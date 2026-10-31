@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1435" viewBox="0 0 1000 1435">
 <rect width="100%" height="100%" fill="white"/>
 <text x="30.0" y="24.0" font-size="14" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Option C, pallet 2 of 2</text>
-<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">96x48 in pallet · gross 273 kg (601 lb) · loaded height 1132 mm (44.6 in) · 5.1 lb/ft3</text>
+<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">96x48 in pallet · gross 269 kg (593 lb) · loaded height 1132 mm (44.6 in) · 5.0 lb/ft3</text>
 <text x="30.0" y="62.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 1 plan (bottom)</text>
 <rect x="30.0" y="70.0" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
 <rect x="95.7" y="70.0" width="210.0" height="169.7" fill="#c9d6ea" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
@@ -69,17 +69,17 @@
 <line x1="25" y1="932.6" x2="522.6" y2="932.6" stroke="#b00" stroke-dasharray="4 3"/>
 <text x="525.6" y="936.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1132 mm loaded</text>
 <text x="30.0" y="1189.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Legend (part id, size as stacked, kg each)</text>
-<text x="30.0" y="1205.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. C-HALF (layer 1): 1500 x 1212 x 47, 13.7 kg</text>
-<text x="30.0" y="1219.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">2. C-HALF (layer 2): 1500 x 1212 x 47, 13.7 kg</text>
-<text x="30.0" y="1233.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">3. F-DR (layer 3): 2290 x 1016 x 200, 19.1 kg</text>
+<text x="30.0" y="1205.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. C-HALF (layer 1): 1500 x 1212 x 47, 13.2 kg</text>
+<text x="30.0" y="1219.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">2. C-HALF (layer 2): 1500 x 1212 x 47, 13.2 kg</text>
+<text x="30.0" y="1233.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">3. F-DR (layer 3): 2290 x 1016 x 200, 18.1 kg</text>
 <text x="30.0" y="1247.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">4. B-BAND-BACK (layer 3): 2420 x 100 x 40, 3.6 kg</text>
 <text x="30.0" y="1261.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. B-BAND-SIDE (layer 3): 1660 x 100 x 40, 2.4 kg</text>
-<text x="30.0" y="1275.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. W-BACK-BAND (layer 4): 1212 x 450 x 47, 4.5 kg</text>
-<text x="30.0" y="1289.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. W-BACK-BAND (layer 4): 1212 x 450 x 47, 4.5 kg</text>
-<text x="30.0" y="1303.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. F-DT (layer 4): 1697 x 280 x 200, 7.4 kg</text>
-<text x="30.0" y="1317.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. W-BACK-BAND (layer 5): 1212 x 450 x 47, 4.5 kg</text>
-<text x="30.0" y="1331.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. W-BACK-BAND (layer 5): 1212 x 450 x 47, 4.5 kg</text>
-<text x="30.0" y="1345.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. F-DL (layer 5): 2290 x 278 x 200, 10.5 kg</text>
+<text x="30.0" y="1275.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. W-BACK-BAND (layer 4): 1212 x 450 x 47, 4.4 kg</text>
+<text x="30.0" y="1289.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. W-BACK-BAND (layer 4): 1212 x 450 x 47, 4.4 kg</text>
+<text x="30.0" y="1303.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. F-DT (layer 4): 1697 x 280 x 200, 7.0 kg</text>
+<text x="30.0" y="1317.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. W-BACK-BAND (layer 5): 1212 x 450 x 47, 4.4 kg</text>
+<text x="30.0" y="1331.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. W-BACK-BAND (layer 5): 1212 x 450 x 47, 4.4 kg</text>
+<text x="30.0" y="1345.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. F-DL (layer 5): 2290 x 278 x 200, 10.0 kg</text>
 <text x="30.0" y="1359.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">12. B-BAND-SIDE (layer 6): 1660 x 100 x 40, 2.4 kg</text>
 <text x="30.0" y="1373.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">13. KIT-CARTON (layer 7): 2400 x 600 x 190, 37.6 kg</text>
 <text x="30.0" y="1387.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">14. F-GLASS-DOOR (layer 8): 2011 x 1176 x 8, 41.6 kg</text>

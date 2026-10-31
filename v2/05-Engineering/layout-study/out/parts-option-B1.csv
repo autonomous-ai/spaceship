@@ -1,9 +1,9 @@
 id,name,name_vi,assembly,size_mm,qty,kg_each,kg_total,ships_as,status,note
-W-SIDE-LO,WALL - SIDE PANEL - LOWER WITH FELT,Vách hông - khung dưới,WALL,1500 x 1145 x 47,2,13.02,26.03,upright,calculation,
-W-SIDE-UP,WALL - SIDE PANEL - UPPER WITH FELT,Vách hông - khung trên,WALL,1500 x 1145 x 47,2,13.02,26.03,upright,calculation,
-W-BACK-LO,WALL - BACK PANEL - LOWER WITH FELT,Vách hậu - khung dưới,WALL,1212 x 1126 x 47,2,10.68,21.35,upright,calculation,
-W-BACK-UP,WALL - BACK PANEL - UPPER WITH FELT,Vách hậu - khung trên,WALL,1212 x 1126 x 47,2,10.68,21.35,upright,calculation,
-C-HALF,CEILING - HALF PANEL WITH FAN OPENING WITH FELT,Trần - nửa khung,CEILING,1500 x 1212 x 47,2,13.75,27.49,upright,calculation,
+W-SIDE-LO,WALL - SIDE PANEL - LOWER WITH FELT,Vách hông - khung dưới,WALL,1500 x 1145 x 47,2,12.50,25.00,upright,calculation,
+W-SIDE-UP,WALL - SIDE PANEL - UPPER WITH FELT,Vách hông - khung trên,WALL,1500 x 1145 x 47,2,12.50,25.00,upright,calculation,
+W-BACK-LO,WALL - BACK PANEL - LOWER WITH FELT,Vách hậu - khung dưới,WALL,1212 x 1126 x 47,2,10.27,20.54,upright,calculation,
+W-BACK-UP,WALL - BACK PANEL - UPPER WITH FELT,Vách hậu - khung trên,WALL,1212 x 1126 x 47,2,10.27,20.54,upright,calculation,
+C-HALF,CEILING - HALF PANEL WITH FAN OPENING WITH FELT,Trần - nửa khung,CEILING,1500 x 1212 x 47,2,13.20,26.40,upright,calculation,
 L-STRIP,LINING - LOOSE FELT STRIPS OVER JOINTS,Dải tiêu âm che mối nối,LINING,1500 x 300 x 60,1,6.56,6.56,box,calculation,the rest of the felt is pre-fitted on the panels (weight counted in WALL and CEILING)
 B-BAND-BACK,BASE - BASE BAND PIECE 100x40 - BACK,Viền chân nhôm,BASE,2420 x 100 x 40,1,3.55,3.55,long,calculation,
 B-BAND-SIDE,BASE - BASE BAND PIECE 100x40 - SIDE,Viền chân nhôm,BASE,1660 x 100 x 40,2,2.44,4.88,long,calculation,
@@ -13,9 +13,9 @@ B-KEY,BASE - CORNER KEY,Ke góc đế,BASE,120 x 80 x 40,6,0.15,0.90,box,assumpt
 B-GLIDE,BASE - LEVELLING GLIDE (hex from above),Chân chỉnh cao,BASE,50 x 50 x 40,8,0.15,1.20,box,assumption,
 B-THRESH,"BASE - DOOR THRESHOLD, LOW",Ngưỡng cửa thấp,BASE,1176 x 60 x 20,1,1.20,1.20,upright,assumption,about 20 mm high; replaces the 100 mm band across the door only
 B-FLOOR,BASE - THIN FLOOR PANEL 15 mm,Tấm sàn mỏng,BASE,1462 x 1212 x 15,2,16.48,32.96,upright,calculation,15 mm ply + 0.3 kg/m2 finish; lies on the room floor on a 3 mm seal mat
-F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 200,1,10.52,10.52,long,calculation,
-F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 200,1,19.05,19.05,long,calculation,
-F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 200,1,7.37,7.37,long,calculation,
+F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 200,1,9.98,9.98,long,calculation,
+F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 200,1,18.06,18.06,long,calculation,
+F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 200,1,7.02,7.02,long,calculation,
 F-GLASS-DOOR,FRONT - GLASS DOOR (8 mm tempered glass),Cửa kính,FRONT,2011 x 1176 x 8,1,41.60,41.60,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
 F-GLASS-FIXED,FRONT - FIXED GLASS (8 mm tempered glass),Vách kính cố định,FRONT,2139 x 724 x 8,1,26.88,26.88,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
 F-HW,FRONT - DOOR AND GLAZING HARDWARE KIT,Phụ kiện cửa và kính,FRONT,600 x 400 x 150,1,5.78,5.78,box,assumption,"3 hinges, pull, drop seal, sealed glazing profiles"

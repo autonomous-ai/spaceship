@@ -7,11 +7,11 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 
 ## Result
 
-1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 447 kg. The light build is 303 kg, and 304 kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a frameless 4+4 laminated front, is **412 kg** here and about 400 kg in the sound study. Both numbers stand until the master BOM comes out of the CAD (PM ruling). The gap is mostly two items. The inline fans the sound study picked weigh 5 kg each, which adds 7.0 kg here; its own total still carries the plan's 1.5 kg fans. And this study holds 9.0 kg for cassette clips and rails. Against the 400 kg cap that is 12 kg over here. An ACP of 3.4 kg/m2 instead of 3.8 would bring it to 404 kg.
-2. **Parts.** In the decided build every part is 20 kg or less except the glass. The glass door weighs 43.3 kg and the fixed panel 28.0 kg; two people carry each with 2 suction lifters (21.6 kg each on the door). The heaviest other part is F-DR at 19.1 kg. The decor's PET fill (4.0 kg) ships loose and goes in on site: inside the right decor block it would make that block 21.2 kg.
-3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet, 511 kg gross, 6.2 lb/ft3. The 48 x 40 weighs 253 kg and stands 1,646 mm high. The 96 x 48 weighs 258 kg and stands 1,056 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
+1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 441 kg. The light build is 296 kg, and 298 kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a frameless 4+4 laminated front, comes to **406 kg** here and about 400 kg in the sound study. Per the PM's ruling it is carried as **400 ± 10 kg** until the CAD parts list settles it, and this study's figure is inside that band. The cap stays at 400 kg. If the CAD parts list lands over it, the inner steel tray or the fans get trimmed, not the sound: a 0.4 mm tray instead of 0.5 mm saves 12.7 kg. The ACP is now 3.5 kg/m2 (Alcorest EV3038 with 0.21 mm skins, as in the sound study) instead of 3.8.
+2. **Parts.** In the decided build every part is 20 kg or less except the glass. The glass door weighs 43.3 kg and the fixed panel 28.0 kg; two people carry each with 2 suction lifters (21.6 kg each on the door). The heaviest other part is F-DR at 18.1 kg. The decor's PET fill (4.0 kg) ships loose and goes in on site: inside the right decor block it would make that block 20.2 kg.
+3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet, 505 kg gross, 6.1 lb/ft3. The 48 x 40 weighs 249 kg and stands 1,646 mm high. The 96 x 48 weighs 256 kg and stands 1,056 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
 4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **121 min** (4.0 person-hours): 76 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
-5. **Decisions.** Everything in the layout is DECIDED, including carrying the ceiling fill on its cassette. One thing to watch: this study's total is 12 kg over the 400 kg cap until the master BOM settles it (item 1).
+5. **Decisions.** Everything in the layout is DECIDED, including carrying the ceiling fill on its cassette and the 400 ± 10 kg total.
 
 ## Decisions
 
@@ -67,34 +67,34 @@ STEP cross-check (same densities). The STEP agrees with the BOM on every big ite
 
 | Assembly | v2 as planned, kg | Light indoor build, kg | Change, kg |
 | --- | ---: | ---: | ---: |
-| BASE | 82.4 | 46.7 | -35.7 |
-| WALL | 137.0 | 80.7 | -56.4 |
-| FRONT | 142.0 | 111.2 | -30.8 |
-| CEILING | 38.9 | 22.3 | -16.6 |
+| BASE | 82.3 | 46.7 | -35.6 |
+| WALL | 133.3 | 77.0 | -56.4 |
+| FRONT | 140.1 | 109.3 | -30.8 |
+| CEILING | 37.8 | 21.2 | -16.6 |
 | LINING | 29.0 | 29.0 | 0.0 |
 | AIR | 3.0 | 6.0 | 3.0 |
 | ELECTRICAL | 3.0 | 7.1 | 4.1 |
 | INTERIOR | 12.0 | 0.0 | -12.0 |
-| **Total** | **447.4** | **303.0** | **-144.4** |
+| **Total** | **440.6** | **296.3** | **-144.3** |
 
 How the light build gets there, one change at a time:
 
 | Step | Status | Change, kg | Running total, kg |
 | --- | --- | ---: | ---: |
-| v2 as planned (steel frames, 6 mm plywood, raised steel floor, 10 mm glass, table) | source + calculation |  | 447.4 |
-| Remove the table; the pod ships empty | confirmed (Dee) | -12.0 | 435.4 |
-| Thin floor inside an aluminium base band instead of the raised steel frame | DECIDED | -36.0 | 399.4 |
-| Aluminium 20x20 frames instead of steel (walls, ceiling, decor) | DECIDED | -47.0 | 352.4 |
-| No plywood behind the ACP; frame members at 400 mm to keep the ACP flat | DECIDED | -54.0 | 298.4 |
-| 8 mm tempered glass instead of 10 mm | light build only; the decided build uses 10 mm acrylic | -17.1 | 281.3 |
-| Add gaskets on every panel joint, sealed glazing profiles, door drop seal | plan requirement | 5.0 | 286.3 |
-| Add 2 silenced vents and an occupancy sensor for automatic fans | plan requirement | 3.1 | 289.4 |
-| Add light cavity fill (20 mm PET) in wall and ceiling bays | assumption (sound group sizes it) | 9.6 | 299.0 |
-| Hold 4 kg for the later voice cockpit kit | Dee's scope addition | 4.0 | 303.0 |
+| v2 as planned (steel frames, 6 mm plywood, raised steel floor, 10 mm glass, table) | source + calculation |  | 440.6 |
+| Remove the table; the pod ships empty | confirmed (Dee) | -12.0 | 428.6 |
+| Thin floor inside an aluminium base band instead of the raised steel frame | DECIDED | -35.8 | 392.7 |
+| Aluminium 20x20 frames instead of steel (walls, ceiling, decor) | DECIDED | -47.0 | 345.7 |
+| No plywood behind the ACP; frame members at 400 mm to keep the ACP flat | DECIDED | -54.0 | 291.7 |
+| 8 mm tempered glass instead of 10 mm | light build only; the decided build uses 10 mm acrylic | -17.1 | 274.6 |
+| Add gaskets on every panel joint, sealed glazing profiles, door drop seal | plan requirement | 5.0 | 279.6 |
+| Add 2 silenced vents and an occupancy sensor for automatic fans | plan requirement | 3.1 | 282.7 |
+| Add light cavity fill (20 mm PET) in wall and ceiling bays | assumption (sound group sizes it) | 9.6 | 292.3 |
+| Hold 4 kg for the later voice cockpit kit | Dee's scope addition | 4.0 | 296.3 |
 
 Notes:
 - Glass weights use the finished shapes from the STEP: door 2.08 m2, fixed panel 1.34 m2. Decor skins use the STEP's finished areas too (6.30 m2, against 7.67 m2 of cutting rectangles in the BOM).
-- The ACP areal mass (3.8 kg/m2) is for a product with 0.3 mm skins, so it is likely conservative. Every 0.1 kg/m2 lighter ACP takes 2.2 kg off the pod.
+- The ACP is Alcorest EV3038, 3 mm with 0.21 mm skins (the plan's VT01). The maker gives skins, not kg/m2; 3.5 kg/m2 is the sound study's calculation, used here by the PM's ruling. Every 0.1 kg/m2 of ACP changes the pod by 2.2 kg.
 - The colour of the decor cladding (yellow ACP in the plan's materials, black in the plan's pictures) is on the issue list. It does not change any weight.
 
 ### 1.3 Variants
@@ -103,30 +103,30 @@ One change at a time against the light build:
 
 | Variant (one change to the light build) | Change, kg | Total, kg | Note |
 | --- | ---: | ---: | --- |
-| Front: smoked acrylic 8 mm (door and fixed panel) | -35.9 | 267.1 | Room uses an acrylic booth door; scratches more, needs a stiffer door frame or hinges rated for acrylic; sound check decides. |
-| Front: smoked acrylic 10 mm | -27.7 | 275.2 | Stiffer door; same notes. |
-| Front: 4+4 laminated acoustic glass | +2.8 | 305.7 | About the weight of 8 mm, quieter (sound group). |
-| Front: 10 mm tempered glass (as v1) | +17.1 | 320.1 | Reference. |
-| Walls and ceiling: foam-core sandwich (same ACP face, 25 mm foam, 0.5 mm aluminium inner skin) | +29.6 | 332.5 | Stiff and flat without studs; factory-bonded; fire behaviour of the core to check for the later US rules. |
-| Walls and ceiling: aluminium honeycomb sandwich (same ACP face on a 10 mm honeycomb panel) | +47.9 | 350.9 | Heaviest of the light options here because the ACP face sits on a full honeycomb panel. |
-| No floor at all (base band only) | -33.0 | 270.0 | Weakest for sound (open to the room floor). |
-| Raised steel floor kept (plan) | +36.0 | 338.9 | Reference. |
+| Front: smoked acrylic 8 mm (door and fixed panel) | -35.9 | 260.4 | Room uses an acrylic booth door; scratches more, needs a stiffer door frame or hinges rated for acrylic; sound check decides. |
+| Front: smoked acrylic 10 mm | -27.7 | 268.5 | Stiffer door; same notes. |
+| Front: 4+4 laminated acoustic glass | +2.8 | 299.0 | About the weight of 8 mm, quieter (sound group). |
+| Front: 10 mm tempered glass (as v1) | +17.1 | 313.4 | Reference. |
+| Walls and ceiling: foam-core sandwich (same ACP face, 25 mm foam, 0.5 mm aluminium inner skin) | +29.6 | 325.8 | Stiff and flat without studs; factory-bonded; fire behaviour of the core to check for the later US rules. |
+| Walls and ceiling: aluminium honeycomb sandwich (same ACP face on a 10 mm honeycomb panel) | +47.9 | 344.2 | Heaviest of the light options here because the ACP face sits on a full honeycomb panel. |
+| No floor at all (base band only) | -33.0 | 263.3 | Weakest for sound (open to the room floor). |
+| Raised steel floor kept (plan) | +35.8 | 332.1 | Reference. |
 
-The smoked acrylic front is the biggest single lever, but the decided build uses 4+4 laminated glass: acrylic needed an opaque band down the door, which breaks the look. The sandwich walls are heavier than the frame build here, because the frame build without plywood is already 6.2 kg/m2. Sandwich walls buy flatness and a second skin, not weight.
+The smoked acrylic front is the biggest single lever, but the decided build uses 4+4 laminated glass: acrylic needed an opaque band down the door, which breaks the look. The sandwich walls are heavier than the frame build here, because the frame build without plywood is already 5.9 kg/m2. Sandwich walls buy flatness and a second skin, not weight.
 
 ### 1.4 Every part against 20 kg
 
-Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 26.9 kg at 8 mm). Over 20 kg in the light build: none. Over 20 kg as planned: F-DR 27.5 kg. With the felt pre-fitted, the light build's wall and ceiling panels weigh 11 to 14 kg. For the decided build see section 5.
+Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 26.9 kg at 8 mm). Over 20 kg in the light build: none. Over 20 kg as planned: F-DR 26.5 kg. With the felt pre-fitted, the light build's wall and ceiling panels weigh 10 to 13 kg. For the decided build see section 5.
 
 <details><summary>Part list with weights, light build</summary>
 
 | ID | Part (English / Vietnamese) | Assembly | Size mm | Qty | kg each | kg | 20 kg check | Status |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- | --- |
-| W-SIDE-LO | WALL - SIDE PANEL - LOWER / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 38 | 2 | 10.6 | 21.2 |  | calculation |
-| W-SIDE-UP | WALL - SIDE PANEL - UPPER / Vách hông - khung trên | WALL | 1,500 x 1,145 x 38 | 2 | 10.6 | 21.2 |  | calculation |
-| W-BACK-LO | WALL - BACK PANEL - LOWER / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 38 | 2 | 8.8 | 17.5 |  | calculation |
-| W-BACK-UP | WALL - BACK PANEL - UPPER / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 38 | 2 | 8.8 | 17.5 |  | calculation |
-| C-HALF | CEILING - HALF PANEL WITH FAN OPENING / Trần - nửa khung | CEILING | 1,500 x 1,212 x 38 | 2 | 11.2 | 22.3 |  | calculation |
+| W-SIDE-LO | WALL - SIDE PANEL - LOWER / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 38 | 2 | 10.1 | 20.2 |  | calculation |
+| W-SIDE-UP | WALL - SIDE PANEL - UPPER / Vách hông - khung trên | WALL | 1,500 x 1,145 x 38 | 2 | 10.1 | 20.2 |  | calculation |
+| W-BACK-LO | WALL - BACK PANEL - LOWER / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 38 | 2 | 8.4 | 16.7 |  | calculation |
+| W-BACK-UP | WALL - BACK PANEL - UPPER / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 38 | 2 | 8.4 | 16.7 |  | calculation |
+| C-HALF | CEILING - HALF PANEL WITH FAN OPENING / Trần - nửa khung | CEILING | 1,500 x 1,212 x 38 | 2 | 10.6 | 21.2 |  | calculation |
 | L-FELT-SIDE | LINING - PET FELT - SIDE / Tấm tiêu âm PET - vách hông | LINING | 1,462 x 1,145 x 9 | 4 | 3.1 | 12.4 |  | calculation |
 | L-FELT-BACK | LINING - PET FELT - BACK / Tấm tiêu âm PET - vách hậu | LINING | 1,212 x 1,126 x 9 | 4 | 2.5 | 10.1 |  | calculation |
 | L-FELT-CEIL | LINING - PET FELT - CEILING / Tấm tiêu âm PET - trần | LINING | 1,462 x 1,212 x 9 | 2 | 3.3 | 6.6 |  | calculation |
@@ -138,9 +138,9 @@ Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 2
 | B-GLIDE | BASE - LEVELLING GLIDE (hex from above) / Chân chỉnh cao | BASE | 50 x 50 x 40 | 8 | 0.1 | 1.2 |  | assumption |
 | B-THRESH | BASE - DOOR THRESHOLD, LOW / Ngưỡng cửa thấp | BASE | 1,176 x 60 x 20 | 1 | 1.2 | 1.2 |  | assumption |
 | B-FLOOR | BASE - THIN FLOOR PANEL 15 mm / Tấm sàn mỏng | BASE | 1,462 x 1,212 x 15 | 2 | 16.5 | 33.0 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.5 | 10.5 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 19.1 | 19.1 |  | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.4 | 7.4 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.0 | 10.0 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 18.1 | 18.1 |  | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.0 | 7.0 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (8 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 8 | 1 | 41.6 | 41.6 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (8 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 8 | 1 | 26.9 | 26.9 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 5.8 | 5.8 |  | assumption |
@@ -149,7 +149,7 @@ Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 2
 | E-KIT | ELECTRICAL - SWITCHES, LIGHTS, HARNESS / Bộ điện: công tắc, đèn, dây | ELECTRICAL | 600 x 400 x 200 | 1 | 3.1 | 3.1 |  | assumption |
 | E-VOICE-RESERVE | ELECTRICAL - VOICE COCKPIT KIT RESERVE (later) / Dự phòng bộ voice cockpit | ELECTRICAL | - | 1 | 4.0 | 4.0 |  | assumption |
 | K-FIX | KIT - M6 BOLTS, RIVNUTS, JOINT GASKETS / Bộ bu lông M6, gioăng | WALL | 400 x 300 x 150 | 1 | 3.2 | 3.2 |  | calculation |
-|  | **Total** |  |  | 54 |  | **303.0** |  |  |
+|  | **Total** |  |  | 54 |  | **296.3** |  |  |
 
 </details>
 
@@ -157,11 +157,11 @@ Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 2
 
 | ID | Part (English / Vietnamese) | Assembly | Size mm | Qty | kg each | kg | 20 kg check | Status |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- | --- |
-| W-SIDE-LO | WALL - SIDE PANEL - LOWER / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 38 | 2 | 18.5 | 37.0 |  | calculation |
-| W-SIDE-UP | WALL - SIDE PANEL - UPPER / Vách hông - khung trên | WALL | 1,500 x 1,145 x 38 | 2 | 18.5 | 37.0 |  | calculation |
-| W-BACK-LO | WALL - BACK PANEL - LOWER / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 38 | 2 | 15.3 | 30.7 |  | calculation |
-| W-BACK-UP | WALL - BACK PANEL - UPPER / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 38 | 2 | 15.3 | 30.7 |  | calculation |
-| C-HALF | CEILING - HALF PANEL WITH FAN OPENING / Trần - nửa khung | CEILING | 1,500 x 1,212 x 38 | 2 | 19.5 | 38.9 |  | calculation |
+| W-SIDE-LO | WALL - SIDE PANEL - LOWER / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 38 | 2 | 18.0 | 36.0 |  | calculation |
+| W-SIDE-UP | WALL - SIDE PANEL - UPPER / Vách hông - khung trên | WALL | 1,500 x 1,145 x 38 | 2 | 18.0 | 36.0 |  | calculation |
+| W-BACK-LO | WALL - BACK PANEL - LOWER / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 38 | 2 | 14.9 | 29.9 |  | calculation |
+| W-BACK-UP | WALL - BACK PANEL - UPPER / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 38 | 2 | 14.9 | 29.9 |  | calculation |
+| C-HALF | CEILING - HALF PANEL WITH FAN OPENING / Trần - nửa khung | CEILING | 1,500 x 1,212 x 38 | 2 | 18.9 | 37.8 |  | calculation |
 | L-FELT-SIDE | LINING - PET FELT - SIDE / Tấm tiêu âm PET - vách hông | LINING | 1,462 x 1,145 x 9 | 4 | 3.1 | 12.4 |  | calculation |
 | L-FELT-BACK | LINING - PET FELT - BACK / Tấm tiêu âm PET - vách hậu | LINING | 1,212 x 1,126 x 9 | 4 | 2.5 | 10.1 |  | calculation |
 | L-FELT-CEIL | LINING - PET FELT - CEILING / Tấm tiêu âm PET - trần | LINING | 1,462 x 1,212 x 9 | 2 | 3.3 | 6.6 |  | calculation |
@@ -177,10 +177,10 @@ Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 2
 | B-FOOT | BASE - LEVELLING FOOT M10 / Chân tăng đưa M10 | BASE | 80 x 60 x 60 | 6 | 0.2 | 1.5 |  | assumption |
 | B-BRACKET | BASE - CORNER BRACKET / Pát góc khung sàn | BASE | 150 x 100 x 60 | 4 | 0.3 | 1.4 |  | assumption |
 | B-BOARD | BASE - FLOOR BOARD / Ván sàn | BASE | 1,428 x 1,184 x 15 | 2 | 15.2 | 30.4 |  | calculation |
-| B-THRESH | BASE - FRONT EDGE TRIM / Ốp mép sàn trước | BASE | 1,917 x 204 x 3 | 1 | 1.5 | 1.5 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 15.3 | 15.3 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 27.5 | 27.5 | OVER 20 kg | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 11.0 | 11.0 |  | calculation |
+| B-THRESH | BASE - FRONT EDGE TRIM / Ốp mép sàn trước | BASE | 1,917 x 204 x 3 | 1 | 1.4 | 1.4 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 14.7 | 14.7 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 26.5 | 26.5 | OVER 20 kg | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 10.7 | 10.7 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (10 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 10 | 1 | 52.0 | 52.0 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (10 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 10 | 1 | 33.6 | 33.6 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 2.6 | 2.6 |  | assumption |
@@ -188,7 +188,7 @@ Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 2
 | E-KIT | ELECTRICAL - SWITCHES, LIGHTS, HARNESS / Bộ điện: công tắc, đèn, dây | ELECTRICAL | 600 x 400 x 200 | 1 | 3.0 | 3.0 |  | assumption |
 | I-TABLE | INTERIOR - TABLE (v1), FLAT-PACKED / Bàn | INTERIOR | 1,000 x 600 x 120 | 1 | 12.0 | 12.0 |  | calculation |
 | K-FIX | KIT - M6 BOLTS, RIVNUTS / Bộ bu lông M6, gioăng | WALL | 400 x 300 x 150 | 1 | 1.6 | 1.6 |  | calculation |
-|  | **Total** |  |  | 59 |  | **447.4** |  |  |
+|  | **Total** |  |  | 59 |  | **440.6** |  |  |
 
 </details>
 
@@ -198,26 +198,26 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | Option | What it is | Pod kg | Parts | M6 bolts + clips | Cable connectors | Pallets 48x40 + 96x48 | Shipped kg (gross) | Max loaded height mm | Density lb/ft3 | Assembly, min (2 people) | Person-hours |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| **A** | Plan as written | 447 | 59 | 134 + 0 | 3 | 1 + 1 | 550 | 1,646 | 7.8 | 193 | 6.4 |
-| **B1** | Plan split, light build, fast assembly, 2 pallets (DECIDED) | 304 | 45 | 76 + 38 | 3 | 1 + 1 | 403 | 1,646 | 6.5 | 104 | 3.5 |
-| **B2** | As B1, decor and base band split to fit 48x40 (rejected) | 307 | 49 | 92 + 38 | 3 | 2 + 1 | 432 | 1,806 | 4.9 | 113 | 3.8 |
-| **C** | Horizontal bands, light build, fast assembly (rejected) | 318 | 57 | 76 + 98 | 6 | 1 + 1 | 417 | 1,646 | 4.8 | 124 | 4.1 |
+| **A** | Plan as written | 441 | 59 | 134 + 0 | 3 | 1 + 1 | 544 | 1,646 | 7.7 | 191 | 6.4 |
+| **B1** | Plan split, light build, fast assembly, 2 pallets (DECIDED) | 298 | 45 | 76 + 38 | 3 | 1 + 1 | 397 | 1,646 | 6.4 | 104 | 3.5 |
+| **B2** | As B1, decor and base band split to fit 48x40 (rejected) | 300 | 49 | 92 + 38 | 3 | 2 + 1 | 425 | 1,806 | 4.9 | 113 | 3.8 |
+| **C** | Horizontal bands, light build, fast assembly (rejected) | 311 | 57 | 76 + 98 | 6 | 1 + 1 | 410 | 1,646 | 4.7 | 124 | 4.1 |
 
-- **A, plan as written.** Fits 2 pallets only if the raised floor frame ships as knock-down bars; welded as in v1 (2500 x 1703 mm per the v1 BOM, 55 kg), it fits no standard pallet. Heaviest option (447 kg). The right decor block is over 20 kg, and the floor boards need screws and a driver.
-- **B1, DECIDED.** Panels, short base band pieces, floor panels and the felt strips go on the 48 x 40 (184 kg, 1,646 mm high). The decor blocks, the long base band pieces, the kit boxes and the glass go on the 96 x 48 (219 kg, 608 mm high). Its longest piece is 2,420 mm (95.3 in), under the 96 in length where most LTL carriers start overlength charges. One long pallet is needed anyway: the glass is 2011 and 2139 mm long.
-- **B2, rejected.** Cutting the decor blocks and standing the base band up puts everything except the glass on 48 x 40 pallets. But it needs two of them, and the glass still takes the long pallet alone: 3 pallets, 432 kg gross. The cut also puts seams across the faceted front.
-- **C, rejected.** Five stacked bands per wall (like Orangebox Air3) give light 5 to 6 kg parts. But they add 60 fixings, 3 extra visible seams per wall, 3 more cable connectors and more gasket to seal. With the plan's split, parts are already under 20 kg, so bands buy nothing.
-- **Fewer, larger panels, rejected where the 20 kg limit bites.** A full-height side wall weighs 20 kg even without felt. A full-height back panel with felt pre-fitted weighs 20.7 kg. Both are over 20 kg.
+- **A, plan as written.** Fits 2 pallets only if the raised floor frame ships as knock-down bars; welded as in v1 (2500 x 1703 mm per the v1 BOM, 55 kg), it fits no standard pallet. Heaviest option (441 kg). The right decor block is over 20 kg, and the floor boards need screws and a driver.
+- **B1, DECIDED.** Panels, short base band pieces, floor panels and the felt strips go on the 48 x 40 (180 kg, 1,646 mm high). The decor blocks, the long base band pieces, the kit boxes and the glass go on the 96 x 48 (217 kg, 608 mm high). Its longest piece is 2,420 mm (95.3 in), under the 96 in length where most LTL carriers start overlength charges. One long pallet is needed anyway: the glass is 2011 and 2139 mm long.
+- **B2, rejected.** Cutting the decor blocks and standing the base band up puts everything except the glass on 48 x 40 pallets. But it needs two of them, and the glass still takes the long pallet alone: 3 pallets, 425 kg gross. The cut also puts seams across the faceted front.
+- **C, rejected.** Five stacked bands per wall (like Orangebox Air3) give light 4 to 5 kg parts. But they add 60 fixings, 3 extra visible seams per wall, 3 more cable connectors and more gasket to seal. With the plan's split, parts are already under 20 kg, so bands buy nothing.
+- **Fewer, larger panels, rejected where the 20 kg limit bites.** A full-height side wall weighs 19 kg even without felt. A full-height back panel with felt pre-fitted weighs 19.9 kg. Both are over 20 kg.
 
 <details><summary>Option A: part list, joints, pallets, assembly</summary>
 
 | ID | Part (English / Vietnamese) | Assembly | Size mm | Qty | kg each | kg | 20 kg check | Status |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- | --- |
-| W-SIDE-LO | WALL - SIDE PANEL - LOWER / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 38 | 2 | 18.5 | 37.0 |  | calculation |
-| W-SIDE-UP | WALL - SIDE PANEL - UPPER / Vách hông - khung trên | WALL | 1,500 x 1,145 x 38 | 2 | 18.5 | 37.0 |  | calculation |
-| W-BACK-LO | WALL - BACK PANEL - LOWER / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 38 | 2 | 15.3 | 30.7 |  | calculation |
-| W-BACK-UP | WALL - BACK PANEL - UPPER / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 38 | 2 | 15.3 | 30.7 |  | calculation |
-| C-HALF | CEILING - HALF PANEL WITH FAN OPENING / Trần - nửa khung | CEILING | 1,500 x 1,212 x 38 | 2 | 19.5 | 38.9 |  | calculation |
+| W-SIDE-LO | WALL - SIDE PANEL - LOWER / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 38 | 2 | 18.0 | 36.0 |  | calculation |
+| W-SIDE-UP | WALL - SIDE PANEL - UPPER / Vách hông - khung trên | WALL | 1,500 x 1,145 x 38 | 2 | 18.0 | 36.0 |  | calculation |
+| W-BACK-LO | WALL - BACK PANEL - LOWER / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 38 | 2 | 14.9 | 29.9 |  | calculation |
+| W-BACK-UP | WALL - BACK PANEL - UPPER / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 38 | 2 | 14.9 | 29.9 |  | calculation |
+| C-HALF | CEILING - HALF PANEL WITH FAN OPENING / Trần - nửa khung | CEILING | 1,500 x 1,212 x 38 | 2 | 18.9 | 37.8 |  | calculation |
 | L-FELT-SIDE | LINING - PET FELT - SIDE / Tấm tiêu âm PET - vách hông | LINING | 1,462 x 1,145 x 9 | 4 | 3.1 | 12.4 |  | calculation |
 | L-FELT-BACK | LINING - PET FELT - BACK / Tấm tiêu âm PET - vách hậu | LINING | 1,212 x 1,126 x 9 | 4 | 2.5 | 10.1 |  | calculation |
 | L-FELT-CEIL | LINING - PET FELT - CEILING / Tấm tiêu âm PET - trần | LINING | 1,462 x 1,212 x 9 | 2 | 3.3 | 6.6 |  | calculation |
@@ -233,10 +233,10 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | B-FOOT | BASE - LEVELLING FOOT M10 / Chân tăng đưa M10 | BASE | 80 x 60 x 60 | 6 | 0.2 | 1.5 |  | assumption |
 | B-BRACKET | BASE - CORNER BRACKET / Pát góc khung sàn | BASE | 150 x 100 x 60 | 4 | 0.3 | 1.4 |  | assumption |
 | B-BOARD | BASE - FLOOR BOARD / Ván sàn | BASE | 1,428 x 1,184 x 15 | 2 | 15.2 | 30.4 |  | calculation |
-| B-THRESH | BASE - FRONT EDGE TRIM / Ốp mép sàn trước | BASE | 1,917 x 204 x 3 | 1 | 1.5 | 1.5 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 15.3 | 15.3 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 27.5 | 27.5 | OVER 20 kg | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 11.0 | 11.0 |  | calculation |
+| B-THRESH | BASE - FRONT EDGE TRIM / Ốp mép sàn trước | BASE | 1,917 x 204 x 3 | 1 | 1.4 | 1.4 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 14.7 | 14.7 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 26.5 | 26.5 | OVER 20 kg | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 10.7 | 10.7 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (10 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 10 | 1 | 52.0 | 52.0 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (10 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 10 | 1 | 33.6 | 33.6 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 2.6 | 2.6 |  | assumption |
@@ -244,7 +244,7 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | E-KIT | ELECTRICAL - SWITCHES, LIGHTS, HARNESS / Bộ điện: công tắc, đèn, dây | ELECTRICAL | 600 x 400 x 200 | 1 | 3.0 | 3.0 |  | assumption |
 | I-TABLE | INTERIOR - TABLE (v1), FLAT-PACKED / Bàn | INTERIOR | 1,000 x 600 x 120 | 1 | 12.0 | 12.0 |  | calculation |
 | K-FIX | KIT - M6 BOLTS, RIVNUTS / Bộ bu lông M6, gioăng | WALL | 400 x 300 x 150 | 1 | 1.6 | 1.6 |  | calculation |
-|  | **Total** |  |  | 59 |  | **447.4** |  |  |
+|  | **Total** |  |  | 59 |  | **440.6** |  |  |
 
 | Joint | What it joins | Edges | M6 bolts |
 | --- | --- | ---: | ---: |
@@ -263,16 +263,16 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-A-1-48x40.svg) | 1,219 x 1,016 | 263 | 580 | 1,646 (64.8 in) | 72.0 | 8.1 | B-BOARD, B-RAIL-FL-06, B-RAIL-FL-07, B-RAIL-FL-08, C-HALF, L-FELT-BACK, L-FELT-CEIL, L-FELT-SIDE, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
-| [2: 96x48 in](out/pallets-A-2-96x48.svg) | 2,438 x 1,219 | 287 | 633 | 788 (31.0 in) | 82.7 | 7.7 | B-JOIST, B-RAIL-FL-01, B-RAIL-FL-02, B-RAIL-FL-03, B-RAIL-FL-04, B-RAIL-FL-05, B-THRESH, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, I-TABLE, KIT-CARTON |
+| [1: 48x40 in](out/pallets-A-1-48x40.svg) | 1,219 x 1,016 | 258 | 570 | 1,646 (64.8 in) | 72.0 | 7.9 | B-BOARD, B-RAIL-FL-06, B-RAIL-FL-07, B-RAIL-FL-08, C-HALF, L-FELT-BACK, L-FELT-CEIL, L-FELT-SIDE, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
+| [2: 96x48 in](out/pallets-A-2-96x48.svg) | 2,438 x 1,219 | 285 | 629 | 788 (31.0 in) | 82.7 | 7.6 | B-JOIST, B-RAIL-FL-01, B-RAIL-FL-02, B-RAIL-FL-03, B-RAIL-FL-04, B-RAIL-FL-05, B-THRESH, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, I-TABLE, KIT-CARTON |
 
 | # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 0 | 20.0 | 0.0 | - |
 | 2 | Raised frame: bars, corner brackets, joists, 6 feet; level | 15 | 32 | 0 | 24.2 | 24.2 | Corner bolts from above and inside before any wall stands on the frame. |
 | 3 | 2 floor boards screwed to the joists (plan: screws, a second fastener and a driver) | 2 | 0 | 0 | 3.0 | 5.3 | From above, open. |
-| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, bolts at seam and corners | 4 | 25 | 0 | 6.0 | 12.5 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
-| 5 | Upper walls: back pair, then sides; bolts at horizontal seams, vertical seam and corners | 4 | 25 | 0 | 6.0 | 12.5 | As the lower walls; top fixings at 2.2 m need the step stool. |
+| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, bolts at seam and corners | 4 | 25 | 0 | 4.5 | 14.0 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
+| 5 | Upper walls: back pair, then sides; bolts at horizontal seams, vertical seam and corners | 4 | 25 | 0 | 4.5 | 14.0 | As the lower walls; top fixings at 2.2 m need the step stool. |
 | 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 24 | 0 | 5.5 | 12.0 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
 | 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 0 | 4.5 | 9.0 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
 | 8 | Fixed glass into its sealed profiles (2 people, 2 suction lifters) | 1 | 4 | 0 | 12.8 | 2.0 | Profile frame bolted from inside; glass held by clip-in beads. |
@@ -280,7 +280,7 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
 | 11 | Felt lining: 10 panels pressed onto Velcro | 10 | 0 | 0 | 0.0 | 12.5 | Closes every bay: last. |
 | 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
-|  | **Elapsed for 2 people, with 15 % for hand-offs** | 43 | 134 | 0 |  |  | **193 min (6.4 person-hours)** |
+|  | **Elapsed for 2 people, with 15 % for hand-offs** | 43 | 134 | 0 |  |  | **191 min (6.4 person-hours)** |
 
 </details>
 
@@ -288,11 +288,11 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | ID | Part (English / Vietnamese) | Assembly | Size mm | Qty | kg each | kg | 20 kg check | Status |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- | --- |
-| W-SIDE-LO | WALL - SIDE PANEL - LOWER WITH FELT / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 47 | 2 | 13.0 | 26.0 |  | calculation |
-| W-SIDE-UP | WALL - SIDE PANEL - UPPER WITH FELT / Vách hông - khung trên | WALL | 1,500 x 1,145 x 47 | 2 | 13.0 | 26.0 |  | calculation |
-| W-BACK-LO | WALL - BACK PANEL - LOWER WITH FELT / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 47 | 2 | 10.7 | 21.4 |  | calculation |
-| W-BACK-UP | WALL - BACK PANEL - UPPER WITH FELT / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 47 | 2 | 10.7 | 21.4 |  | calculation |
-| C-HALF | CEILING - HALF PANEL WITH FAN OPENING WITH FELT / Trần - nửa khung | CEILING | 1,500 x 1,212 x 47 | 2 | 13.7 | 27.5 |  | calculation |
+| W-SIDE-LO | WALL - SIDE PANEL - LOWER WITH FELT / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 47 | 2 | 12.5 | 25.0 |  | calculation |
+| W-SIDE-UP | WALL - SIDE PANEL - UPPER WITH FELT / Vách hông - khung trên | WALL | 1,500 x 1,145 x 47 | 2 | 12.5 | 25.0 |  | calculation |
+| W-BACK-LO | WALL - BACK PANEL - LOWER WITH FELT / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 47 | 2 | 10.3 | 20.5 |  | calculation |
+| W-BACK-UP | WALL - BACK PANEL - UPPER WITH FELT / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 47 | 2 | 10.3 | 20.5 |  | calculation |
+| C-HALF | CEILING - HALF PANEL WITH FAN OPENING WITH FELT / Trần - nửa khung | CEILING | 1,500 x 1,212 x 47 | 2 | 13.2 | 26.4 |  | calculation |
 | L-STRIP | LINING - LOOSE FELT STRIPS OVER JOINTS / Dải tiêu âm che mối nối | LINING | 1,500 x 300 x 60 | 1 | 6.6 | 6.6 |  | calculation |
 | B-BAND-BACK | BASE - BASE BAND PIECE 100x40 - BACK / Viền chân nhôm | BASE | 2,420 x 100 x 40 | 1 | 3.6 | 3.6 |  | calculation |
 | B-BAND-SIDE | BASE - BASE BAND PIECE 100x40 - SIDE / Viền chân nhôm | BASE | 1,660 x 100 x 40 | 2 | 2.4 | 4.9 |  | calculation |
@@ -302,9 +302,9 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | B-GLIDE | BASE - LEVELLING GLIDE (hex from above) / Chân chỉnh cao | BASE | 50 x 50 x 40 | 8 | 0.1 | 1.2 |  | assumption |
 | B-THRESH | BASE - DOOR THRESHOLD, LOW / Ngưỡng cửa thấp | BASE | 1,176 x 60 x 20 | 1 | 1.2 | 1.2 |  | assumption |
 | B-FLOOR | BASE - THIN FLOOR PANEL 15 mm / Tấm sàn mỏng | BASE | 1,462 x 1,212 x 15 | 2 | 16.5 | 33.0 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.5 | 10.5 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 19.1 | 19.1 |  | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.4 | 7.4 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.0 | 10.0 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 18.1 | 18.1 |  | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.0 | 7.0 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (8 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 8 | 1 | 41.6 | 41.6 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (8 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 8 | 1 | 26.9 | 26.9 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 5.8 | 5.8 |  | assumption |
@@ -313,7 +313,7 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | E-KIT | ELECTRICAL - SWITCHES, LIGHTS, HARNESS / Bộ điện: công tắc, đèn, dây | ELECTRICAL | 600 x 400 x 200 | 1 | 3.1 | 3.1 |  | assumption |
 | E-VOICE-RESERVE | ELECTRICAL - VOICE COCKPIT KIT RESERVE (later) / Dự phòng bộ voice cockpit | ELECTRICAL | - | 1 | 4.0 | 4.0 |  | assumption |
 | K-FIX | KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS / Bộ bu lông M6, gioăng | WALL | 400 x 300 x 150 | 1 | 4.7 | 4.7 |  | calculation |
-|  | **Total** |  |  | 45 |  | **304.4** |  |  |
+|  | **Total** |  |  | 45 |  | **297.7** |  |  |
 
 | Joint | What it joins | Edges | M6 bolts |
 | --- | --- | ---: | ---: |
@@ -332,8 +332,8 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-B1-1-48x40.svg) | 1,219 x 1,016 | 184 | 407 | 1,646 (64.8 in) | 72.0 | 5.6 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
-| [2: 96x48 in](out/pallets-B1-2-96x48.svg) | 2,438 x 1,219 | 219 | 483 | 608 (23.9 in) | 63.8 | 7.6 | B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-BOX-1, KIT-BOX-2 |
+| [1: 48x40 in](out/pallets-B1-1-48x40.svg) | 1,219 x 1,016 | 180 | 396 | 1,646 (64.8 in) | 72.0 | 5.5 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
+| [2: 96x48 in](out/pallets-B1-2-96x48.svg) | 2,438 x 1,219 | 217 | 479 | 608 (23.9 in) | 63.8 | 7.5 | B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-BOX-1, KIT-BOX-2 |
 
 </details>
 
@@ -341,11 +341,11 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | ID | Part (English / Vietnamese) | Assembly | Size mm | Qty | kg each | kg | 20 kg check | Status |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- | --- |
-| W-SIDE-LO | WALL - SIDE PANEL - LOWER WITH FELT / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 47 | 2 | 13.0 | 26.0 |  | calculation |
-| W-SIDE-UP | WALL - SIDE PANEL - UPPER WITH FELT / Vách hông - khung trên | WALL | 1,500 x 1,145 x 47 | 2 | 13.0 | 26.0 |  | calculation |
-| W-BACK-LO | WALL - BACK PANEL - LOWER WITH FELT / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 47 | 2 | 10.7 | 21.4 |  | calculation |
-| W-BACK-UP | WALL - BACK PANEL - UPPER WITH FELT / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 47 | 2 | 10.7 | 21.4 |  | calculation |
-| C-HALF | CEILING - HALF PANEL WITH FAN OPENING WITH FELT / Trần - nửa khung | CEILING | 1,500 x 1,212 x 47 | 2 | 13.7 | 27.5 |  | calculation |
+| W-SIDE-LO | WALL - SIDE PANEL - LOWER WITH FELT / Vách hông - khung dưới | WALL | 1,500 x 1,145 x 47 | 2 | 12.5 | 25.0 |  | calculation |
+| W-SIDE-UP | WALL - SIDE PANEL - UPPER WITH FELT / Vách hông - khung trên | WALL | 1,500 x 1,145 x 47 | 2 | 12.5 | 25.0 |  | calculation |
+| W-BACK-LO | WALL - BACK PANEL - LOWER WITH FELT / Vách hậu - khung dưới | WALL | 1,212 x 1,126 x 47 | 2 | 10.3 | 20.5 |  | calculation |
+| W-BACK-UP | WALL - BACK PANEL - UPPER WITH FELT / Vách hậu - khung trên | WALL | 1,212 x 1,126 x 47 | 2 | 10.3 | 20.5 |  | calculation |
+| C-HALF | CEILING - HALF PANEL WITH FAN OPENING WITH FELT / Trần - nửa khung | CEILING | 1,500 x 1,212 x 47 | 2 | 13.2 | 26.4 |  | calculation |
 | L-STRIP | LINING - LOOSE FELT STRIPS OVER JOINTS / Dải tiêu âm che mối nối | LINING | 1,500 x 300 x 60 | 1 | 6.6 | 6.6 |  | calculation |
 | B-BAND-BACK | BASE - BASE BAND PIECE 100x40 - BACK (1/2) / Viền chân nhôm | BASE | 1,210 x 100 x 40 | 2 | 1.9 | 3.8 |  | calculation |
 | B-BAND-SIDE | BASE - BASE BAND PIECE 100x40 - SIDE / Viền chân nhôm | BASE | 1,660 x 100 x 40 | 2 | 2.4 | 4.9 |  | calculation |
@@ -355,9 +355,9 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | B-GLIDE | BASE - LEVELLING GLIDE (hex from above) / Chân chỉnh cao | BASE | 50 x 50 x 40 | 8 | 0.1 | 1.2 |  | assumption |
 | B-THRESH | BASE - DOOR THRESHOLD, LOW / Ngưỡng cửa thấp | BASE | 1,176 x 60 x 20 | 1 | 1.2 | 1.2 |  | assumption |
 | B-FLOOR | BASE - THIN FLOOR PANEL 15 mm / Tấm sàn mỏng | BASE | 1,462 x 1,212 x 15 | 2 | 16.5 | 33.0 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT (half) / Khung trang trí - khối trái (nửa) | FRONT | 1,145 x 278 x 200 | 2 | 5.6 | 11.1 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT (half) / Khung trang trí - khối phải (nửa) | FRONT | 1,145 x 1,016 x 200 | 2 | 9.8 | 19.7 |  | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP (half) / Khung trang trí - khối trên (nửa) | FRONT | 848 x 280 x 200 | 2 | 4.0 | 8.0 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT (half) / Khung trang trí - khối trái (nửa) | FRONT | 1,145 x 278 x 200 | 2 | 5.3 | 10.6 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT (half) / Khung trang trí - khối phải (nửa) | FRONT | 1,145 x 1,016 x 200 | 2 | 9.3 | 18.7 |  | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP (half) / Khung trang trí - khối trên (nửa) | FRONT | 848 x 280 x 200 | 2 | 3.8 | 7.6 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (8 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 8 | 1 | 41.6 | 41.6 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (8 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 8 | 1 | 26.9 | 26.9 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 5.8 | 5.8 |  | assumption |
@@ -366,7 +366,7 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | E-KIT | ELECTRICAL - SWITCHES, LIGHTS, HARNESS / Bộ điện: công tắc, đèn, dây | ELECTRICAL | 600 x 400 x 200 | 1 | 3.1 | 3.1 |  | assumption |
 | E-VOICE-RESERVE | ELECTRICAL - VOICE COCKPIT KIT RESERVE (later) / Dự phòng bộ voice cockpit | ELECTRICAL | - | 1 | 4.0 | 4.0 |  | assumption |
 | K-FIX | KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS / Bộ bu lông M6, gioăng | WALL | 400 x 300 x 150 | 1 | 4.9 | 4.9 |  | calculation |
-|  | **Total** |  |  | 49 |  | **306.6** |  |  |
+|  | **Total** |  |  | 49 |  | **299.9** |  |  |
 
 | Joint | What it joins | Edges | M6 bolts |
 | --- | --- | ---: | ---: |
@@ -387,8 +387,8 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-B2-1-48x40.svg) | 1,219 x 1,016 | 155 | 342 | 1,646 (64.8 in) | 72.0 | 4.7 | C-HALF, F-DL, F-DR, F-DT, W-BACK-LO, W-SIDE-LO, W-SIDE-UP |
-| [2: 48x40 in](out/pallets-B2-2-48x40.svg) | 1,219 x 1,016 | 103 | 227 | 1,806 (71.1 in) | 79.0 | 2.9 | B-BAND-BACK, B-BAND-FRONT-L, B-BAND-FRONT-R, B-BAND-SIDE, B-FLOOR, B-THRESH, W-BACK-LO, W-BACK-UP |
+| [1: 48x40 in](out/pallets-B2-1-48x40.svg) | 1,219 x 1,016 | 150 | 330 | 1,646 (64.8 in) | 72.0 | 4.6 | C-HALF, F-DL, F-DR, F-DT, W-BACK-LO, W-SIDE-LO, W-SIDE-UP |
+| [2: 48x40 in](out/pallets-B2-2-48x40.svg) | 1,219 x 1,016 | 102 | 224 | 1,806 (71.1 in) | 79.0 | 2.8 | B-BAND-BACK, B-BAND-FRONT-L, B-BAND-FRONT-R, B-BAND-SIDE, B-FLOOR, B-THRESH, W-BACK-LO, W-BACK-UP |
 | [3: 96x48 in](out/pallets-B2-3-96x48.svg) | 2,438 x 1,219 | 174 | 383 | 398 (15.7 in) | 41.8 | 9.2 | F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON |
 
 | # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
@@ -413,9 +413,9 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | ID | Part (English / Vietnamese) | Assembly | Size mm | Qty | kg each | kg | 20 kg check | Status |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- | --- |
-| W-SIDE-BAND | WALL - SIDE BAND WITH FELT / Vách hông - băng | WALL | 1,500 x 458 x 47 | 10 | 5.5 | 55.3 |  | calculation |
-| W-BACK-BAND | WALL - BACK BAND WITH FELT / Vách hậu - băng | WALL | 1,212 x 450 x 47 | 10 | 4.5 | 45.3 |  | calculation |
-| C-HALF | CEILING - HALF PANEL WITH FAN OPENING WITH FELT / Trần - nửa khung | CEILING | 1,500 x 1,212 x 47 | 2 | 13.7 | 27.5 |  | calculation |
+| W-SIDE-BAND | WALL - SIDE BAND WITH FELT / Vách hông - băng | WALL | 1,500 x 458 x 47 | 10 | 5.3 | 53.2 |  | calculation |
+| W-BACK-BAND | WALL - BACK BAND WITH FELT / Vách hậu - băng | WALL | 1,212 x 450 x 47 | 10 | 4.4 | 43.7 |  | calculation |
+| C-HALF | CEILING - HALF PANEL WITH FAN OPENING WITH FELT / Trần - nửa khung | CEILING | 1,500 x 1,212 x 47 | 2 | 13.2 | 26.4 |  | calculation |
 | L-STRIP | LINING - LOOSE FELT STRIPS OVER JOINTS / Dải tiêu âm che mối nối | LINING | 1,500 x 300 x 60 | 1 | 10.5 | 10.5 |  | calculation |
 | B-BAND-BACK | BASE - BASE BAND PIECE 100x40 - BACK / Viền chân nhôm | BASE | 2,420 x 100 x 40 | 1 | 3.6 | 3.6 |  | calculation |
 | B-BAND-SIDE | BASE - BASE BAND PIECE 100x40 - SIDE / Viền chân nhôm | BASE | 1,660 x 100 x 40 | 2 | 2.4 | 4.9 |  | calculation |
@@ -425,9 +425,9 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | B-GLIDE | BASE - LEVELLING GLIDE (hex from above) / Chân chỉnh cao | BASE | 50 x 50 x 40 | 8 | 0.1 | 1.2 |  | assumption |
 | B-THRESH | BASE - DOOR THRESHOLD, LOW / Ngưỡng cửa thấp | BASE | 1,176 x 60 x 20 | 1 | 1.2 | 1.2 |  | assumption |
 | B-FLOOR | BASE - THIN FLOOR PANEL 15 mm / Tấm sàn mỏng | BASE | 1,462 x 1,212 x 15 | 2 | 16.5 | 33.0 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.5 | 10.5 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 19.1 | 19.1 |  | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.4 | 7.4 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.0 | 10.0 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 18.1 | 18.1 |  | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.0 | 7.0 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (8 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 8 | 1 | 41.6 | 41.6 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (8 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 8 | 1 | 26.9 | 26.9 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 5.8 | 5.8 |  | assumption |
@@ -436,7 +436,7 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | E-KIT | ELECTRICAL - SWITCHES, LIGHTS, HARNESS / Bộ điện: công tắc, đèn, dây | ELECTRICAL | 600 x 400 x 200 | 1 | 3.1 | 3.1 |  | assumption |
 | E-VOICE-RESERVE | ELECTRICAL - VOICE COCKPIT KIT RESERVE (later) / Dự phòng bộ voice cockpit | ELECTRICAL | - | 1 | 4.0 | 4.0 |  | assumption |
 | K-FIX | KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS / Bộ bu lông M6, gioăng | WALL | 400 x 300 x 150 | 1 | 8.6 | 8.6 |  | calculation |
-|  | **Total** |  |  | 57 |  | **318.1** |  |  |
+|  | **Total** |  |  | 57 |  | **311.4** |  |  |
 
 | Joint | What it joins | Edges | M6 bolts |
 | --- | --- | ---: | ---: |
@@ -455,8 +455,8 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-C-1-48x40.svg) | 1,219 x 1,016 | 145 | 319 | 1,646 (64.8 in) | 72.0 | 4.4 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, W-BACK-BAND, W-SIDE-BAND |
-| [2: 96x48 in](out/pallets-C-2-96x48.svg) | 2,438 x 1,219 | 273 | 601 | 1,132 (44.6 in) | 118.8 | 5.1 | B-BAND-BACK, B-BAND-SIDE, C-HALF, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, W-BACK-BAND |
+| [1: 48x40 in](out/pallets-C-1-48x40.svg) | 1,219 x 1,016 | 142 | 312 | 1,646 (64.8 in) | 72.0 | 4.3 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, W-BACK-BAND, W-SIDE-BAND |
+| [2: 96x48 in](out/pallets-C-2-96x48.svg) | 2,438 x 1,219 | 269 | 593 | 1,132 (44.6 in) | 118.8 | 5.0 | B-BAND-BACK, B-BAND-SIDE, C-HALF, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, W-BACK-BAND |
 
 | # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
@@ -481,7 +481,7 @@ Weighed as the BASE assembly (khung sàn / sàn) under the light build. Step hei
 
 | Floor | BASE kg (light build) | vs thin floor, kg | Step at the door, mm | Sound | Square and stiff | Levelling | Cables | Assembly | Look | Status |
 | --- | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- |
-| Raised steel floor (plan as written) | 82.4 | +35.7 | 125 | Closed box: boards over a 100 mm cavity; seal the board joints and perimeter. | Best: the welded or bolted frame sets square and level; walls bolt to it. | 6 M10 feet under the frame; needs a spanner unless the feet adjust from above. | Under the floor, easy. | Longest: 6 frame bars, 2 joists, 4 bolted corners, 6 feet, then 2 boards screwed to the joists (a second fastener type and tool). | Same as v1. | calculation |
+| Raised steel floor (plan as written) | 82.3 | +35.6 | 125 | Closed box: boards over a 100 mm cavity; seal the board joints and perimeter. | Best: the welded or bolted frame sets square and level; walls bolt to it. | 6 M10 feet under the frame; needs a spanner unless the feet adjust from above. | Under the floor, easy. | Longest: 6 frame bars, 2 joists, 4 bolted corners, 6 feet, then 2 boards screwed to the joists (a second fastener type and tool). | Same as v1. | calculation |
 | Thin floor inside an aluminium base band (DECIDED) | 46.7 | +0.0 | 21 | Closed box: floor panels on a 3 mm seal mat, gasket to the base band; the room slab adds mass under it. | Good: the aluminium base band with corner keys sets square; floor panels float inside it. | 8 glides adjusted from above with the same hex key; floor panels follow the room floor and carry no walls. | Inside the back wall cavity and along the base band channel. | Quick: 4 rails and 6 corner keys, level, drop in 2 floor panels. | Base band unchanged except across the door, where it becomes a low threshold. | calculation |
 | No floor (base band only) | 13.7 | -33.0 | 0 | Open box: sound and air leak under the walls into the room floor; floorless pods post the weakest numbers (market study). | As the thin floor (same base band). | As the thin floor. | Base band channel only. | Quickest: 4 rails and 6 corner keys, level. | As the thin floor. | calculation |
 | Castor platform (optional, Lead's request) | 67.1 | +20.4 | 93 | Closed box like the raised floor, but the gap under the pod needs a skirt or drop seal when parked. | Needs a stiffer platform: the pod racks while rolling, and the glass door can go out of line. | Castors do not level; 4 parking feet are added. | Under the platform; the power cord must be long and loose enough to move the pod. | Like the raised floor (knock-down platform), plus 6 castors. | Base band hides the castors if the frame stays 100 mm; a ramp is needed at the door. | assumption |
@@ -503,7 +503,7 @@ Before and after the DECIDED fast-assembly changes, on the light build. Each row
 | Felt pre-fitted on the panels; only a loose strip over each joint goes on site | DECIDED | 4 | 116 | 76 | 38 |
 | Pallets packed in assembly order, parts numbered | packaging, no design change | 12 | 104 | 76 | 38 |
 
-The full-height back wall panel (fewer, larger panels) was also tried. With the felt pre-fitted it weighs 20.7 kg, over the limit, so it is not used.
+The full-height back wall panel (fewer, larger panels) was also tried. With the felt pre-fitted it weighs 19.9 kg, over the limit, so it is not used.
 
 What remains is mostly work that does not shrink with fewer parts: unpacking, levelling, setting the glass and the door, and testing the electrics. The 1-hour target needs that work timed on the prototype, and possibly more done in the factory. Section 5 gives the step-by-step sequence and access check for the decided build.
 
@@ -513,34 +513,34 @@ Benchmark: Room S needs 4 people for 3 to 5 hours (12 to 20 person-hours), and h
 
 The sound study's final stack (DECIDED): ACP 3 mm on a 20 x 40 aluminium frame at 400 mm with 40 mm PET fill, then a floating lining cassette: a 0.5 mm steel tray, 25 mm deep, with 9 mm felt across its face. That makes 81 mm and 13.1 kg/m2 in the sound study. The ceiling now uses the same 20 x 40 frame (was 20 x 100), and the silencers are separate boxes. The front is frameless 4+4 laminated glass. The sound study puts the pod at about 400 kg and 23.8 dB.
 
-This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts; the cassette is the DECIDED clip-on inner leaf. The outside size stays the same; the inside narrows to 2,338 mm. The wall here comes to 14.0 kg/m2 with clips and tray returns (the sound study: 13.1). The fans and silencer boxes are the sound study's: two 5 kg inline fans and two 3.5 kg silencer boxes. Its door edge seals, base seal and cable grommets are counted too.
+This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts; the cassette is the DECIDED clip-on inner leaf. The outside size stays the same; the inside narrows to 2,338 mm. The wall here comes to 13.7 kg/m2 with clips and tray returns (the sound study: 13.1). The fans and silencer boxes are the sound study's: two 5 kg inline fans and two 3.5 kg silencer boxes. Its door edge seals, base seal and cable grommets are counted too.
 
-Result: **412 kg**, 0 parts over 20 kg except the glass, heaviest F-DR at 19.1 kg, 1 + 1 pallets, 511 kg gross, 1,646 mm at most, assembly 121 min.
+Result: **406 kg**, 0 parts over 20 kg except the glass, heaviest F-DR at 18.1 kg, 1 + 1 pallets, 505 kg gross, 1,646 mm at most, assembly 121 min.
 
 - **Glass.** Door 43.3 kg and fixed panel 28.0 kg in 4+4 laminated. They ride flat on top of the long pallet in their timber frame, with nothing on them. On site, each is carried by two people with 2 suction lifters. The door's hinges and pull are fitted in the factory, so it lifts straight onto its hinge pins. The fixed glass's profiles sit hidden in the decor and base, so the front stays frameless like v1.
-- **Decor fill.** The sound study fills the decor blocks with PET (4.0 kg). Inside the right decor block it would make that block 21.2 kg, so the fill ships loose in the kit and is pushed into each block's open back just before it is mounted.
+- **Decor fill.** The sound study fills the decor blocks with PET (4.0 kg). Inside the right decor block it would make that block 20.2 kg, so the fill ships loose in the kit and is pushed into each block's open back just before it is mounted.
 - **Ceiling (DECIDED).** The fill still rides on the back of the ceiling cassette. With 40 mm frames, both ceiling parts are well under 20 kg either way.
-- **Pallets.** The 48 x 40 carries the wall and ceiling panels, the wall cassettes, the floor panels and the short band pieces (253 kg, 1,646 mm). The long pallet carries the decor blocks, the long band pieces, the silencer boxes, the kit, the ceiling cassettes that don't fit the upright stack, and the glass on top (258 kg, 1,056 mm). Still 1 + 1.
+- **Pallets.** The 48 x 40 carries the wall and ceiling panels, the wall cassettes, the floor panels and the short band pieces (249 kg, 1,646 mm). The long pallet carries the decor blocks, the long band pieces, the silencer boxes, the kit, the ceiling cassettes that don't fit the upright stack, and the glass on top (256 kg, 1,056 mm). Still 1 + 1.
 
 Wall and ceiling parts of the decided build:
 
 | Part | Size mm | Qty | kg each | 20 kg check |
 | --- | --- | ---: | ---: | --- |
-| W-SIDE-LO: WALL - SIDE PANEL - LOWER (outer: ACP + frame + fill) | 1,500 x 1,145 x 43 | 2 | 13.2 |  |
+| W-SIDE-LO: WALL - SIDE PANEL - LOWER (outer: ACP + frame + fill) | 1,500 x 1,145 x 43 | 2 | 12.7 |  |
 | L-CASS-SIDE-LO: LINING - CASSETTE FOR W-SIDE-LO (steel tray + felt) | 1,419 x 1,145 x 34 | 2 | 10.9 |  |
-| W-SIDE-UP: WALL - SIDE PANEL - UPPER (outer: ACP + frame + fill) | 1,500 x 1,145 x 43 | 2 | 13.2 |  |
+| W-SIDE-UP: WALL - SIDE PANEL - UPPER (outer: ACP + frame + fill) | 1,500 x 1,145 x 43 | 2 | 12.7 |  |
 | L-CASS-SIDE-UP: LINING - CASSETTE FOR W-SIDE-UP (steel tray + felt) | 1,419 x 1,145 x 34 | 2 | 10.9 |  |
-| W-BACK-LO: WALL - BACK PANEL - LOWER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 10.0 |  |
+| W-BACK-LO: WALL - BACK PANEL - LOWER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 9.6 |  |
 | L-CASS-BACK-LO: LINING - CASSETTE FOR W-BACK-LO (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 8.7 |  |
-| W-BACK-UP: WALL - BACK PANEL - UPPER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 10.0 |  |
+| W-BACK-UP: WALL - BACK PANEL - UPPER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 9.6 |  |
 | L-CASS-BACK-UP: LINING - CASSETTE FOR W-BACK-UP (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 8.7 |  |
-| C-HALF: CEILING - HALF PANEL WITH FAN OPENING (outer: ACP + frame) | 1,500 x 1,169 x 43 | 2 | 11.2 |  |
+| C-HALF: CEILING - HALF PANEL WITH FAN OPENING (outer: ACP + frame) | 1,500 x 1,169 x 43 | 2 | 10.7 |  |
 | L-CASS-HALF: LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill) | 1,419 x 1,169 x 74 | 2 | 13.2 |  |
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-B1F-1-48x40.svg) | 1,219 x 1,016 | 253 | 558 | 1,646 (64.8 in) | 72.0 | 7.8 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, L-CASS-BACK-LO, L-CASS-BACK-UP, L-CASS-SIDE-LO, L-CASS-SIDE-UP, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
-| [2: 96x48 in](out/pallets-B1F-2-96x48.svg) | 2,438 x 1,219 | 258 | 569 | 1,056 (41.6 in) | 110.8 | 5.1 | A-SILENCER, B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, L-CASS-HALF |
+| [1: 48x40 in](out/pallets-B1F-1-48x40.svg) | 1,219 x 1,016 | 249 | 548 | 1,646 (64.8 in) | 72.0 | 7.6 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, L-CASS-BACK-LO, L-CASS-BACK-UP, L-CASS-SIDE-LO, L-CASS-SIDE-UP, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
+| [2: 96x48 in](out/pallets-B1F-2-96x48.svg) | 2,438 x 1,219 | 256 | 565 | 1,056 (41.6 in) | 110.8 | 5.1 | A-SILENCER, B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, L-CASS-HALF |
 
 Step by step, with the access check. A step fails the check if a part fitted earlier blocks its fixings; none does in this order. The check is at layout level and is repeated on the CAD in Milestone 2.
 
@@ -562,34 +562,34 @@ Step by step, with the access check. A step fails the check if a part fitted ear
 
 <details><summary>Sensitivity: the same layout at 380 and 400 kg with an even added mass (before the final stack was known)</summary>
 
-It adds an even mass to the walls (with or without the ceiling) until the pod reaches the target, with the frames deeper by 20 or 40 mm. Mass inside the plan's panels breaks the 20 kg limit (side panels 24.7 kg, ceiling halves 25.7 kg at 380 kg); on separate inner leaves every part stays at 20 kg or less up to the 400 kg cap.
+It adds an even mass to the walls (with or without the ceiling) until the pod reaches the target, with the frames deeper by 20 or 40 mm. Mass inside the plan's panels breaks the 20 kg limit (side panels 24.9 kg, ceiling halves 25.9 kg at 380 kg); on separate inner leaves every part stays at 20 kg or less up to the 400 kg cap.
 
 | Pod kg | Walls thicker by | Sound mass on | Layout | Added kg/m2 | Heaviest part, kg (not glass) | Parts over 20 kg | Pallets 48x40 + 96x48 | Heaviest 48x40 / 96x48 gross kg | Max height mm | Assembly min |
 | ---: | ---: | --- | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |
-| 380 | +20 mm | walls and ceiling | plan split, sound mass inside the panels | 5.4 | C-HALF 25.7 | 3 | 1 + 1 | 288 / 191 | 1,646 | 108 |
-| 380 | +20 mm | walls and ceiling | 3 rows per wall, sound mass inside the panels | 5.0 | C-HALF 25.0 | 1 | 1 + 1 | 223 / 256 | 1,646 | 113 |
-| 380 | +20 mm | walls and ceiling | plan split, sound mass on separate inner leaves | 5.2 | F-DR 19.1 | 0 | 1 + 1 | 294 / 185 | 1,646 | 118 |
-| 380 | +20 mm | walls only | plan split, sound mass inside the panels | 7.0 | W-SIDE-LO 27.4 | 4 | 1 + 1 | 288 / 191 | 1,646 | 108 |
-| 380 | +20 mm | walls only | 3 rows per wall, sound mass inside the panels | 6.5 | F-DR 19.1 | 0 | 1 + 1 | 240 / 239 | 1,646 | 113 |
-| 380 | +20 mm | walls only | plan split, sound mass on separate inner leaves | 6.7 | F-DR 19.1 | 0 | 1 + 1 | 294 / 185 | 1,646 | 118 |
-| 380 | +40 mm | walls and ceiling | plan split, sound mass inside the panels | 4.2 | C-HALF 25.6 | 3 | 1 + 1 | 262 / 217 | 1,646 | 108 |
-| 380 | +40 mm | walls and ceiling | 3 rows per wall, sound mass inside the panels | 3.7 | C-HALF 24.8 | 1 | 1 + 1 | 198 / 281 | 1,646 | 113 |
-| 380 | +40 mm | walls and ceiling | plan split, sound mass on separate inner leaves | 4.0 | F-DR 19.1 | 0 | 1 + 1 | 263 / 216 | 1,646 | 121 |
-| 380 | +40 mm | walls only | plan split, sound mass inside the panels | 5.4 | W-SIDE-LO 27.2 | 4 | 1 + 1 | 270 / 209 | 1,646 | 108 |
-| 380 | +40 mm | walls only | 3 rows per wall, sound mass inside the panels | 4.8 | F-DR 19.1 | 0 | 1 + 1 | 208 / 271 | 1,646 | 113 |
-| 380 | +40 mm | walls only | plan split, sound mass on separate inner leaves | 5.2 | F-DR 19.1 | 0 | 1 + 1 | 263 / 216 | 1,646 | 121 |
-| 400 | +20 mm | walls and ceiling | plan split, sound mass inside the panels | 6.7 | C-HALF 27.9 | 5 | 1 + 1 | 308 / 191 | 1,646 | 108 |
-| 400 | +20 mm | walls and ceiling | 3 rows per wall, sound mass inside the panels | 6.3 | C-HALF 27.2 | 1 | 1 + 1 | 237 / 262 | 1,646 | 113 |
-| 400 | +20 mm | walls and ceiling | plan split, sound mass on separate inner leaves | 6.5 | F-DR 19.1 | 0 | 1 + 1 | 314 / 185 | 1,646 | 119 |
-| 400 | +20 mm | walls only | plan split, sound mass inside the panels | 8.6 | W-SIDE-LO 30.2 | 4 | 1 + 1 | 308 / 191 | 1,646 | 108 |
-| 400 | +20 mm | walls only | 3 rows per wall, sound mass inside the panels | 8.1 | W-SIDE-ROW 19.9 | 0 | 1 + 1 | 258 / 241 | 1,646 | 115 |
-| 400 | +20 mm | walls only | plan split, sound mass on separate inner leaves | 8.4 | F-DR 19.1 | 0 | 1 + 1 | 314 / 185 | 1,646 | 120 |
-| 400 | +40 mm | walls and ceiling | plan split, sound mass inside the panels | 5.5 | C-HALF 27.9 | 5 | 1 + 1 | 280 / 219 | 1,646 | 108 |
-| 400 | +40 mm | walls and ceiling | 3 rows per wall, sound mass inside the panels | 5.0 | C-HALF 27.0 | 1 | 1 + 1 | 210 / 289 | 1,646 | 113 |
-| 400 | +40 mm | walls and ceiling | plan split, sound mass on separate inner leaves | 5.3 | F-DR 19.1 | 0 | 1 + 1 | 271 / 228 | 1,646 | 121 |
-| 400 | +40 mm | walls only | plan split, sound mass inside the panels | 7.1 | W-SIDE-LO 30.0 | 4 | 1 + 1 | 290 / 209 | 1,646 | 108 |
-| 400 | +40 mm | walls only | 3 rows per wall, sound mass inside the panels | 6.5 | W-SIDE-ROW 19.8 | 0 | 1 + 1 | 224 / 275 | 1,646 | 115 |
-| 400 | +40 mm | walls only | plan split, sound mass on separate inner leaves | 6.9 | F-DR 19.1 | 0 | 1 + 1 | 271 / 228 | 1,646 | 122 |
+| 380 | +20 mm | walls and ceiling | plan split, sound mass inside the panels | 5.8 | C-HALF 25.9 | 3 | 1 + 1 | 290 / 189 | 1,646 | 108 |
+| 380 | +20 mm | walls and ceiling | 3 rows per wall, sound mass inside the panels | 5.4 | C-HALF 25.2 | 1 | 1 + 1 | 224 / 255 | 1,646 | 113 |
+| 380 | +20 mm | walls and ceiling | plan split, sound mass on separate inner leaves | 5.6 | F-DR 18.1 | 0 | 1 + 1 | 296 / 183 | 1,646 | 118 |
+| 380 | +20 mm | walls only | plan split, sound mass inside the panels | 7.5 | W-SIDE-LO 27.8 | 4 | 1 + 1 | 290 / 189 | 1,646 | 108 |
+| 380 | +20 mm | walls only | 3 rows per wall, sound mass inside the panels | 7.0 | W-SIDE-ROW 18.3 | 0 | 1 + 1 | 242 / 237 | 1,646 | 113 |
+| 380 | +20 mm | walls only | plan split, sound mass on separate inner leaves | 7.3 | F-DR 18.1 | 0 | 1 + 1 | 296 / 183 | 1,646 | 120 |
+| 380 | +40 mm | walls and ceiling | plan split, sound mass inside the panels | 4.6 | C-HALF 25.8 | 3 | 1 + 1 | 264 / 215 | 1,646 | 108 |
+| 380 | +40 mm | walls and ceiling | 3 rows per wall, sound mass inside the panels | 4.1 | C-HALF 25.0 | 1 | 1 + 1 | 199 / 280 | 1,646 | 113 |
+| 380 | +40 mm | walls and ceiling | plan split, sound mass on separate inner leaves | 4.5 | F-DR 18.1 | 0 | 1 + 1 | 266 / 213 | 1,646 | 119 |
+| 380 | +40 mm | walls only | plan split, sound mass inside the panels | 6.0 | W-SIDE-LO 27.6 | 4 | 1 + 1 | 272 / 207 | 1,646 | 108 |
+| 380 | +40 mm | walls only | 3 rows per wall, sound mass inside the panels | 5.4 | W-SIDE-ROW 18.2 | 0 | 1 + 1 | 211 / 268 | 1,646 | 113 |
+| 380 | +40 mm | walls only | plan split, sound mass on separate inner leaves | 5.7 | F-DR 18.1 | 0 | 1 + 1 | 266 / 213 | 1,646 | 119 |
+| 400 | +20 mm | walls and ceiling | plan split, sound mass inside the panels | 7.1 | C-HALF 28.1 | 5 | 1 + 1 | 310 / 189 | 1,646 | 108 |
+| 400 | +20 mm | walls and ceiling | 3 rows per wall, sound mass inside the panels | 6.7 | C-HALF 27.5 | 1 | 1 + 1 | 239 / 260 | 1,646 | 113 |
+| 400 | +20 mm | walls and ceiling | plan split, sound mass on separate inner leaves | 6.9 | F-DR 18.1 | 0 | 1 + 1 | 316 / 183 | 1,646 | 121 |
+| 400 | +20 mm | walls only | plan split, sound mass inside the panels | 9.2 | W-SIDE-LO 30.6 | 4 | 1 + 1 | 310 / 189 | 1,646 | 108 |
+| 400 | +20 mm | walls only | 3 rows per wall, sound mass inside the panels | 8.7 | W-SIDE-ROW 20.2 | 1 | 1 + 1 | 261 / 238 | 1,646 | 115 |
+| 400 | +20 mm | walls only | plan split, sound mass on separate inner leaves | 8.9 | L-LEAF-SIDE-LO 18.7 | 0 | 1 + 1 | 316 / 183 | 1,646 | 120 |
+| 400 | +40 mm | walls and ceiling | plan split, sound mass inside the panels | 5.9 | C-HALF 28.1 | 5 | 1 + 1 | 282 / 217 | 1,646 | 108 |
+| 400 | +40 mm | walls and ceiling | 3 rows per wall, sound mass inside the panels | 5.4 | C-HALF 27.2 | 1 | 1 + 1 | 211 / 288 | 1,646 | 113 |
+| 400 | +40 mm | walls and ceiling | plan split, sound mass on separate inner leaves | 5.7 | F-DR 18.1 | 0 | 1 + 1 | 274 / 225 | 1,646 | 119 |
+| 400 | +40 mm | walls only | plan split, sound mass inside the panels | 7.7 | W-SIDE-LO 30.5 | 4 | 1 + 1 | 292 / 207 | 1,646 | 108 |
+| 400 | +40 mm | walls only | 3 rows per wall, sound mass inside the panels | 7.0 | W-SIDE-ROW 20.1 | 1 | 1 + 1 | 226 / 273 | 1,646 | 115 |
+| 400 | +40 mm | walls only | plan split, sound mass on separate inner leaves | 7.4 | F-DR 18.1 | 0 | 1 + 1 | 274 / 225 | 1,646 | 121 |
 
 </details>
 
@@ -599,11 +599,11 @@ Every part must pass a 914 x 2032 mm (36 x 80 in) doorway. A part is carried on 
 
 | Part | Size mm (long x mid x thin) | kg | Width needed on edge, mm | 914 x 2032 doorway | 813 mm clear (ADA) |
 | --- | --- | ---: | ---: | --- | --- |
-| W-SIDE-LO | 1,500 x 1,145 x 47 | 13.0 | 127 | passes | passes |
-| W-SIDE-UP | 1,500 x 1,145 x 47 | 13.0 | 127 | passes | passes |
-| W-BACK-LO | 1,212 x 1,126 x 47 | 10.7 | 127 | passes | passes |
-| W-BACK-UP | 1,212 x 1,126 x 47 | 10.7 | 127 | passes | passes |
-| C-HALF | 1,500 x 1,212 x 47 | 13.7 | 127 | passes | passes |
+| W-SIDE-LO | 1,500 x 1,145 x 47 | 12.5 | 127 | passes | passes |
+| W-SIDE-UP | 1,500 x 1,145 x 47 | 12.5 | 127 | passes | passes |
+| W-BACK-LO | 1,212 x 1,126 x 47 | 10.3 | 127 | passes | passes |
+| W-BACK-UP | 1,212 x 1,126 x 47 | 10.3 | 127 | passes | passes |
+| C-HALF | 1,500 x 1,212 x 47 | 13.2 | 127 | passes | passes |
 | L-STRIP | 1,500 x 300 x 60 | 6.6 | 140 | passes | passes |
 | B-BAND-BACK | 2,420 x 100 x 40 | 3.6 | 120 | passes | passes |
 | B-BAND-SIDE | 1,660 x 100 x 40 | 2.4 | 120 | passes | passes |
@@ -613,9 +613,9 @@ Every part must pass a 914 x 2032 mm (36 x 80 in) doorway. A part is carried on 
 | B-GLIDE | 50 x 50 x 40 | 0.1 | 120 | passes | passes |
 | B-THRESH | 1,176 x 60 x 20 | 1.2 | 100 | passes | passes |
 | B-FLOOR | 1,462 x 1,212 x 15 | 16.5 | 95 | passes | passes |
-| F-DL | 2,290 x 278 x 200 | 10.5 | 280 | passes | passes |
-| F-DR | 2,290 x 1,016 x 200 | 19.1 | 280 | passes | passes |
-| F-DT | 1,697 x 280 x 200 | 7.4 | 280 | passes | passes |
+| F-DL | 2,290 x 278 x 200 | 10.0 | 280 | passes | passes |
+| F-DR | 2,290 x 1,016 x 200 | 18.1 | 280 | passes | passes |
+| F-DT | 1,697 x 280 x 200 | 7.0 | 280 | passes | passes |
 | F-GLASS-DOOR | 2,011 x 1,176 x 8 | 41.6 | 88 | passes | passes |
 | F-GLASS-FIXED | 2,139 x 724 x 8 | 26.9 | 88 | passes | passes |
 | F-HW | 600 x 400 x 150 | 5.8 | 230 | passes | passes |
@@ -650,7 +650,7 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 
 | ID | Item | Status | Who |
 | --- | --- | --- | --- |
-| LS-01 | 412 kg here against about 400 kg in the sound study, against a 400 kg cap: settle from the master BOM out of the CAD, with real clip and ACP weights | open | Milestone 2 |
+| LS-01 | Total carried as 400 ± 10 kg (406 kg here, about 400 kg in the sound study); settle from the CAD parts list. If over 400 kg, trim the inner steel tray or the fans, not the sound | DECIDED | Milestone 2 |
 | LS-02 | 400 mm frame pitch and full-face bond keep the ACP flat without plywood; prove on the early wall sample | PLANNED | Prototype team |
 | LS-03 | Tool-free cam or clip connector and captive bolt: real part numbers, loads and pull-out on the aluminium frame | open | Hardware group |
 | LS-04 | Cassette clips: part numbers, and how the cassette floats (no stud bridge) while it carries a 19 kg leaf | open | Hardware group |
@@ -700,7 +700,8 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | rho_timber_hi | 600 | kg/m3 | assumption | S13 |  |
 | pvb_kgm2 | 0.81 | kg/m2 | calculation | S08 | 0.76 mm PVB at 1070 kg/m3 (assumption on PVB density) |
 | acp2_kgm2 | 2.9 | kg/m2 | source | S10 | 2 mm ACP |
-| acp3_kgm2 | 3.8 | kg/m2 | source | S10 | 3 mm ACP; local ACP with thinner skins is lighter (conservative) |
+| acp3_kgm2 | 3.5 | kg/m2 | calculation | S23 | Spaceship: 3 mm Alcorest EV3038 ACP, 0.21 mm skins (PM ruling; was 3.8) |
+| acp3_v1_kgm2 | 3.8 | kg/m2 | source | S10 | v1's 3 mm decor skins: maker unknown, kept at the 0.3 mm-skin figure |
 | pet9_kgm2 | 1.8 | kg/m2 | source | S11 | 9 mm PET felt |
 | hc10_kgm2 | 4 | kg/m2 | source | S12 | 10 mm Al honeycomb, 0.5+0.5 skins |
 | foam25_kgm2 | 1.5 | kg/m2 | assumption |  | 25 mm closed-cell foam core at about 60 kg/m3; the sound group picks the core |
@@ -810,6 +811,8 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | hw_385_dsa | 24.2 | dB | source | S21 |  |
 | hw_400_total | 400 | kg | source | S22 | sound study's total with 4+4 laminated glass |
 | hw_400_dsa | 23.8 | dB | source | S22 |  |
+| carry_total | 400 | kg | confirmed | S24 | total to carry until the CAD parts list |
+| carry_tol | 10 | kg | confirmed | S24 |  |
 | fan_final_kg | 5 | kg | source | S20 | S&P TD-350/100-125 ECOWATT inline fan, the sound study's pick |
 | silencer_final_kg | 3.5 | kg | calculation | S20 | one separate silencer box: 0.6 m2 HDF 3 box + 1.2 m2 lining 25 mm at 1.2 kg/m2 |
 | door_edge_seal_kg | 1 | kg | source | S20 | door edge seals on 3 sides |
@@ -843,4 +846,6 @@ Sources:
 | S20 | Hardware Engineer's sound and air calc (branch super-tab/09f4617f, commit e22cab1): total-pod kg vs D_S,A curve; at a 380 kg budget with a 10 mm smoked acrylic front: walls DL-ST (ACP 3 / 40 mm fill, shared studs / 0.5 mm steel + felt 9), ceiling DL-2HDF-60-FL (ACP 3 / 60 mm fill / 2 x HDF 3 floating + felt 9), 377 kg, D_S,A 22.5 dB central | `v2/05-Engineering/acoustics-air/calc.py on that branch (read 2026-10-31)` |
 | S21 | Hardware Engineer's final wall stack, relayed by the PM in the layout chat, 2026-10-31: ACP 3 / 20x40 aluminium frame at 400 mm with 40 mm PET fill / floating lining cassette (0.5 mm steel tray, 25 mm deep, 9 mm felt across its face); 81 mm and 13.1 kg/m2. Ceiling the same on 20x100, 141 mm. Pod about 385 kg and 24.2 dB with the acrylic front | `layout conversation, PM message of 2026-10-31` |
 | S22 | PM ruling relayed in the layout chat, 2026-10-31: front is 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look); the sound study puts the pod at about 400 kg and 23.8 dB with 40 mm ceiling frames and separate silencer boxes; the door is handled by two people with suction lifters | `layout conversation, PM message of 2026-10-31` |
+| S23 | Alcorest outdoor ACP, colour EV3038 Dark Yellow (the plan's VT01), 3 mm with 0.21 mm skins: maker's catalogue gives skins, not kg/m2; the sound study calculates 3.5 kg/m2 from the skin spec (selection.md VT01). PM ruling 2026-10-31: use 3.5 | https://vietdung.com.vn/wp-content/uploads/2026/07/CTL-ACP-ALCOREST-07.08.25.pdf (via the sound study's selection table) |
+| S24 | PM ruling 2026-10-31: the 400 kg cap stays; carry the total as 400 +/- 10 kg until the CAD parts list settles it; if the CAD BOM lands over 400 kg, trim the inner steel tray or the fans, not the sound | `layout conversation, PM message of 2026-10-31` |
 | S19 | LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff) | https://logisticsplus.com/?p=25575 (read 2026-10-31) |

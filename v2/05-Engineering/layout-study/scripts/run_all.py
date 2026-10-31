@@ -378,7 +378,12 @@ def build():
     N["gap_fans"] = f1(gap(fan_final_kg=p("fan_kg")))
     N["gap_clips"] = f1(gap(leaf_clip_kgm2=0.0))
     N["final_over_cap"] = f0(base_total - p("quiet_cap"))
-    N["acp_cap_total"] = f0(base_total - gap(acp3_kgm2=3.4))
+    N["carry_total"], N["carry_tol"] = f0(p("carry_total")), f0(p("carry_tol"))
+    lo, hi = p("carry_total") - p("carry_tol"), p("carry_total") + p("carry_tol")
+    N["final_in_band"] = "inside" if lo <= base_total <= hi else "outside"
+    tray = [pt for pt in fparts if pt.pid.startswith("L-CASS")]
+    with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t"), tray_t=0.4):
+        N["tray04_saving"] = f1(base_total - total(parts_for("plan", FINAL)))
     lp = [pl for pl in fpals if pl["kind"] == "96x48"][0]
     N["final_long_kg"], N["final_long_h"] = f0(lp["gross"]), f0(lp["height"])
     sp = [pl for pl in fpals if pl["kind"] == "48x40"][0]
@@ -437,7 +442,7 @@ def build():
     N["band_extra_seams"] = str(5 - 2)
     N["conn_extra_C"] = str(res["C"]["conn"] - res["B1"]["conn"])
     N["v1_fl_kg"] = f0(pieces["FL"])
-    with override(acp2_kgm2=2e-3 * p("rho_al"), acp3_kgm2=3e-3 * p("rho_al")):
+    with override(acp2_kgm2=2e-3 * p("rho_al"), acp3_v1_kgm2=3e-3 * p("rho_al")):
         solid = v1_weights()[0]["bom"]
     N["v1_solid_al_delta"] = f0(sum(solid.values()) - sum(v1["bom"].values()))
     N["hand_clear"] = f0(p("hand_clear"))

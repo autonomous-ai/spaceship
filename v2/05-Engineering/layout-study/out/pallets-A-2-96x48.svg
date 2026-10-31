@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1170" viewBox="0 0 1000 1170">
 <rect width="100%" height="100%" fill="white"/>
 <text x="30.0" y="24.0" font-size="14" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Option A, pallet 2 of 2</text>
-<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">96x48 in pallet · gross 287 kg (633 lb) · loaded height 788 mm (31.0 in) · 7.7 lb/ft3</text>
+<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">96x48 in pallet · gross 285 kg (629 lb) · loaded height 788 mm (31.0 in) · 7.6 lb/ft3</text>
 <text x="30.0" y="62.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 1 plan (bottom)</text>
 <rect x="30.0" y="70.0" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
 <rect x="40.4" y="70.0" width="320.6" height="142.2" fill="#c9d6ea" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
@@ -59,14 +59,14 @@
 <line x1="25" y1="722.0" x2="522.6" y2="722.0" stroke="#b00" stroke-dasharray="4 3"/>
 <text x="525.6" y="726.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">788 mm loaded</text>
 <text x="30.0" y="909.6" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Legend (part id, size as stacked, kg each)</text>
-<text x="30.0" y="925.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. F-DR (layer 1): 2290 x 1016 x 200, 27.5 kg</text>
+<text x="30.0" y="925.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. F-DR (layer 1): 2290 x 1016 x 200, 26.5 kg</text>
 <text x="30.0" y="939.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">2. B-RAIL-FL-01 (layer 1): 2400 x 100 x 50, 11.0 kg</text>
 <text x="30.0" y="953.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">3. B-RAIL-FL-02 (layer 1): 2020 x 100 x 50, 9.3 kg</text>
 <text x="30.0" y="967.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">4. I-TABLE (layer 2): 1000 x 600 x 120, 12.0 kg</text>
-<text x="30.0" y="981.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. F-DT (layer 2): 1697 x 280 x 200, 11.0 kg</text>
-<text x="30.0" y="995.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. F-DL (layer 2): 2290 x 278 x 200, 15.3 kg</text>
+<text x="30.0" y="981.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. F-DT (layer 2): 1697 x 280 x 200, 10.7 kg</text>
+<text x="30.0" y="995.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. F-DL (layer 2): 2290 x 278 x 200, 14.7 kg</text>
 <text x="30.0" y="1009.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. B-JOIST (layer 2): 2400 x 60 x 30, 4.6 kg</text>
-<text x="30.0" y="1023.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. B-THRESH (layer 3): 1917 x 204 x 3, 1.5 kg</text>
+<text x="30.0" y="1023.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. B-THRESH (layer 3): 1917 x 204 x 3, 1.4 kg</text>
 <text x="30.0" y="1037.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. B-RAIL-FL-03 (layer 3): 1370 x 100 x 50, 6.3 kg</text>
 <text x="30.0" y="1051.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. B-RAIL-FL-03 (layer 3): 1370 x 100 x 50, 6.3 kg</text>
 <text x="30.0" y="1065.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. B-RAIL-FL-04 (layer 3): 269 x 100 x 50, 1.2 kg</text>

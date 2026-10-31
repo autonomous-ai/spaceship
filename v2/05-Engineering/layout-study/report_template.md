@@ -7,11 +7,11 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 
 ## Result
 
-1. **Weight.** v1 weighs {{v1_bom}} kg by its BOM (range {{v1_lo}} to {{v1_hi}} kg). Spaceship as planned weighs {{plan_total}} kg. The light build is {{light_total}} kg, and {{fast_total}} kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a frameless 4+4 laminated front, is **{{final_total}} kg** here and about {{hw_400_total}} kg in the sound study. Both numbers stand until the master BOM comes out of the CAD (PM ruling). The gap is mostly two items. The inline fans the sound study picked weigh 5 kg each, which adds {{gap_fans}} kg here; its own total still carries the plan's 1.5 kg fans. And this study holds {{gap_clips}} kg for cassette clips and rails. Against the 400 kg cap that is {{final_over_cap}} kg over here. An ACP of 3.4 kg/m2 instead of 3.8 would bring it to {{acp_cap_total}} kg.
+1. **Weight.** v1 weighs {{v1_bom}} kg by its BOM (range {{v1_lo}} to {{v1_hi}} kg). Spaceship as planned weighs {{plan_total}} kg. The light build is {{light_total}} kg, and {{fast_total}} kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a frameless 4+4 laminated front, comes to **{{final_total}} kg** here and about {{hw_400_total}} kg in the sound study. Per the PM's ruling it is carried as **{{carry_total}} ± {{carry_tol}} kg** until the CAD parts list settles it, and this study's figure is {{final_in_band}} that band. The cap stays at 400 kg. If the CAD parts list lands over it, the inner steel tray or the fans get trimmed, not the sound: a 0.4 mm tray instead of 0.5 mm saves {{tray04_saving}} kg. The ACP is now 3.5 kg/m2 (Alcorest EV3038 with 0.21 mm skins, as in the sound study) instead of 3.8.
 2. **Parts.** In the decided build every part is 20 kg or less except the glass. The glass door weighs {{final_door_kg}} kg and the fixed panel {{final_fixed_kg}} kg; two people carry each with 2 suction lifters ({{final_door_each}} kg each on the door). The heaviest other part is {{final_heaviest}}. The decor's PET fill ({{decor_fill_kg}} kg) ships loose and goes in on site: inside the right decor block it would make that block {{dr_with_fill}} kg.
 3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet, {{final_gross}} kg gross, {{final_pcf}} lb/ft3. The 48 x 40 weighs {{final_std_kg}} kg and stands {{final_std_h}} mm high. The 96 x 48 weighs {{final_long_kg}} kg and stands {{final_long_h}} mm high, with both lites flat on top in their frame. Walls and ceiling are {{final_wall_t}} mm thick.
 4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes {{before_min}} min before the fast-assembly changes and {{after_min}} min after. The decided build takes **{{final_min}} min** ({{final_ph}} person-hours): {{final_bolts}} M6 bolts, {{final_cams}} tool-free clips and {{final_cassettes}} clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
-5. **Decisions.** Everything in the layout is DECIDED, including carrying the ceiling fill on its cassette. One thing to watch: this study's total is {{final_over_cap}} kg over the 400 kg cap until the master BOM settles it (item 1).
+5. **Decisions.** Everything in the layout is DECIDED, including carrying the ceiling fill on its cassette and the 400 ± 10 kg total.
 
 ## Decisions
 
@@ -55,7 +55,7 @@ How the light build gets there, one change at a time:
 
 Notes:
 - Glass weights use the finished shapes from the STEP: door {{glass_area_door}} m2, fixed panel {{glass_area_fixed}} m2. Decor skins use the STEP's finished areas too ({{decor_area_step}} m2, against {{decor_area_bom}} m2 of cutting rectangles in the BOM).
-- The ACP areal mass (3.8 kg/m2) is for a product with 0.3 mm skins, so it is likely conservative. Every 0.1 kg/m2 lighter ACP takes {{acp_sens}} kg off the pod.
+- The ACP is Alcorest EV3038, 3 mm with 0.21 mm skins (the plan's VT01). The maker gives skins, not kg/m2; 3.5 kg/m2 is the sound study's calculation, used here by the PM's ruling. Every 0.1 kg/m2 of ACP changes the pod by {{acp_sens}} kg.
 - The colour of the decor cladding (yellow ACP in the plan's materials, black in the plan's pictures) is on the issue list. It does not change any weight.
 
 ### 1.3 Variants
@@ -214,7 +214,7 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 
 | ID | Item | Status | Who |
 | --- | --- | --- | --- |
-| LS-01 | {{final_total}} kg here against about {{hw_400_total}} kg in the sound study, against a 400 kg cap: settle from the master BOM out of the CAD, with real clip and ACP weights | open | Milestone 2 |
+| LS-01 | Total carried as {{carry_total}} ± {{carry_tol}} kg ({{final_total}} kg here, about {{hw_400_total}} kg in the sound study); settle from the CAD parts list. If over 400 kg, trim the inner steel tray or the fans, not the sound | DECIDED | Milestone 2 |
 | LS-02 | {{pitch_acp}} mm frame pitch and full-face bond keep the ACP flat without plywood; prove on the early wall sample | PLANNED | Prototype team |
 | LS-03 | Tool-free cam or clip connector and captive bolt: real part numbers, loads and pull-out on the aluminium frame | open | Hardware group |
 | LS-04 | Cassette clips: part numbers, and how the cassette floats (no stud bridge) while it carries a 19 kg leaf | open | Hardware group |

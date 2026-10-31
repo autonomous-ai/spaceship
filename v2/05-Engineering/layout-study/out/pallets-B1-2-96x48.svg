@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="839" viewBox="0 0 1000 839">
 <rect width="100%" height="100%" fill="white"/>
 <text x="30.0" y="24.0" font-size="14" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Option B1, pallet 2 of 2</text>
-<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">96x48 in pallet · gross 219 kg (483 lb) · loaded height 608 mm (23.9 in) · 7.6 lb/ft3</text>
+<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">96x48 in pallet · gross 217 kg (479 lb) · loaded height 608 mm (23.9 in) · 7.5 lb/ft3</text>
 <text x="30.0" y="62.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 1 plan (bottom)</text>
 <rect x="30.0" y="70.0" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
 <rect x="40.4" y="70.0" width="320.6" height="142.2" fill="#c9d6ea" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
@@ -39,11 +39,11 @@
 <line x1="25" y1="511.3" x2="522.6" y2="511.3" stroke="#b00" stroke-dasharray="4 3"/>
 <text x="525.6" y="515.3" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">608 mm loaded</text>
 <text x="30.0" y="662.9" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Legend (part id, size as stacked, kg each)</text>
-<text x="30.0" y="678.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. F-DR (layer 1): 2290 x 1016 x 200, 19.1 kg</text>
+<text x="30.0" y="678.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. F-DR (layer 1): 2290 x 1016 x 200, 18.1 kg</text>
 <text x="30.0" y="692.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">2. B-BAND-BACK (layer 1): 2420 x 100 x 40, 3.6 kg</text>
 <text x="30.0" y="706.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">3. B-BAND-SIDE (layer 1): 1660 x 100 x 40, 2.4 kg</text>
-<text x="30.0" y="720.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">4. F-DT (layer 2): 1697 x 280 x 200, 7.4 kg</text>
-<text x="30.0" y="734.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. F-DL (layer 2): 2290 x 278 x 200, 10.5 kg</text>
+<text x="30.0" y="720.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">4. F-DT (layer 2): 1697 x 280 x 200, 7.0 kg</text>
+<text x="30.0" y="734.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. F-DL (layer 2): 2290 x 278 x 200, 10.0 kg</text>
 <text x="30.0" y="748.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. B-BAND-SIDE (layer 2): 1660 x 100 x 40, 2.4 kg</text>
 <text x="30.0" y="762.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. KIT-BOX-1 (layer 2): 2400 x 280 x 200, 14.8 kg</text>
 <text x="30.0" y="776.9" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. KIT-BOX-2 (layer 2): 2400 x 280 x 200, 14.8 kg</text>

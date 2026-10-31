@@ -85,7 +85,7 @@ def line_mass(r, case):
     if spec.startswith("Tấm nhôm 2 mm"):
         return r["area"] * p("acp2_kgm2"), "ACP skin"
     if spec.startswith("Tấm nhôm 3 mm"):
-        return r["area"] * p("acp3_kgm2"), "ACP skin"
+        return r["area"] * p("acp3_v1_kgm2"), "ACP skin"
     if spec.startswith("Kính"):
         return r["area"] * 0.010 * p("rho_glass"), "glass"
     if spec.startswith(("Pát", "Bản mã", "Bản thép")):

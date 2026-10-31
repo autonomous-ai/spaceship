@@ -1,9 +1,9 @@
 id,name,name_vi,assembly,size_mm,qty,kg_each,kg_total,ships_as,status,note
-W-SIDE-LO,WALL - SIDE PANEL - LOWER,Vách hông - khung dưới,WALL,1500 x 1145 x 38,2,18.51,37.02,upright,calculation,
-W-SIDE-UP,WALL - SIDE PANEL - UPPER,Vách hông - khung trên,WALL,1500 x 1145 x 38,2,18.51,37.02,upright,calculation,
-W-BACK-LO,WALL - BACK PANEL - LOWER,Vách hậu - khung dưới,WALL,1212 x 1126 x 38,2,15.35,30.70,upright,calculation,
-W-BACK-UP,WALL - BACK PANEL - UPPER,Vách hậu - khung trên,WALL,1212 x 1126 x 38,2,15.35,30.70,upright,calculation,
-C-HALF,CEILING - HALF PANEL WITH FAN OPENING,Trần - nửa khung,CEILING,1500 x 1212 x 38,2,19.47,38.93,upright,calculation,
+W-SIDE-LO,WALL - SIDE PANEL - LOWER,Vách hông - khung dưới,WALL,1500 x 1145 x 38,2,17.99,35.99,upright,calculation,
+W-SIDE-UP,WALL - SIDE PANEL - UPPER,Vách hông - khung trên,WALL,1500 x 1145 x 38,2,17.99,35.99,upright,calculation,
+W-BACK-LO,WALL - BACK PANEL - LOWER,Vách hậu - khung dưới,WALL,1212 x 1126 x 38,2,14.94,29.88,upright,calculation,
+W-BACK-UP,WALL - BACK PANEL - UPPER,Vách hậu - khung trên,WALL,1212 x 1126 x 38,2,14.94,29.88,upright,calculation,
+C-HALF,CEILING - HALF PANEL WITH FAN OPENING,Trần - nửa khung,CEILING,1500 x 1212 x 38,2,18.92,37.84,upright,calculation,
 L-FELT-SIDE,LINING - PET FELT - SIDE,Tấm tiêu âm PET - vách hông,LINING,1462 x 1145 x 9,4,3.10,12.39,upright,calculation,
 L-FELT-BACK,LINING - PET FELT - BACK,Tấm tiêu âm PET - vách hậu,LINING,1212 x 1126 x 9,4,2.52,10.10,upright,calculation,
 L-FELT-CEIL,LINING - PET FELT - CEILING,Tấm tiêu âm PET - trần,LINING,1462 x 1212 x 9,2,3.28,6.56,upright,calculation,
@@ -19,10 +19,10 @@ B-JOIST,BASE - JOIST 30x60 - L2400,Nan đỡ ván sàn - thép hộp 30x60,BASE,
 B-FOOT,BASE - LEVELLING FOOT M10,Chân tăng đưa M10,BASE,80 x 60 x 60,6,0.25,1.50,box,assumption,
 B-BRACKET,BASE - CORNER BRACKET,Pát góc khung sàn,BASE,150 x 100 x 60,4,0.35,1.40,box,assumption,bolted corners replace v1 welds
 B-BOARD,BASE - FLOOR BOARD,Ván sàn,BASE,1428 x 1184 x 15,2,15.22,30.45,upright,calculation,
-B-THRESH,BASE - FRONT EDGE TRIM,Ốp mép sàn trước,BASE,1917 x 204 x 3,1,1.49,1.49,long,calculation,
-F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 200,1,15.26,15.26,long,calculation,
-F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 200,1,27.51,27.51,long,calculation,
-F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 200,1,11.05,11.05,long,calculation,
+B-THRESH,BASE - FRONT EDGE TRIM,Ốp mép sàn trước,BASE,1917 x 204 x 3,1,1.37,1.37,long,calculation,
+F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 200,1,14.73,14.73,long,calculation,
+F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 200,1,26.51,26.51,long,calculation,
+F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 200,1,10.70,10.70,long,calculation,
 F-GLASS-DOOR,FRONT - GLASS DOOR (10 mm tempered glass),Cửa kính,FRONT,2011 x 1176 x 10,1,52.00,52.00,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
 F-GLASS-FIXED,FRONT - FIXED GLASS (10 mm tempered glass),Vách kính cố định,FRONT,2139 x 724 x 10,1,33.60,33.60,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
 F-HW,FRONT - DOOR AND GLAZING HARDWARE KIT,Phụ kiện cửa và kính,FRONT,600 x 400 x 150,1,2.60,2.60,box,assumption,"3 hinges, pull"

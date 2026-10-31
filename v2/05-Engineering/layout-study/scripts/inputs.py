@@ -30,6 +30,8 @@ SOURCES = {
     "S20": ("Hardware Engineer's sound and air calc (branch super-tab/09f4617f, commit e22cab1): total-pod kg vs D_S,A curve; at a 380 kg budget with a 10 mm smoked acrylic front: walls DL-ST (ACP 3 / 40 mm fill, shared studs / 0.5 mm steel + felt 9), ceiling DL-2HDF-60-FL (ACP 3 / 60 mm fill / 2 x HDF 3 floating + felt 9), 377 kg, D_S,A 22.5 dB central", "v2/05-Engineering/acoustics-air/calc.py on that branch (read 2026-10-31)"),
     "S21": ("Hardware Engineer's final wall stack, relayed by the PM in the layout chat, 2026-10-31: ACP 3 / 20x40 aluminium frame at 400 mm with 40 mm PET fill / floating lining cassette (0.5 mm steel tray, 25 mm deep, 9 mm felt across its face); 81 mm and 13.1 kg/m2. Ceiling the same on 20x100, 141 mm. Pod about 385 kg and 24.2 dB with the acrylic front", "layout conversation, PM message of 2026-10-31"),
     "S22": ("PM ruling relayed in the layout chat, 2026-10-31: front is 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look); the sound study puts the pod at about 400 kg and 23.8 dB with 40 mm ceiling frames and separate silencer boxes; the door is handled by two people with suction lifters", "layout conversation, PM message of 2026-10-31"),
+    "S23": ("Alcorest outdoor ACP, colour EV3038 Dark Yellow (the plan's VT01), 3 mm with 0.21 mm skins: maker's catalogue gives skins, not kg/m2; the sound study calculates 3.5 kg/m2 from the skin spec (selection.md VT01). PM ruling 2026-10-31: use 3.5", "https://vietdung.com.vn/wp-content/uploads/2026/07/CTL-ACP-ALCOREST-07.08.25.pdf (via the sound study's selection table)"),
+    "S24": ("PM ruling 2026-10-31: the 400 kg cap stays; carry the total as 400 +/- 10 kg until the CAD parts list settles it; if the CAD BOM lands over 400 kg, trim the inner steel tray or the fans, not the sound", "layout conversation, PM message of 2026-10-31"),
     "S19": ("LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff)", "https://logisticsplus.com/?p=25575 (read 2026-10-31)"),
 }
 
@@ -67,7 +69,8 @@ P = {
     "pvb_kgm2": V(0.81, "kg/m2", "calculation", "S08", "0.76 mm PVB at 1070 kg/m3 (assumption on PVB density)"),
     # ---- sheet products (areal mass)
     "acp2_kgm2": V(2.9, "kg/m2", "source", "S10", "2 mm ACP"),
-    "acp3_kgm2": V(3.8, "kg/m2", "source", "S10", "3 mm ACP; local ACP with thinner skins is lighter (conservative)"),
+    "acp3_kgm2": V(3.5, "kg/m2", "calculation", "S23", "Spaceship: 3 mm Alcorest EV3038 ACP, 0.21 mm skins (PM ruling; was 3.8)"),
+    "acp3_v1_kgm2": V(3.8, "kg/m2", "source", "S10", "v1's 3 mm decor skins: maker unknown, kept at the 0.3 mm-skin figure"),
     "pet9_kgm2": V(1.8, "kg/m2", "source", "S11", "9 mm PET felt"),
     "hc10_kgm2": V(4.0, "kg/m2", "source", "S12", "10 mm Al honeycomb, 0.5+0.5 skins"),
     "foam25_kgm2": V(1.5, "kg/m2", "assumption", "", "25 mm closed-cell foam core at about 60 kg/m3; the sound group picks the core"),
@@ -187,6 +190,8 @@ P = {
     "hw_385_dsa": V(24.2, "dB", "source", "S21"),
     "hw_400_total": V(400, "kg", "source", "S22", "sound study's total with 4+4 laminated glass"),
     "hw_400_dsa": V(23.8, "dB", "source", "S22"),
+    "carry_total": V(400, "kg", "confirmed", "S24", "total to carry until the CAD parts list"),
+    "carry_tol": V(10, "kg", "confirmed", "S24"),
     "fan_final_kg": V(5.0, "kg", "source", "S20", "S&P TD-350/100-125 ECOWATT inline fan, the sound study's pick"),
     "silencer_final_kg": V(3.5, "kg", "calculation", "S20", "one separate silencer box: 0.6 m2 HDF 3 box + 1.2 m2 lining 25 mm at 1.2 kg/m2"),
     "door_edge_seal_kg": V(1.0, "kg", "source", "S20", "door edge seals on 3 sides"),

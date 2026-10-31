@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="918" viewBox="0 0 1000 918">
 <rect width="100%" height="100%" fill="white"/>
 <text x="30.0" y="24.0" font-size="14" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Option A, pallet 1 of 2</text>
-<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">48x40 in pallet · gross 263 kg (580 lb) · loaded height 1646 mm (64.8 in) · 8.1 lb/ft3</text>
+<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">48x40 in pallet · gross 258 kg (570 lb) · loaded height 1646 mm (64.8 in) · 7.9 lb/ft3</text>
 <text x="30.0" y="60.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Plan view (48 in along X, 40 in along Y)</text>
 <rect x="30" y="70" width="243.8" height="203.2" fill="#f3e9d2" stroke="#7a5c2e"/>
 <rect x="91.5" y="72.0" width="20.0" height="10.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
@@ -70,16 +70,16 @@
 <text x="30.0" y="547.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. B-RAIL-FL-08: 76 along x 100 up x 50 thick, 0.3 kg</text>
 <text x="30.0" y="561.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. B-RAIL-FL-08: 76 along x 100 up x 50 thick, 0.3 kg</text>
 <text x="30.0" y="575.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. B-RAIL-FL-08: 76 along x 100 up x 50 thick, 0.3 kg</text>
-<text x="30.0" y="589.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. C-HALF: 1212 along x 1500 up x 38 thick, 19.5 kg</text>
-<text x="30.0" y="603.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. C-HALF: 1212 along x 1500 up x 38 thick, 19.5 kg</text>
-<text x="30.0" y="617.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. W-SIDE-LO: 1145 along x 1500 up x 38 thick, 18.5 kg</text>
-<text x="30.0" y="631.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. W-SIDE-LO: 1145 along x 1500 up x 38 thick, 18.5 kg</text>
-<text x="30.0" y="645.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">12. W-SIDE-UP: 1145 along x 1500 up x 38 thick, 18.5 kg</text>
-<text x="30.0" y="659.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">13. W-SIDE-UP: 1145 along x 1500 up x 38 thick, 18.5 kg</text>
-<text x="30.0" y="673.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">14. W-BACK-LO: 1126 along x 1212 up x 38 thick, 15.3 kg</text>
-<text x="30.0" y="687.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">15. W-BACK-LO: 1126 along x 1212 up x 38 thick, 15.3 kg</text>
-<text x="30.0" y="701.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">16. W-BACK-UP: 1126 along x 1212 up x 38 thick, 15.3 kg</text>
-<text x="30.0" y="715.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">17. W-BACK-UP: 1126 along x 1212 up x 38 thick, 15.3 kg</text>
+<text x="30.0" y="589.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. C-HALF: 1212 along x 1500 up x 38 thick, 18.9 kg</text>
+<text x="30.0" y="603.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. C-HALF: 1212 along x 1500 up x 38 thick, 18.9 kg</text>
+<text x="30.0" y="617.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. W-SIDE-LO: 1145 along x 1500 up x 38 thick, 18.0 kg</text>
+<text x="30.0" y="631.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. W-SIDE-LO: 1145 along x 1500 up x 38 thick, 18.0 kg</text>
+<text x="30.0" y="645.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">12. W-SIDE-UP: 1145 along x 1500 up x 38 thick, 18.0 kg</text>
+<text x="30.0" y="659.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">13. W-SIDE-UP: 1145 along x 1500 up x 38 thick, 18.0 kg</text>
+<text x="30.0" y="673.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">14. W-BACK-LO: 1126 along x 1212 up x 38 thick, 14.9 kg</text>
+<text x="30.0" y="687.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">15. W-BACK-LO: 1126 along x 1212 up x 38 thick, 14.9 kg</text>
+<text x="30.0" y="701.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">16. W-BACK-UP: 1126 along x 1212 up x 38 thick, 14.9 kg</text>
+<text x="30.0" y="715.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">17. W-BACK-UP: 1126 along x 1212 up x 38 thick, 14.9 kg</text>
 <text x="30.0" y="729.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">18. B-BOARD: 1184 along x 1428 up x 15 thick, 15.2 kg</text>
 <text x="30.0" y="743.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">19. B-BOARD: 1184 along x 1428 up x 15 thick, 15.2 kg</text>
 <text x="30.0" y="757.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">20. L-FELT-CEIL: 1212 along x 1462 up x 9 thick, 3.3 kg</text>
