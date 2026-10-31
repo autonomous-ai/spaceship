@@ -29,6 +29,9 @@ section views go on it. Hatching can't be drawn by the API (no hatch on
 sheets); that is on the person list.
 """
 
+import time
+
+import adsk
 import adsk.core
 import adsk.fusion
 
@@ -49,11 +52,39 @@ def vi(s):
     return adsk.core.ValueInput.createByString(s)
 
 
+def find_in_folder(folder, name):
+    """The DataFiles called name, read safely: the shared check (fusion_folder.py,
+    given to every script by run_script.py) when the runner has it, else a guarded
+    look (a runner from before PR #121). A folder entry can flicker right after a
+    Fusion restart (2026-10-31: DataFiles.item raised "invalid argument index")."""
+    try:
+        from fusion_folder import read_folder
+    except ImportError:
+        read_folder = None
+    if read_folder is not None:
+        files, _unknown, _others = read_folder(folder, stop_when=lambda fs, u, o: name in fs)
+        return files.get(name, [])
+    hits = []
+    for _ in range(12):
+        hits = []
+        for i in range(folder.dataFiles.count):
+            try:
+                f = folder.dataFiles.item(i)
+                if f.name == name:
+                    hits.append(f)
+            except Exception:
+                pass
+        if hits:
+            break
+        adsk.doEvents()
+        time.sleep(5)
+    return hits
+
+
 def skeleton_file(app: "adsk.core.Application"):
     proj = [p for p in app.data.dataProjects if p.name == FOLDER[0]][0]
     folder = proj.rootFolder.dataFolders.itemByName(FOLDER[1])
-    hits = [folder.dataFiles.item(i) for i in range(folder.dataFiles.count)
-            if folder.dataFiles.item(i).name == SKELETON]
+    hits = find_in_folder(folder, SKELETON)
     if len(hits) != 1:
         raise RuntimeError("expected one %s in %s, found %d" % (SKELETON, "/".join(FOLDER), len(hits)))
     return hits[0]

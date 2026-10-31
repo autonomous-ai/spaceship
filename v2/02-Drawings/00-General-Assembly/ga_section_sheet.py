@@ -14,7 +14,9 @@ bodies alternate 45 and 135 degrees so their boundary reads.
 """
 
 import os
+import time
 
+import adsk
 import adsk.core
 import adsk.drawing
 import adsk.fusion
@@ -34,6 +36,35 @@ _hatch_src = open(os.path.join(ARGS.get("repo_root", "."), "tools/fusion/hatch.p
 _ns = {}
 exec(compile(_hatch_src, "hatch.py", "exec"), _ns)
 hatch_segments = _ns["hatch_segments"]
+
+
+def find_in_folder(folder, name):
+    """The DataFiles called name, read safely: the shared check (fusion_folder.py,
+    given to every script by run_script.py) when the runner has it, else a guarded
+    look (a runner from before PR #121). A folder entry can flicker right after a
+    Fusion restart (2026-10-31: DataFiles.item raised "invalid argument index")."""
+    try:
+        from fusion_folder import read_folder
+    except ImportError:
+        read_folder = None
+    if read_folder is not None:
+        files, _unknown, _others = read_folder(folder, stop_when=lambda fs, u, o: name in fs)
+        return files.get(name, [])
+    hits = []
+    for _ in range(12):
+        hits = []
+        for i in range(folder.dataFiles.count):
+            try:
+                f = folder.dataFiles.item(i)
+                if f.name == name:
+                    hits.append(f)
+            except Exception:
+                pass
+        if hits:
+            break
+        adsk.doEvents()
+        time.sleep(5)
+    return hits
 
 
 def p2(x, y):
@@ -120,8 +151,10 @@ def run(_context):
     if opened:
         proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
         folder = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
-        df = [folder.dataFiles.item(i) for i in range(folder.dataFiles.count)
-              if folder.dataFiles.item(i).name == design_name][0]
+        hits = find_in_folder(folder, design_name)
+        if len(hits) != 1:
+            raise RuntimeError("expected one %s in the team folder, found %d" % (design_name, len(hits)))
+        df = hits[0]
         sdoc = app.documents.open(df, False)
     design = adsk.fusion.Design.cast(sdoc.products.itemByProductType("DesignProductType"))
     at = design.userParameters.itemByName("sec_offset").value * 10.0
