@@ -5,8 +5,8 @@ newer number exists: the teams' CAD masses (CEILING PR #32, FRONT PRs #27 and #2
 sized for D-60 (the air report, section 7f), and this study's own model re-run at skeleton P04's sizes for the parts with
 no CAD yet. On top: the PM's adopted savings (ruling after PR #38) and allowances for parts not designed yet. Every line
 carries its status and its source (SOURCES in inputs.py). run_all.py writes weight-rollup.md and out/parts-decided-P04.csv
-from here, and its --check proves they reproduce. The CSV is the pod as shipped: the mechanical check sums every row of it
-for F-010, so the voice kit's reserve, outside the cap, is on the page only.
+from here, and its --check proves they reproduce. The mechanical check sums the CSV for F-010 and leaves out the voice kit's
+line, which is outside the cap (PR #40).
 """
 import os
 import sys
@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.join(HERE, "..", "..", "acoustics-air"))
 import calc as AA  # noqa: E402  (the air report's own model: D-60's air parts)
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
-TARGET_KG = 410.0       # confirmed: the PM's target for the pod as shipped (S40)
+TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
 D71_KG = 429.3          # the PM's running estimate (D-71, S39), for the cross-check
 D71_LEFT_OUT = 1.3 + 0.5 + 2.1   # corner tubes, bond, floor foam: D-71's "not in the sum yet" (S39)
 
@@ -41,8 +41,9 @@ CORNER_TUBES_KG = 1.3         # confirmed, D-63 (S39)
 BOND_OVER_KG = 0.5            # calculation, PR #23 via D-71: bond over this study's 0.25 kg/m2 (S39)
 FLOOR_T, FOAM_KG = 9.0, 2.1   # confirmed, D-72 (9 mm plywood); calculation, D-76 (3 mm foam at about 200 kg/m3) (S39)
 SKEL_STACK = 84.0             # mm: outer panel 46 + the floating lining, wall face to lining face (S33)
-# The PM's weight ruling after PR #38 (S40): adopted now, two of them provisional on a test or a check
-FILL_LIGHT = 24.0             # kg/m3: the default now, provisional on T02 (D-54); the grade Pyrotek lists and the sample tests
+# D-81, the PM's weight ruling on PR #38 (S40): adopted now, two of them provisional on a test or a check
+FILL_LIGHT = 24.0             # kg/m3: the default now, provisional on T02 (D-54, D-81); the grade Pyrotek lists and the
+                              # sample tests, as the PM's brief says (D-81's text says 25)
 CLIP_KG, CATCH_KG = 0.04, 0.10  # assumption: clip-only fixing, no rails (adopted), about 40 g a clip and 100 g a catch
                                 # lanyard until H03 and H04 name them
 BAND_T_LIGHT = 1.5            # mm: the base band's wall (adopted, provisional on BASE's check; this study's 2.0 is S07's)
@@ -50,10 +51,16 @@ BAND_T_LIGHT = 1.5            # mm: the base band's wall (adopted, provisional o
 SHELF_KGM = 0.6               # kg/m: slim aluminium light shelf with its LED strip, along the side and back wall tops (D-70)
 SHELF_BRACKETS_KG = 0.4       # kg: its brackets at about 400 mm
 LEDGE_KG = 2.3                # kg: the work wall's 1000 mm ledge, 200 mm deep in 12 mm ply at 650 kg/m3 with 2 brackets (D-70)
-# Candidates still open
+# Candidates toward the 410 kg target, for the PM to decide (assumption unless marked)
 LAM33_T, LAM44_T = 6.76, 8.76  # mm: 3+3 and 4+4 laminate (glass 3 + 0.76 PVB + 3, as the 4+4 is 4 + 0.76 + 4)
-FIXED_AREA = 1.344            # m2: the fixed pane's finished outline from v1's STEP (this study's glass_area)
-FLOOR_RHO_LIGHT = 450.0       # kg/m3: a light-core plywood (assumption until BASE's floor ply check names one)
+FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar or falcata-core plywood, against this study's 600 (S13)
+T_STUD_LIGHT = 1.0            # mm: inner studs of the 20 x 40 frames; perimeters keep D-34's 1.2 for the rivnuts
+SHELF_KGM_LIGHT = 0.4         # kg/m: the light shelf as a 1.2 mm aluminium angle with its LED strip
+LEDGE_KG_LIGHT = 1.4          # kg: the ledge in 1.5 mm folded aluminium (1000 x 240 developed) with 2 brackets
+KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36, calculation) and a hollow profile, same outside, 2 mm walls
+FELT_KGM2_LIGHT = 1.4         # kg/m2: a lighter 9 mm PET felt, against Polyx Board 9's 1.8 (S11)
+FILL_LIGHTER = 18.0           # kg/m3: Pyrotek's lightest listed grade (hardware selection, fill row: 18, 24, 32, 48, 60)
+DECOR_TUBE_CUT = 0.25         # share of the decor blocks' frame tube a FRONT design could leave out (assumption)
 
 
 def base_parts():
@@ -135,7 +142,7 @@ def lines(**adopt):
         L.append(("LINING", f"Wall cassette, {item}, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
                   final_leaf_kg(w, h) - (0.0 if rails else p("leaf_clip_kgm2") * w * h * 1e-6) + LIP_KG,
                   "calculation; lips confirmed", "this study's model at the P04 size (S33)"
-                  + ("" if rails else " without its 0.6 kg/m2 clip-and-rail allowance (clip-only, S40)")
+                  + ("" if rails else " without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81)")
                   + ", + 0.43 kg of lips (D-69)"))
     ceil_bond = p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6
     L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2, CEIL_PANEL + ceil_bond,
@@ -146,14 +153,14 @@ def lines(**adopt):
               + (", + this study's 0.6 kg/m2 clip-and-rail allowance" if rails else "")))
     if not rails:
         L.append(("LINING", "Named clips and catches: 44 clips and 4 catch lanyards", 1, named_clips_kg(), "assumption",
-                  "allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, S40)"))
+                  "allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, D-81)"))
     kgm_band = al_rhs(100, 40, band_t)
     thin = band_t != p("t_al_base")
     for pid in ("B-BAND-BACK", "B-BAND-SIDE", "B-BAND-FRONT-L", "B-BAND-FRONT-R"):
         pt = base[pid]
         L.append(("BASE", f"{pt.name.split(' - ', 1)[1].capitalize()}, {band_t:g} mm wall", pt.qty, pt.dims[0] * 1e-3 * kgm_band,
                   "calculation" + ("; provisional" if thin else ""),
-                  "this study's model" + (f", {band_t:g} mm wall (S40, if BASE's check passes)" if thin else "")
+                  "this study's model" + (f", {band_t:g} mm wall (D-81, if BASE's check passes)" if thin else "")
                   + "; P03 lengths, P04's faceted front band is about 0.2 m shorter"))
     for pid, note in (("B-KEY", "this study's model"), ("B-GLIDE", "this study's model"),
                       ("B-THRESH", "this study's model (D-72's 13 mm profile isn't modelled yet)")):
@@ -195,7 +202,7 @@ def lines(**adopt):
     pt = base["E-VOICE-RESERVE"]
     if a["kit_outside"]:
         L.append(("LATER", "Voice cockpit kit reserve, outside the 420 kg cap", 1, pt.kg, pt.status,
-                  "the kit ships later as an add-on (D-11); the cap is for the pod as shipped (S40)"))
+                  "the kit ships later as an add-on (D-11); the cap is for the pod as shipped (D-81)"))
     else:
         L.append(("ELECTRICAL", "Voice cockpit kit reserve", 1, pt.kg, pt.status, "this study's model (D-11)"))
     return L
@@ -207,7 +214,7 @@ def pod_kg(rows=None):
 
 
 def applied():
-    """The PM's adopted savings (ruling after PR #38): (kg, what, status, owner). Each is priced by switching it back off
+    """D-81's adopted savings (S40): (kg, what, status, owner). Each is priced by switching it back off
     in lines(), so the table always matches the part list."""
     now = pod_kg(lines())
 
@@ -221,7 +228,8 @@ def applied():
          f"({named_clips_kg():.1f} kg allowance) replace this study's 0.6 kg/m2 clip-and-rail allowance over "
          f"{walls_m2 + ceil_m2:.1f} m2 of cassettes", "adopted; the clip gets named with a rated load and a captive lock "
          "(H03), T01 and T07 confirm", "WALL and CEILING"),
-        (saved(fill=p("fill_pet_kgm3")), f"Cavity fill at {FILL_LIGHT:g} kg/m3 instead of {p('fill_pet_kgm3'):g}: the wall "
+        (saved(fill=p("fill_pet_kgm3")), f"Cavity fill at {FILL_LIGHT:g} kg/m3 instead of {p('fill_pet_kgm3'):g} (D-81's text "
+         "says 25; 24 is the grade Pyrotek lists and the sample tests): the wall "
          "panels, the ceiling cassettes, the air column and the soffit. The cartridges' 50 mm layers stay at 32, the "
          "density their published absorption is for", "provisional: back to 32 kg/m3 if T02 fails (D-54)",
          "WALL, CEILING, AIR"),
@@ -232,28 +240,67 @@ def applied():
     ]
 
 
+def col_soffit_faces_m2():
+    """The air column's two felt-covered faces and the soffit's underside and front face (air report D60), m2."""
+    (cx0, cx1), (cy0, cy1), (cz0, cz1) = AA.D60["col"]
+    (sx0, sx1), (sy0, sy1), (sz0, sz1) = AA.D60["soffit"]
+    return ((cx1 - cx0 + cy1 - cy0) * (cz1 - cz0) + (sy1 - sy0 + sz1 - sz0) * (sx1 - sx0)) * 1e-6
+
+
+def decor_tube_kg():
+    """The three decor blocks' frame tube in this study's model (v1's steel layout in the final aluminium section)."""
+    from v2_model import decor_kg, decor_skin_area
+    return sum(decor_kg(b, FINAL) - decor_skin_area(b) * p("acp3_kgm2") - 4 * 0.05 for b in ("DL", "DR", "DT"))
+
+
 def open_savings():
-    """Candidates still open toward the 410 kg target, and the one rejected: (kg, what, risk, owner)."""
-    lam = 1 - LAM33_T / LAM44_T
-    fa = P04["floor_w"] * P04["floor_d"] * 1e-6
+    """Candidates toward the 410 kg target for the PM to decide: (kg, what, risk, owner), in the order recommended: low
+    risk first, then the ones a test or a check decides. None changes the look or the sound targets."""
+    P = P04
+    kgm12, dk = al_rhs(20, 40, p("t_al_final")), al_rhs(20, 40, p("t_al_final")) - al_rhs(20, 40, T_STUD_LIGHT)
+    fa = P["floor_w"] * P["floor_d"] * 1e-6
+    studs_m = 4 * 3 * P["side_h"] + 4 * 2 * P["back_h"] + 2 * 2 * P["wall_depth"]     # with 2 studs in each back panel
+    perim_m = 4 * 2 * (P["side_w"] + P["side_h"]) + 4 * 2 * (P["back_w"] + P["back_h"]) + 2 * 2 * (P["ceil_w"] + P["wall_depth"])
+    felt_m2 = sum(cassette_faces_m2()) + col_soffit_faces_m2()
     return [
-        (FIXED_GLASS * lam, f"Fixed glass in 3+3 laminate of toughened, heat-soaked panes (6.76 mm) instead of 4+4; the same "
-         "look. The glass carries about 4% of the speech that gets out, so the pod loses well under 0.1 dB",
-         f"only if FRONT's calculation shows the 2 m free edge of the {FIXED_AREA:.2f} m2 pane stays stiff and the door seal "
-         "still closes (S40)", "FRONT"),
-        (2 * plate_kg(fa, FLOOR_T, p("rho_ply") - FLOOR_RHO_LIGHT),
-         f"Floor panels in a light-core 9 mm plywood, about {FLOOR_RHO_LIGHT:.0f} kg/m3 instead of {p('rho_ply'):.0f} "
-         "(assumption until a product is named); hidden under the mat", "BASE's floor ply check: stiffness under a chair "
-         "castor at the panel edge (D-76's sample test)", "BASE"),
-        (DOOR_GLASS * lam, "Door leaf in 3+3 laminate instead of 4+4", "rejected: D-46 stands (S40)", "FRONT"),
+        ((SHELF_KGM - SHELF_KGM_LIGHT) * shelf_m() + LEDGE_KG - LEDGE_KG_LIGHT, f"Weight budgets for the parts not designed "
+         f"yet: the light shelf at {SHELF_KGM_LIGHT:g} kg/m, the ledge in 1.5 mm folded aluminium", "low", "INTERIOR, WALL"),
+        (dk * studs_m * 1e-3, f"Inner studs at {T_STUD_LIGHT:.1f} mm wall; the perimeter members keep 1.2 mm for the rivnuts "
+         "(D-34)", "low: the studs only carry the ACP's bond", "WALL, CEILING"),
+        (4 * P["back_h"] * 1e-3 * kgm12, "Back outer panels with 2 inner studs, not 3: 393 mm centres, inside D-16's 400 mm "
+         "(this study counted from the outer width)", "low", "WALL"),
+        (KICK_KG - KICK_KG_HOLLOW, "Door kick strip as a hollow profile with 2 mm walls; the same outside and finish",
+         "low", "FRONT"),
+        (2 * plate_kg(fa, FLOOR_T, p("rho_ply") - FLOOR_RHO_LIGHT), f"Floor panels in poplar or falcata-core 9 mm plywood, "
+         f"about {FLOOR_RHO_LIGHT:.0f} kg/m3 against {p('rho_ply'):.0f}; the same finish on top", "medium: less stiff; D-76's "
+         "castor and 1000 N edge test (1 mm or less) decides", "BASE"),
+        (dk * perim_m * 1e-3, f"The perimeter members at {T_STUD_LIGHT:.1f} mm too", "medium: reopens D-34; a rivnut pull-out "
+         "test on the wall sample decides", "WALL, CEILING"),
+        (DECOR_TUBE_CUT * decor_tube_kg(), f"Decor block frames lighter than v1's steel layout ({decor_tube_kg():.1f} kg of "
+         "tube in this study's model)", "medium: FRONT's CAD decides; the right block carries the riser and fan box",
+         "FRONT"),
+        (pod_kg(lines()) - pod_kg(lines(fill=FILL_LIGHTER)), f"Cavity fill at {FILL_LIGHTER:g} kg/m3 instead of "
+         f"{FILL_LIGHT:g}", "medium to high: no published absorption and it may slump in the upright panels; T02 would need "
+         "an 18 kg/m3 arm", "WALL, CEILING"),
+        ((p("pet9_kgm2") - FELT_KGM2_LIGHT) * felt_m2, f"A lighter 9 mm felt, {FELT_KGM2_LIGHT:g} kg/m2 against "
+         f"{p('pet9_kgm2'):g}, the same Dark Gray, on {felt_m2:.1f} m2", "medium to high: the sound model counts no felt mass "
+         "in the walls, but the inside absorption uses Polyx Board 9's 1.8 kg/m2 data, and the face is the look; the sample "
+         "decides", "Hardware, LINING"),
     ]
 
 
 REJECTED = (
+    ("Fixed glass in 3+3 laminate", f"saves about {FIXED_GLASS * (1 - LAM33_T / LAM44_T):.1f} kg, but the pane bends "
+     "58 mm; it stays 4+4 (FRONT's calculation, PM)"),
+    ("Door leaf in 3+3 laminate", f"saves about {DOOR_GLASS * (1 - LAM33_T / LAM44_T):.1f} kg; rejected in D-81, D-46 "
+     "stands"),
+    ("Lighter faces on the air column and soffit", "2 mm ACP gives 26.1 dB(A) at 53 l/s and 30.5 at the boost, against "
+     "26 and 30 (air report model)"),
+    ("Side outer panels at a 500 mm stud pitch", "saves about 1.7 kg but reopens D-16: the visible ACP may oil-can"),
     ("0.4 mm lining tray", "saves about 12.7 kg but costs 1 dB (D-37)"),
     ("Lighter cartridge casings, 1.2 mm aluminium", "about 27.8 dB(A) at 53 l/s against the 26 target (air report section 7d)"),
     ("Intake riser in 0.8 mm steel", "saves about 1.7 kg but gives 30.03 dB(A) at the 65 l/s boost against 30 (air report model)"),
-    ("Lighter ACP or felt on the walls and ceiling", "they are the sound leaves; less mass loses dB"),
+    ("Lighter ACP on the walls and ceiling", "it is the outer sound leaf; less mass loses dB"),
 )
 
 
@@ -326,7 +373,7 @@ def rollup_md(rows):
     md.append("")
     md.append("Sources S33 to S39 are in section 10 of the report (`scripts/inputs.py`).")
     md.append("")
-    md.append("## Savings applied (S40)")
+    md.append("## Savings applied (D-81)")
     md.append("")
     md.append("| Saves kg | What changes | Status | Owner |")
     md.append("|---:|---|---|---|")
@@ -334,25 +381,22 @@ def rollup_md(rows):
         md.append(f"| {kg:.1f} | {what} | {st} | {owner} |")
     md.append(f"| **{sum(a[0] for a in ap):.1f}** | **in all** | | |")
     md.append("")
-    md.append(f"## Still open toward the {TARGET_KG:.0f} kg target")
+    md.append(f"## Candidates toward the {TARGET_KG:.0f} kg target, for the PM to decide")
     md.append("")
-    md.append("Each keeps the look exactly and the sound targets (19.3 dB speech reduction; fan noise 26 dB(A) at 53 l/s and "
-              "30 at the boost).")
+    md.append(f"{gap(tot - TARGET_KG).capitalize()} the target. Each keeps the look exactly and the sound targets (19.3 dB "
+              "speech reduction; fan noise 26 dB(A) at 53 l/s and 30 at the boost). Ranked as recommended: low risk "
+              "first, then the ones a test or a check decides.")
     md.append("")
-    md.append("| Saves kg | What changes | Condition or risk | Owner |")
-    md.append("|---:|---|---|---|")
-    for kg, what, risk, owner in op:
-        md.append(f"| {kg:.1f} | {what} | {risk} | {owner} |")
+    md.append("| # | Saves kg | What changes | Risk | Owner |")
+    md.append("|---:|---:|---|---|---|")
+    for n, (kg, what, risk, owner) in enumerate(op, 1):
+        md.append(f"| {n} | {kg:.1f} | {what} | {risk} | {owner} |")
     md.append("")
-    both = op[0][0] + op[1][0]
-    model = sum(r[2] * r[3] for r in rows if r[0] == "FRONT" and r[1].startswith("Decor block"))
-    kit = sum(r[2] * r[3] for r in rows if r[1].startswith("M6 bolts"))
-    allowed = sum(allow.values())
-    md.append(f"With the first two: about {tot - both:.1f} kg as shipped, {gap(tot - both - TARGET_KG)} the target. The rest "
-              f"has to come as the parts still on this study's model or on allowances get their CAD: the decor blocks "
-              f"({model:.1f} kg), the fixings kit ({kit:.1f} kg) and the three allowances ({allowed:.1f} kg).")
+    first5 = sum(o[0] for o in op[:5])
+    md.append(f"Items 1 to 5 save {first5:.1f} kg: {tot - first5:.1f} kg as shipped, {gap(tot - first5 - TARGET_KG)} the "
+              f"target. With item 6 as well: {tot - first5 - op[5][0]:.1f} kg.")
     md.append("")
-    md.append("Looked at and rejected, because they lose the sound targets:")
+    md.append("Looked at and rejected:")
     md.append("")
     for name, why in REJECTED:
         md.append(f"- {name}: {why}.")
@@ -372,8 +416,7 @@ def rollup_md(rows):
 
 def rollup_files():
     rows = lines()
-    shipped = [r for r in rows if r[0] != "LATER"]      # the mechanical check sums every row for F-010
-    return {"weight-rollup.md": rollup_md(rows), "out/parts-decided-P04.csv": rollup_csv(shipped)}
+    return {"weight-rollup.md": rollup_md(rows), "out/parts-decided-P04.csv": rollup_csv(rows)}
 
 
 if __name__ == "__main__":
