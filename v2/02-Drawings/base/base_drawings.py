@@ -290,13 +290,10 @@ def run(_context):
         e = extent(top)
         o_top = nearest_end(top, (e[0], e[1]))
         n_holes += hole_dims(sheet, top, o_top, side="below")
-        n_dims += diameters(sheet, top) + mitre_angle(sheet, top)
+        n_dims += mitre_angle(sheet, top)      # diameters: in the hole table (callouts cluttered the views)
         tables += hole_table(sheet, top, o_top, "HOLES IN THE TOP WALL (VIEW FROM ABOVE), ORIGIN O = DATUMS C, B")
-        bot = made["bottom"]
-        e = extent(bot)
-        o_bot = nearest_end(bot, (e[0], e[3]))
-        n_holes += hole_dims(sheet, bot, o_bot, side="below")
-        n_dims += diameters(sheet, bot)
+        # the view from below shows the bottom wall's holes; their positions are in the hole table
+        # (its dimensions ran into the front view, and a mitred end has no corner at its extent)
         o_l, n = overall(sheet, made["left"], below=True, left=False, gap=6.0)
         n_dims += n
     elif kind == "plate":

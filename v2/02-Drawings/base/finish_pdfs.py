@@ -160,8 +160,15 @@ def finish(pn):
     lines = text_block(pn)
     fs = 6.0 if w > 1000 else 5.0
     bh = (len(lines) + 2) * fs * 1.6
-    box = fitz.Rect(20, h - 20 - bh, w * 0.62, h - 20)      # bottom left, clear of the views and tables
-    page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="helv", align=0)
+    # bottom left, inside the frame and clear of the title block; a font with the Vietnamese letters
+    mm = 72.0 / 25.4
+    box = fitz.Rect(22 * mm, h - 14 * mm - bh, w * 0.545, h - 14 * mm)     # the frame is 20 mm in on the left
+    font = next((f for f in ("/System/Library/Fonts/Supplemental/Arial Unicode.ttf", "/Library/Fonts/Arial Unicode.ttf")
+                 if os.path.exists(f)), None)
+    if font:
+        page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="arialuni", fontfile=font, align=0)
+    else:
+        page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="helv", align=0)
     doc.save(out, garbage=3, deflate=True)
     doc.close()
     os.remove(tmp)
