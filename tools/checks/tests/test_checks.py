@@ -8,6 +8,7 @@ skeleton P03 STEP); the rest is built in the test.
 import csv
 import math
 import os
+import re
 import sys
 
 import pytest
@@ -830,3 +831,15 @@ class TestD89FlatSheetParts:
     def test_a_step_that_is_not_flat_keeps_the_drawing(self, tmp_path):
         flat = (False, None, "its faces lie at 3 levels through the thickness (a pocket, a step or a rebate)")
         assert "3 levels" in self.plate(tmp_path, flat=flat)["361101"]
+
+def test_door_swing_moves_everything_in_the_door_unit_but_the_hinges():
+    import csv as _csv
+    with open(os.path.join(ROOT, "v2/04-Checks/config/door-swing.csv"), newline="") as fh:
+        cfg = next(_csv.DictReader(fh))
+    mv, ex = re.compile(cfg["moving"], re.I), re.compile(cfg["fixed_exclude"], re.I)
+    unit = "360001_P01_FRONT-DOOR-UNIT_CAD:1 / %s:1 / Body1"
+    moves = lambda label: bool(mv.search(label)) and not ex.search(label)
+    assert moves(unit % "368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735")      # rides on the leaf's edge
+    assert moves(unit % "361001 FRONT - DOOR LEAF - 4+4 LAMINATED")
+    assert not moves(unit % "368101 FRONT - DOOR HINGE - HOLD - H1 BOTTOM")      # half fixed, half moving: left out
+    assert not moves("360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1")
