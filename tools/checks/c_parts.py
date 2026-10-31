@@ -21,7 +21,7 @@ import os
 import re
 from collections import defaultdict
 
-from common import (register_names, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
+from common import (register_names, name_words, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
                     parse_file_name, is_soft)
 
 ALIASES = {
@@ -218,15 +218,20 @@ def check_parts_lists(root, plists):
             if is_fastener(pn, name):
                 fs.extend(_fastener_row(r, pn, name, row, owner))
     fs = _fold_unnumbered(_fold_minor_rows(fs))
+    reg = register_names(root)
     for pn, uses in seen.items():
         # the same words in the same order are one name: 'HOOK-AND-LOOP' and 'HOOK AND LOOP' don't differ
-        names = {re.sub(r"[\s-]+", " ", (n or "").upper()).strip() for _f, n in uses}
+        names = {name_words(n) for _f, n in uses}
         if len(names) > 1:
+            # a hardware number takes the joints register's name (D-99): the lists that differ from it own the fix
+            off = [(f, n) for f, n in uses if pn in reg and name_words(n) != name_words(reg[pn])] or uses
             fs.append(Finding("C06", "duplicate-number", pn, "major",
-                              "Part number %s is used for different names: %s." % (
-                                  pn, "; ".join("'%s' in %s" % (n, f) for f, n in uses)),
-                              "One number is one form, fit and function (conventions section 6).", uses[0][0],
-                              owner_for(uses[0][0], pn)))
+                              "Part number %s is used for different names: %s.%s" % (
+                                  pn, "; ".join("'%s' in %s" % (n, f) for f, n in uses),
+                                  " The joints register names it '%s' (D-99)." % reg[pn] if pn in reg else ""),
+                              ("Use the register's name in %s." % ", ".join(sorted({f for f, _n in off})) if pn in reg
+                               else "One number is one form, fit and function (conventions section 6)."),
+                              off[0][0], owner_for(off[0][0], pn)))
     return fs
 
 
@@ -357,7 +362,7 @@ def check_cad_match(root, plists, step_products):
         for row in rows:
             if row["part_number"]:
                 names.setdefault(row["part_number"], (row["name"], rel(root, p)))
-    norm = lambda t: re.sub(r"[\s-]+", " ", (t or "").upper()).strip()
+    norm = name_words
     reg = register_names(root)          # D-99: hardware names come from the joints register
     for pn, info in sorted(step_products.items()):
         if (pn not in names and pn not in reg) or not re.match(r"^\d{6}$", pn):

@@ -493,10 +493,15 @@ def load_edge_exceptions(root):
 def _edge_accepted(rows, hole, edges, need):
     """The accepting row for this hole, or None (see load_edge_exceptions)."""
     short = [e for e in edges if e[0] + 1e-6 < need]
+    ax = sf.norm(hole.axis)
+
+    def across(p):                  # the foot seen along the hole: a plate's top and bottom edge are one edge
+        t = sf.dot(sf._sub(p, hole.center), ax)
+        return sf._sub(p, sf._mul(ax, t))
     lines = []
     for e in short:
-        if not any(sum((e[2][k] - f[2][k]) ** 2 for k in range(3)) ** 0.5 < 0.5 for f in lines):
-            lines.append(e)         # one edge line, however many segments the face splits it into
+        if not any(sum((across(e[2])[k] - across(f[2])[k]) ** 2 for k in range(3)) ** 0.5 < 0.5 for f in lines):
+            lines.append(e)         # one edge line, however many segments or faces carry it
     for row in rows:
         if abs((num(row.get("hole_dia_mm")) or 0) - hole.diameter) > 0.05:
             continue
