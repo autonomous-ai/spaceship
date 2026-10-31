@@ -113,7 +113,7 @@ Part classes (guideline §4.1): **MP** a part we make, **BS** a bonded subassemb
 | BP-06 wall-to-wall joint section (rule 4) | WALL, CEILING | IF-03, IF-04, IF-05 |
 | BP-07 glue, screws, hook-and-loop (rule 5) | WALL, CEILING, LINING | IF-10 |
 | BP-08 walls bolted to the floor with M6 (rule 6) | BASE, WALL | IF-01 |
-| BP-09 fans in the ceiling, 1 in and 1 out (rule 7) | AIR, CEILING | IF-11, IF-14 |
+| BP-09 fans, 1 in and 1 out (rule 7); moved from the ceiling to the front decor blocks (D-29) | AIR, FRONT (decor blocks) | IF-11, IF-14 |
 | BP-10 VT07–VT09 on the back wall (rule 8) | ELECTRICAL, WALL | IF-12 |
 | BP-11 … BP-23 materials VT01 … VT12 | see 3.1 | — |
 | BP-24 section I, floor frame | BASE | IF-01, IF-02 |
