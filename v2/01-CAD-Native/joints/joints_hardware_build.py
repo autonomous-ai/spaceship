@@ -550,7 +550,7 @@ def build_spigot(app):
         ("hex_depth", "3.5 mm", "mm", "ASSUMPTION: hex socket depth"),
     ])
     root = set_root(design, "831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8",
-                    "UNITS MM; MATERIAL STAINLESS A2 (1.4301 OR 1.4305); FINISH AS TURNED, DEBURRED; ISO 2768-m; "
+                    "UNITS MM; MATERIAL STAINLESS A2 (1.4301 OR 1.4305); FINISH PASSIVATED, DEBURRED; ISO 2768-m; "
                     "PIN Ø8 h9; joints register H-05; PROPOSED; origin on the face it sits on (its rivnut's head)")
     comp = root
     xy = comp.xYConstructionPlane
