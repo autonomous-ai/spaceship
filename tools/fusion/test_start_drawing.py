@@ -255,6 +255,11 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(go(f)[0], 1)
         self.assertEqual(f.clicks, [])
 
+    def test_home_screen_with_no_document_counts_as_idle(self):
+        f = FakeFusion(start_cmd="")                            # Fusion just restarted, no document
+        self.assertEqual(go(f)[0], 0)
+        self.assertEqual(f.ran, ["open", "queue", "save"])
+
     def test_busy_fusion_is_not_touched(self):
         f = FakeFusion(start_cmd="SketchCreate")
         self.assertEqual(go(f)[0], 1)
