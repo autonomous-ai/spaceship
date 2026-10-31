@@ -142,6 +142,22 @@ def test_p04_rollup_lines():
     assert any(n.startswith("Fixed glass") for n in names) and any("perimeters" in n for n in names), names   # D-82, D-85
 
 
+def test_cad_masses_from_main():
+    """The roll-up reads WALL L1's merged parts list (PR #41): its panel and cassette lines are the CAD's sums, marked as CAD
+    on main, and every line has a basis; the swap table lists each one."""
+    import rollup
+    w = rollup.read_parts_list(rollup.WALL_L1_LIST)
+    by = {r["pn"]: r["kg"] for r in w if r["pn"]}
+    rows = {r[1]: r for r in rollup.lines()}
+    l1 = rows["L1 and R1, lower side outer panels (R1 is L1's mirror)"]
+    assert abs(l1[3] - sum(by[k] for k in ("211101", "211301", "211501", "108002"))) < 1e-9, l1
+    cs = next(r for k, r in rows.items() if k.startswith("Wall cassette, side, lower"))
+    assert abs(cs[3] - (by["511101"] + by["511301"] + by["848011"] + by["848012"])) < 1e-9, cs
+    assert rollup.basis(l1) == rollup.basis(cs) == "CAD, main"
+    assert all(rollup.basis(r) in ("CAD, main", "CAD, open PR", "estimate") for r in rows.values())
+    assert len(rollup.cad_swaps()) == 2
+
+
 def test_rollup_items_the_packing_plan_reads():
     """The packing plan (v2/07-Packaging/pack.py) takes, for each of its handles, the one roll-up line whose item text
     starts with it (PR #59), so each handle must match exactly one line here: keep the starts of the item texts fixed and
