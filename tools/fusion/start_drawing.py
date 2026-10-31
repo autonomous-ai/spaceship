@@ -31,7 +31,7 @@ first, as a person would press it; Fusion's own cancel (a read-only script
 that starts Fusion's Select command) only when Fusion says its Create Drawing
 or Base View dialog is open but accessibility has seen no dialog on two polls
 in a row, never while Fusion is busy; then the unsaved drawing it made is
-closed. Nothing ends a command by script any more: terminateActiveCommand()
+closed, and the design if this command opened it (never with unsaved changes). Nothing ends a command by script any more: terminateActiveCommand()
 on an open Create Drawing killed Fusion on 2026-10-31.
 
 Exit 0 = saved, 1 = failed or refused (Fusion left idle), 2 = Fusion not
@@ -528,10 +528,22 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     log((out or "").strip())
     status["saved"] = True
     if opened_here:                      # leave Fusion as we found it
-        ok, out = steps.run(rs.doc_script("close", design, folder))
-        log((out or "").strip() if ok else "couldn't close %s: %s" % (design, out))
+        close_design(steps, design, folder, status, log)
     if steps.dialogs():                  # a late dialog must not greet the next run
         raise StartError("a dialog is still open after saving")
+
+
+def close_design(steps, design, folder, status, log):
+    """Close the design this command opened, once. Never with unsaved changes:
+    the runner's close step refuses those (no discard), so they stay open."""
+    if not status.get("opened_here") or status.get("design_closed"):
+        return
+    status["design_closed"] = True
+    try:
+        ok, out = steps.run(rs.doc_script("close", design, folder))
+        log((out or "").strip() if ok else "left %s open: %s" % (design, (out or "").strip()[:200]))
+    except (StartError, rs.McpError) as e:
+        log("couldn't close %s: %s" % (design, e))
 
 
 def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=None):
@@ -546,6 +558,8 @@ def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=N
             "stopped" if isinstance(e, KeyboardInterrupt) else "FAILED"
         print("start_drawing: %s: %s" % (kind, e), file=sys.stderr)
         if not status.get("queued"):
+            if not isinstance(e, rs.McpError):
+                close_design(steps, design, folder, status, log)   # Reviewer 5, P3 on #101
             return 2 if isinstance(e, rs.McpError) else 1
         idle = cancel_dialogs(steps, log)
         if not idle:
@@ -559,6 +573,7 @@ def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=N
                     log(out.strip())
             except (StartError, rs.McpError) as e2:
                 print("start_drawing: couldn't close the unsaved drawing: %s" % e2, file=sys.stderr)
+        close_design(steps, design, folder, status, log)          # Reviewer 5, P3 on #101
         return 2 if isinstance(e, rs.McpError) else 1
 
 

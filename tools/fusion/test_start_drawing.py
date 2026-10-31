@@ -58,7 +58,7 @@ class FakeFusion:
         self.folder_checks = 0
         self.queued = False
         self.pending = []          # (polls left, action)
-        self.ran, self.clicks, self.saved, self.cancels = [], [], [], 0
+        self.ran, self.clicks, self.saved, self.cancels, self.closes = [], [], [], 0, []
 
     def _tick(self):
         nxt = []
@@ -85,6 +85,7 @@ class FakeFusion:
             mode = "close" if "'mode': 'close'" in source else "open"
             self.ran.append(mode)
             if mode == "close":
+                self.closes.append(source)
                 return True, "run_script: closed 'X'"
             return True, self.open_warning + ("run_script: opened 'X' (version 1)" if self.opened
                                               else "run_script: activated 'X'")
@@ -203,6 +204,24 @@ class SequenceTests(unittest.TestCase):
         self.assertIn("'A1' + \"ISOSheetSize\"", f.saved[0])
         self.assertIn("(841, 594)", f.saved[0])                 # read back and checked
         self.assertTrue(any("pressed Cancel in Base View" in m for m in logs))
+
+    def test_a_failed_start_closes_the_design_it_opened_without_discarding(self):
+        # Reviewer 5, P3 on #101: the cleanup closed the unsaved drawing but not the design
+        f = FakeFusion(opened=True, ok_found=False)              # fails after the dialog was queued
+        code, _logs = go(f)
+        self.assertEqual(code, 1)
+        self.assertEqual(f.ran, ["open", "queue", "close-unsaved", "close"])
+        self.assertIn("'discard': False", f.closes[-1])          # unsaved changes are never dropped
+
+    def test_a_start_refused_after_opening_closes_the_design_too(self):
+        f = FakeFusion(opened=True, modified=True)               # the queue step refuses
+        self.assertEqual(go(f)[0], 1)
+        self.assertEqual(f.ran, ["open", "queue", "close"])
+
+    def test_a_design_that_was_already_open_is_left_open(self):
+        f = FakeFusion(opened=False, ok_found=False)
+        go(f)
+        self.assertNotIn("close", f.ran)
 
     def test_a_design_opened_after_a_runner_warning_is_still_closed_again(self):
         # live 2026-10-31: the open step printed "1 entry ... could not be read;
