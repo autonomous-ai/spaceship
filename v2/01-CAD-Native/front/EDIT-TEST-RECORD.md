@@ -4,27 +4,15 @@ Engineering guideline section 4.4. Each test opens the exported .f3d as a new un
 
 ## 360001 FRONT - DOOR UNIT, P01
 
-Run 2026-10-31 on Mac 1, Fusion 2706.1.17:
-
-```sh
-python3 tools/fusion/run_script.py v2/01-CAD-Native/front/edit_test_front.py \
-    --arg anchors=v2/01-CAD-Native/front/360001_P01_FRONT-DOOR-UNIT_ANCHORS.json \
-    --arg "edits=pod_w=2600 mm;fr_dz=12 mm;door_xbr=1474 mm"
-```
-
-The three edits are skeleton parameters: the pod 100 mm wider, the front 5 mm higher (door bottom Z 110, so the strip grows to 83 mm), and the door 10 mm wider at the bottom.
-
-Copy of `v2/01-CAD-Native/front/360001_P01_FRONT-DOOR-UNIT_CAD.f3d`, opened as a new unsaved document and closed without saving; 29 anchors.
+In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a copy of the exported f3d opened as a new unsaved document and closed without saving, skeleton P04 v4:
 
 | State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
 |---|---|---|---|---|---|
-| Before | 1346.0 x 148.8 x 2089.0 | 0 | 0 | none | 0.020 |
-| pod_w 2600 mm; fr_dz 12 mm; door_xbr 1474 mm | 1356.0 x 148.8 x 2094.0 | 0 | 0 | none | 0.020 |
-| Reverted | 1346.0 x 148.8 x 2089.0 | 0 | 0 | none | 0.020 |
+| Before | 1348.1 x 148.8 x 2095.5 | 0 | 0 | none | 0.020 |
+| pod_w 2600 mm; fr_dz 12 mm; door_xbr 1474 mm | 1358.1 x 148.8 x 2100.5 | 0 | 0 | none | 0.020 |
+| Reverted | 1348.1 x 148.8 x 2095.5 | 0 | 0 | none | 0.020 |
 
-**RESULT: PASS (CAD check on a copy)**
-
-The first run of this test failed, and that is why the sketches now measure from a reference point: the lock space's left side was dimensioned from the pod's centre line with abs(), and the edit moved it from X +3.2 to X -41.2, across the centre line, so the corner flipped to +41.2. Every FRONT sketch now dimensions its corners from a point at -`sk_ref` (5000 mm) on both axes, so a distance can't change sign.
+RESULT: PASS. 31 anchors (leaf, kick strip, seals, hinge, strike and pull spaces against their expressions) follow the three skeleton edits at once and return exactly. An earlier run of this test caught a real fault (a dimension that flipped side across the centre line); every FRONT sketch now measures from a far reference point.
 
 ## 360002 FRONT - FIXED GLASS UNIT, P01
 

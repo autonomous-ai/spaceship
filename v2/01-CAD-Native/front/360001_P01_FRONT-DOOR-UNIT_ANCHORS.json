@@ -20,7 +20,7 @@
   {
    "component": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED",
    "index": 5,
-   "expression": "door_zt"
+   "expression": "leaf_zt"
   },
   {
    "component": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED",
@@ -123,14 +123,24 @@
    "expression": "kick_x0 + hinge_clamp_w"
   },
   {
-   "component": "368102 FRONT - DOOR LOCK - HOLD",
-   "index": 3,
-   "expression": "lock_x1"
+   "component": "368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10",
+   "index": 5,
+   "expression": "leaf_zt + st_top"
   },
   {
-   "component": "368102 FRONT - DOOR LOCK - HOLD",
+   "component": "368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10",
    "index": 2,
-   "expression": "lock_zc - lock_h / 2"
+   "expression": "leaf_zt - st_h"
+  },
+  {
+   "component": "368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD",
+   "index": 2,
+   "expression": "door_zb"
+  },
+  {
+   "component": "368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD",
+   "index": 5,
+   "expression": "leaf_zt"
   },
   {
    "component": "368103 FRONT - DOOR PULL PAIR - HOLD",
