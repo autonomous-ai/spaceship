@@ -94,6 +94,10 @@ CEILING_PARAMS = [
     ("cj_spig_x0", "close_gap / 2 + spigot_inset", "mm", "calculation",
      "R-J13: spigots 100 in from each frame end. The round hole sits at the centre-seam end, since ST-04 runs from the round hole to the closing face (+/-0.1); the slot at the side end lets the side bolts pull C1 and C2 onto their stops"),
     ("cj_spig_x1", "close_gap / 2 + half_fw - spigot_inset", "mm", "calculation", "R-J13: the slot 100 in from the frame's side end"),
+    # ---- soffit hangers (D-87: the soffit hangs on tool-free hooks; PROPOSED by CEILING/AIR 2026-11-01)
+    ("x1_ov", "16 mm", "mm", "assumption",
+     "cross member X1 sits this far over the soffit's back edge, so the soffit's back hangers have a member above them (D-87); its back face stays over the cassette for the clips"),
+    ("hang_x", "inner_w / 4", "mm", "calculation", "soffit hanger studs at the middle of each ceiling half's front member and X1 (clear of the clips, the catches and the roof slot)"),
     # ---- roof exhaust slot in C2 only (D-60, D-61; PM ruling 2026-10-31: the two skins are two parts)
     ("slot_x0", "872 mm", "mm", "source", "air report 7e (sized on skeleton P04): roof slot X 872 to 1157, over the soffit's exhaust fan box"),
     ("slot_w", "285 mm", "mm", "source", "air report 7e: roof slot 285 x 294"),
@@ -203,7 +207,7 @@ HARDWARE = {
                "PI", "pc", "0", "cj_pin_n", 0.0079,
                "calculation: head 10 x 6 less the socket, shank 6 x 25 at 85% for the thread, steel 7850 kg/m3"),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6",
-               "PI", "pc", "cj_back_n", "cj_back_n + cj_pin_n", 0.0023,
+               "PI", "pc", "cj_back_n + 2", "cj_back_n + cj_pin_n + 2", 0.0023,
                "calculation: body 9.5 x 14.86 with an M6 bore and a 12.96 x 0.76 head (SHX sizes), 2700 kg/m3"),
     "washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", "Long đen to M6 inox",
                "PI", "pc", "n_ceil_side_bolt", "n_ceil_side_bolt + cj_pin_n", 0.0028,
@@ -331,9 +335,17 @@ def frame_members(half):
     out.append(("FRONT", "FRONT MEMBER", "x", inner + (YW, YW + " + tube_w", ZF0, ZF1)))
     out.append(("BACK", "BACK MEMBER 40X40", "x", xr(half, "0 mm", "half_fw") + (yb0, YB, ZF0, ZF1)))
     for k in range(1, 4):
-        y0 = "%s + %d * fr_pitch" % (YW, k)
+        y0 = cross_y0(k)
         out.append(("X%d" % k, "CROSS MEMBER %d" % k, "x", inner + (y0, y0 + " + tube_w", ZF0, ZF1)))
     return out
+
+
+def cross_y0(k):
+    """Front face Y of cross member k. X1 sits x1_ov over the soffit's back edge (D-87 hangers);
+    X2 and X3 keep the fr_pitch spacing from the front member."""
+    if k == 1:
+        return "%s + cs_front - x1_ov" % YW
+    return "%s + %d * fr_pitch" % (YW, k)
 
 
 def joint_holes(half):
@@ -363,6 +375,9 @@ def joint_holes(half):
     rows.append(("BACK RIVNUT", "BACK", "bottom", (bx0, "cj_back_y", ZF0), "hole_rvn", "cj_back_n", "cj_back_pitch", "x"))
     rows.append(("BACK SPIGOT ROUND", "BACK", "bottom", ("%scj_spig_x0" % ("-" if s < 0 else ""), "cj_back_y", ZF0),
                  "spig_hole", "1", "0 mm", "x"))
+    hx = "%shang_x" % ("-" if s < 0 else "")
+    rows.append(("SOFFIT HANGER FRONT", "FRONT", "bottom", (hx, "%s + tube_w / 2" % YW, ZF0), "hole_rvn", "1", "0 mm", "x"))
+    rows.append(("SOFFIT HANGER X1", "X1", "bottom", (hx, "%s + tube_w / 2" % cross_y0(1), ZF0), "hole_rvn", "1", "0 mm", "x"))
     return rows
 
 
@@ -415,6 +430,8 @@ def member_front_cs(k):
     cs_front behind the front plane YW (D-60 soffit)."""
     if k == 4:
         return "(wall_depth - back_w - cs_front)"
+    if k == 1:
+        return "(-x1_ov)"
     return "(%d * fr_pitch - cs_front)" % k
 
 
@@ -481,7 +498,7 @@ def sprinkler_points():
     """Two candidate zones for a later sprinkler drop (REQ-US-01), one each side so the
     cassette stays one part: in the middle of the outer felt spans (X' +-cs_w / 3) and of the
     first frame bay over the cassette, clear of ribs, clips and members."""
-    y = "%s + (fr_pitch - tube_w) / 2" % member_back_cs(1)
+    y = "(%s + %s) / 2" % (member_back_cs(1), member_front_cs(2))
     return [("-cs_w / 3", y), ("cs_w / 3", y)]
 
 
