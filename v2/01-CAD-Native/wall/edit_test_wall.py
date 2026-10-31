@@ -111,7 +111,7 @@ def record(design, rel):
         mids = sorted(v for k, v in after.items() if "STILE - MID" in k)
         bays = [v for k, v in after.items() if "FILL" in k]
         skin = [v for k, v in after.items() if "SKIN" in k][0]
-        n_mid = math.ceil((after_p["wall_depth"] - 3 - 20) / 300.0) - 1
+        n_mid = math.ceil((after_p["wall_depth"] - 3 - 10 - 20) / 300.0) - 1
         checks += [
             ("rails run wall_depth - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - 3)) < 0.01 for r in rails)),
             ("frame starts at the decor back plate (Y = 850 - wall_depth)", all(abs(r[1] - y0) < 0.01 for r in rails)),

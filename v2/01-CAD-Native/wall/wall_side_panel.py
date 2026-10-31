@@ -121,11 +121,28 @@ WALL_PARAMS = [
     ("frm_len", "pnl_len - skin_t", "mm", "calculation", "the frame stops at the inside of the skin's back return"),
     ("frm_h", "pnl_h", "mm", "assumption",
      "the frame fills the skeleton envelope height; seam and base gasket gaps are set by the joint register (HOLD)"),
-    ("stile_n_mid", "ceil((frm_len - tube_w) / stile_pitch_max) - 1", "", "calculation",
-     "intermediate stiles so that no bay pitch exceeds stile_pitch_max"),
-    ("stile_pitch", "(frm_len - tube_w) / (stile_n_mid + 1)", "mm", "calculation", "equal stile pitch, centre to centre"),
+    ("corner_w", "40 mm", "mm", "confirmed",
+     "the side panel's back member is 40 x 40 x 1.2 (PM ruling on the joints register, item 3, 2026-10-31; "
+     "register F2, FR-06): the back corner joint needs a 37+ mm overlap for the rivnut and the bolt"),
+    ("stile_n_mid", "ceil((frm_len - tube_w / 2 - corner_w / 2) / stile_pitch_max) - 1", "", "calculation",
+     "intermediate stiles so that no stile pitch (centre to centre) exceeds stile_pitch_max"),
+    ("stile_pitch", "(frm_len - tube_w / 2 - corner_w / 2) / (stile_n_mid + 1)", "mm", "calculation",
+     "equal stile pitch, centre to centre, from the front stile to the 40 mm back stile"),
     ("stile_len", "frm_h - 2 * tube_w", "mm", "calculation", "stiles fit between the full-length rails (butt joints)"),
     ("fill_t", "tube_d", "mm", "calculation", "40 mm PET fill fills the frame depth (D-34; layout study 40 mm)"),
+    # site joints, joints register V2-ENG-JNT-01 P01 (ce1f415): M6 x 20 ISO 4762 captive bolts into Sherex
+    # CAH3-610-4.2 rivnuts, bolts and corner members DECIDED by the PM (2026-10-31); positions PROPOSED there
+    ("bolt_d", "6.6 mm", "mm", "assumption", "register FR-02: M6 clearance (ISO 273 medium, unverified there)"),
+    ("access_d", "11 mm", "mm", "calculation", "register FR-03: passes the M6 ISO 4762 head (10 max) and the 5 mm key"),
+    ("rivnut_d", "9.53 mm", "mm", "source", "Sherex CAH3-610-4.2 hole 9.53 +0.10 (HW-SEL A5; register H-03)"),
+    ("spigot_d", "8.5 mm", "mm", "assumption", "register FR-05: hole for the 8 mm locating spigot H-05"),
+    ("spigot_slot", "14 mm", "mm", "assumption", "register FR-05: slot length for the second spigot"),
+    ("spigot_edge", "100 mm", "mm", "assumption", "register FR-04: spigots about 100 from each end of the joint"),
+    ("jnt_edge", "100 mm", "mm", "assumption", "register J-WALL-02, J-FRONT-01: end bolts 100 from each end"),
+    ("n_side_jnt", "3", "", "source", "register J-WALL-02, J-FRONT-01: 3 bolts per panel height"),
+    ("side_jnt_pitch", "(pnl_h - 2 * jnt_edge) / (n_side_jnt - 1)", "mm", "calculation",
+     "equal pitch of the 3 bolts up the corner and decor joints"),
+    ("pocket_w", "60 mm", "mm", "assumption", "register FR-10: fill left out 60 x 60 next to each bolt for the key"),
     # lining cassette
     ("felt_t", "9 mm", "mm", "source", "plan VT03-PET 9 mm PET felt; HW-SEL A3; D-31 (the factory's felt)"),
     ("tray_t", "0.5 mm", "mm", "confirmed", "D-37: galvanised steel tray 0.5 mm"),
@@ -319,6 +336,91 @@ def pattern_y(comp, bodies, count_expr, pitch_expr, label):
     return pat
 
 
+AXES = {"x": (1, 0, 0), "y": (0, 1, 0), "z": (0, 0, 1)}
+
+
+def origin_plane(comp, axis):
+    """The origin plane normal to a model axis."""
+    return {"x": comp.yZConstructionPlane, "y": comp.xZConstructionPlane, "z": comp.xYConstructionPlane}[axis]
+
+
+def plane_at(design, comp, axis, expr, label):
+    """Construction plane normal to `axis` at coordinate `expr`. An offset runs along the origin plane's
+    normal, which need not point along +axis (Fusion's XZ plane), so the sign follows that normal."""
+    base = origin_plane(comp, axis)
+    if abs(ev(design, expr)) < 1e-9:
+        return base
+    n = base.geometry.normal
+    sign = 1 if {"x": n.x, "y": n.y, "z": n.z}[axis] > 0 else -1
+    pin = comp.constructionPlanes.createInput()
+    pin.setByOffset(base, vi(expr if sign > 0 else "-(%s)" % expr))
+    pl = comp.constructionPlanes.add(pin)
+    pl.name = "PLANE - %s" % label
+    o = pl.geometry.origin
+    got = {"x": o.x, "y": o.y, "z": o.z}[axis] * 10.0
+    if abs(got - ev(design, expr)) > 0.01:
+        raise RuntimeError("plane %s landed at %s = %.2f, not %.2f" % (label, axis, got, ev(design, expr)))
+    return pl
+
+
+def sketch_axis_of(sk, model_axis):
+    """Which sketch axis ('x' or 'y') a model axis maps to on this sketch."""
+    o = sk.modelToSketchSpace(adsk.core.Point3D.create(0, 0, 0))
+    e = sk.modelToSketchSpace(adsk.core.Point3D.create(*AXES[model_axis]))
+    return "x" if abs(e.x - o.x) > abs(e.y - o.y) else "y"
+
+
+def hole(design, comp, body, axis, plane_expr, into, pos, dia, depth, label):
+    """A simple hole feature on a plane normal to `axis` at `plane_expr`, drilled `into` (+1 or -1 along
+    the axis) for `depth`. pos: {model axis: coordinate expression} for the two in-plane axes. The centre
+    point is dimensioned from the sketch origin by those expressions, so the sketch is fully constrained."""
+    pl = plane_at(design, comp, axis, plane_expr, label)
+    sk = comp.sketches.add(pl)
+    sk.name = "HOLE CENTRE - %s" % label
+    c = {axis: ev(design, plane_expr)}
+    for a, e in pos.items():
+        c[a] = ev(design, e)
+    pt = sk.sketchPoints.add(sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM)))
+    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+    for a, e in pos.items():
+        sa = sketch_axis_of(sk, a)
+        if abs(ev(design, e)) < 1e-6:
+            (sk.geometricConstraints.addVerticalPoints if sa == "x" else
+             sk.geometricConstraints.addHorizontalPoints)(pt, sk.originPoint)
+        else:
+            g = pt.geometry
+            tp = adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0)
+            sk.sketchDimensions.addDistanceDimension(sk.originPoint, pt, H if sa == "x" else V,
+                                                     tp).parameter.expression = "abs(%s)" % e
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    hin = comp.features.holeFeatures.createSimpleInput(vi(dia))
+    hin.setPositionBySketchPoint(pt)
+    hin.setDistanceExtent(vi(depth))
+    n = pl.geometry.normal
+    if into * {"x": n.x, "y": n.y, "z": n.z}[axis] > 0:
+        hin.isDefaultDirection = False       # a hole runs against the plane normal unless flipped
+    hin.participantBodies = [body]
+    h = comp.features.holeFeatures.add(hin)
+    h.name = "HOLE - %s" % label
+    return h
+
+
+def pattern_feat(comp, feats, axis, count_expr, pitch_expr, label):
+    coll = adsk.core.ObjectCollection.create()
+    for f in feats:
+        coll.add(f)
+    ax = {"x": comp.xConstructionAxis, "y": comp.yConstructionAxis, "z": comp.zConstructionAxis}[axis]
+    pin = comp.features.rectangularPatternFeatures.createInput(
+        coll, ax, vi(count_expr), vi(pitch_expr), adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
+    other = comp.zConstructionAxis if axis != "z" else comp.xConstructionAxis
+    pin.setDirectionTwo(other, vi("1"), vi("1 mm"))      # see pattern_y
+    pat = comp.features.rectangularPatternFeatures.add(pin)
+    pat.name = "PATTERN - %s" % label
+    return pat
+
+
 def name_by_y(comp, known, first, prefix):
     """Name the pattern's copies and the original by their order along +Y: PREFIX 1..n.
     Fusion API objects compare with == but are not hashable, so `known` is a list."""
@@ -430,7 +532,7 @@ def build_panel(design, root):
         return out
     zs = ("(%s) + tube_w" % Z0, "(%s) - tube_w" % Z1)
     out["STILE - FRONT"] = tube(design, frame, "STILE - FRONT", xf, (Y_FRONT, "(%s) + tube_w" % Y_FRONT), zs, "z")
-    out["STILE - BACK"] = tube(design, frame, "STILE - BACK", xf, ("(%s) - tube_w" % Y_FRAME_BACK, Y_FRAME_BACK),
+    out["STILE - BACK"] = tube(design, frame, "STILE - BACK", xf, ("(%s) - corner_w" % Y_FRAME_BACK, Y_FRAME_BACK),
                                zs, "z")
     mid = tube(design, frame, "STILE - MID 1", xf,
                ("(%s) + stile_pitch" % Y_FRONT, "(%s) + stile_pitch + tube_w" % Y_FRONT), zs, "z")
@@ -452,18 +554,86 @@ def build_panel(design, root):
     print("step 4: skin", size(bbox(plate)))
     if STOP_AFTER <= 4:
         return out
+    # fill bays: the seed bay gets its bolt pocket (FR-10) before it is patterned, so every copy carries
+    # its pocket whatever the stile count; the last bay (against the 40 mm back stile) is its own box
+    y_bolt1 = "(%s) + tube_w / 2 + stile_pitch / 2" % Y_FRONT   # bolts sit mid-pitch between stile centres
+    z_rail_top = "(%s) + tube_w" % Z0
+
+    def pocket(body, yc, label):
+        box(design, fill, label, xf, ("(%s) - pocket_w / 2" % yc, "(%s) + pocket_w / 2" % yc),
+            (z_rail_top, "(%s) + pocket_w" % z_rail_top), "cut", body)
     bay = box(design, fill, "FILL BAY 1", xf, ("(%s) + tube_w" % Y_FRONT, "(%s) + stile_pitch" % Y_FRONT),
               zs).bodies.item(0)
     bay.name = "FILL - BAY 1"
     out[bay.name] = bay
-    pattern_y(fill, [bay], "stile_n_mid + 1", "stile_pitch", "FILL BAYS")
+    pocket(bay, y_bolt1, "FILL POCKET BOTTOM BOLT 1")
+    pattern_y(fill, [bay], "stile_n_mid", "stile_pitch", "FILL BAYS")
     out.update(name_by_y(fill, list(out.values()), bay, "FILL - BAY"))
-    print("step 5: fill, %d bays" % sum(1 for k in out if k.startswith("FILL")))
+    last = box(design, fill, "FILL BAY LAST", xf, ("(%s) + stile_n_mid * stile_pitch + tube_w" % Y_FRONT,
+                                                    "(%s) - corner_w" % Y_FRAME_BACK), zs).bodies.item(0)
+    last.name = "FILL - BAY %d" % (sum(1 for k in out if k.startswith("FILL")) + 1)
+    out[last.name] = last
+    pocket(last, "(%s) + stile_n_mid * stile_pitch" % y_bolt1, "FILL POCKET BOTTOM BOLT LAST")
+    # pockets beside the decor bolts, in the front bay only (a pattern of the cut on that one body)
+    z_j1 = "(%s) + jnt_edge" % Z0
+    dp = box(design, fill, "FILL POCKET DECOR BOLT 1", xf, ("(%s) + tube_w" % Y_FRONT, "(%s) + tube_w + pocket_w" % Y_FRONT),
+             ("(%s) - pocket_w / 2" % z_j1, "(%s) + pocket_w / 2" % z_j1), "cut", bay)
+    pattern_feat(fill, [dp], "z", "n_side_jnt", "side_jnt_pitch", "FILL POCKETS DECOR BOLTS")
+    print("step 5: fill, %d bays, pockets at every bolt this panel drives" % sum(1 for k in out if k.startswith("FILL")))
+    if STOP_AFTER <= 5:
+        return out
+    joint_features(design, frame, fill, out)
     set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
                  "ALUMINIUM TUBE (alloy HOLD)")
     set_material(design, [plate], "skin", "ACP 3 MM EV3038")
     set_material(design, [b for k, b in out.items() if k.startswith("FILL")], "fill", "PET FILL 40 MM")
     return out
+
+
+def joint_features(design, frame, fill, out):
+    """Site joint holes per the joints register (V2-ENG-JNT-01 P01, ce1f415). The fill pockets are in step 5."""
+    xc = sx("pod_w / 2 - skin_t - tube_d / 2")              # centre line of the frame depth
+    y_bay1 = "(%s) + tube_w / 2 + stile_pitch / 2" % Y_FRONT  # first bolt: mid-pitch of the first bay
+    n_bays = "stile_n_mid + 1"
+    t = "tube_t"
+    bot, top = out["RAIL - BOTTOM"], out["RAIL - TOP"]
+    front, back = out["STILE - FRONT"], out["STILE - BACK"]
+    zb0, zb1 = Z0, "(%s) + tube_w" % Z0                      # bottom rail bottom and top faces
+    zt1 = Z1                                                 # top rail top face
+    # bottom rail, bolt side of J-BASE-01 (lower) or J-WALL-01 (upper): FR-02 + FR-03 at each bay
+    a = hole(design, frame, bot, "z", zb0, +1, {"x": xc, "y": y_bay1}, "bolt_d", t, "BOTTOM RAIL BOLT CLEARANCE 1")
+    b = hole(design, frame, bot, "z", zb1, -1, {"x": xc, "y": y_bay1}, "access_d", t, "BOTTOM RAIL KEY ACCESS 1")
+    pattern_feat(frame, [a, b], "y", n_bays, "stile_pitch", "BOTTOM RAIL BOLT HOLES")
+    # bottom rail locating: round spigot hole at the front end, slot along X at the back-corner end (FR-05)
+    hole(design, frame, bot, "z", zb0, +1, {"x": xc, "y": "(%s) + spigot_edge" % Y_FRONT}, "spigot_d", t,
+         "BOTTOM RAIL SPIGOT ROUND")
+    ys = "(%s) - spigot_edge" % Y_FRAME_BACK
+    half = "(spigot_slot - spigot_d) / 2"
+    box(design, frame, "BOTTOM RAIL SPIGOT SLOT", ("(%s) - %s" % (xc, half), "(%s) + %s" % (xc, half)),
+        ("(%s) - spigot_d / 2" % ys, "(%s) + spigot_d / 2" % ys), (zb0, "(%s) + %s" % (zb0, t)), "cut", bot)
+    for i, sgn in enumerate(("-", "+")):
+        hole(design, frame, bot, "z", zb0, +1, {"x": "(%s) %s %s" % (xc, sgn, half), "y": ys}, "spigot_d", t,
+             "BOTTOM RAIL SPIGOT SLOT END %d" % (i + 1))
+    if ROW == 1:
+        # top rail, nut side of J-WALL-01: rivnut at each bay (FR-01) and 2 spigot rivnuts (FR-04)
+        r = hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": y_bay1}, "rivnut_d", t, "TOP RAIL RIVNUT 1")
+        pattern_feat(frame, [r], "y", n_bays, "stile_pitch", "TOP RAIL RIVNUTS")
+        hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": "(%s) + spigot_edge" % Y_FRONT}, "rivnut_d", t,
+             "TOP RAIL SPIGOT RIVNUT FRONT")
+        hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": "(%s) - spigot_edge" % Y_FRAME_BACK}, "rivnut_d", t,
+             "TOP RAIL SPIGOT RIVNUT BACK")
+    z_j1 = "(%s) + jnt_edge" % Z0
+    # front stile, bolt side of J-FRONT-01 (decor block): FR-02 in the front wall, FR-03 in the back wall
+    a = hole(design, frame, front, "y", Y_FRONT, +1, {"x": xc, "z": z_j1}, "bolt_d", t, "FRONT STILE BOLT CLEARANCE 1")
+    b = hole(design, frame, front, "y", "(%s) + tube_w" % Y_FRONT, -1, {"x": xc, "z": z_j1}, "access_d", t,
+             "FRONT STILE KEY ACCESS 1")
+    pattern_feat(frame, [a, b], "z", "n_side_jnt", "side_jnt_pitch", "FRONT STILE BOLT HOLES")
+    # 40 x 40 back stile, nut side of J-WALL-02 (back corner): rivnut in the room-side face (FR-01, FR-06)
+    r = hole(design, frame, back, "x", X_FRAME_IN, S, {"y": "(%s) - corner_w / 2" % Y_FRAME_BACK, "z": z_j1},
+             "rivnut_d", t, "BACK STILE CORNER RIVNUT 1")
+    pattern_feat(frame, [r], "z", "n_side_jnt", "side_jnt_pitch", "BACK STILE CORNER RIVNUTS")
+    holes = sum(c.features.holeFeatures.count for c in [frame])
+    print("step 6: joint features: %d hole features (before patterns)" % holes)
 
 
 def build_cassette(design, root):

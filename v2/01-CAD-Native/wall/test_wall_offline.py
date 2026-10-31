@@ -57,9 +57,11 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertEqual(v["tube_d"], 40)                # D-34: 20 x 40 x 1.2
         self.assertEqual(v["frm_len"], 1492)             # 1495 - 3 mm back return
         self.assertEqual(v["stile_n_mid"], 3)
-        self.assertAlmostEqual(v["stile_pitch"], 368.0)
+        self.assertAlmostEqual(v["stile_pitch"], 365.5)     # (1492 - 10 - 20) / 4, 40 mm back stile
+        self.assertEqual(v["corner_w"], 40)
         self.assertLessEqual(v["stile_pitch"], v["stile_pitch_max"])   # D-16, D-34
         self.assertEqual(v["stile_len"], 1105)
+        self.assertAlmostEqual(v["side_jnt_pitch"], 472.5)  # 3 bolts, 100 from each end of 1145
         self.assertEqual(v["tray_ret"], 25)              # D-17
         self.assertEqual(v["cass_len"], 1448)            # D-57
         self.assertEqual(v["cass_h"], 1145)
