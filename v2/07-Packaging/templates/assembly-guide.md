@@ -13,7 +13,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 2. **{{REG_BOLTS}} bolts of the joints register, each captive in its part: {{N16}} × {{PN16}} (M6 × 16) and {{N25}} × {{PN25}} (M6 × 25) pins and lock screws**, each with its {{PNW}} washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit ({{DOOR_KG}} kg) and the fixed glass ({{FIX_KG}} kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
-5. **Pictures:** the skeleton P04 renders below show where each part goes. Step pictures from the Fusion model follow as each part's CAD lands; Fusion runs wait while the Mac's screen is locked (PM, 2026-10-31).
+5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
 
 | Front, from the right and above | Back, from the left and above |
 |---|---|
