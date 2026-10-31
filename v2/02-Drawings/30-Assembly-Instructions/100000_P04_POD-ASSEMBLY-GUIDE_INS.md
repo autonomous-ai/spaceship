@@ -62,7 +62,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 2. Base band
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.1 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.1 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.1 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (0.9 kg), **2-15** BASE - SMALL PARTS CARTON (1.6 kg).
+- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.3 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.2 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.2 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.0 kg), **2-15** BASE - SMALL PARTS CARTON (1.6 kg).
 - **Fasteners:** the 6 corner keys hook in, no bolts (D-87; BASE design).
 - **Person A:** Sets the back band on its glides, then the left and right side bands, each hooked onto its corner key, then the front pieces: front-left under DL, the piece under the fixed glass, and the mesh intake piece under DR with DR's support and closing plate. Every piece locates itself on its key.
 - **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).
@@ -75,7 +75,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Fasteners:** none.
 - **Person A:** Lays floor panel F1 (left), its foam already bonded underneath (D-87), lapped edge up.
 - **Person B:** Lays F2 (right) into F1's lap, then sets the 13 mm threshold across the door opening, level with the floor.
-- **Check before the next step:** Floor flat, no gap at the lap; threshold seated; cover the floor with the packing film for the rest of the work.
+- **Check before the next step:** Floor flat, no gap at the lap; the base seal 118001 at the floor's edge closes the 4 mm gap to the band's inner face all round (D-86); threshold seated; cover the floor with the packing film for the rest of the work.
 
 ### Step 4. Lower back wall: B1, B2
 
@@ -156,7 +156,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Fasteners:** 4 fixings of DT to DL, DR and the ceiling (FRONT design; count assumed). Tool: the 5 mm hex key.
 - **Person A:** From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.
 - **Person B:** Fixes DT to DL, DR and the ceiling (4 fixings, FRONT design).
-- **Check before the next step:** The glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight; the door closes onto the 35 N magnetic catch in DT's underside (D-83).
+- **Check before the next step:** The glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight; the door's strike 368102 closes onto the 35 N magnetic catch 368007 in DT's underside (D-83).
 
 ### Step 13. Electrics, first fix (power off)
 
@@ -235,7 +235,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 12 min for 2 people.
 - **Parts:** none.
 - **Fasteners:** none.
-- **Person A:** Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the threshold land when closed.
+- **Person A:** Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch 368007 with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the threshold land when closed.
 - **Person B:** Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); cleans.
 - **Check before the next step:** Every check in the final check list is ticked.
 
@@ -326,14 +326,6 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 
 The fifth, moving the film peeling after the clock, was rejected so the number stays honest. Instead the film covers only the 15 faces that show (the 8 wall skins, the 3 decor blocks and both faces of both glass panes; none on the roof skins) and each panel has a quick-release tab. Peeling now takes about 0.9 minutes of the clock, against 3.3 for film on all 17 faces without tabs: 2.4 minutes saved. The layout study's 168 minutes didn't count film at all, so this is time the clock now carries honestly.
 
-Where the time goes now:
-
-1. Step 21 (Final check and film): 12 min.
-2. Step 1 (Unpack and set the parts down at their places): 12 min.
-3. Step 10 (Fixed glass, then the right decor block DR): 10 min.
-4. Step 8 (Ceiling: C1, C2): 10 min.
-5. Step 2 (Base band): 8 min.
-
 The 1-hour target needs more than this: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 82 register bolts alone take about 14 minutes of the clock. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
 
 Unit times used:
@@ -371,7 +363,7 @@ Unit times used:
 
 ## 7. Final check list (step 21)
 
-- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes and latches (lock HOLD, ISS-002); the drop seal comes down onto the threshold's land when closed.
+- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the threshold's land when closed.
 - [ ] Seals: with the pod lit and the room dark, no light at any seam, at the door's edges or at the fixed glass's edges.
 - [ ] Bolts: all 82 register bolts driven, the 10 pins snug, the 6 upper corner bolts tightened after the ceiling; the other fixings of section 5 done.
 - [ ] Linings: all 10 cassettes on their clips, both ceiling cassettes on their safety catches, none touching anything but its clips.
@@ -387,7 +379,7 @@ Power off at the mains first. Then the reverse order: ledge; ceiling linings (un
 
 | What | Owner | Status |
 |---|---|---|
-| Door hinges and lock: the set, how the door's hinge halves meet DL's, and the hinge fixings | FRONT | HOLD (D-46, ISS-002); the PM ruled the hinge halves that sit in DL ship in DL and the hinges must lift off |
+| Door hinges: the set, how the door's hinge halves meet DL's, the hinge fixings, and holding the door at its closed position (D-83 removed the lock) | FRONT | HOLD (D-46, ISS-002); the PM ruled the hinge halves that sit in DL ship in DL and the hinges must lift off |
 | Lining clips and the ceiling safety catch | WALL, CEILING, Hardware Engineer | HOLD (D-47, ISS-076) |
 | Bolt torque | Hardware Engineer | HOLD-01 until T06 (D-48) |
 | Captive bolt grommet | Joints Engineer | HOLD-02 |
