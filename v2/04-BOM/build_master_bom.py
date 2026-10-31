@@ -206,6 +206,10 @@ def team_of(path):
     return {"air": "CEILING (builds AIR, D-80)", "interior": "CEILING (builds INTERIOR, D-80)"}.get(folder, folder.upper())
 
 
+RESERVED_AIR = re.compile(r"\breserved air space\b", re.I)
+RESERVED_SEEN = []  # the rows build() skipped as reserved air spaces, for the report (D-105)
+
+
 def parse_parts_list(path, text, where):
     """One row per line of a team's parts list, normalised. Returns (rows, skipped_reason)."""
     if "CUT-LIST" in path.rsplit("/", 1)[-1].upper():
@@ -230,6 +234,10 @@ def parse_parts_list(path, text, where):
         if packing and family_of(first(r, "part_number")) != "91":
             continue  # a packing list names other teams' parts; only packaging items (family 91) are BOM lines here
         kind = first(r, "make_buy", "type", "kind", "class")
+        if RESERVED_AIR.search(kind):
+            # a reserved air space in another team's block: the part is AIR's, counted once in AIR's list (D-105)
+            RESERVED_SEEN.append((first(r, "part_number"), first(r, "name", "name_en"), path, where))
+            continue
         if kind.strip().lower() == "cut":
             continue  # a cut length of the made part above it (its own cut list), not a BOM line
         mb = first(r, "make_buy").lower() or make_buy_of(kind)
@@ -396,6 +404,7 @@ def norm(s):
 
 def build(sources):
     parts, skipped, register, reg_where = [], [], [], None
+    RESERVED_SEEN.clear()
     for path in sorted(sources):
         text, where = sources[path]
         if path == REGISTER:
@@ -628,6 +637,11 @@ def report(parts, skipped, register, reg_where, fails, missing, sources, refs):
             lines.append(f"**{team}**")
             lines += [f"- {m}" for m in missing[team]]
             lines.append("")
+    if RESERVED_SEEN:
+        lines += ["## Reserved air spaces, not counted (D-105)", "",
+                  "Rows typed reserved air space in another team's block: the part is AIR's and is counted once, in AIR's list.", ""]
+        lines += [f"- {pn} {name} in `{path}` @ {where}" for pn, name, path, where in RESERVED_SEEN]
+        lines.append("")
     lines += ["## Rules", "",
               "Fails: no part number; one number for two different items; no mass; a hardware item (any bought item except AIR 61, ELECTRICAL 71 and PACKAGING 91) with no joints-register row (D-63); a reserved old number (D-28).",
               "Listed as missing, without failing: no parts list yet, no quantity, make or buy not stated, a metal part with no finish (D-79, D-67), a made part with no process, a HOLD item, a register item with no part number.", ""]
