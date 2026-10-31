@@ -105,6 +105,16 @@ class Readers(unittest.TestCase):
         parts, skipped, _, fails, _ = run({cut: "part_number,name,size_mm,material\n611104,AIR - COLUMN FILL,30 x 180 x 2105,PET fill\n"})
         self.assertEqual(([s[0] for s in skipped], parts, fails), ([cut], [], []))
 
+    def test_a_reserved_air_space_is_not_counted(self):
+        dr = "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv"
+        text = (FRONT_HDR + "350003,FRONT - DECOR BLOCK ASSY - DR,Khối DR,assembly,-,1,34.5,calculation,DRAFT,x,\n"
+                "351403,FRONT - AIR TRANSITION - LOWER - DR,Ống,reserved air space (detail by AIR),-,1,1.5,assumption,DRAFT,x,\n"
+                "351402,FRONT - AIR INTAKE RISER - DR,Ống,reserved air space,-,1,,,DRAFT,x,\n")
+        parts, _, _, fails, _ = run({dr: text})
+        self.assertEqual([p["part_number"] for p in parts], ["350003"])
+        self.assertEqual(fails, [])
+        self.assertEqual([r[0] for r in bom.RESERVED_SEEN], ["351403", "351402"])
+
     def test_unit_quantity_multiplies_children(self):
         twice = FRONT_HDR + "360001,FRONT - DOOR UNIT,,assembly,-,2,50,calculation,DRAFT,x,\n361001,FRONT - DOOR LEAF,,made (cut),glass,1,43.9,calculation,DRAFT,x,\n"
         parts, _, _, _, _ = run({FRONT: twice})
