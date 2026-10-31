@@ -424,7 +424,9 @@ def check_cad_match(root, plists, step_products):
             continue
         for row in rows:
             pn = row["part_number"]
-            if pn_class(pn) in ("part", "assembly") and pn not in step_products:
+            stepped = any(os.path.basename(f).startswith(pn + "_") for info in step_products.values() for f in info["files"])
+            if pn_class(pn) in ("part", "assembly") and pn not in step_products and not stepped:   # a STEP named
+                # for it whose top carries another number is the top-part-number finding, not this one
                 fs.append(Finding("C06", "bom-not-in-cad", pn, "major",
                                   "%s %s is in %s but in no STEP file in v2/03-Manufacturing." % (pn, row["name"], r),
                                   "Export its STEP from the native CAD (same revision), or take it off the list.", r,
