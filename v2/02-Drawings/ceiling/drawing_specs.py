@@ -246,7 +246,7 @@ SPECS.update({
 })
 # D-89 (PM ruling 2026-11-01): identical or mirrored parts share one tabulated drawing; a plain
 # knife-cut felt or fill rectangle needs none when the cut list gives its size, material,
-# tolerance and part number (the felt 513201: 410000_P01_CEILING-FLAT-CUT-LIST_BOM.csv)
+# tolerance and part number (the felt 513201: its row in 410000_P01_CEILING-PARTS-LIST_BOM.csv)
 SPECS["skins"] = tabulated(skin_spec("skin_c2", "C2"), "411302_P01_CEILING-SKIN-C1-C2_DWG", ["411301"], [
     "TABULATED (D-89): drawn as 411302 C2. 411301 C1 is the same outline mirrored about X 0, with no roof slot.",
 ])
