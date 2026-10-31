@@ -256,9 +256,10 @@ def open_or_create(app, name):
         d = app.documents.open(found[0], True)
         d.activate()
         return d, "opened"
-    if unreadable:
+    if unreadable and ARGS.get("new_name") != "1":
         # PM ruling 2026-11-01: list the folder first and stop before creating anything if any
-        # entry can't be read (that entry could be this very design)
+        # entry can't be read (that entry could be this very design), unless the name has never
+        # been used (new_name=1: the author checked it never existed, so no duplicate can arise)
         raise RuntimeError("%d entries of %s can't be read, so %r isn't made" % (unreadable, FOLDER, name))
     if ARGS.get("create") != "1":
         # PM ruling 2026-11-01: no new designs until the runner's folder fix lands, since an
