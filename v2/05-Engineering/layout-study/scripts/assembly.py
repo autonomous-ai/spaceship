@@ -108,8 +108,10 @@ def sequence(split, m, parts, split_long, n_std, n_long):
     n, two, one = carry_place("F-D")
     b, c, tb = fix(("J-FRONT-01", "J-FRONT-03"))
     fill = sum(pt.qty for pt in parts if pt.pid == "F-DECOR-FILL")
+    sil = sum(pt.qty for pt in parts if pt.pid.startswith("A-SIL-"))
     steps.append(dict(name="Decor blocks (skins on, factory-made): " + ("PET fill pushed into each open back, then " if fill else "")
-                      + "left door post, right, then top", lifts=n, bolts=b, cams=c, two=two,
+                      + "left door post, right, then top" + (f"; then {sil} splitter silencers slid in from inside and the fans connected" if sil else ""),
+                      lifts=n + sil, bolts=b, cams=c, two=two + sil * 120,
                       one=one + tb + (3 * 30 if fill else 0),
                       access="Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips."))
     pre = m.get("prehung")

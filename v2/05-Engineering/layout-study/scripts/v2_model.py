@@ -295,8 +295,11 @@ def service_parts(m):
         parts = [Part("A-FAN", "AIR - CEILING FAN (Panasonic FV-15AUL1 per plan)", "Quạt thông gió", "AIR", (300, 300, 200), 2,
                       p("fan_kg"), "box", "unverified")]
     if m["vents"] and final:
-        parts.append(Part("A-SILENCER", "AIR - SILENCER BOX, SEPARATE (lined plenum 1.2 m)", "Hộp tiêu âm", "AIR", (1200, 250, 100), 2,
-                          p("silencer_final_kg"), "upright", "calculation"))
+        # splitter silencers that sit inside the decor blocks, shipped as their own parts (sizes assumed to fit the blocks)
+        parts.append(Part("A-SIL-DR", "AIR - SPLITTER SILENCER FOR THE RIGHT DECOR BLOCK (2 mm Al casing)", "Bộ tiêu âm khối phải", "AIR",
+                          (1100, 300, 160), 1, p("sil_right_kg"), "upright", "source", "slides into the mounted block from inside"))
+        parts.append(Part("A-SIL-DT", "AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing)", "Bộ tiêu âm khối trên", "AIR",
+                          (1000, 240, 160), 1, p("sil_top_kg"), "upright", "source", "slides into the mounted block from inside"))
     elif m["vents"]:
         parts.append(Part("A-SILENCER", "AIR - SILENCED VENT BOX", "Hộp tiêu âm cửa gió", "AIR", (450, 300, 120), 2,
                           p("silencer_kg"), "box", "assumption"))
@@ -304,7 +307,7 @@ def service_parts(m):
         parts.append(Part("K-SEALS", "KIT - DOOR EDGE SEALS, BASE SEAL, CABLE GROMMETS", "Gioăng cửa, gioăng đế", "BASE", (600, 300, 100), 1,
                           p("door_edge_seal_kg") + p("base_seal_kg") + p("grommet_kg"), "box", "source"))
         parts.append(Part("F-DECOR-FILL", "FRONT - PET FILL PIECES FOR THE DECOR BLOCKS (loose)", "Bông PET khối trang trí", "FRONT",
-                          (1200, 400, 300), 1, p("decor_fill_kg"), "box", "calculation",
+                          (1200, 400, 300), 1, decor_fill_kg(), "box", "calculation",
                           "ships loose: inside the right decor block it would make that block over 20 kg"))
     elec = 3 * p("plate_kg") + 2 * p("light_kg") + p("harness_kg")
     if m["sensor"]:
@@ -478,7 +481,7 @@ FINAL = dict(FAST, key="final", label="Spaceship decided build: light build, fas
 def final_outer_kg(w, h, depth, m, with_fill=True):
     """Outer panel: ACP 3 mm bonded to a 20 x depth aluminium frame at 400 mm, cavity filled with PET."""
     area = w * h * 1e-6
-    frame = frame_length_mm(w, h, p("stud_pitch_acp")) * 1e-3 * al_rhs(20, depth, p("t_al_20"))
+    frame = frame_length_mm(w, h, p("stud_pitch_acp")) * 1e-3 * al_rhs(20, depth, p("t_al_final"))
     fill = depth * 1e-3 * p("fill_pet_kgm3") if with_fill else 0.0
     return area * (p("acp3_kgm2") + p("bond_kgm2") + fill) + frame
 
@@ -521,3 +524,8 @@ def final_stack_parts(split, m, split_long=False):
         parts.append(Part("K-FIX", "KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS", "Bộ bu lông M6, gioăng", "WALL",
                           (400, 300, 150), 1, fixings, "box", "calculation", f"{nb} M6 bolts, {nc} cam or clip connectors"))
         return parts
+
+
+def decor_fill_kg():
+    """PET fill lining the decor blocks: area x 75 mm x fill density."""
+    return p("decor_fill_m2") * 0.075 * p("fill_pet_kgm3")

@@ -388,10 +388,20 @@ def build():
     N["final_long_kg"], N["final_long_h"] = f0(lp["gross"]), f0(lp["height"])
     sp = [pl for pl in fpals if pl["kind"] == "48x40"][0]
     N["final_std_kg"], N["final_std_h"] = f0(sp["gross"]), f0(sp["height"])
-    N["decor_fill_kg"] = f1(p("decor_fill_kg"))
-    with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
-        dr = [pt for pt in parts_for("plan", FINAL) if pt.pid == "F-DR"][0].kg
-    N["dr_with_fill"] = f1(dr + p("decor_fill_kg") * decor_skin_area("DR") / sum(decor_skin_area(b) for b in ("DL", "DR", "DT")))
+    from v2_model import decor_fill_kg  # noqa: E402
+    N["decor_fill_kg"] = f1(decor_fill_kg())
+    byid = {pt.pid: pt for pt in fparts}
+    dr, dt = byid["F-DR"].kg, byid["F-DT"].kg
+    N["dr_with_fill"] = f1(dr + decor_fill_kg() * decor_skin_area("DR") / sum(decor_skin_area(b) for b in ("DL", "DR", "DT")))
+    N["final_dr"], N["final_dt"] = f1(dr), f1(dt)
+    N["sil_right"], N["sil_top"] = f1(byid["A-SIL-DR"].kg), f1(byid["A-SIL-DT"].kg)
+    N["dr_plus_sil"], N["dt_plus_sil"] = f1(dr + byid["A-SIL-DR"].kg), f1(dt + byid["A-SIL-DT"].kg)
+    N["winback_frames"] = f1(-gap(t_al_final=1.5))
+    N["winback_fill"] = f1(-gap(fill_pet_kgm3=32))
+    N["hw_398_total"] = f0(p("hw_398_total"))
+    N["fan_final_kg"] = f1(p("fan_final_kg"))
+    N["without_gap_items"] = f0(base_total - gap(fan_final_kg=p("fan_kg"), leaf_clip_kgm2=0.0))
+    N["tray04_total"] = f0(base_total - gap(tray_t=0.4))
     with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
         cf = parts_for("plan", variant(FINAL, ceil_fill_on_cassette=False))
     N["ceil_outer_with_fill"] = f1([pt for pt in cf if pt.pid == "C-HALF"][0].kg)

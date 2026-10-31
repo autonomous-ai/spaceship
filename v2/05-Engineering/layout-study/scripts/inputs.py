@@ -32,6 +32,7 @@ SOURCES = {
     "S22": ("PM ruling relayed in the layout chat, 2026-10-31: front is 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look); the sound study puts the pod at about 400 kg and 23.8 dB with 40 mm ceiling frames and separate silencer boxes; the door is handled by two people with suction lifters", "layout conversation, PM message of 2026-10-31"),
     "S23": ("Alcorest outdoor ACP, colour EV3038 Dark Yellow (the plan's VT01), 3 mm with 0.21 mm skins: maker's catalogue gives skins, not kg/m2; the sound study calculates 3.5 kg/m2 from the skin spec (selection.md VT01). PM ruling 2026-10-31: use 3.5", "https://vietdung.com.vn/wp-content/uploads/2026/07/CTL-ACP-ALCOREST-07.08.25.pdf (via the sound study's selection table)"),
     "S24": ("PM ruling 2026-10-31: the 400 kg cap stays; carry the total as 400 +/- 10 kg until the CAD parts list settles it; if the CAD BOM lands over 400 kg, trim the inner steel tray or the fans, not the sound", "layout conversation, PM message of 2026-10-31"),
+    "S25": ("Sound study update relayed by the PM, 2026-10-31: silencers move inside the decor blocks as splitter silencers with 2 mm aluminium casings, 18 kg in the right block and 9 kg in the top block, next to the S&P TD-500 fans; weight win-backs: 20x40x1.2 aluminium frames and 25 kg/m3 fill; expected total about 398 kg", "layout conversation, PM message of 2026-10-31"),
     "S19": ("LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff)", "https://logisticsplus.com/?p=25575 (read 2026-10-31)"),
 }
 
@@ -183,7 +184,8 @@ P = {
     "final_wall_depth": V(40, "mm", "source", "S21", "20x40 aluminium wall frame"),
     "final_ceil_depth": V(40, "mm", "source", "S22", "20x40 aluminium ceiling frame (was 20x100)"),
     "final_kgm2_hw": V(13.1, "kg/m2", "source", "S21", "the sound study's wall mass with frame, fill and cassette"),
-    "fill_pet_kgm3": V(32, "kg/m3", "source", "S20", "PET cavity fill (the sound study's fill row)"),
+    "fill_pet_kgm3": V(25, "kg/m3", "source", "S25", "PET cavity fill (was 32)"),
+    "t_al_final": V(1.2, "mm", "source", "S25", "wall of the 20x40 aluminium frames in the final stack (was 1.5)"),
     "tray_t": V(0.5, "mm", "source", "S21", "steel lining tray"),
     "tray_depth": V(25, "mm", "source", "S21"),
     "hw_385_total": V(385, "kg", "source", "S21"),
@@ -192,12 +194,14 @@ P = {
     "hw_400_dsa": V(23.8, "dB", "source", "S22"),
     "carry_total": V(400, "kg", "confirmed", "S24", "total to carry until the CAD parts list"),
     "carry_tol": V(10, "kg", "confirmed", "S24"),
-    "fan_final_kg": V(5.0, "kg", "source", "S20", "S&P TD-350/100-125 ECOWATT inline fan, the sound study's pick"),
-    "silencer_final_kg": V(3.5, "kg", "calculation", "S20", "one separate silencer box: 0.6 m2 HDF 3 box + 1.2 m2 lining 25 mm at 1.2 kg/m2"),
+    "fan_final_kg": V(6.0, "kg", "source", "S20", "S&P TD-500/150-160 ECOWATT inline fan (sound study's fan table)"),
+    "sil_right_kg": V(18.0, "kg", "source", "S25", "splitter silencer in the right decor block, 2 mm aluminium casing"),
+    "sil_top_kg": V(9.0, "kg", "source", "S25", "splitter silencer in the top decor block"),
+    "decor_fill_m2": V(1.65, "m2", "calculation", "S20", "decor faces lined with 75 mm PET fill"),
     "door_edge_seal_kg": V(1.0, "kg", "source", "S20", "door edge seals on 3 sides"),
     "base_seal_kg": V(0.5, "kg", "source", "S20", "seal under the thin floor and band"),
     "grommet_kg": V(0.1, "kg", "source", "S20", "sealed cable holes"),
-    "decor_fill_kg": V(4.0, "kg", "calculation", "S20", "PET fill in the front decor: 1.65 m2 x 75 mm x 32 kg/m3"),
+    "hw_398_total": V(398, "kg", "source", "S25", "sound study's expected total after the update"),
     "t_leaf_s": V(60, "s", "assumption", "", "clip one inner leaf (sound mass + felt) onto its frame from inside"),
 }
 
