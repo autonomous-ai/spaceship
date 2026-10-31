@@ -19,16 +19,36 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "acoustics-air"))
 import calc as AA  # noqa: E402  (the air report's own model: D-60's air parts)
 
+SKELETON_CSV = os.path.join(HERE, "..", "..", "..", "01-CAD-Native", "skeleton", "100000_P04_POD-SKELETON-PARAMETERS.csv")
+
+
+def _skeleton():
+    import csv
+    with open(SKELETON_CSV, encoding="utf-8") as f:
+        return {r["parameter"]: float(r["value"]) for r in csv.DictReader(f)}
+
+
+SKEL = _skeleton()
+
+
+def skel(name):
+    """A named value of skeleton P04 (S33), linked by its name; a missing name stops the study."""
+    if name not in SKEL:
+        raise KeyError(f"skeleton P04 has no parameter {name!r} ({SKELETON_CSV})")
+    return SKEL[name]
+
 CAP_KG = 420.0          # confirmed, D-37 and D-54
 TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
 D71_KG = 429.3          # the PM's running estimate (D-71, S39), for the cross-check
 D71_LEFT_OUT = 1.3 + 0.5 + 2.1   # corner tubes, bond, floor foam: D-71's "not in the sum yet" (S39)
 
 # Skeleton P04 sizes, mm (S33)
-P04 = dict(side_w=1492.74, side_h=1142.74, side_up_h=1142.74, back_w=1200.61, back_h=1118.61,
+P04 = dict(side_w=skel("side_l"), side_h=skel("side_h"), side_up_h=skel("side_h"), back_w=skel("half_pw"),
+           back_h=skel("back_ph"), ceil_w=skel("half_pw"), wall_depth=skel("wall_depth"), frame_d=skel("frame_t"),
+           back_fw=skel("half_fw"),                    # linked to the skeleton's named values (S33)
+           # not named in the skeleton: the linings and the floor panels, from its build record (S33)
            side_cass_l=1445.0, side_cass_lo_h=1142.74, side_cass_up_h=1092.74, back_cass_w=1166.0,
-           back_cass_lo_h=1118.61, back_cass_up_h=1116.87, floor_w=1210.0, floor_d=1455.0, ceil_w=1200.61,
-           wall_depth=1495.0, frame_d=40.0, back_fw=1198.99)      # back_fw: frame width under the 1200.61 skin (PR #58)
+           back_cass_lo_h=1118.61, back_cass_up_h=1116.87, floor_w=1210.0, floor_d=1455.0)
 # The teams' CAD masses, kg (status calculation: CAD geometry x density)
 WALL_L1_MADE, WALL_L1_BOND = 11.35, 0.49                      # S34
 CEIL_PANEL, CEIL_CASS = 9.586, 9.816                          # S35 (P03 build; the P04 cassette is 1160 x 1045)
@@ -39,8 +59,8 @@ FIXED_UNIT, FIXED_GLASS = 29.58, 28.584                       # S37
 LIP_KG = 0.43                 # confirmed, D-69: each wall cassette with the 12 mm lips (S39)
 CORNER_TUBES_KG = 1.3         # confirmed, D-63 (S39)
 BOND_OVER_KG = 0.5            # calculation, PR #23 via D-71: bond over this study's 0.25 kg/m2 (S39)
-FLOOR_T, FOAM_KG = 9.0, 2.1   # confirmed, D-72 (9 mm plywood); calculation, D-76 (3 mm foam at about 200 kg/m3) (S39)
-SKEL_STACK = 84.0             # mm: outer panel 46 + the floating lining, wall face to lining face (S33)
+FLOOR_T, FOAM_KG = skel("floor_t"), 2.1  # confirmed, D-72 (9 mm plywood); calculation, D-76 (3 mm foam, about 200 kg/m3)
+SKEL_STACK = skel("stack_t")  # mm: outer panel 46 + the floating lining, wall face to lining face (S33)
 # D-81, the PM's weight ruling on PR #38 (S40): adopted now, two of them provisional on a test or a check
 FILL_LIGHT = 24.0             # kg/m3: the default now, provisional on T02 (D-54, D-81); the grade Pyrotek lists and the
                               # sample tests
@@ -59,6 +79,8 @@ T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 fram
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
 KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36) and a hollow profile, same outside, 2 mm walls (assumption)
 FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood against this study's 600 (S13); D-85, settled by D-86
+ELEC_KG = 4.94                # kg as shipped: ELECTRICAL P01 (S43), against this study's 3.05 kg allowance
+ELEC_LIGHTS_KG, CALL_LIGHT_M = 0.26, 0.9  # kg and m: ELECTRICAL's lights, the shelf strip and the 0.9 m call light (S43)
 LOAD_BLOCKS_KG = 0.4          # kg per pod: an aluminium load block inside the band at each glide (D-86, BASE's calculation)
 # Parked by D-85, and the rejected glass options
 LAM33_T, LAM44_T = 6.76, 8.76  # mm: 3+3 and 4+4 laminate (glass 3 + 0.76 PVB + 3, as the 4+4 is 4 + 0.76 + 4)
@@ -221,14 +243,18 @@ def lines(**adopt):
     L.append(("AIR", "Four 12 V fans", 1, AA.fans_kg(), "assumption", "S38: 0.3 kg each until the sample is weighed"))
     pt = base["K-SEALS"]
     L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, "this study's model"))
-    pt = base["E-KIT"]
-    L.append(("ELECTRICAL", "Switches and harness (the two ceiling lights go, D-70)", 1, pt.kg - 2 * p("light_kg"), pt.status,
-              "this study's model less 2 x 0.5 kg ceiling lights"))
+    L.append(("ELECTRICAL", "Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL)", 1, ELEC_KG,
+              "calculation (ELECTRICAL)", "S43: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, "
+              "lights 0.26 kg, replacing this study's 3.05 kg allowance. The light shelf's LED strip is counted here only; "
+              "the shelf's line leaves it out (PM, 2026-11-01)"))
     shelf_kgm = SHELF_KGM if a["budgets"] else SHELF_KGM_ALLOW
-    L.append(("INTERIOR", "Light shelf along the side and back wall tops, with its LED strip", 1,
-              shelf_kgm * shelf_m() + SHELF_BRACKETS_KG, "assumption",
+    strip = ELEC_LIGHTS_KG * shelf_m() / (shelf_m() + CALL_LIGHT_M)      # the shelf's LED strip, in ELECTRICAL's line
+    L.append(("INTERIOR", "Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line)", 1,
+              shelf_kgm * shelf_m() + SHELF_BRACKETS_KG - strip, "assumption",
               ("budget (D-85)" if a["budgets"] else "allowance") + f" until it's designed: {shelf_m():.2f} m (the back wall "
-              f"and the side walls back of the soffit) at {shelf_kgm:g} kg/m plus 0.4 kg of brackets (D-70)"))
+              f"and the side walls back of the soffit) at {shelf_kgm:g} kg/m plus 0.4 kg of brackets (D-70), less its LED "
+              f"strip, {strip:.2f} kg, which ELECTRICAL's line carries (S43: 0.26 kg of lights over the shelf strip and the "
+              "0.9 m call light)"))
     L.append(("INTERIOR", "Work-wall ledge, 1000 mm", 1, LEDGE_KG if a["budgets"] else LEDGE_KG_ALLOW, "assumption",
               "budget (D-85) until it's designed: 1.5 mm folded aluminium, 1000 x 240 developed, plus 2 brackets (D-70)"
               if a["budgets"] else "allowance until it's designed: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70)"))
@@ -389,8 +415,9 @@ def rollup_md(rows):
               f"({loose + fan2:.1f} kg, D-87) ships loose and goes into the right decor block on site through its removable "
               f"inner face (D-59), so the block ships at {dr:.1f} kg; fitted in the factory it would be about "
               f"{dr + loose + fan2:.0f} kg, over the rule. The soffit ships with its exhaust fan box and fans fitted "
-              f"({sof + fan2:.1f} kg, D-87). The heaviest piece apart from the glass is the {nm} at {heavy[3]:.1f} kg; the "
-              "door unit and the fixed glass unit are glass and exempt.")
+              f"({sof + fan2:.1f} kg, D-87), and B2 with the power unit inside at about 11.9 kg (ELECTRICAL, S43). The "
+              f"heaviest piece apart from the glass is the {nm} at {heavy[3]:.1f} kg; the door unit and the fixed glass unit "
+              "are glass and exempt.")
     allow = {r[1].split(",")[0].split(" along")[0]: r[2] * r[3] for r in rows if r[4] == "assumption"
              and ("Light shelf" in r[1] or "ledge" in r[1] or "Named clips" in r[1])}
     md.append(f"- **Budgets and allowances (assumption)** for parts not designed yet: the light shelf "
@@ -443,9 +470,11 @@ def rollup_md(rows):
     md.append("")
     md.append("## When this is re-run")
     md.append("")
-    md.append("- **Skeleton P04, updated in place (PR #58):** taken here: the 9 mm floor, and the back panels' frames at "
-              "1198.99 mm under their 1200.61 mm skins. The 13 mm threshold profile (D-72) and the bolt counts of the 220 mm "
-              "rule follow BASE's CAD and the joints register. The next skeleton update re-runs this count.")
+    md.append("- **Skeleton P04, updated in place (PRs #58 and #94):** this count reads the skeleton's named values for the "
+              "panel sizes (side_l, side_h, back_ph, half_pw, half_fw, wall_depth, frame_t, stack_t, floor_t), so a skeleton "
+              "change reaches it on the next run. The linings and the floor panels aren't named in the skeleton and come from "
+              "its build record. The 13 mm threshold profile and the bolt counts (86 in the joints register) follow BASE's CAD "
+              "and the register.")
     md.append("- **Each part PR that merges:** its CAD masses replace this study's model masses line by line (today the walls "
               "other than L1, the base, the decor blocks and the kits are still model masses). The fixings kit is this study's 78 "
               "bolts and 38 cam connectors; the joints register (PR #23) has 82 bolts, 102 rivnuts and no cams, so the kit "

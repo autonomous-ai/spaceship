@@ -146,6 +146,31 @@ def test_d87_in_the_steps():
     assert all(o["secs"] < 600 for o in step20["ops"])
 
 
+def test_step_picture_script_and_data():
+    import json
+    import py_compile
+    guide = pack.GUIDE_DIR
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:   # compile outside the repo, so no __pycache__ lands in the guide folder
+        py_compile.compile(str(guide / "step_pictures.py"), cfile=str(Path(tmp) / "step_pictures.pyc"), doraise=True)
+    data = json.loads(pack.step_bodies_json())
+    assert data["source"].endswith("100000_P04_POD-SKELETON_STEP.step")
+    views = {"back", "front", "inside"}
+    assert data["steps"] and all(s["view"] in views and s["new"] and s["image"].endswith("_IMG.png") for s in data["steps"])
+    script = (guide / "step_pictures.py").read_text(encoding="utf-8")
+    assert all('"%s":' % v in script for v in views)
+
+
+def test_sizes_follow_the_skeleton():
+    # panel sizes are the skeleton's named values, not typed numbers
+    b1 = pack.PIECE["1-03"]
+    assert b1.dims == pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
+    l1 = pack.PIECE["1-05"]
+    assert l1.dims == pack.S(pack.sk("side_l"), pack.sk("side_h"), pack.sk("outer_t"))
+    f1 = pack.PIECE["1-01"]
+    assert f1.dims[2] == pack.sk("floor_t") + pack.sk("mat_t")
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]
     bad = 0

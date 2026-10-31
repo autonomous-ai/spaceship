@@ -36,8 +36,8 @@ AIR,"Intake riser with a mesh allowance, in the right block; ships loose, fitted
 AIR,Roof slot grille and sleeve,1,0.500,0.50,calculation,S38: assumption
 AIR,Four 12 V fans,1,1.200,1.20,assumption,S38: 0.3 kg each until the sample is weighed
 BASE,"Door edge seals, base seal, cable grommets",1,1.600,1.60,source,this study's model
-ELECTRICAL,"Switches and harness (the two ceiling lights go, D-70)",1,2.050,2.05,assumption,this study's model less 2 x 0.5 kg ceiling lights
-INTERIOR,"Light shelf along the side and back wall tops, with its LED strip",1,2.174,2.17,assumption,budget (D-85) until it's designed: 4.43 m (the back wall and the side walls back of the soffit) at 0.4 kg/m plus 0.4 kg of brackets (D-70)
+ELECTRICAL,"Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL)",1,4.940,4.94,calculation (ELECTRICAL),"S43: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, lights 0.26 kg, replacing this study's 3.05 kg allowance. The light shelf's LED strip is counted here only; the shelf's line leaves it out (PM, 2026-11-01)"
+INTERIOR,Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line),1,1.957,1.96,assumption,"budget (D-85) until it's designed: 4.43 m (the back wall and the side walls back of the soffit) at 0.4 kg/m plus 0.4 kg of brackets (D-70), less its LED strip, 0.22 kg, which ELECTRICAL's line carries (S43: 0.26 kg of lights over the shelf strip and the 0.9 m call light)"
 INTERIOR,"Work-wall ledge, 1000 mm",1,1.400,1.40,assumption,"budget (D-85) until it's designed: 1.5 mm folded aluminium, 1000 x 240 developed, plus 2 brackets (D-70)"
 WALL,"M6 bolts, rivnuts, cam connectors, joint gaskets",1,4.673,4.67,calculation,this study's model
 LATER,"Voice cockpit kit reserve, outside the 420 kg cap",1,4.000,4.00,assumption,the kit ships later as an add-on (D-11); the cap is for the pod as shipped (D-81)

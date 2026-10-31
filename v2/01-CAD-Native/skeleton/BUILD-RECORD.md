@@ -20,9 +20,10 @@ Parts link to `100000_P04_POD-SKELETON_CAD` through Derive, so value changes no 
 | Update (2026-10-31) | What changed | Checks |
 |---|---|---|
 | 1 | `floor_t` 9 (was 15) and `thresh_h` 13 (was 20), a US-accessible threshold; the kick strip keeps its `kick_gap` above it (Z 20 to 105). F-014: `glass_gap` 4.0, and `fix_xbl`, `fix_xtl` are now expressions that put the fixed glass's free edge parallel to the door's slanted edge, 4.0 mm away (was v1's 2.40 to 4.6). Wall-to-band bolt rule: `base_bolt_edge` 220, `n_base_bolt` 4, `base_spigot_inset` 100, pitches `side_base_pitch` 350.91 and `back_base_pitch` 253.54 | 147 items healthy, no loose sketch, all envelopes and anchors on their expressions, 0 clashes |
-| 2 | The outer panel split into `skin_t` 3 + `bond_t` 3 + `frame_t` 40 (still 46). Closing seams B1-B2, B3-B4, C1-C2: `close_gap` 5.5 frame gap, frame width `half_fw` **1198.99**, skin width `half_pw` 1200.61 (skins overhang their frames 1.62 at that seam). The 220 mm rule on every bolted edge: `bolt_edge_inset` 220 and `spigot_inset` 100 (the base names now point at them). Wall to ceiling: bolt line `ceil_bolt_z` **2374** on the ceiling frame's centre; counts `n_ceil_side_bolt` 4 and `n_ceil_back_bolt` 3 are assumptions from WALL's proposal, to be confirmed | the same; 83 parameters, all favorites |
+| 2 | The outer panel split into `skin_t` 3 + `bond_t` 3 + `frame_t` 40 (still 46). Closing seams B1-B2, B3-B4, C1-C2: `close_gap` 5.5 frame gap, frame width `half_fw` **1198.99**, skin width `half_pw` 1200.61 (skins overhang their frames 1.62 at that seam). The 220 mm rule on every bolted edge: `bolt_edge_inset` 220 and `spigot_inset` 100 (the base names now point at them). Wall to ceiling: bolt line `ceil_bolt_z` **2374** on the ceiling frame's centre; counts per update 3 | the same; 83 parameters, all favorites |
 
-Fusion keeps the first description of each part number: the root and the eight assembly components still read "... | P01" in Fusion and in the STEP, and setting them by script reads back unchanged. The script no longer writes a revision into descriptions; a person edits the nine descriptions in Fusion (Properties), for the title blocks.
+Fusion keeps the first description of each part number: the root and the eight assemb
+| 3 | PM rulings and Reviewer 5's notes on #58: **back-panel bolt pitches on the frame** (`back_base_pitch`, `ceil_back_pitch` from `half_fw`: **253.00**; "panel end" means the frame end); wall to ceiling `n_ceil_side_bolt` 4 and `n_ceil_back_bolt` **4**; each bolted edge's start point and pitch from the joints register: `ceil_side_y0` Y −645 measured along the ceiling with `ceil_side_pitch` **351.67**, `ceil_back_x0` ±1201.74 on the frame, `base_side_y0` −642.74, `base_back_x0` ±1201.74. **Floor mat (D-72, from BASE):** `mat_t` 3 under the 9 mm ply: F1-MAT and F2-MAT Z 0 to 3 (new bodies, built in place), the ply F1, F2 Z 3 to 12, `floor_top` 12. What reads the floor: the threshold top stays Z 13 (1 above the floor top), the kick strip Z 20 to 105 (7 over the threshold), inside height 2316 − 12 = 2304. The CSV now has a unit column and writes counts as counts (was ×10). A dry run ends with a planned error so Fusion rolls it back; the edit test anchors the fixed glass's free edge too | as above |
 
 ## Pass D (PM rulings, DECIDED 2026-10-31)
 
@@ -91,10 +92,12 @@ The inner points are computed by Fusion from parameter expressions (offset lines
 | B4-CASS | LINING | 1166 x 34 x 1116.87 | 1233.13 to 2350 | L-CASS-BACK-UP |
 | C1 | CEILING | 1200.61 x 1495 x 46 | 2354 to 2400 | C-HALF |
 | C1-CASS | LINING | 1166 x 1411 x 34 | 2316 to 2350 | L-CASS-HALF |
-| F1 | BASE | 1210 x 1455 x 9 | 0 to 9 | B-FLOOR |
+| F1 | BASE | 1210 x 1455 x 9 | 3 to 12 | B-FLOOR |
+| F1-MAT | BASE | 1210 x 1455 x 3 | 0 to 3 | B-FLOOR-MAT |
 | C2 | CEILING | 1200.61 x 1495 x 46 | 2354 to 2400 | C-HALF |
 | C2-CASS | LINING | 1166 x 1411 x 34 | 2316 to 2350 | L-CASS-HALF |
-| F2 | BASE | 1210 x 1455 x 9 | 0 to 9 | B-FLOOR |
+| F2 | BASE | 1210 x 1455 x 9 | 3 to 12 | B-FLOOR |
+| F2-MAT | BASE | 1210 x 1455 x 3 | 0 to 3 | B-FLOOR-MAT |
 | THRESHOLD | BASE | 1175 x 60 x 13 | 0 to 13 | B-THRESH |
 | KICK | GLAZING | 1175 x 20 x 85 | 20 to 105 | D-40 |
 
@@ -106,8 +109,8 @@ The inner points are computed by Fusion from parameter expressions (offset lines
 | Wall depth 1495 | 1492.74 of side panel (Y −642.74 to 850) plus the 2.26 seam at the decor | D-49 (v1 1496); joints register 2.8 |
 | Decor depth 205 | front face Y -850, back face Y -645 | D-49 |
 | Height datum 2400 | roof skin top Z 2400 | D-21 |
-| Inside height about 2307 | ceiling cassette face Z 2316 - floor top Z 9 = 2307 (about 2304 with a 3 mm underlay, not modelled) | D-42; outer 46, floor 9 (P04 updates) |
-| Thin floor | F1, F2 9 mm on the room floor, out to the band (pass D); threshold 13 (P04 update 1) | D-05, D-18; PM ruling 2026-10-31 |
+| Inside height about 2304 | ceiling cassette face Z 2316 - floor top Z 12 = 2304 (mat 3 + ply 9, D-72) | D-42; outer 46, floor 9 on a 3 mat (P04 updates) |
+| Thin floor | F1, F2 9 mm ply on a 3 mm mat (F1-MAT, F2-MAT), out to the band (pass D); floor top Z 12; threshold 13 (P04 updates 1 and 3) | D-05, D-18, D-72; PM rulings 2026-10-31 |
 | Door glass 4+4 laminate 8.76 | DOOR, v1's measured trapezoid | D-46 |
 
 ## Not modelled yet

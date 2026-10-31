@@ -49,6 +49,22 @@ KG_PER_LB = 0.45359237
 MM_PER_IN = 25.4
 
 
+SKEL_CSV = REPO / "v2" / "01-CAD-Native" / "skeleton" / "100000_P04_POD-SKELETON-PARAMETERS.csv"
+
+
+def _load_skeleton(path=SKEL_CSV):
+    """The skeleton's named values (its 'value' column, mm), so panel sizes follow the skeleton instead of typed numbers."""
+    with open(path, encoding="utf-8") as f:
+        return {r["parameter"]: float(r["value"]) for r in csv.DictReader(f)}
+
+
+SK = _load_skeleton()
+
+
+def sk(name):
+    return SK[name]
+
+
 def lay(name):
     return LAYP[name].value
 
@@ -123,27 +139,24 @@ TIME = {
 # Site fixings the joints register doesn't count (its section 3.9 lists them as out of scope). Counts are working
 # values for the time model and the parts kit until each owner's design gives them.
 OTHER_FIXINGS = [
-    dict(step=2, where="Base band corner keys (6 keys)", owner="BASE", count=0, size="none: the keys hook in",
-         status="DECIDED (D-87)", note="hook-in keys replace the 12 site bolts PROPOSED in PR #52",
-         text="the 6 corner keys hook in, no bolts (D-87; BASE design)"),
-    dict(step=9, where="DL on the base band", owner="FRONT and BASE", count=2, size="M6 x 16 socket head (assumption)",
-         status="assumption", note="joints register 3.10: the decor on the band stays with FRONT and BASE",
-         text="2 fixings of DL to the band (FRONT and BASE design; count assumed)"),
-    dict(step=10, where="DR on its support behind the mesh band piece", owner="FRONT and BASE", count=2,
-         size="M6 x 16 socket head (assumption)", status="assumption", note="D-62: the block gets its own support; the mesh carries no load",
-         text="2 fixings of DR to its support (FRONT and BASE design; count assumed)"),
+    dict(step=2, where="Base band corner keys (6 keys)", owner="BASE", count=0, size="none on site: hook studs and fixing bolts in the factory",
+         status="registered: J-BASE-02 (0 on site, 20 in the factory)", note="D-87: the keys hook in; part numbers 111211 to 111214 (joints register)",
+         text="the 6 corner keys hook in, no site bolts (J-BASE-02)"),
+    dict(step=9, where="DL on the base band", owner="FRONT and BASE", count=0, size="none: spigots", status="registered: J-FRONT-02 (spigots)",
+         note="DL stands on its spigots; its bolts are J-FRONT-01's, into the side walls",
+         text="DL stands on its spigots on the band, no bolts (J-FRONT-02)"),
+    dict(step=10, where="DR on its support behind the mesh band piece", owner="FRONT and BASE", count=0, size="none: spigots",
+         status="registered: J-FRONT-02 (spigots)", note="D-62: the block's own support carries it; the mesh carries no load",
+         text="DR stands on its spigots on its support, no bolts (J-FRONT-02)"),
     dict(step=11, where="Door hinges on DL", owner="FRONT", count=0, size="per the named hinge set (HOLD)",
-         status="HOLD (D-46, ISS-002)", note="time is in the door step; the PM ruled the hinge halves that sit in DL ship fitted in DL",
+         status="HOLD in the register (D-46, ISS-002)", note="time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM)",
          text="the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named)"),
-    dict(step=12, where="DT to DL, DR and the ceiling", owner="FRONT", count=4, size="M6 x 16 socket head (assumption)",
-         status="assumption", note="joints register 3.9: DT to the ceiling isn't counted there",
-         text="4 fixings of DT to DL, DR and the ceiling (FRONT design; count assumed)"),
     dict(step=15, where="Intake riser and supply fan box in DR", owner="AIR and FRONT", count=0, size="not designed yet (HOLD)",
-         status="HOLD", note="time is in the step", text="their fixings in DR (AIR and FRONT design, not designed yet)"),
-    dict(step=16, where="Air column", owner="AIR", count=0, size="not designed yet (HOLD)", status="HOLD",
-         note="time is in the step", text="the column's fixings (AIR design, not designed yet)"),
-    dict(step=17, where="Soffit hangers and the exhaust fan box", owner="AIR", count=0, size="not designed yet (HOLD)",
-         status="HOLD", note="time is in the step", text="the soffit's hangers and the fan box's fixings (AIR design, not designed yet)"),
+         status="HOLD in the register", note="time is in the step", text="their fixings in DR (AIR and FRONT design, on hold)"),
+    dict(step=16, where="Air column", owner="AIR", count=0, size="tool-free hooks (D-87)", status="not designed yet",
+         note="time is in the step", text="the column hangs on tool-free hooks (D-87; AIR design)"),
+    dict(step=17, where="Soffit with its exhaust fan box", owner="AIR", count=0, size="tool-free hooks (D-87)", status="not designed yet",
+         note="time is in the step", text="the soffit hangs on tool-free hooks (D-87; AIR design)"),
     dict(step=19, where="Light shelf", owner="INTERIOR", count=0, size="not designed yet (HOLD)", status="HOLD (D-70)",
          note="time is in the step", text="the light shelf's fixings (INTERIOR design, not designed yet)"),
     dict(step=22, where="Ledge and screen mount", owner="INTERIOR", count=0, size="not designed yet (HOLD)",
@@ -201,7 +214,7 @@ R = {
     "ROOF": "Roof slot grille",
     "FANS": "Four 12 V fans",
     "SEALS": "Door edge seals, base seal",
-    "ELEC": "Switches and harness",
+    "ELEC": "Switches and harness",   # ELECTRICAL's line: power unit 2.80 kg (in B2) + harness, cord set, hub zone, lights
     "SHELF": "Light shelf",
     "LEDGE": "Work-wall ledge",
     "HW": "M6 bolts, rivnuts",
@@ -245,64 +258,74 @@ def S(*a):
     return tuple(sorted(a, reverse=True))
 
 
-P04 = "skeleton P04 (S33)"
+P04 = "skeleton P04 named values (100000_P04_POD-SKELETON-PARAMETERS.csv)"
+FLOOR_W_MAX = 1219   # the floor panel with its lap, at most (PM ruling, packing group, 2026-10-31)
+# ELECTRICAL's roll-up line (S43) is 4.94 kg: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, lights 0.26.
+POWER_UNIT_SHARE = 2.80 / 4.94
+# The fixed glass unit's roll-up line is FRONT's 29.58 kg (PR #28 parts list): pane 28.584, 180 seal 0.2, U-profile 0.557 and
+# U-seal 0.241 in four pieces, 745 bottom, 1446 right, 804 diagonal and 303 top (mm). The channels ship fitted in the parts
+# that hold them: the bottom one on BASE's sill (PM ruling), the right and diagonal in DR, the top in DT (D-68).
+FIX_UNIT_KG = 29.58
+CHANNEL_KG_PER_MM = (0.557 + 0.241) / (745 + 1446 + 804 + 303)
+SILL_CHANNEL_SHARE = 745 * CHANNEL_KG_PER_MM / FIX_UNIT_KG
+DR_CHANNEL_SHARE = (1446 + 804) * CHANNEL_KG_PER_MM / FIX_UNIT_KG
+DT_CHANNEL_SHARE = 303 * CHANNEL_KG_PER_MM / FIX_UNIT_KG
+PANE_SHARE = 1 - SILL_CHANNEL_SHARE - DR_CHANNEL_SHARE - DT_CHANNEL_SHARE
 PIECES = [
     # ---------------- pallet 1, 48 x 40 in: upright stack, listed from the open face (first out) to the back
-    Piece("1-01", "111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "F1", [("FLOOR", 1), ("MAT", 0.5)], S(1455, 1219, 12),
-          "1455 deep (skeleton P04, S33); 1219 wide at most with its lap (PM ruling, packing group); 9 mm ply (D-72) + 3 mm foam (D-76)",
+    Piece("1-01", "111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "F1", [("FLOOR", 1), ("MAT", 0.5)], S(sk("wall_depth") - sk("band_t"), FLOOR_W_MAX, sk("floor_t") + sk("mat_t")),
+          "skeleton named values: wall_depth - band_t deep, floor_t + mat_t thick; 1219 wide at most with its lap (PM ruling, packing group)",
           1, 3, "BASE", note="foam mat 111501 bonded under it at the factory (D-87)"),
-    Piece("1-02", "TBD (BASE)", "BASE - FLOOR PANEL - F2", "Tấm sàn mỏng - F2", "F2", [("FLOOR", 1), ("MAT", 0.5)], S(1455, 1219, 12),
+    Piece("1-02", "TBD (BASE)", "BASE - FLOOR PANEL - F2", "Tấm sàn mỏng - F2", "F2", [("FLOOR", 1), ("MAT", 0.5)], S(sk("wall_depth") - sk("band_t"), FLOOR_W_MAX, sk("floor_t") + sk("mat_t")),
           "as F1", 1, 3, "BASE", note="foam mat bonded under it at the factory (D-87)"),
     Piece("1-03", "TBD (WALL)", "WALL - PANEL ASSY - BACK LOWER - LH", "Vách hậu - cụm tấm dưới trái", "B1", [("B", 1)],
-          S(1200.61, 1118.61, 46), P04, 1, 4, "WALL"),
-    Piece("1-04", "TBD (WALL)", "WALL - PANEL ASSY - BACK LOWER - RH", "Vách hậu - cụm tấm dưới phải", "B2", [("B", 1)],
-          S(1200.61, 1118.61, 84),
-          "skeleton P04 (S33); the power unit's face stands 38 mm proud of the frame face: felt plane Y 766 against the frame at Y 804 (ELECTRICAL PR #64, calculation)",
-          1, 4, "WALL", extra_kg=2.804,
-          extra_note="power unit 710001, fitted, wired and tested in B2 at the factory: 2.804 kg (ELECTRICAL PR #64 parts list, calculation); not in the roll-up yet",
-          extra_status="calculation (ELECTRICAL)",
-          note="carries the power unit 710001 (ELECTRICAL PR #64): 11.56 kg; foam block over the unit's face in the stack"),
+          S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 4, "WALL"),
+    Piece("1-04", "TBD (WALL)", "WALL - PANEL ASSY - BACK LOWER - RH", "Vách hậu - cụm tấm dưới phải", "B2",
+          [("B", 1), ("ELEC", POWER_UNIT_SHARE)], S(sk("half_pw"), sk("back_ph"), sk("outer_t") + sk("cav_gap") + sk("cass_t")),
+          "skeleton named values; the power unit's face is flush with the felt (ELECTRICAL), so it stands cav_gap + cass_t = 38 mm proud of the frame face",
+          1, 4, "WALL",
+          note="carries the power unit 710001, fitted, wired and tested at the factory: 2.80 kg of ELECTRICAL's roll-up line (S43); foam block over the unit's face in the stack"),
     Piece("1-05", "210101", "WALL - PANEL ASSY - SIDE LOWER - LH", "Vách trái - cụm tấm dưới", "L1", [("L1R1", 1)],
-          S(1492.74, 1142.74, 46), P04 + "; WALL L1 CAD", 1, 5, "WALL"),
+          S(sk("side_l"), sk("side_h"), sk("outer_t")), P04 + "; WALL L1 CAD", 1, 5, "WALL"),
     Piece("1-06", "TBD (WALL)", "WALL - PANEL ASSY - SIDE LOWER - RH", "Vách phải - cụm tấm dưới", "R1", [("L1R1", 1)],
-          S(1492.74, 1142.74, 46), P04, 1, 5, "WALL"),
+          S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 5, "WALL"),
     Piece("1-07", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - LH", "Vách hậu - cụm tấm trên trái", "B3", [("B", 1)],
-          S(1200.61, 1118.61, 46), P04, 1, 6, "WALL"),
+          S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 6, "WALL"),
     Piece("1-08", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - RH", "Vách hậu - cụm tấm trên phải", "B4", [("B", 1)],
-          S(1200.61, 1118.61, 46), P04, 1, 6, "WALL"),
+          S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 6, "WALL"),
     Piece("1-09", "TBD (WALL)", "WALL - PANEL ASSY - SIDE UPPER - LH", "Vách trái - cụm tấm trên", "L2", [("L2R2", 1)],
-          S(1492.74, 1142.74, 46), P04, 1, 7, "WALL"),
+          S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 7, "WALL"),
     Piece("1-10", "TBD (WALL)", "WALL - PANEL ASSY - SIDE UPPER - RH", "Vách phải - cụm tấm trên", "R2", [("L2R2", 1)],
-          S(1492.74, 1142.74, 46), P04, 1, 7, "WALL"),
+          S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 7, "WALL"),
     Piece("1-11", "410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "C1", [("C", 1)],
-          S(1495, 1203.61, 46), "CEILING PR #32 CAD skin 1203.61 x 1495; 46 mm outer panel (P04)", 1, 8, "CEILING"),
+          S(sk("wall_depth"), sk("half_pw"), sk("outer_t")), "skeleton named values: wall_depth long, half_pw wide, outer_t", 1, 8, "CEILING"),
     Piece("1-12", "410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "C2", [("C", 1), ("ROOF", 1)],
-          S(1495, 1203.61, 60), "as C1; the roof sleeve stands 14 mm below the frame (air report 7e)", 1, 8, "CEILING",
+          S(sk("wall_depth"), sk("half_pw"), sk("outer_t") + 14), "as C1; the roof sleeve stands 14 mm below the frame (air report 7e)", 1, 8, "CEILING",
           note="roof slot grille and sleeve fitted at the factory (PROPOSED)"),
     Piece("1-13", "TBD (WALL)", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
-          S(1445, 1142.74, 34), P04, 1, 14, "LINING"),
+          S(1445, sk("side_h"), sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-14", "TBD (WALL)", "LINING - CASSETTE - SIDE UPPER - RH", "Cassette tiêu âm - vách phải trên", "R2", [("CS_UP", 1)],
-          S(1445, 1092.74, 34), P04, 1, 14, "LINING"),
+          S(1445, 1092.74, sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-15", "510101", "LINING - CASSETTE - SIDE LOWER - LH", "Cassette tiêu âm - vách trái dưới", "L1", [("CS_LO", 1)],
-          S(1445, 1142.74, 34), P04 + "; WALL L1 CAD", 1, 14, "LINING"),
+          S(1445, sk("side_h"), sk("cass_t")), P04 + "; WALL L1 CAD", 1, 14, "LINING"),
     Piece("1-16", "TBD (WALL)", "LINING - CASSETTE - SIDE UPPER - LH", "Cassette tiêu âm - vách trái trên", "L2", [("CS_UP", 1)],
-          S(1445, 1092.74, 34), P04, 1, 14, "LINING"),
+          S(1445, 1092.74, sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-17", "TBD (WALL)", "LINING - CASSETTE - BACK LOWER - LH", "Cassette tiêu âm - vách hậu dưới trái", "B1", [("CB_LO", 1)],
-          S(1166, 1118.61, 34), P04, 1, 14, "LINING"),
+          S(1166, sk("back_ph"), sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-18", "TBD (WALL)", "LINING - CASSETTE - BACK LOWER - RH", "Cassette tiêu âm - vách hậu dưới phải", "B2", [("CB_LO", 1)],
-          S(1166, 1118.61, 34), P04, 1, 14, "LINING"),
+          S(1166, sk("back_ph"), sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-19", "TBD (WALL)", "LINING - CASSETTE - BACK UPPER - LH", "Cassette tiêu âm - vách hậu trên trái", "B3", [("CB_UP", 1)],
-          S(1166, 1116.87, 34), P04, 1, 14, "LINING"),
+          S(1166, 1116.87, sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-20", "TBD (WALL)", "LINING - CASSETTE - BACK UPPER - RH", "Cassette tiêu âm - vách hậu trên phải", "B4", [("CB_UP", 1)],
-          S(1166, 1116.87, 34), P04, 1, 14, "LINING"),
+          S(1166, 1116.87, sk("cass_t")), P04, 1, 14, "LINING"),
     # ---------------- pallet 2, 96 x 48 in: tiers, bottom (tier 1) to top (tier 5)
-    Piece("2-01", "360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "-", [("FIX", 1)], S(2033, 1031, 12),
+    Piece("2-01", "360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "-", [("FIX", PANE_SHARE)], S(2033, 1031, 12),
           "FRONT PR #28 CAD: pane 1026.23 x 2033 with the 180 seal on its free edge", 2, 10, "FRONT", glass=True,
-          note="its U-profiles and U-seals (0.8 kg of the unit) ride fitted in the band, DR and DT channels"),
+          note="the pane with its 180 seal; its U-channels and seals ship fitted on the sill (PM ruling), in DR and in DT (D-68)"),
     Piece("2-02", "360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "-", [("DOOR", 1)], S(2089, 1175, 149),
           "FRONT PR #27 CAD: Z 27 to 2116, glass 1175 wide, pull spaces 149 deep; hinge halves that sit in DL ship in DL (PM ruling)",
           2, 11, "FRONT", glass=True),
-    Piece("2-03", "TBD (FRONT)", "FRONT - DECOR BLOCK - DR", "Khung trang trí - khối phải", "DR", [("DR", 1)], S(2290, 1016, 205),
+    Piece("2-03", "TBD (FRONT)", "FRONT - DECOR BLOCK - DR", "Khung trang trí - khối phải", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1016, 205),
           "layout study bounding box (S02); the real block is faceted", 2, 10, "FRONT"),
     Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-", [("BAND_B", 1), ("GLIDE", 3), ("BLOCKS", 3 / 8)],
           S(2420, 110, 40), "BASE P01 CAD 111103 (2420 x 40 x 100) + glides 10 below", 2, 2, "BASE", note="3 glides fitted, each on its aluminium load block inside the band (BASE CAD; D-86); blocks split by glide count, 3 of 8"),
@@ -313,9 +336,9 @@ PIECES = [
           S(1517, 110, 40), "LH's mirror (BASE P01 CAD)", 2, 2, "BASE",
           note="2 glides fitted, each on its load block inside the band (D-86)"),
     Piece("2-07", "TBD (BASE)", "BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS", "Viền chân nhôm - trước phải, dưới kính", "-",
-          [("BAND_FR", 0.663), ("GLIDE", 1), ("BLOCKS", 1 / 8)], S(729, 110, 40),
+          [("BAND_FR", 0.663), ("GLIDE", 1), ("BLOCKS", 1 / 8), ("FIX", SILL_CHANNEL_SHARE)], S(729, 110, 40),
           "X 218 to about 947 (skeleton P04 front band; air report 7e); carries the glass's bottom U-channel (D-68)", 2, 2, "BASE",
-          note="share of the front-r line by length, 729 of 1100 mm (calculation); 1 glide on its load block (D-86)"),
+          note="the sill: the fixed glass's bottom U-channel and its seal fitted at the factory with 4 M3 countersunk screws (PM ruling); share of the front-r line by length, 729 of 1100 mm (calculation); 1 glide on its load block (D-86)"),
     Piece("2-08", "TBD (BASE)", "BASE - DOOR THRESHOLD - 13 MM", "Ngưỡng cửa thấp 13 mm", "-", [("THRESH", 1)], S(1175, 60, 13),
           "skeleton P04 1175 x 60; 13 mm high (D-72)", 2, 3, "BASE"),
     Piece("2-09", "TBD (FRONT)", "FRONT - DECOR BLOCK - DL", "Khung trang trí - khối trái", "DL", [("DL", 1)], S(2290, 278, 205),
@@ -325,11 +348,11 @@ PIECES = [
           "air report 7e: the fan box (X 867 to 1161, Z 2162 to 2335) sits inside the soffit's envelope", 2, 17, "AIR",
           note="exhaust fan box with its 2 fans fitted inside the soffit's right end at the factory (D-87)"),
     Piece("2-11", "TBD (AIR)", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2105, 360, 217), "air report 7e", 2, 16, "AIR"),
-    Piece("2-12", "TBD (FRONT)", "FRONT - DECOR BLOCK - DT", "Khung trang trí - khối trên", "DT", [("DT", 1)], S(1697, 280, 205),
+    Piece("2-12", "TBD (FRONT)", "FRONT - DECOR BLOCK - DT", "Khung trang trí - khối trên", "DT", [("DT", 1), ("FIX", DT_CHANNEL_SHARE)], S(1697, 280, 205),
           "layout study bounding box (S02)", 2, 12, "FRONT"),
-    Piece("2-13", "TBD (ELECTRICAL)", "ELECTRICAL - KIT - SWITCHES AND HARNESS", "Bộ điện: công tắc, dây", "-", [("ELEC", 1)],
+    Piece("2-13", "TBD (ELECTRICAL)", "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS", "Bộ điện: dây, dây nguồn, hub, đèn", "-", [("ELEC", 1 - POWER_UNIT_SHARE)],
           S(600, 250, 200), "carton (assumption)", 2, 13, "ELECTRICAL"),
-    Piece("2-14", "TBD (INTERIOR)", "INTERIOR - LIGHT SHELF WITH LED STRIP", "Kệ đèn + dải LED", "-", [("SHELF", 1)], S(2332, 80, 50),
+    Piece("2-14", "TBD (INTERIOR)", "INTERIOR - LIGHT SHELF", "Kệ đèn", "-", [("SHELF", 1)], S(2332, 80, 50),
           "bundle (assumption): the roll-up's 4.43 m in lengths up to the 2332 back wall", 2, 19, "INTERIOR"),
     Piece("2-15", "TBD (BASE)", "BASE - SMALL PARTS CARTON", "Thùng phụ kiện đế", "-",
           [("BAND_FL", 1), ("BAND_FR", 0.337), ("KEY", 6)], S(600, 400, 150),
@@ -376,7 +399,7 @@ PIECE = {p.tag: p for p in PIECES}
 # cartons have no skeleton body yet; the step pictures show them when their own CAD lands.
 SKELETON_STEP = REPO / "v2" / "03-Manufacturing" / "skeleton" / "100000_P04_POD-SKELETON_STEP.step"
 SKEL = {
-    "1-01": ["F1 ENVELOPE"], "1-02": ["F2 ENVELOPE"],
+    "1-01": ["F1 ENVELOPE", "F1-MAT ENVELOPE"], "1-02": ["F2 ENVELOPE", "F2-MAT ENVELOPE"],   # the mats ship bonded under the floor (D-87)
     "1-03": ["B1 ENVELOPE"], "1-04": ["B2 ENVELOPE"], "1-05": ["L1 ENVELOPE"], "1-06": ["R1 ENVELOPE"],
     "1-07": ["B3 ENVELOPE"], "1-08": ["B4 ENVELOPE"], "1-09": ["L2 ENVELOPE"], "1-10": ["R2 ENVELOPE"],
     "1-11": ["C1 ENVELOPE"], "1-12": ["C2 ENVELOPE"],
@@ -498,7 +521,7 @@ STEPS = [
     dict(n=2, title="Base band", tags=["2-04", "2-05", "2-06", "2-07", "2-15"],
          A="Sets the back band on its glides, then the left and right side bands, each hooked onto its corner key, then the front pieces: front-left under DL, the piece under the fixed glass, and the mesh intake piece under DR with DR's support and closing plate. Every piece locates itself on its key.",
          B="Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).",
-         check="Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the glass channel in the front-right piece is clean.",
+         check="Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.",
          ops=[carry("2-04"), carry("2-05"), carry("2-06"), carry("2-07"), carry("2-15"),
               op("set each band piece on its keys", 2, lay("t_place_hung_s"), 6, "t_place_hung_s"),
               op("check the level, turn the glides that are out", 2, TIME["t_level_preset_s"].value, 1, "t_level_preset_s")],
@@ -547,16 +570,16 @@ STEPS = [
               op("tighten the 6 upper corner bolts (second visit)", 1, BOLT, 6, "t_bolt_captive_s")],
          joints={"J-CEIL-02": 4, "J-CEIL-01": 16}),
     dict(n=9, title="Left decor block DL", tags=["2-09"],
-         A="With B, carries DL (2.3 m) from its place to the front-left and stands it on the band against L1 and L2's front edges, hinge halves toward the door opening.",
-         B="Drives 3 bolts into DL from each of L1's and L2's front bays (6), then DL's 2 fixings to the band.",
+         A="With B, carries DL (2.3 m) from its place to the front-left and stands it on its spigots on the band, against L1 and L2's front edges, hinge halves toward the door opening.",
+         B="Drives 3 bolts into DL from each of L1's and L2's front bays (6). DL stands on its spigots on the band and needs no bolt there (J-FRONT-02).",
          check="DL plumb (spirit level on its door-side face); the hinge halves free.",
          ops=[carry("2-09"), op("stand DL on the band", 2, lay("t_place_s"), 1, "t_place_s")],
          joints={"J-FRONT-01": 6}),
     dict(n=10, title="Fixed glass, then the right decor block DR", tags=["2-01", "2-03"],
-         A="Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and sets its bottom edge into the band's U-channel on its setting blocks; then holds it upright with both lifters.",
-         B="Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6), then DR's 2 fixings to its support. A lets go only now.",
+         A="Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.",
+         B="Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.",
          check="Glass seated in all three channels so far, its free edge plumb; DR on its stops. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).",
-         ops=[carry("2-01"), op("set the fixed glass in the band channel and hold it", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
+         ops=[carry("2-01"), op("set the fixed glass in the sill's channel and hold it", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
               carry("2-03"), op("slide DR onto the glass edges and its stops", 2, TIME["t_dr_slide_s"].value, 1, "t_dr_slide_s")],
          joints={"J-FRONT-01": 6}),
     dict(n=11, title="Door (before DT)", tags=["2-02"],
@@ -567,10 +590,10 @@ STEPS = [
          joints={}),
     dict(n=12, title="Top decor block DT, from above", tags=["2-12"],
          A="From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.",
-         B="Fixes DT to DL, DR and the ceiling (4 fixings, FRONT design).",
+         B="Drives DT's 4 bolts to the ceiling (J-FRONT-03).",
          check="The glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight; the door's strike 368102 closes onto the 35 N magnetic catch 368007 in DT's underside (D-83).",
          ops=[carry("2-12"), op("lower DT from above", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s")],
-         joints={}),
+         joints={"J-FRONT-03": 4}),
     dict(n=13, title="Electrics, first fix (power off)", tags=["2-13"],
          A="Plugs the factory-tested harness together at each panel seam and runs the plug-in feeds for the light shelf and the hub to their ends (D-87).",
          B="Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).",
@@ -1011,6 +1034,9 @@ def gen_tables(m):
     T["REG_BOLTS"] = str(reg_bolts)
     T["REG_SRC"] = m.reg_src
     T["OTHER_FIX"] = str(sum(f["count"] for f in OTHER_FIXINGS))
+    mine = m.bolts_by_joint()
+    T["N16"] = str(sum(c for j, c in mine.items() if m.register.get(j, (0, "M6 x 16"))[1] == "M6 x 16"))
+    T["N25"] = str(sum(c for j, c in mine.items() if m.register.get(j, (0, "M6 x 16"))[1] == "M6 x 25"))
     T["CHECKS_OK"] = "all pass" if m.ok() else "FAIL: " + ", ".join(c["id"] for c in m.checks if not c["ok"])
     heaviest = max((p for p in m.shipped() if not p.glass), key=lambda p: p.kg)
     T["HEAVIEST"] = f"{heaviest.name} ({heaviest.tag}) at {heaviest.kg:.1f} kg"
