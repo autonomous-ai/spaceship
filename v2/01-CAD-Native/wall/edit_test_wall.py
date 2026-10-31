@@ -23,6 +23,9 @@ import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 EDITS = [("wall_depth", "1300 mm"), ("side_h", "1000 mm"), ("stile_pitch_max", "300 mm")]
+# back wall panels B1-B4 (wall_back_panel.py): the panel width, the row height and the stud rule
+EDITS_BACK = [("half_pw", "1100 mm"), ("back_ph", "1000 mm"), ("stile_pitch_max", "300 mm")]
+BACK_PREFIXES = ("2102", "2112", "2114", "2116", "5102", "5112", "5114")
 
 
 def box(b):
@@ -48,6 +51,57 @@ def pv(design, name, default=None):
     if p is None:                       # a design built before the parameter existed
         return default
     return round(p.value * 10.0, 3) if p.unit == "mm" else round(p.value, 3)
+
+
+def back_checks(after, p):
+    """What must follow on a back wall panel or its cassette (wall_back_panel.py) after EDITS_BACK."""
+    def nm(k):
+        return k.split(" / ", 1)[-1]
+    seam, gap = 2.26, 5.5
+    pick = (lambda pre: sorted((v for k, v in after.items() if nm(k).startswith(pre)), key=lambda b: b[0]))
+    rails, stiles, mids = pick("RAIL"), pick("STILE"), pick("STILE - MID")
+    bays, skins, trays, felts = pick("FILL"), pick("SKIN"), pick("TRAY"), pick("FELT")
+    zones = sorted((v for k, v in after.items() if "CLIP ZONE" in nm(k)), key=lambda b: b[0])
+    rivs = [r for k, r in sorted(after.items()) if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k)]
+    n_mid = math.ceil((p["frm_len"] - 20) / 300.0) - 1
+    out = []
+    if rails:
+        out += [("frame width follows half_pw - 1.62 (%g)" % p["frm_len"],
+                 abs(p["frm_len"] - (p["half_pw"] - (gap - seam) / 2)) < 0.01 and
+                 all(abs((r[3] - r[0]) - p["frm_len"]) < 0.01 for r in rails)),
+                ("frame stays close_gap / 2 from X 0 at the closing seam",
+                 all(abs(min(abs(r[0]), abs(r[3])) - gap / 2) < 0.01 for r in rails)),
+                ("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
+                                                         for st in stiles)),
+                ("stud count follows the 300 mm rule (%d)" % n_mid, len(mids) == n_mid),
+                ("no stud pitch over 300", all(b[0] - a[0] <= 300.01 for a, b in zip(mids, mids[1:])))]
+    if bays:
+        out.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+    if skins:
+        sk = skins[0]
+        out.append(("skin is half_pw wide and the row high", abs((sk[3] - sk[0]) - p["half_pw"]) < 0.01 and
+                    abs((sk[5] - sk[2]) - p["pnl_h"]) < 0.01))
+    if trays:
+        tr = trays[0]
+        out += [("tray runs cass_len", abs((tr[3] - tr[0]) - p["cass_len"]) < 0.01),
+                ("tray height follows cass_h", abs((tr[5] - tr[2]) - p["cass_h"]) < 0.01),
+                ("tray stops seam_gap / 2 short of X 0", abs(min(abs(tr[0]), abs(tr[3])) - seam / 2) < 0.01)]
+    if felts:
+        fe = felts[0]
+        out.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
+                    abs((fe[3] - fe[0]) - (p["cass_len"] - 3)) < 0.01 and abs((fe[5] - fe[2]) - (p["cass_h"] - 3)) < 0.01))
+    if zones and rails:
+        x_low = min(r[0] for r in rails)
+        want = sorted({round(x_low + p["stile_pitch"], 2), round(x_low + p["stile_n_mid"] * p["stile_pitch"], 2)})
+        out.append(("clip zones sit on the first and last stud", sorted({round(z[0], 2) for z in zones}) == want))
+    if rivs and rails:
+        x_low = min(r[0] for r in rails)
+        pitch = (p["frm_len"] - 440.0) / 3.0
+        want = [round(x_low + 220.0 + i * pitch, 2) for i in range(4)]
+        got = sorted(round((r[0] + r[3]) / 2.0, 2) for r in rivs)
+        out.append(("top rail rivnuts follow the 220 rule %s" % want,
+                    len(got) == 4 and all(abs(a - b) < 0.02 for a, b in zip(got, want))))
+    return out
 
 
 def run(_context):
@@ -79,19 +133,25 @@ def record(design, rel):
     p("1. Reopen: timeline %d items, %d not healthy; sketches %d, %d fully constrained; %s." % (
         n, len(bad), sketches, sketches - len(loose),
         "parametric" if design.designType == adsk.fusion.DesignTypes.ParametricDesignType else "DIRECT"))
-    names = ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch", "cass_len",
-             "cass_h", "top_h")
+    back_wall = root_pn[:4] in BACK_PREFIXES
+    edits = EDITS_BACK if back_wall else EDITS
+    names = ("half_pw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch", "cass_len", "cass_h",
+             "pnl_h") if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
+                                         "stile_pitch", "cass_len", "cass_h", "top_h")
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
-    exprs = {k: design.userParameters.itemByName(k).expression for k, _e in EDITS}
-    for k, e in EDITS:
+    exprs = {k: design.userParameters.itemByName(k).expression for k, _e in edits}
+    for k, e in edits:
         design.userParameters.itemByName(k).expression = e
     adsk.doEvents()
     n2, bad2, loose2 = health(design)
     after_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     after = snapshot(design)
     p("2. Edit %s: rebuild %d items, %d not healthy, %d sketches not fully constrained." % (
-        ", ".join("%s -> %s" % (k, e) for k, e in EDITS), n2, len(bad2), len(loose2)))
+        ", ".join("%s -> %s" % (k, e) for k, e in edits), n2, len(bad2), len(loose2)))
+    if bad2 or loose2:
+        p("")
+        p("   Not healthy after the edit: %s" % "; ".join(bad2 + ["sketch %s not fully constrained" % k for k in loose2]))
     p("")
     p("| Parameter | Before | After |")
     p("|---|---|---|")
@@ -105,54 +165,77 @@ def record(design, rel):
     for k in sorted(set(before) | set(after)):
         p("| %s | %s | %s |" % (k, before.get(k, "-"), after.get(k, "-")))
     p("")
-    checks = []
-    seam = 2.26
-    y0p = 850.0 - after_p["wall_depth"] + seam          # panel front end (2.26 behind the decor back plate)
-    y0c = 850.0 - after_p["wall_depth"]                 # the lining starts at the decor back plate
-    z0 = 110.0 + seam                                    # walls stand one seam gap above the band top
-    rails = [v for k, v in after.items() if "RAIL" in k]
-    stiles = [v for k, v in after.items() if "STILE" in k]
-    mids = sorted(v for k, v in after.items() if "STILE - MID" in k)
-    bays = [v for k, v in after.items() if "FILL" in k]
-    skins = [v for k, v in after.items() if "SKIN" in k]
-    trays = [v for k, v in after.items() if "TRAY" in k]
-    felts = [v for k, v in after.items() if "FELT" in k]
-    zones = [v for k, v in after.items() if "CLIP ZONE" in k]
-    n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / 300.0) - 1
-    if rails:
-        checks += [
-            ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
-                                                    for r in rails)),
-            ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
-            ("stiles span side_h - 20 - top_h", all(abs((st[5] - st[2]) - (after_p["side_h"] - 20 - after_p["top_h"]))
-                                                    < 0.01 for st in stiles)),
-            ("mid stile count follows the 300 mm rule (%d)" % n_mid, len(mids) == n_mid),
-            ("no stile pitch over 300", all(b[1] - a[1] <= 300.01 for a, b in zip(mids, mids[1:]))),
-        ]
-    if bays:
-        checks.append(("fill bays = mid stile count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
-    if skins:
-        sk = skins[0]
-        checks.append(("skin runs wall_depth - 2.26 and side_h", abs((sk[4] - sk[1]) - (after_p["wall_depth"] - seam))
-                       < 0.01 and abs((sk[5] - sk[2]) - after_p["side_h"]) < 0.01))
-    if trays:
-        tr = trays[0]
-        checks += [("tray runs cass_len", abs((tr[4] - tr[1]) - after_p["cass_len"]) < 0.01),
-                   ("tray starts at the decor back plate", abs(tr[1] - y0c) < 0.01),
-                   ("tray height follows side_h", abs((tr[5] - tr[2]) - after_p["side_h"]) < 0.01)]
-    if felts:
-        fe = felts[0]
-        checks.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
-                       abs((fe[4] - fe[1]) - (after_p["cass_len"] - 3)) < 0.01 and
-                       abs((fe[5] - fe[2]) - (after_p["side_h"] - 3)) < 0.01))
-    if zones:
-        checks += [
-            ("clip zones sit on the first and last mid stile",
-             sorted({round(zz[1], 2) for zz in zones}) == sorted({round(y0p + after_p["stile_pitch"], 2),
-                                                                  round(y0p + after_p["stile_n_mid"] *
-                                                                        after_p["stile_pitch"], 2)})),
-            ("top clip zones follow the top edge", abs(max(zz[5] for zz in zones) - (z0 + after_p["side_h"] - 70)) < 0.01),
-        ]
+    if back_wall:
+        checks = back_checks(after, after_p)
+    else:
+        checks = []
+        seam = 2.26
+        y0p = 850.0 - after_p["wall_depth"] + seam          # panel front end (2.26 behind the decor back plate)
+        y0c = 850.0 - after_p["wall_depth"]                 # the lining starts at the decor back plate
+        z0 = 110.0 + seam                                    # walls stand one seam gap above the band top
+        def nm(k):          # body name without its component's part number ("PN / NAME")
+            return k.split(" / ", 1)[-1]
+        # by name prefix: hardware names hold member names too ("RIVNUT - TOP RAIL 1", "RIVNUT - BACK STILE CORNER 1")
+        rails = [v for k, v in after.items() if nm(k).startswith("RAIL")]
+        stiles = [v for k, v in after.items() if nm(k).startswith("STILE")]
+        mids = sorted(v for k, v in after.items() if nm(k).startswith("STILE - MID"))
+        bays = [v for k, v in after.items() if nm(k).startswith("FILL")]
+        skins = [v for k, v in after.items() if nm(k).startswith("SKIN")]
+        trays = [v for k, v in after.items() if nm(k).startswith("TRAY")]
+        felts = [v for k, v in after.items() if nm(k).startswith("FELT")]
+        zones = [v for k, v in after.items() if "CLIP ZONE" in nm(k)]
+        rivs = sorted(v for k, v in after.items() if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k))
+        washers = sorted(v for k, v in after.items() if nm(k).startswith("STOP WASHER - TOP RAIL "))
+        spig_front = [v for k, v in after.items() if nm(k) == "SPIGOT - TOP RAIL SPIGOT FRONT"]
+        n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / 300.0) - 1
+        if rails:
+            checks += [
+                ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
+                                                        for r in rails)),
+                ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
+                ("stiles span side_h - 20 - top_h", all(abs((st[5] - st[2]) - (after_p["side_h"] - 20 - after_p["top_h"]))
+                                                        < 0.01 for st in stiles)),
+                ("mid stile count follows the 300 mm rule (%d)" % n_mid, len(mids) == n_mid),
+                ("no stile pitch over 300", all(b[1] - a[1] <= 300.01 for a, b in zip(mids, mids[1:]))),
+            ]
+        if bays:
+            checks.append(("fill bays = mid stile count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+        if skins:
+            sk = skins[0]
+            checks.append(("skin runs wall_depth - 2.26 and side_h", abs((sk[4] - sk[1]) - (after_p["wall_depth"] - seam))
+                           < 0.01 and abs((sk[5] - sk[2]) - after_p["side_h"]) < 0.01))
+        if trays:
+            tr = trays[0]
+            checks += [("tray runs cass_len", abs((tr[4] - tr[1]) - after_p["cass_len"]) < 0.01),
+                       ("tray starts at the decor back plate", abs(tr[1] - y0c) < 0.01),
+                       ("tray height follows side_h", abs((tr[5] - tr[2]) - after_p["side_h"]) < 0.01)]
+        if felts:
+            fe = felts[0]
+            checks.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
+                           abs((fe[4] - fe[1]) - (after_p["cass_len"] - 3)) < 0.01 and
+                           abs((fe[5] - fe[2]) - (after_p["side_h"] - 3)) < 0.01))
+        if zones:
+            checks += [
+                ("clip zones sit on the first and last mid stile",
+                 sorted({round(zz[1], 2) for zz in zones}) == sorted({round(y0p + after_p["stile_pitch"], 2),
+                                                                      round(y0p + after_p["stile_n_mid"] *
+                                                                            after_p["stile_pitch"], 2)})),
+                ("top clip zones follow the top edge", abs(max(zz[5] for zz in zones) - (z0 + after_p["side_h"] - 70)) < 0.01),
+            ]
+        if rivs:
+            pitch = (after_p["wall_depth"] - seam - 440.0) / 3.0        # 220 rule, 4 bolts (R-J14)
+            want = [round(y0p + 220.0 + i * pitch, 2) for i in range(4)]
+            got = sorted(round((r[1] + r[4]) / 2.0, 2) for r in rivs)
+            checks.append(("top rail rivnuts follow the 220 rule %s" % want,
+                           len(got) == 4 and all(abs(a - b) < 0.02 for a, b in zip(got, want))))
+        if washers and rivs:
+            checks.append(("a stop washer under each top rail rivnut",
+                           len(washers) == len(rivs) and all(abs((w[1] + w[4]) - (r[1] + r[4])) < 0.04
+                                                             for w, r in zip(washers, rivs))))
+        if spig_front:
+            sp = spig_front[0]
+            checks.append(("front spigot follows the panel's front end (+100)",
+                           abs((sp[1] + sp[4]) / 2.0 - (y0p + 100.0)) < 0.02))
     for k, e in exprs.items():
         design.userParameters.itemByName(k).expression = e
     adsk.doEvents()

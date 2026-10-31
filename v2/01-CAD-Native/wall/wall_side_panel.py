@@ -100,6 +100,14 @@ PARTS = {
     "clip": ("NO-PN-HOLD-H03", "HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED)",
              "Vùng dành cho kẹp treo cassette (HOLD)"),
 }
+# joint hardware the panel carries from the factory, numbered by the joints register (V2-ENG-JNT-01, table 2.1;
+# PROPOSED numbers, D-63): one component each in the panel assembly
+HW_PARTS = {
+    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6"),
+    "stopw": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm"),
+    "spigot": ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8"),
+}
+PARTS.update(HW_PARTS)
 RESERVED = {"110006", "110002", "120001", "211000", "210001", "210003", "210005",
             "350011", "830001", "830005"}          # D-28
 for _k, (_pn, _n, _v) in PARTS.items():
@@ -122,7 +130,11 @@ WALL_PARAMS = [
      "PM ruling 2026-10-31 (outer panel 46 = ACP 3 + bond 3 + frame 40): SikaTack Panel-50 joint 12 x 3, the fixing tape "
      "sets 3 mm (bond spec, PR #23)"),
     ("tube_d", "outer_t - skin_t - bond_t", "mm", "calculation", "frame depth = outer panel 46 - skin 3 - bond 3 = 40 (D-34)"),
-    ("tube_t", "1.2 mm", "mm", "confirmed", "D-34, D-54: wall 1.2 mm (rivnut grip check passed)"),
+    ("tube_t", "1.2 mm", "mm", "confirmed",
+     "D-34, D-54, D-85: perimeter members (rails, front and back stiles) keep the 1.2 mm wall; they carry the rivnuts "
+     "(grip check passed)"),
+    ("stud_t", "1.0 mm", "mm", "confirmed",
+     "D-85 (weight): intermediate studs at a 1.0 mm wall; they carry no rivnut, only the skin's bond line"),
     ("stile_pitch_max", "400 mm", "mm", "confirmed", "D-16, D-34: members 400 mm apart or less, to keep the ACP flat"),
     ("pnl_len", "wall_depth - seam_gap", "mm", "calculation",
      "D-49 depth 1495 less the 2.26 gap at the decor back plate (PM ruling on F-008): 1492.74"),
@@ -171,6 +183,10 @@ WALL_PARAMS = [
     ("side_jnt_pitch", "(pnl_h - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
      "equal pitch of the 3 bolts up the corner and decor joints"),
     ("pocket_w", "60 mm", "mm", "assumption", "register FR-10: fill left out 60 x 60 next to each bolt for the key"),
+    ("corner_z0", "panel_z0" if ROW == 1 else "panel_z0 + back_ph + seam_gap", "mm", "calculation",
+     "bottom of the back panel row this side panel meets at the corner (B1/B2 or B3/B4, skeleton P04)"),
+    ("corner_bolt_pitch", "(back_ph - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
+     "J-WALL-02 bolts run along the back panel's edge: 220, 559.31, 898.61 on its 1118.61 (joints register 2.9)"),
     ("n_len_bolt", "4", "", "source",
      "bolts along a side panel's length: J-BASE-01, J-WALL-01, J-CEIL-01 side edges (joints register 3.1, 3.3, 3.4)"),
     ("len_bolt_pitch", "(pnl_len - 2 * bolt_edge) / (n_len_bolt - 1)", "mm", "calculation",
@@ -194,6 +210,21 @@ WALL_PARAMS = [
      "lower: the panel height; upper: stops lin_gap under the roof frame so it floats (D-57)"),
     ("clip_zone_h", "60 mm", "mm", "assumption", "height of each reserved clip zone (H03: no clip named)"),
     ("clip_zone_dz", "100 mm", "mm", "assumption", "clip zone centre from the cassette's top and bottom edges (H03)"),
+    # joint hardware bodies (register 2.1 sizes): the rivnut as its installed envelope, threads at 6 mm
+    ("stopw_od", "20 mm", "mm", "source", "joints register H-08: stop washer Ø10.5 x Ø20 x 1.5 (PROPOSED part)"),
+    ("stopw_id", "10.5 mm", "mm", "source", "joints register H-08"),
+    ("stopw_t", "1.5 mm", "mm", "source", "joints register H-08: rivnut head 0.76 + washer 1.5 = the 2.26 stop (R-J5)"),
+    ("rivnut_head_d", "12.96 mm", "mm", "source", "Sherex CAH3-610-4.2 head Ø12.96 (joints register H-03, SHX)"),
+    ("rivnut_head_t", "0.76 mm", "mm", "source", "Sherex CAH3-610-4.2 head 0.76 ±0.08 (H-03, SHX)"),
+    ("rivnut_body_d", "9.5 mm", "mm", "source", "Sherex CAH3-610-4.2 body Ø9.50 max (H-03, SHX)"),
+    ("rivnut_len", "10.16 mm", "mm", "source",
+     "Sherex CAH3-610-4.2 installed length 10.16 max under the head (H-03, SHX); the bulge inside the tube is not "
+     "modelled"),
+    ("m6_d", "6 mm", "mm", "calculation", "M6 threads shown at their 6 mm major diameter (no modelled thread)"),
+    ("spigot_pin_d", "8 mm", "mm", "source", "joints register H-05: Ø8 stainless pin (PROPOSED, assumption sizes)"),
+    ("spigot_proud", "8 mm", "mm", "source", "joints register H-05: stands 8 proud (read as: of the joint face)"),
+    ("spigot_thread_l", "10 mm", "mm", "assumption",
+     "M6 thread into the spigot rivnut; H-05 gives no length; 10 stays inside the rivnut's 10.16"),
 ]
 
 # kg/m3, status, source; used for body materials (mass properties)
@@ -205,6 +236,9 @@ DENSITY = {
     "tray": (7850.0, "source", "steel 7850 kg/m3 (EN 10346 DX51D+Z)"),
     "felt": (1.8 / 0.009, "source", "Polyx Board 9: 1.8 kg/m2 at 9 mm (HW-SEL A3 opt 2); the factory felt is unverified"),
     "zone": (1.0, "assumption", "reserved zone, not a part: near-zero density so it adds no mass"),
+    "rivnut": (2640.0, "source", "aluminium 5056 (Sherex CAH3 series): 2.64 g/cm3"),
+    "stopw": (2700.0, "calculation", "5000- or 6000-series aluminium sheet (H-08): 2.70 g/cm3 (5052 2.68, 6061 2.70)"),
+    "spigot": (7900.0, "source", "stainless steel (H-05): 7.9 g/cm3"),
 }
 
 # ---------------------------------------------------------------- helpers
@@ -250,8 +284,8 @@ def needed_skeleton(skel, wall):
     return [p for p in skel if p[0] in want]
 
 
-SKELETON_NAMES = ("pod_w", "pod_d", "pod_h", "wall_depth", "wall_z0", "panel_z0", "side_h", "stack_t", "outer_t",
-                  "cass_t", "lin_gap", "seam_gap")       # the skeleton parameters the wall uses (P04)
+SKELETON_NAMES = ("pod_w", "pod_d", "pod_h", "wall_depth", "wall_z0", "panel_z0", "side_h", "back_ph", "stack_t",
+                  "outer_t", "cass_t", "lin_gap", "seam_gap")       # the skeleton parameters the wall uses (P04)
 
 
 def derive_skeleton(app, design, name):
@@ -393,13 +427,12 @@ def box(design, comp, label, xr, yr, zr, op="new", body=None, plane=None):
     return ext
 
 
-def tube(design, comp, label, xr, yr, zr, along):
-    """Hollow 20 x 40 x 1.2 member: outer box, then the bore cut through its length.
-    along: 'y' (rail) or 'z' (stile)."""
+def tube(design, comp, label, xr, yr, zr, along, t="tube_t"):
+    """Hollow member (20 x 40 or 40 x 40, wall t): outer box, then the bore cut through its length.
+    along: 'y' (rail) or 'z' (stile); t: 'tube_t' (perimeter, 1.2) or 'stud_t' (intermediate studs, 1.0, D-85)."""
     ext = box(design, comp, label + " TUBE", xr, yr, zr)
     b = ext.bodies.item(0)
     xr, yr, zr = span(design, *xr), span(design, *yr), span(design, *zr)
-    t = "tube_t"
     bx = ("(%s) + %s" % (xr[0], t), "(%s) - %s" % (xr[1], t))
     if along == "y":
         box(design, comp, label + " BORE", bx, yr, ("(%s) + %s" % (zr[0], t), "(%s) - %s" % (zr[1], t)), "cut", b)
@@ -555,6 +588,167 @@ def pattern_feat(comp, feats, axis, count_expr, pitch_expr, label):
     return pat
 
 
+HW_SITES = []          # rivnut sites recorded by the joint features, built as bodies by build_hardware
+ALLOWED_CLASH = []     # body name pairs that overlap by design (a spigot's thread in its rivnut's bore)
+
+
+def hw_site(label, axis, face, into, pos, pat=None, washer=True, spigot=False):
+    """Record a rivnut hole for the hardware bodies: the same plane, centre and pattern as the hole.
+    into: the hole's direction into the tube; the head and any washer stand the other way, in the joint gap."""
+    HW_SITES.append({"label": label, "axis": axis, "face": face, "out": -into, "pos": pos, "pat": pat,
+                     "washer": washer, "spigot": spigot})
+
+
+def cyl(design, comp, label, axis, plane_expr, out, pos, od, length, bore=None):
+    """New body: a cylinder (or a tube, with `bore`) on a plane normal to `axis` at `plane_expr`, extruded `out`
+    (+1 or -1 along the axis) by `length`. The circle's centre is dimensioned from the sketch origin by the `pos`
+    expressions and its diameters by `od` and `bore`, so the sketch is fully constrained."""
+    pl = plane_at(design, comp, axis, plane_expr, label)
+    sk = comp.sketches.add(pl)
+    sk.name = "SKETCH - %s" % label
+    c = {axis: ev(design, plane_expr)}
+    for a, e in pos.items():
+        c[a] = ev(design, e)
+    ctr = sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM))
+    circles = sk.sketchCurves.sketchCircles
+    outer = circles.addByCenterRadius(ctr, ev(design, od) / 2.0 * MM)
+    cp = outer.centerSketchPoint
+    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+    g = cp.geometry
+    tp = adsk.core.Point3D.create(g.x + 0.7, g.y + 0.7, 0)
+    for a, e in pos.items():
+        sa = sketch_axis_of(sk, a)
+        if abs(ev(design, e)) < 1e-6:
+            (sk.geometricConstraints.addVerticalPoints if sa == "x" else
+             sk.geometricConstraints.addHorizontalPoints)(cp, sk.originPoint)
+        else:
+            sk.sketchDimensions.addDistanceDimension(sk.originPoint, cp, H if sa == "x" else V,
+                                                     tp).parameter.expression = "abs(%s)" % e
+    sk.sketchDimensions.addDiameterDimension(outer, tp).parameter.expression = od
+    if bore:
+        inner = circles.addByCenterRadius(cp, ev(design, bore) / 2.0 * MM)
+        sk.sketchDimensions.addDiameterDimension(inner, tp).parameter.expression = bore
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    v, k = ev(design, plane_expr), "xyz".index(axis)
+    for dirn in (adsk.fusion.ExtentDirections.PositiveExtentDirection,
+                 adsk.fusion.ExtentDirections.NegativeExtentDirection):
+        profs = [sk.profiles.item(i) for i in range(sk.profiles.count)]
+        prof = max(profs, key=lambda q: q.profileLoops.count) if bore else profs[0]
+        ein = comp.features.extrudeFeatures.createInput(prof, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+        ein.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(length)), dirn)
+        f = comp.features.extrudeFeatures.add(ein)
+        b = bbox(f.bodies.item(0))
+        if abs((b[k] if out > 0 else b[k + 3]) - v) < 0.01:
+            f.name = "EXTRUDE - %s" % label
+            return f.bodies.item(0)
+        f.deleteMe()
+    raise RuntimeError("cylinder %s: neither direction starts on its plane" % label)
+
+
+def join_bodies(comp, target, tools, label):
+    coll = adsk.core.ObjectCollection.create()
+    for t in tools:
+        coll.add(t)
+    cin = comp.features.combineFeatures.createInput(target, coll)
+    cin.operation = adsk.fusion.FeatureOperations.JoinFeatureOperation
+    f = comp.features.combineFeatures.add(cin)
+    f.name = "COMBINE - %s" % label
+    return f.bodies.item(0) if f.bodies.count else target
+
+
+def name_along(comp, axis, known, first, prefix):
+    """Name a pattern's bodies and its original by their order along +axis: PREFIX 1..n."""
+    k = "xyz".index(axis)
+    group = [first] + [b for b in comp.bRepBodies if not any(b == q for q in known) and not b == first]
+    group.sort(key=lambda b: (b.boundingBox.minPoint.x, b.boundingBox.minPoint.y, b.boundingBox.minPoint.z)[k])
+    if not group[0] == first:
+        raise RuntimeError("pattern went the wrong way along %s: %s" % (axis, prefix))
+    out = {}
+    for i, b in enumerate(group):
+        b.name = "%s %d" % (prefix, i + 1)
+        out[b.name] = b
+    return out
+
+
+def build_hardware(design, root, out):
+    """The joint hardware the panel carries from the factory, as bodies (joints register 2.1; sizes H-03, H-05,
+    H-08): at every rivnut hole an H-03 rivnut, with an H-08 stop washer under its head at a stopped joint, and an
+    H-05 spigot in each spigot rivnut. One body per site, patterned like its holes, so an edit moves them with
+    the holes. The rivnut is its installed envelope: head, and the body to its installed length (the bulge inside
+    the tube is not modelled); threads are shown at 6 mm. The bolts stay in the parts list (bought, ISO)."""
+    if not HW_SITES:
+        return
+    comps = {}
+    n0 = len(out)
+    for s in HW_SITES:
+        ax, face, o, pos, lab = s["axis"], s["face"], s["out"], s["pos"], s["label"]
+        sg = "+" if o > 0 else "-"
+        made = []
+        if s["washer"]:
+            c = comps.get("stopw") or comps.setdefault("stopw", new_comp(root, "stopw"))
+            w = cyl(design, c, "STOP WASHER %s" % lab, ax, face, o, pos, "stopw_od", "stopw_t", "stopw_id")
+            made.append((c, w, "STOP WASHER - %s" % lab))
+            head0 = "(%s) %s stopw_t" % (face, sg)
+        else:
+            head0 = face
+        c = comps.get("rivnut") or comps.setdefault("rivnut", new_comp(root, "rivnut"))
+        head = cyl(design, c, "RIVNUT HEAD %s" % lab, ax, head0, o, pos, "rivnut_head_d", "rivnut_head_t", "m6_d")
+        shank = cyl(design, c, "RIVNUT BODY %s" % lab, ax, head0, -o, pos, "rivnut_body_d", "rivnut_len", "m6_d")
+        made.append((c, join_bodies(c, head, [shank], "RIVNUT %s" % lab), "RIVNUT - %s" % lab))
+        if s["spigot"]:
+            c = comps.get("spigot") or comps.setdefault("spigot", new_comp(root, "spigot"))
+            top = "(%s) %s rivnut_head_t" % (head0, sg)
+            pin = cyl(design, c, "SPIGOT PIN %s" % lab, ax, top, o, pos, "spigot_pin_d",
+                      "spigot_proud - rivnut_head_t" + (" - stopw_t" if s["washer"] else ""))
+            thread = cyl(design, c, "SPIGOT THREAD %s" % lab, ax, top, -o, pos, "m6_d", "spigot_thread_l")
+            made.append((c, join_bodies(c, pin, [thread], "SPIGOT %s" % lab), "SPIGOT - %s" % lab))
+        for c, b, name in made:
+            if s["pat"]:
+                pax, cnt, pitch = s["pat"]
+                known = [q for q in c.bRepBodies if not q == b]
+                pattern_feat(c, [b], pax, cnt, pitch, name)
+                out.update(name_along(c, pax, known, b, name))
+            else:
+                b.name = name
+                out[name] = b
+        if s["spigot"]:
+            rv = [nm for c, b, nm in made if nm.startswith("RIVNUT")][0]
+            sp = [nm for c, b, nm in made if nm.startswith("SPIGOT")][0]
+            if s["pat"]:
+                cnt = int(round(design.userParameters.itemByName(s["pat"][1]).value)) if not s["pat"][1].isdigit() \
+                    else int(s["pat"][1])
+                ALLOWED_CLASH.extend(("%s %d" % (rv, i + 1), "%s %d" % (sp, i + 1)) for i in range(cnt))
+            else:
+                ALLOWED_CLASH.append((rv, sp))
+    for key, label in (("rivnut", "ALUMINIUM 5056 RIVNUT"), ("stopw", "ALUMINIUM STOP WASHER"),
+                       ("spigot", "STAINLESS SPIGOT")):
+        if key in comps:
+            set_material(design, list(comps[key].bRepBodies), key, label)
+    print("step 7: joint hardware, %d bodies in %d components (%s)" % (
+        len(out) - n0, len(comps), ", ".join(c.partNumber for c in comps.values())))
+
+
+def settle_part_number(app, root, pn, seconds=30.0):
+    """--doc-new's first upload can finish after a short build and overwrite the root part number with the
+    document's timestamp name (seen on the skin, a 2-feature build, 2026-10-31). Before saving, wait until the
+    upload has given the document its data file and the number has held for a second, setting it again if not."""
+    import time
+    t0, held = time.time(), 0
+    while time.time() - t0 < seconds:
+        adsk.doEvents()
+        if root.partNumber != pn:
+            root.partNumber = pn
+            held = 0
+        elif app.activeDocument.dataFile is not None:
+            held += 1
+            if held >= 5:
+                return True
+        time.sleep(0.2)
+    return root.partNumber == pn
+
+
 def name_by_y(comp, known, first, prefix):
     """Name the pattern's copies and the original by their order along +Y: PREFIX 1..n.
     Fusion API objects compare with == but are not hashable, so `known` is a list."""
@@ -672,6 +866,8 @@ def build_panel(design, root):
         build_fill(design, fill, out, xf, zs)
     if frame:
         joint_features(design, frame, fill, out)
+    if PART == "panel":
+        build_hardware(design, root, out)
     set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
                  "ALUMINIUM TUBE 6063-T6 MILL")
     set_material(design, [b for k, b in out.items() if k.startswith("SKIN")], "skin", "ACP 3 MM EV3038")
@@ -690,7 +886,7 @@ def build_frame(design, frame, out, xf, yf, zs):
     out["STILE - BACK"] = tube(design, frame, "STILE - BACK", xf, ("(%s) - corner_w" % Y_FRAME_BACK, Y_FRAME_BACK),
                                zs, "z")
     mid = tube(design, frame, "STILE - MID 1", xf,
-               ("(%s) + stile_pitch" % Y_FRONT, "(%s) + stile_pitch + tube_w" % Y_FRONT), zs, "z")
+               ("(%s) + stile_pitch" % Y_FRONT, "(%s) + stile_pitch + tube_w" % Y_FRONT), zs, "z", "stud_t")
     out["STILE - MID 1"] = mid
     pattern_y(frame, [mid], "stile_n_mid", "stile_pitch", "STILES - MID")
     out.update(name_by_y(frame, list(out.values()), mid, "STILE - MID"))
@@ -727,12 +923,9 @@ def build_fill(design, fill, out, xf, zs):
     # the stile count (a pattern of a cut can't reach other bodies: PATTERN_FEATURES_NO_PASTE_INT_EDGES; a fixed
     # target list misses the pieces an edit adds)
     z_rail_top = "(%s) + tube_w" % Z0
-    if ROW == 1:
-        n_now = int(round(design.userParameters.itemByName("n_len_bolt").value))
-        ys = ["(%s) + bolt_edge + %d * len_bolt_pitch" % (Y_FRONT, i) for i in range(n_now)]
-    else:
-        n_now = int(round(design.userParameters.itemByName("stile_n_mid").value)) + 1
-        ys = ["(%s) + tube_w / 2 + (%d + 0.5) * stile_pitch" % (Y_FRONT, i) for i in range(n_now)]
+    # the bottom rail's bolts (J-BASE-01 on a lower panel, J-WALL-01 on an upper one) follow the 220 rule (R-J14)
+    n_now = int(round(design.userParameters.itemByName("n_len_bolt").value))
+    ys = ["(%s) + bolt_edge + %d * len_bolt_pitch" % (Y_FRONT, i) for i in range(n_now)]
     for i, yc in enumerate(ys):
         box(design, fill, "FILL POCKET BOTTOM BOLT %d" % (i + 1), xf,
             ("(%s) - pocket_w / 2" % yc, "(%s) + pocket_w / 2" % yc), (z_rail_top, "(%s) + pocket_w" % z_rail_top),
@@ -775,15 +968,16 @@ def joint_features(design, frame, fill, out):
         # top rail, nut side of J-WALL-01: rivnut at each bay (FR-01) and 2 spigot rivnuts (FR-04)
         r = hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": y_b1}, "rivnut_d", t, "TOP RAIL RIVNUT 1")
         pattern_feat(frame, [r], "y", n_b, p_b, "TOP RAIL RIVNUTS")
-        hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": "(%s) + spigot_edge" % Y_FRONT}, "rivnut_d", t,
-             "TOP RAIL SPIGOT RIVNUT FRONT")
-        hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": "(%s) - spigot_edge" % Y_BACK}, "rivnut_d", t,
-             "TOP RAIL SPIGOT RIVNUT BACK")
+        hw_site("TOP RAIL", "z", zt1, -1, {"x": xc, "y": y_b1}, ("y", n_b, p_b))
+        for k, ys_ in (("FRONT", "(%s) + spigot_edge" % Y_FRONT), ("BACK", "(%s) - spigot_edge" % Y_BACK)):
+            hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": ys_}, "rivnut_d", t, "TOP RAIL SPIGOT RIVNUT %s" % k)
+            hw_site("TOP RAIL SPIGOT %s" % k, "z", zt1, -1, {"x": xc, "y": ys_}, washer=False, spigot=True)
     if ROW == 2:
         # 40 x 40 top member, nut side of J-CEIL-01 side edges: a rivnut in its room-side face at each bay middle
         r = hole(design, frame, top, "x", X_FRAME_IN, S, {"y": y_b1, "z": "pod_h - ceil_bolt_dz"}, "rivnut_d", t,
                  "TOP MEMBER CEILING RIVNUT 1")
         pattern_feat(frame, [r], "y", n_b, p_b, "TOP MEMBER CEILING RIVNUTS")
+        hw_site("TOP MEMBER CEILING", "x", X_FRAME_IN, S, {"y": y_b1, "z": "pod_h - ceil_bolt_dz"}, ("y", n_b, p_b))
     z_j1 = "(%s) + bolt_edge" % Z0
     # front stile, bolt side of J-FRONT-01 (decor block): FR-02 in the front wall, FR-03 in the back wall
     a = hole(design, frame, front, "y", Y_FRONT, +1, {"x": xc, "z": z_j1}, "bolt_d", t, "FRONT STILE BOLT CLEARANCE 1")
@@ -791,9 +985,11 @@ def joint_features(design, frame, fill, out):
              "FRONT STILE KEY ACCESS 1")
     pattern_feat(frame, [a, b], "z", "n_side_jnt", "side_jnt_pitch", "FRONT STILE BOLT HOLES")
     # 40 x 40 back stile, nut side of J-WALL-02 (back corner): rivnut in the room-side face (FR-01, FR-06)
-    r = hole(design, frame, back, "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": z_j1},
+    r = hole(design, frame, back, "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": "corner_z0 + bolt_edge"},
              "rivnut_d", t, "BACK STILE CORNER RIVNUT 1")
-    pattern_feat(frame, [r], "z", "n_side_jnt", "side_jnt_pitch", "BACK STILE CORNER RIVNUTS")
+    pattern_feat(frame, [r], "z", "n_side_jnt", "corner_bolt_pitch", "BACK STILE CORNER RIVNUTS")
+    hw_site("BACK STILE CORNER", "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": "corner_z0 + bolt_edge"},
+            ("z", "n_side_jnt", "corner_bolt_pitch"))
     holes = sum(c.features.holeFeatures.count for c in [frame])
     print("step 6: joint features: %d hole features (before patterns)" % holes)
 
@@ -978,7 +1174,7 @@ def run(_context):
         tl.count, len(bad_items), sum(c.sketches.count for c in design.allComponents), len(loose)))
     for name, b in sorted(bodies.items()):
         print("BODY|%s|%s|%s|%s" % (b.parentComponent.partNumber, name, size(bbox(b)), bbox(b)))
-    hits, bad = clash_check(list(bodies.values()))
+    hits, bad = clash_check(list(bodies.values()), ALLOWED_CLASH)
     print("clash pairs %d, unexpected %d %s" % (len(hits), len(bad), bad))
     for c in design.allComponents:
         if c.bRepBodies.count:
@@ -993,6 +1189,8 @@ def run(_context):
         raise RuntimeError("checks failed (unhealthy %s, loose %s, clashes %s)" % (bad_items, loose, bad))
     if ARGS.get("post") == "1":
         doc = app.activeDocument
+        if not settle_part_number(app, root, pn):
+            raise RuntimeError("root part number %r would not hold at %s before the save" % (root.partNumber, pn))
         if not doc.save("%s build: %s" % (REV, ARGS.get("note", "wall_side_panel.py"))):
             raise RuntimeError("save failed")
         print("saved %s (version %s)" % (doc.name, doc.dataFile.versionNumber if doc.dataFile else "?"))

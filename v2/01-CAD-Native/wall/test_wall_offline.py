@@ -33,6 +33,20 @@ def load(part="panel", side="L", row="1"):
     return ns
 
 
+def load_back(pos="B1", part="panel"):
+    """Import wall_back_panel.py (which runs wall_side_panel.py as its library) with fake adsk modules."""
+    fake = types.ModuleType("adsk")
+    fake.core = types.ModuleType("adsk.core")
+    fake.fusion = types.ModuleType("adsk.fusion")
+    sys.modules.update({"adsk": fake, "adsk.core": fake.core, "adsk.fusion": fake.fusion})
+    path = os.path.join(HERE, "wall_back_panel.py")
+    ns = {"__name__": "wall_back_panel", "__file__": path,
+          "SCRIPT_ARGS": {"pos": pos, "part": part, "repo_root": REPO}}
+    with open(path, "r", encoding="utf-8") as fh:
+        exec(compile(fh.read(), path, "exec"), ns)
+    return ns
+
+
 # PM rulings of 2026-10-31 that skeleton P04 (PR #24) carries, applied here until it merges: outer panel
 # 46 (stack 84), seam gap 2.26 at every site joint, side rows of (wall_h - 2 * seam_gap) / 2.
 PENDING_P04 = [("seam_gap", "2.26 mm"), ("outer_t", "46 mm"), ("stack_t", "84 mm"), ("panel_z0", "wall_z0 + seam_gap")]
@@ -79,6 +93,12 @@ def evaluate(expr, vals):
     return eval(py, {"__builtins__": {}}, dict(vals, ceil=math.ceil, floor=math.floor, abs=abs))
 
 
+# joints register V2-ENG-JNT-01 table 2.1 (main, PR #47): numbers and names of the hardware WALL models
+REGISTER_HW = {"838003": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+               "831002": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
+               "831001": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS"}
+
+
 class WallSidePanelTest(unittest.TestCase):
 
     def test_parameters_resolve_to_the_decided_sizes(self):
@@ -98,6 +118,10 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertEqual(v["access_d"], 19)              # FR-03: passes the 18 mm head washer
         self.assertEqual(v["bolt_line_y"], 824)          # R-J15: back panel tube centre
         self.assertEqual(v["bolt_d"], 7)                 # PM ruling on F-009
+        self.assertEqual(v["tube_t"], 1.2)               # D-85: perimeter members keep 1.2 (they carry the rivnuts)
+        self.assertEqual(v["stud_t"], 1.0)               # D-85: intermediate studs at 1.0
+        self.assertAlmostEqual(v["rivnut_head_t"] + v["stopw_t"], v["seam_gap"])   # the 2.26 metal stop (R-J5)
+        self.assertLess(v["spigot_thread_l"], v["rivnut_len"] + v["rivnut_head_t"])  # thread stays in the rivnut
         self.assertEqual(v["tray_h"], 34)                # returns the full cassette depth, lips hold the felt
         self.assertEqual(v["gap_h"], 24)                 # air gap behind the felt (D-17's 25 less the lip sheet)
         self.assertAlmostEqual(v["cass_len"], 1445)      # decor back plate to past the back cassette's face (D-57)
@@ -115,6 +139,13 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertAlmostEqual(v["stile_len"], 1142.74 - 20 - 40)
         self.assertAlmostEqual(2400 - v["ceil_bolt_dz"], 2374)   # R-J15: ceiling frame tube centre
         self.assertEqual(resolve(load(row="1"))["top_h"], 20)
+
+    def test_corner_rivnuts_follow_the_back_panel_edge(self):
+        """Joints register 2.9: the back corner's 3 bolts run along the back panel's 1118.61 edge."""
+        lo, up = resolve(load(row="1")), resolve(load(row="2"))
+        for v, want in ((lo, (332.26, 671.57, 1010.87)), (up, (1453.13, 1792.44, 2131.74))):
+            for k, w in enumerate(want):
+                self.assertAlmostEqual(v["corner_z0"] + v["bolt_edge"] + k * v["corner_bolt_pitch"], w, delta=0.01)
 
     def test_part_designs_have_their_own_names(self):
         self.assertEqual(load(part="frame")["DOC_NAME"], "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_CAD")
@@ -148,6 +179,10 @@ class WallSidePanelTest(unittest.TestCase):
                     if pn.startswith("NO-PN"):
                         self.assertTrue(name.startswith("HOLD"), name)
                         continue
+                    if key in ns["HW_PARTS"]:       # shared joint hardware: the register's numbers, used by many
+                        self.assertIn(pn, REGISTER_HW)
+                        self.assertEqual(name, REGISTER_HW[pn])
+                        continue
                     self.assertRegex(pn, r"^(21|51)\d{4}$")
                     self.assertNotIn(pn, ns["RESERVED"])
                     self.assertNotIn(pn, seen, "%s used twice" % pn)
@@ -177,6 +212,58 @@ class WallSidePanelTest(unittest.TestCase):
             self.assertNotIn(name, skel_names, name)
         for n in ns["SKELETON_NAMES"]:
             self.assertIn(n, skel_names, n)
+
+
+class WallBackPanelTest(unittest.TestCase):
+
+    def test_back_sizes_follow_the_register(self):
+        for pos in ("B1", "B2", "B3", "B4"):
+            v = resolve(load_back(pos))
+            self.assertAlmostEqual(v["half_pw"], 1200.61, places=2)     # skin width (R-J16)
+            self.assertAlmostEqual(v["frm_len"], 1198.99, places=2)     # frame width, register 2.8
+            self.assertAlmostEqual(v["pnl_h"], 1118.61, places=2)       # both rows, register 2.8
+            self.assertEqual(v["stile_n_mid"], 2)                       # D-85: 2 studs at 393
+            self.assertAlmostEqual(v["stile_pitch"], 393.0, places=2)
+            self.assertAlmostEqual(v["len_bolt_pitch"], 253.0, places=2)   # register 2.9: 220, 473, 725.99, 978.99
+            self.assertAlmostEqual(v["side_jnt_pitch"], 339.31, delta=0.01)  # register 2.9: 220, 559.31, 898.61
+            self.assertAlmostEqual(v["cass_len"], 1164.87, places=2)    # side lining face to 1.13 short of X 0
+            self.assertEqual(v["stud_t"], 1.0)
+        self.assertAlmostEqual(resolve(load_back("B1"))["cass_h"], 1118.61, places=2)
+        self.assertAlmostEqual(resolve(load_back("B3"))["cass_h"], 1116.87, places=2)   # floats 4 under the roof frame
+
+    def test_back_bolts_are_30_clear_of_every_stile(self):
+        v = resolve(load_back("B2"))
+        stiles = [(i * v["stile_pitch"], i * v["stile_pitch"] + 20) for i in range(int(v["stile_n_mid"]) + 2)]
+        bolts = [220 + i * v["len_bolt_pitch"] for i in range(4)]
+        for b in bolts:
+            self.assertGreaterEqual(min(min(abs(b - a), abs(b - z)) for a, z in stiles), 30)   # R-J14
+
+    def test_back_part_numbers_names_and_documents(self):
+        seen = {}
+        for pos in ("B1", "B2", "B3", "B4"):
+            ns = load_back(pos)
+            for key, (pn, name, vn) in ns["PARTS"].items():
+                if pn.startswith("NO-PN") or key in ns["HW_PARTS"]:
+                    continue
+                self.assertRegex(pn, r"^(21|51)\d{4}$")
+                self.assertNotIn(pn, ns["RESERVED"])
+                self.assertNotIn(pn, seen, "%s used twice" % pn)
+                seen[pn] = name
+        self.assertEqual(seen["210201"], "WALL - PANEL ASSY - BACK LOWER - B1")
+        self.assertEqual(seen["211204"], "WALL - PANEL FRAME - BACK UPPER - B4")
+        self.assertEqual(seen["510202"], "LINING - CASSETTE - BACK LOWER - B2")
+        self.assertEqual(load_back("B1")["DOC_NAME"], "210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_CAD")
+        self.assertEqual(load_back("B3", "cassette")["DOC_NAME"], "510203_P01_LINING-CASSETTE-BACK-UPPER-B3_CAD")
+        side = load()
+        for pn in seen:
+            self.assertNotIn(pn, [p[0] for p in side["PARTS"].values()])
+
+    def test_back_parameters_have_status_and_source(self):
+        for pos in ("B1", "B4"):
+            ns = load_back(pos)
+            for name, expr, unit, status, source in ns["WALL_PARAMS"]:
+                self.assertIn(status, ("confirmed", "source", "calculation", "assumption", "unverified"), name)
+                self.assertTrue(source, name)
 
 
 if __name__ == "__main__":
