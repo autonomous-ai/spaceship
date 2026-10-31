@@ -33,12 +33,22 @@ OUT = os.path.join(REPO, "v2", "03-Manufacturing", "ceiling")
 REV = M.REV
 
 
-# material and finish of the joint hardware, as the joints register 2.1 and WALL's lists give them
-HW_MATERIAL = {
-    "838001": ("steel 8.8", "zinc plated"), "838002": ("steel 8.8", "zinc plated"),
-    "838003": ("aluminium 5056", "plain"), "838004": ("stainless A2", "plain"),
-    "838005": ("elastomer (HOLD-02)", ""), "831002": ("aluminium sheet 1.5, 5000 or 6000 series", "mill"),
-    "848001": ("PORON 4701-40 Soft with PSA", ""), "848004": ("EPDM or TPE hollow bulb (HOLD-12)", ""),
+# material, finish, maker, SKU and torque of the joint hardware, worded as the joints register
+# 2.1 and WALL's parts lists give them (one wording per register number)
+TQ_RIVNUT = "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)"
+HW_SPEC = {
+    "838001": ("steel, property class 8.8 (ISO 898-1)", "zinc plated", "HOLD: any maker to ISO 4762, picked at the RFQ",
+               "ISO 4762 M6 x 16 - 8.8 - zinc plated", TQ_RIVNUT),
+    "838002": ("steel, property class 8.8 (ISO 898-1)", "zinc plated", "HOLD: any maker to ISO 4762, picked at the RFQ",
+               "ISO 4762 M6 x 25 - 8.8 - zinc plated", "snug only: a pin, not a clamp (joints register 2.10)"),
+    "838003": ("aluminium 5056", "none (plain aluminium, as supplied)", "Sherex (PEM)", "CAH3-610-4.2", TQ_RIVNUT),
+    "838004": ("stainless steel A2", "none (plain stainless)", "HOLD: any maker to ISO 7093-1, picked at the RFQ",
+               "ISO 7093-1 - 6.4 x 18 x 1.6 - A2", ""),
+    "838005": ("elastomer (HOLD-02)", "as supplied (elastomer)", "HOLD-02", "HOLD-02", ""),
+    "831002": ("aluminium sheet 1.5, 5000 or 6000 series", "mill finish (punched)", "made (register H-08)", "", ""),
+    "848001": ("PORON 4701-40 Soft polyurethane foam with PSA", "none (foam, PSA liner one side)",
+               "Rogers (PORON), PSA laminated and slit by a converter (HOLD-05)", "PORON 4701-40 Soft, 3.97 x 8 strip with PSA", ""),
+    "848004": ("EPDM or TPE hollow bulb (HOLD-12)", "as supplied", "HOLD-12", "HOLD-12: hollow bulb, working gap 4 to 7", ""),
 }
 
 
@@ -158,6 +168,43 @@ def write_tray_dxf():
     return dst, seen
 
 
+def _sizes():
+    """(size, tolerance) per made part and assembly: a parts-list row is the cut list for soft
+    goods and plain parts (PM ruling 2026-11-01 on the Checker's pre-check)."""
+    def fills(key):
+        def f(v):
+            for k, _bay, box, _n in M.fill_strips(v):
+                if k == key:
+                    b = [M.ev(v, e) for e in box]
+                    return "%.1f x %.1f x %.0f" % (b[1] - b[0], b[3] - b[2], v["fill_t"]), "cut +/-2 (assumption); notches per the tabulated drawing"
+            return "", ""
+        return f
+    return {
+        "ceiling": lambda v: ("%.2f x %.2f x %.0f (X x Y x Z)" % (2 * v["half_pw"] + v["seam_gap"], v["wall_depth"], v["stack_t"]), ""),
+        "assy_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["outer_t"]), ""),
+        "assy_c2": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["outer_t"]), ""),
+        "frame_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_fw"], v["wall_depth"], v["frame_t"]),
+                               "cut length +/-0.5; holes +/-0.2 from the round spigot hole (R-J6); spigot to closing face +/-0.1 (ST-04)"),
+        "frame_c2": lambda v: ("%.2f x %.2f x %.0f" % (v["half_fw"], v["wall_depth"], v["frame_t"]),
+                               "cut length +/-0.5; holes +/-0.2 from the round spigot hole (R-J6); spigot to closing face +/-0.1 (ST-04)"),
+        "skin_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"]),
+                              "ISO 2768-m; no drawing (D-89 part 4): its DXF is the outline"),
+        "skin_c2": lambda v: ("%.2f x %.2f x %.0f, roof slot %.0f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"], v["slot_w"], v["slot_d"]),
+                              "ISO 2768-m; roof slot from the closing-seam edge and the front edge +/-0.5 (critical: the roof sleeve passes through it, D-61); no drawing (D-89 part 4)"),
+        "cassette": lambda v: ("%.0f x %.0f x %.0f (%.0f with the fill)" % (v["cs_w"], v["cs_d"], v["tray_h"], v["tray_h"] + v["fill_t"]),
+                               "+/-1 assembled (assumption)"),
+        "tray": lambda v: ("%.0f x %.0f x %.0f, 0.5 sheet" % (v["cs_w"], v["cs_d"], v["tray_h"]), "cut +/-0.2, bent +/-0.5 (assumption)"),
+        "rib": lambda v: ("hat %.0f x %.0f x %.1f long, 0.5 sheet" % (v["rib_crown"] + 2 * v["rib_fl"], v["gap_h"],
+                                                                     v["cs_d"] - 2 * v["tray_t"] - 2 * v["rib_end"]), "length +/-1, bends +/-0.5 (assumption)"),
+        "felt": lambda v: ("%.1f x %.1f x %.0f" % (v["cs_w"] - 2 * (v["tray_t"] + v["felt_c"]), v["cs_d"] - 2 * (v["tray_t"] + v["felt_c"]), v["felt_t"]),
+                           "knife cut +/-1 (assumption); two sprinkler zones marked, nothing cut"),
+        "fill_a": fills("fill_a"), "fill_b": fills("fill_b"), "fill_c": fills("fill_c"), "fill_d": fills("fill_d"),
+    }
+
+
+SIZE_TOL = _sizes()
+
+
 def parts_list(v, mass):
     """Rows for the master BOM: the ceiling (both halves) as it ships."""
     q = {  # quantity per parent, parent
@@ -186,6 +233,7 @@ def parts_list(v, mass):
         else:
             mass_txt, status = ("%.3f" % each) if each is not None else "", "calculation (Fusion, CAD geometry x density)"
         matname = M.MATERIALS[mat][0] if mat else ""
+        size, tol = SIZE_TOL.get(key, (lambda vv: ("", "")))(v)
         src = {
             "frame_c1": "D-16, D-34, D-54, D-55; PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
             "frame_c2": "D-16, D-34, D-54, D-55; PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
@@ -205,6 +253,9 @@ def parts_list(v, mass):
             "part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": q[key][1] or "",
             "qty_per_parent": q[key][0], "qty_per_pod": per_pod[key], "material": matname,
             "finish": M.FINISH.get(key, ""), "process": M.PROCESS.get(key, ""),
+            "maker": "HOLD-08" if kind == "HOLD" else "", "sku": ({"clip": "HOLD-08: rated 4.9 kg pull-out each (ceiling, J-LIN-01), captive lock",
+                                                                  "catch": "HOLD-08: 48 kg working load per lanyard (T08)"}.get(key, "")),
+            "torque": "", "size_mm": size, "tolerance": tol,
             "mass_each_kg": mass_txt, "mass_status": status, "revision": REV,
             "status": "DRAFT" if kind != "HOLD" else "HOLD", "source": src,
         })
@@ -216,6 +267,8 @@ def parts_list(v, mass):
         "name": "POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE",
         "name_vi": "Bộ keo dán ACP", "kind": "PI", "parent": "assy_c1|assy_c2", "qty_per_parent": 1,
         "qty_per_pod": 2, "material": "SikaTack Panel-50 system (bond spec)", "finish": "", "process": "",
+        "maker": "Sika", "sku": "SikaTack Panel-50 system (bond spec V2-ENG-BND): SikaTack Panel-50 (ETA 19/0511), Sika Aktivator-205, Sika Panel Primer, SikaTack Panel Fixing Tape",
+        "torque": "", "size_mm": "", "tolerance": "",
         "mass_each_kg": "%.3f" % bond_each,
         "mass_status": "calculation", "revision": REV, "status": "DRAFT",
         "source": "joints register H-12 (108002); bond spec: 0.28 kg/m2 x %.3f m2 per ceiling outer panel" % (
@@ -234,10 +287,11 @@ def parts_list(v, mass):
             qty = round(n, 3) if unit == "m" else int(round(n))
             key = "%s_%s" % (hk, half)
             q[key] = (qty, half)
-            mat, fin = HW_MATERIAL[pn]
+            mat, fin, maker, sku, tq = HW_SPEC[pn]
             r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": half,
                  "qty_per_parent": qty, "qty_per_pod": qty, "material": mat, "finish": fin,
                  "process": "punched (a part we make)" if kind == "MP" else "",
+                 "maker": maker, "sku": sku, "torque": tq, "size_mm": "", "tolerance": "",
                  "mass_each_kg": "%.4f" % kg, "mass_status": mstat.split(":")[0],
                  "revision": REV, "status": "HOLD" if kind == "HOLD" else "DRAFT",
                  "source": "joints register V2-ENG-JNT-01 2.1 (%s), 3.5 J-CEIL-01 / 3.6 J-CEIL-02; per %s; mass %s" % (
@@ -343,13 +397,7 @@ def main(argv):
         w.writeheader()
         w.writerows(rows)
     print("cut list", p, len(rows), "rows")
-    rows = flat_cut_list(v)
-    p = os.path.join(OUT, "410000_%s_CEILING-FLAT-CUT-LIST_BOM.csv" % REV)
-    with open(p, "w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
-        w.writeheader()
-        w.writerows(rows)
-    print("flat cut list", p, len(rows), "rows")
+
     if flat:
         fb = M.tray_flat(v)
         print("flat body (Fusion) %.2f x %.2f, blank (K-factor calc) %.2f x %.2f" % (
