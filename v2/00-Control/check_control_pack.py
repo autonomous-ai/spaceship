@@ -246,7 +246,7 @@ def check_decisions():
     text = (HERE / "decision-log.md").read_text(encoding="utf-8")
     seen = []
     for hdr, cells in table_rows(text):
-        if not re.match(r"^D-\d\d$", cells[0]):
+        if not re.match(r"^D-\d{2,3}$", cells[0]):
             continue
         seen.append(cells[0])
         h = [x.lower() for x in hdr]
@@ -263,7 +263,7 @@ def check_decisions():
     cited = set()
     for f in sorted(HERE.iterdir()):
         if f.suffix in (".md", ".csv"):
-            cited.update(re.findall(r"\bD-\d\d\b", f.read_text(encoding="utf-8")))
+            cited.update(re.findall(r"\bD-\d{2,3}\b", f.read_text(encoding="utf-8")))
     for d in sorted(cited - set(seen)):
         fail(name, f"{d} is cited but not in the decision log")
     print(f"[6] decision log: {len(seen)} decisions, each with date, decision, reason and what it affects; "

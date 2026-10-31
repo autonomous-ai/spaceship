@@ -150,9 +150,8 @@ NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pock
                       r"\btap(?:ped|ping)?\b|thread|countersink|counterbore|ream|\bturn(?:ed|ing)?\b|lathe|chamfer|weld|"
                       r"bond", re.I)
 BEND_LAYER = re.compile(r"\b(?:BEND|FOLD)", re.I)
-
-
-DXF_STRUCTURE = ("BLOCK", "ENDBLK", "SEQEND", "VERTEX", "ENDSEC", "EOF")   # records, not lines
+METAL = re.compile(r"alumin|steel|zinc", re.I)     # D-99: part 4 is for flat metal sheet (the checklist's METAL)
+ACP = re.compile(r"\bACP\b|aluminium composite", re.I)   # D-100: and flat ACP (the checklist's ACP)
 
 
 def dxf_other_layers(text):
@@ -162,10 +161,9 @@ def dxf_other_layers(text):
 
 
 def dxf_summary(path):
-    """A DXF read without a library: {'units': $INSUNITS, 'layers': {layer: count of drawing entities in the
-    ENTITIES and BLOCKS sections}, 'circles': [diameters of CIRCLE entities]}; None when the file can't be read
-    as ASCII DXF (empty or binary). Block records (BLOCK, ENDBLK) and a polyline's VERTEX and SEQEND are records,
-    not lines, so a block header on layer 0 doesn't count."""
+    """What the D-89 part 4 hole check needs from a DXF, read without a library: {'units': $INSUNITS,
+    'circles': [diameters of the CIRCLE entities it draws]}; None when it can't be read as ASCII DXF. Which layers
+    it draws on is the shared reader's job (dxf_layers), not this one's."""
     try:
         with open(path, encoding="utf-8", errors="replace") as fh:
             text = fh.read()
@@ -175,7 +173,7 @@ def dxf_summary(path):
         return None
     lines = text.splitlines()
     pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
-    out = {"units": None, "layers": {}, "circles": []}
+    out = {"units": None, "circles": []}
     sec, cur = None, None
     for k, (code, val) in enumerate(pairs):
         if code == "2" and k and pairs[k - 1] == ("0", "SECTION"):
@@ -184,10 +182,8 @@ def dxf_summary(path):
             sec, cur = None, None
         elif code == "9" and val == "$INSUNITS" and k + 1 < len(pairs):
             out["units"] = pairs[k + 1][1]
-        elif sec in ("ENTITIES", "BLOCKS") and code == "0":
-            cur = None if val.upper() in DXF_STRUCTURE else val.upper()
-        elif sec in ("ENTITIES", "BLOCKS") and cur and code == "8":
-            out["layers"][val] = out["layers"].get(val, 0) + 1
+        elif sec == "ENTITIES" and code == "0":
+            cur = val.upper()
         elif sec == "ENTITIES" and cur == "CIRCLE" and code == "40":
             try:
                 out["circles"].append(round(2.0 * float(val), 2))
@@ -224,6 +220,7 @@ def flat_row_lacks(root, pn):
             re.search(r"\d+(?:\.\d+)?\s*mm\b", material))
         not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(process)})
         lacks = [n for n, ok in (
+            ("metal or ACP sheet (D-99, D-100)", bool(METAL.search(material) or ACP.search(material))),
             ("a cut by laser, waterjet or router in its process", bool(SHEET_CUT.search(process))),
             ("no bends or machined features (its process names %s)" % ", ".join(not_flat), not not_flat),
             ("material", bool(material)), ("thickness", thick), ("finish", bool(has(r"finish"))),
@@ -338,6 +335,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         where = (files.get("STEP") or files.get("CAD") or [("", "")])[0][1]
         r_where = rel(root, where) if where else ""
         owner = owner_for(r_where or src_by_pn.get(pn, ""), pn)
+        if pn[:2] in ("83", "84"):        # shared hardware: its drawing is the joints register's, wherever it's modelled
+            owner = owner_for("", pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
         if not pdfs and pn in tab:                 # D-89: listed in a tabulated drawing, so drawn
             cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}
@@ -414,6 +413,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   label, "/".join(sorted(revs)), "/".join(sorted(cad_revs))),
                               "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
                               rp, owner))
+        if "WIRING-DIAGRAM" in os.path.basename(pdf).upper():
+            continue        # D-93: ELECTRICAL's wiring diagram draws 710000 (routes and joints on sheet 3); a schematic
         text = pdf_text(pdf)
         if text is None:
             continue

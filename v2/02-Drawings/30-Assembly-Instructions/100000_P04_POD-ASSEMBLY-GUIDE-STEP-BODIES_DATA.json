@@ -20,7 +20,9 @@
    "view": "back",
    "new": [
     "F1 ENVELOPE",
+    "F1-MAT ENVELOPE",
     "F2 ENVELOPE",
+    "F2-MAT ENVELOPE",
     "THRESHOLD ENVELOPE"
    ],
    "image": "v2/02-Drawings/30-Assembly-Instructions/img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png"

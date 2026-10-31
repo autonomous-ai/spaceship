@@ -701,23 +701,28 @@ def dr_volume_m3():
 # D-60 air parts (DECIDED by the PM on 2026-10-31; sizes are this calculation). Pod coordinates, mm.
 D60 = dict(
     skin=12.0,                       # felt-covered faces: 3 mm ACP + 9 mm felt, as the linings (ASSUME construction)
-    fill=27.0,                       # polyester fill between each cartridge and the faces toward the pod (27 mm
-                                     # at the column's left face on P04, 29-30 elsewhere; the smallest is used)
+    fill=27.0,                       # polyester fill between the exhaust cartridge and the soffit's faces (27 mm
+                                     # under it, 29 in front: AIR #91); the smallest is used
+    fill_col=27.0,                   # the same between the supply cartridge and the column's left face: 27 mm on
+                                     # AIR #91 at 3b891cf, the cartridge at X 988 to 1161, 5 mm off the lining (29 in front)
     cart=(173.0, 314.0, 1750.0),     # one cartridge size for both paths: casing outer width, stack depth, length
     gap=80.0, ngap=2, lin=50.0,      # two 80 mm passages between three 50 mm Pyrotek Sorberpoly 2D layers (HW fill row)
-    col=((949.0, 1166.0), (-645.0, -285.0), (15.0, 2120.0)),         # air column outer: X, Y, Z (P04: 217 wide,
+    col=((949.0, 1161.0), (-645.0, -285.0), (12.0, 2120.0)),         # air column outer: X, Y, Z (AIR #91: 212 wide,
+                                                                     # 5 mm off the lining, foot on the floor top Z 12;
                                                                      # its left face stays behind the block)
-    soffit=((-1166.0, 1166.0), (-645.0, -285.0), (2120.0, 2340.0)),  # soffit outer: X, Y, Z
-    kick=(25.0, 125.0),              # supply kick grille on the column's front and left faces, Z
+    soffit=((-1161.0, 1161.0), (-645.0, -285.0), (2120.0, 2340.0)),  # soffit outer: X, Y, Z (AIR #91: 5 mm off the linings)
+    kick=(24.0, 124.0),              # supply kick grille on the column's front and left faces, Z (AIR #91)
     sup_box=((645.0, 945.0), (-847.0, -692.0), (1650.0, 1950.0)),    # supply fan box in the right block
     dr_open=((961.0, 1161.0), (1895.0, 2110.0)),                     # opening in the block's inner face: X, Z
     riser_lo=(139.0, 155.0, 1340.0),  # lower riser behind the column: width, depth, length
     riser_up=(250.0, 155.0, 400.0),   # upper riser and turn into the fan box
     exh_grille=((-1150.0, -885.0), (-633.0, -297.0)),                # on the soffit's underside: X, Y
-    exh_box=((867.0, 1161.0), (-640.0, -326.0), (2162.0, 2335.0)),   # exhaust fan box in the soffit's right end
-    roof=((872.0, 1157.0), (-630.0, -336.0)),                        # roof slot: X, Y
+    exh_box=((867.0, 1161.0), (-640.0, -326.0), (2159.0, 2332.0)),   # exhaust fan box in the soffit's right end (AIR #91)
+    roof=((872.0, 1157.0), (-620.0, -326.0)),                        # roof slot: X, Y (D-61, AIR #91)
 )
-D60_FREE = dict(kick=0.032, intake=0.028, exh_grille=0.036, roof=0.040)   # m2 free areas used (calculation, D60_SIZES)
+# m2 free areas used: AIR #91's perforated plates (kick grille 524 x 100 at 60 %, exhaust grille 265 x 336 at 40 %, roof
+# grille 50 % over the 285 x 294 slot; calculation); the intake is set below from BASE's design (intake_free)
+D60_FREE = dict(kick=0.0314, intake=0.0297, exh_grille=0.0356, roof=0.0419)
 
 
 def band_under_dr_mm():
@@ -735,11 +740,15 @@ INTAKE_OPTIONS = (
     ("mesh", "The band piece under the block becomes a flush black mesh with the same outline (DECIDED)", 95.0, 0.80),
     ("short", "The band stops short under the block, with a mesh set back", 90.0, 0.90),
     ("louvre", "A louvred band piece", 80.0, 0.65),
+    ("base", "BASE's mesh band piece from X 920, fully open (BASE's design, via the PM 2026-11-01)", None, None),
 )
-D60_INTAKE = "mesh"
+BASE_INTAKE_M2 = 0.0297    # m2 free: BASE's intake mesh at X 920, fully open (source: BASE's design, via the PM)
+D60_INTAKE = "base"
 
 
 def intake_free(key):
+    if key == "base":
+        return BASE_INTAKE_M2
     for k, _, h, ratio in INTAKE_OPTIONS:
         if k == key:
             return band_under_dr_mm() * h * ratio / 1e6
@@ -1438,7 +1447,8 @@ def d60_paths(casing="al20"):
     lo_w, lo_d, lo_l = (x / 1000 for x in D60["riser_lo"])
     up_w, up_d, up_l = (x / 1000 for x in D60["riser_up"])
     supply = dict(
-        pod=[part("split", L, w - 0.004, d - 0.004, gap=gap, ngap=n, lin=lin, fill=fill, rad=w + d, bends=1, wall=casing)],
+        pod=[part("split", L, w - 0.004, d - 0.004, gap=gap, ngap=n, lin=lin, fill=D60["fill_col"] / 1000, rad=w + d,
+                  bends=1, wall=casing)],
         room=[part("plain", lo_l, lo_w, lo_d, fill=fill, free=(lo_w - 0.002) * (lo_d - 0.002), wall="st10"),   # behind the column
               part("plain", up_l, up_w, up_d, fill=0.005, free=(up_w - 0.002) * (up_d - 0.002), bends=2, wall="st10")],
         box=dict(wid=0.30, dep=0.155, h=0.30, fill=0.040, lin=50.0, rad_area=0.30 * 0.30),
@@ -1778,7 +1788,7 @@ def t_d60():
     out.append(f"Two fan signals keep both paths at the same flow: at 53 l/s the supply pair runs at {r[3][0]:.0%} and the "
                f"exhaust pair at {r[3][1]:.0%}. One shared signal would run both at about {one[0][1]:.0%} and leave the pod "
                f"{one[0][0]:.1f} Pa below the room at 53 l/s ({one[1][0]:.1f} Pa at 65 l/s).")
-    out.append(f"Flow at 26 dB(A): {layout_flow_for(paths, 26.0):.0f} l/s; at 30 dB(A): {layout_flow_for(paths, 30.0):.0f} l/s "
+    out.append(f"Flow at 26 dB(A): {layout_flow_for(paths, 26.0):.0f} l/s; at 30 dB(A): {layout_flow_for(paths, 30.0):.1f} l/s "
                f"(targets, D-52: 26 dB(A) or less at 53 l/s, 30 or less at the 65 l/s boost). With a 5 dB fan tone at "
                f"250 Hz (risk): {t53[2]:.1f} dB(A) at 53 l/s and {layout_flow_for(paths, 30.0, tone_250=5.0):.0f} l/s at 30 dB(A).")
     return "\n".join(out)
