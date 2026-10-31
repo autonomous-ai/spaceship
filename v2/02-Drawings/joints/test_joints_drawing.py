@@ -85,7 +85,7 @@ WANT = {
     ("spigot", "top"): [4.0],
     ("keys", "front"): [75.0, 30.0],
     ("keys", "right"): [35.0, 26.0, 60.0, 17.5, 5.0],
-    ("keys", "top"): [10.5, 10.5, 14.0, 5.0],
+    ("keys", "top"): [10.5, 10.5, 24.5, 5.0],
 }
 
 for part, cfg in JD.PARTS.items():
