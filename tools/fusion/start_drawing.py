@@ -26,8 +26,9 @@ buttons through macOS accessibility, all inside the Fusion lock:
 Cleanup, whenever a step fails after the dialog was queued (also on SIGTERM,
 SIGHUP, Ctrl-C and lost contact with Fusion): Cancel through accessibility
 first, as a person would press it; Fusion's own cancel (a read-only script
-that starts Fusion's Select command) only when accessibility sees no dialog
-while Fusion is still in a command; then the unsaved drawing it made is
+that starts Fusion's Select command) only when Fusion says its Create Drawing
+or Base View dialog is open but accessibility has seen no dialog on two polls
+in a row, never while Fusion is busy; then the unsaved drawing it made is
 closed. Nothing ends a command by script any more: terminateActiveCommand()
 on an open Create Drawing killed Fusion on 2026-10-31.
 
@@ -326,10 +327,14 @@ def wait_for(steps, pred, timeout_s, poll_s=1.0):
 
 def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
     """Get Fusion back to idle. Cancel through accessibility FIRST (what a person
-    would press); Fusion's own cancel only when accessibility can't see any
-    dialog while Fusion is still busy (PM ruling 2026-10-31, after ending an
-    open Create Drawing by script killed Fusion). True when Fusion is idle and
-    no OK/Cancel dialog is listed. Works without MCP too (accessibility only)."""
+    would press). Fusion's own cancel only when Fusion says one of this
+    command's two dialogs is open (Create Drawing, Base View) but accessibility
+    has seen no dialog on two polls in a row (a dialog can take seconds to
+    show); never while Fusion is busy or in any other command (PM ruling
+    2026-10-31, after ending an open Create Drawing by script killed Fusion).
+    True when Fusion is idle and no OK/Cancel dialog is listed. Works without
+    MCP too (accessibility only)."""
+    unseen = 0
     for _ in range(tries):
         try:
             cmd, _u = steps.state()
@@ -346,19 +351,29 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
         if mcp_ok and cmd in IDLE_CMDS and not left:
             return True
         if left:
+            unseen = 0
             try:
                 log("cleanup: accessibility Cancel: %s" % steps.click("Cancel", TITLES.get(cmd, "")))
             except StartError as e:
                 log("cleanup: %s" % e)
-        elif mcp_ok and cmd not in IDLE_CMDS:
-            # nothing visible to press, but Fusion is still in a command: last resort
-            log("cleanup: no dialog visible to accessibility (%s); Fusion's own cancel"
-                % ("it answers" if ax_ok else "it fails"))
-            try:
-                ok, out = steps.fusion_cancel()
-                log("cleanup: %s" % (out or "").strip() if ok else "cleanup: Fusion cancel failed: %s" % out)
-            except (StartError, rs.McpError) as e:
-                log("cleanup: Fusion cancel failed: %s" % e)
+        elif mcp_ok and cmd in (CREATE_CMD, BASE_VIEW_CMD):
+            unseen += 1
+            if unseen < 2:
+                log("cleanup: Fusion is in %s but accessibility sees no dialog (%s); looking again"
+                    % (cmd, "it answers" if ax_ok else "it fails"))
+            else:
+                # its dialog is open but can't be pressed: last resort, Select only
+                log("cleanup: still no dialog visible to accessibility; Fusion's own cancel")
+                unseen = 0
+                try:
+                    ok, out = steps.fusion_cancel()
+                    log("cleanup: %s" % (out or "").strip() if ok else "cleanup: Fusion cancel failed: %s" % out)
+                except (StartError, rs.McpError) as e:
+                    log("cleanup: Fusion cancel failed: %s" % e)
+        else:
+            unseen = 0
+            if mcp_ok:
+                log("cleanup: Fusion is busy (active command %s); not touching it, waiting" % (cmd or "none"))
         time.sleep(poll_s)
     try:
         cmd, _u = steps.state()

@@ -157,6 +157,27 @@ class FakeFusion:
         return "none"
 
 
+class CleanupStub:
+    """Fusion seen by cancel_dialogs alone: one state and one dialog list per poll."""
+    def __init__(self, states, dialog_lists):
+        self.states, self.lists = list(states), list(dialog_lists)
+        self.clicks, self.cancels, self.log = [], 0, []
+
+    def state(self):
+        return (self.states.pop(0) if len(self.states) > 1 else self.states[0]), 0
+
+    def dialogs(self):
+        return self.lists.pop(0) if len(self.lists) > 1 else self.lists[0]
+
+    def click(self, button, title):
+        self.clicks.append(button)
+        return "clicked by title"
+
+    def fusion_cancel(self):
+        self.cancels += 1
+        return True, "Fusion cancel (Select queued)"
+
+
 def go(fake, **kw):
     logs = []
     code = sd.run_with_cleanup(fake, "100000_P04_POD-SKELETON_CAD", "X_P01_TEST_DWG",
@@ -217,6 +238,22 @@ class SequenceTests(unittest.TestCase):
         self.assertGreaterEqual(f.cancels, 1)
         self.assertEqual(f.cmd, sd.IDLE_CMD)
         self.assertTrue(any("Fusion's own cancel" in m for m in logs))
+
+    def test_a_dialog_seen_late_gets_accessibility_cancel_not_fusions(self):
+        st = CleanupStub([sd.CREATE_CMD, sd.CREATE_CMD, sd.IDLE_CMD], [[], ["395x445"], []])
+        self.assertTrue(sd.cancel_dialogs(st, st.log.append, tries=4, poll_s=0))
+        self.assertEqual((st.clicks, st.cancels), (["Cancel"], 0))
+
+    def test_fusions_own_cancel_needs_two_polls_without_a_dialog(self):
+        st = CleanupStub([sd.BASE_VIEW_CMD, sd.BASE_VIEW_CMD, sd.IDLE_CMD], [[], [], []])
+        self.assertTrue(sd.cancel_dialogs(st, st.log.append, tries=4, poll_s=0))
+        self.assertEqual((st.clicks, st.cancels), ([], 1))
+
+    def test_busy_or_other_commands_are_never_cancelled(self):
+        for cmd in ("busy", "SketchCreate"):
+            st = CleanupStub([cmd] * 9, [[]] * 9)
+            self.assertFalse(sd.cancel_dialogs(st, st.log.append, tries=6, poll_s=0))
+            self.assertEqual((st.clicks, st.cancels), ([], 0), cmd)
 
     def test_the_fusion_cancel_script_does_not_terminate_the_command(self):
         self.assertNotIn("terminateActiveCommand(", sd.FUSION_CANCEL_SCRIPT)
@@ -317,6 +354,7 @@ class SequenceTests(unittest.TestCase):
         finally:
             sd.cancel_dialogs = sd_cancel
         self.assertEqual(code, 4)                               # never claims Fusion is idle
+        self.assertEqual(f.cancels, 0)                          # never touched while busy
 
     @unittest.skipUnless(shutil.which("osacompile"), "osacompile is macOS only")
     def test_every_applescript_compiles(self):
