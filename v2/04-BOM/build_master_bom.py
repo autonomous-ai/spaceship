@@ -357,8 +357,9 @@ def _tokens(s, digits):
 
 def same_item(a, b):
     """True when a parts-list name and the joints register's name describe the same item: their size groups
-    agree (one inside the other, any order), and most of the shorter name's numbered tokens (or, with no
-    numbers, its words) appear in the other, with at least one word in common. Wording and order may differ."""
+    agree (one inside the other, any order), their threads or diameters (M6, D8) agree, they share a word, and
+    either most of the shorter name's numbered tokens match or they share two words (a product code on one side
+    and a requirement such as 'gap 10 ±5' on the other). Wording and order may differ."""
     sa, sb = _sizes(a), _sizes(b)
     if sa and sb:
         def covered(xs, ys):
@@ -367,12 +368,17 @@ def same_item(a, b):
             return False
     ta, tb = _tokens(a, True), _tokens(b, True)
     wa, wb = _tokens(a, False), _tokens(b, False)
-    if ta and tb and len(ta & tb) / min(len(ta), len(tb)) < 0.5:
+    tha = {x for x in ta if re.fullmatch(r"[MD]\d+(?:\.\d+)?", x)}
+    thb = {x for x in tb if re.fullmatch(r"[MD]\d+(?:\.\d+)?", x)}
+    if tha and thb and not tha & thb:
+        return False  # different thread or diameter: M6 is not M10
+    shared_words = wa & wb
+    if wa and wb and not shared_words:
         return False
-    if wa and wb:
-        if not (ta and tb):
-            return len(wa & wb) / min(len(wa), len(wb)) >= 0.5
-        return bool(wa & wb)  # with matching numbers, one shared word (bolt, rivnut, Sherex...) is enough
+    if ta and tb and len(ta & tb) / min(len(ta), len(tb)) < 0.5 and len(shared_words) < 2:
+        return False  # numbers differ and the names share at most one word
+    if wa and wb and not (ta and tb):
+        return len(shared_words) / min(len(wa), len(wb)) >= 0.5
     return True
 
 
