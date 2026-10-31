@@ -255,7 +255,7 @@
    },
    "key": "C01|clash|skeleton BAND-R BASE - BASE BAND - SIDE - RH:1 x DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1",
    "id": "F-006",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-10-31 1eec888",
    "posted": "already in the BASE brief (not re-posted)",
@@ -279,9 +279,15 @@
      "date": "2026-10-31",
      "rev": "c9ae2a4",
      "event": "reopened by hand: an offline run closed it by mistake (it can't see exact clashes); scopes now split offline and Fusion"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "0cb764f",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-10-31 c9ae2a4"
+   "last_seen": "2026-10-31 c9ae2a4",
+   "closed": "2026-10-31 0cb764f"
   },
   {
    "check": "C04",

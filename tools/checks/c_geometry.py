@@ -231,6 +231,8 @@ def check_gap_rules(root, mdl, bodies, rules):
     for r in rules:
         if r.get("models") and mdl not in r["models"].split():
             continue
+        if (r.get("method") or "box").strip() == "exact":
+            continue            # needs true distances (slanted or curved parts): the Fusion check measures it
         ra = re.compile(r["a"], re.I)
         rb = re.compile(r["b"], re.I)
         A = [b for b in bodies if ra.search(b.label)]

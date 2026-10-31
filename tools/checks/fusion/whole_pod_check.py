@@ -35,8 +35,9 @@ import adsk.fusion
 ARGS = globals().get("SCRIPT_ARGS", {})
 CM = 10.0          # Fusion internal cm -> mm
 
-FASTENER_RE = re.compile(r"\b(BOLT|SCREW)\b|\b83\d{4}\b", re.I)
-NUT_RE = re.compile(r"\b(NUT|RIVNUT|RIVET NUT|INSERT|CLINCH)\b", re.I)
+# fasteners are HARDWARE parts (conventions section 5 and 6): family 83, or a name that starts HARDWARE - BOLT
+FASTENER_RE = re.compile(r"(?:^|/ |\s)83\d{4}\s+HARDWARE - (?:BOLT|SCREW)\b|HARDWARE - (?:BOLT|SCREW)\b", re.I)
+NUT_RE = re.compile(r"HARDWARE - (?:NUT|RIVNUT|RIVET NUT|INSERT|CLINCH)\b|\b(?:RIVNUT|RIVET NUT)\b", re.I)
 
 
 def _csv(path):
@@ -139,38 +140,43 @@ def gap_rules(app, bodies, rules):
 
 
 def bolt_axis(body):
-    """Shank axis of a bolt: the longest cylindrical face; head end is where
-    the largest-radius cylinder (or the far extent) sits."""
-    best, rmax = None, None
+    """Axis of a bolt: from its cylindrical faces (all coaxial). The shank
+    radius is the smallest cylinder radius; the head end is the end of the
+    body's extent nearer to the centroid of the largest-radius cylinder
+    (the head), so a short bolt whose head is longer than its shank still
+    reads the right way round."""
+    cyls = []
     for f in body.faces:
         g = f.geometry
-        if g.surfaceType != adsk.core.SurfaceTypes.CylinderSurfaceType:
-            continue
-        bb = f.boundingBox
-        length = bb.minPoint.distanceTo(bb.maxPoint)
-        if best is None or length > best[0]:
-            best = (length, g)
-        if rmax is None or g.radius > rmax.radius:
-            rmax = g
-    if best is None:
+        if g.surfaceType == adsk.core.SurfaceTypes.CylinderSurfaceType:
+            cyls.append((g, f))
+    if not cyls:
         return None
-    g = best[1]
-    o = g.origin
-    ax = g.axis.copy()
+    g0 = cyls[0][0]
+    o = g0.origin
+    ax = g0.axis.copy()
     ax.normalize()
-    # extent of the body along the axis
-    bb = body.boundingBox
-    corners = [adsk.core.Point3D.create(x, y, z) for x in (bb.minPoint.x, bb.maxPoint.x)
-               for y in (bb.minPoint.y, bb.maxPoint.y) for z in (bb.minPoint.z, bb.maxPoint.z)]
-    ts = [(c.x - o.x) * ax.x + (c.y - o.y) * ax.y + (c.z - o.z) * ax.z for c in corners]
+
+    def t_of(p):
+        return (p.x - o.x) * ax.x + (p.y - o.y) * ax.y + (p.z - o.z) * ax.z
+    ts = []
+    for v in body.vertices:
+        ts.append(t_of(v.geometry))
+    for g, f in cyls:                      # circles have no vertices of their own on a full cylinder
+        bb = f.boundingBox
+        for x in (bb.minPoint.x, bb.maxPoint.x):
+            for y in (bb.minPoint.y, bb.maxPoint.y):
+                for z in (bb.minPoint.z, bb.maxPoint.z):
+                    ts.append(t_of(adsk.core.Point3D.create(x, y, z)))
     t0, t1 = min(ts), max(ts)
-    # head: the end nearer the largest-radius cylinder's origin
-    if rmax is not None and rmax is not g:
-        th = (rmax.origin.x - o.x) * ax.x + (rmax.origin.y - o.y) * ax.y + (rmax.origin.z - o.z) * ax.z
+    rmin = min(g.radius for g, _f in cyls)
+    head_g, head_f = max(cyls, key=lambda c: c[0].radius)
+    if head_g.radius > rmin * 1.05:
+        th = t_of(head_f.centroid)
         head_at_t1 = abs(th - t1) < abs(th - t0)
     else:
-        head_at_t1 = False
-    return {"origin": o, "axis": ax, "t0": t0, "t1": t1, "radius": g.radius, "head_at_t1": head_at_t1}
+        head_at_t1 = False                  # no head found: walk from the low end
+    return {"origin": o, "axis": ax, "t0": t0, "t1": t1, "radius": rmin, "head_at_t1": head_at_t1}
 
 
 def _pt(o, ax, t, u=None, r=0.0):

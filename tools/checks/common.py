@@ -127,11 +127,13 @@ def pn_problems(pn):
     return out
 
 
-FASTENER_WORDS = re.compile(r"\b(BOLT|SCREW|NUT|WASHER|RIVNUT|RIVET NUT|INSERT|STUD|RIVET|CLINCH|PIN)\b", re.I)
+FASTENER_WORDS = re.compile(r"^HARDWARE - (BOLT|SCREW|NUT|WASHER|RIVNUT|RIVET NUT|INSERT|STUD|RIVET|CLINCH|PIN)\b|"
+                            r"\b(RIVNUT|RIVET NUT)\b", re.I)
 
 
 def is_fastener(pn="", name=""):
-    return (pn or "")[:2] == "83" or bool(FASTENER_WORDS.search(name or ""))
+    """A standard fastener: family 83 (conventions section 6) or a HARDWARE - BOLT/NUT/... name."""
+    return (pn or "")[:2] == "83" or bool(FASTENER_WORDS.search((name or "").strip()))
 
 
 # ----------------------------------------------------------------- file names
