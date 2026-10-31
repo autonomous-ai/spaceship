@@ -1,0 +1,64 @@
+parameter,value_mm,expression,status,source
+pod_w,2500,2500 mm,decided,D-01; conventions s4 (X = +-1250)
+pod_d,1700,1700 mm,decided,D-01; conventions s4 (Y = +-850)
+pod_h,2400,2400 mm,decided,D-21 (room floor to roof skin top)
+glide_h,10,10 mm,assumption,layout study inputs.py glide_h
+band_h,100,100 mm,source,layout study B1 list B-BAND 100x40; inputs.py base_h
+band_t,40,40 mm,source,layout study B1 list B-BAND 100x40
+stack_t,81,81 mm,decided,"D-16, D-42 (walls and ceiling)"
+outer_t,43,43 mm,source,layout study B1 final list W-SIDE 43 (ACP 3 + frame 40)
+cass_t,34,34 mm,source,layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)
+wall_depth,1495,1495 mm,decided,"PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"
+lin_gap,4,4 mm,assumption,PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)
+seam_gap,2,2 mm,assumption,"PM ruling 2026-10-31 on Mechanical Checker F-001: one gap on every frame-to-frame seam (IF-03 to IF-06), 2 mm until the Joints Engineer's gasket table and the wall sample confirm it (PORON 4701-40 3.18 mm squeezed about 37%)"
+floor_t,15,15 mm,source,layout study B1 list B-FLOOR 15
+thresh_h,20,20 mm,decided,D-18
+thresh_d,60,60 mm,source,layout study B1 list B-THRESH 1176 x 60 x 20
+decor_d,205,205 mm,source,"v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02"
+dl_w,278,278 mm,source,B1 list F-DL 278 (v1 BOM DL)
+dr_w,1016,1016 mm,source,B1 list F-DR 1016 (v1 STEP solid 78)
+dt_w,1697,1697 mm,source,B1 list F-DT 1697 (v1 BOM DT)
+dt_h,280,280 mm,source,B1 list F-DT 280
+door_w,1176,1176 mm,decided,D-46
+door_h,2011,2011 mm,source,B1 list F-GLASS-DOOR 2011; v1 STEP solid 238
+glass_t,8.76,8.76 mm,decided,D-46 (4+4 laminate)
+glass_y,699,699 mm,source,v1 STEP solid 238 centre Y = -699 (layout study data)
+kick_d,20,20 mm,assumption,kick strip envelope depth (D-40 gives the height only)
+kick_gap,7,7 mm,source,FRONT door unit: 7 mm running gap between the threshold and the kick strip for the drop seal (Mechanical Checker F-002 on P03)
+fr_dz,17,17 mm,calculation,v1 front top 2417 (v2 frame) - pod_h 2400
+door_xl,289,289 mm,source,V1-FRONT-FACETS: door left edge X -961 = -1250 + 289
+door_xbr,1464,1464 mm,source,V1-FRONT-FACETS: door bottom-right X 214
+door_xtr,1182,1182 mm,source,V1-FRONT-FACETS: door top-right X -68
+door_zb,105,122 mm - fr_dz,source,V1-FRONT-FACETS: door bottom Z 122
+door_zt,2116,2133 mm - fr_dz,source,V1-FRONT-FACETS: door top Z 2133
+fix_xbl,1468,1468 mm,source,V1-FRONT-FACETS: fixed glass bottom-left X 218
+fix_xbr,302,302 mm,source,V1-FRONT-FACETS: fixed glass bottom-right X 948 = 1250 - 302
+fix_xk,501,501 mm,source,V1-FRONT-FACETS: fixed glass knee X 749 = 1250 - 501
+fix_zk,1521,1538 mm - fr_dz,source,V1-FRONT-FACETS: fixed glass knee Z 1538
+fix_xtr,1480,1480 mm,source,V1-FRONT-FACETS: fixed glass top-right X 230 = -1250 + 1480
+fix_xtl,1184,1184 mm,source,V1-FRONT-FACETS: fixed glass top-left X -66
+fix_zb,102,119 mm - fr_dz,source,V1-FRONT-FACETS: fixed glass bottom Z 119
+fix_zt,2119,2136 mm - fr_dz,source,V1-FRONT-FACETS: fixed glass top Z 2136
+dt_zb,2120,2137 mm - fr_dz,source,V1-FRONT-FACETS: DT and DR edge above the glass Z 2137
+ch_zlo,2200,2217 mm - fr_dz,source,V1-FRONT-FACETS: top chamfer front edge Z 2217 at Y -848
+ch_yb,672,672 mm,source,V1-FRONT-FACETS: top chamfer back edge Y -672
+dl_x2,92,92 mm,source,V1-FRONT-FACETS: DL facet knee X -1158 = -1250 + 92
+dl_y2,752,752 mm,source,V1-FRONT-FACETS: DL facet knee Y -752
+dl_x3,271,271 mm,source,V1-FRONT-FACETS: DL front corner X -979
+dl_y3,844,844 mm,source,V1-FRONT-FACETS: DL front corner Y -844
+dl_y1,670,670 mm,source,V1-FRONT-FACETS: DL outer facet start Y -670
+dl_zo,2397,2414 mm - fr_dz,source,V1-FRONT-FACETS: DL top at the outer corner Z 2414
+dt_x2,281,281 mm,source,V1-FRONT-FACETS: DT lower facet left X -969 = -1250 + 281
+dt_y2,767,767 mm,source,V1-FRONT-FACETS: DT lower facet left Y -767
+dt_y3,753,753 mm,source,V1-FRONT-FACETS: DT lower facet outer Y -753 at X -1154
+dr_xc,198,198 mm,source,V1-FRONT-FACETS: DR corner facet front X 1052 = 1250 - 198
+dt_xr,1699,1699 mm,source,"V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -1250 + 1699 (PM ruling pass C)"
+dr_yc,672,672 mm,source,V1-FRONT-FACETS: DR corner facet back Y -672
+wall_z0,110,glide_h + band_h,calculation,walls stand on the base band
+wall_h,2290,pod_h - wall_z0,calculation,2290 = layout study v2_model wall_h
+side_h,1144,(wall_h - seam_gap) / 2,calculation,"D-23: 2 sheets per side wall with one seam_gap between them (pass D: 1144, was 1145)"
+back_h,2209,wall_h - stack_t,calculation,back linings stand under the ceiling cassette (top Z 2319; v2_model back_h)
+back_oh,2245,pod_h - outer_t - seam_gap - wall_z0,calculation,"PM ruling 2026-10-31 (pass D): the back outer frames run up to the ceiling frame (Z 2357, less the wall-to-ceiling seam_gap), closing the 38 mm slot at the back top edge"
+back_ph,1121.5,(back_oh - seam_gap) / 2,calculation,"D-23: 4 sheets on the back, two equal rows with one seam_gap between them (pass D: 1121.5, was 1104.5); the lower back linings match the lower row, as on the side walls"
+half_pw,1204,(pod_w - 2 * outer_t - 3 * seam_gap) / 2,calculation,"width of each back and ceiling panel: two panels and three seams between the side frames (pass D: 1204, was 1207; Mechanical Checker F-001)"
+inner_w,2338,pod_w - 2 * stack_t,calculation,2338 between the side walls

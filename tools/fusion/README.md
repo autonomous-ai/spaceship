@@ -83,7 +83,29 @@ The proof script `v2/01-CAD-Native/proof/wall_panel_frame.py` follows these step
 
 ## Pod skeleton (Milestone 2)
 
-`v2/01-CAD-Native/skeleton/pod_skeleton.py` builds the whole pod as envelope bodies, one component per panel, block or pane, under the assembly tree's components. Each envelope is a rectangle on an XY plane offset by a parameter, dimensioned from the origin with `abs(<coordinate expression>)` (or aligned to the origin when the coordinate is 0), and extruded by a parameter, so every sketch is fully constrained and every size follows the parameter table. Two rules from the PR #6 review are built in: **the clash check fails the run** (every pair of envelopes is intersected; an overlap over 1 mm3 that is not on the script's list of intended overlaps, each with its reason, raises an error), and the design is **saved before the STEP export**. The thin floor is DECIDED (D-05, D-18) and is modelled as such. `edit_test_skeleton.py` checks every envelope against its own expressions after an edit.
+`v2/01-CAD-Native/skeleton/pod_skeleton.py` builds the whole pod as envelope bodies, one component per panel, block, band or pane, under the assembly tree's components. Each envelope is a polygon on an XY plane offset by a parameter, its corners dimensioned from the origin with `abs(<coordinate expression>)` (or aligned to the origin when the coordinate is 0), and extruded by a parameter, so every sketch is fully constrained and every size follows the parameter table. Two rules from the PR #6 review are built in: **the clash check fails the run** (every pair of envelopes is intersected; an overlap over 1 mm3 that is not on the script's list of intended overlaps, each with its reason, raises an error), and the design is **saved before the STEP export**. The current revision is **P04** (`BUILD-RECORD.md`). `edit_test_skeleton.py` checks every envelope against its own expressions after an edit; `skeleton_view.py` sets the cameras for the renders.
+
+## Linking a part to the skeleton
+
+The skeleton is the single source for the pod's sizes. Every user parameter in `100000_P04_POD-SKELETON_CAD` is a **favorite**, so a part design takes them with Fusion's Derive and stays linked:
+
+```python
+skel_file = <the DataFile "100000_P04_POD-SKELETON_CAD" in Default Project / FocusPod v2>
+skel_doc = app.documents.open(skel_file, False)          # invisible
+skel = adsk.fusion.Design.cast(skel_doc.products.itemByProductType("DesignProductType"))
+part_doc.activate()
+di = root.features.deriveFeatures.createInput(skel)
+di.isIncludeFavoriteParameters = True
+di.sourceEntities = [skel.rootComponent.xYConstructionPlane]   # parameters only; add a body if you want it
+root.features.deriveFeatures.add(di)
+skel_doc.close(False)
+design.userParameters.add("panel_h", ValueInput.createByString("side_h_Ref"), "mm", "SOURCE: skeleton P04 side_h")
+```
+
+- Derived parameters arrive as **`<name>_Ref`** (`side_h_Ref`, `wall_depth_Ref`) and work in the part's own expressions; only favorites come across.
+- When the skeleton saves a new version, the part reports `Document.isUpToDate == False`; `Document.updateAllReferences()` brings the new values in and the part's expressions follow. Tested 2026-10-31 on throwaway designs (300 -> 400 mm after the source changed).
+- A script that raises an exception has all its changes rolled back (found twice on 2026-10-31), so derive and use the parameters in the same successful run.
+- Skeleton changes that keep its shape (new values) go in as new versions of the same cloud file; a new revision (P05) is a new file, and parts then derive from it.
 
 ## Saving to the Fusion cloud
 
