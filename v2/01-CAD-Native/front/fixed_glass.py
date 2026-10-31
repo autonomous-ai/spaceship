@@ -100,8 +100,13 @@ OWN = [
     ("gs_xl", L.free_x(_Z95), "mm", "calculation", "left end of the bottom channel's underside (the pane's free edge)"),
     ("gs_xr", L.right_x(_Z95, "gu_prof_d"), "mm", "calculation",
      "right end of the bottom channel's underside, where it is mitred into the right-edge channel"),
+    ("base_fr1_x", "915 mm", "mm", "source",
+     "joints register (#127): BASE's front band inline joint FR1 at X 915; no sill rivnut on it (PM ruling 2026-11-01)"),
+    ("gs_x4", "base_fr1_x - 10 mm", "mm", "confirmed",
+     "the last channel screw at X 905, clear of FR1's end; BASE moved the sill's last rivnut to match and kept the "
+     "first three (PM ruling 2026-11-01); 59 from the channel's right end"),
     ("gs_p", "(gs_xr - gs_xl - 2 * gs_end) / 3", "mm", "calculation",
-     "pitch of the 4 channel screws; 300 or less (PM ruling)"),
+     "pitch of the first 3 channel screws (X 269.4, 484.3, 699.2, as BASE's sill rivnuts); 300 or less (PM ruling)"),
 ]
 
 SCOPES = {"unit": None, "pane": "GLASS", "uprof": "UPROF"}
@@ -163,7 +168,7 @@ def build(app):
         if L.ev(design, "gs_p") > 300.0:
             raise RuntimeError("bottom channel screw pitch %.1f is over 300" % L.ev(design, "gs_p"))
         sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLES - BOTTOM CHANNEL SCREWS TO THE SILL (4)",
-                       [("gs_xl + gs_end + %d * gs_p" % k, GY) for k in range(4)], "gs_hole")
+                       [("gs_xl + gs_end + %d * gs_p" % k, GY) for k in range(3)] + [("gs_x4", GY)], "gs_hole")
         L.extrude_span(c, sk, "z", _Z95 + " - 1 mm", _Z95 + " + gu_prof_t + 1 mm", CUT, [b],
                        "CUT - BOTTOM CHANNEL SCREW HOLES",
                        profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
@@ -276,9 +281,12 @@ def export_all(app):
          "Bohle BO5201571 aluminium U-profile 15 x 15 x 1.5, finish as supplied by Bohle (hidden in the channels)", "cad",
          "calculation (CAD, 2700 kg/m3)",
          "source (product)", "hardware selection C5",
-         "outer lengths %s mm (bottom, right, diagonal, top); the bottom piece has 4 holes 3.4, countersunk 90 deg "
-         "to 7 inside, for ISO 10642 M3 x 8 A2 screws into BASE's sill rivnuts (PM ruling 2026-11-01; the screw and "
-         "rivnut get joints register numbers)" % " / ".join("%.0f" % v for v in outer)),
+         "outer lengths %s mm (bottom, right, diagonal, top); the bottom piece has 4 holes 3.4 at X %s, countersunk "
+         "90 deg to 7 inside, for the screws 838007 (ISO 10642 M3 x 8 A2) into BASE's sill rivnuts 838008 (J-FRONT-04; "
+         "the last at X 905, clear of FR1: PM ruling 2026-11-01)" % (" / ".join("%.0f" % v for v in outer),
+                                                                    ", ".join("%.1f" % L.ev(design, x) for x in (
+                                                                        "gs_xl + gs_end", "gs_xl + gs_end + gs_p",
+                                                                        "gs_xl + gs_end + 2 * gs_p", "gs_x4")))),
         ("368002", PARTS["USEAL"][1], PARTS["USEAL"][2], 1, "bought by length, 4 pieces",
          "Bohle BO5201735 silicone U-profile seal", "cad", "calculation (CAD, 1200 kg/m3 assumption)",
          "source (product); fit on 8.76 laminate unverified", "hardware selection C5",
