@@ -24,7 +24,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ## 1. Before you start
 
 - **The crew.** Person A leads the lifting and holds each part in place; Person B drives the bolts from inside. Both lift the glass, the long parts and anything overhead.
-- **The one tool** is the 5 mm ball-end hex key {{PNKEY}}, in the OPEN FIRST kit (109000, label 2-24). Nothing else counts as a tool (REQ-ASM-03).
+- **The one tool** is the 5 mm ball-end hex key {{PNKEY}}, in the OPEN FIRST kit (109000, label {{KIT_TAG}}). Nothing else counts as a tool (REQ-ASM-03).
 - **Handling aids** (not tools: ISS-047, ISS-064): 2 suction lifters (two-cup, each rated 40 kg or more; assumption), 2 step stools with 2 treads, a 600 mm spirit level, a utility knife for straps and film, cut-resistant gloves and safety shoes.
 - **The room:** a flat floor within ±5 mm (the glides take it up; ISS-054), a door at least 810 mm wide (REQ-ASM-06), room around the 2500 × 1700 footprint to lay the parts out, and a 220 V socket for the mains inlet (prototype, REQ-SCP-02), connected by a qualified electrician.
 - **Directions:** left and right as seen from outside, facing the door (conventions §4). Position codes: walls L1 and L2 (left, lower and upper), R1 and R2 (right), B1 to B4 (back: lower left, lower right, upper left, upper right); ceiling C1 (left) and C2 (right); floor F1 and F2; decor blocks DL, DR, DT.
@@ -70,12 +70,22 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 
 {{TOP_STEPS}}
 
-What could bring it toward the 1-hour target; none of these is decided, each is for the PM:
+**D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the {{CLOCK_MIN}} above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
 
-- **A flat floor.** Levelling is {{LEVEL_MIN}} minutes of the base band step; glides preset at the factory for a floor known to be flat would save most of it.
-- **The air parts.** The air column, soffit, cartridges, fan boxes and riser take about {{AIR_MIN}} minutes (steps 15 to 17), which the layout study's 126 minutes didn't have. The column with its cartridge fitted would be {{COLUMN_FITTED_KG}} kg, {{COLUMN_OVER_KG}} kg over D-03; shipping it fitted would save one lift and a slide-in.
-- **Corner keys.** 12 site bolts at the base band corners (BASE, PROPOSED); a hook-in key would drop them.
-- **The timed trial** replaces every unit time here, all of them assumptions.
+| Fix | Steps | Priced on the 168-minute model | Owner |
+|---|---|---:|---|
+| The exhaust fan box fitted inside the soffit and the intake riser joined to the supply fan box at the factory, plug-in connectors, tool-free hooks for the soffit and the column, one hinged soffit underside | 15 to 17 | 11.4 min (calculation) | AIR (CEILING Engineer), FRONT |
+| Glides preset at the factory, corner keys that hook in (12 fewer bolts), band pieces that locate on the keys | 2 | 11.8 min (calculation) | BASE, Joints Engineer |
+| The floor foam bonded under the floor panels at the factory, and every pallet 2 part set down at its place in step 1 | 1, 3 and every carry | 10.7 min (calculation) | Packing, BASE |
+| A factory-tested plug-in harness and a self-test button on the hub | 13, 20 | 8.1 min (calculation) | ELECTRICAL |
+
+The fifth, moving the film peeling after the clock, was rejected so the number stays honest. Instead the film covers only the {{FILM_FACES}} faces that show (the 8 wall skins, the 3 decor blocks and both faces of both glass panes; none on the roof skins) and each panel has a quick-release tab. Peeling now takes about {{FILM_MIN}} minutes of the clock, against {{FILM_ALL_MIN}} for film on all {{FILM_FACES_ALL}} faces without tabs: {{FILM_SAVES}} minutes saved. The layout study's 168 minutes didn't count film at all, so this is time the clock now carries honestly.
+
+Where the time goes now:
+
+{{TOP_STEPS}}
+
+The 1-hour target needs more than this: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 82 register bolts alone take about {{REG_BOLT_MIN}} minutes of the clock. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
 
 Unit times used:
 
