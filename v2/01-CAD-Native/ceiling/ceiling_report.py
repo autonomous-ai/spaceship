@@ -51,7 +51,7 @@ def sync_params(design):
             ups.add(name, adsk.core.ValueInput.createByString(expr), unit, comment)
             changed.append(name)
             continue
-        if " ".join(p.expression.split()) != " ".join(expr.split()):
+        if "".join(p.expression.split()) != "".join(expr.split()):     # Fusion writes "( a - b )" for "(a - b)"
             p.expression = expr
             changed.append(name)
         if p.comment != comment:
