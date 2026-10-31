@@ -1,0 +1,7 @@
+match,min_inner_radius_t,hole_to_bend_t,status_source
+acp|composite,0,0,"not checked: ACP folds on a routed V-groove, which has its own rule"
+6061|6082|t6,2.5,2.0,"assumption: common practice for T6 tempers (cracks below about 2.5 t); the factory confirms with a coupon (guideline section 9)"
+5052|5754|5083|3003|h32|h22|h14|alumin,1.0,2.0,"assumption: common practice for work-hardened aluminium sheet; the factory confirms with a coupon (guideline section 9)"
+galv|dx51|sgcc|dc01|spcc|zinc|steel,1.0,2.0,"assumption: common practice for mild and galvanised steel sheet; the factory confirms with a coupon (guideline section 9)"
+stainless|304|316|a2|a4,1.0,2.0,"assumption: common practice for annealed stainless sheet; the factory confirms with a coupon (guideline section 9)"
+default,1.0,2.0,"assumption: material not known from a parts list; 1.0 t and 2 t + r until it is"

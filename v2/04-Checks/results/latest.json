@@ -1,0 +1,600 @@
+{
+ "rev": "1eec888",
+ "date": "2026-10-31",
+ "root": "/Users/d/harnesses/worktrees/spaceship/765409e413323ec806d75b21",
+ "inputs": {
+  "bodies_skeleton": 32,
+  "bodies_assembly": 0,
+  "parts_lists": [],
+  "part_steps": []
+ },
+ "ran": [
+  "C01",
+  "C01:skeleton",
+  "C02:skeleton",
+  "C02:stacks",
+  "C04"
+ ],
+ "findings": [
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "skeleton shell back X -1207..1207 Z 2319..2357",
+   "severity": "severe",
+   "message": "The outer shell is open on the back face of the skeleton: nothing covers X -1207 to 1207, Z 2319 to 2357 (a slot 2414 x 38 mm). Bordered by: B3 ENVELOPE, B4 ENVELOPE, C1 ENVELOPE, C2 ENVELOPE, L2 ENVELOPE, R2 ENVELOPE. Checked 1 mm inside the face on a 5 mm grid, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "v2/03-Manufacturing/skeleton/100000_P03_POD-SKELETON_STEP.step",
+   "owner": "Fusion Engineer 2",
+   "evidence": {
+    "model": "skeleton",
+    "near": [
+     "B3 ENVELOPE",
+     "B4 ENVELOPE",
+     "C1 ENVELOPE",
+     "C2 ENVELOPE",
+     "L2 ENVELOPE",
+     "R2 ENVELOPE"
+    ]
+   },
+   "key": "C01|shell-open|skeleton shell back X -1207..1207 Z 2319..2357"
+  },
+  {
+   "check": "C02",
+   "rule": "gap-SEAM-GAPS",
+   "subject": "skeleton SEAM-GAPS",
+   "severity": "severe",
+   "message": "SEAM-BACK-CENTRE: B1 ENVELOPE to B2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-BACK-CORNER-L: L1 ENVELOPE to B1 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-BACK-CORNER-R: R1 ENVELOPE to B2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-CEILING-CENTRE: C1 ENVELOPE to C2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-CEILING-SIDE: C1 ENVELOPE to L2 ENVELOPE is 0.0 mm, needs at least 1 mm. Rule source: assumption: 1.0 mm stands in until the joints register gives the compressed gasket thickness. Why: IF-04 asks for a seam gasket between B1 and B2 (and B3, B4); a gasket needs a gap of at least its compressed thickness, and frames cut to plus tolerance must still fit",
+   "fix": "Joints Engineer: set the compressed gasket thickness per seam. Fusion Engineer 2: add a seam_gap parameter and shrink the panels by it",
+   "file": "v2/03-Manufacturing/skeleton/100000_P03_POD-SKELETON_STEP.step",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "evidence": {
+    "model": "skeleton",
+    "rules": [
+     {
+      "id": "SEAM-BACK-CENTRE",
+      "gap_mm": 0.0,
+      "a": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / B1 ENVELOPE",
+      "b": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / B2 ENVELOPE"
+     },
+     {
+      "id": "SEAM-BACK-CORNER-L",
+      "gap_mm": 0.0,
+      "a": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / L1 ENVELOPE",
+      "b": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / B1 ENVELOPE"
+     },
+     {
+      "id": "SEAM-BACK-CORNER-R",
+      "gap_mm": 0.0,
+      "a": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / R1 ENVELOPE",
+      "b": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / B2 ENVELOPE"
+     },
+     {
+      "id": "SEAM-CEILING-CENTRE",
+      "gap_mm": 0.0,
+      "a": "100000_P03_POD-SKELETON_CAD / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / C1 ENVELOPE",
+      "b": "100000_P03_POD-SKELETON_CAD / 410000 CEILING:1 / C2 CEILING - HALF PANEL - C2:1 / C2 ENVELOPE"
+     },
+     {
+      "id": "SEAM-CEILING-SIDE",
+      "gap_mm": 0.0,
+      "a": "100000_P03_POD-SKELETON_CAD / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / C1 ENVELOPE",
+      "b": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / L2 ENVELOPE"
+     }
+    ]
+   },
+   "key": "C02|gap-SEAM-GAPS|skeleton SEAM-GAPS"
+  },
+  {
+   "check": "C02",
+   "rule": "gap-SEAM-GAPS-HORIZONTAL",
+   "subject": "skeleton SEAM-GAPS-HORIZONTAL",
+   "severity": "major",
+   "message": "SEAM-SIDE-HORIZONTAL: L1 ENVELOPE to L2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-BACK-HORIZONTAL: B1 ENVELOPE to B3 ENVELOPE is 0.0 mm, needs at least 1 mm. Rule source: assumption: as SEAM-BACK-CENTRE. Why: IF-04 asks for a seam gasket between the lower and upper side panels; under the upper panel's weight it needs its compressed thickness or a groove",
+   "fix": "Joints Engineer: say whether the horizontal seams take a gasket in the gap (then a seam_gap) or in a groove (then no gap)",
+   "file": "v2/03-Manufacturing/skeleton/100000_P03_POD-SKELETON_STEP.step",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "evidence": {
+    "model": "skeleton",
+    "rules": [
+     {
+      "id": "SEAM-SIDE-HORIZONTAL",
+      "gap_mm": 0.0,
+      "a": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / L1 ENVELOPE",
+      "b": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / L2 ENVELOPE"
+     },
+     {
+      "id": "SEAM-BACK-HORIZONTAL",
+      "gap_mm": 0.0,
+      "a": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / B1 ENVELOPE",
+      "b": "100000_P03_POD-SKELETON_CAD / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / B3 ENVELOPE"
+     }
+    ]
+   },
+   "key": "C02|gap-SEAM-GAPS-HORIZONTAL|skeleton SEAM-GAPS-HORIZONTAL"
+  },
+  {
+   "check": "C02",
+   "rule": "gap-KICK-OVER-THRESHOLD",
+   "subject": "skeleton KICK-OVER-THRESHOLD",
+   "severity": "severe",
+   "message": "KICK-OVER-THRESHOLD: KICK ENVELOPE to THRESHOLD ENVELOPE is 0.0 mm, needs at least 7 mm. Rule source: confirmed: FRONT's 7 mm floor gap for the drop seal, approved by the PM in the FRONT group on 2026-10-31. Why: The door swings over the threshold; with no running gap it rubs, and the drop seal needs the gap to close",
+   "fix": "Kick strip bottom at the threshold top plus 7 mm (Z 27 with a 20 mm threshold), carried as a skeleton parameter",
+   "file": "v2/03-Manufacturing/skeleton/100000_P03_POD-SKELETON_STEP.step",
+   "owner": "FRONT; Fusion Engineer 2",
+   "evidence": {
+    "model": "skeleton",
+    "rules": [
+     {
+      "id": "KICK-OVER-THRESHOLD",
+      "gap_mm": 0.0,
+      "a": "100000_P03_POD-SKELETON_CAD / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / KICK ENVELOPE",
+      "b": "100000_P03_POD-SKELETON_CAD / 110000 BASE:1 / THRESHOLD BASE - DOOR THRESHOLD:1 / THRESHOLD ENVELOPE"
+     }
+    ]
+   },
+   "key": "C02|gap-KICK-OVER-THRESHOLD|skeleton KICK-OVER-THRESHOLD"
+  },
+  {
+   "check": "C04",
+   "rule": "pallet-fit",
+   "subject": "F-HW",
+   "severity": "major",
+   "message": "F-HW FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS (2200 x 120 x 60 mm) doesn't fit the 48x40 pallet it ships on (1219 x 1016, at most 1679 tall loaded above a 150 mm deck); it fits the 48x96 pallet.",
+   "fix": "Move it to the right pallet in the layout study, or change the piece.",
+   "file": "v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv",
+   "owner": "Layout Engineer",
+   "evidence": {},
+   "key": "C04|pallet-fit|F-HW"
+  }
+ ],
+ "stacks": [
+  {
+   "nominal": 0.0,
+   "wc_min": 0.0,
+   "wc_max": 0.0,
+   "rss_min": 0.0,
+   "rss_max": 0.0,
+   "missing": [
+    "Door bottom height (glass bottom)",
+    "Kick strip height below the glass",
+    "Threshold height",
+    "Floor height under the threshold"
+   ],
+   "stack_id": "ST-01",
+   "joint": "IF-02 door to threshold",
+   "what": "Running gap between the door's kick strip and the threshold",
+   "min": 3.0,
+   "max": 10.0,
+   "owner": "FRONT",
+   "state": "OPEN"
+  },
+  {
+   "nominal": 0.0,
+   "wc_min": 0.0,
+   "wc_max": 0.0,
+   "rss_min": 0.0,
+   "rss_max": 0.0,
+   "missing": [
+    "Space between the side frames",
+    "Back panel B1 width",
+    "Back panel B2 width",
+    "Three seam gaskets compressed"
+   ],
+   "stack_id": "ST-02",
+   "joint": "IF-03 and IF-04 back wall across its width",
+   "what": "Gasket room left across the back wall: the space between the side frames less two back panels and three seams",
+   "min": 0.0,
+   "max": null,
+   "owner": "Joints Engineer; WALL",
+   "state": "OPEN"
+  },
+  {
+   "nominal": 0.3129999999999997,
+   "wc_min": 0.3129999999999997,
+   "wc_max": 0.3129999999999997,
+   "rss_min": 0.3129999999999997,
+   "rss_max": 0.3129999999999997,
+   "missing": [
+    "Clearance hole radius",
+    "Clearance hole position (radial)",
+    "Rivnut position (radial)",
+    "Locating feature play (radial)"
+   ],
+   "stack_id": "ST-03",
+   "joint": "IF-01 IF-03 IF-04 IF-05 M6 bolt into a rivnut through a clearance hole",
+   "what": "Radial clearance left for an M6 bolt after both hole positions and the locating feature's play (fixed-fastener case)",
+   "min": 0.0,
+   "max": null,
+   "owner": "Joints Engineer; WALL; CEILING; BASE",
+   "state": "OPEN"
+  }
+ ],
+ "shipping": [
+  {
+   "id": "W-SIDE-LO",
+   "name": "WALL - SIDE PANEL - LOWER (outer: ACP + frame + fill)",
+   "kg": 11.41,
+   "dims": [
+    1500.0,
+    1145.0,
+    43.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "L-CASS-SIDE-LO",
+   "name": "LINING - CASSETTE FOR W-SIDE-LO (steel tray + felt)",
+   "kg": 10.86,
+   "dims": [
+    1419.0,
+    1145.0,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "W-SIDE-UP",
+   "name": "WALL - SIDE PANEL - UPPER (outer: ACP + frame + fill)",
+   "kg": 11.41,
+   "dims": [
+    1500.0,
+    1145.0,
+    43.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "L-CASS-SIDE-UP",
+   "name": "LINING - CASSETTE FOR W-SIDE-UP (steel tray + felt)",
+   "kg": 10.86,
+   "dims": [
+    1419.0,
+    1145.0,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "W-BACK-LO",
+   "name": "WALL - BACK PANEL - LOWER (outer: ACP + frame + fill)",
+   "kg": 8.65,
+   "dims": [
+    1169.0,
+    1104.0,
+    43.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "L-CASS-BACK-LO",
+   "name": "LINING - CASSETTE FOR W-BACK-LO (steel tray + felt)",
+   "kg": 8.68,
+   "dims": [
+    1169.0,
+    1104.0,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "W-BACK-UP",
+   "name": "WALL - BACK PANEL - UPPER (outer: ACP + frame + fill)",
+   "kg": 8.65,
+   "dims": [
+    1169.0,
+    1104.0,
+    43.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "L-CASS-BACK-UP",
+   "name": "LINING - CASSETTE FOR W-BACK-UP (steel tray + felt)",
+   "kg": 8.68,
+   "dims": [
+    1169.0,
+    1104.0,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "C-HALF",
+   "name": "CEILING - HALF PANEL (outer: ACP + frame)",
+   "kg": 9.88,
+   "dims": [
+    1500.0,
+    1169.0,
+    43.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "L-CASS-HALF",
+   "name": "LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill)",
+   "kg": 12.74,
+   "dims": [
+    1419.0,
+    1169.0,
+    74.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "B-BAND-BACK",
+   "name": "BASE - BASE BAND PIECE 100x40 - BACK",
+   "kg": 3.55,
+   "dims": [
+    2420.0,
+    100.0,
+    40.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "B-BAND-SIDE",
+   "name": "BASE - BASE BAND PIECE 100x40 - SIDE",
+   "kg": 2.44,
+   "dims": [
+    1660.0,
+    100.0,
+    40.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "B-BAND-FRONT-L",
+   "name": "BASE - BASE BAND PIECE 100x40 - FRONT-L",
+   "kg": 0.44,
+   "dims": [
+    300.0,
+    100.0,
+    40.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "B-BAND-FRONT-R",
+   "name": "BASE - BASE BAND PIECE 100x40 - FRONT-R",
+   "kg": 1.54,
+   "dims": [
+    1050.0,
+    100.0,
+    40.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "B-KEY",
+   "name": "BASE - CORNER KEY",
+   "kg": 0.15,
+   "dims": [
+    120.0,
+    80.0,
+    40.0
+   ],
+   "ships_as": "box",
+   "status": "assumption"
+  },
+  {
+   "id": "B-GLIDE",
+   "name": "BASE - LEVELLING GLIDE (hex from above)",
+   "kg": 0.15,
+   "dims": [
+    50.0,
+    50.0,
+    40.0
+   ],
+   "ships_as": "box",
+   "status": "assumption"
+  },
+  {
+   "id": "B-THRESH",
+   "name": "BASE - DOOR THRESHOLD, LOW",
+   "kg": 1.2,
+   "dims": [
+    1176.0,
+    60.0,
+    20.0
+   ],
+   "ships_as": "upright",
+   "status": "assumption"
+  },
+  {
+   "id": "B-FLOOR",
+   "name": "BASE - THIN FLOOR PANEL 15 mm",
+   "kg": 15.43,
+   "dims": [
+    1419.0,
+    1169.0,
+    15.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "F-DL",
+   "name": "FRONT - DECOR BLOCK - LEFT",
+   "kg": 9.98,
+   "dims": [
+    2290.0,
+    278.0,
+    235.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "F-DR",
+   "name": "FRONT - DECOR BLOCK - RIGHT",
+   "kg": 18.06,
+   "dims": [
+    2290.0,
+    1016.0,
+    235.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "F-DT",
+   "name": "FRONT - DECOR BLOCK - TOP",
+   "kg": 7.02,
+   "dims": [
+    1697.0,
+    280.0,
+    235.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "F-GLASS-DOOR",
+   "name": "FRONT - GLASS DOOR UNIT (4+4 laminated glass, frameless, 90 mm kick strip with drop seal, hinges, pull)",
+   "kg": 47.48,
+   "dims": [
+    2011.0,
+    1176.0,
+    9.0
+   ],
+   "ships_as": "glass",
+   "status": "calculation"
+  },
+  {
+   "id": "F-GLASS-FIXED",
+   "name": "FRONT - FIXED GLASS (4+4 laminated glass, frameless)",
+   "kg": 27.97,
+   "dims": [
+    2139.0,
+    724.0,
+    9.0
+   ],
+   "ships_as": "glass",
+   "status": "calculation"
+  },
+  {
+   "id": "F-HW",
+   "name": "FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS",
+   "kg": 2.58,
+   "dims": [
+    2200.0,
+    120.0,
+    60.0
+   ],
+   "ships_as": "box",
+   "status": "assumption"
+  },
+  {
+   "id": "A-FAN",
+   "name": "AIR - INLINE FAN TD-500 (S&P TD-500/150-160) IN THE DECOR BLOCKS",
+   "kg": 6.0,
+   "dims": [
+    350.0,
+    280.0,
+    280.0
+   ],
+   "ships_as": "box",
+   "status": "source"
+  },
+  {
+   "id": "A-SIL-DR-CASING",
+   "name": "AIR - RIGHT SPLITTER SILENCER: CASING (2 mm Al)",
+   "kg": 5.46,
+   "dims": [
+    1100.0,
+    300.0,
+    160.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "A-SIL-DR-BAFFLE",
+   "name": "AIR - RIGHT SPLITTER SILENCER: BAFFLE",
+   "kg": 7.43,
+   "dims": [
+    1100.0,
+    260.0,
+    60.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "A-SIL-DT",
+   "name": "AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing)",
+   "kg": 10.17,
+   "dims": [
+    1000.0,
+    240.0,
+    160.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "K-SEALS",
+   "name": "KIT - DOOR EDGE SEALS, BASE SEAL, CABLE GROMMETS",
+   "kg": 1.6,
+   "dims": [
+    600.0,
+    300.0,
+    100.0
+   ],
+   "ships_as": "box",
+   "status": "source"
+  },
+  {
+   "id": "F-DECOR-FILL",
+   "name": "FRONT - PET FILL PIECES FOR THE DECOR BLOCKS (loose)",
+   "kg": 3.09,
+   "dims": [
+    1200.0,
+    400.0,
+    300.0
+   ],
+   "ships_as": "box",
+   "status": "calculation"
+  },
+  {
+   "id": "E-KIT",
+   "name": "ELECTRICAL - SWITCHES, LIGHTS, HARNESS",
+   "kg": 3.05,
+   "dims": [
+    600.0,
+    400.0,
+    200.0
+   ],
+   "ships_as": "box",
+   "status": "assumption"
+  },
+  {
+   "id": "K-FIX",
+   "name": "KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS",
+   "kg": 4.49,
+   "dims": [
+    400.0,
+    300.0,
+    150.0
+   ],
+   "ships_as": "box",
+   "status": "calculation"
+  }
+ ],
+ "shipping_source": "v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv",
+ "fastener_schedule": []
+}

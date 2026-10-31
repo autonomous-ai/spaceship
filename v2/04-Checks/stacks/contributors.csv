@@ -1,0 +1,14 @@
+stack_id,name,sign,nominal_mm,plus_mm,minus_mm,status,source
+ST-01,Door bottom height (glass bottom),1,105,,,source,skeleton P03 door_zb (v1 front lowered 17 mm); hinge height adjustment HOLD until the hinges are named (D-46)
+ST-01,Kick strip height below the glass,-1,85,,,source,skeleton P03 KICK thresh_h to door_zb (D-57); FRONT's 7 mm gap would make it 78 (F-002)
+ST-01,Threshold height,-1,20,,,confirmed,D-18; extrusion tolerance to come from the BASE drawing
+ST-01,Floor height under the threshold,1,0,,,assumption,room floor datum Z 0; flatness from the install sheet (IF-17) still to set
+ST-02,Space between the side frames,1,2414,,,calculation,pod_w 2500 - 2 x outer_t 43 (skeleton P03); tolerances from the WALL drawings
+ST-02,Back panel B1 width,-1,1207,,,source,skeleton P03 (D-55); cut tolerance from the WALL drawing
+ST-02,Back panel B2 width,-1,1207,,,source,skeleton P03 (D-55); cut tolerance from the WALL drawing
+ST-02,Three seam gaskets compressed,-1,,,,assumption,the joints register sets the compressed thickness (F-001)
+ST-03,Clearance hole radius,1,3.3,,,source,proof part hole_dia 6.6 (ISO 273 medium for M6); v2 parts and their tolerance from the drawings
+ST-03,M6 bolt major radius at its largest,-1,2.987,0,0,source,ISO 965-1 6g: major diameter max 5.974 mm
+ST-03,Clearance hole position (radial),-1,0,,,assumption,from the part drawing's position tolerance (diameter / 2)
+ST-03,Rivnut position (radial),-1,0,,,assumption,from the part drawing's position tolerance (diameter / 2)
+ST-03,Locating feature play (radial),-1,0,,,assumption,from the joints register (REQ-ASM-04: joints find their own place)
