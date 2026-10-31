@@ -479,10 +479,13 @@ def build_frame_bodies(comp, half, ctx):
         cs = []
         for k in range(count):
             cs.append((at(x, "x"), at(y, "y")) if face == "bottom" else (at(y, "y"), at(z, "z")))
-        if face == "bottom":
-            circles_cut(comp, bodies[member], label, "z", z, cs, dia, "2 * tube_t", 1, ctx)
-        else:
-            circles_cut(comp, bodies[member], label, "x", x, cs, dia, "2 * tube_t", into[(member, face)], ctx)
+        # one sketch per hole: several circles in one sketch came out over-constrained in Fusion
+        for k, (u, v) in enumerate(cs):
+            lab = label if count == 1 else "%s %d" % (label, k + 1)
+            if face == "bottom":
+                circle_cut(comp, bodies[member], lab, u, v, dia, z, "%s + 2 * tube_t" % z, ctx)
+            else:
+                circle_cut_x(comp, bodies[member], lab, x, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
     sx, sy, sz, sw, sl = M.spigot_slot(half)
     label = "%s BACK SPIGOT SLOT" % half
     half_run = "(%s - %s) / 2" % (sl, sw)
