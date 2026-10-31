@@ -47,14 +47,15 @@ class Stack(unittest.TestCase):
         self.assertEqual(VALS["inner_w"], 2338.0)
         self.assertAlmostEqual(VALS["fr_pitch"], 368.75)
         self.assertEqual(VALS["cs_w"], 1163.0)
-        self.assertEqual(VALS["cs_d"], 1408.0)
+        self.assertEqual(VALS["cs_d"], 1414.0 - 360.0 - 6.0)
         self.assertEqual(VALS["gap_h"], 24.0)
         self.assertAlmostEqual(VALS["rib_off"], 1163.0 / 6)
         self.assertAlmostEqual(VALS["fill_hw"], 584.5 - 1.13 - 20 - 5)
 
     def test_stack_closes(self):
         v = VALS
-        self.assertAlmostEqual(v["acp_t"] + v["fr_d"], v["outer_t"])
+        self.assertAlmostEqual(v["acp_t"] + v["bond_t"] + v["fr_d"], v["outer_t"])
+        self.assertGreaterEqual(v["bond_t"], 0.0)
         self.assertAlmostEqual(v["outer_t"] + v["lin_gap"] + v["cass_t"], v["stack_t"])
         top = ev(M.CASSETTE_CS["C1"][2])
         self.assertAlmostEqual(top + v["lin_gap"], ev(M.ZF0), msg="cassette top 4 mm under the frame")
@@ -84,7 +85,8 @@ class Cassette(unittest.TestCase):
 
     def test_inside_envelope(self):
         # skeleton C1-CASS / C2-CASS envelopes: X -1169..0 / 0..1169, Y -645..769, Z 2319..2353
-        env = {"C1": (-1169.0, 0.0, -645.0, 769.0, 2319.0, 2353.0), "C2": (0.0, 1169.0, -645.0, 769.0, 2319.0, 2353.0)}
+        f = VALS["cs_front"]      # the D-60 soffit takes the front strip
+        env = {"C1": (-1169.0, 0.0, -645.0 + f, 769.0, 2319.0, 2353.0), "C2": (0.0, 1169.0, -645.0 + f, 769.0, 2319.0, 2353.0)}
         for half in ("C1", "C2"):
             b = to_pod(self.cassette_outer(), half)
             e = env[half]
@@ -125,8 +127,10 @@ class Cassette(unittest.TestCase):
             xc = (b[0] + b[1]) / 2
             self.assertAlmostEqual(abs(xc), VALS["rib_off"], msg=name)
             k = int(name.split()[1][1])
-            self.assertAlmostEqual(b[3], k * VALS["fr_pitch"], msg=name + " on the member's front face")
+            self.assertAlmostEqual(b[2], k * VALS["fr_pitch"] - VALS["cs_front"] + VALS["tube_w"],
+                                   msg=name + " on the member's back face")
             self.assertGreaterEqual(b[2], ev(M.CS_Y0))
+            self.assertLessEqual(b[3], ev(M.CS_Y1))
         self.assertEqual(len(M.clip_boxes()), 6)
         self.assertEqual(len(M.catch_boxes()), 2)
 
@@ -158,17 +162,20 @@ class Cassette(unittest.TestCase):
             self.assertAlmostEqual(sb[0], -sb[1])
         for x, _y in M.light_points():
             self.assertEqual(ev(x), 0.0)
-        self.assertEqual(ev(M.sprinkler_point()[0]), 0.0)
+        xs = sorted(ev(x) for x, _y in M.sprinkler_points())
+        self.assertAlmostEqual(xs[0], -xs[1])
 
     def test_fill_strip_kinds(self):
-        """Bays 0 and 1 give the same strip (one part, 2 off); bays 2 and 3 differ."""
+        """With the 360 mm soffit the strips lie in bays 1, 2 and 3: three kinds, each one size."""
         strips = M.fill_strips()
+        self.assertEqual([b for _k, b, _x, _n in strips], [1, 2, 3])
         sizes = {}
         for key, bay, b, _n in strips:
             sb = tuple(ev(e) for e in b)
             sizes.setdefault(key, set()).add(round(sb[3] - sb[2], 6))
+            self.assertGreaterEqual(sb[3] - sb[2], VALS["fill_min"])
         self.assertEqual(sizes["fill_a"], {338.75})
-        self.assertEqual(len(sizes["fill_b"]), 1)
+        self.assertEqual(sizes["fill_b"], {338.75})
         self.assertEqual(len(sizes["fill_c"]), 1)
 
     def test_lights_clear(self):
@@ -180,6 +187,24 @@ class Cassette(unittest.TestCase):
                 self.assertGreater(min(abs(cx - rb[0]), abs(cx - rb[1])), r, "light plate over " + rn)
             self.assertGreater(cy - r, ev(M.CS_Y0) + VALS["lip_w"])
             self.assertLess(cy + r, ev(M.CS_Y1) - VALS["lip_w"])
+
+
+class Sprinkler(unittest.TestCase):
+    def test_zones_clear(self):
+        r = VALS["sprk_d"] / 2
+        ribs = M.boxes_mm(VALS, M.rib_boxes())
+        hold = M.boxes_mm(VALS, M.clip_boxes() + M.catch_boxes())
+        for x, y in M.sprinkler_points():
+            cx, cy = ev(x), ev(y)
+            zone = (cx - r, cx + r, cy - r, cy + r, -1e9, 1e9)
+            for n, b in ribs + hold:
+                self.assertFalse(M.overlap(zone, b), "sprinkler zone over " + n)
+            for lx, ly in M.light_points():
+                self.assertGreater(math.hypot(cx - ev(lx), cy - ev(ly)), r + VALS["ring_od"] / 2 * math.sqrt(2))
+            for half in ("C1", "C2"):
+                pz = to_pod(zone, half)
+                for mc, mb in M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members(half)]):
+                    self.assertFalse(M.overlap((pz[0], pz[1], pz[2], pz[3], mb[4], mb[5]), mb), "zone under " + mc)
 
 
 class Numbers(unittest.TestCase):
@@ -242,7 +267,7 @@ class EditFollows(unittest.TestCase):
         self.assertAlmostEqual(v2["fill_hw"], (2600 - 162) / 4 - 1.13 - 25)
         v3 = M.evaluate(P, {"wall_depth": "1520 mm"})
         self.assertAlmostEqual(v3["fr_pitch"], (1520 - 20) / 4)
-        self.assertAlmostEqual(v3["cs_d"], 1520 - 81 - 6)
+        self.assertAlmostEqual(v3["cs_d"], 1520 - 81 - 360 - 6)
 
 
 if __name__ == "__main__":

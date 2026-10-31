@@ -40,6 +40,15 @@ def current_skeleton_csv():
 
 SKELETON_CSV, SKELETON_REV = current_skeleton_csv()
 
+
+def use_skeleton(path):
+    """Point the model at another skeleton parameter list (for a test build against an
+    open skeleton PR); returns its revision."""
+    global SKELETON_CSV, SKELETON_REV
+    SKELETON_CSV = os.path.abspath(path)
+    SKELETON_REV = os.path.basename(path)[7:10]
+    return SKELETON_REV
+
 # Ceiling parameters the skeleton may take over; the skeleton's own then wins.
 SKELETON_MAY_DEFINE = {"seam_gap"}
 
@@ -54,15 +63,17 @@ CEILING_PARAMS = [
     ("acp_t", "3 mm", "mm", "source", "build plan VT01: ACP 3 mm, Dark Yellow EV3038 (selection A1); in the 81 mm stack (D-42)"),
     ("tube_w", "20 mm", "mm", "confirmed", "D-34, D-54: aluminium 20 x 40 x 1.2 members (the 20 mm face lies in the plane of the panel)"),
     ("tube_t", "1.2 mm", "mm", "confirmed", "D-54: the frames stay 1.2 mm (rivnut grip check passed)"),
-    ("fr_d", "outer_t - acp_t", "mm", "calculation", "frame depth under the skin: 43 - 3 = 40 (the 40 mm face of the tube, D-42)"),
+    ("fr_d", "40 mm", "mm", "confirmed", "D-34, D-42: the frame is the 40 mm face of the 20 x 40 tube"),
+    ("bond_t", "outer_t - acp_t - fr_d", "mm", "calculation",
+     "bond line between the frame and the skin: the skeleton's outer panel less skin and frame (0 at P03's 43; 3 at outer_t 46, PM ruling 2026-10-31: 3 ACP + 3 bond + 40 frame)"),
     ("fr_n", "3", "", "confirmed", PM_RULING + ": 3 cross members between the side and seam members"),
     ("fr_pitch", "(wall_depth - tube_w) / (fr_n + 1)", "mm", "calculation",
      "centre spacing of the cross members, front member to back member: (1495 - 20) / 4 = 368.75, 400 or less (D-16)"),
     ("c_w", "pod_w / 2 - outer_t - 3 * seam_gap / 2", "mm", "calculation",
      "ceiling half width between the side frame and the centre seam, less a seam gap at the side and half a gap at the centre (D-55, seam ruling): 1203.61"),
     # ---- the cassette: one part for both halves (CS-510301)
-    ("cs_front", "0 mm", "mm", "assumption",
-     "depth of the soffit over the door head (D-60): the cassettes stop at its back face (PM ruling 2026-10-31); 0 until the Air Engineer's table gives the soffit depth"),
+    ("cs_front", "360 mm", "mm", "confirmed",
+     "D-60 soffit over the door head, 360 deep and 220 tall (Z 2120 to 2340), flush with the air column's face (PM rulings 2026-10-31, air group); the cassettes stop at its back face (PM ruling 2026-10-31)"),
     ("cs_gap", "3 mm", "mm", "assumption",
      "edge gap round the cassette to the next lining, the other cassette or the top decor block; the 3.2 mm PORON gasket (selection D) just touches across it"),
     ("cs_w", "inner_w / 2 - 2 * cs_gap", "mm", "calculation", "cassette width: half the 2338 inside width less a gap each side = 1163"),
@@ -86,6 +97,7 @@ CEILING_PARAMS = [
     ("fill_t", "40 mm", "mm", "confirmed", "D-24, D-54: 40 mm PET fill at 32 kg/m3 rides on the cassette back"),
     ("fill_c", "5 mm", "mm", "assumption",
      "fill clearance to the frame members, clips and catches, so the cassette never touches the frame (D-17)"),
+    ("fill_min", "100 mm", "mm", "assumption", "a fill strip shorter than this isn't made (a bay mostly over the soffit)"),
     ("fill_hw", "inner_w / 4 - seam_gap / 2 - tube_w - fill_c", "mm", "calculation",
      "half length of a fill strip, set by the seam member over the cassette's inner edge and used on both sides, so both cassettes stay the same part"),
     # ---- HOLD envelopes: space kept for parts not yet named (guideline 4.3)
@@ -125,6 +137,7 @@ PARTS = {
     "fill_a": ("513301", "LINING - FILL - CEILING - BAY A", "Bông PET 40 mm - trần - ô A", "MP", "fill"),
     "fill_b": ("513302", "LINING - FILL - CEILING - BAY B", "Bông PET 40 mm - trần - ô B", "MP", "fill"),
     "fill_c": ("513303", "LINING - FILL - CEILING - BAY C", "Bông PET 40 mm - trần - ô C", "MP", "fill"),
+    "fill_d": ("513304", "LINING - FILL - CEILING - BAY D", "Bông PET 40 mm - trần - ô D", "MP", "fill"),
     "ring": ("513401", "LINING - LIGHT PLATE - CEILING", "Tấm đỡ đèn âm trần", "MP", "steel"),
     "clip": ("518001", "LINING - CASSETTE CLIP - HOLD", "Kẹp treo cassette (chờ chọn)", "HOLD", "hold"),
     "catch": ("518002", "LINING - CEILING SAFETY CATCH - HOLD", "Dây an toàn cassette trần (chờ chọn)", "HOLD", "hold"),
@@ -160,8 +173,9 @@ def to_python(expr):
     return _MM.sub(r"\1", expr).replace(";", ",")
 
 
-def load_skeleton(path=SKELETON_CSV):
+def load_skeleton(path=None):
     """[(name, expression, unit, status, source)] from the skeleton's own CSV."""
+    path = path or SKELETON_CSV
     rows = []
     with open(path, encoding="utf-8") as fh:
         for r in csv.DictReader(fh):
@@ -202,7 +216,8 @@ def ev(vals, expr):
 YW = "(pod_d / 2 - wall_depth)"      # front plane of the walls and ceiling (decor back plate)
 YB = "(pod_d / 2)"                   # back face
 ZF0 = "(pod_h - outer_t)"            # underside of the ceiling frame
-ZF1 = "(pod_h - acp_t)"              # top of the frame, underside of the skin
+ZF1 = "(pod_h - outer_t + fr_d)"     # top of the frame (the bond line and the skin sit above it)
+ZSKIN = "(pod_h - acp_t)"            # underside of the skin
 
 
 def frame_members(half):
@@ -236,7 +251,7 @@ def skin_box():
     return ("-c_w", "0 mm", "0 mm", "wall_depth", "0 mm", "acp_t")
 
 
-SKIN_PLACES = {"C1": ("-seam_gap / 2", YW, ZF1), "C2": ("seam_gap / 2 + c_w", YW, ZF1)}
+SKIN_PLACES = {"C1": ("-seam_gap / 2", YW, ZSKIN), "C2": ("seam_gap / 2 + c_w", YW, ZSKIN)}
 
 
 # cassette, in CS-510301
@@ -252,44 +267,62 @@ def member_front_cs(k):
     return "(%d * fr_pitch - cs_front)" % k
 
 
+def member_back_cs(k):
+    return "(%s + tube_w)" % member_front_cs(k)
+
+
 def clip_boxes():
-    """6 clips: on the front faces of cross members 1..3, over the ribs."""
+    """6 clips: on the back faces of cross members 1..3, over the ribs. The back face keeps
+    every clip over the cassette for any soffit up to about 385 mm (D-60)."""
     out = []
     for k in (1, 2, 3):
         for side in (-1, 1):
             xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
-            yf = member_front_cs(k)
+            yb = member_back_cs(k)
             out.append(("CLIP X%d %s" % (k, "L" if side < 0 else "R"),
-                        ("%s - clip_w / 2" % xc, "%s + clip_w / 2" % xc, "%s - clip_d" % yf, yf, "0 mm", "clip_h")))
+                        ("%s - clip_w / 2" % xc, "%s + clip_w / 2" % xc, yb, "%s + clip_d" % yb, "0 mm", "clip_h")))
     return out
 
 
 def catch_boxes():
-    """2 safety catches: on the back face of cross member 2, over the ribs."""
+    """2 safety catches: on the front face of cross member 2, over the ribs (the clips use its back face)."""
     out = []
     for side in (-1, 1):
         xc = "(%s * rib_off)" % ("-1" if side < 0 else "1")
-        yb = "(%s + tube_w)" % member_front_cs(2)
+        yf = member_front_cs(2)
         out.append(("CATCH %s" % ("L" if side < 0 else "R"),
-                    ("%s - catch_w / 2" % xc, "%s + catch_w / 2" % xc, yb, "%s + catch_d" % yb, "0 mm", "catch_h")))
+                    ("%s - catch_w / 2" % xc, "%s + catch_w / 2" % xc, "%s - catch_d" % yf, yf, "0 mm", "catch_h")))
     return out
 
 
-def fill_strips():
-    """Fill strips on the tray back, one per frame bay. Returns
-    [(key, bay, (x0, x1, y0, y1, z0, z1), [notch boxes])]."""
-    strips = []
+FILL_KEYS = ("fill_a", "fill_b", "fill_c", "fill_d")
+
+
+def fill_strips(vals=None):
+    """Fill strips on the tray back, one per frame bay that lies over the cassette.
+    Which bays get a strip is decided from the values at build time (vals); the boxes
+    stay expressions, so the strips follow later edits. Strips of the same size and
+    notches are one part. Returns [(key, bay, (x0, x1, y0, y1, z0, z1), [notch boxes])]."""
+    vals = vals if vals is not None else evaluate(all_params())
+    strips, kinds = [], {}
     for bay in range(4):
-        # Fusion separates function arguments with ";" (max(a; b)); to_python() reads both
         y0 = "max(%s + tube_w; cs_gap) + fill_c" % member_front_cs(bay)
         y1 = "min(%s; cs_gap + cs_d) - fill_c" % member_front_cs(bay + 1)
+        if ev(vals, y1) - ev(vals, y0) < vals["fill_min"]:
+            continue
         box = ("-fill_hw", "fill_hw", y0, y1, "0 mm", "fill_t")
-        notches = []
+        bv = tuple(ev(vals, e) for e in box)
+        notches, sig = [], []
         for name, b in clip_boxes() + catch_boxes():
-            notches.append((name, ("%s - fill_c" % b[0], "%s + fill_c" % b[1], "%s - fill_c" % b[2],
-                                   "%s + fill_c" % b[3], "0 mm", "fill_t")))
-        key = {0: "fill_a", 1: "fill_a", 2: "fill_b", 3: "fill_c"}[bay]
-        strips.append((key, bay, box, notches))
+            nb = ("%s - fill_c" % b[0], "%s + fill_c" % b[1], "%s - fill_c" % b[2], "%s + fill_c" % b[3], "0 mm", "fill_t")
+            nv = tuple(ev(vals, e) for e in nb)
+            if overlap(bv, nv):
+                notches.append((name, nb))
+                sig.append((round(nv[0], 3), round(nv[1], 3), round(nv[2] - bv[2], 3), round(nv[3] - bv[2], 3)))
+        key = (round(bv[3] - bv[2], 3), tuple(sorted(sig)))
+        if key not in kinds:
+            kinds[key] = FILL_KEYS[len(kinds)]
+        strips.append((kinds[key], bay, box, notches))
     return strips
 
 
@@ -298,9 +331,12 @@ def light_points():
     return [("0 mm", "cs_gap + cs_d * %d / 6" % (2 * i + 1)) for i in range(3)]
 
 
-def sprinkler_point():
-    """Reserved sprinkler zone centre: on the centre line, half way between the first two lights."""
-    return ("0 mm", "cs_gap + cs_d / 3")
+def sprinkler_points():
+    """Two candidate zones for a later sprinkler drop (REQ-US-01), one each side so the
+    cassette stays one part: in the middle of the outer felt spans (X' +-cs_w / 3) and of the
+    first frame bay over the cassette, clear of ribs, lights, clips and members."""
+    y = "%s + (fr_pitch - tube_w) / 2" % member_back_cs(1)
+    return [("-cs_w / 3", y), ("cs_w / 3", y)]
 
 
 def rib_boxes():
@@ -324,20 +360,21 @@ def overlap(a, b, tol=1e-6):
 
 # ---------------------------------------------------------------- flat pattern of the tray
 
-def tray_flat(vals):
-    """Flat blank of the tray (mm), from the K-factor rule: base + 4 returns + 4 lips,
-    corner squares notched out. Returns dict with the blank size and bend lines."""
-    t, r, k = vals["tray_t"], vals["bend_r"], 0.44
-    ba = math.pi / 2 * (r + k * t)                # bend allowance, 90 degrees
+def tray_flat(vals, k=0.44):
+    """Flat blank of the tray (mm) by the K-factor rule, for checking Fusion's flat
+    pattern: outside sizes w x d, returns tray_h deep overall (two bends each), lips
+    lip_w wide (outside), inside radius r = t. Each 90 degree bend takes r + t off
+    each straight it meets (outside setback) and adds its bend allowance."""
+    t, r = vals["tray_t"], vals["bend_r"]
+    ba = math.pi / 2 * (r + k * t)
     w, d, h, lip = vals["cs_w"], vals["cs_d"], vals["tray_h"], vals["lip_w"]
-    # outside sizes: base w x d; return outer height h; lip outer width lip
-    flat_ret = h - 2 * (r + t) + ba               # return flat between its two bends
-    flat_lip = lip - (r + t) + ba / 2             # lip from its bend line to its edge (half allowance each side)
-    flat_base_w = w - 2 * (r + t)
-    flat_base_d = d - 2 * (r + t)
-    blank_w = flat_base_w + 2 * (ba / 2 + flat_ret + ba / 2 + flat_lip)
-    blank_d = flat_base_d + 2 * (ba / 2 + flat_ret + ba / 2 + flat_lip)
-    return {"bend_allowance": ba, "blank_w": blank_w, "blank_d": blank_d, "k_factor": k}
+    so = r + t
+    base_w, base_d = w - 2 * so, d - 2 * so
+    ret = h - 2 * so
+    lip_f = lip - so
+    side = 2 * ba + ret + lip_f
+    return {"bend_allowance": ba, "blank_w": base_w + 2 * side, "blank_d": base_d + 2 * side, "k_factor": k,
+            "return_flat": ret, "lip_flat": lip_f}
 
 
 if __name__ == "__main__":

@@ -42,6 +42,8 @@ if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import ceiling_model as M  # noqa: E402
 importlib.reload(M)      # Fusion keeps modules loaded between runs
+import ceiling_checks as C  # noqa: E402
+importlib.reload(C)
 
 DOC_NAME = "410000_%s_CEILING_CAD" % M.REV
 CLOUD_FOLDER = "FocusPod v2"
@@ -427,7 +429,7 @@ def build_tray(cass_occ_root, cass_comp, ctx):
         body = comp.bRepBodies.item(0)
         for tag, yexpr in (("FRONT", M.CS_Y0), ("BACK", M.CS_Y1)):
             pin = comp.constructionPlanes.createInput()
-            pin.setByOffset(comp.xZConstructionPlane, vi("-(%s)" % yexpr) if True else None)
+            pin.setByOffset(comp.xZConstructionPlane, vi(yexpr))
             pl = comp.constructionPlanes.add(pin)
             pl.name = "PLANE - CABLE HOLE %s" % tag
             pl.isLightBulbOn = False
@@ -480,19 +482,19 @@ def build_felt(cass_comp, ctx):
     body = box_body(comp, "FELT 9", b, ctx)
     for i, (x, y) in enumerate(M.light_points()):
         circle_cut(comp, body, "LIGHT %d" % (i + 1), x, y, "light_hole", M.FELT_Z0, M.FELT_Z1, ctx)
-    # reserved sprinkler zone (REQ-US-01): a fully constrained sketch, nothing cut
-    pl = offset_plane(comp, comp.xYConstructionPlane, M.FELT_Z0, "PLANE - SPRINKLER ZONE")
-    sk = comp.sketches.add(pl)
-    sk.name = "RESERVE - SPRINKLER ZONE (REQ-US-01)"
-    x, y = M.sprinkler_point()
-    cc = sk.sketchCurves.sketchCircles.addByCenterRadius(
-        adsk.core.Point3D.create(ctx.ev(x) * MM, ctx.ev(y) * MM, 0), ctx.ev("sprk_d") / 2 * MM)
-    cc.isConstruction = True
-    g = cc.centerSketchPoint.geometry
-    sk.sketchDimensions.addDiameterDimension(cc, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = "sprk_d"
-    dim_point(sk, cc.centerSketchPoint, x, y, ctx)
-    if not sk.isFullyConstrained:
-        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    # reserved sprinkler zones (REQ-US-01): fully constrained sketches, nothing cut
+    for i, (x, y) in enumerate(M.sprinkler_points()):
+        pl = offset_plane(comp, comp.xYConstructionPlane, M.FELT_Z0, "PLANE - SPRINKLER ZONE %d" % (i + 1))
+        sk = comp.sketches.add(pl)
+        sk.name = "RESERVE - SPRINKLER ZONE %d (REQ-US-01)" % (i + 1)
+        cc = sk.sketchCurves.sketchCircles.addByCenterRadius(
+            adsk.core.Point3D.create(ctx.ev(x) * MM, ctx.ev(y) * MM, 0), ctx.ev("sprk_d") / 2 * MM)
+        cc.isConstruction = True
+        g = cc.centerSketchPoint.geometry
+        sk.sketchDimensions.addDiameterDimension(cc, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = "sprk_d"
+        dim_point(sk, cc.centerSketchPoint, x, y, ctx)
+        if not sk.isFullyConstrained:
+            raise RuntimeError("sketch not fully constrained: " + sk.name)
     set_material(comp, ctx, "felt")
     return occ, comp
 
@@ -649,6 +651,8 @@ def run(_context):
         design.designType = adsk.fusion.DesignTypes.ParametricDesignType
         design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
         ctx = Ctx(design)
+        if ARGS.get("skeleton_csv"):
+            print("skeleton list from", ARGS["skeleton_csv"], "rev", M.use_skeleton(ARGS["skeleton_csv"]))
         params = M.all_params()
         for name, expr, unit, status, src in params:
             design.userParameters.add(name, vi(expr), unit, "%s: %s" % (status.upper(), src))
@@ -678,14 +682,17 @@ def run(_context):
         print("step tray done")
         if stop == "tray":
             raise StopIteration
+        felt_occ, _felt = build_felt(cass, ctx)
         rib_occ, rib = build_rib(cass, ctx)
         rib_y = "%s + tray_t + rib_end" % M.CS_Y0
         place(cass, rib_occ, ("-rib_off", rib_y, "-tray_t"), "RIB L", ctx)
         rib_occ2 = cass.occurrences.addExistingComponent(rib, adsk.core.Matrix3D.create())
         place(cass, rib_occ2, ("rib_off", rib_y, "-tray_t"), "RIB R", ctx)
-        build_felt(cass, ctx)
+        # an occurrence without a joint stayed at its world position when the cassette was
+        # placed (build run 9), so the felt gets a joint at the cassette origin too
+        place(cass, felt_occ, ("0 mm", "0 mm", "0 mm"), "FELT", ctx)
         fill_occ = {}
-        for key, bay, bbox, notches in M.fill_strips():
+        for key, bay, bbox, notches in M.fill_strips(ctx.vals):
             vals = ctx.vals
             sb = tuple(M.ev(vals, e) for e in bbox)
             use = [(n, nb) for n, nb in notches if M.overlap(sb, tuple(M.ev(vals, e) for e in nb))]
@@ -705,19 +712,19 @@ def run(_context):
         clip_comp = None
         for name, b in M.clip_boxes():
             if clip_comp is None:
-                o, clip_comp = build_hold(cass, "clip", ("-clip_w / 2", "clip_w / 2", "-clip_d", "0 mm", "0 mm", "clip_h"), ctx)
+                o, clip_comp = build_hold(cass, "clip", ("-clip_w / 2", "clip_w / 2", "0 mm", "clip_d", "0 mm", "clip_h"), ctx)
             else:
                 o = cass.occurrences.addExistingComponent(clip_comp, adsk.core.Matrix3D.create())
             xc = "(%s) + clip_w / 2" % b[0]
-            place(cass, o, (xc, b[3], "0 mm"), name, ctx)
+            place(cass, o, (xc, b[2], "0 mm"), name, ctx)      # origin on the member's back face
         catch_comp = None
         for name, b in M.catch_boxes():
             if catch_comp is None:
-                o, catch_comp = build_hold(cass, "catch", ("-catch_w / 2", "catch_w / 2", "0 mm", "catch_d", "0 mm", "catch_h"), ctx)
+                o, catch_comp = build_hold(cass, "catch", ("-catch_w / 2", "catch_w / 2", "-catch_d", "0 mm", "0 mm", "catch_h"), ctx)
             else:
                 o = cass.occurrences.addExistingComponent(catch_comp, adsk.core.Matrix3D.create())
             xc = "(%s) + catch_w / 2" % b[0]
-            place(cass, o, (xc, b[2], "0 mm"), name, ctx)
+            place(cass, o, (xc, b[3], "0 mm"), name, ctx)      # origin on the member's front face
         print("step cassette parts done")
         place(root, cass_occ, M.CASSETTE_CS["C1"], "CASSETTE C1-CASS", ctx)
         cass_occ2 = root.occurrences.addExistingComponent(cass, adsk.core.Matrix3D.create())
@@ -744,9 +751,12 @@ def run(_context):
             if c.bRepBodies.count:
                 pp = c.getPhysicalProperties()
                 print("MASS|%s|%s|%.3f kg" % (occ.fullPathName, c.partNumber, pp.mass))
-        print("root box", body_box(root))
-        if bad or loose or hits:
-            raise RuntimeError("ceiling checks failed (unhealthy %s, loose %s, clashes %s)" % (bad, loose, hits))
+        pos = C.check(design)
+        print("position check: %d bodies against the layout, worst %.3f mm, off %s" % (
+            pos["checked"], pos["worst"], pos["bad"] or "none"))
+        if bad or loose or hits or pos["bad"]:
+            raise RuntimeError("ceiling checks failed (unhealthy %s, loose %s, clashes %s, off layout %s)" % (
+                bad, loose, hits, pos["bad"]))
         make_flat_pattern(tray_comp)
         design.activateRootComponent()
         if ARGS.get("save") == "1":

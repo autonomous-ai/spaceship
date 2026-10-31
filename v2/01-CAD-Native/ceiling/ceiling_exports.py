@@ -62,8 +62,8 @@ def write_flat_parts(v):
     ents = [("POLY", "CUT", rect(0, 0, fw, fd))]
     for x, y in M.light_points():
         ents.append(("CIRCLE", "CUT", (fw / 2 + M.ev(v, x), M.ev(v, y) - y_off), v["light_hole"] / 2))
-    sx, sy = M.sprinkler_point()
-    ents.append(("CIRCLE", "MARK", (fw / 2 + M.ev(v, sx), M.ev(v, sy) - y_off), v["sprk_d"] / 2))
+    for sx, sy in M.sprinkler_points():
+        ents.append(("CIRCLE", "MARK", (fw / 2 + M.ev(v, sx), M.ev(v, sy) - y_off), v["sprk_d"] / 2))
     p = os.path.join(OUT, fname("felt", "DXF", "dxf"))
     D.write_dxf(p, ents)
     out["felt"] = p
@@ -154,14 +154,18 @@ def parts_list(v, mass):
         "ceiling": (1, None), "assy_c1": (1, "ceiling"), "assy_c2": (1, "ceiling"),
         "frame_c1": (1, "assy_c1"), "frame_c2": (1, "assy_c2"), "skin": (1, "assy_c1|assy_c2"),
         "cassette": (2, "ceiling"), "tray": (1, "cassette"), "rib": (2, "cassette"), "felt": (1, "cassette"),
-        "fill_a": (2, "cassette"), "fill_b": (1, "cassette"), "fill_c": (1, "cassette"), "ring": (3, "cassette"),
+        "ring": (3, "cassette"),
         "clip": (6, "cassette"), "catch": (2, "cassette"),
     }
+    for key, _bay, _b, _n in M.fill_strips():
+        q[key] = (q.get(key, (0, "cassette"))[0] + 1, "cassette")
     per_pod = {"ceiling": 1, "assy_c1": 1, "assy_c2": 1, "frame_c1": 1, "frame_c2": 1, "skin": 2, "cassette": 2}
-    for k in ("tray", "rib", "felt", "fill_a", "fill_b", "fill_c", "ring", "clip", "catch"):
+    for k in [k for k in q if k not in per_pod]:
         per_pod[k] = q[k][0] * 2
     rows = []
     for key, (pn, name, vn, kind, mat) in M.PARTS.items():
+        if key not in q:
+            continue                     # a fill kind this layout doesn't use
         m = mass.get(pn)
         each = round(m[0], 3) if m else None
         if kind == "HOLD":
@@ -178,7 +182,8 @@ def parts_list(v, mass):
             "tray": "D-17, D-37; PM ruling 2026-10-31 (12 mm lip)",
             "rib": "PM ruling 2026-10-31 (2 ribs); rib joint HOLD",
             "felt": "D-17, D-31; felt fixing HOLD H09",
-            "fill_a": "D-24, D-54; fixing HOLD H10", "fill_b": "D-24, D-54; fixing HOLD H10", "fill_c": "D-24, D-54; fixing HOLD H10",
+            "fill_a": "D-24, D-54; fixing HOLD H10", "fill_b": "D-24, D-54; fixing HOLD H10",
+            "fill_c": "D-24, D-54; fixing HOLD H10", "fill_d": "D-24, D-54; fixing HOLD H10",
             "ring": "selection E (Loox5 2094, 58 mm hole); plate assumption",
             "clip": "D-47; H03, ISS-076", "catch": "D-47; H04, ISS-076",
             "cassette": "D-17, D-24, D-41, D-47; PM ruling 2026-10-31 (one part for both halves)",
@@ -190,7 +195,7 @@ def parts_list(v, mass):
             "status": "DRAFT" if kind != "HOLD" else "HOLD", "source": src,
         })
     # assemblies: sum of parts (HOLD envelopes not counted)
-    by_key = {k: r for k, r in zip(M.PARTS.keys(), rows)}
+    by_key = {k: r for k, r in zip([k for k in M.PARTS if k in q], rows)}
 
     def total(key):
         r = by_key[key]
