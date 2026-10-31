@@ -1,6 +1,6 @@
 # Spaceship plan (FocusPod v2)
 
-Status: approved by Dee on 2026-10-31. Work has started.
+Status: approved by Dee on 2026-10-31. Work has started. Decisions made since then are in `v2/00-Control/decision-log.md`, which wins wherever this plan disagrees.
 
 **Spaceship** is the working name for v2. The pod looks like a spaceship, and inside it should feel like one: you command your agents by voice. The prototype stays focused on the structure goals below, but the design reserves the hooks for that cockpit: mounting points, cable paths and power for a mic array, speakers, a screen and a status light. The cockpit kit can then bolt in later without a redesign.
 
@@ -27,9 +27,9 @@ We benchmark against the leaders: Framery, Room, Herman Miller, Steelcase (Orang
 | Installing it | Pro-install leaders: Room S/M take 12–20 person-hours, Framery uses trained crews quoting 4–6 hours, and Air3 needs certified installers. The best DIY is Room's 1-person booth at 2 person-hours and BuzziNest Pod at 4. | 2 people in about 1 hour with one hand tool (2 person-hours). Stretch: 1 person-hour. | 10x against the pro-install leaders, 2–4x against the best DIY |
 | Getting it delivered and inside | Framery ships one crate of 310–430 kg that needs a pallet jack. Room's heaviest box is 73–81 kg. | Standard pallets to the door, then every piece carried by hand. Every part is 20 kg or less except the glass and fits an 81 cm door and a normal elevator. | 3–20x lighter pieces, and no pallet jack inside |
 | Moving it inside the office | Room S/M need a pro teardown and rebuild, and Framery needs a kit and partial disassembly | Under study: castors, or a quick unbolt of the light panels | Up to 10x |
-| Weight | The lightest are about 88–91 kg/m² of floor with no lab sound rating (Bay, Zenbooth Quad). Lab-rated Class A pods are 151–171 (Framery Four). | about 70 kg/m² (300 kg) | 1.2x lighter than the lightest, 2.4x lighter than lab-rated Class A pods |
+| Weight | The lightest are about 88–91 kg/m² of floor with no lab sound rating (Bay, Zenbooth Quad). Lab-rated Class A pods are 151–171 (Framery Four). | about 90 kg/m² (385 kg), with every part 20 kg or less | As light as the lightest unrated pods, and about half the weight of lab-rated ones |
 | Fresh air | Best is about 25 l/s per person. Nobody publishes CO2 readings or fan noise. | About 35 l/s per person (70 l/s for 2), with a CO2 sensor that drives the fans and shows the reading. Fan noise at or under 25 dB(A) at full flow, published. | Best in class, and first to publish CO2 and fan noise |
-| Quiet | 30–30.3 dB speech reduction is the best lab result (hushFree XS, Framery) | At least as quiet as v1, aim 30 dB, stretch 33 dB, with a published lab report | Match or beat the best at 40% less weight per m² |
+| Quiet | 30–30.3 dB speech reduction is the best lab result (hushFree XS, Framery) | About 24 dB (calculated range 22–27), roughly 9 dB quieter than v1 as built (about 15 dB), with a published lab report. Decided (D-02): 30 dB would need about 520 kg. | Clearly quieter than v1 at under half the weight per m² of lab-rated pods |
 | Price | Zenbooth $5,245 per seat (2 seats). Big-brand pods run $13k–30k. | At or below v1's $9,900 for 2 people ($4,950 per seat) | Best per seat |
 
 Ten times better is real on installing, handling, lead time and moving the pod. It isn't physically possible on sound (10x quieter means +10 dB), on weight, or on price; the honest margin there is 1.2–3x. Dee sets the price; the rest are design targets.
@@ -40,7 +40,7 @@ Agents work to these from day one. The hardware engineering lead and the indoor 
 
 | # | Goal | Target | How we prove it |
 |---|---|---|---|
-| 1 | Light | 300 kg or less, about half of v1 (about 550 kg from its BOM). Every part 20 kg or less, so one person can carry it, except the glass. That's about 40% lighter than any acoustically rated pod this size, and no maker claims 20 kg parts. | Weights from the CAD and BOM, then the prototype on a scale |
+| 1 | Light | About 385 kg (cap 400 kg) for the quiet build. v1 is about 480 kg by its BOM. 300 kg is the light build without the sound package, and the kg-vs-dB curve set the trade (decision D-02). Every part 20 kg or less, so one person can carry it, except the glass. No maker claims 20 kg parts. | Weights from the CAD and BOM, then the prototype on a scale |
 | 2 | Easy to assemble | 2 people in about 1 hour with one hand tool, and never more than 4 hours. One bolt size (M6), joints that find their own place, no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
 | 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. Nobody on the market ships pods on 48 × 40. | Pallet layout from the CAD |
 | 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 800 ppm with 2 people all day, which needs at least 26 l/s; we aim for about 70 l/s, a full air change every 2 minutes, which keeps CO2 near 550 ppm. A CO2 sensor drives the fans, and the reading is shown inside. The fans start by themselves, have boost, and are wired in so nobody unplugs them. Fan noise inside is at or under 25 dB(A) at full flow through silenced vents, and we publish it. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |

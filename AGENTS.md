@@ -14,7 +14,7 @@ Before any design, CAD, drawing or BOM work, read and follow `docs/engineering-g
 
 The guideline has the full list. These are the ones that bite most often:
 
-- Use mm everywhere. 3D uses X, Y and Z; 2D views and hole tables use X and Y only.
+- Use mm everywhere. 3D uses X, Y and Z; 2D views and hole tables use X and Y only. The one exception: Fusion's STEP export always writes cm. Keep the file as Fusion wrote it, with its declared unit; don't convert it (decision D-13).
 - Every number carries a status: confirmed, source, calculation, assumption or unverified.
 - Don't edit `sources/`. Don't contact suppliers or order anything.
 - The PM (the Swarm Lead) makes product and design decisions and records each one, with its reason, in `v2/00-Control/decision-log.md`. Nothing waits for outside approval. Follow the guideline's engineering rules, but its approval steps are replaced by this log. The one hard rule on the look: it stays exactly as the team designed it.
