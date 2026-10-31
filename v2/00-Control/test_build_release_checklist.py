@@ -45,6 +45,18 @@ def row(pn, make_buy, name="PART", material="", team="WALL", mass=1.0, finish=""
             "mass_each_kg": mass, "finish": finish, "hold": hold, "source_file": f"{src} @ working tree"}
 
 
+def dxf_doc(*entities):
+    """A small ASCII DXF: the layer table names CUT, BEND and MARK; then one entity per (type, layer)."""
+    head = ["0", "SECTION", "2", "TABLES", "0", "TABLE", "2", "LAYER"]
+    for name in ("CUT", "BEND", "MARK"):
+        head += ["0", "LAYER", "2", name, "70", "0"]
+    head += ["0", "ENDTAB", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    body = []
+    for typ, layer in entities:
+        body += ["0", typ, "8", layer, "10", "0.0", "20", "0.0", "11", "100.0", "21", "0.0"]
+    return "\n".join(head + body + ["0", "ENDSEC", "0", "EOF"]) + "\n"
+
+
 def files(*names, folder="v2/01-CAD-Native/wall/"):
     return {folder + n: "working tree" for n in names}
 
@@ -282,7 +294,8 @@ class D89FlatSheetParts(unittest.TestCase):
     HEAD = "part_number,name,material,thickness_mm,finish,process,tolerance,note"
     GOOD = "361101,FRONT - COVER PLATE,aluminium 5754-H22,2,black anodised AA20,laser cut,ISO 2768-m,"
 
-    def plate(self, line=GOOD, head=HEAD, dxf=True, make_buy="make", pn="361101"):
+    def plate(self, line=GOOD, head=HEAD, dxf=True, make_buy="make", pn="361101", dxf_text=None):
+        dxf_text = dxf_text or dxf_doc(("LWPOLYLINE", "CUT"), ("CIRCLE", "CUT"), ("TEXT", "MARK"))
         fai = rc.fai_plan(PLAN, BOM)
         part = row(pn, make_buy, "FRONT - COVER PLATE", "aluminium 5754-H22", team="FRONT", src=self.LIST)
         part["finish"] = "black anodised AA20"
@@ -290,7 +303,7 @@ class D89FlatSheetParts(unittest.TestCase):
         names += [f"{pn}_P01_FRONT-COVER-PLATE_DXF.dxf"] if dxf else []
         file_map = files(*names, folder="v2/03-Manufacturing/front/")
         made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
-                                 {self.LIST: head + "\n" + line + "\n"})
+                                 {self.LIST: head + "\n" + line + "\n"}, {}, lambda _pn: [dxf_text] if dxf else [])
         return made[0]
 
     def test_a_laser_cut_plate_with_its_dxf_and_a_full_row_is_drawn(self):
@@ -322,6 +335,77 @@ class D89FlatSheetParts(unittest.TestCase):
     def test_an_assembly_always_keeps_its_drawing(self):
         line = self.GOOD.replace("361101", "360101")
         self.assertEqual(self.plate(line, make_buy="assembly", pn="360101")["dwg"], "no")
+
+
+class D89Layers(unittest.TestCase):
+    """D-89 (4) can't be fooled by a process word: its DXF may draw only on the CUT and MARK layers; a line on any
+    other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing (PM ruling 2026-11-01)."""
+
+    def test_reading_the_layers(self):
+        self.assertEqual(rc.dxf_other_layers(dxf_doc(("LINE", "CUT"), ("TEXT", "MARK"))), set())  # BEND only in the layer table
+        self.assertEqual(rc.dxf_other_layers(dxf_doc(("LINE", "CUT"), ("LINE", "BEND"))), {"BEND"})
+        self.assertEqual(rc.dxf_other_layers(dxf_doc(("LWPOLYLINE", "cut"), ("LINE", "bend"), ("LWPOLYLINE", "POCKET-HALF-DEPTH"))),
+                         {"BEND", "POCKET-HALF-DEPTH"})
+        self.assertIsNone(rc.dxf_other_layers(""))
+        self.assertIsNone(rc.dxf_other_layers("AutoCAD Binary DXF\r\n\x1a\x00"))
+
+    BLOCKS = ("0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n8\n0\n2\n*Model_Space\n0\nENDBLK\n8\n0\n"
+              "0\nBLOCK\n8\n0\n2\nTAB\n0\nLINE\n8\nBEND\n0\nENDBLK\n8\n0\n0\nENDSEC\n")
+
+    def test_block_records_are_not_lines_but_block_lines_are(self):
+        header_only = self.BLOCKS.replace("0\nBLOCK\n8\n0\n2\nTAB\n0\nLINE\n8\nBEND\n0\nENDBLK\n8\n0\n", "")
+        self.assertEqual(rc.dxf_other_layers(header_only + dxf_doc(("LINE", "CUT"))), set())
+        self.assertEqual(rc.dxf_other_layers(self.BLOCKS + dxf_doc(("LINE", "CUT"))), {"BEND"})
+        polyline = dxf_doc(("POLYLINE", "CUT")).replace("0\nENDSEC\n0\nEOF", "0\nVERTEX\n8\n0\n0\nSEQEND\n8\n0\n0\nENDSEC\n0\nEOF")
+        self.assertEqual(rc.dxf_other_layers(polyline), set())
+
+    def test_the_layer_reading_matches_the_mechanical_check(self):
+        checks = rc.ROOT / "tools/checks"
+        if not (checks / "c_drawings.py").exists():
+            self.skipTest("no mechanical check in this tree")
+        sys.path.insert(0, str(checks))
+        try:
+            import c_drawings
+        finally:
+            sys.path.remove(str(checks))
+        import tempfile
+        samples = [dxf_doc(("LINE", "CUT"), ("TEXT", "MARK")), dxf_doc(("LINE", "CUT"), ("LINE", "BEND")),
+                   dxf_doc(("LWPOLYLINE", "cut"), ("LWPOLYLINE", "POCKET-HALF-DEPTH")), self.BLOCKS + dxf_doc(("LINE", "CUT")),
+                   self.BLOCKS.replace("8\nBEND", "8\n0") + dxf_doc(("LINE", "CUT"))]
+        with tempfile.TemporaryDirectory() as tmp:
+            for i, text in enumerate(samples):
+                path = Path(tmp) / f"s{i}.dxf"
+                path.write_text(text, encoding="utf-8")
+                theirs = {k.upper() for k in c_drawings.dxf_summary(str(path))["layers"] if k.upper() not in ("CUT", "MARK")}
+                self.assertEqual(rc.dxf_other_layers(text), theirs, i)
+
+    def run_part(self, dxf_text, process="laser", pn="511101", name="LINING - TRAY - SIDE LOWER - LH"):
+        fai = rc.fai_plan(PLAN, BOM)
+        lst = "v2/03-Manufacturing/wall/510000_P01_LINING_BOM.csv"
+        part = row(pn, "make", name, "galvanised steel sheet 0.5 mm", src=lst)
+        part["finish"] = "hot-dip zinc"
+        file_map = files(f"{pn}_P01_PART_CAD.f3d", f"{pn}_P01_PART_STEP.step", f"{pn}_P01_PART_DXF.dxf", folder="v2/03-Manufacturing/wall/")
+        csv_text = ("part_number,name,material,thickness_mm,finish,process,tolerance\n"
+                    f"{pn},{name},galvanised steel DX51D+Z,0.5,hot-dip zinc,{process},ISO 2768-m\n")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {lst: csv_text}, {}, lambda _pn: [dxf_text])
+        return made[0]
+
+    def test_a_folded_tray_whose_row_says_only_laser_keeps_its_drawing(self):
+        folded = self.run_part(dxf_doc(("LINE", "CUT"), ("SPLINE", "CUT"), ("LINE", "BEND"), ("LINE", "BEND"), ("LINE", "MARK")))
+        self.assertEqual(folded["dwg"], "no: its DXF draws on BEND; only CUT and MARK pass (D-89)")
+        self.assertIn("drawing", folded["gaps"])
+        self.assertEqual(self.run_part(dxf_doc(("LINE", "CUT"), ("LINE", "MARK")))["dwg"], "DXF and row (D-89)")
+
+    def test_a_routed_half_lap_or_an_engraving_keeps_the_drawing(self):
+        floor = self.run_part(dxf_doc(("LWPOLYLINE", "CUT"), ("LWPOLYLINE", "POCKET-HALF-DEPTH"), ("TEXT", "MARK")),
+                              process="CNC router", pn="111401", name="BASE - FLOOR PANEL - F1")
+        self.assertEqual(floor["dwg"], "no: its DXF draws on POCKET-HALF-DEPTH; only CUT and MARK pass (D-89)")
+        engraved = self.run_part(dxf_doc(("LINE", "CUT"), ("TEXT", "ENGRAVE")))
+        self.assertEqual(engraved["dwg"], "no: its DXF draws on ENGRAVE; only CUT and MARK pass (D-89)")
+
+    def test_an_unreadable_dxf_keeps_the_drawing(self):
+        self.assertEqual(self.run_part("")["dwg"], "no: its DXF can't be read (D-89)")
 
 
 class Render(unittest.TestCase):

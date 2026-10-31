@@ -775,7 +775,52 @@ class TestD89FlatSheetParts:
     # what only the files show
     def test_a_line_on_the_bend_layer_keeps_the_drawing_whatever_the_row_says(self, tmp_path):
         msg = self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), ("BEND", "LINE", 0)))["361101"]
-        assert "BEND layer, so it is folded" in msg
+        assert "draws on BEND; only CUT and MARK pass, so it is folded" in msg
+
+    def test_only_the_cut_and_mark_layers_are_allowed(self, tmp_path):
+        assert self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), ("MARK", "TEXT", 0))) == {}
+        for layer in ("POCKET-HALF-DEPTH", "ENGRAVE", "HALF-LAP"):
+            msg = self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), (layer, "LINE", 0)))["361101"]
+            assert "draws on %s; only CUT and MARK pass" % layer in msg, layer
+
+    # the release checklist's own layer cases (test_build_release_checklist.py, D-89 (4) layers), so both
+    # tools read a DXF the same way
+    @staticmethod
+    def dxf_doc(*entities):
+        head = ["0", "SECTION", "2", "TABLES", "0", "TABLE", "2", "LAYER"]
+        for name in ("CUT", "BEND", "MARK"):
+            head += ["0", "LAYER", "2", name, "70", "0"]
+        head += ["0", "ENDTAB", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+        body = []
+        for typ, layer in entities:
+            body += ["0", typ, "8", layer, "10", "0.0", "20", "0.0", "11", "100.0", "21", "0.0"]
+        return "\n".join(head + body + ["0", "ENDSEC", "0", "EOF"]) + "\n"
+
+    BLOCKS = ("0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n8\n0\n2\n*Model_Space\n0\nENDBLK\n8\n0\n"
+              "0\nBLOCK\n8\n0\n2\n_ARCHTICK\n0\nLWPOLYLINE\n8\n0\n0\nENDBLK\n8\n0\n"
+              "0\nBLOCK\n8\n0\n2\nTAB\n0\nLINE\n8\nBEND\n0\nENDBLK\n8\n0\n0\nENDSEC\n")
+
+    def test_reading_the_layers(self):
+        o = c_drawings.dxf_other_layers
+        assert o(self.dxf_doc(("LINE", "CUT"), ("TEXT", "MARK"))) == set()       # BEND only in the layer table
+        assert o(self.dxf_doc(("LINE", "CUT"), ("LINE", "BEND"))) == {"BEND"}
+        assert o(self.dxf_doc(("LWPOLYLINE", "cut"), ("LINE", "bend"), ("LWPOLYLINE", "POCKET-HALF-DEPTH"))) == \
+            {"BEND", "POCKET-HALF-DEPTH"}
+        assert o("") is None and o("AutoCAD Binary DXF\r\n\x1a\x00") is None
+
+    def test_only_drawn_entities_and_inserted_blocks_count(self):
+        o = c_drawings.dxf_other_layers
+        assert o(self.BLOCKS + self.dxf_doc(("LINE", "CUT"))) == set()           # blocks never inserted
+        inserted = self.BLOCKS + self.dxf_doc(("LINE", "CUT")).replace(
+            "0\nENDSEC\n0\nEOF", "0\nINSERT\n8\nCUT\n2\nTAB\n0\nENDSEC\n0\nEOF")
+        assert o(inserted) == {"BEND"}
+
+    def test_an_unreadable_dxf_keeps_the_drawing(self, tmp_path):
+        self.plate(tmp_path)
+        (tmp_path / "v2/03-Manufacturing/front/361101_P01_FRONT-COVER-PLATE_DXF.dxf").write_text("")
+        fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), {"361101"}, {},
+                                                                     {"361101": "FRONT - COVER PLATE"})}
+        assert "can't be read" in fs["361101"]
 
     def test_the_dxf_must_hold_every_hole_of_the_step(self, tmp_path):
         holes = [sf.Hole(1, (50, 50, 0), (0, 0, 1), 7.0, 2.0, [])]

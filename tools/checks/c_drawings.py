@@ -151,22 +151,71 @@ NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pock
 BEND_LAYER = re.compile(r"\b(?:BEND|FOLD)", re.I)
 
 
+DXF_STRUCTURE = ("BLOCK", "ENDBLK", "SEQEND", "VERTEX", "ENDSEC", "EOF")   # records, not lines
+
+
+FLAT_LAYERS = {"CUT", "MARK"}
+
+
+def dxf_other_layers(text):
+    """D-89 (4): the layers other than CUT and MARK that an ASCII DXF draws on, upper-cased; None when it can't be
+    read (empty or binary), so the part can't be shown flat. What it draws is its ENTITIES section; a block counts
+    only where an INSERT places it (its entities on layer 0 take the INSERT's layer), so the arrow-head blocks a
+    DXF library writes, never inserted, don't count. Copied from the release checklist
+    (v2/00-Control/build_release_checklist.py, dxf_other_layers) so both tools read a DXF the same way."""
+    if not text or text.startswith("AutoCAD Binary DXF"):
+        return None
+    lines = text.splitlines()
+    pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
+    section, block, ent, blocks, drawn = None, None, None, {}, []
+    for i, (code, value) in enumerate(pairs + [("0", "EOF")]):
+        if code == "0":
+            if ent and section == "ENTITIES":
+                drawn.append(ent)
+            elif ent and section == "BLOCKS" and block and ent[0] not in ("BLOCK", "ENDBLK"):
+                blocks.setdefault(block, set()).add(ent[1])
+            ent = None if value in ("SECTION", "ENDSEC", "EOF") else [value.upper(), "0", ""]
+            section = None if value == "ENDSEC" else section
+        elif code == "2" and i and pairs[i - 1] == ("0", "SECTION"):
+            section = value.upper()
+        elif ent is not None and code == "8":
+            ent[1] = value.upper()
+        elif ent is not None and code == "2":
+            ent[2] = value
+            block = value if ent[0] == "BLOCK" else block
+    other = set()
+    for typ, layer, name in drawn:
+        layers = {layer} | ({x for x in blocks.get(name, set()) if x != "0"} if typ == "INSERT" else set())
+        other |= {x for x in layers if x not in FLAT_LAYERS}
+    return other
+
+
 def dxf_summary(path):
-    """A DXF read without a library: {'units': $INSUNITS, 'layers': {layer: entity count}, 'circles': [diameters
-    of CIRCLE entities]}."""
-    with open(path, encoding="utf-8", errors="replace") as fh:
-        lines = fh.read().splitlines()
+    """A DXF read without a library: {'units': $INSUNITS, 'layers': {layer: count of drawing entities in the
+    ENTITIES and BLOCKS sections}, 'circles': [diameters of CIRCLE entities]}; None when the file can't be read
+    as ASCII DXF (empty or binary). Block records (BLOCK, ENDBLK) and a polyline's VERTEX and SEQEND are records,
+    not lines, so a block header on layer 0 doesn't count."""
+    try:
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            text = fh.read()
+    except OSError:
+        return None
+    if not text.strip() or text.startswith("AutoCAD Binary DXF"):
+        return None
+    lines = text.splitlines()
     pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
     out = {"units": None, "layers": {}, "circles": []}
     sec, cur = None, None
     for k, (code, val) in enumerate(pairs):
         if code == "2" and k and pairs[k - 1] == ("0", "SECTION"):
-            sec, cur = val, None
+            sec, cur = val.upper(), None
+        elif code == "0" and val == "ENDSEC":
+            sec, cur = None, None
         elif code == "9" and val == "$INSUNITS" and k + 1 < len(pairs):
             out["units"] = pairs[k + 1][1]
-        elif sec == "ENTITIES" and code == "0":
-            cur = None if val in ("ENDSEC", "SEQEND", "VERTEX", "EOF") else val
-        elif sec == "ENTITIES" and cur and code == "8":
+        elif sec in ("ENTITIES", "BLOCKS") and code == "0":
+            cur = None if val.upper() in DXF_STRUCTURE else val.upper()
+        elif sec in ("ENTITIES", "BLOCKS") and cur and code == "8":
             out["layers"][val] = out["layers"].get(val, 0) + 1
         elif sec == "ENTITIES" and cur == "CIRCLE" and code == "40":
             try:
@@ -221,10 +270,19 @@ def flat_cut_lacks(root, pn, files, holes, flat):
     if not dxfs:
         return ["it has no DXF of its own"]
     rv, dxf = dxfs[-1]
+    try:
+        with open(dxf, encoding="utf-8", errors="replace") as fh:
+            text = fh.read()
+    except OSError:
+        text = ""
+    other = dxf_other_layers(text)
     d = dxf_summary(dxf)
-    bend = sorted(l for l in d["layers"] if BEND_LAYER.search(l))
-    if bend:
-        why.append("its DXF has lines on the %s layer, so it is folded" % ", ".join(bend))
+    if other is None or d is None:
+        return ["its DXF can't be read, so it can't be shown flat"]
+    if other:
+        other = sorted(other)
+        bend = [l for l in other if BEND_LAYER.search(l)]
+        why.append("its DXF draws on %s; only CUT and MARK pass%s" % (", ".join(other), ", so it is folded" if bend else ""))
     if d["units"] not in (None, "4"):
         why.append("its DXF isn't in mm ($INSUNITS %s)" % d["units"])
     cad_revs = {r for r, _p in files.get("CAD", []) + files.get("STEP", [])}
@@ -241,6 +299,11 @@ def flat_cut_lacks(root, pn, files, holes, flat):
         if got < n:
             why.append("its DXF has %d of the %d Ø%g holes in its STEP" % (got, n, dia))
     lacks = flat_row_lacks(root, pn)
+    worked = [l for l in (lacks or []) if l.startswith("no bends or machined features")]
+    # a folded or machined part keeps its drawing: say why, and leave out the row's other gaps
+    not_flat = [w for w in why if "only CUT and MARK pass" in w or w == (flat[2] if flat is not None and not flat[0] else None)]
+    if not_flat or worked:
+        return not_flat + ["its row's process names %s" % l.split("names ", 1)[-1].rstrip(")") for l in worked]
     if lacks is None:
         why.append("no parts list or cut list has a row for it")
     elif lacks:
