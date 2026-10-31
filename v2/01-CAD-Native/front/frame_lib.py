@@ -126,8 +126,11 @@ def evaluator(env):
 
 
 def member_numbers(m, ev):
-    """Evaluated polygon, axis (unit, in the member's plane), length along it, and end-cut angles."""
+    """Evaluated polygon, axis (unit, in the member's plane), length along it, and end-cut angles. A member whose
+    polygon is its cross-section ("lengthwise": True) runs along its extrusion: its length is b - a."""
     pts = [(ev(u), ev(v)) for u, v in m["pts"]]
+    if m.get("lengthwise"):
+        return {"pts": pts, "axis": None, "length": abs(ev(m["b"]) - ev(m["a"]))}
     i, j = m.get("axis", (0, 1))
     d = (pts[j][0] - pts[i][0], pts[j][1] - pts[i][1])
     n = math.hypot(*d)
@@ -162,7 +165,10 @@ def build_members(design, comp, L, members, t_expr):
         b.name = "%s %s %s" % (m["key"], m["name"], m["section"])
         ev = lambda e: L.ev(design, e)
         num = member_numbers(m, ev)
-        ax = axis3(m["axes"], *num["axis"])
+        if num["axis"] is None:
+            ax = tuple(1.0 if k == m["along"] else 0.0 for k in ("x", "y", "z"))
+        else:
+            ax = axis3(m["axes"], *num["axis"])
         ends = adsk.core.ObjectCollection.create()
         for fc in b.faces:
             ok, nrm = fc.evaluator.getNormalAtPoint(fc.pointOnFace)
