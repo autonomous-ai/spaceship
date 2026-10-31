@@ -388,6 +388,23 @@ def write_dxf_polyline(path, loops, layer="CUT"):
 
 # ---------------------------------------------------------------- export package (parts list, anchors, STEP re-read)
 
+# FRONT's bought items as the joints register names them (section 2.1, H-15 to H-24), so the master BOM sees one
+# name per number, with maker and SKU where the product is named (HOLD items have none yet)
+REGISTER_ITEMS = {
+    "368001": ("FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112", "Ron chân cửa tự động", "athmer", "Schall-Ex GSA 1-1112"),
+    "368002": ("FRONT - GLAZING U-SEAL - BOHLE BO5201735", "Gioăng chữ U silicone", "Bohle", "BO5201735"),
+    "368003": ("FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD", "Gioăng từ 180° (nửa 1)", "", ""),
+    "368004": ("FRONT - GLAZING U-PROFILE - BOHLE BO5201571", "Thanh U nhôm kẹp kính", "Bohle", "BO5201571"),
+    "368005": ("FRONT - FRAME-STOP SEAL", "Gioăng chặn khung cửa", "athmer", "PS 1515 P Flex"),
+    "368006": ("FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng từ 180° (nửa 2)", "", ""),
+    "368007": ("FRONT - DOOR CATCH - IN DT", "Nam châm hít cửa (trong khối DT)", "Sugatsune", "HT-MSG62"),
+    "368101": ("FRONT - DOOR HINGE - HOLD", "Bản lề cửa kính", "", ""),
+    "368102": ("FRONT - DOOR STRIKE", "Đế hít cửa", "Sugatsune", "HT-MSG62-U10"),
+    "368103": ("FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (cặp)", "", ""),
+    "618401": ("AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", "Noctua", "NF-A14 industrialPPC-3000 PWM"),
+}
+
+
 def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
     """rows: [(pn, name, vn, qty, type, material, mass, mass_status, status, source, note)];
     mass "cad" = the component's mass from the model; the root row's mass is the sum of the others.
@@ -399,7 +416,7 @@ def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
     out = []
     for pn, name, vn, qty, typ, mat, mass, mstat, status, src, note in rows:
         if pn == root_pn:
-            out.append([pn, root_name, root_vn, typ, mat, qty, "", mstat, status, src, note])
+            out.append([pn, root_name, root_vn, typ, mat, qty, "", mstat, status, src, note, "", ""])
             continue
         comps = by_pn.get(pn, [])
         if len(comps) != (qty if isinstance(qty, int) else 1):
@@ -410,7 +427,10 @@ def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
             mass = round(comp_mass(comps[0]), 3)
         if mass is None:              # a sub-assembly row: its parts carry the mass
             mass, mstat = "", mstat or "sum of its parts (rows below)"
-        out.append([pn, name, vn, typ, mat, qty, mass, mstat, status, src, note])
+        maker = sku = ""
+        if pn in REGISTER_ITEMS:      # the register's name (the CAD name was checked above), maker and SKU
+            name, vn, maker, sku = REGISTER_ITEMS[pn]
+        out.append([pn, name, vn, typ, mat, qty, mass, mstat, status, src, note, maker, sku])
     total = sum((r[5] if isinstance(r[5], int) else 1) * r[6] for r in out if r[0] != root_pn and r[6] != "")
     for r in out:
         if r[0] == root_pn:
@@ -419,7 +439,7 @@ def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["part_number", "name", "name_vi", "type", "material", "qty", "unit_mass_kg", "mass_status",
-                    "status", "source", "note"])
+                    "status", "source", "note", "maker", "sku"])
         w.writerows(out)
     return total
 
