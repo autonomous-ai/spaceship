@@ -1,8 +1,8 @@
-# Mechanical check run: e3bca55 on 2026-10-31
+# Mechanical check run: fc6192e on 2026-10-31
 
-Offline checks (`tools/checks/run_checks.py`) on revision `e3bca55`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `fc6192e`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 1** (0 severe, 1 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 0** (0 severe, 0 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -11,7 +11,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `e3bca55`. The Fusion 
 | C01 clash and minimum gaps (Fusion) | yes | 0 |
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
-| C04 weight, doorway and pallet fit | yes | 1 |
+| C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | no inputs yet | 0 |
 | C06 BOM completeness | yes | 0 |
 | C07 fastener schedule and thread engagement | yes | 0 |
@@ -26,7 +26,6 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
-| F-010 | major | C04 | POD total mass | The pod is about 422.8 kg against the 420 kg cap (D-37, D-54): 2.8 kg over. The layout study's list gives 422.8 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
 
 ## Tolerance stacks (C02)
 
