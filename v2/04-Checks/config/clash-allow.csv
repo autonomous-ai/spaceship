@@ -1,0 +1,4 @@
+id,a,b,max_mm3,status_source,why
+BOLT-IN-THREAD,"\b(BOLT|SCREW)\b","\b(RIVNUT|RIVET NUT|NUT|INSERT|CLINCH)\b",0,"assumption: CAD models the thread at nominal size, so the bolt overlaps the nut's thread by design","a bolt in its own thread is the joint, not a clash"
+RIVNUT-IN-HOLE,"\b(RIVNUT|RIVET NUT|CLINCH)\b","(TUBE|FRAME|RAIL|STILE|BAND|PROFILE)",0,"assumption: a set rivnut is modelled swaged into its hole","the set rivnut fills its hole"
+GASKET-COMPRESSED,"\b(GASKET|SEAL)\b",".",0,"assumption: gaskets and seals are modelled at free height and compress on assembly; the compression is checked as a gap rule","a seal squeezed by its neighbours is intended"

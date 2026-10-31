@@ -1,0 +1,2 @@
+name,diameter_mm,length_mm,status_source
+"10 mm hex socket on a short drive (M6 ISO 4017 hex head)",18,80,"assumption: socket outside diameter about 15 mm (1/4 in drive) plus 1.5 mm hand clearance each side, 80 mm to clear the socket and the drive head; the one site tool (REQ-ASM-03) is not named yet, so this stands in until the joints register names it"

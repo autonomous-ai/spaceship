@@ -1,0 +1,807 @@
+{
+ "steps": [
+  "v2/03-Manufacturing/skeleton/100000_P03_POD-SKELETON_STEP.step"
+ ],
+ "started": "2026-10-31 22:05:48",
+ "errors": [],
+ "imports": [
+  {
+   "file": "100000_P03_POD-SKELETON_STEP.step",
+   "ok": true
+  }
+ ],
+ "bodies": [
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / F1 BASE - THIN FLOOR PANEL - F1:1 / Body1",
+   "box_mm": [
+    -1169.0,
+    -645.0,
+    0.0,
+    0.0,
+    769.0,
+    15.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / F2 BASE - THIN FLOOR PANEL - F2:1 / Body1",
+   "box_mm": [
+    0.0,
+    -645.0,
+    0.0,
+    1169.0,
+    769.0,
+    15.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
+   "box_mm": [
+    -1210.0,
+    810.0,
+    10.0,
+    1210.0,
+    850.0,
+    110.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-L BASE - BASE BAND - SIDE - LH:1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -810.0,
+    10.0,
+    -1210.0,
+    850.0,
+    110.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-R BASE - BASE BAND - SIDE - RH:1 / Body1",
+   "box_mm": [
+    1210.0,
+    -810.0,
+    10.0,
+    1250.0,
+    850.0,
+    110.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / THRESHOLD BASE - DOOR THRESHOLD:1 / Body1",
+   "box_mm": [
+    -961.0,
+    -729.0,
+    0.0,
+    214.0,
+    -669.0,
+    20.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -645.0,
+    110.0,
+    -1207.0,
+    850.0,
+    1255.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -645.0,
+    1255.0,
+    -1207.0,
+    850.0,
+    2400.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
+   "box_mm": [
+    1207.0,
+    -645.0,
+    110.0,
+    1250.0,
+    850.0,
+    1255.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R2 WALL - SIDE PANEL - UPPER - RH:1 / Body1",
+   "box_mm": [
+    1207.0,
+    -645.0,
+    1255.0,
+    1250.0,
+    850.0,
+    2400.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "box_mm": [
+    -1207.0,
+    807.0,
+    110.0,
+    0.0,
+    850.0,
+    1214.5
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
+   "box_mm": [
+    0.0,
+    807.0,
+    110.0,
+    1207.0,
+    850.0,
+    1214.5
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / Body1",
+   "box_mm": [
+    -1207.0,
+    807.0,
+    1214.5,
+    0.0,
+    850.0,
+    2319.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B4 WALL - BACK PANEL - UPPER - B4:1 / Body1",
+   "box_mm": [
+    0.0,
+    807.0,
+    1214.5,
+    1207.0,
+    850.0,
+    2319.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
+   "box_mm": [
+    -961.0,
+    -709.0,
+    20.0,
+    214.0,
+    -689.0,
+    105.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4 / 4 (TRAPEZOID, v1 MEASURED):1 / Body1",
+   "box_mm": [
+    -961.0,
+    -703.38,
+    105.0,
+    214.0,
+    -694.62,
+    2116.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4 / 4 (PENTAGON, v1 MEASURED):1 / Body1",
+   "box_mm": [
+    -66.0,
+    -703.38,
+    102.0,
+    948.0,
+    -694.62,
+    2119.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DL FRONT - DECOR BLOCK - LEFT (FACETED, v1 MEASURED):1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -844.0,
+    110.0,
+    -972.0,
+    -645.0,
+    2397.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -850.0,
+    2120.0,
+    449.0,
+    -645.0,
+    2400.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "box_mm": [
+    230.0,
+    -850.0,
+    102.0,
+    1250.0,
+    -645.0,
+    2400.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
+   "box_mm": [
+    -1207.0,
+    -645.0,
+    2357.0,
+    0.0,
+    850.0,
+    2400.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C2 CEILING - HALF PANEL - C2:1 / Body1",
+   "box_mm": [
+    0.0,
+    -645.0,
+    2357.0,
+    1207.0,
+    850.0,
+    2400.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L1-CASS LINING - CASSETTE - SIDE LOWER - L:1 / Body1",
+   "box_mm": [
+    -1203.0,
+    -645.0,
+    110.0,
+    -1169.0,
+    803.0,
+    1255.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L2-CASS LINING - CASSETTE - SIDE UPPER - L:1 / Body1",
+   "box_mm": [
+    -1203.0,
+    -645.0,
+    1255.0,
+    -1169.0,
+    803.0,
+    2353.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R1-CASS LINING - CASSETTE - SIDE LOWER - R:1 / Body1",
+   "box_mm": [
+    1169.0,
+    -645.0,
+    110.0,
+    1203.0,
+    803.0,
+    1255.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R2-CASS LINING - CASSETTE - SIDE UPPER - R:1 / Body1",
+   "box_mm": [
+    1169.0,
+    -645.0,
+    1255.0,
+    1203.0,
+    803.0,
+    2353.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B1-CASS LINING - CASSETTE - BACK LOWER - B1:1 / Body1",
+   "box_mm": [
+    -1169.0,
+    769.0,
+    110.0,
+    0.0,
+    803.0,
+    1214.5
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B2-CASS LINING - CASSETTE - BACK LOWER - B2:1 / Body1",
+   "box_mm": [
+    0.0,
+    769.0,
+    110.0,
+    1169.0,
+    803.0,
+    1214.5
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B3-CASS LINING - CASSETTE - BACK UPPER - B3:1 / Body1",
+   "box_mm": [
+    -1169.0,
+    769.0,
+    1214.5,
+    0.0,
+    803.0,
+    2319.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B4-CASS LINING - CASSETTE - BACK UPPER - B4:1 / Body1",
+   "box_mm": [
+    0.0,
+    769.0,
+    1214.5,
+    1169.0,
+    803.0,
+    2319.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C1-CASS LINING - CASSETTE - CEILING - C1:1 / Body1",
+   "box_mm": [
+    -1169.0,
+    -645.0,
+    2319.0,
+    0.0,
+    769.0,
+    2353.0
+   ]
+  },
+  {
+   "label": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C2-CASS LINING - CASSETTE - CEILING - C2:1 / Body1",
+   "box_mm": [
+    0.0,
+    -645.0,
+    2319.0,
+    1169.0,
+    769.0,
+    2353.0
+   ]
+  }
+ ],
+ "clashes": [
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-R BASE - BASE BAND - SIDE - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "mm3": 14393.54,
+   "allowed": null
+  }
+ ],
+ "gaps": [
+  {
+   "id": "SEAM-BACK-CENTRE",
+   "group": "SEAM-GAPS",
+   "gap_mm": 0.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
+   "min_mm": 1.0,
+   "max_mm": null
+  },
+  {
+   "id": "SEAM-BACK-CORNER-L",
+   "group": "SEAM-GAPS",
+   "gap_mm": 0.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "min_mm": 1.0,
+   "max_mm": null
+  },
+  {
+   "id": "SEAM-BACK-CORNER-R",
+   "group": "SEAM-GAPS",
+   "gap_mm": 0.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
+   "min_mm": 1.0,
+   "max_mm": null
+  },
+  {
+   "id": "SEAM-CEILING-CENTRE",
+   "group": "SEAM-GAPS",
+   "gap_mm": 0.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C2 CEILING - HALF PANEL - C2:1 / Body1",
+   "min_mm": 1.0,
+   "max_mm": null
+  },
+  {
+   "id": "SEAM-CEILING-SIDE",
+   "group": "SEAM-GAPS",
+   "gap_mm": 0.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
+   "min_mm": 1.0,
+   "max_mm": null
+  },
+  {
+   "id": "SEAM-SIDE-HORIZONTAL",
+   "group": "SEAM-GAPS-HORIZONTAL",
+   "gap_mm": 0.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
+   "min_mm": 1.0,
+   "max_mm": null
+  },
+  {
+   "id": "SEAM-BACK-HORIZONTAL",
+   "group": "SEAM-GAPS-HORIZONTAL",
+   "gap_mm": 0.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / Body1",
+   "min_mm": 1.0,
+   "max_mm": null
+  },
+  {
+   "id": "KICK-OVER-THRESHOLD",
+   "group": "",
+   "gap_mm": 0.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / THRESHOLD BASE - DOOR THRESHOLD:1 / Body1",
+   "min_mm": 7.0,
+   "max_mm": null
+  },
+  {
+   "id": "LINING-FLOATS",
+   "group": "",
+   "gap_mm": 4.0,
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L2-CASS LINING - CASSETTE - SIDE UPPER - L:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
+   "min_mm": 4.0,
+   "max_mm": null
+  }
+ ],
+ "fasteners": [],
+ "touching": [
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / F1 BASE - THIN FLOOR PANEL - F1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / F2 BASE - THIN FLOOR PANEL - F2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-L BASE - BASE BAND - SIDE - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-R BASE - BASE BAND - SIDE - RH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-L BASE - BASE BAND - SIDE - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-L BASE - BASE BAND - SIDE - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DL FRONT - DECOR BLOCK - LEFT (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-R BASE - BASE BAND - SIDE - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / THRESHOLD BASE - DOOR THRESHOLD:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DL FRONT - DECOR BLOCK - LEFT (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DL FRONT - DECOR BLOCK - LEFT (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R2 WALL - SIDE PANEL - UPPER - RH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B4 WALL - BACK PANEL - UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R2 WALL - SIDE PANEL - UPPER - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B4 WALL - BACK PANEL - UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R2 WALL - SIDE PANEL - UPPER - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / R2 WALL - SIDE PANEL - UPPER - RH:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C2 CEILING - HALF PANEL - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B4 WALL - BACK PANEL - UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B4 WALL - BACK PANEL - UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 210000 WALL:1 / B4 WALL - BACK PANEL - UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4 / 4 (TRAPEZOID, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4 / 4 (PENTAGON, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DL FRONT - DECOR BLOCK - LEFT (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DL FRONT - DECOR BLOCK - LEFT (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L1-CASS LINING - CASSETTE - SIDE LOWER - L:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DL FRONT - DECOR BLOCK - LEFT (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L2-CASS LINING - CASSETTE - SIDE UPPER - L:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C2 CEILING - HALF PANEL - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L2-CASS LINING - CASSETTE - SIDE UPPER - L:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C1-CASS LINING - CASSETTE - CEILING - C1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DT FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C2-CASS LINING - CASSETTE - CEILING - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C2 CEILING - HALF PANEL - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R1-CASS LINING - CASSETTE - SIDE LOWER - R:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R2-CASS LINING - CASSETTE - SIDE UPPER - R:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C2-CASS LINING - CASSETTE - CEILING - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C2 CEILING - HALF PANEL - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L1-CASS LINING - CASSETTE - SIDE LOWER - L:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L2-CASS LINING - CASSETTE - SIDE UPPER - L:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L1-CASS LINING - CASSETTE - SIDE LOWER - L:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B1-CASS LINING - CASSETTE - BACK LOWER - B1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L1-CASS LINING - CASSETTE - SIDE LOWER - L:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B3-CASS LINING - CASSETTE - BACK UPPER - B3:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L2-CASS LINING - CASSETTE - SIDE UPPER - L:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B3-CASS LINING - CASSETTE - BACK UPPER - B3:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / L2-CASS LINING - CASSETTE - SIDE UPPER - L:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C1-CASS LINING - CASSETTE - CEILING - C1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R1-CASS LINING - CASSETTE - SIDE LOWER - R:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R2-CASS LINING - CASSETTE - SIDE UPPER - R:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R1-CASS LINING - CASSETTE - SIDE LOWER - R:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B2-CASS LINING - CASSETTE - BACK LOWER - B2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R1-CASS LINING - CASSETTE - SIDE LOWER - R:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B4-CASS LINING - CASSETTE - BACK UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R2-CASS LINING - CASSETTE - SIDE UPPER - R:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B4-CASS LINING - CASSETTE - BACK UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / R2-CASS LINING - CASSETTE - SIDE UPPER - R:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C2-CASS LINING - CASSETTE - CEILING - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B1-CASS LINING - CASSETTE - BACK LOWER - B1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B2-CASS LINING - CASSETTE - BACK LOWER - B2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B1-CASS LINING - CASSETTE - BACK LOWER - B1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B3-CASS LINING - CASSETTE - BACK UPPER - B3:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B1-CASS LINING - CASSETTE - BACK LOWER - B1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B4-CASS LINING - CASSETTE - BACK UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B2-CASS LINING - CASSETTE - BACK LOWER - B2:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B3-CASS LINING - CASSETTE - BACK UPPER - B3:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B2-CASS LINING - CASSETTE - BACK LOWER - B2:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B4-CASS LINING - CASSETTE - BACK UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B3-CASS LINING - CASSETTE - BACK UPPER - B3:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B4-CASS LINING - CASSETTE - BACK UPPER - B4:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B3-CASS LINING - CASSETTE - BACK UPPER - B3:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C1-CASS LINING - CASSETTE - CEILING - C1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B3-CASS LINING - CASSETTE - BACK UPPER - B3:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C2-CASS LINING - CASSETTE - CEILING - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B4-CASS LINING - CASSETTE - BACK UPPER - B4:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C1-CASS LINING - CASSETTE - CEILING - C1:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / B4-CASS LINING - CASSETTE - BACK UPPER - B4:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C2-CASS LINING - CASSETTE - CEILING - C2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C1-CASS LINING - CASSETTE - CEILING - C1:1 / Body1",
+   "b": "100000_P03_POD-SKELETON_CAD:1 / 510000 LINING:1 / C2-CASS LINING - CASSETTE - CEILING - C2:1 / Body1",
+   "gap_mm": 0.0
+  }
+ ],
+ "seconds": 1.0
+}
