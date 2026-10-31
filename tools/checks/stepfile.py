@@ -745,18 +745,43 @@ def flat_plate(solid):
     return True, round(hi - lo, 3), ""
 
 
-def profile_axis(solid, ratio=4.0):
-    """Unit axis of a long profile (tube, bar, extrusion): the box's longest
-    side when it is at least `ratio` times the next one; else None."""
-    if not solid.box:
-        return None
-    ext = [solid.box[k + 3] - solid.box[k] for k in range(3)]
-    order = sorted(range(3), key=lambda k: ext[k], reverse=True)
-    if ext[order[1]] <= 0 or ext[order[0]] < ratio * ext[order[1]]:
-        return None
-    ax = [0.0, 0.0, 0.0]
-    ax[order[0]] = 1.0
-    return tuple(ax)
+def _edge_key(a, b):
+    return frozenset((tuple(round(x, 3) for x in a), tuple(round(x, 3) for x in b)))
+
+
+def _material_goes_on(solid, face, a, b, depth=0.0, normal=None, steps=4):
+    """Across the straight edge a-b of `face`, does the part carry on (a wall meets it at the edge: a tube's corner,
+    a channel's wall) rather than end (the edge face of a sheet or the side of a block, about as wide as the material
+    the hole goes through, `depth`)? Read from the faces across the edge, so it holds whichever way the part is turned
+    in the pod (a tube set at an angle in plan, like DL's diagonal bottom tube). A narrow face across the edge is
+    looked across in turn: it ends the part when the wall's other side lies beyond it (a sheet's edge, a tube's end
+    ring), and not when another wall does (a chamfered tube corner, like CEILING's seam members)."""
+    normal = normal or face.normal
+    d = norm(_sub(b, a))
+    key = _edge_key(a, b)
+    wide = max(2.5 * max(solid.thickness or 0.0, depth or 0.0), 4.0)
+    for g in solid.faces:
+        if g is face or not any(_edge_key(p, q) == key for p, q in g.lines):
+            continue
+        if g.kind == "cylinder":
+            return True                           # a bend or a rounded corner starts there
+        if g.kind != "plane" or not g.points or dot(g.normal, normal) < -0.9999:
+            continue                              # the wall's other side: the part ends here
+        # its width right at this edge: the nearest edge of it running alongside (a tube's end ring is the wall
+        # thickness wide there, though it spans the whole tube); its full span when no edge runs alongside
+        near = [(line_distance(_mul(_add(p, q), 0.5), a, d), (p, q)) for p, q in g.lines
+                if _edge_key(p, q) != key and math.dist(p, q) > 1e-6 and abs(dot(norm(_sub(q, p)), d)) > 0.999]
+        near = [x for x in near if x[0] > 1e-6]
+        if not near:
+            if max(line_distance(p, a, d) for p in g.points) > wide:
+                return True
+            continue
+        across, far = min(near, key=lambda x: x[0])
+        if across > wide:
+            return True                           # a wall carries on
+        if steps > 1 and _material_goes_on(solid, g, far[0], far[1], depth, normal, steps - 1):
+            return True                           # a chamfer or a step on the way to the next wall
+    return False
 
 
 def _seg_distance(p, a, b):
@@ -774,9 +799,9 @@ def _on_cylinder(p, f, tol=0.05):
 
 def free_edge_distances(solid, hole):
     """Every free straight edge of the face a hole is drilled through, as (distance from the hole centre,
-    unit direction, foot of the perpendicular on the edge's line). Edges along a profile's length (tube
-    corners, where the next wall carries on) and edges that start a bend are not free edges."""
-    pax = profile_axis(solid)
+    unit direction, foot of the perpendicular on the edge's line). An edge where the part carries on (a tube's
+    corner or a channel's wall meeting it, read from the face across the edge) and an edge that starts a bend
+    are not free edges; whichever way the part is turned in the pod."""
     bend_faces = [f for f in solid.faces if f.kind == "cylinder"
                   and not any(abs(a[1] - f.radius) < 1e-3 and _arc_span_deg(a) >= 359.0 for a in f.arcs)]
     out = []
@@ -790,8 +815,8 @@ def free_edge_distances(solid, hole):
         c = _sub(hole.center, _mul(f.normal, dot(_sub(hole.center, f.origin), f.normal)))
         for a, b in f.lines:
             d = norm(_sub(b, a))
-            if pax is not None and abs(dot(d, pax)) > 0.999:
-                continue
+            if _material_goes_on(solid, f, a, b, hole.length):
+                continue                          # a tube's corner or a channel's wall, not a free edge
             if any(_on_cylinder(a, bf) and _on_cylinder(b, bf) for bf in bend_faces):
                 continue
             foot = _add(a, _mul(d, dot(_sub(c, a), d)))

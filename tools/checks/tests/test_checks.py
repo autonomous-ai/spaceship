@@ -509,6 +509,29 @@ def test_bolt_patterns_across_assemblies_must_match():
     assert all(f.severity == "severe" for f in fs)
 
 
+def test_a_bolt_into_its_own_files_rivnut_is_not_paired_with_the_next_files_bolt_line():
+    # FRONT #105: DR's access panel (clearance Ø7.0) bolts into DR's own rivnuts on the same axis; WALL's bolt line,
+    # 36 mm away, goes into DR's frame. Neither is a bolt pattern that doesn't match.
+    def body(label, file, holes):
+        b = _B(label, None, "x", holes)
+        b.file = file
+        return b
+    ax, zs = (1.0, 0.0, 0.0), (300.0, 650.0, 1000.0)
+    panel = body("DR ACCESS PANEL", "dr.step", [sf.Hole(1, (1188.0, -645.0, z), ax, 7.0, 3.0, []) for z in zs])
+    rivnuts = body("DR RIVNUT", "dr.step", [sf.Hole(2, (1192.0, -645.0, z), ax, 9.53, 2.0, []) for z in zs])
+    frame = body("DR FRAME", "dr.step", [sf.Hole(3, (1195.0, -609.0, z), ax, 9.53, 2.0, []) for z in zs])
+    wall = body("WALL R1", "wall.step", [sf.Hole(4, (1199.0, -609.0, z), ax, 6.6, 1.2, []) for z in zs])
+    assert c_geometry.check_unmatched(ROOT, "assembly", [panel, rivnuts, frame, wall]) == []
+    # without its own rivnuts the access panel's holes pair with the wall's bolt line and are reported
+    fs = c_geometry.check_unmatched(ROOT, "assembly", [panel, frame, wall])
+    assert [round(f.evidence["offset_mm"]) for f in fs] == [36, 36, 36]
+    assert all("DR ACCESS PANEL" in f.subject for f in fs)
+    # a rivnut of its own 10 mm off the hole's axis isn't its partner: still reported
+    off = body("DR RIVNUT", "dr.step", [sf.Hole(2, (1192.0, -635.0, z), ax, 9.53, 2.0, []) for z in zs])
+    got = {f.subject for f in c_geometry.check_unmatched(ROOT, "assembly", [panel, off, frame, wall])}
+    assert {"assembly DR ACCESS PANEL hole Ø7.0 at X 1188 Y -645 Z %d" % z for z in zs} <= got
+
+
 def test_shell_reports_a_split_slot_and_ignores_the_decided_seam():
     side = [_B("left", (-1250, -645, 110, -1204, 850, 2400)), _B("right", (1204, -645, 110, 1250, 850, 2400)),
             _B("roof", (-1250, -645, 2354, 1250, 850, 2400))]
@@ -687,6 +710,75 @@ def test_an_accepted_edge_distance_holds_only_as_ruled():
     assert accepted(52.0, 0.0)                 # as ruled
     assert not accepted(30.0, 0.0)             # ends 15 mm: the ruling wants 26
     assert not accepted(52.0, 3.0)             # off centre: one side at 15 mm
+
+
+def _profile(frame, length=600.0, w=40.0, h=40.0, t=2.0, holes=(), chamfer=0.0):
+    """A straight rectangular profile along its own X (0 to `length`), placed by `frame`: a tube with walls `t`
+    thick, or a solid bar when t is None. Holes (x, d) go down through its top wall, centred across it; `chamfer`
+    cuts a 45 degree chamfer that many mm on its outer top-left corner. Returns the solid."""
+    P = frame.point
+    y0, y1, z0, z1, c = -w / 2, w / 2, -h / 2, h / 2, chamfer
+    outer = [(y0, z0), (y1, z0), (y1, z1)] + ([(y0 + c, z1), (y0, z1 - c)] if c else [(y0, z1)])
+    inner = [] if t is None else [(y0 + t, z0 + t), (y1 - t, z0 + t), (y1 - t, z1 - t), (y0 + t, z1 - t)]
+    lo = z0 if t is None else z1 - t                                    # the bottom of the holes
+    rim = lambda x, z, d: _arc(P((x, 0.0, z)), frame.vector((0, 0, 1)), frame.vector((1, 0, 0)), d / 2, 0, 0)
+    s = sf.Solid(7, "PROFILE")
+    fid = 1
+    for poly, sign in ((outer, 1), (inner, -1)):
+        for i in range(len(poly)):
+            (ya, za), (yb, zb) = poly[i], poly[(i + 1) % len(poly)]
+            n = sf.norm((0.0, sign * (zb - za), -sign * (yb - ya)))      # out of the material
+            lines = [(P((0, ya, za)), P((0, yb, zb))), (P((length, ya, za)), P((length, yb, zb))),
+                     (P((0, ya, za)), P((length, ya, za))), (P((0, yb, zb)), P((length, yb, zb)))]
+            arcs = []
+            if abs(abs(n[2]) - 1.0) < 1e-9 and min(ya, yb) < 0.0 < max(ya, yb) and za in (z1, lo):
+                arcs = [rim(x, za, d) for x, d in holes]               # the faces the holes go through
+            pts = [p for ln in lines for p in ln] + [a[2] for a in arcs]
+            s.faces.append(sf.Face(fid, "plane", P((0, ya, za)), frame.vector(n), None, True, pts, arcs, lines))
+            fid += 1
+    for x, nx in ((0.0, -1), (length, 1)):                               # the two end faces
+        lines = [(P((x, *poly[k])), P((x, *poly[(k + 1) % len(poly)]))) for poly in (outer, inner)
+                 for k in range(len(poly))]
+        s.faces.append(sf.Face(fid, "plane", P((x, y0, z0)), frame.vector((nx, 0, 0)), None, True,
+                               [p for ln in lines for p in ln], [], lines))
+        fid += 1
+    for x, d in holes:                                                   # the holes' walls
+        top, bottom = rim(x, z1, d), rim(x, lo, d)
+        s.faces.append(sf.Face(fid, "cylinder", P((x, 0.0, lo)), frame.vector((0, 0, 1)), d / 2, False,
+                               [top[2], bottom[2]], [top, bottom], []))
+        fid += 1
+    pts = list(s.points())
+    s.box = tuple(min(p[k] for p in pts) for k in range(3)) + tuple(max(p[k] for p in pts) for k in range(3))
+    s.thickness = sf._sheet_thickness(s)
+    s.holes = sf._holes(s)
+    return s
+
+
+def test_a_tube_set_at_an_angle_keeps_its_corners_out_of_the_edge_distance():
+    # FRONT #105: DL's spigot hole in a diagonal bottom tube. Its box isn't long in any axis, so a direction read
+    # from the box missed that the tube's corners are where the next wall carries on, and called them free edges.
+    a = math.radians(30.0)
+    for frame in (sf.Frame(), sf.Frame.from_axes((100.0, 200.0, 50.0), (0, 0, 1), (math.cos(a), math.sin(a), 0))):
+        along = frame.vector((1.0, 0.0, 0.0))
+        tube = _profile(frame, holes=((300.0, 17.0), (25.0, 17.0)))
+        assert tube.thickness == pytest.approx(2.0) and len(tube.holes) == 2
+        mid, end = sorted(tube.holes, key=lambda h: -abs(sf.dot(sf._sub(h.center, frame.o), along) - 25.0))
+        # the middle hole: 20 mm to each corner (under 2 x 17), 300 mm to the tube's ends, which are its free edges
+        assert sf.edge_distance(tube, mid) == (pytest.approx(300.0), "free edge")
+        assert all(abs(sf.dot(e[1], along)) < 1e-6 for e in sf.free_edge_distances(tube, mid))
+        # the hole 25 mm from the end still fires the rule
+        assert sf.edge_distance(tube, end)[0] == pytest.approx(25.0)
+        # a 1 mm chamfer on the corner next to the hole (CEILING's seam members, 19 mm from a Ø9.53 hole) is no
+        # free edge either: the next wall carries on beyond it
+        cham = _profile(frame, holes=((300.0, 9.53),), chamfer=1.0)
+        assert sf.edge_distance(cham, cham.holes[0]) == (pytest.approx(300.0), "free edge")
+        # a flat bar's long edges are free edges, chamfered or not (box-read, a long bar hid them as a profile)
+        bar = _profile(frame, w=30.0, h=3.0, t=None, holes=((300.0, 6.6),), chamfer=1.0)
+        assert bar.thickness == pytest.approx(3.0)
+        assert sf.edge_distance(bar, bar.holes[0]) == (pytest.approx(14.0), "free edge")
+    # a block the hole goes 40 mm through: its sides are free edges, though they are wider than a sheet's edge
+    block = _plate_with_hole(t=40.0, hole_x=5.0, d=6.6)
+    assert block.thickness is None and sf.edge_distance(block, block.holes[0]) == (pytest.approx(5.0), "free edge")
 
 
 def test_flat_plate_tells_plain_sheet_parts_from_machined_ones():
