@@ -208,6 +208,10 @@ def team_of(path):
 
 def parse_parts_list(path, text, where):
     """One row per line of a team's parts list, normalised. Returns (rows, skipped_reason)."""
+    if "CUT-LIST" in path.rsplit("/", 1)[-1].upper():
+        # a cut list's rows are cut pieces of parts the parts lists already carry: read as parts they would count
+        # twice, and pieces carry no mass of their own
+        return [], "a cut list (its rows are cut pieces of the parts in the parts lists)"
     reader = csv.DictReader(io.StringIO(text))
     cols = [c.strip().lower() for c in (reader.fieldnames or [])]
     if "part_number" not in cols:

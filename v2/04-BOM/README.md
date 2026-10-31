@@ -31,7 +31,7 @@ With `--ref`, the script reads the files straight from those git refs, so open b
 
 ## What each team's parts list needs
 
-A parts list is any `*_BOM.csv` under `v2/03-Manufacturing/<team>/` with a `part_number` column (cut lists without one are skipped and named in the report). Under `v2/07-Packaging/` only the packaging items (family 91: pallets, crates, protection, labels) are read: a packing list names other teams' parts, which their own lists already carry. The script reads these columns, by name, in any order:
+A parts list is any `*_BOM.csv` under `v2/03-Manufacturing/<team>/` with a `part_number` column. A cut list is skipped and named in the report: one without that column, and any file with `CUT-LIST` in its name, whose rows are cut pieces of the parts the parts lists carry. Under `v2/07-Packaging/` only the packaging items (family 91: pallets, crates, protection, labels) are read: a packing list names other teams' parts, which their own lists already carry. The script reads these columns, by name, in any order:
 
 | Column | Meaning |
 |---|---|
