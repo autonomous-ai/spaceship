@@ -52,15 +52,15 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 
 ## Test items
 
-### S5 · Air sample in a right-decor-block test box · Mẫu thông gió (ống tiêu âm + quạt thông gió)
+### S5 · Air sample in the D-60 air column and soffit mock-ups · Mẫu thông gió (ống tiêu âm + quạt thông gió)
 
 | | |
 |---|---|
-| What | Both splitter cartridges, supply and exhaust, each with its lined fan box and 2 × 12 V fans on a bulkhead (P15 to P17), and the 150 mm exhaust riser (P18), built as the pod gets them (D-51) |
-| Sizes and masses | Each cartridge 159 × 405 × 2100 (1800 lined plus a 300 fan box), 17.7 kg with its fans (calculation, LS; HW-SEL F2). Riser 150 × 155 × 2000, 9.6 kg (calculation, HW-SEL F2). |
-| Test box (rig R3) | The right decor block's envelope, 1016 × 205 × 2290 (skeleton DR, LS F-DR). Superseded by D-60: the air path is an interior air column (220 x 360 mm) in the front-right corner plus a soffit above the door head, so R3 and S5 are rebuilt to the Air Engineer's size table (HOLD H07). Any rigid build will do, except the inner face: that is 3 mm ACP (P20), like the pod's, so the fan sound breaks out through the same skin. The inner face is a removable, felt-covered panel carrying both grilles, supply low and exhaust high (D-51, D-59). The room-side intake is low, on the underside or the bottom of the outer face, and the exhaust slot is on the top face, at least 1 m apart (D-58). 40 mm of fill sits between each cartridge and the inner face (HW-SEL F2). |
-| Tests | T04, T05, T10 (weigh the cartridges, riser and fans), T12 |
-| HOLD | The fit inside the 205 mm block isn't checked in CAD yet (H07). If the CAD moves a grille or the intake, the box follows the CAD. |
+| What | Both splitter cartridges (one part, used twice), the supply fan box with 2 × 12 V fans on a level bulkhead and its transition into the column top, the exhaust fan box with 2 × 12 V fans and the roof sleeve (P15 to P17, P19), and the intake riser (P18), built as the pod gets them (D-60) |
+| Sizes and masses | Each cartridge 173 × 314 × 1750: two 80 mm passages between three 50 mm Pyrotek layers in a 2 mm aluminium casing, 11.2 kg. Supply fan box 300 × 155 × 300 with its transition, 5.1 kg with fans 5.7 kg; exhaust fan box 294 × 314 × 173 with the roof sleeve, 3.5 kg, with fans 4.1 kg. Intake riser 139 × 155, widening to 250 where it turns into the fan box, 1740 long, 9.2 kg with its mesh (calculation, HW-AA sections 7e and 7f, PR #26). |
+| Test box (rig R3) | The D-60 air parts as the pod gets them (sizes: HW-AA section 7e). (a) The air column, 220 × 360 × 2105 outside: front and left faces 3 mm ACP (P20) with 9 mm felt (P09), so the fan sound breaks out through the same skin; the front face lifts off; a 100 mm kick grille at its foot; 30 mm of fill between the cartridge and both faces (P03). It stands against a backboard in place of the right decor block's inner face, with the 203 × 215 opening at the top. Behind the backboard, a box of the block's column shape (skeleton DR, below Z 2120) holds the riser and the supply fans, behind a removable panel. (b) The soffit, 2338 × 360 × 220 outside: underside and front face as the column, the exhaust grille (265 × 336) in the underside at one end and the exhaust fan box at the other, blowing up through a sleeve in place of the roof slot. Any rigid build will do for the backboard and the column-shape box. The intake (a mesh in the box's underside, drawing from a shadow gap as in the pod) and the roof sleeve open to the room, at least 1 m apart (D-58). |
+| Tests | T04, T05, T10 (weigh the cartridges, fan boxes, riser and fans), T12 |
+| HOLD | The CAD of the column, soffit, riser and intake isn't done yet (H07: CEILING and FRONT). If the CAD moves a grille, the opening or the intake, R3 follows the CAD. |
 
 ### S6 · Felt absorption specimen · Mẫu tấm tiêu âm
 
@@ -83,5 +83,5 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 |---|---|---|
 | R1 | Base band rig: a base band piece, aluminium 100 × 40 × 2.0 (P24; LS), with the panel's locating features and 4 holes matching S1's rivnuts, per the BASE drawing (H17) | T11 |
 | R2 | Ceiling hanging frame: 20 × 40 × 1.2 members (P02) at C1's clip and catch positions, on a stand at the pod's ceiling height, about 2.3 m inside (D-42) | T07, T08 |
-| R3 | The right-decor-block test box for S5 (above) | T04, T05, T12 |
-| R4 | Heated chamber on R3's inner side: a closed box that takes the supply air and feeds the exhaust grille, as the pod's inside would, with an adjustable heater (P21) | T05 |
+| R3 | The D-60 air mock-up for S5 (above): the air column with its backboard, riser box and supply fans, and the soffit with its exhaust fans and roof sleeve | T04, T05, T12 |
+| R4 | Heated chamber on R3's inner side: a closed box over the column's kick grille and the soffit's exhaust grille that takes the supply air and feeds the exhaust, as the pod's inside would, with an adjustable heater (P21) | T05 |
