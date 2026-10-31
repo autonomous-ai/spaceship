@@ -332,6 +332,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         where = (files.get("STEP") or files.get("CAD") or [("", "")])[0][1]
         r_where = rel(root, where) if where else ""
         owner = owner_for(r_where or src_by_pn.get(pn, ""), pn)
+        if pn[:2] in ("83", "84"):        # shared hardware: its drawing is the joints register's, wherever it's modelled
+            owner = owner_for("", pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
         if not pdfs and pn in tab:                 # D-89: listed in a tabulated drawing, so drawn
             cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}
