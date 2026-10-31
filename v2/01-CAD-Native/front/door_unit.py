@@ -342,7 +342,7 @@ BOM_ROWS = [
     ("361001", "FRONT - DOOR LEAF - 4+4 LAMINATED", "Tấm kính cửa 4+4", 1, "made to drawing (glass supplier)", "4+4 laminated glass of toughened, heat-soaked panes, 8.76, grey",
      "cad", "calculation (CAD, 2376 kg/m3)", "DRAFT; product HOLD (ISS-074)", "D-27, D-46; skeleton outline (v1 STEP)",
      "no holes or cut-outs until the hinges, lock and pull are named"),
-    ("361002", "FRONT - DOOR KICK STRIP", "Thanh chân cửa nhôm", 1, "made (extruded hollow profile, custom die; D-85)", "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20), as the base band (D-67)",
+    ("361002", "FRONT - DOOR KICK STRIP", "Thanh chân cửa nhôm", 1, "made (extruded hollow profile, custom die; D-85)", "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20, the base band's finish, D-67)",
      "cad", "calculation (CAD, 2700 kg/m3)", "DRAFT", "D-40, D-57; PM rulings on the FRONT plan",
      "cut length = kick_len; glass retention in the pocket HOLD (J-FRONT-02)"),
     ("368001", "FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112", "Ron chân cửa tự động", 1, "bought, cut to length", "athmer Schall-Ex GSA 1-1112, black RAL 9005", 0.6,
@@ -406,7 +406,10 @@ def export_all(app):
             raise RuntimeError("%s: CAD name %r does not match the parts list name %r" % (pn, comps[0].name, name))
         if mass == "cad":
             mass = round(L.comp_mass(comps[0]), 3)
-        rows.append([pn, name, vn, typ, mat, qty, "" if mass is None else mass, mstat, status, src, note])
+        maker = sku = ""
+        if pn in L.REGISTER_ITEMS:    # the joints register's name (the CAD name was checked above), maker and SKU
+            name, vn, maker, sku = L.REGISTER_ITEMS[pn]
+        rows.append([pn, name, vn, typ, mat, qty, "" if mass is None else mass, mstat, status, src, note, maker, sku])
     unit = sum(r[5] * r[6] for r in rows[1:] if r[6] != "")
     rows[0][6] = round(unit, 2)
     rows[0][7] = "calculation (sum of the rows below)"
@@ -414,7 +417,7 @@ def export_all(app):
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["part_number", "name", "name_vi", "type", "material", "qty", "unit_mass_kg", "mass_status",
-                    "status", "source", "note"])
+                    "status", "source", "note", "maker", "sku"])
         w.writerows(rows)
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), unit))
     # anchors for the edit test
