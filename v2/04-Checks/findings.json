@@ -1,5 +1,5 @@
 {
- "next": 149,
+ "next": 150,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -1443,7 +1443,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -1499,7 +1499,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3082,7 +3082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3107,7 +3107,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C06",
@@ -3137,7 +3137,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C06",
@@ -3203,7 +3203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3228,7 +3228,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3253,7 +3253,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C01",
@@ -3313,7 +3313,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C09",
@@ -3371,7 +3371,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3396,7 +3396,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3421,7 +3421,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3446,7 +3446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3471,7 +3471,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3496,7 +3496,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3521,7 +3521,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3546,7 +3546,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3571,7 +3571,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3596,7 +3596,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3621,7 +3621,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3646,7 +3646,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3671,7 +3671,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3696,7 +3696,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3721,7 +3721,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3746,7 +3746,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3771,7 +3771,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3796,7 +3796,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3821,7 +3821,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -3846,7 +3846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C01",
@@ -4158,7 +4158,7 @@
    "file": "",
    "owner": "PM",
    "evidence": {
-    "model": "assembly",
+    "model": "assembly-back-base",
     "near": [
      "BASE - BAND TUBE - BACK - TUBE"
     ]
@@ -4179,10 +4179,21 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "set CLOSED by hand: The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main."
     }
    ],
-   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+   "note": "The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main.",
+   "closed": "2026-11-01 e06fa22 The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main.",
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C01",
@@ -4194,7 +4205,7 @@
    "file": "",
    "owner": "PM",
    "evidence": {
-    "model": "assembly",
+    "model": "assembly-back-base",
     "near": [
      "BASE - BAND TUBE - BACK - TUBE"
     ]
@@ -4215,10 +4226,21 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "set CLOSED by hand: The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main."
     }
    ],
-   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+   "note": "The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main.",
+   "closed": "2026-11-01 e06fa22 The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main.",
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C01",
@@ -4226,18 +4248,18 @@
    "subject": "assembly shell left-base Y 847..850 Z 10..110",
    "severity": "severe",
    "message": "The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes.",
-   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
-   "file": "",
-   "owner": "PM",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there (a bought part that closes it, like an end cap, needs its body in the CAD, an ENVELOPE if the product is HOLD).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
    "evidence": {
-    "model": "assembly",
+    "model": "assembly-left-base",
     "near": [
      "BASE - BAND TUBE - SIDE - LH - TUBE"
     ]
    },
    "key": "C01|shell-open|assembly shell left-base Y 847..850 Z 10..110",
    "id": "F-136",
-   "status": "CLOSED",
+   "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "",
@@ -4251,10 +4273,21 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "owner set by hand to BASE: the opening borders BASE's side band; the end cap 118003 that closes it isn't in the CAD"
     }
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C01",
@@ -4313,7 +4346,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4338,7 +4371,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4363,7 +4396,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4388,7 +4421,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4413,7 +4446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4438,7 +4471,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4463,7 +4496,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4488,7 +4521,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4513,7 +4546,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4538,7 +4571,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
   },
   {
    "check": "C05",
@@ -4563,7 +4596,32 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 1f70c90"
+   "last_seen": "2026-11-01 e06fa22"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "711001",
+   "severity": "severe",
+   "message": "711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND, BEND_EXTENT, INTERIOR_PROFILES, OUTER_PROFILES; only CUT and MARK pass, so it is folded; its row's process names fold.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|no-drawing|711001",
+   "id": "F-149",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 e06fa22",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 e06fa22"
   }
  ]
 }

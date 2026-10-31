@@ -1,12 +1,25 @@
 {
- "rev": "1f70c90",
+ "rev": "e06fa22",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
-  "bodies_assembly": 257,
+  "shell_faces_skeleton": [
+   "back",
+   "back-base",
+   "left",
+   "left-base",
+   "right",
+   "right-base",
+   "top"
+  ],
+  "bodies_assembly": 297,
+  "shell_faces_assembly": [
+   "left-base"
+  ],
   "parts_lists": [
    "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
    "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
    "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv",
    "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv",
    "v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv",
@@ -23,6 +36,10 @@
    "v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step",
    "v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_STEP.step",
    "v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step",
+   "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step",
+   "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step",
+   "v2/03-Manufacturing/electrical/711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_STEP.step",
+   "v2/03-Manufacturing/electrical/711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_STEP.step",
    "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
    "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
    "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step",
@@ -50,7 +67,16 @@
  },
  "ran": [
   "C01",
+  "C01:assembly",
+  "C01:assembly-left-base",
   "C01:skeleton",
+  "C01:skeleton-back",
+  "C01:skeleton-back-base",
+  "C01:skeleton-left",
+  "C01:skeleton-left-base",
+  "C01:skeleton-right",
+  "C01:skeleton-right-base",
+  "C01:skeleton-top",
   "C02:assembly",
   "C02:skeleton",
   "C02:stacks",
@@ -65,6 +91,23 @@
   "C11"
  ],
  "findings": [
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell left-base Y 847..850 Z 10..110",
+   "severity": "severe",
+   "message": "The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there (a bought part that closes it, like an end cap, needs its body in the CAD, an ENVELOPE if the product is HOLD).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "model": "assembly-left-base",
+    "near": [
+     "BASE - BAND TUBE - SIDE - LH - TUBE"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell left-base Y 847..850 Z 10..110"
+  },
   {
    "check": "C06",
    "rule": "row-incomplete",
@@ -688,6 +731,18 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|513303"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "711001",
+   "severity": "severe",
+   "message": "711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND, BEND_EXTENT, INTERIOR_PROFILES, OUTER_PROFILES; only CUT and MARK pass, so it is folded; its row's process names fold.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|no-drawing|711001"
   }
  ],
  "stacks": [
@@ -1658,6 +1713,57 @@
    "sku": "",
    "status": "DRAFT",
    "parts_list": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "M6",
+   "length_mm": "16",
+   "grade": "8.8",
+   "finish": "zinc plated",
+   "torque_nm": "HOLD (D-48: set by the rivnut spin-out test T06)",
+   "qty_parts_list": "4",
+   "qty_cad": 4,
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "maker": "HOLD: standard part, maker picked with the joints register",
+   "sku": "ISO 4762 M6 x 16, 8.8, zinc plated",
+   "status": "HOLD (bought part: no order, no supplier contact; guideline 4.3)",
+   "parts_list": "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "M6",
+   "length_mm": "",
+   "grade": "A2",
+   "finish": "plain (A2 stainless)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "HOLD: standard part, maker picked with the joints register",
+   "sku": "ISO 7093-1 6.4 x 18 x 1.6, A2",
+   "status": "HOLD (bought part: no order, no supplier contact; guideline 4.3)",
+   "parts_list": "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "M6",
+   "length_mm": "14.86",
+   "grade": "5056",
+   "finish": "plain, as supplied",
+   "torque_nm": "HOLD (D-48: spin-out test T06)",
+   "qty_parts_list": "4",
+   "qty_cad": 50,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
+   "maker": "Sherex",
+   "sku": "CAH3-610-4.2",
+   "status": "HOLD (bought part: no order, no supplier contact; guideline 4.3)",
+   "parts_list": "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
   },
   {
