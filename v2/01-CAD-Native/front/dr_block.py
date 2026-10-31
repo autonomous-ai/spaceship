@@ -107,6 +107,7 @@ OWN = [
     ("op_h", "215 mm", "mm", "source", "D-60 air table"),
 ]
 
+AIR_ASSY = ("350004", "FRONT - AIR SUPPLY ASSY - DR", "Cụm cấp gió khối phải")
 PARTS = {
     "SKIN": ("351301", "FRONT - DECOR SKIN - DR", "Tấm ốp alu khối phải"),
     "BACK": ("351302", "FRONT - DECOR BACK PLATE - DR", "Tấm hậu khối phải"),
@@ -140,10 +141,14 @@ def build(app):
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
     CUT = adsk.fusion.FeatureOperations.CutFeatureOperation
     comps, bodies = {}, {}
+    # D-87: the riser, the transitions, the fan box and its fans ship joined (14.9 kg) with plug-in connectors and
+    # slide into DR through its inner face on site, so they form one sub-assembly
+    air = L.new_comp(root, AIR_ASSY[0], AIR_ASSY[1], AIR_ASSY[2], REV)
+    AIR_KEYS = ("RISER", "TLOW", "FBOX", "TUP", "FAN1", "FAN2")
 
     def comp(key):
         pn, nm, vn = PARTS[key]
-        c = L.new_comp(root, pn, nm, vn, REV)
+        c = L.new_comp(air if key in AIR_KEYS else root, pn, nm, vn, REV)
         comps[key] = c
         return c
 
@@ -361,6 +366,8 @@ def export_all(app):
         ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (cut from felt sheet), bonded to 351303",
          "9 mm PET felt, Dark Gray", "cad", "calculation (CAD, 1.8 kg/m2)", "DRAFT; emission certificate HOLD",
          "D-31; hardware selection A3", ""),
+        ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, "assembly, joined at the factory (D-87)", "-", None, "", "DRAFT",
+         "D-87", "ships joined, 14.9 kg (D-60 table), slides into DR through its inner face; plug-in connectors"),
         ("351402", PARTS["RISER"][1], PARTS["RISER"][2], 1, "made (sheet metal duct)", "1 mm galvanised steel", "cad",
          "calculation (CAD, 7850 kg/m3)", "DRAFT", "D-60 air table", "open foot 45 mm over the base opening; mounts stage 2"),
         ("351403", PARTS["TLOW"][1], PARTS["TLOW"][2], 1, "reserved duct space", "-", 1.5, "assumption",

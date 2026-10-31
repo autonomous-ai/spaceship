@@ -407,6 +407,8 @@ def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
             raise RuntimeError("%s: CAD name %r does not start with %r" % (pn, comps[0].name, name))
         if mass == "cad":
             mass = round(comp_mass(comps[0]), 3)
+        if mass is None:              # a sub-assembly row: its parts carry the mass
+            mass, mstat = "", mstat or "sum of its parts (rows below)"
         out.append([pn, name, vn, typ, mat, qty, mass, mstat, status, src, note])
     total = sum((r[5] if isinstance(r[5], int) else 1) * r[6] for r in out if r[0] != root_pn and r[6] != "")
     for r in out:
