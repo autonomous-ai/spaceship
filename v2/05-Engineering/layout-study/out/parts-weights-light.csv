@@ -1,0 +1,28 @@
+id,name,name_vi,assembly,size_mm,qty,kg_each,kg_total,ships_as,status,note
+W-SIDE-LO,WALL - SIDE PANEL - LOWER,Vách hông - khung dưới,WALL,1500 x 1145 x 38,2,10.09,20.17,upright,calculation,
+W-SIDE-UP,WALL - SIDE PANEL - UPPER,Vách hông - khung trên,WALL,1500 x 1145 x 38,2,10.09,20.17,upright,calculation,
+W-BACK-LO,WALL - BACK PANEL - LOWER,Vách hậu - khung dưới,WALL,1212 x 1126 x 38,2,8.35,16.70,upright,calculation,
+W-BACK-UP,WALL - BACK PANEL - UPPER,Vách hậu - khung trên,WALL,1212 x 1126 x 38,2,8.35,16.70,upright,calculation,
+C-HALF,CEILING - HALF PANEL WITH FAN OPENING,Trần - nửa khung,CEILING,1500 x 1212 x 38,2,10.62,21.25,upright,calculation,
+L-FELT-SIDE,LINING - PET FELT - SIDE,Tấm tiêu âm PET - vách hông,LINING,1462 x 1145 x 9,4,3.10,12.39,upright,calculation,
+L-FELT-BACK,LINING - PET FELT - BACK,Tấm tiêu âm PET - vách hậu,LINING,1212 x 1126 x 9,4,2.52,10.10,upright,calculation,
+L-FELT-CEIL,LINING - PET FELT - CEILING,Tấm tiêu âm PET - trần,LINING,1462 x 1212 x 9,2,3.28,6.56,upright,calculation,
+B-BAND-BACK,BASE - BASE BAND PIECE 100x40 - BACK,Viền chân nhôm,BASE,2420 x 100 x 40,1,3.55,3.55,long,calculation,
+B-BAND-SIDE,BASE - BASE BAND PIECE 100x40 - SIDE,Viền chân nhôm,BASE,1660 x 100 x 40,2,2.44,4.88,long,calculation,
+B-BAND-FRONT-L,BASE - BASE BAND PIECE 100x40 - FRONT-L,Viền chân nhôm,BASE,300 x 100 x 40,1,0.44,0.44,upright,calculation,
+B-BAND-FRONT-R,BASE - BASE BAND PIECE 100x40 - FRONT-R,Viền chân nhôm,BASE,1050 x 100 x 40,1,1.54,1.54,upright,calculation,
+B-KEY,BASE - CORNER KEY,Ke góc đế,BASE,120 x 80 x 40,6,0.15,0.90,box,assumption,
+B-GLIDE,BASE - LEVELLING GLIDE (hex from above),Chân chỉnh cao,BASE,50 x 50 x 40,8,0.15,1.20,box,assumption,
+B-THRESH,"BASE - DOOR THRESHOLD, LOW",Ngưỡng cửa thấp,BASE,1176 x 60 x 20,1,1.20,1.20,upright,assumption,about 20 mm high; replaces the 100 mm band across the door only
+B-FLOOR,BASE - THIN FLOOR PANEL 15 mm,Tấm sàn mỏng,BASE,1462 x 1212 x 15,2,16.48,32.96,upright,calculation,15 mm ply + 0.3 kg/m2 finish; lies on the room floor on a 3 mm seal mat
+F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 235,1,9.98,9.98,long,calculation,
+F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 235,1,18.06,18.06,long,calculation,
+F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 235,1,7.02,7.02,long,calculation,
+F-GLASS-DOOR,FRONT - GLASS DOOR (8 mm tempered glass),Cửa kính,FRONT,2011 x 1176 x 8,1,41.60,41.60,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
+F-GLASS-FIXED,FRONT - FIXED GLASS (8 mm tempered glass),Vách kính cố định,FRONT,2139 x 724 x 8,1,26.88,26.88,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
+F-HW,FRONT - DOOR AND GLAZING HARDWARE KIT,Phụ kiện cửa và kính,FRONT,600 x 400 x 150,1,5.78,5.78,box,assumption,"3 hinges, pull, drop seal, sealed glazing profiles"
+A-FAN,AIR - CEILING FAN (Panasonic FV-15AUL1 per plan),Quạt thông gió,AIR,300 x 300 x 200,2,1.50,3.00,box,unverified,
+A-SILENCER,AIR - SILENCED VENT BOX,Hộp tiêu âm cửa gió,AIR,450 x 300 x 120,2,1.50,3.00,box,assumption,
+E-KIT,"ELECTRICAL - SWITCHES, LIGHTS, HARNESS","Bộ điện: công tắc, đèn, dây",ELECTRICAL,600 x 400 x 200,1,3.05,3.05,box,assumption,
+E-VOICE-RESERVE,ELECTRICAL - VOICE COCKPIT KIT RESERVE (later),Dự phòng bộ voice cockpit,ELECTRICAL,0 x 0 x 0,1,4.00,4.00,none,assumption,weight held in the budget only; the kit ships later
+K-FIX,"KIT - M6 BOLTS, RIVNUTS, JOINT GASKETS","Bộ bu lông M6, gioăng",WALL,400 x 300 x 150,1,3.22,3.22,box,calculation,114 M6 bolts
