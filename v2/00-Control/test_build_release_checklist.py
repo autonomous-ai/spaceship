@@ -350,13 +350,34 @@ class D89Layers(unittest.TestCase):
         self.assertIsNone(rc.dxf_other_layers("AutoCAD Binary DXF\r\n\x1a\x00"))
 
     BLOCKS = ("0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n8\n0\n2\n*Model_Space\n0\nENDBLK\n8\n0\n"
-              "0\nBLOCK\n8\n0\n2\n_ARCHTICK\n0\nLWPOLYLINE\n8\n0\n0\nENDBLK\n8\n0\n"
               "0\nBLOCK\n8\n0\n2\nTAB\n0\nLINE\n8\nBEND\n0\nENDBLK\n8\n0\n0\nENDSEC\n")
 
-    def test_only_drawn_entities_and_inserted_blocks_count(self):
-        self.assertEqual(rc.dxf_other_layers(self.BLOCKS + dxf_doc(("LINE", "CUT"))), set())  # blocks never inserted
-        inserted = self.BLOCKS + dxf_doc(("LINE", "CUT")).replace("0\nENDSEC\n0\nEOF", "0\nINSERT\n8\nCUT\n2\nTAB\n0\nENDSEC\n0\nEOF")
-        self.assertEqual(rc.dxf_other_layers(inserted), {"BEND"})
+    def test_block_records_are_not_lines_but_block_lines_are(self):
+        header_only = self.BLOCKS.replace("0\nBLOCK\n8\n0\n2\nTAB\n0\nLINE\n8\nBEND\n0\nENDBLK\n8\n0\n", "")
+        self.assertEqual(rc.dxf_other_layers(header_only + dxf_doc(("LINE", "CUT"))), set())
+        self.assertEqual(rc.dxf_other_layers(self.BLOCKS + dxf_doc(("LINE", "CUT"))), {"BEND"})
+        polyline = dxf_doc(("POLYLINE", "CUT")).replace("0\nENDSEC\n0\nEOF", "0\nVERTEX\n8\n0\n0\nSEQEND\n8\n0\n0\nENDSEC\n0\nEOF")
+        self.assertEqual(rc.dxf_other_layers(polyline), set())
+
+    def test_the_layer_reading_matches_the_mechanical_check(self):
+        checks = rc.ROOT / "tools/checks"
+        if not (checks / "c_drawings.py").exists():
+            self.skipTest("no mechanical check in this tree")
+        sys.path.insert(0, str(checks))
+        try:
+            import c_drawings
+        finally:
+            sys.path.remove(str(checks))
+        import tempfile
+        samples = [dxf_doc(("LINE", "CUT"), ("TEXT", "MARK")), dxf_doc(("LINE", "CUT"), ("LINE", "BEND")),
+                   dxf_doc(("LWPOLYLINE", "cut"), ("LWPOLYLINE", "POCKET-HALF-DEPTH")), self.BLOCKS + dxf_doc(("LINE", "CUT")),
+                   self.BLOCKS.replace("8\nBEND", "8\n0") + dxf_doc(("LINE", "CUT"))]
+        with tempfile.TemporaryDirectory() as tmp:
+            for i, text in enumerate(samples):
+                path = Path(tmp) / f"s{i}.dxf"
+                path.write_text(text, encoding="utf-8")
+                theirs = {k.upper() for k in c_drawings.dxf_summary(str(path))["layers"] if k.upper() not in ("CUT", "MARK")}
+                self.assertEqual(rc.dxf_other_layers(text), theirs, i)
 
     def run_part(self, dxf_text, process="laser", pn="511101", name="LINING - TRAY - SIDE LOWER - LH"):
         fai = rc.fai_plan(PLAN, BOM)
