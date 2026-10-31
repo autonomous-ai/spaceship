@@ -311,50 +311,6 @@ def edit_test(design, measure, changes, expect):
         raise RuntimeError("edit test failed")
 
 
-def configure_family(doc, design, body_of):
-    """Optional last step: make the key design a configured design, one row per part number
-    (cut_angle per row), so the TABULATED drawing can carry Fusion's own configuration table.
-    It saves a new version and re-exports the .f3d only if every step works; otherwise the
-    version saved before stays as it is (the document is then closed without saving)."""
-    try:
-        top = design.createConfiguredDesign()
-        col = top.columns.addParameterColumn(design.userParameters.itemByName("cut_angle"))
-        rows = [top.rows.item(0)]
-        rows[0].name = KEY_VARIANTS[0][0]
-        for pn, _step, _ang in KEY_VARIANTS[1:]:
-            rows.append(top.rows.add(pn))
-        for row, (pn, _step, ang) in zip(rows, KEY_VARIANTS):
-            cell = None
-            try:
-                cell = row.getCellByColumnId(col.id)
-            except Exception:
-                cell = row.getCellByColumnIndex(0)
-            cell = adsk.fusion.ConfigurationParameterCell.cast(cell)
-            cell.expression = ang
-        for row in rows[1:] + rows[:1]:          # visit every row, end on 111211
-            row.activate()
-            adsk.doEvents()
-            health(design)
-            print("    configuration %s: %s" % (row.name, fmt(box(body_of()))))
-    except Exception as ex:
-        print("  NOTE: configured design not made (%s); the drawing's table goes in its notes instead" % ex)
-        return False
-    if not doc.save("Configured design: one row per part number 111211-111214 (cut_angle), active 111211"):
-        print("  NOTE: saving the configured design failed; the version saved before stays")
-        return False
-    em = design.exportManager
-    f3d = os.path.join(REPO, CAD_DIR, KEYS + ".f3d")
-    for attempt in range(10):
-        adsk.doEvents()
-        if em.execute(em.createFusionArchiveExportOptions(f3d, design.rootComponent)):
-            break
-        time.sleep(3)
-    else:
-        raise RuntimeError("f3d re-export after the configuration save failed")
-    print("  configured design saved (4 rows, active 111211) and %s re-exported" % os.path.basename(f3d))
-    return True
-
-
 # ------------------------------------------------------------------ corner keys 111211 to 111214
 def face_where(body, test):
     """The planar face whose outward normal passes test(normal)."""
@@ -521,7 +477,6 @@ def build_keys(app):
     state(DRAWN, "111211 (back to the drawn state)")()
     edit_test(design, lambda: box(comp.bRepBodies.item(0)), [("key_h", "80 mm")],
               lambda b, a: abs((a[5] - a[2]) - 80.0) < 0.01)
-    configure_family(doc, design, lambda: comp.bRepBodies.item(0))
     doc.close(False)
 
 

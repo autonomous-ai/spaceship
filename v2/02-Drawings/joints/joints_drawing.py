@@ -3,7 +3,7 @@
     # 1. start the empty drawing (needs the unlocked screen; tools/fusion/README.md)
     python3 tools/fusion/start_drawing.py 831001_P01_HARDWARE-LOCATING-SPIGOT_CAD \\
         831001_P01_HARDWARE-LOCATING-SPIGOT_DWG --folder "Default Project/FocusPod v2/joints" --sheet A3
-    # 2. one annotate run: base views, dimensions, configuration and hole tables, raw PDF
+    # 2. one annotate run: base views, dimensions, the projection symbol, raw PDF
     python3 tools/fusion/run_script.py v2/02-Drawings/joints/joints_drawing.py \\
         --doc 831001_P01_HARDWARE-LOCATING-SPIGOT_DWG --folder "Default Project/FocusPod v2/joints" \\
         --arg part=spigot --save "views, dimensions, PDF" --close
@@ -15,9 +15,9 @@ The same for part=keys with 111211_P01_BASE-CORNER-KEY-TABULATED_CAD / _DWG (TAB
 
 Why the notes go in as PDF text: the drawing API can't write free text on a sheet (custom
 table cells come out blank, tools/fusion/README.md), so units, material, finish, tolerance,
-hole notes and the tabulated sizes are added to the exported PDF from NOTES below, in the
-sheet's free top-right area. Where the API does write text (dimensions, a hole table, the
-configuration table of a configured design and its title), the native drawing has it too.
+hole notes and the tabulated sizes are added to the exported PDF from the notes below, in
+the sheet's free top-right area; the dimensions are native. No hole or configuration tables:
+the API can't place them, and they land on the top-right corner (README).
 First-angle layout with base views at one scale (PM ruling, README). Offline test:
 test_joints_drawing.py.
 """
@@ -75,7 +75,6 @@ PARTS = {
             "6. JOINTS REGISTER J-BASE-02; POSITIONS v2/01-CAD-Native/joints/corner-keys.csv;",
             "   ONE STEP PER PART NUMBER IN v2/03-Manufacturing/joints/.",
         ],
-        "table_title": "TABULATED 111211 TO 111214: CUT ANGLE A PER PART NUMBER",
     },
 }
 NOTES_BOX = (232.0, 12.0, 412.0, 150.0)   # sheet mm from the top-left corner: x0, y0, x1, y1
@@ -235,32 +234,6 @@ def annotate(sheet, part, views, cfg):
     return n
 
 
-def tables(sheet, part, views, cfg, dwg):
-    made = []
-    if part == "keys":
-        try:
-            ti = sheet.configurationTables.createInput()
-            ti.title = cfg["table_title"]
-            if sheet.configurationTables.add(ti):
-                made.append("configuration table")
-        except Exception as ex:
-            print("  NOTE: no configuration table (%s); the PDF notes carry the tabulated sizes" % ex)
-        for vname, title, corner_name in (("right", "H01-H02: M6x1-6H THROUGH", "bl"),
-                                          ("top", "H03-H04: M6x1-6H x 15", "bl")):
-            try:
-                lines, circles, refs = _curves(views[vname])
-                pts = [(l[0], l[1]) for l in lines] + [(l[2], l[3]) for l in lines]
-                inp = sheet.holeTables.createInput()
-                inp.view = views[vname]
-                inp.originPoint = _ref(refs, corner(pts, corner_name))
-                inp.title = title
-                if sheet.holeTables.add(inp):
-                    made.append("hole table " + title.split(":")[0])
-            except Exception as ex:
-                print("  NOTE: hole table on the %s view not made (%s)" % (vname, ex))
-    return made
-
-
 def projection_symbol(sheet, x0=236.0, y0=72.0, d=5.0, big=10.0, length=10.0, gap=4.0):
     sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
     p2 = adsk.core.Point2D.create
@@ -288,7 +261,6 @@ def run(_context):
     print("sheet %s: %.1f x %.1f" % (sheet.name, sheet.width, sheet.height))
     views = add_views(sheet, cfg)
     n = annotate(sheet, part, views, cfg)
-    made = tables(sheet, part, views, cfg, dwg)
     projection_symbol(sheet)
     raw = os.path.join(ARGS["repo_root"], "v2/02-Drawings/joints", RAW_DIR, cfg["drawing"] + ".pdf")
     os.makedirs(os.path.dirname(raw), exist_ok=True)
@@ -297,8 +269,8 @@ def run(_context):
     opts.useLineWeights = True
     if not dwg.exportManager.execute(opts):
         raise RuntimeError("PDF export failed")
-    print("%s: %d views, %d dimensions, %s; raw PDF %s (finish it locally)" % (
-        cfg["drawing"], len(views), n, ", ".join(made) or "no tables", os.path.relpath(raw, ARGS["repo_root"])))
+    print("%s: %d views, %d dimensions; raw PDF %s (finish it locally)" % (
+        cfg["drawing"], len(views), n, os.path.relpath(raw, ARGS["repo_root"])))
 
 
 # ------------------------------------------------------------------ local finish (no Fusion)

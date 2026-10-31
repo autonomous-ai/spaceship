@@ -11,7 +11,7 @@ The made parts of the joints register (`v2/05-Engineering/joints/joints-register
 | File | What |
 |---|---|
 | `joints_hardware_build.py` | Builds all three designs in one Fusion run, saves them to Default Project / FocusPod v2 / joints, exports the .f3d, STEP and DXF, and edit-tests each one. See its docstring. |
-| `111211_P01_BASE-CORNER-KEY-TABULATED_CAD.f3d` | Corner key family 111211 to 111214 (J-BASE-02): one block, `cut_angle` per part number. Saved at 0 (111211). It is also a Fusion configured design with one row per part number, if the build's last step worked (BUILD-RECORD.md says). |
+| `111211_P01_BASE-CORNER-KEY-TABULATED_CAD.f3d` | Corner key family 111211 to 111214 (J-BASE-02): one block, `cut_angle` per part number. Saved at 0 (111211); one STEP per part number. |
 | `831001_P01_HARDWARE-LOCATING-SPIGOT_CAD.f3d` | Locating spigot 831001 (H-05). |
 | `831002_P01_HARDWARE-STOP-WASHER_CAD.f3d` | Stop washer 831002 (H-08). It is flat and cut from sheet, so it has a DXF and no drawing (D-89 part 4). |
 | `corner_keys.py`, `corner-keys.csv` | Where each of the 6 keys sits in the pod, from the skeleton's named values and BASE's front points (register J-BASE-02). |
