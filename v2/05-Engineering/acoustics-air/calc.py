@@ -89,10 +89,13 @@ MAT = {
     "glass":   (2500.0, 70e9,  0.22, 0.030),   # EN 572-1 (HW glass rows); eta ASSUME (mounted)
     "pmma":    (1190.0, 3.2e9, 0.37, 0.040),   # ETB_E acrylic 3.2 GPa; density HW acrylic row; eta ASSUME
 }
-ACP3_KG_M2 = 4.5         # HW VT01 row (3 mm ACP, PE core)
-ACP3_SKIN_MM = 0.21      # HW VT01 row
+ACP3_KG_M2 = 3.5         # Alcorest EV3038 3 mm x 0.21 mm skins (the plan's VT01): HW VT01 row; maker publishes no
+                         # kg/m2, so this is a calculation (skins 1.14 + PE core 2.32-2.42). The layout study uses
+                         # 3.8 (3A DIBOND, 0.3 mm skins), which is the heavier, conservative case for weight.
+ACP3_SKIN_MM = 0.21      # Alcorest catalogue, HW VT01 row (source)
 PET_FELT9_KG_M2 = 1.8    # HW VT03 felt row
-FILL_KG_M3 = 32.0        # HW cavity-fill row (PET insulation)
+FILL_KG_M3 = 32.0        # ASSUME: PET insulation fill 20-40 kg/m3 (no sourced product row; HW fill row is open)
+TRAY_KG_M2 = 0.26        # calculation: 25 mm steel tray returns, 4.6 m edge per 1.72 m2 x 0.025 m x 3.93 kg/m2
 HC_CORE_KG_M3 = 60.0     # ASSUME: aluminium honeycomb core density (HW sandwich rows give panel kg/m2)
 HC_CORE_G = 150e6        # ASSUME: honeycomb core shear modulus, low end of typical aluminium honeycomb
 FOAM_CORE_KG_M3 = 40.0   # ASSUME: rigid PU foam core
@@ -229,6 +232,19 @@ def r_double(l1, l2, d, filled, conn, f):
     return min(rd, rb)
 
 
+PANEL_M2 = {"v1": 3.4, "v2": 1.7}   # skin panel size: v1 side wall 1496 x 2300 (V1_BOM); v2 frame ~1500 x 1145
+                                     # (calculation from the plan's 2-per-side split)
+
+
+def finite_gain(f, s_m2):
+    """Sewell (1970) finite-panel mass law minus the field-incidence mass law used by Sharp, floored at 0:
+    R = 20 lg(pi f m / rho c) - 10 lg[ln(k sqrt S) + 0.16]  vs  20 lg(f m) - 47. Raises R at 125-500 Hz
+    for small panels. Source: Sewell, J. Sound Vib. 12(1) 1970; as given in Hopkins, Sound Insulation (2007)."""
+    k = 2 * math.pi * f / C0
+    corr = 20 * math.log10(math.pi / (RHO0 * C0)) + 47 - 10 * math.log10(max(math.log(k * math.sqrt(s_m2)) + 0.16, 1.0))
+    return max(0.0, corr)
+
+
 def octave(fun):
     out = []
     for fb in BANDS:
@@ -253,11 +269,12 @@ class Build:
     """Build-up per m2: one leaf, or two leaves with a cavity."""
 
     def __init__(self, key, name, leaves, cavity=0, fill=0, conn=("none",), felt=True,
-                 frame_kg_m2=0.0, thick=None, r_data=None, basis="model", extra_kg_m2=0.0):
+                 frame_kg_m2=0.0, thick=None, r_data=None, basis="model", extra_kg_m2=0.0, felt_gap=False):
         self.key, self.name, self.leaves = key, name, leaves
         self.cavity, self.fill, self.conn, self.felt = cavity, fill, conn, felt
         self.r_data, self.basis, self.thick = r_data, basis, thick
-        self.felt_mount = "direct" if len(leaves) == 2 else "gap"   # felt on the inner leaf, or on the frame
+        self.felt_mount = "direct" if (len(leaves) == 2 and not felt_gap) else "gap"   # felt on the inner leaf, or spaced
+        self.panel_m2 = PANEL_M2["v1"] if key.startswith("V1") else PANEL_M2["v2"]
         self.kg_m2 = (sum(l.m for l in leaves) + (PET_FELT9_KG_M2 if felt else 0)
                       + FILL_KG_M3 * fill / 1000 + frame_kg_m2 + extra_kg_m2)
         self._r = None
@@ -268,11 +285,12 @@ class Build:
                 self._r = list(self.r_data)
             elif len(self.leaves) == 1:
                 lf = self.leaves[0]
-                self._r = octave(lambda f: r_single(lf, f))
+                self._r = octave(lambda f: r_single(lf, f) + finite_gain(f, self.panel_m2))
             else:
                 l1, l2 = self.leaves
                 filled = self.fill >= 0.5 * self.cavity
-                self._r = octave(lambda f: r_double(l1, l2, self.cavity / 1000, filled, self.conn, f))
+                self._r = octave(lambda f: r_double(l1, l2, self.cavity / 1000, filled, self.conn, f)
+                                 + finite_gain(f, self.panel_m2))
         return self._r
 
 
@@ -280,17 +298,23 @@ class Build:
 # Frames (kg per m2 of wall) = tube kg/m x 3.7 m of tube per m2
 # (calculation: a plan-size frame ~1.5 x 1.15 m with one middle member)
 # ---------------------------------------------------------------------------
-TUBE_M_PER_M2 = 3.7
+TUBE_M_PER_M2 = 3.7          # older frames: v1 wood, plan steel (members ~600 mm)
+TUBE_M_PER_M2_400 = 5.0      # DECIDED aluminium frames, members at 400 mm: a 1500 x 1145 panel has 5 x 1.1 m
+                             # + 2 x 1.5 m = 8.5 m of tube per 1.72 m2 (calculation)
 TUBE_KG_M = {
     "steel 20x20x1.0": 0.597,   # calculation (4*20-4*1)*1*7.85e-3; HW steel-tube row
     "alu 20x20x1.5": 0.300,     # calculation (4*20-4*1.5)*1.5*2.70e-3; HW aluminium-tube row
     "alu 20x40x1.5": 0.462,     # calculation; HW aluminium-tube row
     "alu 25x100x1.5": 0.988,    # calculation (2*(25+100)-4*1.5)*1.5*2.70e-3; HW aluminium-tube row
+    "alu 20x60x1.5": 0.624,     # calculation; HW aluminium-tube row
+    "alu 20x100x1.5": 0.948,    # calculation; HW aluminium-tube row
     "wood 40x40": 0.80,         # ASSUME 500 kg/m3 timber
 }
 
 
 def frame(t):
+    if t.startswith("alu"):
+        return TUBE_KG_M[t] * TUBE_M_PER_M2_400      # all aluminium frames at the DECIDED 400 mm pitch
     return TUBE_KG_M[t] * TUBE_M_PER_M2
 
 
@@ -304,11 +328,13 @@ def walls():
     h3 = plate("HDF 3", [layer("hdf", 3)])
     s05 = plate("steel 0.5", [layer("steel", 0.5)])
     h6 = plate("2 x HDF 3", [layer("hdf", 3), layer("hdf", 3)])
+    al1 = plate("aluminium 1.0", [layer("alu", 1.0)])
     hc10 = sandwich("Al honeycomb 10", 10, 0.5, HC_CORE_KG_M3, HC_CORE_G)
     hc20 = sandwich("Al honeycomb 20", 20, 0.5, HC_CORE_KG_M3, HC_CORE_G)
     fc20 = sandwich("foam core 20", 20, 0.5, FOAM_CORE_KG_M3, FOAM_CORE_G, FOAM_CORE_E)
     wd, st, al, al20 = frame("wood 40x40"), frame("steel 20x20x1.0"), frame("alu 20x40x1.5"), frame("alu 20x20x1.5")
-    al100 = frame("alu 25x100x1.5")
+    al100 = frame("alu 20x100x1.5")
+    al60 = frame("alu 20x60x1.5")
     L = [
         Build("V1-DWG", "v1 as drawn: Al 2 + ply 6 / 40 empty, wood studs / ply 15",
               [al2p6, p15], 40, 0, ("line", 1.1), False, wd, 63),
@@ -339,21 +365,31 @@ def walls():
         Build("DL-P6-PLY4", "ACP 3 + ply 6 / 40 fill, shared studs / ply 4 + felt 9",
               [a3p6, p4], 40, 40, ("line", 0.6), True, al, 62),
         Build("DL-HDF-60", "ACP 3 / 60 fill, shared studs / HDF 3 + felt 9",
-              [a3, h3], 60, 60, ("line", 0.6), True, al * 1.3, 75),
+              [a3, h3], 60, 60, ("line", 0.6), True, al60, 75),
         Build("DL-HDF-40-FL", "ACP 3 / 40 fill / HDF 3 floating (no stud bridge) + felt 9",
               [a3, h3], 40, 40, ("none",), True, al, 55),
         Build("DL-HDF-60-FL", "ACP 3 / 60 fill / HDF 3 floating + felt 9",
-              [a3, h3], 60, 60, ("none",), True, al * 1.3, 75),
+              [a3, h3], 60, 60, ("none",), True, al60, 75),
         Build("DL-ST-40-FL", "ACP 3 / 40 fill / steel 0.5 floating + felt 9",
               [a3, s05], 40, 40, ("none",), True, al, 53),
         Build("DL-ST-60-FL", "ACP 3 / 60 fill / steel 0.5 floating + felt 9",
-              [a3, s05], 60, 60, ("none",), True, al * 1.3, 73),
+              [a3, s05], 60, 60, ("none",), True, al60, 73),
         Build("DL-2HDF-60-FL", "ACP 3 / 60 fill / 2 x HDF 3 floating + felt 9",
-              [a3, h6], 60, 60, ("none",), True, al * 1.3, 78),
+              [a3, h6], 60, 60, ("none",), True, al60, 78),
         Build("DL-P6-HDF-60-FL", "ACP 3 + ply 6 / 60 fill / HDF 3 floating + felt 9",
-              [a3p6, h3], 60, 60, ("none",), True, al * 1.3, 81),
+              [a3p6, h3], 60, 60, ("none",), True, al60, 81),
         Build("DL-P6-P9-60-FL", "ACP 3 + ply 6 / 60 fill / ply 9 floating + felt 9",
-              [a3p6, p9], 60, 60, ("none",), True, al * 1.3, 87),
+              [a3p6, p9], 60, 60, ("none",), True, al60, 87),
+        Build("DL-ST-100-FL", "ACP 3 / 100 fill / steel 0.5 floating + felt 9",
+              [a3, s05], 100, 100, ("none",), True, al100, 113),
+        Build("DL-AL1-60-FL", "ACP 3 / 60 fill / aluminium 1.0 floating + felt 9",
+              [a3, al1], 60, 60, ("none",), True, al60, 73),
+        Build("DL-AL1-100-FL", "ACP 3 / 100 fill / aluminium 1.0 floating + felt 9",
+              [a3, al1], 100, 100, ("none",), True, al100, 113),
+        Build("DL-ST-40-FLG", "ACP 3 / 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
+              [a3, s05], 40, 40, ("none",), True, al, 81, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
+        Build("DL-ST-100-FLG", "ACP 3 / 100 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
+              [a3, s05], 100, 100, ("none",), True, al100, 141, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
         Build("DL-HDF-100-DEC", "ACP 3 / 100 fill / HDF 3 on resilient pads + felt 9",
               [a3, h3], 100, 100, ("point", 0.6), True, al100, 115),
         Build("DL-ST-100-DEC", "ACP 3 / 100 fill / steel 0.5 on resilient pads + felt 9",
@@ -368,11 +404,29 @@ def walls():
     return {b.key: b for b in L}
 
 
-# Front panes. Basis "model" until a measured octave set is entered from HW.
+# Measured 1/3-octave R, 80-5000 Hz, lab, bare glass (HW glass rows; Eastman "Acoustic glazing data"
+# booklet 2018, tests EMN TR16-105 / TR16-106 / TR16-269, checked 2026-10-31). Float glass data; toughening
+# is assumed not to change R (unverified).
+THIRDS_8MM = (16, 30, 28, 29, 29, 28, 30, 31, 33, 34, 35, 34, 32, 31, 32, 36, 39, 41, 44)
+THIRDS_10MM = (24, 29, 27, 29, 30, 31, 32, 32, 33, 35, 34, 33, 32, 32, 36, 39, 42, 44, 47)
+THIRDS_44Q = (20, 30, 28, 29, 29, 30, 31, 31, 33, 35, 36, 37, 39, 40, 39, 39, 39, 43, 47)
+
+
+def thirds_to_octaves(t):
+    """80..5000 Hz thirds -> 125..4000 Hz octaves (energy mean of the three thirds in each octave)."""
+    out = []
+    for i in range(6):
+        trio = t[1 + 3 * i: 4 + 3 * i]
+        out.append(-10 * math.log10(sum(10 ** (-x / 10) for x in trio) / 3))
+    return out
+
+
+# Front panes: measured octave sets where published; acrylic stays on the model (published PMMA sound
+# figures disagree with each other, HW acrylic row).
 GLASS = {
-    "G8": ("Tempered 8 mm", 20.0, None),
-    "G10": ("Tempered 10 mm (v1)", 25.0, None),
-    "L44": ("Laminated acoustic 4+4 (~8.8 mm)", 20.4, None),
+    "G8": ("Tempered 8 mm", 20.0, thirds_to_octaves(THIRDS_8MM)),
+    "G10": ("Tempered 10 mm (v1)", 25.0, thirds_to_octaves(THIRDS_10MM)),
+    "L44": ("Laminated acoustic 4+4 (8.76 mm)", 21.0, thirds_to_octaves(THIRDS_44Q)),
     "A8": ("Smoked acrylic 8 mm", 9.5, None),
     "A10": ("Smoked acrylic 10 mm", 11.9, None),
     "A12": ("Smoked acrylic 12 mm", 14.3, None),
@@ -392,7 +446,7 @@ def panes():
             lf = Leaf(label, kg, f_crit(kg, 3 * b4), 0.15)
         else:
             lf = plate(label, [layer("pmma", int(key[1:]))])
-        basis = "measured (HW)" if rdata else "model"
+        basis = "measured, lab (Eastman via HW)" if rdata else "model (Sharp)"
         b = Build(key, label, [lf], felt=False, r_data=rdata, basis=basis)
         b.kg_m2 = kg
         out[key] = b
@@ -416,9 +470,11 @@ def extras(wb):
 # Absorption inside (alpha 125..4k)
 # ---------------------------------------------------------------------------
 ALPHA = {
-    "felt_gap": (0.10, 0.30, 0.65, 0.85, 0.90, 0.95),        # ASSUME until HW felt data: 9 mm over 20-40 mm space
-    "felt_direct": (0.05, 0.12, 0.35, 0.70, 0.90, 0.95),     # ASSUME until HW felt data: 9 mm on a hard face
-    "pet_thick": (0.15, 0.45, 0.85, 1.00, 1.00, 1.00),       # ASSUME until HW data: 24-40 mm PET panel on a board
+    # PET felt: no 9 mm panel with published octave data was found (HW felt rows). Autex Cube ISO 354 data is
+    # used as the proxy (source; 12 mm is 3 mm thicker than the plan's 9 mm, so slightly optimistic):
+    "felt_gap": (0.05, 0.30, 0.60, 0.95, 0.95, 0.85),        # Autex Cube 12 mm + 25 mm air gap (HW felt row)
+    "felt_direct": (0.05, 0.10, 0.30, 0.65, 0.90, 0.95),     # Autex Cube 12 mm, direct on a hard face
+    "pet_thick": (0.05, 0.20, 0.60, 0.90, 1.00, 1.00),       # Autex Cube 24 mm, direct
     "glass": (0.18, 0.06, 0.04, 0.03, 0.02, 0.02),           # ASI_ABS heavy plate glass
     "ply": (0.28, 0.22, 0.17, 0.09, 0.10, 0.11),             # ASI_ABS plywood paneling
     "wood_floor": (0.15, 0.11, 0.10, 0.07, 0.06, 0.07),      # ASI_ABS wood floor
@@ -577,8 +633,6 @@ FIXES = [
      "HW base-seal row; the floor itself is in the weight study"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
     ("PET fill in the front decor", dict(decor_fill=True), 4.0, "calculation: 1.65 m2 x 75 mm x 32 kg/m3"),
-    ("Thick PET absorber on the ceiling instead of 9 mm felt", dict(ceil_absorber=True), 3.0,
-     "calculation: 3.6 m2 x (about 2.6 - 1.8) kg/m2, HW absorber row"),
 ]
 FIX_ALL = {}
 for _l, _c, _k, _b in FIXES:
@@ -587,8 +641,8 @@ FIX_KG = sum(k for _, _, k, _ in FIXES)
 
 
 # Fix mass not already inside REST_KG (layout study): door edge seals 1.0, joint gaskets 1.0, silencer boxes
-# beyond the study's 2 x 1.5 kg 4.0, base seal 0.5, grommets 0.1, decor fill 4.0, ceiling absorber 3.0 (calculation)
-EXTRA_FIX_KG = 13.6
+# beyond the study's 2 x 1.5 kg 4.0, base seal 0.5, grommets 0.1, decor fill 4.0 (calculation)
+EXTRA_FIX_KG = 10.6
 
 
 def pod_total_kg(cfg, wb, gb):
@@ -635,13 +689,26 @@ SYS_K = 7.5   # ASSUME: entry 0.5 + outside grille 2.0 + 180-degree lined turn 2
 FAN_SPECTRUM = (-3.0, -5.0, -8.0, -11.0, -15.0, -20.0)   # ASSUME: dB re overall Lw, small EC fan
 
 # Fan candidates: curve points (l/s, Pa) at full speed and LwA to the duct side at a stated point.
-# Filled from HW fan rows; FV-15AUL1 has no published curve (HW), so it cannot be checked here.
+# FV-15AUL1 (plan) has no published curve and its manual forbids ceiling mounting (HW), so it is not here.
 FANS = {}
 
+# Duct-side sound power per octave, A-weighted per band, dB(A), 125..4000 Hz, at a duty point near
+# 70 l/s (S&P TD-350/100-125 SILENT ECOWATT, 8 V, point 5, about 250 m3/h = 69 l/s at about 30 Pa;
+# S&P catalogue values via HW fan rows, duty point read off the curve figure: source, approximate).
+FAN_BANDS = {
+    "S&P TD-350/100-125 ECOWATT, 8 V (69 l/s @ 30 Pa)": dict(
+        inlet=(25, 44, 53, 45, 39, 34), outlet=(27, 42, 54, 44, 37, 32), lwa=54, watts=15, kg=5.0),
+    "S&P TD-500/150-160 ECOWATT, 4 V (56 l/s @ 42 Pa)": dict(
+        inlet=(25, 37, 49, 46, 37, 29), outlet=(25, 37, 49, 46, 37, 29), lwa=51, watts=10, kg=6.0),
+}
 
-def sys_dp(q_ls, sil_area=SIL_H * SIL_W):
+
+def sys_dp(q_ls, sil_len=1.2, sil_area=SIL_H * SIL_W):
+    """Vent path pressure drop: SYS_K for a 1.2 m path, plus 1.5 per extra 1.2 m (one more lined turn and
+    lining friction; ASSUME)."""
     v = q_ls / 1000 / sil_area
-    return SYS_K * 0.5 * RHO0 * v * v
+    k = SYS_K + 1.5 * max(0.0, sil_len - 1.2) / 1.2
+    return k * 0.5 * RHO0 * v * v
 
 
 def co2_rows():
@@ -696,6 +763,23 @@ def inside_noise(lwa_path, sil_len, derate=0.8, spectrum=None):
             rc = ain[i] / (1 - abar)
             lp = lw_lin[i] - il[i] + 10 * math.log10(2 / (4 * math.pi * r * r) + 4 / rc)
             tot += 10 ** ((lp + A_WEIGHT[i]) / 10)
+    return 10 * math.log10(tot)
+
+
+def inside_from_bands(supply_bands, exhaust_bands, sil_len, derate=0.8, speed_db=0.0):
+    """LpA inside from A-weighted octave sound power of the supply-fan outlet and the exhaust-fan inlet,
+    each through its own silencer and diffuser. Listener 1.0 m from the supply, 1.5 m from the exhaust."""
+    a = areas(GEOM["v2"])
+    s_tot = a["walls"] + a["ceiling"] + a["floor"] + a["front"]
+    ain = [a["walls"] * ALPHA["felt_direct"][i] + a["ceiling"] * ALPHA["pet_thick"][i] + a["glass"] * ALPHA["glass"][i]
+           + a["decor"] * ALPHA["metal"][i] + a["floor"] * ALPHA["hard_floor"][i] for i in range(6)]
+    il = [x + end_reflection(f, DIFFUSER_M2) for x, f in zip(silencer_il(sil_len, derate), BANDS)]
+    tot = 0.0
+    for bands, r in ((supply_bands, 1.0), (exhaust_bands, 1.5)):
+        for i in range(6):
+            abar = ain[i] / s_tot
+            rc = ain[i] / (1 - abar)
+            tot += 10 ** ((bands[i] + speed_db - il[i] + 10 * math.log10(2 / (4 * math.pi * r * r) + 4 / rc)) / 10)
     return 10 * math.log10(tot)
 
 
@@ -790,12 +874,12 @@ def t_pods(wb, gb, fixed):
         ("+ fixes, honeycomb sandwich SW-HC20", dict(fixed, wall="SW-HC20")),
         ("+ fixes, foam sandwich + inner skin", dict(fixed, wall="SW-FOAM20-DL")),
     ]
-    out = ["| Pod | D_S,A low | central | high | kg this study changes |", "|---|---:|---:|---:|---:|"]
+    out = ["| Pod | D_S,A low | central | high |", "|---|---:|---:|---:|"]
     res = {}
     for name, cfg in named:
         b = band(cfg, wb, gb)
         res[name] = (b, cfg)
-        out.append(row([name] + [f"{x:.1f}" for x in b] + [f"{pod_kg(cfg, wb, gb):.0f}"]))
+        out.append(row([name] + [f"{x:.1f}" for x in b]))
     return "\n".join(out), res
 
 
@@ -887,6 +971,49 @@ def t_curve(wb, gb, base):
     return "\n".join(out).rstrip()
 
 
+DECIDED_WALLS = ("DL-HDF-40-FL", "DL-HDF-60-FL", "DL-ST-40-FL", "DL-ST-60-FL", "DL-AL1-60-FL", "DL-2HDF-60-FL",
+                 "DL-ST-40-FLG")
+DECIDED_CEILS = DECIDED_WALLS + ("DL-ST-100-FL", "DL-AL1-100-FL", "DL-ST-100-FLG")
+
+
+DECIDED_STACK = dict(wall="DL-ST-40-FLG", ceiling="DL-ST-100-FLG", glass="A10", sil_len=2.4)
+
+
+def recommend(wb, gb, base, front, cap, sil_len=2.4):
+    """Quietest combination inside the DECIDED rules (ACP without plywood on aluminium frames at 400 mm,
+    filled 40-60 mm cavity, floating inner skin; ceiling may be 100 mm for the silencers) under a kg cap."""
+    best = None
+    for wk in DECIDED_WALLS:
+        for ck in DECIDED_CEILS:
+            cfg = dict(base, wall=wk, ceiling=ck, glass=front, sil_len=sil_len)
+            kg = pod_total_kg(cfg, wb, gb)
+            if kg > cap:
+                continue
+            d = pod(cfg, "central", wb, gb)["dsa"]
+            key = (round(d, 1), -kg)
+            if best is None or key > best[0]:
+                best = (key, kg, cfg)
+    return best
+
+
+def t_recommend(wb, gb, base):
+    out = ["| Case | Walls | Ceiling | Front | Silencer path | Total kg | D_S,A low / central / high |",
+           "|---|---|---|---|---:|---:|---|"]
+    rows = [("DECIDED stack (one lining material)", dict(base, **DECIDED_STACK)),
+            ("Same stack with the fallback front", dict(base, **dict(DECIDED_STACK, glass="L44")))]
+    for label, front, cap in (("Quietest mix under the 400 kg cap, acrylic front", "A10", 400),
+                              ("Quietest mix under the 400 kg cap, fallback front", "L44", 400)):
+        r = recommend(wb, gb, base, front, cap)
+        if r is not None:
+            rows.append((label, r[2]))
+    for label, cfg in rows:
+        kg = pod_total_kg(cfg, wb, gb)
+        b = band(cfg, wb, gb)
+        out.append(row([label, cfg["wall"], cfg["ceiling"], gb[cfg["glass"]].name, f"{cfg['sil_len']:.1f} m",
+                        f"{kg:.0f}", " / ".join(f"{x:.1f}" for x in b)]))
+    return "\n".join(out), rows
+
+
 def t_air():
     rows, v, g = co2_rows()
     out = [f"Inside volume {v:.2f} m3; CO2 from 2 people {g * 1000:.1f} ml/s.", "",
@@ -922,21 +1049,12 @@ def fan_point(fan, sil_len=1.2, target_ls=70.0):
 
 
 def t_fans():
-    out = ["| Fan | Full-speed point on the vent curve (l/s @ Pa) | Speed for 70 l/s | Duct LwA at 70 l/s | Power W | Inside dB(A), 1.2 m silencer | Basis |",
-           "|---|---|---:|---:|---:|---:|---|"]
-    if not FANS:
-        out.append(row(["(no fan with a published curve and sound data entered yet)", "", "", "", "", "", ""]))
-    for k, fan in FANS.items():
-        r = fan_point(fan)
-        if r is None:
-            out.append(row([fan["name"], "curve does not reach the vent curve", "", "", "", "", fan["basis"]]))
-            continue
-        if r["lwa"] is None:
-            out.append(row([fan["name"], f"{r['q_full']:.0f} @ {r['p_full']:.0f}", f"{r['speed'] * 100:.0f}% (short)",
-                            "", "", "", fan["basis"]]))
-            continue
-        out.append(row([fan["name"], f"{r['q_full']:.0f} @ {r['p_full']:.0f}", f"{r['speed'] * 100:.0f}%",
-                        f"{r['lwa']:.0f}", f"{r['watts']:.0f}" if r["watts"] else "", f"{r['inside']:.1f}", fan["basis"]]))
+    out = ["| Fan (duty point near 70 l/s) | Duct LwA dB(A) | Power W | kg | Inside dB(A), silencer 1.2 m | 1.8 m | 2.4 m | Basis |",
+           "|---|---:|---:|---:|---:|---:|---:|---|"]
+    for name, d in FAN_BANDS.items():
+        cells = [f"{inside_from_bands(d['outlet'], d['inlet'], L):.1f}" for L in (1.2, 1.8, 2.4)]
+        out.append(row([name, f"{d['lwa']}", f"{d['watts']}", f"{d['kg']:.1f}"] + cells
+                       + ["HW fan rows (S&P octave data); silencer and room: calculation"]))
     return "\n".join(out)
 
 
@@ -945,7 +1063,7 @@ def t_silencer():
            "|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for L in (0.6, 1.2, 1.8, 2.4):
         il = silencer_il(L, 0.8)
-        out.append(row([f"{L:.1f}"] + [f"{x:.0f}" for x in il] + [f"{sys_dp(70):.0f}",
+        out.append(row([f"{L:.1f}"] + [f"{x:.0f}" for x in il] + [f"{sys_dp(70, L):.0f}",
                                                                  f"{lwa_allowed(25, L):.0f}", f"{lwa_allowed(30, L):.0f}"]))
     return "\n".join(out)
 
@@ -964,8 +1082,8 @@ def tables():
     out["share"] = t_share(wb, gb, {"v1": V1, "Plan, 8 mm": dict(PLAN, glass="G8"),
                                     "Plan + fixes": fixed, "DL-ST + fixes": dict(fixed, wall="DL-ST")})
     ref_kg = pod_kg(dict(PLAN, glass="G8"), wb, gb)
-    out["goal"] = t_goal(wb, gb, fixed, ref_kg, v1b[1], v1b[2])
     out["curve"] = t_curve(wb, gb, fixed)
+    out["recommend"], _ = t_recommend(wb, gb, fixed)
     out["air"] = t_air()
     out["silencer"] = t_silencer()
     out["fans"] = t_fans()
