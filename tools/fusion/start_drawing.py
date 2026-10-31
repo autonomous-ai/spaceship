@@ -253,13 +253,26 @@ def run(_c):
 '''
 
 
+# Closing a drawing can close other documents with it (seen live 2026-10-31:
+# the next index was gone), so the list is read again after every close.
 CLOSE_UNSAVED_SCRIPT = '''import adsk.core, adsk.drawing
 def run(_c):
     app = adsk.core.Application.get()
-    for i in range(app.documents.count - 1, -1, -1):
-        d = app.documents.item(i)
-        if d.objectType == adsk.drawing.DrawingDocument.classType() and not d.isSaved:
-            print("closed unsaved drawing %s: %s" % (d.name, d.close(False)))
+    for _ in range(20):
+        hit = None
+        for i in range(app.documents.count):
+            try:
+                d = app.documents.item(i)
+            except Exception:
+                break                 # the list changed under us: read it again
+            if d.objectType == adsk.drawing.DrawingDocument.classType() and not d.isSaved:
+                hit = d
+                break
+        if hit is None:
+            break
+        name = hit.name
+        print("closed unsaved drawing %s: %s" % (name, hit.close(False)))
+        adsk.doEvents()
 '''
 
 

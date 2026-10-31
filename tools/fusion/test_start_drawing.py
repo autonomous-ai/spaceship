@@ -258,6 +258,52 @@ class SequenceTests(unittest.TestCase):
             self.assertFalse(sd.cancel_dialogs(st, st.log.append, tries=6, poll_s=0))
             self.assertEqual((st.clicks, st.cancels), ([], 0), cmd)
 
+    def test_closing_the_unsaved_drawing_survives_documents_closing_with_it(self):
+        # live 2026-10-31: closing the drawing also closed a document Fusion had
+        # opened for it, and the next index raised "Bad index parameter"
+        class Doc:
+            def __init__(self, name, drawing, saved, docs, takes=()):
+                self.name, self.drawing, self.isSaved, self.docs, self.takes = name, drawing, saved, docs, takes
+                self.objectType = "Drawing" if drawing else "Design"
+
+            def close(self, _save):
+                for d in (self,) + tuple(self.takes):
+                    self.docs.remove(d)
+                return True
+
+        class Docs(list):
+            @property
+            def count(self):
+                return len(self)
+
+            def item(self, i):
+                if not 0 <= i < len(self):
+                    raise RuntimeError("3 : Bad index parameter")
+                return self[i]
+
+        docs = Docs()
+        hidden = Doc("ref", False, True, docs)
+        docs.extend([Doc("A_CAD", False, True, docs), hidden,
+                     Doc("Untitled", True, False, docs, takes=(hidden,))])
+        app = types.SimpleNamespace(documents=docs)
+        adsk = types.ModuleType("adsk")
+        adsk.doEvents = lambda: None
+        adsk.core = types.SimpleNamespace(Application=types.SimpleNamespace(get=lambda: app))
+        adsk.drawing = types.SimpleNamespace(DrawingDocument=types.SimpleNamespace(classType=lambda: "Drawing"))
+        saved = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.drawing")}
+        sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.drawing": adsk.drawing})
+        try:
+            ns = {}
+            exec(compile(sd.CLOSE_UNSAVED_SCRIPT, "close_unsaved", "exec"), ns)
+            ns["run"](None)
+        finally:
+            for k, v in saved.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+        self.assertEqual([d.name for d in docs], ["A_CAD"])
+
     def test_the_fusion_cancel_script_does_not_terminate_the_command(self):
         self.assertNotIn("terminateActiveCommand(", sd.FUSION_CANCEL_SCRIPT)
         self.assertIn('itemById("SelectCommand").execute()', sd.FUSION_CANCEL_SCRIPT)
