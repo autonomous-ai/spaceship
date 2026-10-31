@@ -1,4 +1,4 @@
-Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the Fusion lock: `python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/edit_test_skeleton.py` on the P04 skeleton.
+Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the Fusion lock: `python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/edit_test_skeleton.py` on the P04 skeleton (seam_gap 2.26, outer_t 46).
 
 ## Skeleton edit test record
 

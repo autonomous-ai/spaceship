@@ -40,12 +40,13 @@ PARAMS = [
     ("glide_h", "10 mm", "mm", "assumption", "layout study inputs.py glide_h"),
     ("band_h", "100 mm", "mm", "source", "layout study B1 list B-BAND 100x40; inputs.py base_h"),
     ("band_t", "40 mm", "mm", "source", "layout study B1 list B-BAND 100x40"),
-    ("stack_t", "81 mm", "mm", "decided", "D-16, D-42 (walls and ceiling)"),
-    ("outer_t", "43 mm", "mm", "source", "layout study B1 final list W-SIDE 43 (ACP 3 + frame 40)"),
+    ("outer_t", "46 mm", "mm", "decided", "PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)"),
+    ("cav_gap", "4 mm", "mm", "decided", "D-16, D-42: the gap between the outer panel and the lining cassette in the wall and ceiling stack"),
     ("cass_t", "34 mm", "mm", "source", "layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)"),
+    ("stack_t", "outer_t + cav_gap + cass_t", "mm", "calculation", "D-16, D-42 stack, walls and ceiling: 46 + 4 + 34 = 84 (was 81 with outer_t 43); the inside is 3 mm smaller per wall and in height"),
     ("wall_depth", "1495 mm", "mm", "decided", "PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"),
     ("lin_gap", "4 mm", "mm", "assumption", "PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)"),
-    ("seam_gap", "2 mm", "mm", "assumption", "PM ruling 2026-10-31 on Mechanical Checker F-001: one gap on every frame-to-frame seam (IF-03 to IF-06), 2 mm until the Joints Engineer's gasket table and the wall sample confirm it (PORON 4701-40 3.18 mm squeezed about 37%)"),
+    ("seam_gap", "2.26 mm", "mm", "decided", "PM ruling 2026-10-31 (Mechanical Checker F-001, F-005): the Joints Engineer's 2.26 mm at all nine site seam types, set by a metal stop (1.5 stop washer + 0.76 rivnut head; joints register section 2.8)"),
     ("floor_t", "15 mm", "mm", "source", "layout study B1 list B-FLOOR 15"),
     ("thresh_h", "20 mm", "mm", "decided", "D-18"),
     ("thresh_d", "60 mm", "mm", "source", "layout study B1 list B-THRESH 1176 x 60 x 20"),
@@ -92,13 +93,14 @@ PARAMS = [
     ("dt_xr", "1699 mm", "mm", "source", "V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -1250 + 1699 (PM ruling pass C)"),
     ("dr_yc", "672 mm", "mm", "source", "V1-FRONT-FACETS: DR corner facet back Y -672"),
     # derived
-    ("wall_z0", "glide_h + band_h", "mm", "calculation", "walls stand on the base band"),
+    ("wall_z0", "glide_h + band_h", "mm", "calculation", "base band top (Z 110)"),
+    ("panel_z0", "wall_z0 + seam_gap", "mm", "calculation", "walls stand one seam_gap above the band top (Z 112.26; joints register 2.8, IF-01)"),
     ("wall_h", "pod_h - wall_z0", "mm", "calculation", "2290 = layout study v2_model wall_h"),
-    ("side_h", "(wall_h - seam_gap) / 2", "mm", "calculation", "D-23: 2 sheets per side wall with one seam_gap between them (pass D: 1144, was 1145)"),
-    ("back_h", "wall_h - stack_t", "mm", "calculation", "back linings stand under the ceiling cassette (top Z 2319; v2_model back_h)"),
-    ("back_oh", "pod_h - outer_t - seam_gap - wall_z0", "mm", "calculation", "PM ruling 2026-10-31 (pass D): the back outer frames run up to the ceiling frame (Z 2357, less the wall-to-ceiling seam_gap), closing the 38 mm slot at the back top edge"),
-    ("back_ph", "(back_oh - seam_gap) / 2", "mm", "calculation", "D-23: 4 sheets on the back, two equal rows with one seam_gap between them (pass D: 1121.5, was 1104.5); the lower back linings match the lower row, as on the side walls"),
-    ("half_pw", "(pod_w - 2 * outer_t - 3 * seam_gap) / 2", "mm", "calculation", "width of each back and ceiling panel: two panels and three seams between the side frames (pass D: 1204, was 1207; Mechanical Checker F-001)"),
+    ("side_h", "(wall_h - 2 * seam_gap) / 2", "mm", "calculation", "D-23: 2 sheets per side wall; the gap on the band and the horizontal seam (1142.74, was 1145; joints register 2.8)"),
+    ("side_l", "wall_depth - seam_gap", "mm", "calculation", "side panel length along Y: the seam_gap at the decor's back plate (1492.74; joints register 2.8, IF-07)"),
+    ("back_oh", "pod_h - outer_t - seam_gap - panel_z0", "mm", "calculation", "PM ruling 2026-10-31 (pass D, F-004): the back outer frames run up to the ceiling frame (Z 2357, less the seam_gap under it), closing the 38 mm slot at the back top edge"),
+    ("back_ph", "(back_oh - seam_gap) / 2", "mm", "calculation", "D-23: 4 sheets on the back, two equal rows with one seam_gap between them (1120.11, was 1104.5; joints register 2.8); the lower back linings match the lower row, as on the side walls"),
+    ("half_pw", "(pod_w - 2 * outer_t - 3 * seam_gap) / 2", "mm", "calculation", "width of each back and ceiling panel: two panels and three seams between the side frames (1203.61, was 1207; F-001, joints register 2.8)"),
     ("inner_w", "pod_w - 2 * stack_t", "mm", "calculation", "2338 between the side walls"),
 ]
 
@@ -129,13 +131,14 @@ def env(asm, code, name, sid, x, y, z):
     ENVELOPES.append((asm, code, name, sid, x, y, z))
 
 
+YWP = YW + " + seam_gap"       # side panels start one seam_gap behind the decor's back plate (IF-07)
 for side, x0, x1, cx0, cx1 in (("L", XL, XL + " + outer_t", XIL + " - cass_t", XIL),
                                ("R", XR + " - outer_t", XR, XIR, XIR + " + cass_t")):
-    for row, z0, z1 in ((1, "wall_z0", "wall_z0 + side_h"), (2, "wall_z0 + side_h + seam_gap", "pod_h")):
+    for row, z0, z1 in ((1, "panel_z0", "panel_z0 + side_h"), (2, "panel_z0 + side_h + seam_gap", "pod_h")):
         cz1 = z1 if row == 1 else "pod_h - outer_t - lin_gap"   # stops under the roof frame, floating
         lo = "LOWER" if row == 1 else "UPPER"
         env("WALL", "%s%d" % (side, row), "WALL - SIDE PANEL - %s - %s" % (lo, "LH" if side == "L" else "RH"),
-            "W-SIDE-" + lo[:2], (x0, x1), (YW, YB), (z0, z1))
+            "W-SIDE-" + lo[:2], (x0, x1), (YWP, YB), (z0, z1))
         env("LINING", "%s%d-CASS" % (side, row), "LINING - CASSETTE - SIDE %s - %s" % (lo, side),
             "L-CASS-SIDE-" + lo[:2], (cx0, cx1), (YW, YB + " - stack_t + cass_t"), (z0, cz1))   # closes the inside corner
 # pass D (PM ruling): the back outer frames run up to the ceiling frame (Z 2357) in two equal
@@ -146,11 +149,12 @@ for side, x0, x1, cx0, cx1 in (("L", XL, XL + " + outer_t", XIL + " - cass_t", X
 # pass C's corner and X 0 joints; their rows follow the frame rows.
 BL_X = (XOL + " + seam_gap", XOL + " + seam_gap + half_pw")     # B1, B3, C1
 BR_X = (XOR + " - seam_gap - half_pw", XOR + " - seam_gap")     # B2, B4, C2
-UP0 = "wall_z0 + back_ph + seam_gap"                             # bottom of the upper back row
-for code, x0, x1, z0, z1, cz1 in (("B1", -1, "0 mm", "wall_z0", "wall_z0 + back_ph", "wall_z0 + back_ph"),
-                                  ("B2", "0 mm", 1, "wall_z0", "wall_z0 + back_ph", "wall_z0 + back_ph"),
-                                  ("B3", -1, "0 mm", UP0, "wall_z0 + back_oh", "wall_z0 + back_h"),
-                                  ("B4", "0 mm", 1, UP0, "wall_z0 + back_oh", "wall_z0 + back_h")):
+UP0 = "panel_z0 + back_ph + seam_gap"                            # bottom of the upper back row
+LTOP = "pod_h - outer_t - lin_gap"     # upper linings float 4 mm under the roof frame (D-57; F-004 ruling)
+for code, x0, x1, z0, z1, cz1 in (("B1", -1, "0 mm", "panel_z0", "panel_z0 + back_ph", "panel_z0 + back_ph"),
+                                  ("B2", "0 mm", 1, "panel_z0", "panel_z0 + back_ph", "panel_z0 + back_ph"),
+                                  ("B3", -1, "0 mm", UP0, "panel_z0 + back_oh", LTOP),
+                                  ("B4", "0 mm", 1, UP0, "panel_z0 + back_oh", LTOP)):
     lo = "LOWER" if code in ("B1", "B2") else "UPPER"
     ox0, ox1 = BL_X if x0 == -1 else BR_X
     ix0, ix1 = (XIL if x0 == -1 else x0), (XIR if x1 == 1 else x1)

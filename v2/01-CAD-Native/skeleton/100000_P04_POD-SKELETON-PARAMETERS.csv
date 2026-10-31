@@ -5,12 +5,13 @@ pod_h,2400,2400 mm,decided,D-21 (room floor to roof skin top)
 glide_h,10,10 mm,assumption,layout study inputs.py glide_h
 band_h,100,100 mm,source,layout study B1 list B-BAND 100x40; inputs.py base_h
 band_t,40,40 mm,source,layout study B1 list B-BAND 100x40
-stack_t,81,81 mm,decided,"D-16, D-42 (walls and ceiling)"
-outer_t,43,43 mm,source,layout study B1 final list W-SIDE 43 (ACP 3 + frame 40)
+outer_t,46,46 mm,decided,"PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)"
+cav_gap,4,4 mm,decided,"D-16, D-42: the gap between the outer panel and the lining cassette in the wall and ceiling stack"
 cass_t,34,34 mm,source,layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)
+stack_t,84,outer_t + cav_gap + cass_t,calculation,"D-16, D-42 stack, walls and ceiling: 46 + 4 + 34 = 84 (was 81 with outer_t 43); the inside is 3 mm smaller per wall and in height"
 wall_depth,1495,1495 mm,decided,"PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"
 lin_gap,4,4 mm,assumption,PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)
-seam_gap,2,2 mm,assumption,"PM ruling 2026-10-31 on Mechanical Checker F-001: one gap on every frame-to-frame seam (IF-03 to IF-06), 2 mm until the Joints Engineer's gasket table and the wall sample confirm it (PORON 4701-40 3.18 mm squeezed about 37%)"
+seam_gap,2.26,2.26 mm,decided,"PM ruling 2026-10-31 (Mechanical Checker F-001, F-005): the Joints Engineer's 2.26 mm at all nine site seam types, set by a metal stop (1.5 stop washer + 0.76 rivnut head; joints register section 2.8)"
 floor_t,15,15 mm,source,layout study B1 list B-FLOOR 15
 thresh_h,20,20 mm,decided,D-18
 thresh_d,60,60 mm,source,layout study B1 list B-THRESH 1176 x 60 x 20
@@ -54,11 +55,12 @@ dt_y3,753,753 mm,source,V1-FRONT-FACETS: DT lower facet outer Y -753 at X -1154
 dr_xc,198,198 mm,source,V1-FRONT-FACETS: DR corner facet front X 1052 = 1250 - 198
 dt_xr,1699,1699 mm,source,"V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -1250 + 1699 (PM ruling pass C)"
 dr_yc,672,672 mm,source,V1-FRONT-FACETS: DR corner facet back Y -672
-wall_z0,110,glide_h + band_h,calculation,walls stand on the base band
+wall_z0,110,glide_h + band_h,calculation,base band top (Z 110)
+panel_z0,112.26,wall_z0 + seam_gap,calculation,"walls stand one seam_gap above the band top (Z 112.26; joints register 2.8, IF-01)"
 wall_h,2290,pod_h - wall_z0,calculation,2290 = layout study v2_model wall_h
-side_h,1144,(wall_h - seam_gap) / 2,calculation,"D-23: 2 sheets per side wall with one seam_gap between them (pass D: 1144, was 1145)"
-back_h,2209,wall_h - stack_t,calculation,back linings stand under the ceiling cassette (top Z 2319; v2_model back_h)
-back_oh,2245,pod_h - outer_t - seam_gap - wall_z0,calculation,"PM ruling 2026-10-31 (pass D): the back outer frames run up to the ceiling frame (Z 2357, less the wall-to-ceiling seam_gap), closing the 38 mm slot at the back top edge"
-back_ph,1121.5,(back_oh - seam_gap) / 2,calculation,"D-23: 4 sheets on the back, two equal rows with one seam_gap between them (pass D: 1121.5, was 1104.5); the lower back linings match the lower row, as on the side walls"
-half_pw,1204,(pod_w - 2 * outer_t - 3 * seam_gap) / 2,calculation,"width of each back and ceiling panel: two panels and three seams between the side frames (pass D: 1204, was 1207; Mechanical Checker F-001)"
-inner_w,2338,pod_w - 2 * stack_t,calculation,2338 between the side walls
+side_h,1142.74,(wall_h - 2 * seam_gap) / 2,calculation,"D-23: 2 sheets per side wall; the gap on the band and the horizontal seam (1142.74, was 1145; joints register 2.8)"
+side_l,1492.74,wall_depth - seam_gap,calculation,"side panel length along Y: the seam_gap at the decor's back plate (1492.74; joints register 2.8, IF-07)"
+back_oh,2239.48,pod_h - outer_t - seam_gap - panel_z0,calculation,"PM ruling 2026-10-31 (pass D, F-004): the back outer frames run up to the ceiling frame (Z 2357, less the seam_gap under it), closing the 38 mm slot at the back top edge"
+back_ph,1118.61,(back_oh - seam_gap) / 2,calculation,"D-23: 4 sheets on the back, two equal rows with one seam_gap between them (1120.11, was 1104.5; joints register 2.8); the lower back linings match the lower row, as on the side walls"
+half_pw,1200.61,(pod_w - 2 * outer_t - 3 * seam_gap) / 2,calculation,"width of each back and ceiling panel: two panels and three seams between the side frames (1203.61, was 1207; F-001, joints register 2.8)"
+inner_w,2332,pod_w - 2 * stack_t,calculation,2338 between the side walls

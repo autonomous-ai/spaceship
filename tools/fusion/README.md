@@ -99,7 +99,7 @@ di.isIncludeFavoriteParameters = True
 di.sourceEntities = [skel.rootComponent.xYConstructionPlane]   # parameters only; add a body if you want it
 root.features.deriveFeatures.add(di)
 skel_doc.close(False)
-design.userParameters.add("panel_h", ValueInput.createByString("side_h_Ref"), "mm", "SOURCE: skeleton P04 side_h")
+design.userParameters.add("panel_h", ValueInput.createByString("side_h_Ref"), "mm", "SOURCE: skeleton P04 side_h (1142.74)")
 ```
 
 - Derived parameters arrive as **`<name>_Ref`** (`side_h_Ref`, `wall_depth_Ref`) and work in the part's own expressions; only favorites come across.
