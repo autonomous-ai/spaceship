@@ -243,7 +243,7 @@ def check_parts_lists(root, plists):
                 ref, why = None, ""
             off = [(f, n) for f, n in uses if ref is not None and name_words(n) != name_words(ref)] or uses
             if ref is not None and all(is_master(f) for f, _n in off):
-                owner, fix = "PM", "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py)."
+                owner, fix = "Control", "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py)."
             elif ref is not None:
                 f0 = next(f for f, _n in off if not is_master(f))
                 owner = owner_for(f0, "" if JOINTS_KEYS.match(pn) else pn)
