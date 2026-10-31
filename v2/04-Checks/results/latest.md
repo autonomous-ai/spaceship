@@ -1,6 +1,6 @@
-# Mechanical check run: db69f05 on 2026-11-01
+# Mechanical check run: 34cacc2 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `db69f05`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `34cacc2`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 41** (20 severe, 20 major, 1 minor). Register numbers in brackets.
 
@@ -91,14 +91,14 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 211, "parts_lists": ["v2/03-M
 | 1-06 WALL - PANEL ASSY - SIDE LOWER - RH | 11.163 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-07 WALL - PANEL ASSY - BACK UPPER - LH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
 | 1-08 WALL - PANEL ASSY - BACK UPPER - RH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
-| 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.075 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
-| 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.075 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
+| 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
+| 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-11 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1200.61 x 46 | upright | calculation (CAD); bond assumption |
 | 1-12 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1200.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
-| 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.346 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
-| 1-14 LINING - CASSETTE - SIDE UPPER - RH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
-| 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.346 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
-| 1-16 LINING - CASSETTE - SIDE UPPER - LH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
+| 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.341 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
+| 1-14 LINING - CASSETTE - SIDE UPPER - RH | 9.912 | 1445 x 1092.74 x 34 | upright | calculation (CAD) |
+| 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.341 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
+| 1-16 LINING - CASSETTE - SIDE UPPER - LH | 9.912 | 1445 x 1092.74 x 34 | upright | calculation (CAD) |
 | 1-17 LINING - CASSETTE - BACK LOWER - LH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
 | 1-18 LINING - CASSETTE - BACK LOWER - RH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
 | 1-19 LINING - CASSETTE - BACK UPPER - LH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |

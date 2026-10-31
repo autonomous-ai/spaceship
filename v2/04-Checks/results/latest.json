@@ -1,5 +1,5 @@
 {
- "rev": "db69f05",
+ "rev": "34cacc2",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -761,26 +761,26 @@
   {
    "id": "1-09",
    "name": "WALL - PANEL ASSY - SIDE UPPER - LH",
-   "kg": 11.075,
+   "kg": 11.294,
    "dims": [
     1492.74,
     1142.74,
     46.0
    ],
    "ships_as": "upright",
-   "status": "calculation; fill provisional"
+   "status": "calculation (CAD); fill provisional"
   },
   {
    "id": "1-10",
    "name": "WALL - PANEL ASSY - SIDE UPPER - RH",
-   "kg": 11.075,
+   "kg": 11.294,
    "dims": [
     1492.74,
     1142.74,
     46.0
    ],
    "ships_as": "upright",
-   "status": "calculation; fill provisional"
+   "status": "calculation (CAD); fill provisional"
   },
   {
    "id": "1-11",
@@ -809,7 +809,7 @@
   {
    "id": "1-13",
    "name": "LINING - CASSETTE - SIDE LOWER - RH",
-   "kg": 10.346,
+   "kg": 10.341,
    "dims": [
     1445.0,
     1142.74,
@@ -821,19 +821,19 @@
   {
    "id": "1-14",
    "name": "LINING - CASSETTE - SIDE UPPER - RH",
-   "kg": 10.047,
+   "kg": 9.912,
    "dims": [
     1445.0,
     1092.74,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-15",
    "name": "LINING - CASSETTE - SIDE LOWER - LH",
-   "kg": 10.346,
+   "kg": 10.341,
    "dims": [
     1445.0,
     1142.74,
@@ -845,14 +845,14 @@
   {
    "id": "1-16",
    "name": "LINING - CASSETTE - SIDE UPPER - LH",
-   "kg": 10.047,
+   "kg": 9.912,
    "dims": [
     1445.0,
     1092.74,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-17",
