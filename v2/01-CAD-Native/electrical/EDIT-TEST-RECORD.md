@@ -10,6 +10,10 @@ Guideline section 4.4: the native file must follow its parameters. `edit_test_el
 python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/edit_test_electrical.py --label "ELECTRICAL Engineer"
 ```
 
+## Run 2026-10-31 about 21:39 UTC (export of the 21:38 rebuild, same held session): PASS
+
+The same four edits on the 40-body model (the crossing below B4-CASS's lip, the plain B2-CASS cut-out, the front plate): every body 0.0000 mm against the offline model after each edit and after each revert, timeline 0 unhealthy throughout. The copy was closed without saving.
+
 ## Run 2026-10-31 about 20:56 UTC (export of the 20:55 rebuild, same Fusion run): PASS
 
 | Edit | Timeline | Bodies against the model | Reverted |
