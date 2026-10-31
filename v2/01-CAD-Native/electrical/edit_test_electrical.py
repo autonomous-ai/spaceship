@@ -88,8 +88,12 @@ def run(_context):
     ok = True
     try:
         design = adsk.fusion.Design.cast(copy.products.itemByProductType("DesignProductType"))
-        if design.rootComponent.partNumber != "710000":
-            raise RuntimeError("the copy is not 710000 ELECTRICAL")
+        # an imported copy's root takes the new document's number, so check the components instead
+        pns = {c.partNumber for c in design.allComponents}
+        want = {pn for _k, pn, _n, _vn, _kind in M.COMPONENTS}
+        if not want <= pns:
+            raise RuntimeError("the copy is not 710000 ELECTRICAL: components %s missing" % sorted(want - pns))
+        print("copy: root %r, the %d ELECTRICAL components found" % (design.rootComponent.partNumber, len(want)))
         ok &= check(design, {}, "as exported")
         for label, edits in EDITS:
             before = {n: design.userParameters.itemByName(n).expression for n in edits}

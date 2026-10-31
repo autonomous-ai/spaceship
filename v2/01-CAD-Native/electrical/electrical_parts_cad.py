@@ -619,6 +619,15 @@ def run(_context):
     if bad:
         raise RuntimeError("parts must be among %s, not %s" % (sorted(PARTS), bad))
     app = adsk.core.Application.get()
+    # ELECTRICAL's own route design, left open when the edit test after its rebuild failed (2026-10-31
+    # 19:2x, runner: not saved or closed); its saved version is in the cloud. Close it, so it can't keep
+    # a skeleton copy loaded for other runs. Only that name; nothing of anyone else's.
+    for i in range(app.documents.count - 1, -1, -1):
+        d = app.documents.item(i)
+        if d.name.split(" v")[0] == "710000_P01_ELECTRICAL_CAD":
+            print("closing ELECTRICAL's left-open route design %s (unsaved changes: %s; saved version kept)"
+                  % (d.name, d.isModified))
+            d.close(False)
     failed = []
     for key in keys:
         try:
