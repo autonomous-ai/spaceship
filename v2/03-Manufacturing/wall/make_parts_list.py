@@ -215,8 +215,11 @@ def panel_rows(rep):
                     qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
                     tolerance="per the tabulated skin drawing (D-89)", mass_each_kg=sm, mass_total_kg=sm,
                     mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
-                    source="CAD", note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
-                                        if back else "blank and fold line in the skin DXF")))
+                    source="CAD" + ("; holes ELECTRICAL P01 (PR #64)" if "el_inlet_x" in prm else ""),
+                    note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
+                          if back else "blank and fold line in the skin DXF") + (
+                        "; two Ø%g holes for ELECTRICAL's mains inlet and LAN feed-through, in the DXF" % prm["el_inlet_d"]
+                        if "el_inlet_x" in prm else "")))
     fl = round(sum(b["mass_kg"] for b in fill["bodies"]), 3)
     pieces = Counter(tuple(sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)[:2])
                      for b in fill["bodies"])
@@ -229,7 +232,8 @@ def panel_rows(rep):
                     tolerance="±2 on length and width, thickness as supplied (assumption: knife-cut PET batt)",
                     mass_each_kg=fl, mass_total_kg=fl, mass_status="calculation: CAD at the design's fill density",
                     status="DRAFT", source="CAD; 24 kg/m3 PM ruling 2026-10-31 (T02 confirms, else 32)",
-                    note="friction fit in the bays"))
+                    note="friction fit in the bays" + ("; the first bay left out for ELECTRICAL's power unit (to the first "
+                                                       "stud), sleeve and connectors" if "el_cut_x0" in prm else "")))
     rows += hardware_rows(frame, comps, back, lower, prm)
     made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
     rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
@@ -328,6 +332,12 @@ def cassette_rows(rep):
     pn = rep["document"].split("_")[0]
     back = pn.startswith("5102")
     lower = "LOWER" in tray["name"]
+    # ELECTRICAL's features (el_ parameters in the design; ELECTRICAL P01, PR #64)
+    el = {q["name"] for q in rep.get("parameters", []) if q["name"].startswith("el_")}
+    tray_el = ("; ELECTRICAL's power unit cut-out (304 x 268, plain), the corner slot and the joint's bushing hole, "
+               "all in the flat blank" if "el_cut_x0" in el else
+               "; ELECTRICAL's light feed bushing hole in the bottom return, in the flat blank" if "el_lt_x" in el else "")
+    felt_el = bool(el & {"el_fs_y0", "el_call_y", "el_cut_x0", "el_shelf_d"})
     name_en, name_vi = root_names(root, tray, lambda n: n.replace(" - TRAY - ", " - CASSETTE - "),
                                   lambda n: n.replace("Khay thép lót", "Cassette lót") + " (khay thép + tấm tiêu âm)")
     length = round(max(tb["box"][3] - tb["box"][0], tb["box"][4] - tb["box"][1]), 2)
@@ -343,15 +353,19 @@ def cassette_rows(rep):
                     qty=1, unit="pc", size_mm=size_of(tb["box"]), tolerance="per the tabulated tray drawing (D-89)",
                     mass_each_kg=tb["mass_kg"], mass_total_kg=tb["mass_kg"],
                     mass_status="calculation: CAD at 7850 kg/m3", status="DRAFT",
-                    source="CAD; 0.5 confirmed (D-37); lips PM ruling 2026-10-31",
-                    note="34 mm returns turned in as 12 mm lips that hold the felt; flat blank in the DXF"))
+                    source="CAD; 0.5 confirmed (D-37); lips PM ruling 2026-10-31" + (
+                        "; ELECTRICAL P01 (PR #64)" if tray_el else ""),
+                    note="34 mm returns turned in as 12 mm lips that hold the felt; flat blank in the DXF" + tray_el))
     rows.append(row(level=1, part_number=felt["part_number"], name=en_name(felt), name_vi=vi_name(felt["description"]),
                     kind="MP", material="PET felt 9 mm Dark Gray, the factory's felt (D-31; plan VT03-PET)",
-                    process="knife or die cut, a plain rectangle; no drawing (D-89)", qty=1, unit="pc",
+                    process=("knife or CNC knife cut with ELECTRICAL's openings, as its DXF (a flat part with its DXF "
+                             "needs no drawing, D-89 part 4)" if felt_el else
+                             "knife or die cut, a plain rectangle; no drawing (D-89)"), qty=1, unit="pc",
                     size_mm=size_of(fb["box"]), tolerance="±1 on length and width (assumption: die or knife cut)",
                     mass_each_kg=fb["mass_kg"], mass_total_kg=fb["mass_kg"],
                     mass_status="calculation: CAD at 1.8 kg/m2 (Polyx Board 9 data, HW-SEL A3); the factory felt unverified",
-                    status="DRAFT", source="CAD", note="held by the tray's lips over the 24 mm air gap (settles H09)"))
+                    status="DRAFT", source="CAD" + ("; openings ELECTRICAL P01 (PR #64)" if felt_el else ""),
+                    note="held by the tray's lips over the 24 mm air gap (settles H09)"))
     rows += [
         hw_row("518001", len(clips["bodies"]), "pc", "zones reserved on the panel frame's first and last studs; "
                "8.3 kg rated in shear each (register J-LIN-01)"),

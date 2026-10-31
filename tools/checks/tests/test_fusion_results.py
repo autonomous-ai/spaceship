@@ -158,3 +158,43 @@ def test_door_swing_a_seal_it_only_touches_is_not_a_collision():
     wall = {"angle_deg": 63.5, "moving": "361001 FRONT - DOOR LEAF", "hits": "350002 FRONT - DECOR BLOCK - DL", "mm3": 12.0}
     fs = rf.findings_from(swing([seal], wall), "assembly")
     assert len(fs) == 1 and "63.5 degrees" in fs[0].message
+
+
+def test_d104_an_envelope_may_overlap_the_part_it_clamps_in_its_own_file_only():
+    import csv
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    with open(os.path.join(root, "v2/04-Checks/config/clash-allow.csv"), newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    door = "360001_P01_FRONT-DOOR-UNIT_CAD:1 / "
+    own = {"a": door + "361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+           "b": door + "368102 FRONT - DOOR STRIKE - ENVELOPE:1 / Body1", "mm3": 11948.6}
+    assert rf._allowed(own, rows) == "ENVELOPE-ON-ITS-PART"
+    other = dict(own, a="350004_P01_FRONT-DECOR-BLOCK-DT_CAD:1 / 351401 FRONT - DT - SKIN:1 / Body1")
+    assert rf._allowed(other, rows) is None                    # a clash with another file's part still counts
+    named = dict(own, b=door + "368102 FRONT - DOOR STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1")
+    assert rf._allowed(named, rows) is None                    # without ENVELOPE in its name it is a clash
+
+
+def test_d104_a_skeleton_panel_envelope_is_not_a_hardware_stand_in():
+    import csv
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    with open(os.path.join(root, "v2/04-Checks/config/clash-allow.csv"), newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    skel = "100000_P04_POD-SKELETON_CAD:1 / "
+    c = {"a": skel + "350000 FRONT:1 / DR ENVELOPE:1 / Body1", "b": skel + "110000 BASE:1 / BAND-R ENVELOPE:1 / Body1",
+         "mm3": 14393.5}
+    assert rf._allowed(c, rows) is None                        # F-006's kind of clash still counts
+
+
+def test_a_screw_in_a_base_keys_tapped_hole_is_its_thread_not_a_clash():
+    import csv
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    with open(os.path.join(root, "v2/04-Checks/config/clash-allow.csv"), newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    base = "110000_P01_BASE_CAD:1 / "
+    c = {"a": base + "111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+         "b": base + "838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:1 / Body1", "mm3": 90.7}
+    assert rf._allowed(c, rows) == "SCREW-IN-TAPPED-KEY"
+    assert rf._allowed(dict(c, mm3=900.0), rows) is None       # far more than a thread's overlap
+    wall = dict(c, a=base + "111101 BASE - BAND TUBE - SIDE - LH:1 / Body1")
+    assert rf._allowed(wall, rows) is None                     # a screw into the band tube isn't a tapped key

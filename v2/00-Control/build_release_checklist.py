@@ -345,20 +345,23 @@ def dxf_other_layers(text):
 
 def flat_lacks(rows):
     """D-89 (4): what the best row lacks for a flat part cut from sheet to go without a drawing; None when no row
-    has the number. The process must name the cut (laser, waterjet or router) and no bend, fold, groove, lap,
-    machining, drilling, tapping, welding or bonding; the row gives material, thickness (a thickness column, a
-    size with three dimensions, or "N mm" in the material), finish, and an ISO 2768 general tolerance."""
+    has the number. The process (a process or type column) must name the cut (laser, waterjet or router), and
+    neither it nor the row's note may name a bend, fold, groove, lap, machining, drilling, tapping, welding or
+    bonding: a bonded part shows its bond area and surface prep on its drawing (PM, 2026-11-01). The row gives
+    material, thickness (a thickness column, a size with three dimensions, or "N mm" in the material), finish,
+    and an ISO 2768 general tolerance."""
     best = None
     for cells, _path in rows:
         def has(pattern):
             return [v for k, v in cells.items() if re.search(pattern, k, re.I) and v]
-        process = " ".join(has(r"process"))
+        process = " ".join(has(r"process|^type$"))
+        worked = " ".join([process] + has(r"^note"))
         material = " ".join(has(r"material|grade"))
         sizes = has(r"size|dimension|length|width|thick|^[lwt]_?mm$")
         thick = any(re.search(r"\d", v) for v in has(r"thick|^t_?mm$")) or any(
             len(re.findall(r"\d+(?:\.\d+)?", v)) >= 3 and re.search(r"[x×]", v, re.I) for v in sizes) or bool(
             re.search(r"\d+(?:\.\d+)?\s*mm\b", material))
-        not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(process)})
+        not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(worked)})
         lacks = [n for n, ok in (
             ("metal or ACP sheet (D-99, D-100)", bool(METAL.search(material) or ACP.search(material))),
             ("a cut by laser, waterjet or router in its process", bool(SHEET_CUT.search(process))),
@@ -473,7 +476,7 @@ def state_of(gaps, screen):
     return "open: " + ", ".join(gaps)
 
 
-def files_only(by_pn, parts, files, labels, screen):
+def files_only(by_pn, parts, files, labels, screen, chars=()):
     """Made parts found in the folders whose number no parts list carries: no BOM row."""
     listed = {r["part_number"] for r in parts}
     out = []
@@ -483,10 +486,12 @@ def files_only(by_pn, parts, files, labels, screen):
         some = next(p for ps in kinds.values() for p in ps)
         team = next((FOLDER_TEAM[s] for s in some.split("/") if s in FOLDER_TEAM), "other")
         names = {re.sub(FILE_RE, r"\3", p.rsplit("/", 1)[-1]) for ps in kinds.values() for p in ps}
+        ids = [i for i, pats in chars if any(p.fullmatch(pn) for p in pats)]
         gaps = ["BOM row"] + [k for k, n in (("CAD", "CAD"), ("STEP", "STEP"), ("drawing", "DWG")) if not kinds.get(n)]
+        gaps += [] if ids else ["FAI"]
         out.append({"part_number": pn, "name": sorted(names)[0].replace("-", " "), "team": team, "bom_row": False,
                     "cad": bool(kinds.get("CAD")), "step": bool(kinds.get("STEP")), "flat": "yes" if kinds.get("DXF") else "—",
-                    "dwg": bool(kinds.get("DWG")), "mass_ok": False, "finish_ok": "—", "fai": [], "gaps": gaps,
+                    "dwg": bool(kinds.get("DWG")), "mass_ok": False, "finish_ok": "—", "fai": ids, "gaps": gaps,
                     "state": state_of(gaps, screen),
                     "from": {labels.get(files[p], "this tree" if files[p] == "working tree" else files[p])
                              for ps in kinds.values() for p in ps}})
@@ -656,7 +661,7 @@ def main(argv=None):
 
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
                                screen, bom, labels, cut_texts, tab_cover, dxf_texts)
-    made += files_only(by_pn, parts, files, labels, screen)
+    made += files_only(by_pn, parts, files, labels, screen, fai[0])
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
     Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date), encoding="utf-8")

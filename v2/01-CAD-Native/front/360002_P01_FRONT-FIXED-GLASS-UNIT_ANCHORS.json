@@ -1,0 +1,86 @@
+{
+ "document": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD",
+ "f3d": "v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT_CAD.f3d",
+ "anchors": [
+  {
+   "component": "361003 FRONT - FIXED GLASS - 4+4 LAMINATED",
+   "index": 2,
+   "expression": "fg_vis_zb - fg_bite"
+  },
+  {
+   "component": "361003 FRONT - FIXED GLASS - 4+4 LAMINATED",
+   "index": 5,
+   "expression": "fg_vis_zt + fg_bite"
+  },
+  {
+   "component": "361003 FRONT - FIXED GLASS - 4+4 LAMINATED",
+   "index": 1,
+   "expression": "-glass_y - glass_t / 2"
+  },
+  {
+   "component": "361003 FRONT - FIXED GLASS - 4+4 LAMINATED",
+   "index": 4,
+   "expression": "-glass_y + glass_t / 2"
+  },
+  {
+   "component": "361003 FRONT - FIXED GLASS - 4+4 LAMINATED",
+   "index": 3,
+   "expression": "(fg_rc + fg_bite - fg_rnz * (fg_vis_zb - fg_bite)) / fg_rnx"
+  },
+  {
+   "component": "368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571",
+   "index": 2,
+   "expression": "fg_vis_zb - gu_prof_d"
+  },
+  {
+   "component": "368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571",
+   "index": 5,
+   "expression": "fg_vis_zt + gu_prof_d"
+  },
+  {
+   "component": "368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571",
+   "index": 1,
+   "expression": "-glass_y - gu_prof_w / 2"
+  },
+  {
+   "component": "368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571",
+   "index": 4,
+   "expression": "-glass_y + gu_prof_w / 2"
+  },
+  {
+   "component": "368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571",
+   "index": 3,
+   "expression": "(fg_rc + gu_prof_d - fg_rnz * (fg_vis_zb - gu_prof_d)) / fg_rnx"
+  },
+  {
+   "component": "368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735",
+   "index": 2,
+   "expression": "fg_vis_zb - gu_in_d"
+  },
+  {
+   "component": "368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735",
+   "index": 5,
+   "expression": "fg_vis_zt + gu_in_d"
+  },
+  {
+   "component": "368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735",
+   "index": 1,
+   "expression": "-glass_y - gu_w / 2"
+  },
+  {
+   "component": "368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735",
+   "index": 4,
+   "expression": "-glass_y + gu_w / 2"
+  },
+  {
+   "component": "368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD",
+   "index": 2,
+   "expression": "fg_vis_zb"
+  },
+  {
+   "component": "368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD",
+   "index": 5,
+   "expression": "fg_vis_zt"
+  }
+ ]
+}

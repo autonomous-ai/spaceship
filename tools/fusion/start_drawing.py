@@ -167,44 +167,12 @@ def run(_c):
     print("queued Create Drawing for %%s: %%s" %% (doc.name, ok))
 '''
 
-# Lists a folder entry by entry, inside Fusion; put in front of the scripts
-# that need it (a plain string, no % templating). An entry Fusion can't read
-# (seen after a restart, 2026-10-31) is looked at again, 4 times 2 s apart.
-# One that stays unreadable blocks only when it could be the drawing being
-# made (PM ruling 2026-10-31): its name can't be read and it isn't known to be
-# another kind of file. Returns (names, unknown, others): unknown entries
-# could be anything; others can't be read by name but aren't drawings.
-LIST_FOLDER = '''import adsk, time
-
-def _list_folder(folder):
-    for attempt in range(4):
-        names, unknown, others = [], [], []
-        for i in range(folder.dataFiles.count):
-            try:
-                f = folder.dataFiles.item(i)
-            except Exception as e:
-                unknown.append("entry %d (%s)" % (i, str(e).strip().splitlines()[0][:100] if str(e).strip() else type(e).__name__))
-                continue
-            try:
-                names.append(f.name)
-                continue
-            except Exception:
-                pass
-            try:
-                ext = (f.fileExtension or "").lower()
-            except Exception:
-                ext = ""
-            if ext and ext != "f2d":
-                others.append("entry %d (a .%s file, name unreadable)" % (i, ext))
-            else:
-                unknown.append("entry %d (%s, name unreadable)" % (i, ("a .%s file" % ext) if ext else "kind unknown"))
-        if not unknown and not others:
-            break
-        if attempt < 3:
-            adsk.doEvents()
-            time.sleep(2)
-    return names, unknown, others
-'''
+# The shared folder check (tools/fusion/fusion_folder.py), put in front of the
+# scripts that look at the folder: it reads the folder again for up to a minute
+# while an entry can't be read, and an entry that stays unreadable blocks only
+# when it could be the drawing being made (PM ruling 2026-10-31). One copy for
+# the runner, this command and every team script.
+LIST_FOLDER = rs.FOLDER_HELPER_SRC + "\n"
 
 SAVE_SCRIPT = '''import adsk.core, adsk.drawing, time
 def run(_c):
@@ -219,13 +187,8 @@ def run(_c):
     folder = proj.rootFolder
     for part in %(subfolders)r:
         folder = folder.dataFolders.itemByName(part)
-    names, unknown, others = _list_folder(folder)
-    if unknown:
-        raise RuntimeError("not saved: %%s can't be read and could be %%s" %% ("; ".join(unknown), %(name)r))
-    if others:
-        print("warning: %%s; not drawings, so not %%s" %% ("; ".join(others), %(name)r))
-    if %(name)r in names:
-        raise RuntimeError("%%s is already in the folder" %% %(name)r)
+    for w in safe_to_create(folder, %(name)r, "f2d"):       # raises if it isn't safe
+        print("warning: %%s" %% w)
     sheet = doc.drawing.sheets.item(0)
     want = getattr(adsk.drawing.SheetSizes, %(sheet)r + "ISOSheetSize")
     sheet.sheetSize = want
@@ -263,9 +226,10 @@ def run(_c):
     folder = proj.rootFolder
     for part in %(subfolders)r:
         folder = folder.dataFolders.itemByName(part)
-    names, unknown, others = _list_folder(folder)
-    print("FOLDER_JSON=" + json.dumps({"unknown": unknown, "others": others,
-                                       "has_design": %(design)r in names, "has_drawing": %(name)r in names}))
+    files, unknown, others = read_folder(folder, stop_when=lambda fs, u, o: %(name)r in fs or not could_be(u, o, "f2d"))
+    print("FOLDER_JSON=" + json.dumps({"unknown": could_be(unknown, others, "f2d"),
+                                       "others": cannot_be(others, "f2d"),
+                                       "has_design": %(design)r in files, "has_drawing": %(name)r in files}))
 '''
 
 

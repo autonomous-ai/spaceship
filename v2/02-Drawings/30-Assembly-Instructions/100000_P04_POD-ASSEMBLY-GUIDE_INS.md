@@ -11,7 +11,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 1. **Two people, one 5 mm hex key, 21 steps: about 127 minutes (4.2 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **88 bolts of the joints register, each captive in its part: 76 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
-3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.8 kg) are carried by both people with 2 suction lifters.
+3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
 5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
 
@@ -32,7 +32,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## 2. Safety
 
-- **Glass.** The door unit is 48.6 kg and the fixed glass 28.8 kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
+- **Glass.** The door unit is 48.6 kg and the fixed glass 28.7 kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
 - **Weight.** Every other part is 20 kg or less (D-03); parts longer than 1.6 m or heavier than 15 kg are carried by both people.
 - **Height.** One person on a step stool at a time, the other hands up. The ceiling halves, the soffit, its cartridge, DT and the ceiling linings are lifted by both people.
 - **Hands.** Keep fingers off the joint faces while a panel is lowered onto its spigots and while a bolt pulls a seam shut.
@@ -64,7 +64,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 2](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-02_IMG.png)
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.3 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.2 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.2 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.2 kg), **2-15** BASE - SMALL PARTS CARTON (1.6 kg).
+- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.2 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.0 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.0 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.1 kg), **2-15** BASE - SMALL PARTS CARTON (2.0 kg).
 - **Fasteners:** the 6 corner keys hook in, no site bolts (J-BASE-02).
 - **Person A:** Sets the back band on its glides, then the left and right side bands, each hooked onto its corner key, then the front pieces: front-left under DL, the piece under the fixed glass, and the mesh intake piece under DR with DR's support and closing plate. Every piece locates itself on its key.
 - **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).
@@ -75,7 +75,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 3](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-01** BASE - FLOOR PANEL - F1 (8.7 kg), **1-02** BASE - FLOOR PANEL - F2 (8.7 kg), **2-08** BASE - DOOR THRESHOLD - 13 MM (1.2 kg).
+- **Parts:** **1-01** BASE - FLOOR PANEL - F1 (8.2 kg), **1-02** BASE - FLOOR PANEL - F2 (8.2 kg), **2-08** BASE - DOOR THRESHOLD - 13 MM (1.2 kg).
 - **Fasteners:** none.
 - **Person A:** Lays floor panel F1 (left), its foam already bonded underneath (D-87), lapped edge up.
 - **Person B:** Lays F2 (right) into F1's lap, then sets the 13 mm threshold across the door opening, level with the floor.
@@ -86,7 +86,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 4](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (11.6 kg).
+- **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (11.7 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1. B2 carries the power unit, wired and tested at the factory (11.6 kg).
 - **Person B:** From inside, through the fill pockets: first the 3 pins of the B1-B2 closing seam, snug only; then B1's and B2's 4 base bolts each (pins first: joints register 2.7, R-J11).
@@ -119,7 +119,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 7](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-07_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-09** WALL - PANEL ASSY - SIDE UPPER - LH (11.1 kg), **1-10** WALL - PANEL ASSY - SIDE UPPER - RH (11.1 kg).
+- **Parts:** **1-09** WALL - PANEL ASSY - SIDE UPPER - LH (11.3 kg), **1-10** WALL - PANEL ASSY - SIDE UPPER - RH (11.3 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the 5 mm hex key.
 - **Person A:** Lifts L2 onto L1's spigots against B3's edge, then R2 onto R1 against B4.
 - **Person B:** Drives the 4 horizontal-seam bolts each (L1-L2, R1-R2), then the 3 upper back-corner bolts each side (L2-B3, R2-B4) FINGER-TIGHT only.
@@ -152,7 +152,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 10](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.8 kg), **2-03** FRONT - DECOR BLOCK - DR (18.6 kg).
+- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK - DR (18.6 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DR stands on its spigots on its support, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
 - **Person A:** Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.
 - **Person B:** Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.
@@ -183,7 +183,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 13. Electrics, first fix (power off)
 
 - **Time:** about 1 min for 2 people.
-- **Parts:** **2-13** ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS (2.1 kg).
+- **Parts:** **2-13** ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS (2.2 kg).
 - **Fasteners:** none.
 - **Person A:** Plugs the factory-tested harness together at each panel seam and runs the plug-in feeds for the light shelf and the hub to their ends (D-87).
 - **Person B:** Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).
@@ -194,7 +194,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 14](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png)
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (10.0 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (10.0 kg), **1-17** LINING - CASSETTE - BACK LOWER - LH (8.4 kg), **1-18** LINING - CASSETTE - BACK LOWER - RH (8.4 kg), **1-19** LINING - CASSETTE - BACK UPPER - LH (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - RH (8.4 kg).
+- **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-17** LINING - CASSETTE - BACK LOWER - LH (8.4 kg), **1-18** LINING - CASSETTE - BACK LOWER - RH (8.4 kg), **1-19** LINING - CASSETTE - BACK UPPER - LH (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - RH (8.4 kg).
 - **Fasteners:** none.
 - **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips.
 - **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
@@ -241,7 +241,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 19. Light shelf
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-14** INTERIOR - LIGHT SHELF (2.0 kg).
+- **Parts:** **2-14** INTERIOR - LIGHT SHELF (1.6 kg).
 - **Fasteners:** the light shelf's fixings (INTERIOR design, not designed yet).
 - **Person A:** Fits the light shelf trims along the tops of the side and back walls (INTERIOR design).
 - **Person B:** Plugs the light shelf feed.
@@ -268,7 +268,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 22. Work-wall ledge and screen mount, after the clock
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-16** INTERIOR - LEDGE AND SCREEN MOUNT CARTON (2.4 kg).
+- **Parts:** **2-16** INTERIOR - LEDGE AND SCREEN MOUNT CARTON (2.9 kg).
 - **Fasteners:** their fixings to the work wall's mounting points (INTERIOR design, not designed yet).
 - **Person A:** Holds the 1000 mm ledge on the right (work) wall at its mounting points.
 - **Person B:** Fixes the ledge and the screen mount (INTERIOR design, D-70).

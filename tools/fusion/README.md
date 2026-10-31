@@ -14,6 +14,8 @@ Found on 2026-10-31 with Fusion 2706.1.17. Proof part: `v2/01-CAD-Native/proof/`
 | `test_start_drawing.py` | Offline tests of the drawing-start sequence against a fake Fusion: `python3 tools/fusion/test_start_drawing.py`. |
 | `check_api.py` | **Checks a script's Fusion API names offline, before it costs a run in the queue**: misspelled attributes and methods, wrong argument counts, unknown classes. Reads this Mac's own Fusion API files (Fusion need not run), adds the members that work but aren't in Fusion's code-completion files (for example `Drawing.sheets`), and type-checks with mypy. See "Check API names offline" below. |
 | `test_check_api.py` | Its tests; the end-to-end ones run only with a python that has mypy. |
+| `fusion_folder.py` | **The shared "safe to create" check** for a Fusion cloud folder: `from fusion_folder import safe_to_create` in any script run through `run_script.py`. It reads the folder again for up to a minute while an entry can't be read, then refuses only when an entry that still can't be read could be the new file. The runner's `--doc-new` step and `start_drawing.py` use the same file. See "Making a new file in the team folder" below. |
+| `test_fusion_folder.py` | Its tests, and that the runner and the drawing start send this same text. |
 | `step_check.py` | Reads a STEP file without Fusion: declared length unit, products, solids and the bounding box in mm. `--expect xmin,ymin,zmin,xmax,ymax,zmax` checks it. Never edits the file. |
 | `pdf_clear_field.py` | Removes a title block field's value (default "Created by", which Fusion fills with the account holder's name) from an exported drawing PDF, then re-reads it to prove the text is gone. Needs PyMuPDF. |
 
@@ -22,6 +24,28 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/proof/wall_panel_frame.py --
 python3 tools/fusion/run_script.py v2/01-CAD-Native/proof/edit_test.py
 python3 tools/fusion/step_check.py v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step --expect=0,-20,0,1500,3,1150
 ```
+
+## Making a new file in the team folder
+
+After a Fusion restart, and while files upload, a folder entry can't be read for a while: `DataFiles.item(i)` raises, or the name can't be read. Skipping it could make a second file with the same name; refusing on any unreadable entry blocks every team on one bad file. Use the one shared check before making a file (PM ruling 2026-10-31: no team keeps a stricter copy):
+
+```python
+from fusion_folder import safe_to_create
+
+def run(_context):
+    ...
+    for w in safe_to_create(folder, "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD"):   # raises if it isn't safe
+        print("warning:", w)
+    doc.saveAs("210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD", folder, "...", "")
+```
+
+- It reads the folder again every 5 s for up to a minute while an entry can't be read. Then it refuses only when an entry that still can't be read **could be the new file**: its name can't be read, and its kind isn't known or is the same (`.f3d` for a design, `safe_to_create(folder, name, "f2d")` for a drawing). An unreadable entry of another kind only gives a warning. A name already there is refused.
+- `read_folder(folder)` gives `(files, unknown, others)` to scripts that need the listing itself.
+- `run_script.py` gives every script this module fresh on each run, from the runner's own checkout, so a fix here reaches every team at once (it is never a stale copy left in Fusion). The runner's `--doc`/`--doc-new` step and `start_drawing.py` put the same file's text in front of their own scripts.
+
+## Each run imports its own files
+
+Fusion keeps Python modules loaded between runs. A module another run imported would be used again by any later run that imports the same name: live 2026-10-31, CEILING built from AIR's older module. So before each script, `run_script.py` drops every cached module whose file is in **any worktree of this repo** (`git worktree list`, main checkout included) or under `/tmp` (agents' scratch worktrees). That includes the run's own modules, so every run imports its files fresh and a team's own edits show on its next run. It prints which ones it dropped. `__main__`, Fusion's and Python's own modules are never touched, and an odd module that can't be read is skipped, never failing the run.
 
 ## Check API names offline
 

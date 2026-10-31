@@ -143,7 +143,10 @@ class MadeParts(unittest.TestCase):
     def test_a_part_with_files_but_no_bom_row(self):
         file_map = files("211102_P01_WALL-PANEL-FRAME-RH_CAD.f3d", "211102_P01_WALL-PANEL-FRAME-RH_STEP.step")
         extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked")
-        self.assertEqual([(e["part_number"], e["team"], e["gaps"]) for e in extra], [("211102", "WALL", ["BOM row", "drawing"])])
+        self.assertEqual([(e["part_number"], e["team"], e["gaps"]) for e in extra], [("211102", "WALL", ["BOM row", "drawing", "FAI"])])
+        chars = rc.fai_plan(PLAN, BOM)[0]  # K-J01 covers 2111xx
+        extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked", chars)
+        self.assertEqual((extra[0]["fai"], extra[0]["gaps"]), (["K-J01"], ["BOM row", "drawing"]))
 
 
 class BoughtParts(unittest.TestCase):
@@ -501,6 +504,25 @@ class NoFaiFlag(unittest.TestCase):
             if cells and (cells[0].startswith("K-") or cells[0].startswith("F-")):
                 self.assertIn("Sample", hdr, cells[0])
                 self.assertTrue(cells[hdr.index("Sample")], cells[0])
+
+
+class FlatPartColumns(unittest.TestCase):
+    """FRONT's lists give the cut in a type column; a note that says bonded keeps the drawing (PM, 2026-11-01)."""
+    LIST = "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv"
+    HEAD = "part_number,name,type,material,finish,note"
+
+    def lacks(self, line):
+        return rc.flat_lacks(rc.cut_rows({self.LIST: self.HEAD + "\n" + line + "\n"})["351302"])
+
+    def test_the_type_column_names_the_cut(self):
+        line = ('351302,FRONT - DECOR BACK PLATE - DR,"made (laser-cut sheet, no drawing: D-89 part 4)",'
+                '"aluminium EN AW-5754-H22 sheet 2.0 mm, general tolerance ISO 2768-m",mill finish,"blind-riveted to the frame"')
+        self.assertEqual(self.lacks(line), [])
+
+    def test_a_bonded_part_keeps_its_drawing(self):
+        line = ('351302,FRONT - DECOR BACK PLATE - DT,"made (CNC-routed ACP, no drawing: D-89 part 4)",'
+                '"ACP 3 mm, general tolerance ISO 2768-m",as supplied,"bonded to the frame"')
+        self.assertEqual(self.lacks(line), ["no bends or machined features (its process names bond)"])
 
 
 class Render(unittest.TestCase):

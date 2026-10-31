@@ -13,3 +13,15 @@ In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a 
 | Reverted | 1348.1 x 148.8 x 2095.5 | 0 | 0 | none | 0.020 |
 
 RESULT: PASS. 31 anchors (leaf, kick strip, seals, hinge, strike and pull spaces against their expressions) follow the three skeleton edits at once and return exactly. An earlier run of this test caught a real fault (a dimension that flipped side across the centre line); every FRONT sketch now measures from a far reference point.
+
+## 360002 FRONT - FIXED GLASS UNIT, P01
+
+In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a copy of the exported f3d opened as a new unsaved document and closed without saving, skeleton P04 v4:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1030.8 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
+| pod_w 2600 mm; fr_dz 12 mm; fix_xk 511 mm; door_xtr 1192 mm | 1121.5 x 15.0 x 2045.0 | 0 | 0 | none | 0.010 |
+| Reverted | 1030.8 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
+
+RESULT: PASS. 16 anchors (pane, U-profile, U-seal and seal half sides against their expressions) follow the four skeleton edits at once, with the bottom channel's screw holes in the model, and return exactly.

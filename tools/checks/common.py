@@ -78,7 +78,7 @@ PATH_OWNERS = [
     ("v2/03-Manufacturing/joints/", "Joints Engineer"), ("v2/05-Engineering/joints/", "Joints Engineer"),
     ("v2/05-Engineering/acoustics-air/", "Air Engineer"), ("v2/05-Engineering/hardware/", "Air Engineer"),
     ("v2/05-Engineering/layout-study/", "Layout Engineer"),
-    ("v2/00-Control/", "PM"), ("v2/04-BOM/", "PM"),
+    ("v2/00-Control/", "Control"), ("v2/04-BOM/", "Control"),     # the control pack keeps these (D-78; the Lead)
     ("v2/01-CAD-Native/", "Fusion Engineer 2"), ("v2/02-Drawings/", "Fusion Engineer 2"),
     ("v2/03-Manufacturing/", "Fusion Engineer 2"), ("tools/fusion/", "Fusion Engineer 2"),
 ]
@@ -264,3 +264,38 @@ def register_names(root):
             if m:
                 out.setdefault(m.group(1), m.group(2).split(" · ")[0].strip())
     return out
+
+
+def name_words(name):
+    """A part name as its words, for comparing names: case, hyphens, brackets and spacing don't count
+    ('BASE - LEVELLING GLIDE - M10 (HOLD)' and 'BASE - LEVELLING GLIDE - M10 - HOLD' are one name)."""
+    return " ".join(re.findall(r"[A-Z0-9Ø±×.,+/°]+", (name or "").upper()))
+
+
+def reserved_spaces(root):
+    """{part number: row} from v2/04-Checks/config/reserved-spaces.csv: bodies that only hold space for a part
+    another team designs later (the Lead's rulings, like D-92's ELECTRICAL routes). No drawing and no seam rules
+    for them; each is listed open under its designer until it's designed."""
+    out = {}
+    # D-105: a row a team types "reserved air space" is one too, as the master BOM and the checklist read it
+    for f in walk_files(root, "v2/03-Manufacturing", exts=(".csv",)):
+        try:
+            rows = read_csv(f)
+        except (UnicodeDecodeError, OSError):
+            continue
+        for r in rows:
+            pn = (r.get("part_number") or "").strip()
+            kinds = " ".join((v or "") for k, v in r.items() if isinstance(k, str) and isinstance(v, str)
+                             and re.search(r"type|kind", k, re.I))
+            if PN_RE.match(pn) and re.search(r"\breserved air space\b", kinds, re.I):
+                out.setdefault(pn, {"part_number": pn, "owner": "AIR", "ruling": "D-105",
+                                    "why": "typed reserved air space in %s" % rel(root, f)})
+    p = os.path.join(root, CHECKS_DIR, "config", "reserved-spaces.csv")
+    if os.path.exists(p):
+        out.update({r["part_number"].strip(): r for r in read_csv(p) if (r.get("part_number") or "").strip()})
+    return out
+
+
+def reserved_label(label, reserved):
+    """Does a body's label name one of the reserved part numbers?"""
+    return any(re.search(r"(?<!\d)%s(?!\d)" % pn, label or "") for pn in reserved)

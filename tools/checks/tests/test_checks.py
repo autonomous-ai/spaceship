@@ -905,3 +905,149 @@ def test_d93_to_d99(tmp_path, monkeypatch):
                         "name": "368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10"}}
     fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, prods) if f.rule == "name-mismatch"]
     assert len(fs) == 1 and "'FRONT - DOOR STRIKE'" in fs[0].message and "the CAD" in fs[0].fix
+
+
+def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_path):
+    from common import name_words
+    assert name_words("BASE - LEVELLING GLIDE - M10 (HOLD)") == name_words("BASE - LEVELLING GLIDE - M10 - HOLD")
+    assert name_words("FRONT - DOOR STRIKE") != name_words("FRONT - DOOR LOCK")
+    j = tmp_path / "v2/05-Engineering/joints"
+    j.mkdir(parents=True)
+    (j / "joints-register.md").write_text("| H-06 | **118001** | BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP · x | bought |\n")
+    row = {"part_number": "118001", "name": "BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP", "name_vi": "x",
+           "material": "silicone", "finish": "none", "qty": "1", "mass_kg": "0.1", "status": "HOLD", "source": "register"}
+    (tmp_path / "v2/03-Manufacturing/base").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv", [row])
+    (tmp_path / "v2/04-BOM").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [dict(row, name="BASE - BASE SEAL - GAP 10 ±5")])
+    fs = [f for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
+          if f.rule == "duplicate-number"]
+    assert len(fs) == 1 and fs[0].owner == "Control" and "master BOM" in fs[0].fix
+
+
+def test_a_master_bom_row_copied_from_a_team_list_is_checked_there_whatever_its_source_suffix():
+    row = {"_raw": {"row_type": "part", "source_file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv @ working tree"}}
+    assert c_parts.is_placeholder(row)
+    assert c_parts.is_placeholder({"_raw": {"row_type": "hardware (register only)", "source_file": "x @ main"}})
+    assert not c_parts.is_placeholder({"_raw": {"row_type": "part", "source_file": "v2/00-Control/assembly-tree.md"}})
+
+
+def test_the_master_boms_generated_views_are_not_parts_lists(tmp_path):
+    d = tmp_path / "v2/04-BOM"
+    d.mkdir(parents=True)
+    row = {"part_number": "118002", "name": "BASE - LEVELLING GLIDE - M10 - HOLD", "qty": "7"}
+    for name in ("100000_P01_POD-MASTER_BOM.csv", "100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+                 "100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv"):
+        _write_csv(d / name, [row])
+    assert [os.path.basename(p) for p, _r in c_parts.find_parts_lists(str(tmp_path))] == ["100000_P01_POD-MASTER_BOM.csv"]
+
+
+def test_reserved_air_spaces_are_listed_under_air_not_as_missing_drawings(tmp_path):
+    # the Lead's ruling on FRONT's DR air transitions, as D-92's reserved spaces
+    (tmp_path / "v2/04-Checks/config").mkdir(parents=True)
+    (tmp_path / "v2/04-Checks/config/reserved-spaces.csv").write_text(
+        "part_number,owner,ruling,why\n351403,AIR,as D-92,DR's lower air transition\n")
+    names = {"351403": "FRONT - AIR TRANSITION - LOWER - DR", "351404": "FRONT - SUPPLY FAN BOX - DR"}
+    fs = {f.subject: f for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert fs["351403"].rule == "reserved-space" and fs["351403"].owner == "AIR"
+    assert fs["351404"].rule == "no-drawing"
+    from common import reserved_spaces, reserved_label
+    res = reserved_spaces(str(tmp_path))
+    assert reserved_label("350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351403 FRONT - AIR TRANSITION:1 / Body1", res)
+    assert not reserved_label("3514030 X", res)
+
+
+def test_a_reserved_air_space_row_asks_for_no_mass_material_or_finish(tmp_path):
+    (tmp_path / "v2/04-Checks/config").mkdir(parents=True)
+    (tmp_path / "v2/04-Checks/config/reserved-spaces.csv").write_text("part_number,owner,ruling,why\n351402,AIR,x,riser space\n")
+    d = tmp_path / "v2/03-Manufacturing/front"
+    d.mkdir(parents=True)
+    _write_csv(d / "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+               [{"part_number": "351402", "name": "FRONT - AIR INTAKE RISER - DR", "type": "reserved air space", "qty": "1"},
+                {"part_number": "351306", "name": "FRONT - DR - FRAME", "type": "made", "qty": "1"}])
+    subjects = {f.subject.split(" ")[0] for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))}
+    assert "351402" not in subjects and "351306" in subjects
+
+
+def test_d105_a_row_typed_reserved_air_space_is_reserved_without_a_config_line(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/front"
+    d.mkdir(parents=True)
+    _write_csv(d / "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+               [{"part_number": "351406", "name": "FRONT - AIR SPACE - DR", "type": "reserved air space", "qty": "1"}])
+    from common import reserved_spaces
+    r = reserved_spaces(str(tmp_path))
+    assert r["351406"]["owner"] == "AIR" and r["351406"]["ruling"] == "D-105"
+
+
+def test_a_duplicate_name_goes_to_the_list_that_is_off(tmp_path):
+    row = {"name_vi": "x", "material": "6061-T6", "finish": "mill", "qty": "1", "mass_kg": "0.1", "status": "DRAFT",
+           "source": "CAD"}
+    for folder, name in (("base", "110000_P01_BASE_BOM.csv"), ("joints", "V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv")):
+        (tmp_path / "v2/03-Manufacturing" / folder).mkdir(parents=True)
+    _write_csv(tmp_path / "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+               [dict(row, part_number="111211", name="BASE - CORNER KEY - BACK - COMMON"),
+                dict(row, part_number="111501", name="BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM")])
+    _write_csv(tmp_path / "v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv",
+               [dict(row, part_number="111211", name="BASE - CORNER KEY - SQUARE - COMMON")])
+    (tmp_path / "v2/04-BOM").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+               [dict(row, part_number="111501", name="BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM")])
+    fs = {f.subject: f for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
+          if f.rule == "duplicate-number"}
+    assert fs["111211"].owner == "BASE" and "SQUARE" in fs["111211"].fix      # the key's name is the Joints Engineer's
+    assert fs["111501"].owner == "Control" and "Rebuild the master BOM" in fs["111501"].fix
+
+
+def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
+    # the owner's rule 9 is for sheet parts: a 60 mm access hole near a felt's edge can't tear out
+    def plate(name):
+        x0, x1, y0, y1 = -73.5, 500.0, -73.5, 500.0
+        rim = (sf.Frame(), 30.0, (30.0, 0, 0), (30.0, 0, 0), True)
+        face = sf.Face(1, "plane", (0, 0, 0), (0, 0, 1), None, True, [], [rim],
+                       [((x0, y0, 0), (x1, y0, 0)), ((x1, y0, 0), (x1, y1, 0)), ((x1, y1, 0), (x0, y1, 0)),
+                        ((x0, y1, 0), (x0, y0, 0))])
+        so = sf.Solid(1, name)
+        so.faces, so.holes, so.bends = [face], [sf.Hole(1, (0, 0, 0), (0, 0, 1), 60.0, 9.0, [])], []
+        return so
+
+    class FakeStep:
+        def __init__(self, pn, name):
+            self.pn, self.name, self.so = pn, name, plate(name)
+
+        def instances(self):
+            return [{"solid": 1, "part_number": self.pn, "name": "%s %s" % (self.pn, self.name), "path": [], "frame": sf.Frame()}]
+
+        def solid(self, _sid):
+            return self.so
+    for pn, name, flagged in (("511302", "LINING - FELT - SIDE LOWER - RH", False),
+                              ("511102", "LINING - TRAY - SIDE LOWER - RH", True)):
+        monkeypatch.setattr(c_geometry, "load_step", lambda _p, s=FakeStep(pn, name): s)
+        fs = [f for f in c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, {}, hole_rules=[],
+                                                         edge_exceptions={}) if f.rule == "edge-distance"]
+        assert bool(fs) == flagged, name
+
+
+def test_the_assembled_shell_is_checked_face_by_face_once_its_parts_are_on_main():
+    lo = _B("210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_CAD:1 / 210102 WALL - PANEL ASSY - SIDE LOWER - RH:1 / SKIN",
+            (1204.0, -642.7, 112.3, 1250.0, 850.0, 1255.0), "211302")
+    up = _B("210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_CAD:1 / 210104 WALL - PANEL ASSY - SIDE UPPER - RH:1 / SKIN",
+            (1204.0, -642.7, 1257.3, 1250.0, 850.0, 2400.0), "211304")
+    dr = _B("350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350003 FRONT - DECOR BLOCK ASSY - DR:1 / BODY",
+            (950.0, -850.0, 110.0, 1250.0, -645.0, 2400.0), "351301")
+    assert "right" not in c_geometry.shell_faces_ready("assembly", [lo, up])        # DR not on main yet
+    assert "right" in c_geometry.shell_faces_ready("assembly", [lo, up, dr])
+    assert "back" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr])      # no back walls yet
+    # an L of thin strips (no band below, no decor at the front edge) reports as its two strips
+    gaps = [g for g in c_geometry.shell_gaps([lo, up]) if g["zone"] == "right"]
+    assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 5 for g in gaps)
+
+def test_a_step_whose_top_carries_another_number_is_reported(tmp_path):
+    import shutil, run_checks
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    # the bolt fixture's root part number is CHECK-FIXTURE: named for 210101, it should say so
+    shutil.copy(os.path.join(HERE, "fixtures", "bolt-joints.step"), d / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step")
+    out = run_checks.run(str(tmp_path), "test")
+    fs = out[0] if isinstance(out, tuple) else out["findings"] if isinstance(out, dict) else out
+    keys = {(f.rule, f.subject) if hasattr(f, "rule") else (f["rule"], f["subject"]) for f in fs}
+    assert ("top-part-number", "210101") in keys

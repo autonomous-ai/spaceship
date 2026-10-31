@@ -405,6 +405,25 @@ REGISTER_ITEMS = {
 }
 
 
+def split_material(text):
+    """'aluminium ..., finish: mill finish ...' -> (material, finish), as the master BOM splits it."""
+    m = re.search(r"[,;]\s*finish(?:ed)?\b[:\s]*(.+)$", text or "", re.I)
+    return ((text or "")[:m.start()].strip(), m.group(1).strip()) if m else ((text or "").strip(), "")
+
+
+def parts_list_row(row):
+    """The CSV row in the column order of PARTS_LIST_COLUMNS: the process is the type's words for a made part
+    (D-89 part 4 reads it), and the finish gets its own column."""
+    pn, name, vn, typ, mat, qty, mass, mstat, status, src, note, maker, sku = row
+    material, finish = split_material(mat)
+    process = typ if str(typ).lower().startswith("made") else ""
+    return [pn, name, vn, typ, process, material, finish, qty, mass, mstat, status, src, note, maker, sku]
+
+
+PARTS_LIST_COLUMNS = ["part_number", "name", "name_vi", "type", "process", "material", "finish", "qty", "unit_mass_kg",
+                      "mass_status", "status", "source", "note", "maker", "sku"]
+
+
 def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
     """rows: [(pn, name, vn, qty, type, material, mass, mass_status, status, source, note)];
     mass "cad" = the component's mass from the model; the root row's mass is the sum of the others.
@@ -438,9 +457,8 @@ def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
             r[7] = "calculation (sum of the rows below)"
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["part_number", "name", "name_vi", "type", "material", "qty", "unit_mass_kg", "mass_status",
-                    "status", "source", "note", "maker", "sku"])
-        w.writerows(out)
+        w.writerow(PARTS_LIST_COLUMNS)
+        w.writerows(parts_list_row(r) for r in out)
     return total
 
 
