@@ -280,7 +280,7 @@ def sheet3(doc, rows, harness, v):
         c = b["code"]
         if c == "PU":
             s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), MAINS, 0.4)
-            lab(X(bx[0]), Z(bx[2]) + 3.2, "power unit X 95-395, Z 870-1130", MAINS)
+            lab(X(bx[0]), Z(bx[2]) + 3.2, "power unit X %.0f-%.0f, Z %.0f-%.0f" % (v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"]), MAINS)
         elif c in ("INLET", "LAN-FT"):
             s.p.draw_circle(s.pt(X((bx[0] + bx[3]) / 2), Z((bx[2] + bx[5]) / 2)), (bx[3] - bx[0]) / 2 * k * MMPT,
                             color=MAINS if c == "INLET" else SIG, width=0.3 * MMPT)
@@ -292,8 +292,8 @@ def sheet3(doc, rows, harness, v):
             s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), GREY, 0.3)
     lab(X(-1240), Z(313) + 0.8, "inlet X 120 Z 313, LAN Z 375 (v1's spot, off the X 0 closing seam)", MAINS)
     lab(X(400), Z(1100) - 2.0, "trunk Z 1100 to the corner", SELV)
-    lab(X(370), Z(1800), "light feed up B2, B4 (X 355)", SELV)
-    lab(X(370), Z(2290) + 3.0, "shelf feed X 355 Z 2250", SELV)
+    lab(X(370), Z(1800), "light feed up B2, B4 (X %.0f)" % v["lt_x"], SELV)
+    lab(X(370), Z(2290) + 3.0, "shelf feed X %.0f Z %.0f" % (v["lt_x"], v["shelf_z"]), SELV)
     # ---- view B: right wall from inside, looking toward +X (front to the right)
     Yv = lambda y: ox_b + (850 - y) * k  # noqa: E731
     lab(ox_b, oy - 2400 * k - 9, "VIEW B - RIGHT WALL FROM INSIDE, looking toward +X   (1:20)", INK, 2.3, True)
@@ -337,7 +337,7 @@ def sheet3(doc, rows, harness, v):
         ("7  Room cord into the inlet, RCBO on, press TEST: PASS (D-87).", False),
         ("", False),
         ("KEEP-OUTS FOR OTHER TEAMS", True),
-        ("WALL: B2 bay X 95-395, Z 870-1130 for the unit; sleeve X 140-160,", False),
+        ("WALL: B2 bay X %.0f-%.0f, Z %.0f-%.0f for the unit; sleeve X %.0f-%.0f," % (v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], v["sl_x"] - 10, v["sl_x"] + 10), False),
         ("Z 301-870; the holes and slots in B2-CASS, B4-CASS, R1-CASS, R2-CASS.", False),
         ("INTERIOR: ledge and screen fixings 15 mm off the trunk band Z 1085-1115.", False),
         ("CEILING: column chase 24 x 24 (X 1140-1164, Y -310 to -286), hub zone,", False),

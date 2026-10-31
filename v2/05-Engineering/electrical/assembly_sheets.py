@@ -114,27 +114,51 @@ def formboard(s, rows, x, y, width=390):
     return y + 7 + len(rows) * 6.5
 
 
+def plate_params():
+    """The front plate's own build parameters (electrical_parts_cad.py PARTS["front"]), evaluated the way Fusion
+    does, without Fusion (a stub stands in for the two adsk names that file reads when it loads)."""
+    import sys
+    import types
+    if "adsk" not in sys.modules:
+        adsk = types.ModuleType("adsk")
+        core, fusion = types.ModuleType("adsk.core"), types.ModuleType("adsk.fusion")
+        fusion.DimensionOrientations = types.SimpleNamespace(HorizontalDimensionOrientation=0, VerticalDimensionOrientation=1)
+        adsk.core, adsk.fusion = core, fusion
+        sys.modules.update({"adsk": adsk, "adsk.core": core, "adsk.fusion": fusion})
+    import electrical_parts_cad as C
+    vals = {}
+    for n, expr, _u, _s, _src in C.PARTS["front"][4]:
+        vals[n] = M.evaluate(expr, dict(vals))
+    return vals
+
+
 def sheet_power_unit(doc, v):
     s = Sheet(doc)
+    p = plate_params()
     pn = "710001"
     k = 1.0 / 3.0
     ox, oy = 20.0, 108.0
     W, Hh = v["pu_w"], v["pu_h"]
     s.text(ox, 16, "FACE OF THE POWER UNIT, seen from inside the pod (looking toward +Y), 1:3", 2.2, INK, bold=True)
     s.rect(ox, oy - Hh * k, ox + W * k, oy, INK, 0.5)
-    for xc in (80.0, 190.0):
-        s.rect(ox + (xc - 36.5) * k, oy - (195 + 36.5) * k, ox + (xc + 36.5) * k, oy - (195 - 36.5) * k, INK, 0.3)
-    s.text(ox + (80 - 30) * k, oy - 240 * k, "SOCKET (86, HOLD)", 1.8, MAINS)
-    s.text(ox + (190 - 28) * k, oy - 240 * k, "LAN 2-PORT (86, HOLD)", 1.8, SIG)
-    s.rect(ox + (265 - 18.5) * k, oy - (195 + 22.5) * k, ox + (265 + 18.5) * k, oy - (195 - 22.5) * k, MAINS, 0.3)
-    s.text(ox + 238 * k, oy - 223 * k, "RCBO", 1.8, MAINS)
-    for zc in (25.0, 130.0):
-        for i in range(5):
-            xc = W / 2 + (i - 2) * 50
-            s.rect(ox + (xc - 20) * k, oy - (zc + 2) * k, ox + (xc + 20) * k, oy - (zc - 2) * k, GREY, 0.2)
-    for cx, cy in ((15, 5), (W - 15, 5), (15, Hh - 5), (W - 15, Hh - 5)):
-        s.p.draw_circle(s.pt(ox + cx * k, oy - cy * k), 2.25 * k * MMPT, color=INK, width=0.2 * MMPT)
-    s.text(ox, oy + 4.5, "300 x 260 (X 95-395, Z 870-1130 in the pod); 4 x M4 at 15 / 5 from the edges", 1.9, INK)
+    ha, bz = p["box_a"] / 2, p["box_zc"]
+    for xc in (p["box_x1"], p["box_x2"]):
+        s.rect(ox + (xc - ha) * k, oy - (bz + ha) * k, ox + (xc + ha) * k, oy - (bz - ha) * k, INK, 0.3)
+    s.text(ox + (p["box_x1"] - 30) * k, oy - (bz + ha + 9) * k, "SOCKET (86, HOLD)", 1.8, MAINS)
+    s.text(ox + (p["box_x2"] - 28) * k, oy - (bz + ha + 9) * k, "LAN 2-PORT (86, HOLD)", 1.8, SIG)
+    dw, dh = p["din_w"] / 2, p["din_h"] / 2
+    s.rect(ox + (p["din_x"] - dw) * k, oy - (p["din_zc"] + dh) * k, ox + (p["din_x"] + dw) * k, oy - (p["din_zc"] - dh) * k, MAINS, 0.3)
+    s.text(ox + (p["din_x"] - 27) * k, oy - (p["din_zc"] + dh + 5) * k, "RCBO", 1.8, MAINS)
+    for zc in (p["vent_z1"], p["vent_z2"]):
+        for i in range(int(p["vent_n"])):
+            xc = W / 2 + (i - (p["vent_n"] - 1) / 2) * p["vent_p"]
+            s.rect(ox + (xc - p["vent_l"] / 2) * k, oy - (zc + p["vent_w"] / 2) * k, ox + (xc + p["vent_l"] / 2) * k,
+                   oy - (zc - p["vent_w"] / 2) * k, GREY, 0.2)
+    sx_, sy_ = p["screw_x"], p["screw_y"]
+    for cx, cy in ((sx_, sy_), (W - sx_, sy_), (sx_, Hh - sy_), (W - sx_, Hh - sy_)):
+        s.p.draw_circle(s.pt(ox + cx * k, oy - cy * k), p["screw_d"] / 2 * k * MMPT, color=INK, width=0.2 * MMPT)
+    s.text(ox, oy + 4.5, "%.0f x %.0f (X %.0f-%.0f, Z %.0f-%.0f in the pod); 4 x M4 at %.0f / %.0f from the edges" % (
+        W, Hh, v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], sx_, sy_), 1.9, INK)
     # depth section
     sx, sy = 200.0, 22.0
     s.text(sx, 16, "DEPTH SECTION THROUGH B2, 2:1 (toward the skin to the right)", 2.2, INK, bold=True)

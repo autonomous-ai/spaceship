@@ -186,19 +186,19 @@ def harnesses(v):
     up_side_a = 1.051 * 6.0 / 12.0        # one side-wall uplight run at full (calculation)
     right_a = (DOWN_W + CALL_W) / 12.0 + up_side_a   # the right-wall jumper: down-light, call light, right uplight
     add(id="W11a", harness_pn="710011", segment="SHELF", function="light shelf feed lead",
-        frm="P6 felt exit (X 355, Z 2250)", to="back uplight feed point", route="FX-SHELF, the shelf's channel",
+        frm="P6 felt exit (X %.0f, Z %.0f)" % (v["lt_x"], v["shelf_z"]), to="back uplight feed point", route="FX-SHELF, the shelf's channel",
         circuit="PS2 lights", conductors="+12 V x 2, UP-, DOWN-, CALL-, spare", cable="6 x 18 AWG, Class 2", area_mm2=AWG18,
         length_mm=300, length_status="assumption", end_a="Mini-Fit Jr 6-way plug (mates W10c)",
         end_b="strip feeds: back uplight both ways; jumpers W11b, W11c", grommets="FX-SHELF", amps_max=LIGHT_A, note="")
     add(id="W11b", harness_pn="710011", segment="SHELF", function="jumper to the left wall uplight",
         frm="back feed point", to="left wall uplight, back end", route="the shelf's channel",
         circuit="PS2 lights", conductors="+12 V, UP-", cable="2 x 18 AWG, Class 2", area_mm2=AWG18,
-        length_mm=v["lt_x"] + v["x_rf"] + 100, length_status="calculation (X 355 to X -1166) + assumption (100)",
+        length_mm=v["lt_x"] + v["x_rf"] + 100, length_status="calculation (X %.0f to X -%.0f) + assumption (100)" % (v["lt_x"], v["x_rf"]),
         end_a="strip feed connector", end_b="strip feed connector", grommets="", amps_max=up_side_a, note="")
     add(id="W11c", harness_pn="710011", segment="SHELF", function="jumper to the right wall: uplight, down-light, call drop",
         frm="back feed point", to="right wall shelf: uplight, down-light rows, call drop at Y -209.5", route="the shelf's channel",
         circuit="PS2 lights", conductors="+12 V, UP-, DOWN-, CALL-", cable="4 x 18 AWG, Class 2", area_mm2=AWG18,
-        length_mm=v["x_rf"] - v["lt_x"] + 100 + 300, length_status="calculation (X 355 to X 1166 and along the right wall) + assumption",
+        length_mm=v["x_rf"] - v["lt_x"] + 100 + 300, length_status="calculation (X %.0f to X %.0f and along the right wall) + assumption" % (v["lt_x"], v["x_rf"]),
         end_a="strip feed connector", end_b="strip feed connectors; Mini-Fit Jr 2-way receptacle for the call drop (X6)",
         grommets="", amps_max=right_a,
         note="every strip run is 1.5 m or less, inside the maker's 3.5 m per feed; down-light rows fed in parallel")
@@ -332,14 +332,14 @@ AL = "aluminium 5052-H32"
 # ---- power unit 710001: made parts
 part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "MP", "710001", 1,
      AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.469, "CAD (Fusion volume 175,106 mm3 x 2.68 g/cm3, 711001 P01 design)",
-     size="300 x 260 x 72, 25 mm side flanges", process="sheet metal: laser cut, folded",
+     size="296 x 260 x 72, 25 mm side flanges", process="sheet metal: laser cut, folded",
      status="DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data)",
      source="711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD (electrical_parts_cad.py)",
-     note="folded tray 300 x 260 x 72 with 22 mm front lips; two Ø19.1 lead exits (right), Ø19.1 light feed exit (top), "
+     note="folded tray 296 x 260 x 72 with 22 mm front lips; two Ø19.1 lead exits (right), Ø19.1 light feed exit (top), "
           "Ø25 sleeve entry (bottom), 4 M4 clinch nut holes in the lips")
 part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
      AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.257,
-     "CAD (Fusion volume 96,020 mm3 x 2.68 g/cm3, 711002 P01 design)", size="300 x 260",
+     "CAD (Fusion volume 96,020 mm3 x 2.68 g/cm3, 711002 P01 design)", size="296 x 260",
      process="laser cut from 1.5 mm sheet as a flat plate; anodised", status="DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04)",
      source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD; DXF 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_DXF.dxf (no drawing, D-89 part 4)",
      note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
