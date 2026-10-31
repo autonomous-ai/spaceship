@@ -11,7 +11,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 1. **Two people, one 5 mm hex key, 21 steps: about 127 minutes (4.2 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **86 bolts of the joints register, each captive in its part: 76 × 838001 (M6 × 16) and 10 × 838002 (M6 × 25) pins**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
-3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (49.1 kg) and the fixed glass (29.6 kg) are carried by both people with 2 suction lifters.
+3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (49.1 kg) and the fixed glass (28.8 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
 5. **Pictures:** the skeleton P04 renders below show where each part goes. Step pictures from the Fusion model follow as each part's CAD lands; Fusion runs wait while the Mac's screen is locked (PM, 2026-10-31).
 
@@ -32,7 +32,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## 2. Safety
 
-- **Glass.** The door unit is 49.1 kg and the fixed glass 29.6 kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
+- **Glass.** The door unit is 49.1 kg and the fixed glass 28.8 kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
 - **Weight.** Every other part is 20 kg or less (D-03); parts longer than 1.6 m or heavier than 15 kg are carried by both people.
 - **Height.** One person on a step stool at a time, the other hands up. The ceiling halves, the soffit, its cartridge, DT and the ceiling linings are lifted by both people.
 - **Hands.** Keep fingers off the joint faces while a panel is lowered onto its spigots and while a bolt pulls a seam shut.
@@ -62,11 +62,11 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 2. Base band
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.3 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.2 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.2 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.0 kg), **2-15** BASE - SMALL PARTS CARTON (1.6 kg).
+- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.3 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.2 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.2 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.2 kg), **2-15** BASE - SMALL PARTS CARTON (1.6 kg).
 - **Fasteners:** the 6 corner keys hook in, no site bolts (J-BASE-02).
 - **Person A:** Sets the back band on its glides, then the left and right side bands, each hooked onto its corner key, then the front pieces: front-left under DL, the piece under the fixed glass, and the mesh intake piece under DR with DR's support and closing plate. Every piece locates itself on its key.
 - **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).
-- **Check before the next step:** Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the glass channel in the front-right piece is clean.
+- **Check before the next step:** Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.
 
 ### Step 3. Floor and threshold
 
@@ -134,9 +134,9 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 10. Fixed glass, then the right decor block DR
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (29.6 kg), **2-03** FRONT - DECOR BLOCK - DR (18.1 kg).
+- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.8 kg), **2-03** FRONT - DECOR BLOCK - DR (18.6 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DR stands on its spigots on its support, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
-- **Person A:** Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and sets its bottom edge into the band's U-channel on its setting blocks; then holds it upright with both lifters.
+- **Person A:** Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.
 - **Person B:** Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.
 - **Check before the next step:** Glass seated in all three channels so far, its free edge plumb; DR on its stops. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).
 
@@ -152,7 +152,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 12. Top decor block DT, from above
 
 - **Time:** about 3 min for 2 people.
-- **Parts:** **2-12** FRONT - DECOR BLOCK - DT (7.0 kg).
+- **Parts:** **2-12** FRONT - DECOR BLOCK - DT (7.1 kg).
 - **Fasteners:** 4 × 838001 M6 × 16 (J-FRONT-03). Tool: the 5 mm hex key.
 - **Person A:** From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.
 - **Person B:** Drives DT's 4 bolts to the ceiling (J-FRONT-03).
