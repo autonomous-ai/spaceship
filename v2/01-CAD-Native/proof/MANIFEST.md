@@ -12,7 +12,7 @@ Last updated 2026-10-31. Built by `wall_panel_frame.py` in Fusion 2706.1.17 on M
 | Native CAD, same revision | `v2/01-CAD-Native/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD.f3d` | Exported from Fusion cloud file Default Project / FocusPod v2 / V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH, version 1 |
 | STEP, same revision | `v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step` | AP214. STEP length unit: cm, declared in the file (DECIDED by the PM 2026-10-31: keep Fusion's STEP as written, no conversion). Re-read in Fusion and with `tools/fusion/step_check.py`: box 0..1500 x -20..3 x 0..1150 mm, same as the model |
 | Edit test | `v2/01-CAD-Native/proof/edit_test.py`, record in `edit-test-record.md` | PASS on a copy (CAD check, not a physical test) |
-| Drawing | `v2/02-Drawings/proof/` | See the drawing record there |
+| Drawing | `v2/02-Drawings/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG.pdf` (A2, ISO first-angle, 1:5) | Native Fusion drawing from the design's version 1, made by `make_drawing.py` after one OK and one Cancel click; checks and open items in `DRAWING-RECORD.md` |
 
 ## Coordinate system and datums
 
