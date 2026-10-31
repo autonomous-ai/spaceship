@@ -113,15 +113,6 @@ def skeleton_newest(app: "adsk.core.Application"):
     return d, True, newest
 
 
-def skeleton_ref(doc: "adsk.core.Document"):
-    refs = doc.documentReferences
-    for i in range(refs.count):
-        r = refs.item(i)
-        if r.dataFile is not None and r.dataFile.name == SKELETON:
-            return r
-    raise RuntimeError("%s doesn't reference %s" % (doc.name, SKELETON))
-
-
 def rebuild_keeping_the_derive(doc: "adsk.core.Document", design: "adsk.fusion.Design"):
     """Rebuild in place: the derive stays, everything after it goes, and its reference
     moves to the skeleton's newest version. The skeleton is not opened a second time
@@ -141,15 +132,22 @@ def rebuild_keeping_the_derive(doc: "adsk.core.Document", design: "adsk.fusion.D
     if p:
         p.deleteMe()
     print("rebuild: kept the derive, removed %d timeline items after it" % (n - tl.count))
-    ref = skeleton_ref(doc)
+    # the derive's own reference: the document's reference list didn't show it
+    # (live 2026-10-31: "doesn't reference 100000_P04_POD-SKELETON_CAD")
+    ref = derive.documentReference
+    if ref is None or ref.dataFile is None or ref.dataFile.name != SKELETON:
+        raise RuntimeError("the derive doesn't point at %s" % SKELETON)
     if ref.isOutOfDate:
         print("updated the references to the newest skeleton: %s" % doc.updateAllReferences())
         adsk.doEvents()
-        ref = skeleton_ref(doc)
+        ref = derive.documentReference
     newest = ref.dataFile.latestVersionNumber
     if ref.isOutOfDate or ref.version != newest:
         raise RuntimeError("the derive shows skeleton version %s, not the newest %s" % (ref.version, newest))
-    skel = adsk.fusion.Design.cast(ref.referencedDocument.products.itemByProductType("DesignProductType"))
+    skel = derive.sourceDesign           # the design the derive reads, for the body count
+    if skel is None:
+        rd = ref.referencedDocument
+        skel = adsk.fusion.Design.cast(rd.products.itemByProductType("DesignProductType")) if rd else None
     return derive, ref.version, skel
 
 
@@ -180,12 +178,12 @@ def run(_context):
         if opened:
             skel_doc.close(False)
     derive.name = "DERIVE - SKELETON P04 V%s (ALL BODIES, PARAMETERS)" % version
-    skel_bodies = sum(c.bRepBodies.count for c in skel.allComponents)
+    skel_bodies = sum(c.bRepBodies.count for c in skel.allComponents) if skel else None
     adsk.doEvents()
     bodies = [b for c in design.allComponents for b in c.bRepBodies]
-    print("derived from skeleton version %s: %d bodies (the skeleton has %d), %d parameters" % (
+    print("derived from skeleton version %s: %d bodies (the skeleton has %s), %d parameters" % (
         version, len(bodies), skel_bodies, design.allParameters.count))
-    if len(bodies) != skel_bodies:
+    if skel_bodies is not None and len(bodies) != skel_bodies:
         raise RuntimeError("derived %d bodies, but the skeleton has %d" % (len(bodies), skel_bodies))
 
     # 2. the section plane, placed by a parameter built from the skeleton's own
