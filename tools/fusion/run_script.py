@@ -677,7 +677,20 @@ def run(_context):
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:
             app.data.activeProject = proj
-            doc = app.documents.open(files[0], True)
+            # a version saved a moment ago may not open yet (live 2026-10-31, 4 s after
+            # a save and close: "Missing key for PIMOpenWorkflowTracker"): try again
+            # every 10 s for up to a minute, then give the error
+            for attempt in range(7):
+                try:
+                    doc = app.documents.open(files[0], True)
+                    break
+                except Exception as e:
+                    if attempt == 6:
+                        raise
+                    print("run_script: opening %%r failed (%%s); trying again in 10 s" %% (
+                        name, str(e).strip().splitlines()[-1][:120] if str(e).strip() else type(e).__name__))
+                    adsk.doEvents()
+                    time.sleep(10)
             if doc is None:
                 raise RuntimeError("could not open %%r from %%s" %% (name, ARGS["folder"]))
             doc.activate()

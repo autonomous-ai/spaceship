@@ -21,7 +21,7 @@ import os
 import re
 from collections import defaultdict
 
-from common import (register_names, name_words, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
+from common import (register_names, name_words, reserved_spaces, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
                     parse_file_name, is_soft)
 
 ALIASES = {
@@ -123,11 +123,14 @@ def find_parts_lists(root):
 
 def check_parts_lists(root, plists):
     fs = []
+    reserved = reserved_spaces(root)    # reserved air spaces: no mass, no drawing, no BOM count (the Lead's ruling)
     seen = defaultdict(list)     # pn -> [(file, name)]
     for p, rows in plists:
         r = rel(root, p)
         for i, row in enumerate(rows, start=2):
             pn = row["part_number"]
+            if pn in reserved:
+                continue            # only holds space; listed open under its designer by the drawing check
             name = row["name"]
             owner = owner_for(r, pn)
             subj = "%s (%s line %d)" % (pn or "no part number", os.path.basename(r), i)

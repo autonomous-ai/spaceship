@@ -345,20 +345,23 @@ def dxf_other_layers(text):
 
 def flat_lacks(rows):
     """D-89 (4): what the best row lacks for a flat part cut from sheet to go without a drawing; None when no row
-    has the number. The process must name the cut (laser, waterjet or router) and no bend, fold, groove, lap,
-    machining, drilling, tapping, welding or bonding; the row gives material, thickness (a thickness column, a
-    size with three dimensions, or "N mm" in the material), finish, and an ISO 2768 general tolerance."""
+    has the number. The process (a process or type column) must name the cut (laser, waterjet or router), and
+    neither it nor the row's note may name a bend, fold, groove, lap, machining, drilling, tapping, welding or
+    bonding: a bonded part shows its bond area and surface prep on its drawing (PM, 2026-11-01). The row gives
+    material, thickness (a thickness column, a size with three dimensions, or "N mm" in the material), finish,
+    and an ISO 2768 general tolerance."""
     best = None
     for cells, _path in rows:
         def has(pattern):
             return [v for k, v in cells.items() if re.search(pattern, k, re.I) and v]
-        process = " ".join(has(r"process"))
+        process = " ".join(has(r"process|^type$"))
+        worked = " ".join([process] + has(r"^note"))
         material = " ".join(has(r"material|grade"))
         sizes = has(r"size|dimension|length|width|thick|^[lwt]_?mm$")
         thick = any(re.search(r"\d", v) for v in has(r"thick|^t_?mm$")) or any(
             len(re.findall(r"\d+(?:\.\d+)?", v)) >= 3 and re.search(r"[x×]", v, re.I) for v in sizes) or bool(
             re.search(r"\d+(?:\.\d+)?\s*mm\b", material))
-        not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(process)})
+        not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(worked)})
         lacks = [n for n, ok in (
             ("metal or ACP sheet (D-99, D-100)", bool(METAL.search(material) or ACP.search(material))),
             ("a cut by laser, waterjet or router in its process", bool(SHEET_CUT.search(process))),
