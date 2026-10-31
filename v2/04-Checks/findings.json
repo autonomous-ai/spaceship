@@ -1,5 +1,5 @@
 {
- "next": 17,
+ "next": 27,
  "findings": [
   {
    "check": "C02",
@@ -576,7 +576,7 @@
    },
    "key": "C02|gap-GLASS-TO-GLASS|skeleton GLASS-TO-GLASS",
    "id": "F-014",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-10-31 0cb764f",
    "posted": "Fusion Engineer 2 group 2026-10-31",
@@ -585,8 +585,14 @@
      "date": "2026-10-31",
      "rev": "0cb764f",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "3e23e4b",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
-   ]
+   ],
+   "closed": "2026-11-01 3e23e4b"
   },
   {
    "check": "C06",
@@ -649,6 +655,286 @@
    ],
    "last_seen": "2026-10-31 9881d71",
    "closed": "2026-10-31 6ae0cd3"
+  },
+  {
+   "check": "C07",
+   "rule": "thread-bottoms-out",
+   "subject": "111211 BASE - CORNER KEY - BACK - COMMON: M6 x 16 bolts in holes tapped 12 deep",
+   "severity": "severe",
+   "message": "The joints register's back corner key (J-BASE-02, section 3.11) takes M6 x 16 ISO 4762 bolts (838001) in M6 holes tapped 12 deep. The fixing bolts reach 16 - 1.6 (washer 838004) - 1.5 (band wall) = 12.9 mm into a 12 mm thread, 0.9 mm too far. The hook studs are set with their heads 1.8 mm off the face, so they reach 16 - 1.8 = 14.2 mm into a 12 mm thread, 2.2 mm too far. A stud bottoms at about 4 mm proud, which leaves the side band's 1.5 mm wall about 2.5 mm of play instead of 0.3. The front and inline keys 111212 to 111214 (geometry HOLD-14) use the same bolts. Calculation from the register's own sizes and ISO 4762 / ISO 7093 (source).",
+   "fix": "Thread each hole deeper than its bolt reaches. The end-face holes can be tapped through the 20 mm block: the studs reach 14.2, so they don't come out the back. The bottom holes need at least 15 mm of full thread (the block is 60 tall). Or use a shorter bolt there, if the PM allows a second length (D-63 keeps one bolt).",
+   "file": "v2/05-Engineering/joints/joints-register.md",
+   "owner": "Joints Engineer",
+   "evidence": {
+    "fixing_reach_mm": 12.9,
+    "stud_reach_mm": 14.2,
+    "thread_depth_mm": 12.0
+   },
+   "key": "C07|thread-bottoms-out|111211 BASE - CORNER KEY - BACK - COMMON: M6 x 16 bolts in holes tapped 12 deep",
+   "id": "F-017",
+   "status": "CLOSED",
+   "source": "manual",
+   "found": "2026-11-01 b35fe8f",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b35fe8f",
+     "event": "opened by hand"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "7b9b36f",
+     "event": "set OPEN by hand: PM ruling 2026-11-01 (joints group): end-face holes tapped through, at least 15 mm of thread at the bottom, M6 x 16 stays the one site bolt. Closes when the joints register shows it."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9693aac",
+     "event": "set CLOSED by hand: Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker."
+    }
+   ],
+   "note": "Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker.",
+   "closed": "2026-11-01 9693aac Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker."
+  },
+  {
+   "check": "C03",
+   "rule": "head-floor-clearance",
+   "subject": "111211 BASE - CORNER KEY - BACK - COMMON: bolt heads under the band",
+   "severity": "major",
+   "message": "The back corner key's fixing bolts go in from below (J-BASE-02), so their heads sit under the band's bottom face. An ISO 4762 M6 head is 6 mm tall and its ISO 7093 washer 1.6 mm, so 7.6 mm hangs below the band. The band stands on glides with glide_h 10 mm (skeleton P04, assumption), which leaves 2.4 mm to the floor at the nominal setting. Any glide set lower than about 8.6 mm, or a floor high spot near a corner, puts a head within 1 mm of the floor, where the band can rest on it. The front and inline keys use the same bolts. Calculation from ISO 4762, ISO 7093 and the skeleton (source).",
+   "fix": "Give the heads room: a low-head screw for these bolts (DIN 7984 or ISO 7380, needs a PM ruling because D-63 keeps one bolt), no washer under a flanged head, fixing the key from inside, or a stated minimum glide height with margin in the assembly guide and J-T6.",
+   "file": "v2/05-Engineering/joints/joints-register.md",
+   "owner": "Joints Engineer",
+   "evidence": {
+    "head_below_band_mm": 7.6,
+    "glide_h_mm": 10.0,
+    "clearance_mm": 2.4
+   },
+   "key": "C03|head-floor-clearance|111211 BASE - CORNER KEY - BACK - COMMON: bolt heads under the band",
+   "id": "F-018",
+   "status": "CLOSED",
+   "source": "manual",
+   "found": "2026-11-01 b35fe8f",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b35fe8f",
+     "event": "opened by hand"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "7b9b36f",
+     "event": "set OPEN by hand: PM ruling 2026-11-01 (joints group): the factory-fitted key may use a low-head screw or be fixed from inside; nothing under the band closer than 5 mm to the floor at the lowest glide setting. Closes when the joints register shows it."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9693aac",
+     "event": "set CLOSED by hand: Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker."
+    }
+   ],
+   "note": "Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker.",
+   "closed": "2026-11-01 9693aac Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker."
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210101",
+   "severity": "major",
+   "message": "210101 WALL - PANEL ASSY - SIDE LOWER - LH has no drawing PDF (210101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210101",
+   "id": "F-019",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 bc1798e"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211101",
+   "severity": "severe",
+   "message": "211101 WALL - PANEL FRAME - SIDE LOWER - LH has no drawing PDF (211101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211101",
+   "id": "F-020",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 bc1798e"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211301",
+   "severity": "severe",
+   "message": "211301 WALL - SKIN - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211301",
+   "id": "F-021",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 bc1798e"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211501",
+   "severity": "major",
+   "message": "211501 WALL - CAVITY FILL - SIDE LOWER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211501",
+   "id": "F-022",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 bc1798e"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510101",
+   "severity": "major",
+   "message": "510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510101",
+   "id": "F-023",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 bc1798e"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511101",
+   "severity": "severe",
+   "message": "511101 LINING - TRAY - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511101",
+   "id": "F-024",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 bc1798e"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "831001",
+   "severity": "severe",
+   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS has no drawing PDF (831001_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|831001",
+   "id": "F-025",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 bc1798e"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "831002",
+   "severity": "severe",
+   "message": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL has no drawing PDF (831002_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|831002",
+   "id": "F-026",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   }
  ]
 }

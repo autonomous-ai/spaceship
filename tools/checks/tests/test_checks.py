@@ -8,6 +8,7 @@ skeleton P03 STEP); the rest is built in the test.
 import csv
 import math
 import os
+import re
 import sys
 
 import pytest
@@ -389,7 +390,8 @@ def test_skip_rules_use_whole_words_and_their_own_columns(tmp_path):
 def test_soft_goods_rule_uses_whole_words(tmp_path):
     (tmp_path / "v2/03-Manufacturing/front").mkdir(parents=True)
     with open(tmp_path / "v2/03-Manufacturing/front/cut-list.csv", "w") as fh:
-        fh.write("part_number,name\n351001,x\n351002,x\n351003,x\n351004,x\n")
+        fh.write("part_number,name,size_mm,thickness_mm,material,tolerance\n" +
+                 "".join("%s,x,2000 x 10,3,EPDM 60 Shore A,±0.5\n" % n for n in ("351001", "351002", "351003", "351004")))
     names = {"351001": "FRONT - SEALED GLAZING PROFILE", "351002": "FRONT - TAPERED BLOCK",
              "351003": "FRONT - FILLER PANEL", "351004": "FRONT - DOOR SEAL"}
     plural = {"351005": "FRONT - DOOR SEALS - SET", "351006": "FRONT - GASKETS - KIT"}
@@ -401,9 +403,9 @@ def test_soft_goods_rule_uses_whole_words(tmp_path):
     (tmp_path / "v2/04-Checks/config/policy.csv").write_text("key,value,status_source\nmissing_drawing_severity,major,x\n")
     fs = c_drawings.check_drawings(str(tmp_path), set(names), {}, names)
     assert {f.subject: f.severity for f in fs} == {"351001": "major", "351002": "major", "351003": "major"}
-    # 351004 is a seal: its cut-list line defines it; plurals count too
+    # 351004 is a seal: its full cut-list line defines it (D-89 part 3); plurals count too
     with open(tmp_path / "v2/03-Manufacturing/front/cut-list.csv", "a") as fh:
-        fh.write("351005,x\n351006,x\n")
+        fh.write("351005,x,2000 x 10,3,EPDM,±0.5\n351006,x,500 x 10,2,PORON,±0.3\n")
     assert c_drawings.check_drawings(str(tmp_path), set(plural), {}, plural) == []
 
 
@@ -473,6 +475,25 @@ def test_cad_and_parts_list_names_must_match(tmp_path):
              "211102": {"files": {"a.step"}, "count": 1, "name": "211102 WALL - FRAME - UPPER"}}
     got = {(f.rule, f.subject) for f in c_parts.check_cad_match(str(tmp_path), plists, prods)}
     assert ("name-mismatch", "211102") in got and ("name-mismatch", "211101") not in got
+
+
+def test_parts_list_rows_are_matched_only_against_their_own_teams_cad(tmp_path):
+    # WALL has exported STEP files, BASE hasn't yet; the master BOM lists every team's parts
+    row = {"part_number": "211101", "name": "WALL - PANEL FRAME - SIDE LOWER - LH", "name_vi": "x", "material": "EN AW-6063 T6",
+           "finish": "mill finish", "qty": "1", "mass_kg": "2", "status": "calculation", "source": "CAD"}
+    for folder, rows in (("v2/03-Manufacturing/wall", [row, dict(row, part_number="211301", name="WALL - SKIN - SIDE LOWER - LH")]),
+                         ("v2/03-Manufacturing/base", [dict(row, part_number="111401", name="BASE - FLOOR PANEL - F1")])):
+        (tmp_path / folder).mkdir(parents=True)
+        _write_csv(tmp_path / folder / "parts.csv", rows)
+    (tmp_path / "v2/04-BOM").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+               [dict(row, part_number="100000", name="POD - SPACESHIP"), dict(row, part_number="210000", name="WALL")])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"211101": {"files": {"v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step"},
+                        "count": 1, "name": "211101 WALL - PANEL FRAME - SIDE LOWER - LH"}}
+    got = {(f.rule, f.subject) for f in c_parts.check_cad_match(str(tmp_path), plists, prods)}
+    assert ("bom-not-in-cad", "211301") in got                       # WALL's own list, WALL has STEP files
+    assert not {s for r, s in got if r == "bom-not-in-cad"} & {"111401", "100000", "210000"}
 
 
 def test_bolt_patterns_across_assemblies_must_match():
@@ -559,3 +580,288 @@ def test_shipping_reads_the_packing_list_when_there_is_one(tmp_path):
     got = {(f.rule, f.subject) for f in fs}
     assert ("pallet-fit", "1-02") in got                 # a 2290 mm block put on the 48 x 40 pallet
     assert not any(s in ("1-01", "2-01") for _r, s in got)  # the glass unit is exempt from 20 kg; both fit
+
+
+def test_shared_hardware_drawings_go_to_the_joints_engineer_but_list_rows_stay_with_the_team():
+    from common import owner_for
+    assert owner_for("", "831001") == "Joints Engineer"                  # the spigot's drawing: no team path
+    assert owner_for("v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", "838003") == "WALL"   # WALL's own row
+    assert owner_for("", "211101") == "WALL" and owner_for("", "999999") == "PM"
+
+
+def test_d89_a_tabulated_drawing_covers_the_numbers_it_lists(tmp_path):
+    d = tmp_path / "v2/02-Drawings/wall"
+    d.mkdir(parents=True)
+    (tmp_path / "v2/03-Manufacturing/wall").mkdir(parents=True)
+    base = "UNITS: mm\nMATERIAL: EN AW-6063 T6  FINISH: mill finish\nGENERAL TOLERANCES ISO 2768-m\n"
+    _pdf(d / "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER_DWG.pdf",
+         base + "TABULATED DRAWING\nPART NO | SIDE\n211101 | LH\n211102 | RH\nRIVNUT 838003 IN EVERY H01")
+    _pdf(d / "210101_P01_WALL-PANEL-ASSY_DWG.pdf", base + "TABULATED\nPARTS LIST: 211301 SKIN")
+    names = {"211101": "WALL - PANEL FRAME - SIDE LOWER - LH", "211102": "WALL - PANEL FRAME - SIDE LOWER - RH",
+             "211301": "WALL - SKIN - SIDE LOWER - LH", "210101": "WALL - PANEL ASSY - SIDE LOWER - LH"}
+    got = {(f.rule, f.subject) for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert ("no-drawing", "211102") not in got           # listed in 211101's tabulated drawing
+    assert ("no-drawing", "211301") in got               # an assembly drawing's parts list doesn't cover a part
+    # the covered part's CAD at another revision: the drawing is out of date for it
+    (tmp_path / "v2/03-Manufacturing/wall/211102_P02_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step").write_text("x")
+    got = {(f.rule, f.subject) for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert ("rev-mismatch", "211102") in got
+    # without the word TABULATED, a number in the text is only a reference
+    _pdf(d / "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER_DWG.pdf", base + "MIRROR OF 211102")
+    got = {(f.rule, f.subject) for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert ("no-drawing", "211102") in got
+
+
+def test_d89_felt_and_fill_rectangles_pass_on_a_complete_cut_list_row(tmp_path):
+    m = tmp_path / "v2/03-Manufacturing/wall"
+    m.mkdir(parents=True)
+    with open(m / "510000_P01_LINING-CUT-LIST_SPEC.csv", "w") as fh:
+        fh.write("part_number,name,size_mm,material,tolerance_mm\n"
+                 "511301,felt,1445 x 1142.74 x 9,PET felt 9 mm Dark Gray,±1.0\n"
+                 "511401,fill,1100 x 1050 x 40,PET fill 24 kg/m3,\n"
+                 "511302,felt,1445 x 1142.74 x 9,PET felt 9 mm Dark Gray,±1.0\n")
+    (m / "511303_P01_LINING-FELT-BACK_DXF.dxf").write_text("x")
+    names = {"511301": "LINING - FELT - SIDE LOWER - LH", "511401": "LINING - FILL - SIDE LOWER - BAY A",
+             "511302": "LINING - FELT - SIDE LOWER - RH", "511303": "LINING - FELT - BACK LOWER - LH"}
+    holes = {"511302": [sf.Hole(1, (0, 240.5, 1180.0), (1, 0, 0), 60.0, 9.0, [])]}
+    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), set(names), holes, names)}
+    assert "511301" not in fs                              # complete row, plain rectangle: no drawing needed
+    assert "doesn't give tolerance" in fs["511401"]
+    assert "isn't a plain rectangle" in fs["511302"]       # the felt has a hole: it needs a drawing
+    assert "no cut list or parts list has a row" in fs["511303"]   # a DXF alone doesn't clear felt
+    # a body with pockets (more than a block's 6 faces) isn't a plain rectangle either
+    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), {"511301"}, {}, names,
+                                                                   {"511301": [6, 22]})}
+    assert "22 faces" in fs["511301"]
+
+
+def test_d89_a_parts_list_row_serves_as_the_cut_list(tmp_path):
+    # PM ruling 2026-11-01: a parts-list row that gives part number, size, material and tolerance serves as
+    # the cut list; a row that names pockets keeps the drawing; other soft goods need thickness, or a DXF
+    m = tmp_path / "v2/03-Manufacturing/wall"
+    m.mkdir(parents=True)
+    (m / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv").write_text(
+        "part_number,name,material,size_mm,tolerance\n"
+        "511301,LINING - FELT - SIDE LOWER - LH,PET felt 9 mm Dark Gray,9 x 1442 x 1139.74,±1 on length and width\n"
+        "211501,WALL - CAVITY FILL - SIDE LOWER - LH,PET fill 40 mm,1102.7 x 344.9 x 40 with 60 x 60 pockets,±2\n"
+        "513401,LINING - EDGE GASKET - SIDE LOWER,PORON 4701-40,1445 x 10,±0.5\n")
+    names = {"511301": "LINING - FELT - SIDE LOWER - LH", "211501": "WALL - CAVITY FILL - SIDE LOWER - LH",
+             "513401": "LINING - EDGE GASKET - SIDE LOWER"}
+    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert "511301" not in fs and "names pockets" in fs["211501"]
+    assert "doesn't give thickness" in fs["513401"]                 # a gasket's line must give its thickness
+    (m / "513401_P01_LINING-EDGE-GASKET-SIDE-LOWER_DXF.dxf").write_text("x")
+    fs = {f.subject for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert "513401" not in fs                                       # or a DXF gives its outline (D-89 part 3)
+
+
+def test_duplicate_number_ignores_hyphens_and_case_but_not_words(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    row = {"part_number": "848011", "name": "SEALS - HOOK-AND-LOOP - 25 MM", "name_vi": "x", "material": "VELCRO PS14",
+           "finish": "none", "qty": "1", "mass_kg": "0.01", "status": "HOLD", "source": "register"}
+    _write_csv(d / "a.csv", [row, dict(row, part_number="848012", name="SEALS - CASSETTE EDGE GASKET - 10 X 3.18")])
+    _write_csv(d / "b.csv", [dict(row, name="SEALS - Hook and loop - 25 MM"),
+                             dict(row, part_number="848012", name="SEALS - CASSETTE EDGE SEAL - 10 X 2.0")])
+    got = {f.subject for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
+           if f.rule == "duplicate-number"}
+    assert got == {"848012"}
+
+
+def test_an_accepted_edge_distance_holds_only_as_ruled():
+    # glide doubler 111601: 36 wide; ruling: at least 52 long (ends 26 = 2d), hole centred (18 to each long side)
+    def plate(length, offset):
+        x0, x1, y0, y1 = -length / 2, length / 2, -18.0 - offset, 18.0 - offset
+        rim = (sf.Frame(), 6.5, (6.5, 0, 0), (6.5, 0, 0), True)          # the hole's full circle in this face
+        face = sf.Face(1, "plane", (0, 0, 0), (0, 0, 1), None, True, [], [rim],
+                       [((x0, y0, 0), (x1, y0, 0)), ((x1, y0, 0), (x1, y1, 0)), ((x1, y1, 0), (x0, y1, 0)),
+                        ((x0, y1, 0), (x0, y0, 0))])
+        so = sf.Solid(1, "GLIDE DOUBLER")
+        so.faces = [face]
+        return so
+    hole = sf.Hole(1, (0, 0, 0), (0, 0, 1), 13.0, 3.0, [])
+    rows = [{"part_number": "111601", "hole_dia_mm": "13.0", "min_edge_mm": "18.0", "max_short_edges": "2"}]
+    def accepted(length, offset):
+        edges = sf.free_edge_distances(plate(length, offset), hole)
+        return c_geometry._edge_accepted(rows, hole, edges, 26.0) is not None
+    assert accepted(52.0, 0.0)                 # as ruled
+    assert not accepted(30.0, 0.0)             # ends 15 mm: the ruling wants 26
+    assert not accepted(52.0, 3.0)             # off centre: one side at 15 mm
+
+
+def test_flat_plate_tells_plain_sheet_parts_from_machined_ones():
+    s = sf.StepFile(os.path.join(os.path.dirname(__file__), "fixtures", "bolt-joints.step"))
+    seen = {}
+    for inst in s.instances():
+        seen.setdefault(inst["name"], sf.flat_plate(s.solid(inst["solid"])))
+    plate = next(v for k, v in seen.items() if "BOLT SIDE A" in k)
+    assert plate[0] and abs(plate[1] - 1.2) < 0.01               # a 1.2 mm wall with a through-hole
+    block = next(v for k, v in seen.items() if "FILL E" in k)
+    assert not block[0] and "isn't a sheet" in block[2]          # a 90 x 120 x 73 block is no sheet
+    rivnut = next(v for k, v in seen.items() if "RIVNUT - M6 A" in k)
+    assert not rivnut[0] and "across 9.5" in rivnut[2]           # a turned tube, longer than it is wide
+    # a 3 mm plate with a 1.5 mm deep pocket: a third level through the thickness
+    def face(normal, pts):
+        return sf.Face(1, "plane", pts[0], normal, None, True, pts, [], [])
+    so = sf.Solid(1, "POCKETED PLATE")
+    so.faces = [face((0, 0, -1), [(0, 0, 0), (100, 0, 0), (100, 50, 0), (0, 50, 0)]),
+                face((0, 0, 1), [(0, 0, 3), (100, 0, 3), (100, 50, 3), (0, 50, 3)]),
+                face((0, 0, 1), [(40, 10, 1.5), (60, 10, 1.5), (60, 30, 1.5), (40, 30, 1.5)]),
+                face((1, 0, 0), [(100, 0, 0), (100, 50, 0), (100, 50, 3), (100, 0, 3)]),
+                face((0, 1, 0), [(0, 50, 0), (100, 50, 0), (100, 50, 3), (0, 50, 3)])]
+    ok, _t, why = sf.flat_plate(so)
+    assert not ok and "3 levels" in why
+
+
+def _dxf(path, layers_circles):
+    body = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    for layer, kind, r in layers_circles:
+        if kind == "CIRCLE":
+            body += ["0", "CIRCLE", "8", layer, "10", "50", "20", "50", "40", str(r)]
+        else:
+            body += ["0", "LWPOLYLINE", "8", layer, "90", "4", "10", "0", "20", "0"]
+    body += ["0", "ENDSEC", "0", "EOF"]
+    path.write_text("\n".join(body) + "\n")
+
+
+class TestD89FlatSheetParts:
+    """D-89 (4), with the release checklist's own cases (v2/00-Control/test_build_release_checklist.py,
+    D89FlatSheetParts) so both tools agree; then what only the files show."""
+    LIST = "v2/03-Manufacturing/front/360000_P01_FRONT_BOM.csv"
+    HEAD = "part_number,name,material,thickness_mm,finish,process,tolerance,note"
+    GOOD = "361101,FRONT - COVER PLATE,aluminium 5754-H22,2,black anodised AA20,laser cut,ISO 2768-m,"
+
+    def plate(self, tmp_path, line=GOOD, head=HEAD, dxf=True, pn="361101", layers=(("CUT", "LWPOLYLINE", 0),),
+              holes=None, flat=None):
+        d = tmp_path / "v2/03-Manufacturing/front"
+        d.mkdir(parents=True, exist_ok=True)
+        (tmp_path / self.LIST).write_text(head + "\n" + line + "\n")
+        for f in d.glob("*_DXF.dxf"):
+            f.unlink()
+        for ext in ("CAD.f3d", "STEP.step"):
+            (d / ("%s_P01_FRONT-COVER-PLATE_%s" % (pn, ext))).write_text("x")
+        if dxf:
+            _dxf(d / ("%s_P01_FRONT-COVER-PLATE_DXF.dxf" % pn), list(layers))
+        names = {pn: "FRONT - COVER PLATE"}
+        fs = c_drawings.check_drawings(str(tmp_path), {pn}, {pn: holes or []}, names,
+                                       flat_by_pn={pn: flat} if flat else None)
+        return {f.subject: f.message for f in fs if f.rule == "no-drawing"}
+
+    def test_a_laser_cut_plate_with_its_dxf_and_a_full_row_is_drawn(self, tmp_path):
+        assert self.plate(tmp_path) == {}
+
+    def test_each_missing_item_keeps_the_drawing(self, tmp_path):
+        assert "361101" in self.plate(tmp_path, dxf=False)
+        assert "ISO 2768" in self.plate(tmp_path, self.GOOD.replace("ISO 2768-m", "±0.2"))["361101"]
+        assert "finish" in self.plate(tmp_path, self.GOOD.replace("black anodised AA20", ""))["361101"]
+        assert "thickness" in self.plate(tmp_path, self.GOOD.replace(",2,", ",,"))["361101"]
+        assert "laser, waterjet or router" in self.plate(tmp_path, self.GOOD.replace("laser cut", "punch"))["361101"]
+
+    def test_bent_machined_or_bonded_parts_keep_the_drawing(self, tmp_path):
+        for process in ("laser cut, brake bend", "laser cut, tap M6", "CNC router: outline and the seam half-lap",
+                        "router cut, then bonded to the frame", "waterjet, countersink 4 holes"):
+            assert "361101" in self.plate(tmp_path, self.GOOD.replace("laser cut", '"%s"' % process)), process
+
+    def test_a_mill_finish_is_not_milling(self, tmp_path):
+        assert self.plate(tmp_path, self.GOOD.replace("black anodised AA20", "mill finish")) == {}
+
+    def test_thickness_may_sit_in_the_material(self, tmp_path):
+        head = "part_number,name,material,finish,process,tolerance"
+        line = "361101,FRONT - COVER PLATE,aluminium 5754-H22 2 mm,black anodised AA20,waterjet,ISO 2768-m"
+        assert self.plate(tmp_path, line, head) == {}
+
+    def test_an_assembly_always_keeps_its_drawing(self, tmp_path):
+        assert "360101" in self.plate(tmp_path, self.GOOD.replace("361101", "360101"), pn="360101")
+
+    # what only the files show
+    def test_a_line_on_the_bend_layer_keeps_the_drawing_whatever_the_row_says(self, tmp_path):
+        msg = self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), ("BEND", "LINE", 0)))["361101"]
+        assert "draws on BEND; only CUT and MARK pass, so it is folded" in msg
+
+    def test_only_the_cut_and_mark_layers_are_allowed(self, tmp_path):
+        assert self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), ("MARK", "TEXT", 0))) == {}
+        for layer in ("POCKET-HALF-DEPTH", "ENGRAVE", "HALF-LAP"):
+            msg = self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), (layer, "LINE", 0)))["361101"]
+            assert "draws on %s; only CUT and MARK pass" % layer in msg, layer
+
+    # the release checklist's own layer cases (test_build_release_checklist.py, D-89 (4) layers), so both
+    # tools read a DXF the same way
+    @staticmethod
+    def dxf_doc(*entities):
+        head = ["0", "SECTION", "2", "TABLES", "0", "TABLE", "2", "LAYER"]
+        for name in ("CUT", "BEND", "MARK"):
+            head += ["0", "LAYER", "2", name, "70", "0"]
+        head += ["0", "ENDTAB", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+        body = []
+        for typ, layer in entities:
+            body += ["0", typ, "8", layer, "10", "0.0", "20", "0.0", "11", "100.0", "21", "0.0"]
+        return "\n".join(head + body + ["0", "ENDSEC", "0", "EOF"]) + "\n"
+
+    BLOCKS = ("0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n8\n0\n2\n*Model_Space\n0\nENDBLK\n8\n0\n"
+              "0\nBLOCK\n8\n0\n2\n_ARCHTICK\n0\nLWPOLYLINE\n8\n0\n0\nENDBLK\n8\n0\n"
+              "0\nBLOCK\n8\n0\n2\nTAB\n0\nLINE\n8\nBEND\n0\nENDBLK\n8\n0\n0\nENDSEC\n")
+
+    def test_reading_the_layers(self):
+        o = c_drawings.dxf_other_layers
+        assert o(self.dxf_doc(("LINE", "CUT"), ("TEXT", "MARK"))) == set()       # BEND only in the layer table
+        assert o(self.dxf_doc(("LINE", "CUT"), ("LINE", "BEND"))) == {"BEND"}
+        assert o(self.dxf_doc(("LWPOLYLINE", "cut"), ("LINE", "bend"), ("LWPOLYLINE", "POCKET-HALF-DEPTH"))) == \
+            {"BEND", "POCKET-HALF-DEPTH"}
+        assert o("") is None and o("AutoCAD Binary DXF\r\n\x1a\x00") is None
+
+    def test_only_drawn_entities_and_inserted_blocks_count(self):
+        o = c_drawings.dxf_other_layers
+        assert o(self.BLOCKS + self.dxf_doc(("LINE", "CUT"))) == set()           # blocks never inserted
+        inserted = self.BLOCKS + self.dxf_doc(("LINE", "CUT")).replace(
+            "0\nENDSEC\n0\nEOF", "0\nINSERT\n8\nCUT\n2\nTAB\n0\nENDSEC\n0\nEOF")
+        assert o(inserted) == {"BEND"}
+
+    def test_an_unreadable_dxf_keeps_the_drawing(self, tmp_path):
+        self.plate(tmp_path)
+        (tmp_path / "v2/03-Manufacturing/front/361101_P01_FRONT-COVER-PLATE_DXF.dxf").write_text("")
+        fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), {"361101"}, {},
+                                                                     {"361101": "FRONT - COVER PLATE"})}
+        assert "can't be read" in fs["361101"]
+
+    def test_the_dxf_must_hold_every_hole_of_the_step(self, tmp_path):
+        holes = [sf.Hole(1, (50, 50, 0), (0, 0, 1), 7.0, 2.0, [])]
+        assert "has 0 of the 1 Ø7 holes" in self.plate(tmp_path, holes=holes)["361101"]
+        assert self.plate(tmp_path, holes=holes, layers=(("CUT", "LWPOLYLINE", 0), ("CUT", "CIRCLE", 3.5))) == {}
+
+    def test_a_step_that_is_not_flat_keeps_the_drawing(self, tmp_path):
+        flat = (False, None, "its faces lie at 3 levels through the thickness (a pocket, a step or a rebate)")
+        assert "3 levels" in self.plate(tmp_path, flat=flat)["361101"]
+
+def test_door_swing_moves_everything_in_the_door_unit_but_the_hinges():
+    import csv as _csv
+    with open(os.path.join(ROOT, "v2/04-Checks/config/door-swing.csv"), newline="") as fh:
+        cfg = next(_csv.DictReader(fh))
+    mv, ex = re.compile(cfg["moving"], re.I), re.compile(cfg["fixed_exclude"], re.I)
+    unit = "360001_P01_FRONT-DOOR-UNIT_CAD:1 / %s:1 / Body1"
+    moves = lambda label: bool(mv.search(label)) and not ex.search(label)
+    assert moves(unit % "368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735")      # rides on the leaf's edge
+    assert moves(unit % "361001 FRONT - DOOR LEAF - 4+4 LAMINATED")
+    assert not moves(unit % "368101 FRONT - DOOR HINGE - HOLD - H1 BOTTOM")      # half fixed, half moving: left out
+    assert not moves("360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1")
+
+
+def test_seam_rules_leave_out_electricals_reserved_spaces():
+    # ELECTRICAL's 71xxxx bodies are reserved spaces (routes, pockets, grommets), not wall panels, though their
+    # names carry position codes such as B2/R1 (PM, 2026-11-01)
+    import csv as _csv
+    with open(os.path.join(ROOT, "v2/04-Checks/config/gap-rules.csv"), newline="") as fh:
+        seams = [r for r in _csv.DictReader(fh) if r["id"].startswith("SEAM-")]
+    elec = ("710000_P01_ELECTRICAL_CAD:1 / 710021 ELECTRICAL - HARNESS - TRUNK - B2/R1:1 / "
+            "S-PU-X GROMMETED SLOT - CUT-OUT RIGHT RETURN B2 R1 B4 B1 B3 L1 R2 L2")
+    for r in seams:
+        assert not re.search(r["a"], elec) and not re.search(r["b"], elec), r["id"]
+    corner = next(r for r in seams if r["id"] == "SEAM-BACK-CORNER-R")
+    assert re.search(corner["b"], "210000 WALL:1 / 210202 WALL - PANEL ASSY - BACK LOWER - B2:1 / FRAME")
+
+
+def test_a_shared_hardware_drawing_stays_with_the_joints_engineer_when_a_team_models_it(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    (d / "831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step").write_text("x")
+    fs = c_drawings.check_drawings(str(tmp_path), {"831001"}, {}, {"831001": "HARDWARE - LOCATING SPIGOT - M6 X Ø8"})
+    assert [f.owner for f in fs if f.rule == "no-drawing"] == ["Joints Engineer"]

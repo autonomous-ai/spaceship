@@ -15,9 +15,9 @@ changes go in here instead (Reviewer 5, P3-1 on PR #24):
    anchor where its expressions say, no clash beyond the listed ones;
 4. save a new version, then export the f3d, the STEP and the parameter CSV from
    it (same paths as the build);
-5. dry_run=1 does 1-3 and stops without saving (close with --discard). Note: a
-   skeleton that a linked part keeps loaded stays loaded after --close, with the
-   dry run's changes; the next real run checks and saves them.
+5. dry_run=1 does 1-3, then ends with a planned error so Fusion rolls every
+   change back (also when a linked part keeps the skeleton loaded); the runner
+   reports "DRY RUN: checks passed".
 
 A check that fails raises, and Fusion rolls every change of this run back.
 Changes to the shape (a new body, a new rule in ENVELOPES) need a rebuild and
@@ -47,6 +47,56 @@ def bodies_by_code(design):
                 code = code.replace(suffix, "")
             out[code] = b
     return out
+
+
+def sync_envelopes(design, sk):
+    """Box envelopes in place: build the ones that are missing, move a bottom that
+    left Z 0 (the extrude starts at an offset; the timeline is rolled back to set
+    it) or that sits on an offset plane, and set each height. A change of width or
+    length is not handled here: the envelope check then fails, nothing is saved,
+    and the shape needs a rebuild and a new revision."""
+    um = design.unitsManager
+    vi = adsk.core.ValueInput.createByString
+    pn_key = {row[1]: row[0] for row in sk["ASSEMBLIES"]}
+    asm = {pn_key[c.partNumber]: c for c in design.allComponents if c.partNumber in pn_key}
+    have = {}
+    for c in design.allComponents:
+        for b in c.bRepBodies:
+            if b.name.endswith(" ENVELOPE"):
+                have[b.name[:-len(" ENVELOPE")]] = c
+    done = []
+    tl = design.timeline
+    for a, code, name, sid, x, y, z in sk["ENVELOPES"]:
+        comp = have.get(code)
+        if comp is None:
+            c = sk["new_comp"](asm[a], "", "%s %s" % (code, name), sid)
+            sk["build_envelope"](design, c, code, name, sid, x, y, z)
+            done.append("built %s" % code)
+            continue
+        ext = comp.features.extrudeFeatures.itemByName("EXTRUDE - %s ENVELOPE" % code)
+        if ext is None:
+            continue
+        z0 = um.evaluateExpression(z[0], "mm")
+        plane = comp.constructionPlanes.itemByName("PLANE - %s BOTTOM" % code)
+        if plane is not None:
+            off = adsk.fusion.ConstructionPlaneOffsetDefinition.cast(plane.definition).offset
+            if off.expression.replace(" ", "") != z[0].replace(" ", ""):
+                off.expression = z[0]
+                done.append("%s bottom plane at %s" % (code, z[0]))
+        else:
+            st = adsk.fusion.OffsetStartDefinition.cast(ext.startExtent)
+            cur = st.offset.expression if st is not None else "0 mm"
+            if cur.replace(" ", "") != z[0].replace(" ", "") and not (st is None and abs(z0) < 1e-12):
+                ext.timelineObject.rollTo(True)
+                ext.startExtent = adsk.fusion.OffsetStartDefinition.create(vi(z[0]))
+                tl.moveToEnd()
+                done.append("%s starts at %s" % (code, z[0]))
+        dist = adsk.fusion.DistanceExtentDefinition.cast(ext.extentOne).distance
+        want = "(%s) - (%s)" % (z[1], z[0])
+        if dist.expression.replace(" ", "") != want.replace(" ", ""):
+            dist.expression = want
+            done.append("%s height %s" % (code, want))
+    return done
 
 
 def run(_context):
@@ -89,8 +139,10 @@ def run(_context):
     stale = ["%s: %r" % (c.partNumber, c.description)
              for c in [design.rootComponent] + [o.component for o in design.rootComponent.occurrences]
              if c.partNumber in want and c.description != want[c.partNumber]]
+    shaped = sync_envelopes(design, sk)
     adsk.doEvents()
     print("parameters: %d added %s" % (len(added), added))
+    print("envelopes changed in place: %s" % (shaped or "none"))
     for line in changed:
         print("changed:", line)
     print("comments updated: %d; not in the table (kept): %s" % (comments, extra))
@@ -109,16 +161,17 @@ def run(_context):
     print("pod box", sk["box"](design.rootComponent))
     if unhealthy or loose or res["bad"] or bad:
         raise RuntimeError("checks failed: nothing saved, every change rolled back")
-    if not (added or changed or comments or doc.isModified):
+    if not (added or changed or comments or shaped or doc.isModified):
         print("nothing to change")
         return
-    if not (added or changed or comments):
+    if not (added or changed or comments or shaped):
         # A closed document that another open design links to stays loaded with its
         # changes (seen after a dry run, 2026-10-31); the checks above ran on them.
         print("no new changes, but the open skeleton has unsaved ones; checked above")
     if ARGS.get("dry_run") == "1":
-        print("dry run: not saved (close with --discard)")
-        return
+        # A raise makes Fusion roll every change of this run back, even when a linked
+        # part keeps the skeleton loaded (Reviewer 5 P3 on #58); the runner reports it.
+        raise RuntimeError("DRY RUN: checks passed, all changes rolled back, nothing saved")
 
     # 4. new version, then exports from it
     note = ARGS.get("note") or "parameters from pod_skeleton.py"

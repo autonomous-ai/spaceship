@@ -17,6 +17,8 @@ Found on 2026-10-31 with Fusion 2706.1.17. Proof part: `v2/01-CAD-Native/proof/`
 | `sheet_notes.py` | **Puts notes on a sheet as an image** rendered from a text file kept in the repo (Arial Unicode, ISO text height, exact width in mm). |
 | `hatch.py` | Hatch lines for a cut face (the API has no hatch): parallel lines clipped to a polygon, drawn as sheet-sketch lines. |
 | `test_export_drawing.py`, `test_sheet_notes.py`, `test_hatch.py` | Offline tests of the three helpers. |
+| `check_api.py` | **Checks a script's Fusion API names offline, before it costs a run in the queue**: misspelled attributes and methods, wrong argument counts, unknown classes. Reads this Mac's own Fusion API files (Fusion need not run), adds the members that work but aren't in Fusion's code-completion files (for example `Drawing.sheets`), and type-checks with mypy. See "Check API names offline" below. |
+| `test_check_api.py` | Its tests; the end-to-end ones run only with a python that has mypy. |
 | `step_check.py` | Reads a STEP file without Fusion: declared length unit, products, solids and the bounding box in mm. `--expect xmin,ymin,zmin,xmax,ymax,zmax` checks it. Never edits the file. |
 | `pdf_clear_field.py` | Removes a title block field's value (default "Created by", which Fusion fills with the account holder's name) from an exported drawing PDF, then re-reads it to prove the text is gone. Needs PyMuPDF. |
 
@@ -25,6 +27,21 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/proof/wall_panel_frame.py --
 python3 tools/fusion/run_script.py v2/01-CAD-Native/proof/edit_test.py
 python3 tools/fusion/step_check.py v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step --expect=0,-20,0,1500,3,1150
 ```
+
+## Check API names offline
+
+A wrong name in a Fusion script only shows inside Fusion, after the run has waited its turn in the queue. Check first:
+
+```sh
+python3 -m venv "$SCRATCH/venv" && "$SCRATCH/venv/bin/pip" install mypy     # once, in your session folder
+"$SCRATCH/venv/bin/python" tools/fusion/check_api.py path/to/your_drawing_script.py
+```
+
+- It reports only name errors in your scripts: `attr-defined` (no such attribute or method, often with "maybe ...?"), `call-arg` (wrong arguments), `name-defined` (no such class). Exit 0 clean, 1 errors, 2 no Fusion install or no mypy.
+- Types flow from what the script gets from the API (`app = adsk.core.Application.get()`, then `app.activeDocument`, ...). A helper's parameters are unknown unless annotated, so annotate them with the real class, as a string: `def extent(view: "adsk.drawing.View"):`. The drawing view class is `adsk.drawing.View`; the checker tells you when a class name doesn't exist.
+- Scripts that build Fusion code as text (templates) can't be read inside the string: write the filled-in text to a file and check that file.
+- Fusion ships two sets of API files. The code-completion definitions (`packages/adsk/defs`) leave out members that work but are "not officially supported"; the wrapper (`packages/adsk/*.py`) has them all. The checker adds the wrapper's extra members to a copy of the definitions (once per Fusion install, in the temp folder) and checks against that.
+- First found on 2026-10-31: the GA drawing scripts and every in-Fusion script of `start_drawing.py` came out clean; made-up typos in copies of them were all caught.
 
 ## Ground rules
 

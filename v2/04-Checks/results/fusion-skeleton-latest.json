@@ -2,11 +2,11 @@
  "steps": [
   "v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step"
  ],
- "started": "2026-10-31 22:38:36",
+ "started": "2026-11-01 00:52:55",
  "errors": [],
  "imports": [
   {
-   "file": "100000_P04_POD-SKELETON_STEP.step",
+   "file": "v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step",
    "ok": true
   }
  ],
@@ -19,7 +19,7 @@
     0.0,
     0.0,
     810.0,
-    15.0
+    9.0
    ]
   },
   {
@@ -30,7 +30,7 @@
     0.0,
     1210.0,
     810.0,
-    15.0
+    9.0
    ]
   },
   {
@@ -52,7 +52,7 @@
     0.0,
     214.0,
     -669.0,
-    20.0
+    13.0
    ]
   },
   {
@@ -80,7 +80,7 @@
   {
    "label": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-FR BASE - BASE BAND - FRONT RIGHT (FACETED, UNDER THE FIXED GLASS AND DR):1 / Body1",
    "box_mm": [
-    218.0,
+    218.46,
     -850.0,
     10.0,
     1250.0,
@@ -192,7 +192,7 @@
    "box_mm": [
     -961.0,
     -709.0,
-    27.0,
+    20.0,
     214.0,
     -689.0,
     105.0
@@ -212,7 +212,7 @@
   {
    "label": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4+4 (PENTAGON, v1 MEASURED):1 / Body1",
    "box_mm": [
-    -66.0,
+    -64.38,
     -703.38,
     102.0,
     948.0,
@@ -395,7 +395,12 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
    "min_mm": 2.21,
-   "max_mm": 2.31
+   "max_mm": 2.31,
+   "severity": "severe",
+   "method": "box",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "fix": "Joints Engineer: set the compressed gasket thickness per seam. Fusion Engineer 2: add a seam_gap parameter and shrink the panels by it",
+   "source": "confirmed: D-64, a 2.26 mm metal stop at every seam type (joints register 2.8); \u00b10.05 for CAD rounding"
   },
   {
    "id": "SEAM-BACK-CORNER-L",
@@ -404,7 +409,12 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
    "min_mm": 2.21,
-   "max_mm": 2.31
+   "max_mm": 2.31,
+   "severity": "severe",
+   "method": "box",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "fix": "As SEAM-BACK-CENTRE",
+   "source": "confirmed: as SEAM-BACK-CENTRE"
   },
   {
    "id": "SEAM-BACK-CORNER-R",
@@ -413,7 +423,12 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / R1 WALL - SIDE PANEL - LOWER - RH:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / B2 WALL - BACK PANEL - LOWER - B2:1 / Body1",
    "min_mm": 2.21,
-   "max_mm": 2.31
+   "max_mm": 2.31,
+   "severity": "severe",
+   "method": "box",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "fix": "As SEAM-BACK-CENTRE",
+   "source": "confirmed: as SEAM-BACK-CENTRE"
   },
   {
    "id": "SEAM-CEILING-CENTRE",
@@ -422,7 +437,12 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C2 CEILING - HALF PANEL - C2:1 / Body1",
    "min_mm": 2.21,
-   "max_mm": 2.31
+   "max_mm": 2.31,
+   "severity": "severe",
+   "method": "box",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "fix": "As SEAM-BACK-CENTRE",
+   "source": "confirmed: as SEAM-BACK-CENTRE"
   },
   {
    "id": "SEAM-CEILING-SIDE",
@@ -431,7 +451,12 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 410000 CEILING:1 / C1 CEILING - HALF PANEL - C1:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
    "min_mm": 2.21,
-   "max_mm": 2.31
+   "max_mm": 2.31,
+   "severity": "severe",
+   "method": "box",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "fix": "As SEAM-BACK-CENTRE",
+   "source": "confirmed: as SEAM-BACK-CENTRE"
   },
   {
    "id": "SEAM-SIDE-HORIZONTAL",
@@ -440,7 +465,12 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / L2 WALL - SIDE PANEL - UPPER - LH:1 / Body1",
    "min_mm": 2.21,
-   "max_mm": 2.31
+   "max_mm": 2.31,
+   "severity": "major",
+   "method": "box",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "fix": "Joints Engineer: say whether the horizontal seams take a gasket in the gap (then a seam_gap) or in a groove (then no gap)",
+   "source": "confirmed: as SEAM-BACK-CENTRE"
   },
   {
    "id": "SEAM-BACK-HORIZONTAL",
@@ -449,7 +479,12 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / B1 WALL - BACK PANEL - LOWER - B1:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / B3 WALL - BACK PANEL - UPPER - B3:1 / Body1",
    "min_mm": 2.21,
-   "max_mm": 2.31
+   "max_mm": 2.31,
+   "severity": "major",
+   "method": "box",
+   "owner": "Joints Engineer; Fusion Engineer 2",
+   "fix": "As SEAM-SIDE-HORIZONTAL",
+   "source": "confirmed: as SEAM-BACK-CENTRE"
   },
   {
    "id": "KICK-OVER-THRESHOLD",
@@ -458,7 +493,12 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / THRESHOLD BASE - DOOR THRESHOLD:1 / Body1",
    "min_mm": 6.5,
-   "max_mm": 7.5
+   "max_mm": 7.5,
+   "severity": "severe",
+   "method": "box",
+   "owner": "FRONT; Fusion Engineer 2",
+   "fix": "Kick strip bottom at the threshold top plus 7 mm (Z 27 with a 20 mm threshold), carried as a skeleton parameter",
+   "source": "confirmed: D-68 and D-72, the kick strip keeps a 7 mm floor gap over the threshold for the drop seal"
   },
   {
    "id": "LINING-FLOATS",
@@ -467,16 +507,26 @@
    "a": "100000_P04_POD-SKELETON_CAD:1 / 510000 LINING:1 / L1-CASS LINING - CASSETTE - SIDE LOWER - L:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
    "min_mm": 4.0,
-   "max_mm": null
+   "max_mm": null,
+   "severity": "major",
+   "method": "box",
+   "owner": "WALL; CEILING",
+   "fix": "Keep the cassette 4 mm off every frame and skin; only its clips may touch",
+   "source": "confirmed nominal: D-17 (the cassette never touches the frame) and D-57 (4 mm gap, the wall stack's gap)"
   },
   {
    "id": "GLASS-TO-GLASS",
    "group": "",
-   "gap_mm": 2.399,
+   "gap_mm": 4.0,
    "a": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4+4 (TRAPEZOID, v1 MEASURED):1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4+4 (PENTAGON, v1 MEASURED):1 / Body1",
    "min_mm": 3.9,
-   "max_mm": 4.1
+   "max_mm": 4.1,
+   "severity": "severe",
+   "method": "exact",
+   "owner": "FRONT",
+   "fix": "Keep the gap 4 mm all along the edge, with the glass cutting tolerance inside it",
+   "source": "confirmed: D-68 and D-74, the fixed glass's free edge parallel to the door edge at 4.0 mm"
   }
  ],
  "fasteners": [],
@@ -484,26 +534,6 @@
   {
    "a": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / F1 BASE - THIN FLOOR PANEL - F1:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / F2 BASE - THIN FLOOR PANEL - F2:1 / Body1",
-   "gap_mm": 0.0
-  },
-  {
-   "a": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / F1 BASE - THIN FLOOR PANEL - F1:1 / Body1",
-   "b": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
-   "gap_mm": 0.0
-  },
-  {
-   "a": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / F1 BASE - THIN FLOOR PANEL - F1:1 / Body1",
-   "b": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-L BASE - BASE BAND - SIDE - LH:1 / Body1",
-   "gap_mm": 0.0
-  },
-  {
-   "a": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / F2 BASE - THIN FLOOR PANEL - F2:1 / Body1",
-   "b": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-BACK BASE - BASE BAND - BACK:1 / Body1",
-   "gap_mm": 0.0
-  },
-  {
-   "a": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / F2 BASE - THIN FLOOR PANEL - F2:1 / Body1",
-   "b": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-R BASE - BASE BAND - SIDE - RH:1 / Body1",
    "gap_mm": 0.0
   },
   {
@@ -699,9 +729,9 @@
  ],
  "door_swing": [
   {
-   "rule": "assumption: hinge axis on the leaf's hinge-side edge in the glass plane (skeleton door_xl, glass_y) until the hinges are named (D-46 HOLD); outward swing PROPOSED (open-questions Q3); 90 degrees for the clear width on the GA (REQ-US-03)",
+   "rule": "assumption: 0.5 degree steps move the 1176 mm free edge about 10 mm each; hinge axis on the leaf's hinge-side edge in the glass plane (skeleton door_xl, glass_y) until the hinges are named (D-46 HOLD); outward swing PROPOSED (open-questions Q3); 90 degrees for the clear width on the GA (REQ-US-03)",
    "max_deg": 90.0,
-   "step_deg": 2.0,
+   "step_deg": 0.5,
    "direction": "outward",
    "moving": [
     "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
@@ -710,7 +740,5 @@
    "first_hit": null
   }
  ],
- "seconds": 1.1,
- "rev": "0cb764f",
- "model": "skeleton"
+ "seconds": 1.7
 }
