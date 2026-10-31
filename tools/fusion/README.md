@@ -61,6 +61,16 @@ Drawings need a saved design (`DrawingManager.createDrawingInput` takes a cloud 
 
 Keep every call small, and save after each step. Fusion hung twice during this work and lost an unsaved drawing once.
 
+## Leftover clicks for whoever unlocks the Mac (proof drawing)
+
+In Fusion, Default Project / FocusPod v2 / `V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG`:
+
+1. Delete sheets 1 and 2: Sheet1 is the first try and CLEAN is the second try. Keep CLEAN2, the sheet in the repo PDF.
+2. Title block on CLEAN2: DWG No. V2-SWL-00, Rev. P01, Document status DRAFT, Document type ASSEMBLY DRAWING; clear "Created by". The API can't set these: the design's part number is set but DWG No. doesn't read it, and there is no revision property.
+3. Save, then save the sheet as our drawing template (Fusion's New Drawing Template or Output Drawing Template command), so later drawings start without the two clicks.
+4. Add sections A-A (through H01) and B-B (through H09) at 2:1; the API can't make section views.
+5. Re-export: `make_drawing.py --arg step=export --arg sheet=CLEAN2 --arg sheet_range=1` (after the old sheets are gone), then `pdf_clear_field.py`.
+
 ## Drawings: what works and what needs a person
 
 The drawing API (`adsk.drawing`) is a preview API in this build. Tested on 2026-10-31:

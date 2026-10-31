@@ -44,7 +44,8 @@ FRAME_W, FRAME_H, SKIN_W = 1470.0, 1150.0, 1500.0   # mm, model values at P01
 # points are in cm, but this build uses mm for Sheet.width/height, view curve
 # points and placement points alike. U = sheet units per cm (10 = mm) is
 # measured again on the front view (detect_units); offsets below are in cm.
-FRONT_CENTER = (330.0, 255.0)   # sheet units (mm); A2 landscape is 594 x 420
+FRONT_CENTER = (float(ARGS.get("fx", 330.0)), float(ARGS.get("fy", 245.0)))  # sheet mm; A2 is 594 x 420
+# fy 245 keeps the front view clear of the stock hole table, which Fusion puts top right
 GAP_BELOW = 6.0                 # cm, front view edge to the view from above
 GAP_LEFT = 7.0                  # cm, front view edge to the view from the right
 TOL = 0.02                      # cm, when matching points
@@ -535,7 +536,16 @@ def run(_context):
     dwg = adsk.drawing.Drawing.cast(app.activeProduct)
     if dwg is None:
         raise RuntimeError("make the drawing active first (File > New Drawing > From Design)")
-    sheet = dwg.activeSheet
+    if ARGS.get("step") == "new_sheet":
+        # a clean sheet in the same drawing needs no dialog (Sheets.add)
+        inp = dwg.sheets.createInput()
+        inp.name = ARGS.get("sheet", "CLEAN")
+        sh = dwg.sheets.add(inp)
+        sh.sheetSize = adsk.drawing.SheetSizes.A2ISOSheetSize
+        print("new sheet:", sh.name, sh.width, "x", sh.height, "| sheets:", dwg.sheets.count)
+        save_drawing(app)
+        return
+    sheet = dwg.sheets.itemByName(ARGS["sheet"]) if ARGS.get("sheet") else dwg.activeSheet
     describe(sheet)
     if ARGS.get("inspect") == "1":
         return
@@ -576,13 +586,12 @@ def run(_context):
         if step == "dims_front":
             annotate_front(sheet, front)
         elif step == "dims_top":
-            o_top = annotate_top(sheet, top)
-            hole_table(sheet, top, o_top, "HOLE TABLE 1 - VIEW FROM ABOVE (X-2D = X, Y-2D = Y, ORIGIN O)")
-            print("hole table 1 added")
+            annotate_top(sheet, top)
+            # no hole table here: on this view Fusion's table came out empty
         elif step == "dims_right":
             o_right = annotate_right(sheet, right)
-            hole_table(sheet, right, o_right, "HOLE TABLE 2 - VIEW FROM THE RIGHT (X-2D = Y, Y-2D = Z)")
-            print("hole table 2 added")
+            hole_table(sheet, right, o_right, "HOLE TABLE - VIEW FROM THE RIGHT (H09-H12 = A1-A4)")
+            print("hole table added (view from the right)")
         elif step == "tables":
             parts = parts_rows(app)
             text_table(sheet, [(n,) for n in NOTES])
@@ -622,6 +631,9 @@ def export_pdf(dwg):
     raw = "%s/%s" % (ARGS["repo_root"], PDF_REL.replace("proof/", "proof/.raw/"))
     os.makedirs(os.path.dirname(raw), exist_ok=True)
     opts = dwg.exportManager.createPDFExportOptions(raw)
+    if ARGS.get("sheet_range"):
+        opts.sheetsToExport = adsk.drawing.PDFSheetsExport.RangePDFSheetsExport
+        opts.sheetRange = ARGS["sheet_range"]
     opts.openPDF = False
     opts.useLineWeights = True
     if not dwg.exportManager.execute(opts):

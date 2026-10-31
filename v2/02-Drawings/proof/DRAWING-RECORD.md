@@ -5,7 +5,7 @@ Phase 0 proof. **DRAFT P01, not for manufacture.**
 - PDF: `V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG.pdf` (A2, cleaned: see "Personal data")
 - Render checked by eye: `V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG-render.png` (150 dpi)
 - Native drawing: Fusion cloud, Default Project / FocusPod v2 / `V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG`, made from the design's version 1
-- Made 2026-10-31 on Mac 1, Fusion 2706.1.17, by `make_drawing.py` (steps below)
+- Made 2026-10-31 on Mac 1, Fusion 2706.1.17, by `make_drawing.py` (steps below). The repo PDF is sheet CLEAN2 (sheet 3 of the Fusion drawing): a clean rebuild on a new sheet, added by script with no dialog. Sheets 1 and 2 are earlier tries the API can't delete
 
 ## How it was made
 
@@ -28,21 +28,15 @@ Phase 0 proof. **DRAFT P01, not for manufacture.**
 | ISO, first-angle, projection symbol | Pass: ISO drawing standard (first-angle); symbol drawn. Its layout follows the sources below |
 | Holes dimensioned to centres from datums | Pass: every hole dimension starts on a datum corner of the view and ends on the circle's centre point; values match the model |
 | Holes are true circles | Pass: the view curves are circles (type Circle), and they render round at 150 dpi |
-| Hole table tags match the view | Partial: tags A1-A4 match the view from the right. The view-from-above table is empty, and tags can't be set to H01... by API. The H01-H12 list is in `FEATURE-RATIONALE.md` |
+| Hole table tags match the view | Pass for the one table kept: tags A1-A4 on the view from the right = H09-H12 (said in its title). The view-from-above table came out empty in Fusion, so it was left out; those holes are dimensioned on the view. Tags can't be set to H01... by API; the H01-H12 list is in `FEATURE-RATIONALE.md` |
 | Title block filled | Fail by API: values come from document properties the API can't set. Title, sheet and date are filled; part no., rev, status, scale and material are not |
-| No overlaps | Fail: the two stock hole tables and one blank table sit at the top right, over the front view's top-right corner. The API can't move, fill or delete them |
-| Readable at A2 | Pass for views and dimensions (render checked); tables as above |
+| No overlaps | Pass on CLEAN2 (render checked): the front view sits 10 mm lower so the hole table, which Fusion puts top right, clears it |
+| Readable at A2 | Pass (render checked) |
 | Personal data | Pass after cleaning: "Created by" value removed from the text layer; checked by re-reading the PDF |
 
-## For the Lead to click (the API can't)
+## Leftover clicks
 
-1. Delete the two stock hole tables and the blank table at the top right.
-2. Fill the title block: DWG No. V2-SWL-00, Rev P01, Document status DRAFT, Document type ASSEMBLY DRAWING; clear "Created by".
-3. Optional: add the general notes (units, datums and 2D axis mapping per view, scoped tolerance proposal: see `make_drawing.py` NOTES).
-4. Save, then save the cleaned sheet as our drawing template (Fusion's "New Drawing Template" / "Output Drawing Template" commands), so later drawings can start from it.
-5. Sections A-A (through H01) and B-B (through H09) at 2:1: the API can't create section views.
-
-Then re-export: `make_drawing.py --arg step=export` and `pdf_clear_field.py`.
+The list is in `tools/fusion/README.md` ("Leftover clicks"): delete sheets 1 and 2, fill the title block, save as our template, add the two sections, re-export. The general notes (units, datums, 2D axis mapping per view, scoped tolerance proposal) are in `make_drawing.py` NOTES; the API can't put free text on a sheet.
 
 ## Sources for the projection symbol
 
