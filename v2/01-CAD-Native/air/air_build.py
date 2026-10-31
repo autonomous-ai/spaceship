@@ -150,6 +150,36 @@ def poly_xy_extrude(comp, name, pts, z0, z1, ctx):
     return f.bodies.item(0)
 
 
+def circle_cut_y(comp, body, name, cx, cz, y0, y1, dia, ctx):
+    """A round hole through a face normal to Y, from y0 to y1: sketch on the XZ plane offset
+    to y0, centre dimensioned by expressions for model X and Z."""
+    plane = CB.offset_plane(comp, comp.xZConstructionPlane, y0, "PLANE - %s" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "HOLE - " + name
+    cen = sk.modelToSketchSpace(adsk.core.Point3D.create(ctx.ev(cx) * CB.MM, ctx.ev(y0) * CB.MM, ctx.ev(cz) * CB.MM))
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(cen.x, cen.y, 0), ctx.ev(dia) / 2 * CB.MM)
+    g = c.centerSketchPoint.geometry
+    sk.sketchDimensions.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = dia
+    for model_axis, expr in (("x", cx), ("z", cz)):
+        sa, _sign = CB.model_to_sketch_axis(sk, model_axis)
+        tp = adsk.core.Point3D.create(g.x + 0.6, g.y + 0.6, 0)
+        sk.sketchDimensions.addDistanceDimension(sk.originPoint, c.centerSketchPoint, CB.H if sa == "x" else CB.V,
+                                                 tp).parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: HOLE - " + name)
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    want = 1 if ctx.ev(y1) > ctx.ev(y0) else -1
+    prof = min(sk.profiles, key=lambda p: p.areaProperties().area)
+    ei = comp.features.extrudeFeatures.createInput(prof, CUT)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(CB.vi("abs((%s) - (%s))" % (y1, y0))),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if n.y * want > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
 def build_cartridge(parent, design, ctx, bx, along, tag):
     """Casing (2 mm tube open at both ends) and three 50 mm layers parallel to the
     front face, with two passages between them. bx: outer box; along: 'z' or 'x'."""
@@ -213,20 +243,29 @@ def run(_context):
                 CB.box_body(comp, "%s OPENING %d" % (name, i + 1), cb, ctx, op=CUT, bodies=[b])
             return b
 
-        # ---- column
-        _o, col = new_comp(root, "column")
-        for key, names in (("col_front", ["COLUMN FACE FRONT"]), ("col_left", ["COLUMN FACE LEFT"]),
-                           ("col_fill", ["COLUMN FILL FRONT", "COLUMN FILL LEFT"]),
-                           ("kick", ["KICK GRILLE FRONT", "KICK GRILLE LEFT"]), ("hub", ["SENSOR HUB ZONE"])):
-            _o2, c = new_comp(col, key)
+        made = {}      # body name -> (component, body)
+
+        def put(comp, name):
+            made[name] = (comp, body_in(comp, name))
+            return made[name][1]
+
+        def comp_with(parent, key, names, material=True):
+            _o2, c = new_comp(parent, key)
             for n in names:
-                body_in(c, n)
-            set_material(design, c, key)
+                put(c, n)
+            if material:
+                set_material(design, c, key)
+            return c
+
+        def names_of(key):
+            return [n for k, n, _b in A.layout() if k == key]
+        # ---- column: foot plate, faces, kick grille, plenum plates, fill, hub zone, angles, cartridge
+        _o, col = new_comp(root, "column")
+        for key in ("col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "kick", "hub"):
+            comp_with(col, key, names_of(key))
         _o2, ang = new_comp(col, "col_ang")
         for tag in ("FL", "FR", "BL"):
             x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE %s" % tag][1]
-            # an L in plan: one leg against the face it backs (front face for FL/FR, the block's
-            # back plate for BL), one against the left face or the side lining
             if tag == "FL":
                 pts = [(x0, y1), (x1, y1), (x1, "%s - ang_t" % y1), ("%s + ang_t" % x0, "%s - ang_t" % y1),
                        ("%s + ang_t" % x0, y0), (x0, y0)]
@@ -236,29 +275,35 @@ def run(_context):
             else:
                 pts = [(x0, y0), (x1, y0), (x1, "%s + ang_t" % y0), ("%s + ang_t" % x0, "%s + ang_t" % y0),
                        ("%s + ang_t" % x0, y1), (x0, y1)]
-            poly_xy_extrude(ang, "COLUMN ANGLE %s" % tag, pts, z0, z1, ctx)
+            made["COLUMN ANGLE %s" % tag] = (ang, poly_xy_extrude(ang, "COLUMN ANGLE %s" % tag, pts, z0, z1, ctx))
         set_material(design, ang, "col_ang")
         build_cartridge(col, design, ctx, lay["CARTRIDGE SUPPLY"][1], "z", "SUPPLY")
         print("step column done")
-
-        # ---- soffit
+        # ---- soffit (ships with its exhaust fan box fitted, D-87): underside sections, face,
+        #      rails, end plate, fill, grille, hanging and service hardware envelopes
         _o, sof = new_comp(root, "soffit")
-        for key, names in (("sof_under", ["SOFFIT UNDERSIDE"]), ("sof_front", ["SOFFIT FACE FRONT"]),
-                           ("sof_fill", ["SOFFIT FILL UNDER", "SOFFIT FILL FRONT"]), ("egrille", ["EXHAUST GRILLE"])):
-            _o2, c = new_comp(sof, key)
-            for n in names:
-                body_in(c, n)
-            set_material(design, c, key)
+        for key in ("sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_end",
+                    "sof_fill", "egrille", "stud", "hinge", "latch"):
+            comp_with(sof, key, names_of(key))
+        lo = sof.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+        lk = lo.component
+        hp = A.HARDWARE["lock"]
+        lk.name, lk.partNumber = "%s %s" % (hp[0], hp[1]), hp[0]
+        lk.description = "%s | %s | PI | %s | captive retainer HOLD (joints register)" % (hp[1], hp[2], A.REV)
+        for n in names_of("lock"):
+            put(lk, n)
+        set_material(design, lk, "riser")      # steel, as the riser
         build_cartridge(sof, design, ctx, lay["CARTRIDGE EXHAUST"][1], "x", "EXHAUST")
         print("step soffit done")
-
-        # ---- fan boxes with their fans, transitions, riser, roof sleeve and grille
+        # ---- fan boxes with their fans; the supply box joined with the riser and transitions (D-87)
         fan_comp = None
         fans = A.fan_points()
+        boxes = {}
         for key, bname, parent in (("ebox", "EXHAUST FAN BOX", sof), ("sbox", "SUPPLY FAN BOX", root)):
             _o, fb = new_comp(parent, key)
+            boxes[key] = fb
             _o2, casing = new_comp(fb, "box")
-            b = body_in(casing, bname)
+            b = put(casing, bname)
             hollow_closed(casing, b, bname)
             set_material(design, casing, "box")
             tag = "EXHAUST" if key == "ebox" else "SUPPLY"
@@ -271,16 +316,24 @@ def run(_context):
                 else:
                     fo = fb.occurrences.addExistingComponent(fan_comp, adsk.core.Matrix3D.create())
                 CB.place(fb, fo, (fx, fy, fz), fname, ctx)
-        for key, names in (("trans", ["SUPPLY TRANSITION"]), ("riser", ["INTAKE RISER"]),
-                           ("rtrans", ["RISER TRANSITION"]), ("sleeve", ["ROOF SLEEVE"]), ("rgrille", ["ROOF GRILLE"])):
-            _o, c = new_comp(root, key)
-            for n in names:
-                b = body_in(c, n)
+        for key, parent in (("trans", boxes["sbox"]), ("riser", boxes["sbox"]), ("rtrans", boxes["sbox"]),
+                            ("sleeve", root), ("rgrille", root)):
+            c = comp_with(parent, key, names_of(key))
+            for n in names_of(key):
                 if key == "riser":
-                    hollow_axis(c, b, "z", "rs_t", n)
+                    hollow_axis(c, made[n][1], "z", "rs_t", n)
                 if key == "sleeve":
-                    hollow_axis(c, b, "z", "slv_t", n)
-            set_material(design, c, key)
+                    hollow_axis(c, made[n][1], "z", "slv_t", n)
+        # ---- cut features: keyholes, BASE's spigot hole and slot, the rails' forks, lock holes
+        for k, (bname, kind, a) in enumerate(A.features()):
+            comp, body = made[bname]
+            label = "%s FEATURE %d" % (bname, k + 1)
+            if kind == "zcircle":
+                CB.circle_cut(comp, body, label, a[0], a[1], a[4], a[2], a[3], ctx)
+            elif kind == "ycircle":
+                circle_cut_y(comp, body, label, a[0], a[1], a[2], a[3], a[4], ctx)
+            else:
+                CB.box_body(comp, label, a, ctx, op=CUT, bodies=[body])
         adsk.doEvents()
         print("step boxes, riser, sleeve done")
 

@@ -34,11 +34,13 @@ def gap(a, b):
 class Sizes(unittest.TestCase):
     def test_d61(self):
         col = b6("COLUMN FACE FRONT")
-        self.assertAlmostEqual(col[1] - col[0], V["pod_w"] / 2 - V["stack_t"] - 949.0)
+        self.assertAlmostEqual(col[1] - col[0], V["pod_w"] / 2 - V["stack_t"] - V["col_gap"] - 949.0)
         sof = b6("SOFFIT FACE FRONT")
-        self.assertAlmostEqual(sof[5] - sof[4], 220.0)
+        top = b6("SOFFIT RAIL ROOM")
+        self.assertAlmostEqual(top[5] - sof[4], 220.0, msg="soffit Z 2120 to 2340, rails on top")
         self.assertAlmostEqual(sof[4], 2120.0)
-        self.assertAlmostEqual(sof[1] - sof[0], V["pod_w"] - 2 * V["stack_t"])
+        self.assertGreater(sof[5], V["pod_h"] - V["stack_t"], "front face reaches above the ceiling's felt face")
+        self.assertAlmostEqual(sof[1] - sof[0], V["pod_w"] - 2 * V["stack_t"] - 2 * V["col_gap"])
         for name in ("CARTRIDGE SUPPLY", "CARTRIDGE EXHAUST"):
             b = b6(name)
             dims = sorted((b[1] - b[0], b[3] - b[2], b[5] - b[4]))
@@ -60,7 +62,7 @@ class Sizes(unittest.TestCase):
             self.assertLessEqual(b[1], xir + 1e-9, name)
             self.assertGreaterEqual(b[2], yw - 1e-9, name)
             self.assertLessEqual(b[3], yw + V["col_d"] + 1e-9, name)
-            self.assertGreaterEqual(b[4], V["floor_t"] - 1e-9, name)
+            self.assertGreaterEqual(b[4], V["floor_t"] + V["mat_t"] - 1e-9, name)
             self.assertLessEqual(b[5], V["dt_zb"] + 1e-9, name)
 
 
@@ -68,7 +70,10 @@ class Fits(unittest.TestCase):
     def test_no_overlaps(self):
         """No two layout bodies overlap, except the cut-outs the build makes (hub zone in
         the front face and the fill, exhaust grille in the underside)."""
-        cut = {(t, "SENSOR HUB ZONE") for t in ("COLUMN FACE FRONT", "COLUMN FILL FRONT")} | {("SOFFIT UNDERSIDE", "EXHAUST GRILLE")}
+        cut = {(t, "SENSOR HUB ZONE") for t in ("COLUMN FACE FRONT", "COLUMN FILL FRONT")} | {("SOFFIT UNDERSIDE LEFT", "EXHAUST GRILLE")}
+        cut |= {("SOFFIT FILL UNDER", n) for n in LAY if " LATCH " in n}
+        # the stud and lock shanks pass through the rails' forks and holes (cut features)
+        cut |= {(r, n) for r in ("SOFFIT RAIL DOOR", "SOFFIT RAIL ROOM") for n in LAY if n.endswith("SHANK")}
         names = list(LAY)
         for i in range(len(names)):
             for j in range(i + 1, len(names)):
@@ -81,7 +86,7 @@ class Fits(unittest.TestCase):
         xir = V["pod_w"] / 2 - V["stack_t"]
         yw = V["pod_d"] / 2 - V["wall_depth"]
         c = b6("CARTRIDGE SUPPLY")
-        self.assertAlmostEqual(xir - c[1], 5.0)
+        self.assertAlmostEqual(xir - V["col_gap"] - V["plate_t"] - c[1], 5.0)
         self.assertAlmostEqual(c[2] - yw, 5.0)
         e = b6("CARTRIDGE EXHAUST")
         self.assertAlmostEqual(e[2] - yw, 5.0)
@@ -119,6 +124,57 @@ class Fits(unittest.TestCase):
             self.assertGreaterEqual(cy - h, bx[2] + V["box_t"] - 1e-9, name)
             self.assertLessEqual(cy + h, bx[3] - V["box_t"] + 1e-9, name)
             self.assertLessEqual(cz + V["fan_t"], bx[5] - V["box_t"] + 1e-9, name)
+
+
+class D87(unittest.TestCase):
+    """PM rulings 2026-11-01: hooks, locks, the column foot and 5 mm off the linings."""
+
+    def test_off_the_linings(self):
+        xir = V["pod_w"] / 2 - V["stack_t"]
+        for name, (key, bx) in LAY.items():
+            if key in ("box", "trans", "riser", "rtrans", "sleeve", "rgrille") and name != "EXHAUST FAN BOX":
+                continue
+            self.assertLessEqual(bx[1], xir - 5.0 + 1e-9, name)
+            self.assertGreaterEqual(bx[0], -xir + 5.0 - 1e-9, name)
+
+    def test_foot_on_the_mat(self):
+        self.assertAlmostEqual(b6("COLUMN FOOT PLATE")[4], 12.0)
+
+    def test_studs_and_locks_on_the_ceiling_rivnuts(self):
+        cv = CM.evaluate(CM.all_params())
+        holes = []
+        for half in ("C1", "C2"):
+            holes += [(n, p) for n, _d, p in CM.hole_positions(cv, half) if n.startswith("SOFFIT")]
+        for name in [n for n in LAY if n.endswith("SHANK")]:
+            bx = b6(name)
+            c = ((bx[0] + bx[1]) / 2, (bx[2] + bx[3]) / 2)
+            self.assertTrue(any(abs(p[0] - c[0]) < 1e-6 and abs(p[1] - c[1]) < 1e-6 for _n, p in holes), name)
+            self.assertAlmostEqual(bx[5], cv["pod_h"] - cv["outer_t"])
+        self.assertEqual(len(holes), 6)
+
+    def test_forks_open_toward_the_door_and_slide_clear(self):
+        """Each fork runs from its rail's door-side edge to the stud; a stud slide mm behind
+        its place is clear of both rails' edges, so the soffit lifts straight up."""
+        for bname, kind, a in A.features():
+            if bname.startswith("SOFFIT RAIL") and kind == "box":
+                rail = b6(bname)
+                y0, y1 = A.ev(V, a[2]), A.ev(V, a[3])
+                self.assertAlmostEqual(y0, rail[2])
+                self.assertGreater(y1, y0)
+                self.assertLess(y1 - V["slide"] + V["stud_d"] / 2, rail[2], "stud head clear of %s's edge" % bname)
+
+    def test_hub_fits_between_the_angles(self):
+        hub, fl, fr = b6("SENSOR HUB ZONE"), b6("COLUMN ANGLE FL"), b6("COLUMN ANGLE FR")
+        self.assertGreaterEqual(hub[0], fl[1] - 1e-9)
+        self.assertLessEqual(hub[1], fr[0] + 1e-9)
+        self.assertAlmostEqual(hub[1] - hub[0], 180.0)
+
+    def test_keyholes_drop_onto_the_studs(self):
+        ks = [a for b, k, a in A.features() if b == "COLUMN ANGLE BL" and k == "box"]
+        self.assertEqual(len(ks), 2)
+        for a in ks:
+            self.assertAlmostEqual(A.ev(V, a[5]) - A.ev(V, a[4]), V["key_drop"])
+        self.assertLess(V["key_drop"] - 8.0, 3.0, "the column drops onto BASE's 8 mm spigots as it hooks on")
 
 
 class Numbers(unittest.TestCase):
