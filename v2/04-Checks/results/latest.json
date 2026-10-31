@@ -1,5 +1,5 @@
 {
- "rev": "11d9b51",
+ "rev": "b033321",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -290,18 +290,6 @@
    "owner": "WALL",
    "evidence": {},
    "key": "C05|no-drawing|511101"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "831001",
-   "severity": "severe",
-   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS has no drawing PDF (831001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step.",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step",
-   "owner": "Joints Engineer",
-   "evidence": {},
-   "key": "C05|no-drawing|831001"
   }
  ],
  "stacks": [

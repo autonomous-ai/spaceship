@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -898,7 +898,7 @@
    "evidence": {},
    "key": "C05|no-drawing|831001",
    "id": "F-025",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 6ccbfac",
    "posted": "Joints group 2026-11-01",
@@ -907,9 +907,15 @@
      "date": "2026-11-01",
      "rev": "6ccbfac",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "b033321",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 11d9b51",
+   "closed": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -1027,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -1052,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -1077,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C06",
@@ -1331,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -1356,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -1381,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -1437,7 +1443,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -1493,7 +1499,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -3076,7 +3082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -3101,7 +3107,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C06",
@@ -3131,7 +3137,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C06",
@@ -3197,7 +3203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -3222,7 +3228,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -3247,7 +3253,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 11d9b51"
+   "last_seen": "2026-11-01 b033321"
   },
   {
    "check": "C01",
