@@ -20,8 +20,16 @@ import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(__file__))
-if HERE not in sys.path:
-    sys.path.insert(0, HERE)
+# Fusion keeps modules loaded between runs, and a run from another worktree may have loaded its
+# own copy of these (an AIR run loads the ceiling model too): drop any copy from another folder
+# and put this folder first, so the imports below take this folder's files
+for _n in ("ceiling_model", "ceiling_checks", "ceiling_build"):
+    _f = getattr(sys.modules.get(_n), "__file__", None)
+    if _f and os.path.dirname(os.path.abspath(_f)) != HERE:
+        del sys.modules[_n]
+if HERE in sys.path:
+    sys.path.remove(HERE)
+sys.path.insert(0, HERE)
 import ceiling_model as M  # noqa: E402
 importlib.reload(M)
 import ceiling_checks as C  # noqa: E402
@@ -30,14 +38,43 @@ import ceiling_build as CB  # noqa: E402
 importlib.reload(CB)
 
 
+def sync_params(design):
+    """Reference update from ceiling_model.py: set every user parameter whose expression or
+    status and source changed since the build (a parameter-only change needs no rebuild; the
+    timeline recomputes). Returns the names changed."""
+    changed = []
+    ups = design.userParameters
+    for name, expr, unit, status, src in M.all_params():
+        comment = "%s: %s" % (status.upper(), src)
+        p = ups.itemByName(name)
+        if p is None:
+            ups.add(name, adsk.core.ValueInput.createByString(expr), unit, comment)
+            changed.append(name)
+            continue
+        if "".join(p.expression.split()) != "".join(expr.split()):     # Fusion writes "( a - b )" for "(a - b)"
+            p.expression = expr
+            changed.append(name)
+        if p.comment != comment:
+            try:
+                p.comment = comment
+            except Exception:       # noqa: BLE001 (a comment Fusion won't take is not a geometry change)
+                pass
+    adsk.doEvents()
+    return changed
+
+
 def run(_context):
     app = adsk.core.Application.get()
     doc = app.activeDocument
     if doc.name.split(" v")[0] != CB.DOC_NAME:
         raise RuntimeError("active document is %r, not %s (use the runner's --doc)" % (doc.name, CB.DOC_NAME))
+    if doc.isModified:
+        raise RuntimeError("%s has unsaved changes: the report reads saved versions only (PM rule 2026-11-01)" % doc.name)
     design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
     root = design.rootComponent
     print("document %s, version %s" % (doc.name, doc.dataFile.versionNumber if doc.dataFile else "unsaved"))
+    changed = sync_params(design)
+    print("parameter sync from ceiling_model.py: %s" % (", ".join(changed) or "no change"))
     tl = design.timeline
     bad = [tl.item(i).name for i in range(tl.count)
            if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
@@ -70,7 +107,9 @@ def run(_context):
         raise RuntimeError("ceiling checks failed (unhealthy %s, loose %s, clashes %s, off layout %s, holes %s)" % (
             bad, loose, hits, pos["bad"], holes["bad"]))
     design.activateRootComponent()
-    if ARGS.get("save") == "1":
+    if ARGS.get("save") == "1" or changed:
+        # a parameter sync is a design change: save it before exporting (PM ruling 2026-11-01,
+        # 19.1 mm cable holes), so the exports and the cloud version agree
         print("saved:", doc.save("CEILING %s build (checked by ceiling_report.py), skeleton %s" % (M.REV, M.SKELETON_REV)))
         adsk.doEvents()
     if ARGS.get("export") == "1":

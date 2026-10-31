@@ -503,6 +503,25 @@ class NoFaiFlag(unittest.TestCase):
                 self.assertTrue(cells[hdr.index("Sample")], cells[0])
 
 
+class FlatPartColumns(unittest.TestCase):
+    """FRONT's lists give the cut in a type column; a note that says bonded keeps the drawing (PM, 2026-11-01)."""
+    LIST = "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv"
+    HEAD = "part_number,name,type,material,finish,note"
+
+    def lacks(self, line):
+        return rc.flat_lacks(rc.cut_rows({self.LIST: self.HEAD + "\n" + line + "\n"})["351302"])
+
+    def test_the_type_column_names_the_cut(self):
+        line = ('351302,FRONT - DECOR BACK PLATE - DR,"made (laser-cut sheet, no drawing: D-89 part 4)",'
+                '"aluminium EN AW-5754-H22 sheet 2.0 mm, general tolerance ISO 2768-m",mill finish,"blind-riveted to the frame"')
+        self.assertEqual(self.lacks(line), [])
+
+    def test_a_bonded_part_keeps_its_drawing(self):
+        line = ('351302,FRONT - DECOR BACK PLATE - DT,"made (CNC-routed ACP, no drawing: D-89 part 4)",'
+                '"ACP 3 mm, general tolerance ISO 2768-m",as supplied,"bonded to the frame"')
+        self.assertEqual(self.lacks(line), ["no bends or machined features (its process names bond)"])
+
+
 class Render(unittest.TestCase):
     def test_totals_count_each_number_once_and_name_the_screen(self):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]

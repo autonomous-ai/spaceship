@@ -22,8 +22,19 @@ import adsk.drawing
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(__file__))
-if HERE not in sys.path:
-    sys.path.insert(0, HERE)
+# Fusion keeps modules loaded between runs, and a run from another worktree may have loaded its
+# own copy of these: drop any copy from another folder, so the imports below take this
+# worktree's files (the drawing scripts here, the ceiling model next to them)
+_CAD = os.path.normpath(os.path.join(HERE, "..", "..", "01-CAD-Native", "ceiling"))
+for _n, _d in (("drawing_specs", HERE), ("make_drawing_ceiling", HERE), ("render_notes", HERE),
+               ("ceiling_model", _CAD), ("ceiling_checks", _CAD), ("ceiling_build", _CAD)):
+    _f = getattr(sys.modules.get(_n), "__file__", None)
+    if _f and os.path.dirname(os.path.abspath(_f)) != _d:
+        del sys.modules[_n]
+for _d in (_CAD, HERE):
+    if _d in sys.path:
+        sys.path.remove(_d)
+    sys.path.insert(0, _d)
 import drawing_specs as S  # noqa: E402
 importlib.reload(S)
 import make_drawing_ceiling as MD  # noqa: E402

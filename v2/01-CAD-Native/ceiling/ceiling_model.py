@@ -136,8 +136,8 @@ CEILING_PARAMS = [
     ("catch_h", "40 mm", "mm", "assumption", "safety catch space above the tray, up the member face; HOLD H04 / ISS-076"),
     # ---- cables, sprinkler reserve (no lights in the cassettes: PM ruling 2026-10-31, the lights
     #      move to a light shelf along the tops of the side and back walls)
-    ("cable_hole", "20 mm", "mm", "assumption",
-     "cable hole in the front and back returns for a grommet: the voice cockpit route from the back wall to the front (REQ-VCK-03, D-41) and the spare path (ISS-069); grommet HOLD"),
+    ("cable_hole", "19.1 mm", "mm", "confirmed",
+     "PM ruling 2026-11-01: the panel hole ELECTRICAL's cable bushing needs, in the front and back returns: the voice cockpit route from the back wall to the front (REQ-VCK-03, D-41) and the spare path (ISS-069)"),
     ("sprk_d", "150 mm", "mm", "assumption", "reserved round zone for a later sprinkler drop (REQ-US-01)"),
 ]
 

@@ -27,7 +27,8 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import REPO_ROOT, CHECKS_DIR, Finding, owner_for, rel, walk_files, pn_class  # noqa: E402
+from common import (REPO_ROOT, CHECKS_DIR, Finding, owner_for, rel, walk_files, pn_class,  # noqa: E402
+                    reserved_spaces, reserved_label)
 import register  # noqa: E402
 import c_parts  # noqa: E402
 import stepfile as sf  # noqa: E402
@@ -92,8 +93,9 @@ def _allowed(c, allow_rows):
     for r in allow_rows or []:
         ra, rb = re.compile(r["a"], re.I), re.compile(r["b"], re.I)
         vmax = float(r.get("max_mm3") or 0)
+        same = c["a"].split(" / ")[0] == c["b"].split(" / ")[0]     # scope same-file: one assembly file (D-104)
         if ((ra.search(c["a"]) and rb.search(c["b"])) or (ra.search(c["b"]) and rb.search(c["a"]))) and \
-                (vmax <= 0 or c["mm3"] <= vmax):
+                (vmax <= 0 or c["mm3"] <= vmax) and ((r.get("scope") or "").strip() != "same-file" or same):
             return r["id"]
     return None
 
@@ -103,7 +105,7 @@ def _allowed(c, allow_rows):
 SOFT_SWING_MM3 = 100.0
 
 
-def findings_from(res, model, file_hint="", allow_rows=None):
+def findings_from(res, model, file_hint="", allow_rows=None, reserved=None):
     """Findings carry the scope '<model>/fusion', so only a Fusion run can
     close them (an offline run can't see an exact clash). With allow_rows,
     the allow-list is applied again, so a saved run reads with today's list."""
@@ -120,6 +122,8 @@ def findings_from(res, model, file_hint="", allow_rows=None):
             {"model": scope, "mm3": c["mm3"], "a": c["a"], "b": c["b"]}))
     groups = {}
     for g in res.get("gaps", []):
+        if reserved and (reserved_label(g.get("a", ""), reserved) or reserved_label(g.get("b", ""), reserved)):
+            continue                    # a reserved space has no seams until it's designed
         lo, hi = g.get("min_mm"), g.get("max_mm")
         if (lo is not None and g["gap_mm"] < lo - 1e-6) or (hi is not None and g["gap_mm"] > hi + 1e-6):
             groups.setdefault(g.get("group") or g["id"], []).append(g)
@@ -273,7 +277,7 @@ def _main(a, root):
         os.path.abspath(res["steps"][0]).startswith(root) else ""
     allow_p = os.path.join(a.register_root, CHECKS_DIR, "config", "clash-allow.csv")
     allow_rows = c_parts.read_csv(allow_p) if os.path.exists(allow_p) else []
-    fs = findings_from(res, model, hint, allow_rows)
+    fs = findings_from(res, model, hint, allow_rows, reserved_spaces(root))
     plists = c_parts.find_parts_lists(root)
     if plists:
         fs += c_parts.check_mixed_metals(root, plists, contacts_from(res))

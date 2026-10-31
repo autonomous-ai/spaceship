@@ -5,8 +5,9 @@
 
 Opens 410000_P01_CEILING_CAD.f3d as a new document and changes skeleton
 parameters (pod_w +100, wall_depth +25), the soffit depth (cs_front 360 ->
-330, D-60) and the joint rule (bolt_edge_inset 220 -> 250; 5 bolts on the side
-and back edges instead of 4). After each change it rebuilds and checks every
+330, D-60) and the joint rule (bolt_edge_inset 220 -> 250; the side and back pitches
+340 and 240). A change of bolt count takes a rebuild from the script (each hole row is one
+sketch of its circles, positioned from the skeleton's start and pitch). After each change it rebuilds and checks every
 body against the box the layout gives for the new values (frame members, both
 skins, and in both cassettes the tray, felt, ribs, fill strips, clips and
 catches) and every joint hole against the register's rule for the new values.
@@ -23,8 +24,16 @@ import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(__file__))
-if HERE not in sys.path:
-    sys.path.insert(0, HERE)
+# Fusion keeps modules loaded between runs, and a run from another worktree may have loaded its
+# own copy of these (an AIR run loads the ceiling model too): drop any copy from another folder
+# and put this folder first, so the imports below take this folder's files
+for _n in ("ceiling_model", "ceiling_checks", "ceiling_build"):
+    _f = getattr(sys.modules.get(_n), "__file__", None)
+    if _f and os.path.dirname(os.path.abspath(_f)) != HERE:
+        del sys.modules[_n]
+if HERE in sys.path:
+    sys.path.remove(HERE)
+sys.path.insert(0, HERE)
 import ceiling_model as M  # noqa: E402
 importlib.reload(M)
 import ceiling_checks as C  # noqa: E402
@@ -36,7 +45,7 @@ EDITS = [
     [("wall_depth", "1520 mm")],
     [("cs_front", "330 mm")],
     [("bolt_edge_inset", "250 mm")],
-    [("n_ceil_side_bolt", "5"), ("n_ceil_back_bolt", "5")],
+    [("ceil_side_pitch", "340 mm"), ("ceil_back_pitch", "240 mm")],
 ]
 
 
