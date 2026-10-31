@@ -18,12 +18,12 @@ Nothing here is released for production.
 2. `docs/engineering-guideline.md`: the hardware team's guideline (Vietnamese), mandatory for every version.
 3. `v2/PLAN.md`: the approved plan and targets.
 4. `v2-build-plan.pdf` (this folder): the indoor pod lead engineer's build plan, with pictures. It's in Vietnamese; `requirements.md` §G translates every line.
-5. [`decision-log.md`](decision-log.md): the PM's decisions D-01 to D-23, with reasons.
+5. [`decision-log.md`](decision-log.md): the PM's decisions D-01 to D-26, with reasons.
 6. [`requirements.md`](requirements.md): what v2 must meet, with a status and a source for each line.
 7. [`conventions.md`](conventions.md): units, the ISO list, axes (with a [diagram](pod-coordinate-system.svg)), names, part numbers, file names, revisions and status values.
 8. [`assembly-tree.md`](assembly-tree.md): how the pod splits, where every plan code goes, the interfaces, and the v1 counterparts.
 9. [`open-questions.md`](open-questions.md): answers for door and glass, lights, door hand and the thin floor.
-10. [`issue-register.csv`](issue-register.csv): 69 issues (39 open, 11 proposed, 16 decided, 3 closed), each with who confirms it and when it closes.
+10. [`issue-register.csv`](issue-register.csv): 69 issues (36 open, 11 proposed, 18 decided, 4 closed), each with who confirms it and when it closes.
 11. [`document-register.csv`](document-register.csv): every file in `sources/v1`, `docs` and `v2`, with code, revision, status, date, source and relation.
 12. Background: `v2/research/market-study.md` and `sources/v1/README.md`.
 
@@ -62,8 +62,10 @@ Facts only the team can confirm (indoor pod lead engineer):
 - The v1 CAD's 8 leveling feet sit in only **6 places** (2 duplicates), so it agrees with the BOM's 6. Its 3 hinges sit in only 2 places (ISS-017, ISS-024).
 - The v1 BOM understates plywood: 9 mm against 15 mm in the drawings and CAD. Any v1 weight taken from the BOM is low (ISS-018, ISS-021).
 - The plan's fan (VT06) and speed knob (VT08) are mains parts. They don't fit the 12 V bus or a CO2-driven, self-starting fan (ISS-038, ISS-039).
-- With the final stack, a ceiling half's outer panel weighs about 21 kg with its fill, over the 20 kg rule (ISS-067). If the acrylic front fails its sample, the laminated fallback takes the pod to about 416 kg, over the 400 kg cap (ISS-068).
-- The 25 mm cassette gap is both the acoustic gap and the cable path. Cables must clip to the cassette only, or they bridge it and leak sound (ISS-069).
+- The final stack raised three points, now decided:
+  - The ceiling fill rides on its cassette, so each ceiling panel stays at 20 kg or less (D-24).
+  - A laminated fallback front gets a 420 kg cap, with weight offsets to find (D-25).
+  - Cables in the cassette gap clip only to the cassette (D-26).
 
 ## How to check this pack
 

@@ -112,7 +112,7 @@ The PM's decisions: 2–3 cm panels lying on the room floor, the walls fixed aro
 | Question | Working default | Issue |
 |---|---|---|
 | Decor colour: yellow or black? | DECIDED (D-12): Dark Yellow EV3038, matching the plan's material list and v1's product photos | ISS-031 |
-| Quiet target and weight | DECIDED (D-02): the quiet build at about 385 kg and 24.2 dB calculated (Class C) with the final stack; the factory sample decides; never over 400 kg | ISS-063, ISS-065, ISS-068 |
+| Quiet target and weight | DECIDED (D-02, D-25): the quiet build at about 385 kg and 24.2 dB calculated (Class C) with the final stack; the factory sample decides; never over 400 kg with the acrylic front, 420 kg only with the laminated fallback | ISS-063, ISS-065, ISS-068 |
 | Assembly method | DECIDED (D-08): tool-free connectors, captive bolts, factory-made subassemblies, felt pre-fitted at the factory | ISS-064 |
 | Overall height and its datum | DECIDED (D-21): 2400 from the room floor to the top of the roof skin | ISS-013 |
 | Depth chain between the walls and the decor | Back face at Y = +850, decor front at Y = −850, overlap set by the bracket joint | ISS-012 |
