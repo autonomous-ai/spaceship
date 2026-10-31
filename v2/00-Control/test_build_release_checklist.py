@@ -123,6 +123,11 @@ class MadeParts(unittest.TestCase):
         made, _ = run([self.frame(), self.frame()], ALL_FRAME_FILES)
         self.assertEqual(len(made), 1)
 
+    def test_the_joints_folders_belong_to_joints(self):
+        file_map = files("831002_P01_HARDWARE-STOP-WASHER_STEP.step", folder="v2/03-Manufacturing/joints/")
+        extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked")
+        self.assertEqual([(e["part_number"], e["team"]) for e in extra], [("831002", "JOINTS")])
+
     def test_a_part_with_files_but_no_bom_row(self):
         file_map = files("211102_P01_WALL-PANEL-FRAME-RH_CAD.f3d", "211102_P01_WALL-PANEL-FRAME-RH_STEP.step")
         extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked")
