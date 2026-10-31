@@ -8,7 +8,7 @@ Each question gets an answer and the reasons for it. Where the PM has ruled, the
 
 | Q | Question | Answer in one line | Status | Issues |
 |---|---|---|---|---|
-| Q1 | Door and glass | Keep v1's front layout and outline; 4+4 laminated glass, frameless as v1; dormakaba OFFICE 11.233 hinges in a 160 mm pocket in the left decor block; sealed all round; fixed panel in sealed profiles | DECIDED material (D-27) and hinges (D-30); rest PROPOSED | ISS-001, -002, -003, -023, -043 |
+| Q1 | Door and glass | Keep v1's front layout and outline; 4+4 laminate of toughened, heat-soaked panes, frameless as v1; hinges and lock rated for that glass, 47.5 kg and 1176 mm (HOLD until named); sealed all round; fixed panel in sealed profiles | DECIDED material (D-27, D-46); hardware HOLD; rest PROPOSED | ISS-001, -002, -003, -023, -043 |
 | Q2 | Lights | One dimmable, low-heat LED ceiling light plus a soft front face light for video calls, all on 12 V; the Hardware Engineer picks the parts | DECIDED (D-20); 30 W budget PROPOSED | ISS-004, -061 |
 | Q3 | Door hand | Left-hinged as v1, seen from outside facing the door, with the hinge pocket in the left decor block; handle and catch on the right; opens outward | DECIDED hinge (D-19); swing PROPOSED | ISS-055 |
 | Q4 | Floor type | Thin floor inside the aluminium base band, 20 mm threshold at the door, walls standing around it on a base rail, packers for leveling | DECIDED (D-05, D-18); layer build PROPOSED | ISS-040, -050, -053, -054 |
@@ -17,13 +17,13 @@ Each question gets an answer and the reasons for it. Where the PM has ruled, the
 
 The build plan has no glass at all (ISS-001). The look needs v1's glass layout (REQ-LOOK-04).
 
-**Answer** (material DECIDED, D-27; hinges DECIDED, D-30; the rest PROPOSED)
+**Answer** (material DECIDED, D-27 and D-46; hardware on HOLD, D-46; the rest PROPOSED)
 1. **Same layout and outline as v1.** One hinged door leaf and one fixed panel in the same plane, smoked gray. The door is a trapezoid, 1175.6 wide at the bottom and 892.9 at the top, 2011.1 tall, with a slanted leading edge that meets the fixed panel's slanted edge. The fixed panel has 5 sides and follows the inner edge of the right decor block. Status: source (v1 STEP outline). The v2 cut sizes come from the v2 decor and floor once the depth chain and height are fixed (ISS-012, ISS-013).
-2. **Material, DECIDED (D-27): 4+4 laminated glass (8.76 mm), frameless as in v1.** It replaces the earlier acrylic baseline (D-07): acrylic needed an aluminium stile along its hinge edge, which added an opaque band about 80 mm wide down the door and broke the look rule (D-01). Laminated glass also removes the creep, scratch, fire-class and flatness risks. Acrylic stays only as an optional experiment on the factory sample. The laminate's smoked tint is matched to v1 on the sample.
+2. **Material, DECIDED (D-27, D-46): 4+4 laminate of toughened, heat-soaked panes (8.76 mm), frameless as in v1.** It replaces the earlier acrylic baseline (D-07): acrylic needed an aluminium stile along its hinge edge, which added an opaque band about 80 mm wide down the door and broke the look rule (D-01). Laminated glass also removes the creep, scratch, fire-class and flatness risks. Acrylic stays only as an optional experiment on the factory sample. The laminate's smoked tint is matched to v1 on the sample.
 3. **Hardware, by function.** Each item gets a real part number from the hardware selection first.
-   - Hinges: dormakaba OFFICE 11.233 (D-30), in a 160 mm pocket inside the left decor block DL. The door in laminated glass is about 43 kg (calculation C5 in `requirements.md`); the hinges' clamping range for 8.76 mm laminate goes on the factory's question list. v1 lists 3 hinges, but its CAD has only 2 positions (ISS-024).
+   - Hinges and lock: rated for the 8.76 mm toughened, heat-soaked laminate, for 47.5 kg and the 1176 mm width; on HOLD until a rated set is named (D-46). The candidate is dormakaba OFFICE 11.233 (D-30), in a 160 mm pocket inside the left decor block DL. The door in laminated glass is about 43 kg (calculation C5 in `requirements.md`); the hinges' clamping range for 8.76 mm laminate goes on the factory's question list. v1 lists 3 hinges, but its CAD has only 2 positions (ISS-024).
    - Handle: a back-to-back pull handle, inside and outside, about 300 mm long like v1. The v1 CAD shows only the outside half (ISS-056).
-   - Catch: a magnetic catch on the leading edge, with no lock or latch. It keeps the pull light (REQ-US-04).
+   - Lock and catch: the lock is part of the rated set (D-46); keep the pull light (REQ-US-04).
    - Seals: a perimeter seal on the hinge side and top; a seal on the slanted joint between the door and the fixed panel; an automatic drop seal at the bottom onto the threshold, housed in a 90 mm aluminium kick strip in the base band's dark finish (D-40).
    - Fixed panel: held in sealed U profiles with gaskets, sitting on setting blocks, at the base, DT and DR. No glue, so the panel can be replaced.
 4. **Handling:** two people with suction lifters. The door and fixed panel travel on the standard long pallet, because 2011 is taller than a 48 × 40 pallet takes (layout study).

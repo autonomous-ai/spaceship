@@ -27,7 +27,7 @@ Spaceship is the working name for v2 (FocusPod v2). The team calls the product "
 | Sound | dB, dB(A) | Name the quantity and the standard, for example "D_S,A per ISO 23351-1" or "L_p,A at the seated ear". |
 | Gas concentration · power · voltage | ppm · W · V | |
 
-- **Files (D-13, DECIDED):** drawings and DXF are in mm. A STEP file may stay in cm when the file itself declares cm, as Fusion exports do. After every import or export, check the declared unit and measure a known size; never rescale by hand. `AGENTS.md` still says "mm everywhere" (ISS-066).
+- **Files (D-13, DECIDED):** drawings and DXF are in mm. A STEP file may stay in cm when the file itself declares cm, as Fusion exports do. After every import or export, check the declared unit and measure a known size; never rescale by hand. `AGENTS.md` carries this exception since the sync on main (ISS-066, closed).
 - Imperial numbers appear only as reference data in the logistics appendix (07-Packaging), with the metric number that controls next to them. Examples: 48 × 40 in pallet = 1219 × 1016 mm; 6 ft = 1829 mm; 36 × 80 in door = 914 × 2032 mm. Trade names can keep their inch sizes ("48 × 40 in pallet"). The controlling number is always metric.
 - Round converted numbers to what the function needs. Don't scale a mm model by 25.4. After any import or export, measure a known dimension again.
 
