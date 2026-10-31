@@ -16,6 +16,7 @@ Then closes the copy without saving.
 """
 
 import math
+import os
 
 import adsk.core
 import adsk.fusion
@@ -153,5 +154,10 @@ def record(design, rel):
     p("4. Revert: %d items, %d not healthy, %d sketches not fully constrained; bodies back to before: %s." % (
         n3, len(bad3), len(loose3), same))
     print("\n".join(out))
+    if ARGS.get("out"):                     # also write the record to a file (post_wall_doc.py)
+        path = os.path.join(ARGS["repo_root"], ARGS["out"])
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(out) + "\n")
     if not all(ok for _c, ok in checks) or bad or loose or bad2 or loose2:
         raise RuntimeError("edit test failed: %s" % [c for c, ok in checks if not ok])

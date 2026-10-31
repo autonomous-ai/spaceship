@@ -1,0 +1,701 @@
+{
+ "document": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD",
+ "version": 5,
+ "saved": true,
+ "modified": false,
+ "components": [
+  {
+   "part_number": "511301",
+   "name": "511301 LINING - FELT - SIDE LOWER - LH",
+   "description": "LINING - FELT - SIDE LOWER - LH | Tấm tiêu âm vách trái dưới | P01",
+   "is_root": false,
+   "bodies": [
+    {
+     "name": "FELT - PET 9 HELD BY THE TRAY LIPS",
+     "box": [
+      -1175.5,
+      -643.5,
+      113.76,
+      -1166.5,
+      798.5,
+      1253.5
+     ],
+     "volume_mm3": 14791545.7,
+     "area_mm2": 3333481.5,
+     "mass_kg": 2.9583,
+     "material": "PET FELT 9 MM 200 kg/m3 (source)",
+     "holes": []
+    }
+   ]
+  },
+  {
+   "part_number": "511101",
+   "name": "511101 LINING - TRAY - SIDE LOWER - LH",
+   "description": "LINING - TRAY - SIDE LOWER - LH | Khay thép lót vách trái dưới | P01",
+   "is_root": false,
+   "bodies": [
+    {
+     "name": "TRAY - STEEL 0.5 WITH RETURNS AND LIPS",
+     "box": [
+      -1200.0,
+      -645.0,
+      112.26,
+      -1166.0,
+      800.0,
+      1255.0
+     ],
+     "volume_mm3": 939990.1,
+     "area_mm2": 3762703.0,
+     "mass_kg": 7.3789,
+     "material": "GALVANISED STEEL 0.5 7850 kg/m3 (source)",
+     "holes": [
+      {
+       "d": 2.0,
+       "axis": "y",
+       "centre": [
+        -1167.0,
+        null,
+        1254.0
+       ],
+       "from": -644.15,
+       "to": 799.15,
+       "full_circle": false
+      },
+      {
+       "d": 1.0,
+       "axis": "y",
+       "centre": [
+        -1167.0,
+        null,
+        1254.0
+       ],
+       "from": -644.15,
+       "to": 799.15,
+       "full_circle": false
+      },
+      {
+       "d": 2.0,
+       "axis": "z",
+       "centre": [
+        -1167.0,
+        -644.0,
+        null
+       ],
+       "from": 113.11,
+       "to": 1254.15,
+       "full_circle": false
+      },
+      {
+       "d": 1.0,
+       "axis": "z",
+       "centre": [
+        -1167.0,
+        -644.0,
+        null
+       ],
+       "from": 113.11,
+       "to": 1254.15,
+       "full_circle": false
+      },
+      {
+       "d": 2.0,
+       "axis": "z",
+       "centre": [
+        -1167.0,
+        799.0,
+        null
+       ],
+       "from": 113.11,
+       "to": 1254.15,
+       "full_circle": false
+      },
+      {
+       "d": 1.0,
+       "axis": "z",
+       "centre": [
+        -1167.0,
+        799.0,
+        null
+       ],
+       "from": 113.11,
+       "to": 1254.15,
+       "full_circle": false
+      },
+      {
+       "d": 2.0,
+       "axis": "y",
+       "centre": [
+        -1167.0,
+        null,
+        113.26
+       ],
+       "from": -644.15,
+       "to": 799.15,
+       "full_circle": false
+      },
+      {
+       "d": 1.0,
+       "axis": "y",
+       "centre": [
+        -1167.0,
+        null,
+        113.26
+       ],
+       "from": -644.15,
+       "to": 799.15,
+       "full_circle": false
+      },
+      {
+       "d": 1.0,
+       "axis": "z",
+       "centre": [
+        -1199.0,
+        799.0,
+        null
+       ],
+       "from": 113.69,
+       "to": 1253.57,
+       "full_circle": false
+      },
+      {
+       "d": 2.0,
+       "axis": "z",
+       "centre": [
+        -1199.0,
+        799.0,
+        null
+       ],
+       "from": 113.69,
+       "to": 1253.57,
+       "full_circle": false
+      },
+      {
+       "d": 1.0,
+       "axis": "z",
+       "centre": [
+        -1199.0,
+        -644.0,
+        null
+       ],
+       "from": 113.69,
+       "to": 1253.57,
+       "full_circle": false
+      },
+      {
+       "d": 2.0,
+       "axis": "z",
+       "centre": [
+        -1199.0,
+        -644.0,
+        null
+       ],
+       "from": 113.69,
+       "to": 1253.57,
+       "full_circle": false
+      },
+      {
+       "d": 1.0,
+       "axis": "y",
+       "centre": [
+        -1199.0,
+        null,
+        113.26
+       ],
+       "from": -643.57,
+       "to": 798.57,
+       "full_circle": false
+      },
+      {
+       "d": 2.0,
+       "axis": "y",
+       "centre": [
+        -1199.0,
+        null,
+        113.26
+       ],
+       "from": -643.57,
+       "to": 798.57,
+       "full_circle": false
+      },
+      {
+       "d": 1.0,
+       "axis": "y",
+       "centre": [
+        -1199.0,
+        null,
+        1254.0
+       ],
+       "from": -643.57,
+       "to": 798.57,
+       "full_circle": false
+      },
+      {
+       "d": 2.0,
+       "axis": "y",
+       "centre": [
+        -1199.0,
+        null,
+        1254.0
+       ],
+       "from": -643.57,
+       "to": 798.57,
+       "full_circle": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "part_number": "510101",
+   "name": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD",
+   "description": "LINING - CASSETTE - SIDE LOWER - LH | Cassette lót vách trái dưới (khay thép + tấm tiêu âm) | P01 | position L1",
+   "is_root": true,
+   "bodies": []
+  },
+  {
+   "part_number": "NO-PN-HOLD-H03",
+   "name": "NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED)",
+   "description": "HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED) | Vùng dành cho kẹp treo cassette (HOLD) | P01",
+   "is_root": false,
+   "bodies": [
+    {
+     "name": "HOLD - CLIP ZONE 1 (BOTTOM FRONT)",
+     "box": [
+      -1204.0,
+      -277.81,
+      182.26,
+      -1200.0,
+      -257.81,
+      242.26
+     ],
+     "volume_mm3": 4800.0,
+     "area_mm2": 3040.0,
+     "mass_kg": 0.0,
+     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
+     "holes": []
+    },
+    {
+     "name": "HOLD - CLIP ZONE 2 (BOTTOM BACK)",
+     "box": [
+      -1204.0,
+      452.06,
+      182.26,
+      -1200.0,
+      472.06,
+      242.26
+     ],
+     "volume_mm3": 4800.0,
+     "area_mm2": 3040.0,
+     "mass_kg": 0.0,
+     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
+     "holes": []
+    },
+    {
+     "name": "HOLD - CLIP ZONE 3 (TOP FRONT)",
+     "box": [
+      -1204.0,
+      -277.81,
+      1125.0,
+      -1200.0,
+      -257.81,
+      1185.0
+     ],
+     "volume_mm3": 4800.0,
+     "area_mm2": 3040.0,
+     "mass_kg": 0.0,
+     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
+     "holes": []
+    },
+    {
+     "name": "HOLD - CLIP ZONE 4 (TOP BACK)",
+     "box": [
+      -1204.0,
+      452.06,
+      1125.0,
+      -1200.0,
+      472.06,
+      1185.0
+     ],
+     "volume_mm3": 4800.0,
+     "area_mm2": 3040.0,
+     "mass_kg": 0.0,
+     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
+     "holes": []
+    }
+   ]
+  }
+ ],
+ "parameters": [
+  {
+   "name": "pod_w",
+   "expression": "pod_w_Ref",
+   "unit": "mm",
+   "value": 2500.0,
+   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "pod_d",
+   "expression": "pod_d_Ref",
+   "unit": "mm",
+   "value": 1700.0,
+   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "pod_h",
+   "expression": "pod_h_Ref",
+   "unit": "mm",
+   "value": 2400.0,
+   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "wall_depth",
+   "expression": "wall_depth_Ref",
+   "unit": "mm",
+   "value": 1495.0,
+   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "wall_z0",
+   "expression": "wall_z0_Ref",
+   "unit": "mm",
+   "value": 110.0,
+   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "panel_z0",
+   "expression": "panel_z0_Ref",
+   "unit": "mm",
+   "value": 112.26,
+   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "side_h",
+   "expression": "side_h_Ref",
+   "unit": "mm",
+   "value": 1142.74,
+   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "stack_t",
+   "expression": "stack_t_Ref",
+   "unit": "mm",
+   "value": 84.0,
+   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "outer_t",
+   "expression": "outer_t_Ref",
+   "unit": "mm",
+   "value": 46.0,
+   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "cass_t",
+   "expression": "cass_t_Ref",
+   "unit": "mm",
+   "value": 34.0,
+   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "lin_gap",
+   "expression": "lin_gap_Ref",
+   "unit": "mm",
+   "value": 4.0,
+   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "seam_gap",
+   "expression": "seam_gap_Ref",
+   "unit": "mm",
+   "value": 2.26,
+   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+  },
+  {
+   "name": "skin_t",
+   "expression": "3 mm",
+   "unit": "mm",
+   "value": 3.0,
+   "comment": "SOURCE: HW-SEL A1: Alcorest ACP 3 mm x 0.21 mm skins, EV3038 (plan VT01); D-12 colour"
+  },
+  {
+   "name": "tube_w",
+   "expression": "20 mm",
+   "unit": "mm",
+   "value": 20.0,
+   "comment": "CONFIRMED: D-34, D-54: aluminium tube 20 x 40 x 1.2; the 20 mm face carries the skin, so the 40 mm runs through the wall (outer_t = ACP 3 + frame 40). The joint register may turn it for the bond width (HOLD)"
+  },
+  {
+   "name": "bond_t",
+   "expression": "3 mm",
+   "unit": "mm",
+   "value": 3.0,
+   "comment": "CONFIRMED: PM ruling 2026-10-31 (outer panel 46 = ACP 3 + bond 3 + frame 40): SikaTack Panel-50 joint 12 x 3, the fixing tape sets 3 mm (bond spec, PR #23)"
+  },
+  {
+   "name": "tube_d",
+   "expression": "outer_t - skin_t - bond_t",
+   "unit": "mm",
+   "value": 40.0,
+   "comment": "CALCULATION: frame depth = outer panel 46 - skin 3 - bond 3 = 40 (D-34)"
+  },
+  {
+   "name": "tube_t",
+   "expression": "1.2 mm",
+   "unit": "mm",
+   "value": 1.2,
+   "comment": "CONFIRMED: D-34, D-54: wall 1.2 mm (rivnut grip check passed)"
+  },
+  {
+   "name": "stile_pitch_max",
+   "expression": "400 mm",
+   "unit": "mm",
+   "value": 400.0,
+   "comment": "CONFIRMED: D-16, D-34: members 400 mm apart or less, to keep the ACP flat"
+  },
+  {
+   "name": "pnl_len",
+   "expression": "wall_depth - seam_gap",
+   "unit": "mm",
+   "value": 1492.74,
+   "comment": "CALCULATION: D-49 depth 1495 less the 2.26 gap at the decor back plate (PM ruling on F-008): 1492.74"
+  },
+  {
+   "name": "pnl_h",
+   "expression": "side_h",
+   "unit": "mm",
+   "value": 1142.74,
+   "comment": "CALCULATION: skeleton side_h: 2 sheets per side wall (D-23) with the seam gaps"
+  },
+  {
+   "name": "skin_ret",
+   "expression": "outer_t - skin_t",
+   "unit": "mm",
+   "value": 43.0,
+   "comment": "ASSUMPTION: back return of the side skin: covers the frame's back end at the corner, where the side skin covers the back panel's edge (D-55; sample drawing D04). V-groove and fold per the ACP maker (HOLD H16)"
+  },
+  {
+   "name": "skin_setback",
+   "expression": "0 mm",
+   "unit": "mm",
+   "value": 0.0,
+   "comment": "ASSUMPTION: skin edge set back from the frame's top and bottom edges: 0, so the outside reveal equals the 2.26 seam gap (D-23: crisp, aligned reveals; joints register 2.8 leaves the setback to the WALL drawing)"
+  },
+  {
+   "name": "frm_len",
+   "expression": "pnl_len - skin_t",
+   "unit": "mm",
+   "value": 1489.74,
+   "comment": "CALCULATION: the frame stops at the inside of the skin's back return"
+  },
+  {
+   "name": "frm_h",
+   "expression": "pnl_h",
+   "unit": "mm",
+   "value": 1142.74,
+   "comment": "ASSUMPTION: the frame fills the skeleton envelope height; seam and base gasket gaps are set by the joint register (HOLD)"
+  },
+  {
+   "name": "corner_w",
+   "expression": "40 mm",
+   "unit": "mm",
+   "value": 40.0,
+   "comment": "CONFIRMED: the side panel's back member is 40 x 40 x 1.2 (PM ruling on the joints register, item 3, 2026-10-31; register F2, FR-06): the back corner joint needs a 37+ mm overlap for the rivnut and the bolt"
+  },
+  {
+   "name": "stile_n_mid",
+   "expression": "ceil(( frm_len - tube_w / 2 - corner_w / 2 ) / stile_pitch_max) - 1",
+   "unit": "",
+   "value": 3.0,
+   "comment": "CALCULATION: intermediate stiles so that no stile pitch (centre to centre) exceeds stile_pitch_max"
+  },
+  {
+   "name": "stile_pitch",
+   "expression": "( frm_len - tube_w / 2 - corner_w / 2 ) / ( stile_n_mid + 1 )",
+   "unit": "mm",
+   "value": 364.935,
+   "comment": "CALCULATION: equal stile pitch, centre to centre, from the front stile to the 40 mm back stile"
+  },
+  {
+   "name": "stile_len",
+   "expression": "frm_h - 2 * tube_w",
+   "unit": "mm",
+   "value": 1102.74,
+   "comment": "CALCULATION: stiles fit between the full-length rails (butt joints)"
+  },
+  {
+   "name": "fill_t",
+   "expression": "tube_d",
+   "unit": "mm",
+   "value": 40.0,
+   "comment": "CALCULATION: 40 mm PET fill fills the frame depth (D-34; layout study 40 mm)"
+  },
+  {
+   "name": "bolt_d",
+   "expression": "7 mm",
+   "unit": "mm",
+   "value": 7.0,
+   "comment": "CONFIRMED: PM ruling on F-009: bolt holes 7.0 (0.51 float), position tolerance 0.4 (+-0.2) from the spigot hole, CNC or drill jig (joints register FR-02)"
+  },
+  {
+   "name": "access_d",
+   "expression": "11 mm",
+   "unit": "mm",
+   "value": 11.0,
+   "comment": "CALCULATION: register FR-03: passes the M6 ISO 4762 head (10 max) and the 5 mm key"
+  },
+  {
+   "name": "rivnut_d",
+   "expression": "9.53 mm",
+   "unit": "mm",
+   "value": 9.53,
+   "comment": "SOURCE: Sherex CAH3-610-4.2 hole 9.53 +0.10 (HW-SEL A5; register H-03)"
+  },
+  {
+   "name": "spigot_d",
+   "expression": "8.5 mm",
+   "unit": "mm",
+   "value": 8.5,
+   "comment": "ASSUMPTION: register FR-05: hole for the 8 mm locating spigot H-05"
+  },
+  {
+   "name": "spigot_slot",
+   "expression": "14 mm",
+   "unit": "mm",
+   "value": 14.0,
+   "comment": "ASSUMPTION: register FR-05: slot length for the second spigot"
+  },
+  {
+   "name": "spigot_edge",
+   "expression": "100 mm",
+   "unit": "mm",
+   "value": 100.0,
+   "comment": "ASSUMPTION: register FR-04: spigots about 100 from each end of the joint"
+  },
+  {
+   "name": "jnt_edge",
+   "expression": "100 mm",
+   "unit": "mm",
+   "value": 100.0,
+   "comment": "ASSUMPTION: register J-WALL-02, J-FRONT-01: end bolts 100 from each end"
+  },
+  {
+   "name": "n_side_jnt",
+   "expression": "3",
+   "unit": "",
+   "value": 3.0,
+   "comment": "SOURCE: register J-WALL-02, J-FRONT-01: 3 bolts per panel height"
+  },
+  {
+   "name": "side_jnt_pitch",
+   "expression": "( pnl_h - 2 * jnt_edge ) / ( n_side_jnt - 1 )",
+   "unit": "mm",
+   "value": 471.37,
+   "comment": "CALCULATION: equal pitch of the 3 bolts up the corner and decor joints"
+  },
+  {
+   "name": "pocket_w",
+   "expression": "60 mm",
+   "unit": "mm",
+   "value": 60.0,
+   "comment": "ASSUMPTION: register FR-10: fill left out 60 x 60 next to each bolt for the key"
+  },
+  {
+   "name": "base_bolt_edge",
+   "expression": "220 mm",
+   "unit": "mm",
+   "value": 220.0,
+   "comment": "SOURCE: J-BASE-01 band rivnuts: the end ones 220 in from the panel ends, even pitch (BASE Engineer, 2026-10-31; the PM ruled the positions stand)"
+  },
+  {
+   "name": "n_base_bolt",
+   "expression": "4",
+   "unit": "",
+   "value": 4.0,
+   "comment": "SOURCE: J-BASE-01: 4 bolts per side panel (BASE Engineer; joints register 3.3)"
+  },
+  {
+   "name": "base_bolt_pitch",
+   "expression": "( pnl_len - 2 * base_bolt_edge ) / ( n_base_bolt - 1 )",
+   "unit": "mm",
+   "value": 350.9133,
+   "comment": "CALCULATION: even pitch of the J-BASE-01 bolts"
+  },
+  {
+   "name": "felt_t",
+   "expression": "9 mm",
+   "unit": "mm",
+   "value": 9.0,
+   "comment": "SOURCE: plan VT03-PET 9 mm PET felt; HW-SEL A3; D-31 (the factory's felt)"
+  },
+  {
+   "name": "tray_t",
+   "expression": "0.5 mm",
+   "unit": "mm",
+   "value": 0.5,
+   "comment": "CONFIRMED: D-37: galvanised steel tray 0.5 mm"
+  },
+  {
+   "name": "tray_h",
+   "expression": "cass_t",
+   "unit": "mm",
+   "value": 34.0,
+   "comment": "CONFIRMED: PM ruling 2026-10-31 (WALL group, option 1): the wall cassettes use the ceiling's tray, returns the full cassette depth (34) turned in as lips that hold the felt, no ribs; settles H09 for the walls"
+  },
+  {
+   "name": "lip_w",
+   "expression": "12 mm",
+   "unit": "mm",
+   "value": 12.0,
+   "comment": "CONFIRMED: PM ruling 2026-10-31 (WALL group, option 1): 12 mm lips hold the felt edge"
+  },
+  {
+   "name": "bend_r",
+   "expression": "tray_t",
+   "unit": "mm",
+   "value": 0.5,
+   "comment": "ASSUMPTION: inside bend radius 1 x t for 0.5 mm DX51D (the sheet metal rule's bend radius is its Thickness); the factory's tooling sets it (guideline 9)"
+  },
+  {
+   "name": "felt_c",
+   "expression": "1 mm",
+   "unit": "mm",
+   "value": 1.0,
+   "comment": "ASSUMPTION: felt edge clearance inside the returns, as the ceiling cassette"
+  },
+  {
+   "name": "gap_h",
+   "expression": "tray_h - felt_t - 2 * tray_t",
+   "unit": "mm",
+   "value": 24.0,
+   "comment": "CALCULATION: air gap between the tray base and the felt (24): the acoustic gap (D-17) and the cable path (D-26)"
+  },
+  {
+   "name": "cass_len",
+   "expression": "wall_depth - stack_t + cass_t",
+   "unit": "mm",
+   "value": 1445.0,
+   "comment": "CALCULATION: = 1448: from the decor back plate to past the back cassette's face, closing the inside corner (D-57)"
+  },
+  {
+   "name": "cass_h",
+   "expression": "side_h",
+   "unit": "mm",
+   "value": 1142.74,
+   "comment": "CALCULATION: lower: the panel height; upper: stops lin_gap under the roof frame so it floats (D-57)"
+  },
+  {
+   "name": "clip_zone_h",
+   "expression": "60 mm",
+   "unit": "mm",
+   "value": 60.0,
+   "comment": "ASSUMPTION: height of each reserved clip zone (H03: no clip named)"
+  },
+  {
+   "name": "clip_zone_dz",
+   "expression": "100 mm",
+   "unit": "mm",
+   "value": 100.0,
+   "comment": "ASSUMPTION: clip zone centre from the cassette's top and bottom edges (H03)"
+  }
+ ]
+}

@@ -33,13 +33,44 @@ def load(part="panel", side="L", row="1"):
     return ns
 
 
-def resolve(ns):
+# PM rulings of 2026-10-31 that skeleton P04 (PR #24) carries, applied here until it merges: outer panel
+# 46 (stack 84), seam gap 2.26 at every site joint, side rows of (wall_h - 2 * seam_gap) / 2.
+PENDING_P04 = [("seam_gap", "2.26 mm"), ("outer_t", "46 mm"), ("stack_t", "84 mm"), ("panel_z0", "wall_z0 + seam_gap")]
+PENDING_P04_DERIVED = [("side_h", "(wall_h - 2 * seam_gap) / 2")]
+
+
+def skeleton_with_pending(ns):
+    skel = list(ns["skeleton_params"](REPO))
+    pending = dict(PENDING_P04)
+    skel = [(n, pending[n], u, "confirmed", "pending P04") if n in pending else (n, e, u, st, src)
+            for n, e, u, st, src in skel]
+    for n, e in PENDING_P04:
+        if n not in [p[0] for p in skel]:
+            row = (n, e, "mm", "confirmed", "pending P04")
+            # plain values first (others use them), expressions last (they use others)
+            skel.insert(0, row) if re.fullmatch(r"[\d.]+ mm", e) else skel.append(row)
+    if "2 * seam_gap" not in dict((p[0], p[1]) for p in skel)["side_h"]:
+        skel = [(n, dict(PENDING_P04_DERIVED).get(n, e), u, st, src) for n, e, u, st, src in skel]
+    return skel
+
+
+def resolve(ns, override=None):
     """All parameter values in mm (or plain numbers), skeleton first, as Fusion evaluates them."""
-    skel = ns["skeleton_params"](REPO)
-    used = ns["needed_skeleton"](skel, ns["WALL_PARAMS"])
+    skel = skeleton_with_pending(ns)
+    by = {p[0]: p for p in skel}
+    names = set(ns["SKELETON_NAMES"])
+    todo = set(names)
+    for _n, expr, _u, _s, _src in ns["WALL_PARAMS"]:
+        todo |= ns["names_in"](expr)
+    want = set()
+    while todo:
+        n = todo.pop()
+        if n in by and n not in want:
+            want.add(n)
+            todo |= ns["names_in"](by[n][1])
     vals = {}
-    for name, expr, _unit, _status, _src in list(used) + list(ns["WALL_PARAMS"]):
-        vals[name] = evaluate(expr, vals)
+    for name, expr, _unit, _status, _src in [p for p in skel if p[0] in want] + list(ns["WALL_PARAMS"]):
+        vals[name] = (override or {}).get(name, evaluate(expr, vals)) if name in (override or {}) else evaluate(expr, vals)
     return vals
 
 
@@ -53,32 +84,33 @@ class WallSidePanelTest(unittest.TestCase):
     def test_parameters_resolve_to_the_decided_sizes(self):
         v = resolve(load())
         self.assertEqual(v["wall_depth"], 1495)          # D-49
-        self.assertEqual(v["side_h"], 1145)              # skeleton: (2400 - 110) / 2
-        self.assertEqual(v["tube_d"], 40)                # D-34: 20 x 40 x 1.2
-        self.assertEqual(v["frm_len"], 1492)             # 1495 - 3 mm back return
+        self.assertAlmostEqual(v["side_h"], 1142.74)     # (2290 - 2 x 2.26) / 2, PM ruling on F-008
+        self.assertEqual(v["tube_d"], 40)                # D-34: 20 x 40 x 1.2, behind the 3 mm bond line
+        self.assertAlmostEqual(v["pnl_len"], 1492.74)    # 1495 less the decor seam gap
+        self.assertAlmostEqual(v["frm_len"], 1489.74)    # less the 3 mm back return
         self.assertEqual(v["stile_n_mid"], 3)
-        self.assertAlmostEqual(v["stile_pitch"], 365.5)     # (1492 - 10 - 20) / 4, 40 mm back stile
-        self.assertEqual(v["corner_w"], 40)
+        self.assertAlmostEqual(v["stile_pitch"], 364.935)   # (1489.74 - 10 - 20) / 4, 40 mm back stile
         self.assertLessEqual(v["stile_pitch"], v["stile_pitch_max"])   # D-16, D-34
-        self.assertEqual(v["stile_len"], 1105)
-        self.assertAlmostEqual(v["side_jnt_pitch"], 472.5)  # 3 bolts, 100 from each end of 1145
-        self.assertEqual(v["tray_ret"], 25)              # D-17
-        self.assertEqual(v["cass_len"], 1448)            # D-57
-        self.assertEqual(v["cass_h"], 1145)
-        self.assertEqual(v["stack_t"], v["outer_t"] + 4 + v["cass_t"])  # 43 + 4 gap + 34 = 81 (D-16, D-42)
+        self.assertEqual(v["corner_w"], 40)
+        self.assertAlmostEqual(v["stile_len"], 1102.74)
+        self.assertAlmostEqual(v["side_jnt_pitch"], 471.37)  # 3 bolts, 100 from each end of 1142.74
+        self.assertAlmostEqual(v["base_bolt_pitch"], 350.913, places=3)  # BASE rule: 220 from the ends, 4 even
+        self.assertEqual(v["bolt_d"], 7)                 # PM ruling on F-009
+        self.assertEqual(v["tray_h"], 34)                # returns the full cassette depth, lips hold the felt
+        self.assertEqual(v["gap_h"], 24)                 # air gap behind the felt (D-17's 25 less the lip sheet)
+        self.assertAlmostEqual(v["cass_len"], 1445)      # decor back plate to past the back cassette's face (D-57)
+        self.assertAlmostEqual(v["cass_h"], 1142.74)
+        self.assertEqual(v["stack_t"], v["outer_t"] + 4 + v["cass_t"])  # 46 + 4 gap + 34 = 84 (PM ruling)
+        self.assertEqual(v["outer_t"], v["skin_t"] + v["bond_t"] + v["tube_d"])
 
     def test_upper_cassette_floats_under_the_roof_frame(self):
         v = resolve(load(part="cassette", row="2"))
-        self.assertEqual(v["cass_h"], 1098)              # D-57: 4 mm under the roof frame
+        self.assertAlmostEqual(v["cass_h"], 1142.74 - 46 - 4)   # D-57: lin_gap under the roof frame
 
     def test_stile_rule_holds_when_the_wall_depth_changes(self):
         ns = load()
         for depth in (1200, 1495, 1600, 2000):
-            vals = {}
-            skel = ns["skeleton_params"](REPO)
-            for name, expr, _u, _s, _src in list(ns["needed_skeleton"](skel, ns["WALL_PARAMS"])) + list(
-                    ns["WALL_PARAMS"]):
-                vals[name] = depth if name == "wall_depth" else evaluate(expr, vals)
+            vals = resolve(ns, override={"wall_depth": depth})
             self.assertLessEqual(vals["stile_pitch"], 400, depth)
             self.assertGreater(vals["stile_pitch"], 200, depth)
 
@@ -113,11 +145,13 @@ class WallSidePanelTest(unittest.TestCase):
             self.assertGreater(len(src), 10, name)
 
     def test_no_number_is_copied_from_the_skeleton(self):
-        """The wall script must not restate skeleton values; it reads them from pod_skeleton.py."""
+        """The wall script must not restate skeleton values; it derives them from the skeleton."""
         ns = load()
-        skel_names = {p[0] for p in ns["skeleton_params"](REPO)}
+        skel_names = {p[0] for p in skeleton_with_pending(ns)}
         for name, _e, _u, _s, _src in ns["WALL_PARAMS"]:
             self.assertNotIn(name, skel_names, name)
+        for n in ns["SKELETON_NAMES"]:
+            self.assertIn(n, skel_names, n)
 
 
 if __name__ == "__main__":

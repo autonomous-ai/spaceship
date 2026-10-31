@@ -1,7 +1,7 @@
 """Export the active WALL design: native .f3d and STEP, then re-read the STEP.
 
     python3 tools/fusion/run_script.py v2/01-CAD-Native/wall/export_wall_doc.py \
-        --doc 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD --arg pn=210101 --close
+        --doc 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD --arg pn=210101 --close --discard
 
 Refuses to run unless the active design is saved, unmodified and has the
 root part number given by `pn` (so it never exports someone else's document).
@@ -22,9 +22,17 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 
 
 def box(c):
-    b = c.boundingBox
-    return [round(v * 10.0, 2) for v in (b.minPoint.x, b.minPoint.y, b.minPoint.z,
-                                         b.maxPoint.x, b.maxPoint.y, b.maxPoint.z)]
+    """Box of the solid bodies only: a derived construction plane (the skeleton link) would stretch the
+    component's own box to Z 0, and a STEP carries no planes."""
+    bodies = [b for comp in adsk.fusion.Design.cast(c.parentDesign).allComponents for b in comp.bRepBodies] \
+        if isinstance(c, adsk.fusion.Component) else []
+    if not bodies:
+        b = c.boundingBox
+        return [round(v * 10.0, 2) for v in (b.minPoint.x, b.minPoint.y, b.minPoint.z,
+                                             b.maxPoint.x, b.maxPoint.y, b.maxPoint.z)]
+    lo = [min(getattr(b.boundingBox.minPoint, a) for b in bodies) * 10.0 for a in "xyz"]
+    hi = [max(getattr(b.boundingBox.maxPoint, a) for b in bodies) * 10.0 for a in "xyz"]
+    return [round(v, 2) for v in lo + hi]
 
 
 def export(em, mk, path, root):
@@ -46,6 +54,19 @@ def run(_context):
                                                                                  ARGS.get("pn")))
     if not doc.isSaved or doc.isModified:
         raise RuntimeError("save the design before exporting (saved=%s, modified=%s)" % (doc.isSaved, doc.isModified))
+    # The cloud design keeps its live Derive link to the skeleton. A local .f3d that still holds it can't be
+    # opened on its own ("New design cannot be created from a local file containing external references",
+    # Fusion 2706.1), so the link is broken in memory for the export only: the .f3d carries the skeleton's
+    # values of this saved version. Close the document without saving afterwards (runner --close --discard).
+    broken = []
+    for c in design.allComponents:
+        for d in c.features.deriveFeatures:
+            ref = d.documentReference
+            src = "%s v%s" % (ref.dataFile.name, ref.version) if ref and ref.dataFile else "?"
+            if not d.breakLink():
+                raise RuntimeError("could not break the derive link to %s for the export" % src)
+            broken.append(src)
+    print("derive links broken for the export only (close without saving): %s" % (broken or "none"))
     name = doc.name
     if not name.endswith("_CAD"):
         raise RuntimeError("document name %r does not end in _CAD" % name)
