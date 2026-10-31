@@ -857,3 +857,51 @@ def test_seam_rules_leave_out_electricals_reserved_spaces():
         assert not re.search(r["a"], elec) and not re.search(r["b"], elec), r["id"]
     corner = next(r for r in seams if r["id"] == "SEAM-BACK-CORNER-R")
     assert re.search(corner["b"], "210000 WALL:1 / 210202 WALL - PANEL ASSY - BACK LOWER - B2:1 / FRAME")
+
+
+def test_a_shared_hardware_drawing_stays_with_the_joints_engineer_when_a_team_models_it(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    (d / "831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step").write_text("x")
+    fs = c_drawings.check_drawings(str(tmp_path), {"831001"}, {}, {"831001": "HARDWARE - LOCATING SPIGOT - M6 X Ø8"})
+    assert [f.owner for f in fs if f.rule == "no-drawing"] == ["Joints Engineer"]
+
+
+def test_d93_to_d99(tmp_path, monkeypatch):
+    # D-97: a missing drawing is severe whatever the screen state (the repo's policy file)
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: True)
+    assert c_drawings.missing_drawing_severity(ROOT) == "severe"
+    # D-95: the base keys are the Joints Engineer's, even from BASE's own list
+    assert owner_for("v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv", "111211") == "Joints Engineer"
+    assert owner_for("v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv", "111401") == "BASE"
+    # D-93: the wiring diagram draws 710000, with no units or tolerance block asked of it
+    d = tmp_path / "v2/02-Drawings/electrical"
+    d.mkdir(parents=True)
+    _pdf(d / "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf", "SHEET 3 ROUTES AND JOINTS")
+    assert c_drawings.check_drawings(str(tmp_path), {"710000"}, {}, {"710000": "ELECTRICAL"}) == []
+    # D-99: part 4 is for flat metal sheet; glass keeps its drawing
+    m = tmp_path / "v2/03-Manufacturing/front"
+    m.mkdir(parents=True)
+    (m / "360000_P01_FRONT_BOM.csv").write_text(
+        "part_number,name,material,thickness_mm,finish,process,tolerance\n"
+        "361001,FRONT - DOOR LEAF - 4+4 LAMINATED,laminated safety glass 4+4,8.76,polished edges,waterjet cut,ISO 2768-m\n")
+    _dxf(m / "361001_P01_FRONT-DOOR-LEAF_DXF.dxf", [("CUT", "LWPOLYLINE", 0)])
+    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), {"361001"}, {},
+                                                                 {"361001": "FRONT - DOOR LEAF - 4+4 LAMINATED"})}
+    assert "metal or ACP sheet (D-99, D-100)" in fs["361001"]
+    # D-100: a flat ACP skin counts under part 4 like metal sheet
+    (m / "360000_P01_FRONT_BOM.csv").write_text(
+        "part_number,name,material,thickness_mm,finish,process,tolerance\n"
+        "361001,FRONT - DOOR LEAF - 4+4 LAMINATED,ACP 4 mm FR core,4,PVDF RAL 9005,CNC router,ISO 2768-m\n")
+    assert c_drawings.check_drawings(str(tmp_path), {"361001"}, {}, {"361001": "FRONT - DOOR LEAF - 4+4 LAMINATED"}) == []
+    # D-99: hardware names come from the joints register
+    j = tmp_path / "v2/05-Engineering/joints"
+    j.mkdir(parents=True)
+    (j / "joints-register.md").write_text("| H-22 | **368102** | FRONT - DOOR STRIKE · Đế hít cửa | bought | 1 |\n")
+    _write_csv(m / "360001_P01_FRONT-DOOR-UNIT_BOM.csv", [{"part_number": "368102", "name": "FRONT - DOOR STRIKE",
+                                                          "qty": "1"}])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"368102": {"files": {"v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step"}, "count": 1,
+                        "name": "368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10"}}
+    fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, prods) if f.rule == "name-mismatch"]
+    assert len(fs) == 1 and "'FRONT - DOOR STRIKE'" in fs[0].message and "the CAD" in fs[0].fix

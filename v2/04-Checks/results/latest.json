@@ -1,26 +1,198 @@
 {
- "rev": "a35af8f",
+ "rev": "a58e9e8",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
-  "bodies_assembly": 0,
+  "bodies_assembly": 47,
   "parts_lists": [
+   "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv",
+   "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
    "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
   ],
-  "part_steps": []
+  "part_steps": [
+   "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step",
+   "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step",
+   "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step",
+   "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step",
+   "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step"
+  ]
  },
  "ran": [
   "C01",
   "C01:skeleton",
+  "C02:assembly",
   "C02:skeleton",
   "C02:stacks",
   "C04",
+  "C05",
   "C06",
   "C07",
+  "C08",
+  "C08:assembly",
+  "C09",
   "C10",
   "C11"
  ],
- "findings": [],
+ "findings": [
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368006",
+   "severity": "minor",
+   "message": "368006 is named 'FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368006"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368102",
+   "severity": "minor",
+   "message": "368102 is named 'FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10' in the CAD and 'FRONT - DOOR STRIKE' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - DOOR STRIKE', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368102"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210101",
+   "severity": "major",
+   "message": "210101 WALL - PANEL ASSY - SIDE LOWER - LH has no drawing PDF (210101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210101"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211101",
+   "severity": "severe",
+   "message": "211101 WALL - PANEL FRAME - SIDE LOWER - LH has no drawing PDF (211101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211101"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211301",
+   "severity": "severe",
+   "message": "211301 WALL - SKIN - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211301"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211501",
+   "severity": "major",
+   "message": "211501 WALL - CAVITY FILL - SIDE LOWER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211501"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "360001",
+   "severity": "major",
+   "message": "360001 FRONT - DOOR UNIT has no drawing PDF (360001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|360001"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "361001",
+   "severity": "severe",
+   "message": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|361001"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "361002",
+   "severity": "severe",
+   "message": "361002 FRONT - DOOR KICK STRIP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its faces lie at 8 levels through the thickness (a pocket, a step or a rebate).",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|361002"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510101",
+   "severity": "major",
+   "message": "510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510101"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511101",
+   "severity": "severe",
+   "message": "511101 LINING - TRAY - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511101"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "831001",
+   "severity": "severe",
+   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS has no drawing PDF (831001_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|831001"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "831002",
+   "severity": "severe",
+   "message": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL has no drawing PDF (831002_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|831002"
+  }
+ ],
  "stacks": [
   {
    "nominal": 7.0,
@@ -178,7 +350,7 @@
   {
    "id": "1-05",
    "name": "WALL - PANEL ASSY - SIDE LOWER - LH",
-   "kg": 11.088,
+   "kg": 11.163,
    "dims": [
     1492.74,
     1142.74,
@@ -190,7 +362,7 @@
   {
    "id": "1-06",
    "name": "WALL - PANEL ASSY - SIDE LOWER - RH",
-   "kg": 11.088,
+   "kg": 11.163,
    "dims": [
     1492.74,
     1142.74,
@@ -253,7 +425,7 @@
    "kg": 10.035,
    "dims": [
     1495.0,
-    1203.61,
+    1200.61,
     46.0
    ],
    "ships_as": "upright",
@@ -265,7 +437,7 @@
    "kg": 10.535,
    "dims": [
     1495.0,
-    1203.61,
+    1200.61,
     60.0
    ],
    "ships_as": "upright",
@@ -274,14 +446,14 @@
   {
    "id": "1-13",
    "name": "LINING - CASSETTE - SIDE LOWER - RH",
-   "kg": 10.474,
+   "kg": 10.346,
    "dims": [
     1445.0,
     1142.74,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-14",
@@ -298,14 +470,14 @@
   {
    "id": "1-15",
    "name": "LINING - CASSETTE - SIDE LOWER - LH",
-   "kg": 10.474,
+   "kg": 10.346,
    "dims": [
     1445.0,
     1142.74,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-16",
@@ -382,14 +554,14 @@
   {
    "id": "2-02",
    "name": "FRONT - DOOR UNIT",
-   "kg": 49.076,
+   "kg": 48.59,
    "dims": [
     2089.0,
     1175.0,
     149.0
    ],
    "ships_as": "glass",
-   "status": "calculation (CAD); kick strip assumption"
+   "status": "calculation (CAD); hinges and pull HOLD"
   },
   {
    "id": "2-03",
@@ -478,7 +650,7 @@
   {
    "id": "2-10",
    "name": "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS",
-   "kg": 13.908,
+   "kg": 13.873,
    "dims": [
     2332.0,
     360.0,
@@ -490,7 +662,7 @@
   {
    "id": "2-11",
    "name": "AIR - AIR COLUMN",
-   "kg": 9.779,
+   "kg": 9.735,
    "dims": [
     2105.0,
     360.0,
@@ -526,7 +698,7 @@
   {
    "id": "2-14",
    "name": "INTERIOR - LIGHT SHELF",
-   "kg": 1.957,
+   "kg": 1.954,
    "dims": [
     2332.0,
     80.0,
@@ -635,6 +807,108 @@
  "shipping_source": "v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv",
  "fastener_schedule": [
   {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium 5056",
+   "finish": "none (plain aluminium, as supplied)",
+   "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
+   "qty_parts_list": "9",
+   "qty_cad": 9,
+   "where_cad": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:1",
+   "maker": "Sherex (PEM)",
+   "sku": "CAH3-610-4.2",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "831002",
+   "name": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium sheet 1.5, 5000 or 6000 series",
+   "finish": "mill finish (punched)",
+   "torque_nm": "",
+   "qty_parts_list": "7",
+   "qty_cad": 7,
+   "where_cad": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:1",
+   "maker": "made (register H-08)",
+   "sku": "",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "831001",
+   "name": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2 (EN 1.4301) bar",
+   "finish": "bare stainless, as machined; threadlocker on the thread when fitted (H-05)",
+   "torque_nm": "",
+   "qty_parts_list": "2",
+   "qty_cad": 2,
+   "where_cad": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:1",
+   "maker": "made (register H-05)",
+   "sku": "",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)",
+   "qty_parts_list": "7",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
+   "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
+   "status": "HOLD",
+   "parts_list": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2",
+   "finish": "none (plain stainless)",
+   "torque_nm": "",
+   "qty_parts_list": "7",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "HOLD: any maker to ISO 7093-1, picked at the RFQ",
+   "sku": "ISO 7093-1 - 6.4 x 18 x 1.6 - A2",
+   "status": "HOLD",
+   "parts_list": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838005",
+   "name": "HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE",
+   "size": "",
+   "length_mm": "",
+   "grade": "elastomer (HOLD-02)",
+   "finish": "as supplied (elastomer)",
+   "torque_nm": "",
+   "qty_parts_list": "7",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "HOLD-02",
+   "sku": "HOLD-02",
+   "status": "HOLD",
+   "parts_list": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
    "part_number": "838001",
    "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
    "size": "",
@@ -694,8 +968,8 @@
    "finish": "",
    "torque_nm": "",
    "qty_parts_list": "",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 9,
+   "where_cad": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:1",
    "maker": "",
    "sku": "",
    "status": "",
@@ -711,8 +985,8 @@
    "finish": "",
    "torque_nm": "",
    "qty_parts_list": "",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 2,
+   "where_cad": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS:1",
    "maker": "",
    "sku": "",
    "status": "",
@@ -728,8 +1002,8 @@
    "finish": "",
    "torque_nm": "",
    "qty_parts_list": "",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 7,
+   "where_cad": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL:1",
    "maker": "",
    "sku": "",
    "status": "",

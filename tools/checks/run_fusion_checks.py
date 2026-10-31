@@ -98,6 +98,11 @@ def _allowed(c, allow_rows):
     return None
 
 
+# a door may touch or wipe a seal as it swings (the seal is modelled rigid); more overlap than this means it
+# crushes the seal's body, not its fin (assumption, about a 2 mm deep bite along 25 mm of a 2 mm fin)
+SOFT_SWING_MM3 = 100.0
+
+
 def findings_from(res, model, file_hint="", allow_rows=None):
     """Findings carry the scope '<model>/fusion', so only a Fusion run can
     close them (an offline run can't see an exact clash). With allow_rows,
@@ -131,7 +136,11 @@ def findings_from(res, model, file_hint="", allow_rows=None):
             items[0].get("fix") or "See the rule's fix in v2/04-Checks/config/gap-rules.csv.", file_hint,
             items[0].get("owner") or owner_for(file_hint), {"model": scope, "rules": items}))
     for d in res.get("door_swing", []):
-        h = d.get("first_hit")
+        h = d.get("first_hit")          # the first rigid part it hits (a seal it only touches is soft)
+        deep = [x for x in d.get("hits", []) if x.get("soft") and x.get("max_mm3", 0) > SOFT_SWING_MM3]
+        if not h and deep:               # a seal the door doesn't just touch but crushes
+            x = deep[0]
+            h = {"hits": x["hits"], "angle_deg": x["first_deg"], "moving": x["moving"], "mm3": x["max_mm3"]}
         if h:
             fs.append(Finding(
                 "C01", "door-swing", "%s door swing %s" % (model, d.get("direction")), "severe",
