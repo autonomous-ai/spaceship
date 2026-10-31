@@ -940,3 +940,18 @@ def test_the_master_boms_generated_views_are_not_parts_lists(tmp_path):
                  "100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv"):
         _write_csv(d / name, [row])
     assert [os.path.basename(p) for p, _r in c_parts.find_parts_lists(str(tmp_path))] == ["100000_P01_POD-MASTER_BOM.csv"]
+
+
+def test_reserved_air_spaces_are_listed_under_air_not_as_missing_drawings(tmp_path):
+    # the Lead's ruling on FRONT's DR air transitions, as D-92's reserved spaces
+    (tmp_path / "v2/04-Checks/config").mkdir(parents=True)
+    (tmp_path / "v2/04-Checks/config/reserved-spaces.csv").write_text(
+        "part_number,owner,ruling,why\n351403,AIR,as D-92,DR's lower air transition\n")
+    names = {"351403": "FRONT - AIR TRANSITION - LOWER - DR", "351404": "FRONT - SUPPLY FAN BOX - DR"}
+    fs = {f.subject: f for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert fs["351403"].rule == "reserved-space" and fs["351403"].owner == "AIR"
+    assert fs["351404"].rule == "no-drawing"
+    from common import reserved_spaces, reserved_label
+    res = reserved_spaces(str(tmp_path))
+    assert reserved_label("350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351403 FRONT - AIR TRANSITION:1 / Body1", res)
+    assert not reserved_label("3514030 X", res)

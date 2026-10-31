@@ -25,7 +25,7 @@ import os
 import re
 from collections import defaultdict
 
-from common import Finding, owner_for, rel, walk_files, num, pn_class, read_csv
+from common import Finding, owner_for, rel, walk_files, num, pn_class, read_csv, reserved_spaces, reserved_label
 import stepfile as sf
 
 POD_BOX = (-1250.0, -850.0, 0.0, 1250.0, 850.0, 2400.0)
@@ -254,6 +254,8 @@ def check_gap_rules(root, mdl, bodies, rules):
     """One finding per rule group (the `group` column, else the rule id),
     listing every rule in it that fails."""
     fails = {}
+    reserved = reserved_spaces(root)
+    bodies = [b for b in bodies if not reserved_label(b.label, reserved)]   # reserved spaces have no seams yet
     for r in rules:
         if r.get("models") and mdl not in r["models"].split():
             continue
