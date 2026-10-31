@@ -262,19 +262,37 @@ def export_with_retry(em: "adsk.fusion.ExportManager", mk, path, root: "adsk.fus
     return False
 
 
+def skeleton_open_copies(app: "adsk.core.Application"):
+    return [app.documents.item(i) for i in range(app.documents.count)
+            if app.documents.item(i).name.split(" v")[0] == M.SKELETON_DOC]
+
+
 def skeleton_missing(app: "adsk.core.Application"):
-    """Favourites this build needs from skeleton P04 that aren't there. PM heads-up 2026-10-31 (about
-    18:53): P04 lost its favourite skin_t for a while, and builds that derive its favourites wait until
-    Fusion Engineer 2 restores it. Read-only; closes the skeleton only if this run opened it."""
-    was_open = any(app.documents.item(i).name.split(" v")[0] == M.SKELETON_DOC for i in range(app.documents.count))
-    d = app.documents.open(find_file(app, M.SKELETON_DOC), False)
+    """Why this build must not derive from skeleton P04 now (empty list: it may). PM heads-up 2026-10-31
+    (about 18:53): P04 lost its favourite skin_t for a while; WALL traced it to a copy another run had
+    open with unsaved changes. So an open copy with unsaved changes, or open at an older version than
+    the saved file, is not read at all; otherwise every favourite this build derives, and skin_t, must
+    be there. Read-only; closes the skeleton only if this run opened it."""
+    f = find_file(app, M.SKELETON_DOC)
+    copies = skeleton_open_copies(app)
+    why = []
+    for od in copies:
+        if od.isModified:
+            why.append("an open copy has unsaved changes")
+        elif od.dataFile is not None and od.dataFile.versionNumber != f.latestVersionNumber:
+            why.append("an open copy is version %d, the saved file version %d" % (od.dataFile.versionNumber,
+                                                                                   f.latestVersionNumber))
+    if why:
+        return why
+    d = app.documents.open(f, False)
+    was_open = bool(copies)
     try:
         skel = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
         out = []
         for n in ["skin_t"] + list(M.SKELETON_PARAMS):
             p = skel.userParameters.itemByName(n)
             if p is None or not p.isFavorite:
-                out.append(n)
+                out.append("no favourite " + n)
         return out
     finally:
         if not was_open:
@@ -288,8 +306,9 @@ def run(_context):
         raise RuntimeError("active document is %r, not %r (use --doc)" % (doc.name, M.DOC_NAME))
     missing = skeleton_missing(app)
     if missing:
-        raise RuntimeError("held, nothing changed: skeleton P04 lacks the favourite(s) %s; this build derives its "
-                           "favourites, so it waits until they are restored (PM heads-up 2026-10-31)" % ", ".join(missing))
+        raise RuntimeError("held, nothing changed: skeleton P04 not ready to derive from (%s); this build waits "
+                           "for the PM's all-clear (heads-up 2026-10-31)" % "; ".join(missing))
+    skel_was_open = bool(skeleton_open_copies(app))
     doc.activate()
     print("skeleton P04: skin_t and the %d favourites this build derives are there" % len(M.SKELETON_PARAMS))
     design = adsk.fusion.Design.cast(app.activeProduct)
@@ -373,7 +392,8 @@ def run(_context):
         unused = [(b["code"], a) for b in M.BODIES for a, _w in b["allow"]
                   if not any(h[0] == b["code"] and h[1] == a for h in hits)]
     finally:
-        skel_doc.close(False)
+        if not skel_was_open:          # never close a copy another run opened
+            skel_doc.close(False)
         doc.activate()
 
     print("bodies %d, components %d, timeline %d items, unhealthy %d, loose sketches %d, user parameters %d" % (
