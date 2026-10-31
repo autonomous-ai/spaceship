@@ -356,6 +356,54 @@ def configure_family(doc, design, body_of):
 
 
 # ------------------------------------------------------------------ corner keys 111211 to 111214
+def face_where(body, test):
+    """The planar face whose outward normal passes test(normal)."""
+    for fc in body.faces:
+        if isinstance(fc.geometry, adsk.core.Plane):
+            ok, n = fc.evaluator.getNormalAtPoint(fc.pointOnFace)
+            if ok and test(n):
+                return fc
+    raise RuntimeError("face not found")
+
+
+def line_edge(face, test):
+    """The straight edge of face whose two ends both pass test((x, y, z) in mm)."""
+    for i in range(face.edges.count):
+        e = face.edges.item(i)
+        if not isinstance(e.geometry, adsk.core.Line3D):
+            continue
+        a, b = e.startVertex.geometry, e.endVertex.geometry
+        if test((a.x * 10, a.y * 10, a.z * 10)) and test((b.x * 10, b.y * 10, b.z * 10)):
+            return e
+    raise RuntimeError("edge not found on the face")
+
+
+def hole(comp, body, face, at_mm, edge1, off1, edge2, off2, depth, name):
+    """A Ø tap_d hole in face at at_mm, placed by offsets (expressions) from two of the face's
+    edges; depth an expression, or None for through. Tries the other direction if nothing is cut."""
+    v0 = body.volume
+    for flip in (False, True):
+        hi = comp.features.holeFeatures.createSimpleInput(vi("tap_d"))
+        hi.setPositionByPlaneAndOffsets(face, p3(*at_mm), edge1, vi(off1), edge2, vi(off2))
+        if depth is None:
+            hi.setAllExtent(adsk.fusion.ExtentDirections.NegativeExtentDirection if flip
+                            else adsk.fusion.ExtentDirections.PositiveExtentDirection)
+        else:
+            hi.setDistanceExtent(vi(depth))
+            hi.isDefaultDirection = not flip
+        hi.participantBodies = [body]
+        try:
+            h = comp.features.holeFeatures.add(hi)
+        except Exception as ex:
+            print("  (%s one way failed: %s)" % (name, ex))
+            continue
+        if body.volume < v0 - 1e-6:
+            h.name = name
+            return h
+        h.deleteMe()
+    raise RuntimeError("%s cut nothing either way" % name)
+
+
 def stud_face(body):
     """The planar face whose outward normal points most along +X: the stud face (the cut is under 45 deg)."""
     best, bx = None, -2.0
@@ -428,45 +476,21 @@ def build_keys(app):
     body = ext.bodies.item(0)
     body.name = "CORNER KEY"
 
-    # fixing holes from the bottom: 2 x M6, drill 18, thread 15
-    skf = comp.sketches.add(comp.xYConstructionPlane)
-    skf.name = "SKETCH - FIXING HOLES"
-    for sy in (1, -1):
-        c = skf.sketchCurves.sketchCircles.addByCenterRadius(p3(10, sy * 7.5), 0.25)
-        d = skf.sketchDimensions
-        d.addDistanceDimension(skf.originPoint, c.centerSketchPoint, H, p3(5, sy * 13)).parameter.expression = "fix_x"
-        d.addDistanceDimension(skf.originPoint, c.centerSketchPoint, V, p3(-5, sy * 4)).parameter.expression = "fix_y"
-        d.addDiameterDimension(c, p3(14, sy * 10)).parameter.expression = "tap_d"
-    must_constrain(skf)
-    cut(comp, body, small_profiles(skf), lambda: adsk.fusion.DistanceExtentDefinition.create(vi("fix_drill")),
-        "CUT - FIXING HOLES M6 (DRILL 5.0 X 18)")
-
-    # hook stud holes: square to the stud face, on its centre line, tapped through
-    sks = comp.sketches.add(stud_face(body))
-    sks.name = "SKETCH - HOOK STUD HOLES"
-    pe = sks.project(cl.endSketchPoint).item(0)            # the face's centre at the key's bottom
-    pcd = sks.project(lcd).item(0)                         # the face's bottom edge
-    s2 = sks.modelToSketchSpace(p3(L, 0, 60))
-    s1 = sks.modelToSketchSpace(p3(L, 0, 26))
-    up = sks.sketchCurves.sketchLines.addByTwoPoints(pe.geometry, s2)
-    up.isConstruction = True
-    g2, d2 = sks.geometricConstraints, sks.sketchDimensions
-    g2.addCoincident(up.startSketchPoint, pe)
-    g2.addPerpendicular(up, pcd)
-    d2.addDistanceDimension(up.startSketchPoint, up.endSketchPoint, A,
-                            adsk.core.Point3D.create(s2.x + 1.0, s2.y, 0)).parameter.expression = "stud_z2"
-    lo = sks.sketchPoints.add(s1)
-    g2.addCoincident(lo, up)
-    d2.addDistanceDimension(up.startSketchPoint, lo, A,
-                            adsk.core.Point3D.create(s1.x - 1.0, s1.y, 0)).parameter.expression = "stud_z1"
-    for pt in (lo, up.endSketchPoint):
-        c = sks.sketchCurves.sketchCircles.addByCenterRadius(pt, 0.25)
-        d2.addDiameterDimension(c, adsk.core.Point3D.create(pt.geometry.x + 0.8, pt.geometry.y + 0.8, 0)) \
-            .parameter.expression = "tap_d"
-    print("  stud hole sketch fully constrained: %s" % sks.isFullyConstrained)
-    must_constrain(sks)
-    cut(comp, body, small_profiles(sks), lambda: adsk.fusion.ThroughAllExtentDefinition.create(),
-        "CUT - HOOK STUD HOLES M6 (DRILL 5.0 THROUGH)")
+    # fixing holes from the bottom (2 x M6, drill 18, thread 15) and hook stud holes in the stud
+    # face (2 x M6 through, square to it): hole features placed by offsets from the block's own
+    # edges, so they follow every parameter (cut_angle included) with no hole sketch
+    for name, side in (("FIXING HOLE +Y", 1), ("FIXING HOLE -Y", -1)):
+        bottom = face_where(body, lambda n: n.z < -0.99)
+        back = line_edge(bottom, lambda q: abs(q[0]) < 0.01)
+        edge_y = line_edge(bottom, lambda q: abs(q[1] - side * 17.5) < 0.01)
+        hole(comp, body, bottom, (10, side * 7.5, 0), back, "fix_x", edge_y, "key_w / 2 - fix_y", "fix_drill",
+             "HOLE - %s M6 (DRILL 5.0 X 18)" % name)
+    for name, zp, z in (("HOOK STUD LOW", "stud_z1", 26.0), ("HOOK STUD HIGH", "stud_z2", 60.0)):
+        face = stud_face(body)
+        foot = line_edge(face, lambda q: abs(q[2]) < 0.01)
+        d_side = line_edge(face, lambda q: abs(q[1] + 17.5) < 0.01)
+        hole(comp, body, face, (L, 0, z), foot, zp, d_side, "key_w / 2 / cos(cut_angle)", None,
+             "HOLE - %s M6 (DRILL 5.0 THROUGH)" % name)
     holes = cyl_faces(body, 5.0)
     if len(holes) != 4:
         raise RuntimeError("expected 4 tap-drill faces, found %d" % len(holes))
@@ -555,29 +579,32 @@ def build_spigot(app):
     comp = root
     xy = comp.xYConstructionPlane
     sk = comp.sketches.add(xy)
-    sk.name = "SKETCH - PIN"
+    sk.name = "SKETCH - PIN AND STUD"
     c = sk.sketchCurves.sketchCircles.addByCenterRadius(p3(0, 0), 0.4)
+    c2 = sk.sketchCurves.sketchCircles.addByCenterRadius(p3(0, 0), 0.3)
     sk.geometricConstraints.addCoincident(c.centerSketchPoint, sk.originPoint)
+    sk.geometricConstraints.addCoincident(c2.centerSketchPoint, sk.originPoint)
     sk.sketchDimensions.addDiameterDimension(c, p3(6, 6)).parameter.expression = "pin_d"
+    sk.sketchDimensions.addDiameterDimension(c2, p3(4, -6)).parameter.expression = "thread_d"
     must_constrain(sk)
-    ext = comp.features.extrudeFeatures.addSimple(sk.profiles.item(0), vi("pin_len"),
-                                                  adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    profs = [sk.profiles.item(i) for i in range(sk.profiles.count)]
+    disc = next(pr for pr in profs if pr.profileLoops.count == 1)
+    both = adsk.core.ObjectCollection.create()
+    for pr in profs:
+        both.add(pr)
+    ext = comp.features.extrudeFeatures.addSimple(both, vi("pin_len"), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
     ext.name = "EXTRUDE - PIN D8"
     body = ext.bodies.item(0)
     body.name = "LOCATING SPIGOT"
-    sk2 = comp.sketches.add(xy)
-    sk2.name = "SKETCH - THREAD STUD"
-    c2 = sk2.sketchCurves.sketchCircles.addByCenterRadius(p3(0, 0), 0.3)
-    sk2.geometricConstraints.addCoincident(c2.centerSketchPoint, sk2.originPoint)
-    sk2.sketchDimensions.addDiameterDimension(c2, p3(5, 5)).parameter.expression = "thread_d"
-    must_constrain(sk2)
-    stud_prof = min((sk2.profiles.item(i) for i in range(sk2.profiles.count)), key=lambda p: p.areaProperties().area)
-    ei = comp.features.extrudeFeatures.createInput(stud_prof, adsk.fusion.FeatureOperations.JoinFeatureOperation)
+    ei = comp.features.extrudeFeatures.createInput(disc, adsk.fusion.FeatureOperations.JoinFeatureOperation)
     ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("thread_len")),
                         adsk.fusion.ExtentDirections.NegativeExtentDirection)
     ei.participantBodies = [body]
     e2 = comp.features.extrudeFeatures.add(ei)
     e2.name = "EXTRUDE - M6 STUD"
+    if comp.bRepBodies.count != 1:
+        raise RuntimeError("the pin came out as %d bodies" % comp.bRepBodies.count)
+    body = comp.bRepBodies.item(0)
     b = box(body)
     if abs(b[2] + 8.0) > 0.01:
         raise RuntimeError("stud went the wrong way: %s" % fmt(b))
