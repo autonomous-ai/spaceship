@@ -217,8 +217,11 @@ def _png_size(path):
 
 
 def run(_context):
+    annotate(ARGS["part"])
+
+
+def annotate(part):
     app = adsk.core.Application.get()
-    part = ARGS["part"]
     sp = S.SPECS[part]
     dwg = adsk.drawing.Drawing.cast(app.activeProduct)
     if dwg is None:

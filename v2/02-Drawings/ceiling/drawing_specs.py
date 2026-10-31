@@ -246,7 +246,7 @@ SPECS.update({
 })
 # D-89 (PM ruling 2026-11-01): identical or mirrored parts share one tabulated drawing; a plain
 # knife-cut felt or fill rectangle needs none when the cut list gives its size, material,
-# tolerance and part number (the felt 513201: 410000_P01_CEILING-FLAT-CUT-LIST_BOM.csv)
+# tolerance and part number (the felt 513201: its row in 410000_P01_CEILING-PARTS-LIST_BOM.csv)
 SPECS["skins"] = tabulated(skin_spec("skin_c2", "C2"), "411302_P01_CEILING-SKIN-C1-C2_DWG", ["411301"], [
     "TABULATED (D-89): drawn as 411302 C2. 411301 C1 is the same outline mirrored about X 0, with no roof slot.",
 ])
@@ -254,4 +254,28 @@ SPECS["fills"] = tabulated(SPECS["fill_a"], "513301_P01_LINING-FILL-CEILING-BAYS
     "TABULATED (D-89): drawn as 513301. Sizes X' x Y' x thickness and notches (X' from the strip's centre):",
 ] + fill_table())
 
-ORDER = ["cassette", "tray", "rib", "fills", "frame_c1", "frame_c2", "skins"]
+# D-89 part 4 (PM ruling 2026-11-01): flat parts cut from sheet with no bends or machined
+# features (the two skins) need no drawing: their DXF and parts-list rows define them
+del SPECS["skins"]
+_assy = spec("assy_c2", 0.2, [
+    "TABULATED (D-89): drawn as 410102 C2. 410101 C1 is its mirror about X 0: frame 411101 with the plain "
+    "closing-face holes and the two soffit lock rivnuts, skin 411301 with no roof slot.",
+    "Bonded panel: skin on the frame with the bond set 108002 (bond line 3, bond spec V2-ENG-BND); the ACP face is "
+    "datum A (joints register 4: bonded face down on a flat table).",
+    "Flatness and squareness of the bonded panel: +/-0.5 on the ACP face (assumption, joints register 4).",
+    "Parts: frame (drawing 411101 / 411102), skin (DXF 411301 / 411302), bond set 108002, the factory-fitted joint "
+    "hardware listed in 410000_P01_CEILING-PARTS-LIST_BOM.csv.",
+], views=FRAME_VIEWS, scales={"iso": 0.1})
+_assy["drawing"] = "410101_P01_CEILING-PANEL-ASSY-C1-C2_DWG"
+_assy["title"] = [(k, ("%s (this sheet also covers 410101)" % val if k == "PART NO." else val)) for k, val in _assy["title"]]
+SPECS["assy"] = _assy
+_ga = spec("ceiling", 0.1, [
+    "General arrangement of the ceiling as it ships: two bonded outer panels C1 and C2 and two lining cassettes.",
+    "Joints: J-CEIL-01 to the walls (side bolts Z 2374, back rivnuts Y 824), J-CEIL-02 C1 to C2 (4 pins); see the "
+    "frame drawings and the joints register V2-ENG-JNT-01.",
+    "The soffit (AIR 610201) hangs on the four studs under the front members and X1, locked by two captive screws.",
+    "Parts and quantities: 410000_P01_CEILING-PARTS-LIST_BOM.csv.",
+], views={"front": (300, 470), "top": (300, 250), "left": (620, 470), "iso": (620, 240)}, scales={"iso": 0.05})
+_ga["design"] = "410000_P01_CEILING_CAD"
+SPECS["ga"] = _ga
+ORDER = ["ga", "assy", "frame_c1", "frame_c2", "cassette", "tray", "rib", "fills"]
