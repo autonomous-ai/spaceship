@@ -54,7 +54,8 @@ def run_fusion(root, steps, out_json, cfg_root):
     runner = os.path.join(cfg_root, "tools/fusion/run_script.py")
     script = os.path.join(cfg_root, "tools/checks/fusion/whole_pod_check.py")
     cfg = os.path.join(cfg_root, CHECKS_DIR, "config")
-    cmd = [sys.executable, runner, script, "--arg", "steps=" + ",".join(os.path.abspath(p) for p in steps),
+    cmd = [sys.executable, runner, script, "--lock-wait", os.environ.get("CHECKS_LOCK_WAIT", "3600"),
+           "--arg", "steps=" + ",".join(os.path.abspath(p) for p in steps),
            "--arg", "out=" + out_json, "--arg", "rules=" + os.path.join(cfg, "gap-rules.csv"),
            "--arg", "allow=" + os.path.join(cfg, "clash-allow.csv"), "--arg", "tools=" + os.path.join(cfg, "tools.csv"),
            "--arg", "swing=" + os.path.join(cfg, "door-swing.csv")]

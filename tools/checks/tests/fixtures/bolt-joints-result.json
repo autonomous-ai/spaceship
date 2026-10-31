@@ -2,7 +2,7 @@
  "steps": [
   "/Users/d/harnesses/worktrees/spaceship/765409e413323ec806d75b21/tools/checks/tests/fixtures/bolt-joints.step"
  ],
- "started": "2026-10-31 22:25:03",
+ "started": "2026-10-31 22:31:33",
  "errors": [],
  "imports": [
   {
@@ -278,64 +278,6 @@
  "gaps": [],
  "fasteners": [
   {
-   "bolt": "(Unsaved) (1):1 / 211900 WALL - TEST WALL BOLT SIDE A:1 / Body1",
-   "length_mm": 1.2,
-   "dia_mm": 6.6,
-   "head": [
-    0.0,
-    0.0,
-    0.0
-   ],
-   "axis": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "layers": [
-    {
-     "body": "(Unsaved) (1):1 / 838000 HARDWARE - BOLT - M6 X 16 ISO 4762 A:1 / Body1",
-     "from_head_mm": 1.25,
-     "to_mm": 1.25,
-     "is_nut": false
-    }
-   ],
-   "collisions": [
-    {
-     "body": "(Unsaved) (1):1 / 838000 HARDWARE - BOLT - M6 X 16 ISO 4762 A:1 / Body1",
-     "from_head_mm": 0.0,
-     "to_mm": 7.0
-    }
-   ],
-   "tip_clearance": null,
-   "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
-   "tool_blocked_by": [
-    {
-     "body": "(Unsaved) (1):1 / 838100 HARDWARE - RIVNUT - M6 A:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 311.2
-    },
-    {
-     "body": "(Unsaved) (1):1 / 211920 WALL - TEST FAR WALL A:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 60.3
-    },
-    {
-     "body": "(Unsaved) (1):1 / 838000 HARDWARE - BOLT - M6 X 16 ISO 4762 A:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 404.3
-    }
-   ]
-  },
-  {
    "bolt": "(Unsaved) (1):1 / 838000 HARDWARE - BOLT - M6 X 16 ISO 4762 A:1 / Body1",
    "length_mm": 22.0,
    "dia_mm": 6.0,
@@ -370,64 +312,6 @@
    },
    "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
    "tool_blocked_by": []
-  },
-  {
-   "bolt": "(Unsaved) (1):1 / 211901 WALL - TEST WALL BOLT SIDE B:1 / Body1",
-   "length_mm": 1.2,
-   "dia_mm": 6.6,
-   "head": [
-    100.0,
-    0.0,
-    0.0
-   ],
-   "axis": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "layers": [
-    {
-     "body": "(Unsaved) (1):1 / 838001 HARDWARE - BOLT - M6 X 25 ISO 4762 B:1 / Body1",
-     "from_head_mm": 1.25,
-     "to_mm": 1.25,
-     "is_nut": false
-    }
-   ],
-   "collisions": [
-    {
-     "body": "(Unsaved) (1):1 / 838001 HARDWARE - BOLT - M6 X 25 ISO 4762 B:1 / Body1",
-     "from_head_mm": 0.0,
-     "to_mm": 7.0
-    }
-   ],
-   "tip_clearance": null,
-   "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
-   "tool_blocked_by": [
-    {
-     "body": "(Unsaved) (1):1 / 838101 HARDWARE - RIVNUT - M6 B:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 311.2
-    },
-    {
-     "body": "(Unsaved) (1):1 / 211921 WALL - TEST FAR WALL B:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 60.3
-    },
-    {
-     "body": "(Unsaved) (1):1 / 838001 HARDWARE - BOLT - M6 X 25 ISO 4762 B:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 658.8
-    }
-   ]
   },
   {
    "bolt": "(Unsaved) (1):1 / 838001 HARDWARE - BOLT - M6 X 25 ISO 4762 B:1 / Body1",
@@ -475,71 +359,13 @@
    "tool_blocked_by": []
   },
   {
-   "bolt": "(Unsaved) (1):1 / 211902 WALL - TEST WALL BOLT SIDE C:1 / Body1",
-   "length_mm": 1.2,
-   "dia_mm": 6.6,
-   "head": [
-    200.0,
-    0.0,
-    0.0
-   ],
-   "axis": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "layers": [
-    {
-     "body": "(Unsaved) (1):1 / 838002 HARDWARE - BOLT - M6 X 8 ISO 4762 C:1 / Body1",
-     "from_head_mm": 1.25,
-     "to_mm": 1.25,
-     "is_nut": false
-    }
-   ],
-   "collisions": [
-    {
-     "body": "(Unsaved) (1):1 / 838002 HARDWARE - BOLT - M6 X 8 ISO 4762 C:1 / Body1",
-     "from_head_mm": 0.0,
-     "to_mm": 7.0
-    }
-   ],
-   "tip_clearance": null,
-   "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
-   "tool_blocked_by": [
-    {
-     "body": "(Unsaved) (1):1 / 838102 HARDWARE - RIVNUT - M6 C:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 311.2
-    },
-    {
-     "body": "(Unsaved) (1):1 / 211922 WALL - TEST FAR WALL C:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 60.3
-    },
-    {
-     "body": "(Unsaved) (1):1 / 838002 HARDWARE - BOLT - M6 X 8 ISO 4762 C:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 178.1
-    }
-   ]
-  },
-  {
    "bolt": "(Unsaved) (1):1 / 838002 HARDWARE - BOLT - M6 X 8 ISO 4762 C:1 / Body1",
    "length_mm": 14.0,
-   "dia_mm": 10.0,
+   "dia_mm": 6.0,
    "head": [
     200.0,
     0.0,
-    -6.8
+    7.2
    ],
    "axis": [
     0.0,
@@ -548,100 +374,25 @@
    ],
    "layers": [
     {
-     "body": "(Unsaved) (1):1 / 211912 WALL - TEST WALL NUT SIDE C:1 / Body1",
-     "from_head_mm": 3.5,
-     "to_mm": 4.5,
-     "is_nut": true
+     "body": "(Unsaved) (1):1 / 211902 WALL - TEST WALL BOLT SIDE C:1 / Body1",
+     "from_head_mm": 6.25,
+     "to_mm": 7.0,
+     "is_nut": false
     },
     {
-     "body": "(Unsaved) (1):1 / 211902 WALL - TEST WALL BOLT SIDE C:1 / Body1",
-     "from_head_mm": 7.0,
-     "to_mm": 7.75,
-     "is_nut": false
+     "body": "(Unsaved) (1):1 / 838102 HARDWARE - RIVNUT - M6 C:1 / Body1",
+     "from_head_mm": 9.5,
+     "to_mm": 14.25,
+     "is_nut": true
     }
    ],
    "collisions": [],
-   "tip_clearance": null,
-   "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
-   "tool_blocked_by": [
-    {
-     "body": "(Unsaved) (1):1 / 838102 HARDWARE - RIVNUT - M6 C:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 156.8
-    },
-    {
-     "body": "(Unsaved) (1):1 / 211922 WALL - TEST FAR WALL C:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 60.3
-    }
-   ]
-  },
-  {
-   "bolt": "(Unsaved) (1):1 / 211903 WALL - TEST WALL BOLT SIDE D:1 / Body1",
-   "length_mm": 1.2,
-   "dia_mm": 6.6,
-   "head": [
-    300.0,
-    0.0,
-    0.0
-   ],
-   "axis": [
-    0.0,
-    0.0,
-    1.0
-   ],
-   "layers": [
-    {
-     "body": "(Unsaved) (1):1 / 838003 HARDWARE - BOLT - M6 X 16 ISO 4762 D:1 / Body1",
-     "from_head_mm": 1.25,
-     "to_mm": 1.25,
-     "is_nut": false
-    }
-   ],
-   "collisions": [
-    {
-     "body": "(Unsaved) (1):1 / 838003 HARDWARE - BOLT - M6 X 16 ISO 4762 D:1 / Body1",
-     "from_head_mm": 0.0,
-     "to_mm": 7.0
-    }
-   ],
    "tip_clearance": {
-    "body": "(Unsaved) (1):1 / 211933 WALL - TEST BLOCKING PLATE D:1 / Body1",
-    "mm": 26.05
+    "body": "(Unsaved) (1):1 / 211922 WALL - TEST FAR WALL C:1 / Body1",
+    "mm": 14.5
    },
    "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
-   "tool_blocked_by": [
-    {
-     "body": "(Unsaved) (1):1 / 838103 HARDWARE - RIVNUT - M6 D:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 311.2
-    },
-    {
-     "body": "(Unsaved) (1):1 / 211923 WALL - TEST FAR WALL D:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 60.3
-    },
-    {
-     "body": "(Unsaved) (1):1 / 838003 HARDWARE - BOLT - M6 X 16 ISO 4762 D:1 / Body1",
-     "segment_mm": [
-      0.0,
-      70.0
-     ],
-     "mm3": 404.3
-    }
-   ]
+   "tool_blocked_by": []
   },
   {
    "bolt": "(Unsaved) (1):1 / 838003 HARDWARE - BOLT - M6 X 16 ISO 4762 D:1 / Body1",
@@ -731,5 +482,5 @@
    "gap_mm": 0.015
   }
  ],
- "seconds": 1.1
+ "seconds": 6.2
 }
