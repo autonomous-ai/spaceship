@@ -241,6 +241,11 @@ def flat_cut_lacks(root, pn, files, holes, flat):
         if got < n:
             why.append("its DXF has %d of the %d Ø%g holes in its STEP" % (got, n, dia))
     lacks = flat_row_lacks(root, pn)
+    worked = [l for l in (lacks or []) if l.startswith("no bends or machined features")]
+    # a folded or machined part keeps its drawing: say why, and leave out the row's other gaps
+    not_flat = [w for w in why if "folded" in w or w == (flat[2] if flat is not None and not flat[0] else None)]
+    if not_flat or worked:
+        return not_flat + ["its row's process names %s" % l.split("names ", 1)[-1].rstrip(")") for l in worked]
     if lacks is None:
         why.append("no parts list or cut list has a row for it")
     elif lacks:
