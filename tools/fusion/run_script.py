@@ -695,12 +695,19 @@ def run(_context):
                         name, str(e).strip().splitlines()[-1][:120] if str(e).strip() else type(e).__name__))
                     adsk.doEvents()
                     time.sleep(10)
-                    again, _u, _o = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: name in fs)
-                    fresh = again.get(name) or files
                     try:
-                        target = fresh[0].latestVersion or fresh[0]
-                    except Exception:
-                        target = fresh[0]
+                        again, _u, _o = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: name in fs)
+                        fresh = again.get(name) or files
+                        try:
+                            target = fresh[0].latestVersion or fresh[0]
+                        except Exception:
+                            target = fresh[0]
+                    except Exception as e2:
+                        # PM, on #167: a look-up that fails keeps the reference from
+                        # before, so the tries go on instead of ending early
+                        print("run_script: looking %%r up again failed (%%s); the next try uses the "
+                              "reference from before" %% (name, str(e2).strip().splitlines()[-1][:120]
+                                                          if str(e2).strip() else type(e2).__name__))
             if doc is None:
                 raise RuntimeError("could not open %%r from %%s" %% (name, ARGS["folder"]))
             doc.activate()

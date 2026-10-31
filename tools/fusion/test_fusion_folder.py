@@ -320,6 +320,41 @@ class DocStepTests(unittest.TestCase):
             _time.sleep = real_sleep
         self.assertEqual((len(stale), opened), (1, "NEW_CAD"))  # one failure, then the fresh one opened
 
+    def test_a_look_up_that_fails_keeps_the_old_reference(self):
+        # PM, on #167: if reading the folder again fails, the tries go on with the
+        # reference from before instead of ending early
+        import time as _time
+
+        class FlakyFiles(Files):
+            looks = 0
+
+            @property
+            def count(self):
+                self.looks += 1
+                if self.looks > 1:                           # every look after the first fails
+                    raise RuntimeError("3 : InternalValidationError : the folder can't be read")
+                return len(self.items)
+
+        first = File("NEW_CAD", "f3d")
+        folder = types.SimpleNamespace(dataFiles=FlakyFiles([first]))
+        tries = []
+
+        def open_doc(f, v):
+            tries.append(f)
+            if len(tries) < 3:
+                raise RuntimeError("1 : Missing key for PIMOpenWorkflowTracker")
+            return types.SimpleNamespace(name=f.name, activate=lambda: True)
+
+        real_sleep = _time.sleep
+        _time.sleep = lambda s: None
+        try:
+            opened = self.run_open_with(folder, open_doc)
+        finally:
+            _time.sleep = real_sleep
+        self.assertEqual(opened, "NEW_CAD")
+        self.assertEqual(tries, [first, first, first])        # the old reference, tried again
+        self.assertEqual(folder.dataFiles.looks, 3)           # it did look again, twice
+
     def run_open_with(self, folder, open_doc):
         """The --doc open step against a fake Fusion with this folder and open()."""
         folder.dataFolders = types.SimpleNamespace(itemByName=lambda n: None)
