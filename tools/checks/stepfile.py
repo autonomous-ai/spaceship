@@ -682,6 +682,59 @@ def _bends(solid):
     return uniq
 
 
+def flat_plate(solid):
+    """D-89 part 4: is the solid a plain flat plate cut from sheet? Returns (ok, thickness, why). Plain means:
+    no bends; the faces parallel to the sheet lie at only its two skins (a third level is a pocket, a step or a
+    rebate); every other plane stands square to the sheet (the cut edges); every cylinder runs square to the
+    sheet through its full thickness (through-holes and rounded corners; a blind or cross hole is machined);
+    and no other surface (a cone is a countersink)."""
+    if solid.bends:
+        return False, None, "it is folded (%d bends in its STEP)" % len(solid.bends)
+    planes = [f for f in solid.faces if f.kind == "plane"]
+    pts = list(solid.points())
+    if not planes or not pts:
+        return False, None, "its STEP has no flat faces"
+    # the sheet's normal: of the plane directions, the one the solid is thinnest along
+    dirs = []
+    for f in planes:
+        d = norm(f.normal)
+        if not any(abs(abs(dot(d, e)) - 1.0) < 1e-4 for e in dirs):
+            dirs.append(d)
+    ext = lambda d: max(dot(p, d) for p in pts) - min(dot(p, d) for p in pts)
+    n = min(dirs, key=ext)
+    t = ext(n)
+    across = [ext(d) for d in dirs if abs(dot(d, n)) < 1e-4]
+    if not across:          # no side planes (a disc or a tube): the widest cylinder square to the sheet
+        across = [max([2.0 * f.radius for f in solid.faces
+                       if f.kind == "cylinder" and abs(abs(dot(norm(f.normal), n)) - 1.0) < 1e-4] or [0.0])]
+    if t > 25.0 or t > 0.5 * min(across):
+        return False, None, "it isn't a sheet part (%.1f thick across %.1f)" % (t, min(across))
+    levels = []
+    for f in solid.faces:
+        if f.kind == "plane":
+            c = abs(dot(norm(f.normal), n))
+            if c > 0.9999:
+                lv = dot(f.origin, n)
+                if not any(abs(lv - x) < 0.02 for x in levels):
+                    levels.append(lv)
+            elif c > 1e-4:
+                return False, None, "a face sits at an angle to the sheet (a chamfer or bevel)"
+        elif f.kind == "cylinder":
+            if abs(abs(dot(norm(f.normal), n)) - 1.0) > 1e-4:
+                return False, None, "a cylinder runs across the sheet (a bend, a cross hole or a radius)"
+        else:
+            return False, None, "a %s face (a countersink or another machined form)" % f.kind
+    if len(levels) != 2:
+        return False, None, "its faces lie at %d levels through the thickness (a pocket, a step or a rebate)" % len(levels)
+    lo, hi = min(levels), max(levels)
+    for f in solid.faces:
+        if f.kind == "cylinder" and f.points:
+            ts = [dot(p, n) for p in f.points]
+            if min(ts) > lo + 0.02 or max(ts) < hi - 0.02:
+                return False, None, "a hole stops inside the thickness (a blind or tapped hole)"
+    return True, round(hi - lo, 3), ""
+
+
 def profile_axis(solid, ratio=4.0):
     """Unit axis of a long profile (tube, bar, extrusion): the box's longest
     side when it is at least `ratio` times the next one; else None."""

@@ -576,7 +576,7 @@
    },
    "key": "C02|gap-GLASS-TO-GLASS|skeleton GLASS-TO-GLASS",
    "id": "F-014",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-10-31 0cb764f",
    "posted": "Fusion Engineer 2 group 2026-10-31",
@@ -585,8 +585,14 @@
      "date": "2026-10-31",
      "rev": "0cb764f",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "3e23e4b",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
-   ]
+   ],
+   "closed": "2026-11-01 3e23e4b"
   },
   {
    "check": "C06",
@@ -675,8 +681,14 @@
      "date": "2026-11-01",
      "rev": "b35fe8f",
      "event": "opened by hand"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "7b9b36f",
+     "event": "set OPEN by hand: PM ruling 2026-11-01 (joints group): end-face holes tapped through, at least 15 mm of thread at the bottom, M6 x 16 stays the one site bolt. Closes when the joints register shows it."
     }
-   ]
+   ],
+   "note": "PM ruling 2026-11-01 (joints group): end-face holes tapped through, at least 15 mm of thread at the bottom, M6 x 16 stays the one site bolt. Closes when the joints register shows it."
   },
   {
    "check": "C03",
@@ -703,8 +715,14 @@
      "date": "2026-11-01",
      "rev": "b35fe8f",
      "event": "opened by hand"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "7b9b36f",
+     "event": "set OPEN by hand: PM ruling 2026-11-01 (joints group): the factory-fitted key may use a low-head screw or be fixed from inside; nothing under the band closer than 5 mm to the floor at the lowest glide setting. Closes when the joints register shows it."
     }
-   ]
+   ],
+   "note": "PM ruling 2026-11-01 (joints group): the factory-fitted key may use a low-head screw or be fixed from inside; nothing under the band closer than 5 mm to the floor at the lowest glide setting. Closes when the joints register shows it."
   }
  ]
 }
