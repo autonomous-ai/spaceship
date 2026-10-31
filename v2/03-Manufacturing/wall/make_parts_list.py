@@ -1,14 +1,17 @@
-"""Parts list (BOM CSV, with the tube cut list) for a WALL side panel position and its cassette, from the CAD.
+"""Parts list (BOM CSV, with the tube cut list) for a WALL panel position and its cassette, from the CAD.
 
-    python3 v2/03-Manufacturing/wall/make_parts_list.py 210101 510101
+    python3 v2/03-Manufacturing/wall/make_parts_list.py 210101 510101      # side panel L1 and its cassette
+    python3 v2/03-Manufacturing/wall/make_parts_list.py 210202 510202      # back panel B2 and its cassette
 
 Reads out/<pn>.json (written in Fusion by v2/01-CAD-Native/wall/report_wall_doc.py) for the outer panel
 assembly and its cassette, and writes <panel document name>_BOM.csv next to this script, in the columns
-the master BOM reads (v2/04-BOM/README.md). Made parts, masses, member lengths, fill pieces and hardware
-counts come from the CAD (hole counts by size); bought and hardware items take the joints register's part
-numbers (D-63; PR #23 table 2.1), with masses worked out here from their standard sizes (calculation) or
-the register's working figure. Items the register hasn't numbered yet keep a blank number and say so.
-The cut-length rows (kind "cut") are the frame's own cut list; the master BOM skips them.
+the master BOM reads (v2/04-BOM/README.md), plus maker, SKU and tightening torque for bought items
+(guideline section 4.3: maker, exact SKU, size, grade, coating and source for every standard part).
+Made parts, masses, member lengths, fill pieces and hardware counts come from the CAD: the joint hardware
+the panel carries (rivnuts, stop washers, spigots) is modelled, so it is counted from its bodies and checked
+against the holes it sits in; bolts are counted from their clearance holes. Bought and hardware items take
+the joints register's part numbers (D-63; register table 2.1). The cut-length rows (kind "cut") are the
+frame's own cut list; the master BOM skips them.
 """
 
 import csv
@@ -19,39 +22,78 @@ import sys
 from collections import Counter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FIELDS = ["level", "part_number", "name", "name_vi", "kind", "material", "finish", "process", "qty", "unit",
-          "cut_length_mm", "size_mm", "mass_each_kg", "mass_total_kg", "mass_status", "status", "source", "note"]
-REG = "joints register V2-ENG-JNT-01 (PR #23) table 2.1"
+FIELDS = ["level", "part_number", "name", "name_vi", "kind", "material", "finish", "process", "maker", "sku",
+          "torque", "qty", "unit", "cut_length_mm", "size_mm", "mass_each_kg", "mass_total_kg", "mass_status",
+          "status", "source", "note"]
+REG = "joints register V2-ENG-JNT-01 table 2.1 (main, PR #47)"
+SEL = "hardware selection V2-ENG-SEL"
+TORQUE = "HOLD-01 (D-48): set by the PM from test T06 (half the lowest rivnut spin-out torque)"
 
-# Hardware by register part number: name, Vietnamese, kind, material, finish, mass each (kg), mass status, basis
+# Hardware by register part number. mass: kg each (per metre for items bought by length); "cad" takes the
+# modelled body's mass instead (parts we make, whose geometry is the model).
 HW = {
-    "838001": ("HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI",
-               "steel 8.8", "zinc plated", 0.0062, "calculation",
-               "head Ø10 × 6 less the socket, shank Ø6 × 16 at 85% for the thread, steel 7850 kg/m3"),
-    "838003": ("HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", "aluminium 5056", "plain",
-               0.0023, "calculation", "body Ø9.5 × 14.86 with an M6 bore and a Ø12.96 × 0.76 head (SHX sizes), 2700 kg/m3"),
-    "838004": ("HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", "Long đen to M6 inox", "PI", "stainless A2",
-               "plain", 0.0028, "calculation", "6.4 × 18 × 1.6 (ISO 7093-1), 7900 kg/m3"),
-    "838005": ("HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE", "Vòng giữ đầu bulong", "HOLD",
-               "elastomer (HOLD-02)", "", 0.001, "assumption", "a small grommet; part not chosen (HOLD-02)"),
-    "831001": ("HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8", "MP", "stainless", "plain",
-               0.0049, "calculation", "Ø8 × 8 proud plus an M6 × 10 thread (register H-05 sizes), 7900 kg/m3"),
-    "831002": ("HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP",
-               "aluminium sheet 1.5, 5000 or 6000 series", "mill", 0.0009, "calculation", "Ø10.5 × Ø20 × 1.5, 2700 kg/m3"),
-    "848001": ("HARDWARE - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA", "Gioăng mối nối 3.97", "PI",
-               "PORON 4701-40 Soft with PSA", "", 0.0076, "calculation",
-               "per metre: 8 × 3.97 at 240 kg/m3 (assumption for the foam's density)"),
-    "518001": ("LINING - CASSETTE CLIP", "Kẹp treo cassette", "HOLD", "HOLD (H03, HOLD-08)", "", 0.04, "assumption",
-               "about 40 g each (D-81's working figure, joints register H-10)"),
-    "108002": ("POD - ACP BOND SET - SIKATACK PANEL-50 SYSTEM", "Bộ keo dán ACP", "PI",
-               "SikaTack Panel-50 (ETA 19/0511), Aktivator-205, Panel Primer, Panel Fixing Tape", "", 0.49, "calculation",
-               "bond spec: about 8.7 m of 12 x 3 bead per side panel (joints register follow-up, relayed by the PM)"),
-    "848011": ("SEALS - HOOK-AND-LOOP - 25 MM - LOCATING ONLY", "Miếng dán Velcro định vị", "PI",
-               "VELCRO PS14 hook 25 mm or 3M Dual Lock SJ3560", "", 0.03, "assumption",
-               "per metre: about 30 g for a 25 mm tape; 1.6 m for the 8 wall cassettes (register)"),
-    "848012": ("SEALS - CASSETTE EDGE GASKET - 10 X 3.18 - PSA FOAM", "Gioăng mép cassette", "PI",
-               "PORON 4701-40 Soft with PSA, 10 x 3.18", "", 0.0076, "calculation",
-               "per metre: 10 x 3.18 at 240 kg/m3 (assumption for the foam's density); 29% squeeze in the 2.26 gap"),
+    "838001": dict(name="HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", vi="Bulong lục giác chìm M6 × 16",
+                   kind="PI", material="steel, property class 8.8 (ISO 898-1)", finish="zinc plated",
+                   maker="HOLD: any maker to ISO 4762, picked at the RFQ", sku="ISO 4762 M6 x 16 - 8.8 - zinc plated",
+                   torque=TORQUE, mass=0.0062, mstat="calculation",
+                   basis="head Ø10 x 6 less the socket, shank Ø6 x 16 at 85% for the thread, 7850 kg/m3"),
+    "838002": dict(name="HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
+                   vi="Bulong lục giác chìm M6 × 25 (chốt mối nối khép)", kind="PI",
+                   material="steel, property class 8.8 (ISO 898-1)", finish="zinc plated",
+                   maker="HOLD: any maker to ISO 4762, picked at the RFQ", sku="ISO 4762 M6 x 25 - 8.8 - zinc plated",
+                   torque="snugged, not torqued: a pin (register 2.10)", mass=0.0083, mstat="calculation",
+                   basis="head Ø10 x 6 less the socket, shank Ø6 x 25 at 85% for the thread, 7850 kg/m3"),
+    "838003": dict(name="HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", vi="Tán rút M6", kind="PI",
+                   material="aluminium 5056", finish="none (plain aluminium, as supplied)",
+                   maker="Sherex (PEM)", sku="CAH3-610-4.2", torque=TORQUE, mass=0.0023, mstat="calculation",
+                   basis="body Ø9.5 x 14.86 with an M6 bore and a Ø12.96 x 0.76 head (SHX sizes), 2640 kg/m3; "
+                         "the CAD body is the installed envelope"),
+    "838004": dict(name="HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", vi="Long đen to M6 inox",
+                   kind="PI", material="stainless steel A2", finish="none (plain stainless)",
+                   maker="HOLD: any maker to ISO 7093-1, picked at the RFQ", sku="ISO 7093-1 - 6.4 x 18 x 1.6 - A2",
+                   torque="", mass=0.0028, mstat="calculation", basis="6.4 x 18 x 1.6 (ISO 7093-1), 7900 kg/m3"),
+    "838005": dict(name="HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE", vi="Vòng giữ đầu bulong",
+                   kind="HOLD", material="elastomer (HOLD-02)", finish="", maker="HOLD-02", sku="HOLD-02",
+                   torque="", mass=0.001, mstat="assumption", basis="a small grommet; part not chosen (HOLD-02)"),
+    "831001": dict(name="HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", vi="Chốt định vị Ø8", kind="MP",
+                   material="stainless steel (A2)", finish="none; threadlocker on the thread when fitted (H-05)",
+                   maker="made (register H-05)", sku="", torque="", mass="cad", mstat="calculation",
+                   basis="CAD body: Ø8 pin to 8 proud of the face, M6 x 10 thread, 7900 kg/m3 (H-05 sizes PROPOSED)",
+                   calc=0.0051, calc_basis="Ø8 x 7.24 above the rivnut head plus Ø6 x 10, 7900 kg/m3 (H-05 sizes)"),
+    "831002": dict(name="HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", vi="Long đen chặn nhôm", kind="MP",
+                   material="aluminium sheet 1.5, 5000 or 6000 series", finish="mill (punched)",
+                   maker="made (register H-08)", sku="", torque="", mass="cad", mstat="calculation",
+                   basis="CAD body: Ø10.5 x Ø20 x 1.5 (H-08), 2700 kg/m3",
+                   calc=0.00092, calc_basis="Ø10.5 x Ø20 x 1.5 (H-08), 2700 kg/m3"),
+    "848001": dict(name="SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA", vi="Gioăng mối nối 3.97",
+                   kind="PI", material="PORON 4701-40 Soft polyurethane foam with PSA",
+                   finish="none (foam, PSA liner one side)",
+                   maker="Rogers (PORON), PSA laminated and slit by a converter (HOLD-05)",
+                   sku="PORON 4701-40 Soft, 3.97 x 8 strip with PSA", torque="", mass=0.0076, mstat="calculation",
+                   basis="per metre: 8 x 3.97 at 240 kg/m3 (assumption for the foam's density)"),
+    "848004": dict(name="SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE", vi="Gioăng ống mối nối khép",
+                   kind="HOLD", material="EPDM or TPE hollow bulb (HOLD-12)", finish="", maker="HOLD-12",
+                   sku="HOLD-12: a low-force bulb whose published working gap covers 4.0-7.0", torque="",
+                   mass=0.02, mstat="assumption", basis="per metre: about 20 g for a small hollow bulb"),
+    "518001": dict(name="LINING - CASSETTE CLIP", vi="Kẹp treo cassette", kind="HOLD", material="HOLD (H03, HOLD-08)",
+                   finish="", maker="HOLD-08", sku="HOLD-08: rated 8.3 kg shear, 8.0 kg pull-out, captive lock",
+                   torque="", mass=0.04, mstat="assumption", basis="about 40 g each (D-81's working figure, H-10)"),
+    "108002": dict(name="POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE",
+                   vi="Bộ keo dán ACP", kind="PI",
+                   material="SikaTack Panel-50 (ETA 19/0511), Sika Aktivator-205, Sika Panel Primer, "
+                            "SikaTack Panel Fixing Tape", finish="",
+                   maker="Sika", sku="SikaTack Panel-50 system (bond spec V2-ENG-BND)", torque="", mass=0.49,
+                   mstat="calculation", basis="bond spec: about 8.7 m of 12 x 3 bead per side panel"),
+    "848011": dict(name="SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY", vi="Băng gai dính định vị cassette",
+                   kind="PI", material="hook-and-loop or reclosable fastener tape, 25 mm, PSA",
+                   finish="", maker="VELCRO Brand, or 3M (one to pick at the RFQ)",
+                   sku="VELCRO PS14 hook 25 mm, or 3M Dual Lock SJ3560 25 mm (%s)" % SEL, torque="", mass=0.03,
+                   mstat="assumption", basis="per metre: about 30 g for a 25 mm tape"),
+    "848012": dict(name="SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN",
+                   vi="Gioăng mép cassette (rất mềm)", kind="HOLD",
+                   material="very soft PSA foam strip 10 x 2.0-2.2, or a fin (R-J18)", finish="", maker="HOLD-13",
+                   sku="HOLD-13: no more than about 2 kPa at 20% compression", torque="", mass=0.002,
+                   mstat="assumption", basis="per metre: 10 x 2.1 at about 100 kg/m3 (assumption)"),
 }
 
 
@@ -69,8 +111,8 @@ def en_name(comp):
     return re.sub(r"^\d+ ", "", comp["name"]).strip()
 
 
-def holes_in(comp, d):
-    return [h for b in comp["bodies"] for h in b["holes"] if abs(h["d"] - d) < 0.01 and h["full_circle"]]
+def holes_in(bodies, d):
+    return [h for b in bodies for h in b["holes"] if abs(h["d"] - d) < 0.01 and h["full_circle"]]
 
 
 def box_of(bodies):
@@ -92,41 +134,58 @@ def row(**kw):
     return r
 
 
-def hw_row(pn, qty, unit, note, source=REG):
-    name, vn, kind, mat, fin, mass, mstat, basis = HW[pn]
-    return row(level=1, part_number=pn, name=name, name_vi=vn, kind=kind, material=mat, finish=fin, qty=qty, unit=unit,
-               mass_each_kg=mass, mass_total_kg=round(mass * qty, 4), mass_status="%s: %s" % (mstat, basis),
-               status="HOLD" if kind == "HOLD" else "DRAFT", source=source, note=note)
+def hw_row(pn, qty, unit, note, bodies=None, source=REG):
+    h = dict(HW[pn])
+    mass = h["mass"]
+    if mass == "cad":
+        if bodies:
+            mass = round(sum(b["mass_kg"] for b in bodies) / len(bodies), 5)
+        else:                            # a report from before the hardware was modelled
+            mass, h["basis"] = h["calc"], h["calc_basis"]
+    return row(level=1, part_number=pn, name=h["name"], name_vi=h["vi"], kind=h["kind"], material=h["material"],
+               finish=h["finish"], maker=h["maker"], sku=h["sku"], torque=h["torque"], qty=qty, unit=unit,
+               mass_each_kg=mass, mass_total_kg=round(mass * qty, 4),
+               mass_status="%s: %s" % (h["mstat"], h["basis"]),
+               status="HOLD" if h["kind"] == "HOLD" or h["maker"].startswith("HOLD") else "DRAFT",
+               source=source, note=note)
+
+
+def hw_bodies(comps, pn):
+    c = comps.get(pn)
+    return c["bodies"] if c else []
 
 
 def panel_rows(rep):
     rows = []
     root = [c for c in rep["components"] if c["is_root"]][0]
     comps = {c["part_number"]: c for c in rep["components"] if not c["is_root"]}
+    prm = {p["name"]: p["value"] for p in rep["parameters"]}
     frame = [c for p, c in comps.items() if p.startswith(("2111", "2112"))][0]
     skin = [c for p, c in comps.items() if p.startswith(("2113", "2114"))][0]
     fill = [c for p, c in comps.items() if p.startswith(("2115", "2116"))][0]
-    made = sum(b["mass_kg"] for c in comps.values() for b in c["bodies"])
+    back = frame["part_number"].startswith("2112")
+    lower = "LOWER" in frame["name"]
     pn = rep["document"].split("_")[0]
     name_en, name_vi = (root["description"].split(" | ") + ["", ""])[:2]
-    rows.append(row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
-                    material="see the parts below", qty=1, unit="pc",
-                    size_mm=size_of(box_of([b for c in comps.values() for b in c["bodies"]])),
-                    mass_total_kg=round(made, 3), mass_status="calculation: CAD bodies of the made parts",
-                    status="DRAFT", source="CAD %s v%s" % (rep["document"], rep["version"]),
-                    note="outer panel, bonded and hardware-fitted at the factory; the lining cassette is a separate part (D-17)"))
+    rows.append(None)                                      # the assembly row, once its parts are summed
     fm = round(sum(b["mass_kg"] for b in frame["bodies"]), 3)
+    t, ts = prm.get("tube_t", 1.2), prm.get("stud_t", prm.get("tube_t", 1.2))
     rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame), name_vi=vi_name(frame["description"]),
-                    kind="MP", material="aluminium tube 6063-T6, 20 x 40 x 1.2 and 40 x 40 x 1.2",
+                    kind="MP", material="aluminium tube 6063-T6: perimeter %s x %g, studs 20 x 40 x %g (D-85)" % (
+                        "20 x 40" if back else "20 x 40 and 40 x 40", t, ts),
                     finish="mill finish with the bond prep (D-79)",
-                    process="saw cut square, CNC or jig drill (holes Ø0.4 from the spigot hole), member joints HOLD (H11)",
+                    process="saw cut square, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6), rivnuts and "
+                            "stop washers set at the factory, member joints HOLD (H11)",
                     qty=1, unit="pc", size_mm=size_of(box_of(frame["bodies"])), mass_each_kg=fm, mass_total_kg=fm,
                     mass_status="calculation: CAD at 2700 kg/m3", status="DRAFT",
-                    source="CAD; tube confirmed (D-34, D-54; 40 x 40 R-J3)", note="members butt-jointed, rails full length"))
+                    source="CAD; tube confirmed (D-34, D-54, D-85%s)" % ("" if back else "; 40 x 40 R-J3"),
+                    note="members butt-jointed, rails full length" + (
+                        "; 1 x 45 lead-in on the closing-seam face's top edge (R-J9)" if back else "")))
     cut = Counter()
     for b in frame["bodies"]:
         dims = sorted(round(b["box"][i + 3] - b["box"][i], 1) for i in range(3))
-        sec = "40 x 40 x 1.2" if dims[0] >= 39.9 else "20 x 40 x 1.2"   # the two short sides of the tube
+        wall = ts if b["name"].startswith("STILE - MID") else t
+        sec = "%s x %g" % ("40 x 40" if dims[0] >= 39.9 else "20 x 40", wall)
         cut[(re.sub(r" \d+$", "", b["name"]), sec, member_length(b), b["mass_kg"])] += 1
     for (kind, sec, length, m), q in sorted(cut.items(), key=lambda k: (k[0][0], -k[0][2])):
         rows.append(row(level=2, name="%s (cut length)" % kind, name_vi="thanh nhôm", kind="cut",
@@ -137,12 +196,14 @@ def panel_rows(rep):
     rows.append(row(level=1, part_number=skin["part_number"], name=en_name(skin), name_vi=vi_name(skin["description"]),
                     kind="MP", material="ACP 3 mm Alcorest outdoor, PE-type core (HW-SEL A1)",
                     finish="PVDF coated EV3038 Dark Yellow (maker's coil coating; D-12)",
-                    process="CNC router: cut, V-groove and fold the back return (H16)", qty=1, unit="pc",
-                    size_mm=size_of(box_of(skin["bodies"])), mass_each_kg=sm, mass_total_kg=sm,
+                    process="CNC router: cut flat" if back else "CNC router: cut, V-groove and fold the back return (H16)",
+                    qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])), mass_each_kg=sm, mass_total_kg=sm,
                     mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
-                    source="CAD", note="blank and fold line in the skin DXF"))
+                    source="CAD", note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
+                                        if back else "blank and fold line in the skin DXF")))
     fl = round(sum(b["mass_kg"] for b in fill["bodies"]), 3)
-    pieces = Counter((round(b["box"][4] - b["box"][1], 1), round(b["box"][5] - b["box"][2], 1)) for b in fill["bodies"])
+    pieces = Counter(tuple(sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)[:2])
+                     for b in fill["bodies"])
     rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill), name_vi=vi_name(fill["description"]),
                     kind="MP", material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
                     process="knife cut to the bays, 60 x 60 pockets left open at the bolts", qty=1, unit="set",
@@ -150,29 +211,88 @@ def panel_rows(rep):
                     mass_each_kg=fl, mass_total_kg=fl, mass_status="calculation: CAD at the design's fill density",
                     status="DRAFT", source="CAD; 24 kg/m3 PM ruling 2026-10-31 (T02 confirms, else 32)",
                     note="friction fit in the bays"))
-    # hardware fitted in this panel, counted from the CAD's holes
-    rivnuts = len(holes_in(frame, 9.53))
-    bolts = len(holes_in(frame, 7.0))
-    spigot_rivnuts = 2 if "LOWER" in frame["name"] else 0
-    top = [b for b in frame["bodies"] if b["name"] == "RAIL - TOP"][0]
-    height = round(box_of(frame["bodies"])[5] - box_of(frame["bodies"])[2], 2)
-    rows += [
-        hw_row("108002", 1, "set", "one 12 x 3 joint on every member touching the skin; in-line tape HOLD-B2",
-               source="%s; bond spec V2-ENG-BND (PR #23)" % REG),
-        hw_row("838003", rivnuts, "pc", "%d stopped joints (J-WALL-01 or J-CEIL-01, and J-WALL-02) and %d spigot rivnuts" % (
-            rivnuts - spigot_rivnuts, spigot_rivnuts)),
-        hw_row("831002", rivnuts - spigot_rivnuts, "pc", "one under each stopped-joint rivnut's head; sets the 2.26 gap"),
-    ]
-    if spigot_rivnuts:
-        rows.append(hw_row("831001", spigot_rivnuts, "pc", "in the top rail's spigot rivnuts, locating the panel above"))
-    rows += [
-        hw_row("838001", bolts, "pc", "captive, driven from this panel: J-BASE-01 or J-WALL-01 (bottom rail), J-FRONT-01"),
-        hw_row("838004", bolts, "pc", "one under each bolt head (R-J10)"),
-        hw_row("838005", bolts, "pc", "grommet in each Ø19 access hole, holding its bolt (HOLD-02)"),
-        hw_row("848001", round((member_length(top) + height) / 1000.0, 2), "m",
-               "on this panel's nut-side faces: the top member (%g) and the back stile's room face (%g)" % (
-                   member_length(top), height)),
-    ]
+    rows += hardware_rows(frame, comps, back, lower, prm)
+    made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
+    rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
+                  material="see the parts below", qty=1, unit="pc",
+                  size_mm=size_of(box_of([b for c in comps.values() for b in c["bodies"]])),
+                  mass_total_kg=made, mass_status="calculation: the sum of the rows below (CAD bodies and hardware)",
+                  status="DRAFT", source="CAD %s v%s" % (rep["document"], rep["version"]),
+                  note="outer panel, bonded and hardware-fitted at the factory; the lining cassette is a separate part "
+                       "(D-17)")
+    return rows
+
+
+def hardware_rows(frame, comps, back, lower, prm):
+    """The joint hardware this panel carries, counted from the CAD (bodies where modelled, holes otherwise)."""
+    fb = frame["bodies"]
+    rv_bodies, sw_bodies, sp_bodies = (hw_bodies(comps, p) for p in ("838003", "831002", "831001"))
+    rivnut_holes = len(holes_in(fb, prm.get("rivnut_d", 9.53)))
+    pins = [b for b in rv_bodies if "PIN" in b["name"]]
+    spig_rv = [b for b in rv_bodies if "SPIGOT" in b["name"]]
+    if rv_bodies and len(rv_bodies) != rivnut_holes:
+        raise SystemExit("CAD has %d rivnut bodies for %d rivnut holes" % (len(rv_bodies), rivnut_holes))
+    rivnuts = len(rv_bodies) or rivnut_holes
+    if not rv_bodies:                    # a report from before the hardware was modelled
+        spig_rv = [None] * (2 if (lower or back) else 0)
+        pins = [None] * (3 if back and len(holes_in([b for b in fb if b["name"] == "STILE - CENTRE"], 9.53)) else 0)
+    stopped = rivnuts - len(spig_rv) - len(pins)
+    if sw_bodies and len(sw_bodies) != stopped:
+        raise SystemExit("CAD has %d stop washers for %d stopped-joint rivnuts" % (len(sw_bodies), stopped))
+    centre_holes = [b for b in fb if b["name"] == "STILE - CENTRE"]
+    pin_holes = len(holes_in(centre_holes, prm.get("bolt_d", 7.0))) if back else 0
+    bolts = len(holes_in(fb, prm.get("bolt_d", 7.0))) - pin_holes        # B1/B3: the pin's plain hole takes no bolt
+    top = [b for b in fb if b["name"] == "RAIL - TOP"][0]
+    height = round(box_of(fb)[5] - box_of(fb)[2], 2)
+    rows = []
+    if back:
+        bead = round(sum(member_length(b) for b in fb) / 1000.0, 2)
+        r = hw_row("108002", 1, "set", "one 12 x 3 joint on every member touching the skin, %.2f m of bead" % bead,
+                   source="%s; bond spec V2-ENG-BND (PR #23)" % REG)
+        r["mass_each_kg"] = r["mass_total_kg"] = round(0.49 / 8.7 * bead, 3)
+        r["mass_status"] = "calculation: the bond spec's 0.49 kg per 8.7 m of bead, on this frame's %.2f m" % bead
+        rows.append(r)
+    else:
+        rows.append(hw_row("108002", 1, "set", "one 12 x 3 joint on every member touching the skin; in-line tape "
+                           "HOLD-B2", source="%s; bond spec V2-ENG-BND (PR #23)" % REG))
+    roles = []
+    if stopped:
+        roles.append("%d stopped joints" % stopped)
+    if spig_rv:
+        roles.append("%d spigot rivnuts" % len(spig_rv))
+    if pins:
+        roles.append("%d closing-seam pin rivnuts, no stop washer" % len(pins))
+    rows.append(hw_row("838003", rivnuts, "pc", "; ".join(roles) + "; CAD bodies at every rivnut hole",
+                       bodies=rv_bodies or None))
+    if stopped:
+        rows.append(hw_row("831002", stopped, "pc", "one under each stopped-joint rivnut's head; sets the 2.26 gap",
+                           bodies=sw_bodies or None))
+    if spig_rv:
+        rows.append(hw_row("831001", len(spig_rv), "pc", "in the top rail's spigot rivnuts, locating the %s above" % (
+            "ceiling" if back and not lower else "panel"), bodies=sp_bodies or None))
+    if bolts:
+        rows.append(hw_row("838001", bolts, "pc", "captive, driven from this panel: %s" % (
+            "J-BASE-01 or J-WALL-01 (bottom rail), J-WALL-02 (corner)%s" % ("" if lower else ", J-CEIL-01 (top rail)")
+            if back else "J-BASE-01 or J-WALL-01 (bottom rail), J-FRONT-01 (front stile)")))
+    if pins:
+        rows.append(hw_row("838002", len(pins), "pc", "closing-seam pins, factory-fitted captive in their rivnuts, "
+                           "driven across on site (register 2.10)"))
+    if bolts or pins:
+        rows.append(hw_row("838004", bolts + len(pins), "pc", "one under each bolt head (R-J10)"))
+    if bolts:
+        rows.append(hw_row("838005", bolts, "pc", "grommet in each Ø19 access hole, holding its bolt (HOLD-02); the "
+                           "pins need none"))
+    if back:
+        if lower:
+            rows.append(hw_row("848001", round(member_length(top) / 1000.0, 2), "m",
+                               "on the top rail, the nut side of J-WALL-01 (%g)" % member_length(top)))
+        if pins:
+            rows.append(hw_row("848004", round(height / 1000.0, 2), "m",
+                               "on the closing-seam face beside the rivnut heads (R-J7, R-J17), %g" % height))
+    else:
+        rows.append(hw_row("848001", round((member_length(top) + height) / 1000.0, 2), "m",
+                           "on this panel's nut-side faces: the top member (%g) and the back stile's room face (%g)" % (
+                               member_length(top), height)))
     return rows
 
 
@@ -187,8 +307,11 @@ def cassette_rows(rep):
     tb, fb = tray["bodies"][0], felt["bodies"][0]
     made = sum(b["mass_kg"] for c in real.values() for b in c["bodies"])
     pn = rep["document"].split("_")[0]
+    back = pn.startswith("5102")
+    lower = "LOWER" in tray["name"]
     name_en, name_vi = (root["description"].split(" | ") + ["", ""])[:2]
-    perim = round(2 * ((tb["box"][4] - tb["box"][1]) + (tb["box"][5] - tb["box"][2])) / 1000.0, 2)
+    length = round(max(tb["box"][3] - tb["box"][0], tb["box"][4] - tb["box"][1]), 2)
+    height = round(tb["box"][5] - tb["box"][2], 2)
     rows.append(row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="BS", material="see the parts below",
                     qty=1, unit="pc", size_mm=size_of(box_of([tb, fb])), mass_total_kg=round(made, 3),
                     mass_status="calculation: CAD bodies of the made parts", status="DRAFT",
@@ -208,12 +331,20 @@ def cassette_rows(rep):
                     mass_status="calculation: CAD at 1.8 kg/m2 (Polyx Board 9 data, HW-SEL A3); the factory felt unverified",
                     status="DRAFT", source="CAD", note="held by the tray's lips over the 24 mm air gap (settles H09)"))
     rows += [
-        hw_row("518001", len(clips["bodies"]), "pc", "zones reserved on the first and last intermediate stiles; "
+        hw_row("518001", len(clips["bodies"]), "pc", "zones reserved on the panel frame's first and last studs; "
                "8.3 kg rated in shear each (register J-LIN-01)"),
         hw_row("848011", 0.2, "m", "4 pads of 50 mm to line the cassette up (assumption); carries no load (D-47)"),
-        hw_row("848012", perim, "m", "round the cassette's outer edge, sealing the 2.26 gap to the next cassette; "
-               "converter HOLD (H14)"),
     ]
+    seal, where = 0.0, []
+    if lower:
+        seal += length
+        where.append("the top edge against the upper cassette (%g)" % length)
+    if back and pn[-2:] in ("01", "03"):
+        seal += height
+        where.append("the X 0 edge against the next back cassette (%g; the 2.26 gap there is PROPOSED)" % height)
+    if seal:
+        rows.append(hw_row("848012", round(seal / 1000.0, 2), "m", "only touches across the 2.26 gap, no load (R-J18): "
+                           + "; ".join(where)))
     return rows
 
 
@@ -227,7 +358,7 @@ def main(argv):
         for r in rows:
             w.writerow(r)
     top = [r for r in rows if r["level"] == 0]
-    print("wrote %s: %d rows; made parts %s kg (panel) and %s kg (cassette)" % (
+    print("wrote %s: %d rows; panel %s kg with its hardware, cassette %s kg" % (
         os.path.basename(out), len(rows), top[0]["mass_total_kg"], top[1]["mass_total_kg"]))
 
 

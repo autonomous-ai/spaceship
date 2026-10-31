@@ -122,13 +122,9 @@ DOC_NAME = "%s_%s_%s_CAD" % (PARTS[ROOT_KEY][0], REV, re.sub(r"[^A-Z0-9]+", "-",
 # parameter and the ones above it. Statuses per conventions.md section 9.
 WALL_PARAMS = [
     # outer panel
-    ("skin_t", "3 mm", "mm", "source", "HW-SEL A1: Alcorest ACP 3 mm x 0.21 mm skins, EV3038 (plan VT01); D-12 colour"),
     ("tube_w", "20 mm", "mm", "confirmed",
      "D-34, D-54: aluminium tube 20 x 40 x 1.2; the 20 mm face carries the skin, so the 40 mm runs through the "
      "wall (outer_t = ACP 3 + frame 40). The joint register may turn it for the bond width (HOLD)"),
-    ("bond_t", "3 mm", "mm", "confirmed",
-     "PM ruling 2026-10-31 (outer panel 46 = ACP 3 + bond 3 + frame 40): SikaTack Panel-50 joint 12 x 3, the fixing tape "
-     "sets 3 mm (bond spec, PR #23)"),
     ("tube_d", "outer_t - skin_t - bond_t", "mm", "calculation", "frame depth = outer panel 46 - skin 3 - bond 3 = 40 (D-34)"),
     ("tube_t", "1.2 mm", "mm", "confirmed",
      "D-34, D-54, D-85: perimeter members (rails, front and back stiles) keep the 1.2 mm wall; they carry the rivnuts "
@@ -159,9 +155,9 @@ WALL_PARAMS = [
      "top member height: 20 on a lower panel; 40 x 40 on an upper panel, where the ceiling bolts in (PM ruling "
      "R-J3, joints register FR-06)"),
     ("stile_len", "frm_h - tube_w - top_h", "mm", "calculation", "stiles fit between the full-length rails (butt joints)"),
-    ("ceil_bolt_dz", "skin_t + bond_t + tube_d / 2", "mm", "confirmed",
-     "J-CEIL-01 side bolts on the ceiling frame tube's centre, Z 2374 on P04 (PM ruling 2026-10-31; joints register "
-     "R-J15, FR-07)"),
+    ("ceil_bolt_dz", "pod_h - ceil_bolt_z", "mm", "calculation",
+     "J-CEIL-01 side bolts on the ceiling frame tube's centre: the skeleton's ceil_bolt_z, Z 2374 on P04 (joints "
+     "register R-J15, FR-07)"),
     ("fill_t", "tube_d", "mm", "calculation", "40 mm PET fill fills the frame depth (D-34; layout study 40 mm)"),
     # site joints, joints register V2-ENG-JNT-01 P01 (ce1f415): M6 x 20 ISO 4762 captive bolts into Sherex
     # CAH3-610-4.2 rivnuts, bolts and corner members DECIDED by the PM (2026-10-31); positions PROPOSED there
@@ -175,10 +171,11 @@ WALL_PARAMS = [
     ("rivnut_d", "9.53 mm", "mm", "source", "Sherex CAH3-610-4.2 hole 9.53 +0.10 (HW-SEL A5; register H-03)"),
     ("spigot_d", "8.5 mm", "mm", "assumption", "register FR-05: hole for the 8 mm locating spigot H-05"),
     ("spigot_slot", "14 mm", "mm", "assumption", "register FR-05: slot length for the second spigot"),
-    ("spigot_edge", "100 mm", "mm", "assumption", "register FR-04: spigots about 100 from each end of the joint"),
-    ("bolt_edge", "220 mm", "mm", "confirmed",
-     "every bolted edge: end bolts 220 in from the panel's ends, evenly spaced, every bolt 30 or more from any stile "
-     "(PM ruling 2026-10-31 from the joints register, R-J14)"),
+    ("spigot_edge", "spigot_inset", "mm", "calculation",
+     "the skeleton's spigot_inset: spigots 100 from each end of the edge (PM ruling 2026-10-31, R-J13)"),
+    ("bolt_edge", "bolt_edge_inset", "mm", "calculation",
+     "the skeleton's bolt_edge_inset: end bolts 220 in from the panel's ends, evenly spaced, every bolt 30 or more "
+     "from any stile (PM ruling 2026-10-31, R-J14)"),
     ("n_side_jnt", "3", "", "source", "register J-WALL-02, J-FRONT-01: 3 bolts up each side panel"),
     ("side_jnt_pitch", "(pnl_h - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
      "equal pitch of the 3 bolts up the corner and decor joints"),
@@ -187,8 +184,8 @@ WALL_PARAMS = [
      "bottom of the back panel row this side panel meets at the corner (B1/B2 or B3/B4, skeleton P04)"),
     ("corner_bolt_pitch", "(back_ph - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
      "J-WALL-02 bolts run along the back panel's edge: 220, 559.31, 898.61 on its 1118.61 (joints register 2.9)"),
-    ("n_len_bolt", "4", "", "source",
-     "bolts along a side panel's length: J-BASE-01, J-WALL-01, J-CEIL-01 side edges (joints register 3.1, 3.3, 3.4)"),
+    ("n_len_bolt", "n_base_bolt", "", "calculation",
+     "the skeleton's n_base_bolt (4): the same count on J-WALL-01 and the J-CEIL-01 side edges (register 2.9)"),
     ("len_bolt_pitch", "(pnl_len - 2 * bolt_edge) / (n_len_bolt - 1)", "mm", "calculation",
      "even pitch of the bolts along the panel"),
     # lining cassette
@@ -285,7 +282,8 @@ def needed_skeleton(skel, wall):
 
 
 SKELETON_NAMES = ("pod_w", "pod_d", "pod_h", "wall_depth", "wall_z0", "panel_z0", "side_h", "back_ph", "stack_t",
-                  "outer_t", "cass_t", "lin_gap", "seam_gap")       # the skeleton parameters the wall uses (P04)
+                  "outer_t", "cass_t", "lin_gap", "seam_gap", "skin_t", "bond_t", "bolt_edge_inset", "spigot_inset",
+                  "n_base_bolt", "ceil_bolt_z")       # the skeleton parameters the wall uses (P04, as updated in #58)
 
 
 def derive_skeleton(app, design, name):
@@ -325,8 +323,8 @@ def add_params(design, repo_root):
             ref = design.allParameters.itemByName(n + "_Ref")
             if ref is None:
                 raise RuntimeError("the skeleton has no favorite parameter %s (derived as %s_Ref)" % (n, n))
-            design.userParameters.add(n, vi(n + "_Ref"), "mm", "LINKED: %s_Ref, derived from %s v%d (skeleton is the "
-                                                               "single source)" % (n, skel_name, ver))
+            design.userParameters.add(n, vi(n + "_Ref"), ref.unit, "LINKED: %s_Ref, derived from %s v%d (skeleton is "
+                                                                 "the single source)" % (n, skel_name, ver))
         n_skel = len(SKELETON_NAMES)
     else:
         skel = skeleton_params(repo_root)

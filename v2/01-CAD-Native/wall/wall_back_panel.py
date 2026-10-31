@@ -62,8 +62,9 @@ for _k, (_pn, _n, _v) in PARTS.items():
         raise RuntimeError("reserved part number %s (D-28)" % _pn)
 ROOT_KEY = {"panel": "assy", "cassette": "cass"}.get(PART, PART)
 DOC_NAME = "%s_%s_%s_CAD" % (PARTS[ROOT_KEY][0], REV, re.sub(r"[^A-Z0-9]+", "-", PARTS[ROOT_KEY][1]).strip("-"))
-SKELETON_NAMES = ("pod_w", "pod_d", "pod_h", "panel_z0", "back_ph", "back_oh", "half_pw", "stack_t", "outer_t",
-                  "cass_t", "lin_gap", "seam_gap")
+SKELETON_NAMES = ("pod_w", "pod_d", "pod_h", "panel_z0", "back_ph", "back_oh", "half_pw", "half_fw", "close_gap",
+                  "stack_t", "outer_t", "cass_t", "lin_gap", "seam_gap", "skin_t", "bond_t", "bolt_edge_inset",
+                  "spigot_inset", "n_base_bolt")       # skeleton P04 as updated in place (#58)
 
 _KEEP = {"skin_t", "tube_w", "bond_t", "tube_d", "tube_t", "stud_t", "stile_pitch_max", "skin_setback", "fill_t",
          "bolt_d", "access_d", "rivnut_d", "spigot_d", "spigot_slot", "spigot_edge", "bolt_edge", "pocket_w", "felt_t",
@@ -74,12 +75,9 @@ WALL_PARAMS = [p for p in WALL_PARAMS if p[0] in _KEEP] + [
     ("lead_in", "1 mm", "mm", "source",
      "joints register 2.10 (R-J9): 1 x 45 degree lead-in on the top edge of each closing-seam face, so the panel "
      "beside it drops in past it without catching the bulb seal"),
-    ("close_gap", "5.5 mm", "mm", "confirmed",
-     "frame gap at the closing seam X 0 (joints register R-J11, R-J16: 5.5 nominal, 4.0 to 7.0); the skin keeps "
-     "half_pw and overhangs its frame by (close_gap - seam_gap) / 2"),
     ("pnl_len", "half_pw", "mm", "calculation", "skeleton half_pw: the back panel's skin width (1200.61 on P04)"),
-    ("frm_len", "half_pw - (close_gap - seam_gap) / 2", "mm", "calculation",
-     "frame width 1198.99: it stops 1.62 short of the skin at the closing seam (R-J16)"),
+    ("frm_len", "half_fw", "mm", "calculation",
+     "the skeleton's half_fw, 1198.99: the frame stops close_gap / 2 from X 0 and 1.62 short of its skin (R-J16)"),
     ("pnl_h", "back_ph" if ROW == 1 else "back_oh - back_ph - seam_gap", "mm", "calculation",
      "skeleton back row height (1118.61 on P04)"),
     ("frm_h", "pnl_h", "mm", "calculation", "the frame fills the row height; the seam gaps are outside it (P04)"),
@@ -89,9 +87,12 @@ WALL_PARAMS = [p for p in WALL_PARAMS if p[0] in _KEEP] + [
      "intermediate stiles so that no stile pitch exceeds stile_pitch_max"),
     ("stile_pitch", "(frm_len - tube_w) / (stile_n_mid + 1)", "mm", "calculation", "equal stile pitch, centre to centre"),
     ("stile_len", "frm_h - 2 * tube_w", "mm", "calculation", "stiles between the full-width rails (butt joints)"),
-    ("n_len_bolt", "4", "", "source", "4 bolts on the band, the horizontal seam and the ceiling back edge (register 2.9)"),
+    ("n_len_bolt", "n_base_bolt", "", "calculation",
+     "the skeleton's n_base_bolt (4): also on the horizontal seam and the ceiling back edge (register 2.9; the "
+     "skeleton's n_ceil_back_bolt 3 is an old assumption, flagged)"),
     ("len_bolt_pitch", "(frm_len - 2 * bolt_edge) / (n_len_bolt - 1)", "mm", "calculation",
-     "253.00 on P04: 220, 473.00, 725.99, 978.99 from the frame's ends (register 2.9)"),
+     "253.00 on P04: 220, 473.00, 725.99, 978.99 from the frame's ends (register 2.9; the skeleton's back_base_pitch "
+     "uses the 1200.61 skin and gives 253.54, flagged to its owner)"),
     ("n_side_jnt", "3", "", "source", "3 bolts on the back corner and on the closing seam (register 2.9)"),
     ("side_jnt_pitch", "(pnl_h - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
      "339.31 on P04: 220, 559.31, 898.61 up the 1118.61 edge (register 2.9)"),
@@ -116,12 +117,15 @@ Y_FELT_BACK = "pod_d / 2 - stack_t + tray_t + felt_t"
 YC = "pod_d / 2 - skin_t - bond_t - tube_d / 2"      # the frame's centre line in Y (= bolt_line_y, 824)
 
 # across the width: the outer (corner) end and the centre (closing seam) end
-X_OUTER = "-(pod_w / 2 - outer_t) + seam_gap" if COL == "L" else "(pod_w / 2 - outer_t) - seam_gap"
-X_SKIN_C = "-seam_gap / 2" if COL == "L" else "seam_gap / 2"
-X_FRAME_C = "-close_gap / 2" if COL == "L" else "close_gap / 2"
+# the frame runs half_fw from close_gap / 2 off X 0, the skin half_pw from seam_gap / 2 off X 0, so both outer
+# ends meet the side frame's room face one seam_gap away (X -+1201.74 on P04)
 X_CASS_OUT = "-(pod_w / 2 - stack_t)" if COL == "L" else "(pod_w / 2 - stack_t)"
-X_LOW, X_HIGH = (X_OUTER, X_FRAME_C) if COL == "L" else (X_FRAME_C, X_OUTER)          # frame
-XS_LOW, XS_HIGH = (X_OUTER, X_SKIN_C) if COL == "L" else (X_SKIN_C, X_OUTER)          # skin
+if COL == "L":
+    X_LOW, X_HIGH = "-close_gap / 2 - half_fw", "-close_gap / 2"                       # frame
+    XS_LOW, XS_HIGH = "-seam_gap / 2 - half_pw", "-seam_gap / 2"                       # skin
+else:
+    X_LOW, X_HIGH = "close_gap / 2", "close_gap / 2 + half_fw"
+    XS_LOW, XS_HIGH = "seam_gap / 2", "seam_gap / 2 + half_pw"
 XC_LOW, XC_HIGH = (X_CASS_OUT, "-seam_gap / 2") if COL == "L" else ("seam_gap / 2", X_CASS_OUT)   # lining
 
 Z0 = "panel_z0" if ROW == 1 else "panel_z0 + back_ph + seam_gap"

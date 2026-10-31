@@ -24,7 +24,10 @@ import adsk.fusion
 ARGS = globals().get("SCRIPT_ARGS", {})
 EDITS = [("wall_depth", "1300 mm"), ("side_h", "1000 mm"), ("stile_pitch_max", "300 mm")]
 # back wall panels B1-B4 (wall_back_panel.py): the panel width, the row height and the stud rule
-EDITS_BACK = [("half_pw", "1100 mm"), ("back_ph", "1000 mm"), ("stile_pitch_max", "300 mm")]
+# (pod_w 2300 with the skin and frame widths the skeleton would give it: (2300 - 92 - 3 x 2.26) / 2 and
+# (2300 - 92 - 2 x 2.26 - 5.5) / 2)
+EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1000 mm"),
+              ("stile_pitch_max", "300 mm")]
 BACK_PREFIXES = ("2102", "2112", "2114", "2116", "5102", "5112", "5114")
 
 
@@ -66,11 +69,12 @@ def back_checks(after, p):
     n_mid = math.ceil((p["frm_len"] - 20) / 300.0) - 1
     out = []
     if rails:
-        out += [("frame width follows half_pw - 1.62 (%g)" % p["frm_len"],
-                 abs(p["frm_len"] - (p["half_pw"] - (gap - seam) / 2)) < 0.01 and
-                 all(abs((r[3] - r[0]) - p["frm_len"]) < 0.01 for r in rails)),
+        out += [("frame width follows half_fw (%g)" % p["frm_len"],
+                 abs(p["frm_len"] - p["half_fw"]) < 0.01 and all(abs((r[3] - r[0]) - p["frm_len"]) < 0.01 for r in rails)),
                 ("frame stays close_gap / 2 from X 0 at the closing seam",
                  all(abs(min(abs(r[0]), abs(r[3])) - gap / 2) < 0.01 for r in rails)),
+                ("frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26)",
+                 all(abs(max(abs(r[0]), abs(r[3])) - (p["pod_w"] / 2 - 46 - seam)) < 0.01 for r in rails)),
                 ("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
                                                          for st in stiles)),
                 ("stud count follows the 300 mm rule (%d)" % n_mid, len(mids) == n_mid),
@@ -135,8 +139,8 @@ def record(design, rel):
         "parametric" if design.designType == adsk.fusion.DesignTypes.ParametricDesignType else "DIRECT"))
     back_wall = root_pn[:4] in BACK_PREFIXES
     edits = EDITS_BACK if back_wall else EDITS
-    names = ("half_pw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch", "cass_len", "cass_h",
-             "pnl_h") if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
+    names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
+             "cass_len", "cass_h", "pnl_h") if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
                                          "stile_pitch", "cass_len", "cass_h", "top_h")
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)

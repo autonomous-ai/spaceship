@@ -258,6 +258,24 @@ class WallBackPanelTest(unittest.TestCase):
         for pn in seen:
             self.assertNotIn(pn, [p[0] for p in side["PARTS"].values()])
 
+    def test_back_frame_and_skin_ends_meet_the_corner_gap(self):
+        for pos, sign in (("B1", -1), ("B2", 1), ("B3", -1), ("B4", 1)):
+            ns = load_back(pos)
+            v = resolve(ns)
+            lo, hi = evaluate(ns["X_LOW"], v), evaluate(ns["X_HIGH"], v)
+            slo, shi = evaluate(ns["XS_LOW"], v), evaluate(ns["XS_HIGH"], v)
+            outer = 1250 - 46 - 2.26                                  # side frame's room face less the corner gap
+            self.assertAlmostEqual(max(abs(lo), abs(hi)), outer, places=2)
+            self.assertAlmostEqual(max(abs(slo), abs(shi)), outer, places=2)   # skin flush at the stopped edge
+            self.assertAlmostEqual(min(abs(lo), abs(hi)), 2.75, places=2)      # frame: half the closing gap
+            self.assertAlmostEqual(min(abs(slo), abs(shi)), 1.13, places=2)    # skin: half the 2.26 seam (R-J16)
+            self.assertEqual(sign * (lo + hi) > 0, True)
+
+    def test_back_restates_no_skeleton_number(self):
+        skel_names = {p[0] for p in load()["skeleton_params"](REPO)}
+        for name, _e, _u, _s, _src in load_back("B2")["WALL_PARAMS"]:
+            self.assertNotIn(name, skel_names, name)
+
     def test_back_parameters_have_status_and_source(self):
         for pos in ("B1", "B4"):
             ns = load_back(pos)
