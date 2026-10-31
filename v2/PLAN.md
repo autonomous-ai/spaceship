@@ -16,6 +16,21 @@ It's built from a complete, editable design package, so the prototype matches th
 
 **Later, not in the v2 prototype:** US rules (electrical listing, fire ratings, sprinklers), US 120 V electrics, and updates to the product page. We don't design them out, though. The roof should be able to take a sprinkler head or open on alarm, and the threshold stays low, the door wide and the door pull light.
 
+## 10x better than the big guys
+
+We benchmark against the leaders: Framery, Room, Herman Miller, Steelcase (Orangebox) and Haworth (hushoffice). The numbers are from `v2/research/market-study.md`, and a fuller big-brand scorecard comes in during Milestone 1.
+
+| What buyers feel | Big guys today | FocusPod v2 target | Better by |
+|---|---|---|---|
+| Installing it | Pro crews. Room S needs 4 people for 3–5 hours (12–20 person-hours). hushMeet needs 2 installers for 2.5–3 hours. Air3 needs certified installers. | 2 people in about 1 hour with one hand tool (2 person-hours) | 3–10x less effort |
+| Getting it delivered and inside | Crates 2.2–2.4 m long, up to about 970 kg gross, liftgate or white glove, big elevators | Standard 48 × 40 pallets. Every part 20 kg or less except the glass, and everything fits through a normal door. | Two people can carry it up the stairs |
+| Weight | 150–250 kg per m² of floor (Air3 is 99) | about 70 kg per m² (300 kg) | 2–3x lighter |
+| Fresh air | Users' top complaint; nobody publishes fan noise | CO2 at or under 800 ppm with 2 people all day; fans start by themselves; fan noise published and at or under 30 dB(A) | Best in class |
+| Quiet | 28–30 dB speech reduction (ISO 23351-1) | At least as quiet as v1, aim 30 dB, at about a third of their weight per m² | Match the best |
+| Price | $14k–23k for 1–4 person pods | At or below v1's $9,900 for 2 people | About 2x better per seat |
+
+Dee sets the price; the rest are design targets.
+
 ## Targets
 
 Agents work to these from day one. The hardware engineering lead and the indoor pod lead can change any of them at any time, and we fold their changes in.
@@ -23,9 +38,9 @@ Agents work to these from day one. The hardware engineering lead and the indoor 
 | # | Goal | Target | How we prove it |
 |---|---|---|---|
 | 1 | Light | 300 kg or less, about half of v1 (about 550 kg from its BOM). Every part 20 kg or less, so one person can carry it, except the glass. That's about 40% lighter than any acoustically rated pod this size, and no maker claims 20 kg parts. | Weights from the CAD and BOM, then the prototype on a scale |
-| 2 | Easy to assemble | 2 people in 4 hours or less, hand tools only, one bolt size (M6), no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
+| 2 | Easy to assemble | 2 people in about 1 hour with one hand tool, and never more than 4 hours. One bolt size (M6), joints that find their own place, no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
 | 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. Nobody on the market ships pods on 48 × 40. | Pallet layout from the CAD |
-| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 1,000 ppm for 2 people over 2+ hours, which needs at least 20 l/s; we aim for about 70 l/s, a full air change every 2 minutes. Fans start by themselves when someone is inside, have speed control and boost, and are wired in so nobody unplugs them. Fan noise inside at or under 30 dB(A), through silenced vents. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |
+| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 800 ppm with 2 people all day, which needs at least 26 l/s; we aim for about 70 l/s, a full air change every 2 minutes, which keeps CO2 near 550 ppm. Fans start by themselves when someone is inside, have speed control and boost, and are wired in so nobody unplugs them. Fan noise inside at or under 30 dB(A), through silenced vents. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |
 | 5 | Quiet (guardrail) | At least as quiet as v1, with 30 dB as the aim. v1 and v2 get tested in the same lab to ISO 23351-1. | Calculation, then the lab test |
 | 6 | Healthy materials | Low-emission certified felt, boards and glue | Supplier certificates |
 | 7 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM, joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
