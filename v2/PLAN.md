@@ -28,8 +28,8 @@ We benchmark against the leaders: Framery, Room, Herman Miller, Steelcase (Orang
 | Getting it delivered and inside | Framery ships one crate of 310–430 kg that needs a pallet jack. Room's heaviest box is 73–81 kg. | Standard pallets to the door, then every piece carried by hand. Every part is 20 kg or less except the glass and fits an 81 cm door and a normal elevator. | 3–20x lighter pieces, and no pallet jack inside |
 | Moving it inside the office | Room S/M need a pro teardown and rebuild, and Framery needs a kit and partial disassembly | Under study: castors, or a quick unbolt of the light panels | Up to 10x |
 | Weight | The lightest are about 88–91 kg/m² of floor with no lab sound rating (Bay, Zenbooth Quad). Lab-rated Class A pods are 151–171 (Framery Four). | about 98 kg/m² (about 418 kg, cap 420), with every part 20 kg or less except the glass | As light as the lightest unrated pods, and well under lab-rated ones |
-| Fresh air | Best is about 25 l/s per person. Nobody publishes CO2 readings or fan noise. | 53 l/s normal flow at 25 dB(A) or less, with a 70 l/s boost at about 31 dB(A). A CO2 sensor drives the fans and the reading is shown inside. Fan noise is published. | Best in class, and first to publish CO2 and fan noise |
-| Quiet | 30–30.3 dB speech reduction is the best lab result (hushFree XS, Framery) | About 24 dB (calculated range 21.5–26.5), roughly 9 dB quieter than v1 as built (about 15 dB), with a published lab report. 30 dB would need about 520 kg. | Clearly quieter than v1, at about half the weight per m² of lab-rated pods |
+| Fresh air | Best is about 25 l/s per person. Nobody publishes CO2 readings or fan noise. | CO2 and heat drive the fans: about 33 l/s for one person, 53 l/s for two at 26 dB(A) or less, and a boost to 65 l/s at 30 dB(A). The CO2 reading is shown inside. Fan noise is published. | Best in class, and first to publish CO2 and fan noise |
+| Quiet | 30–30.3 dB speech reduction is the best lab result (hushFree XS, Framery) | About 19 dB calculated (range 14.6–21.7), and up to 24 dB if the felt does better on its air gap. That's quieter than v1 as built (about 15 dB). The wall sample, measured down to 100 Hz, settles it before a lab report. 30 dB would need about 520 kg. | Quieter than v1, at about half the weight per m² of lab-rated pods |
 | Price | Zenbooth $5,245 per seat (2 seats). Big-brand pods run $13k–30k. | At or below v1's $9,900 for 2 people ($4,950 per seat) | Best per seat |
 
 Ten times better is real on installing, handling, lead time and moving the pod. It isn't physically possible on sound (10x quieter means +10 dB), on weight, or on price; the honest margin there is 1.2–3x. The product owner sets the price; the rest are design targets.
@@ -43,7 +43,7 @@ Agents work to these from day one. The hardware engineering lead and the indoor 
 | 1 | Light | About 418 kg for the decided build, with a cap of 420 kg (decision log). v1 is about 480 kg by its BOM. The kg-vs-dB curve set the trade. Every part 20 kg or less, so one person can carry it, except the glass. No maker claims 20 kg parts. | Weights from the CAD and BOM, then the prototype on a scale |
 | 2 | Easy to assemble | 2 people in about 1 hour with one hand tool, and never more than 4 hours. One bolt size (M6), joints that find their own place, no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
 | 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. Nobody on the market ships pods on 48 × 40. | Pallet layout from the CAD |
-| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 800 ppm with 2 people all day in a 600 ppm office. Normal flow is 53 l/s at 25 dB(A) or less; the CO2 sensor or a button boosts it to 70 l/s at about 31 dB(A). Fans start by themselves and are wired in. Silencers sit inside the decor blocks. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |
+| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 800 ppm with 2 people all day in a 600 ppm office. CO2 and heat drive the fans, keeping the inside within 4 K of the room and never going below 26 l/s with someone inside. One person runs at about 33 l/s. Two need 53 l/s at 26 dB(A) or less, and often the 65 l/s boost at 30 dB(A). Four 12 V fans in boxed cartridges sit in the right decor block, with supply low and exhaust high. Fans start by themselves. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |
 | 5 | Quiet (guardrail) | At least as quiet as v1, with 30 dB as the aim. v1 and v2 get tested in the same lab to ISO 23351-1. | Calculation, then the lab test |
 | 6 | Healthy materials | Low-emission certified felt, boards and glue | Supplier certificates |
 | 7 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM, joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
@@ -118,18 +118,18 @@ So v2 adds:
 
 We also compare three front options: 8 mm tempered glass; 4+4 laminated acoustic glass, which weighs about the same and is quieter; and smoked acrylic, less than half the weight. Room still claims about 30 dB with an acrylic door.
 
-The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, the product owner gets the trade-off before we add weight. Because 300 kg is beyond anything rated on the market, the team should build one wall sample and the door early and test them.
+The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, the product owner gets the trade-off before we add weight. Because 300 kg is beyond anything rated on the market, the team should build one wall sample and the door early and test them. Result so far: the decided build calculates at about 19 dB (range 14.6–21.7), still quieter than v1, so no weight goes back in until the wall sample is measured.
 
 ## What we keep, add and leave out
 
 **Kept from the v2 build plan:**
 - The look: the faceted front, proportions, colors and glass layout, unchanged.
 - The frame layout. The material may go from steel to aluminum (see above).
-- 3 mm ACP outside and 9 mm PET felt inside on Velcro. The plywood backing stays only where sound needs it.
+- 3 mm ACP outside and 9 mm PET felt inside, on lining cassettes held by mechanical clips. No plywood backing (decision log).
 - M6 bolts throughout.
 - Small wall frames: 2 per side, 4 at the back and 2 in the ceiling, adjusted to fit the pallet.
 - A 3-block decor frame.
-- Ceiling fans, one blowing in and one out.
+- Fans, one path blowing in and one out. They now sit in the right decor block instead of the ceiling (decision log).
 - The plan's switches on the back wall, which is fine for the prototype.
 - The modeling order: base, left wall, right wall, back wall, ceiling, decor frame, then the floor finish.
 
@@ -186,7 +186,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
 ### Milestone 2: sample set (about 2 days, 2 to 3 Engineers, starting once Phase 0 passes)
 
 The skeleton starts from the plan's fixed dimensions while Milestone 1 finishes, then takes the chosen panel layout.
-- A native Fusion skeleton of the whole pod, driven by named parameters: overall size, wall depth 1500, decor depth 200, tube sizes and panel splits. It's built in the plan's order, as components, not bodies.
+- A native Fusion skeleton of the whole pod, driven by named parameters: overall size, wall depth 1495, decor depth 205 (both measured from v1), tube sizes and panel splits. It's built in the plan's order, as components, not bodies.
 - Sample drawings:
   - GA with sections.
   - The floor (BASE) assembly and 2 of its parts.
