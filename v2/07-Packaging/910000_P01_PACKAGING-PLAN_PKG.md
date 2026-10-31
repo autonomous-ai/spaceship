@@ -46,8 +46,8 @@ Every piece stands on edge with its along-size on the 48 in side; the stack runs
 | 8 | **1-08** | B4 | WALL - PANEL ASSY - BACK UPPER - RH | 8.8 | 1200.61 × 1118.61 | 46 | 6 |
 | 9 | **1-09** | L2 | WALL - PANEL ASSY - SIDE UPPER - LH | 11.1 | 1142.74 × 1492.74 | 46 | 7 |
 | 10 | **1-10** | R2 | WALL - PANEL ASSY - SIDE UPPER - RH | 11.1 | 1142.74 × 1492.74 | 46 | 7 |
-| 11 | **1-11** | C1 | CEILING - PANEL ASSY - C1 | 10.0 | 1203.61 × 1495 | 46 | 8 |
-| 12 | **1-12** | C2 | CEILING - PANEL ASSY - C2 | 10.5 | 1203.61 × 1495 | 60 | 8 |
+| 11 | **1-11** | C1 | CEILING - PANEL ASSY - C1 | 10.0 | 1200.61 × 1495 | 46 | 8 |
+| 12 | **1-12** | C2 | CEILING - PANEL ASSY - C2 | 10.5 | 1200.61 × 1495 | 60 | 8 |
 | 13 | **1-13** | R1 | LINING - CASSETTE - SIDE LOWER - RH | 10.5 | 1142.74 × 1445 | 34 | 14 |
 | 14 | **1-14** | R2 | LINING - CASSETTE - SIDE UPPER - RH | 10.0 | 1092.74 × 1445 | 34 | 14 |
 | 15 | **1-15** | L1 | LINING - CASSETTE - SIDE LOWER - LH | 10.5 | 1142.74 × 1445 | 34 | 14 |
@@ -193,8 +193,8 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-08** | TBD (WALL) | WALL - PANEL ASSY - BACK UPPER - RH | Vách hậu - cụm tấm trên phải | B4 | 8.76 | calculation; fill provisional | 1200.61 × 1118.61 × 46 | 6 |
 | **1-09** | TBD (WALL) | WALL - PANEL ASSY - SIDE UPPER - LH | Vách trái - cụm tấm trên | L2 | 11.07 | calculation; fill provisional | 1492.74 × 1142.74 × 46 | 7 |
 | **1-10** | TBD (WALL) | WALL - PANEL ASSY - SIDE UPPER - RH | Vách phải - cụm tấm trên | R2 | 11.07 | calculation; fill provisional | 1492.74 × 1142.74 × 46 | 7 |
-| **1-11** | 410101 | CEILING - PANEL ASSY - C1 | Trần - tấm trái (cụm) | C1 | 10.04 | calculation (CAD); bond assumption | 1495 × 1203.61 × 46 | 8 |
-| **1-12** | 410102 | CEILING - PANEL ASSY - C2 | Trần - tấm phải (cụm) | C2 | 10.54 | calculation; calculation (CAD); bond assumption | 1495 × 1203.61 × 60 | 8 |
+| **1-11** | 410101 | CEILING - PANEL ASSY - C1 | Trần - tấm trái (cụm) | C1 | 10.04 | calculation (CAD); bond assumption | 1495 × 1200.61 × 46 | 8 |
+| **1-12** | 410102 | CEILING - PANEL ASSY - C2 | Trần - tấm phải (cụm) | C2 | 10.54 | calculation; calculation (CAD); bond assumption | 1495 × 1200.61 × 60 | 8 |
 | **1-13** | TBD (WALL) | LINING - CASSETTE - SIDE LOWER - RH | Cassette tiêu âm - vách phải dưới | R1 | 10.47 | calculation; lips confirmed | 1445 × 1142.74 × 34 | 14 |
 | **1-14** | TBD (WALL) | LINING - CASSETTE - SIDE UPPER - RH | Cassette tiêu âm - vách phải trên | R2 | 10.05 | calculation; lips confirmed | 1445 × 1092.74 × 34 | 14 |
 | **1-15** | 510101 | LINING - CASSETTE - SIDE LOWER - LH | Cassette tiêu âm - vách trái dưới | L1 | 10.47 | calculation; lips confirmed | 1445 × 1142.74 × 34 | 14 |
@@ -314,7 +314,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 | K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 14, never going back: True; crate top 2-01 (step 10) over 2-02 (step 11) | yes |
 | K10 | Every piece has a label (part number or owner, position code) and a place on a pallet | 42 labelled pieces; without a place: none; unknown tags: none | yes |
 | K11 | Every labelled piece is fitted in the step its label names | unfitted none; step mismatches none | yes |
-| K12 | Every skeleton body maps to exactly one label, for the step pictures | 34 bodies in the skeleton STEP; not in it none; unmapped none; twice none; unknown labels none | yes |
+| K12 | Every skeleton body maps to exactly one label, for the step pictures | 36 bodies in the skeleton STEP; not in it none; unmapped none; twice none; unknown labels none | yes |
 
 The bolt check reads `v2/05-Engineering/joints/joints-register.md` section 3.9. When PR #23 merges, the script reads the file on main instead, by itself.
 

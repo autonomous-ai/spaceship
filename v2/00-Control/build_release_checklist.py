@@ -23,9 +23,9 @@ material and tolerance; another soft good (foam, gasket, seal, tape, by the name
 by its DXF, or, as a plain strip or rectangle, by such a row that also gives its thickness; a flat part cut from
 sheet (its row's process says laser, waterjet or router, and names no bend, fold, groove, lap, machining,
 drilling, tapping, welding or bonding) counts as drawn by its own DXF when its row gives material, thickness,
-finish and an ISO 2768 general tolerance, unless its DXF has any line on the BEND layer (the guideline's CUT, BEND
-and MARK layers, section 9): a part with bends keeps its drawing whatever its process says. A part found only in
-the folders has no BOM row. When the
+finish and an ISO 2768 general tolerance, and its DXF draws only on the CUT and MARK layers (the guideline's CUT,
+BEND and MARK layers, section 9): a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the
+drawing whatever its process says. A part found only in the folders has no BOM row. When the
 drawing is a made part's only gap and the Mac's screen is locked, the part is blocked by the locked screen:
 the drawing start needs it unlocked (D-84). Otherwise a part with a gap is open.
 A bought part is done when it has a joints-register row (hardware only, D-63), a maker and SKU, and a
@@ -322,23 +322,23 @@ def where_of(r, labels):
     return labels.get(ref, "this tree" if ref == "working tree" else ref)
 
 
-def dxf_has_bend(text):
-    """True when an ASCII DXF has any entity on the BEND layer (in its ENTITIES or BLOCKS section), False when it
-    has none, None when it can't be read (empty or binary): then the part can't be shown flat."""
-    if not text or text.startswith("AutoCAD Binary DXF"):
-        return None
-    lines = text.splitlines()
-    section, prev = None, ("", "")
-    for i in range(0, len(lines) - 1, 2):
-        code, value = lines[i].strip(), lines[i + 1].strip()
-        if prev == ("0", "SECTION") and code == "2":
-            section = value.upper()
-        elif code == "0" and value == "ENDSEC":
-            section = None
-        elif code == "8" and section in ("ENTITIES", "BLOCKS") and value.upper() == "BEND":
-            return True
-        prev = (code, value)
-    return False
+def load_dxf_layers():
+    """The DXF layer reader shared with the mechanical check (tools/checks/dxf_layers.py), so both tools read a DXF
+    the same way (PM, 2026-11-01)."""
+    spec = importlib.util.spec_from_file_location("dxf_layers", ROOT / "tools/checks/dxf_layers.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.dont_write_bytecode = True
+    spec.loader.exec_module(mod)
+    return mod
+
+
+DXF_LAYERS = load_dxf_layers()
+
+
+def dxf_other_layers(text):
+    """D-89 (4): the layers other than CUT and MARK that a DXF draws on; None when it can't be read. The shared
+    reader's rule: ENTITIES only, records skipped, a stored block only where an INSERT places it."""
+    return DXF_LAYERS.other_layers(text)
 
 
 def flat_lacks(rows):
@@ -416,9 +416,14 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 dwg = "DXF (D-89)"
             elif (not soft and r["make_buy"] == "make" and kind_of(pn) == "part" and by_pn.get(pn, {}).get("DXF")
                   and flat_lacks(by_cut_row.get(pn, [])) == []):
-                bends = [dxf_has_bend(t) for t in dxf_texts(pn)] if dxf_texts else [False]
-                dwg = ("DXF and row (D-89)" if bends and not any(b is not False for b in bends)
-                       else "no: its DXF has bend lines, or can't be read (D-89)")
+                found = [dxf_other_layers(t) for t in dxf_texts(pn)] if dxf_texts else [set()]
+                other = sorted(set().union(*[f for f in found if f]))
+                if found and all(f == set() for f in found):
+                    dwg = "DXF and row (D-89)"
+                elif other:
+                    dwg = "no: its DXF draws on %s; only CUT and MARK pass (D-89)" % ", ".join(other)
+                else:
+                    dwg = "no: its DXF can't be read (D-89)"
             else:
                 dwg = "no"
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"
@@ -577,8 +582,11 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "a flat part cut from sheet needs no drawing when it has its own DXF and its row's process names laser, waterjet or router "
             "cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, "
             "thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole "
-            "note is left to the drawing review. A DXF with any line on the BEND layer (the guideline's CUT, BEND and MARK layers, "
-            "section 9) keeps the drawing whatever the process says. Assemblies always keep their drawings.",
+            "note is left to the drawing review. The DXF may draw only on the CUT and MARK layers (the guideline's layers, section 9; "
+            "every entity in its ENTITIES section counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, and a stored block only "
+            "where an INSERT places it, its layer-0 shapes taking the INSERT's layer): "
+            "a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing whatever the process says. "
+            "Assemblies always keep their drawings.",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
