@@ -208,8 +208,185 @@ def build_cartridge(parent, design, ctx, bx, along, tag):
     return occ, comp
 
 
+FOLDER = "Default Project/FocusPod v2"
+# part-only designs for the drawings (D-89 parts 1 to 4: assemblies, folded, machined and bonded
+# parts keep drawings); each scope lists layout keys, or a special item in capitals
+SCOPE_KEYS = {
+    "column": ["col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "kick", "hub", "col_ang",
+               "CART:SUPPLY"],
+    "soffit": ["sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_end", "sof_fill",
+               "egrille", "stud", "hinge", "latch", "lock", "CART:EXHAUST", "BOX:EXHAUST"],
+    "cart": ["CART:SUPPLY"], "sbox": ["BOX:SUPPLY", "trans", "riser", "rtrans"], "ebox": ["BOX:EXHAUST"],
+    "col_ang": ["col_ang"], "casing": ["CASING"], "box": ["BOXCASE:EXHAUST"], "box_s": ["BOXCASE:SUPPLY"],
+    "riser": ["riser"], "sleeve": ["sleeve"], "col_front": ["col_front"], "col_left": ["col_left"],
+    "sof_under": ["sof_under"], "sof_under_r": ["sof_under_r"], "sof_under_f": ["sof_under_f"], "sof_front": ["sof_front"],
+}
+
+
+def part_doc_name(key):
+    import re
+    pn, name, _vn, _k, _m = A.PARTS[key]
+    return "%s_%s_%s_CAD" % (pn, A.REV, re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-"))
+
+
+def open_or_create(app, name):
+    """The design called `name` in FOLDER: activate it if open, open it from the cloud, or make
+    it there (the same steps as run_script.py --doc NAME --doc-new)."""
+    for i in range(app.documents.count):
+        d = app.documents.item(i)
+        if d.name.split(" v")[0] == name:
+            d.activate()
+            return d, "activated"
+    parts = [p for p in FOLDER.split("/") if p]
+    proj = next(app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
+                if app.data.dataProjects.item(i).name == parts[0])
+    folder = proj.rootFolder
+    for n in parts[1:]:
+        folder = folder.dataFolders.itemByName(n)
+    found = []
+    for _try in range(3):
+        try:
+            files = [folder.dataFiles.item(i) for i in range(folder.dataFiles.count)]
+            found = [f for f in files if f.name == name]
+            break
+        except RuntimeError:
+            time.sleep(2)
+            adsk.doEvents()
+    app.data.activeProject = proj
+    if found:
+        d = app.documents.open(found[0], True)
+        d.activate()
+        return d, "opened"
+    d = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
+    if not d.saveAs(name, folder, "new, made by air_build.py parts=", ""):
+        raise RuntimeError("saveAs %r failed" % name)
+    d.activate()
+    return d, "made"
+
+
+def build_scope(root, design, ctx, scope):
+    lay = {name: (key, bx) for key, name, bx in A.layout()}
+    cuts = {}
+    for target, cb in A.cutouts():
+        cuts.setdefault(target, []).append(cb)
+    made = {}
+
+    def body(name):
+        b = CB.box_body(root, name, lay[name][1], ctx)
+        for i, cb in enumerate(cuts.get(name, [])):
+            CB.box_body(root, "%s OPENING %d" % (name, i + 1), cb, ctx, op=CUT, bodies=[b])
+        made[name] = b
+        return b
+
+    def casing(bname, key):
+        b = body(bname)
+        hollow_closed(root, b, bname)
+        return b
+    for item in SCOPE_KEYS[scope]:
+        if item.startswith("CART:"):
+            tag = item.split(":")[1]
+            build_cartridge(root, design, ctx, lay["CARTRIDGE %s" % tag][1], "z" if tag == "SUPPLY" else "x", tag)
+        elif item == "CASING":
+            b = CB.box_body(root, "CARTRIDGE CASING", lay["CARTRIDGE SUPPLY"][1], ctx)
+            hollow_axis(root, b, "z", "cart_t", "CARTRIDGE CASING")
+        elif item.startswith(("BOX:", "BOXCASE:")):
+            tag = item.split(":")[1]
+            casing("%s FAN BOX" % tag, "box" if tag == "EXHAUST" else "box_s")
+            if item.startswith("BOX:"):
+                fan_comp = None
+                for fname, fx, fy, fz in [f for f in A.fan_points() if f[0].startswith(tag)]:
+                    if fan_comp is None:
+                        fo, fan_comp = new_comp(root, "fan")
+                        CB.box_body(fan_comp, "FAN 140 ENVELOPE", ("-fan_s / 2", "fan_s / 2", "-fan_s / 2", "fan_s / 2",
+                                                                    "0 mm", "fan_t"), ctx)
+                    else:
+                        fo = root.occurrences.addExistingComponent(fan_comp, adsk.core.Matrix3D.create())
+                    CB.place(root, fo, (fx, fy, fz), fname, ctx)
+        elif item == "col_ang":
+            for tag in ("FL", "FR", "BL"):
+                x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE %s" % tag][1]
+                if tag == "FL":
+                    pts = [(x0, y1), (x1, y1), (x1, "%s - ang_t" % y1), ("%s + ang_t" % x0, "%s - ang_t" % y1),
+                           ("%s + ang_t" % x0, y0), (x0, y0)]
+                elif tag == "FR":
+                    pts = [(x0, y1), (x1, y1), (x1, y0), ("%s - ang_t" % x1, y0), ("%s - ang_t" % x1, "%s - ang_t" % y1),
+                           (x0, "%s - ang_t" % y1)]
+                else:
+                    pts = [(x0, y0), (x1, y0), (x1, "%s + ang_t" % y0), ("%s + ang_t" % x0, "%s + ang_t" % y0),
+                           ("%s + ang_t" % x0, y1), (x0, y1)]
+                made["COLUMN ANGLE %s" % tag] = poly_xy_extrude(root, "COLUMN ANGLE %s" % tag, pts, z0, z1, ctx)
+        else:
+            for k, name, _bx in A.layout():
+                if k != item:
+                    continue
+                b = body(name)
+                if k == "riser":
+                    hollow_axis(root, b, "z", "rs_t", name)
+                if k == "sleeve":
+                    hollow_axis(root, b, "z", "slv_t", name)
+    for k, (bname, kind, a) in enumerate(A.features()):
+        if bname not in made:
+            continue
+        label = "%s FEATURE %d" % (bname, k + 1)
+        if kind == "zcircle":
+            CB.circle_cut(root, made[bname], label, a[0], a[1], a[4], a[2], a[3], ctx)
+        elif kind == "ycircle":
+            circle_cut_y(root, made[bname], label, a[0], a[1], a[2], a[3], a[4], ctx)
+        else:
+            CB.box_body(root, label, a, ctx, op=CUT, bodies=[made[bname]])
+    return made
+
+
+def run_parts(app, scopes):
+    """One run, several part-only designs for the drawings (fair-share queue rule)."""
+    for scope in scopes:
+        if scope not in SCOPE_KEYS:
+            raise RuntimeError("scope must be one of %s" % sorted(SCOPE_KEYS))
+        name = part_doc_name(scope)
+        t0 = time.time()
+        doc, how = open_or_create(app, name)
+        design = adsk.fusion.Design.cast(app.activeProduct)
+        CB.clear_design(design)
+        design.designType = adsk.fusion.DesignTypes.ParametricDesignType
+        design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
+        ctx = CB.Ctx(design)
+        params = A.all_params()
+        for pname, expr, unit, status, src in params:
+            design.userParameters.add(pname, CB.vi(expr), unit, "%s: %s" % (status.upper(), src))
+        ctx.vals = A.evaluate(params)
+        root = design.rootComponent
+        pn, pname_, vn, kind, mk = A.PARTS[scope]
+        root.partNumber = pn
+        root.description = "%s | %s | %s | %s | drawing source, built by air_build.py" % (pname_, vn, kind, A.REV)
+        build_scope(root, design, ctx, scope)
+        if mk:
+            nm, density = A.MATERIALS[mk]
+            m = design.materials.itemByName(nm)
+            if m is None:
+                lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
+                m = design.materials.addByCopy(lib.materials.itemByName("Steel" if mk == "steel" else "Aluminum"), nm)
+                m.materialProperties.itemById("structural_Density").value = density
+            for b in root.bRepBodies:
+                b.material = m
+        adsk.doEvents()
+        tl = design.timeline
+        bad = [tl.item(i).name for i in range(tl.count)
+               if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+        loose = [c.name + "/" + sk.name for c in design.allComponents for sk in c.sketches if not sk.isFullyConstrained]
+        print("PART %s %s (%s): timeline %d, unhealthy %d, loose %d, box %s, %.0f s" % (
+            pn, pname_, how, tl.count, len(bad), len(loose), CB.body_box(root), time.time() - t0))
+        if bad or loose:
+            raise RuntimeError("part %s checks failed (unhealthy %s, loose %s)" % (scope, bad, loose))
+        print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, A.REV, ceiling_model.SKELETON_REV)))
+        adsk.doEvents()
+        doc.close(False)
+
+
 def run(_context):
     app = adsk.core.Application.get()
+    if ARGS.get("parts"):
+        run_parts(app, [k for k in ARGS["parts"].split(",") if k])
+        return
     into_active = ARGS.get("into_active") == "1"
     if into_active:
         doc = app.activeDocument
