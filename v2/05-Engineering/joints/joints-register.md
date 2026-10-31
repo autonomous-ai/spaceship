@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | V2-ENG-JNT-01 (row in `document-register.csv`) | P01 | DRAFT | 2026-10-31 | Joints Engineer (v2 Milestone 2) |
 
-This is the joint register the guideline asks for (§8, and Milestone 2 item 6), for the site joints of the sample set: wall to wall, wall to floor (base band), wall to ceiling, back corner, decor to wall, the closing seams, and the lining cassette clips. It also gives the feature-rationale inputs (§7) the Fusion Engineers need (section 8), the seam gaps and bolt positions the skeleton needs (sections 2.8 and 2.9), and the closed-chain stacks ST-02 and ST-04 (section 2.11).
+This is the joint register the guideline asks for (§8, and Milestone 2 item 6), for the site joints of the sample set: wall to wall, wall to floor (base band), wall to ceiling, back corner, decor to wall, the closing seams, the lining cassette clips, the base band's hook-in corner keys, and the decor blocks on the band, on DR's support and under the ceiling. It also gives the feature-rationale inputs (§7) the Fusion Engineers need (section 8), the seam gaps and bolt positions the skeleton needs (sections 2.8 and 2.9), and the closed-chain stacks ST-02 and ST-04 (section 2.11).
 
 - **Status of numbers** (conventions §9): confirmed, source, calculation, assumption, unverified. Every number below carries one.
 - **Status of choices:** DECIDED where the PM has ruled, citing the ruling; every other choice is **PROPOSED**: the work goes ahead on it until the PM rules (`AGENTS.md`).
@@ -33,14 +33,16 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 
 ## Result
 
-1. **Two bolts, one key:** every site joint uses an **M6 ISO 4762 socket head, class 8.8, zinc plated, with an ISO 7093 6.4 × 18 A2 washer under the head**, driven with one 5 mm key (R-J2, R-J10). **M6 × 16** at the 72 stopped joints, threaded into a Sherex CAH3-610-4.2 rivnut; **M6 × 25** as a pin at the 10 closing-seam positions. **82 site bolts** in all (section 3.9). The bolt lives inside an edge tube of the part placed second and is driven from inside the pod before the linings go on (section 2.2).
+1. **Two bolts, one key:** every site joint uses an **M6 ISO 4762 socket head, class 8.8, zinc plated, with an ISO 7093 6.4 × 18 A2 washer under the head**, driven with one 5 mm key (R-J2, R-J10). **M6 × 16** at the 72 stopped joints, threaded into a Sherex CAH3-610-4.2 rivnut; **M6 × 25** as a pin at the 10 closing-seam positions. **86 site bolts** in all, the 82 of the walls and ceiling plus 4 for DT (section 3.9). The bolt lives inside an edge tube of the part placed second and is driven from inside the pod before the linings go on (section 2.2).
 2. **Seam gaps for the skeleton:** **2.26 mm** at every stopped seam (R-J5), set by a metal stop: rivnut head 0.76 (Sherex) on a 1.5 mm aluminium stop washer. **5.5 mm nominal (4.0–7.0) at the three closing seams** B1–B2, B3–B4 and C1–C2 (R-J11, section 2.10). So the back panels' and ceiling halves' **frames become (2408 − 2 × 2.26 − 5.5) / 2 = 1198.99 wide**, against 1200.61 in skeleton P04 (calculation), while **their skins stay 1200.61 and overhang the frame by 1.62 mm at the closing seam**, so every visible skin seam stays 2.26 nominal (R-J16).
 3. **Bolt positions follow one rule on every bolted edge** (R-J13, R-J14): end bolts 220 mm in from each panel end, evenly spaced between, every bolt at least 30 mm clear of any stile; 4 on the horizontal edges and 3 on the vertical edges of about 1.1 m; spigots 100 mm in from each end (section 2.9). The register owns the bolt lines (R-J15).
+   - **Every outside fixing is now in the register** (D-87; the assembly guide's assumptions): the base band's **6 corner keys hook in** with no site bolt (J-BASE-02: back keys 111211 × 2, front corner keys 111212 and 111213, front inline keys 111214 × 2); **DL stands on 2 spigots on the band and DR on 2 spigots on its support**, held by their J-FRONT-01 bolts, so they need no bolt of their own (J-FRONT-02); **DT sits on a spigot on DL and on DR and takes 4 bolts from the ceiling's front tubes** at the 220 mm rule (J-FRONT-03). That turns the guide's 8 assumed fixings into 4 bolts.
+   - **Wall-to-ceiling bolt lines confirmed:** side edges from Y −645 along the ceiling (1495 long), pitch 351.67, at Y −425.00, −73.33, +278.33 and +630.00; back edges on the frame (1198.99), pitch 253.00, 4 per back panel (2.9). Skeleton P04 still carries 3 bolts on the back edges on the skin width and the side pitch on the side panel's 1492.74; it follows this register.
 4. **Seals:** at every stopped joint, PORON 4701-40 foam, 8 mm wide, beside the washer line on the outer (skin) side of the nut-side face, so no seal is cut (R-J7): **3.97 mm thick, squeezed 33–51%** (43% nominal). At the three closing seams, **a low-force hollow bulb seal (EPDM or TPE) whose working gap covers 4.0–7.0 mm** (R-J17), which needs no squeeze at fit-up and can be reused when the pod is moved; the part is HOLD-12. **Fit-up:** every part drops in or slides past a seal with 150 N or less per edge by hand (J-T5, R-J17): the side panels' back-end spigots are slotted along X so they drop clear of the corner gasket, and the side walls' tops lean out for the ceiling (R-J9).
 5. **Holes:** clearance Ø7.0 positioned to ±0.2 from the spigot hole (R-J6), leaving 0.05 mm to spare worst case (stack ST-03, section 4); access Ø19, so the Ø18 head washer goes in with the bolt (section 2.2).
 6. **Findings carried from the first pass:** F1, no room-side hardware in the 4 mm frame-to-lining gap; F2, the 90° joints overlap only 14 mm with 20 × 40 tubes, 34 mm with the 40 × 40 edge members (R-J3); F3, seams need clamping force (R-J1); F4, the bond doesn't fit the 20 mm face as Sika lays it out (bond spec B1); F5, the back-top gap (closed by R-J4); F6, one head type (R-J2).
 7. **Part numbers and per-pod counts** for all 25 hardware items, in 2.1: bolts 838001 (72) and 838002 (10), rivnut 838003 (102), head washer 838004 (82), retainer 838005 (72), spigot 831001 (20), stop washer 831002 (72), joint gasket 848001 (25.2 m), closing-seam bulb seal 848004 (3.73 m), base seal 118001 (7.1 m), key 108001 (1), cassette clip 518001 (44), ceiling safety catch 518002 (4), ACP bond set 108002 (4.4 kg), hook-and-loop 848011 (1.6 m on the walls), cassette edge gasket 848012. 848002 and 848003 are cancelled (never used again, conventions §6); and FRONT's 10 bought items, 368001 to 368007 and 368101 to 368103, adopted as FRONT numbered them (2.1).
-8. **HOLDs: 11 open, 2 closed** (section 6). **Tests** take the sample package's numbers: rivnut spin-out **T06**, bond **T09**, timed access **T11**; the joint tests the package doesn't have are **J-T1 to J-T5**, for the PM to route (section 5).
+8. **HOLDs: 12 open, 2 closed** (section 6). **Tests** take the sample package's numbers: rivnut spin-out **T06**, bond **T09**, timed access **T11**; the joint tests the package doesn't have are **J-T1 to J-T5**, for the PM to route (section 5).
 
 ## 1. Sources
 
@@ -56,6 +58,8 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 | HW | `v2/05-Engineering/acoustics-air/report.md` §1, §8, §10 | Stack layers, cassette mass, clip risk |
 | LAY | `v2/05-Engineering/layout-study/report.md` §4, §5 | Assembly order, one 5 mm key, bolt and clip counts, base band and glides |
 | SKL | `v2/01-CAD-Native/skeleton/` P04: `100000_P04_POD-SKELETON-PARAMETERS.csv` (`outer_t` 46, `cav_gap` 4, `seam_gap` 2.26, `half_pw` 1200.61, `side_h` 1142.74, `side_l` 1492.74, `back_ph` 1118.61, `panel_z0` 112.26) | Envelopes and positions |
+| GUIDE | `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`, its section 5 table of fixings the register didn't count | DL on the band, DR on its support, DT, the corner keys |
+| BASE | BASE's draft PR #55 (P01: the back-left corner and F1): `110000_P01_BASE_BOM.csv` and the tube cut list | Band tubes 100 × 40, glides 2 per side band and 3 in the back band, M10 glide nuts, tube end caps, the bolted corner bracket 111201 that the keys replace |
 | SMP | `v2/06-Samples/wall-door-sample/` (parts list, test plan, hold list) | Sample package: P05–P07, T06, T09, T11, H13 |
 | CHK | Mechanical Checker findings F-001, F-008, F-009, F-011, F-012, F-013 and stacks ST-02, ST-03, ST-04 | Gaps, hole float, closed chains |
 | SHX | Sherex [CAH3-610-4.2 product page](https://fasteners.sherex.com/item/nd-rivet-nuts-american-style-rivet-nuts-cah-series/cah-series-aluminum-metric-/cah3-610-4-2-1), read 2026-10-31 | Head Ø12.96 ±0.25 × 0.76 ±0.08; length 14.86 ±0.38; installed length 10.16 max; body Ø9.50 max; open end; aluminium 5056; grip 0.70–4.20; hole 9.53 +0.10; "trial installations" recommended |
@@ -76,7 +80,7 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 | H-04 | **Joint gasket, stopped joints.** Rogers PORON 4701-40 Soft with pressure-sensitive adhesive, 3.97 mm thick, 8 mm wide, on the nut-side face beside the washer line (R-J7, R-J17) | 41 kPa at 25% compression; compression set ≤ 5% at 23 °C (ASTM D3574 D); 3.18–12.70 mm listed (SEL D) | source; the 3.97 thickness and the converter **HOLD-05** |
 | H-04B | **Closing-seam seal.** A low-force hollow bulb (D or P profile) in EPDM or TPE, on the nut-side face beside the pin line, whose published working gap covers 4.0–7.0 mm (R-J17); reusable | Candidate with a published range: tesa tesamoll D-Profile EPDM, gaps 3–7 mm (SEL D; consumer grade). Closure force not published | requirement DECIDED (R-J17); part **HOLD-12** |
 | H-05 | **Locating spigot.** Ø8 stainless pin with an M6 thread, screwed into an H-03 rivnut at the factory with threadlocker. A part we make. | Ø8, stands 8 proud | PROPOSED (assumption sizes) |
-| H-06 | **Base seal.** Closes the gap under the base band to the room floor | Gap 10 nominal (`glide_h`, assumption) ± 5 for the floor (ISS-054, assumption) | **HOLD-06** |
+| H-06 | **Base seal.** Sits at the floor's edge against the base band's inner face and seals a fixed 4 mm gap (D-86), so v1's open shadow line under the band stays and DR's intake under the block stays clear | Gap 4 (D-86, calculation by BASE); BASE's candidate: Pemko S88BL silicone bulb 12.7 × 6.4, self-adhesive (SEL D pick 1; its gap range unverified) | DECIDED place (D-86); part **HOLD-06** |
 | H-07 | **One tool.** A 5 mm ball-end hex key, or a 5 mm hex bit in a short driver (LAY §4) | — | DECIDED (R-J2) |
 | H-08 | **Stop washer.** Aluminium, Ø10.5 × Ø20 × 1.5, clamped under each stopped-joint rivnut's head when the rivnut is set. A part we make (punched from 1.5 mm 5000- or 6000-series sheet). | Grip with it: 1.2 + 1.5 = 2.7, inside 0.70–4.20 (SHX); needs a 40 mm face | PROPOSED; thickness ±0.05 (assumption) |
 | H-09 | **Head washer.** ISO 7093-1 large series, 6.4 × 18 × 1.6, A2 stainless, under every bolt head (R-J10) | (ISO7093) | DECIDED (R-J10); dimensions source |
@@ -92,17 +96,17 @@ Every rivnut, stop washer, spigot, gasket, retainer and pre-fitted bolt is fitte
 
 | Item | Part number | Name · Vietnamese | Class | Per pod | Status |
 |---|---|---|---|---|---|
-| H-01 | **838001** | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 16 | bought | 72 | PROPOSED number; part DECIDED (R-J2) |
+| H-01 | **838001** | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 16 | bought | 76 on site (72 at the walls and ceiling, 4 for DT) and 20 in the factory (the corner keys' fixings and hook studs, J-BASE-02) | PROPOSED number; part DECIDED (R-J2) |
 | H-01P | **838002** | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 25 (chốt mối nối khép) | bought | 10 | PROPOSED number; part DECIDED (R-J16) |
-| H-02 | **838005** | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE · Vòng giữ đầu bulong | bought | 72 (the stopped-joint bolts; the pins need none) | PROPOSED number; part HOLD-02 (number kept for it) |
-| H-03 | **838003** | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 · Tán rút M6 | bought | 102 (72 stopped joints, 10 closing-seam pins, 20 spigots) | PROPOSED number; part source (SHX) |
-| H-04 | **848001** | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA · Gioăng mối nối 3.97 | bought by length | 25.2 m (every stopped joint) | PROPOSED number; strip HOLD-05 |
+| H-02 | **838005** | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE · Vòng giữ đầu bulong | bought | 76 (the stopped-joint bolts on site; the pins and the keys' factory bolts need none) | PROPOSED number; part HOLD-02 (number kept for it) |
+| H-03 | **838003** | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 · Tán rút M6 | bought | 114 (76 stopped joints, 10 closing-seam pins, 28 spigots) | PROPOSED number; part source (SHX) |
+| H-04 | **848001** | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA · Gioăng mối nối 3.97 | bought by length | 26.9 m (every stopped joint, DT's 1.65 m included) | PROPOSED number; strip HOLD-05 |
 | H-04B | **848004** | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE · Gioăng ống mối nối khép | bought by length | 3.73 m (the three closing seams) | PROPOSED number; part HOLD-12 |
-| H-05 | **831001** | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS · Chốt định vị Ø8 | made | 20 (8 on the band, 8 on the horizontal seams, 4 under the ceiling) | PROPOSED number and part |
-| H-06 | **118001** | BASE - BASE SEAL - GAP 10 ±5 · Gioăng chân đế | bought by length, used only in BASE | 7.1 m (the base band's length) | PROPOSED number; part HOLD-06 (number kept for it) |
+| H-05 | **831001** | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS · Chốt định vị Ø8 | made | 28 (8 on the band, 8 on the horizontal seams, 4 under the ceiling, 2 under DL, 2 under DR, 2 under DT) | PROPOSED number and part |
+| H-06 | **118001** | BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP · Gioăng mép sàn | bought by length, used only in BASE | BASE's count along the floor's edges at the band (2.656 m on F1 in PR #55) | PROPOSED number; part HOLD-06 (number kept for it) |
 | H-07 | **108001** | POD - HEX KEY - 5 MM BALL END · Lục giác 5 mm đầu bi | bought, in the installation kit 109000 | 1 | PROPOSED number; part DECIDED (R-J2) |
-| H-08 | **831002** | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL · Long đen chặn nhôm | made | 72 (one under each stopped-joint rivnut) | PROPOSED number and part |
-| H-09 | **838004** | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 · Long đen to M6 inox | bought | 82 (one under each bolt head) | PROPOSED number; part DECIDED (R-J10) |
+| H-08 | **831002** | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL · Long đen chặn nhôm | made | 76 (one under each stopped-joint rivnut) | PROPOSED number and part |
+| H-09 | **838004** | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 · Long đen to M6 inox | bought | 98: 86 under the site bolts' heads, 12 under the corner keys' factory fixing bolts | PROPOSED number; part DECIDED (R-J10) |
 | H-10 | **518001** | LINING - CASSETTE CLIP · Kẹp treo cassette | bought, used only in LINING | **44**: 4 on each of the 8 wall cassettes, 6 on each of the 2 ceiling cassettes | number as CEILING uses it (PR #32); part HOLD-08 |
 | H-11 | **518002** | LINING - CEILING SAFETY CATCH · Dây an toàn cassette trần | bought, used only in LINING | **4**: 2 on each ceiling cassette | number as CEILING uses it (PR #32); part HOLD-08 |
 | H-12 | **108002** | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE · Bộ keo dán ACP | bought set, used by WALL and CEILING | about 4.4 kg (0.49 kg per side panel, bond spec) | PROPOSED number; system source (bond spec) |
@@ -125,6 +129,14 @@ Every rivnut, stop washer, spigot, gasket, retainer and pre-fitted bolt is fitte
 | H-22 | **368102** | FRONT - DOOR STRIKE · Đế hít cửa | bought | 1 (about 0.023 kg) | adopted; product per FRONT's parts list |
 | H-23 | **368007** | FRONT - DOOR CATCH - IN DT · Nam châm hít cửa (trong khối DT) | bought | 1 (about 0.052 kg) | adopted; product per FRONT's parts list |
 | H-24 | **368103** | FRONT - DOOR PULL PAIR - HOLD · Tay nắm cửa (cặp) | bought | 1 pair (about 0.8 kg) | adopted; product HOLD (hole sizes on the laminate, SEL C2) |
+
+**BASE's bought items** (from BASE's draft PR #55; family 11 BASE for its own items, 83 for the nut; NNNN 8000–8999). All three are on hold until BASE names the products; the numbers are BASE's proposals, adopted (D-63). Counts: PR #55 has 2 glides on each side band and 3 on the back band; the front pieces come in BASE's P02 (the layout study counts 8 glides in all).
+
+| Item | Part number | Name · Vietnamese | Class | Per pod | Status |
+|---|---|---|---|---|---|
+| H-25 | **118002** | BASE - LEVELLING GLIDE - M10 - HOLD · Chân chỉnh cao | bought, used only in BASE | 7 in the side and back bands, plus the front pieces' (BASE P02; about 8 in all) | adopted; product HOLD (BASE): an M10 stem with a 5 mm hex socket on top, about a 36 mm pad, preset at the factory (D-87), the same 5 mm key as every bolt (REQ-ASM-03) |
+| H-26 | **838006** | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD · Tán rút M10 cho chân chỉnh | bought | one per glide: 7, plus the front pieces' | adopted; product HOLD (BASE): in the band's 1.5 mm bottom wall with an aluminium load block above it (D-86) |
+| H-27 | **118003** | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD · Nút bịt đầu ống 100x40 | bought, used only in BASE | 2 at the side bands' back ends, plus any open front end (BASE P02) | adopted; product HOLD (BASE): PE or PP insert cap, black |
 
 ### 2.2 The in-member bolt (stopped joints)
 
@@ -235,10 +247,11 @@ One rule for every bolted edge (DECIDED, R-J13, R-J14): **end bolts 220 mm in fr
 | Edge | Length (SKL P04, 2.8) | Bolts | Positions from the edge's start | Spacing | Status |
 |---|---|---|---|---|---|
 | Side panel on the band; side horizontal seam | 1492.74 | 4 | 220, 570.91, 921.83, 1272.74 | 350.91 | DECIDED |
-| Back panel on the band; back horizontal seam; ceiling back edge | 1198.99 | 4 | 220, 473.00, 725.99, 978.99 | 253.00 | DECIDED |
+| Back panel on the band; back horizontal seam; ceiling back edge | 1198.99 | 4 | 220, 473.00, 725.99, 978.99 | 253.00 | DECIDED (the ceiling's back edges on the frame confirmed by the PM: C1 at X −981.74, −728.74, −475.75, −222.75; C2 mirrored) |
 | Back corner; back closing seam (along the back panel's 1118.61 edge) | 1118.61 | 3 | 220, 559.31, 898.61 | 339.31 | DECIDED rule; count this register's |
 | Decor to side wall (along each side panel's height) | 1142.74 | 3 | 220, 571.37, 922.74 | 351.37 | DECIDED rule; count this register's |
-| Ceiling side edge; ceiling closing seam (along Y) | 1495 (unverified: the ceiling's Y extent in P04) | 4 | 220, 571.67, 923.33, 1275.00 | 351.67 | DECIDED rule; count this register's |
+| Ceiling side edge; ceiling closing seam (along Y), from Y −645 along the ceiling | 1495 | 4 | 220, 571.67, 923.33, 1275.00, so Y −425.00, −73.33, +278.33, +630.00 | 351.67 | DECIDED (confirmed by the PM) |
+| DT's edge with the ceiling's front tubes (J-FRONT-03), from X −1201.74 (C1's frame end) to X +449 (DT's right end) | 1650.74 | 4 | 220, 623.58, 1027.16, 1430.74, so X −981.74, −578.16, −174.58, +228.99 | 403.58 | DECIDED rule; count this register's |
 
 All positions are calculation. Spigots at 100 from each end, Ø8.5 round at one end and 8.5 × 14 along the edge at the other: on the band, on the lower panels' top tubes, and on the back wall's top tubes under the ceiling. Which end is round is set in the skeleton with the rule; it doesn't change any number here.
 
@@ -357,12 +370,12 @@ Each entry has the guideline's fields (§8). Joint IDs here differ from the layo
 | Loads | LC1: about 0.34 kN per metre of side wall (calculation). LC2: about 100 N per bolt. |
 | Options compared | Room-side angle: clashes with the lower cassette (F1); spigots alone: nothing holds a panel down or squeezes the gasket; **in-member bolts down into rivnuts in the band (chosen)**. |
 | Choice and reason | DECIDED positions (R-J13): 4 bolts at the 220 mm rule, spigots 100 in, Ø7.0. |
-| Nut side and bolt side | Nut side: the band's top wall, with 2 H-05 spigots and 4 rivnuts with stop washers per panel, on the wall tube's centre line: **X ∓1224** (side walls) or **Y +824** (back wall), 6 mm off the band's own centre line (calculation: band 40, panel 46). The band's top wall must be 2.7 mm or thinner for the rivnut grip with the washer (**HOLD-07**). Bolt side: the wall's bottom tube: spigot hole and slot, Ø7.0 in its bottom wall, Ø19 in its top wall. H-06 base seal under the band (HOLD-06). |
+| Nut side and bolt side | Nut side: the band's top wall, with 2 H-05 spigots and 4 rivnuts with stop washers per panel, on the wall tube's centre line: **X ∓1224** (side walls) or **Y +824** (back wall), 6 mm off the band's own centre line (calculation: band 40, panel 46). The band's top wall must be 2.7 mm or thinner for the rivnut grip with the washer (**HOLD-07**). Bolt side: the wall's bottom tube: spigot hole and slot, Ø7.0 in its bottom wall, Ø19 in its top wall. H-06 base seal at the floor's edge against the band's inner face, a fixed 4 mm gap (D-86, HOLD-06). |
 | Bolts | 4 per panel: **16**. |
 | Stack | 2.2 (the band is open inside). |
 | Tolerance and adjustment | The band is levelled on its 8 glides before any wall goes on; the walls stand at Z 112.26 (2.8); the ACP's outer face is flush with the band's outer face, so the frame overhangs the band by **6 mm** inside (calculation). |
 | Assembly | Wall lowered onto the band spigots; bolts down from the pocket in its bottom bay (LAY step 4). |
-| What can go wrong | Band top wall too thick (HOLD-07); DR's notch in BAND-R (a BASE HOLD); a 10 ± 5 mm gap the base seal can't close (HOLD-06). |
+| What can go wrong | Band top wall too thick (HOLD-07); DR's notch in BAND-R (a BASE HOLD); the base seal at the floor's edge not closing its fixed 4 mm gap (HOLD-06, D-86). |
 | Check and pass mark | T06, T11 (its 4 base bolts), J-T1, J-T4. |
 | Status | DECIDED (R-J2, R-J10, R-J13); HOLD-01, -02, -05, -06, -07. |
 
@@ -434,9 +447,12 @@ Each entry has the guideline's fields (§8). Joint IDs here differ from the layo
 | J-CEIL-01 walls to ceiling | 16 | M6 × 16 |
 | J-CEIL-02 ceiling closing seam | 4 | M6 × 25 pin |
 | J-FRONT-01 decor to walls | 12 | M6 × 16 |
-| **Total** | **82** | 72 × M6 × 16, 10 × M6 × 25 |
+| J-FRONT-03 DT to the ceiling | 4 | M6 × 16 |
+| J-BASE-02 base band corner keys | 0 on site (20 in the factory) | M6 × 16 as fixing bolts and hook studs |
+| J-FRONT-02 DL on the band, DR on its support | 0 (spigots) | — |
+| **Total on site** | **86** | 76 × M6 × 16, 10 × M6 × 25 |
 
-Every bolt carries one H-09 washer. Not counted: the base band's corner keys, the door hinges, the fixed glass profiles and DT to the ceiling. The layout study's decided build counts 78 bolts and 38 tool-free clips (LAY §4); R-J1 turns the seam and corner clips into bolts, which the PM set at about 12 more minutes of assembly.
+Every site bolt carries one H-09 washer. Not counted: the door hinges and the fixed glass profiles (FRONT, on hold), and the air parts' fixings in DR (AIR and FRONT, on hold). The layout study's decided build counts 78 bolts and 38 tool-free clips (LAY §4); R-J1 turns the seam and corner clips into bolts, which the PM set at about 12 more minutes of assembly.
 
 ### 3.10 Joint IDs against the layout study
 
@@ -446,8 +462,57 @@ Every bolt carries one H-09 washer. Not counted: the base band's corner keys, th
 | J-WALL-03 back vertical seam | J-WALL-03 (now the closing seam) |
 | J-WALL-04 side wall to back wall corner | J-WALL-02 |
 | J-BASE-01 walls to base band | J-BASE-01 |
+| J-BASE-02 base band corner keys and front joints | J-BASE-02 (now hook-in keys, no site bolts, D-87) |
 | J-CEIL-01 ceiling halves to walls; J-CEIL-02 ceiling half to half | J-CEIL-01; J-CEIL-02 (now the closing seam) |
 | J-FRONT-01 decor blocks to walls, ceiling and base | J-FRONT-01 covers the decor to the side walls only; DT to the ceiling and the decor on the band stay with FRONT and BASE |
+
+### 3.11 J-BASE-02: base band corner keys, hook-in (D-87)
+
+| Field | Entry |
+|---|---|
+| Parts | The base band's pieces at its 6 joints: the 2 back corners (each side band to the back band), the 2 front corners (each side band's mitred front end to its front piece) and the 2 inline joints between the front pieces (under DL, under the fixed glass, the mesh piece under DR). Band: 100 × 40 aluminium tube, 1.5 mm wall (D-86), on preset glides (D-87). |
+| Function and load path | Ties the band into one ring so the corners can't open, and locates each piece on its neighbour so the band sets itself out. The walls' weight goes through the band and the glides to the floor (J-BASE-01); the keys carry only the tie and the racking share, at most a few hundred newtons (assumption: of the order of LC2's 0.26 kN/m on a wall). |
+| Take-down | Yes: lift a piece 10 mm and pull it off; 5 cycles. |
+| Options compared | (a) BASE's bolted angle, 2 bolts a leg, site-fitted (111201 in PR #55; the layout study's 12 bolts): about 12 minutes on site (D-87). (b) A cleat glued or riveted on site: not allowed (REQ-ASM-05). (c) **A key fitted in one piece at the factory, with headed studs that hook into keyholes in the other piece as it is set down (chosen)**: no tool, no loose part, and it locates. |
+| Choice and reason | (c), DECIDED (D-87). The design here is PROPOSED. |
+| Back corner key, 111211 BASE - CORNER KEY - BACK - COMMON (2 per pod) | A 6061-T6 aluminium block 35 (Y) × 60 (Z) × 20 (X), mill finish, hidden, about 0.11 kg (calculation). It slides into the back band's open end, sitting on the band's bottom wall, its end face flush with the band's end face at X ∓1210. Held at the factory by 2 × 838001 with 838004 washers from below, through Ø7.0 holes in the band's bottom wall, into M6 tapped holes 12 deep in the block's bottom, 10 mm in from its two Y faces and 10 mm in from its end face (assumption; clear of the glide's load block, BASE). Two more 838001 are its **hook studs**: screwed into M6 tapped holes 12 deep in the block's end face, 15 mm and 45 mm above its bottom, on the band's centre line, and set at the factory with their heads' undersides 1.8 mm off the face (a 1.8 gauge: 1.5 wall and 0.3 clearance), threadlocked. The same block serves both back corners turned end for end, so COMMON (conventions §5). |
+| Keyholes in the side band | In the side band's inner wall (the X ∓1210 face, 1.5 mm), opposite each hook stud: a Ø12 entry hole whose centre is 10 mm above the stud's final position, and a 6.5 mm wide slot running down 10 mm from it to the stud's seat. |
+| How it goes together | The back band stands on its glides first (the guide's step 2). Each side band is offered up 10 mm high, pushed in so the two stud heads pass through the Ø12 entries, then lowered 10 mm onto its preset glides: the shanks drop to the bottom of the slots and the heads hold the inner wall. The slot width locates the corner in Y to ±0.25 (Ø5.97 shank in 6.5); its bottom sets the height; the heads hold it in X. |
+| Front corner keys, 111212 BASE - CORNER KEY - FRONT - LH and 111213 … - RH (1 each), and inline keys, 111214 BASE - INLINE KEY - FRONT - COMMON (2) | The same principle: a 6061-T6 cleat fixed at the factory in one piece's open end by 2 × 838001 from below, and 1 hook stud (838001, set 1.8 proud) dropping into a keyhole in the other piece's bottom wall as that piece is set down. The front corner keys follow the side band's front mitre to DL's and DR's facet pieces (24.14° from square in PR #55), so they come as a left and a right hand; the inline keys are straight. **Geometry HOLD** for BASE's P02 front pieces (HOLD-14). |
+| Hardware (factory) | Back keys: 4 × 838001 and 2 × 838004 each. Front and inline keys: 3 × 838001 and 2 × 838004 each. 20 × 838001 and 12 × 838004 for the 6 keys (calculation); none on site. |
+| Calculation | Stud shank bearing on the 1.5 mm wall at 300 N (assumption): 300 / (5.97 × 1.5) = 34 MPa, against about 160 MPa yield for 6063-T6 (D-86's figure for the band, source); the head on the 6.5 slot's lips takes pull-out of the same order. Block thread: 12 mm of M6 in 6061-T6, 2 × the diameter (calculation). |
+| What can go wrong | The side band can't be held 10 mm high while it's pushed in: two people, one at each end; the glides' preset height decides where the heads land (J-T6). A keyhole lands on a glide's load block or nut (BASE checks the positions). |
+| Check and pass mark | J-T6 (section 5): each corner hooks home by hand with no tool; it stays closed under a 300 N pull across the joint (assumption). |
+| Status | DECIDED principle (D-87); back key geometry PROPOSED; front keys HOLD-14. Replaces BASE's bolted bracket 111201, which BASE retires. |
+
+### 3.12 J-FRONT-02: DL on the band and DR on its support
+
+| Field | Entry |
+|---|---|
+| Parts | DL's bottom on the base band's front-left piece (DL stops at Z 110, D-57); DR's bottom on its own support behind the mesh band piece (D-62: the mesh carries no load). |
+| Function and load path | Locates the block where it stands and takes its weight and sideways shear into the band or the support. The door's moment from DL's hinges and DR's own weight are held by the 6 J-FRONT-01 bolts into the side wall; the base only needs to stop sliding. |
+| Options compared | (a) The guide's assumed 2 bolts each (M6 × 16): no access to DL's or DR's underside from inside the pod, and nothing for them to do that J-FRONT-01 doesn't. (b) **2 spigots each (chosen)**. |
+| Choice and reason | (b): no site fixing, one less step for each block, and it locates the block for its J-FRONT-01 bolts (REQ-ASM-04). PROPOSED. |
+| Parts and process | The band's front-left piece and DR's support each get 2 H-05 spigots (831001 in 838003 rivnuts), 100 mm in from the ends of the block's bottom edge, at the 220 mm rule's spigot inset (R-J13); DL's and DR's bottom faces get a Ø8.5 hole at one end and an 8.5 × 14 slot along the edge at the other. DR's support is BASE's and FRONT's design (D-62). |
+| Assembly | The block is set down onto its spigots, then bolted to the side wall (J-FRONT-01, the guide's steps 9 and 10). |
+| Check and pass mark | J-T5: the block stands on its spigots without being held, then bolts up flush. |
+| Status | PROPOSED. Spigot positions follow FRONT's block drawings. |
+
+### 3.13 J-FRONT-03: DT on DL and DR, and to the ceiling
+
+| Field | Entry |
+|---|---|
+| Parts | DT (7.0 kg, the guide) on DL's and DR's tops, and its back plate to the ceiling halves' front tubes (IF-08). |
+| Function and load path | DT's weight goes down onto DL and DR through a spigot on each; the 4 bolts hold it against the ceiling's front edge so it can't tip or be pulled forward, and close the shell's top front edge (a stopped seam, sealed). The door's 35 N magnetic catch in DT's underside (D-83) is a small pull on DT. |
+| Options compared | (a) The guide's assumed 4 fixings to DL, DR and the ceiling: DT's insides can't be reached once it sits on DL and DR. (b) **In-member bolts from the ceiling's front tubes into DT's back plate, reached from below through the ceiling's open bays before the soffit goes up (D-60), with a spigot on DL and on DR (chosen)**: the same joint as J-FRONT-01 and J-CEIL-01. |
+| Choice and reason | (b). PROPOSED. |
+| Nut side and bolt side | Nut side DT: rivnuts with stop washers in its back plate, which must be aluminium 1.0–2.7 mm at each bolt (HOLD-10). Bolt side: the ceiling's front tubes (C1 and C2), Ø7.0 in their front walls and Ø19 in their back walls, reached from the open bays. H-04 strip beside the washer line on DT's back plate. |
+| Stop gap | The ceiling's front face is at Y −645 (the side-edge bolts are measured from it, 2.9). So the 2.26 stop gap comes from DT: **its back plate sits at Y −647.26**, 2.26 in front of the ceiling's face. DT's front and top faces don't move, so the look doesn't change (D-01); for FRONT's DT drawing and the skeleton. |
+| Bolts and spigots | 4 bolts at the 220 mm rule along DT's 1650.74 mm edge with the ceiling: X −981.74, −578.16, −174.58 on C1 and +228.99 on C2 (2.9), clear of the C1–C2 closing seam and of the roof slot behind DR (D-60). 2 H-05 spigots: one in DL's top (round hole in DT's underside) and one in DR's top (a slot along X). |
+| Assembly | After the door (the guide's step 12): DT lowered onto its two spigots from above; the 4 bolts driven from below through the ceiling's front bays, before the soffit. |
+| What can go wrong | The ceiling's front bays get closed before DT's bolts are in (the soffit and the ceiling cassettes go up after this step). |
+| Check and pass mark | J-T5. |
+| Status | PROPOSED; HOLD-01, -02, -05, -10. |
 
 ## 4. Tolerance stacks at the joint faces
 
@@ -475,8 +540,9 @@ Physical tests stay PLANNED until real data exists (guideline §10); the factory
 | J-T1 | Pull-out and shear of a whole joint: M6 × 16 through a bolt-side tube into a rivnut and stop washer in a nut-side tube (20- and 40-deep), and a closing-seam pin | 5 of each | Failure at 3 × the joint's highest bolt load or more (assumption: about 0.6 kN for the walls, 1.6 kN for DL), no loss of fit after 5 cycles (REQ-ASM-09) | PLANNED, to route |
 | J-T2 | Captive retainer: the bolt stays in its tube when the panel is shaken, carried and turned over; drives and backs out 5 times | 5 | Doesn't fall out; grips at least 3 × the bolt and washer's weight (assumption) | PLANNED, after HOLD-02 |
 | J-T3 | Seams: gap at every bolt, flushness, gasket squeeze, light and air through the seam; push test at 1.2 m with LC2; on one stopped seam and one closing seam set at 4.0 and 7.0 | wall sample or a seam mock-up | Stopped gap 2.26 ±0.15; faces flush within 0.5 (assumption); no light through either seam; no step after the push | PLANNED, to route |
-| J-T4 | Base seal on a floor stepped ±5 mm | base band piece (R1) | Touches all the way along; checked with a light from inside | PLANNED, after HOLD-06 |
+| J-T4 | Base seal at the floor's edge: a fixed 4 mm gap between the floor and the band's inner face, on a floor stepped ±5 mm under the glides | base band piece and floor piece (R1) | Touches all the way along; no light through from inside | PLANNED, after HOLD-06 |
 | J-T5 | Corner and ceiling mock-up: a side panel corner, the back closing seam, and both ceiling halves closed in the R-J9 order | joint mock-up | Every bolt reached, overhead too; **every part drops in or slides past its seal with 150 N or less per edge by hand, overhead included** (push-pull gauge; R-J17); C2 drops in past the lead-in; the corner stops close with the bolts; faces flush within 0.5 | PLANNED, to route |
+| J-T6 | Hook-in corner keys: a back corner, then a front key once drawn: set the side band 10 mm high, push it onto the studs, lower it onto its preset glides | joint mock-up with 2 band pieces | Hooks home by hand with no tool; under a 300 N pull across the joint (assumption) the corner stays closed and level within the glide's setting; 5 cycles | PLANNED, to route |
 
 ## 6. HOLD list
 
@@ -487,7 +553,7 @@ Physical tests stay PLANNED until real data exists (guideline §10); the factory
 | HOLD-03 | Rivnut head thickness and installed length | — | — | **Closed** (SHX) |
 | HOLD-04 | Rivnut edge distance | To Sherex: minimum distance from a Ø9.53 hole to the edge of a 1.2 mm aluminium face; is 9.2 mm (the corner and ceiling bolt lines, 2.4) enough? | Hardware Engineer | Answer on file, or T06's coupons show no cracking |
 | HOLD-05 | Joint gasket thickness and converter | PORON 4701-40 with adhesive in 8 mm strips, 3.97 mm thick | Hardware Engineer | The converter's strip data on file (package H14) |
-| HOLD-06 | Base seal for a 10 ± 5 mm gap (H-06) | Which bulb or brush seal closes 5–15 mm under an aluminium band, with a published range? | BASE engineer | Part named; J-T4 passed |
+| HOLD-06 | Base seal at the floor's edge, a fixed 4 mm gap against the band's inner face (H-06, 118001; D-86) | Is BASE's candidate, the Pemko S88BL silicone bulb 12.7 × 6.4, made for a 4 mm gap, with a published range? Otherwise which bulb is? | BASE engineer | Part named with its range; J-T4 passed |
 | HOLD-07 | Base band top wall 2.7 mm or thinner (grip with the stop washer) | None: BASE design | BASE engineer | Band drawing with its wall thickness |
 | HOLD-08 | Cassette clip 518001 and ceiling catch 518002 (D-56, ISS-076) | SEL question 10, plus points 1–6 of J-LIN-01: a clip rated for 8.3 kg in shear and 8.0 kg in pull-out with a captive lock that doesn't bridge the lining; a lanyard rated for 48 kg | Hardware Engineer; Layout Engineer | Parts with ratings named; T07 and T08 passed |
 | HOLD-09 | Frame tube alloy, temper and E (ISS-034) | None: D-79, pending in the control pack, names 6063-T6, mill finish | Hardware Engineer | D-79 merged; 2.5 re-checked with 6063-T6 |
@@ -495,11 +561,12 @@ Physical tests stay PLANNED until real data exists (guideline §10); the factory
 | HOLD-11 | The back wall's top edge under the ceiling | — | — | **Closed** (R-J4) |
 | HOLD-12 | Closing-seam bulb seal (H-04B, 848004) | Which EPDM or TPE hollow bulb has a published working gap covering 4.0–7.0 mm and a closure force low enough for a 150 N fit-up per edge, and survives being reused? (The tesamoll D-Profile's 3–7 mm range is published; it is consumer grade, with no force data) | Hardware Engineer | Part named with its range and force; J-T5 and J-T3 passed |
 | HOLD-13 | Cassette edge seal (H-14, 848012) | Which PSA foam strip 2.0–2.2 mm thick pushes no more than about 2 kPa at 20% compression (or which fin seal) and still closes a 2.26 mm gap against light? | Hardware Engineer | Part named with its force data; the wall sample's cassettes stay seated on their clips with it fitted (T07, J-T3) |
+| HOLD-14 | Front corner keys and inline keys (111212, 111213, 111214) | None: BASE's P02 front pieces set their mitres and lengths | BASE engineer | Front keys drawn with their keyholes, and J-T6 on one of them |
 
 ## 7. Open for others
 
-1. **Skeleton (Fusion Engineer 2):** the closing gap 5.5 at X 0 for the back wall and the ceiling, so the frames are 1198.99 wide while the skins stay 1200.61 (2.8, R-J16); the 220 mm bolt rule on every bolted edge (2.9); the bolt lines at the tube centres, Y +824 and Z 2374 (2.4, R-J15).
-2. **BASE, WALL and CEILING drawings:** every stile at least 30 mm from a bolt (R-J14); ±0.1 on every spigot position and every panel's spigot-to-joint-face distance (ST-02, ST-04); the skins' 1.62 mm overhang at the closing seams (FR-14); the outside corner and the back top edge, where the side panels' back members and the ceiling's back member show (3.2).
+1. **Skeleton (Fusion Engineer 2):** the closing gap 5.5 at X 0 for the back wall and the ceiling, so the frames are 1198.99 wide while the skins stay 1200.61 (2.8, R-J16); the 220 mm bolt rule on every bolted edge (2.9); the bolt lines at the tube centres, Y +824 and Z 2374 (2.4, R-J15). Also: n_ceil_back_bolt 4 on the frame width (1198.99, pitch 253.00) and the side pitch 351.67 from Y −645 along the ceiling, replacing P04's 3 bolts on the skin width and 350.91 on the side panel; DT's back plate at Y −647.26 (J-FRONT-03).
+2. **BASE, WALL and CEILING drawings:** every stile at least 30 mm from a bolt (R-J14); ±0.1 on every spigot position and every panel's spigot-to-joint-face distance (ST-02, ST-04); the skins' 1.62 mm overhang at the closing seams (FR-14); the outside corner and the back top edge, where the side panels' back members and the ceiling's back member show (3.2). BASE: the back corner keys 111211 and the keyholes in the side bands (J-BASE-02), the front keys with P02 (HOLD-14), the spigots for DL and for DR's support (J-FRONT-02), the base seal at the floor's edge (D-86). FRONT: Ø8.5 holes and slots under DL, DR and DT, spigots in DL's and DR's tops, DT's back plate at Y −647.26 with its rivnuts (J-FRONT-03). CEILING: the front tubes' Ø7.0 and Ø19 holes for DT (J-FRONT-03).
 3. **Decision log (control pack):** rows for R-J1 to R-J16, including the parts of D-08 (tool-free seam clips) and D-49 ("face to face") they change.
 4. **Sample package:** P05–P07 and the new head washer and retainer rows, T06's stack, T09's bonded face, H13 and H14 are updated in this PR (R-J12); J-T1 to J-T5 wait for the PM to route.
 
@@ -523,6 +590,11 @@ What each joint puts into each part, and why (guideline §7). "Nut side" and "bo
 | FR-12 | Frame tubes behind the cassette clips and the ceiling catch | Clip and catch fixings | HOLD-08 | Reserve an UNVERIFIED envelope only | D-47, D-56 | HOLD |
 | FR-13 | The closing seams' faces | Lead-in chamfer | 1 × 45° | C1–C2 lower edges; B1–B2 and B3–B4 top edges | R-J9 (2.10) | DECIDED (R-J9) |
 | FR-14 | Back panels' and ceiling halves' skins (B1–B4, C1, C2) | Skin width and overhang | Skin 1200.61 on a 1198.99 frame: flush at the stopped edge, 1.62 past the frame at the closing seam | The closing-seam edge: right edge on B1, B3, C1; left edge on B2, B4, C2 | Visible skin seam 2.26 nominal everywhere, 0.76–3.76 at the closing seams (2.8) | DECIDED (R-J16) |
+| FR-15 | Side band tubes at the back corners (inner wall, X ∓1210 face) | Keyholes | Ø12 entry, 6.5 slot 10 long downward, 2 per corner | Opposite the key's hook studs, 15 and 45 above the band's bottom wall at the stud seat | J-BASE-02 (D-87) | PROPOSED |
+| FR-16 | Back band ends; back corner key 111211 | Key seat and fixings | Ø7.0 × 2 in the band's bottom wall; M6 × 12 deep tapped × 2 in the key's bottom and × 2 in its end face | 10 from the key's Y faces, 10 in from its end face; studs 15 and 45 above its bottom | J-BASE-02 | PROPOSED |
+| FR-17 | The band's front-left piece and DR's support (tops); DL's and DR's tops | Spigot rivnut (831001 in 838003) | Ø9.53 +0.10 | 100 in from the ends of the block's bottom edge; one in each top for DT | J-FRONT-02, J-FRONT-03 | PROPOSED |
+| FR-18 | DL's and DR's bottoms; DT's underside | Spigot hole and slot | Ø8.5 round, 8.5 × 14 slot | Coaxial with FR-17 | J-FRONT-02, J-FRONT-03 | PROPOSED |
+| FR-19 | DT's back plate; the ceiling's front tubes | Joint holes and plate position | FR-01, FR-02 and FR-03 at X −981.74, −578.16, −174.58, +228.99; DT's back plate at Y −647.26 | 2.9, J-FRONT-03 | J-FRONT-03 | PROPOSED |
 
 Rules for the Fusion check (each can be a scripted check):
 
