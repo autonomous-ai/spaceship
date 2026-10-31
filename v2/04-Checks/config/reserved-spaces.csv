@@ -1,3 +1,5 @@
 part_number,owner,ruling,why
-351403,AIR,"Lead 2026-11-01, as D-92","DR's lower air transition: a reserved duct space in FRONT's DR block until AIR designs it; no drawing and no seam rules until then, listed open under AIR"
-351405,AIR,"Lead 2026-11-01, as D-92","DR's upper air transition: a reserved duct space in FRONT's DR block until AIR designs it; no drawing and no seam rules until then, listed open under AIR"
+351402,AIR,"Lead 2026-11-01 (every air part is an AIR number in AIR's tree)","the space in FRONT's DR block for AIR's intake riser (611501 in AIR's supply-box assembly): a reserved air space with no mass, no drawing and no BOM count"
+351403,AIR,"Lead 2026-11-01 (every air part is an AIR number in AIR's tree)","the space in FRONT's DR block for the lower air transition, which AIR designs: a reserved air space with no mass, no drawing and no BOM count"
+351404,AIR,"Lead 2026-11-01 (every air part is an AIR number in AIR's tree)","the space in FRONT's DR block for AIR's supply fan box (610401 in AIR's supply-box assembly): a reserved air space with no mass, no drawing and no BOM count"
+351405,AIR,"Lead 2026-11-01 (every air part is an AIR number in AIR's tree)","the space in FRONT's DR block for the upper air transition, which AIR designs: a reserved air space with no mass, no drawing and no BOM count"

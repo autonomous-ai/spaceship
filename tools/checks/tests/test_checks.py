@@ -955,3 +955,15 @@ def test_reserved_air_spaces_are_listed_under_air_not_as_missing_drawings(tmp_pa
     res = reserved_spaces(str(tmp_path))
     assert reserved_label("350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351403 FRONT - AIR TRANSITION:1 / Body1", res)
     assert not reserved_label("3514030 X", res)
+
+
+def test_a_reserved_air_space_row_asks_for_no_mass_material_or_finish(tmp_path):
+    (tmp_path / "v2/04-Checks/config").mkdir(parents=True)
+    (tmp_path / "v2/04-Checks/config/reserved-spaces.csv").write_text("part_number,owner,ruling,why\n351402,AIR,x,riser space\n")
+    d = tmp_path / "v2/03-Manufacturing/front"
+    d.mkdir(parents=True)
+    _write_csv(d / "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+               [{"part_number": "351402", "name": "FRONT - AIR INTAKE RISER - DR", "type": "reserved air space", "qty": "1"},
+                {"part_number": "351306", "name": "FRONT - DR - FRAME", "type": "made", "qty": "1"}])
+    subjects = {f.subject.split(" ")[0] for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))}
+    assert "351402" not in subjects and "351306" in subjects
