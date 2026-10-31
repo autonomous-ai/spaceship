@@ -148,7 +148,8 @@ def record(design, rel):
     edits = EDITS_BACK if back_wall else EDITS
     names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
              "cass_len", "cass_h", "pnl_h") if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
-                                         "stile_pitch", "cass_len", "cass_h", "top_h")
+                                         "stile_pitch", "cass_len", "cass_h", "top_h", "pod_h", "panel_z0",
+                                         "seam_gap", "outer_t", "lin_gap")
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
     if any(k.split(" / ", 1)[-1].startswith("FILL") for k in before):
@@ -188,7 +189,12 @@ def record(design, rel):
         seam = 2.26
         y0p = 850.0 - after_p["wall_depth"] + seam          # panel front end (2.26 behind the decor back plate)
         y0c = 850.0 - after_p["wall_depth"]                 # the lining starts at the decor back plate
-        z0 = 110.0 + seam                                    # walls stand one seam gap above the band top
+        # rows as the builder makes them: the lower panel from panel_z0, side_h high; the upper one from one seam
+        # gap above it up to the roof datum pod_h (its cassette floats lin_gap under the roof frame)
+        upper = root_pn[4:6] in ("03", "04")
+        z0 = after_p["panel_z0"] + (after_p["side_h"] + seam if upper else 0.0)
+        z1 = after_p["pod_h"] if upper else after_p["panel_z0"] + after_p["side_h"]
+        zc1 = after_p["pod_h"] - after_p["outer_t"] - after_p["lin_gap"] if upper else z1
         def nm(k):          # body name without its component's part number ("PN / NAME")
             return k.split(" / ", 1)[-1]
         # by name prefix: hardware names hold member names too ("RIVNUT - TOP RAIL 1", "RIVNUT - BACK STILE CORNER 1")
@@ -210,8 +216,8 @@ def record(design, rel):
                 ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
                                                         for r in rails)),
                 ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
-                ("stiles span side_h - 20 - top_h", all(abs((st[5] - st[2]) - (after_p["side_h"] - 20 - after_p["top_h"]))
-                                                        < 0.01 for st in stiles)),
+                ("stiles span the panel height - 20 - top_h", all(abs((st[5] - st[2]) - (z1 - z0 - 20 - after_p["top_h"]))
+                                                                  < 0.01 for st in stiles)),
                 ("mid stile count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
                 ("no stile pitch over %g" % rule, all(b[1] - a[1] <= rule + 0.01 for a, b in zip(mids, mids[1:]))),
             ]
@@ -219,25 +225,26 @@ def record(design, rel):
             checks.append(("fill bays = mid stile count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
         if skins:
             sk = skins[0]
-            checks.append(("skin runs wall_depth - 2.26 and side_h", abs((sk[4] - sk[1]) - (after_p["wall_depth"] - seam))
-                           < 0.01 and abs((sk[5] - sk[2]) - after_p["side_h"]) < 0.01))
+            checks.append(("skin runs wall_depth - 2.26 and the panel height", abs((sk[4] - sk[1]) - (after_p["wall_depth"] - seam))
+                           < 0.01 and abs((sk[5] - sk[2]) - (z1 - z0)) < 0.01))
         if trays:
             tr = trays[0]
             checks += [("tray runs cass_len", abs((tr[4] - tr[1]) - after_p["cass_len"]) < 0.01),
                        ("tray starts at the decor back plate", abs(tr[1] - y0c) < 0.01),
-                       ("tray height follows side_h", abs((tr[5] - tr[2]) - after_p["side_h"]) < 0.01)]
+                       ("tray height follows the row (cass_h)", abs((tr[5] - tr[2]) - (zc1 - z0)) < 0.01 and
+                        abs(after_p["cass_h"] - (zc1 - z0)) < 0.01)]
         if felts:
             fe = felts[0]
             checks.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
                            abs((fe[4] - fe[1]) - (after_p["cass_len"] - 3)) < 0.01 and
-                           abs((fe[5] - fe[2]) - (after_p["side_h"] - 3)) < 0.01))
+                           abs((fe[5] - fe[2]) - (zc1 - z0 - 3)) < 0.01))
         if zones:
             checks += [
                 ("clip zones sit on the first and last mid stile",
                  sorted({round(zz[1], 2) for zz in zones}) == sorted({round(y0p + after_p["stile_pitch"], 2),
                                                                       round(y0p + after_p["stile_n_mid"] *
                                                                             after_p["stile_pitch"], 2)})),
-                ("top clip zones follow the top edge", abs(max(zz[5] for zz in zones) - (z0 + after_p["side_h"] - 70)) < 0.01),
+                ("top clip zones follow the top edge", abs(max(zz[5] for zz in zones) - (zc1 - 70)) < 0.01),
             ]
         if rivs:
             pitch = (after_p["wall_depth"] - seam - 440.0) / 3.0        # 220 rule, 4 bolts (R-J14)

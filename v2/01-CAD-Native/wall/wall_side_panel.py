@@ -135,7 +135,9 @@ WALL_PARAMS = [
     ("stile_pitch_max", "400 mm", "mm", "confirmed", "D-16, D-34: members 400 mm apart or less, to keep the ACP flat"),
     ("pnl_len", "wall_depth - seam_gap", "mm", "calculation",
      "D-49 depth 1495 less the 2.26 gap at the decor back plate (PM ruling on F-008): 1492.74"),
-    ("pnl_h", "side_h", "mm", "calculation", "skeleton side_h: 2 sheets per side wall (D-23) with the seam gaps"),
+    ("pnl_h", "side_h" if ROW == 1 else "pod_h - (panel_z0 + side_h + seam_gap)", "mm", "calculation",
+     "lower: skeleton side_h (2 sheets per side wall, D-23); upper: from one seam gap above the lower row to the roof "
+     "datum pod_h, as the skeleton's envelope (equal to side_h at P04 values)"),
     ("skin_ret", "outer_t - skin_t", "mm", "assumption",
      "back return of the side skin: covers the frame's back end at the corner, where the side skin covers the back "
      "panel's edge (D-55; sample drawing D04). V-groove and fold per the ACP maker (HOLD H16)"),
@@ -207,7 +209,8 @@ WALL_PARAMS = [
      "air gap between the tray base and the felt (24): the acoustic gap (D-17) and the cable path (D-26)"),
     ("cass_len", "wall_depth - stack_t + cass_t", "mm", "calculation",
      "= 1448: from the decor back plate to past the back cassette's face, closing the inside corner (D-57)"),
-    ("cass_h", "side_h" if ROW == 1 else "side_h - outer_t - lin_gap", "mm", "calculation",
+    ("cass_h", "side_h" if ROW == 1 else "pod_h - outer_t - lin_gap - (panel_z0 + side_h + seam_gap)", "mm",
+     "calculation",
      "lower: the panel height; upper: stops lin_gap under the roof frame so it floats (D-57)"),
     ("clip_zone_h", "60 mm", "mm", "assumption", "height of each reserved clip zone (H03: no clip named)"),
     ("clip_zone_dz", "100 mm", "mm", "assumption", "clip zone centre from the cassette's top and bottom edges (H03)"),
