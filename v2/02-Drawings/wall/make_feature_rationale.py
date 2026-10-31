@@ -17,6 +17,96 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall", "out")
 REG = "joints register V2-ENG-JNT-01 P01 (PR #23)"
 
+# back panels B1-B4 (wall_back_panel.py): the families that differ from the side panels'
+FAMILIES_BACK = {
+    ("RAIL - BOTTOM", 8.5, "z"): (
+        "F03", "Locating: the round spigot hole 100 from the closing-seam end, and the two arcs of the slot F04 100 "
+        "from the corner end", "Ø8 spigot H-05 standing 8 proud of the band top (B1, B2) or of the lower panel (B3, B4)",
+        "round by the closing seam, so the closing gap is set by the round spigots and their distance to the seam face "
+        "(5.2 to 5.8, ST-02); the slot runs along the edge (8.5 x 14)", "%s 2.11 ST-02, R-J13" % REG,
+        "16.5 to each side wall", "±0.1 spigot position and spigot-to-seam-face (PROPOSED in ST-02); Ø8.5 on Ø8",
+        "CNC or jig; the drill jig's locating point", "PROPOSED (register)"),
+    ("RAIL - TOP", 9.53, "z"): (
+        "F05", "Top rail rivnuts, nut side: J-WALL-01 to the upper panel (B1, B2: 4 at the 220 rule, with stop washers) "
+        "and 2 spigot rivnuts 100 from the ends (B1, B2 for the upper panel; B3, B4 for the ceiling's back spigots)",
+        "Sherex CAH3-610-4.2 (838003), stop washer H-08 (831002) under the bolt ones; spigots H-05 (831001)",
+        "on the frame's centre line Y 824; bolts 220, 473.00, 725.99, 978.99 from the frame's ends (register 2.9)",
+        "%s 2.9, 3.1, 3.4" % REG, "15.2 to each side wall of the 40 face", "Ø0.4 from F03", "CNC or jig; T-01, T-02",
+        "source (hole); DECIDED (positions)"),
+    ("RAIL - TOP", 7.0, "z"): (
+        "F24", "J-CEIL-01 back edge bolt clearance, bolt side (B3, B4): the captive bolt goes up through the top wall "
+        "into the ceiling's 40 x 40 back member's rivnut", "M6 x 16 ISO 4762 (838001), washer 838004, into the "
+        "ceiling's rivnut over its stop washer",
+        "4 at 220, 473.00, 725.99, 978.99 from the frame's ends (register 2.9; 4 per back panel, PM ruling 16:50)",
+        "%s 2.4, 2.9, 3.4" % REG, "16.5 to each side wall; 30 or more to every stile (R-J14)", "Ø0.4 from F03",
+        "CNC or jig", "DECIDED (register)"),
+    ("RAIL - TOP", 19.0, "z"): (
+        "F25", "Key access for F24, in the top rail's bottom wall facing the bay; holds the grommet retainer",
+        "ISO 7093-1 washer Ø18, ISO 4762 head, 5 mm key", "coaxial with F24", "%s FR-03" % REG,
+        "pocket F13 below it", "coaxial within the Ø0.4 zone", "drilled with F24", "calculation"),
+    ("STILE - OUTER", 7.0, "x"): (
+        "F26", "J-WALL-02 corner bolt clearance, bolt side: the captive bolt goes out through the outer stile's end wall "
+        "across the 2.26 corner gap into the side panel's back-stile rivnut", "M6 x 16 ISO 4762 (838001), washer "
+        "838004, into the side panel's rivnut (F09) over its stop washer",
+        "3 on the bolt line Y 824 (R-J15) at 220, 559.31, 898.61 up the 1118.61 edge (register 2.9)",
+        "%s 2.4, 2.9, 3.2" % REG, "16.5 to each side wall", "Ø0.4 from F03, matched by the side panel's F09",
+        "CNC or jig", "DECIDED (register)"),
+    ("STILE - OUTER", 19.0, "x"): (
+        "F27", "Key access for F26, in the outer stile's bay-side wall; holds the grommet retainer",
+        "ISO 7093-1 washer Ø18, ISO 4762 head, 5 mm key", "coaxial with F26", "%s FR-03" % REG, "pocket F13 beside it",
+        "coaxial within the Ø0.4 zone", "drilled with F26", "calculation"),
+    ("STILE - CENTRE", 7.0, "x"): (
+        "F28", "Closing-seam pin hole, nut side (B1, B3): a plain hole the right-hand panel's pin bolt passes through; "
+        "no rivnut", "the M6 x 25 pin bolt (838002) of B2 or B4", "3 on the frame's centre line at the corner bolts' "
+        "heights (220, 559.31, 898.61)", "%s 2.10, R-J11, R-J16" % REG, "16.5 to each side wall",
+        "coaxial with the pin rivnut within ±0.2 (R-J6)", "CNC or jig", "DECIDED (register)"),
+    ("STILE - CENTRE", 9.53, "x"): (
+        "F29", "Closing-seam pin rivnut, bolt side (B2, B4): holds the factory-fitted M6 x 25 pin bolt; no stop washer, "
+        "the gap is set by the spigots", "Sherex CAH3-610-4.2 (838003); M6 x 25 ISO 4762 (838002) with its washer",
+        "3 at F28's positions", "%s 2.10" % REG, "15.2 to each side wall", "±0.2 to F28 (R-J6)",
+        "CNC or jig; T-01, T-02", "DECIDED (register)"),
+    ("STILE - CENTRE", 19.0, "x"): (
+        "F30", "Key access for the pin bolt F29 (B2, B4), in the centre stile's bay-side wall",
+        "5 mm key; the bolt's head Ø10 and washer Ø18 stay inside the tube (head top 17.76 of 18.8, register 2.10)",
+        "coaxial with F29", "%s 2.10" % REG, "pocket F13 beside it", "coaxial within the Ø0.4 zone",
+        "drilled with F29", "calculation"),
+}
+
+OTHER_BACK = [
+    ("F10", "{frame}", "Two studs at 393 between centres, 1.0 wall (D-85); perimeter 1.2",
+     "keeps the ACP flat (members 400 apart or less, D-16, D-34); every bolt 30 or more from every stud (R-J14)",
+     "stile_pitch_max 400; pitch = (half_fw - 20) / 3 (calculation)", "follows half_fw (edit test)",
+     "cut list ±0.5 (assumption)", "DECIDED (D-85)"),
+    ("F12", "{frame}", "Rails run the full frame width; stiles fit between them (square butt ends)",
+     "a continuous bottom rail sits on its gasket in one line", "member joint method HOLD (H11)", "", "", "HOLD"),
+    ("F13", "{fill}", "Fill pockets 60 x 60 x 40 beside every bolt this panel drives (bottom rail, corner, and the "
+     "ceiling bolts on B3/B4, the pins on B2/B4)", "the key reaches the access holes from inside before the cassette "
+     "goes on", "%s FR-10, 2.3" % REG, "", "", "PROPOSED (assumption size)"),
+    ("F31", "{frame}", "Frame width half_fw 1198.99, stopping close_gap / 2 (2.75) from X 0",
+     "the closing seam takes the back wall's tolerance as a 5.5 gap (4.0 to 7.0), set by the spigots (R-J11, R-J16)",
+     "skeleton P04 half_fw, close_gap", "follows half_fw (edit test)", "5.2 to 5.8 (ST-02)", "DECIDED"),
+    ("F32", "{frame}", "1 x 45 lead-in on the top edge of the closing-seam face",
+     "the next panel drops in past it without catching the bulb seal (R-J9)", "%s 2.10" % REG, "", "", "DECIDED"),
+    ("F33", "{skin}", "Skin width half_pw 1200.61: flush with the frame at the corner, 1.62 past it at the closing seam",
+     "every visible skin seam stays 2.26 (R-J16); the look is unchanged", "skeleton P04 half_pw", "follows half_pw",
+     "0.76 to 3.76 as the closing gap moves (register 2.8)", "DECIDED"),
+    ("F16", "{assy}", "Seam gaps 2.26 at the corner (stops) and under the panel (band or seam)",
+     "the gasket's compressed thickness, set by the metal stop (stop washer 1.5 + rivnut head 0.76)",
+     "skeleton P04 seam_gap", "", "2.13 to 2.39 (register 2.8)", "confirmed"),
+    ("F20", "{tray}", "Tray returns run the full 34 mm and turn in as 12 mm lips", "the lips hold the felt with no glue",
+     "PM ruling 2026-10-31, option 1", "", "", "confirmed"),
+    ("F21", "{tray}", "Bend radius 0.5 (1 x t), K-factor 0.44, square corner relief", "flat pattern for the 0.5 tray",
+     "assumption, as the side and ceiling trays", "", "", "assumption"),
+    ("F22", "{felt}", "Felt 1 mm clear inside the returns, behind the lips", "held by the lips; 24 mm air gap behind it",
+     "felt_c 1 (assumption)", "", "", "assumption"),
+    ("F34", "{tray}", "Back cassettes stop seam_gap / 2 (1.13) short of X 0: a 2.26 gap to the next back cassette, "
+     "with the soft edge seal H-14", "each cassette hangs on its own frame and the closing seam moves, so touching "
+     "edges would clash", "PM ruling 2026-10-31 16:58 (DECIDED)", "follows pod_w", "", "DECIDED"),
+    ("F23", "NO-PN-HOLD-H03", "Clip zones on the panel frame's two studs, 100 from the cassette's top and bottom",
+     "reserved for the captive clip (D-47); clear of every key access hole and pocket", "HOLD H03, HOLD-08", "", "",
+     "HOLD"),
+]
+
 # (body name, hole diameter, axis) -> id, function, mating part, rule (where and why there), source,
 # clearances, tolerance, make and check, status
 FAMILIES = {
@@ -64,6 +154,13 @@ FAMILIES = {
         "ISO 7093-1 washer Ø18, ISO 4762 head, 5 mm key",
         "coaxial with F07", "%s FR-03" % REG, "pocket F13 in the first bay", "coaxial within the Ø0.4 zone",
         "drilled with F07", "calculation"),
+    ("RAIL - TOP", 9.53, "x"): (
+        "F06", "J-CEIL-01 rivnuts, nut side (upper side panels): the ceiling's side tube bolts across the 2.26 gap "
+        "into these", "Sherex CAH3-610-4.2 with the stop washer H-08 in the room-side wall of the 40 x 40 top member",
+        "4 on the ceiling's bolt line Z 2374 (R-J15), at the ceiling's rule: from Y -645 (its front edge), 220 in, "
+        "pitch 351.67, so CEILING drills the same (PM ruling 2026-10-31 16:55)",
+        "%s 3.4, 2.9; PM rulings R-J3, R-J15" % REG, "hole edge 15.2 from each side wall; Ø20 washer on the 40 face",
+        "Ø0.4 from F03, matched by the ceiling's holes", "CNC or jig; T-01, T-02", "source (hole); DECIDED (positions)"),
     ("STILE - BACK", 9.53, "x"): (
         "F09", "J-WALL-02 corner rivnuts, nut side: the back panel's edge tube bolts across the corner gap into these",
         "Sherex CAH3-610-4.2 with the stop washer H-08 in the room-side wall of the 40 x 40 back stile",
@@ -74,29 +171,29 @@ FAMILIES = {
 }
 
 OTHER = [
-    ("F10", "211101", "Stile pitch 364.93 between centres, 3 intermediate stiles",
+    ("F10", "{frame}", "Stile pitch 364.93 between centres, 3 intermediate studs at a 1.0 wall (D-85); perimeter 1.2",
      "keeps the ACP flat between bond lines (D-16, D-34: members 400 apart or less); every bolt lands 30 or more from "
      "every stile (R-J14; checked by test_wall_offline.py)", "stile_pitch_max 400 (confirmed); "
      "pitch = (frame length - 10 - 20) / 4 (calculation)", "follows wall_depth (edit test)", "cut list ±0.5 (assumption)", "confirmed rule"),
-    ("F11", "211101", "Back stile 40 x 40 x 1.2", "room for the corner rivnut, its Ø20 stop washer and the bolt "
+    ("F11", "{frame}", "Back stile 40 x 40 x 1.2", "room for the corner rivnut, its Ø20 stop washer and the bolt "
      "(37+ mm overlap instead of 17)", "PM ruling R-J3; %s 2.4, FR-06" % REG, "", "", "confirmed"),
-    ("F12", "211101", "Rails run the full frame length; stiles fit between them (square butt ends)",
+    ("F12", "{frame}", "Rails run the full frame length; stiles fit between them (square butt ends)",
      "a continuous bottom rail sits on the band and its gasket in one line", "member joint method HOLD (H11)", "", "", "HOLD (joint method)"),
-    ("F13", "211501", "Fill pockets 60 x 60 x 40, beside every bolt this panel drives (4 above F01, 3 beside F07)",
+    ("F13", "{fill}", "Fill pockets 60 x 60 x 40, beside every bolt this panel drives (4 above F01, 3 beside F07)",
      "the 5 mm key reaches F02 and F08 from inside the pod before the cassette goes on", "%s FR-10, 2.3" % REG, "", "", "PROPOSED (assumption size)"),
-    ("F14", "211301", "Skin back return: the side skin folds 43 mm round the frame's back end",
+    ("F14", "{skin}", "Skin back return: the side skin folds 43 mm round the frame's back end",
      "the back corner shows ACP, not the frame end (D-55; register section 7 item 5)", "skin_ret = outer_t - skin_t (assumption)",
      "V-groove and fold per the ACP maker (HOLD H16)", "", "assumption"),
-    ("F15", "211301", "Skin flush with the frame's top and bottom (setback 0)", "the outside reveal equals the 2.26 seam gap, "
+    ("F15", "{skin}", "Skin flush with the frame's top and bottom (setback 0)", "the outside reveal equals the 2.26 seam gap, "
      "crisp and aligned (D-23)", "skin_setback 0 (assumption); seam_gap 2.26 (P04, confirmed)", "", "", "assumption"),
-    ("F16", "210101", "Seam gaps 2.26: at the decor back plate (front end) and on the base band (bottom)",
+    ("F16", "{assy}", "Seam gaps 2.26: at the decor back plate (front end) and under the panel (band or seam)",
      "the gasket's compressed thickness, set by the metal stop (stop washer 1.5 + rivnut head 0.76)", "skeleton P04 seam_gap and "
      "panel_z0, derived (PM ruling F-008)", "", "2.13 to 2.39 (register 2.8)", "confirmed"),
-    ("F20", "511101", "Tray returns run the full 34 mm and turn in as 12 mm lips", "the lips hold the felt with no glue "
+    ("F20", "{tray}", "Tray returns run the full 34 mm and turn in as 12 mm lips", "the lips hold the felt with no glue "
      "(settles H09) and match the ceiling cassette", "PM ruling 2026-10-31, option 1", "", "", "confirmed"),
-    ("F21", "511101", "Bend radius 0.5 (1 x t), K-factor 0.44, square corner relief", "flat pattern for the 0.5 mm DX51D tray",
+    ("F21", "{tray}", "Bend radius 0.5 (1 x t), K-factor 0.44, square corner relief", "flat pattern for the 0.5 mm DX51D tray",
      "assumption, same rule as the ceiling tray; the factory's tooling sets the real values (guideline 9)", "", "", "assumption"),
-    ("F22", "511301", "Felt 1 mm clear inside the returns, behind the lips", "drops in and is held by the lips; 24 mm air gap "
+    ("F22", "{felt}", "Felt 1 mm clear inside the returns, behind the lips", "drops in and is held by the lips; 24 mm air gap "
      "behind it (D-17)", "felt_c 1 (assumption, as the ceiling)", "", "", "assumption"),
     ("F23", "NO-PN-HOLD-H03", "Clip zones on the first and last intermediate stiles, 100 from the cassette's top and bottom",
      "reserved for the captive clip (D-47); clear of every key access hole and pocket (register rule R8)", "HOLD H03, HOLD-08",
@@ -112,6 +209,8 @@ def load(pn):
 def holes(rep):
     rows = {}
     for c in rep["components"]:
+        if not c["part_number"].startswith("21"):        # joint hardware (83xxxx): its bores are the maker's
+            continue
         for b in c["bodies"]:
             for h in b["holes"]:
                 key = (b["name"], h["d"], h["axis"])
@@ -128,34 +227,49 @@ def main(argv):
                  panel["version"], cass["version"]), "",
              "| ID | Part | Holes from the CAD (Ø, axis, centres) | Function | Mating part | Rule: where and why | Source | "
              "Clearances | Tolerance | Make and check | Status |", "|---|---|---|---|---|---|---|---|---|---|---|"]
+    pns = {}
+    for rep in (panel, cass):
+        for c in rep["components"]:
+            for key, pre in (("frame", ("2111", "2112")), ("skin", ("2113", "2114")), ("fill", ("2115", "2116")),
+                             ("tray", ("5111", "5112")), ("felt", ("5113", "5114"))):
+                if c["part_number"].startswith(pre):
+                    pns[key] = c["part_number"]
+    pns["assy"] = panel["document"].split("_")[0]
+    back = pns["frame"].startswith("2112")
+    families = dict(FAMILIES, **FAMILIES_BACK) if back else FAMILIES
     found = holes(panel)
     unexplained = []
     for key, hs in sorted(found.items()):
         body, d, ax = key
         full = [h for h in hs if h["full_circle"]]
-        fam = FAMILIES.get(key)
+        fam = families.get(key)
         if fam is None:
             if d == 8.5 and body == "RAIL - BOTTOM":
-                fam = FAMILIES[("RAIL - BOTTOM", 8.5, "z")]
+                fam = families[("RAIL - BOTTOM", 8.5, "z")]
             else:
                 unexplained.append(key)
                 continue
         cs = "; ".join("(%s)" % ", ".join("%g" % v for v in h["centre"] if v is not None) for h in hs)
-        lines.append("| %s | 211101 %s | Ø%g along %s, %d: %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
-            fam[0], body, d, ax, len(hs), cs, fam[1], fam[2], fam[3], fam[4], fam[5], fam[6], fam[7], fam[8]))
+        lines.append("| %s | %s %s | Ø%g along %s, %d: %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
+            fam[0], pns["frame"], body, d, ax, len(hs), cs, fam[1], fam[2], fam[3], fam[4], fam[5], fam[6], fam[7],
+            fam[8]))
     if unexplained:
         raise SystemExit("holes with no rationale: %s" % unexplained)
     lines += ["", "Other features:", "", "| ID | Part | Feature | Why | Source or calculation | Edit behaviour | Tolerance | Status |",
               "|---|---|---|---|---|---|---|---|"]
-    for row in OTHER:
-        lines.append("| %s |" % " | ".join(row))
+    other = OTHER_BACK if back else OTHER
+    for row in other:
+        lines.append("| %s |" % " | ".join(f.format(**pns) for f in row))
+    lines += ["", "Joint hardware modelled in the panel (bodies at every rivnut hole, joints register 2.1): rivnut "
+              "838003 as its installed envelope, stop washer 831002 under each stopped-joint rivnut, spigot 831001 in "
+              "each spigot rivnut. Their own bores are not features of ours and are not listed."]
     lines += ["", "Masses from the CAD (kg): " + "; ".join(
         "%s %s %.3f" % (c["part_number"], c["name"].split(" ", 1)[-1][:40], sum(b["mass_kg"] for b in c["bodies"]))
         for rep in (panel, cass) for c in rep["components"] if c["bodies"] and not c["part_number"].startswith("NO-PN")), ""]
     out = os.path.join(HERE, "FEATURE-RATIONALE-%s.md" % argv[1])
     with open(out, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines))
-    print("wrote %s: %d hole families, %d other features" % (os.path.basename(out), len(found), len(OTHER)))
+    print("wrote %s: %d hole families, %d other features" % (os.path.basename(out), len(found), len(other)))
 
 
 if __name__ == "__main__":
