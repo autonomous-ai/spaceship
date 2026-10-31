@@ -12,6 +12,7 @@ What the faces say:
 - **DR front face**: vertical plane Y = -850, outline (950, 115) (1048, 115) (1048, 2215) (750, 2215) (750, 1538) on the right part, and (230, 2137) (750, 1538) (750, 2215) (230, 2215) above the fixed glass: its inner edges follow the fixed glass. Outer corner facet n = (0.67, -0.74, 0) from (1248, -672) to (1052, -848).
 - **DL front**: two vertical facets in plan, n = (-0.67, -0.74, 0) from (-1248, -672) to (-1158, -752), and n = (-0.46, -0.89, 0) from (-1158, -753) to (-981, -844). Door-side face X = -972.
 - **DT**: lower facet nearly vertical, n = (-0.07, -1.00, 0): (-1154, -753, 2322) (-969, -767, 2137) (229, -850, 2137) (229, -850, 2215). Top chamfer n = (0, -0.74, 0.67) across DT and DR: from about Z 2215-2219 at Y -848 up to Z 2415 at Y -672.
+- **DT/DR joint** (used from P03, PM ruling on pass C): on the front face at X 230 up to the chamfer, then along the chamfer from (231, -848, 2219) to (447, -672, 2415), then across the top strip at X 449 to the back face (Y -667 to -645, see body 127 below). v1's top-frame drawing (`sources/v1/drawings/decor-frame-assembly.pdf`, page 10, "Cụm khung trên") shows the same diagonal end: 216 mm between the frame's front and back corners, on the 16 mm frame inside the skin.
 - **Heights**: v1's front runs from Z 115 to 2417 (v2 frame). v2's decided envelope is Z 110 to 2400 (D-21, layout study 2290), so stage B maps heights into it and states how.
 
 ## Raw dump

@@ -13,7 +13,7 @@ import adsk.core
 import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
-F3D_REL = "v2/01-CAD-Native/skeleton/100000_P02_POD-SKELETON_CAD.f3d"
+F3D_REL = "v2/01-CAD-Native/skeleton/100000_P03_POD-SKELETON_CAD.f3d"
 EDITS = [("pod_w", "2600 mm", "2500 mm"), ("pod_h", "2450 mm", "2400 mm")]
 TOL = 0.05   # mm
 

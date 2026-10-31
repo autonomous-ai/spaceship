@@ -8,7 +8,8 @@ band_t,40,40 mm,source,layout study B1 list B-BAND 100x40
 stack_t,81,81 mm,decided,"D-16, D-42 (walls and ceiling)"
 outer_t,43,43 mm,source,layout study B1 final list W-SIDE 43 (ACP 3 + frame 40)
 cass_t,34,34 mm,source,layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)
-wall_depth,1500,1500 mm,source,build plan II; conventions s4 (wall front edge Y = -650)
+wall_depth,1495,1495 mm,decided,"PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"
+lin_gap,4,4 mm,assumption,PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)
 floor_t,15,15 mm,source,layout study B1 list B-FLOOR 15
 thresh_h,20,20 mm,decided,D-18
 thresh_d,60,60 mm,source,layout study B1 list B-THRESH 1176 x 60 x 20
@@ -49,6 +50,7 @@ dt_x2,281,281 mm,source,V1-FRONT-FACETS: DT lower facet left X -969 = -1250 + 28
 dt_y2,767,767 mm,source,V1-FRONT-FACETS: DT lower facet left Y -767
 dt_y3,753,753 mm,source,V1-FRONT-FACETS: DT lower facet outer Y -753 at X -1154
 dr_xc,198,198 mm,source,V1-FRONT-FACETS: DR corner facet front X 1052 = 1250 - 198
+dt_xr,1699,1699 mm,source,"V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -1250 + 1699 (PM ruling pass C)"
 dr_yc,672,672 mm,source,V1-FRONT-FACETS: DR corner facet back Y -672
 wall_z0,110,glide_h + band_h,calculation,walls stand on the base band
 wall_h,2290,pod_h - wall_z0,calculation,2290 = layout study v2_model wall_h
