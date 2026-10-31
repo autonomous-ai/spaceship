@@ -19,6 +19,7 @@ import shutil
 import subprocess
 
 from common import Finding, owner_for, rel, walk_files, parse_file_name, pn_class, is_soft
+import dxf_layers
 
 
 def pdf_text(path):
@@ -151,50 +152,16 @@ NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pock
 BEND_LAYER = re.compile(r"\b(?:BEND|FOLD)", re.I)
 
 
-DXF_STRUCTURE = ("BLOCK", "ENDBLK", "SEQEND", "VERTEX", "ENDSEC", "EOF")   # records, not lines
-
-
-FLAT_LAYERS = {"CUT", "MARK"}
-
-
 def dxf_other_layers(text):
-    """D-89 (4): the layers other than CUT and MARK that an ASCII DXF draws on, upper-cased; None when it can't be
-    read (empty or binary), so the part can't be shown flat. What it draws is its ENTITIES section; a block counts
-    only where an INSERT places it (its entities on layer 0 take the INSERT's layer), so the arrow-head blocks a
-    DXF library writes, never inserted, don't count. Copied from the release checklist
-    (v2/00-Control/build_release_checklist.py, dxf_other_layers) so both tools read a DXF the same way."""
-    if not text or text.startswith("AutoCAD Binary DXF"):
-        return None
-    lines = text.splitlines()
-    pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
-    section, block, ent, blocks, drawn = None, None, None, {}, []
-    for i, (code, value) in enumerate(pairs + [("0", "EOF")]):
-        if code == "0":
-            if ent and section == "ENTITIES":
-                drawn.append(ent)
-            elif ent and section == "BLOCKS" and block and ent[0] not in ("BLOCK", "ENDBLK"):
-                blocks.setdefault(block, set()).add(ent[1])
-            ent = None if value in ("SECTION", "ENDSEC", "EOF") else [value.upper(), "0", ""]
-            section = None if value == "ENDSEC" else section
-        elif code == "2" and i and pairs[i - 1] == ("0", "SECTION"):
-            section = value.upper()
-        elif ent is not None and code == "8":
-            ent[1] = value.upper()
-        elif ent is not None and code == "2":
-            ent[2] = value
-            block = value if ent[0] == "BLOCK" else block
-    other = set()
-    for typ, layer, name in drawn:
-        layers = {layer} | ({x for x in blocks.get(name, set()) if x != "0"} if typ == "INSERT" else set())
-        other |= {x for x in layers if x not in FLAT_LAYERS}
-    return other
+    """D-89 (4): the layers other than CUT and MARK that a DXF draws on; None when it can't be read. One reader,
+    shared with the release checklist (tools/checks/dxf_layers.py), so the two tools can't drift."""
+    return dxf_layers.other_layers(text)
 
 
 def dxf_summary(path):
-    """A DXF read without a library: {'units': $INSUNITS, 'layers': {layer: count of drawing entities in the
-    ENTITIES and BLOCKS sections}, 'circles': [diameters of CIRCLE entities]}; None when the file can't be read
-    as ASCII DXF (empty or binary). Block records (BLOCK, ENDBLK) and a polyline's VERTEX and SEQEND are records,
-    not lines, so a block header on layer 0 doesn't count."""
+    """What the D-89 part 4 hole check needs from a DXF, read without a library: {'units': $INSUNITS,
+    'circles': [diameters of the CIRCLE entities it draws]}; None when it can't be read as ASCII DXF. Which layers
+    it draws on is the shared reader's job (dxf_layers), not this one's."""
     try:
         with open(path, encoding="utf-8", errors="replace") as fh:
             text = fh.read()
@@ -204,7 +171,7 @@ def dxf_summary(path):
         return None
     lines = text.splitlines()
     pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
-    out = {"units": None, "layers": {}, "circles": []}
+    out = {"units": None, "circles": []}
     sec, cur = None, None
     for k, (code, val) in enumerate(pairs):
         if code == "2" and k and pairs[k - 1] == ("0", "SECTION"):
@@ -213,10 +180,8 @@ def dxf_summary(path):
             sec, cur = None, None
         elif code == "9" and val == "$INSUNITS" and k + 1 < len(pairs):
             out["units"] = pairs[k + 1][1]
-        elif sec in ("ENTITIES", "BLOCKS") and code == "0":
-            cur = None if val.upper() in DXF_STRUCTURE else val.upper()
-        elif sec in ("ENTITIES", "BLOCKS") and cur and code == "8":
-            out["layers"][val] = out["layers"].get(val, 0) + 1
+        elif sec == "ENTITIES" and code == "0":
+            cur = val.upper()
         elif sec == "ENTITIES" and cur == "CIRCLE" and code == "40":
             try:
                 out["circles"].append(round(2.0 * float(val), 2))
@@ -367,6 +332,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         where = (files.get("STEP") or files.get("CAD") or [("", "")])[0][1]
         r_where = rel(root, where) if where else ""
         owner = owner_for(r_where or src_by_pn.get(pn, ""), pn)
+        if pn[:2] in ("83", "84"):        # shared hardware: its drawing is the joints register's, wherever it's modelled
+            owner = owner_for("", pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
         if not pdfs and pn in tab:                 # D-89: listed in a tabulated drawing, so drawn
             cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}

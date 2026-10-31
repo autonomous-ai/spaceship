@@ -49,6 +49,22 @@ KG_PER_LB = 0.45359237
 MM_PER_IN = 25.4
 
 
+SKEL_CSV = REPO / "v2" / "01-CAD-Native" / "skeleton" / "100000_P04_POD-SKELETON-PARAMETERS.csv"
+
+
+def _load_skeleton(path=SKEL_CSV):
+    """The skeleton's named values (its 'value' column, mm), so panel sizes follow the skeleton instead of typed numbers."""
+    with open(path, encoding="utf-8") as f:
+        return {r["parameter"]: float(r["value"]) for r in csv.DictReader(f)}
+
+
+SK = _load_skeleton()
+
+
+def sk(name):
+    return SK[name]
+
+
 def lay(name):
     return LAYP[name].value
 
@@ -137,10 +153,9 @@ OTHER_FIXINGS = [
          text="the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named)"),
     dict(step=15, where="Intake riser and supply fan box in DR", owner="AIR and FRONT", count=0, size="not designed yet (HOLD)",
          status="HOLD in the register", note="time is in the step", text="their fixings in DR (AIR and FRONT design, on hold)"),
-    dict(step=16, where="Air column", owner="AIR", count=0, size="tool-free hooks (D-87)", status="not designed yet",
-         note="time is in the step", text="the column hangs on tool-free hooks (D-87; AIR design)"),
-    dict(step=17, where="Soffit with its exhaust fan box", owner="AIR", count=0, size="tool-free hooks (D-87)", status="not designed yet",
-         note="time is in the step", text="the soffit hangs on tool-free hooks (D-87; AIR design)"),
+    dict(step=16, where="Air column on DR and the floor", owner="AIR", count=0, size="none on site: 2 hook studs set in the factory, 2 spigots",
+         status="registered: J-AIR-02 (0 on site)", note="D-87: the column hangs on its hook studs",
+         text="the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02)"),
     dict(step=19, where="Light shelf", owner="INTERIOR", count=0, size="not designed yet (HOLD)", status="HOLD (D-70)",
          note="time is in the step", text="the light shelf's fixings (INTERIOR design, not designed yet)"),
     dict(step=22, where="Ledge and screen mount", owner="INTERIOR", count=0, size="not designed yet (HOLD)",
@@ -242,7 +257,8 @@ def S(*a):
     return tuple(sorted(a, reverse=True))
 
 
-P04 = "skeleton P04 (S33)"
+P04 = "skeleton P04 named values (100000_P04_POD-SKELETON-PARAMETERS.csv)"
+FLOOR_W_MAX = 1219   # the floor panel with its lap, at most (PM ruling, packing group, 2026-10-31)
 # ELECTRICAL's roll-up line (S43) is 4.94 kg: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, lights 0.26.
 POWER_UNIT_SHARE = 2.80 / 4.94
 # The fixed glass unit's roll-up line is FRONT's 29.58 kg (PR #28 parts list): pane 28.584, 180 seal 0.2, U-profile 0.557 and
@@ -256,51 +272,51 @@ DT_CHANNEL_SHARE = 303 * CHANNEL_KG_PER_MM / FIX_UNIT_KG
 PANE_SHARE = 1 - SILL_CHANNEL_SHARE - DR_CHANNEL_SHARE - DT_CHANNEL_SHARE
 PIECES = [
     # ---------------- pallet 1, 48 x 40 in: upright stack, listed from the open face (first out) to the back
-    Piece("1-01", "111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "F1", [("FLOOR", 1), ("MAT", 0.5)], S(1455, 1219, 12),
-          "1455 deep (skeleton P04, S33); 1219 wide at most with its lap (PM ruling, packing group); 9 mm ply (D-72) + 3 mm foam (D-76)",
+    Piece("1-01", "111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "F1", [("FLOOR", 1), ("MAT", 0.5)], S(sk("wall_depth") - sk("band_t"), FLOOR_W_MAX, sk("floor_t") + sk("mat_t")),
+          "skeleton named values: wall_depth - band_t deep, floor_t + mat_t thick; 1219 wide at most with its lap (PM ruling, packing group)",
           1, 3, "BASE", note="foam mat 111501 bonded under it at the factory (D-87)"),
-    Piece("1-02", "TBD (BASE)", "BASE - FLOOR PANEL - F2", "Tấm sàn mỏng - F2", "F2", [("FLOOR", 1), ("MAT", 0.5)], S(1455, 1219, 12),
+    Piece("1-02", "TBD (BASE)", "BASE - FLOOR PANEL - F2", "Tấm sàn mỏng - F2", "F2", [("FLOOR", 1), ("MAT", 0.5)], S(sk("wall_depth") - sk("band_t"), FLOOR_W_MAX, sk("floor_t") + sk("mat_t")),
           "as F1", 1, 3, "BASE", note="foam mat bonded under it at the factory (D-87)"),
     Piece("1-03", "TBD (WALL)", "WALL - PANEL ASSY - BACK LOWER - LH", "Vách hậu - cụm tấm dưới trái", "B1", [("B", 1)],
-          S(1200.61, 1118.61, 46), P04, 1, 4, "WALL"),
+          S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 4, "WALL"),
     Piece("1-04", "TBD (WALL)", "WALL - PANEL ASSY - BACK LOWER - RH", "Vách hậu - cụm tấm dưới phải", "B2",
-          [("B", 1), ("ELEC", POWER_UNIT_SHARE)], S(1200.61, 1118.61, 84),
-          "skeleton P04 (S33); the power unit's face stands 38 mm proud of the frame face: felt plane Y 766 against the frame at Y 804 (ELECTRICAL PR #64, calculation)",
+          [("B", 1), ("ELEC", POWER_UNIT_SHARE)], S(sk("half_pw"), sk("back_ph"), sk("outer_t") + sk("cav_gap") + sk("cass_t")),
+          "skeleton named values; the power unit's face is flush with the felt (ELECTRICAL), so it stands cav_gap + cass_t = 38 mm proud of the frame face",
           1, 4, "WALL",
           note="carries the power unit 710001, fitted, wired and tested at the factory: 2.80 kg of ELECTRICAL's roll-up line (S43); foam block over the unit's face in the stack"),
     Piece("1-05", "210101", "WALL - PANEL ASSY - SIDE LOWER - LH", "Vách trái - cụm tấm dưới", "L1", [("L1R1", 1)],
-          S(1492.74, 1142.74, 46), P04 + "; WALL L1 CAD", 1, 5, "WALL"),
+          S(sk("side_l"), sk("side_h"), sk("outer_t")), P04 + "; WALL L1 CAD", 1, 5, "WALL"),
     Piece("1-06", "TBD (WALL)", "WALL - PANEL ASSY - SIDE LOWER - RH", "Vách phải - cụm tấm dưới", "R1", [("L1R1", 1)],
-          S(1492.74, 1142.74, 46), P04, 1, 5, "WALL"),
+          S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 5, "WALL"),
     Piece("1-07", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - LH", "Vách hậu - cụm tấm trên trái", "B3", [("B", 1)],
-          S(1200.61, 1118.61, 46), P04, 1, 6, "WALL"),
+          S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 6, "WALL"),
     Piece("1-08", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - RH", "Vách hậu - cụm tấm trên phải", "B4", [("B", 1)],
-          S(1200.61, 1118.61, 46), P04, 1, 6, "WALL"),
+          S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 6, "WALL"),
     Piece("1-09", "TBD (WALL)", "WALL - PANEL ASSY - SIDE UPPER - LH", "Vách trái - cụm tấm trên", "L2", [("L2R2", 1)],
-          S(1492.74, 1142.74, 46), P04, 1, 7, "WALL"),
+          S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 7, "WALL"),
     Piece("1-10", "TBD (WALL)", "WALL - PANEL ASSY - SIDE UPPER - RH", "Vách phải - cụm tấm trên", "R2", [("L2R2", 1)],
-          S(1492.74, 1142.74, 46), P04, 1, 7, "WALL"),
+          S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 7, "WALL"),
     Piece("1-11", "410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "C1", [("C", 1)],
-          S(1495, 1203.61, 46), "CEILING PR #32 CAD skin 1203.61 x 1495; 46 mm outer panel (P04)", 1, 8, "CEILING"),
+          S(sk("wall_depth"), sk("half_pw"), sk("outer_t")), "skeleton named values: wall_depth long, half_pw wide, outer_t", 1, 8, "CEILING"),
     Piece("1-12", "410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "C2", [("C", 1), ("ROOF", 1)],
-          S(1495, 1203.61, 60), "as C1; the roof sleeve stands 14 mm below the frame (air report 7e)", 1, 8, "CEILING",
+          S(sk("wall_depth"), sk("half_pw"), sk("outer_t") + 14), "as C1; the roof sleeve stands 14 mm below the frame (air report 7e)", 1, 8, "CEILING",
           note="roof slot grille and sleeve fitted at the factory (PROPOSED)"),
     Piece("1-13", "TBD (WALL)", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
-          S(1445, 1142.74, 34), P04, 1, 14, "LINING"),
+          S(1445, sk("side_h"), sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-14", "TBD (WALL)", "LINING - CASSETTE - SIDE UPPER - RH", "Cassette tiêu âm - vách phải trên", "R2", [("CS_UP", 1)],
-          S(1445, 1092.74, 34), P04, 1, 14, "LINING"),
+          S(1445, 1092.74, sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-15", "510101", "LINING - CASSETTE - SIDE LOWER - LH", "Cassette tiêu âm - vách trái dưới", "L1", [("CS_LO", 1)],
-          S(1445, 1142.74, 34), P04 + "; WALL L1 CAD", 1, 14, "LINING"),
+          S(1445, sk("side_h"), sk("cass_t")), P04 + "; WALL L1 CAD", 1, 14, "LINING"),
     Piece("1-16", "TBD (WALL)", "LINING - CASSETTE - SIDE UPPER - LH", "Cassette tiêu âm - vách trái trên", "L2", [("CS_UP", 1)],
-          S(1445, 1092.74, 34), P04, 1, 14, "LINING"),
+          S(1445, 1092.74, sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-17", "TBD (WALL)", "LINING - CASSETTE - BACK LOWER - LH", "Cassette tiêu âm - vách hậu dưới trái", "B1", [("CB_LO", 1)],
-          S(1166, 1118.61, 34), P04, 1, 14, "LINING"),
+          S(1166, sk("back_ph"), sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-18", "TBD (WALL)", "LINING - CASSETTE - BACK LOWER - RH", "Cassette tiêu âm - vách hậu dưới phải", "B2", [("CB_LO", 1)],
-          S(1166, 1118.61, 34), P04, 1, 14, "LINING"),
+          S(1166, sk("back_ph"), sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-19", "TBD (WALL)", "LINING - CASSETTE - BACK UPPER - LH", "Cassette tiêu âm - vách hậu trên trái", "B3", [("CB_UP", 1)],
-          S(1166, 1116.87, 34), P04, 1, 14, "LINING"),
+          S(1166, 1116.87, sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-20", "TBD (WALL)", "LINING - CASSETTE - BACK UPPER - RH", "Cassette tiêu âm - vách hậu trên phải", "B4", [("CB_UP", 1)],
-          S(1166, 1116.87, 34), P04, 1, 14, "LINING"),
+          S(1166, 1116.87, sk("cass_t")), P04, 1, 14, "LINING"),
     # ---------------- pallet 2, 96 x 48 in: tiers, bottom (tier 1) to top (tier 5)
     Piece("2-01", "360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "-", [("FIX", PANE_SHARE)], S(2033, 1031, 12),
           "FRONT PR #28 CAD: pane 1026.23 x 2033 with the 180 seal on its free edge", 2, 10, "FRONT", glass=True,
@@ -382,7 +398,7 @@ PIECE = {p.tag: p for p in PIECES}
 # cartons have no skeleton body yet; the step pictures show them when their own CAD lands.
 SKELETON_STEP = REPO / "v2" / "03-Manufacturing" / "skeleton" / "100000_P04_POD-SKELETON_STEP.step"
 SKEL = {
-    "1-01": ["F1 ENVELOPE"], "1-02": ["F2 ENVELOPE"],
+    "1-01": ["F1 ENVELOPE", "F1-MAT ENVELOPE"], "1-02": ["F2 ENVELOPE", "F2-MAT ENVELOPE"],   # the mats ship bonded under the floor (D-87)
     "1-03": ["B1 ENVELOPE"], "1-04": ["B2 ENVELOPE"], "1-05": ["L1 ENVELOPE"], "1-06": ["R1 ENVELOPE"],
     "1-07": ["B3 ENVELOPE"], "1-08": ["B4 ENVELOPE"], "1-09": ["L2 ENVELOPE"], "1-10": ["R2 ENVELOPE"],
     "1-11": ["C1 ENVELOPE"], "1-12": ["C2 ENVELOPE"],
@@ -608,14 +624,14 @@ STEPS = [
               op("plug the hub", 1, lay("t_connector_s"), 1, "t_connector_s")],
          joints={}),
     dict(n=17, title="Soffit and exhaust cartridge", tags=["2-10", "2-19"],
-         A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its tool-free hooks under the ceiling frame, the fan box under C2's roof sleeve.",
-         B="With A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.",
+         A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof sleeve.",
+         B="Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.",
          check="Soffit underside at Z 2120, level; the fan box meets the roof sleeve; the door still clears.",
-         ops=[carry("2-10"), op("hang the soffit on its hooks", 2, TIME["t_hook_s"].value, 1, "t_hook_s"),
+         ops=[carry("2-10"), op("hang the soffit on its hanger studs", 2, TIME["t_hook_s"].value, 1, "t_hook_s"),
               carry("2-19"), op("lift the cartridge in", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s"),
               op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s"),
               op("close the hinged underside", 1, TIME["t_face_s"].value, 1, "t_face_s")],
-         joints={}),
+         joints={"J-AIR-01": 2}),
     dict(n=18, title="Ceiling linings: 2 cassettes", tags=["2-20", "2-21"],
          A="With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.",
          B="Hooks the 2 safety catches of each cassette before A lets go.",
@@ -685,9 +701,11 @@ def read_register(path):
         if len(cells) < 3:
             continue
         jm = re.match(r"(J-[A-Z]+-\d+)", cells[0])
-        if jm and cells[1].isdigit():
-            size = "M6 x 25" if "25" in cells[2] else "M6 x 16"
-            rows[jm.group(1)] = (int(cells[1]), size)
+        nm = re.match(r"\**\s*(\d+)", cells[1])   # the leading count: "16", "2 (the lock screws; ...)", "0 on site (...)"
+        if jm and nm:
+            sm = re.search(r"M6\s*[×x]\s*(\d+)", cells[2])   # the site bolt's size is the first one the row names
+            size = "M6 x %s" % (sm.group(1) if sm else "16")
+            rows[jm.group(1)] = (int(nm.group(1)), size)
         elif "Total" in cells[0]:
             total = int(re.sub(r"\D", "", cells[1]))
     return rows, total

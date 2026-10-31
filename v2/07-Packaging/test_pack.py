@@ -161,6 +161,30 @@ def test_step_picture_script_and_data():
     assert all('"%s":' % v in script for v in views)
 
 
+def test_sizes_follow_the_skeleton():
+    # panel sizes are the skeleton's named values, not typed numbers
+    b1 = pack.PIECE["1-03"]
+    assert b1.dims == pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
+    l1 = pack.PIECE["1-05"]
+    assert l1.dims == pack.S(pack.sk("side_l"), pack.sk("side_h"), pack.sk("outer_t"))
+    f1 = pack.PIECE["1-01"]
+    assert f1.dims[2] == pack.sk("floor_t") + pack.sk("mat_t")
+
+
+def test_register_parser_reads_counts_with_notes(tmp=Path(__file__).resolve().parent / "_register_test2.md"):
+    text = REGISTER_39.replace("| **Total** | **82** | 72 × M6 × 16, 10 × M6 × 25 |",
+                               "| J-AIR-01 soffit on the ceiling frame | 2 (the lock screws; its 4 hanger studs are set in the factory) | M6 × 25 lock screws; M6 × 16 hanger studs |\n"
+                               "| J-BASE-02 base band corner keys | 0 on site (20 in the factory) | M6 × 16 as fixing bolts and hook studs |\n"
+                               "| **Total on site** | **84** | 72 × M6 × 16, 12 × M6 × 25 |")
+    tmp.write_text(text, encoding="utf-8")
+    try:
+        rows, total = pack.read_register(tmp)
+    finally:
+        tmp.unlink()
+    assert rows["J-AIR-01"] == (2, "M6 x 25") and rows["J-BASE-02"] == (0, "M6 x 16")
+    assert total == 84 and sum(c for c, _ in rows.values()) == 84
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]
     bad = 0
