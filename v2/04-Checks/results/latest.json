@@ -1,5 +1,5 @@
 {
- "rev": "de19950",
+ "rev": "a00072c",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -554,14 +554,14 @@
   {
    "id": "2-02",
    "name": "FRONT - DOOR UNIT",
-   "kg": 49.076,
+   "kg": 48.59,
    "dims": [
     2089.0,
     1175.0,
     149.0
    ],
    "ships_as": "glass",
-   "status": "calculation (CAD); kick strip assumption"
+   "status": "calculation (CAD); hinges and pull HOLD"
   },
   {
    "id": "2-03",

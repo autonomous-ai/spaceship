@@ -1,6 +1,6 @@
-# Mechanical check run: de19950 on 2026-11-01
+# Mechanical check run: a00072c on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `de19950`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `a00072c`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 13** (7 severe, 4 major, 2 minor). Register numbers in brackets.
 
@@ -76,7 +76,7 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 47, "parts_lists": ["v2/03-Ma
 | 1-19 LINING - CASSETTE - BACK UPPER - LH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
 | 1-20 LINING - CASSETTE - BACK UPPER - RH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
 | 2-01 FRONT - FIXED GLASS UNIT | 28.782 | 2033 x 1031 x 12 | glass | calculation (CAD) |
-| 2-02 FRONT - DOOR UNIT | 49.076 | 2089 x 1175 x 149 | glass | calculation (CAD); kick strip assumption |
+| 2-02 FRONT - DOOR UNIT | 48.59 | 2089 x 1175 x 149 | glass | calculation (CAD); hinges and pull HOLD |
 | 2-03 FRONT - DECOR BLOCK - DR | 18.6 | 2290 x 1016 x 205 | long | calculation; calculation (CAD) |
 | 2-04 BASE - BAND ASSY - BACK | 3.285 | 2420 x 110 x 40 | long | assumption; calculation; calculation; confirmed (1.5 mm) |
 | 2-05 BASE - BAND ASSY - SIDE - LH | 2.242 | 1517 x 110 x 40 | long | assumption; calculation; calculation; confirmed (1.5 mm) |
