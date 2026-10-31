@@ -68,7 +68,7 @@ def set_material(design, comp, key):
     if m is None:
         lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
         m = design.materials.addByCopy(lib.materials.itemByName("Steel" if mk == "steel" else "Aluminum"), name)
-        m.materialProperties.itemById("structural_Density").value = density
+        adsk.core.FloatProperty.cast(m.materialProperties.itemById("structural_Density")).value = density
     for b in comp.bRepBodies:
         b.material = m
 
@@ -224,7 +224,7 @@ def build_cartridge(parent, design, ctx, bx, along, tag):
         if design.materials.itemByName(name) is None:
             lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
             m = design.materials.addByCopy(lib.materials.itemByName("Aluminum"), name)
-            m.materialProperties.itemById("structural_Density").value = density
+            adsk.core.FloatProperty.cast(m.materialProperties.itemById("structural_Density")).value = density
     for b in comp.bRepBodies:
         b.material = design.materials.itemByName(al[0] if b.name.startswith("CARTRIDGE") else py[0])
     return occ, comp
@@ -400,7 +400,7 @@ def run_parts(app, scopes):
                 if m is None:
                     lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
                     m = design.materials.addByCopy(lib.materials.itemByName("Steel" if mk == "steel" else "Aluminum"), nm)
-                    m.materialProperties.itemById("structural_Density").value = density
+                    adsk.core.FloatProperty.cast(m.materialProperties.itemById("structural_Density")).value = density
                 for b in root.bRepBodies:
                     b.material = m
             adsk.doEvents()
