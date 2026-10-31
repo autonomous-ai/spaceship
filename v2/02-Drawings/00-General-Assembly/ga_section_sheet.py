@@ -71,9 +71,9 @@ def cut_loops(design: "adsk.fusion.Design", axis, at_mm):
         for b in c.bRepBodies:
             loops = []
             for f in b.faces:
-                geo = f.geometry
-                if not isinstance(geo, adsk.core.Plane):
+                if f.geometry.surfaceType != adsk.core.SurfaceTypes.PlaneSurfaceType:
                     continue
+                geo = adsk.core.Plane.cast(f.geometry)
                 n = [geo.normal.x, geo.normal.y, geo.normal.z]
                 if abs(abs(n[k]) - 1.0) > 1e-6:
                     continue
