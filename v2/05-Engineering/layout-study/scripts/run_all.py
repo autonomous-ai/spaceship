@@ -365,6 +365,28 @@ def build():
     N["final_kgm2_hw"] = f1(p("final_kgm2_hw"))
     N["final_wall_t"], N["final_ceil_t"] = f0(p("final_wall_t")), f0(p("final_ceil_t"))
     N["hw_385_total"], N["hw_385_dsa"] = f0(p("hw_385_total")), f1(p("hw_385_dsa"))
+    N["hw_400_total"], N["hw_400_dsa"] = f0(p("hw_400_total")), f1(p("hw_400_dsa"))
+    gd = [pt for pt in fparts if pt.pid == "F-GLASS-DOOR"][0]
+    gf = [pt for pt in fparts if pt.pid == "F-GLASS-FIXED"][0]
+    N["final_door_kg"], N["final_fixed_kg"] = f1(gd.kg), f1(gf.kg)
+    N["final_door_each"] = f1(gd.kg / 2)
+    base_total = total(fparts)
+
+    def gap(**kw):
+        with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t"), **kw):
+            return base_total - total(parts_for("plan", FINAL))
+    N["gap_fans"] = f1(gap(fan_final_kg=p("fan_kg")))
+    N["gap_clips"] = f1(gap(leaf_clip_kgm2=0.0))
+    N["final_over_cap"] = f0(base_total - p("quiet_cap"))
+    N["acp_cap_total"] = f0(base_total - gap(acp3_kgm2=3.4))
+    lp = [pl for pl in fpals if pl["kind"] == "96x48"][0]
+    N["final_long_kg"], N["final_long_h"] = f0(lp["gross"]), f0(lp["height"])
+    sp = [pl for pl in fpals if pl["kind"] == "48x40"][0]
+    N["final_std_kg"], N["final_std_h"] = f0(sp["gross"]), f0(sp["height"])
+    N["decor_fill_kg"] = f1(p("decor_fill_kg"))
+    with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
+        dr = [pt for pt in parts_for("plan", FINAL) if pt.pid == "F-DR"][0].kg
+    N["dr_with_fill"] = f1(dr + p("decor_fill_kg") * decor_skin_area("DR") / sum(decor_skin_area(b) for b in ("DL", "DR", "DT")))
     with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
         cf = parts_for("plan", variant(FINAL, ceil_fill_on_cassette=False))
     N["ceil_outer_with_fill"] = f1([pt for pt in cf if pt.pid == "C-HALF"][0].kg)

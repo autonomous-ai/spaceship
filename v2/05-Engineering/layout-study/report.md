@@ -7,11 +7,11 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 
 ## Result
 
-1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 447 kg. The light build is 303 kg, and 304 kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a 10 mm smoked acrylic front, is **378 kg** here and about 385 kg in the sound study. Both numbers stand until the master BOM comes out of the CAD (PM ruling). Either way it is inside the PM's 400 kg cap.
-2. **Parts.** In the decided build every part is 20 kg or less except the glass. The heaviest is F-DR at 19.1 kg. The ceiling fill rides on the back of its lining cassette; inside the ceiling panel it would make that panel 21.1 kg.
-3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet: 477 kg gross, at most 1,646 mm high, 6.0 lb/ft3. That is with 81 mm walls and a 141 mm ceiling.
+1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 447 kg. The light build is 303 kg, and 304 kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a frameless 4+4 laminated front, is **412 kg** here and about 400 kg in the sound study. Both numbers stand until the master BOM comes out of the CAD (PM ruling). The gap is mostly two items. The inline fans the sound study picked weigh 5 kg each, which adds 7.0 kg here; its own total still carries the plan's 1.5 kg fans. And this study holds 9.0 kg for cassette clips and rails. Against the 400 kg cap that is 12 kg over here. An ACP of 3.4 kg/m2 instead of 3.8 would bring it to 404 kg.
+2. **Parts.** In the decided build every part is 20 kg or less except the glass. The glass door weighs 43.3 kg and the fixed panel 28.0 kg; two people carry each with 2 suction lifters (21.6 kg each on the door). The heaviest other part is F-DR at 19.1 kg. The decor's PET fill (4.0 kg) ships loose and goes in on site: inside the right decor block it would make that block 21.2 kg.
+3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet, 511 kg gross, 6.2 lb/ft3. The 48 x 40 weighs 253 kg and stands 1,646 mm high. The 96 x 48 weighs 258 kg and stands 1,056 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
 4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **121 min** (4.0 person-hours): 76 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
-5. **Decisions.** Everything in the layout is DECIDED, including carrying the ceiling fill on its cassette. Nothing is waiting for a ruling.
+5. **Decisions.** Everything in the layout is DECIDED, including carrying the ceiling fill on its cassette. One thing to watch: this study's total is 12 kg over the 400 kg cap until the master BOM settles it (item 1).
 
 ## Decisions
 
@@ -20,10 +20,11 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 | Keep the plan's panel split: 2 frames per side wall (vách hông), 4 back wall frames (vách hậu), 2 ceiling halves (trần), 3 decor blocks (khung trang trí) | DECIDED |
 | Ship on one 48 x 40 and one 96 x 48 pallet. Don't split the decor blocks: a seam across the faceted front breaks the look rule, and a third pallet costs more than it saves | DECIDED |
 | Thin floor inside an aluminium base band (viền chân); the band drops to a 20 mm threshold across the door only. Castors are a possible later accessory, not part of v2 | DECIDED |
-| Aluminium frames, with the section depth set by the sound study's wall: 20 x 40 in the walls, 20 x 100 in the ceiling | DECIDED |
+| Aluminium frames, with the section depth set by the sound study's wall: 20 x 40 in the walls and in the ceiling | DECIDED |
 | No plywood behind the ACP; frame members at 400 mm keep the ACP flat | DECIDED |
 | Fast-assembly changes: factory subassemblies, captive bolts, tool-free clips on panel seams, felt pre-fitted (section 4) | DECIDED |
-| Quiet build: the sound study's final stack, smoked acrylic front, 400 kg cap, 20 kg part limit and pallet layout kept | DECIDED |
+| Front: 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look). Door and fixed glass are carried by two people with suction lifters | DECIDED |
+| Quiet build: the sound study's final stack with separate silencer boxes, 400 kg cap, 20 kg part limit and pallet layout kept | DECIDED |
 | The inner skin and felt ship as separate clip-on inner leaves (the sound study's lining cassettes), one per panel, 19 kg or less, with the outside seams as planned | DECIDED |
 | Ceiling fill carried on the back of the ceiling cassettes, so the ceiling panel stays at 20 kg or less (section 5) | DECIDED |
 | Rejected: split decor blocks (B2), 5 bands per wall (C), full-height walls, castors in v2, no floor | DECIDED |
@@ -111,7 +112,7 @@ One change at a time against the light build:
 | No floor at all (base band only) | -33.0 | 270.0 | Weakest for sound (open to the room floor). |
 | Raised steel floor kept (plan) | +36.0 | 338.9 | Reference. |
 
-The smoked acrylic front is the biggest single lever, and the decided build uses it (10 mm). The sandwich walls are heavier than the frame build here, because the frame build without plywood is already 6.2 kg/m2. Sandwich walls buy flatness and a second skin, not weight.
+The smoked acrylic front is the biggest single lever, but the decided build uses 4+4 laminated glass: acrylic needed an opaque band down the door, which breaks the look. The sandwich walls are heavier than the frame build here, because the frame build without plywood is already 6.2 kg/m2. Sandwich walls buy flatness and a second skin, not weight.
 
 ### 1.4 Every part against 20 kg
 
@@ -274,8 +275,8 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | 5 | Upper walls: back pair, then sides; bolts at horizontal seams, vertical seam and corners | 4 | 25 | 0 | 6.0 | 12.5 | As the lower walls; top fixings at 2.2 m need the step stool. |
 | 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 24 | 0 | 5.5 | 12.0 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
 | 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 0 | 4.5 | 9.0 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
-| 8 | Fixed glass into its sealed profiles | 1 | 4 | 0 | 12.8 | 2.0 | Profile frame bolted from inside; glass held by clip-in beads. |
-| 9 | Door: hinges on the left decor post, pull, drop seal; adjust swing | 1 | 6 | 0 | 18.8 | 3.0 | Hinge bolts reachable with the door open 90 degrees. |
+| 8 | Fixed glass into its sealed profiles (2 people, 2 suction lifters) | 1 | 4 | 0 | 12.8 | 2.0 | Profile frame bolted from inside; glass held by clip-in beads. |
+| 9 | Door: hinges on the left decor post, pull, drop seal; adjust swing (2 people, 2 suction lifters) | 1 | 6 | 0 | 18.8 | 3.0 | Hinge bolts reachable with the door open 90 degrees. |
 | 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
 | 11 | Felt lining: 10 panels pressed onto Velcro | 10 | 0 | 0 | 0.0 | 12.5 | Closes every bay: last. |
 | 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
@@ -399,8 +400,8 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | 5 | Upper walls: back pair, then sides; cam or clip connectors at horizontal seams, vertical seam and corners | 4 | 0 | 25 | 1.3 | 7.2 | As the lower walls; top fixings at 2.2 m need the step stool. |
 | 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4 | 4.0 | 8.2 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
 | 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 6 | 30 | 0 | 2.0 | 13.5 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
-| 8 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
-| 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
+| 8 | Fixed glass in its factory profile frame: set and fix (2 people, 2 suction lifters) | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
+| 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust (2 people, 2 suction lifters) | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
 | 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
 | 11 | Felt: 15 loose strips over the joints (the rest came pre-fitted) | 0 | 0 | 0 | 0.0 | 5.0 | Closes the joints: last. |
 | 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
@@ -465,8 +466,8 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | 4 | Walls row by row from the bottom: back pair, then each side, 5 rows | 20 | 16 | 94 | 6.7 | 35.5 | All from inside through open frame bays or the loose felt strips over the joints. |
 | 5 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4 | 4.0 | 8.2 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
 | 6 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 0 | 3.2 | 5.4 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
-| 7 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
-| 8 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
+| 7 | Fixed glass in its factory profile frame: set and fix (2 people, 2 suction lifters) | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
+| 8 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust (2 people, 2 suction lifters) | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
 | 9 | Electrics: 6 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 2.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
 | 10 | Felt: 36 loose strips over the joints (the rest came pre-fitted) | 0 | 0 | 0 | 0.0 | 12.0 | Closes the joints: last. |
 | 11 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
@@ -489,7 +490,7 @@ DECIDED: the thin floor. It is 36 kg lighter than the raised steel floor, closes
 
 ## 4. Assembly by 2 people
 
-Tool: one 5 mm T-handle hex key (M6 socket-head bolts into rivnuts; glides adjust from above with the same key). A small step stool is needed for the ceiling and the top fixings; it is not a tool. Every bolt and clip is reached from inside the pod, through open frame bays or behind the loose felt strip over each joint. The strips, or in the decided build the lining cassettes, go on last.
+Tool: one 5 mm T-handle hex key (M6 socket-head bolts into rivnuts; glides adjust from above with the same key). Handling aids, not tools: a small step stool and 2 suction lifters for the glass. A small step stool is needed for the ceiling and the top fixings; it is not a tool. Every bolt and clip is reached from inside the pod, through open frame bays or behind the loose felt strip over each joint. The strips, or in the decided build the lining cassettes, go on last.
 
 Before and after the DECIDED fast-assembly changes, on the light build. Each row adds one change to the rows above it, with the same time model:
 
@@ -510,14 +511,16 @@ Benchmark: Room S needs 4 people for 3 to 5 hours (12 to 20 person-hours), and h
 
 ## 5. The decided build: final wall stack (re-check)
 
-The sound study's final stack (DECIDED): ACP 3 mm on a 20 x 40 aluminium frame at 400 mm with 40 mm PET fill, then a floating lining cassette: a 0.5 mm steel tray, 25 mm deep, with 9 mm felt across its face. That makes 81 mm and 13.1 kg/m2 in the sound study. The ceiling is the same on a 20 x 100 frame, 141 mm. The front is 10 mm smoked acrylic. The sound study puts the pod at about 385 kg and 24.2 dB.
+The sound study's final stack (DECIDED): ACP 3 mm on a 20 x 40 aluminium frame at 400 mm with 40 mm PET fill, then a floating lining cassette: a 0.5 mm steel tray, 25 mm deep, with 9 mm felt across its face. That makes 81 mm and 13.1 kg/m2 in the sound study. The ceiling now uses the same 20 x 40 frame (was 20 x 100), and the silencers are separate boxes. The front is frameless 4+4 laminated glass. The sound study puts the pod at about 400 kg and 23.8 dB.
 
-This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts, and the cassette is the DECIDED clip-on inner leaf. The outside size stays the same; the inside narrows to 2,338 mm. The wall here comes to 14.0 kg/m2 with clips and tray returns (the sound study: 13.1).
+This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts; the cassette is the DECIDED clip-on inner leaf. The outside size stays the same; the inside narrows to 2,338 mm. The wall here comes to 14.0 kg/m2 with clips and tray returns (the sound study: 13.1). The fans and silencer boxes are the sound study's: two 5 kg inline fans and two 3.5 kg silencer boxes. Its door edge seals, base seal and cable grommets are counted too.
 
-Result: **378 kg**, 0 parts over 20 kg, heaviest F-DR at 19.1 kg, 1 + 1 pallets, 477 kg gross, 1,646 mm at most, assembly 121 min.
+Result: **412 kg**, 0 parts over 20 kg except the glass, heaviest F-DR at 19.1 kg, 1 + 1 pallets, 511 kg gross, 1,646 mm at most, assembly 121 min.
 
-- **Ceiling (DECIDED).** With 100 mm of fill inside it, an outer ceiling half would weigh 21.1 kg. Carried on the back of its cassette, the fill fills the same cavity when the cassette clips up from below, and both parts stay under 20 kg. Nothing else changes.
-- **Pallets.** The 48 x 40 keeps the wall panels, cassettes, floor panels and short band pieces. One ceiling half and the two ceiling cassettes, too thick for the upright stack, lie flat on the long pallet under the decor blocks and the glass. Still 1 + 1.
+- **Glass.** Door 43.3 kg and fixed panel 28.0 kg in 4+4 laminated. They ride flat on top of the long pallet in their timber frame, with nothing on them. On site, each is carried by two people with 2 suction lifters. The door's hinges and pull are fitted in the factory, so it lifts straight onto its hinge pins. The fixed glass's profiles sit hidden in the decor and base, so the front stays frameless like v1.
+- **Decor fill.** The sound study fills the decor blocks with PET (4.0 kg). Inside the right decor block it would make that block 21.2 kg, so the fill ships loose in the kit and is pushed into each block's open back just before it is mounted.
+- **Ceiling (DECIDED).** The fill still rides on the back of the ceiling cassette. With 40 mm frames, both ceiling parts are well under 20 kg either way.
+- **Pallets.** The 48 x 40 carries the wall and ceiling panels, the wall cassettes, the floor panels and the short band pieces (253 kg, 1,646 mm). The long pallet carries the decor blocks, the long band pieces, the silencer boxes, the kit, the ceiling cassettes that don't fit the upright stack, and the glass on top (258 kg, 1,056 mm). Still 1 + 1.
 
 Wall and ceiling parts of the decided build:
 
@@ -527,17 +530,17 @@ Wall and ceiling parts of the decided build:
 | L-CASS-SIDE-LO: LINING - CASSETTE FOR W-SIDE-LO (steel tray + felt) | 1,419 x 1,145 x 34 | 2 | 10.9 |  |
 | W-SIDE-UP: WALL - SIDE PANEL - UPPER (outer: ACP + frame + fill) | 1,500 x 1,145 x 43 | 2 | 13.2 |  |
 | L-CASS-SIDE-UP: LINING - CASSETTE FOR W-SIDE-UP (steel tray + felt) | 1,419 x 1,145 x 34 | 2 | 10.9 |  |
-| W-BACK-LO: WALL - BACK PANEL - LOWER (outer: ACP + frame + fill) | 1,169 x 1,074 x 43 | 2 | 9.8 |  |
-| L-CASS-BACK-LO: LINING - CASSETTE FOR W-BACK-LO (steel tray + felt) | 1,169 x 1,074 x 34 | 2 | 8.4 |  |
-| W-BACK-UP: WALL - BACK PANEL - UPPER (outer: ACP + frame + fill) | 1,169 x 1,074 x 43 | 2 | 9.8 |  |
-| L-CASS-BACK-UP: LINING - CASSETTE FOR W-BACK-UP (steel tray + felt) | 1,169 x 1,074 x 34 | 2 | 8.4 |  |
-| C-HALF: CEILING - HALF PANEL WITH FAN OPENING (outer: ACP + frame) | 1,500 x 1,169 x 103 | 2 | 15.5 |  |
-| L-CASS-HALF: LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill) | 1,419 x 1,169 x 134 | 2 | 16.4 |  |
+| W-BACK-LO: WALL - BACK PANEL - LOWER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 10.0 |  |
+| L-CASS-BACK-LO: LINING - CASSETTE FOR W-BACK-LO (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 8.7 |  |
+| W-BACK-UP: WALL - BACK PANEL - UPPER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 10.0 |  |
+| L-CASS-BACK-UP: LINING - CASSETTE FOR W-BACK-UP (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 8.7 |  |
+| C-HALF: CEILING - HALF PANEL WITH FAN OPENING (outer: ACP + frame) | 1,500 x 1,169 x 43 | 2 | 11.2 |  |
+| L-CASS-HALF: LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill) | 1,419 x 1,169 x 74 | 2 | 13.2 |  |
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-B1F-1-48x40.svg) | 1,219 x 1,016 | 245 | 539 | 1,646 (64.8 in) | 72.0 | 7.5 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, L-CASS-BACK-LO, L-CASS-BACK-UP, L-CASS-SIDE-LO, L-CASS-SIDE-UP, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
-| [2: 96x48 in](out/pallets-B1F-2-96x48.svg) | 2,438 x 1,219 | 233 | 513 | 979 (38.5 in) | 102.7 | 5.0 | B-BAND-BACK, B-BAND-SIDE, C-HALF, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-BOX-1, KIT-BOX-2, L-CASS-HALF |
+| [1: 48x40 in](out/pallets-B1F-1-48x40.svg) | 1,219 x 1,016 | 253 | 558 | 1,646 (64.8 in) | 72.0 | 7.8 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, L-CASS-BACK-LO, L-CASS-BACK-UP, L-CASS-SIDE-LO, L-CASS-SIDE-UP, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
+| [2: 96x48 in](out/pallets-B1F-2-96x48.svg) | 2,438 x 1,219 | 258 | 569 | 1,056 (41.6 in) | 110.8 | 5.1 | A-SILENCER, B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, L-CASS-HALF |
 
 Step by step, with the access check. A step fails the check if a part fitted earlier blocks its fixings; none does in this order. The check is at layout level and is repeated on the CAD in Milestone 2.
 
@@ -548,14 +551,14 @@ Step by step, with the access check. A step fails the check if a part fitted ear
 | 3 | Seal mat and 2 thin floor panels dropped inside the band (no fixings) | 2 | 0 | 0 | 2.2 | 0.0 | - |
 | 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, cam or clip connectors at seam and corners | 4 | 16 | 9 | 1.3 | 9.3 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
 | 5 | Upper walls: back pair, then sides; cam or clip connectors at horizontal seams, vertical seam and corners | 4 | 0 | 25 | 1.3 | 7.2 | As the lower walls; top fixings at 2.2 m need the step stool. |
-| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4 | 5.5 | 6.7 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
-| 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 0 | 3.2 | 5.4 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
-| 8 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
-| 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
+| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4 | 4.0 | 8.2 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
+| 7 | Decor blocks (skins on, factory-made): PET fill pushed into each open back, then left door post, right, then top | 4 | 18 | 0 | 3.6 | 7.7 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
+| 8 | Fixed glass in its factory profile frame: set and fix (2 people, 2 suction lifters) | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
+| 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust (2 people, 2 suction lifters) | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
 | 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
-| 11 | 10 lining cassettes (steel tray + felt) clipped on from inside, ceiling ones from below | 10 | 0 | 0 | 8.2 | 16.0 | Close every bay and joint: last. Joints stay reachable until then. |
+| 11 | 10 lining cassettes (steel tray + felt) clipped on from inside, ceiling ones from below | 10 | 0 | 0 | 6.7 | 17.5 | Close every bay and joint: last. Joints stay reachable until then. |
 | 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
-|  | **Elapsed for 2 people, with 15 % for hand-offs** | 33 | 76 | 38 |  |  | **121 min (4.0 person-hours)** |
+|  | **Elapsed for 2 people, with 15 % for hand-offs** | 34 | 76 | 38 |  |  | **121 min (4.0 person-hours)** |
 
 <details><summary>Sensitivity: the same layout at 380 and 400 kg with an even added mass (before the final stack was known)</summary>
 
@@ -647,11 +650,11 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 
 | ID | Item | Status | Who |
 | --- | --- | --- | --- |
-| LS-01 | 378 kg here against about 385 kg in the sound study: settle from the master BOM out of the CAD | open | Milestone 2 |
+| LS-01 | 412 kg here against about 400 kg in the sound study, against a 400 kg cap: settle from the master BOM out of the CAD, with real clip and ACP weights | open | Milestone 2 |
 | LS-02 | 400 mm frame pitch and full-face bond keep the ACP flat without plywood; prove on the early wall sample | PLANNED | Prototype team |
 | LS-03 | Tool-free cam or clip connector and captive bolt: real part numbers, loads and pull-out on the aluminium frame | open | Hardware group |
 | LS-04 | Cassette clips: part numbers, and how the cassette floats (no stud bridge) while it carries a 19 kg leaf | open | Hardware group |
-| LS-05 | Door hinges for a 10 mm smoked acrylic door, fitted in the factory, with the door lifting onto its pins | open | Hardware group |
+| LS-05 | Hinges for a frameless 4+4 laminated door of about 43 kg, fitted in the factory, with the door lifting onto its pins | open | Hardware group |
 | LS-06 | The plan uses code VT03 for both the PET felt and the 50 x 100 steel tube | issue | Control pack |
 | LS-07 | v1 BOM 9 mm boards vs 15 mm in the drawings and STEP (already listed by the control pack) | issue | Control pack |
 | LS-08 | Panasonic FV-15AUL1 weight not published on the pages read; 1.5 kg assumed | unverified | Hardware group |
@@ -796,15 +799,23 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | leaf_clip_kgm2 | 0.6 | kg/m2 | assumption |  | clip rail and clips of an inner leaf |
 | ceil_t | 0 | mm | assumption |  | ceiling thickness; 0 means the same as the walls |
 | final_wall_t | 81 | mm | source | S21 | final wall: outer panel 3 + 40, cassette 25 + 9, 4 mm gaps |
-| final_ceil_t | 141 | mm | source | S21 |  |
+| final_ceil_t | 81 | mm | calculation | S22 | 40 mm ceiling frames: the same 81 mm stack as the walls |
 | final_wall_depth | 40 | mm | source | S21 | 20x40 aluminium wall frame |
-| final_ceil_depth | 100 | mm | source | S21 | 20x100 aluminium ceiling frame |
+| final_ceil_depth | 40 | mm | source | S22 | 20x40 aluminium ceiling frame (was 20x100) |
 | final_kgm2_hw | 13.1 | kg/m2 | source | S21 | the sound study's wall mass with frame, fill and cassette |
 | fill_pet_kgm3 | 32 | kg/m3 | source | S20 | PET cavity fill (the sound study's fill row) |
 | tray_t | 0.5 | mm | source | S21 | steel lining tray |
 | tray_depth | 25 | mm | source | S21 |  |
 | hw_385_total | 385 | kg | source | S21 |  |
 | hw_385_dsa | 24.2 | dB | source | S21 |  |
+| hw_400_total | 400 | kg | source | S22 | sound study's total with 4+4 laminated glass |
+| hw_400_dsa | 23.8 | dB | source | S22 |  |
+| fan_final_kg | 5 | kg | source | S20 | S&P TD-350/100-125 ECOWATT inline fan, the sound study's pick |
+| silencer_final_kg | 3.5 | kg | calculation | S20 | one separate silencer box: 0.6 m2 HDF 3 box + 1.2 m2 lining 25 mm at 1.2 kg/m2 |
+| door_edge_seal_kg | 1 | kg | source | S20 | door edge seals on 3 sides |
+| base_seal_kg | 0.5 | kg | source | S20 | seal under the thin floor and band |
+| grommet_kg | 0.1 | kg | source | S20 | sealed cable holes |
+| decor_fill_kg | 4 | kg | calculation | S20 | PET fill in the front decor: 1.65 m2 x 75 mm x 32 kg/m3 |
 | t_leaf_s | 60 | s | assumption |  | clip one inner leaf (sound mass + felt) onto its frame from inside |
 
 Sources:
@@ -831,4 +842,5 @@ Sources:
 | S18 | Market study, 2026-10-31 | `v2/research/market-study.md` |
 | S20 | Hardware Engineer's sound and air calc (branch super-tab/09f4617f, commit e22cab1): total-pod kg vs D_S,A curve; at a 380 kg budget with a 10 mm smoked acrylic front: walls DL-ST (ACP 3 / 40 mm fill, shared studs / 0.5 mm steel + felt 9), ceiling DL-2HDF-60-FL (ACP 3 / 60 mm fill / 2 x HDF 3 floating + felt 9), 377 kg, D_S,A 22.5 dB central | `v2/05-Engineering/acoustics-air/calc.py on that branch (read 2026-10-31)` |
 | S21 | Hardware Engineer's final wall stack, relayed by the PM in the layout chat, 2026-10-31: ACP 3 / 20x40 aluminium frame at 400 mm with 40 mm PET fill / floating lining cassette (0.5 mm steel tray, 25 mm deep, 9 mm felt across its face); 81 mm and 13.1 kg/m2. Ceiling the same on 20x100, 141 mm. Pod about 385 kg and 24.2 dB with the acrylic front | `layout conversation, PM message of 2026-10-31` |
+| S22 | PM ruling relayed in the layout chat, 2026-10-31: front is 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look); the sound study puts the pod at about 400 kg and 23.8 dB with 40 mm ceiling frames and separate silencer boxes; the door is handled by two people with suction lifters | `layout conversation, PM message of 2026-10-31` |
 | S19 | LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff) | https://logisticsplus.com/?p=25575 (read 2026-10-31) |

@@ -29,6 +29,7 @@ SOURCES = {
     "S18": ("Market study, 2026-10-31", "v2/research/market-study.md"),
     "S20": ("Hardware Engineer's sound and air calc (branch super-tab/09f4617f, commit e22cab1): total-pod kg vs D_S,A curve; at a 380 kg budget with a 10 mm smoked acrylic front: walls DL-ST (ACP 3 / 40 mm fill, shared studs / 0.5 mm steel + felt 9), ceiling DL-2HDF-60-FL (ACP 3 / 60 mm fill / 2 x HDF 3 floating + felt 9), 377 kg, D_S,A 22.5 dB central", "v2/05-Engineering/acoustics-air/calc.py on that branch (read 2026-10-31)"),
     "S21": ("Hardware Engineer's final wall stack, relayed by the PM in the layout chat, 2026-10-31: ACP 3 / 20x40 aluminium frame at 400 mm with 40 mm PET fill / floating lining cassette (0.5 mm steel tray, 25 mm deep, 9 mm felt across its face); 81 mm and 13.1 kg/m2. Ceiling the same on 20x100, 141 mm. Pod about 385 kg and 24.2 dB with the acrylic front", "layout conversation, PM message of 2026-10-31"),
+    "S22": ("PM ruling relayed in the layout chat, 2026-10-31: front is 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look); the sound study puts the pod at about 400 kg and 23.8 dB with 40 mm ceiling frames and separate silencer boxes; the door is handled by two people with suction lifters", "layout conversation, PM message of 2026-10-31"),
     "S19": ("LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff)", "https://logisticsplus.com/?p=25575 (read 2026-10-31)"),
 }
 
@@ -175,15 +176,23 @@ P = {
     "leaf_clip_kgm2": V(0.6, "kg/m2", "assumption", "", "clip rail and clips of an inner leaf"),
     "ceil_t": V(0, "mm", "assumption", "", "ceiling thickness; 0 means the same as the walls"),
     "final_wall_t": V(81, "mm", "source", "S21", "final wall: outer panel 3 + 40, cassette 25 + 9, 4 mm gaps"),
-    "final_ceil_t": V(141, "mm", "source", "S21"),
+    "final_ceil_t": V(81, "mm", "calculation", "S22", "40 mm ceiling frames: the same 81 mm stack as the walls"),
     "final_wall_depth": V(40, "mm", "source", "S21", "20x40 aluminium wall frame"),
-    "final_ceil_depth": V(100, "mm", "source", "S21", "20x100 aluminium ceiling frame"),
+    "final_ceil_depth": V(40, "mm", "source", "S22", "20x40 aluminium ceiling frame (was 20x100)"),
     "final_kgm2_hw": V(13.1, "kg/m2", "source", "S21", "the sound study's wall mass with frame, fill and cassette"),
     "fill_pet_kgm3": V(32, "kg/m3", "source", "S20", "PET cavity fill (the sound study's fill row)"),
     "tray_t": V(0.5, "mm", "source", "S21", "steel lining tray"),
     "tray_depth": V(25, "mm", "source", "S21"),
     "hw_385_total": V(385, "kg", "source", "S21"),
     "hw_385_dsa": V(24.2, "dB", "source", "S21"),
+    "hw_400_total": V(400, "kg", "source", "S22", "sound study's total with 4+4 laminated glass"),
+    "hw_400_dsa": V(23.8, "dB", "source", "S22"),
+    "fan_final_kg": V(5.0, "kg", "source", "S20", "S&P TD-350/100-125 ECOWATT inline fan, the sound study's pick"),
+    "silencer_final_kg": V(3.5, "kg", "calculation", "S20", "one separate silencer box: 0.6 m2 HDF 3 box + 1.2 m2 lining 25 mm at 1.2 kg/m2"),
+    "door_edge_seal_kg": V(1.0, "kg", "source", "S20", "door edge seals on 3 sides"),
+    "base_seal_kg": V(0.5, "kg", "source", "S20", "seal under the thin floor and band"),
+    "grommet_kg": V(0.1, "kg", "source", "S20", "sealed cable holes"),
+    "decor_fill_kg": V(4.0, "kg", "calculation", "S20", "PET fill in the front decor: 1.65 m2 x 75 mm x 32 kg/m3"),
     "t_leaf_s": V(60, "s", "assumption", "", "clip one inner leaf (sound mass + felt) onto its frame from inside"),
 }
 

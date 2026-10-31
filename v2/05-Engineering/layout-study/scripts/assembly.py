@@ -10,7 +10,8 @@ import math
 from inputs import p
 from v2_model import CAM_JOINTS, connectors, joints
 
-TOOL = "one 5 mm T-handle hex key (M6 socket-head bolts into rivnuts; glides adjust from above with the same key)"
+TOOL = ("one 5 mm T-handle hex key (M6 socket-head bolts into rivnuts; glides adjust from above with the same key). "
+        "Handling aids, not tools: a small step stool and 2 suction lifters for the glass")
 
 
 def _bolts(J, ids, frac=1.0):
@@ -106,18 +107,21 @@ def sequence(split, m, parts, split_long, n_std, n_long):
                       access="Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening."))
     n, two, one = carry_place("F-D")
     b, c, tb = fix(("J-FRONT-01", "J-FRONT-03"))
-    steps.append(dict(name="Decor blocks (skins on, factory-made): left door post, right, then top", lifts=n, bolts=b, cams=c, two=two,
-                      one=one + tb,
+    fill = sum(pt.qty for pt in parts if pt.pid == "F-DECOR-FILL")
+    steps.append(dict(name="Decor blocks (skins on, factory-made): " + ("PET fill pushed into each open back, then " if fill else "")
+                      + "left door post, right, then top", lifts=n, bolts=b, cams=c, two=two,
+                      one=one + tb + (3 * 30 if fill else 0),
                       access="Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips."))
     pre = m.get("prehung")
     b = 4
-    steps.append(dict(name="Fixed glass " + ("in its factory profile frame: set and fix" if pre else "into its sealed profiles"),
+    lifters = " (2 people, 2 suction lifters)" if m.get("front") in ("lam44", "glass8", "glass10") else ""
+    steps.append(dict(name="Fixed glass " + ("in its factory profile frame: set and fix" if pre else "into its sealed profiles") + lifters,
                       lifts=1, bolts=b, cams=0,
                       two=(p("t_fixed_preglazed_min") if pre else p("t_fixed_glass_min")) * 60 + p("t_carry_s"), one=b * t_bolt,
                       access="Profile frame bolted from inside; glass held by clip-in beads."))
     b = 6
     steps.append(dict(name="Door: " + ("hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust" if pre
-                                       else "hinges on the left decor post, pull, drop seal; adjust swing"),
+                                       else "hinges on the left decor post, pull, drop seal; adjust swing") + lifters,
                       lifts=1, bolts=b, cams=0, two=(p("t_door_prehung_min") if pre else p("t_door_min")) * 60 + p("t_carry_s"),
                       one=b * t_bolt, access="Hinge bolts reachable with the door open 90 degrees."))
     nc = connectors(split)

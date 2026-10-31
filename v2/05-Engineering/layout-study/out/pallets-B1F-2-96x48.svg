@@ -1,39 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1166" viewBox="0 0 1000 1166">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1181" viewBox="0 0 1000 1181">
 <rect width="100%" height="100%" fill="white"/>
 <text x="30.0" y="24.0" font-size="14" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Option B1 with the final wall stack, pallet 2 of 2</text>
-<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">96x48 in pallet · gross 233 kg (513 lb) · loaded height 979 mm (38.5 in) · 5.0 lb/ft3</text>
+<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">96x48 in pallet · gross 258 kg (569 lb) · loaded height 1056 mm (41.6 in) · 5.1 lb/ft3</text>
 <text x="30.0" y="62.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 1 plan (bottom)</text>
 <rect x="30.0" y="70.0" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
-<rect x="95.7" y="70.0" width="210.0" height="163.7" fill="#c9d6ea" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="99.7" y="82.0" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">1</text>
+<rect x="101.3" y="70.0" width="198.7" height="163.7" fill="#c9d6ea" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="105.3" y="82.0" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">1</text>
 <text x="411.3" y="62.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 2 plan</text>
 <rect x="411.32000000000005" y="70.0" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
 <rect x="482.7" y="70.0" width="198.7" height="163.7" fill="#d9ead3" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
 <text x="486.7" y="82.0" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">2</text>
 <text x="30.0" y="272.7" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 3 plan</text>
 <rect x="30.0" y="280.66" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
-<rect x="101.3" y="280.7" width="198.7" height="163.7" fill="#fde2c8" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="105.3" y="292.7" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">3</text>
+<rect x="40.4" y="280.7" width="320.6" height="142.2" fill="#fde2c8" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="44.4" y="292.7" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">3</text>
+<rect x="31.3" y="422.9" width="338.8" height="14.0" fill="#fde2c8" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="35.3" y="434.9" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">4</text>
+<rect x="84.5" y="436.9" width="232.4" height="14.0" fill="#fde2c8" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="88.5" y="448.9" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">5</text>
 <text x="411.3" y="272.7" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 4 plan</text>
 <rect x="411.32000000000005" y="280.66" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
-<rect x="421.7" y="280.7" width="320.6" height="142.2" fill="#e6d3f0" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="425.7" y="292.7" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">4</text>
-<rect x="412.6" y="422.9" width="338.8" height="14.0" fill="#e6d3f0" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="416.6" y="434.9" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">5</text>
-<rect x="465.8" y="436.9" width="232.4" height="14.0" fill="#e6d3f0" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="469.8" y="448.9" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">6</text>
+<rect x="463.2" y="280.7" width="237.6" height="39.2" fill="#e6d3f0" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="467.2" y="292.7" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">6</text>
+<rect x="421.7" y="319.9" width="320.6" height="38.9" fill="#e6d3f0" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="425.7" y="331.9" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">7</text>
+<rect x="498.0" y="358.8" width="168.0" height="35.0" fill="#e6d3f0" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="502.0" y="370.8" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">8</text>
+<rect x="498.0" y="393.8" width="168.0" height="35.0" fill="#e6d3f0" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="502.0" y="405.8" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">9</text>
+<rect x="465.8" y="428.8" width="232.4" height="14.0" fill="#e6d3f0" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="469.8" y="440.8" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">10</text>
 <text x="30.0" y="483.3" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 5 plan</text>
 <rect x="30.0" y="491.32000000000005" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
-<rect x="81.9" y="491.3" width="237.6" height="39.2" fill="#f4cccc" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="85.9" y="503.3" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">7</text>
-<rect x="40.4" y="530.5" width="320.6" height="38.9" fill="#f4cccc" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="44.4" y="542.5" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">8</text>
-<rect x="84.5" y="569.4" width="232.4" height="14.0" fill="#f4cccc" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="88.5" y="581.4" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">9</text>
-<rect x="32.7" y="583.4" width="336.0" height="39.3" fill="#f4cccc" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="36.7" y="595.4" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">10</text>
-<rect x="32.7" y="622.7" width="336.0" height="39.3" fill="#f4cccc" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="36.7" y="634.7" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">11</text>
+<rect x="32.7" y="491.3" width="336.0" height="84.0" fill="#f4cccc" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="36.7" y="503.3" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">11</text>
 <text x="411.3" y="483.3" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Layer 6 plan (glass, lites stacked flat with foam)</text>
 <rect x="411.32000000000005" y="491.32000000000005" width="341.3" height="170.7" fill="#f3e9d2" stroke="#7a5c2e"/>
 <rect x="441.2" y="491.3" width="281.5" height="164.6" fill="#c9d6ea" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
@@ -41,33 +41,33 @@
 <rect x="432.3" y="491.3" width="299.5" height="101.4" fill="#c9d6ea" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>
 <text x="436.3" y="503.3" font-size="10" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">13</text>
 <text x="30.0" y="714.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Side view (96 in along X, height up)</text>
-<rect x="30" y="893.6" width="487.6" height="24.2" fill="#b08a55" stroke="#7a5c2e"/>
-<rect x="123.8" y="873.0" width="300.0" height="20.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="127.8" y="887.3" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 1</text>
-<rect x="131.9" y="846.2" width="283.8" height="26.8" fill="#d9ead3" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="135.9" y="863.6" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 2</text>
-<rect x="131.9" y="819.4" width="283.8" height="26.8" fill="#fde2c8" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="135.9" y="836.8" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 3</text>
-<rect x="31.8" y="779.4" width="484.0" height="40.0" fill="#e6d3f0" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="35.8" y="803.4" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 4</text>
-<rect x="33.8" y="739.4" width="480.0" height="40.0" fill="#f4cccc" stroke="#1f3b63" stroke-width="0.8"/>
-<text x="37.8" y="763.4" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 5</text>
+<rect x="30" y="909.0" width="487.6" height="24.2" fill="#b08a55" stroke="#7a5c2e"/>
+<rect x="131.9" y="894.2" width="283.8" height="14.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="135.9" y="905.6" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 1</text>
+<rect x="131.9" y="879.4" width="283.8" height="14.8" fill="#d9ead3" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="135.9" y="890.8" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 2</text>
+<rect x="31.8" y="839.4" width="484.0" height="40.0" fill="#fde2c8" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="35.8" y="863.4" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 3</text>
+<rect x="44.8" y="799.4" width="458.0" height="40.0" fill="#e6d3f0" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="48.8" y="823.4" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 4</text>
+<rect x="33.8" y="739.4" width="480.0" height="60.0" fill="#f4cccc" stroke="#1f3b63" stroke-width="0.8"/>
+<text x="37.8" y="773.4" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 5</text>
 <rect x="59.9" y="727.0" width="427.8" height="10.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.8"/>
 <text x="63.9" y="736.0" font-size="9" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">layer 6 (glass)</text>
 <line x1="25" y1="722.0" x2="522.6" y2="722.0" stroke="#b00" stroke-dasharray="4 3"/>
-<text x="525.6" y="726.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">979 mm loaded</text>
-<text x="30.0" y="947.8" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Legend (part id, size as stacked, kg each)</text>
-<text x="30.0" y="963.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. C-HALF (layer 1): 1500 x 1169 x 103, 15.5 kg</text>
-<text x="30.0" y="977.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">2. L-CASS-HALF (layer 2): 1419 x 1169 x 134, 16.4 kg</text>
-<text x="30.0" y="991.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">3. L-CASS-HALF (layer 3): 1419 x 1169 x 134, 16.4 kg</text>
-<text x="30.0" y="1005.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">4. F-DR (layer 4): 2290 x 1016 x 200, 19.1 kg</text>
-<text x="30.0" y="1019.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. B-BAND-BACK (layer 4): 2420 x 100 x 40, 3.6 kg</text>
-<text x="30.0" y="1033.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. B-BAND-SIDE (layer 4): 1660 x 100 x 40, 2.4 kg</text>
-<text x="30.0" y="1047.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. F-DT (layer 5): 1697 x 280 x 200, 7.4 kg</text>
-<text x="30.0" y="1061.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. F-DL (layer 5): 2290 x 278 x 200, 10.5 kg</text>
-<text x="30.0" y="1075.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. B-BAND-SIDE (layer 5): 1660 x 100 x 40, 2.4 kg</text>
-<text x="30.0" y="1089.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. KIT-BOX-1 (layer 5): 2400 x 280 x 170, 11.5 kg</text>
-<text x="30.0" y="1103.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. KIT-BOX-2 (layer 5): 2400 x 280 x 170, 11.5 kg</text>
-<text x="30.0" y="1117.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">12. F-GLASS-DOOR (layer 6): 2011 x 1176 x 10, 24.8 kg</text>
-<text x="30.0" y="1131.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">13. F-GLASS-FIXED (layer 6): 2139 x 724 x 10, 16.0 kg</text>
+<text x="525.6" y="726.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1056 mm loaded</text>
+<text x="30.0" y="963.2" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Legend (part id, size as stacked, kg each)</text>
+<text x="30.0" y="979.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. L-CASS-HALF (layer 1): 1419 x 1169 x 74, 13.2 kg</text>
+<text x="30.0" y="993.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">2. L-CASS-HALF (layer 2): 1419 x 1169 x 74, 13.2 kg</text>
+<text x="30.0" y="1007.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">3. F-DR (layer 3): 2290 x 1016 x 200, 19.1 kg</text>
+<text x="30.0" y="1021.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">4. B-BAND-BACK (layer 3): 2420 x 100 x 40, 3.6 kg</text>
+<text x="30.0" y="1035.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. B-BAND-SIDE (layer 3): 1660 x 100 x 40, 2.4 kg</text>
+<text x="30.0" y="1049.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. F-DT (layer 4): 1697 x 280 x 200, 7.4 kg</text>
+<text x="30.0" y="1063.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. F-DL (layer 4): 2290 x 278 x 200, 10.5 kg</text>
+<text x="30.0" y="1077.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. A-SILENCER (layer 4): 1200 x 250 x 100, 3.5 kg</text>
+<text x="30.0" y="1091.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. A-SILENCER (layer 4): 1200 x 250 x 100, 3.5 kg</text>
+<text x="30.0" y="1105.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. B-BAND-SIDE (layer 4): 1660 x 100 x 40, 2.4 kg</text>
+<text x="30.0" y="1119.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. KIT-CARTON (layer 5): 2400 x 600 x 300, 32.5 kg</text>
+<text x="30.0" y="1133.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">12. F-GLASS-DOOR (layer 6): 2011 x 1176 x 9, 43.3 kg</text>
+<text x="30.0" y="1147.2" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">13. F-GLASS-FIXED (layer 6): 2139 x 724 x 9, 28.0 kg</text>
 </svg>

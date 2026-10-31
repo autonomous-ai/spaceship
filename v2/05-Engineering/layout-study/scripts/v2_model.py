@@ -112,7 +112,7 @@ def glass_kg(area, m):
     raise ValueError(f)
 
 
-FRONT_LABEL = {"glass10": "10 mm tempered glass", "glass8": "8 mm tempered glass", "lam44": "4+4 laminated glass",
+FRONT_LABEL = {"glass10": "10 mm tempered glass", "glass8": "8 mm tempered glass", "lam44": "4+4 laminated glass, frameless",
                "acrylic8": "8 mm smoked acrylic", "acrylic10": "10 mm smoked acrylic"}
 
 
@@ -287,11 +287,25 @@ def front_parts(m, split_long):
 
 
 def service_parts(m):
-    parts = [Part("A-FAN", "AIR - CEILING FAN (Panasonic FV-15AUL1 per plan)", "Quạt thông gió", "AIR", (300, 300, 200), 2,
-                  p("fan_kg"), "box", "unverified")]
-    if m["vents"]:
+    final = m.get("stack") == "final"
+    if final:
+        parts = [Part("A-FAN", "AIR - INLINE FAN (S&P TD-350/100-125, sound study's pick)", "Quạt thông gió", "AIR", (350, 280, 280), 2,
+                      p("fan_final_kg"), "box", "source")]
+    else:
+        parts = [Part("A-FAN", "AIR - CEILING FAN (Panasonic FV-15AUL1 per plan)", "Quạt thông gió", "AIR", (300, 300, 200), 2,
+                      p("fan_kg"), "box", "unverified")]
+    if m["vents"] and final:
+        parts.append(Part("A-SILENCER", "AIR - SILENCER BOX, SEPARATE (lined plenum 1.2 m)", "Hộp tiêu âm", "AIR", (1200, 250, 100), 2,
+                          p("silencer_final_kg"), "upright", "calculation"))
+    elif m["vents"]:
         parts.append(Part("A-SILENCER", "AIR - SILENCED VENT BOX", "Hộp tiêu âm cửa gió", "AIR", (450, 300, 120), 2,
                           p("silencer_kg"), "box", "assumption"))
+    if final:
+        parts.append(Part("K-SEALS", "KIT - DOOR EDGE SEALS, BASE SEAL, CABLE GROMMETS", "Gioăng cửa, gioăng đế", "BASE", (600, 300, 100), 1,
+                          p("door_edge_seal_kg") + p("base_seal_kg") + p("grommet_kg"), "box", "source"))
+        parts.append(Part("F-DECOR-FILL", "FRONT - PET FILL PIECES FOR THE DECOR BLOCKS (loose)", "Bông PET khối trang trí", "FRONT",
+                          (1200, 400, 300), 1, p("decor_fill_kg"), "box", "calculation",
+                          "ships loose: inside the right decor block it would make that block over 20 kg"))
     elec = 3 * p("plate_kg") + 2 * p("light_kg") + p("harness_kg")
     if m["sensor"]:
         elec += p("sensor_kg")
@@ -457,8 +471,8 @@ def total(parts):
 
 
 # ---------------------------------------------------------------- final wall stack (sound study, DECIDED)
-FINAL = dict(FAST, key="final", label="Spaceship final stack: light build, fast assembly, sound walls, acrylic front",
-             front="acrylic10", stack="final", leaf=True, fill=True)
+FINAL = dict(FAST, key="final", label="Spaceship decided build: light build, fast assembly, sound walls, 4+4 laminated front",
+             front="lam44", stack="final", leaf=True, fill=True)
 
 
 def final_outer_kg(w, h, depth, m, with_fill=True):
