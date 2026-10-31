@@ -140,7 +140,8 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "egrille": ("611204", "AIR - EXHAUST GRILLE", "Lưới gió thải", "MP", "perf40"),
     "casing": ("611301", "AIR - CARTRIDGE CASING", "Vỏ ống tiêu âm nhôm 2 mm", "MP", "al"),
     "layer": ("611302", "AIR - CARTRIDGE LAYER 50", "Lớp tiêu âm 50 mm", "MP", "pyro"),
-    "box": ("611401", "AIR - FAN BOX CASING", "Vỏ hộp quạt nhôm 2 mm", "MP", "al"),
+    "box": ("611401", "AIR - FAN BOX CASING - EXHAUST", "Vỏ hộp quạt thải nhôm 2 mm", "MP", "al"),
+    "box_s": ("611402", "AIR - FAN BOX CASING - SUPPLY", "Vỏ hộp quạt cấp nhôm 2 mm", "MP", "al"),
     "riser": ("611501", "AIR - INTAKE RISER", "Ống hút gió đứng", "MP", "steel"),
     "sleeve": ("611601", "AIR - ROOF SLEEVE", "Ống thải qua mái", "MP", "steel"),
     "rgrille": ("611602", "AIR - ROOF GRILLE", "Lưới thải mái", "MP", "perf50"),
@@ -303,7 +304,7 @@ def layout():
                                                              "%s - face_t - hl_h" % YFACE, "%s - face_t" % YFACE, zh0, zh1)))
     # supply fan box joined with the intake riser (D-87), the transitions, the roof sleeve and grille
     sy0 = "%s + sb_yf" % YF
-    b.append(("box", "SUPPLY FAN BOX", box("sb_x0", "sb_x0 + sb_w", sy0, "%s + sb_d" % sy0, "sb_z0", "sb_z0 + sb_h")))
+    b.append(("box_s", "SUPPLY FAN BOX", box("sb_x0", "sb_x0 + sb_w", sy0, "%s + sb_d" % sy0, "sb_z0", "sb_z0 + sb_h")))
     b.append(("trans", "SUPPLY TRANSITION", box("sb_x0", "op_x0 + (%s - op_x0)" % XR, "%s + sb_d" % sy0, YW,
                                                  "op_z0", "op_z0 + op_h")))
     b.append(("riser", "INTAKE RISER", box("rs_x0", "rs_x0 + rs_w", "rs_y0", "rs_y0 + rs_d", "rs_z0", "rs_z1")))

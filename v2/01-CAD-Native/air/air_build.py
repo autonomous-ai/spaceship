@@ -302,10 +302,11 @@ def run(_context):
         for key, bname, parent in (("ebox", "EXHAUST FAN BOX", sof), ("sbox", "SUPPLY FAN BOX", root)):
             _o, fb = new_comp(parent, key)
             boxes[key] = fb
-            _o2, casing = new_comp(fb, "box")
+            ck = "box" if key == "ebox" else "box_s"
+            _o2, casing = new_comp(fb, ck)
             b = put(casing, bname)
             hollow_closed(casing, b, bname)
-            set_material(design, casing, "box")
+            set_material(design, casing, ck)
             tag = "EXHAUST" if key == "ebox" else "SUPPLY"
             for fname, fx, fy, fz in [f for f in fans if f[0].startswith(tag)]:
                 if fan_comp is None:

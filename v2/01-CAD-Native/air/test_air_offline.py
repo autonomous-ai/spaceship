@@ -132,7 +132,7 @@ class D87(unittest.TestCase):
     def test_off_the_linings(self):
         xir = V["pod_w"] / 2 - V["stack_t"]
         for name, (key, bx) in LAY.items():
-            if key in ("box", "trans", "riser", "rtrans", "sleeve", "rgrille") and name != "EXHAUST FAN BOX":
+            if key in ("box_s", "trans", "riser", "rtrans", "sleeve", "rgrille"):
                 continue
             self.assertLessEqual(bx[1], xir - 5.0 + 1e-9, name)
             self.assertGreaterEqual(bx[0], -xir + 5.0 - 1e-9, name)
