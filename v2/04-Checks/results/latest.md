@@ -1,6 +1,6 @@
-# Mechanical check run: a722824 on 2026-11-01
+# Mechanical check run: a35af8f on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `a722824`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `a35af8f`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 0** (0 severe, 0 major, 0 minor). Register numbers in brackets.
 
@@ -20,7 +20,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `a722824`. The Fusion 
 | C10 mixed metals | yes | 0 |
 | C11 material grade and finish | yes | 0 |
 
-Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": []}
+Inputs: {"bodies_skeleton": 36, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": []}
 
 ## Findings
 

@@ -55,7 +55,8 @@ PARAMS = [
     ("wall_depth", "1495 mm", "mm", "decided", "PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"),
     ("lin_gap", "4 mm", "mm", "assumption", "PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)"),
     ("seam_gap", "2.26 mm", "mm", "decided", "PM ruling 2026-10-31 (Mechanical Checker F-001, F-005): the Joints Engineer's 2.26 mm at all nine site seam types, set by a metal stop (1.5 stop washer + 0.76 rivnut head; joints register section 2.8)"),
-    ("floor_t", "9 mm", "mm", "decided", "PM ruling 2026-10-31: 9 mm floor panels (was 15, layout study B1 list)"),
+    ("mat_t", "3 mm", "mm", "decided", "D-72, PM ruling 2026-10-31 (from BASE): the 3 mm floor mat under the floor ply"),
+    ("floor_t", "9 mm", "mm", "decided", "PM ruling 2026-10-31: 9 mm floor panels (was 15, layout study B1 list), on the mat"),
     ("thresh_h", "13 mm", "mm", "decided", "PM ruling 2026-10-31: 13 mm, a US-accessible threshold (D-18 had 20); the kick strip keeps its kick_gap above it"),
     ("thresh_d", "60 mm", "mm", "source", "layout study B1 list B-THRESH 1176 x 60 x 20"),
     ("decor_d", "205 mm", "mm", "source", "v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02"),
@@ -103,6 +104,7 @@ PARAMS = [
     # derived
     ("fix_xbl", "door_xbr + (door_zb - fix_zb) * (door_xbr - door_xtr) / (door_zt - door_zb) + glass_gap * sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb)) / (door_zt - door_zb)", "mm", "calculation", "F-014: fixed glass bottom-left, on the line glass_gap from the door's slanted edge (was v1's 1468)"),
     ("fix_xtl", "door_xbr + (door_zb - fix_zt) * (door_xbr - door_xtr) / (door_zt - door_zb) + glass_gap * sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb)) / (door_zt - door_zb)", "mm", "calculation", "F-014: fixed glass top-left, on the same line (was v1's 1184)"),
+    ("floor_top", "mat_t + floor_t", "mm", "calculation", "D-72: the floor top, Z 12 (mat 3 + ply 9); the threshold stands thresh_h above the room floor"),
     ("wall_z0", "glide_h + band_h", "mm", "calculation", "base band top: glides + band"),
     ("panel_z0", "wall_z0 + seam_gap", "mm", "calculation", "walls stand one seam_gap above the band top (joints register 2.8, IF-01)"),
     ("wall_h", "pod_h - wall_z0", "mm", "calculation", "2290 = layout study v2_model wall_h"),
@@ -115,18 +117,24 @@ PARAMS = [
     ("half_fw", "(pod_w - 2 * outer_t - 2 * seam_gap - close_gap) / 2", "mm", "calculation", "FRAME width of each back and ceiling panel: the skins overhang their frames by half_pw - half_fw at the closing seam (PM ruling 2026-10-31)"),
     ("inner_w", "pod_w - 2 * stack_t", "mm", "calculation", "inside width between the side linings"),
     # team-to-team bolt rules: one copy, derived by both sides of the joint (PM rulings 2026-10-31)
-    ("bolt_edge_inset", "220 mm", "mm", "decided", "PM ruling 2026-10-31: on every bolted edge the end bolts sit this far in from each panel end, the rest evenly spaced"),
+    ("bolt_edge_inset", "220 mm", "mm", "decided", "PM ruling 2026-10-31: on every bolted edge the end bolts sit this far in from each panel end (the FRAME end, where the bolts go), the rest evenly spaced"),
     ("spigot_inset", "100 mm", "mm", "decided", "PM ruling 2026-10-31: locating spigots this far in from each panel end (round hole at one end, slot at the other)"),
     ("base_bolt_edge", "bolt_edge_inset", "mm", "decided", "J-BASE-01 wall to band: the edge rule (kept by this name for parts already linked)"),
     ("n_base_bolt", "4", "", "decided", "PM ruling 2026-10-31, J-BASE-01: bolts per panel along the band, evenly spaced"),
     ("base_spigot_inset", "spigot_inset", "mm", "decided", "J-BASE-01: the spigot rule (kept by this name for parts already linked)"),
+    # each bolted edge: where its bolt line starts and its pitch (the joints register owns the bolt lines;
+    # PM ruling 2026-10-31 from CEILING), so WALL, CEILING and BASE all link to the same numbers
+    ("base_side_y0", "pod_d / 2 - wall_depth + seam_gap", "mm", "calculation", "J-BASE-01: side bolt lines start at the side panel's front end (first bolt base_bolt_edge further on)"),
     ("side_base_pitch", "(side_l - 2 * base_bolt_edge) / (n_base_bolt - 1)", "mm", "calculation", "J-BASE-01 bolt pitch along a side panel"),
-    ("back_base_pitch", "(half_pw - 2 * base_bolt_edge) / (n_base_bolt - 1)", "mm", "calculation", "J-BASE-01 bolt pitch along a back panel"),
+    ("base_back_x0", "pod_w / 2 - outer_t - seam_gap", "mm", "calculation", "J-BASE-01: back bolt lines start at each back FRAME's outer end, X -/+ this (first bolt base_bolt_edge further in)"),
+    ("back_base_pitch", "(half_fw - 2 * base_bolt_edge) / (n_base_bolt - 1)", "mm", "decided", "PM ruling 2026-10-31 (Reviewer 5 P2 on #58): J-BASE-01 pitch along a back panel, measured on the FRAME (half_fw), where the bolts go; 'panel end' means the frame end"),
     ("ceil_bolt_z", "pod_h - outer_t + frame_t / 2", "mm", "decided", "PM ruling 2026-10-31, J-CEIL-01 wall to ceiling: the bolt line on the ceiling frame's centre (Z 2374)"),
-    ("n_ceil_side_bolt", "4", "", "assumption", "J-CEIL-01 bolts along each side wall top (WALL's proposal 2026-10-31); count per edge to be confirmed"),
-    ("n_ceil_back_bolt", "3", "", "assumption", "J-CEIL-01 bolts along each back panel top (WALL's proposal 2026-10-31); count per edge to be confirmed"),
-    ("ceil_side_pitch", "(side_l - 2 * bolt_edge_inset) / (n_ceil_side_bolt - 1)", "mm", "calculation", "J-CEIL-01 bolt pitch along a side wall top"),
-    ("ceil_back_pitch", "(half_pw - 2 * bolt_edge_inset) / (n_ceil_back_bolt - 1)", "mm", "calculation", "J-CEIL-01 bolt pitch along a back panel top"),
+    ("n_ceil_side_bolt", "4", "", "decided", "PM ruling 2026-10-31, J-CEIL-01: bolts along each side wall top"),
+    ("n_ceil_back_bolt", "4", "", "decided", "PM ruling 2026-10-31, J-CEIL-01: bolts along each back panel top, like the base (pitch about 253, every edge 350 or less; joints register: 82 bolts in all)"),
+    ("ceil_side_y0", "pod_d / 2 - wall_depth", "mm", "decided", "PM ruling 2026-10-31 (joints register): J-CEIL-01 side bolt lines start at Y -645, measured along the ceiling (first bolt bolt_edge_inset further on)"),
+    ("ceil_side_pitch", "(wall_depth - 2 * bolt_edge_inset) / (n_ceil_side_bolt - 1)", "mm", "decided", "PM ruling 2026-10-31 (joints register): J-CEIL-01 pitch along a side wall top, over the ceiling's length (was over the side panel's)"),
+    ("ceil_back_x0", "pod_w / 2 - outer_t - seam_gap", "mm", "decided", "PM ruling 2026-10-31 (joints register): J-CEIL-01 back bolt lines start at each back frame's outer end, X -/+ this"),
+    ("ceil_back_pitch", "(half_fw - 2 * bolt_edge_inset) / (n_ceil_back_bolt - 1)", "mm", "decided", "PM ruling 2026-10-31 (joints register): J-CEIL-01 pitch along a back panel top, on the frame (half_fw)"),
 ]
 
 ASSEMBLIES = [  # key, part number, name, Vietnamese name, parent key
@@ -195,8 +203,11 @@ for code, ox0, ox1, ix0, ix1 in (("C1",) + BL_X + (XIL, "0 mm"), ("C2",) + BR_X 
     # pass D (PM ruling): the floor runs out to the base band, closing the 41 mm trench
     # under the wall stack (sides and back); its front edge stays at the walls' start
     fx0, fx1 = (XL + " + band_t", "0 mm") if code == "C1" else ("0 mm", XR + " - band_t")
+    # D-72 (PM ruling from BASE): the 9 mm ply lies on a 3 mm floor mat, floor top Z 12
     env("BASE", "F" + code[1], "BASE - THIN FLOOR PANEL - F" + code[1], "B-FLOOR",
-        (fx0, fx1), (YW, YB + " - band_t"), ("0 mm", "floor_t"))
+        (fx0, fx1), (YW, YB + " - band_t"), ("mat_t", "floor_top"))
+    env("BASE", "F%s-MAT" % code[1], "BASE - FLOOR MAT - F" + code[1], "B-FLOOR-MAT",
+        (fx0, fx1), (YW, YB + " - band_t"), ("0 mm", "mat_t"))
 env("BASE", "BAND-BACK", "BASE - BASE BAND - BACK", "B-BAND-BACK",
     (XL + " + band_t", XR + " - band_t"), (YB + " - band_t", YB), ("glide_h", "wall_z0"))
 # The side bands and the faceted front band are polygons: see base_bands().
@@ -214,6 +225,7 @@ FACET_ANCHORS = [
     ("DR", 3, XR), ("DR", 5, "pod_h"), ("DR", 2, "wall_z0"),
     ("DOOR", 0, XL + " + door_xl"), ("DOOR", 3, XL + " + door_xbr"),
     ("FIXED", 3, XR + " - fix_xbr"), ("FIXED", 5, "fix_zt"),
+    ("FIXED", 0, XL + " + fix_xtl"),    # the free edge's top end (F-014: parallel to the door, glass_gap away)
     ("BAND-L", 0, XL), ("BAND-L", 1, "-dl_y1"), ("BAND-L", 4, YB),
     ("BAND-R", 3, XR), ("BAND-R", 1, "-dr_yc"), ("BAND-R", 4, YB),
     ("BAND-FL", 0, XL), ("BAND-FL", 1, "-dl_y3"), ("BAND-FL", 3, XL + " + dl_w"),
@@ -597,10 +609,12 @@ def export_files(design, root_dir):
             raise RuntimeError("export failed: " + rel)
     with open("%s/%s" % (root_dir, CSV_REL), "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh, lineterminator="\n")
-        w.writerow(["parameter", "value_mm", "expression", "status", "source"])
-        for name, expr, _unit, status, src in PARAMS:
-            v = design.userParameters.itemByName(name).value * 10.0
-            w.writerow([name, ("%.3f" % v).rstrip("0").rstrip("."), expr, status, src])
+        w.writerow(["parameter", "value", "unit", "expression", "status", "source"])
+        for name, expr, unit, status, src in PARAMS:
+            v = design.userParameters.itemByName(name).value
+            if unit == "mm":
+                v *= 10.0                 # Fusion's internal length unit is cm; counts stay as they are
+            w.writerow([name, ("%.3f" % v).rstrip("0").rstrip("."), unit or "-", expr, status, src])
     print("export %s: True (%d parameters, all favorites)" % (CSV_REL, len(PARAMS)))
 
 
