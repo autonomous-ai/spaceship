@@ -133,8 +133,8 @@ PARTS = {
     "H1": ("368101", "FRONT - DOOR HINGE - HOLD - H1 BOTTOM", "Bản lề cửa dưới (chờ chọn)"),
     "H2": ("368101", "FRONT - DOOR HINGE - HOLD - H2 MIDDLE", "Bản lề cửa giữa (chờ chọn)"),
     "H3": ("368101", "FRONT - DOOR HINGE - HOLD - H3 TOP", "Bản lề cửa trên (chờ chọn)"),
-    "STRIKE": ("368102", "FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10", "Bát hít cửa"),
-    "MSEAL": ("368006", "FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)"),
+    "STRIKE": ("368102", "FRONT - DOOR STRIKE", "Bát hít cửa"),
+    "MSEAL": ("368006", "FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)"),
     "PULL": ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)"),
 }
 
@@ -354,11 +354,11 @@ BOM_ROWS = [
      "not named: rated for the 8.76 laminate, at least 60 kg and the 1176 mm width; holds the door at its closed "
      "position; two-part lift-off, the frame halves ship fitted in DL; hung on site with the 5 mm key (PM rulings)",
      0.6, "assumption (D-56)", "HOLD (D-46, ISS-002)", "hardware selection C1", "reserved space only"),
-    ("368102", "FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10", "Bát hít cửa", 1, "bought",
+    ("368102", "FRONT - DOOR STRIKE", "Bát hít cửa", 1, "bought",
      "stainless steel SUS430 strike with CR packing, finish as supplied", 0.023, "source (Sugatsune datasheet, 22.9 g)",
      "source (product); on the 8.76 laminate with a 1.2 mm shim: HOLD", "hardware selection C7; PM rulings 2026-10-31",
      "its catch 368007 sits in DT's underside; no latch on the glass"),
-    ("368006", "FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)", 1,
+    ("368006", "FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)", 1,
      "bought, HOLD", "magnetic 180 deg glass-to-glass seal, door half; product not named", 0.15, "assumption",
      "HOLD: product for the 8.76 laminate and a 4 mm gap", "PM ruling 2026-10-31", "pairs with 368003 on the fixed pane"),
     ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought, HOLD", "not named", 0.8, "assumption (D-56)", "HOLD", "hardware selection C2",
