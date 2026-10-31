@@ -1,8 +1,8 @@
-# Mechanical check run: 34cacc2 on 2026-11-01
+# Mechanical check run: 1f70c90 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `34cacc2`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `1f70c90`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 41** (20 severe, 20 major, 1 minor). Register numbers in brackets.
+**Findings in this run: 52** (24 severe, 27 major, 1 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `34cacc2`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 39 |
+| C05 drawing completeness | yes | 50 |
 | C06 BOM completeness | yes | 2 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 0 |
@@ -20,7 +20,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `34cacc2`. The Fusion 
 | C10 mixed metals | yes | 0 |
 | C11 material grade and finish | yes | 0 |
 
-Inputs: {"bodies_skeleton": 36, "bodies_assembly": 211, "parts_lists": ["v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv", "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv", "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv", "v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv", "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv", "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv", "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv", "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv", "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": ["v2/03-Manufacturing/base/110000_P01_BASE_STEP.step", "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step", "v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step", "v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step", "v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_STEP.step", "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step", "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step", "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step", "v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step", "v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step", "v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step", "v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step", "v2/03-Manufacturing/joints/831002_P01_HARDWARE-STOP-WASHER_STEP.step", "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step", "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step", "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step", "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step", "v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step", "v2/03-Manufacturing/wall/211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step", "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step", "v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step", "v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step", "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step"]}
+Inputs: {"bodies_skeleton": 36, "bodies_assembly": 257, "parts_lists": ["v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv", "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv", "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv", "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv", "v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv", "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv", "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv", "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv", "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv", "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": ["v2/03-Manufacturing/base/110000_P01_BASE_STEP.step", "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step", "v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step", "v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step", "v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_STEP.step", "v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step", "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step", "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step", "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step", "v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step", "v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step", "v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step", "v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step", "v2/03-Manufacturing/joints/831002_P01_HARDWARE-STOP-WASHER_STEP.step", "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step", "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step", "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step", "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step", "v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step", "v2/03-Manufacturing/wall/211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step", "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step", "v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step", "v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step", "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step"]}
 
 ## Findings
 
@@ -42,10 +42,14 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 211, "parts_lists": ["v2/03-M
 | F-030 | severe | C05 | 361001 | 361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance. | FRONT |
 | F-031 | severe | C05 | 361002 | 361002 FRONT - DOOR KICK STRIP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its faces lie at 8 levels through the thickness (a pocket, a step or a rebate). | FRONT |
 | F-097 | severe | C05 | 361003 | 361003 FRONT - FIXED GLASS - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance. | FRONT |
+| F-141 | severe | C05 | 411101 | 411101 CEILING - PANEL FRAME - C1 has no drawing PDF (411101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
+| F-142 | severe | C05 | 411102 | 411102 CEILING - PANEL FRAME - C2 has no drawing PDF (411102_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-024 | severe | C05 | 511101 | 511101 LINING - TRAY - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake. | WALL |
 | F-121 | severe | C05 | 511102 | 511102 LINING - TRAY - SIDE LOWER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake. | WALL |
 | F-122 | severe | C05 | 511103 | 511103 LINING - TRAY - SIDE UPPER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake. | WALL |
 | F-123 | severe | C05 | 511104 | 511104 LINING - TRAY - SIDE UPPER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake. | WALL |
+| F-144 | severe | C05 | 513101 | 513101 LINING - TRAY - CEILING has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bent. | CEILING |
+| F-145 | severe | C05 | 513102 | 513102 LINING - RIB - CEILING has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (24.0 thick across 44.0); its row's process names bent. | CEILING |
 | F-039 | major | C05 | 110000 | 110000 BASE has no drawing PDF (110000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/110000_P01_BASE_STEP.step. | BASE |
 | F-040 | major | C05 | 110101 | 110101 BASE - BAND ASSY - SIDE - LH has no drawing PDF (110101_REV_NAME_DWG.pdf under v2/02-Drawings). | BASE |
 | F-041 | major | C05 | 110103 | 110103 BASE - BAND ASSY - BACK has no drawing PDF (110103_REV_NAME_DWG.pdf under v2/02-Drawings). | BASE |
@@ -59,12 +63,19 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 211, "parts_lists": ["v2/03-M
 | F-117 | major | C05 | 211504 | 211504 WALL - CAVITY FILL - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle. | WALL |
 | F-029 | major | C05 | 360001 | 360001 FRONT - DOOR UNIT has no drawing PDF (360001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step. | FRONT |
 | F-096 | major | C05 | 360002 | 360002 FRONT - FIXED GLASS UNIT has no drawing PDF (360002_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step. | FRONT |
+| F-138 | major | C05 | 410000 | 410000 CEILING has no drawing PDF (410000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step. | CEILING |
+| F-139 | major | C05 | 410101 | 410101 CEILING - PANEL ASSY - C1 has no drawing PDF (410101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
+| F-140 | major | C05 | 410102 | 410102 CEILING - PANEL ASSY - C2 has no drawing PDF (410102_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-023 | major | C05 | 510101 | 510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-118 | major | C05 | 510102 | 510102 LINING - CASSETTE - SIDE LOWER - RH has no drawing PDF (510102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step. | WALL |
 | F-119 | major | C05 | 510103 | 510103 LINING - CASSETTE - SIDE UPPER - LH has no drawing PDF (510103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step. | WALL |
 | F-120 | major | C05 | 510104 | 510104 LINING - CASSETTE - SIDE UPPER - RH has no drawing PDF (510104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step. | WALL |
+| F-143 | major | C05 | 510301 | 510301 LINING - CASSETTE - CEILING - COMMON has no drawing PDF (510301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-124 | major | C05 | 511302 | 511302 LINING - FELT - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes). | WALL |
 | F-125 | major | C05 | 511304 | 511304 LINING - FELT - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes). | WALL |
+| F-146 | major | C05 | 513301 | 513301 LINING - FILL - CEILING - BAY A has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle. | CEILING |
+| F-147 | major | C05 | 513302 | 513302 LINING - FILL - CEILING - BAY B has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle. | CEILING |
+| F-148 | major | C05 | 513303 | 513303 LINING - FILL - CEILING - BAY C has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle. | CEILING |
 | F-098 | major | C06 | 111211 | Part number 111211 is used for different names: 'BASE - CORNER KEY - BACK - COMMON' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - CORNER KEY - SQUARE - COMMON' in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv; 'BASE - CORNER KEY - BACK - COMMON' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The Joints Engineer's list names it 'BASE - CORNER KEY - SQUARE - COMMON', and the teams place the keys by reference (D-95). | BASE |
 | F-104 | minor | C06 | 211102 | 211102 WALL - PANEL FRAME - SIDE LOWER - RH in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv is missing: Vietnamese name. | WALL |
 
@@ -93,8 +104,8 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 211, "parts_lists": ["v2/03-M
 | 1-08 WALL - PANEL ASSY - BACK UPPER - RH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
 | 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
-| 1-11 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1200.61 x 46 | upright | calculation (CAD); bond assumption |
-| 1-12 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1200.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
+| 1-11 CEILING - PANEL ASSY - C1 | 10.047 | 1495 x 1200.61 x 46 | upright | calculation (CAD) |
+| 1-12 CEILING - PANEL ASSY - C2 | 10.547 | 1495 x 1200.61 x 60 | upright | calculation; calculation (CAD) |
 | 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.341 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
 | 1-14 LINING - CASSETTE - SIDE UPPER - RH | 9.912 | 1445 x 1092.74 x 34 | upright | calculation (CAD) |
 | 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.341 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
@@ -122,11 +133,11 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 211, "parts_lists": ["v2/03-M
 | 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.895 | 1845 x 460 x 155 | long | assumption; calculation |
 | 2-18 AIR - CARTRIDGE - SUPPLY | 11.155 | 1750 x 314 x 173 | long | calculation |
 | 2-19 AIR - CARTRIDGE - EXHAUST | 11.155 | 1750 x 314 x 173 | long | calculation |
-| 2-20 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
-| 2-21 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
+| 2-20 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
+| 2-21 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
 | 2-22 POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 300 x 150 x 80 | long | assumption |
 
 ## Fastener schedule (C07)
 
-70 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+81 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 
