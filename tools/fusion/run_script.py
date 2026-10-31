@@ -789,18 +789,26 @@ def git_worktrees(repo_root=None):
     """Every worktree of this repo, the main checkout included (git worktree list)."""
     repo_root = repo_root or REPO_ROOT
     try:
-        out = subprocess.run(["git", "-C", repo_root, "worktree", "list", "--porcelain"],
-                             capture_output=True, text=True, timeout=20).stdout
-        trees = [line.split(" ", 1)[1] for line in out.splitlines() if line.startswith("worktree ")]
-    except (OSError, subprocess.SubprocessError):
-        trees = []
+        p = subprocess.run(["git", "-C", repo_root, "worktree", "list", "--porcelain"],
+                           capture_output=True, text=True, timeout=20)
+        trees = [line.split(" ", 1)[1] for line in p.stdout.splitlines() if line.startswith("worktree ")]
+        why = None if trees else (p.stderr.strip() or "no worktrees listed")
+    except (OSError, subprocess.SubprocessError) as e:
+        trees, why = [], str(e)
+    if why:
+        print("run_script: warning: git worktree list failed (%s); only this checkout and /tmp are "
+              "cleared of cached modules" % why[:200], file=sys.stderr)
     return trees or [repo_root]
 
 
 def team_roots(repo_root=None):
     """The folders whose cached modules the wrapper drops before a script: every
-    worktree of this repo and /tmp (where agents' scratch worktrees live)."""
-    return git_worktrees(repo_root) + ["/tmp", "/private/tmp"]
+    worktree of this repo, the parent folder of every worktree but the main
+    checkout (git lists it first), so a deleted worktree's modules still drop, and
+    /tmp (where agents' scratch worktrees live)."""
+    trees = git_worktrees(repo_root)
+    parents = sorted({os.path.dirname(os.path.abspath(t)) for t in trees[1:]})
+    return trees + parents + ["/tmp", "/private/tmp"]
 
 
 def wrap_script(source, path, args):
