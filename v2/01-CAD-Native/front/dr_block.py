@@ -641,8 +641,8 @@ def export_all(app):
          "DRAFT", "D-59, D-60",
          "DXF " + DXF_FLAT["INNER"] + "; lifts off for the fan box; held on the frame by 4 clips (HOLD: clip, "
          "assumed 0.04 kg each)"),
-        ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (laser-cut PET felt sheet, no drawing: D-89 part 4), "
-         "glued to 351303 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
+        ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (laser-cut PET felt sheet; its outline is stepped and slanted, not a "
+         "rectangle, so it keeps a drawing: D-89), glued to 351303 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
          "calculation (CAD, 1.8 kg/m2)",
          "DRAFT; emission certificate HOLD", "D-31; hardware selection A3", "DXF " + DXF_FLAT["FELT"]),
         ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, "assembly, joined at the factory (D-87)", "-", None, "", "DRAFT",
@@ -652,10 +652,11 @@ def export_all(app):
          "calculation (CAD, 7850 kg/m3)", "DRAFT", "D-60 air table", "open foot 140 mm over the base opening"),
         ("351403", PARTS["TLOW"][1], PARTS["TLOW"][2], 1, "reserved duct space", "-", 1.5, "assumption",
          "HOLD: the Air Engineer's transition detail", "D-60 air table", ""),
-        ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, "made", "2 mm aluminium, 50 mm lining inside", 5.1,
-         "source (D-60 air table, box and transition)", "DRAFT; lining and bulkhead HOLD (air detail)",
+        ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, "made", "2 mm aluminium, 50 mm lining inside", 3.6,
+         "source (D-60 air table: 5.1 kg for the box and the upper transition) less 351405's 1.5 kg", "DRAFT; lining and bulkhead HOLD (air detail)",
          "D-60 air table", "12 from the fixed glass channel, so the frame's inner-edge tube fits"),
-        ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, "reserved duct space", "-", 0.0, "included in 351404's 5.1 kg",
+        ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, "reserved duct space", "-", 1.5,
+         "assumption (as the lower transition 351403; part of the D-60 air table's 5.1 kg)",
          "HOLD: the Air Engineer's transition detail", "D-60 air table", ""),
         ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", 2, "bought",
          "Noctua NF-A14 industrialPPC-3000 PWM, 12 V", 0.3, "assumption (D-60 air table)", "HOLD: product (PM ruling, one number for all four fans)",
