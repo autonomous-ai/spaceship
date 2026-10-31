@@ -161,6 +161,16 @@ def test_step_picture_script_and_data():
     assert all('"%s":' % v in script for v in views)
 
 
+def test_sizes_follow_the_skeleton():
+    # panel sizes are the skeleton's named values, not typed numbers
+    b1 = pack.PIECE["1-03"]
+    assert b1.dims == pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
+    l1 = pack.PIECE["1-05"]
+    assert l1.dims == pack.S(pack.sk("side_l"), pack.sk("side_h"), pack.sk("outer_t"))
+    f1 = pack.PIECE["1-01"]
+    assert f1.dims[2] == pack.sk("floor_t") + pack.sk("mat_t")
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]
     bad = 0

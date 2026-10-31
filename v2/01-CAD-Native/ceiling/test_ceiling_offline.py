@@ -372,7 +372,7 @@ class EditFollows(unittest.TestCase):
         self.assertAlmostEqual(v2["half_fw"], (2600 - 2 * ot - 2 * 2.26 - 5.5) / 2)
         self.assertAlmostEqual(v2["cs_w"], (2600 - 2 * st) / 2 - 6)
         self.assertAlmostEqual(v2["fill_hw"], (2600 - 2 * st) / 4 - 2.75 - 25)
-        self.assertAlmostEqual(v2["cj_back_pitch"], (v2["half_fw"] - 440) / 3)
+        self.assertAlmostEqual(v2["ceil_back_pitch"], (v2["half_fw"] - 440) / 3)
         v3 = M.evaluate(P, {"wall_depth": "1520 mm"})
         self.assertAlmostEqual(v3["fr_pitch"], (1520 - 20) / 4)
         self.assertAlmostEqual(v3["cs_d"], 1520 - st - 360 - 6)

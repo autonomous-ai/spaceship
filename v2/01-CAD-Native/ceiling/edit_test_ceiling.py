@@ -36,7 +36,7 @@ EDITS = [
     [("wall_depth", "1520 mm")],
     [("cs_front", "330 mm")],
     [("bolt_edge_inset", "250 mm")],
-    [("n_ceil_side_bolt", "5"), ("cj_back_n", "5")],
+    [("n_ceil_side_bolt", "5"), ("n_ceil_back_bolt", "5")],
 ]
 
 

@@ -867,19 +867,23 @@ def open_or_create(app, name):
     folder = proj.rootFolder
     for n in parts[1:]:
         folder = folder.dataFolders.itemByName(n)
-    found = []
+    found, unreadable = [], 0
     for i in range(folder.dataFiles.count):
         try:
             f = folder.dataFiles.item(i)
             if f.name == name:
                 found.append(f)
         except RuntimeError:
-            continue                       # an entry that can't be read (as run_script.py since #86)
+            unreadable += 1
     app.data.activeProject = proj
     if found:
         d = app.documents.open(found[0], True)
         d.activate()
         return d, "opened"
+    if unreadable:
+        # PM ruling 2026-11-01: list the folder first and stop before creating anything if any
+        # entry can't be read (that entry could be this very design)
+        raise RuntimeError("%d entries of %s can't be read, so %r isn't made" % (unreadable, FOLDER, name))
     if ARGS.get("create") != "1":
         # PM ruling 2026-11-01: no new designs until the runner's folder fix lands, since an
         # entry Fusion can't read could make a second, empty design with a real one's name
