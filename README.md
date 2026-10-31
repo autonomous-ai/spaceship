@@ -1,6 +1,6 @@
 # spaceship
 
-Design files for FocusPod, the sound-insulated office pod from Autonomous ([autonomous.ai/focus-pod](https://www.autonomous.ai/focus-pod)). Inside the team it's called "Indoor Pod".
+Design files for Spaceship, the next version of FocusPod, the sound-insulated office pod from Autonomous ([autonomous.ai/focus-pod](https://www.autonomous.ai/focus-pod)). Inside the team it's called "Indoor Pod". Spaceship is a working name.
 
 | Path | What's there |
 |---|---|
