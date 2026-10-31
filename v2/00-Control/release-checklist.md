@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (fcf079c), PR #105 (bd2eaa9), PR #152 (1180d96), PR #91 (a10628b), PR #163 (d858fa1). The Mac's screen at run time: **unlocked**. 448 files in the CAD, drawing and manufacturing folders; the FAI plan's 85 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (5cf7aef), PR #105 (f13da19), PR #91 (d96ba84), PR #152 (553fc3c). The Mac's screen at run time: **unlocked**. 448 files in the CAD, drawing and manufacturing folders; the FAI plan's 85 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -183,13 +183,13 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 510101 | LINING - CASSETTE - SIDE LOWER - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
 | 511101 | LINING - TRAY - SIDE LOWER - LH | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511301 | LINING - FELT - SIDE LOWER - LH | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211102 | WALL - PANEL FRAME - SIDE LOWER - RH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
-| 211302 | WALL - SKIN - SIDE LOWER - RH | main | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
-| 211502 | WALL - CAVITY FILL - SIDE LOWER - RH | main | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510102 | LINING - CASSETTE - SIDE LOWER - RH | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
-| 511102 | LINING - TRAY - SIDE LOWER - RH | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511302 | LINING - FELT - SIDE LOWER - RH | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | PR #152 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211102 | WALL - PANEL FRAME - SIDE LOWER - RH | PR #152 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
+| 211302 | WALL - SKIN - SIDE LOWER - RH | PR #152 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
+| 211502 | WALL - CAVITY FILL - SIDE LOWER - RH | PR #152 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510102 | LINING - CASSETTE - SIDE LOWER - RH | PR #152 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 511102 | LINING - TRAY - SIDE LOWER - RH | PR #152 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 511302 | LINING - FELT - SIDE LOWER - RH | PR #152 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210103 | WALL - PANEL ASSY - SIDE UPPER - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
 | 211103 | WALL - PANEL FRAME - SIDE UPPER - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
 | 211303 | WALL - SKIN - SIDE UPPER - LH | main | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
