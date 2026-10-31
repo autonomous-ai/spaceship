@@ -1,6 +1,6 @@
-# Mechanical check run: c72ea57 on 2026-11-01
+# Mechanical check run: 1f70c90 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `c72ea57`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `1f70c90`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 52** (24 severe, 27 major, 1 minor). Register numbers in brackets.
 
@@ -104,8 +104,8 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 257, "parts_lists": ["v2/03-M
 | 1-08 WALL - PANEL ASSY - BACK UPPER - RH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
 | 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
-| 1-11 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1200.61 x 46 | upright | calculation (CAD); bond assumption |
-| 1-12 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1200.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
+| 1-11 CEILING - PANEL ASSY - C1 | 10.047 | 1495 x 1200.61 x 46 | upright | calculation (CAD) |
+| 1-12 CEILING - PANEL ASSY - C2 | 10.547 | 1495 x 1200.61 x 60 | upright | calculation; calculation (CAD) |
 | 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.341 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
 | 1-14 LINING - CASSETTE - SIDE UPPER - RH | 9.912 | 1445 x 1092.74 x 34 | upright | calculation (CAD) |
 | 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.341 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
@@ -133,8 +133,8 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 257, "parts_lists": ["v2/03-M
 | 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.895 | 1845 x 460 x 155 | long | assumption; calculation |
 | 2-18 AIR - CARTRIDGE - SUPPLY | 11.155 | 1750 x 314 x 173 | long | calculation |
 | 2-19 AIR - CARTRIDGE - EXHAUST | 11.155 | 1750 x 314 x 173 | long | calculation |
-| 2-20 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
-| 2-21 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
+| 2-20 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
+| 2-21 LINING - CASSETTE - CEILING - COMMON | 9.455 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
 | 2-22 POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 300 x 150 x 80 | long | assumption |
 
 ## Fastener schedule (C07)

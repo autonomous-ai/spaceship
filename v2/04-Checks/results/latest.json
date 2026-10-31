@@ -1,5 +1,5 @@
 {
- "rev": "c72ea57",
+ "rev": "1f70c90",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -919,26 +919,26 @@
   {
    "id": "1-11",
    "name": "CEILING - PANEL ASSY - C1",
-   "kg": 10.035,
+   "kg": 10.047,
    "dims": [
     1495.0,
     1200.61,
     46.0
    ],
    "ships_as": "upright",
-   "status": "calculation (CAD); bond assumption"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-12",
    "name": "CEILING - PANEL ASSY - C2",
-   "kg": 10.535,
+   "kg": 10.547,
    "dims": [
     1495.0,
     1200.61,
     60.0
    ],
    "ships_as": "upright",
-   "status": "calculation; calculation (CAD); bond assumption"
+   "status": "calculation; calculation (CAD)"
   },
   {
    "id": "1-13",
@@ -1267,7 +1267,7 @@
   {
    "id": "2-20",
    "name": "LINING - CASSETTE - CEILING - COMMON",
-   "kg": 9.476,
+   "kg": 9.455,
    "dims": [
     1163.0,
     1048.0,
@@ -1279,7 +1279,7 @@
   {
    "id": "2-21",
    "name": "LINING - CASSETTE - CEILING - COMMON",
-   "kg": 9.476,
+   "kg": 9.455,
    "dims": [
     1163.0,
     1048.0,
