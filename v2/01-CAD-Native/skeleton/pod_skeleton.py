@@ -18,6 +18,11 @@ clash over 1 mm3 fails the run. P01 (stage A, box placeholders), P02
 (BUILD-RECORD.md). Every user parameter is a favorite, so a part design can
 derive them from the saved skeleton (they arrive as <name>_Ref) and follow it
 (tools/fusion/README.md, "Linking a part to the skeleton").
+
+Parts are linked to the cloud file 100000_P04_POD-SKELETON_CAD. To change a
+value, edit PARAMS here and run skeleton_update.py, which saves a new version
+of that same file. This build makes a NEW file and would cut every link: use
+it only for a new revision of the shape.
 """
 
 import time
@@ -40,15 +45,18 @@ PARAMS = [
     ("glide_h", "10 mm", "mm", "assumption", "layout study inputs.py glide_h"),
     ("band_h", "100 mm", "mm", "source", "layout study B1 list B-BAND 100x40; inputs.py base_h"),
     ("band_t", "40 mm", "mm", "source", "layout study B1 list B-BAND 100x40"),
-    ("outer_t", "46 mm", "mm", "decided", "PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)"),
+    ("skin_t", "3 mm", "mm", "decided", "ACP skin, walls and ceiling (D-16; PM ruling 2026-10-31 on outer_t)"),
+    ("bond_t", "3 mm", "mm", "decided", "bond line between the ACP and the frame (PM ruling 2026-10-31 on outer_t)"),
+    ("frame_t", "40 mm", "mm", "decided", "aluminium frame tube depth, walls and ceiling (PM ruling 2026-10-31 on outer_t)"),
+    ("outer_t", "skin_t + bond_t + frame_t", "mm", "decided", "PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)"),
     ("cav_gap", "4 mm", "mm", "decided", "D-16, D-42: the gap between the outer panel and the lining cassette in the wall and ceiling stack"),
     ("cass_t", "34 mm", "mm", "source", "layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)"),
-    ("stack_t", "outer_t + cav_gap + cass_t", "mm", "calculation", "D-16, D-42 stack, walls and ceiling: 46 + 4 + 34 = 84 (was 81 with outer_t 43); the inside is 3 mm smaller per wall and in height"),
+    ("stack_t", "outer_t + cav_gap + cass_t", "mm", "calculation", "D-16, D-42 stack, walls and ceiling: outer panel + cavity gap + cassette (PM ruling 2026-10-31 on outer_t)"),
     ("wall_depth", "1495 mm", "mm", "decided", "PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"),
     ("lin_gap", "4 mm", "mm", "assumption", "PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)"),
     ("seam_gap", "2.26 mm", "mm", "decided", "PM ruling 2026-10-31 (Mechanical Checker F-001, F-005): the Joints Engineer's 2.26 mm at all nine site seam types, set by a metal stop (1.5 stop washer + 0.76 rivnut head; joints register section 2.8)"),
-    ("floor_t", "15 mm", "mm", "source", "layout study B1 list B-FLOOR 15"),
-    ("thresh_h", "20 mm", "mm", "decided", "D-18"),
+    ("floor_t", "9 mm", "mm", "decided", "PM ruling 2026-10-31: 9 mm floor panels (was 15, layout study B1 list)"),
+    ("thresh_h", "13 mm", "mm", "decided", "PM ruling 2026-10-31: 13 mm, a US-accessible threshold (D-18 had 20); the kick strip keeps its kick_gap above it"),
     ("thresh_d", "60 mm", "mm", "source", "layout study B1 list B-THRESH 1176 x 60 x 20"),
     ("decor_d", "205 mm", "mm", "source", "v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02"),
     ("dl_w", "278 mm", "mm", "source", "B1 list F-DL 278 (v1 BOM DL)"),
@@ -69,12 +77,12 @@ PARAMS = [
     ("door_xtr", "1182 mm", "mm", "source", "V1-FRONT-FACETS: door top-right X -68"),
     ("door_zb", "122 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: door bottom Z 122"),
     ("door_zt", "2133 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: door top Z 2133"),
-    ("fix_xbl", "1468 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass bottom-left X 218"),
+    ("glass_gap", "4 mm", "mm", "decided", "PM ruling 2026-10-31 on Mechanical Checker F-014: the fixed glass's free edge runs parallel to the door's slanted edge, 4.0 mm away (FRONT's glass in PR #28 is the reference)"),
     ("fix_xbr", "302 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass bottom-right X 948 = 1250 - 302"),
     ("fix_xk", "501 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass knee X 749 = 1250 - 501"),
     ("fix_zk", "1538 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: fixed glass knee Z 1538"),
     ("fix_xtr", "1480 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass top-right X 230 = -1250 + 1480"),
-    ("fix_xtl", "1184 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass top-left X -66"),
+
     ("fix_zb", "119 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: fixed glass bottom Z 119"),
     ("fix_zt", "2136 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: fixed glass top Z 2136"),
     ("dt_zb", "2137 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: DT and DR edge above the glass Z 2137"),
@@ -93,15 +101,32 @@ PARAMS = [
     ("dt_xr", "1699 mm", "mm", "source", "V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -1250 + 1699 (PM ruling pass C)"),
     ("dr_yc", "672 mm", "mm", "source", "V1-FRONT-FACETS: DR corner facet back Y -672"),
     # derived
-    ("wall_z0", "glide_h + band_h", "mm", "calculation", "base band top (Z 110)"),
-    ("panel_z0", "wall_z0 + seam_gap", "mm", "calculation", "walls stand one seam_gap above the band top (Z 112.26; joints register 2.8, IF-01)"),
+    ("fix_xbl", "door_xbr + (door_zb - fix_zb) * (door_xbr - door_xtr) / (door_zt - door_zb) + glass_gap * sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb)) / (door_zt - door_zb)", "mm", "calculation", "F-014: fixed glass bottom-left, on the line glass_gap from the door's slanted edge (was v1's 1468)"),
+    ("fix_xtl", "door_xbr + (door_zb - fix_zt) * (door_xbr - door_xtr) / (door_zt - door_zb) + glass_gap * sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb)) / (door_zt - door_zb)", "mm", "calculation", "F-014: fixed glass top-left, on the same line (was v1's 1184)"),
+    ("wall_z0", "glide_h + band_h", "mm", "calculation", "base band top: glides + band"),
+    ("panel_z0", "wall_z0 + seam_gap", "mm", "calculation", "walls stand one seam_gap above the band top (joints register 2.8, IF-01)"),
     ("wall_h", "pod_h - wall_z0", "mm", "calculation", "2290 = layout study v2_model wall_h"),
-    ("side_h", "(wall_h - 2 * seam_gap) / 2", "mm", "calculation", "D-23: 2 sheets per side wall; the gap on the band and the horizontal seam (1142.74, was 1145; joints register 2.8)"),
-    ("side_l", "wall_depth - seam_gap", "mm", "calculation", "side panel length along Y: the seam_gap at the decor's back plate (1492.74; joints register 2.8, IF-07)"),
-    ("back_oh", "pod_h - outer_t - seam_gap - panel_z0", "mm", "calculation", "PM ruling 2026-10-31 (pass D, F-004): the back outer frames run up to the ceiling frame (Z 2357, less the seam_gap under it), closing the 38 mm slot at the back top edge"),
-    ("back_ph", "(back_oh - seam_gap) / 2", "mm", "calculation", "D-23: 4 sheets on the back, two equal rows with one seam_gap between them (1120.11, was 1104.5; joints register 2.8); the lower back linings match the lower row, as on the side walls"),
-    ("half_pw", "(pod_w - 2 * outer_t - 3 * seam_gap) / 2", "mm", "calculation", "width of each back and ceiling panel: two panels and three seams between the side frames (1203.61, was 1207; F-001, joints register 2.8)"),
-    ("inner_w", "pod_w - 2 * stack_t", "mm", "calculation", "2338 between the side walls"),
+    ("side_h", "(wall_h - 2 * seam_gap) / 2", "mm", "calculation", "D-23: 2 sheets per side wall; the gap on the band and the horizontal seam (joints register 2.8)"),
+    ("side_l", "wall_depth - seam_gap", "mm", "calculation", "side panel length along Y: the seam_gap at the decor's back plate (joints register 2.8, IF-07)"),
+    ("back_oh", "pod_h - outer_t - seam_gap - panel_z0", "mm", "calculation", "PM ruling 2026-10-31 (pass D, F-004): the back outer frames run up to the ceiling frame (pod_h - outer_t), less the seam_gap under it, closing the slot at the back top edge"),
+    ("back_ph", "(back_oh - seam_gap) / 2", "mm", "calculation", "D-23: 4 sheets on the back, two equal rows with one seam_gap between them (joints register 2.8); the lower back linings match the lower row, as on the side walls"),
+    ("half_pw", "(pod_w - 2 * outer_t - 3 * seam_gap) / 2", "mm", "calculation", "SKIN width of each back and ceiling panel: two skins and three seam_gap seams between the side frames (F-001, joints register 2.8)"),
+    ("close_gap", "5.5 mm", "mm", "decided", "PM ruling 2026-10-31 (joints register, F-011/F-012): frame gap at the closing seams B1-B2, B3-B4 and C1-C2, which have no hard stop (slotted holes, thicker gasket)"),
+    ("half_fw", "(pod_w - 2 * outer_t - 2 * seam_gap - close_gap) / 2", "mm", "calculation", "FRAME width of each back and ceiling panel: the skins overhang their frames by half_pw - half_fw at the closing seam (PM ruling 2026-10-31)"),
+    ("inner_w", "pod_w - 2 * stack_t", "mm", "calculation", "inside width between the side linings"),
+    # team-to-team bolt rules: one copy, derived by both sides of the joint (PM rulings 2026-10-31)
+    ("bolt_edge_inset", "220 mm", "mm", "decided", "PM ruling 2026-10-31: on every bolted edge the end bolts sit this far in from each panel end, the rest evenly spaced"),
+    ("spigot_inset", "100 mm", "mm", "decided", "PM ruling 2026-10-31: locating spigots this far in from each panel end (round hole at one end, slot at the other)"),
+    ("base_bolt_edge", "bolt_edge_inset", "mm", "decided", "J-BASE-01 wall to band: the edge rule (kept by this name for parts already linked)"),
+    ("n_base_bolt", "4", "", "decided", "PM ruling 2026-10-31, J-BASE-01: bolts per panel along the band, evenly spaced"),
+    ("base_spigot_inset", "spigot_inset", "mm", "decided", "J-BASE-01: the spigot rule (kept by this name for parts already linked)"),
+    ("side_base_pitch", "(side_l - 2 * base_bolt_edge) / (n_base_bolt - 1)", "mm", "calculation", "J-BASE-01 bolt pitch along a side panel"),
+    ("back_base_pitch", "(half_pw - 2 * base_bolt_edge) / (n_base_bolt - 1)", "mm", "calculation", "J-BASE-01 bolt pitch along a back panel"),
+    ("ceil_bolt_z", "pod_h - outer_t + frame_t / 2", "mm", "decided", "PM ruling 2026-10-31, J-CEIL-01 wall to ceiling: the bolt line on the ceiling frame's centre (Z 2374)"),
+    ("n_ceil_side_bolt", "4", "", "assumption", "J-CEIL-01 bolts along each side wall top (WALL's proposal 2026-10-31); count per edge to be confirmed"),
+    ("n_ceil_back_bolt", "3", "", "assumption", "J-CEIL-01 bolts along each back panel top (WALL's proposal 2026-10-31); count per edge to be confirmed"),
+    ("ceil_side_pitch", "(side_l - 2 * bolt_edge_inset) / (n_ceil_side_bolt - 1)", "mm", "calculation", "J-CEIL-01 bolt pitch along a side wall top"),
+    ("ceil_back_pitch", "(half_pw - 2 * bolt_edge_inset) / (n_ceil_back_bolt - 1)", "mm", "calculation", "J-CEIL-01 bolt pitch along a back panel top"),
 ]
 
 ASSEMBLIES = [  # key, part number, name, Vietnamese name, parent key
@@ -224,7 +249,7 @@ def new_comp(parent, pn, name, vn):
     c = occ.component
     c.name = ("%s %s" % (pn, name)).strip()
     c.partNumber = pn
-    c.description = "%s | %s | %s" % (name, vn, REV)
+    c.description = "%s | %s" % (name, vn)
     return c
 
 
@@ -553,6 +578,42 @@ def base_bands(design, asm):
     return out
 
 
+def export_files(design, root_dir):
+    """f3d, STEP (cm, D-13) and the parameter CSV, from the saved version."""
+    import csv
+    root = design.rootComponent
+    em = design.exportManager
+    for rel, mk in ((F3D_REL, em.createFusionArchiveExportOptions),
+                    (STEP_REL, em.createSTEPExportOptions)):
+        ok = False
+        for _try in range(10):        # right after a save Fusion may still be uploading
+            ok = em.execute(mk("%s/%s" % (root_dir, rel), root))
+            if ok:
+                break
+            adsk.doEvents()
+            time.sleep(3)
+        print("export %s: %s" % (rel, ok))
+        if not ok:
+            raise RuntimeError("export failed: " + rel)
+    with open("%s/%s" % (root_dir, CSV_REL), "w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh, lineterminator="\n")
+        w.writerow(["parameter", "value_mm", "expression", "status", "source"])
+        for name, expr, _unit, status, src in PARAMS:
+            v = design.userParameters.itemByName(name).value * 10.0
+            w.writerow([name, ("%.3f" % v).rstrip("0").rstrip("."), expr, status, src])
+    print("export %s: True (%d parameters, all favorites)" % (CSV_REL, len(PARAMS)))
+
+
+def descriptions():
+    """Component descriptions carry no revision: Fusion keeps one description
+    per part number across the hub (the STEP still showed P01 under P04), and
+    the revision lives in the file name and the title block."""
+    out = {"100000": "POD - SPACESHIP (FocusPod v2) skeleton | Pod hoàn chỉnh"}
+    for _key, pn, name, vn, _parent in ASSEMBLIES:
+        out[pn] = "%s | %s" % (name, vn)
+    return out
+
+
 def run(_context):
     app = adsk.core.Application.get()
     if ARGS.get("close_previous") == "1":
@@ -570,7 +631,7 @@ def run(_context):
     add_params(design)
     root = design.rootComponent
     root.partNumber = "100000"
-    root.description = "POD - SPACESHIP (FocusPod v2) skeleton | Pod hoàn chỉnh | " + REV
+    root.description = descriptions()["100000"]
     asm = {}
     for key, pn, name, vn, parent in ASSEMBLIES:
         asm[key] = new_comp(asm[parent] if parent else root, pn, name, vn)
@@ -612,28 +673,7 @@ def run(_context):
             raise RuntimeError("%s already in %s" % (DOC_NAME, CLOUD_FOLDER))
         print("saved:", doc.saveAs(DOC_NAME, folder, "Spaceship pod skeleton, %s" % REV, ""))
     if ARGS.get("export") == "1":
-        root_dir = ARGS["repo_root"]
-        em = design.exportManager
-        for rel, mk in ((F3D_REL, em.createFusionArchiveExportOptions),
-                        (STEP_REL, em.createSTEPExportOptions)):
-            ok = False
-            for _try in range(10):        # right after a save Fusion may still be uploading
-                ok = em.execute(mk("%s/%s" % (root_dir, rel), root))
-                if ok:
-                    break
-                adsk.doEvents()
-                time.sleep(3)
-            print("export %s: %s" % (rel, ok))
-            if not ok:
-                raise RuntimeError("export failed: " + rel)
-        import csv
-        with open("%s/%s" % (root_dir, CSV_REL), "w", newline="", encoding="utf-8") as fh:
-            w = csv.writer(fh, lineterminator="\n")
-            w.writerow(["parameter", "value_mm", "expression", "status", "source"])
-            for name, expr, _unit, status, src in PARAMS:
-                v = design.userParameters.itemByName(name).value * 10.0
-                w.writerow([name, ("%.3f" % v).rstrip("0").rstrip("."), expr, status, src])
-        print("export %s: True (%d parameters, all favorites)" % (CSV_REL, len(PARAMS)))
+        export_files(design, ARGS["repo_root"])
     if ARGS.get("close") == "1":          # leave Fusion as we found it (tools/fusion/README.md)
         if not doc.isSaved:
             raise RuntimeError("close=1 needs save=1: the new skeleton would be lost")
