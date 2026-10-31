@@ -300,7 +300,21 @@ def skeleton_missing(app: "adsk.core.Application"):
 
 
 def run(_context):
+    """PM rule (drawings restart, 2026-10-31): every run closes what it opened, and the runner leaves a failed
+    run's document open, so a failure closes the route design unsaved here (its saved version is kept)."""
     app = adsk.core.Application.get()
+    try:
+        _run(app)
+    except Exception:
+        for i in range(app.documents.count - 1, -1, -1):
+            d = app.documents.item(i)
+            if d.name.split(" v")[0] == M.DOC_NAME:
+                print("closing %s unsaved after the failure (its saved version is kept)" % d.name)
+                d.close(False)
+        raise
+
+
+def _run(app: "adsk.core.Application"):
     doc = app.activeDocument
     if doc.name != M.DOC_NAME:
         raise RuntimeError("active document is %r, not %r (use --doc)" % (doc.name, M.DOC_NAME))

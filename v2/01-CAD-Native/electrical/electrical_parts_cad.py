@@ -58,7 +58,7 @@ PARTS = {
                  ("w", "%.1f mm" % V["pu_w"], "mm", "assumption", "route model pu_w (300)"),
                  ("h", "%.1f mm" % V["pu_h"], "mm", "assumption", "route model pu_h (260)"),
                  ("d", "%.1f mm" % V["pu_d"], "mm", "calculation", "route model pu_d (72): felt face to 6 mm short of the skin"),
-                 ("lip", "10 mm", "mm", "assumption", "front lips that carry the front plate's 4 screws"),
+                 ("lip", "22 mm", "mm", "assumption", "front lips that carry the front plate's 4 M4 screws and clinch nuts: 22 mm keeps each hole (Ø5.4 here, Ø4.5 in the plate) 2 diameters from the edge (mechanical check C09)"),
                  ("hole_b", "19.1 mm", "mm", "source", "Heyco 2836 bushing hole (maker page, 2026-10-31)"),
                  ("lead_z1", "%.1f mm" % (V["trunk_z"] - 30 - V["pu_z0"]), "mm", "calculation",
                   "first lead exit up the right side from the bottom: Z 1070 (trunk Z 1100 less 30) less the unit's bottom Z 870"),
@@ -71,7 +71,7 @@ PARTS = {
                  ("sleeve_d", "25 mm", "mm", "assumption", "entry for the 20 mm flexible conduit"),
                  ("sleeve_y", "%.1f mm" % (V["sl_y"] - V["y_bf"]), "mm", "calculation", "sleeve centre 58 mm behind the unit's front"),
                  ("clinch_d", "5.4 mm", "mm", HOLD, "M4 clinch nut hole in each lip; nut and hole to confirm (H-ELE-11 family)"),
-                 ("clinch_x", "15 mm", "mm", "assumption", "clinch nut centre from each side edge, along the top and bottom lips"),
+                 ("clinch_x", "30 mm", "mm", "assumption", "clinch nut centre from each side edge, along the top and bottom lips: 2 diameters clear of the lips' mitred corners (C09)"),
                  ("clinch_y", "lip / 2", "mm", "calculation", "clinch nut centre in the middle of the lip"),
              ]),
     "front": ("711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước",
@@ -94,8 +94,8 @@ PARTS = {
                   ("vent_z1", "25 mm", "mm", "assumption", "bottom vent row centre from the bottom edge"),
                   ("vent_z2", "130 mm", "mm", "assumption", "top vent row centre (between the supplies and the plates)"),
                   ("screw_d", "4.5 mm", "mm", "assumption", "M4 screw clearance hole"),
-                  ("screw_x", "15 mm", "mm", "assumption", "screw centre from each side edge, along the width (the body's clinch nuts)"),
-                  ("screw_y", "5 mm", "mm", "calculation", "screw centre from the top and bottom edges: the middle of the body's 10 mm lips"),
+                  ("screw_x", "30 mm", "mm", "calculation", "screw centre from each side edge, along the width: on the body's clinch nuts (clinch_x)"),
+                  ("screw_y", "11 mm", "mm", "calculation", "screw centre from the top and bottom edges: the middle of the body's 22 mm lips (2.4 diameters from the edge, C09)"),
               ]),
     "hub": ("711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến",
             "711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE", [
@@ -108,7 +108,7 @@ PARTS = {
                 ("btn_d", "16.2 mm", "mm", HOLD, "16 mm panel push button hole (button SKU HOLD)"),
                 ("btn_p", "40 mm", "mm", "assumption", "button pitch (BOOST, TEST, CALL)"),
                 ("btn_zc", "50 mm", "mm", "assumption", "button row centre from the bottom edge"),
-                ("btn_x1", "30 mm", "mm", "assumption", "first button centre from the left edge"),
+                ("btn_x1", "35 mm", "mm", "assumption", "first button centre from the left edge: at least 2 diameters (32.4) from the edge (C09)"),
                 ("knob_d", "7.5 mm", "mm", HOLD, "potentiometer bush hole (part HOLD)"),
                 ("knob_x", "150 mm", "mm", "assumption", "LIGHT knob centre from the left edge"),
                 ("screw_d", "4.5 mm", "mm", HOLD, "M4 fixing holes into the column (CEILING models the column)"),
@@ -451,15 +451,23 @@ def open_or_create(app: "adsk.core.Application", name):
         docs[0].activate()
         return docs[0], "activated"
     proj, folder = _folder(app)
-    n = folder.dataFiles.count
-    found, unreadable = [], 0
-    for i in range(n):
-        try:
-            f = folder.dataFiles.item(i)
-            if f.name == name:
-                found.append(f)
-        except Exception:
-            unreadable += 1
+    # an entry still uploading (often a design saved a moment ago) reads as unreadable for a while, so read
+    # the whole folder again a few times before giving up; nothing is made while any entry can't be read
+    for attempt in range(6):
+        n = folder.dataFiles.count
+        found, unreadable = [], 0
+        for i in range(n):
+            try:
+                f = folder.dataFiles.item(i)
+                if f.name == name:
+                    found.append(f)
+            except Exception:
+                unreadable += 1
+        if not unreadable or found:
+            break
+        print("%s: %d of %d entries can't be read yet; reading again in 10 s (%d)" % (FOLDER, unreadable, n, attempt + 1))
+        adsk.doEvents()
+        time.sleep(10)
     app.data.activeProject = proj
     if len(found) > 1:
         raise RuntimeError("%d files are called %s in %s" % (len(found), name, FOLDER))
