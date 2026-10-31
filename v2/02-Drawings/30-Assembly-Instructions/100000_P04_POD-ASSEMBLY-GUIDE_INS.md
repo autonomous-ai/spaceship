@@ -80,9 +80,9 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 4. Lower back wall: B1, B2
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (8.8 kg).
+- **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (11.6 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
-- **Person A:** Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1.
+- **Person A:** Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1. B2 carries the power unit, wired and tested at the factory (11.6 kg).
 - **Person B:** From inside, through the fill pockets: first the 3 pins of the B1-B2 closing seam, snug only; then B1's and B2's 4 base bolts each (pins first: joints register 2.7, R-J11).
 - **Check before the next step:** Both panels sit down on their stops; the B1-B2 gap looks even top to bottom (5.5 mm nominal).
 
