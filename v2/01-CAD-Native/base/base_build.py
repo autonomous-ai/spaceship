@@ -377,19 +377,54 @@ def describe(comp, pn, name, vn, cls):
     comp.description = "%s | %s | %s | rev %s | DRAFT" % (name, vn, CLASS_NAME.get(cls, cls), REV)
 
 
+def close_unsaved_builds(app, keep=None):
+    """Close earlier unsaved build documents of this assembly (found by the
+    root part number); never a saved document or anyone else's."""
+    for i in range(app.documents.count - 1, -1, -1):
+        d = app.documents.item(i)
+        try:   # drawings and other documents have no design product
+            dd = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
+        except RuntimeError:
+            dd = None
+        if dd and not d.isSaved and dd.rootComponent.partNumber == ASSEMBLY[0] and d != keep:
+            d.close(False)
+
+
+def wipe(design):
+    """Empty the open design (timeline and user parameters), so the same
+    cloud file gets the new build as its next version and drawings linked to
+    it stay linked."""
+    tl = design.timeline
+    if tl.count:
+        tl.markerPosition = 0
+        tl.deleteAllAfterMarker()
+    root = design.rootComponent
+    for i in range(root.occurrences.count - 1, -1, -1):
+        root.occurrences.item(i).deleteMe()
+    up = design.userParameters
+    for i in range(up.count - 1, -1, -1):
+        up.item(i).deleteMe()
+
+
 def step1_document(app):
+    if ARGS.get("in_place") == "1":
+        # the runner's --doc opened our saved document; rebuild it in place
+        doc = app.activeDocument
+        close_unsaved_builds(app, keep=doc)
+        if doc.name != DOC_NAME:
+            raise RuntimeError("in_place: the active document is %r, not %r (run with --doc %s)" % (
+                doc.name, DOC_NAME, DOC_NAME))
+        design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
+        wipe(design)
+        return build_tree(doc, design)
     if ARGS.get("close_previous", "1") == "1":
-        # only an unsaved document whose root part number is this assembly's
-        for i in range(app.documents.count - 1, -1, -1):
-            d = app.documents.item(i)
-            try:   # drawings and other documents have no design product
-                dd = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
-            except RuntimeError:
-                dd = None
-            if dd and not d.isSaved and dd.rootComponent.partNumber == ASSEMBLY[0]:
-                d.close(False)
+        close_unsaved_builds(app)
     doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     design = adsk.fusion.Design.cast(app.activeProduct)
+    return build_tree(doc, design)
+
+
+def build_tree(doc, design):
     design.designType = adsk.fusion.DesignTypes.ParametricDesignType
     design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
     up = design.userParameters
@@ -411,9 +446,8 @@ def step1_document(app):
         occ = host.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         describe(occ.component, pn, name, vn, cls)
         made[key] = occ.component
-        if key in ("pin", "glide", "rivnut"):
-            # placed later as copies at their holes; the first copy stays hidden
-            occ.isLightBulbOn = False
+        # pin, glide and rivnut: this first copy only holds the component; step 7
+        # places the real copies at their holes and then deletes it
     print("step 1: document, %d skeleton parameters (read from %s) + %d BASE parameters" % (
         n_skel, os.path.relpath(SKELETON, REPO), len(BASE_PARAMS)))
     for k in ("pod_w", "pod_d", "glide_h", "band_h", "band_t", "wall_z0", "wall_depth", "outer_t",
@@ -785,7 +819,9 @@ def place(design, host_key, key, xyz, rot=None):
         m.setToRotation(math.pi / 2, X, adsk.core.Point3D.create(0, 0, 0))
     m.translation = adsk.core.Vector3D.create(xyz[0] * CM, xyz[1] * CM, xyz[2] * CM)
     host = design.rootComponent if host_key is None else find_comp(design, host_key)
-    return host.occurrences.addExistingComponent(find_comp(design, key), m)
+    occ = host.occurrences.addExistingComponent(find_comp(design, key), m)
+    occ.isLightBulbOn = True
+    return occ
 
 
 def hardware_points(design):
@@ -841,6 +877,12 @@ def step7_hardware(design):
     for host, key, xyz, rot in hardware_points(design):
         place(design, host, key, xyz, rot)
         counts[(host, key)] = counts.get((host, key), 0) + 1
+    # remove the holding copies from step 1, so the CAD count equals the BOM count
+    root = design.rootComponent
+    for i in range(root.occurrences.count - 1, -1, -1):
+        occ = root.occurrences.item(i)
+        if occ.component.partNumber in (PARTS["pin"][0], PARTS["glide"][0], PARTS["rivnut"][0]):
+            occ.deleteMe()
     print("step 7: hardware placed")
     for (host, key), n in sorted(counts.items()):
         print("  %-30s %-44s x %d" % (PARTS[host][1], PARTS[key][1], n))
@@ -910,21 +952,34 @@ def report_mass(design):
 # ---------------------------------------------------------------- checks
 
 def body_boxes(design):
-    """(label, proxy body) for every visible body in the assembly."""
+    """(label, proxy body, occurrence) for every visible body in the assembly."""
     out = []
     for occ in design.rootComponent.allOccurrences:
         if not occ.isLightBulbOn:
             continue
         for b in occ.bRepBodies:
-            out.append(("%s @%s" % (occ.component.partNumber, occ.name.split(":")[-1]), b))
+            out.append(("%s @%s" % (occ.component.partNumber, occ.name.split(":")[-1]), b, occ))
     return out
 
 
-def intersect_volume(tbm, a, b):
+def temp_copy(tbm, body, occ):
+    """Temporary copy of a body where it sits in the assembly. A proxy's copy
+    can come back in its component's own space; then the occurrence's
+    transform is applied (checked against the proxy's bounding box)."""
+    t = tbm.copy(body)
+    if occ is not None:
+        a, b = t.boundingBox, body.boundingBox
+        if max(abs(a.minPoint.x - b.minPoint.x), abs(a.minPoint.y - b.minPoint.y),
+               abs(a.minPoint.z - b.minPoint.z)) > 1e-4:
+            tbm.transform(t, occ.transform2)
+    return t
+
+
+def intersect_volume(tbm, a, b, occ_a=None, occ_b=None):
     ba, bb = a.boundingBox, b.boundingBox
     if not ba.intersects(bb):
         return 0.0
-    ta, tb = tbm.copy(a), tbm.copy(b)
+    ta, tb = temp_copy(tbm, a, occ_a), temp_copy(tbm, b, occ_b)
     tbm.booleanOperation(ta, tb, adsk.fusion.BooleanTypes.IntersectionBooleanType)
     return ta.volume * 1000.0  # cm3 -> mm3
 
@@ -994,7 +1049,7 @@ def step9_checks(design):
     own = []
     for i in range(len(bodies)):
         for j in range(i + 1, len(bodies)):
-            vol = intersect_volume(tbm, bodies[i][1], bodies[j][1])
+            vol = intersect_volume(tbm, bodies[i][1], bodies[j][1], bodies[i][2], bodies[j][2])
             if vol > 1.0:
                 a, b = bodies[i][0].split()[0], bodies[j][0].split()[0]
                 ok = any({a, b} == {e[0], e[1]} for e in EXPECTED_OWN)
@@ -1010,8 +1065,8 @@ def step9_checks(design):
             p3((bx[0] + bx[3]) / 2, (bx[1] + bx[4]) / 2, (bx[2] + bx[5]) / 2),
             X, Y, (bx[3] - bx[0]) * CM, (bx[4] - bx[1]) * CM, (bx[5] - bx[2]) * CM)
         box = tbm.createBox(ob)
-        for name, b in bodies:
-            vol = intersect_volume(tbm, b, box)
+        for name, b, occ in bodies:
+            vol = intersect_volume(tbm, b, box, occ, None)
             if vol > 1.0:
                 pn = name.split()[0]
                 ok = any(pn == e[0] and label == e[1] for e in EXPECTED_WITH_SKELETON)
@@ -1068,7 +1123,8 @@ def step_export(app, design):
         raise RuntimeError("f3d export failed")
     ok = False
     for _ in range(10):
-        if em.execute(em.createSTEPExportOptions(step, design.rootComponent)) and os.path.getsize(step) > 2000:
+        if em.execute(em.createSTEPExportOptions(step, design.rootComponent)) and os.path.exists(step) \
+                and os.path.getsize(step) > 2000:
             ok = True
             break
         adsk.doEvents()
@@ -1081,7 +1137,25 @@ def step_export(app, design):
     unit = "cm" if "SI_UNIT(.CENTI.,.METRE.)" in text else ("mm" if "SI_UNIT(.MILLI.,.METRE.)" in text else "?")
     print("export: %s" % F3D_REL)
     print("export: %s (STEP length unit %s, declared in the file; D-13)" % (STEP_REL, unit))
-    print("  assembly box %s" % fmt_box(bbox_mm(design.rootComponent)))
+    if "PRODUCT('%s'," % ASSEMBLY[0] not in text:
+        raise RuntimeError("STEP: no root product with part number %s" % ASSEMBLY[0])
+    if "/*author*/('')" not in text or "/*organization*/('')" not in text:
+        raise RuntimeError("STEP header carries an author or organisation; it must stay empty (public repo)")
+    box = bbox_mm(design.rootComponent)
+    print("  assembly box   %s" % fmt_box(box))
+    # read the STEP back in Fusion (it applies the declared unit and the assembly transforms)
+    src = app.activeDocument
+    imp = app.importManager.importToNewDocument(app.importManager.createSTEPImportOptions(step))
+    d2 = adsk.fusion.Design.cast(imp.products.itemByProductType("DesignProductType"))
+    box2 = bbox_mm(d2.rootComponent)
+    n_occ = d2.rootComponent.allOccurrences.count
+    imp.close(False)
+    src.activate()
+    diff = max(abs(a - b) for a, b in zip(box, box2))
+    print("  STEP re-read   %s  (%d occurrences); largest difference %.3f mm -> %s" % (
+        fmt_box(box2), n_occ, diff, "MATCH" if diff < 0.05 else "MISMATCH"))
+    if diff >= 0.05:
+        raise RuntimeError("STEP box does not match the model")
 
 
 # ---------------------------------------------------------------- main
@@ -1096,10 +1170,15 @@ def run(_context):
         steps[n](design)
     print("done through step %d" % last)
     if last == len(steps) - 1:
+        if ARGS.get("in_place") == "1":
+            # save first, so the exports come from a saved version (PR #6 review)
+            if not doc.save("rev %s build by v2/01-CAD-Native/base/base_build.py" % REV):
+                raise RuntimeError("save failed")
+            print("saved: %s, version %s" % (doc.name, doc.dataFile.versionNumber if doc.dataFile else "?"))
+        elif ARGS.get("save") == "1":
+            step_save(app, doc)
         if ARGS.get("export") == "1":
             step_export(app, design)
-        if ARGS.get("save") == "1":
-            step_save(app, doc)
-    if ARGS.get("keep") != "1" and ARGS.get("save") != "1":
+    if ARGS.get("in_place") != "1" and ARGS.get("keep") != "1" and ARGS.get("save") != "1":
         doc.close(False)
         print("closed the unsaved build document (pass --arg keep=1 to keep it open)")
