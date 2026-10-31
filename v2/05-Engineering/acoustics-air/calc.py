@@ -340,6 +340,20 @@ def walls():
               [a3p6, p4], 40, 40, ("line", 0.6), True, al, 62),
         Build("DL-HDF-60", "ACP 3 / 60 fill, shared studs / HDF 3 + felt 9",
               [a3, h3], 60, 60, ("line", 0.6), True, al * 1.3, 75),
+        Build("DL-HDF-40-FL", "ACP 3 / 40 fill / HDF 3 floating (no stud bridge) + felt 9",
+              [a3, h3], 40, 40, ("none",), True, al, 55),
+        Build("DL-HDF-60-FL", "ACP 3 / 60 fill / HDF 3 floating + felt 9",
+              [a3, h3], 60, 60, ("none",), True, al * 1.3, 75),
+        Build("DL-ST-40-FL", "ACP 3 / 40 fill / steel 0.5 floating + felt 9",
+              [a3, s05], 40, 40, ("none",), True, al, 53),
+        Build("DL-ST-60-FL", "ACP 3 / 60 fill / steel 0.5 floating + felt 9",
+              [a3, s05], 60, 60, ("none",), True, al * 1.3, 73),
+        Build("DL-2HDF-60-FL", "ACP 3 / 60 fill / 2 x HDF 3 floating + felt 9",
+              [a3, h6], 60, 60, ("none",), True, al * 1.3, 78),
+        Build("DL-P6-HDF-60-FL", "ACP 3 + ply 6 / 60 fill / HDF 3 floating + felt 9",
+              [a3p6, h3], 60, 60, ("none",), True, al * 1.3, 81),
+        Build("DL-P6-P9-60-FL", "ACP 3 + ply 6 / 60 fill / ply 9 floating + felt 9",
+              [a3p6, p9], 60, 60, ("none",), True, al * 1.3, 87),
         Build("DL-HDF-100-DEC", "ACP 3 / 100 fill / HDF 3 on resilient pads + felt 9",
               [a3, h3], 100, 100, ("point", 0.6), True, al100, 115),
         Build("DL-ST-100-DEC", "ACP 3 / 100 fill / steel 0.5 on resilient pads + felt 9",
@@ -421,10 +435,15 @@ GEOM = {
 }
 DOOR_W, DOOR_H = 1.1756, 2.011               # V1_BOM GL-01 (kept in v2: same look)
 DOOR_M2 = DOOR_W * DOOR_H
-FIXED_M2 = 2.1385 * 0.7237                   # V1_BOM GW-01 area
+FIXED_M2 = 3.425 - DOOR_M2                   # finished fixed-glass shape from the v1 STEP (layout study, 68.5 kg at
+                                             # 8 mm = 3.425 m2 door + fixed); the BOM's 2138.5 x 723.7 is its bounding box
 GLASS_M2 = DOOR_M2 + FIXED_M2
-OUT_WALL_M2 = 2 * 1.5 * 2.4 + 2.5 * 2.4      # calculation from PLAN: 2 sides 1500 deep + back
-OUT_CEIL_M2 = 2.5 * 1.5                      # calculation from PLAN
+OUT_WALL_M2 = 2 * 1.5 * 2.29 + 2.424 * 2.252  # layout-study panel areas: 2 sides 1500 x 2290 + back 2424 x 2252
+OUT_CEIL_M2 = 2.424 * 1.5                       # layout-study ceiling 2424 x 1500
+REST_KG = 102.4   # layout study (branch super-tab/7667a51, commit cb7009f, work in progress): 'Spaceship light
+                  # indoor build' total 303.0 kg minus walls+ceiling 103.0, felt 29.0 and glass 68.5. Includes the
+                  # thin floor and base band, decor blocks, door hardware with drop seal and glazing profiles,
+                  # fans, 2 silencer boxes, electrics and a 4 kg voice-kit reserve.
 
 
 def areas(g):
@@ -497,6 +516,11 @@ def elements(cfg, sc, wb, gb):
         el.append(("door bottom", DOOR_W * SEAL_STRIP, flat(10 ** (-s["seal_r"] / 10))))
     else:
         el.append(("door bottom", DOOR_W * s["gap_bottom"] / 1000, flat(1.0)))
+    fg_len = 5.5   # m, fixed-glass edge (calculation from the BOM outline)
+    if cfg.get("glass_seals"):
+        el.append(("fixed glass edges", fg_len * SEAL_STRIP, flat(10 ** (-s["gasket_r"] / 10))))
+    else:
+        el.append(("fixed glass edges", fg_len * s["joint"] / 1000, flat(1.0)))
     jl = JOINT_LEN[cfg["geom"]]
     if cfg.get("gaskets"):
         el.append(("panel joints", jl * SEAL_STRIP, flat(10 ** (-s["gasket_r"] / 10))))
@@ -545,6 +569,7 @@ FIXES = [
     # label, change, kg added to the pod, kg basis
     ("Door edge seals on 3 sides", dict(door_seals=True), 1.0, "HW door-seal rows, about 0.2 kg/m x 5.2 m"),
     ("Door drop seal", dict(drop_seal=True), 1.0, "HW drop-seal row"),
+    ("Fixed glass in sealed U-profiles", dict(glass_seals=True), 0.0, "profiles are already in the layout study's rest"),
     ("Gaskets on every panel joint", dict(gaskets=True), 1.0, "HW gasket row, about 0.03 kg/m x 34 m"),
     ("Silenced vents (2 lined ceiling plenums)", dict(vents="silenced", sil_len=1.2), 7.0,
      "calculation: 2 x (0.6 m2 HDF 3 box + 1.2 m2 lining 25 mm at 1.2 kg/m2)"),
@@ -559,6 +584,21 @@ FIX_ALL = {}
 for _l, _c, _k, _b in FIXES:
     FIX_ALL.update(_c)
 FIX_KG = sum(k for _, _, k, _ in FIXES)
+
+
+# Fix mass not already inside REST_KG (layout study): door edge seals 1.0, joint gaskets 1.0, silencer boxes
+# beyond the study's 2 x 1.5 kg 4.0, base seal 0.5, grommets 0.1, decor fill 4.0, ceiling absorber 3.0 (calculation)
+EXTRA_FIX_KG = 13.6
+
+
+def pod_total_kg(cfg, wb, gb):
+    """Whole pod, all light fixes on: rest of pod + wall and ceiling build-ups (with felt, fill, frame) + front."""
+    kg = REST_KG + EXTRA_FIX_KG
+    kg += wb[cfg["wall"]].kg_m2 * OUT_WALL_M2 + wb[cfg.get("ceiling", cfg["wall"])].kg_m2 * OUT_CEIL_M2
+    kg += gb[cfg["glass"]].kg_m2 * GLASS_M2
+    if cfg.get("sil_len", 1.2) > 1.2:
+        kg += (cfg["sil_len"] - 1.2) / 1.2 * 7.0
+    return kg
 
 
 def wall_kg(wb, key):
@@ -589,7 +629,7 @@ AIR = dict(
     lights_w=24.0,              # HW lights rows (2 ceiling lights) - provisional
     front_light_w=10.0,         # HW soft front light row - provisional
     controls_w=3.0,             # HW CO2 controller row - provisional
-    voice_kit_w=40.0,           # reserve for the later voice cockpit kit (BRIEF update): ASSUME
+    voice_kit_w=60.0,           # reserve for the later voice cockpit kit: ASSUME, same as the layout study
 )
 SYS_K = 7.5   # ASSUME: entry 0.5 + outside grille 2.0 + 180-degree lined turn 2.0 + inside diffuser 2.0 + exit 1.0
 FAN_SPECTRUM = (-3.0, -5.0, -8.0, -11.0, -15.0, -20.0)   # ASSUME: dB re overall Lw, small EC fan
@@ -817,6 +857,36 @@ def t_goal(wb, gb, base, ref_kg, v1_central, v1_high):
     return "\n".join(out)
 
 
+def t_curve(wb, gb, base):
+    """Best predicted D_S,A for each total pod weight, all light fixes on (Lead request).
+    Two fronts: glass (8 mm tempered or 4+4 laminated) and smoked acrylic 10 mm."""
+    wall_keys = [k for k in wb if not k.startswith("_") and not k.startswith("V1")]
+    out = []
+    for title, fronts in (("Glass front (8 mm tempered or 4+4 laminated)", ("G8", "L44")),
+                          ("Smoked acrylic 10 mm front", ("A10",))):
+        combos = []
+        for wk in wall_keys:
+            for ck in wall_keys:
+                for gk in fronts:
+                    for sil in (1.2, 1.8):
+                        cfg = dict(base, wall=wk, ceiling=ck, glass=gk, sil_len=sil)
+                        combos.append((pod_total_kg(cfg, wb, gb), pod(cfg, "central", wb, gb)["dsa"], cfg))
+        out += [f"{title}:", "",
+                "| Pod budget kg | Best wall / ceiling / front / silencer | Total kg | D_S,A low / central / high |",
+                "|---:|---|---:|---|"]
+        for budget in range(280, 521, 20):
+            ok = [c for c in combos if c[0] <= budget]
+            if not ok:
+                out.append(row([str(budget), "nothing fits", "", ""]))
+                continue
+            kg, d, cfg = max(ok, key=lambda c: (round(c[1], 1), -c[0]))
+            bb = band(cfg, wb, gb)
+            out.append(row([str(budget), f"{cfg['wall']} / {cfg['ceiling']} / {gb[cfg['glass']].name} / {cfg['sil_len']:.1f} m",
+                            f"{kg:.0f}", " / ".join(f"{x:.1f}" for x in bb)]))
+        out.append("")
+    return "\n".join(out).rstrip()
+
+
 def t_air():
     rows, v, g = co2_rows()
     out = [f"Inside volume {v:.2f} m3; CO2 from 2 people {g * 1000:.1f} ml/s.", "",
@@ -828,6 +898,45 @@ def t_air():
     out.append("")
     out.append(f"CO2 after 2 h at 40 l/s from 400 ppm (room 400): {co2_after(40, 120, 400, 400):.0f} ppm; "
                f"after 3 h at 26 l/s, room 600: {co2_after(26, 180, 600, 600):.0f} ppm.")
+    return "\n".join(out)
+
+
+def fan_point(fan, sil_len=1.2, target_ls=70.0):
+    """Full-speed operating point on the silenced-vent system curve, then the speed that gives
+    target_ls (fan laws: Q ~ n, p ~ n^2, P ~ n^3, Lw ~ 50 lg n)."""
+    pts = sorted(fan["curve"])                      # (l/s, Pa) at full speed
+    q_op = None
+    for (q1, p1), (q2, p2) in zip(pts, pts[1:]):
+        f1, f2 = p1 - sys_dp(q1), p2 - sys_dp(q2)
+        if f1 >= 0 >= f2:
+            q_op = q1 + (q2 - q1) * f1 / (f1 - f2) if f1 != f2 else q1
+            break
+    if q_op is None:
+        return None
+    n = target_ls / q_op
+    lwa_full = fan["lwa"][0]
+    lwa = lwa_full + 50 * math.log10(min(n, 1.0)) if n <= 1 else None
+    watts = fan.get("watts_full", 0) * min(n, 1.0) ** 3 if n <= 1 else None
+    return dict(q_full=q_op, p_full=sys_dp(q_op), speed=n, lwa=lwa, watts=watts,
+                inside=inside_noise(lwa, sil_len) if lwa is not None else None)
+
+
+def t_fans():
+    out = ["| Fan | Full-speed point on the vent curve (l/s @ Pa) | Speed for 70 l/s | Duct LwA at 70 l/s | Power W | Inside dB(A), 1.2 m silencer | Basis |",
+           "|---|---|---:|---:|---:|---:|---|"]
+    if not FANS:
+        out.append(row(["(no fan with a published curve and sound data entered yet)", "", "", "", "", "", ""]))
+    for k, fan in FANS.items():
+        r = fan_point(fan)
+        if r is None:
+            out.append(row([fan["name"], "curve does not reach the vent curve", "", "", "", "", fan["basis"]]))
+            continue
+        if r["lwa"] is None:
+            out.append(row([fan["name"], f"{r['q_full']:.0f} @ {r['p_full']:.0f}", f"{r['speed'] * 100:.0f}% (short)",
+                            "", "", "", fan["basis"]]))
+            continue
+        out.append(row([fan["name"], f"{r['q_full']:.0f} @ {r['p_full']:.0f}", f"{r['speed'] * 100:.0f}%",
+                        f"{r['lwa']:.0f}", f"{r['watts']:.0f}" if r["watts"] else "", f"{r['inside']:.1f}", fan["basis"]]))
     return "\n".join(out)
 
 
@@ -856,8 +965,10 @@ def tables():
                                     "Plan + fixes": fixed, "DL-ST + fixes": dict(fixed, wall="DL-ST")})
     ref_kg = pod_kg(dict(PLAN, glass="G8"), wb, gb)
     out["goal"] = t_goal(wb, gb, fixed, ref_kg, v1b[1], v1b[2])
+    out["curve"] = t_curve(wb, gb, fixed)
     out["air"] = t_air()
     out["silencer"] = t_silencer()
+    out["fans"] = t_fans()
     return out
 
 
