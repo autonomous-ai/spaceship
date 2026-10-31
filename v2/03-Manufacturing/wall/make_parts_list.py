@@ -23,7 +23,7 @@ from collections import Counter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIELDS = ["level", "part_number", "name", "name_vi", "kind", "material", "finish", "process", "maker", "sku",
-          "torque", "qty", "unit", "cut_length_mm", "size_mm", "mass_each_kg", "mass_total_kg", "mass_status",
+          "torque", "qty", "unit", "cut_length_mm", "size_mm", "tolerance", "mass_each_kg", "mass_total_kg", "mass_status",
           "status", "source", "note"]
 REG = "joints register V2-ENG-JNT-01 table 2.1 (main, PR #47)"
 SEL = "hardware selection V2-ENG-SEL"
@@ -177,7 +177,8 @@ def panel_rows(rep):
                     finish="mill finish with the bond prep (D-79)",
                     process="saw cut square, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6), rivnuts and "
                             "stop washers set at the factory, member joints HOLD (H11)",
-                    qty=1, unit="pc", size_mm=size_of(box_of(frame["bodies"])), mass_each_kg=fm, mass_total_kg=fm,
+                    qty=1, unit="pc", size_mm=size_of(box_of(frame["bodies"])), tolerance="per its drawing",
+                    mass_each_kg=fm, mass_total_kg=fm,
                     mass_status="calculation: CAD at 2700 kg/m3", status="DRAFT",
                     source="CAD; tube confirmed (D-34, D-54, D-85%s)" % ("" if back else "; 40 x 40 R-J3"),
                     note="members butt-jointed, rails full length" + (
@@ -191,6 +192,7 @@ def panel_rows(rep):
     for (kind, sec, length, m), q in sorted(cut.items(), key=lambda k: (k[0][0], -k[0][2])):
         rows.append(row(level=2, name="%s (cut length)" % kind, name_vi="thanh nhôm", kind="cut",
                         material="aluminium tube 6063-T6 %s" % sec, qty=q, unit="pc", cut_length_mm=length, size_mm=sec,
+                        tolerance="length ±0.5, square ends (assumption, guideline 6.3)",
                         mass_each_kg=round(m, 3), mass_total_kg=round(m * q, 3), mass_status="calculation: CAD",
                         status="DRAFT", source="CAD body length", note="square-cut ends; cut list of %s" % frame["part_number"]))
     sm = round(sum(b["mass_kg"] for b in skin["bodies"]), 3)
@@ -198,7 +200,8 @@ def panel_rows(rep):
                     kind="MP", material="ACP 3 mm Alcorest outdoor, PE-type core (HW-SEL A1)",
                     finish="PVDF coated EV3038 Dark Yellow (maker's coil coating; D-12)",
                     process="CNC router: cut flat" if back else "CNC router: cut, V-groove and fold the back return (H16)",
-                    qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])), mass_each_kg=sm, mass_total_kg=sm,
+                    qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
+                    tolerance="per the tabulated skin drawing (D-89)", mass_each_kg=sm, mass_total_kg=sm,
                     mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
                     source="CAD", note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
                                         if back else "blank and fold line in the skin DXF")))
@@ -207,8 +210,11 @@ def panel_rows(rep):
                      for b in fill["bodies"])
     rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill), name_vi=vi_name(fill["description"]),
                     kind="MP", material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
-                    process="knife cut to the bays, 60 x 60 pockets left open at the bolts", qty=1, unit="set",
+                    process="knife cut to the bays, 60 x 60 x 40 pockets left out beside each bolt this panel drives "
+                            "(at the bolt positions in the frame drawing's hole tables); no drawing (D-89)",
+                    qty=1, unit="set",
                     size_mm="; ".join("%d pieces %g x %g x 40" % (q, a, b) for (a, b), q in sorted(pieces.items())),
+                    tolerance="±2 on length and width, thickness as supplied (assumption: knife-cut PET batt)",
                     mass_each_kg=fl, mass_total_kg=fl, mass_status="calculation: CAD at the design's fill density",
                     status="DRAFT", source="CAD; 24 kg/m3 PM ruling 2026-10-31 (T02 confirms, else 32)",
                     note="friction fit in the bays"))
@@ -321,13 +327,15 @@ def cassette_rows(rep):
     rows.append(row(level=1, part_number=tray["part_number"], name=en_name(tray), name_vi=vi_name(tray["description"]),
                     kind="MP", material="galvanised steel sheet 0.5, EN 10346 DX51D+Z",
                     finish="hot-dip zinc (coating mass to confirm)", process="laser or punch blank, brake bend (sheet metal)",
-                    qty=1, unit="pc", size_mm=size_of(tb["box"]), mass_each_kg=tb["mass_kg"], mass_total_kg=tb["mass_kg"],
+                    qty=1, unit="pc", size_mm=size_of(tb["box"]), tolerance="per the tabulated tray drawing (D-89)",
+                    mass_each_kg=tb["mass_kg"], mass_total_kg=tb["mass_kg"],
                     mass_status="calculation: CAD at 7850 kg/m3", status="DRAFT",
                     source="CAD; 0.5 confirmed (D-37); lips PM ruling 2026-10-31",
                     note="34 mm returns turned in as 12 mm lips that hold the felt; flat blank in the DXF"))
     rows.append(row(level=1, part_number=felt["part_number"], name=en_name(felt), name_vi=vi_name(felt["description"]),
                     kind="MP", material="PET felt 9 mm Dark Gray, the factory's felt (D-31; plan VT03-PET)",
-                    process="knife or die cut", qty=1, unit="pc", size_mm=size_of(fb["box"]),
+                    process="knife or die cut, a plain rectangle; no drawing (D-89)", qty=1, unit="pc",
+                    size_mm=size_of(fb["box"]), tolerance="±1 on length and width (assumption: die or knife cut)",
                     mass_each_kg=fb["mass_kg"], mass_total_kg=fb["mass_kg"],
                     mass_status="calculation: CAD at 1.8 kg/m2 (Polyx Board 9 data, HW-SEL A3); the factory felt unverified",
                     status="DRAFT", source="CAD", note="held by the tray's lips over the 24 mm air gap (settles H09)"))

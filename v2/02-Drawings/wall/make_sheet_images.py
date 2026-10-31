@@ -30,6 +30,31 @@ def load(pn):
         return json.load(fh)
 
 
+def tab_rows(kind, back):
+    """D-89: identical or mirrored skins and trays share one tabulated drawing. The rows (part number, position,
+    hand, size) come from the build scripts' own parameters, resolved offline the way Fusion resolves them
+    (v2/01-CAD-Native/wall/test_wall_offline.py), so they match the designs."""
+    sys.path.insert(0, os.path.join(HERE, "..", "..", "01-CAD-Native", "wall"))
+    import test_wall_offline as t
+    out = []
+    for code in (("B1", "B2", "B3", "B4") if back else ("L1", "R1", "L2", "R2")):
+        if back:
+            ns = t.load_back(code, "skin" if kind == "skin" else "tray")
+        else:
+            ns = t.load(part="skin" if kind == "skin" else "tray", side=code[0], row=code[1])
+        v = t.resolve(ns)
+        pn = ns["PARTS"]["skin" if kind == "skin" else "tray"][0]
+        hand = ("LH" if code in ("L1", "L2", "B1", "B3") else "RH")
+        if kind == "skin":
+            size = ("%.2f × %.2f, flat" % (v["pnl_len"], v["pnl_h"]) if back else
+                    "%.2f × %.2f, back return %.0f (blank %.2f × %.2f)" % (v["pnl_len"], v["pnl_h"], v["outer_t"],
+                                                                        v["pnl_len"] + v["outer_t"], v["pnl_h"]))
+        else:
+            size = "%.2f × %.2f × %.0f deep" % (v["cass_len"], v["cass_h"], v["tray_h"])
+        out.append("%s · %s · %s · %s" % (pn, code, hand, size))
+    return out
+
+
 def render(name, lines, width_mm, size_pt=7.0, lead=1.35, title=None, border=True):
     """Lines of text (wrapped to width_mm) in a bordered block, rendered to PNG. Returns (path, w_mm, h_mm)."""
     font = fitz.Font(fontfile=FONT)
@@ -211,13 +236,16 @@ def skin_blocks(pn, src=None):
             "back end at the corner (D-55). Fold allowance 0 and the groove rest thickness: HOLD H16." % (
                 ret + length, height, pn, length, ret),
         ]
+    table = ["**TABULATED DRAWING (D-89): ONE SHAPE, THESE PART NUMBERS (part · position · hand · size)"] + \
+        tab_rows("skin", pos["back"]) + ["Shown: %s. %s" % (pn, "All four are the same flat rectangle." if pos["back"]
+                                                          else "RH is the mirror of LH; L1 = L2 and R1 = R2.")]
     notes = ["**GENERAL NOTES", "1. " + views_note(pos)] + body + [
         "4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
         "table with the ACP face as datum (bond spec, joints register; in-line tape HOLD-B2).",
         "5. Edges flush with the frame's top and bottom: the outside reveal is the 2.26 seam gap (D-23).",
         "6. Protect the coloured face; film stays on until the panel is installed.",
     ]
-    return [("data", data, 150.0, None), ("notes", notes, 150.0, None)]
+    return [("data", data, 150.0, None), ("notes", notes, 150.0, None), ("table", table, 150.0, None)]
 
 
 def tray_blocks(pn, src=None):
@@ -251,7 +279,10 @@ def tray_blocks(pn, src=None):
         "nothing else fixes the tray to the frame (floating, D-17).",
         "6. Burr-free edges; zinc coating mass to confirm with the supplier.",
     ]
-    return [("data", data, 150.0, None), ("notes", notes, 150.0, None)]
+    table = ["**TABULATED DRAWING (D-89): ONE CONSTRUCTION, THESE PART NUMBERS (part · position · hand · size)"] + \
+        tab_rows("tray", pos["back"]) + ["Shown: %s. LH and RH are the same tray (no handed feature); the flat "
+                                         "blank of each is its own DXF." % pn]
+    return [("data", data, 150.0, None), ("notes", notes, 150.0, None), ("table", table, 150.0, None)]
 
 
 def parts_rows(bom_csv, top_pn):
