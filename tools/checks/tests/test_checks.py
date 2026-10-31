@@ -389,7 +389,8 @@ def test_skip_rules_use_whole_words_and_their_own_columns(tmp_path):
 def test_soft_goods_rule_uses_whole_words(tmp_path):
     (tmp_path / "v2/03-Manufacturing/front").mkdir(parents=True)
     with open(tmp_path / "v2/03-Manufacturing/front/cut-list.csv", "w") as fh:
-        fh.write("part_number,name\n351001,x\n351002,x\n351003,x\n351004,x\n")
+        fh.write("part_number,name,size_mm,thickness_mm,material,tolerance\n" +
+                 "".join("%s,x,2000 x 10,3,EPDM 60 Shore A,±0.5\n" % n for n in ("351001", "351002", "351003", "351004")))
     names = {"351001": "FRONT - SEALED GLAZING PROFILE", "351002": "FRONT - TAPERED BLOCK",
              "351003": "FRONT - FILLER PANEL", "351004": "FRONT - DOOR SEAL"}
     plural = {"351005": "FRONT - DOOR SEALS - SET", "351006": "FRONT - GASKETS - KIT"}
@@ -401,9 +402,9 @@ def test_soft_goods_rule_uses_whole_words(tmp_path):
     (tmp_path / "v2/04-Checks/config/policy.csv").write_text("key,value,status_source\nmissing_drawing_severity,major,x\n")
     fs = c_drawings.check_drawings(str(tmp_path), set(names), {}, names)
     assert {f.subject: f.severity for f in fs} == {"351001": "major", "351002": "major", "351003": "major"}
-    # 351004 is a seal: its cut-list line defines it; plurals count too
+    # 351004 is a seal: its full cut-list line defines it (D-89 part 3); plurals count too
     with open(tmp_path / "v2/03-Manufacturing/front/cut-list.csv", "a") as fh:
-        fh.write("351005,x\n351006,x\n")
+        fh.write("351005,x,2000 x 10,3,EPDM,±0.5\n351006,x,500 x 10,2,PORON,±0.3\n")
     assert c_drawings.check_drawings(str(tmp_path), set(plural), {}, plural) == []
 
 
@@ -626,28 +627,31 @@ def test_d89_felt_and_fill_rectangles_pass_on_a_complete_cut_list_row(tmp_path):
     assert "511301" not in fs                              # complete row, plain rectangle: no drawing needed
     assert "doesn't give tolerance" in fs["511401"]
     assert "isn't a plain rectangle" in fs["511302"]       # the felt has a hole: it needs a drawing
-    assert "no cut list" in fs["511303"]                             # a DXF alone isn't D-89's route
+    assert "no cut list or parts list has a row" in fs["511303"]   # a DXF alone doesn't clear felt
     # a body with pockets (more than a block's 6 faces) isn't a plain rectangle either
     fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), {"511301"}, {}, names,
                                                                    {"511301": [6, 22]})}
     assert "22 faces" in fs["511301"]
 
 
-def test_d89_a_cut_list_is_a_csv_with_cut_in_its_name(tmp_path):
-    # D-89 as logged: a parts list doesn't serve as the cut list, a ..._CUT-LIST_... csv does; a row that
-    # names pockets keeps the drawing
+def test_d89_a_parts_list_row_serves_as_the_cut_list(tmp_path):
+    # PM ruling 2026-11-01: a parts-list row that gives part number, size, material and tolerance serves as
+    # the cut list; a row that names pockets keeps the drawing; other soft goods need thickness, or a DXF
     m = tmp_path / "v2/03-Manufacturing/wall"
     m.mkdir(parents=True)
-    rows = ("part_number,name,material,size_mm,tolerance\n"
-            "511301,LINING - FELT - SIDE LOWER - LH,PET felt 9 mm Dark Gray,9 x 1442 x 1139.74,±1 on length and width\n"
-            "211501,WALL - CAVITY FILL - SIDE LOWER - LH,PET fill 40 mm,1102.7 x 344.9 x 40 with 60 x 60 pockets,±2\n")
-    (m / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv").write_text(rows)
-    names = {"511301": "LINING - FELT - SIDE LOWER - LH", "211501": "WALL - CAVITY FILL - SIDE LOWER - LH"}
-    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
-    assert "no cut list" in fs["511301"]
-    (m / "210101_P01_WALL-FELT-AND-FILL-CUT-LIST_SPEC.csv").write_text(rows)
+    (m / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv").write_text(
+        "part_number,name,material,size_mm,tolerance\n"
+        "511301,LINING - FELT - SIDE LOWER - LH,PET felt 9 mm Dark Gray,9 x 1442 x 1139.74,±1 on length and width\n"
+        "211501,WALL - CAVITY FILL - SIDE LOWER - LH,PET fill 40 mm,1102.7 x 344.9 x 40 with 60 x 60 pockets,±2\n"
+        "513401,LINING - EDGE GASKET - SIDE LOWER,PORON 4701-40,1445 x 10,±0.5\n")
+    names = {"511301": "LINING - FELT - SIDE LOWER - LH", "211501": "WALL - CAVITY FILL - SIDE LOWER - LH",
+             "513401": "LINING - EDGE GASKET - SIDE LOWER"}
     fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
     assert "511301" not in fs and "names pockets" in fs["211501"]
+    assert "doesn't give thickness" in fs["513401"]                 # a gasket's line must give its thickness
+    (m / "513401_P01_LINING-EDGE-GASKET-SIDE-LOWER_DXF.dxf").write_text("x")
+    fs = {f.subject for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert "513401" not in fs                                       # or a DXF gives its outline (D-89 part 3)
 
 
 def test_duplicate_number_ignores_hyphens_and_case_but_not_words(tmp_path):
