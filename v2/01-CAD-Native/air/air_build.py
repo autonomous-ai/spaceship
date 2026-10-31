@@ -257,6 +257,10 @@ def open_or_create(app, name):
         d = app.documents.open(found[0], True)
         d.activate()
         return d, "opened"
+    if ARGS.get("create") != "1":
+        # PM ruling 2026-11-01: no new designs until the runner's folder fix lands, since an
+        # entry Fusion can't read could make a second, empty design with a real one's name
+        raise RuntimeError("%r is not in %s; pass create=1 to make it (only once that's allowed)" % (name, FOLDER))
     d = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     if not d.saveAs(name, folder, "new, made by air_build.py parts=", ""):
         raise RuntimeError("saveAs %r failed" % name)
