@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | V2-CTL-005 | P01 | DRAFT. Items marked PROPOSED are working rules until the PM decides them. | 2026-10-31 | Control pack |
 
-Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-59. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum), D-22 and D-28 (part numbers), D-32 (no outside approvals), and D-49 (the decor and wall depth in the key planes, section 4).
+Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-60. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum), D-22 and D-28 (part numbers), D-32 (no outside approvals), and D-49 (the decor and wall depth in the key planes, section 4).
 
 Spaceship is the working name for v2 (FocusPod v2). The team calls the product "Indoor Pod", and v1 is "Indoor Pod V3" in `sources/v1/`. Folder names stay as they are.
 
@@ -169,7 +169,7 @@ The guideline asks to keep existing numbers where they still identify the item c
 | 51 | LINING: PET felt panels and their fixing |
 | 61 | AIR: fans, silencers, vents, grilles |
 | 71 | ELECTRICAL: lights, switches, sockets, controller, sensors, wiring, power inlet, and hooks for the voice cockpit kit |
-| 81 | INTERIOR: inside trims only. The pod ships empty. |
+| 81 | INTERIOR: inside trims and fittings, such as the work-wall ledge and the air column and soffit casings (D-70). The floor stays empty (D-06). |
 | 83 | HARDWARE: standard fasteners, inserts, nuts, washers. The family code echoes the guideline's insert and nut numbers; none of those numbers is reused. |
 | 84 | SEALS AND TAPES bought by length: gaskets, hook-and-loop, adhesive tapes |
 | 91 | PACKAGING: pallets, crates, protection, labels |

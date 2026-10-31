@@ -1,0 +1,2 @@
+id,min_dia_mm,max_dia_mm,severity,status_source,message,fix
+M6-CLEARANCE-7,6.3,6.95,major,"confirmed: D-64 and D-75 (holes Ø7.0) with the F-009 ruling: position Ø0.4 (±0.2) from the spigot hole, by CNC or jig","An M6 clearance hole smaller than the ruled 7.0 mm: with a rivnut on the other side the bolt float drops to 0.31 mm and the joint may not go together (stack ST-03)","Make it Ø7.0 (+0.1/0) and give its position Ø0.4 from the spigot hole on the drawing; if this is a factory joint, not a site joint, say so in the feature rationale"

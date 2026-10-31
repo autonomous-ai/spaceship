@@ -109,13 +109,12 @@ def sequence(split, m, parts, split_long, n_std, n_long):
                              ("; fans mount from below through their opening." if fans_in_ceiling else ".")))
     n, two, one = carry_place("F-D")
     b, c, tb = fix(("J-FRONT-01", "J-FRONT-03", "J-AIR-02"))
-    fill = sum(pt.qty for pt in parts if pt.pid == "F-DECOR-FILL")
-    sil = sum(1 for pt in parts if pt.pid in ("A-SIL-DR", "A-SIL-DR-CASING", "A-SIL-DT"))
-    baffles = sum(pt.qty for pt in parts if pt.pid == "A-SIL-DR-BAFFLE")
-    steps.append(dict(name="Decor blocks (skins on, factory-made): " + ("PET fill pushed into each open back, then " if fill else "")
-                      + "left door post, right, then top" + (f"; then {sil} splitter silencers slid in from inside through the felt-covered access panels, the right one's baffles after its casing, and the 2 TD-500 fans fitted next to them" if sil else ""),
-                      lifts=n + sil + baffles, bolts=b, cams=c, two=two + sil * 120,
-                      one=one + tb + (3 * 30 if fill else 0) + baffles * 30,
+    air = sum(pt.qty for pt in parts if pt.pid.startswith(("A-CART", "A-RISER")))
+    steps.append(dict(name="Decor blocks (skins on, factory-made): left door post, right, then top"
+                      + (f"; then {air} air parts slid into the right block from inside, with its removable felt-covered inner panel off: "
+                         "the supply and exhaust cartridges with their 12 V fans fitted, and the exhaust riser between them; the panel, "
+                         "carrying both grilles, goes back on" if air else ""),
+                      lifts=n + air, bolts=b, cams=c, two=two + air * 120, one=one + tb,
                       access="Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips."))
     pre = m.get("prehung")
     b = 4

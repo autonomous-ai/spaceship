@@ -295,6 +295,40 @@ class LockTests(unittest.TestCase):
         self.assertNotIn(ghost, os.listdir(self.path + ".queue"))
         lk.release()
 
+    def test_joined_run_takes_its_note_out_when_it_ends(self):
+        holder = self.lock(pid=None, hold_s=60)
+        holder.acquire(1)
+        joiner = self.lock(hold_s=5)
+        joiner.acquire(0.2, token=holder.token)
+        self.assertIn("joined", self.lock().read_owner())
+        self.assertIn("now running", rs.describe_owner(self.lock().read_owner()))
+        self.assertFalse(joiner.release())
+        owner = self.lock().read_owner()
+        self.assertNotIn("joined", owner)               # the hold stays, the note goes
+        self.assertEqual(owner["token"], holder.token)
+        self.assertTrue(self.lock().release_held(holder.token))
+
+    def test_finished_joined_run_is_not_shown_as_running(self):
+        owner = {"label": "x", "since": time.time(), "joined": {"script": "s.py", "pid": dead_pid()}}
+        self.assertNotIn("now running", rs.describe_owner(owner))
+
+    def test_unremovable_lock_without_owner_says_so_once(self):
+        os.mkdir(self.path)
+        os.chmod(self.path, 0o555)
+        old = time.time() - rs.NO_OWNER_GRACE_S - 5
+        os.utime(self.path, (old, old))
+        sub = os.path.join(self.path, "x")             # can't be made: the folder is read-only
+        try:
+            os.chmod(self.path, 0o755)
+            os.mkdir(sub)
+            os.chmod(self.path, 0o555)                  # the lock folder can't be emptied
+            os.utime(self.path, (old, old))
+            with self.assertRaises(rs.LockTimeout):
+                self.lock().acquire(2.5, poll_s=0.05, note_every_s=100)
+            self.assertEqual(sum("can't clear" in m for m in self.logs), 1)
+        finally:
+            os.chmod(self.path, 0o755)
+
     def test_racing_takers_get_it_one_at_a_time(self):
         inside, peak, done = [0], [0], []
         mutex = threading.Lock()

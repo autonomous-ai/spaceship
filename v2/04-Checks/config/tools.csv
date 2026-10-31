@@ -1,0 +1,4 @@
+name,segment,diameter_mm,along,from_mm,to_mm,status_source
+5 mm hex key (ISO 4762 M6),short arm through the access hole,8,axis,0,30,"confirmed: D-63, one 5 mm hex key for the ISO 4762 M6 x 16 bolts (joints register H-07): the key's short arm runs on the bolt axis from the socket out through the Ø11 access hole (11.6 mm inside the tube, joints register 2.2); 30 mm = ISO 2936 short arm for a 5 mm key (assumption); 8 mm clears its 5.8 mm across corners"
+5 mm hex key (ISO 4762 M6),long arm in the fill pocket,8,room,0,40,"the long arm turns 90 degrees toward the room through the 60 x 60 pocket left in the fill (joints register 2.3); 40 mm of it inside the panel"
+5 mm hex key (ISO 4762 M6),hand on the long arm,40,room,40,140,"assumption: a hand around the rest of the long arm, out in the room before the lining cassettes go on (they go on last)"
