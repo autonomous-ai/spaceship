@@ -1,6 +1,6 @@
-# Mechanical check run: 7963e9c on 2026-11-01
+# Mechanical check run: de19950 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `7963e9c`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `de19950`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 13** (7 severe, 4 major, 2 minor). Register numbers in brackets.
 
@@ -84,11 +84,11 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 47, "parts_lists": ["v2/03-Ma
 | 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 1.153 | 729 x 110 x 40 | long | assumption; calculation; calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-08 BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1175 x 60 x 13 | long | assumption |
 | 2-09 FRONT - DECOR BLOCK - DL | 9.976 | 2290 x 278 x 205 | long | calculation |
-| 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.908 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
-| 2-11 AIR - AIR COLUMN | 9.779 | 2105 x 360 x 217 | long | calculation; fill provisional |
+| 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.873 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
+| 2-11 AIR - AIR COLUMN | 9.735 | 2105 x 360 x 217 | long | calculation; fill provisional |
 | 2-12 FRONT - DECOR BLOCK - DT | 7.088 | 1697 x 280 x 205 | long | calculation; calculation (CAD) |
 | 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.14 | 600 x 250 x 200 | long | calculation (ELECTRICAL) |
-| 2-14 INTERIOR - LIGHT SHELF | 1.957 | 2332 x 80 x 50 | long | assumption |
+| 2-14 INTERIOR - LIGHT SHELF | 1.954 | 2332 x 80 x 50 | long | assumption |
 | 2-15 BASE - SMALL PARTS CARTON | 1.626 | 600 x 400 x 150 | long | assumption; calculation; confirmed (1.5 mm) |
 | 2-16 INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 2.4 | 1000 x 250 x 120 | long | assumption |
 | 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.895 | 1845 x 460 x 155 | long | assumption; calculation |

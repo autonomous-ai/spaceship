@@ -1,5 +1,5 @@
 {
- "rev": "7963e9c",
+ "rev": "de19950",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -650,7 +650,7 @@
   {
    "id": "2-10",
    "name": "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS",
-   "kg": 13.908,
+   "kg": 13.873,
    "dims": [
     2332.0,
     360.0,
@@ -662,7 +662,7 @@
   {
    "id": "2-11",
    "name": "AIR - AIR COLUMN",
-   "kg": 9.779,
+   "kg": 9.735,
    "dims": [
     2105.0,
     360.0,
@@ -698,7 +698,7 @@
   {
    "id": "2-14",
    "name": "INTERIOR - LIGHT SHELF",
-   "kg": 1.957,
+   "kg": 1.954,
    "dims": [
     2332.0,
     80.0,
