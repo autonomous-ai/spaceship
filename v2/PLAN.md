@@ -1,6 +1,6 @@
 # Spaceship plan (FocusPod v2)
 
-Status: approved by Dee on 2026-10-31. Work has started. Decisions made since then are in `v2/00-Control/decision-log.md`, which wins wherever this plan disagrees.
+Status: approved by the product owner on 2026-10-31. Work has started. Decisions made since then are in `v2/00-Control/decision-log.md`, which wins wherever this plan disagrees.
 
 **Spaceship** is the working name for v2. The pod looks like a spaceship, and inside it should feel like one: you command your agents by voice. The prototype stays focused on the structure goals below, but the design reserves the hooks for that cockpit: mounting points, cable paths and power for a mic array, speakers, a screen and a status light. The cockpit kit can then bolt in later without a redesign.
 
@@ -32,7 +32,7 @@ We benchmark against the leaders: Framery, Room, Herman Miller, Steelcase (Orang
 | Quiet | 30–30.3 dB speech reduction is the best lab result (hushFree XS, Framery) | About 24 dB (calculated range 22–27), roughly 9 dB quieter than v1 as built (about 15 dB), with a published lab report. Decided (D-02): 30 dB would need about 520 kg. | Clearly quieter than v1 at under half the weight per m² of lab-rated pods |
 | Price | Zenbooth $5,245 per seat (2 seats). Big-brand pods run $13k–30k. | At or below v1's $9,900 for 2 people ($4,950 per seat) | Best per seat |
 
-Ten times better is real on installing, handling, lead time and moving the pod. It isn't physically possible on sound (10x quieter means +10 dB), on weight, or on price; the honest margin there is 1.2–3x. Dee sets the price; the rest are design targets.
+Ten times better is real on installing, handling, lead time and moving the pod. It isn't physically possible on sound (10x quieter means +10 dB), on weight, or on price; the honest margin there is 1.2–3x. The product owner sets the price; the rest are design targets.
 
 ## Targets
 
@@ -118,7 +118,7 @@ So v2 adds:
 
 We also compare three front options: 8 mm tempered glass; 4+4 laminated acoustic glass, which weighs about the same and is quieter; and smoked acrylic, less than half the weight. Room still claims about 30 dB with an acrylic door.
 
-The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, Dee gets the trade-off before we add weight. Because 300 kg is beyond anything rated on the market, the team should build one wall sample and the door early and test them.
+The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, the product owner gets the trade-off before we add weight. Because 300 kg is beyond anything rated on the market, the team should build one wall sample and the door early and test them.
 
 ## What we keep, add and leave out
 
@@ -223,12 +223,12 @@ About 1.5 weeks to a prototype-ready package, with no waiting on reviews. The cr
 ## Risks
 
 1. **Drawings.** The API covers what we need, but readable dimension placement is where the last attempt fell short. Each part gets a dimension plan, every rendered sheet gets checked by eye, and the hardware leads tune the template on day 2.
-2. **Claude allowance.** This Mac's weekly Claude allowance is 70% used until Nov 3, and Opus at max effort uses it fast. If it runs low, the non-Fusion Engineers can move to another Swarm machine with a Claude account, if Dee agrees.
-3. **Light vs quiet.** At 300 kg the walls lose most of their mass. The two-skin wall with fill is the light answer, and light fixes come first. Any heavy fix goes to Dee with its cost in kg.
+2. **Claude allowance.** This Mac's weekly Claude allowance is 70% used until Nov 3, and Opus at max effort uses it fast. If it runs low, the non-Fusion Engineers can move to another Swarm machine with a Claude account, if the product owner agrees.
+3. **Light vs quiet.** At 300 kg the walls lose most of their mass. The two-skin wall with fill is the light answer, and light fixes come first. Any heavy fix goes to the product owner with its cost in kg.
 4. **Late feedback.** With no gates, a late "no" can mean rework. Parametric CAD and small review packets after each milestone keep that cheap.
 5. **One Fusion.** A single Fusion on this Mac is the bottleneck for CAD and drawings. Fusion runs scripts one at a time from a queue. If that's too slow, we add a second Fusion seat on another machine.
 
-## Decisions for Dee
+## Decisions for the product owner
 
 1. Approve the goals and this plan. Everything else is ready: Fusion's MCP is registered, and this Mac can run the Engineers.
 2. Send last attempt's output and the engineers' top complaints about it. That's the fastest way not to repeat them.
