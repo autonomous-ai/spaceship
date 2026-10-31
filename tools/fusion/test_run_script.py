@@ -67,7 +67,7 @@ class FakeHandler(http.server.BaseHTTPRequestHandler):
         if body["method"] == "tools/call":
             args = body["params"]["arguments"]
             script = args.get("object", {}).get("script", "")
-            m = re.search(r"_b64.b64decode\('([A-Za-z0-9+/=]+)'\)", script)
+            m = re.search(r"_SRC = _b64.b64decode\('([A-Za-z0-9+/=]+)'\)", script)   # the script, not the folder helper
             if m:                                  # the runner's wrapper: unwrap
                 script = base64.b64decode(m.group(1)).decode("utf-8")
             with srv.mutex:
