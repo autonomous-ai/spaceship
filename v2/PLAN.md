@@ -24,7 +24,7 @@ Agents work to these from day one. The hardware engineering lead and the indoor 
 |---|---|---|---|
 | 1 | Light | 450 kg or less, and as light as we can make it (v1 comes to about 550 kg from its BOM). Every part one person can carry (25 kg or less), except the glass. | Weights from the CAD and BOM, then the prototype on a scale |
 | 2 | Easy to assemble | 2 people in 4 hours or less, hand tools only, one bolt size (M6), no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
-| 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. One oversize pallet only if needed, likely for the 2 m glass door. | Pallet layout from the CAD |
+| 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. | Pallet layout from the CAD |
 | 4 | Guardrails: quiet and fresh air | At least as quiet as v1, with 30 dB as the aim. CO2 at or under 1,000 ppm with 2 people inside (about 62 m³/h). Fan noise inside at or under 30 dB(A). | Calculation, then a check on the prototype |
 | 5 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM, joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
 
@@ -36,7 +36,7 @@ Shipping sets the panel sizes, so we decide the split before the CAD. A panel sh
 - **Just over:** the ceiling halves are about 1240 mm wide, roughly 20 mm too wide.
 - **Too long:** the glass door (2011 mm), the fixed glass (2139 mm), the side decor blocks (2300 mm) and the floor rails (2500 mm).
 
-The likely answer is one standard pallet for the panels plus one long pallet for the glass and long pieces. The other option is to split the decor blocks and floor rails so only the glass rides oversize. Milestone 1 picks whichever layout is lightest, cheapest to ship and quickest to assemble, and the CAD follows it.
+The likely answer is one 48 × 40 pallet for the panels, plus one standard long pallet for the glass and long pieces. The other option is to split the decor blocks and floor rails so only the glass needs the long pallet. No custom pallet sizes either way. Milestone 1 picks whichever layout is lightest, cheapest to ship and quickest to assemble, and the CAD follows it.
 
 ## Quiet without the weight
 
@@ -73,9 +73,9 @@ There are no gates. Work runs straight through, and phases overlap where they ca
 
 ### Phase 0: Fusion access (half a day, 1 Engineer on this Mac)
 
-Fusion's built-in MCP server already works on this Mac. I ran a test script through it, and it's now registered with Claude Code and Codex. It only answers locally, so all Engineers run on this Mac, which needs to join the Swarm.
+Fusion's built-in MCP server already works on this Mac. I ran a test script through it, and it's now registered with Claude Code and Codex. It only answers locally, so all Engineers run on this Mac (Mac 1, already in the Swarm).
 - Prove the guideline's edit test (§4.4). Build one part from a fully constrained sketch with named parameters, save it as .f3d, export it to STEP, then change a parameter and confirm it rebuilds cleanly.
-- Drawing spike: produce one ISO drawing sheet. Fusion's API has little drawing support, so we also try computer use and a scripted fallback, which the guideline allows if it is accurate and updatable (§6.1).
+- Drawing proof: produce one ISO drawing sheet through Fusion's drawing API. This Fusion version has the API we need: drawings in ISO first-angle; base, projected, section and detail views; dimensions and auto-dimensions; hole tables; datum and tolerance symbols; title blocks and revision tables; and PDF, DXF and DWG export. So agents script native drawings that update when the model changes, which is what the guideline prefers (§6.1). Computer use handles the visual check of each sheet and anything the API can't do.
 
 ### Milestone 1: decide the layout (about 1 day, 3 Engineers, starting alongside Phase 0)
 
@@ -138,14 +138,13 @@ About 1.5 weeks to a prototype-ready package, with no waiting on reviews. The cr
 
 ## Risks
 
-1. **Drawings.** Fusion's API can barely make drawings. The Phase 0 spike tests this first. The fallback is computer use or scripted drawings.
+1. **Drawings.** The API covers what we need, but auto-placed dimensions usually need cleanup to be readable. Every sheet gets a visual check. A Codex Engineer with computer use fixes what the API can't.
 2. **Light vs quiet.** Light fixes come first, and any heavy fix goes to Dee with its cost in kg.
 3. **Late feedback.** With no gates, a late "no" can mean rework. Parametric CAD and small review packets after each milestone keep that cheap.
 4. **One Fusion.** A single Fusion on this Mac is the bottleneck for CAD and drawings. Fusion runs scripts one at a time from a queue. If that's too slow, we add a second Fusion seat on another machine.
 
 ## Decisions for Dee
 
-1. Approve the goals and this plan.
-2. Add this Mac to the Swarm. Fusion's MCP is already registered for Claude Code and Codex.
+1. Approve the goals and this plan. Everything else is ready: Fusion's MCP is registered, and this Mac can run both Claude and Codex Engineers.
 
 Rulings that need no answer: documents are in English with the team's Vietnamese part names alongside, and v2 files follow the guideline's folder layout (§12) under `v2/`.
