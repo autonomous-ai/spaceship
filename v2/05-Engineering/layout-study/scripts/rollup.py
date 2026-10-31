@@ -59,6 +59,7 @@ T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 fram
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
 KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36) and a hollow profile, same outside, 2 mm walls (assumption)
 FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood against this study's 600 (S13); D-85, settled by D-86
+ELEC_KG = 4.94                # kg as shipped: ELECTRICAL P01 (S43), against this study's 3.05 kg allowance
 LOAD_BLOCKS_KG = 0.4          # kg per pod: an aluminium load block inside the band at each glide (D-86, BASE's calculation)
 # Parked by D-85, and the rejected glass options
 LAM33_T, LAM44_T = 6.76, 8.76  # mm: 3+3 and 4+4 laminate (glass 3 + 0.76 PVB + 3, as the 4+4 is 4 + 0.76 + 4)
@@ -221,9 +222,10 @@ def lines(**adopt):
     L.append(("AIR", "Four 12 V fans", 1, AA.fans_kg(), "assumption", "S38: 0.3 kg each until the sample is weighed"))
     pt = base["K-SEALS"]
     L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, "this study's model"))
-    pt = base["E-KIT"]
-    L.append(("ELECTRICAL", "Switches and harness (the two ceiling lights go, D-70)", 1, pt.kg - 2 * p("light_kg"), pt.status,
-              "this study's model less 2 x 0.5 kg ceiling lights"))
+    L.append(("ELECTRICAL", "Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL)", 1, ELEC_KG,
+              "calculation (ELECTRICAL)", "S43: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, "
+              "lights 0.26 kg, replacing this study's 3.05 kg allowance. The light shelf's budget (D-85) also carries its LED "
+              "strip, so about 0.2 kg may be counted twice until INTERIOR and ELECTRICAL settle which list holds it"))
     shelf_kgm = SHELF_KGM if a["budgets"] else SHELF_KGM_ALLOW
     L.append(("INTERIOR", "Light shelf along the side and back wall tops, with its LED strip", 1,
               shelf_kgm * shelf_m() + SHELF_BRACKETS_KG, "assumption",
@@ -389,8 +391,9 @@ def rollup_md(rows):
               f"({loose + fan2:.1f} kg, D-87) ships loose and goes into the right decor block on site through its removable "
               f"inner face (D-59), so the block ships at {dr:.1f} kg; fitted in the factory it would be about "
               f"{dr + loose + fan2:.0f} kg, over the rule. The soffit ships with its exhaust fan box and fans fitted "
-              f"({sof + fan2:.1f} kg, D-87). The heaviest piece apart from the glass is the {nm} at {heavy[3]:.1f} kg; the "
-              "door unit and the fixed glass unit are glass and exempt.")
+              f"({sof + fan2:.1f} kg, D-87), and B2 with the power unit inside at about 11.9 kg (ELECTRICAL, S43). The "
+              f"heaviest piece apart from the glass is the {nm} at {heavy[3]:.1f} kg; the door unit and the fixed glass unit "
+              "are glass and exempt.")
     allow = {r[1].split(",")[0].split(" along")[0]: r[2] * r[3] for r in rows if r[4] == "assumption"
              and ("Light shelf" in r[1] or "ledge" in r[1] or "Named clips" in r[1])}
     md.append(f"- **Budgets and allowances (assumption)** for parts not designed yet: the light shelf "
