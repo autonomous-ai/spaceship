@@ -1,6 +1,6 @@
 # Proof part: source manifest
 
-Engineering guideline sections 4.4 and 4.5. Phase 0 proof only: **DRAFT, PROPOSED, not for manufacture.** Part numbers, names and revision P01 are proposals until the v2 control pack sets the numbering.
+Engineering guideline sections 4.4 and 4.5. Phase 0 proof only: **DRAFT, not for manufacture.** Part numbers, names and revision P01 are this proof's proposals until the v2 control pack sets the numbering; nothing here has been ruled on by the PM unless it says DECIDED (decisions are logged in `v2/00-Control/decision-log.md`).
 
 Last updated 2026-10-31. Built by `wall_panel_frame.py` in Fusion 2706.1.17 on Mac 1.
 
@@ -10,7 +10,7 @@ Last updated 2026-10-31. Built by `wall_panel_frame.py` in Fusion 2706.1.17 on M
 |---|---|---|
 | Build script (source of truth for the geometry) | `v2/01-CAD-Native/proof/wall_panel_frame.py` | Runs end to end, all checks pass (`build-record.md`) |
 | Native CAD, same revision | `v2/01-CAD-Native/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD.f3d` | Exported from Fusion cloud file Default Project / FocusPod v2 / V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH, version 1 |
-| STEP, same revision | `v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step` | AP214. STEP length unit: cm, declared in the file. Re-read in Fusion and with `tools/fusion/step_check.py`: box 0..1500 x -20..3 x 0..1150 mm, same as the model |
+| STEP, same revision | `v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step` | AP214. STEP length unit: cm, declared in the file (DECIDED by the PM 2026-10-31: keep Fusion's STEP as written, no conversion). Re-read in Fusion and with `tools/fusion/step_check.py`: box 0..1500 x -20..3 x 0..1150 mm, same as the model |
 | Edit test | `v2/01-CAD-Native/proof/edit_test.py`, record in `edit-test-record.md` | PASS on a copy (CAD check, not a physical test) |
 | Drawing | `v2/02-Drawings/proof/` | See the drawing record there |
 

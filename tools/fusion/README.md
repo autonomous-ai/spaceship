@@ -40,7 +40,7 @@ The proof script `v2/01-CAD-Native/proof/wall_panel_frame.py` follows these step
 ## Exports and checks
 
 - **.f3d**: `exportManager.createFusionArchiveExportOptions(path, rootComponent)`. It keeps the timeline, sketches and parameters.
-- **STEP**: `createSTEPExportOptions(path, rootComponent)`. Fusion writes it in **centimetres**, even with the design in mm and the units set again right before the export, and `STEPExportOptions` has no unit setting. The unit is declared in the file, so every CAD reads it at true size. Ruling for v2: keep Fusion's STEP as written and record "STEP length unit: cm, declared in the file". Drawings and DXF must be in mm.
+- **STEP**: `createSTEPExportOptions(path, rootComponent)`. Fusion writes it in **centimetres**, even with the design in mm and the units set again right before the export, and `STEPExportOptions` has no unit setting. The unit is declared in the file, so every CAD reads it at true size. DECIDED by the PM (2026-10-31): keep Fusion's STEP as written, don't convert it, and record "STEP length unit: cm, declared in the file". Drawings and DXF must be in mm.
 - **Re-read the STEP twice**: in Fusion (`importManager.importToNewDocument(createSTEPImportOptions(path))`, compare `rootComponent.boundingBox`, close the copy with `close(False)`), and with `step_check.py`, which applies the declared unit.
 - **Export before you save.** A STEP export started right after `Document.saveAs` (while Fusion is still uploading) returned False and wrote a file with only the header. Five seconds later the same call worked.
 - **Edit test (guideline section 4.4)**: open the exported .f3d as a copy (`importToNewDocument(createFusionArchiveImportOptions(path))`), change parameters, call `adsk.doEvents()`, check timeline health and measure every body, revert, compare with the "before" values, close without saving. See `v2/01-CAD-Native/proof/edit_test.py`.
@@ -48,6 +48,18 @@ The proof script `v2/01-CAD-Native/proof/wall_panel_frame.py` follows these step
 ## Saving to the Fusion cloud
 
 Drawings need a saved design (`DrawingManager.createDrawingInput` takes a cloud `DataFile`). Save with `document.saveAs(name, folder, description, "")` into **Default Project / FocusPod v2**. The proof script refuses to save when a file with the same name is already there, so the folder keeps one copy.
+
+## Drawings: what works and what needs a person
+
+The drawing API (`adsk.drawing`) is a preview API in this build. Tested on 2026-10-31:
+
+- **Starting a drawing needs a person once.** Manual creation needs a drawing template with view placeholders, and none exists (no `.f2t` ships with the install, none in the hub). Automatic creation hung. So a person makes the first sheet in Fusion: open the saved design, File > New Drawing > From Design, ISO, mm, A2, save. After that, scripts do the rest on the open drawing (`v2/02-Drawings/proof/make_drawing.py`).
+- **Templates can't be made by script.** `DrawingDocument.saveAs` writes a normal drawing (`.f2d`), and `DrawingExportManager` exports PDF, DWG and DXF only. To start later drawings by script, a person saves one drawing as a template once in Fusion. `CreateDrawingInput.templateFile` then takes it (a cloud `DataFile`), and `DataFolder.uploadFile` can upload a template file kept in the repo.
+- **Views.** `Views.add` makes base views only. Projected, section and detail views can't be created by the API. The PM ruled that base views at the same scale, aligned in the first-angle layout, are fine. Sections go on the person list. A base view shows the whole design (`BaseViewInput` "uses the drawing's active model reference"), so make the drawing from the design you want to show.
+- **Dimensions** attach to view geometry: `DrawingDimensions.addLinearDimension(a, b, place, False)` with `a`, `b` taken from `ViewCurve.startPoint`, `endPoint` or `centerPoint`. Take datum points from line ends and hole centres from circles. A hole through two tube walls can show as two coincident circles; keep one per centre.
+- **Hole tables**: `HoleTables.createInput()`, set `view`, `originPoint` (a point on that view's geometry: put it on the datum corner) and `title`, then `add`. One origin marker per view.
+- **Text**: sheet sketches (`DrawingSketch`) have lines, rectangles, circles, arcs and ellipses, but no text and no hatch. Title block values come from the model and document properties: `TitleBlock.setAttributes` only places predefined tags. Free text goes in a custom table (`CustomTables`), whose position the API can't set.
+- **Test offline first.** `v2/02-Drawings/proof/test_make_drawing_offline.py` fakes the few drawing objects and checks the annotation logic without Fusion.
 
 ## Limits found
 
@@ -58,3 +70,9 @@ Drawings need a saved design (`DrawingManager.createDrawingInput` takes a cloud 
 | STEP right after save | `execute()` returns False; the file has only the header | Export before `saveAs` |
 | Screenshot framing | The MCP screenshot `direction` turns the camera but doesn't zoom to fit | `run_script.py --screenshot` turns and fits first |
 | Named views | Fusion's "Front" looks along +Y; both iso views look from the -Y side | Put the side you want to see in drawings toward -Y |
+| Manual drawing creation | `DrawingManager.createDrawing(input)` with `ManualDrawingCreationMode` raises `RuntimeError: 3 : Manual drawing creation requires a template with view placeholder information.` | A person starts the first sheet once |
+| Automatic drawing creation | `createDrawing` with `AutomaticDrawingCreationMode` (sub-assembly sheet only, auto dimensions off) never returned: over 10 minutes, Fusion idle, a second copy of the design opened, no drawing made | Same |
+| Drawing templates | No API call saves a template; no `.f2t` in the install or the hub | A person saves one template once |
+| Projected, section, detail views | `adsk.drawing.Views` has only `createBaseViewInput` and `add` | Aligned base views; sections listed for a person |
+| Text and hatch on sheets | `DrawingSketch` has no text or hatch collections | Custom tables for notes |
+| **Fusion froze** | A wide API help search (`fusion_mcp_read`, `queryType: apiDocumentation`, pattern `[Tt]emplate`, category `all`, no filter) timed out and Fusion sat at 100% CPU until restarted | Always give API help searches a narrow `filter` such as `adsk.drawing.Views`. The Python stubs on disk (`Autodesk Fusion.app/Contents/Api/Python/packages/adsk/*.py`) can be searched offline with grep |
