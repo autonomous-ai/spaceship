@@ -15,9 +15,9 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod"). This is the parts 
 | Outer skin (VT01) | Alcorest ACP 3 mm EV3038 Dark Yellow, 0.21 mm skins, PE core | source; kg/m² calculation; DECIDED: no plywood (VT02 dropped) |
 | Wall frame (VT10) | Aluminium 20 × 40 × 1.5 (walls), 20 × 100 × 1.5 (ceiling), members at 400 mm | DECIDED |
 | Inner leaf | Floating lining cassette: 0.5 mm galvanised steel tray, 25 mm deep, with 9 mm felt across its face | DECIDED (stack accepted by the PM) |
-| Felt (VT03) | 9 mm PET felt; plan's DHG panel has no usable data; Autex Cube 12 mm is the sourced reference | HOLD: product with test data |
-| Front | Smoked cast acrylic 10 mm (Perspex Neutral 9T56); fallback 4+4 acoustic laminate (AGC Stratophone 44.2 with Planibel Grey) | DECIDED; acrylic hinge fixing HOLD |
-| Door hinges | dormakaba OFFICE 11.233 (70 kg, 1200 mm), 160 mm pocket in the left decor block | DECIDED; acrylic fixing HOLD |
+| Felt (VT03) | The factory's 9 mm PET felt, tested in the wall sample first; buy Autex Cube 12 mm only if it falls short | DECIDED (test-first) |
+| Front | Smoked cast acrylic 10 mm (Perspex Neutral 9T56) with an aluminium hinge-edge stile (C9); fallback 4+4 acoustic laminate (AGC Stratophone 44.2 with Planibel Grey) | DECIDED (D-07); stile is the DECIDED baseline, supplier confirmation on the factory's list |
+| Door hinges | dormakaba OFFICE 11.233 (70 kg, 1200 mm), 160 mm pocket in the left decor block; on the acrylic door they clamp the aluminium stile, not the acrylic | DECIDED |
 | Door seals | Frame stop seal (athmer PS 1515 class, but in EPDM or silicone if the door is acrylic), drop seal athmer Schall-Ex GSA cut to 1176 mm, 180° glass-to-glass seal on the fixed pane | source; HOLD on acrylic-safe materials |
 | Fans (VT06) | S&P TD-350/100-125 SILENT ECOWATT (EC, 0–10 V, mains outlet circuit), two, inside the front decor blocks; FV-15AUL1 rejected | DECIDED; exception to the 12 V bus (D-10) because no 12 V fan performs (F1) |
 | Fan control | In-house Desk Pro AI sensor hub reads and shows CO2 and drives both fans 0–10 V (D-09); presence sensor for start and run-on | DECIDED; third-party CO2 controllers listed as reference (F3) |
@@ -49,7 +49,7 @@ The PM ruled "no plywood behind the ACP" on 2026-10-31. For reference: HCPLY 6 m
 | 3 (reference data) | Autex **Cube 12 mm** | ISO 354: direct 0.05/0.10/0.30/0.65/0.90/0.95 (NRC 0.45); with 25 mm gap 0.05/0.30/0.60/0.95/0.95/0.85 (NRC 0.70); EN 13501-1 B-s1,d0; CDPH-compliant, Declare Red List free, HPD, EPD; 1220 × 2440 | 2.4 (older sheet) | unverified in VN | https://cdn.mediavalet.com/aunsw/autex/v7u3NcemSkmPcPN5VuEQ9Q/cXKq4VBRsEGhTdPqme4gJA/Original/Cube%20Datasheet.pdf | source | 9 mm or custom thickness; VN reseller |
 | 4 | EASYfelt PET felt Panel 9 mm | 120 × 60 / 120 / 240 cm; B-s1,d0; absorption shown only as a graph | unverified | unverified in VN | https://easy-noise-control.files.prepr.io/64s9qhr374wk-easyfelt-product-sheet-panel-9mm.pdf | source (numbers unverified) | Octave numbers; emissions |
 
-HOLD: the felt product needs ISO 354 octave data and an emission certificate. The calc uses Autex Cube 12 mm data as a proxy, which is slightly optimistic for 9 mm.
+DECIDED (PM, 2026-10-31): test the factory's 9 mm PET felt in the wall sample first, and buy Autex Cube only if it falls short. The calc uses Autex Cube 12 mm data as a proxy, which is slightly optimistic for 9 mm. Still ask the factory for the felt's emission certificate.
 
 ### A4. Tube: VT10 20 × 20, VT04 30 × 60, VT03 50 × 100 (thép hộp), and the DECIDED aluminium
 
@@ -222,12 +222,33 @@ No door-size hinge, patch or seal maker covers acrylic. dormakaba, Bohle, CRL an
 
 Sources: https://www.perspex.co.uk/Perspex/media/General/technical-library/PDFs/Perspex-Design-Guide.pdf ; https://www.zenit.cz/public/media/Plasty/Zenit_Montaz_Plasty_Plexiglas_EN.pdf ; https://www.acrylite.co/resources/knowledge-base/article/how-far-in-should-I-drill-a-hole-from-the-edge-of-acrylic-sheet
 
-What the acrylic door likely needs is a continuous aluminium strip along the hinge edge, clamped with sleeved oversize bolts, with the 11.233 hinges fixed to the strip and not to the PMMA. That's our reading of the guides, not a maker design. It changes a key joint, so it needs a call from the PM once the supplier answers. HOLD until:
+What the acrylic door needs is a continuous aluminium strip along the hinge edge, clamped with sleeved oversize bolts, with the 11.233 hinges fixed to the strip and not to the PMMA. That's our reading of the guides, not a maker design. The PM made it the baseline (C9). These questions go on the factory's list, because we don't contact suppliers:
 - dormakaba approves 11.233 on 10 mm acrylic: hole size, sleeve, pads, torque and rating.
 - Perspex or Röhm approves the hinge-edge detail.
 - Every seal touching the leaf is confirmed acrylic-safe.
 
-If any of these fail, the 4+4 laminate fallback applies.
+If any of these fail, the 4+4 laminate fallback applies. The DECIDED baseline detail is in C9.
+
+
+### C9. Acrylic door: hinge-edge stile (DECIDED baseline detail)
+
+The hinges never touch the acrylic. They clamp an aluminium stile that has the same thickness as the glass they're rated for. The stile carries the acrylic leaf through a bolted joint that spreads the load and lets the acrylic move. This is a calculation-level detail for CAD; the factory's door sample is the physical check.
+
+| Part | Spec | Why | Status |
+|---|---|---|---|
+| Hinge stile | Aluminium flat bar 10 × 50 mm, EN AW-6060-T66 or 6063-T6, 2011 mm long, anodised or painted to suit the look; the 11.233 hinge preparation is machined into the bar, not the acrylic | 10 mm is the glass thickness the hinge is rated for, so the hinge clamps metal, not PMMA | calculation; hinge-on-aluminium rating on the factory's list |
+| Acrylic leaf | Cast PMMA 10 mm, Perspex Neutral 9T56, 1123 × 2011 mm (1176 door − 50 stile − 3 joint) | same outer door size as v1 | source (sheet); size calculation |
+| Joint | 3 mm butt gap with an EPDM strip between stile and acrylic edge | acrylic must never touch plasticised PVC; EPDM is listed as suitable by PLEXIGLAS | source (C8) |
+| Cover strips | 2 × aluminium flat 3 × 60 mm, full height, one on each face: 30 mm over the stile, 30 mm over the acrylic, with 2 mm EPDM pads on the acrylic side | spreads the load ("load spreading devices", Perspex) and hides the bolts | calculation |
+| Bolts | M6 throughout (one-bolt rule). Stile side: 8 bolts in Ø6.6 holes. Acrylic side: 8 bolts in Ø12 holes (2 × bolt Ø, ACRYLITE; PLEXIGLAS gives bolt + 5 mm/m = 11.6), each with an aluminium spacer sleeve 6.5/9 mm × 13 mm and a PE sleeve, so the bolt clamps the strips onto the spacer and the EPDM is compressed to a set gap. Hole centres 20 mm from the acrylic edge (≥ 1.5 × hole Ø = 18 mm) | PMMA is only clamped through soft pads, with the pressure set by the spacer, as PLEXIGLAS shows | source for the rules; layout calculation |
+| Movement | Fixed point: the middle two acrylic-side bolts in round Ø12 holes. All others in vertical slots 12 × 20 mm (±4 mm) | differential movement along the 2011 mm edge: 2.2 mm thermal (20 K, PMMA 77 vs Al 23 × 10⁻⁶/K) + 2–6 mm moisture (0.1–0.3%); fixed at mid-height that's 2.1–4.1 mm at each end | calculation |
+| Load check | Acrylic leaf 26.9 kg, so 33 N per acrylic-side bolt. Bearing on PMMA through the 9 mm sleeve is 0.37 MPa against a long-term tensile of 7 MPa (factor about 19). The EPDM friction carries part of it too | — | calculation |
+| Mass | Stile 2.71 + covers 1.95 + pads 0.31 + bolts 0.19 kg; door total about 32 kg (the frameless acrylic door is 28 kg; 8 mm glass is 47 kg); +3.9 kg in the pod totals | well inside 11.233's 70 kg | calculation |
+| Seals | The hinge-side frame stop seal bears on the aluminium stile. Latch-side and 180° seals that touch the acrylic must be EPDM or silicone | Perspex: no plasticised PVC on acrylic | source (C8) |
+| Handle and catch | Through-bolted on the acrylic with the same sleeved-hole rule (2 × bolt Ø, EPDM washers). Catch strike on a small aluminium plate with 2 sleeved bolts | same creep rule | HOLD for the factory's list (Häfele 909.00.900 sleeves are sized for a Ø13 glass hole) |
+| **Look** | An opaque band about 80 mm wide down the hinge edge, on both faces (stile 50 + cover 30). v1's frameless door doesn't have one | it is the price of the 24 kg saving; the 4+4 glass fallback has no band | the factory sample shows both fronts; PM's call on the look stays open |
+
+For the factory's list: dormakaba, the 11.233 clamping a 10 mm aluminium bar (rating and gaskets); Perspex or Röhm, the sleeved joint detail and the EPDM pads; athmer, the drop seal bonded to acrylic.
 
 ## D. Seals and gaskets for the walls and floor
 

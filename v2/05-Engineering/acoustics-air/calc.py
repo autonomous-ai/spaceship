@@ -433,6 +433,11 @@ GLASS = {
 }
 
 
+# An acrylic door needs an aluminium hinge-edge stile (HW C9, DECIDED baseline): 10 x 50 stile 2.71 kg + two
+# 3 x 60 cover strips 1.95 kg + EPDM pads 0.31 kg + 16 M6 bolts 0.19 kg - acrylic it replaces 1.27 kg (calculation)
+FRONT_EXTRA_KG = {"A8": 3.9, "A10": 3.9, "A12": 3.9}
+
+
 def panes():
     out = {}
     for key, (label, kg, rdata) in GLASS.items():
@@ -649,7 +654,7 @@ def pod_total_kg(cfg, wb, gb):
     """Whole pod, all light fixes on: rest of pod + wall and ceiling build-ups (with felt, fill, frame) + front."""
     kg = REST_KG + EXTRA_FIX_KG
     kg += wb[cfg["wall"]].kg_m2 * OUT_WALL_M2 + wb[cfg.get("ceiling", cfg["wall"])].kg_m2 * OUT_CEIL_M2
-    kg += gb[cfg["glass"]].kg_m2 * GLASS_M2
+    kg += gb[cfg["glass"]].kg_m2 * GLASS_M2 + FRONT_EXTRA_KG.get(cfg["glass"], 0.0)
     if cfg.get("sil_len", 1.2) > 1.2:
         kg += (cfg["sil_len"] - 1.2) / 1.2 * 7.0
     return kg

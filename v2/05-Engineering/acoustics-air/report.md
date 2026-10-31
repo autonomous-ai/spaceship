@@ -11,7 +11,7 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
 
 1. **v1 as built is predicted at about 15 dB speech reduction (D_S,A, range 12–18), not the 30 dB on the product page.** Its open vent slots (35%), door gaps (33%) and raised floor (14%) let out most of the sound, and its bare wood interior adds to it. v1's lab test will settle this. Until then, "at least as quiet as v1" is a low bar.
 2. **Spaceship as planned comes out at about 19 dB (16–22).** That's already above v1, mostly because of the felt lining. Light fixes take it to about 21 dB for about 15 kg: perimeter and drop seals, sealed glass, joint gaskets, silenced vents, and the thin floor with a base seal. After that, the walls and ceiling carry about 90% of the sound that gets out.
-3. **DECIDED build: about 385 kg and 24.2 dB (22–27).** Walls are ACP 3 mm on an aluminium 20×40 frame at 400 mm with 40 mm PET fill, plus a floating lining cassette (0.5 mm steel tray, 25 mm air gap, 9 mm felt). The ceiling is the same stack on 20×100. The front is smoked acrylic 10 mm, and every light fix is on. The fallback front, 4+4 acoustic laminate, gives 24.6 dB at about 416 kg, which is over the 400 kg cap unless the ceiling drops to 40 mm (23.8 dB at 400 kg).
+3. **DECIDED build: about 389 kg and 24.2 dB (22–27).** Walls are ACP 3 mm on an aluminium 20×40 frame at 400 mm with 40 mm PET fill, plus a floating lining cassette (0.5 mm steel tray, 25 mm air gap, 9 mm felt). The ceiling is the same stack on 20×100. The front is smoked acrylic 10 mm, and every light fix is on. The fallback front, 4+4 acoustic laminate, gives 24.6 dB at about 416 kg, which is over the 400 kg cap unless the ceiling drops to 40 mm (23.8 dB at 400 kg).
 4. **30 dB isn't reached anywhere in this search, up to 520 kg (best about 26.5 dB).** Above about 380 kg each extra dB costs about 25–40 kg of wall. What limits a light pod is low voices (125–250 Hz). Only mass, cavity depth and low-frequency absorption help there.
 5. **Air: 70 l/s is the right target, because of heat rather than CO2.** At 26 l/s two people hold 800 ppm only if the room air is outdoor-fresh, and the pod runs about 7 °C warmer than the room. At 70 l/s it is about 550 ppm and 3 °C warmer. The in-house Desk Pro AI sensor hub reads CO2, shows it, and drives both EC fans (D-09).
 6. **25 dB(A) fan noise at full flow is reachable:** about 24 dB(A) with two S&P TD-350/100-125 ECOWATT fans, each behind a 2.4 m lined U-channel in a ceiling half (calculation). The plan's Panasonic FV-15AUL1 can't be used. Its manual forbids ceiling mounting and it has no published fan curve.
@@ -36,7 +36,7 @@ Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target
 
 **Ceiling (trần), 141 mm, 17.4 kg/m²:** the same stack on a 20 × 100 × 1.5 aluminium frame (4.7 kg/m²) with 100 mm of fill. In each ceiling half, part of the 100 mm zone holds the lined U-channel silencer (section 7).
 
-**Part weights for the 20 kg rule** (calculation): a side-wall outer panel of 1500 × 1145 mm is 12.2 kg. Its lining cassette is 10.3 kg. A ceiling half outer panel of 1212 × 1500 mm is about 21 kg with fill in it, so ship the fill loose (about 5.8 kg per half), or the Layout Engineer chooses a thinner tube. The inside ends up about 2338 × 1460 × 2241 mm: about 3 cm narrower and shallower than v1 (2372 × 1480), and 2 cm taller (2223).
+**Part weights for the 20 kg rule** (calculation): a side-wall outer panel of 1500 × 1145 mm is 12.2 kg. Its lining cassette is 10.3 kg. A ceiling half outer panel of 1212 × 1500 mm would be about 21 kg with its fill, so the fill rides on the ceiling lining cassette instead (DECIDED). That keeps the panel at 20 kg or less. The inside ends up about 2338 × 1460 × 2241 mm: about 3 cm narrower and shallower than v1 (2372 × 1480), and 2 cm taller (2223).
 
 **Why this stack.** Inside the decided rules, it's the quietest within 400 kg (table 6). It also uses one lining material, galvanised steel. That gives no formaldehyde, fire class A1, and a smooth face behind the felt. The steel tray stiffens itself through its returns, and the floating cassette never touches the frame through a screw. The 25 mm gap behind the felt is worth about 2 dB at 250–500 Hz, where felt fixed flat on a board absorbs too little.
 
@@ -119,11 +119,11 @@ Effect in the DECIDED pod (all else equal):
 | Smoked acrylic 10 mm | 41 | 21.7 | 24.2 | 26.7 | -0.3 |
 | Smoked acrylic 12 mm | 49 | 21.9 | 24.4 | 26.9 | -0.2 |
 
-- **Most dB per kg within the look: smoked acrylic 10 mm** (DECIDED). It saves 27 kg against 8 mm glass and costs 0.3 dB, because the walls dominate. 4+4 acoustic laminate is the quietest pane, but only 0.4 dB better in this pod, at +31 kg.
+- **Most dB per kg within the look: smoked acrylic 10 mm** (DECIDED). With its hinge-edge stile it saves about 24 kg against 8 mm glass and costs 0.3 dB, because the walls dominate. 4+4 acoustic laminate is the quietest pane, but only 0.4 dB better in this pod, at about +27 kg.
 - **Scratches:** cast acrylic is pencil hardness 3H (ACRYLITE cast), far softer than glass. Plan a hard-coated sheet, or accept wear on the door face. The factory sample decides.
 - **Look:** the grey cast sheet is Perspex Neutral 9T56, 46% light transmission at 3 mm. The value at 10 mm isn't published (darker), so the sample decides the match with v1's smoked glass.
 - **Fire, for later US rules:** PMMA is Euroclass E / UL 94 HB, while glass is A1 and PVB laminate is "no performance declared". A 2.4 m² acrylic door may be a problem for US interior-finish rules later. That's the main reason to keep the glass fallback ready.
-- **Hinges:** acrylic creeps under clamp pressure. Glass clamp fittings on acrylic need larger pads or sleeved through-bolts, or a fitting rated for plastic sheet. HOLD for supplier confirmation (selection.md, door hinge rows). The 10 mm acrylic door is also about 11 times less stiff than 8 mm glass, so check door flatness and feel on the sample.
+- **Hinges (DECIDED baseline, selection.md C9):** acrylic creeps under clamp pressure, and no hinge maker covers it. So the hinges clamp a 10 × 50 mm aluminium stile along the hinge edge instead of the acrylic. The stile joins the acrylic through two 3 × 60 mm cover strips, with M6 bolts in sleeved Ø12 holes (slots towards the ends) and EPDM pads. The door is about 32 kg. That's +3.9 kg in the totals, well inside the hinge's 70 kg. **Look:** this adds an opaque band about 80 mm wide down the hinge edge, which v1's frameless door doesn't have. The factory sample shows both fronts side by side. The supplier questions go on the factory's list. The 10 mm acrylic door is also about 11 times less stiff than 8 mm glass, so check door flatness and feel on the sample.
 
 ## 4. The whole pod: predicted speech reduction
 
@@ -214,27 +214,27 @@ Smoked acrylic 10 mm front:
 
 | Pod budget kg | Best wall / ceiling / front / silencer | Total kg | D_S,A low / central / high |
 |---:|---|---:|---|
-| 280 | SW-FOAM20 / PLAN / Smoked acrylic 10 mm / 1.2 m | 277 | 14.0 / 16.4 / 18.8 |
-| 300 | PLAN-NOPLY / DL-ST-40-FLG / Smoked acrylic 10 mm / 1.2 m | 294 | 14.3 / 16.7 / 19.1 |
-| 320 | PLAN / PLAN-NOPLY / Smoked acrylic 10 mm / 1.2 m | 318 | 16.4 / 19.0 / 21.4 |
-| 340 | PLAN / DL-ST-40-FLG / Smoked acrylic 10 mm / 1.2 m | 338 | 18.7 / 21.2 / 23.7 |
-| 360 | DL-ST-40-FLG / DL-HDF-DEC / Smoked acrylic 10 mm / 1.2 m | 357 | 20.5 / 23.0 / 25.4 |
-| 380 | DL-ST-40-FLG / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.2 m | 378 | 21.7 / 24.2 / 26.6 |
-| 400 | DL-ST-40-FLG / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.2 m | 378 | 21.7 / 24.2 / 26.6 |
-| 420 | DL-ST-100-FLG / DL-ST-40-FLG / Smoked acrylic 10 mm / 1.2 m | 416 | 22.7 / 25.2 / 27.6 |
-| 440 | DL-ST-100-FLG / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.8 m | 435 | 23.2 / 25.7 / 28.1 |
-| 460 | DL-ST-100-FLG / DL-P6-P9-100-DEC / Smoked acrylic 10 mm / 1.8 m | 453 | 23.3 / 25.8 / 28.2 |
-| 480 | DL-ST-100-FLG / DL-P6-P9-100-DEC / Smoked acrylic 10 mm / 1.8 m | 453 | 23.3 / 25.8 / 28.2 |
-| 500 | DL-P6-P9-100-DEC / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.8 m | 495 | 23.2 / 25.9 / 28.4 |
-| 520 | DL-P6-P9-100-DEC / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.8 m | 495 | 23.2 / 25.9 / 28.4 |
+| 280 | SW-FOAM20 / SW-FOAM20 / Smoked acrylic 10 mm / 1.2 m | 266 | 13.4 / 15.8 / 18.1 |
+| 300 | PLAN-NOPLY / DL-ST-40-FLG / Smoked acrylic 10 mm / 1.2 m | 298 | 14.3 / 16.7 / 19.1 |
+| 320 | PLAN / SW-FOAM20 / Smoked acrylic 10 mm / 1.2 m | 319 | 16.4 / 18.9 / 21.4 |
+| 340 | PLAN / PLAN / Smoked acrylic 10 mm / 1.2 m | 335 | 18.1 / 20.7 / 23.2 |
+| 360 | DL-ST-40-FLG / PLAN / Smoked acrylic 10 mm / 1.2 m | 359 | 20.4 / 22.9 / 25.3 |
+| 380 | DL-ST-40-FLG / DL-ST-40-FLG / Smoked acrylic 10 mm / 1.8 m | 370 | 21.4 / 23.9 / 26.3 |
+| 400 | DL-ST-40-FLG / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.2 m | 382 | 21.7 / 24.2 / 26.6 |
+| 420 | DL-ST-100-FLG / DL-ST / Smoked acrylic 10 mm / 1.2 m | 419 | 22.2 / 24.7 / 27.2 |
+| 440 | DL-ST-100-FLG / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.8 m | 439 | 23.2 / 25.7 / 28.1 |
+| 460 | DL-ST-100-FLG / DL-P6-P9-100-DEC / Smoked acrylic 10 mm / 1.8 m | 457 | 23.3 / 25.8 / 28.2 |
+| 480 | DL-ST-100-FLG / DL-P6-P9-100-DEC / Smoked acrylic 10 mm / 1.8 m | 457 | 23.3 / 25.8 / 28.2 |
+| 500 | DL-P6-P9-100-DEC / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.8 m | 499 | 23.2 / 25.9 / 28.4 |
+| 520 | DL-P6-P9-100-DEC / DL-ST-100-FLG / Smoked acrylic 10 mm / 1.8 m | 499 | 23.2 / 25.9 / 28.4 |
 
 Best builds inside the DECIDED rules:
 
 | Case | Walls | Ceiling | Front | Silencer path | Total kg | D_S,A low / central / high |
 |---|---|---|---|---:|---:|---|
-| DECIDED stack (one lining material) | DL-ST-40-FLG | DL-ST-100-FLG | Smoked acrylic 10 mm | 2.4 m | 385 | 21.7 / 24.2 / 26.7 |
+| DECIDED stack (one lining material) | DL-ST-40-FLG | DL-ST-100-FLG | Smoked acrylic 10 mm | 2.4 m | 389 | 21.7 / 24.2 / 26.7 |
 | Same stack with the fallback front | DL-ST-40-FLG | DL-ST-100-FLG | Laminated acoustic 4+4 (8.76 mm) | 2.4 m | 416 | 22.1 / 24.6 / 27.1 |
-| Quietest mix under the 400 kg cap, acrylic front | DL-ST-40-FLG | DL-ST-100-FLG | Smoked acrylic 10 mm | 2.4 m | 385 | 21.7 / 24.2 / 26.7 |
+| Quietest mix under the 400 kg cap, acrylic front | DL-ST-40-FLG | DL-ST-100-FLG | Smoked acrylic 10 mm | 2.4 m | 389 | 21.7 / 24.2 / 26.7 |
 | Quietest mix under the 400 kg cap, fallback front | DL-ST-40-FLG | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | 2.4 m | 400 | 21.3 / 23.8 / 26.3 |
 
 - **The knee is between 340 and 380 kg.** About 3 dB for 40 kg there. Beyond it, each dB costs 25–40 kg.
