@@ -73,12 +73,12 @@
    "expression": "-glass_y + gu_w / 2"
   },
   {
-   "component": "368003 FRONT - GLASS-TO-GLASS SEAL 180 - BOHLE BO5281018",
+   "component": "368003 FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD",
    "index": 2,
    "expression": "fg_vis_zb"
   },
   {
-   "component": "368003 FRONT - GLASS-TO-GLASS SEAL 180 - BOHLE BO5281018",
+   "component": "368003 FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD",
    "index": 5,
    "expression": "fg_vis_zt"
   }
