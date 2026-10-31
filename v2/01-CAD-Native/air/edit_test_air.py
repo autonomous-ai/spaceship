@@ -3,7 +3,7 @@
     python3 tools/fusion/run_script.py v2/01-CAD-Native/air/edit_test_air.py --label "CEILING Engineer (AIR)"
 
 Opens 610000_P01_AIR_CAD.f3d as a new document and changes skeleton parameters (pod_w +100,
-wall_depth +25, dt_zb 2120 -> 2100: the soffit underside), FRONT's named input (DR's access
+pod_d and wall_depth +25 together, dt_zb 2120 -> 2100: the soffit underside), FRONT's named input (DR's access
 panel dr_acc_t 3 -> 4: the column and the soffit start at its face) and AIR's own (the column's
 left face col_x0 949 -> 940, the hub height hub_z 1200 -> 1250). After each change it checks
 every layout body against the box the layout gives for the new values, then reverts, checks
@@ -39,8 +39,7 @@ import air_checks as K  # noqa: E402
 importlib.reload(K)
 
 F3D_REL = "v2/01-CAD-Native/air/610000_%s_AIR_CAD.f3d" % A.REV
-EDITS = [[("pod_w", "2600 mm")], [("wall_depth", "1520 mm")], [("dt_zb", "2100 mm")],
-         [("dr_acc_t", "4 mm")], [("col_x0", "940 mm")], [("hub_z", "1250 mm")]]
+EDITS = A.EDITS        # one list with the offline check that every cut lands in its body for each
 
 
 def sick(r):

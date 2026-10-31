@@ -238,6 +238,33 @@ class FrontInterface(unittest.TestCase):
             self.assertEqual(theirs[name], mine[name], "%s drifted from FRONT's DR model" % name)
 
 
+class EditTest(unittest.TestCase):
+    """Every cut and hole feature lands in its body for each change the edit test makes: a cut
+    that finds nothing turns a timeline item unhealthy in Fusion (a soffit latch's cut did, at
+    pod_w 2600, until the fill stopped short of the latch line)."""
+
+    def test_cuts_land_for_every_edit(self):
+        for edit in [[]] + A.EDITS:
+            v = A.evaluate(overrides=dict(edit))
+            lay = {n: tuple(A.ev(v, e) for e in bx) for _k, n, bx in A.layout()}
+            for target, cb in A.cutouts():
+                c, t = tuple(A.ev(v, e) for e in cb), lay[target]
+                self.assertTrue(all(min(t[2 * i + 1], c[2 * i + 1]) - max(t[2 * i], c[2 * i]) > 1e-6 for i in range(3)),
+                                "%s: a cut in %s finds nothing" % (edit, target))
+            for bname, kind, a in A.features():
+                t = lay[bname]
+                if kind == "box":
+                    c = tuple(A.ev(v, e) for e in a)
+                elif kind == "zcircle":
+                    x, y, z0, z1, d = (A.ev(v, e) for e in a)
+                    c = (x - d / 2, x + d / 2, y - d / 2, y + d / 2, z0, z1)
+                else:
+                    x, z, y0, y1, d = (A.ev(v, e) for e in a)
+                    c = (x - d / 2, x + d / 2, y0, y1, z - d / 2, z + d / 2)
+                self.assertTrue(all(min(t[2 * i + 1], c[2 * i + 1]) - max(t[2 * i], c[2 * i]) > 1e-6 for i in range(3)),
+                                "%s: a %s in %s finds nothing" % (edit, kind, bname))
+
+
 class Numbers(unittest.TestCase):
     def test_bands(self):
         seen = set()

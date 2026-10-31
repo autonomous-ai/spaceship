@@ -244,6 +244,13 @@ ev = CM.ev
 overlap = CM.overlap
 
 
+# the edit test's changes (edit_test_air.py, guideline 4.4), one list for it and the offline check
+# that every cut lands in its body for each: pod_d and wall_depth change together, since the side
+# walls start at DR's back (the skeleton keeps the two, and decor_d, as separate values)
+EDITS = [[("pod_w", "2600 mm")], [("pod_d", "1725 mm"), ("wall_depth", "1520 mm")], [("dt_zb", "2100 mm")],
+         [("dr_acc_t", "4 mm")], [("col_x0", "940 mm")], [("hub_z", "1250 mm")]]
+
+
 def box(x0, x1, y0, y1, z0, z1):
     return (x0, x1, y0, y1, z0, z1)
 
