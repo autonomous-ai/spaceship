@@ -68,6 +68,12 @@ PATH_OWNERS = [
     ("v2/01-CAD-Native/base/", "BASE"), ("v2/02-Drawings/base/", "BASE"), ("v2/03-Manufacturing/base/", "BASE"),
     ("v2/01-CAD-Native/ceiling/", "CEILING"), ("v2/02-Drawings/ceiling/", "CEILING"),
     ("v2/03-Manufacturing/ceiling/", "CEILING"),
+    ("v2/01-CAD-Native/electrical/", "ELECTRICAL"), ("v2/02-Drawings/electrical/", "ELECTRICAL"),
+    ("v2/03-Manufacturing/electrical/", "ELECTRICAL"), ("v2/05-Engineering/electrical/", "ELECTRICAL"),
+    ("v2/01-CAD-Native/air/", "CEILING"), ("v2/02-Drawings/air/", "CEILING"), ("v2/03-Manufacturing/air/", "CEILING"),
+    ("v2/01-CAD-Native/interior/", "CEILING"), ("v2/02-Drawings/interior/", "CEILING"),
+    ("v2/03-Manufacturing/interior/", "CEILING"),
+    ("v2/07-Packaging/", "Packing and Assembly"), ("v2/02-Drawings/30-Assembly-Instructions/", "Packing and Assembly"),
     ("v2/05-Engineering/joints/", "Joints Engineer"),
     ("v2/05-Engineering/acoustics-air/", "Air Engineer"), ("v2/05-Engineering/hardware/", "Air Engineer"),
     ("v2/05-Engineering/layout-study/", "Layout Engineer"),
@@ -76,15 +82,17 @@ PATH_OWNERS = [
     ("v2/03-Manufacturing/", "Fusion Engineer 2"), ("tools/fusion/", "Fusion Engineer 2"),
 ]
 
-# Part-number family -> owner group, from the briefs (LINING follows the
-# assembly its cassettes hang in; AIR sits in DR; ELECTRICAL and INTERIOR
-# are with CEILING). Hardware and seals (83, 84) are the joints register's:
+# Part-number family -> owner group, used when no team folder applies (the
+# path comes first: LINING follows the assembly its cassettes hang in, so a
+# ceiling cassette inside CEILING's STEP is CEILING's). D-80: ELECTRICAL is
+# its own team; CEILING keeps AIR (61) and INTERIOR (81); Packing and Assembly
+# owns PACKAGING (91). Hardware and seals (83, 84) are the joints register's:
 # a shared made part such as the spigot 831001 gets its drawing from the
-# Joints Engineer, while a team's parts-list row stays that team's (path first).
+# Joints Engineer, while a team's parts-list row stays that team's.
 FAMILY_OWNERS = {
     "10": "Fusion Engineer 2", "11": "BASE", "21": "WALL", "35": "FRONT", "36": "FRONT",
-    "41": "CEILING", "51": "WALL", "61": "FRONT", "71": "CEILING", "81": "CEILING",
-    "83": "Joints Engineer", "84": "Joints Engineer",
+    "41": "CEILING", "51": "WALL", "61": "CEILING", "71": "ELECTRICAL", "81": "CEILING",
+    "83": "Joints Engineer", "84": "Joints Engineer", "91": "Packing and Assembly",
 }
 
 

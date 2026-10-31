@@ -129,7 +129,14 @@ def run(root, rev):
     names = {row["part_number"]: row["name"] for _p, rows in plists for row in rows}
     names.update({pn: d["name"] for pn, d in step_products.items() if pn not in names})
     if made:
-        findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn)
+        # where each number comes from, for its owner when it has no file of its own: the STEP holding it,
+        # else the parts list naming it (a ceiling cassette inside CEILING's STEP is CEILING's)
+        src_by_pn = {pn: sorted(d["files"])[0] for pn, d in step_products.items() if d["files"]}
+        for p, rows in plists:
+            for row in rows:
+                if row["part_number"]:
+                    src_by_pn.setdefault(row["part_number"], rel(root, p))
+        findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn)
         ran.add("C05")
     schedule = c_parts.fastener_schedule(root, plists, usage)
     return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,

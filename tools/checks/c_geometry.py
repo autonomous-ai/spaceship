@@ -477,10 +477,41 @@ def load_hole_rules(root):
     return read_csv(p) if os.path.exists(p) else []
 
 
-def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None):
+def load_edge_exceptions(root):
+    """pn -> rows of v2/04-Checks/config/edge-exceptions.csv: edge distances the PM accepted for one hole size
+    of one part, with the ruling. A row lets at most max_short_edges parallel edge lines sit under the
+    2-diameter rule, each at least min_edge_mm from the hole centre; every other edge keeps the rule."""
+    p = os.path.join(root, "v2/04-Checks/config/edge-exceptions.csv")
+    out = {}
+    if os.path.exists(p):
+        for row in read_csv(p):
+            if row.get("part_number"):
+                out.setdefault(row["part_number"].strip(), []).append(row)
+    return out
+
+
+def _edge_accepted(rows, hole, edges, need):
+    """The accepting row for this hole, or None (see load_edge_exceptions)."""
+    short = [e for e in edges if e[0] + 1e-6 < need]
+    lines = []
+    for e in short:
+        if not any(sum((e[2][k] - f[2][k]) ** 2 for k in range(3)) ** 0.5 < 0.5 for f in lines):
+            lines.append(e)         # one edge line, however many segments the face splits it into
+    for row in rows:
+        if abs((num(row.get("hole_dia_mm")) or 0) - hole.diameter) > 0.05:
+            continue
+        lo, n_max = num(row.get("min_edge_mm")) or 0.0, int(num(row.get("max_short_edges")) or 0)
+        if len(lines) <= n_max and all(e[0] + 0.05 >= lo for e in short) and \
+                all(abs(abs(sf.dot(e[1], lines[0][1])) - 1.0) < 1e-3 for e in short):
+            return row
+    return None
+
+
+def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None, edge_exceptions=None):
     """Per-part checks on a STEP file. materials: part number -> material text."""
     fs = []
     hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
+    edge_exceptions = edge_exceptions if edge_exceptions is not None else load_edge_exceptions(root)
     s = load_step(path)
     r = rel(root, path)
     done = set()
@@ -494,17 +525,26 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
         part = "%s %s" % (pn, (so.name or "").strip())
         holes = so.holes
         for h in holes:
-            e, _kind = sf.edge_distance(so, h)
-            if e is None:
+            edges = sf.free_edge_distances(so, h)
+            if not edges:
                 continue
+            e = min(x[0] for x in edges)
             need = edge_factor * h.diameter
             if e + 1e-6 < need:
+                rows = edge_exceptions.get(pn, [])
+                if rows and _edge_accepted(rows, h, edges, need):
+                    continue        # an edge distance the PM accepted, with its rationale
                 sev = "severe" if e < 1.5 * h.diameter else "major"
+                ruled = ""
+                for row in rows:
+                    if abs((num(row.get("hole_dia_mm")) or 0) - h.diameter) <= 0.05:
+                        ruled = " %s accepts this hole only as: %s" % (row.get("ruling", "A PM ruling"),
+                                                                       row.get("reason", ""))
                 fs.append(Finding(
                     "C09", "edge-distance", "%s hole Ø%.1f at %s" % (part, h.diameter, _pt(h.center)), sev,
                     "Hole Ø%.2f in %s is %.1f mm from the free edge (centre to edge), %.2f diameters; the rule is at "
-                    "least %g diameters (%.1f mm). Hole centre %s in the part's own coordinates." % (
-                        h.diameter, part, e, e / h.diameter, edge_factor, need, _pt(h.center)),
+                    "least %g diameters (%.1f mm). Hole centre %s in the part's own coordinates.%s" % (
+                        h.diameter, part, e, e / h.diameter, edge_factor, need, _pt(h.center), ruled),
                     "Move the hole to at least %.1f mm from the edge, or justify a smaller distance with a "
                     "calculation in the feature rationale." % need,
                     r, owner_for(r, pn), {"edge_mm": round(e, 2), "dia_mm": round(h.diameter, 2)}))
