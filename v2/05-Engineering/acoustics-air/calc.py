@@ -94,7 +94,8 @@ ACP3_KG_M2 = 3.5         # Alcorest EV3038 3 mm x 0.21 mm skins (the plan's VT01
                          # 3.8 (3A DIBOND, 0.3 mm skins), which is the heavier, conservative case for weight.
 ACP3_SKIN_MM = 0.21      # Alcorest catalogue, HW VT01 row (source)
 PET_FELT9_KG_M2 = 1.8    # HW VT03 felt row
-FILL_KG_M3 = 32.0        # ASSUME: PET insulation fill 20-40 kg/m3 (no sourced product row; HW fill row is open)
+FILL_KG_M3 = 32.0        # Pyrotek Sorberpoly 2D polyester, 32 kg/m3: the density its ISO 354 data is for (HW fill row).
+                         # 24 kg/m3 exists but has no published absorption, so the lighter fill is not used (PM rule).
 TRAY_KG_M2 = 0.26        # calculation: 25 mm steel tray returns, 4.6 m edge per 1.72 m2 x 0.025 m x 3.93 kg/m2
 HC_CORE_KG_M3 = 60.0     # ASSUME: aluminium honeycomb core density (HW sandwich rows give panel kg/m2)
 HC_CORE_G = 150e6        # ASSUME: honeycomb core shear modulus, low end of typical aluminium honeycomb
@@ -305,6 +306,7 @@ TUBE_KG_M = {
     "steel 20x20x1.0": 0.597,   # calculation (4*20-4*1)*1*7.85e-3; HW steel-tube row
     "alu 20x20x1.5": 0.300,     # calculation (4*20-4*1.5)*1.5*2.70e-3; HW aluminium-tube row
     "alu 20x40x1.5": 0.462,     # calculation; HW aluminium-tube row
+    "alu 20x40x1.2": 0.373,     # calculation (2*(20+40)-4*1.2)*1.2*2.70e-3; DECIDED if the rivnut grip check passes
     "alu 25x100x1.5": 0.988,    # calculation (2*(25+100)-4*1.5)*1.5*2.70e-3; HW aluminium-tube row
     "alu 20x60x1.5": 0.624,     # calculation; HW aluminium-tube row
     "alu 20x100x1.5": 0.948,    # calculation; HW aluminium-tube row
@@ -388,6 +390,11 @@ def walls():
               [a3, al1], 100, 100, ("none",), True, al100, 113),
         Build("DL-ST-40-FLG", "ACP 3 / 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
               [a3, s05], 40, 40, ("none",), True, al, 81, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
+        Build("DL-ST-40-FLG-12", "ACP 3 / 20x40x1.2 frame, 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
+              [a3, s05], 40, 40, ("none",), True, frame("alu 20x40x1.2"), 81, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
+        Build("DL-ST4-40-FLG-12", "ACP 3 / 20x40x1.2 frame, 40 fill / floating cassette: steel 0.4 tray, 25 air, felt 9",
+              [a3, plate("steel 0.4", [layer("steel", 0.4)])], 40, 40, ("none",), True, frame("alu 20x40x1.2"), 81,
+              extra_kg_m2=TRAY_KG_M2 * 0.8, felt_gap=True),
         Build("DL-ST-100-FLG", "ACP 3 / 100 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
               [a3, s05], 100, 100, ("none",), True, al100, 141, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
         Build("DL-HDF-100-DEC", "ACP 3 / 100 fill / HDF 3 on resilient pads + felt 9",
@@ -530,18 +537,44 @@ BASE_LEN = {"v1": 7.7, "v2": 7.8}     # m, floor perimeter (calculation)
 VENT_OPEN = {"v1": 2 * 0.0295,        # calculation from V1_DWG sheet 9: per fan unit 2 x 20 slots 76 x 10 mm
              "plan": 2 * 0.020}       # ASSUME: plan shows slot patterns but no size
 
-# Silencer: lined plenum in the ceiling. Passage h x w, lined on both wide faces with 25 mm
-# PET or mineral wool, path length L with one 180-degree turn. Sized in report.md.
-SIL_H, SIL_W = 0.050, 0.500
-SIL_LINING_ALPHA = (0.10, 0.35, 0.75, 0.95, 0.95, 0.90)   # ASSUME until HW lining data
-SIL_TURN_DB = (0, 2, 4, 6, 6, 6)                          # ASSUME: one lined 180-degree turn
-SIL_CAP_DB = 40.0                                         # ASSUME: casing flanking limit per band
+# Silencers (DECIDED 2026-10-31): splitter cartridges inside the hollow front decor blocks, outside the pod's
+# sound shell, next to their fans. Two 50 mm air passages between three 25 mm lining layers, so the lined
+# perimeter over free area P/S = 40 per metre (calculation). Supply: right block, vertical, 175 x 500 x 2000 mm.
+# Exhaust: top block, horizontal, 175 x 280 x 1500 mm. The fan's sound also breaks out through the cartridge
+# casing into the felt-lined decor cavity and then through the decor's inner ACP face into the pod.
+SIL_PS = 40.0
+LINING_DATA = {   # absorption of the splitter lining layers, 125..4k Hz
+    25.0: (0.08, 0.27, 0.48, 0.63, 0.71, 0.75),   # Pyrotek Sorberpoly 2D 25 mm, 32 kg/m3, ISO 354 (HW fill row)
+    37.5: (0.12, 0.37, 0.65, 0.77, 0.78, 0.79),   # ASSUME: linear between the 25 and 50 mm data (custom thickness)
+    50.0: (0.16, 0.47, 0.82, 0.90, 0.84, 0.83),   # Pyrotek Sorberpoly 2D 50 mm, ISO 354 (HW fill row)
+}
+SIL_LINING_MM = 37.5                               # DECIDED with the PM: three 37.5 mm layers, two 50 mm gaps
+SIL_LINING_ALPHA = LINING_DATA[SIL_LINING_MM]
+SIL_CAP_DB = 40.0                                         # ASSUME: flanking limit per band
+SIL_DERATE = 0.8                                          # ASSUME: Sabine formula derated (central case)
+SIL_PATHS = {   # name: (length m, free area m2, casing face width toward the decor cavity m, depth x width m)
+    "supply": (2.0, 0.050, 0.5, (0.2125, 0.500)),    # 3 x 37.5 lining + 2 x 50 gaps = 212.5 mm deep
+    "exhaust": (1.5, 0.028, 0.5, (0.2125, 0.280)),
+}
+CASINGS = {     # DECIDED: al20
+    "al08": ("aluminium 0.8 mm", "alu", 0.8),
+    "al20": ("aluminium 2.0 mm", "alu", 2.0),
+    "st10": ("steel 1.0 mm", "steel", 1.0),
+}
+LINING_KG_M3 = 40.0    # polyester lining board, about 40 kg/m3 (ASSUME)
 
 
 def silencer_il(length, derate=1.0):
-    p, s = 2 * SIL_W, SIL_H * SIL_W
-    return [min((1.05 * a ** 1.4 * p / s * length + t) * derate, SIL_CAP_DB)
-            for a, t in zip(SIL_LINING_ALPHA, SIL_TURN_DB)]
+    return [min(1.05 * a ** 1.4 * SIL_PS * length * derate, SIL_CAP_DB) for a in SIL_LINING_ALPHA]
+
+
+def cartridge_kg(casing):
+    _, mat, t = CASINGS[casing]
+    kg_m2 = MAT[mat][0] * t / 1000
+    tot = 0.0
+    for L, area, b, (dep, wid) in SIL_PATHS.values():
+        tot += 2 * (dep + wid) * L * kg_m2 + 3 * wid * L * LINING_KG_M3 * SIL_LINING_MM / 1000
+    return tot
 
 
 def flat(x):
@@ -588,8 +621,13 @@ def elements(cfg, sc, wb, gb):
     else:
         el.append(("panel joints", jl * s["joint"] / 1000, flat(1.0)))
     if cfg["vents"] == "silenced":
-        il = silencer_il(cfg.get("sil_len", 1.2), s["sil_derate"])
-        el.append(("vents", 2 * SIL_H * SIL_W, [10 ** (-x / 10) for x in il]))
+        st_v = [0.0] * 6
+        ar_v = 0.0
+        for L, area, _, _ in SIL_PATHS.values():
+            il = silencer_il(L, s["sil_derate"])
+            st_v = [x + area * 10 ** (-y / 10) for x, y in zip(st_v, il)]
+            ar_v += area
+        el.append(("vents", ar_v, [x / ar_v for x in st_v]))
     else:
         el.append(("vents", VENT_OPEN[cfg["vents"]], flat(10 ** (-s["open_vent_il"] / 10))))
     if cfg.get("grommets"):
@@ -632,12 +670,11 @@ FIXES = [
     ("Door drop seal", dict(drop_seal=True), 1.0, "HW drop-seal row"),
     ("Fixed glass in sealed U-profiles", dict(glass_seals=True), 0.0, "profiles are already in the layout study's rest"),
     ("Gaskets on every panel joint", dict(gaskets=True), 1.0, "HW gasket row, about 0.03 kg/m x 34 m"),
-    ("Silenced vents (2 lined ceiling plenums)", dict(vents="silenced", sil_len=1.2), 7.0,
-     "calculation: 2 x (0.6 m2 HDF 3 box + 1.2 m2 lining 25 mm at 1.2 kg/m2)"),
+    ("Silenced vents (splitter silencers in the decor blocks)", dict(vents="silenced"), round(cartridge_kg("al20") - 3.0, 1),
+     "calculation: two cartridges with 2 mm aluminium casings, less the 3 kg already in the layout study's rest"),
     ("Thin floor with base seal (DECIDED, D-05)", dict(floor="thin", base_seal=True), 0.5,
      "HW base-seal row; the floor itself is in the weight study"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
-    ("PET fill in the front decor", dict(decor_fill=True), 4.0, "calculation: 1.65 m2 x 75 mm x 32 kg/m3"),
 ]
 FIX_ALL = {}
 for _l, _c, _k, _b in FIXES:
@@ -645,9 +682,10 @@ for _l, _c, _k, _b in FIXES:
 FIX_KG = sum(k for _, _, k, _ in FIXES)
 
 
-# Fix mass not already inside REST_KG (layout study): door edge seals 1.0, joint gaskets 1.0, silencer boxes
-# beyond the study's 2 x 1.5 kg 4.0, base seal 0.5, grommets 0.1, decor fill 4.0 (calculation)
-EXTRA_FIX_KG = 10.6
+# Fix mass not already inside REST_KG (layout study): door edge seals 1.0, joint gaskets 1.0, base seal 0.5,
+# grommets 0.1 (calculation); the silencer cartridges are added by casing, less the study's 2 x 1.5 kg boxes.
+EXTRA_FIX_KG = 2.6
+FAN_KG = 6.0           # S&P TD-500/150-160 ECOWATT, 6.0 kg (HW fan row); the PM asked to use 6 kg per fan
 
 
 def pod_total_kg(cfg, wb, gb):
@@ -655,8 +693,8 @@ def pod_total_kg(cfg, wb, gb):
     kg = REST_KG + EXTRA_FIX_KG
     kg += wb[cfg["wall"]].kg_m2 * OUT_WALL_M2 + wb[cfg.get("ceiling", cfg["wall"])].kg_m2 * OUT_CEIL_M2
     kg += gb[cfg["glass"]].kg_m2 * GLASS_M2 + FRONT_EXTRA_KG.get(cfg["glass"], 0.0)
-    if cfg.get("sil_len", 1.2) > 1.2:
-        kg += (cfg["sil_len"] - 1.2) / 1.2 * 7.0
+    kg += cartridge_kg(cfg.get("casing", "al20")) - 3.0
+    kg += 2 * (FAN_KG - 1.5)           # TD-500 fans at 6 kg each; the layout study's rest carries 1.5 kg each
     return kg
 
 
@@ -671,8 +709,6 @@ def pod_kg(cfg, wb, gb):
     for _, change, k, _ in FIXES:
         if all(cfg.get(kk) == vv for kk, vv in change.items()):
             kg += k
-    if cfg.get("sil_len", 1.2) > 1.2 and cfg.get("vents") == "silenced":
-        kg += (cfg["sil_len"] - 1.2) / 1.2 * 7.0
     return kg
 
 
@@ -690,12 +726,8 @@ AIR = dict(
     controls_w=3.0,             # HW CO2 controller row - provisional
     voice_kit_w=60.0,           # reserve for the later voice cockpit kit: ASSUME, same as the layout study
 )
-SYS_K = 7.5   # ASSUME: entry 0.5 + outside grille 2.0 + 180-degree lined turn 2.0 + inside diffuser 2.0 + exit 1.0
-FAN_SPECTRUM = (-3.0, -5.0, -8.0, -11.0, -15.0, -20.0)   # ASSUME: dB re overall Lw, small EC fan
-
-# Fan candidates: curve points (l/s, Pa) at full speed and LwA to the duct side at a stated point.
-# FV-15AUL1 (plan) has no published curve and its manual forbids ceiling mounting (HW), so it is not here.
-FANS = {}
+SYS_K = 7.5   # ASSUME: entry 0.5 + outside slot grille 2.0 + inside diffuser 2.0 + exit 1.0 + splitter 2.0
+# The plan's Panasonic FV-15AUL1 has no published curve and its manual forbids ceiling mounting (HW): not used.
 
 # Duct-side sound power per octave, A-weighted per band, dB(A), 125..4000 Hz, at a duty point near
 # 70 l/s (S&P TD-350/100-125 SILENT ECOWATT, 8 V, point 5, about 250 m3/h = 69 l/s at about 30 Pa;
@@ -708,19 +740,17 @@ FAN_BANDS = {
 }
 
 
-def sys_dp(q_ls, sil_len=1.2, sil_area=SIL_H * SIL_W):
-    """Vent path pressure drop: SYS_K for a 1.2 m path, plus 1.5 per extra 1.2 m (one more lined turn and
-    lining friction; ASSUME)."""
-    v = q_ls / 1000 / sil_area
-    k = SYS_K + 1.5 * max(0.0, sil_len - 1.2) / 1.2
-    return k * 0.5 * RHO0 * v * v
+def sys_dp(q_ls, area):
+    """Pressure drop of one vent path at q_ls through a splitter of free area `area` (square law)."""
+    v = q_ls / 1000 / area
+    return SYS_K * 0.5 * RHO0 * v * v
 
 
 def co2_rows():
     v = areas(GEOM["v2"])["volume"]
     g = AIR["people"] * AIR["co2_per_person_ls"]
     rows = []
-    for q in (26.0, 40.0, 70.0):
+    for q in (26.0, 40.0, 53.0, 70.0):
         rise = g / q * 1e6
         tau_min = v / (q / 1000) / 60
         heat = (AIR["people"] * (AIR["sensible_w_person"] + AIR["laptop_w"]) + AIR["lights_w"]
@@ -747,53 +777,56 @@ def end_reflection(f, area_m2):
     return 10 * math.log10(1 + (0.7 * C0 / (math.pi * f * d)) ** 2)
 
 
-DIFFUSER_M2 = 0.025   # ASSUME: inside diffuser free area = silencer passage area
+FAN_SPEED_DB = {"supply": 0.0, "exhaust": 2.5}   # ASSUME: the exhaust path (28 Pa at 70 l/s) needs a little
+                                                  # more speed than the TD-500 4 V point; the supply (9 Pa) less
 
 
-def inside_noise(lwa_path, sil_len, derate=0.8, spectrum=None):
-    """LpA at a seated head 1.0 m from the supply diffuser and 1.5 m from the exhaust grille,
-    both fans at the same duct-side LwA. Only the duct path; casings sit outside the pod."""
+def inside_room_terms():
     a = areas(GEOM["v2"])
     s_tot = a["walls"] + a["ceiling"] + a["floor"] + a["front"]
-    ain = [a["walls"] * ALPHA["felt_direct"][i] + a["ceiling"] * ALPHA["pet_thick"][i] + a["glass"] * ALPHA["glass"][i]
+    ain = [(a["walls"] + a["ceiling"]) * ALPHA["felt_gap"][i] + a["glass"] * ALPHA["glass"][i]
            + a["decor"] * ALPHA["metal"][i] + a["floor"] * ALPHA["hard_floor"][i] for i in range(6)]
-    il = [x + end_reflection(f, DIFFUSER_M2) for x, f in zip(silencer_il(sil_len, derate), BANDS)]
-    lw_lin = [lwa_path + s for s in (spectrum or FAN_SPECTRUM)]
-    norm = 10 * math.log10(sum(10 ** ((x + aw) / 10) for x, aw in zip(lw_lin, A_WEIGHT)))
-    lw_lin = [x + (lwa_path - norm) for x in lw_lin]
-    tot = 0.0
-    for r in (1.0, 1.5):
-        for i in range(6):
-            abar = ain[i] / s_tot
-            rc = ain[i] / (1 - abar)
-            lp = lw_lin[i] - il[i] + 10 * math.log10(2 / (4 * math.pi * r * r) + 4 / rc)
-            tot += 10 ** ((lp + A_WEIGHT[i]) / 10)
-    return 10 * math.log10(tot)
+
+    def room(r, i):
+        abar = ain[i] / s_tot
+        rc = ain[i] / (1 - abar)
+        return 10 * math.log10(2 / (4 * math.pi * r * r) + 4 / rc)
+    return room
 
 
-def inside_from_bands(supply_bands, exhaust_bands, sil_len, derate=0.8, speed_db=0.0):
-    """LpA inside from A-weighted octave sound power of the supply-fan outlet and the exhaust-fan inlet,
-    each through its own silencer and diffuser. Listener 1.0 m from the supply, 1.5 m from the exhaust."""
-    a = areas(GEOM["v2"])
-    s_tot = a["walls"] + a["ceiling"] + a["floor"] + a["front"]
-    ain = [a["walls"] * ALPHA["felt_direct"][i] + a["ceiling"] * ALPHA["pet_thick"][i] + a["glass"] * ALPHA["glass"][i]
-           + a["decor"] * ALPHA["metal"][i] + a["floor"] * ALPHA["hard_floor"][i] for i in range(6)]
-    il = [x + end_reflection(f, DIFFUSER_M2) for x, f in zip(silencer_il(sil_len, derate), BANDS)]
-    tot = 0.0
-    for bands, r in ((supply_bands, 1.0), (exhaust_bands, 1.5)):
-        for i in range(6):
-            abar = ain[i] / s_tot
-            rc = ain[i] / (1 - abar)
-            tot += 10 ** ((bands[i] + speed_db - il[i] + 10 * math.log10(2 / (4 * math.pi * r * r) + 4 / rc)) / 10)
-    return 10 * math.log10(tot)
+def fan_noise_inside(fan_key, casing="al20", q_ls=70.0, derate=SIL_DERATE):
+    """LpA at a seated head (1.0 m from the supply grille, 1.5 m from the exhaust grille, 1.2 m from the decor
+    faces) from both fans: the duct path through each splitter plus breakout through the cartridge casing,
+    the felt-lined decor cavity and the decor's inner ACP face. Returns (duct dB(A), breakout dB(A), total)."""
+    room = inside_room_terms()
+    fan = FAN_BANDS[fan_key]
+    _, mat, t = CASINGS[casing]
+    casing_leaf = plate(casing, [layer(mat, t)])
+    face = acp()
+    flow_db = 50 * math.log10(q_ls / 70.0)
+    duct = brk = 0.0
+    for name, side, r in (("supply", "outlet", 1.0), ("exhaust", "inlet", 1.5)):
+        L, area, b, _ = SIL_PATHS[name]
+        bands = [x + flow_db + FAN_SPEED_DB[name] for x in fan[side]]
+        il = silencer_il(L, derate)
+        for i, f in enumerate(BANDS):
+            duct += 10 ** ((bands[i] - il[i] - end_reflection(f, area) + room(r, i)) / 10)
+            a_db = max(1.05 * SIL_LINING_ALPHA[i] ** 1.4 * SIL_PS * derate, 0.5)
+            k = a_db / 4.343
+            tau = 10 ** (-(r_single(casing_leaf, f) + finite_gain(f, 1.0)) / 10)
+            lw_cav = bands[i] + 10 * math.log10(tau * (b / area) * (1 - math.exp(-k * L)) / k)
+            a_cav = 1.5 * ALPHA["felt_direct"][i] + 0.05      # ASSUME: 1.5 m2 of felt lining in the block
+            r_face = r_single(face, f) + finite_gain(f, 0.8)
+            lw_pod = lw_cav - r_face + 10 * math.log10(0.8 / a_cav)
+            brk += 10 ** ((lw_pod + room(1.2, i)) / 10)
+    return 10 * math.log10(duct), 10 * math.log10(brk), 10 * math.log10(duct + brk)
 
 
-def lwa_allowed(target_dba, sil_len, derate=0.8):
-    """Largest fan LwA (duct side, per fan) that keeps the inside at target with 2 fans."""
-    lo, hi = 0.0, 100.0
+def flow_for(target_dba, fan_key, casing="al20"):
+    lo, hi = 10.0, 120.0
     for _ in range(60):
         mid = (lo + hi) / 2
-        if inside_noise(mid, sil_len, derate) > target_dba:
+        if fan_noise_inside(fan_key, casing, mid)[2] > target_dba:
             hi = mid
         else:
             lo = mid
@@ -878,8 +911,8 @@ def t_pods(wb, gb, fixed):
         ("+ fixes, DL-ST decoupled", dict(fixed, wall="DL-ST-DEC")),
         ("+ fixes, honeycomb sandwich SW-HC20", dict(fixed, wall="SW-HC20")),
         ("+ fixes, foam sandwich + inner skin", dict(fixed, wall="SW-FOAM20-DL")),
-        ("DECIDED stack, smoked acrylic 10 mm front", dict(fixed, **DECIDED_STACK)),
-        ("DECIDED stack, fallback 4+4 laminated front", dict(fixed, **dict(DECIDED_STACK, glass="L44"))),
+        ("DECIDED stack, 4+4 laminated front", dict(fixed, **DECIDED_STACK)),
+        ("DECIDED stack with the acrylic experiment", dict(fixed, **dict(DECIDED_STACK, glass="A10"))),
     ]
     out = ["| Pod | D_S,A low | central | high |", "|---|---:|---:|---:|"]
     res = {}
@@ -914,40 +947,6 @@ def t_share(wb, gb, cfgs):
     return "\n".join(out)
 
 
-def search_30(wb, gb, base, fronts=("G8", "L44")):
-    """All wall x ceiling x front x silencer combinations (light fixes on). Glass fronts only:
-    acrylic is a separate decision (report.md), so it does not hide wall costs here."""
-    wall_keys = [k for k in wb if not k.startswith("_") and not k.startswith("V1")]
-    combos = []
-    for wk in wall_keys:
-        for ck in wall_keys:
-            for gk in fronts:
-                for sil in (1.2, 1.8, 2.4):
-                    cfg = dict(base, wall=wk, ceiling=ck, glass=gk, sil_len=sil)
-                    d = pod(cfg, "central", wb, gb)["dsa"]
-                    combos.append((pod_kg(cfg, wb, gb), d, cfg))
-    return combos
-
-
-def t_goal(wb, gb, base, ref_kg, v1_central, v1_high):
-    """kg-per-dB curve: lightest combination (all light fixes on) for each central D_S,A goal."""
-    combos = search_30(wb, gb, base)
-    out = ["| Goal, central D_S,A | Lightest wall / ceiling / front / silencer | D_S,A low / central / high | kg vs plan (8 mm glass) |",
-           "|---|---|---|---:|"]
-    goals = [("v1 central", v1_central), ("v1 optimistic", v1_high)]
-    goals += [(f"{g} dB", float(g)) for g in range(20, 31)]
-    for label, goal in goals:
-        ok = [c for c in combos if c[1] >= goal - 1e-9]
-        if not ok:
-            out.append(row([f"{label} ({goal:.1f})", "not reached with any option here", "", ""]))
-            continue
-        kg, d, cfg = min(ok, key=lambda c: (c[0], -c[1]))
-        b = band(cfg, wb, gb)
-        out.append(row([f"{label} ({goal:.1f})", f"{cfg['wall']} / {cfg['ceiling']} / {gb[cfg['glass']].name} / "
-                        f"{cfg['sil_len']:.1f} m", " / ".join(f"{x:.1f}" for x in b), f"{kg - ref_kg:+.0f}"]))
-    return "\n".join(out)
-
-
 def t_curve(wb, gb, base):
     """Best predicted D_S,A for each total pod weight, all light fixes on (Lead request).
     Two fronts: glass (8 mm tempered or 4+4 laminated) and smoked acrylic 10 mm."""
@@ -959,11 +958,10 @@ def t_curve(wb, gb, base):
         for wk in wall_keys:
             for ck in wall_keys:
                 for gk in fronts:
-                    for sil in (1.2, 1.8):
-                        cfg = dict(base, wall=wk, ceiling=ck, glass=gk, sil_len=sil)
-                        combos.append((pod_total_kg(cfg, wb, gb), pod(cfg, "central", wb, gb)["dsa"], cfg))
+                    cfg = dict(base, wall=wk, ceiling=ck, glass=gk)
+                    combos.append((pod_total_kg(cfg, wb, gb), pod(cfg, "central", wb, gb)["dsa"], cfg))
         out += [f"{title}:", "",
-                "| Pod budget kg | Best wall / ceiling / front / silencer | Total kg | D_S,A low / central / high |",
+                "| Pod budget kg | Best wall / ceiling / front | Total kg | D_S,A low / central / high |",
                 "|---:|---|---:|---|"]
         for budget in range(280, 521, 20):
             ok = [c for c in combos if c[0] <= budget]
@@ -972,51 +970,31 @@ def t_curve(wb, gb, base):
                 continue
             kg, d, cfg = max(ok, key=lambda c: (round(c[1], 1), -c[0]))
             bb = band(cfg, wb, gb)
-            out.append(row([str(budget), f"{cfg['wall']} / {cfg['ceiling']} / {gb[cfg['glass']].name} / {cfg['sil_len']:.1f} m",
+            out.append(row([str(budget), f"{cfg['wall']} / {cfg['ceiling']} / {gb[cfg['glass']].name}",
                             f"{kg:.0f}", " / ".join(f"{x:.1f}" for x in bb)]))
         out.append("")
     return "\n".join(out).rstrip()
 
 
-DECIDED_WALLS = ("DL-HDF-40-FL", "DL-HDF-60-FL", "DL-ST-40-FL", "DL-ST-60-FL", "DL-AL1-60-FL", "DL-2HDF-60-FL",
-                 "DL-ST-40-FLG")
-DECIDED_CEILS = DECIDED_WALLS + ("DL-ST-100-FL", "DL-AL1-100-FL", "DL-ST-100-FLG")
-
-
-DECIDED_STACK = dict(wall="DL-ST-40-FLG", ceiling="DL-ST-100-FLG", glass="A10", sil_len=2.4)
-
-
-def recommend(wb, gb, base, front, cap, sil_len=2.4):
-    """Quietest combination inside the DECIDED rules (ACP without plywood on aluminium frames at 400 mm,
-    filled 40-60 mm cavity, floating inner skin; ceiling may be 100 mm for the silencers) under a kg cap."""
-    best = None
-    for wk in DECIDED_WALLS:
-        for ck in DECIDED_CEILS:
-            cfg = dict(base, wall=wk, ceiling=ck, glass=front, sil_len=sil_len)
-            kg = pod_total_kg(cfg, wb, gb)
-            if kg > cap:
-                continue
-            d = pod(cfg, "central", wb, gb)["dsa"]
-            key = (round(d, 1), -kg)
-            if best is None or key > best[0]:
-                best = (key, kg, cfg)
-    return best
+DECIDED_WALLS = ("DL-HDF-40-FL", "DL-ST-40-FL", "DL-ST-40-FLG", "DL-ST-40-FLG-12")
+# DECIDED 2026-10-31: 4+4 laminated front (frameless like v1), 40 mm ceiling frames, splitter silencers in the
+# decor blocks with 2 mm aluminium casings, 20x40x1.2 frames (rivnut grip check passed), fill stays 32 kg/m3.
+DECIDED_STACK = dict(wall="DL-ST-40-FLG-12", ceiling="DL-ST-40-FLG-12", glass="L44", casing="al20")
 
 
 def t_recommend(wb, gb, base):
-    out = ["| Case | Walls | Ceiling | Front | Silencer path | Total kg | D_S,A low / central / high |",
-           "|---|---|---|---|---:|---:|---|"]
-    rows = [("DECIDED stack (one lining material)", dict(base, **DECIDED_STACK)),
-            ("Same stack with the fallback front", dict(base, **dict(DECIDED_STACK, glass="L44")))]
-    for label, front, cap in (("Quietest mix under the 400 kg cap, acrylic front", "A10", 400),
-                              ("Quietest mix under the 400 kg cap, fallback front", "L44", 400)):
-        r = recommend(wb, gb, base, front, cap)
-        if r is not None:
-            rows.append((label, r[2]))
+    out = ["| Case | Walls | Ceiling | Front | Silencer casing | Total kg | D_S,A low / central / high |",
+           "|---|---|---|---|---|---:|---|"]
+    rows = [("DECIDED stack", dict(base, **DECIDED_STACK)),
+            ("Same with 20x40x1.5 frames", dict(base, **dict(DECIDED_STACK, wall="DL-ST-40-FLG", ceiling="DL-ST-40-FLG"))),
+            ("Same with a 0.4 mm tray (rejected: costs 1 dB)", dict(base, **dict(DECIDED_STACK, wall="DL-ST4-40-FLG-12", ceiling="DL-ST4-40-FLG-12"))),
+            ("Same, felt flat on the ceiling lining (no gap)", dict(base, **dict(DECIDED_STACK, ceiling="DL-ST-40-FL"))),
+            ("Acrylic experiment: 10 mm with hinge stile", dict(base, **dict(DECIDED_STACK, glass="A10"))),
+            ("Light 0.8 mm casings (fails the noise target)", dict(base, **dict(DECIDED_STACK, casing="al08")))]
     for label, cfg in rows:
         kg = pod_total_kg(cfg, wb, gb)
         b = band(cfg, wb, gb)
-        out.append(row([label, cfg["wall"], cfg["ceiling"], gb[cfg["glass"]].name, f"{cfg['sil_len']:.1f} m",
+        out.append(row([label, cfg["wall"], cfg["ceiling"], gb[cfg["glass"]].name, CASINGS[cfg["casing"]][0],
                         f"{kg:.0f}", " / ".join(f"{x:.1f}" for x in b)]))
     return "\n".join(out), rows
 
@@ -1035,43 +1013,39 @@ def t_air():
     return "\n".join(out)
 
 
-def fan_point(fan, sil_len=1.2, target_ls=70.0):
-    """Full-speed operating point on the silenced-vent system curve, then the speed that gives
-    target_ls (fan laws: Q ~ n, p ~ n^2, P ~ n^3, Lw ~ 50 lg n)."""
-    pts = sorted(fan["curve"])                      # (l/s, Pa) at full speed
-    q_op = None
-    for (q1, p1), (q2, p2) in zip(pts, pts[1:]):
-        f1, f2 = p1 - sys_dp(q1), p2 - sys_dp(q2)
-        if f1 >= 0 >= f2:
-            q_op = q1 + (q2 - q1) * f1 / (f1 - f2) if f1 != f2 else q1
-            break
-    if q_op is None:
-        return None
-    n = target_ls / q_op
-    lwa_full = fan["lwa"][0]
-    lwa = lwa_full + 50 * math.log10(min(n, 1.0)) if n <= 1 else None
-    watts = fan.get("watts_full", 0) * min(n, 1.0) ** 3 if n <= 1 else None
-    return dict(q_full=q_op, p_full=sys_dp(q_op), speed=n, lwa=lwa, watts=watts,
-                inside=inside_noise(lwa, sil_len) if lwa is not None else None)
+FAN_DECIDED = "S&P TD-500/150-160 ECOWATT, 4 V (56 l/s @ 42 Pa)"
 
 
 def t_fans():
-    out = ["| Fan (duty point near 70 l/s) | Duct LwA dB(A) | Power W | kg | Inside dB(A), silencer 1.2 m | 1.8 m | 2.4 m | Basis |",
-           "|---|---:|---:|---:|---:|---:|---:|---|"]
-    for name, d in FAN_BANDS.items():
-        cells = [f"{inside_from_bands(d['outlet'], d['inlet'], L):.1f}" for L in (1.2, 1.8, 2.4)]
-        out.append(row([name, f"{d['lwa']}", f"{d['watts']}", f"{d['kg']:.1f}"] + cells
-                       + ["HW fan rows (S&P octave data); silencer and room: calculation"]))
+    out = ["| Fan, 2 mm aluminium casings | Duct LwA dB(A) at its data point | Inside at 53 l/s: duct / breakout / total dB(A) | Inside at 70 l/s: duct / breakout / total | Flow for 25 dB(A) l/s |",
+           "|---|---:|---|---|---:|"]
+    for k, fan in FAN_BANDS.items():
+        a = fan_noise_inside(k, "al20", 53.0)
+        b = fan_noise_inside(k, "al20", 70.0)
+        out.append(row([k + (" (DECIDED)" if k == FAN_DECIDED else ""), f"{fan['lwa']}",
+                        " / ".join(f"{x:.1f}" for x in a), " / ".join(f"{x:.1f}" for x in b),
+                        f"{flow_for(25.0, k, 'al20'):.0f}"]))
     return "\n".join(out)
 
 
 def t_silencer():
-    out = ["| Silencer path length m | 125 | 250 | 500 | 1k | 2k | 4k | Pressure drop at 70 l/s Pa | Fan LwA allowed for 25 dB(A) | for 30 dB(A) |",
-           "|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
-    for L in (0.6, 1.2, 1.8, 2.4):
-        il = silencer_il(L, 0.8)
-        out.append(row([f"{L:.1f}"] + [f"{x:.0f}" for x in il] + [f"{sys_dp(70, L):.0f}",
-                                                                 f"{lwa_allowed(25, L):.0f}", f"{lwa_allowed(30, L):.0f}"]))
+    out = ["| Splitter (2 mm aluminium casing unless noted) | Two cartridges kg | Supply path IL 125 | 250 | 500 | 1k | 2k | 4k dB | Inside at 53 l/s dB(A) | at 70 l/s | Flow for 25 dB(A) l/s |",
+           "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    global SIL_LINING_ALPHA, SIL_LINING_MM
+    keep = (SIL_LINING_ALPHA, SIL_LINING_MM)
+    cases = [(f"lining {mm:g} mm" + (" (DECIDED)" if mm == keep[1] else ""), mm, "al20") for mm in (25.0, 37.5, 50.0)]
+    cases += [("lining 37.5 mm, casing aluminium 0.8 mm", 37.5, "al08"), ("lining 37.5 mm, casing steel 1.0 mm", 37.5, "st10")]
+    for label, mm, ck in cases:
+        SIL_LINING_MM, SIL_LINING_ALPHA = mm, LINING_DATA[mm]
+        il = silencer_il(SIL_PATHS["supply"][0], SIL_DERATE)
+        out.append(row([label, f"{cartridge_kg(ck):.1f}"] + [f"{x:.0f}" for x in il]
+                       + [f"{fan_noise_inside(FAN_DECIDED, ck, 53.0)[2]:.1f}", f"{fan_noise_inside(FAN_DECIDED, ck, 70.0)[2]:.1f}",
+                          f"{flow_for(25.0, FAN_DECIDED, ck):.0f}"]))
+    SIL_LINING_ALPHA, SIL_LINING_MM = keep
+    out.append("")
+    out.append(f"Pressure drop at 70 l/s: supply {sys_dp(70, SIL_PATHS['supply'][1]):.0f} Pa, exhaust "
+               f"{sys_dp(70, SIL_PATHS['exhaust'][1]):.0f} Pa. The 50 mm lining needs a 250 mm deep cartridge, "
+               f"which does not fit the decor blocks.")
     return "\n".join(out)
 
 
