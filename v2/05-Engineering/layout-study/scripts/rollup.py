@@ -28,7 +28,7 @@ D71_LEFT_OUT = 1.3 + 0.5 + 2.1   # corner tubes, bond, floor foam: D-71's "not i
 P04 = dict(side_w=1492.74, side_h=1142.74, side_up_h=1142.74, back_w=1200.61, back_h=1118.61,
            side_cass_l=1445.0, side_cass_lo_h=1142.74, side_cass_up_h=1092.74, back_cass_w=1166.0,
            back_cass_lo_h=1118.61, back_cass_up_h=1116.87, floor_w=1210.0, floor_d=1455.0, ceil_w=1200.61,
-           wall_depth=1495.0, frame_d=40.0)
+           wall_depth=1495.0, frame_d=40.0, back_fw=1198.99)      # back_fw: frame width under the 1200.61 skin (PR #58)
 # The teams' CAD masses, kg (status calculation: CAD geometry x density)
 WALL_L1_MADE, WALL_L1_BOND = 11.35, 0.49                      # S34
 CEIL_PANEL, CEIL_CASS = 9.586, 9.816                          # S35 (P03 build; the P04 cassette is 1160 x 1045)
@@ -58,8 +58,8 @@ T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 fram
                               # rivnuts, and the ceiling's inner members stay 1.2 for the overhead clips and catches (D-85)
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
 KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36) and a hollow profile, same outside, 2 mm walls (assumption)
-FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood (assumption) against this study's 600 (S13); provisional on
-                              # BASE's castor and 1000 N edge tests (D-76, D-85)
+FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood against this study's 600 (S13); D-85, settled by D-86
+LOAD_BLOCKS_KG = 0.4          # kg per pod: an aluminium load block inside the band at each glide (D-86, BASE's calculation)
 # Parked by D-85, and the rejected glass options
 LAM33_T, LAM44_T = 6.76, 8.76  # mm: 3+3 and 4+4 laminate (glass 3 + 0.76 PVB + 3, as the 4+4 is 4 + 0.76 + 4)
 FELT_KGM2_LIGHT = 1.4         # kg/m2: a lighter 9 mm PET felt, against Polyx Board 9's 1.8 (S11)
@@ -141,9 +141,10 @@ def lines(**adopt):
     L.append(("WALL", "L2 and R2, upper side outer panels, the same size and build", 2,
               up - 3 * P04["side_up_h"] * 1e-3 * stud_d, "calculation" + prov,
               f"this study's model at the P04 size (S33), fill {fill:g} kg/m3" + studs_txt))
-    L.append(("WALL", f"B1 to B4, back outer panels, {n_back} inner studs", 4,
-              back - 3 * P04["back_h"] * 1e-3 * kgm12 + n_back * P04["back_h"] * 1e-3 * kgm_s, "calculation" + prov,
-              f"this study's model at the P04 size (S33), fill {fill:g} kg/m3"
+    L.append(("WALL", "B1 to B4, back outer panels", 4,
+              back - 3 * P04["back_h"] * 1e-3 * kgm12 + n_back * P04["back_h"] * 1e-3 * kgm_s
+              - 2 * (P04["back_w"] - P04["back_fw"]) * 1e-3 * kgm12, "calculation" + prov,
+              f"this study's model at the P04 size (S33), frame {P04['back_fw']} under the {P04['back_w']} skin, fill {fill:g} kg/m3"
               + ("; 2 inner studs at 393 mm centres, inside D-16 (D-85)" if a["back2"] else "") + studs_txt))
     L.append(("WALL", "40 x 40 corner edge tubes beyond L1 and R1's back stiles", 1,
               CORNER_TUBES_KG - 2 * stile_delta_kg(), "calculation", "D-63's 1.3 kg less L1 and R1's two stiles (S34, S39)"))
@@ -176,19 +177,23 @@ def lines(**adopt):
     for pid in ("B-BAND-BACK", "B-BAND-SIDE", "B-BAND-FRONT-L", "B-BAND-FRONT-R"):
         pt = base[pid]
         L.append(("BASE", f"{pt.name.split(' - ', 1)[1].capitalize()}, {band_t:g} mm wall", pt.qty, pt.dims[0] * 1e-3 * kgm_band,
-                  "calculation" + ("; provisional" if thin else ""),
-                  "this study's model" + (f", {band_t:g} mm wall (D-81, if BASE's check passes)" if thin else "")
+                  "calculation" + ("; confirmed (1.5 mm)" if thin else ""),
+                  "this study's model" + (f", {band_t:g} mm wall (D-81; BASE's check passed, D-86)" if thin else "")
                   + "; P03 lengths, P04's faceted front band is about 0.2 m shorter"))
     for pid, note in (("B-KEY", "this study's model"), ("B-GLIDE", "this study's model"),
                       ("B-THRESH", "this study's model (D-72's 13 mm profile isn't modelled yet)")):
         pt = base[pid]
         L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, note))
+    if thin:
+        L.append(("BASE", "Glide load blocks, aluminium, one inside the band at each glide", 1, LOAD_BLOCKS_KG, "calculation",
+                  "D-86 (S42): about 0.4 kg per pod, BASE's calculation; they carry each glide into both side walls"))
     fa = P04["floor_w"] * P04["floor_d"] * 1e-6
     if a["floor"]:
-        L.append(("BASE", "Floor panels, 9 mm poplar-core plywood with a 0.3 kg/m2 finish", 2,
-                  plate_kg(fa, FLOOR_T, FLOOR_RHO_LIGHT) + fa * 0.3, "confirmed (9 mm); calculation; provisional",
-                  "D-72 (S39) at the P04 size (S33); poplar-core plywood about 450 kg/m3 (assumption), if BASE's castor and "
-                  "1000 N edge tests pass (D-76, D-85)"))
+        L.append(("BASE", "Floor panels, 9 mm plywood with a 0.3 kg/m2 finish", 2,
+                  plate_kg(fa, FLOOR_T, FLOOR_RHO_LIGHT) + fa * 0.3, "confirmed (9 mm, poplar core); calculation",
+                  "D-72 (S39) at the P04 size (S33); poplar-core plywood with a hard face veneer, about 450 kg/m3 "
+                  "(D-85, D-86; BASE: about 0.6 mm at a panel edge under 1000 N); the castor and edge tests on the sample "
+                  "are planned"))
     else:
         L.append(("BASE", "Floor panels, 9 mm plywood with a 0.3 kg/m2 finish", 2, plate_kg(fa, FLOOR_T, p("rho_ply")) + fa * 0.3,
                   "confirmed (9 mm); calculation", "D-72 (S39) at the P04 size (S33); plywood 600 kg/m3 (S13)"))
@@ -198,7 +203,7 @@ def lines(**adopt):
         L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status,
                   "this study's model from v1's STEP shapes (S02)"))
     if a["kick"]:
-        L.append(("FRONT", "Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, lock, pull", 1,
+        L.append(("FRONT", "Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull", 1,
                   DOOR_UNIT - (KICK_KG - KICK_KG_HOLLOW), "calculation (CAD); kick strip assumption",
                   f"S36, with the kick strip as a hollow profile, about {KICK_KG_HOLLOW:.1f} kg against {KICK_KG} (D-85)"))
     else:
@@ -257,7 +262,8 @@ def applied():
          "cassettes, the air column and the soffit. The cartridges' 50 mm layers stay at 32, the density their published "
          "absorption is for", "provisional (D-81): back to 32 kg/m3 if T02 fails (D-54)", "WALL, CEILING, AIR"),
         ("band_t", f"Base band with a {BAND_T_LIGHT:g} mm wall instead of {p('t_al_base'):.1f} mm, {band_m:.1f} m of it; the "
-         "same outside size and finish", "provisional on BASE's check (D-81)", "BASE"),
+         "same outside size and finish", "adopted (D-81); BASE's check passed, with a load block at each glide (D-86)",
+         "BASE"),
         ("kit_outside", "The voice kit's reserve moves outside the cap: the kit ships later as an add-on (D-11)",
          "adopted (D-81); the cap is for the pod as shipped", "PM"),
         ("budgets", f"Weight budgets for the parts not designed yet: the light shelf at {SHELF_KGM:g} kg/m, the ledge in "
@@ -270,8 +276,8 @@ def applied():
         ("kick", "Door kick strip as a hollow profile with 2 mm walls; the same outside and finish", "adopted (D-85)",
          "FRONT"),
         ("floor", f"Floor panels in poplar-core 9 mm plywood, about {FLOOR_RHO_LIGHT:.0f} kg/m3 against "
-         f"{p('rho_ply'):.0f}; the same finish on top", "provisional (D-85): BASE's castor and 1000 N edge tests (D-76) "
-         "decide", "BASE"),
+         f"{p('rho_ply'):.0f}, with a hard face veneer; the same finish on top", "adopted (D-85, D-86); the castor and "
+         "edge tests on the factory sample are planned", "BASE"),
     ]
     state = dict(OFF)
     prev = pod_kg(lines(**state))
@@ -377,10 +383,14 @@ def rollup_md(rows):
     nm = heavy[1].split(",")[0]
     nm = nm.split(" - ")[1] + " decor block" if nm.startswith("Decor block - ") else nm.lower()
     dr = base_parts_kg("F-DR")
-    md.append(f"- **20 kg rule (D-03).** The intake riser and the supply fan box ({loose:.1f} kg together) ship loose and go "
-              f"into the right decor block on site through its removable inner face (D-59), so the block ships at {dr:.1f} kg; "
-              f"fitted in the factory it would be about {dr + loose:.0f} kg, over the rule. The heaviest piece apart from the "
-              f"glass is the {nm} at {heavy[3]:.1f} kg; the door unit and the fixed glass unit are glass and exempt.")
+    fan2 = AA.fans_kg() / 2
+    sof = sum(r[3] for r in rows if r[0] == "AIR" and (r[1].startswith("Soffit") or r[1].startswith("Exhaust fan box")))
+    md.append(f"- **20 kg rule (D-03).** The intake riser joined to the supply fan box with its two fans "
+              f"({loose + fan2:.1f} kg, D-87) ships loose and goes into the right decor block on site through its removable "
+              f"inner face (D-59), so the block ships at {dr:.1f} kg; fitted in the factory it would be about "
+              f"{dr + loose + fan2:.0f} kg, over the rule. The soffit ships with its exhaust fan box and fans fitted "
+              f"({sof + fan2:.1f} kg, D-87). The heaviest piece apart from the glass is the {nm} at {heavy[3]:.1f} kg; the "
+              "door unit and the fixed glass unit are glass and exempt.")
     allow = {r[1].split(",")[0].split(" along")[0]: r[2] * r[3] for r in rows if r[4] == "assumption"
              and ("Light shelf" in r[1] or "ledge" in r[1] or "Named clips" in r[1])}
     md.append(f"- **Budgets and allowances (assumption)** for parts not designed yet: the light shelf "
@@ -433,8 +443,9 @@ def rollup_md(rows):
     md.append("")
     md.append("## When this is re-run")
     md.append("")
-    md.append("- **The next skeleton update** (ISS-086): the 9 mm floor and 13 mm threshold (D-72), and the back and ceiling "
-              "frames at 1198.99 mm at the closing seams.")
+    md.append("- **Skeleton P04, updated in place (PR #58):** taken here: the 9 mm floor, and the back panels' frames at "
+              "1198.99 mm under their 1200.61 mm skins. The 13 mm threshold profile (D-72) and the bolt counts of the 220 mm "
+              "rule follow BASE's CAD and the joints register. The next skeleton update re-runs this count.")
     md.append("- **Each part PR that merges:** its CAD masses replace this study's model masses line by line (today the walls "
               "other than L1, the base, the decor blocks and the kits are still model masses). The fixings kit is this study's 78 "
               "bolts and 38 cam connectors; the joints register (PR #23) has 82 bolts, 102 rivnuts and no cams, so the kit "
@@ -443,8 +454,8 @@ def rollup_md(rows):
               "report re-runs the fan noise (25.3 / 29.7 dB(A) now).")
     md.append("- **D-83:** a 35 N magnetic catch in DT and a magnetic seal pair on the glass edges replace the door lock "
               "(0.84 kg in FRONT's door unit); the door line follows FRONT's CAD.")
-    md.append("- **The tests:** T02 (fill), T07 (clips), T10 (weights) and BASE's castor and 1000 N edge tests (the floor, "
-              "D-85) replace the provisional and assumed lines.")
+    md.append("- **The tests:** T02 (fill), T07 (clips), T10 (weights) and the castor and edge tests on the floor sample "
+              "(D-86) replace the provisional and assumed lines.")
     md.append("")
     return "\n".join(md)
 
