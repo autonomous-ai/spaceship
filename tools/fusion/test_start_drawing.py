@@ -58,7 +58,7 @@ class FakeFusion:
         self.folder_checks = 0
         self.queued = False
         self.pending = []          # (polls left, action)
-        self.ran, self.clicks, self.saved, self.cancels = [], [], [], 0
+        self.ran, self.clicks, self.saved, self.cancels, self.closes = [], [], [], 0, []
 
     def _tick(self):
         nxt = []
@@ -85,6 +85,7 @@ class FakeFusion:
             mode = "close" if "'mode': 'close'" in source else "open"
             self.ran.append(mode)
             if mode == "close":
+                self.closes.append(source)
                 return True, "run_script: closed 'X'"
             return True, self.open_warning + ("run_script: opened 'X' (version 1)" if self.opened
                                               else "run_script: activated 'X'")
@@ -203,6 +204,24 @@ class SequenceTests(unittest.TestCase):
         self.assertIn("'A1' + \"ISOSheetSize\"", f.saved[0])
         self.assertIn("(841, 594)", f.saved[0])                 # read back and checked
         self.assertTrue(any("pressed Cancel in Base View" in m for m in logs))
+
+    def test_a_failed_start_closes_the_design_it_opened_without_discarding(self):
+        # Reviewer 5, P3 on #101: the cleanup closed the unsaved drawing but not the design
+        f = FakeFusion(opened=True, ok_found=False)              # fails after the dialog was queued
+        code, _logs = go(f)
+        self.assertEqual(code, 1)
+        self.assertEqual(f.ran, ["open", "queue", "close-unsaved", "close"])
+        self.assertIn("'discard': False", f.closes[-1])          # unsaved changes are never dropped
+
+    def test_a_start_refused_after_opening_closes_the_design_too(self):
+        f = FakeFusion(opened=True, modified=True)               # the queue step refuses
+        self.assertEqual(go(f)[0], 1)
+        self.assertEqual(f.ran, ["open", "queue", "close"])
+
+    def test_a_design_that_was_already_open_is_left_open(self):
+        f = FakeFusion(opened=False, ok_found=False)
+        go(f)
+        self.assertNotIn("close", f.ran)
 
     def test_a_design_opened_after_a_runner_warning_is_still_closed_again(self):
         # live 2026-10-31: the open step printed "1 entry ... could not be read;
@@ -332,62 +351,11 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertTrue(any("warning" in m and "entry 4" in m for m in logs))
 
-    def test_the_folder_lister_sorts_bad_entries(self):
-        class E(Exception):
-            pass
-
-        class File:
-            def __init__(self, name=None, ext=None):
-                self._n, self._e = name, ext
-
-            @property
-            def name(self):
-                if self._n is None:
-                    raise E("name")
-                return self._n
-
-            @property
-            def fileExtension(self):
-                if self._e is None:
-                    raise E("ext")
-                return self._e
-
-        class Files:
-            def __init__(self, items, heal_after=None):
-                self.items, self.calls, self.heal_after = items, 0, heal_after
-
-            @property
-            def count(self):
-                return len(self.items)
-
-            def item(self, i):
-                self.calls += 1
-                it = self.items[i]
-                if it == "boom" and not (self.heal_after and self.calls > self.heal_after):
-                    raise E("InternalValidationError : invalid argument index")
-                return File("HEALED") if it == "boom" else it
-
-        class Folder:
-            def __init__(self, files):
-                self.dataFiles = files
-
-        fake_adsk = types.SimpleNamespace(doEvents=lambda: None)
-        sys.modules["adsk"] = fake_adsk
-        try:
-            ns = {}
-            exec(compile(sd.LIST_FOLDER, "list_folder", "exec"), ns)
-        finally:
-            del sys.modules["adsk"]
-        ns["time"] = types.SimpleNamespace(sleep=lambda s: None)
-        items = [File("A_CAD", "f3d"), "boom", File(None, "f3d"), File(None, "f2d"), File(None, None)]
-        names, unknown, others = ns["_list_folder"](Folder(Files(items)))
-        self.assertEqual(names, ["A_CAD"])
-        self.assertEqual([u.split(" (")[0] for u in unknown], ["entry 1", "entry 3", "entry 4"])
-        self.assertIn("invalid argument index", unknown[0])
-        self.assertEqual(others, ["entry 2 (a .f3d file, name unreadable)"])
-        # an entry that heals on a second look is just read
-        names, unknown, others = ns["_list_folder"](Folder(Files([File("A_CAD", "f3d"), "boom"], heal_after=2)))
-        self.assertEqual((names, unknown, others), (["A_CAD", "HEALED"], [], []))
+    def test_the_folder_check_is_the_shared_one(self):
+        # the lister moved to fusion_folder.py (its own tests): one copy for every team
+        self.assertTrue(sd.LIST_FOLDER.startswith(rs.FOLDER_HELPER_SRC))
+        self.assertIn('safe_to_create(folder, %(name)r, "f2d")', sd.SAVE_SCRIPT)
+        self.assertIn("read_folder(folder, stop_when=", sd.FOLDER_SCRIPT)
 
     def test_steps_folder_reads_the_result_line(self):
         st = sd.Steps.__new__(sd.Steps)                         # no MCP needed
@@ -398,7 +366,7 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(st.folder("P", ["F"], "D", "N"),
                          (["entry 3 (kind unknown, name unreadable)"], [], True, False))
         self.assertTrue(seen[0][1])                             # read-only
-        self.assertIn("def _list_folder", seen[0][0])
+        self.assertIn("def read_folder", seen[0][0])                # the shared fusion_folder.py
 
     def test_an_existing_drawing_name_is_refused_before_anything_opens(self):
         f = FakeFusion(drawing_exists=True)

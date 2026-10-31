@@ -110,6 +110,32 @@ class ParseTests(unittest.TestCase):
         compile(src, "drawing.py", "exec")
 
 
+class AnnotateTests(unittest.TestCase):
+    SRC = textwrap.dedent('''\
+        def helper(sheet, fx=0, *, view=None):   # Bản vẽ: a line with non-ASCII text
+            return sheet
+
+        def long_one(a,
+                     b={1: 2}, c=lambda x: x):
+            return a
+        ''')
+
+    def test_types_go_into_the_def_lines_and_no_line_moves(self):
+        out = ca.annotate(self.SRC, {(1, "sheet"): "adsk.drawing.Sheet", (1, "view"): "adsk.drawing.View",
+                                     (4, "b"): "adsk.core.Base"},
+                          {1: "adsk.drawing.Sheet", 4: "tuple[adsk.drawing.Sheet, float]"})
+        lines = out.splitlines()
+        self.assertEqual(lines[0], 'def helper(sheet: "adsk.drawing.Sheet", fx=0, *, view: "adsk.drawing.View"=None)'
+                                   ' -> "adsk.drawing.Sheet":   # Bản vẽ: a line with non-ASCII text')
+        self.assertEqual(lines[4].strip(), 'b: "adsk.core.Base"={1: 2}, c=lambda x: x) -> "tuple[adsk.drawing.Sheet, float]":')
+        self.assertEqual(lines[:len(self.SRC.splitlines())][1], "    return sheet")
+        self.assertEqual(len(lines), len(self.SRC.splitlines()) + 1)     # only the import line added, at the end
+        compile(out, "x", "exec")
+
+    def test_nothing_found_leaves_the_source_alone(self):
+        self.assertEqual(ca.annotate(self.SRC, {}, {}), self.SRC)
+
+
 def have_mypy():
     return importlib.util.find_spec("mypy") is not None
 
@@ -145,6 +171,45 @@ class EndToEndTests(unittest.TestCase):
                 return view.viewCurves.count
             ''')
         self.assertEqual(code, 0, out)
+
+    def test_untyped_helpers_are_checked_through_their_calls_and_returns(self):
+        # Product Manager, 2026-10-31 (found by ELECTRICAL): typos inside untyped helpers
+        code, out = self.check('''\
+            import adsk.core, adsk.drawing, adsk.fusion
+
+            A = SCRIPT_ARGS                          # put in by the runner: not an error
+
+            def sheet_and_drawing():
+                app = adsk.core.Application.get()
+                dwg = adsk.drawing.DrawingDocument.cast(app.activeDocument).drawing
+                return dwg, dwg.sheets.item(0)
+
+            def outer(sheet):
+                return inner(sheet.views)
+
+            def inner(views):
+                return views.cuont                   # typo two calls deep
+
+            def from_parameter(sheet):
+                return sheet.veiws                   # typo on an untyped parameter
+
+            def either(thing):
+                return thing.name                    # both types have it: no error
+
+            def run(_c):
+                dwg, sheet = sheet_and_drawing()     # its return type comes from its return
+                outer(sheet)
+                from_parameter(sheet)
+                either(sheet)
+                either(adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct).rootComponent)
+                print(A)
+            ''')
+        self.assertEqual(code, 1, out)
+        self.assertIn('script.py:14: error: "Views" has no attribute "cuont"', out)
+        self.assertIn('script.py:17: error: "Sheet" has no attribute "veiws"', out)
+        self.assertNotIn("SCRIPT_ARGS", out)
+        self.assertNotIn(":20:", out)
+        self.assertIn("2 name error(s)", out)
 
     def test_wrong_names_and_arguments_fail(self):
         code, out = self.check('''\

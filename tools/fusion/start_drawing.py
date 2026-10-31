@@ -31,7 +31,7 @@ first, as a person would press it; Fusion's own cancel (a read-only script
 that starts Fusion's Select command) only when Fusion says its Create Drawing
 or Base View dialog is open but accessibility has seen no dialog on two polls
 in a row, never while Fusion is busy; then the unsaved drawing it made is
-closed. Nothing ends a command by script any more: terminateActiveCommand()
+closed, and the design if this command opened it (never with unsaved changes). Nothing ends a command by script any more: terminateActiveCommand()
 on an open Create Drawing killed Fusion on 2026-10-31.
 
 Exit 0 = saved, 1 = failed or refused (Fusion left idle), 2 = Fusion not
@@ -167,44 +167,12 @@ def run(_c):
     print("queued Create Drawing for %%s: %%s" %% (doc.name, ok))
 '''
 
-# Lists a folder entry by entry, inside Fusion; put in front of the scripts
-# that need it (a plain string, no % templating). An entry Fusion can't read
-# (seen after a restart, 2026-10-31) is looked at again, 4 times 2 s apart.
-# One that stays unreadable blocks only when it could be the drawing being
-# made (PM ruling 2026-10-31): its name can't be read and it isn't known to be
-# another kind of file. Returns (names, unknown, others): unknown entries
-# could be anything; others can't be read by name but aren't drawings.
-LIST_FOLDER = '''import adsk, time
-
-def _list_folder(folder):
-    for attempt in range(4):
-        names, unknown, others = [], [], []
-        for i in range(folder.dataFiles.count):
-            try:
-                f = folder.dataFiles.item(i)
-            except Exception as e:
-                unknown.append("entry %d (%s)" % (i, str(e).strip().splitlines()[0][:100] if str(e).strip() else type(e).__name__))
-                continue
-            try:
-                names.append(f.name)
-                continue
-            except Exception:
-                pass
-            try:
-                ext = (f.fileExtension or "").lower()
-            except Exception:
-                ext = ""
-            if ext and ext != "f2d":
-                others.append("entry %d (a .%s file, name unreadable)" % (i, ext))
-            else:
-                unknown.append("entry %d (%s, name unreadable)" % (i, ("a .%s file" % ext) if ext else "kind unknown"))
-        if not unknown and not others:
-            break
-        if attempt < 3:
-            adsk.doEvents()
-            time.sleep(2)
-    return names, unknown, others
-'''
+# The shared folder check (tools/fusion/fusion_folder.py), put in front of the
+# scripts that look at the folder: it reads the folder again for up to a minute
+# while an entry can't be read, and an entry that stays unreadable blocks only
+# when it could be the drawing being made (PM ruling 2026-10-31). One copy for
+# the runner, this command and every team script.
+LIST_FOLDER = rs.FOLDER_HELPER_SRC + "\n"
 
 SAVE_SCRIPT = '''import adsk.core, adsk.drawing, time
 def run(_c):
@@ -219,13 +187,8 @@ def run(_c):
     folder = proj.rootFolder
     for part in %(subfolders)r:
         folder = folder.dataFolders.itemByName(part)
-    names, unknown, others = _list_folder(folder)
-    if unknown:
-        raise RuntimeError("not saved: %%s can't be read and could be %%s" %% ("; ".join(unknown), %(name)r))
-    if others:
-        print("warning: %%s; not drawings, so not %%s" %% ("; ".join(others), %(name)r))
-    if %(name)r in names:
-        raise RuntimeError("%%s is already in the folder" %% %(name)r)
+    for w in safe_to_create(folder, %(name)r, "f2d"):       # raises if it isn't safe
+        print("warning: %%s" %% w)
     sheet = doc.drawing.sheets.item(0)
     want = getattr(adsk.drawing.SheetSizes, %(sheet)r + "ISOSheetSize")
     sheet.sheetSize = want
@@ -263,9 +226,10 @@ def run(_c):
     folder = proj.rootFolder
     for part in %(subfolders)r:
         folder = folder.dataFolders.itemByName(part)
-    names, unknown, others = _list_folder(folder)
-    print("FOLDER_JSON=" + json.dumps({"unknown": unknown, "others": others,
-                                       "has_design": %(design)r in names, "has_drawing": %(name)r in names}))
+    files, unknown, others = read_folder(folder, stop_when=lambda fs, u, o: %(name)r in fs or not could_be(u, o, "f2d"))
+    print("FOLDER_JSON=" + json.dumps({"unknown": could_be(unknown, others, "f2d"),
+                                       "others": cannot_be(others, "f2d"),
+                                       "has_design": %(design)r in files, "has_drawing": %(name)r in files}))
 '''
 
 
@@ -528,10 +492,22 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     log((out or "").strip())
     status["saved"] = True
     if opened_here:                      # leave Fusion as we found it
-        ok, out = steps.run(rs.doc_script("close", design, folder))
-        log((out or "").strip() if ok else "couldn't close %s: %s" % (design, out))
+        close_design(steps, design, folder, status, log)
     if steps.dialogs():                  # a late dialog must not greet the next run
         raise StartError("a dialog is still open after saving")
+
+
+def close_design(steps, design, folder, status, log):
+    """Close the design this command opened, once. Never with unsaved changes:
+    the runner's close step refuses those (no discard), so they stay open."""
+    if not status.get("opened_here") or status.get("design_closed"):
+        return
+    status["design_closed"] = True
+    try:
+        ok, out = steps.run(rs.doc_script("close", design, folder))
+        log((out or "").strip() if ok else "left %s open: %s" % (design, (out or "").strip()[:200]))
+    except (StartError, rs.McpError) as e:
+        log("couldn't close %s: %s" % (design, e))
 
 
 def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=None):
@@ -546,6 +522,8 @@ def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=N
             "stopped" if isinstance(e, KeyboardInterrupt) else "FAILED"
         print("start_drawing: %s: %s" % (kind, e), file=sys.stderr)
         if not status.get("queued"):
+            if not isinstance(e, rs.McpError):
+                close_design(steps, design, folder, status, log)   # Reviewer 5, P3 on #101
             return 2 if isinstance(e, rs.McpError) else 1
         idle = cancel_dialogs(steps, log)
         if not idle:
@@ -559,6 +537,7 @@ def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=N
                     log(out.strip())
             except (StartError, rs.McpError) as e2:
                 print("start_drawing: couldn't close the unsaved drawing: %s" % e2, file=sys.stderr)
+        close_design(steps, design, folder, status, log)          # Reviewer 5, P3 on #101
         return 2 if isinstance(e, rs.McpError) else 1
 
 

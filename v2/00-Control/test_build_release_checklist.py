@@ -428,6 +428,81 @@ class D89Layers(unittest.TestCase):
         self.assertEqual(self.run_part("")["dwg"], "no: its DXF can't be read (D-89)")
 
 
+class Rulings93To99(unittest.TestCase):
+    """D-93: 710000 is drawn by its wiring diagram. D-95: the corner keys count under JOINTS. D-99: D-89 part (4) is
+    for flat metal sheet."""
+
+    def made(self, part, file_map, lists=None, dxf_text=None):
+        fai = rc.fai_plan(PLAN, BOM)
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 lists or {}, {}, (lambda _pn: [dxf_text]) if dxf_text else None)
+        return made[0]
+
+    def test_the_wiring_diagram_draws_710000(self):
+        unit = row("710000", "assembly", "ELECTRICAL", "", team="ELECTRICAL", src="v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL_BOM.csv")
+        file_map = files("710000_P01_ELECTRICAL_CAD.f3d", "710000_P01_ELECTRICAL_STEP.step", folder="v2/01-CAD-Native/electrical/")
+        file_map.update(files("710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf", folder="v2/02-Drawings/electrical/"))
+        line = self.made(unit, file_map)
+        self.assertEqual(line["dwg"], "yes: its wiring diagram, routes and joints on sheet 3 (D-93)")
+        self.assertNotIn("drawing", line["gaps"])
+
+    def test_the_corner_keys_count_under_joints(self):
+        key = row("111211", "make", "BASE - CORNER KEY - BACK - COMMON", "aluminium 6061-T6, mill finish", team="BASE",
+                  src="v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv")
+        self.assertEqual(self.made(key, {})["team"], "JOINTS")
+
+    def test_a_part_modelled_in_a_joints_folder_counts_under_joints(self):
+        washer = row("831002", "make", "HARDWARE - STOP WASHER - D10.5 X D20 X 1.5 - AL", "aluminium sheet 1.5 mm, mill finish")
+        file_map = files("831002_P01_HARDWARE-STOP-WASHER_STEP.step", folder="v2/03-Manufacturing/joints/")
+        self.assertEqual(self.made(washer, file_map)["team"], "JOINTS")
+        self.assertEqual(self.made(washer, {})["team"], "WALL")
+
+    def test_flat_sheet_part_four_is_for_metal_only(self):
+        lst = "v2/03-Manufacturing/front/360000_P01_FRONT_BOM.csv"
+        glass = row("361001", "make", "FRONT - DOOR LEAF - 4+4 LAMINATED", "4+4 laminated toughened glass", team="FRONT", src=lst)
+        file_map = files("361001_P01_DOOR-LEAF_CAD.f3d", "361001_P01_DOOR-LEAF_STEP.step", "361001_P01_DOOR-LEAF_DXF.dxf",
+                         folder="v2/03-Manufacturing/front/")
+        csv_text = ("part_number,name,material,thickness_mm,finish,process,tolerance\n"
+                    "361001,FRONT - DOOR LEAF,4+4 laminated toughened glass,8.76,clear,waterjet,ISO 2768-m\n")
+        line = self.made(glass, file_map, {lst: csv_text}, dxf_doc(("LWPOLYLINE", "CUT")))
+        self.assertEqual(line["dwg"], "no")
+        self.assertEqual(rc.flat_lacks(rc.cut_rows({lst: csv_text})["361001"]), ["metal or ACP sheet (D-99, D-100)"])
+
+    def test_a_flat_acp_skin_counts_and_a_folded_one_keeps_its_drawing(self):
+        lst = "v2/03-Manufacturing/ceiling/410000_P01_CEILING_BOM.csv"
+        skin = row("411301", "make", "CEILING - SKIN - COMMON", "ACP 3 mm EV3038", team="CEILING", src=lst)
+        skin["finish"] = "PVDF EV3038"
+        file_map = files("411301_P01_CEILING-SKIN_CAD.f3d", "411301_P01_CEILING-SKIN_STEP.step", "411301_P01_CEILING-SKIN_DXF.dxf",
+                         folder="v2/03-Manufacturing/ceiling/")
+        csv_text = ("part_number,name,material,finish,process,tolerance\n"
+                    "411301,CEILING - SKIN - COMMON,ACP 3 mm EV3038,PVDF EV3038,CNC routed,ISO 2768-m\n")
+        flat = self.made(skin, file_map, {lst: csv_text}, dxf_doc(("LWPOLYLINE", "CUT"), ("TEXT", "MARK")))
+        self.assertEqual(flat["dwg"], "DXF and row (D-89)")
+        folded = self.made(skin, file_map, {lst: csv_text}, dxf_doc(("LWPOLYLINE", "CUT"), ("LINE", "V-GROOVE"), ("LINE", "BEND")))
+        self.assertEqual(folded["dwg"], "no: its DXF draws on BEND, V-GROOVE; only CUT and MARK pass (D-89)")
+
+
+class NoFaiFlag(unittest.TestCase):
+    def test_a_made_part_with_no_fai_line_is_listed(self):
+        fai = rc.fai_plan(PLAN, BOM)
+        frame = row("211101", "make", "WALL - PANEL FRAME", "aluminium 6063-T6 tube, mill finish")
+        bracket = row("351999", "make", "FRONT - TEST BRACKET", "aluminium sheet 2 mm, mill finish", team="FRONT")
+        made, _ = rc.check_parts([frame, bracket], [], {}, [], fai, fai[1], {}, "unlocked", BOM, {}, {})
+        text = rc.render(made, [], [], [], "this working tree", "unlocked", {}, fai, "2026-11-01")
+        self.assertIn("## Made parts with no FAI line", text)
+        self.assertIn("| FRONT | 351999 | FRONT - TEST BRACKET |", text)
+        self.assertNotIn("| WALL | 211101 |", text.split("## Made parts with no FAI line")[1].split("## Made parts and assemblies")[0])
+        made, _ = rc.check_parts([frame], [], {}, [], fai, fai[1], {}, "unlocked", BOM, {}, {})
+        self.assertIn("Every made number has at least one line in the FAI plan", rc.render(made, [], [], [], "", "unlocked", {}, fai, "2026-11-01"))
+
+    def test_the_real_fai_plan_gives_each_line_a_sample(self):
+        text = (rc.ROOT / rc.FAI).read_text(encoding="utf-8")
+        for hdr, cells in BOM.table_rows(text):
+            if cells and (cells[0].startswith("K-") or cells[0].startswith("F-")):
+                self.assertIn("Sample", hdr, cells[0])
+                self.assertTrue(cells[hdr.index("Sample")], cells[0])
+
+
 class Render(unittest.TestCase):
     def test_totals_count_each_number_once_and_name_the_screen(self):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]

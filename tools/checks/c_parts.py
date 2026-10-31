@@ -21,7 +21,7 @@ import os
 import re
 from collections import defaultdict
 
-from common import (Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
+from common import (register_names, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
                     parse_file_name, is_soft)
 
 ALIASES = {
@@ -357,15 +357,31 @@ def check_cad_match(root, plists, step_products):
         for row in rows:
             if row["part_number"]:
                 names.setdefault(row["part_number"], (row["name"], rel(root, p)))
-    norm = lambda t: re.sub(r"\s+", " ", (t or "").upper()).strip()
+    norm = lambda t: re.sub(r"[\s-]+", " ", (t or "").upper()).strip()
+    reg = register_names(root)          # D-99: hardware names come from the joints register
     for pn, info in sorted(step_products.items()):
-        if pn not in names or not re.match(r"^\d{6}$", pn):
+        if (pn not in names and pn not in reg) or not re.match(r"^\d{6}$", pn):
             continue
         cad = re.sub(r"^%s\s+" % pn, "", info["name"] or "")
         cad = re.sub(r"\s*\(\d+\)$", "", cad)            # Fusion's '(1)' copy suffix
-        same = norm(cad) == norm(names[pn][0]) or norm(cad).startswith(norm(names[pn][0]) + " - ")  # + a position code
-        if cad and not re.match(r"^\d{6}_[PR]\d{2}_", cad) and not same:
-            f = sorted(info["files"])[0]
+        if not cad or re.match(r"^\d{6}_[PR]\d{2}_", cad):
+            continue
+        f = sorted(info["files"])[0]
+        if pn in reg:
+            ref = reg[pn]
+            # the CAD may add a position code to the register's name (368101 '... - HOLD - H1 BOTTOM')
+            wrong = ["the CAD"] if not (norm(cad) == norm(ref) or norm(cad).startswith(norm(ref) + " ")) else []
+            if pn in names and norm(names[pn][0]) != norm(ref):
+                wrong.append("the parts list (%s)" % names[pn][1])
+            if wrong:
+                fs.append(Finding("C06", "name-mismatch", pn, "minor",
+                                  "%s is named '%s' in the CAD%s; the joints register names it '%s', and hardware names "
+                                  "come from the register (D-99)." % (
+                                      pn, cad, " and '%s' in %s" % (names[pn][0], names[pn][1]) if pn in names else "", ref),
+                                  "Use the register's name in %s." % " and ".join(wrong), f, owner_for(f, pn)))
+            continue
+        same = norm(cad) == norm(names[pn][0]) or norm(cad).startswith(norm(names[pn][0]) + " ")  # + a position code
+        if not same:
             fs.append(Finding("C06", "name-mismatch", pn, "minor",
                               "%s is named '%s' in the CAD (%s) but '%s' in the parts list (%s); the guideline wants one "
                               "name everywhere (section 4.2)." % (pn, cad, f, names[pn][0], names[pn][1]),
