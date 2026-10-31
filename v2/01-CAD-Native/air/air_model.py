@@ -26,6 +26,12 @@ R7E = "air report 7e (sized on skeleton P04)"
 AIR_PARAMS = [
     # ---- floor and linings (PM rulings 2026-11-01 from BASE)
     ("col_gap", "5 mm", "mm", "confirmed", "PM ruling 2026-11-01 (BASE): the column keeps 5 mm off the floating side lining (D-17), X up to 1161; the soffit's ends the same"),
+    # ---- FRONT's named values (350003 DR model; PM rulings 2026-11-01): the column and the whole soffit
+    #      start at the room-side face of DR's access panel, so neither overlaps it. Same names,
+    #      expressions and inputs as FRONT's model; test_air_offline fails if they drift
+    ("dr_back_t", "1.5 mm", "mm", "confirmed", "FRONT's named value (350003 DR model): DR's back plate, aluminium 1.5 (J-FRONT-01; DR under 20 kg, D-03)"),
+    ("dr_acc_t", "3 mm", "mm", "calculation", "FRONT's named value (350003 DR model): DR's access panel, aluminium 3; it carries the column's two hook studs"),
+    ("dr_acc_face_y", "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t", "mm", "calculation", "FRONT's named value (350003 DR model, PM ruling 2026-11-01): the room-side face of DR's access panel (Y -643.5), where the column and the soffit start"),
     # ---- faces of the column and the soffit
     ("face_acp", "3 mm", "mm", "source", R7E + ": faces 3 mm ACP + 9 mm felt"),
     ("face_felt", "9 mm", "mm", "source", R7E + ": faces 3 mm ACP + 9 mm felt"),
@@ -33,7 +39,7 @@ AIR_PARAMS = [
     ("clr", "5 mm", "mm", "source", R7E + ": 5 mm round each cartridge and fan box, to slide it out"),
     # ---- column (front-right inside corner)
     ("col_x0", "949 mm", "mm", "source", R7E + ": the column's left face, X 949 (220 wide on P03, 217 on P04)"),
-    ("col_d", "360 mm", "mm", "confirmed", "D-61: 360 deep, flush with the soffit's face"),
+    ("col_d", "360 mm", "mm", "confirmed", "D-61: the room face 360 from the side walls' front end (Y -285), flush with the soffit's face; the column itself starts at DR's access-panel face, so it is 358.5 deep"),
     ("plen_lo", "120 mm", "mm", "source", R7E + ": base plenum Z 15 to 135 under the cartridge"),
     ("grille_h", "100 mm", "mm", "confirmed", "D-61: a 100 mm kick grille at the column's foot"),
     ("grille_z", "10 mm", "mm", "source", R7E + ": kick grille Z 25 to 125, 10 mm above the column's foot"),
@@ -80,8 +86,8 @@ AIR_PARAMS = [
     #      the ceiling frame, lift and slide toward the door, 2 captive lock screws; the underside
     #      in two hinged sections and a fixed strip over the column
     ("rail_t", "3 mm", "mm", "assumption", "soffit top rails, aluminium flat bar, riveted to the door-side plate and the front face"),
-    ("dp_t", "2 mm", "mm", "assumption", "soffit door-side plate: carries the door-side rail, closes the soffit against DT's back plate"),
-    ("rail_w", "24 mm", "mm", "assumption", "soffit top rail width: holds the 6.5 fork with 8 each side, and the door-side rail stays 1 mm clear of the roof sleeve"),
+    ("dp_t", "2 mm", "mm", "assumption", "soffit door-side plate: carries the door-side rail, closes the soffit against DT's back plate and DR's back (DR's riveted band stays: PM ruling 2026-11-01)"),
+    ("rail_w", "24 mm", "mm", "assumption", "soffit top rail width (room side); the door-side rail runs from the soffit's door side to 24 from the side walls' front end (22.5 wide), so it stays 1 mm clear of the roof sleeve"),
     ("stud_l", "16 mm", "mm", "confirmed", "D-90 (HOLD-18, joints register #99): the hanger studs are M6 x 16 socket head bolts"),
     ("stud_eng", "9 mm", "mm", "assumption", "thread engaged in the ceiling's rivnut (10.16 installed length less the lead-in)"),
     ("rvn_head", "0.76 mm", "mm", "source", "H-03 rivnut head under the frame face (Sherex CAH3-610-4.2, 0.76)"),
@@ -182,7 +188,8 @@ MATERIALS = {
 # skeleton planes (expressions)
 XIR = "(pod_w / 2 - stack_t)"
 XIL = "(-pod_w / 2 + stack_t)"
-YW = "(pod_d / 2 - wall_depth)"
+YW = "(pod_d / 2 - wall_depth)"      # the side walls' front end, the ceiling's front edge (Y -645)
+YD = "dr_acc_face_y"                 # the column's and the soffit's door side: DR's access-panel face (FRONT)
 YF = "(-pod_d / 2)"
 ZS0 = "dt_zb"                        # soffit underside, flush with the top block's underside (D-61)
 ZS1 = "(dt_zb + sof_h)"
@@ -192,10 +199,32 @@ XR = "(pod_w / 2 - stack_t - col_gap)"    # the column's and the soffit's right 
 XL = "(-pod_w / 2 + stack_t + col_gap)"   # the soffit's left limit
 ZRB = "(pod_h - outer_t - rvn_head - (stud_l - stud_eng))"   # rails' underside: on the M6 x 16 studs' heads (HOLD-18)
 ZBT = "(%s - hd_h - hd_c)" % ZRB                           # top of what sits under a stud head
-YFACE = "(%s + col_d)" % YW          # the column's and the soffit's front face (Y -285)
+YFACE = "(%s + col_d)" % YW          # the column's and the soffit's room face (Y -285), the ceiling cassette's front edge
 
 
-AIR_MAY_DEFINE = set()        # AIR parameters the skeleton may take over (none now: v4 carries the mat)
+# AIR parameters another owner may take over: if the skeleton or the ceiling ever carries FRONT's
+# named values, theirs win and AIR's copies drop out
+AIR_MAY_DEFINE = {"dr_back_t", "dr_acc_t", "dr_acc_face_y"}
+FRONT_NAMED = ("dr_back_t", "dr_acc_t", "dr_acc_face_y")
+FRONT_FILE = "v2/01-CAD-Native/front/dr_block.py"     # FRONT's DR model, which publishes them
+
+
+def front_named(repo_root):
+    """FRONT's own entries for FRONT_NAMED, read from its DR model's parameter table without Fusion
+    (a list of (name, expression, unit, status, source) tuples), or None when the file isn't here."""
+    import ast
+    path = os.path.join(repo_root, FRONT_FILE)
+    if not os.path.isfile(path):
+        return None
+    out = {}
+    with open(path, encoding="utf-8") as f:
+        tree = ast.parse(f.read())
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Tuple) and len(node.elts) == 5 and all(isinstance(e, ast.Constant) for e in node.elts[:3]):
+            name = node.elts[0].value
+            if name in FRONT_NAMED and name not in out:
+                out[name] = (node.elts[1].value, node.elts[2].value)
+    return out
 
 
 def all_params():
@@ -238,10 +267,10 @@ def layout():
     """[(part key, body name, box expressions)] for every body, pod system."""
     b = []
     # column: foot plate on the floor's mat, faces above the kick grille up to the soffit
-    b.append(("col_foot", "COLUMN FOOT PLATE", box("col_x0", XR, YW, YFACE, ZC0, ZCB)))
+    b.append(("col_foot", "COLUMN FOOT PLATE", box("col_x0", XR, YD, YFACE, ZC0, ZCB)))
     zg1 = "%s + grille_z + grille_h" % ZCB
     b.append(("col_front", "COLUMN FACE FRONT", box("col_x0", XR, "%s - face_t" % YFACE, YFACE, zg1, ZS0)))
-    b.append(("col_left", "COLUMN FACE LEFT", box("col_x0", "col_x0 + face_t", YW, "%s - face_t" % YFACE, zg1, ZS0)))
+    b.append(("col_left", "COLUMN FACE LEFT", box("col_x0", "col_x0 + face_t", YD, "%s - face_t" % YFACE, zg1, ZS0)))
     zg0 = "%s + grille_z" % ZCB
     b.append(("kick", "KICK GRILLE FRONT", box("col_x0", XR, "%s - grille_t" % YFACE, YFACE, zg0, zg1)))
     b.append(("kick", "KICK GRILLE LEFT", box("col_x0", "col_x0 + grille_t", "%s - grille_t - grille_l" % YFACE,
@@ -249,42 +278,44 @@ def layout():
     # corner angles, full height inside the faces (the back-right corner: the plenum plates)
     for name, x0, xw, y0 in (("FL", "col_x0 + face_t", "ang_f", "%s - face_t - ang_w" % YFACE),
                              ("FR", "%s - ang_f" % XR, "ang_f", "%s - face_t - ang_w" % YFACE),
-                             ("BL", "col_x0 + face_t", "ang_w", YW)):
+                             ("BL", "col_x0 + face_t", "ang_w", YD)):
         b.append(("col_ang", "COLUMN ANGLE %s" % name, box(x0, "%s + %s" % (x0, xw), y0, "%s + ang_w" % y0, ZCB, ZS0)))
     # supply cartridge: its right side on the column's limit, 5 off the floating lining; the plenum
     # plates sit only above and below it (air report #110: 27 of fill at the left face, D-61)
     cx1 = XR
     cx0 = "%s - cart_w" % cx1
-    cy0, cy1 = "%s + clr" % YW, "%s + clr + cart_d" % YW
+    cy0, cy1 = "%s + clr" % YD, "%s + clr + cart_d" % YD
     cz0 = "%s + plen_lo" % ZCB
     cz1 = "%s + cart_l" % cz0
     b.append(("cart", "CARTRIDGE SUPPLY", box(cx0, cx1, cy0, cy1, cz0, cz1)))
     # the column's right side at the two plenums (the cartridge closes the rest)
     py1 = "%s - face_t - ang_w" % YFACE
-    b.append(("col_side_lo", "COLUMN PLENUM PLATE LOW", box("%s - plate_t" % XR, XR, YW, py1, ZCB, cz0)))
-    b.append(("col_side_hi", "COLUMN PLENUM PLATE HIGH", box("%s - plate_t" % XR, XR, YW, py1, cz1, ZS0)))
+    b.append(("col_side_lo", "COLUMN PLENUM PLATE LOW", box("%s - plate_t" % XR, XR, YD, py1, ZCB, cz0)))
+    b.append(("col_side_hi", "COLUMN PLENUM PLATE HIGH", box("%s - plate_t" % XR, XR, YD, py1, cz1, ZS0)))
     b.append(("col_fill", "COLUMN FILL FRONT", box("col_x0 + face_t + ang_f", "%s - ang_f" % XR, cy1,
                                                      "%s - face_t" % YFACE, cz0, cz1)))
-    b.append(("col_fill", "COLUMN FILL LEFT", box("col_x0 + face_t", cx0, "%s + ang_w" % YW, cy1, cz0, cz1)))
+    b.append(("col_fill", "COLUMN FILL LEFT", box("col_x0 + face_t", cx0, "%s + ang_w" % YD, cy1, cz0, cz1)))
     hx = "(col_x0 + face_t + ang_f + %s - ang_f) / 2" % XR     # centred between the front angles' legs
     b.append(("hub", "SENSOR HUB ZONE", box("%s - hub_w / 2" % hx, "%s + hub_w / 2" % hx, "%s - hub_t" % YFACE,
                                              YFACE, "hub_z - hub_w / 2", "hub_z + hub_w / 2")))
     # soffit: underside sections (dark tone), front face, top rails, left end plate
     zf1 = ZRB                                      # front face up to the rail (riveted); pockets round the studs
     for key, name, x0, x1 in soffit_sections():
-        b.append((key, name, box(x0, x1, YW, "%s - face_t" % YFACE, ZS0, "%s + face_t" % ZS0)))
+        b.append((key, name, box(x0, x1, YD, "%s - face_t" % YFACE, ZS0, "%s + face_t" % ZS0)))
     b.append(("sof_front", "SOFFIT FACE FRONT", box(XL, XR, "%s - face_t" % YFACE, YFACE, ZS0, zf1)))
     zr0, zr1 = ZRB, "%s + rail_t" % ZRB
-    b.append(("sof_rail_d", "SOFFIT RAIL DOOR", box(XL, XR, YW, "%s + rail_w" % YW, zr0, zr1)))
+    b.append(("sof_rail_d", "SOFFIT RAIL DOOR", box(XL, XR, YD, "%s + rail_w" % YW, zr0, zr1)))
     b.append(("sof_rail_r", "SOFFIT RAIL ROOM", box(XL, XR, "%s - rail_w" % YFACE, YFACE, zr0, zr1)))
-    b.append(("sof_door", "SOFFIT DOOR PLATE", box(XL, XR, YW, "%s + dp_t" % YW, "%s + face_t + hl_h" % ZS0, zr0)))
-    b.append(("sof_end", "SOFFIT END PLATE LEFT", box(XL, "%s + box_t" % XL, "%s + dp_t" % YW, "%s - face_t" % YFACE,
+    b.append(("sof_door", "SOFFIT DOOR PLATE", box(XL, XR, YD, "%s + dp_t" % YD, "%s + face_t + hl_h" % ZS0, zr0)))
+    b.append(("sof_end", "SOFFIT END PLATE LEFT", box(XL, "%s + box_t" % XL, "%s + dp_t" % YD, "%s - face_t" % YFACE,
                                                       "%s + face_t" % ZS0, ZBT)))
     ex1 = "%s - fb_w" % XR
     ez0 = "%s + face_t + sof_fill_t" % ZS0
     b.append(("cart", "CARTRIDGE EXHAUST", box("%s - cart_l" % ex1, ex1, cy0, cy1, ez0, "%s + cart_w" % ez0)))
     b.append(("box", "EXHAUST FAN BOX", box(ex1, XR, cy0, cy1, ez0, "%s + cart_w" % ez0)))
-    b.append(("sof_fill", "SOFFIT FILL UNDER", box("%s - cart_l" % ex1, XR, cy0, "%s - face_t" % YFACE,
+    # the fill under the cartridge stops short of the latch line, so no latch cuts it, wherever the
+    # sections' quarter points fall (a latch cut that missed the fill failed at pod_w 2600)
+    b.append(("sof_fill", "SOFFIT FILL UNDER", box("%s - cart_l" % ex1, XR, cy0, "%s - face_t - hl_h" % YFACE,
                                                     "%s + face_t" % ZS0, ez0)))
     b.append(("sof_fill", "SOFFIT FILL FRONT", box("%s - cart_l" % ex1, XR, cy1, "%s - face_t" % YFACE, ez0, ZBT)))
     b.append(("egrille", "EXHAUST GRILLE", box("%s + eg_x0" % XIL, "%s + eg_x0 + eg_l" % XIL, "%s + face_t" % YW,
@@ -308,13 +339,13 @@ def layout():
         for q in (1, 3):
             xc = "(%s) + ((%s) - (%s)) * %d / 4" % (x0, x1, x0, q)
             b.append(("hinge", "%s HINGE %d" % (name, q), box("%s - hinge_l / 2" % xc, "%s + hinge_l / 2" % xc,
-                                                             YW, "%s + clr" % YW, zh0, zh1)))
+                                                             YD, "%s + clr" % YD, zh0, zh1)))
             b.append(("latch", "%s LATCH %d" % (name, q), box("%s - latch_l / 2" % xc, "%s + latch_l / 2" % xc,
                                                              "%s - face_t - hl_h" % YFACE, "%s - face_t" % YFACE, zh0, zh1)))
     # supply fan box joined with the intake riser (D-87), the transitions, the roof sleeve and grille
     sy0 = "%s + sb_yf" % YF
     b.append(("box_s", "SUPPLY FAN BOX", box("sb_x0", "sb_x0 + sb_w", sy0, "%s + sb_d" % sy0, "sb_z0", "sb_z0 + sb_h")))
-    b.append(("trans", "SUPPLY TRANSITION", box("sb_x0", "op_x0 + (%s - op_x0)" % XR, "%s + sb_d" % sy0, YW,
+    b.append(("trans", "SUPPLY TRANSITION", box("sb_x0", "op_x0 + (%s - op_x0)" % XR, "%s + sb_d" % sy0, YD,
                                                  "op_z0", "op_z0 + op_h")))
     b.append(("riser", "INTAKE RISER", box("rs_x0", "rs_x0 + rs_w", "rs_y0", "rs_y0 + rs_d", "rs_z0", "rs_z1")))
     b.append(("rtrans", "RISER TRANSITION", box("sb_x0", "rs_x0 + rs_w", "rs_y0", "rs_y0 + rs_d", "rs_z1", "sb_z0")))
@@ -333,10 +364,10 @@ def features():
     out = []
     # keyholes: the column drops key_drop onto each stud, so the big hole is key_drop below it
     for k, zs in (("1", "hook_z1"), ("2", "hook_z2")):
-        out.append(("COLUMN ANGLE BL", "ycircle", ("hook_x", "%s - key_drop" % zs, YW, "%s + ang_t" % YW, "key_d")))
-        out.append(("COLUMN ANGLE BL", "box", ("hook_x - key_w / 2", "hook_x + key_w / 2", YW, "%s + ang_t" % YW,
+        out.append(("COLUMN ANGLE BL", "ycircle", ("hook_x", "%s - key_drop" % zs, YD, "%s + ang_t" % YD, "key_d")))
+        out.append(("COLUMN ANGLE BL", "box", ("hook_x - key_w / 2", "hook_x + key_w / 2", YD, "%s + ang_t" % YD,
                                                "%s - key_drop" % zs, zs)))
-        out.append(("COLUMN ANGLE BL", "ycircle", ("hook_x", zs, YW, "%s + ang_t" % YW, "key_w")))
+        out.append(("COLUMN ANGLE BL", "ycircle", ("hook_x", zs, YD, "%s + ang_t" % YD, "key_w")))
     # foot plate: S1 round, S2 slot along Y
     out.append(("COLUMN FOOT PLATE", "zcircle", ("spg1_x", "spg1_y", ZC0, ZCB, "spg_hole")))
     run = "(spg_slot - spg_hole) / 2"
@@ -348,7 +379,7 @@ def features():
     zr0, zr1 = ZRB, "%s + rail_t" % ZRB
     for name, x, y in stud_points():
         rail = "SOFFIT RAIL DOOR" if name.endswith("DOOR") else "SOFFIT RAIL ROOM"
-        edge = YW if rail.endswith("DOOR") else "%s - rail_w" % YFACE
+        edge = YD if rail.endswith("DOOR") else "%s - rail_w" % YFACE
         out.append((rail, "box", ("%s - key_w / 2" % x, "%s + key_w / 2" % x, edge, y, zr0, zr1)))
         out.append((rail, "zcircle", (x, y, zr0, zr1, "key_w")))
     for x in ("-lock_x", "-lock_x + lock_dx"):
@@ -358,16 +389,14 @@ def features():
 
 def cutouts():
     """(body name to cut, cutter box): the hub zone through the front face and the fill
-    behind it, the exhaust grille's opening in the soffit underside."""
+    behind it, the exhaust grille's opening in the soffit underside, the room-side stud heads'
+    pockets in the soffit's front face."""
     lay = {name: bx for _k, name, bx in layout()}
     hub = lay["SENSOR HUB ZONE"]
     eg = lay["EXHAUST GRILLE"]
     hub_cut = (hub[0], hub[1], "%s - face_t - 40 mm" % YFACE, hub[3], hub[4], hub[5])
     eg_cut = (eg[0], eg[1], eg[2], eg[3], ZS0, "%s + face_t" % ZS0)    # the grille's opening through the face
     out = [("COLUMN FACE FRONT", hub_cut), ("COLUMN FILL FRONT", hub_cut), ("SOFFIT UNDERSIDE LEFT", eg_cut)]
-    for _k, name, bx in layout():
-        if " LATCH " in name:
-            out.append(("SOFFIT FILL UNDER", bx))       # the fill clears each latch
     for name, x, y in stud_points():
         if name.endswith("ROOM"):                       # a head pocket: the head plus 1.5 all round
             out.append(("SOFFIT FACE FRONT", ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x,
@@ -379,7 +408,7 @@ def fan_points():
     """Fan centres (x, y, z of the fan's underside): two in each fan box, lying flat."""
     pts = []
     for tag, x0, w, y0, d, z0 in (("SUPPLY", "sb_x0", "sb_w", "%s + sb_yf" % YF, "sb_d", "sb_z0 + lin_t"),
-                                  ("EXHAUST", "%s - fb_w" % XR, "fb_w", "%s + clr" % YW, "cart_d",
+                                  ("EXHAUST", "%s - fb_w" % XR, "fb_w", "%s + clr" % YD, "cart_d",
                                    "%s + face_t + sof_fill_t + lin_t" % ZS0)):
         for k in (1, 3):
             pts.append(("%s FAN %d" % (tag, (k + 1) // 2), "%s + %s * %d / 4" % (x0, w, k), "%s + %s / 2" % (y0, d), z0))

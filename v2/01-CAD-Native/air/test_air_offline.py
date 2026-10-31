@@ -71,7 +71,6 @@ class Fits(unittest.TestCase):
         """No two layout bodies overlap, except the cut-outs the build makes (hub zone in
         the front face and the fill, exhaust grille in the underside)."""
         cut = {(t, "SENSOR HUB ZONE") for t in ("COLUMN FACE FRONT", "COLUMN FILL FRONT")} | {("SOFFIT UNDERSIDE LEFT", "EXHAUST GRILLE")}
-        cut |= {("SOFFIT FILL UNDER", n) for n in LAY if " LATCH " in n}
         # the stud and lock shanks pass through the rails' forks and holes (cut features)
         cut |= {(r, n) for r in ("SOFFIT RAIL DOOR", "SOFFIT RAIL ROOM") for n in LAY if n.endswith("SHANK")}
         cut |= {("SOFFIT FACE FRONT", n) for n in LAY if n.startswith("STUD") and n.endswith("ROOM HEAD")}   # head pockets
@@ -91,9 +90,10 @@ class Fits(unittest.TestCase):
         self.assertAlmostEqual(c[0] - (b6("COLUMN FACE LEFT")[1]), 27.0, msg="27 of fill at the column's left face (air report #110)")
         for plate in ("COLUMN PLENUM PLATE LOW", "COLUMN PLENUM PLATE HIGH"):
             self.assertGreaterEqual(gap(c, b6(plate)), -1e-9, plate)
-        self.assertAlmostEqual(c[2] - yw, 5.0)
+        yd = V["dr_acc_face_y"]
+        self.assertAlmostEqual(c[2] - yd, 5.0)
         e = b6("CARTRIDGE EXHAUST")
-        self.assertAlmostEqual(e[2] - yw, 5.0)
+        self.assertAlmostEqual(e[2] - yd, 5.0)
         self.assertAlmostEqual(e[1], b6("EXHAUST FAN BOX")[0])      # the cartridge feeds the fan box
 
     def test_soffit_meets_ceiling(self):
@@ -199,6 +199,43 @@ class Hold18(unittest.TestCase):
                 if other == name or (other == "SOFFIT FACE FRONT" and "ROOM" in name):
                     continue
                 self.assertGreaterEqual(gap(room, ob), -1e-9, "%s: %s under its head" % (name, other))
+
+
+class FrontInterface(unittest.TestCase):
+    """PM rulings 2026-11-01: the column and the whole soffit start at the room-side face of DR's
+    access panel, FRONT's named value dr_acc_face_y, so neither overlaps the panel; DR's riveted
+    band behind the soffit stays (the soffit isn't sealed to DR)."""
+
+    DOOR_SIDE = ("COLUMN FOOT PLATE", "COLUMN FACE LEFT", "COLUMN ANGLE BL", "COLUMN PLENUM PLATE LOW",
+                 "COLUMN PLENUM PLATE HIGH", "SOFFIT UNDERSIDE LEFT", "SOFFIT UNDERSIDE RIGHT",
+                 "SOFFIT UNDERSIDE FIXED", "SOFFIT RAIL DOOR", "SOFFIT DOOR PLATE")
+
+    def test_door_side_on_the_panel_face(self):
+        yd = V["dr_acc_face_y"]
+        self.assertAlmostEqual(yd, -643.5)
+        for name in self.DOOR_SIDE:
+            self.assertAlmostEqual(b6(name)[2], yd, msg=name)
+        for name, (_k, bx) in LAY.items():
+            if _k not in ("box_s", "trans", "riser", "rtrans", "sleeve", "rgrille", "stud", "lock"):
+                self.assertGreaterEqual(bx[2], yd - 1e-9, "%s reaches into DR's access panel" % name)
+
+    def test_door_rail_clear_of_the_sleeve(self):
+        self.assertLessEqual(b6("SOFFIT RAIL DOOR")[3], b6("ROOF SLEEVE")[2] - 1.0 + 1e-9)
+        self.assertAlmostEqual(b6("SOFFIT RAIL DOOR")[3] - b6("SOFFIT RAIL DOOR")[2], 22.5)
+
+    def test_same_as_front(self):
+        """AIR's copies of FRONT's named values carry FRONT's expressions and units (no drift);
+        checked against FRONT's DR model whenever its file is in this checkout."""
+        mine = {p[0]: (p[1], p[2]) for p in A.AIR_PARAMS if p[0] in A.FRONT_NAMED}
+        self.assertEqual(set(mine), set(A.FRONT_NAMED))
+        self.assertEqual(mine["dr_acc_face_y"][0], "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t")
+        root = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+        theirs = A.front_named(os.environ.get("FRONT_REPO", root))
+        if theirs is None:
+            self.skipTest("FRONT's DR model (%s) is not in this checkout yet" % A.FRONT_FILE)
+        for name in A.FRONT_NAMED:
+            self.assertIn(name, theirs, "FRONT no longer publishes %s" % name)
+            self.assertEqual(theirs[name], mine[name], "%s drifted from FRONT's DR model" % name)
 
 
 class Numbers(unittest.TestCase):

@@ -3,10 +3,12 @@
     python3 tools/fusion/run_script.py v2/01-CAD-Native/air/edit_test_air.py --label "CEILING Engineer (AIR)"
 
 Opens 610000_P01_AIR_CAD.f3d as a new document and changes skeleton parameters (pod_w +100,
-wall_depth +25, dt_zb 2120 -> 2100: the soffit underside) and AIR's own (the column's left
-face col_x0 949 -> 940, the hub height hub_z 1200 -> 1250). After each change it checks every
-layout body against the box the layout gives for the new values, then reverts, checks again
-and closes the copy without saving. Prints a Markdown record.
+wall_depth +25, dt_zb 2120 -> 2100: the soffit underside), FRONT's named input (DR's access
+panel dr_acc_t 3 -> 4: the column and the soffit start at its face) and AIR's own (the column's
+left face col_x0 949 -> 940, the hub height hub_z 1200 -> 1250). After each change it checks
+every layout body against the box the layout gives for the new values, then reverts, checks
+again and closes the copy without saving. Prints a Markdown record, naming any timeline item
+that isn't healthy.
 """
 
 import importlib
@@ -28,7 +30,13 @@ importlib.reload(K)
 
 F3D_REL = "v2/01-CAD-Native/air/610000_%s_AIR_CAD.f3d" % A.REV
 EDITS = [[("pod_w", "2600 mm")], [("wall_depth", "1520 mm")], [("dt_zb", "2100 mm")],
-         [("col_x0", "940 mm")], [("hub_z", "1250 mm")]]
+         [("dr_acc_t", "4 mm")], [("col_x0", "940 mm")], [("hub_z", "1250 mm")]]
+
+
+def sick(r):
+    """The unhealthy timeline items, by name (up to 4), or 0."""
+    u = r["unhealthy"]
+    return "0" if not u else "%d: %s" % (len(u), "; ".join(u[:4]))
 
 
 def run(_context):
@@ -41,7 +49,7 @@ def run(_context):
     failed = False
     try:
         r = K.check(design, adsk.fusion)
-        lines.append("| before | none | %d | %s | %s | %d |" % (r["checked"], r["worst"], r["bad"] or "none", len(r["unhealthy"])))
+        lines.append("| before | none | %d | %s | %s | %s |" % (r["checked"], r["worst"], r["bad"] or "none", sick(r)))
         failed |= bool(r["bad"] or r["unhealthy"])
         params = design.userParameters
         for edit in EDITS:
@@ -51,15 +59,15 @@ def run(_context):
             adsk.doEvents()
             r = K.check(design, adsk.fusion)
             desc = ", ".join("%s %s -> %s" % (n, o, v) for (n, o), (_n, v) in zip(old, edit))
-            lines.append("| edit | %s | %d | %s | %s | %d |" % (desc, r["checked"], r["worst"], r["bad"] or "none",
-                                                              len(r["unhealthy"])))
+            lines.append("| edit | %s | %d | %s | %s | %s |" % (desc, r["checked"], r["worst"], r["bad"] or "none",
+                                                              sick(r)))
             failed |= bool(r["bad"] or r["unhealthy"])
             for n, o in old:
                 params.itemByName(n).expression = o
             adsk.doEvents()
             r = K.check(design, adsk.fusion)
-            lines.append("| revert | %s back | %d | %s | %s | %d |" % (", ".join(n for n, _o in old), r["checked"],
-                                                                       r["worst"], r["bad"] or "none", len(r["unhealthy"])))
+            lines.append("| revert | %s back | %d | %s | %s | %s |" % (", ".join(n for n, _o in old), r["checked"],
+                                                                       r["worst"], r["bad"] or "none", sick(r)))
             failed |= bool(r["bad"] or r["unhealthy"])
     finally:
         doc.close(False)
