@@ -283,20 +283,43 @@ def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
     sk.circles.addByCenterRadius(p2(cx, y0), d / 2)
 
 
+MAPPING = os.path.join(HERE, "image_mapping.json")
+STACK_X, STACK_Y0, STACK_GAP, STACK_TOP = 410.0, 72.0, 4.0, 405.0   # right column, above the title block (mm)
+ORDER = ("data", "parts", "table", "pockets", "notes")             # bottom to top
+
+
 def images(sheet, pn, cfg):
-    path = os.path.join(ARGS["repo_root"], HERE, ".images", "%s_images.json" % pn)
-    with open(path) as fh:
+    """The note images, stacked bottom-up in the right column (lower-left corners at x 410, from y 72), placed
+    with the measured Images.insert mapping (image_mapping.json). Until that mapping is measured nothing is
+    placed: an inserted image can't be moved or deleted, so a guess would cost the drawing."""
+    with open(os.path.join(ARGS["repo_root"], MAPPING)) as fh:
+        mp = json.load(fh)
+    if not mp.get("mm_per_px_at_scale_1") or not mp.get("anchor"):
+        print("IMAGES|skipped: the Images.insert mapping isn't measured yet (%s)" % MAPPING)
+        return 0
+    with open(os.path.join(ARGS["repo_root"], HERE, ".images", "%s_images.json" % pn)) as fh:
         meta = json.load(fh)
-    for name, at in cfg["images"]:
+    names = [n for n in ORDER if n in meta and n in [c for c, _at in cfg["images"]]]
+    y, placed = STACK_Y0, 0
+    for name in names:
         m = meta[name]
+        w_px = m["w_mm"] / 25.4 * 300.0                  # make_sheet_images.py renders at 300 dpi
+        h_px = m["h_mm"] / 25.4 * 300.0
+        scale = m["w_mm"] / (w_px * mp["mm_per_px_at_scale_1"])
+        w, h = m["w_mm"], h_px * mp["mm_per_px_at_scale_1"] * scale
+        if y + h > STACK_TOP:
+            raise RuntimeError("note images don't fit the right column (%s ends at %.1f mm)" % (name, y + h))
+        dx, dy = {"lower-left": (0.0, 0.0), "upper-left": (0.0, h), "center": (w / 2, h / 2)}[mp["anchor"]]
         ii = sheet.images.createInput()
         ii.imageFilePath = m["path"]
-        ii.position = p2(*at)
-        px_w = m["w_mm"] / 25.4 * 300.0
-        ii.scale = m["w_mm"] / px_w * float(ARGS.get("img_scale_fudge", "1"))
+        ii.position = p2(STACK_X + dx, y + dy)
+        ii.scale = scale
         if not sheet.images.insert(ii):
             raise RuntimeError("image %s not inserted" % name)
-        print("IMAGE|%s|at %s|%s x %s mm|scale %.5f" % (name, at, m["w_mm"], m["h_mm"], ii.scale))
+        print("IMAGE|%s|lower-left (%.1f, %.1f)|%s x %.1f mm|scale %.5f" % (name, STACK_X, y, w, h, scale))
+        y += h + STACK_GAP
+        placed += 1
+    return placed
 
 
 def annotate(app, kind, pn, datum_b):
@@ -328,8 +351,14 @@ def annotate(app, kind, pn, datum_b):
     for vname, title in cfg["tables"]:
         hole_table(sheet, views[vname], "%s (ORIGIN: VIEW LOWER %s CORNER)" % (title, side.upper())
                    if "ORIGIN" not in title else title, "br" if right else "bl")
-    projection_symbol(sheet, *cfg["symbol_at"])
-    images(sheet, pn, cfg)
+    projection_symbol(sheet, 30.0, 400.0)                 # top left: clear of the views and the note column
+    finish(app, dwg, sheet, kind, pn)
+
+
+def finish(app, dwg, sheet, kind, pn):
+    """The note images (once their mapping is measured) and the raw PDF."""
+    if ARGS.get("images", "1") != "0":
+        images(sheet, pn, KINDS[kind])
     raw = os.path.join(ARGS["repo_root"], HERE, ".raw", app.activeDocument.name + ".pdf")
     os.makedirs(os.path.dirname(raw), exist_ok=True)
     opts = dwg.exportManager.createPDFExportOptions(raw)
@@ -388,8 +417,15 @@ def run(_context):
                 raise RuntimeError("%r is open with unsaved changes; not reused (PM rule 4)" % name)
             doc = docs[0] if docs else open_drawing(app, name)
             doc.activate()
-            print("BATCH|annotate %s" % name)
-            annotate(app, kind, pn, datum_b)
+            if ARGS.get("only_images") == "1":            # notes added later to an annotated drawing
+                dwg = adsk.drawing.Drawing.cast(app.activeProduct)
+                if dwg is None or not dwg.activeSheet.views.count:
+                    raise RuntimeError("%r has no views yet: annotate it first" % name)
+                print("BATCH|images %s" % name)
+                finish(app, dwg, dwg.activeSheet, kind, pn)
+            else:
+                print("BATCH|annotate %s" % name)
+                annotate(app, kind, pn, datum_b)
             if not doc.save("views, dimensions, hole tables, notes"):
                 raise RuntimeError("save failed")
             done.append(name)

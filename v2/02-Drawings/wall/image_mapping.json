@@ -1,0 +1,5 @@
+{
+  "mm_per_px_at_scale_1": null,
+  "anchor": null,
+  "source": "not measured yet: Fusion Engineer 2's image test (Images.insert on Mac 1, Fusion 2706.1.17) fills these in; until then the drawings get no note images (they are added later by an images-only run, since an inserted image can't be moved or deleted)"
+}
