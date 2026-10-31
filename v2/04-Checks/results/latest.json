@@ -1,6 +1,6 @@
 {
- "rev": "fc6192e",
- "date": "2026-10-31",
+ "rev": "c54af38",
+ "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 34,
   "bodies_assembly": 0,
@@ -129,68 +129,80 @@
  "shipping": [
   {
    "id": "1-01",
-   "name": "BASE - SEAL MAT - F1",
-   "kg": 1.05,
+   "name": "BASE - FLOOR PANEL - F1",
+   "kg": 8.708,
    "dims": [
-    1451.0,
-    1205.5,
-    3.0
+    1455.0,
+    1219.0,
+    12.0
    ],
    "ships_as": "upright",
-   "status": "calculation"
+   "status": "calculation; confirmed (9 mm, poplar core); calculation"
   },
   {
    "id": "1-02",
-   "name": "BASE - SEAL MAT - F2",
-   "kg": 1.05,
+   "name": "BASE - FLOOR PANEL - F2",
+   "kg": 8.708,
    "dims": [
-    1451.0,
-    1205.5,
-    3.0
+    1455.0,
+    1219.0,
+    12.0
    ],
    "ships_as": "upright",
-   "status": "calculation"
+   "status": "calculation; confirmed (9 mm, poplar core); calculation"
   },
   {
    "id": "1-03",
-   "name": "BASE - FLOOR PANEL - F1",
-   "kg": 10.035,
+   "name": "WALL - PANEL ASSY - BACK LOWER - LH",
+   "kg": 8.756,
    "dims": [
-    1455.0,
-    1219.0,
-    9.0
+    1200.61,
+    1118.61,
+    46.0
    ],
    "ships_as": "upright",
-   "status": "confirmed (9 mm); calculation"
+   "status": "calculation; fill provisional"
   },
   {
    "id": "1-04",
-   "name": "BASE - FLOOR PANEL - F2",
-   "kg": 10.035,
+   "name": "WALL - PANEL ASSY - BACK LOWER - RH",
+   "kg": 11.556,
    "dims": [
-    1455.0,
-    1219.0,
-    9.0
+    1200.61,
+    1118.61,
+    84.0
    ],
    "ships_as": "upright",
-   "status": "confirmed (9 mm); calculation"
+   "status": "calculation (ELECTRICAL); calculation; fill provisional"
   },
   {
    "id": "1-05",
-   "name": "WALL - PANEL ASSY - BACK LOWER - LH",
-   "kg": 9.309,
+   "name": "WALL - PANEL ASSY - SIDE LOWER - LH",
+   "kg": 11.088,
    "dims": [
-    1200.61,
-    1118.61,
+    1492.74,
+    1142.74,
     46.0
    ],
    "ships_as": "upright",
-   "status": "calculation; fill provisional"
+   "status": "calculation (CAD); fill provisional"
   },
   {
    "id": "1-06",
-   "name": "WALL - PANEL ASSY - BACK LOWER - RH",
-   "kg": 9.309,
+   "name": "WALL - PANEL ASSY - SIDE LOWER - RH",
+   "kg": 11.088,
+   "dims": [
+    1492.74,
+    1142.74,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation (CAD); fill provisional"
+  },
+  {
+   "id": "1-07",
+   "name": "WALL - PANEL ASSY - BACK UPPER - LH",
+   "kg": 8.756,
    "dims": [
     1200.61,
     1118.61,
@@ -200,36 +212,24 @@
    "status": "calculation; fill provisional"
   },
   {
-   "id": "1-07",
-   "name": "WALL - PANEL ASSY - SIDE LOWER - LH",
-   "kg": 11.294,
-   "dims": [
-    1492.74,
-    1142.74,
-    46.0
-   ],
-   "ships_as": "upright",
-   "status": "calculation (CAD); fill provisional"
-  },
-  {
    "id": "1-08",
-   "name": "WALL - PANEL ASSY - SIDE LOWER - RH",
-   "kg": 11.294,
-   "dims": [
-    1492.74,
-    1142.74,
-    46.0
-   ],
-   "ships_as": "upright",
-   "status": "calculation (CAD); fill provisional"
-  },
-  {
-   "id": "1-09",
-   "name": "WALL - PANEL ASSY - BACK UPPER - LH",
-   "kg": 9.309,
+   "name": "WALL - PANEL ASSY - BACK UPPER - RH",
+   "kg": 8.756,
    "dims": [
     1200.61,
     1118.61,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "1-09",
+   "name": "WALL - PANEL ASSY - SIDE UPPER - LH",
+   "kg": 11.075,
+   "dims": [
+    1492.74,
+    1142.74,
     46.0
    ],
    "ships_as": "upright",
@@ -237,11 +237,11 @@
   },
   {
    "id": "1-10",
-   "name": "WALL - PANEL ASSY - BACK UPPER - RH",
-   "kg": 9.309,
+   "name": "WALL - PANEL ASSY - SIDE UPPER - RH",
+   "kg": 11.075,
    "dims": [
-    1200.61,
-    1118.61,
+    1492.74,
+    1142.74,
     46.0
    ],
    "ships_as": "upright",
@@ -249,30 +249,6 @@
   },
   {
    "id": "1-11",
-   "name": "WALL - PANEL ASSY - SIDE UPPER - LH",
-   "kg": 11.281,
-   "dims": [
-    1492.74,
-    1142.74,
-    46.0
-   ],
-   "ships_as": "upright",
-   "status": "calculation; fill provisional"
-  },
-  {
-   "id": "1-12",
-   "name": "WALL - PANEL ASSY - SIDE UPPER - RH",
-   "kg": 11.281,
-   "dims": [
-    1492.74,
-    1142.74,
-    46.0
-   ],
-   "ships_as": "upright",
-   "status": "calculation; fill provisional"
-  },
-  {
-   "id": "1-13",
    "name": "CEILING - PANEL ASSY - C1",
    "kg": 10.035,
    "dims": [
@@ -284,7 +260,7 @@
    "status": "calculation (CAD); bond assumption"
   },
   {
-   "id": "1-14",
+   "id": "1-12",
    "name": "CEILING - PANEL ASSY - C2",
    "kg": 10.535,
    "dims": [
@@ -296,7 +272,7 @@
    "status": "calculation; calculation (CAD); bond assumption"
   },
   {
-   "id": "1-15",
+   "id": "1-13",
    "name": "LINING - CASSETTE - SIDE LOWER - RH",
    "kg": 10.474,
    "dims": [
@@ -308,7 +284,7 @@
    "status": "calculation; lips confirmed"
   },
   {
-   "id": "1-16",
+   "id": "1-14",
    "name": "LINING - CASSETTE - SIDE UPPER - RH",
    "kg": 10.047,
    "dims": [
@@ -320,7 +296,7 @@
    "status": "calculation; lips confirmed"
   },
   {
-   "id": "1-17",
+   "id": "1-15",
    "name": "LINING - CASSETTE - SIDE LOWER - LH",
    "kg": 10.474,
    "dims": [
@@ -332,7 +308,7 @@
    "status": "calculation; lips confirmed"
   },
   {
-   "id": "1-18",
+   "id": "1-16",
    "name": "LINING - CASSETTE - SIDE UPPER - LH",
    "kg": 10.047,
    "dims": [
@@ -344,7 +320,7 @@
    "status": "calculation; lips confirmed"
   },
   {
-   "id": "1-19",
+   "id": "1-17",
    "name": "LINING - CASSETTE - BACK LOWER - LH",
    "kg": 8.411,
    "dims": [
@@ -356,7 +332,7 @@
    "status": "calculation; lips confirmed"
   },
   {
-   "id": "1-20",
+   "id": "1-18",
    "name": "LINING - CASSETTE - BACK LOWER - RH",
    "kg": 8.411,
    "dims": [
@@ -368,7 +344,7 @@
    "status": "calculation; lips confirmed"
   },
   {
-   "id": "1-21",
+   "id": "1-19",
    "name": "LINING - CASSETTE - BACK UPPER - LH",
    "kg": 8.399,
    "dims": [
@@ -380,7 +356,7 @@
    "status": "calculation; lips confirmed"
   },
   {
-   "id": "1-22",
+   "id": "1-20",
    "name": "LINING - CASSETTE - BACK UPPER - RH",
    "kg": 8.399,
    "dims": [
@@ -406,14 +382,14 @@
   {
    "id": "2-02",
    "name": "FRONT - DOOR UNIT",
-   "kg": 50.17,
+   "kg": 49.076,
    "dims": [
     2089.0,
     1175.0,
     149.0
    ],
    "ships_as": "glass",
-   "status": "calculation (CAD)"
+   "status": "calculation (CAD); kick strip assumption"
   },
   {
    "id": "2-03",
@@ -430,50 +406,50 @@
   {
    "id": "2-04",
    "name": "BASE - BAND ASSY - BACK",
-   "kg": 3.135,
+   "kg": 3.285,
    "dims": [
     2420.0,
     110.0,
     40.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation; provisional"
+   "status": "assumption; calculation; calculation; confirmed (1.5 mm)"
   },
   {
    "id": "2-05",
    "name": "BASE - BAND ASSY - SIDE - LH",
-   "kg": 2.142,
+   "kg": 2.242,
    "dims": [
     1517.0,
     110.0,
     40.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation; provisional"
+   "status": "assumption; calculation; calculation; confirmed (1.5 mm)"
   },
   {
    "id": "2-06",
    "name": "BASE - BAND ASSY - SIDE - RH",
-   "kg": 2.142,
+   "kg": 2.242,
    "dims": [
     1517.0,
     110.0,
     40.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation; provisional"
+   "status": "assumption; calculation; calculation; confirmed (1.5 mm)"
   },
   {
    "id": "2-07",
    "name": "BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS",
-   "kg": 0.922,
+   "kg": 0.972,
    "dims": [
     729.0,
     110.0,
     40.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation; provisional"
+   "status": "assumption; calculation; calculation; confirmed (1.5 mm)"
   },
   {
    "id": "2-08",
@@ -501,15 +477,15 @@
   },
   {
    "id": "2-10",
-   "name": "AIR - SOFFIT",
-   "kg": 9.833,
+   "name": "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS",
+   "kg": 13.908,
    "dims": [
     2332.0,
     360.0,
     220.0
    ],
    "ships_as": "long",
-   "status": "calculation; fill provisional"
+   "status": "assumption; calculation; calculation; fill provisional"
   },
   {
    "id": "2-11",
@@ -537,20 +513,20 @@
   },
   {
    "id": "2-13",
-   "name": "ELECTRICAL - KIT - SWITCHES AND HARNESS",
-   "kg": 2.05,
+   "name": "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS",
+   "kg": 2.14,
    "dims": [
     600.0,
     250.0,
     200.0
    ],
    "ships_as": "long",
-   "status": "assumption"
+   "status": "calculation (ELECTRICAL)"
   },
   {
    "id": "2-14",
-   "name": "INTERIOR - LIGHT SHELF WITH LED STRIP",
-   "kg": 3.06,
+   "name": "INTERIOR - LIGHT SHELF",
+   "kg": 1.957,
    "dims": [
     2332.0,
     80.0,
@@ -561,18 +537,6 @@
   },
   {
    "id": "2-15",
-   "name": "AIR - SUPPLY FAN BOX AND TRANSITION, WITH 2 FANS",
-   "kg": 5.666,
-   "dims": [
-    516.0,
-    460.0,
-    155.0
-   ],
-   "ships_as": "long",
-   "status": "assumption; calculation"
-  },
-  {
-   "id": "2-16",
    "name": "BASE - SMALL PARTS CARTON",
    "kg": 1.626,
    "dims": [
@@ -581,12 +545,12 @@
     150.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation; provisional"
+   "status": "assumption; calculation; confirmed (1.5 mm)"
   },
   {
-   "id": "2-17",
+   "id": "2-16",
    "name": "INTERIOR - LEDGE AND SCREEN MOUNT CARTON",
-   "kg": 3.3,
+   "kg": 2.4,
    "dims": [
     1000.0,
     250.0,
@@ -596,19 +560,19 @@
    "status": "assumption"
   },
   {
-   "id": "2-18",
-   "name": "AIR - INTAKE RISER",
-   "kg": 9.229,
+   "id": "2-17",
+   "name": "AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS",
+   "kg": 14.895,
    "dims": [
-    1740.0,
-    250.0,
+    1845.0,
+    460.0,
     155.0
    ],
    "ships_as": "long",
-   "status": "calculation"
+   "status": "assumption; calculation"
   },
   {
-   "id": "2-19",
+   "id": "2-18",
    "name": "AIR - CARTRIDGE - SUPPLY",
    "kg": 11.155,
    "dims": [
@@ -620,7 +584,7 @@
    "status": "calculation"
   },
   {
-   "id": "2-20",
+   "id": "2-19",
    "name": "AIR - CARTRIDGE - EXHAUST",
    "kg": 11.155,
    "dims": [
@@ -632,43 +596,31 @@
    "status": "calculation"
   },
   {
-   "id": "2-21",
-   "name": "AIR - EXHAUST FAN BOX, WITH 2 FANS",
-   "kg": 4.075,
+   "id": "2-20",
+   "name": "LINING - CASSETTE - CEILING - COMMON",
+   "kg": 9.476,
    "dims": [
-    314.0,
-    294.0,
-    173.0
+    1163.0,
+    1048.0,
+    74.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation"
+   "status": "calculation (CAD); fill provisional"
+  },
+  {
+   "id": "2-21",
+   "name": "LINING - CASSETTE - CEILING - COMMON",
+   "kg": 9.476,
+   "dims": [
+    1163.0,
+    1048.0,
+    74.0
+   ],
+   "ships_as": "long",
+   "status": "calculation (CAD); fill provisional"
   },
   {
    "id": "2-22",
-   "name": "LINING - CASSETTE - CEILING - COMMON",
-   "kg": 9.476,
-   "dims": [
-    1163.0,
-    1048.0,
-    74.0
-   ],
-   "ships_as": "long",
-   "status": "calculation (CAD); fill provisional"
-  },
-  {
-   "id": "2-23",
-   "name": "LINING - CASSETTE - CEILING - COMMON",
-   "kg": 9.476,
-   "dims": [
-    1163.0,
-    1048.0,
-    74.0
-   ],
-   "ships_as": "long",
-   "status": "calculation (CAD); fill provisional"
-  },
-  {
-   "id": "2-24",
    "name": "POD - INSTALLATION KIT (OPEN FIRST)",
    "kg": 0.5,
    "dims": [
