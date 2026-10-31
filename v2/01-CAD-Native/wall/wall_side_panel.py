@@ -308,9 +308,14 @@ def derive_skeleton(app, design, name):
     part_doc = app.activeDocument
     # if the skeleton is already open (its owner may be working in it), use that and never close it
     already = [app.documents.item(i) for i in range(app.documents.count) if app.documents.item(i).name == name]
-    if already and already[0].isModified:
-        raise RuntimeError("the skeleton is open in Fusion with unsaved changes (someone is working in it): its "
-                           "favorites may not be the saved ones; try again when it is closed")
+    if already and (already[0].isModified or not already[0].dataFile
+                    or already[0].dataFile.versionNumber != files[0].versionNumber):
+        # an open copy can be changed, or an older version loaded through another document (the GA drawing
+        # kept an old P04 loaded, 2026-10-31 18:53): derive only from the latest saved version
+        raise RuntimeError("the skeleton is open in Fusion but not as its latest saved version (v%s; open: v%s, %s): "
+                           "try again when it is closed" % (files[0].versionNumber,
+                           already[0].dataFile.versionNumber if already[0].dataFile else "?",
+                           "modified" if already[0].isModified else "unmodified"))
     skel_doc = already[0] if already else app.documents.open(files[0], False)          # invisible
     try:
         skel = adsk.fusion.Design.cast(skel_doc.products.itemByProductType("DesignProductType"))

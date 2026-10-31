@@ -124,8 +124,9 @@ def preflight(app):
     if not files:
         return sorted(names), "skeleton not found"
     already = [app.documents.item(i) for i in range(app.documents.count) if app.documents.item(i).name == SKELETON]
-    if already and already[0].isModified:
-        return sorted(names), "open in Fusion with unsaved changes (someone is working in it)"
+    if already and (already[0].isModified or not already[0].dataFile
+                    or already[0].dataFile.versionNumber != files[0].versionNumber):
+        return sorted(names), "open in Fusion but not as its latest saved version v%s" % files[0].versionNumber
     active = app.activeDocument
     doc = already[0] if already else app.documents.open(files[0], False)
     try:
