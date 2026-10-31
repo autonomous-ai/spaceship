@@ -265,7 +265,10 @@ def load_skeleton(path=None):
     rows = []
     with open(path, encoding="utf-8") as fh:
         for r in csv.DictReader(fh):
-            rows.append((r["parameter"], r["expression"], "mm", r["status"],
+            # skeleton v4 (PR #94) gives each parameter its unit ("-" for a count); older lists were all mm
+            unit = (r.get("unit") or "mm").strip()
+            unit = "" if unit in ("-", "") else unit
+            rows.append((r["parameter"], r["expression"], unit, r["status"],
                          "skeleton %s: %s" % (SKELETON_REV, r["source"])))
     return rows
 
