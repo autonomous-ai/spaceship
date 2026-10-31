@@ -93,7 +93,7 @@ FocusPod lives indoors: in a cool, air-conditioned room, on a flat, level floor.
 | Floor | A thin floor: 2 to 3 cm panels lying on the room floor, with the walls fixed around them, instead of the raised 50×100 steel frame. The outside base band stays as trim, so the look doesn't change. The step into the pod drops from about 13 cm to about 2 cm, and the room inside gets about 10 cm taller. | about 50 kg |
 | Wall, ceiling and decor frames | Aluminum instead of steel | about 40 kg |
 | Skins | No plywood behind the ACP where sound doesn't need it. Also study sandwich walls: a foam-core or honeycomb panel with the same yellow ACP face on an aluminum frame. That's how the lightest pods are built (Mamava XL at 318 kg, hushMeet's honeycomb). | up to 58 kg |
-| Glass | 8 mm instead of 10 mm, same smoked glass and same shape | about 20 kg |
+| Glass | 8 mm instead of 10 mm saves about 20 kg. Smoked acrylic, which Room uses for its booth door to cut shipping weight, saves about 60 kg on the door and fixed panel together. Same smoked look and same shape either way. Acrylic scratches more and feels less premium, so the sound check and a sample decide. | about 20–60 kg |
 | Table | Removed. Customers put whatever they like in the pod. | about 20 kg |
 
 That takes v2 from about 460 kg as planned to a little under 300 kg. The outside looks identical. These are material changes to the build plan, so they go in marked PROPOSED for the hardware engineering lead while we keep building.
@@ -113,7 +113,7 @@ So v2 adds:
 - the glass seated in sealed profiles
 - a seal under the thin floor
 
-We also compare 8 mm tempered glass with 4+4 laminated acoustic glass, which weighs about the same and is quieter.
+We also compare three front options: 8 mm tempered glass; 4+4 laminated acoustic glass, which weighs about the same and is quieter; and smoked acrylic, less than half the weight. Room still claims about 30 dB with an acrylic door.
 
 The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, Dee gets the trade-off before we add weight. Because 300 kg is beyond anything rated on the market, the team should build one wall sample and the door early and test them.
 
@@ -161,7 +161,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - A weight budget by assembly, comparing v1 with v2 as planned.
    - Panel split options that fit standard pallets, including wall bands about 1.2 m long that stand on 48 × 40 pallets. Orangebox Air3 stacks 5 bands per wall.
    - A pallet layout for each option.
-   - Part weights, with every part at 20 kg or less, plus the lighter indoor options against the 300 kg target: aluminum frames, no plywood backing, sandwich walls, and 8 mm or 4+4 laminated glass.
+   - Part weights, with every part at 20 kg or less, plus the lighter indoor options against the 300 kg target: aluminum frames, no plywood backing, sandwich walls, and 8 mm glass, 4+4 laminated glass or smoked acrylic for the front.
    - Floor options compared on weight, step height, sound, stiffness and assembly time: the plan's raised floor, a thin floor, and no floor.
    - A 2-person assembly sequence with step count, fastener count and estimated time.
    - A recommendation for the layout the CAD should follow.
@@ -176,7 +176,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - Real part numbers and fit data for every bought item, lightest options first.
    - The parts the plan doesn't cover yet: glass door hinges, handle, seals, glass clamps, latch, lights and power inlet.
    - Fasteners for the 20×20 tube.
-   - A sound check: the lightest wall that's at least as quiet as v1, comparing two skins with fill against sandwich panels; seals and gaskets; 8 mm tempered against 4+4 laminated glass; and what 30 dB would cost in kg.
+   - A sound check: the lightest wall that's at least as quiet as v1, comparing two skins with fill against sandwich panels; seals and gaskets; 8 mm tempered glass, 4+4 laminated glass and smoked acrylic for the door and fixed panel; and what 30 dB would cost in kg.
    - An air design that meets the fresh-air requirement: airflow with a 2-person load, self-starting fans with boost, silenced vents, and noise inside.
    - Low-emission certified options for the felt, boards and glue.
 
