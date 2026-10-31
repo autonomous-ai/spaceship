@@ -32,7 +32,7 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 VO = adsk.drawing.ViewOrientationTypes
 HERE = "v2/02-Drawings/wall"
 
-KINDS = {
+KINDS: "dict[str, dict]" = {
     # views: (orientation, where): where = centre | below | above | right | left (first-angle positions)
     "frame": {"scale": 0.2, "front_at": (205.0, 235.0), "gap": 14.0,
               "views": [("front", VO.FrontViewOrientationType, "centre"),
@@ -283,20 +283,46 @@ def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
     sk.circles.addByCenterRadius(p2(cx, y0), d / 2)
 
 
+MAPPING = os.path.join(HERE, "image_mapping.json")
+STACK_X, STACK_Y0, STACK_GAP, STACK_TOP = 410.0, 72.0, 4.0, 405.0   # right column, above the title block (mm)
+ORDER = ("data", "parts", "table", "pockets", "notes")             # bottom to top
+
+
 def images(sheet, pn, cfg):
-    path = os.path.join(ARGS["repo_root"], HERE, ".images", "%s_images.json" % pn)
-    with open(path) as fh:
+    """The note images, stacked bottom-up in the right column (lower-left corners at x 410, from y 72), placed
+    with the measured Images.insert mapping (image_mapping.json). Until that mapping is measured nothing is
+    placed: an inserted image can't be moved or deleted, so a guess would cost the drawing."""
+    with open(os.path.join(ARGS["repo_root"], MAPPING)) as fh:
+        mp = json.load(fh)
+    if not mp.get("width_at_scale_1_mm") or not mp.get("anchor"):
+        print("IMAGES|skipped: the Images.insert mapping for %s isn't measured yet (%s)" % (mp.get("sheet"), MAPPING))
+        return 0
+    width_mm = sheet.width * 10.0 if sheet.width < 100 else sheet.width     # the API may report cm
+    if abs(width_mm - {"A2": 594.0, "A3": 420.0, "A1": 841.0}.get(mp.get("sheet"), -1)) > 1.0:
+        print("IMAGES|skipped: the mapping is for %s, this sheet is %.1f mm wide" % (mp.get("sheet"), width_mm))
+        return 0
+    with open(os.path.join(ARGS["repo_root"], HERE, ".images", "%s_images.json" % pn)) as fh:
         meta = json.load(fh)
-    for name, at in cfg["images"]:
+    names = [n for n in ORDER if n in meta and n in [c for c, _at in cfg["images"]]]
+    y, placed = STACK_Y0, 0
+    for name in names:
         m = meta[name]
+        # at scale 1 an image comes out width_at_scale_1_mm wide (the sheet sets it), keeping its aspect ratio
+        scale = m["w_mm"] / mp["width_at_scale_1_mm"]
+        w, h = m["w_mm"], m["h_mm"]
+        if y + h > STACK_TOP:
+            raise RuntimeError("note images don't fit the right column (%s ends at %.1f mm)" % (name, y + h))
+        dx, dy = {"lower-left": (0.0, 0.0), "upper-left": (0.0, h), "center": (w / 2, h / 2)}[mp["anchor"]]
         ii = sheet.images.createInput()
         ii.imageFilePath = m["path"]
-        ii.position = p2(*at)
-        px_w = m["w_mm"] / 25.4 * 300.0
-        ii.scale = m["w_mm"] / px_w * float(ARGS.get("img_scale_fudge", "1"))
+        ii.position = p2(STACK_X + dx, y + dy)
+        ii.scale = scale
         if not sheet.images.insert(ii):
             raise RuntimeError("image %s not inserted" % name)
-        print("IMAGE|%s|at %s|%s x %s mm|scale %.5f" % (name, at, m["w_mm"], m["h_mm"], ii.scale))
+        print("IMAGE|%s|lower-left (%.1f, %.1f)|%s x %.1f mm|scale %.5f" % (name, STACK_X, y, w, h, scale))
+        y += h + STACK_GAP
+        placed += 1
+    return placed
 
 
 def annotate(app, kind, pn, datum_b):
@@ -328,8 +354,14 @@ def annotate(app, kind, pn, datum_b):
     for vname, title in cfg["tables"]:
         hole_table(sheet, views[vname], "%s (ORIGIN: VIEW LOWER %s CORNER)" % (title, side.upper())
                    if "ORIGIN" not in title else title, "br" if right else "bl")
-    projection_symbol(sheet, *cfg["symbol_at"])
-    images(sheet, pn, cfg)
+    projection_symbol(sheet, 30.0, 400.0)                 # top left: clear of the views and the note column
+    finish(app, dwg, sheet, kind, pn)
+
+
+def finish(app, dwg, sheet, kind, pn):
+    """The note images (once their mapping is measured) and the raw PDF."""
+    if ARGS.get("images", "1") != "0":
+        images(sheet, pn, KINDS[kind])
     raw = os.path.join(ARGS["repo_root"], HERE, ".raw", app.activeDocument.name + ".pdf")
     os.makedirs(os.path.dirname(raw), exist_ok=True)
     opts = dwg.exportManager.createPDFExportOptions(raw)
@@ -342,10 +374,33 @@ def annotate(app, kind, pn, datum_b):
         sheet.views.count, sheet.drawingDimensions.count, sheet.holeTables.count))
 
 
+def open_drawing(app, name):
+    """Open the saved drawing NAME from Default Project / FocusPod v2 (the screen is unlocked: PM rule)."""
+    proj = [app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
+            if app.data.dataProjects.item(i).name == "Default Project"][0]
+    fold = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
+    files = []
+    for _attempt in range(3):            # the list can change while others save
+        try:
+            files = [fold.dataFiles.item(i) for i in range(fold.dataFiles.count)]
+            break
+        except RuntimeError:
+            adsk.doEvents()
+    files = [f for f in files if f.name == name]
+    if len(files) != 1:
+        raise RuntimeError("%d saved drawings are called %r" % (len(files), name))
+    app.data.activeProject = proj
+    doc = app.documents.open(files[0], True)
+    if doc is None:
+        raise RuntimeError("could not open %r" % name)
+    print("BATCH|opened %s (version %s)" % (name, files[0].versionNumber))
+    return doc
+
+
 def run(_context):
     """One drawing (the active one: --doc DWG with --save and --close on the runner), or, with
-    --arg batch="KIND:PN:DWG:DATUM_B;...", every listed drawing that start_drawing.py left open: each is
-    activated, annotated, saved and closed. A failing one is reported (BATCH|FAIL) and closed unsaved, so it
+    --arg batch="KIND:PN:DWG:DATUM_B;...", every listed drawing start_drawing.py saved: each is opened (or
+    activated, if open and unmodified), annotated, saved and closed. A failing one is reported (BATCH|FAIL) and closed unsaved, so it
     stays as start_drawing.py made it; the batch goes on and never raises (PM fair-share ruling 2026-10-31:
     fewer, bigger runs)."""
     import traceback
@@ -359,13 +414,21 @@ def run(_context):
         try:
             kind, pn, name, datum_b = item.split(":")
             docs = [app.documents.item(i) for i in range(app.documents.count) if app.documents.item(i).name == name]
-            if len(docs) != 1:
-                raise RuntimeError("%d open documents are called %r (start_drawing.py --keep-open leaves one)" % (
-                    len(docs), name))
-            doc = docs[0]
+            if len(docs) > 1:
+                raise RuntimeError("%d open documents are called %r" % (len(docs), name))
+            if docs and docs[0].isModified:
+                raise RuntimeError("%r is open with unsaved changes; not reused (PM rule 4)" % name)
+            doc = docs[0] if docs else open_drawing(app, name)
             doc.activate()
-            print("BATCH|annotate %s" % name)
-            annotate(app, kind, pn, datum_b)
+            if ARGS.get("only_images") == "1":            # notes added later to an annotated drawing
+                dwg = adsk.drawing.Drawing.cast(app.activeProduct)
+                if dwg is None or not dwg.activeSheet.views.count:
+                    raise RuntimeError("%r has no views yet: annotate it first" % name)
+                print("BATCH|images %s" % name)
+                finish(app, dwg, dwg.activeSheet, kind, pn)
+            else:
+                print("BATCH|annotate %s" % name)
+                annotate(app, kind, pn, datum_b)
             if not doc.save("views, dimensions, hole tables, notes"):
                 raise RuntimeError("save failed")
             done.append(name)

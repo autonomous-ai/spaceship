@@ -237,7 +237,9 @@ def skin_blocks(pn, src=None):
                 ret + length, height, pn, length, ret),
         ]
     table = ["**TABULATED DRAWING (D-89): ONE SHAPE, THESE PART NUMBERS (part · position · hand · size)"] + \
-        tab_rows("skin", pos["back"]) + ["Shown: %s. %s" % (pn, "All four are the same flat rectangle." if pos["back"]
+        tab_rows("skin", pos["back"]) + ["Shown: %s. %s" % (pn, "All four are the same flat rectangle, except 211402 "
+                                                          "(B2): two Ø24 holes for ELECTRICAL's inlet and LAN, placed "
+                                                          "on the panel drawing 210202 and in its DXF." if pos["back"]
                                                           else "RH is the mirror of LH; L1 = L2 and R1 = R2.")]
     notes = ["**GENERAL NOTES", "1. " + views_note(pos)] + body + [
         "4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
@@ -281,7 +283,11 @@ def tray_blocks(pn, src=None):
     ]
     table = ["**TABULATED DRAWING (D-89): ONE CONSTRUCTION, THESE PART NUMBERS (part · position · hand · size)"] + \
         tab_rows("tray", pos["back"]) + ["Shown: %s. LH and RH are the same tray (no handed feature); the flat "
-                                         "blank of each is its own DXF." % pn]
+                                         "blank of each is its own DXF." % pn + (
+                                             " ELECTRICAL's features: 511202 (B2) has the power unit cut-out 304 × 268, "
+                                             "the corner slot and a Ø19.1 bushing hole; 511204 (B4) a Ø19.1 bushing hole "
+                                             "in its bottom return; placed on the cassette drawings 510202 and 510204 "
+                                             "and in their DXFs." if pos["back"] else "")]
     return [("data", data, 150.0, None), ("notes", notes, 150.0, None), ("table", table, 150.0, None)]
 
 
@@ -345,7 +351,8 @@ def fill_blocks(pn, src=None):
     if pos["back"]:
         tab = ["**TABULATED DRAWING (D-89): THE BACK FILLS (part · position · pockets)",
                "211601 · B1 · as shown: bottom bolts, corner bolts",
-               "211602 · B2 · as B1 (mirrored), plus 3 closing-seam pin pockets at B, at the corner pockets' heights",
+               "211602 · B2 · as B1 (mirrored), plus 3 closing-seam pin pockets at B, at the corner pockets' heights; "
+               "the first bay left out for ELECTRICAL's power unit, sleeve and connectors (panel drawing 210202, F47)",
                "211603 · B3 · as B1, plus 4 ceiling bolt pockets at the top, at the bottom pockets' positions from B",
                "211604 · B4 · as B3 (mirrored), plus the 3 closing-seam pin pockets"]
     else:
@@ -402,6 +409,65 @@ JOINTS["B2"] = JOINTS["B1"].replace("L1", "R1").replace("B3", "B4").replace(
     "(no stop washer), driven across on site")
 JOINTS["B4"] = JOINTS["B3"].replace("L2", "R2").replace("B1", "B2").replace(
     "closing seam to B4: 3 plain Ø7.0 for B4's pins", "closing seam to B3: 3 rivnuts with factory-fitted M6 × 25 pins")
+
+
+def el_lines(rep, pos, kind):
+    """ELECTRICAL's features in this design (its el_ parameters; ELECTRICAL P01, PR #64; the PM's rulings of
+    2026-10-31), placed from the drawing's datums: A = the bottom (pod Z of the part's bottom), B = the front end
+    (side walls, pod Y -645) or the X 0 end (back walls, pod X 1.13), as the part drawings define them. Empty when the
+    design has none."""
+    pv = {q["name"]: q["value"] for q in rep.get("parameters", [])}
+    if not any(k.startswith("el_") for k in pv):
+        return []
+    za = pv["panel_z0"] + ((pv.get("back_ph", 0.0) if pos["back"] else pv.get("side_h", 0.0)) + pv["seam_gap"]
+                           if pos["row"] == 2 else 0.0)
+    if pos["back"]:
+        xb = pv["seam_gap"] / 2.0
+
+        def at(x, z):
+            return "%.2f from B, %.2f from A (pod X %g, Z %g)" % (abs(x - xb), z - za, x, z)
+    else:
+        yb = pv["pod_d"] / 2.0 - pv["wall_depth"]
+
+        def at(y, z):
+            return "%.2f from B, %.2f from A (pod Y %g, Z %g)" % (y - yb, z - za, y, z)
+    out = []
+    code = pos["code"]
+    if kind == "cassette" and code == "R1":
+        yl = pv["pod_d"] / 2.0 - pv["stack_t"]
+        out += ["felt slot FS-CNR %g × %g, lower front corner at %s, hidden behind B2-CASS (F43)" % (
+                    pv["el_fs_y1"] - pv["el_fs_y0"], 2 * pv["el_fs_dz"], at(yl + pv["el_fs_y0"], pv["el_trunk_z"] - pv["el_fs_dz"])),
+                "felt hole FA-KIT Ø%g at %s, with a felt plug (F35)" % (pv["el_kit_d"], at(pv["el_y_kit"], pv["el_trunk_z"] + pv["el_kit_dz"])),
+                "felt hole FX-COL Ø%g at %s (F36)" % (pv["el_grm_d"], at(pv["el_y_cx"], pv["el_trunk_z"]))]
+    elif kind == "cassette" and code == "R2":
+        out += ["felt holes FX-CALL0 and FX-CALL2 Ø%g at %s and %s (F37)" % (
+            pv["el_grm_s"], at(pv["el_call_y"], pv["el_shelf_z"]), at(pv["el_call_y"], pv["el_call_z"]))]
+    elif kind == "cassette" and code == "B2":
+        out += ["power unit cut-out %g × %g through the tray base and the felt, plain, lower corner at %s; the unit "
+                "stays 4 clear all round; its front plate 320 × 284 covers the felt edge by 8 all round, 2 off the felt "
+                "on four nylon spacers, so the lining face stays clear of other features in that band (F44, F46)" % (
+                    pv["el_cut_x1"] - pv["el_cut_x0"], pv["el_cut_z1"] - pv["el_cut_z0"],
+                                                       at(pv["el_cut_x0"], pv["el_cut_z0"])),
+                "bushing hole G-B2-B4 Ø%g in the top return at %.2f from B, Y %g (the cable gap's middle) (F39)" % (
+                    pv["el_grm_d"], abs(pv["el_lt_x"] - pv["seam_gap"] / 2.0), pv["el_y_bg"]),
+                "corner slot S-CNR %g × %g in the end return, Y %g to %g, Z %g to %g (%.2f to %.2f from A) (F45)" % (
+                    2 * pv["el_cs_h"], 2 * pv["el_cs_dz"], pv["el_y_xc"] - pv["el_cs_h"], pv["el_y_xc"] + pv["el_cs_h"],
+                    pv["el_trunk_z"] - pv["el_cs_dz"], pv["el_trunk_z"] + pv["el_cs_dz"],
+                    pv["el_trunk_z"] - pv["el_cs_dz"] - za, pv["el_trunk_z"] + pv["el_cs_dz"] - za)]
+    elif kind == "cassette" and code == "B4":
+        out += ["bushing hole G-B2-B4 Ø%g in the bottom return at %.2f from B, Y %g (F39)" % (
+                    pv["el_grm_d"], abs(pv["el_lt_x"] - pv["seam_gap"] / 2.0), pv["el_y_bg"]),
+                "felt hole FX-SHELF Ø%g at %s (F42)" % (pv["el_shelf_d"], at(pv["el_lt_x"], pv["el_shelf_z"])),
+                "felt hole FX-CEIL Ø%g at %s, 2 under the top lip: no cable hole goes through a lip (F40)" % (
+                    pv["el_grm_s"], at(pv["el_ceil_x"], pv["el_ceil_z"]))]
+    elif kind == "panel" and code == "B2":
+        out += ["skin holes Ø%g for the mains inlet and the LAN feed-through at %s and %s (F38)" % (
+                    pv["el_inlet_d"], at(pv["el_inlet_x"], pv["el_inlet_z"]), at(pv["el_inlet_x"], pv["el_lan_z"])),
+                "fill left out in the first bay for the power unit (to the first stud), the sleeve and the connectors "
+                "(F47); the unit's fixing to the frame HOLD (IF-12)"]
+    if not out:
+        return []
+    return ["ELECTRICAL's features (ELECTRICAL P01, PR #64; FEATURE-RATIONALE): " + "; ".join(out) + "."]
 
 
 def assembly_blocks(pn, kind, src=None):
@@ -473,6 +539,8 @@ def assembly_blocks(pn, kind, src=None):
             "848012 only touches across the 2.26 gap (R-J18, HOLD-13).",
             "5. " + run + " Cables in the air gap clip to the tray only (D-26).",
         ]
+    for line in el_lines(rep, pos, kind):
+        notes.append("%d. %s" % (len(notes), line))
     return [("data", data, 150.0, None), ("parts", plist, 150.0, None), ("notes", notes, 150.0, None)]
 
 

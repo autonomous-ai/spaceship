@@ -112,7 +112,7 @@ Power off at the mains first. Then the reverse order: ledge; ceiling linings (un
 | Fixings of DL and DR to the band and DR's support, DT to DL, DR and the ceiling | FRONT, BASE | counts assumed (section 5) |
 | How DR slides onto the fixed glass's channels without dragging its back-plate gasket over the side walls' front edges | FRONT | to check in FRONT's model |
 | Air column, soffit and fan box fixings; the soffit's fit between the side linings | AIR (CEILING Engineer) | not designed yet |
-| Light shelf, ledge, screen mount | INTERIOR | not designed yet (D-70) |
+| Light shelf, ledge, screen rail | INTERIOR | parts designed (810201, 810101); the ledge brackets 818101 and the screen rail 818102 on HOLD; their fixings not listed yet (D-70) |
 | Electrical connectors and the wiring diagram | ELECTRICAL | not designed yet |
 | Step pictures from the Fusion model | Packing and Assembly | after each part's CAD lands and the screen is unlocked |
 

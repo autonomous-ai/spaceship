@@ -68,6 +68,7 @@ import os
 import shutil
 import signal
 import socket
+import subprocess
 import sys
 import time
 import urllib.error
@@ -679,23 +680,39 @@ def run(_context):
             app.data.activeProject = proj
             # a version saved a moment ago may not open yet (live 2026-10-31, 4 s after
             # a save and close: "Missing key for PIMOpenWorkflowTracker"): try again
-            # every 10 s for up to a minute, then give the error
+            # every 10 s for up to a minute, then give the error. Each new try looks the
+            # file up afresh and opens its latest version: the same reference kept
+            # failing for a full minute (live 2026-10-31, the #140 batch test)
+            target = files[0]
             for attempt in range(7):
                 try:
-                    doc = app.documents.open(files[0], True)
+                    doc = app.documents.open(target, True)
                     break
                 except Exception as e:
                     if attempt == 6:
                         raise
-                    print("run_script: opening %%r failed (%%s); trying again in 10 s" %% (
+                    print("run_script: opening %%r failed (%%s); looking it up again in 10 s" %% (
                         name, str(e).strip().splitlines()[-1][:120] if str(e).strip() else type(e).__name__))
                     adsk.doEvents()
                     time.sleep(10)
+                    try:
+                        again, _u, _o = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: name in fs)
+                        fresh = again.get(name) or files
+                        try:
+                            target = fresh[0].latestVersion or fresh[0]
+                        except Exception:
+                            target = fresh[0]
+                    except Exception as e2:
+                        # PM, on #167: a look-up that fails keeps the reference from
+                        # before, so the tries go on instead of ending early
+                        print("run_script: looking %%r up again failed (%%s); the next try uses the "
+                              "reference from before" %% (name, str(e2).strip().splitlines()[-1][:120]
+                                                          if str(e2).strip() else type(e2).__name__))
             if doc is None:
                 raise RuntimeError("could not open %%r from %%s" %% (name, ARGS["folder"]))
             doc.activate()
             print("run_script: opened %%r (version %%s) from %%s" %% (
-                name, files[0].versionNumber, ARGS["folder"]))
+                name, target.versionNumber, ARGS["folder"]))
             return
         if not ARGS.get("create"):
             raise RuntimeError("%%r is not open and not in %%s%%s (add --doc-new to make it)"
@@ -741,7 +758,44 @@ def doc_script(mode, name, folder=DEFAULT_FOLDER, create=False, description="",
         "description": description, "discard": bool(discard)}}
 
 
-WRAPPER = '''import base64 as _b64, sys as _sys, types as _types
+WRAPPER = '''import base64 as _b64, os as _os, sys as _sys, types as _types
+# Fusion keeps Python modules loaded between runs, so a module another team's run
+# imported would be used again by any run that imports the same name (live
+# 2026-10-31: CEILING got AIR's older module). Before each script, drop every
+# cached module whose file is in any worktree of this repo (main checkout
+# included) or under /tmp, this run's own included, so every run imports its
+# files fresh and a team's own edits show at once. Never __main__; Fusion's and
+# Python's own modules are never touched; one odd module can't fail the run.
+_TEAM = [_os.path.realpath(p) for p in %(team)r]
+# never dropped, even under a team folder: Fusion's add-ins and install, and Python's own
+_KEEP = [_os.path.realpath(p) for p in %(keep)r]
+for _p in (getattr(_sys, "prefix", ""), getattr(_sys, "base_prefix", ""), _os.path.dirname(_os.__file__)):
+    if _p:
+        _KEEP.append(_os.path.realpath(_p))
+try:
+    import adsk as _adsk
+    _KEEP.append(_os.path.realpath(_os.path.dirname(_os.path.dirname(_adsk.__file__))))
+except Exception:
+    pass
+
+def _under(f, roots):
+    return any(f == r or f.startswith(r.rstrip("/") + "/") for r in roots)
+
+_dropped = []
+for _n in list(_sys.modules):
+    if _n == "__main__":
+        continue
+    try:
+        _f = getattr(_sys.modules.get(_n), "__file__", None)
+        if isinstance(_f, str) and _under(_os.path.realpath(_f), _TEAM) \
+                and not _under(_os.path.realpath(_f), _KEEP):
+            _sys.modules.pop(_n, None)
+            _dropped.append(_n)
+    except Exception:
+        pass
+if _dropped:
+    print("run_script: dropped %%d cached team module(s), so this run imports its own files: %%s" %% (
+        len(_dropped), ", ".join(sorted(_dropped)[:12])))
 # the shared folder check, from this runner's repo, fresh on every run: a
 # script's "from fusion_folder import safe_to_create" finds it (one copy for all)
 _FF = _types.ModuleType("fusion_folder")
@@ -758,12 +812,52 @@ def run(context):
 '''
 
 
+def git_worktrees(repo_root=None):
+    """Every worktree of this repo, the main checkout included (git worktree list)."""
+    repo_root = repo_root or REPO_ROOT
+    try:
+        p = subprocess.run(["git", "-C", repo_root, "worktree", "list", "--porcelain"],
+                           capture_output=True, text=True, timeout=20)
+        trees = [line.split(" ", 1)[1] for line in p.stdout.splitlines() if line.startswith("worktree ")]
+        why = None if trees else (p.stderr.strip() or "no worktrees listed")
+    except (OSError, subprocess.SubprocessError) as e:
+        trees, why = [], str(e)
+    if why:
+        print("run_script: warning: git worktree list failed (%s); only this checkout and /tmp are "
+              "cleared of cached modules" % why[:200], file=sys.stderr)
+    return trees or [repo_root]
+
+
+def team_roots(repo_root=None):
+    """The folders whose cached modules the wrapper drops before a script: every
+    worktree of this repo, the parent folder of every worktree but the main
+    checkout (git lists it first), so a deleted worktree's modules still drop, and
+    /tmp (where agents' scratch worktrees live)."""
+    trees = git_worktrees(repo_root)
+    parents = sorted({os.path.dirname(os.path.abspath(t)) for t in trees[1:]})
+    home = os.path.realpath(os.path.expanduser("~"))
+
+    def holds_home(root):            # never sweep the home folder or a folder above it
+        r = os.path.realpath(root)
+        return r == home or home.startswith(r.rstrip("/") + "/")
+
+    return [r for r in trees + parents if not holds_home(r)] + ["/tmp", "/private/tmp"]
+
+
+def keep_roots():
+    """Folders whose modules are never dropped, even inside a team folder: Fusion's
+    add-ins and install (Application Support/Autodesk). The wrapper adds Python's own
+    and the adsk package's folders inside Fusion."""
+    return [os.path.join(os.path.expanduser("~"), "Library", "Application Support", "Autodesk")]
+
+
 def wrap_script(source, path, args):
     """Wrap the file so it compiles under its real path (true line numbers)."""
     compile(source, path, "exec")  # fail fast on syntax errors, locally
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
                       "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
-                      "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii")}
+                      "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii"),
+                      "team": team_roots(), "keep": keep_roots()}
 
 
 def run_in_fusion(mcp, source, read_only=False):

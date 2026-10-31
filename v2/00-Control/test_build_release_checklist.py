@@ -143,7 +143,10 @@ class MadeParts(unittest.TestCase):
     def test_a_part_with_files_but_no_bom_row(self):
         file_map = files("211102_P01_WALL-PANEL-FRAME-RH_CAD.f3d", "211102_P01_WALL-PANEL-FRAME-RH_STEP.step")
         extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked")
-        self.assertEqual([(e["part_number"], e["team"], e["gaps"]) for e in extra], [("211102", "WALL", ["BOM row", "drawing"])])
+        self.assertEqual([(e["part_number"], e["team"], e["gaps"]) for e in extra], [("211102", "WALL", ["BOM row", "drawing", "FAI"])])
+        chars = rc.fai_plan(PLAN, BOM)[0]  # K-J01 covers 2111xx
+        extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked", chars)
+        self.assertEqual((extra[0]["fai"], extra[0]["gaps"]), (["K-J01"], ["BOM row", "drawing"]))
 
 
 class BoughtParts(unittest.TestCase):
@@ -520,6 +523,48 @@ class FlatPartColumns(unittest.TestCase):
         line = ('351302,FRONT - DECOR BACK PLATE - DT,"made (CNC-routed ACP, no drawing: D-89 part 4)",'
                 '"ACP 3 mm, general tolerance ISO 2768-m",as supplied,"bonded to the frame"')
         self.assertEqual(self.lacks(line), ["no bends or machined features (its process names bond)"])
+
+
+class OpenPrFiles(unittest.TestCase):
+    """A branch stacked on a PR that squash-merged since keeps that PR's older copies; main's newer files win."""
+
+    def test_a_stacked_branch_old_copies_do_not_hide_main_newer_files(self):
+        import os
+        import subprocess
+        import tempfile
+        skin = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
+        own = "v2/03-Manufacturing/air/611101_P01_AIR-COLUMN-FACE-FRONT_DXF.dxf"
+        with tempfile.TemporaryDirectory() as d:
+            def g(*a, when):
+                env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when}
+                subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                               check=True, capture_output=True, text=True, env=env)
+
+            def put(path, text, when):
+                Path(d, path).parent.mkdir(parents=True, exist_ok=True)
+                Path(d, path).write_text(text, encoding="utf-8")
+                g("add", "-A", when=when)
+                g("commit", "-q", "-m", path, when=when)
+
+            g("init", "-q", when="2026-11-01T00:00:00")
+            g("checkout", "-q", "-b", "main", when="2026-11-01T00:00:00")
+            put("v2/01-CAD-Native/README.md", "start", "2026-11-01T00:00:00")
+            g("checkout", "-q", "-b", "ceiling", when="2026-11-01T01:00:00")
+            put(skin, "old outline", "2026-11-01T01:00:00")
+            g("checkout", "-q", "-b", "air", when="2026-11-01T02:00:00")
+            put(own, "AIR's face", "2026-11-01T02:00:00")
+            g("checkout", "-q", "main", when="2026-11-01T05:00:00")
+            put(skin, "merged outline", "2026-11-01T05:00:00")
+            old = rc.ROOT, BOM.ROOT
+            rc.ROOT = BOM.ROOT = Path(d)
+            try:
+                files = rc.list_files(["main", "air"], BOM)
+                text = rc.text_at(skin, files[skin], ["main", "air"])
+            finally:
+                rc.ROOT, BOM.ROOT = old
+        self.assertEqual(files[skin], "main")
+        self.assertEqual(text, "merged outline")
+        self.assertEqual(files[own], "air")
 
 
 class Render(unittest.TestCase):

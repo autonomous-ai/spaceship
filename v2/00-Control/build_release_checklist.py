@@ -100,10 +100,10 @@ def open_pr_refs(bom):
     for p in json.loads(out or "[]"):
         ref = f"origin/{p['headRefName']}"
         try:
-            mb = git("merge-base", "origin/main", ref).strip()
+            git("merge-base", "origin/main", ref)
         except subprocess.CalledProcessError:
             continue  # the branch is gone
-        changed = git("diff", "--name-only", mb, ref, "--", *TREES, "v2/07-Packaging", bom.REGISTER).split()
+        changed = bom.branch_changes("origin/main", ref, *TREES, "v2/07-Packaging", bom.REGISTER)
         if any(c.endswith("_BOM.csv") or c == bom.REGISTER or FILE_RE.match(c.rsplit("/", 1)[-1]) for c in changed):
             found.append((int(git("log", "-1", "--format=%ct", ref).strip() or 0), ref, f"PR #{p['number']}"))
     found.sort()
@@ -111,8 +111,9 @@ def open_pr_refs(bom):
     return ["origin/main"] + [ref for _, ref, _ in found], labels
 
 
-def list_files(refs):
-    """{path: where} for the three trees: the working tree, or the first ref plus each later ref's own changes."""
+def list_files(refs, bom=None):
+    """{path: where} for the three trees: the working tree, or the first ref plus each later ref's own changes (not
+    a stacked branch's old copies of files the first ref has replaced since)."""
     if not refs:
         out = {}
         for t in TREES:
@@ -120,10 +121,10 @@ def list_files(refs):
             if base.exists():
                 out.update({p.relative_to(ROOT).as_posix(): "working tree" for p in base.rglob("*") if p.is_file()})
         return out
+    bom = bom or load_bom()
     files = {f: refs[0] for f in git("ls-tree", "-r", "--name-only", refs[0], "--", *TREES).split()}
     for ref in refs[1:]:
-        mb = git("merge-base", refs[0], ref).strip()
-        files.update({f: ref for f in git("diff", "--name-only", "--diff-filter=AM", mb, ref, "--", *TREES).split()})
+        files.update({f: ref for f in bom.branch_changes(refs[0], ref, *TREES, diff_filter="AM")})
     return files
 
 
@@ -476,7 +477,7 @@ def state_of(gaps, screen):
     return "open: " + ", ".join(gaps)
 
 
-def files_only(by_pn, parts, files, labels, screen):
+def files_only(by_pn, parts, files, labels, screen, chars=()):
     """Made parts found in the folders whose number no parts list carries: no BOM row."""
     listed = {r["part_number"] for r in parts}
     out = []
@@ -486,10 +487,12 @@ def files_only(by_pn, parts, files, labels, screen):
         some = next(p for ps in kinds.values() for p in ps)
         team = next((FOLDER_TEAM[s] for s in some.split("/") if s in FOLDER_TEAM), "other")
         names = {re.sub(FILE_RE, r"\3", p.rsplit("/", 1)[-1]) for ps in kinds.values() for p in ps}
+        ids = [i for i, pats in chars if any(p.fullmatch(pn) for p in pats)]
         gaps = ["BOM row"] + [k for k, n in (("CAD", "CAD"), ("STEP", "STEP"), ("drawing", "DWG")) if not kinds.get(n)]
+        gaps += [] if ids else ["FAI"]
         out.append({"part_number": pn, "name": sorted(names)[0].replace("-", " "), "team": team, "bom_row": False,
                     "cad": bool(kinds.get("CAD")), "step": bool(kinds.get("STEP")), "flat": "yes" if kinds.get("DXF") else "—",
-                    "dwg": bool(kinds.get("DWG")), "mass_ok": False, "finish_ok": "—", "fai": [], "gaps": gaps,
+                    "dwg": bool(kinds.get("DWG")), "mass_ok": False, "finish_ok": "—", "fai": ids, "gaps": gaps,
                     "state": state_of(gaps, screen),
                     "from": {labels.get(files[p], "this tree" if files[p] == "working tree" else files[p])
                              for ps in kinds.values() for p in ps}})
@@ -639,12 +642,13 @@ def main(argv=None):
             for r in parts:
                 if r["source_file"].startswith(path) and TUBE.search(r["material"] or ""):
                     r["cut_rows"] = True
-    files = list_files(refs)
-    cut_texts = {p: read_text(p, refs) for p in files  # every list a D-89 row may sit in, and the tube cut lists
+    files = list_files(refs, bom)
+    cut_texts = {p: text_at(p, files[p], refs) for p in files  # every list a D-89 row may sit in, and the cut lists,
+                 # each from the ref that gave it
                  if p.endswith(".csv") and p.startswith(("v2/02-Drawings/", "v2/03-Manufacturing/")) or "CUT-LIST" in p}
     fai = fai_plan(read_text(FAI, refs, local_first=True), bom)
     register_text = sources.get(bom.REGISTER, ("", ""))[0]
-    tests = test_rows(read_text(TEST_PLAN, refs), register_text, fai[1], bom)
+    tests = test_rows(read_text(TEST_PLAN, refs, local_first=True), register_text, fai[1], bom)
     screen = screen_state(a.screen)
     by_pn = files_by_pn(files)
     with tempfile.TemporaryDirectory() as tmp:
@@ -659,7 +663,7 @@ def main(argv=None):
 
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
                                screen, bom, labels, cut_texts, tab_cover, dxf_texts)
-    made += files_only(by_pn, parts, files, labels, screen)
+    made += files_only(by_pn, parts, files, labels, screen, fai[0])
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
     Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date), encoding="utf-8")
