@@ -482,6 +482,27 @@ class Rulings93To99(unittest.TestCase):
         self.assertEqual(folded["dwg"], "no: its DXF draws on BEND, V-GROOVE; only CUT and MARK pass (D-89)")
 
 
+class NoFaiFlag(unittest.TestCase):
+    def test_a_made_part_with_no_fai_line_is_listed(self):
+        fai = rc.fai_plan(PLAN, BOM)
+        frame = row("211101", "make", "WALL - PANEL FRAME", "aluminium 6063-T6 tube, mill finish")
+        bracket = row("351999", "make", "FRONT - TEST BRACKET", "aluminium sheet 2 mm, mill finish", team="FRONT")
+        made, _ = rc.check_parts([frame, bracket], [], {}, [], fai, fai[1], {}, "unlocked", BOM, {}, {})
+        text = rc.render(made, [], [], [], "this working tree", "unlocked", {}, fai, "2026-11-01")
+        self.assertIn("## Made parts with no FAI line", text)
+        self.assertIn("| FRONT | 351999 | FRONT - TEST BRACKET |", text)
+        self.assertNotIn("| WALL | 211101 |", text.split("## Made parts with no FAI line")[1].split("## Made parts and assemblies")[0])
+        made, _ = rc.check_parts([frame], [], {}, [], fai, fai[1], {}, "unlocked", BOM, {}, {})
+        self.assertIn("Every made number has at least one line in the FAI plan", rc.render(made, [], [], [], "", "unlocked", {}, fai, "2026-11-01"))
+
+    def test_the_real_fai_plan_gives_each_line_a_sample(self):
+        text = (rc.ROOT / rc.FAI).read_text(encoding="utf-8")
+        for hdr, cells in BOM.table_rows(text):
+            if cells and (cells[0].startswith("K-") or cells[0].startswith("F-")):
+                self.assertIn("Sample", hdr, cells[0])
+                self.assertTrue(cells[hdr.index("Sample")], cells[0])
+
+
 class Render(unittest.TestCase):
     def test_totals_count_each_number_once_and_name_the_screen(self):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]
