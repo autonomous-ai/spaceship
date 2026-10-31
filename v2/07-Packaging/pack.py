@@ -245,6 +245,15 @@ def S(*a):
 P04 = "skeleton P04 (S33)"
 # ELECTRICAL's roll-up line (S43) is 4.94 kg: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, lights 0.26.
 POWER_UNIT_SHARE = 2.80 / 4.94
+# The fixed glass unit's roll-up line is FRONT's 29.58 kg (PR #28 parts list): pane 28.584, 180 seal 0.2, U-profile 0.557 and
+# U-seal 0.241 in four pieces, 745 bottom, 1446 right, 804 diagonal and 303 top (mm). The channels ship fitted in the parts
+# that hold them: the bottom one on BASE's sill (PM ruling), the right and diagonal in DR, the top in DT (D-68).
+FIX_UNIT_KG = 29.58
+CHANNEL_KG_PER_MM = (0.557 + 0.241) / (745 + 1446 + 804 + 303)
+SILL_CHANNEL_SHARE = 745 * CHANNEL_KG_PER_MM / FIX_UNIT_KG
+DR_CHANNEL_SHARE = (1446 + 804) * CHANNEL_KG_PER_MM / FIX_UNIT_KG
+DT_CHANNEL_SHARE = 303 * CHANNEL_KG_PER_MM / FIX_UNIT_KG
+PANE_SHARE = 1 - SILL_CHANNEL_SHARE - DR_CHANNEL_SHARE - DT_CHANNEL_SHARE
 PIECES = [
     # ---------------- pallet 1, 48 x 40 in: upright stack, listed from the open face (first out) to the back
     Piece("1-01", "111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "F1", [("FLOOR", 1), ("MAT", 0.5)], S(1455, 1219, 12),
@@ -293,13 +302,13 @@ PIECES = [
     Piece("1-20", "TBD (WALL)", "LINING - CASSETTE - BACK UPPER - RH", "Cassette tiêu âm - vách hậu trên phải", "B4", [("CB_UP", 1)],
           S(1166, 1116.87, 34), P04, 1, 14, "LINING"),
     # ---------------- pallet 2, 96 x 48 in: tiers, bottom (tier 1) to top (tier 5)
-    Piece("2-01", "360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "-", [("FIX", 1)], S(2033, 1031, 12),
+    Piece("2-01", "360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "-", [("FIX", PANE_SHARE)], S(2033, 1031, 12),
           "FRONT PR #28 CAD: pane 1026.23 x 2033 with the 180 seal on its free edge", 2, 10, "FRONT", glass=True,
-          note="its U-profiles and U-seals (0.8 kg of the unit) ride fitted in the band, DR and DT channels"),
+          note="the pane with its 180 seal; its U-channels and seals ship fitted on the sill (PM ruling), in DR and in DT (D-68)"),
     Piece("2-02", "360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "-", [("DOOR", 1)], S(2089, 1175, 149),
           "FRONT PR #27 CAD: Z 27 to 2116, glass 1175 wide, pull spaces 149 deep; hinge halves that sit in DL ship in DL (PM ruling)",
           2, 11, "FRONT", glass=True),
-    Piece("2-03", "TBD (FRONT)", "FRONT - DECOR BLOCK - DR", "Khung trang trí - khối phải", "DR", [("DR", 1)], S(2290, 1016, 205),
+    Piece("2-03", "TBD (FRONT)", "FRONT - DECOR BLOCK - DR", "Khung trang trí - khối phải", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1016, 205),
           "layout study bounding box (S02); the real block is faceted", 2, 10, "FRONT"),
     Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-", [("BAND_B", 1), ("GLIDE", 3), ("BLOCKS", 3 / 8)],
           S(2420, 110, 40), "BASE P01 CAD 111103 (2420 x 40 x 100) + glides 10 below", 2, 2, "BASE", note="3 glides fitted, each on its aluminium load block inside the band (BASE CAD; D-86); blocks split by glide count, 3 of 8"),
@@ -310,9 +319,9 @@ PIECES = [
           S(1517, 110, 40), "LH's mirror (BASE P01 CAD)", 2, 2, "BASE",
           note="2 glides fitted, each on its load block inside the band (D-86)"),
     Piece("2-07", "TBD (BASE)", "BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS", "Viền chân nhôm - trước phải, dưới kính", "-",
-          [("BAND_FR", 0.663), ("GLIDE", 1), ("BLOCKS", 1 / 8)], S(729, 110, 40),
+          [("BAND_FR", 0.663), ("GLIDE", 1), ("BLOCKS", 1 / 8), ("FIX", SILL_CHANNEL_SHARE)], S(729, 110, 40),
           "X 218 to about 947 (skeleton P04 front band; air report 7e); carries the glass's bottom U-channel (D-68)", 2, 2, "BASE",
-          note="share of the front-r line by length, 729 of 1100 mm (calculation); 1 glide on its load block (D-86)"),
+          note="the sill: the fixed glass's bottom U-channel and its seal fitted at the factory with 4 M3 countersunk screws (PM ruling); share of the front-r line by length, 729 of 1100 mm (calculation); 1 glide on its load block (D-86)"),
     Piece("2-08", "TBD (BASE)", "BASE - DOOR THRESHOLD - 13 MM", "Ngưỡng cửa thấp 13 mm", "-", [("THRESH", 1)], S(1175, 60, 13),
           "skeleton P04 1175 x 60; 13 mm high (D-72)", 2, 3, "BASE"),
     Piece("2-09", "TBD (FRONT)", "FRONT - DECOR BLOCK - DL", "Khung trang trí - khối trái", "DL", [("DL", 1)], S(2290, 278, 205),
@@ -322,7 +331,7 @@ PIECES = [
           "air report 7e: the fan box (X 867 to 1161, Z 2162 to 2335) sits inside the soffit's envelope", 2, 17, "AIR",
           note="exhaust fan box with its 2 fans fitted inside the soffit's right end at the factory (D-87)"),
     Piece("2-11", "TBD (AIR)", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2105, 360, 217), "air report 7e", 2, 16, "AIR"),
-    Piece("2-12", "TBD (FRONT)", "FRONT - DECOR BLOCK - DT", "Khung trang trí - khối trên", "DT", [("DT", 1)], S(1697, 280, 205),
+    Piece("2-12", "TBD (FRONT)", "FRONT - DECOR BLOCK - DT", "Khung trang trí - khối trên", "DT", [("DT", 1), ("FIX", DT_CHANNEL_SHARE)], S(1697, 280, 205),
           "layout study bounding box (S02)", 2, 12, "FRONT"),
     Piece("2-13", "TBD (ELECTRICAL)", "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS", "Bộ điện: dây, dây nguồn, hub, đèn", "-", [("ELEC", 1 - POWER_UNIT_SHARE)],
           S(600, 250, 200), "carton (assumption)", 2, 13, "ELECTRICAL"),
@@ -495,7 +504,7 @@ STEPS = [
     dict(n=2, title="Base band", tags=["2-04", "2-05", "2-06", "2-07", "2-15"],
          A="Sets the back band on its glides, then the left and right side bands, each hooked onto its corner key, then the front pieces: front-left under DL, the piece under the fixed glass, and the mesh intake piece under DR with DR's support and closing plate. Every piece locates itself on its key.",
          B="Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).",
-         check="Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the glass channel in the front-right piece is clean.",
+         check="Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.",
          ops=[carry("2-04"), carry("2-05"), carry("2-06"), carry("2-07"), carry("2-15"),
               op("set each band piece on its keys", 2, lay("t_place_hung_s"), 6, "t_place_hung_s"),
               op("check the level, turn the glides that are out", 2, TIME["t_level_preset_s"].value, 1, "t_level_preset_s")],
@@ -550,10 +559,10 @@ STEPS = [
          ops=[carry("2-09"), op("stand DL on the band", 2, lay("t_place_s"), 1, "t_place_s")],
          joints={"J-FRONT-01": 6}),
     dict(n=10, title="Fixed glass, then the right decor block DR", tags=["2-01", "2-03"],
-         A="Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and sets its bottom edge into the band's U-channel on its setting blocks; then holds it upright with both lifters.",
+         A="Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.",
          B="Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.",
          check="Glass seated in all three channels so far, its free edge plumb; DR on its stops. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).",
-         ops=[carry("2-01"), op("set the fixed glass in the band channel and hold it", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
+         ops=[carry("2-01"), op("set the fixed glass in the sill's channel and hold it", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
               carry("2-03"), op("slide DR onto the glass edges and its stops", 2, TIME["t_dr_slide_s"].value, 1, "t_dr_slide_s")],
          joints={"J-FRONT-01": 6}),
     dict(n=11, title="Door (before DT)", tags=["2-02"],

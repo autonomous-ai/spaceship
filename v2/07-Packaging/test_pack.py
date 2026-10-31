@@ -150,7 +150,9 @@ def test_step_picture_script_and_data():
     import json
     import py_compile
     guide = pack.GUIDE_DIR
-    py_compile.compile(str(guide / "step_pictures.py"), doraise=True)
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:   # compile outside the repo, so no __pycache__ lands in the guide folder
+        py_compile.compile(str(guide / "step_pictures.py"), cfile=str(Path(tmp) / "step_pictures.pyc"), doraise=True)
     data = json.loads(pack.step_bodies_json())
     assert data["source"].endswith("100000_P04_POD-SKELETON_STEP.step")
     views = {"back", "front", "inside"}
