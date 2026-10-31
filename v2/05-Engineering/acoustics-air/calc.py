@@ -257,6 +257,7 @@ class Build:
         self.key, self.name, self.leaves = key, name, leaves
         self.cavity, self.fill, self.conn, self.felt = cavity, fill, conn, felt
         self.r_data, self.basis, self.thick = r_data, basis, thick
+        self.felt_mount = "direct" if len(leaves) == 2 else "gap"   # felt on the inner leaf, or on the frame
         self.kg_m2 = (sum(l.m for l in leaves) + (PET_FELT9_KG_M2 if felt else 0)
                       + FILL_KG_M3 * fill / 1000 + frame_kg_m2 + extra_kg_m2)
         self._r = None
@@ -284,6 +285,7 @@ TUBE_KG_M = {
     "steel 20x20x1.0": 0.597,   # calculation (4*20-4*1)*1*7.85e-3; HW steel-tube row
     "alu 20x20x1.5": 0.300,     # calculation (4*20-4*1.5)*1.5*2.70e-3; HW aluminium-tube row
     "alu 20x40x1.5": 0.462,     # calculation; HW aluminium-tube row
+    "alu 25x100x1.5": 0.988,    # calculation (2*(25+100)-4*1.5)*1.5*2.70e-3; HW aluminium-tube row
     "wood 40x40": 0.80,         # ASSUME 500 kg/m3 timber
 }
 
@@ -301,10 +303,12 @@ def walls():
     p4 = plate("ply 4", [layer("ply", 4)])
     h3 = plate("HDF 3", [layer("hdf", 3)])
     s05 = plate("steel 0.5", [layer("steel", 0.5)])
+    h6 = plate("2 x HDF 3", [layer("hdf", 3), layer("hdf", 3)])
     hc10 = sandwich("Al honeycomb 10", 10, 0.5, HC_CORE_KG_M3, HC_CORE_G)
     hc20 = sandwich("Al honeycomb 20", 20, 0.5, HC_CORE_KG_M3, HC_CORE_G)
     fc20 = sandwich("foam core 20", 20, 0.5, FOAM_CORE_KG_M3, FOAM_CORE_G, FOAM_CORE_E)
     wd, st, al, al20 = frame("wood 40x40"), frame("steel 20x20x1.0"), frame("alu 20x40x1.5"), frame("alu 20x20x1.5")
+    al100 = frame("alu 25x100x1.5")
     L = [
         Build("V1-DWG", "v1 as drawn: Al 2 + ply 6 / 40 empty, wood studs / ply 15",
               [al2p6, p15], 40, 0, ("line", 1.1), False, wd, 63),
@@ -336,6 +340,16 @@ def walls():
               [a3p6, p4], 40, 40, ("line", 0.6), True, al, 62),
         Build("DL-HDF-60", "ACP 3 / 60 fill, shared studs / HDF 3 + felt 9",
               [a3, h3], 60, 60, ("line", 0.6), True, al * 1.3, 75),
+        Build("DL-HDF-100-DEC", "ACP 3 / 100 fill / HDF 3 on resilient pads + felt 9",
+              [a3, h3], 100, 100, ("point", 0.6), True, al100, 115),
+        Build("DL-ST-100-DEC", "ACP 3 / 100 fill / steel 0.5 on resilient pads + felt 9",
+              [a3, s05], 100, 100, ("point", 0.6), True, al100, 113),
+        Build("DL-P6-P9-DEC", "ACP 3 + ply 6 / 40 fill / ply 9 on resilient pads + felt 9",
+              [a3p6, p9], 40, 40, ("point", 0.6), True, al, 67),
+        Build("DL-P6-P9-100-DEC", "ACP 3 + ply 6 / 100 fill / ply 9 on resilient pads + felt 9",
+              [a3p6, p9], 100, 100, ("point", 0.6), True, al100, 127),
+        Build("DL-2HDF-100-DEC", "ACP 3 / 100 fill / 2 x HDF 3 on resilient pads + felt 9",
+              [a3, h6], 100, 100, ("point", 0.6), True, al100, 118),
     ]
     return {b.key: b for b in L}
 
@@ -388,8 +402,9 @@ def extras(wb):
 # Absorption inside (alpha 125..4k)
 # ---------------------------------------------------------------------------
 ALPHA = {
-    "felt_on_frame": (0.10, 0.30, 0.65, 0.85, 0.90, 0.95),   # ASSUME until HW felt data: 9 mm over 20-40 mm space
+    "felt_gap": (0.10, 0.30, 0.65, 0.85, 0.90, 0.95),        # ASSUME until HW felt data: 9 mm over 20-40 mm space
     "felt_direct": (0.05, 0.12, 0.35, 0.70, 0.90, 0.95),     # ASSUME until HW felt data: 9 mm on a hard face
+    "pet_thick": (0.15, 0.45, 0.85, 1.00, 1.00, 1.00),       # ASSUME until HW data: 24-40 mm PET panel on a board
     "glass": (0.18, 0.06, 0.04, 0.03, 0.02, 0.02),           # ASI_ABS heavy plate glass
     "ply": (0.28, 0.22, 0.17, 0.09, 0.10, 0.11),             # ASI_ABS plywood paneling
     "wood_floor": (0.15, 0.11, 0.10, 0.07, 0.06, 0.07),      # ASI_ABS wood floor
@@ -497,8 +512,13 @@ def elements(cfg, sc, wb, gb):
     else:
         el.append(("cable holes", s["cable_mm2"] * 1e-6, flat(1.0)))
     k = s["alpha_k"]
-    lin = ALPHA["felt_on_frame"] if cfg["lining"] == "felt" else ALPHA["ply"]
-    ab = [(a["walls"] + a["ceiling"], lin),
+    def lining(build_key):
+        if cfg["lining"] != "felt":
+            return ALPHA["ply"]
+        return ALPHA["felt_gap"] if wb[build_key].felt_mount == "gap" else ALPHA["felt_direct"]
+    ceil_alpha = ALPHA["pet_thick"] if cfg.get("ceil_absorber") else lining(cfg.get("ceiling", cfg["wall"]))
+    ab = [(a["walls"], lining(cfg["wall"])),
+          (a["ceiling"], ceil_alpha),
           (a["glass"], ALPHA["glass"]),
           (a["decor"], ALPHA["felt_direct"] if cfg.get("decor_felt") else ALPHA["metal"]),
           (a["floor"], ALPHA["wood_floor"] if cfg["floor"] == "raised" else ALPHA["hard_floor"])]
@@ -532,6 +552,8 @@ FIXES = [
      "HW base-seal row; the floor itself is in the weight study"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
     ("PET fill in the front decor", dict(decor_fill=True), 4.0, "calculation: 1.65 m2 x 75 mm x 32 kg/m3"),
+    ("Thick PET absorber on the ceiling instead of 9 mm felt", dict(ceil_absorber=True), 3.0,
+     "calculation: 3.6 m2 x (about 2.6 - 1.8) kg/m2, HW absorber row"),
 ]
 FIX_ALL = {}
 for _l, _c, _k, _b in FIXES:
@@ -606,15 +628,25 @@ def co2_after(q_ls, minutes, start_ppm, room_ppm):
     return ss + (start_ppm - ss) * math.exp(-q_ls / 1000 * minutes * 60 / v)
 
 
-def inside_noise(lwa_path, sil_len, derate=0.8):
-    """LpA at a seated head 1.0 m from the supply diffuser and 1.5 m from the exhaust grille."""
+def end_reflection(f, area_m2):
+    """Duct end reflection loss for an opening flush with a surface (ASHRAE HVAC Applications,
+    noise chapter: ERL = 10 lg[1 + (0.7 c / (pi f D))^2]; formula source, not re-checked online)."""
+    d = math.sqrt(4 * area_m2 / math.pi)
+    return 10 * math.log10(1 + (0.7 * C0 / (math.pi * f * d)) ** 2)
+
+
+DIFFUSER_M2 = 0.025   # ASSUME: inside diffuser free area = silencer passage area
+
+
+def inside_noise(lwa_path, sil_len, derate=0.8, spectrum=None):
+    """LpA at a seated head 1.0 m from the supply diffuser and 1.5 m from the exhaust grille,
+    both fans at the same duct-side LwA. Only the duct path; casings sit outside the pod."""
     a = areas(GEOM["v2"])
-    s_tot = 2 * (a["walls"] / 2) + a["walls"] + 2 * a["ceiling"] + a["front"] * 0  # placeholder (overwritten)
     s_tot = a["walls"] + a["ceiling"] + a["floor"] + a["front"]
-    ain = [(a["walls"] + a["ceiling"]) * ALPHA["felt_on_frame"][i] + a["glass"] * ALPHA["glass"][i]
+    ain = [a["walls"] * ALPHA["felt_direct"][i] + a["ceiling"] * ALPHA["pet_thick"][i] + a["glass"] * ALPHA["glass"][i]
            + a["decor"] * ALPHA["metal"][i] + a["floor"] * ALPHA["hard_floor"][i] for i in range(6)]
-    il = silencer_il(sil_len, derate)
-    lw_lin = [lwa_path + s for s in FAN_SPECTRUM]
+    il = [x + end_reflection(f, DIFFUSER_M2) for x, f in zip(silencer_il(sil_len, derate), BANDS)]
+    lw_lin = [lwa_path + s for s in (spectrum or FAN_SPECTRUM)]
     norm = 10 * math.log10(sum(10 ** ((x + aw) / 10) for x, aw in zip(lw_lin, A_WEIGHT)))
     lw_lin = [x + (lwa_path - norm) for x in lw_lin]
     tot = 0.0
@@ -654,6 +686,24 @@ def t_walls(wb):
             continue
         r = b.r()
         out.append(row([k, b.name, f"{b.kg_m2:.1f}", f"{b.thick}"] + [f"{x:.0f}" for x in r] + [f"{r_speech(r):.1f}"]))
+    return "\n".join(out)
+
+
+def t_wallmatch(wb):
+    """Wall-only comparison: lightest build-up whose R speech reaches each v1 reading."""
+    out = ["| Target (wall element only) | Lightest build that reaches it | kg/m2 | mm | R speech | Walls + ceiling kg |",
+           "|---|---|---:|---:|---:|---:|"]
+    cands = [b for k, b in wb.items() if not k.startswith("_") and not k.startswith("V1")]
+    for vk in ("V1-BOM", "V1-DWG"):
+        goal = r_speech(wb[vk].r())
+        ok = [b for b in cands if r_speech(b.r()) >= goal - 0.05]
+        if not ok:
+            best = max(cands, key=lambda b: r_speech(b.r()))
+            out.append(row([f"{vk} ({goal:.1f})", f"none; best is {best.key} at {r_speech(best.r()):.1f}", "", "", "", ""]))
+            continue
+        b = min(ok, key=lambda x: x.kg_m2)
+        out.append(row([f"{vk} ({goal:.1f})", f"{b.key}: {b.name}", f"{b.kg_m2:.1f}", f"{b.thick}",
+                        f"{r_speech(b.r()):.1f}", f"{b.kg_m2 * (OUT_WALL_M2 + OUT_CEIL_M2):.0f}"]))
     return "\n".join(out)
 
 
@@ -733,13 +783,14 @@ def t_share(wb, gb, cfgs):
     return "\n".join(out)
 
 
-def search_30(wb, gb, base):
-    """Lightest combination reaching each D_S,A goal (central)."""
+def search_30(wb, gb, base, fronts=("G8", "L44")):
+    """All wall x ceiling x front x silencer combinations (light fixes on). Glass fronts only:
+    acrylic is a separate decision (report.md), so it does not hide wall costs here."""
     wall_keys = [k for k in wb if not k.startswith("_") and not k.startswith("V1")]
     combos = []
     for wk in wall_keys:
         for ck in wall_keys:
-            for gk in gb:
+            for gk in fronts:
                 for sil in (1.2, 1.8, 2.4):
                     cfg = dict(base, wall=wk, ceiling=ck, glass=gk, sil_len=sil)
                     d = pod(cfg, "central", wb, gb)["dsa"]
@@ -747,23 +798,23 @@ def search_30(wb, gb, base):
     return combos
 
 
-def t_goal(wb, gb, base, v1_central, v1_high):
+def t_goal(wb, gb, base, ref_kg, v1_central, v1_high):
+    """kg-per-dB curve: lightest combination (all light fixes on) for each central D_S,A goal."""
     combos = search_30(wb, gb, base)
-    out = ["| Goal (central D_S,A) | Lightest wall / ceiling / front / silencer length | D_S,A low / central / high | kg this study changes |",
+    out = ["| Goal, central D_S,A | Lightest wall / ceiling / front / silencer | D_S,A low / central / high | kg vs plan (8 mm glass) |",
            "|---|---|---|---:|"]
-    picks = {}
-    for label, goal in (("at least v1 central", v1_central), ("at least v1 high (robust)", v1_high),
-                        ("27 dB", 27.0), ("28 dB", 28.0), ("29 dB", 29.0), ("30 dB", 30.0)):
-        ok = [c for c in combos if c[1] >= goal]
+    goals = [("v1 central", v1_central), ("v1 optimistic", v1_high)]
+    goals += [(f"{g} dB", float(g)) for g in range(20, 31)]
+    for label, goal in goals:
+        ok = [c for c in combos if c[1] >= goal - 1e-9]
         if not ok:
-            out.append(row([f"{label} ({goal:.1f})", "not reached with these options", "", ""]))
+            out.append(row([f"{label} ({goal:.1f})", "not reached with any option here", "", ""]))
             continue
-        kg, d, cfg = min(ok, key=lambda c: c[0])
+        kg, d, cfg = min(ok, key=lambda c: (c[0], -c[1]))
         b = band(cfg, wb, gb)
-        picks[label] = (kg, b, cfg)
         out.append(row([f"{label} ({goal:.1f})", f"{cfg['wall']} / {cfg['ceiling']} / {gb[cfg['glass']].name} / "
-                        f"{cfg['sil_len']:.1f} m", " / ".join(f"{x:.1f}" for x in b), f"{kg:.0f}"]))
-    return "\n".join(out), picks
+                        f"{cfg['sil_len']:.1f} m", " / ".join(f"{x:.1f}" for x in b), f"{kg - ref_kg:+.0f}"]))
+    return "\n".join(out)
 
 
 def t_air():
@@ -795,14 +846,16 @@ def tables():
     gb = panes()
     out = {}
     out["walls"] = t_walls(wb)
+    out["wallmatch"] = t_wallmatch(wb)
     out["panes"] = t_panes(gb)
     out["fixes"], fixed = t_fixes(wb, gb)
     out["pods"], res = t_pods(wb, gb, fixed)
     v1b = res["v1 as drawn (inner ply 15)"][0]
-    out["fronts"] = t_fronts(wb, gb, dict(fixed, wall="DL-HDF"))
+    out["fronts"] = t_fronts(wb, gb, fixed)
     out["share"] = t_share(wb, gb, {"v1": V1, "Plan, 8 mm": dict(PLAN, glass="G8"),
-                                    "Plan + fixes": fixed, "DL-HDF + fixes": dict(fixed, wall="DL-HDF")})
-    out["goal"], _ = t_goal(wb, gb, fixed, v1b[1], v1b[2])
+                                    "Plan + fixes": fixed, "DL-ST + fixes": dict(fixed, wall="DL-ST")})
+    ref_kg = pod_kg(dict(PLAN, glass="G8"), wb, gb)
+    out["goal"] = t_goal(wb, gb, fixed, ref_kg, v1b[1], v1b[2])
     out["air"] = t_air()
     out["silencer"] = t_silencer()
     return out
