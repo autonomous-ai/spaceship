@@ -12,7 +12,11 @@ constraint state) so the result can be checked against the intent.
 Options (--arg KEY=VALUE):
     stop_after=N      stop after step N (1..9) for step-by-step checks
     close_previous=1  first close an unsaved document left by an earlier run
-                      (same name, never saved); nothing else is closed
+                      (same root part number, never saved); nothing else
+    save=1            save to the Fusion cloud: Default Project / FocusPod v2
+                      (refuses if a file of the same name is already there)
+    export=1          export .f3d and STEP into the repo, then re-read the STEP
+                      in a new document and compare bounding boxes
 
 Part coordinate system (right-handed, mm): origin O = rear-bottom-outer corner
 of the frame. +X along the wall toward the pod front (door side), +Y from the
@@ -639,6 +643,73 @@ def step9_checks(design):
         raise RuntimeError("step 9 checks failed")
 
 
+# ---------------------------------------------------------------- save, export
+
+CLOUD_FOLDER = "FocusPod v2"   # in the hub's "Default Project"
+F3D_REL = "v2/01-CAD-Native/proof/%s_CAD.f3d" % DOC_NAME
+STEP_REL = "v2/03-Manufacturing/proof/%s_STEP.step" % DOC_NAME
+
+
+def cloud_folder(app):
+    proj = None
+    for p in app.data.dataProjects:
+        if p.name == "Default Project":
+            proj = p
+    if proj is None:
+        raise RuntimeError("no 'Default Project' in the active hub")
+    folder = proj.rootFolder.dataFolders.itemByName(CLOUD_FOLDER)
+    if folder is None:
+        folder = proj.rootFolder.dataFolders.add(CLOUD_FOLDER)
+    return folder
+
+
+def step_save(app, doc):
+    folder = cloud_folder(app)
+    for df in folder.dataFiles:
+        if df.name == DOC_NAME:
+            raise RuntimeError("'%s' already exists in %s; delete or rename it first, so the "
+                               "folder keeps one copy" % (DOC_NAME, CLOUD_FOLDER))
+    ok = doc.saveAs(DOC_NAME, folder, "FocusPod v2 proof part, rev %s, PROPOSED. Built by "
+                    "v2/01-CAD-Native/proof/wall_panel_frame.py" % REV, "")
+    if not ok:
+        raise RuntimeError("saveAs failed")
+    print("save: '%s' saved to Default Project / %s" % (doc.name, CLOUD_FOLDER))
+
+
+def root_box(design):
+    return bbox_mm(design.rootComponent)
+
+
+def step_export(app, design):
+    root_dir = ARGS.get("repo_root")
+    if not root_dir:
+        raise RuntimeError("export needs repo_root (run through tools/fusion/run_script.py)")
+    em = design.exportManager
+    f3d = "%s/%s" % (root_dir, F3D_REL)
+    step = "%s/%s" % (root_dir, STEP_REL)
+    if not em.execute(em.createFusionArchiveExportOptions(f3d, design.rootComponent)):
+        raise RuntimeError("f3d export failed")
+    if not em.execute(em.createSTEPExportOptions(step, design.rootComponent)):
+        raise RuntimeError("STEP export failed")
+    box = root_box(design)
+    print("export: %s" % F3D_REL)
+    print("export: %s" % STEP_REL)
+    print("  model bounding box (assembly):  %s" % fmt_box(box))
+    # re-read the STEP in a new document and compare
+    src_doc = app.activeDocument
+    imp = app.importManager.importToNewDocument(app.importManager.createSTEPImportOptions(step))
+    d2 = adsk.fusion.Design.cast(imp.products.itemByProductType("DesignProductType"))
+    box2 = root_box(d2)
+    n_bodies = sum(c.bRepBodies.count for c in d2.allComponents)
+    diff = max(abs(a - b) for a, b in zip(box, box2))
+    print("  STEP re-read bounding box:      %s  (%d bodies)" % (fmt_box(box2), n_bodies))
+    print("  largest difference: %.4f mm -> %s" % (diff, "MATCH" if diff < 0.01 else "MISMATCH"))
+    imp.close(False)
+    src_doc.activate()
+    if diff >= 0.01:
+        raise RuntimeError("STEP bounding box does not match the model")
+
+
 # ---------------------------------------------------------------- main
 
 def run(_context):
@@ -650,3 +721,8 @@ def run(_context):
     for n in range(2, last + 1):
         steps[n](design)
     print("done through step %d" % last)
+    if last == len(steps) - 1:
+        if ARGS.get("save") == "1":
+            step_save(app, doc)
+        if ARGS.get("export") == "1":
+            step_export(app, design)
