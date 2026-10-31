@@ -627,3 +627,16 @@ def test_d89_felt_and_fill_rectangles_pass_on_a_complete_cut_list_row(tmp_path):
     assert "doesn't give tolerance" in fs["511401"]
     assert "isn't a plain rectangle" in fs["511302"]       # the felt has a hole: it needs a drawing
     assert "no cut list has a row" in fs["511303"]         # a DXF alone isn't D-89's route
+
+
+def test_duplicate_number_ignores_hyphens_and_case_but_not_words(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    row = {"part_number": "848011", "name": "SEALS - HOOK-AND-LOOP - 25 MM", "name_vi": "x", "material": "VELCRO PS14",
+           "finish": "none", "qty": "1", "mass_kg": "0.01", "status": "HOLD", "source": "register"}
+    _write_csv(d / "a.csv", [row, dict(row, part_number="848012", name="SEALS - CASSETTE EDGE GASKET - 10 X 3.18")])
+    _write_csv(d / "b.csv", [dict(row, name="SEALS - Hook and loop - 25 MM"),
+                             dict(row, part_number="848012", name="SEALS - CASSETTE EDGE SEAL - 10 X 2.0")])
+    got = {f.subject for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
+           if f.rule == "duplicate-number"}
+    assert got == {"848012"}
