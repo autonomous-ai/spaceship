@@ -122,8 +122,8 @@ def parts_rows():
 
 
 BOM_HEADER = ["part_number", "name", "name_vi", "kind", "parent", "qty_per_parent", "qty_per_pod", "unit",
-              "material", "grade", "finish", "mass_each_kg", "mass_status", "maker", "sku", "size", "length_mm",
-              "torque_nm", "process", "revision", "status", "source", "note"]
+              "material", "grade", "finish", "thickness_mm", "tolerance", "mass_each_kg", "mass_status", "maker", "sku",
+              "size", "length_mm", "torque_nm", "process", "revision", "status", "source", "note"]
 
 
 # ------------------------------------------------------------------ routes and harness lengths

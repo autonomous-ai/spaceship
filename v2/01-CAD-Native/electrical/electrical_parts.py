@@ -339,9 +339,11 @@ part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện -
 part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
      AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.26,
      "calculation (0.063 m2 net x 1.5 mm x 2.68 g/cm3)", size="300 x 260",
-     process="sheet metal: laser cut; anodised", status="DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04)",
-     source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD (electrical_parts_cad.py)",
-     note="cut-outs for two 86 x 86 plates, the RCBO toggle (45 mm window) and vent slots")
+     process="laser cut from 1.5 mm sheet, flat, no bends; anodised", status="DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04)",
+     source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD; DXF 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_DXF.dxf (no drawing, D-89 part 4)",
+     note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
+          "ISO 2768-m; critical holes: the 4 x Ø4.5 M4 holes on the body's clinch nuts (15 and 5 mm from the edges, true "
+          "position Ø0.3), the RCBO window 37 x 45 +0.5/0; HOLD: the two 86-plate openings (UTEN codes)")
 # ---- power unit 710001: bought parts
 part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - nguồn 12 V 60 W", "PI", "710001", 3,
      "potted plastic case, IP67", "", 0.40, "source", maker="Mean Well", sku="LPV-60-12",
@@ -538,10 +540,11 @@ part("hub", "718060", "ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE)", "Đi�
      status="HOLD (in-house module: interface data ISS-060)", source="REQ-ELE-02, D-09; cited by name only")
 part("hub_plate", "711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến", "MP", "710041", 1,
      AL + " 1.5 mm", "black anodised AA20 (D-67)", 0.11, "calculation (0.027 m2 net x 1.5 mm x 2.68 g/cm3)",
-     size="180 x 180", process="sheet metal: laser cut; anodised",
+     size="180 x 180", process="laser cut from 1.5 mm sheet, flat, no bends; anodised",
      status="DRAFT; HOLD features: the hub window, button and knob holes (ISS-060) and the fixing holes (CEILING's column)",
-     source="711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_CAD (electrical_parts_cad.py)",
-     note="window for the hub, holes for BOOST, CALL and the DIM knob; removable for the fuses behind it")
+     source="711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_CAD; DXF 711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_DXF.dxf (no drawing, D-89 part 4)",
+     note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
+          "ISO 2768-m; HOLD: the hub window, the 3 button holes, the knob hole (ISS-060) and the 4 fixing holes (CEILING's column)")
 for key, pn, name, vi, qty, note in (
         ("btn_boost", "718061", "ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST", "Điện - nút nhấn tăng gió", 1, "hub input (D-33)"),
         ("btn_call", "718062", "ELECTRICAL - PUSH BUTTON - MOMENTARY - CALL", "Điện - nút nhấn đèn gọi", 1,
@@ -575,6 +578,12 @@ part("cord_wire", "718071", "ELECTRICAL - CORD - H05VV-F 3G1.5", "Điện - dây
      0.12, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY, source="", note="3 m; qty in m")
 part("plug_vn", "718072", "ELECTRICAL - MAINS PLUG - VN OFFICE SOCKET", "Điện - phích cắm", "PI", "710051", 1, "", "", 0.06,
      "assumption", sku="HOLD: plug type checked with the factory's office sockets", status=HOLD_BUY, source="")
+
+
+# D-89 part 4: flat sheet parts carry thickness and the general tolerance in their row
+P["pu_front"].update(thickness_mm="1.5", tolerance="ISO 2768-m; M4 holes true position Ø0.3; RCBO window +0.5/0")
+P["hub_plate"].update(thickness_mm="1.5", tolerance="ISO 2768-m")
+P["pu_body"].update(thickness_mm="1.0", tolerance="ISO 2768-m (drawing 711001)")
 
 
 def _fill_sources():
