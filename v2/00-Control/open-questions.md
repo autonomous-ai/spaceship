@@ -24,7 +24,7 @@ The build plan has no glass at all (ISS-001). The look needs v1's glass layout (
    - Hinges and lock: rated for the 8.76 mm toughened, heat-soaked laminate, for 47.5 kg and the 1176 mm width; on HOLD until a rated set is named (D-46). The candidate is dormakaba OFFICE 11.233 (D-30), in a 160 mm pocket inside the left decor block DL. The door in laminated glass is about 43 kg (calculation C5 in `requirements.md`); the hinges' clamping range for 8.76 mm laminate goes on the factory's question list. v1 lists 3 hinges, but its CAD has only 2 positions (ISS-024).
    - Handle: a back-to-back pull handle, inside and outside, about 300 mm long like v1. The v1 CAD shows only the outside half (ISS-056).
    - Lock and catch: the lock is part of the rated set (D-46); keep the pull light (REQ-US-04).
-   - Seals: a perimeter seal on the hinge side and top; a seal on the slanted joint between the door and the fixed panel; an automatic drop seal at the bottom onto the threshold, housed in a 90 mm aluminium kick strip in the base band's dark finish (D-40).
+   - Seals: a perimeter seal on the hinge side and top; a seal on the slanted joint between the door and the fixed panel; an automatic drop seal at the bottom onto the threshold, housed in an 85 mm aluminium kick strip in the base band's dark finish (D-40, D-57).
    - Fixed panel: held in sealed U profiles with gaskets, sitting on setting blocks, at the base, DT and DR. No glue, so the panel can be replaced.
 4. **Handling:** two people with suction lifters. The door and fixed panel travel on the standard long pallet, because 2011 is taller than a 48 × 40 pallet takes (layout study).
 
