@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | V2-CTL-005 | P01 | DRAFT. Items marked PROPOSED are working rules until the PM decides them. | 2026-10-31 | Control pack |
 
-Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-59. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum), D-22 and D-28 (part numbers), D-32 (no outside approvals), and D-49 (the decor and wall depth in the key planes, section 4).
+Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-60. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum), D-22 and D-28 (part numbers), D-32 (no outside approvals), and D-49 (the decor and wall depth in the key planes, section 4).
 
 Spaceship is the working name for v2 (FocusPod v2). The team calls the product "Indoor Pod", and v1 is "Indoor Pod V3" in `sources/v1/`. Folder names stay as they are.
 

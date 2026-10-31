@@ -1,0 +1,324 @@
+#!/usr/bin/env python3
+"""Start a new Fusion drawing of a saved design, with nobody at the Mac.
+
+    python3 tools/fusion/start_drawing.py DESIGN_NAME DRAWING_NAME [--sheet A2] [--keep-open]
+
+Fusion's API can't create a drawing in this build: manual creation needs a
+drawing template (.f2t) with view placeholders, a saved drawing (.f2d) is
+refused as a template, and automatic creation hung (tools/fusion/README.md).
+So this command uses Fusion's own Create Drawing command and presses its two
+buttons through macOS accessibility, all inside the Fusion lock:
+
+1. take the Fusion lock (it waits its turn like any run);
+2. check that Fusion is idle and that no unsaved drawing is open;
+3. open or activate DESIGN_NAME from --folder and queue Create Drawing (its
+   dialog defaults: Manual, From scratch, ISO, mm);
+4. press OK in that dialog and wait for the new drawing;
+5. press Cancel in the Base View dialog that Fusion then opens by itself;
+6. set the sheet size, save the drawing as DRAWING_NAME in --folder, and
+   close it (unless --keep-open);
+7. give the lock back.
+
+If a step fails, it presses Cancel in every open Fusion dialog until Fusion is
+idle, closes the unsaved drawing it made, and exits 1 saying what happened.
+Exit 0 = saved, 1 = failed (Fusion left idle), 2 = Fusion not reachable,
+3 = the Fusion lock was busy past --lock-wait, 4 = Fusion was left with a
+dialog open (a person must press Cancel in Fusion).
+
+Needs the Mac awake and unlocked (Fusion's dialogs are read through
+accessibility) and the accessibility permission for the terminal running it.
+Fusion only answers accessibility while it is idle, which the lock ensures.
+Then add views with the drawing API (base views only): run_script.py with
+--doc DRAWING_NAME.
+"""
+
+import argparse
+import os
+import subprocess
+import sys
+import time
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import run_script as rs  # noqa: E402
+
+CREATE_CMD = "FusionDrawingCreateFromComponentsCommand"
+BASE_VIEW_CMD = "FusionDrawingViewBaseCommand"
+IDLE_CMD = "SelectCommand"
+SHEETS = ("A0", "A1", "A2", "A3", "A4")
+
+# Clicks a button in the first Fusion dialog window that has both OK and
+# Cancel (Create Drawing and Base View have both; Fusion's palettes don't).
+AX_CLICK = '''on run argv
+  set target to item 1 of argv
+  tell application "System Events"
+    tell (first process whose name is "Autodesk Fusion")
+      repeat with w in (every window whose subrole is "AXDialog")
+        set bn to name of every button of w
+        if bn contains "OK" and bn contains "Cancel" then
+          click (first button of w whose name is target)
+          return "clicked"
+        end if
+      end repeat
+    end tell
+  end tell
+  return "none"
+end run
+'''
+
+# Lists Fusion's dialog windows that have OK and Cancel, as "WxH" each.
+AX_DIALOGS = '''tell application "System Events"
+  tell (first process whose name is "Autodesk Fusion")
+    set out to ""
+    repeat with w in (every window whose subrole is "AXDialog")
+      set bn to name of every button of w
+      if bn contains "OK" and bn contains "Cancel" then
+        set s to size of w
+        set out to out & ((item 1 of s) as text) & "x" & ((item 2 of s) as text) & " "
+      end if
+    end repeat
+    return out
+  end tell
+end tell
+'''
+
+STATE_SCRIPT = '''import adsk.core, adsk.drawing
+def run(_c):
+    app = adsk.core.Application.get()
+    drawings = []
+    for i in range(app.documents.count):
+        d = app.documents.item(i)
+        if d.objectType == adsk.drawing.DrawingDocument.classType() and not d.isSaved:
+            drawings.append(d.name)
+    print("CMD=%s" % app.userInterface.activeCommand)
+    print("UNSAVED_DRAWINGS=%d" % len(drawings))
+'''
+
+QUEUE_SCRIPT = '''import adsk.core
+def run(_c):
+    app = adsk.core.Application.get()
+    proj = [p for p in app.data.dataProjects if p.name == %(project)r][0]
+    app.data.activeProject = proj        # without it Create Drawing picked the wrong project and crashed
+    doc = app.activeDocument
+    if doc.name != %(design)r or not doc.isSaved:
+        raise RuntimeError("the active document is %%r, not the saved design %%r" %% (doc.name, %(design)r))
+    ok = app.userInterface.commandDefinitions.itemById(%(cmd)r).execute()
+    print("queued Create Drawing for %%s: %%s" %% (doc.name, ok))
+'''
+
+SAVE_SCRIPT = '''import adsk.core, adsk.drawing
+def run(_c):
+    app = adsk.core.Application.get()
+    docs = [app.documents.item(i) for i in range(app.documents.count)]
+    docs = [d for d in docs if d.objectType == adsk.drawing.DrawingDocument.classType() and not d.isSaved]
+    if len(docs) != 1:
+        raise RuntimeError("expected one unsaved drawing, found %%d" %% len(docs))
+    doc = adsk.drawing.DrawingDocument.cast(docs[0])
+    doc.activate()
+    proj = [p for p in app.data.dataProjects if p.name == %(project)r][0]
+    folder = proj.rootFolder
+    for part in %(subfolders)r:
+        folder = folder.dataFolders.itemByName(part)
+    names = [folder.dataFiles.item(i).name for i in range(folder.dataFiles.count)]
+    if %(name)r in names:
+        raise RuntimeError("%%s is already in the folder" %% %(name)r)
+    sheet = doc.drawing.sheets.item(0)
+    sheet.sheetSize = getattr(adsk.drawing.SheetSizes, %(sheet)r + "ISOSheetSize")
+    print("sheet %%s: %%g x %%g mm, %%d views" %% (sheet.name, sheet.width, sheet.height, sheet.views.count))
+    if not doc.saveAs(%(name)r, folder, %(desc)r, ""):
+        raise RuntimeError("saveAs failed")
+    print("saved %%s" %% %(name)r)
+    if %(close)r:
+        print("closed: %%s" %% doc.close(False))
+'''
+
+CLOSE_UNSAVED_SCRIPT = '''import adsk.core, adsk.drawing
+def run(_c):
+    app = adsk.core.Application.get()
+    for i in range(app.documents.count - 1, -1, -1):
+        d = app.documents.item(i)
+        if d.objectType == adsk.drawing.DrawingDocument.classType() and not d.isSaved:
+            print("closed unsaved drawing %s: %s" % (d.name, d.close(False)))
+'''
+
+
+class StartError(Exception):
+    pass
+
+
+class Steps:
+    """Talks to Fusion (MCP) and to its dialogs (accessibility). Split out so
+    the offline tests can replace both."""
+
+    def __init__(self, url, timeout):
+        self.mcp = rs.FusionMcp(url, timeout)
+        self.mcp.initialize()
+
+    def run(self, source, read_only=False):
+        return rs.run_in_fusion(self.mcp, source, read_only)
+
+    def state(self):
+        ok, out = self.run(STATE_SCRIPT, read_only=True)
+        if not ok:
+            raise StartError("couldn't read Fusion's state: %s" % out)
+        vals = dict(line.split("=", 1) for line in (out or "").splitlines() if "=" in line)
+        return vals.get("CMD", ""), int(vals.get("UNSAVED_DRAWINGS", "0"))
+
+    @staticmethod
+    def osa(script, *args):
+        p = subprocess.run(["osascript", "-"] + list(args), input=script, text=True,
+                           capture_output=True, timeout=30)
+        if p.returncode != 0:
+            raise StartError("accessibility call failed: %s" % p.stderr.strip()[:300])
+        return p.stdout.strip()
+
+    def click(self, button):
+        return self.osa(AX_CLICK, button) == "clicked"
+
+    def dialogs(self):
+        return self.osa(AX_DIALOGS).split()
+
+
+def wait_for(steps, pred, timeout_s, poll_s=1.0):
+    """Poll Fusion's state until pred(cmd, unsaved) is true; return the last state."""
+    t0 = time.time()
+    while True:
+        cmd, unsaved = steps.state()
+        if pred(cmd, unsaved):
+            return cmd, unsaved, True
+        if time.time() - t0 >= timeout_s:
+            return cmd, unsaved, False
+        time.sleep(poll_s)
+
+
+def cancel_dialogs(steps, log, tries=5, poll_s=1.0):
+    """Press Cancel until Fusion is idle. True when idle."""
+    for _ in range(tries):
+        cmd, _u = steps.state()
+        if cmd == IDLE_CMD:
+            return True
+        try:
+            clicked = steps.click("Cancel")
+        except StartError as e:
+            log("cleanup: %s" % e)
+            clicked = False
+        log("cleanup: active command %s, pressed Cancel: %s" % (cmd, clicked))
+        time.sleep(poll_s)
+    cmd, _u = steps.state()
+    return cmd == IDLE_CMD
+
+
+def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None):
+    """The sequence; raises StartError with what went wrong."""
+    w = {"dialog": 20, "drawing": 90, "base_view": 30, "idle": 20, "poll": 1.0}
+    w.update(waits or {})
+    project, *subfolders = [p for p in folder.split("/") if p]
+
+    cmd, unsaved = steps.state()
+    if cmd != IDLE_CMD:
+        raise StartError("Fusion isn't idle (active command %s); nothing was started" % cmd)
+    if unsaved:
+        raise StartError("%d unsaved drawing(s) already open; save or close them first" % unsaved)
+
+    ok, out = steps.run(rs.doc_script("open", design, folder))
+    if not ok:
+        raise StartError("couldn't open %s: %s" % (design, out))
+    log(out.strip())
+    opened_here = "opened" in (out or "")
+    ok, out = steps.run(QUEUE_SCRIPT % {"project": project, "design": design, "cmd": CREATE_CMD})
+    if not ok:
+        raise StartError("couldn't queue Create Drawing: %s" % out)
+    log(out.strip())
+
+    cmd, _u, seen = wait_for(steps, lambda c, u: c == CREATE_CMD, w["dialog"], w["poll"])
+    if not seen:
+        raise StartError("the Create Drawing dialog didn't open (active command %s)" % cmd)
+    if not steps.click("OK"):
+        raise StartError("couldn't find the OK button of the Create Drawing dialog")
+    log("pressed OK in Create Drawing")
+
+    cmd, unsaved, made = wait_for(steps, lambda c, u: u >= 1 and c != CREATE_CMD, w["drawing"], w["poll"])
+    if not made:
+        raise StartError("no new drawing after OK (active command %s)" % cmd)
+    log("new drawing is open")
+
+    # Fusion opens the Base View dialog by itself, a few seconds later
+    cmd, _u, seen = wait_for(steps, lambda c, u: c == BASE_VIEW_CMD, w["base_view"], w["poll"])
+    if seen:
+        if not steps.click("Cancel"):
+            raise StartError("couldn't find the Cancel button of the Base View dialog")
+        log("pressed Cancel in Base View")
+    else:
+        log("no Base View dialog within %d s (active command %s)" % (w["base_view"], cmd))
+    cmd, _u, idle = wait_for(steps, lambda c, u: c == IDLE_CMD, w["idle"], w["poll"])
+    if not idle:
+        raise StartError("Fusion didn't go idle after the dialogs (active command %s)" % cmd)
+
+    ok, out = steps.run(SAVE_SCRIPT % {"project": project, "subfolders": subfolders, "name": name,
+                                       "sheet": sheet, "close": not keep_open,
+                                       "desc": "drawing of %s, started by start_drawing.py" % design})
+    if not ok:
+        raise StartError("couldn't save the drawing: %s" % out)
+    log(out.strip())
+    if opened_here:                      # leave Fusion as we found it
+        ok, out = steps.run(rs.doc_script("close", design, folder))
+        log((out or "").strip() if ok else "couldn't close %s: %s" % (design, out))
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description="Start a new Fusion drawing of a saved design, "
+                                             "with nobody at the Mac (see the module help).")
+    ap.add_argument("design", help="the saved design's name in --folder")
+    ap.add_argument("drawing", help="name for the new drawing, e.g. PARTNO_P01_NAME_DWG")
+    ap.add_argument("--folder", default=rs.DEFAULT_FOLDER)
+    ap.add_argument("--sheet", default="A2", choices=SHEETS)
+    ap.add_argument("--keep-open", action="store_true", help="leave the drawing open")
+    ap.add_argument("--url", default=rs.DEFAULT_URL)
+    ap.add_argument("--timeout", type=float, default=120.0, help="seconds per Fusion call")
+    ap.add_argument("--lock", default=None)
+    ap.add_argument("--lock-wait", type=float, default=1200.0)
+    ap.add_argument("--label", default=os.environ.get(rs.LABEL_ENV, ""))
+    opts = ap.parse_args(argv)
+
+    def log(msg):
+        print("start_drawing: %s" % msg, flush=True)
+
+    lock = rs.FusionLock(opts.lock or rs.default_lock_path(opts.url),
+                         label=opts.label or "start_drawing", hold_s=900,
+                         script="start_drawing.py %s -> %s" % (opts.design, opts.drawing))
+    try:
+        lock.acquire(opts.lock_wait)
+    except rs.LockTimeout as e:
+        print("start_drawing: %s" % e, file=sys.stderr)
+        return 3
+    steps = None
+    try:
+        steps = Steps(opts.url, opts.timeout)
+        start_drawing(steps, opts.design, opts.drawing, opts.folder, opts.sheet,
+                      opts.keep_open, log)
+        log("done: %s" % opts.drawing)
+        return 0
+    except rs.McpError as e:
+        print("start_drawing: %s" % e, file=sys.stderr)
+        return 2
+    except (StartError, KeyboardInterrupt) as e:
+        print("start_drawing: FAILED: %s" % e, file=sys.stderr)
+        if steps is None:
+            return 1
+        try:
+            if not cancel_dialogs(steps, log):
+                print("start_drawing: Fusion still has a dialog open: press Cancel in Fusion",
+                      file=sys.stderr)
+                return 4
+            ok, out = steps.run(CLOSE_UNSAVED_SCRIPT)
+            if out:
+                log(out.strip())
+        except (StartError, rs.McpError) as e2:
+            print("start_drawing: cleanup failed: %s" % e2, file=sys.stderr)
+            return 4
+        return 1
+    finally:
+        lock.release()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
