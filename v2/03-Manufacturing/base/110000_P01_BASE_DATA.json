@@ -1,0 +1,1797 @@
+{
+ "band_finish": "Black anodised, matte, 20 um (class AA20, EN ISO 7599)",
+ "copies": {
+  "110000>110101": 1,
+  "110000>110103": 1,
+  "110000>110401": 1,
+  "110101>111101": 1,
+  "110101>111601": 2,
+  "110101>118002": 2,
+  "110101>831001": 2,
+  "110101>831002": 4,
+  "110101>838003": 6,
+  "110103>111103": 1,
+  "110103>111211": 2,
+  "110103>111601": 3,
+  "110103>118002": 3,
+  "110103>831001": 4,
+  "110103>831002": 8,
+  "110103>838001": 4,
+  "110103>838003": 12,
+  "110103>838010": 4,
+  "110401>111401": 1,
+  "110401>111501": 1
+ },
+ "doc": "110000_P01_BASE_CAD",
+ "floor_f1": {
+  "lap_depth": 4.5,
+  "t": 9.0,
+  "x0": -1206.0,
+  "x_lap": 12.5,
+  "x_seam": -0.5,
+  "y0": -645.0,
+  "y1": 806.0
+ },
+ "holes": {
+  "111101": [
+   {
+    "at": [
+     -1237.5,
+     -646.03,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
+   },
+   {
+    "at": [
+     -1230.0,
+     -595.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 8.0
+   },
+   {
+    "at": [
+     -1230.0,
+     -595.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     -1230.0,
+     700.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 8.0
+   },
+   {
+    "at": [
+     -1230.0,
+     700.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     -1224.0,
+     -542.74,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1224.0,
+     -422.74,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1224.0,
+     -71.83,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1224.0,
+     279.09,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1224.0,
+     630.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1224.0,
+     750.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1222.5,
+     -646.03,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
+   },
+   {
+    "at": [
+     null,
+     830.0,
+     27.5
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "dia": 12.0
+   },
+   {
+    "at": [
+     null,
+     830.0,
+     37.5
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "dia": 6.5
+   },
+   {
+    "at": [
+     null,
+     830.0,
+     61.5
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "dia": 12.0
+   },
+   {
+    "at": [
+     null,
+     830.0,
+     71.5
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "dia": 6.5
+   }
+  ],
+  "111103": [
+   {
+    "at": [
+     -1195.0,
+     822.5,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
+   },
+   {
+    "at": [
+     -1195.0,
+     837.5,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
+   },
+   {
+    "at": [
+     -1101.74,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1060.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 8.0
+   },
+   {
+    "at": [
+     -1060.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     -981.74,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -728.74,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -475.75,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -222.75,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -102.75,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     0.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 8.0
+   },
+   {
+    "at": [
+     0.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     102.75,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     222.75,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     475.75,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     728.74,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     981.74,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     1060.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 8.0
+   },
+   {
+    "at": [
+     1060.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     1101.74,
+     824.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     1195.0,
+     822.5,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
+   },
+   {
+    "at": [
+     1195.0,
+     837.5,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
+   }
+  ]
+ },
+ "params": [
+  {
+   "comment": "SKELETON DECIDED: D-01; conventions s4 (X = +-1250)",
+   "expression": "2500 mm",
+   "name": "pod_w",
+   "unit": "mm",
+   "value": 2500.0
+  },
+  {
+   "comment": "SKELETON DECIDED: D-01; conventions s4 (Y = +-850)",
+   "expression": "1700 mm",
+   "name": "pod_d",
+   "unit": "mm",
+   "value": 1700.0
+  },
+  {
+   "comment": "SKELETON DECIDED: D-21 (room floor to roof skin top)",
+   "expression": "2400 mm",
+   "name": "pod_h",
+   "unit": "mm",
+   "value": 2400.0
+  },
+  {
+   "comment": "SKELETON ASSUMPTION: layout study inputs.py glide_h",
+   "expression": "10 mm",
+   "name": "glide_h",
+   "unit": "mm",
+   "value": 10.0
+  },
+  {
+   "comment": "SKELETON SOURCE: layout study B1 list B-BAND 100x40; inputs.py base_h",
+   "expression": "100 mm",
+   "name": "band_h",
+   "unit": "mm",
+   "value": 100.0
+  },
+  {
+   "comment": "SKELETON SOURCE: layout study B1 list B-BAND 100x40",
+   "expression": "40 mm",
+   "name": "band_t",
+   "unit": "mm",
+   "value": 40.0
+  },
+  {
+   "comment": "SKELETON DECIDED: ACP skin, walls and ceiling (D-16; PM ruling 2026-10-31 on outer_t)",
+   "expression": "3 mm",
+   "name": "skin_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "SKELETON DECIDED: bond line between the ACP and the frame (PM ruling 2026-10-31 on outer_t)",
+   "expression": "3 mm",
+   "name": "bond_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "SKELETON DECIDED: aluminium frame tube depth, walls and ceiling (PM ruling 2026-10-31 on outer_t)",
+   "expression": "40 mm",
+   "name": "frame_t",
+   "unit": "mm",
+   "value": 40.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)",
+   "expression": "skin_t + bond_t + frame_t",
+   "name": "outer_t",
+   "unit": "mm",
+   "value": 46.0
+  },
+  {
+   "comment": "SKELETON DECIDED: D-16, D-42: the gap between the outer panel and the lining cassette in the wall and ceiling stack",
+   "expression": "4 mm",
+   "name": "cav_gap",
+   "unit": "mm",
+   "value": 4.0
+  },
+  {
+   "comment": "SKELETON SOURCE: layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)",
+   "expression": "34 mm",
+   "name": "cass_t",
+   "unit": "mm",
+   "value": 34.0
+  },
+  {
+   "comment": "SKELETON CALCULATION: D-16, D-42 stack, walls and ceiling: outer panel + cavity gap + cassette (PM ruling 2026-10-31 on outer_t)",
+   "expression": "outer_t + cav_gap + cass_t",
+   "name": "stack_t",
+   "unit": "mm",
+   "value": 84.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)",
+   "expression": "1495 mm",
+   "name": "wall_depth",
+   "unit": "mm",
+   "value": 1495.0
+  },
+  {
+   "comment": "SKELETON ASSUMPTION: PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)",
+   "expression": "4 mm",
+   "name": "lin_gap",
+   "unit": "mm",
+   "value": 4.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31 (Mechanical Checker F-001, F-005): the Joints Engineer's 2.26 mm at all nine site seam types, set by a metal stop (1.5 stop washer + 0.76 rivnut head; joints register section 2.8)",
+   "expression": "2.26 mm",
+   "name": "seam_gap",
+   "unit": "mm",
+   "value": 2.26
+  },
+  {
+   "comment": "SKELETON DECIDED: D-72, PM ruling 2026-10-31 (from BASE): the 3 mm floor mat under the floor ply",
+   "expression": "3 mm",
+   "name": "mat_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31: 9 mm floor panels (was 15, layout study B1 list), on the mat",
+   "expression": "9 mm",
+   "name": "floor_t",
+   "unit": "mm",
+   "value": 9.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31: 13 mm, a US-accessible threshold (D-18 had 20); the kick strip keeps its kick_gap above it",
+   "expression": "13 mm",
+   "name": "thresh_h",
+   "unit": "mm",
+   "value": 13.0
+  },
+  {
+   "comment": "SKELETON SOURCE: layout study B1 list B-THRESH 1176 x 60 x 20",
+   "expression": "60 mm",
+   "name": "thresh_d",
+   "unit": "mm",
+   "value": 60.0
+  },
+  {
+   "comment": "SKELETON SOURCE: v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02",
+   "expression": "205 mm",
+   "name": "decor_d",
+   "unit": "mm",
+   "value": 205.0
+  },
+  {
+   "comment": "SKELETON SOURCE: B1 list F-DL 278 (v1 BOM DL)",
+   "expression": "278 mm",
+   "name": "dl_w",
+   "unit": "mm",
+   "value": 278.0
+  },
+  {
+   "comment": "SKELETON SOURCE: B1 list F-DR 1016 (v1 STEP solid 78)",
+   "expression": "1016 mm",
+   "name": "dr_w",
+   "unit": "mm",
+   "value": 1016.0
+  },
+  {
+   "comment": "SKELETON SOURCE: B1 list F-DT 1697 (v1 BOM DT)",
+   "expression": "1697 mm",
+   "name": "dt_w",
+   "unit": "mm",
+   "value": 1697.0
+  },
+  {
+   "comment": "SKELETON SOURCE: B1 list F-DT 280",
+   "expression": "280 mm",
+   "name": "dt_h",
+   "unit": "mm",
+   "value": 280.0
+  },
+  {
+   "comment": "SKELETON DECIDED: D-46",
+   "expression": "1176 mm",
+   "name": "door_w",
+   "unit": "mm",
+   "value": 1176.0
+  },
+  {
+   "comment": "SKELETON SOURCE: B1 list F-GLASS-DOOR 2011; v1 STEP solid 238",
+   "expression": "2011 mm",
+   "name": "door_h",
+   "unit": "mm",
+   "value": 2011.0
+  },
+  {
+   "comment": "SKELETON DECIDED: D-46 (4+4 laminate)",
+   "expression": "8.76 mm",
+   "name": "glass_t",
+   "unit": "mm",
+   "value": 8.76
+  },
+  {
+   "comment": "SKELETON SOURCE: v1 STEP solid 238 centre Y = -699 (layout study data)",
+   "expression": "699 mm",
+   "name": "glass_y",
+   "unit": "mm",
+   "value": 699.0
+  },
+  {
+   "comment": "SKELETON ASSUMPTION: kick strip envelope depth (D-40 gives the height only)",
+   "expression": "20 mm",
+   "name": "kick_d",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "SKELETON SOURCE: FRONT door unit: 7 mm running gap between the threshold and the kick strip for the drop seal (Mechanical Checker F-002 on P03)",
+   "expression": "7 mm",
+   "name": "kick_gap",
+   "unit": "mm",
+   "value": 7.0
+  },
+  {
+   "comment": "SKELETON CALCULATION: v1 front top 2417 (v2 frame) - pod_h 2400",
+   "expression": "17 mm",
+   "name": "fr_dz",
+   "unit": "mm",
+   "value": 17.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: door left edge X -961 = -1250 + 289",
+   "expression": "289 mm",
+   "name": "door_xl",
+   "unit": "mm",
+   "value": 289.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: door bottom-right X 214",
+   "expression": "1464 mm",
+   "name": "door_xbr",
+   "unit": "mm",
+   "value": 1464.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: door top-right X -68",
+   "expression": "1182 mm",
+   "name": "door_xtr",
+   "unit": "mm",
+   "value": 1182.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: door bottom Z 122",
+   "expression": "122 mm - fr_dz",
+   "name": "door_zb",
+   "unit": "mm",
+   "value": 105.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: door top Z 2133",
+   "expression": "2133 mm - fr_dz",
+   "name": "door_zt",
+   "unit": "mm",
+   "value": 2116.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31 on Mechanical Checker F-014: the fixed glass's free edge runs parallel to the door's slanted edge, 4.0 mm away (FRONT's glass in PR #28 is the reference)",
+   "expression": "4 mm",
+   "name": "glass_gap",
+   "unit": "mm",
+   "value": 4.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: fixed glass bottom-right X 948 = 1250 - 302",
+   "expression": "302 mm",
+   "name": "fix_xbr",
+   "unit": "mm",
+   "value": 302.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: fixed glass knee X 749 = 1250 - 501",
+   "expression": "501 mm",
+   "name": "fix_xk",
+   "unit": "mm",
+   "value": 501.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: fixed glass knee Z 1538",
+   "expression": "1538 mm - fr_dz",
+   "name": "fix_zk",
+   "unit": "mm",
+   "value": 1521.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: fixed glass top-right X 230 = -1250 + 1480",
+   "expression": "1480 mm",
+   "name": "fix_xtr",
+   "unit": "mm",
+   "value": 1480.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: fixed glass bottom Z 119",
+   "expression": "119 mm - fr_dz",
+   "name": "fix_zb",
+   "unit": "mm",
+   "value": 102.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: fixed glass top Z 2136",
+   "expression": "2136 mm - fr_dz",
+   "name": "fix_zt",
+   "unit": "mm",
+   "value": 2119.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DT and DR edge above the glass Z 2137",
+   "expression": "2137 mm - fr_dz",
+   "name": "dt_zb",
+   "unit": "mm",
+   "value": 2120.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: top chamfer front edge Z 2217 at Y -848",
+   "expression": "2217 mm - fr_dz",
+   "name": "ch_zlo",
+   "unit": "mm",
+   "value": 2200.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: top chamfer back edge Y -672",
+   "expression": "672 mm",
+   "name": "ch_yb",
+   "unit": "mm",
+   "value": 672.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DL facet knee X -1158 = -1250 + 92",
+   "expression": "92 mm",
+   "name": "dl_x2",
+   "unit": "mm",
+   "value": 92.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DL facet knee Y -752",
+   "expression": "752 mm",
+   "name": "dl_y2",
+   "unit": "mm",
+   "value": 752.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DL front corner X -979",
+   "expression": "271 mm",
+   "name": "dl_x3",
+   "unit": "mm",
+   "value": 271.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DL front corner Y -844",
+   "expression": "844 mm",
+   "name": "dl_y3",
+   "unit": "mm",
+   "value": 844.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DL outer facet start Y -670",
+   "expression": "670 mm",
+   "name": "dl_y1",
+   "unit": "mm",
+   "value": 670.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DL top at the outer corner Z 2414",
+   "expression": "2414 mm - fr_dz",
+   "name": "dl_zo",
+   "unit": "mm",
+   "value": 2397.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DT lower facet left X -969 = -1250 + 281",
+   "expression": "281 mm",
+   "name": "dt_x2",
+   "unit": "mm",
+   "value": 281.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DT lower facet left Y -767",
+   "expression": "767 mm",
+   "name": "dt_y2",
+   "unit": "mm",
+   "value": 767.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DT lower facet outer Y -753 at X -1154",
+   "expression": "753 mm",
+   "name": "dt_y3",
+   "unit": "mm",
+   "value": 753.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DR corner facet front X 1052 = 1250 - 198",
+   "expression": "198 mm",
+   "name": "dr_xc",
+   "unit": "mm",
+   "value": 198.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -1250 + 1699 (PM ruling pass C)",
+   "expression": "1699 mm",
+   "name": "dt_xr",
+   "unit": "mm",
+   "value": 1699.0
+  },
+  {
+   "comment": "SKELETON SOURCE: V1-FRONT-FACETS: DR corner facet back Y -672",
+   "expression": "672 mm",
+   "name": "dr_yc",
+   "unit": "mm",
+   "value": 672.0
+  },
+  {
+   "comment": "SKELETON CALCULATION: F-014: fixed glass bottom-left, on the line glass_gap from the door's slanted edge (was v1's 1468)",
+   "expression": "door_xbr + ( door_zb - fix_zb ) * ( door_xbr - door_xtr ) / ( door_zt - door_zb ) + glass_gap * sqrt(( door_xbr - door_xtr ) * ( door_xbr - door_xtr ) + ( door_zt - door_zb ) * ( door_zt - door_zb )) / ( door_zt - door_zb )",
+   "name": "fix_xbl",
+   "unit": "mm",
+   "value": 1468.4598
+  },
+  {
+   "comment": "SKELETON CALCULATION: F-014: fixed glass top-left, on the same line (was v1's 1184)",
+   "expression": "door_xbr + ( door_zb - fix_zt ) * ( door_xbr - door_xtr ) / ( door_zt - door_zb ) + glass_gap * sqrt(( door_xbr - door_xtr ) * ( door_xbr - door_xtr ) + ( door_zt - door_zb ) * ( door_zt - door_zb )) / ( door_zt - door_zb )",
+   "name": "fix_xtl",
+   "unit": "mm",
+   "value": 1185.6185
+  },
+  {
+   "comment": "SKELETON CALCULATION: D-72: the floor top, Z 12 (mat 3 + ply 9); the threshold stands thresh_h above the room floor",
+   "expression": "mat_t + floor_t",
+   "name": "floor_top",
+   "unit": "mm",
+   "value": 12.0
+  },
+  {
+   "comment": "SKELETON CALCULATION: base band top: glides + band",
+   "expression": "glide_h + band_h",
+   "name": "wall_z0",
+   "unit": "mm",
+   "value": 110.0
+  },
+  {
+   "comment": "SKELETON CALCULATION: walls stand one seam_gap above the band top (joints register 2.8, IF-01)",
+   "expression": "wall_z0 + seam_gap",
+   "name": "panel_z0",
+   "unit": "mm",
+   "value": 112.26
+  },
+  {
+   "comment": "SKELETON CALCULATION: 2290 = layout study v2_model wall_h",
+   "expression": "pod_h - wall_z0",
+   "name": "wall_h",
+   "unit": "mm",
+   "value": 2290.0
+  },
+  {
+   "comment": "SKELETON CALCULATION: D-23: 2 sheets per side wall; the gap on the band and the horizontal seam (joints register 2.8)",
+   "expression": "( wall_h - 2 * seam_gap ) / 2",
+   "name": "side_h",
+   "unit": "mm",
+   "value": 1142.74
+  },
+  {
+   "comment": "SKELETON CALCULATION: side panel length along Y: the seam_gap at the decor's back plate (joints register 2.8, IF-07)",
+   "expression": "wall_depth - seam_gap",
+   "name": "side_l",
+   "unit": "mm",
+   "value": 1492.74
+  },
+  {
+   "comment": "SKELETON CALCULATION: PM ruling 2026-10-31 (pass D, F-004): the back outer frames run up to the ceiling frame (pod_h - outer_t), less the seam_gap under it, closing the slot at the back top edge",
+   "expression": "pod_h - outer_t - seam_gap - panel_z0",
+   "name": "back_oh",
+   "unit": "mm",
+   "value": 2239.48
+  },
+  {
+   "comment": "SKELETON CALCULATION: D-23: 4 sheets on the back, two equal rows with one seam_gap between them (joints register 2.8); the lower back linings match the lower row, as on the side walls",
+   "expression": "( back_oh - seam_gap ) / 2",
+   "name": "back_ph",
+   "unit": "mm",
+   "value": 1118.61
+  },
+  {
+   "comment": "SKELETON CALCULATION: SKIN width of each back and ceiling panel: two skins and three seam_gap seams between the side frames (F-001, joints register 2.8)",
+   "expression": "( pod_w - 2 * outer_t - 3 * seam_gap ) / 2",
+   "name": "half_pw",
+   "unit": "mm",
+   "value": 1200.61
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31 (joints register, F-011/F-012): frame gap at the closing seams B1-B2, B3-B4 and C1-C2, which have no hard stop (slotted holes, thicker gasket)",
+   "expression": "5.5 mm",
+   "name": "close_gap",
+   "unit": "mm",
+   "value": 5.5
+  },
+  {
+   "comment": "SKELETON CALCULATION: FRAME width of each back and ceiling panel: the skins overhang their frames by half_pw - half_fw at the closing seam (PM ruling 2026-10-31)",
+   "expression": "( pod_w - 2 * outer_t - 2 * seam_gap - close_gap ) / 2",
+   "name": "half_fw",
+   "unit": "mm",
+   "value": 1198.99
+  },
+  {
+   "comment": "SKELETON CALCULATION: inside width between the side linings",
+   "expression": "pod_w - 2 * stack_t",
+   "name": "inner_w",
+   "unit": "mm",
+   "value": 2332.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31: on every bolted edge the end bolts sit this far in from each panel end (the FRAME end, where the bolts go), the rest evenly spaced",
+   "expression": "220 mm",
+   "name": "bolt_edge_inset",
+   "unit": "mm",
+   "value": 220.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31: locating spigots this far in from each panel end (round hole at one end, slot at the other)",
+   "expression": "100 mm",
+   "name": "spigot_inset",
+   "unit": "mm",
+   "value": 100.0
+  },
+  {
+   "comment": "SKELETON DECIDED: J-BASE-01 wall to band: the edge rule (kept by this name for parts already linked)",
+   "expression": "bolt_edge_inset",
+   "name": "base_bolt_edge",
+   "unit": "mm",
+   "value": 220.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31, J-BASE-01: bolts per panel along the band, evenly spaced",
+   "expression": "4",
+   "name": "n_base_bolt",
+   "unit": "",
+   "value": 4.0
+  },
+  {
+   "comment": "SKELETON DECIDED: J-BASE-01: the spigot rule (kept by this name for parts already linked)",
+   "expression": "spigot_inset",
+   "name": "base_spigot_inset",
+   "unit": "mm",
+   "value": 100.0
+  },
+  {
+   "comment": "SKELETON CALCULATION: J-BASE-01: side bolt lines start at the side panel's front end (first bolt base_bolt_edge further on)",
+   "expression": "pod_d / 2 - wall_depth + seam_gap",
+   "name": "base_side_y0",
+   "unit": "mm",
+   "value": -642.74
+  },
+  {
+   "comment": "SKELETON CALCULATION: J-BASE-01 bolt pitch along a side panel",
+   "expression": "( side_l - 2 * base_bolt_edge ) / ( n_base_bolt - 1 )",
+   "name": "side_base_pitch",
+   "unit": "mm",
+   "value": 350.9133
+  },
+  {
+   "comment": "SKELETON CALCULATION: J-BASE-01: back bolt lines start at each back FRAME's outer end, X -/+ this (first bolt base_bolt_edge further in)",
+   "expression": "pod_w / 2 - outer_t - seam_gap",
+   "name": "base_back_x0",
+   "unit": "mm",
+   "value": 1201.74
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31 (Reviewer 5 P2 on #58): J-BASE-01 pitch along a back panel, measured on the FRAME (half_fw), where the bolts go; 'panel end' means the frame end",
+   "expression": "( half_fw - 2 * base_bolt_edge ) / ( n_base_bolt - 1 )",
+   "name": "back_base_pitch",
+   "unit": "mm",
+   "value": 252.9967
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31, J-CEIL-01 wall to ceiling: the bolt line on the ceiling frame's centre (Z 2374)",
+   "expression": "pod_h - outer_t + frame_t / 2",
+   "name": "ceil_bolt_z",
+   "unit": "mm",
+   "value": 2374.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31, J-CEIL-01: bolts along each side wall top",
+   "expression": "4",
+   "name": "n_ceil_side_bolt",
+   "unit": "",
+   "value": 4.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31, J-CEIL-01: bolts along each back panel top, like the base (pitch about 253, every edge 350 or less; joints register: 82 bolts in all)",
+   "expression": "4",
+   "name": "n_ceil_back_bolt",
+   "unit": "",
+   "value": 4.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31 (joints register): J-CEIL-01 side bolt lines start at Y -645, measured along the ceiling (first bolt bolt_edge_inset further on)",
+   "expression": "pod_d / 2 - wall_depth",
+   "name": "ceil_side_y0",
+   "unit": "mm",
+   "value": -645.0
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31 (joints register): J-CEIL-01 pitch along a side wall top, over the ceiling's length (was over the side panel's)",
+   "expression": "( wall_depth - 2 * bolt_edge_inset ) / ( n_ceil_side_bolt - 1 )",
+   "name": "ceil_side_pitch",
+   "unit": "mm",
+   "value": 351.6667
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31 (joints register): J-CEIL-01 back bolt lines start at each back frame's outer end, X -/+ this",
+   "expression": "pod_w / 2 - outer_t - seam_gap",
+   "name": "ceil_back_x0",
+   "unit": "mm",
+   "value": 1201.74
+  },
+  {
+   "comment": "SKELETON DECIDED: PM ruling 2026-10-31 (joints register): J-CEIL-01 pitch along a back panel top, on the frame (half_fw)",
+   "expression": "( half_fw - 2 * bolt_edge_inset ) / ( n_ceil_back_bolt - 1 )",
+   "name": "ceil_back_pitch",
+   "unit": "mm",
+   "value": 252.9967
+  },
+  {
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group): 100 x 40 x 1.5 base band (was 2.0), with a doubler at each glide; rivnut coupon in 1.5 mm added to the rivnut test",
+   "expression": "1.5 mm",
+   "name": "band_wall",
+   "unit": "mm",
+   "value": 1.5
+  },
+  {
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group): every base band piece and the door's kick strip",
+   "expression": "'Black anodised, matte, 20 um (class AA20, EN ISO 7599)'",
+   "name": "band_finish",
+   "unit": "Text",
+   "value": "Black anodised, matte, 20 um (class AA20, EN ISO 7599)"
+  },
+  {
+   "comment": "BASE ASSUMPTION: head of the plastic end cap closing the side band's back end, so the cap face is flush with the back face Y = pod_d/2; cap product HOLD",
+   "expression": "3 mm",
+   "name": "cap_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE CALCULATION: J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)",
+   "expression": "outer_t - frame_t / 2",
+   "name": "jb_x",
+   "unit": "mm",
+   "value": 26.0
+  },
+  {
+   "comment": "BASE SOURCE: Sherex CAH3-610-4.2 M6 rivet nut: hole 9.53 +0.10/0 (hardware selection A5)",
+   "expression": "9.53 mm",
+   "name": "rn_hole",
+   "unit": "mm",
+   "value": 9.53
+  },
+  {
+   "comment": "BASE SOURCE: CAH3-610-4.2 head diameter 12.96 (hardware selection A5)",
+   "expression": "12.96 mm",
+   "name": "rn_flange",
+   "unit": "mm",
+   "value": 12.96
+  },
+  {
+   "comment": "BASE SOURCE: CAH3-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)",
+   "expression": "10.16 mm",
+   "name": "rn_inst",
+   "unit": "mm",
+   "value": 10.16
+  },
+  {
+   "comment": "BASE SOURCE: CAH3-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)",
+   "expression": "0.76 mm",
+   "name": "rn_head_t",
+   "unit": "mm",
+   "value": 0.76
+  },
+  {
+   "comment": "BASE SOURCE: stop washer bore (joints register H-08, PROPOSED)",
+   "expression": "10.5 mm",
+   "name": "sw_hole",
+   "unit": "mm",
+   "value": 10.5
+  },
+  {
+   "comment": "BASE SOURCE: stop washer outside diameter (joints register H-08, PROPOSED)",
+   "expression": "20 mm",
+   "name": "sw_d",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "BASE SOURCE: stop washer, under each bolt rivnut's head: washer 1.5 + head 0.76 = seam_gap 2.26, so the walls stand at panel_z0 (D-64)",
+   "expression": "1.5 mm",
+   "name": "sw_t",
+   "unit": "mm",
+   "value": 1.5
+  },
+  {
+   "comment": "BASE CONFIRMED: skeleton n_base_bolt (D-75, joints register R-J13): 4 bolts per wall panel on the band",
+   "expression": "n_base_bolt",
+   "name": "jb_n",
+   "unit": "",
+   "value": 4.0
+  },
+  {
+   "comment": "BASE CONFIRMED: skeleton base_bolt_edge (D-75, R-J13): end bolts 220 in from each panel FRAME end, evenly spaced (PM ruling: measured on the frame, not the skin)",
+   "expression": "base_bolt_edge",
+   "name": "jb_e",
+   "unit": "mm",
+   "value": 220.0
+  },
+  {
+   "comment": "BASE CONFIRMED: skeleton base_spigot_inset (D-75, R-J13): spigots 100 in from each panel frame end",
+   "expression": "base_spigot_inset",
+   "name": "sp_e",
+   "unit": "mm",
+   "value": 100.0
+  },
+  {
+   "comment": "BASE SOURCE: locating spigot, stainless, M6 thread (joints register H-05, PROPOSED sizes)",
+   "expression": "8 mm",
+   "name": "sp_dia",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE SOURCE: spigot stands 8 proud of the band top (joints register H-05, PROPOSED)",
+   "expression": "8 mm",
+   "name": "sp_proud",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: lead-in chamfer on the spigot top",
+   "expression": "1 mm",
+   "name": "sp_ch",
+   "unit": "mm",
+   "value": 1.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: spigot's M6 stud into its rivnut, with threadlocker",
+   "expression": "8 mm",
+   "name": "sp_stud",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE CALCULATION: glides per side band: span about 1.3 m, sag under 0.5 mm (see feature rationale)",
+   "expression": "2",
+   "name": "gl_n_side",
+   "unit": "",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE CALCULATION: glides on the back band: 2 spans of 1060 (see feature rationale)",
+   "expression": "3",
+   "name": "gl_n_back",
+   "unit": "",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE CALCULATION: front glide of a side band, behind the band's outer front corner (Y = -dl_y1): its doubler (26 each way) stays 15 behind the front corner key's back face (Y -636.03) and out of the keyed end's last 30 mm, which the joints register asks BASE to keep clear (PR #99, J-BASE-02)",
+   "expression": "75 mm",
+   "name": "gl_e_f",
+   "unit": "mm",
+   "value": 75.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: back glide of a side band from the back face",
+   "expression": "150 mm",
+   "name": "gl_e_b",
+   "unit": "mm",
+   "value": 150.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: end glides of the back band from its ends",
+   "expression": "150 mm",
+   "name": "gl_e_bb",
+   "unit": "mm",
+   "value": 150.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: hole in the band top for the 5 mm hex key that turns the glide (5.77 across corners, so 1.1 clear each side; levelled before the walls go on). On the band's centre line it spans 16 to 24 from the outer face, inboard of the PORON strip that runs beside the washer line on its outer side (8 to 16, joints register FR-11)",
+   "expression": "8 mm",
+   "name": "gl_key_hole",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group): the doubler's hole centred across its 36 mm width, so the glide stands on the band's centre line",
+   "expression": "0 mm",
+   "name": "gl_dx",
+   "unit": "mm",
+   "value": 0.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD",
+   "expression": "13 mm",
+   "name": "gl_nut_hole",
+   "unit": "mm",
+   "value": 13.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: glide pad diameter (envelope, HOLD); stays inside the band's 40 mm width",
+   "expression": "36 mm",
+   "name": "gl_pad",
+   "unit": "mm",
+   "value": 36.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: glide stem M10 (envelope, HOLD)",
+   "expression": "10 mm",
+   "name": "gl_stem",
+   "unit": "mm",
+   "value": 10.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: M10 rivet nut head under the band, between the band and the glide pad (HOLD)",
+   "expression": "2 mm",
+   "name": "gl_nut_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE SOURCE: lowest glide setting: the corner keys' button heads hang 3.3 under the band and nothing may come within 5 of the floor (PM ruling on F-018; joints register PR #99 via the Lead, 2026-11-01)",
+   "expression": "8.5 mm",
+   "name": "gl_min",
+   "unit": "mm",
+   "value": 8.5
+  },
+  {
+   "comment": "BASE CALCULATION: the glide's base must stand this tall (6.5), so that screwed fully home against the M10 rivnut's head it holds the band at gl_min: a hard stop (glide spec, HOLD)",
+   "expression": "gl_min - gl_nut_t",
+   "name": "gl_base_min",
+   "unit": "mm",
+   "value": 6.5
+  },
+  {
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 26 (2 hole diameters) from the hole",
+   "expression": "52 mm",
+   "name": "gd_l",
+   "unit": "mm",
+   "value": 52.0
+  },
+  {
+   "comment": "BASE CALCULATION: glide doubler width: the band's bore less 1 mm, so it bears on the bottom face right next to both side walls",
+   "expression": "band_t - 2 * band_wall - 1 mm",
+   "name": "gd_w",
+   "unit": "mm",
+   "value": 36.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: glide doubler thickness: clamped with the 1.5 mm bottom face by the glide's M10 rivnut (grip 4.5); bending at 500 N falls from about 123 MPa to about 31 MPa (calculation, feature rationale)",
+   "expression": "3 mm",
+   "name": "gd_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE SOURCE: back corner key length into the back band: 25 (the Joints Engineer, via the Lead 2026-11-01; the register PR follows)",
+   "expression": "25 mm",
+   "name": "ck_x",
+   "unit": "mm",
+   "value": 25.0
+  },
+  {
+   "comment": "BASE SOURCE: back corner key width across the band (J-BASE-02)",
+   "expression": "35 mm",
+   "name": "ck_y",
+   "unit": "mm",
+   "value": 35.0
+  },
+  {
+   "comment": "BASE SOURCE: back corner key height, standing on the band's bottom wall: 75 (the Joints Engineer, via the Lead 2026-11-01)",
+   "expression": "75 mm",
+   "name": "ck_z",
+   "unit": "mm",
+   "value": 75.0
+  },
+  {
+   "comment": "BASE SOURCE: key fixing holes 10 in from its back face (inside the band) and 7.5 either side of its centre line, so 10 in from its Y faces (joints register PR #99, J-BASE-02)",
+   "expression": "10 mm",
+   "name": "ck_e",
+   "unit": "mm",
+   "value": 10.0
+  },
+  {
+   "comment": "BASE SOURCE: fixing bolt holes in the back band's bottom wall, Ø7.0 (J-BASE-02)",
+   "expression": "7 mm",
+   "name": "ck_fix_hole",
+   "unit": "mm",
+   "value": 7.0
+  },
+  {
+   "comment": "BASE SOURCE: M6 tap drill in the key (J-BASE-02)",
+   "expression": "5 mm",
+   "name": "ck_tap",
+   "unit": "mm",
+   "value": 5.0
+  },
+  {
+   "comment": "BASE CONFIRMED: M6 thread in the key's bottom at least 15 deep: the M6 x 16 fixing bolt reaches 12.9 (PM ruling 2026-11-01 on F-017, joints group)",
+   "expression": "15 mm",
+   "name": "ck_thr_b",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE SOURCE: tap drill Ø5.0, 18 deep, under the 15 of full thread (joints register PR #99, J-BASE-02)",
+   "expression": "18 mm",
+   "name": "ck_tap_d",
+   "unit": "mm",
+   "value": 18.0
+  },
+  {
+   "comment": "BASE SOURCE: lower hook stud above the key's bottom: pod Z 37.5 with glide_h 10 and band_wall 1.5, so the keyhole's entry below it clears the tube's bottom corner (the Joints Engineer, via the Lead 2026-11-01)",
+   "expression": "26 mm",
+   "name": "st_z1",
+   "unit": "mm",
+   "value": 26.0
+  },
+  {
+   "comment": "BASE SOURCE: upper hook stud above the key's bottom: pod Z 71.5 (the Joints Engineer, via the Lead 2026-11-01)",
+   "expression": "60 mm",
+   "name": "st_z2",
+   "unit": "mm",
+   "value": 60.0
+  },
+  {
+   "comment": "BASE SOURCE: hook stud head's underside off the key's end face: 1.5 wall + 0.3 clearance (J-BASE-02)",
+   "expression": "1.8 mm",
+   "name": "st_gap",
+   "unit": "mm",
+   "value": 1.8
+  },
+  {
+   "comment": "BASE SOURCE: keyhole entry in the side band's inner wall, Ø12 (J-BASE-02)",
+   "expression": "12 mm",
+   "name": "kh_entry",
+   "unit": "mm",
+   "value": 12.0
+  },
+  {
+   "comment": "BASE SOURCE: keyhole slot width, 6.5, locates the corner in Y to ±0.25 (J-BASE-02)",
+   "expression": "6.5 mm",
+   "name": "kh_slot",
+   "unit": "mm",
+   "value": 6.5
+  },
+  {
+   "comment": "BASE SOURCE: entry centre 10 BELOW the stud's final spot, the slot running 10 up to it: the side band goes on 10 high, then drops onto the studs (the Joints Engineer's fix, via the Lead 2026-11-01)",
+   "expression": "10 mm",
+   "name": "kh_drop",
+   "unit": "mm",
+   "value": 10.0
+  },
+  {
+   "comment": "BASE CONFIRMED: skeleton floor_t 9 (D-72): 9 mm floor panels, as v1 (FLR-01 9 mm), floor top 12, threshold 13 (US accessibility)",
+   "expression": "floor_t",
+   "name": "fl_t",
+   "unit": "mm",
+   "value": 9.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)",
+   "expression": "4 mm",
+   "name": "fl_gap",
+   "unit": "mm",
+   "value": 4.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: gap at the F1 / F2 seam on X = 0",
+   "expression": "1 mm",
+   "name": "fl_seam",
+   "unit": "mm",
+   "value": 1.0
+  },
+  {
+   "comment": "BASE CONFIRMED: half-lap at the F1 / F2 seam: F1's lower half runs 13 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls). 13 keeps F1 at 1218.5 including its lap, inside the 1219 of the 48 in pallet (PM ruling 2026-10-31, packing plan)",
+   "expression": "13 mm",
+   "name": "lap_w",
+   "unit": "mm",
+   "value": 13.0
+  }
+ ],
+ "parts": {
+  "110101": {
+   "class": "HS",
+   "key": "band_l",
+   "name": "BASE - BAND ASSY - SIDE - LH",
+   "name_vi": "Viền chân nhôm - cạnh trái (cụm)",
+   "parent": "110000",
+   "pn": "110101"
+  },
+  "110103": {
+   "class": "HS",
+   "key": "band_b",
+   "name": "BASE - BAND ASSY - BACK",
+   "name_vi": "Viền chân nhôm - cạnh sau (cụm)",
+   "parent": "110000",
+   "pn": "110103"
+  },
+  "110401": {
+   "class": "BS",
+   "key": "floor_assy",
+   "name": "BASE - FLOOR PANEL ASSY - F1",
+   "name_vi": "Tấm sàn F1 (cụm dán)",
+   "parent": "110000",
+   "pn": "110401"
+  },
+  "111101": {
+   "box_mm": [
+    -1250.0,
+    -670.0,
+    10.0,
+    -1210.0,
+    847.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "band_l_tube",
+   "mass_kg": 1.6687,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - SIDE - LH",
+   "name_vi": "Viền chân nhôm 100x40 - cạnh trái",
+   "parent": "110101",
+   "pn": "111101",
+   "volume_mm3": 618022.8
+  },
+  "111103": {
+   "box_mm": [
+    -1210.0,
+    810.0,
+    10.0,
+    1210.0,
+    850.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "band_b_tube",
+   "mass_kg": 2.6792,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - BACK",
+   "name_vi": "Viền chân nhôm 100x40 - cạnh sau",
+   "parent": "110103",
+   "pn": "111103",
+   "volume_mm3": 992281.7
+  },
+  "111211": {
+   "box_mm": [
+    0.0,
+    -17.5,
+    0.0,
+    25.0,
+    17.5,
+    75.0
+   ],
+   "class": "MP",
+   "key": "key",
+   "mass_kg": 0.1726,
+   "material": "Aluminum",
+   "name": "BASE - CORNER KEY - BACK - COMMON",
+   "name_vi": "Ke góc đế - góc sau",
+   "parent": "110000",
+   "pn": "111211",
+   "volume_mm3": 63916.7
+  },
+  "111401": {
+   "box_mm": [
+    -1206.0,
+    -645.0,
+    3.0,
+    12.5,
+    806.0,
+    12.0
+   ],
+   "class": "MP",
+   "key": "floor_f1",
+   "mass_kg": 7.1224,
+   "material": "Poplar-core plywood 450 kg/m3 (ASSUMPTION)",
+   "name": "BASE - FLOOR PANEL - F1",
+   "name_vi": "Tấm sàn mỏng - F1",
+   "parent": "110401",
+   "pn": "111401",
+   "volume_mm3": 15827508.0
+  },
+  "111501": {
+   "box_mm": [
+    -1206.0,
+    -645.0,
+    0.0,
+    12.5,
+    806.0,
+    3.0
+   ],
+   "class": "MP",
+   "key": "mat_f1",
+   "mass_kg": 1.0608,
+   "material": "Closed-cell foam 200 kg/m3 (ASSUMPTION)",
+   "name": "BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM",
+   "name_vi": "Tấm lót sàn F1 - xốp kín 3 mm",
+   "parent": "110401",
+   "pn": "111501",
+   "volume_mm3": 5304130.5
+  },
+  "111601": {
+   "box_mm": [
+    -18.0,
+    -26.0,
+    0.0,
+    18.0,
+    26.0,
+    3.0
+   ],
+   "class": "MP",
+   "key": "doubler",
+   "mass_kg": 0.0141,
+   "material": "Aluminum",
+   "name": "BASE - GLIDE DOUBLER - COMMON",
+   "name_vi": "Tấm tăng cứng chân chỉnh",
+   "parent": "110000",
+   "pn": "111601",
+   "volume_mm3": 5217.8
+  },
+  "118002": {
+   "box_mm": [
+    -18.0,
+    -18.0,
+    0.0,
+    18.0,
+    18.0,
+    60.0
+   ],
+   "class": "PI",
+   "key": "glide",
+   "mass_kg": 0.15,
+   "material": "Glide envelope 0.15 kg (ASSUMPTION)",
+   "name": "BASE - LEVELLING GLIDE - M10 (HOLD)",
+   "name_vi": "Chân chỉnh cao",
+   "parent": "110000",
+   "pn": "118002",
+   "volume_mm3": 12227.1
+  },
+  "831001": {
+   "box_mm": [
+    -4.0,
+    -4.0,
+    -8.0,
+    4.0,
+    4.0,
+    7.24
+   ],
+   "class": "MP",
+   "key": "pin",
+   "mass_kg": 0.0045,
+   "material": "Steel",
+   "name": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
+   "name_vi": "Chốt định vị Ø8",
+   "parent": "110000",
+   "pn": "831001",
+   "volume_mm3": 578.6
+  },
+  "831002": {
+   "box_mm": [
+    -10.0,
+    -10.0,
+    0.0,
+    10.0,
+    10.0,
+    1.5
+   ],
+   "class": "MP",
+   "key": "washer",
+   "mass_kg": 0.0009,
+   "material": "Aluminum",
+   "name": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
+   "name_vi": "Long đen chặn nhôm",
+   "parent": "110000",
+   "pn": "831002",
+   "volume_mm3": 341.4
+  },
+  "838001": {
+   "box_mm": [
+    -5.0,
+    -5.0,
+    -16.0,
+    5.0,
+    5.0,
+    6.0
+   ],
+   "class": "PI",
+   "key": "bolt",
+   "mass_kg": 0.0073,
+   "material": "Steel",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "name_vi": "Bulong lục giác chìm M6 × 16",
+   "parent": "110000",
+   "pn": "838001",
+   "volume_mm3": 923.6
+  },
+  "838003": {
+   "box_mm": [
+    -6.48,
+    -6.48,
+    -9.4,
+    6.48,
+    6.48,
+    0.76
+   ],
+   "class": "PI",
+   "key": "rivnut",
+   "mass_kg": 0.0013,
+   "material": "Aluminum",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "name_vi": "Tán rút M6",
+   "parent": "110000",
+   "pn": "838003",
+   "volume_mm3": 465.3
+  },
+  "838010": {
+   "box_mm": [
+    -6.8,
+    -6.8,
+    -12.0,
+    6.8,
+    6.8,
+    3.3
+   ],
+   "class": "PI",
+   "key": "bscrew",
+   "mass_kg": 0.0054,
+   "material": "Steel",
+   "name": "HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2",
+   "name_vi": "Vít đầu tròn có vành M6 × 12 inox",
+   "parent": "110000",
+   "pn": "838010",
+   "volume_mm3": 683.7
+  }
+ },
+ "rev": "P01",
+ "tubes": {
+  "111101": {
+   "axis": "Y",
+   "back_end": "square, for the end cap",
+   "front_end": "mitre to DL's outer facet band piece: 24.14 deg from square, long point on the outer face",
+   "inner_face_length": 1499.07,
+   "outer_face_length": 1517.0,
+   "section": "100 x 40 x 1.5"
+  },
+  "111103": {
+   "axis": "X",
+   "back_end": "square",
+   "front_end": "square",
+   "inner_face_length": 2420.0,
+   "outer_face_length": 2420.0,
+   "section": "100 x 40 x 1.5"
+  }
+ }
+}
