@@ -39,12 +39,12 @@ EDITS = [
 ]
 
 
-def box(body):
+def box(body: "adsk.fusion.BRepBody"):
     b = body.boundingBox
     return [v * 10.0 for v in (b.minPoint.x, b.minPoint.y, b.minPoint.z, b.maxPoint.x, b.maxPoint.y, b.maxPoint.z)]
 
 
-def bodies_by_code(design):
+def bodies_by_code(design: "adsk.fusion.Design"):
     out = {}
     for comp in design.allComponents:
         for i in range(comp.bRepBodies.count):
@@ -53,7 +53,7 @@ def bodies_by_code(design):
     return out
 
 
-def check(design, overrides, label):
+def check(design: "adsk.fusion.Design", overrides, label):
     adsk.doEvents()
     tl = design.timeline
     bad = [tl.item(i).name for i in range(tl.count)

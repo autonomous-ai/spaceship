@@ -53,17 +53,17 @@ def vi(expr):
     return adsk.core.ValueInput.createByString(expr)
 
 
-def ev(design, expr):
+def ev(design: "adsk.fusion.Design", expr):
     return design.unitsManager.evaluateExpression(expr, "mm") * 10.0
 
 
-def box(body):
+def box(body: "adsk.fusion.BRepBody"):
     b = body.boundingBox
     return [round(v * 10.0, 3) for v in (b.minPoint.x, b.minPoint.y, b.minPoint.z,
                                          b.maxPoint.x, b.maxPoint.y, b.maxPoint.z)]
 
 
-def _axis_of(sk, model_axis):
+def _axis_of(sk: "adsk.fusion.Sketch", model_axis):
     """Which sketch axis ('x' or 'y') a model axis maps to."""
     o = sk.modelToSketchSpace(adsk.core.Point3D.create(0, 0, 0))
     v = {"x": (1, 0, 0), "y": (0, 1, 0), "z": (0, 0, 1)}[model_axis]
@@ -71,12 +71,12 @@ def _axis_of(sk, model_axis):
     return "x" if abs(e.x - o.x) > abs(e.y - o.y) else "y"
 
 
-def _normal_sign(sk, axis):
+def _normal_sign(sk: "adsk.fusion.Sketch", axis):
     n = sk.xDirection.crossProduct(sk.yDirection)
     return 1 if {"x": n.x, "y": n.y, "z": n.z}[axis] > 0 else -1
 
 
-def extrude_span(comp, sk, axis, a_expr, b_expr, name):
+def extrude_span(comp: "adsk.fusion.Component", sk: "adsk.fusion.Sketch", axis, a_expr, b_expr, name):
     """New body: the sketch's profile extruded along a model axis from a to b."""
     sign = _normal_sign(sk, axis)
     ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0),
@@ -93,7 +93,7 @@ def extrude_span(comp, sk, axis, a_expr, b_expr, name):
 BASE_PLANE = {"z": "xYConstructionPlane", "y": "xZConstructionPlane", "x": "yZConstructionPlane"}
 
 
-def _dim_point(design, sk, pt, axis_expr):
+def _dim_point(design: "adsk.fusion.Design", sk: "adsk.fusion.Sketch", pt: "adsk.fusion.SketchPoint", axis_expr):
     """Dimension a sketch point from the sketch origin along each model axis in
     axis_expr {model axis: expression}; a zero coordinate gets a coincidence."""
     dims, gc = sk.sketchDimensions, sk.geometricConstraints
@@ -110,7 +110,7 @@ def _dim_point(design, sk, pt, axis_expr):
                 "abs(%s)" % ex
 
 
-def build_box(design, comp, b):
+def build_box(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", b):
     """A box from the XY plane: rectangle dimensioned to the origin, extruded z0 -> z1."""
     (ex0, ex1), (ey0, ey1), (ez0, ez1) = b["x"], b["y"], b["z"]
     x0, x1, y0, y1 = (ev(design, e) for e in (ex0, ex1, ey0, ey1))
@@ -146,7 +146,7 @@ def build_box(design, comp, b):
     return f.bodies.item(0)
 
 
-def build_cyl(design, comp, b):
+def build_cyl(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", b):
     """A cylinder: circle on the origin plane normal to its axis, extruded a0 -> a1."""
     axis = b["axis"]
     others = [a for a in ("x", "y", "z") if a != axis]
@@ -166,7 +166,7 @@ def build_cyl(design, comp, b):
     return f.bodies.item(0)
 
 
-def find_file(app, name):
+def find_file(app: "adsk.core.Application", name):
     """The one DataFile called `name` in Default Project / FocusPod v2. Other
     agents save into the same folder, so its list can change while it is read
     (run of 2026-10-31: 'invalid argument index'): take a snapshot with
@@ -198,7 +198,7 @@ def find_file(app, name):
     raise RuntimeError("could not read %s: %s" % (CLOUD_FOLDER, last))
 
 
-def skeleton_bodies(skel):
+def skeleton_bodies(skel: "adsk.fusion.Design"):
     """{code: body} for every body of the skeleton, by its body name."""
     out = {}
     for comp in skel.allComponents:
@@ -212,7 +212,7 @@ def skeleton_bodies(skel):
     return out
 
 
-def intersect_mm3(tbm, a, b):
+def intersect_mm3(tbm: "adsk.fusion.TemporaryBRepManager", a: "adsk.fusion.BRepBody", b: "adsk.fusion.BRepBody"):
     ba, bb = box(a), box(b)
     if not all(ba[k] < bb[k + 3] - 1e-6 and bb[k] < ba[k + 3] - 1e-6 for k in range(3)):
         return 0.0
@@ -221,7 +221,7 @@ def intersect_mm3(tbm, a, b):
     return t1.volume * 1000.0 if t1 else 0.0
 
 
-def clear_design(design):
+def clear_design(design: "adsk.fusion.Design"):
     """Empty the design for a rebuild: the timeline (features, sketches, the derive) and the components.
     User parameters stay and are updated in place, because a parameter that a feature still uses can't
     be deleted (run of 2026-10-31: 'param name is not valid' on re-adding one)."""
@@ -243,7 +243,7 @@ def clear_design(design):
         raise RuntimeError("rebuild: %d timeline items, components or bodies left after clearing" % left)
 
 
-def set_param(design, name, expr, unit, comment):
+def set_param(design: "adsk.fusion.Design", name, expr, unit, comment):
     """Add a user parameter, or update it in place when a rebuild finds it."""
     p = design.userParameters.itemByName(name)
     if p is None:
@@ -253,7 +253,7 @@ def set_param(design, name, expr, unit, comment):
     return p
 
 
-def export_with_retry(em, mk, path, root):
+def export_with_retry(em: "adsk.fusion.ExportManager", mk, path, root: "adsk.fusion.Component"):
     for _try in range(10):          # right after a save Fusion may still be uploading
         if em.execute(mk(path, root)) and os.path.getsize(path) > 1000:
             return True

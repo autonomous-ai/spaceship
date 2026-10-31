@@ -121,11 +121,11 @@ def vi(e):
     return adsk.core.ValueInput.createByString(e)
 
 
-def ev(design, e):
+def ev(design: "adsk.fusion.Design", e):
     return design.unitsManager.evaluateExpression(e, "mm") * 10.0
 
 
-def box(b):
+def box(b: "adsk.fusion.BRepBody"):
     bb = b.boundingBox
     return [round(x * 10.0, 3) for x in (bb.minPoint.x, bb.minPoint.y, bb.minPoint.z, bb.maxPoint.x, bb.maxPoint.y, bb.maxPoint.z)]
 
@@ -134,7 +134,7 @@ H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
 VO = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
 
 
-def rect(sk, design, x0, y0, x1, y1, name):
+def rect(sk: "adsk.fusion.Sketch", design: "adsk.fusion.Design", x0, y0, x1, y1, name):
     """Rectangle (sketch coordinates in mm expressions), dimensioned to the sketch origin."""
     a, b, c, d = (ev(design, e) for e in (x0, y0, x1, y1))
     r = sk.sketchCurves.sketchLines.addTwoPointRectangle(adsk.core.Point3D.create(a * MM, b * MM, 0),
@@ -164,7 +164,7 @@ def rect(sk, design, x0, y0, x1, y1, name):
     return r
 
 
-def circle(sk, design, cx, cy, d):
+def circle(sk: "adsk.fusion.Sketch", design: "adsk.fusion.Design", cx, cy, d):
     x, y = ev(design, cx), ev(design, cy)
     c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(x * MM, y * MM, 0), ev(design, d) / 2 * MM)
     g = c.centerSketchPoint.geometry
@@ -179,7 +179,7 @@ def circle(sk, design, cx, cy, d):
     return c
 
 
-def flat_plate(design, comp, key):
+def flat_plate(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", key):
     """A flat plate in the XZ plane (X along the width, Z up), thickness along -Y... built on XY for simplicity:
     X = width, Y = height, extruded t along +Z. The drawing's front view looks at it."""
     sk = comp.sketches.add(comp.xYConstructionPlane)
@@ -218,7 +218,7 @@ def flat_plate(design, comp, key):
     return b, sk
 
 
-def body_tray(design, comp, occ):
+def body_tray(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", occ: "adsk.fusion.Occurrence"):
     """Folded tray: base (the back, w x h on XY at Z 0), four returns of depth d (outer faces on the outline,
     toward +Z = toward the room), four lips of `lip` turned inward at the front."""
     rule = design.designSheetMetalRules.itemByName("AL 5052 1.0 - POWER UNIT")
@@ -332,7 +332,7 @@ def body_tray(design, comp, occ):
 AXIS_OF_PLANE = {"yZConstructionPlane": "x", "xZConstructionPlane": "y", "xYConstructionPlane": "z"}
 
 
-def plane_at(design, comp, plane_base, offset, name):
+def plane_at(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", plane_base, offset, name):
     """A construction plane parallel to plane_base at model coordinate `offset` along its normal axis
     (tries +offset and -(offset), keeps the one that lands there), or the base plane itself at 0."""
     base = getattr(comp, plane_base)
@@ -354,7 +354,7 @@ def plane_at(design, comp, plane_base, offset, name):
     raise RuntimeError("could not place the plane for " + name)
 
 
-def cut_hole(design, comp, body, plane_base, offset, c1, c2, d, name, axis_map):
+def cut_hole(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", body: "adsk.fusion.BRepBody", plane_base, offset, c1, c2, d, name, axis_map):
     """A through hole: circle on a plane at `offset`, cut symmetric 3 x t (the wall it crosses)."""
     pl = plane_at(design, comp, plane_base, offset, name)
     sk = comp.sketches.add(pl)
@@ -384,7 +384,7 @@ def cut_hole(design, comp, body, plane_base, offset, c1, c2, d, name, axis_map):
     return f
 
 
-def export(design, root, comp, key, repo, stem):
+def export(design: "adsk.fusion.Design", root: "adsk.fusion.Component", comp: "adsk.fusion.Component", key, repo, stem):
     em = design.exportManager
     out = {"f3d": "v2/01-CAD-Native/electrical/%s_CAD.f3d" % stem,
            "step": "v2/03-Manufacturing/electrical/%s_STEP.step" % stem,
@@ -434,12 +434,12 @@ def export(design, root, comp, key, repo, stem):
         raise RuntimeError("DXF export failed")
 
 
-def _folder(app):
+def _folder(app: "adsk.core.Application"):
     proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
     return proj, proj.rootFolder.dataFolders.itemByName(FOLDER)
 
 
-def open_or_create(app, name):
+def open_or_create(app: "adsk.core.Application", name):
     """The design called `name`: activated if open, opened from FocusPod v2 if there, else made.
     PM ruling 2026-11-01: read every entry of the folder first, and make nothing if any can't be read
     (that entry could be this very design); a new design is saved there at once, empty."""
@@ -481,7 +481,7 @@ def open_or_create(app, name):
     return d, "made"
 
 
-def clear_design(design):
+def clear_design(design: "adsk.fusion.Design"):
     """Empty a design that is opened again: the timeline and the components. User parameters stay and
     are updated in place (a parameter a feature used can't be deleted and re-added in the same run)."""
     tl = design.timeline
@@ -496,7 +496,7 @@ def clear_design(design):
         raise RuntimeError("%d timeline items, components, bodies or sketches left after clearing" % left)
 
 
-def set_param(design, name, expr, unit, comment):
+def set_param(design: "adsk.fusion.Design", name, expr, unit, comment):
     p = design.userParameters.itemByName(name)
     if p is None:
         return design.userParameters.add(name, vi(expr), unit, comment)
@@ -505,7 +505,7 @@ def set_param(design, name, expr, unit, comment):
     return p
 
 
-def set_front_room_side(app, comp, zs):
+def set_front_room_side(app: "adsk.core.Application", comp: "adsk.fusion.Component", zs):
     """Make the body design's Front (ViewCube) the view from the room side (its open side), +Y up, so
     the drawing's standard views line up in first-angle (WALL's set_front method: the drawing API has
     no view rotation). Geometry doesn't change; the save after this keeps it."""
@@ -527,7 +527,7 @@ def set_front_room_side(app, comp, zs):
     print("body: Front set to the room side (looking %sZ, +Y up)" % ("-" if zs > 0 else "+"))
 
 
-def build_part(app, key):
+def build_part(app: "adsk.core.Application", key):
     pn, name, vn, stem, params = PARTS[key]
     t0 = time.time()
     doc, how = open_or_create(app, stem + "_CAD")
