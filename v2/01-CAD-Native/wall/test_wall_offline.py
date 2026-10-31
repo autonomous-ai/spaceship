@@ -310,5 +310,53 @@ class WallBackPanelTest(unittest.TestCase):
                 self.assertTrue(source, name)
 
 
+# ELECTRICAL P01 (electrical_model.py, PR #64) with the PM's final sizes of 2026-10-31 20:38 UTC: where its
+# features sit in the right linings (mm)
+EL_SIDE_EXPECT = {"1": {"el_y_kit": 240.5, "el_y_cx": -298.0, "el_trunk_z": 1100.0, "el_kit_d": 60.0, "el_grm_d": 19.1,
+                        "el_fs_y0": 2.0, "el_fs_y1": 20.0, "el_fs_dz": 60.0, "el_kit_dz": 80.0},
+                  "2": {"el_call_y": -209.5, "el_call_z": 1450.0, "el_shelf_z": 2250.0, "el_grm_s": 12.0}}
+
+
+class ElectricalInterfaceSideTest(unittest.TestCase):
+
+    def test_side_values_match_electrical(self):
+        for row, want in EL_SIDE_EXPECT.items():
+            v = resolve(load("cassette", "R", row))
+            for k, x in want.items():
+                self.assertAlmostEqual(v[k], x, places=3, msg=k)
+
+    def test_only_the_right_cassettes_carry_them(self):
+        for part, side, row in (("cassette", "L", "1"), ("cassette", "L", "2"), ("panel", "R", "1"),
+                                ("frame", "R", "2"), ("fill", "R", "1")):
+            ns = load(part, side, row)
+            self.assertEqual([q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")], [], (part, side, row))
+
+    def test_felt_openings_stay_inside_the_felt_before_and_after_the_edit_test(self):
+        """As built and under the edit test's skeleton edit (wall_depth 1300, side_h 1120), every felt opening
+        lies inside its felt with 1 mm round it (the build refuses otherwise)."""
+        for row in ("1", "2"):
+            for over in (None, {"wall_depth": 1300.0, "side_h": 1120.0}):
+                v = resolve(load("cassette", "R", row), over)
+                fy = (850.0 - v["wall_depth"] + 1.5, v["pod_d"] / 2 - v["stack_t"] + v["cass_t"] - 1.5)
+                z0 = v["panel_z0"] + (0.0 if row == "1" else v["side_h"] + v["seam_gap"])
+                z1 = v["panel_z0"] + v["side_h"] if row == "1" else v["pod_h"] - v["outer_t"] - v["lin_gap"]
+                fz = (z0 + 1.5, z1 - 1.5)
+                if row == "1":
+                    yb = v["pod_d"] / 2 - v["stack_t"]
+                    boxes = {"FS-CNR": (yb + v["el_fs_y0"], yb + v["el_fs_y1"], v["el_trunk_z"] - v["el_fs_dz"],
+                                        v["el_trunk_z"] + v["el_fs_dz"])}
+                    holes = {"FA-KIT": (v["el_y_kit"], v["el_trunk_z"] + v["el_kit_dz"], v["el_kit_d"]),
+                             "FX-COL": (v["el_y_cx"], v["el_trunk_z"], v["el_grm_d"])}
+                else:
+                    boxes = {}
+                    holes = {"FX-CALL0": (v["el_call_y"], v["el_shelf_z"], v["el_grm_s"]),
+                             "FX-CALL2": (v["el_call_y"], v["el_call_z"], v["el_grm_s"])}
+                for k, (y, z, d) in holes.items():
+                    boxes[k] = (y - d / 2, y + d / 2, z - d / 2, z + d / 2)
+                for k, (y0, y1, za, zb) in boxes.items():
+                    self.assertTrue(fy[0] + 1 <= y0 and y1 <= fy[1] - 1 and fz[0] + 1 <= za and zb <= fz[1] - 1,
+                                    "%s row %s %s: %s not inside %s %s" % (k, row, over, (y0, y1, za, zb), fy, fz))
+
+
 if __name__ == "__main__":
     unittest.main()

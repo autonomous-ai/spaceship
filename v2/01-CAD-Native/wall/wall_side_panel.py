@@ -324,7 +324,8 @@ def el_params(code, kind):
     return [p for p in EL_PARAMS if p[0] in want]
 
 
-WALL_PARAMS = WALL_PARAMS + el_params(CODE, "panel" if PANEL_SIDE else "cass")
+EL_KIND = "frame" if PART == "frame" else ("panel" if PANEL_SIDE else "cass")    # a frame has none of them
+WALL_PARAMS = WALL_PARAMS + el_params(CODE, EL_KIND)
 
 # kg/m3, status, source; used for body materials (mass properties)
 DENSITY = {
@@ -388,19 +389,32 @@ SKELETON_NAMES = ("pod_w", "pod_d", "pod_h", "wall_depth", "wall_z0", "panel_z0"
                   "n_base_bolt", "ceil_bolt_z")       # the skeleton parameters the wall uses (P04, as updated in #58)
 
 
+def folder_files(folder, tries=12, wait=2.5):
+    """Every data file in a cloud folder. The list can fail or come back short while others save (17:32 and
+    20:55 on 2026-10-31: three quick tries all failed and a batch lost two designs), so retry for about half a
+    minute, letting Fusion catch up between tries; refuse rather than act on a list that never came."""
+    import time
+    last = None
+    for _attempt in range(tries):
+        try:
+            n = folder.dataFiles.count
+            files = [folder.dataFiles.item(i) for i in range(n)]
+            if n and all(f is not None for f in files):
+                return files
+        except RuntimeError as exc:
+            last = exc
+        adsk.doEvents()
+        time.sleep(wait)
+        adsk.doEvents()
+    raise RuntimeError("could not list the files in %s after %d tries (%s)" % (folder.name, tries, last))
+
+
 def derive_skeleton(app, design, name):
     """Link the design to the saved skeleton with Fusion's Derive (favorite parameters only), as
     tools/fusion/README.md 'Linking a part to the skeleton' describes. Returns the version derived."""
     proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
     folder = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
-    files = None
-    for _attempt in range(3):           # the file list can change under us while others save (17:32 glitch)
-        try:
-            files = [folder.dataFiles.item(i) for i in range(folder.dataFiles.count)]
-            break
-        except RuntimeError:
-            adsk.doEvents()
-    files = [f for f in (files or []) if f.name == name]
+    files = [f for f in folder_files(folder) if f.name == name]
     if not files:
         raise RuntimeError("skeleton %r not found in Default Project / FocusPod v2" % name)
     part_doc = app.activeDocument

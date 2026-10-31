@@ -32,8 +32,9 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 EDITS = [("wall_depth", "1300 mm"), ("side_h", "1120 mm"), ("stile_pitch_max", "300 mm")]
 # back wall panels B1-B4 (wall_back_panel.py): the panel width, the row height and the stud rule
 # (pod_w 2300 with the skin and frame widths the skeleton would give it: (2300 - 92 - 3 x 2.26) / 2 and
-# (2300 - 92 - 2 x 2.26 - 5.5) / 2)
-EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1000 mm"),
+# (2300 - 92 - 2 x 2.26 - 5.5) / 2); back_ph 1080, not 1000: ELECTRICAL's power unit cut-out in B2-CASS reaches
+# Z 1134 at a fixed height, and a lower row 1000 high would end at Z 1112, under it
+EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1080 mm"),
               ("stile_pitch_max", "300 mm")]
 BACK_PREFIXES = ("2102", "2112", "2114", "2116", "5102", "5112", "5114")
 
@@ -64,8 +65,9 @@ def pv(design, name, default=None):
 
 
 def round_holes(design, prefix):
-    """(diameter, axis, centre) of the round holes in the bodies whose names start with `prefix`; the centre
-    holds the two coordinates across the axis (the one along it is None)."""
+    """(diameter, axis, centre, span) of the round holes in the bodies whose names start with `prefix`; the
+    centre holds the two coordinates across the axis (the one along it is None), the span is the face's extent
+    along the axis (low, high)."""
     out = []
     for c in design.allComponents:
         for b in c.bRepBodies:
@@ -78,15 +80,19 @@ def round_holes(design, prefix):
                 ax = max(range(3), key=lambda i: abs((g.axis.x, g.axis.y, g.axis.z)[i]))
                 ctr = [round(v * 10.0, 2) for v in (g.origin.x, g.origin.y, g.origin.z)]
                 ctr[ax] = None
-                out.append((round(g.radius * 20.0, 2), "xyz"[ax], tuple(ctr)))
+                fb = box(f)
+                out.append((round(g.radius * 20.0, 2), "xyz"[ax], tuple(ctr), (fb[ax], fb[ax + 3])))
     return out
 
 
-def has_hole(holes, d, axis, **at):
-    """A hole of diameter d along `axis` whose centre matches every coordinate in `at` (mm) within 0.02."""
+def has_hole(holes, d, axis, within=None, **at):
+    """A hole of diameter d along `axis` whose centre matches every coordinate in `at` (mm) within 0.02 and,
+    with `within` (low, high), whose span along the axis lies inside it (0.02 slack)."""
     k = {"x": 0, "y": 1, "z": 2}
     return any(abs(hd - d) < 0.02 and ha == axis and all(c[k[a]] is not None and abs(c[k[a]] - v) < 0.02
-                                                           for a, v in at.items()) for hd, ha, c in holes)
+                                                           for a, v in at.items()) and
+               (within is None or (sp[0] > within[0] - 0.02 and sp[1] < within[1] + 0.02))
+               for hd, ha, c, sp in holes)
 
 
 EL_SIDE = {"510102": ("el_y_kit", "el_y_cx", "el_trunk_z", "el_kit_dz", "el_kit_d", "el_grm_d"),
@@ -113,6 +119,68 @@ def el_side_checks(design, root_pn, before_p, after_p):
         out += [("FX-CALL0 and FX-CALL2 %g holes follow the call light line (Y %.2f)" % (a["el_grm_s"], a["el_call_y"]),
                  has_hole(holes, a["el_grm_s"], "x", y=a["el_call_y"], z=a["el_shelf_z"]) and
                  has_hole(holes, a["el_grm_s"], "x", y=a["el_call_y"], z=a["el_call_z"]))]
+    return out
+
+
+EL_BACK = {"510202": ("panel_z0", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_cut_x0", "el_cut_x1", "el_cut_z0",
+                      "el_cut_z1"),
+           "510204": ("panel_z0", "seam_gap", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_ceil_x", "el_z_cg",
+                      "el_shelf_z", "el_shelf_d"),
+           "210202": ("close_gap", "tube_w", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d", "el_cut_z0",
+                      "el_cut_z1")}
+
+
+def inside_of(design, prefix, x, y, z):
+    """Is the point (mm) inside a body whose name starts with `prefix`?"""
+    pt = adsk.core.Point3D.create(x / 10.0, y / 10.0, z / 10.0)
+    inside = adsk.fusion.PointContainment.PointInsidePointContainment
+    return any(b.pointContainment(pt) == inside for c in design.allComponents for b in c.bRepBodies
+               if b.name.startswith(prefix))
+
+
+def el_back_checks(design, root_pn, before_p, after_p):
+    """ELECTRICAL's features in B2-CASS, B4-CASS and panel B2 after the edit: the joint's bushing holes follow
+    the row seam (back_ph), the ceiling route's hole follows the pod width, the unit's openings stay where
+    ELECTRICAL puts them and the fill cut-out runs to the first stud."""
+    if root_pn not in EL_BACK:
+        return []
+    a = after_p
+    out = []
+    if root_pn == "510202":
+        holes = round_holes(design, "TRAY")
+        top = a["panel_z0"] + a["back_ph"]
+        ym, zm = a["el_y_bg"], (a["el_cut_z0"] + a["el_cut_z1"]) / 2.0
+        out += [("G-B2-B4 %g hole in the top return follows the row top (Z %.2f)" % (a["el_grm_d"], top),
+                 has_hole(holes, a["el_grm_d"], "z", (top - a["tray_t"], top), x=a["el_lt_x"], y=ym)),
+                ("G-PU-TOP %g hole in the cut-out's top return (Z %.2f)" % (a["el_grm_d"], a["el_cut_z1"]),
+                 has_hole(holes, a["el_grm_d"], "z", (a["el_cut_z1"], a["el_cut_z1"] + a["tray_t"]),
+                          x=a["el_lt_x"], y=ym)),
+                ("power unit cut-out open at X %g to %g, its returns outside it" % (a["el_cut_x0"], a["el_cut_x1"]),
+                 not inside_of(design, "TRAY", a["el_cut_x0"] + 0.2, ym, zm) and
+                 not inside_of(design, "TRAY", a["el_cut_x1"] - 0.2, ym, zm) and
+                 inside_of(design, "TRAY", a["el_cut_x0"] - a["tray_t"] / 2, ym, zm) and
+                 inside_of(design, "TRAY", a["el_cut_x1"] + a["tray_t"] / 2, ym, zm))]
+    elif root_pn == "510204":
+        bot = a["panel_z0"] + a["back_ph"] + a["seam_gap"]
+        tray, felt = round_holes(design, "TRAY"), round_holes(design, "FELT")
+        dw = a["pod_w"] - before_p["pod_w"]
+        out += [("G-B2-B4 %g hole in the bottom return follows the row seam (Z %.2f)" % (a["el_grm_d"], bot),
+                 has_hole(tray, a["el_grm_d"], "z", (bot, bot + a["tray_t"]), x=a["el_lt_x"], y=a["el_y_bg"])),
+                ("FX-CEIL %g hole follows the pod width (X (pod_w - 2 stack_t) / 4 = %.2f)" % (a["el_grm_d"],
+                                                                                              a["el_ceil_x"]),
+                 has_hole(felt, a["el_grm_d"], "y", x=a["el_ceil_x"], z=a["el_z_cg"]) and
+                 abs((a["el_ceil_x"] - before_p["el_ceil_x"]) - dw / 4.0) < 0.01),
+                ("FX-SHELF %g felt hole at X %g, Z %g" % (a["el_shelf_d"], a["el_lt_x"], a["el_shelf_z"]),
+                 has_hole(felt, a["el_shelf_d"], "y", x=a["el_lt_x"], z=a["el_shelf_z"]))]
+    else:
+        skin = round_holes(design, "SKIN")
+        stud = a["close_gap"] / 2.0 + a["stile_pitch"]
+        out += [("inlet and LAN %g holes in the skin at X %g" % (a["el_inlet_d"], a["el_inlet_x"]),
+                 has_hole(skin, a["el_inlet_d"], "y", x=a["el_inlet_x"], z=a["el_inlet_z"]) and
+                 has_hole(skin, a["el_inlet_d"], "y", x=a["el_inlet_x"], z=a["el_lan_z"])),
+                ("the unit's fill cut-out runs to the first stud (X %.2f), fill below it" % stud,
+                 not inside_of(design, "FILL", stud - 0.3, 824.0, (a["el_cut_z0"] + a["el_cut_z1"]) / 2.0) and
+                 inside_of(design, "FILL", stud - 0.3, 824.0, a["el_cut_z0"] - 20.0))]
     return out
 
 
@@ -203,7 +271,7 @@ def record(design, rel):
     back_wall = root_pn[:4] in BACK_PREFIXES
     edits = EDITS_BACK if back_wall else EDITS
     names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
-             "cass_len", "cass_h", "pnl_h") if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
+             "cass_len", "cass_h", "pnl_h") + EL_BACK.get(root_pn, ()) if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
                                          "stile_pitch", "cass_len", "cass_h", "top_h", "pod_h", "panel_z0",
                                          "seam_gap", "outer_t", "lin_gap") + EL_SIDE.get(root_pn, ())
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
@@ -239,7 +307,7 @@ def record(design, rel):
         p("| %s | %s | %s |" % (k, before.get(k, "-"), after.get(k, "-")))
     p("")
     if back_wall:
-        checks = back_checks(after, after_p)
+        checks = back_checks(after, after_p) + el_back_checks(design, root_pn, before_p, after_p)
     else:
         checks = []
         seam = 2.26
