@@ -278,6 +278,145 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 4. Revert: 129 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
+## Edit test: 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211201, 211401, 211601, 831001, 831002, 838003.
+
+1. Reopen: timeline 147 items, 0 not healthy; sketches 42, 42 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1000 mm: rebuild 147 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1000 |
+| stile_pitch_max | 400 | 400 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 2 |
+| stile_pitch | 392.997 | 359.663 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1118.61 | 1000 |
+| pnl_h | 1118.61 | 1000 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211201 / RAIL - BOTTOM | (-1201.74, 804.0, 112.26, -2.75, 844.0, 132.26) | (-1101.74, 804.0, 112.26, -2.75, 844.0, 132.26) |
+| 211201 / RAIL - TOP | (-1201.74, 804.0, 1210.87, -2.75, 844.0, 1230.87) | (-1101.74, 804.0, 1092.26, -2.75, 844.0, 1112.26) |
+| 211201 / STILE - CENTRE | (-22.75, 804.0, 132.26, -2.75, 844.0, 1210.87) | (-22.75, 804.0, 132.26, -2.75, 844.0, 1092.26) |
+| 211201 / STILE - MID 1 | (-808.74, 804.0, 132.26, -788.74, 844.0, 1210.87) | (-742.08, 804.0, 132.26, -722.08, 844.0, 1092.26) |
+| 211201 / STILE - MID 2 | (-415.75, 804.0, 132.26, -395.75, 844.0, 1210.87) | (-382.41, 804.0, 132.26, -362.41, 844.0, 1092.26) |
+| 211201 / STILE - OUTER | (-1201.74, 804.0, 132.26, -1181.74, 844.0, 1210.87) | (-1101.74, 804.0, 132.26, -1081.74, 844.0, 1092.26) |
+| 211401 / SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM | (-1201.74, 847.0, 112.26, -1.13, 850.0, 1230.87) | (-1101.74, 847.0, 112.26, -1.13, 850.0, 1112.26) |
+| 211601 / FILL - BAY 1 | (-1181.74, 804.0, 132.26, -808.74, 844.0, 1210.87) | (-1081.74, 804.0, 132.26, -742.08, 844.0, 1092.26) |
+| 211601 / FILL - BAY 2 | (-788.74, 804.0, 132.26, -415.75, 844.0, 1210.87) | (-722.08, 804.0, 132.26, -382.41, 844.0, 1092.26) |
+| 211601 / FILL - BAY 3 | (-395.75, 804.0, 132.26, -22.75, 844.0, 1210.87) | (-362.41, 804.0, 132.26, -22.75, 844.0, 1092.26) |
+| 831001 / SPIGOT - TOP RAIL SPIGOT HIGH X | (-106.75, 820.0, 1221.63, -98.75, 828.0, 1238.87) | (-106.75, 820.0, 1103.02, -98.75, 828.0, 1120.26) |
+| 831001 / SPIGOT - TOP RAIL SPIGOT LOW X | (-1105.74, 820.0, 1221.63, -1097.74, 828.0, 1238.87) | (-1005.74, 820.0, 1103.02, -997.74, 828.0, 1120.26) |
+| 831002 / STOP WASHER - TOP RAIL 1 | (-991.74, 814.0, 1230.87, -971.74, 834.0, 1232.37) | (-891.74, 814.0, 1112.26, -871.74, 834.0, 1113.76) |
+| 831002 / STOP WASHER - TOP RAIL 2 | (-738.74, 814.0, 1230.87, -718.74, 834.0, 1232.37) | (-672.08, 814.0, 1112.26, -652.08, 834.0, 1113.76) |
+| 831002 / STOP WASHER - TOP RAIL 3 | (-485.75, 814.0, 1230.87, -465.75, 834.0, 1232.37) | (-452.41, 814.0, 1112.26, -432.41, 834.0, 1113.76) |
+| 831002 / STOP WASHER - TOP RAIL 4 | (-232.75, 814.0, 1230.87, -212.75, 834.0, 1232.37) | (-232.75, 814.0, 1112.26, -212.75, 834.0, 1113.76) |
+| 838003 / RIVNUT - TOP RAIL 1 | (-988.22, 817.52, 1222.21, -975.26, 830.48, 1233.13) | (-888.22, 817.52, 1103.6, -875.26, 830.48, 1114.52) |
+| 838003 / RIVNUT - TOP RAIL 2 | (-735.22, 817.52, 1222.21, -722.26, 830.48, 1233.13) | (-668.56, 817.52, 1103.6, -655.6, 830.48, 1114.52) |
+| 838003 / RIVNUT - TOP RAIL 3 | (-482.23, 817.52, 1222.21, -469.27, 830.48, 1233.13) | (-448.89, 817.52, 1103.6, -435.93, 830.48, 1114.52) |
+| 838003 / RIVNUT - TOP RAIL 4 | (-229.23, 817.52, 1222.21, -216.27, 830.48, 1233.13) | (-229.23, 817.52, 1103.6, -216.27, 830.48, 1114.52) |
+| 838003 / RIVNUT - TOP RAIL SPIGOT HIGH X | (-109.23, 817.52, 1220.71, -96.27, 830.48, 1231.63) | (-109.23, 817.52, 1102.1, -96.27, 830.48, 1113.02) |
+| 838003 / RIVNUT - TOP RAIL SPIGOT LOW X | (-1108.22, 817.52, 1220.71, -1095.26, 830.48, 1231.63) | (-1008.22, 817.52, 1102.1, -995.26, 830.48, 1113.02) |
+
+| Check | Result |
+|---|---|
+| frame width follows half_fw (1098.99) | PASS |
+| frame stays close_gap / 2 from X 0 at the closing seam | PASS |
+| frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26) | PASS |
+| stiles span the row height - 40 | PASS |
+| stud count follows the 400 mm rule (2) | PASS |
+| no stud pitch over 400 | PASS |
+| fill bays = stud count + 1 (3) | PASS |
+| skin is half_pw wide and the row high | PASS |
+| top rail rivnuts follow the 220 rule [-881.74, -662.08, -442.41, -222.75] | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 147 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211202, 211402, 211602, 831001, 831002, 838003.
+
+1. Reopen: timeline 182 items, 0 not healthy; sketches 53, 53 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm: rebuild 182 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 400 | 400 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 2 |
+| stile_pitch | 392.997 | 359.663 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1118.61 | 1080 |
+| pnl_h | 1118.61 | 1080 |
+| close_gap | 5.5 | 5.5 |
+| tube_w | 20 | 20 |
+| el_inlet_x | 120 | 120 |
+| el_inlet_z | 313 | 313 |
+| el_lan_z | 375 | 375 |
+| el_inlet_d | 24 | 24 |
+| el_cut_z0 | 866 | 866 |
+| el_cut_z1 | 1134 | 1134 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211202 / RAIL - BOTTOM | (2.75, 804.0, 112.26, 1201.74, 844.0, 132.26) | (2.75, 804.0, 112.26, 1101.74, 844.0, 132.26) |
+| 211202 / RAIL - TOP | (2.75, 804.0, 1210.87, 1201.74, 844.0, 1230.87) | (2.75, 804.0, 1172.26, 1101.74, 844.0, 1192.26) |
+| 211202 / STILE - CENTRE | (2.75, 804.0, 132.26, 22.75, 844.0, 1210.87) | (2.75, 804.0, 132.26, 22.75, 844.0, 1172.26) |
+| 211202 / STILE - MID 1 | (395.75, 804.0, 132.26, 415.75, 844.0, 1210.87) | (362.41, 804.0, 132.26, 382.41, 844.0, 1172.26) |
+| 211202 / STILE - MID 2 | (788.74, 804.0, 132.26, 808.74, 844.0, 1210.87) | (722.08, 804.0, 132.26, 742.08, 844.0, 1172.26) |
+| 211202 / STILE - OUTER | (1181.74, 804.0, 132.26, 1201.74, 844.0, 1210.87) | (1081.74, 804.0, 132.26, 1101.74, 844.0, 1172.26) |
+| 211402 / SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM | (1.13, 847.0, 112.26, 1201.74, 850.0, 1230.87) | (1.13, 847.0, 112.26, 1101.74, 850.0, 1192.26) |
+| 211602 / FILL - BAY 1 | (22.75, 804.0, 132.26, 395.75, 844.0, 1210.87) | (22.75, 804.0, 132.26, 362.41, 844.0, 1172.26) |
+| 211602 / FILL - BAY 2 | (415.75, 804.0, 132.26, 788.74, 844.0, 1210.87) | (382.41, 804.0, 132.26, 722.08, 844.0, 1172.26) |
+| 211602 / FILL - BAY 3 | (808.74, 804.0, 132.26, 1181.74, 844.0, 1210.87) | (742.08, 804.0, 132.26, 1081.74, 844.0, 1172.26) |
+| 831001 / SPIGOT - TOP RAIL SPIGOT HIGH X | (1097.74, 820.0, 1221.63, 1105.74, 828.0, 1238.87) | (997.74, 820.0, 1183.02, 1005.74, 828.0, 1200.26) |
+| 831001 / SPIGOT - TOP RAIL SPIGOT LOW X | (98.75, 820.0, 1221.63, 106.75, 828.0, 1238.87) | (98.75, 820.0, 1183.02, 106.75, 828.0, 1200.26) |
+| 831002 / STOP WASHER - TOP RAIL 1 | (212.75, 814.0, 1230.87, 232.75, 834.0, 1232.37) | (212.75, 814.0, 1192.26, 232.75, 834.0, 1193.76) |
+| 831002 / STOP WASHER - TOP RAIL 2 | (465.75, 814.0, 1230.87, 485.75, 834.0, 1232.37) | (432.41, 814.0, 1192.26, 452.41, 834.0, 1193.76) |
+| 831002 / STOP WASHER - TOP RAIL 3 | (718.74, 814.0, 1230.87, 738.74, 834.0, 1232.37) | (652.08, 814.0, 1192.26, 672.08, 834.0, 1193.76) |
+| 831002 / STOP WASHER - TOP RAIL 4 | (971.74, 814.0, 1230.87, 991.74, 834.0, 1232.37) | (871.74, 814.0, 1192.26, 891.74, 834.0, 1193.76) |
+| 838003 / RIVNUT - CENTRE STILE PIN 1 | (1.99, 817.52, 325.78, 12.91, 830.48, 338.74) | (1.99, 817.52, 325.78, 12.91, 830.48, 338.74) |
+| 838003 / RIVNUT - CENTRE STILE PIN 2 | (1.99, 817.52, 665.09, 12.91, 830.48, 678.05) | (1.99, 817.52, 645.78, 12.91, 830.48, 658.74) |
+| 838003 / RIVNUT - CENTRE STILE PIN 3 | (1.99, 817.52, 1004.39, 12.91, 830.48, 1017.35) | (1.99, 817.52, 965.78, 12.91, 830.48, 978.74) |
+| 838003 / RIVNUT - TOP RAIL 1 | (216.27, 817.52, 1222.21, 229.23, 830.48, 1233.13) | (216.27, 817.52, 1183.6, 229.23, 830.48, 1194.52) |
+| 838003 / RIVNUT - TOP RAIL 2 | (469.27, 817.52, 1222.21, 482.23, 830.48, 1233.13) | (435.93, 817.52, 1183.6, 448.89, 830.48, 1194.52) |
+| 838003 / RIVNUT - TOP RAIL 3 | (722.26, 817.52, 1222.21, 735.22, 830.48, 1233.13) | (655.6, 817.52, 1183.6, 668.56, 830.48, 1194.52) |
+| 838003 / RIVNUT - TOP RAIL 4 | (975.26, 817.52, 1222.21, 988.22, 830.48, 1233.13) | (875.26, 817.52, 1183.6, 888.22, 830.48, 1194.52) |
+| 838003 / RIVNUT - TOP RAIL SPIGOT HIGH X | (1095.26, 817.52, 1220.71, 1108.22, 830.48, 1231.63) | (995.26, 817.52, 1182.1, 1008.22, 830.48, 1193.02) |
+| 838003 / RIVNUT - TOP RAIL SPIGOT LOW X | (96.27, 817.52, 1220.71, 109.23, 830.48, 1231.63) | (96.27, 817.52, 1182.1, 109.23, 830.48, 1193.02) |
+
+| Check | Result |
+|---|---|
+| frame width follows half_fw (1098.99) | PASS |
+| frame stays close_gap / 2 from X 0 at the closing seam | PASS |
+| frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26) | PASS |
+| stiles span the row height - 40 | PASS |
+| stud count follows the 400 mm rule (2) | PASS |
+| no stud pitch over 400 | PASS |
+| fill bays = stud count + 1 (3) | PASS |
+| skin is half_pw wide and the row high | PASS |
+| top rail rivnuts follow the 220 rule [222.75, 442.41, 662.08, 881.74] | PASS |
+| inlet and LAN 24 holes in the skin at X 120 | PASS |
+| the unit's fill cut-out runs to the first stud (X 362.41), fill below it | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 182 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
 ## Edit test: 211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_CAD.f3d
 
 Copy opened as a new, unsaved document and closed without saving. Components: 211101.
@@ -460,6 +599,51 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 
 4. Revert: 67 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
+## Edit test: 211201_P01_WALL-PANEL-FRAME-BACK-LOWER-B1_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211201.
+
+1. Reopen: timeline 74 items, 0 not healthy; sketches 22, 22 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm, stile_pitch_max -> 300 mm: rebuild 74 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 400 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 3 |
+| stile_pitch | 392.997 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1118.61 | 1080 |
+| pnl_h | 1118.61 | 1080 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211201 / RAIL - BOTTOM | (-1201.74, 804.0, 112.26, -2.75, 844.0, 132.26) | (-1101.74, 804.0, 112.26, -2.75, 844.0, 132.26) |
+| 211201 / RAIL - TOP | (-1201.74, 804.0, 1210.87, -2.75, 844.0, 1230.87) | (-1101.74, 804.0, 1172.26, -2.75, 844.0, 1192.26) |
+| 211201 / STILE - CENTRE | (-22.75, 804.0, 132.26, -2.75, 844.0, 1210.87) | (-22.75, 804.0, 132.26, -2.75, 844.0, 1172.26) |
+| 211201 / STILE - MID 1 | (-808.74, 804.0, 132.26, -788.74, 844.0, 1210.87) | (-831.99, 804.0, 132.26, -811.99, 844.0, 1172.26) |
+| 211201 / STILE - MID 1 (1) | - | (-292.5, 804.0, 132.26, -272.5, 844.0, 1172.26) |
+| 211201 / STILE - MID 2 | (-415.75, 804.0, 132.26, -395.75, 844.0, 1210.87) | (-562.25, 804.0, 132.26, -542.25, 844.0, 1172.26) |
+| 211201 / STILE - OUTER | (-1201.74, 804.0, 132.26, -1181.74, 844.0, 1210.87) | (-1101.74, 804.0, 132.26, -1081.74, 844.0, 1172.26) |
+
+| Check | Result |
+|---|---|
+| frame width follows half_fw (1098.99) | PASS |
+| frame stays close_gap / 2 from X 0 at the closing seam | PASS |
+| frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26) | PASS |
+| stiles span the row height - 40 | PASS |
+| stud count follows the 300 mm rule (3) | PASS |
+| no stud pitch over 300 | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 74 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
 ## Edit test: 211301_P01_WALL-SKIN-SIDE-LOWER-LH_CAD.f3d
 
 Copy opened as a new, unsaved document and closed without saving. Components: 211301.
@@ -491,6 +675,40 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | revert: every body back to its before box, healthy | PASS |
 
 4. Revert: 8 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 211401_P01_WALL-SKIN-BACK-LOWER-B1_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211401.
+
+1. Reopen: timeline 5 items, 0 not healthy; sketches 1, 1 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm, stile_pitch_max -> 300 mm: rebuild 5 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 400 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 3 |
+| stile_pitch | 392.997 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1118.61 | 1080 |
+| pnl_h | 1118.61 | 1080 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211401 / SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM | (-1201.74, 847.0, 112.26, -1.13, 850.0, 1230.87) | (-1101.74, 847.0, 112.26, -1.13, 850.0, 1192.26) |
+
+| Check | Result |
+|---|---|
+| skin is half_pw wide and the row high | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 5 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_CAD.f3d
 
@@ -526,6 +744,42 @@ Copy opened as a new, unsaved document and closed without saving. Components: 21
 | revert: every body back to its before box, healthy | PASS |
 
 4. Revert: 30 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 211601.
+
+1. Reopen: timeline 27 items, 0 not healthy; sketches 8, 8 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm: rebuild 27 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 400 | 400 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 2 |
+| stile_pitch | 392.997 | 359.663 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1118.61 | 1080 |
+| pnl_h | 1118.61 | 1080 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 211601 / FILL - BAY 1 | (-1181.74, 804.0, 132.26, -808.74, 844.0, 1210.87) | (-1081.74, 804.0, 132.26, -742.08, 844.0, 1172.26) |
+| 211601 / FILL - BAY 2 | (-788.74, 804.0, 132.26, -415.75, 844.0, 1210.87) | (-722.08, 804.0, 132.26, -382.41, 844.0, 1172.26) |
+| 211601 / FILL - BAY 3 | (-395.75, 804.0, 132.26, -22.75, 844.0, 1210.87) | (-362.41, 804.0, 132.26, -22.75, 844.0, 1172.26) |
+
+| Check | Result |
+|---|---|
+| fill bays = stud count + 1 (3) | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 27 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
 ## Edit test: 510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD.f3d
 
@@ -726,6 +980,158 @@ Copy opened as a new, unsaved document and closed without saving. Components: 51
 
 4. Revert: 30 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
 
+## Edit test: 510201_P01_LINING-CASSETTE-BACK-LOWER-B1_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 511201, 511401, NO-PN-HOLD-H03.
+
+1. Reopen: timeline 24 items, 0 not healthy; sketches 6, 6 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm, stile_pitch_max -> 300 mm: rebuild 24 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 400 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 3 |
+| stile_pitch | 392.997 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1118.61 | 1080 |
+| pnl_h | 1118.61 | 1080 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 511201 / TRAY - STEEL 0.5 WITH RETURNS AND LIPS | (-1166.0, 766.0, 112.26, -1.13, 800.0, 1230.87) | (-1066.0, 766.0, 112.26, -1.13, 800.0, 1192.26) |
+| 511401 / FELT - PET 9 HELD BY THE TRAY LIPS | (-1164.5, 766.5, 113.76, -2.63, 775.5, 1229.37) | (-1064.5, 766.5, 113.76, -2.63, 775.5, 1190.76) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 1 (BOTTOM LOW X) | (-808.74, 800.0, 182.26, -788.74, 804.0, 242.26) | (-831.99, 800.0, 182.26, -811.99, 804.0, 242.26) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 2 (BOTTOM HIGH X) | (-415.75, 800.0, 182.26, -395.75, 804.0, 242.26) | (-562.25, 800.0, 182.26, -542.25, 804.0, 242.26) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 3 (TOP LOW X) | (-808.74, 800.0, 1100.87, -788.74, 804.0, 1160.87) | (-831.99, 800.0, 1062.26, -811.99, 804.0, 1122.26) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 4 (TOP HIGH X) | (-415.75, 800.0, 1100.87, -395.75, 804.0, 1160.87) | (-562.25, 800.0, 1062.26, -542.25, 804.0, 1122.26) |
+
+| Check | Result |
+|---|---|
+| tray runs cass_len | PASS |
+| tray height follows cass_h | PASS |
+| tray stops seam_gap / 2 short of X 0 | PASS |
+| felt follows the tray, 1 mm clear inside the 0.5 returns | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 24 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 510202_P01_LINING-CASSETTE-BACK-LOWER-B2_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 511202, 511402, NO-PN-HOLD-H03.
+
+1. Reopen: timeline 36 items, 0 not healthy; sketches 10, 10 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm, stile_pitch_max -> 300 mm: rebuild 36 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 400 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 3 |
+| stile_pitch | 392.997 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1118.61 | 1080 |
+| pnl_h | 1118.61 | 1080 |
+| panel_z0 | 112.26 | 112.26 |
+| tray_t | 0.5 | 0.5 |
+| el_lt_x | 346 | 346 |
+| el_y_bg | 787.5 | 787.5 |
+| el_grm_d | 19.1 | 19.1 |
+| el_cut_x0 | 91 | 91 |
+| el_cut_x1 | 395 | 395 |
+| el_cut_z0 | 866 | 866 |
+| el_cut_z1 | 1134 | 1134 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 511202 / TRAY - STEEL 0.5 WITH RETURNS AND LIPS | (1.13, 766.0, 112.26, 1166.0, 800.0, 1230.87) | (1.13, 766.0, 112.26, 1066.0, 800.0, 1192.26) |
+| 511402 / FELT - PET 9 HELD BY THE TRAY LIPS | (2.63, 766.5, 113.76, 1164.5, 775.5, 1229.37) | (2.63, 766.5, 113.76, 1064.5, 775.5, 1190.76) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 1 (BOTTOM LOW X) | (395.75, 800.0, 182.26, 415.75, 804.0, 242.26) | (272.5, 800.0, 182.26, 292.5, 804.0, 242.26) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 2 (BOTTOM HIGH X) | (788.74, 800.0, 182.26, 808.74, 804.0, 242.26) | (542.25, 800.0, 182.26, 562.25, 804.0, 242.26) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 3 (TOP LOW X) | (395.75, 800.0, 1100.87, 415.75, 804.0, 1160.87) | (272.5, 800.0, 1062.26, 292.5, 804.0, 1122.26) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 4 (TOP HIGH X) | (788.74, 800.0, 1100.87, 808.74, 804.0, 1160.87) | (542.25, 800.0, 1062.26, 562.25, 804.0, 1122.26) |
+
+| Check | Result |
+|---|---|
+| tray runs cass_len | PASS |
+| tray height follows cass_h | PASS |
+| tray stops seam_gap / 2 short of X 0 | PASS |
+| felt follows the tray, 1 mm clear inside the 0.5 returns | PASS |
+| G-B2-B4 19.1 hole in the top return follows the row top (Z 1192.26) | PASS |
+| plain power unit cut-out at X 91 to 395 through the tray base and the felt | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 36 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 510204_P01_LINING-CASSETTE-BACK-UPPER-B4_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 511204, 511404, NO-PN-HOLD-H03.
+
+1. Reopen: timeline 33 items, 0 not healthy; sketches 9, 9 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm, stile_pitch_max -> 300 mm: rebuild 33 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 400 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 3 |
+| stile_pitch | 392.997 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1116.87 | 1155.48 |
+| pnl_h | 1118.61 | 1157.22 |
+| panel_z0 | 112.26 | 112.26 |
+| seam_gap | 2.26 | 2.26 |
+| tray_t | 0.5 | 0.5 |
+| el_lt_x | 346 | 346 |
+| el_y_bg | 787.5 | 787.5 |
+| el_grm_d | 19.1 | 19.1 |
+| el_shelf_z | 2250 | 2250 |
+| el_shelf_d | 16 | 16 |
+| el_ceil_x | 583 | 533 |
+| el_ceil_z | 2330 | 2330 |
+| el_grm_s | 12 | 12 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 511204 / TRAY - STEEL 0.5 WITH RETURNS AND LIPS | (1.13, 766.0, 1233.13, 1166.0, 800.0, 2350.0) | (1.13, 766.0, 1194.52, 1066.0, 800.0, 2350.0) |
+| 511404 / FELT - PET 9 HELD BY THE TRAY LIPS | (2.63, 766.5, 1234.63, 1164.5, 775.5, 2348.5) | (2.63, 766.5, 1196.02, 1064.5, 775.5, 2348.5) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 1 (BOTTOM LOW X) | (395.75, 800.0, 1303.13, 415.75, 804.0, 1363.13) | (272.5, 800.0, 1264.52, 292.5, 804.0, 1324.52) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 2 (BOTTOM HIGH X) | (788.74, 800.0, 1303.13, 808.74, 804.0, 1363.13) | (542.25, 800.0, 1264.52, 562.25, 804.0, 1324.52) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 3 (TOP LOW X) | (395.75, 800.0, 2220.0, 415.75, 804.0, 2280.0) | (272.5, 800.0, 2220.0, 292.5, 804.0, 2280.0) |
+| NO-PN-HOLD-H03 / HOLD - CLIP ZONE 4 (TOP HIGH X) | (788.74, 800.0, 2220.0, 808.74, 804.0, 2280.0) | (542.25, 800.0, 2220.0, 562.25, 804.0, 2280.0) |
+
+| Check | Result |
+|---|---|
+| tray runs cass_len | PASS |
+| tray height follows cass_h | PASS |
+| tray stops seam_gap / 2 short of X 0 | PASS |
+| felt follows the tray, 1 mm clear inside the 0.5 returns | PASS |
+| G-B2-B4 19.1 hole in the bottom return follows the row seam (Z 1194.52) | PASS |
+| no cable hole through the top lip | PASS |
+| FX-CEIL 12 felt hole follows the pod width (X (pod_w - 2 stack_t) / 4 = 533.00), 2 under the lip | PASS |
+| FX-SHELF 16 felt hole at X 346, Z 2250 | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 33 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
 ## Edit test: 511101_P01_LINING-TRAY-SIDE-LOWER-LH_CAD.f3d
 
 Copy opened as a new, unsaved document and closed without saving. Components: 511101.
@@ -756,6 +1162,42 @@ Copy opened as a new, unsaved document and closed without saving. Components: 51
 | tray runs cass_len | PASS |
 | tray starts at the decor back plate | PASS |
 | tray height follows side_h | PASS |
+| revert: every body back to its before box, healthy | PASS |
+
+4. Revert: 7 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
+
+## Edit test: 511201_P01_LINING-TRAY-BACK-LOWER-B1_CAD.f3d
+
+Copy opened as a new, unsaved document and closed without saving. Components: 511201.
+
+1. Reopen: timeline 7 items, 0 not healthy; sketches 1, 1 fully constrained; parametric.
+2. Edit pod_w -> 2300 mm, half_pw -> 1100.61 mm, half_fw -> 1098.99 mm, back_ph -> 1080 mm, stile_pitch_max -> 300 mm: rebuild 7 items, 0 not healthy, 0 sketches not fully constrained.
+
+| Parameter | Before | After |
+|---|---|---|
+| pod_w | 2500 | 2300 |
+| half_pw | 1200.61 | 1100.61 |
+| half_fw | 1198.99 | 1098.99 |
+| back_ph | 1118.61 | 1080 |
+| stile_pitch_max | 400 | 300 |
+| frm_len | 1198.99 | 1098.99 |
+| stile_n_mid | 2 | 3 |
+| stile_pitch | 392.997 | 269.748 |
+| cass_len | 1164.87 | 1064.87 |
+| cass_h | 1118.61 | 1080 |
+| pnl_h | 1118.61 | 1080 |
+
+3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):
+
+| Body | Before | After |
+|---|---|---|
+| 511201 / TRAY - STEEL 0.5 WITH RETURNS AND LIPS | (-1166.0, 766.0, 112.26, -1.13, 800.0, 1230.87) | (-1066.0, 766.0, 112.26, -1.13, 800.0, 1192.26) |
+
+| Check | Result |
+|---|---|
+| tray runs cass_len | PASS |
+| tray height follows cass_h | PASS |
+| tray stops seam_gap / 2 short of X 0 | PASS |
 | revert: every body back to its before box, healthy | PASS |
 
 4. Revert: 7 items, 0 not healthy, 0 sketches not fully constrained; bodies back to before: True.
