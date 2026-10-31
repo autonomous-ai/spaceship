@@ -59,8 +59,7 @@ We follow the guideline's milestones, with a gate after each one. Agents never o
 
 ### Phase 0: Fusion access (half a day, 1 Engineer on this Mac)
 
-Fusion's built-in MCP server already works on this Mac. I ran a test script through it.
-- Register it with Claude Code and Codex, and add this Mac to the Swarm. It only answers locally, so the Fusion work runs here.
+Fusion's built-in MCP server already works on this Mac. I ran a test script through it, and it's now registered with Claude Code and Codex. It only answers locally, so all Engineers run on this Mac, which needs to join the Swarm.
 - Prove the guideline's edit test (§4.4). Build one part from a fully constrained sketch with named parameters, save it as .f3d, export it to STEP, then change a parameter and confirm it rebuilds cleanly.
 - Drawing spike: produce one ISO drawing sheet. Fusion's API has little drawing support, so we also try computer use and a scripted fallback, which the guideline allows if it is accurate and updatable (§6.1).
 
@@ -108,6 +107,8 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
 
 The Engineers split by assembly so they never share files: BASE and WALL; FRONT (door and glass); CEILING, AIR and ELECTRICAL; LINING and INTERIOR; PACKAGING and the assembly guide.
 
+There is only one Fusion, and the MCP works on whichever document is active. So the Engineers write and review their CAD scripts in parallel, and Fusion runs them one at a time.
+
 **Gate C:** ready for prototype. Every scope is marked as one of: done, waiting on a supplier, or needs a test sample.
 
 ### Phase 4: prototype (the team in Vietnam)
@@ -124,12 +125,13 @@ About 2 weeks to a prototype-ready package. That assumes the drawing spike works
 2. **Light vs quiet.** This may force more mass or a looser weight target. We'll have numbers in Milestone 1 and a decision at Gate A.
 3. **Review speed.** Every gate waits on two engineers. We'll keep review packets small, and it's best if they join this project.
 4. **US rules.** UL, ASTM E84 or sprinkler rules could change materials or electrics. We check them in Milestone 1.
+5. **One Fusion.** A single Fusion on this Mac is the bottleneck for CAD and drawings. Fusion runs scripts one at a time from a queue. If that's too slow, we add a second Fusion seat on another machine.
 
 ## Decisions for Dee
 
 1. Approve the goals and this plan.
 2. Can the hardware engineering lead and the indoor pod lead join this project to approve gates directly? Otherwise, reviews go through you.
-3. Register Fusion's MCP for agents and add this Mac to the Swarm. I can do the registration if you say so.
+3. Add this Mac to the Swarm. Fusion's MCP is already registered for Claude Code and Codex.
 4. Include US compliance (UL, ASTM E84, NFPA 13) in v2? I recommend yes.
 
 Rulings that need no answer: documents are in English with the team's Vietnamese part names alongside, and v2 files follow the guideline's folder layout (§12) under `v2/`.
