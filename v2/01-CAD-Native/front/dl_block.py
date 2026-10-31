@@ -84,6 +84,8 @@ OWN = [
     ("stop_t", "2 mm", "mm", "assumption", "stop: an aluminium angle leg 2 thick on DL's door-side face"),
     ("stop_reach", "door_xl - dl_w + ps_s", "mm", "calculation", "the stop reaches from DL's face across the 11 mm gap and 15 over the glass"),
     ("hinge_skip", "10 mm", "mm", "assumption", "the stop and seal stop 10 short of each hinge space"),
+    ("stop_fl", "22 mm", "mm", "assumption",
+     "the stop's flange on DL's door-side face, bonded (an aluminium angle 22 x stop_reach x 2; tape HOLD)"),
     # ---- the tube frame (stage 2): v1's DL frame (16 mm steel box, 60 x 20 hinge members; sources/v1 decor frame
     # drawing) in 6063-T6 aluminium tube (D-79). It carries the door: hinges -> hinge post -> rings -> bolt-line
     # post -> back plate -> J-FRONT-01 bolts -> left wall (ISS-045)
@@ -105,6 +107,33 @@ OWN = [
     ("fr_z3", "(hinge_z2 + hinge_z3) / 2 - fr_w / 2", "mm", "calculation", "ring between hinges 2 and 3"),
     ("fr_z4", "dt_zb + dl_m * dl_skin_t - dl_skin_t * dl_k - fr_w", "mm", "calculation",
      "top ring, just under the slope at DL's door-side face"),
+    # J-FRONT-02 (PM ruling 2026-11-01): DL stands on 2 spigots on the band, a round hole and a slot, 100 in from the
+    # ends of its bottom edge, measured on the bottom ring tube's centre line (13 in from the outer faces: a hole on
+    # the band's own centre line, 20 in, would break the 20 mm tube's inner wall)
+    ("sp_c", "dl_skin_t + fr_w / 2", "mm", "calculation", "the bottom ring tube's centre line, in from the outer faces"),
+    ("sp_e", "100 mm", "mm", "source", "R-J13: spigots 100 in from the ends of the edge a part is set down on"),
+    ("sp_hole", "8.5 mm", "mm", "source", "R-J13: spigot hole 8.5 round at one end, 8.5 x 14 slot at the other"),
+    ("sp_slot", "14 mm", "mm", "source", "R-J13: the slot 14 long along the edge"),
+    ("sp_skin", "16 mm", "mm", "calculation", "clearance in the bottom skin round each spigot's rivnut head (12.96)"),
+    ("sp_d1x", "dl_x2 / dl_l1", "", "calculation", "outer facet direction, X"),
+    ("sp_d1y", "-(dl_y2 - dl_y1) / dl_l1", "", "calculation", "outer facet direction, Y"),
+    ("sp_n1x", "(dl_y2 - dl_y1) / dl_l1", "", "calculation", "outer facet normal into DL, X"),
+    ("sp_n1y", "dl_x2 / dl_l1", "", "calculation", "outer facet normal into DL, Y"),
+    ("sp_d2x", "(dl_x3 - dl_x2) / dl_l2", "", "calculation", "front facet direction, X"),
+    ("sp_d2y", "-(dl_y3 - dl_y2) / dl_l2", "", "calculation", "front facet direction, Y"),
+    ("sp_n2x", "(dl_y3 - dl_y2) / dl_l2", "", "calculation", "front facet normal into DL, X"),
+    ("sp_n2y", "(dl_x3 - dl_x2) / dl_l2", "", "calculation", "front facet normal into DL, Y"),
+    ("sp_tk", "sp_c * (1 - sp_n1x) / sp_d1x", "mm", "calculation", "the knee on the ring's centre line, along the outer facet"),
+    ("sp_side", "(-pod_d / 2 + decor_d) - (-dl_y1 + sp_d1y * sp_tk + sp_c * sp_n1y)", "mm", "calculation",
+     "the bottom edge's run along the side, from the back to the knee"),
+    ("sp_ta", "sp_tk + sp_e - sp_side", "mm", "calculation", "the round hole, along the outer facet from its corner"),
+    ("sp_ax", "-pod_w / 2 + sp_d1x * sp_ta + sp_c * sp_n1x", "mm", "calculation", "the round hole, X (-1176.7)"),
+    ("sp_ay", "-dl_y1 + sp_d1y * sp_ta + sp_c * sp_n1y", "mm", "calculation", "the round hole, Y (-718.0)"),
+    ("sp_te", "(dl_w - sp_c - dl_x2 - sp_c * sp_n2x) / sp_d2x", "mm", "calculation",
+     "the front facet's end at the door side, on the ring's centre line"),
+    ("sp_bx", "-pod_w / 2 + dl_x2 + sp_d2x * (sp_te - sp_e) + sp_c * sp_n2x", "mm", "calculation",
+     "the slot's centre, X (-1073.9)"),
+    ("sp_by", "-dl_y2 + sp_d2y * (sp_te - sp_e) + sp_c * sp_n2y", "mm", "calculation", "the slot's centre, Y (-780.6)"),
 ]
 
 PARTS = {
@@ -183,7 +212,7 @@ def frame_members():
 
 # part-only designs for the part drawings (a base view shows its whole design): the full block is built and checked,
 # then every other component is removed
-SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN"}
+SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN", "stop": "STOP"}
 
 
 def scope_doc(scope):
@@ -250,6 +279,18 @@ def build(app):
                               ("hinge_x0 - hinge_clear", GY + " + hinge_clamp_t / 2 + hinge_clear")],
               "z", "%s - hinge_clamp_h / 2 - hinge_clear" % zc, "%s + hinge_clamp_h / 2 + hinge_clear" % zc,
               "POCKET - HINGE H%d (HOLD SPACE)" % (i + 1), "CUT - HINGE POCKET H%d IN THE SKIN" % (i + 1), CUT, skin)
+    # J-FRONT-02: clearance in the bottom skin round the band spigots' rivnut heads (the slot's runs along the facet)
+    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "CLEARANCE - BAND SPIGOT (ROUND HOLE)",
+                   [("sp_ax", "sp_ay")], "sp_skin")
+    L.extrude_span(c, sk, "z", ZB + " - 1 mm", ZB + " + dl_skin_t + 1 mm", CUT, [skin], "CUT - SPIGOT CLEARANCE ROUND",
+                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    hl, hw = "((sp_slot - sp_hole) / 2 + sp_skin / 2)", "(sp_skin / 2)"
+    prism(c, ("x", "y"), [("sp_bx - %s * sp_d2x - %s * sp_n2x" % (hl, hw), "sp_by - %s * sp_d2y - %s * sp_n2y" % (hl, hw)),
+                          ("sp_bx + %s * sp_d2x - %s * sp_n2x" % (hl, hw), "sp_by + %s * sp_d2y - %s * sp_n2y" % (hl, hw)),
+                          ("sp_bx + %s * sp_d2x + %s * sp_n2x" % (hl, hw), "sp_by + %s * sp_d2y + %s * sp_n2y" % (hl, hw)),
+                          ("sp_bx - %s * sp_d2x + %s * sp_n2x" % (hl, hw), "sp_by - %s * sp_d2y + %s * sp_n2y" % (hl, hw))],
+          "z", ZB + " - 1 mm", ZB + " + dl_skin_t + 1 mm", "CLEARANCE - BAND SPIGOT (SLOT)", "CUT - SPIGOT CLEARANCE SLOT",
+          CUT, skin)
     skin.name = "DL SKIN ACP 3"
     bodies["SKIN"] = skin
 
@@ -280,8 +321,14 @@ def build(app):
         b = L.box_body(design, c_ps, "PS%d" % (i + 1), (XL + " + door_xl", XL + " + door_xl + ps_s"), (gi, gi + " + stop_gap"),
                        (z0, z1), "FRAME-STOP SEAL PS 1515 - HINGE SIDE %d" % (i + 1))
         bodies["PS%d" % (i + 1)] = b
-        b = L.box_body(design, c_st, "ST%d" % (i + 1), (xs0, xs1), (gi + " + stop_gap", gi + " + stop_gap + stop_t"),
-                       (z0, z1), "HINGE-SIDE STOP %d (ANGLE LEG)" % (i + 1))
+        # an angle: the leg the seal sits on, and a flange bonded to DL's door-side face
+        y0 = "(%s + stop_gap)" % gi
+        ang = [(xs0, y0), (xs1, y0), (xs1, "%s + stop_t" % y0), ("%s + stop_t" % xs0, "%s + stop_t" % y0),
+               ("%s + stop_t" % xs0, "%s + stop_fl" % y0), (xs0, "%s + stop_fl" % y0)]
+        f = prism(c_st, ("x", "y"), ang, "z", z0, z1, "SECTION - HINGE-SIDE STOP %d (ANGLE)" % (i + 1),
+                  "EXTRUDE - HINGE-SIDE STOP %d" % (i + 1))
+        b = f.bodies.item(0)
+        b.name = "HINGE-SIDE STOP %d (ANGLE, BONDED)" % (i + 1)
         bodies["ST%d" % (i + 1)] = b
 
     # ---- 351104 the welded tube frame (stage 2)
@@ -293,8 +340,28 @@ def build(app):
     L.extrude_span(c, sk, "y", yb1 + " - fr_t - 1 mm", yb1 + " + 0.5 mm", CUT, [tubes["B04"]],
                    "CUT - J-FRONT-01 RIVNUT TAILS AND BOLT TIPS",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    # J-FRONT-02: the spigot hole in the outer facet's bottom ring tube and the slot (along the facet) in the front's
+    zr0 = ZB + " + dl_skin_t"
+    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLE - J-FRONT-02 SPIGOT (ROUND)",
+                   [("sp_ax", "sp_ay")], "sp_hole")
+    L.extrude_span(c, sk, "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", CUT, [tubes["R1O"]], "CUT - J-FRONT-02 SPIGOT HOLE",
+                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    hs = "((sp_slot - sp_hole) / 2)"
+    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLES - J-FRONT-02 SPIGOT SLOT ENDS",
+                   [("sp_bx - %s * sp_d2x" % hs, "sp_by - %s * sp_d2y" % hs),
+                    ("sp_bx + %s * sp_d2x" % hs, "sp_by + %s * sp_d2y" % hs)], "sp_hole")
+    L.extrude_span(c, sk, "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", CUT, [tubes["R1F"]], "CUT - J-FRONT-02 SLOT ENDS",
+                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    hw = "(sp_hole / 2)"
+    prism(c, ("x", "y"), [("sp_bx - %s * sp_d2x - %s * sp_n2x" % (hs, hw), "sp_by - %s * sp_d2y - %s * sp_n2y" % (hs, hw)),
+                          ("sp_bx + %s * sp_d2x - %s * sp_n2x" % (hs, hw), "sp_by + %s * sp_d2y - %s * sp_n2y" % (hs, hw)),
+                          ("sp_bx + %s * sp_d2x + %s * sp_n2x" % (hs, hw), "sp_by + %s * sp_d2y + %s * sp_n2y" % (hs, hw)),
+                          ("sp_bx - %s * sp_d2x + %s * sp_n2x" % (hs, hw), "sp_by - %s * sp_d2y + %s * sp_n2y" % (hs, hw))],
+          "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", "SLOT - J-FRONT-02 SPIGOT (MIDDLE)", "CUT - J-FRONT-02 SLOT MIDDLE",
+          CUT, tubes["R1F"])
 
-    acp = L.material(design, "ACP 3 mm PE core EV3038 (1300 kg/m3, calculation)", "Aluminum", 1300.0)
+    # the selected ACP's 0.21 mm skins give 3.5 kg/m2 (selection VT01), as WALL, CEILING and AIR count it
+    acp = L.material(design, "ACP 3 mm PE core EV3038, 0.21 mm skins (3.5 kg/m2, calculation)", "Aluminum", 3500.0 / 3.0)
     alu = L.material(design, "Aluminium (2700 kg/m3)", "Aluminum", 2700.0)
     env = L.material(design, "ENVELOPE - mass carried in the parts list (1 kg/m3)", "Aluminum", 1.0)
     al6063 = L.material(design, "Aluminium 6063-T6 tube (2700 kg/m3)", "Aluminum", 2700.0)
@@ -362,24 +429,28 @@ def export_all(app):
         (PN, NAME, VN, 1, "assembly", "-", None, "", "DRAFT", "D-19, D-49, D-79; PM rulings 2026-10-31; this build",
          "skin bonded to the welded tube frame 351104; ships with the hinges' frame halves fitted (packing plan)"),
         ("351101", PARTS["SKIN"][1], PARTS["SKIN"][2], 1, "made: ACP panels, 45 deg mitred joints as v1, bonded to "
-         "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 1300 kg/m3)", "DRAFT",
-         "D-12, D-49; skeleton DL shape", "three hinge pockets (HOLD sizes); one flat panel per outside face: " +
+         "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 3.5 kg/m2: selection VT01)", "DRAFT",
+         "D-12, D-49; skeleton DL shape", "three hinge pockets (HOLD sizes); 2 clearance holes in the bottom over the "
+         "band spigots (J-FRONT-02); one flat panel per outside face: " +
          DXF_SKIN_REL.split("/")[-1] + "; bond to the frame per the joints register's ACP bond spec"),
         (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "made: welded frame, %d tubes (cut list %s)" % (
             len(members), CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5, "
          "finish: mill finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
          "v1 decor frame drawing (DL frame, 60 x 20 hinge members); D-79; joints register HOLD-10, ISS-045",
          "%.1f m of tube; the door's load: hinges, hinge post H1 to H3, rings, bolt-line post B04 (6 holes 14 for "
-         "the J-FRONT-01 rivnut tails), back plate, bolts; hinge fixing holes when the hinge is named (HOLD H01)" % tube_m),
+         "the J-FRONT-01 rivnut tails), back plate, bolts; hinge fixing holes when the hinge is named (HOLD H01); "
+         "J-FRONT-02: spigot hole 8.5 in the outer facet's bottom tube and slot 8.5 x 14 in the front facet's" % tube_m),
         ("351102", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
          "aluminium EN AW-5754-H22 sheet 2.0 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "joints register J-FRONT-01 (HOLD-10 answered: 2 mm aluminium)",
          "DXF " + DXF_BACK_REL.split("/")[-1] + "; 6 holes 9.53 +0.10/0 for the rivnuts 838003 (counted in the joints "
          "register) on X -1224, 3 per side panel (critical: on the wall's bolt line); blind-riveted to the frame "
          "(HOLD: rivet)"),
-        ("351103", PARTS["STOP"][1], PARTS["STOP"][2], 1, "made (aluminium angle, 4 lengths between the hinges)",
-         "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20)", "cad", "calculation (CAD)", "DRAFT",
-         "selection C3 (frame gap 2 to 6)", "screwed through DL's door-side skin into the frame's door-side tubes"),
+        ("351103", PARTS["STOP"][1], PARTS["STOP"][2], 1, "made (aluminium angle, 4 lengths between the hinges, "
+         "bonded to DL's door-side face: keeps a drawing with the bond area and surface prep)",
+         "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20); general tolerance ISO 2768-m", "cad",
+         "calculation (CAD)", "DRAFT", "selection C3 (frame gap 2 to 6)",
+         "its flange bonded to DL's door-side skin with structural tape (HOLD: product); the 4 lengths on its drawing"),
         ("368005", "FRONT - FRAME-STOP SEAL", "Gioăng chặn cửa", 1, "bought by length",
          "athmer PS 1515 P Flex, PVC co-extrusion, self-adhesive", 0.07, "assumption", "source (product)",
          "hardware selection C3; joints register", "hinge-side run %.0f mm in 4 pieces (DT's run in DT's list)" % seal_len),

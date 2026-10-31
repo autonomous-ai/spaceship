@@ -65,6 +65,12 @@ XL, XR = "-pod_w / 2", "pod_w / 2"
 YF, YB = "-pod_d / 2", "-pod_d / 2 + decor_d"
 GY = "-glass_y"
 ZT = "fg_vis_zt"                   # DT's underside = dt_zb
+YBP = "(%s - dt_stop_gap)" % YB    # the back plate's back face, 2.26 in front of the ceiling (J-FRONT-03)
+
+
+def jf3_x(i):
+    """X of the i-th of the 4 J-FRONT-03 bolts (register 2.9: 220 in from each end of DT's edge, even between)."""
+    return "(jf3_x0 + jf3_e + %d * (%s + dt_xr - jf3_x0 - 2 * jf3_e) / 3)" % (i, XL)
 
 
 def latch_x(z):
@@ -76,7 +82,36 @@ CATCH_X = "(%s - st_end - st_l / 2)" % latch_x("leaf_zt")      # the catch's cen
 
 OWN = [
     ("dt_skin_t", "3 mm", "mm", "source", "ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)"),
-    ("dt_back_t", "3 mm", "mm", "assumption", "back plate in the same 3 mm ACP"),
+    ("dt_back_t", "2 mm", "mm", "confirmed",
+     "back plate 2 mm aluminium: J-FRONT-03 puts the ceiling bolts' rivnuts in it, 1.0 to 2.7 thick at each bolt "
+     "(HOLD-10: 2 mm; PM ruling 2026-11-01)"),
+    # ---- J-FRONT-03 (joints register; PM ruling 2026-11-01): DT's back plate bolted to the ceiling's front tubes
+    ("dt_stop_gap", "2.26 mm", "mm", "source",
+     "J-FRONT-03: DT's back plate stands 2.26 in front of the ceiling's front face (Y -645), the stopped seam's gap "
+     "(rivnut head 0.76 on a 1.5 stop washer, R-J5)"),
+    ("jf3_x0", "-1201.74 mm", "mm", "source", "joints register 2.9: DT's bolt line starts at C1's frame end, X -1201.74"),
+    ("jf3_e", "220 mm", "mm", "source", "R-J13: the end bolts 220 in from each end of the edge"),
+    ("jf3_z", "2374 mm", "mm", "source", "R-J15: the bolt line on the ceiling's front tube centre, Z 2374"),
+    ("jf3_hole", "9.53 mm", "mm", "source", "rivnut 838003 hole 9.53 +0.10/0 (joints register H-03)"),
+    ("jf3_tail", "14 mm", "mm", "calculation",
+     "holes in the top back tube's back wall round the rivnut tails and the bolt tips, as J-FRONT-01's"),
+    ("fr_wtop", "40 mm", "mm", "confirmed",
+     "the back ring's top tube 40 x 20, so the J-FRONT-03 rivnut tails at Z 2374 go into it (PM ruling 2026-11-01)"),
+    # DT's two locating spigots stand on DR's ledge (J-FRONT-03; PM ruling 2026-11-01): a round hole and a slot
+    # along X, 140 apart, in DT's bottom back tube; clearance in the skin for the rivnut heads
+    ("sp_x1", "-pod_w / 2 + dt_xr - 179 mm", "mm", "confirmed",
+     "the round spigot hole, X 270: 36 in from the left end of DR's ledge tube (X 234 to 449)"),
+    ("sp_dx", "140 mm", "mm", "confirmed", "the slot 140 from the round hole (PM ruling 2026-11-01)"),
+    ("sp_y", "-pod_d / 2 + decor_d - 12.88 mm", "mm", "calculation",
+     "the spigots' Y, -657.88: the middle of where DR's ledge tube (Y -666.5 to -646.5) and DT's bottom back tube "
+     "overlap"),
+    ("sp_hole", "8.5 mm", "mm", "source", "R-J13: spigot hole 8.5 round at one end, 8.5 x 14 slot at the other"),
+    ("sp_slot", "14 mm", "mm", "source", "R-J13: the slot 14 long along the edge"),
+    ("sp_skin", "16 mm", "mm", "calculation",
+     "clearance in DT's underside skin round each spigot's rivnut head (12.96); the slot's is 16 x 22 for its play"),
+    ("stop_fl", "22 mm", "mm", "assumption",
+     "the top stop's flange under DT's underside, screwed up into the rail F02 (an aluminium angle 22 x 18 x 2)"),
+    ("stop_hole", "4.5 mm", "mm", "assumption", "M4 countersunk screws through the stop's flange (product HOLD)"),
     ("dt_m", "(dl_zo - dt_zb) / dl_w", "", "calculation", "rise of the slope DT shares with DL, per unit of X"),
     ("dt_k", "sqrt(1 + dt_m * dt_m)", "", "calculation", "for pushing the slope line in by the skin"),
     ("slot_clear", "1 mm", "mm", "assumption", "fitting clearance each side of the glass channel in the skin slot"),
@@ -102,8 +137,10 @@ OWN = [
     ("fr_w", "20 mm", "mm", "calculation",
      "frame tube 20 x 20 x 1.5, 6063-T6 (D-79): bending stiffness about v1's 16 x 16 x 1 steel box, as DR"),
     ("fr_t", "1.5 mm", "mm", "calculation", "frame tube wall, as fr_w"),
-    ("rail_clear", "3.5 mm", "mm", "assumption",
-     "the catch and stop rail stands this far behind the fixed glass's top channel (its back face at Y -691.5)"),
+    ("rail_clear", "-pod_d / 2 + decor_d - dt_stop_gap - dt_back_t - 2 * fr_w - (-glass_y + gu_prof_w / 2)", "mm",
+     "calculation",
+     "the catch and stop rail sits against the back ring's bottom tube, so it stands 2.24 behind the fixed glass's "
+     "top channel (its back face at Y -691.5); J-FRONT-03 moved the back ring 1.26 forward"),
     # the lower front facet and the top chamfer as lines, for the frame
     ("dt_fdx", "fix_xtr - dt_x2", "mm", "calculation", "lower front facet in plan, along X"),
     ("dt_fdy", "pod_d / 2 - dt_y2", "mm", "calculation", "lower front facet in plan, along Y"),
@@ -140,7 +177,7 @@ S20 = "20 x 20 x 1.5"
 def frame_members():
     """DT's welded tube frame as data (as DR's): a back ring just in front of the back plate, a tube along the lower
     front facet, a tube under the top chamfer, the rail over the door's catch and top stop, and cross tubes."""
-    yb0, yb1 = "(%s - dt_back_t - fr_w)" % YB, "(%s - dt_back_t)" % YB
+    yb0, yb1 = "(%s - dt_back_t - fr_w)" % YBP, "(%s - dt_back_t)" % YBP
     zb3 = "(%s + dt_skin_t)" % ZT
     bot, top = FL.line(0, 1, ZT), FL.line(0, -1, "-pod_h")
     right = FL.line(-1, 0, "-(%s + dt_xr)" % XL)
@@ -153,7 +190,7 @@ def frame_members():
                   "section": S20, "axis": axis, "lengthwise": lengthwise,
                   "ends": ends or "mitred to its neighbours (angles on the frame drawing)"})
 
-    back = FL.ring([(bot, "dt_skin_t", "fr_w"), (right, "0 mm", "fr_w"), (top, "dt_skin_t", "fr_w"),
+    back = FL.ring([(bot, "dt_skin_t", "fr_w"), (right, "0 mm", "fr_w"), (top, "dt_skin_t", "fr_wtop"),
                     (slope, "dt_skin_t", "fr_w")])
     for k, (key, nm) in enumerate((("B01", "BACK RING BOTTOM"), ("B02", "BACK RING DR JOINT"), ("B03", "BACK RING TOP"),
                                    ("B04", "BACK RING SLOPE OVER DL"))):
@@ -161,7 +198,7 @@ def frame_members():
     # a post in the middle of the back ring, as v1
     xm = "((%s + dl_w + %s + dt_xr) / 2 - fr_w / 2)" % (XL, XL)
     add("B05", "BACK RING POST", ("x", "z"), [(xm, "%s + fr_w" % zb3), ("%s + fr_w" % xm, "%s + fr_w" % zb3),
-                                             ("%s + fr_w" % xm, "pod_h - dt_skin_t - fr_w"), (xm, "pod_h - dt_skin_t - fr_w")],
+                                             ("%s + fr_w" % xm, "pod_h - dt_skin_t - fr_wtop"), (xm, "pod_h - dt_skin_t - fr_wtop")],
         "y", yb0, yb1, axis=(1, 2), ends="square both ends")
     # along the lower front facet (plan), on the underside skin
     fac = FL.line("dt_fnx", "dt_fny", "dt_fc")
@@ -210,7 +247,7 @@ def frame_members():
 
 # part-only designs for the part drawings (a base view shows its whole design): the full block is built and checked,
 # then every other component is removed
-SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN"}
+SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN", "stop": "STOP"}
 
 
 def scope_doc(scope):
@@ -246,15 +283,15 @@ def build(app):
 
     # ---- 351201 skin: the skeleton's DT shape, shelled
     c = comp("SKIN")
-    plan = [(XL, YB), (XL, "-dl_y1"), (XL + " + dl_x2 + 4 mm", "-dt_y3"), (XL + " + dt_x2", "-dt_y2"),
-            (XL + " + fix_xtr", YF), (XL + " + dt_xr", "-ch_yb"), (XL + " + dt_xr", YB)]
+    plan = [(XL, YBP), (XL, "-dl_y1"), (XL + " + dl_x2 + 4 mm", "-dt_y3"), (XL + " + dt_x2", "-dt_y2"),
+            (XL + " + fix_xtr", YF), (XL + " + dt_xr", "-ch_yb"), (XL + " + dt_xr", YBP)]
     f = prism(c, ("x", "y"), plan, "z", "dt_zb", "pod_h", "PLAN - DT FACETS (SKELETON)", "EXTRUDE - DT OUTER SHAPE")
     skin = f.bodies.item(0)
     prism(c, ("x", "z"), [(XL, "dt_zb"), (XL + " + dl_w", "dt_zb"), (XL, "dl_zo")], "y", YF, YB,
           "SLOPE - DT BOTTOM OVER DL", "CUT - DT BOTTOM SLOPE", CUT, skin)
     prism(c, ("y", "z"), [(YF, "ch_zlo"), ("-ch_yb", "pod_h"), (YF, "pod_h")], "x", XL, XR,
           "CHAMFER - DT TOP FRONT", "CUT - DT TOP CHAMFER", CUT, skin)
-    yb, xj = L.ev(design, YB), L.ev(design, XL + " + dt_xr")
+    yb, xj = L.ev(design, YBP), L.ev(design, XL + " + dt_xr")
     open_faces, kinds = adsk.core.ObjectCollection.create(), []
     for fc in skin.faces:
         p = fc.pointOnFace
@@ -281,6 +318,18 @@ def build(app):
             (L.free_x(ZT + " - 1 mm"), GY + " + gu_prof_w / 2 + slot_clear")]
     prism(c, ("x", "y"), slot, "z", ZT + " - 1 mm", ZT + " + dt_skin_t + 1 mm",
           "SLOT - FIXED GLASS TOP CHANNEL", "CUT - SKIN SLOT FOR THE TOP CHANNEL", CUT, skin)
+    # clearance round DR's two ledge spigots' rivnut heads (J-FRONT-03): round at the hole, long at the slot
+    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "CLEARANCE - DR LEDGE SPIGOT (ROUND HOLE)",
+                   [("sp_x1", "sp_y")], "sp_skin")
+    L.extrude_span(c, sk, "z", ZT + " - 1 mm", ZT + " + dt_skin_t + 1 mm", CUT, [skin], "CUT - SPIGOT CLEARANCE ROUND",
+                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    xs2 = "(sp_x1 + sp_dx)"
+    sk_pts = [("%s - (sp_slot - sp_hole) / 2 - sp_skin / 2" % xs2, "sp_y - sp_skin / 2"),
+              ("%s + (sp_slot - sp_hole) / 2 + sp_skin / 2" % xs2, "sp_y - sp_skin / 2"),
+              ("%s + (sp_slot - sp_hole) / 2 + sp_skin / 2" % xs2, "sp_y + sp_skin / 2"),
+              ("%s - (sp_slot - sp_hole) / 2 - sp_skin / 2" % xs2, "sp_y + sp_skin / 2")]
+    prism(c, ("x", "y"), sk_pts, "z", ZT + " - 1 mm", ZT + " + dt_skin_t + 1 mm",
+          "CLEARANCE - DR LEDGE SPIGOT (SLOT)", "CUT - SPIGOT CLEARANCE SLOT", CUT, skin)
     skin.name = "DT SKIN ACP 3"
     bodies["SKIN"] = skin
 
@@ -293,9 +342,14 @@ def build(app):
     xt = "(%s + dl_w - (pod_h - dt_skin_t - dt_zb - dt_skin_t * dt_k) / dt_m)" % XL
     back = [(xb, "dt_zb + dt_skin_t"), (XL + " + dt_xr", "dt_zb + dt_skin_t"), (XL + " + dt_xr", "pod_h - dt_skin_t"),
             (xt, "pod_h - dt_skin_t")]
-    f = prism(c, ("x", "z"), back, "y", YB + " - dt_back_t", YB, "OUTLINE - DT BACK PLATE", "EXTRUDE - DT BACK PLATE")
-    bodies["BACK"] = f.bodies.item(0)
-    bodies["BACK"].name = "DT BACK PLATE ACP 3"
+    f = prism(c, ("x", "z"), back, "y", YBP + " - dt_back_t", YBP, "OUTLINE - DT BACK PLATE", "EXTRUDE - DT BACK PLATE")
+    bp = f.bodies.item(0)
+    sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - J-FRONT-03 RIVNUTS (4)",
+                   [(jf3_x(i), "jf3_z") for i in range(4)], "jf3_hole")
+    L.extrude_span(c, sk, "y", YBP + " - dt_back_t - 1 mm", YBP + " + 1 mm", CUT, [bp], "CUT - J-FRONT-03 RIVNUT HOLES",
+                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    bp.name = "DT BACK PLATE AL 2"
+    bodies["BACK"] = bp
 
     # ---- the catch under DT, behind the strike (the door stops against it), and the top stop with its seal
     sx1 = "(%s - st_end)" % latch_x("leaf_zt")
@@ -310,23 +364,55 @@ def build(app):
     bodies["PS"] = L.box_body(design, c, "PS", (x_stop0, x_stop1), (gi, gi + " + stop_gap"),
                               (ZT + " - ps_s", ZT), "FRAME-STOP SEAL PS 1515 - TOP (COMPRESSED TO THE GAP)")
     c = comp("STOP")
-    bodies["STOP"] = L.box_body(design, c, "STOP", (x_stop0, x_stop1), (gi + " + stop_gap", gi + " + stop_gap + stop_t"),
-                                (ZT + " - stop_h", ZT), "DOOR TOP STOP (ANGLE LEG)")
+    # an angle: the leg the seal sits on, and a flange under DT's underside screwed up into the rail F02
+    ys0 = "(%s + stop_gap)" % gi
+    ang = [(ys0, ZT + " - stop_h"), ("%s + stop_t" % ys0, ZT + " - stop_h"), ("%s + stop_t" % ys0, ZT + " - stop_t"),
+           ("%s + stop_fl" % ys0, ZT + " - stop_t"), ("%s + stop_fl" % ys0, ZT), (ys0, ZT)]
+    f = prism(c, ("y", "z"), ang, "x", x_stop0, x_stop1, "SECTION - DOOR TOP STOP (ANGLE)", "EXTRUDE - DOOR TOP STOP")
+    stp = f.bodies.item(0)
+    yh = "(%s + stop_t + (stop_fl - stop_t) / 2)" % ys0
+    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLES - TOP STOP SCREWS (5)",
+                   [("(%s + 50 mm + %d * (%s - %s - 100 mm) / 4)" % (x_stop0, k, x_stop1, x_stop0), yh) for k in range(5)],
+                   "stop_hole")
+    L.extrude_span(c, sk, "z", ZT + " - stop_t - 1 mm", ZT + " + 1 mm", CUT, [stp], "CUT - TOP STOP SCREW HOLES",
+                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    stp.name = "DOOR TOP STOP ANGLE 22 X 18 X 2"
+    bodies["STOP"] = stp
 
     # ---- 351204 the welded tube frame (stage 2)
     c = comp("FRAME")
     tubes = FL.build_members(design, c, L, frame_members(), "fr_t")
     bodies.update(tubes)
+    # J-FRONT-03: holes in the top back tube's back wall round the rivnut tails and bolt tips
+    yb1 = YBP + " - dt_back_t"
+    sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - J-FRONT-03 RIVNUT TAILS (4)",
+                   [(jf3_x(i), "jf3_z") for i in range(4)], "jf3_tail")
+    L.extrude_span(c, sk, "y", yb1 + " - fr_t - 1 mm", yb1 + " + 0.5 mm", CUT, [tubes["B03"]],
+                   "CUT - J-FRONT-03 RIVNUT TAILS", profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    # J-FRONT-03: the spigot hole and slot in the bottom back tube's bottom wall, over DR's ledge
+    zb3 = ZT + " + dt_skin_t"
+    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLES - SPIGOT ROUND AND SLOT ENDS",
+                   [("sp_x1", "sp_y"), ("sp_x1 + sp_dx - (sp_slot - sp_hole) / 2", "sp_y"),
+                    ("sp_x1 + sp_dx + (sp_slot - sp_hole) / 2", "sp_y")], "sp_hole")
+    L.extrude_span(c, sk, "z", zb3 + " - 1 mm", zb3 + " + fr_t + 0.5 mm", CUT, [tubes["B01"]], "CUT - SPIGOT HOLE AND SLOT ENDS",
+                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    sl = [("sp_x1 + sp_dx - (sp_slot - sp_hole) / 2", "sp_y - sp_hole / 2"),
+          ("sp_x1 + sp_dx + (sp_slot - sp_hole) / 2", "sp_y - sp_hole / 2"),
+          ("sp_x1 + sp_dx + (sp_slot - sp_hole) / 2", "sp_y + sp_hole / 2"),
+          ("sp_x1 + sp_dx - (sp_slot - sp_hole) / 2", "sp_y + sp_hole / 2")]
+    prism(c, ("x", "y"), sl, "z", zb3 + " - 1 mm", zb3 + " + fr_t + 0.5 mm", "SLOT - SPIGOT (MIDDLE)",
+          "CUT - SPIGOT SLOT MIDDLE", CUT, tubes["B01"])
 
-    acp = L.material(design, "ACP 3 mm PE core EV3038 (1300 kg/m3, calculation)", "Aluminum", 1300.0)
+    # the selected ACP's 0.21 mm skins give 3.5 kg/m2 (selection VT01), as WALL, CEILING and AIR count it
+    acp = L.material(design, "ACP 3 mm PE core EV3038, 0.21 mm skins (3.5 kg/m2, calculation)", "Aluminum", 3500.0 / 3.0)
     alu = L.material(design, "Aluminium (2700 kg/m3)", "Aluminum", 2700.0)
     al6063 = L.material(design, "Aluminium 6063-T6 tube (2700 kg/m3)", "Aluminum", 2700.0)
     for k in tubes:
         bodies[k].material = al6063
     env = L.material(design, "ENVELOPE - mass carried in the parts list (1 kg/m3)", "Aluminum", 1.0)
-    for k, m in (("SKIN", acp), ("BACK", acp), ("STOP", alu), ("PS", env), ("CATCH", env)):
+    for k, m in (("SKIN", acp), ("BACK", alu), ("STOP", alu), ("PS", env), ("CATCH", env)):
         bodies[k].material = m
-    looks = {"SKIN": ["Paint - Enamel Glossy (Yellow)"], "BACK": ["Paint - Enamel Glossy (Yellow)"],
+    looks = {"SKIN": ["Paint - Enamel Glossy (Yellow)"], "BACK": ["Aluminum - Satin"],
              "STOP": ["Paint - Enamel Glossy (Black)"], "PS": ["Plastic - Matte (Black)"],
              "CATCH": ["Plastic - Matte (Black)"]}
     looks.update({k: ["Aluminum - Satin"] for k in tubes})
@@ -360,11 +446,12 @@ def build(app):
 
 ANCHORS = [
     ("SKIN", 0, "-pod_w / 2"), ("SKIN", 3, "dt_xr - pod_w / 2"), ("SKIN", 2, "dt_zb"), ("SKIN", 5, "pod_h"),
-    ("SKIN", 1, "-pod_d / 2"), ("SKIN", 4, "-pod_d / 2 + decor_d"),
+    ("SKIN", 1, "-pod_d / 2"), ("SKIN", 4, "-pod_d / 2 + decor_d - dt_stop_gap"),
+    ("BACK", 4, "-pod_d / 2 + decor_d - dt_stop_gap"), ("BACK", 1, "-pod_d / 2 + decor_d - dt_stop_gap - dt_back_t"),
     ("BACK", 3, "dt_xr - pod_w / 2"), ("CATCH", 5, "dt_zb"), ("CATCH", 2, "dt_zb - ca_h"),
     ("PS", 1, "-glass_y + glass_t / 2"), ("STOP", 2, "dt_zb - stop_h"),
     ("FRAME", 3, "dt_xr - pod_w / 2"), ("FRAME", 2, "dt_zb + dt_skin_t"), ("FRAME", 5, "pod_h - dt_skin_t"),
-    ("FRAME", 4, "-pod_d / 2 + decor_d - dt_back_t"),
+    ("FRAME", 4, "-pod_d / 2 + decor_d - dt_stop_gap - dt_back_t"),
 ]
 
 

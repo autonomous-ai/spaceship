@@ -167,6 +167,18 @@ OWN = [
      "hole in the bolt-line tube's back wall round each J-FRONT-01 rivnut: body 9.50 max and its bulge (SHX), and the "
      "bolt tip, go into the tube"),
     ("fr_hole_rn", "9.53 mm", "mm", "source", "joints register H-03: hole for the rivnut 838003 (Sherex CAH3-610-4.2)"),
+    # J-FRONT-02 (PM ruling 2026-11-01): DR stands on 2 spigots on BASE's support behind the mesh piece, a round hole
+    # and a slot along X in the bottom back tube's bottom wall
+    ("dr_sp_x1", "1050 mm", "mm", "confirmed", "J-FRONT-02: DR's round spigot hole (PM ruling 2026-11-01)"),
+    ("dr_sp_x2", "1147 mm", "mm", "confirmed", "J-FRONT-02: DR's spigot slot, along X (PM ruling 2026-11-01)"),
+    ("sp_hole", "8.5 mm", "mm", "source", "R-J13: spigot hole 8.5 round at one end, 8.5 x 14 slot at the other"),
+    ("sp_slot", "14 mm", "mm", "source", "R-J13: the slot 14 long along the edge"),
+    # J-FRONT-03 (PM ruling 2026-11-01): DT's two spigots stand in rivnuts in the top of DR's ledge tube B05
+    ("dt_sp_x1", "-pod_w / 2 + dt_xr - 179 mm", "mm", "confirmed",
+     "J-FRONT-03: DT's round-hole spigot on DR's ledge, X 270, 36 in from the ledge tube's left end"),
+    ("dt_sp_dx", "140 mm", "mm", "confirmed", "J-FRONT-03: DT's slot spigot 140 from the first (PM ruling 2026-11-01)"),
+    ("dt_sp_y", "-pod_d / 2 + decor_d - 12.88 mm", "mm", "calculation",
+     "J-FRONT-03: the spigots' Y, -657.88, the middle of where DR's ledge tube and DT's bottom back tube overlap"),
     ("ab_hole", "7 mm", "mm", "source",
      "the pod's M6 clearance hole, 7.0 (D-64, D-75; the mechanical check's hole rule M6-CLEARANCE-7) for the bolts "
      "838001; the frame's rivnut heads (0.76 proud, SHX) sit in the access panel's 1 mm perimeter gasket (HOLD)"),
@@ -232,7 +244,8 @@ FRAME = ("351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)")
 # tube sections and walls (PM ruling 2026-11-01): skin-only tubes 1.0, rivnut tubes 1.2, the fan box shelf 1.5
 S20, S40, S60, S80 = "20 x 20 x 1.0", "40 x 20 x 1.2", "60 x 20 x 1.2", "80 x 20 x 1.2"
 S20_SHELF = "20 x 20 x 1.5"
-WALL = {"20 x 20 x 1.0": "fr_t_sk", "40 x 20 x 1.2": "fr_t_rn", "60 x 20 x 1.2": "fr_t_rn", "80 x 20 x 1.2": "fr_t_rn",
+S20_RN = "20 x 20 x 1.2"            # the ledge tube: DT's two spigot rivnuts (J-FRONT-03)
+WALL = {"20 x 20 x 1.0": "fr_t_sk", "20 x 20 x 1.2": "fr_t_rn", "40 x 20 x 1.2": "fr_t_rn", "60 x 20 x 1.2": "fr_t_rn", "80 x 20 x 1.2": "fr_t_rn",
         "20 x 20 x 1.5": "fr_t"}
 ACCESS_BOLTS = ([("ab_x", "ab_z0 + %d * ab_p" % k) for k in range(6)] + [("ab_x1", "ab_zb"), ("ab_x2", "ab_zb")] +
                 [("ab_x1", "ab_zt"), ("ab_x2", "ab_zt")])
@@ -270,7 +283,7 @@ def frame_members():
                     (ledge, "0 mm", "fr_w"), (diag, sk3, "fr_w"), (rl, sk3, "fr_w")])
     for k, (key, nm, sec) in enumerate((("B01", "BACK RING BOTTOM", S40), ("B02", "BACK RING BOLT LINE", S80),
                                         ("B03", "BACK RING TOP", S20), ("B04", "BACK RING DT JOINT", S20),
-                                        ("B05", "BACK RING DT LEDGE", S20), ("B06", "BACK RING DIAGONAL", S20),
+                                        ("B05", "BACK RING DT LEDGE", S20_RN), ("B06", "BACK RING DIAGONAL", S20),
                                         ("B07", "BACK RING GLASS EDGE", S20))):
         add(key, nm, ("x", "z"), back[k], "y", yb0, yb1, sec)
     # cross tubes in the front ring: v1's 724, and the shelf the fan box stands on
@@ -547,6 +560,22 @@ def build(app):
         L.extrude_span(c, sk, "y", yb1 + " - fr_t_rn - 1 mm", yb1 + " + 0.5 mm", CUT, [tubes[key]],
                        "CUT - " + name.split(" - ", 1)[1],
                        profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    # J-FRONT-02: the spigot hole and slot (along X) in the bottom back tube's bottom wall, on its centre line
+    ysb = "(%s - dr_back_t - fr_w / 2)" % YB
+    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLES - J-FRONT-02 SPIGOT ROUND AND SLOT ENDS",
+                   [("dr_sp_x1", ysb), ("dr_sp_x2 - (sp_slot - sp_hole) / 2", ysb),
+                    ("dr_sp_x2 + (sp_slot - sp_hole) / 2", ysb)], "sp_hole")
+    L.extrude_span(c, sk, "z", ZB + " - 1 mm", ZB + " + fr_t_rn + 0.5 mm", CUT, [tubes["B01"]],
+                   "CUT - J-FRONT-02 SPIGOT HOLE AND SLOT ENDS", profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    sl = [("dr_sp_x2 - (sp_slot - sp_hole) / 2", "%s - sp_hole / 2" % ysb), ("dr_sp_x2 + (sp_slot - sp_hole) / 2", "%s - sp_hole / 2" % ysb),
+          ("dr_sp_x2 + (sp_slot - sp_hole) / 2", "%s + sp_hole / 2" % ysb), ("dr_sp_x2 - (sp_slot - sp_hole) / 2", "%s + sp_hole / 2" % ysb)]
+    prism(c, ("x", "y"), sl, "z", ZB + " - 1 mm", ZB + " + fr_t_rn + 0.5 mm", "SLOT - J-FRONT-02 SPIGOT (MIDDLE)",
+          "CUT - J-FRONT-02 SPIGOT SLOT MIDDLE", CUT, tubes["B01"])
+    # J-FRONT-03: rivnuts for DT's two spigots in the top of the ledge tube
+    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLES - J-FRONT-03 SPIGOT RIVNUTS (2)",
+                   [("dt_sp_x1", "dt_sp_y"), ("dt_sp_x1 + dt_sp_dx", "dt_sp_y")], "fr_hole_rn")
+    L.extrude_span(c, sk, "z", ZT + " - fr_t_rn - 0.5 mm", ZT + " + 1 mm", CUT, [tubes["B05"]],
+                   "CUT - J-FRONT-03 SPIGOT RIVNUTS", profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
 
     # ---- materials
     # the selected ACP's 0.21 mm skins give 3.5 kg/m2, as WALL, CEILING and AIR count it (selection VT01; acoustics
@@ -659,8 +688,10 @@ def export_all(app):
          CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.2 "
          "(rivnuts), 20 x 20 x 1.5 (fan box shelf), finish: mill finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
          "v1 decor frame drawing (front and back frames); D-79; joints register HOLD-10",
-         "%.1f m of tube; rivnuts 838003 fitted in the factory: 10 for the access panel bolts; the bolt-line tube has "
-         "6 holes 14 for the J-FRONT-01 rivnut tails" % tube_m),
+         "%.1f m of tube; rivnuts 838003 fitted in the factory: 10 for the access panel bolts and 2 in the ledge tube's "
+         "top for DT's spigots 831001 (J-FRONT-03, X 270 and 410); the bolt-line tube has 6 holes 14 for the J-FRONT-01 "
+         "rivnut tails; the bottom back tube has the J-FRONT-02 spigot hole 8.5 and slot 8.5 x 14 (X 1050 and 1147, "
+         "over BASE's support behind the mesh)" % tube_m),
         ("351302", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
          "aluminium EN AW-5754-H22 sheet 1.5 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "joints register J-FRONT-01 (1.0 to 2.7 at each bolt, HOLD-10); "
