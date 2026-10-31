@@ -25,3 +25,21 @@ Copy of `v2/01-CAD-Native/front/360001_P01_FRONT-DOOR-UNIT_CAD.f3d`, opened as a
 **RESULT: PASS (CAD check on a copy)**
 
 The first run of this test failed, and that is why the sketches now measure from a reference point: the lock space's left side was dimensioned from the pod's centre line with abs(), and the edit moved it from X +3.2 to X -41.2, across the centre line, so the corner flipped to +41.2. Every FRONT sketch now dimensions its corners from a point at -`sk_ref` (5000 mm) on both axes, so a distance can't change sign.
+
+## 360002 FRONT - FIXED GLASS UNIT, P01
+
+```sh
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/edit_test_front.py \
+    --arg anchors=v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT_ANCHORS.json \
+    --arg "edits=pod_w=2600 mm;fr_dz=12 mm;fix_xk=511 mm;door_xtr=1192 mm"
+```
+
+Four skeleton edits at once: the pod 100 mm wider, the front 5 mm higher, the pane's knee 10 mm further left, and the door's top-right corner 10 mm further right (so the free edge, which follows the door edge, tilts).
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1032.7 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
+| pod_w 2600 mm; fr_dz 12 mm; fix_xk 511 mm; door_xtr 1192 mm | 1123.5 x 15.0 x 2045.0 | 0 | 0 | none | 0.010 |
+| Reverted | 1032.7 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
+
+**RESULT: PASS (CAD check on a copy)**, 16 anchors.

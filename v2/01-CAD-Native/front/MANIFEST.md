@@ -13,7 +13,7 @@ Part numbers: FRONT's own bands, `conventions.md` section 6 (DECIDED, D-22, D-28
 | Sub-assembly | Native design (cloud: Default Project / FocusPod v2) | Script | Status |
 |---|---|---|---|
 | 360001 FRONT - DOOR UNIT · Cụm cửa kính | `360001_P01_FRONT-DOOR-UNIT_CAD`, exported as `360001_P01_FRONT-DOOR-UNIT_CAD.f3d` | `door_unit.py` | Built, exported, edit test PASS; drawings pending |
-| Fixed glass unit | — | — | Next |
+| 360002 FRONT - FIXED GLASS UNIT · Cụm vách kính cố định | `360002_P01_FRONT-FIXED-GLASS-UNIT_CAD`, exported as `360002_P01_FRONT-FIXED-GLASS-UNIT_CAD.f3d` | `fixed_glass.py` | Built, exported, edit test PASS; drawings pending |
 | DL, DT, DR decor shells | — | — | After the fixed glass |
 
 Shared code: `front_lib.py` (skeleton parameter loader, fully constrained polygons, clash and health checks, exports), `edit_test_front.py` (edit test of any FRONT design from its anchors file).
@@ -84,3 +84,37 @@ The design holds the 60 skeleton P03 parameters (comment "SKELETON P03 …"), `s
 ### Editability check (§4.4)
 
 Edit test PASS on a copy (`EDIT-TEST-RECORD.md`): pod_w 2600, fr_dz 12 and door_xbr 1474 at once; all 29 anchors follow, no unhealthy item, no loose sketch, and the copy reverts to the same size.
+
+## 360002 FRONT - FIXED GLASS UNIT
+
+| File | What |
+|---|---|
+| `v2/01-CAD-Native/front/fixed_glass.py` | Build script: `step=build`, then `step=export` |
+| `v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT_CAD.f3d` | Native design, exported from the saved cloud version |
+| `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step` | STEP AP214, length unit cm, declared in the file (D-13) |
+| `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` | Parts list, written from the model, with the U-profile cut lengths |
+| `v2/03-Manufacturing/front/361003_P01_FRONT-FIXED-GLASS-4-4-LAMINATED_DXF.dxf` | Pane outline 1:1 in mm for the glass cutter |
+| `v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT_ANCHORS.json` | Edit-test anchors |
+| `v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT-FRONT_IMG.png`, `...-ISO_IMG.png` | Renders, checked by eye |
+
+The visible outline is the skeleton's pentagon with two rulings applied (PM, 2026-10-31): the free edge runs parallel to the door's latch edge at the 4 mm the 180° seal needs (`fg_gap`), and on the four held edges the pane runs `fg_bite` (11.5 mm) into hidden U-channels in DR, DT and the base band. The held edges' visible lines are the base band top (`wall_z0`), the skeleton's right and diagonal edge lines (DR's inner edge) and DT's underside (`dt_zb`). Each corner is the crossing of two of those lines pushed out by the same distance, written as parameter expressions (`fg_rnx`… normals and `fg_rc`… line constants), so the corners mitre and follow every skeleton edit.
+
+| Part no. | Component · Vietnamese | Body | Sketch (plane) | Features | Driving parameters |
+|---|---|---|---|---|---|
+| 360002 | FRONT - FIXED GLASS UNIT (root) · Cụm vách kính cố định | none | none | none | all |
+| 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED · Tấm kính cố định 4+4 | FIXED GLASS 4+4 | OUTLINE - FIXED GLASS (SKELETON PENTAGON + BITE ON 4 EDGES) (XZ) | EXTRUDE - FIXED GLASS 8.76 | skeleton: pod_w, fix_xbr, fix_xk, fix_zk, fix_xtr, fix_zb, fix_zt, door_xbr, door_xtr, door_zb, door_zt, wall_z0, dt_zb, glass_y, glass_t; own: fg_gap, fg_bite and the line parameters |
+| 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 · Thanh U nhôm kẹp kính | GLAZING U-PROFILE (4 PIECES, MITRED) | BAND - U-PROFILE OUTER (4 EDGES, MITRED), BAND - U-PROFILE CHANNEL (XZ) | EXTRUDE - U-PROFILE BAR, CUT - U-PROFILE CHANNEL 12 X 13.5 | gu_prof_w, gu_prof_d, gu_prof_t, gu_w, gu_in_d |
+| 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 · Gioăng chữ U silicone | GLAZING U-SEAL (4 PIECES) | BAND - U-SEAL OUTER, BAND - U-SEAL GLASS SLOT (XZ) | EXTRUDE - U-SEAL, CUT - U-SEAL GLASS SLOT | gu_w, gu_in_d, fg_bite, glass_t |
+| 368003 | FRONT - GLASS-TO-GLASS SEAL 180 - BOHLE BO5281018 · Gioăng kính-kính 180° | 180 SEAL ENVELOPE (THE 4 MM GAP) | OUTLINE - 180 SEAL SPACE ON THE FREE EDGE (XZ) | EXTRUDE - 180 SEAL SPACE | fg_gap and the door edge line |
+
+| Parameter | Value | Status · source |
+|---|---|---|
+| fg_gap | 4 | decided: PM ruling 2026-10-31; the seal's 4 mm between edges (selection C3) |
+| fg_vis_zb = wall_z0 | 110 | calculation: the band top, where DL and DR stop too |
+| fg_vis_zt = dt_zb | 2120 | calculation: DT's underside |
+| gu_prof_w, gu_prof_d, gu_prof_t | 15, 15, 1.5 | source: Bohle BO5201571 (selection C5) |
+| gu_w, gu_in_d | 12, 13.5 | calculation |
+| gu_base | 2 | assumption: HOLD for Bohle's BO5201735 section |
+| fg_bite = gu_in_d - gu_base | 11.5 | calculation, decided as the hidden depth (PM ruling); HOLD for the glass supplier's minimum cover |
+
+Edit test PASS on a copy (`EDIT-TEST-RECORD.md`).

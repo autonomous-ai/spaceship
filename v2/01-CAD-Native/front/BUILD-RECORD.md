@@ -59,3 +59,51 @@ Listed overlaps (the HOLD spaces wrap the glass where the named hardware will cl
 | BASE (base band under the fixed glass) | The strip's latch end is square at X 214, 4 mm from where the fixed glass starts (X 218); the band piece under the fixed glass should end about 4 mm clear of it, like the glass-to-glass gap | for BASE and the fixed glass unit |
 | DL | The hinge spaces reach 160 mm into DL (to X -1132) at three heights, and the frame-stop seal and stop come with DL and DT | next FRONT PRs; HOLD H01 |
 | Fixed glass unit | The 180° glass-to-glass seal sits on the fixed pane's edge | next FRONT PR |
+
+## 360002 FRONT - FIXED GLASS UNIT, P01 (DRAFT)
+
+Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the shared lock:
+
+```sh
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/fixed_glass.py --doc 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD --doc-new --save "P01 build"
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/fixed_glass.py --doc 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD --arg step=export
+python3 tools/fusion/step_check.py v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step --expect=-68.564,-706.5,95,964.128,-691.5,2135
+```
+
+### Result
+
+- skeleton parameters: P03, 60 loaded; bodies 4, timeline 16 items, unhealthy 0, loose sketches 0, parameters 84
+- clash pairs 0
+- gap from the door's latch edge to the pane's free edge: 4.00 mm square to the edge at the band top, mid-height and the door top (4.04 mm horizontally); before the ruling, on the skeleton's own points, it ran 3.57 to 2.42 mm
+- STEP: length unit cm, declared in the file (D-13); 5 products, 4 solids; `step_check.py` box MATCH (0.0031 mm); re-read in Fusion, box equal to the model's (0.000 mm); no names in the exports
+- edit test PASS (`EDIT-TEST-RECORD.md`); renders checked by eye
+
+| Body | Size X × Y × Z (mm) | Box (mm) |
+|---|---|---|
+| FIXED GLASS 4+4 | 1026.23 × 8.76 × 2033 | -66.13, -703.38, 98.5 → 960.1, -694.62, 2131.5 |
+| GLAZING U-PROFILE (4 PIECES, MITRED) | 1030.76 × 15 × 2040 | -66.63, -706.5, 95 → 964.13, -691.5, 2135 |
+| GLAZING U-SEAL (4 PIECES) | 1028.81 × 12 × 2037 | -66.41, -705, 96.5 → 962.4, -693, 2133.5 |
+| 180 SEAL ENVELOPE (THE 4 MM GAP) | 285.9 × 11.76 × 2010 | -68.56, -704.88, 110 → 217.34, -693.12, 2120 |
+
+Pane corners in its DXF (X from its leftmost point, Y from its bottom): (285.09, 0), (1026.24, 0), (826.05, 1427.47), (300.51, 2033), (0, 2033). U-profile cut lengths, long point / short point: bottom 744.7 / 729.5, right 1446.5 / 1424.8, diagonal 804.4 / 793.1, top 302.6 / 293.7.
+
+### Mass (calculation)
+
+| Item | kg |
+|---|---|
+| 361003 pane, 8.76 mm at 2376 kg/m³ | 28.58 |
+| 368004 U-profile, 4 pieces | 0.56 |
+| 368002 U-seal | 0.24 |
+| 368003 180° seal (assumption) | 0.20 |
+| **Fixed glass unit** | **29.58** |
+
+### Interfaces to other assemblies (PM rulings, 2026-10-31)
+
+| With | What |
+|---|---|
+| BASE | The bottom channel: the U-profile centred on the glass plane (Y -706.5 to -691.5), top flush with the band top at Z 110, bottom Z 95, from the free edge (X about -66 at the top, 217 at the band) to X 964 at the bottom-right mitre. The band piece under the pane needs room and fixings for it. |
+| DR | The right and diagonal channels sit inside DR, 15 mm deep behind a 15 mm slot in DR's inner skin along the glass edge, fixed to DR's frame. |
+| DT | The top channel sits inside DT behind a 15 mm slot in its underside, from X about -67 to 235. |
+| Door unit | The free edge runs 4 mm from the door's latch edge, the 180° seal between. |
+
+Fit order (DECIDED): the band's channel, then the pane set in it and held, then DR slid in from the right onto the pane's right edges, then DT lowered onto its top edge.
