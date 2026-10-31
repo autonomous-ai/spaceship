@@ -131,6 +131,33 @@ def joints_cad(path=JOINTS_LIST):
 
 
 JOINTS = joints_cad()
+CEILING_LIST = os.path.join(MANUF, "ceiling", "410000_P01_CEILING-PARTS-LIST_BOM.csv")       # PR #32 (S35)
+
+
+def ceiling_cad(path=CEILING_LIST):
+    """CEILING's panels C1 and C2 and the common cassette from the merged parts list (PR #32): each panel's frame, skin and
+    bond set; per cassette the tray, its ribs, the felt and the three fill bays at the list's fill density. The clips and
+    catches stay in the named clips' line, the hardware and seals in the fixings kit's line."""
+    import re
+    by, pod = {}, {}
+    for r in read_parts_list(path):
+        if r["pn"] and r["pn"] not in by:
+            by[r["pn"]] = r
+    import csv
+    with open(path, encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            pod.setdefault(r["part_number"], float(r.get("qty_per_pod") or 0))
+    ncass = pod["510301"]
+    fills = [by[k]["each"] for k in ("513301", "513302", "513303")]
+    rho = float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", by["513301"]["material"]).group(1))
+    return dict(c1=by["411101"]["each"] + by["411301"]["each"] + by["108002"]["each"],
+                c2=by["411102"]["each"] + by["411302"]["each"] + by["108002"]["each"], bond=by["108002"]["each"],
+                frames=(by["411101"]["each"], by["411102"]["each"]), skins=(by["411301"]["each"], by["411302"]["each"]),
+                tray=by["513101"]["each"], ribs=by["513102"]["each"] * pod["513102"] / ncass, felt=by["513201"]["each"],
+                fill=sum(fills), fill_rho=rho)
+
+
+CEILING = ceiling_cad()
 KEY_PNS = ("111211", "111212", "111213", "111214")            # the corner key family: square, front LH and RH, knee LH
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
@@ -147,7 +174,7 @@ P04 = dict(side_w=skel("side_l"), side_h=skel("side_h"), side_up_h=skel("side_h"
            back_cass_lo_h=1118.61, back_cass_up_h=1116.87, floor_w=1210.0, floor_d=1455.0)
 # The teams' CAD masses, kg (status calculation: CAD geometry x density)
 WALL_L1_BOND = WALL_L1["bond"]                                 # S34: WALL's bond set per side panel
-CEIL_PANEL, CEIL_CASS = 9.586, 9.816                          # S35 (P03 build; the P04 cassette is 1160 x 1045)
+CEIL_PANEL, CEIL_CASS = 9.586, 9.816   # kg: PR #32's first list (P03 build), the estimates before its CAD merged
 CEIL_TRAY = (1163.0, 1048.0)                                  # S35: the cassette tray's outline as built
 CEIL_FILL_M2 = 1.11674 * (0.33875 + 0.33875 + 0.27475)        # S35: the three fill strips on each cassette's back
 DOOR_UNIT_DRAFT = 50.17       # kg: the door unit in PR #27's first parts list (S36), the estimate before its CAD merged
@@ -194,6 +221,11 @@ def base_parts():
 def base_parts_kg(pid):
     """kg each of one part in this study's decided build (P03)."""
     return [pt for pt in base_parts() if pt.pid == pid][0].kg
+
+
+def ceil_back_delta_kg():
+    """A 40 x 40 back member over the 20 x 40 member it replaces, one ceiling half wide (FR-06: C1 and C2; calculation)."""
+    return (al_rhs(40, 40, p("t_al_final")) - al_rhs(20, 40, p("t_al_final"))) * P04["ceil_w"] * 1e-3
 
 
 def top_delta_kg():
@@ -274,13 +306,14 @@ def lines(**adopt):
               - 2 * (P04["back_w"] - P04["back_fw"]) * 1e-3 * kgm12, "calculation" + prov,
               f"this study's model at the P04 size (S33), frame {P04['back_fw']} under the {P04['back_w']} skin, fill {fill:g} kg/m3"
               + ("; 2 inner studs at 393 mm centres, inside D-16 (D-85)" if a["back2"] else "") + studs_txt))
-    L.append(("WALL", "40 x 40 corner edge tubes beyond the side panels' own", 1,
-              CORNER_TUBES_KG - 4 * stile_delta_kg() - 2 * top_delta_kg(), "calculation",
-              "D-63's 1.3 kg less the four side panels' 40 x 40 back stiles and L2 and R2's top members, which their CAD "
-              "carries (S34, S39)"))
-    L.append(("WALL", "Bond over this study's 0.25 kg/m2, beyond the side panels", 1,
-              BOND_OVER_KG - sum(WALL_SIDE[n]["bond"] - p("bond_kgm2") * side_a for n in (1, 2, 3, 4)), "calculation",
-              "D-71's 0.5 kg (PR #23) less the four side panels' share, which their CAD carries (S34, S39)"))
+    L.append(("WALL", "40 x 40 corner edge tubes beyond the panels' own", 1,
+              CORNER_TUBES_KG - 4 * stile_delta_kg() - 2 * top_delta_kg() - 2 * ceil_back_delta_kg(), "calculation",
+              "D-63's 1.3 kg less the 40 x 40 members the panels' CAD carries: the four side panels' back stiles, L2 and R2's "
+              "tops and the ceiling halves' back members (S34, S35, S39)"))
+    L.append(("WALL", "Bond over this study's 0.25 kg/m2, beyond the side and ceiling panels", 1,
+              BOND_OVER_KG - sum(WALL_SIDE[n]["bond"] - p("bond_kgm2") * side_a for n in (1, 2, 3, 4))
+              - 2 * (CEILING["bond"] - p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6), "calculation",
+              "D-71's 0.5 kg (PR #23) less the side and ceiling panels' share, which their CAD carries (S34, S35, S39)"))
     for item, a_, b_, hh in (("side, lower", 1, 2, P04["side_cass_lo_h"]), ("side, upper", 3, 4, P04["side_cass_up_h"])):
         wa, wb = WALL_SIDE[a_], WALL_SIDE[b_]
         cas = sum(w_["tray"] + w_["felt"] + w_["cass_seals"] for w_ in (wa, wb)) / 2
@@ -297,14 +330,17 @@ def lines(**adopt):
                   "calculation; lips confirmed", "this study's model at the P04 size (S33)"
                   + ("" if rails else " without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81)")
                   + ", + 0.43 kg of lips (D-69)"))
-    ceil_bond = p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6
-    L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2,
-              CEIL_PANEL + ceil_bond, "calculation (CAD); bond assumption",
-              "S35 + this study's 0.25 kg/m2 bond on the P04 46 mm panel"
-              + ("; its inner members stay 1.2 mm for the overhead clips and catches (D-85)" if a["studs10"] else "")))
+    cg = CEILING
+    L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2, (cg["c1"] + cg["c2"]) / 2,
+              "calculation (CAD)", f"S35, CAD on main: CEILING parts list 410000 P01: frames {cg['frames'][0]:.3f} and "
+              f"{cg['frames'][1]:.3f} (the 40 x 40 back member, inner members at 1.2 mm, D-85), skins {cg['skins'][0]:.3f} and "
+              f"{cg['skins'][1]:.3f}, bond sets {cg['bond']:.3f}; the hardware and seals stay in the fixings kit's line"))
     rails_kg = p("leaf_clip_kgm2") * CEIL_TRAY[0] * CEIL_TRAY[1] * 1e-6 if rails else 0.0
-    L.append(("LINING", "Ceiling cassettes, one part for both halves", 2, CEIL_CASS - CEIL_FILL_M2 * fill_d + rails_kg,
-              "calculation (CAD)" + prov, "S35" + (f", its fill strips from 32 to {fill:g} kg/m3" if lighter else "")
+    L.append(("LINING", "Ceiling cassettes, one part for both halves", 2,
+              cg["tray"] + cg["ribs"] + cg["felt"] + cg["fill"] * fill / cg["fill_rho"] + rails_kg, "calculation (CAD)" + prov,
+              f"S35, CAD on main: CEILING parts list 510301 P01: tray {cg['tray']:.3f}, 2 ribs, felt {cg['felt']:.3f}, fill bays "
+              f"{cg['fill']:.3f} at {cg['fill_rho']:g} kg/m3" + (f", scaled to {fill:g}" if fill != cg["fill_rho"] else "")
+              + "; its clips and catches are in the named clips' line"
               + (", + this study's 0.6 kg/m2 clip-and-rail allowance" if rails else "")))
     if not rails:
         L.append(("LINING", "Named clips and catches: 44 clips and 4 catch lanyards", 1, named_clips_kg(), "assumption",
@@ -442,7 +478,12 @@ def cad_swaps():
             ("Door unit 360001", 1, DOOR_UNIT_DRAFT - (KICK_KG - KICK_KG_HOLLOW), door[3],
              "FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip)"),
             ("Fixed glass unit 360002", 1, FIXED_UNIT_DRAFT, FRONT_FIXED["unit"],
-             "FRONT 360002 P01, PR #28 (the estimate: its first list)")] + base_swaps()
+             "FRONT 360002 P01, PR #28 (the estimate: its first list)"),
+            ("Ceiling outer panels C1 and C2", 2, CEIL_PANEL + p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6,
+             (CEILING["c1"] + CEILING["c2"]) / 2, "CEILING 410101 and 410102 P01, PR #32 (the estimate: its first list)"),
+            ("Ceiling cassettes", 2, CEIL_CASS - CEIL_FILL_M2 * (p("fill_pet_kgm3") - FILL_LIGHT) * P04["frame_d"] * 1e-3,
+             next(r for r in lines() if r[1].startswith("Ceiling cassettes"))[3],
+             "CEILING 510301 P01, PR #32 (the estimate: its first list)")] + base_swaps()
 
 
 def base_swaps():
