@@ -250,16 +250,16 @@ def export_all(app):
     print("STEP re-read in Fusion: model box %s, STEP box %s, max diff %.3f mm" % (before, after, diff))
 
 
+SHOTS = [("v2/01-CAD-Native/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL-FRONT_IMG.png", "front"),
+         ("v2/01-CAD-Native/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL-ISO_IMG.png", "iso-top-right")]
+
+
 def run(_context):
+    """step: build | export | post (export, pictures, edit test with --arg edits=...) | all (build, save, post)."""
     app = adsk.core.Application.get()
     step = ARGS.get("step", "build")
     doc = app.activeDocument
     if doc is None or not doc.name.startswith(DOC_NAME):
         raise RuntimeError("active document is %r, not %s: open it with the runner's --doc" % (
             doc.name if doc else None, DOC_NAME))
-    if step == "build":
-        build(app)
-    elif step == "export":
-        export_all(app)
-    else:
-        raise RuntimeError("unknown step " + step)
+    L.run_steps(app, ARGS, HERE, step, build, export_all, SHOTS, ANCHORS_REL)

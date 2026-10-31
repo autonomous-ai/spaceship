@@ -51,10 +51,13 @@ def check(design, anchors):
 
 
 def run(_context):
-    app = adsk.core.Application.get()
-    root_dir = ARGS["repo_root"]
-    spec = json.load(open(os.path.join(root_dir, ARGS["anchors"]), encoding="utf-8"))
-    edits = [e.split("=", 1) for e in ARGS["edits"].split(";") if e.strip()]
+    test(adsk.core.Application.get(), ARGS["repo_root"], ARGS["anchors"], ARGS["edits"])
+
+
+def test(app, root_dir, anchors_rel, edits_text):
+    """The edit test on a copy of the f3d named in the anchors file; also called by the build scripts' "post" step."""
+    spec = json.load(open(os.path.join(root_dir, anchors_rel), encoding="utf-8"))
+    edits = [e.split("=", 1) for e in edits_text.split(";") if e.strip()]
     im = app.importManager
     doc = im.importToNewDocument(im.createFusionArchiveImportOptions(os.path.join(root_dir, spec["f3d"])))
     try:

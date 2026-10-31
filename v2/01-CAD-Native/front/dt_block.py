@@ -160,10 +160,12 @@ def build(app):
     # ---- 351202 back plate, inside the skin's ends
     c = comp("BACK")
     # its lower-left edge follows the slope over DL, pushed in by the skin
-    slope_z = lambda x: "(dt_zb + dt_m * (%s + dl_w - (%s)) + dt_skin_t * dt_k)" % (XL, x)
     xb = "(%s + dl_w + dt_skin_t * (dt_k - 1) / dt_m)" % XL
+    # the pushed-in slope meets the top skin's inner face before the left end (dl_zo is 3 under the roof), so the
+    # plate's top-left corner is on the slope: a quadrilateral
+    xt = "(%s + dl_w - (pod_h - dt_skin_t - dt_zb - dt_skin_t * dt_k) / dt_m)" % XL
     back = [(xb, "dt_zb + dt_skin_t"), (XL + " + dt_xr", "dt_zb + dt_skin_t"), (XL + " + dt_xr", "pod_h - dt_skin_t"),
-            (XL + " + dt_skin_t", "pod_h - dt_skin_t"), (XL + " + dt_skin_t", slope_z(XL + " + dt_skin_t"))]
+            (xt, "pod_h - dt_skin_t")]
     f = prism(c, ("x", "z"), back, "y", YB + " - dt_back_t", YB, "OUTLINE - DT BACK PLATE", "EXTRUDE - DT BACK PLATE")
     bodies["BACK"] = f.bodies.item(0)
     bodies["BACK"].name = "DT BACK PLATE ACP 3"
@@ -266,16 +268,16 @@ def export_all(app):
     print("STEP re-read in Fusion: model box %s, STEP box %s, max diff %.3f mm" % (before, after, diff))
 
 
+SHOTS = [("v2/01-CAD-Native/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT-FRONT_IMG.png", "front"),
+         ("v2/01-CAD-Native/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT-ISO_IMG.png", "iso-top-right")]
+
+
 def run(_context):
+    """step: build | export | post (export, pictures, edit test with --arg edits=...) | all (build, save, post)."""
     app = adsk.core.Application.get()
     step = ARGS.get("step", "build")
     doc = app.activeDocument
     if doc is None or not doc.name.startswith(DOC_NAME):
         raise RuntimeError("active document is %r, not %s: open it with the runner's --doc" % (
             doc.name if doc else None, DOC_NAME))
-    if step == "build":
-        build(app)
-    elif step == "export":
-        export_all(app)
-    else:
-        raise RuntimeError("unknown step " + step)
+    L.run_steps(app, ARGS, HERE, step, build, export_all, SHOTS, ANCHORS_REL)

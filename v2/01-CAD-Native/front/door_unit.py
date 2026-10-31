@@ -435,17 +435,20 @@ def export_all(app):
         before, after, max(abs(a - b) for a, b in zip(before, after))))
 
 
+SHOTS = [("v2/01-CAD-Native/front/360001_P01_FRONT-DOOR-UNIT-FRONT_IMG.png", "front"),
+         ("v2/01-CAD-Native/front/360001_P01_FRONT-DOOR-UNIT-ISO_IMG.png", "iso-top-right")]
+
+
 def run(_context):
+    """step: build | export | post (export, pictures, edit test with --arg edits=...) | all (build, save, post)."""
     app = adsk.core.Application.get()
     step = ARGS.get("step", "build")
+    scope = ARGS.get("scope", "unit")
     doc = app.activeDocument
-    want_doc = scope_doc(ARGS.get("scope", "unit"))
+    want_doc = scope_doc(scope)
     if doc is None or not doc.name.startswith(want_doc):
         raise RuntimeError("active document is %r, not %s: open it with the runner's --doc" % (
             doc.name if doc else None, want_doc))
-    if step == "build":
-        build(app)
-    elif step == "export":
-        export_all(app)
-    else:
-        raise RuntimeError("unknown step " + step)
+    if scope != "unit" and step != "build":
+        raise RuntimeError("a part-only design is only built (the runner's --save keeps it)")
+    L.run_steps(app, ARGS, HERE, step, build, export_all, SHOTS, ANCHORS_REL)

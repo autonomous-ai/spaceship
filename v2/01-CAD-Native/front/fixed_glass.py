@@ -20,9 +20,10 @@ glass seal to the door (Bohle BO5281018). That edge runs parallel to the door's 
 edge at the seal's 4 mm (PM ruling 2026-10-31), not on the skeleton's
 fix_xbl / fix_xtl line, which gave 2.4 to 3.6 mm.
 
-Fit order (PROPOSED, for the assembly guide): base band with the bottom
-channel, then the pane set in it and held, then DR slid in from the right
-onto the pane's right edges, then DT lowered onto its top edge.
+Fit order (PM ruling 2026-11-01): the bottom channel ships factory-fitted on
+BASE's sill (four ISO 10642 M3 countersunk screws, a 2 mm key, so factory
+work); on site the pane drops into that channel, then DR slides in from the
+right onto the pane's right edges, then DT is lowered onto its top edge.
 """
 
 import importlib.util
@@ -87,7 +88,23 @@ ANCHORS = [
 ]
 
 
-SCOPES = {"unit": None, "pane": "GLASS"}
+# the bottom channel's screws down into BASE's sill (PM ruling 2026-11-01: rivnuts in the sill's 15 mm seat, every 300
+# and 50 from each end; FRONT picked the screw: ISO 10642 M3 x 8 A2 countersunk, head under the U-seal)
+_Z95 = "(fg_vis_zb - gu_prof_d)"
+OWN = [
+    ("gs_end", "50 mm", "mm", "source", "PM ruling 2026-11-01 (BASE's sill): channel screws 50 from each end"),
+    ("gs_hole", "3.4 mm", "mm", "source", "ISO 273 medium clearance hole for M3 (screw ISO 10642 M3 x 8, A2)"),
+    ("gs_csk", "7 mm", "mm", "calculation",
+     "90 deg countersink on the channel's inside face, over the ISO 10642 M3 head (6.72 max); the head stands about "
+     "0.4 proud of the 1.5 base and the U-seal's base covers it"),
+    ("gs_xl", L.free_x(_Z95), "mm", "calculation", "left end of the bottom channel's underside (the pane's free edge)"),
+    ("gs_xr", L.right_x(_Z95, "gu_prof_d"), "mm", "calculation",
+     "right end of the bottom channel's underside, where it is mitred into the right-edge channel"),
+    ("gs_p", "(gs_xr - gs_xl - 2 * gs_end) / 3", "mm", "calculation",
+     "pitch of the 4 channel screws; 300 or less (PM ruling)"),
+]
+
+SCOPES = {"unit": None, "pane": "GLASS", "uprof": "UPROF"}
 
 
 def scope_doc(scope):
@@ -106,6 +123,7 @@ def build(app):
     L.add_params(design, sk_params)
     L.add_params(design, L.LIB_PARAMS)
     L.add_params(design, L.GLASS_PARAMS)
+    L.add_params(design, OWN)
     root = design.rootComponent
     comps, bodies = {}, {}
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
@@ -140,6 +158,15 @@ def build(app):
         b = f.bodies.item(0)
         slab(c, band("gu_in_d"), GY + " - gu_w / 2", GY + " + gu_w / 2",
              "BAND - U-PROFILE CHANNEL", "CUT - U-PROFILE CHANNEL 12 X 13.5", CUT, b)
+        # 4 screw holes through the bottom channel's base, into BASE's sill rivnuts (countersink 90 deg to gs_csk on
+        # the inside: drawing note); the factory fits the bottom piece to the sill (PM ruling 2026-11-01)
+        if L.ev(design, "gs_p") > 300.0:
+            raise RuntimeError("bottom channel screw pitch %.1f is over 300" % L.ev(design, "gs_p"))
+        sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLES - BOTTOM CHANNEL SCREWS TO THE SILL (4)",
+                       [("gs_xl + gs_end + %d * gs_p" % k, GY) for k in range(4)], "gs_hole")
+        L.extrude_span(c, sk, "z", _Z95 + " - 1 mm", _Z95 + " + gu_prof_t + 1 mm", CUT, [b],
+                       "CUT - BOTTOM CHANNEL SCREW HOLES",
+                       profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
         b.name = "GLAZING U-PROFILE (4 PIECES, MITRED)"
         bodies["UPROF"] = b
 
@@ -240,7 +267,7 @@ def export_all(app):
         TL("0 mm")[0], BL("0 mm")[0], TL("0 mm")[0], BL("0 mm")[0]))
     rows = [
         (PN, NAME, VN, 1, "assembly", "-", None, "", "DRAFT", "D-27, D-46; this build",
-         "fit order PROPOSED: band channel, pane, DR, DT"),
+         "bottom channel factory-fitted on BASE's sill; on site: pane, DR, DT (PM ruling 2026-11-01)"),
         ("361003", PARTS["GLASS"][1], PARTS["GLASS"][2], 1, "made to drawing (glass supplier)",
          "4+4 laminated glass of toughened, heat-soaked panes, 8.76, grey", "cad", "calculation (CAD, 2376 kg/m3)",
          "DRAFT; product HOLD (ISS-074)", "D-27, D-46; skeleton outline (v1 STEP body 222)",
@@ -249,7 +276,9 @@ def export_all(app):
          "Bohle BO5201571 aluminium U-profile 15 x 15 x 1.5, finish as supplied by Bohle (hidden in the channels)", "cad",
          "calculation (CAD, 2700 kg/m3)",
          "source (product)", "hardware selection C5",
-         "outer lengths %s mm (bottom, right, diagonal, top)" % " / ".join("%.0f" % v for v in outer)),
+         "outer lengths %s mm (bottom, right, diagonal, top); the bottom piece has 4 holes 3.4, countersunk 90 deg "
+         "to 7 inside, for ISO 10642 M3 x 8 A2 screws into BASE's sill rivnuts (PM ruling 2026-11-01; the screw and "
+         "rivnut get joints register numbers)" % " / ".join("%.0f" % v for v in outer)),
         ("368002", PARTS["USEAL"][1], PARTS["USEAL"][2], 1, "bought by length, 4 pieces",
          "Bohle BO5201735 silicone U-profile seal", "cad", "calculation (CAD, 1200 kg/m3 assumption)",
          "source (product); fit on 8.76 laminate unverified", "hardware selection C5",
@@ -270,17 +299,20 @@ def export_all(app):
     print("STEP re-read in Fusion: model box %s, STEP box %s, max diff %.3f mm" % (before, after, diff))
 
 
+SHOTS = [("v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT-FRONT_IMG.png", "front"),
+         ("v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT-ISO_IMG.png", "iso-top-right")]
+
+
 def run(_context):
+    """step: build | export | post (export, pictures, edit test with --arg edits=...) | all (build, save, post)."""
     app = adsk.core.Application.get()
     step = ARGS.get("step", "build")
+    scope = ARGS.get("scope", "unit")
     doc = app.activeDocument
-    want_doc = scope_doc(ARGS.get("scope", "unit"))
+    want_doc = scope_doc(scope)
     if doc is None or not doc.name.startswith(want_doc):
         raise RuntimeError("active document is %r, not %s: open it with the runner's --doc" % (
             doc.name if doc else None, want_doc))
-    if step == "build":
-        build(app)
-    elif step == "export":
-        export_all(app)
-    else:
-        raise RuntimeError("unknown step " + step)
+    if scope != "unit" and step != "build":
+        raise RuntimeError("a part-only design is only built (the runner's --save keeps it)")
+    L.run_steps(app, ARGS, HERE, step, build, export_all, SHOTS, ANCHORS_REL)

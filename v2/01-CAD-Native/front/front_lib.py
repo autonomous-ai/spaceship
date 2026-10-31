@@ -678,3 +678,71 @@ def write_panels_dxf(path, panels, gap=60.0, row_w=3000.0):
     with open(path, "w", encoding="ascii", errors="replace") as fh:
         fh.write("\n".join(out) + "\n")
     return placed
+
+
+# ---- one Fusion run per design (PM fair-share rule 2026-11-01): build, save, export, pictures and the edit test
+# in the same run, so each team keeps at most 3 runs in the queue
+
+VIEWS = {"front": "FrontViewOrientation", "top": "TopViewOrientation", "left": "LeftViewOrientation",
+         "right": "RightViewOrientation", "iso-top-right": "IsoTopRightViewOrientation"}
+
+
+def save_doc(app, desc):
+    """Save the active document as a new version (it was saved once when the runner made it)."""
+    doc = app.activeDocument
+    if not doc.save(desc):
+        raise RuntimeError("could not save %r" % doc.name)
+    print("saved %r: %s" % (doc.name, desc))
+
+
+def take_shots(app, root_dir, doc, shots, size=(1600, 1000)):
+    """Pictures of a design: shots = [(repo-relative .png, view name in VIEWS)]."""
+    doc.activate()
+    adsk.doEvents()
+    vp = app.activeViewport
+    for rel, view in shots:
+        cam = vp.camera
+        cam.viewOrientation = getattr(adsk.core.ViewOrientations, VIEWS[view])
+        cam.isFitView = True
+        cam.isSmoothTransition = False
+        vp.camera = cam
+        vp.fit()
+        vp.refresh()
+        adsk.doEvents()
+        path = os.path.join(root_dir, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if not vp.saveAsImageFile(path, size[0], size[1]):
+            raise RuntimeError("picture failed: " + rel)
+        print("picture %s (%s)" % (rel, view))
+
+
+def load_sibling(here, filename, modname):
+    """Load another script in this folder as a module (its run() is not called)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(modname, os.path.join(here, filename))
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def run_steps(app, args, here, step, build_fn, export_fn, shots, anchors_rel=None):
+    """step build | export | post (export, pictures, edit test) | all (build, save, post).
+    The edit test runs when args has "edits" (skeleton edits "name=value;..."), on a copy of the exported f3d."""
+    doc = app.activeDocument
+    if step in ("build", "all"):
+        build_fn(app)
+    if step == "all":
+        save_doc(app, args.get("desc", "P01 build"))
+    if step in ("export", "post", "all"):
+        export_fn(app)
+    if step in ("post", "all"):
+        take_shots(app, args["repo_root"], doc, shots)
+        if args.get("edits"):
+            et = load_sibling(here, "edit_test_front.py", "edit_test_front_run")
+            et.test(app, args["repo_root"], anchors_rel, args["edits"])
+            doc.activate()
+        if doc.isModified:           # the part number stamp or the view: keep it, so --close needs no --discard
+            doc.activate()
+            save_doc(app, "P01 after the export")
+    if step not in ("build", "export", "post", "all"):
+        raise RuntimeError("unknown step " + step)
