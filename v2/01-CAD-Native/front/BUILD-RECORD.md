@@ -144,11 +144,10 @@ python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350003_P01_FRONT-DE
 | 351305 access panel | 3.87 |
 | 351303 inner panel | 1.67 |
 | 351304 felt, 1.8 kg/m² | 0.77 |
-| 350004: the reserved air spaces 351402 to 351405, where AIR's riser 611501, transitions 618103 and 618102 and supply fan box 610401 go (AIR's parts and mass, not counted here: PM ruling 2026-11-01) | 0 |
-| 618401 supply fans, 2 × 0.3 (assumption), listed here as AIR's list notes | 0.60 |
-| **DR block** | **21.85** |
+| 350004 and 351402 to 351405: reserved air spaces where AIR's supply fan box assembly 610401 goes (its riser, transitions, fan box and two fans: AIR's parts and mass, not counted here, PM rulings 2026-11-01) | 0 |
+| **DR block** | **21.25** |
 
-The build's parts list said 33.92 kg with the air parts in it; after the PM ruling of 2026-11-01 (every air part is an AIR number in AIR's tree, so nothing is counted twice) the four air rows were re-written as reserved air spaces with no mass, from the script's own rows (same CAD). The next DR build writes the same list and names those spaces RESERVED AIR SPACE in the CAD.
+The build's parts list said 33.92 kg with the air parts in it; after the PM rulings of 2026-11-01 (every air part, the supply fans included, is an AIR number in AIR's tree, so nothing is counted twice) the air rows were re-written as reserved air spaces with no mass and the fans' row dropped, from the script's own rows (same CAD). The next DR build writes the same list, names those spaces RESERVED AIR SPACE in the CAD and has no fan bodies. At 21.25 kg DR is over the 20 kg piece limit (D-03): the weight saving is proposed in the decor drawings' pull request.
 
 ### Interfaces to other assemblies
 

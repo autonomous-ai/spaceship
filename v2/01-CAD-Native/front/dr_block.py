@@ -17,9 +17,9 @@ Stage 1 of the right decor block (the decor detail sample):
 - 351303 the removable inner panel and 351304 its 9 mm felt: the part of DR's
   back face that shows inside the pod, between the glass edge, the air column
   and the soffit (D-59, D-60);
-- the air parts the D-60 table puts in DR (the Air Engineer's sizes, status
-  source): the 1 mm steel intake riser, the supply fan box with its two 12 V
-  fans, and the two transitions as reserved duct spaces. The room-side intake
+- reserved air spaces where AIR's supply fan box assembly goes (the D-60 table's
+  sizes): the intake riser, the fan box with its two fans and the two
+  transitions. AIR designs and lists those parts (PM ruling 2026-11-01). The room-side intake
   is a slotted section of the base band under DR (PM ruling 2026-10-31): DR's
   underside opens onto the band top, sealed, and the block's bottom is the
   plenum the riser's raised foot draws from. The base is open over the whole
@@ -130,8 +130,6 @@ OWN = [
      "so the box sits fb_clear clear of the channel at its lower-left corner (about X 662) and follows the glass line"),
     ("fb_h", "300 mm", "mm", "source", "D-60 air table"),
     ("fb_t", "2 mm", "mm", "source", "D-60 air table: 2 mm aluminium"),
-    ("fan_s", "140 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM, 140 x 140 x 25 (hardware selection F1)"),
-    ("fan_t", "25 mm", "mm", "source", "as fan_s"),
     # opening from DR into the air column's top (D-60 air table)
     ("op_x0", "961 mm", "mm", "source", "D-60 air table: opening X 961 to 1164"),
     ("op_w", "203 mm", "mm", "source", "D-60 air table: 203 x 215"),
@@ -199,8 +197,6 @@ PARTS = {
     "TLOW": ("351403", "FRONT - AIR TRANSITION - LOWER - DR", "Ống chuyển hướng dưới"),
     "FBOX": ("351404", "FRONT - SUPPLY FAN BOX - DR", "Hộp quạt cấp"),
     "TUP": ("351405", "FRONT - AIR TRANSITION - UPPER - DR", "Ống chuyển hướng trên"),
-    "FAN1": ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM - 1", "Quạt 12 V"),
-    "FAN2": ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM - 2", "Quạt 12 V"),
     "FRAME": ("351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)"),
 }
 
@@ -337,8 +333,8 @@ def build(app):
     comps, bodies = {}, {}
     # D-87: the riser, the transitions, the fan box and its fans ship joined (14.9 kg) with plug-in connectors and
     # slide into DR through its inner face on site, so they form one sub-assembly
-    air = L.new_comp(root, AIR_ASSY[0], AIR_ASSY[1], AIR_ASSY[2], REV)
-    AIR_KEYS = ("RISER", "TLOW", "FBOX", "TUP", "FAN1", "FAN2")
+    air = L.new_comp(root, AIR_ASSY[0], AIR_ASSY[1] + " - RESERVED AIR SPACE", AIR_ASSY[2], REV)
+    AIR_KEYS = ("RISER", "TLOW", "FBOX", "TUP")
     RESERVED_AIR = ("RISER", "TLOW", "FBOX", "TUP")
 
     def comp(key):
@@ -489,15 +485,7 @@ def build(app):
           CUT, fbb)
     fbb.name = "RESERVED AIR SPACE - SUPPLY FAN BOX (AIR 610401)"
     bodies["FBOX"] = fbb
-    for i, key in enumerate(("FAN1", "FAN2")):
-        c = comp(key)
-        x0 = "fb_x0 + fb_w / 2 - fan_s - 2 mm" if i == 0 else "fb_x0 + fb_w / 2 + 2 mm"
-        y0 = "fb_y0 + fb_d / 2 - fan_s / 2"
-        f = prism(c, ("x", "y"), [(x0, y0), ("%s + fan_s" % x0, y0), ("%s + fan_s" % x0, "%s + fan_s" % y0),
-                                  (x0, "%s + fan_s" % y0)], "z", "fb_z0 + fb_h / 2", "fb_z0 + fb_h / 2 + fan_t",
-                  "PLAN - FAN %d" % (i + 1), "EXTRUDE - FAN %d (CATALOGUE ENVELOPE)" % (i + 1))
-        bodies[key] = f.bodies.item(0)
-        bodies[key].name = "FAN %d NF-A14 ENVELOPE" % (i + 1)
+    # the supply fans are AIR's too (618401 in AIR's supply box 610401, PM ruling 2026-11-01): inside this space
     c = comp("TUP")
     # over the fan box, then back toward the opening, kept clear of the corner facet (which is at X 1192 at Y -720)
     yb_in = YB + " - dr_back_t"
@@ -540,12 +528,12 @@ def build(app):
     for k in tubes:
         bodies[k].material = al6063
     for k, m in (("SKIN", acp), ("BACK", alu), ("ACCESS", alu), ("INNER", acp), ("FELT", felt), ("RISER", env),
-                 ("TLOW", env), ("FBOX", env), ("TUP", env), ("TUP2", env), ("FAN1", env), ("FAN2", env)):
+                 ("TLOW", env), ("FBOX", env), ("TUP", env), ("TUP2", env)):
         bodies[k].material = m
     looks = {"SKIN": ["Paint - Enamel Glossy (Yellow)"], "BACK": ["Aluminum - Satin"], "ACCESS": ["Aluminum - Satin"],
              "INNER": ["Paint - Enamel Glossy (Yellow)"], "FELT": ["Fabric (Gray)", "Plastic - Matte (Grey)"],
              "RISER": ["Steel - Satin", "Paint - Enamel Glossy (Grey)"],
-             "FBOX": ["Aluminum - Satin"], "FAN1": ["Plastic - Matte (Black)"], "FAN2": ["Plastic - Matte (Black)"],
+             "FBOX": ["Aluminum - Satin"],
              "TLOW": ["Paint - Enamel Glossy (Red)"], "TUP": ["Paint - Enamel Glossy (Red)"],
              "TUP2": ["Paint - Enamel Glossy (Red)"]}
     looks.update({k: ["Aluminum - Satin"] for k in tubes})
@@ -664,11 +652,10 @@ def export_all(app):
          "rectangle, so it keeps a drawing: D-89), glued to 351303 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
          "calculation (CAD, 1.8 kg/m2)",
          "DRAFT; emission certificate HOLD", "D-31; hardware selection A3", "DXF " + DXF_FLAT["FELT"]),
-        ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, "assembly: the reserved air spaces and the supply fans", "-", None, "",
-         "DRAFT", "D-87; PM ruling 2026-11-01",
-         "AIR's supply fan box assembly 610401 (AIR #91) fills these spaces and ships as its own pallet piece; it slides "
-         "into DR through its inner face and stands on the frame's shelf tubes F08 and C03; the two supply fans 618401 "
-         "are listed here (PM ruling, as AIR's list notes)"),
+        ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, RESERVED_TYPE, "-", None,
+         "not counted: AIR's supply fan box assembly 610401 (AIR #91)", RESERVED_STATUS, "D-87; PM ruling 2026-11-01",
+         "the space AIR's supply fan box assembly takes (riser, transitions, fan box and its two fans), its own pallet "
+         "piece; it slides into DR through its inner face and stands on the frame's shelf tubes F08 and C03"),
         ("351402", PARTS["RISER"][1], PARTS["RISER"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's intake riser 611501 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
          "the space AIR's intake riser takes; its open foot stands 140 mm over the base opening"),
@@ -681,9 +668,6 @@ def export_all(app):
         ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply transition 618102 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
          "the space AIR's supply transition takes, fan box outlet to the access panel's opening"),
-        ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", 2, "bought",
-         "Noctua NF-A14 industrialPPC-3000 PWM, 12 V", 0.3, "assumption (D-60 air table)", "HOLD: product (PM ruling, one number for all four fans)",
-         "hardware selection F1", "on the fan box bulkhead, blowing up"),
     ]
     total = L.write_parts_list(design, os.path.join(root_dir, BOM_REL), rows, PN, NAME, VN)
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), total))

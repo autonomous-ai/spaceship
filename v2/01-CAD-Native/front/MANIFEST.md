@@ -142,7 +142,7 @@ One script per block (`dl_block.py`, `dt_block.py`, `dr_block.py`); `--arg step=
 
 | Block | Skin | Frame (welded) | Plates and panels | Fitted parts |
 |---|---|---|---|---|
-| DR 350003 | 351301 | 351306 (26 tubes) | 351302 back plate (fixed), 351305 access panel, 351303 inner panel, 351304 felt | 350004: reserved air spaces 351402 riser, 351403 and 351405 transitions, 351404 fan box (AIR designs and lists those parts: 611501, 618103, 618102, 610401; no mass and no drawing here, PM ruling 2026-11-01), and the supply fans 618401 × 2 |
+| DR 350003 | 351301 | 351306 (26 tubes) | 351302 back plate (fixed), 351305 access panel, 351303 inner panel, 351304 felt | 350004: reserved air spaces for AIR's supply fan box assembly 610401: 351402 riser, 351403 and 351405 transitions, 351404 fan box (AIR designs and lists those parts and the two fans: 611501, 618103, 618102, 610401; no mass and no drawing here, PM rulings 2026-11-01) |
 | DT 350002 | 351201 | 351204 (13 tubes) | 351202 back plate | 368007 catch, 351203 top stop, 368005 top seal |
 | DL 350001 | 351101 | 351104 (26 tubes) | 351102 back plate | 351103 hinge-side stop, 368005 seal |
 
