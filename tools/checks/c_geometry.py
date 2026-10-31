@@ -25,7 +25,8 @@ import os
 import re
 from collections import defaultdict
 
-from common import Finding, owner_for, rel, walk_files, num, pn_class, read_csv, reserved_spaces, reserved_label
+from common import (Finding, owner_for, rel, walk_files, num, pn_class, read_csv, reserved_spaces, reserved_label,
+                    is_soft)
 import stepfile as sf
 
 POD_BOX = (-1250.0, -850.0, 0.0, 1250.0, 850.0, 2400.0)
@@ -191,7 +192,13 @@ def shell_gaps(bodies, inset=1.0, seam=SEAM_GAP, root=None):
             c = (b.box[aa] - grow, b.box[aa + 3] + grow, b.box[bb] - grow, b.box[bb + 3] + grow)
             open_ = [piece for r in open_ for piece in _subtract(r, c)]
         open_ = [r for r in open_ if r[1] - r[0] > 1e-3 and r[3] - r[2] > 1e-3]
+        groups = []
         for g in _components(open_):
+            box_area = (max(x[1] for x in g) - min(x[0] for x in g)) * (max(x[3] for x in g) - min(x[2] for x in g))
+            area = sum((x[1] - x[0]) * (x[3] - x[2]) for x in g)
+            # an L of thin strips isn't a hole its box covers: report each strip then, not the box of all of them
+            groups.extend([g] if area >= 0.5 * box_area else [[x] for x in g])
+        for g in groups:
             r = (max(a0, min(x[0] for x in g) - grow), min(a1, max(x[1] for x in g) + grow),
                  max(b0, min(x[2] for x in g) - grow), min(b1, max(x[3] for x in g) + grow))
             near = sorted({b.label.split(" / ")[-1] for b in face_bodies
@@ -209,7 +216,10 @@ def _glob_exists(root, pattern):
     return any(fnmatch.fnmatch(f, os.path.basename(pattern)) for f in os.listdir(d))
 
 
-FAMILIES_FOR_SHELL = ("21", "41")     # the assembled shell is checked once WALL and CEILING both exist
+# the outer shell is checked once every assembly that covers it is on main: BASE, WALL, the FRONT decor and the
+# door with its glass, and CEILING. Before that, an "opening" is mostly a part not merged yet (the back walls, a band,
+# a decor block), not a gap in what is there; the seams between parts that are there are the gap rules' job.
+FAMILIES_FOR_SHELL = ("11", "21", "35", "36", "41")
 
 
 def shell_ready(mdl, bodies):
@@ -530,7 +540,9 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
         done.add(k)
         pn = inst["part_number"]
         part = "%s %s" % (pn, (so.name or "").strip())
-        holes = so.holes
+        # the edge-distance and spacing rules are for rigid sheet and machined parts (the owner's rule 9, "for the
+        # sheet parts"): a hole near the edge of a felt, fill, foam or gasket can't tear out under load
+        holes = [] if is_soft(inst.get("name") or "") or is_soft(so.name or "") else so.holes
         for h in holes:
             edges = sf.free_edge_distances(so, h)
             if not edges:

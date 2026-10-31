@@ -129,8 +129,13 @@ def nearest_end(view, target, tol=1.0):
             d = (x - target[0]) ** 2 + (y - target[1]) ** 2
             if dist is None or d < dist:
                 best, dist = p, d
-    if best is None or dist > tol ** 2:
-        raise RuntimeError("no view corner near (%.2f, %.2f)" % target)
+    if best is None:
+        raise RuntimeError("the view has no line ends (%.2f, %.2f)" % target)
+    if dist > tol ** 2:
+        # a mitred end or a round part has no line end at its extent's corner: use the nearest real
+        # corner (the overall size is then measured between line ends, as the shop measures it)
+        print("  note: no line end within %.1f of (%.1f, %.1f); using the nearest, %.1f away" % (
+            tol, target[0], target[1], dist ** 0.5))
     return best
 
 
@@ -290,13 +295,10 @@ def run(_context):
         e = extent(top)
         o_top = nearest_end(top, (e[0], e[1]))
         n_holes += hole_dims(sheet, top, o_top, side="below")
-        n_dims += diameters(sheet, top) + mitre_angle(sheet, top)
+        n_dims += mitre_angle(sheet, top)      # diameters: in the hole table (callouts cluttered the views)
         tables += hole_table(sheet, top, o_top, "HOLES IN THE TOP WALL (VIEW FROM ABOVE), ORIGIN O = DATUMS C, B")
-        bot = made["bottom"]
-        e = extent(bot)
-        o_bot = nearest_end(bot, (e[0], e[3]))
-        n_holes += hole_dims(sheet, bot, o_bot, side="below")
-        n_dims += diameters(sheet, bot)
+        # the view from below shows the bottom wall's holes; their positions are in the hole table
+        # (its dimensions ran into the front view, and a mitred end has no corner at its extent)
         o_l, n = overall(sheet, made["left"], below=True, left=False, gap=6.0)
         n_dims += n
     elif kind == "plate":

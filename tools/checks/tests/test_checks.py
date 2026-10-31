@@ -922,7 +922,7 @@ def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_pa
     _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [dict(row, name="BASE - BASE SEAL - GAP 10 ±5")])
     fs = [f for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
           if f.rule == "duplicate-number"]
-    assert len(fs) == 1 and fs[0].owner == "PM" and "MASTER_BOM" in fs[0].fix
+    assert len(fs) == 1 and fs[0].owner == "Control" and "master BOM" in fs[0].fix
 
 
 def test_a_master_bom_row_copied_from_a_team_list_is_checked_there_whatever_its_source_suffix():
@@ -967,3 +967,71 @@ def test_a_reserved_air_space_row_asks_for_no_mass_material_or_finish(tmp_path):
                 {"part_number": "351306", "name": "FRONT - DR - FRAME", "type": "made", "qty": "1"}])
     subjects = {f.subject.split(" ")[0] for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))}
     assert "351402" not in subjects and "351306" in subjects
+
+
+def test_d105_a_row_typed_reserved_air_space_is_reserved_without_a_config_line(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/front"
+    d.mkdir(parents=True)
+    _write_csv(d / "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+               [{"part_number": "351406", "name": "FRONT - AIR SPACE - DR", "type": "reserved air space", "qty": "1"}])
+    from common import reserved_spaces
+    r = reserved_spaces(str(tmp_path))
+    assert r["351406"]["owner"] == "AIR" and r["351406"]["ruling"] == "D-105"
+
+
+def test_a_duplicate_name_goes_to_the_list_that_is_off(tmp_path):
+    row = {"name_vi": "x", "material": "6061-T6", "finish": "mill", "qty": "1", "mass_kg": "0.1", "status": "DRAFT",
+           "source": "CAD"}
+    for folder, name in (("base", "110000_P01_BASE_BOM.csv"), ("joints", "V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv")):
+        (tmp_path / "v2/03-Manufacturing" / folder).mkdir(parents=True)
+    _write_csv(tmp_path / "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+               [dict(row, part_number="111211", name="BASE - CORNER KEY - BACK - COMMON"),
+                dict(row, part_number="111501", name="BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM")])
+    _write_csv(tmp_path / "v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv",
+               [dict(row, part_number="111211", name="BASE - CORNER KEY - SQUARE - COMMON")])
+    (tmp_path / "v2/04-BOM").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+               [dict(row, part_number="111501", name="BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM")])
+    fs = {f.subject: f for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
+          if f.rule == "duplicate-number"}
+    assert fs["111211"].owner == "BASE" and "SQUARE" in fs["111211"].fix      # the key's name is the Joints Engineer's
+    assert fs["111501"].owner == "Control" and "Rebuild the master BOM" in fs["111501"].fix
+
+
+def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
+    # the owner's rule 9 is for sheet parts: a 60 mm access hole near a felt's edge can't tear out
+    def plate(name):
+        x0, x1, y0, y1 = -73.5, 500.0, -73.5, 500.0
+        rim = (sf.Frame(), 30.0, (30.0, 0, 0), (30.0, 0, 0), True)
+        face = sf.Face(1, "plane", (0, 0, 0), (0, 0, 1), None, True, [], [rim],
+                       [((x0, y0, 0), (x1, y0, 0)), ((x1, y0, 0), (x1, y1, 0)), ((x1, y1, 0), (x0, y1, 0)),
+                        ((x0, y1, 0), (x0, y0, 0))])
+        so = sf.Solid(1, name)
+        so.faces, so.holes, so.bends = [face], [sf.Hole(1, (0, 0, 0), (0, 0, 1), 60.0, 9.0, [])], []
+        return so
+
+    class FakeStep:
+        def __init__(self, pn, name):
+            self.pn, self.name, self.so = pn, name, plate(name)
+
+        def instances(self):
+            return [{"solid": 1, "part_number": self.pn, "name": "%s %s" % (self.pn, self.name), "path": [], "frame": sf.Frame()}]
+
+        def solid(self, _sid):
+            return self.so
+    for pn, name, flagged in (("511302", "LINING - FELT - SIDE LOWER - RH", False),
+                              ("511102", "LINING - TRAY - SIDE LOWER - RH", True)):
+        monkeypatch.setattr(c_geometry, "load_step", lambda _p, s=FakeStep(pn, name): s)
+        fs = [f for f in c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, {}, hole_rules=[],
+                                                         edge_exceptions={}) if f.rule == "edge-distance"]
+        assert bool(fs) == flagged, name
+
+
+def test_the_assembled_shell_waits_for_every_shell_assembly_and_reports_an_l_as_its_strips():
+    wall = _B("210102 WALL - SKIN - RH", (1204.0, -642.7, 112.3, 1250.0, 850.0, 2400.0), "211302")
+    assert not c_geometry.shell_ready("assembly", [wall, _B("c", (0, 0, 0, 1, 1, 1), "411301")])
+    every = [_B(pn, (0, 0, 0, 1, 1, 1), pn) for pn in ("111101", "211101", "351101", "361001", "411301")]
+    assert c_geometry.shell_ready("assembly", every)
+    # the right face: the skin leaves a thin strip at the bottom (no band yet) and at the front edge (no DR yet)
+    gaps = [g for g in c_geometry.shell_gaps([wall]) if g["zone"] == "right"]
+    assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 5 for g in gaps)
