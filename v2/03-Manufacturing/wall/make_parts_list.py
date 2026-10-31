@@ -215,8 +215,11 @@ def panel_rows(rep):
                     qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
                     tolerance="per the tabulated skin drawing (D-89)", mass_each_kg=sm, mass_total_kg=sm,
                     mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
-                    source="CAD", note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
-                                        if back else "blank and fold line in the skin DXF")))
+                    source="CAD" + ("; holes ELECTRICAL P01 (PR #64)" if "el_inlet_x" in prm else ""),
+                    note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
+                          if back else "blank and fold line in the skin DXF") + (
+                        "; two Ø%g holes for ELECTRICAL's mains inlet and LAN feed-through, in the DXF" % prm["el_inlet_d"]
+                        if "el_inlet_x" in prm else "")))
     fl = round(sum(b["mass_kg"] for b in fill["bodies"]), 3)
     pieces = Counter(tuple(sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)[:2])
                      for b in fill["bodies"])
@@ -229,7 +232,8 @@ def panel_rows(rep):
                     tolerance="±2 on length and width, thickness as supplied (assumption: knife-cut PET batt)",
                     mass_each_kg=fl, mass_total_kg=fl, mass_status="calculation: CAD at the design's fill density",
                     status="DRAFT", source="CAD; 24 kg/m3 PM ruling 2026-10-31 (T02 confirms, else 32)",
-                    note="friction fit in the bays"))
+                    note="friction fit in the bays" + ("; the first bay left out for ELECTRICAL's power unit (to the first "
+                                                       "stud), sleeve and connectors" if "el_cut_x0" in prm else "")))
     rows += hardware_rows(frame, comps, back, lower, prm)
     made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
     rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
