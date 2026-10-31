@@ -228,7 +228,8 @@ def pattern(comp, feature, axis, n, pitch, name):
     pi = comp.features.rectangularPatternFeatures.createInput(
         coll, ax, vi(n), vi(pitch), adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
     try:
-        pi.patternComputeOption = adsk.fusion.PatternComputeOptions.AdjustPatternCompute
+        # identical copies: every instance cuts the same flat wall, and it computes much faster
+        pi.patternComputeOption = adsk.fusion.PatternComputeOptions.IdenticalPatternCompute
     except Exception:
         pass
     f = comp.features.rectangularPatternFeatures.add(pi)
@@ -894,6 +895,10 @@ def run(_context):
             ok = True
             return
 
+        t0 = time.time()
+
+        def lap(what):
+            print("step %s done at %.0f s" % (what, time.time() - t0))
         # outer panels
         assy = {}
         for half in ("C1", "C2"):
@@ -903,19 +908,19 @@ def run(_context):
         for half in ("C1", "C2"):
             skin_occ, _skin = build_skin(assy[half][1], "skin_c1" if half == "C1" else "skin_c2", ctx)
             place(assy[half][1], skin_occ, M.SKIN_PLACES[half], "SKIN " + half, ctx)
-        print("step outer panels done")
+        lap("outer panels")
         if stop == "outer":
             raise StopIteration
 
         # the cassette (one component, two occurrences)
         cass_occ, cass = new_comp(root, "cassette", ctx)
         tray_comp = build_cassette_contents(cass, cass_occ, ctx)
-        print("step cassette parts done")
+        lap("cassette parts")
         place(root, cass_occ, M.CASSETTE_CS["C1"], "CASSETTE C1-CASS", ctx)
         cass_occ2 = root.occurrences.addExistingComponent(cass, adsk.core.Matrix3D.create())
         place(root, cass_occ2, M.CASSETTE_CS["C2"], "CASSETTE C2-CASS", ctx)
         adsk.doEvents()
-        print("step placement done")
+        lap("placement")
 
         # ---- checks
         tl = design.timeline
@@ -927,8 +932,9 @@ def run(_context):
             tl.count, len(bad), len(loose), design.userParameters.count, len(bodies)))
         for n, b in bodies:
             print("BODY|%s|%s" % (n, body_box(b)))
-        hits = clash_check(bodies)
-        print("clash pairs over 1 mm3: %d" % len(hits))
+        full = ARGS.get("checks", "1") == "1"      # checks=0: ceiling_report.py checks the saved version
+        hits = clash_check(bodies) if full else []
+        print("clash pairs over 1 mm3: %s" % (len(hits) if full else "not checked (checks=0)"))
         for h in hits:
             print("CLASH|%s|%s|%s mm3" % h)
         for occ in root.allOccurrences:
@@ -936,12 +942,13 @@ def run(_context):
             if c.bRepBodies.count:
                 pp = c.getPhysicalProperties()
                 print("MASS|%s|%s|%.3f kg" % (occ.fullPathName, c.partNumber, pp.mass))
-        pos = C.check(design)
+        pos = C.check(design) if full else {"checked": 0, "worst": 0.0, "bad": []}
         print("position check: %d bodies against the layout, worst %.3f mm, off %s" % (
             pos["checked"], pos["worst"], pos["bad"] or "none"))
-        holes = C.hole_check(design)
+        holes = C.hole_check(design) if full else {"checked": 0, "worst": 0.0, "bad": []}
         print("hole check: %d joint holes against the register's positions, worst %.3f mm, off %s" % (
             holes["checked"], holes["worst"], holes["bad"] or "none"))
+        lap("checks")
         if bad or loose or hits or pos["bad"] or holes["bad"]:
             raise RuntimeError("ceiling checks failed (unhealthy %s, loose %s, clashes %s, off layout %s, holes %s)" % (
                 bad, loose, hits, pos["bad"], holes["bad"]))
@@ -952,6 +959,7 @@ def run(_context):
                 raise RuntimeError("save=1 needs into_active=1 with the runner's --doc %s --doc-new" % doc_name)
             print("saved:", doc.save("CEILING %s build, skeleton %s" % (M.REV, M.SKELETON_REV)))
             adsk.doEvents()
+            lap("save")
         if ARGS.get("export") == "1":
             if ARGS.get("save") != "1":
                 raise RuntimeError("export=1 needs save=1, so the exports come from a saved version")
