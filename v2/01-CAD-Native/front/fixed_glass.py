@@ -60,86 +60,10 @@ XL, XR = "-pod_w / 2", "pod_w / 2"
 GY = "-glass_y"
 
 
-def door_x(z):
-    """X of the door's latch edge line (skeleton door corners) at height z."""
-    return "((fg_lc - fg_lnz * (%s)) / fg_lnx)" % z
-
-
-def left_x(z):
-    """X of the pane's free left edge at height z: parallel to the door's latch edge, fg_gap away
-    (PM ruling 2026-10-31; replaces the skeleton's fix_xbl / fix_xtl edge, which ran 2.4 to 3.6 mm off)."""
-    return "((fg_lc + fg_gap - fg_lnz * (%s)) / fg_lnx)" % z
-
-
-# Corners of the outline pushed out by d on the bottom, right, diagonal and top edges (the left edge stays).
-def BL(d):
-    z = "(fg_vis_zb - %s)" % d
-    return (left_x(z), z)
-
-
-def BR(d):
-    z = "(fg_vis_zb - %s)" % d
-    return ("((fg_rc + %s - fg_rnz * %s) / fg_rnx)" % (d, z), z)
-
-
-def K(d):
-    return ("(((fg_rc + %s) * fg_dnz - (fg_dc + %s) * fg_rnz) / fg_det)" % (d, d),
-            "((fg_rnx * (fg_dc + %s) - fg_dnx * (fg_rc + %s)) / fg_det)" % (d, d))
-
-
-def TR(d):
-    z = "(fg_vis_zt + %s)" % d
-    return ("((fg_dc + %s - fg_dnz * %s) / fg_dnx)" % (d, z), z)
-
-
-def TL(d):
-    z = "(fg_vis_zt + %s)" % d
-    return (left_x(z), z)
-
-
-def outline(d):
-    return [BL(d), BR(d), K(d), TR(d), TL(d)]
-
-
-def band(d):
-    """C-shaped band between the visible outline (offset 0) and offset d, open along the free left edge."""
-    return outline("0 mm") + [TL(d), TR(d), K(d), BR(d), BL(d)]
-
-
-OWN = [
-    ("fg_vis_zb", "wall_z0", "mm", "calculation",
-     "visible bottom of the pane = the base band top (DR and DL stop there too, PM ruling 2026-10-31)"),
-    ("fg_vis_zt", "dt_zb", "mm", "calculation", "visible top of the pane = DT's underside"),
-    ("gu_prof_w", "15 mm", "mm", "source", "Bohle BO5201571 aluminium U-profile 15 x 15 x 1.5 (hardware selection C5)"),
-    ("gu_prof_d", "15 mm", "mm", "source", "as gu_prof_w"),
-    ("gu_prof_t", "1.5 mm", "mm", "source", "as gu_prof_w"),
-    ("gu_w", "gu_prof_w - 2 * gu_prof_t", "mm", "calculation", "inner width of the U-profile = the U-seal's outer width"),
-    ("gu_base", "2 mm", "mm", "assumption", "U-seal base under the glass edge; HOLD for Bohle's BO5201735 section drawing"),
-    ("gu_in_d", "gu_prof_d - gu_prof_t", "mm", "calculation", "inner depth of the U-profile"),
-    ("fg_bite", "gu_in_d - gu_base", "mm", "calculation",
-     "glass edge cover in the channel: 11.5; HOLD for the glass supplier's minimum"),
-    ("fg_gap", "4 mm", "mm", "decided",
-     "PM ruling 2026-10-31: the pane's free edge runs parallel to the door's latch edge at the 4 mm the "
-     "180 deg seal needs (Bohle BO5281018, 4 mm between 8 mm edges, hardware selection C3)"),
-    # door latch edge line (skeleton door corners), unit normal toward the fixed pane
-    ("fg_l_len", "sqrt((door_xbr - door_xtr) * (door_xbr - door_xtr) + (door_zt - door_zb) * (door_zt - door_zb))",
-     "mm", "calculation", "length of the door's latch edge"),
-    ("fg_lnx", "(door_zt - door_zb) / fg_l_len", "", "calculation", "door latch edge normal toward the pane, X"),
-    ("fg_lnz", "(door_xbr - door_xtr) / fg_l_len", "", "calculation", "door latch edge normal toward the pane, Z"),
-    ("fg_lc", "fg_lnx * (%s + door_xbr) + fg_lnz * door_zb" % XL, "mm", "calculation", "door latch edge line constant"),
-    # right edge line (skeleton bottom-right corner to the knee) and diagonal (knee to top-right), unit outward normals
-    ("fg_r_len", "sqrt((fix_xbr - fix_xk) * (fix_xbr - fix_xk) + (fix_zk - fix_zb) * (fix_zk - fix_zb))", "mm",
-     "calculation", "length of the skeleton's right edge"),
-    ("fg_rnx", "(fix_zk - fix_zb) / fg_r_len", "", "calculation", "right edge outward normal, X"),
-    ("fg_rnz", "(fix_xk - fix_xbr) / fg_r_len", "", "calculation", "right edge outward normal, Z"),
-    ("fg_rc", "fg_rnx * (%s - fix_xbr) + fg_rnz * fix_zb" % XR, "mm", "calculation", "right edge line constant"),
-    ("fg_d_len", "sqrt((pod_w - fix_xtr - fix_xk) * (pod_w - fix_xtr - fix_xk) + (fix_zt - fix_zk) * (fix_zt - fix_zk))",
-     "mm", "calculation", "length of the skeleton's diagonal edge"),
-    ("fg_dnx", "(fix_zt - fix_zk) / fg_d_len", "", "calculation", "diagonal edge outward normal, X"),
-    ("fg_dnz", "(pod_w - fix_xtr - fix_xk) / fg_d_len", "", "calculation", "diagonal edge outward normal, Z"),
-    ("fg_dc", "fg_dnx * (%s - fix_xk) + fg_dnz * fix_zk" % XR, "mm", "calculation", "diagonal edge line constant"),
-    ("fg_det", "fg_rnx * fg_dnz - fg_rnz * fg_dnx", "", "calculation", "for the knee corner"),
-]
+# The pane's lines and corners are shared with DR and DT (front_lib.GLASS_PARAMS and the g_* helpers).
+door_x, left_x = L.door_x, L.free_x
+BL, BR, K, TR, TL = L.g_BL, L.g_BR, L.g_K, L.g_TR, L.g_TL
+outline, band = L.g_outline, L.g_band
 
 PARTS = {
     "GLASS": ("361003", "FRONT - FIXED GLASS - 4+4 LAMINATED", "Tấm kính cố định 4+4"),
@@ -168,7 +92,7 @@ def build(app):
     sk_params, sk_path, sk_rev = L.load_skeleton_params(ARGS["repo_root"])
     L.add_params(design, sk_params)
     L.add_params(design, L.LIB_PARAMS)
-    L.add_params(design, OWN)
+    L.add_params(design, L.GLASS_PARAMS)
     root = design.rootComponent
     comps, bodies = {}, {}
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
