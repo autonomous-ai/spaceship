@@ -196,6 +196,69 @@ def test_power_unit_share_from_electrical():
     assert abs(b2.kg - (back + unit)) < 1e-9, (b2.kg, back, unit)
 
 
+def _bom_copy(edit, tmp):
+    """The master BOM with edit(rows) applied, written to tmp."""
+    import csv
+    with open(pack.MASTER_BOM, encoding="utf-8") as f:
+        rd = csv.DictReader(f)
+        cols, rows = rd.fieldnames, list(rd)
+    edit(rows)
+    with open(tmp, "w", encoding="utf-8", newline="") as f:
+        wr = csv.DictWriter(f, fieldnames=cols)
+        wr.writeheader()
+        wr.writerows(rows)
+
+
+def test_numbers_match_the_master_bom():
+    # every number on a label is the BOM's number for that name (K13), and the ones the reviewer found are filled
+    m = pack.Model()
+    by_pn, _ = m.bom
+    for tag, pn in (("1-06", "210102"), ("1-09", "210103"), ("1-10", "210104"), ("1-13", "510102"), ("1-14", "510104"),
+                    ("1-16", "510103"), ("2-14", "810201"), ("2-16", "810101"), ("1-01", "110401")):
+        p = pack.PIECE[tag]
+        assert p.pn == pn and by_pn[pn][0] == p.name, (tag, p.pn, p.name)
+    assert "K13" not in failing(m)
+
+
+def test_tbd_piece_takes_its_bom_number(tmp=Path(__file__).resolve().parent / "_bom_test.csv"):
+    # when an owner's list lands with the piece's exact name, the label gets the number without a code change
+    dr = pack.PIECE["2-03"]
+    assert dr.pn_declared.startswith("TBD")
+
+    def add(rows):
+        rows.append(dict(rows[-1], part_number="350301", name=dr.name, name_vi="Khối trang trí phải (thử)"))
+    _bom_copy(add, tmp)
+    try:
+        m = pack.Model(bom_path=tmp)
+        assert dr.pn == "350301" and dr.vi == "Khối trang trí phải (thử)", (dr.pn, dr.vi)
+        assert "2-03" in m.filled and "K13" not in failing(m)
+    finally:
+        tmp.unlink()
+        pack.Model()   # back to the real BOM
+    assert dr.pn == dr.pn_declared
+
+
+def test_number_named_otherwise_is_caught(tmp=Path(__file__).resolve().parent / "_bom_test2.csv"):
+    # a label number whose BOM name differs from the piece's name fails K13
+    def rename(rows):
+        for r in rows:
+            if r["part_number"] == "210102":
+                r["name"] = "WALL - PANEL ASSY - SIDE LOWER - RH - RENAMED"
+    _bom_copy(rename, tmp)
+    try:
+        assert "K13" in failing(pack.Model(bom_path=tmp))
+    finally:
+        tmp.unlink()
+        pack.Model()
+
+
+def test_ledge_carton_counts_the_screen_rail_once():
+    # the roll-up's ledge line carries the screen rail 818102 since INTERIOR's list merged; no extra mass on top
+    m = pack.Model()
+    ledge = pack.PIECE["2-16"]
+    assert ledge.extra_kg == 0 and abs(ledge.kg - m.roll[pack.resolve(m.roll, "LEDGE")]["kg_each"]) < 1e-9, ledge.kg
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]
     bad = 0

@@ -13,6 +13,8 @@ Masses: the layout study's P04 roll-up, ../05-Engineering/layout-study/out/parts
 mass source for every part (PM, packing group, 2026-10-31). This script reads it and copies no mass.
 Pallet tares, pack allowances and the unit times of the time model come from the layout study's
 scripts/inputs.py, read at run time. Every other number is defined below with its status and source.
+Part numbers: a piece marked "TBD (owner)" takes the master BOM's number (../04-BOM/100000_P01_POD-MASTER_BOM.csv)
+as soon as the owner's parts list carries its exact name, and every number on a label must be the BOM's (check K13).
 
     python3 v2/07-Packaging/pack.py                 # write every output
     python3 v2/07-Packaging/pack.py --check         # exit 1 if an output is stale or a check fails
@@ -50,6 +52,9 @@ MM_PER_IN = 25.4
 
 
 SKEL_CSV = REPO / "v2" / "01-CAD-Native" / "skeleton" / "100000_P04_POD-SKELETON-PARAMETERS.csv"
+MASTER_BOM = REPO / "v2" / "04-BOM" / "100000_P01_POD-MASTER_BOM.csv"
+# Numbers on a label that are not master BOM rows, with the reason (check K13).
+NOT_BOM_ROWS = {"109000": "the installation kit: the assembly tree's family 10 node; the master BOM lists its contents"}
 
 
 def _load_skeleton(path=SKEL_CSV):
@@ -125,9 +130,9 @@ TIME = {
     "t_slide_long_s": N(120, "s", "assumption", "this plan", "slide one long air part (riser or cartridge) into its housing, 2 people"),
     "t_face_s": N(60, "s", "assumption", "this plan", "lift one felt-covered face or section off, or back on"),
     "t_catch_s": N(60, "s", "assumption", "this plan", "hook one ceiling cassette safety catch (HOLD, D-47)"),
-    "t_light_shelf_s": N(600, "s", "assumption", "this plan", "fit and plug the light shelf trims along the wall tops (D-70, not designed yet)"),
-    "t_ledge_two_s": N(120, "s", "assumption", "this plan", "hold the 1000 mm ledge in place while it is fixed (D-70, not designed yet)"),
-    "t_ledge_one_s": N(600, "s", "assumption", "this plan", "fix the ledge and the screen mount to the work wall's mounting points (D-70, IF-16, not designed yet)"),
+    "t_light_shelf_s": N(600, "s", "assumption", "this plan", "fit and plug the light shelf along the wall tops (D-70; INTERIOR 810201, its fixings not listed yet)"),
+    "t_ledge_two_s": N(120, "s", "assumption", "this plan", "hold the 1000 mm ledge in place while it is fixed (D-70; INTERIOR 810101)"),
+    "t_ledge_one_s": N(600, "s", "assumption", "this plan", "fix the ledge's 2 brackets to R1's stiles and the screen rail to R2's stiles (D-70, IF-16; brackets 818101 and rail 818102 HOLD, their screws not listed yet)"),
     "t_carry_staged_s": N(20, "s", "assumption", "this plan (D-87)", "carry a pallet 2 part that step 1 set down at its place: a few steps"),
     "t_level_preset_s": N(240, "s", "assumption", "this plan (D-87)", "check the band with the spirit level and turn only the glides that are out; glides preset at the factory"),
     "t_hook_s": N(120, "s", "assumption", "this plan (D-87)", "hang a part on its tool-free hooks and check it"),
@@ -156,11 +161,11 @@ OTHER_FIXINGS = [
     dict(step=16, where="Air column on DR and the floor", owner="AIR", count=0, size="none on site: 2 hook studs set in the factory, 2 spigots",
          status="registered: J-AIR-02 (0 on site)", note="D-87: the column hangs on its hook studs",
          text="the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02)"),
-    dict(step=19, where="Light shelf", owner="INTERIOR", count=0, size="not designed yet (HOLD)", status="HOLD (D-70)",
-         note="time is in the step", text="the light shelf's fixings (INTERIOR design, not designed yet)"),
-    dict(step=22, where="Ledge and screen mount", owner="INTERIOR", count=0, size="not designed yet (HOLD)",
+    dict(step=19, where="Light shelf", owner="INTERIOR", count=0, size="not in INTERIOR's parts list yet (HOLD)", status="HOLD (D-70)",
+         note="time is in the step", text="the light shelf's fixings (INTERIOR's parts list 810201 names none yet)"),
+    dict(step=22, where="Ledge and screen rail", owner="INTERIOR", count=0, size="brackets and rail on HOLD; screws not listed yet",
          status="HOLD (D-70, IF-16)", note="time is in the step",
-         text="their fixings to the work wall's mounting points (INTERIOR design, not designed yet)"),
+         text="the ledge's 2 brackets 818101 on R1's stiles, on stand-offs through R1's cassette, and the screen rail 818102 on stand-offs to R2's stiles (INTERIOR; both HOLD)"),
 ]
 
 
@@ -250,6 +255,9 @@ class Piece:
     kind: str = "piece"         # piece | allowance | later
     note: str = ""
     kg: float = 0.0
+
+    def __post_init__(self):
+        self.pn_declared, self.vi_declared = self.pn, self.vi
     status: str = ""
 
 
@@ -283,10 +291,10 @@ DT_CHANNEL_SHARE = 303 * CHANNEL_KG_PER_MM / FIX_UNIT_KG
 PANE_SHARE = 1 - SILL_CHANNEL_SHARE - DR_CHANNEL_SHARE - DT_CHANNEL_SHARE
 PIECES = [
     # ---------------- pallet 1, 48 x 40 in: upright stack, listed from the open face (first out) to the back
-    Piece("1-01", "111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "F1", [("FLOOR", 1), ("MAT", 0.5)], S(sk("wall_depth") - sk("band_t"), FLOOR_W_MAX, sk("floor_t") + sk("mat_t")),
+    Piece("1-01", "110401", "BASE - FLOOR PANEL ASSY - F1", "Tấm sàn F1 (cụm dán)", "F1", [("FLOOR", 1), ("MAT", 0.5)], S(sk("wall_depth") - sk("band_t"), FLOOR_W_MAX, sk("floor_t") + sk("mat_t")),
           "skeleton named values: wall_depth - band_t deep, floor_t + mat_t thick; 1219 wide at most with its lap (PM ruling, packing group)",
-          1, 3, "BASE", note="foam mat 111501 bonded under it at the factory (D-87)"),
-    Piece("1-02", "TBD (BASE)", "BASE - FLOOR PANEL - F2", "Tấm sàn mỏng - F2", "F2", [("FLOOR", 1), ("MAT", 0.5)], S(sk("wall_depth") - sk("band_t"), FLOOR_W_MAX, sk("floor_t") + sk("mat_t")),
+          1, 3, "BASE", note="the panel 111401 with its foam mat 111501 bonded under it at the factory (D-87)"),
+    Piece("1-02", "TBD (BASE)", "BASE - FLOOR PANEL ASSY - F2", "Tấm sàn F2 (cụm dán)", "F2", [("FLOOR", 1), ("MAT", 0.5)], S(sk("wall_depth") - sk("band_t"), FLOOR_W_MAX, sk("floor_t") + sk("mat_t")),
           "as F1", 1, 3, "BASE", note="foam mat bonded under it at the factory (D-87)"),
     Piece("1-03", "TBD (WALL)", "WALL - PANEL ASSY - BACK LOWER - LH", "Vách hậu - cụm tấm dưới trái", "B1", [("B", 1)],
           S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 4, "WALL"),
@@ -297,28 +305,28 @@ PIECES = [
           note="carries the power unit 710001, fitted, wired and tested at the factory: its mass from ELECTRICAL's parts list, as a share of ELECTRICAL's roll-up line; foam block over the unit's face in the stack"),
     Piece("1-05", "210101", "WALL - PANEL ASSY - SIDE LOWER - LH", "Vách trái - cụm tấm dưới", "L1", [("L1R1", 1)],
           S(sk("side_l"), sk("side_h"), sk("outer_t")), P04 + "; WALL L1 CAD", 1, 5, "WALL"),
-    Piece("1-06", "TBD (WALL)", "WALL - PANEL ASSY - SIDE LOWER - RH", "Vách phải - cụm tấm dưới", "R1", [("L1R1", 1)],
+    Piece("1-06", "210102", "WALL - PANEL ASSY - SIDE LOWER - RH", "Vách phải - cụm tấm dưới", "R1", [("L1R1", 1)],
           S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 5, "WALL"),
     Piece("1-07", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - LH", "Vách hậu - cụm tấm trên trái", "B3", [("B", 1)],
           S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 6, "WALL"),
     Piece("1-08", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - RH", "Vách hậu - cụm tấm trên phải", "B4", [("B", 1)],
           S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 6, "WALL"),
-    Piece("1-09", "TBD (WALL)", "WALL - PANEL ASSY - SIDE UPPER - LH", "Vách trái - cụm tấm trên", "L2", [("L2R2", 1)],
+    Piece("1-09", "210103", "WALL - PANEL ASSY - SIDE UPPER - LH", "Vách trái - cụm tấm trên", "L2", [("L2R2", 1)],
           S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 7, "WALL"),
-    Piece("1-10", "TBD (WALL)", "WALL - PANEL ASSY - SIDE UPPER - RH", "Vách phải - cụm tấm trên", "R2", [("L2R2", 1)],
+    Piece("1-10", "210104", "WALL - PANEL ASSY - SIDE UPPER - RH", "Vách phải - cụm tấm trên", "R2", [("L2R2", 1)],
           S(sk("side_l"), sk("side_h"), sk("outer_t")), P04, 1, 7, "WALL"),
     Piece("1-11", "410101", "CEILING - PANEL ASSY - C1", "Trần - tấm trái (cụm)", "C1", [("C", 1)],
           S(sk("wall_depth"), sk("half_pw"), sk("outer_t")), "skeleton named values: wall_depth long, half_pw wide, outer_t", 1, 8, "CEILING"),
     Piece("1-12", "410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "C2", [("C", 1), ("ROOF", 1)],
           S(sk("wall_depth"), sk("half_pw"), sk("outer_t") + 14), "as C1; the roof sleeve stands 14 mm below the frame (air report 7e)", 1, 8, "CEILING",
           note="roof slot grille and sleeve fitted at the factory (PROPOSED)"),
-    Piece("1-13", "TBD (WALL)", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
+    Piece("1-13", "510102", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
           S(1445, sk("side_h"), sk("cass_t")), P04, 1, 14, "LINING"),
-    Piece("1-14", "TBD (WALL)", "LINING - CASSETTE - SIDE UPPER - RH", "Cassette tiêu âm - vách phải trên", "R2", [("CS_UP", 1)],
+    Piece("1-14", "510104", "LINING - CASSETTE - SIDE UPPER - RH", "Cassette tiêu âm - vách phải trên", "R2", [("CS_UP", 1)],
           S(1445, 1092.74, sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-15", "510101", "LINING - CASSETTE - SIDE LOWER - LH", "Cassette tiêu âm - vách trái dưới", "L1", [("CS_LO", 1)],
           S(1445, sk("side_h"), sk("cass_t")), P04 + "; WALL L1 CAD", 1, 14, "LINING"),
-    Piece("1-16", "TBD (WALL)", "LINING - CASSETTE - SIDE UPPER - LH", "Cassette tiêu âm - vách trái trên", "L2", [("CS_UP", 1)],
+    Piece("1-16", "510103", "LINING - CASSETTE - SIDE UPPER - LH", "Cassette tiêu âm - vách trái trên", "L2", [("CS_UP", 1)],
           S(1445, 1092.74, sk("cass_t")), P04, 1, 14, "LINING"),
     Piece("1-17", "TBD (WALL)", "LINING - CASSETTE - BACK LOWER - LH", "Cassette tiêu âm - vách hậu dưới trái", "B1", [("CB_LO", 1)],
           S(1166, sk("back_ph"), sk("cass_t")), P04, 1, 14, "LINING"),
@@ -362,15 +370,17 @@ PIECES = [
           "layout study bounding box (S02)", 2, 12, "FRONT"),
     Piece("2-13", "TBD (ELECTRICAL)", "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS", "Bộ điện: dây, dây nguồn, hub, đèn", "-", [("ELEC", 1 - POWER_UNIT_SHARE)],
           S(600, 250, 200), "carton (assumption)", 2, 13, "ELECTRICAL"),
-    Piece("2-14", "TBD (INTERIOR)", "INTERIOR - LIGHT SHELF", "Kệ đèn", "-", [("SHELF", 1)], S(2332, 80, 50),
-          "bundle (assumption): the roll-up's 4.43 m in lengths up to the 2332 back wall", 2, 19, "INTERIOR"),
+    Piece("2-14", "810201", "INTERIOR - LIGHT SHELF ASSY", "Kệ đèn hắt (cụm)", "-", [("SHELF", 1)], S(2332, 80, 60),
+          "bundle (assumption): INTERIOR's parts list 810201, the 2332 back shelf and the two 991 side shelves (60 x 40 sections) "
+          "two high, the down channel and the diffuser inside them", 2, 19, "INTERIOR"),
     Piece("2-15", "TBD (BASE)", "BASE - SMALL PARTS CARTON", "Thùng phụ kiện đế", "-",
           [("BAND_FL", 1), ("BAND_FR", 0.337), ("KEY", 6)], S(600, 400, 150),
           "carton (assumption): front-left band piece (faceted, under DL), mesh intake piece under DR with DR's support and the closing plate (D-62), 6 corner keys",
           2, 2, "BASE", note="mesh piece share of the front-r line by length, 371 of 1100 mm (calculation)"),
-    Piece("2-16", "TBD (INTERIOR)", "INTERIOR - LEDGE AND SCREEN MOUNT CARTON", "Kệ làm việc + giá màn hình", "-", [("LEDGE", 1)], S(1000, 250, 120),
-          "carton (assumption): the 1000 mm ledge (D-70) with its 2 brackets, and the screen mount", 2, 22, "INTERIOR",
-          extra_kg=1.0, extra_note="screen mount, not in the roll-up (D-70, IF-16; assumption)"),
+    Piece("2-16", "810101", "INTERIOR - WORK WALL LEDGE ASSY", "Bàn tựa vách làm việc (cụm)", "-", [("LEDGE", 1)], S(1000, 250, 120),
+          "carton (assumption): INTERIOR's parts list, the 1000 x 250 ledge top 811101 with its 2 brackets 818101 (HOLD) "
+          "and the screen rail 818102 (HOLD)", 2, 22, "INTERIOR",
+          note="one carton with the screen rail 818102 (HOLD), as the roll-up's ledge line carries both"),
     Piece("2-17", "TBD (AIR)", "AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS", "Ống hút gió đứng + hộp quạt cấp", "-",
           [("RISER", 1), ("FANBOX_S", 1), ("FANS", 0.5)], S(1845, 460, 155),
           "air report 7e: riser Z 105 to 1445 joined to the fan box Z 1650 to 1950, X 645 to 1094 (calculation)", 2, 15, "AIR",
@@ -651,9 +661,9 @@ STEPS = [
               op("hook a safety catch", 1, TIME["t_catch_s"].value, 4, "t_catch_s")],
          joints={}),
     dict(n=19, title="Light shelf", tags=["2-14"],
-         A="Fits the light shelf trims along the tops of the side and back walls (INTERIOR design).",
+         A="Fits the light shelf along the tops of the side and back walls: the back shelf, the two side shelves, and the down-light channel with its diffuser on the right wall (INTERIOR 810201).",
          B="Plugs the light shelf feed.",
-         check="Trims straight; no cable shows.",
+         check="Shelves straight; no cable shows.",
          ops=[carry("2-14"), op("fit and plug the light shelf", 1, TIME["t_light_shelf_s"].value, 1, "t_light_shelf_s")],
          joints={}),
     dict(n=20, title="Power on and self-test: fans run", tags=[],
@@ -669,12 +679,12 @@ STEPS = [
          ops=[op("check door, seals and fans; clean", 2, lay("t_final_min") * 60, 1, "t_final_min"),
               op("pull one film panel by its tab", 1, TIME["t_peel_tab_s"].value, int(MINE["film_faces"].value), "t_peel_tab_s")],
          joints={}),
-    dict(n=22, title="Work-wall ledge and screen mount", tags=["2-16"],
-         A="Holds the 1000 mm ledge on the right (work) wall at its mounting points.",
-         B="Fixes the ledge and the screen mount (INTERIOR design, D-70).",
+    dict(n=22, title="Work-wall ledge and screen rail", tags=["2-16"],
+         A="Holds the 1000 mm ledge on the right (work) wall's lower panel R1, on its 2 brackets.",
+         B="Fixes the ledge's brackets to R1's stiles and the screen rail to R2's stiles (INTERIOR 810101 and 818102, D-70).",
          check="Ledge level and firm.",
          ops=[carry("2-16"), op("hold the ledge", 2, TIME["t_ledge_two_s"].value, 1, "t_ledge_two_s"),
-              op("fix the ledge and the screen mount", 1, TIME["t_ledge_one_s"].value, 1, "t_ledge_one_s")],
+              op("fix the ledge and the screen rail", 1, TIME["t_ledge_one_s"].value, 1, "t_ledge_one_s")],
          joints={}),
 ]
 CLOCK_LAST_STEP = 21     # REQ-ASM-01 clock: steps 1 to 21; step 22 is fit-out after it (PROPOSED)
@@ -722,6 +732,39 @@ def read_register(path):
     return rows, total
 
 
+# ------------------------------------------------------------------------------------------- part numbers
+def read_bom(path=MASTER_BOM):
+    """The master BOM's numbered rows: ({number: (name, Vietnamese name)}, {name: {numbers}})."""
+    by_pn, by_name = {}, {}
+    with open(path, encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            pn = (r.get("part_number") or "").strip()
+            if not re.fullmatch(r"\d{6}", pn):
+                continue
+            name = (r.get("name") or "").strip()
+            by_pn.setdefault(pn, (name, (r.get("name_vi") or "").strip()))
+            by_name.setdefault(name, set()).add(pn)
+    return by_pn, by_name
+
+
+def number_pieces(pieces, bom):
+    """A piece marked "TBD (owner)" takes the master BOM's number for its exact name, and a numbered piece takes
+    the BOM's Vietnamese name, so the labels carry the owner's words. Starts from what each piece was declared
+    with, so it can run again. Returns the labels numbered from the BOM by name."""
+    by_pn, by_name = bom
+    filled = []
+    for p in pieces:
+        p.pn, p.vi = p.pn_declared, p.vi_declared
+        if p.kind != "piece":
+            continue
+        if p.pn.startswith("TBD") and len(by_name.get(p.name, ())) == 1:
+            p.pn = next(iter(by_name[p.name]))
+            filled.append(p.tag)
+        if p.pn in by_pn and by_pn[p.pn][0] == p.name and by_pn[p.pn][1]:
+            p.vi = by_pn[p.pn][1]
+    return filled
+
+
 # ------------------------------------------------------------------------------------------- time model
 def step_ops(st, other_fixings):
     """A step's operations, with one captive-bolt drive per register bolt and per counted outside fixing."""
@@ -747,8 +790,12 @@ def clock_min(steps, other_fixings, upto=None):
 
 # ------------------------------------------------------------------------------------------- model
 class Model:
-    def __init__(self, joints_path=None):
+    def __init__(self, joints_path=None, bom_path=None):
         self.roll = read_rollup()
+        self.bom_path = Path(bom_path) if bom_path else MASTER_BOM
+        self.bom = read_bom(self.bom_path) if self.bom_path.exists() else ({}, {})
+        self.filled = number_pieces(PIECES, self.bom)
+        self.tbd_left = {}
         self.checks = []          # (id, what, result, pass)
         self.issues = []
         for p in PIECES:
@@ -970,6 +1017,33 @@ class Model:
         self.check("K11", "Every labelled piece is fitted in the step its label names",
                    f"unfitted {unfitted or 'none'}; step mismatches {wrong or 'none'}", not unfitted and not wrong)
         self.check_skeleton()
+        self.check_numbers()
+
+    def check_numbers(self):
+        """K13: every number on a label is the master BOM's number for that name; a TBD piece whose exact name the
+        BOM numbers has been filled in (number_pieces), so only an owner's list still to come leaves it TBD."""
+        by_pn, by_name = self.bom
+        if not by_pn:
+            self.check("K13", "Every part number on a label is the master BOM's", f"{self.bom_path.name} not found or empty", False)
+            return
+        ships = self.shipped()
+        numbered = [p for p in ships if re.fullmatch(r"\d{6}", p.pn)]
+        other = [f"{p.tag} {p.name} is {by_pn[p.pn][0]!r} in the BOM" for p in numbered if p.pn in by_pn and by_pn[p.pn][0] != p.name]
+        unknown = [f"{p.tag} {p.pn}" for p in numbered if p.pn not in by_pn and p.pn not in NOT_BOM_ROWS]
+        two = [f"{p.tag} {sorted(by_name[p.name])}" for p in ships if p.pn.startswith("TBD") and len(by_name.get(p.name, ())) > 1]
+        loose = [p.tag for p in ships if not (re.fullmatch(r"\d{6}", p.pn) or re.fullmatch(r"TBD \([A-Z]+\)", p.pn))]
+        left = {}
+        for p in ships:
+            if p.pn.startswith("TBD"):
+                owner = p.pn[5:-1]
+                left[owner] = left.get(owner, 0) + 1
+        self.tbd_left = left
+        self.check("K13", "Every part number on a label is the master BOM's number for that name",
+                   f"{len(numbered)} of {len(ships)} pieces numbered, {len(self.filled)} of them from the BOM by name "
+                   f"({', '.join(self.filled) or 'none'}); still TBD: "
+                   f"{', '.join(f'{o} {n}' for o, n in sorted(left.items())) or 'none'}; named otherwise in the BOM: {other or 'none'}; "
+                   f"not in the BOM: {unknown or 'none'}; two numbers for one name: {two or 'none'}; neither a number nor TBD: {loose or 'none'}",
+                   not (other or unknown or two or loose))
 
     def check_skeleton(self):
         if not SKELETON_STEP.exists():
@@ -1054,6 +1128,8 @@ def gen_tables(m):
     T["HEAVIEST"] = f"{heaviest.name} ({heaviest.tag}) at {heaviest.kg:.1f} kg"
     T["PN16"], T["PN25"], T["PNW"], T["PNKEY"] = m.pn["M6 x 16"], m.pn["M6 x 25"], m.pn["washer"], m.pn["key"]
     T["KIT_TAG"] = next(p.tag for p in m.shipped() if p.pn == "109000")
+    T["TBD_LEFT"] = (f"{sum(m.tbd_left.values())} of {len(m.shipped())} pieces: "
+                     + ", ".join(f"{o} {n}" for o, n in sorted(m.tbd_left.items()))) if m.tbd_left else "none"
     T["DOOR_KG"] = f1(PIECE["2-02"].kg)
     T["FIX_KG"] = f1(PIECE["2-01"].kg)
 
