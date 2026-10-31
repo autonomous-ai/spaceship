@@ -1,6 +1,6 @@
 # FocusPod v2 plan
 
-Status: draft for Dee's approval. Nothing has started.
+Status: approved by Dee on 2026-10-31. Work has started.
 
 Sources: the v2 build plan from the indoor pod lead engineer (`v2/00-Control/v2-build-plan.pdf`), the engineering guideline from the hardware engineering lead (`docs/engineering-guideline.md`), v1 (`sources/v1/` plus the [product page](https://www.autonomous.ai/focus-pod)), and the market study (`v2/research/market-study.md`).
 
