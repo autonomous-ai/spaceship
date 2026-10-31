@@ -314,8 +314,7 @@ BOM_ROWS = [
 def export_all(app):
     design = adsk.fusion.Design.cast(app.activeProduct)
     doc = app.activeDocument
-    if design.rootComponent.partNumber != PN or not doc.isSaved:
-        raise RuntimeError("export needs the saved %s document active" % DOC_NAME)
+    L.ensure_saved_part_number(doc, design, PN)
     root_dir = ARGS["repo_root"]
     f3d = L.export(design, root_dir, F3D_REL, "f3d")
     step = L.export(design, root_dir, STEP_REL, "step")

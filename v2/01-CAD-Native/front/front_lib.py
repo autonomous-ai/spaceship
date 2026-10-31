@@ -380,3 +380,67 @@ def write_dxf_polyline(path, loops, layer="CUT"):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="ascii") as f:
         f.write("\n".join(out) + "\n")
+
+
+# ---------------------------------------------------------------- export package (parts list, anchors, STEP re-read)
+
+def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
+    """rows: [(pn, name, vn, qty, type, material, mass, mass_status, status, source, note)];
+    mass "cad" = the component's mass from the model; the root row's mass is the sum of the others.
+    Every non-root part number must exist in the CAD with that many components, named 'PN NAME…'."""
+    by_pn = {}
+    for c in design.allComponents:
+        if c.partNumber and c != design.rootComponent:
+            by_pn.setdefault(c.partNumber, []).append(c)
+    out = []
+    for pn, name, vn, qty, typ, mat, mass, mstat, status, src, note in rows:
+        if pn == root_pn:
+            out.append([pn, root_name, root_vn, typ, mat, qty, "", mstat, status, src, note])
+            continue
+        comps = by_pn.get(pn, [])
+        if len(comps) != (qty if isinstance(qty, int) else 1):
+            raise RuntimeError("%s: %d components in CAD, parts list says %s" % (pn, len(comps), qty))
+        if not comps[0].name.startswith("%s %s" % (pn, name)):
+            raise RuntimeError("%s: CAD name %r does not start with %r" % (pn, comps[0].name, name))
+        if mass == "cad":
+            mass = round(comp_mass(comps[0]), 3)
+        out.append([pn, name, vn, typ, mat, qty, mass, mstat, status, src, note])
+    total = sum((r[5] if isinstance(r[5], int) else 1) * r[6] for r in out if r[0] != root_pn and r[6] != "")
+    for r in out:
+        if r[0] == root_pn:
+            r[6] = round(total, 2)
+            r[7] = "calculation (sum of the rows below)"
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["part_number", "name", "name_vi", "type", "material", "qty", "unit_mass_kg", "mass_status",
+                    "status", "source", "note"])
+        w.writerows(out)
+    return total
+
+
+def step_reread(app, doc, design, step_path):
+    imp = app.importManager
+    before = box(design.rootComponent)
+    sdoc = imp.importToNewDocument(imp.createSTEPImportOptions(step_path))
+    sdes = adsk.fusion.Design.cast(sdoc.products.itemByProductType("DesignProductType"))
+    after = box(sdes.rootComponent)
+    sdoc.close(False)
+    doc.activate()
+    return before, after, max(abs(a - b) for a, b in zip(before, after))
+
+
+def ensure_saved_part_number(doc, design, pn):
+    """Fusion stamps a new document's root part number on its first save (seen 2026-10-31:
+    '2026-10-31-21-54-47-400'); set it back and save a new version, so the exports carry the
+    real part number."""
+    if design.rootComponent.partNumber != pn:
+        design.rootComponent.partNumber = pn
+        if not doc.save("root part number %s" % pn):
+            raise RuntimeError("save after setting the part number failed")
+        for _i in range(20):
+            adsk.doEvents()
+            if design.rootComponent.partNumber == pn and not doc.isModified:
+                break
+            time.sleep(1)
+    if design.rootComponent.partNumber != pn or not doc.isSaved:
+        raise RuntimeError("root part number %r, saved %s" % (design.rootComponent.partNumber, doc.isSaved))
