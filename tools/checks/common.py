@@ -131,6 +131,26 @@ FASTENER_WORDS = re.compile(r"^HARDWARE - (BOLT|SCREW|NUT|WASHER|RIVNUT|RIVET NU
                             r"\b(RIVNUT|RIVET NUT)\b", re.I)
 
 
+SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
+
+
+def head_noun(name):
+    """The last word of a part name's FUNCTION field (conventions section 5): 'BASE - SEAL HOLDER - LH'
+    gives HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL, 'FRONT - DROP SEAL - ATHMER' gives SEAL."""
+    fields = [f.strip() for f in (name or "").upper().split(" - ")]
+    func = fields[1] if len(fields) > 1 else fields[0]
+    words = re.findall(r"[A-Z][A-Z-]*", func)
+    return words[-1] if words else ""
+
+
+def is_soft(name, kinds=None):
+    """A soft good by its head noun (fill, felt, foam, gasket, seal, tape); kinds narrows the set."""
+    h = head_noun(name)
+    if not SOFT_HEADS.fullmatch(h):
+        return False
+    return kinds is None or any(h.rstrip("S").endswith(k) for k in kinds)
+
+
 def is_fastener(pn="", name=""):
     """A standard fastener: family 83 (conventions section 6) or a HARDWARE - BOLT/NUT/... name."""
     return (pn or "")[:2] == "83" or bool(FASTENER_WORDS.search((name or "").strip()))

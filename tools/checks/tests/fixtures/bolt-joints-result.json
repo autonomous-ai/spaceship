@@ -1,12 +1,12 @@
 {
  "steps": [
-  "/Users/d/harnesses/worktrees/spaceship/765409e413323ec806d75b21/tools/checks/tests/fixtures/bolt-joints.step"
+  "tools/checks/tests/fixtures/bolt-joints.step"
  ],
- "started": "2026-10-31 22:34:42",
+ "started": "2026-10-31 22:53:38",
  "errors": [],
  "imports": [
   {
-   "file": "/Users/d/harnesses/worktrees/spaceship/765409e413323ec806d75b21/tools/checks/tests/fixtures/bolt-joints.step",
+   "file": "tools/checks/tests/fixtures/bolt-joints.step",
    "ok": true
   }
  ],
@@ -241,6 +241,160 @@
     30.0,
     30.2
    ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211980 WALL - TEST WALL BOLT SIDE E:1 / Body1",
+   "box_mm": [
+    1070.0,
+    -30.0,
+    0.0,
+    1130.0,
+    30.0,
+    1.2
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211981 WALL - TEST WALL NUT SIDE E:1 / Body1",
+   "box_mm": [
+    1070.0,
+    -30.0,
+    -3.46,
+    1130.0,
+    30.0,
+    -2.26
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 838104 HARDWARE - RIVNUT - M6 E:1 / Body1",
+   "box_mm": [
+    1095.25,
+    -4.75,
+    -12.42,
+    1104.75,
+    4.75,
+    -2.26
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211982 WALL - TEST FAR WALL E:1 / Body1",
+   "box_mm": [
+    1070.0,
+    -30.0,
+    -22.26,
+    1130.0,
+    30.0,
+    -21.06
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 838004 HARDWARE - BOLT - M6 X 16 ISO 4762 E:1 / Body1",
+   "box_mm": [
+    1095.0,
+    -5.0,
+    -14.8,
+    1105.0,
+    5.0,
+    7.2
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211983 WALL - TEST SKIN E:1 / Body1",
+   "box_mm": [
+    1150.0,
+    -60.0,
+    -30.0,
+    1153.0,
+    60.0,
+    80.0
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211984 WALL - TEST FILL E:1 / Body1",
+   "box_mm": [
+    1060.0,
+    -60.0,
+    7.3,
+    1150.0,
+    60.0,
+    80.0
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211990 WALL - TEST WALL BOLT SIDE F:1 / Body1",
+   "box_mm": [
+    1070.0,
+    170.0,
+    0.0,
+    1130.0,
+    230.0,
+    1.2
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211991 WALL - TEST WALL NUT SIDE F:1 / Body1",
+   "box_mm": [
+    1070.0,
+    170.0,
+    -3.46,
+    1130.0,
+    230.0,
+    -2.26
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 838105 HARDWARE - RIVNUT - M6 F:1 / Body1",
+   "box_mm": [
+    1095.25,
+    195.25,
+    -12.42,
+    1104.75,
+    204.75,
+    -2.26
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211992 WALL - TEST FAR WALL F:1 / Body1",
+   "box_mm": [
+    1070.0,
+    170.0,
+    -22.26,
+    1130.0,
+    230.0,
+    -21.06
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 838005 HARDWARE - BOLT - M6 X 16 ISO 4762 F:1 / Body1",
+   "box_mm": [
+    1095.0,
+    195.0,
+    -14.8,
+    1105.0,
+    205.0,
+    7.2
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211993 WALL - TEST SKIN F:1 / Body1",
+   "box_mm": [
+    1150.0,
+    140.0,
+    -30.0,
+    1153.0,
+    260.0,
+    80.0
+   ]
+  },
+  {
+   "label": "(Unsaved) (1):1 / 211994 WALL - TEST FILL F:1 / Body1",
+   "box_mm": [
+    1060.0,
+    140.0,
+    7.3,
+    1150.0,
+    260.0,
+    80.0
+   ]
   }
  ],
  "clashes": [
@@ -271,6 +425,18 @@
   {
    "a": "(Unsaved) (1):1 / 838103 HARDWARE - RIVNUT - M6 D:1 / Body1",
    "b": "(Unsaved) (1):1 / 838003 HARDWARE - BOLT - M6 X 16 ISO 4762 D:1 / Body1",
+   "mm3": 87.78,
+   "allowed": "BOLT-IN-THREAD"
+  },
+  {
+   "a": "(Unsaved) (1):1 / 838104 HARDWARE - RIVNUT - M6 E:1 / Body1",
+   "b": "(Unsaved) (1):1 / 838004 HARDWARE - BOLT - M6 X 16 ISO 4762 E:1 / Body1",
+   "mm3": 87.78,
+   "allowed": "BOLT-IN-THREAD"
+  },
+  {
+   "a": "(Unsaved) (1):1 / 838105 HARDWARE - RIVNUT - M6 F:1 / Body1",
+   "b": "(Unsaved) (1):1 / 838005 HARDWARE - BOLT - M6 X 16 ISO 4762 F:1 / Body1",
    "mm3": 87.78,
    "allowed": "BOLT-IN-THREAD"
   }
@@ -316,7 +482,7 @@
     "body": "(Unsaved) (1):1 / 211920 WALL - TEST FAR WALL A:1 / Body1",
     "mm": 6.5
    },
-   "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
+   "tool": "5 mm hex key (ISO 4762 M6)",
    "tool_blocked_by": []
   },
   {
@@ -361,7 +527,7 @@
     }
    ],
    "tip_clearance": null,
-   "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
+   "tool": "5 mm hex key (ISO 4762 M6)",
    "tool_blocked_by": []
   },
   {
@@ -403,7 +569,7 @@
     "body": "(Unsaved) (1):1 / 211922 WALL - TEST FAR WALL C:1 / Body1",
     "mm": 14.5
    },
-   "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
+   "tool": "5 mm hex key (ISO 4762 M6)",
    "tool_blocked_by": []
   },
   {
@@ -445,15 +611,119 @@
     "body": "(Unsaved) (1):1 / 211923 WALL - TEST FAR WALL D:1 / Body1",
     "mm": 6.5
    },
-   "tool": "5 mm hex key or 5 mm bit in a short driver (ISO 4762 M6)",
+   "tool": "5 mm hex key (ISO 4762 M6)",
    "tool_blocked_by": [
     {
      "body": "(Unsaved) (1):1 / 211933 WALL - TEST BLOCKING PLATE D:1 / Body1",
+     "segment": "axis",
      "segment_mm": [
       0.0,
-      70.0
+      30.0
      ],
      "mm3": 150.8
+    }
+   ]
+  },
+  {
+   "bolt": "(Unsaved) (1):1 / 838004 HARDWARE - BOLT - M6 X 16 ISO 4762 E:1 / Body1",
+   "length_mm": 22.0,
+   "dia_mm": 6.0,
+   "head": [
+    1100.0,
+    0.0,
+    7.2
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "layers": [
+    {
+     "body": "(Unsaved) (1):1 / 211980 WALL - TEST WALL BOLT SIDE E:1 / Body1",
+     "from_head_mm": 6.25,
+     "to_mm": 7.0,
+     "is_nut": false
+    },
+    {
+     "body": "(Unsaved) (1):1 / 838104 HARDWARE - RIVNUT - M6 E:1 / Body1",
+     "from_head_mm": 9.5,
+     "to_mm": 19.5,
+     "is_nut": true
+    },
+    {
+     "body": "(Unsaved) (1):1 / 211982 WALL - TEST FAR WALL E:1 / Body1",
+     "from_head_mm": 28.5,
+     "to_mm": 29.25,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": {
+    "body": "(Unsaved) (1):1 / 211982 WALL - TEST FAR WALL E:1 / Body1",
+    "mm": 6.5
+   },
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": []
+  },
+  {
+   "bolt": "(Unsaved) (1):1 / 838005 HARDWARE - BOLT - M6 X 16 ISO 4762 F:1 / Body1",
+   "length_mm": 22.0,
+   "dia_mm": 6.0,
+   "head": [
+    1100.0,
+    200.0,
+    7.2
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "layers": [
+    {
+     "body": "(Unsaved) (1):1 / 211990 WALL - TEST WALL BOLT SIDE F:1 / Body1",
+     "from_head_mm": 6.25,
+     "to_mm": 7.0,
+     "is_nut": false
+    },
+    {
+     "body": "(Unsaved) (1):1 / 838105 HARDWARE - RIVNUT - M6 F:1 / Body1",
+     "from_head_mm": 9.5,
+     "to_mm": 19.5,
+     "is_nut": true
+    },
+    {
+     "body": "(Unsaved) (1):1 / 211992 WALL - TEST FAR WALL F:1 / Body1",
+     "from_head_mm": 28.5,
+     "to_mm": 29.25,
+     "is_nut": false
+    }
+   ],
+   "collisions": [],
+   "tip_clearance": {
+    "body": "(Unsaved) (1):1 / 211992 WALL - TEST FAR WALL F:1 / Body1",
+    "mm": 6.5
+   },
+   "tool": "5 mm hex key (ISO 4762 M6)",
+   "tool_blocked_by": [
+    {
+     "body": "(Unsaved) (1):1 / 211994 WALL - TEST FILL F:1 / Body1",
+     "segment": "axis",
+     "segment_mm": [
+      0.0,
+      30.0
+     ],
+     "mm3": 1482.8
+    },
+    {
+     "body": "(Unsaved) (1):1 / 211994 WALL - TEST FILL F:1 / Body1",
+     "segment": "room",
+     "segment_mm": [
+      0.0,
+      40.0
+     ],
+     "mm3": 1985.5
     }
    ]
   }
@@ -498,8 +768,38 @@
    "a": "(Unsaved) (1):1 / 211913 WALL - TEST WALL NUT SIDE D:1 / Body1",
    "b": "(Unsaved) (1):1 / 838103 HARDWARE - RIVNUT - M6 D:1 / Body1",
    "gap_mm": 0.015
+  },
+  {
+   "a": "(Unsaved) (1):1 / 211980 WALL - TEST WALL BOLT SIDE E:1 / Body1",
+   "b": "(Unsaved) (1):1 / 838004 HARDWARE - BOLT - M6 X 16 ISO 4762 E:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "(Unsaved) (1):1 / 211981 WALL - TEST WALL NUT SIDE E:1 / Body1",
+   "b": "(Unsaved) (1):1 / 838104 HARDWARE - RIVNUT - M6 E:1 / Body1",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "(Unsaved) (1):1 / 211983 WALL - TEST SKIN E:1 / Body1",
+   "b": "(Unsaved) (1):1 / 211984 WALL - TEST FILL E:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "(Unsaved) (1):1 / 211990 WALL - TEST WALL BOLT SIDE F:1 / Body1",
+   "b": "(Unsaved) (1):1 / 838005 HARDWARE - BOLT - M6 X 16 ISO 4762 F:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "(Unsaved) (1):1 / 211991 WALL - TEST WALL NUT SIDE F:1 / Body1",
+   "b": "(Unsaved) (1):1 / 838105 HARDWARE - RIVNUT - M6 F:1 / Body1",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "(Unsaved) (1):1 / 211993 WALL - TEST SKIN F:1 / Body1",
+   "b": "(Unsaved) (1):1 / 211994 WALL - TEST FILL F:1 / Body1",
+   "gap_mm": 0.0
   }
  ],
  "door_swing": [],
- "seconds": 2.5
+ "seconds": 1.6
 }

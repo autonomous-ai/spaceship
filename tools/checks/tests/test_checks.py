@@ -498,3 +498,12 @@ def test_door_swing_steps_leave_no_big_unchecked_gap():
     for r in rows:
         travel = math.radians(float(r["step_deg"])) * 1176.0          # the door's free edge (D-46 width)
         assert travel <= 12.0, travel
+
+
+def test_soft_goods_by_head_noun():
+    from common import is_soft, head_noun
+    assert head_noun("BASE - SEAL HOLDER - LH") == "HOLDER" and not is_soft("BASE - SEAL HOLDER - LH")
+    assert is_soft("LINING - FILL - CEILING - BAY A") and is_soft("FRONT - DOOR SEALS - SET")
+    assert is_soft("FRONT - GLAZING U-SEAL - BOHLE BO5201735") and is_soft("FRONT - GLASS-TO-GLASS SEAL 180 - BOHLE")
+    assert not is_soft("FRONT - SEALED GLAZING PROFILE") and not is_soft("FRONT - FILLER PANEL")
+    assert is_soft("LINING - FELT - CEILING", ("FELT",)) and not is_soft("LINING - FELT - CEILING", ("FILL",))

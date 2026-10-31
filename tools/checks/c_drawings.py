@@ -18,7 +18,7 @@ import re
 import shutil
 import subprocess
 
-from common import Finding, owner_for, rel, walk_files, parse_file_name, pn_class
+from common import Finding, owner_for, rel, walk_files, parse_file_name, pn_class, is_soft
 
 
 def pdf_text(path):
@@ -101,7 +101,7 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None):
         r_where = rel(root, where) if where else ""
         owner = owner_for(r_where, pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
-        soft = re.search(r"\b(FILLS?|FELTS?|GASKETS?|SEALS?|TAPES?|FOAMS?)\b", names.get(pn, ""), re.I)
+        soft = is_soft(names.get(pn, ""))          # by the name's head noun: SEAL HOLDER is a holder
         if not pdfs and soft and (files.get("DXF") or _in_cut_list(root, pn)):
             continue        # soft goods may be defined by a DXF or a cut list line instead of a drawing
         if not pdfs:

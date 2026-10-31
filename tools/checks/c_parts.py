@@ -22,7 +22,7 @@ import re
 from collections import defaultdict
 
 from common import (Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
-                    parse_file_name)
+                    parse_file_name, is_soft)
 
 ALIASES = {
     "part_number": ("part_number", "partnumber", "part_no", "partno", "pn", "part", "item_number", "number"),
@@ -52,7 +52,9 @@ GRADE_HINT = re.compile(r"\d|\b(A2|A4|ABS|PET|PE|PVC|EPDM|PU|PUR|ACP|MDF|HPL|LVL
                         re.I)
 FINISH_WORDS = re.compile(r"anodi[sz]|powder|paint|galvani|zinc|\bzn\b|plated|passivat|black oxide|e-?coat|mill finish|"
                           r"\braw\b|natural|lacquer|PVDF|coated|polished|brushed|as supplied|bare|self.colou?r|\bRAL\s*\d|"
-                          r"\bblack\b|\bwhite\b|\bgr[ae]y\b|colou?r|\bclear\b|ground|arris|seamed|\+Z\d|Z275|Z140|Z100", re.I)
+                          r"\bblack\b|\bwhite\b|\bgr[ae]y\b|colou?r|\bclear\b|ground|arris|seamed|\+Z\d|Z275|Z140|Z100|"
+                          r"\bEV\d{3,}\b", re.I)          # EV3038: the ACP's factory coil coating colour
+
 VAGUE_FINISH = re.compile(r"finish (to )?match|as (the )?(base band|v1)|tbd|to be (set|decided|confirmed)", re.I)
 
 
@@ -118,7 +120,7 @@ def check_parts_lists(root, plists):
                                   "Use a new number in the right family band (conventions section 6).", r, owner))
             cls = pn_class(pn)
             missing = []
-            if not NAME_RE.match(name or ""):
+            if not NAME_RE.match(name or "") and not (pn_class(pn) == "assembly" and pn[2:] == "0000"):
                 fs.append(Finding("C06", "name-pattern", pn, "minor",
                                   "%s name '%s' doesn't follow [ASSEMBLY] - [FUNCTION] - [LOCATION] - [VARIANT] "
                                   "(conventions section 5)." % (pn, name), "Rename it to the pattern.", r, owner))
@@ -134,6 +136,8 @@ def check_parts_lists(root, plists):
                 missing.append("source")
             if missing:
                 sev = "major" if ("quantity" in missing or "mass" in missing) else "minor"
+                if re.search(r"\bHOLD\b", row["status"] or "") or re.search(r"\bHOLD\b", name or ""):
+                    sev = "minor"           # a held item's data comes with its release
                 fs.append(Finding("C06", "row-incomplete", pn, sev,
                                   "%s %s in %s is missing: %s." % (pn, name, r, ", ".join(missing)),
                                   "Fill them in, each number with its status and source.", r, owner))
@@ -147,6 +151,10 @@ def check_parts_lists(root, plists):
                 fin_text = row["finish"] or row["material"] or ""
                 if re.search(r"glass|laminat", mat, re.I):      # a glass part's finish is its edge work
                     fin = re.search(r"ground|polish|arris|seamed|edge", fin_text, re.I)
+                elif is_soft(name, ("FILL", "FOAM", "GASKET", "SEAL", "TAPE")):   # hidden soft goods: no finish
+                    fin = True
+                elif is_soft(name, ("FELT",)):                    # the felt's finish is its colour
+                    fin = re.search(r"gr[ae]y|black|white|colou?r|RAL|\bdark\b", fin_text, re.I)
                 else:
                     fin = FINISH_WORDS.search(fin_text) and not VAGUE_FINISH.search(fin_text)
                 lacks = []
@@ -157,6 +165,8 @@ def check_parts_lists(root, plists):
                 if not fin:
                     if re.search(r"glass|laminat", mat, re.I):
                         lacks.append("edge finish for the glass (ground, polished, arrised)")
+                    elif is_soft(name, ("FELT",)):
+                        lacks.append("felt colour (plan VT03-PET: Dark Gray)")
                     elif VAGUE_FINISH.search(fin_text):
                         lacks.append("finish (it says only '%s')" % VAGUE_FINISH.search(fin_text).group(0))
                     else:
