@@ -184,3 +184,17 @@ def test_d104_a_skeleton_panel_envelope_is_not_a_hardware_stand_in():
     c = {"a": skel + "350000 FRONT:1 / DR ENVELOPE:1 / Body1", "b": skel + "110000 BASE:1 / BAND-R ENVELOPE:1 / Body1",
          "mm3": 14393.5}
     assert rf._allowed(c, rows) is None                        # F-006's kind of clash still counts
+
+
+def test_a_screw_in_a_base_keys_tapped_hole_is_its_thread_not_a_clash():
+    import csv
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    with open(os.path.join(root, "v2/04-Checks/config/clash-allow.csv"), newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    base = "110000_P01_BASE_CAD:1 / "
+    c = {"a": base + "111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+         "b": base + "838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:1 / Body1", "mm3": 90.7}
+    assert rf._allowed(c, rows) == "SCREW-IN-TAPPED-KEY"
+    assert rf._allowed(dict(c, mm3=900.0), rows) is None       # far more than a thread's overlap
+    wall = dict(c, a=base + "111101 BASE - BAND TUBE - SIDE - LH:1 / Body1")
+    assert rf._allowed(wall, rows) is None                     # a screw into the band tube isn't a tapped key

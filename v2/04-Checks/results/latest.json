@@ -1,5 +1,5 @@
 {
- "rev": "8c3aca4",
+ "rev": "e54dce6",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -71,7 +71,7 @@
    "message": "Part number 111501 is used for different names: 'BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv.",
    "fix": "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py).",
    "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
-   "owner": "PM",
+   "owner": "Control",
    "evidence": {},
    "key": "C06|duplicate-number|111501"
   },
@@ -150,18 +150,6 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "110401",
-   "severity": "major",
-   "message": "110401 BASE - FLOOR PANEL ASSY - F1 has no drawing PDF (110401_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|no-drawing|110401"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
    "subject": "111101",
    "severity": "severe",
    "message": "111101 BASE - BAND TUBE - SIDE - LH has no drawing PDF (111101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step.",
@@ -170,18 +158,6 @@
    "owner": "BASE",
    "evidence": {},
    "key": "C05|no-drawing|111101"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "111103",
-   "severity": "severe",
-   "message": "111103 BASE - BAND TUBE - BACK has no drawing PDF (111103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step.",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|no-drawing|111103"
   },
   {
    "check": "C05",
@@ -230,18 +206,6 @@
    "owner": "Joints Engineer",
    "evidence": {},
    "key": "C05|no-drawing|111214"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "111401",
-   "severity": "severe",
-   "message": "111401 BASE - FLOOR PANEL - F1 has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on POCKET-HALF-DEPTH; only CUT and MARK pass; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names half-lap.",
-   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
-   "file": "v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|no-drawing|111401"
   },
   {
    "check": "C05",
@@ -785,7 +749,7 @@
   {
    "id": "2-04",
    "name": "BASE - BAND ASSY - BACK",
-   "kg": 3.171,
+   "kg": 3.173,
    "dims": [
     2420.0,
     110.0,
@@ -797,7 +761,7 @@
   {
    "id": "2-05",
    "name": "BASE - BAND ASSY - SIDE - LH",
-   "kg": 1.997,
+   "kg": 1.999,
    "dims": [
     1517.0,
     110.0,
@@ -809,7 +773,7 @@
   {
    "id": "2-06",
    "name": "BASE - BAND ASSY - SIDE - RH",
-   "kg": 1.997,
+   "kg": 1.999,
    "dims": [
     1517.0,
     110.0,
@@ -917,14 +881,14 @@
   {
    "id": "2-15",
    "name": "BASE - SMALL PARTS CARTON",
-   "kg": 1.674,
+   "kg": 1.968,
    "dims": [
     600.0,
     400.0,
     150.0
    ],
    "ships_as": "long",
-   "status": "calculation (part CAD); calculation; confirmed (1.5 mm)"
+   "status": "calculation (CAD); calculation; confirmed (1.5 mm)"
   },
   {
    "id": "2-16",

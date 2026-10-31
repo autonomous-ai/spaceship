@@ -1,5 +1,5 @@
 {
- "next": 103,
+ "next": 104,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -909,7 +909,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -965,7 +965,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C06",
@@ -990,7 +990,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1015,7 +1015,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1040,7 +1040,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1065,7 +1065,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C06",
@@ -1319,7 +1319,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1344,7 +1344,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1369,7 +1369,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1383,7 +1383,7 @@
    "evidence": {},
    "key": "C05|no-drawing|110401",
    "id": "F-042",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1392,9 +1392,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e54dce6",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 25ecb9c",
+   "closed": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1419,7 +1425,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1433,7 +1439,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111103",
    "id": "F-044",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1442,9 +1448,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e54dce6",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 25ecb9c",
+   "closed": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1469,7 +1481,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1483,7 +1495,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111401",
    "id": "F-046",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1492,9 +1504,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e54dce6",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 25ecb9c",
+   "closed": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -1519,7 +1537,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C11",
@@ -3009,7 +3027,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -3034,7 +3052,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -3059,7 +3077,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C06",
@@ -3089,7 +3107,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C06",
@@ -3099,7 +3117,7 @@
    "message": "Part number 111501 is used for different names: 'BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv.",
    "fix": "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py).",
    "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
-   "owner": "PM",
+   "owner": "Control",
    "evidence": {},
    "key": "C06|duplicate-number|111501",
    "id": "F-099",
@@ -3117,9 +3135,14 @@
      "date": "2026-11-01",
      "rev": "8c3aca4",
      "event": "owner set by hand to PM: BASE renamed 111501; only the master BOM still has the old name and needs a rebuild"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "983bb96",
+     "event": "owner set by hand to Control: the master BOM rebuild is the control pack's (the Lead)"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -3144,7 +3167,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -3169,7 +3192,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
   },
   {
    "check": "C05",
@@ -3194,7 +3217,36 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 8c3aca4"
+   "last_seen": "2026-11-01 e54dce6"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 x 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1",
+   "severity": "severe",
+   "message": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1 and 360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1 overlap by 11948.6 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 11948.64,
+    "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+    "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1"
+   },
+   "key": "C01|clash|assembly 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 x 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1",
+   "id": "F-103",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 97a1aeb",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "97a1aeb",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }
