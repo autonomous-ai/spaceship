@@ -87,7 +87,10 @@ class Fits(unittest.TestCase):
         xir = V["pod_w"] / 2 - V["stack_t"]
         yw = V["pod_d"] / 2 - V["wall_depth"]
         c = b6("CARTRIDGE SUPPLY")
-        self.assertAlmostEqual(xir - V["col_gap"] - V["plate_t"] - c[1], 5.0)
+        self.assertAlmostEqual(xir - c[1], 5.0, msg="5 off the floating side lining")
+        self.assertAlmostEqual(c[0] - (b6("COLUMN FACE LEFT")[1]), 27.0, msg="27 of fill at the column's left face (air report #110)")
+        for plate in ("COLUMN PLENUM PLATE LOW", "COLUMN PLENUM PLATE HIGH"):
+            self.assertGreaterEqual(gap(c, b6(plate)), -1e-9, plate)
         self.assertAlmostEqual(c[2] - yw, 5.0)
         e = b6("CARTRIDGE EXHAUST")
         self.assertAlmostEqual(e[2] - yw, 5.0)

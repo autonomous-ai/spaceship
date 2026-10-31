@@ -251,8 +251,9 @@ def layout():
                              ("FR", "%s - ang_f" % XR, "ang_f", "%s - face_t - ang_w" % YFACE),
                              ("BL", "col_x0 + face_t", "ang_w", YW)):
         b.append(("col_ang", "COLUMN ANGLE %s" % name, box(x0, "%s + %s" % (x0, xw), y0, "%s + ang_w" % y0, ZCB, ZS0)))
-    # supply cartridge: 5 mm clear of the plenum plates and the block
-    cx1 = "%s - plate_t - clr" % XR
+    # supply cartridge: its right side on the column's limit, 5 off the floating lining; the plenum
+    # plates sit only above and below it (air report #110: 27 of fill at the left face, D-61)
+    cx1 = XR
     cx0 = "%s - cart_w" % cx1
     cy0, cy1 = "%s + clr" % YW, "%s + clr + cart_d" % YW
     cz0 = "%s + plen_lo" % ZCB

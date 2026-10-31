@@ -235,6 +235,10 @@ def open_or_create(app, name):
     for i in range(app.documents.count):
         d = app.documents.item(i)
         if d.name.split(" v")[0] == name:
+            if d.isModified:
+                # PM rule 2026-11-01: never reuse an open document with unsaved changes
+                d.close(False)
+                break
             d.activate()
             return d, "activated"
     parts = [p for p in FOLDER.split("/") if p]
@@ -362,32 +366,34 @@ def run_parts(app, scopes):
         for pname, expr, unit, status, src in params:
             design.userParameters.add(pname, CB.vi(expr), unit, "%s: %s" % (status.upper(), src))
         ctx.vals = A.evaluate(params)
-        root = design.rootComponent
-        pn, pname_, vn, kind, mk = A.PARTS[scope]
-        root.partNumber = pn
-        root.description = "%s | %s | %s | %s | drawing source, built by air_build.py" % (pname_, vn, kind, A.REV)
-        build_scope(root, design, ctx, scope)
-        if mk:
-            nm, density = A.MATERIALS[mk]
-            m = design.materials.itemByName(nm)
-            if m is None:
-                lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
-                m = design.materials.addByCopy(lib.materials.itemByName("Steel" if mk == "steel" else "Aluminum"), nm)
-                m.materialProperties.itemById("structural_Density").value = density
-            for b in root.bRepBodies:
-                b.material = m
-        adsk.doEvents()
-        tl = design.timeline
-        bad = [tl.item(i).name for i in range(tl.count)
-               if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
-        loose = [c.name + "/" + sk.name for c in design.allComponents for sk in c.sketches if not sk.isFullyConstrained]
-        print("PART %s %s (%s): timeline %d, unhealthy %d, loose %d, box %s, %.0f s" % (
-            pn, pname_, how, tl.count, len(bad), len(loose), CB.body_box(root), time.time() - t0))
-        if bad or loose:
-            raise RuntimeError("part %s checks failed (unhealthy %s, loose %s)" % (scope, bad, loose))
-        print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, A.REV, ceiling_model.SKELETON_REV)))
-        adsk.doEvents()
-        doc.close(False)
+        try:
+            root = design.rootComponent
+            pn, pname_, vn, kind, mk = A.PARTS[scope]
+            root.partNumber = pn
+            root.description = "%s | %s | %s | %s | drawing source, built by air_build.py" % (pname_, vn, kind, A.REV)
+            build_scope(root, design, ctx, scope)
+            if mk:
+                nm, density = A.MATERIALS[mk]
+                m = design.materials.itemByName(nm)
+                if m is None:
+                    lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
+                    m = design.materials.addByCopy(lib.materials.itemByName("Steel" if mk == "steel" else "Aluminum"), nm)
+                    m.materialProperties.itemById("structural_Density").value = density
+                for b in root.bRepBodies:
+                    b.material = m
+            adsk.doEvents()
+            tl = design.timeline
+            bad = [tl.item(i).name for i in range(tl.count)
+                   if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+            loose = [c.name + "/" + sk.name for c in design.allComponents for sk in c.sketches if not sk.isFullyConstrained]
+            print("PART %s %s (%s): timeline %d, unhealthy %d, loose %d, box %s, %.0f s" % (
+                pn, pname_, how, tl.count, len(bad), len(loose), CB.body_box(root), time.time() - t0))
+            if bad or loose:
+                raise RuntimeError("part %s checks failed (unhealthy %s, loose %s)" % (scope, bad, loose))
+            print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, A.REV, ceiling_model.SKELETON_REV)))
+            adsk.doEvents()
+        finally:
+            doc.close(False)        # each run closes what it opened (PM rule 2026-11-01)
 
 
 def run(_context):
