@@ -8,7 +8,8 @@ Found on 2026-10-31 with Fusion 2706.1.17. Proof part: `v2/01-CAD-Native/proof/`
 
 | File | What it does |
 |---|---|
-| `run_script.py` | Sends a Fusion API script file to Fusion's MCP server and prints what the script printed. Exit 0 = ran, 1 = the script raised (traceback with the real file and line), 2 = Fusion not reachable. `--arg KEY=VALUE` reaches the script as `SCRIPT_ARGS`; `--read-only` for inspect-only scripts; `--screenshot out.png --direction front` saves a zoomed-to-fit picture. Standard library only. |
+| `run_script.py` | Sends a Fusion API script file to Fusion's MCP server and prints what the script printed. Every run takes **the Fusion lock** first (below), so only one script drives Fusion at a time. Exit 0 = ran, 1 = the script or a document step raised (traceback with the real file and line), 2 = Fusion not reachable, 3 = the lock was busy past `--lock-wait`. `--arg KEY=VALUE` reaches the script as `SCRIPT_ARGS`; `--read-only` for inspect-only scripts; `--screenshot out.png --direction front` saves a zoomed-to-fit picture; `--doc NAME` / `--doc-new` / `--save` / `--close` open your own document, save it and close it. Standard library only. |
+| `test_run_script.py` | Offline tests of the lock and the document steps against a fake Fusion MCP server: `python3 tools/fusion/test_run_script.py`. |
 | `step_check.py` | Reads a STEP file without Fusion: declared length unit, products, solids and the bounding box in mm. `--expect xmin,ymin,zmin,xmax,ymax,zmax` checks it. Never edits the file. |
 | `pdf_clear_field.py` | Removes a title block field's value (default "Created by", which Fusion fills with the account holder's name) from an exported drawing PDF, then re-reads it to prove the text is gone. Needs PyMuPDF. |
 
@@ -20,10 +21,44 @@ python3 tools/fusion/step_check.py v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-
 
 ## Ground rules
 
-- Fusion's MCP server answers only on this Mac, at `http://127.0.0.1:27182/mcp`. It runs every script on the **active** document of the one Fusion app, so only one agent may drive Fusion at a time. Others write and review scripts and hand them over.
+- Fusion's MCP server answers only on this Mac, at `http://127.0.0.1:27182/mcp`. It runs every script on the **active** document of the one Fusion app. Several agents write scripts in parallel; Fusion runs them one at a time. **Always go through `run_script.py`**, which takes the Fusion lock. Calling Fusion's MCP tools directly (for example the `fusion` MCP tools in Claude Code or Codex) skips the lock and can run in the middle of someone else's script.
 - A script must define `run(_context)`. Don't catch exceptions in it: an uncaught one is how the runner learns it failed.
 - Never close, save or change a document you didn't create. Unsaved documents are all called "Untitled", so find your own by something you set, such as the root component's part number.
 - A script cannot run while a command dialog is open in Fusion. `--read-only` scripts can, but they may not change anything.
+
+## One run at a time: the Fusion lock
+
+Several Engineers write Fusion scripts at once, and the one Fusion runs them one after the other. `run_script.py` makes that safe:
+
+- **The lock.** Before it talks to Fusion, every run makes the directory `/tmp/fusion-mcp-27182.lock` (`mkdir` is atomic, so exactly one run gets it) and writes `owner.json` in it: label, script, worktree, process id, since and expiry. It keeps the lock for the whole run (document steps, script, screenshot) and removes it at the end, also after an error, Ctrl-C or SIGTERM. Every worktree on this Mac uses the same path; `--lock DIR` or `$FUSION_MCP_LOCK` changes it (tests only).
+- **Waiting, oldest first.** A run that finds the lock taken takes a ticket in `/tmp/fusion-mcp-27182.lock.queue` and waits its turn: only the oldest live ticket may take the lock, so no run loses every race. It prints who holds the lock and how many runs are ahead every 30 s, and gives up after `--lock-wait` seconds (default 1200) with exit 3. Tickets of runs that have ended are dropped. Set `--label` or `$FUSION_MCP_LABEL` (for example `"WALL engineer"`) so the others see who they wait for. A long wait can pass a tool call's time limit, so start long runs in the background.
+- **Crashed runs.** A lock whose process has ended (checked by process id; `/tmp` is local to this Mac, so the hostname doesn't matter), or that is past its expiry, is stale: the next run in line clears it, under a guard directory (`.guard`), so two runs can't clear a fresh lock, and says so. Anything else at the lock path (a plain file, a link, a lock it can't delete) counts as held: the run says once that it can't clear it and gives up at `--lock-wait` with exit 3.
+- **UNVERIFIED:** whether Fusion finishes a killed run's script before it starts the next one. Not tested; if a run is killed mid-script, check the document before the next run builds on it.
+- **Who has it now:** `python3 tools/fusion/run_script.py --lock-status`.
+
+Each run looks after its own document, so it never depends on what the run before it left active:
+
+```sh
+# make the design the first time (new mm parametric design, saved into Default Project / FocusPod v2)
+python3 tools/fusion/run_script.py build.py --doc PARTNO_P01_DESCRIPTIVE-NAME_CAD --doc-new --save "first build" --close
+# later runs: activate it if open, else open it from the folder; save and close at the end
+python3 tools/fusion/run_script.py add_holes.py --doc PARTNO_P01_DESCRIPTIVE-NAME_CAD --save "rail holes" --close
+```
+
+- `--doc NAME` runs before the script: it activates the open document called NAME, or opens the file NAME from `--folder` (default `Default Project/FocusPod v2`), and fails if there are two of either. `--doc-new` makes it when it doesn't exist.
+- `--save [DESCRIPTION]` (a new version) and `--close` run after the script and the screenshot, only when the script succeeded. `--close` refuses to drop unsaved changes unless `--discard` is given; it never shows Fusion's save prompt.
+- Exports stay in your script, after a save: save, export (with the STEP retries below), then let `--close` close it. A script that makes its own document (like the proof and skeleton scripts) can skip `--doc` but must still save and close what it opened.
+
+**Steps that must stay together** across several runs (a script, then a click in Fusion, then another script, as when starting a drawing) hold the lock, at most an hour:
+
+```sh
+export FUSION_MCP_LOCK_TOKEN=$(python3 tools/fusion/run_script.py --lock-hold 900 --label "drawing start")
+python3 tools/fusion/run_script.py step1.py     # runs inside the held lock, no waiting
+python3 tools/fusion/run_script.py step2.py
+python3 tools/fusion/run_script.py --lock-release
+```
+
+A held lock has no live process behind it, so only its expiry ends it if you forget `--lock-release`. Each run that joins it moves the expiry out to cover that run (under the guard), so a hold can't run out while one of its runs is still in Fusion.
 
 ## Recipe that worked: a native, editable part
 
