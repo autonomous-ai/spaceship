@@ -10,7 +10,7 @@ Get the v2 prototype design right. It keeps the same size (2500 × 1700 × 2400 
 
 1. **Lighter**, which saves on shipping and makes it easier to handle.
 2. **Easy to assemble**: two people put it up in a few hours.
-3. **Easy to ship**: it fits on standard LTL pallets. An oversize pallet is OK if needed, but standard is preferred.
+3. **Easy to ship**: it fits on standard 48 × 40 in LTL pallets. Long parts can go on standard long pallets, but never on odd sizes.
 
 It's built from a complete, editable design package, so the prototype matches the drawings.
 
