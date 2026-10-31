@@ -21,6 +21,7 @@ scripts/inputs.py, read at run time. Every other number is defined below with it
 import argparse
 import copy
 import csv
+import json
 import io
 import re
 import sys
@@ -181,6 +182,7 @@ R = {
     "BAND_FR": "Base band piece 100x40 - front-r",
     "KEY": "Corner key",
     "GLIDE": "Levelling glide",
+    "BLOCKS": "Glide load blocks",
     "THRESH": "Door threshold",
     "FLOOR": "Floor panels, 9 mm",
     "MAT": "Floor mat",
@@ -296,16 +298,18 @@ PIECES = [
           2, 11, "FRONT", glass=True),
     Piece("2-03", "TBD (FRONT)", "FRONT - DECOR BLOCK - DR", "Khung trang trí - khối phải", "DR", [("DR", 1)], S(2290, 1016, 205),
           "layout study bounding box (S02); the real block is faceted", 2, 10, "FRONT"),
-    Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-", [("BAND_B", 1), ("GLIDE", 3)],
-          S(2420, 110, 40), "BASE P01 CAD 111103 (2420 x 40 x 100) + glides 10 below", 2, 2, "BASE", note="3 glides fitted (BASE CAD)"),
-    Piece("2-05", "110101", "BASE - BAND ASSY - SIDE - LH", "Viền chân nhôm - cạnh trái (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2)],
-          S(1517, 110, 40), "BASE P01 CAD 111101 (outer face 1517) + glides", 2, 2, "BASE", note="2 glides fitted (BASE CAD)"),
-    Piece("2-06", "TBD (BASE)", "BASE - BAND ASSY - SIDE - RH", "Viền chân nhôm - cạnh phải (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2)],
-          S(1517, 110, 40), "LH's mirror (BASE P01 CAD)", 2, 2, "BASE", note="2 glides fitted"),
+    Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-", [("BAND_B", 1), ("GLIDE", 3), ("BLOCKS", 3 / 8)],
+          S(2420, 110, 40), "BASE P01 CAD 111103 (2420 x 40 x 100) + glides 10 below", 2, 2, "BASE", note="3 glides fitted, each on its aluminium load block inside the band (BASE CAD; D-86); blocks split by glide count, 3 of 8"),
+    Piece("2-05", "110101", "BASE - BAND ASSY - SIDE - LH", "Viền chân nhôm - cạnh trái (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2), ("BLOCKS", 2 / 8)],
+          S(1517, 110, 40), "BASE P01 CAD 111101 (outer face 1517) + glides", 2, 2, "BASE",
+          note="2 glides fitted, each on its load block inside the band (BASE CAD; D-86)"),
+    Piece("2-06", "TBD (BASE)", "BASE - BAND ASSY - SIDE - RH", "Viền chân nhôm - cạnh phải (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2), ("BLOCKS", 2 / 8)],
+          S(1517, 110, 40), "LH's mirror (BASE P01 CAD)", 2, 2, "BASE",
+          note="2 glides fitted, each on its load block inside the band (D-86)"),
     Piece("2-07", "TBD (BASE)", "BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS", "Viền chân nhôm - trước phải, dưới kính", "-",
-          [("BAND_FR", 0.663), ("GLIDE", 1)], S(729, 110, 40),
+          [("BAND_FR", 0.663), ("GLIDE", 1), ("BLOCKS", 1 / 8)], S(729, 110, 40),
           "X 218 to about 947 (skeleton P04 front band; air report 7e); carries the glass's bottom U-channel (D-68)", 2, 2, "BASE",
-          note="share of the front-r line by length, 729 of 1100 mm (calculation)"),
+          note="share of the front-r line by length, 729 of 1100 mm (calculation); 1 glide on its load block (D-86)"),
     Piece("2-08", "TBD (BASE)", "BASE - DOOR THRESHOLD - 13 MM", "Ngưỡng cửa thấp 13 mm", "-", [("THRESH", 1)], S(1175, 60, 13),
           "skeleton P04 1175 x 60; 13 mm high (D-72)", 2, 3, "BASE"),
     Piece("2-09", "TBD (FRONT)", "FRONT - DECOR BLOCK - DL", "Khung trang trí - khối trái", "DL", [("DL", 1)], S(2290, 278, 205),
@@ -361,6 +365,46 @@ PIECES = [
 ]
 
 PIECE = {p.tag: p for p in PIECES}
+
+# Each label's body in skeleton P04's STEP (v2/03-Manufacturing/skeleton/), for the step pictures. The air parts, kits and
+# cartons have no skeleton body yet; the step pictures show them when their own CAD lands.
+SKELETON_STEP = REPO / "v2" / "03-Manufacturing" / "skeleton" / "100000_P04_POD-SKELETON_STEP.step"
+SKEL = {
+    "1-01": ["F1 ENVELOPE"], "1-02": ["F2 ENVELOPE"],
+    "1-03": ["B1 ENVELOPE"], "1-04": ["B2 ENVELOPE"], "1-05": ["L1 ENVELOPE"], "1-06": ["R1 ENVELOPE"],
+    "1-07": ["B3 ENVELOPE"], "1-08": ["B4 ENVELOPE"], "1-09": ["L2 ENVELOPE"], "1-10": ["R2 ENVELOPE"],
+    "1-11": ["C1 ENVELOPE"], "1-12": ["C2 ENVELOPE"],
+    "1-13": ["R1-CASS ENVELOPE"], "1-14": ["R2-CASS ENVELOPE"], "1-15": ["L1-CASS ENVELOPE"], "1-16": ["L2-CASS ENVELOPE"],
+    "1-17": ["B1-CASS ENVELOPE"], "1-18": ["B2-CASS ENVELOPE"], "1-19": ["B3-CASS ENVELOPE"], "1-20": ["B4-CASS ENVELOPE"],
+    "2-01": ["FIXED GLASS"], "2-02": ["DOOR GLASS", "KICK ENVELOPE"], "2-03": ["DR FACETED"],
+    "2-04": ["BAND-BACK ENVELOPE"], "2-05": ["BAND-L ENVELOPE"], "2-06": ["BAND-R ENVELOPE"], "2-07": ["BAND-FR ENVELOPE"],
+    "2-08": ["THRESHOLD ENVELOPE"], "2-09": ["DL FACETED"], "2-12": ["DT FACETED"], "2-15": ["BAND-FL ENVELOPE"],
+    "2-20": ["C1-CASS ENVELOPE"], "2-21": ["C2-CASS ENVELOPE"],
+}
+# Camera per step for the pictures: "back" looks from behind, left and above; "front" from the front, right and above;
+# "inside" from above with the ceiling and the front hidden, to show the linings.
+STEP_VIEW = {2: "back", 3: "back", 4: "back", 5: "back", 6: "back", 7: "back", 8: "back", 9: "front", 10: "front", 11: "front",
+             12: "front", 14: "inside", 18: "inside"}
+OUT_STEP_BODIES = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json"
+
+
+def step_image(n):
+    return GUIDE_DIR / "img" / ("100000_P04_POD-ASSEMBLY-GUIDE-STEP-%02d_IMG.png" % n)
+
+
+def skeleton_bodies(path=SKELETON_STEP):
+    return sorted(set(re.findall(r"MANIFOLD_SOLID_BREP\('([^']*)'", Path(path).read_text(encoding="utf-8", errors="replace"))))
+
+
+def step_bodies_json():
+    rows = []
+    for st in STEPS:
+        new = [b for t in st["tags"] for b in SKEL.get(t, [])]
+        if not new:
+            continue
+        rows.append(dict(step=st["n"], title=st["title"], view=STEP_VIEW.get(st["n"], "front"), new=new,
+                         image=str(step_image(st["n"]).relative_to(REPO))))
+    return json.dumps(dict(source=str(SKELETON_STEP.relative_to(REPO)), steps=rows), indent=1) + "\n"
 
 # ---------------- packaging (910000 PACKAGING), part numbers PROPOSED in the 91 band (conventions section 6)
 PACKAGING = [
@@ -456,7 +500,7 @@ STEPS = [
     dict(n=3, title="Floor and threshold", tags=["1-01", "1-02", "2-08"],
          A="Lays floor panel F1 (left), its foam already bonded underneath (D-87), lapped edge up.",
          B="Lays F2 (right) into F1's lap, then sets the 13 mm threshold across the door opening, level with the floor.",
-         check="Floor flat, no gap at the lap; threshold seated; cover the floor with the packing film for the rest of the work.",
+         check="Floor flat, no gap at the lap; the base seal 118001 at the floor's edge closes the 4 mm gap to the band's inner face all round (D-86); threshold seated; cover the floor with the packing film for the rest of the work.",
          ops=[carry("1-01"), carry("1-02"), carry("2-08"),
               op("lay each floor panel and the threshold", 2, lay("t_place_s"), 3, "t_place_s")],
          joints={}),
@@ -518,7 +562,7 @@ STEPS = [
     dict(n=12, title="Top decor block DT, from above", tags=["2-12"],
          A="From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.",
          B="Fixes DT to DL, DR and the ceiling (4 fixings, FRONT design).",
-         check="The glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight; the door closes onto the 35 N magnetic catch in DT's underside (D-83).",
+         check="The glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight; the door's strike 368102 closes onto the 35 N magnetic catch 368007 in DT's underside (D-83).",
          ops=[carry("2-12"), op("lower DT from above", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s")],
          joints={}),
     dict(n=13, title="Electrics, first fix (power off)", tags=["2-13"],
@@ -580,7 +624,7 @@ STEPS = [
          ops=[op("power on and self-test", 2, TIME["t_selftest_s"].value, 1, "t_selftest_s")],
          joints={}),
     dict(n=21, title="Final check and film", tags=[],
-         A="Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the threshold land when closed.",
+         A="Checks the door: swing to 90 degrees, no rub, closes onto DT's magnetic catch 368007 with the magnetic seal pair meeting on the glass edges (D-83), drop seal down on the threshold land when closed.",
          B="Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); cleans.",
          check="Every check in the final check list is ticked.",
          ops=[op("check door, seals and fans; clean", 2, lay("t_final_min") * 60, 1, "t_final_min"),
@@ -816,7 +860,7 @@ class Model:
         bad = [k for k, r in self.roll.items() if abs(used.get(k, 0.0) - r["qty"]) > 1e-6]
         unknown = [k for k in used if k not in self.roll]
         self.check("K1", "Every roll-up line is shipped exactly once, or marked as shipping later",
-                   f"{len(self.roll)} lines, {sum(r['kg_total'] for r in self.roll.values()):.1f} kg; "
+                   f"{len(self.roll)} lines, {sum(r['qty'] * r['kg_each'] for r in self.roll.values()):.1f} kg; "
                    f"{len(bad)} lines miscounted, {len(unknown)} unknown", not bad and not unknown)
         # K2 20 kg
         heavy = [p for p in self.shipped() if p.kg > MINE["part_limit_kg"].value and not p.glass]
@@ -884,6 +928,21 @@ class Model:
         wrong = [p.tag for p in self.shipped() if p.tag in fitted and not any(p.tag in st["tags"] and st["n"] == p.step for st in STEPS)]
         self.check("K11", "Every labelled piece is fitted in the step its label names",
                    f"unfitted {unfitted or 'none'}; step mismatches {wrong or 'none'}", not unfitted and not wrong)
+        self.check_skeleton()
+
+    def check_skeleton(self):
+        if not SKELETON_STEP.exists():
+            self.check("K12", "Every skeleton body maps to one label (step pictures)", f"{SKELETON_STEP.name} not found", False)
+            return
+        have = skeleton_bodies()
+        mapped = [b for bs in SKEL.values() for b in bs]
+        missing = sorted(set(mapped) - set(have))
+        unmapped = sorted(set(have) - set(mapped))
+        twice = sorted({b for b in mapped if mapped.count(b) > 1})
+        bad_tags = [t for t in SKEL if t not in PIECE]
+        self.check("K12", "Every skeleton body maps to exactly one label, for the step pictures",
+                   f"{len(have)} bodies in the skeleton STEP; not in it {missing or 'none'}; unmapped {unmapped or 'none'}; "
+                   f"twice {twice or 'none'}; unknown labels {bad_tags or 'none'}", not (missing or unmapped or twice or bad_tags))
 
     def ok(self):
         return all(c["ok"] for c in self.checks)
@@ -925,7 +984,7 @@ def gen_tables(m):
     clock = m.time_total(CLOCK_LAST_STEP)
     total = m.time_total()
     later = sum(p.kg for p in PIECES if p.kind == "later")
-    rollup_total = sum(r["kg_total"] for r in m.roll.values())
+    rollup_total = sum(r["qty"] * r["kg_each"] for r in m.roll.values())
     not_in = sum(p.extra_kg for p in PIECES if p.kind == "piece")
     reg_bolts = sum(c for c, _ in m.register.values())
     T["ROLLUP_TOTAL"] = f1(rollup_total - later)
@@ -1073,8 +1132,10 @@ def guide_tables(m, T):
                 bolts.append(ux(fx["text"]))
         tool = " Tool: the 5 mm hex key." if (st["joints"] or any(f["step"] == st["n"] and f["count"] for f in OTHER_FIXINGS)) else ""
         clock = "" if st["n"] <= CLOCK_LAST_STEP else ", after the clock"
+        img = step_image(st["n"])
+        pic = (f"![Step {st['n']}](img/{img.name})\n\n" if img.exists() else "")
         steps_md.append(
-            f"### Step {st['n']}. {st['title']}{clock}\n\n"
+            f"### Step {st['n']}. {st['title']}{clock}\n\n{pic}"
             f"- **Time:** about {tr['elapsed'] / 60:.0f} min for 2 people.\n"
             f"- **Parts:** {parts}.\n"
             f"- **Fasteners:** {'; '.join(bolts) if bolts else 'none'}.{tool}\n"
@@ -1288,6 +1349,7 @@ def outputs(m):
         OUT_SVG[1]: svg_pallet1(m),
         OUT_SVG[2]: svg_pallet2(m),
         OUT_GUIDE: fill(TPL_GUIDE.read_text(encoding="utf-8"), G),
+        OUT_STEP_BODIES: step_bodies_json(),
     }
 
 
