@@ -86,10 +86,10 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 3: DL, soffit, air column, DT | 217 | **2-11** | AIR - AIR COLUMN | 9.7 | 2105 × 217 × 360 | 16 |
 | Tier 3: DL, soffit, air column, DT | 280 | **2-12** | FRONT - DECOR BLOCK - DT | 7.1 | 1697 × 280 × 205 | 12 |
 | Tier 3: DL, soffit, air column, DT | 280 | **2-13** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.3 | 600 × 250 × 200 | 13 |
-| Tier 3: DL, soffit, air column, DT | 80 | **2-14** | INTERIOR - LIGHT SHELF | 2.1 | 2332 × 80 × 50 | 19 |
+| Tier 3: DL, soffit, air column, DT | 80 | **2-14** | INTERIOR - LIGHT SHELF | 1.6 | 2332 × 80 × 50 | 19 |
 | Tier 4: air parts and cartons | 460 | **2-17** | AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.9 | 1845 × 460 × 155 | 15 |
 | Tier 4: air parts and cartons | 400 | **2-15** | BASE - SMALL PARTS CARTON | 2.0 | 600 × 400 × 150 | 2 |
-| Tier 4: air parts and cartons | 400 | **2-16** | INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 2.4 | 1000 × 250 × 120 | 22 |
+| Tier 4: air parts and cartons | 400 | **2-16** | INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 2.9 | 1000 × 250 × 120 | 22 |
 | Tier 4: air parts and cartons | 173 | **2-18** | AIR - CARTRIDGE - SUPPLY | 11.2 | 1750 × 173 × 314 | 16 |
 | Tier 4: air parts and cartons | 173 | **2-19** | AIR - CARTRIDGE - EXHAUST | 11.2 | 1750 × 173 × 314 | 17 |
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1048 | **2-20** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1163 × 1048 × 74 | 18 |
@@ -167,9 +167,9 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-11** | TBD (AIR) | - | AIR - AIR COLUMN | 9.7 | 2 | 16 |
 | **2-12** | TBD (FRONT) | DT | FRONT - DECOR BLOCK - DT | 7.1 | 2 | 12 |
 | **2-13** | TBD (ELECTRICAL) | - | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.3 | 1 | 13 |
-| **2-14** | TBD (INTERIOR) | - | INTERIOR - LIGHT SHELF | 2.1 | 2 | 19 |
+| **2-14** | TBD (INTERIOR) | - | INTERIOR - LIGHT SHELF | 1.6 | 2 | 19 |
 | **2-15** | TBD (BASE) | - | BASE - SMALL PARTS CARTON | 2.0 | 1 | 2 |
-| **2-16** | TBD (INTERIOR) | - | INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 2.4 | 1 | 22 |
+| **2-16** | TBD (INTERIOR) | - | INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 2.9 | 1 | 22 |
 | **2-17** | TBD (AIR) | - | AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.9 | 2 | 15 |
 | **2-18** | TBD (AIR) | - | AIR - CARTRIDGE - SUPPLY | 11.2 | 2 | 16 |
 | **2-19** | TBD (AIR) | - | AIR - CARTRIDGE - EXHAUST | 11.2 | 2 | 17 |
@@ -228,9 +228,9 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-11** | TBD (AIR) | AIR - AIR COLUMN | Cột dẫn gió | - | 9.73 | calculation; fill provisional | 2105 × 360 × 217 | 16 |
 | **2-12** | TBD (FRONT) | FRONT - DECOR BLOCK - DT | Khung trang trí - khối trên | DT | 7.09 | calculation; calculation (CAD); magnetic seal HOLD | 1697 × 280 × 205 | 12 |
 | **2-13** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.28 | calculation (CAD) | 600 × 250 × 200 | 13 |
-| **2-14** | TBD (INTERIOR) | INTERIOR - LIGHT SHELF | Kệ đèn | - | 2.08 | assumption | 2332 × 80 × 50 | 19 |
+| **2-14** | TBD (INTERIOR) | INTERIOR - LIGHT SHELF | Kệ đèn | - | 1.56 | calculation (CAD) | 2332 × 80 × 50 | 19 |
 | **2-15** | TBD (BASE) | BASE - SMALL PARTS CARTON | Thùng phụ kiện đế | - | 1.97 | calculation (CAD); calculation; confirmed (1.5 mm) | 600 × 400 × 150 | 2 |
-| **2-16** | TBD (INTERIOR) | INTERIOR - LEDGE AND SCREEN MOUNT CARTON | Kệ làm việc + giá màn hình | - | 2.40 | assumption | 1000 × 250 × 120 | 22 |
+| **2-16** | TBD (INTERIOR) | INTERIOR - LEDGE AND SCREEN MOUNT CARTON | Kệ làm việc + giá màn hình | - | 2.90 | assumption; calculation (CAD); brackets and screen rail HOLD | 1000 × 250 × 120 | 22 |
 | **2-17** | TBD (AIR) | AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | Ống hút gió đứng + hộp quạt cấp | - | 14.89 | assumption; calculation | 1845 × 460 × 155 | 15 |
 | **2-18** | TBD (AIR) | AIR - CARTRIDGE - SUPPLY | Ống tiêu âm cấp gió | - | 11.15 | calculation | 1750 × 314 × 173 | 16 |
 | **2-19** | TBD (AIR) | AIR - CARTRIDGE - EXHAUST | Ống tiêu âm thải gió | - | 11.15 | calculation | 1750 × 314 × 173 | 17 |
@@ -290,8 +290,8 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | AIR | Four 12 V fans | 1 | 1.20 | assumption | 2-10 × 0.5, 2-17 × 0.5 |
 | BASE | Door edge seals, base seal, cable grommets | 1 | 1.60 | source | A-4 |
 | ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.17 | calculation (CAD) | 1-04 × 0.558607, 2-13 × 0.441393 |
-| INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 2.08 | assumption | 2-14 |
-| INTERIOR | Work-wall ledge, 1000 mm | 1 | 1.40 | assumption | 2-16 |
+| INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.56 | calculation (CAD) | 2-14 |
+| INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | calculation (CAD); brackets and screen rail HOLD | 2-16 |
 | WALL | M6 bolts, rivnuts, cam connectors, joint gaskets, spigots and stop washers | 1 | 4.87 | calculation (part CAD) | A-3 |
 | LATER | Voice cockpit kit reserve, outside the 420 kg cap | 1 | 4.00 | assumption | L-1 |
 
