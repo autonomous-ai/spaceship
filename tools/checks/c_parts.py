@@ -271,6 +271,33 @@ def load_shipping_list(root):
     return rel(root, p), read_csv(p)
 
 
+def load_adjustments(root):
+    p = os.path.join(root, "v2/04-Checks/config/mass-adjustments.csv")
+    return read_csv(p) if os.path.exists(p) else []
+
+
+def check_pod_mass(root, rows, src, cap_kg=420.0):
+    """The pod total from the shipping list (every row, as the layout study
+    sums it) plus the adjustments the owners have given since, against the
+    cap (D-37, D-54)."""
+    if not rows:
+        return [], None
+    base = sum(num(r.get("kg_total")) or 0.0 for r in rows)
+    adj = load_adjustments(root)
+    extra = sum(num(a.get("kg")) or 0.0 for a in adj)
+    total = base + extra
+    info = {"list_kg": round(base, 2), "adjustments": adj, "total_kg": round(total, 2), "cap_kg": cap_kg}
+    if total <= cap_kg + 1e-6:
+        return [], info
+    parts = "; ".join("%+.1f kg %s (%s, %s)" % (num(a["kg"]), a["id"], a["status"], a["source"]) for a in adj)
+    return [Finding("C04", "pod-mass-over-cap", "POD total mass", "major",
+                    "The pod is about %.1f kg against the %.0f kg cap (D-37, D-54): %.1f kg over. The layout study's "
+                    "list gives %.1f kg (%s)%s. Open against the cap until the wall sample settles it (ISS-080)." % (
+                        total, cap_kg, total - cap_kg, base, src, "; adjustments since: " + parts if parts else ""),
+                    "Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill "
+                    "would save 4.3 kg).", src, "PM (Lead)", {"total_kg": round(total, 2), "cap_kg": cap_kg})], info
+
+
 def check_shipping(root, door=(914.0, 2032.0), door_req=(810.0, 2032.0), limit_kg=20.0):
     fs = []
     src, rows = load_shipping_list(root)
@@ -315,7 +342,8 @@ def check_shipping(root, door=(914.0, 2032.0), door_req=(810.0, 2032.0), limit_k
                                       "; it fits the %s pallet" % other if _fits(dims, other) else
                                       "; it fits no standard pallet"),
                                   "Move it to the right pallet in the layout study, or change the piece.", src, owner))
-    return fs, report, src
+    mass_fs, _info = check_pod_mass(root, rows, src)
+    return fs + mass_fs, report, src
 
 
 def _family_of(row):

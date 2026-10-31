@@ -2,7 +2,7 @@
 
 Offline checks (`tools/checks/run_checks.py`) on revision `c9ae2a4`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 5** (3 severe, 2 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 6** (3 severe, 3 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -11,7 +11,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `c9ae2a4`. The Fusion 
 | C01 clash and minimum gaps (Fusion) | yes | 1 |
 | C02 tolerance stack-ups | yes | 3 |
 | C03 fastener and tool access | no inputs yet | 0 |
-| C04 weight, doorway and pallet fit | yes | 1 |
+| C04 weight, doorway and pallet fit | yes | 2 |
 | C05 drawing completeness | no inputs yet | 0 |
 | C06 BOM completeness | no inputs yet | 0 |
 | C07 fastener schedule and thread engagement | no inputs yet | 0 |
@@ -31,6 +31,7 @@ Inputs: {"bodies_skeleton": 32, "bodies_assembly": 0, "parts_lists": [], "part_s
 | F-002 | severe | C02 | skeleton KICK-OVER-THRESHOLD | KICK-OVER-THRESHOLD: KICK ENVELOPE to THRESHOLD ENVELOPE is 0.0 mm, needs at least 7 mm. Rule source: confirmed: FRONT's 7 mm floor gap for the drop seal, approved by the PM in the FRONT group on 2026-10-31. Why: The door swings over the threshold; with no running gap it rubs, and the drop seal needs the gap to close | FRONT; Fusion Engineer 2 |
 | F-005 | major | C02 | skeleton SEAM-GAPS-HORIZONTAL | SEAM-SIDE-HORIZONTAL: L1 ENVELOPE to L2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-BACK-HORIZONTAL: B1 ENVELOPE to B3 ENVELOPE is 0.0 mm, needs at least 1 mm. Rule source: assumption: as SEAM-BACK-CENTRE. Why: IF-04 asks for a seam gasket between the lower and upper side panels; under the upper panel's weight it needs its compressed thickness or a groove | Joints Engineer; Fusion Engineer 2 |
 | F-007 | major | C04 | F-HW | F-HW FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS (2200 x 120 x 60 mm) doesn't fit the 48x40 pallet it ships on (1219 x 1016, at most 1679 tall loaded above a 150 mm deck); it fits the 48x96 pallet. | Layout Engineer |
+| F-010 | major | C04 | POD total mass | The pod is about 438.7 kg against the 420 kg cap (D-37, D-54): 18.7 kg over. The layout study's list gives 426.7 kg (v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv); adjustments since: +12.0 kg AIR-D60 (calculation, Air Engineer, passed on by the PM on 2026-10-31). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
 
 ## Tolerance stacks (C02)
 

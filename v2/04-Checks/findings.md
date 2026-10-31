@@ -8,7 +8,7 @@ Every finding has an owner group and a status. **Severe findings block the owner
 
 Severity: **severe** = can't be made, assembled or used as drawn; **major** = will cause rework or a wrong part; **minor** = record keeping. Check codes: C01 clash and minimum gaps (Fusion); C02 tolerance stack-ups; C03 fastener and tool access; C04 weight, doorway and pallet fit; C05 drawing completeness; C06 BOM completeness; C07 fastener schedule and thread engagement; C08 hole-to-hole alignment; C09 edge distance, bend radius, hole-to-bend; C10 mixed metals; C11 material grade and finish.
 
-## Open: 9 (5 severe, 3 major, 1 minor)
+## Open: 10 (5 severe, 4 major, 1 minor)
 
 By owner group:
 
@@ -19,7 +19,7 @@ By owner group:
 - Fusion Engineer 2; WALL; CEILING: F-004
 - Joints Engineer; Fusion Engineer 2: F-001, F-005
 - Joints Engineer; WALL; CEILING: F-009
-- PM (Lead): F-007
+- PM (Lead): F-007, F-010
 
 | ID | Severity | Check | Part | Finding | File | Fix | Owner group | Found | Posted |
 |---|---|---|---|---|---|---|---|---|---|
@@ -31,6 +31,7 @@ By owner group:
 | F-005 | major | C02 | skeleton SEAM-GAPS-HORIZONTAL | SEAM-SIDE-HORIZONTAL: L1 ENVELOPE to L2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-BACK-HORIZONTAL: B1 ENVELOPE to B3 ENVELOPE is 0.0 mm, needs at least 1 mm. Rule source: assumption: as SEAM-BACK-CENTRE. Why: IF-04 asks for a seam gasket between the lower and upper side panels; under the upper panel's weight it needs its compressed thickness or a groove | `v2/03-Manufacturing/skeleton/100000_P03_POD-SKELETON_STEP.step` | Joints Engineer: say whether the horizontal seams take a gasket in the gap (then a seam_gap) or in a groove (then no gap) | Joints Engineer; Fusion Engineer 2 | 2026-10-31 1eec888 | Joints, Fusion Engineer 2, WALL groups 2026-10-31 |
 | F-007 | major | C04 | F-HW | F-HW FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS (2200 x 120 x 60 mm) doesn't fit the 48x40 pallet it ships on (1219 x 1016, at most 1679 tall loaded above a 150 mm deck); it fits the 48x96 pallet. | `v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv` | Move it to the right pallet in the layout study, or change the piece. | PM (Lead) | 2026-10-31 1eec888 | Lead in the mechanical check group 2026-10-31 |
 | F-009 | major | C08 | joints register (PR #23) bolt holes | With Ø6.6 clearance holes and an M6 bolt (major diameter 5.974 max, ISO 965-1 6g) the float is 0.31 mm radial. The rivnut can sit up to 0.07 off in its Ø9.53 +0.10 hole (Sherex body Ø9.50 max), leaving 0.24 mm for both hole positions: about ±0.12 mm each (Ø0.24 positional from the spigot hole), which needs CNC or a drill jig. The register gives no hole position tolerance. Spigot play doesn't add: the panel shifts to the bolts within it. | `v2/05-Engineering/joints/joints-register.md` | State ±0.12 (Ø0.24 positional) in the register for the WALL and CEILING drawings, or open the clearance holes to Ø7.0 (float 0.51, about ±0.22 each). Stack ST-03. | Joints Engineer; WALL; CEILING | 2026-10-31 c9ae2a4 | Joints group 2026-10-31 |
+| F-010 | major | C04 | POD total mass | The pod is about 438.7 kg against the 420 kg cap (D-37, D-54): 18.7 kg over. The layout study's list gives 426.7 kg (v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv); adjustments since: +12.0 kg AIR-D60 (calculation, Air Engineer, passed on by the PM on 2026-10-31). Open against the cap until the wall sample settles it (ISS-080). | `v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv` | Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill would save 4.3 kg). | PM (Lead) | 2026-10-31 c9ae2a4 | tracked for the PM (Lead) in the mechanical check group 2026-10-31 |
 | F-003 | minor | C02 | skeleton door_z0 | Skeleton P03 parameter door_z0 = 109 (pod_h - dt_h - door_h) is used by nothing and disagrees with door_zb = 105, where the door bottom really is (BUILD-RECORD). | `v2/01-CAD-Native/skeleton/pod_skeleton.py` | Remove door_z0, or derive it from door_zb so the two can't disagree. | Fusion Engineer 2 | 2026-10-31 1eec888 | Fusion Engineer 2 group 2026-10-31 |
 
 ## Closed and accepted: 0

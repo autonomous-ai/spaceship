@@ -323,3 +323,17 @@ def test_part_numbers_and_file_names():
     assert m["pn"] == "211101" and m["rev"] == "P01" and m["doc"] == "DWG"
     assert owner_for("v2/03-Manufacturing/front/x.step") == "FRONT" and owner_for("", "") == "PM"
     assert owner_for("", "411001") == "CEILING"
+
+
+def test_pod_mass_against_the_cap(tmp_path):
+    rows = [{"kg_total": "400.0"}, {"kg_total": "26.7"}]
+    fs, info = c_parts.check_pod_mass(str(tmp_path), rows, "list.csv")
+    assert info["total_kg"] == pytest.approx(426.7) and [f.rule for f in fs] == ["pod-mass-over-cap"]
+    fs, info = c_parts.check_pod_mass(str(tmp_path), [{"kg_total": "419"}], "list.csv")
+    assert fs == []
+
+
+def test_repo_pod_mass_includes_the_air_adjustment():
+    fs, info = c_parts.check_pod_mass(ROOT, c_parts.load_shipping_list(ROOT)[1], "list")
+    assert info["total_kg"] == pytest.approx(438.73, abs=0.01)
+    assert fs and "438.7" in fs[0].message
