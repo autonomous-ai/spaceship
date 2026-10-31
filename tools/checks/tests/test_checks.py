@@ -277,10 +277,10 @@ def test_repo_stacks_are_open_until_tolerances_exist():
     fs, rep = c_stacks.check_stacks(ROOT)
     assert {r["stack_id"]: r["state"] for r in rep} == {"ST-01": "OPEN", "ST-02": "OPEN", "ST-02A": "PASS",
                                                         "ST-03": "PASS", "ST-04": "OPEN", "ST-04A": "PASS"}
-    # PM ruling on F-011/F-012: the centre seam takes the chain's tolerance (slots +-1.5); with perfect panels
-    # the two corner stops move its gap 2.26 +-0.26, inside the slots
+    # D-65 with the joints register's closing seam (R-J16): frames 1198.99, frame gap 5.5 inside 4.0 to 7.0;
+    # with perfect frames the two corner stops move it 5.5 +-0.26
     st2a = [r for r in rep if r["stack_id"] == "ST-02A"][0]
-    assert st2a["wc_min"] == pytest.approx(2.0) and st2a["wc_max"] == pytest.approx(2.52)
+    assert st2a["wc_min"] == pytest.approx(5.24) and st2a["wc_max"] == pytest.approx(5.76)
     assert fs == []
     st3 = [r for r in rep if r["stack_id"] == "ST-03"][0]
     # F-009 ruling: Ø7.0 holes, positions Ø0.4 each: (7.0 - 5.974) / 2 - 0.2 - 0.2 - 0.065 rivnut float
@@ -350,9 +350,10 @@ def test_repo_pod_mass_from_the_newest_list_without_double_counting():
     fs, info = c_parts.check_pod_mass(ROOT, rows, src)
     if src.endswith("parts-decided-P04.csv"):
         # the P04 roll-up already holds the air parts, the tray lips and the 9 mm floor: no adjustments on top
-        # the voice cockpit kit's 4.0 kg sits outside the cap (PM weight ruling)
-        assert info["adjustments"] == [] and info["outside_cap_kg"] == pytest.approx(4.0)
-        assert info["total_kg"] == pytest.approx(sum(float(r["kg_total"]) for r in rows) - 4.0, abs=0.01)
+        # no adjustments on top of the live roll-up; any voice cockpit kit line sits outside the cap (D-81)
+        assert info["adjustments"] == []
+        assert info["total_kg"] == pytest.approx(sum(float(r["kg_total"]) for r in rows) - info["outside_cap_kg"],
+                                                 abs=0.01)
     else:
         # the older list: 426.73 + 11.8 air + 3.4 wall trays - 12.6 floor (D-71)
         assert info["total_kg"] == pytest.approx(429.33, abs=0.01)
@@ -526,3 +527,33 @@ def test_current_skeleton_on_main_passes_the_shell_and_gap_rules():
     bodies = c_geometry.bodies_of(ROOT, cur[-1])
     assert c_geometry.shell_gaps(bodies, root=ROOT) == []
     assert c_geometry.check_gap_rules(ROOT, "skeleton", bodies, c_geometry.load_gap_rules(ROOT)) == []
+
+
+def test_missing_drawing_follows_the_screen_lock(monkeypatch, tmp_path):
+    (tmp_path / "v2/04-Checks/config").mkdir(parents=True)
+    (tmp_path / "v2/04-Checks/config/policy.csv").write_text("key,value,status_source\nmissing_drawing_severity,auto-screen-lock,D-84\n")
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: True)
+    assert c_drawings.missing_drawing_severity(str(tmp_path)) == "major"
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: False)
+    assert c_drawings.missing_drawing_severity(str(tmp_path)) == "severe"
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: None)
+    assert c_drawings.missing_drawing_severity(str(tmp_path)) == "severe"
+
+
+def test_shipping_reads_the_packing_list_when_there_is_one(tmp_path):
+    d = tmp_path / "v2/07-Packaging"
+    d.mkdir(parents=True)
+    (d / "910001_P01_PALLET-1-48X40_PKG.svg").write_text("<svg/>")
+    (d / "910002_P01_PALLET-2-96X48_PKG.svg").write_text("<svg/>")
+    rows = [{"label": "1-01", "part_number": "211101", "name": "WALL - PANEL", "pallet": "1", "kg": "11.3",
+             "size_mm": "1492.74 x 1142.74 x 46", "glass": "no", "kg_status": "calculation"},
+            {"label": "2-01", "part_number": "360002", "name": "FRONT - FIXED GLASS UNIT", "pallet": "2", "kg": "29.6",
+             "size_mm": "2033 x 1031 x 12", "glass": "yes", "kg_status": "calculation"},
+            {"label": "1-02", "part_number": "350003", "name": "FRONT - DECOR BLOCK - DR", "pallet": "1", "kg": "18.1",
+             "size_mm": "2290 x 1016 x 205", "glass": "no", "kg_status": "calculation"}]
+    _write_csv(d / "910000_P01_PACKING-LIST_BOM.csv", rows)
+    fs, rep, src = c_parts.check_shipping(str(tmp_path))
+    assert src.endswith("PACKING-LIST_BOM.csv")
+    got = {(f.rule, f.subject) for f in fs}
+    assert ("pallet-fit", "1-02") in got                 # a 2290 mm block put on the 48 x 40 pallet
+    assert not any(s in ("1-01", "2-01") for _r, s in got)  # the glass unit is exempt from 20 kg; both fit

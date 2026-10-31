@@ -6,11 +6,12 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 0 part lines (0 made, 0 bought, 0 on HOLD) and 0 sub-assembly lines from 0 parts list(s); 0 hardware items in the joints register (0 with a part number). Listed parts weigh 0.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 0 part lines (0 made, 0 bought, 0 on HOLD) and 0 sub-assembly lines from 1 parts list(s); 26 hardware items in the joints register (26 with a part number). Listed parts weigh 0.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
-- none
+- `v2/05-Engineering/joints/joints-register.md` @ working tree
+- `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv` @ working tree
 
 ## Failures
 
@@ -40,10 +41,7 @@ Read from: this working tree.
 - no parts list yet (expected *_BOM.csv files in v2/03-Manufacturing/electrical/)
 
 **Packing and Assembly**
-- no parts list yet (expected *_BOM.csv files in v2/07-Packaging/)
-
-**Joints register**
-- no joints register found at v2/05-Engineering/joints/joints-register.md, so no hardware can be matched
+- no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
 
 ## Rules
 

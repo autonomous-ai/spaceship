@@ -4,8 +4,9 @@
 Doc code V2-BOM-001, revision P01. Standard library only.
 
 It reads every team's parts list and the joints register's hardware set:
-  - parts lists: every v2/03-Manufacturing/<team>/**/*_BOM.csv and v2/07-Packaging/**/*_BOM.csv
-    that has a part_number column (cut lists without one are skipped and named in the report);
+  - parts lists: every v2/03-Manufacturing/<team>/**/*_BOM.csv that has a part_number column (cut lists
+    without one are skipped and named in the report), and from v2/07-Packaging/**/*_BOM.csv only the
+    packaging items (family 91): a packing list names other teams' parts, which their own lists carry;
   - v2/05-Engineering/joints/joints-register.md: the hardware set table (ID H-nn) and any table
     with a "Part number" column. The joints register owns every fastener and hardware number (D-63).
 
@@ -18,7 +19,8 @@ and writes, into v2/04-BOM/ unless --out says otherwise:
 Usage, from anywhere:
   python3 v2/04-BOM/build_master_bom.py                 # the files in this working tree
   python3 v2/04-BOM/build_master_bom.py --ref origin/main --ref origin/BRANCH ...
-        # reads the files from those git refs instead; for the same path a later ref wins
+        # reads the files from those git refs instead; a later ref adds only the files its branch changed
+        # since its merge-base with the first ref, and wins for those
   --out DIR       write the outputs into DIR
   --no-write      check only, write nothing
 
@@ -48,6 +50,9 @@ ROOT = HERE.parents[1]
 REV = "P01"
 BOM_GLOBS = ["v2/03-Manufacturing", "v2/07-Packaging"]
 REGISTER = "v2/05-Engineering/joints/joints-register.md"
+TREE = "v2/00-Control/assembly-tree.md"
+# Families with no node in the assembly tree: Vietnamese added by the control pack (conventions.md section 6).
+FAMILY_VI = {"83": "Bulông, tán rút, đai ốc, long đen", "84": "Gioăng và băng dính theo mét"}
 # Old numbers from the guideline's examples and the earlier attempt: never reused (D-28).
 RESERVED_PN = {"110006", "110002", "120001", "211000", "210001", "210003", "210005", "350011", "830001", "830005"}
 NOT_HARDWARE = {"61", "71", "91"}
@@ -107,9 +112,17 @@ def load_sources(refs):
         if reg.exists():
             found[REGISTER] = (reg.read_text(encoding="utf-8"), "working tree")
         return found
-    for ref in refs:
+    base = refs[0]
+    for i, ref in enumerate(refs):
         short = git("rev-parse", "--short", ref).strip()
-        for rel in git("ls-tree", "-r", "--name-only", ref, "--", *BOM_GLOBS, REGISTER).splitlines():
+        names = git("ls-tree", "-r", "--name-only", ref, "--", *BOM_GLOBS, REGISTER).splitlines()
+        if i:
+            # A later ref adds only the files its own branch changed: an old, untouched copy of a file
+            # (the joints register on a branch cut before the register moved on) never overrides the first ref.
+            mb = git("merge-base", base, ref).strip()
+            changed = set(git("diff", "--name-only", mb, ref, "--", *BOM_GLOBS, REGISTER).splitlines())
+            names = [n for n in names if n in changed]
+        for rel in names:
             if wanted(rel):
                 found[rel] = (git("show", f"{ref}:{rel}"), f"{ref} ({short})")
     return found
@@ -207,8 +220,11 @@ def parse_parts_list(path, text, where):
         kind0 = first(raw[0], "type", "kind", "class")
         if make_buy_of(kind0) == "assembly":
             top_qty = num(first(raw[0], "qty")) or 1.0
+    packing = path.startswith("v2/07-Packaging/")
     rows = []
     for i, r in enumerate(raw):
+        if packing and family_of(first(r, "part_number")) != "91":
+            continue  # a packing list names other teams' parts; only packaging items (family 91) are BOM lines here
         kind = first(r, "make_buy", "type", "kind", "class")
         if kind.strip().lower() == "cut":
             continue  # a cut length of the made part above it (its own cut list), not a BOM line
@@ -225,7 +241,7 @@ def parse_parts_list(path, text, where):
         material, finish = first(r, "material"), first(r, "finish")
         if not finish:
             material, finish = split_finish(material)
-        mass = num(first(r, "unit_mass_kg", "mass_each_kg", "mass_kg", "mass"))
+        mass = num(first(r, "unit_mass_kg", "mass_each_kg", "mass_kg", "mass", "kg"))
         mtot, qraw = num(first(r, "mass_total_kg")), num(first(r, "qty"))
         derived = mass is None and mtot is not None and qraw
         if derived:
@@ -240,7 +256,7 @@ def parse_parts_list(path, text, where):
             "part_number": first(r, "part_number"), "name": name, "name_vi": first(r, "name_vi"),
             "qty_per_pod": q, "qty_status": qs, "material": material, "finish": finish,
             "mass_each_kg": mass,
-            "mass_status": first(r, "mass_status") or ("calculation (mass total / qty)" if derived else (first(r, "status") if mass is not None else "")),
+            "mass_status": first(r, "mass_status", "kg_status") or ("calculation (mass total / qty)" if derived else (first(r, "status") if mass is not None else "")),
             "make_buy": mb, "process": process, "process_status": pstatus,
             "product_status": status, "hold": "HOLD" in text_all, "team": team_of(path),
             "source_file": f"{path} @ {where}", "note": first(r, "note", "source"), "kind": kind,
@@ -320,6 +336,52 @@ def family_of(pn):
     return pn[:2] if re.fullmatch(r"\d{6}", pn or "") else ""
 
 
+GENERIC = {"HARDWARE", "THE", "FOR", "WITH", "AND", "OF", "A", "AN", "IN", "ON", "TO", "PC", "PCS"}
+SIZE = re.compile(r"[A-Z]?\d[\d.]*(?:\s*X\s*[A-Z]?\d[\d.]*)+")
+
+
+def _up(s):
+    s = re.sub(r"\(H-\d+\w*\)", " ", (s or "").upper())  # drop register ID tags such as (H-05)
+    s = s.replace("×", " X ").replace("Ø", "D")
+    return re.sub(r"(?<=\d)\s*X\s*(?=[\dDM])", " X ", s)
+
+
+def _sizes(s):
+    return [frozenset(p.strip() for p in m.group(0).split("X")) for m in SIZE.finditer(_up(s))]
+
+
+def _tokens(s, digits):
+    toks = {t.strip(".-") for t in re.findall(r"[A-Z0-9][A-Z0-9.\-]*", _up(s))}
+    return {t for t in toks if t and (bool(re.search(r"\d", t)) == digits) and t not in GENERIC and t != "X"}
+
+
+def same_item(a, b):
+    """True when a parts-list name and the joints register's name describe the same item: their size groups
+    agree (one inside the other, any order), their threads or diameters (M6, D8) agree, they share a word, and
+    either most of the shorter name's numbered tokens match or they share two words (a product code on one side
+    and a requirement such as 'gap 10 ±5' on the other). Wording and order may differ."""
+    sa, sb = _sizes(a), _sizes(b)
+    if sa and sb:
+        def covered(xs, ys):
+            return all(any(x <= y or y <= x for y in ys) for x in xs)
+        if not (covered(sa, sb) or covered(sb, sa)):
+            return False
+    ta, tb = _tokens(a, True), _tokens(b, True)
+    wa, wb = _tokens(a, False), _tokens(b, False)
+    tha = {x for x in ta if re.fullmatch(r"[MD]\d+(?:\.\d+)?", x)}
+    thb = {x for x in tb if re.fullmatch(r"[MD]\d+(?:\.\d+)?", x)}
+    if tha and thb and not tha & thb:
+        return False  # different thread or diameter: M6 is not M10
+    shared_words = wa & wb
+    if wa and wb and not shared_words:
+        return False
+    if ta and tb and len(ta & tb) / min(len(ta), len(tb)) < 0.5 and len(shared_words) < 2:
+        return False  # numbers differ and the names share at most one word
+    if wa and wb and not (ta and tb):
+        return len(shared_words) / min(len(wa), len(wb)) >= 0.5
+    return True
+
+
 def is_hardware(r):
     return r["make_buy"] == "buy" and family_of(r["part_number"]) not in NOT_HARDWARE
 
@@ -342,13 +404,15 @@ def build(sources):
     return parts, skipped, register, reg_where
 
 
-def check(parts, register, reg_where):
+def check(parts, register, reg_where, read_paths=()):
+    """read_paths: the parts-list files read (some may give no BOM lines, such as a packing list)."""
     fails, missing = [], {}
 
     def miss(team, msg):
         missing.setdefault(team, []).append(msg)
 
     reg_numbers = {i["part_number"] for i in register if i["part_number"]}
+    reg_by_pn = {i["part_number"]: i for i in register if i["part_number"]}
     names_by_pn = {}
     for r in parts:
         pn, where = r["part_number"], r["source_file"]
@@ -363,6 +427,9 @@ def check(parts, register, reg_where):
                 miss(r["team"], f"{label}: family {family_of(pn)} is not in conventions section 6")
         if r["make_buy"] != "assembly" and r["mass_each_kg"] is None:
             fails.append(f"no mass: {label} in {where}")
+        if pn in reg_by_pn and not same_item(r["name"], reg_by_pn[pn]["name"]):
+            ri = reg_by_pn[pn]
+            fails.append(f"duplicate number {pn}: '{r['name']}' in {where} is not the joints register's {ri['id']} '{ri['name']}'")
         if is_hardware(r) and re.fullmatch(r"\d{6}", pn) and pn not in reg_numbers:
             fails.append(f"hardware with no joints-register row: {label} in {where}")
         if r["make_buy"] == "":
@@ -377,7 +444,7 @@ def check(parts, register, reg_where):
         if r["hold"]:
             miss(r["team"], f"{label}: HOLD ({r['product_status'] or r['kind']})")
     for pn, names in sorted(names_by_pn.items()):
-        if len(names) > 1 and pn not in reg_numbers:  # a register number names its item there (D-63)
+        if len(names) > 1 and pn not in reg_numbers:  # register numbers are checked against the register's item above
             uses = "; ".join(f"'{n}' in {', '.join(sorted(set(w)))}" for n, w in names.items())
             fails.append(f"duplicate number {pn}: {uses}")
     if reg_where is None:
@@ -389,7 +456,14 @@ def check(parts, register, reg_where):
     listed_teams = {r["team"] for r in parts}
     for team, folder in EXPECTED_FOLDERS.items():
         if team not in listed_teams:
-            missing.setdefault(team, []).insert(0, f"no parts list yet (expected *_BOM.csv files in {folder})")
+            read = sorted(p for p in read_paths if p.startswith(folder))
+            if read and folder == "v2/07-Packaging/":
+                msg = f"no packaging items (family 91) listed yet; {read[0]} names other teams' parts, which their own lists carry"
+            elif read:
+                msg = f"no BOM lines yet in {', '.join(read)}"
+            else:
+                msg = f"no parts list yet (expected *_BOM.csv files in {folder})"
+            missing.setdefault(team, []).insert(0, msg)
     for fam, node, name, team in FAMILIES:
         if fam in ("10", "83", "84", "91"):
             continue
@@ -404,18 +478,49 @@ def fmt(x, nd=3):
     return f"{x:.{nd}f}".rstrip("0").rstrip(".") if isinstance(x, float) else str(x)
 
 
-def master_rows(parts, register):
+def node_names(refs=None):
+    """{node: (English name, Vietnamese name)} from the assembly tree's node table (`| Node | Name · Vietnamese |`),
+    read from the first git ref when refs are given, else from this working tree."""
+    if refs:
+        text = git("show", f"{refs[0]}:{TREE}")
+    else:
+        p = ROOT / TREE
+        text = p.read_text(encoding="utf-8") if p.exists() else ""
+    out = {}
+    for hdr, cells in table_rows(text):
+        if hdr and hdr[0].lower() == "node" and re.fullmatch(r"\d{6}", cells[0]):
+            en, _, vi = cells[1].partition(" · ")
+            out[cells[0]] = (en.strip(), vi.strip())
+    return out
+
+
+def group_names(fam, node, nodes):
+    """(Vietnamese name, source) of a family row."""
+    if node and node in nodes:
+        return nodes[node][1], f"{TREE} (node {node})"
+    if fam == "10" and "109000" in nodes:
+        return nodes["109000"][1], f"{TREE} (node 109000, the installation kit); conventions.md section 6 (family 10)"
+    if fam in FAMILY_VI:
+        return FAMILY_VI[fam], f"v2/00-Control/conventions.md section 6 (family {fam}; Vietnamese by the control pack)"
+    return "", f"v2/00-Control/conventions.md section 6 (family {fam})"
+
+
+def master_rows(parts, register, nodes=None):
+    nodes = node_names() if nodes is None else nodes
     out = []
     pod_mass = sum((r["qty_per_pod"] or 0) * (r["mass_each_kg"] or 0) for r in parts if r["make_buy"] in ("make", "buy"))
     out.append({"level": 0, "row_type": "pod", "group": "POD", "part_number": "100000", "name": "POD - SPACESHIP",
+                "name_vi": nodes.get("100000", ("", ""))[1],
                 "qty_per_pod": 1.0, "qty_status": "source (assembly tree)", "mass_total_kg": pod_mass,
                 "mass_status": "calculation (sum of the listed parts; assemblies with no list count 0)",
-                "source_file": "v2/00-Control/assembly-tree.md"})
+                "source_file": f"{TREE} (node 100000)"})
     for fam, node, gname, team in FAMILIES:
         members = sorted((r for r in parts if family_of(r["part_number"]) == fam), key=lambda r: (r["part_number"], r["source_file"]))
         reg_items = [i for i in register if family_of(i["part_number"]) == fam]
         gmass = sum((r["qty_per_pod"] or 0) * (r["mass_each_kg"] or 0) for r in members if r["make_buy"] in ("make", "buy"))
+        gvi, gsrc = group_names(fam, node, nodes)
         out.append({"level": 1, "row_type": "assembly", "group": gname, "part_number": node, "name": gname,
+                    "name_vi": gvi, "source_file": gsrc,
                     "qty_per_pod": 1.0 if node else None, "qty_status": "source (assembly tree)" if node else "",
                     "mass_total_kg": gmass, "mass_status": "calculation (sum of its listed parts)", "team": team,
                     "note": "" if members else "no parts listed yet"})
@@ -533,11 +638,12 @@ def main(argv=None):
     a = ap.parse_args(argv)
     sources = load_sources(a.ref)
     parts, skipped, register, reg_where = build(sources)
-    fails, missing = check(parts, register, reg_where)
+    read_paths = [p for p in sources if p != REGISTER and p not in {s[0] for s in skipped}]
+    fails, missing = check(parts, register, reg_where, read_paths)
     if not a.no_write:
         out = Path(a.out)
         out.mkdir(parents=True, exist_ok=True)
-        write_csv(out / f"100000_{REV}_POD-MASTER_BOM.csv", MASTER_COLS, master_rows(parts, register))
+        write_csv(out / f"100000_{REV}_POD-MASTER_BOM.csv", MASTER_COLS, master_rows(parts, register, node_names(a.ref)))
         write_csv(out / f"100000_{REV}_POD-MADE-PARTS-BY-PROCESS_BOM.csv",
                   ["process", "process_status", "part_number", "name", "qty_per_pod", "material", "finish", "mass_each_kg", "mass_status", "team", "source_file"],
                   made_rows(parts))
