@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (9322ea3), PR #27 (4696390), PR #28 (04ac4dd), PR #55 (9028182), PR #41 (b196f05), PR #32 (547ef0c), PR #64 (97c381c). The Mac's screen at run time: **unlocked**. 174 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
+Read from: main (40ccd24), PR #27 (4696390), PR #28 (04ac4dd), PR #55 (9028182), PR #32 (40c7c5d), PR #64 (4d4f9e3), PR #41 (2a503fc). The Mac's screen at run time: **unlocked**. 171 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -20,14 +20,14 @@ Read from: main (9322ea3), PR #27 (4696390), PR #28 (04ac4dd), PR #55 (9028182),
 | CEILING (builds INTERIOR, D-80) | — | — | — | — | — | — |
 | ELECTRICAL | 0 | 12 | 0 | 3 | 0 | 64 |
 | FRONT | 0 | 5 | 0 | 3 | 0 | 4 |
-| WALL | 0 | 11 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 0 | 49 | 0 | 7 | 1 | 77 |
+| WALL | 0 | 9 | 0 | 4 | 1 | 4 |
+| **All, each number once** | 0 | 47 | 0 | 7 | 1 | 77 |
 
 No parts list yet: CEILING (builds AIR, D-80), CEILING (builds INTERIOR, D-80).
 
-48 of the 49 made numbers have no drawing yet; for 31 of them the drawing is the only gap, so their drawings can start now (D-84).
+46 of the 47 made numbers have no drawing yet; for 31 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 48, CAD 12, STEP 12, DXF or cut list 7, BOM row 2.
+What the open made numbers miss: drawing 46, CAD 12, STEP 12, DXF or cut list 7.
 
 ## Made parts and assemblies
 
@@ -100,12 +100,10 @@ What the open made numbers miss: drawing 48, CAD 12, STEP 12, DXF or cut list 7,
 | 211301 | WALL - SKIN - SIDE LOWER - LH | PR #41 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
 | 211501 | WALL - CAVITY FILL - SIDE LOWER - LH | PR #41 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
 | 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #41 | yes | yes | yes | no | no | yes | yes | K-J08 | open: DXF or cut list, drawing |
-| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #41 | yes | yes | yes | n/a | no | yes | n/a | K-J07 | open: drawing |
+| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #41 | yes | yes | yes | n/a | no | yes | yes | K-J07 | open: drawing |
 | 510101 | LINING - CASSETTE - SIDE LOWER - LH | PR #41 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
 | 511101 | LINING - TRAY - SIDE LOWER - LH | PR #41 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511301 | LINING - FELT - SIDE LOWER - LH | PR #41 | yes | yes | yes | no | no | yes | n/a | K-L04 | open: DXF or cut list, drawing |
-| 211102 | WALL PANEL FRAME SIDE LOWER RH | PR #41 | no | yes | yes | — | no | no | — | no | open: BOM row, drawing |
-| 510102 | LINING CASSETTE SIDE LOWER RH | PR #41 | no | yes | yes | — | no | no | — | no | open: BOM row, drawing |
 
 ## Bought parts
 
@@ -217,15 +215,15 @@ What the open made numbers miss: drawing 48, CAD 12, STEP 12, DXF or cut list 7,
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 SYSTEM | PR #41 | H-12 | yes | T09 | done |
+| 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | PR #41 | H-12 | yes | T09 | done |
 | 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | PR #41 | H-03 | yes | J-T1, T06 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #41 | H-01 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #41 | H-09 | yes | T06 | done |
 | 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | PR #41 | H-02 | HOLD | J-T2 | HOLD |
-| 848001 | HARDWARE - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | PR #41 | H-04 | HOLD | J-T3 | HOLD |
+| 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | PR #41 | H-04 | HOLD | J-T3 | HOLD |
 | 518001 | LINING - CASSETTE CLIP | PR #41 | H-10 | HOLD | T07 | HOLD |
-| 848011 | SEALS - HOOK-AND-LOOP - 25 MM - LOCATING ONLY | PR #41 | H-13 | yes | no | open: test |
-| 848012 | SEALS - CASSETTE EDGE GASKET - 10 X 3.18 - PSA FOAM | PR #41 | H-14 | HOLD | F-03 | HOLD |
+| 848011 | SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY | PR #41 | H-13 | no | no | open: maker and SKU, test |
+| 848012 | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN | PR #41 | H-14 | HOLD | F-03 | HOLD |
 
 ## Joints-register items no parts list uses yet
 
@@ -242,7 +240,7 @@ What the open made numbers miss: drawing 48, CAD 12, STEP 12, DXF or cut list 7,
 
 `python3 v2/00-Control/build_release_checklist.py --open-prs` reads origin/main and every open PR that changes parts, through the master BOM's reader (a later branch adds only the files it changed), the files named `PARTNO_REV_NAME_DOCTYPE.ext` in `v2/01-CAD-Native`, `v2/02-Drawings` and `v2/03-Manufacturing`, the FAI plan (`v2/06-Verification/fai-plan.md`) and the test plans. Without `--open-prs` it reads this working tree.
 
-- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing must carry its own number.
+- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing carry its own number, with two exceptions (D-89), read as the mechanical check reads them: a drawing whose text says TABULATED covers the other numbers of its family and kind that it lists; a felt or fill piece needs no drawing or DXF when a cut list (a .csv with "cut" in its name) has a row with its number, size, material and tolerance, and the row names no pockets, notches or holes (the mechanical check also looks for holes in its STEP).
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.

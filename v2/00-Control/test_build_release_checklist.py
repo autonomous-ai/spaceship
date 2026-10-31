@@ -49,11 +49,11 @@ def files(*names, folder="v2/01-CAD-Native/wall/"):
     return {folder + n: "working tree" for n in names}
 
 
-def run(parts, file_map, screen="unlocked", register_text=REGISTER, tests=()):
+def run(parts, file_map, screen="unlocked", register_text=REGISTER, tests=(), tab_cover=None):
     fai = rc.fai_plan(PLAN, BOM)
     register = BOM.parse_register(register_text, "test")
     return rc.check_parts(parts, register, rc.files_by_pn(file_map), list(file_map), fai, list(tests) + fai[1],
-                          rc.register_products(register_text, BOM), screen, BOM, {}, {})
+                          rc.register_products(register_text, BOM), screen, BOM, {}, {}, tab_cover or {})
 
 
 ALL_FRAME_FILES = files("211101_P01_WALL-FRAME_CAD.f3d", "211101_P01_WALL-FRAME_STEP.step",
@@ -150,6 +150,66 @@ class BoughtParts(unittest.TestCase):
     def test_team_numbered_parts_need_no_register_row(self):
         _, bought = run([row("718001", "buy", "ELECTRICAL - 12 V SUPPLY - MW LPV-60-12", team="ELECTRICAL")], {})
         self.assertEqual((bought[0]["in_reg"], bought[0]["state"]), (None, "open: test"))
+
+
+class D89Drawings(unittest.TestCase):
+    """D-89, read as the mechanical check reads it (tools/checks/c_drawings.py)."""
+    DWG = "v2/02-Drawings/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER_DWG.pdf"
+    TEXT = "UNITS: mm\nTABULATED DRAWING\nPART NO | SIDE\n211101 | LH\n211102 | RH\nRIVNUT 838003 IN EVERY H01\n210101"
+
+    def test_a_tabulated_drawing_covers_its_family_and_kind(self):
+        by_pn = {"211101": {"DWG": [self.DWG]}}
+        self.assertEqual(rc.tabulated_cover(by_pn, lambda _p: self.TEXT), {"211102": "211101"})  # not 838003, not 210101
+        self.assertEqual(rc.tabulated_cover(by_pn, lambda _p: self.TEXT.replace("TABULATED ", "")), {})
+
+    def test_a_number_on_a_tabulated_drawing_counts_as_drawn(self):
+        rh = row("211102", "make", "WALL - PANEL FRAME - RH", "aluminium 6063-T6 tube 20 x 40 x 1.2, mill finish")
+        rh["cut_rows"] = True
+        file_map = files("211102_P01_WALL-FRAME-RH_CAD.f3d", "211102_P01_WALL-FRAME-RH_STEP.step")
+        fai = rc.fai_plan(PLAN, BOM)
+        made, _ = rc.check_parts([rh], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {}, {},
+                                 {"211102": "211101"})
+        self.assertEqual(made[0]["dwg"], "on 211101, tabulated (D-89)")
+        self.assertEqual(made[0]["state"], "done")
+
+    CUT = "v2/03-Manufacturing/wall/510000_P01_LINING-CUT-LIST_SPEC.csv"
+    FELT_FILES = files("511301_P01_LINING-FELT_CAD.f3d", "511301_P01_LINING-FELT_STEP.step")
+
+    def felt(self, header="part_number,name,size_mm,material,tolerance_mm",
+             line="511301,LINING - FELT,9 x 1442 x 1139.74,PET felt 9 mm,+0 / -2"):
+        fai = rc.fai_plan(PLAN, BOM)
+        felt = row("511301", "make", "LINING - FELT - SIDE LOWER - LH", "PET felt 9 mm Dark Gray")
+        made, _ = rc.check_parts([felt], [], rc.files_by_pn(self.FELT_FILES), list(self.FELT_FILES), fai, fai[1], {}, "unlocked",
+                                 BOM, {}, {self.CUT: header + "\n" + line + "\n"})
+        return made[0]
+
+    def test_a_felt_rectangle_on_a_full_cut_list_row_needs_no_drawing_or_dxf(self):
+        line = self.felt()
+        self.assertEqual((line["flat"], line["dwg"]), ("cut list", "cut list (D-89)"))
+        self.assertEqual(line["gaps"], ["FAI"])  # this test plan has no felt characteristic
+
+    def test_a_tolerance_may_sit_in_any_cell(self):
+        line = self.felt("part_number,name,size_mm,material,note", "511301,LINING - FELT,9 x 1442 x 1139.74,PET felt,±2 on each side")
+        self.assertEqual(line["dwg"], "cut list (D-89)")
+
+    def test_no_tolerance_or_a_pocket_keeps_the_drawing(self):
+        self.assertEqual(self.felt("part_number,name,size_mm,material", "511301,LINING - FELT,9 x 1442 x 1139.74,PET felt")["gaps"],
+                         ["DXF or cut list", "drawing", "FAI"])
+        self.assertIn("drawing", self.felt(line="511301,LINING - FELT - 60 X 60 POCKETS,9 x 1442 x 1139.74,PET felt,+0 / -2")["gaps"])
+
+    def test_a_metal_part_never_skips_its_drawing_by_a_cut_list(self):
+        fai = rc.fai_plan(PLAN, BOM)
+        tray = row("511101", "make", "LINING - TRAY", "galvanised steel 0.5")
+        file_map = files("511101_P01_TRAY_CAD.f3d", "511101_P01_TRAY_STEP.step", "511101_P01_TRAY_DXF.dxf")
+        made, _ = rc.check_parts([tray], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {self.CUT: "part_number,size_mm,material,tolerance\n511101,1442 x 1139,steel,1\n"})
+        self.assertEqual(made[0]["dwg"], "no")
+
+    def test_what_counts_as_a_cut_list(self):
+        self.assertTrue(rc.is_cut_list(self.CUT))
+        self.assertTrue(rc.is_cut_list("v2/02-Drawings/ceiling/410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv"))
+        self.assertFalse(rc.is_cut_list("v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY_BOM.csv"))
+        self.assertFalse(rc.is_cut_list("v2/03-Manufacturing/wall/make_cut_files.py"))
 
 
 class Render(unittest.TestCase):
