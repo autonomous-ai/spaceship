@@ -996,3 +996,58 @@ def test_a_duplicate_name_goes_to_the_list_that_is_off(tmp_path):
           if f.rule == "duplicate-number"}
     assert fs["111211"].owner == "BASE" and "SQUARE" in fs["111211"].fix      # the key's name is the Joints Engineer's
     assert fs["111501"].owner == "Control" and "Rebuild the master BOM" in fs["111501"].fix
+
+
+def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
+    # the owner's rule 9 is for sheet parts: a 60 mm access hole near a felt's edge can't tear out
+    def plate(name):
+        x0, x1, y0, y1 = -73.5, 500.0, -73.5, 500.0
+        rim = (sf.Frame(), 30.0, (30.0, 0, 0), (30.0, 0, 0), True)
+        face = sf.Face(1, "plane", (0, 0, 0), (0, 0, 1), None, True, [], [rim],
+                       [((x0, y0, 0), (x1, y0, 0)), ((x1, y0, 0), (x1, y1, 0)), ((x1, y1, 0), (x0, y1, 0)),
+                        ((x0, y1, 0), (x0, y0, 0))])
+        so = sf.Solid(1, name)
+        so.faces, so.holes, so.bends = [face], [sf.Hole(1, (0, 0, 0), (0, 0, 1), 60.0, 9.0, [])], []
+        return so
+
+    class FakeStep:
+        def __init__(self, pn, name):
+            self.pn, self.name, self.so = pn, name, plate(name)
+
+        def instances(self):
+            return [{"solid": 1, "part_number": self.pn, "name": "%s %s" % (self.pn, self.name), "path": [], "frame": sf.Frame()}]
+
+        def solid(self, _sid):
+            return self.so
+    for pn, name, flagged in (("511302", "LINING - FELT - SIDE LOWER - RH", False),
+                              ("511102", "LINING - TRAY - SIDE LOWER - RH", True)):
+        monkeypatch.setattr(c_geometry, "load_step", lambda _p, s=FakeStep(pn, name): s)
+        fs = [f for f in c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, {}, hole_rules=[],
+                                                         edge_exceptions={}) if f.rule == "edge-distance"]
+        assert bool(fs) == flagged, name
+
+
+def test_the_assembled_shell_is_checked_face_by_face_once_its_parts_are_on_main():
+    lo = _B("210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_CAD:1 / 210102 WALL - PANEL ASSY - SIDE LOWER - RH:1 / SKIN",
+            (1204.0, -642.7, 112.3, 1250.0, 850.0, 1255.0), "211302")
+    up = _B("210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_CAD:1 / 210104 WALL - PANEL ASSY - SIDE UPPER - RH:1 / SKIN",
+            (1204.0, -642.7, 1257.3, 1250.0, 850.0, 2400.0), "211304")
+    dr = _B("350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350003 FRONT - DECOR BLOCK ASSY - DR:1 / BODY",
+            (950.0, -850.0, 110.0, 1250.0, -645.0, 2400.0), "351301")
+    assert "right" not in c_geometry.shell_faces_ready("assembly", [lo, up])        # DR not on main yet
+    assert "right" in c_geometry.shell_faces_ready("assembly", [lo, up, dr])
+    assert "back" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr])      # no back walls yet
+    # an L of thin strips (no band below, no decor at the front edge) reports as its two strips
+    gaps = [g for g in c_geometry.shell_gaps([lo, up]) if g["zone"] == "right"]
+    assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 5 for g in gaps)
+
+def test_a_step_whose_top_carries_another_number_is_reported(tmp_path):
+    import shutil, run_checks
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    # the bolt fixture's root part number is CHECK-FIXTURE: named for 210101, it should say so
+    shutil.copy(os.path.join(HERE, "fixtures", "bolt-joints.step"), d / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step")
+    out = run_checks.run(str(tmp_path), "test")
+    fs = out[0] if isinstance(out, tuple) else out["findings"] if isinstance(out, dict) else out
+    keys = {(f.rule, f.subject) if hasattr(f, "rule") else (f["rule"], f["subject"]) for f in fs}
+    assert ("top-part-number", "210101") in keys

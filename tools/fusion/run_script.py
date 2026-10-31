@@ -68,6 +68,7 @@ import os
 import shutil
 import signal
 import socket
+import subprocess
 import sys
 import time
 import urllib.error
@@ -741,7 +742,33 @@ def doc_script(mode, name, folder=DEFAULT_FOLDER, create=False, description="",
         "description": description, "discard": bool(discard)}}
 
 
-WRAPPER = '''import base64 as _b64, sys as _sys, types as _types
+WRAPPER = '''import base64 as _b64, os as _os, sys as _sys, types as _types
+# Fusion keeps Python modules loaded between runs, so a module another team's run
+# imported would be used again by any run that imports the same name (live
+# 2026-10-31: CEILING got AIR's older module). Before each script, drop every
+# cached module whose file is in any worktree of this repo (main checkout
+# included) or under /tmp, this run's own included, so every run imports its
+# files fresh and a team's own edits show at once. Never __main__; Fusion's and
+# Python's own modules are never touched; one odd module can't fail the run.
+_TEAM = [_os.path.realpath(p) for p in %(team)r]
+
+def _under(f, roots):
+    return any(f == r or f.startswith(r.rstrip("/") + "/") for r in roots)
+
+_dropped = []
+for _n in list(_sys.modules):
+    if _n == "__main__":
+        continue
+    try:
+        _f = getattr(_sys.modules.get(_n), "__file__", None)
+        if isinstance(_f, str) and _under(_os.path.realpath(_f), _TEAM):
+            _sys.modules.pop(_n, None)
+            _dropped.append(_n)
+    except Exception:
+        pass
+if _dropped:
+    print("run_script: dropped %%d cached team module(s), so this run imports its own files: %%s" %% (
+        len(_dropped), ", ".join(sorted(_dropped)[:12])))
 # the shared folder check, from this runner's repo, fresh on every run: a
 # script's "from fusion_folder import safe_to_create" finds it (one copy for all)
 _FF = _types.ModuleType("fusion_folder")
@@ -758,12 +785,39 @@ def run(context):
 '''
 
 
+def git_worktrees(repo_root=None):
+    """Every worktree of this repo, the main checkout included (git worktree list)."""
+    repo_root = repo_root or REPO_ROOT
+    try:
+        p = subprocess.run(["git", "-C", repo_root, "worktree", "list", "--porcelain"],
+                           capture_output=True, text=True, timeout=20)
+        trees = [line.split(" ", 1)[1] for line in p.stdout.splitlines() if line.startswith("worktree ")]
+        why = None if trees else (p.stderr.strip() or "no worktrees listed")
+    except (OSError, subprocess.SubprocessError) as e:
+        trees, why = [], str(e)
+    if why:
+        print("run_script: warning: git worktree list failed (%s); only this checkout and /tmp are "
+              "cleared of cached modules" % why[:200], file=sys.stderr)
+    return trees or [repo_root]
+
+
+def team_roots(repo_root=None):
+    """The folders whose cached modules the wrapper drops before a script: every
+    worktree of this repo, the parent folder of every worktree but the main
+    checkout (git lists it first), so a deleted worktree's modules still drop, and
+    /tmp (where agents' scratch worktrees live)."""
+    trees = git_worktrees(repo_root)
+    parents = sorted({os.path.dirname(os.path.abspath(t)) for t in trees[1:]})
+    return trees + parents + ["/tmp", "/private/tmp"]
+
+
 def wrap_script(source, path, args):
     """Wrap the file so it compiles under its real path (true line numbers)."""
     compile(source, path, "exec")  # fail fast on syntax errors, locally
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
                       "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
-                      "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii")}
+                      "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii"),
+                      "team": team_roots()}
 
 
 def run_in_fusion(mcp, source, read_only=False):

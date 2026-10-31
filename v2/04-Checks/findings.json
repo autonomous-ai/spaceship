@@ -1,5 +1,5 @@
 {
- "next": 104,
+ "next": 160,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -898,7 +898,7 @@
    "evidence": {},
    "key": "C05|no-drawing|831001",
    "id": "F-025",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 6ccbfac",
    "posted": "Joints group 2026-11-01",
@@ -907,9 +907,15 @@
      "date": "2026-11-01",
      "rev": "6ccbfac",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "b033321",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 11d9b51",
+   "closed": "2026-11-01 b033321"
   },
   {
    "check": "C05",
@@ -954,7 +960,7 @@
    "evidence": {},
    "key": "C06|name-mismatch|368006",
    "id": "F-027",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 7963e9c",
    "posted": "FRONT group 2026-11-01",
@@ -963,9 +969,15 @@
      "date": "2026-11-01",
      "rev": "7963e9c",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "11d9b51",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83",
+   "closed": "2026-11-01 11d9b51"
   },
   {
    "check": "C06",
@@ -979,7 +991,7 @@
    "evidence": {},
    "key": "C06|name-mismatch|368102",
    "id": "F-028",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 7963e9c",
    "posted": "FRONT group 2026-11-01",
@@ -988,9 +1000,15 @@
      "date": "2026-11-01",
      "rev": "7963e9c",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "11d9b51",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83",
+   "closed": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -1015,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -1040,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -1065,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C06",
@@ -1319,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -1344,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -1369,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -1425,7 +1443,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -1481,7 +1499,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -1526,7 +1544,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111501",
    "id": "F-047",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1535,9 +1553,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "02cfe83",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 e54dce6",
+   "closed": "2026-11-01 02cfe83"
   },
   {
    "check": "C11",
@@ -3016,7 +3040,7 @@
    "evidence": {},
    "key": "C06|name-mismatch|368003",
    "id": "F-095",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 284dae7",
    "posted": "FRONT group 2026-11-01",
@@ -3025,9 +3049,15 @@
      "date": "2026-11-01",
      "rev": "284dae7",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "11d9b51",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83",
+   "closed": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -3052,7 +3082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -3077,7 +3107,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C06",
@@ -3107,7 +3137,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C06",
@@ -3121,7 +3151,7 @@
    "evidence": {},
    "key": "C06|duplicate-number|111501",
    "id": "F-099",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "Lead group 2026-11-01",
@@ -3140,9 +3170,15 @@
      "date": "2026-11-01",
      "rev": "983bb96",
      "event": "owner set by hand to Control: the master BOM rebuild is the control pack's (the Lead)"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "02cfe83",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 e54dce6",
+   "closed": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -3167,7 +3203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -3192,7 +3228,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C05",
@@ -3217,7 +3253,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 d4454f3"
   },
   {
    "check": "C01",
@@ -3236,7 +3272,7 @@
    },
    "key": "C01|clash|assembly 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 x 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1",
    "id": "F-103",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 97a1aeb",
    "posted": "FRONT group 2026-11-01",
@@ -3245,8 +3281,1602 @@
      "date": "2026-11-01",
      "rev": "97a1aeb",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "11d9b51",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
-   ]
+   ],
+   "closed": "2026-11-01 11d9b51"
+  },
+  {
+   "check": "C06",
+   "rule": "row-incomplete",
+   "subject": "211102",
+   "severity": "minor",
+   "message": "211102 WALL - PANEL FRAME - SIDE LOWER - RH in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv is missing: Vietnamese name.",
+   "fix": "Fill them in, each number with its status and source.",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C06|row-incomplete|211102",
+   "id": "F-104",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "511302 FELT - PET 9 HELD BY THE TRAY LIPS hole Ø60.0 at X 1171 Y 240 Z 1180",
+   "severity": "severe",
+   "message": "Hole Ø60.00 in 511302 FELT - PET 9 HELD BY THE TRAY LIPS is 73.5 mm from the free edge (centre to edge), 1.23 diameters; the rule is at least 2 diameters (120.0 mm). Hole centre X 1171 Y 240 Z 1180 in the part's own coordinates.",
+   "fix": "Move the hole to at least 120.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "edge_mm": 73.5,
+    "dia_mm": 60.0
+   },
+   "key": "C09|edge-distance|511302 FELT - PET 9 HELD BY THE TRAY LIPS hole Ø60.0 at X 1171 Y 240 Z 1180",
+   "id": "F-105",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210102",
+   "severity": "major",
+   "message": "210102 WALL - PANEL ASSY - SIDE LOWER - RH has no drawing PDF (210102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210102",
+   "id": "F-106",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210103",
+   "severity": "major",
+   "message": "210103 WALL - PANEL ASSY - SIDE UPPER - LH has no drawing PDF (210103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210103",
+   "id": "F-107",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210104",
+   "severity": "major",
+   "message": "210104 WALL - PANEL ASSY - SIDE UPPER - RH has no drawing PDF (210104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210104",
+   "id": "F-108",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211102",
+   "severity": "severe",
+   "message": "211102 WALL - PANEL FRAME - SIDE LOWER - RH has no drawing PDF (211102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211102",
+   "id": "F-109",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211103",
+   "severity": "severe",
+   "message": "211103 WALL - PANEL FRAME - SIDE UPPER - LH has no drawing PDF (211103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211103",
+   "id": "F-110",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211104",
+   "severity": "severe",
+   "message": "211104 WALL - PANEL FRAME - SIDE UPPER - RH has no drawing PDF (211104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211104",
+   "id": "F-111",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211302",
+   "severity": "severe",
+   "message": "211302 WALL - SKIN - SIDE LOWER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211302",
+   "id": "F-112",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211303",
+   "severity": "severe",
+   "message": "211303 WALL - SKIN - SIDE UPPER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211303",
+   "id": "F-113",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211304",
+   "severity": "severe",
+   "message": "211304 WALL - SKIN - SIDE UPPER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211304",
+   "id": "F-114",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211502",
+   "severity": "major",
+   "message": "211502 WALL - CAVITY FILL - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211502",
+   "id": "F-115",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211503",
+   "severity": "major",
+   "message": "211503 WALL - CAVITY FILL - SIDE UPPER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211503",
+   "id": "F-116",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211504",
+   "severity": "major",
+   "message": "211504 WALL - CAVITY FILL - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211504",
+   "id": "F-117",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510102",
+   "severity": "major",
+   "message": "510102 LINING - CASSETTE - SIDE LOWER - RH has no drawing PDF (510102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510102",
+   "id": "F-118",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510103",
+   "severity": "major",
+   "message": "510103 LINING - CASSETTE - SIDE UPPER - LH has no drawing PDF (510103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510103",
+   "id": "F-119",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510104",
+   "severity": "major",
+   "message": "510104 LINING - CASSETTE - SIDE UPPER - RH has no drawing PDF (510104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510104",
+   "id": "F-120",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511102",
+   "severity": "severe",
+   "message": "511102 LINING - TRAY - SIDE LOWER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511102",
+   "id": "F-121",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511103",
+   "severity": "severe",
+   "message": "511103 LINING - TRAY - SIDE UPPER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511103",
+   "id": "F-122",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511104",
+   "severity": "severe",
+   "message": "511104 LINING - TRAY - SIDE UPPER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511104",
+   "id": "F-123",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511302",
+   "severity": "major",
+   "message": "511302 LINING - FELT - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511302",
+   "id": "F-124",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511304",
+   "severity": "major",
+   "message": "511304 LINING - FELT - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511304",
+   "id": "F-125",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell back X -1250..-1210 Z 110..112",
+   "severity": "severe",
+   "message": "The outer shell is open on the back face of the assembly: nothing covers X -1250 to -1210, Z 110 to 112 (a slot 40 x 2 mm). Bordered by: BASE - BAND TUBE - BACK - TUBE, SKIN - ACP 3 WITH BACK RETURN. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": [
+     "BASE - BAND TUBE - BACK - TUBE",
+     "SKIN - ACP 3 WITH BACK RETURN"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell back X -1250..-1210 Z 110..112",
+   "id": "F-126",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell back X 1210..1250 Z 110..112",
+   "severity": "severe",
+   "message": "The outer shell is open on the back face of the assembly: nothing covers X 1210 to 1250, Z 110 to 112 (a slot 40 x 2 mm). Bordered by: BASE - BAND TUBE - BACK - TUBE, SKIN - ACP 3 WITH BACK RETURN. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": [
+     "BASE - BAND TUBE - BACK - TUBE",
+     "SKIN - ACP 3 WITH BACK RETURN"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell back X 1210..1250 Z 110..112",
+   "id": "F-127",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell back X -1204..1204 Z 110..2397",
+   "severity": "severe",
+   "message": "The outer shell is open on the back face of the assembly: nothing covers X -1204 to 1204, Z 110 to 2397 (a slot 2408 x 2287 mm). Bordered by: BASE - BAND TUBE - BACK - TUBE, C1 BACK MEMBER 40X40, C2 BACK MEMBER 40X40, SKIN - ACP 3 WITH BACK RETURN, SKIN ACP 3. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": [
+     "BASE - BAND TUBE - BACK - TUBE",
+     "C1 BACK MEMBER 40X40",
+     "C2 BACK MEMBER 40X40",
+     "SKIN - ACP 3 WITH BACK RETURN",
+     "SKIN ACP 3"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell back X -1204..1204 Z 110..2397",
+   "id": "F-128",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell left Y 847..850 Z 110..112",
+   "severity": "severe",
+   "message": "The outer shell is open on the left face of the assembly: nothing covers Y 847 to 850, Z 110 to 112 (a slot 3 x 2 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE, SKIN - ACP 3 WITH BACK RETURN. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": [
+     "BASE - BAND TUBE - SIDE - LH - TUBE",
+     "SKIN - ACP 3 WITH BACK RETURN"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell left Y 847..850 Z 110..112",
+   "id": "F-129",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell left Y -645..-643 Z 110..2400",
+   "severity": "severe",
+   "message": "The outer shell is open on the left face of the assembly: nothing covers Y -645 to -643, Z 110 to 2400 (a slot 2 x 2290 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE, SKIN - ACP 3 WITH BACK RETURN. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": [
+     "BASE - BAND TUBE - SIDE - LH - TUBE",
+     "SKIN - ACP 3 WITH BACK RETURN"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell left Y -645..-643 Z 110..2400",
+   "id": "F-130",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell right Y -645..850 Z 110..2400",
+   "severity": "severe",
+   "message": "The outer shell is open on the right face of the assembly: nothing covers Y -645 to 850, Z 110 to 2400 (a slot 1495 x 2290 mm). Bordered by: SKIN - ACP 3 WITH BACK RETURN. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": [
+     "SKIN - ACP 3 WITH BACK RETURN"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell right Y -645..850 Z 110..2400",
+   "id": "F-131",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell top X -1250..-1202 Y -645..-643",
+   "severity": "severe",
+   "message": "The outer shell is open on the top face of the assembly: nothing covers X -1250 to -1202, Y -645 to -643 (a slot 48 x 2 mm). Bordered by: RAIL - TOP, SKIN - ACP 3 WITH BACK RETURN, SKIN ACP 3. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": [
+     "RAIL - TOP",
+     "SKIN - ACP 3 WITH BACK RETURN",
+     "SKIN ACP 3"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell top X -1250..-1202 Y -645..-643",
+   "id": "F-132",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell top X 1202..1250 Y -645..-643",
+   "severity": "severe",
+   "message": "The outer shell is open on the top face of the assembly: nothing covers X 1202 to 1250, Y -645 to -643 (a slot 48 x 2 mm). Bordered by: RAIL - TOP, SKIN - ACP 3 WITH BACK RETURN, SKIN ACP 3. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": [
+     "RAIL - TOP",
+     "SKIN - ACP 3 WITH BACK RETURN",
+     "SKIN ACP 3"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell top X 1202..1250 Y -645..-643",
+   "id": "F-133",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell back-base X -1250..-1210 Z 10..110",
+   "severity": "severe",
+   "message": "The outer shell is open on the back-base face of the assembly: nothing covers X -1250 to -1210, Z 10 to 110 (a slot 40 x 100 mm). Bordered by: BASE - BAND TUBE - BACK - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly-back-base",
+    "near": [
+     "BASE - BAND TUBE - BACK - TUBE"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell back-base X -1250..-1210 Z 10..110",
+   "id": "F-134",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "set CLOSED by hand: The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main."
+    }
+   ],
+   "note": "The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main.",
+   "closed": "2026-11-01 e06fa22 The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main.",
+   "last_seen": "2026-11-01 e06fa22"
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell back-base X 1210..1250 Z 10..110",
+   "severity": "severe",
+   "message": "The outer shell is open on the back-base face of the assembly: nothing covers X 1210 to 1250, Z 10 to 110 (a slot 40 x 100 mm). Bordered by: BASE - BAND TUBE - BACK - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly-back-base",
+    "near": [
+     "BASE - BAND TUBE - BACK - TUBE"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell back-base X 1210..1250 Z 10..110",
+   "id": "F-135",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "set CLOSED by hand: The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main."
+    }
+   ],
+   "note": "The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main.",
+   "closed": "2026-11-01 e06fa22 The back-base face is checked once the back band and both side bands are on main; the right band isn't yet (BASE's sample is the back-left corner), so these corner openings are parts not merged yet. Comes back if still open when the bands are all on main.",
+   "last_seen": "2026-11-01 e06fa22"
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell left-base Y 847..850 Z 10..110",
+   "severity": "severe",
+   "message": "The outer shell is open on the left-base face of the assembly: nothing covers Y 847 to 850, Z 10 to 110 (a slot 3 x 100 mm). Bordered by: BASE - BAND TUBE - SIDE - LH - TUBE. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there (a bought part that closes it, like an end cap, needs its body in the CAD, an ENVELOPE if the product is HOLD).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "model": "assembly-left-base",
+    "near": [
+     "BASE - BAND TUBE - SIDE - LH - TUBE"
+    ]
+   },
+   "key": "C01|shell-open|assembly shell left-base Y 847..850 Z 10..110",
+   "id": "F-136",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "owner set by hand to BASE: the opening borders BASE's side band; the end cap 118003 that closes it isn't in the CAD"
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C01",
+   "rule": "shell-open",
+   "subject": "assembly shell right-base Y -645..850 Z 10..110",
+   "severity": "severe",
+   "message": "The outer shell is open on the right-base face of the assembly: nothing covers Y -645 to 850, Z 10 to 110 (a slot 1495 x 100 mm). Bordered by: nothing. Checked exactly, 1 mm inside the face, bodies as their boxes.",
+   "fix": "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+   "file": "",
+   "owner": "PM",
+   "evidence": {
+    "model": "assembly",
+    "near": []
+   },
+   "key": "C01|shell-open|assembly shell right-base Y -645..850 Z 10..110",
+   "id": "F-137",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "set CLOSED by hand: The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+    }
+   ],
+   "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete."
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "410000",
+   "severity": "major",
+   "message": "410000 CEILING has no drawing PDF (410000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|410000",
+   "id": "F-138",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "410101",
+   "severity": "major",
+   "message": "410101 CEILING - PANEL ASSY - C1 has no drawing PDF (410101_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|410101",
+   "id": "F-139",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "410102",
+   "severity": "major",
+   "message": "410102 CEILING - PANEL ASSY - C2 has no drawing PDF (410102_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|410102",
+   "id": "F-140",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "411101",
+   "severity": "severe",
+   "message": "411101 CEILING - PANEL FRAME - C1 has no drawing PDF (411101_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|411101",
+   "id": "F-141",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "411102",
+   "severity": "severe",
+   "message": "411102 CEILING - PANEL FRAME - C2 has no drawing PDF (411102_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|411102",
+   "id": "F-142",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510301",
+   "severity": "major",
+   "message": "510301 LINING - CASSETTE - CEILING - COMMON has no drawing PDF (510301_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|510301",
+   "id": "F-143",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "513101",
+   "severity": "severe",
+   "message": "513101 LINING - TRAY - CEILING has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bent.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|513101",
+   "id": "F-144",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "513102",
+   "severity": "severe",
+   "message": "513102 LINING - RIB - CEILING has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (24.0 thick across 44.0); its row's process names bent.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|513102",
+   "id": "F-145",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "513301",
+   "severity": "major",
+   "message": "513301 LINING - FILL - CEILING - BAY A has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|513301",
+   "id": "F-146",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "513302",
+   "severity": "major",
+   "message": "513302 LINING - FILL - CEILING - BAY B has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|513302",
+   "id": "F-147",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "513303",
+   "severity": "major",
+   "message": "513303 LINING - FILL - CEILING - BAY C has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|513303",
+   "id": "F-148",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c72ea57",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c72ea57",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "711001",
+   "severity": "severe",
+   "message": "711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND, BEND_EXTENT, INTERIOR_PROFILES, OUTER_PROFILES; only CUT and MARK pass, so it is folded; its row's process names fold.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|no-drawing|711001",
+   "id": "F-149",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 e06fa22",
+   "posted": "ELECTRICAL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "e06fa22",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "810000",
+   "severity": "major",
+   "message": "810000 INTERIOR is in v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|810000",
+   "id": "F-150",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 b3cc47e"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "810101",
+   "severity": "major",
+   "message": "810101 INTERIOR - WORK WALL LEDGE ASSY has no drawing PDF (810101_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|810101",
+   "id": "F-151",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "810201",
+   "severity": "major",
+   "message": "810201 INTERIOR - LIGHT SHELF ASSY has no drawing PDF (810201_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|810201",
+   "id": "F-152",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "811101",
+   "severity": "severe",
+   "message": "811101 INTERIOR - LEDGE - TOP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|811101",
+   "id": "F-153",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "811201",
+   "severity": "severe",
+   "message": "811201 INTERIOR - LIGHT SHELF - BACK has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|811201",
+   "id": "F-154",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "811202",
+   "severity": "severe",
+   "message": "811202 INTERIOR - LIGHT SHELF - SIDE LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|811202",
+   "id": "F-155",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "811203",
+   "severity": "severe",
+   "message": "811203 INTERIOR - LIGHT SHELF - SIDE RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|811203",
+   "id": "F-156",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "811204",
+   "severity": "severe",
+   "message": "811204 INTERIOR - LIGHT SHELF - DOWN CHANNEL RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|811204",
+   "id": "F-157",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "811205",
+   "severity": "severe",
+   "message": "811205 INTERIOR - LIGHT SHELF - DIFFUSER RH has no drawing PDF (811205_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|811205",
+   "id": "F-158",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
+  },
+  {
+   "check": "C06",
+   "rule": "top-part-number",
+   "subject": "810000",
+   "severity": "major",
+   "message": "810000_P01_INTERIOR_STEP.step's top component carries part number '2026-11-01-02-34-22-890', not 810000 from its file name (conventions section 6); until it does, the assembled checks leave this file out.",
+   "fix": "Set the root component's part number to 810000 in the native design and export the STEP again.",
+   "file": "v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|top-part-number|810000",
+   "id": "F-159",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 b3cc47e",
+   "posted": "CEILING group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "b3cc47e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d4454f3"
   }
  ]
 }

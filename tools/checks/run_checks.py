@@ -29,7 +29,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class  # noqa: E402
+from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class, parse_file_name, Finding, owner_for  # noqa: E402
 import c_geometry  # noqa: E402
 import c_parts  # noqa: E402
 import c_drawings  # noqa: E402
@@ -67,8 +67,10 @@ def run(root, rev):
         if not bodies:
             continue
         findings += c_geometry.check_shell(root, mdl, bodies)
-        if c_geometry.shell_ready(mdl, bodies):
-            ran |= {"C01", "C01:" + mdl}
+        faces = c_geometry.shell_faces_ready(mdl, bodies)
+        if faces:
+            ran |= {"C01", "C01:" + mdl} | {"C01:%s-%s" % (mdl, z) for z in faces}
+        inputs["shell_faces_" + mdl] = sorted(faces)
         if rules:
             findings += c_geometry.check_gap_rules(root, mdl, bodies, rules)
             ran |= {"C02:" + mdl}
@@ -102,6 +104,15 @@ def run(root, rev):
     for p in per_part:
         s = c_geometry.load_step(p)
         counts, _tops = s.usage_counts()
+        fn = parse_file_name(p)
+        if fn and _tops and fn["pn"] not in _tops:
+            r = rel(root, p)
+            findings.append(Finding(
+                "C06", "top-part-number", fn["pn"], "major",
+                "%s's top component carries part number '%s', not %s from its file name (conventions section 6); "
+                "until it does, the assembled checks leave this file out." % (os.path.basename(r), _tops[0], fn["pn"]),
+                "Set the root component's part number to %s in the native design and export the STEP again." % fn["pn"],
+                r, owner_for(r, fn["pn"])))
         for prod in s.products():
             pn = prod["part_number"]
             d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"]})

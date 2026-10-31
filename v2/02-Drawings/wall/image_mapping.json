@@ -1,0 +1,6 @@
+{
+  "sheet": "A2",
+  "width_at_scale_1_mm": null,
+  "anchor": null,
+  "source": "Fusion Engineer 2's Images.insert measurement (#67): an image inserted at scale 1 comes out a fixed width, set by the sheet (58.02 mm on A3), anchored at its lower-left corner. The A2 width isn't measured yet; until it is, the drawings get no note images (an inserted image can't be moved or deleted), and an images-only run adds them afterwards."
+}
