@@ -1,14 +1,16 @@
 {
- "rev": "bc1798e",
+ "rev": "847075f",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
-  "bodies_assembly": 36,
+  "bodies_assembly": 47,
   "parts_lists": [
+   "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv",
    "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
    "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
   ],
   "part_steps": [
+   "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
    "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
    "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step",
    "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step",
@@ -34,6 +36,30 @@
   "C11"
  ],
  "findings": [
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368006",
+   "severity": "minor",
+   "message": "368006 is named 'FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD' in the CAD (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step) but 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD' in the parts list (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv); the guideline wants one name everywhere (section 4.2).",
+   "fix": "Use the same name in the CAD component and the parts list.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368006"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368102",
+   "severity": "minor",
+   "message": "368102 is named 'FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10' in the CAD (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step) but 'FRONT - DOOR STRIKE' in the parts list (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv); the guideline wants one name everywhere (section 4.2).",
+   "fix": "Use the same name in the CAD component and the parts list.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368102"
+  },
   {
    "check": "C05",
    "rule": "no-drawing",
@@ -81,6 +107,42 @@
    "owner": "WALL",
    "evidence": {},
    "key": "C05|no-drawing|211501"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "360001",
+   "severity": "major",
+   "message": "360001 FRONT - DOOR UNIT has no drawing PDF (360001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|360001"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "361001",
+   "severity": "severe",
+   "message": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|361001"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "361002",
+   "severity": "severe",
+   "message": "361002 FRONT - DOOR KICK STRIP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its faces lie at 8 levels through the thickness (a pocket, a step or a rebate).",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|361002"
   },
   {
    "check": "C05",
@@ -288,7 +350,7 @@
   {
    "id": "1-05",
    "name": "WALL - PANEL ASSY - SIDE LOWER - LH",
-   "kg": 11.088,
+   "kg": 11.163,
    "dims": [
     1492.74,
     1142.74,
@@ -300,7 +362,7 @@
   {
    "id": "1-06",
    "name": "WALL - PANEL ASSY - SIDE LOWER - RH",
-   "kg": 11.088,
+   "kg": 11.163,
    "dims": [
     1492.74,
     1142.74,
@@ -384,14 +446,14 @@
   {
    "id": "1-13",
    "name": "LINING - CASSETTE - SIDE LOWER - RH",
-   "kg": 10.474,
+   "kg": 10.346,
    "dims": [
     1445.0,
     1142.74,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-14",
@@ -408,14 +470,14 @@
   {
    "id": "1-15",
    "name": "LINING - CASSETTE - SIDE LOWER - LH",
-   "kg": 10.474,
+   "kg": 10.346,
    "dims": [
     1445.0,
     1142.74,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-16",
@@ -492,14 +554,14 @@
   {
    "id": "2-02",
    "name": "FRONT - DOOR UNIT",
-   "kg": 49.076,
+   "kg": 48.59,
    "dims": [
     2089.0,
     1175.0,
     149.0
    ],
    "ships_as": "glass",
-   "status": "calculation (CAD); kick strip assumption"
+   "status": "calculation (CAD); hinges and pull HOLD"
   },
   {
    "id": "2-03",
@@ -588,7 +650,7 @@
   {
    "id": "2-10",
    "name": "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS",
-   "kg": 13.908,
+   "kg": 13.873,
    "dims": [
     2332.0,
     360.0,
@@ -600,7 +662,7 @@
   {
    "id": "2-11",
    "name": "AIR - AIR COLUMN",
-   "kg": 9.779,
+   "kg": 9.735,
    "dims": [
     2105.0,
     360.0,
@@ -636,7 +698,7 @@
   {
    "id": "2-14",
    "name": "INTERIOR - LIGHT SHELF",
-   "kg": 1.957,
+   "kg": 1.954,
    "dims": [
     2332.0,
     80.0,
