@@ -48,7 +48,7 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-513101-02 | Four returns | 34 deep overall | Make the 24 mm air gap (D-17, D-41), stiffen the edges | `tray_h` = `cass_t` 34 (skeleton) | confirmed |
 | F-513101-03 | Lips, 12 inward | felt seat at Z' −33.5 | Hold the felt mechanically (guideline §8.2) | PM ruling 2026-10-31 | confirmed |
 | F-513101-04 | Bend radius, K-factor | r = 0.5, K 0.44 | Flat pattern | Until the factory's tooling sets them (guideline §9) | assumption |
-| F-513101-05 | Cable holes, front and back returns | Ø20 at X' 0, Z' −12.5 | Voice cockpit route and spare path (D-41, REQ-VCK-03, ISS-069) | Grommet not named | assumption; grommet HOLD |
+| F-513101-05 | Cable holes, front and back returns | Ø19.1 at X' 0, Z' −12.5 | Voice cockpit route and spare path (D-41, REQ-VCK-03, ISS-069) | ELECTRICAL's cable bushing needs a 19.1 panel hole (PM ruling 2026-11-01) | confirmed |
 | F-513101-06 | Clip zones (6) | 40 × 30 at X' ±193.33 on the back faces of X1, X2, X3: Y' 4…34, 397.5…427.5, 766.25…796.25 | Hang the cassette (D-47, D-81: clips only) | Over the ribs; on the back faces so every clip stays over the cassette | HOLD (HOLD-08) |
 | F-513101-07 | Catch zones (2) | 40 × 30 at X' ±193.33, Y' 347.5…377.5 (X2's front face) | A cassette over people can't drop (D-47) | Near the middle so it hangs level; never shares a fixing with a clip | HOLD (HOLD-08) |
 
