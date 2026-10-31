@@ -81,3 +81,61 @@ SPECS["dl"] = {
     "title": title("350001", "FRONT - DECOR BLOCK ASSY - DL", "Khối trang trí trái (cụm)", "see the parts list",
                    "see the parts list", "1:10", "A2", [("DOC TYPE", "ASSEMBLY DRAWING")]),
 }
+
+
+def _cut_notes(G, V):
+    """The frame's cut list as note lines, from the build script's own tube data."""
+    import math as _m
+    FLx = G["FL"]
+    ev = lambda e: eval(re.sub(r"(\d)\s*mm\b", r"\1", str(e)).replace("^", "**"),
+                        {"__builtins__": {}, "sqrt": _m.sqrt, "abs": abs}, V)
+    rows = FLx.cut_list_rows(G["frame_members"](), ev, "")
+    total = sum(float(r[4]) for r in rows) / 1000.0
+    lines = ["CUT LIST (6063-T6 tube, mill finish, D-79), %d tubes, %.1f m: " % (len(rows), total) +
+             "; ".join("%s %s %s L %s" % (r[1], re.sub(r"\b(Dt|Dr|Dl)\b", lambda m_: m_.group(0).upper(),
+                                                        r[2].capitalize().replace("dt ", "Dt ")),
+                                         r[3].replace("6063-T6 aluminium tube ", ""), r[4]) for r in rows) + "."]
+    return lines
+
+
+def _frame_spec(key, pn, name, vn, G, V, views, box, notes):
+    return {
+        "design": doc(pn, name, "CAD"), "drawing": doc(pn, name, "DWG"),
+        "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": views, "box": box, "dims": [],
+        "notes": notes + _cut_notes(G, V) + [
+            "Weld all round at every tube joint (TIG, 6063-T6 filler 4043); grind flush where a skin or plate bonds. "
+            "Tube lengths +/-0.5, angles +/-0.5 deg, frame +/-1 overall (PROPOSED). Ends open (no caps) unless noted.",
+            "Tube positions and every end cut come from the build script's parameters (frame_members); the 3D model "
+            "and STEP are the reference for the joints between tubes.",
+        ],
+        "title": title(pn, name, vn, "aluminium EN AW-6063-T6 tube", "mill (hidden, D-79)", "1:10", "A2",
+                       [("DOC TYPE", "WELDMENT DRAWING")]),
+    }
+
+
+SPECS["dr_frame"] = _frame_spec(
+    "dr_frame", "351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)", G_DR, V_DR,
+    {"front": (150, 255), "top": (150, 110), "left": (280, 255), "iso": (345, 95)},
+    {"front": (_drx0, V_DR["wall_z0"], _XR, V_DR["pod_h"])},
+    ["DR's welded frame: a ring 20 inside the front skin, a ring in front of the back plates with the 60 x 20 "
+     "bolt-line tube (6 holes 14 in its back wall round the J-FRONT-01 rivnut tails) and the 60 x 20 band tube, "
+     "facet, chamfer and DT-joint tubes between the rings. No back-ring tube crosses the opening the air unit slides "
+     "through (D-87). Rivnuts 838003 set at the factory: 10 for the access panel's bolts (6 on X 1198.5, 2 at "
+     "Z 131.5, 2 at Z 2135)."])
+SPECS["dr_skin"] = {
+    "design": doc("351301", "FRONT - DECOR SKIN - DR", "CAD"), "drawing": doc("351301", "FRONT - DECOR SKIN - DR", "DWG"),
+    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05},
+    "views": {"front": (150, 255), "top": (150, 110), "left": (280, 255), "iso": (345, 95)},
+    "box": {"front": (_drx0, V_DR["wall_z0"], _XR, V_DR["pod_h"])}, "dims": [
+        ("front", (_XR, V_DR["wall_z0"]), (_XR, V_DR["pod_h"]), "right", 12)],
+    "notes": [
+        "DR's skin: 3 mm ACP (EV3038 Dark Yellow, PE core, D-12), one flat panel per outside face, edges mitred at 45 "
+        "deg and joined as v1. Flat patterns 1:1 in 351301_P01_FRONT-DECOR-SKIN-DR_DXF.dxf (layers CUT and MARK).",
+        "Open at the back (plates) and where DT sits on DR. Slot 17 wide along the inner edge at the glass plane for "
+        "the fixed pane's hidden channel; base open over the mesh band piece (PM rulings).",
+        "Bonded to the frame 351306 per the joints register's ACP bond spec. Outline +/-1 (PROPOSED).",
+    ],
+    "title": title("351301", "FRONT - DECOR SKIN - DR", "Tấm ốp alu khối phải", "ACP 3 mm EV3038 Dark Yellow",
+                   "factory coil coating (D-12)", "1:10", "A2"),
+}
+
