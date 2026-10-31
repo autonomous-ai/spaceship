@@ -146,6 +146,28 @@ def tool_payload(result):
     return parsed, image
 
 
+VIEWS = {
+    "front": "FrontViewOrientation", "back": "BackViewOrientation",
+    "top": "TopViewOrientation", "bottom": "BottomViewOrientation",
+    "left": "LeftViewOrientation", "right": "RightViewOrientation",
+    "iso-top-right": "IsoTopRightViewOrientation", "iso-top-left": "IsoTopLeftViewOrientation",
+    "iso-bottom-right": "IsoBottomRightViewOrientation",
+    "iso-bottom-left": "IsoBottomLeftViewOrientation",
+}
+
+# Turns the camera and zooms to fit; changes the view only, not the design.
+FIT_SCRIPT = '''import adsk.core
+def run(_context):
+    vp = adsk.core.Application.get().activeViewport
+    cam = vp.camera
+    cam.viewOrientation = adsk.core.ViewOrientations.%(view)s
+    cam.isFitView = True
+    cam.isSmoothTransition = False
+    vp.camera = cam
+    vp.fit()
+    vp.refresh()
+'''
+
 WRAPPER = '''import base64 as _b64
 _SRC = _b64.b64decode(%(src)r).decode("utf-8")
 _NS = {"__name__": "__fusion_script__", "__file__": %(path)r,
@@ -175,9 +197,10 @@ def main(argv=None):
                     help="passed to the script in SCRIPT_ARGS (repeatable)")
     ap.add_argument("--screenshot", metavar="PNG",
                     help="after the script, save a screenshot of the active view")
-    ap.add_argument("--direction", default="current",
-                    help="camera for --screenshot: current, front, back, top, "
-                         "bottom, left, right, iso-top-right, ... (default current)")
+    ap.add_argument("--direction", default="iso-top-right",
+                    help="camera for --screenshot: front, back, top, bottom, left, "
+                         "right, iso-top-right, iso-top-left, ..., or current. The "
+                         "view is turned and zoomed to fit first (default iso-top-right)")
     ap.add_argument("--width", type=int, default=1600)
     ap.add_argument("--height", type=int, default=1000)
     ap.add_argument("--url", default=DEFAULT_URL)
@@ -222,8 +245,14 @@ def main(argv=None):
 
     if opts.screenshot:
         try:
+            if opts.direction != "current":
+                view = VIEWS.get(opts.direction)
+                if view is None:
+                    ap.error("unknown --direction %r" % opts.direction)
+                mcp.call_tool("fusion_mcp_execute", {"featureType": "script", "object": {
+                    "script": FIT_SCRIPT % {"view": view}}})
             shot = mcp.call_tool("fusion_mcp_read", {
-                "queryType": "screenshot", "direction": opts.direction,
+                "queryType": "screenshot", "direction": "current",
                 "width": opts.width, "height": opts.height,
                 "transparentBackground": False, "antiAliasing": True})
         except McpError as e:
