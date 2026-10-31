@@ -219,7 +219,8 @@ def check_parts_lists(root, plists):
                 fs.extend(_fastener_row(r, pn, name, row, owner))
     fs = _fold_unnumbered(_fold_minor_rows(fs))
     for pn, uses in seen.items():
-        names = {n for _f, n in uses}
+        # the same words in the same order are one name: 'HOOK-AND-LOOP' and 'HOOK AND LOOP' don't differ
+        names = {re.sub(r"[\s-]+", " ", (n or "").upper()).strip() for _f, n in uses}
         if len(names) > 1:
             fs.append(Finding("C06", "duplicate-number", pn, "major",
                               "Part number %s is used for different names: %s." % (
@@ -333,6 +334,12 @@ def fastener_schedule(root, plists, step_usage):
 
 # ----------------------------------------------------------------- CAD match (C06)
 
+def _group(path):
+    """The team folder a file sits in: 'v2/03-Manufacturing/wall/x.step' gives 'wall'."""
+    parts = (path or "").replace("\\", "/").split("/")
+    return parts[2] if len(parts) > 3 and parts[0] == "v2" else ""
+
+
 def check_cad_match(root, plists, step_products):
     """step_products: pn -> {"files": set, "count": int, "name": str}."""
     fs = []
@@ -363,11 +370,17 @@ def check_cad_match(root, plists, step_products):
                               "%s is named '%s' in the CAD (%s) but '%s' in the parts list (%s); the guideline wants one "
                               "name everywhere (section 4.2)." % (pn, cad, f, names[pn][0], names[pn][1]),
                               "Use the same name in the CAD component and the parts list.", f, owner_for(f, pn)))
+    # A team's parts list is matched against the CAD once that team has exported STEP files (its folder,
+    # e.g. v2/03-Manufacturing/wall). The master BOM lists every team's parts, so it isn't matched itself:
+    # each row is checked in its team's own list.
+    step_groups = {_group(f) for info in step_products.values() for f in info["files"]}
     for p, rows in plists:
         r = rel(root, p)
+        if is_master(r) or _group(r) not in step_groups:
+            continue
         for row in rows:
             pn = row["part_number"]
-            if pn_class(pn) in ("part", "assembly") and pn not in step_products and step_products:
+            if pn_class(pn) in ("part", "assembly") and pn not in step_products:
                 fs.append(Finding("C06", "bom-not-in-cad", pn, "major",
                                   "%s %s is in %s but in no STEP file in v2/03-Manufacturing." % (pn, row["name"], r),
                                   "Export its STEP from the native CAD (same revision), or take it off the list.", r,

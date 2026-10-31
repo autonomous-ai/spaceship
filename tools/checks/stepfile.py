@@ -682,6 +682,59 @@ def _bends(solid):
     return uniq
 
 
+def flat_plate(solid):
+    """D-89 part 4: is the solid a plain flat plate cut from sheet? Returns (ok, thickness, why). Plain means:
+    no bends; the faces parallel to the sheet lie at only its two skins (a third level is a pocket, a step or a
+    rebate); every other plane stands square to the sheet (the cut edges); every cylinder runs square to the
+    sheet through its full thickness (through-holes and rounded corners; a blind or cross hole is machined);
+    and no other surface (a cone is a countersink)."""
+    if solid.bends:
+        return False, None, "it is folded (%d bends in its STEP)" % len(solid.bends)
+    planes = [f for f in solid.faces if f.kind == "plane"]
+    pts = list(solid.points())
+    if not planes or not pts:
+        return False, None, "its STEP has no flat faces"
+    # the sheet's normal: of the plane directions, the one the solid is thinnest along
+    dirs = []
+    for f in planes:
+        d = norm(f.normal)
+        if not any(abs(abs(dot(d, e)) - 1.0) < 1e-4 for e in dirs):
+            dirs.append(d)
+    ext = lambda d: max(dot(p, d) for p in pts) - min(dot(p, d) for p in pts)
+    n = min(dirs, key=ext)
+    t = ext(n)
+    across = [ext(d) for d in dirs if abs(dot(d, n)) < 1e-4]
+    if not across:          # no side planes (a disc or a tube): the widest cylinder square to the sheet
+        across = [max([2.0 * f.radius for f in solid.faces
+                       if f.kind == "cylinder" and abs(abs(dot(norm(f.normal), n)) - 1.0) < 1e-4] or [0.0])]
+    if t > 25.0 or t > 0.5 * min(across):
+        return False, None, "it isn't a sheet part (%.1f thick across %.1f)" % (t, min(across))
+    levels = []
+    for f in solid.faces:
+        if f.kind == "plane":
+            c = abs(dot(norm(f.normal), n))
+            if c > 0.9999:
+                lv = dot(f.origin, n)
+                if not any(abs(lv - x) < 0.02 for x in levels):
+                    levels.append(lv)
+            elif c > 1e-4:
+                return False, None, "a face sits at an angle to the sheet (a chamfer or bevel)"
+        elif f.kind == "cylinder":
+            if abs(abs(dot(norm(f.normal), n)) - 1.0) > 1e-4:
+                return False, None, "a cylinder runs across the sheet (a bend, a cross hole or a radius)"
+        else:
+            return False, None, "a %s face (a countersink or another machined form)" % f.kind
+    if len(levels) != 2:
+        return False, None, "its faces lie at %d levels through the thickness (a pocket, a step or a rebate)" % len(levels)
+    lo, hi = min(levels), max(levels)
+    for f in solid.faces:
+        if f.kind == "cylinder" and f.points:
+            ts = [dot(p, n) for p in f.points]
+            if min(ts) > lo + 0.02 or max(ts) < hi - 0.02:
+                return False, None, "a hole stops inside the thickness (a blind or tapped hole)"
+    return True, round(hi - lo, 3), ""
+
+
 def profile_axis(solid, ratio=4.0):
     """Unit axis of a long profile (tube, bar, extrusion): the box's longest
     side when it is at least `ratio` times the next one; else None."""
@@ -709,16 +762,14 @@ def _on_cylinder(p, f, tol=0.05):
     return abs(line_distance(p, f.origin, f.normal) - f.radius) < tol
 
 
-def edge_distance(solid, hole):
-    """Centre-to-edge distance of a hole, measured in the face it is drilled
-    through: the nearest straight boundary edge of that face, from the hole
-    centre. Edges along a profile's length (tube corners, where the next wall
-    carries on) and edges that start a bend are not free edges and are left
-    out. Returns (distance, kind) with kind 'free edge', or (None, None)."""
+def free_edge_distances(solid, hole):
+    """Every free straight edge of the face a hole is drilled through, as (distance from the hole centre,
+    unit direction, foot of the perpendicular on the edge's line). Edges along a profile's length (tube
+    corners, where the next wall carries on) and edges that start a bend are not free edges."""
     pax = profile_axis(solid)
     bend_faces = [f for f in solid.faces if f.kind == "cylinder"
                   and not any(abs(a[1] - f.radius) < 1e-3 and _arc_span_deg(a) >= 359.0 for a in f.arcs)]
-    best = None
+    out = []
     for f in solid.faces:
         if f.kind != "plane" or abs(abs(dot(f.normal, hole.axis)) - 1.0) > 1e-4:
             continue
@@ -733,10 +784,18 @@ def edge_distance(solid, hole):
                 continue
             if any(_on_cylinder(a, bf) and _on_cylinder(b, bf) for bf in bend_faces):
                 continue
-            dist = _seg_distance(c, a, b)
-            if best is None or dist < best:
-                best = dist
-    return (best, "free edge") if best is not None else (None, None)
+            foot = _add(a, _mul(d, dot(_sub(c, a), d)))
+            out.append((_seg_distance(c, a, b), d, foot))
+    return out
+
+
+def edge_distance(solid, hole):
+    """Centre-to-edge distance of a hole, measured in the face it is drilled
+    through: the nearest free straight boundary edge of that face, from the
+    hole centre (see free_edge_distances). Returns (distance, kind) with kind
+    'free edge', or (None, None)."""
+    es = free_edge_distances(solid, hole)
+    return (min(e[0] for e in es), "free edge") if es else (None, None)
 
 
 def hole_to_bend(hole, bend):
