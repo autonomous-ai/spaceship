@@ -83,16 +83,16 @@ OWN = [
     ("dr_skin_t", "3 mm", "mm", "source", "ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)"),
     ("dr_back_t", "2 mm", "mm", "source",
      "joints register J-FRONT-01: the back plate is aluminium 1.0 to 2.7 thick at each bolt, for the rivnuts (HOLD-10)"),
-    ("dr_strip_x0", "jf_x - 14 mm", "mm", "calculation",
-     "the fixed back strip's inner edge, 14 (1.5 x the rivnut's 9.53 hole) inside the bolt line, so the access panel "
-     "gets a 23 mm land on the bolt-line tube for its own bolts; the rest of the back comes off for the air unit (D-87)"),
+    ("dr_strip_x0", "jf_x - 2 * jf_hole - 0.5 mm", "mm", "calculation",
+     "the fixed back strip's inner edge, 2 hole diameters plus 0.5 from the J-FRONT-01 rivnut holes (mechanical "
+     "check C09); the rest of the back comes off for the air unit (D-87)"),
     ("dr_acc_t", "3 mm", "mm", "calculation",
      "access panel 3 mm aluminium: it carries the air column's 10 kg on two hook studs 222 mm from its screwed edge "
      "(PM ruling 2026-11-01); 2 mm would see about 110 MPa if the column pulls 50 N, 3 mm about 50 MPa"),
-    ("dr_band_dz", "30 mm", "mm", "assumption",
-     "the back plate's top band starts this far above DT's underside: the removable panels' top edges land 30 on the "
-     "frame's band tube (their bolts), the band's lower edge the other 30, and the access panel keeps 40 over the "
-     "opening into the column"),
+    ("dr_band_dz", "35 mm", "mm", "calculation",
+     "the back plate's top band starts this far above DT's underside: the removable panels' top edges land 35 on the "
+     "frame's band tube, so the access panel's top bolts sit 2 hole diameters from its edge and the rivnuts 2 from "
+     "the tube's edge (C09); the access panel keeps 45 over the opening into the column"),
     ("dr_stud_x", "971 mm", "mm", "source", "PM ruling 2026-11-01 (CEILING): the air column's two hook studs at X 971"),
     ("dr_stud_z1", "1700 mm", "mm", "source", "PM ruling 2026-11-01 (CEILING): lower hook stud Z 1700"),
     ("dr_stud_z2", "1850 mm", "mm", "source", "PM ruling 2026-11-01 (CEILING): upper hook stud Z 1850"),
@@ -143,9 +143,10 @@ OWN = [
      "frame tube 20 x 20 x 1.5, 6063-T6 (D-79): bending stiffness E*I = 4.5e8 N.mm2, about v1's 16 x 16 x 1 steel box "
      "(4.7e8), at 0.30 kg/m against 0.47"),
     ("fr_t", "1.5 mm", "mm", "calculation", "frame tube wall, as fr_w"),
-    ("fr_wb", "60 mm", "mm", "assumption",
-     "bolt-line tube 60 x 20 x 1.5 behind the fixed strip: the J-FRONT-01 rivnut tails and bolt tips go into it "
-     "through 14 mm holes (HOLD-10: the plate with the frame behind), and the access panel lands on its other 23"),
+    ("fr_wb", "80 mm", "mm", "calculation",
+     "bolt-line tube 80 x 20 x 1.5 behind the fixed strip: the J-FRONT-01 rivnut tails and bolt tips go into it "
+     "through 14 mm holes (HOLD-10: the plate with the frame behind), and the access panel lands 37 on its other "
+     "side, wide enough for its bolts and rivnuts at 2 diameters from every edge (C09); 3 clear of the duct spaces"),
     ("fr_wbot", "40 mm", "mm", "assumption", "back ring's bottom tube 40 x 20 x 1.5: the access panel's lower bolts"),
     ("fr_wband", "60 mm", "mm", "assumption",
      "band tube 60 x 20 x 1.5 at DT's underside: the access panel's top bolts and the top band's rivets land on it"),
@@ -154,19 +155,21 @@ OWN = [
      "hole in the bolt-line tube's back wall round each J-FRONT-01 rivnut: body 9.50 max and its bulge (SHX), and the "
      "bolt tip, go into the tube"),
     ("fr_hole_rn", "9.53 mm", "mm", "source", "joints register H-03: hole for the rivnut 838003 (Sherex CAH3-610-4.2)"),
-    ("ab_hole", "14 mm", "mm", "calculation",
-     "access panel holes over the frame's rivnut heads (12.96 x 0.76, SHX), so the panel sits flat on the tubes; the "
-     "M6 bolt's 18 mm washer 838004 bears on the panel round the hole"),
-    ("ab_x", "(dr_strip_x0 + (pod_w / 2 - dr_skin_t - fr_wb)) / 2", "mm", "calculation",
-     "access panel bolts on the bolt-line tube: the middle of the panel's land on it"),
+    ("ab_hole", "6.6 mm", "mm", "source",
+     "ISO 273 medium clearance hole for the M6 bolts 838001; the frame's rivnut heads (0.76 proud, SHX) sit in the "
+     "access panel's 1 mm perimeter gasket (HOLD), which also seals the plenum"),
+    ("ab_x", "pod_w / 2 - dr_skin_t - fr_wb + 2 * fr_hole_rn + 2 mm", "mm", "calculation",
+     "access panel bolts on the bolt-line tube: the rivnut 2 diameters plus 2 from the tube's inner edge (C09)"),
     ("ab_z0", "300 mm", "mm", "assumption", "lowest access panel bolt on the bolt-line tube"),
     ("ab_p", "350 mm", "mm", "assumption", "pitch of the 6 access panel bolts on the bolt-line tube"),
     ("ab_x1", "dr_col_x0 + 45 mm", "mm", "assumption", "access panel's top and bottom bolts, left"),
-    ("ab_x2", "dr_strip_x0 - 45 mm", "mm", "assumption", "access panel's top and bottom bolts, right"),
-    ("ab_zb", "fg_vis_zb + dr_skin_t + (fr_wbot - dr_skin_t) / 2", "mm", "calculation",
-     "access panel's bottom bolts: the middle of its land on the bottom tube"),
-    ("ab_zt", "fg_vis_zt + dr_band_dz / 2", "mm", "calculation",
-     "access panel's top bolts: the middle of its land on the band tube"),
+    ("ab_x2", "pod_w / 2 - dr_skin_t - fr_wb - 2 * fr_hole_rn - 3 mm", "mm", "calculation",
+     "access panel's top and bottom bolts, right: their rivnuts 2 diameters plus 3 from the end of the bottom and "
+     "band tubes (C09)"),
+    ("ab_zb", "fg_vis_zb + fr_wbot / 2", "mm", "calculation",
+     "access panel's bottom bolts: the middle of the 40 bottom tube, so the rivnut is 2 diameters from both its edges"),
+    ("ab_zt", "fg_vis_zt + 2 * fr_hole_rn + 1 mm", "mm", "calculation",
+     "access panel's top bolts: their rivnuts 2 diameters plus 1 above the band tube's lower edge (C09)"),
     # the top chamfer and the DT joint as lines, for the frame
     ("dr_cl", "sqrt((pod_d / 2 - ch_yb) * (pod_d / 2 - ch_yb) + (pod_h - ch_zlo) * (pod_h - ch_zlo))", "mm",
      "calculation", "length of the top chamfer in the side view"),
@@ -207,7 +210,7 @@ EXPECTED = [
 
 FRAME_PN = "351306"
 FRAME = ("351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)")
-S20, S40, S60 = "20 x 20 x 1.5", "40 x 20 x 1.5", "60 x 20 x 1.5"
+S20, S40, S60, S80 = "20 x 20 x 1.5", "40 x 20 x 1.5", "60 x 20 x 1.5", "80 x 20 x 1.5"
 ACCESS_BOLTS = ([("ab_x", "ab_z0 + %d * ab_p" % k) for k in range(6)] + [("ab_x1", "ab_zb"), ("ab_x2", "ab_zb")] +
                 [("ab_x1", "ab_zt"), ("ab_x2", "ab_zt")])
 
@@ -242,7 +245,7 @@ def frame_members():
         add(key, nm, ("x", "z"), front[k], "y", yf0, yf1)
     back = FL.ring([(bot, "0 mm", "fr_wbot"), (right, sk3, "fr_wb"), (top, sk3, "fr_w"), (dtjb, "0 mm", "fr_w"),
                     (ledge, "0 mm", "fr_w"), (diag, sk3, "fr_w"), (rl, sk3, "fr_w")])
-    for k, (key, nm, sec) in enumerate((("B01", "BACK RING BOTTOM", S40), ("B02", "BACK RING BOLT LINE", S60),
+    for k, (key, nm, sec) in enumerate((("B01", "BACK RING BOTTOM", S40), ("B02", "BACK RING BOLT LINE", S80),
                                         ("B03", "BACK RING TOP", S20), ("B04", "BACK RING DT JOINT", S20),
                                         ("B05", "BACK RING DT LEDGE", S20), ("B06", "BACK RING DIAGONAL", S20),
                                         ("B07", "BACK RING GLASS EDGE", S20))):
@@ -614,7 +617,7 @@ def export_all(app):
          "D-12, D-49; skeleton DR shape", "one flat panel per outside face: " + DXF_SKIN_REL.split("/")[-1] +
          "; bond to the frame per the joints register's ACP bond spec"),
         (FRAME_PN, FRAME[1], FRAME[2], 1, "made: welded frame, %d tubes (cut list %s)" % (len(members),
-         CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5, 40 x 20 x 1.5 and 60 x 20 x 1.5, "
+         CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5, 40 x 20 x 1.5, 60 x 20 x 1.5 and 80 x 20 x 1.5, "
          "finish mill (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
          "v1 decor frame drawing (front and back frames); D-79; joints register HOLD-10",
          "%.1f m of tube; rivnuts 838003 fitted in the factory: 10 for the access panel bolts; the bolt-line tube has "
@@ -628,8 +631,9 @@ def export_all(app):
          "removable", "aluminium EN AW-5754-H22 sheet 3.0 mm, finish mill (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "D-60 air table (opening 203 x 215); D-87; PM ruling 2026-11-01 "
          "(column hook studs, panel carries the 10 kg column)",
-         "DXF " + DXF_FLAT["ACCESS"] + "; 10 bolts M6 x 16 838001 with washers 838004 into rivnuts 838003 in the "
-         "frame (holes 14 clear the rivnut heads); 2 holes 9.53 +0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 "
+         "DXF " + DXF_FLAT["ACCESS"] + "; 10 bolts M6 x 16 838001 with washers 838004 through holes 6.6 into rivnuts "
+         "838003 in the frame, a 1 mm perimeter gasket over the rivnut heads (HOLD: gasket tape); 2 holes 9.53 "
+         "+0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 "
          "with the column's 2 hook studs (this joint to be added to the joints register); comes off after the column "
          "and the inner panel, so the air unit 350004 slides in"),
         ("351303", PARTS["INNER"][1], PARTS["INNER"][2], 1, "made (CNC-routed ACP, no drawing: D-89 part 4), "

@@ -117,11 +117,11 @@ SPECS["dr_frame"] = _frame_spec(
     "dr_frame", "351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)", G_DR, V_DR,
     {"front": (150, 255), "top": (150, 110), "left": (280, 255), "iso": (345, 95)},
     {"front": (_drx0, V_DR["wall_z0"], _XR, V_DR["pod_h"])},
-    ["DR's welded frame: a ring 20 inside the front skin, a ring in front of the back plates with the 60 x 20 "
+    ["DR's welded frame: a ring 20 inside the front skin, a ring in front of the back plates with the 80 x 20 "
      "bolt-line tube (6 holes 14 in its back wall round the J-FRONT-01 rivnut tails) and the 60 x 20 band tube, "
      "facet, chamfer and DT-joint tubes between the rings. No back-ring tube crosses the opening the air unit slides "
-     "through (D-87). Rivnuts 838003 set at the factory: 10 for the access panel's bolts (6 on X 1198.5, 2 at "
-     "Z 131.5, 2 at Z 2135)."])
+     "through (D-87). Rivnuts 838003 set at the factory: 10 for the access panel's bolts (6 on X 1188, 2 at "
+     "Z 130, 2 at Z 2140)."])
 SPECS["dr_skin"] = {
     "design": doc("351301", "FRONT - DECOR SKIN - DR", "CAD"), "drawing": doc("351301", "FRONT - DECOR SKIN - DR", "DWG"),
     "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05},
