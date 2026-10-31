@@ -1,0 +1,2078 @@
+{
+ "steps": [
+  "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+  "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+  "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
+  "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+  "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step"
+ ],
+ "started": "2026-11-01 04:16:55",
+ "errors": [],
+ "imports": [
+  {
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "ok": true
+  },
+  {
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "ok": true
+  },
+  {
+   "file": "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
+   "ok": true
+  },
+  {
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "ok": true
+  },
+  {
+   "file": "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step",
+   "ok": true
+  }
+ ],
+ "bodies": [
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -670.0,
+    10.0,
+    -1210.0,
+    847.0,
+    110.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:1 / Body1",
+   "box_mm": [
+    -1234.0,
+    -432.74,
+    110.0,
+    -1214.0,
+    -412.74,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:1 / Body1",
+   "box_mm": [
+    -1230.48,
+    -429.22,
+    102.1,
+    -1217.52,
+    -416.26,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:2 / Body1",
+   "box_mm": [
+    -1234.0,
+    -81.83,
+    110.0,
+    -1214.0,
+    -61.83,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2 / Body1",
+   "box_mm": [
+    -1230.48,
+    -78.31,
+    102.1,
+    -1217.52,
+    -65.35,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:3 / Body1",
+   "box_mm": [
+    -1234.0,
+    269.09,
+    110.0,
+    -1214.0,
+    289.09,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3 / Body1",
+   "box_mm": [
+    -1230.48,
+    272.61,
+    102.1,
+    -1217.52,
+    285.57,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:4 / Body1",
+   "box_mm": [
+    -1234.0,
+    620.0,
+    110.0,
+    -1214.0,
+    640.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4 / Body1",
+   "box_mm": [
+    -1230.48,
+    623.52,
+    102.1,
+    -1217.52,
+    636.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5 / Body1",
+   "box_mm": [
+    -1230.48,
+    -549.22,
+    100.6,
+    -1217.52,
+    -536.26,
+    110.76
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:1 / Body1",
+   "box_mm": [
+    -1228.0,
+    -546.74,
+    102.76,
+    -1220.0,
+    -538.74,
+    118.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6 / Body1",
+   "box_mm": [
+    -1230.48,
+    743.52,
+    100.6,
+    -1217.52,
+    756.48,
+    110.76
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:2 / Body1",
+   "box_mm": [
+    -1228.0,
+    746.0,
+    102.76,
+    -1220.0,
+    754.0,
+    118.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 118002 BASE - LEVELLING GLIDE - M10 (HOLD):1 / Body1",
+   "box_mm": [
+    -1248.0,
+    -613.0,
+    0.0,
+    -1212.0,
+    -577.0,
+    60.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111601 BASE - GLIDE DOUBLER - COMMON:1 / Body1",
+   "box_mm": [
+    -1248.0,
+    -621.0,
+    11.5,
+    -1212.0,
+    -569.0,
+    14.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 118002 BASE - LEVELLING GLIDE - M10 (HOLD):2 / Body1",
+   "box_mm": [
+    -1248.0,
+    682.0,
+    0.0,
+    -1212.0,
+    718.0,
+    60.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111601 BASE - GLIDE DOUBLER - COMMON:2 / Body1",
+   "box_mm": [
+    -1248.0,
+    674.0,
+    11.5,
+    -1212.0,
+    726.0,
+    14.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "box_mm": [
+    -1210.0,
+    810.0,
+    10.0,
+    1210.0,
+    850.0,
+    110.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:5 / Body1",
+   "box_mm": [
+    -991.74,
+    814.0,
+    110.0,
+    -971.74,
+    834.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:7 / Body1",
+   "box_mm": [
+    -988.22,
+    817.52,
+    102.1,
+    -975.26,
+    830.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:6 / Body1",
+   "box_mm": [
+    -738.74,
+    814.0,
+    110.0,
+    -718.74,
+    834.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:8 / Body1",
+   "box_mm": [
+    -735.22,
+    817.52,
+    102.1,
+    -722.26,
+    830.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:7 / Body1",
+   "box_mm": [
+    -485.75,
+    814.0,
+    110.0,
+    -465.75,
+    834.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:9 / Body1",
+   "box_mm": [
+    -482.23,
+    817.52,
+    102.1,
+    -469.27,
+    830.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:8 / Body1",
+   "box_mm": [
+    -232.75,
+    814.0,
+    110.0,
+    -212.75,
+    834.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:10 / Body1",
+   "box_mm": [
+    -229.23,
+    817.52,
+    102.1,
+    -216.27,
+    830.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:11 / Body1",
+   "box_mm": [
+    -1108.22,
+    817.52,
+    100.6,
+    -1095.26,
+    830.48,
+    110.76
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:3 / Body1",
+   "box_mm": [
+    -1105.74,
+    820.0,
+    102.76,
+    -1097.74,
+    828.0,
+    118.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:12 / Body1",
+   "box_mm": [
+    -109.23,
+    817.52,
+    100.6,
+    -96.27,
+    830.48,
+    110.76
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:4 / Body1",
+   "box_mm": [
+    -106.75,
+    820.0,
+    102.76,
+    -98.75,
+    828.0,
+    118.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:9 / Body1",
+   "box_mm": [
+    212.75,
+    814.0,
+    110.0,
+    232.75,
+    834.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:13 / Body1",
+   "box_mm": [
+    216.27,
+    817.52,
+    102.1,
+    229.23,
+    830.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:10 / Body1",
+   "box_mm": [
+    465.75,
+    814.0,
+    110.0,
+    485.75,
+    834.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:14 / Body1",
+   "box_mm": [
+    469.27,
+    817.52,
+    102.1,
+    482.23,
+    830.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:11 / Body1",
+   "box_mm": [
+    718.74,
+    814.0,
+    110.0,
+    738.74,
+    834.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:15 / Body1",
+   "box_mm": [
+    722.26,
+    817.52,
+    102.1,
+    735.22,
+    830.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:12 / Body1",
+   "box_mm": [
+    971.74,
+    814.0,
+    110.0,
+    991.74,
+    834.0,
+    111.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:16 / Body1",
+   "box_mm": [
+    975.26,
+    817.52,
+    102.1,
+    988.22,
+    830.48,
+    112.26
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:17 / Body1",
+   "box_mm": [
+    96.27,
+    817.52,
+    100.6,
+    109.23,
+    830.48,
+    110.76
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:5 / Body1",
+   "box_mm": [
+    98.75,
+    820.0,
+    102.76,
+    106.75,
+    828.0,
+    118.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:18 / Body1",
+   "box_mm": [
+    1095.26,
+    817.52,
+    100.6,
+    1108.22,
+    830.48,
+    110.76
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:6 / Body1",
+   "box_mm": [
+    1097.74,
+    820.0,
+    102.76,
+    1105.74,
+    828.0,
+    118.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+   "box_mm": [
+    -1210.0,
+    812.5,
+    11.5,
+    -1185.0,
+    847.5,
+    86.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:1 / Body1",
+   "box_mm": [
+    -1217.8,
+    825.0,
+    32.5,
+    -1195.8,
+    835.0,
+    42.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2 / Body1",
+   "box_mm": [
+    -1217.8,
+    825.0,
+    66.5,
+    -1195.8,
+    835.0,
+    76.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:1 / Body1",
+   "box_mm": [
+    -1201.8,
+    815.7,
+    6.7,
+    -1188.2,
+    829.3,
+    22.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:2 / Body1",
+   "box_mm": [
+    -1201.8,
+    830.7,
+    6.7,
+    -1188.2,
+    844.3,
+    22.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+   "box_mm": [
+    1185.0,
+    812.5,
+    11.5,
+    1210.0,
+    847.5,
+    86.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3 / Body1",
+   "box_mm": [
+    1195.8,
+    825.0,
+    32.5,
+    1217.8,
+    835.0,
+    42.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4 / Body1",
+   "box_mm": [
+    1195.8,
+    825.0,
+    66.5,
+    1217.8,
+    835.0,
+    76.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:3 / Body1",
+   "box_mm": [
+    1188.2,
+    815.7,
+    6.7,
+    1201.8,
+    829.3,
+    22.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:4 / Body1",
+   "box_mm": [
+    1188.2,
+    830.7,
+    6.7,
+    1201.8,
+    844.3,
+    22.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 118002 BASE - LEVELLING GLIDE - M10 (HOLD):3 / Body1",
+   "box_mm": [
+    -1078.0,
+    812.0,
+    0.0,
+    -1042.0,
+    848.0,
+    60.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111601 BASE - GLIDE DOUBLER - COMMON:3 / Body1",
+   "box_mm": [
+    -1086.0,
+    812.0,
+    11.5,
+    -1034.0,
+    848.0,
+    14.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 118002 BASE - LEVELLING GLIDE - M10 (HOLD):4 / Body1",
+   "box_mm": [
+    -18.0,
+    812.0,
+    0.0,
+    18.0,
+    848.0,
+    60.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111601 BASE - GLIDE DOUBLER - COMMON:4 / Body1",
+   "box_mm": [
+    -26.0,
+    812.0,
+    11.5,
+    26.0,
+    848.0,
+    14.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 118002 BASE - LEVELLING GLIDE - M10 (HOLD):5 / Body1",
+   "box_mm": [
+    1042.0,
+    812.0,
+    0.0,
+    1078.0,
+    848.0,
+    60.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111601 BASE - GLIDE DOUBLER - COMMON:5 / Body1",
+   "box_mm": [
+    1034.0,
+    812.0,
+    11.5,
+    1086.0,
+    848.0,
+    14.5
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110401 BASE - FLOOR PANEL ASSY - F1:1 / 111401 BASE - FLOOR PANEL - F1:1 / Body1",
+   "box_mm": [
+    -1206.0,
+    -645.0,
+    3.0,
+    12.5,
+    806.0,
+    12.0
+   ]
+  },
+  {
+   "label": "110000_P01_BASE_CAD:1 / 110401 BASE - FLOOR PANEL ASSY - F1:1 / 111501 BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM:1 / Body1",
+   "box_mm": [
+    -1206.0,
+    -645.0,
+    0.0,
+    12.5,
+    806.0,
+    3.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "box_mm": [
+    -961.0,
+    -703.38,
+    80.0,
+    214.0,
+    -694.62,
+    2114.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361002 FRONT - DOOR KICK STRIP:1 / Body1",
+   "box_mm": [
+    -961.0,
+    -709.0,
+    20.0,
+    214.0,
+    -689.0,
+    105.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / Body1",
+   "box_mm": [
+    -961.0,
+    -705.0,
+    78.0,
+    214.0,
+    -693.0,
+    105.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112:1 / Body1",
+   "box_mm": [
+    -961.0,
+    -704.6,
+    20.0,
+    214.0,
+    -693.0,
+    60.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368101 FRONT - DOOR HINGE - HOLD - H1 BOTTOM:1 / Body1",
+   "box_mm": [
+    -1132.0,
+    -719.0,
+    295.0,
+    -861.0,
+    -679.0,
+    415.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368101 FRONT - DOOR HINGE - HOLD - H2 MIDDLE:1 / Body1",
+   "box_mm": [
+    -1132.0,
+    -719.0,
+    1049.5,
+    -861.0,
+    -679.0,
+    1169.5
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368101 FRONT - DOOR HINGE - HOLD - H3 TOP:1 / Body1",
+   "box_mm": [
+    -1132.0,
+    -719.0,
+    1804.0,
+    -861.0,
+    -679.0,
+    1924.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1",
+   "box_mm": [
+    -154.72,
+    -706.05,
+    2092.0,
+    -92.72,
+    -691.95,
+    2115.5
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD:1 / Body1",
+   "box_mm": [
+    -67.72,
+    -704.88,
+    105.0,
+    216.02,
+    -693.12,
+    2114.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368103 FRONT - DOOR PULL PAIR - HOLD:1 / Body1",
+   "box_mm": [
+    -65.44,
+    -773.38,
+    882.0,
+    -25.44,
+    -703.38,
+    1242.0
+   ]
+  },
+  {
+   "label": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368103 FRONT - DOOR PULL PAIR - HOLD:1 / Body2",
+   "box_mm": [
+    -65.44,
+    -694.62,
+    882.0,
+    -25.44,
+    -624.62,
+    1242.0
+   ]
+  },
+  {
+   "label": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+   "box_mm": [
+    -66.13,
+    -703.38,
+    98.5,
+    960.1,
+    -694.62,
+    2131.5
+   ]
+  },
+  {
+   "label": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+   "box_mm": [
+    -66.63,
+    -706.5,
+    95.0,
+    964.13,
+    -691.5,
+    2135.0
+   ]
+  },
+  {
+   "label": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 (1):1 / Body1",
+   "box_mm": [
+    -66.41,
+    -705.0,
+    96.5,
+    962.4,
+    -693.0,
+    2133.5
+   ]
+  },
+  {
+   "label": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368003 FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD:1 / Body1",
+   "box_mm": [
+    -66.54,
+    -704.88,
+    110.0,
+    217.34,
+    -693.12,
+    2120.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "box_mm": [
+    -1244.0,
+    -642.74,
+    112.26,
+    -1204.0,
+    847.0,
+    132.26
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "box_mm": [
+    -1244.0,
+    -642.74,
+    1235.0,
+    -1204.0,
+    847.0,
+    1255.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body3",
+   "box_mm": [
+    -1244.0,
+    -642.74,
+    132.26,
+    -1204.0,
+    -622.74,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "box_mm": [
+    -1244.0,
+    807.0,
+    132.26,
+    -1204.0,
+    847.0,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body5",
+   "box_mm": [
+    -1244.0,
+    -277.81,
+    132.26,
+    -1204.0,
+    -257.81,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body6",
+   "box_mm": [
+    -1244.0,
+    87.13,
+    132.26,
+    -1204.0,
+    107.13,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body7",
+   "box_mm": [
+    -1244.0,
+    452.06,
+    132.26,
+    -1204.0,
+    472.06,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211301 WALL - SKIN - SIDE LOWER - LH:1 / Body1",
+   "box_mm": [
+    -1250.0,
+    -642.74,
+    112.26,
+    -1204.0,
+    850.0,
+    1255.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body1",
+   "box_mm": [
+    -1244.0,
+    -622.74,
+    132.26,
+    -1204.0,
+    -277.81,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body2",
+   "box_mm": [
+    -1244.0,
+    -257.81,
+    132.26,
+    -1204.0,
+    87.13,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body3",
+   "box_mm": [
+    -1244.0,
+    107.13,
+    132.26,
+    -1204.0,
+    452.06,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body4",
+   "box_mm": [
+    -1244.0,
+    472.06,
+    132.26,
+    -1204.0,
+    807.0,
+    1235.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body1",
+   "box_mm": [
+    -1234.0,
+    -432.74,
+    1255.0,
+    -1214.0,
+    -412.74,
+    1256.5
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body2",
+   "box_mm": [
+    -1234.0,
+    -81.83,
+    1255.0,
+    -1214.0,
+    -61.83,
+    1256.5
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body3",
+   "box_mm": [
+    -1234.0,
+    269.09,
+    1255.0,
+    -1214.0,
+    289.09,
+    1256.5
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body4",
+   "box_mm": [
+    -1234.0,
+    620.0,
+    1255.0,
+    -1214.0,
+    640.0,
+    1256.5
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body5",
+   "box_mm": [
+    -1204.0,
+    814.0,
+    322.26,
+    -1202.5,
+    834.0,
+    342.26
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body6",
+   "box_mm": [
+    -1204.0,
+    814.0,
+    661.56,
+    -1202.5,
+    834.0,
+    681.56
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body7",
+   "box_mm": [
+    -1204.0,
+    814.0,
+    1000.87,
+    -1202.5,
+    834.0,
+    1020.87
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body1",
+   "box_mm": [
+    -1230.48,
+    -429.22,
+    1246.34,
+    -1217.52,
+    -416.26,
+    1257.26
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body2",
+   "box_mm": [
+    -1230.48,
+    -78.31,
+    1246.34,
+    -1217.52,
+    -65.35,
+    1257.26
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body3",
+   "box_mm": [
+    -1230.48,
+    272.61,
+    1246.34,
+    -1217.52,
+    285.57,
+    1257.26
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body4",
+   "box_mm": [
+    -1230.48,
+    623.52,
+    1246.34,
+    -1217.52,
+    636.48,
+    1257.26
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body5",
+   "box_mm": [
+    -1230.48,
+    -549.22,
+    1244.84,
+    -1217.52,
+    -536.26,
+    1255.76
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body6",
+   "box_mm": [
+    -1230.48,
+    743.52,
+    1244.84,
+    -1217.52,
+    756.48,
+    1255.76
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body7",
+   "box_mm": [
+    -1212.66,
+    817.52,
+    325.78,
+    -1201.74,
+    830.48,
+    338.74
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body8",
+   "box_mm": [
+    -1212.66,
+    817.52,
+    665.09,
+    -1201.74,
+    830.48,
+    678.05
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body9",
+   "box_mm": [
+    -1212.66,
+    817.52,
+    1004.39,
+    -1201.74,
+    830.48,
+    1017.35
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS (1):1 / Body1",
+   "box_mm": [
+    -1228.0,
+    -546.74,
+    1245.76,
+    -1220.0,
+    -538.74,
+    1263.0
+   ]
+  },
+  {
+   "label": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS (1):1 / Body2",
+   "box_mm": [
+    -1228.0,
+    746.0,
+    1245.76,
+    -1220.0,
+    754.0,
+    1263.0
+   ]
+  },
+  {
+   "label": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511101 LINING - TRAY - SIDE LOWER - LH:1 / Body1",
+   "box_mm": [
+    -1200.0,
+    -645.0,
+    112.26,
+    -1166.0,
+    800.0,
+    1255.0
+   ]
+  },
+  {
+   "label": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511301 LINING - FELT - SIDE LOWER - LH:1 / Body1",
+   "box_mm": [
+    -1175.5,
+    -643.5,
+    113.76,
+    -1166.5,
+    798.5,
+    1253.5
+   ]
+  },
+  {
+   "label": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body1",
+   "box_mm": [
+    -1204.0,
+    -277.81,
+    182.26,
+    -1200.0,
+    -257.81,
+    242.26
+   ]
+  },
+  {
+   "label": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body2",
+   "box_mm": [
+    -1204.0,
+    452.06,
+    182.26,
+    -1200.0,
+    472.06,
+    242.26
+   ]
+  },
+  {
+   "label": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body3",
+   "box_mm": [
+    -1204.0,
+    -277.81,
+    1125.0,
+    -1200.0,
+    -257.81,
+    1185.0
+   ]
+  },
+  {
+   "label": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body4",
+   "box_mm": [
+    -1204.0,
+    452.06,
+    1125.0,
+    -1200.0,
+    472.06,
+    1185.0
+   ]
+  }
+ ],
+ "clashes": [
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:1 / Body1",
+   "mm3": 122.68,
+   "allowed": null
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2 / Body1",
+   "mm3": 122.68,
+   "allowed": null
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:1 / Body1",
+   "mm3": 90.71,
+   "allowed": null
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:2 / Body1",
+   "mm3": 90.71,
+   "allowed": null
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3 / Body1",
+   "mm3": 122.68,
+   "allowed": null
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4 / Body1",
+   "mm3": 122.68,
+   "allowed": null
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:3 / Body1",
+   "mm3": 90.71,
+   "allowed": null
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:4 / Body1",
+   "mm3": 90.71,
+   "allowed": null
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368101 FRONT - DOOR HINGE - HOLD - H1 BOTTOM:1 / Body1",
+   "mm3": 105120.0,
+   "allowed": "HOLD-ON-GLASS"
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368101 FRONT - DOOR HINGE - HOLD - H2 MIDDLE:1 / Body1",
+   "mm3": 105120.0,
+   "allowed": "HOLD-ON-GLASS"
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368101 FRONT - DOOR HINGE - HOLD - H3 TOP:1 / Body1",
+   "mm3": 105120.0,
+   "allowed": "HOLD-ON-GLASS"
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1",
+   "mm3": 11948.64,
+   "allowed": null
+  }
+ ],
+ "gaps": [
+  {
+   "id": "LINING-FLOATS",
+   "group": "",
+   "gap_mm": 4.0,
+   "a": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511101 LINING - TRAY - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "min_mm": 4.0,
+   "max_mm": null,
+   "severity": "major",
+   "method": "box",
+   "owner": "WALL; CEILING",
+   "fix": "Keep the cassette 4 mm off every frame and skin; only its clips may touch",
+   "source": "confirmed nominal: D-17 (the cassette never touches the frame) and D-57 (4 mm gap, the wall stack's gap)"
+  },
+  {
+   "id": "GLASS-TO-GLASS",
+   "group": "",
+   "gap_mm": 4.0,
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+   "min_mm": 3.9,
+   "max_mm": 4.1,
+   "severity": "severe",
+   "method": "exact",
+   "owner": "FRONT",
+   "fix": "Keep the gap 4 mm all along the edge, with the glass cutting tolerance inside it",
+   "source": "confirmed: D-68 and D-74, the fixed glass's free edge parallel to the door edge at 4.0 mm"
+  }
+ ],
+ "fasteners": [],
+ "touching": [
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:2 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:3 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:4 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111601 BASE - GLIDE DOUBLER - COMMON:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111601 BASE - GLIDE DOUBLER - COMMON:2 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:2 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:3 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:4 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110101 BASE - BAND ASSY - SIDE - LH:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:2 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:5 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:6 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:7 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:8 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:11 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:12 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:9 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:10 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:11 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:12 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:17 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:18 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:2 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111211 BASE - CORNER KEY - BACK - COMMON:2 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:3 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:4 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111601 BASE - GLIDE DOUBLER - COMMON:3 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111601 BASE - GLIDE DOUBLER - COMMON:4 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111103 BASE - BAND TUBE - BACK:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 111601 BASE - GLIDE DOUBLER - COMMON:5 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:5 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:7 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:6 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:8 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:7 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:9 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:8 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:10 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:11 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:3 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:12 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:4 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:9 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:13 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:10 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:14 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:11 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:15 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL:12 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:16 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:17 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:5 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:18 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110103 BASE - BAND ASSY - BACK:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS:6 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "110000_P01_BASE_CAD:1 / 110401 BASE - FLOOR PANEL ASSY - F1:1 / 111401 BASE - FLOOR PANEL - F1:1 / Body1",
+   "b": "110000_P01_BASE_CAD:1 / 110401 BASE - FLOOR PANEL ASSY - F1:1 / 111501 BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368103 FRONT - DOOR PULL PAIR - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368103 FRONT - DOOR PULL PAIR - HOLD:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361002 FRONT - DOOR KICK STRIP:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361002 FRONT - DOOR KICK STRIP:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / Body1",
+   "b": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368003 FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 (1):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368003 FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 (1):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 (1):1 / Body1",
+   "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368003 FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211301 WALL - SKIN - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211301 WALL - SKIN - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body1",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body2",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body3",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body4",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body3",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211301 WALL - SKIN - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body5",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body6",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body7",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body8",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body9",
+   "gap_mm": 0.015
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body5",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body5",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body5",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body5",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body6",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body6",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body7",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body7",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body7",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211101 WALL - PANEL FRAME - SIDE LOWER - LH:1 / Body7",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body1",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body1",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body2",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body2",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body3",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body3",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body4",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 211501 WALL - CAVITY FILL - SIDE LOWER - LH:1 / Body4",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body1",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body2",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body3",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body4",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body4",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body5",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body7",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body6",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body8",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831002 HARDWARE - STOP WASHER - \u00d810.5 X \u00d820 X 1.5 - AL (1):1 / Body7",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body9",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body5",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS (1):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 (1):1 / Body6",
+   "b": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD:1 / 831001 HARDWARE - LOCATING SPIGOT - M6 X \u00d88 - STAINLESS (1):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511101 LINING - TRAY - SIDE LOWER - LH:1 / Body1",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511301 LINING - FELT - SIDE LOWER - LH:1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511101 LINING - TRAY - SIDE LOWER - LH:1 / Body1",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body1",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511101 LINING - TRAY - SIDE LOWER - LH:1 / Body1",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body2",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511101 LINING - TRAY - SIDE LOWER - LH:1 / Body1",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body3",
+   "gap_mm": 0.0
+  },
+  {
+   "a": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / 511101 LINING - TRAY - SIDE LOWER - LH:1 / Body1",
+   "b": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD:1 / NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED):1 / Body4",
+   "gap_mm": 0.0
+  }
+ ],
+ "door_swing": [
+  {
+   "rule": "assumption: 0.5 degree steps move the 1176 mm free edge about 10 mm each; hinge axis on the leaf's hinge-side edge in the glass plane (skeleton door_xl, glass_y) until the hinges are named (D-46 HOLD); outward swing PROPOSED (open-questions Q3); 90 degrees for the clear width on the GA (REQ-US-03); everything in the door unit's file moves with the leaf except the hinges (its glazing U-seal included); a seal it hits is soft: the door touches or wipes it, and only an overlap over 100 mm3 counts",
+   "max_deg": 90.0,
+   "step_deg": 0.5,
+   "direction": "outward",
+   "moving": [
+    "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+    "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361002 FRONT - DOOR KICK STRIP:1 / Body1",
+    "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / Body1",
+    "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112:1 / Body1",
+    "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1",
+    "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD:1 / Body1",
+    "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368103 FRONT - DOOR PULL PAIR - HOLD:1 / Body1",
+    "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368103 FRONT - DOOR PULL PAIR - HOLD:1 / Body2"
+   ],
+   "hits": [
+    {
+     "hits": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368003 FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD:1 / Body1",
+     "moving": "360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD:1 / Body1",
+     "first_deg": 0.5,
+     "last_deg": 0.5,
+     "max_mm3": 17.3,
+     "soft": true
+    }
+   ],
+   "first_hit": null
+  }
+ ],
+ "seconds": 7.8
+}

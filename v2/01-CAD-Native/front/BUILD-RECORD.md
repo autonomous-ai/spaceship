@@ -2,6 +2,8 @@
 
 ## 360001 FRONT - DOOR UNIT, P01 (DRAFT)
 
+Rebuilt 2026-10-31 21:17 UTC in one lock hold (the cloud copy is the version this run saved) with the glass rebuild and the four part-only designs: the hardware's CAD names are the joints register's (D-99), and the strike is named FRONT - DOOR STRIKE - ENVELOPE, a stand-in for the product (D-104), so its expected overlap with the leaf is no clash (F-103). Same geometry and results as the run below: clash pairs 4, all expected; leaf 43.854 kg, unit 48.59 kg; STEP re-read 0.000 mm; edit test PASS (31 anchors). The parts list is in the process and finish columns, same values.
+
 Run 2026-10-31 18:5x UTC on Mac 1, Fusion 2706.1.17, through the shared lock, one run per design (PM fair-share rule): build, save, export, pictures and the edit test in one run, on skeleton P04 updated in place (v4, #94):
 
 ```sh
@@ -67,6 +69,8 @@ The hinge set's rating stays at least 60 kg (PM ruling 2026-10-31: the unit plus
 | Fixed glass unit | The magnetic seal pair: 368006 on this leaf, 368003 on the pane | HOLD product |
 
 ## 360002 FRONT - FIXED GLASS UNIT, P01 (DRAFT)
+
+Rebuilt 2026-10-31 21:18 UTC in the same lock hold: the magnetic seal half's CAD name is the joints register's, FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD (D-99). Same geometry and results as the run below: clash pairs 0; gap to the door 4.00 mm square to the edge; unit 29.54 kg; STEP re-read 0.000 mm; edit test PASS (16 anchors). Parts list in the process and finish columns, same values.
 
 Run 2026-10-31 18:3x UTC on Mac 1, Fusion 2706.1.17, through the shared lock, one run per design (PM fair-share rule): build, save, export, pictures and the edit test in one run, on skeleton P04 updated in place (v4, #94):
 

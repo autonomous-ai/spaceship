@@ -143,7 +143,10 @@ class MadeParts(unittest.TestCase):
     def test_a_part_with_files_but_no_bom_row(self):
         file_map = files("211102_P01_WALL-PANEL-FRAME-RH_CAD.f3d", "211102_P01_WALL-PANEL-FRAME-RH_STEP.step")
         extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked")
-        self.assertEqual([(e["part_number"], e["team"], e["gaps"]) for e in extra], [("211102", "WALL", ["BOM row", "drawing"])])
+        self.assertEqual([(e["part_number"], e["team"], e["gaps"]) for e in extra], [("211102", "WALL", ["BOM row", "drawing", "FAI"])])
+        chars = rc.fai_plan(PLAN, BOM)[0]  # K-J01 covers 2111xx
+        extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked", chars)
+        self.assertEqual((extra[0]["fai"], extra[0]["gaps"]), (["K-J01"], ["BOM row", "drawing"]))
 
 
 class BoughtParts(unittest.TestCase):
