@@ -439,36 +439,43 @@ def _folder(app: "adsk.core.Application"):
     return proj, proj.rootFolder.dataFolders.itemByName(FOLDER)
 
 
+def _fusion_folder():
+    """The team's one shared safe-to-create check (tools/fusion/fusion_folder.py, #121). The runner
+    registers it fresh on every run; a run queued with an older runner loads it from this checkout."""
+    try:
+        import fusion_folder
+    except ImportError:
+        p = os.path.join(ARGS["repo_root"], "tools", "fusion")
+        if p not in sys.path:
+            sys.path.insert(0, p)
+        import fusion_folder
+        importlib.reload(fusion_folder)
+    return fusion_folder
+
+
 def open_or_create(app: "adsk.core.Application", name):
-    """The design called `name`: activated if open, opened from FocusPod v2 if there, else made.
-    PM ruling 2026-11-01: read every entry of the folder first, and make nothing if any can't be read
-    (that entry could be this very design); a new design is saved there at once, empty."""
+    """The design called `name`: activated if open, opened from FocusPod v2 if there, else made, saved
+    there at once, empty. Whether it is safe to make is the shared check's call (PM ruling 2026-10-31:
+    no team keeps its own guard): it re-reads a flickering folder for up to a minute and refuses only
+    when an entry it still can't read could be this design."""
     docs = [app.documents.item(i) for i in range(app.documents.count)]
     docs = [d for d in docs if d.name == name or d.name.split(" v")[0] == name]
     if len(docs) > 1:
         raise RuntimeError("%d open documents are called %s" % (len(docs), name))
+    if docs and docs[0].isModified:     # never reuse an open document with unsaved changes (PM rule):
+        print("%s is open with unsaved changes (a failed run left it): closed unsaved, the saved version "
+              "is opened instead" % docs[0].name)   # it's this script's own design, found by its name
+        docs[0].close(False)
+        docs = []
     if docs:
         docs[0].activate()
         return docs[0], "activated"
     proj, folder = _folder(app)
-    # an entry still uploading (often a design saved a moment ago) reads as unreadable for a while, so read
-    # the whole folder again a few times before giving up; nothing is made while any entry can't be read
-    for attempt in range(6):
-        n = folder.dataFiles.count
-        found, unreadable = [], 0
-        for i in range(n):
-            try:
-                f = folder.dataFiles.item(i)
-                if f.name == name:
-                    found.append(f)
-            except Exception:
-                unreadable += 1
-        if not unreadable or found:
-            break
-        print("%s: %d of %d entries can't be read yet; reading again in 10 s (%d)" % (FOLDER, unreadable, n, attempt + 1))
-        adsk.doEvents()
-        time.sleep(10)
+    ff = _fusion_folder()
+    files, _unknown, _others = ff.read_folder(
+        folder, stop_when=lambda fs, u, o: name in fs or not ff.could_be(u, o, "f3d"))
     app.data.activeProject = proj
+    found = files.get(name, [])
     if len(found) > 1:
         raise RuntimeError("%d files are called %s in %s" % (len(found), name, FOLDER))
     if found:
@@ -477,10 +484,9 @@ def open_or_create(app: "adsk.core.Application", name):
             raise RuntimeError("could not open %s" % name)
         d.activate()
         return d, "opened (version %s)" % found[0].versionNumber
-    if unreadable:
-        raise RuntimeError("%d of the %d entries of %s can't be read, so %s isn't made (PM ruling 2026-11-01)"
-                           % (unreadable, n, FOLDER, name))
-    print("%s: all %d entries read, %s is not there: making it" % (FOLDER, n, name))
+    for w in ff.safe_to_create(folder, name):       # raises if it isn't safe
+        print("warning:", w)
+    print("%s: safe to make %s (shared check): making it" % (FOLDER, name))
     d = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     if not d.saveAs(name, folder, "new, made by electrical_parts_cad.py", ""):
         d.close(False)
