@@ -16,6 +16,7 @@ import os
 import re
 import subprocess
 import sys
+import shutil
 import tempfile
 import threading
 import time
@@ -577,6 +578,62 @@ class RunnerTests(unittest.TestCase):
         for mode in ("open", "save", "close"):
             compile(rs.doc_script(mode, "N", create=True, description="d"), mode, "exec")
 
+
+
+class FreshModulesTests(unittest.TestCase):
+    """Fusion keeps Python modules between runs: a run must import its own files, not
+    a module of the same name another worktree's run loaded (live 2026-10-31)."""
+
+    def setUp(self):
+        self.parent = tempfile.mkdtemp(prefix="worktrees-")          # holds two worktrees
+        self.keep_root = rs.REPO_ROOT
+        self.keep_path = list(sys.path)
+        for wt, value in (("wtA", "A"), ("wtB", "B")):
+            os.makedirs(os.path.join(self.parent, wt, "lib"))
+            with open(os.path.join(self.parent, wt, "lib", "shared_helper.py"), "w") as fh:
+                fh.write("VALUE = %r\n" % value)
+            with open(os.path.join(self.parent, wt, "script.py"), "w") as fh:
+                fh.write("import os, sys\n"
+                         "sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))\n"
+                         "import shared_helper\n"
+                         "def run(_c):\n    RESULT.append(shared_helper.VALUE)\n")
+
+    def tearDown(self):
+        rs.REPO_ROOT = self.keep_root
+        sys.path[:] = self.keep_path
+        sys.modules.pop("shared_helper", None)
+        shutil.rmtree(self.parent, ignore_errors=True)
+
+    def run_as(self, wt, result):
+        rs.REPO_ROOT = os.path.join(self.parent, wt)                  # the run's own worktree
+        path = os.path.join(self.parent, wt, "script.py")
+        with open(path) as fh:
+            wrapped = rs.wrap_script(fh.read(), path, {})
+        ns = {}
+        exec(compile(wrapped, "wrapper", "exec"), ns)               # what Fusion runs
+        ns["_NS"]["RESULT"] = result
+        ns["run"](None)
+
+    def test_each_run_imports_its_own_module_of_a_shared_name(self):
+        result = []
+        self.run_as("wtA", result)
+        self.assertEqual(result, ["A"])
+        self.run_as("wtB", result)                                   # same module name, other folder
+        self.assertEqual(result, ["A", "B"])
+        self.run_as("wtA", result)
+        self.assertEqual(result, ["A", "B", "A"])
+
+    def test_python_and_fusion_modules_are_left_alone(self):
+        import json as _json                                         # stdlib: outside every run folder
+        self.run_as("wtA", [])
+        self.assertIs(sys.modules["json"], _json)
+        self.assertIn("fusion_folder", sys.modules)                  # given to every run, fresh
+
+    def test_the_run_folders(self):
+        own, foreign = rs.module_roots("/w/spaceship/wt1/v2/x/script.py", "/w/spaceship/wt1")
+        self.assertEqual(own, ["/w/spaceship/wt1", "/w/spaceship/wt1/v2/x"])
+        self.assertIn("/w/spaceship", foreign)                       # the other worktrees
+        self.assertIn("/private/tmp", foreign)                       # agents' scratch folders
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

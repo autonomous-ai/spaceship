@@ -43,6 +43,10 @@ def run(_context):
 - `read_folder(folder)` gives `(files, unknown, others)` to scripts that need the listing itself.
 - `run_script.py` gives every script this module fresh on each run, from the runner's own checkout, so a fix here reaches every team at once (it is never a stale copy left in Fusion). The runner's `--doc`/`--doc-new` step and `start_drawing.py` put the same file's text in front of their own scripts.
 
+## Each run imports its own files
+
+Fusion keeps Python modules loaded between runs. A module another team's run imported from its own folder would be used again by any later run that imports the same name: live 2026-10-31, CEILING built from AIR's older module. So before each script, `run_script.py` drops every cached module whose file lies in another run's folders (the folder holding all worktrees, or `/tmp`, where agents' scratch folders live) and not in this run's own repo or script folder. The run prints which ones it dropped. Fusion's and Python's own modules are never touched.
+
 ## Check API names offline
 
 A wrong name in a Fusion script only shows inside Fusion, after the run has waited its turn in the queue. Check first:
