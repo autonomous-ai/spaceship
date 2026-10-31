@@ -23,12 +23,12 @@ Nothing here is released for production. Every physical test stays PLANNED until
 - **What gets built** (build list): one full lower side wall panel, L1, with its lining cassette (S1, S2); one ceiling cassette, C1, with its safety catch (S3); the door unit (S4), on HOLD until its hinges and lock are named. The tests also need the air sample: both D-60 cartridges with their fan boxes and fans and the intake riser, in mock-ups of the air column and the soffit (S5, rig R3), a felt specimen for the absorption test (S6), and coupons (S7).
 - **What gets measured** (test plan): wall sound transmission from 100 Hz (T01); the lighter fill next to the 32 kg/m³ one (T02); felt absorption on its 25 mm gap (T03); the 12 V fans' flow and octave noise in their cartridges (T04); recirculation at boost (T05); rivnut spin-out in the real 1.2 mm tube (T06); clip pull-out (T07); the ceiling catch's drop test (T08); the ACP-to-aluminium bond (T09); weight per m² (T10); timed assembly of the panel (T11); taking a cartridge out into the pod and back (T12). The door's tests (T13) wait for its hardware.
 - **What it decides:**
-  - whether the pod lands at or under the 420 kg cap (D-54). The layout study's estimate is 426.7 kg, and about 438.7 kg with D-60's air parts (+12.0 kg, HW-AA section 7f), open against the cap.
+  - whether the pod lands at or under the 420 kg cap (D-54). The layout study's estimate is 426.7 kg, and about 438.5 kg with D-60's air parts (+11.8 kg, HW-AA section 7f), open against the cap.
   - whether the 24 kg/m³ fill can replace the 32, saving about 4.9 kg (24 kg/m³ grade; D-54's 4.3 kg was for 25 kg/m³).
   - the real sound figure: 19.3 dB calculated, with 24 dB as the best case (D-53).
   - the rivnut tightening torque (D-48).
   - whether the clips and the ceiling catch hold their loads (D-47).
-  - whether the fans meet 26 dB(A) at 53 l/s and 30 dB(A) at boost (D-52; 25.1 and 29.6 dB(A) calculated for D-60's layout), without breathing their own exhaust (D-58).
+  - whether the fans meet 26 dB(A) at 53 l/s and 30 dB(A) at boost (D-52; 25.3 and 29.7 dB(A) calculated for D-60's layout), without breathing their own exhaust (D-58).
   - whether each 1750 mm cartridge comes out of the air column and the soffit into the pod in one piece, or splits in two with a sealed slip joint (D-59, D-60).
 
 ## Where the numbers come from
