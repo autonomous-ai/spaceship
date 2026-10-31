@@ -1,8 +1,8 @@
-# Mechanical check run: fbdfc73 on 2026-10-31
+# Mechanical check run: 6ae0cd3 on 2026-10-31
 
-Offline checks (`tools/checks/run_checks.py`) on revision `fbdfc73`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `6ae0cd3`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 3** (0 severe, 1 major, 2 minor). Register numbers in brackets.
+**Findings in this run: 1** (0 severe, 1 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -13,7 +13,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `fbdfc73`. The Fusion 
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 1 |
 | C05 drawing completeness | no inputs yet | 0 |
-| C06 BOM completeness | yes | 2 |
+| C06 BOM completeness | yes | 0 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | no inputs yet | 0 |
 | C09 edge distance, bend radius, hole-to-bend | no inputs yet | 0 |
@@ -27,8 +27,6 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
 | F-010 | major | C04 | POD total mass | The pod is about 432.3 kg against the 420 kg cap (D-37, D-54): 12.3 kg over. The layout study's list gives 432.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv); 4.0 kg of voice cockpit kit is outside the cap (PM weight ruling). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
-| F-015 | minor | C06 | 100000 | 100000 POD - SPACESHIP in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv is missing: Vietnamese name. | PM |
-| F-016 | minor | C06 | 100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source | 10 rows of v2/04-BOM/100000_P01_POD-MASTER_BOM.csv are missing: Vietnamese name, source (110000, 210000, 350000, 360000, 410000, 510000, 610000, 710000, 810000, 910000). | PM |
 
 ## Tolerance stacks (C02)
 
@@ -36,10 +34,10 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 |---|---|---|---|---|---|---|---|---|
 | ST-01 | IF-02 door to threshold | Running gap between the door's kick strip and the threshold | 3.0 to 10.0 | 7.00 | 7.00 to 7.00 | 7.00 to 7.00 | OPEN | Door bottom height (glass bottom); Kick strip height below the glass; Threshold height; Floor height under the threshold |
 | ST-03 | IF-01 IF-03 IF-04 IF-05 M6 bolt into a rivnut through a clearance hole | Radial clearance left for an M6 bolt after both hole positions and the rivnut's float (fixed-fastener case; the panel shifts to the bolts within the spigot play) | >= 0.0 | 0.51 | 0.05 to 0.51 | 0.14 to 0.43 | PASS |  |
-| ST-02 | IF-03 and IF-04 back wall across its width | Centre seam B1-B2 gap: the span less B1, B2 and the two corner stops; the centre seam takes the chain's tolerance through its slotted holes | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | OPEN | Space between the side frames; Back panel B1 width; Back panel B2 width |
-| ST-02A | IF-03 and IF-04 back wall across its width: perfect panels | As ST-02 with the panels and the span taken as perfect, so only the two corner stops vary | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | PASS |  |
-| ST-04 | IF-05 and IF-06 ceiling across its width | Centre seam C1-C2 gap: the span less C1, C2 and the two side stops; the centre seam takes the chain's tolerance through its slotted holes | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | OPEN | Space between the upper side panels' top members; Ceiling half C1 width; Ceiling half C2 width |
-| ST-04A | IF-05 and IF-06 ceiling across its width: perfect halves | As ST-04 with the halves and the span taken as perfect, so only the two side stops vary | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | PASS |  |
+| ST-02 | IF-03 and IF-04 back wall across its width | Closing seam B1-B2 frame gap: the span less the two corner stops and the B1, B2 frames | 4.0 to 7.0 | 5.50 | 5.24 to 5.76 | 5.32 to 5.68 | OPEN | Space between the side frames; Back panel B1 frame width; Back panel B2 frame width |
+| ST-02A | IF-03 and IF-04 back wall across its width: perfect frames | As ST-02 with the frames and the span taken as perfect, so only the two corner stops vary | 4.0 to 7.0 | 5.50 | 5.24 to 5.76 | 5.32 to 5.68 | PASS |  |
+| ST-04 | IF-05 and IF-06 ceiling across its width | Closing seam C1-C2 frame gap: the span less the two side stops and the C1, C2 frames | 4.0 to 7.0 | 5.50 | 5.24 to 5.76 | 5.32 to 5.68 | OPEN | Space between the upper side panels' top members; Ceiling half C1 frame width; Ceiling half C2 frame width |
+| ST-04A | IF-05 and IF-06 ceiling across its width: perfect frames | As ST-04 with the frames and the span taken as perfect, so only the two side stops vary | 4.0 to 7.0 | 5.50 | 5.24 to 5.76 | 5.32 to 5.68 | PASS |  |
 
 ## Shipping pieces (C04), from `v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv`
 
