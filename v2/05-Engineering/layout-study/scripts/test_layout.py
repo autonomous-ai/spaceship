@@ -104,7 +104,7 @@ def test_only_the_five_status_words():
 def test_p04_rollup_lines():
     """ISS-081, F-010: every roll-up line has a status word and a source and every piece but the glass is 20 kg or less
     (D-03); the pod as shipped is the CSV's sum less the voice kit's line, which the mechanical check leaves out by its
-    name (PR #40); at 32 kg/m3 the air parts are the air report's 61.8 kg with fans; the allowances are assumptions; each
+    name (PR #40); at 32 kg/m3 the air parts are the air report's own figure with fans; the allowances are assumptions; each
     applied saving is priced from the list itself (D-81, D-85)."""
     import re
     import csv
@@ -126,7 +126,7 @@ def test_p04_rollup_lines():
     csv_kg = sum(float(r[4]) for r in csv_rows if not kit.search(r[1] + " " + r[5]))
     assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
     air32 = sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=p("fill_pet_kgm3")) if g == "AIR")
-    assert abs(air32 - 61.8) < 0.05, air32
+    assert abs(air32 - (rollup.AA.d60_air_kg() + rollup.AA.fans_kg())) < 0.05, air32
     for name in ("Light shelf", "Work-wall ledge", "Named clips"):
         hit = [r for r in rows if r[1].startswith(name)]
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
