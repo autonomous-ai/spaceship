@@ -466,7 +466,20 @@ class Rulings93To99(unittest.TestCase):
                     "361001,FRONT - DOOR LEAF,4+4 laminated toughened glass,8.76,clear,waterjet,ISO 2768-m\n")
         line = self.made(glass, file_map, {lst: csv_text}, dxf_doc(("LWPOLYLINE", "CUT")))
         self.assertEqual(line["dwg"], "no")
-        self.assertEqual(rc.flat_lacks(rc.cut_rows({lst: csv_text})["361001"]), ["metal sheet (D-99)"])
+        self.assertEqual(rc.flat_lacks(rc.cut_rows({lst: csv_text})["361001"]), ["metal or ACP sheet (D-99, D-100)"])
+
+    def test_a_flat_acp_skin_counts_and_a_folded_one_keeps_its_drawing(self):
+        lst = "v2/03-Manufacturing/ceiling/410000_P01_CEILING_BOM.csv"
+        skin = row("411301", "make", "CEILING - SKIN - COMMON", "ACP 3 mm EV3038", team="CEILING", src=lst)
+        skin["finish"] = "PVDF EV3038"
+        file_map = files("411301_P01_CEILING-SKIN_CAD.f3d", "411301_P01_CEILING-SKIN_STEP.step", "411301_P01_CEILING-SKIN_DXF.dxf",
+                         folder="v2/03-Manufacturing/ceiling/")
+        csv_text = ("part_number,name,material,finish,process,tolerance\n"
+                    "411301,CEILING - SKIN - COMMON,ACP 3 mm EV3038,PVDF EV3038,CNC routed,ISO 2768-m\n")
+        flat = self.made(skin, file_map, {lst: csv_text}, dxf_doc(("LWPOLYLINE", "CUT"), ("TEXT", "MARK")))
+        self.assertEqual(flat["dwg"], "DXF and row (D-89)")
+        folded = self.made(skin, file_map, {lst: csv_text}, dxf_doc(("LWPOLYLINE", "CUT"), ("LINE", "V-GROOVE"), ("LINE", "BEND")))
+        self.assertEqual(folded["dwg"], "no: its DXF draws on BEND, V-GROOVE; only CUT and MARK pass (D-89)")
 
 
 class Render(unittest.TestCase):
