@@ -29,7 +29,7 @@ EDITS = [
     ("pod size and wall depth (skeleton)", {"pod_w": "2700 mm", "pod_d": "1800 mm", "wall_depth": "1595 mm"}),
     ("band section and glide height (skeleton + BASE)", {"band_h": "120 mm", "glide_h": "15 mm", "band_wall": "2.5 mm"}),
     ("DL facet, joint and pin spacing (skeleton + BASE)", {"dl_x2": "110 mm", "dl_y1": "650 mm", "jb_e": "260 mm",
-                                                           "pin_e": "120 mm", "jb_n": "5"}),
+                                                           "sp_e": "120 mm", "jb_n": "5"}),
     ("floor and bracket (BASE)", {"fl_gap": "6 mm", "fl_t": "12 mm", "lap_w": "25 mm", "br_leg": "50 mm",
                                   "br_len": "60 mm"}),
 ]
@@ -62,9 +62,9 @@ def expected_boxes(b, design):
 def expected_side_holes(b, design):
     v = lambda e: b["ev"](design, e)  # noqa: E731
     n = int(round(v("jb_n")))
-    yw, wd = v(b["YW"]), v("wall_depth")
-    ys = [yw + v("jb_e") + i * (wd - 2 * v("jb_e")) / (n - 1) for i in range(n)]
-    ys += [yw + v("pin_e"), yw + wd - v("pin_e")]
+    y0, ln = v("%s + seam_gap" % b["YW"]), v("side_l")          # L1 on the band (skeleton P04)
+    ys = [y0 + v("jb_e") + i * (ln - 2 * v("jb_e")) / (n - 1) for i in range(n)]
+    ys += [y0 + v("sp_e"), y0 + ln - v("sp_e")]
     x = v("%s + jb_x" % b["XL"])
     return sorted((round(x, 2), round(y, 2)) for y in ys)
 

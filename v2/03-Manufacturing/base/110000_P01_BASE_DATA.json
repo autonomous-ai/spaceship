@@ -7,20 +7,22 @@
   "110000>111401": 1,
   "110000>111501": 1,
   "110101>111101": 1,
-  "110101>111301": 2,
   "110101>118001": 2,
-  "110101>838001": 8,
+  "110101>831001": 2,
+  "110101>831002": 4,
+  "110101>838003": 8,
   "110103>111103": 1,
-  "110103>111301": 4,
   "110103>118001": 3,
-  "110103>838001": 16
+  "110103>831001": 4,
+  "110103>831002": 8,
+  "110103>838003": 16
  },
  "doc": "110000_P01_BASE_CAD",
  "floor_f1": {
   "lap_depth": 4.5,
   "t": 9.0,
   "x0": -1206.0,
-  "x_lap": 19.5,
+  "x_lap": 12.5,
   "x_seam": -0.5,
   "y0": -645.0,
   "y1": 806.0
@@ -29,7 +31,7 @@
   "111101": [
    {
     "at": [
-     -1230.0,
+     -1227.0,
      -625.0,
      null
     ],
@@ -38,11 +40,11 @@
      0.0,
      1.0
     ],
-    "dia": 12.0
+    "dia": 10.0
    },
    {
     "at": [
-     -1230.0,
+     -1227.0,
      -625.0,
      null
     ],
@@ -55,7 +57,7 @@
    },
    {
     "at": [
-     -1230.0,
+     -1227.0,
      700.0,
      null
     ],
@@ -64,11 +66,11 @@
      0.0,
      1.0
     ],
-    "dia": 12.0
+    "dia": 10.0
    },
    {
     "at": [
-     -1230.0,
+     -1227.0,
      700.0,
      null
     ],
@@ -81,8 +83,8 @@
    },
    {
     "at": [
-     -1227.0,
-     -545.0,
+     -1224.0,
+     -542.74,
      null
     ],
     "axis": [
@@ -94,8 +96,8 @@
    },
    {
     "at": [
-     -1227.0,
-     -425.0,
+     -1224.0,
+     -422.74,
      null
     ],
     "axis": [
@@ -107,8 +109,8 @@
    },
    {
     "at": [
-     -1227.0,
-     -73.33,
+     -1224.0,
+     -71.83,
      null
     ],
     "axis": [
@@ -120,8 +122,8 @@
    },
    {
     "at": [
-     -1227.0,
-     278.33,
+     -1224.0,
+     279.09,
      null
     ],
     "axis": [
@@ -133,7 +135,7 @@
    },
    {
     "at": [
-     -1227.0,
+     -1224.0,
      630.0,
      null
     ],
@@ -146,7 +148,7 @@
    },
    {
     "at": [
-     -1227.0,
+     -1224.0,
      750.0,
      null
     ],
@@ -187,8 +189,8 @@
   "111103": [
    {
     "at": [
-     -1107.0,
-     827.0,
+     -1101.74,
+     824.0,
      null
     ],
     "axis": [
@@ -201,7 +203,7 @@
    {
     "at": [
      -1060.0,
-     830.0,
+     827.0,
      null
     ],
     "axis": [
@@ -209,12 +211,12 @@
      0.0,
      1.0
     ],
-    "dia": 12.0
+    "dia": 10.0
    },
    {
     "at": [
      -1060.0,
-     830.0,
+     827.0,
      null
     ],
     "axis": [
@@ -226,8 +228,8 @@
    },
    {
     "at": [
-     -987.0,
-     827.0,
+     -981.74,
+     824.0,
      null
     ],
     "axis": [
@@ -239,8 +241,8 @@
    },
    {
     "at": [
-     -731.33,
-     827.0,
+     -728.2,
+     824.0,
      null
     ],
     "axis": [
@@ -252,8 +254,8 @@
    },
    {
     "at": [
-     -475.67,
-     827.0,
+     -474.67,
+     824.0,
      null
     ],
     "axis": [
@@ -265,8 +267,8 @@
    },
    {
     "at": [
-     -220.0,
-     827.0,
+     -221.13,
+     824.0,
      null
     ],
     "axis": [
@@ -278,8 +280,8 @@
    },
    {
     "at": [
-     -100.0,
-     827.0,
+     -101.13,
+     824.0,
      null
     ],
     "axis": [
@@ -292,7 +294,7 @@
    {
     "at": [
      0.0,
-     830.0,
+     827.0,
      null
     ],
     "axis": [
@@ -300,12 +302,12 @@
      0.0,
      1.0
     ],
-    "dia": 12.0
+    "dia": 10.0
    },
    {
     "at": [
      0.0,
-     830.0,
+     827.0,
      null
     ],
     "axis": [
@@ -317,8 +319,8 @@
    },
    {
     "at": [
-     100.0,
-     827.0,
+     101.13,
+     824.0,
      null
     ],
     "axis": [
@@ -330,8 +332,8 @@
    },
    {
     "at": [
-     220.0,
-     827.0,
+     221.13,
+     824.0,
      null
     ],
     "axis": [
@@ -343,8 +345,8 @@
    },
    {
     "at": [
-     475.67,
-     827.0,
+     474.67,
+     824.0,
      null
     ],
     "axis": [
@@ -356,8 +358,8 @@
    },
    {
     "at": [
-     731.33,
-     827.0,
+     728.2,
+     824.0,
      null
     ],
     "axis": [
@@ -369,8 +371,8 @@
    },
    {
     "at": [
-     987.0,
-     827.0,
+     981.74,
+     824.0,
      null
     ],
     "axis": [
@@ -383,7 +385,7 @@
    {
     "at": [
      1060.0,
-     830.0,
+     827.0,
      null
     ],
     "axis": [
@@ -391,12 +393,12 @@
      0.0,
      1.0
     ],
-    "dia": 12.0
+    "dia": 10.0
    },
    {
     "at": [
      1060.0,
-     830.0,
+     827.0,
      null
     ],
     "axis": [
@@ -408,8 +410,8 @@
    },
    {
     "at": [
-     1107.0,
-     827.0,
+     1101.74,
+     824.0,
      null
     ],
     "axis": [
@@ -571,18 +573,18 @@
    "value": 40.0
   },
   {
-   "comment": "SKELETON P03 DECIDED: D-16, D-42 (walls and ceiling)",
-   "expression": "81 mm",
-   "name": "stack_t",
-   "unit": "mm",
-   "value": 81.0
-  },
-  {
-   "comment": "SKELETON P03 SOURCE: layout study B1 final list W-SIDE 43 (ACP 3 + frame 40)",
-   "expression": "43 mm",
+   "comment": "SKELETON P03 DECIDED: PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)",
+   "expression": "46 mm",
    "name": "outer_t",
    "unit": "mm",
-   "value": 43.0
+   "value": 46.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: D-16, D-42: the gap between the outer panel and the lining cassette in the wall and ceiling stack",
+   "expression": "4 mm",
+   "name": "cav_gap",
+   "unit": "mm",
+   "value": 4.0
   },
   {
    "comment": "SKELETON P03 SOURCE: layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)",
@@ -590,6 +592,13 @@
    "name": "cass_t",
    "unit": "mm",
    "value": 34.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: D-16, D-42 stack, walls and ceiling: 46 + 4 + 34 = 84 (was 81 with outer_t 43); the inside is 3 mm smaller per wall and in height",
+   "expression": "outer_t + cav_gap + cass_t",
+   "name": "stack_t",
+   "unit": "mm",
+   "value": 84.0
   },
   {
    "comment": "SKELETON P03 DECIDED: PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)",
@@ -604,6 +613,13 @@
    "name": "lin_gap",
    "unit": "mm",
    "value": 4.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: PM ruling 2026-10-31 (Mechanical Checker F-001, F-005): the Joints Engineer's 2.26 mm at all nine site seam types, set by a metal stop (1.5 stop washer + 0.76 rivnut head; joints register section 2.8)",
+   "expression": "2.26 mm",
+   "name": "seam_gap",
+   "unit": "mm",
+   "value": 2.26
   },
   {
    "comment": "SKELETON P03 SOURCE: layout study B1 list B-FLOOR 15",
@@ -695,6 +711,13 @@
    "name": "kick_d",
    "unit": "mm",
    "value": 20.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: FRONT door unit: 7 mm running gap between the threshold and the kick strip for the drop seal (Mechanical Checker F-002 on P03)",
+   "expression": "7 mm",
+   "name": "kick_gap",
+   "unit": "mm",
+   "value": 7.0
   },
   {
    "comment": "SKELETON P03 CALCULATION: v1 front top 2417 (v2 frame) - pod_h 2400",
@@ -900,11 +923,18 @@
    "value": 672.0
   },
   {
-   "comment": "SKELETON P03 CALCULATION: walls stand on the base band",
+   "comment": "SKELETON P03 CALCULATION: base band top (Z 110)",
    "expression": "glide_h + band_h",
    "name": "wall_z0",
    "unit": "mm",
    "value": 110.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: walls stand one seam_gap above the band top (Z 112.26; joints register 2.8, IF-01)",
+   "expression": "wall_z0 + seam_gap",
+   "name": "panel_z0",
+   "unit": "mm",
+   "value": 112.26
   },
   {
    "comment": "SKELETON P03 CALCULATION: 2290 = layout study v2_model wall_h",
@@ -914,39 +944,46 @@
    "value": 2290.0
   },
   {
-   "comment": "SKELETON P03 CALCULATION: D-23: 2 sheets per side wall; B1 list 1145",
-   "expression": "wall_h / 2",
+   "comment": "SKELETON P03 CALCULATION: D-23: 2 sheets per side wall; the gap on the band and the horizontal seam (1142.74, was 1145; joints register 2.8)",
+   "expression": "( wall_h - 2 * seam_gap ) / 2",
    "name": "side_h",
    "unit": "mm",
-   "value": 1145.0
+   "value": 1142.74
   },
   {
-   "comment": "SKELETON P03 CALCULATION: back wall stands under the ceiling (v2_model back_h)",
-   "expression": "wall_h - stack_t",
-   "name": "back_h",
+   "comment": "SKELETON P03 CALCULATION: side panel length along Y: the seam_gap at the decor's back plate (1492.74; joints register 2.8, IF-07)",
+   "expression": "wall_depth - seam_gap",
+   "name": "side_l",
    "unit": "mm",
-   "value": 2209.0
+   "value": 1492.74
   },
   {
-   "comment": "SKELETON P03 CALCULATION: D-23: 4 sheets on the back; B1 list 1104",
-   "expression": "back_h / 2",
+   "comment": "SKELETON P03 CALCULATION: PM ruling 2026-10-31 (pass D, F-004): the back outer frames run up to the ceiling frame (Z 2357, less the seam_gap under it), closing the 38 mm slot at the back top edge",
+   "expression": "pod_h - outer_t - seam_gap - panel_z0",
+   "name": "back_oh",
+   "unit": "mm",
+   "value": 2239.48
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: D-23: 4 sheets on the back, two equal rows with one seam_gap between them (1120.11, was 1104.5; joints register 2.8); the lower back linings match the lower row, as on the side walls",
+   "expression": "( back_oh - seam_gap ) / 2",
    "name": "back_ph",
    "unit": "mm",
-   "value": 1104.5
+   "value": 1118.61
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: width of each back and ceiling panel: two panels and three seams between the side frames (1203.61, was 1207; F-001, joints register 2.8)",
+   "expression": "( pod_w - 2 * outer_t - 3 * seam_gap ) / 2",
+   "name": "half_pw",
+   "unit": "mm",
+   "value": 1200.61
   },
   {
    "comment": "SKELETON P03 CALCULATION: 2338 between the side walls",
    "expression": "pod_w - 2 * stack_t",
    "name": "inner_w",
    "unit": "mm",
-   "value": 2338.0
-  },
-  {
-   "comment": "SKELETON P03 CALCULATION: door meets DT; leaves 89 above the threshold (D-40 about 90)",
-   "expression": "pod_h - dt_h - door_h",
-   "name": "door_z0",
-   "unit": "mm",
-   "value": 109.0
+   "value": 2332.0
   },
   {
    "comment": "BASE ASSUMPTION: layout study inputs.py t_al_base 2.0 mm (aluminium 100x40 base band); alloy, temper and dark finish HOLD (ISS-034, sample hold H15)",
@@ -970,25 +1007,18 @@
    "value": 3.0
   },
   {
-   "comment": "BASE SOURCE: ACP skin 3 mm (plan VT01); skeleton outer_t = ACP 3 + frame 40 (D-16, D-34)",
-   "expression": "3 mm",
-   "name": "acp_t",
-   "unit": "mm",
-   "value": 3.0
-  },
-  {
-   "comment": "BASE CALCULATION: wall frame member depth, 40 (D-34: 20 x 40 x 1.2)",
-   "expression": "outer_t - acp_t",
+   "comment": "BASE SOURCE: wall frame member depth (D-34: 20 x 40 x 1.2); the outer panel is ACP 3 + bond 3 + frame 40 = outer_t (D-66)",
+   "expression": "40 mm",
    "name": "frame_d",
    "unit": "mm",
    "value": 40.0
   },
   {
-   "comment": "BASE CALCULATION: J-BASE-01 bolt line: centre of the wall's bottom member, measured in from the pod's outer face",
-   "expression": "acp_t + frame_d / 2",
+   "comment": "BASE CALCULATION: J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)",
+   "expression": "outer_t - frame_d / 2",
    "name": "jb_x",
    "unit": "mm",
-   "value": 23.0
+   "value": 26.0
   },
   {
    "comment": "BASE SOURCE: Sherex CAH3-610-4.2 M6 rivet nut: hole 9.53 +0.10/0 (hardware selection A5)",
@@ -1005,65 +1035,86 @@
    "value": 12.96
   },
   {
-   "comment": "BASE SOURCE: CAH3-610-4.2 length 14.86 (hardware selection A5)",
-   "expression": "14.86 mm",
-   "name": "rn_len",
+   "comment": "BASE SOURCE: CAH3-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)",
+   "expression": "10.16 mm",
+   "name": "rn_inst",
    "unit": "mm",
-   "value": 14.86
+   "value": 10.16
   },
   {
-   "comment": "BASE ASSUMPTION: CAH3 large-flange head height; read it from the maker's drawing (HOLD)",
-   "expression": "1 mm",
+   "comment": "BASE SOURCE: CAH3-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)",
+   "expression": "0.76 mm",
    "name": "rn_head_t",
    "unit": "mm",
-   "value": 1.0
+   "value": 0.76
   },
   {
-   "comment": "BASE SOURCE: layout study J-BASE-01: 4 bolts per wall panel on the band; sample parts list P05",
+   "comment": "BASE SOURCE: stop washer bore (joints register H-08, PROPOSED)",
+   "expression": "10.5 mm",
+   "name": "sw_hole",
+   "unit": "mm",
+   "value": 10.5
+  },
+  {
+   "comment": "BASE SOURCE: stop washer outside diameter (joints register H-08, PROPOSED)",
+   "expression": "20 mm",
+   "name": "sw_d",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "BASE SOURCE: stop washer, under each bolt rivnut's head: washer 1.5 + head 0.76 = seam_gap 2.26, so the walls stand at panel_z0 (D-64)",
+   "expression": "1.5 mm",
+   "name": "sw_t",
+   "unit": "mm",
+   "value": 1.5
+  },
+  {
+   "comment": "BASE CONFIRMED: D-75 and joints register R-J13: 4 bolts per wall panel on the band",
    "expression": "4",
    "name": "jb_n",
    "unit": "",
    "value": 4.0
   },
   {
-   "comment": "BASE ASSUMPTION: J-BASE-01 end bolts from the panel ends; HOLD until the joints register and the WALL frame bays fix it",
+   "comment": "BASE CONFIRMED: D-75 and joints register R-J13: end bolts 220 in from each panel end, evenly spaced",
    "expression": "220 mm",
    "name": "jb_e",
    "unit": "mm",
    "value": 220.0
   },
   {
-   "comment": "BASE ASSUMPTION: locating pins from the panel ends: 2 per panel, outside the bolts",
+   "comment": "BASE CONFIRMED: D-75 and joints register R-J13: spigots 100 in from each panel end",
    "expression": "100 mm",
-   "name": "pin_e",
+   "name": "sp_e",
    "unit": "mm",
    "value": 100.0
   },
   {
-   "comment": "BASE ASSUMPTION: locating pin shank; enters a 12.5 hole and a 12.5 x 20 slot in the wall member (WALL)",
-   "expression": "12 mm",
-   "name": "pin_dia",
-   "unit": "mm",
-   "value": 12.0
-  },
-  {
-   "comment": "BASE ASSUMPTION: pin height above the rivnut head; the wall member's bore is 17.6 tall (20 x 1.2)",
-   "expression": "12 mm",
-   "name": "pin_h",
-   "unit": "mm",
-   "value": 12.0
-  },
-  {
-   "comment": "BASE ASSUMPTION: lead-in chamfer on the pin top",
-   "expression": "2 mm",
-   "name": "pin_ch",
-   "unit": "mm",
-   "value": 2.0
-  },
-  {
-   "comment": "BASE ASSUMPTION: M6 stud length into the rivnut",
+   "comment": "BASE SOURCE: locating spigot, stainless, M6 thread (joints register H-05, PROPOSED sizes)",
    "expression": "8 mm",
-   "name": "pin_stud",
+   "name": "sp_dia",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE SOURCE: spigot stands 8 proud of the band top (joints register H-05, PROPOSED)",
+   "expression": "8 mm",
+   "name": "sp_proud",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: lead-in chamfer on the spigot top",
+   "expression": "1 mm",
+   "name": "sp_ch",
+   "unit": "mm",
+   "value": 1.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: spigot's M6 stud into its rivnut, with threadlocker",
+   "expression": "8 mm",
+   "name": "sp_stud",
    "unit": "mm",
    "value": 8.0
   },
@@ -1103,11 +1154,18 @@
    "value": 150.0
   },
   {
-   "comment": "BASE ASSUMPTION: hole in the band top for the 5 mm hex key that turns the glide (levelled before the walls go on)",
-   "expression": "12 mm",
+   "comment": "BASE ASSUMPTION: hole in the band top for the 5 mm hex key that turns the glide (levelled before the walls go on); stays inboard of the wall gasket line",
+   "expression": "10 mm",
    "name": "gl_key_hole",
    "unit": "mm",
-   "value": 12.0
+   "value": 10.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: glide axis 3 mm inboard of the band's centre line, so its key hole clears the wall gasket strip (joints register 2.4)",
+   "expression": "3 mm",
+   "name": "gl_dx",
+   "unit": "mm",
+   "value": 3.0
   },
   {
    "comment": "BASE ASSUMPTION: hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD",
@@ -1117,11 +1175,11 @@
    "value": 13.0
   },
   {
-   "comment": "BASE ASSUMPTION: glide pad diameter (envelope, HOLD)",
-   "expression": "40 mm",
+   "comment": "BASE ASSUMPTION: glide pad diameter (envelope, HOLD); stays inside the band's 40 mm width",
+   "expression": "36 mm",
    "name": "gl_pad",
    "unit": "mm",
-   "value": 40.0
+   "value": 36.0
   },
   {
    "comment": "BASE ASSUMPTION: glide stem M10 (envelope, HOLD)",
@@ -1215,11 +1273,11 @@
    "value": 1.0
   },
   {
-   "comment": "BASE ASSUMPTION: half-lap at the F1 / F2 seam: F1's lower half runs 20 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls)",
-   "expression": "20 mm",
+   "comment": "BASE CONFIRMED: half-lap at the F1 / F2 seam: F1's lower half runs 13 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls). 13 keeps F1 at 1218.5 including its lap, inside the 1219 of the 48 in pallet (PM ruling 2026-10-31, packing plan)",
+   "expression": "13 mm",
    "name": "lap_w",
    "unit": "mm",
-   "value": 20.0
+   "value": 13.0
   }
  ],
  "parts": {
@@ -1250,13 +1308,13 @@
    ],
    "class": "MP",
    "key": "band_l_tube",
-   "mass_kg": 2.2093,
+   "mass_kg": 2.2096,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - SIDE - LH",
    "name_vi": "Viền chân nhôm 100x40 - cạnh trái",
    "parent": "110101",
    "pn": "111101",
-   "volume_mm3": 818246.4
+   "volume_mm3": 818384.6
   },
   "111103": {
    "box_mm": [
@@ -1269,21 +1327,21 @@
    ],
    "class": "MP",
    "key": "band_b_tube",
-   "mass_kg": 3.5444,
+   "mass_kg": 3.5449,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - BACK",
    "name_vi": "Viền chân nhôm 100x40 - cạnh sau",
    "parent": "110103",
    "pn": "111103",
-   "volume_mm3": 1312722.4
+   "volume_mm3": 1312929.8
   },
   "111201": {
    "box_mm": [
-    -1209.0,
-    749.0,
+    -1209.24,
+    749.24,
     25.0,
-    -1149.0,
-    809.0,
+    -1149.24,
+    809.24,
     95.0
    ],
    "class": "MP",
@@ -1296,43 +1354,24 @@
    "pn": "111201",
    "volume_mm3": 39565.8
   },
-  "111301": {
-   "box_mm": [
-    -6.0,
-    -6.0,
-    -8.0,
-    6.0,
-    6.0,
-    12.0
-   ],
-   "class": "MP",
-   "key": "pin",
-   "mass_kg": 0.0041,
-   "material": "Aluminum",
-   "name": "BASE - LOCATING PIN - COMMON",
-   "name_vi": "Chốt định vị vách",
-   "parent": "110000",
-   "pn": "111301",
-   "volume_mm3": 1516.3
-  },
   "111401": {
    "box_mm": [
     -1206.0,
     -645.0,
     3.0,
-    19.5,
+    12.5,
     806.0,
     12.0
    ],
    "class": "MP",
    "key": "floor_f1",
-   "mass_kg": 9.5239,
+   "mass_kg": 9.4965,
    "material": "Plywood 600 kg/m3 (ASSUMPTION)",
    "name": "BASE - FLOOR PANEL - F1",
    "name_vi": "Tấm sàn mỏng - F1",
    "parent": "110000",
    "pn": "111401",
-   "volume_mm3": 15873214.5
+   "volume_mm3": 15827508.0
   },
   "111501": {
    "box_mm": [
@@ -1355,11 +1394,11 @@
   },
   "118001": {
    "box_mm": [
-    -20.0,
-    -20.0,
+    -18.0,
+    -18.0,
     0.0,
-    20.0,
-    20.0,
+    18.0,
+    18.0,
     60.0
    ],
    "class": "PI",
@@ -1370,26 +1409,64 @@
    "name_vi": "Chân chỉnh cao",
    "parent": "110000",
    "pn": "118001",
-   "volume_mm3": 14137.2
+   "volume_mm3": 12227.1
   },
-  "838001": {
+  "831001": {
+   "box_mm": [
+    -4.0,
+    -4.0,
+    -8.0,
+    4.0,
+    4.0,
+    7.24
+   ],
+   "class": "MP",
+   "key": "pin",
+   "mass_kg": 0.0045,
+   "material": "Steel",
+   "name": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
+   "name_vi": "Chốt định vị Ø8",
+   "parent": "110000",
+   "pn": "831001",
+   "volume_mm3": 578.6
+  },
+  "831002": {
+   "box_mm": [
+    -10.0,
+    -10.0,
+    0.0,
+    10.0,
+    10.0,
+    1.5
+   ],
+   "class": "MP",
+   "key": "washer",
+   "mass_kg": 0.0009,
+   "material": "Aluminum",
+   "name": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
+   "name_vi": "Long đen chặn nhôm",
+   "parent": "110000",
+   "pn": "831002",
+   "volume_mm3": 341.4
+  },
+  "838003": {
    "box_mm": [
     -6.48,
     -6.48,
-    -13.86,
+    -9.4,
     6.48,
     6.48,
-    1.0
+    0.76
    ],
    "class": "PI",
    "key": "rivnut",
-   "mass_kg": 0.0018,
+   "mass_kg": 0.0013,
    "material": "Aluminum",
-   "name": "HARDWARE - RIVET NUT - M6 - CAH3-610-4.2",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
    "name_vi": "Tán rút M6",
    "parent": "110000",
-   "pn": "838001",
-   "volume_mm3": 673.6
+   "pn": "838003",
+   "volume_mm3": 465.3
   }
  },
  "rev": "P01",

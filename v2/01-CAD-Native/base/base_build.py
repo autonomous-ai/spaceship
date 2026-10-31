@@ -62,32 +62,35 @@ BASE_PARAMS = [
     ("cap_t", "3 mm", "mm", "assumption",
      "head of the plastic end cap closing the side band's back end, so the cap face is flush with the back face Y = pod_d/2; cap product HOLD"),
     # the wall above (WALL owns it; these say where its bottom member sits)
-    ("acp_t", "3 mm", "mm", "source", "ACP skin 3 mm (plan VT01); skeleton outer_t = ACP 3 + frame 40 (D-16, D-34)"),
-    ("frame_d", "outer_t - acp_t", "mm", "calculation", "wall frame member depth, 40 (D-34: 20 x 40 x 1.2)"),
-    ("jb_x", "acp_t + frame_d / 2", "mm", "calculation",
-     "J-BASE-01 bolt line: centre of the wall's bottom member, measured in from the pod's outer face"),
+    ("frame_d", "40 mm", "mm", "source", "wall frame member depth (D-34: 20 x 40 x 1.2); the outer panel is ACP 3 + bond 3 + frame 40 = outer_t (D-66)"),
+    ("jb_x", "outer_t - frame_d / 2", "mm", "calculation",
+     "J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)"),
     # J-BASE-01, wall to base band
     ("rn_hole", "9.53 mm", "mm", "source", "Sherex CAH3-610-4.2 M6 rivet nut: hole 9.53 +0.10/0 (hardware selection A5)"),
     ("rn_flange", "12.96 mm", "mm", "source", "CAH3-610-4.2 head diameter 12.96 (hardware selection A5)"),
-    ("rn_len", "14.86 mm", "mm", "source", "CAH3-610-4.2 length 14.86 (hardware selection A5)"),
-    ("rn_head_t", "1 mm", "mm", "assumption", "CAH3 large-flange head height; read it from the maker's drawing (HOLD)"),
-    ("jb_n", "4", "", "source", "layout study J-BASE-01: 4 bolts per wall panel on the band; sample parts list P05"),
-    ("jb_e", "220 mm", "mm", "assumption",
-     "J-BASE-01 end bolts from the panel ends; HOLD until the joints register and the WALL frame bays fix it"),
-    ("pin_e", "100 mm", "mm", "assumption", "locating pins from the panel ends: 2 per panel, outside the bolts"),
-    ("pin_dia", "12 mm", "mm", "assumption", "locating pin shank; enters a 12.5 hole and a 12.5 x 20 slot in the wall member (WALL)"),
-    ("pin_h", "12 mm", "mm", "assumption", "pin height above the rivnut head; the wall member's bore is 17.6 tall (20 x 1.2)"),
-    ("pin_ch", "2 mm", "mm", "assumption", "lead-in chamfer on the pin top"),
-    ("pin_stud", "8 mm", "mm", "assumption", "M6 stud length into the rivnut"),
+    ("rn_inst", "10.16 mm", "mm", "source", "CAH3-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)"),
+    ("rn_head_t", "0.76 mm", "mm", "source", "CAH3-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)"),
+    ("sw_hole", "10.5 mm", "mm", "source", "stop washer bore (joints register H-08, PROPOSED)"),
+    ("sw_d", "20 mm", "mm", "source", "stop washer outside diameter (joints register H-08, PROPOSED)"),
+    ("sw_t", "1.5 mm", "mm", "source",
+     "stop washer, under each bolt rivnut's head: washer 1.5 + head 0.76 = seam_gap 2.26, so the walls stand at panel_z0 (D-64)"),
+    ("jb_n", "4", "", "confirmed", "D-75 and joints register R-J13: 4 bolts per wall panel on the band"),
+    ("jb_e", "220 mm", "mm", "confirmed", "D-75 and joints register R-J13: end bolts 220 in from each panel end, evenly spaced"),
+    ("sp_e", "100 mm", "mm", "confirmed", "D-75 and joints register R-J13: spigots 100 in from each panel end"),
+    ("sp_dia", "8 mm", "mm", "source", "locating spigot, stainless, M6 thread (joints register H-05, PROPOSED sizes)"),
+    ("sp_proud", "8 mm", "mm", "source", "spigot stands 8 proud of the band top (joints register H-05, PROPOSED)"),
+    ("sp_ch", "1 mm", "mm", "assumption", "lead-in chamfer on the spigot top"),
+    ("sp_stud", "8 mm", "mm", "assumption", "spigot's M6 stud into its rivnut, with threadlocker"),
     # levelling glides (bought, HOLD: no product named yet)
     ("gl_n_side", "2", "", "calculation", "glides per side band: span about 1.3 m, sag under 0.5 mm (see feature rationale)"),
     ("gl_n_back", "3", "", "calculation", "glides on the back band: 2 spans of 1060 (see feature rationale)"),
     ("gl_e_f", "45 mm", "mm", "assumption", "front glide of a side band, behind the band's outer front corner (Y = -dl_y1), so it stays under the band's front end"),
     ("gl_e_b", "150 mm", "mm", "assumption", "back glide of a side band from the back face"),
     ("gl_e_bb", "150 mm", "mm", "assumption", "end glides of the back band from its ends"),
-    ("gl_key_hole", "12 mm", "mm", "assumption", "hole in the band top for the 5 mm hex key that turns the glide (levelled before the walls go on)"),
+    ("gl_key_hole", "10 mm", "mm", "assumption", "hole in the band top for the 5 mm hex key that turns the glide (levelled before the walls go on); stays inboard of the wall gasket line"),
+    ("gl_dx", "3 mm", "mm", "assumption", "glide axis 3 mm inboard of the band's centre line, so its key hole clears the wall gasket strip (joints register 2.4)"),
     ("gl_nut_hole", "13 mm", "mm", "assumption", "hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD"),
-    ("gl_pad", "40 mm", "mm", "assumption", "glide pad diameter (envelope, HOLD)"),
+    ("gl_pad", "36 mm", "mm", "assumption", "glide pad diameter (envelope, HOLD); stays inside the band's 40 mm width"),
     ("gl_stem", "10 mm", "mm", "assumption", "glide stem M10 (envelope, HOLD)"),
     ("gl_nut_t", "2 mm", "mm", "assumption", "M10 rivet nut head under the band, between the band and the glide pad (HOLD)"),
     # back corner bracket (aluminium angle 60 x 60 x 5, inside the corner, pod side)
@@ -105,8 +108,8 @@ BASE_PARAMS = [
      "PM ruling 2026-10-31: a firm closed-cell foam mat (cross-linked PE or EPDM), 3 mm, about 200 kg/m3, under the floor panels; product HOLD"),
     ("fl_gap", "4 mm", "mm", "assumption", "gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)"),
     ("fl_seam", "1 mm", "mm", "assumption", "gap at the F1 / F2 seam on X = 0"),
-    ("lap_w", "20 mm", "mm", "assumption",
-     "half-lap at the F1 / F2 seam: F1's lower half runs 20 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls)"),
+    ("lap_w", "13 mm", "mm", "confirmed",
+     "half-lap at the F1 / F2 seam: F1's lower half runs 13 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls). 13 keeps F1 at 1218.5 including its lap, inside the 1219 of the 48 in pallet (PM ruling 2026-10-31, packing plan)"),
 ]
 
 ASSEMBLY = ("110000", "BASE", "Đế / sàn")
@@ -117,17 +120,21 @@ PARTS = {
     "band_b": ("110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "HS", None),
     "band_b_tube": ("111103", "BASE - BAND TUBE - BACK", "Viền chân nhôm 100x40 - cạnh sau", "MP", "band_b"),
     "bracket": ("111201", "BASE - CORNER BRACKET - BACK - COMMON", "Ke góc đế - góc sau", "MP", None),
-    "pin": ("111301", "BASE - LOCATING PIN - COMMON", "Chốt định vị vách", "MP", None),
+    "pin": ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8", "MP", None),
+    "washer": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP", None),
     "floor_f1": ("111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "MP", None),
     "mat_f1": ("111501", "BASE - SEAL MAT - F1", "Tấm lót kín sàn - F1", "MP", None),
     "glide": ("118001", "BASE - LEVELLING GLIDE - M10 (HOLD)", "Chân chỉnh cao", "PI", None),
-    "rivnut": ("838001", "HARDWARE - RIVET NUT - M6 - CAH3-610-4.2", "Tán rút M6", "PI", None),
+    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", None),
 }
 CLASS_NAME = {"HS": "hardware-fitted subassembly", "MP": "part we make", "PI": "bought item"}
 
 XL, XR = "-pod_w / 2", "pod_w / 2"
 YB, YW = "pod_d / 2", "pod_d / 2 - wall_depth"     # back face; side walls' front edge
 XOL = "-pod_w / 2 + outer_t"                        # back panels span frame to frame (D-55)
+# P04 panel ranges on the band (skeleton BL_X, BR_X; D-64, D-66): one seam_gap at each stop
+B1_X0 = "(-pod_w / 2 + outer_t + seam_gap)"         # B1 from here, half_pw wide
+B2_X0 = "(pod_w / 2 - outer_t - seam_gap - half_pw)"  # B2 from here, half_pw wide
 # inner point of the mitre between the left side band and DL's outer facet band
 # piece (both band_t wide): Y = -dl_y1 + band_t * (L - dy) / dl_x2 with
 # L = facet length, dy = dl_y2 - dl_y1 (the bisector of the two outer lines)
@@ -607,13 +614,13 @@ def step4_band_holes(design):
     down.scaleBy(-1)
     out_x.scaleBy(-1)
     xb = "%s + jb_x" % XL
-    hole(design, "band_l_tube", top, "J-BASE-01 RIVNUT - L1", (v(xb), v("%s + jb_e" % YW), v("wall_z0")),
-         [(X, xb), (Y, "%s + jb_e" % YW)], "rn_hole", "band_wall", down,
-         ("yConstructionAxis", "jb_n", "wall_depth - 2 * jb_e"))
-    hole(design, "band_l_tube", top, "LOCATING PIN RIVNUT - L1", (v(xb), v("%s + pin_e" % YW), v("wall_z0")),
-         [(X, xb), (Y, "%s + pin_e" % YW)], "rn_hole", "band_wall", down,
-         ("yConstructionAxis", "2", "wall_depth - 2 * pin_e"))
-    xg = "%s + band_t / 2" % XL
+    y1b = "%s + seam_gap + jb_e" % YW                       # L1 starts one seam_gap behind Y -645 (P04)
+    hole(design, "band_l_tube", top, "J-BASE-01 RIVNUT - L1", (v(xb), v(y1b), v("wall_z0")),
+         [(X, xb), (Y, y1b)], "rn_hole", "band_wall", down, ("yConstructionAxis", "jb_n", "side_l - 2 * jb_e"))
+    y1s = "%s + seam_gap + sp_e" % YW
+    hole(design, "band_l_tube", top, "SPIGOT RIVNUT - L1", (v(xb), v(y1s), v("wall_z0")),
+         [(X, xb), (Y, y1s)], "rn_hole", "band_wall", down, ("yConstructionAxis", "2", "side_l - 2 * sp_e"))
+    xg = "%s + band_t / 2 + gl_dx" % XL
     yg0, gext = "-dl_y1 + gl_e_f", "pod_d / 2 - gl_e_b + dl_y1 - gl_e_f"
     hole(design, "band_l_tube", top, "GLIDE KEY ACCESS - SIDE LH", (v(xg), v(yg0), v("wall_z0")),
          [(X, xg), (Y, yg0)], "gl_key_hole", "band_wall", down, ("yConstructionAxis", "gl_n_side", gext))
@@ -631,15 +638,14 @@ def step4_band_holes(design):
     inner = offset_plane(c, "xz", "%s - band_t" % YB, v("%s - band_t" % YB),
                          "PLANE - BAND INNER FACE Y = pod_d/2 - band_t")
     yb_line = "%s - jb_x" % YB
-    for panel, x0 in (("B1", "%s + jb_e" % XOL), ("B2", "jb_e")):
-        hole(design, "band_b_tube", top, "J-BASE-01 RIVNUT - %s" % panel, (v(x0), v(yb_line), v("wall_z0")),
-             [(X, x0), (Y, yb_line)], "rn_hole", "band_wall", down,
-             ("xConstructionAxis", "jb_n", "pod_w / 2 - outer_t - 2 * jb_e"))
-    for panel, x0 in (("B1", "%s + pin_e" % XOL), ("B2", "pin_e")):
-        hole(design, "band_b_tube", top, "LOCATING PIN RIVNUT - %s" % panel, (v(x0), v(yb_line), v("wall_z0")),
-             [(X, x0), (Y, yb_line)], "rn_hole", "band_wall", down,
-             ("xConstructionAxis", "2", "pod_w / 2 - outer_t - 2 * pin_e"))
-    xg0, yg = "%s + band_t + gl_e_bb" % XL, "%s - band_t / 2" % YB
+    for panel, x0 in (("B1", B1_X0), ("B2", B2_X0)):
+        hole(design, "band_b_tube", top, "J-BASE-01 RIVNUT - %s" % panel, (v("%s + jb_e" % x0), v(yb_line), v("wall_z0")),
+             [(X, "%s + jb_e" % x0), (Y, yb_line)], "rn_hole", "band_wall", down,
+             ("xConstructionAxis", "jb_n", "half_pw - 2 * jb_e"))
+        hole(design, "band_b_tube", top, "SPIGOT RIVNUT - %s" % panel, (v("%s + sp_e" % x0), v(yb_line), v("wall_z0")),
+             [(X, "%s + sp_e" % x0), (Y, yb_line)], "rn_hole", "band_wall", down,
+             ("xConstructionAxis", "2", "half_pw - 2 * sp_e"))
+    xg0, yg = "%s + band_t + gl_e_bb" % XL, "%s - band_t / 2 - gl_dx" % YB
     hole(design, "band_b_tube", top, "GLIDE KEY ACCESS - BACK", (v(xg0), v(yg), v("wall_z0")),
          [(X, xg0), (Y, yg)], "gl_key_hole", "band_wall", down,
          ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
@@ -774,8 +780,8 @@ def PZ(design, er, ez):
 def build_rivnut(design):
     comp = find_comp(design, "rivnut")
     revolve_section(design, comp, "RIVET NUT M6 CAH3-610-4.2 - ENVELOPE", [
-        PZ(design, "3 mm", "-(rn_len - rn_head_t)"),            # thread bore, M6 (envelope)
-        PZ(design, "rn_hole / 2 - 0.065 mm", "-(rn_len - rn_head_t)"),
+        PZ(design, "3 mm", "-(rn_inst - rn_head_t)"),           # thread bore, M6 (envelope)
+        PZ(design, "rn_hole / 2 - 0.065 mm", "-(rn_inst - rn_head_t)"),
         PZ(design, "rn_hole / 2 - 0.065 mm", "0 mm"),
         PZ(design, "rn_flange / 2", "0 mm"),
         PZ(design, "rn_flange / 2", "rn_head_t"),
@@ -784,15 +790,29 @@ def build_rivnut(design):
 
 
 def build_pin(design):
+    """Locating spigot (joints register H-05): Ø8 stainless, sits on its rivnut's
+    head and stands sp_proud above the band top; M6 stud into the rivnut."""
     comp = find_comp(design, "pin")
-    revolve_section(design, comp, "LOCATING PIN", [
-        PZ(design, "0 mm", "-pin_stud"),
-        PZ(design, "3 mm", "-pin_stud"),                        # M6 stud
+    h = "sp_proud - rn_head_t"
+    revolve_section(design, comp, "LOCATING SPIGOT D8", [
+        PZ(design, "0 mm", "-sp_stud"),
+        PZ(design, "3 mm", "-sp_stud"),                         # M6 stud
         PZ(design, "3 mm", "0 mm"),
-        PZ(design, "pin_dia / 2", "0 mm"),
-        PZ(design, "pin_dia / 2", "pin_h - pin_ch"),             # lead-in chamfer
-        PZ(design, "pin_dia / 2 - pin_ch", "pin_h"),
-        PZ(design, "0 mm", "pin_h"),
+        PZ(design, "sp_dia / 2", "0 mm"),
+        PZ(design, "sp_dia / 2", "%s - sp_ch" % h),              # lead-in chamfer
+        PZ(design, "sp_dia / 2 - sp_ch", h),
+        PZ(design, "0 mm", h),
+    ])
+
+
+def build_washer(design):
+    """Stop washer (joints register H-08): under each bolt rivnut's head."""
+    comp = find_comp(design, "washer")
+    revolve_section(design, comp, "STOP WASHER 10.5 X 20 X 1.5", [
+        PZ(design, "sw_hole / 2", "0 mm"),
+        PZ(design, "sw_d / 2", "0 mm"),
+        PZ(design, "sw_d / 2", "sw_t"),
+        PZ(design, "sw_hole / 2", "sw_t"),
     ])
 
 
@@ -827,30 +847,28 @@ def place(design, host_key, key, xyz, rot=None):
 
 def hardware_points(design):
     """(host assembly, item, (x, y, z) mm, rotation) for every hardware copy,
-    from the same parameters as the holes."""
+    from the same parameters as the holes. Bolt rivnuts sit on a stop washer;
+    spigot rivnuts sit on the band and carry the spigot (joints register 2.1)."""
     v = lambda e: ev(design, e)  # noqa: E731
     out = []
-    z_top = v("wall_z0")
+    z_top, sw, head = v("wall_z0"), v("sw_t"), v("rn_head_t")
     n = int(round(v("jb_n")))
-    yw, wd, jb_e, pin_e = v(YW), v("wall_depth"), v("jb_e"), v("pin_e")
-    # left side band: J-BASE-01 rivnuts and pins for L1
-    xb = v("%s + jb_x" % XL)
-    for i in range(n):
-        out.append(("band_l", "rivnut", (xb, yw + jb_e + i * (wd - 2 * jb_e) / (n - 1), z_top), None))
-    for i in range(2):
-        y = yw + pin_e + i * (wd - 2 * pin_e)
-        out.append(("band_l", "rivnut", (xb, y, z_top), None))
-        out.append(("band_l", "pin", (xb, y, z_top + v("rn_head_t")), None))
-    # back band: J-BASE-01 rivnuts and pins for B1 and B2
-    yl = v("%s - jb_x" % YB)
-    span = v("pod_w / 2 - outer_t")
-    for x0 in (v(XOL), 0.0):
+    jb_e, sp_e = v("jb_e"), v("sp_e")
+
+    def edge(host, along, start, length, fixed):
+        """J-BASE-01 on one panel edge: 4 bolts at the 220 mm rule, 2 spigots."""
+        def pt(t, z):
+            return (fixed, start + t, z) if along == "y" else (start + t, fixed, z)
         for i in range(n):
-            out.append(("band_b", "rivnut", (x0 + jb_e + i * (span - 2 * jb_e) / (n - 1), yl, z_top), None))
-        for i in range(2):
-            x = x0 + pin_e + i * (span - 2 * pin_e)
-            out.append(("band_b", "rivnut", (x, yl, z_top), None))
-            out.append(("band_b", "pin", (x, yl, z_top + v("rn_head_t")), None))
+            t = jb_e + i * (length - 2 * jb_e) / (n - 1)
+            out.append((host, "washer", pt(t, z_top), None))
+            out.append((host, "rivnut", pt(t, z_top + sw), None))
+        for t in (sp_e, length - sp_e):
+            out.append((host, "rivnut", pt(t, z_top), None))
+            out.append((host, "pin", pt(t, z_top + head), None))
+    edge("band_l", "y", v("%s + seam_gap" % YW), v("side_l"), v("%s + jb_x" % XL))            # L1
+    for x0 in (B1_X0, B2_X0):                                                                 # B1, B2
+        edge("band_b", "x", v(x0), v("half_pw"), v("%s - jb_x" % YB))
     # corner bracket rivnuts in the bands' inner walls (BL on both bands, BR on the back band)
     zb, dz = v("br_z0 + br_zh"), v("br_len - 2 * br_zh")
     for k in range(2):
@@ -858,7 +876,7 @@ def hardware_points(design):
         for xb_ in (v("%s + band_t + br_e" % XL), v("%s - band_t - br_e" % XR)):
             out.append(("band_b", "rivnut", (xb_, v("%s - band_t" % YB), zb + k * dz), "y-"))
     # glides, screwed into the bands at the factory
-    xg = v("%s + band_t / 2" % XL)
+    xg = v("%s + band_t / 2 + gl_dx" % XL)
     ng = int(round(v("gl_n_side")))
     yg0, gext = v("-dl_y1 + gl_e_f"), v("pod_d / 2 - gl_e_b + dl_y1 - gl_e_f")
     for i in range(ng):
@@ -866,13 +884,14 @@ def hardware_points(design):
     nb = int(round(v("gl_n_back")))
     x0, ext = v("%s + band_t + gl_e_bb" % XL), v("pod_w - 2 * band_t - 2 * gl_e_bb")
     for i in range(nb):
-        out.append(("band_b", "glide", (x0 + i * ext / (nb - 1), v("%s - band_t / 2" % YB), 0.0), None))
+        out.append(("band_b", "glide", (x0 + i * ext / (nb - 1), v("%s - band_t / 2 - gl_dx" % YB), 0.0), None))
     return out
 
 
 def step7_hardware(design):
     build_rivnut(design)
     build_pin(design)
+    build_washer(design)
     build_glide(design)
     counts = {}
     for host, key, xyz, rot in hardware_points(design):
@@ -882,7 +901,8 @@ def step7_hardware(design):
     root = design.rootComponent
     for i in range(root.occurrences.count - 1, -1, -1):
         occ = root.occurrences.item(i)
-        if occ.component.partNumber in (PARTS["pin"][0], PARTS["glide"][0], PARTS["rivnut"][0]):
+        if occ.component.partNumber in (PARTS["pin"][0], PARTS["glide"][0], PARTS["rivnut"][0],
+                                        PARTS["washer"][0]):
             occ.deleteMe()
     print("step 7: hardware placed")
     for (host, key), n in sorted(counts.items()):
@@ -896,7 +916,8 @@ MATERIALS = {
     "band_l_tube": ("Aluminum", None, None),
     "band_b_tube": ("Aluminum", None, None),
     "bracket": ("Aluminum", None, None),
-    "pin": ("Aluminum", None, None),
+    "pin": ("Steel", None, None),
+    "washer": ("Aluminum", None, None),
     "rivnut": ("Aluminum", None, None),
     "floor_f1": ("Aluminum", "Plywood 600 kg/m3 (ASSUMPTION)", 600.0),
     "mat_f1": ("Aluminum", "Closed-cell foam 200 kg/m3 (ASSUMPTION)", 200.0),
@@ -990,31 +1011,34 @@ def intersect_volume(tbm, a, b, occ_a=None, occ_b=None):
 
 
 def skeleton_boxes(design):
-    """Skeleton P03 envelopes next to the base, from the same parameters."""
+    """Skeleton P04 envelopes next to the base, from the same parameters
+    (pod_skeleton.py: side panels from YW + seam_gap, back panels BL_X / BR_X,
+    all standing at panel_z0)."""
     v = lambda e: ev(design, e)  # noqa: E731
-    xl, yb, yw, z0 = v(XL), v(YB), v(YW), v("wall_z0")
+    xl, yb, yw, z0 = v(XL), v(YB), v(YW), v("panel_z0")
     ot, st, ct = v("outer_t"), v("stack_t"), v("cass_t")
-    sh, bh = v("side_h"), v("back_ph")
+    sh, bh, hp = v("side_h"), v("back_ph"), v("half_pw")
+    b1, b2 = v(B1_X0), v(B2_X0)
     return [
-        ("skeleton L1", (xl, yw, z0, xl + ot, yb, z0 + sh)),
+        ("skeleton L1", (xl, yw + v("seam_gap"), z0, xl + ot, yb, z0 + sh)),
         ("skeleton L1-CASS", (xl + st - ct, yw, z0, xl + st, yb - st + ct, z0 + sh)),
-        ("skeleton B1", (v(XOL), yb - ot, z0, 0.0, yb, z0 + bh)),
-        ("skeleton B2", (0.0, yb - ot, z0, -v(XOL), yb, z0 + bh)),
+        ("skeleton B1", (b1, yb - ot, z0, b1 + hp, yb, z0 + bh)),
+        ("skeleton B2", (b2, yb - ot, z0, b2 + hp, yb, z0 + bh)),
         ("skeleton B1-CASS", (xl + st, yb - st, z0, 0.0, yb - st + ct, z0 + bh)),
     ]
 
 
 # overlaps made on purpose: (part number prefix, skeleton label, reason)
 EXPECTED_WITH_SKELETON = [
-    ("838001", "skeleton L1", "rivnut heads sit in clearance holes in the wall's bottom member (WALL)"),
-    ("838001", "skeleton B1", "same, back wall"),
-    ("838001", "skeleton B2", "same, back wall"),
-    ("111301", "skeleton L1", "locating pins enter the wall's bottom member (WALL: hole and slot)"),
-    ("111301", "skeleton B1", "same, back wall"),
-    ("111301", "skeleton B2", "same, back wall"),
+    ("838003", "skeleton L1", "rivnut heads sit in clearance holes in the wall's bottom member (WALL)"),
+    ("838003", "skeleton B1", "same, back wall"),
+    ("838003", "skeleton B2", "same, back wall"),
+    ("831001", "skeleton L1", "locating spigots enter the wall's bottom tube (WALL: Ø8.5 hole and 8.5 x 14 slot)"),
+    ("831001", "skeleton B1", "same, back wall"),
+    ("831001", "skeleton B2", "same, back wall"),
 ]
 EXPECTED_OWN = [
-    ("838001", "111301", "pin stud in the rivnut thread (both modelled as envelopes)"),
+    ("838003", "831001", "spigot stud in the rivnut thread (both modelled as envelopes)"),
 ]
 
 
@@ -1081,9 +1105,13 @@ def step9_checks(design):
     print("  clashes with skeleton walls and linings: %s; unexpected %d %s" % (
         ", ".join("%s x %s: %d" % (k[0], k[1], n) for k, n in sorted(sk_hits.items())) or "none",
         len(sk_bad), sk_bad or ""))
-    # the walls must sit on the band: band top = skeleton wall_z0
-    print("  band top Z %.2f = skeleton wall_z0 %.2f" % (
-        bbox_mm(find_comp(design, "band_l_tube").bRepBodies.item(0))[5], v("wall_z0")))
+    # the walls stand on the stops: band top + stop washer + rivnut head = skeleton panel_z0
+    top = bbox_mm(find_comp(design, "band_l_tube").bRepBodies.item(0))[5]
+    stop = top + v("sw_t") + v("rn_head_t")
+    print("  band top Z %.2f = wall_z0 %.2f; stop top Z %.2f vs skeleton panel_z0 %.2f -> %s" % (
+        top, v("wall_z0"), stop, v("panel_z0"), "OK" if abs(stop - v("panel_z0")) < 0.01 else "OFF"))
+    if abs(stop - v("panel_z0")) >= 0.01:
+        box_bad.append("stop height")
     ok = not bad and not open_sk and not box_bad and not unexpected and not sk_bad
     print("  RESULT: %s" % ("all checks pass" if ok else "CHECKS FAILED"))
     if not ok:

@@ -1,0 +1,4 @@
+item,name,section,qty_per_pod,cut_length_outer_face_mm,cut_length_inner_face_mm,front_or_first_end,back_or_second_end,finish,status,source
+111101,BASE - BAND TUBE - SIDE - LH,100 x 40 x 2.0,1,1517.00,1499.07,"mitre to DL's outer facet band piece: 24.14 deg from square, long point on the outer face","square, for the end cap","black anodised, matte, 20 um (class AA20, EN ISO 7599)",calculation (CAD),110000_P01_BASE_CAD; tolerance +0 / -0.5 on length (assumption)
+111103,BASE - BAND TUBE - BACK,100 x 40 x 2.0,1,2420.00,2420.00,square,square,"black anodised, matte, 20 um (class AA20, EN ISO 7599)",calculation (CAD),110000_P01_BASE_CAD; tolerance +0 / -0.5 on length (assumption)
+111201,BASE - CORNER BRACKET - BACK - COMMON,angle 60 x 60 x 5,1,70.00,70.00,square,square,"black anodised, matte, 20 um (class AA20, EN ISO 7599) (visible inside at floor level; assumption)",calculation (CAD),110000_P01_BASE_CAD; tolerance +0 / -0.5 on length (assumption)
