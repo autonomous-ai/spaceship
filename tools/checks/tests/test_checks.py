@@ -350,9 +350,10 @@ def test_repo_pod_mass_from_the_newest_list_without_double_counting():
     fs, info = c_parts.check_pod_mass(ROOT, rows, src)
     if src.endswith("parts-decided-P04.csv"):
         # the P04 roll-up already holds the air parts, the tray lips and the 9 mm floor: no adjustments on top
-        # the voice cockpit kit's 4.0 kg sits outside the cap (PM weight ruling)
-        assert info["adjustments"] == [] and info["outside_cap_kg"] == pytest.approx(4.0)
-        assert info["total_kg"] == pytest.approx(sum(float(r["kg_total"]) for r in rows) - 4.0, abs=0.01)
+        # no adjustments on top of the live roll-up; any voice cockpit kit line sits outside the cap (D-81)
+        assert info["adjustments"] == []
+        assert info["total_kg"] == pytest.approx(sum(float(r["kg_total"]) for r in rows) - info["outside_cap_kg"],
+                                                 abs=0.01)
     else:
         # the older list: 426.73 + 11.8 air + 3.4 wall trays - 12.6 floor (D-71)
         assert info["total_kg"] == pytest.approx(429.33, abs=0.01)
@@ -526,3 +527,14 @@ def test_current_skeleton_on_main_passes_the_shell_and_gap_rules():
     bodies = c_geometry.bodies_of(ROOT, cur[-1])
     assert c_geometry.shell_gaps(bodies, root=ROOT) == []
     assert c_geometry.check_gap_rules(ROOT, "skeleton", bodies, c_geometry.load_gap_rules(ROOT)) == []
+
+
+def test_missing_drawing_follows_the_screen_lock(monkeypatch, tmp_path):
+    (tmp_path / "v2/04-Checks/config").mkdir(parents=True)
+    (tmp_path / "v2/04-Checks/config/policy.csv").write_text("key,value,status_source\nmissing_drawing_severity,auto-screen-lock,D-84\n")
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: True)
+    assert c_drawings.missing_drawing_severity(str(tmp_path)) == "major"
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: False)
+    assert c_drawings.missing_drawing_severity(str(tmp_path)) == "severe"
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: None)
+    assert c_drawings.missing_drawing_severity(str(tmp_path)) == "severe"

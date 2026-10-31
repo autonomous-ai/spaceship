@@ -46,7 +46,7 @@ ALIASES = {
     "parent": ("parent", "parent_pn", "assembly", "parent_part_number", "used_in"),
     "location": ("location", "position", "position_code", "where"),
 }
-NAME_RE = re.compile(r"^(POD|BASE|WALL|FRONT|CEILING|LINING|AIR|ELECTRICAL|INTERIOR|PACKAGING|HARDWARE) - \S")
+NAME_RE = re.compile(r"^(POD|BASE|WALL|FRONT|CEILING|LINING|AIR|ELECTRICAL|INTERIOR|PACKAGING|HARDWARE|SEALS) - \S")
 STATUS_WORDS = ("confirmed", "source", "calculation", "assumption", "unverified", "measured", "draft", "hold",
                 "review", "decided", "proposed")
 GRADE_HINT = re.compile(r"\d|\b(A2|A4|ABS|PET|PE|PVC|EPDM|PU|PUR|ACP|MDF|HPL|LVL|felt|glass|toughened|laminat)\b",
@@ -250,11 +250,28 @@ def _fold_minor_rows(fs):
 
 
 def _fastener_row(r, pn, name, row, owner):
+    """What a fastener row must state depends on its kind: a bolt, screw or stud its thread, length, grade,
+    finish and torque; a nut, rivnut or insert its thread, grade, finish and torque (a rivnut's torque may be
+    HOLD with its test, D-48); a washer or retainer its grade and finish; all of them maker and SKU."""
     lacks = []
+    up = (name or "").upper()
+    threaded = re.search(r"\b(BOLT|SCREW|STUD)\b", up)
+    nutlike = re.search(r"\b(NUT|RIVNUT|RIVET NUT|INSERT|CLINCH)\b", up)
+    if not (threaded or nutlike):
+        # washers, retainers, spigots and the like: grade, finish, maker and SKU only
+        lacks = []
+        if not (row["grade"] or GRADE_HINT.search(row["material"] or "")):
+            lacks.append("grade")
+        if not (row["finish"] or FINISH_WORDS.search((row["material"] or "") + " " + (name or ""))):
+            lacks.append("finish")
+        if pn_class(pn) == "bought" and not (row["maker"] and row["sku"]):
+            lacks.append("maker and SKU")          # a part we make has a drawing instead
+        return [] if not lacks else [Finding("C07", "fastener-spec", pn, "major",
+                                             "Hardware item %s %s in %s has no %s." % (pn, name, r, ", no ".join(lacks)),
+                                             "Complete the row (guideline section 4.2).", r, owner)]
     if not (row["size"] or re.search(r"\bM\d+(\.\d+)?\b", name or "")):
         lacks.append("thread size")
-    if not (row["length"] or re.search(r"\bM\d+\s*[x×]\s*\d+", name or "", re.I)) and \
-            not re.search(r"NUT|WASHER|RIVNUT|RIVET NUT|INSERT", name or "", re.I):
+    if threaded and not (row["length"] or re.search(r"\bM\d+\s*[x×]\s*\d+", name or "", re.I)):
         lacks.append("length")
     if not (row["grade"] or re.search(r"\b(4\.6|5\.6|8\.8|10\.9|12\.9|A2|A4|A2-70|A4-70|A4-80|steel|stainless|"
                                        r"alumin)", (row["material"] or "") + " " + (name or ""), re.I)):
@@ -264,7 +281,7 @@ def _fastener_row(r, pn, name, row, owner):
     tq = row["torque"]
     if not tq:
         lacks.append("torque (or HOLD with its test, as D-48 does for the rivnuts)")
-    if not (row["maker"] and row["sku"]):
+    if pn_class(pn) == "bought" and not (row["maker"] and row["sku"]):
         lacks.append("maker and SKU")
     if not lacks:
         return []

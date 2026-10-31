@@ -1,2 +1,2 @@
 key,value,status_source
-missing_drawing_severity,severe,"confirmed: D-73: a missing drawing for a part we make was major while the shared drawing start was being solved; severe again from main 9ec5623, where the drawing start merged (Lead, mechanical check group)"
+missing_drawing_severity,auto-screen-lock,"confirmed: D-84 (2026-10-31): a missing drawing for a part we make rates major while the Mac's screen is locked, because a drawing can't be started then (start_drawing refuses); severe the moment the screen is unlocked. auto-screen-lock reads the console lock the same way tools/fusion/start_drawing.py does; on a machine that can't tell, it stays severe (D-73's rule since the drawing start merged)"
