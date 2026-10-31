@@ -1,16 +1,16 @@
 part_number,name,name_vi,kind,parent,qty_per_parent,qty_per_pod,material,mass_each_kg,mass_status,revision,status,source
-410000,CEILING,Trần,HS,,1,1,,38.804,calculation (sum of its parts),P01,DRAFT,assembly tree; conventions s6
-410101,CEILING - PANEL ASSY - C1,Trần - tấm trái (cụm),HS,ceiling,1,1,,9.586,calculation (sum of its parts),P01,DRAFT,assembly tree; conventions s6
-410102,CEILING - PANEL ASSY - C2,Trần - tấm phải (cụm),HS,ceiling,1,1,,9.586,calculation (sum of its parts),P01,DRAFT,assembly tree; conventions s6
-411101,CEILING - PANEL FRAME - C1,Trần trái - khung nhôm,MP,assy_c1,1,1,"Aluminium 6063-T6 (alloy HOLD, ISS-034)",3.288,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-16, D-34, D-54, D-55; PM ruling 2026-10-31 (3 cross members)"
-411102,CEILING - PANEL FRAME - C2,Trần phải - khung nhôm,MP,assy_c2,1,1,"Aluminium 6063-T6 (alloy HOLD, ISS-034)",3.288,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-16, D-34, D-54, D-55; PM ruling 2026-10-31 (3 cross members)"
-411301,CEILING - SKIN - COMMON,Trần - tấm ốp alu (dùng chung trái/phải),MP,assy_c1|assy_c2,1,2,"ACP 3 mm EV3038, 3.5 kg/m2",6.298,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,build plan VT01; D-12; D-42
-510301,LINING - CASSETTE - CEILING - COMMON,Cassette trần (dùng chung trái/phải),HS,ceiling,2,2,,9.816,calculation (sum of its parts),P01,DRAFT,"D-17, D-24, D-41, D-47; PM ruling 2026-10-31 (one part for both halves)"
-513101,LINING - TRAY - CEILING,Khay thép cassette trần,MP,cassette,1,2,Galvanised steel DX51D+Z,5.548,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-17, D-37; PM ruling 2026-10-31 (12 mm lip)"
-513102,LINING - RIB - CEILING,Gân đỡ tấm tiêu âm trần,MP,cassette,2,4,Galvanised steel DX51D+Z,0.370,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,PM ruling 2026-10-31 (2 ribs); rib joint HOLD
-513201,LINING - FELT - CEILING,Tấm tiêu âm PET 9 mm - trần,MP,cassette,1,2,"PET felt 9 mm, 1.8 kg/m2",2.182,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-17, D-31; felt fixing HOLD H09"
-513301,LINING - FILL - CEILING - BAY A,Bông PET 40 mm - trần - ô A,MP,cassette,1,2,PET fill 32 kg/m3 (Sorberpoly 2D),0.477,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-24, D-54; fixing HOLD H10"
-513302,LINING - FILL - CEILING - BAY B,Bông PET 40 mm - trần - ô B,MP,cassette,1,2,PET fill 32 kg/m3 (Sorberpoly 2D),0.480,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-24, D-54; fixing HOLD H10"
-513303,LINING - FILL - CEILING - BAY C,Bông PET 40 mm - trần - ô C,MP,cassette,1,2,PET fill 32 kg/m3 (Sorberpoly 2D),0.389,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-24, D-54; fixing HOLD H10"
+410000,CEILING,Trần,HS,,1,1,,38.660,calculation (sum of its parts),P01,DRAFT,assembly tree; conventions s6
+410101,CEILING - PANEL ASSY - C1,Trần - tấm trái (cụm),HS,ceiling,1,1,,9.564,calculation (sum of its parts),P01,DRAFT,assembly tree; conventions s6
+410102,CEILING - PANEL ASSY - C2,Trần - tấm phải (cụm),HS,ceiling,1,1,,9.564,calculation (sum of its parts),P01,DRAFT,assembly tree; conventions s6
+411101,CEILING - PANEL FRAME - C1,Trần trái - khung nhôm,MP,assy_c1,1,1,"Aluminium 6063-T6 (alloy HOLD, ISS-034)",3.282,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-16, D-34, D-54, D-55; PM ruling 2026-10-31 (3 cross members)"
+411102,CEILING - PANEL FRAME - C2,Trần phải - khung nhôm,MP,assy_c2,1,1,"Aluminium 6063-T6 (alloy HOLD, ISS-034)",3.282,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-16, D-34, D-54, D-55; PM ruling 2026-10-31 (3 cross members)"
+411301,CEILING - SKIN - COMMON,Trần - tấm ốp alu (dùng chung trái/phải),MP,assy_c1|assy_c2,1,2,"ACP 3 mm EV3038, 3.5 kg/m2",6.282,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,build plan VT01; D-12; D-42
+510301,LINING - CASSETTE - CEILING - COMMON,Cassette trần (dùng chung trái/phải),HS,ceiling,2,2,,9.766,calculation (sum of its parts),P01,DRAFT,"D-17, D-24, D-41, D-47; PM ruling 2026-10-31 (one part for both halves)"
+513101,LINING - TRAY - CEILING,Khay thép cassette trần,MP,cassette,1,2,Galvanised steel DX51D+Z,5.520,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-17, D-37; PM ruling 2026-10-31 (12 mm lip)"
+513102,LINING - RIB - CEILING,Gân đỡ tấm tiêu âm trần,MP,cassette,2,4,Galvanised steel DX51D+Z,0.369,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,PM ruling 2026-10-31 (2 ribs); rib joint HOLD
+513201,LINING - FELT - CEILING,Tấm tiêu âm PET 9 mm - trần,MP,cassette,1,2,"PET felt 9 mm, 1.8 kg/m2",2.170,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-17, D-31; felt fixing HOLD H09"
+513301,LINING - FILL - CEILING - BAY A,Bông PET 40 mm - trần - ô A,MP,cassette,1,2,PET fill 32 kg/m3 (Sorberpoly 2D),0.475,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-24, D-54; fixing HOLD H10"
+513302,LINING - FILL - CEILING - BAY B,Bông PET 40 mm - trần - ô B,MP,cassette,1,2,PET fill 32 kg/m3 (Sorberpoly 2D),0.479,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-24, D-54; fixing HOLD H10"
+513303,LINING - FILL - CEILING - BAY C,Bông PET 40 mm - trần - ô C,MP,cassette,1,2,PET fill 32 kg/m3 (Sorberpoly 2D),0.384,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"D-24, D-54; fixing HOLD H10"
 518001,LINING - CASSETTE CLIP - HOLD,Kẹp treo cassette (chờ chọn),HOLD,cassette,6,12,HOLD envelope - no mass,HOLD,HOLD (no part named; envelope only),P01,HOLD,"D-47; H03, ISS-076"
 518002,LINING - CEILING SAFETY CATCH - HOLD,Dây an toàn cassette trần (chờ chọn),HOLD,cassette,2,4,HOLD envelope - no mass,HOLD,HOLD (no part named; envelope only),P01,HOLD,"D-47; H04, ISS-076"

@@ -3,7 +3,7 @@
 Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the Fusion lock:
 `python3 tools/fusion/run_script.py v2/01-CAD-Native/ceiling/edit_test_ceiling.py --label "CEILING Engineer"`
 
-On a copy: the script opens `410000_P01_CEILING_CAD.f3d` (the export of the saved cloud version) as a new document, changes one parameter at a time, rebuilds, and checks every body in the root context against the box the layout (`ceiling_model.py`) gives for the new values: the 14 frame members, both skins, and in both cassettes the tray, felt, 2 ribs, 3 fill strips, 6 clip spaces and 2 catch spaces (46 bodies). Then it reverts, checks again and closes the copy without saving. `pod_w` and `wall_depth` are skeleton parameters; `cs_front` is the D-60 soffit depth.
+On a copy, on skeleton P04: the script opens `410000_P01_CEILING_CAD.f3d` (the export of the saved cloud version 4) as a new document, changes one parameter at a time, rebuilds, and checks every body in the root context against the box the layout (`ceiling_model.py`) gives for the new values: the 14 frame members, both skins, and in both cassettes the tray, felt, 2 ribs, 3 fill strips, 6 clip spaces and 2 catch spaces (46 bodies). Then it reverts, checks again and closes the copy without saving. `pod_w` and `wall_depth` are skeleton parameters; `cs_front` is the D-60 soffit depth.
 
 | Step | Change | Bodies checked | Worst deviation (mm) | Off | Unhealthy timeline items |
 |---|---|---|---|---|---|
