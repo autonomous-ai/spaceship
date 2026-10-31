@@ -6,20 +6,27 @@ Run 2026-11-01 (about 20:19 UTC) on Mac 1, Fusion 2706.1.17 (API b43a07003c01), 
 
 | Design (Default Project / FocusPod v2 / joints) | Body box in its own frame (mm) | Mass (calculation, Fusion material) | Edit test |
 |---|---|---|---|
-| `111211_P01_BASE-CORNER-KEY-TABULATED_CAD`, saved at `cut_angle` 0 (111211) | X 0..25, Y −17.5..17.5, Z 0..75; 12 faces (block, 4 tap-drill holes, 2 drill points) | 0.1725 kg (Aluminum 6061) | `key_h` 75 → 80: Z 0..80, then back to 0..75: **PASS** |
+| `111211_P01_BASE-CORNER-KEY-TABULATED_CAD`, saved at `cut_angle` 0 (111211); **version 2** after the update run below | X 0..30, Y −17.5..17.5, Z 0..75 (version 1: X 0..25); 12 faces (block, 4 tap-drill holes, 2 drill points) | 0.2075 kg (calculation from the version 2 geometry at Fusion's 2.70 g/cm³; version 1 measured 0.1725 kg at 25 long) | `key_h` 75 → 80: Z 0..80, then back to 0..75: **PASS** (version 1) |
 | `831001_P01_HARDWARE-LOCATING-SPIGOT_CAD` | X −4..4, Y −4..4, Z −8..7.24 (origin on its rivnut's head); hex socket sketch fully constrained | 0.00417 kg (Stainless Steel) | `pin_proud` 8 → 10: top Z 7.24 → 9.24, then back: **PASS** |
 | `831002_P01_HARDWARE-STOP-WASHER_CAD` | X −10..10, Y −10..10, Z 0..1.5 (`wash_t` = skeleton `seam_gap` − 0.76) | 0.000915 kg (Aluminum 5052) | `wash_od` 20 → 24: X −12..12, then back: **PASS** |
 
 The key family, one STEP per part number (`cut_angle` set, then exported):
 
-| Part | `cut_angle` | Body box (mm) | Mass | STEP check (`tools/fusion/step_check.py --expect`) |
-|---|---|---|---|---|
-| 111211 | 0 | X 0..25.00 | 0.1725 kg | X 0..25.000, Y ±17.5, Z 0..75: **MATCH** (0.0000) |
-| 111212 (LH) | −24.14° | X 0..32.84 | 0.1723 kg | X 0..32.843: **MATCH** (0.0028) |
-| 111213 (RH) | +24.02° | X 0..32.80 | 0.1723 kg | X 0..32.799: **MATCH** (0.0012) |
-| 111214 (knee) | −7.25° | X 0..27.23 | 0.1725 kg | X 0..27.226: **MATCH** (0.0037) |
+| Part | `cut_angle` | Body box (mm), version 2 | Mass | STEP check (`tools/fusion/step_check.py --expect`) | Part number in the STEP |
+|---|---|---|---|---|---|
+| 111211 | 0 | X 0..30.00 | 0.2075 kg | X 0..30, Y ±17.5, Z 0..75: **MATCH** (0.0000) | 111211 |
+| 111212 (LH) | −24.14° | X 0..37.84 | 0.2072 kg | X 0..37.84: **MATCH** (0.0028) | 111212 |
+| 111213 (RH) | +24.02° | X 0..37.80 | 0.2072 kg | X 0..37.80: **MATCH** (0.0012) | 111213 |
+| 111214 (knee) | −7.25° | X 0..32.23 | 0.2075 kg | X 0..32.23: **MATCH** (0.0037) | 111214 |
 
 Every STEP file says its length unit is cm, as Fusion writes it (D-13). step_check takes its box from vertices, so it is exact only for the straight-edged keys. The spigot's and washer's round outlines are checked against the boxes Fusion measured above.
+
+## Update run (version 2 of the key design)
+
+Run about 20:55 UTC through the lock: `joints_keys_update.py` with `--doc 111211_P01_BASE-CORNER-KEY-TABULATED_CAD --close`. The API checker was clean. It changed the saved design in place (a new version, no copy):
+- `key_len` 25 → **30**: the carrier's Ø7.0 fixing holes then sit at least 2 × 7 from its cut end on every key: 14.9 on the front corners, 18.5 at the knee, 19.5 on the square keys (PM note, 2026-11-01; register J-BASE-02, merged in #127).
+- `fix_x` 10 → **10.5** and `fix_y` 7.5 → **7.0**: the key's own holes sit 10.5 from its back and side faces, over 2 × the Ø5.03 hole (the mechanical check's C09). Log: "fixing holes at [(10.5, -7.0), (10.5, 7.0)]".
+- **Each STEP carries its own part number and name** (C06): the four STEPs were exported with the root part number set to 111211, 111212, 111213 and 111214 in turn, then the saved family state (111211 at 0) was restored. The document was closed without keeping those per-STEP changes.
 
 ## Exports
 
