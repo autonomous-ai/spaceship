@@ -1,8 +1,8 @@
-# Mechanical check run: c53b1eb on 2026-11-01
+# Mechanical check run: 7963e9c on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `c53b1eb`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `7963e9c`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 8** (5 severe, 3 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 13** (7 severe, 4 major, 2 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,15 +12,15 @@ Offline checks (`tools/checks/run_checks.py`) on revision `c53b1eb`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 8 |
-| C06 BOM completeness | yes | 0 |
+| C05 drawing completeness | yes | 11 |
+| C06 BOM completeness | yes | 2 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 0 |
 | C09 edge distance, bend radius, hole-to-bend | yes | 0 |
 | C10 mixed metals | yes | 0 |
 | C11 material grade and finish | yes | 0 |
 
-Inputs: {"bodies_skeleton": 36, "bodies_assembly": 36, "parts_lists": ["v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv", "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": ["v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step"]}
+Inputs: {"bodies_skeleton": 36, "bodies_assembly": 47, "parts_lists": ["v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv", "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv", "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": ["v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step", "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step"]}
 
 ## Findings
 
@@ -28,12 +28,17 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 36, "parts_lists": ["v2/03-Ma
 |---|---|---|---|---|---|
 | F-020 | severe | C05 | 211101 | 211101 WALL - PANEL FRAME - SIDE LOWER - LH has no drawing PDF (211101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-021 | severe | C05 | 211301 | 211301 WALL - SKIN - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove. | WALL |
+| F-030 | severe | C05 | 361001 | 361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance. | FRONT |
+| F-031 | severe | C05 | 361002 | 361002 FRONT - DOOR KICK STRIP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its faces lie at 8 levels through the thickness (a pocket, a step or a rebate). | FRONT |
 | F-024 | severe | C05 | 511101 | 511101 LINING - TRAY - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake. | WALL |
 | F-025 | severe | C05 | 831001 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS has no drawing PDF (831001_REV_NAME_DWG.pdf under v2/02-Drawings). | Joints Engineer |
 | F-026 | severe | C05 | 831002 | 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL has no drawing PDF (831002_REV_NAME_DWG.pdf under v2/02-Drawings). | Joints Engineer |
 | F-019 | major | C05 | 210101 | 210101 WALL - PANEL ASSY - SIDE LOWER - LH has no drawing PDF (210101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-022 | major | C05 | 211501 | 211501 WALL - CAVITY FILL - SIDE LOWER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle. | WALL |
+| F-029 | major | C05 | 360001 | 360001 FRONT - DOOR UNIT has no drawing PDF (360001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step. | FRONT |
 | F-023 | major | C05 | 510101 | 510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step. | WALL |
+| F-027 | minor | C06 | 368006 | 368006 is named 'FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD' in the CAD (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step) but 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD' in the parts list (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv); the guideline wants one name everywhere (section 4.2). | FRONT |
+| F-028 | minor | C06 | 368102 | 368102 is named 'FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10' in the CAD (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step) but 'FRONT - DOOR STRIKE' in the parts list (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv); the guideline wants one name everywhere (section 4.2). | FRONT |
 
 ## Tolerance stacks (C02)
 
