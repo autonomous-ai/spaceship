@@ -1,0 +1,272 @@
+"""Edit test for a WALL design (engineering guideline section 4.4), on a COPY.
+
+    python3 tools/fusion/run_script.py v2/01-CAD-Native/wall/edit_test_wall.py \
+        --arg f3d=v2/01-CAD-Native/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD.f3d
+
+Opens the exported .f3d as a new, unsaved document (the saved design is never
+touched) and prints a Markdown record:
+  1. Reopen check: timeline health, every sketch fully constrained, design type.
+  2. Edit two skeleton parameters (wall_depth 1495 -> 1300, side_h -> 1000) and,
+     on designs with no fill, one wall rule (stile_pitch_max 400 -> 300), rebuild,
+     check health again. A fill pocket is a cut, and a Fusion cut keeps the bodies
+     it first cut: when the stud count changes, a pocket can land on a fill piece
+     it doesn't know. So the stud rule isn't edited on designs with fill; a change
+     in the stud count is a rebuild by the script (rebuild=1).
+  3. Every body's box before and after, and the checks that the parts follow:
+     lengths follow wall_depth, heights follow side_h, the stile and fill-bay
+     counts follow the pitch rule, no stile pitch over the rule.
+  4. Revert, rebuild, and confirm every body is back to its "before" box.
+Then closes the copy without saving.
+"""
+
+import math
+import os
+
+import adsk.core
+import adsk.fusion
+
+ARGS = globals().get("SCRIPT_ARGS", {})
+EDITS = [("wall_depth", "1300 mm"), ("side_h", "1000 mm"), ("stile_pitch_max", "300 mm")]
+# back wall panels B1-B4 (wall_back_panel.py): the panel width, the row height and the stud rule
+# (pod_w 2300 with the skin and frame widths the skeleton would give it: (2300 - 92 - 3 x 2.26) / 2 and
+# (2300 - 92 - 2 x 2.26 - 5.5) / 2)
+EDITS_BACK = [("pod_w", "2300 mm"), ("half_pw", "1100.61 mm"), ("half_fw", "1098.99 mm"), ("back_ph", "1000 mm"),
+              ("stile_pitch_max", "300 mm")]
+BACK_PREFIXES = ("2102", "2112", "2114", "2116", "5102", "5112", "5114")
+
+
+def box(b):
+    bb = b.boundingBox
+    return tuple(round(v * 10.0, 2) for v in (bb.minPoint.x, bb.minPoint.y, bb.minPoint.z,
+                                              bb.maxPoint.x, bb.maxPoint.y, bb.maxPoint.z))
+
+
+def snapshot(design):
+    return {"%s / %s" % (c.partNumber, b.name): box(b) for c in design.allComponents for b in c.bRepBodies}
+
+
+def health(design):
+    tl = design.timeline
+    bad = ["%s (%s)" % (tl.item(i).name, tl.item(i).errorOrWarningMessage) for i in range(tl.count)
+           if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    loose = [sk.name for c in design.allComponents for sk in c.sketches if not sk.isFullyConstrained]
+    return tl.count, bad, loose
+
+
+def pv(design, name, default=None):
+    p = design.userParameters.itemByName(name)
+    if p is None:                       # a design built before the parameter existed
+        return default
+    return round(p.value * 10.0, 3) if p.unit == "mm" else round(p.value, 3)
+
+
+def back_checks(after, p):
+    """What must follow on a back wall panel or its cassette (wall_back_panel.py) after EDITS_BACK."""
+    def nm(k):
+        return k.split(" / ", 1)[-1]
+    seam, gap = 2.26, 5.5
+    pick = (lambda pre: sorted((v for k, v in after.items() if nm(k).startswith(pre)), key=lambda b: b[0]))
+    rails, stiles, mids = pick("RAIL"), pick("STILE"), pick("STILE - MID")
+    bays, skins, trays, felts = pick("FILL"), pick("SKIN"), pick("TRAY"), pick("FELT")
+    zones = sorted((v for k, v in after.items() if "CLIP ZONE" in nm(k)), key=lambda b: b[0])
+    rivs = [r for k, r in sorted(after.items()) if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k)]
+    rule = p["stile_pitch_max"]
+    n_mid = math.ceil((p["frm_len"] - 20) / rule) - 1
+    out = []
+    if rails:
+        out += [("frame width follows half_fw (%g)" % p["frm_len"],
+                 abs(p["frm_len"] - p["half_fw"]) < 0.01 and all(abs((r[3] - r[0]) - p["frm_len"]) < 0.01 for r in rails)),
+                ("frame stays close_gap / 2 from X 0 at the closing seam",
+                 all(abs(min(abs(r[0]), abs(r[3])) - gap / 2) < 0.01 for r in rails)),
+                ("frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26)",
+                 all(abs(max(abs(r[0]), abs(r[3])) - (p["pod_w"] / 2 - 46 - seam)) < 0.01 for r in rails)),
+                ("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
+                                                         for st in stiles)),
+                ("stud count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
+                ("no stud pitch over %g" % rule, all(b[0] - a[0] <= rule + 0.01 for a, b in zip(mids, mids[1:])))]
+    if bays:
+        out.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+    if skins:
+        sk = skins[0]
+        out.append(("skin is half_pw wide and the row high", abs((sk[3] - sk[0]) - p["half_pw"]) < 0.01 and
+                    abs((sk[5] - sk[2]) - p["pnl_h"]) < 0.01))
+    if trays:
+        tr = trays[0]
+        out += [("tray runs cass_len", abs((tr[3] - tr[0]) - p["cass_len"]) < 0.01),
+                ("tray height follows cass_h", abs((tr[5] - tr[2]) - p["cass_h"]) < 0.01),
+                ("tray stops seam_gap / 2 short of X 0", abs(min(abs(tr[0]), abs(tr[3])) - seam / 2) < 0.01)]
+    if felts:
+        fe = felts[0]
+        out.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
+                    abs((fe[3] - fe[0]) - (p["cass_len"] - 3)) < 0.01 and abs((fe[5] - fe[2]) - (p["cass_h"] - 3)) < 0.01))
+    if zones and rails:
+        x_low = min(r[0] for r in rails)
+        want = sorted({round(x_low + p["stile_pitch"], 2), round(x_low + p["stile_n_mid"] * p["stile_pitch"], 2)})
+        out.append(("clip zones sit on the first and last stud", sorted({round(z[0], 2) for z in zones}) == want))
+    if rivs and rails:
+        x_low = min(r[0] for r in rails)
+        pitch = (p["frm_len"] - 440.0) / 3.0
+        want = [round(x_low + 220.0 + i * pitch, 2) for i in range(4)]
+        got = sorted(round((r[0] + r[3]) / 2.0, 2) for r in rivs)
+        out.append(("top rail rivnuts follow the 220 rule %s" % want,
+                    len(got) == 4 and all(abs(a - b) < 0.02 for a, b in zip(got, want))))
+    return out
+
+
+def run(_context):
+    app = adsk.core.Application.get()
+    rel = ARGS["f3d"]
+    src = app.activeDocument
+    doc = app.importManager.importToNewDocument(
+        app.importManager.createFusionArchiveImportOptions("%s/%s" % (ARGS["repo_root"], rel)))
+    design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
+    try:
+        record(design, rel)
+    finally:
+        doc.close(False)
+        if src and src.isValid:
+            src.activate()
+
+
+def record(design, rel):
+    out = []
+    p = out.append
+    root_pn = design.rootComponent.partNumber
+    p("## Edit test: %s" % rel.split("/")[-1])
+    p("")
+    p("Copy opened as a new, unsaved document and closed without saving. Components: %s." % ", ".join(
+        sorted(c.partNumber for c in design.allComponents if c != design.rootComponent)))
+    p("")
+    n, bad, loose = health(design)
+    sketches = sum(c.sketches.count for c in design.allComponents)
+    p("1. Reopen: timeline %d items, %d not healthy; sketches %d, %d fully constrained; %s." % (
+        n, len(bad), sketches, sketches - len(loose),
+        "parametric" if design.designType == adsk.fusion.DesignTypes.ParametricDesignType else "DIRECT"))
+    back_wall = root_pn[:4] in BACK_PREFIXES
+    edits = EDITS_BACK if back_wall else EDITS
+    names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
+             "cass_len", "cass_h", "pnl_h") if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
+                                         "stile_pitch", "cass_len", "cass_h", "top_h")
+    before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
+    before = snapshot(design)
+    if any(k.split(" / ", 1)[-1].startswith("FILL") for k in before):
+        edits = [e for e in edits if e[0] != "stile_pitch_max"]      # see step 2 in the docstring
+    exprs = {k: design.userParameters.itemByName(k).expression for k, _e in edits}
+    for k, e in edits:
+        design.userParameters.itemByName(k).expression = e
+    adsk.doEvents()
+    n2, bad2, loose2 = health(design)
+    after_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
+    after = snapshot(design)
+    p("2. Edit %s: rebuild %d items, %d not healthy, %d sketches not fully constrained." % (
+        ", ".join("%s -> %s" % (k, e) for k, e in edits), n2, len(bad2), len(loose2)))
+    if bad2 or loose2:
+        p("")
+        p("   Not healthy after the edit: %s" % "; ".join(bad2 + ["sketch %s not fully constrained" % k for k in loose2]))
+    p("")
+    p("| Parameter | Before | After |")
+    p("|---|---|---|")
+    for k in names:
+        p("| %s | %g | %g |" % (k, before_p[k], after_p[k]))
+    p("")
+    p("3. Bodies (box in mm: xmin, ymin, zmin, xmax, ymax, zmax):")
+    p("")
+    p("| Body | Before | After |")
+    p("|---|---|---|")
+    for k in sorted(set(before) | set(after)):
+        p("| %s | %s | %s |" % (k, before.get(k, "-"), after.get(k, "-")))
+    p("")
+    if back_wall:
+        checks = back_checks(after, after_p)
+    else:
+        checks = []
+        seam = 2.26
+        y0p = 850.0 - after_p["wall_depth"] + seam          # panel front end (2.26 behind the decor back plate)
+        y0c = 850.0 - after_p["wall_depth"]                 # the lining starts at the decor back plate
+        z0 = 110.0 + seam                                    # walls stand one seam gap above the band top
+        def nm(k):          # body name without its component's part number ("PN / NAME")
+            return k.split(" / ", 1)[-1]
+        # by name prefix: hardware names hold member names too ("RIVNUT - TOP RAIL 1", "RIVNUT - BACK STILE CORNER 1")
+        rails = [v for k, v in after.items() if nm(k).startswith("RAIL")]
+        stiles = [v for k, v in after.items() if nm(k).startswith("STILE")]
+        mids = sorted(v for k, v in after.items() if nm(k).startswith("STILE - MID"))
+        bays = [v for k, v in after.items() if nm(k).startswith("FILL")]
+        skins = [v for k, v in after.items() if nm(k).startswith("SKIN")]
+        trays = [v for k, v in after.items() if nm(k).startswith("TRAY")]
+        felts = [v for k, v in after.items() if nm(k).startswith("FELT")]
+        zones = [v for k, v in after.items() if "CLIP ZONE" in nm(k)]
+        rivs = sorted(v for k, v in after.items() if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k))
+        washers = sorted(v for k, v in after.items() if nm(k).startswith("STOP WASHER - TOP RAIL "))
+        spig_front = [v for k, v in after.items() if nm(k) == "SPIGOT - TOP RAIL SPIGOT FRONT"]
+        rule = after_p["stile_pitch_max"]
+        n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / rule) - 1
+        if rails:
+            checks += [
+                ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
+                                                        for r in rails)),
+                ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
+                ("stiles span side_h - 20 - top_h", all(abs((st[5] - st[2]) - (after_p["side_h"] - 20 - after_p["top_h"]))
+                                                        < 0.01 for st in stiles)),
+                ("mid stile count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
+                ("no stile pitch over %g" % rule, all(b[1] - a[1] <= rule + 0.01 for a, b in zip(mids, mids[1:]))),
+            ]
+        if bays:
+            checks.append(("fill bays = mid stile count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+        if skins:
+            sk = skins[0]
+            checks.append(("skin runs wall_depth - 2.26 and side_h", abs((sk[4] - sk[1]) - (after_p["wall_depth"] - seam))
+                           < 0.01 and abs((sk[5] - sk[2]) - after_p["side_h"]) < 0.01))
+        if trays:
+            tr = trays[0]
+            checks += [("tray runs cass_len", abs((tr[4] - tr[1]) - after_p["cass_len"]) < 0.01),
+                       ("tray starts at the decor back plate", abs(tr[1] - y0c) < 0.01),
+                       ("tray height follows side_h", abs((tr[5] - tr[2]) - after_p["side_h"]) < 0.01)]
+        if felts:
+            fe = felts[0]
+            checks.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
+                           abs((fe[4] - fe[1]) - (after_p["cass_len"] - 3)) < 0.01 and
+                           abs((fe[5] - fe[2]) - (after_p["side_h"] - 3)) < 0.01))
+        if zones:
+            checks += [
+                ("clip zones sit on the first and last mid stile",
+                 sorted({round(zz[1], 2) for zz in zones}) == sorted({round(y0p + after_p["stile_pitch"], 2),
+                                                                      round(y0p + after_p["stile_n_mid"] *
+                                                                            after_p["stile_pitch"], 2)})),
+                ("top clip zones follow the top edge", abs(max(zz[5] for zz in zones) - (z0 + after_p["side_h"] - 70)) < 0.01),
+            ]
+        if rivs:
+            pitch = (after_p["wall_depth"] - seam - 440.0) / 3.0        # 220 rule, 4 bolts (R-J14)
+            want = [round(y0p + 220.0 + i * pitch, 2) for i in range(4)]
+            got = sorted(round((r[1] + r[4]) / 2.0, 2) for r in rivs)
+            checks.append(("top rail rivnuts follow the 220 rule %s" % want,
+                           len(got) == 4 and all(abs(a - b) < 0.02 for a, b in zip(got, want))))
+        if washers and rivs:
+            checks.append(("a stop washer under each top rail rivnut",
+                           len(washers) == len(rivs) and all(abs((w[1] + w[4]) - (r[1] + r[4])) < 0.04
+                                                             for w, r in zip(washers, rivs))))
+        if spig_front:
+            sp = spig_front[0]
+            checks.append(("front spigot follows the panel's front end (+100)",
+                           abs((sp[1] + sp[4]) / 2.0 - (y0p + 100.0)) < 0.02))
+    for k, e in exprs.items():
+        design.userParameters.itemByName(k).expression = e
+    adsk.doEvents()
+    n3, bad3, loose3 = health(design)
+    back = snapshot(design)
+    same = all(back.get(k) == v for k, v in before.items()) and set(back) == set(before)
+    checks.append(("revert: every body back to its before box, healthy", same and not bad3 and not loose3))
+    p("| Check | Result |")
+    p("|---|---|")
+    for c, ok in checks:
+        p("| %s | %s |" % (c, "PASS" if ok else "FAIL"))
+    p("")
+    p("4. Revert: %d items, %d not healthy, %d sketches not fully constrained; bodies back to before: %s." % (
+        n3, len(bad3), len(loose3), same))
+    print("\n".join(out))
+    if ARGS.get("out"):                     # also write the record to a file (post_wall_doc.py)
+        path = os.path.join(ARGS["repo_root"], ARGS["out"])
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(out) + "\n")
+    if not all(ok for _c, ok in checks) or bad or loose or bad2 or loose2:
+        raise RuntimeError("edit test failed: %s" % [c for c, ok in checks if not ok])
