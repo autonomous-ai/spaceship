@@ -1,7 +1,6 @@
 {
  "rev": "1eec888",
  "date": "2026-10-31",
- "root": "/Users/d/harnesses/worktrees/spaceship/765409e413323ec806d75b21",
  "inputs": {
   "bodies_skeleton": 32,
   "bodies_assembly": 0,

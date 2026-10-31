@@ -126,7 +126,7 @@ def run(root, rev):
         findings += c_drawings.check_drawings(root, made, holes_by_pn, names)
         ran.add("C05")
     schedule = c_parts.fastener_schedule(root, plists, usage)
-    return {"rev": rev, "date": datetime.date.today().isoformat(), "root": root, "inputs": inputs,
+    return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,
             "ran": sorted(ran), "findings": [f.to_dict() for f in findings], "stacks": stack_report,
             "shipping": ship_report, "shipping_source": ship_src, "fastener_schedule": schedule}
 
