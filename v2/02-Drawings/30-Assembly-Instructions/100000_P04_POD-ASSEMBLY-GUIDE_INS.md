@@ -65,7 +65,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Parts:** **2-04** BASE - BAND ASSY - BACK (3.1 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.1 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.1 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (0.9 kg), **2-16** BASE - SMALL PARTS CARTON (1.6 kg).
 - **Fasteners:** 12 × M6 × 16 corner-key bolts (BASE design; PROPOSED: each key arrives bolted to one band piece). Tool: the 5 mm hex key.
 - **Person A:** Sets the back band, then the left and right side bands, then the front pieces (front-left under DL, the piece under the fixed glass, the mesh intake piece under DR with DR's support and closing plate) on the room floor in their places.
-- **Person B:** Joins each corner key with its 2 site bolts, then levels the band from above with the hex key on the 8 glides, checking with the spirit level corner to corner.
+- **Person B:** Joins each corner key with its 2 site bolts, then levels the band from above on its 8 glides, checking with the spirit level corner to corner. The glide is HOLD: the named one must adjust with the same 5 mm key (REQ-ASM-03).
 - **Check before the next step:** Band level within the spirit level's bubble over its length; corners closed; the mesh piece's support stands; the glass channel in the front-right piece is clean.
 
 ### Step 3. Floor and threshold
@@ -83,7 +83,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Parts:** **1-05** WALL - PANEL ASSY - BACK LOWER - LH (9.3 kg), **1-06** WALL - PANEL ASSY - BACK LOWER - RH (9.3 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1.
-- **Person B:** From inside, through the fill pockets: drives B1's and B2's 4 base bolts each, then the 3 pins of the B1-B2 closing seam (pins first, R-J11).
+- **Person B:** From inside, through the fill pockets: first the 3 pins of the B1-B2 closing seam, snug only; then B1's and B2's 4 base bolts each (pins first: joints register 2.7, R-J11).
 - **Check before the next step:** Both panels sit down on their stops; the B1-B2 gap looks even top to bottom (5.5 mm nominal).
 
 ### Step 5. Lower side walls: L1, R1
@@ -101,7 +101,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Parts:** **1-09** WALL - PANEL ASSY - BACK UPPER - LH (9.3 kg), **1-10** WALL - PANEL ASSY - BACK UPPER - RH (9.3 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Lifts B3 onto B1's top spigots (step stool), then B4 onto B2's, dropping past the closing seam's lead-in chamfer.
-- **Person B:** Drives the 4 horizontal-seam bolts under each (B1-B3, B2-B4), then the 3 pins of the B3-B4 closing seam.
+- **Person B:** First the 3 pins of the B3-B4 closing seam, snug only; then the 4 horizontal-seam bolts under each (B1-B3, B2-B4).
 - **Check before the next step:** Seams closed; skins flush across the horizontal seam.
 
 ### Step 7. Upper side walls: L2, R2
