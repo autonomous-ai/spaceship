@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (40ccd24), PR #27 (4696390), PR #28 (04ac4dd), PR #55 (9028182), PR #32 (40c7c5d), PR #64 (4d4f9e3), PR #41 (2a503fc). The Mac's screen at run time: **unlocked**. 171 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
+Read from: main (deeecf9), PR #27 (4696390), PR #28 (04ac4dd), PR #55 (9028182), PR #32 (40c7c5d), PR #64 (4d4f9e3), PR #41 (2a503fc). The Mac's screen at run time: **unlocked**. 171 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -20,14 +20,14 @@ Read from: main (40ccd24), PR #27 (4696390), PR #28 (04ac4dd), PR #55 (9028182),
 | CEILING (builds INTERIOR, D-80) | — | — | — | — | — | — |
 | ELECTRICAL | 0 | 12 | 0 | 3 | 0 | 64 |
 | FRONT | 0 | 5 | 0 | 3 | 0 | 4 |
-| WALL | 0 | 9 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 0 | 47 | 0 | 7 | 1 | 77 |
+| WALL | 1 | 8 | 0 | 4 | 1 | 4 |
+| **All, each number once** | 1 | 46 | 0 | 7 | 1 | 77 |
 
 No parts list yet: CEILING (builds AIR, D-80), CEILING (builds INTERIOR, D-80).
 
-46 of the 47 made numbers have no drawing yet; for 31 of them the drawing is the only gap, so their drawings can start now (D-84).
+45 of the 47 made numbers have no drawing yet; for 31 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 46, CAD 12, STEP 12, DXF or cut list 7.
+What the open made numbers miss: drawing 45, CAD 12, STEP 12, DXF or cut list 6.
 
 ## Made parts and assemblies
 
@@ -103,7 +103,7 @@ What the open made numbers miss: drawing 46, CAD 12, STEP 12, DXF or cut list 7.
 | 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #41 | yes | yes | yes | n/a | no | yes | yes | K-J07 | open: drawing |
 | 510101 | LINING - CASSETTE - SIDE LOWER - LH | PR #41 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
 | 511101 | LINING - TRAY - SIDE LOWER - LH | PR #41 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511301 | LINING - FELT - SIDE LOWER - LH | PR #41 | yes | yes | yes | no | no | yes | n/a | K-L04 | open: DXF or cut list, drawing |
+| 511301 | LINING - FELT - SIDE LOWER - LH | PR #41 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 
 ## Bought parts
 
@@ -240,7 +240,7 @@ What the open made numbers miss: drawing 46, CAD 12, STEP 12, DXF or cut list 7.
 
 `python3 v2/00-Control/build_release_checklist.py --open-prs` reads origin/main and every open PR that changes parts, through the master BOM's reader (a later branch adds only the files it changed), the files named `PARTNO_REV_NAME_DOCTYPE.ext` in `v2/01-CAD-Native`, `v2/02-Drawings` and `v2/03-Manufacturing`, the FAI plan (`v2/06-Verification/fai-plan.md`) and the test plans. Without `--open-prs` it reads this working tree.
 
-- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing carry its own number, with two exceptions (D-89), read as the mechanical check reads them: a drawing whose text says TABULATED covers the other numbers of its family and kind that it lists; a felt or fill piece needs no drawing or DXF when a cut list (a .csv with "cut" in its name) has a row with its number, size, material and tolerance, and the row names no pockets, notches or holes (the mechanical check also looks for holes in its STEP).
+- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing carry its own number, except as D-89 allows, read as the mechanical check reads them: a drawing whose text says TABULATED covers the other numbers of its family and kind that it lists; a felt or fill piece needs no drawing or DXF when a cut-list or parts-list row gives its number, size, material and tolerance and names no pockets, notches or holes (the mechanical check also counts the holes and faces in its STEP); another soft good cut from sheet or roll (foam, gasket, seal or tape, by the name's last word in its function field) needs no drawing when its DXF gives the outline, or, as a plain strip or rectangle, when such a row also gives its thickness.
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.

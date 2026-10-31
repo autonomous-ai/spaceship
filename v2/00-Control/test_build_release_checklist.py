@@ -212,6 +212,65 @@ class D89Drawings(unittest.TestCase):
         self.assertFalse(rc.is_cut_list("v2/03-Manufacturing/wall/make_cut_files.py"))
 
 
+class D89SoftGoods(unittest.TestCase):
+    """D-89 (3): foam, gaskets, seals and tape: a DXF of the outline, or for a plain strip or rectangle a row with
+    size, thickness, material, tolerance and number. Felt and fill: a row with size, material and tolerance."""
+    FOAM = "BASE - FLOOR FOAM - F1"
+
+    def foam(self, file_names, csv_text=None, name=FOAM):
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row("111501", "make", name, "closed-cell PE foam 3 mm", team="BASE",
+                   src="v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv")
+        file_map = files(*file_names, folder="v2/03-Manufacturing/base/")
+        lists = {"v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv": csv_text} if csv_text else {}
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {}, lists)
+        return made[0]
+
+    CADS = ("111501_P01_BASE-FLOOR-FOAM_CAD.f3d", "111501_P01_BASE-FLOOR-FOAM_STEP.step")
+
+    def test_a_dxf_draws_a_foam_part_of_any_shape(self):
+        line = self.foam(self.CADS + ("111501_P01_BASE-FLOOR-FOAM_DXF.dxf",))
+        self.assertEqual((line["flat"], line["dwg"]), ("yes", "DXF (D-89)"))
+
+    def test_a_plain_foam_rectangle_needs_its_thickness_on_the_row(self):
+        head = "part_number,name,size_mm,material,tolerance_mm"
+        no_t = self.foam(self.CADS, head + "\n111501,BASE - FLOOR FOAM - F1,1210 x 1455,PE foam,±2\n")
+        self.assertEqual((no_t["flat"], no_t["dwg"]), ("no", "no"))
+        with_t = self.foam(self.CADS, head + ",thickness_mm\n111501,BASE - FLOOR FOAM - F1,1210 x 1455,PE foam,±2,3\n")
+        self.assertEqual((with_t["flat"], with_t["dwg"]), ("cut list", "cut list (D-89)"))
+        three = self.foam(self.CADS, head + "\n111501,BASE - FLOOR FOAM - F1,1210 x 1455 x 3,PE foam,±2\n")
+        self.assertEqual(three["dwg"], "cut list (D-89)")
+
+    def test_the_name_decides_what_is_a_soft_good(self):
+        self.assertEqual(self.foam(self.CADS + ("111501_P01_BASE-SEAL-MAT_DXF.dxf",), name="BASE - SEAL MAT - F1")["dwg"], "no")
+        self.assertEqual(rc.soft_kind("FRONT - DROP SEAL - ATHMER"), "soft")
+        self.assertEqual(rc.soft_kind("BASE - SEAL HOLDER - LH"), "")
+        self.assertEqual(rc.soft_kind("WALL - CAVITY FILL - SIDE LOWER - LH"), "felt or fill")
+
+    def test_a_felt_row_in_a_parts_list_serves_as_its_cut_list(self):
+        fai = rc.fai_plan(PLAN, BOM)
+        felt = row("511301", "make", "LINING - FELT - SIDE LOWER - LH", "PET felt 9 mm")
+        file_map = files("511301_P01_LINING-FELT_CAD.f3d", "511301_P01_LINING-FELT_STEP.step")
+        lists = {WALL: "part_number,name,size_mm,material,tolerance\n511301,LINING - FELT,9 x 1442 x 1139.74,PET felt,±2\n"}
+        made, _ = rc.check_parts([felt], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {}, lists)
+        self.assertEqual(made[0]["dwg"], "cut list (D-89)")
+
+    def test_the_name_rule_matches_the_mechanical_check(self):
+        path = rc.ROOT / "tools/checks/common.py"
+        if not path.exists():
+            self.skipTest("no mechanical check in this tree")
+        spec = importlib.util.spec_from_file_location("checks_common", path)
+        common = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(common)
+        names = ["LINING - FELT - SIDE LOWER - LH", "LINING - FILL - CEILING - BAY A", "WALL - CAVITY FILL - SIDE LOWER - LH",
+                 "BASE - SEAL MAT - F1", "BASE - FLOOR FOAM - F1", "FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112",
+                 "BASE - SEAL HOLDER - LH", "SEALS - JOINT GASKET - 8 X 3.97", "POD - FIXING TAPE", "WALL - PANEL FRAME - SIDE LOWER - LH"]
+        for n in names:
+            self.assertEqual(rc.head_noun(n), common.head_noun(n), n)
+            self.assertEqual(bool(rc.soft_kind(n)), common.is_soft(n), n)
+            self.assertEqual(rc.soft_kind(n) == "felt or fill", common.is_soft(n, kinds=("FELT", "FILL")), n)
+
+
 class Render(unittest.TestCase):
     def test_totals_count_each_number_once_and_name_the_screen(self):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]
