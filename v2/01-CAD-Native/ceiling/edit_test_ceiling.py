@@ -63,7 +63,9 @@ def run(_context):
                                                             len(r["unhealthy"])))
         failed |= bool(r["bad"] or r["unhealthy"])
         params = design.userParameters
-        for edit in EDITS:
+        pick = ARGS.get("edits")         # e.g. "0,1,2": a part of the list, so each run stays short
+        todo = [EDITS[int(i)] for i in pick.split(",")] if pick else EDITS
+        for edit in todo:
             old = [(n, params.itemByName(n).expression) for n, _v in edit]
             for n, v in edit:
                 params.itemByName(n).expression = v
