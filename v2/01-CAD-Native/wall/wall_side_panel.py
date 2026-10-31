@@ -186,6 +186,9 @@ WALL_PARAMS = [
      "J-WALL-02 bolts run along the back panel's edge: 220, 559.31, 898.61 on its 1118.61 (joints register 2.9)"),
     ("n_len_bolt", "n_base_bolt", "", "calculation",
      "the skeleton's n_base_bolt (4): the same count on J-WALL-01 and the J-CEIL-01 side edges (register 2.9)"),
+    ("ceil_bolt_pitch", "(wall_depth - 2 * bolt_edge) / (n_len_bolt - 1)", "mm", "calculation",
+     "J-CEIL-01 side edge: 4 bolts along the ceiling's 1495 from Y -645 (its front edge), 220 rule, pitch 351.67 on "
+     "P04; CEILING drills the same (PM ruling 2026-10-31 16:55; joints register 2.9)"),
     ("len_bolt_pitch", "(pnl_len - 2 * bolt_edge) / (n_len_bolt - 1)", "mm", "calculation",
      "even pitch of the bolts along the panel"),
     # lining cassette
@@ -972,10 +975,13 @@ def joint_features(design, frame, fill, out):
             hw_site("TOP RAIL SPIGOT %s" % k, "z", zt1, -1, {"x": xc, "y": ys_}, washer=False, spigot=True)
     if ROW == 2:
         # 40 x 40 top member, nut side of J-CEIL-01 side edges: a rivnut in its room-side face at each bay middle
-        r = hole(design, frame, top, "x", X_FRAME_IN, S, {"y": y_b1, "z": "pod_h - ceil_bolt_dz"}, "rivnut_d", t,
+        # positions follow the ceiling's edge, not this panel's: from Y -645 at pitch 351.67 (PM ruling 16:55)
+        y_c1 = "(%s) + bolt_edge" % Y_CASS_FRONT
+        r = hole(design, frame, top, "x", X_FRAME_IN, S, {"y": y_c1, "z": "pod_h - ceil_bolt_dz"}, "rivnut_d", t,
                  "TOP MEMBER CEILING RIVNUT 1")
-        pattern_feat(frame, [r], "y", n_b, p_b, "TOP MEMBER CEILING RIVNUTS")
-        hw_site("TOP MEMBER CEILING", "x", X_FRAME_IN, S, {"y": y_b1, "z": "pod_h - ceil_bolt_dz"}, ("y", n_b, p_b))
+        pattern_feat(frame, [r], "y", n_b, "ceil_bolt_pitch", "TOP MEMBER CEILING RIVNUTS")
+        hw_site("TOP MEMBER CEILING", "x", X_FRAME_IN, S, {"y": y_c1, "z": "pod_h - ceil_bolt_dz"},
+                ("y", n_b, "ceil_bolt_pitch"))
     z_j1 = "(%s) + bolt_edge" % Z0
     # front stile, bolt side of J-FRONT-01 (decor block): FR-02 in the front wall, FR-03 in the back wall
     a = hole(design, frame, front, "y", Y_FRONT, +1, {"x": xc, "z": z_j1}, "bolt_d", t, "FRONT STILE BOLT CLEARANCE 1")

@@ -140,6 +140,12 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertAlmostEqual(2400 - v["ceil_bolt_dz"], 2374)   # R-J15: ceiling frame tube centre
         self.assertEqual(resolve(load(row="1"))["top_h"], 20)
 
+    def test_ceiling_rivnuts_follow_the_ceiling_edge(self):
+        v = resolve(load(row="2"))
+        ys = [850 - v["wall_depth"] + v["bolt_edge"] + i * v["ceil_bolt_pitch"] for i in range(int(v["n_len_bolt"]))]
+        for got, want in zip(ys, [-425.0, -73.33, 278.33, 630.0]):      # register 2.9, PM ruling 16:55
+            self.assertAlmostEqual(got, want, delta=0.01)
+
     def test_corner_rivnuts_follow_the_back_panel_edge(self):
         """Joints register 2.9: the back corner's 3 bolts run along the back panel's 1118.61 edge."""
         lo, up = resolve(load(row="1")), resolve(load(row="2"))
