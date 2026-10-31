@@ -1,6 +1,6 @@
 {
  "document": "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_CAD",
- "version": 4,
+ "version": 5,
  "saved": true,
  "modified": true,
  "components": [
@@ -365,7 +365,7 @@
        "centre": [
         null,
         824.0,
-        1035.0
+        1010.87
        ],
        "from": -1205.2,
        "to": -1204.0,
@@ -377,7 +377,7 @@
        "centre": [
         null,
         824.0,
-        683.63
+        671.56
        ],
        "from": -1205.2,
        "to": -1204.0,
@@ -407,9 +407,9 @@
       -257.81,
       1235.0
      ],
-     "volume_mm3": 152442.8,
-     "area_mm2": 254347.8,
-     "mass_kg": 0.4116,
+     "volume_mm3": 127917.8,
+     "area_mm2": 256067.7,
+     "mass_kg": 0.3454,
      "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": []
     },
@@ -423,9 +423,9 @@
       107.13,
       1235.0
      ],
-     "volume_mm3": 152442.8,
-     "area_mm2": 254347.8,
-     "mass_kg": 0.4116,
+     "volume_mm3": 127917.8,
+     "area_mm2": 256067.7,
+     "mass_kg": 0.3454,
      "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": []
     },
@@ -439,9 +439,9 @@
       472.06,
       1235.0
      ],
-     "volume_mm3": 152442.8,
-     "area_mm2": 254347.8,
-     "mass_kg": 0.4116,
+     "volume_mm3": 127917.8,
+     "area_mm2": 256067.7,
+     "mass_kg": 0.3454,
      "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": []
     }
@@ -454,91 +454,133 @@
    "expression": "pod_w_Ref",
    "unit": "mm",
    "value": 2500.0,
-   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "pod_d",
    "expression": "pod_d_Ref",
    "unit": "mm",
    "value": 1700.0,
-   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "pod_h",
    "expression": "pod_h_Ref",
    "unit": "mm",
    "value": 2400.0,
-   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "wall_depth",
    "expression": "wall_depth_Ref",
    "unit": "mm",
    "value": 1495.0,
-   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "wall_z0",
    "expression": "wall_z0_Ref",
    "unit": "mm",
    "value": 110.0,
-   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "panel_z0",
    "expression": "panel_z0_Ref",
    "unit": "mm",
    "value": 112.26,
-   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "side_h",
    "expression": "side_h_Ref",
    "unit": "mm",
    "value": 1142.74,
-   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
+  },
+  {
+   "name": "back_ph",
+   "expression": "back_ph_Ref",
+   "unit": "mm",
+   "value": 1118.61,
+   "comment": "LINKED: back_ph_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "stack_t",
    "expression": "stack_t_Ref",
    "unit": "mm",
    "value": 84.0,
-   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "outer_t",
    "expression": "outer_t_Ref",
    "unit": "mm",
    "value": 46.0,
-   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "cass_t",
    "expression": "cass_t_Ref",
    "unit": "mm",
    "value": 34.0,
-   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "lin_gap",
    "expression": "lin_gap_Ref",
    "unit": "mm",
    "value": 4.0,
-   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "seam_gap",
    "expression": "seam_gap_Ref",
    "unit": "mm",
    "value": 2.26,
-   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
+   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "skin_t",
-   "expression": "3 mm",
+   "expression": "skin_t_Ref",
    "unit": "mm",
    "value": 3.0,
-   "comment": "SOURCE: HW-SEL A1: Alcorest ACP 3 mm x 0.21 mm skins, EV3038 (plan VT01); D-12 colour"
+   "comment": "LINKED: skin_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
+  },
+  {
+   "name": "bond_t",
+   "expression": "bond_t_Ref",
+   "unit": "mm",
+   "value": 3.0,
+   "comment": "LINKED: bond_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
+  },
+  {
+   "name": "bolt_edge_inset",
+   "expression": "bolt_edge_inset_Ref",
+   "unit": "mm",
+   "value": 220.0,
+   "comment": "LINKED: bolt_edge_inset_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
+  },
+  {
+   "name": "spigot_inset",
+   "expression": "spigot_inset_Ref",
+   "unit": "mm",
+   "value": 100.0,
+   "comment": "LINKED: spigot_inset_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
+  },
+  {
+   "name": "n_base_bolt",
+   "expression": "n_base_bolt_Ref",
+   "unit": "",
+   "value": 4.0,
+   "comment": "LINKED: n_base_bolt_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
+  },
+  {
+   "name": "ceil_bolt_z",
+   "expression": "ceil_bolt_z_Ref",
+   "unit": "mm",
+   "value": 2374.0,
+   "comment": "LINKED: ceil_bolt_z_Ref, derived from 100000_P04_POD-SKELETON_CAD v3 (skeleton is the single source)"
   },
   {
    "name": "tube_w",
@@ -546,13 +588,6 @@
    "unit": "mm",
    "value": 20.0,
    "comment": "CONFIRMED: D-34, D-54: aluminium tube 20 x 40 x 1.2; the 20 mm face carries the skin, so the 40 mm runs through the wall (outer_t = ACP 3 + frame 40). The joint register may turn it for the bond width (HOLD)"
-  },
-  {
-   "name": "bond_t",
-   "expression": "3 mm",
-   "unit": "mm",
-   "value": 3.0,
-   "comment": "CONFIRMED: PM ruling 2026-10-31 (outer panel 46 = ACP 3 + bond 3 + frame 40): SikaTack Panel-50 joint 12 x 3, the fixing tape sets 3 mm (bond spec, PR #23)"
   },
   {
    "name": "tube_d",
@@ -566,7 +601,14 @@
    "expression": "1.2 mm",
    "unit": "mm",
    "value": 1.2,
-   "comment": "CONFIRMED: D-34, D-54: wall 1.2 mm (rivnut grip check passed)"
+   "comment": "CONFIRMED: D-34, D-54, D-85: perimeter members (rails, front and back stiles) keep the 1.2 mm wall; they carry the rivnuts (grip check passed)"
+  },
+  {
+   "name": "stud_t",
+   "expression": "1.0 mm",
+   "unit": "mm",
+   "value": 1.0,
+   "comment": "CONFIRMED: D-85 (weight): intermediate studs at a 1.0 mm wall; they carry no rivnut, only the skin's bond line"
   },
   {
    "name": "stile_pitch_max",
@@ -654,10 +696,10 @@
   },
   {
    "name": "ceil_bolt_dz",
-   "expression": "skin_t + bond_t + tube_d / 2",
+   "expression": "pod_h - ceil_bolt_z",
    "unit": "mm",
    "value": 26.0,
-   "comment": "CONFIRMED: J-CEIL-01 side bolts on the ceiling frame tube's centre, Z 2374 on P04 (PM ruling 2026-10-31; joints register R-J15, FR-07)"
+   "comment": "CALCULATION: J-CEIL-01 side bolts on the ceiling frame tube's centre: the skeleton's ceil_bolt_z, Z 2374 on P04 (joints register R-J15, FR-07)"
   },
   {
    "name": "fill_t",
@@ -710,17 +752,17 @@
   },
   {
    "name": "spigot_edge",
-   "expression": "100 mm",
+   "expression": "spigot_inset",
    "unit": "mm",
    "value": 100.0,
-   "comment": "ASSUMPTION: register FR-04: spigots about 100 from each end of the joint"
+   "comment": "CALCULATION: the skeleton's spigot_inset: spigots 100 from each end of the edge (PM ruling 2026-10-31, R-J13)"
   },
   {
    "name": "bolt_edge",
-   "expression": "220 mm",
+   "expression": "bolt_edge_inset",
    "unit": "mm",
    "value": 220.0,
-   "comment": "CONFIRMED: every bolted edge: end bolts 220 in from the panel's ends, evenly spaced, every bolt 30 or more from any stile (PM ruling 2026-10-31 from the joints register, R-J14)"
+   "comment": "CALCULATION: the skeleton's bolt_edge_inset: end bolts 220 in from the panel's ends, evenly spaced, every bolt 30 or more from any stile (PM ruling 2026-10-31, R-J14)"
   },
   {
    "name": "n_side_jnt",
@@ -744,11 +786,32 @@
    "comment": "ASSUMPTION: register FR-10: fill left out 60 x 60 next to each bolt for the key"
   },
   {
+   "name": "corner_z0",
+   "expression": "panel_z0",
+   "unit": "mm",
+   "value": 112.26,
+   "comment": "CALCULATION: bottom of the back panel row this side panel meets at the corner (B1/B2 or B3/B4, skeleton P04)"
+  },
+  {
+   "name": "corner_bolt_pitch",
+   "expression": "( back_ph - 2 * bolt_edge ) / ( n_side_jnt - 1 )",
+   "unit": "mm",
+   "value": 339.305,
+   "comment": "CALCULATION: J-WALL-02 bolts run along the back panel's edge: 220, 559.31, 898.61 on its 1118.61 (joints register 2.9)"
+  },
+  {
    "name": "n_len_bolt",
-   "expression": "4",
+   "expression": "n_base_bolt",
    "unit": "",
    "value": 4.0,
-   "comment": "SOURCE: bolts along a side panel's length: J-BASE-01, J-WALL-01, J-CEIL-01 side edges (joints register 3.1, 3.3, 3.4)"
+   "comment": "CALCULATION: the skeleton's n_base_bolt (4): the same count on J-WALL-01 and the J-CEIL-01 side edges (register 2.9)"
+  },
+  {
+   "name": "ceil_bolt_pitch",
+   "expression": "( wall_depth - 2 * bolt_edge ) / ( n_len_bolt - 1 )",
+   "unit": "mm",
+   "value": 351.6667,
+   "comment": "CALCULATION: J-CEIL-01 side edge: 4 bolts along the ceiling's 1495 from Y -645 (its front edge), 220 rule, pitch 351.67 on P04; CEILING drills the same (PM ruling 2026-10-31 16:55; joints register 2.9)"
   },
   {
    "name": "len_bolt_pitch",
@@ -833,6 +896,83 @@
    "unit": "mm",
    "value": 100.0,
    "comment": "ASSUMPTION: clip zone centre from the cassette's top and bottom edges (H03)"
+  },
+  {
+   "name": "stopw_od",
+   "expression": "20 mm",
+   "unit": "mm",
+   "value": 20.0,
+   "comment": "SOURCE: joints register H-08: stop washer Ø10.5 x Ø20 x 1.5 (PROPOSED part)"
+  },
+  {
+   "name": "stopw_id",
+   "expression": "10.5 mm",
+   "unit": "mm",
+   "value": 10.5,
+   "comment": "SOURCE: joints register H-08"
+  },
+  {
+   "name": "stopw_t",
+   "expression": "1.5 mm",
+   "unit": "mm",
+   "value": 1.5,
+   "comment": "SOURCE: joints register H-08: rivnut head 0.76 + washer 1.5 = the 2.26 stop (R-J5)"
+  },
+  {
+   "name": "rivnut_head_d",
+   "expression": "12.96 mm",
+   "unit": "mm",
+   "value": 12.96,
+   "comment": "SOURCE: Sherex CAH3-610-4.2 head Ø12.96 (joints register H-03, SHX)"
+  },
+  {
+   "name": "rivnut_head_t",
+   "expression": "0.76 mm",
+   "unit": "mm",
+   "value": 0.76,
+   "comment": "SOURCE: Sherex CAH3-610-4.2 head 0.76 ±0.08 (H-03, SHX)"
+  },
+  {
+   "name": "rivnut_body_d",
+   "expression": "9.5 mm",
+   "unit": "mm",
+   "value": 9.5,
+   "comment": "SOURCE: Sherex CAH3-610-4.2 body Ø9.50 max (H-03, SHX)"
+  },
+  {
+   "name": "rivnut_len",
+   "expression": "10.16 mm",
+   "unit": "mm",
+   "value": 10.16,
+   "comment": "SOURCE: Sherex CAH3-610-4.2 installed length 10.16 max under the head (H-03, SHX); the bulge inside the tube is not modelled"
+  },
+  {
+   "name": "m6_d",
+   "expression": "6 mm",
+   "unit": "mm",
+   "value": 6.0,
+   "comment": "CALCULATION: M6 threads shown at their 6 mm major diameter (no modelled thread)"
+  },
+  {
+   "name": "spigot_pin_d",
+   "expression": "8 mm",
+   "unit": "mm",
+   "value": 8.0,
+   "comment": "SOURCE: joints register H-05: Ø8 stainless pin (PROPOSED, assumption sizes)"
+  },
+  {
+   "name": "spigot_proud",
+   "expression": "8 mm",
+   "unit": "mm",
+   "value": 8.0,
+   "comment": "SOURCE: joints register H-05: stands 8 proud (read as: of the joint face)"
+  },
+  {
+   "name": "spigot_thread_l",
+   "expression": "10 mm",
+   "unit": "mm",
+   "value": 10.0,
+   "comment": "ASSUMPTION: M6 thread into the spigot rivnut; H-05 gives no length; 10 stays inside the rivnut's 10.16"
   }
  ]
 }
