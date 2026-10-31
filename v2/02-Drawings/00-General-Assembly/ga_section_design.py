@@ -137,11 +137,17 @@ def rebuild_keeping_the_derive(doc: "adsk.core.Document", design: "adsk.fusion.D
     ref = derive.documentReference
     if ref is None or ref.dataFile is None or ref.dataFile.name != SKELETON:
         raise RuntimeError("the derive doesn't point at %s" % SKELETON)
-    if ref.isOutOfDate:
+    newest = ref.dataFile.latestVersionNumber
+    if ref.isOutOfDate or ref.version != newest:
         print("updated the references to the newest skeleton: %s" % doc.updateAllReferences())
         adsk.doEvents()
         ref = derive.documentReference
-    newest = ref.dataFile.latestVersionNumber
+    if ref.isOutOfDate or ref.version != newest:
+        # the document's list didn't hold the derive's reference, so the refresh may
+        # pass it by: move that one reference itself
+        print("moved the derive's reference to the newest skeleton: %s" % ref.getLatestVersion())
+        adsk.doEvents()
+        ref = derive.documentReference
     if ref.isOutOfDate or ref.version != newest:
         raise RuntimeError("the derive shows skeleton version %s, not the newest %s" % (ref.version, newest))
     skel = derive.sourceDesign           # the design the derive reads, for the body count
