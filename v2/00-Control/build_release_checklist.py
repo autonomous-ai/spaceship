@@ -20,8 +20,10 @@ metal, its finish, and FAI characteristics. D-89, read as the mechanical check r
 a part counts as drawn when a drawing whose text says TABULATED lists its number (same family and kind); a plain
 felt or fill rectangle counts as drawn, and cut, when a cut-list or parts-list row gives its number, size,
 material and tolerance; another soft good (foam, gasket, seal, tape, by the name's head noun) counts as drawn
-by its DXF, or, as a plain strip or rectangle, by such a row that also gives its thickness. A part found only in
-the folders has no BOM row. When the
+by its DXF, or, as a plain strip or rectangle, by such a row that also gives its thickness; a flat part cut from
+sheet (its row's process says laser, waterjet or router, and names no bend, fold, groove, lap, machining,
+drilling, tapping, welding or bonding) counts as drawn by its own DXF when its row gives material, thickness,
+finish and an ISO 2768 general tolerance. A part found only in the folders has no BOM row. When the
 drawing is a made part's only gap and the Mac's screen is locked, the part is blocked by the locked screen:
 the drawing start needs it unlocked (D-84). Otherwise a part with a gap is open.
 A bought part is done when it has a joints-register row (hardware only, D-63), a maker and SKU, and a
@@ -66,6 +68,9 @@ BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)
 SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
 FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
 TABULATED = re.compile(r"\bTABULATED\b", re.I)
+SHEET_CUT = re.compile(r"laser|water\s*-?\s*jet|router|routed", re.I)
+NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pocket|machin|\bmill(?:ed|ing)?\b|drill|\btap(?:ped|ping)?\b|"
+                      r"thread|countersink|counterbore|ream|\bturn(?:ed|ing)?\b|lathe|chamfer|weld|bond", re.I)
 
 
 def load_bom():
@@ -304,6 +309,32 @@ def where_of(r, labels):
     return labels.get(ref, "this tree" if ref == "working tree" else ref)
 
 
+def flat_lacks(rows):
+    """D-89 (4): what the best row lacks for a flat part cut from sheet to go without a drawing; None when no row
+    has the number. The process must name the cut (laser, waterjet or router) and no bend, fold, groove, lap,
+    machining, drilling, tapping, welding or bonding; the row gives material, thickness (a thickness column, a
+    size with three dimensions, or "N mm" in the material), finish, and an ISO 2768 general tolerance."""
+    best = None
+    for cells, _path in rows:
+        def has(pattern):
+            return [v for k, v in cells.items() if re.search(pattern, k, re.I) and v]
+        process = " ".join(has(r"process"))
+        material = " ".join(has(r"material|grade"))
+        sizes = has(r"size|dimension|length|width|thick|^[lwt]_?mm$")
+        thick = any(re.search(r"\d", v) for v in has(r"thick|^t_?mm$")) or any(
+            len(re.findall(r"\d+(?:\.\d+)?", v)) >= 3 and re.search(r"[x×]", v, re.I) for v in sizes) or bool(
+            re.search(r"\d+(?:\.\d+)?\s*mm\b", material))
+        not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(process)})
+        lacks = [n for n, ok in (
+            ("a cut by laser, waterjet or router in its process", bool(SHEET_CUT.search(process))),
+            ("no bends or machined features (its process names %s)" % ", ".join(not_flat), not not_flat),
+            ("material", bool(material)), ("thickness", thick), ("finish", bool(has(r"finish"))),
+            ("an ISO 2768 general tolerance", any("2768" in v for v in cells.values()))) if not ok]
+        if best is None or len(lacks) < len(best):
+            best = lacks
+    return best
+
+
 def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None):
     chars, _, accept = fai
     tab_cover = tab_cover or {}
@@ -331,8 +362,10 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 flat = "n/a"
             elif by_cut:
                 flat = "cut list"
+            elif by_pn.get(pn, {}).get("DXF"):
+                flat = "yes"
             elif SHEET.search(text):
-                flat = "yes" if by_pn.get(pn, {}).get("DXF") else "no"
+                flat = "no"
             elif TUBE.search(text):
                 team_dir = src.rsplit("/", 1)[0] + "/"
                 listed = any(c.startswith(team_dir) and pn in cut_texts.get(c, "") for c in cut_lists)
@@ -347,6 +380,9 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 dwg = "cut list (D-89)"
             elif soft == "soft" and by_pn.get(pn, {}).get("DXF"):
                 dwg = "DXF (D-89)"
+            elif (not soft and r["make_buy"] == "make" and kind_of(pn) == "part" and by_pn.get(pn, {}).get("DXF")
+                  and flat_lacks(by_cut_row.get(pn, [])) == []):
+                dwg = "DXF and row (D-89)"
             else:
                 dwg = "no"
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"
@@ -501,7 +537,11 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "that it lists; a felt or fill piece needs no drawing or DXF when a cut-list or parts-list row gives its number, size, material "
             "and tolerance and names no pockets, notches or holes (the mechanical check also counts the holes and faces in its STEP); "
             "another soft good cut from sheet or roll (foam, gasket, seal or tape, by the name's last word in its function field) needs no "
-            "drawing when its DXF gives the outline, or, as a plain strip or rectangle, when such a row also gives its thickness.",
+            "drawing when its DXF gives the outline, or, as a plain strip or rectangle, when such a row also gives its thickness; "
+            "a flat part cut from sheet needs no drawing when it has its own DXF and its row's process names laser, waterjet or router "
+            "cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, "
+            "thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole "
+            "note is left to the drawing review. Assemblies always keep their drawings.",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
