@@ -29,9 +29,19 @@ import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(__file__))
-for d in (HERE, os.path.join(HERE, "..", "ceiling")):
-    if d not in sys.path:
-        sys.path.insert(0, d)
+_CEIL = os.path.normpath(os.path.join(HERE, "..", "ceiling"))
+# Fusion keeps modules loaded between runs, and a run from another worktree may have loaded its
+# own copy of these (the ceiling's own runs load the ceiling model too): drop any copy from
+# another folder and put this worktree's folders first, so the imports below take its files
+for _n, _d in (("air_model", HERE), ("air_checks", HERE), ("ceiling_model", _CEIL), ("ceiling_checks", _CEIL),
+               ("ceiling_build", _CEIL), ("ceiling_exports", _CEIL)):
+    _f = getattr(sys.modules.get(_n), "__file__", None)
+    if _f and os.path.dirname(os.path.abspath(_f)) != _d:
+        del sys.modules[_n]
+for _d in (_CEIL, HERE):
+    if _d in sys.path:
+        sys.path.remove(_d)
+    sys.path.insert(0, _d)
 import ceiling_model  # noqa: E402
 importlib.reload(ceiling_model)
 import ceiling_checks  # noqa: E402,F401
