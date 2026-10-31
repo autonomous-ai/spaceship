@@ -967,3 +967,13 @@ def test_a_reserved_air_space_row_asks_for_no_mass_material_or_finish(tmp_path):
                 {"part_number": "351306", "name": "FRONT - DR - FRAME", "type": "made", "qty": "1"}])
     subjects = {f.subject.split(" ")[0] for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))}
     assert "351402" not in subjects and "351306" in subjects
+
+
+def test_d105_a_row_typed_reserved_air_space_is_reserved_without_a_config_line(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/front"
+    d.mkdir(parents=True)
+    _write_csv(d / "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+               [{"part_number": "351406", "name": "FRONT - AIR SPACE - DR", "type": "reserved air space", "qty": "1"}])
+    from common import reserved_spaces
+    r = reserved_spaces(str(tmp_path))
+    assert r["351406"]["owner"] == "AIR" and r["351406"]["ruling"] == "D-105"
