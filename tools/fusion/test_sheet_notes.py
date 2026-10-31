@@ -94,14 +94,19 @@ class NotesTests(unittest.TestCase):
         self.assertEqual(pos, (340.0, 90.0))
         self.assertAlmostEqual(scale, 280.0 / 58.02)
 
+    def test_a1_and_a2_are_measured_now(self):
+        self.assertEqual(sorted(sn.MEASURED), ["A1", "A2", "A3"])
+        [(_pos, scale)] = self.run_insert(841.0, 594.0)                 # A1
+        self.assertAlmostEqual(scale, 280.0 / 58.02)
+
     def test_a_sheet_size_not_yet_measured_is_refused(self):
         # PM and Reviewer 5, 2026-10-31: no insert on a size the mapping wasn't measured on
         with self.assertRaises(RuntimeError) as cm:
-            self.run_insert(841.0, 594.0)                               # A1
+            self.run_insert(1189.0, 841.0)                              # A0
         self.assertIn("hasn't been measured on that sheet size", str(cm.exception))
 
     def test_a_width_measured_in_the_same_run_is_used(self):
-        [(_pos, scale)] = self.run_insert(841.0, 594.0, width_at_scale_1=58.0)
+        [(_pos, scale)] = self.run_insert(1189.0, 841.0, width_at_scale_1=58.0)   # A0, measured in the run
         self.assertAlmostEqual(scale, 280.0 / 58.0)
 
     def test_insert_script_compiles(self):

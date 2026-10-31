@@ -43,14 +43,16 @@ CAP_RATIO = 0.716            # Arial capital height / font size (ISO 3098 text h
 # 58.02 mm wide, whatever its pixel size or DPI tag (1000 x 500 px at 300 dpi,
 # 500 x 500 and 2000 x 400 px at 300 dpi, 1000 x 500 px at 72 dpi: all
 # 58.02 mm wide, height by aspect); scale 0.5 gives exactly half; `position`
-# is the image's lower-left corner, in sheet mm. Measured on A3 sheets; on
-# other sheet sizes pass --width-at-scale-1 until measured there.
+# is the image's lower-left corner, in sheet mm. Measured on A3 sheets, then
+# on A1 and A2 (2026-10-31, GA sheet 1 session: the 1000 x 500 px card came out
+# 58.02 x 29.02 mm on both, lower-left at the given point): the width doesn't
+# depend on the sheet.
 WIDTH_AT_SCALE_1_MM = 58.02
 ANCHOR = "lower-left"
 # Sheet sizes it was measured on: the insert refuses any other size until it is
 # measured there too (PM and Reviewer 5, 2026-10-31), unless the run passes a
 # width it measured itself (--width-at-scale-1).
-MEASURED = {"A3": WIDTH_AT_SCALE_1_MM}
+MEASURED = {"A1": WIDTH_AT_SCALE_1_MM, "A2": WIDTH_AT_SCALE_1_MM, "A3": WIDTH_AT_SCALE_1_MM}
 SHEET_MM = {"A0": (1189, 841), "A1": (841, 594), "A2": (594, 420), "A3": (420, 297), "A4": (297, 210)}
 
 INSERT_SCRIPT = '''import adsk.core, adsk.drawing
