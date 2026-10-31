@@ -11,6 +11,7 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod"). This is the parts 
 
 | Function | Pick | Status |
 |---|---|---|
+| Lights | Häfele Loox5 12 V: 6 × LED 2094 downlights (CRI > 90) + 2 m LED 2162 strip (CRI 92) as the soft front light, all on the 12 V bus (D-10) | source; VN stock unverified |
 | Outer skin (VT01) | Alcorest ACP 3 mm EV3038 Dark Yellow, 0.21 mm skins, PE core | source; kg/m² calculation; DECIDED: no plywood (VT02 dropped) |
 | Wall frame (VT10) | Aluminium 20 × 40 × 1.5 (walls), 20 × 100 × 1.5 (ceiling), members at 400 mm | DECIDED |
 | Inner leaf | Floating lining cassette: 0.5 mm galvanised steel tray, 25 mm deep, with 9 mm felt across its face | DECIDED (stack accepted by the PM) |
@@ -242,7 +243,15 @@ If any of these fail, the 4+4 laminate fallback applies.
 
 ## E. Lights, front light and power
 
-{{LIGHTS}}
+Lights run on the 12 V DC bus (D-10) and stay low-heat. In v1 the pod had two 170 × 170 mm mains panels.
+
+| Function | Opt | Maker · article | Data | Source (checked 2026-10-31) | Status |
+|---|---|---|---|---|---|
+| Ceiling light | 1 (pick) | Häfele **Loox5 12V LED 2094** downlight, Ø65 mm; white 3000 K **833.72.539** / 4000 K **833.72.540** (black 833.72.535 / .536); surface bezel 833.72.807 (white) | 12 V, 2.5 W, dimmable, IP20; 150 lm (3000 K), 160 lm (4000 K); CRI Ra > 90, R9 > 50; recess in a Ø58 hole, at least 13.5 mm deep, which fits inside the lining cassette's 25 mm gap; 2 m lead with Loox5 12 V connector | https://files.hafele.co.uk/CatalogFiles/www/20D5-115A.pdf | source; Häfele has a VN company, but stock of these UK article numbers is unverified |
+| | plan | six downlights over the ceiling: 15 W, about 900–960 lm in total (calculation) | — | — | calculation; light level to confirm on the prototype |
+| Soft front light for video calls | 1 (pick) | Häfele **Loox5 LED 2162** 8 mm strip, 12 V; 3000 K **833.74.056** / 4000 K **833.74.057** (5 m rolls 833.74.246 / .247), in an aluminium diffuser profile | 3.0 W/m; 465 lm/m (3000 K), 490 lm/m (4000 K); CRI Ra 92, R9 > 50; Häfele recommends a profile "for appealing design, diffuse" light | https://files.hafele.co.uk/CatalogFiles/www/25L1-18.pdf | source; profile article and VN stock unverified |
+| | plan | 2 m of strip on the back wall or the ceiling front edge, facing the user: 6 W, about 950 lm (calculation) | — | — | calculation; position decided with the Control Engineer (open question on lights) |
+| Driver | — | Loox5 12 V driver from the same system, or the pod's 12 V bus (D-10) | — | catalogue reference in the 25L1-18 sheet | unverified |
 
 Power inlet (outside, back wall):
 
@@ -258,8 +267,8 @@ Plan items VT07 to VT09: UTEN S300 switch and socket (code S300GK12Z12Z13/N on u
 
 | Circuit | Load | W |
 |---|---|---:|
-| 12 V DC bus (D-10) | Ceiling lights (2) | {{LIGHT_W}} |
-| 12 V DC bus | Soft front light | {{FRONT_W}} |
+| 12 V DC bus (D-10) | Ceiling lights, 6 × Loox5 2094 | 15 |
+| 12 V DC bus | Soft front light, 2 m Loox5 2162 | 6 |
 | 12 V DC bus | Sensor hub with CO2 display, presence sensor | about 5 (assumption) |
 | 12 V DC bus | Voice cockpit kit reserve, 12 V 5 A (D-11) | 60 |
 | Mains, outlet circuit | 2 fans at 70 l/s (S&P TD-350 ECOWATT, 15–19 W each), the PM's exception to D-10 | 38 |
@@ -291,7 +300,20 @@ Source: Vents SR / SRF datasheet https://ventilation-system.com/download/sr-roun
 
 ### F3. Controls
 
-{{CO2_ROWS}}
+The CO2 sensing and display come from the in-house Desk Pro AI sensor hub (DECIDED, D-09). The hub's 0–10 V output drives both fans, using the same signal for supply and exhaust so the pod stays at room pressure. Required behaviour:
+- start on presence;
+- minimum flow about 40 l/s while occupied;
+- ramp to 70 l/s as CO2 rises (800 ppm limit);
+- boost on temperature too, because heat sets the flow (report §7a);
+- run on for 15–30 min after the last presence;
+- no user off switch, only boost.
+
+Third-party CO2 controllers, for reference or as a fallback if the hub isn't ready for the prototype:
+
+| Opt | Maker · SKU | Data | Source (checked 2026-10-31) | Status |
+|---|---|---|---|---|
+| 1 | Belimo **P-22RTM-1900D-1** room unit (CO2, T, RH) | ePaper touch display 69 × 62 mm; NDIR dual channel, 0–2000 ppm, ±(50 ppm + 2% of reading), ±20 ppm per year; 3 × 0–10 V outputs; MP-Bus; IP30 | https://www.belimo.com/mam/general-documents/datasheets/en-gb/belimo_P-22RT..-1900D-1_datasheet_en-gb.pdf | source; VN stock unverified |
+| 2 | E+E Elektronik **CDS201** (CO2, T, RH) with optional large graphic display (e.g. CDS201-M11 US format) | NDIR dual wavelength, 0–2000 / 5000 ppm, ±(60 ppm + 2%); three analogue outputs or RS485 | https://www.epluse.com/fileadmin/data/product/cds201/datasheet_CDS201.pdf | source; VN stock unverified |
 
 Presence sensor for automatic start and run-on:
 

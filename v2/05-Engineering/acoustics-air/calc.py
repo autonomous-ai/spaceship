@@ -680,8 +680,8 @@ AIR = dict(
     room_ppm=(400.0, 600.0),    # BRIEF uses 400 (outdoor); 600 = typical occupied office (ASSUME)
     sensible_w_person=75.0,     # ASSUME seated office work
     laptop_w=30.0,              # ASSUME per person
-    lights_w=24.0,              # HW lights rows (2 ceiling lights) - provisional
-    front_light_w=10.0,         # HW soft front light row - provisional
+    lights_w=15.0,              # HW lights: 6 x Haefele Loox5 LED 2094 at 2.5 W (source)
+    front_light_w=6.0,          # HW lights: 2 m Haefele Loox5 LED 2162 at 3.0 W/m (source)
     controls_w=3.0,             # HW CO2 controller row - provisional
     voice_kit_w=60.0,           # reserve for the later voice cockpit kit: ASSUME, same as the layout study
 )

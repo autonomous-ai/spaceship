@@ -13,7 +13,7 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
 2. **Spaceship as planned comes out at about 19 dB (16–22).** That's already above v1, mostly because of the felt lining. Light fixes take it to about 21 dB for about 15 kg: perimeter and drop seals, sealed glass, joint gaskets, silenced vents, and the thin floor with a base seal. After that, the walls and ceiling carry about 90% of the sound that gets out.
 3. **DECIDED build: about 385 kg and 24.2 dB (22–27).** Walls are ACP 3 mm on an aluminium 20×40 frame at 400 mm with 40 mm PET fill, plus a floating lining cassette (0.5 mm steel tray, 25 mm air gap, 9 mm felt). The ceiling is the same stack on 20×100. The front is smoked acrylic 10 mm, and every light fix is on. The fallback front, 4+4 acoustic laminate, gives 24.6 dB at about 416 kg, which is over the 400 kg cap unless the ceiling drops to 40 mm (23.8 dB at 400 kg).
 4. **30 dB isn't reached anywhere in this search, up to 520 kg (best about 26.5 dB).** Above about 380 kg each extra dB costs about 25–40 kg of wall. What limits a light pod is low voices (125–250 Hz). Only mass, cavity depth and low-frequency absorption help there.
-5. **Air: 70 l/s is the right target, because of heat rather than CO2.** At 26 l/s two people hold 800 ppm only if the room air is outdoor-fresh, and the pod runs 8 °C warmer than the room. At 70 l/s it is about 550 ppm and 3 °C warmer. The in-house Desk Pro AI sensor hub reads CO2, shows it, and drives both EC fans (D-09).
+5. **Air: 70 l/s is the right target, because of heat rather than CO2.** At 26 l/s two people hold 800 ppm only if the room air is outdoor-fresh, and the pod runs about 7 °C warmer than the room. At 70 l/s it is about 550 ppm and 3 °C warmer. The in-house Desk Pro AI sensor hub reads CO2, shows it, and drives both EC fans (D-09).
 6. **25 dB(A) fan noise at full flow is reachable:** about 24 dB(A) with two S&P TD-350/100-125 ECOWATT fans, each behind a 2.4 m lined U-channel in a ceiling half (calculation). The plan's Panasonic FV-15AUL1 can't be used. Its manual forbids ceiling mounting and it has no published fan curve.
 
 ## 1. The DECIDED stack, for the Layout and Fusion Engineers
@@ -249,14 +249,14 @@ Inside volume 8.35 m3; CO2 from 2 people 10.4 ml/s.
 
 | Fresh air l/s | Air changes /h | Minutes per change | CO2 rise ppm | CO2 ppm, room 400 | CO2 ppm, room 600 | Minutes to 95% | Heat rise K | Heat rise K with voice kit |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 26 | 11 | 5.4 | 400 | 800 | 1000 | 16 | 7.9 | 9.8 |
-| 40 | 17 | 3.5 | 260 | 660 | 860 | 10 | 5.1 | 6.3 |
-| 70 | 30 | 2.0 | 149 | 549 | 749 | 6 | 2.9 | 3.6 |
+| 26 | 11 | 5.4 | 400 | 800 | 1000 | 16 | 7.4 | 9.3 |
+| 40 | 17 | 3.5 | 260 | 660 | 860 | 10 | 4.8 | 6.1 |
+| 70 | 30 | 2.0 | 149 | 549 | 749 | 6 | 2.8 | 3.5 |
 
 CO2 after 2 h at 40 l/s from 400 ppm (room 400): 660 ppm; after 3 h at 26 l/s, room 600: 1000 ppm.
 
 - 800 ppm needs 26 l/s **only when the room air is at outdoor CO2 (400 ppm)**. Real offices sit at 500–700 ppm, and at 600 ppm the pod needs about 52 l/s to stay at 800.
-- **Heat sets the flow.** Two people plus laptops, lights and controls give about 247 W, and 307 W with the voice-kit reserve. At 26 l/s the pod runs about 8 °C over the room. At 70 l/s it's about 3 °C. So aim for 70 l/s, as DECIDED.
+- **Heat sets the flow.** Two people plus laptops, lights and controls give about 234 W, and 294 W with the voice-kit reserve. At 26 l/s the pod runs about 7 °C over the room. At 70 l/s it's about 3 °C. So aim for 70 l/s, as DECIDED.
 - With CO2 control alone the fans would sit at low speed while the pod gets hot. The controller needs a minimum flow when occupied (about 40 l/s) and should boost on temperature as well as on CO2.
 
 ### 7b. Fans, silencer and noise inside
