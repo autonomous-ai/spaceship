@@ -5,7 +5,7 @@
         831001_P01_HARDWARE-LOCATING-SPIGOT_DWG --folder "Default Project/FocusPod v2/joints" --sheet A3
     # 2. one annotate run: it checks the screen is unlocked, opens the drawing itself, adds the
     #    base views, dimensions and projection symbol, exports the raw PDF, saves and closes
-    python3 tools/fusion/run_script.py v2/02-Drawings/joints/joints_drawing.py --arg part=spigot
+    python3 tools/fusion/run_script.py v2/02-Drawings/joints/joints_drawing.py --arg part=spigot,keys
     # 3. local finish: clear "Created by", add the notes as PDF text, render a PNG
     python3 v2/02-Drawings/joints/joints_drawing.py finish spigot
 
@@ -277,21 +277,29 @@ def open_drawing(app, name):
 
 
 def run(_context):
-    part = ARGS.get("part")
-    if part not in PARTS:
-        raise RuntimeError("--arg part=spigot or part=keys")
-    cfg = PARTS[part]
-    if screen_locked():
-        raise RuntimeError("the screen is locked: not opening %s (it could hang Fusion)" % cfg["drawing"])
+    """--arg part=spigot, part=keys or part=spigot,keys (both drawings in one run, one queue place)."""
+    parts = [p.strip() for p in ARGS.get("part", "").split(",") if p.strip()]
+    if not parts or any(p not in PARTS for p in parts):
+        raise RuntimeError("--arg part=spigot, keys or spigot,keys")
     app = adsk.core.Application.get()
-    doc = open_drawing(app, cfg["drawing"])
-    try:
-        annotate_and_export(app, doc, part, cfg)
-        if not doc.save("Views, dimensions and PDF by v2/02-Drawings/joints/joints_drawing.py"):
-            raise RuntimeError("saving the drawing failed")
-        print("saved %s (new version)" % cfg["drawing"])
-    finally:
-        print("closed %s: %s" % (cfg["drawing"], doc.close(False)))
+    failed = []
+    for part in parts:
+        cfg = PARTS[part]
+        if screen_locked():
+            failed.append("%s (the screen is locked: not opened, it could hang Fusion)" % cfg["drawing"])
+            continue
+        doc = open_drawing(app, cfg["drawing"])
+        try:
+            annotate_and_export(app, doc, part, cfg)
+            if not doc.save("Views, dimensions and PDF by v2/02-Drawings/joints/joints_drawing.py"):
+                raise RuntimeError("saving the drawing failed")
+            print("saved %s (new version)" % cfg["drawing"])
+        except Exception as ex:
+            failed.append("%s (%s)" % (cfg["drawing"], ex))
+        finally:
+            print("closed %s: %s" % (cfg["drawing"], doc.close(False)))
+    if failed:
+        raise RuntimeError("not done: " + "; ".join(failed))
 
 
 def annotate_and_export(app, doc, part, cfg):
