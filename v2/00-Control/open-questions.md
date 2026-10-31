@@ -32,7 +32,7 @@ The build plan has no glass at all (ISS-001). The look needs v1's glass layout (
 - Weight: the front is the heaviest single item. In 4+4 laminated glass the door is about 43.3 kg and the fixed panel about 28.0 kg (calculation C5); the BOM's rectangles overstated the door (ISS-023). D-27 frees the weight for it by moving the ceiling to 40 mm frames, so the pod stays at about 400 kg.
 - Look: same outline, same smoked colour, same plane.
 - Safety: a glass door must be safety glass, tempered or laminated, as is standard practice. Laminated glass holds together if it breaks.
-- Sound: the front is the weak spot. Sealing every edge does more than adding thickness (PLAN.md "Quiet without the weight"), and the quiet target is about 24 dB (REQ-SND-01).
+- Sound: the front is the weak spot. Sealing every edge does more than adding thickness (PLAN.md "Quiet without the weight"), and the decided build calculates at about 19.3 dB, about 24 dB at best (REQ-SND-01, D-53).
 
 ## Q2. Lights
 
@@ -45,7 +45,7 @@ The build plan has no lights. The v1 BOM lists 2 square 170 × 170 ceiling light
 4. Lights connect with plugs, so a ceiling panel can come off without cutting wires.
 
 **Reasons**
-- Heat is the users' top complaint. Each watt of light is heat in a small box: 30 W adds about 0.36 K at 70 l/s (calculation C4 basis).
+- Heat is the users' top complaint. Each watt of light is heat in a small box: 30 W adds about 0.38 K at the 65 l/s boost (calculation C4 basis).
 - Video calls come up again and again in user comments (market study).
 - 12 V keeps mains out of the ceiling, and the later US version only changes the power supply.
 - The lights are inside, so the outside look doesn't change.
@@ -112,7 +112,7 @@ The PM's decisions: 2–3 cm panels lying on the room floor, the walls fixed aro
 | Question | Working default | Issue |
 |---|---|---|
 | Decor colour: yellow or black? | DECIDED (D-12): Dark Yellow EV3038, matching the plan's material list and v1's product photos | ISS-031 |
-| Quiet target and weight | DECIDED (D-27, D-37, D-42): 4+4 laminated front; the pod at about 418 kg against a 420 kg cap; about 24 dB calculated (Class C), with the factory sample deciding. The 0.4 mm lining tray was tried and dropped because it cost 1 dB. | ISS-063, ISS-065, ISS-068 |
+| Quiet target and weight | DECIDED (D-27, D-37, D-53, D-54): 4+4 laminated front; the pod's weight being rechecked against the 420 kg cap (D-54); about 19.3 dB calculated (14.6–21.7), about 24 dB at best, with the wall sample deciding. The 0.4 mm lining tray was tried and dropped because it cost 1 dB. | ISS-063, ISS-065, ISS-068 |
 | Assembly method | DECIDED (D-08): tool-free connectors, captive bolts, factory-made subassemblies, felt pre-fitted at the factory | ISS-064 |
 | Overall height and its datum | DECIDED (D-21): 2400 from the room floor to the top of the roof skin | ISS-013 |
 | Depth chain between the walls and the decor | Back face at Y = +850, decor front at Y = −850, overlap set by the bracket joint | ISS-012 |

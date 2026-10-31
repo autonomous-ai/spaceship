@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | V2-CTL-005 | P01 | DRAFT. Items marked PROPOSED are working rules until the PM decides them. | 2026-10-31 | Control pack |
 
-Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-43. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum), D-22 and D-28 (part numbers), and D-32 (no outside approvals).
+Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-57. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum), D-22 and D-28 (part numbers), D-32 (no outside approvals), and D-49 (the decor and wall depth in the key planes, section 4).
 
 Spaceship is the working name for v2 (FocusPod v2). The team calls the product "Indoor Pod", and v1 is "Indoor Pod V3" in `sources/v1/`. Folder names stay as they are.
 
@@ -90,8 +90,8 @@ Spaceship is the working name for v2 (FocusPod v2). The team calls the product "
 |---|---|---|
 | Outer faces of the side walls | X = ±1250 | source: build plan 2500 W |
 | Outer face of the back wall | Y = +850 | source: build plan 1700 D |
-| Front edge of the side walls | Y = −650 | calculation: 850 − 1500 (build plan II: wall depth 1500). The decor blocks overlap it by about 30–35 mm (D-39, ISS-012). |
-| Front-most face of the decor | Y = −850 | DECIDED (D-39): decor blocks 230–235 mm deep as in v1, not the plan's 200 |
+| Front edge of the side walls (the decor's back plate) | Y = −645 | DECIDED (D-49): wall depth 1495 (850 − 1495, calculation), so the side walls start at the decor's back plate and meet it face to face, keeping v1's side seam (v1: Y −646). Replaces the build plan's 1500 (Y −650); ISS-012. |
+| Front-most face of the decor | Y = −850 | DECIDED (D-49): decor blocks 205 mm deep (Y −850 to −645), measured from v1's decor-frame drawing and confirmed in the v1 STEP; replaces D-39's 230–235 and the plan's 200 |
 | Top of the roof skin | Z = 2400 | DECIDED (D-21): the build plan's 2400 H, measured from the room floor. v1 is 2405 without feet and 2417 with them (ISS-013, ISS-020). |
 
 **2D views use X and Y only** (guideline §3.3). Each view says how its X and Y map to 3D:
@@ -163,7 +163,7 @@ The guideline asks to keep existing numbers where they still identify the item c
 | 11 | BASE: thin floor or floor frame, base trim band, base seal, leveling |
 | 12 | Reserved. The guideline uses it for FRAME corner posts. v2 has no separate posts, so it stays unused unless they come back. |
 | 21 | WALL: side and back panels, their frames, skins, backers and cavity fill |
-| 35 | FRONT - DECOR: decor blocks DL, DR, DT and their brackets, fans and silencers inside them (D-29, D-36). The family code echoes the guideline's FRONT FASCIA numbers; none of those numbers is reused. |
+| 35 | FRONT - DECOR: decor blocks DL, DR, DT and their brackets, and the fans and cartridges inside DR (D-29, D-51). The family code echoes the guideline's FRONT FASCIA numbers; none of those numbers is reused. |
 | 36 | FRONT - DOOR AND GLAZING: door leaf, fixed glass, hinges, handle, catch, glazing profiles, door seals |
 | 41 | CEILING |
 | 51 | LINING: PET felt panels and their fixing |
