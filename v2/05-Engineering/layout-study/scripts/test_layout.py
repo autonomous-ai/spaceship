@@ -143,8 +143,8 @@ def test_p04_rollup_lines():
 
 
 def test_cad_masses_from_main():
-    """The roll-up reads WALL L1's merged parts list (PR #41): its panel and cassette lines are the CAD's sums, marked as CAD
-    on main, and every line has a basis; the swap table lists each one."""
+    """The roll-up reads the merged parts lists (WALL L1, PR #41; FRONT's door unit, PR #27): those lines are the CAD's
+    sums, marked as CAD on main, and every line has a basis; the swap table lists each one."""
     import rollup
     w = rollup.read_parts_list(rollup.WALL_L1_LIST)
     by = {r["pn"]: r["kg"] for r in w if r["pn"]}
@@ -155,7 +155,10 @@ def test_cad_masses_from_main():
     assert abs(cs[3] - (by["511101"] + by["511301"] + by["848011"] + by["848012"])) < 1e-9, cs
     assert rollup.basis(l1) == rollup.basis(cs) == "CAD, main"
     assert all(rollup.basis(r) in ("CAD, main", "CAD, open PR", "estimate") for r in rows.values())
-    assert len(rollup.cad_swaps()) == 2
+    door = next(r for k, r in rows.items() if k.startswith("Door unit 360001"))
+    d = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_DOOR_LIST) if r["pn"]}
+    assert abs(door[3] - d["360001"]) < 1e-9 and rollup.basis(door) == "CAD, main", door
+    assert len(rollup.cad_swaps()) == 3
 
 
 def test_rollup_items_the_packing_plan_reads():
