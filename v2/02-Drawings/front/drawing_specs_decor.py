@@ -34,8 +34,12 @@ SPECS["dr"] = {
         "panel and the access panel come off so the air supply assembly (14.9 kg, plug-in connectors) slides in from "
         "inside the pod (D-87); no frame tube crosses that opening.",
         "Access panel: 3 mm, 10 bolts M6 x 16 into rivnuts in the frame; the air column hangs on 2 hook studs at X 971, "
-        "Z 1700 and 1850 (PM ruling 2026-11-01). Flat sheet parts (back plate, access panel, inner panel, felt) are "
-        "cut from their DXFs (D-89 part 4).",
+        "Z 1700 and 1850, and starts at the panel's room-side face, Y -643.5 (PM rulings 2026-11-01). The inner panel "
+        "and its felt stop at the soffit's underside, Z 2120. Flat sheet parts (back plate 1.5, access panel 3.0, "
+        "inner panel) are cut from their DXFs (D-89 part 4); the felt has its own drawing.",
+        "J-FRONT-02: DR stands on 2 spigots on BASE's support behind the mesh piece: hole 8.5 at X 1050 and slot "
+        "8.5 x 14 along X at X 1147, Y -656.5, in the bottom back tube. J-FRONT-03: rivnuts for DT's two spigots in "
+        "the ledge tube's top at X 270 and 410, Y -657.9 (PM rulings 2026-11-01).",
     ],
     "title": title("350003", "FRONT - DECOR BLOCK ASSY - DR", "Khối trang trí phải (cụm)", "see the parts list",
                    "see the parts list", "1:10", "A2", [("DOC TYPE", "ASSEMBLY DRAWING")]),
@@ -50,7 +54,11 @@ SPECS["dt"] = {
     "dims": [("front", (_XL, V_DT["pod_h"]), (_dtx1, V_DT["pod_h"]), "above", 10)],
     "notes": [
         "DT: 3 mm ACP skin 351201 from the skeleton's measured v1 shape, bonded to the welded 6063-T6 tube frame "
-        "351204 (13 tubes); back plate 351202 bonded to the frame's back ring (its own drawing: bond area, surface prep).",
+        "351204 (13 tubes); back plate 351202, 2 mm aluminium, riveted to the frame's back ring (D-89 part 4).",
+        "J-FRONT-03: DT's back plate stands 2.26 in front of the ceiling's front face (Y -647.26), with 4 rivnuts "
+        "838003 and stop washers on the ceiling's bolt line, Z 2374, X -981.7, -578.2, -174.6, +229.0; the bolts come "
+        "from the ceiling's open bays. DT drops onto 2 spigots on DR's ledge: hole 8.5 at X 270 and slot 8.5 x 14 at "
+        "X 410, Y -657.9, in the bottom back tube, with clearance in the underside skin (PM rulings 2026-11-01).",
         "Slot in the underside for the fixed pane's top channel (PM ruling). Door's top: the magnetic door-stop catch "
         "368007 (Sugatsune HT-MSG62, 35 N) behind the leaf's top latch corner; the top stop 351203 with the frame-stop "
         "seal 368005 along the leaf's top, 10 short of the catch. Gap leaf to DT: 6 (PM ruling).",
@@ -74,7 +82,12 @@ SPECS["dl"] = {
         "Three hinge pockets in the door-side face, 160 deep (D-30's candidate pocket), at the door unit's hinge heights: "
         "reserved spaces until a rated two-part hinge set of at least 60 kg is named (D-46, PM rulings). The hinges' "
         "frame halves ship fitted here.",
-        "Hinge-side stop 351103 with the frame-stop seal 368005 on the leaf's inner face, in 4 lengths between the hinges.",
+        "Hinge-side stop 351103 (aluminium angle 30 x 20 x 2, bonded to the door-side face) with the frame-stop seal "
+        "368005 on the leaf's inner face, in 4 lengths between the hinges; at the top they butt DT's top stop and seal.",
+        "J-FRONT-02: DL stands on 2 spigots on the band: hole 8.5 at X -1176.7, Y -718.0 (outer facet) and slot "
+        "8.5 x 14 along the front facet at X -1073.9, Y -780.6, in the bottom ring tubes, 100 in from the ends of the "
+        "bottom edge on the tubes' centre line, 13 in from the outer faces; clearance in the bottom skin (PM rulings "
+        "2026-11-01).",
         "The door's load: hinges, the 60 x 20 hinge post behind the pockets, the frame's rings, the 60 x 20 bolt-line "
         "post, the back plate and the J-FRONT-01 bolts into the left wall (ISS-045; hinge fixing holes HOLD H01).",
     ],
@@ -121,7 +134,9 @@ SPECS["dr_frame"] = _frame_spec(
      "bolt-line tube (6 holes 14 in its back wall round the J-FRONT-01 rivnut tails) and the 60 x 20 band tube, "
      "facet, chamfer and DT-joint tubes between the rings. No back-ring tube crosses the opening the air unit slides "
      "through (D-87). Rivnuts 838003 set at the factory: 10 for the access panel's bolts (6 on X 1188, 2 at "
-     "Z 130, 2 at Z 2140)."])
+     "Z 130, 2 at Z 2140), and 2 in the ledge tube's top for DT's spigots (X 270 and 410). Walls: 1.0 on the tubes "
+     "that only hold the skin, 1.2 on the tubes with rivnuts, 1.5 on the fan-box shelf tubes (PM ruling 2026-11-01). "
+     "J-FRONT-02: spigot hole 8.5 (X 1050) and slot 8.5 x 14 (X 1147) in the bottom back tube's bottom wall."])
 SPECS["dr_skin"] = {
     "design": doc("351301", "FRONT - DECOR SKIN - DR", "CAD"), "drawing": doc("351301", "FRONT - DECOR SKIN - DR", "DWG"),
     "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05},
@@ -144,9 +159,10 @@ SPECS["dt_frame"] = _frame_spec(
     {"front": (190, 300), "top": (190, 220), "left": (380, 300), "iso": (190, 110)},
     {"front": (_XL, V_DT["dt_zb"], _dtx1, V_DT["pod_h"])},
     ["DT's welded frame: a back ring in front of the back plate (its slope tube 3 above DL's slope for the joint's "
-     "seal, HOLD), a tube along the lower front facet, a tube laid under the top chamfer, the rail just behind the "
-     "glass's top channel that the catch 368007 and the top stop 351203 screw into, and cross tubes (one over the "
-     "catch)."])
+     "seal, HOLD; its top tube 40 x 20 with 4 holes 14 in the back wall round the J-FRONT-03 rivnut tails at Z 2374; "
+     "its bottom tube with the spigot hole 8.5 and slot 8.5 x 14 over DR's ledge), a tube along the lower front facet, "
+     "a tube laid under the top chamfer, the rail against the back ring that the catch 368007 and the top stop 351203 "
+     "screw into, and cross tubes (one over the catch)."])
 SPECS["dt_skin"] = {
     "design": doc("351201", "FRONT - DECOR SKIN - DT", "CAD"), "drawing": doc("351201", "FRONT - DECOR SKIN - DT", "DWG"),
     "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05},
@@ -157,7 +173,8 @@ SPECS["dt_skin"] = {
         "DT's skin: 3 mm ACP (EV3038 Dark Yellow, PE core, D-12), one flat panel per outside face, edges mitred at 45 "
         "deg and joined as v1. Flat patterns 1:1 in 351201_P01_FRONT-DECOR-SKIN-DT_DXF.dxf (layers CUT and MARK).",
         "Open at the back, at DR and over DL's slope. Slot 17 wide in the underside at the glass plane for the fixed "
-        "pane's top channel (PM ruling).",
+        "pane's top channel, its left end where the pane's free edge leaves the skin (PM ruling). Two clearance cuts "
+        "in the underside over DR's ledge spigots: dia 16 at X 270, 16 x 22 at X 410, Y -657.9 (J-FRONT-03).",
         "Bonded to the frame 351204 per the joints register's ACP bond spec. Outline +/-1 (PROPOSED).",
     ],
     "title": title("351201", "FRONT - DECOR SKIN - DT", "Tấm ốp alu khối trên", "ACP 3 mm EV3038 Dark Yellow",
@@ -170,7 +187,8 @@ SPECS["dl_frame"] = _frame_spec(
     ["DL's welded frame carries the door (ISS-045): the hinges' frame halves screw into the 60 x 20 hinge post "
      "behind the three pockets (holes when the hinge is named, HOLD H01); the four plan rings tie it to the back "
      "ring's 60 x 20 bolt-line post (6 holes 14 round the J-FRONT-01 rivnut tails), the back plate and the bolts "
-     "into the left wall."])
+     "into the left wall. J-FRONT-02: spigot hole 8.5 in the outer facet's bottom ring tube and slot 8.5 x 14 along "
+     "the front facet's, on the tubes' centre line."])
 SPECS["dl_skin"] = {
     "design": doc("351101", "FRONT - DECOR SKIN - DL", "CAD"), "drawing": doc("351101", "FRONT - DECOR SKIN - DL", "DWG"),
     "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05},
@@ -181,9 +199,116 @@ SPECS["dl_skin"] = {
         "DL's skin: 3 mm ACP (EV3038 Dark Yellow, PE core, D-12), one flat panel per outside face, edges mitred at 45 "
         "deg and joined as v1. Flat patterns 1:1 in 351101_P01_FRONT-DECOR-SKIN-DL_DXF.dxf (layers CUT and MARK).",
         "Three hinge pockets in the door-side face, 164 x 44 x 124, 160 deep, at the door unit's hinge heights "
-        "(reserved spaces until a rated hinge is named, D-46). Open at the back and under DT.",
+        "(reserved spaces until a rated hinge is named, D-46). Open at the back and under DT. Two clearance cuts in "
+        "the bottom over the band spigots: dia 16 at X -1176.7, Y -718.0 and 16 x 22 along the front facet at "
+        "X -1073.9, Y -780.6 (J-FRONT-02).",
         "Bonded to the frame 351104 per the joints register's ACP bond spec. Outline +/-1 (PROPOSED).",
     ],
     "title": title("351101", "FRONT - DECOR SKIN - DL", "Tấm ốp alu khối trái", "ACP 3 mm EV3038 Dark Yellow",
                    "factory coil coating (D-12)", "1:10", "A2"),
+}
+
+
+# ---- part drawings added with J-FRONT-02 and 03 (PM rulings 2026-11-01)
+
+def _ev(V):
+    import math as _m
+    return lambda e: eval(re.sub(r"(\d)\s*mm\b", r"\1", str(e)).replace("^", "**"),
+                          {"__builtins__": {}, "sqrt": _m.sqrt, "abs": abs}, V)
+
+
+# 351304 DR felt: the inner panel's outline (stepped and slanted, so it keeps a drawing: D-89)
+_evr = _ev(V_DR)
+_LR = G_DR["L"]
+_fk = tuple(_evr(c) for c in _LR.g_K("dr_skin_t"))                       # the knee on the glass's right edge
+_ftl = (_evr(_LR.diag_x("fg_vis_zt", "dr_skin_t")), V_DR["fg_vis_zt"])   # top left, on the diagonal
+_ftr = (V_DR["dr_col_x0"], V_DR["fg_vis_zt"])
+_fbr = (V_DR["dr_col_x0"], _evr("((fg_rc + dr_skin_t - fg_rnx * dr_col_x0) / fg_rnz)"))
+SPECS["dr_felt"] = {
+    "design": doc("351304", "FRONT - DECOR INNER PANEL FELT - DR", "CAD"),
+    "drawing": doc("351304", "FRONT - DECOR INNER PANEL FELT - DR", "DWG"),
+    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (150, 230), "iso": (330, 95)},
+    "box": {"front": (_ftl[0], _fbr[1], _ftr[0], _ftr[1])},
+    "dims": [("front", _ftl, _ftr, "above", 10), ("front", _fbr, _ftr, "right", 12),
+             ("front", _fk, _ftr, "right", 25), ("front", _ftl, _fk, "below", 10)],
+    "notes": [
+        "PET acoustic felt 9 mm, Dark Gray (D-79), the factory's felt (D-31; hardware selection A3); emission "
+        "certificate HOLD. Laser-cut from 351304_P01_FRONT-DECOR-INNER-PANEL-FELT-DR_DXF.dxf (1:1, mm). Outline +/-2.",
+        "Its outline follows the inner panel 351303 (the glass's slanted edges on the left, the air column's edge on "
+        "the right, the soffit's underside at the top), so it is not a plain rectangle and keeps a drawing (D-89).",
+        "Glued to the inner panel 351303 at the factory over its whole face: the bond area is the full outline. "
+        "Surface prep: the panel's face clean, dry and dust-free, wiped with isopropyl alcohol; adhesive per the felt "
+        "maker (product HOLD).",
+        "Seen from inside the pod between the fixed glass and the air column; its top meets the soffit's underside at "
+        "Z 2120 (PM ruling 2026-11-01).",
+    ],
+    "title": title("351304", "FRONT - DECOR INNER PANEL FELT - DR", "Nỉ tấm trong khối phải", "PET felt 9 mm",
+                   "Dark Gray, as supplied (D-79)", "1:10", "A2", [("MASS", "0.74 kg (calculation)")]),
+}
+
+# 351203 DT top stop: a 20 x 20 x 2 angle, screwed up into DT's rail F02
+_evt = _ev(V_DT)
+_lat = lambda z: _XL + V_DT["door_xbr"] - (V_DT["door_xbr"] - V_DT["door_xtr"]) * (z - V_DT["door_zb"]) / (
+    V_DT["door_zt"] - V_DT["door_zb"])
+_sx0 = _XL + V_DT["door_xl"]
+_sx1 = _lat(V_DT["leaf_zt"]) - V_DT["st_end"] - V_DT["st_l"] / 2 - V_DT["ca_l"] / 2 - V_DT["stop_end"]
+_sy0 = -V_DT["glass_y"] + V_DT["glass_t"] / 2 + V_DT["stop_gap"]
+_sy1 = _sy0 + V_DT["stop_fl"]
+_sz0, _sz1 = V_DT["fg_vis_zt"] - V_DT["stop_h"], V_DT["fg_vis_zt"]
+_shx = [_sx0 + 50 + k * (_sx1 - _sx0 - 100) / 4 for k in range(5)]
+_shy = _sy0 + V_DT["stop_t"] + (V_DT["stop_fl"] - V_DT["stop_t"]) / 2
+SPECS["dt_stop"] = {
+    "design": doc("351203", "FRONT - DOOR TOP STOP - DT", "CAD"),
+    "drawing": doc("351203", "FRONT - DOOR TOP STOP - DT", "DWG"),
+    "sheet": "A2", "scale": 0.2, "scales": {"left": 2.0, "iso": 0.2},
+    "views": {"front": (200, 300), "top": (200, 230), "left": (440, 300), "iso": (200, 110)},
+    "box": {"front": (_sx0, _sz0, _sx1, _sz1), "top": (_sx0, _sy0, _sx1, _sy1), "left": (-_sy1, _sz0, -_sy0, _sz1)},
+    "dims": [("front", (_sx0, _sz0), (_sx1, _sz0), "below", 10),
+             ("left", (-_sy1, _sz1), (-_sy0, _sz1), "above", 8), ("left", (-_sy0, _sz0), (-_sy0, _sz1), "right", 8)],
+    "notes": [
+        "Aluminium angle 20 x 20 x 2, EN AW-6063-T6 (EN 755-9), black anodised matte 20 um (AA20, D-67). Cut length "
+        "%.1f (-1/0), square ends, burr-free." % (_sx1 - _sx0),
+        "HOLE TABLE: 5 x dia %.1f through the flange, countersunk 90 deg to dia 8.6 on its underside, for M4 "
+        "countersunk screws up into rivnuts in DT's rail F02 (screw and rivnut: joints register numbers HOLD). From "
+        "the left (hinge) end: %s; %.0f from the leg's outer face (2.1 diameters from the flange's edge)." % (
+            V_DT["stop_hole"], ", ".join("%.1f" % (x - _sx0) for x in _shx), _shy - _sy0),
+        "The frame-stop seal 368005 (athmer PS 1515 P Flex, self-adhesive) goes on the leg's glass-side face; the leg "
+        "hangs 20 below DT's underside. At the hinge end the stop and seal butt DL's (PM ruling 2026-11-01).",
+        "General tolerance ISO 2768-m.",
+    ],
+    "title": title("351203", "FRONT - DOOR TOP STOP - DT", "Nẹp chặn cửa trên", "aluminium angle 20 x 20 x 2, 6063-T6",
+                   "black anodised matte 20 um (AA20)", "1:5, section 2:1", "A2", [("MASS", "see the parts list")]),
+}
+
+# 351103 DL hinge-side stop: a 30 x 20 x 2 angle in 4 lengths, bonded to DL's door-side face
+_lx0 = _XL + V_DL["dl_w"]
+_lx1 = _lx0 + V_DL["stop_reach"]
+_ly0 = -V_DL["glass_y"] + V_DL["glass_t"] / 2 + V_DL["stop_gap"]
+_ly1 = _ly0 + V_DL["stop_fl"]
+_hz = lambda k: V_DL["hinge_z%d" % k]
+_hh, _hs = V_DL["hinge_clamp_h"] / 2, V_DL["hinge_skip"]
+_lsp = [(V_DL["door_zb"], _hz(1) - _hh - _hs), (_hz(1) + _hh + _hs, _hz(2) - _hh - _hs),
+        (_hz(2) + _hh + _hs, _hz(3) - _hh - _hs), (_hz(3) + _hh + _hs, V_DL["dt_zb"] - V_DL["dt_stop_h"])]
+SPECS["dl_stop"] = {
+    "design": doc("351103", "FRONT - DOOR HINGE-SIDE STOP - DL", "CAD"),
+    "drawing": doc("351103", "FRONT - DOOR HINGE-SIDE STOP - DL", "DWG"),
+    "sheet": "A2", "scale": 0.1, "scales": {"top": 2.0, "iso": 0.05},
+    "views": {"front": (120, 230), "top": (300, 300), "iso": (330, 110)},
+    "box": {"front": (_lx0, _lsp[0][0], _lx1, _lsp[-1][1]), "top": (_lx0, _ly0, _lx1, _ly1)},
+    "dims": [("top", (_lx0, _ly0), (_lx1, _ly0), "below", 8), ("top", (_lx0, _ly0), (_lx0, _ly1), "left", 8)] +
+            [("front", (_lx1, a), (_lx1, b), "right", 10) for a, b in _lsp],
+    "notes": [
+        "Aluminium angle 30 x 20 x 2, EN AW-6063-T6 (EN 755-9), black anodised matte 20 um (AA20, D-67). Cut list, 4 "
+        "pieces between the hinges, bottom to top: %s mm (-1/0), square ends, burr-free." % ", ".join(
+            "%.1f" % (b - a) for a, b in _lsp),
+        "Bonded to DL's door-side face by its 20 mm flange: the bond area is the flange's full face on each piece. "
+        "Surface prep: abrade the anodised face lightly, wipe both faces with isopropyl alcohol, primer and structural "
+        "tape per the tape maker (product HOLD). The 30 mm leg reaches 19 over the door glass, past the 15 mm seal.",
+        "The frame-stop seal 368005 (athmer PS 1515 P Flex, self-adhesive) goes on the leg's glass-side face. The top "
+        "piece stops 20 under DT's underside, where DT's top stop takes over (PM ruling 2026-11-01).",
+        "General tolerance ISO 2768-m.",
+    ],
+    "title": title("351103", "FRONT - DOOR HINGE-SIDE STOP - DL", "Nẹp chặn cửa phía bản lề",
+                   "aluminium angle 30 x 20 x 2, 6063-T6", "black anodised matte 20 um (AA20)", "1:10, section 2:1", "A2",
+                   [("MASS", "see the parts list")]),
 }

@@ -179,8 +179,9 @@ for _part in ("drawing_specs_glass.py", "drawing_specs_decor.py"):
     _path = os.path.join(HERE, _part)
     if os.path.exists(_path):
         exec(compile(open(_path, encoding="utf-8").read(), _path, "exec"), globals())
-ORDER = [_k for _k in ("door_unit", "leaf", "kick", "fixed_unit", "pane", "uprof", "dr", "dr_frame", "dr_skin", "dt",
-                       "dt_frame", "dt_skin", "dl", "dl_frame", "dl_skin") if _k in SPECS]
+ORDER = [_k for _k in ("door_unit", "leaf", "kick", "fixed_unit", "pane", "uprof", "dr", "dr_frame", "dr_skin",
+                       "dr_felt", "dt", "dt_frame", "dt_skin", "dt_stop", "dl", "dl_frame", "dl_skin", "dl_stop")
+         if _k in SPECS]
 
 for _k, _sp in SPECS.items():
     _sp["images"] = image_places(_sp["sheet"])
