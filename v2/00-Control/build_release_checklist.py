@@ -325,35 +325,28 @@ def where_of(r, labels):
 FLAT_LAYERS = {"CUT", "MARK"}
 
 
+DXF_STRUCTURE = ("BLOCK", "ENDBLK", "SEQEND", "VERTEX", "ENDSEC", "EOF")  # records, not lines
+
+
 def dxf_other_layers(text):
-    """D-89 (4): the layers other than CUT and MARK that an ASCII DXF draws on, upper-cased; None when it can't be
-    read (empty or binary), so the part can't be shown flat. What it draws is its ENTITIES section; a block counts
-    only where an INSERT places it (its entities on layer 0 take the INSERT's layer), so the arrow-head blocks a
-    DXF library writes, never inserted, don't count."""
-    if not text or text.startswith("AutoCAD Binary DXF"):
+    """D-89 (4): the layers other than CUT and MARK that an ASCII DXF has lines on, upper-cased; None when it can't
+    be read (empty or binary), so the part can't be shown flat. Read the way the mechanical check reads it
+    (tools/checks/c_drawings.py, dxf_summary): every entity in the ENTITIES and BLOCKS sections counts, except the
+    records BLOCK, ENDBLK, VERTEX and SEQEND, so a block header on layer 0 doesn't."""
+    if not text or not text.strip() or text.startswith("AutoCAD Binary DXF"):
         return None
     lines = text.splitlines()
     pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
-    section, block, ent, blocks, drawn = None, None, None, {}, []
-    for i, (code, value) in enumerate(pairs + [("0", "EOF")]):
-        if code == "0":
-            if ent and section == "ENTITIES":
-                drawn.append(ent)
-            elif ent and section == "BLOCKS" and block and ent[0] not in ("BLOCK", "ENDBLK"):
-                blocks.setdefault(block, set()).add(ent[1])
-            ent = None if value in ("SECTION", "ENDSEC", "EOF") else [value.upper(), "0", ""]
-            section = None if value == "ENDSEC" else section
-        elif code == "2" and i and pairs[i - 1] == ("0", "SECTION"):
-            section = value.upper()
-        elif ent is not None and code == "8":
-            ent[1] = value.upper()
-        elif ent is not None and code == "2":
-            ent[2] = value
-            block = value if ent[0] == "BLOCK" else block
-    other = set()
-    for typ, layer, name in drawn:
-        layers = {layer} | ({x for x in blocks.get(name, set()) if x != "0"} if typ == "INSERT" else set())
-        other |= {x for x in layers if x not in FLAT_LAYERS}
+    sec, cur, other = None, None, set()
+    for k, (code, val) in enumerate(pairs):
+        if code == "2" and k and pairs[k - 1] == ("0", "SECTION"):
+            sec, cur = val.upper(), None
+        elif code == "0" and val == "ENDSEC":
+            sec, cur = None, None
+        elif sec in ("ENTITIES", "BLOCKS") and code == "0":
+            cur = None if val.upper() in DXF_STRUCTURE else val.upper()
+        elif sec in ("ENTITIES", "BLOCKS") and cur and code == "8" and val.upper() not in FLAT_LAYERS:
+            other.add(val.upper())
     return other
 
 
@@ -598,7 +591,9 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "a flat part cut from sheet needs no drawing when it has its own DXF and its row's process names laser, waterjet or router "
             "cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, "
             "thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole "
-            "note is left to the drawing review. The DXF may draw only on the CUT and MARK layers (the guideline's layers, section 9): "
+            "note is left to the drawing review. The DXF may draw only on the CUT and MARK layers (the guideline's layers, section 9; "
+            "every entity in its ENTITIES and BLOCKS sections counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, as the "
+            "mechanical check reads it): "
             "a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing whatever the process says. "
             "Assemblies always keep their drawings.",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
