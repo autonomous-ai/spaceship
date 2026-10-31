@@ -1,6 +1,6 @@
-# Mechanical check run: 8d51f12 on 2026-10-31
+# Mechanical check run: 1073fb5 on 2026-10-31
 
-Offline checks (`tools/checks/run_checks.py`) on revision `8d51f12`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `1073fb5`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 1** (0 severe, 1 major, 0 minor). Register numbers in brackets.
 
