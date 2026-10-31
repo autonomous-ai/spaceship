@@ -29,6 +29,7 @@ DXF into the repo; needs save=1).
 
 import importlib
 import os
+import re
 import sys
 import time
 import traceback
@@ -46,6 +47,12 @@ import ceiling_checks as C  # noqa: E402
 importlib.reload(C)
 
 DOC_NAME = "410000_%s_CEILING_CAD" % M.REV
+SCOPES = ("cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c")   # part-only designs for drawings
+
+
+def part_doc_name(key):
+    pn, name, _vn, _k, _m = M.PARTS[key]
+    return "%s_%s_%s_CAD" % (pn, M.REV, re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-"))
 CLOUD_FOLDER = "FocusPod v2"
 F3D_REL = "v2/01-CAD-Native/ceiling/%s.f3d" % DOC_NAME
 STEP_REL = "v2/03-Manufacturing/ceiling/410000_%s_CEILING_STEP.step" % M.REV
@@ -355,7 +362,7 @@ def build_tray(cass_occ_root, cass_comp, ctx):
     rule.kFactor = 0.44
     rule.twoBendReliefShape = adsk.fusion.TwoBendReliefShapes.SquareTwoBendReliefShape
     comp.activeSheetMetalRule = rule
-    proxy = occ.createForAssemblyContext(cass_occ_root)
+    proxy = occ.createForAssemblyContext(cass_occ_root) if cass_occ_root is not None else occ
     proxy.activate()
     try:
         sk = rect_sketch(comp, comp.xYConstructionPlane, "OUTLINE - TRAY BASE",
@@ -517,6 +524,51 @@ def build_hold(cass_comp, key, b, ctx):
     return occ, comp
 
 
+def build_cassette_contents(cass, cass_occ, ctx):
+    """Tray, felt, ribs, fill strips, clip and catch spaces inside the cassette
+    component `cass` (CS-510301). cass_occ is its first occurrence in the root,
+    or None when `cass` is the root itself (the cassette-only design)."""
+    _tray_occ, tray_comp = build_tray(cass_occ, cass, ctx)
+    print("step tray done")
+    felt_occ, _felt = build_felt(cass, ctx)
+    rib_occ, rib = build_rib(cass, ctx)
+    rib_y = "%s + tray_t + rib_end" % M.CS_Y0
+    place(cass, rib_occ, ("-rib_off", rib_y, "-tray_t"), "RIB L", ctx)
+    rib_occ2 = cass.occurrences.addExistingComponent(rib, adsk.core.Matrix3D.create())
+    place(cass, rib_occ2, ("rib_off", rib_y, "-tray_t"), "RIB R", ctx)
+    # an occurrence without a joint stayed at its world position when the cassette was
+    # placed (build run 9), so the felt gets a joint at the cassette origin too
+    place(cass, felt_occ, ("0 mm", "0 mm", "0 mm"), "FELT", ctx)
+    fill_occ = {}
+    for key, bay, bbox, notches in M.fill_strips(ctx.vals):
+        vals = ctx.vals
+        sb = tuple(M.ev(vals, e) for e in bbox)
+        use = [(n, nb) for n, nb in notches if M.overlap(sb, tuple(M.ev(vals, e) for e in nb))]
+        if key in fill_occ:
+            o = cass.occurrences.addExistingComponent(fill_occ[key], adsk.core.Matrix3D.create())
+        else:
+            o, c = build_fill(cass, key, bbox, use, ctx)
+            fill_occ[key] = c
+        place(cass, o, ("0 mm", bbox[2], "0 mm"), "FILL BAY %d" % bay, ctx)
+    clip_comp = None
+    for name, b in M.clip_boxes():
+        if clip_comp is None:
+            o, clip_comp = build_hold(cass, "clip", ("-clip_w / 2", "clip_w / 2", "0 mm", "clip_d", "0 mm", "clip_h"), ctx)
+        else:
+            o = cass.occurrences.addExistingComponent(clip_comp, adsk.core.Matrix3D.create())
+        xc = "(%s) + clip_w / 2" % b[0]
+        place(cass, o, (xc, b[2], "0 mm"), name, ctx)      # origin on the member's back face
+    catch_comp = None
+    for name, b in M.catch_boxes():
+        if catch_comp is None:
+            o, catch_comp = build_hold(cass, "catch", ("-catch_w / 2", "catch_w / 2", "-catch_d", "0 mm", "0 mm", "catch_h"), ctx)
+        else:
+            o = cass.occurrences.addExistingComponent(catch_comp, adsk.core.Matrix3D.create())
+        xc = "(%s) + catch_w / 2" % b[0]
+        place(cass, o, (xc, b[3], "0 mm"), name, ctx)      # origin on the member's front face
+    return tray_comp
+
+
 # ---------------------------------------------------------------- checks
 
 def body_box(body):
@@ -618,6 +670,50 @@ def make_flat_pattern(tray_comp):
     return fp
 
 
+def run_part(app, doc, design, root, scope, ctx):
+    """A part-only design for a drawing (a Fusion drawing shows its whole design):
+    the same build functions, the part alone in its own frame. Checks: timeline,
+    sketches, clashes. The source of record stays 410000_P01_CEILING_CAD."""
+    pn, name, vn, kind, _m = M.PARTS[scope]
+    root.partNumber = pn
+    root.description = "%s | %s | %s | %s | drawing source, built by ceiling_build.py" % (name, vn, kind, M.REV)
+    tray_comp = None
+    if scope == "cassette":
+        tray_comp = build_cassette_contents(root, None, ctx)
+    elif scope == "tray":
+        _o, tray_comp = build_tray(None, root, ctx)
+    elif scope == "rib":
+        build_rib(root, ctx)
+    elif scope == "felt":
+        build_felt(root, ctx)
+    else:
+        for key, bay, bbox, notches in M.fill_strips(ctx.vals):
+            if key == scope:
+                sb = tuple(M.ev(ctx.vals, e) for e in bbox)
+                use = [(n, nb) for n, nb in notches if M.overlap(sb, tuple(M.ev(ctx.vals, e) for e in nb))]
+                build_fill(root, key, bbox, use, ctx)
+                break
+        else:
+            raise RuntimeError("no fill strip of kind %s in this layout" % scope)
+    adsk.doEvents()
+    tl = design.timeline
+    bad = [tl.item(i).name for i in range(tl.count)
+           if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    loose = [c.name + "/" + sk.name for c in design.allComponents for sk in c.sketches if not sk.isFullyConstrained]
+    bodies = all_bodies(root) + [("root/" + b.name, b) for b in root.bRepBodies]
+    hits = clash_check(bodies)
+    print("PART %s %s: timeline %d items, unhealthy %d, loose sketches %d, bodies %d, clashes %d, box %s" % (
+        pn, name, tl.count, len(bad), len(loose), len(bodies), len(hits), body_box(root)))
+    if bad or loose or hits:
+        raise RuntimeError("part checks failed (unhealthy %s, loose %s, clashes %s)" % (bad, loose, hits))
+    if tray_comp is not None:
+        make_flat_pattern(tray_comp)
+    design.activateRootComponent()
+    if ARGS.get("save") == "1":
+        print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, M.REV, M.SKELETON_REV)))
+        adsk.doEvents()
+
+
 def run(_context):
     app = adsk.core.Application.get()
     if ARGS.get("close_previous") == "1":
@@ -628,11 +724,15 @@ def run(_context):
             dd = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
             if dd and not d.isSaved and dd.rootComponent.partNumber == "410000":
                 d.close(False)
+    scope = ARGS.get("scope", "")
+    if scope and scope not in SCOPES:
+        raise RuntimeError("scope must be one of %s" % (SCOPES,))
+    doc_name = part_doc_name(scope) if scope else DOC_NAME
     into_active = ARGS.get("into_active") == "1"
     if into_active:
         doc = app.activeDocument
-        if doc.name.split(" v")[0] != DOC_NAME:
-            raise RuntimeError("active document is %r, not %s (use the runner's --doc)" % (doc.name, DOC_NAME))
+        if doc.name.split(" v")[0] != doc_name:
+            raise RuntimeError("active document is %r, not %s (use the runner's --doc)" % (doc.name, doc_name))
     else:
         doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     keep = ARGS.get("keep") == "1" or into_active
@@ -654,6 +754,10 @@ def run(_context):
         root.partNumber = "410000"
         root.description = "CEILING | Trần | HS | " + M.REV
         stop = ARGS.get("stop_after", "")
+        if scope:
+            run_part(app, doc, design, root, scope, ctx)
+            ok = True
+            return
 
         # outer panels
         assy = {}
@@ -671,46 +775,7 @@ def run(_context):
 
         # the cassette (one component, two occurrences)
         cass_occ, cass = new_comp(root, "cassette", ctx)
-        _tray_occ, tray_comp = build_tray(cass_occ, cass, ctx)
-        print("step tray done")
-        if stop == "tray":
-            raise StopIteration
-        felt_occ, _felt = build_felt(cass, ctx)
-        rib_occ, rib = build_rib(cass, ctx)
-        rib_y = "%s + tray_t + rib_end" % M.CS_Y0
-        place(cass, rib_occ, ("-rib_off", rib_y, "-tray_t"), "RIB L", ctx)
-        rib_occ2 = cass.occurrences.addExistingComponent(rib, adsk.core.Matrix3D.create())
-        place(cass, rib_occ2, ("rib_off", rib_y, "-tray_t"), "RIB R", ctx)
-        # an occurrence without a joint stayed at its world position when the cassette was
-        # placed (build run 9), so the felt gets a joint at the cassette origin too
-        place(cass, felt_occ, ("0 mm", "0 mm", "0 mm"), "FELT", ctx)
-        fill_occ = {}
-        for key, bay, bbox, notches in M.fill_strips(ctx.vals):
-            vals = ctx.vals
-            sb = tuple(M.ev(vals, e) for e in bbox)
-            use = [(n, nb) for n, nb in notches if M.overlap(sb, tuple(M.ev(vals, e) for e in nb))]
-            if key in fill_occ:
-                o = cass.occurrences.addExistingComponent(fill_occ[key], adsk.core.Matrix3D.create())
-            else:
-                o, c = build_fill(cass, key, bbox, use, ctx)
-                fill_occ[key] = c
-            place(cass, o, ("0 mm", bbox[2], "0 mm"), "FILL BAY %d" % bay, ctx)
-        clip_comp = None
-        for name, b in M.clip_boxes():
-            if clip_comp is None:
-                o, clip_comp = build_hold(cass, "clip", ("-clip_w / 2", "clip_w / 2", "0 mm", "clip_d", "0 mm", "clip_h"), ctx)
-            else:
-                o = cass.occurrences.addExistingComponent(clip_comp, adsk.core.Matrix3D.create())
-            xc = "(%s) + clip_w / 2" % b[0]
-            place(cass, o, (xc, b[2], "0 mm"), name, ctx)      # origin on the member's back face
-        catch_comp = None
-        for name, b in M.catch_boxes():
-            if catch_comp is None:
-                o, catch_comp = build_hold(cass, "catch", ("-catch_w / 2", "catch_w / 2", "-catch_d", "0 mm", "0 mm", "catch_h"), ctx)
-            else:
-                o = cass.occurrences.addExistingComponent(catch_comp, adsk.core.Matrix3D.create())
-            xc = "(%s) + catch_w / 2" % b[0]
-            place(cass, o, (xc, b[3], "0 mm"), name, ctx)      # origin on the member's front face
+        tray_comp = build_cassette_contents(cass, cass_occ, ctx)
         print("step cassette parts done")
         place(root, cass_occ, M.CASSETTE_CS["C1"], "CASSETTE C1-CASS", ctx)
         cass_occ2 = root.occurrences.addExistingComponent(cass, adsk.core.Matrix3D.create())
@@ -747,7 +812,7 @@ def run(_context):
         design.activateRootComponent()
         if ARGS.get("save") == "1":
             if not into_active:
-                raise RuntimeError("save=1 needs into_active=1 with the runner's --doc %s --doc-new" % DOC_NAME)
+                raise RuntimeError("save=1 needs into_active=1 with the runner's --doc %s --doc-new" % doc_name)
             print("saved:", doc.save("CEILING %s build, skeleton %s" % (M.REV, M.SKELETON_REV)))
             adsk.doEvents()
         if ARGS.get("export") == "1":

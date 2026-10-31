@@ -51,7 +51,7 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-513201-01 | Panel | 1160 × 1045 × 9, on the lips, no holes | The room face; sound absorption on the 24 mm gap (D-17, D-53). No lights in the ceiling: they sit on a light shelf along the tops of the side and back walls (PM ruling 2026-10-31, interior design) | Inside the returns less 1 mm each side (`felt_c`, assumption), so it drops onto the lips | calculation |
 | F-513201-02 | Sprinkler reserve (2 candidates) | Ø150 zones at X' ±387.67, Y' 203.13 (mark only, nothing cut) | Keeps a clear path for a later sprinkler drop (REQ-US-01) | One each side so the cassette stays one part: the middle of the outer felt spans and of the first frame bay over the cassette, clear of ribs, clips and members (checked by the tests) | assumption |
 
-## Fill 513301, 513302, 513303, PET 40 mm at 32 kg/m³
+## Fill 513301, 513302, 513303, PET 40 mm at 25 kg/m³ (PM ruling: the default; the wall sample's T02 confirms it, else 32)
 
 | Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|
