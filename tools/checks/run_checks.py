@@ -98,7 +98,7 @@ def run(root, rev):
         ran.add("C09")
     inputs["part_steps"] = [rel(root, p) for p in per_part]
     # STEP products for the BOM match and the drawings
-    step_products, holes_by_pn, usage, faces_by_pn = {}, {}, {}, {}
+    step_products, holes_by_pn, usage, faces_by_pn, flat_by_pn = {}, {}, {}, {}, {}
     for p in per_part:
         s = c_geometry.load_step(p)
         counts, _tops = s.usage_counts()
@@ -111,6 +111,9 @@ def run(root, rev):
             so = s.solid(inst["solid"])
             holes_by_pn.setdefault(inst["part_number"], so.holes)
             faces_by_pn.setdefault(inst["part_number"], []).append(len(so.faces))
+            fl = sf.flat_plate(so)
+            if not fl[0] or inst["part_number"] not in flat_by_pn:      # one body that isn't flat decides
+                flat_by_pn[inst["part_number"]] = fl
             usage.setdefault(inst["part_number"], []).append((rel(root, p), 1, [" / ".join(inst["path"][1:])]))
     if plists:
         findings += c_parts.check_cad_match(root, plists, step_products)
@@ -136,7 +139,7 @@ def run(root, rev):
             for row in rows:
                 if row["part_number"]:
                     src_by_pn.setdefault(row["part_number"], rel(root, p))
-        findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn)
+        findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn, flat_by_pn)
         ran.add("C05")
     schedule = c_parts.fastener_schedule(root, plists, usage)
     return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,
