@@ -30,6 +30,7 @@ def load_lib():
     spec = importlib.util.spec_from_file_location("front_lib_run", os.path.join(HERE, "front_lib.py"))
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
+    print("helper module %s: %s" % (m.__name__, m.__file__))
     return m
 
 
@@ -40,6 +41,7 @@ def load_frame_lib():
     spec = importlib.util.spec_from_file_location("frame_lib_run", os.path.join(HERE, "frame_lib.py"))
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
+    print("helper module %s: %s" % (m.__name__, m.__file__))
     return m
 
 
