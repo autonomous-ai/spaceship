@@ -46,6 +46,8 @@ TREE = [   # key, parent, qty per parent, source
 FINISH = {"ledge": "powder coat, charcoal to match the felt (RAL HOLD)", "shelf_back": "powder coat, charcoal (RAL HOLD)",
           "shelf_lh": "powder coat, charcoal (RAL HOLD)", "shelf_rh": "powder coat, charcoal (RAL HOLD)",
           "dchan": "powder coat, charcoal (RAL HOLD)", "diffuser": "opal, as supplied"}
+# a part whose material grade isn't chosen yet: HOLD in the status column until it is (C11)
+GRADE_HOLD = {"diffuser": "picked with ELECTRICAL's down-light strips, for their light and heat"}
 PROCESS = {"ledge": "laser cut, brake bend (2 bends)", "shelf_back": "laser cut, brake bend (3 bends), cable hole",
            "shelf_lh": "laser cut, brake bend (3 bends)", "shelf_rh": "laser cut, brake bend (3 bends), cable hole",
            "dchan": "laser cut, brake bend (4 bends)", "diffuser": "cut to length"}
@@ -154,7 +156,9 @@ def parts_list(v, mass):
                                                                if key == "rail" else ""),
              "torque": "", "size_mm": size, "tolerance": tol,
              "mass_each_kg": mass_txt, "mass_status": mstat, "revision": REV,
-             "status": "HOLD" if kind == "HOLD" else "DRAFT", "source": src}
+             "status": "HOLD" if kind == "HOLD" or key in GRADE_HOLD else "DRAFT", "source": src}
+        if key in GRADE_HOLD:
+            r["material"] = "%s (grade HOLD: %s)" % (r["material"], GRADE_HOLD[key])
         rows.append(r)
         by_key[key] = r
     kids = {}

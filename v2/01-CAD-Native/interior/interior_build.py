@@ -47,6 +47,19 @@ CUT = adsk.fusion.FeatureOperations.CutFeatureOperation
 NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
 
 
+
+def keep_part_number(doc, comp, pn, what):
+    """Fusion can put back a new design's own part number (a timestamp) when the run that made
+    the design saves it, so the STEP and the drawing would carry that: check after the save and,
+    if so, set the part number again and save once more."""
+    if comp.partNumber != pn:
+        print("part number after the save: %r, set again to %s" % (comp.partNumber, pn))
+        comp.partNumber = pn
+        print("saved:", doc.save("%s: part number %s" % (what, pn)))
+        adsk.doEvents()
+    if comp.partNumber != pn:
+        raise RuntimeError("the root part number won't stay %s (it is %r)" % (pn, comp.partNumber))
+
 def new_comp(parent, key):
     pn, name, vn, kind, _mat = I.PARTS[key]
     occ = parent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
@@ -295,6 +308,7 @@ def run_parts(app, keys):
                 raise RuntimeError("part %s checks failed (unhealthy %s, loose %s)" % (key, bad, loose))
             print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, I.REV, ceiling_model.SKELETON_REV)))
             adsk.doEvents()
+            keep_part_number(doc, root, pn, "%s drawing source" % pn)
         finally:
             doc.close(False)        # each run closes what it opened (PM rule 2026-11-01)
 
@@ -396,6 +410,7 @@ def run(_context):
                 raise RuntimeError("save=1 needs into_active=1 with the runner's --doc %s --doc-new" % DOC_NAME)
             print("saved:", doc.save("INTERIOR %s build, skeleton %s" % (I.REV, ceiling_model.SKELETON_REV)))
             adsk.doEvents()
+            keep_part_number(doc, root, "810000", "INTERIOR build")
         if ARGS.get("export") == "1":
             em = design.exportManager
             for rel, mk in ((F3D_REL, em.createFusionArchiveExportOptions), (STEP_REL, em.createSTEPExportOptions)):
