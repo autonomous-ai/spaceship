@@ -12,8 +12,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 ## Result
 
 1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **228 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **324 kg gross, 1,439 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 552 kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, 415.0 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 419.0 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 416.5 kg of pod: the roll-up plus 1.5 kg it doesn't carry (the screen mount and the installation kit; assumptions). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
-3. **42 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK - DR (2-03) at 18.6 kg. The door unit (49.1 kg) and the fixed glass (28.8 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
+2. **Masses are the layout study's P04 roll-up**, 414.5 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 418.5 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 416.0 kg of pod: the roll-up plus 1.5 kg it doesn't carry (the screen mount and the installation kit; assumptions). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+3. **42 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK - DR (2-03) at 18.6 kg. The door unit (48.6 kg) and the fixed glass (28.8 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: floor, back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 10; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels.
 6. **PM rulings this plan follows** (packing group, 2026-10-31): the floor panel is 1219 mm or less including its lap, so nothing overhangs the pallet; the hinge halves that sit in DL ship fitted in DL, so the door travels 1175 mm wide; the door hangs before DT; the intake riser and the supply fan box ship apart and go into DR on site, so DR ships at 20 kg or less.
@@ -23,8 +23,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 | Pallet | Deck mm (in) | Pieces | Net kg | Gross kg (lb) | Loaded height mm (in) | Volume ft3 (reference) | Density lb/ft3 (reference) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 202.0 | 228 (503) | 1,641 (64.6) | 71.8 | 7.0 |
-| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 214.5 | 324 (714) | 1,439 (56.6) | 151.1 | 4.7 |
-| **Both** |  | 42 | **416.5** | **552** (1,217) |  |  |  |
+| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 214.0 | 324 (713) | 1,439 (56.6) | 151.1 | 4.7 |
+| **Both** |  | 42 | **416.0** | **552** (1,216) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -74,7 +74,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 
 | Tier | Lane mm | Label | Piece | kg | Along × across × up, mm | Fitted in step |
 | --- | ---: | --- | --- | ---: | --- | --- |
-| Tier 1: glass crate | crate | - | GLASS CRATE 911001 with 2-01, 2-02 | 113.9 | 2200 × 1219 × 238 | 10, 11 |
+| Tier 1: glass crate | crate | - | GLASS CRATE 911001 with 2-01, 2-02 | 113.4 | 2200 × 1219 × 238 | 10, 11 |
 | Tier 2: DR and the base band | 1016 | **2-03** | FRONT - DECOR BLOCK - DR | 18.6 | 2290 × 1016 × 205 | 10 |
 | Tier 2: DR and the base band | 50 | **2-04** | BASE - BAND ASSY - BACK | 3.3 | 2420 × 40 × 110 | 2 |
 | Tier 2: DR and the base band | 50 | **2-05** | BASE - BAND ASSY - SIDE - LH | 2.2 | 1517 × 40 × 110 | 2 |
@@ -155,7 +155,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-19** | TBD (WALL) | B3 | LINING - CASSETTE - BACK UPPER - LH | 8.4 | 1 | 14 |
 | **1-20** | TBD (WALL) | B4 | LINING - CASSETTE - BACK UPPER - RH | 8.4 | 1 | 14 |
 | **2-01** | 360002 | - | FRONT - FIXED GLASS UNIT | 28.8 | 2 | 10 |
-| **2-02** | 360001 | - | FRONT - DOOR UNIT | 49.1 | 2 | 11 |
+| **2-02** | 360001 | - | FRONT - DOOR UNIT | 48.6 | 2 | 11 |
 | **2-03** | TBD (FRONT) | DR | FRONT - DECOR BLOCK - DR | 18.6 | 2 | 10 |
 | **2-04** | 110103 | - | BASE - BAND ASSY - BACK | 3.3 | 2 | 2 |
 | **2-05** | 110101 | - | BASE - BAND ASSY - SIDE - LH | 2.2 | 1 | 2 |
@@ -216,7 +216,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | Label | Part number | Piece | Vietnamese | Pos. | kg | Status | Size mm | Step |
 | --- | --- | --- | --- | --- | ---: | --- | --- | ---: |
 | **2-01** | 360002 | FRONT - FIXED GLASS UNIT | Cụm vách kính cố định | - | 28.78 | calculation (CAD) | 2033 × 1031 × 12 | 10 |
-| **2-02** | 360001 | FRONT - DOOR UNIT | Cụm cửa kính | - | 49.08 | calculation (CAD); kick strip assumption | 2089 × 1175 × 149 | 11 |
+| **2-02** | 360001 | FRONT - DOOR UNIT | Cụm cửa kính | - | 48.59 | calculation (CAD); hinges and pull HOLD | 2089 × 1175 × 149 | 11 |
 | **2-03** | TBD (FRONT) | FRONT - DECOR BLOCK - DR | Khung trang trí - khối phải | DR | 18.60 | calculation; calculation (CAD) | 2290 × 1016 × 205 | 10 |
 | **2-04** | 110103 | BASE - BAND ASSY - BACK | Viền chân nhôm - cạnh sau (cụm) | - | 3.28 | assumption; calculation; calculation; confirmed (1.5 mm) | 2420 × 110 × 40 | 2 |
 | **2-05** | 110101 | BASE - BAND ASSY - SIDE - LH | Viền chân nhôm - cạnh trái (cụm) | - | 2.24 | assumption; calculation; calculation; confirmed (1.5 mm) | 1517 × 110 × 40 | 2 |
@@ -244,7 +244,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | 911002 (PROPOSED) | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) |  | - | 6.00 | assumption | - | - |
 | - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR (BATTENS ON POSTS) |  | - | 16.00 | assumption | - | - |
 | - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: corner guards, foam, PE sheets, cap board, straps, film |  | - | 9.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **324.0** |  |  |  |
+|  |  | **Gross** |  |  | **323.5** |  |  |  |
 
 The same list, one row per piece with its mass source and size source, is [`910000_P01_PACKING-LIST_BOM.csv`](910000_P01_PACKING-LIST_BOM.csv).
 
@@ -277,7 +277,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | FRONT | Decor block - left | 1 | 9.98 | calculation | 2-09 |
 | FRONT | Decor block - right | 1 | 18.06 | calculation | 2-03 |
 | FRONT | Decor block - top | 1 | 7.02 | calculation | 2-12 |
-| FRONT | Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull | 1 | 49.08 | calculation (CAD); kick strip assumption | 2-02 |
+| FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.59 | calculation (CAD); hinges and pull HOLD | 2-02 |
 | FRONT | Fixed glass unit 360002: 4+4 pane, U-profiles and seals | 1 | 29.58 | calculation (CAD) | 2-01 × 0.973022, 2-03 × 0.018405, 2-07 × 0.00609411, 2-12 × 0.00247854 |
 | AIR | Supply cartridge, in the air column | 1 | 11.15 | calculation | 2-18 |
 | AIR | Exhaust cartridge, in the soffit | 1 | 11.15 | calculation | 2-19 |
@@ -303,7 +303,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 
 | Check | What | Result | Pass |
 | --- | --- | --- | --- |
-| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 419.0 kg; 0 lines miscounted, 0 unknown | yes |
+| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 418.5 kg; 0 lines miscounted, 0 unknown | yes |
 | K2 | Every piece 20 kg or less except the glass (D-03) | heaviest non-glass piece 2-03 FRONT - DECOR BLOCK - DR 18.6 kg; over 20 kg: 0 | yes |
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 42 pieces, 0 fail | yes |
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 904 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |

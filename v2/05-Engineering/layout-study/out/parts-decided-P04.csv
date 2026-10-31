@@ -24,7 +24,7 @@ BASE,"Floor mat, 3 mm firm closed-cell foam",1,2.100,2.10,calculation,"D-76 (S39
 FRONT,Decor block - left,1,9.976,9.98,calculation,this study's model from v1's STEP shapes (S02),estimate
 FRONT,Decor block - right,1,18.056,18.06,calculation,this study's model from v1's STEP shapes (S02),estimate
 FRONT,Decor block - top,1,7.015,7.02,calculation,this study's model from v1's STEP shapes (S02),estimate
-FRONT,"Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull",1,49.076,49.08,calculation (CAD); kick strip assumption,"S36, with the kick strip as a hollow profile, about 1.0 kg against 2.094 (D-85)","CAD, open PR"
+FRONT,"Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull",1,48.590,48.59,calculation (CAD); hinges and pull HOLD,"S36, CAD on main: FRONT parts list 360001 P01: leaf 43.854, kick strip 1.218 (hollow, D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair","CAD, main"
 FRONT,"Fixed glass unit 360002: 4+4 pane, U-profiles and seals",1,29.580,29.58,calculation (CAD),S37,"CAD, open PR"
 AIR,"Supply cartridge, in the air column",1,11.155,11.15,calculation,"S38: aluminium 2.0 mm casing, three 50 mm layers at 40 kg/m3",estimate
 AIR,"Exhaust cartridge, in the soffit",1,11.155,11.15,calculation,S38: same part,estimate
