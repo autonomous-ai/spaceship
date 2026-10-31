@@ -416,9 +416,8 @@ def export_all(app):
     path = os.path.join(root_dir, BOM_REL)
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["part_number", "name", "name_vi", "type", "material", "qty", "unit_mass_kg", "mass_status",
-                    "status", "source", "note", "maker", "sku"])
-        w.writerows(rows)
+        w.writerow(L.PARTS_LIST_COLUMNS)
+        w.writerows(L.parts_list_row(r) for r in rows)
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), unit))
     # anchors for the edit test
     names = {k: (PARTS[k][1] if k in PARTS else PARTS["PULL"][1]) for k in [a[0] for a in ANCHORS]}
