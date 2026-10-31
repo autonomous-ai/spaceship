@@ -32,17 +32,17 @@
 | WALL | B1 to B4, back outer panels | 4 | 9.31 | 37.24 | calculation; fill provisional | this study's model at the P04 size (S33), fill 24 kg/m3 |
 | WALL | 40 x 40 corner edge tubes beyond L1 and R1's back stiles | 1 | 1.00 | 1.00 | calculation | D-63's 1.3 kg less L1 and R1's two stiles (S34, S39) |
 | WALL | Bond over this study's 0.25 kg/m2, beyond L1 and R1 | 1 | 0.37 | 0.37 | calculation | D-71's 0.5 kg (PR #23) less L1 and R1's share (S34, S39) |
-| LINING | Wall cassette, side, lower, with 12 mm lips, no clip rails | 2 | 10.47 | 20.95 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, S40), + 0.43 kg of lips (D-69) |
-| LINING | Wall cassette, side, upper, with 12 mm lips, no clip rails | 2 | 10.05 | 20.09 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, S40), + 0.43 kg of lips (D-69) |
-| LINING | Wall cassette, back, lower, with 12 mm lips, no clip rails | 2 | 8.41 | 16.82 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, S40), + 0.43 kg of lips (D-69) |
-| LINING | Wall cassette, back, upper, with 12 mm lips, no clip rails | 2 | 8.40 | 16.80 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, S40), + 0.43 kg of lips (D-69) |
+| LINING | Wall cassette, side, lower, with 12 mm lips, no clip rails | 2 | 10.47 | 20.95 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69) |
+| LINING | Wall cassette, side, upper, with 12 mm lips, no clip rails | 2 | 10.05 | 20.09 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69) |
+| LINING | Wall cassette, back, lower, with 12 mm lips, no clip rails | 2 | 8.41 | 16.82 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69) |
+| LINING | Wall cassette, back, upper, with 12 mm lips, no clip rails | 2 | 8.40 | 16.80 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69) |
 | CEILING | Ceiling outer panels C1 and C2, with their bond line | 2 | 10.03 | 20.07 | calculation (CAD); bond assumption | S35 + this study's 0.25 kg/m2 bond on the P04 46 mm panel |
 | LINING | Ceiling cassettes, one part for both halves | 2 | 9.48 | 18.95 | calculation (CAD); fill provisional | S35, its fill strips from 32 to 24 kg/m3 |
-| LINING | Named clips and catches: 44 clips and 4 catch lanyards | 1 | 2.16 | 2.16 | assumption | allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, S40) |
-| BASE | Base band piece 100x40 - back, 1.5 mm wall | 1 | 2.69 | 2.69 | calculation; provisional | this study's model, 1.5 mm wall (S40, if BASE's check passes); P03 lengths, P04's faceted front band is about 0.2 m shorter |
-| BASE | Base band piece 100x40 - side, 1.5 mm wall | 2 | 1.84 | 3.68 | calculation; provisional | this study's model, 1.5 mm wall (S40, if BASE's check passes); P03 lengths, P04's faceted front band is about 0.2 m shorter |
-| BASE | Base band piece 100x40 - front-l, 1.5 mm wall | 1 | 0.33 | 0.33 | calculation; provisional | this study's model, 1.5 mm wall (S40, if BASE's check passes); P03 lengths, P04's faceted front band is about 0.2 m shorter |
-| BASE | Base band piece 100x40 - front-r, 1.5 mm wall | 1 | 1.17 | 1.17 | calculation; provisional | this study's model, 1.5 mm wall (S40, if BASE's check passes); P03 lengths, P04's faceted front band is about 0.2 m shorter |
+| LINING | Named clips and catches: 44 clips and 4 catch lanyards | 1 | 2.16 | 2.16 | assumption | allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, D-81) |
+| BASE | Base band piece 100x40 - back, 1.5 mm wall | 1 | 2.69 | 2.69 | calculation; provisional | this study's model, 1.5 mm wall (D-81, if BASE's check passes); P03 lengths, P04's faceted front band is about 0.2 m shorter |
+| BASE | Base band piece 100x40 - side, 1.5 mm wall | 2 | 1.84 | 3.68 | calculation; provisional | this study's model, 1.5 mm wall (D-81, if BASE's check passes); P03 lengths, P04's faceted front band is about 0.2 m shorter |
+| BASE | Base band piece 100x40 - front-l, 1.5 mm wall | 1 | 0.33 | 0.33 | calculation; provisional | this study's model, 1.5 mm wall (D-81, if BASE's check passes); P03 lengths, P04's faceted front band is about 0.2 m shorter |
+| BASE | Base band piece 100x40 - front-r, 1.5 mm wall | 1 | 1.17 | 1.17 | calculation; provisional | this study's model, 1.5 mm wall (D-81, if BASE's check passes); P03 lengths, P04's faceted front band is about 0.2 m shorter |
 | BASE | Corner key | 6 | 0.15 | 0.90 | assumption | this study's model |
 | BASE | Levelling glide (hex from above) | 8 | 0.15 | 1.20 | assumption | this study's model |
 | BASE | Door threshold, low | 1 | 1.20 | 1.20 | assumption | this study's model (D-72's 13 mm profile isn't modelled yet) |
@@ -67,38 +67,48 @@
 | INTERIOR | Light shelf along the side and back wall tops, with its LED strip | 1 | 3.06 | 3.06 | assumption | allowance until it's designed: 4.43 m (the back wall and the side walls back of the soffit) at 0.6 kg/m plus 0.4 kg of brackets (D-70) |
 | INTERIOR | Work-wall ledge, 1000 mm | 1 | 2.30 | 2.30 | assumption | allowance until it's designed: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70) |
 | WALL | M6 bolts, rivnuts, cam connectors, joint gaskets | 1 | 4.67 | 4.67 | calculation | this study's model |
-| LATER | Voice cockpit kit reserve, outside the 420 kg cap | 1 | 4.00 | 4.00 | assumption | the kit ships later as an add-on (D-11); the cap is for the pod as shipped (S40) |
+| LATER | Voice cockpit kit reserve, outside the 420 kg cap | 1 | 4.00 | 4.00 | assumption | the kit ships later as an add-on (D-11); the cap is for the pod as shipped (D-81) |
 
 Sources S33 to S39 are in section 10 of the report (`scripts/inputs.py`).
 
-## Savings applied (S40)
+## Savings applied (D-81)
 
 | Saves kg | What changes | Status | Owner |
 |---:|---|---|---|
 | 6.3 | Clip-only cassette fixing, no rails: 44 named clips and 4 catch lanyards (2.2 kg allowance) replace this study's 0.6 kg/m2 clip-and-rail allowance over 14.1 m2 of cassettes | adopted; the clip gets named with a rated load and a captive lock (H03), T01 and T07 confirm | WALL and CEILING |
-| 5.0 | Cavity fill at 24 kg/m3 instead of 32: the wall panels, the ceiling cassettes, the air column and the soffit. The cartridges' 50 mm layers stay at 32, the density their published absorption is for | provisional: back to 32 kg/m3 if T02 fails (D-54) | WALL, CEILING, AIR |
+| 5.0 | Cavity fill at 24 kg/m3 instead of 32 (D-81's text says 25; 24 is the grade Pyrotek lists and the sample tests): the wall panels, the ceiling cassettes, the air column and the soffit. The cartridges' 50 mm layers stay at 32, the density their published absorption is for | provisional: back to 32 kg/m3 if T02 fails (D-54) | WALL, CEILING, AIR |
 | 2.5 | Base band with a 1.5 mm wall instead of 2 mm, 7.1 m of it; the same outside size and finish | provisional on BASE's check | BASE |
 | 4.0 | The voice kit's reserve moves outside the cap: the kit ships later as an add-on (D-11) | adopted; the cap is for the pod as shipped | PM |
 | **17.8** | **in all** | | |
 
-## Still open toward the 410 kg target
+## Candidates toward the 410 kg target, for the PM to decide
 
-Each keeps the look exactly and the sound targets (19.3 dB speech reduction; fan noise 26 dB(A) at 53 l/s and 30 at the boost).
+12.8 kg over the target. Each keeps the look exactly and the sound targets (19.3 dB speech reduction; fan noise 26 dB(A) at 53 l/s and 30 at the boost). Ranked as recommended: low risk first, then the ones a test or a check decides.
 
-| Saves kg | What changes | Condition or risk | Owner |
-|---:|---|---|---|
-| 6.5 | Fixed glass in 3+3 laminate of toughened, heat-soaked panes (6.76 mm) instead of 4+4; the same look. The glass carries about 4% of the speech that gets out, so the pod loses well under 0.1 dB | only if FRONT's calculation shows the 2 m free edge of the 1.34 m2 pane stays stiff and the door seal still closes (S40) | FRONT |
-| 4.8 | Floor panels in a light-core 9 mm plywood, about 450 kg/m3 instead of 600 (assumption until a product is named); hidden under the mat | BASE's floor ply check: stiffness under a chair castor at the panel edge (D-76's sample test) | BASE |
-| 10.0 | Door leaf in 3+3 laminate instead of 4+4 | rejected: D-46 stands (S40) | FRONT |
+| # | Saves kg | What changes | Risk | Owner |
+|---:|---:|---|---|---|
+| 1 | 1.8 | Weight budgets for the parts not designed yet: the light shelf at 0.4 kg/m, the ledge in 1.5 mm folded aluminium | low | INTERIOR, WALL |
+| 2 | 1.7 | Inner studs at 1.0 mm wall; the perimeter members keep 1.2 mm for the rivnuts (D-34) | low: the studs only carry the ACP's bond | WALL, CEILING |
+| 3 | 1.7 | Back outer panels with 2 inner studs, not 3: 393 mm centres, inside D-16's 400 mm (this study counted from the outer width) | low | WALL |
+| 4 | 1.1 | Door kick strip as a hollow profile with 2 mm walls; the same outside and finish | low | FRONT |
+| 5 | 4.8 | Floor panels in poplar or falcata-core 9 mm plywood, about 450 kg/m3 against 600; the same finish on top | medium: less stiff; D-76's castor and 1000 N edge test (1 mm or less) decides | BASE |
+| 6 | 3.0 | The perimeter members at 1.0 mm too | medium: reopens D-34; a rivnut pull-out test on the wall sample decides | WALL, CEILING |
+| 7 | 3.1 | Decor block frames lighter than v1's steel layout (12.4 kg of tube in this study's model) | medium: FRONT's CAD decides; the right block carries the riser and fan box | FRONT |
+| 8 | 3.7 | Cavity fill at 18 kg/m3 instead of 24 | medium to high: no published absorption and it may slump in the upright panels; T02 would need an 18 kg/m3 arm | WALL, CEILING |
+| 9 | 6.7 | A lighter 9 mm felt, 1.4 kg/m2 against 1.8, the same Dark Gray, on 16.7 m2 | medium to high: the sound model counts no felt mass in the walls, but the inside absorption uses Polyx Board 9's 1.8 kg/m2 data, and the face is the look; the sample decides | Hardware, LINING |
 
-With the first two: about 411.5 kg as shipped, 1.5 kg over the target. The rest has to come as the parts still on this study's model or on allowances get their CAD: the decor blocks (35.0 kg), the fixings kit (4.7 kg) and the three allowances (7.5 kg).
+Items 1 to 5 save 11.0 kg: 411.8 kg as shipped, 1.8 kg over the target. With item 6 as well: 408.8 kg.
 
-Looked at and rejected, because they lose the sound targets:
+Looked at and rejected:
 
+- Fixed glass in 3+3 laminate: saves about 6.5 kg, but the pane bends 58 mm; it stays 4+4 (FRONT's calculation, PM).
+- Door leaf in 3+3 laminate: saves about 10.0 kg; rejected in D-81, D-46 stands.
+- Lighter faces on the air column and soffit: 2 mm ACP gives 26.1 dB(A) at 53 l/s and 30.5 at the boost, against 26 and 30 (air report model).
+- Side outer panels at a 500 mm stud pitch: saves about 1.7 kg but reopens D-16: the visible ACP may oil-can.
 - 0.4 mm lining tray: saves about 12.7 kg but costs 1 dB (D-37).
 - Lighter cartridge casings, 1.2 mm aluminium: about 27.8 dB(A) at 53 l/s against the 26 target (air report section 7d).
 - Intake riser in 0.8 mm steel: saves about 1.7 kg but gives 30.03 dB(A) at the 65 l/s boost against 30 (air report model).
-- Lighter ACP or felt on the walls and ceiling: they are the sound leaves; less mass loses dB.
+- Lighter ACP on the walls and ceiling: it is the outer sound leaf; less mass loses dB.
 
 ## When this is re-run
 

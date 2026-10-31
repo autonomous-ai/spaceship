@@ -103,9 +103,10 @@ def test_only_the_five_status_words():
 
 def test_p04_rollup_lines():
     """ISS-081, F-010: every roll-up line has a status word and a source and every piece but the glass is 20 kg or less
-    (D-03); the pod as shipped leaves out the voice kit and is the CSV's sum, which the mechanical check reads; at 32 kg/m3
-    the air parts are the air report's 61.8 kg with fans; the allowances are assumptions; each applied saving is priced
-    from the list itself (S40)."""
+    (D-03); the pod as shipped is the CSV's sum less the voice kit's line, which the mechanical check leaves out by its
+    name (PR #40); at 32 kg/m3 the air parts are the air report's 61.8 kg with fans; the allowances are assumptions; each
+    applied saving is priced from the list itself (D-81)."""
+    import re
     import csv
     import rollup
     rows = rollup.lines()
@@ -119,7 +120,10 @@ def test_p04_rollup_lines():
     assert abs(rollup.pod_kg(rows) - shipped) < 1e-9
     body = rollup.rollup_files()["out/parts-decided-P04.csv"].splitlines()
     assert body[0].split(",")[4] == "kg_total", body[0]
-    csv_kg = sum(float(r[4]) for r in csv.reader(body[1:]))
+    kit = re.compile(r"outside the cap|voice cockpit kit reserve", re.I)      # tools/checks/c_parts.py, PR #40
+    csv_rows = list(csv.reader(body[1:]))
+    assert [r[1] for r in csv_rows if kit.search(r[1] + " " + r[5])] == [later[0][1]], "only the kit is outside the cap"
+    csv_kg = sum(float(r[4]) for r in csv_rows if not kit.search(r[1] + " " + r[5]))
     assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
     air32 = sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=p("fill_pet_kgm3")) if g == "AIR")
     assert abs(air32 - 61.8) < 0.05, air32
@@ -132,7 +136,9 @@ def test_p04_rollup_lines():
     off = rollup.lines(fill=p("fill_pet_kgm3"), clip_only=False, band_t=p("t_al_base"), kit_outside=False)
     assert abs(rollup.pod_kg(off) - rollup.pod_kg(rows) - sum(a[0] for a in ap)) < 0.01
     op = rollup.open_savings()
-    assert len(op) == 3 and all(o[0] > 0 for o in op) and op[-1][2].startswith("rejected"), op
+    assert len(op) == 9 and all(o[0] > 0 and o[2] and o[3] for o in op), op
+    assert [o[0] for o in op[:4]] == sorted((o[0] for o in op[:4]), reverse=True), "the low-risk items ranked by kg"
+    assert any(name.startswith("Fixed glass") for name, _ in rollup.REJECTED), "3+3 fixed glass is out (PM)"
 
 
 P_DEFAULT_CEIL = p("ceil_t")
