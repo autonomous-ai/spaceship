@@ -25,7 +25,7 @@ SPECS["dr"] = {
         "shape, bonded to the welded 6063-T6 tube frame 351306 (26 tubes, cut list in the parts list's folder); fixed "
         "back plate 351302 on the right wall's bolt line; removable access panel 351305 and felt-covered inner panel "
         "351303/351304 (D-59); the air supply assembly 350004 (D-87): intake riser 351402, transitions 351403/351405 "
-        "(reserved duct spaces, HOLD), supply fan box 351404 with two 12 V fans 618401 (HOLD).",
+        "(reserved air spaces, detail by AIR), supply fan box 351404 with two 12 V fans 618401 (HOLD).",
         "Base open inside the skins over the mesh band piece, back to the closing plate: 0.042 m2 gross less the "
         "frame's bottom tubes (PM ruling: at least 0.028 free). Air goes band, block, riser; the riser's open foot "
         "stands 140 above the base.",

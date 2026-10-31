@@ -184,6 +184,10 @@ OWN = [
 ]
 
 AIR_ASSY = ("350004", "FRONT - AIR SUPPLY ASSY - DR", "Cụm cấp gió khối phải")
+# the two transitions are reserved air spaces until AIR designs them (PM ruling 2026-11-01): marked in the CAD names
+# and in the parts list, and drawn only then
+RESERVED_TYPE = "reserved air space (detail by AIR; no drawing until AIR designs it, PM ruling 2026-11-01)"
+RESERVED_STATUS = "HOLD: reserved air space, detail by AIR"
 PARTS = {
     "SKIN": ("351301", "FRONT - DECOR SKIN - DR", "Tấm ốp alu khối phải"),
     "BACK": ("351302", "FRONT - DECOR BACK PLATE - DR", "Tấm hậu khối phải"),
@@ -329,9 +333,12 @@ def build(app):
     # slide into DR through its inner face on site, so they form one sub-assembly
     air = L.new_comp(root, AIR_ASSY[0], AIR_ASSY[1], AIR_ASSY[2], REV)
     AIR_KEYS = ("RISER", "TLOW", "FBOX", "TUP", "FAN1", "FAN2")
+    RESERVED_AIR = ("TLOW", "TUP")
 
     def comp(key):
         pn, nm, vn = PARTS[key]
+        if key in RESERVED_AIR:       # PM ruling 2026-11-01: reserved air spaces, detail by AIR, no drawing until then
+            nm += " - RESERVED AIR SPACE"
         c = L.new_comp(air if key in AIR_KEYS else root, pn, nm, vn, REV)
         comps[key] = c
         return c
@@ -465,7 +472,7 @@ def build(app):
     f = prism(c, ("x", "z"), [("ri_x0", "ri_zt"), ("ri_x0 + ri_w", "ri_zt"), ("fb_x0 + fb_w", "fb_z0"), ("fb_x0", "fb_z0")],
               "y", "ri_y0", "ri_y0 + ri_d", "SIDE - LOWER TRANSITION SPACE", "EXTRUDE - LOWER TRANSITION SPACE")
     bodies["TLOW"] = f.bodies.item(0)
-    bodies["TLOW"].name = "HOLD LOWER TRANSITION DUCT SPACE"
+    bodies["TLOW"].name = "RESERVED AIR SPACE - LOWER TRANSITION (DETAIL BY AIR)"
     c = comp("FBOX")
     box = [("fb_x0", "fb_y0"), ("fb_x0 + fb_w", "fb_y0"), ("fb_x0 + fb_w", "fb_y0 + fb_d"), ("fb_x0", "fb_y0 + fb_d")]
     f = prism(c, ("x", "y"), box, "z", "fb_z0", "fb_z0 + fb_h", "PLAN - FAN BOX OUTER", "EXTRUDE - FAN BOX")
@@ -493,13 +500,13 @@ def build(app):
     f = prism(c, ("x", "y"), tup, "z", "fb_z0 + fb_h", "op_z0 + op_h", "PLAN - UPPER TRANSITION SPACE",
               "EXTRUDE - UPPER TRANSITION SPACE")
     bodies["TUP"] = f.bodies.item(0)
-    bodies["TUP"].name = "HOLD UPPER TRANSITION DUCT SPACE"
+    bodies["TUP"].name = "RESERVED AIR SPACE - UPPER TRANSITION (DETAIL BY AIR)"
     drop = [("fb_x0 + fb_w", "fb_y0 + fb_d - 2 * fb_t"), ("op_x0 + op_w", "fb_y0 + fb_d - 2 * fb_t"),
             ("op_x0 + op_w", yb_in), ("fb_x0 + fb_w", yb_in)]
     f = prism(c, ("x", "y"), drop, "z", "op_z0", "fb_z0 + fb_h", "PLAN - UPPER TRANSITION DROP TO THE OPENING",
               "EXTRUDE - UPPER TRANSITION DROP")
     bodies["TUP2"] = f.bodies.item(0)
-    bodies["TUP2"].name = "HOLD UPPER TRANSITION DUCT SPACE - DROP"
+    bodies["TUP2"].name = "RESERVED AIR SPACE - UPPER TRANSITION DROP (DETAIL BY AIR)"
 
     # ---- 351306 the welded tube frame (stage 2)
     c = comp("FRAME")
@@ -650,14 +657,15 @@ def export_all(app):
          "fan box stands on the frame's shelf tubes F08 and C03 (fixing HOLD: air detail)"),
         ("351402", PARTS["RISER"][1], PARTS["RISER"][2], 1, "made (sheet metal duct)", "1 mm galvanised steel", "cad",
          "calculation (CAD, 7850 kg/m3)", "DRAFT", "D-60 air table", "open foot 140 mm over the base opening"),
-        ("351403", PARTS["TLOW"][1], PARTS["TLOW"][2], 1, "reserved duct space", "-", 1.5, "assumption",
-         "HOLD: the Air Engineer's transition detail", "D-60 air table", ""),
+        ("351403", PARTS["TLOW"][1], PARTS["TLOW"][2], 1, RESERVED_TYPE, "-", 1.5, "assumption", RESERVED_STATUS,
+         "D-60 air table", "the space the lower transition may take, riser top to fan box inlet; AIR designs the part"),
         ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, "made", "2 mm aluminium, 50 mm lining inside", 3.6,
          "source (D-60 air table: 5.1 kg for the box and the upper transition) less 351405's 1.5 kg", "DRAFT; lining and bulkhead HOLD (air detail)",
          "D-60 air table", "12 from the fixed glass channel, so the frame's inner-edge tube fits"),
-        ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, "reserved duct space", "-", 1.5,
-         "assumption (as the lower transition 351403; part of the D-60 air table's 5.1 kg)",
-         "HOLD: the Air Engineer's transition detail", "D-60 air table", ""),
+        ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, RESERVED_TYPE, "-", 1.5,
+         "assumption (as the lower transition 351403; part of the D-60 air table's 5.1 kg)", RESERVED_STATUS,
+         "D-60 air table", "the space the upper transition may take, fan box outlet to the access panel's opening; AIR "
+         "designs the part"),
         ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", 2, "bought",
          "Noctua NF-A14 industrialPPC-3000 PWM, 12 V", 0.3, "assumption (D-60 air table)", "HOLD: product (PM ruling, one number for all four fans)",
          "hardware selection F1", "on the fan box bulkhead, blowing up"),

@@ -27,7 +27,8 @@ EXPECTED = []
 # clearances to measure: (label, body name A, body name B)
 GAPS = [
     ("supply fan box to the fixed glass channel", "SUPPLY FAN BOX", "GLAZING U-PROFILE"),
-    ("lower transition space to the fixed glass channel", "HOLD LOWER TRANSITION", "GLAZING U-PROFILE"),
+    ("lower transition space to the fixed glass channel",
+     ("RESERVED AIR SPACE - LOWER TRANSITION", "HOLD LOWER TRANSITION"), "GLAZING U-PROFILE"),
     ("intake riser to the fixed glass channel", "INTAKE RISER", "GLAZING U-PROFILE"),
     ("fixed pane to DR's skin (through the slot)", "FIXED GLASS 4+4", "DR SKIN ACP 3"),
     ("glass channel to DR's skin", "GLAZING U-PROFILE", "DR SKIN ACP 3"),

@@ -144,7 +144,7 @@ python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350003_P01_FRONT-DE
 | 351305 access panel | 3.87 |
 | 351303 inner panel | 1.67 |
 | 351304 felt, 1.8 kg/m² | 0.77 |
-| 350004 air supply assembly: riser 5.47, transitions 1.5 + 1.5 (assumption), fan box 3.6 (D-60 table's 5.1 less the upper transition), fans 2 × 0.3 | 12.67 |
+| 350004 air supply assembly: riser 5.47, transitions 1.5 + 1.5 (assumption; reserved air spaces, detail by AIR), fan box 3.6 (D-60 table's 5.1 less the upper transition), fans 2 × 0.3 | 12.67 |
 | **DR block** | **33.92** |
 
 ### Interfaces to other assemblies
