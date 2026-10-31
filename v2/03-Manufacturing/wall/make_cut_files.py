@@ -54,7 +54,7 @@ def main(argv):
         # back panel: flat, seen from the outside face (from +Y): X(view) = -X(pod), Y(view) = +Z(pod)
         w, height = b[3] - b[0], b[5] - b[2]
         dxf_tools.write_dxf(path, [("POLY", "CUT", [(0.0, 0.0), (w, 0.0), (w, height), (0.0, height)])])
-        seam = "left" if b[0] + b[3] > 0 else "right"         # seen from outside, the closing-seam edge
+        seam = "right" if b[0] + b[3] > 0 else "left"         # seen from outside (+X to the left), the seam edge
         out.append((path, "skin blank %.2f x %.2f, flat; the closing-seam edge (1.62 past the frame) on the %s" % (
             w, height, seam)))
     else:
