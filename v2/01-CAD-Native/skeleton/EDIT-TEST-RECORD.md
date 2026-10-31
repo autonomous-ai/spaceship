@@ -1,4 +1,4 @@
-Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the Fusion lock: `python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/edit_test_skeleton.py` on the P04 skeleton after in-place update 2. The edit now also changes `seam_gap` (2.26 to 4) and `outer_t` (46 to 50), so every seam and stack rule is shown to follow (Reviewer 5, P3-4 on PR #24).
+Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the Fusion lock: `python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/edit_test_skeleton.py` on the P04 skeleton version 4, the in-place update of PR #94 (floor mats F1-MAT and F2-MAT, the fixed glass's free edge anchored). The edit changes `pod_w` (2500 to 2600), `pod_h` (2400 to 2450), `seam_gap` (2.26 to 4) and `outer_t` (46 to 50), so every seam and stack rule is shown to follow (Reviewer 5, P3-4 on PR #24). Version 4 has 27 envelopes and 26 faceted anchors; update 2 had 25 and 25.
 
 ## Skeleton edit test record
 
@@ -6,8 +6,8 @@ Copy of `v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON_CAD.f3d`, opened as a
 
 | State | pod size X x Y x Z (mm) | Unhealthy items | Envelopes off their expressions | Worst (mm) |
 |---|---|---|---|---|
-| Before | 2500 x 1700 x 2400 | 0 | none (all 25 envelopes and 25 faceted anchors follow) | 0 |
-| pod_w 2600, pod_h 2450, seam_gap 4, outer_t 50 | 2600 x 1700 x 2450 | 0 | none (all 25 envelopes and 25 faceted anchors follow) | 0 |
-| Reverted | 2500 x 1700 x 2400 | 0 | none (all 25 envelopes and 25 faceted anchors follow) | 0 |
+| Before | 2500 x 1700 x 2400 | 0 | none (all 27 envelopes and 26 faceted anchors follow) | 0 |
+| pod_w 2600, pod_h 2450, seam_gap 4, outer_t 50 | 2600 x 1700 x 2450 | 0 | none (all 27 envelopes and 26 faceted anchors follow) | 0 |
+| Reverted | 2500 x 1700 x 2400 | 0 | none (all 27 envelopes and 26 faceted anchors follow) | 0 |
 
 **RESULT: PASS (CAD check on a copy)**

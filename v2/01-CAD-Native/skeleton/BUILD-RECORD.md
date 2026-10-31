@@ -11,7 +11,7 @@ Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the Fusion lock: `python3 too
 - export `v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON_CAD.f3d`: True
 - export `v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step`: True; length unit cm, declared in the file (D-13); `tools/fusion/step_check.py --expect=-1250,-850,0,1250,850,2400` -> MATCH (largest difference 0.0000 mm); author and organization empty in the header
 - export `v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON-PARAMETERS.csv`: True, written by the build from the design's own parameter values (65 rows)
-- Edit test: `EDIT-TEST-RECORD.md`, PASS (every envelope and all 25 anchors follow pod_w and pod_h, then revert)
+- Edit test: `EDIT-TEST-RECORD.md`, PASS on version 4 (all 27 envelopes and 26 faceted anchors follow pod_w, pod_h, seam_gap and outer_t, then revert)
 
 ## Versions of P04 (updated in place, the same cloud file)
 
