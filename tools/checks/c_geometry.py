@@ -25,7 +25,8 @@ import os
 import re
 from collections import defaultdict
 
-from common import Finding, owner_for, rel, walk_files, num, pn_class, read_csv, reserved_spaces, reserved_label
+from common import (Finding, owner_for, rel, walk_files, num, pn_class, read_csv, reserved_spaces, reserved_label,
+                    is_soft)
 import stepfile as sf
 
 POD_BOX = (-1250.0, -850.0, 0.0, 1250.0, 850.0, 2400.0)
@@ -530,7 +531,9 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
         done.add(k)
         pn = inst["part_number"]
         part = "%s %s" % (pn, (so.name or "").strip())
-        holes = so.holes
+        # the edge-distance and spacing rules are for rigid sheet and machined parts (the owner's rule 9, "for the
+        # sheet parts"): a hole near the edge of a felt, fill, foam or gasket can't tear out under load
+        holes = [] if is_soft(inst.get("name") or "") or is_soft(so.name or "") else so.holes
         for h in holes:
             edges = sf.free_edge_distances(so, h)
             if not edges:

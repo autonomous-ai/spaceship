@@ -1,5 +1,5 @@
 {
- "next": 104,
+ "next": 126,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -1443,7 +1443,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -1499,7 +1499,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -3082,7 +3082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -3107,7 +3107,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C06",
@@ -3137,7 +3137,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C06",
@@ -3203,7 +3203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -3228,7 +3228,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C05",
@@ -3253,7 +3253,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 b033321"
+   "last_seen": "2026-11-01 87586c1"
   },
   {
    "check": "C01",
@@ -3283,6 +3283,564 @@
      "event": "opened"
     }
    ]
+  },
+  {
+   "check": "C06",
+   "rule": "row-incomplete",
+   "subject": "211102",
+   "severity": "minor",
+   "message": "211102 WALL - PANEL FRAME - SIDE LOWER - RH in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv is missing: Vietnamese name.",
+   "fix": "Fill them in, each number with its status and source.",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C06|row-incomplete|211102",
+   "id": "F-104",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "511302 FELT - PET 9 HELD BY THE TRAY LIPS hole Ø60.0 at X 1171 Y 240 Z 1180",
+   "severity": "severe",
+   "message": "Hole Ø60.00 in 511302 FELT - PET 9 HELD BY THE TRAY LIPS is 73.5 mm from the free edge (centre to edge), 1.23 diameters; the rule is at least 2 diameters (120.0 mm). Hole centre X 1171 Y 240 Z 1180 in the part's own coordinates.",
+   "fix": "Move the hole to at least 120.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "edge_mm": 73.5,
+    "dia_mm": 60.0
+   },
+   "key": "C09|edge-distance|511302 FELT - PET 9 HELD BY THE TRAY LIPS hole Ø60.0 at X 1171 Y 240 Z 1180",
+   "id": "F-105",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210102",
+   "severity": "major",
+   "message": "210102 WALL - PANEL ASSY - SIDE LOWER - RH has no drawing PDF (210102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210102",
+   "id": "F-106",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210103",
+   "severity": "major",
+   "message": "210103 WALL - PANEL ASSY - SIDE UPPER - LH has no drawing PDF (210103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210103",
+   "id": "F-107",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210104",
+   "severity": "major",
+   "message": "210104 WALL - PANEL ASSY - SIDE UPPER - RH has no drawing PDF (210104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210104",
+   "id": "F-108",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211102",
+   "severity": "severe",
+   "message": "211102 WALL - PANEL FRAME - SIDE LOWER - RH has no drawing PDF (211102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211102",
+   "id": "F-109",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211103",
+   "severity": "severe",
+   "message": "211103 WALL - PANEL FRAME - SIDE UPPER - LH has no drawing PDF (211103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211103",
+   "id": "F-110",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211104",
+   "severity": "severe",
+   "message": "211104 WALL - PANEL FRAME - SIDE UPPER - RH has no drawing PDF (211104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211104",
+   "id": "F-111",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211302",
+   "severity": "severe",
+   "message": "211302 WALL - SKIN - SIDE LOWER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211302",
+   "id": "F-112",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211303",
+   "severity": "severe",
+   "message": "211303 WALL - SKIN - SIDE UPPER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211303",
+   "id": "F-113",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211304",
+   "severity": "severe",
+   "message": "211304 WALL - SKIN - SIDE UPPER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211304",
+   "id": "F-114",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211502",
+   "severity": "major",
+   "message": "211502 WALL - CAVITY FILL - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211502",
+   "id": "F-115",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211503",
+   "severity": "major",
+   "message": "211503 WALL - CAVITY FILL - SIDE UPPER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211503",
+   "id": "F-116",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211504",
+   "severity": "major",
+   "message": "211504 WALL - CAVITY FILL - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211504",
+   "id": "F-117",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510102",
+   "severity": "major",
+   "message": "510102 LINING - CASSETTE - SIDE LOWER - RH has no drawing PDF (510102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510102",
+   "id": "F-118",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510103",
+   "severity": "major",
+   "message": "510103 LINING - CASSETTE - SIDE UPPER - LH has no drawing PDF (510103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510103_P01_LINING-CASSETTE-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510103",
+   "id": "F-119",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510104",
+   "severity": "major",
+   "message": "510104 LINING - CASSETTE - SIDE UPPER - RH has no drawing PDF (510104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510104",
+   "id": "F-120",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511102",
+   "severity": "severe",
+   "message": "511102 LINING - TRAY - SIDE LOWER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511102",
+   "id": "F-121",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511103",
+   "severity": "severe",
+   "message": "511103 LINING - TRAY - SIDE UPPER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511103",
+   "id": "F-122",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511104",
+   "severity": "severe",
+   "message": "511104 LINING - TRAY - SIDE UPPER - RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511104",
+   "id": "F-123",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511302",
+   "severity": "major",
+   "message": "511302 LINING - FELT - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511302",
+   "id": "F-124",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511304",
+   "severity": "major",
+   "message": "511304 LINING - FELT - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511304",
+   "id": "F-125",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 87586c1",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "87586c1",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 87586c1"
   }
  ]
 }
