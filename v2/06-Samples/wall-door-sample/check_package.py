@@ -40,12 +40,12 @@ def main():
     bad = []
 
     # what exists outside the package
-    known = set(re.findall(r"^\| (D-\d\d) \|", read(os.path.join(V2, "00-Control", "decision-log.md")), re.M))
+    known = set(re.findall(r"^\| (D-\d{2,3}) \|", read(os.path.join(V2, "00-Control", "decision-log.md")), re.M))
     known |= set(re.findall(r"^\| (REQ-[A-Z]+-\d\d) \|", read(os.path.join(V2, "00-Control", "requirements.md")), re.M))
     with open(os.path.join(V2, "00-Control", "issue-register.csv"), encoding="utf-8") as f:
         known |= {r[0] for r in csv.reader(f) if r and r[0].startswith("ISS-")}
     known |= set(re.findall(r"^\| (LS-\d\d) \|", read(os.path.join(V2, "05-Engineering", "layout-study", "report.md")), re.M))
-    for ref in sorted(set(re.findall(r"\b(?:D-\d\d|REQ-[A-Z]+-\d\d|ISS-\d{3}|LS-\d\d)\b", every))):
+    for ref in sorted(set(re.findall(r"\b(?:D-\d{2,3}|REQ-[A-Z]+-\d\d|ISS-\d{3}|LS-\d\d)\b", every))):
         if ref not in known:
             bad.append(f"cited but not found: {ref}")
 
@@ -81,7 +81,7 @@ def main():
             bad.append(f"{r[0]}: names no sample item or rig")
         if not (r[7].startswith("PLANNED") or r[7].startswith("HOLD")):
             bad.append(f"{r[0]}: status '{r[7]}' must be PLANNED or HOLD until real data exists")
-        if not re.search(r"\b(?:REQ-[A-Z]+-\d\d|D-\d\d)\b", r[6]):
+        if not re.search(r"\b(?:REQ-[A-Z]+-\d\d|D-\d{2,3})\b", r[6]):
             bad.append(f"{r[0]}: ties to no requirement or decision")
     if f"T01 to {ids[-1]}" not in docs["README.md"]:
         bad.append(f"README.md doesn't give the tests as T01 to {ids[-1]}")

@@ -26,11 +26,11 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
    - The range also widened at the bottom: the low case now carries the 125–250 Hz risks (no finite-panel gain, and a 4 dB dip at each double wall's resonance).
 5. **30 dB isn't reached anywhere in this search, up to 520 kg (best about 23 dB).** Beyond 420 kg each extra dB costs about 20–30 kg. Low voices (125–250 Hz) limit a light pod, and only mass, cavity depth and low-frequency absorption help there. A thicker felt on the ceiling (24 mm Autex Cube) would add about 1.2 dB; its weight isn't sourced yet.
 6. **Air (D-60, DECIDED):**
-   - On AIR's build (#91) with BASE's intake (section 7j), all calculation: 53 l/s normal at 25.6 dB(A), against the 26 dB(A) target (D-52).
-   - The boost: 65 l/s gives 30.05 dB(A), just over the 30 dB(A) target, so the boost held at 30 dB(A) or less reaches 64.9 l/s; 70 l/s would give 31.7 dB(A). The supply cartridge's left fill, 21 mm on AIR's build against the 27 mm sized here, costs about 0.3 dB(A); with 27 mm it would be 25.2 and 29.6 dB(A) (section 7j).
+   - On AIR's build (#91) with BASE's intake (section 7j), all calculation: 53 l/s normal at 25.2 dB(A), against the 26 dB(A) target (D-52).
+   - The boost: 65 l/s gives 29.6 dB(A), under the 30 dB(A) target, and the boost held at 30 dB(A) or less reaches 66.2 l/s; 70 l/s would give 31.2 dB(A).
    - One person at 33 l/s hears about 15 dB(A).
    - Two people in a 600 ppm office: 796 ppm at 53 l/s with perfect mixing, 845 ppm at the PM's mixing effectiveness of 0.8. Holding 800 ppm at 0.8 takes about 65 l/s, which is the boost. The supply leaves low at the front-right and the exhaust high at the far end of the soffit, 2.9 m apart, which should mix better than 0.8.
-   - Heat: with ELECTRICAL's loads (PR #64: the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans), two people put 249 W into the air, 3.9 K over the room at the 53 l/s normal flow; 4 K needs 51 l/s, and one person 29 l/s, more than the 26 l/s floor (D-44). With the voice kit fitted at its 40 W average budget plus 8.2 W of supply loss (D-88), 4 K needs 62 l/s (29.0 dB(A)), inside the 65 l/s that the 30 dB(A) boost reaches: 3.8 K at the boost. Its 60 W peak stays on the hook.
+   - Heat: with ELECTRICAL's loads (PR #64: the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans), two people put 249 W into the air, 3.9 K over the room at the 53 l/s normal flow; 4 K needs 51 l/s, and one person 29 l/s, more than the 26 l/s floor (D-44). With the voice kit fitted at its 40 W average budget plus 8.2 W of supply loss (D-88), 4 K needs 62 l/s (28.5 dB(A)), inside the 65 l/s that the 30 dB(A) boost reaches: 3.8 K at the boost. Its 60 W peak stays on the hook.
 7. **Corrections in this fix pass:**
    - The 5c1003b fans were 6 kg S&P TD-500s loose in the decor cavity. Their own casings radiate 44 dB(A), which the old model left out. With it, that design gives 35.8 dB(A) at 53 l/s. They also don't fit: the decor is 205 mm deep (measured from v1), not 230–235.
    - Four 12 V fans at about 0.3 kg each replace them. That saves about 11 kg, which pays for the bigger cartridges and the exhaust riser.
@@ -38,7 +38,7 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
 8. **D-60 recheck (this version):**
    - PR #11 sized the air path to the layout study's 2290 × 1016 × 235 box for the right decor block. Skeletons P03 and P04 show the block following the fixed glass: 145–343 mm wide below Z 1521, with a flat top only 27 mm deep. Two 405 mm cartridges and the riser need 960 mm.
    - Every layout kept inside the decor blocks gave 39–46 dB(A) at 53 l/s, or couldn't reach 53 l/s at all (section 7c).
-   - D-60 puts one cartridge in an air column in the front-right inside corner and one in a soffit above the door head. With 50 mm layers, a kick grille at the column's foot, one cartridge size for both, and the intake through a black mesh band piece under the right block (skeleton P04), it gave 25.3 dB(A) at 53 l/s and 29.7 at 65 l/s as sized here, and 25.6 and 30.05 on AIR's build with BASE's intake (calculation, section 7j).
+   - D-60 puts one cartridge in an air column in the front-right inside corner and one in a soffit above the door head. With 50 mm layers, a kick grille at the column's foot, one cartridge size for both, and the intake through a black mesh band piece under the right block (skeleton P04), it gave 25.3 dB(A) at 53 l/s and 29.7 at 65 l/s as sized here, and 25.2 and 29.6 on AIR's build with BASE's intake (calculation, section 7j).
    - The outside doesn't change. Inside, the column takes about 0.08 m² of floor, and the soffit leaves 2120 mm headroom, as at the door.
 
 ## 1. The DECIDED stack, for the Layout and Fusion Engineers
@@ -321,7 +321,7 @@ Flow that keeps the inside 4 K or less over the room: one person 29 l/s, two peo
 CO2 after 2 h at 40 l/s from 400 ppm (room 400): 660 ppm; after 3 h at 26 l/s, room 600: 1000 ppm.
 
 - 800 ppm needs 26 l/s **only when the room air is at outdoor CO2 (400 ppm)** and the air is perfectly mixed. In a 600 ppm office two people need about 52 l/s with perfect mixing, and about 65 l/s at the mixing effectiveness of 0.8 the PM set (ruling 8).
-- **Heat also drives the fans (D-44, D-50):** the inside stays at most 4 K over the room. With ELECTRICAL's loads (PR #64) that takes 51 l/s for two people and 29 l/s for one person, so the 53 l/s normal flow holds it (3.9 K). With the voice kit fitted, at its 40 W average budget and 8.2 W of supply loss (D-88), it takes 62 l/s, about 29.0 dB(A), inside the 30 dB(A) boost; at the 65 l/s boost the inside is 3.83 K over the room. The kit's measured draw settles it when the kit exists.
+- **Heat also drives the fans (D-44, D-50):** the inside stays at most 4 K over the room. With ELECTRICAL's loads (PR #64) that takes 51 l/s for two people and 29 l/s for one person, so the 53 l/s normal flow holds it (3.9 K). With the voice kit fitted, at its 40 W average budget and 8.2 W of supply loss (D-88), it takes 62 l/s, about 28.5 dB(A), inside the 30 dB(A) boost; at the 65 l/s boost the inside is 3.83 K over the room. The kit's measured draw settles it when the kit exists.
 - **Control (D-44):** CO2 leads, with a floor of 26 l/s while one person is inside. Temperature can raise the flow. 53 l/s for two, and a boost of up to 65 l/s inside 30 dB(A).
 - **Supply low, exhaust high (D-60, DECIDED):** the supply leaves through a kick grille at the foot of the air column in the front-right corner, so the cool room air spreads across the floor. The exhaust grille sits in the soffit's underside at its far end, above the door's hinge side, 2.9 m away, and takes the warm, stale air out. That should mix better than the 0.8 used here.
 
@@ -355,7 +355,7 @@ Same fans, same methods and the same conservative felt data as PR #11. Sizes for
 | (b) right and left blocks | supply in the right block; exhaust up the left block and across the top block | out of reach | out of reach | 34.6 | 22 | 27 | out of reach |
 | (c) right and top blocks | supply in the right block; exhaust along the top block | out of reach | out of reach | 32.9 | 24 | 29 | out of reach |
 | (c) improved, exhaust out a roof slot: the best inside the decor | as (c), with the column as a plain duct and bigger openings | 39.0 | out of reach | 28.7 | 29 | 35 | 82% / 84% |
-| (e) D-60 as sized here | an air column in the front-right inside corner and a soffit above the door head | 25.6 | 30.0 | 15.3 | 54 | 65 | 73% / 65% |
+| (e) D-60 as sized here | an air column in the front-right inside corner and a soffit above the door head | 25.2 | 29.6 | 14.9 | 55 | 66 | 73% / 65% |
 
 - **Every layout kept inside the decor fails.** The passages are narrow, so the pressure rises two to three times and the fans run at 80–100%, and the lined legs on the pod side of the fans are short. The best, (c) with a roof slot, gives 39.0 dB(A) at 53 l/s.
 - **D-60 (DECIDED by the PM, 2026-10-31):** the silencers move inside the pod, into an air column in the front-right inside corner and a soffit above the door head. The outside look doesn't change.
@@ -367,20 +367,20 @@ Targets (D-52): 26 dB(A) or less at 53 l/s and 30 or less at the 65 l/s boost, a
 
 | Flow l/s | Supply fans: speed, pressure | Supply duct / breakout / total dB(A) | Exhaust fans: speed, pressure | Exhaust duct / breakout / total dB(A) | Inside, both paths dB(A) |
 |---:|---|---|---|---|---:|
-| 26 | 36%, 4 Pa | 4.9 / 6.1 / 8.6 | 32%, 3 Pa | 2.4 / 1.6 / 5.0 | 10.2 |
-| 33 | 45%, 7 Pa | 10.0 / 11.3 / 13.7 | 40%, 5 Pa | 7.6 / 6.7 / 10.2 | 15.3 |
-| 53 | 73%, 17 Pa | 20.3 / 21.6 / 24.0 | 65%, 12 Pa | 17.9 / 17.0 / 20.5 | 25.6 |
-| 65 | 89%, 26 Pa | 24.8 / 26.0 / 28.5 | 79%, 18 Pa | 22.3 / 21.4 / 24.9 | 30.0 |
-| 70 | 96%, 30 Pa | 26.4 / 27.7 / 30.1 | 85%, 21 Pa | 23.9 / 23.1 / 26.5 | 31.7 |
+| 26 | 36%, 4 Pa | 4.9 / 4.9 / 7.9 | 32%, 3 Pa | 2.4 / 1.6 / 5.0 | 9.7 |
+| 33 | 45%, 7 Pa | 10.0 / 10.1 / 13.1 | 40%, 5 Pa | 7.6 / 6.7 / 10.2 | 14.9 |
+| 53 | 73%, 17 Pa | 20.3 / 20.4 / 23.4 | 65%, 12 Pa | 17.9 / 17.0 / 20.5 | 25.2 |
+| 65 | 89%, 26 Pa | 24.8 / 24.8 / 27.8 | 79%, 18 Pa | 22.3 / 21.4 / 24.9 | 29.6 |
+| 70 | 96%, 30 Pa | 26.4 / 26.4 / 29.4 | 85%, 21 Pa | 23.9 / 23.1 / 26.5 | 31.2 |
 
 Two fan signals keep both paths at the same flow: at 53 l/s the supply pair runs at 73% and the exhaust pair at 65%. One shared signal would run both at about 69% and leave the pod 2.6 Pa below the room at 53 l/s (4.0 Pa at 65 l/s).
-Flow at 26 dB(A): 54 l/s; at 30 dB(A): 64.9 l/s (targets, D-52: 26 dB(A) or less at 53 l/s, 30 or less at the 65 l/s boost). With a 5 dB fan tone at 250 Hz (risk): 28.7 dB(A) at 53 l/s and 56 l/s at 30 dB(A).
+Flow at 26 dB(A): 55 l/s; at 30 dB(A): 66.2 l/s (targets, D-52: 26 dB(A) or less at 53 l/s, 30 or less at the 65 l/s boost). With a 5 dB fan tone at 250 Hz (risk): 28.5 dB(A) at 53 l/s and 57 l/s at 30 dB(A).
 
 The cartridge, the same part on both paths:
 
 | Cartridge casing | Air parts kg | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + 30 mm fill + felt-covered face R 125 | 250 | 500 | 1k | 2k | 4k dB | At 53 l/s dB(A) | Flow at 30 dB(A) l/s |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| aluminium 2.0 mm (pick) | 60.5 | 3 | 13 | 28 | 32 | 29 | 28 | 14 | 20 | 31 | 48 | 55 | 46 | 25.6 | 65 |
+| aluminium 2.0 mm (pick) | 60.5 | 3 | 13 | 28 | 32 | 29 | 28 | 14 | 20 | 31 | 48 | 55 | 46 | 25.2 | 66 |
 | aluminium 0.8 mm | 49.2 | 3 | 13 | 28 | 32 | 29 | 28 | 10 | 16 | 23 | 41 | 51 | 42 | 29.9 | 53 |
 
 Pressure per path, supply / exhaust: 26 l/s 4 / 3 Pa; 53 l/s 17 / 12 Pa; 65 l/s 26 / 18 Pa. At full speed the supply pair reaches 73 l/s and the exhaust pair 82 l/s.
@@ -401,11 +401,11 @@ The CEILING Engineer models the air column, the soffit, the cartridges in them a
 
 | Intake route | Free area m2 | Speed at 53 l/s m/s | At 53 l/s dB(A) | At 65 l/s dB(A) | Flow at 30 dB(A) l/s |
 |---|---:|---:|---:|---:|---:|
-| The 10 mm glide gap under the band only (skeleton P04 as it is) | 0.0037 | 14.3 | out of reach | out of reach | 23 |
-| The band piece under the block becomes a flush black mesh with the same outline (DECIDED) | 0.0282 | 1.9 | 25.7 | 30.2 | 64 |
-| The band stops short under the block, with a mesh set back | 0.0301 | 1.8 | 25.6 | 30.0 | 65 |
-| A louvred band piece | 0.0193 | 2.7 | 27.1 | 31.5 | 61 |
-| BASE's mesh band piece from X 920, fully open (BASE's design, via the PM 2026-11-01) | 0.0297 | 1.8 | 25.6 | 30.0 | 65 |
+| The 10 mm glide gap under the band only (skeleton P04 as it is) | 0.0037 | 14.3 | out of reach | out of reach | 24 |
+| The band piece under the block becomes a flush black mesh with the same outline (DECIDED) | 0.0282 | 1.9 | 25.3 | 29.7 | 66 |
+| The band stops short under the block, with a mesh set back | 0.0301 | 1.8 | 25.1 | 29.6 | 66 |
+| A louvred band piece | 0.0193 | 2.7 | 26.6 | 31.0 | 62 |
+| BASE's mesh band piece from X 920, fully open (BASE's design, via the PM 2026-11-01) | 0.0297 | 1.8 | 25.2 | 29.6 | 66 |
 
 The band piece under the block is 371 mm long (skeleton P04). Open heights and free ratios are assumptions until the mesh is picked.
 
@@ -478,7 +478,7 @@ How it's checked:
 - **Servicing (D-59), all from inside.** The column's front face and the soffit's underside lift off. Each cartridge (11.2 kg) slides out into the pod. The supply fans come out through the right block's inner face beside the column top, and the exhaust fans drop out of the soffit. Nothing on the walls or the outside comes off.
 - **Pressure balance and the door.** The hub drives the two fan pairs with two signals, so both paths move the same flow and the pod stays near room pressure (section 7d). One shared signal would leave the pod about 2.7 Pa below the room at 53 l/s, about 3 N at the door handle; a 5 Pa difference adds about 6 N.
 - **Controls.** The in-house Desk Pro AI sensor hub (D-09) sits on the air column's front face at seated eye height (Z 1200), with the boost button below it. It reads the room air 1.1 m above the kick grille, shows CO2 inside, and drives both fan pairs through the column's cable chase.
-  - 26 l/s floor with one person (D-44), 53 l/s for two, more on CO2 or temperature, boost by hand, up to 64.9 l/s inside 30 dB(A) on AIR's build (calculation).
+  - 26 l/s floor with one person (D-44), 53 l/s for two, more on CO2 or temperature, boost by hand, up to 66.2 l/s inside 30 dB(A) on AIR's build (calculation).
   - The supply fan inlet sensor (D-50) sits in the fan box inlet, so it reads the intake air from the floor.
   - Run-on of 15–30 min after the last presence.
   - The hub's fan output has to suit PWM fans; the exact interface belongs to the electrical scope (HOLD).
@@ -499,12 +499,12 @@ How it's checked:
 
 ### 7j. Against AIR's build (#91) and BASE's intake
 
-Every air-path size this report uses, against AIR's current build (PR #91 at ced7f12, read from its own model, `air_model.py`) and BASE's intake at X 920. The tables above now use AIR's and BASE's sizes.
+Every air-path size this report uses, against AIR's current build (PR #91 at 3b891cf, read from its own model, `air_model.py`) and BASE's intake at X 920. The tables above now use AIR's and BASE's sizes.
 
 | Item | This report, as sized | AIR #91 or BASE | Effect (calculation) |
 |---|---|---|---|
 | Air column | 217 wide, X 949 to 1166, from Z 15 | 212 wide, X 949 to 1161, 5 mm off the side lining (PM ruling 2026-11-01), foot on the floor top Z 12 | mass only |
-| Supply cartridge | X 988 to 1161, 27 mm fill at the column's left face | X 982 to 1155: 5 mm clear of the new 1 mm plenum plates, so 21 mm fill at the left face (29 in front) | **+0.3 dB(A) at 53 and 65 l/s** |
+| Supply cartridge | X 988 to 1161, 27 mm fill at the column's left face | X 988 to 1161 at 3b891cf (it was X 982 to 1155, 21 mm fill, at ced7f12): 27 mm at the left face, 29 in front | none now (21 mm cost 0.3 dB(A)) |
 | Kick grille | 529 × 100, 60 % free, 0.032 m2 | 524 × 100, 60 % free, 0.0314 m2; Z 24 to 124 | +0.02 dB(A) |
 | Intake | the mesh band piece under the right block, 371 × 95 at 80 %, 0.0282 m2 | BASE's mesh band piece from X 920, fully open, about 0.0297 m2 | -0.1 dB(A) |
 | Soffit | X ±1166, top Z 2340, two frame angles | X ±1161, 5 mm off the linings; front face up to the hanger rails at Z 2346; a 2 mm door-side plate, two 3 × 24 top rails and a left end plate; the underside in three sections, hinges and latches HOLD | mass: about +2.7 kg net (3.9 kg of plates and rails against 1.2 kg of angles); no sound change |
@@ -516,8 +516,8 @@ Every air-path size this report uses, against AIR's current build (PR #91 at ced
 | Roof slot and grille | Y -630 to -336, 0.040 m2 | Y -620 to -326 (D-61), grille 50 % free over the 285 × 294 slot, 0.0419 m2; sleeve 68 mm | -0.03 dB(A); this report now uses D-61's Y |
 | Column frame | four 25 × 25 angles | three angles (two 9 × 20, one 20 × 20, 2 mm), a 2 mm foot plate and two 1 mm plenum plates | mass: about -0.4 kg |
 
-- **Net (calculation):** 25.3 → 25.6 dB(A) at 53 l/s and 29.7 → 30.05 dB(A) at 65 l/s; the boost at 30 dB(A) or less reaches 64.9 l/s (it was 65.8). Flow and heat don't move: two people stay at 3.9 K over the room at 53 l/s, and with the voice kit at its 40 W average 4 K holds at 62 l/s, 29.0 dB(A).
-- **Question for AIR:** the plenum plates sit only above and below the supply cartridge, so the cartridge could move 6 mm right, to X 988 to 1161, inside the column's X 1161 limit and 5 mm from the side lining, as sized here. That restores 27 mm of fill: 25.2 dB(A) at 53 l/s and 29.6 at 65 l/s, with the boost reaching 66 l/s (calculation).
+- **Net (calculation):** 25.3 → 25.2 dB(A) at 53 l/s and 29.7 → 29.6 dB(A) at 65 l/s; the boost at 30 dB(A) or less reaches 66.2 l/s (it was 65.8). BASE's larger intake is the gain. Flow and heat don't move: two people stay at 3.9 K over the room at 53 l/s, and with the voice kit at its 40 W average 4 K holds at 62 l/s, 28.5 dB(A).
+- **AIR's answer:** at ced7f12 the supply cartridge sat 6 mm further left (X 982 to 1155), leaving 21 mm of fill at the column's left face and costing 0.3 dB(A) (30.05 dB(A) at 65 l/s). AIR moved it to X 988 to 1161 at 3b891cf, inside the column's X 1161 limit and 5 mm from the side lining, since the plenum plates sit only above and below it.
 - **For the weight roll-up:** the soffit's plates and rails (about +2.7 kg) and the column's frame (about -0.4 kg) arrive with AIR's parts list when #91 merges; the roll-up reads AIR's own masses then.
 
 ## 8. Hooks for the later voice cockpit kit

@@ -14,6 +14,8 @@ Found on 2026-10-31 with Fusion 2706.1.17. Proof part: `v2/01-CAD-Native/proof/`
 | `test_start_drawing.py` | Offline tests of the drawing-start sequence against a fake Fusion: `python3 tools/fusion/test_start_drawing.py`. |
 | `check_api.py` | **Checks a script's Fusion API names offline, before it costs a run in the queue**: misspelled attributes and methods, wrong argument counts, unknown classes. Reads this Mac's own Fusion API files (Fusion need not run), adds the members that work but aren't in Fusion's code-completion files (for example `Drawing.sheets`), and type-checks with mypy. See "Check API names offline" below. |
 | `test_check_api.py` | Its tests; the end-to-end ones run only with a python that has mypy. |
+| `fusion_folder.py` | **The shared "safe to create" check** for a Fusion cloud folder: `from fusion_folder import safe_to_create` in any script run through `run_script.py`. It reads the folder again for up to a minute while an entry can't be read, then refuses only when an entry that still can't be read could be the new file. The runner's `--doc-new` step and `start_drawing.py` use the same file. See "Making a new file in the team folder" below. |
+| `test_fusion_folder.py` | Its tests, and that the runner and the drawing start send this same text. |
 | `step_check.py` | Reads a STEP file without Fusion: declared length unit, products, solids and the bounding box in mm. `--expect xmin,ymin,zmin,xmax,ymax,zmax` checks it. Never edits the file. |
 | `pdf_clear_field.py` | Removes a title block field's value (default "Created by", which Fusion fills with the account holder's name) from an exported drawing PDF, then re-reads it to prove the text is gone. Needs PyMuPDF. |
 
@@ -22,6 +24,24 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/proof/wall_panel_frame.py --
 python3 tools/fusion/run_script.py v2/01-CAD-Native/proof/edit_test.py
 python3 tools/fusion/step_check.py v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step --expect=0,-20,0,1500,3,1150
 ```
+
+## Making a new file in the team folder
+
+After a Fusion restart, and while files upload, a folder entry can't be read for a while: `DataFiles.item(i)` raises, or the name can't be read. Skipping it could make a second file with the same name; refusing on any unreadable entry blocks every team on one bad file. Use the one shared check before making a file (PM ruling 2026-10-31: no team keeps a stricter copy):
+
+```python
+from fusion_folder import safe_to_create
+
+def run(_context):
+    ...
+    for w in safe_to_create(folder, "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD"):   # raises if it isn't safe
+        print("warning:", w)
+    doc.saveAs("210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD", folder, "...", "")
+```
+
+- It reads the folder again every 5 s for up to a minute while an entry can't be read. Then it refuses only when an entry that still can't be read **could be the new file**: its name can't be read, and its kind isn't known or is the same (`.f3d` for a design, `safe_to_create(folder, name, "f2d")` for a drawing). An unreadable entry of another kind only gives a warning. A name already there is refused.
+- `read_folder(folder)` gives `(files, unknown, others)` to scripts that need the listing itself.
+- `run_script.py` gives every script this module fresh on each run, from the runner's own checkout, so a fix here reaches every team at once (it is never a stale copy left in Fusion). The runner's `--doc`/`--doc-new` step and `start_drawing.py` put the same file's text in front of their own scripts.
 
 ## Check API names offline
 
@@ -144,7 +164,7 @@ The design must be saved in Default Project / FocusPod v2 (`--folder` for anothe
 - **Why clicks.** The API can't create a drawing here: manual creation needs a drawing template (.f2t) with view placeholders, a saved drawing (.f2d) is refused as `templateFile` ("Passed file type should be of type template and have extension as .f2t", tested 2026-10-31), automatic creation hung, and no script call saves a template. Base views always show the drawing's own design ("specifying a reference will be supported in a future release"), so each design needs its own drawing.
 - **How the clicks work.** `osascript` and System Events press the named button in the Fusion dialog with OK and Cancel (by its title or text when Fusion exposes one, else the only such dialog; it refuses when there are several). Fusion answers accessibility **only while it is idle**, which the lock guarantees; between the steps the command polls Fusion's active command with read-only scripts (they run while a dialog is open).
 - **Refusals before anything opens** (exit 1): the drawing name already in the folder; an entry of that folder Fusion can't read that **could be the new drawing** (it lists the folder entry by entry and looks again 4 times, 2 s apart; an unreadable entry known to be another kind of file, such as a .f3d, only gets a warning, PM ruling 2026-10-31: one bad entry must not block every team; the save step checks the same way); Fusion not idle (its Home screen, with no document, counts as idle), an unsaved drawing already open, the screen locked (`CGSSessionScreenIsLocked` under `IOConsoleUsers` in `ioreg`), accessibility seeing no Fusion window, or a design with unsaved changes (Create Drawing could ask to save it). With the screen locked on 2026-10-31 the command refused at once, as it should.
-- **Cleanup** whenever a step fails after the dialog was queued, also on SIGTERM, SIGHUP, Ctrl-C and lost contact with Fusion: **Cancel through accessibility first**, as a person would press it. Fusion's own cancel, a read-only script that starts Fusion's Select command, runs **only when Fusion says its Create Drawing or Base View dialog is open but accessibility has seen no dialog on two polls in a row**, never while Fusion is busy or in any other command (on a locked screen on 2026-10-31, starting Select closed an open Create Drawing dialog). Then the unsaved drawing is closed. Exit 4 only when Fusion can't be shown idle: then a person presses Cancel in Fusion.
+- **Cleanup** whenever a step fails after the dialog was queued, also on SIGTERM, SIGHUP, Ctrl-C and lost contact with Fusion: **Cancel through accessibility first**, as a person would press it. Fusion's own cancel, a read-only script that starts Fusion's Select command, runs **only when Fusion says its Create Drawing or Base View dialog is open but accessibility has seen no dialog on two polls in a row**, never while Fusion is busy or in any other command (on a locked screen on 2026-10-31, starting Select closed an open Create Drawing dialog). Then the unsaved drawing is closed, and the design if this command opened it and it has no unsaved changes (Reviewer 5, P3 on #101). Exit 4 only when Fusion can't be shown idle: then a person presses Cancel in Fusion.
 - **What went wrong on 2026-10-31 (Fusion died).** The click script used `named`, a reserved word in AppleScript, as a variable, so it never compiled (error -2741) and every click failed; the cleanup then ran `terminateActiveCommand()` on the open Create Drawing dialog, and Fusion quit. Fixes: the variable is `isNamed`; a test compiles every AppleScript in `start_drawing.py` with `osacompile` (it fails on the old script); no script ends a command any more; accessibility Cancel comes first.
 - **Needs** the Mac awake and unlocked and the accessibility permission for the terminal. While the screen is locked, drawings can't be started; adding sheets and base views to an existing drawing still works by script.
 - **Nobody else scripts dialog clicks** (PM ruling 2026-10-31). Use this command.

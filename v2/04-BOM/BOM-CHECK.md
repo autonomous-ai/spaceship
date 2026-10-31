@@ -6,10 +6,14 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 0 part lines (0 made, 0 bought, 0 on HOLD) and 0 sub-assembly lines from 1 parts list(s); 26 hardware items in the joints register (26 with a part number). Listed parts weigh 0.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 49 part lines (21 made, 28 bought, 20 on HOLD) and 8 sub-assembly lines from 5 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 114.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
+- `v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` @ working tree
+- `v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv` @ working tree
 - `v2/05-Engineering/joints/joints-register.md` @ working tree
 - `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv` @ working tree
 
@@ -20,13 +24,31 @@ Read from: this working tree.
 ## Missing or on HOLD, per team
 
 **BASE**
-- no parts list yet (expected *_BOM.csv files in v2/03-Manufacturing/base/)
+- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
+- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM: HOLD (HOLD)
+- 118001 BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP: HOLD (HOLD)
 
 **WALL**
-- no parts list yet (expected *_BOM.csv files in v2/03-Manufacturing/wall/)
+- 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
+- 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
+- 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
+- 848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN: HOLD (HOLD)
 
 **FRONT**
-- no parts list yet (expected *_BOM.csv files in v2/03-Manufacturing/front/)
+- 361001 FRONT - DOOR LEAF - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
+- 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112: HOLD (source (product); bond to aluminium HOLD)
+- 368101 FRONT - DOOR HINGE - HOLD: HOLD (HOLD (D-46, ISS-002))
+- 368102 FRONT - DOOR STRIKE: HOLD (source (product); on the 8.76 laminate with a 1.2 mm shim: HOLD)
+- 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD: HOLD (HOLD: product for the 8.76 laminate and a 4 mm gap)
+- 368103 FRONT - DOOR PULL PAIR - HOLD: HOLD (HOLD)
+- 361003 FRONT - FIXED GLASS - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
+- 368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD: HOLD (HOLD: product for the 8.76 laminate and a 4 mm gap)
+- no 350000 FRONT - DECOR parts listed yet
 
 **CEILING**
 - no parts list yet (expected *_BOM.csv files in v2/03-Manufacturing/ceiling/)

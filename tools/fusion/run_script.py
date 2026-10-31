@@ -607,6 +607,13 @@ def run(_context):
     vp.refresh()
 '''
 
+# The shared folder check (fusion_folder.py): put in front of the scripts this
+# runner and start_drawing.py send, and given to every script as a module.
+FOLDER_HELPER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fusion_folder.py")
+with open(FOLDER_HELPER_PATH, encoding="utf-8") as _fh:
+    FOLDER_HELPER_SRC = _fh.read()
+
+
 # Document steps for --doc, --save and --close. Runs inside Fusion; ARGS is
 # filled in by doc_script(). It never closes or saves a document with
 # another name, and never calls close(True) (that opens a dialog).
@@ -649,32 +656,41 @@ def run(_context):
             print("run_script: activated %%r" %% name)
             return
         proj, folder = _folder(app, ARGS["folder"])
-        for attempt in range(4):
-            files, bad = [], []
-            for i in range(folder.dataFiles.count):
-                try:              # one unreadable entry (being uploaded, deleted) must not stop the rest
-                    f = folder.dataFiles.item(i)
-                    if f.name == name:
-                        files.append(f)
-                except Exception:
-                    bad.append(i)
-            if files or not bad:
-                break
-            if attempt < 3:
-                adsk.doEvents()   # the name may be the unreadable entry: look again
-                time.sleep(2)
+        # the shared check (fusion_folder.py, in front of this script): reads
+        # again for up to a minute while an entry can't be read, unless the
+        # name turns up
+        found, unknown, others = read_folder(folder, stop_when=lambda fs, u, o: name in fs or (
+            ARGS.get("create") and not could_be(u, o, "f3d")))
+        files = found.get(name, [])
+        bad = unknown + [t for items in others.values() for t in items]
         if bad:
-            print("run_script: %%d entr%%s of %%s could not be read (positions %%s); skipped" %% (
-                len(bad), "y" if len(bad) == 1 else "ies", ARGS["folder"], ", ".join(map(str, bad))))
-        if not files and bad:
-            raise RuntimeError("%%r is not in %%s, but %%d entr%%s there can't be read and it may be "
-                               "one of them; nothing was opened or made (try again later)" %% (
-                                   name, ARGS["folder"], len(bad), "y" if len(bad) == 1 else "ies"))
+            print("run_script: %%d entr%%s of %%s could not be read; skipped: %%s" %% (
+                len(bad), "y" if len(bad) == 1 else "ies", ARGS["folder"], "; ".join(bad)))
+        if not files and ARGS.get("create"):
+            risky = could_be(unknown, others, "f3d")      # --doc-new makes a design
+            if risky:
+                raise RuntimeError("%%r is not in %%s, but %%s there can't be read and could be it; "
+                                   "nothing was opened or made (try again later): %%s" %% (
+                                       name, ARGS["folder"], "an entry" if len(risky) == 1 else
+                                       "%%d entries" %% len(risky), "; ".join(risky)))
         if len(files) > 1:
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:
             app.data.activeProject = proj
-            doc = app.documents.open(files[0], True)
+            # a version saved a moment ago may not open yet (live 2026-10-31, 4 s after
+            # a save and close: "Missing key for PIMOpenWorkflowTracker"): try again
+            # every 10 s for up to a minute, then give the error
+            for attempt in range(7):
+                try:
+                    doc = app.documents.open(files[0], True)
+                    break
+                except Exception as e:
+                    if attempt == 6:
+                        raise
+                    print("run_script: opening %%r failed (%%s); trying again in 10 s" %% (
+                        name, str(e).strip().splitlines()[-1][:120] if str(e).strip() else type(e).__name__))
+                    adsk.doEvents()
+                    time.sleep(10)
             if doc is None:
                 raise RuntimeError("could not open %%r from %%s" %% (name, ARGS["folder"]))
             doc.activate()
@@ -682,8 +698,8 @@ def run(_context):
                 name, files[0].versionNumber, ARGS["folder"]))
             return
         if not ARGS.get("create"):
-            raise RuntimeError("%%r is not open and not in %%s (add --doc-new to make it)"
-                               %% (name, ARGS["folder"]))
+            raise RuntimeError("%%r is not open and not in %%s%%s (add --doc-new to make it)"
+                               %% (name, ARGS["folder"], " (some entries there can't be read)" if bad else ""))
         doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
         design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
         design.designType = adsk.fusion.DesignTypes.ParametricDesignType
@@ -720,12 +736,18 @@ def run(_context):
 
 def doc_script(mode, name, folder=DEFAULT_FOLDER, create=False, description="",
                discard=False):
-    return DOC_SCRIPT % {"args": {
+    return FOLDER_HELPER_SRC + "\n" + DOC_SCRIPT % {"args": {
         "mode": mode, "name": name, "folder": folder, "create": bool(create),
         "description": description, "discard": bool(discard)}}
 
 
-WRAPPER = '''import base64 as _b64
+WRAPPER = '''import base64 as _b64, sys as _sys, types as _types
+# the shared folder check, from this runner's repo, fresh on every run: a
+# script's "from fusion_folder import safe_to_create" finds it (one copy for all)
+_FF = _types.ModuleType("fusion_folder")
+_FF.__file__ = %(ffpath)r
+exec(compile(_b64.b64decode(%(ffsrc)r).decode("utf-8"), %(ffpath)r, "exec"), _FF.__dict__)
+_sys.modules["fusion_folder"] = _FF
 _SRC = _b64.b64decode(%(src)r).decode("utf-8")
 _NS = {"__name__": "__fusion_script__", "__file__": %(path)r,
        "SCRIPT_ARGS": %(args)r}
@@ -740,7 +762,8 @@ def wrap_script(source, path, args):
     """Wrap the file so it compiles under its real path (true line numbers)."""
     compile(source, path, "exec")  # fail fast on syntax errors, locally
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
-                      "path": path, "args": args}
+                      "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
+                      "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii")}
 
 
 def run_in_fusion(mcp, source, read_only=False):

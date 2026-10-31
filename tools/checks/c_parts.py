@@ -21,7 +21,7 @@ import os
 import re
 from collections import defaultdict
 
-from common import (Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
+from common import (register_names, name_words, reserved_spaces, JOINTS_KEYS, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
                     parse_file_name, is_soft)
 
 ALIASES = {
@@ -88,7 +88,7 @@ def is_placeholder(row):
     raw = row.get("_raw", {})
     rtype = (raw.get("row_type") or "").lower()
     note = (raw.get("note") or raw.get("notes") or "").lower()
-    src = (raw.get("source_file") or "")
+    src = (raw.get("source_file") or "").split(" @ ")[0].strip()      # 'path.csv @ working tree' since #122
     return ("register only" in rtype or "not in any parts list" in note
             or (src.startswith("v2/03-Manufacturing/") and src.endswith(".csv")))
 
@@ -105,6 +105,8 @@ def find_parts_lists(root):
         for p in walk_files(root, top, exts=(".csv",)):
             if "/skeleton/" in rel(root, p):
                 continue          # the skeleton parameter table is not a parts list
+            if "/04-BOM/" in "/" + rel(root, p) and "MASTER" not in os.path.basename(p).upper():
+                continue          # the master BOM's generated views (bought parts, made parts by process) copy it
             try:
                 rows = read_csv(p)
             except (UnicodeDecodeError, OSError):
@@ -121,11 +123,14 @@ def find_parts_lists(root):
 
 def check_parts_lists(root, plists):
     fs = []
+    reserved = reserved_spaces(root)    # reserved air spaces: no mass, no drawing, no BOM count (the Lead's ruling)
     seen = defaultdict(list)     # pn -> [(file, name)]
     for p, rows in plists:
         r = rel(root, p)
         for i, row in enumerate(rows, start=2):
             pn = row["part_number"]
+            if pn in reserved:
+                continue            # only holds space; listed open under its designer by the drawing check
             name = row["name"]
             owner = owner_for(r, pn)
             subj = "%s (%s line %d)" % (pn or "no part number", os.path.basename(r), i)
@@ -218,15 +223,38 @@ def check_parts_lists(root, plists):
             if is_fastener(pn, name):
                 fs.extend(_fastener_row(r, pn, name, row, owner))
     fs = _fold_unnumbered(_fold_minor_rows(fs))
+    reg = register_names(root)
     for pn, uses in seen.items():
         # the same words in the same order are one name: 'HOOK-AND-LOOP' and 'HOOK AND LOOP' don't differ
-        names = {re.sub(r"[\s-]+", " ", (n or "").upper()).strip() for _f, n in uses}
+        names = {name_words(n) for _f, n in uses}
         if len(names) > 1:
+            # which name is right: the joints register's for hardware (D-99); the Joints Engineer's own list for the
+            # base keys (D-95); else the name the team lists agree on. The master BOM copies the team lists, so a
+            # name only it differs on means it needs a rebuild (the PM's).
+            team = [(f, n) for f, n in uses if not is_master(f)]
+            if pn in reg:
+                ref, why = reg[pn], " The joints register names it '%s' (D-99)." % reg[pn]
+            elif JOINTS_KEYS.match(pn) and any("/joints/" in f for f, _n in team):
+                ref = next(n for f, n in team if "/joints/" in f)
+                why = " The Joints Engineer's list names it '%s', and the teams place the keys by reference (D-95)." % ref
+            elif team and len({name_words(n) for _f, n in team}) == 1:
+                ref, why = team[0][1], ""
+            else:
+                ref, why = None, ""
+            off = [(f, n) for f, n in uses if ref is not None and name_words(n) != name_words(ref)] or uses
+            if ref is not None and all(is_master(f) for f, _n in off):
+                owner, fix = "Control", "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py)."
+            elif ref is not None:
+                f0 = next(f for f, _n in off if not is_master(f))
+                owner = owner_for(f0, "" if JOINTS_KEYS.match(pn) else pn)
+                fix = "Use '%s' in %s." % (ref, ", ".join(sorted({f for f, _n in off})))
+            else:
+                owner = owner_for(uses[0][0], pn)
+                fix = "One number is one form, fit and function (conventions section 6)."
             fs.append(Finding("C06", "duplicate-number", pn, "major",
-                              "Part number %s is used for different names: %s." % (
-                                  pn, "; ".join("'%s' in %s" % (n, f) for f, n in uses)),
-                              "One number is one form, fit and function (conventions section 6).", uses[0][0],
-                              owner_for(uses[0][0], pn)))
+                              "Part number %s is used for different names: %s.%s" % (
+                                  pn, "; ".join("'%s' in %s" % (n, f) for f, n in uses), why),
+                              fix, off[0][0], owner))
     return fs
 
 
@@ -357,15 +385,31 @@ def check_cad_match(root, plists, step_products):
         for row in rows:
             if row["part_number"]:
                 names.setdefault(row["part_number"], (row["name"], rel(root, p)))
-    norm = lambda t: re.sub(r"\s+", " ", (t or "").upper()).strip()
+    norm = name_words
+    reg = register_names(root)          # D-99: hardware names come from the joints register
     for pn, info in sorted(step_products.items()):
-        if pn not in names or not re.match(r"^\d{6}$", pn):
+        if (pn not in names and pn not in reg) or not re.match(r"^\d{6}$", pn):
             continue
         cad = re.sub(r"^%s\s+" % pn, "", info["name"] or "")
         cad = re.sub(r"\s*\(\d+\)$", "", cad)            # Fusion's '(1)' copy suffix
-        same = norm(cad) == norm(names[pn][0]) or norm(cad).startswith(norm(names[pn][0]) + " - ")  # + a position code
-        if cad and not re.match(r"^\d{6}_[PR]\d{2}_", cad) and not same:
-            f = sorted(info["files"])[0]
+        if not cad or re.match(r"^\d{6}_[PR]\d{2}_", cad):
+            continue
+        f = sorted(info["files"])[0]
+        if pn in reg:
+            ref = reg[pn]
+            # the CAD may add a position code to the register's name (368101 '... - HOLD - H1 BOTTOM')
+            wrong = ["the CAD"] if not (norm(cad) == norm(ref) or norm(cad).startswith(norm(ref) + " ")) else []
+            if pn in names and norm(names[pn][0]) != norm(ref):
+                wrong.append("the parts list (%s)" % names[pn][1])
+            if wrong:
+                fs.append(Finding("C06", "name-mismatch", pn, "minor",
+                                  "%s is named '%s' in the CAD%s; the joints register names it '%s', and hardware names "
+                                  "come from the register (D-99)." % (
+                                      pn, cad, " and '%s' in %s" % (names[pn][0], names[pn][1]) if pn in names else "", ref),
+                                  "Use the register's name in %s." % " and ".join(wrong), f, owner_for(f, pn)))
+            continue
+        same = norm(cad) == norm(names[pn][0]) or norm(cad).startswith(norm(names[pn][0]) + " ")  # + a position code
+        if not same:
             fs.append(Finding("C06", "name-mismatch", pn, "minor",
                               "%s is named '%s' in the CAD (%s) but '%s' in the parts list (%s); the guideline wants one "
                               "name everywhere (section 4.2)." % (pn, cad, f, names[pn][0], names[pn][1]),
