@@ -1,0 +1,31 @@
+parameter,value_mm,expression,status,source
+pod_w,2500,2500 mm,decided,D-01; conventions s4 (X = +-1250)
+pod_d,1700,1700 mm,decided,D-01; conventions s4 (Y = +-850)
+pod_h,2400,2400 mm,decided,D-21 (room floor to roof skin top)
+glide_h,10,10 mm,assumption,layout study inputs.py glide_h
+band_h,100,100 mm,source,layout study B1 list B-BAND 100x40; inputs.py base_h
+band_t,40,40 mm,source,layout study B1 list B-BAND 100x40
+stack_t,81,81 mm,decided,"D-16, D-42 (walls and ceiling)"
+outer_t,43,43 mm,source,layout study B1 final list W-SIDE 43 (ACP 3 + frame 40)
+cass_t,34,34 mm,source,layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)
+wall_depth,1500,1500 mm,source,build plan II; conventions s4 (wall front edge Y = -650)
+floor_t,15,15 mm,source,layout study B1 list B-FLOOR 15
+thresh_h,20,20 mm,decided,D-18
+thresh_d,60,60 mm,source,layout study B1 list B-THRESH 1176 x 60 x 20
+decor_d,235,235 mm,decided,"D-39 (230-235, v1); B1 list 235"
+dl_w,278,278 mm,source,B1 list F-DL 278 (v1 BOM DL)
+dr_w,1016,1016 mm,source,B1 list F-DR 1016 (v1 STEP solid 78)
+dt_w,1697,1697 mm,source,B1 list F-DT 1697 (v1 BOM DT)
+dt_h,280,280 mm,source,B1 list F-DT 280
+door_w,1176,1176 mm,decided,D-46
+door_h,2011,2011 mm,source,B1 list F-GLASS-DOOR 2011; v1 STEP solid 238
+glass_t,8.76,8.76 mm,decided,D-46 (4+4 laminate)
+glass_y,699,699 mm,source,v1 STEP solid 238 centre Y = -699 (layout study data)
+kick_d,20,20 mm,assumption,kick strip envelope depth (D-40 gives the height only)
+wall_z0,110,glide_h + band_h,calculation,walls stand on the base band
+wall_h,2290,pod_h - wall_z0,calculation,2290 = layout study v2_model wall_h
+side_h,1145,wall_h / 2,calculation,D-23: 2 sheets per side wall; B1 list 1145
+back_h,2209,wall_h - stack_t,calculation,back wall stands under the ceiling (v2_model back_h)
+back_ph,1104.5,back_h / 2,calculation,D-23: 4 sheets on the back; B1 list 1104
+inner_w,2338,pod_w - 2 * stack_t,calculation,2338 between the side walls
+door_z0,109,pod_h - dt_h - door_h,calculation,door meets DT; leaves 89 above the threshold (D-40 about 90)
