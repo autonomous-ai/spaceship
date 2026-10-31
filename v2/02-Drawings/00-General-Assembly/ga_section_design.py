@@ -12,11 +12,13 @@ skeleton's), splits the bodies the plane crosses, and removes the half
 between the plane and the viewer. A base view of the design from the
 viewer's side then shows the cut faces, as a section would.
 
-After a skeleton update, rebuild it in place (same file, a new version):
+After a skeleton update, rebuild it in place (same file, a new version; the
+derive stays and moves to the newest skeleton, the rest is built again):
     ... ga_section_design.py --doc 100000_P04_POD-SECTION-AA_CAD --arg section=AA \\
         --arg rebuild=1 --save "section A-A, rebuilt" --close
 A new skeleton body that crosses the plane would not be split by updating the
-references alone, so the rebuild clears the timeline and builds it again.
+references alone, so the rebuild removes the plane, split and removals and
+makes them again.
 
 A-A: plane X = the door's middle (the door's left and right bottom corners,
      from the skeleton), viewer on the left (-X): the longitudinal section
@@ -111,24 +113,44 @@ def skeleton_newest(app: "adsk.core.Application"):
     return d, True, newest
 
 
-def clear(design: "adsk.fusion.Design"):
-    """Empty the design for a rebuild in place: the plane parameter is set to a
-    plain value first, so nothing ties it to the derived parameters, then the
-    whole timeline goes, then the parameter."""
+def skeleton_ref(doc: "adsk.core.Document"):
+    refs = doc.documentReferences
+    for i in range(refs.count):
+        r = refs.item(i)
+        if r.dataFile is not None and r.dataFile.name == SKELETON:
+            return r
+    raise RuntimeError("%s doesn't reference %s" % (doc.name, SKELETON))
+
+
+def rebuild_keeping_the_derive(doc: "adsk.core.Document", design: "adsk.fusion.Design"):
+    """Rebuild in place: the derive stays, everything after it goes, and its reference
+    moves to the skeleton's newest version. The skeleton is not opened a second time
+    (2026-10-31: that open failed, "Zip64: failed to open a zip package ... in use").
+    Returns (derive, skeleton version, skeleton design)."""
+    root = design.rootComponent
+    if root.features.deriveFeatures.count != 1:
+        raise RuntimeError("a rebuild expects one derive feature, found %d" % root.features.deriveFeatures.count)
+    derive = root.features.deriveFeatures.item(0)
     p = design.userParameters.itemByName("sec_offset")
     if p:
-        p.expression = "0 mm"
+        p.expression = "0 mm"          # nothing may tie it to what goes
     tl = design.timeline
     n = tl.count
-    tl.markerPosition = 0
+    tl.markerPosition = derive.timelineObject.index + 1
     tl.deleteAllAfterMarker()
     if p:
         p.deleteMe()
-    root = design.rootComponent
-    if tl.count or root.bRepBodies.count or root.occurrences.count:
-        raise RuntimeError("rebuild: the design isn't empty after clearing (%d timeline items, %d bodies)"
-                           % (tl.count, root.bRepBodies.count))
-    print("rebuild: cleared %d timeline items" % n)
+    print("rebuild: kept the derive, removed %d timeline items after it" % (n - tl.count))
+    ref = skeleton_ref(doc)
+    if ref.isOutOfDate:
+        print("updated the references to the newest skeleton: %s" % doc.updateAllReferences())
+        adsk.doEvents()
+        ref = skeleton_ref(doc)
+    newest = ref.dataFile.latestVersionNumber
+    if ref.isOutOfDate or ref.version != newest:
+        raise RuntimeError("the derive shows skeleton version %s, not the newest %s" % (ref.version, newest))
+    skel = adsk.fusion.Design.cast(ref.referencedDocument.products.itemByProductType("DesignProductType"))
+    return derive, ref.version, skel
 
 
 def run(_context):
@@ -138,26 +160,27 @@ def run(_context):
     doc = app.activeDocument
     design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
     root = design.rootComponent
-    if root.bRepBodies.count or root.occurrences.count or root.features.deriveFeatures.count:
-        if ARGS.get("rebuild") != "1":
-            raise RuntimeError("%s already has content; add --arg rebuild=1 to rebuild it in place"
-                               % doc.name)
-        clear(design)
+    rebuilding = bool(root.bRepBodies.count or root.occurrences.count or root.features.deriveFeatures.count)
+    if rebuilding and ARGS.get("rebuild") != "1":
+        raise RuntimeError("%s already has content; add --arg rebuild=1 to rebuild it in place" % doc.name)
     root.partNumber = "100000-SEC-%s" % sec
     root.description = title
 
-    # 1. derive the whole skeleton, newest version: every body and every (favorite) parameter
-    skel_doc, opened, version = skeleton_newest(app)
-    skel = adsk.fusion.Design.cast(skel_doc.products.itemByProductType("DesignProductType"))
-    skel_bodies = sum(c.bRepBodies.count for c in skel.allComponents)
-    doc.activate()
-    di = root.features.deriveFeatures.createInput(skel)
-    di.isIncludeFavoriteParameters = True
-    di.sourceEntities = [skel.rootComponent]
-    derive = root.features.deriveFeatures.add(di)
+    # 1. the whole skeleton, newest version, by derive: every body and every (favorite) parameter
+    if rebuilding:
+        derive, version, skel = rebuild_keeping_the_derive(doc, design)
+    else:
+        skel_doc, opened, version = skeleton_newest(app)
+        skel = adsk.fusion.Design.cast(skel_doc.products.itemByProductType("DesignProductType"))
+        doc.activate()
+        di = root.features.deriveFeatures.createInput(skel)
+        di.isIncludeFavoriteParameters = True
+        di.sourceEntities = [skel.rootComponent]
+        derive = root.features.deriveFeatures.add(di)
+        if opened:
+            skel_doc.close(False)
     derive.name = "DERIVE - SKELETON P04 V%s (ALL BODIES, PARAMETERS)" % version
-    if opened:
-        skel_doc.close(False)
+    skel_bodies = sum(c.bRepBodies.count for c in skel.allComponents)
     adsk.doEvents()
     bodies = [b for c in design.allComponents for b in c.bRepBodies]
     print("derived from skeleton version %s: %d bodies (the skeleton has %d), %d parameters" % (
