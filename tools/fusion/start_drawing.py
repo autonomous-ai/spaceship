@@ -541,6 +541,72 @@ def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=N
         return 2 if isinstance(e, rs.McpError) else 1
 
 
+# PM rule 2026-10-31: drawing starts are batched in one lock hold, up to 6 starts
+# or about 15 minutes per hold; then the hold is released and the next one queued.
+BATCH_MAX = 6
+BATCH_BUDGET_S = 15 * 60
+
+
+def read_batch(path, default_sheet):
+    """[(design, drawing, sheet)] from a text file: one start per line, "DESIGN DRAWING
+    [SHEET]" separated by spaces or tabs; blank lines and lines starting with # are
+    skipped. Raises ValueError naming the line on anything else."""
+    pairs, seen = [], set()
+    with open(path, encoding="utf-8") as fh:
+        for n, line in enumerate(fh, 1):
+            text = line.strip()
+            if not text or text.startswith("#"):
+                continue
+            parts = text.split()
+            if len(parts) not in (2, 3):
+                raise ValueError("line %d: expected DESIGN DRAWING [SHEET], got %r" % (n, text))
+            design, drawing = parts[0], parts[1]
+            sheet = parts[2] if len(parts) == 3 else default_sheet
+            if sheet not in SHEETS:
+                raise ValueError("line %d: sheet %r is not one of %s" % (n, sheet, ", ".join(sorted(SHEETS))))
+            if drawing in seen:
+                raise ValueError("line %d: drawing %s is in the batch twice" % (n, drawing))
+            seen.add(drawing)
+            pairs.append((design, drawing, sheet))
+    if not pairs:
+        raise ValueError("no starts in %s" % path)
+    return pairs
+
+
+def run_batch(steps, pairs, folder, log, max_starts=BATCH_MAX, budget_s=BATCH_BUDGET_S,
+              waits=None, now=time.monotonic):
+    """The starts one after another in one lock hold, each saved and closed exactly as a
+    single start is; stop at the first failure. Starts past max_starts, or not begun
+    before budget_s has gone by, are left for the next hold.
+    Returns (exit code, done pairs, (failed pair, code) or None, pairs left)."""
+    t0 = now()
+    done = []
+    for i, (design, drawing, sheet) in enumerate(pairs):
+        if i >= max_starts or (i and now() - t0 >= budget_s):
+            log("batch: %d left for the next hold (%s)" % (
+                len(pairs) - i, "at most %d starts per hold" % max_starts if i >= max_starts
+                else "about %d minutes per hold" % round(budget_s / 60)))
+            return 0, done, None, pairs[i:]
+        log("batch %d/%d: %s -> %s (%s)" % (i + 1, len(pairs), design, drawing, sheet))
+        code = run_with_cleanup(steps, design, drawing, folder, sheet, False, log, waits)
+        if code != 0:
+            log("batch: stopped at %s (exit %d); %d not started" % (drawing, code, len(pairs) - i - 1))
+            return code, done, ((design, drawing, sheet), code), pairs[i + 1:]
+        done.append((design, drawing, sheet))
+    return 0, done, None, []
+
+
+def write_rest(path, failed, left):
+    """The batch's failed start (first) and the starts not begun, for the next hold."""
+    with open(path, "w", encoding="utf-8") as fh:
+        if failed:
+            (design, drawing, sheet), code = failed
+            fh.write("# failed (exit %d): fix it, then run this file again\n" % code)
+            fh.write("%s %s %s\n" % (design, drawing, sheet))
+        for design, drawing, sheet in left:
+            fh.write("%s %s %s\n" % (design, drawing, sheet))
+
+
 def _stop(_signum, _frame):
     raise KeyboardInterrupt
 
@@ -554,8 +620,17 @@ def install_signal_handlers():
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Start a new Fusion drawing of a saved design, "
                                              "with nobody at the Mac (see the module help).")
-    ap.add_argument("design", help="the saved design's name in --folder")
-    ap.add_argument("drawing", help="name for the new drawing, e.g. PARTNO_P01_NAME_DWG")
+    ap.add_argument("design", nargs="?", help="the saved design's name in --folder")
+    ap.add_argument("drawing", nargs="?", help="name for the new drawing, e.g. PARTNO_P01_NAME_DWG")
+    ap.add_argument("--batch", metavar="FILE",
+                    help="several starts in one lock hold: one per line, DESIGN DRAWING [SHEET]; "
+                         "each is saved and closed; stops at the first failure; what is left "
+                         "goes to FILE.rest")
+    ap.add_argument("--max", type=int, default=BATCH_MAX,
+                    help="with --batch: at most this many starts per hold (default %d)" % BATCH_MAX)
+    ap.add_argument("--budget-min", type=float, default=BATCH_BUDGET_S / 60.0,
+                    help="with --batch: begin no start after this many minutes (default %d)"
+                         % (BATCH_BUDGET_S // 60))
     ap.add_argument("--folder", default=rs.DEFAULT_FOLDER)
     ap.add_argument("--sheet", default="A2", choices=sorted(SHEETS))
     ap.add_argument("--keep-open", action="store_true", help="leave the drawing open")
@@ -568,14 +643,30 @@ def main(argv=None):
                          "lock); only for runs the Product Manager approved, see run_script.py")
     ap.add_argument("--label", default=os.environ.get(rs.LABEL_ENV, ""))
     opts = ap.parse_args(argv)
+    pairs = None
+    if opts.batch:
+        if opts.design or opts.drawing or opts.keep_open:
+            ap.error("--batch takes its starts from the file (no DESIGN DRAWING, no --keep-open)")
+        try:
+            pairs = read_batch(opts.batch, opts.sheet)
+        except (OSError, ValueError) as e:
+            print("start_drawing: --batch %s: %s; nothing was started" % (opts.batch, e), file=sys.stderr)
+            return 1
+    elif not (opts.design and opts.drawing):
+        ap.error("give DESIGN DRAWING, or --batch FILE")
 
     def log(msg):
         print("start_drawing: %s" % msg, flush=True)
 
     install_signal_handlers()
+    if pairs:
+        script = "start_drawing.py --batch %s (%d starts)" % (os.path.basename(opts.batch), len(pairs))
+        hold_s = opts.budget_min * 60 + 900
+    else:
+        script = "start_drawing.py %s -> %s" % (opts.design, opts.drawing)
+        hold_s = 900
     lock = rs.FusionLock(opts.lock or rs.default_lock_path(opts.url),
-                         label=opts.label or "start_drawing", hold_s=900,
-                         script="start_drawing.py %s -> %s" % (opts.design, opts.drawing),
+                         label=opts.label or "start_drawing", hold_s=hold_s, script=script,
                          front=opts.lock_front)
     try:
         lock.acquire(opts.lock_wait, token=os.environ.get(rs.TOKEN_ENV) or None)
@@ -591,8 +682,20 @@ def main(argv=None):
         except rs.McpError as e:
             print("start_drawing: %s" % e, file=sys.stderr)
             return 2
-        return run_with_cleanup(steps, opts.design, opts.drawing, opts.folder, opts.sheet,
-                                opts.keep_open, log)
+        if not pairs:
+            return run_with_cleanup(steps, opts.design, opts.drawing, opts.folder, opts.sheet,
+                                    opts.keep_open, log)
+        code, done, failed, left = run_batch(steps, pairs, opts.folder, log, opts.max,
+                                             opts.budget_min * 60)
+        log("batch: %d of %d done%s" % (len(done), len(pairs), "; failed: %s (exit %d)" % (
+            failed[0][1], failed[1]) if failed else ""))
+        rest = opts.batch + ".rest"
+        if failed or left:
+            write_rest(rest, failed, left)
+            log("batch: %d start(s) for the next hold written to %s" % ((1 if failed else 0) + len(left), rest))
+        elif os.path.exists(rest):
+            os.remove(rest)
+        return code
     finally:
         lock.release()
 
