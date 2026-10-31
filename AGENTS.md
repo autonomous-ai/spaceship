@@ -1,6 +1,6 @@
 # Working in this repo
 
-This repo holds the FocusPod design (the team calls it "Indoor Pod"): the v1 source files and the v2 work.
+This repo holds the FocusPod design (the team calls it "Indoor Pod"): the v1 source files and the v2 work. v2 has the working name Spaceship.
 
 Before any design, CAD, drawing or BOM work, read and follow `docs/engineering-guideline.md`. It's the hardware team's engineering guideline for every version of the pod, not just one. It's in Vietnamese.
 

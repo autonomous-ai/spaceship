@@ -1,6 +1,8 @@
-# FocusPod v2 plan
+# Spaceship plan (FocusPod v2)
 
 Status: approved by Dee on 2026-10-31. Work has started.
+
+**Spaceship** is the working name for v2. The pod looks like a spaceship, and inside it should feel like one: you command your agents by voice. The prototype stays focused on the structure goals below, but the design reserves the hooks for that cockpit: mounting points, cable paths and power for a mic array, speakers, a screen and a status light. The cockpit kit can then bolt in later without a redesign.
 
 Sources: the v2 build plan from the indoor pod lead engineer (`v2/00-Control/v2-build-plan.pdf`), the engineering guideline from the hardware engineering lead (`docs/engineering-guideline.md`), v1 (`sources/v1/` plus the [product page](https://www.autonomous.ai/focus-pod)), and the market study (`v2/research/market-study.md`).
 
