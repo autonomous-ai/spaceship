@@ -37,7 +37,7 @@ The **Status** column gives the status of the numbers in that row (confirmed, so
 | P17 | Cartridge linings and fan box linings, 25 mm, 32 kg/m³ · lớp tiêu âm ống | S5, three layers per cartridge plus the fan boxes | 5.05 m² at 25 mm | Pyrotek · Sorberpoly 2D, 25 mm (standard thickness), 32 kg/m³ | source (product, published ISO 354 data at 25 mm); calculation (2 × (3 × 405 × 1800 + 2 × (405 + 155) × 300) mm²) | HW-SEL B and F2; HW-AA calc.py | |
 | P18 | Exhaust riser, galvanised steel sheet 1.0 mm · ống thải đứng | S5 riser 150 × 155 × 2000 | 1.22 m² | Galvanised steel, grade as P08 | source (1 mm, HW-SEL F2); calculation (2 × (150 + 155) × 2000 mm²) | HW-SEL F2 | H07 |
 | P19 | Fan bulkhead and fan box parts · vách đỡ quạt | S5 | per D08 | Not designed | — | HW-SEL F1 | H07 |
-| P20 | ACP 3 mm for R3's inner face · tấm ốp alu mặt trong | R3 removable inner panel, 1016 × 2290 | 1 sheet 1500 × 3000 | As P01 | calculation (fit); source (sheet size) | HW-SEL A1; LS F-DR | |
+| P20 | ACP 3 mm for R3's inner face · tấm ốp alu mặt trong | R3 removable inner panel, 1016 × 2290 (resized per D-60, HOLD H07) | 1 sheet 1500 × 3000 | As P01 | calculation (fit); source (sheet size) | HW-SEL A1; LS F-DR | |
 | P21 | Heater for T05, adjustable, with a power reading · bộ gia nhiệt | R4 | 1, at least 320 W | Test equipment | calculation (314 W lifts 65 l/s by 4 K: 1.2 × 1005 × 0.065 × 4; air density and heat capacity as REQ C4) | T05; D-50; D-52 | |
 | P22 | Bench 12 V supply and a PWM speed source for the fans · nguồn 12 V | S5 tests | 1 | Test equipment, set to the fan maker's PWM input | — | HW-SEL F3 (the sensor hub's PWM output is HOLD for the electrical scope) | |
 

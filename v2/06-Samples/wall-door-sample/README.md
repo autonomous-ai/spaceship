@@ -24,7 +24,7 @@ Nothing here is released for production. Every physical test stays PLANNED until
 - **What gets measured** (test plan): wall sound transmission from 100 Hz (T01); the lighter fill next to the 32 kg/m³ one (T02); felt absorption on its 25 mm gap (T03); the 12 V fans' flow and octave noise in their cartridges (T04); recirculation at boost (T05); rivnut spin-out in the real 1.2 mm tube (T06); clip pull-out (T07); the ceiling catch's drop test (T08); the ACP-to-aluminium bond (T09); weight per m² (T10); timed assembly of the panel (T11); taking a cartridge out into the pod and back (T12). The door's tests (T13) wait for its hardware.
 - **What it decides:**
   - whether the pod lands at or under the 420 kg cap (D-54). The layout study's estimate is 426.7 kg, open against the cap.
-  - whether the 24 kg/m³ fill can replace the 32, saving 4.3 kg (D-54).
+  - whether the 24 kg/m³ fill can replace the 32, saving about 4.9 kg (24 kg/m³ grade; D-54's 4.3 kg was for 25 kg/m³).
   - the real sound figure: 19.3 dB calculated, with 24 dB as the best case (D-53).
   - the rivnut tightening torque (D-48).
   - whether the clips and the ceiling catch hold their loads (D-47).
