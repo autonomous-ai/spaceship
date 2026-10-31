@@ -100,6 +100,11 @@ class Readers(unittest.TestCase):
         _, skipped, _, _, _ = run({CUT: "frame,half,member,name,section,length_mm,qty,ends,status\n411101,C1,SIDE,SIDE,tube,1495,1,square,calc\n"})
         self.assertEqual([s[0] for s in skipped], [CUT])
 
+    def test_a_cut_list_with_part_numbers_is_skipped_too(self):
+        cut = "v2/03-Manufacturing/air/610000_P01_AIR-FLAT-CUT-LIST_BOM.csv"
+        parts, skipped, _, fails, _ = run({cut: "part_number,name,size_mm,material\n611104,AIR - COLUMN FILL,30 x 180 x 2105,PET fill\n"})
+        self.assertEqual(([s[0] for s in skipped], parts, fails), ([cut], [], []))
+
     def test_unit_quantity_multiplies_children(self):
         twice = FRONT_HDR + "360001,FRONT - DOOR UNIT,,assembly,-,2,50,calculation,DRAFT,x,\n361001,FRONT - DOOR LEAF,,made (cut),glass,1,43.9,calculation,DRAFT,x,\n"
         parts, _, _, _, _ = run({FRONT: twice})
