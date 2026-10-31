@@ -371,7 +371,7 @@ Presence sensor for automatic start and run-on:
 
 Mic array, speakers, screen and status light. Reserved here; the kit itself isn't designed.
 - **Mounting:** M6 rivnuts (A5) in the 20 × 40 aluminium members at positions the Layout Engineer sets. Screen on the back wall, status light on the front decor top block, mic array and speakers on lining cassettes. Never cut through the ACP outer skin.
-- **Cable path:** the 25 mm gap inside each lining cassette, joining the ceiling's 100 mm zone.
+- **Cable path:** the 25 mm gap inside each lining cassette; the ceiling cassettes link the back wall to the front decor blocks.
 - **Power:** 60 W reserve in the power budget (E) and in the heat figures (report §7a).
 - **Data:** the NE8FDP LAN feed-through (E) and the UTEN LAN socket.
 

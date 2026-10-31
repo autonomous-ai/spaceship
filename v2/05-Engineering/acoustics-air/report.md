@@ -154,7 +154,7 @@ Effect in the DECIDED pod (all else equal):
   - It stays as an optional experiment on the factory sample.
 - **Scratches:** cast acrylic is pencil hardness 3H (ACRYLITE cast), far softer than glass. Plan a hard-coated sheet, or accept wear on the door face. The factory sample decides.
 - **Look:** the grey cast sheet is Perspex Neutral 9T56, 46% light transmission at 3 mm. The value at 10 mm isn't published (darker), so the sample decides the match with v1's smoked glass.
-- **Fire, for later US rules:** PMMA is Euroclass E / UL 94 HB, while glass is A1 and PVB laminate is "no performance declared". A 2.4 m² acrylic door may be a problem for US interior-finish rules later. That's the main reason to keep the glass fallback ready.
+- **Fire, for later US rules:** PMMA is Euroclass E / UL 94 HB, while glass is A1 and PVB laminate is "no performance declared". A 2.4 m² acrylic door may be a problem for US interior-finish rules later, one more reason the baseline is glass.
 - **Hinges:** dormakaba OFFICE 11.233 clamps the 4+4 laminate directly (rated 70 kg and 1200 mm; the door is about 50 kg). The acrylic experiment's hinge-edge stile is detailed in selection.md C9.
 
 ## 4. The whole pod: predicted speech reduction
