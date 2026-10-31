@@ -850,8 +850,69 @@ def run_part(app, doc, design, root, scope, ctx):
         adsk.doEvents()
 
 
+FOLDER = "Default Project/FocusPod v2"
+
+
+def open_or_create(app, name):
+    """The design called `name` in FOLDER: activate it if open, open it from the cloud, or make
+    it there (the same steps as run_script.py --doc NAME --doc-new)."""
+    for i in range(app.documents.count):
+        d = app.documents.item(i)
+        if d.name.split(" v")[0] == name:
+            d.activate()
+            return d, "activated"
+    parts = [p for p in FOLDER.split("/") if p]
+    proj = next(app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
+                if app.data.dataProjects.item(i).name == parts[0])
+    folder = proj.rootFolder
+    for n in parts[1:]:
+        folder = folder.dataFolders.itemByName(n)
+    found = []
+    for i in range(folder.dataFiles.count):
+        try:
+            f = folder.dataFiles.item(i)
+            if f.name == name:
+                found.append(f)
+        except RuntimeError:
+            continue                       # an entry that can't be read (as run_script.py since #86)
+    app.data.activeProject = proj
+    if found:
+        d = app.documents.open(found[0], True)
+        d.activate()
+        return d, "opened"
+    d = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
+    if not d.saveAs(name, folder, "new, made by ceiling_build.py parts=", ""):
+        raise RuntimeError("saveAs %r failed" % name)
+    d.activate()
+    return d, "made"
+
+
+def run_parts(app, scopes):
+    """Several part-only designs in one run (fair-share queue rule, PM ruling 2026-11-01)."""
+    for scope in scopes:
+        if scope not in SCOPES:
+            raise RuntimeError("scope must be one of %s" % (SCOPES,))
+        t0 = time.time()
+        doc, how = open_or_create(app, part_doc_name(scope))
+        design = adsk.fusion.Design.cast(app.activeProduct)
+        clear_design(design)
+        design.designType = adsk.fusion.DesignTypes.ParametricDesignType
+        design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
+        ctx = Ctx(design)
+        params = M.all_params()
+        for name, expr, unit, status, src in params:
+            design.userParameters.add(name, vi(expr), unit, "%s: %s" % (status.upper(), src))
+        ctx.vals = M.evaluate(params)
+        run_part(app, doc, design, design.rootComponent, scope, ctx)       # checks, then saves (save=1)
+        print("part %s (%s) in %.0f s" % (scope, how, time.time() - t0))
+        doc.close(False)
+
+
 def run(_context):
     app = adsk.core.Application.get()
+    if ARGS.get("parts"):
+        run_parts(app, [k for k in ARGS["parts"].split(",") if k])
+        return
     if ARGS.get("close_previous") == "1":
         for i in range(app.documents.count - 1, -1, -1):
             d = app.documents.item(i)
