@@ -6,7 +6,7 @@
 - **Basis.** This study's decided build on skeleton P03, recounted on P04 with tonight's numbers: the teams' CAD masses where they exist (CEILING PR #32, FRONT PRs #27 and #28, WALL's L1), D-60's air parts as sized (the air report), the PM's adopted savings (D-81, D-85), budgets and allowances for parts not designed yet, and this study's model at P04's sizes for the rest. Every line has its status and source below and in `out/parts-decided-P04.csv`.
 - **Cross-check.** This study's model gives L1 11.83 kg at the P04 size with 32 kg/m3 fill and 1.2 mm studs; WALL's CAD on main gives 11.16 kg with 24 kg/m3 fill and 1.0 mm mid stiles.
 - **20 kg rule (D-03).** The intake riser joined to the supply fan box with its two fans (14.9 kg, D-87) ships loose and goes into the right decor block on site through its removable inner face (D-59), so the block ships at 18.1 kg; fitted in the factory it would be about 33 kg, over the rule. The soffit ships with its exhaust fan box and fans fitted (13.9 kg, D-87), and B2 with the power unit inside at about 11.9 kg (ELECTRICAL, S43). The heaviest piece apart from the glass is the right decor block at 18.1 kg; the door unit and the fixed glass unit are glass and exempt.
-- **Budgets and allowances (assumption)** for parts not designed yet: the light shelf 2.1 kg and the work-wall ledge 1.4 kg (D-70; budgets from D-85), and the named clips 2.2 kg; the two ceiling lights go (D-70), 1.0 kg less.
+- **Interior and allowances.** The light shelf (1.6 kg) and the work-wall ledge with the screen rail (1.9 kg) are INTERIOR's CAD (D-70, D-85); the named clips (2.2 kg) stay an allowance (assumption) until they're named; the two ceiling lights go (D-70), 1.0 kg less.
 
 | Assembly | kg |
 |---|---:|
@@ -38,7 +38,9 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Ceiling outer panels C1 and C2 | 2 | 10.03 | 10.05 | +0.01 | CEILING 410101 and 410102 P01, PR #32 (the estimate: its first list) |
 | Ceiling cassettes | 2 | 9.48 | 9.46 | -0.02 | CEILING 510301 P01, PR #32 (the estimate: its first list) |
 | ELECTRICAL, as shipped | 1 | 4.94 | 5.17 | +0.23 | ELECTRICAL 710000 P01, PR #64 (the estimate: as relayed) |
-| Light shelf, less its LED strip | 1 | 1.95 | 2.08 | +0.13 | the strip from ELECTRICAL 718050 P01, PR #64 (the light shelf itself is still a budget) |
+| Light shelf (its LED strip in ELECTRICAL's line) | 1 | 1.95 | 1.56 | -0.39 | INTERIOR 810201 P01, PR #92 (the estimate: D-85's budget less the strip share) |
+| Work-wall ledge | 1 | 1.40 | 1.40 | +0.00 | INTERIOR 810101 P01, PR #92 (the estimate: D-85's budget) |
+| Screen rail (not in the estimate) | 1 | 0.00 | 0.50 | +0.50 | INTERIOR 818102 P01, HOLD, PR #92 |
 | Base band piece, back | 1 | 2.69 | 2.68 | -0.01 | BASE 111103 P01, PR #55 |
 | Base band piece, side | 2 | 1.84 | 1.67 | -0.17 | BASE 111101 P01, PR #55 |
 | Corner keys, the 30 mm family | 6 | 0.15 | 0.21 | +0.06 | joints 111211 to 111214 P01, PR #139 |
@@ -46,9 +48,9 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.19 | +0.19 | joints 831001 and 831002 P01, PR #139 |
 | Floor panel | 2 | 7.66 | 7.12 | -0.54 | BASE 111401 P01, PR #55 |
 | Floor mat | 1 | 2.10 | 2.12 | +0.02 | BASE 111501 P01, PR #55 |
-| **In all** | | | | **-1.25** | |
+| **In all** | | | | **-1.27** | |
 
-Lines by basis: 16 from CAD on main, 1 partly, 0 from CAD in a team's open PR, 25 estimated.
+Lines by basis: 18 from CAD on main, 1 partly, 0 from CAD in a team's open PR, 23 estimated.
 
 ## Every line
 
@@ -92,8 +94,8 @@ Lines by basis: 16 from CAD on main, 1 partly, 0 from CAD in a team's open PR, 2
 | AIR | Four 12 V fans | 1 | 1.20 | 1.20 | assumption | S38: 0.3 kg each until the sample is weighed | estimate |
 | BASE | Door edge seals, base seal, cable grommets | 1 | 1.60 | 1.60 | source | this study's model | estimate |
 | ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.17 | 5.17 | calculation (CAD) | S43, CAD on main: ELECTRICAL parts list 710000 P01: the power unit in B2 2.89, the hub and controls zone 0.36, the cord set 0.50, the harnesses, cables and connectors, and the lights (6.49 m of shelf and down-light strip, the call light). The light shelf's strip is counted here only | CAD, main |
-| INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 2.08 | 2.08 | assumption | budget (D-85) until it's designed: 4.42 m (the back wall and the side walls back of the soffit) at 0.4 kg/m plus 0.4 kg of brackets (D-70), less its LED strip, 0.09 kg (20 g/m), which ELECTRICAL's line carries (S43) | estimate |
-| INTERIOR | Work-wall ledge, 1000 mm | 1 | 1.40 | 1.40 | assumption | budget (D-85) until it's designed: 1.5 mm folded aluminium, 1000 x 240 developed, plus 2 brackets (D-70) | estimate |
+| INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.56 | 1.56 | calculation (CAD) | S46, CAD on main: INTERIOR parts list 810201 P01: the back and side shelves, the right-wall down-light channel and its diffuser; the LED strips are in ELECTRICAL's line | CAD, main |
+| INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | 1.90 | calculation (CAD); brackets and screen rail HOLD | S46, CAD on main: INTERIOR parts list 810101 P01, the ledge and its 2 brackets (1.403), and 818102, the screen rail on HOLD (0.50); one line, as the packing plan ships them together | CAD, main |
 | WALL | M6 bolts, rivnuts, cam connectors, joint gaskets, spigots and stop washers | 1 | 4.87 | 4.87 | calculation (part CAD) | part CAD on main: 30 spigots 831001 and 76 stop washers 831002 from the joints' made hardware list (0.19 kg, S45); the bolts, rivnuts, cam connectors and gaskets this study's model (4.67 kg) until the joints register gives their masses | CAD, main (part) |
 | LATER | Voice cockpit kit reserve, outside the 420 kg cap | 1 | 4.00 | 4.00 | assumption | the kit ships later as an add-on (D-11); the cap is for the pod as shipped (D-81) | estimate |
 
@@ -107,12 +109,12 @@ Sources S33 to S39 are in section 10 of the report (`scripts/inputs.py`).
 | 4.7 | Cavity fill at 24 kg/m3 instead of 32: the wall panels, the ceiling cassettes, the air column and the soffit. The cartridges' 50 mm layers stay at 32, the density their published absorption is for | provisional (D-81): back to 32 kg/m3 if T02 fails (D-54) | WALL, CEILING, AIR |
 | 2.3 | Base band with a 1.5 mm wall instead of 2.0 mm, 7.1 m of it; the same outside size and finish | adopted (D-81); BASE's check passed, with a load block at each glide (D-86) | BASE |
 | 4.0 | The voice kit's reserve moves outside the cap: the kit ships later as an add-on (D-11) | adopted (D-81); the cap is for the pod as shipped | PM |
-| 1.8 | Weight budgets for the parts not designed yet: the light shelf at 0.4 kg/m, the ledge in 1.5 mm folded aluminium | adopted (D-85): the designs keep to them | INTERIOR, WALL |
+| 2.3 | Weight budgets for the light shelf (0.4 kg/m) and the ledge (1.5 mm folded aluminium), now INTERIOR's CAD; against the first allowances, the ledge in 1.5 mm folded aluminium | adopted (D-85): the designs keep to them | INTERIOR, WALL |
 | 1.7 | Back outer panels with 2 inner studs, not 3: 393 mm centres, inside D-16's 400 mm (this study counted from the outer width) | adopted (D-85) | WALL |
 | 1.3 | Wall panels' inner studs at 1.0 mm wall; the perimeter members keep 1.2 mm for the rivnuts (D-34), and the ceiling's inner members stay 1.2 mm for the overhead cassette clips and safety catches | adopted (D-85) | WALL |
 | 0.9 | Door kick strip as a hollow profile with 2 mm walls; the same outside and finish | adopted (D-85) | FRONT |
 | 4.8 | Floor panels in poplar-core 9 mm plywood, about 450 kg/m3 against 600, with a hard face veneer; the same finish on top | adopted (D-85, D-86); the castor and edge tests on the factory sample are planned | BASE |
-| **27.7** | **in all** | | |
+| **28.2** | **in all** | | |
 
 ## Parked (D-85)
 

@@ -241,7 +241,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 19. Light shelf
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-14** INTERIOR - LIGHT SHELF (2.1 kg).
+- **Parts:** **2-14** INTERIOR - LIGHT SHELF (1.6 kg).
 - **Fasteners:** the light shelf's fixings (INTERIOR design, not designed yet).
 - **Person A:** Fits the light shelf trims along the tops of the side and back walls (INTERIOR design).
 - **Person B:** Plugs the light shelf feed.
@@ -268,7 +268,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 22. Work-wall ledge and screen mount, after the clock
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-16** INTERIOR - LEDGE AND SCREEN MOUNT CARTON (2.4 kg).
+- **Parts:** **2-16** INTERIOR - LEDGE AND SCREEN MOUNT CARTON (2.9 kg).
 - **Fasteners:** their fixings to the work wall's mounting points (INTERIOR design, not designed yet).
 - **Person A:** Holds the 1000 mm ledge on the right (work) wall at its mounting points.
 - **Person B:** Fixes the ledge and the screen mount (INTERIOR design, D-70).
