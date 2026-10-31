@@ -2,7 +2,7 @@
 
 | Doc code | Revision | Status | Date | Owner |
 |---|---|---|---|---|
-| V2-ENG-JNT-02 (PROPOSED code; the control pack adds the register row) | P01 | DRAFT | 2026-10-31 | Joints Engineer (v2 Milestone 2) |
+| V2-ENG-JNT-02 (row in `document-register.csv`) | P01 | DRAFT | 2026-10-31 | Joints Engineer (v2 Milestone 2) |
 
 This is the bond specification the guideline asks for (§8.2, and Milestone 2 item 6), for the one structural bond in the decided build: the 3 mm ACP skin to the 20 × 40 × 1.2 aluminium frame of every wall and ceiling outer panel (ISS-016). With no plywood behind the ACP (D-17), this bond is what holds the skin on. It is made in the factory only; nothing is glued on site (REQ-ASM-05).
 
@@ -13,7 +13,7 @@ Status words as in the joints register: numbers carry confirmed, source, calcula
 ## Result
 
 1. **Bond system: SikaTack Panel-50**, a one-part, moisture-curing silicone with an ETA for wall cladding (ETA 19/0511), **with SikaTack Panel Fixing Tape** (3 × 12 mm polyethylene foam) to set the joint at 3 mm and hold the skin while it cures. Both faces are pre-treated with **Sika Aktivator-205 and SikaTack Panel Primer**, after a very fine abrasive pad on mill-finish aluminium (Sika's general table). Joint: **12 × 3 mm**, one on every frame member that touches the skin. This is the hardware selection's pick (A9); status source.
-2. **B1. The 20 mm tube face is too narrow for Sika's layout.** Sika puts the tape and the bead side by side, with the bead at least 5 mm from the tape and from the rail's edge. That needs about 32 mm of flat face (calculation); the frame's skin-side face is 20 mm wide. **Proposed:** one bead centred on every member, with the 3 mm thickness set by short pieces of the same fixing tape **in line** with the bead, and the panel bonded face down on a flat table. That departs from Sika's "tape along the whole length", so it needs Sika's written OK (HOLD-B2), and the coupons (section 6) test it.
+2. **B1. The 20 mm tube face is too narrow for Sika's layout.** Sika puts the tape and the bead side by side, with the bead at least 5 mm from the tape and from the rail's edge. That needs about 32 mm of flat face (calculation); the frame's skin-side face is 20 mm wide. **Proposed:** one bead centred on every member, with the 3 mm thickness set by short pieces of the same fixing tape **in line** with the bead, and the panel bonded face down on a flat table. That departs from Sika's "tape along the whole length", so it needs Sika's written OK (HOLD-B2), and the package's T09 coupons test it.
 3. **Design check:** the skin's own weight puts about **1.1 kPa** of shear on the bond, and a 2 g bump in shipping about **2.3 kPa** of tension (calculation). Against the ETA's design values, about 12 kPa in long-term shear and 150 kPa in tension (unverified: read from a search engine's extract of the ETA; the PDF itself wouldn't download, HOLD-B1), that's at least 10 times inside them, on top of the ETA's own safety factors. The bond's real strength is shown by coupons on the real skin, frame finish and process (section 6), not by a catalogue figure (guideline §8.2).
 4. **Mass: about 4.4 kg for the pod** (calculation: about 79 m of bead at 40 ml/m and 1.4 kg/l), 0.28 kg/m² against the 0.25 kg/m² the layout study assumed: **+0.5 kg** over its estimate.
 5. **HOLDs: 5** (section 7): the ETA text, Sika's OK for the in-line tape, the cure time before handling, the ACP's back-face coating and the frame's finish, and the coupon results.
@@ -64,7 +64,7 @@ Status words as in the joints register: numbers carry confirmed, source, calcula
 | Option | What | For | Against | Result |
 |---|---|---|---|---|
 | (a) | Sika's layout on a wider face: a 40 mm wide member, or a flange added to each member | Exactly Sika's system | Turns the frame 90° (only 20 deep, so the fill and the 81 mm stack change, D-16, D-42) or adds an angle to every member (weight) | Rejected |
-| (b) | **One bead centred on every member; 3 mm set by short tape pieces in line with the bead** | Fits the 20 mm face (bead 10 wide with 5 mm each side on a full face; about 4 mm with the corner radii); every member bonded; the skin stays supported at 400 mm (LAY LS-02); no weight added | Departs from "tape along the whole length", which Sika writes for panels hung on a vertical façade; here the panel lies flat on a table, and the tape only sets the thickness and stops the frame sliding | **PROPOSED**, with Sika's OK (HOLD-B2) and coupons C-1 to C-4 |
+| (b) | **One bead centred on every member; 3 mm set by short tape pieces in line with the bead** | Fits the 20 mm face (bead 10 wide with 5 mm each side on a full face; about 4 mm with the corner radii); every member bonded; the skin stays supported at 400 mm (LAY LS-02); no weight added | Departs from "tape along the whole length", which Sika writes for panels hung on a vertical façade; here the panel lies flat on a table, and the tape only sets the thickness and stops the frame sliding | **PROPOSED**, with Sika's OK (HOLD-B2) and the package's T09 coupons |
 | (c) | Tape on one member, bead on the next | Each fits alone | Only every second member is bonded (the tape is "not a structural component", TAPE), so the skin spans 800 mm between bond lines: waviness risk (LAY `stud_pitch_acp` 400 for flatness) | Rejected |
 | (d) | Structural acrylic foam tape alone, no liquid adhesive | Fits 20 mm; no cure wait | Not in the hardware selection; no data checked here; long-term load data for tapes are much lower than for silicone | Fallback only if Sika says no to (b); needs its own data |
 
@@ -75,7 +75,7 @@ Bond area per square metre of skin: one 12 mm joint per member at 400 mm gives 0
 | Load | Value | Stress in the bond | Against | Margin | Status |
 |---|---|---|---|---|---|
 | Skin's own weight, long term, in shear (walls) | 3.5 kg/m² × 9.81 = 34.3 N/m² (SEL A1, kg/m² calculation) | 34.3 / 0.030 = **1.14 kPa** | ETA design shear, about 12 kPa (unverified, HOLD-B1) | about 10 | calculation |
-| Skin's own weight on the ceiling, hanging in tension | 34.3 N/m² | **1.14 kPa** | ETA design tensile, about 150 kPa (unverified) | over 100 | calculation |
+| Skin's own weight on the ceiling | 34.3 N/m² | none in tension: the roof skin sits on top of its frame, so its weight presses the bond | — | — | calculation |
 | Shipping bump, 2 g, skin side up (joints register LC4) | 2 × 34.3 = 68.6 N/m² | **2.3 kPa** | 150 kPa (unverified) | about 65 | calculation |
 | Someone leaning on the wall (LC2) | pushes the skin onto the frame and fill | compression, no tension | — | — | — |
 | Temperature indoors | ±10 K (assumption) | The skin's faces are aluminium like the frame, so the two move almost together; the 450% elongation (TDS) takes any rest | — | — | assumption |
@@ -100,24 +100,23 @@ Flatness: the panel is bonded face down on a flat table with the skin's face as 
 11. Check every panel per GG Table 4; run the peel test at 72 h; record everything on the daily sheet (GG §10); label the panel with its bond date and batch.
 12. Fill and gaskets go in after the bond has passed (the fill isn't bonded).
 
-## 6. Coupon and sample tests
+## 6. Tests
 
-All PLANNED until done (guideline §10). Specimens use the production skin (back face as delivered), the production tube finish and the production pre-treatment (guideline §8.2: "Làm coupon trên đúng stack và quy trình sản xuất dự kiến", coupons on the real stack and process).
+All PLANNED until done (guideline §10). The sample package's numbers take precedence (joints register R-J12): the bond is tested in **T09** and its mass in **T10**, with T09's PM-ruled pass mark (cohesive failure: the bond breaks inside the adhesive, not at a surface). Specimens use the production skin (back face as delivered), the production tube finish and the production pre-treatment (guideline §8.2: "Làm coupon trên đúng stack và quy trình sản xuất dự kiến", coupons on the real stack and process).
 
 | Test | What | Specimens | Pass mark | When | Status |
 |---|---|---|---|---|---|
-| C-1 | Bead peel adhesion by Sika's method (GG §9.2; CQP033-3), on the skin's back face and on the tube face | 3 beads of 150 mm or more per substrate, cured 3–7 days in the factory climate | At least 95% cohesive failure on each substrate (GG §10 record) | Before the first panel; each new adhesive batch; each new skin or tube lot | PLANNED |
-| C-2 | Tension and shear coupons: a 12 × 3 × 50 mm joint between a skin strip and a tube offcut, made by the in-line-tape layout (B1) | 5 in tension and 5 in shear at 23 °C after 7 days; the same again after 7 days at 70 °C (assumption: indoor heat ageing) | Mean at least 6 × the ETA design value (assumption, pending HOLD-B1), no result below 4 ×, and at least 95% cohesive failure | Before the wall sample | PLANNED |
-| C-3 | Long-term load: shear coupons held at 10 × the skin's own-weight stress, 11.4 kPa (calculation) | 3 coupons, 500 h at 23 °C (assumption) | Slip 0.1 mm or less (assumption) | Alongside the wall sample | PLANNED |
-| C-4 | A whole outer panel bonded by the process sheet | 1 side panel, then it goes into the wall sample | Face flat within ±0.3 mm per metre (assumption); every bead 12 mm or wider where seen; tap test finds no unbonded length; bond mass weighed (section 2: at most about 0.49 kg for a side panel, 8.7 m of bead, calculation) | Wall sample | PLANNED |
-| C-5 | Cut-out after the wall sample's sound test | 300 mm of one bead | At least 95% cohesive failure | After the sound test | PLANNED |
+| QC-1 (process check, not a sample test) | Bead peel adhesion by Sika's method (GG §9.2; CQP033-3), on the skin's back face and on the tube face | 3 beads of 150 mm or more per substrate, cured 3–7 days in the factory climate | At least 95% cohesive failure on each substrate (GG §10 record) | Before the first panel; each new adhesive batch; each new skin or tube lot | PLANNED |
+| **T09** (package) | Lap-shear coupons on the skin's back face and the tube's real finish, laid out as section 2 (in-line tape, B1): 5 as cured and 5 after 7 days at 40 °C and 95% r.h. (the package's ageing screen); S1's skin flatness before T01; S1's skin cut off after its other tests to compare the bead coverage with the pattern | as the package gives | **The package's PM-ruled mark:** every coupon fails in the adhesive itself, and S1's bead coverage matches the pattern. The strengths are recorded against the ETA's design values (HOLD-B1), as information, not as a pass mark | Before the wall sample; S1 last | PLANNED |
+| **T10** (package) | Bond mass: S1 weighed before and after bonding | S1 | Recorded; this spec's figure is at most about 0.49 kg for a side panel (8.7 m of bead, calculation) | During the build | PLANNED |
+| Long-term hold (to route) | Shear coupons held at 10 × the skin's own-weight stress, 11.4 kPa (calculation), for the slow creep the guideline asks about (§8.2) | 3 coupons, 500 h at 23 °C (assumption) | Slip 0.1 mm or less (assumption) | Alongside the wall sample, if the PM adds it to the package | PLANNED, for the PM to route |
 
 ## 7. HOLD list
 
 | HOLD | What | Question (for the PM to send; we don't contact suppliers) | Releases when |
 |---|---|---|---|
 | HOLD-B1 | ETA 19/0511 design values and scope | Get the ETA PDF (ITeC or Sika) and confirm the design tensile and long-term shear values, the joint size and whether interior wall cladding is in its scope | ETA on file; section 4 re-checked |
-| HOLD-B2 | The in-line tape layout (B1) | To Sika: is SikaTack Panel-50 with Fixing Tape pieces in line with the bead, on a 20 mm aluminium face, bonded flat in a factory, acceptable? The tape's data sheet asks for "written approval of the corresponding project details by the Technical Department of Sika Industry" | Sika's written answer on file and C-2 passed |
-| HOLD-B3 | Cure time before handling, standing and shipping | To Sika: cure depth against time at 30 °C and 75% r.h. (the TDS diagram isn't readable as text) | Time set from Sika's data and C-1 |
+| HOLD-B2 | The in-line tape layout (B1) | To Sika: is SikaTack Panel-50 with Fixing Tape pieces in line with the bead, on a 20 mm aluminium face, bonded flat in a factory, acceptable, and on the ceiling's horizontal panels too, since the data sheet scopes Panel-50 to vertically installed sub-structures? The tape's data sheet asks for "written approval of the corresponding project details by the Technical Department of Sika Industry" | Sika's written answer on file and T09 passed |
+| HOLD-B3 | Cure time before handling, standing and shipping | To Sika: cure depth against time at 30 °C and 75% r.h. (the TDS diagram isn't readable as text) | Time set from Sika's data and the daily peel test (QC-1) |
 | HOLD-B4 | The skin's back-face coating and the frame's finish (ISS-034) | To the ACP maker (SEL supplier question 1): what is on the back face of Alcorest 3 mm × 0.21 mm? Then Sika's lab test on that face and on the chosen frame finish if either isn't in Sika's table | Coating and finish known; pre-treatment confirmed |
-| HOLD-B5 | Coupon results | None: tests C-1 to C-5 | Results recorded with method, date and role |
+| HOLD-B5 | Test results | None: QC-1, T09, T10 and the long-term hold | Results recorded with method, date and role |
