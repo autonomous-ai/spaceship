@@ -30,7 +30,7 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
    - The boost: 65 l/s at 29.7 dB(A), and 66 l/s at 30 dB(A) (target 30 or less at 65); 70 l/s would give 31.3 dB(A).
    - One person at 33 l/s hears about 15 dB(A).
    - Two people in a 600 ppm office: 796 ppm at 53 l/s with perfect mixing, 845 ppm at the PM's mixing effectiveness of 0.8. Holding 800 ppm at 0.8 takes about 65 l/s, which is the boost. The supply leaves low at the front-right and the exhaust high at the far end of the soffit, 2.9 m apart, which should mix better than 0.8.
-   - Heat: with ELECTRICAL's loads (PR #64: the light shelf and call light, the hub, the supplies' losses and the supply fans), two people need 53 l/s to stay within 4 K of the room and one person 31 l/s, so the 53 l/s normal flow sits right at the heat limit and one person needs more than the 26 l/s floor (D-44). With the voice kit fitted at its full 60 W reserve plus 12 W of supply loss, 4 K needs 69 l/s, over the 65 l/s that the 30 dB(A) boost reaches: 4.2 K at the boost.
+   - Heat: with ELECTRICAL's loads (PR #64: the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans), two people put 249 W into the air, 3.9 K over the room at the 53 l/s normal flow; 4 K needs 51 l/s, and one person 29 l/s, more than the 26 l/s floor (D-44). With the voice kit fitted at its 40 W average budget plus 8.2 W of supply loss (D-88), 4 K needs 62 l/s (28.7 dB(A)), inside the 65 l/s that the 30 dB(A) boost reaches: 3.8 K at the boost. Its 60 W peak stays on the hook.
 7. **Corrections in this fix pass:**
    - The 5c1003b fans were 6 kg S&P TD-500s loose in the decor cavity. Their own casings radiate 44 dB(A), which the old model left out. With it, that design gives 35.8 dB(A) at 53 l/s. They also don't fit: the decor is 205 mm deep (measured from v1), not 230–235.
    - Four 12 V fans at about 0.3 kg each replace them. That saves about 11 kg, which pays for the bigger cartridges and the exhaust riser.
@@ -311,17 +311,17 @@ Inside volume 8.35 m3; CO2 from 2 people 10.4 ml/s. The last column uses a mixin
 
 | Fresh air l/s | Air changes /h | Minutes per change | CO2 rise ppm | CO2 ppm, room 400 | CO2 ppm, room 600 | Minutes to 95% | Heat rise K | Heat rise K with voice kit | CO2 ppm, room 600, mixing 0.8 |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 26 | 11 | 5.4 | 400 | 800 | 1000 | 16 | 8.0 | 10.3 | 1100 |
-| 40 | 17 | 3.5 | 260 | 660 | 860 | 10 | 5.3 | 6.7 | 925 |
-| 53 | 23 | 2.6 | 196 | 596 | 796 | 8 | 4.0 | 5.1 | 845 |
-| 70 | 30 | 2.0 | 149 | 549 | 749 | 6 | 3.1 | 4.0 | 786 |
+| 26 | 11 | 5.4 | 400 | 800 | 1000 | 16 | 7.8 | 9.3 | 1100 |
+| 40 | 17 | 3.5 | 260 | 660 | 860 | 10 | 5.1 | 6.1 | 925 |
+| 53 | 23 | 2.6 | 196 | 596 | 796 | 8 | 3.9 | 4.6 | 845 |
+| 70 | 30 | 2.0 | 149 | 549 | 749 | 6 | 3.0 | 3.6 | 786 |
 
-Heat into the air at 53 l/s: two people 257 W, with the voice kit 329 W (people and laptops, the light shelf and call light, the hub, the supplies' losses and the supply fans; ELECTRICAL, PR #64).
-Flow that keeps the inside 4 K or less over the room: one person 31 l/s, two people 53 l/s, two with the voice-kit reserve 69 l/s. One person at the 26 l/s floor (D-44), room 600, mixing 0.8: 850 ppm.
+Heat into the air at 53 l/s: two people 249 W, with the voice kit at its 40 W average (D-88) 297 W (people and laptops, the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans; ELECTRICAL, PR #64).
+Flow that keeps the inside 4 K or less over the room: one person 29 l/s, two people 51 l/s, two with the voice kit 62 l/s. One person at the 26 l/s floor (D-44), room 600, mixing 0.8: 850 ppm.
 CO2 after 2 h at 40 l/s from 400 ppm (room 400): 660 ppm; after 3 h at 26 l/s, room 600: 1000 ppm.
 
 - 800 ppm needs 26 l/s **only when the room air is at outdoor CO2 (400 ppm)** and the air is perfectly mixed. In a 600 ppm office two people need about 52 l/s with perfect mixing, and about 65 l/s at the mixing effectiveness of 0.8 the PM set (ruling 8).
-- **Heat also drives the fans (D-44, D-50):** the inside stays at most 4 K over the room. With ELECTRICAL's loads (PR #64) that takes 53 l/s for two people (25.4 dB(A)) and 31 l/s for one person. With the voice kit fitted at its full 60 W reserve and its 12 W supply loss it takes 69 l/s, about 31.1 dB(A), over the 30 dB(A) boost; at the 65 l/s boost the inside is 4.2 K over the room. The kit's real draw, measured when it exists, settles this.
+- **Heat also drives the fans (D-44, D-50):** the inside stays at most 4 K over the room. With ELECTRICAL's loads (PR #64) that takes 51 l/s for two people and 29 l/s for one person, so the 53 l/s normal flow holds it (3.9 K). With the voice kit fitted, at its 40 W average budget and 8.2 W of supply loss (D-88), it takes 62 l/s, about 28.7 dB(A), inside the 30 dB(A) boost; at the 65 l/s boost the inside is 3.83 K over the room. The kit's measured draw settles it when the kit exists.
 - **Control (D-44):** CO2 leads, with a floor of 26 l/s while one person is inside. Temperature can raise the flow. 53 l/s for two, and a boost of up to 65 l/s inside 30 dB(A).
 - **Supply low, exhaust high (D-60, DECIDED):** the supply leaves through a kick grille at the foot of the air column in the front-right corner, so the cool room air spreads across the floor. The exhaust grille sits in the soffit's underside at its far end, above the door's hinge side, 2.9 m away, and takes the warm, stale air out. That should mix better than the 0.8 used here.
 
@@ -499,7 +499,7 @@ How it's checked:
 ## 8. Hooks for the later voice cockpit kit
 
 Mic array, speakers, screen and status light. Reserved here; the kit itself isn't designed.
-- **Power:** 12 V 5 A (60 W) on the 12 V bus (D-11), the same as the layout study, plus about 12 W of supply loss (ELECTRICAL). Both are in the heat figures above (+0.9 K at 70 l/s).
+- **Power:** 12 V 5 A (60 W) peak on the 12 V bus (D-11), with a 40 W average budget (D-88) and about 8.2 W of supply loss at that average (ELECTRICAL). The average is in the heat figures above (+0.6 K at 70 l/s).
 - **Cable path:** the 25 mm gap inside each lining cassette carries cables behind the felt without touching the outer wall. Cassettes lift off with no tools. The ceiling cassettes link the back wall to the soffit (D-60), and the air column's cable chase carries the sensor hub's cables.
 - **Mounting points:** M6 rivnuts in the 20 × 40 aluminium members, one bolt size, at positions the Layout Engineer fixes. The screen goes on the back wall and the status light on the front decor top block.
 - **Sound:** speakers and mics mount on the lining cassette, never through the ACP skin. A hole through the outer leaf would be a new leak, about 0.1 dB for a 28 mm hole. The 26 dB(A) fan target also helps the mic array.

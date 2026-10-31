@@ -357,7 +357,9 @@ def test_repo_pod_mass_from_the_newest_list_without_double_counting():
     else:
         # the older list: 426.73 + 11.8 air + 3.4 wall trays - 12.6 floor (D-71)
         assert info["total_kg"] == pytest.approx(429.33, abs=0.01)
-    assert fs and fs[0].rule == "pod-mass-over-cap"
+    # a finding exactly when the total is over the cap
+    assert bool(fs) == (info["total_kg"] > info["cap_kg"])
+    assert all(f.rule == "pod-mass-over-cap" for f in fs)
 
 
 def test_skip_rules_use_whole_words_and_their_own_columns(tmp_path):

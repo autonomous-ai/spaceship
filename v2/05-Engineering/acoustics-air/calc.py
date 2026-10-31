@@ -963,16 +963,17 @@ AIR = dict(
     room_ppm=(400.0, 600.0),    # BRIEF uses 400 (outdoor); 600 = typical occupied office (ASSUME)
     sensible_w_person=75.0,     # ASSUME seated office work
     laptop_w=30.0,              # ASSUME per person
-    lights_w=26.6,              # ELECTRICAL load table LD05 (PR #64): the light shelf, 4.434 m of Haefele Loox5 2168 strip
-                                # at 6.0 W/m (calculation, maker data; D-70 replaced the 6 ceiling lights of 15 W)
-    call_light_w=2.7,           # ELECTRICAL LD04: the call light, 0.9 m of Loox5 2165 strip at 3.0 W/m (D-70 dropped the 6 W
-                                # front light)
+    lights_w=9.7,               # ELECTRICAL load table LD05 (PR #64, 1b219fb): the shelf uplight in the work scene, 4.434 m of
+                                # Haefele Loox5 2168 strip dimmed to 71.5 % (PM heat request; 26.6 W at full)
+    down_light_w=12.3,          # ELECTRICAL LD08: the down-light under the right-wall shelf, 2 rows x 1.026 m of Loox5 2168
+    call_light_w=0.0,           # ELECTRICAL LD04: the call light is off in the work scene (2.7 W in the call scene)
     controls_w=3.0,             # ELECTRICAL LD03: the sensor hub, typical (assumption, ISS-060)
-    supply_loss_w=9.9,          # ELECTRICAL calc-results: the three 60 W Class 2 supplies' losses at the typical load, in B2
+    supply_loss_w=8.4,          # ELECTRICAL calc-results section 4: the three Class 2 supplies' losses at the 33.9 W typical
+                                # load, in the power unit in B2
     supply_fan_w_max=6.6,       # ELECTRICAL LD01: each supply fan at full speed (unverified: the maker figure from retailer
                                 # copies); the exhaust fans' heat leaves with the exhaust air
-    voice_kit_w=60.0,           # reserve for the later voice cockpit kit: ASSUME, same as the layout study
-    voice_kit_loss_w=12.0,      # ELECTRICAL: the kit's supply loss when it is fitted
+    voice_kit_w=40.0,           # the later voice cockpit kit's average power budget (D-88); its 60 W peak stays on the hook
+    voice_kit_loss_w=8.2,       # its supply's loss at the 40 W average (ELECTRICAL calc-results section 4, calculation)
 )
 SYS_K = 7.5   # ASSUME: entry 0.5 + outside slot grille 2.0 + inside diffuser 2.0 + exit 1.0 + splitter 2.0
 # The plan's Panasonic FV-15AUL1 has no published curve and its manual forbids ceiling mounting (HW): not used.
@@ -1007,9 +1008,10 @@ def supply_fan_w(q_ls):
 
 
 def heat_w(people, kit=False, q_ls=53.0):
-    """Heat into the pod's air, W: people and laptops, the light shelf and call light, the hub, the supplies' losses and
-    the supply fans (ELECTRICAL, PR #64), and the voice kit with its supply loss when fitted."""
-    return (people * (AIR["sensible_w_person"] + AIR["laptop_w"]) + AIR["lights_w"] + AIR["call_light_w"]
+    """Heat into the pod's air, W: people and laptops, the lights in the work scene (the shelf uplight and the down-light),
+    the hub, the supplies' losses and the supply fans (ELECTRICAL, PR #64), and the voice kit with its supply loss when
+    fitted."""
+    return (people * (AIR["sensible_w_person"] + AIR["laptop_w"]) + AIR["lights_w"] + AIR["down_light_w"] + AIR["call_light_w"]
             + AIR["controls_w"] + AIR["supply_loss_w"] + supply_fan_w(q_ls)
             + (AIR["voice_kit_w"] + AIR["voice_kit_loss_w"] if kit else 0.0))
 
@@ -1626,11 +1628,12 @@ def t_air():
                         f"{t95:.0f}", f"{dt:.1f}", f"{dtk:.1f}", f"{600 + rise / MIX_EFF:.0f}"]))
     one = 600 + AIR["co2_per_person_ls"] / 26.0 * 1e6 / MIX_EFF
     out.append("")
-    out.append(f"Heat into the air at 53 l/s: two people {heat_w(2):.0f} W, with the voice kit {heat_w(2, True):.0f} W "
-               "(people and laptops, the light shelf and call light, the hub, the supplies' losses and the supply fans; "
+    out.append(f"Heat into the air at 53 l/s: two people {heat_w(2):.0f} W, with the voice kit at its 40 W average (D-88) "
+               f"{heat_w(2, True):.0f} W "
+               "(people and laptops, the work scene's 22 W of lights, the hub, the supplies' losses and the supply fans; "
                "ELECTRICAL, PR #64).")
     out.append(f"Flow that keeps the inside 4 K or less over the room: one person {flow_for_dt(1):.0f} l/s, two people "
-               f"{flow_for_dt(2):.0f} l/s, two with the voice-kit reserve {flow_for_dt(2, True):.0f} l/s. One person at the "
+               f"{flow_for_dt(2):.0f} l/s, two with the voice kit {flow_for_dt(2, True):.0f} l/s. One person at the "
                f"26 l/s floor (D-44), room 600, mixing 0.8: {one:.0f} ppm.")
     out.append(f"CO2 after 2 h at 40 l/s from 400 ppm (room 400): {co2_after(40, 120, 400, 400):.0f} ppm; "
                f"after 3 h at 26 l/s, room 600: {co2_after(26, 180, 600, 600):.0f} ppm.")
