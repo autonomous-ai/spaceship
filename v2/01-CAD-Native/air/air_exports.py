@@ -9,7 +9,8 @@ Writes into v2/03-Manufacturing/air/:
   box fitted, the column, two cartridges, the supply fan box joined with the riser);
 - 1:1 mm DXF cut files for the flat parts (plates, rails, the ACP + felt faces with their
   openings), seen from the face's outside, origin at the part's lower left corner;
-- a flat cut list for the knife-cut fill and absorbent pieces (D-89: no drawing needed).
+- size and tolerance in every parts-list row (a parts-list row is the cut list, PM ruling
+  2026-11-01; D-89 part 4: flat sheet parts on their DXF and row, ISO 2768-m).
 
 Folded parts (cartridge casings, fan box casings, riser, sleeve) get their sizes and wall in
 the parts list; their blanks wait for the factory's bend tables (HOLD).
@@ -181,6 +182,35 @@ def flat_cut_list(v):
     return rows
 
 
+FLAT = {"col_foot", "col_side_lo", "col_side_hi", "sof_rail_d", "sof_rail_r", "sof_end", "sof_door", "kick", "egrille",
+        "rgrille"}
+SOFT = {"col_fill", "sof_fill", "layer"}
+MAKER = {"fan": ("Noctua", "NF-A14 industrialPPC-3000 PWM")}
+
+
+def size_tol(v, key):
+    """(size, tolerance) for a made part's row, from its layout bodies."""
+    L = boxes(v)
+    names = [n for n, (k, _b) in ((n, (k, b)) for k, n, b in A.layout()) if k == key]
+    if key == "layer":
+        return "%.0f x %.0f x %.0f" % (v["cart_l"], v["cart_w"] - 2 * v["cart_t"], v["lay_t"]), "knife cut +/-2 (assumption)"
+    if key == "casing":
+        return "%.0f x %.0f x %.0f, %.0f wall" % (v["cart_w"], v["cart_d"], v["cart_l"], v["cart_t"]), "ISO 2768-m; folded"
+    if not names:
+        return "", ""
+    parts = []
+    for n in names:
+        b = L[n]
+        d = sorted((b[1] - b[0], b[3] - b[2], b[5] - b[4]), reverse=True)
+        parts.append("%.1f x %.1f x %.1f" % tuple(d))
+    size = "; ".join(sorted(set(parts)))
+    if key in SOFT:
+        return size, "knife cut +/-2 (assumption); a plain piece, no drawing (D-89)"
+    if key in FLAT:
+        return size, "ISO 2768-m; flat cut part, no drawing: its DXF is the outline (D-89 part 4)"
+    return size, "ISO 2768-m; see the drawing"
+
+
 def parts_list(v, mass):
     per = {}
 
@@ -214,17 +244,22 @@ def parts_list(v, mass):
             # one entry per body: a part's mass is the sum over its bodies in one occurrence
             each = (sum(m) / max(1, qty_pod(key))) if m else None
             mass_txt, mstat = ("%.3f" % each if each is not None else ""), "calculation (Fusion, CAD geometry x density)"
+        size, tol = size_tol(v, pkey) if kind == "MP" else ("", "")
+        maker, sku = MAKER.get(pkey, ("HOLD", "HOLD: chosen at the RFQ") if kind == "HOLD" else ("", ""))
         r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": A.PARTS[parent][0] if parent else "",
              "qty_per_parent": q, "qty_per_pod": qty_pod(key), "material": A.MATERIALS[mat][0] if mat else "",
-             "finish": FINISH.get(key, ""), "process": PROCESS.get(key, ""), "mass_each_kg": mass_txt,
+             "finish": FINISH.get(key, ""), "process": PROCESS.get(key, ""), "maker": maker, "sku": sku,
+             "torque": "", "size_mm": size, "tolerance": tol, "mass_each_kg": mass_txt,
              "mass_status": mstat, "revision": REV, "status": "HOLD" if kind == "HOLD" or pkey == "fan" else "DRAFT",
              "source": src}
         rows.append(r)
         by_key[key] = r
     hp = A.HARDWARE["lock"]
     rows.append({"part_number": hp[0], "name": hp[1], "name_vi": hp[2], "kind": "PI", "parent": A.PARTS["soffit"][0],
-                 "qty_per_parent": hp[3], "qty_per_pod": hp[3], "material": "steel 8.8", "finish": "zinc plated",
-                 "process": "", "mass_each_kg": "%.4f" % hp[4], "mass_status": "calculation (joints register sizes)",
+                 "qty_per_parent": hp[3], "qty_per_pod": hp[3], "material": "steel, property class 8.8 (ISO 898-1)",
+                 "finish": "zinc plated", "process": "", "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
+                 "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated", "torque": "snug only, into C1's rivnuts (HOLD-01 for the rivnut)",
+                 "size_mm": "", "tolerance": "", "mass_each_kg": "%.4f" % hp[4], "mass_status": "calculation (joints register sizes)",
                  "revision": REV, "status": "DRAFT",
                  "source": "PM ruling 2026-11-01: two captive lock screws, the 5 mm key; captive retainer HOLD (joints register, D-63)"})
     by_key["lock"] = rows[-1]
@@ -256,7 +291,7 @@ def main(argv):
     for k, p in sorted(write_dxfs(v).items()):
         s = D.summary(p)
         print("DXF", os.path.basename(p), "extents", [round(x, 2) for x in s["extents"]])
-    for name, rows in (("PARTS-LIST", parts_list(v, mass)), ("FLAT-CUT-LIST", flat_cut_list(v))):
+    for name, rows in (("PARTS-LIST", parts_list(v, mass)),):
         p = os.path.join(OUT, "610000_%s_AIR-%s_BOM.csv" % (REV, name))
         with open(p, "w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
