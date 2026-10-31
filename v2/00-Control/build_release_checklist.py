@@ -546,6 +546,14 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
     if gap_count:
         out += ["", "What the open made numbers miss: " + ", ".join(f"{g} {n}" for g, n in
                                                                   sorted(gap_count.items(), key=lambda x: -x[1])) + "."]
+    no_fai = [r for r in um if not r["fai"]]
+    out += ["", "## Made parts with no FAI line", ""]
+    if no_fai:
+        out += [f"{len(no_fai)} made numbers have no line in the FAI plan (`v2/06-Verification/fai-plan.md`) yet:", "",
+                "| Team | Part | Name | From |", "|---|---|---|---|"]
+        out += [f"| {r['team']} | {r['part_number'] or '(no number)'} | {r['name']} | {', '.join(sorted(r['from']))} |" for r in no_fai]
+    else:
+        out += ["Every made number has at least one line in the FAI plan (`v2/06-Verification/fai-plan.md`)."]
     out += ["", "## Made parts and assemblies", ""]
     for t in teams:
         m = [r for r in made if r["team"] == t]
