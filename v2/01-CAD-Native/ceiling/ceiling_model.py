@@ -76,16 +76,8 @@ CEILING_PARAMS = [
     ("spig_hole", "8.5 mm", "mm", "confirmed", "R-J13: spigot hole 8.5, round at one end of the edge, an 8.5 x 14 slot along it at the other"),
     ("spig_slot", "14 mm", "mm", "confirmed", "R-J13: the spigot slot's length along the edge (+/-2.75 of travel for the 8 mm spigot)"),
     ("lead_in", "1 mm", "mm", "confirmed", "R-J9 (joints register 2.10): 1 x 45 deg lead-in on the lower edges of the C1-C2 faces, so C2 drops past C1 without catching the seal"),
-    ("cj_side_y0", "pod_d / 2 - wall_depth + bolt_edge_inset", "mm", "confirmed",
-     "PM ruling 2026-10-31 (the register owns the bolt lines): J-CEIL-01 side edges run along the ceiling from its front end, first bolt 220 in (Y -425; joints register 2.9)"),
-    ("cj_side_pitch", "(wall_depth - 2 * bolt_edge_inset) / (n_ceil_side_bolt - 1)", "mm", "calculation",
-     "J-CEIL-01 side edges along the ceiling's 1495: 351.67 (joints register 2.9)"),
-    ("cj_back_n", "4", "", "confirmed",
-     "PM correction 2026-10-31: 4 bolts per back panel, as the joints register 3.5 (16 on the ceiling's edges); the skeleton's n_ceil_back_bolt (3) is being corrected"),
-    ("cj_back_x0", "close_gap / 2 + bolt_edge_inset", "mm", "calculation",
-     "J-CEIL-01 back edges on the frame (PM ruling 2026-10-31): first bolt 220 in from the frame's centre-seam end (|X| 222.75; joints register 2.9)"),
-    ("cj_back_pitch", "(half_fw - 2 * bolt_edge_inset) / (cj_back_n - 1)", "mm", "calculation",
-     "J-CEIL-01 back edges along the 1198.99 frame: 253.00 (joints register 2.9)"),
+    # J-CEIL-01's counts, start points and pitches are the skeleton's named values (v4, PR #94):
+    # n_ceil_side_bolt, n_ceil_back_bolt, ceil_side_y0, ceil_side_pitch, ceil_back_x0, ceil_back_pitch
     ("cj_back_y", "pod_d / 2 - outer_t + frame_t / 2", "mm", "confirmed",
      "R-J15 (joints register 2.4): the back edges' bolt line on the back panel's top tube centre (Y +824)"),
     ("cj_pin_n", "4", "", "confirmed", "J-CEIL-02 (joints register 3.6): 4 pins at the 220 mm rule along the C1-C2 seam"),
@@ -210,7 +202,7 @@ HARDWARE = {
                "PI", "pc", "0", "cj_pin_n", 0.0079,
                "calculation: head 10 x 6 less the socket, shank 6 x 25 at 85% for the thread, steel 7850 kg/m3"),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6",
-               "PI", "pc", "cj_back_n + 4", "cj_back_n + cj_pin_n + 2", 0.0023,
+               "PI", "pc", "n_ceil_back_bolt + 4", "n_ceil_back_bolt + cj_pin_n + 2", 0.0023,
                "calculation: body 9.5 x 14.86 with an M6 bore and a 12.96 x 0.76 head (SHX sizes), 2700 kg/m3"),
     "washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", "Long đen to M6 inox",
                "PI", "pc", "n_ceil_side_bolt", "n_ceil_side_bolt + cj_pin_n", 0.0028,
@@ -219,7 +211,7 @@ HARDWARE = {
                  "HOLD", "pc", "n_ceil_side_bolt", "n_ceil_side_bolt", 0.001,
                  "assumption: a small grommet; part not chosen (HOLD-02)"),
     "stopw": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm",
-              "MP", "pc", "cj_back_n", "cj_back_n", 0.0009, "calculation: 10.5 x 20 x 1.5, 2700 kg/m3"),
+              "MP", "pc", "n_ceil_back_bolt", "n_ceil_back_bolt", 0.0009, "calculation: 10.5 x 20 x 1.5, 2700 kg/m3"),
     "gasket": ("848001", "SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA", "Gioăng mối nối 3.97",
                "PI", "m", "half_fw / 1000 mm", "half_fw / 1000 mm", 0.0076,
                "calculation: per metre, 8 x 3.97 at 240 kg/m3 (assumption for the foam's density)"),
@@ -367,18 +359,21 @@ def joint_holes(half):
     side_x_in = "%s(close_gap / 2 + half_fw - tube_w)" % ("-" if s < 0 else "")
     seam_x_out = "%s(close_gap / 2)" % ("-" if s < 0 else "")
     seam_x_in = "%s(close_gap / 2 + tube_w)" % ("-" if s < 0 else "")
-    ys = "cj_side_y0"
+    ys = "ceil_side_y0 + bolt_edge_inset"
     rows = [
-        ("SIDE BOLT CLEARANCE", "SIDE", "out", (side_x_out, ys, zc), "hole_clr", "n_ceil_side_bolt", "cj_side_pitch", "y"),
-        ("SIDE BOLT ACCESS", "SIDE", "in", (side_x_in, ys, zc), "hole_acc", "n_ceil_side_bolt", "cj_side_pitch", "y"),
+        ("SIDE BOLT CLEARANCE", "SIDE", "out", (side_x_out, ys, zc), "hole_clr", "n_ceil_side_bolt", "ceil_side_pitch", "y"),
+        ("SIDE BOLT ACCESS", "SIDE", "in", (side_x_in, ys, zc), "hole_acc", "n_ceil_side_bolt", "ceil_side_pitch", "y"),
     ]
     if s < 0:
         rows.append(("SEAM PIN CLEARANCE", "SEAM", "out", (seam_x_out, ys, zc), "hole_clr", "cj_pin_n", "cj_pin_pitch", "y"))
     else:
         rows.append(("SEAM PIN RIVNUT", "SEAM", "out", (seam_x_out, ys, zc), "hole_rvn", "cj_pin_n", "cj_pin_pitch", "y"))
         rows.append(("SEAM PIN ACCESS", "SEAM", "in", (seam_x_in, ys, zc), "hole_acc", "cj_pin_n", "cj_pin_pitch", "y"))
-    bx0 = "-(close_gap / 2 + half_fw - bolt_edge_inset)" if s < 0 else "cj_back_x0"
-    rows.append(("BACK RIVNUT", "BACK", "bottom", (bx0, "cj_back_y", ZF0), "hole_rvn", "cj_back_n", "cj_back_pitch", "x"))
+    # the skeleton's back lines start at each frame's outer end (X -/+ ceil_back_x0), first bolt
+    # bolt_edge_inset in; a row here starts at its lowest X and runs toward +X
+    bx0 = "-(ceil_back_x0 - bolt_edge_inset)" if s < 0 else \
+        "(ceil_back_x0 - bolt_edge_inset - (n_ceil_back_bolt - 1) * ceil_back_pitch)"
+    rows.append(("BACK RIVNUT", "BACK", "bottom", (bx0, "cj_back_y", ZF0), "hole_rvn", "n_ceil_back_bolt", "ceil_back_pitch", "x"))
     rows.append(("BACK SPIGOT ROUND", "BACK", "bottom", ("%scj_spig_x0" % ("-" if s < 0 else ""), "cj_back_y", ZF0),
                  "spig_hole", "1", "0 mm", "x"))
     hx = "%shang_x" % ("-" if s < 0 else "")
@@ -552,7 +547,7 @@ if __name__ == "__main__":
     p = all_params()
     v = evaluate(p)
     for n in ("half_pw", "half_fw", "fr_pitch", "cs_w", "cs_d", "gap_h", "rib_off", "fill_hw", "inner_w",
-              "cj_side_y0", "cj_side_pitch", "cj_back_x0", "cj_back_pitch", "cj_back_y", "ceil_bolt_z"):
+              "ceil_side_y0", "ceil_side_pitch", "ceil_back_x0", "ceil_back_pitch", "cj_back_y", "ceil_bolt_z"):
         print(n, round(v[n], 3))
     print(tray_flat(v))
     for half in ("C1", "C2"):
