@@ -35,7 +35,8 @@ GAPS = [
     ("kick strip to the fixed glass channel", "KICK STRIP", "GLAZING U-PROFILE"),
     ("door leaf to DR's skin", "DOOR LEAF GLASS 4+4", "DR SKIN ACP 3"),
     ("door leaf top to DT's skin (the catch gap, 6 by ruling)", "DOOR LEAF GLASS 4+4", "DT SKIN ACP 3"),
-    ("catch to the strike (0 = the door stop touches)", "CATCH HT-MSG62", "CATCH STRIKE HT-MSG62"),
+    ("catch to the strike (0 = the door stop touches)", "CATCH HT-MSG62",
+     ("FRONT - DOOR STRIKE", "CATCH STRIKE HT-MSG62")),      # D-104 name, or the build before it
     ("catch to the door leaf", "CATCH HT-MSG62", "DOOR LEAF GLASS 4+4"),
     ("top seal to the door leaf (0 = sealing)", "FRAME-STOP SEAL PS 1515 - TOP", "DOOR LEAF GLASS 4+4"),
     ("hinge-side seal to the door leaf (0 = sealing)", "FRAME-STOP SEAL PS 1515 - HINGE SIDE", "DOOR LEAF GLASS 4+4"),

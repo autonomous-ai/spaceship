@@ -133,7 +133,8 @@ PARTS = {
     "H1": ("368101", "FRONT - DOOR HINGE - HOLD - H1 BOTTOM", "Bản lề cửa dưới (chờ chọn)"),
     "H2": ("368101", "FRONT - DOOR HINGE - HOLD - H2 MIDDLE", "Bản lề cửa giữa (chờ chọn)"),
     "H3": ("368101", "FRONT - DOOR HINGE - HOLD - H3 TOP", "Bản lề cửa trên (chờ chọn)"),
-    "STRIKE": ("368102", "FRONT - DOOR STRIKE", "Bát hít cửa"),
+    # D-104: the strike body is a stand-in (its own clip over the leaf's top edge is the overlap), so ENVELOPE
+    "STRIKE": ("368102", "FRONT - DOOR STRIKE - ENVELOPE", "Đế hít cửa"),
     "MSEAL": ("368006", "FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)"),
     "PULL": ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)"),
 }
@@ -256,7 +257,7 @@ def build(app):
         sx1 = "(%s - st_end)" % latch_x("leaf_zt")
         bodies["STRIKE"] = L.box_body(design, c, "STRIKE", ("%s - st_l" % sx1, sx1),
                                       ("-glass_y - st_a / 2", "-glass_y + st_a / 2"), ("leaf_zt - st_h", "leaf_zt + st_top"),
-                                      "CATCH STRIKE HT-MSG62-U10")
+                                      "FRONT - DOOR STRIKE - ENVELOPE")
     if want("MSEAL"):
         c = comp("MSEAL")
         dx = lambda z: "((fg_lc + ms_w - fg_lnz * (%s)) / fg_lnx)" % z
