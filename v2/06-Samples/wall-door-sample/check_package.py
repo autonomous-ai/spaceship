@@ -1,8 +1,8 @@
 """Check the wall and door sample package. Run from this folder: python3 check_package.py
 
 - the parts list's Status cells use only the five status words: confirmed, source, calculation, assumption, unverified;
-- every decision (D-nn), requirement (REQ-...), issue (ISS-nnn) and layout study item (LS-nn) the package cites exists,
-  in the files on this branch or in the control pack's PR #19 (PENDING below, not merged when this was written);
+- every decision (D-nn), requirement (REQ-...), issue (ISS-nnn) and layout study item (LS-nn) the package cites exists
+  in the control pack and the layout study on this branch;
 - every test names items the build list defines and HOLDs the HOLD list has, and stays PLANNED or HOLD (guideline §10);
 - every part, HOLD and drawing ID cited anywhere is defined in its own list, and nothing reads like a price.
 Exits with 1 and a list of problems if any check fails.
@@ -16,7 +16,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 V2 = os.path.normpath(os.path.join(HERE, "..", ".."))
 FILES = ("README.md", "build-list.md", "parts-list.md", "test-plan.md", "hold-list.md", "drawings-needed.md")
 STATUS_WORDS = {"confirmed", "source", "calculation", "assumption", "unverified"}
-PENDING = {f"D-{n}" for n in range(49, 60)} | {f"ISS-{n:03d}" for n in range(74, 81)}   # PR #19: D-49 to D-59, ISS-074 to ISS-080
 
 
 def read(path):
@@ -47,9 +46,8 @@ def main():
         known |= {r[0] for r in csv.reader(f) if r and r[0].startswith("ISS-")}
     known |= set(re.findall(r"^\| (LS-\d\d) \|", read(os.path.join(V2, "05-Engineering", "layout-study", "report.md")), re.M))
     for ref in sorted(set(re.findall(r"\b(?:D-\d\d|REQ-[A-Z]+-\d\d|ISS-\d{3}|LS-\d\d)\b", every))):
-        if ref not in known and ref not in PENDING:
+        if ref not in known:
             bad.append(f"cited but not found: {ref}")
-    pending = sorted({r for r in re.findall(r"\b(?:D-\d\d|ISS-\d{3})\b", every)} & (PENDING - known))
 
     # the package's own IDs
     parts = {r[0] for r in table_rows(docs["parts-list.md"], r"P\d\d[A-Z]?")}
@@ -97,7 +95,7 @@ def main():
         print("NOT OK:\n  " + "\n  ".join(bad))
         sys.exit(1)
     print(f"OK: {len(parts)} parts, {len(tests)} tests, {len(holds)} HOLDs, {len(drawings)} drawings, {len(items)} items and rigs; "
-          f"every citation found ({len(pending)} only in the control pack's PR #19: {', '.join(pending)}).")
+          "every cited decision, requirement, issue and layout study item exists.")
 
 
 if __name__ == "__main__":

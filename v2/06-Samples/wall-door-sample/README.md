@@ -35,13 +35,13 @@ Nothing here is released for production. Every physical test stays PLANNED until
 
 | Key | Source |
 |---|---|
-| LS | Layout study, `v2/05-Engineering/layout-study/`, as updated by PR #20 (revision 16ea081): part sizes, weights, joint counts, assembly times |
+| LS | Layout study, `v2/05-Engineering/layout-study/`, as updated by PR #20 (revision d2662a9): part sizes, weights, joint counts, assembly times |
 | HW-SEL | Hardware selection, `v2/05-Engineering/hardware/selection.md` (PR #11, merged): products, interface data, clip loads, sample tests |
 | HW-AA | Sound and air check, `v2/05-Engineering/acoustics-air/report.md` and `calc.py` (PR #11, merged): stack, R per band, felt data, fan duty, noise |
 | SKL | Pod skeleton P03, `v2/01-CAD-Native/skeleton/BUILD-RECORD.md` and its parameter register: envelopes |
-| DL | Decision log, `v2/00-Control/decision-log.md`. D-01 to D-48 are merged; D-49 to D-58 come from the control pack's PR #19, which wasn't merged when this was written |
+| DL | Decision log, `v2/00-Control/decision-log.md`, D-01 to D-59 (the control pack's PR #19 added D-49 to D-59) |
 | REQ | Requirements, `v2/00-Control/requirements.md` |
-| ISS | Issue register, `v2/00-Control/issue-register.csv`. ISS-074 to ISS-080 come from PR #19 |
+| ISS | Issue register, `v2/00-Control/issue-register.csv` (PR #19 added ISS-074 to ISS-080) |
 | GL | Engineering guideline, `docs/engineering-guideline.md` |
 
 Every number in a table carries one of the five status words: confirmed, source, calculation, assumption or unverified. A value the PM decided is confirmed and cites its decision. Test results don't exist yet, so nothing here is "measured" (conventions §9).
