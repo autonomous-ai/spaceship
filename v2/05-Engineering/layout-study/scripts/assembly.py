@@ -111,8 +111,9 @@ def sequence(split, m, parts, split_long, n_std, n_long):
     b, c, tb = fix(("J-FRONT-01", "J-FRONT-03", "J-AIR-02"))
     air = sum(pt.qty for pt in parts if pt.pid.startswith(("A-CART", "A-RISER")))
     steps.append(dict(name="Decor blocks (skins on, factory-made): left door post, right, then top"
-                      + (f"; then {air} air parts slid into the right block from inside through its felt-covered access panel: "
-                         "the supply and exhaust cartridges with their 12 V fans fitted, and the exhaust riser between them" if air else ""),
+                      + (f"; then {air} air parts slid into the right block from inside, with its removable felt-covered inner panel off: "
+                         "the supply and exhaust cartridges with their 12 V fans fitted, and the exhaust riser between them; the panel, "
+                         "carrying both grilles, goes back on" if air else ""),
                       lifts=n + air, bolts=b, cams=c, two=two + air * 120, one=one + tb,
                       access="Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips."))
     pre = m.get("prehung")
