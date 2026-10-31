@@ -282,7 +282,9 @@ def frame_members():
     xs = "(%s - dr_skin_t)" % XR
     fac_pts = [FL.meet(f3, FL.line(1, 0, xf)), FL.meet(f3, FL.line(1, 0, xs)), (xs, yb0), FL.meet(f23, FL.line(0, 1, yb0)),
                FL.meet(f23, FL.line(1, 0, xf))]
-    for key, nm, z0 in (("C01", "FACET TUBE BOTTOM", ZB), ("C02", "FACET TUBE KNEE", "fix_zk - fr_w / 2"),
+    # (no tube at the knee: the shelf tube C03 is 100 above it; dropped with the middle chamfer tube to keep DR under
+    # 19 kg as shipped, PM ruling 2026-11-01)
+    for key, nm, z0 in (("C01", "FACET TUBE BOTTOM", ZB),
                         ("C03", "FACET TUBE FAN BOX SHELF", "fb_z0 - fr_w"), ("C04", "FACET TUBE FAN BOX TOP", "fb_z0 + fb_h - fr_w"),
                         ("C05", "FACET TUBE TOP", "%s - fr_w" % zch)):
         add(key, nm, ("x", "y"), fac_pts, "z", z0, "%s + fr_w" % z0, S20_SHELF if key == "C03" else S20,
@@ -294,7 +296,7 @@ def frame_members():
     ch_pts = [(yf0, zch), FL.meet(c3, FL.line(0, 1, zs_top)), (yb0, zs_top), FL.meet(c23, FL.line(1, 0, yb0)),
               FL.meet(c23, FL.line(0, 1, zch))]
     xc_l, xc_r = "(%s + dt_xr + fr_w)" % XL, "(%s - 2 * fr_w)" % xf
-    for key, nm, x0 in (("C06", "CHAMFER TUBE LEFT", xc_l), ("C07", "CHAMFER TUBE MIDDLE", "((%s + %s) / 2 - fr_w / 2)" % (xc_l, xc_r)),
+    for key, nm, x0 in (("C06", "CHAMFER TUBE LEFT", xc_l),
                         ("C08", "CHAMFER TUBE RIGHT", xc_r)):
         add(key, nm, ("y", "z"), ch_pts, "x", x0, "%s + fr_w" % x0,
             ends="lower end sits on the front ring's top tube, upper end square to the back ring's top tube")
@@ -531,7 +533,9 @@ def build(app):
                        profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
 
     # ---- materials
-    acp = L.material(design, "ACP 3 mm PE core EV3038 (1300 kg/m3, calculation)", "Aluminum", 1300.0)
+    # the selected ACP's 0.21 mm skins give 3.5 kg/m2, as WALL, CEILING and AIR count it (selection VT01; acoustics
+    # and air report, calculation from the maker's skin spec)
+    acp = L.material(design, "ACP 3 mm PE core EV3038, 0.21 mm skins (3.5 kg/m2, calculation)", "Aluminum", 3500.0 / 3.0)
     felt = L.material(design, "PET felt 9 mm (200 kg/m3, calculation: 1.8 kg/m2)", "Aluminum", 200.0)
     steel = L.material(design, "Galvanised steel (7850 kg/m3)", "Steel", 7850.0)
     alu = L.material(design, "Aluminium (2700 kg/m3)", "Aluminum", 2700.0)
@@ -632,7 +636,7 @@ def export_all(app):
         (PN, NAME, VN, 1, "assembly", "-", None, "", "DRAFT", "D-49, D-59, D-60, D-79, D-87; PM rulings 2026-10-31 "
          "and 2026-11-01; this build", "skin bonded to the welded tube frame 351306; plates and panels on the frame"),
         ("351301", PARTS["SKIN"][1], PARTS["SKIN"][2], 1, "made: ACP panels, 45 deg mitred joints as v1, bonded to "
-         "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 1300 kg/m3)", "DRAFT",
+         "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 3.5 kg/m2: selection VT01)", "DRAFT",
          "D-12, D-49; skeleton DR shape", "one flat panel per outside face: " + DXF_SKIN_REL.split("/")[-1] +
          "; bond to the frame per the joints register's ACP bond spec"),
         (FRAME_PN, FRAME[1], FRAME[2], 1, "made: welded frame, %d tubes (cut list %s)" % (len(members),
