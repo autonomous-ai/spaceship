@@ -448,3 +448,16 @@ def test_update_refuses_a_revision_label_for_another_tree(capsys):
     import run_checks
     code = run_checks.main(["--update", "--rev", "0000000"])
     assert code == 2 and "refusing --update" in capsys.readouterr().err
+
+
+def test_cad_and_parts_list_names_must_match(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    row = {"part_number": "211101", "name": "WALL - PANEL FRAME - SIDE LOWER - LH", "name_vi": "x", "material": "EN AW-6063 T6",
+           "finish": "mill finish", "qty": "1", "mass_kg": "2", "status": "calculation", "source": "CAD"}
+    _write_csv(d / "parts.csv", [row, dict(row, part_number="211102", name="WALL - PANEL FRAME - SIDE UPPER - LH")])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"211101": {"files": {"a.step"}, "count": 1, "name": "211101 WALL - PANEL FRAME - SIDE LOWER - LH"},
+             "211102": {"files": {"a.step"}, "count": 1, "name": "211102 WALL - FRAME - UPPER"}}
+    got = {(f.rule, f.subject) for f in c_parts.check_cad_match(str(tmp_path), plists, prods)}
+    assert ("name-mismatch", "211102") in got and ("name-mismatch", "211101") not in got

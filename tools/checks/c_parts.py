@@ -247,6 +247,24 @@ def check_cad_match(root, plists, step_products):
             fs.append(Finding("C06", "cad-not-in-bom", pn, "major",
                               "%s %s is in the CAD (%s) but in no parts list." % (pn, info["name"], f),
                               "Add it to the parts list, or remove it from the CAD.", f, owner_for(f, pn)))
+    names = {}
+    for p, rows in plists:
+        for row in rows:
+            if row["part_number"]:
+                names.setdefault(row["part_number"], (row["name"], rel(root, p)))
+    norm = lambda t: re.sub(r"\s+", " ", (t or "").upper()).strip()
+    for pn, info in sorted(step_products.items()):
+        if pn not in names or not re.match(r"^\d{6}$", pn):
+            continue
+        cad = re.sub(r"^%s\s+" % pn, "", info["name"] or "")
+        cad = re.sub(r"\s*\(\d+\)$", "", cad)            # Fusion's '(1)' copy suffix
+        same = norm(cad) == norm(names[pn][0]) or norm(cad).startswith(norm(names[pn][0]) + " - ")  # + a position code
+        if cad and not re.match(r"^\d{6}_[PR]\d{2}_", cad) and not same:
+            f = sorted(info["files"])[0]
+            fs.append(Finding("C06", "name-mismatch", pn, "minor",
+                              "%s is named '%s' in the CAD (%s) but '%s' in the parts list (%s); the guideline wants one "
+                              "name everywhere (section 4.2)." % (pn, cad, f, names[pn][0], names[pn][1]),
+                              "Use the same name in the CAD component and the parts list.", f, owner_for(f, pn)))
     for p, rows in plists:
         r = rel(root, p)
         for row in rows:
