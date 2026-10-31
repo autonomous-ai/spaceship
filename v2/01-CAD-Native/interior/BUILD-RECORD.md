@@ -34,6 +34,6 @@ Run 2026-10-31 19:35 UTC on Mac 1 (Fusion 2706.1.17), through the Fusion lock:
 
 ## Not in this build yet
 
-- Edit test: `edit_test_interior.py` (pod_w, wall_depth, cs_front, sh_z0, lg_z), queued.
+- (done) Edit test: `EDIT-TEST-RECORD.md`, PASS: pod_w, wall_depth, cs_front, sh_z0 and lg_z, every body to 0.0 mm.
 - Drawings (D-89 parts 1 to 4): GA, ledge and shelf assemblies, ledge top, back run, side runs (tabulated), down channel: specs ready in `../../02-Drawings/interior/`, waiting for drawing starts.
 - HOLD: the ledge brackets and their stand-offs, the screen rail, the shelf's fixing to the wall cassettes (WALL interfaces).
