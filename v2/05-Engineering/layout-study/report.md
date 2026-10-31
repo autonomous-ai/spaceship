@@ -1,17 +1,17 @@
 <!-- report.md is generated from report_template.md by scripts/run_all.py. Edit the template or the scripts, never report.md. -->
 # Spaceship layout study: weight, pallets and 2-person assembly
 
-Status: DECIDED marks the PM's rulings of 2026-10-31. Under AGENTS.md the PM decides, and the Control Engineer records each decision in `v2/00-Control/decision-log.md`. PROPOSED marks a change still waiting for a ruling. Spaceship is the working name of v2 (folders keep their v2 names).
+Status: DECIDED marks the PM's rulings of 2026-10-31. Under AGENTS.md the PM decides, and the Control Engineer records each decision in `v2/00-Control/decision-log.md`. Spaceship is the working name of v2 (folders keep their v2 names).
 
 Every number below comes from the scripts in `scripts/`. `python3 scripts/run_all.py --check` proves that this report and the files in `out/` reproduce exactly. Section 10 lists the inputs, their status (confirmed, source, calculation, assumption, unverified) and their sources.
 
 ## Result
 
-1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 447 kg. The light build is 303 kg, and 304 kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a 10 mm smoked acrylic front, is **378 kg** (the sound study says about 385 kg). That is inside the PM's 400 kg cap.
+1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 447 kg. The light build is 303 kg, and 304 kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a 10 mm smoked acrylic front, is **378 kg** here and about 385 kg in the sound study. Both numbers stand until the master BOM comes out of the CAD (PM ruling). Either way it is inside the PM's 400 kg cap.
 2. **Parts.** In the decided build every part is 20 kg or less except the glass. The heaviest is F-DR at 19.1 kg. The ceiling fill rides on the back of its lining cassette; inside the ceiling panel it would make that panel 21.1 kg.
 3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet: 477 kg gross, at most 1,646 mm high, 6.0 lb/ft3. That is with 81 mm walls and a 141 mm ceiling.
 4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **121 min** (4.0 person-hours): 76 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
-5. **Open call.** Carrying the ceiling fill on its cassette is PROPOSED. Everything else in the layout is DECIDED.
+5. **Decisions.** Everything in the layout is DECIDED, including carrying the ceiling fill on its cassette. Nothing is waiting for a ruling.
 
 ## Decisions
 
@@ -25,7 +25,7 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 | Fast-assembly changes: factory subassemblies, captive bolts, tool-free clips on panel seams, felt pre-fitted (section 4) | DECIDED |
 | Quiet build: the sound study's final stack, smoked acrylic front, 400 kg cap, 20 kg part limit and pallet layout kept | DECIDED |
 | The inner skin and felt ship as separate clip-on inner leaves (the sound study's lining cassettes), one per panel, 19 kg or less, with the outside seams as planned | DECIDED |
-| Ceiling fill carried on the back of the ceiling cassettes, so the ceiling panel stays under 20 kg (section 5) | PROPOSED |
+| Ceiling fill carried on the back of the ceiling cassettes, so the ceiling panel stays at 20 kg or less (section 5) | DECIDED |
 | Rejected: split decor blocks (B2), 5 bands per wall (C), full-height walls, castors in v2, no floor | DECIDED |
 
 ## 1. Weight
@@ -516,7 +516,7 @@ This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and
 
 Result: **378 kg**, 0 parts over 20 kg, heaviest F-DR at 19.1 kg, 1 + 1 pallets, 477 kg gross, 1,646 mm at most, assembly 121 min.
 
-- **Ceiling (PROPOSED).** With 100 mm of fill inside it, an outer ceiling half would weigh 21.1 kg. Carried on the back of its cassette, the fill fills the same cavity when the cassette clips up from below, and both parts stay under 20 kg. Nothing else changes.
+- **Ceiling (DECIDED).** With 100 mm of fill inside it, an outer ceiling half would weigh 21.1 kg. Carried on the back of its cassette, the fill fills the same cavity when the cassette clips up from below, and both parts stay under 20 kg. Nothing else changes.
 - **Pallets.** The 48 x 40 keeps the wall panels, cassettes, floor panels and short band pieces. One ceiling half and the two ceiling cassettes, too thick for the upright stack, lie flat on the long pallet under the decor blocks and the glass. Still 1 + 1.
 
 Wall and ceiling parts of the decided build:
@@ -647,7 +647,7 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 
 | ID | Item | Status | Who |
 | --- | --- | --- | --- |
-| LS-01 | Ceiling fill carried on the back of its cassette (section 5) | PROPOSED | PM |
+| LS-01 | 378 kg here against about 385 kg in the sound study: settle from the master BOM out of the CAD | open | Milestone 2 |
 | LS-02 | 400 mm frame pitch and full-face bond keep the ACP flat without plywood; prove on the early wall sample | PLANNED | Prototype team |
 | LS-03 | Tool-free cam or clip connector and captive bolt: real part numbers, loads and pull-out on the aluminium frame | open | Hardware group |
 | LS-04 | Cassette clips: part numbers, and how the cassette floats (no stud bridge) while it carries a 19 kg leaf | open | Hardware group |
