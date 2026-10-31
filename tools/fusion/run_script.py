@@ -23,6 +23,11 @@ One run at a time: the Fusion lock
       python3 tools/fusion/run_script.py step1.py ...   # runs inside the held lock
       python3 tools/fusion/run_script.py --lock-release
   --lock-status prints who holds the lock now.
+  Waiting runs are served oldest first. --lock-front REASON puts a run ahead
+  of every waiting run (never ahead of the run that holds the lock; it waits
+  for that one to end like everyone). It is only for runs the Product Manager
+  approved in the project chat; REASON names that approval, and every waiting
+  run sees it.
 
 Your own document, by name
   --doc NAME activates the open document called NAME, or opens it from the
@@ -76,6 +81,10 @@ PROTOCOL_VERSION = "2025-06-18"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 LOCK_ENV = "FUSION_MCP_LOCK"           # lock directory, to override the default
+# A front-of-queue ticket is stamped this much earlier than now (about 32
+# years), so it sorts before every waiting ticket, also for runners from
+# before --lock-front, which serve ticket names in plain sorted order.
+FRONT_SHIFT_NS = 10 ** 18
 TOKEN_ENV = "FUSION_MCP_LOCK_TOKEN"    # run inside a lock held with --lock-hold
 LABEL_ENV = "FUSION_MCP_LABEL"         # who is running, shown to waiting runs
 OWNER_FILE = "owner.json"
@@ -127,6 +136,8 @@ def describe_owner(owner, now=None):
     mins = max(0, int((now - owner.get("since", now)) // 60))
     text = "%s (%s, pid %s) since %s, %d min ago" % (
         who, what, owner.get("pid") or "none, held", owner.get("since_utc", "?"), mins)
+    if owner.get("front"):
+        text += "; went first in the queue: %s" % owner["front"]
     joined = owner.get("joined")
     if isinstance(joined, dict) and pid_alive(joined.get("pid")):
         text += "; now running %s (pid %s)" % (joined.get("script", "?"), joined.get("pid", "?"))
@@ -144,8 +155,9 @@ class FusionLock:
     """
 
     def __init__(self, path, label="", script="", hold_s=3600.0, pid="self",
-                 host=None, log=None):
+                 host=None, log=None, front=""):
         self.path = path
+        self.front = (front or "").strip()   # --lock-front: why this run goes first
         self.queue_dir = path + ".queue"
         self.guard = path + ".guard"
         self.label = label
@@ -238,11 +250,15 @@ class FusionLock:
     # -- the queue ------------------------------------------------------------
     def _take_ticket(self, deadline):
         os.makedirs(self.queue_dir, exist_ok=True)
-        name = "%020d-%d-%s" % (time.time_ns(), os.getpid(), uuid.uuid4().hex[:8])
+        stamp = time.time_ns() - (FRONT_SHIFT_NS if self.front else 0)
+        name = "%020d-%d-%s" % (stamp, os.getpid(), uuid.uuid4().hex[:8])
         fd = os.open(os.path.join(self.queue_dir, name), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump({"pid": os.getpid(), "label": self.label, "script": self.script,
-                       "give_up": deadline}, fh)
+            ticket = {"pid": os.getpid(), "label": self.label, "script": self.script,
+                      "give_up": deadline}
+            if self.front:
+                ticket["front"] = self.front
+            json.dump(ticket, fh)
         self.ticket = name
 
     def _drop_ticket(self):
@@ -281,6 +297,19 @@ class FusionLock:
                     continue
             live.append(n)
         return live
+
+    def front_waiting(self):
+        """(label, reason) of the waiting runs that go first (--lock-front)."""
+        out = []
+        for n in self.queue():
+            try:
+                with open(os.path.join(self.queue_dir, n), "r", encoding="utf-8") as fh:
+                    t = json.load(fh)
+            except (OSError, ValueError):
+                continue
+            if isinstance(t, dict) and t.get("front"):
+                out.append((t.get("label") or "a run", t["front"]))
+        return out
 
     # -- taking and giving back --------------------------------------------
     def _write_owner(self, owner):
@@ -342,6 +371,8 @@ class FusionLock:
                 "since": now, "since_utc": _utc(now),
                 "expires": now + self.hold_s, "expires_utc": _utc(now + self.hold_s),
             }
+            if self.front:
+                owner["front"] = self.front
             self._write_owner(owner)
         except BaseException:
             shutil.rmtree(self.path, ignore_errors=True)
@@ -791,6 +822,10 @@ def build_parser():
     lk.add_argument("--label", default=os.environ.get(LABEL_ENV, ""),
                     help="who is running, shown to runs that wait (default $%s)"
                          % LABEL_ENV)
+    lk.add_argument("--lock-front", default="", metavar="REASON",
+                    help="go ahead of every waiting run (never ahead of the run holding "
+                         "the lock). Only for runs the Product Manager approved in the "
+                         "project chat; REASON names that approval and is shown to all")
     lk.add_argument("--lock-status", action="store_true",
                     help="print who holds the lock and exit")
     lk.add_argument("--lock-hold", type=float, metavar="S",
@@ -805,7 +840,11 @@ def lock_commands(opts, lock):
     """--lock-status, --lock-hold, --lock-release; returns an exit code."""
     if opts.lock_status:
         waiting = len(lock.queue())
+        fronts = lock.front_waiting()
         queued = ("; %d run(s) waiting" % waiting) if waiting else ""
+        if fronts:
+            queued += " (%d going first: %s)" % (len(fronts), "; ".join(
+                "%s, %s" % f for f in fronts))
         if not lock.exists():
             print("free: %s%s" % (lock.path, queued))
             return 0
@@ -845,7 +884,9 @@ def main(argv=None):
     opts = ap.parse_args(argv)
     lock_path = opts.lock or default_lock_path(opts.url)
     label = opts.label or "a run from %s" % os.path.basename(REPO_ROOT)
-    lock = FusionLock(lock_path, label=label)
+    if opts.lock_front and not opts.lock_front.strip():
+        ap.error("--lock-front needs the reason: which approval in the project chat")
+    lock = FusionLock(lock_path, label=label, front=opts.lock_front)
 
     if opts.lock_status or opts.lock_hold is not None or opts.lock_release:
         return lock_commands(opts, lock)

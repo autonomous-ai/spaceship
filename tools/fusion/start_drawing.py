@@ -527,6 +527,9 @@ def main(argv=None):
     ap.add_argument("--timeout", type=float, default=120.0, help="seconds per Fusion call")
     ap.add_argument("--lock", default=None)
     ap.add_argument("--lock-wait", type=float, default=1200.0)
+    ap.add_argument("--lock-front", default="", metavar="REASON",
+                    help="go ahead of every waiting run (never ahead of the run holding the "
+                         "lock); only for runs the Product Manager approved, see run_script.py")
     ap.add_argument("--label", default=os.environ.get(rs.LABEL_ENV, ""))
     opts = ap.parse_args(argv)
 
@@ -536,7 +539,8 @@ def main(argv=None):
     install_signal_handlers()
     lock = rs.FusionLock(opts.lock or rs.default_lock_path(opts.url),
                          label=opts.label or "start_drawing", hold_s=900,
-                         script="start_drawing.py %s -> %s" % (opts.design, opts.drawing))
+                         script="start_drawing.py %s -> %s" % (opts.design, opts.drawing),
+                         front=opts.lock_front)
     try:
         lock.acquire(opts.lock_wait)
     except rs.LockTimeout as e:
