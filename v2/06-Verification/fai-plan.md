@@ -1,0 +1,136 @@
+# First-article inspection plan: Spaceship (FocusPod v2)
+
+| Doc code | Revision | Status | Date | Owner |
+|---|---|---|---|---|
+| V2-VER-001 | P01 | DRAFT: a plan, no result yet | 2026-11-01 | Control pack |
+
+What to inspect on the first article of each made part and assembly, the functional checks on the first pod, and the test that accepts each bought part. Guideline §10: an FAI line traces to a drawing characteristic (part and revision, characteristic ID, nominal, limits, unit, datum, method and gauge, result, conclusion, evidence). This is the plan: every result is empty and every line is **PLANNED**, not passed.
+
+- **IDs.** Each characteristic gets an ID here (K-J01 and so on). When the part's drawing exists, its balloon carries the same ID, and the drawing's own tolerance governs.
+- **Limits.** A limit is written only where a source sets it, with its status. Where none does, the line says "set on the drawing", because §10 forbids inventing numbers to fill a table.
+- **Applies to.** Part numbers or number patterns in backticks (x is any digit). The release checklist (`v2/00-Control/release-checklist.md`) reads them to list each part's characteristics and each bought part's test.
+- **Units.** mm, kg and N unless a line says otherwise.
+
+## A. Site joints and frames
+
+| ID | Applies to | Characteristic | Nominal | Limits | Datum | Method and gauge | Source and status | Result | Conclusion | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|
+| K-J01 | `2111xx` `4111xx` `1111xx` `11120x` | Bolt clearance hole diameter | Ø7.0 | set on the drawing | — | pin gauges, go and no-go | DECIDED (D-64, joints register R-J6) | | PLANNED | |
+| K-J02 | `2111xx` `4111xx` `1111xx` `11120x` | Bolt hole position from the spigot hole | 0 | Ø0.4 (±0.2) | the spigot hole | CMM, or the drill jig's check fixture | DECIDED (D-64, R-J6); calculation (stack ST-03: 0.05 to spare) | | PLANNED | |
+| K-J03 | `2111xx` `4111xx` | Spigot hole and slot | Ø8.5; slot 8.5 × 14 | set on the drawing | — | pin gauge Ø8.5; slot gauge | DECIDED (D-64) | | PLANNED | |
+| K-J04 | `2111xx` `4111xx` `1111xx` | Rivnut hole | Ø9.53 | +0.10 / 0 | — | pin gauges | source (maker's data, joints register H-03) | | PLANNED | |
+| K-J05 | `2111xx` `4111xx` `1111xx` | Frame flatness at a joint face | 0 | ±0.5 over a seam | the joint face | straightedge and feeler gauge | assumption (joints register; the frame drawings set it with the maker's capability) | | PLANNED | |
+| K-J06 | `2111xx` `4111xx` | Tube wall: 20 × 40 × 1.2 perimeter members; the wall panels' inner studs 1.0; the ceiling's cross members 1.2 | 1.2 / 1.0 | to the profile standard (unverified) | — | wall-thickness micrometer on a cut sample | DECIDED (D-34, D-54, D-85) | | PLANNED | |
+| K-J07 | `831001` | Locating spigot diameter and stand | Ø8; 8 proud | set on the drawing | the rivnut face | micrometer; height gauge | PROPOSED sizes (joints register H-05, assumption) | | PLANNED | |
+| K-J08 | `831002` | Stop washer thickness | 1.5 | ±0.05 | — | micrometer | PROPOSED part; assumption tolerance (joints register H-08) | | PLANNED | |
+| K-J09 | `210xxx` `410xxx` | Seam gap at a stopped seam, assembled | 2.26 | 2.13–2.39 | — | feeler gauges | DECIDED (D-64); calculation (joints register stack: washer 1.5 + rivnut head 0.76); J-T3 accepts 2.26 ±0.15 | | PLANNED | |
+| K-J10 | `210xxx` `410xxx` | Closing gap at B1–B2, B3–B4 and C1–C2, assembled | 5.5 | ±0.3 (5.2–5.8) | — | feeler or taper gauge | DECIDED (D-65); calculation (stacks ST-02 and ST-04) | | PLANNED | |
+| K-J11 | `210xxx` `410xxx` | Gasket squeeze at a stopped seam: the 848001 strip, 3.97 free | 43% | 33–51% | — | micrometer on the free strip, then the seam gap | calculation (joints register: stop 2.13–2.39, gasket ±10% an assumption) | | PLANNED | |
+| K-J12 | `210xxx` `410xxx` | Fit-up force per edge, sliding past a seal by hand, overhead included | — | ≤ 150 | — | push-pull force gauge on the panel edge | DECIDED (joints register R-J17); test J-T5 | | PLANNED | |
+| K-J13 | `210xxx` `410xxx` `110xxx` | Bolt thread past the rivnut's far end (838001, 838002) | 2.28 | ≥ 1.9 | — | depth gauge on a coupon | calculation (joints register; bolt length tolerance js15, unverified) | | PLANNED | |
+| K-J14 | `210xxx` `410xxx` `110xxx` | A head washer (838004) under every bolt head | 1 per bolt | — | — | visual count | DECIDED (D-63, R-J10) | | PLANNED | |
+| K-J15 | `210xxx` `410xxx` | Outside faces flush across a seam | 0 | within 0.5 | — | straightedge and feeler gauge | assumption (joints register tests J-T3, J-T5) | | PLANNED | |
+| K-J16 | `2111xx` `4111xx` | Hidden frame tubes: 6063-T6, mill finish, with only the bond spec's surface prep | as stated | — | — | the mill certificate; visual | DECIDED (D-79) | | PLANNED | |
+
+## B. Outer panels and skins
+
+| ID | Applies to | Characteristic | Nominal | Limits | Datum | Method and gauge | Source and status | Result | Conclusion | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|
+| K-P01 | `210xxx` | Outer panel size: side panels 1492.74 × 1142.74; back panels 1200.61 × 1118.61, frames 1198.99 wide at the closing seams | as stated; 46 thick | set on the drawing | the panel's spigot hole | steel tape and caliper; height gauge for the thickness | calculation (skeleton P04, PRs #24 and #58; D-66) | | PLANNED | |
+| K-P02 | `410xxx` | Ceiling half size | 1200.61 × 1495 × 46 | set on the drawing | the spigot hole | steel tape and caliper | calculation (skeleton P04; D-66) | | PLANNED | |
+| K-P03 | `2113xx` `4113xx` | ACP skin bonded flat: bond line 3, skin flatness | 3 | flatness set with the bond spec | — | straightedge and feeler; the bond spec's T09 coupons | DECIDED (D-66); source (bond spec, sample test T09) | | PLANNED | |
+| K-P04 | `2113xx` `4113xx` | Skin colour Dark Yellow EV3038 | EV3038 | match the approved sample | — | visual, against the sample, under daylight | DECIDED (D-12) | | PLANNED | |
+| K-P05 | `2115xx` `5133xx` | Cavity fill density | 24 kg/m³ | the maker's data | — | weigh a cut piece and measure it | DECIDED (D-81); the wall sample's T02 confirms it | | PLANNED | |
+
+## C. Lining cassettes
+
+| ID | Applies to | Characteristic | Nominal | Limits | Datum | Method and gauge | Source and status | Result | Conclusion | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|
+| K-L01 | `5111xx` `5131xx` | Tray: 0.5 mm galvanised steel, 34 mm returns, 12 mm lips | 0.5; 34; 12 | sheet to its standard (unverified); returns and lips set on the drawing | — | micrometer; caliper | DECIDED (D-37, D-69) | | PLANNED | |
+| K-L02 | `5111xx` `5131xx` | Inside bend radius and flat-pattern size | from the CAD flat pattern | set on the drawing | — | radius gauge; tape on the flat blank | source (the team's sheet-metal model; CEILING's flat pattern matches its bend calculation to 0.01, PR #32) | | PLANNED | |
+| K-L03 | `510xxx` | Cassette size: wall cassettes per skeleton P04; ceiling cassette 1160 × 1045 | as stated; 34 thick | set on the drawing | — | steel tape and caliper | calculation (skeleton P04; D-77) | | PLANNED | |
+| K-L04 | `5113xx` `5132xx` | Felt: 9 mm, 1.8 kg/m², Dark Gray | 9; 1.8 | the maker's data | — | caliper; scale on a cut piece; colour against the sample | DECIDED (D-17, D-79); unverified (felt data, ISS-075) | | PLANNED | |
+| K-L05 | `510xxx` | Clips and catches hold (518001, 518002): each wall clip 8.3 kg in shear, each ceiling clip 8.0 kg in pull-out, each catch lanyard 48 kg | as stated | ≥ | — | pull test T07; drop test T08 | calculation (test plan T07, T08; safety factor 3 an assumption, ISS-076); clip and catch products HOLD-08 | | PLANNED | |
+
+## D. Front
+
+| ID | Applies to | Characteristic | Nominal | Limits | Datum | Method and gauge | Source and status | Result | Conclusion | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|
+| K-F01 | `361001` `361003` | Glass: 4+4 laminate of toughened, heat-soaked panes | 8.76 | the glass standard (supplier) | — | micrometer; the toughening and heat-soak certificates | DECIDED (D-46, D-82); product HOLD (ISS-074) | | PLANNED | |
+| K-F02 | `361001` `361003` | Glass outline against its DXF | the DXF | set on the drawing | the bottom edge | full-size template or tape against the DXF | source (v1 STEP outline via skeleton P04) | | PLANNED | |
+| K-F03 | `360002` | Fixed glass free edge to the door: gap, parallel | 4.0 | set on the drawing | the door's edge | feeler gauges at the top, middle and bottom | DECIDED (D-68, D-74); PR #28 measured 4.00 in CAD | | PLANNED | |
+| K-F04 | `360002` | Glass depth in its hidden U-channels | 11.5 | set on the drawing | — | depth gauge before glazing | DECIDED (D-68) | | PLANNED | |
+| K-F05 | `361002` | Kick strip running gap over the threshold | 7 | 6.5–7.5 | the threshold | feeler gauges | DECIDED (D-68, D-72); limits from the mechanical check's gap rule (`v2/04-Checks/config/gap-rules.csv`) | | PLANNED | |
+| K-F06 | `361002` `110xxx` `1111xx` | Black anodised, matte (the kick strip and every base band piece) | ≥ 20 µm | class AA20 (EN ISO 7599) | — | eddy-current coating thickness gauge; visual against the sample | DECIDED (D-67, D-79) | | PLANNED | |
+| K-F07 | `360001` | Door unit mass, as hung | 49.1 | weigh; the hardware is rated ≥ 60 kg | — | scale | calculation (CAD, with the hollow kick strip, D-85; the layout study's live count, PR #61); DECIDED rating (D-68) | | PLANNED | |
+| K-F08 | `360001` | Door keep: the magnetic catch in DT holds the door | 35 N | ≥ | — | push-pull gauge at the latch corner | DECIDED (D-83); product to be named | | PLANNED | |
+
+## E. Base
+
+| ID | Applies to | Characteristic | Nominal | Limits | Datum | Method and gauge | Source and status | Result | Conclusion | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|
+| K-B01 | `110xxx` `1111xx` | Base band wall 1.5, with an aluminium load block at each glide | 1.5 | the profile standard (unverified) | — | caliper; check each block is in | DECIDED (D-86) | | PLANNED | |
+| K-B02 | `1114xx` | Floor panel: 9 mm poplar-core ply with a hard face; plan size per skeleton P04, X 0 to ±1210 and Y −645 to 810 (1210 × 1455), plus its half-lap | 9; 1210 × 1455 | set on the drawing | the band's inner face | caliper; steel tape | DECIDED (D-72, D-85, D-86); calculation (skeleton P04) | | PLANNED | |
+| K-B03 | `1114xx` | Panel edge and half-lap seam under 1000 N on the foam | — | ≤ 1 deflection | the room floor | dial gauge under a 1000 N load; castor rolled over the edge | assumption until tested (D-76); calculation about 0.6 (D-86) | | PLANNED | |
+| K-B04 | `1115xx` | Floor foam: 3 mm firm closed-cell, about 200 kg/m³, bonded under the panel at the factory | 3 | the maker's data | — | caliper; check the bond | DECIDED (D-76, D-87); product HOLD (ISS-085) | | PLANNED | |
+| K-B05 | `110000` | Door threshold (in the BASE assembly until the profile has its own number): 13 high, a 6 mm upright, then a 1:2 bevel | 13; 6; 1:2 | set on the drawing | the room floor | height gauge; angle gauge | DECIDED (D-72) | | PLANNED | |
+| K-B06 | `110000` | Intake mesh band piece under the right decor block (in the BASE assembly until it has its own number): free area | 0.028 m² | ≥ | — | measure the open area | DECIDED (D-62) | | PLANNED | |
+| K-B07 | `110000` | Base seal (118001) at the floor's edge, against the band's inner face | 4 gap | sealed | — | feeler gauge; light test | DECIDED (D-86) | | PLANNED | |
+| K-B08 | `11121x` | Corner and inline keys: 6061-T6, mill finish, hidden, fixed in a band piece's open end at the factory; the back key 35 × 60 × 20, about 0.11 kg; each key's hook stud takes the next piece | 35 × 60 × 20 | set on the drawing | the band's bottom wall | caliper; trial fit in a band end | DECIDED (D-87, hook-in keys); calculation (joints register J-BASE-02, PR #69) | | PLANNED | |
+
+## F. Air, electrical and interior
+
+| ID | Applies to | Characteristic | Nominal | Limits | Datum | Method and gauge | Source and status | Result | Conclusion | Evidence |
+|---|---|---|---|---|---|---|---|---|---|---|
+| K-A01 | `61xxxx` | Cartridge: 173 × 314 × 1750, two 80 mm passages between three 50 mm layers | as stated | set on the drawing | — | steel tape and caliper | calculation (D-61, the air report) | | PLANNED | |
+| K-A02 | `61xxxx` `81xxxx` | Air column 217 × 360 × 2105 and soffit 2332 × 360 × 220 | as stated | set on the drawing | the pod's inside corner | steel tape | calculation (D-61, the air report, skeleton P04) | | PLANNED | |
+| K-A03 | `61xxxx` | Each shipped air piece ≤ 20 kg: the soffit with its fan box about 13.9, the riser with the supply fan box about 14.9 | ≤ 20 | — | — | scale | DECIDED (D-03, D-87); calculation | | PLANNED | |
+| K-E01 | `71xxxx` | Harness tested at the factory; the hub's self-test passes | pass | — | — | the factory test record; the self-test log | DECIDED (D-87) | | PLANNED | |
+| K-I01 | `81xxxx` | Light shelf within 0.4 kg/m; the 1000 mm ledge in 1.5 mm folded aluminium | 0.4; 1.5 | set on the drawing | — | scale; caliper | DECIDED (D-85) | | PLANNED | |
+
+## G. Functional checks on the first pod
+
+| ID | Check | Pass mark | Method and gauge | Source and status | Result | Conclusion | Evidence |
+|---|---|---|---|---|---|---|---|
+| F-01 | The door swings outward to 90° and clears the soffit (door top Z 2116, soffit 4 mm above it) | no contact | swing the door; feeler at the top | calculation (the air report); the mechanical check's swing sweep | | PLANNED | |
+| F-02 | The door closes and stays shut: the 35 N catch, the drop seal on the threshold, the magnetic seal pair on the glass edge | closed, no gap | visual; light test from inside | DECIDED (D-40, D-83) | | PLANNED | |
+| F-03 | Every seam and seal: no light through any joint | no light | lamp inside, room dark | confirmed (REQ-SND-02) | | PLANNED | |
+| F-04 | Fans: 53 l/s at 26 dB(A) or less and the 65 l/s boost at 30 dB(A) or less, at seated ear height; with two people inside, 53 l/s holds the inside within 4 K of the room | as stated | flow hood; sound level meter; thermometers inside and in the room | DECIDED (D-50, D-52); calculation (25.3 and 29.7 dB(A), D-62; 249 W and 3.9 K at 53 l/s, PR #72); the fan sample's T04 | | PLANNED | |
+| F-05 | Control: fans start on presence; CO2 and the 4 K limit drive the flow; boost by hand; with the voice kit fitted, the boost holds 4 K | as stated | logged readings over a session | DECIDED (D-44, D-50, D-88) | | PLANNED | |
+| F-06 | The hub's self-test button runs and passes | pass | press it; read the log | DECIDED (D-87) | | PLANNED | |
+| F-07 | Lights: the light shelf scenes, including a 'call' scene that lights the face from the screen side | as stated | visual | DECIDED (D-70) | | PLANNED | |
+| F-08 | Assembly: two people, one 5 mm key, every piece but the glass 20 kg or less | about 127 min; never over 4 h | timed trial with the guide | DECIDED (D-03, D-63; 4 h, REQ-ASM-01); calculation (the guide, PR #59; D-87's target about 126) | | PLANNED | |
+| F-09 | Mass as shipped | ≤ 420 kg (cap); 415.2 calculated | weigh every piece | DECIDED cap (D-37); calculation (the layout study's live count, PR #68) | | PLANNED | |
+| F-10 | Sound: speech level reduction to ISO 23351-1 | the measured figure; about 19 dB calculated | lab, after the wall sample's T01 from 100 Hz | DECIDED (D-53); calculation | | PLANNED | |
+| F-11 | Voice kit, once it exists: average draw over a session and peak on its 12 V 5 A outlet; with it on, the inside within 4 K at 30 dB(A) or less | ≤ 40 W average; ≤ 60 W peak; ≤ 4 K | power logger on the outlet; thermometers; sound level meter | DECIDED (D-11, D-88); calculation (4 K takes 62 l/s at 28.7 dB(A), PR #72) | | PLANNED | |
+
+## H. Bought parts: the test that accepts each
+
+| Applies to | Part | Test | Source |
+|---|---|---|---|
+| `838001` | Socket head bolt M6 × 16 | T06, J-T1 | test plan T06 (the bolt sets the torque); joints register J-T1 |
+| `838002` | Closing-seam pin bolt M6 × 25 | J-T1 | joints register J-T1 |
+| `838003` | Rivnut M6 | T06, J-T1 | test plan T06; joints register J-T1 |
+| `838004` | Head washer 6.4 × 18 | T06 | test plan T06 |
+| `838005` | Captive retainer | J-T2 | joints register J-T2 |
+| `848001` | Joint gasket | J-T3 | joints register J-T3 |
+| `848004` | Closing-seam seal | J-T3, J-T5 | joints register J-T3, J-T5 |
+| `848012` | Cassette edge seal | F-03 | the light test |
+| `118001` | Base seal | J-T4 | joints register J-T4 |
+| `518001` | Cassette clip | T07 | test plan T07 |
+| `518002` | Ceiling safety catch | T08 | test plan T08 |
+| `108002` | ACP bond set | T09 | test plan T09 |
+| `108001` | The 5 mm hex key | F-08 | the timed assembly |
+| `368001` `368003` `368006` `368101` `368103` | Drop seal, magnetic seal halves, hinges, pull | T13 | test plan T13 (once the hinges and lock are named) |
+| `368007` `368102` | Door catch and strike | F-02 | the door check |
+| `368002` `368004` `368005` | Glazing U-seal, U-profile, frame-stop seal | F-03 | the light test |
+| `618xxx` | AIR's bought parts (the fans) | T04 | test plan T04 |
+| `71xxxx` | ELECTRICAL's parts | F-06 | the hub's self-test, with the harness tested at the factory (D-87) |
+
+A bought part with no line here has no test yet; the release checklist shows it as open.
+
+## How this plan grows
+
+- When a part's drawing lands, its characteristics move onto the drawing with these IDs, and new ones get the next free ID in their section.
+- When a test or a first article is measured, the result, conclusion and evidence columns fill in (the measured value, the sample number, the gauge's calibration, the date and the file). Only then can a line say PASS.
+- The release checklist re-reads this file to show which parts have characteristics and which bought parts have a test.

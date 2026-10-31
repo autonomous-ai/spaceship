@@ -10,7 +10,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ## Result
 
 1. **Two people, one 5 mm hex key, 21 steps: about {{CLOCK_MIN}} minutes ({{CLOCK_PH}} person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
-2. **{{REG_BOLTS}} bolts of the joints register, each captive in its part: 72 × {{PN16}} (M6 × 16) and 10 × {{PN25}} (M6 × 25) pins**, each with its {{PNW}} washer already on. They match the register joint by joint (section 5). {{OTHER_FIX}} more fixings belong to BASE and FRONT designs that the register doesn't count; section 5 lists them with their status.
+2. **{{REG_BOLTS}} bolts of the joints register, each captive in its part: {{N16}} × {{PN16}} (M6 × 16) and {{N25}} × {{PN25}} (M6 × 25) pins**, each with its {{PNW}} washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit ({{DOOR_KG}} kg) and the fixed glass ({{FIX_KG}} kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
 5. **Pictures:** the skeleton P04 renders below show where each part goes. Step pictures from the Fusion model follow as each part's CAD lands; Fusion runs wait while the Mac's screen is locked (PM, 2026-10-31).
@@ -44,7 +44,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 - **Captive bolts.** Each bolt sits in the edge tube of the part placed second, with its washer, pulled back and held by a grommet (joints register 2.2). You only turn it: the key goes through the Ø19 hole from the 60 × 60 fill pocket in that panel's bay.
 - **Spigots.** Every wall and ceiling part stands on two Ø8 spigots, a round hole at one end and a slot at the other, before its first bolt (REQ-ASM-04). If a part doesn't drop on, lift it and seat it again; never force it.
-- **Two bolts, one key.** {{PN16}} (M6 × 16) at the 72 stopped joints: it pulls the seam onto its 2.26 mm metal stop. {{PN25}} (M6 × 25) pins at the 10 closing-seam positions (B1–B2, B3–B4, C1–C2): snug only, they hold the faces level and pull nothing (joints register 2.10).
+- **Two bolts, one key.** {{PN16}} (M6 × 16) for the {{N16}} other bolts: each pulls its joint onto its 2.26 mm metal stop or its seat. {{PN25}} (M6 × 25) pins at the 10 closing-seam positions (B1–B2, B3–B4, C1–C2): snug only, they hold the faces level and pull nothing (joints register 2.10).
 - **Order of tightening** (joints register 2.7, R-J9): closing-seam pins first, then the stopped seams; the side walls' top corner bolts and the ceiling's side bolts last, once both ceiling halves are in.
 - **Linings last.** Every bolt is driven through a bay that a lining cassette covers later, so check each wall's bolts before its cassette goes on.
 
@@ -58,7 +58,7 @@ The guide's register bolts, joint by joint, against {{REG_SRC}}:
 
 {{BOLTS}}
 
-Other site fixings that the joints register doesn't count (its section 3.9). The counts are working values for the time model and the kit until each owner's design gives them:
+Joints with no site bolts, and the fixings still on hold or not designed (the joints register's section 3.9 and its HOLD list):
 
 {{OTHER_FIXINGS}}
 
@@ -81,11 +81,7 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 
 The fifth, moving the film peeling after the clock, was rejected so the number stays honest. Instead the film covers only the {{FILM_FACES}} faces that show (the 8 wall skins, the 3 decor blocks and both faces of both glass panes; none on the roof skins) and each panel has a quick-release tab. Peeling now takes about {{FILM_MIN}} minutes of the clock, against {{FILM_ALL_MIN}} for film on all {{FILM_FACES_ALL}} faces without tabs: {{FILM_SAVES}} minutes saved. The layout study's 168 minutes didn't count film at all, so this is time the clock now carries honestly.
 
-Where the time goes now:
-
-{{TOP_STEPS}}
-
-The 1-hour target needs more than this: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 82 register bolts alone take about {{REG_BOLT_MIN}} minutes of the clock. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
+The 1-hour target needs more than this: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The {{REG_BOLTS}} register bolts alone take about {{REG_BOLT_MIN}} minutes of the clock. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
 
 Unit times used:
 
@@ -93,7 +89,7 @@ Unit times used:
 
 ## 7. Final check list (step 21)
 
-- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes and latches (lock HOLD, ISS-002); the drop seal comes down onto the threshold's land when closed.
+- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the threshold's land when closed.
 - [ ] Seals: with the pod lit and the room dark, no light at any seam, at the door's edges or at the fixed glass's edges.
 - [ ] Bolts: all {{REG_BOLTS}} register bolts driven, the 10 pins snug, the 6 upper corner bolts tightened after the ceiling; the other fixings of section 5 done.
 - [ ] Linings: all 10 cassettes on their clips, both ceiling cassettes on their safety catches, none touching anything but its clips.
@@ -109,7 +105,7 @@ Power off at the mains first. Then the reverse order: ledge; ceiling linings (un
 
 | What | Owner | Status |
 |---|---|---|
-| Door hinges and lock: the set, how the door's hinge halves meet DL's, and the hinge fixings | FRONT | HOLD (D-46, ISS-002); the PM ruled the hinge halves that sit in DL ship in DL and the hinges must lift off |
+| Door hinges: the set, how the door's hinge halves meet DL's, the hinge fixings, and holding the door at its closed position (D-83 removed the lock) | FRONT | HOLD (D-46, ISS-002); the PM ruled the hinge halves that sit in DL ship in DL and the hinges must lift off |
 | Lining clips and the ceiling safety catch | WALL, CEILING, Hardware Engineer | HOLD (D-47, ISS-076) |
 | Bolt torque | Hardware Engineer | HOLD-01 until T06 (D-48) |
 | Captive bolt grommet | Joints Engineer | HOLD-02 |
