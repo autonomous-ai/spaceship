@@ -496,7 +496,7 @@
    "message": "The wall-and-door sample parts list (v2/06-Samples/wall-door-sample/parts-list.md on main, and still in PR #29) buys 25 x M6 x 50 ISO 4017 hex bolts (P06) and ISO 7089 washers (P07), sized to pass through a 40 mm member. The decided joint is M6 x 16 ISO 4762 socket head (PM ruling R-J2), driven from inside the member into the Sherex rivnut, with a 1.5 mm aluminium stop washer under the rivnut head and 7.0 mm clearance holes (joints register 2.1, 2.2; F-009 ruling). Built from this list, the sample tests a different joint and the factory buys the wrong bolts.",
    "fix": "Update P06 to M6 x 16 ISO 4762 class 8.8 zinc and replace P07 with the H-08 stop washer (and the H-02 captive retainer, HOLD), in PR #29 or right after PR #23 merges.",
    "file": "v2/06-Samples/wall-door-sample/parts-list.md",
-   "owner": "PM (Lead)",
+   "owner": "Joints Engineer",
    "evidence": {},
    "key": "C07|sample-fasteners-stale|sample package P06, P07",
    "id": "F-013",
@@ -509,8 +509,14 @@
      "date": "2026-10-31",
      "rev": "0cb764f",
      "event": "opened by hand"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "0cb764f",
+     "event": "owner set to the Joints Engineer by the PM"
     }
-   ]
+   ],
+   "note": "PM ruling (P2-4): the Joints Engineer fixes the sample package's fastener rows in PR #23 (P06 M6 x 16 ISO 4762, P07 the 1.5 mm stop washer, an ISO 7093 washer under the head, the captive retainer HOLD); merge order #26, #29, #23 rebased"
   }
  ]
 }

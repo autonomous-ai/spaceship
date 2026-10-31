@@ -12,10 +12,11 @@ Severity: **severe** = can't be made, assembled or used as drawn; **major** = wi
 
 By owner group:
 
+- Joints Engineer: F-013
 - Joints Engineer; CEILING: F-012
 - Joints Engineer; WALL: F-011
 - Joints Engineer; WALL; CEILING: F-009
-- PM (Lead): F-010, F-013
+- PM (Lead): F-010
 
 | ID | Severity | Check | Part | Finding | File | Fix | Owner group | Found | Posted |
 |---|---|---|---|---|---|---|---|---|---|
@@ -23,7 +24,7 @@ By owner group:
 | F-010 | major | C04 | POD total mass | The pod is about 429.5 kg against the 420 kg cap (D-37, D-54): 9.5 kg over. The layout study's list gives 426.7 kg (v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv); adjustments since: +12.0 kg AIR-D60 (calculation, Air Engineer, passed on by the PM on 2026-10-31); +3.4 kg WALL-TRAY-LIPS (confirmed, PM ruling in the WALL group, 2026-10-31); -12.6 kg FLOOR-9MM (confirmed, PM ruling in the BASE group, 2026-10-31). Open against the cap until the wall sample settles it (ISS-080). | `v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv` | Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill would save 4.3 kg). | PM (Lead) | 2026-10-31 c9ae2a4 | tracked for the PM (Lead) in the mechanical check group 2026-10-31 |
 | F-011 | major | C02 | ST-02A | As ST-02, with the panels and the side-frame spacing taken as perfect, so only the three metal stops vary (IF-03 and IF-04 back wall across its width: perfect panels): worst case -0.39 to 0.39 mm (nominal 0.00; RSS -0.23 to 0.23, for information), the joint needs 0 to 0.125 mm. Source of the limit: as ST-02. | `v2/04-Checks/stacks/contributors.csv` | as ST-02 | Joints Engineer; WALL | 2026-10-31 0cb764f | Joints and WALL groups 2026-10-31 |
 | F-012 | major | C02 | ST-04A | As ST-04, with the halves and the side-member spacing taken as perfect, so only the three metal stops vary (IF-05 and IF-06 ceiling across its width: perfect halves): worst case -0.39 to 0.39 mm (nominal 0.00; RSS -0.23 to 0.23, for information), the joint needs 0 to 0.125 mm. Source of the limit: as ST-02. | `v2/04-Checks/stacks/contributors.csv` | as ST-02 | Joints Engineer; CEILING | 2026-10-31 0cb764f | Joints and CEILING groups 2026-10-31 |
-| F-013 | major | C07 | sample package P06, P07 | The wall-and-door sample parts list (v2/06-Samples/wall-door-sample/parts-list.md on main, and still in PR #29) buys 25 x M6 x 50 ISO 4017 hex bolts (P06) and ISO 7089 washers (P07), sized to pass through a 40 mm member. The decided joint is M6 x 16 ISO 4762 socket head (PM ruling R-J2), driven from inside the member into the Sherex rivnut, with a 1.5 mm aluminium stop washer under the rivnut head and 7.0 mm clearance holes (joints register 2.1, 2.2; F-009 ruling). Built from this list, the sample tests a different joint and the factory buys the wrong bolts. | `v2/06-Samples/wall-door-sample/parts-list.md` | Update P06 to M6 x 16 ISO 4762 class 8.8 zinc and replace P07 with the H-08 stop washer (and the H-02 captive retainer, HOLD), in PR #29 or right after PR #23 merges. | PM (Lead) | 2026-10-31 0cb764f | Lead in the mechanical check group 2026-10-31 |
+| F-013 | major | C07 | sample package P06, P07 | The wall-and-door sample parts list (v2/06-Samples/wall-door-sample/parts-list.md on main, and still in PR #29) buys 25 x M6 x 50 ISO 4017 hex bolts (P06) and ISO 7089 washers (P07), sized to pass through a 40 mm member. The decided joint is M6 x 16 ISO 4762 socket head (PM ruling R-J2), driven from inside the member into the Sherex rivnut, with a 1.5 mm aluminium stop washer under the rivnut head and 7.0 mm clearance holes (joints register 2.1, 2.2; F-009 ruling). Built from this list, the sample tests a different joint and the factory buys the wrong bolts. | `v2/06-Samples/wall-door-sample/parts-list.md` | Update P06 to M6 x 16 ISO 4762 class 8.8 zinc and replace P07 with the H-08 stop washer (and the H-02 captive retainer, HOLD), in PR #29 or right after PR #23 merges. | Joints Engineer | 2026-10-31 0cb764f | Lead in the mechanical check group 2026-10-31 |
 
 ## Closed and accepted: 8
 
