@@ -406,6 +406,13 @@ def export_all(app):
     ]
     total = L.write_parts_list(design, os.path.join(root_dir, BOM_REL), rows, PN, NAME, VN)
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), total))
+    # the skin's panels laid flat (one ACP panel per outside face, 45 degree mitred edges as v1), 1:1 in mm
+    skin_comp = [c for c in design.allComponents if c.partNumber == PARTS["SKIN"][0]][0]
+    try:
+        placed = L.write_panels_dxf(os.path.join(root_dir, DXF_SKIN_REL), L.skin_panels(skin_comp.bRepBodies.item(0)))
+        print("DXF skin panels %s: %d panels %s" % (DXF_SKIN_REL, len(placed), placed))
+    except Exception as exc:          # the model exports stand; the flat patterns are reported and retried
+        print("DXF skin panels FAILED: %r" % (exc,))
     with open(os.path.join(root_dir, ANCHORS_REL), "w", encoding="utf-8") as fh:
         json.dump({"document": DOC_NAME, "f3d": F3D_REL, "anchors": [
             {"component": "%s %s" % (PARTS[k][0], PARTS[k][1]), "index": i, "expression": e} for k, i, e in ANCHORS]},

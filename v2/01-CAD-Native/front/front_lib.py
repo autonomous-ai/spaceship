@@ -595,3 +595,86 @@ JF_PARAMS = [
     ("jf_z5", "panel_z0 + side_h + seam_gap + side_h / 2", "mm", "calculation", "upper panel, middle bolt"),
     ("jf_z6", "panel_z0 + 2 * side_h + seam_gap - bolt_edge_inset", "mm", "calculation", "upper panel, top bolt"),
 ]
+
+
+# ---------------------------------------------------------------- ACP skin panels laid flat
+def skin_panels(body, probe_mm=60.0):
+    """The skin's outside faces as flat panels: [(name, area_mm2, [loop, ...])] with each loop a list of (u, v) in mm.
+
+    The skin is a shell, so each planar outside face is one ACP panel, joined to its neighbours with 45 degree mitred
+    edges as in v1 ("ghép mí 45°"); the panel's outline is the face's outline on the outside surface. A face is on the
+    outside when a short ray along its outward normal does not hit the skin again (an inside face looks across the
+    hollow at the opposite wall). u runs along the face's longest outer edge, v square to it, origin at its corner."""
+    import math
+    root = body.parentComponent
+    out = []
+    for i, fc in enumerate(body.faces):
+        if fc.geometry.surfaceType != adsk.core.SurfaceTypes.PlaneSurfaceType:
+            continue
+        p = fc.pointOnFace
+        _ok, n = fc.evaluator.getNormalAtPoint(p)
+        o = adsk.core.Point3D.create(p.x + n.x * 0.01, p.y + n.y * 0.01, p.z + n.z * 0.01)
+        hp = adsk.core.ObjectCollection.create()
+        hits = root.findBRepUsingRay(o, n, adsk.fusion.BRepEntityTypes.BRepFaceEntityType, -1.0, False, hp)
+        again = []
+        for k in range(hits.count if hits else 0):
+            h, q = hits.item(k), hp.item(k) if k < hp.count else None
+            if h.body == body and h != fc and q is not None and q.distanceTo(o) * 10 < probe_mm:
+                again.append(h)
+        if again:
+            continue
+        loops = []
+        edge0 = None
+        for lp in fc.loops:
+            pts = []
+            for coedge in lp.coEdges:
+                e = coedge.edge
+                a, b = (e.startVertex.geometry, e.endVertex.geometry) if not coedge.isOpposedToEdge else \
+                       (e.endVertex.geometry, e.startVertex.geometry)
+                pts.append(a)
+                if lp.isOuter and (edge0 is None or e.length > edge0[2]):
+                    edge0 = (a, b, e.length)
+            loops.append((lp.isOuter, pts))
+        a, b, _l = edge0
+        ux = adsk.core.Vector3D.create(b.x - a.x, b.y - a.y, b.z - a.z)
+        ux.normalize()
+        vy = n.crossProduct(ux)
+        vy.normalize()
+        flat = []
+        for outer, pts in sorted(loops, key=lambda t: not t[0]):
+            flat.append([((q.x - a.x) * ux.x + (q.y - a.y) * ux.y + (q.z - a.z) * ux.z,
+                          (q.x - a.x) * vy.x + (q.y - a.y) * vy.y + (q.z - a.z) * vy.z) for q in pts])
+        flat = [[(u * 10.0, v * 10.0) for u, v in lp] for lp in flat]
+        out.append(("F%02d" % (i + 1), fc.area * 100.0, flat, (round(n.x, 3), round(n.y, 3), round(n.z, 3))))
+    return out
+
+
+def write_panels_dxf(path, panels, gap=60.0, row_w=3000.0):
+    """All panels side by side on layer CUT, each with a TEXT label on layer MARK (name, size, outward normal)."""
+    out = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "9", "$MEASUREMENT", "70", "1",
+           "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    x0 = y0 = 0.0
+    row_h = 0.0
+    placed = []
+    for name, area, loops, nrm in panels:
+        us = [u for lp in loops for u, _v in lp]
+        vs = [v for lp in loops for _u, v in lp]
+        w, h = max(us) - min(us), max(vs) - min(vs)
+        if x0 > 0 and x0 + w > row_w:
+            x0, y0, row_h = 0.0, y0 + row_h + gap * 2, 0.0
+        dx, dy = x0 - min(us), y0 - min(vs)
+        for lp in loops:
+            for i in range(len(lp)):
+                (a, b), (c, d) = lp[i], lp[(i + 1) % len(lp)]
+                out += ["0", "LINE", "8", "CUT", "10", "%.3f" % (a + dx), "20", "%.3f" % (b + dy), "30", "0.0",
+                        "11", "%.3f" % (c + dx), "21", "%.3f" % (d + dy), "31", "0.0"]
+        label = "%s %.0f x %.0f n%s" % (name, w, h, nrm)
+        out += ["0", "TEXT", "8", "MARK", "10", "%.3f" % x0, "20", "%.3f" % (y0 - 25.0), "30", "0.0", "40", "15.0",
+                "1", label]
+        placed.append((name, round(w, 1), round(h, 1), round(area / 1e6, 4)))
+        x0 += w + gap
+        row_h = max(row_h, h)
+    out += ["0", "ENDSEC", "0", "EOF"]
+    with open(path, "w", encoding="ascii", errors="replace") as fh:
+        fh.write("\n".join(out) + "\n")
+    return placed
