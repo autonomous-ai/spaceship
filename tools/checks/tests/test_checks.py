@@ -996,3 +996,32 @@ def test_a_duplicate_name_goes_to_the_list_that_is_off(tmp_path):
           if f.rule == "duplicate-number"}
     assert fs["111211"].owner == "BASE" and "SQUARE" in fs["111211"].fix      # the key's name is the Joints Engineer's
     assert fs["111501"].owner == "Control" and "Rebuild the master BOM" in fs["111501"].fix
+
+
+def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
+    # the owner's rule 9 is for sheet parts: a 60 mm access hole near a felt's edge can't tear out
+    def plate(name):
+        x0, x1, y0, y1 = -73.5, 500.0, -73.5, 500.0
+        rim = (sf.Frame(), 30.0, (30.0, 0, 0), (30.0, 0, 0), True)
+        face = sf.Face(1, "plane", (0, 0, 0), (0, 0, 1), None, True, [], [rim],
+                       [((x0, y0, 0), (x1, y0, 0)), ((x1, y0, 0), (x1, y1, 0)), ((x1, y1, 0), (x0, y1, 0)),
+                        ((x0, y1, 0), (x0, y0, 0))])
+        so = sf.Solid(1, name)
+        so.faces, so.holes, so.bends = [face], [sf.Hole(1, (0, 0, 0), (0, 0, 1), 60.0, 9.0, [])], []
+        return so
+
+    class FakeStep:
+        def __init__(self, pn, name):
+            self.pn, self.name, self.so = pn, name, plate(name)
+
+        def instances(self):
+            return [{"solid": 1, "part_number": self.pn, "name": "%s %s" % (self.pn, self.name), "path": [], "frame": sf.Frame()}]
+
+        def solid(self, _sid):
+            return self.so
+    for pn, name, flagged in (("511302", "LINING - FELT - SIDE LOWER - RH", False),
+                              ("511102", "LINING - TRAY - SIDE LOWER - RH", True)):
+        monkeypatch.setattr(c_geometry, "load_step", lambda _p, s=FakeStep(pn, name): s)
+        fs = [f for f in c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, {}, hole_rules=[],
+                                                         edge_exceptions={}) if f.rule == "edge-distance"]
+        assert bool(fs) == flagged, name
