@@ -1,8 +1,8 @@
-# Mechanical check run: 02cfe83 on 2026-11-01
+# Mechanical check run: 11d9b51 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `02cfe83`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `11d9b51`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 24** (12 severe, 9 major, 3 minor). Register numbers in brackets.
+**Findings in this run: 21** (12 severe, 9 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -13,7 +13,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `02cfe83`. The Fusion 
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | yes | 20 |
-| C06 BOM completeness | yes | 4 |
+| C06 BOM completeness | yes | 1 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 0 |
 | C09 edge distance, bend radius, hole-to-bend | yes | 0 |
@@ -47,9 +47,6 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 111, "parts_lists": ["v2/03-M
 | F-096 | major | C05 | 360002 | 360002 FRONT - FIXED GLASS UNIT has no drawing PDF (360002_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step. | FRONT |
 | F-023 | major | C05 | 510101 | 510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step. | WALL |
 | F-098 | major | C06 | 111211 | Part number 111211 is used for different names: 'BASE - CORNER KEY - BACK - COMMON' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - CORNER KEY - SQUARE - COMMON' in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv; 'BASE - CORNER KEY - BACK - COMMON' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The Joints Engineer's list names it 'BASE - CORNER KEY - SQUARE - COMMON', and the teams place the keys by reference (D-95). | BASE |
-| F-095 | minor | C06 | 368003 | 368003 is named 'FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD' in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD', and hardware names come from the register (D-99). | FRONT |
-| F-027 | minor | C06 | 368006 | 368006 is named 'FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD', and hardware names come from the register (D-99). | FRONT |
-| F-028 | minor | C06 | 368102 | 368102 is named 'FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10' in the CAD and 'FRONT - DOOR STRIKE' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - DOOR STRIKE', and hardware names come from the register (D-99). | FRONT |
 
 ## Tolerance stacks (C02)
 

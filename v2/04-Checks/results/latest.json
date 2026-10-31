@@ -1,5 +1,5 @@
 {
- "rev": "02cfe83",
+ "rev": "11d9b51",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -62,42 +62,6 @@
    "owner": "BASE",
    "evidence": {},
    "key": "C06|duplicate-number|111211"
-  },
-  {
-   "check": "C06",
-   "rule": "name-mismatch",
-   "subject": "368003",
-   "severity": "minor",
-   "message": "368003 is named 'FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD' in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD', and hardware names come from the register (D-99).",
-   "fix": "Use the register's name in the CAD.",
-   "file": "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
-   "owner": "FRONT",
-   "evidence": {},
-   "key": "C06|name-mismatch|368003"
-  },
-  {
-   "check": "C06",
-   "rule": "name-mismatch",
-   "subject": "368006",
-   "severity": "minor",
-   "message": "368006 is named 'FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD', and hardware names come from the register (D-99).",
-   "fix": "Use the register's name in the CAD.",
-   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
-   "owner": "FRONT",
-   "evidence": {},
-   "key": "C06|name-mismatch|368006"
-  },
-  {
-   "check": "C06",
-   "rule": "name-mismatch",
-   "subject": "368102",
-   "severity": "minor",
-   "message": "368102 is named 'FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10' in the CAD and 'FRONT - DOOR STRIKE' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - DOOR STRIKE', and hardware names come from the register (D-99).",
-   "fix": "Use the register's name in the CAD.",
-   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
-   "owner": "FRONT",
-   "evidence": {},
-   "key": "C06|name-mismatch|368102"
   },
   {
    "check": "C05",

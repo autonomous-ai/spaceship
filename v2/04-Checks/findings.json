@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -909,7 +909,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -954,7 +954,7 @@
    "evidence": {},
    "key": "C06|name-mismatch|368006",
    "id": "F-027",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 7963e9c",
    "posted": "FRONT group 2026-11-01",
@@ -963,9 +963,15 @@
      "date": "2026-11-01",
      "rev": "7963e9c",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "11d9b51",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 02cfe83",
+   "closed": "2026-11-01 11d9b51"
   },
   {
    "check": "C06",
@@ -979,7 +985,7 @@
    "evidence": {},
    "key": "C06|name-mismatch|368102",
    "id": "F-028",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 7963e9c",
    "posted": "FRONT group 2026-11-01",
@@ -988,9 +994,15 @@
      "date": "2026-11-01",
      "rev": "7963e9c",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "11d9b51",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 02cfe83",
+   "closed": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -1015,7 +1027,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -1040,7 +1052,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -1065,7 +1077,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C06",
@@ -1319,7 +1331,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -1344,7 +1356,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -1369,7 +1381,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -1425,7 +1437,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -1481,7 +1493,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -3022,7 +3034,7 @@
    "evidence": {},
    "key": "C06|name-mismatch|368003",
    "id": "F-095",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 284dae7",
    "posted": "FRONT group 2026-11-01",
@@ -3031,9 +3043,15 @@
      "date": "2026-11-01",
      "rev": "284dae7",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "11d9b51",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 02cfe83",
+   "closed": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -3058,7 +3076,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -3083,7 +3101,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C06",
@@ -3113,7 +3131,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C06",
@@ -3179,7 +3197,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -3204,7 +3222,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C05",
@@ -3229,7 +3247,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 02cfe83"
+   "last_seen": "2026-11-01 11d9b51"
   },
   {
    "check": "C01",
