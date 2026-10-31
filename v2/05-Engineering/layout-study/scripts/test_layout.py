@@ -101,6 +101,40 @@ def test_only_the_five_status_words():
             assert any(c in v.source for c in ("D-", "PR #", "S05")), f"{k}: a confirmed value cites its decision ({v.source})"
 
 
+def test_p04_rollup_lines():
+    """ISS-081, F-010: every roll-up line has a status word and a source and every piece but the glass is 20 kg or less
+    (D-03); the pod as shipped leaves out the voice kit and is the CSV's sum, which the mechanical check reads; at 32 kg/m3
+    the air parts are the air report's 61.8 kg with fans; the allowances are assumptions; each applied saving is priced
+    from the list itself (S40)."""
+    import csv
+    import rollup
+    rows = rollup.lines()
+    for g, item, q, kg, st, src in rows:
+        assert any(w in st for w in STATUS_WORDS), (item, st)
+        assert src.strip(), item
+        assert kg <= 20.0 or "glass" in item.lower() or "door unit" in item.lower(), (item, kg)
+    later = [r for r in rows if r[0] == "LATER"]
+    assert len(later) == 1 and "voice" in later[0][1].lower() and abs(later[0][3] - 4.0) < 1e-9, later
+    shipped = sum(q * kg for g, _, q, kg, _, _ in rows if g != "LATER")
+    assert abs(rollup.pod_kg(rows) - shipped) < 1e-9
+    body = rollup.rollup_files()["out/parts-decided-P04.csv"].splitlines()
+    assert body[0].split(",")[4] == "kg_total", body[0]
+    csv_kg = sum(float(r[4]) for r in csv.reader(body[1:]))
+    assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
+    air32 = sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=p("fill_pet_kgm3")) if g == "AIR")
+    assert abs(air32 - 61.8) < 0.05, air32
+    for name in ("Light shelf", "Work-wall ledge", "Named clips"):
+        hit = [r for r in rows if r[1].startswith(name)]
+        assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
+    assert len([r for r in rows if "ships loose" in r[1]]) == 2
+    ap = rollup.applied()
+    assert len(ap) == 4 and all(a[0] > 0 for a in ap), ap
+    off = rollup.lines(fill=p("fill_pet_kgm3"), clip_only=False, band_t=p("t_al_base"), kit_outside=False)
+    assert abs(rollup.pod_kg(off) - rollup.pod_kg(rows) - sum(a[0] for a in ap)) < 0.01
+    op = rollup.open_savings()
+    assert len(op) == 3 and all(o[0] > 0 for o in op) and op[-1][2].startswith("rejected"), op
+
+
 P_DEFAULT_CEIL = p("ceil_t")
 
 if __name__ == "__main__":

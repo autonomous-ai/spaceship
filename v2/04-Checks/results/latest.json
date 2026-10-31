@@ -1,0 +1,821 @@
+{
+ "rev": "e3bca55",
+ "date": "2026-10-31",
+ "inputs": {
+  "bodies_skeleton": 34,
+  "bodies_assembly": 0,
+  "parts_lists": [
+   "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
+  ],
+  "part_steps": []
+ },
+ "ran": [
+  "C01",
+  "C01:skeleton",
+  "C02:skeleton",
+  "C02:stacks",
+  "C04",
+  "C06",
+  "C07",
+  "C10",
+  "C11"
+ ],
+ "findings": [
+  {
+   "check": "C04",
+   "rule": "pod-mass-over-cap",
+   "subject": "POD total mass",
+   "severity": "major",
+   "message": "The pod is about 422.8 kg against the 420 kg cap (D-37, D-54): 2.8 kg over. The layout study's list gives 422.8 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv). Open against the cap until the wall sample settles it (ISS-080).",
+   "fix": "Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill would save 4.3 kg).",
+   "file": "v2/05-Engineering/layout-study/out/parts-decided-P04.csv",
+   "owner": "PM (Lead)",
+   "evidence": {
+    "total_kg": 422.82,
+    "cap_kg": 420.0
+   },
+   "key": "C04|pod-mass-over-cap|POD total mass"
+  }
+ ],
+ "stacks": [
+  {
+   "nominal": 7.0,
+   "wc_min": 7.0,
+   "wc_max": 7.0,
+   "rss_min": 7.0,
+   "rss_max": 7.0,
+   "missing": [
+    "Door bottom height (glass bottom)",
+    "Kick strip height below the glass",
+    "Threshold height",
+    "Floor height under the threshold"
+   ],
+   "stack_id": "ST-01",
+   "joint": "IF-02 door to threshold",
+   "what": "Running gap between the door's kick strip and the threshold",
+   "min": 3.0,
+   "max": 10.0,
+   "owner": "FRONT",
+   "state": "OPEN"
+  },
+  {
+   "nominal": 0.5129999999999999,
+   "wc_min": 0.047999999999999876,
+   "wc_max": 0.5129999999999999,
+   "rss_min": 0.13539228139068532,
+   "rss_max": 0.4256077186093144,
+   "missing": [],
+   "stack_id": "ST-03",
+   "joint": "IF-01 IF-03 IF-04 IF-05 M6 bolt into a rivnut through a clearance hole",
+   "what": "Radial clearance left for an M6 bolt after both hole positions and the rivnut's float (fixed-fastener case; the panel shifts to the bolts within the spigot play)",
+   "min": 0.0,
+   "max": null,
+   "owner": "Joints Engineer; WALL; CEILING; BASE",
+   "state": "PASS"
+  },
+  {
+   "nominal": 5.499999999999982,
+   "wc_min": 5.2399999999999824,
+   "wc_max": 5.759999999999982,
+   "rss_min": 5.3161522368914795,
+   "rss_max": 5.683847763108485,
+   "missing": [
+    "Space between the side frames",
+    "Back panel B1 frame width",
+    "Back panel B2 frame width"
+   ],
+   "stack_id": "ST-02",
+   "joint": "IF-03 and IF-04 back wall across its width",
+   "what": "Closing seam B1-B2 frame gap: the span less the two corner stops and the B1, B2 frames",
+   "min": 4.0,
+   "max": 7.0,
+   "owner": "Joints Engineer; WALL",
+   "state": "OPEN"
+  },
+  {
+   "nominal": 5.499999999999982,
+   "wc_min": 5.2399999999999824,
+   "wc_max": 5.759999999999982,
+   "rss_min": 5.3161522368914795,
+   "rss_max": 5.683847763108485,
+   "missing": [],
+   "stack_id": "ST-02A",
+   "joint": "IF-03 and IF-04 back wall across its width: perfect frames",
+   "what": "As ST-02 with the frames and the span taken as perfect, so only the two corner stops vary",
+   "min": 4.0,
+   "max": 7.0,
+   "owner": "Joints Engineer; WALL",
+   "state": "PASS"
+  },
+  {
+   "nominal": 5.499999999999982,
+   "wc_min": 5.2399999999999824,
+   "wc_max": 5.759999999999982,
+   "rss_min": 5.3161522368914795,
+   "rss_max": 5.683847763108485,
+   "missing": [
+    "Space between the upper side panels' top members",
+    "Ceiling half C1 frame width",
+    "Ceiling half C2 frame width"
+   ],
+   "stack_id": "ST-04",
+   "joint": "IF-05 and IF-06 ceiling across its width",
+   "what": "Closing seam C1-C2 frame gap: the span less the two side stops and the C1, C2 frames",
+   "min": 4.0,
+   "max": 7.0,
+   "owner": "Joints Engineer; CEILING",
+   "state": "OPEN"
+  },
+  {
+   "nominal": 5.499999999999982,
+   "wc_min": 5.2399999999999824,
+   "wc_max": 5.759999999999982,
+   "rss_min": 5.3161522368914795,
+   "rss_max": 5.683847763108485,
+   "missing": [],
+   "stack_id": "ST-04A",
+   "joint": "IF-05 and IF-06 ceiling across its width: perfect frames",
+   "what": "As ST-04 with the frames and the span taken as perfect, so only the two side stops vary",
+   "min": 4.0,
+   "max": 7.0,
+   "owner": "Joints Engineer; CEILING",
+   "state": "PASS"
+  }
+ ],
+ "shipping": [
+  {
+   "id": "1-01",
+   "name": "BASE - SEAL MAT - F1",
+   "kg": 1.05,
+   "dims": [
+    1451.0,
+    1205.5,
+    3.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "1-02",
+   "name": "BASE - SEAL MAT - F2",
+   "kg": 1.05,
+   "dims": [
+    1451.0,
+    1205.5,
+    3.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation"
+  },
+  {
+   "id": "1-03",
+   "name": "BASE - FLOOR PANEL - F1",
+   "kg": 10.035,
+   "dims": [
+    1455.0,
+    1219.0,
+    9.0
+   ],
+   "ships_as": "upright",
+   "status": "confirmed (9 mm); calculation"
+  },
+  {
+   "id": "1-04",
+   "name": "BASE - FLOOR PANEL - F2",
+   "kg": 10.035,
+   "dims": [
+    1455.0,
+    1219.0,
+    9.0
+   ],
+   "ships_as": "upright",
+   "status": "confirmed (9 mm); calculation"
+  },
+  {
+   "id": "1-05",
+   "name": "WALL - PANEL ASSY - BACK LOWER - LH",
+   "kg": 9.309,
+   "dims": [
+    1200.61,
+    1118.61,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "1-06",
+   "name": "WALL - PANEL ASSY - BACK LOWER - RH",
+   "kg": 9.309,
+   "dims": [
+    1200.61,
+    1118.61,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "1-07",
+   "name": "WALL - PANEL ASSY - SIDE LOWER - LH",
+   "kg": 11.294,
+   "dims": [
+    1492.74,
+    1142.74,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation (CAD); fill provisional"
+  },
+  {
+   "id": "1-08",
+   "name": "WALL - PANEL ASSY - SIDE LOWER - RH",
+   "kg": 11.294,
+   "dims": [
+    1492.74,
+    1142.74,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation (CAD); fill provisional"
+  },
+  {
+   "id": "1-09",
+   "name": "WALL - PANEL ASSY - BACK UPPER - LH",
+   "kg": 9.309,
+   "dims": [
+    1200.61,
+    1118.61,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "1-10",
+   "name": "WALL - PANEL ASSY - BACK UPPER - RH",
+   "kg": 9.309,
+   "dims": [
+    1200.61,
+    1118.61,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "1-11",
+   "name": "WALL - PANEL ASSY - SIDE UPPER - LH",
+   "kg": 11.281,
+   "dims": [
+    1492.74,
+    1142.74,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "1-12",
+   "name": "WALL - PANEL ASSY - SIDE UPPER - RH",
+   "kg": 11.281,
+   "dims": [
+    1492.74,
+    1142.74,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "1-13",
+   "name": "CEILING - PANEL ASSY - C1",
+   "kg": 10.035,
+   "dims": [
+    1495.0,
+    1203.61,
+    46.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation (CAD); bond assumption"
+  },
+  {
+   "id": "1-14",
+   "name": "CEILING - PANEL ASSY - C2",
+   "kg": 10.535,
+   "dims": [
+    1495.0,
+    1203.61,
+    60.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; calculation (CAD); bond assumption"
+  },
+  {
+   "id": "1-15",
+   "name": "LINING - CASSETTE - SIDE LOWER - RH",
+   "kg": 10.474,
+   "dims": [
+    1445.0,
+    1142.74,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; lips confirmed"
+  },
+  {
+   "id": "1-16",
+   "name": "LINING - CASSETTE - SIDE UPPER - RH",
+   "kg": 10.047,
+   "dims": [
+    1445.0,
+    1092.74,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; lips confirmed"
+  },
+  {
+   "id": "1-17",
+   "name": "LINING - CASSETTE - SIDE LOWER - LH",
+   "kg": 10.474,
+   "dims": [
+    1445.0,
+    1142.74,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; lips confirmed"
+  },
+  {
+   "id": "1-18",
+   "name": "LINING - CASSETTE - SIDE UPPER - LH",
+   "kg": 10.047,
+   "dims": [
+    1445.0,
+    1092.74,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; lips confirmed"
+  },
+  {
+   "id": "1-19",
+   "name": "LINING - CASSETTE - BACK LOWER - LH",
+   "kg": 8.411,
+   "dims": [
+    1166.0,
+    1118.61,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; lips confirmed"
+  },
+  {
+   "id": "1-20",
+   "name": "LINING - CASSETTE - BACK LOWER - RH",
+   "kg": 8.411,
+   "dims": [
+    1166.0,
+    1118.61,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; lips confirmed"
+  },
+  {
+   "id": "1-21",
+   "name": "LINING - CASSETTE - BACK UPPER - LH",
+   "kg": 8.399,
+   "dims": [
+    1166.0,
+    1116.87,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; lips confirmed"
+  },
+  {
+   "id": "1-22",
+   "name": "LINING - CASSETTE - BACK UPPER - RH",
+   "kg": 8.399,
+   "dims": [
+    1166.0,
+    1116.87,
+    34.0
+   ],
+   "ships_as": "upright",
+   "status": "calculation; lips confirmed"
+  },
+  {
+   "id": "2-01",
+   "name": "FRONT - FIXED GLASS UNIT",
+   "kg": 29.58,
+   "dims": [
+    2033.0,
+    1031.0,
+    12.0
+   ],
+   "ships_as": "glass",
+   "status": "calculation (CAD)"
+  },
+  {
+   "id": "2-02",
+   "name": "FRONT - DOOR UNIT",
+   "kg": 50.17,
+   "dims": [
+    2089.0,
+    1175.0,
+    149.0
+   ],
+   "ships_as": "glass",
+   "status": "calculation (CAD)"
+  },
+  {
+   "id": "2-03",
+   "name": "FRONT - DECOR BLOCK - DR",
+   "kg": 18.056,
+   "dims": [
+    2290.0,
+    1016.0,
+    205.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "2-04",
+   "name": "BASE - BAND ASSY - BACK",
+   "kg": 3.135,
+   "dims": [
+    2420.0,
+    110.0,
+    40.0
+   ],
+   "ships_as": "long",
+   "status": "assumption; calculation; provisional"
+  },
+  {
+   "id": "2-05",
+   "name": "BASE - BAND ASSY - SIDE - LH",
+   "kg": 2.142,
+   "dims": [
+    1517.0,
+    110.0,
+    40.0
+   ],
+   "ships_as": "long",
+   "status": "assumption; calculation; provisional"
+  },
+  {
+   "id": "2-06",
+   "name": "BASE - BAND ASSY - SIDE - RH",
+   "kg": 2.142,
+   "dims": [
+    1517.0,
+    110.0,
+    40.0
+   ],
+   "ships_as": "long",
+   "status": "assumption; calculation; provisional"
+  },
+  {
+   "id": "2-07",
+   "name": "BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS",
+   "kg": 0.922,
+   "dims": [
+    729.0,
+    110.0,
+    40.0
+   ],
+   "ships_as": "long",
+   "status": "assumption; calculation; provisional"
+  },
+  {
+   "id": "2-08",
+   "name": "BASE - DOOR THRESHOLD - 13 MM",
+   "kg": 1.2,
+   "dims": [
+    1175.0,
+    60.0,
+    13.0
+   ],
+   "ships_as": "long",
+   "status": "assumption"
+  },
+  {
+   "id": "2-09",
+   "name": "FRONT - DECOR BLOCK - DL",
+   "kg": 9.976,
+   "dims": [
+    2290.0,
+    278.0,
+    205.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "2-10",
+   "name": "AIR - SOFFIT",
+   "kg": 9.833,
+   "dims": [
+    2332.0,
+    360.0,
+    220.0
+   ],
+   "ships_as": "long",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "2-11",
+   "name": "AIR - AIR COLUMN",
+   "kg": 9.779,
+   "dims": [
+    2105.0,
+    360.0,
+    217.0
+   ],
+   "ships_as": "long",
+   "status": "calculation; fill provisional"
+  },
+  {
+   "id": "2-12",
+   "name": "FRONT - DECOR BLOCK - DT",
+   "kg": 7.015,
+   "dims": [
+    1697.0,
+    280.0,
+    205.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "2-13",
+   "name": "ELECTRICAL - KIT - SWITCHES AND HARNESS",
+   "kg": 2.05,
+   "dims": [
+    600.0,
+    250.0,
+    200.0
+   ],
+   "ships_as": "long",
+   "status": "assumption"
+  },
+  {
+   "id": "2-14",
+   "name": "INTERIOR - LIGHT SHELF WITH LED STRIP",
+   "kg": 3.06,
+   "dims": [
+    2332.0,
+    80.0,
+    50.0
+   ],
+   "ships_as": "long",
+   "status": "assumption"
+  },
+  {
+   "id": "2-15",
+   "name": "AIR - SUPPLY FAN BOX AND TRANSITION, WITH 2 FANS",
+   "kg": 5.666,
+   "dims": [
+    516.0,
+    460.0,
+    155.0
+   ],
+   "ships_as": "long",
+   "status": "assumption; calculation"
+  },
+  {
+   "id": "2-16",
+   "name": "BASE - SMALL PARTS CARTON",
+   "kg": 1.626,
+   "dims": [
+    600.0,
+    400.0,
+    150.0
+   ],
+   "ships_as": "long",
+   "status": "assumption; calculation; provisional"
+  },
+  {
+   "id": "2-17",
+   "name": "INTERIOR - LEDGE AND SCREEN MOUNT CARTON",
+   "kg": 3.3,
+   "dims": [
+    1000.0,
+    250.0,
+    120.0
+   ],
+   "ships_as": "long",
+   "status": "assumption"
+  },
+  {
+   "id": "2-18",
+   "name": "AIR - INTAKE RISER",
+   "kg": 9.229,
+   "dims": [
+    1740.0,
+    250.0,
+    155.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "2-19",
+   "name": "AIR - CARTRIDGE - SUPPLY",
+   "kg": 11.155,
+   "dims": [
+    1750.0,
+    314.0,
+    173.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "2-20",
+   "name": "AIR - CARTRIDGE - EXHAUST",
+   "kg": 11.155,
+   "dims": [
+    1750.0,
+    314.0,
+    173.0
+   ],
+   "ships_as": "long",
+   "status": "calculation"
+  },
+  {
+   "id": "2-21",
+   "name": "AIR - EXHAUST FAN BOX, WITH 2 FANS",
+   "kg": 4.075,
+   "dims": [
+    314.0,
+    294.0,
+    173.0
+   ],
+   "ships_as": "long",
+   "status": "assumption; calculation"
+  },
+  {
+   "id": "2-22",
+   "name": "LINING - CASSETTE - CEILING - COMMON",
+   "kg": 9.476,
+   "dims": [
+    1163.0,
+    1048.0,
+    74.0
+   ],
+   "ships_as": "long",
+   "status": "calculation (CAD); fill provisional"
+  },
+  {
+   "id": "2-23",
+   "name": "LINING - CASSETTE - CEILING - COMMON",
+   "kg": 9.476,
+   "dims": [
+    1163.0,
+    1048.0,
+    74.0
+   ],
+   "ships_as": "long",
+   "status": "calculation (CAD); fill provisional"
+  },
+  {
+   "id": "2-24",
+   "name": "POD - INSTALLATION KIT (OPEN FIRST)",
+   "kg": 0.5,
+   "dims": [
+    300.0,
+    150.0,
+    80.0
+   ],
+   "ships_as": "long",
+   "status": "assumption"
+  }
+ ],
+ "shipping_source": "v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv",
+ "fastener_schedule": [
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "72",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838002",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "10",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838005",
+   "name": "HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "831001",
+   "name": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "831002",
+   "name": "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  }
+ ]
+}
