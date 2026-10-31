@@ -1,1 +1,8 @@
 part_number,name,size,length_mm,grade,finish,torque_nm,qty_parts_list,qty_cad,where_cad,maker,sku,status,parts_list,engagement
+838001,HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC,,,,,,72,,,,,,v2/04-BOM/100000_P01_POD-MASTER_BOM.csv,not measured yet (Fusion check)
+838002,HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC,,,,,,10,,,,,,v2/04-BOM/100000_P01_POD-MASTER_BOM.csv,not measured yet (Fusion check)
+838005,HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE,,,,,,,,,,,,v2/04-BOM/100000_P01_POD-MASTER_BOM.csv,not measured yet (Fusion check)
+838003,HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2,,,,,,,,,,,,v2/04-BOM/100000_P01_POD-MASTER_BOM.csv,not measured yet (Fusion check)
+831001,HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS,,,,,,,,,,,,v2/04-BOM/100000_P01_POD-MASTER_BOM.csv,not measured yet (Fusion check)
+831002,HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL,,,,,,,,,,,,v2/04-BOM/100000_P01_POD-MASTER_BOM.csv,not measured yet (Fusion check)
+838004,HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2,,,,,,,,,,,,v2/04-BOM/100000_P01_POD-MASTER_BOM.csv,not measured yet (Fusion check)

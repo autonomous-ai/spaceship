@@ -82,6 +82,21 @@ def normalise(row):
     return out
 
 
+def is_placeholder(row):
+    """A master BOM row that stands in for an item not yet in any parts list ('register only'), or one copied
+    from a team's parts list, which is checked in that list itself."""
+    raw = row.get("_raw", {})
+    rtype = (raw.get("row_type") or "").lower()
+    note = (raw.get("note") or raw.get("notes") or "").lower()
+    src = (raw.get("source_file") or "")
+    return ("register only" in rtype or "not in any parts list" in note
+            or (src.startswith("v2/03-Manufacturing/") and src.endswith(".csv")))
+
+
+def is_master(path):
+    return "/04-BOM/" in path.replace("\\", "/") and "MASTER" in os.path.basename(path).upper()
+
+
 def find_parts_lists(root):
     """CSV files under 03-Manufacturing, 04-BOM and 02-Drawings with a
     part-number column."""
@@ -117,6 +132,10 @@ def check_parts_lists(root, plists):
             rtype = (row["_raw"].get("row_type") or "").lower()
             if not pn and rtype in ("assembly", "pod", "group", "heading", "family"):
                 continue            # a master BOM heading row, not a part
+            if is_master(r) and is_placeholder(row):
+                if pn:
+                    seen[pn].append((r, name))      # still counts for duplicate numbers
+                continue            # its details live in the register or the team's own parts list
             if not pn and (row["class"] or "").lower() == "cut":
                 continue            # a cut-length member of a made frame: the frame's drawing and cut list define it
             if not pn:
@@ -538,8 +557,13 @@ def check_mixed_metals(root, plists, contacts):
         r = rel(root, p)
         for row in rows:
             pn = row["part_number"]
+            if is_master(r) and is_placeholder(row):
+                continue            # checked in the register or the team's own parts list
+            own = " ".join(x for x in (row["material"], row["grade"], row["finish"]) if x)
             if not pn:
-                mat[""] = " ".join(x for x in (row["material"], row["grade"], row["finish"]) if x)
+                mat[""] = own
+            if metal_class(mat.get(pn, "")) == "unknown" and metal_class(row["name"]) != "unknown":
+                mat[pn] = row["name"]           # e.g. 'ISO 4762 8.8 ZINC' in the name
             if is_fastener(pn, row["name"]) and metal_class(mat.get(pn, "")) == "unknown":
                 fs.append(Finding("C10", "fastener-metal-unknown", pn, "major",
                                   "Fastener %s %s in %s has no material or finish, so it can't be checked against "

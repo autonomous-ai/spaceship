@@ -1,6 +1,6 @@
-# Mechanical check run: 95d9ed3 on 2026-10-31
+# Mechanical check run: 295dd85 on 2026-10-31
 
-Offline checks (`tools/checks/run_checks.py`) on revision `95d9ed3`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `295dd85`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 1** (0 severe, 1 major, 0 minor). Register numbers in brackets.
 
@@ -76,5 +76,5 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 
 ## Fastener schedule (C07)
 
-0 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+7 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 
