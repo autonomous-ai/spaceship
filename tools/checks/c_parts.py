@@ -346,18 +346,26 @@ def check_pod_mass(root, rows, src, cap_kg=420.0):
     cap (D-37, D-54)."""
     if not rows:
         return [], None
+    # the PM's weight ruling of 2026-10-31: the voice cockpit kit (4.0 kg, shipped later) sits outside the cap
+    outside = [r for r in rows if re.search(r"outside the cap|voice cockpit kit reserve",
+                                            " ".join(str(r.get(k) or "") for k in ("item", "name", "status", "note")), re.I)]
+    rows = [r for r in rows if r not in outside]
     base = sum(num(r.get("kg_total")) or 0.0 for r in rows)
     adj = load_adjustments(root, src)
     extra = sum(num(a.get("kg")) or 0.0 for a in adj)
     total = base + extra
-    info = {"list_kg": round(base, 2), "adjustments": adj, "total_kg": round(total, 2), "cap_kg": cap_kg}
+    outside_kg = sum(num(r.get("kg_total")) or 0.0 for r in outside)
+    info = {"list_kg": round(base, 2), "adjustments": adj, "total_kg": round(total, 2), "cap_kg": cap_kg,
+            "outside_cap_kg": round(outside_kg, 2)}
     if total <= cap_kg + 1e-6:
         return [], info
     parts = "; ".join("%+.1f kg %s (%s, %s)" % (num(a["kg"]), a["id"], a["status"], a["source"]) for a in adj)
     return [Finding("C04", "pod-mass-over-cap", "POD total mass", "major",
                     "The pod is about %.1f kg against the %.0f kg cap (D-37, D-54): %.1f kg over. The layout study's "
-                    "list gives %.1f kg (%s)%s. Open against the cap until the wall sample settles it (ISS-080)." % (
-                        total, cap_kg, total - cap_kg, base, src, "; adjustments since: " + parts if parts else ""),
+                    "list gives %.1f kg (%s)%s%s. Open against the cap until the wall sample settles it (ISS-080)." % (
+                        total, cap_kg, total - cap_kg, base, src, "; adjustments since: " + parts if parts else "",
+                        "; %.1f kg of voice cockpit kit is outside the cap (PM weight ruling)" % outside_kg
+                        if outside_kg else ""),
                     "Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill "
                     "would save 4.3 kg).", src, "PM (Lead)", {"total_kg": round(total, 2), "cap_kg": cap_kg})], info
 

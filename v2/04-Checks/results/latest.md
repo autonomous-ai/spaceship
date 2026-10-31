@@ -1,6 +1,6 @@
-# Mechanical check run: e4cc460 on 2026-10-31
+# Mechanical check run: 2e90127 on 2026-10-31
 
-Offline checks (`tools/checks/run_checks.py`) on revision `e4cc460`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `2e90127`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 1** (0 severe, 1 major, 0 minor). Register numbers in brackets.
 
@@ -26,7 +26,7 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": [], "part_s
 
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
-| F-010 | major | C04 | POD total mass | The pod is about 436.3 kg against the 420 kg cap (D-37, D-54): 16.3 kg over. The layout study's list gives 436.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
+| F-010 | major | C04 | POD total mass | The pod is about 432.3 kg against the 420 kg cap (D-37, D-54): 12.3 kg over. The layout study's list gives 432.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv); 4.0 kg of voice cockpit kit is outside the cap (PM weight ruling). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
 
 ## Tolerance stacks (C02)
 
