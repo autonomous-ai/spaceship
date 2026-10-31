@@ -491,13 +491,15 @@ def build():
     N["tool_power"] = (f"12 V 5 A ({p('voice_kit_w'):.0f} W) for the kit on the pod's 12 V bus, which also feeds the fans, lights and "
                        "sensors (D-10, D-11); the electrical group adds it to the power budget.")
     N["pitch_acp"] = f0(p("stud_pitch_acp"))
-    # tonight's recount on skeleton P04 (ISS-081, F-010): weight-rollup.md and out/parts-decided-P04.csv
+    # the live weight count on skeleton P04 (ISS-081, F-010): weight-rollup.md and out/parts-decided-P04.csv
     import rollup
     rrows = rollup.lines()
     files.update(rollup.rollup_files())
-    N["rollup_total"] = f1(rollup.pod_kg(rrows))
-    N["rollup_over"] = f1(rollup.pod_kg(rrows) - rollup.CAP_KG)
-    N["rollup_save4"] = f1(sum(sv[0] for sv in rollup.savings()[:4]))
+    shipped = rollup.pod_kg(rrows)
+    N["rollup_total"] = f1(shipped)
+    for key, ref in (("rollup_cap_gap", rollup.CAP_KG), ("rollup_target_gap", rollup.TARGET_KG)):
+        N[key] = f"{f1(abs(shipped - ref))} kg {'over' if shipped > ref else 'under'}"
+    N["rollup_applied"] = f1(sum(a[0] for a in rollup.applied()))
     tmpl = open(os.path.join(ROOT, "report_template.md"), encoding="utf-8").read()
     missing = sorted(set(re.findall(r"\{\{(\w+)\}\}", tmpl)) - set(N))
     if missing:
