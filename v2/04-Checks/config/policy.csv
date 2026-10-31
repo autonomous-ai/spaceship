@@ -1,0 +1,2 @@
+key,value,status_source
+missing_drawing_severity,major,"confirmed: PM ruling of 2026-10-31 in the mechanical check group: a missing drawing for a part we make is major while the shared drawing start is being solved, so CAD keeps merging and the drawings stay tracked; back to severe the moment Fusion Engineer 2's drawing start works"

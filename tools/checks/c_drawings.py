@@ -72,12 +72,24 @@ def _in_cut_list(root, pn):
     return False
 
 
+def policy(root, key, default):
+    p = os.path.join(root, "v2/04-Checks/config/policy.csv")
+    if os.path.exists(p):
+        import csv
+        with open(p, newline="", encoding="utf-8") as fh:
+            for row in csv.DictReader(fh):
+                if row.get("key") == key and row.get("value"):
+                    return row["value"].strip()
+    return default
+
+
 def check_drawings(root, part_numbers, holes_by_pn, names=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes."""
     names = names or {}
     fs = []
     idx = index_files(root)
+    missing_sev = policy(root, "missing_drawing_severity", "severe")      # PM ruling, see config/policy.csv
     for pn in sorted(part_numbers):
         cls = pn_class(pn)
         if cls not in ("part", "assembly"):
@@ -93,7 +105,7 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None):
         if not pdfs and soft and (files.get("DXF") or _in_cut_list(root, pn)):
             continue        # soft goods may be defined by a DXF or a cut list line instead of a drawing
         if not pdfs:
-            fs.append(Finding("C05", "no-drawing", pn, "severe" if cls == "part" and not soft else "major",
+            fs.append(Finding("C05", "no-drawing", pn, missing_sev if cls == "part" and not soft else "major",
                               "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s." % (
                                   label, pn, " though its CAD is in %s" % r_where if r_where else ""),
                               "Make the ISO first-angle drawing, export it through the name strip, and commit it.",

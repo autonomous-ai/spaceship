@@ -382,6 +382,11 @@ def test_soft_goods_rule_uses_whole_words(tmp_path):
     fs = c_drawings.check_drawings(str(tmp_path), set(names), {}, names)
     got = {f.subject: f.severity for f in fs}
     assert got == {"351001": "severe", "351002": "severe", "351003": "severe"}   # real parts need drawings
+    # the PM's policy can rate a missing drawing major while the drawing start is being solved
+    (tmp_path / "v2/04-Checks/config").mkdir(parents=True)
+    (tmp_path / "v2/04-Checks/config/policy.csv").write_text("key,value,status_source\nmissing_drawing_severity,major,x\n")
+    fs = c_drawings.check_drawings(str(tmp_path), set(names), {}, names)
+    assert {f.subject: f.severity for f in fs} == {"351001": "major", "351002": "major", "351003": "major"}
     # 351004 is a seal: its cut-list line defines it
 
 

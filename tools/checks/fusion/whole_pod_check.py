@@ -217,6 +217,9 @@ def fasteners(app, bodies, tools, later_re, step_mm=0.25, ring_extra_mm=0.6, pas
     tbm = adsk.fusion.TemporaryBRepManager.get()
     inside = adsk.fusion.PointContainment.PointInsidePointContainment
     boxes = {id(b): bbox_mm(b) for _l, b in bodies}
+    n_bolts = sum(1 for l, _b in bodies if FASTENER_RE.search(l) and not NUT_RE.search(l))
+    if n_bolts > 20:                 # the whole pod: a coarser walk keeps the run to minutes
+        step_mm, past_tip_mm = max(step_mm, 0.5), min(past_tip_mm, 15.0)
     # the tool: one or more coaxial segments out from the head (diameter, start, end in mm)
     segs = [(_f(t.get("diameter_mm"), 8.0), _f(t.get("start_mm"), 0.0), _f(t.get("end_mm"), _f(t.get("length_mm"), 80.0)))
             for t in tools] or [(8.0, 0.0, 70.0), (40.0, 70.0, 170.0)]
@@ -240,7 +243,13 @@ def fasteners(app, bodies, tools, later_re, step_mm=0.25, ring_extra_mm=0.6, pas
         sgn = 1.0 if tip_t > head_t else -1.0
         length_mm = abs(tip_t - head_t) * CM
         reach = (length_mm + past_tip_mm) / CM
-        near = [(l, b) for l, b in bodies if b is not bb and box_gap(boxes[id(b)], boxes[id(bb)]) < past_tip_mm]
+        # only bodies whose box meets the walked segment (head to past the tip, radius + 1 mm)
+        p_head = _pt(o, a, head_t)
+        p_end = _pt(o, a, head_t + sgn * (length_mm + past_tip_mm) / CM)
+        rr = (ax["radius"] * CM + ring_extra_mm + 1.0)
+        seg = (min(p_head.x, p_end.x) * CM - rr, min(p_head.y, p_end.y) * CM - rr, min(p_head.z, p_end.z) * CM - rr,
+               max(p_head.x, p_end.x) * CM + rr, max(p_head.y, p_end.y) * CM + rr, max(p_head.z, p_end.z) * CM + rr)
+        near = [(l, b) for l, b in bodies if b is not bb and box_gap(boxes[id(b)], seg) < 0]
         n = int((length_mm + past_tip_mm) / step_mm)
         ring, axis_hits = {}, {}
         for k in range(n + 1):
