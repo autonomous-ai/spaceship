@@ -446,6 +446,10 @@ def main(argv=None):
     if not install:
         print("check_api: no Fusion install found (%s)" % INSTALL_GLOB, file=sys.stderr)
         return 2
+    missing = [s for s in opts.scripts if not os.path.isfile(s)]
+    if missing:
+        print("check_api: no such file: %s" % ", ".join(missing), file=sys.stderr)
+        return 2
     scripts = [os.path.relpath(s) for s in opts.scripts]
     try:
         errors = run_mypy(scripts, defs_cache(install))
