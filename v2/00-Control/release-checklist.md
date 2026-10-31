@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (2f7a851), PR #32 (cec14ba), PR #91 (38342c1), PR #92 (46e7ee6), PR #104 (5c6e527), PR #64 (64fed40), PR #105 (9031736), PR #127 (bca872d). The Mac's screen at run time: **unlocked**. 296 files in the CAD, drawing and manufacturing folders; the FAI plan's 61 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (97a1aeb), PR #32 (cec14ba), PR #91 (38342c1), PR #92 (46e7ee6), PR #104 (5c6e527), PR #64 (64fed40), PR #105 (e56e867). The Mac's screen at run time: **unlocked**. 305 files in the CAD, drawing and manufacturing folders; the FAI plan's 66 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -19,16 +19,16 @@ Read from: main (2f7a851), PR #32 (cec14ba), PR #91 (38342c1), PR #92 (46e7ee6),
 | CEILING (builds AIR, D-80) | — | — | — | — | — | — |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 10 | 2 | 0 | 3 | 0 | 64 |
-| FRONT | 3 | 12 | 0 | 3 | 0 | 6 |
+| FRONT | 4 | 16 | 0 | 4 | 1 | 6 |
 | JOINTS | 0 | 1 | 0 | 0 | 0 | 0 |
 | WALL | 2 | 14 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 16 | 59 | 0 | 8 | 1 | 81 |
+| **All, each number once** | 17 | 63 | 0 | 9 | 2 | 81 |
 
 No parts list yet: CEILING (builds AIR, D-80).
 
-59 of the 75 made numbers have no drawing yet; for 52 of them the drawing is the only gap, so their drawings can start now (D-84).
+63 of the 80 made numbers have no drawing yet; for 55 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 59, DXF or cut list 6, finish 1.
+What the open made numbers miss: drawing 63, DXF or cut list 7, finish 1.
 
 ## Made parts with no FAI line
 
@@ -105,6 +105,11 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| 350002 | FRONT - DECOR BLOCK ASSY - DT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
+| 351201 | FRONT - DECOR SKIN - DT | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
+| 351204 | FRONT - DECOR FRAME - DT | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D15 | open: drawing |
+| 351202 | FRONT - DECOR BACK PLATE - DT | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-D16 | done |
+| 351203 | FRONT - DOOR TOP STOP - DT | PR #105 | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
 | 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
 | 351301 | FRONT - DECOR SKIN - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
 | 351306 | FRONT - DECOR FRAME - DR | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D04, K-D05 | open: drawing |
@@ -253,6 +258,8 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
+| 368005 | FRONT - FRAME-STOP SEAL | PR #105 | H-20 | no | F-03 | open: maker and SKU |
+| 368007 | FRONT - DOOR CATCH - IN DT | PR #105 | H-23 | yes | F-02 | done |
 | 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | PR #105 | n/a (team-numbered) | HOLD | T04 | HOLD |
 | 368001 | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 | main | H-15 | yes | T13 | done |
 | 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | main | H-16 | yes | F-03 | done |
@@ -284,8 +291,6 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838002 | H-01P | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC |
 | 848004 | H-04B | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE |
 | 108001 | H-07 | POD - HEX KEY - 5 MM BALL END |
-| 368005 | H-20 | FRONT - FRAME-STOP SEAL |
-| 368007 | H-23 | FRONT - DOOR CATCH - IN DT |
 | 838007 | H-28 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 |
 | 838008 | H-29 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
