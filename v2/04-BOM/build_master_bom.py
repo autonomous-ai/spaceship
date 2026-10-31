@@ -370,7 +370,7 @@ def check(parts, register, reg_where):
         if r["qty_per_pod"] is None:
             miss(r["team"], f"{label}: no quantity per pod")
         if r["make_buy"] in ("make", "buy") and re.search(r"alumin|steel|zinc", r["material"], re.I) \
-                and not r["finish"] and not re.search(r"galvani|\+Z\b|stainless|\bA2\b|zinc plated|anodi[sz]ed|mill finish", r["material"], re.I):
+                and not r["finish"] and not re.search(r"galvani|\+Z\b|stainless|\bA2\b|\bzinc\b|plated|anodi[sz]ed|mill finish|powder|painted", r["material"], re.I):
             miss(r["team"], f"{label}: metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)")
         if r["make_buy"] == "make" and not r["process"]:
             miss(r["team"], f"{label}: made part with no process")
