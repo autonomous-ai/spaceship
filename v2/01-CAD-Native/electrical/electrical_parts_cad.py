@@ -502,6 +502,28 @@ def set_param(design, name, expr, unit, comment):
     return p
 
 
+def set_front_room_side(app, comp, zs):
+    """Make the body design's Front (ViewCube) the view from the room side (its open side), +Y up, so
+    the drawing's standard views line up in first-angle (WALL's set_front method: the drawing API has
+    no view rotation). Geometry doesn't change; the save after this keeps it."""
+    b = comp.bRepBodies.item(0).boundingBox
+    mid = [(getattr(b.minPoint, a) + getattr(b.maxPoint, a)) / 2 for a in "xyz"]
+    eye = list(mid)
+    eye[2] += zs * 1000.0                          # 10 m out on the open side (cm)
+    vp = app.activeViewport
+    cam = vp.camera
+    cam.cameraType = adsk.core.CameraTypes.OrthographicCameraType
+    cam.target = adsk.core.Point3D.create(*mid)
+    cam.eye = adsk.core.Point3D.create(*eye)
+    cam.upVector = adsk.core.Vector3D.create(0, 1, 0)
+    cam.isSmoothTransition = False
+    vp.camera = cam
+    vp.fit()
+    if not vp.setCurrentAsFront():
+        raise RuntimeError("setCurrentAsFront returned False")
+    print("body: Front set to the room side (looking %sZ, +Y up)" % ("-" if zs > 0 else "+"))
+
+
 def build_part(app, key):
     pn, name, vn, stem, params = PARTS[key]
     t0 = time.time()
@@ -571,6 +593,11 @@ def build_part(app, key):
         print("MASS|%s|%.4f" % (pn, vol * 2.68e-6))
         if unhealthy or loose:
             raise RuntimeError("checks failed: unhealthy %s, loose %s" % (unhealthy, loose))
+        if key == "body":
+            try:
+                set_front_room_side(app, comp, zs)
+            except Exception as e:      # the drawing can set it later; never fail the part for this
+                print("body: Front not set (%s)" % e)
         if not doc.save("%s %s, by electrical_parts_cad.py" % (name, M.REV)):
             raise RuntimeError("save failed")
         print("saved %s_CAD in %s" % (stem, FOLDER))
