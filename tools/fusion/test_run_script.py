@@ -281,6 +281,58 @@ class LockTests(unittest.TestCase):
         self.assertEqual(order, [0, 1, 2, 3, 4])
         self.assertEqual(self.lock().queue(), [])
 
+    # --lock-front (PM ruling 2026-10-31: only for runs the PM approved)
+    def test_a_front_run_goes_ahead_of_older_waiters_but_never_the_holder(self):
+        holder = self.lock()
+        holder.acquire(1)
+        order, threads = [], []
+
+        def waiter(i, front):
+            lk = rs.FusionLock(self.path, label="w%s" % i, log=lambda m: None, front=front)
+            lk.acquire(20, poll_s=0.02)
+            order.append(i)
+            time.sleep(0.05)
+            lk.release()
+
+        for i, front in ((0, ""), (1, ""), ("F1", "PM approved: test 1"), (2, ""),
+                         ("F2", "PM approved: test 2")):
+            th = threading.Thread(target=waiter, args=(i, front))
+            th.start()
+            threads.append(th)
+            time.sleep(0.15)                              # tickets in a known order
+        time.sleep(0.3)
+        self.assertEqual(order, [])                       # nobody took it from the holder
+        self.assertEqual(self.lock().read_owner()["token"], holder.token)
+        self.assertEqual([r for _l, r in self.lock().front_waiting()],
+                         ["PM approved: test 1", "PM approved: test 2"])
+        holder.release()
+        for th in threads:
+            th.join(30)
+        self.assertEqual(order, ["F1", "F2", 0, 1, 2])
+
+    def test_a_front_ticket_sorts_first_for_runners_without_the_option(self):
+        # main before #101 serves sorted ticket names with three parts, the
+        # first two digits: a front ticket must come first there too
+        normal = self.lock()
+        normal._take_ticket(time.time() + 60)
+        front = self.lock(front="PM approved: test")
+        front._take_ticket(time.time() + 60)
+        old_style = sorted(n for n in os.listdir(self.path + ".queue")
+                           if len(n.split("-")) == 3 and n.split("-")[0].isdigit()
+                           and n.split("-")[1].isdigit())
+        self.assertEqual(old_style, [front.ticket, normal.ticket])
+        self.assertEqual(self.lock().queue(), [front.ticket, normal.ticket])
+        normal._drop_ticket()
+        front._drop_ticket()
+
+    def test_the_front_reason_is_shown_to_everyone_waiting(self):
+        f = self.lock(front="PM approved: cancel test")
+        f.acquire(1)
+        with self.assertRaises(rs.LockTimeout) as cm:
+            self.lock().acquire(0.2, poll_s=0.05)
+        self.assertIn("went first in the queue: PM approved: cancel test", str(cm.exception))
+        f.release()
+
     def test_a_dead_waiters_ticket_is_dropped(self):
         holder = self.lock()
         holder.acquire(1)
@@ -487,6 +539,26 @@ class RunnerTests(unittest.TestCase):
             else:
                 kinds.append("script")
         self.assertEqual(kinds, ["open", "script", "fit", "shot", "save", "close"])
+
+    def test_lock_front_waits_for_the_hold_and_shows_in_status(self):
+        code, out, _ = self.runner("--lock-hold", "60")
+        token = out.strip()
+        p = self.runner(self.script, "--url", self.fake.url, "--label", "cancel test",
+                        "--lock-front", "PM approved: live test", wait=False)
+        time.sleep(1.5)
+        code, out, _ = self.runner("--lock-status")
+        self.assertIn("1 going first: cancel test, PM approved: live test", out)
+        self.assertIsNone(p.poll())                       # still waiting behind the hold
+        self.assertEqual(self.fake.scripts, [])
+        self.runner("--lock-release", env={rs.TOKEN_ENV: token})
+        out, err = p.communicate(timeout=60)
+        self.assertEqual(p.returncode, 0, err)
+        self.assertEqual(len(self.fake.scripts), 1)
+
+    def test_lock_front_needs_a_reason(self):
+        code, _out, err = self.runner(self.script, "--url", self.fake.url, "--lock-front", "  ")
+        self.assertEqual(code, 2)
+        self.assertIn("needs the reason", err)
 
     def test_status_reports_a_plain_file_as_held(self):
         with open(self.lockdir, "w") as fh:

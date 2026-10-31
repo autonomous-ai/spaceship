@@ -50,8 +50,9 @@ def read_parts_list(path):
     with open(path, encoding="utf-8") as f:
         for r in csv.DictReader(f):
             kg = r.get("mass_total_kg") or ""
-            if not kg and r.get("mass_each_kg"):
-                kg = float(r["mass_each_kg"]) * float(r.get("qty") or 1)
+            each = r.get("mass_each_kg") or r.get("unit_mass_kg") or ""
+            if not kg and each:
+                kg = float(each) * float(r.get("qty") or 1)
             out.append(dict(level=int(r.get("level") or 0), pn=(r.get("part_number") or "").strip(), name=r.get("name", ""),
                             material=r.get("material", ""), qty=float(r.get("qty") or 0), kg=float(kg or 0)))
     return out
@@ -77,6 +78,16 @@ def wall_l1_cad(path=WALL_L1_LIST):
 
 
 WALL_L1 = wall_l1_cad()
+FRONT_DOOR_LIST = os.path.join(MANUF, "front", "360001_P01_FRONT-DOOR-UNIT_BOM.csv")        # PR #27 (S36)
+
+
+def front_door_cad(path=FRONT_DOOR_LIST):
+    """FRONT's door unit from its merged parts list (PR #27): the unit's total, the leaf and the kick strip."""
+    by = {r["pn"]: r for r in read_parts_list(path) if r["pn"]}
+    return dict(unit=by["360001"]["kg"], leaf=by["361001"]["kg"], kick=by["361002"]["kg"])
+
+
+FRONT_DOOR = front_door_cad()
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
 TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
@@ -95,7 +106,8 @@ WALL_L1_BOND = WALL_L1["bond"]                                 # S34: WALL's bon
 CEIL_PANEL, CEIL_CASS = 9.586, 9.816                          # S35 (P03 build; the P04 cassette is 1160 x 1045)
 CEIL_TRAY = (1163.0, 1048.0)                                  # S35: the cassette tray's outline as built
 CEIL_FILL_M2 = 1.11674 * (0.33875 + 0.33875 + 0.27475)        # S35: the three fill strips on each cassette's back
-DOOR_UNIT, DOOR_GLASS = 50.17, 43.891                         # S36
+DOOR_UNIT_DRAFT = 50.17       # kg: the door unit in PR #27's first parts list (S36), the estimate before its CAD merged
+DOOR_GLASS = FRONT_DOOR["leaf"]                               # S36: the 4+4 leaf, CAD on main
 FIXED_UNIT, FIXED_GLASS = 29.58, 28.584                       # S37
 LIP_KG = 0.43                 # confirmed, D-69: each wall cassette with the 12 mm lips (S39)
 CORNER_TUBES_KG = 1.3         # confirmed, D-63 (S39)
@@ -118,7 +130,7 @@ LEDGE_KG_ALLOW, LEDGE_KG = 2.3, 1.4    # kg: the work wall's 1000 mm ledge (D-70
 T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 frames; the perimeters keep D-34's 1.2 for the
                               # rivnuts, and the ceiling's inner members stay 1.2 for the overhead clips and catches (D-85)
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
-KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36) and a hollow profile, same outside, 2 mm walls (assumption)
+KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the solid kick strip of PR #27's first list (S36) and D-85's hollow budget
 FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood against this study's 600 (S13); D-85, settled by D-86
 ELEC_KG = 4.94                # kg as shipped: ELECTRICAL P01 (S43), against this study's 3.05 kg allowance
 ELEC_LIGHTS_KG, CALL_LIGHT_M = 0.26, 0.9  # kg and m: ELECTRICAL's lights, the shelf strip and the 0.9 m call light (S43)
@@ -274,13 +286,12 @@ def lines(**adopt):
         pt = base[pid]
         L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status,
                   "this study's model from v1's STEP shapes (S02)"))
-    if a["kick"]:
-        L.append(("FRONT", "Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull", 1,
-                  DOOR_UNIT - (KICK_KG - KICK_KG_HOLLOW), "calculation (CAD); kick strip assumption",
-                  f"S36, with the kick strip as a hollow profile, about {KICK_KG_HOLLOW:.1f} kg against {KICK_KG} (D-85)"))
-    else:
-        L.append(("FRONT", "Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull", 1, DOOR_UNIT,
-                  "calculation (CAD)", "S36"))
+    fd = FRONT_DOOR
+    L.append(("FRONT", "Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull", 1,
+              fd["unit"] + (0.0 if a["kick"] else KICK_KG - fd["kick"]), "calculation (CAD); hinges and pull HOLD",
+              f"S36, CAD on main: FRONT parts list 360001 P01: leaf {fd['leaf']:.3f}, kick strip {fd['kick']:.3f} (hollow, "
+              "D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair"
+              + ("" if a["kick"] else f"; + the solid strip's {KICK_KG - fd['kick']:.2f} kg")))
     L.append(("FRONT", "Fixed glass unit 360002: 4+4 pane, U-profiles and seals", 1, FIXED_UNIT, "calculation (CAD)", "S37"))
     for name, size, kg, basis in AA.d60_parts():
         filled = lighter and (name.startswith("Air column") or name.startswith("Soffit"))
@@ -337,9 +348,12 @@ def cad_swaps():
     w, h = P04["side_cass_l"], P04["side_cass_lo_h"]
     cass_est = final_leaf_kg(w, h) - p("leaf_clip_kgm2") * w * h * 1e-6 + LIP_KG
     rows = {r[1].split(" (")[0].split(", with")[0]: r for r in lines() if basis(r) == "CAD, main"}
+    door = next(r for r in lines() if r[1].startswith("Door unit 360001"))
     return [("L1 and R1, lower side outer panels", 2, l1_est, rows["L1 and R1, lower side outer panels"][3],
              "WALL 210101 P01, PR #41"),
-            ("Wall cassette, side, lower", 2, cass_est, rows["Wall cassette, side, lower"][3], "WALL 510101 P01, PR #41")]
+            ("Wall cassette, side, lower", 2, cass_est, rows["Wall cassette, side, lower"][3], "WALL 510101 P01, PR #41"),
+            ("Door unit 360001", 1, DOOR_UNIT_DRAFT - (KICK_KG - KICK_KG_HOLLOW), door[3],
+             "FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip)")]
 
 
 def pod_kg(rows=None):
