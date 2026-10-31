@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | V2-CTL-005 | P01 | DRAFT. Items marked PROPOSED are working rules until the PM decides them. | 2026-10-31 | Control pack |
 
-Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-15; the one that touches these rules is D-13 (units in STEP files).
+Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-23. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum) and D-22 (part numbers).
 
 Spaceship is the working name for v2 (FocusPod v2). The team calls the product "Indoor Pod", and v1 is "Indoor Pod V3" in `sources/v1/`. Folder names stay as they are.
 
@@ -92,7 +92,7 @@ Spaceship is the working name for v2 (FocusPod v2). The team calls the product "
 | Outer face of the back wall | Y = +850 | source: build plan 1700 D |
 | Front edge of the side walls | Y = −650 | calculation: 850 − 1500 (build plan II: wall depth 1500). See issue ISS-012. |
 | Front-most face of the decor | Y = −850 | source: build plan (decor depth 200) |
-| Top of the roof skin | Z = 2400 | source: build plan 2400 H. Conflicts with v1 2405 and 2417, see ISS-013. |
+| Top of the roof skin | Z = 2400 | DECIDED (D-21): the build plan's 2400 H, measured from the room floor. v1 is 2405 without feet and 2417 with them (ISS-013, ISS-020). |
 
 **2D views use X and Y only** (guideline §3.3). Each view says how its X and Y map to 3D:
 
@@ -153,7 +153,7 @@ Rules:
 - The same name appears in the BOM, the CAD component, the drawing title block, the STEP product name, the DXF and the label on the part.
 - A standard part needs maker, exact SKU, size, material or grade, finish and its source document. "M6", "good glue" or "or equal" is not a part definition.
 
-## 6. Part numbers — PROPOSED
+## 6. Part numbers — DECIDED (D-22)
 
 The guideline asks to keep existing numbers where they still identify the item correctly, and not to renumber for looks. v2 is a new design, so it gets new numbers. They use the same 6-digit **FF NNNN** shape as the team's existing numbers (110006, 211000, 350011, 830001), so the format is familiar.
 

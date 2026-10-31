@@ -157,7 +157,7 @@ def check_conventions():
     name = "4 conventions"
     text = (HERE / "conventions.md").read_text(encoding="utf-8")
     for s in ["Origin O", "+X", "+Y", "+Z", "Left / right", "seen from outside", "Right-handed",
-              "first-angle", "Part numbers — PROPOSED", "PARTNO_REV_DESCRIPTIVE-NAME_DOCTYPE.ext",
+              "first-angle", "Part numbers —", "FF NNNN", "PARTNO_REV_DESCRIPTIVE-NAME_DOCTYPE.ext",
               "ISO 129-1", "ISO 5456-2", "ISO 1101", "ISO 5459", "ISO 2768-1", "ISO 22081",
               "confirmed", "source", "calculation", "assumption", "unverified", "P01", "R01",
               "[ASSEMBLY] - [FUNCTION/PART] - [LOCATION] - [VARIANT]"]:

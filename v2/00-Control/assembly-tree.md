@@ -24,31 +24,35 @@ Part classes (guideline §4.1): **MP** a part we make, **BS** a bonded subassemb
 │   ├── FLOOR PANEL F1..Fn            thin floor, DECIDED (D-05) ............. Tấm sàn mỏng
 │   ├── BASE RAIL - PERIMETER         locates and fixes the walls ............ Thanh biên đế
 │   ├── BASE SEAL + UNDERLAY                                                Gioăng đế, lớp lót sàn
-│   ├── THRESHOLD                     door edge of the floor ................. Ngưỡng cửa
-│   ├── BASE TRIM BAND                outside trim, keeps the v1 look ........ Nẹp chân trang trí
+│   ├── THRESHOLD 20 mm (D-18)        door edge of the floor ................. Ngưỡng cửa
+│   ├── ALUMINIUM BASE BAND           outside, keeps the v1 look; the thin
+│   │                                 floor sits inside it (D-18) ............ Nẹp chân nhôm
 │   └── (build plan's raised floor, dropped by D-05, for reference only)
 │       FLOOR FRAME 50x100 + 30x60, 6 LEVELING FEET M10, 2 FLOOR BOARDS ..... Khung sàn, chân tăng đưa, ván sàn
 ├── 210000  WALL ............................................................ Vách
 │   ├── LEFT WALL  - PANEL ASSY L1, L2 ....................................... Vách trái
 │   ├── RIGHT WALL - PANEL ASSY R1, R2 ....................................... Vách phải
 │   └── BACK WALL  - PANEL ASSY B1..B4 ....................................... Vách hậu
-│        each panel, made complete at the factory: FRAME 20x20 + SKIN ACP 3
-│        + BACKER ply 6 (only where sound needs it) + CAVITY FILL + GASKETS
-│        + FELT (LINING) + captive M6 bolts or tool-free connectors
+│        each panel, 81 mm (D-16, D-17), made at the factory as 2 parts:
+│        OUTER PANEL = SKIN ACP 3 + FRAME AL 20x40 at 400 + PET FILL 40 + GASKETS
+│                      + captive M6 bolts or tool-free connectors
+│        LINING CASSETTE (510000) = steel tray 0.5 + 25 air gap + felt 9, floating
 ├── 350000  FRONT ........................................................... Mặt trước
-│   ├── DECOR BLOCK DL, DR, DT  (frame 20x20 + ACP skin grooved and folded) .. Khung trang trí trái, phải, trên
+│   ├── DECOR BLOCK DL, DR, DT  (AL frame + ACP grooved and folded;
+│   │                            hinge pocket in DL, D-19) ................. Khung trang trí trái, phải, trên
 │   └── 360000  DOOR AND GLAZING
 │       ├── DOOR LEAF + HINGES + HANDLE SET + CATCH + DOOR SEALS .............. Cửa, bản lề, tay nắm, gioăng
 │       ├── FIXED PANEL + GLAZING PROFILES + SETTING BLOCKS + SEALS .......... Vách kính cố định
 │       └── (both panels smoked acrylic, laminated glass as the fallback, D-07)
-├── 410000  CEILING - PANEL ASSY C1, C2  (as the wall panel, plus fan openings) Trần
-├── 510000  LINING - PET FELT, PRE-FITTED ON EACH PANEL AT THE FACTORY ......... Tấm tiêu âm
+├── 410000  CEILING - PANEL ASSY C1, C2  (same stack on AL 20x100, 141 mm;
+│                                          silencer and fan openings) ...... Trần
+├── 510000  LINING - CASSETTES: steel tray + felt, made at the factory, floating Tấm tiêu âm
 ├── 610000  AIR - 2 FANS 12 V DC (1 in, 1 out) + SILENCERS + GRILLES / SLOTS .. Thông gió
 ├── 710000  ELECTRICAL ...................................................... Điện
 │   ├── MAINS: inlet, protection, user socket (the only mains point inside)
 │   ├── 12 V DC BUS: power supply, fused branches, harness with joint connectors
 │   ├── DESK PRO AI SENSOR HUB (in-house: CO2, presence, air quality, sound level)
-│   ├── LIGHTS 12 V LED + soft front light, LAN socket
+│   ├── LIGHTS 12 V: 1 dimmable LED ceiling light + front face light (D-20); LAN socket
 │   └── VOICE COCKPIT HOOKS: 12 V 5 A outlet, data link, mounts, cable path
 │       (kit later, on the in-house Lamp electronics)
 ├── 810000  INTERIOR - empty (no furniture); inside trims only ................ Nội thất
@@ -64,12 +68,12 @@ Part classes (guideline §4.1): **MP** a part we make, **BS** a bonded subassemb
 | Node | Name · Vietnamese | v2 contents | Classes | Build plan | Plan VT | v1 counterpart (BOM code) | Status |
 |---|---|---|---|---|---|---|---|
 | 100000 | POD · Pod hoàn chỉnh | Everything below; overall size 2500 × 1700 × 2400 | — | BP-01…BP-05 | — | the whole v1 (STEP root "Indoor Pod V3 (Assembly)") | DRAFT |
-| 110000 | BASE · Đế / sàn | Thin floor panels, base rail, base seal and underlay, threshold, outside base trim band. The thin floor is DECIDED (D-05); its build is PROPOSED (open-questions Q4). The plan's steel floor frame, 6 feet and 2 boards are dropped. | MP, HS, PI | BP-24, BP-30, BP-08 | VT03-ST, VT04, VT12, VT05 (assumption) | FL-01…FL-13, FLR-01, MUA-01 | DECIDED (D-05) |
-| 210000 | WALL · Vách | Left L1–L2, right R1–R2, back B1–B4 panel assemblies; frames, skins, backers, cavity fill, gaskets, M6 anchors; back boxes for electrical | MP, BS, HS, PI | BP-06, BP-07, BP-25, BP-26, BP-27 | VT01, VT02, VT10, VT11 | LW-01…08, RW-01…08, BWL-01…07, BWC-01…06, BWR-01…07; v1 VT-01…VT-03 (M8 screws and inserts) | DRAFT |
-| 350000 | FRONT · Mặt trước | Decor blocks DL, DR, DT with their brackets; door and glazing (360000) | MP, BS, HS, PI | BP-29 | VT01, VT10, VT05 (assumption) | DL-01…17, DR-01…32 (+ CAD "Decor Right (DR2)"), DT-01…24 | DRAFT |
-| 360000 | FRONT - DOOR AND GLAZING · Cửa và kính | Door leaf and fixed panel in smoked acrylic, or laminated glass as the fallback (D-07), hinges, handle set, catch, glazing profiles, setting blocks, perimeter and drop seals. Not in the build plan (ISS-001, ISS-002, ISS-003). | PI, HS | — (gap) | — | GL-01, GW-01, MUA-09 (hinges), MUA-10 (handle) | DECIDED material (D-07); hardware and hand PROPOSED (Q1, Q3) |
-| 410000 | CEILING · Trần | Panel assemblies C1 (−X half) and C2 (+X half); fan openings with slot patterns; reserved sprinkler zone; voice cockpit front zone | MP, BS, HS | BP-06, BP-07, BP-28 | VT01, VT02, VT10, VT11 | CL-01…05 | DRAFT |
-| 510000 | LINING · Lớp tiêu âm | PET felt panels for the walls and ceiling, pre-fitted on each panel at the factory (DECIDED, D-08; ISS-064). In the BOM the felt sits under each panel assembly; LINING keeps the felt spec, layout and the detail at panel joints. | MP (cut felt), PI | BP-07 | VT03-PET | none: v1 had no felt. Its inner layer was plywood LW-04, RW-04, BWL-05, BWC-04, BWR-05, CL-03, plus the yellow inner sheet BWC-07. | DECIDED pre-fitted (D-08) |
+| 110000 | BASE · Đế / sàn | Thin floor panels inside the aluminium base band (D-18), base rail, base seal and underlay, 20 mm threshold (D-18). The thin floor is DECIDED (D-05); its build is PROPOSED (open-questions Q4). The plan's steel floor frame, 6 feet and 2 boards are dropped. | MP, HS, PI | BP-24, BP-30, BP-08 | VT03-ST, VT04, VT12, VT05 (assumption) | FL-01…FL-13, FLR-01, MUA-01 | DECIDED (D-05) |
+| 210000 | WALL · Vách | Left L1–L2, right R1–R2, back B1–B4 outer panels: ACP 3 skin, aluminium 20 × 40 frame at 400, 40 mm PET fill, gaskets, captive M6 bolts or tool-free connectors, electrical back boxes. 81 mm with the lining cassette, 13.1 kg/m² (D-16, D-17). Seams: 2 sheets per side wall, 4 at the back, aligned reveals (D-23). No plywood. | MP, BS, HS, PI | BP-06, BP-07, BP-25, BP-26, BP-27 | VT01, VT10, VT11 (VT02 dropped) | LW-01…08, RW-01…08, BWL-01…07, BWC-01…06, BWR-01…07; v1 VT-01…VT-03 (M8 screws and inserts) | DECIDED stack (D-16, D-17) |
+| 350000 | FRONT · Mặt trước | Decor blocks DL, DR, DT (aluminium frames, D-16; ACP in Dark Yellow, D-12; not split, D-04; hinge pocket in DL, D-19) with their brackets; door and glazing (360000) | MP, BS, HS, PI | BP-29 | VT01, VT10, VT05 (assumption) | DL-01…17, DR-01…32 (+ CAD "Decor Right (DR2)"), DT-01…24 | DRAFT |
+| 360000 | FRONT - DOOR AND GLAZING · Cửa và kính | Door leaf and fixed panel in smoked acrylic, or laminated glass as the fallback (D-07), hinges, handle set, catch, glazing profiles, setting blocks, perimeter and drop seals. Not in the build plan (ISS-001, ISS-002, ISS-003). | PI, HS | — (gap) | — | GL-01, GW-01, MUA-09 (hinges), MUA-10 (handle) | DECIDED material (D-07) and hand (D-19); hardware PROPOSED (Q1) |
+| 410000 | CEILING · Trần | Panel assemblies C1 (−X half) and C2 (+X half): the wall stack on a 20 × 100 × 1.5 aluminium frame, 141 mm, 17.4 kg/m² (D-16); fan openings with slot patterns; reserved sprinkler zone; voice cockpit front zone | MP, BS, HS | BP-06, BP-07, BP-28 | VT01, VT10, VT11 (VT02 dropped) | CL-01…05 | DECIDED stack (D-16) |
+| 510000 | LINING · Lớp tiêu âm | Lining cassettes for the walls and ceiling: a 0.5 mm galvanised steel tray with 25 mm returns, a 25 mm air gap and 9 mm PET felt on its face, made at the factory (D-08, D-17). Each cassette ships as its own part, hangs on the frame with tool-free clips and never touches it through a screw (floating). The gap is also the spare cable path (ISS-069). | MP (cut felt), PI | BP-07 | VT03-PET | none: v1 had no felt. Its inner layer was plywood LW-04, RW-04, BWL-05, BWC-04, BWR-05, CL-03, plus the yellow inner sheet BWC-07. | DECIDED pre-fitted (D-08) |
 | 610000 | AIR · Thông gió | 2 fans in the ceiling (1 in, 1 out) on the 12 V DC bus (D-10), CO2-driven and self-starting through the sensor hub, 70 l/s and 25 dB(A) or less (D-09); silencers, grilles or slot pattern; airflow to REQ-AIR | PI, MP | BP-09, BP-28 | VT06 | MUA-02 (4 fans in 2 units) | DECIDED targets (D-09, D-10); fans OPEN (ISS-039) |
 | 710000 | ELECTRICAL · Điện | Per D-10 and D-11. Mains: 220 V inlet (prototype), protection, the user socket (the only mains point inside). 12 V DC bus: power supply, fused branches, harness. In-house Desk Pro AI sensor hub (CO2, presence, air quality, sound level). 12 V LED lights and soft front light, LAN socket. Voice cockpit hooks: fused 12 V 5 A outlet, data link, mounts, cable path. | PI, HS | BP-10 | VT07, VT08, VT09 | MUA-03…MUA-08 | DECIDED architecture (D-10, D-11); design OPEN (ISS-004, ISS-005, ISS-060, ISS-061, ISS-062) |
 | 810000 | INTERIOR · Nội thất | Nothing: the pod ships empty. Inside trims only, if any. | MP | — | — | TB-01…03 (table, removed: ISS-006); BWC-07 inner decor sheet (replaced by felt) | DECIDED: no furniture (D-06) |
@@ -83,8 +87,8 @@ Part classes (guideline §4.1): **MP** a part we make, **BS** a bonded subassemb
 | Plan code | Material (build plan) | Node | Where used | v2 status |
 |---|---|---|---|---|
 | VT01 | Tấm ốp Aluminium Composite Panel 3 mm, Dark Yellow EV3038 · ACP skin | WALL, CEILING, FRONT | Outer skin of every wall and ceiling panel; decor skin, grooved and folded | Kept. Spec gaps ISS-035; decor colour ISS-031. |
-| VT02 | Ván plywood 6 mm · plywood backer | WALL, CEILING | Under the ACP, bonded to it and screwed to the frame | PROPOSED: only where sound needs it (ISS-042) |
-| VT03-PET | Tấm tiêu âm Polyester Fiber 9 mm, Dark Gray · acoustic felt | LINING | Inside face of the walls and ceiling | Kept. Code clash ISS-007. |
+| VT02 | Ván plywood 6 mm · plywood backer | WALL, CEILING | Under the ACP, bonded to it and screwed to the frame | Dropped: no plywood behind the ACP (D-17) |
+| VT03-PET | Tấm tiêu âm Polyester Fiber 9 mm, Dark Gray · acoustic felt | LINING | On the lining cassette's face, walls and ceiling | Kept, pre-fitted on the cassette (D-08, D-17). Code clash ISS-007. |
 | VT03-ST | Thép hộp 50×100 · steel box tube | BASE | Outer frame of the plan's raised floor | Dropped: thin floor (D-05) |
 | VT04 | Thép hộp 30×60 · steel box tube | BASE | 2 joists of the plan's raised floor | Dropped: thin floor (D-05) |
 | VT05 | Thép tấm 3 mm · steel plate | BASE, FRONT (assumption) | No step in the plan uses it; probably brackets | Open (ISS-037) |
@@ -92,7 +96,7 @@ Part classes (guideline §4.1): **MP** a part we make, **BS** a bonded subassemb
 | VT07 | Công tắc 1 chiều + ổ cắm 5 chấu UTEN S300 · switch and socket | ELECTRICAL | Back wall, inside | Socket kept: the only mains point inside. Switch role open (ISS-061). |
 | VT08 | Bộ triết áp quạt UTEN S300 · fan speed knob | ELECTRICAL (controls AIR) | Back wall, inside | Can't drive 12 V fans; the sensor hub controls them (ISS-038) |
 | VT09 | Ổ cắm đơn mạng UTEN S300 · network socket | ELECTRICAL | Back wall, inside | Kept; voice cockpit data path starts here |
-| VT10 | Thép hộp 20×20 · box tube | WALL, CEILING, FRONT | Panel frames and decor core frames | Aluminium PROPOSED (ISS-041); wall thickness ISS-034 |
+| VT10 | Thép hộp 20×20 · box tube | WALL, CEILING, FRONT | Panel frames and decor core frames | Aluminium (D-16): 20 × 40 at 400 for walls, 20 × 100 for the ceiling; alloy and wall thickness ISS-034 |
 | VT11 | Bolt M6×60 | POD - INSTALLATION KIT | Site joints IF-01, IF-03 to IF-08 | Kept as the one bolt size (ISS-036, ISS-011) |
 | VT12 | Chân tăng đưa M10 · leveling foot | BASE | Under the plan's floor frame | Dropped: thin floor (D-05) |
 
@@ -126,7 +130,7 @@ Each interface becomes one or more Joint Register entries (J-BASE-01, J-WALL-01 
 
 | IF | Between | What crosses it | Plan | v2 working answer | Issues |
 |---|---|---|---|---|---|
-| IF-01 | BASE – WALL (L, R, B) | Weight of the walls and roof down to the room floor; racking; base seal; position | Walls bolted to the floor frame with M6 (rule 6) | Wall bottom rails stand on the room floor on the base seal, are located by the floor's perimeter base rail, and fix to it with tool-free connectors or captive M6 bolts (thin floor D-05, fixing D-08; rail PROPOSED, open-questions Q4) | ISS-040, ISS-050, ISS-054, ISS-011 |
+| IF-01 | BASE – WALL (L, R, B) | Weight of the walls and roof down to the room floor; racking; base seal; position | Walls bolted to the floor frame with M6 (rule 6) | The thin floor lies inside the aluminium base band (D-18). Wall bottom rails stand on the room floor on the base seal, are located by the floor's perimeter base rail, and fix to it with tool-free connectors or captive M6 bolts (thin floor D-05, fixing D-08; rail PROPOSED, open-questions Q4) | ISS-040, ISS-050, ISS-054, ISS-011 |
 | IF-02 | BASE – FRONT | Decor blocks DL and DR stand on the base; threshold under the door; bottom glazing profile; drop seal strike | Not covered | Threshold profile on the floor's front edge; base trim continues under the decor | ISS-053, ISS-022, ISS-003 |
 | IF-03 | WALL – WALL at the back corners (BL: L–B, BR: R–B) | Racking, position, seal; the side wall skin covers the back wall edge | M6×60 between frames; side ACP covers the back wall frame (II) | Captive M6 bolts or tool-free connectors (D-08), a corner gasket and a locating feature | ISS-011, ISS-003 |
 | IF-04 | WALL – WALL inside one wall (L1–L2, R1–R2, B1…B4) | Panel-to-panel shear, seal, visible seam | M6×60 between frames (II–IV) | Captive M6 bolts or tool-free connectors (D-08) and a seam gasket; the seam layout is a look question | ISS-044, ISS-011 |
@@ -135,7 +139,7 @@ Each interface becomes one or more Joint Register entries (J-BASE-01, J-WALL-01 
 | IF-07 | WALL – FRONT (left wall – DL, right wall – DR) | Decor weight; **door load through DL**; position; seal; depth chain | V brackets and steel screws (VI) | Brackets with captive M6 bolts or tool-free hooks (D-08); overlap per the depth chain | ISS-014, ISS-045, ISS-012 |
 | IF-08 | CEILING – FRONT (C1, C2 – DT) | Top decor weight; seal; voice cockpit front zone | "3 blocks to 3 walls" (VI); the top block actually meets the ceiling | Brackets with captive M6 bolts or tool-free hooks into the ceiling front edge (D-08) | ISS-045, ISS-051 |
 | IF-09 | Inside FRONT: DL–DT, DR–DT; door – DL (hinges); door – fixed panel (slanted joint); fixed panel – DR, DT, BASE (profiles) | Door weight and moment; seals; panel edge clearances | Not covered | Hinges on DL (left, as v1); a seal on the slanted joint; fixed panel in sealed U profiles; panels in smoked acrylic or laminated glass (D-07) | ISS-001, ISS-002, ISS-003, ISS-023, ISS-024, ISS-059 |
-| IF-10 | WALL, CEILING – LINING | Felt fixing; felt edges at panel joints; cut-outs for boxes and lights | Hook-and-loop last, on site (rule 5) | Pre-fitted at the factory (D-08); felt stops short of or overlaps each joint so the gasket seals and the bolt or connector stays reachable | ISS-015, ISS-042, ISS-064 |
+| IF-10 | WALL, CEILING – LINING | The lining cassette hangs on the frame; felt and cassette edges at panel joints; cut-outs for boxes and lights; cables in the 25 mm gap | Hook-and-loop last, on site (rule 5) | Floating cassette on tool-free clips, never a screw (D-17); made at the factory (D-08); edges at each joint so the gasket seals and the bolt or connector stays reachable | ISS-015, ISS-064, ISS-069 |
 | IF-11 | CEILING – AIR | Fan mounting, openings and slot patterns, silencer depth; the ceiling build is only about 38 mm thick | Fan in each half, slots below (V) | Fan and silencer housing sized by the air design; any housing above the roof keeps the roof look (one grille per half, as BP p1) | ISS-010, ISS-039, ISS-049 |
 | IF-12 | WALL (back) – ELECTRICAL | Back boxes for VT07–VT09; mains inlet and the user socket; the 12 V power supply and its heat; cable route inside the back wall band | VT07–VT09 on the back wall (rule 8) | Mains stays in the back wall band (inlet to socket only); 12 V supply in the same band; route up to the ceiling; inlet kept inside the 1700 depth or listed as a protrusion | ISS-005, ISS-025, ISS-062 |
 | IF-13 | CEILING – ELECTRICAL | 12 V lights and front light, 12 V cables to the fans, sprinkler or alarm reserve | Not covered | Lights per open-questions Q2; plug connectors at the WALL–CEILING joint so panels come apart | ISS-004, ISS-052, ISS-062 |
