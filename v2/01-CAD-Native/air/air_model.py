@@ -244,6 +244,12 @@ ev = CM.ev
 overlap = CM.overlap
 
 
+# the faces each fan box leaves open, where the air passes (axis, -1 for the low face, +1 for the
+# high one): the exhaust box takes the cartridge's air through its left face and blows it up into the
+# roof sleeve; the supply box takes the riser's air from below and blows it up into the upper
+# transition. A closed box would block the air (and its STEP solid would hold a sealed void)
+FAN_BOX_OPEN = {"EXHAUST FAN BOX": (("x", -1), ("z", 1)), "SUPPLY FAN BOX": (("z", -1), ("z", 1))}
+
 # the edit test's changes (edit_test_air.py, guideline 4.4), one list for it and the offline check
 # that every cut lands in its body for each: pod_d and wall_depth change together, since the side
 # walls start at DR's back (the skeleton keeps the two, and decor_d, as separate values)

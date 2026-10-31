@@ -83,13 +83,28 @@ def set_material(design, comp, key):
         b.material = m
 
 
-def hollow_closed(comp, body, name):
+def hollow_open(comp, body, opens, thick, name):
+    """Shell a box into a casing, open on the faces `opens` ((axis, -1) is the face at the low end
+    along that axis, (axis, 1) the high one): a fan box is open where its air comes in and goes out."""
     coll = adsk.core.ObjectCollection.create()
-    coll.add(body)
+    for axis, side in opens:
+        k = {"x": 0, "y": 1, "z": 2}[axis]
+        cands = []
+        for f in body.faces:
+            if f.geometry.objectType != adsk.core.Plane.classType():
+                continue
+            n = adsk.core.Plane.cast(f.geometry).normal
+            if abs((n.x, n.y, n.z)[k]) > 0.99:
+                p = f.pointOnFace
+                cands.append(((p.x, p.y, p.z)[k], f))
+        if len(cands) != 2:
+            raise RuntimeError("%s: expected 2 faces across %s, found %d" % (name, axis, len(cands)))
+        cands.sort(key=lambda c: c[0])
+        coll.add(cands[0][1] if side < 0 else cands[-1][1])
     si = comp.features.shellFeatures.createInput(coll, False)
-    si.insideThickness = CB.vi("box_t")
+    si.insideThickness = CB.vi(thick)
     f = comp.features.shellFeatures.add(si)
-    f.name = "SHELL - %s" % name
+    f.name = "SHELL - %s (OPEN WHERE THE AIR PASSES)" % name
     return f
 
 
@@ -324,7 +339,7 @@ def build_scope(root, design, ctx, scope):
 
     def casing(bname, key):
         b = body(bname)
-        hollow_closed(root, b, bname)
+        hollow_open(root, b, A.FAN_BOX_OPEN[bname], "box_t", bname)
         return b
     for item in SCOPE_KEYS[scope]:
         if item.startswith("CART:"):
@@ -533,7 +548,7 @@ def run(_context):
             ck = "box" if key == "ebox" else "box_s"
             _o2, casing = new_comp(fb, ck)
             b = put(casing, bname)
-            hollow_closed(casing, b, bname)
+            hollow_open(casing, b, A.FAN_BOX_OPEN[bname], "box_t", bname)
             set_material(design, casing, ck)
             tag = "EXHAUST" if key == "ebox" else "SUPPLY"
             for fname, fx, fy, fz in [f for f in fans if f[0].startswith(tag)]:
