@@ -9,20 +9,20 @@ ST-03,Clearance hole position (radial),-1,0,0.2,0,confirmed,F-009 ruling: positi
 ST-03,Rivnut hole position (radial),-1,0,0.2,0,confirmed,F-009 ruling: position Ø0.4 (±0.2) from the spigot hole by CNC or a drill jig
 ST-03,Rivnut float in its hole (radial),-1,0,0.065,0,calculation,Sherex CAH3-610-4.2: hole 9.53 +0.10 less body 9.50 max over 2 (joints register PR #23 H-03); spigot play is not a contributor: the panel shifts to the bolts within it
 ST-02,Space between the side frames,1,2408,,,calculation,pod_w 2500 - 2 x outer_t 46 (skeleton P04 on main 0cb764f); its tolerance from the BASE band corners and the WALL drawings
-ST-02,Back panel B1 width,-1,1200.61,,,source,skeleton P04 (main 0cb764f): (2408 - 3 x 2.26) / 2; cut tolerance from the WALL drawing
-ST-02,Back panel B2 width,-1,1200.61,,,source,skeleton P04 (main 0cb764f); cut tolerance from the WALL drawing
+ST-02,Back panel B1 frame width,-1,1198.99,,,source,joints register R-J16 (main 9881d71): (2408 - 2 x 2.26 - 5.5) / 2; the skin stays 1200.61; cut tolerance from the WALL drawing
+ST-02,Back panel B2 frame width,-1,1198.99,,,source,joints register R-J16 (main 9881d71); cut tolerance from the WALL drawing
 ST-02,Stop at the left back corner,-1,2.26,0.13,0.13,source,joints register 2.2 and 2.8 (PR #23): stop washer 1.5 ±0.05 (assumption) + rivnut head 0.76 ±0.08 (Sherex)
 ST-02,Stop at the right back corner,-1,2.26,0.13,0.13,source,joints register 2.2 and 2.8 (PR #23): stop washer 1.5 ±0.05 (assumption) + rivnut head 0.76 ±0.08 (Sherex)
 ST-02A,Space between the side frames (taken as perfect),1,2408,0,0,assumption,best case: shows the stops alone
-ST-02A,Back panels B1 + B2 (taken as perfect),-1,2401.22,0,0,assumption,best case: 2 x 1200.61 (skeleton P04)
+ST-02A,Back panel frames B1 + B2 (taken as perfect),-1,2397.98,0,0,assumption,best case: 2 x 1198.99 (joints register R-J16)
 ST-02A,Stop at the left back corner,-1,2.26,0.13,0.13,source,joints register 2.2 and 2.8 (PR #23): stop washer 1.5 ±0.05 (assumption) + rivnut head 0.76 ±0.08 (Sherex)
 ST-02A,Stop at the right back corner,-1,2.26,0.13,0.13,source,joints register 2.2 and 2.8 (PR #23): stop washer 1.5 ±0.05 (assumption) + rivnut head 0.76 ±0.08 (Sherex)
 ST-04,Space between the upper side panels' top members,1,2408,,,calculation,skeleton P04 (main 0cb764f); tolerance from the WALL drawings
-ST-04,Ceiling half C1 width,-1,1200.61,,,source,skeleton P04 (main 0cb764f); cut tolerance from the CEILING drawing
-ST-04,Ceiling half C2 width,-1,1200.61,,,source,skeleton P04 (main 0cb764f); cut tolerance from the CEILING drawing
+ST-04,Ceiling half C1 frame width,-1,1198.99,,,source,joints register R-J16 (main 9881d71); cut tolerance from the CEILING drawing
+ST-04,Ceiling half C2 frame width,-1,1198.99,,,source,joints register R-J16 (main 9881d71); cut tolerance from the CEILING drawing
 ST-04,Stop at the left side edge,-1,2.26,0.13,0.13,source,joints register 2.2 and 2.8 (PR #23): stop washer 1.5 ±0.05 (assumption) + rivnut head 0.76 ±0.08 (Sherex)
 ST-04,Stop at the right side edge,-1,2.26,0.13,0.13,source,joints register 2.2 and 2.8 (PR #23): stop washer 1.5 ±0.05 (assumption) + rivnut head 0.76 ±0.08 (Sherex)
 ST-04A,Space between the top members (taken as perfect),1,2408,0,0,assumption,best case: shows the stops alone
-ST-04A,Ceiling halves C1 + C2 (taken as perfect),-1,2401.22,0,0,assumption,best case: 2 x 1200.61 (skeleton P04)
+ST-04A,Ceiling half frames C1 + C2 (taken as perfect),-1,2397.98,0,0,assumption,best case: 2 x 1198.99 (joints register R-J16)
 ST-04A,Stop at the left side edge,-1,2.26,0.13,0.13,source,joints register 2.2 and 2.8 (PR #23): stop washer 1.5 ±0.05 (assumption) + rivnut head 0.76 ±0.08 (Sherex)
 ST-04A,Stop at the right side edge,-1,2.26,0.13,0.13,source,joints register 2.2 and 2.8 (PR #23): stop washer 1.5 ±0.05 (assumption) + rivnut head 0.76 ±0.08 (Sherex)

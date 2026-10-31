@@ -102,20 +102,44 @@ def test_only_the_five_status_words():
 
 
 def test_p04_rollup_lines():
-    """ISS-081: every roll-up line has a status word and a source, the total is their sum, every piece but the glass is
-    20 kg or less (D-03), the air parts are the air report's 61.8 kg with fans, and the five savings are ranked."""
+    """ISS-081, F-010: every roll-up line has a status word and a source and every piece but the glass is 20 kg or less
+    (D-03); the pod as shipped is the CSV's sum less the voice kit's line, which the mechanical check leaves out by its
+    name (PR #40); at 32 kg/m3 the air parts are the air report's 61.8 kg with fans; the allowances are assumptions; each
+    applied saving is priced from the list itself (D-81, D-85)."""
+    import re
+    import csv
     import rollup
     rows = rollup.lines()
     for g, item, q, kg, st, src in rows:
         assert any(w in st for w in STATUS_WORDS), (item, st)
         assert src.strip(), item
         assert kg <= 20.0 or "glass" in item.lower() or "door unit" in item.lower(), (item, kg)
-    assert abs(rollup.pod_kg(rows) - sum(q * kg for _, _, q, kg, _, _ in rows)) < 1e-9
-    air = sum(q * kg for g, _, q, kg, _, _ in rows if g == "AIR")
-    assert abs(air - 61.8) < 0.05, air
-    sv = rollup.savings()
-    assert len(sv) == 5 and all(s[0] > 0 for s in sv)
-    assert [s[0] for s in sv[:4]] == sorted((s[0] for s in sv[:4]), reverse=True), "savings 1 to 4 ranked by kg"
+    later = [r for r in rows if r[0] == "LATER"]
+    assert len(later) == 1 and "voice" in later[0][1].lower() and abs(later[0][3] - 4.0) < 1e-9, later
+    shipped = sum(q * kg for g, _, q, kg, _, _ in rows if g != "LATER")
+    assert abs(rollup.pod_kg(rows) - shipped) < 1e-9
+    body = rollup.rollup_files()["out/parts-decided-P04.csv"].splitlines()
+    assert body[0].split(",")[4] == "kg_total", body[0]
+    kit = re.compile(r"outside the cap|voice cockpit kit reserve", re.I)      # tools/checks/c_parts.py, PR #40
+    csv_rows = list(csv.reader(body[1:]))
+    assert [r[1] for r in csv_rows if kit.search(r[1] + " " + r[5])] == [later[0][1]], "only the kit is outside the cap"
+    csv_kg = sum(float(r[4]) for r in csv_rows if not kit.search(r[1] + " " + r[5]))
+    assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
+    air32 = sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=p("fill_pet_kgm3")) if g == "AIR")
+    assert abs(air32 - 61.8) < 0.05, air32
+    for name in ("Light shelf", "Work-wall ledge", "Named clips"):
+        hit = [r for r in rows if r[1].startswith(name)]
+        assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
+    assert len([r for r in rows if "ships loose" in r[1]]) == 2
+    ap = rollup.applied()
+    assert len(ap) == 9 and all(a[0] > 0 for a in ap), ap                    # D-81's four and D-85's five
+    off = rollup.lines(**rollup.OFF)
+    assert abs(rollup.pod_kg(off) - rollup.pod_kg(rows) - sum(a[0] for a in ap)) < 1e-6, "the table adds up exactly"
+    assert set(rollup.OFF) == set(rollup.ADOPTED)
+    op = rollup.parked()
+    assert len(op) == 3 and all(o[0] > 0 and o[2] and o[3] for o in op), op
+    names = [name for name, _ in rollup.REJECTED]
+    assert any(n.startswith("Fixed glass") for n in names) and any("perimeters" in n for n in names), names   # D-82, D-85
 
 
 P_DEFAULT_CEIL = p("ceil_t")

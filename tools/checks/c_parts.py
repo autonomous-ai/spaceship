@@ -33,6 +33,7 @@ ALIASES = {
     "finish": ("finish", "coating", "surface", "surface_finish", "treatment"),
     "qty": ("qty", "quantity", "qty_per_pod", "count"),
     "mass": ("mass_kg", "mass", "kg", "kg_each", "weight_kg", "unit_mass_kg", "mass_each_kg", "weight"),
+    "mass_total": ("mass_total_kg", "kg_total", "total_mass_kg", "mass_total"),
     "status": ("status", "number_status", "mass_status"),
     "source": ("source", "sources", "source_file", "source_doc"),
     "rev": ("rev", "revision"),
@@ -45,7 +46,7 @@ ALIASES = {
     "parent": ("parent", "parent_pn", "assembly", "parent_part_number", "used_in"),
     "location": ("location", "position", "position_code", "where"),
 }
-NAME_RE = re.compile(r"^(POD|BASE|WALL|FRONT|CEILING|LINING|AIR|ELECTRICAL|INTERIOR|PACKAGING|HARDWARE) - \S")
+NAME_RE = re.compile(r"^(POD|BASE|WALL|FRONT|CEILING|LINING|AIR|ELECTRICAL|INTERIOR|PACKAGING|HARDWARE|SEALS) - \S")
 STATUS_WORDS = ("confirmed", "source", "calculation", "assumption", "unverified", "measured", "draft", "hold",
                 "review", "decided", "proposed")
 GRADE_HINT = re.compile(r"\d|\b(A2|A4|ABS|PET|PE|PVC|EPDM|PU|PUR|ACP|MDF|HPL|LVL|felt|glass|toughened|laminat)\b",
@@ -73,7 +74,27 @@ def normalise(row):
         else:
             out.setdefault(field, "")
     out["_raw"] = nk
+    if not out["mass"] and out.get("mass_total"):          # a row that gives only its total mass
+        q = num(out["qty"]) or 1.0
+        t = num(out["mass_total"])
+        if t is not None and q > 0:
+            out["mass"] = "%g" % (t / q)
     return out
+
+
+def is_placeholder(row):
+    """A master BOM row that stands in for an item not yet in any parts list ('register only'), or one copied
+    from a team's parts list, which is checked in that list itself."""
+    raw = row.get("_raw", {})
+    rtype = (raw.get("row_type") or "").lower()
+    note = (raw.get("note") or raw.get("notes") or "").lower()
+    src = (raw.get("source_file") or "")
+    return ("register only" in rtype or "not in any parts list" in note
+            or (src.startswith("v2/03-Manufacturing/") and src.endswith(".csv")))
+
+
+def is_master(path):
+    return "/04-BOM/" in path.replace("\\", "/") and "MASTER" in os.path.basename(path).upper()
 
 
 def find_parts_lists(root):
@@ -111,6 +132,12 @@ def check_parts_lists(root, plists):
             rtype = (row["_raw"].get("row_type") or "").lower()
             if not pn and rtype in ("assembly", "pod", "group", "heading", "family"):
                 continue            # a master BOM heading row, not a part
+            if is_master(r) and is_placeholder(row):
+                if pn:
+                    seen[pn].append((r, name))      # still counts for duplicate numbers
+                continue            # its details live in the register or the team's own parts list
+            if not pn and (row["class"] or "").lower() == "cut":
+                continue            # a cut-length member of a made frame: the frame's drawing and cut list define it
             if not pn:
                 fs.append(Finding("C06", "no-part-number", "%s line %d" % (r, i), "major",
                                   "Row %d of %s has no part number (%s)." % (i, r, name or "no name"),
@@ -190,7 +217,7 @@ def check_parts_lists(root, plists):
                                   "issue that releases it.", r, owner))
             if is_fastener(pn, name):
                 fs.extend(_fastener_row(r, pn, name, row, owner))
-    fs = _fold_minor_rows(fs)
+    fs = _fold_unnumbered(_fold_minor_rows(fs))
     for pn, uses in seen.items():
         names = {n for _f, n in uses}
         if len(names) > 1:
@@ -200,6 +227,23 @@ def check_parts_lists(root, plists):
                               "One number is one form, fit and function (conventions section 6).", uses[0][0],
                               owner_for(uses[0][0], pn)))
     return fs
+
+
+def _fold_unnumbered(fs):
+    """One finding per file for rows with no part number yet (often bought hardware waiting for its numbers)."""
+    keep, groups = [], {}
+    for f in fs:
+        if f.check == "C06" and f.rule == "no-part-number":
+            groups.setdefault(f.file, []).append(f)
+        else:
+            keep.append(f)
+    for file, items in groups.items():
+        what = "; ".join(re.sub(r"^Row \d+ of .*? has no part number \((.*)\)\.$", r"\1", x.message) for x in items)
+        keep.append(Finding("C06", "no-part-number", "%s: %d rows" % (os.path.basename(file), len(items)), "major",
+                            "%d rows of %s have no part number: %s." % (len(items), file, what),
+                            "Give each a number from conventions section 6 (bought hardware: family 83 or 84, from the "
+                            "joints register and the master BOM).", file, items[0].owner))
+    return keep
 
 
 def _fold_minor_rows(fs):
@@ -225,11 +269,28 @@ def _fold_minor_rows(fs):
 
 
 def _fastener_row(r, pn, name, row, owner):
+    """What a fastener row must state depends on its kind: a bolt, screw or stud its thread, length, grade,
+    finish and torque; a nut, rivnut or insert its thread, grade, finish and torque (a rivnut's torque may be
+    HOLD with its test, D-48); a washer or retainer its grade and finish; all of them maker and SKU."""
     lacks = []
+    up = (name or "").upper()
+    threaded = re.search(r"\b(BOLT|SCREW|STUD)\b", up)
+    nutlike = re.search(r"\b(NUT|RIVNUT|RIVET NUT|INSERT|CLINCH)\b", up)
+    if not (threaded or nutlike):
+        # washers, retainers, spigots and the like: grade, finish, maker and SKU only
+        lacks = []
+        if not (row["grade"] or GRADE_HINT.search(row["material"] or "")):
+            lacks.append("grade")
+        if not (row["finish"] or FINISH_WORDS.search((row["material"] or "") + " " + (name or ""))):
+            lacks.append("finish")
+        if pn_class(pn) == "bought" and not (row["maker"] and row["sku"]):
+            lacks.append("maker and SKU")          # a part we make has a drawing instead
+        return [] if not lacks else [Finding("C07", "fastener-spec", pn, "major",
+                                             "Hardware item %s %s in %s has no %s." % (pn, name, r, ", no ".join(lacks)),
+                                             "Complete the row (guideline section 4.2).", r, owner)]
     if not (row["size"] or re.search(r"\bM\d+(\.\d+)?\b", name or "")):
         lacks.append("thread size")
-    if not (row["length"] or re.search(r"\bM\d+\s*[x×]\s*\d+", name or "", re.I)) and \
-            not re.search(r"NUT|WASHER|RIVNUT|RIVET NUT|INSERT", name or "", re.I):
+    if threaded and not (row["length"] or re.search(r"\bM\d+\s*[x×]\s*\d+", name or "", re.I)):
         lacks.append("length")
     if not (row["grade"] or re.search(r"\b(4\.6|5\.6|8\.8|10\.9|12\.9|A2|A4|A2-70|A4-70|A4-80|steel|stainless|"
                                        r"alumin)", (row["material"] or "") + " " + (name or ""), re.I)):
@@ -239,7 +300,7 @@ def _fastener_row(r, pn, name, row, owner):
     tq = row["torque"]
     if not tq:
         lacks.append("torque (or HOLD with its test, as D-48 does for the rivnuts)")
-    if not (row["maker"] and row["sku"]):
+    if pn_class(pn) == "bought" and not (row["maker"] and row["sku"]):
         lacks.append("maker and SKU")
     if not lacks:
         return []
@@ -337,8 +398,26 @@ def _fits(dims, pallet):
 
 
 def load_shipping_list(root):
-    """The layout study's list of the decided build (each row a piece that
-    ships on its own)."""
+    """The pieces that ship on their own: the packing list in v2/07-Packaging when it exists (each row with
+    its pallet, size and mass), else the layout study's list of the decided build. Rows are normalised to
+    id, name, size_mm, kg_each, ships_as, status."""
+    pk = sorted(walk_files(root, "v2/07-Packaging", exts=(".csv",)))
+    pk = [p for p in pk if "PACKING-LIST" in os.path.basename(p).upper()]
+    if pk:
+        types = {}
+        for f in walk_files(root, "v2/07-Packaging", exts=(".svg", ".md", ".pdf")):
+            m = re.search(r"PALLET-(\d+)-(48X40|96X48|48X96)", os.path.basename(f).upper())
+            if m:
+                types[m.group(1)] = "48x40" if m.group(2) == "48X40" else "48x96"
+        rows = []
+        for r in read_csv(pk[0]):
+            glass = (r.get("glass") or "").strip().lower() in ("yes", "y", "true", "1")
+            pal = types.get((r.get("pallet") or "").strip(), "")
+            rows.append({"id": r.get("label") or r.get("part_number", ""), "name": r.get("name", ""),
+                         "size_mm": r.get("size_mm", ""), "kg_each": r.get("kg", ""),
+                         "ships_as": "glass" if glass else ("long" if pal == "48x96" else "upright"),
+                         "pallet": pal, "status": r.get("kg_status", ""), "assembly": (r.get("name") or "").split(" - ")[0]})
+        return rel(root, pk[0]), rows
     p = os.path.join(root, "v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv")
     if not os.path.exists(p):
         return None, []
@@ -432,8 +511,8 @@ def check_shipping(root, door=(914.0, 2032.0), door_req=(810.0, 2032.0), limit_k
                                   "smallest size is %g." % (sid, name, a), "PM to confirm which door rule holds.",
                                   src, owner))
             has_long = any((r.get("ships_as") or "").strip().lower() in ("long", "glass") for r in rows)
-            want = "48x96" if ships in ("long", "glass") else ("kit-carton" if ships == "box" and has_long
-                                                                 else "48x40")
+            want = row.get("pallet") or ("48x96" if ships in ("long", "glass") else
+                                         ("kit-carton" if ships == "box" and has_long else "48x40"))
             if not _fits(dims, want):
                 other = "48x40" if want != "48x40" else "48x96"
                 fs.append(Finding("C04", "pallet-fit", sid, "major" if _fits(dims, other) else "severe",
@@ -496,6 +575,13 @@ def check_mixed_metals(root, plists, contacts):
         r = rel(root, p)
         for row in rows:
             pn = row["part_number"]
+            if is_master(r) and is_placeholder(row):
+                continue            # checked in the register or the team's own parts list
+            own = " ".join(x for x in (row["material"], row["grade"], row["finish"]) if x)
+            if not pn:
+                mat[""] = own
+            if metal_class(mat.get(pn, "")) == "unknown" and metal_class(row["name"]) != "unknown":
+                mat[pn] = row["name"]           # e.g. 'ISO 4762 8.8 ZINC' in the name
             if is_fastener(pn, row["name"]) and metal_class(mat.get(pn, "")) == "unknown":
                 fs.append(Finding("C10", "fastener-metal-unknown", pn, "major",
                                   "Fastener %s %s in %s has no material or finish, so it can't be checked against "

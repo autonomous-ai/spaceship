@@ -83,13 +83,35 @@ def policy(root, key, default):
     return default
 
 
+def screen_locked():
+    """True when this Mac's console session is locked (ioreg IOConsoleUsers), as tools/fusion/start_drawing.py
+    reads it; None when it can't tell (not a Mac, no ioreg)."""
+    import plistlib
+    try:
+        out = subprocess.run(["ioreg", "-n", "Root", "-d1", "-a"], capture_output=True, timeout=30).stdout
+        data = plistlib.loads(out)
+    except Exception:
+        return None
+    data = data[0] if isinstance(data, list) else data
+    return any(u.get("CGSSessionScreenIsLocked") for u in data.get("IOConsoleUsers", []))
+
+
+def missing_drawing_severity(root):
+    """The severity of a missing drawing for a part we make, from config/policy.csv: severe or major, or
+    auto-screen-lock (D-84): major while the screen is locked, severe otherwise or when it can't tell."""
+    v = policy(root, "missing_drawing_severity", "severe")
+    if v == "auto-screen-lock":
+        return "major" if screen_locked() else "severe"
+    return v
+
+
 def check_drawings(root, part_numbers, holes_by_pn, names=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes."""
     names = names or {}
     fs = []
     idx = index_files(root)
-    missing_sev = policy(root, "missing_drawing_severity", "severe")      # PM ruling, see config/policy.csv
+    missing_sev = missing_drawing_severity(root)          # PM rulings D-73, D-84: see config/policy.csv
     for pn in sorted(part_numbers):
         cls = pn_class(pn)
         if cls not in ("part", "assembly"):

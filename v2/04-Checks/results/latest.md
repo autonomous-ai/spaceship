@@ -1,8 +1,8 @@
-# Mechanical check run: fbdfc73 on 2026-10-31
+# Mechanical check run: fc6192e on 2026-10-31
 
-Offline checks (`tools/checks/run_checks.py`) on revision `fbdfc73`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `fc6192e`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 3** (0 severe, 1 major, 2 minor). Register numbers in brackets.
+**Findings in this run: 0** (0 severe, 0 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -11,9 +11,9 @@ Offline checks (`tools/checks/run_checks.py`) on revision `fbdfc73`. The Fusion 
 | C01 clash and minimum gaps (Fusion) | yes | 0 |
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
-| C04 weight, doorway and pallet fit | yes | 1 |
+| C04 weight, doorway and pallet fit | yes | 0 |
 | C05 drawing completeness | no inputs yet | 0 |
-| C06 BOM completeness | yes | 2 |
+| C06 BOM completeness | yes | 0 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | no inputs yet | 0 |
 | C09 edge distance, bend radius, hole-to-bend | no inputs yet | 0 |
@@ -26,9 +26,6 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
-| F-010 | major | C04 | POD total mass | The pod is about 432.3 kg against the 420 kg cap (D-37, D-54): 12.3 kg over. The layout study's list gives 432.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv); 4.0 kg of voice cockpit kit is outside the cap (PM weight ruling). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
-| F-015 | minor | C06 | 100000 | 100000 POD - SPACESHIP in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv is missing: Vietnamese name. | PM |
-| F-016 | minor | C06 | 100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source | 10 rows of v2/04-BOM/100000_P01_POD-MASTER_BOM.csv are missing: Vietnamese name, source (110000, 210000, 350000, 360000, 410000, 510000, 610000, 710000, 810000, 910000). | PM |
 
 ## Tolerance stacks (C02)
 
@@ -36,47 +33,63 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 |---|---|---|---|---|---|---|---|---|
 | ST-01 | IF-02 door to threshold | Running gap between the door's kick strip and the threshold | 3.0 to 10.0 | 7.00 | 7.00 to 7.00 | 7.00 to 7.00 | OPEN | Door bottom height (glass bottom); Kick strip height below the glass; Threshold height; Floor height under the threshold |
 | ST-03 | IF-01 IF-03 IF-04 IF-05 M6 bolt into a rivnut through a clearance hole | Radial clearance left for an M6 bolt after both hole positions and the rivnut's float (fixed-fastener case; the panel shifts to the bolts within the spigot play) | >= 0.0 | 0.51 | 0.05 to 0.51 | 0.14 to 0.43 | PASS |  |
-| ST-02 | IF-03 and IF-04 back wall across its width | Centre seam B1-B2 gap: the span less B1, B2 and the two corner stops; the centre seam takes the chain's tolerance through its slotted holes | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | OPEN | Space between the side frames; Back panel B1 width; Back panel B2 width |
-| ST-02A | IF-03 and IF-04 back wall across its width: perfect panels | As ST-02 with the panels and the span taken as perfect, so only the two corner stops vary | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | PASS |  |
-| ST-04 | IF-05 and IF-06 ceiling across its width | Centre seam C1-C2 gap: the span less C1, C2 and the two side stops; the centre seam takes the chain's tolerance through its slotted holes | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | OPEN | Space between the upper side panels' top members; Ceiling half C1 width; Ceiling half C2 width |
-| ST-04A | IF-05 and IF-06 ceiling across its width: perfect halves | As ST-04 with the halves and the span taken as perfect, so only the two side stops vary | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | PASS |  |
+| ST-02 | IF-03 and IF-04 back wall across its width | Closing seam B1-B2 frame gap: the span less the two corner stops and the B1, B2 frames | 4.0 to 7.0 | 5.50 | 5.24 to 5.76 | 5.32 to 5.68 | OPEN | Space between the side frames; Back panel B1 frame width; Back panel B2 frame width |
+| ST-02A | IF-03 and IF-04 back wall across its width: perfect frames | As ST-02 with the frames and the span taken as perfect, so only the two corner stops vary | 4.0 to 7.0 | 5.50 | 5.24 to 5.76 | 5.32 to 5.68 | PASS |  |
+| ST-04 | IF-05 and IF-06 ceiling across its width | Closing seam C1-C2 frame gap: the span less the two side stops and the C1, C2 frames | 4.0 to 7.0 | 5.50 | 5.24 to 5.76 | 5.32 to 5.68 | OPEN | Space between the upper side panels' top members; Ceiling half C1 frame width; Ceiling half C2 frame width |
+| ST-04A | IF-05 and IF-06 ceiling across its width: perfect frames | As ST-04 with the frames and the span taken as perfect, so only the two side stops vary | 4.0 to 7.0 | 5.50 | 5.24 to 5.76 | 5.32 to 5.68 | PASS |  |
 
-## Shipping pieces (C04), from `v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv`
+## Shipping pieces (C04), from `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`
 
 | Piece | kg | Size mm | Ships as | Status |
 |---|---|---|---|---|
-| W-SIDE-LO WALL - SIDE PANEL - LOWER (outer: ACP + frame + fill) | 11.86 | 1495 x 1145 x 43 | upright | calculation |
-| L-CASS-SIDE-LO LINING - CASSETTE FOR W-SIDE-LO (steel tray + felt) | 11.08 | 1448 x 1145 x 34 | upright | calculation |
-| W-SIDE-UP WALL - SIDE PANEL - UPPER (outer: ACP + frame + fill) | 11.86 | 1495 x 1145 x 43 | upright | calculation |
-| L-CASS-SIDE-UP LINING - CASSETTE FOR W-SIDE-UP (steel tray + felt) | 10.64 | 1448 x 1098 x 34 | upright | calculation |
-| W-BACK-LO WALL - BACK PANEL - LOWER (outer: ACP + frame + fill) | 9.67 | 1207 x 1104 x 43 | upright | calculation |
-| L-CASS-BACK-LO LINING - CASSETTE FOR W-BACK-LO (steel tray + felt) | 8.68 | 1169 x 1104 x 34 | upright | calculation |
-| W-BACK-UP WALL - BACK PANEL - UPPER (outer: ACP + frame + fill) | 9.67 | 1207 x 1104 x 43 | upright | calculation |
-| L-CASS-BACK-UP LINING - CASSETTE FOR W-BACK-UP (steel tray + felt) | 8.68 | 1169 x 1104 x 34 | upright | calculation |
-| C-HALF CEILING - HALF PANEL (outer: ACP + frame) | 10.14 | 1495 x 1207 x 43 | upright | calculation |
-| L-CASS-HALF LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill) | 13.16 | 1414 x 1169 x 74 | upright | calculation |
-| B-BAND-BACK BASE - BASE BAND PIECE 100x40 - BACK | 3.55 | 2420 x 100 x 40 | long | calculation |
-| B-BAND-SIDE BASE - BASE BAND PIECE 100x40 - SIDE | 2.44 | 1660 x 100 x 40 | long | calculation |
-| B-BAND-FRONT-L BASE - BASE BAND PIECE 100x40 - FRONT-L | 0.44 | 300 x 100 x 40 | upright | calculation |
-| B-BAND-FRONT-R BASE - BASE BAND PIECE 100x40 - FRONT-R | 1.54 | 1050 x 100 x 40 | upright | calculation |
-| B-KEY BASE - CORNER KEY | 0.15 | 120 x 80 x 40 | box | assumption |
-| B-GLIDE BASE - LEVELLING GLIDE (hex from above) | 0.15 | 50 x 50 x 40 | box | assumption |
-| B-THRESH BASE - DOOR THRESHOLD, LOW | 1.2 | 1176 x 60 x 20 | upright | assumption |
-| B-FLOOR BASE - THIN FLOOR PANEL 15 mm | 15.37 | 1414 x 1169 x 15 | upright | calculation |
-| F-DL FRONT - DECOR BLOCK - LEFT | 9.98 | 2290 x 278 x 205 | long | calculation |
-| F-DR FRONT - DECOR BLOCK - RIGHT | 18.06 | 2290 x 1016 x 205 | long | calculation |
-| F-DT FRONT - DECOR BLOCK - TOP | 7.02 | 1697 x 280 x 205 | long | calculation |
-| F-GLASS-DOOR FRONT - GLASS DOOR UNIT (4+4 laminated glass, frameless, 85 mm kick strip with drop seal, hinges, pull) | 47.48 | 2096 x 1176 x 20 | glass | calculation |
-| F-GLASS-FIXED FRONT - FIXED GLASS (4+4 laminated glass, frameless) | 27.97 | 2139 x 724 x 9 | glass | calculation |
-| F-HW FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS | 2.58 | 2200 x 120 x 60 | box | assumption |
-| A-CART-SUPPLY AIR - SUPPLY SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM) | 17.7 | 2100 x 405 x 159 | long | calculation |
-| A-CART-EXHAUST AIR - EXHAUST SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM) | 17.7 | 2100 x 405 x 159 | long | calculation |
-| A-RISER AIR - EXHAUST RISER 150 mm (1 mm galvanised steel duct) | 9.6 | 2000 x 155 x 150 | long | calculation |
-| K-SEALS KIT - DOOR EDGE SEALS, BASE SEAL, CABLE GROMMETS | 1.6 | 600 x 300 x 100 | box | source |
-| E-KIT ELECTRICAL - SWITCHES, LIGHTS, HARNESS | 3.05 | 600 x 400 x 200 | box | assumption |
-| K-FIX KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS | 4.67 | 400 x 300 x 150 | box | calculation |
+| 1-01 BASE - SEAL MAT - F1 | 1.05 | 1451 x 1205.5 x 3 | upright | calculation |
+| 1-02 BASE - SEAL MAT - F2 | 1.05 | 1451 x 1205.5 x 3 | upright | calculation |
+| 1-03 BASE - FLOOR PANEL - F1 | 10.035 | 1455 x 1219 x 9 | upright | confirmed (9 mm); calculation |
+| 1-04 BASE - FLOOR PANEL - F2 | 10.035 | 1455 x 1219 x 9 | upright | confirmed (9 mm); calculation |
+| 1-05 WALL - PANEL ASSY - BACK LOWER - LH | 9.309 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
+| 1-06 WALL - PANEL ASSY - BACK LOWER - RH | 9.309 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
+| 1-07 WALL - PANEL ASSY - SIDE LOWER - LH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
+| 1-08 WALL - PANEL ASSY - SIDE LOWER - RH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
+| 1-09 WALL - PANEL ASSY - BACK UPPER - LH | 9.309 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
+| 1-10 WALL - PANEL ASSY - BACK UPPER - RH | 9.309 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
+| 1-11 WALL - PANEL ASSY - SIDE UPPER - LH | 11.281 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
+| 1-12 WALL - PANEL ASSY - SIDE UPPER - RH | 11.281 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
+| 1-13 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1203.61 x 46 | upright | calculation (CAD); bond assumption |
+| 1-14 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1203.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
+| 1-15 LINING - CASSETTE - SIDE LOWER - RH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
+| 1-16 LINING - CASSETTE - SIDE UPPER - RH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
+| 1-17 LINING - CASSETTE - SIDE LOWER - LH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
+| 1-18 LINING - CASSETTE - SIDE UPPER - LH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
+| 1-19 LINING - CASSETTE - BACK LOWER - LH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
+| 1-20 LINING - CASSETTE - BACK LOWER - RH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
+| 1-21 LINING - CASSETTE - BACK UPPER - LH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
+| 1-22 LINING - CASSETTE - BACK UPPER - RH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
+| 2-01 FRONT - FIXED GLASS UNIT | 29.58 | 2033 x 1031 x 12 | glass | calculation (CAD) |
+| 2-02 FRONT - DOOR UNIT | 50.17 | 2089 x 1175 x 149 | glass | calculation (CAD) |
+| 2-03 FRONT - DECOR BLOCK - DR | 18.056 | 2290 x 1016 x 205 | long | calculation |
+| 2-04 BASE - BAND ASSY - BACK | 3.135 | 2420 x 110 x 40 | long | assumption; calculation; provisional |
+| 2-05 BASE - BAND ASSY - SIDE - LH | 2.142 | 1517 x 110 x 40 | long | assumption; calculation; provisional |
+| 2-06 BASE - BAND ASSY - SIDE - RH | 2.142 | 1517 x 110 x 40 | long | assumption; calculation; provisional |
+| 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 0.922 | 729 x 110 x 40 | long | assumption; calculation; provisional |
+| 2-08 BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1175 x 60 x 13 | long | assumption |
+| 2-09 FRONT - DECOR BLOCK - DL | 9.976 | 2290 x 278 x 205 | long | calculation |
+| 2-10 AIR - SOFFIT | 9.833 | 2332 x 360 x 220 | long | calculation; fill provisional |
+| 2-11 AIR - AIR COLUMN | 9.779 | 2105 x 360 x 217 | long | calculation; fill provisional |
+| 2-12 FRONT - DECOR BLOCK - DT | 7.015 | 1697 x 280 x 205 | long | calculation |
+| 2-13 ELECTRICAL - KIT - SWITCHES AND HARNESS | 2.05 | 600 x 250 x 200 | long | assumption |
+| 2-14 INTERIOR - LIGHT SHELF WITH LED STRIP | 3.06 | 2332 x 80 x 50 | long | assumption |
+| 2-15 AIR - SUPPLY FAN BOX AND TRANSITION, WITH 2 FANS | 5.666 | 516 x 460 x 155 | long | assumption; calculation |
+| 2-16 BASE - SMALL PARTS CARTON | 1.626 | 600 x 400 x 150 | long | assumption; calculation; provisional |
+| 2-17 INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 3.3 | 1000 x 250 x 120 | long | assumption |
+| 2-18 AIR - INTAKE RISER | 9.229 | 1740 x 250 x 155 | long | calculation |
+| 2-19 AIR - CARTRIDGE - SUPPLY | 11.155 | 1750 x 314 x 173 | long | calculation |
+| 2-20 AIR - CARTRIDGE - EXHAUST | 11.155 | 1750 x 314 x 173 | long | calculation |
+| 2-21 AIR - EXHAUST FAN BOX, WITH 2 FANS | 4.075 | 314 x 294 x 173 | long | assumption; calculation |
+| 2-22 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
+| 2-23 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
+| 2-24 POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 300 x 150 x 80 | long | assumption |
 
 ## Fastener schedule (C07)
 
-0 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+7 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 
