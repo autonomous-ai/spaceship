@@ -16,9 +16,11 @@ run) and type-checks the scripts with mypy:
 - It reports only name errors in the given scripts: an attribute or method
   that doesn't exist (attr-defined), a call with the wrong arguments
   (call-arg), an unknown name (name-defined).
-- Types only flow from what the script gets from the API. Give helper
-  functions annotated parameters (def extent(view: "adsk.drawing.DrawingView"))
-  to have their bodies checked too.
+- Types flow from what the script gets from the API. A helper function whose
+  parameters have no types gets them from the calls to it in the same script
+  (a helper called from a helper too), so its body is checked without adding
+  types. A helper nobody calls with a known API object stays unchecked on its
+  parameters; annotate those (def extent(view: "adsk.drawing.View")).
 
 Needs mypy (python3 -m pip install mypy into a virtual environment in your
 session folder, then run this with that environment's python). Exit 0 clean,
@@ -29,12 +31,15 @@ import argparse
 import ast
 import glob
 import hashlib
+import io
 import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
+import tokenize
+import uuid
 import warnings
 
 INSTALL_GLOB = os.path.expanduser(
@@ -176,21 +181,243 @@ def complete_definitions(install, out_dir):
     return added
 
 
-def run_mypy(scripts, defs_dir, python=sys.executable):
-    env = dict(os.environ, MYPYPATH=defs_dir)
-    cache = os.path.join(defs_dir, ".mypy_cache")
-    cmd = [python, "-m", "mypy", "--check-untyped-defs", "--follow-imports=silent",
-           "--no-error-summary", "--show-error-codes", "--cache-dir", cache,
-           "--allow-redefinition", "--no-incremental"] + list(scripts)
-    p = subprocess.run(cmd, capture_output=True, text=True, env=env)
-    if "No module named mypy" in p.stderr:
-        raise RuntimeError("mypy isn't installed for %s" % python)
-    wanted = []
-    for line in p.stdout.splitlines():
-        m = re.search(r"\[([\w-]+)\]\s*$", line)
-        if m and m.group(1) in CODES and any(line.startswith(s + ":") for s in scripts):
-            wanted.append(line)
-    return wanted
+def _signature_colons(source):
+    """{def line: (line, column) of the colon that ends its signature}."""
+    out, toks = {}, list(tokenize.generate_tokens(io.StringIO(source).readline))
+    for i, t in enumerate(toks):
+        if t.type == tokenize.NAME and t.string == "def":
+            depth, opened = 0, False
+            for u in toks[i + 1:]:
+                if u.type == tokenize.OP and u.string in "([{":
+                    depth, opened = depth + 1, True
+                elif u.type == tokenize.OP and u.string in ")]}":
+                    depth -= 1
+                elif u.type == tokenize.OP and u.string == ":" and depth == 0 and opened:
+                    out[t.start[0]] = u.start
+                    break
+    return out
+
+
+def annotate(source, params, returns=None):
+    """The source with the found types put in as string annotations: parameter
+    types {(def line, name): type} and return types {def line: type}. Every line
+    stays where it was, so error lines match the original."""
+    tree = ast.parse(source)
+    lines = source.splitlines(keepends=True)
+    returns = returns or {}
+    colons = _signature_colons(source) if returns else {}
+    edits = {}
+
+    def at(row, char_col, text):
+        edits.setdefault(row - 1, []).append((char_col, text))
+
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        a = node.args
+        for arg in a.posonlyargs + a.args + a.kwonlyargs:
+            t = params.get((node.lineno, arg.arg))
+            if t and arg.annotation is None:
+                b = lines[arg.lineno - 1].encode("utf-8")      # ast columns count UTF-8 bytes
+                at(arg.lineno, len(b[:arg.end_col_offset].decode("utf-8")), ': "%s"' % t)
+        t = returns.get(node.lineno)
+        if t and node.returns is None and node.lineno in colons:
+            row, col = colons[node.lineno]
+            at(row, col, ' -> "%s"' % t)
+    for i, ins in edits.items():
+        line = lines[i]
+        for col, text in sorted(ins, reverse=True):
+            line = line[:col] + text + line[col:]
+        lines[i] = line
+    out = "".join(lines)
+    if edits:
+        out += ("" if out.endswith("\n") else "\n") + \
+            "import adsk.core, adsk.fusion, adsk.drawing  # added by check_api for the types it put in\n"
+    return out
+
+
+def _build(path, defs_dir, module):
+    """One mypy build of the script as `module`. The name must be new every time:
+    the cache would otherwise hand back an earlier result for the same name."""
+    from mypy import build
+    from mypy.modulefinder import BuildSource
+    from mypy.options import Options
+    o = Options()
+    o.check_untyped_defs = True
+    o.follow_imports = "silent"
+    o.mypy_path = [defs_dir]
+    o.export_types = True
+    o.incremental = True
+    o.cache_dir = os.path.join(defs_dir, ".mypy_cache")
+    o.allow_redefinition = True
+    o.hide_error_codes = False
+    o.preserve_asts = True
+    return build.build(sources=[BuildSource(path, module)], options=o)
+
+
+def _type_name(t, in_tuple=False):
+    """'adsk.drawing.Sheet' (or 'A | B', or a tuple of them) for a Fusion API
+    type, else None. Plain numbers and text are kept only inside a tuple."""
+    from mypy.types import Instance, NoneType, TupleType, UnionType, get_proper_type
+    p = get_proper_type(t)
+    if isinstance(p, Instance):
+        if p.type.fullname.startswith("adsk."):
+            return p.type.fullname
+        if in_tuple and p.type.fullname in ("builtins.int", "builtins.float", "builtins.str", "builtins.bool"):
+            return p.type.fullname.split(".")[1]
+        return None
+    if isinstance(p, TupleType) and not in_tuple:
+        names = [_type_name(i, True) for i in p.items]
+        if names and all(names) and any(n.startswith("adsk.") for n in names):
+            return "tuple[%s]" % ", ".join(names)
+        return None
+    if isinstance(p, UnionType):
+        items = [get_proper_type(i) for i in p.items]
+        names = [_type_name(i, in_tuple) for i in items if not isinstance(i, NoneType)]
+        if names and all(names):
+            return " | ".join(sorted(set(n for x in names for n in x.split(" | "))))
+    return None
+
+
+def infer_parameters(result, path, module):
+    """{(def line, parameter name): type} for the script's own functions whose
+    parameters have no annotation, from the types mypy sees at the calls to
+    them in the same script."""
+    from mypy.nodes import ARG_NAMED, ARG_OPT, ARG_POS, CallExpr, FuncDef, NameExpr
+    from mypy.traverser import TraverserVisitor
+    state = result.graph.get(module)
+    tree = state.tree if state is not None else None
+    if tree is None:
+        return {}
+    calls = []
+
+    class Calls(TraverserVisitor):
+        def visit_call_expr(self, e: CallExpr) -> None:
+            calls.append(e)
+            super().visit_call_expr(e)
+
+    tree.accept(Calls())
+    found = {}
+    for e in calls:
+        fn = e.callee.node if isinstance(e.callee, NameExpr) else None
+        if not isinstance(fn, FuncDef) or not fn.fullname.startswith(module + "."):
+            continue
+        params = list(fn.arguments)
+        if params and params[0].variable.name in ("self", "cls"):
+            params = params[1:]
+        positional = [p for p in params if p.kind in (ARG_POS, ARG_OPT)]
+        for i, (arg, kind, name) in enumerate(zip(e.args, e.arg_kinds, e.arg_names)):
+            if kind == ARG_POS and i < len(positional):
+                param = positional[i]
+            elif kind == ARG_NAMED:
+                param = next((p for p in params if p.variable.name == name), None)
+            else:
+                break                                 # *args or **kwargs: stop guessing
+            if param is None or param.type_annotation is not None:
+                continue
+            t = result.types.get(arg)
+            n = _type_name(t) if t is not None else None
+            if n:
+                found.setdefault((fn.line, param.variable.name), set()).update(n.split(" | "))
+    return {k: " | ".join(sorted(v)) for k, v in found.items()}
+
+
+def infer_returns(result, module):
+    """{def line: type} for the script's own functions with no return
+    annotation, when every value they return is a known API type (or a tuple
+    with one): mypy treats what an untyped function returns as unknown."""
+    from mypy.nodes import FuncDef, LambdaExpr, ReturnStmt
+    from mypy.traverser import TraverserVisitor
+    state = result.graph.get(module)
+    tree = state.tree if state is not None else None
+    if tree is None:
+        return {}
+    found = {}
+
+    class Returns(TraverserVisitor):
+        def __init__(self):
+            super().__init__()
+            self.stack = []
+
+        def visit_func_def(self, fn: FuncDef) -> None:
+            self.stack.append((fn, []))
+            super().visit_func_def(fn)
+            fn_, rets = self.stack.pop()
+            if fn.unanalyzed_type is not None and getattr(fn.unanalyzed_type, "ret_type", None) is not None \
+                    and type(fn.unanalyzed_type.ret_type).__name__ != "AnyType":
+                return                                  # it has a return annotation
+            names, optional = set(), False
+            for r in rets:
+                if r.expr is None or type(r.expr).__name__ == "NameExpr" and r.expr.name == "None":
+                    optional = True
+                    continue
+                t = result.types.get(r.expr)
+                n = _type_name(t) if t is not None else None
+                if not n:
+                    return                              # an unknown return: leave it
+                names.add(n)
+            if names:
+                found[fn.line] = " | ".join(sorted(names)) + (" | None" if optional else "")
+
+        def visit_lambda_expr(self, e: LambdaExpr) -> None:
+            pass                                        # their returns aren't the function's
+
+        def visit_return_stmt(self, r: ReturnStmt) -> None:
+            if self.stack:
+                self.stack[-1][1].append(r)
+            super().visit_return_stmt(r)
+
+    tree.accept(Returns())
+    return found
+
+
+IGNORED = ('Name "SCRIPT_ARGS" is not defined',)   # put in by run_script.py at run time
+
+
+def check_script(path, defs_dir, rounds=8):
+    """Name errors in one script, after giving its untyped helpers the
+    parameter types of their calls and the return types of their returns,
+    repeated so the types travel along a chain of helpers."""
+    with open(path, encoding="utf-8") as fh:
+        src = fh.read()
+    n_lines = src.count("\n") + 1
+    with tempfile.TemporaryDirectory(prefix="check-api-") as d:
+        tmp = os.path.join(d, os.path.basename(path))
+        params, rets, cur = {}, {}, src
+        for _ in range(rounds + 1):
+            with open(tmp, "w", encoding="utf-8") as fh:
+                fh.write(cur)
+            module = "check_api_target_%s" % uuid.uuid4().hex[:12]
+            result = _build(tmp, defs_dir, module)
+            new_p = {k: v for k, v in infer_parameters(result, tmp, module).items() if k not in params}
+            new_r = {k: v for k, v in infer_returns(result, module).items() if k not in rets}
+            if not new_p and not new_r:
+                break
+            params.update(new_p)
+            rets.update(new_r)
+            cur = annotate(src, params, rets)
+        out = []
+        for line in result.errors:
+            m = re.match(r"^(.*?):(\d+): error: (.*?)\s+\[([\w-]+)\]\s*$", line)
+            if not m or m.group(1) != tmp or m.group(4) not in CODES or int(m.group(2)) > n_lines:
+                continue
+            if any(x in m.group(3) for x in IGNORED):
+                continue
+            out.append("%s:%s: error: %s  [%s]" % (path, m.group(2), m.group(3), m.group(4)))
+    return out, (params, rets)
+
+
+def run_mypy(scripts, defs_dir, python=None):
+    """Name errors in all the scripts (one mypy build per script and round)."""
+    try:
+        import mypy  # noqa: F401
+    except ImportError:
+        raise RuntimeError("mypy isn't installed for %s" % sys.executable)
+    errors = []
+    for s in scripts:
+        errs, _found = check_script(s, defs_dir)
+        errors.extend(errs)
+    return errors
 
 
 def defs_cache(install):
