@@ -166,6 +166,7 @@ def contacts_from(res):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", default=REPO_ROOT)
+    ap.add_argument("--ref", default="", help="check this git ref (e.g. origin/main) in a fresh export instead of --root")
     ap.add_argument("--register-root", default=REPO_ROOT)
     ap.add_argument("--model", choices=("assembly", "skeleton"), default="assembly")
     ap.add_argument("--rev", default="")
@@ -173,6 +174,10 @@ def main(argv=None):
     ap.add_argument("--from-json", default="")
     a = ap.parse_args(argv)
     root = os.path.abspath(a.root)
+    if a.ref:
+        from common import export_ref
+        root, sha = export_ref(a.ref)
+        a.rev = a.rev or sha
     if a.from_json:
         with open(a.from_json, encoding="utf-8") as fh:
             res = json.load(fh)

@@ -166,6 +166,31 @@ def walk_files(root, top, exts=None, skip=("/proof/", "/.raw/", "/__pycache__/")
     return sorted(out)
 
 
+def export_ref(ref, repo=REPO_ROOT, dest=None):
+    """Check out a git ref (for example origin/main or a PR head) into a
+    fresh folder with git archive, so a run checks exactly that revision.
+    Returns (folder, short sha). The rule files in v2/04-Checks/config and
+    stacks come from this checkout, so a revision without them is still
+    checked with the current rules."""
+    import shutil
+    import subprocess
+    import tarfile
+    import tempfile
+    sha = subprocess.run(["git", "-C", repo, "rev-parse", "--short", ref], capture_output=True, text=True,
+                         check=True).stdout.strip()
+    dest = dest or tempfile.mkdtemp(prefix="checks-%s-" % sha)
+    tar = subprocess.run(["git", "-C", repo, "archive", "--format=tar", ref], capture_output=True, check=True).stdout
+    with tarfile.open(fileobj=io.BytesIO(tar)) as tf:
+        tf.extractall(dest, filter="data")
+    for sub in ("v2/04-Checks/config", "v2/04-Checks/stacks"):
+        src = os.path.join(repo, sub)
+        if os.path.isdir(src):
+            dst = os.path.join(dest, sub)
+            shutil.rmtree(dst, ignore_errors=True)
+            shutil.copytree(src, dst)
+    return dest, sha
+
+
 def read_csv(path):
     with open(path, newline="", encoding="utf-8-sig") as fh:
         text = fh.read()

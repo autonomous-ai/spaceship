@@ -176,12 +176,17 @@ def report_md(res, reg_ids):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", default=REPO_ROOT)
+    ap.add_argument("--ref", default="", help="check this git ref (e.g. origin/main) in a fresh export instead of --root")
     ap.add_argument("--register-root", default=REPO_ROOT)
     ap.add_argument("--rev", default=None)
     ap.add_argument("--update", action="store_true")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     root = os.path.abspath(a.root)
+    if a.ref:
+        from common import export_ref
+        root, sha = export_ref(a.ref)
+        a.rev = a.rev or sha
     rev = a.rev or git_rev(root)
     res = run(root, rev)
     reg_ids = {}
