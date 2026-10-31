@@ -36,8 +36,8 @@
   "111101": [
    {
     "at": [
-     -1237.5,
-     -646.03,
+     -1237.0,
+     -641.53,
      null
     ],
     "axis": [
@@ -179,8 +179,8 @@
    },
    {
     "at": [
-     -1222.5,
-     -646.03,
+     -1223.0,
+     -641.53,
      null
     ],
     "axis": [
@@ -246,8 +246,8 @@
   "111103": [
    {
     "at": [
-     -1195.0,
-     822.5,
+     -1190.5,
+     823.0,
      null
     ],
     "axis": [
@@ -259,8 +259,8 @@
    },
    {
     "at": [
-     -1195.0,
-     837.5,
+     -1190.5,
+     837.0,
      null
     ],
     "axis": [
@@ -506,8 +506,8 @@
    },
    {
     "at": [
-     1195.0,
-     822.5,
+     1190.5,
+     823.0,
      null
     ],
     "axis": [
@@ -519,8 +519,8 @@
    },
    {
     "at": [
-     1195.0,
-     837.5,
+     1190.5,
+     837.0,
      null
     ],
     "axis": [
@@ -1374,11 +1374,11 @@
    "value": 6.5
   },
   {
-   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 26 (2 hole diameters) from the hole",
-   "expression": "52 mm",
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 2 hole diameters (26) from the hole; 54 gives 27, clear of that line",
+   "expression": "54 mm",
    "name": "gd_l",
    "unit": "mm",
-   "value": 52.0
+   "value": 54.0
   },
   {
    "comment": "BASE CALCULATION: glide doubler width: the band's bore less 1 mm, so it bears on the bottom face right next to both side walls",
@@ -1395,11 +1395,11 @@
    "value": 3.0
   },
   {
-   "comment": "BASE SOURCE: back corner key length into the back band: 25 (the Joints Engineer, via the Lead 2026-11-01; the register PR follows)",
-   "expression": "25 mm",
+   "comment": "BASE SOURCE: corner key length into its carrier: 30, so the carrier's Ø7.0 fixing holes keep 2 diameters from its cut end (joints register #127)",
+   "expression": "30 mm",
    "name": "ck_x",
    "unit": "mm",
-   "value": 25.0
+   "value": 30.0
   },
   {
    "comment": "BASE SOURCE: back corner key width across the band (J-BASE-02)",
@@ -1416,11 +1416,11 @@
    "value": 75.0
   },
   {
-   "comment": "BASE SOURCE: key fixing holes 10 in from its back face (inside the band) and 7.5 either side of its centre line, so 10 in from its Y faces (joints register PR #99, J-BASE-02)",
-   "expression": "10 mm",
+   "comment": "BASE SOURCE: key fixing holes 10.5 from its back face (inside the band) and 7.0 either side of its centre line, so 10.5 from its side faces (joints register #127, J-BASE-02)",
+   "expression": "10.5 mm",
    "name": "ck_e",
    "unit": "mm",
-   "value": 10.0
+   "value": 10.5
   },
   {
    "comment": "BASE SOURCE: fixing bolt holes in the back band's bottom wall, Ø7.0 (J-BASE-02)",
@@ -1589,19 +1589,19 @@
     0.0,
     -17.5,
     0.0,
-    25.0,
+    30.0,
     17.5,
     75.0
    ],
    "class": "MP",
    "key": "key",
-   "mass_kg": 0.1726,
+   "mass_kg": 0.2075,
    "material": "Aluminum",
    "name": "BASE - CORNER KEY - BACK - COMMON",
    "name_vi": "Ke góc đế - góc sau",
    "parent": "110000",
    "pn": "111211",
-   "volume_mm3": 63916.7
+   "volume_mm3": 76845.4
   },
   "111401": {
    "box_mm": [
@@ -1635,7 +1635,7 @@
    "key": "mat_f1",
    "mass_kg": 1.0608,
    "material": "Closed-cell foam 200 kg/m3 (ASSUMPTION)",
-   "name": "BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM",
+   "name": "BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM",
    "name_vi": "Tấm lót sàn F1 - xốp kín 3 mm",
    "parent": "110401",
    "pn": "111501",
@@ -1644,21 +1644,21 @@
   "111601": {
    "box_mm": [
     -18.0,
-    -26.0,
+    -27.0,
     0.0,
     18.0,
-    26.0,
+    27.0,
     3.0
    ],
    "class": "MP",
    "key": "doubler",
-   "mass_kg": 0.0141,
+   "mass_kg": 0.0147,
    "material": "Aluminum",
    "name": "BASE - GLIDE DOUBLER - COMMON",
    "name_vi": "Tấm tăng cứng chân chỉnh",
    "parent": "110000",
    "pn": "111601",
-   "volume_mm3": 5217.8
+   "volume_mm3": 5433.8
   },
   "118002": {
    "box_mm": [
@@ -1673,7 +1673,7 @@
    "key": "glide",
    "mass_kg": 0.15,
    "material": "Glide envelope 0.15 kg (ASSUMPTION)",
-   "name": "BASE - LEVELLING GLIDE - M10 (HOLD)",
+   "name": "BASE - LEVELLING GLIDE - M10 - HOLD",
    "name_vi": "Chân chỉnh cao",
    "parent": "110000",
    "pn": "118002",
