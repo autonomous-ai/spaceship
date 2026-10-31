@@ -142,6 +142,23 @@ def test_p04_rollup_lines():
     assert any(n.startswith("Fixed glass") for n in names) and any("perimeters" in n for n in names), names   # D-82, D-85
 
 
+def test_rollup_items_the_packing_plan_reads():
+    """The packing plan (v2/07-Packaging/pack.py) takes, for each of its handles, the one roll-up line whose item text
+    starts with it (PR #59), so each handle must match exactly one line here: keep the starts of the item texts fixed and
+    put changes in the status or the source column (PR #50 renamed three and broke it)."""
+    import ast
+    import rollup
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "07-Packaging", "pack.py")
+    if not os.path.exists(path):
+        return
+    tree = ast.parse(open(path, encoding="utf-8").read())
+    handles = next(ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
+                   and any(isinstance(t, ast.Name) and t.id == "R" for t in n.targets))
+    items = [r[1] for r in rollup.lines()]
+    bad = {v: n for v in handles.values() for n in [sum(1 for i in items if i.startswith(v))] if n != 1}
+    assert not bad, f"handles matching no line or several: {bad}"
+
+
 P_DEFAULT_CEIL = p("ceil_t")
 
 if __name__ == "__main__":

@@ -618,8 +618,17 @@ def run(_context):
             print("run_script: activated %%r" %% name)
             return
         proj, folder = _folder(app, ARGS["folder"])
-        files = [folder.dataFiles.item(i) for i in range(folder.dataFiles.count)]
-        files = [f for f in files if f.name == name]
+        files, unreadable = [], 0
+        for i in range(folder.dataFiles.count):
+            try:                  # one unreadable entry (being uploaded, deleted) must not stop the rest
+                f = folder.dataFiles.item(i)
+                if f.name == name:
+                    files.append(f)
+            except Exception:
+                unreadable += 1
+        if unreadable:
+            print("run_script: %%d entr%%s of %%s could not be read; skipped" %% (
+                unreadable, "y" if unreadable == 1 else "ies", ARGS["folder"]))
         if len(files) > 1:
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:

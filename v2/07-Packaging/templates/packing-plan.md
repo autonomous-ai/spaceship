@@ -12,7 +12,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 ## Result
 
 1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **{{G1}} kg gross, {{H1}} mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **{{G2}} kg gross, {{H2}} mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); {{GROSS_TOTAL}} kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, {{ROLLUP_TOTAL}} kg (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part). It is the pod as shipped; `pack.py` reads it line by line and copies no mass. The pallets carry {{SHIPPED_NET}} kg of pod: the roll-up plus {{NOT_IN_ROLLUP_KG}} kg it doesn't carry (the screen mount and the installation kit; assumptions). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+2. **Masses are the layout study's P04 roll-up**, {{ROLLUP_TOTAL}} kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its {{ROLLUP_CSV_TOTAL}} kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry {{SHIPPED_NET}} kg of pod: the roll-up plus {{NOT_IN_ROLLUP_KG}} kg it doesn't carry (the screen mount and the installation kit; assumptions). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **{{PIECES_N}} labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is {{HEAVIEST}}. The door unit ({{DOOR_KG}} kg) and the fixed glass ({{FIX_KG}} kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: floor, back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 10; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: {{CHECKS_OK}}** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels.
@@ -34,7 +34,7 @@ Every piece stands on edge with its along-size on the 48 in side; the stack runs
 
 How to load it (factory):
 
-1. Deck: a 10 mm edge board standing at the back edge, then the pieces in **reverse** label order, 1-22 first, 1-01 last, so 1-01 ends up at the open face.
+1. Deck: a 10 mm edge board standing at the back edge, then the pieces in **reverse** label order, the highest number first and 1-01 last, so 1-01 ends up at the open face.
 2. Pairs face to face: each pair of outer panels meets ACP to ACP (B1 with B2, L1 with R1, B3 with B4, L2 with R2, C1 with C2), and each pair of cassettes felt to felt (R1 with R2, L1 with L2, B1 with B2, B3 with B4), with a clean polyethylene sheet between the felts. A 4 mm foam interleaf goes between every two pieces.
 3. Outer panels stand on a frame edge, never on an ACP edge: on the back stile for L1, L2, R1, R2 (40 × 40, D-63), on a side member for the back panels and the ceiling halves. Cassettes stand on a tray return.
 4. A 10 mm edge board at the open face, corner guards on all eight top corners of the stack, a 25 mm cap board, two horizontal and two vertical straps over edge protectors, and three layers of stretch film. "OPEN THIS FACE FIRST" arrows on the film over 1-01.
@@ -59,14 +59,15 @@ How to load it (factory): crate first, then tier by tier, each lane against the 
 
 | What | Protection | Why |
 |---|---|---|
-| ACP faces (walls, ceiling, decor) | The factory's protective film stays on until the final check (guide step 21); corner guards on every corner; 4 mm foam between pieces | The ACP is the look (D-01); scratches can't be repaired on site |
+| ACP faces (walls, decor) | Protective film on the faces that show only (the 8 wall skins and the 3 decor blocks; none on the roof skins), each panel with a quick-release tab (D-87); it stays on until the final check (guide step 21). Corner guards on every corner; 4 mm foam between pieces | The ACP is the look (D-01); scratches can't be repaired on site |
 | Felt faces (every lining cassette, the air column and soffit faces) | Felt to felt with a clean PE sheet between; no tape, no label and no load on felt; nothing stacked on the ceiling cassettes | Felt marks and dents; adhesive tears it |
 | Lining trays and their 12 mm lips | Stand on a return, never on a lip; foam between trays | The lips hold the felt (D-69) |
 | Frame edges with spigots and captive bolts | The bolts travel pulled back, tips flush, held by their grommets (joints register 2.2); edge protectors under every strap | A bent spigot or a pushed-in bolt stops the part locating on site |
 | Black anodised base band and threshold | Foam sleeve on each piece; corners in edge guards | Anodise can't be touched up (D-67) |
 | Decor blocks DL, DR, DT | On their back plates, skins up, corner guards on facet edges, foam wrap, separators above | Faceted skins are the iconic front (D-01) |
-| Glass: door unit and fixed glass | Crate with 5 mm edge foam all round, foam pads above and below, setting-block edges marked; the protective film stays on; no tape or label on the glass itself | Laminated toughened glass breaks at its edges; the door's hinge halves and pull need free space |
-| Air cartridges, fan boxes, riser | End caps on the cartridges, the fan boxes bagged with their connectors taped to the box (not to the fans), the riser in foam | Keeps fill, fans and connectors clean and dry |
+| Glass: door unit and fixed glass | Crate with 5 mm edge foam all round, foam pads above and below, setting-block edges marked; film on both faces with quick-release tabs (D-87), on until the final check; no tape or label on the glass itself | Laminated toughened glass breaks at its edges; the door's hinge halves and pull need free space |
+| Air cartridges, the riser with its fan box, the soffit with its fan box | End caps on the cartridges; each fan box bagged inside its part, its plug-in connector taped to the box (not to the fans); the riser unit in foam | Keeps fill, fans and connectors clean and dry |
+| The power unit in B2 (ELECTRICAL) | A foam block over the unit's black face, which stands 38 mm proud of B2's frame; B2 stands with that face toward L1's frame side, so the block takes the gap | The unit ships wired and tested; its face plate is visible aluminium (D-67) |
 | Kits and cartons | Cartons with the contents list on the side | One place for small parts |
 | The whole load | Straps over edge protectors, cap board, three layers of stretch film, "DO NOT STACK" on both pallets | Fork and stacking damage |
 
@@ -134,7 +135,7 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | PK-02 | The hinge halves that sit in DL ship fitted in DL, so the door travels 1175 mm wide (PM ruling). FRONT confirms the named hinges lift off; until a hinge set is named the door envelope is the FRONT CAD's glass width and pull spaces. | FRONT | DECIDED (PM); hinges HOLD (ISS-002) |
 | PK-03 | The glass crate's sizes and 30 kg are this plan's assumptions; the 17 mm side rails leave 5 mm of edge foam each side of the 1175 mm door. The glass supplier's packer sets the real crate. | Packing | assumption |
 | PK-04 | DL, DR and DT are packed as the layout study's bounding boxes; FRONT's models set their real envelopes. Tier 2 has 13 mm spare across the deck. | FRONT | calculation on boxes |
-| PK-05 | The supply fan box with its transition is packed as 516 × 460 × 155, from the air report's positions; FRONT's DR model sets it. | FRONT, AIR | calculation |
+| PK-05 | The intake riser joined to the supply fan box (D-87) is packed as 1845 × 460 × 155, from the air report's positions; the AIR and FRONT models set it. | AIR, FRONT | calculation |
 | PK-06 | The light shelf and the ledge (D-70) aren't designed: their masses are the roll-up's allowances. The screen mount isn't in the roll-up: 1.0 kg assumed. | INTERIOR | assumption |
 | PK-07 | Part numbers marked TBD come from their owners or the master BOM; labels print them when they exist. | WALL, BASE, FRONT, AIR, INTERIOR, ELECTRICAL | open |
 | PK-08 | Re-run `pack.py` when a team's CAD mass replaces a roll-up line (the roll-up's own regeneration carries it through). | Packing | process |
