@@ -172,7 +172,9 @@ def build_members(design, comp, L, members, t_expr):
         ends = adsk.core.ObjectCollection.create()
         for fc in b.faces:
             ok, nrm = fc.evaluator.getNormalAtPoint(fc.pointOnFace)
-            if abs(nrm.x * ax[0] + nrm.y * ax[1] + nrm.z * ax[2]) > 0.25:
+            # an end face leans on the tube's axis; where a wide tube meets a narrow one the mitre is long and
+            # oblique (about 14 degrees off the axis for 80 against 20), so the test is small but not zero
+            if abs(nrm.x * ax[0] + nrm.y * ax[1] + nrm.z * ax[2]) > 0.1:
                 ends.add(fc)
         try:
             if ends.count < 2:
