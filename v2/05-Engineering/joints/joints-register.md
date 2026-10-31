@@ -37,7 +37,7 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 4. **Gaskets:** PORON 4701-40, 8 mm wide, beside the washer line on the outer (skin) side of every joint face, so no seal is cut (R-J7). **3.97 mm thick at the stopped seams, squeezed 33–51%** (43% nominal); **9.53 mm at the closing seams, 27–58% over the 4.0–7.0 mm range** (calculation; thicknesses inside SEL's 3.18–12.70 range, stock HOLD-05).
 5. **Holes:** clearance Ø7.0 positioned to ±0.2 from the spigot hole (R-J6), leaving 0.05 mm to spare worst case (stack ST-03, section 4); access Ø19, so the Ø18 head washer goes in with the bolt (section 2.2).
 6. **Findings carried from the first pass:** F1, no room-side hardware in the 4 mm frame-to-lining gap; F2, the 90° joints overlap only 14 mm with 20 × 40 tubes, 34 mm with the 40 × 40 edge members (R-J3); F3, seams need clamping force (R-J1); F4, the bond doesn't fit the 20 mm face as Sika lays it out (bond spec B1); F5, the back-top gap (closed by R-J4); F6, one head type (R-J2).
-7. **Part numbers** for all 10 hardware items (11 numbers: the gasket has two thicknesses), in 2.1: bolts 838001 and 838002, rivnut 838003, head washer 838004, retainer 838005, spigot 831001, stop washer 831002, gaskets 848001 and 848002, base seal 848003, key 108001.
+7. **Part numbers and per-pod counts** for all 12 hardware items (13 numbers: the gasket has two thicknesses), in 2.1: bolts 838001 (72) and 838002 (10), rivnut 838003 (102), head washer 838004 (82), retainer 838005 (72), spigot 831001 (20), stop washer 831002 (72), gaskets 848001 (25.2 m) and 848002 (3.73 m), base seal 848003 (7.1 m), key 108001 (1), **cassette clip 518001 (44) and ceiling safety catch 518002 (4)**.
 8. **HOLDs: 9 open, 2 closed** (section 6). **Tests** take the sample package's numbers: rivnut spin-out **T06**, bond **T09**, timed access **T11**; the joint tests the package doesn't have are **J-T1 to J-T5**, for the PM to route (section 5).
 
 ## 1. Sources
@@ -77,24 +77,28 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 | H-07 | **One tool.** A 5 mm ball-end hex key, or a 5 mm hex bit in a short driver (LAY §4) | — | DECIDED (R-J2) |
 | H-08 | **Stop washer.** Aluminium, Ø10.5 × Ø20 × 1.5, clamped under each stopped-joint rivnut's head when the rivnut is set. A part we make (punched from 1.5 mm 5000- or 6000-series sheet). | Grip with it: 1.2 + 1.5 = 2.7, inside 0.70–4.20 (SHX); needs a 40 mm face | PROPOSED; thickness ±0.05 (assumption) |
 | H-09 | **Head washer.** ISO 7093-1 large series, 6.4 × 18 × 1.6, A2 stainless, under every bolt head (R-J10) | (ISO7093) | DECIDED (R-J10); dimensions source |
+| H-10 | **Lining cassette clip.** The only fixing between each lining cassette and its outer panel's frame: clip-only, no rails (D-81). It must carry a rated load, have a captive lock, and never bridge the floating lining (D-17, D-47; J-LIN-01) | Rated load at least 8.3 kg in shear per wall clip and 8.0 kg in pull-out per ceiling clip (the sample package's T07 limits, calculation, safety factor 3 as an assumption); about 40 g each (D-81's working figure, assumption) | DECIDED requirement (D-47, D-81); part **HOLD-08** |
+| H-11 | **Ceiling cassette safety catch.** A steel wire lanyard with a rated working load and its two end fixings, from the ceiling cassette's return to a 20 × 40 ceiling tube (D-47) | At least 48 kg working load per lanyard (the package's T08 limit: 3 × a 16 kg cassette; the P04 cassette is 9.8 kg, CEILING PR #32, so this covers it) | DECIDED requirement (D-47); part **HOLD-08** |
 
 Every rivnut, stop washer, spigot, gasket, retainer and pre-fitted bolt is fitted in the factory (D-08, REQ-ASM-10); on site only the bolts are turned. Every joint rivnut sits on a 40 mm tube face (or the decor's back plate).
 
-**Part numbers** (conventions §5 and §6: 6 digits, FF NNNN; family 83 HARDWARE, 84 SEALS AND TAPES, 10 POD general items and the installation kit; NNNN 1000–7999 for parts we make, 8000–8999 for bought catalogue items). Given here at the PM's request so the master BOM can match every team's hardware to this register; the master BOM adopts them. None is on the reserved list (D-28), and none was in use on main or in the open pull requests on 2026-10-31. H-04 gets two numbers, one per thickness, because one number covers one form, fit and function (conventions §6).
+**Part numbers** (conventions §5 and §6: 6 digits, FF NNNN; family 83 HARDWARE, 84 SEALS AND TAPES, 10 POD general items and the installation kit; NNNN 1000–7999 for parts we make, 8000–8999 for bought catalogue items). Given here at the PM's request so the master BOM can match every team's hardware to this register (D-63: the register owns the one list); the master BOM adopts them. None is on the reserved list (D-28), and none was in use on main or in the open pull requests on 2026-10-31 except 518001 and 518002, which CEILING already uses for the clip and the catch and which this register adopts. H-04 gets two numbers, one per thickness, because one number covers one form, fit and function (conventions §6). The per-pod counts are calculation from the joint entries (section 3) and the panel sizes (2.8).
 
-| Item | Part number | Name · Vietnamese | Class | Status |
-|---|---|---|---|---|
-| H-01 | **838001** | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 16 | bought | PROPOSED number; part DECIDED (R-J2) |
-| H-01P | **838002** | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 25 (chốt mối nối khép) | bought | PROPOSED number; part DECIDED (R-J16) |
-| H-02 | **838005** | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE · Vòng giữ đầu bulong | bought | PROPOSED number; part HOLD-02 (number kept for it) |
-| H-03 | **838003** | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 · Tán rút M6 | bought | PROPOSED number; part source (SHX) |
-| H-04 | **848001** | HARDWARE - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA · Gioăng mối nối 3.97 | bought by length | PROPOSED number; strip HOLD-05 |
-| H-04 | **848002** | HARDWARE - JOINT GASKET - 8 X 9.53 - PORON 4701-40 PSA · Gioăng mối nối khép 9.53 | bought by length | PROPOSED number; strip HOLD-05 |
-| H-05 | **831001** | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS · Chốt định vị Ø8 | made | PROPOSED number and part |
-| H-06 | **848003** | HARDWARE - BASE SEAL - GAP 10 ±5 · Gioăng chân đế | bought by length | PROPOSED number; part HOLD-06 (number kept for it) |
-| H-07 | **108001** | POD - HEX KEY - 5 MM BALL END · Lục giác 5 mm đầu bi | bought, in the installation kit 109000 | PROPOSED number; part DECIDED (R-J2) |
-| H-08 | **831002** | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL · Long đen chặn nhôm | made | PROPOSED number and part |
-| H-09 | **838004** | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 · Long đen to M6 inox | bought | PROPOSED number; part DECIDED (R-J10) |
+| Item | Part number | Name · Vietnamese | Class | Per pod | Status |
+|---|---|---|---|---|---|
+| H-01 | **838001** | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 16 | bought | 72 | PROPOSED number; part DECIDED (R-J2) |
+| H-01P | **838002** | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 25 (chốt mối nối khép) | bought | 10 | PROPOSED number; part DECIDED (R-J16) |
+| H-02 | **838005** | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE · Vòng giữ đầu bulong | bought | 72 (the stopped-joint bolts; the pins need none) | PROPOSED number; part HOLD-02 (number kept for it) |
+| H-03 | **838003** | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 · Tán rút M6 | bought | 102 (72 stopped joints, 10 closing-seam pins, 20 spigots) | PROPOSED number; part source (SHX) |
+| H-04 | **848001** | HARDWARE - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA · Gioăng mối nối 3.97 | bought by length | 25.2 m (every stopped joint) | PROPOSED number; strip HOLD-05 |
+| H-04 | **848002** | HARDWARE - JOINT GASKET - 8 X 9.53 - PORON 4701-40 PSA · Gioăng mối nối khép 9.53 | bought by length | 3.73 m (the three closing seams) | PROPOSED number; strip HOLD-05 |
+| H-05 | **831001** | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS · Chốt định vị Ø8 | made | 20 (8 on the band, 8 on the horizontal seams, 4 under the ceiling) | PROPOSED number and part |
+| H-06 | **848003** | HARDWARE - BASE SEAL - GAP 10 ±5 · Gioăng chân đế | bought by length | 7.1 m (the base band's length) | PROPOSED number; part HOLD-06 (number kept for it) |
+| H-07 | **108001** | POD - HEX KEY - 5 MM BALL END · Lục giác 5 mm đầu bi | bought, in the installation kit 109000 | 1 | PROPOSED number; part DECIDED (R-J2) |
+| H-08 | **831002** | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL · Long đen chặn nhôm | made | 72 (one under each stopped-joint rivnut) | PROPOSED number and part |
+| H-09 | **838004** | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 · Long đen to M6 inox | bought | 82 (one under each bolt head) | PROPOSED number; part DECIDED (R-J10) |
+| H-10 | **518001** | LINING - CASSETTE CLIP · Kẹp treo cassette | bought, used only in LINING | **44**: 4 on each of the 8 wall cassettes, 6 on each of the 2 ceiling cassettes | number as CEILING uses it (PR #32); part HOLD-08 |
+| H-11 | **518002** | LINING - CEILING SAFETY CATCH · Dây an toàn cassette trần | bought, used only in LINING | **4**: 2 on each ceiling cassette | number as CEILING uses it (PR #32); part HOLD-08 |
 
 ### 2.2 The in-member bolt (stopped joints)
 
@@ -385,13 +389,13 @@ Each entry has the guideline's fields (§8). Joint IDs here differ from the layo
 
 | Field | Entry |
 |---|---|
-| Parts | Each wall and ceiling cassette to its outer panel's frame. |
-| Function and load path | Hangs the cassette with no screw through it, so the inner leaf floats (D-17); holds it under its weight and knocks; ceiling cassettes can't drop (D-47); hook-and-loop only lines it up. Load: tray → clip → frame tube. The perimeter gasket in the 4 mm gap seals the cassette edge and carries no load. |
-| Loads | Per clip (SEL A8; the package's T07 uses the layout study's heavier wall cassette, 11.1 kg, so 8.3 kg in shear): wall clips about 8 kg rated in shear, ceiling clips 8.0 kg in pull-out, the catch 48 kg per lanyard. |
+| Parts | Each wall and ceiling cassette to its outer panel's frame: 8 wall cassettes and 2 ceiling cassettes. Clip 518001 (H-10), 44 per pod: 4 on each wall cassette, 6 on each ceiling cassette. Safety catch 518002 (H-11), 4 per pod: 2 on each ceiling cassette. |
+| Function and load path | Hangs the cassette with no screw through it, so the inner leaf floats (D-17); holds it under its weight and knocks; ceiling cassettes can't drop (D-47). **Clip-only fixing, no rails (D-81):** the clips are the cassette's only load path; hook-and-loop only lines it up. Load: tray → clip → frame tube. The perimeter gasket in the 4 mm gap seals the cassette edge and carries no load. |
+| Loads | Per clip, with a safety factor of 3 (assumption, as SEL A8 and the package's T07): a wall cassette of 11.1 kg (layout study) on 4 clips needs **8.3 kg rated in shear** per clip; a ceiling cassette on 6 clips needs 4.9 kg in pull-out for the P04 cassette of 9.77 kg (CEILING PR #32), and **8.0 kg** for the older 16 kg figure, which the package's T07 keeps. The catch: **48 kg working load per lanyard** (T08; 3 × 9.77 = 29.3 kg would do for the P04 cassette). Clip mass about 40 g, so 1.76 kg per pod (D-81's working figure; calculation). |
 | Choice and reason | **HOLD (D-56, ISS-076, HOLD-08).** What the clip must meet, so CAD can reserve its space: (1) those rated loads; (2) captive: no unhooking without a deliberate lift (D-47); (3) fits the 4 mm frame-to-tray gap (`cav_gap`, D-16, D-42), or sits on the tray's 25 mm returns, clear of the Ø19 access holes and the pockets; (4) fixes to the 0.5 mm tray return and to a frame tube's face with small rivnuts or blind rivets, never through the ACP; (5) soft enough not to bridge the floating leaf (HW §10); (6) the ceiling catch anchors to a 20 × 40 ceiling tube, not the 20 × 100 SEL A8 names (ISS-079). |
 | Assembly | Last, after every bolt is in and checked (LAY step 11); no tool. |
 | Check and pass mark | T07 and T08 in the sample package; the wall sample is built with the real clips (HW §10). |
-| Status | HOLD; the requirements above are PROPOSED. |
+| Status | Requirements DECIDED (D-47, D-81); parts HOLD (HOLD-08); numbers 518001 and 518002 as CEILING uses them. |
 
 ### 3.9 Bolt count
 
@@ -459,8 +463,8 @@ Physical tests stay PLANNED until real data exists (guideline §10); the factory
 | HOLD-05 | Gasket thicknesses and converter | PORON 4701-40 with adhesive in 8 mm strips, 3.97 mm and 9.53 mm thick | Hardware Engineer | The converter's strip data on file (package H14) |
 | HOLD-06 | Base seal for a 10 ± 5 mm gap (H-06) | Which bulb or brush seal closes 5–15 mm under an aluminium band, with a published range? | BASE engineer | Part named; J-T4 passed |
 | HOLD-07 | Base band top wall 2.7 mm or thinner (grip with the stop washer) | None: BASE design | BASE engineer | Band drawing with its wall thickness |
-| HOLD-08 | Cassette clip and ceiling catch (D-56, ISS-076) | SEL question 10, plus points 3–6 of J-LIN-01 | Hardware Engineer; Layout Engineer | Part with ratings; T07 and T08 passed |
-| HOLD-09 | Frame tube alloy, temper and E (ISS-034) | None: hardware selection | Hardware Engineer | Alloy named; 2.5 re-checked |
+| HOLD-08 | Cassette clip 518001 and ceiling catch 518002 (D-56, ISS-076) | SEL question 10, plus points 1–6 of J-LIN-01: a clip rated for 8.3 kg in shear and 8.0 kg in pull-out with a captive lock that doesn't bridge the lining; a lanyard rated for 48 kg | Hardware Engineer; Layout Engineer | Parts with ratings named; T07 and T08 passed |
+| HOLD-09 | Frame tube alloy, temper and E (ISS-034) | None: D-79, pending in the control pack, names 6063-T6, mill finish | Hardware Engineer | D-79 merged; 2.5 re-checked with 6063-T6 |
 | HOLD-10 | Decor back plate at the J-FRONT-01 bolts: aluminium 1.0–2.7 mm with the frame behind (ISS-045) | None: FRONT design | FRONT engineer | FRONT CAD shows it |
 | HOLD-11 | The back wall's top edge under the ceiling | — | — | **Closed** (R-J4) |
 
