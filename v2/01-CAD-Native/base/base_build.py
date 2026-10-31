@@ -1,0 +1,1105 @@
+"""Build 110000 BASE (Spaceship, FocusPod v2) as a native, parametric Fusion design.
+
+Run it through the Fusion runner (tools/fusion/run_script.py):
+
+    python3 tools/fusion/run_script.py v2/01-CAD-Native/base/base_build.py \
+        --arg stop_after=9 --arg keep=1
+
+Scope of revision P01 (the sample, built first because the factory's wall
+sample stands on it): the back-left corner of the base. The left side band
+(also the factory's base band rig R1, sample hold H17), the back band, the
+back-left corner bracket, the levelling glides under those two bands, and
+floor panel F1 with its seal mat. The front band pieces, the right side, F2
+and the threshold follow in the next revision.
+
+Every size comes from parameters. The pod's own sizes are not copied here:
+the script reads the skeleton P03 parameter list (PARAMS in
+v2/01-CAD-Native/skeleton/pod_skeleton.py) at run time and adds it to this
+design under the same names, so a skeleton change reaches the base on the
+next build. BASE's own parameters follow, each with its status and source.
+
+Coordinates are the pod system of v2/00-Control/conventions.md section 4:
+origin on the room floor at the pod centre, +X to the right wall, +Y to the
+back wall, +Z up; left and right as seen from outside facing the door. Each
+part is its own component, built in place in pod coordinates.
+
+Steps (--arg stop_after=N stops after step N):
+  1 document, parameters, components     6 floor panel F1 and its seal mat
+  2 left side band                       7 hardware: rivet nuts, pins, glides
+  3 back band                            8 materials and masses
+  4 band holes (joints, pins, glides)    9 checks: sketches, timeline, boxes,
+  5 corner bracket BL                      holes, clashes (own parts and skeleton)
+Optional after step 9: --arg export=1 (f3d, STEP), --arg save=1 (cloud).
+"""
+
+import ast
+import math
+import os
+
+import adsk.core
+import adsk.fusion
+
+ARGS = globals().get("SCRIPT_ARGS", {})
+STOP_AFTER = int(ARGS.get("stop_after", "9"))
+REV = "P01"
+DOC_NAME = "110000_%s_BASE_CAD" % REV
+HERE = os.path.dirname(os.path.abspath(globals().get("__file__", ARGS.get("script_path", "."))))
+REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+SKELETON = os.path.join(REPO, "v2", "01-CAD-Native", "skeleton", "pod_skeleton.py")
+
+CM = 0.1  # Fusion API lengths are in cm; multiply mm by CM
+
+# ---------------------------------------------------------------- parameters
+# BASE's own parameters: name, expression, unit, status, source.
+# Statuses follow conventions.md section 9. HOLD marks a value that waits on
+# a named item (joints register, WALL frame bays, a bought part's data sheet).
+BASE_PARAMS = [
+    # base band section (100 x 40 is the skeleton's band_h x band_t)
+    ("band_wall", "2 mm", "mm", "assumption",
+     "layout study inputs.py t_al_base 2.0 mm (aluminium 100x40 base band); alloy, temper and dark finish HOLD (ISS-034, sample hold H15)"),
+    ("cap_t", "3 mm", "mm", "assumption",
+     "head of the plastic end cap closing the side band's back end, so the cap face is flush with the back face Y = pod_d/2; cap product HOLD"),
+    # the wall above (WALL owns it; these say where its bottom member sits)
+    ("acp_t", "3 mm", "mm", "source", "ACP skin 3 mm (plan VT01); skeleton outer_t = ACP 3 + frame 40 (D-16, D-34)"),
+    ("frame_d", "outer_t - acp_t", "mm", "calculation", "wall frame member depth, 40 (D-34: 20 x 40 x 1.2)"),
+    ("jb_x", "acp_t + frame_d / 2", "mm", "calculation",
+     "J-BASE-01 bolt line: centre of the wall's bottom member, measured in from the pod's outer face"),
+    # J-BASE-01, wall to base band
+    ("rn_hole", "9.53 mm", "mm", "source", "Sherex CAH3-610-4.2 M6 rivet nut: hole 9.53 +0.10/0 (hardware selection A5)"),
+    ("rn_flange", "12.96 mm", "mm", "source", "CAH3-610-4.2 head diameter 12.96 (hardware selection A5)"),
+    ("rn_len", "14.86 mm", "mm", "source", "CAH3-610-4.2 length 14.86 (hardware selection A5)"),
+    ("rn_head_t", "1 mm", "mm", "assumption", "CAH3 large-flange head height; read it from the maker's drawing (HOLD)"),
+    ("jb_n", "4", "", "source", "layout study J-BASE-01: 4 bolts per wall panel on the band; sample parts list P05"),
+    ("jb_e", "220 mm", "mm", "assumption",
+     "J-BASE-01 end bolts from the panel ends; HOLD until the joints register and the WALL frame bays fix it"),
+    ("pin_e", "100 mm", "mm", "assumption", "locating pins from the panel ends: 2 per panel, outside the bolts"),
+    ("pin_dia", "12 mm", "mm", "assumption", "locating pin shank; enters a 12.5 hole and a 12.5 x 20 slot in the wall member (WALL)"),
+    ("pin_h", "12 mm", "mm", "assumption", "pin height above the rivnut head; the wall member's bore is 17.6 tall (20 x 1.2)"),
+    ("pin_ch", "2 mm", "mm", "assumption", "lead-in chamfer on the pin top"),
+    ("pin_stud", "8 mm", "mm", "assumption", "M6 stud length into the rivnut"),
+    # levelling glides (bought, HOLD: no product named yet)
+    ("gl_n_side", "2", "", "calculation", "glides per side band: span about 1.3 m, sag under 0.5 mm (see feature rationale)"),
+    ("gl_n_back", "3", "", "calculation", "glides on the back band: 2 spans of 1060 (see feature rationale)"),
+    ("gl_e_f", "20 mm", "mm", "assumption", "front glide of a side band from the side wall's front edge (Y = pod_d/2 - wall_depth)"),
+    ("gl_e_b", "150 mm", "mm", "assumption", "back glide of a side band from the back face"),
+    ("gl_e_bb", "150 mm", "mm", "assumption", "end glides of the back band from its ends"),
+    ("gl_key_hole", "12 mm", "mm", "assumption", "hole in the band top for the 5 mm hex key that turns the glide (levelled before the walls go on)"),
+    ("gl_nut_hole", "13 mm", "mm", "assumption", "hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD"),
+    ("gl_pad", "40 mm", "mm", "assumption", "glide pad diameter (envelope, HOLD)"),
+    ("gl_stem", "10 mm", "mm", "assumption", "glide stem M10 (envelope, HOLD)"),
+    ("gl_nut_t", "2 mm", "mm", "assumption", "M10 rivet nut head under the band, between the band and the glide pad (HOLD)"),
+    # back corner bracket (aluminium angle 60 x 60 x 5, inside the corner, pod side)
+    ("br_leg", "60 mm", "mm", "assumption", "angle leg, standard extruded aluminium angle 60 x 60 x 5"),
+    ("br_t", "5 mm", "mm", "assumption", "angle thickness"),
+    ("br_len", "70 mm", "mm", "assumption", "bracket height, Z 25 to 95: above the floor top, below the walls"),
+    ("br_z0", "25 mm", "mm", "assumption", "bracket bottom: 7 mm above the floor top (mat_t + floor_t)"),
+    ("br_e", "35 mm", "mm", "assumption", "bolt holes from the bracket's heel: clears the other leg and the bolt head"),
+    ("br_zh", "15 mm", "mm", "assumption", "bolt holes from the bracket's top and bottom ends"),
+    ("br_hole", "6.6 mm", "mm", "source", "ISO 273 medium clearance hole for M6"),
+    # thin floor
+    ("mat_t", "3 mm", "mm", "assumption", "closed-cell seal mat under the floor panels (layout study B-FLOOR: 3 mm seal mat); product HOLD"),
+    ("fl_gap", "4 mm", "mm", "assumption", "gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)"),
+    ("fl_seam", "1 mm", "mm", "assumption", "gap at the F1 / F2 seam on X = 0"),
+    ("tg_t", "5 mm", "mm", "assumption", "tongue thickness on F1's seam edge, in a groove in F2"),
+    ("tg_len", "8 mm", "mm", "assumption", "tongue length; F2's groove is 9 deep"),
+]
+
+ASSEMBLY = ("110000", "BASE", "Đế / sàn")
+# key: (part number, name, Vietnamese name, class, parent key)
+PARTS = {
+    "band_l": ("110101", "BASE - BAND ASSY - SIDE - LH", "Viền chân nhôm - cạnh trái (cụm)", "HS", None),
+    "band_l_tube": ("111101", "BASE - BAND TUBE - SIDE - LH", "Viền chân nhôm 100x40 - cạnh trái", "MP", "band_l"),
+    "band_b": ("110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "HS", None),
+    "band_b_tube": ("111103", "BASE - BAND TUBE - BACK", "Viền chân nhôm 100x40 - cạnh sau", "MP", "band_b"),
+    "bracket": ("111201", "BASE - CORNER BRACKET - BACK - COMMON", "Ke góc đế - góc sau", "MP", None),
+    "pin": ("111301", "BASE - LOCATING PIN - COMMON", "Chốt định vị vách", "MP", None),
+    "floor_f1": ("111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "MP", None),
+    "mat_f1": ("111501", "BASE - SEAL MAT - F1", "Tấm lót kín sàn - F1", "MP", None),
+    "glide": ("118001", "BASE - LEVELLING GLIDE - M10 (HOLD)", "Chân chỉnh cao", "PI", None),
+    "rivnut": ("838001", "HARDWARE - RIVET NUT - M6 - CAH3-610-4.2", "Tán rút M6", "PI", None),
+}
+CLASS_NAME = {"HS": "hardware-fitted subassembly", "MP": "part we make", "PI": "bought item"}
+
+XL, XR = "-pod_w / 2", "pod_w / 2"
+YB, YW = "pod_d / 2", "pod_d / 2 - wall_depth"     # back face; side walls' front edge
+XOL = "-pod_w / 2 + outer_t"                        # back panels span frame to frame (D-55)
+# inner point of the mitre between the left side band and DL's outer facet band
+# piece (both band_t wide): Y = -dl_y1 + band_t * (L - dy) / dl_x2 with
+# L = facet length, dy = dl_y2 - dl_y1 (the bisector of the two outer lines)
+Y_MITRE_IN = "(-dl_y1 + band_t * (sqrt(dl_x2 ^ 2 + (dl_y2 - dl_y1) ^ 2) - (dl_y2 - dl_y1)) / dl_x2)"
+
+X = adsk.core.Vector3D.create(1, 0, 0)
+Y = adsk.core.Vector3D.create(0, 1, 0)
+Z = adsk.core.Vector3D.create(0, 0, 1)
+
+
+def vi(expr):
+    return adsk.core.ValueInput.createByString(expr)
+
+
+def mm(v_cm):
+    return round(v_cm * 10.0, 3)
+
+
+def p3(x_mm, y_mm, z_mm):
+    return adsk.core.Point3D.create(x_mm * CM, y_mm * CM, z_mm * CM)
+
+
+def ev(design, expr):
+    """Value of a length expression in mm (plain number for unitless)."""
+    um = design.unitsManager
+    if any(ch.isalpha() for ch in expr):
+        try:
+            return um.evaluateExpression(expr, "mm") * 10.0
+        except RuntimeError:
+            return um.evaluateExpression(expr, "")
+    return float(expr)
+
+
+def bbox_mm(entity):
+    b = entity.boundingBox
+    return tuple(mm(v) for v in (b.minPoint.x, b.minPoint.y, b.minPoint.z,
+                                 b.maxPoint.x, b.maxPoint.y, b.maxPoint.z))
+
+
+def fmt_box(b):
+    return "X %.2f..%.2f  Y %.2f..%.2f  Z %.2f..%.2f" % (b[0], b[3], b[1], b[4], b[2], b[5])
+
+
+def skeleton_params():
+    with open(SKELETON, "r", encoding="utf-8") as fh:
+        tree = ast.parse(fh.read(), SKELETON)
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == "PARAMS" for t in node.targets):
+            return ast.literal_eval(node.value)
+    raise RuntimeError("no PARAMS list in " + SKELETON)
+
+
+# ---------------------------------------------------------------- sketch helpers
+
+def sketch_axis(sk, direction):
+    """Which sketch axis a model direction maps to: ('x'|'y', sign)."""
+    o = sk.modelToSketchSpace(adsk.core.Point3D.create(0, 0, 0))
+    e = sk.modelToSketchSpace(adsk.core.Point3D.create(direction.x, direction.y, direction.z))
+    dx, dy = e.x - o.x, e.y - o.y
+    if abs(dx) > abs(dy):
+        return "x", 1 if dx > 0 else -1
+    return "y", 1 if dy > 0 else -1
+
+
+def on_plane(sk, xyz):
+    """Sketch-space point for a model point, dropped onto the sketch plane
+    (a point off the plane keeps a free coordinate and the sketch is never
+    fully constrained)."""
+    q = sk.modelToSketchSpace(p3(*xyz))
+    return adsk.core.Point3D.create(q.x, q.y, 0)
+
+
+def orient(axis):
+    return (adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation if axis == "x"
+            else adsk.fusion.DimensionOrientations.VerticalDimensionOrientation)
+
+
+def dim_coord(sk, pt, direction, expr, value):
+    """Fix pt's model coordinate along `direction` (a model axis lying in the
+    sketch plane) to the expression: a distance dimension from the sketch
+    origin driven by abs(expr), or an alignment with the origin when it is 0."""
+    ax, _sign = sketch_axis(sk, direction)
+    if abs(value) < 1e-6:
+        if ax == "x":
+            sk.geometricConstraints.addVerticalPoints(pt, sk.originPoint)
+        else:
+            sk.geometricConstraints.addHorizontalPoints(pt, sk.originPoint)
+        return
+    g = pt.geometry
+    tp = adsk.core.Point3D.create(g.x / 2 + 0.7, g.y / 2 + 0.7, 0)
+    d = sk.sketchDimensions.addDistanceDimension(sk.originPoint, pt, orient(ax), tp)
+    d.parameter.expression = "abs(%s)" % expr
+
+
+def polygon(design, sk, pts, u, v):
+    """Closed polygon through pts = [(expr_u, expr_v, (x, y, z) mm), ...] in
+    order, fully constrained: an edge parallel to a sketch axis gets a
+    horizontal or vertical constraint, and each group of corners that such
+    edges tie together gets one dimension from the sketch origin along that
+    axis (Fusion over-constrains if both ends of an axis-parallel line are
+    dimensioned; the skeleton's poly() does the same)."""
+    lines = sk.sketchCurves.sketchLines
+    q = [on_plane(sk, xyz) for (_a, _b, xyz) in pts]
+    n = len(q)
+    verts, edges = [], []
+    for i in range(n):
+        start = verts[-1] if verts else q[0]
+        end = q[i + 1] if i < n - 1 else verts[0]
+        ln = lines.addByTwoPoints(start, end)
+        edges.append(ln)
+        if i == 0:
+            verts.append(ln.startSketchPoint)
+        if i < n - 1:
+            verts.append(ln.endSketchPoint)
+    au, _s = sketch_axis(sk, u)
+    av, _s = sketch_axis(sk, v)
+    on = {au: (0, u), av: (1, v)}
+    gc = sk.geometricConstraints
+    for sa in ("x", "y"):
+        group = list(range(n))
+
+        def root(i):
+            while group[i] != i:
+                i = group[i]
+            return i
+        for i, ln in enumerate(edges):
+            ga, gb = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+            if abs((ga.x - gb.x) if sa == "x" else (ga.y - gb.y)) < 1e-7:
+                (gc.addVertical if sa == "x" else gc.addHorizontal)(ln)
+                group[root((i + 1) % n)] = root(i)
+        k, direction = on[sa]
+        for i in range(n):
+            if root(i) != i:
+                continue
+            xyz = pts[i][2]
+            val = xyz[0] * direction.x + xyz[1] * direction.y + xyz[2] * direction.z
+            dim_coord(sk, verts[i], direction, pts[i][k], val)
+    return verts
+
+
+def circle_at(sk, xyz, dia_expr, dia_mm, u, v, eu, ev_):
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(on_plane(sk, xyz), dia_mm / 2 * CM)
+    g = c.centerSketchPoint.geometry
+    d = sk.sketchDimensions.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0))
+    d.parameter.expression = dia_expr
+    uu = xyz[0] * u.x + xyz[1] * u.y + xyz[2] * u.z
+    vv = xyz[0] * v.x + xyz[1] * v.y + xyz[2] * v.z
+    dim_coord(sk, c.centerSketchPoint, u, eu, uu)
+    dim_coord(sk, c.centerSketchPoint, v, ev_, vv)
+    return c
+
+
+def check_sketch(sk):
+    if not sk.isFullyConstrained:
+        free = []
+        for sp in sk.sketchPoints:
+            if not sp.isFullyConstrained:
+                g = sp.geometry
+                free.append("(%.2f, %.2f)" % (g.x * 10, g.y * 10))
+        dims = ["%s=%s" % (d.parameter.name, d.parameter.expression) for d in sk.sketchDimensions]
+        raise RuntimeError("sketch not fully constrained: %s; free points (sketch mm) %s; dims %s" % (
+            sk.name, free, dims))
+    return sk.name
+
+
+def offset_plane(comp, which, expr, value, name):
+    """Construction plane parallel to an origin plane ('xy', 'yz' or 'xz') at
+    the model coordinate `value` (mm) given by `expr`. Checks the side: an
+    origin plane's normal may point along -axis, and then the offset is negated."""
+    base = {"xy": comp.xYConstructionPlane, "yz": comp.yZConstructionPlane,
+            "xz": comp.xZConstructionPlane}[which]
+    if abs(value) < 1e-6:
+        return base
+    axis = {"xy": 2, "yz": 0, "xz": 1}[which]
+    for e in (expr, "-(%s)" % expr):
+        pin = comp.constructionPlanes.createInput()
+        pin.setByOffset(base, vi(e))
+        pl = comp.constructionPlanes.add(pin)
+        o = pl.geometry.origin
+        got = (o.x, o.y, o.z)[axis] * 10.0
+        if abs(got - value) < 0.01:
+            pl.name = name
+            return pl
+        pl.deleteMe()
+    raise RuntimeError("could not place plane %s at %.3f" % (name, value))
+
+
+def extrude(comp, prof, dist_expr, name, op=None, start_expr=None, body=None):
+    """Extrude a profile along its plane normal. A join is made as a new body
+    and then combined into `body`: an extrude join that only touches the body
+    along a face makes a second body instead of joining."""
+    op = op or adsk.fusion.FeatureOperations.NewBodyFeatureOperation
+    join = op == adsk.fusion.FeatureOperations.JoinFeatureOperation
+    ei = comp.features.extrudeFeatures.createInput(
+        prof, adsk.fusion.FeatureOperations.NewBodyFeatureOperation if join else op)
+    if start_expr:
+        ei.startExtent = adsk.fusion.OffsetStartDefinition.create(vi(start_expr))
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(dist_expr)),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection)
+    if body is not None and not join:
+        ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = name
+    if join:
+        tools = adsk.core.ObjectCollection.create()
+        tools.add(f.bodies.item(0))
+        ci = comp.features.combineFeatures.createInput(body, tools)
+        ci.operation = adsk.fusion.FeatureOperations.JoinFeatureOperation
+        ci.isKeepToolBodies = False
+        cf = comp.features.combineFeatures.add(ci)
+        cf.name = name.replace("EXTRUDE", "COMBINE", 1)
+    return f
+
+
+def single_body(comp, name=None):
+    """The one body of a part component (a join leaves stale handles)."""
+    if comp.bRepBodies.count != 1:
+        raise RuntimeError("%s: expected 1 body, found %d" % (comp.name, comp.bRepBodies.count))
+    b = comp.bRepBodies.item(0)
+    if name:
+        b.name = name
+    return b
+
+
+def one_profile(sk):
+    if sk.profiles.count != 1:
+        raise RuntimeError("%s: expected 1 profile, found %d" % (sk.name, sk.profiles.count))
+    return sk.profiles.item(0)
+
+
+# ---------------------------------------------------------------- document
+
+def find_comp(design, key):
+    want = PARTS[key][0]
+    for c in design.allComponents:
+        if c.partNumber == want:
+            return c
+    raise RuntimeError("component not found: " + want)
+
+
+def find_occ(design, key):
+    want = PARTS[key][0]
+    for occ in design.rootComponent.allOccurrences:
+        if occ.component.partNumber == want:
+            return occ
+    raise RuntimeError("occurrence not found: " + want)
+
+
+def describe(comp, pn, name, vn, cls):
+    comp.name = "%s %s" % (pn, name)
+    comp.partNumber = pn
+    comp.description = "%s | %s | %s | rev %s | DRAFT" % (name, vn, CLASS_NAME.get(cls, cls), REV)
+
+
+def step1_document(app):
+    if ARGS.get("close_previous", "1") == "1":
+        # only an unsaved document whose root part number is this assembly's
+        for i in range(app.documents.count - 1, -1, -1):
+            d = app.documents.item(i)
+            try:   # drawings and other documents have no design product
+                dd = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
+            except RuntimeError:
+                dd = None
+            if dd and not d.isSaved and dd.rootComponent.partNumber == ASSEMBLY[0]:
+                d.close(False)
+    doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    design.designType = adsk.fusion.DesignTypes.ParametricDesignType
+    design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
+    up = design.userParameters
+    n_skel = 0
+    for name, expr, unit, status, src in skeleton_params():
+        if up.add(name, vi(expr), unit, "SKELETON P03 %s: %s" % (status.upper(), src)) is None:
+            raise RuntimeError("could not add skeleton parameter " + name)
+        n_skel += 1
+    for name, expr, unit, status, src in BASE_PARAMS:
+        if up.add(name, vi(expr), unit, "BASE %s: %s" % (status.upper(), src)) is None:
+            raise RuntimeError("could not add parameter " + name)
+    root = design.rootComponent
+    root.partNumber = ASSEMBLY[0]
+    # the root component takes the document name; it can't be renamed by script
+    root.description = "%s | %s | assembly | rev %s | DRAFT" % (ASSEMBLY[1], ASSEMBLY[2], REV)
+    made = {}
+    for key, (pn, name, vn, cls, parent) in PARTS.items():
+        host = root if parent is None else made[parent]
+        occ = host.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+        describe(occ.component, pn, name, vn, cls)
+        made[key] = occ.component
+        if key in ("pin", "glide", "rivnut"):
+            # placed later as copies at their holes; the first copy stays hidden
+            occ.isLightBulbOn = False
+    print("step 1: document, %d skeleton parameters (read from %s) + %d BASE parameters" % (
+        n_skel, os.path.relpath(SKELETON, REPO), len(BASE_PARAMS)))
+    for k in ("pod_w", "pod_d", "glide_h", "band_h", "band_t", "wall_z0", "wall_depth", "outer_t",
+              "floor_t", "dl_x2", "dl_y1", "dl_y2"):
+        print("  %-12s = %9.3f mm   [%s]" % (k, ev(design, k), up.itemByName(k).expression))
+    print("  components: " + ", ".join(c.name for c in design.allComponents))
+    return doc, design
+
+
+# ---------------------------------------------------------------- band tubes
+
+def band_tube(design, key, label, outline, bore, axis_note):
+    """Hollow 100 x 40 band tube: plan outline extruded band_h up from the
+    band bottom (Z glide_h), then the bore cut leaving band_wall all round.
+    outline / bore: polygons as for polygon(); the bore runs past both ends."""
+    comp = find_comp(design, key)
+    plane = offset_plane(comp, "xy", "glide_h", ev(design, "glide_h"),
+                         "PLANE - BAND BOTTOM Z = glide_h")
+    sk = comp.sketches.add(plane)
+    sk.name = "PLAN - %s - OUTLINE" % label
+    polygon(design, sk, outline, X, Y)
+    check_sketch(sk)
+    f = extrude(comp, one_profile(sk), "band_h", "EXTRUDE - %s - TUBE OUTSIDE" % label)
+    body = f.bodies.item(0)
+    body.name = "%s - TUBE" % PARTS[key][1]
+    sk2 = comp.sketches.add(plane)
+    sk2.name = "PLAN - %s - BORE" % label
+    polygon(design, sk2, bore, X, Y)
+    check_sketch(sk2)
+    extrude(comp, one_profile(sk2), "band_h - 2 * band_wall", "CUT - %s - BORE, WALL band_wall" % label,
+            op=adsk.fusion.FeatureOperations.CutFeatureOperation, start_expr="band_wall", body=body)
+    print("  %-30s %s  (%s)" % (PARTS[key][1], fmt_box(bbox_mm(body)), axis_note))
+    return body
+
+
+def P(design, ex, ey, ez="0 mm"):
+    """(expr_x, expr_y, (x, y, z) mm) for polygon()."""
+    return (ex, ey, (ev(design, ex), ev(design, ey), ev(design, ez)))
+
+
+def step2_band_side_lh(design):
+    outline = [
+        P(design, XL, "%s - cap_t" % YB),
+        P(design, "%s + band_t" % XL, "%s - cap_t" % YB),
+        P(design, "%s + band_t" % XL, Y_MITRE_IN),
+        P(design, XL, "-dl_y1"),
+    ]
+    bore = [
+        P(design, "%s + band_wall" % XL, "%s + 20 mm" % YB),
+        P(design, "%s + band_t - band_wall" % XL, "%s + 20 mm" % YB),
+        P(design, "%s + band_t - band_wall" % XL, "-dl_y1 - 20 mm"),
+        P(design, "%s + band_wall" % XL, "-dl_y1 - 20 mm"),
+    ]
+    print("step 2: left side band (front end mitred to DL's outer facet, back end cut for the cap)")
+    band_tube(design, "band_l_tube", "SIDE LH", outline, bore, "length along Y")
+
+
+def step3_band_back(design):
+    outline = [
+        P(design, "%s + band_t" % XL, "%s - band_t" % YB),
+        P(design, "%s - band_t" % XR, "%s - band_t" % YB),
+        P(design, "%s - band_t" % XR, YB),
+        P(design, "%s + band_t" % XL, YB),
+    ]
+    bore = [
+        P(design, "%s + band_t - 20 mm" % XL, "%s - band_t + band_wall" % YB),
+        P(design, "%s - band_t + 20 mm" % XR, "%s - band_t + band_wall" % YB),
+        P(design, "%s - band_t + 20 mm" % XR, "%s - band_wall" % YB),
+        P(design, "%s + band_t - 20 mm" % XL, "%s - band_wall" % YB),
+    ]
+    print("step 3: back band (butts the side bands' inner faces, as v1's frame)")
+    band_tube(design, "band_b_tube", "BACK", outline, bore, "length along X")
+
+
+# ---------------------------------------------------------------- holes
+
+def hole(design, key, plane, label, xyz, dims, dia_expr, depth_expr, want_dir,
+         pattern=None):
+    """A simple hole (Hole feature) at a sketch point on `plane`, drilled along
+    want_dir (model vector) to depth_expr, optionally patterned:
+    pattern = (axis attribute name, count expr, extent expr)."""
+    comp = find_comp(design, key)
+    body = comp.bRepBodies.item(0)
+    sk = comp.sketches.add(plane)
+    sk.name = "HOLE POSITION - %s" % label
+    pt = sk.sketchPoints.add(on_plane(sk, xyz))
+    for direction, expr in dims:
+        val = xyz[0] * direction.x + xyz[1] * direction.y + xyz[2] * direction.z
+        dim_coord(sk, pt, direction, expr, val)
+    check_sketch(sk)
+    holes = comp.features.holeFeatures
+    hin = holes.createSimpleInput(vi(dia_expr))
+    hin.setPositionBySketchPoint(pt)
+    hin.setDistanceExtent(vi(depth_expr))
+    n = plane.geometry.normal
+    # a hole runs against the sketch plane's normal unless flipped
+    if -(n.x * want_dir.x + n.y * want_dir.y + n.z * want_dir.z) < 0:
+        hin.isDefaultDirection = False
+    hin.participantBodies = [body]
+    hf = holes.add(hin)
+    hf.name = "HOLE - %s" % label
+    if pattern:
+        axis_name, count_expr, extent_expr = pattern
+        coll = adsk.core.ObjectCollection.create()
+        coll.add(hf)
+        pats = comp.features.rectangularPatternFeatures
+        pin = pats.createInput(coll, getattr(comp, axis_name), vi(count_expr), vi(extent_expr),
+                               adsk.fusion.PatternDistanceType.ExtentPatternDistanceType)
+        # direction two defaults to 3 copies 0 mm apart (found by the WALL
+        # Engineer): set it to a single instance
+        other = "xConstructionAxis" if axis_name != "xConstructionAxis" else "yConstructionAxis"
+        pin.setDirectionTwo(getattr(comp, other), vi("1"), vi("1 mm"))
+        pat = pats.add(pin)
+        pat.name = "PATTERN - %s" % label
+    return hf
+
+
+def holes_of(body, dia_mm):
+    """Hole centres from the cylindrical faces of one diameter: list of
+    (axis origin mm, axis direction)."""
+    out = []
+    for f in body.faces:
+        g = f.geometry
+        if g.surfaceType == adsk.core.SurfaceTypes.CylinderSurfaceType and \
+                abs(g.radius * 20.0 - dia_mm) < 0.01:
+            out.append(((mm(g.origin.x), mm(g.origin.y), mm(g.origin.z)),
+                        (round(g.axis.x, 3), round(g.axis.y, 3), round(g.axis.z, 3))))
+    return out
+
+
+def centres(body, dia_mm, along):
+    """Unique centres of the holes of one diameter whose axis runs along
+    `along`, as the two coordinates across that axis."""
+    k = {"x": 0, "y": 1, "z": 2}[along]
+    idx = {"x": (1, 2), "y": (0, 2), "z": (0, 1)}[along]
+    pts = set()
+    for org, d in holes_of(body, dia_mm):
+        if abs(abs(d[k]) - 1.0) < 1e-3:
+            pts.add((round(org[idx[0]], 2), round(org[idx[1]], 2)))
+    return sorted(pts)
+
+
+def step4_band_holes(design):
+    v = lambda e: ev(design, e)  # noqa: E731
+    # -- left side band
+    c = find_comp(design, "band_l_tube")
+    top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
+    bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
+    inner = offset_plane(c, "yz", "%s + band_t" % XL, v("%s + band_t" % XL),
+                         "PLANE - BAND INNER FACE X = -pod_w/2 + band_t")
+    down, up, out_x = Z.copy(), Z.copy(), X.copy()
+    down.scaleBy(-1)
+    out_x.scaleBy(-1)
+    xb = "%s + jb_x" % XL
+    hole(design, "band_l_tube", top, "J-BASE-01 RIVNUT - L1", (v(xb), v("%s + jb_e" % YW), v("wall_z0")),
+         [(X, xb), (Y, "%s + jb_e" % YW)], "rn_hole", "band_wall", down,
+         ("yConstructionAxis", "jb_n", "wall_depth - 2 * jb_e"))
+    hole(design, "band_l_tube", top, "LOCATING PIN RIVNUT - L1", (v(xb), v("%s + pin_e" % YW), v("wall_z0")),
+         [(X, xb), (Y, "%s + pin_e" % YW)], "rn_hole", "band_wall", down,
+         ("yConstructionAxis", "2", "wall_depth - 2 * pin_e"))
+    xg = "%s + band_t / 2" % XL
+    hole(design, "band_l_tube", top, "GLIDE KEY ACCESS - SIDE LH", (v(xg), v("%s + gl_e_f" % YW), v("wall_z0")),
+         [(X, xg), (Y, "%s + gl_e_f" % YW)], "gl_key_hole", "band_wall", down,
+         ("yConstructionAxis", "gl_n_side", "wall_depth - gl_e_f - gl_e_b"))
+    hole(design, "band_l_tube", bot, "GLIDE NUT - SIDE LH", (v(xg), v("%s + gl_e_f" % YW), v("glide_h")),
+         [(X, xg), (Y, "%s + gl_e_f" % YW)], "gl_nut_hole", "band_wall", up,
+         ("yConstructionAxis", "gl_n_side", "wall_depth - gl_e_f - gl_e_b"))
+    yb = "%s - band_t - br_e" % YB
+    hole(design, "band_l_tube", inner, "BRACKET RIVNUT - BL - SIDE LH",
+         (v("%s + band_t" % XL), v(yb), v("br_z0 + br_zh")),
+         [(Y, yb), (Z, "br_z0 + br_zh")], "rn_hole", "band_wall", out_x,
+         ("zConstructionAxis", "2", "br_len - 2 * br_zh"))
+    # -- back band
+    c = find_comp(design, "band_b_tube")
+    top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
+    bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
+    inner = offset_plane(c, "xz", "%s - band_t" % YB, v("%s - band_t" % YB),
+                         "PLANE - BAND INNER FACE Y = pod_d/2 - band_t")
+    yb_line = "%s - jb_x" % YB
+    for panel, x0 in (("B1", "%s + jb_e" % XOL), ("B2", "jb_e")):
+        hole(design, "band_b_tube", top, "J-BASE-01 RIVNUT - %s" % panel, (v(x0), v(yb_line), v("wall_z0")),
+             [(X, x0), (Y, yb_line)], "rn_hole", "band_wall", down,
+             ("xConstructionAxis", "jb_n", "pod_w / 2 - outer_t - 2 * jb_e"))
+    for panel, x0 in (("B1", "%s + pin_e" % XOL), ("B2", "pin_e")):
+        hole(design, "band_b_tube", top, "LOCATING PIN RIVNUT - %s" % panel, (v(x0), v(yb_line), v("wall_z0")),
+             [(X, x0), (Y, yb_line)], "rn_hole", "band_wall", down,
+             ("xConstructionAxis", "2", "pod_w / 2 - outer_t - 2 * pin_e"))
+    xg0, yg = "%s + band_t + gl_e_bb" % XL, "%s - band_t / 2" % YB
+    hole(design, "band_b_tube", top, "GLIDE KEY ACCESS - BACK", (v(xg0), v(yg), v("wall_z0")),
+         [(X, xg0), (Y, yg)], "gl_key_hole", "band_wall", down,
+         ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
+    hole(design, "band_b_tube", bot, "GLIDE NUT - BACK", (v(xg0), v(yg), v("glide_h")),
+         [(X, xg0), (Y, yg)], "gl_nut_hole", "band_wall", up,
+         ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
+    into_back = Y.copy()
+    for corner, xb_ in (("BL", "%s + band_t + br_e" % XL), ("BR", "%s - band_t - br_e" % XR)):
+        hole(design, "band_b_tube", inner, "BRACKET RIVNUT - %s - BACK" % corner,
+             (v(xb_), v("%s - band_t" % YB), v("br_z0 + br_zh")),
+             [(X, xb_), (Z, "br_z0 + br_zh")], "rn_hole", "band_wall", into_back,
+             ("zConstructionAxis", "2", "br_len - 2 * br_zh"))
+    print("step 4: band holes")
+    report_holes(design)
+
+
+def report_holes(design):
+    rn, gk, gn = ev(design, "rn_hole"), ev(design, "gl_key_hole"), ev(design, "gl_nut_hole")
+    for key in ("band_l_tube", "band_b_tube"):
+        body = find_comp(design, key).bRepBodies.item(0)
+        top = [p for p in centres(body, rn, "z")]
+        side = [p for p in centres(body, rn, "x")] if key == "band_l_tube" else centres(body, rn, "y")
+        print("  %s" % PARTS[key][1])
+        print("    rivnut holes in the top wall (X, Y): %d  %s" % (len(top), top))
+        print("    rivnut holes in the inner wall:      %d  %s" % (len(side), side))
+        print("    glide key holes (top): %s   glide nut holes (bottom): %s" % (
+            centres(body, gk, "z"), centres(body, gn, "z")))
+
+
+# ---------------------------------------------------------------- bracket
+
+def step5_bracket(design):
+    v = lambda e: ev(design, e)  # noqa: E731
+    comp = find_comp(design, "bracket")
+    plane = offset_plane(comp, "xy", "br_z0", v("br_z0"), "PLANE - BRACKET BOTTOM Z = br_z0")
+    # heel: the bands' inside corner, standing off by the rivnut heads it bears on
+    xh, yh = "%s + band_t + rn_head_t" % XL, "%s - band_t - rn_head_t" % YB
+    pts = [
+        P(design, xh, yh),
+        P(design, "%s + br_leg" % xh, yh),
+        P(design, "%s + br_leg" % xh, "%s - br_t" % yh),
+        P(design, "%s + br_t" % xh, "%s - br_t" % yh),
+        P(design, "%s + br_t" % xh, "%s - br_leg" % yh),
+        P(design, xh, "%s - br_leg" % yh),
+    ]
+    sk = comp.sketches.add(plane)
+    sk.name = "SECTION - CORNER BRACKET - ANGLE br_leg x br_leg x br_t"
+    polygon(design, sk, pts, X, Y)
+    check_sketch(sk)
+    f = extrude(comp, one_profile(sk), "br_len", "EXTRUDE - CORNER BRACKET - ANGLE")
+    body = f.bodies.item(0)
+    body.name = "%s - ANGLE" % PARTS["bracket"][1]
+    # leg on the side band: holes along X through br_t, from the pod side
+    pl1 = offset_plane(comp, "yz", "%s + br_t" % xh, v("%s + br_t" % xh),
+                       "PLANE - BRACKET LEG 1 POD-SIDE FACE")
+    to_mx = X.copy()
+    to_mx.scaleBy(-1)
+    # hole positions use the same expressions as the bands' rivnut holes
+    y1 = "%s - band_t - br_e" % YB
+    hole(design, "bracket", pl1, "BRACKET - LEG 1 - M6 CLEARANCE",
+         (v("%s + br_t" % xh), v(y1), v("br_z0 + br_zh")), [(Y, y1), (Z, "br_z0 + br_zh")],
+         "br_hole", "br_t", to_mx, ("zConstructionAxis", "2", "br_len - 2 * br_zh"))
+    pl2 = offset_plane(comp, "xz", "%s - br_t" % yh, v("%s - br_t" % yh),
+                       "PLANE - BRACKET LEG 2 POD-SIDE FACE")
+    x2 = "%s + band_t + br_e" % XL
+    hole(design, "bracket", pl2, "BRACKET - LEG 2 - M6 CLEARANCE",
+         (v(x2), v("%s - br_t" % yh), v("br_z0 + br_zh")), [(X, x2), (Z, "br_z0 + br_zh")],
+         "br_hole", "br_t", Y, ("zConstructionAxis", "2", "br_len - 2 * br_zh"))
+    print("step 5: corner bracket BL  %s" % fmt_box(bbox_mm(body)))
+    d = ev(design, "br_hole")
+    print("  holes leg 1 (Y, Z): %s   leg 2 (X, Z): %s" % (centres(body, d, "x"), centres(body, d, "y")))
+
+
+# ---------------------------------------------------------------- floor
+
+def step6_floor(design):
+    v = lambda e: ev(design, e)  # noqa: E731
+    x0, x1 = "%s + band_t + fl_gap" % XL, "-fl_seam / 2"
+    xt = "-fl_seam / 2 + tg_len"                       # tongue tip, inside F2's groove
+    y0, y1 = YW, "%s - band_t - fl_gap" % YB
+    comp = find_comp(design, "floor_f1")
+    plane = offset_plane(comp, "xy", "mat_t", v("mat_t"), "PLANE - FLOOR UNDERSIDE Z = mat_t")
+    sk = comp.sketches.add(plane)
+    sk.name = "PLAN - FLOOR PANEL F1 (WITH THE TONGUE ZONE)"
+    polygon(design, sk, [P(design, x0, y0), P(design, xt, y0), P(design, xt, y1), P(design, x0, y1)], X, Y)
+    check_sketch(sk)
+    f = extrude(comp, one_profile(sk), "floor_t", "EXTRUDE - FLOOR PANEL F1 - PLYWOOD floor_t")
+    f.bodies.item(0).name = "%s - PANEL" % PARTS["floor_f1"][1]
+    # the tongue: cut the shoulders above and below it along the seam edge
+    sk2 = comp.sketches.add(plane)
+    sk2.name = "PLAN - F1 SEAM TONGUE ZONE"
+    polygon(design, sk2, [P(design, x1, y0), P(design, xt, y0), P(design, xt, y1), P(design, x1, y1)], X, Y)
+    check_sketch(sk2)
+    body = single_body(comp)
+    extrude(comp, one_profile(sk2), "(floor_t - tg_t) / 2", "CUT - F1 TONGUE - LOWER SHOULDER",
+            op=adsk.fusion.FeatureOperations.CutFeatureOperation, body=body)
+    body = single_body(comp)
+    extrude(comp, one_profile(sk2), "(floor_t - tg_t) / 2", "CUT - F1 TONGUE - UPPER SHOULDER",
+            op=adsk.fusion.FeatureOperations.CutFeatureOperation, start_expr="(floor_t + tg_t) / 2", body=body)
+    body = single_body(comp, "%s - PANEL" % PARTS["floor_f1"][1])
+    print("step 6: floor panel F1  %s" % fmt_box(bbox_mm(body)))
+    comp = find_comp(design, "mat_f1")
+    sk = comp.sketches.add(comp.xYConstructionPlane)
+    sk.name = "PLAN - SEAL MAT F1"
+    polygon(design, sk, [P(design, x0, y0), P(design, x1, y0), P(design, x1, y1), P(design, x0, y1)], X, Y)
+    check_sketch(sk)
+    extrude(comp, one_profile(sk), "mat_t", "EXTRUDE - SEAL MAT F1")
+    mat = single_body(comp, "%s - SHEET" % PARTS["mat_f1"][1])
+    print("  seal mat F1           %s" % fmt_box(bbox_mm(mat)))
+
+
+# ---------------------------------------------------------------- hardware
+
+def revolve_section(design, comp, name, pts):
+    """A round part as one revolve: the half section in the XZ plane (X =
+    radius, Z = height, pts as for polygon() with u = X, v = Z) turned 360
+    degrees about the Z axis."""
+    sk = comp.sketches.add(comp.xZConstructionPlane)
+    sk.name = "HALF SECTION - %s" % name
+    polygon(design, sk, pts, X, Z)
+    check_sketch(sk)
+    ri = comp.features.revolveFeatures.createInput(
+        one_profile(sk), comp.zConstructionAxis, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    ri.setAngleExtent(False, vi("360 deg"))
+    rf = comp.features.revolveFeatures.add(ri)
+    rf.name = "REVOLVE - %s" % name
+    return single_body(comp, name)
+
+
+def PZ(design, er, ez):
+    """(expr_r, expr_z, (r, 0, z) mm) for a half section in the XZ plane."""
+    return (er, ez, (ev(design, er), 0.0, ev(design, ez)))
+
+
+def build_rivnut(design):
+    comp = find_comp(design, "rivnut")
+    revolve_section(design, comp, "RIVET NUT M6 CAH3-610-4.2 - ENVELOPE", [
+        PZ(design, "3 mm", "-(rn_len - rn_head_t)"),            # thread bore, M6 (envelope)
+        PZ(design, "rn_hole / 2 - 0.065 mm", "-(rn_len - rn_head_t)"),
+        PZ(design, "rn_hole / 2 - 0.065 mm", "0 mm"),
+        PZ(design, "rn_flange / 2", "0 mm"),
+        PZ(design, "rn_flange / 2", "rn_head_t"),
+        PZ(design, "3 mm", "rn_head_t"),
+    ])
+
+
+def build_pin(design):
+    comp = find_comp(design, "pin")
+    revolve_section(design, comp, "LOCATING PIN", [
+        PZ(design, "0 mm", "-pin_stud"),
+        PZ(design, "3 mm", "-pin_stud"),                        # M6 stud
+        PZ(design, "3 mm", "0 mm"),
+        PZ(design, "pin_dia / 2", "0 mm"),
+        PZ(design, "pin_dia / 2", "pin_h - pin_ch"),             # lead-in chamfer
+        PZ(design, "pin_dia / 2 - pin_ch", "pin_h"),
+        PZ(design, "0 mm", "pin_h"),
+    ])
+
+
+def build_glide(design):
+    comp = find_comp(design, "glide")
+    revolve_section(design, comp, "LEVELLING GLIDE - ENVELOPE (HOLD)", [
+        PZ(design, "0 mm", "0 mm"),
+        PZ(design, "gl_pad / 2", "0 mm"),
+        PZ(design, "gl_pad / 2", "glide_h - gl_nut_t"),
+        PZ(design, "gl_stem / 2", "glide_h - gl_nut_t"),
+        PZ(design, "gl_stem / 2", "glide_h + band_h / 2"),
+        PZ(design, "0 mm", "glide_h + band_h / 2"),
+    ])
+
+
+def place(design, host_key, key, xyz, rot=None):
+    """A copy of a hardware component inside a host assembly (or the root when
+    host_key is None) at a point; rot = 'x+' turns its +Z to +X, 'y-' to -Y.
+    Positions come from the same expressions as the holes and are set when
+    the script runs (see the manifest)."""
+    m = adsk.core.Matrix3D.create()
+    if rot == "x+":
+        m.setToRotation(math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
+    elif rot == "y-":
+        m.setToRotation(math.pi / 2, X, adsk.core.Point3D.create(0, 0, 0))
+    m.translation = adsk.core.Vector3D.create(xyz[0] * CM, xyz[1] * CM, xyz[2] * CM)
+    host = design.rootComponent if host_key is None else find_comp(design, host_key)
+    return host.occurrences.addExistingComponent(find_comp(design, key), m)
+
+
+def hardware_points(design):
+    """(host assembly, item, (x, y, z) mm, rotation) for every hardware copy,
+    from the same parameters as the holes."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    out = []
+    z_top = v("wall_z0")
+    n = int(round(v("jb_n")))
+    yw, wd, jb_e, pin_e = v(YW), v("wall_depth"), v("jb_e"), v("pin_e")
+    # left side band: J-BASE-01 rivnuts and pins for L1
+    xb = v("%s + jb_x" % XL)
+    for i in range(n):
+        out.append(("band_l", "rivnut", (xb, yw + jb_e + i * (wd - 2 * jb_e) / (n - 1), z_top), None))
+    for i in range(2):
+        y = yw + pin_e + i * (wd - 2 * pin_e)
+        out.append(("band_l", "rivnut", (xb, y, z_top), None))
+        out.append(("band_l", "pin", (xb, y, z_top + v("rn_head_t")), None))
+    # back band: J-BASE-01 rivnuts and pins for B1 and B2
+    yl = v("%s - jb_x" % YB)
+    span = v("pod_w / 2 - outer_t")
+    for x0 in (v(XOL), 0.0):
+        for i in range(n):
+            out.append(("band_b", "rivnut", (x0 + jb_e + i * (span - 2 * jb_e) / (n - 1), yl, z_top), None))
+        for i in range(2):
+            x = x0 + pin_e + i * (span - 2 * pin_e)
+            out.append(("band_b", "rivnut", (x, yl, z_top), None))
+            out.append(("band_b", "pin", (x, yl, z_top + v("rn_head_t")), None))
+    # corner bracket rivnuts in the bands' inner walls (BL on both bands, BR on the back band)
+    zb, dz = v("br_z0 + br_zh"), v("br_len - 2 * br_zh")
+    for k in range(2):
+        out.append(("band_l", "rivnut", (v("%s + band_t" % XL), v("%s - band_t - br_e" % YB), zb + k * dz), "x+"))
+        for xb_ in (v("%s + band_t + br_e" % XL), v("%s - band_t - br_e" % XR)):
+            out.append(("band_b", "rivnut", (xb_, v("%s - band_t" % YB), zb + k * dz), "y-"))
+    # glides, screwed into the bands at the factory
+    xg = v("%s + band_t / 2" % XL)
+    ng = int(round(v("gl_n_side")))
+    for i in range(ng):
+        out.append(("band_l", "glide", (xg, yw + v("gl_e_f") + i * (wd - v("gl_e_f") - v("gl_e_b")) / (ng - 1), 0.0),
+                    None))
+    nb = int(round(v("gl_n_back")))
+    x0, ext = v("%s + band_t + gl_e_bb" % XL), v("pod_w - 2 * band_t - 2 * gl_e_bb")
+    for i in range(nb):
+        out.append(("band_b", "glide", (x0 + i * ext / (nb - 1), v("%s - band_t / 2" % YB), 0.0), None))
+    return out
+
+
+def step7_hardware(design):
+    build_rivnut(design)
+    build_pin(design)
+    build_glide(design)
+    counts = {}
+    for host, key, xyz, rot in hardware_points(design):
+        place(design, host, key, xyz, rot)
+        counts[(host, key)] = counts.get((host, key), 0) + 1
+    print("step 7: hardware placed")
+    for (host, key), n in sorted(counts.items()):
+        print("  %-30s %-44s x %d" % (PARTS[host][1], PARTS[key][1], n))
+
+
+# ---------------------------------------------------------------- materials
+
+MATERIALS = {
+    # key: (library material, design material name or None, density kg/m3 or None)
+    "band_l_tube": ("Aluminum", None, None),
+    "band_b_tube": ("Aluminum", None, None),
+    "bracket": ("Aluminum", None, None),
+    "pin": ("Aluminum", None, None),
+    "rivnut": ("Aluminum", None, None),
+    "floor_f1": ("Aluminum", "Plywood 15 mm, 600 kg/m3 (ASSUMPTION: layout study rho_ply)", 600.0),
+    "mat_f1": ("Aluminum", "Closed-cell seal mat, 150 kg/m3 (ASSUMPTION)", 150.0),
+    "glide": ("Aluminum", "Glide envelope, mass 0.15 kg (ASSUMPTION: layout study B-GLIDE)", None),
+}
+
+
+def step8_materials(design):
+    app = adsk.core.Application.get()
+    lib = app.materialLibraries.itemByName("Fusion Material Library")
+    for key, (libname, dname, rho) in MATERIALS.items():
+        base = lib.materials.itemByName(libname)
+        mat = base
+        if dname:
+            mat = design.materials.itemByName(dname)
+            if mat is None:
+                mat = design.materials.addByCopy(base, dname)
+            if rho is None:
+                comp = find_comp(design, key)
+                vol_cm3 = sum(b.volume for b in comp.bRepBodies)
+                rho = 0.15 / (vol_cm3 * 1e-6)
+            mat.materialProperties.itemById("structural_Density").value = rho
+        for b in find_comp(design, key).bRepBodies:
+            b.material = mat
+    alib = app.materialLibraries.itemByName("Fusion Appearance Library")
+    dark = None
+    for nm in ("Paint - Enamel Glossy (Black)", "Aluminum - Anodized Glossy (Black)", "Plastic - Matte (Black)"):
+        a = alib.appearances.itemByName(nm)
+        if a is not None:
+            dark = design.appearances.itemByName(nm) or design.appearances.addByCopy(a, nm)
+            break
+    if dark is not None:
+        for key in ("band_l_tube", "band_b_tube"):
+            for b in find_comp(design, key).bRepBodies:
+                b.appearance = dark
+    print("step 8: materials (band look: %s)" % (dark.name if dark else "library default"))
+    report_mass(design)
+
+
+def comp_mass(comp):
+    return comp.getPhysicalProperties(adsk.fusion.CalculationAccuracy.HighCalculationAccuracy).mass
+
+
+def report_mass(design):
+    for key in PARTS:
+        comp = find_comp(design, key)
+        if comp.bRepBodies.count == 0:
+            continue
+        m = comp_mass(comp)
+        flag = "" if m <= 20.0 else "  OVER 20 kg"
+        print("  %-44s %7.3f kg  %s%s" % (comp.name, m, comp.bRepBodies.item(0).material.name, flag))
+
+
+# ---------------------------------------------------------------- checks
+
+def body_boxes(design):
+    """(label, proxy body) for every visible body in the assembly."""
+    out = []
+    for occ in design.rootComponent.allOccurrences:
+        if not occ.isLightBulbOn:
+            continue
+        for b in occ.bRepBodies:
+            out.append(("%s @%s" % (occ.component.partNumber, occ.name.split(":")[-1]), b))
+    return out
+
+
+def intersect_volume(tbm, a, b):
+    ba, bb = a.boundingBox, b.boundingBox
+    if not ba.intersects(bb):
+        return 0.0
+    ta, tb = tbm.copy(a), tbm.copy(b)
+    tbm.booleanOperation(ta, tb, adsk.fusion.BooleanTypes.IntersectionBooleanType)
+    return ta.volume * 1000.0  # cm3 -> mm3
+
+
+def skeleton_boxes(design):
+    """Skeleton P03 envelopes next to the base, from the same parameters."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    xl, yb, yw, z0 = v(XL), v(YB), v(YW), v("wall_z0")
+    ot, st, ct = v("outer_t"), v("stack_t"), v("cass_t")
+    sh, bh = v("side_h"), v("back_ph")
+    return [
+        ("skeleton L1", (xl, yw, z0, xl + ot, yb, z0 + sh)),
+        ("skeleton L1-CASS", (xl + st - ct, yw, z0, xl + st, yb - st + ct, z0 + sh)),
+        ("skeleton B1", (v(XOL), yb - ot, z0, 0.0, yb, z0 + bh)),
+        ("skeleton B2", (0.0, yb - ot, z0, -v(XOL), yb, z0 + bh)),
+        ("skeleton B1-CASS", (xl + st, yb - st, z0, 0.0, yb - st + ct, z0 + bh)),
+    ]
+
+
+# overlaps made on purpose: (part number prefix, skeleton label, reason)
+EXPECTED_WITH_SKELETON = [
+    ("838001", "skeleton L1", "rivnut heads sit in clearance holes in the wall's bottom member (WALL)"),
+    ("838001", "skeleton B1", "same, back wall"),
+    ("838001", "skeleton B2", "same, back wall"),
+    ("111301", "skeleton L1", "locating pins enter the wall's bottom member (WALL: hole and slot)"),
+    ("111301", "skeleton B1", "same, back wall"),
+    ("111301", "skeleton B2", "same, back wall"),
+]
+EXPECTED_OWN = [
+    ("838001", "111301", "pin stud in the rivnut thread (both modelled as envelopes)"),
+]
+
+
+def step9_checks(design):
+    tl = design.timeline
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    bad = ["%s: %s" % (tl.item(i).name, tl.item(i).errorOrWarningMessage)
+           for i in range(tl.count) if tl.item(i).healthState != healthy]
+    n_sk, open_sk = 0, []
+    for comp in design.allComponents:
+        for sk in comp.sketches:
+            n_sk += 1
+            if not sk.isFullyConstrained:
+                open_sk.append("%s / %s" % (comp.partNumber, sk.name))
+    print("step 9: checks")
+    print("  timeline items %d, not healthy %d %s" % (tl.count, len(bad), bad or ""))
+    print("  sketches %d, fully constrained %d %s" % (n_sk, n_sk - len(open_sk), open_sk or ""))
+    v = lambda e: ev(design, e)  # noqa: E731
+    expect = {
+        "band_l_tube": (v(XL), v(Y_MITRE_IN) if v(Y_MITRE_IN) < v("-dl_y1") else v("-dl_y1"), v("glide_h"),
+                        v("%s + band_t" % XL), v("%s - cap_t" % YB), v("wall_z0")),
+        "band_b_tube": (v("%s + band_t" % XL), v("%s - band_t" % YB), v("glide_h"),
+                        v("%s - band_t" % XR), v(YB), v("wall_z0")),
+        "floor_f1": (v("%s + band_t + fl_gap" % XL), v(YW), v("mat_t"),
+                     v("-fl_seam / 2 + tg_len"), v("%s - band_t - fl_gap" % YB), v("mat_t + floor_t")),
+    }
+    box_bad = []
+    for key, want in expect.items():
+        got = bbox_mm(find_comp(design, key).bRepBodies.item(0))
+        diff = max(abs(a - b) for a, b in zip(got, want))
+        print("  box %-34s %s  %s" % (PARTS[key][1], fmt_box(got), "OK" if diff < 0.05 else "OFF by %.3f" % diff))
+        if diff >= 0.05:
+            box_bad.append(key)
+    # clashes between the base's own parts
+    tbm = adsk.fusion.TemporaryBRepManager.get()
+    bodies = body_boxes(design)
+    own = []
+    for i in range(len(bodies)):
+        for j in range(i + 1, len(bodies)):
+            vol = intersect_volume(tbm, bodies[i][1], bodies[j][1])
+            if vol > 1.0:
+                a, b = bodies[i][0].split()[0], bodies[j][0].split()[0]
+                ok = any({a, b} == {e[0], e[1]} for e in EXPECTED_OWN)
+                own.append((bodies[i][0], bodies[j][0], vol, ok))
+    unexpected = [c for c in own if not c[3]]
+    print("  own clashes over 1 mm3: %d, expected %d, unexpected %d %s" % (
+        len(own), len(own) - len(unexpected), len(unexpected),
+        ["%s x %s %.1f mm3" % c[:3] for c in unexpected] or ""))
+    # clashes with the skeleton's walls and linings
+    sk_hits, sk_bad = {}, []
+    for label, bx in skeleton_boxes(design):
+        ob = adsk.core.OrientedBoundingBox3D.create(
+            p3((bx[0] + bx[3]) / 2, (bx[1] + bx[4]) / 2, (bx[2] + bx[5]) / 2),
+            X, Y, (bx[3] - bx[0]) * CM, (bx[4] - bx[1]) * CM, (bx[5] - bx[2]) * CM)
+        box = tbm.createBox(ob)
+        for name, b in bodies:
+            vol = intersect_volume(tbm, b, box)
+            if vol > 1.0:
+                pn = name.split()[0]
+                ok = any(pn == e[0] and label == e[1] for e in EXPECTED_WITH_SKELETON)
+                sk_hits[(pn, label)] = sk_hits.get((pn, label), 0) + 1
+                if not ok:
+                    sk_bad.append("%s x %s %.1f mm3" % (name, label, vol))
+    print("  clashes with skeleton walls and linings: %s; unexpected %d %s" % (
+        ", ".join("%s x %s: %d" % (k[0], k[1], n) for k, n in sorted(sk_hits.items())) or "none",
+        len(sk_bad), sk_bad or ""))
+    # the walls must sit on the band: band top = skeleton wall_z0
+    print("  band top Z %.2f = skeleton wall_z0 %.2f" % (
+        bbox_mm(find_comp(design, "band_l_tube").bRepBodies.item(0))[5], v("wall_z0")))
+    ok = not bad and not open_sk and not box_bad and not unexpected and not sk_bad
+    print("  RESULT: %s" % ("all checks pass" if ok else "CHECKS FAILED"))
+    if not ok:
+        raise RuntimeError("step 9 checks failed")
+
+
+# ---------------------------------------------------------------- save, export
+
+CLOUD = ("Default Project", "FocusPod v2")
+F3D_REL = "v2/01-CAD-Native/base/%s.f3d" % DOC_NAME
+STEP_REL = "v2/03-Manufacturing/base/110000_%s_BASE_STEP.step" % REV
+
+
+def cloud_folder(app):
+    for p in app.data.dataProjects:
+        if p.name == CLOUD[0]:
+            folder = p.rootFolder.dataFolders.itemByName(CLOUD[1])
+            if folder is None:
+                raise RuntimeError("no folder %s in %s" % (CLOUD[1], CLOUD[0]))
+            return p, folder
+    raise RuntimeError("no project " + CLOUD[0])
+
+
+def step_save(app, doc):
+    proj, folder = cloud_folder(app)
+    for df in folder.dataFiles:
+        if df.name == DOC_NAME:
+            raise RuntimeError("'%s' is already in %s/%s; save a new version of it instead" % (DOC_NAME, *CLOUD))
+    app.data.activeProject = proj
+    if not doc.saveAs(DOC_NAME, folder, "Spaceship BASE rev %s, DRAFT, built by "
+                      "v2/01-CAD-Native/base/base_build.py" % REV, ""):
+        raise RuntimeError("saveAs failed")
+    print("save: %s saved to %s / %s" % (DOC_NAME, *CLOUD))
+
+
+def step_export(app, design):
+    em = design.exportManager
+    f3d, step = os.path.join(REPO, F3D_REL), os.path.join(REPO, STEP_REL)
+    for path in (f3d, step):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+    if not em.execute(em.createFusionArchiveExportOptions(f3d, design.rootComponent)):
+        raise RuntimeError("f3d export failed")
+    ok = False
+    for _ in range(10):
+        if em.execute(em.createSTEPExportOptions(step, design.rootComponent)) and os.path.getsize(step) > 2000:
+            ok = True
+            break
+        adsk.doEvents()
+        import time
+        time.sleep(3)
+    if not ok:
+        raise RuntimeError("STEP export failed")
+    with open(step, "r", encoding="utf-8", errors="replace") as fh:
+        text = fh.read().replace(" ", "")
+    unit = "cm" if "SI_UNIT(.CENTI.,.METRE.)" in text else ("mm" if "SI_UNIT(.MILLI.,.METRE.)" in text else "?")
+    print("export: %s" % F3D_REL)
+    print("export: %s (STEP length unit %s, declared in the file; D-13)" % (STEP_REL, unit))
+    print("  assembly box %s" % fmt_box(bbox_mm(design.rootComponent)))
+
+
+# ---------------------------------------------------------------- main
+
+def run(_context):
+    app = adsk.core.Application.get()
+    doc, design = step1_document(app)
+    steps = [None, None, step2_band_side_lh, step3_band_back, step4_band_holes, step5_bracket,
+             step6_floor, step7_hardware, step8_materials, step9_checks]
+    last = min(STOP_AFTER, len(steps) - 1)
+    for n in range(2, last + 1):
+        steps[n](design)
+    print("done through step %d" % last)
+    if last == len(steps) - 1:
+        if ARGS.get("export") == "1":
+            step_export(app, design)
+        if ARGS.get("save") == "1":
+            step_save(app, doc)
+    if ARGS.get("keep") != "1" and ARGS.get("save") != "1":
+        doc.close(False)
+        print("closed the unsaved build document (pass --arg keep=1 to keep it open)")
