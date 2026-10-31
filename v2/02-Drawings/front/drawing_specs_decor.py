@@ -24,8 +24,8 @@ SPECS["dr"] = {
         "DR (the decor detail sample): 3 mm ACP skin 351301 (EV3038 Dark Yellow) from the skeleton's measured v1 "
         "shape, bonded to the welded 6063-T6 tube frame 351306 (26 tubes, cut list in the parts list's folder); fixed "
         "back plate 351302 on the right wall's bolt line; removable access panel 351305 and felt-covered inner panel "
-        "351303/351304 (D-59); the air supply assembly 350004 (D-87): intake riser 351402, transitions 351403/351405 "
-        "(reserved air spaces, detail by AIR), supply fan box 351404 with two 12 V fans 618401 (HOLD).",
+        "351303/351304 (D-59); reserved air spaces 351402 to 351405 for AIR's supply fan box 610401, its intake riser "
+        "and transitions (AIR designs and lists them, PM ruling 2026-11-01), with the two 12 V supply fans 618401 (HOLD).",
         "Base open inside the skins over the mesh band piece, back to the closing plate: 0.042 m2 gross less the "
         "frame's bottom tubes (PM ruling: at least 0.028 free). Air goes band, block, riser; the riser's open foot "
         "stands 140 above the base.",

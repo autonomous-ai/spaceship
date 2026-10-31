@@ -184,10 +184,11 @@ OWN = [
 ]
 
 AIR_ASSY = ("350004", "FRONT - AIR SUPPLY ASSY - DR", "Cụm cấp gió khối phải")
-# the two transitions are reserved air spaces until AIR designs them (PM ruling 2026-11-01): marked in the CAD names
-# and in the parts list, and drawn only then
-RESERVED_TYPE = "reserved air space (detail by AIR; no drawing until AIR designs it, PM ruling 2026-11-01)"
-RESERVED_STATUS = "HOLD: reserved air space, detail by AIR"
+# every air part is an AIR number in AIR's tree, designed by AIR (PM ruling 2026-11-01, so nothing is counted twice):
+# DR keeps only the spaces the riser, the fan box and the two transitions take. They are typed "reserved air space",
+# carry no mass and need no drawing; the CAD names say so too
+RESERVED_TYPE = "reserved air space"
+RESERVED_STATUS = "HOLD: reserved air space; AIR designs and lists the part (PM ruling 2026-11-01)"
 PARTS = {
     "SKIN": ("351301", "FRONT - DECOR SKIN - DR", "Tấm ốp alu khối phải"),
     "BACK": ("351302", "FRONT - DECOR BACK PLATE - DR", "Tấm hậu khối phải"),
@@ -305,19 +306,24 @@ def frame_members():
 
 # part-only designs for the part drawings (a base view shows its whole design): the full block is built and checked,
 # then every other component is removed
-SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN"}
+SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN", "felt": "FELT"}
+
+
+def scope_part(scope):
+    """(part number, name, Vietnamese name) of the part a part-only design keeps."""
+    return AIR_ASSY if SCOPES[scope] == "AIR" else PARTS[SCOPES[scope]]
 
 
 def scope_doc(scope):
     if scope == "assy":
         return DOC_NAME
-    pn, nm, _vn = PARTS[SCOPES[scope]]
+    pn, nm, _vn = scope_part(scope)
     return "%s_%s_%s_CAD" % (pn, REV, nm.replace(" - ", "-").replace(" ", "-"))
 
 
 def build(app):
     scope = ARGS.get("scope", "assy")
-    rpn, rname, rvn = (PN, NAME, VN) if SCOPES[scope] is None else PARTS[SCOPES[scope]]
+    rpn, rname, rvn = (PN, NAME, VN) if SCOPES[scope] is None else scope_part(scope)
     design = L.start_design(app, rpn, "%s | %s | %s" % (rname, rvn, REV))
     sk_params, sk_path, sk_rev = L.load_skeleton_params(ARGS["repo_root"])
     L.add_params(design, sk_params)
@@ -333,11 +339,11 @@ def build(app):
     # slide into DR through its inner face on site, so they form one sub-assembly
     air = L.new_comp(root, AIR_ASSY[0], AIR_ASSY[1], AIR_ASSY[2], REV)
     AIR_KEYS = ("RISER", "TLOW", "FBOX", "TUP", "FAN1", "FAN2")
-    RESERVED_AIR = ("TLOW", "TUP")
+    RESERVED_AIR = ("RISER", "TLOW", "FBOX", "TUP")
 
     def comp(key):
         pn, nm, vn = PARTS[key]
-        if key in RESERVED_AIR:       # PM ruling 2026-11-01: reserved air spaces, detail by AIR, no drawing until then
+        if key in RESERVED_AIR:       # PM ruling 2026-11-01: AIR designs and lists these parts
             nm += " - RESERVED AIR SPACE"
         c = L.new_comp(air if key in AIR_KEYS else root, pn, nm, vn, REV)
         comps[key] = c
@@ -466,13 +472,13 @@ def build(app):
                ("ri_x0 + ri_w - ri_t", "ri_y0 + ri_d - ri_t"), ("ri_x0 + ri_t", "ri_y0 + ri_d - ri_t")]
     prism(c, ("x", "y"), inner_r, "z", ZB + " + dr_skin_t + ri_gap - 1 mm", "ri_zt + 1 mm", "PLAN - INTAKE RISER BORE",
           "CUT - INTAKE RISER BORE", CUT, rb)
-    rb.name = "INTAKE RISER 1 MM STEEL"
+    rb.name = "RESERVED AIR SPACE - INTAKE RISER (AIR 611501)"
     bodies["RISER"] = rb
     c = comp("TLOW")
     f = prism(c, ("x", "z"), [("ri_x0", "ri_zt"), ("ri_x0 + ri_w", "ri_zt"), ("fb_x0 + fb_w", "fb_z0"), ("fb_x0", "fb_z0")],
               "y", "ri_y0", "ri_y0 + ri_d", "SIDE - LOWER TRANSITION SPACE", "EXTRUDE - LOWER TRANSITION SPACE")
     bodies["TLOW"] = f.bodies.item(0)
-    bodies["TLOW"].name = "RESERVED AIR SPACE - LOWER TRANSITION (DETAIL BY AIR)"
+    bodies["TLOW"].name = "RESERVED AIR SPACE - LOWER TRANSITION (AIR 618103)"
     c = comp("FBOX")
     box = [("fb_x0", "fb_y0"), ("fb_x0 + fb_w", "fb_y0"), ("fb_x0 + fb_w", "fb_y0 + fb_d"), ("fb_x0", "fb_y0 + fb_d")]
     f = prism(c, ("x", "y"), box, "z", "fb_z0", "fb_z0 + fb_h", "PLAN - FAN BOX OUTER", "EXTRUDE - FAN BOX")
@@ -481,7 +487,7 @@ def build(app):
             ("fb_x0 + fb_w - fb_t", "fb_y0 + fb_d - fb_t"), ("fb_x0 + fb_t", "fb_y0 + fb_d - fb_t")]
     prism(c, ("x", "y"), bore, "z", "fb_z0 - 1 mm", "fb_z0 + fb_h + 1 mm", "PLAN - FAN BOX BORE", "CUT - FAN BOX BORE",
           CUT, fbb)
-    fbb.name = "SUPPLY FAN BOX 2 MM (LINING AND BULKHEAD: AIR DETAIL)"
+    fbb.name = "RESERVED AIR SPACE - SUPPLY FAN BOX (AIR 610401)"
     bodies["FBOX"] = fbb
     for i, key in enumerate(("FAN1", "FAN2")):
         c = comp(key)
@@ -500,13 +506,13 @@ def build(app):
     f = prism(c, ("x", "y"), tup, "z", "fb_z0 + fb_h", "op_z0 + op_h", "PLAN - UPPER TRANSITION SPACE",
               "EXTRUDE - UPPER TRANSITION SPACE")
     bodies["TUP"] = f.bodies.item(0)
-    bodies["TUP"].name = "RESERVED AIR SPACE - UPPER TRANSITION (DETAIL BY AIR)"
+    bodies["TUP"].name = "RESERVED AIR SPACE - UPPER TRANSITION (AIR 618102)"
     drop = [("fb_x0 + fb_w", "fb_y0 + fb_d - 2 * fb_t"), ("op_x0 + op_w", "fb_y0 + fb_d - 2 * fb_t"),
             ("op_x0 + op_w", yb_in), ("fb_x0 + fb_w", yb_in)]
     f = prism(c, ("x", "y"), drop, "z", "op_z0", "fb_z0 + fb_h", "PLAN - UPPER TRANSITION DROP TO THE OPENING",
               "EXTRUDE - UPPER TRANSITION DROP")
     bodies["TUP2"] = f.bodies.item(0)
-    bodies["TUP2"].name = "RESERVED AIR SPACE - UPPER TRANSITION DROP (DETAIL BY AIR)"
+    bodies["TUP2"].name = "RESERVED AIR SPACE - UPPER TRANSITION DROP (AIR 618102)"
 
     # ---- 351306 the welded tube frame (stage 2)
     c = comp("FRAME")
@@ -533,8 +539,8 @@ def build(app):
     al6063 = L.material(design, "Aluminium 6063-T6 tube (2700 kg/m3)", "Aluminum", 2700.0)
     for k in tubes:
         bodies[k].material = al6063
-    for k, m in (("SKIN", acp), ("BACK", alu), ("ACCESS", alu), ("INNER", acp), ("FELT", felt), ("RISER", steel),
-                 ("TLOW", env), ("FBOX", alu), ("TUP", env), ("TUP2", env), ("FAN1", env), ("FAN2", env)):
+    for k, m in (("SKIN", acp), ("BACK", alu), ("ACCESS", alu), ("INNER", acp), ("FELT", felt), ("RISER", env),
+                 ("TLOW", env), ("FBOX", env), ("TUP", env), ("TUP2", env), ("FAN1", env), ("FAN2", env)):
         bodies[k].material = m
     looks = {"SKIN": ["Paint - Enamel Glossy (Yellow)"], "BACK": ["Aluminum - Satin"], "ACCESS": ["Aluminum - Satin"],
              "INNER": ["Paint - Enamel Glossy (Yellow)"], "FELT": ["Fabric (Gray)", "Plastic - Matte (Grey)"],
@@ -578,11 +584,17 @@ def build(app):
     if bad or loose or bad_clash:
         raise RuntimeError("DR checks failed (unhealthy %s, loose %s, clashes %s)" % (bad, loose, bad_clash))
     if SCOPES[scope] is not None:
-        keep = PARTS[SCOPES[scope]][0]
+        keep = scope_part(scope)[0]
+        nested = SCOPES[scope] in AIR_KEYS          # inside 350004: keep that sub-assembly, then only this part in it
         for occ in [root.occurrences.item(i) for i in range(root.occurrences.count)]:
-            if occ.component.partNumber != keep:
+            if occ.component.partNumber not in (keep, AIR_ASSY[0] if nested else keep):
                 occ.deleteMe()
-        print("scope %s: kept %s only, %d components left" % (scope, keep, root.occurrences.count))
+        if nested:
+            for occ in [air.occurrences.item(i) for i in range(air.occurrences.count)]:
+                if occ.component.partNumber != keep:
+                    occ.deleteMe()
+        left = root.occurrences.count + (air.occurrences.count if nested else 0)
+        print("scope %s: kept %s only, %d components left" % (scope, keep, left))
 
 
 ANCHORS = [
@@ -652,21 +664,23 @@ def export_all(app):
          "rectangle, so it keeps a drawing: D-89), glued to 351303 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
          "calculation (CAD, 1.8 kg/m2)",
          "DRAFT; emission certificate HOLD", "D-31; hardware selection A3", "DXF " + DXF_FLAT["FELT"]),
-        ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, "assembly, joined at the factory (D-87)", "-", None, "", "DRAFT",
-         "D-87", "ships joined, 14.9 kg (D-60 table), slides into DR through its inner face; plug-in connectors; the "
-         "fan box stands on the frame's shelf tubes F08 and C03 (fixing HOLD: air detail)"),
-        ("351402", PARTS["RISER"][1], PARTS["RISER"][2], 1, "made (sheet metal duct)", "1 mm galvanised steel", "cad",
-         "calculation (CAD, 7850 kg/m3)", "DRAFT", "D-60 air table", "open foot 140 mm over the base opening"),
-        ("351403", PARTS["TLOW"][1], PARTS["TLOW"][2], 1, RESERVED_TYPE, "-", 1.5, "assumption", RESERVED_STATUS,
-         "D-60 air table", "designer: AIR (a sheet-metal duct inside this space, after PR #91); the space the lower transition may "
-         "take, riser top to fan box inlet"),
-        ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, "made", "2 mm aluminium, 50 mm lining inside", 3.6,
-         "source (D-60 air table: 5.1 kg for the box and the upper transition) less 351405's 1.5 kg", "DRAFT; lining and bulkhead HOLD (air detail)",
-         "D-60 air table", "12 from the fixed glass channel, so the frame's inner-edge tube fits"),
-        ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, RESERVED_TYPE, "-", 1.5,
-         "assumption (as the lower transition 351403; part of the D-60 air table's 5.1 kg)", RESERVED_STATUS,
-         "D-60 air table", "designer: AIR (a sheet-metal duct inside this space, after PR #91); the space the upper transition may "
-         "take, fan box outlet to the access panel's opening"),
+        ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, "assembly: the reserved air spaces and the supply fans", "-", None, "",
+         "DRAFT", "D-87; PM ruling 2026-11-01",
+         "AIR's supply fan box assembly 610401 (AIR #91) fills these spaces and ships as its own pallet piece; it slides "
+         "into DR through its inner face and stands on the frame's shelf tubes F08 and C03; the two supply fans 618401 "
+         "are listed here (PM ruling, as AIR's list notes)"),
+        ("351402", PARTS["RISER"][1], PARTS["RISER"][2], 1, RESERVED_TYPE, "-", None,
+         "not counted: AIR's intake riser 611501 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
+         "the space AIR's intake riser takes; its open foot stands 140 mm over the base opening"),
+        ("351403", PARTS["TLOW"][1], PARTS["TLOW"][2], 1, RESERVED_TYPE, "-", None,
+         "not counted: AIR's riser transition 618103 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
+         "the space AIR's riser transition takes, riser top to fan box inlet"),
+        ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, RESERVED_TYPE, "-", None,
+         "not counted: AIR's supply fan box 610401 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
+         "the space AIR's supply fan box takes; 12 from the fixed glass channel, so the frame's inner-edge tube fits"),
+        ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, RESERVED_TYPE, "-", None,
+         "not counted: AIR's supply transition 618102 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
+         "the space AIR's supply transition takes, fan box outlet to the access panel's opening"),
         ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", 2, "bought",
          "Noctua NF-A14 industrialPPC-3000 PWM, 12 V", 0.3, "assumption (D-60 air table)", "HOLD: product (PM ruling, one number for all four fans)",
          "hardware selection F1", "on the fan box bulkhead, blowing up"),
