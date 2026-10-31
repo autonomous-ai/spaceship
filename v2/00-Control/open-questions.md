@@ -98,7 +98,7 @@ The PM's decisions: 2–3 cm panels lying on the room floor, the walls fixed aro
 **Reasons**
 - Weight: no steel frame, joists, feet or boards. PLAN.md estimates about 50 kg saved.
 - Step: 20 mm instead of about 130 mm (calculation C7). Easier to walk in, and closer to a later US threshold.
-- Headroom: about 10 cm more inside than v1, at the same 2400 outside height: about 2329 mm against v1's 2223, with D-27's 53 mm ceiling (REQ-BLD-06, calculation).
+- Headroom: about 8 cm more inside than v1, at the same 2400 outside height: about 2301 mm against v1's 2223, with the 81 mm ceiling (D-42, REQ-BLD-06, calculation).
 - Sound: it still closes the bottom of the box, with a seal. Floorless pods post the weakest numbers (market study).
 - Square and quick: the floor sets the wall positions, and the walls locate themselves on the rail.
 
@@ -112,7 +112,7 @@ The PM's decisions: 2–3 cm panels lying on the room floor, the walls fixed aro
 | Question | Working default | Issue |
 |---|---|---|
 | Decor colour: yellow or black? | DECIDED (D-12): Dark Yellow EV3038, matching the plan's material list and v1's product photos | ISS-031 |
-| Quiet target and weight | DECIDED (D-27, D-37): 4+4 laminated front; the pod at about 418 kg against a 420 kg cap; 23.8 dB calculated (Class C), with the factory sample deciding. The 0.4 mm lining tray was tried and dropped because it cost 1 dB. | ISS-063, ISS-065, ISS-068 |
+| Quiet target and weight | DECIDED (D-27, D-37, D-42): 4+4 laminated front; the pod at about 418 kg against a 420 kg cap; about 24 dB calculated (Class C), with the factory sample deciding. The 0.4 mm lining tray was tried and dropped because it cost 1 dB. | ISS-063, ISS-065, ISS-068 |
 | Assembly method | DECIDED (D-08): tool-free connectors, captive bolts, factory-made subassemblies, felt pre-fitted at the factory | ISS-064 |
 | Overall height and its datum | DECIDED (D-21): 2400 from the room floor to the top of the roof skin | ISS-013 |
 | Depth chain between the walls and the decor | Back face at Y = +850, decor front at Y = −850, overlap set by the bracket joint | ISS-012 |
