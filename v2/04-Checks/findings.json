@@ -1016,7 +1016,7 @@
    "rule": "no-drawing",
    "subject": "361001",
    "severity": "severe",
-   "message": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal sheet (D-99); a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance.",
+   "message": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance.",
    "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
    "file": "",
    "owner": "FRONT",

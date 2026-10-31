@@ -888,7 +888,12 @@ def test_d93_to_d99(tmp_path, monkeypatch):
     _dxf(m / "361001_P01_FRONT-DOOR-LEAF_DXF.dxf", [("CUT", "LWPOLYLINE", 0)])
     fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), {"361001"}, {},
                                                                  {"361001": "FRONT - DOOR LEAF - 4+4 LAMINATED"})}
-    assert "metal sheet (D-99)" in fs["361001"]
+    assert "metal or ACP sheet (D-99, D-100)" in fs["361001"]
+    # D-100: a flat ACP skin counts under part 4 like metal sheet
+    (m / "360000_P01_FRONT_BOM.csv").write_text(
+        "part_number,name,material,thickness_mm,finish,process,tolerance\n"
+        "361001,FRONT - DOOR LEAF - 4+4 LAMINATED,ACP 4 mm FR core,4,PVDF RAL 9005,CNC router,ISO 2768-m\n")
+    assert c_drawings.check_drawings(str(tmp_path), {"361001"}, {}, {"361001": "FRONT - DOOR LEAF - 4+4 LAMINATED"}) == []
     # D-99: hardware names come from the joints register
     j = tmp_path / "v2/05-Engineering/joints"
     j.mkdir(parents=True)
