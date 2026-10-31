@@ -1051,3 +1051,23 @@ def test_a_step_whose_top_carries_another_number_is_reported(tmp_path):
     fs = out[0] if isinstance(out, tuple) else out["findings"] if isinstance(out, dict) else out
     keys = {(f.rule, f.subject) if hasattr(f, "rule") else (f["rule"], f["subject"]) for f in fs}
     assert ("top-part-number", "210101") in keys
+
+
+def test_a_solid_with_a_sealed_void_reads_by_its_outer_shell():
+    # BREP_WITH_VOIDS (an inner shell, valid STEP; AIR's closed fan boxes): the outer shell gives the box and the
+    # holes, the void is counted, and nothing crashes
+    text = open(os.path.join(HERE, "fixtures", "bolt-joints.step"), encoding="utf-8").read()
+    path_plain = os.path.join(HERE, "fixtures", "bolt-joints.step")
+    hollow = text.replace("#256=MANIFOLD_SOLID_BREP('WALL - TEST WALL BOLT SIDE A',#3379);",
+                          "#256=BREP_WITH_VOIDS('WALL - TEST WALL BOLT SIDE A',#3379,(#999901));\n"
+                          "#999901=ORIENTED_CLOSED_SHELL('',*,#3380,.F.);")
+    assert hollow != text
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        p = os.path.join(d, "hollow.step")
+        open(p, "w", encoding="utf-8").write(hollow)
+        a, b = sf.StepFile(path_plain), sf.StepFile(p)
+        sa, sb = a.solid(256), b.solid(256)
+        assert sb.voids == 1 and sa.voids == 0
+        assert sb.box == sa.box and len(sb.holes) == len(sa.holes) == 1
+        assert any(i["solid"] == 256 for i in b.instances())        # still found as a solid of its product
