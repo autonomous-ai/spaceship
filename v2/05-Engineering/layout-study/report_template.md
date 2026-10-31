@@ -13,6 +13,7 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 3. **Shipping (confirmed, D-04).** One 48 x 40 pallet and one 96 x 48 pallet, {{final_gross}} kg gross, {{final_pcf}} lb/ft3. The 48 x 40 weighs {{final_std_kg}} kg and stands {{final_std_h}} mm high. The 96 x 48 weighs {{final_long_kg}} kg and stands {{final_long_h}} mm high, with both lites flat on top in their frame. Walls and ceiling are {{final_wall_t}} mm thick.
 4. **Assembly (confirmed changes, D-08).** Two people with one 5 mm hex key. The light build takes {{before_min}} min before the fast-assembly changes and {{after_min}} min after. The decided build takes **{{final_min}} min** ({{final_ph}} person-hours): {{final_bolts}} M6 bolts, {{final_cams}} tool-free clips and {{final_cassettes}} clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
 5. **Decisions.** Every layout choice is confirmed by a decision; the table below cites it.
+6. **Tonight's recount on skeleton P04** ([weight-rollup.md](weight-rollup.md), ISS-081): **{{rollup_total}} kg, {{rollup_over}} kg over the cap**, with tonight's CAD masses (CEILING PR #32, FRONT PRs #27 and #28, WALL's L1), D-60's air parts and the P04 sizes. Its five best savings keep the look and the sound targets; the first four take off {{rollup_save4}} kg. Its part list is `out/parts-decided-P04.csv`. The sections below still describe the P03 build.
 
 ## Decisions
 

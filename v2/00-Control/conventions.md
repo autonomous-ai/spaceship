@@ -169,7 +169,7 @@ The guideline asks to keep existing numbers where they still identify the item c
 | 51 | LINING: PET felt panels and their fixing |
 | 61 | AIR: fans, silencers, vents, grilles |
 | 71 | ELECTRICAL: lights, switches, sockets, controller, sensors, wiring, power inlet, and hooks for the voice cockpit kit |
-| 81 | INTERIOR: inside trims only. The pod ships empty. |
+| 81 | INTERIOR: inside trims and fittings, such as the work-wall ledge and the air column and soffit casings (D-70). The floor stays empty (D-06). |
 | 83 | HARDWARE: standard fasteners, inserts, nuts, washers. The family code echoes the guideline's insert and nut numbers; none of those numbers is reused. |
 | 84 | SEALS AND TAPES bought by length: gaskets, hook-and-loop, adhesive tapes |
 | 91 | PACKAGING: pallets, crates, protection, labels |
