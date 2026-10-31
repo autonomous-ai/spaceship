@@ -10,6 +10,18 @@ Guideline section 4.4: the native file must follow its parameters. `edit_test_el
 python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/edit_test_electrical.py --label "ELECTRICAL Engineer"
 ```
 
+## Run 2026-10-31 about 20:56 UTC (export of the 20:55 rebuild, same Fusion run): PASS
+
+| Edit | Timeline | Bodies against the model | Reverted |
+|---|---|---|---|
+| as exported | 0 unhealthy | 0.0000 mm | - |
+| power unit down 50 mm (`pu_zc` 950) | 0 unhealthy | 0.0000 mm | 0.0000 mm |
+| trunk up 50 mm (`trunk_z` 1150) | 0 unhealthy | 0.0000 mm | 0.0000 mm |
+| pod 20 mm deeper (skeleton `pod_d` 1720) | 0 unhealthy | 0.0000 mm | 0.0000 mm |
+| bigger pockets and grommets (`pk_l` 180, `grm_d` 22) | 0 unhealthy | 0.0000 mm | 0.0000 mm |
+
+All 41 bodies follow every edit to 0.0000 mm and come back to the exported state on every revert. The copy was closed without saving.
+
 ## Run 2026-10-31 about 20:2x UTC (export of the 19:17 rebuild on skeleton P04 version 4): FAIL, two edits
 
 | Edit | Timeline | Bodies against the model | Reverted |
@@ -25,4 +37,3 @@ Why, and what changed:
 - **G-CEIL-F**: three numbers copied from CEILING's design didn't follow the skeleton: the ceiling cassette's front return (Y −282), its back return (Y 763) and its cable holes' X (+583). They are now linked: `ceil_y0 = col_y1 + 3 mm` (3 mm behind the soffit's back face), `ceil_y1 = y_bf - 3 mm` (3 mm off the back lining) and `ceil_x = inner_w / 4` (the right ceiling cassette's centre, from the skeleton's named value `inner_w`, now derived too). The values at P04 are the same.
 - The first attempt (19:17 run, second step) stopped before any edit: it looked for part number 710000 on the copy's root, which an imported copy doesn't keep. It now checks for the 7 ELECTRICAL components.
 
-The route model is rebuilt with the linked values and the edit test runs again in the same Fusion run; its result goes here.
