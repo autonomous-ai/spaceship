@@ -131,7 +131,9 @@ def run(_context):
 def record(design, rel):
     out = []
     p = out.append
-    root_pn = design.rootComponent.partNumber
+    # the family comes from the file name (<pn>_P01_..._CAD.f3d): the copy's root part number isn't reliable
+    # on a document made in the same run (B1 cassette and frame, 2026-10-31 18:25)
+    root_pn = os.path.basename(rel).split("_")[0] or design.rootComponent.partNumber
     p("## Edit test: %s" % rel.split("/")[-1])
     p("")
     p("Copy opened as a new, unsaved document and closed without saving. Components: %s." % ", ".join(
@@ -151,6 +153,9 @@ def record(design, rel):
     before = snapshot(design)
     if any(k.split(" / ", 1)[-1].startswith("FILL") for k in before):
         edits = [e for e in edits if e[0] != "stile_pitch_max"]      # see step 2 in the docstring
+    missing = [k for k, _e in edits if design.userParameters.itemByName(k) is None]
+    if missing:
+        raise RuntimeError("edit test: %s has no parameter %s" % (rel.split("/")[-1], ", ".join(missing)))
     exprs = {k: design.userParameters.itemByName(k).expression for k, _e in edits}
     for k, e in edits:
         design.userParameters.itemByName(k).expression = e
