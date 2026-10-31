@@ -6,12 +6,14 @@
 
 Each question gets an answer and the reasons for it. Where the PM has ruled, the answer is DECIDED and logged in `decision-log.md`. Otherwise it is PROPOSED: the work follows it now, and it changes if the PM rules otherwise. Nothing waits for outside approval (`AGENTS.md`). Numbers carry their status (`conventions.md` §9). The hardware parts named below are functions, not chosen products: real part numbers come from the hardware selection (`v2/05-Engineering/hardware/`, guideline §4.3) before anything goes into CAD.
 
+**Since these answers were written** (2026-10-31): D-70 replaces Q2's lights (a light shelf, no front face light); D-72 and D-76 set Q4's floor (9 mm plywood on a 3 mm closed-cell foam mat, floor top at 12 mm) and a 13 mm threshold in place of 20 mm; D-67 and D-68 set the kick strip's finish, the door unit's 50.2 kg and the fixed glass's hidden channels; D-63 to D-65 replace the tool-free connectors with captive M6 × 16 socket-head bolts. Where the text below differs, the decision log wins.
+
 | Q | Question | Answer in one line | Status | Issues |
 |---|---|---|---|---|
-| Q1 | Door and glass | Keep v1's front layout and outline; 4+4 laminate of toughened, heat-soaked panes, frameless as v1; hinges and lock rated for that glass, 47.5 kg and 1176 mm (HOLD until named); sealed all round; fixed panel in sealed profiles | DECIDED material (D-27, D-46); hardware HOLD; rest PROPOSED | ISS-001, -002, -003, -023, -043 |
-| Q2 | Lights | One dimmable, low-heat LED ceiling light plus a soft front face light for video calls, all on 12 V; the Hardware Engineer picks the parts | DECIDED (D-20); 30 W budget PROPOSED | ISS-004, -061 |
+| Q1 | Door and glass | Keep v1's front layout and outline; 4+4 laminate of toughened, heat-soaked panes, frameless as v1; hinges and lock rated for that glass, at least 60 kg, since the door unit is about 50.2 kg (D-68), and 1176 mm (HOLD until named); sealed all round; fixed panel in sealed profiles | DECIDED material (D-27, D-46); hardware HOLD; rest PROPOSED | ISS-001, -002, -003, -023, -043 |
+| Q2 | Lights | A slim light shelf along the wall tops lights the felt ceiling, with scenes including a 'call' scene that lights the face from the screen side; no front face light; all on 12 V (D-70, replacing D-20) | DECIDED (D-70); 30 W budget PROPOSED | ISS-004, -061 |
 | Q3 | Door hand | Left-hinged as v1, seen from outside facing the door, with the hinge pocket in the left decor block; handle and catch on the right; opens outward | DECIDED hinge (D-19); swing PROPOSED | ISS-055 |
-| Q4 | Floor type | Thin floor inside the aluminium base band, 20 mm threshold at the door, walls standing around it on a base rail, packers for leveling | DECIDED (D-05, D-18); layer build PROPOSED | ISS-040, -050, -053, -054 |
+| Q4 | Floor type | Thin floor inside the aluminium base band, out to the band: 9 mm plywood on a firm 3 mm closed-cell foam mat, floor top at 12 mm, a 13 mm threshold with a 1:2 bevel; walls standing on the band (D-66, D-72) | DECIDED (D-05, D-66, D-72, D-76); mat product on HOLD (ISS-085) | ISS-040, -050, -053, -054, -085 |
 
 ## Q1. Door and glass
 
