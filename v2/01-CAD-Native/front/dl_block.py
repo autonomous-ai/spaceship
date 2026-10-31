@@ -52,7 +52,8 @@ ZB = "wall_z0"
 
 OWN = [
     ("dl_skin_t", "3 mm", "mm", "source", "ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)"),
-    ("dl_back_t", "3 mm", "mm", "assumption", "back plate in the same 3 mm ACP"),
+    ("dl_back_t", "2 mm", "mm", "source",
+     "joints register J-FRONT-01: the back plate is aluminium 1.0 to 2.7 thick at each bolt, for the rivnuts (HOLD-10)"),
     ("door_top_cut", "2 mm", "mm", "decided", "PM ruling 2026-10-31: the leaf 2 mm short of the skeleton top (catch gap)"),
     ("leaf_zt", "door_zt - door_top_cut", "mm", "calculation", "top of the door leaf"),
     # the door unit's HOLD hinge spaces (same parameters as door_unit.py)
@@ -88,6 +89,7 @@ def build(app):
     L.add_params(design, sk_params)
     L.add_params(design, L.LIB_PARAMS)
     L.add_params(design, L.GLASS_PARAMS)
+    L.add_params(design, L.JF_PARAMS)
     L.add_params(design, OWN)
     root = design.rootComponent
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
@@ -147,7 +149,12 @@ def build(app):
                               (xl_in, slope_z(xl_in))], "y", YB + " - dl_back_t", YB, "OUTLINE - DL BACK PLATE",
               "EXTRUDE - DL BACK PLATE")
     bodies["BACK"] = f.bodies.item(0)
-    bodies["BACK"].name = "DL BACK PLATE ACP 3"
+    # J-FRONT-01: six rivnut holes on the left wall's front member line, 3 per side panel (220 rule)
+    sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - J-FRONT-01 RIVNUTS (6)",
+                   [("-jf_x", "jf_z%d" % i) for i in range(1, 7)], "jf_hole")
+    L.extrude_span(c, sk, "y", YB + " - dl_back_t - 1 mm", YB + " + 1 mm", CUT, [bodies["BACK"]],
+                   "CUT - J-FRONT-01 RIVNUT HOLES", profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    bodies["BACK"].name = "DL BACK PLATE AL 2"
 
     # ---- the hinge-side stop and its seal, between the hinge spaces
     gi = GY + " + glass_t / 2"
@@ -169,7 +176,7 @@ def build(app):
     alu = L.material(design, "Aluminium (2700 kg/m3)", "Aluminum", 2700.0)
     env = L.material(design, "ENVELOPE - mass carried in the parts list (1 kg/m3)", "Aluminum", 1.0)
     for k, b in bodies.items():
-        b.material = acp if k in ("SKIN", "BACK") else (alu if k.startswith("ST") else env)
+        b.material = acp if k == "SKIN" else (alu if k.startswith("ST") or k == "BACK" else env)
         a = L.appearance(design, ["Paint - Enamel Glossy (Yellow)"] if k in ("SKIN", "BACK") else
                          (["Paint - Enamel Glossy (Black)"] if k.startswith("ST") else ["Plastic - Matte (Black)"]))
         if a:
@@ -214,8 +221,10 @@ def export_all(app):
         ("351101", PARTS["SKIN"][1], PARTS["SKIN"][2], 1, "made: ACP panels, 45 deg mitred joints as v1",
          "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 1300 kg/m3)", "DRAFT",
          "D-12, D-49; skeleton DL shape", "three hinge pockets (HOLD sizes); panel split and flat patterns: stage 2"),
-        ("351102", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made", "ACP 3 mm", "cad", "calculation (CAD)", "DRAFT",
-         "this build", "bolted to the left wall (J-FRONT-01): rivnut plate HOLD-10"),
+        ("351102", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet)",
+         "aluminium EN AW-5754-H22 sheet 2.0, finish mill (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3)",
+         "DRAFT", "joints register J-FRONT-01 (HOLD-10 answered: 2 mm aluminium)",
+         "6 holes 9.53 for the rivnuts 838003 (counted in the joints register) on X -1224, 3 per side panel"),
         ("351103", PARTS["STOP"][1], PARTS["STOP"][2], 1, "made (aluminium angle, 4 lengths between the hinges)",
          "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20)", "cad", "calculation (CAD)", "DRAFT",
          "selection C3 (frame gap 2 to 6)", "screwed to DL's frame: fixings stage 2"),

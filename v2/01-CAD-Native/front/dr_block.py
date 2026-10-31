@@ -65,7 +65,10 @@ ZB, ZT = "fg_vis_zb", "fg_vis_zt"                  # band top and DT's underside
 
 OWN = [
     ("dr_skin_t", "3 mm", "mm", "source", "ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)"),
-    ("dr_back_t", "3 mm", "mm", "assumption", "back plate and inner panel in the same 3 mm ACP"),
+    ("dr_back_t", "2 mm", "mm", "source",
+     "joints register J-FRONT-01: the back plate is aluminium 1.0 to 2.7 thick at each bolt, for the rivnuts (HOLD-10)"),
+    ("dr_strip_x0", "jf_x - 24 mm", "mm", "assumption",
+     "the fixed back strip's inner edge, 24 inside the bolt line: the rest of the back comes off for the air unit (D-87)"),
     ("felt_t", "9 mm", "mm", "source", "the factory's 9 mm PET felt (D-31; hardware selection A3)"),
     ("dr_col_x0", "949 mm", "mm", "source", "D-60 air table: the air column's left face, X 949 (column X 949 to 1169)"),
     # intake (PM rulings 2026-10-31): room air enters through the mesh band piece under DR and goes up into the block
@@ -111,6 +114,7 @@ AIR_ASSY = ("350004", "FRONT - AIR SUPPLY ASSY - DR", "Cụm cấp gió khối p
 PARTS = {
     "SKIN": ("351301", "FRONT - DECOR SKIN - DR", "Tấm ốp alu khối phải"),
     "BACK": ("351302", "FRONT - DECOR BACK PLATE - DR", "Tấm hậu khối phải"),
+    "ACCESS": ("351305", "FRONT - DECOR ACCESS PANEL - DR", "Tấm thăm khối phải"),
     "INNER": ("351303", "FRONT - DECOR INNER PANEL - DR", "Tấm trong tháo được khối phải"),
     "FELT": ("351304", "FRONT - DECOR INNER PANEL FELT - DR", "Nỉ tấm trong khối phải"),
     "RISER": ("351402", "FRONT - AIR INTAKE RISER - DR", "Ống gió đứng khối phải"),
@@ -136,6 +140,7 @@ def build(app):
     L.add_params(design, sk_params)
     L.add_params(design, L.LIB_PARAMS)
     L.add_params(design, L.GLASS_PARAMS)
+    L.add_params(design, L.JF_PARAMS)
     L.add_params(design, OWN)
     root = design.rootComponent
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
@@ -212,27 +217,38 @@ def build(app):
     skin.name = "DR SKIN ACP 3"
     bodies["SKIN"] = skin
 
-    # ---- 351302 fixed back plate: behind the air column, the side wall and the soffit
-    c = comp("BACK")
-    # its lower-left corner follows the inner-edge skin (the glass line pushed in by dr_skin_t) below the point
-    # where that line crosses the column face, so the plate never cuts into the skin
+    # ---- 351302 fixed back plate (aluminium, J-FRONT-01): a strip on the right wall's bolt line and the band behind
+    # the soffit; 351305 the access panel between it and the air column comes off, so the air unit slides in (D-87)
     tip_z = "((fg_rc + dr_skin_t - fg_rnx * dr_col_x0) / fg_rnz)"
     zs = ZB + " + dr_skin_t"
-    back = [(L.right_x(zs, "dr_skin_t"), zs), (XR + " - dr_skin_t", zs),
-            (XR + " - dr_skin_t", "pod_h - dr_skin_t"), (XL + " + dt_xr", "pod_h - dr_skin_t"),
-            (XL + " + dt_xr", ZT), ("dr_col_x0", ZT), ("dr_col_x0", tip_z)]
-    f = prism(c, ("x", "z"), back, "y", YB + " - dr_back_t", YB, "OUTLINE - DR BACK PLATE", "EXTRUDE - DR BACK PLATE")
+    c = comp("BACK")
+    back = [("dr_strip_x0", zs), (XR + " - dr_skin_t", zs), (XR + " - dr_skin_t", "pod_h - dr_skin_t"),
+            (XL + " + dt_xr", "pod_h - dr_skin_t"), (XL + " + dt_xr", ZT), ("dr_strip_x0", ZT)]
+    f = prism(c, ("x", "z"), back, "y", YB + " - dr_back_t", YB, "OUTLINE - DR BACK PLATE (FIXED STRIP AND TOP BAND)",
+              "EXTRUDE - DR BACK PLATE")
     bp = f.bodies.item(0)
+    sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - J-FRONT-01 RIVNUTS (6)",
+                   [("jf_x", "jf_z%d" % i) for i in range(1, 7)], "jf_hole")
+    L.extrude_span(c, sk, "y", YB + " - dr_back_t - 1 mm", YB + " + 1 mm", CUT, [bp], "CUT - J-FRONT-01 RIVNUT HOLES",
+                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    bp.name = "DR BACK PLATE AL 2"
+    bodies["BACK"] = bp
+    c = comp("ACCESS")
+    acc = [(L.right_x(zs, "dr_skin_t"), zs), ("dr_strip_x0", zs), ("dr_strip_x0", ZT), ("dr_col_x0", ZT),
+           ("dr_col_x0", tip_z)]
+    f = prism(c, ("x", "z"), acc, "y", YB + " - dr_back_t", YB, "OUTLINE - DR ACCESS PANEL (REMOVABLE, D-87)",
+              "EXTRUDE - DR ACCESS PANEL")
+    ap = f.bodies.item(0)
     prism(c, ("x", "z"), [("op_x0", "op_z0"), ("op_x0 + op_w", "op_z0"), ("op_x0 + op_w", "op_z0 + op_h"),
                           ("op_x0", "op_z0 + op_h")], "y", YB + " - dr_back_t - 1 mm", YB + " + 1 mm",
-          "OPENING - INTO THE AIR COLUMN TOP", "CUT - OPENING INTO THE AIR COLUMN", CUT, bp)
-    bp.name = "DR BACK PLATE ACP 3"
-    bodies["BACK"] = bp
+          "OPENING - INTO THE AIR COLUMN TOP", "CUT - OPENING INTO THE AIR COLUMN", CUT, ap)
+    ap.name = "DR ACCESS PANEL AL 2"
+    bodies["ACCESS"] = ap
 
     # ---- 351303 removable inner panel and 351304 its felt: the part of the back face seen from inside
     inner = [("dr_col_x0", tip_z), ("dr_col_x0", ZT), (L.diag_x(ZT, "dr_skin_t"), ZT), L.g_K("dr_skin_t")]
     c = comp("INNER")
-    f = prism(c, ("x", "z"), inner, "y", YB + " - dr_back_t", YB, "OUTLINE - DR INNER PANEL (SEEN FROM INSIDE)",
+    f = prism(c, ("x", "z"), inner, "y", YB + " - dr_skin_t", YB, "OUTLINE - DR INNER PANEL (SEEN FROM INSIDE)",
               "EXTRUDE - DR INNER PANEL")
     bodies["INNER"] = f.bodies.item(0)
     bodies["INNER"].name = "DR INNER PANEL ACP 3"
@@ -299,10 +315,10 @@ def build(app):
     steel = L.material(design, "Galvanised steel (7850 kg/m3)", "Steel", 7850.0)
     alu = L.material(design, "Aluminium (2700 kg/m3)", "Aluminum", 2700.0)
     env = L.material(design, "ENVELOPE - mass carried in the parts list (1 kg/m3)", "Aluminum", 1.0)
-    for k, m in (("SKIN", acp), ("BACK", acp), ("INNER", acp), ("FELT", felt), ("RISER", steel),
+    for k, m in (("SKIN", acp), ("BACK", alu), ("ACCESS", alu), ("INNER", acp), ("FELT", felt), ("RISER", steel),
                  ("TLOW", env), ("FBOX", alu), ("TUP", env), ("TUP2", env), ("FAN1", env), ("FAN2", env)):
         bodies[k].material = m
-    looks = {"SKIN": ["Paint - Enamel Glossy (Yellow)"], "BACK": ["Paint - Enamel Glossy (Yellow)"],
+    looks = {"SKIN": ["Paint - Enamel Glossy (Yellow)"], "BACK": ["Aluminum - Satin"], "ACCESS": ["Aluminum - Satin"],
              "INNER": ["Paint - Enamel Glossy (Yellow)"], "FELT": ["Fabric (Gray)", "Plastic - Matte (Grey)"],
              "RISER": ["Steel - Satin", "Paint - Enamel Glossy (Grey)"],
              "FBOX": ["Aluminum - Satin"], "FAN1": ["Plastic - Matte (Black)"], "FAN2": ["Plastic - Matte (Black)"],
@@ -337,6 +353,7 @@ ANCHORS = [
     ("SKIN", 0, "fix_xtr - pod_w / 2"), ("SKIN", 3, "pod_w / 2"), ("SKIN", 2, "fg_vis_zb"), ("SKIN", 5, "pod_h"),
     ("SKIN", 1, "-pod_d / 2"), ("SKIN", 4, "-pod_d / 2 + decor_d"),
     ("BACK", 0, "dt_xr - pod_w / 2"), ("BACK", 3, "pod_w / 2 - dr_skin_t"), ("BACK", 5, "pod_h - dr_skin_t"),
+    ("ACCESS", 3, "dr_strip_x0"), ("ACCESS", 5, "fg_vis_zt"),
     ("INNER", 3, "dr_col_x0"), ("INNER", 5, "fg_vis_zt"), ("FELT", 4, "-pod_d / 2 + decor_d + felt_t"),
     ("RISER", 2, "fg_vis_zb + dr_skin_t + ri_gap"), ("RISER", 5, "ri_zt"), ("RISER", 0, "ri_x0"),
     ("FBOX", 0, "fb_x0"), ("FBOX", 2, "fb_z0"), ("FBOX", 5, "fb_z0 + fb_h"),
@@ -359,8 +376,14 @@ def export_all(app):
         ("351301", PARTS["SKIN"][1], PARTS["SKIN"][2], 1, "made: ACP panels, 45 deg mitred joints as v1",
          "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 1300 kg/m3)", "DRAFT",
          "D-12, D-49; skeleton DR shape", "panel split and flat patterns: stage 2"),
-        ("351302", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made", "ACP 3 mm", "cad", "calculation (CAD)", "DRAFT",
-         "D-60 air table (opening 203 x 215)", "behind the air column, the side wall and the soffit"),
+        ("351302", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet)",
+         "aluminium EN AW-5754-H22 sheet 2.0, finish mill (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3)",
+         "DRAFT", "joints register J-FRONT-01 (HOLD-10 answered: 2 mm aluminium)",
+         "fixed: the strip on X +1224 with 6 holes 9.53 for the rivnuts 838003 (joints register), and the band behind the soffit"),
+        ("351305", PARTS["ACCESS"][1], PARTS["ACCESS"][2], 1, "made (laser-cut sheet), removable",
+         "aluminium EN AW-5754-H22 sheet 2.0, finish mill (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3)",
+         "DRAFT", "D-60 air table (opening 203 x 215); D-87",
+         "comes off with the inner panel so the air unit 350004 slides in; behind the air column once fitted"),
         ("351303", PARTS["INNER"][1], PARTS["INNER"][2], 1, "made, removable", "ACP 3 mm", "cad", "calculation (CAD)",
          "DRAFT", "D-59, D-60", "lifts off for the fan box; fixings stage 2"),
         ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (cut from felt sheet), bonded to 351303",

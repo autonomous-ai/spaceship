@@ -544,3 +544,54 @@ def g_outline(d):
 def g_band(d):
     """C-shaped band between the visible outline and offset d, open along the free edge."""
     return g_outline("0 mm") + [g_TL(d), g_TR(d), g_K(d), g_BR(d), g_BL(d)]
+
+
+def circles(design, comp, plane, plane_axes, fixed, name, centers, dia_expr):
+    """Circles on an origin plane, fully constrained: each centre dimensioned from the -sk_ref reference point along
+    both plane axes by "(coordinate expression) + sk_ref", each diameter by dia_expr. Returns the sketch."""
+    sk = comp.sketches.add(plane)
+    sk.name = name
+    third = ({"x", "y", "z"} - set(plane_axes)).pop()
+    expr_on = {}
+    for k, ax in enumerate(plane_axes):
+        expr_on[_axis_of(sk, ax)] = k
+    dims = sk.sketchDimensions
+    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+    off = ev(design, "sk_ref")
+    c = {plane_axes[0]: -off, plane_axes[1]: -off, third: fixed}
+    ref = sk.sketchPoints.add(sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM)))
+    for sa in ("x", "y"):
+        g = ref.geometry
+        dims.addDistanceDimension(sk.originPoint, ref, H if sa == "x" else V,
+                                  adsk.core.Point3D.create(g.x / 2, g.y / 2, 0)).parameter.expression = "sk_ref"
+    r = ev(design, dia_expr) / 2
+    for ea, eb in centers:
+        c = {plane_axes[0]: ev(design, ea), plane_axes[1]: ev(design, eb), third: fixed}
+        p = sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM))
+        circ = sk.sketchCurves.sketchCircles.addByCenterRadius(p, r * MM)
+        cp = circ.centerSketchPoint
+        for sa in ("x", "y"):
+            ex = (ea, eb)[expr_on[sa]]
+            g = cp.geometry
+            dims.addDistanceDimension(ref, cp, H if sa == "x" else V,
+                                      adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0)).parameter.expression = \
+                "(%s) + sk_ref" % ex
+        dims.addDiameterDimension(circ, adsk.core.Point3D.create(p.x + r * MM, p.y + r * MM, 0)).parameter.expression = dia_expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + name)
+    return sk
+
+
+# J-FRONT-01 (joints register 3.7): decor block to side wall, 3 bolts per side panel on the panel's front member
+# centre line, the end bolts bolt_edge_inset from each panel end; the rivnuts sit in the decor's aluminium back plate
+JF_PARAMS = [
+    ("jf_x", "1224 mm", "mm", "source", "joints register J-FRONT-01: the side panel's front member centre line, X -/+1224"),
+    ("jf_hole", "9.53 mm", "mm", "source", "rivnut 838003 (Sherex CAH3-610-4.2) hole 9.53 +0.10/0 (hardware selection A5; joints register H-03)"),
+    ("jf_z1", "panel_z0 + bolt_edge_inset", "mm", "calculation", "lower panel, bottom bolt (220 rule)"),
+    ("jf_z2", "panel_z0 + side_h / 2", "mm", "calculation", "lower panel, middle bolt"),
+    ("jf_z3", "panel_z0 + side_h - bolt_edge_inset", "mm", "calculation", "lower panel, top bolt"),
+    ("jf_z4", "panel_z0 + side_h + seam_gap + bolt_edge_inset", "mm", "calculation", "upper panel, bottom bolt"),
+    ("jf_z5", "panel_z0 + side_h + seam_gap + side_h / 2", "mm", "calculation", "upper panel, middle bolt"),
+    ("jf_z6", "panel_z0 + 2 * side_h + seam_gap - bolt_edge_inset", "mm", "calculation", "upper panel, top bolt"),
+]
