@@ -220,10 +220,10 @@ def front_named(repo_root):
     with open(path, encoding="utf-8") as f:
         tree = ast.parse(f.read())
     for node in ast.walk(tree):
-        if isinstance(node, ast.Tuple) and len(node.elts) == 5 and all(isinstance(e, ast.Constant) for e in node.elts[:3]):
-            name = node.elts[0].value
-            if name in FRONT_NAMED and name not in out:
-                out[name] = (node.elts[1].value, node.elts[2].value)
+        if isinstance(node, ast.Tuple) and len(node.elts) == 5:
+            vals = [e.value for e in node.elts[:3] if isinstance(e, ast.Constant)]
+            if len(vals) == 3 and vals[0] in FRONT_NAMED and vals[0] not in out:
+                out[vals[0]] = (vals[1], vals[2])
     return out
 
 
