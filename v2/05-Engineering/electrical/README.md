@@ -25,7 +25,7 @@ The pod's electrical design: mains, the 12 V bus, the sensor hub, lights, fans, 
 | [`710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv`](710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv) | The load table (generated) |
 | [`compliance-note.md`](compliance-note.md) | UL 962 / NEC Class 2 note |
 | [`electrical_docs.py`](electrical_docs.py), [`wiring_diagram.py`](wiring_diagram.py) | Write the CSV files, the calculations and the wiring diagram from the model; `--check` fails if a file is stale |
-| `../../02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf` | Wiring diagram, 2 A3 sheets: the schematic; the harness list and two route views at 1:25 |
+| `../../02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf` | Wiring diagram, 3 A3 sheets: the schematic; the harness list; two route views at 1:20 |
 | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv` | Electrical parts list (generated), for the master BOM |
 | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL-HARNESS-LIST_SPEC.csv` | Harness list: every segment with its conductors, length, plugs, grommets and voltage drop (generated) |
 | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step` | The route model (Fusion writes cm, declared in the file, D-13) |
