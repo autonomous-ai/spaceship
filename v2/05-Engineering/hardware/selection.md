@@ -312,8 +312,9 @@ Third-party CO2 controllers, for reference or as a fallback if the hub isn't rea
 
 | Opt | Maker · SKU | Data | Source (checked 2026-10-31) | Status |
 |---|---|---|---|---|
-| 1 | Belimo **P-22RTM-1900D-1** room unit (CO2, T, RH) | ePaper touch display 69 × 62 mm; NDIR dual channel, 0–2000 ppm, ±(50 ppm + 2% of reading), ±20 ppm per year; 3 × 0–10 V outputs; MP-Bus; IP30 | https://www.belimo.com/mam/general-documents/datasheets/en-gb/belimo_P-22RT..-1900D-1_datasheet_en-gb.pdf | source; VN stock unverified |
-| 2 | E+E Elektronik **CDS201** (CO2, T, RH) with optional large graphic display (e.g. CDS201-M11 US format) | NDIR dual wavelength, 0–2000 / 5000 ppm, ±(60 ppm + 2%); three analogue outputs or RS485 | https://www.epluse.com/fileadmin/data/product/cds201/datasheet_CDS201.pdf | source; VN stock unverified |
+| 1 (VN) | Produal **HDH-N-R** (product no. 1135041010: HDH-N with HD-R relay option) | display; 0–2000 ppm with automatic self-calibration; typically ±40 ppm + 3% of reading; CO2 output 0–10 V, PI-control output 0–10 V; relay 24 V AC 1 A changeover, factory-set on at 1100 ppm; supply 24 V AC/DC; 87 × 86 × 30 mm. NDIR not stated | https://www.produal.com/en/products/hdh ; user guide https://produal-pim.rockon.io//rockon/api/v1/int/extmedia/openFile/01TGWJBKAXY5TMZKSPIZFLSVWYYEMK44CA ; VN seller https://stock.ttech.vn/cam-bien-do-nong-do-khi-co2-o2-voc-hang-produal-p24928.aspx | source; **listed in VN**; needs a 24 V supply |
+| 2 | Belimo **P-22RTM-1900D-1** room unit (CO2, T, RH) | ePaper touch display 69 × 62 mm; NDIR dual channel, 0–2000 ppm, ±(50 ppm + 2% of reading), ±20 ppm per year; 3 × 0–10 V outputs; MP-Bus; IP30 | https://www.belimo.com/mam/general-documents/datasheets/en-gb/belimo_P-22RT..-1900D-1_datasheet_en-gb.pdf | source; VN stock unverified |
+| 3 | E+E Elektronik **CDS201** (CO2, T, RH) with optional large graphic display (e.g. CDS201-M11 US format) | NDIR dual wavelength, 0–2000 / 5000 ppm, ±(60 ppm + 2%); three analogue outputs or RS485 | https://www.epluse.com/fileadmin/data/product/cds201/datasheet_CDS201.pdf | source; VN stock unverified |
 
 Presence sensor for automatic start and run-on:
 
