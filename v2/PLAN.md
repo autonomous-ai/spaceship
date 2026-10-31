@@ -77,9 +77,9 @@ FocusPod lives indoors: in a cool, air-conditioned room, on a flat, level floor.
 | Wall, ceiling and decor frames | Aluminum instead of steel | about 40 kg |
 | Skins | No plywood behind the ACP where sound doesn't need it | up to 58 kg |
 | Glass | 8 mm instead of 10 mm, same smoked glass and same shape | about 20 kg |
-| Table | A lighter build | about 12 kg |
+| Table | Removed. Customers put whatever they like in the pod. | about 20 kg |
 
-That takes v2 from about 460 kg as planned to roughly 300 kg. The outside looks identical. These are material changes to the build plan, so they go in marked PROPOSED for the hardware engineering lead while we keep building.
+That takes v2 from about 460 kg as planned to a little under 300 kg. The outside looks identical. These are material changes to the build plan, so they go in marked PROPOSED for the hardware engineering lead while we keep building.
 
 ## Quiet without the weight
 
@@ -102,7 +102,9 @@ The walls are both the heaviest part and what stops sound. Mass is the cheap way
 - Seals and quiet vents. v1 had none, and they're light and do a lot for sound.
 - One source of truth. v1's CAD, BOM and drawings disagree, and none of them can be edited.
 - A bolt-together floor frame. v1's welded 2500 × 1703 mm frame was its biggest, heaviest piece.
-- The parts the build plan doesn't cover yet: glass door and fixed glass, hinges, handle, seals, lights, power inlet and wiring, and the table.
+- The parts the build plan doesn't cover yet: glass door and fixed glass, hinges, handle, seals, lights, power inlet and wiring.
+
+**Removed:** the table. The pod ships empty, and customers furnish it however they like.
 
 **Left out of v2:** the one-cable dock, room mic and agent status light I pitched earlier.
 
@@ -136,7 +138,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - Interfaces between the assemblies.
    - A file register and an issue register.
    - Conventions: units, axes, naming, part numbers, file names and revisions.
-   - A proposed answer to each open question: door and glass, lights, table, door hand and floor board thickness.
+   - A proposed answer to each open question: door and glass, lights, door hand and floor board thickness.
 3. **Bought parts, hardware, and a sound and air check.**
    - Real part numbers and fit data for every bought item, lightest options first.
    - The parts the plan doesn't cover yet: glass door hinges, handle, seals, glass clamps, latch, lights and power inlet.
