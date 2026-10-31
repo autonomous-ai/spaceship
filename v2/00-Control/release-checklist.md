@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (e54dce6), PR #92 (a86c41a), PR #91 (2d221ad), PR #32 (78edd7f), PR #64 (e761d1d), PR #105 (fc43c99), PR #104 (404710d). The Mac's screen at run time: **unlocked**. 365 files in the CAD, drawing and manufacturing folders; the FAI plan's 71 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (11d9b51), PR #92 (a86c41a), PR #91 (2d221ad), PR #32 (78edd7f), PR #64 (e761d1d), PR #104 (404710d), PR #105 (5f7de28), PR #147 (1d4b0e5). The Mac's screen at run time: **unlocked**. 368 files in the CAD, drawing and manufacturing folders; the FAI plan's 71 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -20,13 +20,13 @@ Read from: main (e54dce6), PR #92 (a86c41a), PR #91 (2d221ad), PR #32 (78edd7f),
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 10 | 2 | 0 | 3 | 0 | 65 |
 | FRONT | 4 | 18 | 0 | 4 | 1 | 5 |
-| JOINTS | 1 | 5 | 0 | 0 | 0 | 0 |
+| JOINTS | 2 | 4 | 0 | 0 | 0 | 0 |
 | WALL | 2 | 12 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 36 | 80 | 0 | 10 | 2 | 88 |
+| **All, each number once** | 37 | 79 | 0 | 10 | 2 | 88 |
 
-80 of the 116 made numbers have no drawing yet; for 66 of them the drawing is the only gap, so their drawings can start now (D-84).
+79 of the 116 made numbers have no drawing yet; for 65 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 80, DXF or cut list 11, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 79, DXF or cut list 11, BOM row 3, CAD 3.
 
 ## Made parts with no FAI line
 
@@ -164,7 +164,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #104, main | yes | yes | yes | n/a | no | yes | yes | K-J07 | open: drawing |
+| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #104, main | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
 | 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #104, main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
 | 111211 | BASE - CORNER KEY - BACK - COMMON | main | yes | yes | yes | no | no | yes | yes | K-B08 | open: DXF or cut list, drawing |
 | 111212 | BASE CORNER KEY FRONT LH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
