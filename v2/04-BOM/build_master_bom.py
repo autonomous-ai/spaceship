@@ -48,6 +48,9 @@ ROOT = HERE.parents[1]
 REV = "P01"
 BOM_GLOBS = ["v2/03-Manufacturing", "v2/07-Packaging"]
 REGISTER = "v2/05-Engineering/joints/joints-register.md"
+TREE = "v2/00-Control/assembly-tree.md"
+# Families with no node in the assembly tree: Vietnamese added by the control pack (conventions.md section 6).
+FAMILY_VI = {"83": "Bulông, tán rút, đai ốc, long đen", "84": "Gioăng và băng dính theo mét"}
 # Old numbers from the guideline's examples and the earlier attempt: never reused (D-28).
 RESERVED_PN = {"110006", "110002", "120001", "211000", "210001", "210003", "210005", "350011", "830001", "830005"}
 NOT_HARDWARE = {"61", "71", "91"}
@@ -404,18 +407,49 @@ def fmt(x, nd=3):
     return f"{x:.{nd}f}".rstrip("0").rstrip(".") if isinstance(x, float) else str(x)
 
 
-def master_rows(parts, register):
+def node_names(refs=None):
+    """{node: (English name, Vietnamese name)} from the assembly tree's node table (`| Node | Name · Vietnamese |`),
+    read from the first git ref when refs are given, else from this working tree."""
+    if refs:
+        text = git("show", f"{refs[0]}:{TREE}")
+    else:
+        p = ROOT / TREE
+        text = p.read_text(encoding="utf-8") if p.exists() else ""
+    out = {}
+    for hdr, cells in table_rows(text):
+        if hdr and hdr[0].lower() == "node" and re.fullmatch(r"\d{6}", cells[0]):
+            en, _, vi = cells[1].partition(" · ")
+            out[cells[0]] = (en.strip(), vi.strip())
+    return out
+
+
+def group_names(fam, node, nodes):
+    """(Vietnamese name, source) of a family row."""
+    if node and node in nodes:
+        return nodes[node][1], f"{TREE} (node {node})"
+    if fam == "10" and "109000" in nodes:
+        return nodes["109000"][1], f"{TREE} (node 109000, the installation kit); conventions.md section 6 (family 10)"
+    if fam in FAMILY_VI:
+        return FAMILY_VI[fam], f"v2/00-Control/conventions.md section 6 (family {fam}; Vietnamese by the control pack)"
+    return "", f"v2/00-Control/conventions.md section 6 (family {fam})"
+
+
+def master_rows(parts, register, nodes=None):
+    nodes = node_names() if nodes is None else nodes
     out = []
     pod_mass = sum((r["qty_per_pod"] or 0) * (r["mass_each_kg"] or 0) for r in parts if r["make_buy"] in ("make", "buy"))
     out.append({"level": 0, "row_type": "pod", "group": "POD", "part_number": "100000", "name": "POD - SPACESHIP",
+                "name_vi": nodes.get("100000", ("", ""))[1],
                 "qty_per_pod": 1.0, "qty_status": "source (assembly tree)", "mass_total_kg": pod_mass,
                 "mass_status": "calculation (sum of the listed parts; assemblies with no list count 0)",
-                "source_file": "v2/00-Control/assembly-tree.md"})
+                "source_file": f"{TREE} (node 100000)"})
     for fam, node, gname, team in FAMILIES:
         members = sorted((r for r in parts if family_of(r["part_number"]) == fam), key=lambda r: (r["part_number"], r["source_file"]))
         reg_items = [i for i in register if family_of(i["part_number"]) == fam]
         gmass = sum((r["qty_per_pod"] or 0) * (r["mass_each_kg"] or 0) for r in members if r["make_buy"] in ("make", "buy"))
+        gvi, gsrc = group_names(fam, node, nodes)
         out.append({"level": 1, "row_type": "assembly", "group": gname, "part_number": node, "name": gname,
+                    "name_vi": gvi, "source_file": gsrc,
                     "qty_per_pod": 1.0 if node else None, "qty_status": "source (assembly tree)" if node else "",
                     "mass_total_kg": gmass, "mass_status": "calculation (sum of its listed parts)", "team": team,
                     "note": "" if members else "no parts listed yet"})
@@ -537,7 +571,7 @@ def main(argv=None):
     if not a.no_write:
         out = Path(a.out)
         out.mkdir(parents=True, exist_ok=True)
-        write_csv(out / f"100000_{REV}_POD-MASTER_BOM.csv", MASTER_COLS, master_rows(parts, register))
+        write_csv(out / f"100000_{REV}_POD-MASTER_BOM.csv", MASTER_COLS, master_rows(parts, register, node_names(a.ref)))
         write_csv(out / f"100000_{REV}_POD-MADE-PARTS-BY-PROCESS_BOM.csv",
                   ["process", "process_status", "part_number", "name", "qty_per_pod", "material", "finish", "mass_each_kg", "mass_status", "team", "source_file"],
                   made_rows(parts))

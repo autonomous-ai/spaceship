@@ -1,6 +1,6 @@
 # Spaceship plan (FocusPod v2)
 
-Status: approved by the product owner on 2026-10-31. Work has started. Decisions made since then are in `v2/00-Control/decision-log.md`, which wins wherever this plan disagrees.
+Status: approved by the product owner on 2026-10-31. Work has started. Decisions made since then are in `v2/00-Control/decision-log.md`, which wins wherever this plan disagrees. This plan was last brought up to the log on 2026-10-31, through D-81.
 
 **Spaceship** is the working name for v2. The pod looks like a spaceship, and inside it should feel like one: you command your agents by voice. The prototype stays focused on the structure goals below, but the design reserves the hooks for that cockpit: mounting points, cable paths and power for a mic array, speakers, a screen and a status light. The cockpit kit can then bolt in later without a redesign.
 
@@ -27,8 +27,8 @@ We benchmark against the leaders: Framery, Room, Herman Miller, Steelcase (Orang
 | Installing it | Pro-install leaders: Room S/M take 12–20 person-hours, Framery uses trained crews quoting 4–6 hours, and Air3 needs certified installers. The best DIY is Room's 1-person booth at 2 person-hours and BuzziNest Pod at 4. | 2 people in about 1 hour with one hand tool (2 person-hours). Stretch: 1 person-hour. | 10x against the pro-install leaders, 2–4x against the best DIY |
 | Getting it delivered and inside | Framery ships one crate of 310–430 kg that needs a pallet jack. Room's heaviest box is 73–81 kg. | Standard pallets to the door, then every piece carried by hand. Every part is 20 kg or less except the glass and fits an 81 cm door and a normal elevator. | 3–20x lighter pieces, and no pallet jack inside |
 | Moving it inside the office | Room S/M need a pro teardown and rebuild, and Framery needs a kit and partial disassembly | Under study: castors, or a quick unbolt of the light panels | Up to 10x |
-| Weight | The lightest are about 88–91 kg/m² of floor with no lab sound rating (Bay, Zenbooth Quad). Lab-rated Class A pods are 151–171 (Framery Four). | about 98 kg/m² (about 418 kg, cap 420), with every part 20 kg or less except the glass | As light as the lightest unrated pods, and well under lab-rated ones |
-| Fresh air | Best is about 25 l/s per person. Nobody publishes CO2 readings or fan noise. | CO2 and heat drive the fans: about 33 l/s for one person, 53 l/s for two at 26 dB(A) or less, and a boost to 65 l/s at 30 dB(A). The CO2 reading is shown inside. Fan noise is published. | Best in class, and first to publish CO2 and fan noise |
+| Weight | The lightest are about 88–91 kg/m² of floor with no lab sound rating (Bay, Zenbooth Quad). Lab-rated Class A pods are 151–171 (Framery Four). | about 99 kg/m² (about 422 kg as shipped, calculated; cap 420, target 410), with every part 20 kg or less except the glass | As light as the lightest unrated pods, and well under lab-rated ones |
+| Fresh air | Best is about 25 l/s per person. Nobody publishes CO2 readings or fan noise. | CO2 and heat drive the fans: about 33 l/s for one person, 53 l/s for two at 26 dB(A) or less, and a boost to 65 l/s at 30 dB(A) (calculated: 25.3 and 29.7 dB(A)). The CO2 reading is shown inside. Fan noise is published. | Best in class, and first to publish CO2 and fan noise |
 | Quiet | 30–30.3 dB speech reduction is the best lab result (hushFree XS, Framery) | About 19 dB calculated (range 14.6–21.7), and up to 24 dB if the felt does better on its air gap. That's quieter than v1 as built (about 15 dB). The wall sample, measured down to 100 Hz, settles it before a lab report. 30 dB would need about 520 kg. | Quieter than v1, at about half the weight per m² of lab-rated pods |
 | Price | Zenbooth $5,245 per seat (2 seats). Big-brand pods run $13k–30k. | At or below v1's $9,900 for 2 people ($4,950 per seat) | Best per seat |
 
@@ -36,17 +36,26 @@ Ten times better is real on installing, handling, lead time and moving the pod. 
 
 ## Targets
 
-Agents work to these from day one. The hardware engineering lead and the indoor pod lead can change any of them at any time, and we fold their changes in.
+Agents work to these from day one. The PM can change any of them, with the reason logged in the decision log (D-32).
 
 | # | Goal | Target | How we prove it |
 |---|---|---|---|
-| 1 | Light | About 418 kg for the decided build, with a cap of 420 kg (decision log). v1 is about 480 kg by its BOM. The kg-vs-dB curve set the trade. Every part 20 kg or less, so one person can carry it, except the glass. No maker claims 20 kg parts. | Weights from the CAD and BOM, then the prototype on a scale |
-| 2 | Easy to assemble | 2 people in about 1 hour with one hand tool, and never more than 4 hours. One bolt size (M6), joints that find their own place, no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
+| 1 | Light | 300 kg stays the goal. The cap is 420 kg as shipped, and the target is 410 kg (decided, D-37, D-81). Skeleton P04's roll-up is 436.3 kg, or 432.3 kg with the voice kit's 4.0 kg reserve held outside the cap, because the kit ships later (calculated, PR #38). With the adopted savings (clip-only lining fixing, a lighter fill) and allowances for the light shelf and ledge, the live count is 422.8 kg as shipped (calculated, PR #42, in review). A 1.5 mm base band and a 3+3 fixed pane wait on their checks; the door stays 4+4 (D-81). v1 is about 480 kg by its BOM. Every part 20 kg or less, so one person can carry it, except the glass. No maker claims 20 kg parts. | Weights from the CAD and the master BOM, then the prototype on a scale |
+| 2 | Easy to assemble | 2 people in about 1 hour with one hand tool, and never more than 4 hours. One bolt: an M6 × 16 socket head, captive, turned with one 5 mm key (decided, D-63). Panels find their place on spigots and meet at 2.26 mm metal-stop seams, and every bolt pattern between teams comes from one skeleton rule (decided, D-64, D-75). No glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
 | 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. Nobody on the market ships pods on 48 × 40. | Pallet layout from the CAD |
-| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 800 ppm with 2 people all day in a 600 ppm office. CO2 and heat drive the fans, keeping the inside within 4 K of the room and never going below 26 l/s with someone inside. One person runs at about 33 l/s. Two need 53 l/s at 26 dB(A) or less, and often the 65 l/s boost at 30 dB(A). Four 12 V fans in boxed cartridges sit in the right decor block, with supply low and exhaust high. Fans start by themselves. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |
-| 5 | Quiet (guardrail) | At least as quiet as v1, with 30 dB as the aim. v1 and v2 get tested in the same lab to ISO 23351-1. | Calculation, then the lab test |
+| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 800 ppm with 2 people all day in a 600 ppm office. CO2 and heat drive the fans, keeping the inside within 4 K of the room and never going below 26 l/s with someone inside. One person runs at about 33 l/s. Two need 53 l/s at 26 dB(A) or less, and often the 65 l/s boost at 30 dB(A). The air runs inside the pod (decided, D-60 to D-62): room air comes in through a flush black mesh in the base band under the right decor block, rises to the supply fans high in that block, and runs down a felt-covered air column in the front-right corner; the exhaust leaves through a felt-covered soffit above the door and a roof slot behind the block. Four 12 V fans on two balanced signals start by themselves. Calculated: 25.3 dB(A) at 53 l/s and 29.7 at 65 l/s. The lights are a low-heat light shelf (D-70). | Calculation, then a CO2 and noise check on the prototype |
+| 5 | Quiet (guardrail) | At least as quiet as v1. The decided build calculates at about 19 dB (range 14.6–21.7, about 24 at best), against about 15 dB for v1 as built (calculated, D-53). The wall sample, measured down to 100 Hz, and then the lab test, with v1 and v2 in the same lab to ISO 23351-1, give the real figure; until then we quote only the calculation. | Calculation, then the lab test |
 | 6 | Healthy materials | Low-emission certified felt, boards and glue | Supplier certificates |
-| 7 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM, joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
+| 7 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM (`v2/04-BOM/`, checked on every run), joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
+
+## Where it stands (2026-10-31)
+
+| | What |
+|---|---|
+| Done, on main | The control pack and decision log (D-01 to D-81); Milestone 1: bought parts, sound and air check, layout study (PRs #10, #11, #18, #20); skeleton P04 (PR #24); the D-60 air path (PRs #26, #30); the wall and door sample package for the factory (PRs #21, #29, #34); the P04 weight roll-up (PR #38); the shared Fusion lock and the no-click drawing start (PRs #22, #33); the mechanical checks (PRs #25, #39, #40); the master BOM and its check (PR #36) |
+| In review | Joints register and bond spec (PR #23); FRONT door unit and fixed glass (PRs #27, #28); CEILING sample (PR #32); WALL sample L1 (PR #41); the live weight count (PR #42) |
+| In progress | The CAD of every assembly, one team each (D-80): WALL, FRONT, BASE, CEILING (also AIR and INTERIOR), ELECTRICAL, and Packing and Assembly (pallets and the assembly guide) |
+| Open checks | The factory's wall and door sample (sound down to 100 Hz, real cassette weights, the lighter fill), the fan sample, and the HOLDs: door hinges and lock, the glass product, the cassette clips, the felt certificate, the rivnut torque and the floor foam |
 
 ## What changes from the last attempt
 
@@ -73,19 +82,13 @@ Python wasn't the problem. Scripts written blind, in one shot and shipped withou
    Auto-dimension is only a draft (§6). Every sheet is rendered and looked at before review.
 5. **Automatic checks on every revision.** Units, names, BOM against CAD by part number, every hole a true circle, every dimension on a centre, and the title block filled.
 6. **A separate Reviewer.** A different agent from the one that built the work checks every sheet against the guideline's checklist (§13).
-7. **Engineers see it early.** One part and its drawing go to the hardware leads on day 2. We tune the template to their taste while the rest keeps going.
+7. **Checked as it lands.** A Reviewer checks every pull request, the Mechanical Checker runs on every merge, and the factory's wall and door sample is the physical check (D-32).
 
 All Engineers run Opus 5.5 at max effort on this Mac.
 
 ## Design for the pallet
 
-Shipping sets the panel sizes, so we decide the split before the CAD. A panel ships best standing upright on a standard 48 × 40 in pallet, which allows up to about 1200 mm wide and 1700 mm tall. Here's how the build plan's parts measure up:
-
-- **They fit:** the side wall frames (about 1500 × 1150 mm), the back wall frames (about 1200 × 1150 mm if split 2 × 2) and the floor boards (about 1185 × 1430 mm).
-- **Just over:** the ceiling halves are about 1240 mm wide, roughly 20 mm too wide.
-- **Too long:** the glass door (2011 mm), the fixed glass (2139 mm), the side decor blocks (2300 mm) and the plan's floor rails (2500 mm). A thin floor removes the floor rails entirely.
-
-The likely answer is one 48 × 40 pallet for the panels, plus one standard long pallet for the glass and long pieces. The other option is to split the decor blocks so only the glass needs the long pallet. No custom pallet sizes either way. Milestone 1 picks whichever layout is lightest, cheapest to ship and quickest to assemble, and the CAD follows it.
+Shipping sets the panel sizes. Decided (D-04): standard 48 × 40 in pallets plus one standard long pallet, with the decor blocks not split. Skeleton P04 gives the panels (D-66): side panels 1492.74 × 1142.74 mm, back panels 1200.61 × 1118.61 mm and ceiling halves 1200.61 × 1495 mm; the glass door, the fixed glass and the side decor blocks ride the long pallet. The pallet layout on P04 is still open (ISS-081), with the Packing and Assembly team (D-80).
 
 ## Same look, lighter bones
 
@@ -93,13 +96,13 @@ FocusPod lives indoors: in a cool, air-conditioned room, on a flat, level floor.
 
 | Where | Change | Rough saving |
 |---|---|---|
-| Floor | A thin floor: 2 to 3 cm panels lying on the room floor, with the walls fixed around them, instead of the raised 50×100 steel frame. The outside base band stays as trim, so the look doesn't change. The step into the pod drops from about 13 cm to about 2 cm, and the room inside gets about 10 cm taller. | about 50 kg |
-| Wall, ceiling and decor frames | Aluminum instead of steel | about 40 kg |
-| Skins | No plywood behind the ACP where sound doesn't need it. Also study sandwich walls: a foam-core or honeycomb panel with the same yellow ACP face on an aluminum frame. That's how the lightest pods are built (Mamava XL at 318 kg, hushMeet's honeycomb). | up to 58 kg |
-| Glass | 8 mm instead of 10 mm saves about 20 kg. Smoked acrylic, which Room uses for its booth door to cut shipping weight, saves about 60 kg on the door and fixed panel together. Same smoked look and same shape either way. Acrylic scratches more and feels less premium, so the sound check and a sample decide. | about 20–60 kg |
-| Table | Removed. Customers put whatever they like in the pod. | about 20 kg |
+| Floor | A thin floor inside the base band: 9 mm plywood on a 3 mm firm closed-cell foam mat, instead of the raised 50×100 steel frame (decided, D-05, D-72, D-76). The base band stays as trim, so the look doesn't change. The step into the pod is a 13 mm threshold with a 1:2 bevel, which meets the US accessibility rule (D-72), and the room inside is about 8 cm taller than v1 (calculated). | about 50 kg (first estimate) |
+| Wall, ceiling and decor frames | Aluminium instead of steel; the hidden tubes are 6063-T6, mill finish (decided, D-16, D-79) | about 40 kg (first estimate) |
+| Skins | No plywood behind the ACP (decided, D-17). The sound mass sits in a floating lining cassette instead: a 0.5 mm steel tray with 9 mm felt on a 25 mm gap, hung on clips only (D-17, D-37, D-69, D-81). | up to 58 kg (first estimate) |
+| Glass | 4+4 laminated glass of toughened, heat-soaked panes, frameless as in v1 (decided, D-27, D-46). Acrylic would have needed an opaque stile down the door, which breaks the look. A 3+3 fixed pane would save about 6.5 kg if FRONT's check allows it; the door stays 4+4 (D-81). | none: the look and the sound come first |
+| Table | Removed. The floor stays empty, and the work wall gets a ledge (D-06, D-70). | about 20 kg (first estimate) |
 
-That takes v2 from about 460 kg as planned to a little under 300 kg. The outside looks identical. These are material changes to the build plan, so they go in marked PROPOSED for the hardware engineering lead while we keep building.
+Those were the first estimates. The sound package (felt cassettes, laminated glass, seals) puts weight back, so the decided build is about 422 kg as shipped (Target 1). The outside looks identical. The PM decides each change and logs it in the decision log (D-32).
 
 ## Quiet without the weight
 
@@ -110,36 +113,36 @@ The market says seals matter more than mass:
 - Floorless pods post the weakest numbers.
 
 So v2 adds:
-- a gasket on every panel joint
+- a gasket on every panel joint, running beside the bolts so none is cut (D-64)
 - a drop seal on the door
 - fill in the cavities
 - the glass seated in sealed profiles
 - a seal under the thin floor
 
-We also compare three front options: 8 mm tempered glass; 4+4 laminated acoustic glass, which weighs about the same and is quieter; and smoked acrylic, less than half the weight. Room still claims about 30 dB with an acrylic door.
+The front is 4+4 laminated glass (D-27).
 
-The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, the product owner gets the trade-off before we add weight. Because 300 kg is beyond anything rated on the market, the team should build one wall sample and the door early and test them. Result so far: the decided build calculates at about 19 dB (range 14.6–21.7), still quieter than v1, so no weight goes back in until the wall sample is measured.
+The sound check found the lightest wall that's still quieter than v1. The decided build calculates at about 19 dB (range 14.6–21.7), against about 15 dB for v1 as built (D-53). No weight goes back in until the factory's wall and door sample is measured down to 100 Hz.
 
 ## What we keep, add and leave out
 
 **Kept from the v2 build plan:**
 - The look: the faceted front, proportions, colors and glass layout, unchanged.
-- The frame layout. The material may go from steel to aluminum (see above).
-- 3 mm ACP outside and 9 mm PET felt inside, on lining cassettes held by mechanical clips. No plywood backing (decision log).
-- M6 bolts throughout.
+- The frame layout, in aluminium (D-16).
+- 3 mm ACP outside and 9 mm PET felt inside, on lining cassettes held by mechanical clips only (D-47, D-81). No plywood backing (D-17).
+- M6 bolts throughout: one M6 × 16 socket-head bolt and one 5 mm key (D-63).
 - Small wall frames: 2 per side, 4 at the back and 2 in the ceiling, adjusted to fit the pallet.
 - A 3-block decor frame.
-- Fans, one path blowing in and one out. They now sit in the right decor block instead of the ceiling (decision log).
+- Fans, one path blowing in and one out. They now sit inside the pod, in an air column and a soffit, instead of the ceiling (D-60 to D-62).
 - The plan's switches on the back wall, which is fine for the prototype.
 - The modeling order: base, left wall, right wall, back wall, ceiling, decor frame, then the floor finish.
 
 **Added because of what v1 taught us:**
 - Seals and quiet vents. v1 had none, and they're light and do a lot for sound.
 - One source of truth. v1's CAD, BOM and drawings disagree, and none of them can be edited.
-- A thin floor instead of a raised one, marked PROPOSED. v1's welded 2500 × 1703 mm floor frame was its biggest, heaviest piece and put a 13 cm step at the door. A raised floor is for uneven ground and running cables underneath. Indoors, the floor is flat and the cable can run inside the back wall. The thin floor still closes the box for sound and keeps the walls square.
+- A thin floor instead of a raised one (decided, D-05, D-72). v1's welded 2500 × 1703 mm floor frame was its biggest, heaviest piece and put a 13 cm step at the door. A raised floor is for uneven ground and running cables underneath. Indoors, the floor is flat and the cable can run inside the back wall. The thin floor still closes the box for sound and keeps the walls square.
 - The parts the build plan doesn't cover yet: glass door and fixed glass, hinges, handle, seals, lights, power inlet and wiring.
 
-**Removed:** the table. The pod ships empty, and customers furnish it however they like.
+**Removed:** the table. The floor stays empty, and the work wall gets a 1000 mm ledge and a screen mount (D-06, D-70).
 
 **Left out of v2:** the one-cable dock, room mic and agent status light I pitched earlier.
 
@@ -147,8 +150,8 @@ The sound check designs the lightest wall that's still at least as quiet as v1, 
 
 There are no gates. Work runs straight through, and phases overlap where they can.
 
-- **Reviews run alongside the work.** The hardware engineering lead and the indoor pod lead get a short review packet after each milestone. Their notes go into the next pass, and nothing waits on them.
-- **Choices the guideline reserves for the hardware engineering lead go ahead anyway.** That means changes to the look, overall size, architecture, main materials or key joints. Each one is marked PROPOSED until he signs off.
+- **The PM decides and logs.** There are no human hardware leads on the project (D-32). Choices the guideline reserves for a lead (the look, overall size, architecture, main materials, key joints) are ruled by the PM and logged with the reason; the look rule never moves.
+- **Reviews run alongside the work.** A Reviewer checks every pull request, and the Mechanical Checker runs on every merge.
 - **Agents never** order parts, contact suppliers or release anything for production.
 - **Every pull request gets a Reviewer.**
 
@@ -156,9 +159,9 @@ There are no gates. Work runs straight through, and phases overlap where they ca
 
 Fusion's built-in MCP server already works on this Mac. I ran a test script through it, and it's now registered with Claude Code and Codex. It only answers locally, so all Engineers run on this Mac (Mac 1, already in the Swarm).
 - Prove the guideline's edit test (§4.4). Build one part from a fully constrained sketch with named parameters, save it as .f3d, export it to STEP, then change a parameter and confirm it rebuilds cleanly.
-- Drawing proof: produce one ISO drawing sheet through Fusion's drawing API. This Fusion version has the API we need: drawings in ISO first-angle; base, projected, section and detail views; dimensions and auto-dimensions; hole tables; datum and tolerance symbols; title blocks and revision tables; and PDF, DXF and DWG export. So agents script native drawings that update when the model changes, which is what the guideline prefers (§6.1). Every sheet is exported, rendered and checked by eye. Anything the API can't do goes on a short list for a person to finish in Fusion.
+- Drawing proof, done (PR #6). By script, the drawing API places base views, dimensions and hole tables; it can't add projected or section views or fill the title block, so those go on a short list for a person or the shared tools. A no-click drawing start merged in PR #33. Every sheet is exported, rendered and checked by eye.
 
-### Milestone 1: decide the layout (about 1 day, 3 Engineers, starting alongside Phase 0)
+### Milestone 1: decide the layout (done: PRs #8, #10, #11, #18, #19)
 
 1. **Weight, pallet and assembly study.** This is the heart of v2.
    - A weight budget by assembly, comparing v1 with v2 as planned.
@@ -194,7 +197,7 @@ The skeleton starts from the plan's fixed dimensions while Milestone 1 finishes,
   - One decor detail.
 - Sample registers:
   - Joints: wall to wall, wall to floor and the decor bracket.
-  - One bond spec (ACP to plywood).
+  - One bond spec (ACP to aluminium, PR #23).
   - Feature rationale for the sample parts.
   - A master BOM generated from the CAD, with weights.
 
@@ -206,7 +209,7 @@ The skeleton starts from the plan's fixed dimensions while Milestone 1 finishes,
 - A 2-person assembly guide with pictures.
 - The pallet and packing plan, and an FAI plan.
 
-The Engineers split by assembly so they never share files: BASE and WALL; FRONT (door and glass); CEILING, AIR and ELECTRICAL; LINING and INTERIOR; PACKAGING and the assembly guide.
+The Engineers split by assembly so they never share files, one team each (D-80): WALL (with its linings); FRONT; BASE; CEILING, which also builds AIR and INTERIOR; ELECTRICAL; and Packing and Assembly (the pallets and the assembly guide).
 
 There is only one Fusion, and the MCP works on whichever document is active. So the Engineers write and review their CAD scripts in parallel, and Fusion runs them one at a time.
 
@@ -222,7 +225,7 @@ About 1.5 weeks to a prototype-ready package, with no waiting on reviews. The cr
 
 ## Risks
 
-1. **Drawings.** The API covers what we need, but readable dimension placement is where the last attempt fell short. Each part gets a dimension plan, every rendered sheet gets checked by eye, and the hardware leads tune the template on day 2.
+1. **Drawings.** The API places base views and dimensions, and the shared drawing start now works (PR #33), but readable dimension placement is where the last attempt fell short. Each part gets a dimension plan, and every rendered sheet gets checked by eye.
 2. **Claude allowance.** This Mac's weekly Claude allowance is 70% used until Nov 3, and Opus at max effort uses it fast. If it runs low, the non-Fusion Engineers can move to another Swarm machine with a Claude account, if the product owner agrees.
 3. **Light vs quiet.** At 300 kg the walls lose most of their mass. The two-skin wall with fill is the light answer, and light fixes come first. Any heavy fix goes to the product owner with its cost in kg.
 4. **Late feedback.** With no gates, a late "no" can mean rework. Parametric CAD and small review packets after each milestone keep that cheap.
@@ -230,8 +233,6 @@ About 1.5 weeks to a prototype-ready package, with no waiting on reviews. The cr
 
 ## Decisions for the product owner
 
-1. Approve the goals and this plan. Everything else is ready: Fusion's MCP is registered, and this Mac can run the Engineers.
-2. Send last attempt's output and the engineers' top complaints about it. That's the fastest way not to repeat them.
-3. Ask the team to build one wall sample and the door as soon as Milestone 1 picks the wall build, so we can measure sound early instead of trusting a calculation.
+The plan was approved on 2026-10-31. Since then the PM makes the design decisions and logs them (D-32); only spending, credentials and releases go to the product owner.
 
 Rulings that need no answer: documents are in English with the team's Vietnamese part names alongside, and v2 files follow the guideline's folder layout (§12) under `v2/`.

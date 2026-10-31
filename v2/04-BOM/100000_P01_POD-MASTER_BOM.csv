@@ -1,15 +1,15 @@
 level,row_type,group,part_number,name,name_vi,qty_per_pod,qty_status,material,finish,mass_each_kg,mass_status,mass_total_kg,make_buy,process,process_status,product_status,register_id,team,source_file,note
-0,pod,POD,100000,POD - SPACESHIP,,1,source (assembly tree),,,,calculation (sum of the listed parts; assemblies with no list count 0),0,,,,,,,v2/00-Control/assembly-tree.md,
-1,assembly,POD - GENERAL ITEMS AND INSTALLATION KIT (family 10),,POD - GENERAL ITEMS AND INSTALLATION KIT (family 10),,,,,,,calculation (sum of its listed parts),0,,,,,,Packing and Assembly,,no parts listed yet
-1,assembly,BASE,110000,BASE,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,BASE,,no parts listed yet
-1,assembly,WALL,210000,WALL,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,WALL,,no parts listed yet
-1,assembly,FRONT - DECOR,350000,FRONT - DECOR,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,FRONT,,no parts listed yet
-1,assembly,FRONT - DOOR AND GLAZING,360000,FRONT - DOOR AND GLAZING,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,FRONT,,no parts listed yet
-1,assembly,CEILING,410000,CEILING,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,CEILING,,no parts listed yet
-1,assembly,LINING,510000,LINING,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,WALL and CEILING,,no parts listed yet
-1,assembly,AIR,610000,AIR,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,"CEILING (builds AIR, D-80)",,no parts listed yet
-1,assembly,ELECTRICAL,710000,ELECTRICAL,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,ELECTRICAL,,no parts listed yet
-1,assembly,INTERIOR,810000,INTERIOR,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,"CEILING (builds INTERIOR, D-80)",,no parts listed yet
-1,assembly,"HARDWARE: FASTENERS, INSERTS, NUTS, WASHERS (family 83)",,"HARDWARE: FASTENERS, INSERTS, NUTS, WASHERS (family 83)",,,,,,,calculation (sum of its listed parts),0,,,,,,Joints register,,no parts listed yet
-1,assembly,SEALS AND TAPES BY LENGTH (family 84),,SEALS AND TAPES BY LENGTH (family 84),,,,,,,calculation (sum of its listed parts),0,,,,,,Joints register,,no parts listed yet
-1,assembly,PACKAGING,910000,PACKAGING,,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,Packing and Assembly,,no parts listed yet
+0,pod,POD,100000,POD - SPACESHIP,Pod hoàn chỉnh,1,source (assembly tree),,,,calculation (sum of the listed parts; assemblies with no list count 0),0,,,,,,,v2/00-Control/assembly-tree.md (node 100000),
+1,assembly,POD - GENERAL ITEMS AND INSTALLATION KIT (family 10),,POD - GENERAL ITEMS AND INSTALLATION KIT (family 10),Bộ phụ kiện lắp,,,,,,calculation (sum of its listed parts),0,,,,,,Packing and Assembly,"v2/00-Control/assembly-tree.md (node 109000, the installation kit); conventions.md section 6 (family 10)",no parts listed yet
+1,assembly,BASE,110000,BASE,Đế / sàn,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,BASE,v2/00-Control/assembly-tree.md (node 110000),no parts listed yet
+1,assembly,WALL,210000,WALL,Vách,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,WALL,v2/00-Control/assembly-tree.md (node 210000),no parts listed yet
+1,assembly,FRONT - DECOR,350000,FRONT - DECOR,Mặt trước,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,FRONT,v2/00-Control/assembly-tree.md (node 350000),no parts listed yet
+1,assembly,FRONT - DOOR AND GLAZING,360000,FRONT - DOOR AND GLAZING,Cửa và kính,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,FRONT,v2/00-Control/assembly-tree.md (node 360000),no parts listed yet
+1,assembly,CEILING,410000,CEILING,Trần,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,CEILING,v2/00-Control/assembly-tree.md (node 410000),no parts listed yet
+1,assembly,LINING,510000,LINING,Lớp tiêu âm,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,WALL and CEILING,v2/00-Control/assembly-tree.md (node 510000),no parts listed yet
+1,assembly,AIR,610000,AIR,Thông gió,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,"CEILING (builds AIR, D-80)",v2/00-Control/assembly-tree.md (node 610000),no parts listed yet
+1,assembly,ELECTRICAL,710000,ELECTRICAL,Điện,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,ELECTRICAL,v2/00-Control/assembly-tree.md (node 710000),no parts listed yet
+1,assembly,INTERIOR,810000,INTERIOR,Nội thất,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,"CEILING (builds INTERIOR, D-80)",v2/00-Control/assembly-tree.md (node 810000),no parts listed yet
+1,assembly,"HARDWARE: FASTENERS, INSERTS, NUTS, WASHERS (family 83)",,"HARDWARE: FASTENERS, INSERTS, NUTS, WASHERS (family 83)","Bulông, tán rút, đai ốc, long đen",,,,,,calculation (sum of its listed parts),0,,,,,,Joints register,v2/00-Control/conventions.md section 6 (family 83; Vietnamese by the control pack),no parts listed yet
+1,assembly,SEALS AND TAPES BY LENGTH (family 84),,SEALS AND TAPES BY LENGTH (family 84),Gioăng và băng dính theo mét,,,,,,calculation (sum of its listed parts),0,,,,,,Joints register,v2/00-Control/conventions.md section 6 (family 84; Vietnamese by the control pack),no parts listed yet
+1,assembly,PACKAGING,910000,PACKAGING,Đóng gói,1,source (assembly tree),,,,calculation (sum of its listed parts),0,,,,,,Packing and Assembly,v2/00-Control/assembly-tree.md (node 910000),no parts listed yet

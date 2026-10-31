@@ -190,5 +190,18 @@ class WallAndRegisterV3(unittest.TestCase):
         self.assertTrue(fails[0].startswith("no part number"), fails)
 
 
+class FamilyRows(unittest.TestCase):
+    def test_family_rows_have_vietnamese_names_and_sources(self):
+        nodes = bom.node_names()
+        self.assertEqual(nodes["110000"], ("BASE", "Đế / sàn"))
+        rows = bom.master_rows([], [], nodes)
+        for r in rows:
+            if r["row_type"] in ("pod", "assembly") and r.get("group") != "HARDWARE WITH NO NUMBER":
+                self.assertTrue(r.get("name_vi"), r["name"])
+                self.assertTrue(r.get("source_file"), r["name"])
+        pod = rows[0]
+        self.assertEqual((pod["part_number"], pod["name_vi"]), ("100000", "Pod hoàn chỉnh"))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
