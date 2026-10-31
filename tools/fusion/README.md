@@ -45,7 +45,7 @@ def run(_context):
 
 ## Each run imports its own files
 
-Fusion keeps Python modules loaded between runs. A module another team's run imported from its own folder would be used again by any later run that imports the same name: live 2026-10-31, CEILING built from AIR's older module. So before each script, `run_script.py` drops every cached module whose file lies in another run's folders (the folder holding all worktrees, or `/tmp`, where agents' scratch folders live) and not in this run's own repo or script folder. The run prints which ones it dropped. Fusion's and Python's own modules are never touched.
+Fusion keeps Python modules loaded between runs. A module another run imported would be used again by any later run that imports the same name: live 2026-10-31, CEILING built from AIR's older module. So before each script, `run_script.py` drops every cached module whose file is in **any worktree of this repo** (`git worktree list`, main checkout included) or under `/tmp` (agents' scratch worktrees). That includes the run's own modules, so every run imports its files fresh and a team's own edits show on its next run. It prints which ones it dropped. `__main__`, Fusion's and Python's own modules are never touched, and an odd module that can't be read is skipped, never failing the run.
 
 ## Check API names offline
 
