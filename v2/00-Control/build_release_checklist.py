@@ -4,30 +4,33 @@ manufacturing release, part by part.
 
 Doc code V2-CTL-010, revision P01. Standard library only.
 
-Reads, from this working tree or from git refs (same rule as the master BOM: a later ref adds only
-the files its own branch changed):
+Reads, from this working tree or from git refs (the master BOM's rule: a later ref adds only the files its
+own branch changed since it left the first):
   - every team's parts list and the joints register, through v2/04-BOM/build_master_bom.py;
-  - the files in v2/01-CAD-Native, v2/02-Drawings and v2/03-Manufacturing, named
+  - the files in v2/01-CAD-Native, v2/02-Drawings and v2/03-Manufacturing named
     PARTNO_REV_NAME_DOCTYPE.ext (conventions.md section 7);
-  - the FAI plan, v2/06-Verification/fai-plan.md: which characteristics apply to which numbers;
-  - the tests: the wall and door sample's test plan, the joints register's tests and the FAI plan's
-    functional checks.
+  - the FAI plan, v2/06-Verification/fai-plan.md, always from this working tree (the control pack owns it):
+    which characteristics apply to which numbers, and which test accepts each bought part;
+  - the tests: the wall and door sample's test plan, the joints register's tests, the FAI plan's checks.
 Writes v2/00-Control/release-checklist.md, or --out.
 
-A made part or assembly is done when it has native CAD (its own file or its assembly's), STEP, a DXF
-if it is sheet or cut (a cut list if it is tube), a drawing, a BOM row with its mass and, for metal,
-its finish, and FAI characteristics. When the drawing is its only gap and the Mac's screen is locked,
-it is blocked by the locked screen (D-84); otherwise it is open.
-A bought part is done when it has a joints-register row (hardware only, D-63), a maker and SKU that
-aren't on HOLD, and a test. HOLD items are counted apart.
+A made part or assembly is done when it has native CAD (its own file or its assembly's), STEP, a DXF if it
+is sheet or cut from sheet (a cut list if it is tube), its own drawing, a BOM row with its mass and, for
+metal, its finish, and FAI characteristics. A part found only in the folders has no BOM row. When the
+drawing is a made part's only gap and the Mac's screen is locked, the part is blocked by the locked screen:
+the drawing start needs it unlocked (D-84). Otherwise a part with a gap is open.
+A bought part is done when it has a joints-register row (hardware only, D-63), a maker and SKU, and a
+test. Its product is on HOLD when the joints register says so (register numbers), or its parts list does.
 
-Usage:  python3 v2/00-Control/build_release_checklist.py [--ref REF ...] [--out FILE]
+Usage:  python3 v2/00-Control/build_release_checklist.py [--open-prs | --ref REF ...] [--out FILE]
                 [--screen auto|locked|unlocked]
-Nothing here releases anything: it lists what's missing (guideline milestone 4; REQ-DOC-02).
+--open-prs fetches origin and reads origin/main plus every open PR's branch that changes parts.
+Nothing here releases anything: it lists what is missing (guideline milestone 4; REQ-DOC-02).
 """
 import argparse
 import datetime
 import importlib.util
+import json
 import plistlib
 import re
 import subprocess
@@ -44,7 +47,13 @@ SHEET = re.compile(r"\bACP\b|sheet|galvani[sz]ed|DX51D|felt|\bfill\b|foam|\bply\
 TUBE = re.compile(r"\btube\b|\d+\s*x\s*\d+\s*x\s*\d|profile|6063|\bframe\b", re.I)
 METAL = re.compile(r"alumin|steel|zinc", re.I)
 COATED = re.compile(r"galvani|\+Z\b|stainless|\bA2\b|\bzinc\b|plated|anodi[sz]ed|mill finish|powder|painted", re.I)
-SKU = re.compile(r"\b(?=[A-Z0-9.\-]*\d)(?=[A-Z0-9.\-]*[A-Z])[A-Z0-9][A-Z0-9.\-]{3,}\b|\bISO \d{3,}|\bEN \d{3,}")
+SKU = re.compile(r"\b(?=[A-Z0-9.\-]*\d)(?=[A-Z0-9.\-]*[A-Z])[A-Z0-9][A-Z0-9.\-]{3,}\b|\b(?:ISO|EN|DIN) \d{3,}")
+PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD", re.I)
+PRODUCT_NAMED = re.compile(r"\b(?:part|product|system)\b[^;]*\b(?:DECIDED|source)\b", re.I)
+TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
+FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL",
+               "air": "CEILING (builds AIR, D-80)", "interior": "CEILING (builds INTERIOR, D-80)"}
+BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"
 
 
 def load_bom():
@@ -60,35 +69,53 @@ def git(*args):
     return subprocess.run(["git", "-C", str(ROOT), *args], check=True, capture_output=True, text=True).stdout
 
 
+def open_pr_refs(bom):
+    """origin/main, then each open PR's branch that changes a parts list, the joints register or a part's file,
+    oldest first so a newer branch wins for the same path. Also returns {ref: label}."""
+    git("fetch", "-q", "origin")
+    out = subprocess.run(["gh", "pr", "list", "--state", "open", "--limit", "100", "--json", "number,headRefName"],
+                         cwd=ROOT, check=True, capture_output=True, text=True).stdout
+    found = []
+    for p in json.loads(out or "[]"):
+        ref = f"origin/{p['headRefName']}"
+        try:
+            mb = git("merge-base", "origin/main", ref).strip()
+        except subprocess.CalledProcessError:
+            continue  # the branch is gone
+        changed = git("diff", "--name-only", mb, ref, "--", *TREES, "v2/07-Packaging", bom.REGISTER).split()
+        if any(c.endswith("_BOM.csv") or c == bom.REGISTER or FILE_RE.match(c.rsplit("/", 1)[-1]) for c in changed):
+            found.append((int(git("log", "-1", "--format=%ct", ref).strip() or 0), ref, f"PR #{p['number']}"))
+    found.sort()
+    labels = {"origin/main": "main", **{ref: label for _, ref, label in found}}
+    return ["origin/main"] + [ref for _, ref, _ in found], labels
+
+
 def list_files(refs):
-    """Paths in the three trees: the working tree, or the first ref plus each later ref's own changes."""
+    """{path: where} for the three trees: the working tree, or the first ref plus each later ref's own changes."""
     if not refs:
-        out = []
+        out = {}
         for t in TREES:
             base = ROOT / t
             if base.exists():
-                out += [p.relative_to(ROOT).as_posix() for p in base.rglob("*") if p.is_file()]
-        return sorted(out)
-    files = set(git("ls-tree", "-r", "--name-only", refs[0], "--", *TREES).split())
+                out.update({p.relative_to(ROOT).as_posix(): "working tree" for p in base.rglob("*") if p.is_file()})
+        return out
+    files = {f: refs[0] for f in git("ls-tree", "-r", "--name-only", refs[0], "--", *TREES).split()}
     for ref in refs[1:]:
         mb = git("merge-base", refs[0], ref).strip()
-        files |= set(git("diff", "--name-only", "--diff-filter=AM", mb, ref, "--", *TREES).split())
-    return sorted(files)
+        files.update({f: ref for f in git("diff", "--name-only", "--diff-filter=AM", mb, ref, "--", *TREES).split()})
+    return files
 
 
-def read_text(path, refs):
-    try:
-        if refs:
-            for ref in reversed(refs):
-                try:
-                    return git("show", f"{ref}:{path}")
-                except subprocess.CalledProcessError:
-                    continue
-            return ""
-        p = ROOT / path
-        return p.read_text(encoding="utf-8") if p.exists() else ""
-    except Exception:
-        return ""
+def read_text(path, refs, local_first=False):
+    p = ROOT / path
+    if (local_first or not refs) and p.exists():
+        return p.read_text(encoding="utf-8")
+    for ref in reversed(refs):
+        try:
+            return git("show", f"{ref}:{path}")
+        except subprocess.CalledProcessError:
+            continue
+    return ""
 
 
 def screen_state(choice):
@@ -102,24 +129,44 @@ def screen_state(choice):
         return "unknown"
 
 
-def fai_rows(text, bom):
-    rows = []
+def patterns(cell):
+    return [re.compile(p.replace("x", r"\d")) for p in re.findall(r"`([0-9x]{6})`", cell)]
+
+
+def fai_plan(text, bom):
+    """(characteristics [(K-id, patterns)], checks [(F-id, text)], accept [(patterns, [test ids])])."""
+    chars, checks, accept = [], [], []
     for hdr, cells in bom.table_rows(text):
-        if not re.fullmatch(r"[KF]-[A-Z]?\d\d", cells[0]):
-            continue
-        pats = re.findall(r"`([0-9x]{6})`", cells[1]) if cells[0].startswith("K-") else []
-        rows.append((cells[0], [re.compile(p.replace("x", r"\d")) for p in pats], " ".join(cells)))
-    return rows
+        if re.fullmatch(r"K-[A-Z]\d\d", cells[0]) and len(cells) > 1:
+            chars.append((cells[0], patterns(cells[1])))
+        elif re.fullmatch(r"F-\d\d", cells[0]):
+            checks.append((cells[0], " ".join(cells)))
+        elif hdr and hdr[0].strip().lower() == "applies to" and len(cells) > 2:
+            accept.append((patterns(cells[0]), TEST_ID.findall(cells[2])))
+    return chars, checks, accept
 
 
-def test_rows(sample_text, register_text, fai, bom):
+def test_rows(sample_text, register_text, checks, bom):
     rows = []
     for text in (sample_text, register_text):
         for hdr, cells in bom.table_rows(text):
-            if re.fullmatch(r"T\d\d|T-\d\d|J-T\d+", cells[0]):
+            if re.fullmatch(r"T\d\d|J-T\d+", cells[0]):
                 rows.append((cells[0], " ".join(cells)))
-    rows += [(i, t) for i, _, t in fai if i.startswith("F-")]
-    return rows
+    return rows + checks
+
+
+def register_products(register_text, bom):
+    """{part number: 'hold' | 'named' | 'defer'} from the status cell of the joints register's part-number table:
+    its part, strip, product or system on HOLD; named (DECIDED or from a source); or left to the parts list."""
+    status = {}
+    for hdr, cells in bom.table_rows(register_text):
+        if not cells or not re.fullmatch(r"H-\d+\w*", cells[0]):
+            continue
+        m = re.search(r"\*\*(\d{6})\*\*", " ".join(cells[1:2]))
+        if m:
+            last = cells[-1]
+            status[m.group(1)] = "hold" if PRODUCT_HOLD.search(last) else ("named" if PRODUCT_NAMED.search(last) else "defer")
+    return status
 
 
 def files_by_pn(paths):
@@ -131,119 +178,177 @@ def files_by_pn(paths):
     return by
 
 
-def check_parts(parts, register, by_pn, paths, fai, tests, screen, bom):
+def where_of(r, labels):
+    where = r["source_file"].split(" @ ", 1)[-1]
+    ref = where.split(" (", 1)[0]
+    return labels.get(ref, "this tree" if ref == "working tree" else ref)
+
+
+def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts):
+    chars, _, accept = fai
     reg = {i["part_number"]: i for i in register if i["part_number"]}
     cut_lists = [p for p in paths if "CUT-LIST" in p]
-    made, bought, last_unit = [], [], {}
+    made, bought, last_unit, seen = [], [], {}, {}
     for r in parts:
         pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
         unit = src.rsplit("/", 1)[-1][:6]
         if r["make_buy"] == "assembly":
             last_unit[src] = pn
-        holders = [pn, last_unit.get(src, ""), unit]
+        key = (r["team"], pn or r["name"])
+        if key in seen:  # the same part again in this team's lists: one line, every source named
+            seen[key]["from"].add(where_of(r, labels))
+            continue
+        holders = [h for h in (pn, last_unit.get(src, ""), unit) if h]
         if r["make_buy"] in ("make", "assembly"):
             text = " ".join([r["material"], r["process"], r["name"]])
-            has = lambda kind: any(by_pn.get(h, {}).get(kind) for h in holders if h)  # noqa: E731
-            cad, step = has("CAD"), has("STEP")
+            cad = any(by_pn.get(h, {}).get("CAD") for h in holders)
+            step = any(by_pn.get(h, {}).get("STEP") for h in holders)
             if r["make_buy"] == "assembly":
                 flat = "n/a"
             elif SHEET.search(text):
                 flat = "yes" if by_pn.get(pn, {}).get("DXF") else "no"
             elif TUBE.search(text):
                 team_dir = src.rsplit("/", 1)[0] + "/"
-                flat = "yes" if any(c.startswith(team_dir) and pn in read_cache.get(c, "") for c in cut_lists) or r.get("cut_rows") else "no"
+                listed = any(c.startswith(team_dir) and pn in cut_texts.get(c, "") for c in cut_lists)
+                flat = "yes" if listed or r.get("cut_rows") else "no"
             else:
                 flat = "n/a"
             dwg = bool(by_pn.get(pn, {}).get("DWG"))
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"
             metal = METAL.search(r["material"] or "")
-            finish = "n/a" if not metal or r["make_buy"] == "assembly" else ("yes" if r["finish"] or COATED.search(r["material"]) else "no")
-            ids = [i for i, pats, _ in fai if any(p.fullmatch(pn) for p in pats)]
+            finish = "n/a" if not metal or r["make_buy"] == "assembly" else (
+                "yes" if r["finish"] or COATED.search(r["material"]) else "no")
+            ids = [i for i, pats in chars if any(p.fullmatch(pn) for p in pats)]
             gaps = [n for n, ok in (("CAD", cad), ("STEP", step), ("DXF or cut list", flat != "no"), ("drawing", dwg),
                                     ("mass", mass), ("finish", finish != "no"), ("FAI", bool(ids))) if not ok]
-            if not gaps:
-                state = "done"
-            elif gaps == ["drawing"] and screen == "locked":
-                state = "blocked: the drawing waits for the unlocked screen (D-84)"
-            else:
-                state = "open: " + ", ".join(gaps)
-            made.append({**r, "cad": cad, "step": step, "flat": flat, "dwg": dwg, "mass_ok": mass, "finish_ok": finish,
-                         "fai": ids, "state": state})
+            line = {**r, "bom_row": True, "cad": cad, "step": step, "flat": flat, "dwg": dwg, "mass_ok": mass,
+                    "finish_ok": finish, "fai": ids, "gaps": gaps, "from": {where_of(r, labels)}}
+            line["state"] = state_of(gaps, screen)
+            made.append(line)
+            seen[key] = line
         elif r["make_buy"] == "buy":
-            fam = pn[:2] if re.fullmatch(r"\d{6}", pn) else ""
-            hw = fam not in bom.NOT_HARDWARE
+            hw = bom.family_of(pn) not in bom.NOT_HARDWARE
             in_reg = (pn in reg) if hw else None
+            given = reg_status.get(pn, "defer")  # the register wins where it states the product (D-63)
+            hold = given == "hold" or (given == "defer" and bool(r["hold"]))
             words = " ".join([r["name"], r["material"]])
-            sku = "HOLD" if r["hold"] else ("yes" if SKU.search(words) else "no")
+            sku = "HOLD" if hold else ("yes" if given == "named" or SKU.search(words) else "no")
             rid = reg.get(pn, {}).get("id", "")
-            keys = [k for k in [pn, rid] + SKU.findall(words) if k and len(k) >= 4]
-            found = sorted({tid for tid, t in tests if any(k in t for k in keys)})
-            gaps = [n for n, ok in (("register row", in_reg is not False), ("maker and SKU", sku == "yes"), ("test", bool(found))) if not ok]
+            found = {t for pats, ids in accept if any(p.fullmatch(pn) for p in pats) for t in ids}
+            found |= {tid for tid, t in tests if pn and (re.search(rf"\b{pn}\b", t) or (rid and re.search(rf"\b{rid}\b", t)))}
+            gaps = [n for n, ok in (("register row", in_reg is not False), ("maker and SKU", sku == "yes"),
+                                    ("test", bool(found))) if not ok]
             state = "HOLD" if sku == "HOLD" else ("done" if not gaps else "open: " + ", ".join(gaps))
-            bought.append({**r, "in_reg": in_reg, "rid": rid, "sku": sku, "tests": found, "state": state})
+            line = {**r, "in_reg": in_reg, "rid": rid, "sku": sku, "tests": sorted(found), "state": state,
+                    "from": {where_of(r, labels)}}
+            bought.append(line)
+            seen[key] = line
     return made, bought
 
 
-read_cache = {}
+def state_of(gaps, screen):
+    if not gaps:
+        return "done"
+    if gaps == ["drawing"] and screen == "locked":
+        return BLOCKED
+    return "open: " + ", ".join(gaps)
+
+
+def files_only(by_pn, parts, files, labels, screen):
+    """Made parts found in the folders whose number no parts list carries: no BOM row."""
+    listed = {r["part_number"] for r in parts}
+    out = []
+    for pn, kinds in sorted(by_pn.items()):
+        if pn in listed or pn == "100000" or not ({"CAD", "STEP", "DXF", "DWG"} & set(kinds)):
+            continue
+        some = next(p for ps in kinds.values() for p in ps)
+        team = next((FOLDER_TEAM[s] for s in some.split("/") if s in FOLDER_TEAM), "other")
+        names = {re.sub(FILE_RE, r"\3", p.rsplit("/", 1)[-1]) for ps in kinds.values() for p in ps}
+        gaps = ["BOM row"] + [k for k, n in (("CAD", "CAD"), ("STEP", "STEP"), ("drawing", "DWG")) if not kinds.get(n)]
+        out.append({"part_number": pn, "name": sorted(names)[0].replace("-", " "), "team": team, "bom_row": False,
+                    "cad": bool(kinds.get("CAD")), "step": bool(kinds.get("STEP")), "flat": "yes" if kinds.get("DXF") else "—",
+                    "dwg": bool(kinds.get("DWG")), "mass_ok": False, "finish_ok": "—", "fai": [], "gaps": gaps,
+                    "state": state_of(gaps, screen),
+                    "from": {labels.get(files[p], "this tree" if files[p] == "working tree" else files[p])
+                             for ps in kinds.values() for p in ps}})
+    return out
 
 
 def yn(v):
     return "yes" if v is True else ("no" if v is False else str(v))
 
 
-def render(made, bought, register, teams_no_list, refs, screen, files_seen, fai_count):
-    today = datetime.date.today().isoformat()
+def counts(lines):
+    return (sum(r["state"] == "done" for r in lines), sum(r["state"].startswith("open") for r in lines),
+            sum(r["state"].startswith("blocked") for r in lines), sum(r["state"] == "HOLD" for r in lines))
+
+
+def render(made, bought, register, no_list, ref_note, screen, files, fai, today):
+    chars, checks, accept = fai
     out = ["# Release checklist: Spaceship (FocusPod v2)", "",
            "| Doc code | Revision | Status | Date | Owner |", "|---|---|---|---|---|",
            f"| V2-CTL-009 | P01 | DRAFT, written by `build_release_checklist.py` | {today} | Control pack |", "",
-           "What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). "
-           "Re-run it whenever parts merge.", "",
-           f"Read from: {', '.join(f'`{r}`' for r in refs) if refs else 'this working tree'}. "
-           f"The Mac's screen at run time: **{screen}**. {len(files_seen)} files in the CAD, drawing and manufacturing folders; {fai_count} FAI plan lines.", "",
-           "**Done** means every item is in. **Blocked** means only the drawing is missing while the screen is locked (D-84). **HOLD** means the product isn't named yet.", "",
+           "What stands between the design and a manufacturing release, part by part. Nothing here is released "
+           "(guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.", "",
+           f"Read from: {ref_note}. The Mac's screen at run time: **{screen}**. {len(files)} files in the CAD, drawing "
+           f"and manufacturing folders; the FAI plan's {len(chars)} characteristics, {len(checks)} functional checks and "
+           f"{len(accept)} bought-part test lines.", "",
+           "**Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. "
+           "**Open**: something missing that can be done now. **Blocked**: only the drawing is "
+           "missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.", "",
            "## Totals per team", "",
-           "| Team | Made: done | Made: open | Made: blocked | Bought: done | Bought: open | Bought: HOLD |", "|---|---:|---:|---:|---:|---:|---:|"]
-    teams = sorted({r["team"] for r in made + bought} | set(teams_no_list))
+           "| Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |",
+           "|---|---:|---:|---:|---:|---:|---:|"]
+    teams = sorted({r["team"] for r in made + bought} | set(no_list))
     for t in teams:
         m = [r for r in made if r["team"] == t]
         b = [r for r in bought if r["team"] == t]
-        if t in teams_no_list and not m and not b:
+        if not m and not b:
             out.append(f"| {t} | — | — | — | — | — | — |")
             continue
-        out.append(f"| {t} | {sum(r['state'] == 'done' for r in m)} | {sum(r['state'].startswith('open') for r in m)} | "
-                   f"{sum(r['state'].startswith('blocked') for r in m)} | {sum(r['state'] == 'done' for r in b)} | "
-                   f"{sum(r['state'].startswith('open') for r in b)} | {sum(r['state'] == 'HOLD' for r in b)} |")
-    tm = sum(len([r for r in made]) for _ in [0])
-    out.append(f"| **All** | {sum(r['state'] == 'done' for r in made)} | {sum(r['state'].startswith('open') for r in made)} | "
-               f"{sum(r['state'].startswith('blocked') for r in made)} | {sum(r['state'] == 'done' for r in bought)} | "
-               f"{sum(r['state'].startswith('open') for r in bought)} | {sum(r['state'] == 'HOLD' for r in bought)} |")
-    if teams_no_list:
-        out += ["", "No parts list yet: " + ", ".join(sorted(teams_no_list)) + "."]
+        md, mo, mb, _ = counts(m)
+        bd, bo, _, bh = counts(b)
+        out.append(f"| {t} | {md} | {mo} | {mb} | {bd} | {bo} | {bh} |")
+    um = list({r["part_number"] or r["name"]: r for r in made}.values())
+    ub = list({r["part_number"] or r["name"]: r for r in bought}.values())
+    md, mo, mb, _ = counts(um)
+    bd, bo, _, bh = counts(ub)
+    out.append(f"| **All, each number once** | {md} | {mo} | {mb} | {bd} | {bo} | {bh} |")
+    if no_list:
+        out += ["", "No parts list yet: " + ", ".join(sorted(no_list)) + "."]
+    only_dwg = sum(r["gaps"] == ["drawing"] for r in um)
+    no_dwg = sum("drawing" in r["gaps"] for r in um)
+    out += ["", f"{no_dwg} of the {len(um)} made numbers have no drawing yet; for {only_dwg} of them the drawing is the only "
+                f"gap, so {'they wait for the unlocked screen' if screen == 'locked' else 'their drawings can start now'} (D-84)."]
+    gap_count = {}
+    for r in um:
+        for g in r["gaps"]:
+            gap_count[g] = gap_count.get(g, 0) + 1
+    if gap_count:
+        out += ["", "What the open made numbers miss: " + ", ".join(f"{g} {n}" for g, n in
+                                                                  sorted(gap_count.items(), key=lambda x: -x[1])) + "."]
     out += ["", "## Made parts and assemblies", ""]
     for t in teams:
         m = [r for r in made if r["team"] == t]
         if not m:
             continue
-        out += [f"### {t}", "", "| Part | Name | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |",
-                "|---|---|---|---|---|---|---|---|---|---|"]
+        out += [f"### {t}", "", "| Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |",
+                "|---|---|---|---|---|---|---|---|---|---|---|---|"]
         for r in m:
-            out.append(f"| {r['part_number'] or '(no number)'} | {r['name']} | {yn(r['cad'])} | {yn(r['step'])} | {r['flat']} | {yn(r['dwg'])} | "
-                       f"{yn(r['mass_ok'])} | {r['finish_ok']} | {', '.join(r['fai']) or 'no'} | {r['state']} |")
+            out.append(f"| {r['part_number'] or '(no number)'} | {r['name']} | {', '.join(sorted(r['from']))} | {yn(r['bom_row'])} | "
+                       f"{yn(r['cad'])} | {yn(r['step'])} | {r['flat']} | {yn(r['dwg'])} | {yn(r['mass_ok'])} | {r['finish_ok']} | "
+                       f"{', '.join(r['fai']) or 'no'} | {r['state']} |")
         out.append("")
     out += ["## Bought parts", ""]
     for t in teams:
         b = [r for r in bought if r["team"] == t]
         if not b:
             continue
-        out += [f"### {t}", "", "| Part | Name | Register | Maker and SKU | Test | State |", "|---|---|---|---|---|---|"]
-        seen = set()
+        out += [f"### {t}", "", "| Part | Name | From | Register | Maker and SKU | Test | State |", "|---|---|---|---|---|---|---|"]
         for r in b:
-            key = (r["part_number"], r["name"])
-            if key in seen:
-                continue
-            seen.add(key)
-            reg = "n/a (team-numbered)" if r["in_reg"] is None else (r["rid"] or "yes") if r["in_reg"] else "no"
-            out.append(f"| {r['part_number'] or '(no number)'} | {r['name']} | {reg} | {r['sku']} | {', '.join(r['tests']) or 'no'} | {r['state']} |")
+            reg = "n/a (team-numbered)" if r["in_reg"] is None else ((r["rid"] or "yes") if r["in_reg"] else "no")
+            out.append(f"| {r['part_number'] or '(no number)'} | {r['name']} | {', '.join(sorted(r['from']))} | {reg} | {r['sku']} | "
+                       f"{', '.join(r['tests']) or 'no'} | {r['state']} |")
         out.append("")
     used = {r["part_number"] for r in made + bought}
     spare = [i for i in register if i["part_number"] and i["part_number"] not in used]
@@ -252,40 +357,55 @@ def render(made, bought, register, teams_no_list, refs, screen, files_seen, fai_
         out += [f"| {i['part_number']} | {i['id']} | {i['name']} |" for i in spare]
         out.append("")
     out += ["## How it's built", "",
-            "`python3 v2/00-Control/build_release_checklist.py` reads the parts lists and the joints register through the master BOM's reader, the files named "
-            "`PARTNO_REV_NAME_DOCTYPE.ext` in `v2/01-CAD-Native`, `v2/02-Drawings` and `v2/03-Manufacturing`, the FAI plan's patterns and the test plans. "
-            "A part's CAD and STEP may sit in its assembly's file; its DXF and drawing must carry its own number. `--ref origin/main --ref origin/BRANCH` "
-            "shows open branches without merging them.", ""]
+            "`python3 v2/00-Control/build_release_checklist.py --open-prs` reads origin/main and every open PR that changes "
+            "parts, through the master BOM's reader (a later branch adds only the files it changed), the files named "
+            "`PARTNO_REV_NAME_DOCTYPE.ext` in `v2/01-CAD-Native`, `v2/02-Drawings` and `v2/03-Manufacturing`, the FAI plan "
+            "(`v2/06-Verification/fai-plan.md`) and the test plans. Without `--open-prs` it reads this working tree.", "",
+            "- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing must carry its own number.",
+            "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
+            "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
+            "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
+            "that names the number or its register ID.",
+            "- A register number's product status comes from the joints register: on HOLD, or named (DECIDED or from a source), "
+            "or left to the parts list; a team number's from its parts list.", ""]
     return "\n".join(out)
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Build the release checklist")
     ap.add_argument("--ref", action="append", default=[])
+    ap.add_argument("--open-prs", action="store_true", help="read origin/main and the open PRs' branches")
     ap.add_argument("--out", default=str(HERE / "release-checklist.md"))
     ap.add_argument("--screen", default="auto", choices=["auto", "locked", "unlocked"])
+    ap.add_argument("--date", default=datetime.date.today().isoformat())
     a = ap.parse_args(argv)
     bom = load_bom()
-    sources = bom.load_sources(a.ref)
+    refs, labels = (open_pr_refs(bom) if a.open_prs else (a.ref, {}))
+    if refs:
+        shas = {r: git("rev-parse", "--short", r).strip() for r in refs}
+        ref_note = ", ".join(f"{labels.get(r, r)} ({shas[r]})" for r in refs)
+    else:
+        ref_note = "this working tree"
+    sources = bom.load_sources(refs)
     parts, skipped, register, reg_where = bom.build(sources)
-    # Rows of kind 'cut' (a frame's cut lengths) were skipped by the reader: mark the frames that have them.
-    for path, (text, _) in sources.items():
+    for path, (text, _) in sources.items():  # a frame whose list carries its cut rows has its cut list
         if path.endswith("_BOM.csv") and re.search(r"^\d*,?,[^\n]*,cut,", text, re.M | re.I):
             for r in parts:
                 if r["source_file"].startswith(path) and TUBE.search(r["material"] or ""):
                     r["cut_rows"] = True
-    paths = list_files(a.ref)
-    for p in paths:
-        if "CUT-LIST" in p:
-            read_cache[p] = read_text(p, a.ref)
-    fai = fai_rows(read_text(FAI, a.ref), bom)
-    tests = test_rows(read_text(TEST_PLAN, a.ref), sources.get(bom.REGISTER, ("", ""))[0], fai, bom)
+    files = list_files(refs)
+    cut_texts = {p: read_text(p, refs) for p in files if "CUT-LIST" in p}
+    fai = fai_plan(read_text(FAI, refs, local_first=True), bom)
+    register_text = sources.get(bom.REGISTER, ("", ""))[0]
+    tests = test_rows(read_text(TEST_PLAN, refs), register_text, fai[1], bom)
     screen = screen_state(a.screen)
-    made, bought = check_parts(parts, register, files_by_pn(paths), paths, fai, tests, screen, bom)
-    read_paths = [p for p in sources if p != bom.REGISTER and p not in {s[0] for s in skipped}]
+    by_pn = files_by_pn(files)
+    made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
+                               screen, bom, labels, cut_texts)
+    made += files_only(by_pn, parts, files, labels, screen)
     listed = {r["team"] for r in parts}
-    no_list = [t for t, folder in bom.EXPECTED_FOLDERS.items() if t not in listed and t != "Packing and Assembly"]
-    Path(a.out).write_text(render(made, bought, register, no_list, a.ref, screen, paths, len(fai)), encoding="utf-8")
+    no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
+    Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date), encoding="utf-8")
     done = sum(r["state"] == "done" for r in made + bought)
     print(f"release checklist: {len(made)} made lines, {len(bought)} bought lines, {done} done; screen {screen}; written to {a.out}")
     return 0
