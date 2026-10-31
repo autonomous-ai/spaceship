@@ -96,8 +96,10 @@ SHELL_ZONES = [
     ("top", 2, 2400.0, -1, (0, -1250.0, 1250.0), (1, -645.0, 850.0), None),
     # the base zone (Z 10 to 110) once the BASE assembly exists; Z 0 to 10 is the glide gap
     ("back-base", 1, 850.0, -1, (0, -1250.0, 1250.0), (2, 10.0, 110.0), "v2/03-Manufacturing/base/*.step"),
-    ("left-base", 0, -1250.0, +1, (1, -850.0, 850.0), (2, 10.0, 110.0), "v2/03-Manufacturing/base/*.step"),
-    ("right-base", 0, 1250.0, -1, (1, -850.0, 850.0), (2, 10.0, 110.0), "v2/03-Manufacturing/base/*.step"),
+    # the side faces start where the walls do: in front of Y -645 the outline is v1's faceted front, which
+    # follows the decor blocks and is checked exactly in Fusion, not on a flat face
+    ("left-base", 0, -1250.0, +1, (1, -645.0, 850.0), (2, 10.0, 110.0), "v2/03-Manufacturing/base/*.step"),
+    ("right-base", 0, 1250.0, -1, (1, -645.0, 850.0), (2, 10.0, 110.0), "v2/03-Manufacturing/base/*.step"),
 ]
 
 
