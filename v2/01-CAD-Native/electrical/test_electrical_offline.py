@@ -14,6 +14,8 @@ Checks:
   numbers), never a reserved old number (D-28);
 - every 12 V path stays within 3 % voltage drop; every supply within its 60 W;
 - connector counts in the parts list match the harness list's plug ends;
+- the flat plates (711002, 711005) meet D-89 part 4 as the mechanical check reads it: their DXF
+  writer draws only on the CUT layer, in mm, with every circle; their parts-list rows lack nothing;
 - the generated documents are up to date (electrical_docs.py --check).
 """
 
@@ -41,7 +43,7 @@ class Model(unittest.TestCase):
 
     def test_skeleton_values_match_csv(self):
         path = os.path.join(REPO, "v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON-PARAMETERS.csv")
-        rows = {r["parameter"]: float(r["value_mm"]) for r in csv.DictReader(open(path, encoding="utf-8"))}
+        rows = {r["parameter"]: float(r.get("value", r.get("value_mm"))) for r in csv.DictReader(open(path, encoding="utf-8"))}
         for k in M.SKELETON_PARAMS:
             self.assertAlmostEqual(rows[k], M.SKELETON_VALUES[k], places=6, msg=k)
 
@@ -151,6 +153,40 @@ class Parts(unittest.TestCase):
              + 10 * EP.P["plug10"]["qty_per_parent"])
         self.assertEqual(EP.P["term_f"]["qty_per_parent"], f)
         self.assertEqual(EP.P["term_m"]["qty_per_parent"], m)
+
+
+class FlatParts(unittest.TestCase):
+    """D-89 part 4, read with the mechanical check's own code (tools/checks)."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, os.path.join(REPO, "tools", "checks"))
+        import c_drawings
+        import dxf_layers
+        import flat_dxf
+        cls.cd, cls.dl, cls.fd = c_drawings, dxf_layers, flat_dxf
+
+    def test_dxf_writer_draws_only_on_cut_in_mm(self):
+        import tempfile
+        lines = [((0, 0), (180, 0)), ((180, 0), (180, 180)), ((180, 180), (0, 180)), ((0, 180), (0, 0))]
+        circles = [((10, 10), 2.25), ((50, 50), 8.1), ((150, 50), 3.75)]
+        text = self.fd.dxf_text(lines, circles)
+        self.assertEqual(self.dl.drawn_layers(text), {"CUT"})
+        self.assertEqual(self.dl.other_layers(text), set())
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "x.dxf")
+            self.fd.write(path, lines, circles)
+            d = self.cd.dxf_summary(path)
+        self.assertEqual(d["units"], "4")
+        self.assertEqual(sorted(d["circles"]), [4.5, 7.5, 16.2])
+
+    def test_plate_rows_lack_nothing(self):
+        for pn in ("711002", "711005"):
+            self.assertEqual(self.cd.flat_row_lacks(REPO, pn), [], pn)
+
+    def test_folded_body_is_not_read_as_flat(self):
+        lacks = self.cd.flat_row_lacks(REPO, "711001")
+        self.assertTrue(any(x.startswith("no bends or machined features") for x in lacks), lacks)
 
 
 class Docs(unittest.TestCase):

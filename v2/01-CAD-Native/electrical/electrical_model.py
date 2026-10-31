@@ -29,6 +29,7 @@ SKELETON_DOC = "100000_P04_POD-SKELETON_CAD"
 SKELETON_PARAMS = [
     "pod_w", "pod_d", "pod_h", "outer_t", "cav_gap", "cass_t", "stack_t", "seam_gap",
     "lin_gap", "wall_depth", "side_h", "back_ph", "back_oh", "half_pw", "panel_z0",
+    "dt_zb",
 ]
 
 PM = "PM ruling 2026-10-31 in the ELECTRICAL group"
@@ -100,7 +101,7 @@ PARAMS = [
     ("col_y0", "pod_d / 2 - wall_depth", "mm", "calculation", "air column front face, against the decor back plate, Y -645"),
     ("col_y1", "col_y0 + col_d", "mm", "calculation", "air column back face (into the pod), Y -285"),
     ("col_x0", "x_rf - col_w", "mm", "calculation", "air column left face, X 949"),
-    ("col_z1", "2120 mm", "mm", "DECIDED", "D-61: the soffit's underside, the top of the air column (Z 15 to 2120)"),
+    ("col_z1", "dt_zb", "mm", "DECIDED", "D-61: the soffit's underside, the top of the air column (Z 15 to 2120) = skeleton dt_zb, the top decor's bottom edge (named value, skeleton v4)"),
     ("col_skin", "1 mm", "mm", "assumption", "column casing in front of its 30 mm fill (CEILING models the column)"),
     ("ch_w", "24 mm", "mm", "assumption", "cable chase in the column's fill, 24 x 24, behind its back face and against the right wall"),
     ("ch_off", "2 mm", "mm", "assumption", "chase clear of the right lining's felt face"),
@@ -128,6 +129,7 @@ SKELETON_VALUES = {
     "pod_w": 2500.0, "pod_d": 1700.0, "pod_h": 2400.0, "outer_t": 46.0, "cav_gap": 4.0, "cass_t": 34.0,
     "stack_t": 84.0, "seam_gap": 2.26, "lin_gap": 4.0, "wall_depth": 1495.0, "side_h": 1142.74,
     "back_ph": 1118.61, "back_oh": 2239.48, "half_pw": 1200.61, "panel_z0": 112.26,
+    "dt_zb": 2120.0,
 }
 
 _MM = re.compile(r"(\d)\s*mm\b")
