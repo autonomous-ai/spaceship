@@ -14,6 +14,7 @@ import zlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+sys.path.insert(0, os.path.join(HERE, "..", "..", "..", "tools", "fusion"))
 import ga_pdf_check as pc  # noqa: E402
 
 RAW = 1.0 / (0.06 * pc.PT_MM)          # PDF units per sheet mm under Fusion's 0.06 cm
@@ -66,36 +67,60 @@ class ReadBackTests(unittest.TestCase):
 
 
 class ProbeTests(unittest.TestCase):
-    def run_probe(self, drawn):
-        """drawn: {case label: [path, ...]}; the cases are the probe script's own."""
-        spec = {"cases": [["01 2pt", [[[20, 20], [50, 50]]], False],
-                          ["02 2pt x5", [[[20 + 12 * k, 70], [30 + 12 * k, 90]] for k in range(5)], False],
-                          ["06 mid x5", [[[20 + 12 * k, 110], [25 + 12 * k, 120], [30 + 12 * k, 130]]
-                                         for k in range(5)], False]]}
+    @staticmethod
+    def spec():
+        """Probe cases like the probe script's: per form, five lines, a hatch, a thin strip."""
+        import hatch
+        out = []
+        for r, form in enumerate(("plain", "mid", "dup-first", "dup-last")):
+            y = 20.0 + 60.0 * r
+            out.append(["%s small x5" % form, [hatch.chain_for((20.0 + 12 * k, y), (30.0 + 12 * k, y + 20), form)
+                                               for k in range(5)], False])
+            sq = [(100.0, y), (120.0, y), (120.0, y + 20.0), (100.0, y + 20.0)]
+            out.append(["%s many" % form, [hatch.chain_for(a, b, form) for a, b in
+                                           hatch.hatch_segments(sq, spacing=0.7)], False])
+            strip = [(140.0, y), (170.0, y), (170.0, y + 0.44), (140.0, y + 0.44)]
+            out.append(["%s thin" % form, [hatch.chain_for(a, b, form) for a, b in
+                                           hatch.hatch_segments(strip, spacing=0.5, angle_deg=135.0)], False])
+        return out
+
+    def run_probe(self, drawn_for):
+        """drawn_for(label, chains) -> the paths Fusion "drew" for that case."""
+        spec = self.spec()
         d = tempfile.mkdtemp()
         pdf = os.path.join(d, "probe.pdf")
         with open(pdf, "wb") as fh:
-            fh.write(fake_pdf({"PROBE " + k: v for k, v in drawn.items()}))
+            fh.write(fake_pdf({"PROBE " + label: drawn_for(label, chains) for label, chains, _own in spec}))
         with open(pdf + ".json", "w") as fh:
-            json.dump(spec, fh)
+            json.dump({"cases": spec}, fh)
         out = os.path.join(d, "mode.json")
         mode = pc.probe(pdf, out)
         with open(out) as fh:
             self.assertEqual(json.load(fh)["mode"], mode)
         return mode
 
+    @staticmethod
+    def as_asked(chains):
+        return [[("m", tuple(ch[0]))] + [("l", tuple(p)) for p in ch[1:]] for ch in chains]
+
     def test_plain_lines_that_come_out_right(self):
-        mode = self.run_probe({"01 2pt": [seg_path((20, 20), (50, 50))],
-                               "02 2pt x5": [seg_path((20 + 12 * k, 70), (30 + 12 * k, 90)) for k in range(5)]})
-        self.assertEqual(mode, "plain")
+        self.assertEqual(self.run_probe(lambda label, chains: self.as_asked(chains)), "plain")
+
+    def test_a_form_that_breaks_only_with_many_lines_is_not_taken(self):
+        # the B-B hatch had 230 lines in one sketch: five good lines aren't proof enough
+        def drawn(label, chains):
+            if label == "plain many":
+                return [[("m", (100, 20)), ("l", (100, 20.4)), ("l", (100, 20))]]
+            return self.as_asked(chains)
+        self.assertEqual(self.run_probe(drawn), "mid")
 
     def test_scraps_like_the_live_b_b_hatch_are_not_taken_for_lines(self):
         # live 2026-10-31: 2-point lines came out as short vertical back-and-forth pieces
-        scraps = [[("m", (50, 20)), ("l", (50, 20.4)), ("l", (50, 20)), ("l", (50, 20.4))]]
-        mode = self.run_probe({"01 2pt": scraps, "02 2pt x5": scraps,
-                               "06 mid x5": [[("m", (20 + 12 * k, 110)), ("l", (25 + 12 * k, 120)),
-                                              ("l", (30 + 12 * k, 130))] for k in range(5)]})
-        self.assertEqual(mode, "mid")
+        def drawn(label, chains):
+            if label.startswith("mid"):
+                return self.as_asked(chains)
+            return [[("m", (50, 20)), ("l", (50, 20.4)), ("l", (50, 20)), ("l", (50, 20.4))]]
+        self.assertEqual(self.run_probe(drawn), "mid")
 
     def test_no_probe_export_gives_none(self):
         out = os.path.join(tempfile.mkdtemp(), "mode.json")
@@ -104,7 +129,7 @@ class ProbeTests(unittest.TestCase):
             self.assertEqual(json.load(fh)["mode"], "none")
 
     def test_nothing_right_gives_none(self):
-        self.assertEqual(self.run_probe({"01 2pt": [seg_path((0, 0), (1, 0))]}), "none")
+        self.assertEqual(self.run_probe(lambda label, chains: [seg_path((0, 0), (1, 0))]), "none")
 
 
 class SheetCheckTests(unittest.TestCase):

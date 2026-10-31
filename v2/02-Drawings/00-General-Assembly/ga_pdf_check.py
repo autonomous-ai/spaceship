@@ -4,6 +4,7 @@
     python3 ga_pdf_check.py probe PROBE.pdf OUT.json   # which point form Lines.add keeps
     python3 ga_pdf_check.py hatch DRAWING.pdf "HATCH - SECTION BB" [--min 200]
     python3 ga_pdf_check.py symbol DRAWING.pdf
+    python3 ga_pdf_check.py need-mode OUT.json      # exit 0 if a hatch can be drawn
 
 Why: the drawing sketch Lines.add is a preview API, and what it keeps differs
 from what was asked. Live 2026-10-31: GA sheet 1's closed 5-point first-angle
@@ -12,9 +13,10 @@ vertical scraps, while the script saw every add succeed. Fusion's PDF export
 puts each drawing sketch on its own layer (an optional content group named
 after the sketch), so the lines can be read back from the PDF and checked.
 
-probe: reads the export of the probe cases (img/probe_lines.py in the session
-scratchpad; the cases come with the PDF as PDF.json) and picks the first form
-whose cases come out exactly as asked:
+probe: reads the export of the probe cases (ga_line_probe.py; the cases come
+with the PDF as PDF.json) and picks the first form
+whose cases (five lines, a 40-line hatch, tiny lines in a thin strip) all come
+out exactly as asked:
   plain      [a, b]
   mid        [a, middle, b]
   dup-first  [a, a, b]
@@ -125,10 +127,14 @@ def merge_collinear(segs, tol=TOL):
                     if math.dist(q, r) > tol:
                         continue
                     u, v = (q[0] - p[0], q[1] - p[1]), (s[0] - r[0], s[1] - r[1])
-                    lu, lv = math.hypot(*u), math.hypot(*v)
-                    if lu < 1e-9 or lv < 1e-9:
+                    w = (s[0] - p[0], s[1] - p[1])
+                    lw = math.hypot(*w)
+                    if math.hypot(*u) < 1e-9 or math.hypot(*v) < 1e-9 or lw < 1e-9:
                         continue
-                    if abs(u[0] * v[1] - u[1] * v[0]) / (lu * lv) < 1e-3 and u[0] * v[0] + u[1] * v[1] > 0:
+                    # one straight line when the joint lies on p-s (0.05 mm: the PDF
+                    # rounds to 0.02 mm, so short pieces can't be held to an angle)
+                    off = abs(w[0] * (q[1] - p[1]) - w[1] * (q[0] - p[0])) / lw
+                    if off < 0.05 and u[0] * v[0] + u[1] * v[1] > 0:
                         segs[i] = (p, s)
                         del segs[j]
                         changed = True
@@ -161,8 +167,13 @@ def chain_segments(chains):
             if math.dist(ch[i], ch[i + 1]) >= 0.02]
 
 
-MODES = [("plain", ("01 2pt", "02 2pt x5")), ("mid", ("06 mid x5",)), ("dup-first", ("07 dup first x5",)),
-         ("dup-last", ("08 dup last x5",)), ("own-sketch", ("09 2pt own sketch x5",))]
+# a form is taken when all its cases come out exactly as asked: five separate lines, a
+# hatch of about 40 lines in one sketch, and tiny lines in a 0.44 mm strip (the B-B walls)
+MODES = [(f, ("%s small x5" % f, "%s many" % f, "%s thin" % f)) for f in ("plain", "mid", "dup-first", "dup-last")] \
+    + [("own-sketch", ("own sketch x5",))]
+
+
+USABLE = ("plain", "mid", "dup-first", "dup-last")       # forms a hatch (thousands of lines) can use
 
 
 def probe(pdf_path, out_path):
@@ -198,7 +209,7 @@ def check_hatch(pdf_path, layer, min_segments=1, angles=(45.0, 135.0)):
     with open(pdf_path, "rb") as fh:
         lay = layers(fh.read())
     paths = lay.get(layer, [])
-    segs = merge_collinear(segments(paths)) if len(paths) < 400 else segments(paths)
+    segs = segments(paths)              # each piece keeps its line's angle; no need to join them
     bad = [s for s in segs if min(abs(((math.degrees(math.atan2(s[1][1] - s[0][1], s[1][0] - s[0][0])) % 180)
                                        - a)) for a in angles) > 1.0 and math.dist(*s) > 0.3]
     problems = []
@@ -233,6 +244,11 @@ def main(argv):
     if len(argv) >= 3 and argv[0] == "probe":
         probe(argv[1], argv[2])
         return 0
+    if len(argv) >= 2 and argv[0] == "need-mode":      # exit 0 when the probe found a form for hatch lines
+        with open(argv[1], encoding="utf-8") as fh:
+            mode = json.load(fh)["mode"]
+        print("line mode %r: %s" % (mode, "hatch can be drawn" if mode in USABLE else "no hatch this time"))
+        return 0 if mode in USABLE else 1
     if len(argv) >= 3 and argv[0] == "hatch":
         n = int(argv[argv.index("--min") + 1]) if "--min" in argv else 1
         problems = check_hatch(argv[1], argv[2], n)
