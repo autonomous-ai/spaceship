@@ -181,8 +181,22 @@ def frame_members():
     return M
 
 
+# part-only designs for the part drawings (a base view shows its whole design): the full block is built and checked,
+# then every other component is removed
+SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN"}
+
+
+def scope_doc(scope):
+    if scope == "assy":
+        return DOC_NAME
+    pn, nm, _vn = PARTS[SCOPES[scope]]
+    return "%s_%s_%s_CAD" % (pn, REV, nm.replace(" - ", "-").replace(" ", "-"))
+
+
 def build(app):
-    design = L.start_design(app, PN, "%s | %s | %s" % (NAME, VN, REV))
+    scope = ARGS.get("scope", "assy")
+    rpn, rname, rvn = (PN, NAME, VN) if SCOPES[scope] is None else PARTS[SCOPES[scope]]
+    design = L.start_design(app, rpn, "%s | %s | %s" % (rname, rvn, REV))
     sk_params, sk_path, sk_rev = L.load_skeleton_params(ARGS["repo_root"])
     L.add_params(design, sk_params)
     L.add_params(design, L.LIB_PARAMS)
@@ -312,6 +326,12 @@ def build(app):
     print("DL box", L.box(root))
     if bad or loose or bad_clash:
         raise RuntimeError("DL checks failed (unhealthy %s, loose %s, clashes %s)" % (bad, loose, bad_clash))
+    if SCOPES[scope] is not None:
+        keep = PARTS[SCOPES[scope]][0]
+        for occ in [root.occurrences.item(i) for i in range(root.occurrences.count)]:
+            if occ.component.partNumber != keep:
+                occ.deleteMe()
+        print("scope %s: kept %s only, %d components left" % (scope, keep, root.occurrences.count))
 
 
 ANCHORS = [
@@ -402,9 +422,13 @@ def run(_context):
     app = adsk.core.Application.get()
     step = ARGS.get("step", "build")
     doc = app.activeDocument
-    if doc is None or not doc.name.startswith(DOC_NAME):
+    scope = ARGS.get("scope", "assy")
+    want_doc = scope_doc(scope)
+    if doc is None or not doc.name.startswith(want_doc):
         raise RuntimeError("active document is %r, not %s: open it with the runner's --doc" % (
-            doc.name if doc else None, DOC_NAME))
+            doc.name if doc else None, want_doc))
+    if scope != "assy" and step != "build":
+        raise RuntimeError("a part-only design is only built (the runner's --save keeps it)")
     design = adsk.fusion.Design.cast(app.activeProduct)
     if step == "post" and not any(c.partNumber == FRAME_PN for c in design.allComponents):
         print("the saved design has no frame yet (stage 1): rebuilding it with the frame first")

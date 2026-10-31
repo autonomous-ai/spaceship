@@ -139,3 +139,51 @@ SPECS["dr_skin"] = {
                    "factory coil coating (D-12)", "1:10", "A2"),
 }
 
+SPECS["dt_frame"] = _frame_spec(
+    "dt_frame", "351204", "FRONT - DECOR FRAME - DT", "Khung trang trí trên (hàn)", G_DT, V_DT,
+    {"front": (190, 300), "top": (190, 220), "left": (380, 300), "iso": (190, 110)},
+    {"front": (_XL, V_DT["dt_zb"], _dtx1, V_DT["pod_h"])},
+    ["DT's welded frame: a back ring in front of the back plate (its slope tube 3 above DL's slope for the joint's "
+     "seal, HOLD), a tube along the lower front facet, a tube laid under the top chamfer, the rail just behind the "
+     "glass's top channel that the catch 368007 and the top stop 351203 screw into, and cross tubes (one over the "
+     "catch)."])
+SPECS["dt_skin"] = {
+    "design": doc("351201", "FRONT - DECOR SKIN - DT", "CAD"), "drawing": doc("351201", "FRONT - DECOR SKIN - DT", "DWG"),
+    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05},
+    "views": {"front": (190, 300), "top": (190, 220), "left": (380, 300), "iso": (190, 110)},
+    "box": {"front": (_XL, V_DT["dt_zb"], _dtx1, V_DT["pod_h"])},
+    "dims": [("front", (_XL, V_DT["pod_h"]), (_dtx1, V_DT["pod_h"]), "above", 10)],
+    "notes": [
+        "DT's skin: 3 mm ACP (EV3038 Dark Yellow, PE core, D-12), one flat panel per outside face, edges mitred at 45 "
+        "deg and joined as v1. Flat patterns 1:1 in 351201_P01_FRONT-DECOR-SKIN-DT_DXF.dxf (layers CUT and MARK).",
+        "Open at the back, at DR and over DL's slope. Slot 17 wide in the underside at the glass plane for the fixed "
+        "pane's top channel (PM ruling).",
+        "Bonded to the frame 351204 per the joints register's ACP bond spec. Outline +/-1 (PROPOSED).",
+    ],
+    "title": title("351201", "FRONT - DECOR SKIN - DT", "Tấm ốp alu khối trên", "ACP 3 mm EV3038 Dark Yellow",
+                   "factory coil coating (D-12)", "1:10", "A2"),
+}
+SPECS["dl_frame"] = _frame_spec(
+    "dl_frame", "351104", "FRONT - DECOR FRAME - DL", "Khung trang trí trái (hàn)", G_DL, V_DL,
+    {"front": (120, 255), "top": (120, 110), "left": (230, 255), "iso": (330, 95)},
+    {"front": (_XL, V_DL["wall_z0"], _dlx1, V_DL["dl_zo"])},
+    ["DL's welded frame carries the door (ISS-045): the hinges' frame halves screw into the 60 x 20 hinge post "
+     "behind the three pockets (holes when the hinge is named, HOLD H01); the four plan rings tie it to the back "
+     "ring's 60 x 20 bolt-line post (6 holes 14 round the J-FRONT-01 rivnut tails), the back plate and the bolts "
+     "into the left wall."])
+SPECS["dl_skin"] = {
+    "design": doc("351101", "FRONT - DECOR SKIN - DL", "CAD"), "drawing": doc("351101", "FRONT - DECOR SKIN - DL", "DWG"),
+    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05},
+    "views": {"front": (120, 255), "top": (120, 110), "left": (230, 255), "iso": (330, 95)},
+    "box": {"front": (_XL, V_DL["wall_z0"], _dlx1, V_DL["dl_zo"])},
+    "dims": [("front", (_XL, V_DL["wall_z0"]), (_XL, V_DL["dl_zo"]), "left", 12)],
+    "notes": [
+        "DL's skin: 3 mm ACP (EV3038 Dark Yellow, PE core, D-12), one flat panel per outside face, edges mitred at 45 "
+        "deg and joined as v1. Flat patterns 1:1 in 351101_P01_FRONT-DECOR-SKIN-DL_DXF.dxf (layers CUT and MARK).",
+        "Three hinge pockets in the door-side face, 164 x 44 x 124, 160 deep, at the door unit's hinge heights "
+        "(reserved spaces until a rated hinge is named, D-46). Open at the back and under DT.",
+        "Bonded to the frame 351104 per the joints register's ACP bond spec. Outline +/-1 (PROPOSED).",
+    ],
+    "title": title("351101", "FRONT - DECOR SKIN - DL", "Tấm ốp alu khối trái", "ACP 3 mm EV3038 Dark Yellow",
+                   "factory coil coating (D-12)", "1:10", "A2"),
+}
