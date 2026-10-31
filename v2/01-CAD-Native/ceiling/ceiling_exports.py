@@ -285,6 +285,34 @@ def cut_list(v):
     return rows
 
 
+def flat_cut_list(v):
+    """Felt and fill pieces with size, material, tolerance and part number: D-89 (PM ruling
+    2026-11-01) lets a plain knife-cut felt or fill rectangle go without a drawing when this
+    list gives them; the notched fill strips also have their tabulated drawing."""
+    rows = []
+    fw = v["cs_w"] - 2 * (v["tray_t"] + v["felt_c"])
+    fd = v["cs_d"] - 2 * (v["tray_t"] + v["felt_c"])
+    pn, name, vn, _k, mat = M.PARTS["felt"]
+    rows.append({"part_number": pn, "name": name, "name_vi": vn, "material": M.MATERIALS[mat][0],
+                 "size_mm": "%.1f x %.1f x %.0f" % (fw, fd, v["felt_t"]), "qty_per_pod": 2,
+                 "tolerance": "knife cut +/-1 (assumption)", "drawing": "none (D-89: plain rectangle)",
+                 "cut_file": fname("felt", "DXF", "dxf"),
+                 "note": "2 sprinkler drop zones D%.0f marked on the MARK layer, nothing cut (REQ-US-01)" % v["sprk_d"]})
+    seen = set()
+    for key, _bay, box, notches in M.fill_strips(v):
+        if key in seen:
+            continue
+        seen.add(key)
+        b = [M.ev(v, e) for e in box]
+        pn, name, vn, _k, mat = M.PARTS[key]
+        n = sum(1 for _n, nb in notches if M.overlap(tuple(b), tuple(M.ev(v, e) for e in nb)))
+        rows.append({"part_number": pn, "name": name, "name_vi": vn, "material": M.MATERIALS[mat][0],
+                     "size_mm": "%.1f x %.1f x %.0f" % (b[1] - b[0], b[3] - b[2], v["fill_t"]), "qty_per_pod": 2,
+                     "tolerance": "cut +/-2 (assumption)", "drawing": "513301_P01_LINING-FILL-CEILING-BAYS-A-B-C_DWG (tabulated, D-89)",
+                     "cut_file": fname(key, "DXF", "dxf"), "note": "%d notches clearing clips and catches by fill_c" % n})
+    return rows
+
+
 def main(argv):
     if len(argv) < 2:
         print(__doc__)
@@ -315,6 +343,13 @@ def main(argv):
         w.writeheader()
         w.writerows(rows)
     print("cut list", p, len(rows), "rows")
+    rows = flat_cut_list(v)
+    p = os.path.join(OUT, "410000_%s_CEILING-FLAT-CUT-LIST_BOM.csv" % REV)
+    with open(p, "w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        w.writerows(rows)
+    print("flat cut list", p, len(rows), "rows")
     if flat:
         fb = M.tray_flat(v)
         print("flat body (Fusion) %.2f x %.2f, blank (K-factor calc) %.2f x %.2f" % (
