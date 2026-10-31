@@ -63,9 +63,9 @@ Shipping sets the panel sizes, so we decide the split before the CAD. A panel sh
 
 - **They fit:** the side wall frames (about 1500 × 1150 mm), the back wall frames (about 1200 × 1150 mm if split 2 × 2) and the floor boards (about 1185 × 1430 mm).
 - **Just over:** the ceiling halves are about 1240 mm wide, roughly 20 mm too wide.
-- **Too long:** the glass door (2011 mm), the fixed glass (2139 mm), the side decor blocks (2300 mm) and the floor rails (2500 mm).
+- **Too long:** the glass door (2011 mm), the fixed glass (2139 mm), the side decor blocks (2300 mm) and the plan's floor rails (2500 mm). A thin floor removes the floor rails entirely.
 
-The likely answer is one 48 × 40 pallet for the panels, plus one standard long pallet for the glass and long pieces. The other option is to split the decor blocks and floor rails so only the glass needs the long pallet. No custom pallet sizes either way. Milestone 1 picks whichever layout is lightest, cheapest to ship and quickest to assemble, and the CAD follows it.
+The likely answer is one 48 × 40 pallet for the panels, plus one standard long pallet for the glass and long pieces. The other option is to split the decor blocks so only the glass needs the long pallet. No custom pallet sizes either way. Milestone 1 picks whichever layout is lightest, cheapest to ship and quickest to assemble, and the CAD follows it.
 
 ## Same look, lighter bones
 
@@ -73,7 +73,7 @@ FocusPod lives indoors: in a cool, air-conditioned room, on a flat, level floor.
 
 | Where | Change | Rough saving |
 |---|---|---|
-| Floor | A light frame instead of 50×100 steel (a flat floor carries no ground loads), and lighter boards | about 35 kg |
+| Floor | A thin floor: 2 to 3 cm panels lying on the room floor, with the walls fixed around them, instead of the raised 50×100 steel frame. The outside base band stays as trim, so the look doesn't change. The step into the pod drops from about 13 cm to about 2 cm, and the room inside gets about 10 cm taller. | about 50 kg |
 | Wall, ceiling and decor frames | Aluminum instead of steel | about 40 kg |
 | Skins | No plywood behind the ACP where sound doesn't need it | up to 58 kg |
 | Glass | 8 mm instead of 10 mm, same smoked glass and same shape | about 20 kg |
@@ -96,12 +96,12 @@ The walls are both the heaviest part and what stops sound. Mass is the cheap way
 - A 3-block decor frame.
 - Ceiling fans, one blowing in and one out.
 - The plan's switches on the back wall, which is fine for the prototype.
-- The modeling order: floor frame, left wall, right wall, back wall, ceiling, decor frame, floor.
+- The modeling order: base, left wall, right wall, back wall, ceiling, decor frame, then the floor finish.
 
 **Added because of what v1 taught us:**
 - Seals and quiet vents. v1 had none, and they're light and do a lot for sound.
 - One source of truth. v1's CAD, BOM and drawings disagree, and none of them can be edited.
-- A bolt-together floor frame. v1's welded 2500 × 1703 mm frame was its biggest, heaviest piece.
+- A thin floor instead of a raised one, marked PROPOSED. v1's welded 2500 × 1703 mm floor frame was its biggest, heaviest piece and put a 13 cm step at the door. A raised floor is for uneven ground and running cables underneath. Indoors, the floor is flat and the cable can run inside the back wall. The thin floor still closes the box for sound and keeps the walls square.
 - The parts the build plan doesn't cover yet: glass door and fixed glass, hinges, handle, seals, lights, power inlet and wiring.
 
 **Removed:** the table. The pod ships empty, and customers furnish it however they like.
@@ -129,7 +129,8 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - A weight budget by assembly, comparing v1 with v2 as planned.
    - Panel split options that fit standard pallets.
    - A pallet layout for each option.
-   - Part weights, with every part at 20 kg or less, plus the lighter indoor material options (aluminum frames, no plywood backing, 8 mm glass, light floor) against the 300 kg target.
+   - Part weights, with every part at 20 kg or less, plus the lighter indoor material options (aluminum frames, no plywood backing, 8 mm glass) against the 300 kg target.
+   - Floor options compared on weight, step height, sound, stiffness and assembly time: the plan's raised floor, a thin floor, and no floor.
    - A 2-person assembly sequence with step count, fastener count and estimated time.
    - A recommendation for the layout the CAD should follow.
 2. **Control pack.** Covers:
@@ -151,7 +152,7 @@ The skeleton starts from the plan's fixed dimensions while Milestone 1 finishes,
 - A native Fusion skeleton of the whole pod, driven by named parameters: overall size, wall depth 1500, decor depth 200, tube sizes and panel splits. It's built in the plan's order, as components, not bodies.
 - Sample drawings:
   - GA with sections.
-  - The floor frame (BASE) assembly and 2 of its parts.
+  - The floor (BASE) assembly and 2 of its parts.
   - One wall assembly and its panel.
   - One decor detail.
 - Sample registers:
