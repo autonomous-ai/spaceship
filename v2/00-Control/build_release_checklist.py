@@ -322,32 +322,23 @@ def where_of(r, labels):
     return labels.get(ref, "this tree" if ref == "working tree" else ref)
 
 
-FLAT_LAYERS = {"CUT", "MARK"}
+def load_dxf_layers():
+    """The DXF layer reader shared with the mechanical check (tools/checks/dxf_layers.py), so both tools read a DXF
+    the same way (PM, 2026-11-01)."""
+    spec = importlib.util.spec_from_file_location("dxf_layers", ROOT / "tools/checks/dxf_layers.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.dont_write_bytecode = True
+    spec.loader.exec_module(mod)
+    return mod
 
 
-DXF_STRUCTURE = ("BLOCK", "ENDBLK", "SEQEND", "VERTEX", "ENDSEC", "EOF")  # records, not lines
+DXF_LAYERS = load_dxf_layers()
 
 
 def dxf_other_layers(text):
-    """D-89 (4): the layers other than CUT and MARK that an ASCII DXF has lines on, upper-cased; None when it can't
-    be read (empty or binary), so the part can't be shown flat. Read the way the mechanical check reads it
-    (tools/checks/c_drawings.py, dxf_summary): every entity in the ENTITIES and BLOCKS sections counts, except the
-    records BLOCK, ENDBLK, VERTEX and SEQEND, so a block header on layer 0 doesn't."""
-    if not text or not text.strip() or text.startswith("AutoCAD Binary DXF"):
-        return None
-    lines = text.splitlines()
-    pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
-    sec, cur, other = None, None, set()
-    for k, (code, val) in enumerate(pairs):
-        if code == "2" and k and pairs[k - 1] == ("0", "SECTION"):
-            sec, cur = val.upper(), None
-        elif code == "0" and val == "ENDSEC":
-            sec, cur = None, None
-        elif sec in ("ENTITIES", "BLOCKS") and code == "0":
-            cur = None if val.upper() in DXF_STRUCTURE else val.upper()
-        elif sec in ("ENTITIES", "BLOCKS") and cur and code == "8" and val.upper() not in FLAT_LAYERS:
-            other.add(val.upper())
-    return other
+    """D-89 (4): the layers other than CUT and MARK that a DXF draws on; None when it can't be read. The shared
+    reader's rule: ENTITIES only, records skipped, a stored block only where an INSERT places it."""
+    return DXF_LAYERS.other_layers(text)
 
 
 def flat_lacks(rows):
@@ -592,8 +583,8 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, "
             "thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole "
             "note is left to the drawing review. The DXF may draw only on the CUT and MARK layers (the guideline's layers, section 9; "
-            "every entity in its ENTITIES and BLOCKS sections counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, as the "
-            "mechanical check reads it): "
+            "every entity in its ENTITIES section counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, and a stored block only "
+            "where an INSERT places it, its layer-0 shapes taking the INSERT's layer): "
             "a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing whatever the process says. "
             "Assemblies always keep their drawings.",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",

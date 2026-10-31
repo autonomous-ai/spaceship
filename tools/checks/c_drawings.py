@@ -19,6 +19,7 @@ import shutil
 import subprocess
 
 from common import Finding, owner_for, rel, walk_files, parse_file_name, pn_class, is_soft
+import dxf_layers
 
 
 def pdf_text(path):
@@ -151,8 +152,13 @@ NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pock
 BEND_LAYER = re.compile(r"\b(?:BEND|FOLD)", re.I)
 
 
-DXF_LAYERS_ALLOWED = ("CUT", "MARK")          # D-89 part 4: a flat part's DXF holds only these (guideline 9)
 DXF_STRUCTURE = ("BLOCK", "ENDBLK", "SEQEND", "VERTEX", "ENDSEC", "EOF")   # records, not lines
+
+
+def dxf_other_layers(text):
+    """D-89 (4): the layers other than CUT and MARK that a DXF draws on; None when it can't be read. One reader,
+    shared with the release checklist (tools/checks/dxf_layers.py), so the two tools can't drift."""
+    return dxf_layers.other_layers(text)
 
 
 def dxf_summary(path):
@@ -235,14 +241,19 @@ def flat_cut_lacks(root, pn, files, holes, flat):
     if not dxfs:
         return ["it has no DXF of its own"]
     rv, dxf = dxfs[-1]
+    try:
+        with open(dxf, encoding="utf-8", errors="replace") as fh:
+            text = fh.read()
+    except OSError:
+        text = ""
+    other = dxf_other_layers(text)
     d = dxf_summary(dxf)
-    if d is None:
-        return ["its DXF can't be read as ASCII DXF, so it can't be shown flat"]
-    other = sorted(l for l in d["layers"] if l.upper() not in DXF_LAYERS_ALLOWED)
+    if other is None or d is None:
+        return ["its DXF can't be read, so it can't be shown flat"]
     if other:
+        other = sorted(other)
         bend = [l for l in other if BEND_LAYER.search(l)]
-        why.append("its DXF has lines on the %s layer%s; only CUT and MARK are allowed%s" % (
-            ", ".join(other), "s" if len(other) > 1 else "", ", so it is folded" if bend else ""))
+        why.append("its DXF draws on %s; only CUT and MARK pass%s" % (", ".join(other), ", so it is folded" if bend else ""))
     if d["units"] not in (None, "4"):
         why.append("its DXF isn't in mm ($INSUNITS %s)" % d["units"])
     cad_revs = {r for r, _p in files.get("CAD", []) + files.get("STEP", [])}
@@ -261,7 +272,7 @@ def flat_cut_lacks(root, pn, files, holes, flat):
     lacks = flat_row_lacks(root, pn)
     worked = [l for l in (lacks or []) if l.startswith("no bends or machined features")]
     # a folded or machined part keeps its drawing: say why, and leave out the row's other gaps
-    not_flat = [w for w in why if "only CUT and MARK" in w or w == (flat[2] if flat is not None and not flat[0] else None)]
+    not_flat = [w for w in why if "only CUT and MARK pass" in w or w == (flat[2] if flat is not None and not flat[0] else None)]
     if not_flat or worked:
         return not_flat + ["its row's process names %s" % l.split("names ", 1)[-1].rstrip(")") for l in worked]
     if lacks is None:
