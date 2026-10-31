@@ -40,29 +40,24 @@ class NotesTests(unittest.TestCase):
         doc.save(png)
         self.assertIn("Lớp tiêu âm", fitz.open(png)[0].get_text())
 
-    def test_placement_puts_the_lower_left_corner_where_asked(self):
-        old = (sn.MM_PER_PX_AT_SCALE_1, sn.ANCHOR)
-        try:
-            for anchor in ("lower-left", "upper-left", "center"):
-                sn.MM_PER_PX_AT_SCALE_1, sn.ANCHOR = 0.0846667, anchor
-                x, y, scale = sn.placement(600.0, 250.0, 200.0, 2362, 900)
-                w = 2362 * sn.MM_PER_PX_AT_SCALE_1 * scale
-                h = 900 * sn.MM_PER_PX_AT_SCALE_1 * scale
-                self.assertAlmostEqual(w, 200.0, places=6)
-                ll = {"lower-left": (x, y), "upper-left": (x, y - h), "center": (x - w / 2, y - h / 2)}[anchor]
-                self.assertAlmostEqual(ll[0], 600.0, places=6)
-                self.assertAlmostEqual(ll[1], 250.0, places=6)
-        finally:
-            sn.MM_PER_PX_AT_SCALE_1, sn.ANCHOR = old
+    def test_placement_follows_the_measured_mapping(self):
+        # measured 2026-10-31: 58.02 mm wide at scale 1 whatever the pixels or DPI; lower-left anchor
+        self.assertEqual((sn.WIDTH_AT_SCALE_1_MM, sn.ANCHOR), (58.02, "lower-left"))
+        for w_px, h_px in ((1000, 500), (500, 500), (2000, 400), (3308, 1212)):
+            x, y, scale = sn.placement(340.0, 90.0, 280.0, w_px, h_px)
+            self.assertEqual((x, y), (340.0, 90.0))
+            self.assertAlmostEqual(scale * 58.02, 280.0, places=6)     # same scale for any pixel size
 
-    def test_unmeasured_mapping_refuses(self):
-        old = (sn.MM_PER_PX_AT_SCALE_1, sn.ANCHOR)
-        try:
-            sn.MM_PER_PX_AT_SCALE_1, sn.ANCHOR = None, None
-            with self.assertRaises(RuntimeError):
-                sn.placement(0, 0, 100, 100, 100)
-        finally:
-            sn.MM_PER_PX_AT_SCALE_1, sn.ANCHOR = old
+    def test_measured_test_images_come_out_as_in_the_pdf(self):
+        # the four live measurements, predicted back: (px, py, scale) -> width, height in mm
+        for w_px, h_px, scale, w_mm, h_mm in ((1000, 500, 1.0, 58.02, 29.02), (1000, 500, 0.5, 29.02, 14.52),
+                                              (500, 500, 1.0, 58.02, 58.02), (2000, 400, 1.0, 58.02, 11.62)):
+            self.assertAlmostEqual(58.02 * scale, w_mm, delta=0.02)
+            self.assertAlmostEqual(58.02 * scale * h_px / w_px, h_mm, delta=0.02)
+
+    def test_another_sheet_size_can_pass_its_own_width(self):
+        _x, _y, scale = sn.placement(0, 0, 116.04, 1000, 500, width_at_scale_1=116.04)
+        self.assertAlmostEqual(scale, 1.0)
 
     def test_insert_script_compiles(self):
         compile(sn.INSERT_SCRIPT % {"args": {"name": "N", "sheet": 1, "png": "/x.png", "px": 1.0,

@@ -38,10 +38,15 @@ DPI = 300
 PT_PER_MM = 72.0 / 25.4
 CAP_RATIO = 0.716            # Arial capital height / font size (ISO 3098 text height = capitals)
 
-# Measured on Mac 1, Fusion 2706.1.17, 2026-10-31 (MEASURED below): how
-# Images.insert maps a PNG onto the sheet. Filled in from the live test.
-MM_PER_PX_AT_SCALE_1 = None   # sheet mm per image pixel at scale 1.0
-ANCHOR = None                 # which point of the image `position` sets
+# How Images.insert maps a PNG onto the sheet, measured on Mac 1 (Fusion
+# 2706.1.17, 2026-10-31) from the exported PDF: at scale 1 every image is
+# 58.02 mm wide, whatever its pixel size or DPI tag (1000 x 500 px at 300 dpi,
+# 500 x 500 and 2000 x 400 px at 300 dpi, 1000 x 500 px at 72 dpi: all
+# 58.02 mm wide, height by aspect); scale 0.5 gives exactly half; `position`
+# is the image's lower-left corner, in sheet mm. Measured on A3 sheets; on
+# other sheet sizes pass --width-at-scale-1 until measured there.
+WIDTH_AT_SCALE_1_MM = 58.02
+ANCHOR = "lower-left"
 
 INSERT_SCRIPT = '''import adsk.core, adsk.drawing
 A = %(args)r
@@ -119,13 +124,15 @@ def render(text, width_mm, text_mm, png_path):
     return png_path, w_px, h_px, h_pt / PT_PER_MM
 
 
-def placement(x, y, width_mm, w_px, h_px):
+def placement(x, y, width_mm, w_px, h_px, width_at_scale_1=None):
     """(position x, position y, scale) for Images.insert, from the measured mapping,
-    so that the image's lower-left corner lands at (x, y) and it is width_mm wide."""
-    if MM_PER_PX_AT_SCALE_1 is None or ANCHOR is None:
-        raise RuntimeError("Images.insert's mapping hasn't been measured yet")
-    scale = width_mm / (w_px * MM_PER_PX_AT_SCALE_1)
-    w, h = width_mm, h_px * MM_PER_PX_AT_SCALE_1 * scale
+    so that the image's lower-left corner lands at (x, y) and it is width_mm wide
+    (its height follows: width_mm * h_px / w_px)."""
+    at1 = width_at_scale_1 or WIDTH_AT_SCALE_1_MM
+    if not at1 or at1 <= 0:
+        raise RuntimeError("Images.insert's mapping hasn't been measured")
+    scale = width_mm / at1
+    w, h = width_mm, width_mm * h_px / float(w_px)
     dx, dy = {"lower-left": (0, 0), "upper-left": (0, h), "center": (w / 2, h / 2)}[ANCHOR]
     return x + dx, y + dy, scale
 
@@ -140,6 +147,9 @@ def main(argv=None):
     ap.add_argument("--y", type=float, required=True, help="lower-left corner, sheet mm")
     ap.add_argument("--width", type=float, required=True, help="width on the sheet, mm")
     ap.add_argument("--text-mm", type=float, default=2.5, help="capital height, mm (ISO 3098)")
+    ap.add_argument("--width-at-scale-1", type=float, default=None, metavar="MM",
+                    help="an image's width at scale 1 on this sheet (default %.2f, measured on A3)"
+                         % WIDTH_AT_SCALE_1_MM)
     ap.add_argument("--render-only", metavar="PNG", help="write the PNG here and stop")
     ap.add_argument("--folder", default=rs.DEFAULT_FOLDER)
     ap.add_argument("--url", default=rs.DEFAULT_URL)
@@ -157,7 +167,7 @@ def main(argv=None):
         os.path.basename(opts.notes), w_px, h_px, opts.width, h_mm))
     if opts.render_only:
         return 0
-    px, py, scale = placement(opts.x, opts.y, opts.width, w_px, h_px)
+    px, py, scale = placement(opts.x, opts.y, opts.width, w_px, h_px, opts.width_at_scale_1)
 
     lock = rs.FusionLock(opts.lock or rs.default_lock_path(opts.url),
                          label=opts.label or "sheet_notes", hold_s=3 * opts.timeout + 300,
