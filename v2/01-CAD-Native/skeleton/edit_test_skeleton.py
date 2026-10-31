@@ -13,7 +13,7 @@ import adsk.core
 import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
-F3D_REL = "v2/01-CAD-Native/skeleton/100000_P01_POD-SKELETON_CAD.f3d"
+F3D_REL = "v2/01-CAD-Native/skeleton/100000_P02_POD-SKELETON_CAD.f3d"
 EDITS = [("pod_w", "2600 mm", "2500 mm"), ("pod_h", "2450 mm", "2400 mm")]
 TOL = 0.05   # mm
 
@@ -22,7 +22,7 @@ def skeleton_envelopes():
     ns = {"SCRIPT_ARGS": {}, "__name__": "skeleton"}
     path = "%s/v2/01-CAD-Native/skeleton/pod_skeleton.py" % ARGS["repo_root"]
     exec(compile(open(path, encoding="utf-8").read(), path, "exec"), ns)
-    return ns["ENVELOPES"]
+    return ns["ENVELOPES"], ns.get("FACET_ANCHORS", [])
 
 
 def bodies(design):
@@ -33,7 +33,7 @@ def bodies(design):
     return out
 
 
-def check(design, envs):
+def check(design, envs, anchors=()):
     um = design.unitsManager
     got = bodies(design)
     worst, bad = 0.0, []
@@ -43,6 +43,15 @@ def check(design, envs):
         have = [v * 10.0 for v in (bb.minPoint.x, bb.minPoint.y, bb.minPoint.z,
                                    bb.maxPoint.x, bb.maxPoint.y, bb.maxPoint.z)]
         d = max(abs(a - b) for a, b in zip(want, have))
+        worst = max(worst, d)
+        if d > TOL:
+            bad.append((code, round(d, 3)))
+    for code, k, expr in anchors:            # faceted bodies: their anchors follow
+        body = got.get(code) or got.get(code + " FACETED") or got.get(code + " GLASS")
+        bb = body.boundingBox
+        have = [v * 10.0 for v in (bb.minPoint.x, bb.minPoint.y, bb.minPoint.z,
+                                   bb.maxPoint.x, bb.maxPoint.y, bb.maxPoint.z)][k]
+        d = abs(have - um.evaluateExpression(expr, "mm") * 10.0)
         worst = max(worst, d)
         if d > TOL:
             bad.append((code, round(d, 3)))
@@ -57,21 +66,21 @@ def check(design, envs):
 
 def run(_context):
     app = adsk.core.Application.get()
-    envs = skeleton_envelopes()
+    envs, anchors = skeleton_envelopes()
     src = app.activeDocument
     doc = app.importManager.importToNewDocument(app.importManager.createFusionArchiveImportOptions(
         "%s/%s" % (ARGS["repo_root"], F3D_REL)))
     design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
     try:
-        before = check(design, envs)
+        before = check(design, envs, anchors)
         for name, new, _old in EDITS:
             design.userParameters.itemByName(name).expression = new
         adsk.doEvents()
-        after = check(design, envs)
+        after = check(design, envs, anchors)
         for name, _new, old in EDITS:
             design.userParameters.itemByName(name).expression = old
         adsk.doEvents()
-        back = check(design, envs)
+        back = check(design, envs, anchors)
     finally:
         doc.close(False)
         if src and src.isValid:
@@ -84,7 +93,7 @@ def run(_context):
     print("|---|---|---|---|---|")
     for label, r in (("Before", before), ("pod_w 2600, pod_h 2450", after), ("Reverted", back)):
         print("| %s | %s | %d | %s | %g |" % (label, " x ".join(map(str, r["size"])), r["unhealthy"],
-                                              r["bad"] or "none (all %d follow)" % len(envs), r["worst"]))
+                                              r["bad"] or "none (all %d envelopes and %d faceted anchors follow)" % (len(envs), len(anchors)), r["worst"]))
     print("\n**RESULT: %s**" % ("PASS (CAD check on a copy)" if ok else "FAIL"))
     if not ok:
         raise RuntimeError("edit test failed")

@@ -22,10 +22,11 @@ import adsk.core
 import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
-DOC_NAME = "100000_P01_POD-SKELETON_CAD"
+REV = "P02" if ARGS.get("stage", "B") == "B" else "P01"     # P02 = stage B, the measured faceted front
+DOC_NAME = "100000_%s_POD-SKELETON_CAD" % REV
 CLOUD_FOLDER = "FocusPod v2"
 F3D_REL = "v2/01-CAD-Native/skeleton/%s.f3d" % DOC_NAME
-STEP_REL = "v2/03-Manufacturing/skeleton/100000_P01_POD-SKELETON_STEP.step"
+STEP_REL = "v2/03-Manufacturing/skeleton/100000_%s_POD-SKELETON_STEP.step" % REV
 
 # name, expression, unit, status, source
 PARAMS = [
@@ -42,7 +43,7 @@ PARAMS = [
     ("floor_t", "15 mm", "mm", "source", "layout study B1 list B-FLOOR 15"),
     ("thresh_h", "20 mm", "mm", "decided", "D-18"),
     ("thresh_d", "60 mm", "mm", "source", "layout study B1 list B-THRESH 1176 x 60 x 20"),
-    ("decor_d", "235 mm", "mm", "decided", "D-39 (230-235, v1); B1 list 235"),
+    ("decor_d", "205 mm", "mm", "source", "v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02"),
     ("dl_w", "278 mm", "mm", "source", "B1 list F-DL 278 (v1 BOM DL)"),
     ("dr_w", "1016 mm", "mm", "source", "B1 list F-DR 1016 (v1 STEP solid 78)"),
     ("dt_w", "1697 mm", "mm", "source", "B1 list F-DT 1697 (v1 BOM DT)"),
@@ -52,6 +53,36 @@ PARAMS = [
     ("glass_t", "8.76 mm", "mm", "decided", "D-46 (4+4 laminate)"),
     ("glass_y", "699 mm", "mm", "source", "v1 STEP solid 238 centre Y = -699 (layout study data)"),
     ("kick_d", "20 mm", "mm", "assumption", "kick strip envelope depth (D-40 gives the height only)"),
+    # stage B: the faceted front, measured from the v1 STEP (V1-FRONT-FACETS.md), Z shifted
+    # -17 mm so v1's top (2417) meets the 2400 datum (D-21); X offsets from the side faces
+    ("fr_dz", "17 mm", "mm", "calculation", "v1 front top 2417 (v2 frame) - pod_h 2400"),
+    ("door_xl", "289 mm", "mm", "source", "V1-FRONT-FACETS: door left edge X -961 = -1250 + 289"),
+    ("door_xbr", "1464 mm", "mm", "source", "V1-FRONT-FACETS: door bottom-right X 214"),
+    ("door_xtr", "1182 mm", "mm", "source", "V1-FRONT-FACETS: door top-right X -68"),
+    ("door_zb", "122 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: door bottom Z 122"),
+    ("door_zt", "2133 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: door top Z 2133"),
+    ("fix_xbl", "1468 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass bottom-left X 218"),
+    ("fix_xbr", "302 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass bottom-right X 948 = 1250 - 302"),
+    ("fix_xk", "501 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass knee X 749 = 1250 - 501"),
+    ("fix_zk", "1538 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: fixed glass knee Z 1538"),
+    ("fix_xtr", "1480 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass top-right X 230 = -1250 + 1480"),
+    ("fix_xtl", "1184 mm", "mm", "source", "V1-FRONT-FACETS: fixed glass top-left X -66"),
+    ("fix_zb", "119 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: fixed glass bottom Z 119"),
+    ("fix_zt", "2136 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: fixed glass top Z 2136"),
+    ("dt_zb", "2137 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: DT and DR edge above the glass Z 2137"),
+    ("ch_zlo", "2217 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: top chamfer front edge Z 2217 at Y -848"),
+    ("ch_yb", "672 mm", "mm", "source", "V1-FRONT-FACETS: top chamfer back edge Y -672"),
+    ("dl_x2", "92 mm", "mm", "source", "V1-FRONT-FACETS: DL facet knee X -1158 = -1250 + 92"),
+    ("dl_y2", "752 mm", "mm", "source", "V1-FRONT-FACETS: DL facet knee Y -752"),
+    ("dl_x3", "271 mm", "mm", "source", "V1-FRONT-FACETS: DL front corner X -979"),
+    ("dl_y3", "844 mm", "mm", "source", "V1-FRONT-FACETS: DL front corner Y -844"),
+    ("dl_y1", "670 mm", "mm", "source", "V1-FRONT-FACETS: DL outer facet start Y -670"),
+    ("dl_zo", "2414 mm - fr_dz", "mm", "source", "V1-FRONT-FACETS: DL top at the outer corner Z 2414"),
+    ("dt_x2", "281 mm", "mm", "source", "V1-FRONT-FACETS: DT lower facet left X -969 = -1250 + 281"),
+    ("dt_y2", "767 mm", "mm", "source", "V1-FRONT-FACETS: DT lower facet left Y -767"),
+    ("dt_y3", "753 mm", "mm", "source", "V1-FRONT-FACETS: DT lower facet outer Y -753 at X -1154"),
+    ("dr_xc", "198 mm", "mm", "source", "V1-FRONT-FACETS: DR corner facet front X 1052 = 1250 - 198"),
+    ("dr_yc", "672 mm", "mm", "source", "V1-FRONT-FACETS: DR corner facet back Y -672"),
     # derived
     ("wall_z0", "glide_h + band_h", "mm", "calculation", "walls stand on the base band"),
     ("wall_h", "pod_h - wall_z0", "mm", "calculation", "2290 = layout study v2_model wall_h"),
@@ -123,20 +154,30 @@ env("BASE", "BAND-L", "BASE - BASE BAND - SIDE - LH", "B-BAND-SIDE",
 env("BASE", "BAND-R", "BASE - BASE BAND - SIDE - RH", "B-BAND-SIDE",
     (XR + " - band_t", XR), (YF + " + band_t", YB), ("glide_h", "wall_z0"))
 env("BASE", "THRESHOLD", "BASE - DOOR THRESHOLD", "B-THRESH",
-    (XL + " + dl_w", XL + " + dl_w + door_w"), ("-glass_y - thresh_d / 2", "-glass_y + thresh_d / 2"),
+    (XL + " + door_xl", XL + " + door_xbr"), ("-glass_y - thresh_d / 2", "-glass_y + thresh_d / 2"),
     ("0 mm", "thresh_h"))
-env("FRONT", "DL", "FRONT - DECOR BLOCK - LEFT - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DL",
+STAGE = ARGS.get("stage", "B")
+if STAGE == "A":
+  env("FRONT", "DL", "FRONT - DECOR BLOCK - LEFT - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DL",
     (XL, XL + " + dl_w"), (YF, YF + " + decor_d"), ("wall_z0", "pod_h"))
-env("FRONT", "DR", "FRONT - DECOR BLOCK - RIGHT - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DR",
+  env("FRONT", "DR", "FRONT - DECOR BLOCK - RIGHT - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DR",
     (XR + " - dr_w", XR), (YF, YF + " + decor_d"), ("wall_z0", "pod_h"))
-env("FRONT", "DT", "FRONT - DECOR BLOCK - TOP - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DT",
+  env("FRONT", "DT", "FRONT - DECOR BLOCK - TOP - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DT",
     (XL + " + dl_w", XL + " + dl_w + dt_w"), (YF, YF + " + decor_d"), ("pod_h - dt_h", "pod_h"))
-env("GLAZING", "DOOR", "FRONT - DOOR LEAF GLASS 4+4", "F-GLASS-DOOR",
+  env("GLAZING", "DOOR", "FRONT - DOOR LEAF GLASS 4+4", "F-GLASS-DOOR",
     (XL + " + dl_w", XL + " + dl_w + door_w"), ("-glass_y - glass_t / 2", "-glass_y + glass_t / 2"),
     ("door_z0", "door_z0 + door_h"))
 env("GLAZING", "KICK", "FRONT - DOOR KICK STRIP", "D-40",
-    (XL + " + dl_w", XL + " + dl_w + door_w"), ("-glass_y - kick_d / 2", "-glass_y + kick_d / 2"),
-    ("thresh_h", "door_z0"))
+    (XL + " + door_xl", XL + " + door_xbr"), ("-glass_y - kick_d / 2", "-glass_y + kick_d / 2"),
+    ("thresh_h", "door_zb" if STAGE == "B" else "door_z0"))
+
+# Stage B bodies have no box expressions; the edit test checks these anchors
+# (code, bounding-box index 0..5 = xmin ymin zmin xmax ymax zmax, expression).
+FACET_ANCHORS = [
+    ("DL", 0, XL), ("DL", 2, "wall_z0"), ("DT", 0, XL), ("DT", 5, "pod_h"),
+    ("DR", 3, XR), ("DR", 5, "pod_h"), ("DOOR", 0, XL + " + door_xl"), ("DOOR", 3, XL + " + door_xbr"),
+    ("FIXED", 3, XR + " - fix_xbr"), ("FIXED", 5, "fix_zt"),
+]
 
 # Overlaps the stage A boxes make on purpose, with the reason. Any other
 # clash fails the run.
@@ -151,6 +192,8 @@ EXPECTED = [
     (("DR", "BAND-R"), "same"),
     (("DL", "C1"), "box corner reaches the ceiling front edge (stage B)"),
     (("DR", "C2"), "same"), (("DL", "C1-CASS"), "same"), (("DR", "C2-CASS"), "same"),
+    (("DT", "L2"), "DT wraps the left wall's upper front edge (v1 measured, stage B)"),
+    (("DT", "L2-CASS"), "same"),
 ]
 
 MM = 0.1
@@ -262,6 +305,177 @@ def clash_check(bodies):
     return hits, bad
 
 
+
+# ---------------------------------------------------------------- stage B: faceted front
+
+def _axis_of(sk, model_axis):
+    """Which sketch axis ('x' or 'y') a model axis ('x', 'y' or 'z') maps to."""
+    o = sk.modelToSketchSpace(adsk.core.Point3D.create(0, 0, 0))
+    v = {"x": (1, 0, 0), "y": (0, 1, 0), "z": (0, 0, 1)}[model_axis]
+    e = sk.modelToSketchSpace(adsk.core.Point3D.create(*v))
+    return "x" if abs(e.x - o.x) > abs(e.y - o.y) else "y"
+
+
+def poly(design, comp, plane, plane_axes, fixed, name, pts):
+    """Closed polygon on `plane`, each vertex dimensioned from the sketch origin
+    along both plane axes by its parameter expression (fully constrained).
+    plane_axes: the two model axes in the plane, e.g. ("x", "z"); fixed: value
+    in mm of the third axis on the plane. pts: [(expr_a, expr_b)]."""
+    sk = comp.sketches.add(plane)
+    sk.name = name
+    third = ({"x", "y", "z"} - set(plane_axes)).pop()
+    sp = []
+    for ea, eb in pts:
+        c = {plane_axes[0]: ev(design, ea), plane_axes[1]: ev(design, eb), third: fixed}
+        sp.append(sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM)))
+    lines = sk.sketchCurves.sketchLines
+    verts, edges = [], []          # the polygon's corners in the order of pts, and its lines
+    n = len(sp)
+    for i in range(n):
+        start = verts[-1] if verts else sp[0]
+        end = sp[i + 1] if i < n - 1 else verts[0]
+        ln = lines.addByTwoPoints(start, end)
+        edges.append(ln)
+        if i == 0:
+            verts.append(ln.startSketchPoint)
+        if i < n - 1:
+            verts.append(ln.endSketchPoint)
+    dims, gc = sk.sketchDimensions, sk.geometricConstraints
+    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+    expr_on = {}                   # sketch axis -> index into (ea, eb)
+    for k, ax in enumerate(plane_axes):
+        expr_on[_axis_of(sk, ax)] = k
+    for sa in ("x", "y"):
+        # corners joined by an edge parallel to the other axis share this coordinate:
+        # constrain that edge and dimension one corner per group (never redundant)
+        group = list(range(n))
+
+        def root(i):
+            while group[i] != i:
+                i = group[i]
+            return i
+        for i, ln in enumerate(edges):
+            a, b = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+            if abs((a.x - b.x) if sa == "x" else (a.y - b.y)) < 1e-7:
+                (gc.addVertical if sa == "x" else gc.addHorizontal)(ln)
+                group[root((i + 1) % n)] = root(i)
+        for i in range(n):
+            if root(i) != i:
+                continue
+            ex = pts[i][expr_on[sa]]
+            vp = verts[i]
+            if abs(ev(design, ex)) < 1e-6:
+                (gc.addVerticalPoints if sa == "x" else gc.addHorizontalPoints)(vp, sk.originPoint)
+            else:
+                g = vp.geometry
+                tp = adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0)
+                dims.addDistanceDimension(sk.originPoint, vp, H if sa == "x" else V, tp).parameter.expression = \
+                    "abs(%s)" % ex
+    if not sk.isFullyConstrained:
+        info = ["v%d %s%s" % (i, "ok" if vp.isFullyConstrained else "LOOSE",
+                              "(%.1f,%.1f)" % (vp.geometry.x * 10, vp.geometry.y * 10)) for i, vp in enumerate(verts)]
+        cons = [c.objectType.split("::")[-1] for c in sk.geometricConstraints]
+        raise RuntimeError("sketch not fully constrained: %s | dims %d | %s | constraints %s" % (
+            name, sk.sketchDimensions.count, " ".join(info), cons))
+    return sk
+
+
+def _normal_sign(sk, axis):
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    return 1 if {"x": n.x, "y": n.y, "z": n.z}[axis] > 0 else -1
+
+
+def extrude_span(comp, sk, axis, a_expr, b_expr, op, bodies=None, name=""):
+    """Extrude the sketch's profiles along a model axis from a to b (a < b)."""
+    sign = _normal_sign(sk, axis)
+    coll = adsk.core.ObjectCollection.create()
+    for pr in sk.profiles:
+        coll.add(pr)
+    ei = comp.features.extrudeFeatures.createInput(coll, op)
+    ei.startExtent = adsk.fusion.OffsetStartDefinition.create(vi("(%s) * (%d)" % (a_expr, sign)))
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("(%s) - (%s)" % (b_expr, a_expr))),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if sign > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    if bodies:
+        ei.participantBodies = bodies
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = name
+    return f
+
+
+def faceted_front(design, asm):
+    """DL, DT, DR as measured outlines, extruded and cut by the measured planes;
+    door and fixed glass with their true outlines. Returns {code: body}."""
+    NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
+    CUT = adsk.fusion.FeatureOperations.CutFeatureOperation
+    out = {}
+    back = YF + " + decor_d"
+    chamfer = [(YF, "ch_zlo"), ("-ch_yb", "pod_h"), (YF, "pod_h")]
+
+    def comp_for(a, code, name, sid):
+        return new_comp(asm[a], "", "%s %s" % (code, name), sid)
+
+    # DL: plan outline (two facets), up to the 45 degree slope shared with DT
+    c = comp_for("FRONT", "DL", "FRONT - DECOR BLOCK - LEFT (FACETED, v1 MEASURED)", "F-DL")
+    sk = poly(design, c, c.xYConstructionPlane, ("x", "y"), 0, "PLAN - DL FACETS",
+              [(XL, back), (XL, "-dl_y1"), (XL + " + dl_x2", "-dl_y2"), (XL + " + dl_x3", "-dl_y3"),
+               (XL + " + dl_w", "-dl_y3"), (XL + " + dl_w", back)])
+    f = extrude_span(c, sk, "z", "wall_z0", "pod_h", NEW, name="EXTRUDE - DL PLAN")
+    b = f.bodies.item(0)
+    sk = poly(design, c, c.xZConstructionPlane, ("x", "z"), 0, "SLOPE - DL TOP",
+              [(XL, "dl_zo"), (XL + " + dl_w", "dt_zb"), (XL + " + dl_w", "pod_h"), (XL, "pod_h")])
+    extrude_span(c, sk, "y", YF, back, CUT, [b], "CUT - DL TOP SLOPE")
+    b.name = "DL FACETED"
+    out["DL"] = b
+
+    # DT: plan outline (lower facet), above the slope, front top chamfer
+    c = comp_for("FRONT", "DT", "FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED)", "F-DT")
+    sk = poly(design, c, c.xYConstructionPlane, ("x", "y"), 0, "PLAN - DT FACETS",
+              [(XL, back), (XL, "-dl_y1"), (XL + " + dl_x2 + 4 mm", "-dt_y3"), (XL + " + dt_x2", "-dt_y2"),
+               (XL + " + fix_xtr", YF), (XL + " + fix_xtr", back)])
+    f = extrude_span(c, sk, "z", "dt_zb", "pod_h", NEW, name="EXTRUDE - DT PLAN")
+    b = f.bodies.item(0)
+    sk = poly(design, c, c.xZConstructionPlane, ("x", "z"), 0, "SLOPE - DT BOTTOM",
+              [(XL, "dt_zb"), (XL + " + dl_w", "dt_zb"), (XL, "dl_zo")])
+    extrude_span(c, sk, "y", YF, back, CUT, [b], "CUT - DT BOTTOM SLOPE")
+    sk = poly(design, c, c.yZConstructionPlane, ("y", "z"), 0, "CHAMFER - DT TOP FRONT", chamfer)
+    extrude_span(c, sk, "x", XL, XR, CUT, [b], "CUT - DT TOP CHAMFER")
+    b.name = "DT FACETED"
+    out["DT"] = b
+
+    # DR: front outline following the fixed glass, corner facet, top chamfer
+    c = comp_for("FRONT", "DR", "FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED)", "F-DR")
+    sk = poly(design, c, c.xZConstructionPlane, ("x", "z"), 0, "FRONT - DR OUTLINE",
+              [(XR + " - fix_xbr", "fix_zb"), (XR, "fix_zb"), (XR, "pod_h"), (XL + " + fix_xtr", "pod_h"),
+               (XL + " + fix_xtr", "dt_zb"), (XR + " - fix_xk", "fix_zk")])
+    f = extrude_span(c, sk, "y", YF, back, NEW, name="EXTRUDE - DR OUTLINE")
+    b = f.bodies.item(0)
+    sk = poly(design, c, c.xYConstructionPlane, ("x", "y"), 0, "CORNER FACET - DR",
+              [(XR + " - dr_xc", YF), (XR, "-dr_yc"), (XR, YF)])
+    extrude_span(c, sk, "z", "0 mm", "pod_h", CUT, [b], "CUT - DR CORNER FACET")
+    sk = poly(design, c, c.yZConstructionPlane, ("y", "z"), 0, "CHAMFER - DR TOP FRONT", chamfer)
+    extrude_span(c, sk, "x", XL, XR, CUT, [b], "CUT - DR TOP CHAMFER")
+    b.name = "DR FACETED"
+    out["DR"] = b
+
+    # glass, true outlines
+    gy0, gy1 = "-glass_y - glass_t / 2", "-glass_y + glass_t / 2"
+    for code, name, sid, pts in (
+            ("DOOR", "FRONT - DOOR LEAF GLASS 4+4 (TRAPEZOID, v1 MEASURED)", "F-GLASS-DOOR",
+             [(XL + " + door_xl", "door_zb"), (XL + " + door_xbr", "door_zb"),
+              (XL + " + door_xtr", "door_zt"), (XL + " + door_xl", "door_zt")]),
+            ("FIXED", "FRONT - FIXED GLASS 4+4 (PENTAGON, v1 MEASURED)", "F-GLASS-FIXED",
+             [(XL + " + fix_xbl", "fix_zb"), (XR + " - fix_xbr", "fix_zb"), (XR + " - fix_xk", "fix_zk"),
+              (XL + " + fix_xtr", "fix_zt"), (XL + " + fix_xtl", "fix_zt")])):
+        c = comp_for("GLAZING", code, name, sid)
+        sk = poly(design, c, c.xZConstructionPlane, ("x", "z"), 0, "OUTLINE - " + code, pts)
+        f = extrude_span(c, sk, "y", gy0, gy1, NEW, name="EXTRUDE - %s GLASS" % code)
+        f.bodies.item(0).name = code + " GLASS"
+        out[code] = f.bodies.item(0)
+    return out
+
+
 def run(_context):
     app = adsk.core.Application.get()
     if ARGS.get("close_previous") == "1":
@@ -287,6 +501,8 @@ def run(_context):
     for a, code, name, sid, x, y, z in ENVELOPES:
         comp = new_comp(asm[a], "", "%s %s" % (code, name), sid)
         bodies[code] = build_envelope(design, comp, code, name, sid, x, y, z)
+    if STAGE == "B":
+        bodies.update(faceted_front(design, asm))
     tl = design.timeline
     bad_items = [tl.item(i).name for i in range(tl.count)
                  if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
@@ -311,7 +527,7 @@ def run(_context):
         folder = proj.rootFolder.dataFolders.itemByName(CLOUD_FOLDER)
         if any(df.name == DOC_NAME for df in folder.dataFiles):
             raise RuntimeError("%s already in %s" % (DOC_NAME, CLOUD_FOLDER))
-        print("saved:", doc.saveAs(DOC_NAME, folder, "Spaceship pod skeleton stage A, P01", ""))
+        print("saved:", doc.saveAs(DOC_NAME, folder, "Spaceship pod skeleton, %s" % REV, ""))
     if ARGS.get("export") == "1":
         root_dir = ARGS["repo_root"]
         em = design.exportManager
