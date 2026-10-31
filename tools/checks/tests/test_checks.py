@@ -626,4 +626,33 @@ def test_d89_felt_and_fill_rectangles_pass_on_a_complete_cut_list_row(tmp_path):
     assert "511301" not in fs                              # complete row, plain rectangle: no drawing needed
     assert "doesn't give tolerance" in fs["511401"]
     assert "isn't a plain rectangle" in fs["511302"]       # the felt has a hole: it needs a drawing
-    assert "no cut list has a row" in fs["511303"]         # a DXF alone isn't D-89's route
+    assert "no cut list or parts list has a row" in fs["511303"]   # a DXF alone isn't D-89's route
+    # a body with pockets (more than a block's 6 faces) isn't a plain rectangle either
+    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), {"511301"}, {}, names,
+                                                                   {"511301": [6, 22]})}
+    assert "22 faces" in fs["511301"]
+
+
+def test_d89_a_parts_list_row_with_size_material_and_tolerance_serves_as_the_cut_list(tmp_path):
+    m = tmp_path / "v2/03-Manufacturing/wall"
+    m.mkdir(parents=True)
+    with open(m / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv", "w") as fh:
+        fh.write("part_number,name,material,size_mm,tolerance\n"
+                 "511301,LINING - FELT - SIDE LOWER - LH,PET felt 9 mm Dark Gray,9 x 1442 x 1139.74,±1 on length and width\n"
+                 "211501,WALL - CAVITY FILL - SIDE LOWER - LH,PET fill 40 mm,1102.7 x 344.9 x 40,\n")
+    names = {"511301": "LINING - FELT - SIDE LOWER - LH", "211501": "WALL - CAVITY FILL - SIDE LOWER - LH"}
+    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert "511301" not in fs and "doesn't give tolerance" in fs["211501"]
+
+
+def test_duplicate_number_ignores_hyphens_and_case_but_not_words(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    row = {"part_number": "848011", "name": "SEALS - HOOK-AND-LOOP - 25 MM", "name_vi": "x", "material": "VELCRO PS14",
+           "finish": "none", "qty": "1", "mass_kg": "0.01", "status": "HOLD", "source": "register"}
+    _write_csv(d / "a.csv", [row, dict(row, part_number="848012", name="SEALS - CASSETTE EDGE GASKET - 10 X 3.18")])
+    _write_csv(d / "b.csv", [dict(row, name="SEALS - Hook and loop - 25 MM"),
+                             dict(row, part_number="848012", name="SEALS - CASSETTE EDGE SEAL - 10 X 2.0")])
+    got = {f.subject for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
+           if f.rule == "duplicate-number"}
+    assert got == {"848012"}

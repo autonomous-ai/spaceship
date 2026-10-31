@@ -219,7 +219,8 @@ def check_parts_lists(root, plists):
                 fs.extend(_fastener_row(r, pn, name, row, owner))
     fs = _fold_unnumbered(_fold_minor_rows(fs))
     for pn, uses in seen.items():
-        names = {n for _f, n in uses}
+        # the same words in the same order are one name: 'HOOK-AND-LOOP' and 'HOOK AND LOOP' don't differ
+        names = {re.sub(r"[\s-]+", " ", (n or "").upper()).strip() for _f, n in uses}
         if len(names) > 1:
             fs.append(Finding("C06", "duplicate-number", pn, "major",
                               "Part number %s is used for different names: %s." % (
