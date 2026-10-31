@@ -1406,6 +1406,7 @@ def run(_context):
         sf_ns = {"__name__": "__fusion_set_front__", "__file__": sf, "SCRIPT_ARGS": {"inside": INSIDE}}
         with open(sf, "r", encoding="utf-8") as fh:
             exec(compile(fh.read(), sf, "exec"), sf_ns)
+        print("helper file %s" % os.path.realpath(sf))
         sf_ns["run"](None)
         ver = save_holding_props(app, doc, root, pn, desc, "%s build: %s" % (REV, ARGS.get("note", "wall_side_panel.py")))
         print("saved %s (version %s), part number %s, description %r" % (doc.name, ver, root.partNumber,
@@ -1414,4 +1415,5 @@ def run(_context):
         ns = {"__name__": "__fusion_post__", "__file__": path, "SCRIPT_ARGS": dict(ARGS, pn=pn)}
         with open(path, "r", encoding="utf-8") as fh:
             exec(compile(fh.read(), path, "exec"), ns)
+        print("helper file %s" % os.path.realpath(path))
         ns["run"](None)
