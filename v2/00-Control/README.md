@@ -12,9 +12,9 @@ The PM (the Swarm Lead) decides and logs each decision in [`decision-log.md`](de
 
 Nothing here is released for production.
 
-**Headline today (D-27, D-37, D-49 to D-53, D-59 to D-84):**
+**Headline today (D-27, D-37, D-49 to D-53, D-59 to D-87):**
 - A 4+4 laminated front of toughened, heat-soaked panes, frameless as in v1, over a black anodised kick strip; the door unit is about 50.2 kg, so its hinges, on HOLD, must be rated for 60 kg or more and hold it closed, and a 35 N magnetic catch in DT keeps it shut, with no load on the fixed glass (D-46, D-56, D-67, D-68, D-83). Both panes stay 4+4 (D-82). The threshold is 13 mm with a 1:2 bevel, to the US accessibility rule (D-72).
-- Walls and ceiling on one 84 mm stack, joined by captive ISO 4762 M6 × 16 bolts with one 5 mm key at 2.26 mm metal-stop seams, every cross-team bolt pattern from one skeleton rule (D-63 to D-66, D-75). The layout study's live count is 422.8 kg as shipped, with the adopted savings (clip-only cassettes, the 24 kg/m³ fill, the 1.5 mm band) and the voice kit's 4.0 kg reserve outside the cap: 2.8 kg over the 420 kg cap, with a 410 kg target (D-81). About 19.3 dB calculated (range 14.6–21.7, about 24 dB at best); the wall sample, measured down to 100 Hz, decides (D-53).
+- Walls and ceiling on one 84 mm stack, joined by captive ISO 4762 M6 × 16 bolts with one 5 mm key at 2.26 mm metal-stop seams, every cross-team bolt pattern from one skeleton rule (D-63 to D-66, D-75). With the savings of D-81 and D-85 the pod is 412.2 kg as shipped, with the voice kit's 4.0 kg reserve outside the cap: 7.8 kg under the 420 kg cap and 2.2 kg over the 410 kg target (calculation, PR #50). About 19.3 dB calculated (range 14.6–21.7, about 24 dB at best); the wall sample, measured down to 100 Hz, decides (D-53).
 - Fresh air driven by CO2 and heat, holding 800 ppm in a 600 ppm office and at most 4 K over the room: never below 26 l/s with someone inside, about 33 l/s for one person, 53 l/s for two and a 65 l/s boost (D-50, D-52). The air runs inside the pod: in through a flush mesh in the base band under the right decor block, up to the supply fans high in that block, down a felt-covered air column; out through a soffit above the door and a roof slot behind the block. 25.3 dB(A) at 53 l/s and 29.7 at 65 l/s, calculated (D-60 to D-62).
 - Decor blocks 205 mm deep and side walls 1495 deep, as v1 measures (D-49). Inside: an empty floor, a light shelf, and a 1000 mm ledge with a screen on the right wall (D-70).
 
@@ -24,7 +24,7 @@ Nothing here is released for production.
 2. `docs/engineering-guideline.md`: the hardware team's guideline (Vietnamese), mandatory for every version.
 3. `v2/PLAN.md`: the approved plan and targets. Where it disagrees, the decision log wins.
 4. `v2-build-plan.pdf` (this folder): the v2 build plan, with pictures. It's in Vietnamese; `requirements.md` §G translates every line.
-5. [`decision-log.md`](decision-log.md): the PM's decisions D-01 to D-84, with reasons.
+5. [`decision-log.md`](decision-log.md): the PM's decisions D-01 to D-87, with reasons.
 6. [`requirements.md`](requirements.md): what v2 must meet, with a status and a source for each line.
 7. [`conventions.md`](conventions.md): units, the ISO list, axes (with a [diagram](pod-coordinate-system.svg)), names, part numbers (with the reserved old numbers), file names, revisions and status values.
 8. [`assembly-tree.md`](assembly-tree.md): how the pod splits, where every plan code goes, the interfaces, and the v1 counterparts.

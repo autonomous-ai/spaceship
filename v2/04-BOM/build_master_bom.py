@@ -4,8 +4,9 @@
 Doc code V2-BOM-001, revision P01. Standard library only.
 
 It reads every team's parts list and the joints register's hardware set:
-  - parts lists: every v2/03-Manufacturing/<team>/**/*_BOM.csv and v2/07-Packaging/**/*_BOM.csv
-    that has a part_number column (cut lists without one are skipped and named in the report);
+  - parts lists: every v2/03-Manufacturing/<team>/**/*_BOM.csv that has a part_number column (cut lists
+    without one are skipped and named in the report), and from v2/07-Packaging/**/*_BOM.csv only the
+    packaging items (family 91): a packing list names other teams' parts, which their own lists carry;
   - v2/05-Engineering/joints/joints-register.md: the hardware set table (ID H-nn) and any table
     with a "Part number" column. The joints register owns every fastener and hardware number (D-63).
 
@@ -18,7 +19,8 @@ and writes, into v2/04-BOM/ unless --out says otherwise:
 Usage, from anywhere:
   python3 v2/04-BOM/build_master_bom.py                 # the files in this working tree
   python3 v2/04-BOM/build_master_bom.py --ref origin/main --ref origin/BRANCH ...
-        # reads the files from those git refs instead; for the same path a later ref wins
+        # reads the files from those git refs instead; a later ref adds only the files its branch changed
+        # since its merge-base with the first ref, and wins for those
   --out DIR       write the outputs into DIR
   --no-write      check only, write nothing
 
@@ -110,9 +112,17 @@ def load_sources(refs):
         if reg.exists():
             found[REGISTER] = (reg.read_text(encoding="utf-8"), "working tree")
         return found
-    for ref in refs:
+    base = refs[0]
+    for i, ref in enumerate(refs):
         short = git("rev-parse", "--short", ref).strip()
-        for rel in git("ls-tree", "-r", "--name-only", ref, "--", *BOM_GLOBS, REGISTER).splitlines():
+        names = git("ls-tree", "-r", "--name-only", ref, "--", *BOM_GLOBS, REGISTER).splitlines()
+        if i:
+            # A later ref adds only the files its own branch changed: an old, untouched copy of a file
+            # (the joints register on a branch cut before the register moved on) never overrides the first ref.
+            mb = git("merge-base", base, ref).strip()
+            changed = set(git("diff", "--name-only", mb, ref, "--", *BOM_GLOBS, REGISTER).splitlines())
+            names = [n for n in names if n in changed]
+        for rel in names:
             if wanted(rel):
                 found[rel] = (git("show", f"{ref}:{rel}"), f"{ref} ({short})")
     return found
@@ -210,8 +220,11 @@ def parse_parts_list(path, text, where):
         kind0 = first(raw[0], "type", "kind", "class")
         if make_buy_of(kind0) == "assembly":
             top_qty = num(first(raw[0], "qty")) or 1.0
+    packing = path.startswith("v2/07-Packaging/")
     rows = []
     for i, r in enumerate(raw):
+        if packing and family_of(first(r, "part_number")) != "91":
+            continue  # a packing list names other teams' parts; only packaging items (family 91) are BOM lines here
         kind = first(r, "make_buy", "type", "kind", "class")
         if kind.strip().lower() == "cut":
             continue  # a cut length of the made part above it (its own cut list), not a BOM line
@@ -228,7 +241,7 @@ def parse_parts_list(path, text, where):
         material, finish = first(r, "material"), first(r, "finish")
         if not finish:
             material, finish = split_finish(material)
-        mass = num(first(r, "unit_mass_kg", "mass_each_kg", "mass_kg", "mass"))
+        mass = num(first(r, "unit_mass_kg", "mass_each_kg", "mass_kg", "mass", "kg"))
         mtot, qraw = num(first(r, "mass_total_kg")), num(first(r, "qty"))
         derived = mass is None and mtot is not None and qraw
         if derived:
@@ -243,7 +256,7 @@ def parse_parts_list(path, text, where):
             "part_number": first(r, "part_number"), "name": name, "name_vi": first(r, "name_vi"),
             "qty_per_pod": q, "qty_status": qs, "material": material, "finish": finish,
             "mass_each_kg": mass,
-            "mass_status": first(r, "mass_status") or ("calculation (mass total / qty)" if derived else (first(r, "status") if mass is not None else "")),
+            "mass_status": first(r, "mass_status", "kg_status") or ("calculation (mass total / qty)" if derived else (first(r, "status") if mass is not None else "")),
             "make_buy": mb, "process": process, "process_status": pstatus,
             "product_status": status, "hold": "HOLD" in text_all, "team": team_of(path),
             "source_file": f"{path} @ {where}", "note": first(r, "note", "source"), "kind": kind,
@@ -344,8 +357,9 @@ def _tokens(s, digits):
 
 def same_item(a, b):
     """True when a parts-list name and the joints register's name describe the same item: their size groups
-    agree (one inside the other, any order), and most of the shorter name's numbered tokens (or, with no
-    numbers, its words) appear in the other, with at least one word in common. Wording and order may differ."""
+    agree (one inside the other, any order), their threads or diameters (M6, D8) agree, they share a word, and
+    either most of the shorter name's numbered tokens match or they share two words (a product code on one side
+    and a requirement such as 'gap 10 ±5' on the other). Wording and order may differ."""
     sa, sb = _sizes(a), _sizes(b)
     if sa and sb:
         def covered(xs, ys):
@@ -354,12 +368,17 @@ def same_item(a, b):
             return False
     ta, tb = _tokens(a, True), _tokens(b, True)
     wa, wb = _tokens(a, False), _tokens(b, False)
-    if ta and tb and len(ta & tb) / min(len(ta), len(tb)) < 0.5:
+    tha = {x for x in ta if re.fullmatch(r"[MD]\d+(?:\.\d+)?", x)}
+    thb = {x for x in tb if re.fullmatch(r"[MD]\d+(?:\.\d+)?", x)}
+    if tha and thb and not tha & thb:
+        return False  # different thread or diameter: M6 is not M10
+    shared_words = wa & wb
+    if wa and wb and not shared_words:
         return False
-    if wa and wb:
-        if not (ta and tb):
-            return len(wa & wb) / min(len(wa), len(wb)) >= 0.5
-        return bool(wa & wb)  # with matching numbers, one shared word (bolt, rivnut, Sherex...) is enough
+    if ta and tb and len(ta & tb) / min(len(ta), len(tb)) < 0.5 and len(shared_words) < 2:
+        return False  # numbers differ and the names share at most one word
+    if wa and wb and not (ta and tb):
+        return len(shared_words) / min(len(wa), len(wb)) >= 0.5
     return True
 
 
@@ -385,7 +404,8 @@ def build(sources):
     return parts, skipped, register, reg_where
 
 
-def check(parts, register, reg_where):
+def check(parts, register, reg_where, read_paths=()):
+    """read_paths: the parts-list files read (some may give no BOM lines, such as a packing list)."""
     fails, missing = [], {}
 
     def miss(team, msg):
@@ -436,7 +456,14 @@ def check(parts, register, reg_where):
     listed_teams = {r["team"] for r in parts}
     for team, folder in EXPECTED_FOLDERS.items():
         if team not in listed_teams:
-            missing.setdefault(team, []).insert(0, f"no parts list yet (expected *_BOM.csv files in {folder})")
+            read = sorted(p for p in read_paths if p.startswith(folder))
+            if read and folder == "v2/07-Packaging/":
+                msg = f"no packaging items (family 91) listed yet; {read[0]} names other teams' parts, which their own lists carry"
+            elif read:
+                msg = f"no BOM lines yet in {', '.join(read)}"
+            else:
+                msg = f"no parts list yet (expected *_BOM.csv files in {folder})"
+            missing.setdefault(team, []).insert(0, msg)
     for fam, node, name, team in FAMILIES:
         if fam in ("10", "83", "84", "91"):
             continue
@@ -611,7 +638,8 @@ def main(argv=None):
     a = ap.parse_args(argv)
     sources = load_sources(a.ref)
     parts, skipped, register, reg_where = build(sources)
-    fails, missing = check(parts, register, reg_where)
+    read_paths = [p for p in sources if p != REGISTER and p not in {s[0] for s in skipped}]
+    fails, missing = check(parts, register, reg_where, read_paths)
     if not a.no_write:
         out = Path(a.out)
         out.mkdir(parents=True, exist_ok=True)

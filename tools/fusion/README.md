@@ -107,7 +107,8 @@ design.userParameters.add("panel_h", ValueInput.createByString("side_h_Ref"), "m
 - Derived parameters arrive as **`<name>_Ref`** (`side_h_Ref`, `wall_depth_Ref`) and work in the part's own expressions; only favorites come across.
 - When the skeleton saves a new version, the part reports `Document.isUpToDate == False`; `Document.updateAllReferences()` brings the new values in and the part's expressions follow. Tested 2026-10-31 on throwaway designs (300 -> 400 mm after the source changed).
 - A script that raises an exception has all its changes rolled back (found twice on 2026-10-31), so derive and use the parameters in the same successful run.
-- Skeleton changes that keep its shape (new values) go in as new versions of the same cloud file; a new revision (P05) is a new file, and parts then derive from it.
+- **Changing the skeleton without cutting links:** `v2/01-CAD-Native/skeleton/skeleton_update.py` (run with `--doc 100000_P04_POD-SKELETON_CAD --close`) syncs the parameters from the table in `pod_skeleton.py` into the cloud file, checks it, saves a **new version of the same file** and exports. Never rebuild with `pod_skeleton.py` once parts are linked: a rebuild is a new file. A change of shape needs a new revision; `DataFile.name` can be set, so the same file can be renamed (P05) and keep its links.
+- A closed document that another open design derives from can stay loaded (with its changes): close it with `--discard` after a dry run, and expect the next run to find it already open.
 
 ## Saving to the Fusion cloud
 
