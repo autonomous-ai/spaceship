@@ -147,30 +147,34 @@ WALL_PARAMS = [
      "top member height: 20 on a lower panel; 40 x 40 on an upper panel, where the ceiling bolts in (PM ruling "
      "R-J3, joints register FR-06)"),
     ("stile_len", "frm_h - tube_w - top_h", "mm", "calculation", "stiles fit between the full-length rails (butt joints)"),
-    ("ceil_bolt_dz", "(corner_w + skin_t + bond_t) / 2", "mm", "calculation",
-     "J-CEIL-01 side bolts: the middle of the overlap between the 40 x 40 top member (pod_h - 40 to pod_h) and the "
-     "ceiling frame (pod_h - outer_t to pod_h - 6), below pod_h; Z 2377 on P04 (proposed to CEILING, 2026-10-31)"),
+    ("ceil_bolt_dz", "skin_t + bond_t + tube_d / 2", "mm", "confirmed",
+     "J-CEIL-01 side bolts on the ceiling frame tube's centre, Z 2374 on P04 (PM ruling 2026-10-31; joints register "
+     "R-J15, FR-07)"),
     ("fill_t", "tube_d", "mm", "calculation", "40 mm PET fill fills the frame depth (D-34; layout study 40 mm)"),
     # site joints, joints register V2-ENG-JNT-01 P01 (ce1f415): M6 x 20 ISO 4762 captive bolts into Sherex
     # CAH3-610-4.2 rivnuts, bolts and corner members DECIDED by the PM (2026-10-31); positions PROPOSED there
     ("bolt_d", "7 mm", "mm", "confirmed", "PM ruling on F-009: bolt holes 7.0 (0.51 float), position tolerance "
      "0.4 (+-0.2) from the spigot hole, CNC or drill jig (joints register FR-02)"),
-    ("access_d", "11 mm", "mm", "calculation", "register FR-03: passes the M6 ISO 4762 head (10 max) and the 5 mm key"),
+    ("access_d", "19 mm", "mm", "calculation",
+     "register FR-03: passes the 18 mm head washer (ISO 7093-1, R-J10), the M6 head and the 5 mm key; holds the "
+     "grommet retainer (H-02)"),
+    ("bolt_line_y", "pod_d / 2 - skin_t - bond_t - tube_d / 2", "mm", "confirmed",
+     "J-WALL-02 bolt line on the back panel's tube centre, Y 824 (joints register R-J15, FR-07)"),
     ("rivnut_d", "9.53 mm", "mm", "source", "Sherex CAH3-610-4.2 hole 9.53 +0.10 (HW-SEL A5; register H-03)"),
     ("spigot_d", "8.5 mm", "mm", "assumption", "register FR-05: hole for the 8 mm locating spigot H-05"),
     ("spigot_slot", "14 mm", "mm", "assumption", "register FR-05: slot length for the second spigot"),
     ("spigot_edge", "100 mm", "mm", "assumption", "register FR-04: spigots about 100 from each end of the joint"),
-    ("jnt_edge", "100 mm", "mm", "assumption", "register J-WALL-02, J-FRONT-01: end bolts 100 from each end"),
-    ("n_side_jnt", "3", "", "source", "register J-WALL-02, J-FRONT-01: 3 bolts per panel height"),
-    ("side_jnt_pitch", "(pnl_h - 2 * jnt_edge) / (n_side_jnt - 1)", "mm", "calculation",
+    ("bolt_edge", "220 mm", "mm", "confirmed",
+     "every bolted edge: end bolts 220 in from the panel's ends, evenly spaced, every bolt 30 or more from any stile "
+     "(PM ruling 2026-10-31 from the joints register, R-J14)"),
+    ("n_side_jnt", "3", "", "source", "register J-WALL-02, J-FRONT-01: 3 bolts up each side panel"),
+    ("side_jnt_pitch", "(pnl_h - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
      "equal pitch of the 3 bolts up the corner and decor joints"),
     ("pocket_w", "60 mm", "mm", "assumption", "register FR-10: fill left out 60 x 60 next to each bolt for the key"),
-    ("base_bolt_edge", "220 mm", "mm", "source",
-     "J-BASE-01 band rivnuts: the end ones 220 in from the panel ends, even pitch (BASE Engineer, 2026-10-31; the PM "
-     "ruled the positions stand)"),
-    ("n_base_bolt", "4", "", "source", "J-BASE-01: 4 bolts per side panel (BASE Engineer; joints register 3.3)"),
-    ("base_bolt_pitch", "(pnl_len - 2 * base_bolt_edge) / (n_base_bolt - 1)", "mm", "calculation",
-     "even pitch of the J-BASE-01 bolts"),
+    ("n_len_bolt", "4", "", "source",
+     "bolts along a side panel's length: J-BASE-01, J-WALL-01, J-CEIL-01 side edges (joints register 3.1, 3.3, 3.4)"),
+    ("len_bolt_pitch", "(pnl_len - 2 * bolt_edge) / (n_len_bolt - 1)", "mm", "calculation",
+     "even pitch of the bolts along the panel"),
     # lining cassette
     ("felt_t", "9 mm", "mm", "source", "plan VT03-PET 9 mm PET felt; HW-SEL A3; D-31 (the factory's felt)"),
     ("tray_t", "0.5 mm", "mm", "confirmed", "D-37: galvanised steel tray 0.5 mm"),
@@ -196,7 +200,8 @@ WALL_PARAMS = [
 DENSITY = {
     "frame": (2700.0, "source", "6063-T6 mill finish (PM ruling 2026-10-31, hidden frame tubes): 2.70 g/cm3"),
     "skin": (3.5 / 0.003, "calculation", "HW-SEL A1: 3.5 kg/m2 for 3 mm Alcorest / 3 mm; real kg/m2 HOLD (H16)"),
-    "fill": (32.0, "confirmed", "D-54: 32 kg/m3 fill until the wall sample tests 25"),
+    "fill": (24.0, "confirmed", "PM ruling 2026-10-31: 24 kg/m3 by default, the grade Pyrotek lists (the wall sample's "
+                                "T02 confirms it, else 32)"),
     "tray": (7850.0, "source", "steel 7850 kg/m3 (EN 10346 DX51D+Z)"),
     "felt": (1.8 / 0.009, "source", "Polyx Board 9: 1.8 kg/m2 at 9 mm (HW-SEL A3 opt 2); the factory felt is unverified"),
     "zone": (1.0, "assumption", "reserved zone, not a part: near-zero density so it adds no mass"),
@@ -723,8 +728,8 @@ def build_fill(design, fill, out, xf, zs):
     # target list misses the pieces an edit adds)
     z_rail_top = "(%s) + tube_w" % Z0
     if ROW == 1:
-        n_now = int(round(design.userParameters.itemByName("n_base_bolt").value))
-        ys = ["(%s) + base_bolt_edge + %d * base_bolt_pitch" % (Y_FRONT, i) for i in range(n_now)]
+        n_now = int(round(design.userParameters.itemByName("n_len_bolt").value))
+        ys = ["(%s) + bolt_edge + %d * len_bolt_pitch" % (Y_FRONT, i) for i in range(n_now)]
     else:
         n_now = int(round(design.userParameters.itemByName("stile_n_mid").value)) + 1
         ys = ["(%s) + tube_w / 2 + (%d + 0.5) * stile_pitch" % (Y_FRONT, i) for i in range(n_now)]
@@ -732,7 +737,7 @@ def build_fill(design, fill, out, xf, zs):
         box(design, fill, "FILL POCKET BOTTOM BOLT %d" % (i + 1), xf,
             ("(%s) - pocket_w / 2" % yc, "(%s) + pocket_w / 2" % yc), (z_rail_top, "(%s) + pocket_w" % z_rail_top),
             "cut")
-    z_j1 = "(%s) + jnt_edge" % Z0
+    z_j1 = "(%s) + bolt_edge" % Z0
     for j in range(3):
         zc = "(%s) + %d * side_jnt_pitch" % (z_j1, j)
         box(design, fill, "FILL POCKET DECOR BOLT %d" % (j + 1), xf,
@@ -744,18 +749,15 @@ def build_fill(design, fill, out, xf, zs):
 def joint_features(design, frame, fill, out):
     """Site joint holes per the joints register (V2-ENG-JNT-01 P01, ce1f415). The fill pockets are in step 5."""
     xc = sx("pod_w / 2 - skin_t - bond_t - tube_d / 2")     # centre line of the frame depth
-    y_bay1 = "(%s) + tube_w / 2 + stile_pitch / 2" % Y_FRONT  # first bolt: mid-pitch of the first bay
-    n_bays = "stile_n_mid + 1"
+    y_b1 = "(%s) + bolt_edge" % Y_FRONT                     # 220 rule on every edge (R-J14)
+    n_b, p_b = "n_len_bolt", "len_bolt_pitch"
     t = "tube_t"
     bot, top = out["RAIL - BOTTOM"], out["RAIL - TOP"]
     front, back = out["STILE - FRONT"], out["STILE - BACK"]
     zb0, zb1 = Z0, "(%s) + tube_w" % Z0                      # bottom rail bottom and top faces
     zt1 = Z1                                                 # top rail top face
     # bottom rail, bolt side of J-BASE-01 (lower) or J-WALL-01 (upper): FR-02 + FR-03 at each bay
-    if ROW == 1:      # J-BASE-01: at the band's rivnuts (BASE Engineer's rule, ruled to stand)
-        y_b1, n_b, p_b = "(%s) + base_bolt_edge" % Y_FRONT, "n_base_bolt", "base_bolt_pitch"
-    else:             # J-WALL-01 bolt side: one per bay, coaxial with the lower panel's rivnuts
-        y_b1, n_b, p_b = y_bay1, n_bays, "stile_pitch"
+    # bottom rail: J-BASE-01 (lower) or J-WALL-01 bolt side (upper), both at the 220 rule
     a = hole(design, frame, bot, "z", zb0, +1, {"x": xc, "y": y_b1}, "bolt_d", t, "BOTTOM RAIL BOLT CLEARANCE 1")
     b = hole(design, frame, bot, "z", zb1, -1, {"x": xc, "y": y_b1}, "access_d", t, "BOTTOM RAIL KEY ACCESS 1")
     pattern_feat(frame, [a, b], "y", n_b, p_b, "BOTTOM RAIL BOLT HOLES")
@@ -771,25 +773,25 @@ def joint_features(design, frame, fill, out):
              "BOTTOM RAIL SPIGOT SLOT END %d" % (i + 1))
     if ROW == 1:
         # top rail, nut side of J-WALL-01: rivnut at each bay (FR-01) and 2 spigot rivnuts (FR-04)
-        r = hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": y_bay1}, "rivnut_d", t, "TOP RAIL RIVNUT 1")
-        pattern_feat(frame, [r], "y", n_bays, "stile_pitch", "TOP RAIL RIVNUTS")
+        r = hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": y_b1}, "rivnut_d", t, "TOP RAIL RIVNUT 1")
+        pattern_feat(frame, [r], "y", n_b, p_b, "TOP RAIL RIVNUTS")
         hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": "(%s) + spigot_edge" % Y_FRONT}, "rivnut_d", t,
              "TOP RAIL SPIGOT RIVNUT FRONT")
         hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": "(%s) - spigot_edge" % Y_BACK}, "rivnut_d", t,
              "TOP RAIL SPIGOT RIVNUT BACK")
     if ROW == 2:
         # 40 x 40 top member, nut side of J-CEIL-01 side edges: a rivnut in its room-side face at each bay middle
-        r = hole(design, frame, top, "x", X_FRAME_IN, S, {"y": y_bay1, "z": "pod_h - ceil_bolt_dz"}, "rivnut_d", t,
+        r = hole(design, frame, top, "x", X_FRAME_IN, S, {"y": y_b1, "z": "pod_h - ceil_bolt_dz"}, "rivnut_d", t,
                  "TOP MEMBER CEILING RIVNUT 1")
-        pattern_feat(frame, [r], "y", n_bays, "stile_pitch", "TOP MEMBER CEILING RIVNUTS")
-    z_j1 = "(%s) + jnt_edge" % Z0
+        pattern_feat(frame, [r], "y", n_b, p_b, "TOP MEMBER CEILING RIVNUTS")
+    z_j1 = "(%s) + bolt_edge" % Z0
     # front stile, bolt side of J-FRONT-01 (decor block): FR-02 in the front wall, FR-03 in the back wall
     a = hole(design, frame, front, "y", Y_FRONT, +1, {"x": xc, "z": z_j1}, "bolt_d", t, "FRONT STILE BOLT CLEARANCE 1")
     b = hole(design, frame, front, "y", "(%s) + tube_w" % Y_FRONT, -1, {"x": xc, "z": z_j1}, "access_d", t,
              "FRONT STILE KEY ACCESS 1")
     pattern_feat(frame, [a, b], "z", "n_side_jnt", "side_jnt_pitch", "FRONT STILE BOLT HOLES")
     # 40 x 40 back stile, nut side of J-WALL-02 (back corner): rivnut in the room-side face (FR-01, FR-06)
-    r = hole(design, frame, back, "x", X_FRAME_IN, S, {"y": "(%s) - corner_w / 2" % Y_FRAME_BACK, "z": z_j1},
+    r = hole(design, frame, back, "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": z_j1},
              "rivnut_d", t, "BACK STILE CORNER RIVNUT 1")
     pattern_feat(frame, [r], "z", "n_side_jnt", "side_jnt_pitch", "BACK STILE CORNER RIVNUTS")
     holes = sum(c.features.holeFeatures.count for c in [frame])

@@ -22,17 +22,20 @@ REG = "joints register V2-ENG-JNT-01 P01 (PR #23)"
 FAMILIES = {
     ("RAIL - BOTTOM", 7.0, "z"): (
         "F01", "J-BASE-01 bolt clearance, bolt side: the panel's captive bolt goes down through the rail's bottom wall "
-        "into the base band's rivnut", "M6 x 16 ISO 4762 8.8 (H-01) into Sherex CAH3-610-4.2 with the 1.5 mm stop "
-        "washer (H-03, H-08) in the band's top wall",
-        "4 holes, on the frame's centre line; first and last 220 from the panel's ends, even pitch, at the band "
-        "rivnuts (BASE Engineer's positions, ruled to stand)", "%s 3.3, FR-02; PM ruling F-009 (Ø7.0)" % REG,
-        "16.5 to each side wall of the 40 mm face; at least 30 to the nearest stile face (pocket F13)",
+        "into the base band's rivnut (lower panel) or the lower panel's rivnut (upper panel)",
+        "M6 x 16 ISO 4762 8.8 (838001) with its ISO 7093-1 head washer (838004), into Sherex CAH3-610-4.2 (838003) "
+        "over the 1.5 mm stop washer (831002)",
+        "4 holes on the frame's centre line: end bolts 220 in from the panel's ends, evenly spaced (R-J14)",
+        "%s 3.1, 3.3, FR-02; PM rulings F-009 (Ø7.0) and R-J14 (220 rule)" % REG,
+        "16.5 to each side wall of the 40 mm face; 30 or more to every stile face (R-J14; pocket F13)",
         "Ø7.0 gives 0.51 float on M6; position Ø0.4 (±0.2) from the spigot hole F03 (PM ruling F-009)",
         "CNC or drill jig located on F03; check with a Ø6.6 pin through both parts on the jig", "PROPOSED (register); positions source; Ø confirmed"),
-    ("RAIL - BOTTOM", 11.0, "z"): (
-        "F02", "Key access for F01: the bolt goes in head first at the factory and the 5 mm key reaches its socket on site",
-        "ISO 4762 head Ø10 max; 5 mm hex key (H-07)", "coaxial with F01, in the rail's top wall, which faces the bay",
-        "%s 2.2, FR-03" % REG, "the Ø11 clears the Ø10 head by 0.5 a side", "coaxial with F01 within the Ø0.4 zone",
+    ("RAIL - BOTTOM", 19.0, "z"): (
+        "F02", "Key access for F01: the bolt and its washer go in head first at the factory, a grommet (838005, "
+        "HOLD-02) in this hole holds the head, and the 5 mm key reaches the socket on site",
+        "ISO 7093-1 washer Ø18; ISO 4762 head Ø10; 5 mm hex key (108001)",
+        "coaxial with F01, in the rail's top wall, which faces the bay", "%s 2.2, FR-03" % REG,
+        "Ø19 leaves 10.5 to each side wall of the 40 mm face", "coaxial with F01 within the Ø0.4 zone",
         "drilled with F01 in the same set-up", "calculation"),
     ("RAIL - BOTTOM", 8.5, "z"): (
         "F03", "Locating: the fixed spigot hole (round) at the front end, and the two arcs of the slot F04 at the back end",
@@ -45,32 +48,35 @@ FAMILIES = {
         "F05", "J-WALL-01 rivnuts, nut side (4, one per bay) and 2 spigot rivnuts: the upper panel bolts down into "
         "these, and its spigots stand in the 2 end ones", "Sherex CAH3-610-4.2 with the 1.5 mm stop washer H-08 "
         "(sets the 2.26 seam gap); spigots H-05 in the 2 end ones",
-        "bolt rivnuts mid-pitch between stile centres (one per bay, for the seal and the key's reach); spigot "
-        "rivnuts 100 from each end, not at a bolt", "%s 3.1, FR-01, FR-04" % REG,
+        "bolt rivnuts at the 220 rule, coaxial with the upper panel's F01 holes (R-J14); spigot rivnuts 100 from each "
+        "end (R-J13), not at a bolt", "%s 3.1, FR-01, FR-04" % REG,
         "15.2 to each side wall of the 40 mm face (Ø20 stop washer fits a 40 mm face only)",
         "Ø9.53 +0.10 (Sherex); position Ø0.4 from the lower panel's spigot rivnut (PM ruling F-009)",
         "CNC or jig; set with the maker's tool; check flush set and spin with T-01/T-02", "source (hole); PROPOSED (positions)"),
     ("STILE - FRONT", 7.0, "y"): (
         "F07", "J-FRONT-01 bolt clearance, bolt side: the captive bolt goes forward through the front wall into the "
         "decor block's rivnut", "M6 x 16 ISO 4762 into the decor back plate's rivnut (H-03, H-08; FRONT design)",
-        "3 per panel height: 100 from the panel's bottom and top, and the middle; on the frame's centre line",
-        "%s 3.5, FR-08; PM ruling F-009" % REG, "16.5 to each side wall; the Ø11 F08 behind it",
+        "3 per panel height at the 220 rule (220 in from the panel's bottom and top, and the middle); on the frame's "
+        "centre line", "%s 3.5, FR-08; PM rulings F-009, R-J14" % REG, "16.5 to each side wall; the Ø19 F08 behind it",
         "Ø0.4 position from F03", "CNC or jig", "PROPOSED (register)"),
-    ("STILE - FRONT", 11.0, "y"): (
-        "F08", "Key access for F07, in the stile's back wall facing the first bay", "ISO 4762 head, 5 mm key",
+    ("STILE - FRONT", 19.0, "y"): (
+        "F08", "Key access for F07, in the stile's back wall facing the first bay; holds F07's grommet retainer",
+        "ISO 7093-1 washer Ø18, ISO 4762 head, 5 mm key",
         "coaxial with F07", "%s FR-03" % REG, "pocket F13 in the first bay", "coaxial within the Ø0.4 zone",
         "drilled with F07", "calculation"),
     ("STILE - BACK", 9.53, "x"): (
         "F09", "J-WALL-02 corner rivnuts, nut side: the back panel's edge tube bolts across the corner gap into these",
         "Sherex CAH3-610-4.2 with the stop washer H-08 in the room-side wall of the 40 x 40 back stile",
-        "3 per panel height at F07's heights, on the back stile's centre (the middle of the corner overlap)",
-        "%s 3.2, FR-01, FR-06; PM ruling R-J3 (40 x 40)" % REG, "15.2 to each side wall of the 40 mm face",
+        "3 per panel height at F07's heights, on the back panel's bolt line Y 824 (its tube centre, R-J15)",
+        "%s 3.2, FR-01, FR-06, FR-07; PM rulings R-J3 (40 x 40), R-J15" % REG,
+        "hole edge 11 from the inner wall; the Ø20 stop washer (Y 814 to 834) lies on the 40 mm face",
         "Ø0.4 from F03, matched by the back panel's FR-07 holes", "CNC or jig; T-01, T-02", "source (hole); PROPOSED (positions)"),
 }
 
 OTHER = [
     ("F10", "211101", "Stile pitch 364.93 between centres, 3 intermediate stiles",
-     "keeps the ACP flat between bond lines (D-16, D-34: members 400 apart or less)", "stile_pitch_max 400 (confirmed); "
+     "keeps the ACP flat between bond lines (D-16, D-34: members 400 apart or less); every bolt lands 30 or more from "
+     "every stile (R-J14; checked by test_wall_offline.py)", "stile_pitch_max 400 (confirmed); "
      "pitch = (frame length - 10 - 20) / 4 (calculation)", "follows wall_depth (edit test)", "cut list ±0.5 (assumption)", "confirmed rule"),
     ("F11", "211101", "Back stile 40 x 40 x 1.2", "room for the corner rivnut, its Ø20 stop washer and the bolt "
      "(37+ mm overlap instead of 17)", "PM ruling R-J3; %s 2.4, FR-06" % REG, "", "", "confirmed"),

@@ -1,13 +1,20 @@
 {
  "document": "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_CAD",
- "version": 2,
+ "version": 4,
  "saved": true,
  "modified": true,
  "components": [
   {
    "part_number": "211101",
+   "name": "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_CAD",
+   "description": "WALL - PANEL FRAME - SIDE LOWER - LH | Vách trái - khung dưới | P01 | position L1",
+   "is_root": true,
+   "bodies": []
+  },
+  {
+   "part_number": "211101",
    "name": "211101 WALL - PANEL FRAME - SIDE LOWER - LH",
-   "description": "WALL - PANEL FRAME - SIDE LOWER - LH | Vách trái - khung dưới | P01",
+   "description": "WALL - PANEL FRAME - SIDE LOWER - LH | Vách trái - khung dưới | P01 | position L1",
    "is_root": false,
    "bodies": [
     {
@@ -20,9 +27,9 @@
       847.0,
       132.26
      ],
-     "volume_mm3": 205108.5,
-     "area_mm2": 342472.7,
-     "mass_kg": 0.5538,
+     "volume_mm3": 204203.7,
+     "area_mm2": 341085.3,
+     "mass_kg": 0.5514,
      "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": [
       {
@@ -62,7 +69,7 @@
        "full_circle": true
       },
       {
-       "d": 11.0,
+       "d": 19.0,
        "axis": "z",
        "centre": [
         -1224.0,
@@ -86,7 +93,7 @@
        "full_circle": true
       },
       {
-       "d": 11.0,
+       "d": 19.0,
        "axis": "z",
        "centre": [
         -1224.0,
@@ -110,7 +117,7 @@
        "full_circle": true
       },
       {
-       "d": 11.0,
+       "d": 19.0,
        "axis": "z",
        "centre": [
         -1224.0,
@@ -134,7 +141,7 @@
        "full_circle": true
       },
       {
-       "d": 11.0,
+       "d": 19.0,
        "axis": "z",
        "centre": [
         -1224.0,
@@ -203,7 +210,7 @@
        "axis": "z",
        "centre": [
         -1224.0,
-        644.53,
+        630.0,
         null
        ],
        "from": 1253.8,
@@ -215,7 +222,7 @@
        "axis": "z",
        "centre": [
         -1224.0,
-        279.6,
+        279.09,
         null
        ],
        "from": 1253.8,
@@ -227,7 +234,7 @@
        "axis": "z",
        "centre": [
         -1224.0,
-        -85.34,
+        -71.83,
         null
        ],
        "from": 1253.8,
@@ -239,7 +246,7 @@
        "axis": "z",
        "centre": [
         -1224.0,
-        -450.27,
+        -422.74,
         null
        ],
        "from": 1253.8,
@@ -258,18 +265,18 @@
       -622.74,
       1235.0
      ],
-     "volume_mm3": 151962.1,
-     "area_mm2": 253750.2,
-     "mass_kg": 0.4103,
+     "volume_mm3": 151283.5,
+     "area_mm2": 252709.7,
+     "mass_kg": 0.4085,
      "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": [
       {
-       "d": 11.0,
+       "d": 19.0,
        "axis": "y",
        "centre": [
         -1224.0,
         null,
-        1155.0
+        1035.0
        ],
        "from": -623.94,
        "to": -622.74,
@@ -281,14 +288,14 @@
        "centre": [
         -1224.0,
         null,
-        1155.0
+        1035.0
        ],
        "from": -642.74,
        "to": -641.54,
        "full_circle": true
       },
       {
-       "d": 11.0,
+       "d": 19.0,
        "axis": "y",
        "centre": [
         -1224.0,
@@ -312,12 +319,12 @@
        "full_circle": true
       },
       {
-       "d": 11.0,
+       "d": 19.0,
        "axis": "y",
        "centre": [
         -1224.0,
         null,
-        212.26
+        332.26
        ],
        "from": -623.94,
        "to": -622.74,
@@ -329,7 +336,7 @@
        "centre": [
         -1224.0,
         null,
-        212.26
+        332.26
        ],
        "from": -642.74,
        "to": -641.54,
@@ -357,8 +364,8 @@
        "axis": "x",
        "centre": [
         null,
-        827.0,
-        1155.0
+        824.0,
+        1035.0
        ],
        "from": -1205.2,
        "to": -1204.0,
@@ -369,7 +376,7 @@
        "axis": "x",
        "centre": [
         null,
-        827.0,
+        824.0,
         683.63
        ],
        "from": -1205.2,
@@ -381,8 +388,8 @@
        "axis": "x",
        "centre": [
         null,
-        827.0,
-        212.26
+        824.0,
+        332.26
        ],
        "from": -1205.2,
        "to": -1204.0,
@@ -439,13 +446,6 @@
      "holes": []
     }
    ]
-  },
-  {
-   "part_number": "211101",
-   "name": "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_CAD",
-   "description": "WALL - PANEL FRAME - SIDE LOWER - LH | Vách trái - khung dưới | P01",
-   "is_root": true,
-   "bodies": []
   }
  ],
  "parameters": [
@@ -639,11 +639,25 @@
    "comment": "CALCULATION: equal stile pitch, centre to centre, from the front stile to the 40 mm back stile"
   },
   {
+   "name": "top_h",
+   "expression": "tube_w",
+   "unit": "mm",
+   "value": 20.0,
+   "comment": "CALCULATION: top member height: 20 on a lower panel; 40 x 40 on an upper panel, where the ceiling bolts in (PM ruling R-J3, joints register FR-06)"
+  },
+  {
    "name": "stile_len",
-   "expression": "frm_h - 2 * tube_w",
+   "expression": "frm_h - tube_w - top_h",
    "unit": "mm",
    "value": 1102.74,
    "comment": "CALCULATION: stiles fit between the full-length rails (butt joints)"
+  },
+  {
+   "name": "ceil_bolt_dz",
+   "expression": "skin_t + bond_t + tube_d / 2",
+   "unit": "mm",
+   "value": 26.0,
+   "comment": "CONFIRMED: J-CEIL-01 side bolts on the ceiling frame tube's centre, Z 2374 on P04 (PM ruling 2026-10-31; joints register R-J15, FR-07)"
   },
   {
    "name": "fill_t",
@@ -661,10 +675,17 @@
   },
   {
    "name": "access_d",
-   "expression": "11 mm",
+   "expression": "19 mm",
    "unit": "mm",
-   "value": 11.0,
-   "comment": "CALCULATION: register FR-03: passes the M6 ISO 4762 head (10 max) and the 5 mm key"
+   "value": 19.0,
+   "comment": "CALCULATION: register FR-03: passes the 18 mm head washer (ISO 7093-1, R-J10), the M6 head and the 5 mm key; holds the grommet retainer (H-02)"
+  },
+  {
+   "name": "bolt_line_y",
+   "expression": "pod_d / 2 - skin_t - bond_t - tube_d / 2",
+   "unit": "mm",
+   "value": 824.0,
+   "comment": "CONFIRMED: J-WALL-02 bolt line on the back panel's tube centre, Y 824 (joints register R-J15, FR-07)"
   },
   {
    "name": "rivnut_d",
@@ -695,24 +716,24 @@
    "comment": "ASSUMPTION: register FR-04: spigots about 100 from each end of the joint"
   },
   {
-   "name": "jnt_edge",
-   "expression": "100 mm",
+   "name": "bolt_edge",
+   "expression": "220 mm",
    "unit": "mm",
-   "value": 100.0,
-   "comment": "ASSUMPTION: register J-WALL-02, J-FRONT-01: end bolts 100 from each end"
+   "value": 220.0,
+   "comment": "CONFIRMED: every bolted edge: end bolts 220 in from the panel's ends, evenly spaced, every bolt 30 or more from any stile (PM ruling 2026-10-31 from the joints register, R-J14)"
   },
   {
    "name": "n_side_jnt",
    "expression": "3",
    "unit": "",
    "value": 3.0,
-   "comment": "SOURCE: register J-WALL-02, J-FRONT-01: 3 bolts per panel height"
+   "comment": "SOURCE: register J-WALL-02, J-FRONT-01: 3 bolts up each side panel"
   },
   {
    "name": "side_jnt_pitch",
-   "expression": "( pnl_h - 2 * jnt_edge ) / ( n_side_jnt - 1 )",
+   "expression": "( pnl_h - 2 * bolt_edge ) / ( n_side_jnt - 1 )",
    "unit": "mm",
-   "value": 471.37,
+   "value": 351.37,
    "comment": "CALCULATION: equal pitch of the 3 bolts up the corner and decor joints"
   },
   {
@@ -723,25 +744,18 @@
    "comment": "ASSUMPTION: register FR-10: fill left out 60 x 60 next to each bolt for the key"
   },
   {
-   "name": "base_bolt_edge",
-   "expression": "220 mm",
-   "unit": "mm",
-   "value": 220.0,
-   "comment": "SOURCE: J-BASE-01 band rivnuts: the end ones 220 in from the panel ends, even pitch (BASE Engineer, 2026-10-31; the PM ruled the positions stand)"
-  },
-  {
-   "name": "n_base_bolt",
+   "name": "n_len_bolt",
    "expression": "4",
    "unit": "",
    "value": 4.0,
-   "comment": "SOURCE: J-BASE-01: 4 bolts per side panel (BASE Engineer; joints register 3.3)"
+   "comment": "SOURCE: bolts along a side panel's length: J-BASE-01, J-WALL-01, J-CEIL-01 side edges (joints register 3.1, 3.3, 3.4)"
   },
   {
-   "name": "base_bolt_pitch",
-   "expression": "( pnl_len - 2 * base_bolt_edge ) / ( n_base_bolt - 1 )",
+   "name": "len_bolt_pitch",
+   "expression": "( pnl_len - 2 * bolt_edge ) / ( n_len_bolt - 1 )",
    "unit": "mm",
    "value": 350.9133,
-   "comment": "CALCULATION: even pitch of the J-BASE-01 bolts"
+   "comment": "CALCULATION: even pitch of the bolts along the panel"
   },
   {
    "name": "felt_t",

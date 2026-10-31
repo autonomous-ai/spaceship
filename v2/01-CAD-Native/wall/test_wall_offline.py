@@ -93,8 +93,10 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertLessEqual(v["stile_pitch"], v["stile_pitch_max"])   # D-16, D-34
         self.assertEqual(v["corner_w"], 40)
         self.assertAlmostEqual(v["stile_len"], 1102.74)
-        self.assertAlmostEqual(v["side_jnt_pitch"], 471.37)  # 3 bolts, 100 from each end of 1142.74
-        self.assertAlmostEqual(v["base_bolt_pitch"], 350.913, places=3)  # BASE rule: 220 from the ends, 4 even
+        self.assertAlmostEqual(v["side_jnt_pitch"], 351.37)  # 3 bolts, 220 from each end of 1142.74 (R-J14)
+        self.assertAlmostEqual(v["len_bolt_pitch"], 350.913, places=3)  # 220 from the ends, 4 even (R-J14)
+        self.assertEqual(v["access_d"], 19)              # FR-03: passes the 18 mm head washer
+        self.assertEqual(v["bolt_line_y"], 824)          # R-J15: back panel tube centre
         self.assertEqual(v["bolt_d"], 7)                 # PM ruling on F-009
         self.assertEqual(v["tray_h"], 34)                # returns the full cassette depth, lips hold the felt
         self.assertEqual(v["gap_h"], 24)                 # air gap behind the felt (D-17's 25 less the lip sheet)
@@ -111,7 +113,7 @@ class WallSidePanelTest(unittest.TestCase):
         v = resolve(load(row="2"))
         self.assertEqual(v["top_h"], 40)                 # R-J3: 40 x 40 top member on L2, R2
         self.assertAlmostEqual(v["stile_len"], 1142.74 - 20 - 40)
-        self.assertAlmostEqual(2400 - v["ceil_bolt_dz"], 2377)   # middle of the 34 mm overlap with the ceiling frame
+        self.assertAlmostEqual(2400 - v["ceil_bolt_dz"], 2374)   # R-J15: ceiling frame tube centre
         self.assertEqual(resolve(load(row="1"))["top_h"], 20)
 
     def test_part_designs_have_their_own_names(self):
@@ -125,6 +127,17 @@ class WallSidePanelTest(unittest.TestCase):
             vals = resolve(ns, override={"wall_depth": depth})
             self.assertLessEqual(vals["stile_pitch"], 400, depth)
             self.assertGreater(vals["stile_pitch"], 200, depth)
+
+    def test_every_bolt_is_30_clear_of_every_stile(self):
+        """R-J14: every bolt along the panel at least 30 mm from any stile face (the 60 mm key pocket fits)."""
+        v = resolve(load())
+        y0 = 0.0                                          # panel front end
+        stiles = [(y0, y0 + 20)] + [(y0 + k * v["stile_pitch"], y0 + k * v["stile_pitch"] + 20)
+                                    for k in range(1, int(v["stile_n_mid"]) + 1)] + [(v["frm_len"] - 40, v["frm_len"])]
+        for i in range(int(v["n_len_bolt"])):
+            yb = y0 + v["bolt_edge"] + i * v["len_bolt_pitch"]
+            gap = min(min(abs(yb - a), abs(yb - b)) if not a <= yb <= b else -1 for a, b in stiles)
+            self.assertGreaterEqual(gap, 30, "bolt %d at %.2f" % (i, yb))
 
     def test_part_numbers_and_names(self):
         seen = {}

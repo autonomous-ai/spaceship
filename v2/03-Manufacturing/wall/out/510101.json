@@ -1,112 +1,9 @@
 {
  "document": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD",
- "version": 5,
+ "version": 6,
  "saved": true,
  "modified": true,
  "components": [
-  {
-   "part_number": "511301",
-   "name": "511301 LINING - FELT - SIDE LOWER - LH",
-   "description": "LINING - FELT - SIDE LOWER - LH | Tấm tiêu âm vách trái dưới | P01",
-   "is_root": false,
-   "bodies": [
-    {
-     "name": "FELT - PET 9 HELD BY THE TRAY LIPS",
-     "box": [
-      -1175.5,
-      -643.5,
-      113.76,
-      -1166.5,
-      798.5,
-      1253.5
-     ],
-     "volume_mm3": 14791545.7,
-     "area_mm2": 3333481.5,
-     "mass_kg": 2.9583,
-     "material": "PET FELT 9 MM 200 kg/m3 (source)",
-     "holes": []
-    }
-   ]
-  },
-  {
-   "part_number": "NO-PN-HOLD-H03",
-   "name": "NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED)",
-   "description": "HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED) | Vùng dành cho kẹp treo cassette (HOLD) | P01",
-   "is_root": false,
-   "bodies": [
-    {
-     "name": "HOLD - CLIP ZONE 1 (BOTTOM FRONT)",
-     "box": [
-      -1204.0,
-      -277.81,
-      182.26,
-      -1200.0,
-      -257.81,
-      242.26
-     ],
-     "volume_mm3": 4800.0,
-     "area_mm2": 3040.0,
-     "mass_kg": 0.0,
-     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
-     "holes": []
-    },
-    {
-     "name": "HOLD - CLIP ZONE 2 (BOTTOM BACK)",
-     "box": [
-      -1204.0,
-      452.06,
-      182.26,
-      -1200.0,
-      472.06,
-      242.26
-     ],
-     "volume_mm3": 4800.0,
-     "area_mm2": 3040.0,
-     "mass_kg": 0.0,
-     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
-     "holes": []
-    },
-    {
-     "name": "HOLD - CLIP ZONE 3 (TOP FRONT)",
-     "box": [
-      -1204.0,
-      -277.81,
-      1125.0,
-      -1200.0,
-      -257.81,
-      1185.0
-     ],
-     "volume_mm3": 4800.0,
-     "area_mm2": 3040.0,
-     "mass_kg": 0.0,
-     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
-     "holes": []
-    },
-    {
-     "name": "HOLD - CLIP ZONE 4 (TOP BACK)",
-     "box": [
-      -1204.0,
-      452.06,
-      1125.0,
-      -1200.0,
-      472.06,
-      1185.0
-     ],
-     "volume_mm3": 4800.0,
-     "area_mm2": 3040.0,
-     "mass_kg": 0.0,
-     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
-     "holes": []
-    }
-   ]
-  },
-  {
-   "part_number": "510101",
-   "name": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD",
-   "description": "LINING - CASSETTE - SIDE LOWER - LH | Cassette lót vách trái dưới (khay thép + tấm tiêu âm) | P01 | position L1",
-   "is_root": true,
-   "bodies": []
-  },
   {
    "part_number": "511101",
    "name": "511101 LINING - TRAY - SIDE LOWER - LH",
@@ -323,6 +220,109 @@
      ]
     }
    ]
+  },
+  {
+   "part_number": "NO-PN-HOLD-H03",
+   "name": "NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED)",
+   "description": "HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED) | Vùng dành cho kẹp treo cassette (HOLD) | P01",
+   "is_root": false,
+   "bodies": [
+    {
+     "name": "HOLD - CLIP ZONE 1 (BOTTOM FRONT)",
+     "box": [
+      -1204.0,
+      -277.81,
+      182.26,
+      -1200.0,
+      -257.81,
+      242.26
+     ],
+     "volume_mm3": 4800.0,
+     "area_mm2": 3040.0,
+     "mass_kg": 0.0,
+     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
+     "holes": []
+    },
+    {
+     "name": "HOLD - CLIP ZONE 2 (BOTTOM BACK)",
+     "box": [
+      -1204.0,
+      452.06,
+      182.26,
+      -1200.0,
+      472.06,
+      242.26
+     ],
+     "volume_mm3": 4800.0,
+     "area_mm2": 3040.0,
+     "mass_kg": 0.0,
+     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
+     "holes": []
+    },
+    {
+     "name": "HOLD - CLIP ZONE 3 (TOP FRONT)",
+     "box": [
+      -1204.0,
+      -277.81,
+      1125.0,
+      -1200.0,
+      -257.81,
+      1185.0
+     ],
+     "volume_mm3": 4800.0,
+     "area_mm2": 3040.0,
+     "mass_kg": 0.0,
+     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
+     "holes": []
+    },
+    {
+     "name": "HOLD - CLIP ZONE 4 (TOP BACK)",
+     "box": [
+      -1204.0,
+      452.06,
+      1125.0,
+      -1200.0,
+      472.06,
+      1185.0
+     ],
+     "volume_mm3": 4800.0,
+     "area_mm2": 3040.0,
+     "mass_kg": 0.0,
+     "material": "RESERVED ZONE 1 kg/m3 (assumption)",
+     "holes": []
+    }
+   ]
+  },
+  {
+   "part_number": "511301",
+   "name": "511301 LINING - FELT - SIDE LOWER - LH",
+   "description": "LINING - FELT - SIDE LOWER - LH | Tấm tiêu âm vách trái dưới | P01",
+   "is_root": false,
+   "bodies": [
+    {
+     "name": "FELT - PET 9 HELD BY THE TRAY LIPS",
+     "box": [
+      -1175.5,
+      -643.5,
+      113.76,
+      -1166.5,
+      798.5,
+      1253.5
+     ],
+     "volume_mm3": 14791545.7,
+     "area_mm2": 3333481.5,
+     "mass_kg": 2.9583,
+     "material": "PET FELT 9 MM DARK GRAY 200 kg/m3 (source)",
+     "holes": []
+    }
+   ]
+  },
+  {
+   "part_number": "510101",
+   "name": "510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_CAD",
+   "description": "LINING - CASSETTE - SIDE LOWER - LH | Cassette lót vách trái dưới (khay thép + tấm tiêu âm) | P01 | position L1",
+   "is_root": true,
+   "bodies": []
   }
  ],
  "parameters": [
@@ -331,84 +331,84 @@
    "expression": "pod_w_Ref",
    "unit": "mm",
    "value": 2500.0,
-   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "pod_d",
    "expression": "pod_d_Ref",
    "unit": "mm",
    "value": 1700.0,
-   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "pod_h",
    "expression": "pod_h_Ref",
    "unit": "mm",
    "value": 2400.0,
-   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "wall_depth",
    "expression": "wall_depth_Ref",
    "unit": "mm",
    "value": 1495.0,
-   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "wall_z0",
    "expression": "wall_z0_Ref",
    "unit": "mm",
    "value": 110.0,
-   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "panel_z0",
    "expression": "panel_z0_Ref",
    "unit": "mm",
    "value": 112.26,
-   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "side_h",
    "expression": "side_h_Ref",
    "unit": "mm",
    "value": 1142.74,
-   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "stack_t",
    "expression": "stack_t_Ref",
    "unit": "mm",
    "value": 84.0,
-   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "outer_t",
    "expression": "outer_t_Ref",
    "unit": "mm",
    "value": 46.0,
-   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "cass_t",
    "expression": "cass_t_Ref",
    "unit": "mm",
    "value": 34.0,
-   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "lin_gap",
    "expression": "lin_gap_Ref",
    "unit": "mm",
    "value": 4.0,
-   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "seam_gap",
    "expression": "seam_gap_Ref",
    "unit": "mm",
    "value": 2.26,
-   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "skin_t",
@@ -516,11 +516,25 @@
    "comment": "CALCULATION: equal stile pitch, centre to centre, from the front stile to the 40 mm back stile"
   },
   {
+   "name": "top_h",
+   "expression": "tube_w",
+   "unit": "mm",
+   "value": 20.0,
+   "comment": "CALCULATION: top member height: 20 on a lower panel; 40 x 40 on an upper panel, where the ceiling bolts in (PM ruling R-J3, joints register FR-06)"
+  },
+  {
    "name": "stile_len",
-   "expression": "frm_h - 2 * tube_w",
+   "expression": "frm_h - tube_w - top_h",
    "unit": "mm",
    "value": 1102.74,
    "comment": "CALCULATION: stiles fit between the full-length rails (butt joints)"
+  },
+  {
+   "name": "ceil_bolt_dz",
+   "expression": "( corner_w + skin_t + bond_t ) / 2",
+   "unit": "mm",
+   "value": 23.0,
+   "comment": "CALCULATION: J-CEIL-01 side bolts: the middle of the overlap between the 40 x 40 top member (pod_h - 40 to pod_h) and the ceiling frame (pod_h - outer_t to pod_h - 6), below pod_h; Z 2377 on P04 (proposed to CEILING, 2026-10-31)"
   },
   {
    "name": "fill_t",

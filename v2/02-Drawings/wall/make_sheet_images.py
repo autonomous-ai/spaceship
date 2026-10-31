@@ -94,9 +94,11 @@ def frame_blocks(pn, src=None):
         "end) on its left. Pod position L1: left wall, lower row; pod system per conventions.md section 4.",
         "2. Datums. A = bottom face of the bottom rail (stands on the base band, pod Z 112.26). B = front face of the "
         "front stile (pod Y -642.74, 2.26 seam to the decor block). C = outer face (pod X -1244, bonded to the skin).",
-        "3. Hole tables: one per drilled face, origin at that view's B-A corner (or B-C), X/Y in mm. Ø7.0 = M6 bolt "
-        "clearance (captive M6 × 16 ISO 4762). Ø11 = key access. Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut over a "
-        "1.5 mm stop washer. Ø8.5 and the 8.5 × 14 slot (along X) = locating spigots. Reasons: FEATURE-RATIONALE-210101.md.",
+        "3. Hole tables: one per drilled face, origin at that view's lower left corner, X/Y in mm. Ø7.0 = M6 bolt "
+        "clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer). Ø19 = key access and grommet retainer. "
+        "Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut over a 1.5 mm stop washer. Ø8.5 and the 8.5 × 14 slot (along X) = "
+        "locating spigots. Bolts at the 220 rule on every edge; corner rivnuts on the bolt line Y 824 (pod). Reasons: "
+        "FEATURE-RATIONALE-210101.md.",
         "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (PM ruling F-009).",
         "5. Cut list (square ends, tube 6063-T6): " + "; ".join(
             "%s %s × %g × %d" % (k[0], k[1], k[2], q) for k, q in sorted(cut.items())) + ".",
