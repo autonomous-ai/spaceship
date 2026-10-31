@@ -145,7 +145,9 @@ def gap_rules(app, bodies, rules):
                     worst = (d, la, lb)
         if worst:
             out.append({"id": r["id"], "group": r.get("group", ""), "gap_mm": round(worst[0], 3), "a": worst[1],
-                        "b": worst[2], "min_mm": _f(r.get("min_gap_mm")), "max_mm": _f(r.get("max_gap_mm"))})
+                        "b": worst[2], "min_mm": _f(r.get("min_gap_mm")), "max_mm": _f(r.get("max_gap_mm")),
+                        "severity": r.get("severity") or "major", "method": r.get("method") or "box",
+                        "owner": r.get("owner", ""), "fix": r.get("fix", ""), "source": r.get("status_source", "")})
     return out
 
 

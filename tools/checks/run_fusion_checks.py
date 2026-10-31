@@ -104,14 +104,17 @@ def findings_from(res, model, file_hint="", allow_rows=None):
         if (lo is not None and g["gap_mm"] < lo - 1e-6) or (hi is not None and g["gap_mm"] > hi + 1e-6):
             groups.setdefault(g.get("group") or g["id"], []).append(g)
     for grp, items in groups.items():
+        sev = "severe" if any(g.get("severity") == "severe" for g in items) else "major"
+        if model == "skeleton" and all(g.get("method") == "exact" for g in items):
+            sev = "major"           # reference geometry only: the made parts are checked in the assembly model
         fs.append(Finding(
-            "C02", "gap-" + grp, "%s %s" % (model, grp), "severe" if "SEAM-GAPS" == grp or "KICK" in grp else "major",
+            "C02", "gap-" + grp, "%s %s" % (model, grp), sev,
             "; ".join("%s: %s to %s is %.2f mm (true minimum distance, Fusion), needs %s" % (
                 g["id"], _short(g["a"]), _short(g["b"]), g["gap_mm"],
                 ("%g to %g" % (g["min_mm"], g["max_mm"])) if g.get("max_mm") is not None else ">= %g" % g["min_mm"])
                       for g in items),
-            "See the rule's fix in v2/04-Checks/config/gap-rules.csv.", file_hint, owner_for(file_hint),
-            {"model": scope, "rules": items}))
+            items[0].get("fix") or "See the rule's fix in v2/04-Checks/config/gap-rules.csv.", file_hint,
+            items[0].get("owner") or owner_for(file_hint), {"model": scope, "rules": items}))
     for d in res.get("door_swing", []):
         h = d.get("first_hit")
         if h:

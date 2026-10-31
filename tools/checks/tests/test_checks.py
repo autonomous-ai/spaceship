@@ -273,12 +273,13 @@ def test_stack_worst_case_and_open_state():
 
 def test_repo_stacks_are_open_until_tolerances_exist():
     fs, rep = c_stacks.check_stacks(ROOT)
-    assert {r["stack_id"]: r["state"] for r in rep} == {"ST-01": "OPEN", "ST-02": "OPEN", "ST-02A": "FAIL",
-                                                        "ST-03": "PASS", "ST-04": "OPEN", "ST-04A": "FAIL"}
-    # the closed chains of three 2.26 mm metal stops move +-0.39 even with perfect panels
+    assert {r["stack_id"]: r["state"] for r in rep} == {"ST-01": "OPEN", "ST-02": "OPEN", "ST-02A": "PASS",
+                                                        "ST-03": "PASS", "ST-04": "OPEN", "ST-04A": "PASS"}
+    # PM ruling on F-011/F-012: the centre seam takes the chain's tolerance (slots +-1.5); with perfect panels
+    # the two corner stops move its gap 2.26 +-0.26, inside the slots
     st2a = [r for r in rep if r["stack_id"] == "ST-02A"][0]
-    assert st2a["wc_min"] == pytest.approx(-0.39) and st2a["wc_max"] == pytest.approx(0.39)
-    assert sorted(f.subject for f in fs) == ["ST-02A", "ST-04A"]
+    assert st2a["wc_min"] == pytest.approx(2.0) and st2a["wc_max"] == pytest.approx(2.52)
+    assert fs == []
     st3 = [r for r in rep if r["stack_id"] == "ST-03"][0]
     # F-009 ruling: Ø7.0 holes, positions Ø0.4 each: (7.0 - 5.974) / 2 - 0.2 - 0.2 - 0.065 rivnut float
     assert st3["nominal"] == pytest.approx(0.513) and st3["wc_min"] == pytest.approx(0.048)

@@ -1,5 +1,5 @@
 {
- "next": 14,
+ "next": 15,
  "findings": [
   {
    "check": "C02",
@@ -433,7 +433,7 @@
    },
    "key": "C02|stack-ST-02A|ST-02A",
    "id": "F-011",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-10-31 0cb764f",
    "posted": "Joints and WALL groups 2026-10-31",
@@ -442,9 +442,16 @@
      "date": "2026-10-31",
      "rev": "0cb764f",
      "event": "opened"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "0cb764f",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-10-31 0cb764f"
+   "last_seen": "2026-10-31 0cb764f",
+   "closed": "2026-10-31 0cb764f",
+   "note": "PM ruling (joints group, 2026-10-31): the centre seam (B1-B2 / C1-C2) has no hard stop, slotted holes about ±1.5 mm and a thicker gasket; the outer seams keep their stops. The stack now passes with perfect panels (gap 2.00 to 2.52, inside the slots); with real tolerances it stays OPEN until the drawings and the gasket's range exist. The joints register carries the change (PR #23)."
   },
   {
    "check": "C02",
@@ -475,7 +482,7 @@
    },
    "key": "C02|stack-ST-04A|ST-04A",
    "id": "F-012",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-10-31 0cb764f",
    "posted": "Joints and CEILING groups 2026-10-31",
@@ -484,9 +491,16 @@
      "date": "2026-10-31",
      "rev": "0cb764f",
      "event": "opened"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "0cb764f",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-10-31 0cb764f"
+   "last_seen": "2026-10-31 0cb764f",
+   "closed": "2026-10-31 0cb764f",
+   "note": "PM ruling (joints group, 2026-10-31): the centre seam (B1-B2 / C1-C2) has no hard stop, slotted holes about ±1.5 mm and a thicker gasket; the outer seams keep their stops. The stack now passes with perfect panels (gap 2.00 to 2.52, inside the slots); with real tolerances it stays OPEN until the drawings and the gasket's range exist. The joints register carries the change (PR #23)."
   },
   {
    "check": "C07",
@@ -517,6 +531,43 @@
     }
    ],
    "note": "PM ruling (P2-4): the Joints Engineer fixes the sample package's fastener rows in PR #23 (P06 M6 x 16 ISO 4762, P07 the 1.5 mm stop washer, an ISO 7093 washer under the head, the captive retainer HOLD); merge order #26, #29, #23 rebased"
+  },
+  {
+   "check": "C02",
+   "rule": "gap-GLASS-TO-GLASS",
+   "subject": "skeleton GLASS-TO-GLASS",
+   "severity": "major",
+   "message": "Skeleton P04's fixed glass keeps v1's edge: its closest point to the door is 2.40 mm (true distance, Fusion), and the gap isn't parallel. The PM decided a 4 mm parallel free edge (FRONT group, 2026-10-31), which FRONT's fixed glass in PR #28 has (measured 4.0 mm). The skeleton is the single source of sizes, so the two disagree.",
+   "fix": "Move the skeleton's fixed glass free edge (fix_xbl, fix_xtl) to run parallel to the door edge at 4 mm, so FRONT links to it.",
+   "file": "v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step",
+   "owner": "Fusion Engineer 2",
+   "evidence": {
+    "model": "skeleton/fusion",
+    "rules": [
+     {
+      "id": "GLASS-TO-GLASS",
+      "group": "",
+      "gap_mm": 2.399,
+      "a": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4+4 (TRAPEZOID, v1 MEASURED):1 / Body1",
+      "b": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4+4 (PENTAGON, v1 MEASURED):1 / Body1",
+      "min_mm": 3.9,
+      "max_mm": 4.1
+     }
+    ]
+   },
+   "key": "C02|gap-GLASS-TO-GLASS|skeleton GLASS-TO-GLASS",
+   "id": "F-014",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-10-31 0cb764f",
+   "posted": "Fusion Engineer 2 group 2026-10-31",
+   "history": [
+    {
+     "date": "2026-10-31",
+     "rev": "0cb764f",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }

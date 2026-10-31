@@ -2,7 +2,7 @@
  "steps": [
   "v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step"
  ],
- "started": "2026-10-31 22:24:48",
+ "started": "2026-10-31 22:38:36",
  "errors": [],
  "imports": [
   {
@@ -199,7 +199,7 @@
    ]
   },
   {
-   "label": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4 / 4 (TRAPEZOID, v1 MEASURED):1 / Body1",
+   "label": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4+4 (TRAPEZOID, v1 MEASURED):1 / Body1",
    "box_mm": [
     -961.0,
     -703.38,
@@ -210,7 +210,7 @@
    ]
   },
   {
-   "label": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4 / 4 (PENTAGON, v1 MEASURED):1 / Body1",
+   "label": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4+4 (PENTAGON, v1 MEASURED):1 / Body1",
    "box_mm": [
     -66.0,
     -703.38,
@@ -457,8 +457,8 @@
    "gap_mm": 7.0,
    "a": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 110000 BASE:1 / THRESHOLD BASE - DOOR THRESHOLD:1 / Body1",
-   "min_mm": 7.0,
-   "max_mm": null
+   "min_mm": 6.5,
+   "max_mm": 7.5
   },
   {
    "id": "LINING-FLOATS",
@@ -468,6 +468,15 @@
    "b": "100000_P04_POD-SKELETON_CAD:1 / 210000 WALL:1 / L1 WALL - SIDE PANEL - LOWER - LH:1 / Body1",
    "min_mm": 4.0,
    "max_mm": null
+  },
+  {
+   "id": "GLASS-TO-GLASS",
+   "group": "",
+   "gap_mm": 2.399,
+   "a": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4+4 (TRAPEZOID, v1 MEASURED):1 / Body1",
+   "b": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4+4 (PENTAGON, v1 MEASURED):1 / Body1",
+   "min_mm": 3.9,
+   "max_mm": 4.1
   }
  ],
  "fasteners": [],
@@ -539,11 +548,11 @@
   },
   {
    "a": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
-   "b": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4 / 4 (TRAPEZOID, v1 MEASURED):1 / Body1",
+   "b": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4+4 (TRAPEZOID, v1 MEASURED):1 / Body1",
    "gap_mm": 0.0
   },
   {
-   "a": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4 / 4 (PENTAGON, v1 MEASURED):1 / Body1",
+   "a": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / FIXED FRONT - FIXED GLASS 4+4 (PENTAGON, v1 MEASURED):1 / Body1",
    "b": "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1",
    "gap_mm": 0.0
   },
@@ -688,7 +697,20 @@
    "gap_mm": 0.0
   }
  ],
- "seconds": 1.0,
+ "door_swing": [
+  {
+   "rule": "assumption: hinge axis on the leaf's hinge-side edge in the glass plane (skeleton door_xl, glass_y) until the hinges are named (D-46 HOLD); outward swing PROPOSED (open-questions Q3); 90 degrees for the clear width on the GA (REQ-US-03)",
+   "max_deg": 90.0,
+   "step_deg": 2.0,
+   "direction": "outward",
+   "moving": [
+    "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / KICK FRONT - DOOR KICK STRIP:1 / Body1",
+    "100000_P04_POD-SKELETON_CAD:1 / 350000 FRONT:1 / 360000 FRONT - DOOR AND GLAZING:1 / DOOR FRONT - DOOR LEAF GLASS 4+4 (TRAPEZOID, v1 MEASURED):1 / Body1"
+   ],
+   "first_hit": null
+  }
+ ],
+ "seconds": 1.1,
  "rev": "0cb764f",
  "model": "skeleton"
 }

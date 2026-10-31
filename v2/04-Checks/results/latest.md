@@ -2,14 +2,14 @@
 
 Offline checks (`tools/checks/run_checks.py`) on revision `0cb764f`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 3** (0 severe, 3 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 1** (0 severe, 1 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
 | Check | Ran on this revision | Findings |
 |---|---|---|
 | C01 clash and minimum gaps (Fusion) | yes | 0 |
-| C02 tolerance stack-ups | yes | 2 |
+| C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 1 |
 | C05 drawing completeness | no inputs yet | 0 |
@@ -26,8 +26,6 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": [], "part_s
 
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
-| F-011 | major | C02 | ST-02A | As ST-02, with the panels and the side-frame spacing taken as perfect, so only the three metal stops vary (IF-03 and IF-04 back wall across its width: perfect panels): worst case -0.39 to 0.39 mm (nominal 0.00; RSS -0.23 to 0.23, for information), the joint needs 0 to 0.125 mm. Source of the limit: as ST-02. | Joints Engineer; WALL |
-| F-012 | major | C02 | ST-04A | As ST-04, with the halves and the side-member spacing taken as perfect, so only the three metal stops vary (IF-05 and IF-06 ceiling across its width: perfect halves): worst case -0.39 to 0.39 mm (nominal 0.00; RSS -0.23 to 0.23, for information), the joint needs 0 to 0.125 mm. Source of the limit: as ST-02. | Joints Engineer; CEILING |
 | F-010 | major | C04 | POD total mass | The pod is about 429.5 kg against the 420 kg cap (D-37, D-54): 9.5 kg over. The layout study's list gives 426.7 kg (v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv); adjustments since: +12.0 kg AIR-D60 (calculation, Air Engineer, passed on by the PM on 2026-10-31); +3.4 kg WALL-TRAY-LIPS (confirmed, PM ruling in the WALL group, 2026-10-31); -12.6 kg FLOOR-9MM (confirmed, PM ruling in the BASE group, 2026-10-31). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
 
 ## Tolerance stacks (C02)
@@ -36,10 +34,10 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": [], "part_s
 |---|---|---|---|---|---|---|---|---|
 | ST-01 | IF-02 door to threshold | Running gap between the door's kick strip and the threshold | 3.0 to 10.0 | 7.00 | 7.00 to 7.00 | 7.00 to 7.00 | OPEN | Door bottom height (glass bottom); Kick strip height below the glass; Threshold height; Floor height under the threshold |
 | ST-03 | IF-01 IF-03 IF-04 IF-05 M6 bolt into a rivnut through a clearance hole | Radial clearance left for an M6 bolt after both hole positions and the rivnut's float (fixed-fastener case; the panel shifts to the bolts within the spigot play) | >= 0.0 | 0.51 | 0.05 to 0.51 | 0.14 to 0.43 | PASS |  |
-| ST-02 | IF-03 and IF-04 back wall across its width | Slack left in the back wall's closed chain: side frame face, stop, B1, stop, B2, stop, side frame face. Below 0 the last panel won't seat on its stops; all slack lands in one seam, so above 0.125 that seam's gasket drops under 25% squeeze | 0.0 to 0.125 | 0.00 | -0.39 to 0.39 | -0.23 to 0.23 | OPEN | Space between the side frames; Back panel B1 width; Back panel B2 width |
-| ST-02A | IF-03 and IF-04 back wall across its width: perfect panels | As ST-02, with the panels and the side-frame spacing taken as perfect, so only the three metal stops vary | 0.0 to 0.125 | 0.00 | -0.39 to 0.39 | -0.23 to 0.23 | FAIL |  |
-| ST-04 | IF-05 and IF-06 ceiling across its width | Slack left in the ceiling's closed chain: L2 top member face, stop, C1, stop, C2, stop, R2 top member face; limits as ST-02 | 0.0 to 0.125 | 0.00 | -0.39 to 0.39 | -0.23 to 0.23 | OPEN | Space between the upper side panels' top members; Ceiling half C1 width; Ceiling half C2 width |
-| ST-04A | IF-05 and IF-06 ceiling across its width: perfect halves | As ST-04, with the halves and the side-member spacing taken as perfect, so only the three metal stops vary | 0.0 to 0.125 | 0.00 | -0.39 to 0.39 | -0.23 to 0.23 | FAIL |  |
+| ST-02 | IF-03 and IF-04 back wall across its width | Centre seam B1-B2 gap: the span less B1, B2 and the two corner stops; the centre seam takes the chain's tolerance through its slotted holes | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | OPEN | Space between the side frames; Back panel B1 width; Back panel B2 width |
+| ST-02A | IF-03 and IF-04 back wall across its width: perfect panels | As ST-02 with the panels and the span taken as perfect, so only the two corner stops vary | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | PASS |  |
+| ST-04 | IF-05 and IF-06 ceiling across its width | Centre seam C1-C2 gap: the span less C1, C2 and the two side stops; the centre seam takes the chain's tolerance through its slotted holes | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | OPEN | Space between the upper side panels' top members; Ceiling half C1 width; Ceiling half C2 width |
+| ST-04A | IF-05 and IF-06 ceiling across its width: perfect halves | As ST-04 with the halves and the span taken as perfect, so only the two side stops vary | 0.76 to 3.76 | 2.26 | 2.00 to 2.52 | 2.08 to 2.44 | PASS |  |
 
 ## Shipping pieces (C04), from `v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv`
 

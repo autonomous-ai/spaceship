@@ -32,7 +32,7 @@ def test_unlisted_clash_is_severe_and_listed_one_is_not_reported():
 
 def test_gap_rule_results():
     res = {"gaps": [{"id": "KICK-OVER-THRESHOLD", "group": "", "gap_mm": 0.0, "a": "k", "b": "t", "min_mm": 7.0,
-                     "max_mm": None},
+                     "max_mm": None, "severity": "severe", "method": "box"},
                     {"id": "LINING-FLOATS", "group": "", "gap_mm": 4.0, "a": "c", "b": "f", "min_mm": 4.0,
                      "max_mm": None}]}
     fs = rf.findings_from(res, "skeleton")
@@ -124,3 +124,11 @@ def test_door_swing_hit_is_severe_and_a_free_swing_is_quiet():
     free = {"door_swing": [{"rule": "r", "max_deg": 90, "step_deg": 2, "direction": "outward", "moving": ["door"],
                             "first_hit": None}]}
     assert rf.findings_from(free, "skeleton") == []
+
+
+
+def test_exact_only_gap_on_the_skeleton_is_major():
+    res = {"gaps": [{"id": "GLASS-TO-GLASS", "group": "", "gap_mm": 2.4, "a": "d", "b": "f", "min_mm": 3.9,
+                     "max_mm": 4.1, "severity": "severe", "method": "exact"}]}
+    assert [f.severity for f in rf.findings_from(res, "skeleton")] == ["major"]
+    assert [f.severity for f in rf.findings_from(res, "assembly")] == ["severe"]
