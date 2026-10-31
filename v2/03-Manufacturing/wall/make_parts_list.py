@@ -104,9 +104,44 @@ def load(pn):
         return json.load(fh)
 
 
-def vi_name(desc):
+_BUILDER_VI = {}
+
+
+def builder_vi(pn):
+    """The Vietnamese name the build script gives part number `pn` (its PARTS table, loaded offline with stand-in
+    adsk modules): the fallback when the cloud left a component's description empty (211102 in R1's panel)."""
+    if not _BUILDER_VI:
+        import types
+        wall = os.path.join(HERE, "..", "..", "01-CAD-Native", "wall")
+        repo = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+        fake = types.ModuleType("adsk")
+        fake.core, fake.fusion = types.ModuleType("adsk.core"), types.ModuleType("adsk.fusion")
+        saved = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.fusion")}
+        sys.modules.update({"adsk": fake, "adsk.core": fake.core, "adsk.fusion": fake.fusion})
+        try:
+            jobs = [("wall_side_panel.py", {"part": "panel", "side": sd, "row": r}) for sd in "LR" for r in "12"] + \
+                   [("wall_back_panel.py", {"part": "panel", "pos": q}) for q in ("B1", "B2", "B3", "B4")]
+            for script, args in jobs:
+                path = os.path.join(wall, script)
+                ns = {"__name__": "wall_names", "__file__": path, "SCRIPT_ARGS": dict(args, repo_root=repo)}
+                with open(path, encoding="utf-8") as fh:
+                    exec(compile(fh.read(), path, "exec"), ns)
+                for _k, (num, _en, vi) in ns["PARTS"].items():
+                    _BUILDER_VI.setdefault(num, vi)
+        finally:
+            for k, v in saved.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+    return _BUILDER_VI.get(pn, "")
+
+
+def vi_name(desc, pn=None):
     parts = [p.strip() for p in (desc or "").split("|")]
-    return parts[1] if len(parts) > 1 else ""
+    if len(parts) > 1 and parts[1]:
+        return parts[1]
+    return builder_vi(pn) if pn else ""
 
 
 def en_name(comp):
@@ -183,7 +218,7 @@ def panel_rows(rep):
     rows.append(None)                                      # the assembly row, once its parts are summed
     fm = round(sum(b["mass_kg"] for b in frame["bodies"]), 3)
     t, ts = prm.get("tube_t", 1.2), prm.get("stud_t", prm.get("tube_t", 1.2))
-    rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame), name_vi=vi_name(frame["description"]),
+    rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame), name_vi=vi_name(frame["description"], frame["part_number"]),
                     kind="MP", material="aluminium tube 6063-T6: perimeter %s x %g, studs 20 x 40 x %g (D-85)" % (
                         "20 x 40" if back else "20 x 40 and 40 x 40", t, ts),
                     finish="mill finish with the bond prep (D-79)",
@@ -208,7 +243,7 @@ def panel_rows(rep):
                         mass_each_kg=round(m, 3), mass_total_kg=round(m * q, 3), mass_status="calculation: CAD",
                         status="DRAFT", source="CAD body length", note="square-cut ends; cut list of %s" % frame["part_number"]))
     sm = round(sum(b["mass_kg"] for b in skin["bodies"]), 3)
-    rows.append(row(level=1, part_number=skin["part_number"], name=en_name(skin), name_vi=vi_name(skin["description"]),
+    rows.append(row(level=1, part_number=skin["part_number"], name=en_name(skin), name_vi=vi_name(skin["description"], skin["part_number"]),
                     kind="MP", material="ACP 3 mm Alcorest outdoor, PE-type core (HW-SEL A1)",
                     finish="PVDF coated EV3038 Dark Yellow (maker's coil coating; D-12)",
                     process="CNC router: cut flat" if back else "CNC router: cut, V-groove and fold the back return (H16)",
@@ -223,7 +258,7 @@ def panel_rows(rep):
     fl = round(sum(b["mass_kg"] for b in fill["bodies"]), 3)
     pieces = Counter(tuple(sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)[:2])
                      for b in fill["bodies"])
-    rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill), name_vi=vi_name(fill["description"]),
+    rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill), name_vi=vi_name(fill["description"], fill["part_number"]),
                     kind="MP", material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
                     process="knife cut to the bays, 60 x 60 x 40 pockets left out beside each bolt this panel drives; "
                             "sizes and pockets on the tabulated fill drawing (D-89)",
@@ -347,7 +382,7 @@ def cassette_rows(rep):
                     mass_status="calculation: CAD bodies of the made parts", status="DRAFT",
                     source="CAD %s v%s" % (rep["document"], rep["version"]),
                     note="floating inner leaf; clips onto the panel frame from inside (D-17, D-47)"))
-    rows.append(row(level=1, part_number=tray["part_number"], name=en_name(tray), name_vi=vi_name(tray["description"]),
+    rows.append(row(level=1, part_number=tray["part_number"], name=en_name(tray), name_vi=vi_name(tray["description"], tray["part_number"]),
                     kind="MP", material="galvanised steel sheet 0.5, EN 10346 DX51D+Z",
                     finish="hot-dip zinc (coating mass to confirm)", process="laser or punch blank, brake bend (sheet metal)",
                     qty=1, unit="pc", size_mm=size_of(tb["box"]), tolerance="per the tabulated tray drawing (D-89)",
@@ -356,7 +391,7 @@ def cassette_rows(rep):
                     source="CAD; 0.5 confirmed (D-37); lips PM ruling 2026-10-31" + (
                         "; ELECTRICAL P01 (PR #64)" if tray_el else ""),
                     note="34 mm returns turned in as 12 mm lips that hold the felt; flat blank in the DXF" + tray_el))
-    rows.append(row(level=1, part_number=felt["part_number"], name=en_name(felt), name_vi=vi_name(felt["description"]),
+    rows.append(row(level=1, part_number=felt["part_number"], name=en_name(felt), name_vi=vi_name(felt["description"], felt["part_number"]),
                     kind="MP", material="PET felt 9 mm Dark Gray, the factory's felt (D-31; plan VT03-PET)",
                     process=("knife or CNC knife cut with ELECTRICAL's openings, as its DXF (a flat part with its DXF "
                              "needs no drawing, D-89 part 4)" if felt_el else
