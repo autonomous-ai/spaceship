@@ -116,21 +116,33 @@ TIME = {
 # Site fixings the joints register doesn't count (its section 3.9 lists them as out of scope). Counts are working
 # values for the time model and the parts kit until each owner's design gives them.
 OTHER_FIXINGS = [
-    dict(where="Base band corner keys (6 keys)", owner="BASE", count=12, size="M6 x 16 socket head (assumption)",
+    dict(step=2, where="Base band corner keys (6 keys)", owner="BASE", count=12, size="M6 x 16 socket head (assumption)",
          status="PROPOSED: each key arrives bolted to one band piece; 2 bolts per key on site",
-         note="BASE's corner bracket 111201 has 4 holes (BASE P01 CAD); F-009 makes them 7.0"),
-    dict(where="DL on the base band", owner="FRONT and BASE", count=2, size="M6 x 16 socket head (assumption)",
-         status="assumption", note="joints register 3.10: the decor on the band stays with FRONT and BASE"),
-    dict(where="DR on its support behind the mesh band piece", owner="FRONT and BASE", count=2, size="M6 x 16 socket head (assumption)",
-         status="assumption", note="D-62: the block gets its own support; the mesh carries no load"),
-    dict(where="DT to DL, DR and the ceiling", owner="FRONT", count=4, size="M6 x 16 socket head (assumption)",
-         status="assumption", note="joints register 3.9: DT to the ceiling isn't counted there"),
-    dict(where="Door hinges on DL", owner="FRONT", count=0, size="per the named hinge set (HOLD)",
-         status="HOLD (D-46, ISS-002)", note="time is in the door step; the PM ruled the hinge halves that sit in DL ship fitted in DL"),
-    dict(where="Air column, soffit hangers, fan boxes", owner="AIR (CEILING Engineer)", count=0, size="not designed yet (HOLD)",
-         status="HOLD", note="time is in the air steps"),
-    dict(where="Ledge, screen mount, light shelf", owner="INTERIOR", count=0, size="not designed yet (HOLD)",
-         status="HOLD (D-70)", note="time is in the interior steps"),
+         note="BASE's corner bracket 111201 has 4 holes (BASE P01 CAD); F-009 makes them 7.0",
+         text="12 x M6 x 16 corner-key bolts (BASE design; PROPOSED: each key arrives bolted to one band piece)"),
+    dict(step=9, where="DL on the base band", owner="FRONT and BASE", count=2, size="M6 x 16 socket head (assumption)",
+         status="assumption", note="joints register 3.10: the decor on the band stays with FRONT and BASE",
+         text="2 fixings of DL to the band (FRONT and BASE design; count assumed)"),
+    dict(step=10, where="DR on its support behind the mesh band piece", owner="FRONT and BASE", count=2,
+         size="M6 x 16 socket head (assumption)", status="assumption", note="D-62: the block gets its own support; the mesh carries no load",
+         text="2 fixings of DR to its support (FRONT and BASE design; count assumed)"),
+    dict(step=11, where="Door hinges on DL", owner="FRONT", count=0, size="per the named hinge set (HOLD)",
+         status="HOLD (D-46, ISS-002)", note="time is in the door step; the PM ruled the hinge halves that sit in DL ship fitted in DL",
+         text="the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named)"),
+    dict(step=12, where="DT to DL, DR and the ceiling", owner="FRONT", count=4, size="M6 x 16 socket head (assumption)",
+         status="assumption", note="joints register 3.9: DT to the ceiling isn't counted there",
+         text="4 fixings of DT to DL, DR and the ceiling (FRONT design; count assumed)"),
+    dict(step=15, where="Intake riser and supply fan box in DR", owner="AIR and FRONT", count=0, size="not designed yet (HOLD)",
+         status="HOLD", note="time is in the step", text="their fixings in DR (AIR and FRONT design, not designed yet)"),
+    dict(step=16, where="Air column", owner="AIR", count=0, size="not designed yet (HOLD)", status="HOLD",
+         note="time is in the step", text="the column's fixings (AIR design, not designed yet)"),
+    dict(step=17, where="Soffit hangers and the exhaust fan box", owner="AIR", count=0, size="not designed yet (HOLD)",
+         status="HOLD", note="time is in the step", text="the soffit's hangers and the fan box's fixings (AIR design, not designed yet)"),
+    dict(step=19, where="Light shelf", owner="INTERIOR", count=0, size="not designed yet (HOLD)", status="HOLD (D-70)",
+         note="time is in the step", text="the light shelf's fixings (INTERIOR design, not designed yet)"),
+    dict(step=22, where="Ledge and screen mount", owner="INTERIOR", count=0, size="not designed yet (HOLD)",
+         status="HOLD (D-70, IF-16)", note="time is in the step",
+         text="their fixings to the work wall's mounting points (INTERIOR design, not designed yet)"),
 ]
 
 
@@ -417,105 +429,96 @@ STEPS = [
          check="Every label on the packing list is found. Nothing leans on the glass crate. Pallet 1 stays strapped until step 3.",
          ops=[op("open pallet 1, packed in fitting order", 2, lay("t_unpack_std_ordered_min") * 60, 1, "t_unpack_std_ordered_min"),
               op("unload pallet 2 tiers 5 to 2 by label", 2, lay("t_unpack_long_ordered_min") * 60, 1, "t_unpack_long_ordered_min")],
-         joints={}, other=[]),
+         joints={}),
     dict(n=2, title="Base band", tags=["2-04", "2-05", "2-06", "2-07", "2-16"],
          A="Sets the back band, then the left and right side bands, then the front pieces (front-left under DL, the piece under the fixed glass, the mesh intake piece under DR with DR's support and closing plate) on the room floor in their places.",
          B="Joins each corner key with its 2 site bolts, then levels the band from above with the hex key on the 8 glides, checking with the spirit level corner to corner.",
          check="Band level within the spirit level's bubble over its length; corners closed; the mesh piece's support stands; the glass channel in the front-right piece is clean.",
          ops=[carry("2-04"), carry("2-05"), carry("2-06"), carry("2-07"), carry("2-16"),
               op("set each band piece in place", 2, lay("t_place_s"), 6, "t_place_s"),
-              op("corner-key bolts", 1, BOLT, 12, "t_bolt_captive_s"),
               op("level on the 8 glides", 2, lay("t_level_min") * 60, 1, "t_level_min")],
-         joints={}, other=[("Base band corner keys (6 keys)", 12)]),
+         joints={}),
     dict(n=3, title="Floor and threshold", tags=["1-01", "1-02", "1-03", "1-04", "2-08"],
          A="Lays the 2 foam mats inside the band, then floor panel F1 (left), lapped edge up.",
          B="Lays F2 (right) into F1's lap, then sets the 13 mm threshold across the door opening, level with the floor.",
          check="Floor flat, no gap at the lap; threshold seated; cover the floor with the packing film for the rest of the work.",
          ops=[carry("1-01"), carry("1-02"), carry("1-03"), carry("1-04"), carry("2-08"),
               op("lay each mat, panel and the threshold", 2, lay("t_place_s"), 5, "t_place_s")],
-         joints={}, other=[]),
+         joints={}),
     dict(n=4, title="Lower back wall: B1, B2", tags=["1-05", "1-06"],
          A="Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1.",
          B="From inside, through the fill pockets: drives B1's and B2's 4 base bolts each, then the 3 pins of the B1-B2 closing seam (pins first, R-J11).",
          check="Both panels sit down on their stops; the B1-B2 gap looks even top to bottom (5.5 mm nominal).",
          ops=[carry("1-05"), carry("1-06"),
-              op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s"),
-              op("bolts", 1, BOLT, 11, "t_bolt_captive_s")],
-         joints={"J-BASE-01": 8, "J-WALL-03": 3}, other=[]),
+              op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s")],
+         joints={"J-BASE-01": 8, "J-WALL-03": 3}),
     dict(n=5, title="Lower side walls: L1, R1", tags=["1-07", "1-08"],
          A="Stands L1 on its band spigots against B1's edge and holds it; then R1 against B2.",
          B="Drives the 4 base bolts of each, then the 3 lower back-corner bolts each side (L1-B1, R1-B2), from the back panels' bays.",
          check="Corners closed onto their stops; side panels' front edges in line with the band's front end.",
          ops=[carry("1-07"), carry("1-08"),
-              op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s"),
-              op("bolts", 1, BOLT, 14, "t_bolt_captive_s")],
-         joints={"J-BASE-01": 8, "J-WALL-02": 6}, other=[]),
+              op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s")],
+         joints={"J-BASE-01": 8, "J-WALL-02": 6}),
     dict(n=6, title="Upper back wall: B3, B4", tags=["1-09", "1-10"],
          A="Lifts B3 onto B1's top spigots (step stool), then B4 onto B2's, dropping past the closing seam's lead-in chamfer.",
          B="Drives the 4 horizontal-seam bolts under each (B1-B3, B2-B4), then the 3 pins of the B3-B4 closing seam.",
          check="Seams closed; skins flush across the horizontal seam.",
          ops=[carry("1-09"), carry("1-10"),
-              op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s"),
-              op("bolts", 1, BOLT, 11, "t_bolt_captive_s")],
-         joints={"J-WALL-01": 8, "J-WALL-03": 3}, other=[]),
+              op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s")],
+         joints={"J-WALL-01": 8, "J-WALL-03": 3}),
     dict(n=7, title="Upper side walls: L2, R2", tags=["1-11", "1-12"],
          A="Lifts L2 onto L1's spigots against B3's edge, then R2 onto R1 against B4.",
          B="Drives the 4 horizontal-seam bolts each (L1-L2, R1-R2), then the 3 upper back-corner bolts each side (L2-B3, R2-B4) FINGER-TIGHT only.",
          check="The 6 upper corner bolts are finger-tight, so the wall tops can follow the ceiling (R-J9).",
          ops=[carry("1-11"), carry("1-12"),
-              op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s"),
-              op("bolts", 1, BOLT, 14, "t_bolt_captive_s")],
-         joints={"J-WALL-01": 8, "J-WALL-02": 6}, other=[]),
+              op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s")],
+         joints={"J-WALL-01": 8, "J-WALL-02": 6}),
     dict(n=8, title="Ceiling: C1, C2", tags=["1-13", "1-14"],
          A="With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2; then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.",
          B="Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 7.",
          check="Ceiling seams closed; the C1-C2 gap even (4.3 to 6.7 mm); all 6 upper corner bolts now tight.",
          ops=[carry("1-13"), carry("1-14"),
               op("lift and set each ceiling half from inside", 2, lay("t_place_overhead_s"), 2, "t_place_overhead_s"),
-              op("bolts", 1, BOLT, 20, "t_bolt_captive_s"),
               op("tighten the 6 upper corner bolts (second visit)", 1, BOLT, 6, "t_bolt_captive_s")],
-         joints={"J-CEIL-02": 4, "J-CEIL-01": 16}, other=[]),
+         joints={"J-CEIL-02": 4, "J-CEIL-01": 16}),
     dict(n=9, title="Left decor block DL", tags=["2-09"],
          A="With B, carries DL (2.3 m) to the front-left and stands it on the band against L1 and L2's front edges, hinge halves toward the door opening.",
          B="Drives 3 bolts into DL from each of L1's and L2's front bays (6), then DL's 2 fixings to the band.",
          check="DL plumb (spirit level on its door-side face); the hinge halves free.",
-         ops=[carry("2-09"), op("stand DL on the band", 2, lay("t_place_s"), 1, "t_place_s"),
-              op("bolts", 1, BOLT, 8, "t_bolt_captive_s")],
-         joints={"J-FRONT-01": 6}, other=[("DL on the base band", 2)]),
+         ops=[carry("2-09"), op("stand DL on the band", 2, lay("t_place_s"), 1, "t_place_s")],
+         joints={"J-FRONT-01": 6}),
     dict(n=10, title="Fixed glass, then the right decor block DR", tags=["2-01", "2-03"],
          A="Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and sets its bottom edge into the band's U-channel on its setting blocks; then holds it upright with both lifters.",
          B="Carries DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6), then DR's 2 fixings to its support. A lets go only now.",
          check="Glass seated in all three channels so far, its free edge plumb; DR on its stops. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).",
          ops=[carry("2-01"), op("set the fixed glass in the band channel and hold it", 2, lay("t_fixed_preglazed_min") * 60, 1, "t_fixed_preglazed_min"),
-              carry("2-03"), op("slide DR onto the glass edges and its stops", 2, TIME["t_dr_slide_s"].value, 1, "t_dr_slide_s"),
-              op("bolts", 1, BOLT, 8, "t_bolt_captive_s")],
-         joints={"J-FRONT-01": 6}, other=[("DR on its support behind the mesh band piece", 2)]),
+              carry("2-03"), op("slide DR onto the glass edges and its stops", 2, TIME["t_dr_slide_s"].value, 1, "t_dr_slide_s")],
+         joints={"J-FRONT-01": 6}),
     dict(n=11, title="Door (before DT)", tags=["2-02"],
          A="With B, lifts the door unit out of the crate on 2 suction lifters (about 25 kg each), carries it upright and lowers its hinge halves onto DL's.",
          B="Locks the hinges as the named set requires (HOLD), then swings the door slowly to 90 degrees and back, checking the 7 mm running gap over the threshold.",
          check="The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub.",
          ops=[carry("2-02"), op("hang the door and adjust", 2, lay("t_door_prehung_min") * 60, 1, "t_door_prehung_min")],
-         joints={}, other=[("Door hinges on DL", 0)]),
+         joints={}),
     dict(n=12, title="Top decor block DT, from above", tags=["2-12"],
          A="From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.",
          B="Fixes DT to DL, DR and the ceiling (4 fixings, FRONT design).",
          check="The glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight.",
-         ops=[carry("2-12"), op("lower DT from above", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s"),
-              op("fixings", 1, BOLT, 4, "t_bolt_captive_s")],
-         joints={}, other=[("DT to DL, DR and the ceiling", 4)]),
+         ops=[carry("2-12"), op("lower DT from above", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s")],
+         joints={}),
     dict(n=13, title="Electrics, first fix (power off)", tags=["2-13"],
          A="Plugs the pre-made harness at each panel seam and runs the feeds for the light shelf and the hub to their ends.",
          B="Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).",
          check="Every seam connector latched before any cassette closes its bay.",
          ops=[carry("2-13"), op("plug one connector", 1, lay("t_connector_s"), 6, "t_connector_s")],
-         joints={}, other=[]),
+         joints={}),
     dict(n=14, title="Wall linings: 8 cassettes", tags=["1-15", "1-16", "1-17", "1-18", "1-19", "1-20", "1-21", "1-22"],
          A="Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips.",
          B="Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.",
          check="Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.",
          ops=[*[carry(t) for t in ["1-15", "1-16", "1-17", "1-18", "1-19", "1-20", "1-21", "1-22"]],
               op("hang one cassette on its clips", 1, lay("t_leaf_s"), 8, "t_leaf_s")],
-         joints={}, other=[]),
+         joints={}),
     dict(n=15, title="Air parts in DR: intake riser and supply fan box", tags=["2-18", "2-15"],
          A="Lifts DR's removable inner face off; with B, slides the intake riser in down to its foot over the mesh space.",
          B="Sets the supply fan box (2 fans fitted) high in DR and mates its plug-in connector; refits the inner face.",
@@ -523,7 +526,7 @@ STEPS = [
          ops=[op("DR inner face off and on", 1, TIME["t_face_s"].value, 2, "t_face_s"),
               carry("2-18"), op("slide the riser in", 2, TIME["t_slide_long_s"].value, 1, "t_slide_long_s"),
               carry("2-15"), op("set the fan box and plug it", 1, TIME["t_fit_box_s"].value, 1, "t_fit_box_s")],
-         joints={}, other=[("Air column, soffit hangers, fan boxes", 0)]),
+         joints={}),
     dict(n=16, title="Air column and supply cartridge", tags=["2-11", "2-19"],
          A="With B, stands the air column (2.1 m) in the front-right corner, its back on DR's inner face and its right side on R1's and R2's linings, and fixes it; lifts its front face off.",
          B="With A, slides the supply cartridge into the column; plugs the hub into the cable chase; A refits the front face.",
@@ -532,7 +535,7 @@ STEPS = [
               op("column front face off and on", 1, TIME["t_face_s"].value, 2, "t_face_s"),
               carry("2-19"), op("slide the cartridge in", 2, TIME["t_slide_long_s"].value, 1, "t_slide_long_s"),
               op("plug the hub", 1, lay("t_connector_s"), 1, "t_connector_s")],
-         joints={}, other=[]),
+         joints={}),
     dict(n=17, title="Soffit, exhaust cartridge and exhaust fan box", tags=["2-10", "2-20", "2-21"],
          A="With B, both on step stools, lifts the soffit (2.3 m) above the door head across the inside width and hangs it from the ceiling frame.",
          B="With A, lifts the exhaust cartridge into the soffit; then sets the exhaust fan box (2 fans fitted) at its right end under C2's roof sleeve and plugs it; refits the soffit's underside sections.",
@@ -541,39 +544,39 @@ STEPS = [
               carry("2-20"), op("lift the cartridge in", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s"),
               carry("2-21"), op("set the fan box and plug it", 1, TIME["t_fit_box_s"].value, 1, "t_fit_box_s"),
               op("soffit underside sections on", 1, TIME["t_face_s"].value, 3, "t_face_s")],
-         joints={}, other=[]),
+         joints={}),
     dict(n=18, title="Ceiling linings: 2 cassettes", tags=["2-22", "2-23"],
          A="With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.",
          B="Hooks the 2 safety catches of each cassette before A lets go.",
          check="Both catches on each cassette; front edges 3 mm behind the soffit.",
          ops=[carry("2-22"), carry("2-23"), op("lift each cassette onto its clips", 2, lay("t_place_overhead_s"), 2, "t_place_overhead_s"),
               op("hook a safety catch", 1, TIME["t_catch_s"].value, 4, "t_catch_s")],
-         joints={}, other=[]),
+         joints={}),
     dict(n=19, title="Light shelf", tags=["2-14"],
          A="Fits the light shelf trims along the tops of the side and back walls (INTERIOR design).",
          B="Plugs the light shelf feed.",
          check="Trims straight; no cable shows.",
          ops=[carry("2-14"), op("fit and plug the light shelf", 1, TIME["t_light_shelf_s"].value, 1, "t_light_shelf_s")],
-         joints={}, other=[("Ledge, screen mount, light shelf", 0)]),
+         joints={}),
     dict(n=20, title="Power on: fans run", tags=[],
          A="A qualified electrician connects the mains inlet (220 V for the prototype, REQ-SCP-02) and switches on.",
          B="Checks the lights and scenes, the hub's CO2 reading, and that both fan pairs run: air out at the kick grille, air into the soffit grille; presses boost.",
-         check="Fans run on both paths. The clock stops here (REQ-ASM-01: closed, powered, fans running), after the final check in step 21.",
+         check="Fans run on both paths. The clock stops after step 21's final check (REQ-ASM-01: closed, powered, fans running).",
          ops=[op("power on and test", 2, lay("t_elec_min") * 60, 1, "t_elec_min")],
-         joints={}, other=[]),
+         joints={}),
     dict(n=21, title="Final check", tags=[],
          A="Checks the door: swing to 90 degrees, no rub, closes and latches (lock HOLD), drop seal down on the threshold land when closed.",
          B="Checks the seals: with the pod lights on and the room dark, no light through any seam; peels the protective film off the ACP and the glass; cleans.",
          check="Every check in the final check list is ticked.",
          ops=[op("final check and clean", 2, lay("t_final_min") * 60, 1, "t_final_min")],
-         joints={}, other=[]),
-    dict(n=22, title="Work-wall ledge and screen mount (fit-out)", tags=["2-17"],
+         joints={}),
+    dict(n=22, title="Work-wall ledge and screen mount", tags=["2-17"],
          A="Holds the 1000 mm ledge on the right (work) wall at its mounting points.",
          B="Fixes the ledge and the screen mount (INTERIOR design, D-70).",
          check="Ledge level and firm.",
          ops=[carry("2-17"), op("hold the ledge", 2, TIME["t_ledge_two_s"].value, 1, "t_ledge_two_s"),
               op("fix the ledge and the screen mount", 1, TIME["t_ledge_one_s"].value, 1, "t_ledge_one_s")],
-         joints={}, other=[]),
+         joints={}),
 ]
 CLOCK_LAST_STEP = 21     # REQ-ASM-01 clock: steps 1 to 21; step 22 is fit-out after it (PROPOSED)
 
@@ -745,12 +748,15 @@ class Model:
     def time_steps(self):
         rows = []
         for st in STEPS:
-            two = sum(o["secs"] * o["n"] for o in st["ops"] if o["who"] == 2)
-            one = sum(o["secs"] * o["n"] for o in st["ops"] if o["who"] == 1)
-            el = (two + one / 2) * (1 + lay("inefficiency"))
             bolts = sum(st["joints"].values())
-            other = sum(c for _, c in st["other"])
-            rows.append(dict(n=st["n"], two=two, one=one, elapsed=el, bolts=bolts, other=other))
+            other = sum(f["count"] for f in OTHER_FIXINGS if f["step"] == st["n"])
+            ops = list(st["ops"])
+            if bolts + other:   # every register bolt and counted fixing is one captive-bolt drive by one person
+                ops.append(op("drive the step's bolts and fixings", 1, BOLT, bolts + other, "t_bolt_captive_s"))
+            two = sum(o["secs"] * o["n"] for o in ops if o["who"] == 2)
+            one = sum(o["secs"] * o["n"] for o in ops if o["who"] == 1)
+            el = (two + one / 2) * (1 + lay("inefficiency"))
+            rows.append(dict(n=st["n"], two=two, one=one, elapsed=el, bolts=bolts, other=other, ops=ops))
         return rows
 
     def time_total(self, upto=None):
@@ -862,11 +868,16 @@ def dims_txt(d):
     return " x ".join(("%g" % round(v, 2)) for v in d)
 
 
+def ux(text):
+    """Multiplication sign for the Markdown outputs ('M6 x 16' reads 'M6 × 16'); the CSV keeps plain ASCII."""
+    return re.sub(r"(?<=[0-9A-Za-z)]) x (?=[0-9A-Z(])", " × ", text)
+
+
 def md_table(head, rows, align=None):
     align = align or ["---"] * len(head)
-    out = ["| " + " | ".join(head) + " |", "| " + " | ".join(align) + " |"]
+    out = ["| " + " | ".join(ux(h) for h in head) + " |", "| " + " | ".join(align) + " |"]
     for r in rows:
-        out.append("| " + " | ".join(str(c) for c in r) + " |")
+        out.append("| " + " | ".join(ux(str(c)) for c in r) + " |")
     return "\n".join(out)
 
 
@@ -924,7 +935,7 @@ def gen_tables(m):
     for i, r in enumerate(rows1, 1):
         p = PIECE[r["tag"]]
         r1.append([i, f"**{p.tag}**", p.pos, p.name, f"{p.kg:.1f}", f"{r['along']:g} x {r['up']:g}", f"{r['thick']:g}", p.step])
-    T["STACK1_TABLE"] = md_table(["Out", "Label", "Pos.", "Piece", "kg", "Along x up, mm", "Thick mm", "Fitted in step"], r1,
+    T["STACK1_TABLE"] = md_table(["Out", "Label", "Pos.", "Piece", "kg", "Along × up, mm", "Thick mm", "Fitted in step"], r1,
                                  ["---:", "---", "---", "---", "---:", "---", "---:", "---:"])
     T["STACK1_SUM"] = (f"{len(rows1)} pieces, {f0(sum(r['thick'] for r in rows1))} mm of parts + {len(rows1) - 1} foam "
                        f"interleaves of {lay('pack_gap')} mm + 2 edge boards of {lay('edge_board')} mm = **{f0(thick1)} mm of "
@@ -942,7 +953,7 @@ def gen_tables(m):
                 p = PIECE[it["tag"]]
                 r2.append([t["name"], f"{ln['width']:g}", f"**{p.tag}**", p.name, f"{p.kg:.1f}",
                            f"{it['along']:g} x {it['across']:g} x {it['up']:g}", p.step])
-    T["TIERS_TABLE"] = md_table(["Tier", "Lane mm", "Label", "Piece", "kg", "Along x across x up, mm", "Fitted in step"], r2,
+    T["TIERS_TABLE"] = md_table(["Tier", "Lane mm", "Label", "Piece", "kg", "Along × across × up, mm", "Fitted in step"], r2,
                                 ["---", "---:", "---", "---", "---:", "---", "---"])
     hl = [f"{lay('pal_long_h')} deck"] + [f"{f0(t['h'])} ({t['name'].split(':')[0].lower()})" for t in tiers]
     T["TIERS_SUM"] = (" + ".join(hl) + f" + {len(tiers) - 1} separators of {MINE['sep_h'].value:g} + {lay('pack_cap_h')} cap = "
@@ -1016,21 +1027,21 @@ def guide_tables(m, T):
     steps_md = []
     srow = []
     for st, tr in zip(STEPS, m.steps):
-        parts = ", ".join(f"{t} {PIECE[t].pos if PIECE[t].pos != '-' else PIECE[t].name.split(' - ', 1)[1].title()} ({PIECE[t].kg:.1f} kg)"
-                          for t in st["tags"]) or "none"
+        parts = ", ".join(f"**{t}** {ux(PIECE[t].name)} ({PIECE[t].kg:.1f} kg)" for t in st["tags"]) or "none"
         bolts = []
         for j, c in st["joints"].items():
             size = m.register.get(j, (0, 'M6 x 16'))[1]
-            bolts.append(f"{c} x {m.pn.get(size, '')} {size} ({j})")
-        for what, c in st["other"]:
-            fx = next(f for f in OTHER_FIXINGS if f["where"] == what)
-            bolts.append(f"{c} x {fx['size']} ({what}, {fx['owner']}: {fx['status']})" if c else f"{what}: {fx['size']} ({fx['owner']})")
-        clock = "" if st["n"] <= CLOCK_LAST_STEP else " (after the clock)"
+            bolts.append(f"{c} × {m.pn.get(size, '')} {ux(size)} ({j})")
+        for fx in OTHER_FIXINGS:
+            if fx["step"] == st["n"]:
+                bolts.append(ux(fx["text"]))
+        tool = " Tool: the 5 mm hex key." if (st["joints"] or any(f["step"] == st["n"] and f["count"] for f in OTHER_FIXINGS)) else ""
+        clock = "" if st["n"] <= CLOCK_LAST_STEP else ", after the clock"
         steps_md.append(
             f"### Step {st['n']}. {st['title']}{clock}\n\n"
             f"- **Time:** about {tr['elapsed'] / 60:.0f} min for 2 people.\n"
             f"- **Parts:** {parts}.\n"
-            f"- **Fasteners:** {'; '.join(bolts) if bolts else 'none'}. Tool: the 5 mm hex key only.\n"
+            f"- **Fasteners:** {'; '.join(bolts) if bolts else 'none'}.{tool}\n"
             f"- **Person A:** {st['A']}\n"
             f"- **Person B:** {st['B']}\n"
             f"- **Check before the next step:** {st['check']}\n")
@@ -1059,9 +1070,9 @@ def guide_tables(m, T):
                "yes" if sum(mine.values()) == m.reg_total else "**NO**"])
     G["BOLTS"] = md_table(["Joint", "Bolt", "Where in this guide", "Guide", "Register", "Match"], br,
                           ["---", "---", "---", "---:", "---:", "---"])
-    G["OTHER_FIXINGS"] = md_table(["Fixing", "Owner", "Count used here", "Size", "Status", "Note"],
-                                  [[f["where"], f["owner"], f["count"], f["size"], f["status"], f["note"]] for f in OTHER_FIXINGS],
-                                  ["---", "---", "---:", "---", "---", "---"])
+    G["OTHER_FIXINGS"] = md_table(["Step", "Fixing", "Owner", "Count used here", "Size", "Status", "Note"],
+                                  [[f["step"], f["where"], f["owner"], f["count"], ux(f["size"]), f["status"], f["note"]] for f in OTHER_FIXINGS],
+                                  ["---:", "---", "---", "---:", "---", "---", "---"])
     # unit times
     ut = []
     for k in ["t_unpack_std_ordered_min", "t_unpack_long_ordered_min", "t_carry_s", "t_place_s", "t_place_hung_s", "t_place_overhead_s",

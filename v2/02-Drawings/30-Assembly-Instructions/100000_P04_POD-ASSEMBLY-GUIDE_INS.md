@@ -53,8 +53,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 1. Unpack and lay out
 
 - **Time:** about 12 min for 2 people.
-- **Parts:** 2-24 Installation Kit (Open First) (0.5 kg).
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Parts:** **2-24** POD - INSTALLATION KIT (OPEN FIRST) (0.5 kg).
+- **Fasteners:** none.
 - **Person A:** Cuts the straps and film on pallet 2 and hands the tiers down, top first: the OPEN FIRST kit, the ceiling cassettes, then tiers 4 to 2. Leaves the glass crate closed on the pallet.
 - **Person B:** Lays every part out by its step number on the label, felt and ACP faces up on the floor protection; opens the kit (hex key, this guide, label map) and ticks the packing list.
 - **Check before the next step:** Every label on the packing list is found. Nothing leans on the glass crate. Pallet 1 stays strapped until step 3.
@@ -62,8 +62,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 2. Base band
 
 - **Time:** about 21 min for 2 people.
-- **Parts:** 2-04 Band Assy - Back (3.1 kg), 2-05 Band Assy - Side - Lh (2.1 kg), 2-06 Band Assy - Side - Rh (2.1 kg), 2-07 Band Assy - Front - Rh - Under The Fixed Glass (0.9 kg), 2-16 Small Parts Carton (1.6 kg).
-- **Fasteners:** 12 x M6 x 16 socket head (assumption) (Base band corner keys (6 keys), BASE: PROPOSED: each key arrives bolted to one band piece; 2 bolts per key on site). Tool: the 5 mm hex key only.
+- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.1 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.1 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.1 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (0.9 kg), **2-16** BASE - SMALL PARTS CARTON (1.6 kg).
+- **Fasteners:** 12 × M6 × 16 corner-key bolts (BASE design; PROPOSED: each key arrives bolted to one band piece). Tool: the 5 mm hex key.
 - **Person A:** Sets the back band, then the left and right side bands, then the front pieces (front-left under DL, the piece under the fixed glass, the mesh intake piece under DR with DR's support and closing plate) on the room floor in their places.
 - **Person B:** Joins each corner key with its 2 site bolts, then levels the band from above with the hex key on the 8 glides, checking with the spirit level corner to corner.
 - **Check before the next step:** Band level within the spirit level's bubble over its length; corners closed; the mesh piece's support stands; the glass channel in the front-right piece is clean.
@@ -71,8 +71,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 3. Floor and threshold
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** 1-01 F1 (1.1 kg), 1-02 F2 (1.1 kg), 1-03 F1 (10.0 kg), 1-04 F2 (10.0 kg), 2-08 Door Threshold - 13 Mm (1.2 kg).
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Parts:** **1-01** BASE - SEAL MAT - F1 (1.1 kg), **1-02** BASE - SEAL MAT - F2 (1.1 kg), **1-03** BASE - FLOOR PANEL - F1 (10.0 kg), **1-04** BASE - FLOOR PANEL - F2 (10.0 kg), **2-08** BASE - DOOR THRESHOLD - 13 MM (1.2 kg).
+- **Fasteners:** none.
 - **Person A:** Lays the 2 foam mats inside the band, then floor panel F1 (left), lapped edge up.
 - **Person B:** Lays F2 (right) into F1's lap, then sets the 13 mm threshold across the door opening, level with the floor.
 - **Check before the next step:** Floor flat, no gap at the lap; threshold seated; cover the floor with the packing film for the rest of the work.
@@ -80,8 +80,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 4. Lower back wall: B1, B2
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** 1-05 B1 (9.3 kg), 1-06 B2 (9.3 kg).
-- **Fasteners:** 8 x 838001 M6 x 16 (J-BASE-01); 3 x 838002 M6 x 25 (J-WALL-03). Tool: the 5 mm hex key only.
+- **Parts:** **1-05** WALL - PANEL ASSY - BACK LOWER - LH (9.3 kg), **1-06** WALL - PANEL ASSY - BACK LOWER - RH (9.3 kg).
+- **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1.
 - **Person B:** From inside, through the fill pockets: drives B1's and B2's 4 base bolts each, then the 3 pins of the B1-B2 closing seam (pins first, R-J11).
 - **Check before the next step:** Both panels sit down on their stops; the B1-B2 gap looks even top to bottom (5.5 mm nominal).
@@ -89,8 +89,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 5. Lower side walls: L1, R1
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** 1-07 L1 (11.3 kg), 1-08 R1 (11.3 kg).
-- **Fasteners:** 8 x 838001 M6 x 16 (J-BASE-01); 6 x 838001 M6 x 16 (J-WALL-02). Tool: the 5 mm hex key only.
+- **Parts:** **1-07** WALL - PANEL ASSY - SIDE LOWER - LH (11.3 kg), **1-08** WALL - PANEL ASSY - SIDE LOWER - RH (11.3 kg).
+- **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the 5 mm hex key.
 - **Person A:** Stands L1 on its band spigots against B1's edge and holds it; then R1 against B2.
 - **Person B:** Drives the 4 base bolts of each, then the 3 lower back-corner bolts each side (L1-B1, R1-B2), from the back panels' bays.
 - **Check before the next step:** Corners closed onto their stops; side panels' front edges in line with the band's front end.
@@ -98,8 +98,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 6. Upper back wall: B3, B4
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** 1-09 B3 (9.3 kg), 1-10 B4 (9.3 kg).
-- **Fasteners:** 8 x 838001 M6 x 16 (J-WALL-01); 3 x 838002 M6 x 25 (J-WALL-03). Tool: the 5 mm hex key only.
+- **Parts:** **1-09** WALL - PANEL ASSY - BACK UPPER - LH (9.3 kg), **1-10** WALL - PANEL ASSY - BACK UPPER - RH (9.3 kg).
+- **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Lifts B3 onto B1's top spigots (step stool), then B4 onto B2's, dropping past the closing seam's lead-in chamfer.
 - **Person B:** Drives the 4 horizontal-seam bolts under each (B1-B3, B2-B4), then the 3 pins of the B3-B4 closing seam.
 - **Check before the next step:** Seams closed; skins flush across the horizontal seam.
@@ -107,8 +107,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 7. Upper side walls: L2, R2
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** 1-11 L2 (11.3 kg), 1-12 R2 (11.3 kg).
-- **Fasteners:** 8 x 838001 M6 x 16 (J-WALL-01); 6 x 838001 M6 x 16 (J-WALL-02). Tool: the 5 mm hex key only.
+- **Parts:** **1-11** WALL - PANEL ASSY - SIDE UPPER - LH (11.3 kg), **1-12** WALL - PANEL ASSY - SIDE UPPER - RH (11.3 kg).
+- **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the 5 mm hex key.
 - **Person A:** Lifts L2 onto L1's spigots against B3's edge, then R2 onto R1 against B4.
 - **Person B:** Drives the 4 horizontal-seam bolts each (L1-L2, R1-R2), then the 3 upper back-corner bolts each side (L2-B3, R2-B4) FINGER-TIGHT only.
 - **Check before the next step:** The 6 upper corner bolts are finger-tight, so the wall tops can follow the ceiling (R-J9).
@@ -116,8 +116,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 8. Ceiling: C1, C2
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** 1-13 C1 (10.0 kg), 1-14 C2 (10.5 kg).
-- **Fasteners:** 4 x 838002 M6 x 25 (J-CEIL-02); 16 x 838001 M6 x 16 (J-CEIL-01). Tool: the 5 mm hex key only.
+- **Parts:** **1-13** CEILING - PANEL ASSY - C1 (10.0 kg), **1-14** CEILING - PANEL ASSY - C2 (10.5 kg).
+- **Fasteners:** 4 × 838002 M6 × 25 (J-CEIL-02); 16 × 838001 M6 × 16 (J-CEIL-01). Tool: the 5 mm hex key.
 - **Person A:** With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2; then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.
 - **Person B:** Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 7.
 - **Check before the next step:** Ceiling seams closed; the C1-C2 gap even (4.3 to 6.7 mm); all 6 upper corner bolts now tight.
@@ -125,8 +125,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 9. Left decor block DL
 
 - **Time:** about 3 min for 2 people.
-- **Parts:** 2-09 DL (10.0 kg).
-- **Fasteners:** 6 x 838001 M6 x 16 (J-FRONT-01); 2 x M6 x 16 socket head (assumption) (DL on the base band, FRONT and BASE: assumption). Tool: the 5 mm hex key only.
+- **Parts:** **2-09** FRONT - DECOR BLOCK - DL (10.0 kg).
+- **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); 2 fixings of DL to the band (FRONT and BASE design; count assumed). Tool: the 5 mm hex key.
 - **Person A:** With B, carries DL (2.3 m) to the front-left and stands it on the band against L1 and L2's front edges, hinge halves toward the door opening.
 - **Person B:** Drives 3 bolts into DL from each of L1's and L2's front bays (6), then DL's 2 fixings to the band.
 - **Check before the next step:** DL plumb (spirit level on its door-side face); the hinge halves free.
@@ -134,8 +134,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 10. Fixed glass, then the right decor block DR
 
 - **Time:** about 11 min for 2 people.
-- **Parts:** 2-01 Fixed Glass Unit (29.6 kg), 2-03 DR (18.1 kg).
-- **Fasteners:** 6 x 838001 M6 x 16 (J-FRONT-01); 2 x M6 x 16 socket head (assumption) (DR on its support behind the mesh band piece, FRONT and BASE: assumption). Tool: the 5 mm hex key only.
+- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (29.6 kg), **2-03** FRONT - DECOR BLOCK - DR (18.1 kg).
+- **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); 2 fixings of DR to its support (FRONT and BASE design; count assumed). Tool: the 5 mm hex key.
 - **Person A:** Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and sets its bottom edge into the band's U-channel on its setting blocks; then holds it upright with both lifters.
 - **Person B:** Carries DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6), then DR's 2 fixings to its support. A lets go only now.
 - **Check before the next step:** Glass seated in all three channels so far, its free edge plumb; DR on its stops. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).
@@ -143,8 +143,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 11. Door (before DT)
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** 2-02 Door Unit (50.2 kg).
-- **Fasteners:** Door hinges on DL: per the named hinge set (HOLD) (FRONT). Tool: the 5 mm hex key only.
+- **Parts:** **2-02** FRONT - DOOR UNIT (50.2 kg).
+- **Fasteners:** the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named).
 - **Person A:** With B, lifts the door unit out of the crate on 2 suction lifters (about 25 kg each), carries it upright and lowers its hinge halves onto DL's.
 - **Person B:** Locks the hinges as the named set requires (HOLD), then swings the door slowly to 90 degrees and back, checking the 7 mm running gap over the threshold.
 - **Check before the next step:** The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub.
@@ -152,8 +152,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 12. Top decor block DT, from above
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** 2-12 DT (7.0 kg).
-- **Fasteners:** 4 x M6 x 16 socket head (assumption) (DT to DL, DR and the ceiling, FRONT: assumption). Tool: the 5 mm hex key only.
+- **Parts:** **2-12** FRONT - DECOR BLOCK - DT (7.0 kg).
+- **Fasteners:** 4 fixings of DT to DL, DR and the ceiling (FRONT design; count assumed). Tool: the 5 mm hex key.
 - **Person A:** From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.
 - **Person B:** Fixes DT to DL, DR and the ceiling (4 fixings, FRONT design).
 - **Check before the next step:** The glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight.
@@ -161,8 +161,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 13. Electrics, first fix (power off)
 
 - **Time:** about 2 min for 2 people.
-- **Parts:** 2-13 Kit - Switches And Harness (2.0 kg).
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Parts:** **2-13** ELECTRICAL - KIT - SWITCHES AND HARNESS (2.0 kg).
+- **Fasteners:** none.
 - **Person A:** Plugs the pre-made harness at each panel seam and runs the feeds for the light shelf and the hub to their ends.
 - **Person B:** Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).
 - **Check before the next step:** Every seam connector latched before any cassette closes its bay.
@@ -170,8 +170,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 14. Wall linings: 8 cassettes
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** 1-15 R1 (10.5 kg), 1-16 R2 (10.0 kg), 1-17 L1 (10.5 kg), 1-18 L2 (10.0 kg), 1-19 B1 (8.4 kg), 1-20 B2 (8.4 kg), 1-21 B3 (8.4 kg), 1-22 B4 (8.4 kg).
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Parts:** **1-15** LINING - CASSETTE - SIDE LOWER - RH (10.5 kg), **1-16** LINING - CASSETTE - SIDE UPPER - RH (10.0 kg), **1-17** LINING - CASSETTE - SIDE LOWER - LH (10.5 kg), **1-18** LINING - CASSETTE - SIDE UPPER - LH (10.0 kg), **1-19** LINING - CASSETTE - BACK LOWER - LH (8.4 kg), **1-20** LINING - CASSETTE - BACK LOWER - RH (8.4 kg), **1-21** LINING - CASSETTE - BACK UPPER - LH (8.4 kg), **1-22** LINING - CASSETTE - BACK UPPER - RH (8.4 kg).
+- **Fasteners:** none.
 - **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips.
 - **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
 - **Check before the next step:** Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.
@@ -179,8 +179,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 15. Air parts in DR: intake riser and supply fan box
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** 2-18 Intake Riser (9.2 kg), 2-15 Supply Fan Box And Transition, With 2 Fans (5.7 kg).
-- **Fasteners:** Air column, soffit hangers, fan boxes: not designed yet (HOLD) (AIR (CEILING Engineer)). Tool: the 5 mm hex key only.
+- **Parts:** **2-18** AIR - INTAKE RISER (9.2 kg), **2-15** AIR - SUPPLY FAN BOX AND TRANSITION, WITH 2 FANS (5.7 kg).
+- **Fasteners:** their fixings in DR (AIR and FRONT design, not designed yet).
 - **Person A:** Lifts DR's removable inner face off; with B, slides the intake riser in down to its foot over the mesh space.
 - **Person B:** Sets the supply fan box (2 fans fitted) high in DR and mates its plug-in connector; refits the inner face.
 - **Check before the next step:** Riser foot sits over the opening; fan box connector latched; inner face back on all round.
@@ -188,8 +188,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 16. Air column and supply cartridge
 
 - **Time:** about 11 min for 2 people.
-- **Parts:** 2-11 Air Column (9.8 kg), 2-19 Cartridge - Supply (11.2 kg).
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Parts:** **2-11** AIR - AIR COLUMN (9.8 kg), **2-19** AIR - CARTRIDGE - SUPPLY (11.2 kg).
+- **Fasteners:** the column's fixings (AIR design, not designed yet).
 - **Person A:** With B, stands the air column (2.1 m) in the front-right corner, its back on DR's inner face and its right side on R1's and R2's linings, and fixes it; lifts its front face off.
 - **Person B:** With A, slides the supply cartridge into the column; plugs the hub into the cable chase; A refits the front face.
 - **Check before the next step:** Kick grille clear at the floor; the hub zone at about Z 1200 faces the room.
@@ -197,8 +197,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 17. Soffit, exhaust cartridge and exhaust fan box
 
 - **Time:** about 14 min for 2 people.
-- **Parts:** 2-10 Soffit (9.8 kg), 2-20 Cartridge - Exhaust (11.2 kg), 2-21 Exhaust Fan Box, With 2 Fans (4.1 kg).
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Parts:** **2-10** AIR - SOFFIT (9.8 kg), **2-20** AIR - CARTRIDGE - EXHAUST (11.2 kg), **2-21** AIR - EXHAUST FAN BOX, WITH 2 FANS (4.1 kg).
+- **Fasteners:** the soffit's hangers and the fan box's fixings (AIR design, not designed yet).
 - **Person A:** With B, both on step stools, lifts the soffit (2.3 m) above the door head across the inside width and hangs it from the ceiling frame.
 - **Person B:** With A, lifts the exhaust cartridge into the soffit; then sets the exhaust fan box (2 fans fitted) at its right end under C2's roof sleeve and plugs it; refits the soffit's underside sections.
 - **Check before the next step:** Soffit underside at Z 2120, level; the exhaust box meets the roof sleeve; the door still clears.
@@ -206,8 +206,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 18. Ceiling linings: 2 cassettes
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** 2-22 C1 (9.5 kg), 2-23 C2 (9.5 kg).
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Parts:** **2-22** LINING - CASSETTE - CEILING - COMMON (9.5 kg), **2-23** LINING - CASSETTE - CEILING - COMMON (9.5 kg).
+- **Fasteners:** none.
 - **Person A:** With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.
 - **Person B:** Hooks the 2 safety catches of each cassette before A lets go.
 - **Check before the next step:** Both catches on each cassette; front edges 3 mm behind the soffit.
@@ -215,8 +215,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 19. Light shelf
 
 - **Time:** about 7 min for 2 people.
-- **Parts:** 2-14 Light Shelf With Led Strip (3.1 kg).
-- **Fasteners:** Ledge, screen mount, light shelf: not designed yet (HOLD) (INTERIOR). Tool: the 5 mm hex key only.
+- **Parts:** **2-14** INTERIOR - LIGHT SHELF WITH LED STRIP (3.1 kg).
+- **Fasteners:** the light shelf's fixings (INTERIOR design, not designed yet).
 - **Person A:** Fits the light shelf trims along the tops of the side and back walls (INTERIOR design).
 - **Person B:** Plugs the light shelf feed.
 - **Check before the next step:** Trims straight; no cable shows.
@@ -225,25 +225,25 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 - **Time:** about 12 min for 2 people.
 - **Parts:** none.
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Fasteners:** none.
 - **Person A:** A qualified electrician connects the mains inlet (220 V for the prototype, REQ-SCP-02) and switches on.
 - **Person B:** Checks the lights and scenes, the hub's CO2 reading, and that both fan pairs run: air out at the kick grille, air into the soffit grille; presses boost.
-- **Check before the next step:** Fans run on both paths. The clock stops here (REQ-ASM-01: closed, powered, fans running), after the final check in step 21.
+- **Check before the next step:** Fans run on both paths. The clock stops after step 21's final check (REQ-ASM-01: closed, powered, fans running).
 
 ### Step 21. Final check
 
 - **Time:** about 12 min for 2 people.
 - **Parts:** none.
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Fasteners:** none.
 - **Person A:** Checks the door: swing to 90 degrees, no rub, closes and latches (lock HOLD), drop seal down on the threshold land when closed.
 - **Person B:** Checks the seals: with the pod lights on and the room dark, no light through any seam; peels the protective film off the ACP and the glass; cleans.
 - **Check before the next step:** Every check in the final check list is ticked.
 
-### Step 22. Work-wall ledge and screen mount (fit-out) (after the clock)
+### Step 22. Work-wall ledge and screen mount, after the clock
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** 2-17 Ledge And Screen Mount Carton (3.3 kg).
-- **Fasteners:** none. Tool: the 5 mm hex key only.
+- **Parts:** **2-17** INTERIOR - LEDGE AND SCREEN MOUNT CARTON (3.3 kg).
+- **Fasteners:** their fixings to the work wall's mounting points (INTERIOR design, not designed yet).
 - **Person A:** Holds the 1000 mm ledge on the right (work) wall at its mounting points.
 - **Person B:** Fixes the ledge and the screen mount (INTERIOR design, D-70).
 - **Check before the next step:** Ledge level and firm.
@@ -255,26 +255,29 @@ The guide's register bolts, joint by joint, against `v2/05-Engineering/joints/jo
 
 | Joint | Bolt | Where in this guide | Guide | Register | Match |
 | --- | --- | --- | ---: | ---: | --- |
-| J-BASE-01 | 838001 M6 x 16 | step 4: 8, step 5: 8 | 16 | 16 | yes |
-| J-CEIL-01 | 838001 M6 x 16 | step 8: 16 | 16 | 16 | yes |
-| J-CEIL-02 | 838002 M6 x 25 | step 8: 4 | 4 | 4 | yes |
-| J-FRONT-01 | 838001 M6 x 16 | step 9: 6, step 10: 6 | 12 | 12 | yes |
-| J-WALL-01 | 838001 M6 x 16 | step 6: 8, step 7: 8 | 16 | 16 | yes |
-| J-WALL-02 | 838001 M6 x 16 | step 5: 6, step 7: 6 | 12 | 12 | yes |
-| J-WALL-03 | 838002 M6 x 25 | step 4: 3, step 6: 3 | 6 | 6 | yes |
-| **Total** | 72 x M6 x 16, 10 x M6 x 25 |  | **82** | **82** | yes |
+| J-BASE-01 | 838001 M6 × 16 | step 4: 8, step 5: 8 | 16 | 16 | yes |
+| J-CEIL-01 | 838001 M6 × 16 | step 8: 16 | 16 | 16 | yes |
+| J-CEIL-02 | 838002 M6 × 25 | step 8: 4 | 4 | 4 | yes |
+| J-FRONT-01 | 838001 M6 × 16 | step 9: 6, step 10: 6 | 12 | 12 | yes |
+| J-WALL-01 | 838001 M6 × 16 | step 6: 8, step 7: 8 | 16 | 16 | yes |
+| J-WALL-02 | 838001 M6 × 16 | step 5: 6, step 7: 6 | 12 | 12 | yes |
+| J-WALL-03 | 838002 M6 × 25 | step 4: 3, step 6: 3 | 6 | 6 | yes |
+| **Total** | 72 × M6 × 16, 10 × M6 × 25 |  | **82** | **82** | yes |
 
 Other site fixings that the joints register doesn't count (its section 3.9). The counts are working values for the time model and the kit until each owner's design gives them:
 
-| Fixing | Owner | Count used here | Size | Status | Note |
-| --- | --- | ---: | --- | --- | --- |
-| Base band corner keys (6 keys) | BASE | 12 | M6 x 16 socket head (assumption) | PROPOSED: each key arrives bolted to one band piece; 2 bolts per key on site | BASE's corner bracket 111201 has 4 holes (BASE P01 CAD); F-009 makes them 7.0 |
-| DL on the base band | FRONT and BASE | 2 | M6 x 16 socket head (assumption) | assumption | joints register 3.10: the decor on the band stays with FRONT and BASE |
-| DR on its support behind the mesh band piece | FRONT and BASE | 2 | M6 x 16 socket head (assumption) | assumption | D-62: the block gets its own support; the mesh carries no load |
-| DT to DL, DR and the ceiling | FRONT | 4 | M6 x 16 socket head (assumption) | assumption | joints register 3.9: DT to the ceiling isn't counted there |
-| Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD (D-46, ISS-002) | time is in the door step; the PM ruled the hinge halves that sit in DL ship fitted in DL |
-| Air column, soffit hangers, fan boxes | AIR (CEILING Engineer) | 0 | not designed yet (HOLD) | HOLD | time is in the air steps |
-| Ledge, screen mount, light shelf | INTERIOR | 0 | not designed yet (HOLD) | HOLD (D-70) | time is in the interior steps |
+| Step | Fixing | Owner | Count used here | Size | Status | Note |
+| ---: | --- | --- | ---: | --- | --- | --- |
+| 2 | Base band corner keys (6 keys) | BASE | 12 | M6 × 16 socket head (assumption) | PROPOSED: each key arrives bolted to one band piece; 2 bolts per key on site | BASE's corner bracket 111201 has 4 holes (BASE P01 CAD); F-009 makes them 7.0 |
+| 9 | DL on the base band | FRONT and BASE | 2 | M6 × 16 socket head (assumption) | assumption | joints register 3.10: the decor on the band stays with FRONT and BASE |
+| 10 | DR on its support behind the mesh band piece | FRONT and BASE | 2 | M6 × 16 socket head (assumption) | assumption | D-62: the block gets its own support; the mesh carries no load |
+| 11 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD (D-46, ISS-002) | time is in the door step; the PM ruled the hinge halves that sit in DL ship fitted in DL |
+| 12 | DT to DL, DR and the ceiling | FRONT | 4 | M6 × 16 socket head (assumption) | assumption | joints register 3.9: DT to the ceiling isn't counted there |
+| 15 | Intake riser and supply fan box in DR | AIR and FRONT | 0 | not designed yet (HOLD) | HOLD | time is in the step |
+| 16 | Air column | AIR | 0 | not designed yet (HOLD) | HOLD | time is in the step |
+| 17 | Soffit hangers and the exhaust fan box | AIR | 0 | not designed yet (HOLD) | HOLD | time is in the step |
+| 19 | Light shelf | INTERIOR | 0 | not designed yet (HOLD) | HOLD (D-70) | time is in the step |
+| 22 | Ledge and screen mount | INTERIOR | 0 | not designed yet (HOLD) | HOLD (D-70, IF-16) | time is in the step |
 
 ## 6. Time
 
@@ -301,7 +304,7 @@ Other site fixings that the joints register doesn't count (its section 3.9). The
 | 19 | Light shelf | 1 | 0 | 0 | 0.8 | 10.0 | **6.6** |
 | 20 | Power on: fans run | 0 | 0 | 0 | 10.0 | 0.0 | **11.5** |
 | 21 | Final check | 0 | 0 | 0 | 10.0 | 0.0 | **11.5** |
-| 22 | Work-wall ledge and screen mount (fit-out) | 1 | 0 | 0 | 2.0 | 10.8 | **8.5** (after) |
+| 22 | Work-wall ledge and screen mount | 1 | 0 | 0 | 2.0 | 10.8 | **8.5** (after) |
 |  | **Clock, steps 1 to 21** |  | 82 | 20 |  |  | **168** |
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
