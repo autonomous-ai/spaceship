@@ -17,5 +17,5 @@ The guideline has the full list. These are the ones that bite most often:
 - Use mm everywhere. 3D uses X, Y and Z; 2D views and hole tables use X and Y only.
 - Every number carries a status: confirmed, source, calculation, assumption or unverified.
 - Don't edit `sources/`. Don't contact suppliers or order anything.
-- A change to the look, overall size, architecture, main materials or key joints needs a change proposal for the hardware engineering lead. Don't wait for the answer: keep working with the change marked PROPOSED until he approves it.
+- The PM (the Swarm Lead) makes product and design decisions and records each one, with its reason, in `v2/00-Control/decision-log.md`. Nothing waits for outside approval. Follow the guideline's engineering rules, but its approval steps are replaced by this log. The one hard rule on the look: it stays exactly as the team designed it.
 - The repo is public, so leave out supplier quotes, margins and personal data.
