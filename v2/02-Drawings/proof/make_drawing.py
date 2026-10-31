@@ -360,6 +360,9 @@ def run(_context):
     describe(sheet)
     if ARGS.get("inspect") == "1":
         return
+    if sheet.sheetSize != adsk.drawing.SheetSizes.A2ISOSheetSize:
+        sheet.sheetSize = adsk.drawing.SheetSizes.A2ISOSheetSize
+        print("sheet size set to A2")
     front, top, right = ensure_views(sheet)
     describe(sheet)
     annotate_front(sheet, front)
@@ -381,3 +384,12 @@ def run(_context):
     if not dwg.exportManager.execute(opts):
         raise RuntimeError("PDF export failed")
     print("PDF: %s" % PDF_REL)
+    doc = app.activeDocument
+    if ARGS.get("save") == "1":
+        if doc.isSaved:
+            print("saved new version:", doc.save("Annotated by v2/02-Drawings/proof/make_drawing.py"))
+        else:
+            proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
+            folder = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
+            print("saved as:", doc.saveAs(DESIGN_NAME + "_DWG", folder,
+                                          "FocusPod v2 proof drawing, rev P01, DRAFT", ""))
