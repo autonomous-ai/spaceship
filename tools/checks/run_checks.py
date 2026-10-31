@@ -120,9 +120,10 @@ def run(root, rev):
     if ship_src:
         ran.add("C04")
     # drawings
-    made = {row["part_number"] for _p, rows in plists for row in rows
-            if pn_class(row["part_number"]) in ("part", "assembly")}
-    made |= {pn for pn in step_products if pn_class(pn) in ("part", "assembly")}
+    # parts we make need drawings; assemblies only once they exist in CAD (not the skeleton, a reference)
+    made = {row["part_number"] for _p, rows in plists for row in rows if pn_class(row["part_number"]) == "part"}
+    made |= {pn for pn, d in step_products.items() if pn_class(pn) in ("part", "assembly")
+             and not all("/skeleton/" in f for f in d["files"])}
     names = {row["part_number"]: row["name"] for _p, rows in plists for row in rows}
     names.update({pn: d["name"] for pn, d in step_products.items() if pn not in names})
     if made:

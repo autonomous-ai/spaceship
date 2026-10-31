@@ -1,8 +1,8 @@
-# Mechanical check run: e4cc460 on 2026-10-31
+# Mechanical check run: fbdfc73 on 2026-10-31
 
-Offline checks (`tools/checks/run_checks.py`) on revision `e4cc460`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `fbdfc73`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 1** (0 severe, 1 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 3** (0 severe, 1 major, 2 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -13,20 +13,22 @@ Offline checks (`tools/checks/run_checks.py`) on revision `e4cc460`. The Fusion 
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 1 |
 | C05 drawing completeness | no inputs yet | 0 |
-| C06 BOM completeness | no inputs yet | 0 |
-| C07 fastener schedule and thread engagement | no inputs yet | 0 |
+| C06 BOM completeness | yes | 2 |
+| C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | no inputs yet | 0 |
 | C09 edge distance, bend radius, hole-to-bend | no inputs yet | 0 |
-| C10 mixed metals | no inputs yet | 0 |
-| C11 material grade and finish | no inputs yet | 0 |
+| C10 mixed metals | yes | 0 |
+| C11 material grade and finish | yes | 0 |
 
-Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": [], "part_steps": []}
+Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": []}
 
 ## Findings
 
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
-| F-010 | major | C04 | POD total mass | The pod is about 436.3 kg against the 420 kg cap (D-37, D-54): 16.3 kg over. The layout study's list gives 436.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
+| F-010 | major | C04 | POD total mass | The pod is about 432.3 kg against the 420 kg cap (D-37, D-54): 12.3 kg over. The layout study's list gives 432.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv); 4.0 kg of voice cockpit kit is outside the cap (PM weight ruling). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
+| F-015 | minor | C06 | 100000 | 100000 POD - SPACESHIP in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv is missing: Vietnamese name. | PM |
+| F-016 | minor | C06 | 100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source | 10 rows of v2/04-BOM/100000_P01_POD-MASTER_BOM.csv are missing: Vietnamese name, source (110000, 210000, 350000, 360000, 410000, 510000, 610000, 710000, 810000, 910000). | PM |
 
 ## Tolerance stacks (C02)
 

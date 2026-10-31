@@ -8,21 +8,24 @@ Every finding has an owner group and a status. **Severe findings block the owner
 
 Severity: **severe** = can't be made, assembled or used as drawn; **major** = will cause rework or a wrong part; **minor** = record keeping. Check codes: C01 clash and minimum gaps (Fusion); C02 tolerance stack-ups; C03 fastener and tool access; C04 weight, doorway and pallet fit; C05 drawing completeness; C06 BOM completeness; C07 fastener schedule and thread engagement; C08 hole-to-hole alignment; C09 edge distance, bend radius, hole-to-bend; C10 mixed metals; C11 material grade and finish.
 
-## Open: 4 (0 severe, 4 major, 0 minor)
+## Open: 6 (0 severe, 4 major, 2 minor)
 
 By owner group:
 
 - Fusion Engineer 2: F-014
 - Joints Engineer: F-013
 - Joints Engineer; WALL; CEILING: F-009
+- PM: F-015, F-016
 - PM (Lead): F-010
 
 | ID | Severity | Check | Part | Finding | File | Fix | Owner group | Found | Posted |
 |---|---|---|---|---|---|---|---|---|---|
 | F-009 | major | C08 | joints register (PR #23) bolt holes | With Ø6.6 clearance holes and an M6 bolt (major diameter 5.974 max, ISO 965-1 6g) the float is 0.31 mm radial. The rivnut can sit up to 0.07 off in its Ø9.53 +0.10 hole (Sherex body Ø9.50 max), leaving 0.24 mm for both hole positions: about ±0.12 mm each (Ø0.24 positional from the spigot hole), which needs CNC or a drill jig. The register gives no hole position tolerance. Spigot play doesn't add: the panel shifts to the bolts within it. | `v2/05-Engineering/joints/joints-register.md` | State ±0.12 (Ø0.24 positional) in the register for the WALL and CEILING drawings, or open the clearance holes to Ø7.0 (float 0.51, about ±0.22 each). Stack ST-03. | Joints Engineer; WALL; CEILING | 2026-10-31 c9ae2a4 | Joints group 2026-10-31 |
-| F-010 | major | C04 | POD total mass | The pod is about 436.3 kg against the 420 kg cap (D-37, D-54): 16.3 kg over. The layout study's list gives 436.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv). Open against the cap until the wall sample settles it (ISS-080). | `v2/05-Engineering/layout-study/out/parts-decided-P04.csv` | Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill would save 4.3 kg). | PM (Lead) | 2026-10-31 c9ae2a4 | tracked for the PM (Lead) in the mechanical check group 2026-10-31 |
+| F-010 | major | C04 | POD total mass | The pod is about 432.3 kg against the 420 kg cap (D-37, D-54): 12.3 kg over. The layout study's list gives 432.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv); 4.0 kg of voice cockpit kit is outside the cap (PM weight ruling). Open against the cap until the wall sample settles it (ISS-080). | `v2/05-Engineering/layout-study/out/parts-decided-P04.csv` | Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill would save 4.3 kg). | PM (Lead) | 2026-10-31 c9ae2a4 | tracked for the PM (Lead) in the mechanical check group 2026-10-31 |
 | F-013 | major | C07 | sample package P06, P07 | The wall-and-door sample parts list (v2/06-Samples/wall-door-sample/parts-list.md on main, and still in PR #29) buys 25 x M6 x 50 ISO 4017 hex bolts (P06) and ISO 7089 washers (P07), sized to pass through a 40 mm member. The decided joint is M6 x 16 ISO 4762 socket head (PM ruling R-J2), driven from inside the member into the Sherex rivnut, with a 1.5 mm aluminium stop washer under the rivnut head and 7.0 mm clearance holes (joints register 2.1, 2.2; F-009 ruling). Built from this list, the sample tests a different joint and the factory buys the wrong bolts. | `v2/06-Samples/wall-door-sample/parts-list.md` | Update P06 to M6 x 16 ISO 4762 class 8.8 zinc and replace P07 with the H-08 stop washer (and the H-02 captive retainer, HOLD), in PR #29 or right after PR #23 merges. | Joints Engineer | 2026-10-31 0cb764f | Lead in the mechanical check group 2026-10-31 |
 | F-014 | major | C02 | skeleton GLASS-TO-GLASS | Skeleton P04's fixed glass keeps v1's edge: its closest point to the door is 2.40 mm (true distance, Fusion), and the gap isn't parallel. The PM decided a 4 mm parallel free edge (FRONT group, 2026-10-31), which FRONT's fixed glass in PR #28 has (measured 4.0 mm). The skeleton is the single source of sizes, so the two disagree. | `v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step` | Move the skeleton's fixed glass free edge (fix_xbl, fix_xtl) to run parallel to the door edge at 4 mm, so FRONT links to it. | Fusion Engineer 2 | 2026-10-31 0cb764f | Fusion Engineer 2 group 2026-10-31 |
+| F-015 | minor | C06 | 100000 | 100000 POD - SPACESHIP in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv is missing: Vietnamese name. | `v2/04-BOM/100000_P01_POD-MASTER_BOM.csv` | Fill them in, each number with its status and source. | PM | 2026-10-31 fbdfc73 |  |
+| F-016 | minor | C06 | 100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source | 10 rows of v2/04-BOM/100000_P01_POD-MASTER_BOM.csv are missing: Vietnamese name, source (110000, 210000, 350000, 360000, 410000, 510000, 610000, 710000, 810000, 910000). | `v2/04-BOM/100000_P01_POD-MASTER_BOM.csv` | Fill them in (the assembly tree has the Vietnamese names of the families). | PM | 2026-10-31 fbdfc73 |  |
 
 ## Closed and accepted: 10
 

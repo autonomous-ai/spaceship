@@ -34,9 +34,9 @@ ALIASES = {
     "qty": ("qty", "quantity", "qty_per_pod", "count"),
     "mass": ("mass_kg", "mass", "kg", "kg_each", "weight_kg", "unit_mass_kg", "mass_each_kg", "weight"),
     "status": ("status", "number_status", "mass_status"),
-    "source": ("source", "sources"),
+    "source": ("source", "sources", "source_file", "source_doc"),
     "rev": ("rev", "revision"),
-    "class": ("class", "part_class", "type", "kind"),
+    "class": ("class", "part_class", "type", "kind", "row_type", "make_buy"),
     "maker": ("maker", "manufacturer", "brand", "supplier_brand"),
     "sku": ("sku", "maker_pn", "mpn", "catalog", "catalogue", "maker_part_number", "order_code"),
     "size": ("size", "thread", "thread_size", "nominal_size"),
@@ -108,6 +108,9 @@ def check_parts_lists(root, plists):
             name = row["name"]
             owner = owner_for(r, pn)
             subj = "%s (%s line %d)" % (pn or "no part number", os.path.basename(r), i)
+            rtype = (row["_raw"].get("row_type") or "").lower()
+            if not pn and rtype in ("assembly", "pod", "group", "heading", "family"):
+                continue            # a master BOM heading row, not a part
             if not pn:
                 fs.append(Finding("C06", "no-part-number", "%s line %d" % (r, i), "major",
                                   "Row %d of %s has no part number (%s)." % (i, r, name or "no name"),
@@ -128,8 +131,9 @@ def check_parts_lists(root, plists):
                 missing.append("Vietnamese name")
             if num(row["qty"]) is None or num(row["qty"]) <= 0:
                 missing.append("quantity")
-            if num(row["mass"]) is None or num(row["mass"]) <= 0:
-                missing.append("mass")
+            summed = cls == "assembly" and re.search(r"\bsum\b", row["_raw"].get("mass_status") or "", re.I)
+            if (num(row["mass"]) is None or num(row["mass"]) <= 0) and not summed:
+                missing.append("mass")      # an assembly's mass may be the sum of its listed parts, 0 until listed
             if not row["status"]:
                 missing.append("status")
             if not row["source"]:
@@ -186,6 +190,7 @@ def check_parts_lists(root, plists):
                                   "issue that releases it.", r, owner))
             if is_fastener(pn, name):
                 fs.extend(_fastener_row(r, pn, name, row, owner))
+    fs = _fold_minor_rows(fs)
     for pn, uses in seen.items():
         names = {n for _f, n in uses}
         if len(names) > 1:
@@ -195,6 +200,28 @@ def check_parts_lists(root, plists):
                               "One number is one form, fit and function (conventions section 6).", uses[0][0],
                               owner_for(uses[0][0], pn)))
     return fs
+
+
+def _fold_minor_rows(fs):
+    """One finding per file for minor gaps in its rows (missing Vietnamese name, status or source), so a
+    generated list with the same gap on every row reads as one item to fix."""
+    keep, groups = [], {}
+    for f in fs:
+        if f.check == "C06" and f.rule == "row-incomplete" and f.severity == "minor":
+            gap = f.message.split("is missing: ", 1)[-1].rstrip(".")
+            groups.setdefault((f.file, gap), []).append(f)
+        else:
+            keep.append(f)
+    for (file, gap), items in groups.items():
+        if len(items) == 1:
+            keep.append(items[0])
+            continue
+        pns = ", ".join(x.subject for x in items)
+        keep.append(Finding("C06", "rows-incomplete", "%s: %s" % (os.path.basename(file), gap), "minor",
+                            "%d rows of %s are missing: %s (%s)." % (len(items), file, gap, pns),
+                            "Fill them in (the assembly tree has the Vietnamese names of the families).", file,
+                            items[0].owner))
+    return keep
 
 
 def _fastener_row(r, pn, name, row, owner):
@@ -346,18 +373,26 @@ def check_pod_mass(root, rows, src, cap_kg=420.0):
     cap (D-37, D-54)."""
     if not rows:
         return [], None
+    # the PM's weight ruling of 2026-10-31: the voice cockpit kit (4.0 kg, shipped later) sits outside the cap
+    outside = [r for r in rows if re.search(r"outside the cap|voice cockpit kit reserve",
+                                            " ".join(str(r.get(k) or "") for k in ("item", "name", "status", "note")), re.I)]
+    rows = [r for r in rows if r not in outside]
     base = sum(num(r.get("kg_total")) or 0.0 for r in rows)
     adj = load_adjustments(root, src)
     extra = sum(num(a.get("kg")) or 0.0 for a in adj)
     total = base + extra
-    info = {"list_kg": round(base, 2), "adjustments": adj, "total_kg": round(total, 2), "cap_kg": cap_kg}
+    outside_kg = sum(num(r.get("kg_total")) or 0.0 for r in outside)
+    info = {"list_kg": round(base, 2), "adjustments": adj, "total_kg": round(total, 2), "cap_kg": cap_kg,
+            "outside_cap_kg": round(outside_kg, 2)}
     if total <= cap_kg + 1e-6:
         return [], info
     parts = "; ".join("%+.1f kg %s (%s, %s)" % (num(a["kg"]), a["id"], a["status"], a["source"]) for a in adj)
     return [Finding("C04", "pod-mass-over-cap", "POD total mass", "major",
                     "The pod is about %.1f kg against the %.0f kg cap (D-37, D-54): %.1f kg over. The layout study's "
-                    "list gives %.1f kg (%s)%s. Open against the cap until the wall sample settles it (ISS-080)." % (
-                        total, cap_kg, total - cap_kg, base, src, "; adjustments since: " + parts if parts else ""),
+                    "list gives %.1f kg (%s)%s%s. Open against the cap until the wall sample settles it (ISS-080)." % (
+                        total, cap_kg, total - cap_kg, base, src, "; adjustments since: " + parts if parts else "",
+                        "; %.1f kg of voice cockpit kit is outside the cap (PM weight ruling)" % outside_kg
+                        if outside_kg else ""),
                     "Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill "
                     "would save 4.3 kg).", src, "PM (Lead)", {"total_kg": round(total, 2), "cap_kg": cap_kg})], info
 
