@@ -1,6 +1,6 @@
-# Mechanical check run: 6ccbfac on 2026-11-01
+# Mechanical check run: bc1798e on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `6ccbfac`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `bc1798e`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 8** (5 severe, 3 major, 0 minor). Register numbers in brackets.
 

@@ -672,7 +672,7 @@
    },
    "key": "C07|thread-bottoms-out|111211 BASE - CORNER KEY - BACK - COMMON: M6 x 16 bolts in holes tapped 12 deep",
    "id": "F-017",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "manual",
    "found": "2026-11-01 b35fe8f",
    "posted": "Joints group 2026-11-01",
@@ -686,9 +686,15 @@
      "date": "2026-11-01",
      "rev": "7b9b36f",
      "event": "set OPEN by hand: PM ruling 2026-11-01 (joints group): end-face holes tapped through, at least 15 mm of thread at the bottom, M6 x 16 stays the one site bolt. Closes when the joints register shows it."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9693aac",
+     "event": "set CLOSED by hand: Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker."
     }
    ],
-   "note": "PM ruling 2026-11-01 (joints group): end-face holes tapped through, at least 15 mm of thread at the bottom, M6 x 16 stays the one site bolt. Closes when the joints register shows it."
+   "note": "Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker.",
+   "closed": "2026-11-01 9693aac Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker."
   },
   {
    "check": "C03",
@@ -706,7 +712,7 @@
    },
    "key": "C03|head-floor-clearance|111211 BASE - CORNER KEY - BACK - COMMON: bolt heads under the band",
    "id": "F-018",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "manual",
    "found": "2026-11-01 b35fe8f",
    "posted": "Joints group 2026-11-01",
@@ -720,9 +726,15 @@
      "date": "2026-11-01",
      "rev": "7b9b36f",
      "event": "set OPEN by hand: PM ruling 2026-11-01 (joints group): the factory-fitted key may use a low-head screw or be fixed from inside; nothing under the band closer than 5 mm to the floor at the lowest glide setting. Closes when the joints register shows it."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9693aac",
+     "event": "set CLOSED by hand: Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker."
     }
    ],
-   "note": "PM ruling 2026-11-01 (joints group): the factory-fitted key may use a low-head screw or be fixed from inside; nothing under the band closer than 5 mm to the floor at the lowest glide setting. Closes when the joints register shows it."
+   "note": "Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker.",
+   "closed": "2026-11-01 9693aac Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker."
   },
   {
    "check": "C05",
@@ -746,7 +758,8 @@
      "rev": "6ccbfac",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   },
   {
    "check": "C05",
@@ -770,7 +783,8 @@
      "rev": "6ccbfac",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   },
   {
    "check": "C05",
@@ -794,7 +808,8 @@
      "rev": "6ccbfac",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   },
   {
    "check": "C05",
@@ -818,7 +833,8 @@
      "rev": "6ccbfac",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   },
   {
    "check": "C05",
@@ -842,7 +858,8 @@
      "rev": "6ccbfac",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   },
   {
    "check": "C05",
@@ -866,7 +883,8 @@
      "rev": "6ccbfac",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   },
   {
    "check": "C05",
@@ -890,7 +908,8 @@
      "rev": "6ccbfac",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   },
   {
    "check": "C05",
@@ -914,7 +933,8 @@
      "rev": "6ccbfac",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 bc1798e"
   }
  ]
 }
