@@ -19,7 +19,7 @@ BACK = (("B1", "LOWER-B1"), ("B2", "LOWER-B2"), ("B3", "UPPER-B3"), ("B4", "UPPE
 
 
 def rows():
-    out = []
+    out = [("210000_P01_WALL_DWG", ["210000"], "WALL assembly: the 8 panels and 8 cassettes (wall_assembly.py)")]
     for i, (code, tag) in enumerate(SIDE, 1):
         out += [("2101%02d_P01_WALL-PANEL-ASSY-SIDE-%s_DWG" % (i, tag), ["2101%02d" % i], "panel assembly %s" % code),
                 ("2111%02d_P01_WALL-PANEL-FRAME-SIDE-%s_DWG" % (i, tag), ["2111%02d" % i], "frame %s" % code),
