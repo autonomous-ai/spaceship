@@ -703,8 +703,8 @@ D60 = dict(
     skin=12.0,                       # felt-covered faces: 3 mm ACP + 9 mm felt, as the linings (ASSUME construction)
     fill=27.0,                       # polyester fill between the exhaust cartridge and the soffit's faces (27 mm
                                      # under it, 29 in front: AIR #91); the smallest is used
-    fill_col=21.0,                   # the same between the supply cartridge and the column's left face: 21 mm on
-                                     # AIR #91, the column 5 mm off the lining and the cartridge 5 mm clear (29 in front)
+    fill_col=27.0,                   # the same between the supply cartridge and the column's left face: 27 mm on
+                                     # AIR #91 at 3b891cf, the cartridge at X 988 to 1161, 5 mm off the lining (29 in front)
     cart=(173.0, 314.0, 1750.0),     # one cartridge size for both paths: casing outer width, stack depth, length
     gap=80.0, ngap=2, lin=50.0,      # two 80 mm passages between three 50 mm Pyrotek Sorberpoly 2D layers (HW fill row)
     col=((949.0, 1161.0), (-645.0, -285.0), (12.0, 2120.0)),         # air column outer: X, Y, Z (AIR #91: 212 wide,
