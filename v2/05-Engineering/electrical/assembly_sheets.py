@@ -253,7 +253,7 @@ def write(out_dir, v, harness):
         doc.set_metadata({"title": "%s %s %s" % (pn, M.REV, stem), "author": "ELECTRICAL Engineer",
                           "creator": "assembly_sheets.py", "producer": "PyMuPDF",
                           "creationDate": "D:20261101000000", "modDate": "D:20261101000000"})
-        doc.save(path, deflate=True, garbage=4)
+        doc.save(path, deflate=True, garbage=4, no_new_id=True)
         doc.close()
         written.append(path)
     return written

@@ -366,7 +366,7 @@ def write(pdf_path, png_pattern, v, rows, harness):
     doc.set_metadata({"title": "710000 P01 ELECTRICAL - WIRING DIAGRAM", "author": "ELECTRICAL Engineer",
                       "subject": "FocusPod v2 (Spaceship)", "creator": "electrical_docs.py", "producer": "PyMuPDF",
                       "creationDate": "D:20261031000000", "modDate": "D:20261031000000"})
-    doc.save(pdf_path, deflate=True, garbage=4)
+    doc.save(pdf_path, deflate=True, garbage=4, no_new_id=True)
     for i, page in enumerate(doc, start=1):
         page.get_pixmap(dpi=110).save(png_pattern % i)
     doc.close()
