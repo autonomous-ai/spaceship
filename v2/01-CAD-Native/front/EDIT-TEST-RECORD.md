@@ -28,18 +28,12 @@ The first run of this test failed, and that is why the sketches now measure from
 
 ## 360002 FRONT - FIXED GLASS UNIT, P01
 
-```sh
-python3 tools/fusion/run_script.py v2/01-CAD-Native/front/edit_test_front.py \
-    --arg anchors=v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT_ANCHORS.json \
-    --arg "edits=pod_w=2600 mm;fr_dz=12 mm;fix_xk=511 mm;door_xtr=1192 mm"
-```
-
-Four skeleton edits at once: the pod 100 mm wider, the front 5 mm higher, the pane's knee 10 mm further left, and the door's top-right corner 10 mm further right (so the free edge, which follows the door edge, tilts).
+In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a copy of the exported f3d opened as a new unsaved document and closed without saving, skeleton P04 v4:
 
 | State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
 |---|---|---|---|---|---|
-| Before | 1032.7 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
-| pod_w 2600 mm; fr_dz 12 mm; fix_xk 511 mm; door_xtr 1192 mm | 1123.5 x 15.0 x 2045.0 | 0 | 0 | none | 0.010 |
-| Reverted | 1032.7 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
+| Before | 1030.8 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
+| pod_w 2600 mm; fr_dz 12 mm; fix_xk 511 mm; door_xtr 1192 mm | 1121.5 x 15.0 x 2045.0 | 0 | 0 | none | 0.010 |
+| Reverted | 1030.8 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
 
-**RESULT: PASS (CAD check on a copy)**, 16 anchors.
+RESULT: PASS. 16 anchors (pane, U-profile, U-seal and seal half sides against their expressions) follow the four skeleton edits at once, with the bottom channel's screw holes in the model, and return exactly.
