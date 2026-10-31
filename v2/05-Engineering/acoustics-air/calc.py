@@ -963,10 +963,16 @@ AIR = dict(
     room_ppm=(400.0, 600.0),    # BRIEF uses 400 (outdoor); 600 = typical occupied office (ASSUME)
     sensible_w_person=75.0,     # ASSUME seated office work
     laptop_w=30.0,              # ASSUME per person
-    lights_w=15.0,              # HW lights: 6 x Haefele Loox5 LED 2094 at 2.5 W (source)
-    front_light_w=6.0,          # HW lights: 2 m Haefele Loox5 LED 2162 at 3.0 W/m (source)
-    controls_w=3.0,             # HW CO2 controller row - provisional
+    lights_w=26.6,              # ELECTRICAL load table LD05 (PR #64): the light shelf, 4.434 m of Haefele Loox5 2168 strip
+                                # at 6.0 W/m (calculation, maker data; D-70 replaced the 6 ceiling lights of 15 W)
+    call_light_w=2.7,           # ELECTRICAL LD04: the call light, 0.9 m of Loox5 2165 strip at 3.0 W/m (D-70 dropped the 6 W
+                                # front light)
+    controls_w=3.0,             # ELECTRICAL LD03: the sensor hub, typical (assumption, ISS-060)
+    supply_loss_w=9.9,          # ELECTRICAL calc-results: the three 60 W Class 2 supplies' losses at the typical load, in B2
+    supply_fan_w_max=6.6,       # ELECTRICAL LD01: each supply fan at full speed (unverified: the maker figure from retailer
+                                # copies); the exhaust fans' heat leaves with the exhaust air
     voice_kit_w=60.0,           # reserve for the later voice cockpit kit: ASSUME, same as the layout study
+    voice_kit_loss_w=12.0,      # ELECTRICAL: the kit's supply loss when it is fitted
 )
 SYS_K = 7.5   # ASSUME: entry 0.5 + outside slot grille 2.0 + inside diffuser 2.0 + exit 1.0 + splitter 2.0
 # The plan's Panasonic FV-15AUL1 has no published curve and its manual forbids ceiling mounting (HW): not used.
@@ -992,9 +998,28 @@ def sys_dp(q_ls, area):
 MIX_EFF = 0.8   # PM ruling 8: assumed mixing (ventilation) effectiveness for CO2
 
 
-def heat_w(people, kit=False):
-    return (people * (AIR["sensible_w_person"] + AIR["laptop_w"]) + AIR["lights_w"] + AIR["front_light_w"]
-            + AIR["controls_w"] + (AIR["voice_kit_w"] if kit else 0.0))
+def supply_fan_w(q_ls):
+    """Heat of the two supply fans at q_ls: the cube law on the air model's supply fan speed (ELECTRICAL LD01 gives 5.2 W
+    at 73 %); full speed if q_ls is out of the fans' reach."""
+    r = layout_noise12(d60_paths(), q_ls)
+    s = r[3][0] if r else 1.0
+    return FAN12_N * AIR["supply_fan_w_max"] * s ** 3
+
+
+def heat_w(people, kit=False, q_ls=53.0):
+    """Heat into the pod's air, W: people and laptops, the light shelf and call light, the hub, the supplies' losses and
+    the supply fans (ELECTRICAL, PR #64), and the voice kit with its supply loss when fitted."""
+    return (people * (AIR["sensible_w_person"] + AIR["laptop_w"]) + AIR["lights_w"] + AIR["call_light_w"]
+            + AIR["controls_w"] + AIR["supply_loss_w"] + supply_fan_w(q_ls)
+            + (AIR["voice_kit_w"] + AIR["voice_kit_loss_w"] if kit else 0.0))
+
+
+def flow_for_dt(people, kit=False, dt=4.0):
+    """Fresh air (l/s) that holds the inside dt over the room, with the supply fans' heat at that flow."""
+    q = 53.0
+    for _ in range(30):
+        q = heat_w(people, kit, q) / (RHO0 * CP_AIR * dt / 1000)
+    return q
 
 
 def co2_rows():
@@ -1004,8 +1029,8 @@ def co2_rows():
     for q in (26.0, 40.0, 53.0, 70.0):
         rise = g / q * 1e6
         tau_min = v / (q / 1000) / 60
-        dt = heat_w(2) / (RHO0 * CP_AIR * q / 1000)
-        dt_kit = heat_w(2, True) / (RHO0 * CP_AIR * q / 1000)
+        dt = heat_w(2, False, q) / (RHO0 * CP_AIR * q / 1000)
+        dt_kit = heat_w(2, True, q) / (RHO0 * CP_AIR * q / 1000)
         ach = q / 1000 * 3600 / v
         rows.append((q, ach, 60 / ach, rise, AIR["room_ppm"][0] + rise, AIR["room_ppm"][1] + rise,
                      3 * tau_min, dt, dt_kit))
@@ -1599,11 +1624,13 @@ def t_air():
     for q, ach, mins, rise, c4, c6, t95, dt, dtk in rows:
         out.append(row([f"{q:.0f}", f"{ach:.0f}", f"{mins:.1f}", f"{rise:.0f}", f"{c4:.0f}", f"{c6:.0f}",
                         f"{t95:.0f}", f"{dt:.1f}", f"{dtk:.1f}", f"{600 + rise / MIX_EFF:.0f}"]))
-    k4 = RHO0 * CP_AIR * 4.0 / 1000
     one = 600 + AIR["co2_per_person_ls"] / 26.0 * 1e6 / MIX_EFF
     out.append("")
-    out.append(f"Flow that keeps the inside 4 K or less over the room: one person {heat_w(1) / k4:.0f} l/s, two people "
-               f"{heat_w(2) / k4:.0f} l/s, two with the voice-kit reserve {heat_w(2, True) / k4:.0f} l/s. One person at the "
+    out.append(f"Heat into the air at 53 l/s: two people {heat_w(2):.0f} W, with the voice kit {heat_w(2, True):.0f} W "
+               "(people and laptops, the light shelf and call light, the hub, the supplies' losses and the supply fans; "
+               "ELECTRICAL, PR #64).")
+    out.append(f"Flow that keeps the inside 4 K or less over the room: one person {flow_for_dt(1):.0f} l/s, two people "
+               f"{flow_for_dt(2):.0f} l/s, two with the voice-kit reserve {flow_for_dt(2, True):.0f} l/s. One person at the "
                f"26 l/s floor (D-44), room 600, mixing 0.8: {one:.0f} ppm.")
     out.append(f"CO2 after 2 h at 40 l/s from 400 ppm (room 400): {co2_after(40, 120, 400, 400):.0f} ppm; "
                f"after 3 h at 26 l/s, room 600: {co2_after(26, 180, 600, 600):.0f} ppm.")
