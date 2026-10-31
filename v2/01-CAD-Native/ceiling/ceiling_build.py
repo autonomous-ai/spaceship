@@ -932,28 +932,20 @@ def open_or_create(app, name):
     folder = proj.rootFolder
     for n in parts[1:]:
         folder = folder.dataFolders.itemByName(n)
-    found, unreadable = [], 0
-    for i in range(folder.dataFiles.count):
-        try:
-            f = folder.dataFiles.item(i)
-            if f.name == name:
-                found.append(f)
-        except RuntimeError:
-            unreadable += 1
+    # the shared folder check (tools/fusion/fusion_folder.py, one copy for every team script):
+    # it reads the folder again while entries can't be read, and refuses to make a design that
+    # an unreadable entry could already be
+    from fusion_folder import read_folder, safe_to_create
+    files, _unknown, _others = read_folder(folder, stop_when=lambda fs, _u, _o: name in fs)
     app.data.activeProject = proj
-    if found:
-        d = app.documents.open(found[0], True)
+    if name in files:
+        d = app.documents.open(files[name][0], True)
         d.activate()
         return d, "opened"
-    if unreadable and ARGS.get("new_name") != "1":
-        # PM ruling 2026-11-01: list the folder first and stop before creating anything if any
-        # entry can't be read (that entry could be this very design), unless the name has never
-        # been used (new_name=1: the author checked it never existed, so no duplicate can arise)
-        raise RuntimeError("%d entries of %s can't be read, so %r isn't made" % (unreadable, FOLDER, name))
     if ARGS.get("create") != "1":
-        # PM ruling 2026-11-01: no new designs until the runner's folder fix lands, since an
-        # entry Fusion can't read could make a second, empty design with a real one's name
-        raise RuntimeError("%r is not in %s; pass create=1 to make it (only once that's allowed)" % (name, FOLDER))
+        raise RuntimeError("%r is not in %s; pass create=1 to make it" % (name, FOLDER))
+    for w in safe_to_create(folder, name):
+        print("warning:", w)
     d = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     if not d.saveAs(name, folder, "new, made by ceiling_build.py parts=", ""):
         raise RuntimeError("saveAs %r failed" % name)
