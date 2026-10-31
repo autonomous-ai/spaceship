@@ -23,7 +23,9 @@ material and tolerance; another soft good (foam, gasket, seal, tape, by the name
 by its DXF, or, as a plain strip or rectangle, by such a row that also gives its thickness; a flat part cut from
 sheet (its row's process says laser, waterjet or router, and names no bend, fold, groove, lap, machining,
 drilling, tapping, welding or bonding) counts as drawn by its own DXF when its row gives material, thickness,
-finish and an ISO 2768 general tolerance. A part found only in the folders has no BOM row. When the
+finish and an ISO 2768 general tolerance, unless its DXF has any line on the BEND layer (the guideline's CUT, BEND
+and MARK layers, section 9): a part with bends keeps its drawing whatever its process says. A part found only in
+the folders has no BOM row. When the
 drawing is a made part's only gap and the Mac's screen is locked, the part is blocked by the locked screen:
 the drawing start needs it unlocked (D-84). Otherwise a part with a gap is open.
 A bought part is done when it has a joints-register row (hardware only, D-63), a maker and SKU, and a
@@ -143,6 +145,17 @@ def local_copy(path, where, refs, tmp):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(subprocess.run(["git", "-C", str(ROOT), "show", f"{where}:{path}"], check=True, capture_output=True).stdout)
     return out
+
+
+def text_at(path, where, refs):
+    """A text file from the ref that listed it, or from this working tree."""
+    try:
+        if not refs or where == "working tree":
+            return (ROOT / path).read_text(encoding="utf-8", errors="replace")
+        return subprocess.run(["git", "-C", str(ROOT), "show", f"{where}:{path}"], check=True, capture_output=True).stdout.decode(
+            "utf-8", errors="replace")
+    except (OSError, subprocess.CalledProcessError):
+        return ""
 
 
 def screen_state(choice):
@@ -309,6 +322,25 @@ def where_of(r, labels):
     return labels.get(ref, "this tree" if ref == "working tree" else ref)
 
 
+def dxf_has_bend(text):
+    """True when an ASCII DXF has any entity on the BEND layer (in its ENTITIES or BLOCKS section), False when it
+    has none, None when it can't be read (empty or binary): then the part can't be shown flat."""
+    if not text or text.startswith("AutoCAD Binary DXF"):
+        return None
+    lines = text.splitlines()
+    section, prev = None, ("", "")
+    for i in range(0, len(lines) - 1, 2):
+        code, value = lines[i].strip(), lines[i + 1].strip()
+        if prev == ("0", "SECTION") and code == "2":
+            section = value.upper()
+        elif code == "0" and value == "ENDSEC":
+            section = None
+        elif code == "8" and section in ("ENTITIES", "BLOCKS") and value.upper() == "BEND":
+            return True
+        prev = (code, value)
+    return False
+
+
 def flat_lacks(rows):
     """D-89 (4): what the best row lacks for a flat part cut from sheet to go without a drawing; None when no row
     has the number. The process must name the cut (laser, waterjet or router) and no bend, fold, groove, lap,
@@ -335,7 +367,9 @@ def flat_lacks(rows):
     return best
 
 
-def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None):
+def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None,
+                dxf_texts=None):
+    """dxf_texts: number -> the texts of its DXF files, for D-89 (4)'s BEND-layer rule (None skips that rule)."""
     chars, _, accept = fai
     tab_cover = tab_cover or {}
     by_cut_row = cut_rows(cut_texts)
@@ -382,7 +416,9 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 dwg = "DXF (D-89)"
             elif (not soft and r["make_buy"] == "make" and kind_of(pn) == "part" and by_pn.get(pn, {}).get("DXF")
                   and flat_lacks(by_cut_row.get(pn, [])) == []):
-                dwg = "DXF and row (D-89)"
+                bends = [dxf_has_bend(t) for t in dxf_texts(pn)] if dxf_texts else [False]
+                dwg = ("DXF and row (D-89)" if bends and not any(b is not False for b in bends)
+                       else "no: its DXF has bend lines, or can't be read (D-89)")
             else:
                 dwg = "no"
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"
@@ -541,7 +577,8 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "a flat part cut from sheet needs no drawing when it has its own DXF and its row's process names laser, waterjet or router "
             "cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, "
             "thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole "
-            "note is left to the drawing review. Assemblies always keep their drawings.",
+            "note is left to the drawing review. A DXF with any line on the BEND layer (the guideline's CUT, BEND and MARK layers, "
+            "section 9) keeps the drawing whatever the process says. Assemblies always keep their drawings.",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
@@ -583,8 +620,16 @@ def main(argv=None):
     by_pn = files_by_pn(files)
     with tempfile.TemporaryDirectory() as tmp:
         tab_cover = tabulated_cover(by_pn, lambda path: pdf_text(local_copy(path, files[path], refs, tmp)))
+    dxf_cache = {}
+
+    def dxf_texts(pn):
+        for path in by_pn.get(pn, {}).get("DXF", []):
+            if path not in dxf_cache:
+                dxf_cache[path] = text_at(path, files[path], refs)
+        return [dxf_cache[p] for p in by_pn.get(pn, {}).get("DXF", [])]
+
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
-                               screen, bom, labels, cut_texts, tab_cover)
+                               screen, bom, labels, cut_texts, tab_cover, dxf_texts)
     made += files_only(by_pn, parts, files, labels, screen)
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
