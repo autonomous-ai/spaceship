@@ -538,3 +538,22 @@ def test_missing_drawing_follows_the_screen_lock(monkeypatch, tmp_path):
     assert c_drawings.missing_drawing_severity(str(tmp_path)) == "severe"
     monkeypatch.setattr(c_drawings, "screen_locked", lambda: None)
     assert c_drawings.missing_drawing_severity(str(tmp_path)) == "severe"
+
+
+def test_shipping_reads_the_packing_list_when_there_is_one(tmp_path):
+    d = tmp_path / "v2/07-Packaging"
+    d.mkdir(parents=True)
+    (d / "910001_P01_PALLET-1-48X40_PKG.svg").write_text("<svg/>")
+    (d / "910002_P01_PALLET-2-96X48_PKG.svg").write_text("<svg/>")
+    rows = [{"label": "1-01", "part_number": "211101", "name": "WALL - PANEL", "pallet": "1", "kg": "11.3",
+             "size_mm": "1492.74 x 1142.74 x 46", "glass": "no", "kg_status": "calculation"},
+            {"label": "2-01", "part_number": "360002", "name": "FRONT - FIXED GLASS UNIT", "pallet": "2", "kg": "29.6",
+             "size_mm": "2033 x 1031 x 12", "glass": "yes", "kg_status": "calculation"},
+            {"label": "1-02", "part_number": "350003", "name": "FRONT - DECOR BLOCK - DR", "pallet": "1", "kg": "18.1",
+             "size_mm": "2290 x 1016 x 205", "glass": "no", "kg_status": "calculation"}]
+    _write_csv(d / "910000_P01_PACKING-LIST_BOM.csv", rows)
+    fs, rep, src = c_parts.check_shipping(str(tmp_path))
+    assert src.endswith("PACKING-LIST_BOM.csv")
+    got = {(f.rule, f.subject) for f in fs}
+    assert ("pallet-fit", "1-02") in got                 # a 2290 mm block put on the 48 x 40 pallet
+    assert not any(s in ("1-01", "2-01") for _r, s in got)  # the glass unit is exempt from 20 kg; both fit
