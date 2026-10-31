@@ -315,12 +315,18 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 4. Step 20, power on: fans run: 12 min.
 5. Step 21, final check: 12 min.
 
-What could bring it toward the 1-hour target; none of these is decided, each is for the PM:
+**The five biggest time sinks, and a fix for each** (none decided; the PM decides, and each owner's design makes it real). Each fix is priced alone with the same model; the minutes saved don't simply add, because the fixes overlap in a few steps:
 
-- **A flat floor.** Levelling is 10 minutes of the base band step; glides preset at the factory for a floor known to be flat would save most of it.
-- **The air parts.** The air column, soffit, cartridges, fan boxes and riser take about 31 minutes (steps 15 to 17), which the layout study's 126 minutes didn't have. The column with its cartridge fitted would be 20.9 kg, 0.9 kg over D-03; shipping it fitted would save one lift and a slide-in.
-- **Corner keys.** 12 site bolts at the base band corners (BASE, PROPOSED); a hook-in key would drop them.
-- **The timed trial** replaces every unit time here, all of them assumptions.
+| ID | Time sink | Minutes in the clock | Fix (not decided) | Saves, min | Owner |
+| --- | --- | ---: | --- | ---: | --- |
+| T1 | Air parts: the riser and fan box in DR, the air column, the soffit with its cartridge and fan box (steps 15 to 17) | 30.7 | Factory-fit what stays under 20 kg: the exhaust fan box inside the soffit, and the intake riser joined to the supply fan box as one unit, each with a plug-in connector; hang the soffit and the column on tool-free hooks; one hinged soffit underside instead of three loose sections. | **11.4** | AIR (CEILING Engineer); FRONT for DR's inner face |
+| T2 | Carrying parts to their place (every step) | 24.1 | Fewer loose pieces and shorter carries: bond each floor mat under its floor panel at the factory, and in step 1 set every part from pallet 2 down at its own place round the pod (label map), so its later carry is a few steps. | **10.7** | Packing (guide and label map); BASE for the floor mats |
+| T3 | Base band: setting, joining and levelling the band (step 2) | 21.3 | Glides preset at the factory, so the crew checks with the spirit level and turns only the glides that are out; corner keys that hook in without bolts; band pieces that locate themselves on the keys. | **11.8** | BASE, with the Joints Engineer for the corner keys |
+| T4 | Power on and test (step 20) | 11.5 | Plug-in harness tested at the factory, and a self-test on the hub: one button runs both fan pairs, the lights and the sensors and shows pass or fail. | **8.1** | ELECTRICAL |
+| T5 | Final check, film and cleaning (step 21) | 11.5 | Inside the clock, only the door, seal and fan checks; peeling the protective film and cleaning move after the clock, with the ledge. | **5.8** | The PM (REQ-ASM-01's start and stop are PROPOSED) |
+|  | **All five together** |  |  | **47.3** | clock about **121 min** (4.0 person-hours) |
+
+With all five the clock is about 121 minutes. Even so, the 1-hour target needs more than these: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 82 register bolts alone take about 14 minutes of the clock, and every bolt and fixing together about 19. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
 
 Unit times used:
 
@@ -351,6 +357,11 @@ Unit times used:
 | `t_light_shelf_s` | 600 s | assumption | this plan | fit and plug the light shelf trims along the wall tops (D-70, not designed yet) |
 | `t_ledge_two_s` | 120 s | assumption | this plan | hold the 1000 mm ledge in place while it is fixed (D-70, not designed yet) |
 | `t_ledge_one_s` | 600 s | assumption | this plan | fix the ledge and the screen mount to the work wall's mounting points (D-70, IF-16, not designed yet) |
+| `t_carry_staged_s` | 20 s | assumption | this plan | carry a part that step 1 laid out at its place: a few steps |
+| `t_level_preset_s` | 240 s | assumption | this plan | check the band with the spirit level and turn only the glides that are out; glides preset at the factory |
+| `t_hook_s` | 120 s | assumption | this plan | hang a part on tool-free hooks and check it |
+| `t_selftest_s` | 180 s | assumption | this plan | the hub's self-test: both fan pairs, the lights and the sensors run and it shows pass or fail |
+| `t_final_in_clock_s` | 300 s | assumption | this plan | the final check's door, seal and fan checks only; peeling film and cleaning come after the clock |
 
 ## 7. Final check list (step 21)
 

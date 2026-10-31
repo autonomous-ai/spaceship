@@ -129,6 +129,18 @@ def test_no_reserved_part_numbers():
     assert not (used & reserved), used & reserved
 
 
+def test_what_if_prices():
+    base = pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS)
+    m = pack.Model()
+    assert abs(base - m.time_total(pack.CLOCK_LAST_STEP) / 60) < 1e-9
+    assert abs(pack.what_if([]) - base) < 1e-9
+    for f in pack.FIXES:
+        assert pack.what_if([f]) < base, f["id"]
+    assert pack.what_if(pack.FIXES) < min(pack.what_if([f]) for f in pack.FIXES)
+    # what_if works on copies: the guide's own steps are unchanged
+    assert abs(pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS) - base) < 1e-9
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]
     bad = 0

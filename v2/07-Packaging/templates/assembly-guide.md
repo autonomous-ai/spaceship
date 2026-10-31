@@ -70,12 +70,11 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 
 {{TOP_STEPS}}
 
-What could bring it toward the 1-hour target; none of these is decided, each is for the PM:
+**The five biggest time sinks, and a fix for each** (none decided; the PM decides, and each owner's design makes it real). Each fix is priced alone with the same model; the minutes saved don't simply add, because the fixes overlap in a few steps:
 
-- **A flat floor.** Levelling is {{LEVEL_MIN}} minutes of the base band step; glides preset at the factory for a floor known to be flat would save most of it.
-- **The air parts.** The air column, soffit, cartridges, fan boxes and riser take about {{AIR_MIN}} minutes (steps 15 to 17), which the layout study's 126 minutes didn't have. The column with its cartridge fitted would be {{COLUMN_FITTED_KG}} kg, {{COLUMN_OVER_KG}} kg over D-03; shipping it fitted would save one lift and a slide-in.
-- **Corner keys.** 12 site bolts at the base band corners (BASE, PROPOSED); a hook-in key would drop them.
-- **The timed trial** replaces every unit time here, all of them assumptions.
+{{FIXES}}
+
+With all five the clock is about {{FIXES_ALL_MIN}} minutes. Even so, the 1-hour target needs more than these: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 82 register bolts alone take about {{REG_BOLT_MIN}} minutes of the clock, and every bolt and fixing together about {{SINK_MIN_BOLTS}}. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
 
 Unit times used:
 

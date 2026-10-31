@@ -19,6 +19,7 @@ scripts/inputs.py, read at run time. Every other number is defined below with it
     python3 v2/07-Packaging/pack.py --joints PATH   # check the bolt totals against that joints register
 """
 import argparse
+import copy
 import csv
 import io
 import re
@@ -621,6 +622,125 @@ def read_register(path):
     return rows, total
 
 
+# ------------------------------------------------------------------------------------------- time model
+def step_ops(st, other_fixings):
+    """A step's operations, with one captive-bolt drive per register bolt and per counted outside fixing."""
+    bolts = sum(st["joints"].values())
+    other = sum(f["count"] for f in other_fixings if f["step"] == st["n"])
+    ops = list(st["ops"])
+    if bolts + other:   # every register bolt and counted fixing is one captive-bolt drive by one person
+        ops.append(op("drive the step's bolts and fixings", 1, BOLT, bolts + other, "t_bolt_captive_s"))
+    return ops, bolts, other
+
+
+def ops_time(ops):
+    """(2-person s, 1-person s, elapsed s): 2-person work runs once, 1-person work is shared, plus the hand-off allowance."""
+    two = sum(o["secs"] * o["n"] for o in ops if o["who"] == 2)
+    one = sum(o["secs"] * o["n"] for o in ops if o["who"] == 1)
+    return two, one, (two + one / 2) * (1 + lay("inefficiency"))
+
+
+def clock_min(steps, other_fixings, upto=None):
+    upto = CLOCK_LAST_STEP if upto is None else upto
+    return sum(ops_time(step_ops(st, other_fixings)[0])[2] for st in steps if st["n"] <= upto) / 60
+
+
+# What-if fixes for the time sinks. Each changes a copy of the steps and the outside fixings; the model prices it.
+# None is decided: the PM decides, and each owner's design has to make it real.
+TIME.update({
+    "t_carry_staged_s": N(20, "s", "assumption", "this plan", "carry a part that step 1 laid out at its place: a few steps"),
+    "t_level_preset_s": N(240, "s", "assumption", "this plan", "check the band with the spirit level and turn only the glides that are out; glides preset at the factory"),
+    "t_hook_s": N(120, "s", "assumption", "this plan", "hang a part on tool-free hooks and check it"),
+    "t_selftest_s": N(180, "s", "assumption", "this plan", "the hub's self-test: both fan pairs, the lights and the sensors run and it shows pass or fail"),
+    "t_final_in_clock_s": N(300, "s", "assumption", "this plan", "the final check's door, seal and fan checks only; peeling film and cleaning come after the clock"),
+})
+
+
+def _step(steps, n):
+    return next(s for s in steps if s["n"] == n)
+
+
+def _drop(st, *texts):
+    st["ops"] = [o for o in st["ops"] if o["text"] not in texts]
+
+
+def _set(st, text, secs=None, n=None, who=None):
+    hit = False
+    for o in st["ops"]:
+        if o["text"] == text:
+            hit = True
+            if secs is not None:
+                o["secs"] = float(secs)
+            if n is not None:
+                o["n"] = n
+            if who is not None:
+                o["who"] = who
+    if not hit:
+        raise KeyError(f"step {st['n']}: no operation '{text}'")
+
+
+def fix_air(steps, other):
+    s15, s16, s17 = _step(steps, 15), _step(steps, 16), _step(steps, 17)
+    _drop(s15, "carry 2-15", "set the fan box and plug it")
+    s15["ops"].append(op("plug the joined riser and fan box", 1, lay("t_connector_s"), 1, "t_connector_s"))
+    _set(s16, "stand and fix the column", secs=TIME["t_hook_s"].value)
+    _drop(s17, "carry 2-21", "set the fan box and plug it")
+    s17["ops"].append(op("plug the exhaust fan box", 1, lay("t_connector_s"), 1, "t_connector_s"))
+    _set(s17, "lift and hang the soffit", secs=TIME["t_hook_s"].value)
+    _set(s17, "soffit underside sections on", n=1)
+
+
+def fix_pieces(steps, other):
+    s3 = _step(steps, 3)
+    _drop(s3, "carry 1-01 F1", "carry 1-02 F2")
+    _set(s3, "lay each mat, panel and the threshold", n=3)
+    for st in steps:
+        for o in st["ops"]:
+            if o["text"].startswith("carry 2-"):
+                o["secs"] = TIME["t_carry_staged_s"].value
+
+
+def fix_band(steps, other):
+    s2 = _step(steps, 2)
+    _set(s2, "level on the 8 glides", secs=TIME["t_level_preset_s"].value)
+    _set(s2, "set each band piece in place", secs=lay("t_place_hung_s"))
+    for f in other:
+        if f["step"] == 2:
+            f["count"] = 0
+
+
+def fix_selftest(steps, other):
+    _set(_step(steps, 20), "power on and test", secs=TIME["t_selftest_s"].value)
+
+
+def fix_final(steps, other):
+    _set(_step(steps, 21), "final check and clean", secs=TIME["t_final_in_clock_s"].value)
+
+
+FIXES = [
+    dict(id="T1", sink="Air parts: the riser and fan box in DR, the air column, the soffit with its cartridge and fan box (steps 15 to 17)",
+         steps=(15, 16, 17), apply=fix_air, owner="AIR (CEILING Engineer); FRONT for DR's inner face",
+         fix="Factory-fit what stays under 20 kg: the exhaust fan box inside the soffit, and the intake riser joined to the supply fan box as one unit, each with a plug-in connector; hang the soffit and the column on tool-free hooks; one hinged soffit underside instead of three loose sections."),
+    dict(id="T2", sink="Carrying parts to their place (every step)", steps=None, apply=fix_pieces,
+         owner="Packing (guide and label map); BASE for the floor mats",
+         fix="Fewer loose pieces and shorter carries: bond each floor mat under its floor panel at the factory, and in step 1 set every part from pallet 2 down at its own place round the pod (label map), so its later carry is a few steps."),
+    dict(id="T3", sink="Base band: setting, joining and levelling the band (step 2)", steps=(2,), apply=fix_band,
+         owner="BASE, with the Joints Engineer for the corner keys",
+         fix="Glides preset at the factory, so the crew checks with the spirit level and turns only the glides that are out; corner keys that hook in without bolts; band pieces that locate themselves on the keys."),
+    dict(id="T4", sink="Power on and test (step 20)", steps=(20,), apply=fix_selftest, owner="ELECTRICAL",
+         fix="Plug-in harness tested at the factory, and a self-test on the hub: one button runs both fan pairs, the lights and the sensors and shows pass or fail."),
+    dict(id="T5", sink="Final check, film and cleaning (step 21)", steps=(21,), apply=fix_final, owner="The PM (REQ-ASM-01's start and stop are PROPOSED)",
+         fix="Inside the clock, only the door, seal and fan checks; peeling the protective film and cleaning move after the clock, with the ledge."),
+]
+
+
+def what_if(fixes):
+    steps, other = copy.deepcopy(STEPS), copy.deepcopy(OTHER_FIXINGS)
+    for f in fixes:
+        f["apply"](steps, other)
+    return clock_min(steps, other)
+
+
 # ------------------------------------------------------------------------------------------- model
 class Model:
     def __init__(self, joints_path=None):
@@ -748,14 +868,8 @@ class Model:
     def time_steps(self):
         rows = []
         for st in STEPS:
-            bolts = sum(st["joints"].values())
-            other = sum(f["count"] for f in OTHER_FIXINGS if f["step"] == st["n"])
-            ops = list(st["ops"])
-            if bolts + other:   # every register bolt and counted fixing is one captive-bolt drive by one person
-                ops.append(op("drive the step's bolts and fixings", 1, BOLT, bolts + other, "t_bolt_captive_s"))
-            two = sum(o["secs"] * o["n"] for o in ops if o["who"] == 2)
-            one = sum(o["secs"] * o["n"] for o in ops if o["who"] == 1)
-            el = (two + one / 2) * (1 + lay("inefficiency"))
+            ops, bolts, other = step_ops(st, OTHER_FIXINGS)
+            two, one, el = ops_time(ops)
             rows.append(dict(n=st["n"], two=two, one=one, elapsed=el, bolts=bolts, other=other, ops=ops))
         return rows
 
@@ -1073,6 +1187,24 @@ def guide_tables(m, T):
     G["OTHER_FIXINGS"] = md_table(["Step", "Fixing", "Owner", "Count used here", "Size", "Status", "Note"],
                                   [[f["step"], f["where"], f["owner"], f["count"], ux(f["size"]), f["status"], f["note"]] for f in OTHER_FIXINGS],
                                   ["---:", "---", "---", "---:", "---", "---", "---"])
+    # what-if fixes for the time sinks
+    base = clock_min(STEPS, OTHER_FIXINGS)
+    inef = 1 + lay("inefficiency")
+    carry_min = sum(o["secs"] * o["n"] * (1 if o["who"] == 2 else 0.5) for r in m.steps if r["n"] <= CLOCK_LAST_STEP
+                    for o in r["ops"] if o["text"].startswith("carry")) * inef / 60
+    fx_rows = []
+    for f in FIXES:
+        sink = (sum(r["elapsed"] for r in m.steps if r["n"] in f["steps"]) / 60) if f["steps"] else carry_min
+        fx_rows.append([f["id"], f["sink"], f"{sink:.1f}", f["fix"], f"**{base - what_if([f]):.1f}**", f["owner"]])
+    allf = what_if(FIXES)
+    fx_rows.append(["", "**All five together**", "", "", f"**{base - allf:.1f}**", f"clock about **{allf:.0f} min** "
+                    f"({2 * allf / 60:.1f} person-hours)"])
+    G["FIXES"] = md_table(["ID", "Time sink", "Minutes in the clock", "Fix (not decided)", "Saves, min", "Owner"], fx_rows,
+                          ["---", "---", "---:", "---", "---:", "---"])
+    G["FIXES_ALL_MIN"] = f0(allf)
+    G["REG_BOLT_MIN"] = f"{sum(c for c, _ in m.register.values()) * BOLT / 2 * inef / 60:.0f}"
+    G["SINK_MIN_BOLTS"] = f"{sum(o['secs'] * o['n'] / 2 for r in m.steps if r['n'] <= CLOCK_LAST_STEP for o in r['ops'] if o['text'] in ('drive the step\'s bolts and fixings',) or 'second visit' in o['text']) * inef / 60:.0f}"
+
     # unit times
     ut = []
     for k in ["t_unpack_std_ordered_min", "t_unpack_long_ordered_min", "t_carry_s", "t_place_s", "t_place_hung_s", "t_place_overhead_s",
