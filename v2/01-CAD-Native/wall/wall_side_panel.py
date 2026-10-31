@@ -520,7 +520,9 @@ def run(_context):
     if design.userParameters.count or root.occurrences.count or root.bRepBodies.count:
         if ARGS.get("rebuild") != "1":
             raise RuntimeError("the active design is not empty; pass rebuild=1 to rebuild it")
-        if root.partNumber != pn:
+        if root.partNumber != pn and not app.activeDocument.name.startswith(pn + "_"):
+            # a root part number set while --doc-new's first upload is still running can be
+            # overwritten by it (seen on the first cassette build), so the document name counts too
             raise RuntimeError("refusing to rebuild: root part number is %r, not %s" % (root.partNumber, pn))
         clear_design(design)
     design.designType = adsk.fusion.DesignTypes.ParametricDesignType
@@ -545,6 +547,7 @@ def run(_context):
         if c.bRepBodies.count:
             pp = c.getPhysicalProperties(adsk.fusion.CalculationAccuracy.HighCalculationAccuracy)
             print("MASS|%s|%s|%.3f kg|%d bodies" % (c.partNumber, c.name, pp.mass, c.bRepBodies.count))
-    print("root box", bbox(root))
+    root.partNumber = pn            # again at the end, in case an upload overwrote it (see above)
+    print("root part number %s, root box %s" % (root.partNumber, bbox(root)))
     if bad_items or loose or bad:
         raise RuntimeError("checks failed (unhealthy %s, loose %s, clashes %s)" % (bad_items, loose, bad))
