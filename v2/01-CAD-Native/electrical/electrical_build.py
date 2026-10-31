@@ -213,9 +213,15 @@ def intersect_mm3(tbm, a, b):
 
 
 def clear_design(design):
-    """Empty the design for a rebuild: parameters (newest first), timeline, components."""
-    for i in range(design.userParameters.count - 1, -1, -1):
-        design.userParameters.item(i).deleteMe()
+    """Empty the design for a rebuild: the timeline (features, sketches, the derive) and the components.
+    User parameters stay and are updated in place, because a parameter that a feature still uses can't
+    be deleted (run of 2026-10-31: 'param name is not valid' on re-adding one)."""
+    for i in range(design.userParameters.count):      # freeze values, so nothing points at the old derive
+        p = design.userParameters.item(i)
+        if p.unit == "mm":
+            p.expression = "%.6f mm" % (p.value * 10.0)
+        elif p.unit == "":
+            p.expression = "%.6f" % p.value
     tl = design.timeline
     if tl.count:
         tl.markerPosition = 0
@@ -223,6 +229,19 @@ def clear_design(design):
     root = design.rootComponent
     for i in range(root.occurrences.count - 1, -1, -1):
         root.occurrences.item(i).deleteMe()
+    left = design.timeline.count + root.occurrences.count + root.bRepBodies.count
+    if left:
+        raise RuntimeError("rebuild: %d timeline items, components or bodies left after clearing" % left)
+
+
+def set_param(design, name, expr, unit, comment):
+    """Add a user parameter, or update it in place when a rebuild finds it."""
+    p = design.userParameters.itemByName(name)
+    if p is None:
+        return design.userParameters.add(name, vi(expr), unit, comment)
+    p.expression = expr
+    p.comment = comment
+    return p
 
 
 def export_with_retry(em, mk, path, root):
@@ -241,7 +260,7 @@ def run(_context):
         raise RuntimeError("active document is %r, not %r (use --doc)" % (doc.name, M.DOC_NAME))
     design = adsk.fusion.Design.cast(app.activeProduct)
     root = design.rootComponent
-    if root.occurrences.count or design.userParameters.count:
+    if root.occurrences.count or design.userParameters.count or design.timeline.count:
         if ARGS.get("rebuild") != "1":
             raise RuntimeError("%s is not empty; pass --arg rebuild=1 to rebuild it" % doc.name)
         clear_design(design)
@@ -262,10 +281,9 @@ def run(_context):
             ref = design.allParameters.itemByName(name + "_Ref")
             if ref is None:
                 raise RuntimeError("derived parameter %s_Ref not found" % name)
-            design.userParameters.add(name, vi(name + "_Ref"), "mm",
-                                      "SOURCE: skeleton P04 %s, derived (%s)" % (name, M.SKELETON_DOC))
+            set_param(design, name, name + "_Ref", "mm", "SOURCE: skeleton P04 %s, derived (%s)" % (name, M.SKELETON_DOC))
         for name, expr, unit, status, src in M.PARAMS:
-            design.userParameters.add(name, vi(expr), unit, "%s: %s" % (status.upper(), src))
+            set_param(design, name, expr, unit, "%s: %s" % (status.upper(), src))
         root.partNumber = "710000"
         root.description = "ELECTRICAL | Điện | %s | routes, pockets, grommets, power unit, hub zone" % M.REV
 
