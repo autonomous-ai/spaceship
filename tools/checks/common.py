@@ -71,7 +71,7 @@ PATH_OWNERS = [
     ("v2/05-Engineering/joints/", "Joints Engineer"),
     ("v2/05-Engineering/acoustics-air/", "Air Engineer"), ("v2/05-Engineering/hardware/", "Air Engineer"),
     ("v2/05-Engineering/layout-study/", "Layout Engineer"),
-    ("v2/00-Control/", "PM"),
+    ("v2/00-Control/", "PM"), ("v2/04-BOM/", "PM"),
     ("v2/01-CAD-Native/", "Fusion Engineer 2"), ("v2/02-Drawings/", "Fusion Engineer 2"),
     ("v2/03-Manufacturing/", "Fusion Engineer 2"), ("tools/fusion/", "Fusion Engineer 2"),
 ]

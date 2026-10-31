@@ -1,10 +1,12 @@
 {
- "rev": "2e90127",
+ "rev": "fbdfc73",
  "date": "2026-10-31",
  "inputs": {
   "bodies_skeleton": 34,
   "bodies_assembly": 0,
-  "parts_lists": [],
+  "parts_lists": [
+   "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
+  ],
   "part_steps": []
  },
  "ran": [
@@ -12,9 +14,37 @@
   "C01:skeleton",
   "C02:skeleton",
   "C02:stacks",
-  "C04"
+  "C04",
+  "C06",
+  "C07",
+  "C10",
+  "C11"
  ],
  "findings": [
+  {
+   "check": "C06",
+   "rule": "row-incomplete",
+   "subject": "100000",
+   "severity": "minor",
+   "message": "100000 POD - SPACESHIP in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv is missing: Vietnamese name.",
+   "fix": "Fill them in, each number with its status and source.",
+   "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|row-incomplete|100000"
+  },
+  {
+   "check": "C06",
+   "rule": "rows-incomplete",
+   "subject": "100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source",
+   "severity": "minor",
+   "message": "10 rows of v2/04-BOM/100000_P01_POD-MASTER_BOM.csv are missing: Vietnamese name, source (110000, 210000, 350000, 360000, 410000, 510000, 610000, 710000, 810000, 910000).",
+   "fix": "Fill them in (the assembly tree has the Vietnamese names of the families).",
+   "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|rows-incomplete|100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source"
+  },
   {
    "check": "C04",
    "rule": "pod-mass-over-cap",

@@ -1,5 +1,5 @@
 {
- "next": 15,
+ "next": 17,
  "findings": [
   {
    "check": "C02",
@@ -402,7 +402,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-10-31 2e90127"
+   "last_seen": "2026-10-31 fbdfc73"
   },
   {
    "check": "C02",
@@ -565,6 +565,54 @@
     {
      "date": "2026-10-31",
      "rev": "0cb764f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "row-incomplete",
+   "subject": "100000",
+   "severity": "minor",
+   "message": "100000 POD - SPACESHIP in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv is missing: Vietnamese name.",
+   "fix": "Fill them in, each number with its status and source.",
+   "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|row-incomplete|100000",
+   "id": "F-015",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-10-31 fbdfc73",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-10-31",
+     "rev": "fbdfc73",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "rows-incomplete",
+   "subject": "100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source",
+   "severity": "minor",
+   "message": "10 rows of v2/04-BOM/100000_P01_POD-MASTER_BOM.csv are missing: Vietnamese name, source (110000, 210000, 350000, 360000, 410000, 510000, 610000, 710000, 810000, 910000).",
+   "fix": "Fill them in (the assembly tree has the Vietnamese names of the families).",
+   "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|rows-incomplete|100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source",
+   "id": "F-016",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-10-31 fbdfc73",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-10-31",
+     "rev": "fbdfc73",
      "event": "opened"
     }
    ]
