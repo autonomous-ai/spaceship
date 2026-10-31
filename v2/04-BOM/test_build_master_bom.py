@@ -217,6 +217,58 @@ class RegisterItems(unittest.TestCase):
         self.assertFalse(bom.same_item("RIVNUT - M6 - SHEREX CAH3-610-4.2", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC"))
 
 
+class RefsAndPacking(unittest.TestCase):
+    def test_an_untouched_old_copy_on_a_branch_does_not_override_the_first_ref(self):
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            def g(*a):
+                return subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                                      check=True, capture_output=True, text=True).stdout
+            g("init", "-q")
+            g("checkout", "-q", "-b", "main")
+            reg = Path(d, bom.REGISTER)
+            reg.parent.mkdir(parents=True)
+            reg.write_text("register v1", encoding="utf-8")
+            g("add", "-A")
+            g("commit", "-q", "-m", "v1")
+            g("checkout", "-q", "-b", "team")
+            lst = Path(d, "v2/03-Manufacturing/front/360001_P01_X_BOM.csv")
+            lst.parent.mkdir(parents=True)
+            lst.write_text("part_number\n", encoding="utf-8")
+            g("add", "-A")
+            g("commit", "-q", "-m", "team list")
+            g("checkout", "-q", "main")
+            reg.write_text("register v2", encoding="utf-8")
+            g("commit", "-q", "-am", "v2")
+            old = bom.ROOT
+            bom.ROOT = Path(d)
+            try:
+                src = bom.load_sources(["main", "team"])
+            finally:
+                bom.ROOT = old
+        self.assertEqual(src[bom.REGISTER][0], "register v2")              # main's newer register wins
+        self.assertIn("v2/03-Manufacturing/front/360001_P01_X_BOM.csv", src)  # the branch's own list is read
+
+    def test_a_packing_list_adds_only_packaging_items(self):
+        pk = ("label,part_number,name,name_vi,pallet,kg,kg_status,class\n"
+              "1-01,111501,BASE - SEAL MAT - F1,,1,1.05,calculation,MP\n"
+              "1-02,TBD (BASE),BASE - SEAL MAT - F2,,1,1.05,calculation,MP\n"
+              "P-1,910001,PACKAGING - PALLET 48 X 40,,1,18.0,source,PI\n")
+        parts, _, _, fails, _ = run({"v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv": pk})
+        self.assertEqual([r["part_number"] for r in parts], ["910001"])
+        self.assertEqual(parts[0]["mass_each_kg"], 18.0)
+        self.assertEqual(fails, [])
+
+    def test_a_packing_list_without_packaging_items_says_so(self):
+        path = "v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv"
+        pk = "label,part_number,name,kg\n1-01,111501,BASE - SEAL MAT - F1,1.05\n"
+        src = {path: (pk, "test")}
+        parts, skipped, register, reg_where = bom.build(src)
+        _, missing = bom.check(parts, register, reg_where, [path])
+        self.assertTrue(missing["Packing and Assembly"][0].startswith("no packaging items"), missing)
+
+
 class FamilyRows(unittest.TestCase):
     def test_family_rows_have_vietnamese_names_and_sources(self):
         nodes = bom.node_names()
