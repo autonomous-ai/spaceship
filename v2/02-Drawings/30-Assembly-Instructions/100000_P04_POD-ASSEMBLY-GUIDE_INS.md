@@ -75,7 +75,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 3](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-01** BASE - FLOOR PANEL - F1 (8.2 kg), **1-02** BASE - FLOOR PANEL - F2 (8.2 kg), **2-08** BASE - DOOR THRESHOLD - 13 MM (1.2 kg).
+- **Parts:** **1-01** BASE - FLOOR PANEL ASSY - F1 (8.2 kg), **1-02** BASE - FLOOR PANEL ASSY - F2 (8.2 kg), **2-08** BASE - DOOR THRESHOLD - 13 MM (1.2 kg).
 - **Fasteners:** none.
 - **Person A:** Lays floor panel F1 (left), its foam already bonded underneath (D-87), lapped edge up.
 - **Person B:** Lays F2 (right) into F1's lap, then sets the 13 mm threshold across the door opening, level with the floor.
@@ -86,7 +86,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 4](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (11.7 kg).
+- **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (11.6 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1. B2 carries the power unit, wired and tested at the factory (11.6 kg).
 - **Person B:** From inside, through the fill pockets: first the 3 pins of the B1-B2 closing seam, snug only; then B1's and B2's 4 base bolts each (pins first: joints register 2.7, R-J11).
@@ -183,7 +183,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 13. Electrics, first fix (power off)
 
 - **Time:** about 1 min for 2 people.
-- **Parts:** **2-13** ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS (2.2 kg).
+- **Parts:** **2-13** ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS (2.3 kg).
 - **Fasteners:** none.
 - **Person A:** Plugs the factory-tested harness together at each panel seam and runs the plug-in feeds for the light shelf and the hub to their ends (D-87).
 - **Person B:** Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).
@@ -241,11 +241,11 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 19. Light shelf
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-14** INTERIOR - LIGHT SHELF (1.6 kg).
-- **Fasteners:** the light shelf's fixings (INTERIOR design, not designed yet).
-- **Person A:** Fits the light shelf trims along the tops of the side and back walls (INTERIOR design).
+- **Parts:** **2-14** INTERIOR - LIGHT SHELF ASSY (1.6 kg).
+- **Fasteners:** the light shelf's fixings (INTERIOR's parts list 810201 names none yet).
+- **Person A:** Fits the light shelf along the tops of the side and back walls: the back shelf, the two side shelves, and the down-light channel with its diffuser on the right wall (INTERIOR 810201).
 - **Person B:** Plugs the light shelf feed.
-- **Check before the next step:** Trims straight; no cable shows.
+- **Check before the next step:** Shelves straight; no cable shows.
 
 ### Step 20. Power on and self-test: fans run
 
@@ -265,13 +265,13 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Person B:** Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); cleans.
 - **Check before the next step:** Every check in the final check list is ticked.
 
-### Step 22. Work-wall ledge and screen mount, after the clock
+### Step 22. Work-wall ledge and screen rail, after the clock
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-16** INTERIOR - LEDGE AND SCREEN MOUNT CARTON (2.9 kg).
-- **Fasteners:** their fixings to the work wall's mounting points (INTERIOR design, not designed yet).
-- **Person A:** Holds the 1000 mm ledge on the right (work) wall at its mounting points.
-- **Person B:** Fixes the ledge and the screen mount (INTERIOR design, D-70).
+- **Parts:** **2-16** INTERIOR - WORK WALL LEDGE ASSY (1.9 kg).
+- **Fasteners:** the ledge's 2 brackets 818101 on R1's stiles, on stand-offs through R1's cassette, and the screen rail 818102 on stand-offs to R2's stiles (INTERIOR; both HOLD).
+- **Person A:** Holds the 1000 mm ledge on the right (work) wall's lower panel R1, on its 2 brackets.
+- **Person B:** Fixes the ledge's brackets to R1's stiles and the screen rail to R2's stiles (INTERIOR 810101 and 818102, D-70).
 - **Check before the next step:** Ledge level and firm.
 
 
@@ -306,8 +306,8 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 11 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD in the register (D-46, ISS-002) | time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM) |
 | 15 | Intake riser and supply fan box in DR | AIR and FRONT | 0 | not designed yet (HOLD) | HOLD in the register | time is in the step |
 | 16 | Air column on DR and the floor | AIR | 0 | none on site: 2 hook studs set in the factory, 2 spigots | registered: J-AIR-02 (0 on site) | D-87: the column hangs on its hook studs |
-| 19 | Light shelf | INTERIOR | 0 | not designed yet (HOLD) | HOLD (D-70) | time is in the step |
-| 22 | Ledge and screen mount | INTERIOR | 0 | not designed yet (HOLD) | HOLD (D-70, IF-16) | time is in the step |
+| 19 | Light shelf | INTERIOR | 0 | not in INTERIOR's parts list yet (HOLD) | HOLD (D-70) | time is in the step |
+| 22 | Ledge and screen rail | INTERIOR | 0 | brackets and rail on HOLD; screws not listed yet | HOLD (D-70, IF-16) | time is in the step |
 
 ## 6. Time
 
@@ -334,7 +334,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 19 | Light shelf | 1 | 0 | 0 | 0.3 | 10.0 | **6.1** |
 | 20 | Power on and self-test: fans run | 0 | 0 | 0 | 3.0 | 0.0 | **3.4** |
 | 21 | Final check and film | 0 | 0 | 0 | 10.0 | 1.5 | **12.4** |
-| 22 | Work-wall ledge and screen mount | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
+| 22 | Work-wall ledge and screen rail | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
 |  | **Clock, steps 1 to 21** |  | 88 | 0 |  |  | **127** |
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
@@ -381,9 +381,9 @@ Unit times used:
 | `t_slide_long_s` | 120 s | assumption | this plan | slide one long air part (riser or cartridge) into its housing, 2 people |
 | `t_face_s` | 60 s | assumption | this plan | lift one felt-covered face or section off, or back on |
 | `t_catch_s` | 60 s | assumption | this plan | hook one ceiling cassette safety catch (HOLD, D-47) |
-| `t_light_shelf_s` | 600 s | assumption | this plan | fit and plug the light shelf trims along the wall tops (D-70, not designed yet) |
-| `t_ledge_two_s` | 120 s | assumption | this plan | hold the 1000 mm ledge in place while it is fixed (D-70, not designed yet) |
-| `t_ledge_one_s` | 600 s | assumption | this plan | fix the ledge and the screen mount to the work wall's mounting points (D-70, IF-16, not designed yet) |
+| `t_light_shelf_s` | 600 s | assumption | this plan | fit and plug the light shelf along the wall tops (D-70; INTERIOR 810201, its fixings not listed yet) |
+| `t_ledge_two_s` | 120 s | assumption | this plan | hold the 1000 mm ledge in place while it is fixed (D-70; INTERIOR 810101) |
+| `t_ledge_one_s` | 600 s | assumption | this plan | fix the ledge's 2 brackets to R1's stiles and the screen rail to R2's stiles (D-70, IF-16; brackets 818101 and rail 818102 HOLD, their screws not listed yet) |
 | `t_carry_staged_s` | 20 s | assumption | this plan (D-87) | carry a pallet 2 part that step 1 set down at its place: a few steps |
 | `t_level_preset_s` | 240 s | assumption | this plan (D-87) | check the band with the spirit level and turn only the glides that are out; glides preset at the factory |
 | `t_hook_s` | 120 s | assumption | this plan (D-87) | hang a part on its tool-free hooks and check it |
@@ -416,7 +416,7 @@ Power off at the mains first. Then the reverse order: ledge; ceiling linings (un
 | Fixings of DL and DR to the band and DR's support, DT to DL, DR and the ceiling | FRONT, BASE | counts assumed (section 5) |
 | How DR slides onto the fixed glass's channels without dragging its back-plate gasket over the side walls' front edges | FRONT | to check in FRONT's model |
 | Air column, soffit and fan box fixings; the soffit's fit between the side linings | AIR (CEILING Engineer) | not designed yet |
-| Light shelf, ledge, screen mount | INTERIOR | not designed yet (D-70) |
+| Light shelf, ledge, screen rail | INTERIOR | parts designed (810201, 810101); the ledge brackets 818101 and the screen rail 818102 on HOLD; their fixings not listed yet (D-70) |
 | Electrical connectors and the wiring diagram | ELECTRICAL | not designed yet |
 | Step pictures from the Fusion model | Packing and Assembly | after each part's CAD lands and the screen is unlocked |
 
