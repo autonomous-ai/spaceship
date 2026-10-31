@@ -9,13 +9,17 @@ step=build (default) empties the active design (it must be this unit's
 document) and builds it; step=export writes the .f3d, STEP, DXF, parts list
 and the edit-test anchors from the saved version.
 
-The door unit hangs as one factory-fitted piece (D-56): the 4+4 leaf, the
-85 mm aluminium kick strip with the drop seal (D-40, D-57), and the hinges,
-lock and pull. The hinges, lock and pull are HOLD (D-46): they are reserved
-spaces only, and the glass gets no holes or cut-outs for them until a rated
-set is named (PM ruling on the FRONT plan). The glass runs 25 mm down into the
-kick strip and the strip keeps a 7 mm floor gap (PM ruling on the FRONT
-plan, 2026-10-31). The door opens outward (open-questions Q3, ISS-055).
+The door unit (D-56): the 4+4 leaf, the 85 mm aluminium kick strip with the
+drop seal (D-40, D-57), the hinges and the pull. The hinges and pull are HOLD
+(D-46): reserved spaces only, and the glass gets no holes or cut-outs for them
+until a rated set is named (PM ruling on the FRONT plan). The glass runs 25 mm
+down into the kick strip and the strip keeps the skeleton's 7 mm kick_gap
+(PM rulings, 2026-10-31). The door opens outward (open-questions Q3, ISS-055).
+No latch on the glass (PM ruling 2026-10-31): a 35 N magnetic door-stop catch
+in DT's underside holds the door at its top latch corner, with its strike
+clipped on the leaf's top edge, and the leaf is 2 mm shorter at the top for
+the catch's 6 mm gap; the latch edge carries the door's half of a 180 deg
+magnetic seal pair; the hinges hold the door at its closed position.
 
 Every size comes from the skeleton's parameter list (front_lib), so the leaf
 is the skeleton's measured trapezoid and moves with it.
@@ -70,23 +74,23 @@ OWN = [
     ("door_glass_engage", "25 mm", "mm", "decided",
      "PM ruling on the FRONT plan, 2026-10-31: the glass runs 25 mm down into the kick strip, so the visible "
      "glass bottom stays at the skeleton's door_zb"),
-    ("kick_floor_gap", "7 mm", "mm", "decided",
-     "PM ruling on the FRONT plan, 2026-10-31: the drop seal's rated floor gap (athmer Schall-Ex GSA, 51 dB "
-     "joint at a 7 mm gap; hardware selection C4)"),
     ("kick_x0", XL + " + door_xl", "mm", "calculation", "strip end and leaf hinge edge = the skeleton door's left edge"),
     ("kick_x1", XL + " + door_xbr", "mm", "calculation",
      "strip end under the latch edge = the skeleton door's bottom-right corner"),
-    ("kick_zb", "thresh_h + kick_floor_gap", "mm", "calculation", "strip bottom = threshold top + floor gap"),
+    ("kick_zb", "thresh_h + kick_gap", "mm", "calculation", "strip bottom = threshold top + the skeleton's kick_gap (7, PM ruling)"),
+    ("door_top_cut", "2 mm", "mm", "decided",
+     "PM ruling 2026-10-31: the leaf is 2 mm shorter at the top, so the gap to DT is 6 mm, inside the 5 to 10 mm the "
+     "Sugatsune HT-MSG62 door-stop catch needs (datasheet)"),
+    ("leaf_zt", "door_zt - door_top_cut", "mm", "calculation", "top of the leaf"),
     ("kick_h", "door_zb - kick_zb", "mm", "calculation", "strip height: 78 on skeleton P03"),
     ("kick_len", "kick_x1 - kick_x0", "mm", "calculation", "cut length of the strip and the drop seal"),
-    ("gu_w", "12 mm", "mm", "source",
-     "glazing pocket = inner width of the Bohle BO5201571 U-profile 15 x 15 x 1.5 (15 - 2 x 1.5), the channel "
-     "the BO5201735 silicone U-seal is made for (hardware selection C5)"),
-    ("gu_base", "2 mm", "mm", "assumption", "U-seal base under the glass edge; HOLD for Bohle's BO5201735 section drawing"),
     ("kick_pocket_d", "door_glass_engage + gu_base", "mm", "calculation", "glazing pocket depth"),
     ("kick_wall", "(kick_d - gu_w) / 2", "mm", "calculation",
-     "strip side walls: 4 with the skeleton's 20 mm kick_d, machined from 20 x 80 flat bar"),
+     "strip side walls: 4 with the skeleton's 20 mm kick_d (each a hollow wall, D-85)"),
     ("kick_web", "3 mm", "mm", "assumption", "web between the glazing pocket and the drop-seal cavity"),
+    # D-85 (weight): the strip is hollow, same outside shape and finish: each 4 mm side wall is two skins round a chamber
+    ("kick_skin", "1 mm", "mm", "assumption", "extrusion skin of the hollow side walls and their closing flanges (6063, 1.0 mm)"),
+    ("kick_ch_w", "kick_wall - 2 * kick_skin", "mm", "calculation", "chamber inside each side wall: 2 mm"),
     ("kick_cav_h", "kick_h - kick_pocket_d - kick_web", "mm", "calculation", "drop-seal cavity height; must hold gsa_h"),
     ("gsa_t", "11.6 mm", "mm", "source", "athmer Schall-Ex GSA 1-1112 section 11.6 x 40 (hardware selection C4)"),
     ("gsa_h", "40 mm", "mm", "source", "athmer Schall-Ex GSA 1-1112 section 11.6 x 40 (hardware selection C4)"),
@@ -97,21 +101,23 @@ OWN = [
      "the HOLD candidate dormakaba OFFICE 11.233 needs a 160 mm frame pocket in DL (D-30, D-46; selection C1)"),
     ("hinge_x0", XL + " + dl_w - hinge_pocket_d", "mm", "calculation", "inner end of the hinge pocket in DL (DL door face at XL + dl_w)"),
     ("hinge_z1", "door_zb + 250 mm", "mm", "assumption", "bottom hinge centre 250 above the visible glass bottom; HOLD H01"),
-    ("hinge_z3", "door_zt - 250 mm", "mm", "assumption", "top hinge centre 250 below the glass top; HOLD H01"),
+    ("hinge_z3", "leaf_zt - 250 mm", "mm", "assumption", "top hinge centre 250 below the glass top; HOLD H01"),
     ("hinge_z2", "(hinge_z1 + hinge_z3) / 2", "mm", "assumption", "middle hinge at mid-span; HOLD H01"),
-    ("lock_zc", "floor_t + 1050 mm", "mm", "assumption",
-     "lock and pull centre 1050 above the finished floor (usual door handle height); HOLD H02"),
-    ("lock_h", "159 mm", "mm", "source",
-     "reserved space = the HOLD candidate's body, dormakaba STUDIO Rondo 10.200, 159 x 65 (selection C7)"),
-    ("lock_w", "65 mm", "mm", "source", "as lock_h"),
-    ("lock_t", "40 mm", "mm", "assumption", "reserved thickness across the glass; HOLD H02"),
-    ("lock_x1", latch_x("lock_zc + lock_h / 2"), "mm", "calculation",
-     "the lock space ends at the latch edge's X at its top corner, so it never passes the edge"),
+    ("lock_zc", "floor_t + 1050 mm", "mm", "assumption", "pull centre 1050 above the finished floor (usual handle height)"),
+    # no latch on the glass (PM ruling 2026-10-31): the door is held at the top by a magnetic door-stop catch in DT's
+    # underside; its strike clips on the leaf's top edge at the latch corner
+    ("st_l", "62 mm", "mm", "source", "Sugatsune HT-MSG62 strike plate, 62 long (datasheet D2, Dec 2020)"),
+    ("st_h", "22 mm", "mm", "source", "strike plate, 22 down the glass faces (datasheet)"),
+    ("st_a", "14.1 mm", "mm", "source", "strike HT-MSG62-U10 (10 mm glass), A = 14.1; on the 8.76 laminate with a 1.2 mm shim, HOLD (PM ruling)"),
+    ("st_top", "1.5 mm", "mm", "assumption", "strike plate over the glass top edge, steel plus packing"),
+    ("st_end", "25 mm", "mm", "assumption", "the strike's latch-side end, in from the leaf's top latch corner"),
+    ("ms_w", "fg_gap / 2", "mm", "assumption", "the door's half of the 180 deg magnetic seal pair fills half the 4 mm gap"),
+    ("ms_t", "1.5 mm", "mm", "assumption", "the seal profile over each glass face"),
     ("pull_cc", "300 mm", "mm", "source", "HOLD candidate Häfele 903.10.390 pull pair, 300 mm centres, Ø19 (selection C2)"),
     ("pull_len", "pull_cc + 60 mm", "mm", "assumption", "bar 30 mm past each fixing"),
     ("pull_w", "40 mm", "mm", "assumption", "reserved width: the Ø19 bar and its fixing roses"),
     ("pull_stand", "70 mm", "mm", "assumption", "reserved projection from each glass face"),
-    ("pull_back", "100 mm", "mm", "assumption", "pull axis 100 mm in from the latch edge, clear of the lock space"),
+    ("pull_back", "100 mm", "mm", "assumption", "pull axis 100 mm in from the latch edge"),
     ("pull_zc", "lock_zc", "mm", "assumption", "pull centred at the lock height"),
     ("pull_x", latch_x("pull_zc + pull_len / 2") + " - pull_back", "mm", "calculation",
      "pull axis X, measured from the latch edge at the bar's top end"),
@@ -126,7 +132,8 @@ PARTS = {
     "H1": ("368101", "FRONT - DOOR HINGE - HOLD - H1 BOTTOM", "Bản lề cửa dưới (chờ chọn)"),
     "H2": ("368101", "FRONT - DOOR HINGE - HOLD - H2 MIDDLE", "Bản lề cửa giữa (chờ chọn)"),
     "H3": ("368101", "FRONT - DOOR HINGE - HOLD - H3 TOP", "Bản lề cửa trên (chờ chọn)"),
-    "LOCK": ("368102", "FRONT - DOOR LOCK - HOLD", "Khóa cửa (chờ chọn)"),
+    "STRIKE": ("368102", "FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10", "Bát hít cửa"),
+    "MSEAL": ("368006", "FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)"),
     "PULL": ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)"),
 }
 
@@ -135,20 +142,21 @@ EXPECTED = [
     (("H1", "LEAF"), "HOLD hinge space wraps the leaf's hinge edge: the named hinge will clamp the glass there"),
     (("H2", "LEAF"), "as H1"),
     (("H3", "LEAF"), "as H1"),
-    (("LOCK", "LEAF"), "HOLD lock space wraps the leaf at the latch edge: a glass lock clamps the leaf"),
+    (("STRIKE", "LEAF"), "the catch's strike plate clips over the leaf's top edge"),
 ]
 
 # Edit-test anchors: (key, bounding-box index 0..5 = xmin ymin zmin xmax ymax zmax, expression).
 ANCHORS = [
     ("LEAF", 0, "kick_x0"), ("LEAF", 3, "kick_x1"), ("LEAF", 2, "door_zb - door_glass_engage"),
-    ("LEAF", 5, "door_zt"), ("LEAF", 1, GY0), ("LEAF", 4, GY1),
+    ("LEAF", 5, "leaf_zt"), ("LEAF", 1, GY0), ("LEAF", 4, GY1),
     ("KICK", 0, "kick_x0"), ("KICK", 3, "kick_x1"), ("KICK", 2, "kick_zb"), ("KICK", 5, "door_zb"),
     ("KICK", 1, KY0), ("KICK", 4, KY1),
     ("USEAL", 2, "door_zb - kick_pocket_d"), ("USEAL", 5, "door_zb"), ("USEAL", 1, UY0), ("USEAL", 4, UY1),
     ("GSA", 2, "kick_zb"), ("GSA", 5, "kick_zb + gsa_h"), ("GSA", 4, UY1), ("GSA", 3, "kick_x1"),
     ("H1", 2, "hinge_z1 - hinge_clamp_h / 2"), ("H3", 5, "hinge_z3 + hinge_clamp_h / 2"),
     ("H2", 0, "hinge_x0"), ("H2", 3, "kick_x0 + hinge_clamp_w"),
-    ("LOCK", 3, "lock_x1"), ("LOCK", 2, "lock_zc - lock_h / 2"),
+    ("STRIKE", 5, "leaf_zt + st_top"), ("STRIKE", 2, "leaf_zt - st_h"),
+    ("MSEAL", 2, "door_zb"), ("MSEAL", 5, "leaf_zt"),
     ("PULL", 1, GY0 + " - pull_stand"), ("PULL", 4, GY1 + " + pull_stand"), ("PULL", 5, "pull_zc + pull_len / 2"),
 ]
 
@@ -160,6 +168,7 @@ def build(app):
     sk_params, sk_path, sk_rev = L.load_skeleton_params(ARGS["repo_root"])
     L.add_params(design, sk_params)
     L.add_params(design, L.LIB_PARAMS)
+    L.add_params(design, L.GLASS_PARAMS)
     L.add_params(design, OWN)
     root = design.rootComponent
     for name, expr in (("kick_cav_h", "gsa_h"),):
@@ -178,7 +187,7 @@ def build(app):
     c = comp("LEAF")
     bodies["LEAF"] = L.prism(design, c, "LEAF", ("x", "z"), [
         ("kick_x0", "door_zb - door_glass_engage"), ("kick_x1", "door_zb - door_glass_engage"),
-        ("kick_x1", "door_zb"), (XL + " + door_xtr", "door_zt"), ("kick_x0", "door_zt")],
+        ("kick_x1", "door_zb"), (latch_x("leaf_zt"), "leaf_zt"), ("kick_x0", "leaf_zt")],
         "y", GY0, GY1, "DOOR LEAF GLASS 4+4", "OUTLINE - DOOR LEAF (SKELETON TRAPEZOID + 25 MM INTO THE KICK STRIP)",
         "EXTRUDE - DOOR LEAF 8.76")
 
@@ -190,6 +199,12 @@ def build(app):
         (UY1, "door_zb - kick_pocket_d"), (UY0, "door_zb - kick_pocket_d"), (UY0, "door_zb"), (KY0, "door_zb")],
         "x", "kick_x0", "kick_x1", "KICK STRIP", "SECTION - KICK STRIP (H: GLAZING POCKET OVER DROP-SEAL CAVITY)",
         "EXTRUDE - KICK STRIP LENGTH")
+    for side, y0 in (("OUTSIDE", KY0 + " + kick_skin"), ("POD SIDE", UY1 + " + kick_skin")):
+        sk = L.poly(design, c, c.yZConstructionPlane, ("y", "z"), 0, "SECTION - KICK STRIP CHAMBER - " + side,
+                    [(y0, "kick_zb + kick_skin"), (y0 + " + kick_ch_w", "kick_zb + kick_skin"),
+                     (y0 + " + kick_ch_w", "door_zb - kick_skin"), (y0, "door_zb - kick_skin")])
+        L.extrude_span(c, sk, "x", "kick_x0", "kick_x1", adsk.fusion.FeatureOperations.CutFeatureOperation,
+                       [bodies["KICK"]], "CUT - KICK STRIP CHAMBER - " + side + " (D-85)")
 
     # 368002 silicone U-seal round the glass edge in the pocket
     c = comp("USEAL")
@@ -213,10 +228,18 @@ def build(app):
                                  ("-glass_y - hinge_clamp_t / 2", "-glass_y + hinge_clamp_t / 2"),
                                  ("%s - hinge_clamp_h / 2" % zc, "%s + hinge_clamp_h / 2" % zc),
                                  "HOLD HINGE SPACE " + key, "PLAN - HOLD HINGE SPACE " + key)
-    c = comp("LOCK")
-    bodies["LOCK"] = L.box_body(design, c, "LOCK", ("lock_x1 - lock_w", "lock_x1"),
-                                ("-glass_y - lock_t / 2", "-glass_y + lock_t / 2"),
-                                ("lock_zc - lock_h / 2", "lock_zc + lock_h / 2"), "HOLD LOCK SPACE")
+    c = comp("STRIKE")
+    sx1 = "(%s - st_end)" % latch_x("leaf_zt")
+    bodies["STRIKE"] = L.box_body(design, c, "STRIKE", ("%s - st_l" % sx1, sx1),
+                                  ("-glass_y - st_a / 2", "-glass_y + st_a / 2"), ("leaf_zt - st_h", "leaf_zt + st_top"),
+                                  "CATCH STRIKE HT-MSG62-U10")
+    c = comp("MSEAL")
+    dx = lambda z: "((fg_lc + ms_w - fg_lnz * (%s)) / fg_lnx)" % z
+    bodies["MSEAL"] = L.prism(design, c, "MSEAL", ("x", "z"), [
+        (L.door_x("door_zb"), "door_zb"), (dx("door_zb"), "door_zb"), (dx("leaf_zt"), "leaf_zt"),
+        (L.door_x("leaf_zt"), "leaf_zt")], "y", GY0 + " - ms_t", GY1 + " + ms_t",
+        "180 MAGNETIC SEAL - DOOR HALF (HOLD PRODUCT)", "OUTLINE - 180 MAGNETIC SEAL DOOR HALF",
+        "EXTRUDE - 180 MAGNETIC SEAL DOOR HALF")
     c = comp("PULL")
     out = L.box_body(design, c, "PULL-OUT", ("pull_x - pull_w / 2", "pull_x + pull_w / 2"),
                      (GY0 + " - pull_stand", GY0), ("pull_zc - pull_len / 2", "pull_zc + pull_len / 2"),
@@ -235,15 +258,18 @@ def build(app):
     bodies["LEAF"].material = glass
     bodies["KICK"].material = alu
     bodies["USEAL"].material = sil
-    for k in ("GSA", "H1", "H2", "H3", "LOCK", "PULL", "PULL-IN"):
+    bodies["STRIKE"].material = L.material(design, "Stainless steel SUS430 (7700 kg/m3)", "Steel", 7700.0)
+    for k in ("GSA", "H1", "H2", "H3", "MSEAL", "PULL", "PULL-IN"):
         bodies[k].material = env
     looks = {"LEAF": ["Glass - Smoked", "Glass (Smoked)", "Glass - Window", "Glass"],
              "KICK": ["Paint - Enamel Glossy (Black)", "Aluminum - Anodized Glossy (Black)", "Plastic - Matte (Black)"],
              "USEAL": ["Rubber - Soft (Black)", "Plastic - Matte (Black)"],
              "GSA": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"],
-             "HOLD": ["Paint - Enamel Glossy (Red)", "Plastic - Glossy (Red)"]}
+             "HOLD": ["Paint - Enamel Glossy (Red)", "Plastic - Glossy (Red)"],
+             "STRIKE": ["Steel - Satin", "Stainless Steel - Satin"],
+             "MSEAL": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"]}
     for k, b in bodies.items():
-        a = L.appearance(design, looks["HOLD" if k[0] in "HLP" and k not in ("LEAF",) else k])
+        a = L.appearance(design, looks.get(k) or looks["HOLD"])
         if a:
             b.appearance = a
 
@@ -266,7 +292,7 @@ def build(app):
     for key in ("LEAF", "KICK", "USEAL"):
         print("MASS|%s|%s|%.3f kg" % (key, PARTS[key][0], L.comp_mass(comps[key])))
     print("unit box", L.box(root))
-    for name in ("kick_h", "kick_len", "kick_cav_h", "kick_wall", "lock_x1", "pull_x", "hinge_z1", "hinge_z2", "hinge_z3"):
+    for name in ("kick_h", "kick_len", "kick_cav_h", "kick_wall", "leaf_zt", "pull_x", "hinge_z1", "hinge_z2", "hinge_z3"):
         print("PARAM|%s|%.2f" % (name, L.ev(design, name)))
     if bad or loose or bad_clash or missing:
         raise RuntimeError("door unit checks failed (unhealthy %s, loose %s, clashes %s, missing %s)" % (
@@ -294,7 +320,7 @@ BOM_ROWS = [
     ("361001", "FRONT - DOOR LEAF - 4+4 LAMINATED", "Tấm kính cửa 4+4", 1, "made to drawing (glass supplier)", "4+4 laminated glass of toughened, heat-soaked panes, 8.76, grey",
      "cad", "calculation (CAD, 2376 kg/m3)", "DRAFT; product HOLD (ISS-074)", "D-27, D-46; skeleton outline (v1 STEP)",
      "no holes or cut-outs until the hinges, lock and pull are named"),
-    ("361002", "FRONT - DOOR KICK STRIP", "Thanh chân cửa nhôm", 1, "made (machined from 20 x 80 flat bar)", "aluminium EN AW-6082-T6, finish to match the base band",
+    ("361002", "FRONT - DOOR KICK STRIP", "Thanh chân cửa nhôm", 1, "made (extruded hollow profile, custom die; D-85)", "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20), as the base band (D-67)",
      "cad", "calculation (CAD, 2700 kg/m3)", "DRAFT", "D-40, D-57; PM rulings on the FRONT plan",
      "cut length = kick_len; glass retention in the pocket HOLD (J-FRONT-02)"),
     ("368001", "FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112", "Ron chân cửa tự động", 1, "bought, cut to length", "athmer Schall-Ex GSA 1-1112, black RAL 9005", 0.6,
@@ -303,13 +329,16 @@ BOM_ROWS = [
      "calculation (CAD, 1200 kg/m3 assumption)", "source (product); fit on 8.76 laminate unverified",
      "hardware selection C5", "length = kick_len"),
     ("368101", "FRONT - DOOR HINGE - HOLD", "Bản lề cửa (chờ chọn)", 3, "bought, HOLD",
-     "not named: the set must be rated for the 8.76 laminate, at least 60 kg (PM ruling: the 50.2 kg unit plus a "
-     "margin) and the 1176 mm width", 0.6, "assumption (D-56)", "HOLD (D-46, ISS-002)", "hardware selection C1",
-     "reserved space only"),
-    ("368102", "FRONT - DOOR LOCK - HOLD", "Khóa cửa (chờ chọn)", 1, "bought, HOLD",
-     "not named: rated with the hinges for at least 60 kg and the 1176 mm width (PM ruling)", 0.84,
-     "source (HOLD candidate STUDIO 10.200, selection C7)", "HOLD (D-46, ISS-002)", "hardware selection C7",
-     "reserved space only; the latch side has no frame for a strike"),
+     "not named: rated for the 8.76 laminate, at least 60 kg and the 1176 mm width; holds the door at its closed "
+     "position; two-part lift-off, the frame halves ship fitted in DL; hung on site with the 5 mm key (PM rulings)",
+     0.6, "assumption (D-56)", "HOLD (D-46, ISS-002)", "hardware selection C1", "reserved space only"),
+    ("368102", "FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10", "Bát hít cửa", 1, "bought",
+     "stainless steel SUS430 strike with CR packing, finish as supplied", 0.023, "source (Sugatsune datasheet, 22.9 g)",
+     "source (product); on the 8.76 laminate with a 1.2 mm shim: HOLD", "hardware selection C7; PM rulings 2026-10-31",
+     "its catch 368007 sits in DT's underside; no latch on the glass"),
+    ("368006", "FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)", 1,
+     "bought, HOLD", "magnetic 180 deg glass-to-glass seal, door half; product not named", 0.15, "assumption",
+     "HOLD: product for the 8.76 laminate and a 4 mm gap", "PM ruling 2026-10-31", "pairs with 368003 on the fixed pane"),
     ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought, HOLD", "not named", 0.8, "assumption (D-56)", "HOLD", "hardware selection C2",
      "reserved space only"),
 ]
