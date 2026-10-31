@@ -199,6 +199,11 @@ def main(argv=None):
 
 
 def _main(a, root):
+    if a.update and a.rev and not a.ref and git_rev(root) not in ("unknown", a.rev[:len(git_rev(root))]):
+        # a register update must describe the tree it checked: refuse a label that names another revision
+        print("refusing --update: --rev %s but the tree checked is at %s; use --ref to check that revision"
+              % (a.rev, git_rev(root)), file=sys.stderr)
+        return 2
     rev = a.rev or git_rev(root)
     res = run(root, rev)
     reg_ids = {}

@@ -73,13 +73,24 @@ def _pn(label):
     return m[-1] if m else ""
 
 
-def findings_from(res, model, file_hint=""):
+def _allowed(c, allow_rows):
+    for r in allow_rows or []:
+        ra, rb = re.compile(r["a"], re.I), re.compile(r["b"], re.I)
+        vmax = float(r.get("max_mm3") or 0)
+        if ((ra.search(c["a"]) and rb.search(c["b"])) or (ra.search(c["b"]) and rb.search(c["a"]))) and \
+                (vmax <= 0 or c["mm3"] <= vmax):
+            return r["id"]
+    return None
+
+
+def findings_from(res, model, file_hint="", allow_rows=None):
     """Findings carry the scope '<model>/fusion', so only a Fusion run can
-    close them (an offline run can't see an exact clash)."""
+    close them (an offline run can't see an exact clash). With allow_rows,
+    the allow-list is applied again, so a saved run reads with today's list."""
     fs = []
     scope = model + "/fusion"
     for c in res.get("clashes", []):
-        if c.get("allowed"):
+        if c.get("allowed") or _allowed(c, allow_rows):
             continue
         fs.append(Finding(
             "C01", "clash", "%s %s x %s" % (model, _short(c["a"]), _short(c["b"])), "severe",
@@ -116,8 +127,9 @@ def findings_from(res, model, file_hint=""):
         if b.get("error"):
             continue
         name = _short(b["bolt"])
-        nut = [x for x in b["layers"] if x["is_nut"]]
-        solid = [x for x in b["layers"] if not x["is_nut"]]
+        reach = b["length_mm"]
+        nut = [x for x in b["layers"] if x["is_nut"] and x["from_head_mm"] <= reach]       # threads the bolt enters
+        solid = [x for x in b["layers"] if not x["is_nut"] and x["from_head_mm"] <= reach]
         if b.get("tool_blocked_by"):
             fs.append(Finding(
                 "C03", "tool-blocked", "%s %s at %s" % (model, name, b["head"]), "severe",
@@ -230,7 +242,9 @@ def _main(a, root):
     model = res.get("model", a.model)
     hint = rel(root, res["steps"][0]) if res.get("steps") and len(res["steps"]) == 1 and \
         os.path.abspath(res["steps"][0]).startswith(root) else ""
-    fs = findings_from(res, model, hint)
+    allow_p = os.path.join(a.register_root, CHECKS_DIR, "config", "clash-allow.csv")
+    allow_rows = c_parts.read_csv(allow_p) if os.path.exists(allow_p) else []
+    fs = findings_from(res, model, hint, allow_rows)
     plists = c_parts.find_parts_lists(root)
     if plists:
         fs += c_parts.check_mixed_metals(root, plists, contacts_from(res))

@@ -65,8 +65,18 @@ def box_gap(a, b):
 
 
 def label_of(occ, body):
-    path = occ.fullPathName if occ else ""
-    return (path.replace("+", " / ") + " / " if path else "") + body.name
+    """'top occurrence / ... / leaf occurrence / body', built from the
+    occurrence chain (fullPathName joins with '+', which names like
+    '4+4 LAMINATED' also contain)."""
+    names = []
+    o = occ
+    while o is not None:
+        names.insert(0, o.name)
+        try:
+            o = o.assemblyContext
+        except Exception:
+            o = None
+    return " / ".join(names + [body.name])
 
 
 def collect_bodies(root):
@@ -239,10 +249,10 @@ def fasteners(app, bodies, tools, later_re, step_mm=0.25, ring_extra_mm=0.6, pas
             for l, b in near:
                 if b.pointContainment(_pt(o, a, t)) == inside:
                     axis_hits.setdefault(l, []).append(pos)
-                if pos <= length_mm + step_mm:
-                    cnt = sum(1 for d in dirs if b.pointContainment(_pt(o, a, t, d, r)) == inside)
-                    if cnt >= 3:
-                        ring.setdefault(l, []).append(pos)
+                # the ring is walked past the tip too, so a nut's or rivnut's full thread length is known
+                cnt = sum(1 for d in dirs if b.pointContainment(_pt(o, a, t, d, r)) == inside)
+                if cnt >= 3:
+                    ring.setdefault(l, []).append(pos)
         layers = sorted(({"body": l, "from_head_mm": min(ks), "to_mm": max(ks), "is_nut": bool(NUT_RE.search(l))}
                          for l, ks in ring.items()), key=lambda x: x["from_head_mm"])
         collisions = sorted(({"body": l, "from_head_mm": min(ks), "to_mm": max(ks)}

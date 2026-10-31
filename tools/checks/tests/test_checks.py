@@ -435,3 +435,9 @@ def test_hole_size_rule_flags_6_6_mm_m6_clearance_holes(monkeypatch, tmp_path):
         monkeypatch.setitem(c_geometry.load_step.__defaults__[0], key, FakeStep())
         fs = c_geometry.check_part_features(str(tmp_path), key, {}, [], hole_rules=rules)
         assert [f.rule for f in fs] == expect
+
+
+def test_update_refuses_a_revision_label_for_another_tree(capsys):
+    import run_checks
+    code = run_checks.main(["--update", "--rev", "0000000"])
+    assert code == 2 and "refusing --update" in capsys.readouterr().err

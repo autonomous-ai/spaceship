@@ -2,7 +2,7 @@
  "steps": [
   "/Users/d/harnesses/worktrees/spaceship/765409e413323ec806d75b21/tools/checks/tests/fixtures/bolt-joints.step"
  ],
- "started": "2026-10-31 22:31:33",
+ "started": "2026-10-31 22:34:42",
  "errors": [],
  "imports": [
   {
@@ -303,6 +303,12 @@
      "from_head_mm": 9.5,
      "to_mm": 19.5,
      "is_nut": true
+    },
+    {
+     "body": "(Unsaved) (1):1 / 211920 WALL - TEST FAR WALL A:1 / Body1",
+     "from_head_mm": 28.5,
+     "to_mm": 29.25,
+     "is_nut": false
     }
    ],
    "collisions": [],
@@ -382,8 +388,14 @@
     {
      "body": "(Unsaved) (1):1 / 838102 HARDWARE - RIVNUT - M6 C:1 / Body1",
      "from_head_mm": 9.5,
-     "to_mm": 14.25,
+     "to_mm": 19.5,
      "is_nut": true
+    },
+    {
+     "body": "(Unsaved) (1):1 / 211922 WALL - TEST FAR WALL C:1 / Body1",
+     "from_head_mm": 28.5,
+     "to_mm": 29.25,
+     "is_nut": false
     }
    ],
    "collisions": [],
@@ -420,6 +432,12 @@
      "from_head_mm": 9.5,
      "to_mm": 19.5,
      "is_nut": true
+    },
+    {
+     "body": "(Unsaved) (1):1 / 211923 WALL - TEST FAR WALL D:1 / Body1",
+     "from_head_mm": 28.5,
+     "to_mm": 29.25,
+     "is_nut": false
     }
    ],
    "collisions": [],
@@ -482,5 +500,6 @@
    "gap_mm": 0.015
   }
  ],
- "seconds": 6.2
+ "door_swing": [],
+ "seconds": 2.5
 }
