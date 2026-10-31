@@ -1,6 +1,6 @@
-# Mechanical check run: a00072c on 2026-11-01
+# Mechanical check run: 847075f on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `a00072c`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `847075f`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 13** (7 severe, 4 major, 2 minor). Register numbers in brackets.
 
