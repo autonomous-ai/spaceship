@@ -40,8 +40,16 @@ import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(__file__))
-if HERE not in sys.path:
-    sys.path.insert(0, HERE)
+# Fusion keeps modules loaded between runs, and a run from another worktree may have loaded its
+# own copy of these (an AIR run loads the ceiling model too): drop any copy from another folder
+# and put this folder first, so the imports below take this folder's files
+for _n in ("ceiling_model", "ceiling_checks", "ceiling_build"):
+    _f = getattr(sys.modules.get(_n), "__file__", None)
+    if _f and os.path.dirname(os.path.abspath(_f)) != HERE:
+        del sys.modules[_n]
+if HERE in sys.path:
+    sys.path.remove(HERE)
+sys.path.insert(0, HERE)
 import ceiling_model as M  # noqa: E402
 importlib.reload(M)      # Fusion keeps modules loaded between runs
 import ceiling_checks as C  # noqa: E402
@@ -315,7 +323,7 @@ def hollow(comp, body, axis, name):
     for f in body.faces:
         if f.geometry.objectType != adsk.core.Plane.classType():
             continue
-        n = f.geometry.normal
+        n = adsk.core.Plane.cast(f.geometry).normal
         if abs({"x": n.x, "y": n.y}[axis]) > 0.99:
             ends.append(f)
     if len(ends) != 2:
@@ -841,7 +849,7 @@ def export_all(design, tray_comp):
 def make_flat_pattern(tray_comp):
     body = tray_comp.bRepBodies.item(0)
     top = max((f for f in body.faces if f.geometry.objectType == adsk.core.Plane.classType()
-               and f.geometry.normal.z > 0.99), key=lambda f: f.area)
+               and adsk.core.Plane.cast(f.geometry).normal.z > 0.99), key=lambda f: f.area)
     fp = tray_comp.flatPattern or tray_comp.createFlatPattern(top)
     fb = fp.flatBody
     print("FLAT|513101|%s" % body_box(fb))
