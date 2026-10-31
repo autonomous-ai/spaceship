@@ -58,7 +58,8 @@ SPECS["dt"] = {
         "J-FRONT-03: DT's back plate stands 2.26 in front of the ceiling's front face (Y -647.26), with 4 rivnuts "
         "838003 and stop washers on the ceiling's bolt line, Z 2374, X -981.7, -578.2, -174.6, +229.0; the bolts come "
         "from the ceiling's open bays. DT drops onto 2 spigots on DR's ledge: hole 8.5 at X 270 and slot 8.5 x 14 at "
-        "X 410, Y -657.9, in the bottom back tube, with clearance in the underside skin (PM rulings 2026-11-01).",
+        "X 410, Y -657.9, in the bottom back tube; the underside skin is notched open over them at the back (PM rulings "
+        "2026-11-01).",
         "Slot in the underside for the fixed pane's top channel (PM ruling). Door's top: the magnetic door-stop catch "
         "368007 (Sugatsune HT-MSG62, 35 N) behind the leaf's top latch corner; the top stop 351203 with the frame-stop "
         "seal 368005 along the leaf's top, 10 short of the catch. Gap leaf to DT: 6 (PM ruling).",
@@ -86,8 +87,8 @@ SPECS["dl"] = {
         "368005 on the leaf's inner face, in 4 lengths between the hinges; at the top they butt DT's top stop and seal.",
         "J-FRONT-02: DL stands on 2 spigots on the band: hole 8.5 at X -1176.7, Y -718.0 (outer facet) and slot "
         "8.5 x 14 along the front facet at X -1073.9, Y -780.6, in the bottom ring tubes, 100 in from the ends of the "
-        "bottom edge on the tubes' centre line, 13 in from the outer faces; clearance in the bottom skin (PM rulings "
-        "2026-11-01).",
+        "bottom edge on the tubes' centre line, 13 in from the outer faces. DL is open at the bottom: its frame's "
+        "bottom ring stands on the band (PM rulings 2026-11-01).",
         "The door's load: hinges, the 60 x 20 hinge post behind the pockets, the frame's rings, the 60 x 20 bolt-line "
         "post, the back plate and the J-FRONT-01 bolts into the left wall (ISS-045; hinge fixing holes HOLD H01).",
     ],
@@ -173,8 +174,8 @@ SPECS["dt_skin"] = {
         "DT's skin: 3 mm ACP (EV3038 Dark Yellow, PE core, D-12), one flat panel per outside face, edges mitred at 45 "
         "deg and joined as v1. Flat patterns 1:1 in 351201_P01_FRONT-DECOR-SKIN-DT_DXF.dxf (layers CUT and MARK).",
         "Open at the back, at DR and over DL's slope. Slot 17 wide in the underside at the glass plane for the fixed "
-        "pane's top channel, its left end where the pane's free edge leaves the skin (PM ruling). Two clearance cuts "
-        "in the underside over DR's ledge spigots: dia 16 at X 270, 16 x 22 at X 410, Y -657.9 (J-FRONT-03).",
+        "pane's top channel, its left end where the pane's free edge leaves the skin (PM ruling). The underside is "
+        "notched open to its back edge over DR's ledge spigots, X 254 to 442, from Y -673.9 back (J-FRONT-03).",
         "Bonded to the frame 351204 per the joints register's ACP bond spec. Outline +/-1 (PROPOSED).",
     ],
     "title": title("351201", "FRONT - DECOR SKIN - DT", "Tấm ốp alu khối trên", "ACP 3 mm EV3038 Dark Yellow",
@@ -199,9 +200,8 @@ SPECS["dl_skin"] = {
         "DL's skin: 3 mm ACP (EV3038 Dark Yellow, PE core, D-12), one flat panel per outside face, edges mitred at 45 "
         "deg and joined as v1. Flat patterns 1:1 in 351101_P01_FRONT-DECOR-SKIN-DL_DXF.dxf (layers CUT and MARK).",
         "Three hinge pockets in the door-side face, 164 x 44 x 124, 160 deep, at the door unit's hinge heights "
-        "(reserved spaces until a rated hinge is named, D-46). Open at the back and under DT. Two clearance cuts in "
-        "the bottom over the band spigots: dia 16 at X -1176.7, Y -718.0 and 16 x 22 along the front facet at "
-        "X -1073.9, Y -780.6 (J-FRONT-02).",
+        "(reserved spaces until a rated hinge is named, D-46). Open at the back, under DT and at the bottom, where "
+        "the frame's bottom ring stands on the band and takes its spigots (J-FRONT-02).",
         "Bonded to the frame 351104 per the joints register's ACP bond spec. Outline +/-1 (PROPOSED).",
     ],
     "title": title("351101", "FRONT - DECOR SKIN - DL", "Tấm ốp alu khối trái", "ACP 3 mm EV3038 Dark Yellow",

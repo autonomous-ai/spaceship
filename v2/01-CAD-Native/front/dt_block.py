@@ -110,7 +110,7 @@ OWN = [
     ("sp_hole", "8.5 mm", "mm", "source", "R-J13: spigot hole 8.5 round at one end, 8.5 x 14 slot at the other"),
     ("sp_slot", "14 mm", "mm", "source", "R-J13: the slot 14 long along the edge"),
     ("sp_skin", "16 mm", "mm", "calculation",
-     "clearance in DT's underside skin round each spigot's rivnut head (12.96); the slot's is 16 x 22 for its play"),
+     "the underside's notch over DR's ledge reaches this far past each spigot, clear of the rivnut heads (12.96)"),
     ("stop_fl", "20 mm", "mm", "source",
      "the top stop's flange under DT's underside (the 20 x 20 x 2 angle), screwed up into the rail F02"),
     ("stop_hole", "4.3 mm", "mm", "source",
@@ -326,18 +326,11 @@ def build(app):
             (L.free_x(zs1), GY + " + gu_prof_w / 2 + slot_clear")]
     prism(c, ("x", "y"), slot, "z", ZT + " - 1 mm", ZT + " + dt_skin_t + 1 mm",
           "SLOT - FIXED GLASS TOP CHANNEL", "CUT - SKIN SLOT FOR THE TOP CHANNEL", CUT, skin)
-    # clearance round DR's two ledge spigots' rivnut heads (J-FRONT-03): round at the hole, long at the slot
-    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "CLEARANCE - DR LEDGE SPIGOT (ROUND HOLE)",
-                   [("sp_x1", "sp_y")], "sp_skin")
-    L.extrude_span(c, sk, "z", ZT + " - 1 mm", ZT + " + dt_skin_t + 1 mm", CUT, [skin], "CUT - SPIGOT CLEARANCE ROUND",
-                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
-    xs2 = "(sp_x1 + sp_dx)"
-    sk_pts = [("%s - (sp_slot - sp_hole) / 2 - sp_skin / 2" % xs2, "sp_y - sp_skin / 2"),
-              ("%s + (sp_slot - sp_hole) / 2 + sp_skin / 2" % xs2, "sp_y - sp_skin / 2"),
-              ("%s + (sp_slot - sp_hole) / 2 + sp_skin / 2" % xs2, "sp_y + sp_skin / 2"),
-              ("%s - (sp_slot - sp_hole) / 2 - sp_skin / 2" % xs2, "sp_y + sp_skin / 2")]
-    prism(c, ("x", "y"), sk_pts, "z", ZT + " - 1 mm", ZT + " + dt_skin_t + 1 mm",
-          "CLEARANCE - DR LEDGE SPIGOT (SLOT)", "CUT - SPIGOT CLEARANCE SLOT", CUT, skin)
+    # J-FRONT-03: the underside is notched open to its back edge over DR's ledge, round both spigots and their rivnut
+    # heads (a hole there would sit 10 from the edge); hidden where DT sits on DR
+    nx0, nx1 = "(sp_x1 - sp_skin)", "(sp_x1 + sp_dx + (sp_slot - sp_hole) / 2 + sp_skin)"
+    prism(c, ("x", "y"), [(nx0, "sp_y - sp_skin"), (nx1, "sp_y - sp_skin"), (nx1, YBP + " + 1 mm"), (nx0, YBP + " + 1 mm")],
+          "z", ZT + " - 1 mm", ZT + " + dt_skin_t + 1 mm", "NOTCH - OVER DR'S LEDGE SPIGOTS", "CUT - UNDERSIDE NOTCH", CUT, skin)
     skin.name = "DT SKIN ACP 3"
     bodies["SKIN"] = skin
 
