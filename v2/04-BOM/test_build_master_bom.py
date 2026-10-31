@@ -271,6 +271,49 @@ class RefsAndPacking(unittest.TestCase):
         self.assertEqual(src[bom.REGISTER][0], "register v2")              # main's newer register wins
         self.assertIn("v2/03-Manufacturing/front/360001_P01_X_BOM.csv", src)  # the branch's own list is read
 
+    def test_a_stacked_branch_keeps_no_old_copy_of_a_list_main_merged_since(self):
+        # AIR's branch sat on CEILING's PR; CEILING then squash-merged a newer list. Main's list wins until AIR
+        # changes that list itself, later.
+        import os
+        import subprocess
+        import tempfile
+        ceil = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv"
+        air = "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv"
+        with tempfile.TemporaryDirectory() as d:
+            def g(*a, when="2026-11-01T00:00:00"):
+                env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when}
+                return subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                                      check=True, capture_output=True, text=True, env=env).stdout
+
+            def put(path, text, msg, when):
+                Path(d, path).parent.mkdir(parents=True, exist_ok=True)
+                Path(d, path).write_text(text, encoding="utf-8")
+                g("add", "-A")
+                g("commit", "-q", "-m", msg, when=when)
+
+            g("init", "-q")
+            g("checkout", "-q", "-b", "main")
+            put(bom.REGISTER, "register", "start", "2026-11-01T00:00:00")
+            g("checkout", "-q", "-b", "ceiling")
+            put(ceil, "part_number\n411301\n", "CEILING, first version", "2026-11-01T01:00:00")
+            g("checkout", "-q", "-b", "air")
+            put(air, "part_number\n611101\n", "AIR", "2026-11-01T02:00:00")
+            g("checkout", "-q", "main")
+            put(ceil, "part_number\n411301\n411302\n", "CEILING (#32), squash-merged", "2026-11-01T05:00:00")
+            old = bom.ROOT
+            bom.ROOT = Path(d)
+            try:
+                src = bom.load_sources(["main", "air"])
+                g("checkout", "-q", "air")
+                put(ceil, "part_number\n411301\n411302\n611999\n", "AIR edits CEILING's list", "2026-11-01T06:00:00")
+                later = bom.load_sources(["main", "air"])
+            finally:
+                bom.ROOT = old
+        self.assertIn("411302", src[ceil][0])                # main's merged list, not AIR's old copy
+        self.assertTrue(src[ceil][1].startswith("main"), src[ceil][1])
+        self.assertTrue(src[air][1].startswith("air"))       # AIR's own list is read
+        self.assertIn("611999", later[ceil][0])              # AIR's own later change wins
+
     def test_a_packing_list_adds_only_packaging_items(self):
         pk = ("label,part_number,name,name_vi,pallet,kg,kg_status,class\n"
               "1-01,111501,BASE - SEAL MAT - F1,,1,1.05,calculation,MP\n"

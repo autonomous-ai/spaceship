@@ -100,10 +100,10 @@ def open_pr_refs(bom):
     for p in json.loads(out or "[]"):
         ref = f"origin/{p['headRefName']}"
         try:
-            mb = git("merge-base", "origin/main", ref).strip()
+            git("merge-base", "origin/main", ref)
         except subprocess.CalledProcessError:
             continue  # the branch is gone
-        changed = git("diff", "--name-only", mb, ref, "--", *TREES, "v2/07-Packaging", bom.REGISTER).split()
+        changed = bom.branch_changes("origin/main", ref, *TREES, "v2/07-Packaging", bom.REGISTER)
         if any(c.endswith("_BOM.csv") or c == bom.REGISTER or FILE_RE.match(c.rsplit("/", 1)[-1]) for c in changed):
             found.append((int(git("log", "-1", "--format=%ct", ref).strip() or 0), ref, f"PR #{p['number']}"))
     found.sort()
@@ -111,8 +111,9 @@ def open_pr_refs(bom):
     return ["origin/main"] + [ref for _, ref, _ in found], labels
 
 
-def list_files(refs):
-    """{path: where} for the three trees: the working tree, or the first ref plus each later ref's own changes."""
+def list_files(refs, bom=None):
+    """{path: where} for the three trees: the working tree, or the first ref plus each later ref's own changes (not
+    a stacked branch's old copies of files the first ref has replaced since)."""
     if not refs:
         out = {}
         for t in TREES:
@@ -120,10 +121,10 @@ def list_files(refs):
             if base.exists():
                 out.update({p.relative_to(ROOT).as_posix(): "working tree" for p in base.rglob("*") if p.is_file()})
         return out
+    bom = bom or load_bom()
     files = {f: refs[0] for f in git("ls-tree", "-r", "--name-only", refs[0], "--", *TREES).split()}
     for ref in refs[1:]:
-        mb = git("merge-base", refs[0], ref).strip()
-        files.update({f: ref for f in git("diff", "--name-only", "--diff-filter=AM", mb, ref, "--", *TREES).split()})
+        files.update({f: ref for f in bom.branch_changes(refs[0], ref, *TREES, diff_filter="AM")})
     return files
 
 
@@ -641,12 +642,13 @@ def main(argv=None):
             for r in parts:
                 if r["source_file"].startswith(path) and TUBE.search(r["material"] or ""):
                     r["cut_rows"] = True
-    files = list_files(refs)
-    cut_texts = {p: read_text(p, refs) for p in files  # every list a D-89 row may sit in, and the tube cut lists
+    files = list_files(refs, bom)
+    cut_texts = {p: text_at(p, files[p], refs) for p in files  # every list a D-89 row may sit in, and the cut lists,
+                 # each from the ref that gave it
                  if p.endswith(".csv") and p.startswith(("v2/02-Drawings/", "v2/03-Manufacturing/")) or "CUT-LIST" in p}
     fai = fai_plan(read_text(FAI, refs, local_first=True), bom)
     register_text = sources.get(bom.REGISTER, ("", ""))[0]
-    tests = test_rows(read_text(TEST_PLAN, refs), register_text, fai[1], bom)
+    tests = test_rows(read_text(TEST_PLAN, refs, local_first=True), register_text, fai[1], bom)
     screen = screen_state(a.screen)
     by_pn = files_by_pn(files)
     with tempfile.TemporaryDirectory() as tmp:

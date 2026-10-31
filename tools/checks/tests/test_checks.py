@@ -1040,3 +1040,14 @@ def test_the_assembled_shell_is_checked_face_by_face_once_its_parts_are_on_main(
     # an L of thin strips (no band below, no decor at the front edge) reports as its two strips
     gaps = [g for g in c_geometry.shell_gaps([lo, up]) if g["zone"] == "right"]
     assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 5 for g in gaps)
+
+def test_a_step_whose_top_carries_another_number_is_reported(tmp_path):
+    import shutil, run_checks
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    # the bolt fixture's root part number is CHECK-FIXTURE: named for 210101, it should say so
+    shutil.copy(os.path.join(HERE, "fixtures", "bolt-joints.step"), d / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step")
+    out = run_checks.run(str(tmp_path), "test")
+    fs = out[0] if isinstance(out, tuple) else out["findings"] if isinstance(out, dict) else out
+    keys = {(f.rule, f.subject) if hasattr(f, "rule") else (f["rule"], f["subject"]) for f in fs}
+    assert ("top-part-number", "210101") in keys
