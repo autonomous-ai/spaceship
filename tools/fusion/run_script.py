@@ -128,7 +128,7 @@ def describe_owner(owner, now=None):
     text = "%s (%s, pid %s) since %s, %d min ago" % (
         who, what, owner.get("pid") or "none, held", owner.get("since_utc", "?"), mins)
     joined = owner.get("joined")
-    if isinstance(joined, dict):
+    if isinstance(joined, dict) and pid_alive(joined.get("pid")):
         text += "; now running %s (pid %s)" % (joined.get("script", "?"), joined.get("pid", "?"))
     return text
 
@@ -202,9 +202,10 @@ class FusionLock:
             return "its process %s has ended" % pid
         return None
 
-    def _say_once(self, msg):
-        if msg not in self._said:
-            self._said.add(msg)
+    def _say_once(self, msg, key=None):
+        key = key or msg
+        if key not in self._said:
+            self._said.add(key)
             self.log(msg)
 
     # -- the guard: one clearer or extender at a time -------------------------
@@ -379,6 +380,19 @@ class FusionLock:
         self.joined = True
         return owner
 
+    def _unjoin(self):
+        if not self._take_guard():
+            return
+        try:
+            owner = self.read_owner()
+            joined = owner.get("joined") if owner else None
+            if owner and owner.get("token") == self.token and isinstance(joined, dict) \
+                    and joined.get("pid") == os.getpid():
+                del owner["joined"]
+                self._write_owner(owner)
+        finally:
+            self._drop_guard()
+
     def _clear_stale(self, seen, why):
         """Remove a stale lock, unless it changed hands since we looked.
         True only when the path is really gone."""
@@ -395,7 +409,7 @@ class FusionLock:
             if self.exists():
                 self._say_once("run_script: can't clear the stale Fusion lock %s (%s): "
                                "remove it by hand; waiting until --lock-wait runs out"
-                               % (self.path, why))
+                               % (self.path, why), key="cant-clear")
                 return False
             self.log("run_script: cleared a stale Fusion lock (%s), left by %s"
                      % (why, describe_owner(seen)))
@@ -404,7 +418,12 @@ class FusionLock:
             self._drop_guard()
 
     def release(self):
-        """Give the lock back if we made it and still own it."""
+        """Give the lock back if we made it and still own it. A run that joined a
+        held lock leaves the hold in place and only takes its "now running" note out."""
+        if self.joined:
+            self.joined = False
+            self._unjoin()
+            return False
         if not self.owned:
             return False
         self.owned = False
