@@ -12,17 +12,17 @@ We deliver it as a complete, editable, traceable design package that the factory
 
 ## Targets
 
-These are proposals. They become requirements once the hardware engineering lead and the indoor pod lead confirm them at Gate A.
+Agents work to these from day one. The hardware engineering lead and the indoor pod lead can change any of them at any time, and we fold their changes in.
 
-| # | Goal | Proposed target | How we prove it |
+| # | Goal | Target | How we prove it |
 |---|---|---|---|
 | 1 | Quiet | Speech level reduction of at least 30 dB, measured to ISO 23351-1. This is the number on the v1 page. | Calculation in Milestones 1 and 2, then a test on the prototype |
-| 2 | Light | 450 kg or less (v1 comes to about 550 kg from its BOM). No single part over 40 kg except the glass. Final number set at Gate A. | Weights from the CAD and BOM, then the prototype on a scale |
+| 2 | Light | 450 kg or less (v1 comes to about 550 kg from its BOM). No single part over 40 kg except the glass. The Milestone 1 numbers set the final figure. | Weights from the CAD and BOM, then the prototype on a scale |
 | 3 | Easy to assemble | 2 people in 4 hours or less, hand tools only, one bolt size (M6), no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Timed assembly trial on the prototype |
-| 4 | Easy to ship | Flat-packed. Crate count and pods per 40 ft container are computed and kept as low as possible; the target is set at Gate A. | Packing plan from the CAD |
+| 4 | Easy to ship | Flat-packed. Crate count and pods per 40 ft container come from the packing study and are kept as low as possible. | Packing plan from the CAD |
 | 5 | Fresh, quiet air | CO2 at or under 1,000 ppm with 2 people inside (about 62 m³/h of airflow). Fan noise inside at or under 30 dB(A). Vents that don't let speech out. | Calculation, then a measurement on the prototype |
 | 6 | Sellable in the US | 120 V / 60 Hz, UL-listed electrical parts, finishes rated ASTM E84 Class A, and sprinkler rules (NFPA 13) checked | Parts list with certificates, plus a code check |
-| 7 | Built to the guideline | Native Fusion CAD with editable sketches and parameters. Drawings go GA, then assemblies, then parts (ISO, first-angle). One master BOM, joint and feature registers, and a status on every number. | A Reviewer runs the guideline's checklist (§13) at each gate |
+| 7 | Built to the guideline | Native Fusion CAD with editable sketches and parameters. Drawings go GA, then assemblies, then parts (ISO, first-angle). One master BOM, joint and feature registers, and a status on every number. | A Reviewer runs the guideline's checklist (§13) on every pull request |
 
 ## What we keep, add and leave out
 
@@ -51,11 +51,16 @@ Mass stops sound. The plan's wall puts about 7.6 kg/m² in the sound path (3 mm 
 
 The rough weights point the same way. v2 as planned comes to about 460 kg, about 100 kg of it glass. v1 comes to about 550 kg from its BOM, although the page says 431 kg. Adding a heavy layer to reach 30 dB could wipe out the weight saving.
 
-Milestone 1 replaces these rough numbers with calculations. It also gives a short list of fixes (a mass layer, an inner board with fill, seals, vent silencers) with the dB each one gains and the kg each one costs. Gate A picks. My leaning is that quiet wins, because it's the product's promise, and then we cut weight where it doesn't carry sound: the frames, the decor and the floor.
+Milestone 1 replaces these rough numbers with calculations. It also gives a short list of fixes (a mass layer, an inner board with fill, seals, vent silencers) with the dB each one gains and the kg each one costs. We pick the best option by the numbers, mark it proposed for the hardware engineering lead, and keep building. My leaning is that quiet wins, because it's the product's promise, and then we cut weight where it doesn't carry sound: the frames, the decor and the floor.
 
 ## How we build it
 
-We follow the guideline's milestones, with a gate after each one. Agents never order parts, contact suppliers or release anything for production. Every pull request gets a Reviewer.
+There are no gates. Work runs straight through, and phases overlap where they can.
+
+- **Reviews run alongside the work.** The hardware engineering lead and the indoor pod lead get a short review packet at the end of each milestone. Their notes go into the next pass, and nothing waits on them.
+- **Choices the guideline reserves for the hardware engineering lead go ahead anyway.** That means changes to the look, overall size, architecture, main materials or key joints. Each one is marked PROPOSED until he signs off.
+- **Agents never** order parts, contact suppliers or release anything for production. Only the hardware engineering lead releases.
+- **Every pull request gets a Reviewer.**
 
 ### Phase 0: Fusion access (half a day, 1 Engineer on this Mac)
 
@@ -63,7 +68,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
 - Prove the guideline's edit test (§4.4). Build one part from a fully constrained sketch with named parameters, save it as .f3d, export it to STEP, then change a parameter and confirm it rebuilds cleanly.
 - Drawing spike: produce one ISO drawing sheet. Fusion's API has little drawing support, so we also try computer use and a scripted fallback, which the guideline allows if it is accurate and updatable (§6.1).
 
-### Phase 1, Milestone 1: requirements and issues (about 1 day, 3 Engineers in parallel)
+### Milestone 1: requirements and issues (about 1 day, 3 Engineers, starting alongside Phase 0)
 
 1. **Control pack.** Covers:
    - Requirements and targets, each with a status.
@@ -71,6 +76,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - Interfaces between the assemblies.
    - A file register and an issue register.
    - Conventions: units, axes, naming, part numbers, file names and revisions.
+   - A proposed answer to each open question: door and glass, lights, table, door hand and floor board thickness.
 2. **Bought parts and hardware.** Real part numbers and fit data for every bought item in the plan. Also the parts the plan doesn't cover yet: glass door hinges, handle, seals, glass clamps, latch, lights and power inlet. Plus US 120 V, UL-listed options for the plan's Vietnamese 220 V switches and fan.
 3. **Sound, air and weight.**
    - Sound estimates for the walls, door and vents.
@@ -79,10 +85,9 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - Vent silencer size.
    - The weight of v1 and v2, assembly by assembly.
 
-**Gate A:** the hardware engineering lead and the indoor pod lead approve the targets, conventions and change proposals. They also settle the open questions: door and glass, lights, table, door hand and floor board thickness.
+### Milestone 2: sample set (about 2 days, 2 to 3 Engineers, starting once Phase 0 passes)
 
-### Phase 2, Milestone 2: sample set (about 2 days, 2 to 3 Engineers)
-
+The skeleton starts from the plan's fixed dimensions while Milestone 1 finishes, then picks up its answers.
 - A native Fusion skeleton of the whole pod, driven by named parameters: overall size, wall depth 1500, decor depth 200, tube sizes and panel splits. It's built in the plan's order, as components, not bodies.
 - Sample drawings:
   - GA with sections.
@@ -95,9 +100,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
   - Feature rationale for the sample parts.
   - A master BOM generated from the CAD.
 
-**Gate B:** the hardware engineering lead reviews the sample before we scale it.
-
-### Phase 3, Milestone 3: full set (about 1 week, 4 to 5 Engineers)
+### Milestone 3: full set (about 1 week, 4 to 5 Engineers, starting right after the sample set)
 
 - Every part and drawing.
 - DXF flat patterns for the ACP and sheet metal, and tube cut lists.
@@ -109,7 +112,7 @@ The Engineers split by assembly so they never share files: BASE and WALL; FRONT 
 
 There is only one Fusion, and the MCP works on whichever document is active. So the Engineers write and review their CAD scripts in parallel, and Fusion runs them one at a time.
 
-**Gate C:** ready for prototype. Every scope is marked as one of: done, waiting on a supplier, or needs a test sample.
+It ends with the hand-off: a package ready for prototype. Every scope is marked as one of: done, waiting on a supplier, or needs a test sample.
 
 ### Phase 4: prototype (the team in Vietnam)
 
@@ -117,21 +120,21 @@ The team builds one pod from the package, and we fold what they find back into t
 
 ## Timeline
 
-About 2 weeks to a prototype-ready package. That assumes the drawing spike works and each gate gets a review within a day. The prototype's timing depends on the team.
+About 1.5 weeks to a prototype-ready package, with no waiting on reviews. The critical path is Phase 0, then Milestone 2, then Milestone 3; Milestone 1 runs alongside. The prototype's timing depends on the team.
 
 ## Risks
 
 1. **Drawings.** Fusion's API can barely make drawings. The Phase 0 spike tests this first. The fallback is computer use or scripted drawings.
-2. **Light vs quiet.** This may force more mass or a looser weight target. We'll have numbers in Milestone 1 and a decision at Gate A.
-3. **Review speed.** Every gate waits on two engineers. We'll keep review packets small, and it's best if they join this project.
+2. **Light vs quiet.** We pick by the Milestone 1 numbers and keep going. If the hardware engineering lead disagrees later, the parametric model keeps the change cheap.
+3. **Late feedback.** With no gates, a late "no" can mean rework. Parametric CAD and small review packets after each milestone keep that cheap.
 4. **US rules.** UL, ASTM E84 or sprinkler rules could change materials or electrics. We check them in Milestone 1.
 5. **One Fusion.** A single Fusion on this Mac is the bottleneck for CAD and drawings. Fusion runs scripts one at a time from a queue. If that's too slow, we add a second Fusion seat on another machine.
 
 ## Decisions for Dee
 
 1. Approve the goals and this plan.
-2. Can the hardware engineering lead and the indoor pod lead join this project to approve gates directly? Otherwise, reviews go through you.
-3. Add this Mac to the Swarm. Fusion's MCP is already registered for Claude Code and Codex.
-4. Include US compliance (UL, ASTM E84, NFPA 13) in v2? I recommend yes.
+2. Add this Mac to the Swarm. Fusion's MCP is already registered for Claude Code and Codex.
+3. Include US compliance (UL, ASTM E84, NFPA 13) in v2? I recommend yes.
+4. Optional: invite the hardware engineering lead and the indoor pod lead to this project, so they review directly instead of through you.
 
 Rulings that need no answer: documents are in English with the team's Vietnamese part names alongside, and v2 files follow the guideline's folder layout (§12) under `v2/`.
