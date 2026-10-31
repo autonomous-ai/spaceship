@@ -626,23 +626,28 @@ def test_d89_felt_and_fill_rectangles_pass_on_a_complete_cut_list_row(tmp_path):
     assert "511301" not in fs                              # complete row, plain rectangle: no drawing needed
     assert "doesn't give tolerance" in fs["511401"]
     assert "isn't a plain rectangle" in fs["511302"]       # the felt has a hole: it needs a drawing
-    assert "no cut list or parts list has a row" in fs["511303"]   # a DXF alone isn't D-89's route
+    assert "no cut list" in fs["511303"]                             # a DXF alone isn't D-89's route
     # a body with pockets (more than a block's 6 faces) isn't a plain rectangle either
     fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), {"511301"}, {}, names,
                                                                    {"511301": [6, 22]})}
     assert "22 faces" in fs["511301"]
 
 
-def test_d89_a_parts_list_row_with_size_material_and_tolerance_serves_as_the_cut_list(tmp_path):
+def test_d89_a_cut_list_is_a_csv_with_cut_in_its_name(tmp_path):
+    # D-89 as logged: a parts list doesn't serve as the cut list, a ..._CUT-LIST_... csv does; a row that
+    # names pockets keeps the drawing
     m = tmp_path / "v2/03-Manufacturing/wall"
     m.mkdir(parents=True)
-    with open(m / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv", "w") as fh:
-        fh.write("part_number,name,material,size_mm,tolerance\n"
-                 "511301,LINING - FELT - SIDE LOWER - LH,PET felt 9 mm Dark Gray,9 x 1442 x 1139.74,±1 on length and width\n"
-                 "211501,WALL - CAVITY FILL - SIDE LOWER - LH,PET fill 40 mm,1102.7 x 344.9 x 40,\n")
+    rows = ("part_number,name,material,size_mm,tolerance\n"
+            "511301,LINING - FELT - SIDE LOWER - LH,PET felt 9 mm Dark Gray,9 x 1442 x 1139.74,±1 on length and width\n"
+            "211501,WALL - CAVITY FILL - SIDE LOWER - LH,PET fill 40 mm,1102.7 x 344.9 x 40 with 60 x 60 pockets,±2\n")
+    (m / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv").write_text(rows)
     names = {"511301": "LINING - FELT - SIDE LOWER - LH", "211501": "WALL - CAVITY FILL - SIDE LOWER - LH"}
     fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
-    assert "511301" not in fs and "doesn't give tolerance" in fs["211501"]
+    assert "no cut list" in fs["511301"]
+    (m / "210101_P01_WALL-FELT-AND-FILL-CUT-LIST_SPEC.csv").write_text(rows)
+    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert "511301" not in fs and "names pockets" in fs["211501"]
 
 
 def test_duplicate_number_ignores_hyphens_and_case_but_not_words(tmp_path):
@@ -656,3 +661,24 @@ def test_duplicate_number_ignores_hyphens_and_case_but_not_words(tmp_path):
     got = {f.subject for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
            if f.rule == "duplicate-number"}
     assert got == {"848012"}
+
+
+def test_an_accepted_edge_distance_holds_only_as_ruled():
+    # glide doubler 111601: 36 wide; ruling: at least 52 long (ends 26 = 2d), hole centred (18 to each long side)
+    def plate(length, offset):
+        x0, x1, y0, y1 = -length / 2, length / 2, -18.0 - offset, 18.0 - offset
+        rim = (sf.Frame(), 6.5, (6.5, 0, 0), (6.5, 0, 0), True)          # the hole's full circle in this face
+        face = sf.Face(1, "plane", (0, 0, 0), (0, 0, 1), None, True, [], [rim],
+                       [((x0, y0, 0), (x1, y0, 0)), ((x1, y0, 0), (x1, y1, 0)), ((x1, y1, 0), (x0, y1, 0)),
+                        ((x0, y1, 0), (x0, y0, 0))])
+        so = sf.Solid(1, "GLIDE DOUBLER")
+        so.faces = [face]
+        return so
+    hole = sf.Hole(1, (0, 0, 0), (0, 0, 1), 13.0, 3.0, [])
+    rows = [{"part_number": "111601", "hole_dia_mm": "13.0", "min_edge_mm": "18.0", "max_short_edges": "2"}]
+    def accepted(length, offset):
+        edges = sf.free_edge_distances(plate(length, offset), hole)
+        return c_geometry._edge_accepted(rows, hole, edges, 26.0) is not None
+    assert accepted(52.0, 0.0)                 # as ruled
+    assert not accepted(30.0, 0.0)             # ends 15 mm: the ruling wants 26
+    assert not accepted(52.0, 3.0)             # off centre: one side at 15 mm

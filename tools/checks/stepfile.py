@@ -709,16 +709,14 @@ def _on_cylinder(p, f, tol=0.05):
     return abs(line_distance(p, f.origin, f.normal) - f.radius) < tol
 
 
-def edge_distance(solid, hole):
-    """Centre-to-edge distance of a hole, measured in the face it is drilled
-    through: the nearest straight boundary edge of that face, from the hole
-    centre. Edges along a profile's length (tube corners, where the next wall
-    carries on) and edges that start a bend are not free edges and are left
-    out. Returns (distance, kind) with kind 'free edge', or (None, None)."""
+def free_edge_distances(solid, hole):
+    """Every free straight edge of the face a hole is drilled through, as (distance from the hole centre,
+    unit direction, foot of the perpendicular on the edge's line). Edges along a profile's length (tube
+    corners, where the next wall carries on) and edges that start a bend are not free edges."""
     pax = profile_axis(solid)
     bend_faces = [f for f in solid.faces if f.kind == "cylinder"
                   and not any(abs(a[1] - f.radius) < 1e-3 and _arc_span_deg(a) >= 359.0 for a in f.arcs)]
-    best = None
+    out = []
     for f in solid.faces:
         if f.kind != "plane" or abs(abs(dot(f.normal, hole.axis)) - 1.0) > 1e-4:
             continue
@@ -733,10 +731,18 @@ def edge_distance(solid, hole):
                 continue
             if any(_on_cylinder(a, bf) and _on_cylinder(b, bf) for bf in bend_faces):
                 continue
-            dist = _seg_distance(c, a, b)
-            if best is None or dist < best:
-                best = dist
-    return (best, "free edge") if best is not None else (None, None)
+            foot = _add(a, _mul(d, dot(_sub(c, a), d)))
+            out.append((_seg_distance(c, a, b), d, foot))
+    return out
+
+
+def edge_distance(solid, hole):
+    """Centre-to-edge distance of a hole, measured in the face it is drilled
+    through: the nearest free straight boundary edge of that face, from the
+    hole centre (see free_edge_distances). Returns (distance, kind) with kind
+    'free edge', or (None, None)."""
+    es = free_edge_distances(solid, hole)
+    return (min(e[0] for e in es), "free edge") if es else (None, None)
 
 
 def hole_to_bend(hole, bend):
