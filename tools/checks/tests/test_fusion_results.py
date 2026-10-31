@@ -144,3 +144,43 @@ def test_saved_results_have_no_absolute_paths(tmp_path):
     out = rf._relative(res, rf.REPO_ROOT)
     assert out["steps"] == ["v2/03-Manufacturing/a.step", "b.step"]
     assert out["imports"][0]["file"] == "v2/03-Manufacturing/a.step"
+
+
+def test_door_swing_a_seal_it_only_touches_is_not_a_collision():
+    def swing(hits, first=None):
+        return {"door_swing": [{"direction": "outward", "max_deg": 90.0, "rule": "x", "hits": hits, "first_hit": first}]}
+    seal = {"hits": "360002 / 368003 FRONT - GLASS-TO-GLASS SEAL 180", "moving": "361001 FRONT - DOOR LEAF",
+            "first_deg": 0.5, "last_deg": 0.5, "max_mm3": 0.3, "soft": True}
+    assert rf.findings_from(swing([seal]), "assembly") == []          # the door wipes its seal: no finding
+    crushed = dict(seal, max_mm3=650.0)
+    fs = rf.findings_from(swing([crushed]), "assembly")
+    assert [f.rule for f in fs] == ["door-swing"] and "650.0 mm3" in fs[0].message
+    wall = {"angle_deg": 63.5, "moving": "361001 FRONT - DOOR LEAF", "hits": "350002 FRONT - DECOR BLOCK - DL", "mm3": 12.0}
+    fs = rf.findings_from(swing([seal], wall), "assembly")
+    assert len(fs) == 1 and "63.5 degrees" in fs[0].message
+
+
+def test_d104_an_envelope_may_overlap_the_part_it_clamps_in_its_own_file_only():
+    import csv
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    with open(os.path.join(root, "v2/04-Checks/config/clash-allow.csv"), newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    door = "360001_P01_FRONT-DOOR-UNIT_CAD:1 / "
+    own = {"a": door + "361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1",
+           "b": door + "368102 FRONT - DOOR STRIKE - ENVELOPE:1 / Body1", "mm3": 11948.6}
+    assert rf._allowed(own, rows) == "ENVELOPE-ON-ITS-PART"
+    other = dict(own, a="350004_P01_FRONT-DECOR-BLOCK-DT_CAD:1 / 351401 FRONT - DT - SKIN:1 / Body1")
+    assert rf._allowed(other, rows) is None                    # a clash with another file's part still counts
+    named = dict(own, b=door + "368102 FRONT - DOOR STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1")
+    assert rf._allowed(named, rows) is None                    # without ENVELOPE in its name it is a clash
+
+
+def test_d104_a_skeleton_panel_envelope_is_not_a_hardware_stand_in():
+    import csv
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    with open(os.path.join(root, "v2/04-Checks/config/clash-allow.csv"), newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    skel = "100000_P04_POD-SKELETON_CAD:1 / "
+    c = {"a": skel + "350000 FRONT:1 / DR ENVELOPE:1 / Body1", "b": skel + "110000 BASE:1 / BAND-R ENVELOPE:1 / Body1",
+         "mm3": 14393.5}
+    assert rf._allowed(c, rows) is None                        # F-006's kind of clash still counts

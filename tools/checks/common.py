@@ -97,7 +97,13 @@ FAMILY_OWNERS = {
 }
 
 
+# D-95: the base corner and inline keys have one source, the Joints Engineer; the teams place them by reference
+JOINTS_KEYS = re.compile(r"^11121[1-4]$")
+
+
 def owner_for(path="", part_number=""):
+    if JOINTS_KEYS.match(part_number or ""):
+        return "Joints Engineer"
     path = (path or "").replace("\\", "/")
     for prefix, owner in PATH_OWNERS:
         if path.startswith(prefix):
@@ -239,3 +245,43 @@ def num(v):
     if not m:
         return None
     return float(m.group(0).replace(",", "."))
+
+
+REGISTER = "v2/05-Engineering/joints/joints-register.md"
+
+
+def register_names(root):
+    """D-99: hardware names come from the joints register: {part number: name} from its hardware tables
+    ('| H-05 | **831001** | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS · Chốt định vị Ø8 | ...'),
+    the English name before the ' · ' that starts the Vietnamese one."""
+    p = os.path.join(root, REGISTER)
+    out = {}
+    if not os.path.exists(p):
+        return out
+    with open(p, encoding="utf-8") as fh:
+        for line in fh:
+            m = re.match(r"^\|\s*H-[\w.]+\s*\|\s*\*\*(\d{6})\*\*\s*\|\s*([^|]+?)\s*\|", line)
+            if m:
+                out.setdefault(m.group(1), m.group(2).split(" · ")[0].strip())
+    return out
+
+
+def name_words(name):
+    """A part name as its words, for comparing names: case, hyphens, brackets and spacing don't count
+    ('BASE - LEVELLING GLIDE - M10 (HOLD)' and 'BASE - LEVELLING GLIDE - M10 - HOLD' are one name)."""
+    return " ".join(re.findall(r"[A-Z0-9Ø±×.,+/°]+", (name or "").upper()))
+
+
+def reserved_spaces(root):
+    """{part number: row} from v2/04-Checks/config/reserved-spaces.csv: bodies that only hold space for a part
+    another team designs later (the Lead's rulings, like D-92's ELECTRICAL routes). No drawing and no seam rules
+    for them; each is listed open under its designer until it's designed."""
+    p = os.path.join(root, CHECKS_DIR, "config", "reserved-spaces.csv")
+    if not os.path.exists(p):
+        return {}
+    return {r["part_number"].strip(): r for r in read_csv(p) if (r.get("part_number") or "").strip()}
+
+
+def reserved_label(label, reserved):
+    """Does a body's label name one of the reserved part numbers?"""
+    return any(re.search(r"(?<!\d)%s(?!\d)" % pn, label or "") for pn in reserved)

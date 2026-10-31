@@ -150,6 +150,8 @@ NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pock
                       r"\btap(?:ped|ping)?\b|thread|countersink|counterbore|ream|\bturn(?:ed|ing)?\b|lathe|chamfer|weld|"
                       r"bond", re.I)
 BEND_LAYER = re.compile(r"\b(?:BEND|FOLD)", re.I)
+METAL = re.compile(r"alumin|steel|zinc", re.I)     # D-99: part 4 is for flat metal sheet (the checklist's METAL)
+ACP = re.compile(r"\bACP\b|aluminium composite", re.I)   # D-100: and flat ACP (the checklist's ACP)
 
 
 def dxf_other_layers(text):
@@ -218,6 +220,7 @@ def flat_row_lacks(root, pn):
             re.search(r"\d+(?:\.\d+)?\s*mm\b", material))
         not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(process)})
         lacks = [n for n, ok in (
+            ("metal or ACP sheet (D-99, D-100)", bool(METAL.search(material) or ACP.search(material))),
             ("a cut by laser, waterjet or router in its process", bool(SHEET_CUT.search(process))),
             ("no bends or machined features (its process names %s)" % ", ".join(not_flat), not not_flat),
             ("material", bool(material)), ("thickness", thick), ("finish", bool(has(r"finish"))),
@@ -322,6 +325,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     idx = index_files(root)
     missing_sev = missing_drawing_severity(root)          # PM rulings D-73, D-84: see config/policy.csv
     tab = tabulated_cover(idx)                            # D-89
+    from common import reserved_spaces
+    reserved = reserved_spaces(root)
     for pn in sorted(part_numbers):
         cls = pn_class(pn)
         if cls not in ("part", "assembly"):
@@ -332,7 +337,17 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         where = (files.get("STEP") or files.get("CAD") or [("", "")])[0][1]
         r_where = rel(root, where) if where else ""
         owner = owner_for(r_where or src_by_pn.get(pn, ""), pn)
+        if pn[:2] in ("83", "84"):        # shared hardware: its drawing is the joints register's, wherever it's modelled
+            owner = owner_for("", pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
+        if pn in reserved:                          # a reserved space: open under its designer, no drawing yet
+            rr = reserved[pn]
+            fs.append(Finding("C05", "reserved-space", pn, "major",
+                              "%s is a reserved space until %s designs it (%s): %s." % (
+                                  label, rr.get("owner") or "its designer", rr.get("ruling") or "", rr.get("why") or ""),
+                              "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing "
+                              "and seams are checked from then on.", r_where, rr.get("owner") or owner))
+            continue
         if not pdfs and pn in tab:                 # D-89: listed in a tabulated drawing, so drawn
             cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}
             tab_revs = {rv for rv, _p, _own in tab[pn]}
@@ -408,6 +423,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   label, "/".join(sorted(revs)), "/".join(sorted(cad_revs))),
                               "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
                               rp, owner))
+        if "WIRING-DIAGRAM" in os.path.basename(pdf).upper():
+            continue        # D-93: ELECTRICAL's wiring diagram draws 710000 (routes and joints on sheet 3); a schematic
         text = pdf_text(pdf)
         if text is None:
             continue

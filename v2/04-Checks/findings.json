@@ -1,5 +1,5 @@
 {
- "next": 19,
+ "next": 98,
  "findings": [
   {
    "check": "C02",
@@ -672,7 +672,7 @@
    },
    "key": "C07|thread-bottoms-out|111211 BASE - CORNER KEY - BACK - COMMON: M6 x 16 bolts in holes tapped 12 deep",
    "id": "F-017",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "manual",
    "found": "2026-11-01 b35fe8f",
    "posted": "Joints group 2026-11-01",
@@ -686,9 +686,15 @@
      "date": "2026-11-01",
      "rev": "7b9b36f",
      "event": "set OPEN by hand: PM ruling 2026-11-01 (joints group): end-face holes tapped through, at least 15 mm of thread at the bottom, M6 x 16 stays the one site bolt. Closes when the joints register shows it."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9693aac",
+     "event": "set CLOSED by hand: Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker."
     }
    ],
-   "note": "PM ruling 2026-11-01 (joints group): end-face holes tapped through, at least 15 mm of thread at the bottom, M6 x 16 stays the one site bolt. Closes when the joints register shows it."
+   "note": "Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker.",
+   "closed": "2026-11-01 9693aac Fixed in the joints register (PR #99, main 9693aac): fixing screws 838010 M6 x 12 ISO 7380-2 button head, no washer, reach 12 - 1.5 = 10.5 mm in a 15 mm thread (Ø5.0 drill 18); hook studs 838001 set 1.8 proud reach 14.2 mm into an M6 thread tapped through the 25 mm block. Calculation, checked by the Mechanical Checker."
   },
   {
    "check": "C03",
@@ -706,7 +712,7 @@
    },
    "key": "C03|head-floor-clearance|111211 BASE - CORNER KEY - BACK - COMMON: bolt heads under the band",
    "id": "F-018",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "manual",
    "found": "2026-11-01 b35fe8f",
    "posted": "Joints group 2026-11-01",
@@ -720,9 +726,2316 @@
      "date": "2026-11-01",
      "rev": "7b9b36f",
      "event": "set OPEN by hand: PM ruling 2026-11-01 (joints group): the factory-fitted key may use a low-head screw or be fixed from inside; nothing under the band closer than 5 mm to the floor at the lowest glide setting. Closes when the joints register shows it."
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9693aac",
+     "event": "set CLOSED by hand: Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker."
     }
    ],
-   "note": "PM ruling 2026-11-01 (joints group): the factory-fitted key may use a low-head screw or be fixed from inside; nothing under the band closer than 5 mm to the floor at the lowest glide setting. Closes when the joints register shows it."
+   "note": "Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker.",
+   "closed": "2026-11-01 9693aac Fixed in the joints register (PR #99, main 9693aac): the button heads hang 3.3 mm under the band (ISO 7380-2, unverified), 6.7 mm off the floor at glide 10; no glide set lower than 8.5, so at least 5.2 mm (PM rule: 5 mm at the lowest glide setting; BASE confirms its glide range). Calculation, checked by the Mechanical Checker."
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "210101",
+   "severity": "major",
+   "message": "210101 WALL - PANEL ASSY - SIDE LOWER - LH has no drawing PDF (210101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|210101",
+   "id": "F-019",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211101",
+   "severity": "severe",
+   "message": "211101 WALL - PANEL FRAME - SIDE LOWER - LH has no drawing PDF (211101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211101",
+   "id": "F-020",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211301",
+   "severity": "severe",
+   "message": "211301 WALL - SKIN - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211301",
+   "id": "F-021",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "211501",
+   "severity": "major",
+   "message": "211501 WALL - CAVITY FILL - SIDE LOWER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "file": "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|211501",
+   "id": "F-022",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "510101",
+   "severity": "major",
+   "message": "510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|510101",
+   "id": "F-023",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "511101",
+   "severity": "severe",
+   "message": "511101 LINING - TRAY - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {},
+   "key": "C05|no-drawing|511101",
+   "id": "F-024",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "WALL group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "831001",
+   "severity": "severe",
+   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS has no drawing PDF (831001_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|831001",
+   "id": "F-025",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "831002",
+   "severity": "severe",
+   "message": "831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL has no drawing PDF (831002_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|831002",
+   "id": "F-026",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6ccbfac",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6ccbfac",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368006",
+   "severity": "minor",
+   "message": "368006 is named 'FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368006",
+   "id": "F-027",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 7963e9c",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "7963e9c",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368102",
+   "severity": "minor",
+   "message": "368102 is named 'FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10' in the CAD and 'FRONT - DOOR STRIKE' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - DOOR STRIKE', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368102",
+   "id": "F-028",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 7963e9c",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "7963e9c",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "360001",
+   "severity": "major",
+   "message": "360001 FRONT - DOOR UNIT has no drawing PDF (360001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|360001",
+   "id": "F-029",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 7963e9c",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "7963e9c",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "361001",
+   "severity": "severe",
+   "message": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|361001",
+   "id": "F-030",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 7963e9c",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "7963e9c",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "361002",
+   "severity": "severe",
+   "message": "361002 FRONT - DOOR KICK STRIP has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its faces lie at 8 levels through the thickness (a pocket, a step or a rebate).",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|361002",
+   "id": "F-031",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 7963e9c",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "7963e9c",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368101",
+   "severity": "minor",
+   "message": "368101 is named 'FRONT - DOOR HINGE - HOLD - H1 BOTTOM' in the CAD and 'FRONT - DOOR HINGE - HOLD' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - DOOR HINGE - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368101",
+   "id": "F-032",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 63cefe0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "63cefe0",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "a58e9e8",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 a58e9e8"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-spec",
+   "subject": "838006",
+   "severity": "major",
+   "message": "Fastener 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv has no finish.",
+   "fix": "Complete the row: size, length, grade, finish, torque with its basis, maker and SKU (guideline sections 4.2 and 8.1).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C07|fastener-spec|838006",
+   "id": "F-033",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C06",
+   "rule": "duplicate-number",
+   "subject": "118001",
+   "severity": "major",
+   "message": "Part number 118001 is used for different names: 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - BASE SEAL - GAP 10 ±5' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The joints register names it 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP' (D-99).",
+   "fix": "Use the register's name in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv.",
+   "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|duplicate-number|118001",
+   "id": "F-034",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "Lead group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "owner set by hand to PM: BASE's name matches the joints register; the master BOM's is stale (D-99)"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9",
+   "closed": "2026-11-01 15ab172"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1222 Y -646 Z 11",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111101 BASE - BAND TUBE - SIDE - LH - TUBE is 10.6 mm from the free edge (centre to edge), 1.52 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X -1222 Y -646 Z 11 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 10.62,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1222 Y -646 Z 11",
+   "id": "F-035",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111601 GLIDE DOUBLER hole Ø13.0 at X 0 Y 0 Z 2",
+   "severity": "severe",
+   "message": "Hole Ø13.00 in 111601 GLIDE DOUBLER is 18.0 mm from the free edge (centre to edge), 1.38 diameters; the rule is at least 2 diameters (26.0 mm). Hole centre X 0 Y 0 Z 2 in the part's own coordinates. PM ruling 2026-11-01 (BASE glide doubler, Lead) accepts this hole only as: At least 52 mm long so the ends are 2 diameters (26 mm) away; the hole centred across the 36 mm width, 18 mm (1.38 diameters) to each long side. Justified in the feature rationale: the glide load pushes the plate into the band and does not pull the edge.",
+   "fix": "Move the hole to at least 26.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 18.0,
+    "dia_mm": 13.0
+   },
+   "key": "C09|edge-distance|111601 GLIDE DOUBLER hole Ø13.0 at X 0 Y 0 Z 2",
+   "id": "F-036",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9",
+   "closed": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 1493 Y 27 Z 1",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111101 BASE - BAND TUBE - SIDE - LH - TUBE is 10.6 mm from the free edge (centre to edge), 1.52 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X 1493 Y 27 Z 1 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 10.62,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 1493 Y 27 Z 1",
+   "id": "F-037",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "118002",
+   "severity": "minor",
+   "message": "118002 is named 'BASE - LEVELLING GLIDE - M10 (HOLD)' in the CAD and 'BASE - LEVELLING GLIDE - M10 (HOLD)' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; the joints register names it 'BASE - LEVELLING GLIDE - M10 - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD and the parts list (v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|name-mismatch|118002",
+   "id": "F-038",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110000",
+   "severity": "major",
+   "message": "110000 BASE has no drawing PDF (110000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/110000_P01_BASE_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110000",
+   "id": "F-039",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110101",
+   "severity": "major",
+   "message": "110101 BASE - BAND ASSY - SIDE - LH has no drawing PDF (110101_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110101",
+   "id": "F-040",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110103",
+   "severity": "major",
+   "message": "110103 BASE - BAND ASSY - BACK has no drawing PDF (110103_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110103",
+   "id": "F-041",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110401",
+   "severity": "major",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 has no drawing PDF (110401_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110401",
+   "id": "F-042",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111101",
+   "severity": "severe",
+   "message": "111101 BASE - BAND TUBE - SIDE - LH has no drawing PDF (111101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111101",
+   "id": "F-043",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111103",
+   "severity": "severe",
+   "message": "111103 BASE - BAND TUBE - BACK has no drawing PDF (111103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111103",
+   "id": "F-044",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111211",
+   "severity": "severe",
+   "message": "111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111211",
+   "id": "F-045",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111401",
+   "severity": "severe",
+   "message": "111401 BASE - FLOOR PANEL - F1 has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on POCKET-HALF-DEPTH; only CUT and MARK pass; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names half-lap.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111401",
+   "id": "F-046",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111501",
+   "severity": "severe",
+   "message": "111501 BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; finish; an ISO 2768 general tolerance.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111501",
+   "id": "F-047",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "108002",
+   "severity": "major",
+   "message": "108002 POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'SikaTack Panel-50 (ETA 19/0511), Sika Aktivator-205, Sika Panel Primer, SikaTack Panel Fixing Tape'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|108002",
+   "id": "F-048",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "108002",
+   "severity": "major",
+   "message": "108002 POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|108002",
+   "id": "F-049",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "118001",
+   "severity": "major",
+   "message": "118001 BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|118001",
+   "id": "F-050",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "118002",
+   "severity": "major",
+   "message": "118002 BASE - LEVELLING GLIDE - M10 (HOLD) in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad; base 6.5 mm or taller, so that screwed fully home against the M10 rivnut's head it holds the band at 8.5 mm: a hard stop (product HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|118002",
+   "id": "F-051",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "118002",
+   "severity": "major",
+   "message": "118002 BASE - LEVELLING GLIDE - M10 (HOLD) in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|118002",
+   "id": "F-052",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "118003",
+   "severity": "major",
+   "message": "118003 BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD) in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|118003",
+   "id": "F-053",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "368001",
+   "severity": "major",
+   "message": "368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|368001",
+   "id": "F-054",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "368002",
+   "severity": "major",
+   "message": "368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|368002",
+   "id": "F-055",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "368006",
+   "severity": "major",
+   "message": "368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no edge finish for the glass (ground, polished, arrised). Material given: 'magnetic 180 deg glass-to-glass seal, door half; product not named'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|368006",
+   "id": "F-056",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "368006",
+   "severity": "major",
+   "message": "368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|368006",
+   "id": "F-057",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "368101",
+   "severity": "major",
+   "message": "368101 FRONT - DOOR HINGE - HOLD in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no edge finish for the glass (ground, polished, arrised). Material given: 'not named: rated for the 8.76 laminate, at least 60 kg and the 1176 mm width; holds the door at its closed position; two-part lift-off, the frame halves ship fitted in DL; hung on site with the 5 mm key (PM rulings)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|368101",
+   "id": "F-058",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "368101",
+   "severity": "major",
+   "message": "368101 FRONT - DOOR HINGE - HOLD in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|368101",
+   "id": "F-059",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "368102",
+   "severity": "major",
+   "message": "368102 FRONT - DOOR STRIKE in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'stainless steel SUS430 strike with CR packing'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|368102",
+   "id": "F-060",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "368102",
+   "severity": "major",
+   "message": "368102 FRONT - DOOR STRIKE in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|368102",
+   "id": "F-061",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "368103",
+   "severity": "major",
+   "message": "368103 FRONT - DOOR PULL PAIR - HOLD in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no material grade (a named grade or alloy and temper, not just a family) and no finish. Material given: 'not named'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|368103",
+   "id": "F-062",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "368103",
+   "severity": "major",
+   "message": "368103 FRONT - DOOR PULL PAIR - HOLD in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|368103",
+   "id": "F-063",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "518001",
+   "severity": "major",
+   "message": "518001 LINING - CASSETTE CLIP in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'HOLD (H03, HOLD-08)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|518001",
+   "id": "F-064",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "518001",
+   "severity": "major",
+   "message": "518001 LINING - CASSETTE CLIP in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|518001",
+   "id": "F-065",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "838001",
+   "severity": "major",
+   "message": "838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'steel, property class 8.8 (ISO 898-1)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|838001",
+   "id": "F-066",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "838001",
+   "severity": "major",
+   "message": "838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|838001",
+   "id": "F-067",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-spec",
+   "subject": "838001",
+   "severity": "major",
+   "message": "Fastener 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no torque (or HOLD with its test, as D-48 does for the rivnuts), no maker and SKU.",
+   "fix": "Complete the row: size, length, grade, finish, torque with its basis, maker and SKU (guideline sections 4.2 and 8.1).",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C07|fastener-spec|838001",
+   "id": "F-068",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "838003",
+   "severity": "major",
+   "message": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'aluminium 5056 (maker)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|838003",
+   "id": "F-069",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "838003",
+   "severity": "major",
+   "message": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|838003",
+   "id": "F-070",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-spec",
+   "subject": "838003",
+   "severity": "major",
+   "message": "Fastener 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish, no torque (or HOLD with its test, as D-48 does for the rivnuts), no maker and SKU.",
+   "fix": "Complete the row: size, length, grade, finish, torque with its basis, maker and SKU (guideline sections 4.2 and 8.1).",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C07|fastener-spec|838003",
+   "id": "F-071",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "838004",
+   "severity": "major",
+   "message": "838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'stainless steel A2'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|838004",
+   "id": "F-072",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "838004",
+   "severity": "major",
+   "message": "838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|838004",
+   "id": "F-073",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-spec",
+   "subject": "838004",
+   "severity": "major",
+   "message": "Hardware item 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish, no maker and SKU.",
+   "fix": "Complete the row (guideline section 4.2).",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C07|fastener-spec|838004",
+   "id": "F-074",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "838005",
+   "severity": "major",
+   "message": "838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'elastomer (HOLD-02)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|838005",
+   "id": "F-075",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "838005",
+   "severity": "major",
+   "message": "838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|838005",
+   "id": "F-076",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-spec",
+   "subject": "838005",
+   "severity": "major",
+   "message": "Hardware item 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish, no maker and SKU.",
+   "fix": "Complete the row (guideline section 4.2).",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C07|fastener-spec|838005",
+   "id": "F-077",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "838006",
+   "severity": "major",
+   "message": "838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no material grade (a named grade or alloy and temper, not just a family) and no finish. Material given: 'aluminium or steel (HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|838006",
+   "id": "F-078",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "838006",
+   "severity": "major",
+   "message": "838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|838006",
+   "id": "F-079",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "838010",
+   "severity": "major",
+   "message": "838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'stainless steel A2-70 (ISO 3506-1)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|838010",
+   "id": "F-080",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "838010",
+   "severity": "major",
+   "message": "838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|838010",
+   "id": "F-081",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-spec",
+   "subject": "838010",
+   "severity": "major",
+   "message": "Fastener 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish, no torque (or HOLD with its test, as D-48 does for the rivnuts), no maker and SKU.",
+   "fix": "Complete the row: size, length, grade, finish, torque with its basis, maker and SKU (guideline sections 4.2 and 8.1).",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C07|fastener-spec|838010",
+   "id": "F-082",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "848001",
+   "severity": "major",
+   "message": "848001 SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|848001",
+   "id": "F-083",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "848011",
+   "severity": "major",
+   "message": "848011 SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv has no finish. Material given: 'hook-and-loop or reclosable fastener tape, 25 mm, PSA'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|848011",
+   "id": "F-084",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "848011",
+   "severity": "major",
+   "message": "848011 SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|848011",
+   "id": "F-085",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "bought-no-sku",
+   "subject": "848012",
+   "severity": "major",
+   "message": "848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN in v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv is a bought item with no maker and exact SKU, and it isn't marked HOLD (guideline section 4.2).",
+   "fix": "Give maker and exact SKU with its source document, or mark it HOLD with the issue that releases it.",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|bought-no-sku|848012",
+   "id": "F-086",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "111501",
+   "severity": "major",
+   "message": "111501 BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM in v2/04-BOM/100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv has no finish. Material given: 'closed-cell foam, cross-linked PE or EPDM, 3 mm thick, about 200 kg/m3 (assumption; product HOLD, ISS-085)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|111501",
+   "id": "F-087",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "361001",
+   "severity": "major",
+   "message": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED in v2/04-BOM/100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv has no edge finish for the glass (ground, polished, arrised). Material given: '4+4 laminated glass of toughened, heat-soaked panes, 8.76, grey'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/04-BOM/100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C11|material-finish|361001",
+   "id": "F-088",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "rows-incomplete",
+   "subject": "100000_P01_POD-BOUGHT-PARTS_BOM.csv: Vietnamese name",
+   "severity": "minor",
+   "message": "20 rows of v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv are missing: Vietnamese name (108002, 118001, 118002, 118003, 368001, 368002, 368006, 368101, 368102, 368103, 518001, 838001, 838003, 838004, 838005, 838006, 838010, 848001, 848011, 848012).",
+   "fix": "Fill them in (the assembly tree has the Vietnamese names of the families).",
+   "file": "v2/04-BOM/100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|rows-incomplete|100000_P01_POD-BOUGHT-PARTS_BOM.csv: Vietnamese name",
+   "id": "F-089",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "rows-incomplete",
+   "subject": "100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv: Vietnamese name",
+   "severity": "minor",
+   "message": "20 rows of v2/04-BOM/100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv are missing: Vietnamese name (211301, 111401, 831002, 111501, 361002, 211501, 511301, 511101, 111601, 111601, 831001, 831001, 831002, 831002, 111101, 111103, 211101, 111211, 831001, 361001).",
+   "fix": "Fill them in (the assembly tree has the Vietnamese names of the families).",
+   "file": "v2/04-BOM/100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|rows-incomplete|100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv: Vietnamese name",
+   "id": "F-090",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 15ab172",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "15ab172",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 15ab172",
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 699 Y -699 Z 96",
+   "severity": "major",
+   "message": "Hole Ø3.40 in 368004 GLAZING U-PROFILE (4 PIECES, MITRED) is 6.0 mm from the free edge (centre to edge), 1.76 diameters; the rule is at least 2 diameters (6.8 mm). Hole centre X 699 Y -699 Z 96 in the part's own coordinates.",
+   "fix": "Move the hole to at least 6.8 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "edge_mm": 6.0,
+    "dia_mm": 3.4
+   },
+   "key": "C09|edge-distance|368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 699 Y -699 Z 96",
+   "id": "F-091",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 284dae7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 484 Y -699 Z 96",
+   "severity": "major",
+   "message": "Hole Ø3.40 in 368004 GLAZING U-PROFILE (4 PIECES, MITRED) is 6.0 mm from the free edge (centre to edge), 1.76 diameters; the rule is at least 2 diameters (6.8 mm). Hole centre X 484 Y -699 Z 96 in the part's own coordinates.",
+   "fix": "Move the hole to at least 6.8 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "edge_mm": 6.0,
+    "dia_mm": 3.4
+   },
+   "key": "C09|edge-distance|368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 484 Y -699 Z 96",
+   "id": "F-092",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 284dae7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 269 Y -699 Z 96",
+   "severity": "major",
+   "message": "Hole Ø3.40 in 368004 GLAZING U-PROFILE (4 PIECES, MITRED) is 6.0 mm from the free edge (centre to edge), 1.76 diameters; the rule is at least 2 diameters (6.8 mm). Hole centre X 269 Y -699 Z 96 in the part's own coordinates.",
+   "fix": "Move the hole to at least 6.8 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "edge_mm": 6.0,
+    "dia_mm": 3.4
+   },
+   "key": "C09|edge-distance|368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 269 Y -699 Z 96",
+   "id": "F-093",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 284dae7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 914 Y -699 Z 96",
+   "severity": "major",
+   "message": "Hole Ø3.40 in 368004 GLAZING U-PROFILE (4 PIECES, MITRED) is 6.0 mm from the free edge (centre to edge), 1.76 diameters; the rule is at least 2 diameters (6.8 mm). Hole centre X 914 Y -699 Z 96 in the part's own coordinates.",
+   "fix": "Move the hole to at least 6.8 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "edge_mm": 6.0,
+    "dia_mm": 3.4
+   },
+   "key": "C09|edge-distance|368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 914 Y -699 Z 96",
+   "id": "F-094",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 284dae7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 284dae7"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368003",
+   "severity": "minor",
+   "message": "368003 is named 'FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD' in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
+   "file": "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368003",
+   "id": "F-095",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 284dae7",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "360002",
+   "severity": "major",
+   "message": "360002 FRONT - FIXED GLASS UNIT has no drawing PDF (360002_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|360002",
+   "id": "F-096",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 284dae7",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "361003",
+   "severity": "severe",
+   "message": "361003 FRONT - FIXED GLASS - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|361003",
+   "id": "F-097",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 284dae7",
+   "posted": "FRONT group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "284dae7",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5824c50"
   }
  ]
 }

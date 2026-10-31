@@ -37,6 +37,86 @@ def skel(name):
         raise KeyError(f"skeleton P04 has no parameter {name!r} ({SKELETON_CSV})")
     return SKEL[name]
 
+
+# ---------------------------------------------------------------------------------------- CAD masses on main
+MANUF = os.path.join(HERE, "..", "..", "..", "03-Manufacturing")
+WALL_L1_LIST = os.path.join(MANUF, "wall", "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv")   # PR #41 (S34)
+
+
+def read_parts_list(path):
+    """The rows of a merged parts list: dicts with level, pn, name, material, qty, kg (the row's total mass)."""
+    import csv
+    out = []
+    with open(path, encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            kg = r.get("mass_total_kg") or ""
+            each = r.get("mass_each_kg") or r.get("unit_mass_kg") or ""
+            if not kg and each:
+                kg = float(each) * float(r.get("qty") or 1)
+            out.append(dict(level=int(r.get("level") or 0), pn=(r.get("part_number") or "").strip(), name=r.get("name", ""),
+                            material=r.get("material", ""), qty=float(r.get("qty") or r.get("qty_per_parent") or 0),
+                            kg=float(kg or 0), each=float(each or 0)))
+    return out
+
+
+def wall_l1_cad(path=WALL_L1_LIST):
+    """WALL's L1 outer panel and its lining cassette from the merged parts list (PR #41): the made parts and the bond set
+    per panel; the hardware stays in the fixings kit's line, the clips in the named clips' line."""
+    import re
+    rows = read_parts_list(path)
+    by = {r["pn"]: r for r in rows if r["pn"]}
+    frame = rows.index(by["211101"])
+    mids = [r for r in rows[frame + 1:] if r["level"] == 2 and "STILE - MID" in r["name"].upper()]
+    fill = by["211501"]
+    rho = float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", fill["material"]).group(1))
+    t_mid = float(re.search(r"x\s*(\d+(?:\.\d+)?)\s*$", mids[0]["material"].strip()).group(1))
+    panel = rows[rows.index(by["210101"]) + 1:rows.index(by["510101"])]
+    hardware = sum(r["kg"] for r in panel if r["level"] == 1 and r["pn"] not in ("211101", "211301", "211501", "108002"))
+    return dict(frame=by["211101"]["kg"], skin=by["211301"]["kg"], fill=fill["kg"], fill_rho=rho, bond=by["108002"]["kg"],
+                mid_kg=sum(r["kg"] for r in mids), mid_n=int(sum(r["qty"] for r in mids)), mid_t=t_mid, hardware=hardware,
+                tray=by["511101"]["kg"], felt=by["511301"]["kg"], cass_seals=by["848011"]["kg"] + by["848012"]["kg"],
+                clips=by["518001"]["kg"])
+
+
+WALL_L1 = wall_l1_cad()
+FRONT_DOOR_LIST = os.path.join(MANUF, "front", "360001_P01_FRONT-DOOR-UNIT_BOM.csv")        # PR #27 (S36)
+
+
+def front_door_cad(path=FRONT_DOOR_LIST):
+    """FRONT's door unit from its merged parts list (PR #27): the unit's total, the leaf and the kick strip."""
+    by = {r["pn"]: r for r in read_parts_list(path) if r["pn"]}
+    return dict(unit=by["360001"]["kg"], leaf=by["361001"]["kg"], kick=by["361002"]["kg"])
+
+
+FRONT_DOOR = front_door_cad()
+FRONT_FIXED_LIST = os.path.join(MANUF, "front", "360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv")  # PR #28 (S37)
+
+
+def front_fixed_cad(path=FRONT_FIXED_LIST):
+    """FRONT's fixed glass unit from its merged parts list (PR #28): the unit's total and the pane."""
+    by = {r["pn"]: r for r in read_parts_list(path) if r["pn"]}
+    return dict(unit=by["360002"]["kg"], pane=by["361003"]["kg"])
+
+
+FRONT_FIXED = front_fixed_cad()
+BASE_LIST = os.path.join(MANUF, "base", "110000_P01_BASE_BOM.csv")                           # PR #55 (S44)
+
+
+def base_cad(path=BASE_LIST):
+    """BASE's P01 sample from its merged parts list (PR #55): the back-left corner and F1, unit masses by part number. The
+    right side band and F2 are taken as the mirrors of the left side band and F1; the front bands and front corner keys
+    come in BASE P02."""
+    by = {}
+    for r in read_parts_list(path):
+        if r["pn"] and r["pn"] not in by:
+            by[r["pn"]] = r
+    return dict(band_side=by["111101"]["each"], band_back=by["111103"]["each"], key_back=by["111211"]["each"],
+                doubler=by["111601"]["each"], glide=by["118002"]["each"], floor=by["111401"]["each"],
+                mat=by["111501"]["each"])
+
+
+BASE_CAD = base_cad()
+
 CAP_KG = 420.0          # confirmed, D-37 and D-54
 TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
 D71_KG = 429.3          # the PM's running estimate (D-71, S39), for the cross-check
@@ -50,12 +130,14 @@ P04 = dict(side_w=skel("side_l"), side_h=skel("side_h"), side_up_h=skel("side_h"
            side_cass_l=1445.0, side_cass_lo_h=1142.74, side_cass_up_h=1092.74, back_cass_w=1166.0,
            back_cass_lo_h=1118.61, back_cass_up_h=1116.87, floor_w=1210.0, floor_d=1455.0)
 # The teams' CAD masses, kg (status calculation: CAD geometry x density)
-WALL_L1_MADE, WALL_L1_BOND = 11.35, 0.49                      # S34
+WALL_L1_BOND = WALL_L1["bond"]                                 # S34: WALL's bond set per side panel
 CEIL_PANEL, CEIL_CASS = 9.586, 9.816                          # S35 (P03 build; the P04 cassette is 1160 x 1045)
 CEIL_TRAY = (1163.0, 1048.0)                                  # S35: the cassette tray's outline as built
 CEIL_FILL_M2 = 1.11674 * (0.33875 + 0.33875 + 0.27475)        # S35: the three fill strips on each cassette's back
-DOOR_UNIT, DOOR_GLASS = 50.17, 43.891                         # S36
-FIXED_UNIT, FIXED_GLASS = 29.58, 28.584                       # S37
+DOOR_UNIT_DRAFT = 50.17       # kg: the door unit in PR #27's first parts list (S36), the estimate before its CAD merged
+DOOR_GLASS = FRONT_DOOR["leaf"]                               # S36: the 4+4 leaf, CAD on main
+FIXED_UNIT_DRAFT = 29.58      # kg: the fixed glass unit in PR #28's first parts list (S37), the estimate before its CAD merged
+FIXED_GLASS = FRONT_FIXED["pane"]                             # S37: the 4+4 pane, CAD on main
 LIP_KG = 0.43                 # confirmed, D-69: each wall cassette with the 12 mm lips (S39)
 CORNER_TUBES_KG = 1.3         # confirmed, D-63 (S39)
 BOND_OVER_KG = 0.5            # calculation, PR #23 via D-71: bond over this study's 0.25 kg/m2 (S39)
@@ -77,7 +159,7 @@ LEDGE_KG_ALLOW, LEDGE_KG = 2.3, 1.4    # kg: the work wall's 1000 mm ledge (D-70
 T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 frames; the perimeters keep D-34's 1.2 for the
                               # rivnuts, and the ceiling's inner members stay 1.2 for the overhead clips and catches (D-85)
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
-KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36) and a hollow profile, same outside, 2 mm walls (assumption)
+KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the solid kick strip of PR #27's first list (S36) and D-85's hollow budget
 FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood against this study's 600 (S13); D-85, settled by D-86
 ELEC_KG = 4.94                # kg as shipped: ELECTRICAL P01 (S43), against this study's 3.05 kg allowance
 ELEC_LIGHTS_KG, CALL_LIGHT_M = 0.26, 0.9  # kg and m: ELECTRICAL's lights, the shelf strip and the 0.9 m call light (S43)
@@ -156,10 +238,13 @@ def lines(**adopt):
     with override(fill_pet_kgm3=fill):
         up = final_outer_kg(P04["side_w"], P04["side_up_h"], P04["frame_d"], FINAL)
         back = final_outer_kg(P04["back_w"], P04["back_h"], P04["frame_d"], FINAL)
-    L.append(("WALL", "L1 and R1, lower side outer panels (R1 is L1's mirror)", 2,
-              WALL_L1_MADE + WALL_L1_BOND - fill_d * side_a - 3 * P04["side_h"] * 1e-3 * stud_d,
-              "calculation (CAD)" + prov, "S34: 11.35 kg of made parts + 0.49 kg of bond"
-              + (f", less the fill from 32 to {fill:g} kg/m3" if lighter else "") + studs_txt))
+    w = WALL_L1
+    l1 = (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"]
+          + w["mid_kg"] * (kgm_s / al_rhs(20, P04["frame_d"], w["mid_t"]) - 1))
+    L.append(("WALL", "L1 and R1, lower side outer panels (R1 is L1's mirror)", 2, l1, "calculation (CAD)" + prov,
+              f"S34, CAD on main: WALL parts list 210101 P01: frame {w['frame']:.3f} (its {w['mid_n']} mid stiles at "
+              f"{w['mid_t']:g} mm), skin {w['skin']:.3f}, fill {w['fill']:.3f} at {w['fill_rho']:g} kg/m3, bond set "
+              f"{w['bond']:.2f}; its hardware ({w['hardware']:.2f} kg) stays in the fixings kit's line"))
     L.append(("WALL", "L2 and R2, upper side outer panels, the same size and build", 2,
               up - 3 * P04["side_up_h"] * 1e-3 * stud_d, "calculation" + prov,
               f"this study's model at the P04 size (S33), fill {fill:g} kg/m3" + studs_txt))
@@ -173,8 +258,14 @@ def lines(**adopt):
     L.append(("WALL", "Bond over this study's 0.25 kg/m2, beyond L1 and R1", 1,
               BOND_OVER_KG - 2 * (WALL_L1_BOND - p("bond_kgm2") * side_a), "calculation",
               "D-71's 0.5 kg (PR #23) less L1 and R1's share (S34, S39)"))
-    for item, w, h in (("side, lower", P04["side_cass_l"], P04["side_cass_lo_h"]),
-                       ("side, upper", P04["side_cass_l"], P04["side_cass_up_h"]),
+    cad_cass = WALL_L1["tray"] + WALL_L1["felt"] + WALL_L1["cass_seals"]
+    face = P04["side_cass_l"] * P04["side_cass_lo_h"] * 1e-6
+    L.append(("LINING", "Wall cassette, side, lower, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
+              cad_cass + (p("leaf_clip_kgm2") * face if rails else 0.0), "calculation (CAD)",
+              f"S34, CAD on main: WALL parts list 510101 P01: tray {WALL_L1['tray']:.3f} with its lips, felt "
+              f"{WALL_L1['felt']:.3f}, hook-and-loop and edge seal {WALL_L1['cass_seals']:.3f}; its 4 clips are in the named "
+              "clips' line" + (", + this study's 0.6 kg/m2 clip-and-rail allowance" if rails else "")))
+    for item, w, h in (("side, upper", P04["side_cass_l"], P04["side_cass_up_h"]),
                        ("back, lower", P04["back_cass_w"], P04["back_cass_lo_h"]),
                        ("back, upper", P04["back_cass_w"], P04["back_cass_up_h"])):
         L.append(("LINING", f"Wall cassette, {item}, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
@@ -196,42 +287,56 @@ def lines(**adopt):
                   "allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, D-81)"))
     kgm_band = al_rhs(100, 40, band_t)
     thin = band_t != p("t_al_base")
-    for pid in ("B-BAND-BACK", "B-BAND-SIDE", "B-BAND-FRONT-L", "B-BAND-FRONT-R"):
+    bc = BASE_CAD
+    scale = kgm_band / al_rhs(100, 40, BAND_T_LIGHT)           # BASE's tubes are 1.5 mm; a 2.0 mm wall scales them
+    for pid, cad, pn in (("B-BAND-BACK", bc["band_back"], "111103"), ("B-BAND-SIDE", bc["band_side"], "111101")):
+        pt = base[pid]
+        L.append(("BASE", f"{pt.name.split(' - ', 1)[1].capitalize()}, {band_t:g} mm wall", pt.qty, cad * scale,
+                  "calculation (CAD)" + ("; confirmed (1.5 mm)" if thin else ""),
+                  f"S44, CAD on main: BASE parts list {pn} P01" + (" (the right side as the left's mirror)" if pn == "111101" else "")
+                  + ("" if thin else f", scaled to a {band_t:g} mm wall") + "; its hardware stays in the fixings kit's line"))
+    for pid in ("B-BAND-FRONT-L", "B-BAND-FRONT-R"):
         pt = base[pid]
         L.append(("BASE", f"{pt.name.split(' - ', 1)[1].capitalize()}, {band_t:g} mm wall", pt.qty, pt.dims[0] * 1e-3 * kgm_band,
                   "calculation" + ("; confirmed (1.5 mm)" if thin else ""),
                   "this study's model" + (f", {band_t:g} mm wall (D-81; BASE's check passed, D-86)" if thin else "")
-                  + "; P03 lengths, P04's faceted front band is about 0.2 m shorter"))
-    for pid, note in (("B-KEY", "this study's model"), ("B-GLIDE", "this study's model"),
-                      ("B-THRESH", "this study's model (D-72's 13 mm profile isn't modelled yet)")):
-        pt = base[pid]
-        L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, note))
+                  + "; P03 lengths, P04's faceted front band is about 0.2 m shorter; BASE P02 models it"))
+    key = base["B-KEY"]
+    L.append(("BASE", "Corner key", key.qty, (2 * bc["key_back"] + (key.qty - 2) * key.kg) / key.qty, "calculation (part CAD)",
+              f"part CAD on main: the 2 back keys from BASE parts list 111211 P01 ({bc['key_back']:.3f} kg); the "
+              f"{key.qty - 2} others this study's {key.kg:.2f} kg until BASE P02"))
+    glide = base["B-GLIDE"]
+    L.append(("BASE", glide.name.split(" - ", 1)[1].capitalize(), glide.qty, bc["glide"], "assumption (CAD, HOLD)",
+              "S44, CAD on main: BASE parts list 118002 P01, a levelling glide on HOLD"))
+    thr = base["B-THRESH"]
+    L.append(("BASE", thr.name.split(" - ", 1)[1].capitalize(), thr.qty, thr.kg, thr.status,
+              "this study's model (D-72's 13 mm profile isn't modelled yet)"))
     if thin:
-        L.append(("BASE", "Glide load blocks, aluminium, one inside the band at each glide", 1, LOAD_BLOCKS_KG, "calculation",
-                  "D-86 (S42): about 0.4 kg per pod, BASE's calculation; they carry each glide into both side walls"))
+        L.append(("BASE", "Glide load blocks: BASE's glide doublers, one at each glide", 1, glide.qty * bc["doubler"],
+                  "calculation (CAD)", f"S44, CAD on main: BASE parts list 111601 P01, {glide.qty} x {bc['doubler']:.4f} kg, a "
+                  "52 x 36 x 3 aluminium doubler inside the band at each glide (D-86's load block); one line, as the packing "
+                  "plan shares it out by glide"))
     fa = P04["floor_w"] * P04["floor_d"] * 1e-6
-    if a["floor"]:
-        L.append(("BASE", "Floor panels, 9 mm plywood with a 0.3 kg/m2 finish", 2,
-                  plate_kg(fa, FLOOR_T, FLOOR_RHO_LIGHT) + fa * 0.3, "confirmed (9 mm, poplar core); calculation",
-                  "D-72 (S39) at the P04 size (S33); poplar-core plywood with a hard face veneer, about 450 kg/m3 "
-                  "(D-85, D-86; BASE: about 0.6 mm at a panel edge under 1000 N); the castor and edge tests on the sample "
-                  "are planned"))
-    else:
-        L.append(("BASE", "Floor panels, 9 mm plywood with a 0.3 kg/m2 finish", 2, plate_kg(fa, FLOOR_T, p("rho_ply")) + fa * 0.3,
-                  "confirmed (9 mm); calculation", "D-72 (S39) at the P04 size (S33); plywood 600 kg/m3 (S13)"))
-    L.append(("BASE", "Floor mat, 3 mm firm closed-cell foam", 1, FOAM_KG, "calculation", "D-76 (S39), BASE Engineer"))
+    L.append(("BASE", "Floor panels, 9 mm poplar-core plywood with a hard face veneer", 2,
+              bc["floor"] + (0.0 if a["floor"] else plate_kg(fa, FLOOR_T, p("rho_ply") - FLOOR_RHO_LIGHT)),
+              "confirmed (9 mm, poplar core); calculation (CAD)",
+              "S44, CAD on main: BASE parts list 111401 P01 (F2 as F1's mirror), D-85, D-86; the castor and edge tests on the "
+              "sample are planned" + ("" if a["floor"] else "; + 600 kg/m3 plywood's extra")))
+    L.append(("BASE", "Floor mat, 3 mm firm closed-cell foam", 1, 2 * bc["mat"], "calculation (CAD)",
+              "S44, CAD on main: BASE parts list 111501 P01 under F1, and F2's the same (D-76)"))
     for pid in ("F-DL", "F-DR", "F-DT"):
         pt = base[pid]
         L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status,
                   "this study's model from v1's STEP shapes (S02)"))
-    if a["kick"]:
-        L.append(("FRONT", "Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull", 1,
-                  DOOR_UNIT - (KICK_KG - KICK_KG_HOLLOW), "calculation (CAD); kick strip assumption",
-                  f"S36, with the kick strip as a hollow profile, about {KICK_KG_HOLLOW:.1f} kg against {KICK_KG} (D-85)"))
-    else:
-        L.append(("FRONT", "Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull", 1, DOOR_UNIT,
-                  "calculation (CAD)", "S36"))
-    L.append(("FRONT", "Fixed glass unit 360002: 4+4 pane, U-profiles and seals", 1, FIXED_UNIT, "calculation (CAD)", "S37"))
+    fd = FRONT_DOOR
+    L.append(("FRONT", "Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull", 1,
+              fd["unit"] + (0.0 if a["kick"] else KICK_KG - fd["kick"]), "calculation (CAD); hinges and pull HOLD",
+              f"S36, CAD on main: FRONT parts list 360001 P01: leaf {fd['leaf']:.3f}, kick strip {fd['kick']:.3f} (hollow, "
+              "D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair"
+              + ("" if a["kick"] else f"; + the solid strip's {KICK_KG - fd['kick']:.2f} kg")))
+    L.append(("FRONT", "Fixed glass unit 360002: 4+4 pane, U-profile, U-seal and magnetic seal half", 1, FRONT_FIXED["unit"],
+              "calculation (CAD); magnetic seal HOLD", f"S37, CAD on main: FRONT parts list 360002 P01: pane "
+              f"{FRONT_FIXED['pane']:.3f}, U-profile, U-seal and one half of the magnetic seal (D-83)"))
     for name, size, kg, basis in AA.d60_parts():
         filled = lighter and (name.startswith("Air column") or name.startswith("Soffit"))
         loose = name.startswith("Intake riser") or name.startswith("Supply fan box")
@@ -267,6 +372,51 @@ def lines(**adopt):
     else:
         L.append(("ELECTRICAL", "Voice cockpit kit reserve", 1, pt.kg, pt.status, "this study's model (D-11)"))
     return L
+
+
+def basis(row):
+    """Where a line's mass comes from: CAD merged on main, CAD in a team's open PR, or this study's estimate."""
+    _g, _item, _q, _kg, st, src = row
+    if src.startswith("part CAD on main"):
+        return "CAD, main (part)"
+    if "CAD on main" in src:
+        return "CAD, main"
+    if "(CAD)" in st or "(ELECTRICAL)" in st:
+        return "CAD, open PR"
+    return "estimate"
+
+
+def cad_swaps():
+    """Each line now read from CAD on main: (line, qty, this study's estimate kg each, CAD kg each, source)."""
+    kgm12, kgm10 = al_rhs(20, P04["frame_d"], p("t_al_final")), al_rhs(20, P04["frame_d"], T_STUD_LIGHT)
+    with override(fill_pet_kgm3=FILL_LIGHT):
+        l1_est = final_outer_kg(P04["side_w"], P04["side_h"], P04["frame_d"], FINAL) - 3 * P04["side_h"] * 1e-3 * (kgm12 - kgm10)
+    w, h = P04["side_cass_l"], P04["side_cass_lo_h"]
+    cass_est = final_leaf_kg(w, h) - p("leaf_clip_kgm2") * w * h * 1e-6 + LIP_KG
+    rows = {r[1].split(" (")[0].split(", with")[0]: r for r in lines() if basis(r) == "CAD, main"}
+    door = next(r for r in lines() if r[1].startswith("Door unit 360001"))
+    return [("L1 and R1, lower side outer panels", 2, l1_est, rows["L1 and R1, lower side outer panels"][3],
+             "WALL 210101 P01, PR #41"),
+            ("Wall cassette, side, lower", 2, cass_est, rows["Wall cassette, side, lower"][3], "WALL 510101 P01, PR #41"),
+            ("Door unit 360001", 1, DOOR_UNIT_DRAFT - (KICK_KG - KICK_KG_HOLLOW), door[3],
+             "FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip)"),
+            ("Fixed glass unit 360002", 1, FIXED_UNIT_DRAFT, FRONT_FIXED["unit"],
+             "FRONT 360002 P01, PR #28 (the estimate: its first list)")] + base_swaps()
+
+
+def base_swaps():
+    """BASE's swaps (PR #55): (line, qty, this study's estimate kg each, CAD kg each, source)."""
+    base = {pt.pid: pt for pt in base_parts()}
+    kgm = al_rhs(100, 40, BAND_T_LIGHT)
+    fa = P04["floor_w"] * P04["floor_d"] * 1e-6
+    bc = BASE_CAD
+    return [("Base band piece, back", 1, base["B-BAND-BACK"].dims[0] * 1e-3 * kgm, bc["band_back"], "BASE 111103 P01, PR #55"),
+            ("Base band piece, side", 2, base["B-BAND-SIDE"].dims[0] * 1e-3 * kgm, bc["band_side"], "BASE 111101 P01, PR #55"),
+            ("Corner key, back", 2, base["B-KEY"].kg, bc["key_back"], "BASE 111211 P01, PR #55"),
+            ("Glide load blocks (D-86's 0.4 kg), now glide doublers", 8, LOAD_BLOCKS_KG / 8, bc["doubler"],
+             "BASE 111601 P01, PR #55"),
+            ("Floor panel", 2, plate_kg(fa, FLOOR_T, FLOOR_RHO_LIGHT) + fa * 0.3, bc["floor"], "BASE 111401 P01, PR #55"),
+            ("Floor mat", 1, FOAM_KG, 2 * bc["mat"], "BASE 111501 P01, PR #55")]
 
 
 def pod_kg(rows=None):
@@ -370,10 +520,11 @@ REJECTED = (
 
 
 def rollup_csv(rows):
-    head = ["group", "item", "qty", "kg_each", "kg_total", "status", "source"]
+    head = ["group", "item", "qty", "kg_each", "kg_total", "status", "source", "basis"]
     out = [",".join(head)]
-    for g, item, q, kg, st, src in rows:
-        cells = [g, item, str(q), f"{kg:.3f}", f"{q * kg:.2f}", st, src]
+    for row in rows:
+        g, item, q, kg, st, src = row
+        cells = [g, item, str(q), f"{kg:.3f}", f"{q * kg:.2f}", st, src, basis(row)]
         out.append(",".join('"' + c.replace('"', '""') + '"' if ("," in c or '"' in c) else c for c in cells))
     return "\n".join(out) + "\n"
 
@@ -404,8 +555,9 @@ def rollup_md(rows):
               "report), the PM's adopted savings (D-81, D-85), budgets and allowances for parts not designed yet, and this "
               "study's model at P04's sizes "
               "for the rest. Every line has its status and source below and in `out/parts-decided-P04.csv`.")
-    md.append(f"- **Cross-check.** This study's model gives L1 {model_l1:.2f} kg at the P04 size with 32 kg/m3 fill; WALL's CAD "
-              f"gives {WALL_L1_MADE + WALL_L1_BOND:.2f} kg.")
+    md.append(f"- **Cross-check.** This study's model gives L1 {model_l1:.2f} kg at the P04 size with 32 kg/m3 fill and 1.2 mm "
+              f"studs; WALL's CAD on main gives {sum(WALL_L1[k] for k in ('frame', 'skin', 'fill', 'bond')):.2f} kg with "
+              f"24 kg/m3 fill and 1.0 mm mid stiles.")
     nm = heavy[1].split(",")[0]
     nm = nm.split(" - ")[1] + " decor block" if nm.startswith("Decor block - ") else nm.lower()
     dr = base_parts_kg("F-DR")
@@ -436,12 +588,29 @@ def rollup_md(rows):
     md.append(f"| Target (PM) | {TARGET_KG:.0f} ({gap(tot - TARGET_KG)}) |")
     md.append(f"| Voice cockpit kit reserve, later (D-11) | {later:.1f}, outside the cap |")
     md.append("")
+    sw = cad_swaps()
+    md.append("## CAD masses in place of estimates")
+    md.append("")
+    md.append("Each line read from a team's merged parts list (CAD on main), against the estimate this study carried for it "
+              "(its model at the P04 size with the adopted savings).")
+    md.append("")
+    md.append("| Line | Qty | Estimate kg each | CAD kg each | Difference kg each | CAD |")
+    md.append("|---|---:|---:|---:|---:|---|")
+    for line, q, est, cad, src in sw:
+        md.append(f"| {line} | {q} | {est:.2f} | {cad:.2f} | {cad - est:+.2f} | {src} |")
+    md.append(f"| **In all** | | | | **{sum(q * (cad - est) for _l, q, est, cad, _s in sw):+.2f}** | |")
+    md.append("")
+    n = {b: sum(1 for r in rows if basis(r) == b) for b in ("CAD, main", "CAD, main (part)", "CAD, open PR", "estimate")}
+    md.append(f"Lines by basis: {n['CAD, main']} from CAD on main, {n['CAD, main (part)']} partly, {n['CAD, open PR']} from "
+              f"CAD in a team's open PR, {n['estimate']} estimated.")
+    md.append("")
     md.append("## Every line")
     md.append("")
-    md.append("| Assembly | Item | Qty | kg each | kg | Status | Source |")
-    md.append("|---|---|---:|---:|---:|---|---|")
-    for g, item, q, kg, st, src in rows:
-        md.append(f"| {g} | {item} | {q} | {kg:.2f} | {q * kg:.2f} | {st} | {src} |")
+    md.append("| Assembly | Item | Qty | kg each | kg | Status | Source | Basis |")
+    md.append("|---|---|---:|---:|---:|---|---|---|")
+    for row in rows:
+        g, item, q, kg, st, src = row
+        md.append(f"| {g} | {item} | {q} | {kg:.2f} | {q * kg:.2f} | {st} | {src} | {basis(row)} |")
     md.append("")
     md.append("Sources S33 to S39 are in section 10 of the report (`scripts/inputs.py`).")
     md.append("")

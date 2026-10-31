@@ -120,7 +120,9 @@ def clash_pairs(bodies, allow, min_mm3):
                 continue
             allowed = None
             for ra, rb, vmax, r in rules:
-                if ((ra.search(la) and rb.search(lb)) or (ra.search(lb) and rb.search(la))) and (vmax <= 0 or vol <= vmax):
+                same = la.split(" / ")[0] == lb.split(" / ")[0]     # scope same-file: one assembly file (D-104)
+                if ((ra.search(la) and rb.search(lb)) or (ra.search(lb) and rb.search(la))) and \
+                        (vmax <= 0 or vol <= vmax) and ((r.get("scope") or "").strip() != "same-file" or same):
                     allowed = r.get("id")
                     break
             out.append({"a": la, "b": lb, "mm3": round(vol, 2), "allowed": allowed})
@@ -326,9 +328,10 @@ def fasteners(app, bodies, tools, later_re, step_mm=0.25, ring_extra_mm=0.6, pas
 
 
 def door_swing(bodies, cfg):
-    """Turn the door's moving bodies about the hinge axis in steps and
-    report the first angle at which they hit anything else (guideline
-    section 10: clearances in motion, not only in the closed position)."""
+    """Turn the door's moving bodies about the hinge axis in steps through the whole swing and record every
+    body they hit: its first and last angle and the largest overlap (guideline section 10: clearances in
+    motion, not only in the closed position). Bodies matching the config's soft pattern (seals the door is
+    meant to touch or wipe) are marked soft, so a light touch on them isn't taken for a collision."""
     if not cfg:
         return []
     tbm = adsk.fusion.TemporaryBRepManager.get()
@@ -336,6 +339,7 @@ def door_swing(bodies, cfg):
     for c in cfg:
         mv = re.compile(c["moving"], re.I)
         ex = re.compile(c["fixed_exclude"], re.I) if c.get("fixed_exclude") else None
+        soft = re.compile(c["soft"], re.I) if c.get("soft") else None
         moving = [(l, b) for l, b in bodies if mv.search(l) and not (ex and ex.search(l))]
         fixed = [(l, b) for l, b in bodies if not mv.search(l) and not (ex and ex.search(l))]
         if not moving:
@@ -346,9 +350,9 @@ def door_swing(bodies, cfg):
         step = _f(c.get("step_deg"), 2.0)
         maxd = _f(c.get("max_deg"), 90.0)
         fixed_boxes = [(l, b, bbox_mm(b)) for l, b in fixed]
-        hit = None
+        hits = {}
         ang = step
-        while ang <= maxd + 1e-6 and hit is None:
+        while ang <= maxd + 1e-6:
             m = adsk.core.Matrix3D.create()
             m.setToRotation(math.radians(sgn * ang), axis, ax_pt)
             for lm, bm in moving:
@@ -362,13 +366,20 @@ def door_swing(bodies, cfg):
                     t2 = tbm.copy(bf)
                     if tbm.booleanOperation(t1, t2, adsk.fusion.BooleanTypes.IntersectionBooleanType) and t1 \
                             and t1.volume * 1000.0 > 0.1:
-                        hit = {"angle_deg": ang, "moving": lm, "hits": lf, "mm3": round(t1.volume * 1000.0, 1)}
-                        break
-                if hit:
-                    break
+                        v = round(t1.volume * 1000.0, 1)
+                        h = hits.setdefault(lf, {"hits": lf, "moving": lm, "first_deg": ang, "last_deg": ang,
+                                                 "max_mm3": v, "soft": bool(soft and soft.search(lf))})
+                        h["last_deg"] = ang
+                        if v > h["max_mm3"]:
+                            h["max_mm3"], h["moving"] = v, lm
             ang += step
+        hl = sorted(hits.values(), key=lambda h: h["first_deg"])
+        rigid = [h for h in hl if not h["soft"]]
+        first = rigid[0] if rigid else None
         out.append({"rule": c.get("status_source", ""), "max_deg": maxd, "step_deg": step,
-                    "direction": c.get("direction"), "moving": [l for l, _b in moving], "first_hit": hit})
+                    "direction": c.get("direction"), "moving": [l for l, _b in moving], "hits": hl,
+                    "first_hit": ({"angle_deg": first["first_deg"], "moving": first["moving"], "hits": first["hits"],
+                                   "mm3": first["max_mm3"]} if first else None)})
     return out
 
 
@@ -394,7 +405,7 @@ def run(_context):
     app = adsk.core.Application.get()
     t_start = time.time()
     steps = [p for p in (ARGS.get("steps") or "").split(",") if p]
-    result = {"steps": steps, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "errors": []}
+    result: dict = {"steps": steps, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "errors": []}
     doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     try:
         design = adsk.fusion.Design.cast(app.activeProduct)

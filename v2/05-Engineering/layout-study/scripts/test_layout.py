@@ -104,7 +104,7 @@ def test_only_the_five_status_words():
 def test_p04_rollup_lines():
     """ISS-081, F-010: every roll-up line has a status word and a source and every piece but the glass is 20 kg or less
     (D-03); the pod as shipped is the CSV's sum less the voice kit's line, which the mechanical check leaves out by its
-    name (PR #40); at 32 kg/m3 the air parts are the air report's 61.8 kg with fans; the allowances are assumptions; each
+    name (PR #40); at 32 kg/m3 the air parts are the air report's own figure with fans; the allowances are assumptions; each
     applied saving is priced from the list itself (D-81, D-85)."""
     import re
     import csv
@@ -126,7 +126,7 @@ def test_p04_rollup_lines():
     csv_kg = sum(float(r[4]) for r in csv_rows if not kit.search(r[1] + " " + r[5]))
     assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
     air32 = sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=p("fill_pet_kgm3")) if g == "AIR")
-    assert abs(air32 - 61.8) < 0.05, air32
+    assert abs(air32 - (rollup.AA.d60_air_kg() + rollup.AA.fans_kg())) < 0.05, air32
     for name in ("Light shelf", "Work-wall ledge", "Named clips"):
         hit = [r for r in rows if r[1].startswith(name)]
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
@@ -140,6 +140,33 @@ def test_p04_rollup_lines():
     assert len(op) == 3 and all(o[0] > 0 and o[2] and o[3] for o in op), op
     names = [name for name, _ in rollup.REJECTED]
     assert any(n.startswith("Fixed glass") for n in names) and any("perimeters" in n for n in names), names   # D-82, D-85
+
+
+def test_cad_masses_from_main():
+    """The roll-up reads the merged parts lists (WALL L1, PR #41; FRONT's door unit, PR #27): those lines are the CAD's
+    sums, marked as CAD on main, and every line has a basis; the swap table lists each one."""
+    import rollup
+    w = rollup.read_parts_list(rollup.WALL_L1_LIST)
+    by = {r["pn"]: r["kg"] for r in w if r["pn"]}
+    rows = {r[1]: r for r in rollup.lines()}
+    l1 = rows["L1 and R1, lower side outer panels (R1 is L1's mirror)"]
+    assert abs(l1[3] - sum(by[k] for k in ("211101", "211301", "211501", "108002"))) < 1e-9, l1
+    cs = next(r for k, r in rows.items() if k.startswith("Wall cassette, side, lower"))
+    assert abs(cs[3] - (by["511101"] + by["511301"] + by["848011"] + by["848012"])) < 1e-9, cs
+    assert rollup.basis(l1) == rollup.basis(cs) == "CAD, main"
+    assert all(rollup.basis(r) in ("CAD, main", "CAD, main (part)", "CAD, open PR", "estimate") for r in rows.values())
+    door = next(r for k, r in rows.items() if k.startswith("Door unit 360001"))
+    d = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_DOOR_LIST) if r["pn"]}
+    assert abs(door[3] - d["360001"]) < 1e-9 and rollup.basis(door) == "CAD, main", door
+    b = rollup.BASE_CAD
+    fl = next(r for k, r in rows.items() if k.startswith("Floor panels, 9 mm"))
+    assert abs(fl[3] - b["floor"]) < 1e-9 and rollup.basis(fl) == "CAD, main", fl
+    key = rows["Corner key"]
+    assert rollup.basis(key) == "CAD, main (part)", key
+    fx = next(r for k, r in rows.items() if k.startswith("Fixed glass unit 360002"))
+    f = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_FIXED_LIST) if r["pn"]}
+    assert abs(fx[3] - f["360002"]) < 1e-9 and rollup.basis(fx) == "CAD, main", fx
+    assert len(rollup.cad_swaps()) == 10
 
 
 def test_rollup_items_the_packing_plan_reads():
