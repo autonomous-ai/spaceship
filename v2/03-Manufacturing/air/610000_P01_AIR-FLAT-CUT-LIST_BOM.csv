@@ -1,0 +1,6 @@
+part_number,piece,name,name_vi,material,size_mm,qty_per_pod,tolerance,drawing,note
+611104,COLUMN FILL FRONT,AIR - COLUMN FILL,Cột gió - bông,Polyester fill 32 kg/m3,1750.0 x 182.0 x 29.0,1,knife cut +/-2 (assumption),none (D-89: plain rectangle),openings cut on site to the hub zone / latches: see the AIR drawing
+611104,COLUMN FILL LEFT,AIR - COLUMN FILL,Cột gió - bông,Polyester fill 32 kg/m3,1750.0 x 299.0 x 27.0,1,knife cut +/-2 (assumption),none (D-89: plain rectangle),openings cut on site to the hub zone / latches: see the AIR drawing
+611203,SOFFIT FILL UNDER,AIR - SOFFIT FILL,Hộp gió - bông,Polyester fill 32 kg/m3,2044.0 x 343.0 x 27.0,1,knife cut +/-2 (assumption),none (D-89: plain rectangle),openings cut on site to the hub zone / latches: see the AIR drawing
+611203,SOFFIT FILL FRONT,AIR - SOFFIT FILL,Hộp gió - bông,Polyester fill 32 kg/m3,2044.0 x 179.7 x 29.0,1,knife cut +/-2 (assumption),none (D-89: plain rectangle),openings cut on site to the hub zone / latches: see the AIR drawing
+611302,LAYER 50,AIR - CARTRIDGE LAYER 50,Lớp tiêu âm 50 mm,Pyrotek Sorberpoly 2D 40 kg/m3,1750.0 x 169.0 x 50.0,6,knife cut +/-2 (assumption),none (D-89: plain rectangle),"3 per cartridge, 2 cartridges"
