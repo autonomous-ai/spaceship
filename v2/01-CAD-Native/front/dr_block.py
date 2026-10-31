@@ -658,14 +658,15 @@ def export_all(app):
         ("351402", PARTS["RISER"][1], PARTS["RISER"][2], 1, "made (sheet metal duct)", "1 mm galvanised steel", "cad",
          "calculation (CAD, 7850 kg/m3)", "DRAFT", "D-60 air table", "open foot 140 mm over the base opening"),
         ("351403", PARTS["TLOW"][1], PARTS["TLOW"][2], 1, RESERVED_TYPE, "-", 1.5, "assumption", RESERVED_STATUS,
-         "D-60 air table", "the space the lower transition may take, riser top to fan box inlet; AIR designs the part"),
+         "D-60 air table", "designer: AIR (a sheet-metal duct inside this space, after PR #91); the space the lower transition may "
+         "take, riser top to fan box inlet"),
         ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, "made", "2 mm aluminium, 50 mm lining inside", 3.6,
          "source (D-60 air table: 5.1 kg for the box and the upper transition) less 351405's 1.5 kg", "DRAFT; lining and bulkhead HOLD (air detail)",
          "D-60 air table", "12 from the fixed glass channel, so the frame's inner-edge tube fits"),
         ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, RESERVED_TYPE, "-", 1.5,
          "assumption (as the lower transition 351403; part of the D-60 air table's 5.1 kg)", RESERVED_STATUS,
-         "D-60 air table", "the space the upper transition may take, fan box outlet to the access panel's opening; AIR "
-         "designs the part"),
+         "D-60 air table", "designer: AIR (a sheet-metal duct inside this space, after PR #91); the space the upper transition may "
+         "take, fan box outlet to the access panel's opening"),
         ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", 2, "bought",
          "Noctua NF-A14 industrialPPC-3000 PWM, 12 V", 0.3, "assumption (D-60 air table)", "HOLD: product (PM ruling, one number for all four fans)",
          "hardware selection F1", "on the fan box bulkhead, blowing up"),
