@@ -112,7 +112,7 @@ The PM's decisions: 2–3 cm panels lying on the room floor, the walls fixed aro
 | Question | Working default | Issue |
 |---|---|---|
 | Decor colour: yellow or black? | DECIDED (D-12): Dark Yellow EV3038, matching the plan's material list and v1's product photos | ISS-031 |
-| Quiet target and weight | DECIDED (D-27, D-37, D-53, D-54): 4+4 laminated front; the pod's weight being rechecked against the 420 kg cap (D-54); about 19.3 dB calculated (14.6–21.7), about 24 dB at best, with the wall sample deciding. The 0.4 mm lining tray was tried and dropped because it cost 1 dB. | ISS-063, ISS-065, ISS-068 |
+| Quiet target and weight | DECIDED (D-27, D-37, D-53, D-54): 4+4 laminated front; the pod estimated at about 427 kg, open against the 420 kg cap (D-54); about 19.3 dB calculated (14.6–21.7), about 24 dB at best, with the wall sample deciding. The 0.4 mm lining tray was tried and dropped because it cost 1 dB. | ISS-063, ISS-065, ISS-068 |
 | Assembly method | DECIDED (D-08): tool-free connectors, captive bolts, factory-made subassemblies, felt pre-fitted at the factory | ISS-064 |
 | Overall height and its datum | DECIDED (D-21): 2400 from the room floor to the top of the roof skin | ISS-013 |
 | Depth chain between the walls and the decor | Back face at Y = +850, decor front at Y = −850, overlap set by the bracket joint | ISS-012 |

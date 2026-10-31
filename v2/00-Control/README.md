@@ -14,7 +14,7 @@ Nothing here is released for production.
 
 **Headline today (D-27, D-37, D-42, D-46 to D-57):**
 - A 4+4 laminated front of toughened, heat-soaked panes, frameless as in v1, with an 85 mm dark kick strip at the bottom; the door hardware and the glass product are on HOLD until rated parts are named (D-46, D-56).
-- Walls and ceiling on one 81 mm stack. The pod's weight is being rechecked against the 420 kg cap: about 418 kg in PR #11's model, about 425 kg in the layout study's own list (D-54). About 19.3 dB calculated (range 14.6–21.7, about 24 dB at best); the wall sample, measured down to 100 Hz, decides (D-53).
+- Walls and ceiling on one 81 mm stack. The pod is estimated at about 427 kg, open against the 420 kg cap until the wall sample settles it (D-54). About 19.3 dB calculated (range 14.6–21.7, about 24 dB at best); the wall sample, measured down to 100 Hz, decides (D-53).
 - Fresh air driven by CO2 and heat, holding 800 ppm in a 600 ppm office and at most 4 K over the room: never below 26 l/s with someone inside, about 33 l/s for one person, 53 l/s for two at 26 dB(A) or less, and a boost to 65 l/s at 30 dB(A) (D-50, D-52). Four 12 V fans in two boxed cartridges in the right decor block, supply low and exhaust high (D-51).
 - Decor blocks 205 mm deep and side walls 1495 deep, as v1 measures (D-49).
 
