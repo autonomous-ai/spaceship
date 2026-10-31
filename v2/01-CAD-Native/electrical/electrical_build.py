@@ -262,11 +262,36 @@ def export_with_retry(em: "adsk.fusion.ExportManager", mk, path, root: "adsk.fus
     return False
 
 
+def skeleton_missing(app: "adsk.core.Application"):
+    """Favourites this build needs from skeleton P04 that aren't there. PM heads-up 2026-10-31 (about
+    18:53): P04 lost its favourite skin_t for a while, and builds that derive its favourites wait until
+    Fusion Engineer 2 restores it. Read-only; closes the skeleton only if this run opened it."""
+    was_open = any(app.documents.item(i).name.split(" v")[0] == M.SKELETON_DOC for i in range(app.documents.count))
+    d = app.documents.open(find_file(app, M.SKELETON_DOC), False)
+    try:
+        skel = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
+        out = []
+        for n in ["skin_t"] + list(M.SKELETON_PARAMS):
+            p = skel.userParameters.itemByName(n)
+            if p is None or not p.isFavorite:
+                out.append(n)
+        return out
+    finally:
+        if not was_open:
+            d.close(False)
+
+
 def run(_context):
     app = adsk.core.Application.get()
     doc = app.activeDocument
     if doc.name != M.DOC_NAME:
         raise RuntimeError("active document is %r, not %r (use --doc)" % (doc.name, M.DOC_NAME))
+    missing = skeleton_missing(app)
+    if missing:
+        raise RuntimeError("held, nothing changed: skeleton P04 lacks the favourite(s) %s; this build derives its "
+                           "favourites, so it waits until they are restored (PM heads-up 2026-10-31)" % ", ".join(missing))
+    doc.activate()
+    print("skeleton P04: skin_t and the %d favourites this build derives are there" % len(M.SKELETON_PARAMS))
     design = adsk.fusion.Design.cast(app.activeProduct)
     root = design.rootComponent
     if root.occurrences.count or design.userParameters.count or design.timeline.count:
