@@ -35,7 +35,7 @@ def floor_options():
              cables="Under the floor, easy.",
              assembly="Longest: 6 frame bars, 2 joists, 4 bolted corners, 6 feet, then 2 boards screwed to the joists (a second fastener type and tool).",
              look="Same as v1.", status="calculation"),
-        dict(key="thin", name="Thin floor inside an aluminium base band (DECIDED)", kg=thin,
+        dict(key="thin", name="Thin floor inside an aluminium base band (confirmed, D-05, D-18)", kg=thin,
              step=board + 3,
              sound="Closed box: floor panels on a 3 mm seal mat, gasket to the base band; the room slab adds mass under it.",
              square="Good: the aluminium base band with corner keys sets square; floor panels float inside it.",
