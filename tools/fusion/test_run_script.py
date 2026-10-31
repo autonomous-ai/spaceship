@@ -11,11 +11,14 @@ its own lock directory in a temporary folder, never the real lock.
 
 import base64
 import http.server
+import contextlib
+import io
 import json
 import os
 import re
 import subprocess
 import sys
+import shutil
 import tempfile
 import threading
 import time
@@ -577,6 +580,112 @@ class RunnerTests(unittest.TestCase):
         for mode in ("open", "save", "close"):
             compile(rs.doc_script(mode, "N", create=True, description="d"), mode, "exec")
 
+
+
+class FreshModulesTests(unittest.TestCase):
+    """Fusion keeps Python modules between runs: every run must import its own files,
+    not a module of the same name another run loaded (live 2026-10-31), and a team's
+    own edits must show on its next run (PM rule for the #156 follow-up)."""
+
+    def setUp(self):
+        self.keep = (rs.REPO_ROOT, rs.git_worktrees, list(sys.path))
+        not_tmp = os.path.expanduser("~/Library/Caches")
+        if not os.path.isdir(not_tmp):
+            not_tmp = os.path.expanduser("~")
+        self.dirs = [tempfile.mkdtemp(prefix="wt-under-tmp-", dir="/tmp"),       # like AIR's scratch worktree
+                     tempfile.mkdtemp(prefix="wt-not-tmp-", dir=not_tmp)]        # like the team worktrees
+        self.trees = {"MAIN": os.path.join(self.dirs[1], "main-checkout"),     # git lists it first
+                      "A": os.path.join(self.dirs[0], "wtA"), "B": os.path.join(self.dirs[1], "worktrees", "wtB"),
+                      "C": os.path.join(self.dirs[1], "worktrees", "wtC")}
+        for key, root in self.trees.items():
+            self.helper(key, key)
+            with open(os.path.join(root, "script.py"), "w") as fh:
+                fh.write("import os, sys\n"
+                         "sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'lib'))\n"
+                         "import shared_helper\n"
+                         "def run(_c):\n    RESULT.append(shared_helper.VALUE)\n")
+        rs.git_worktrees = lambda repo_root=None: list(self.trees.values())     # what git would list
+
+    def helper(self, key, value):
+        lib = os.path.join(self.trees[key], "lib")
+        os.makedirs(lib, exist_ok=True)
+        with open(os.path.join(lib, "shared_helper.py"), "w") as fh:
+            fh.write("VALUE = %r\n" % value)
+
+    def tearDown(self):
+        rs.REPO_ROOT, rs.git_worktrees, path = self.keep
+        sys.path[:] = path
+        sys.modules.pop("shared_helper", None)
+        for d in self.dirs:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def run_as(self, key, result):
+        rs.REPO_ROOT = self.trees[key]
+        path = os.path.join(self.trees[key], "script.py")
+        with open(path) as fh:
+            wrapped = rs.wrap_script(fh.read(), path, {})
+        ns = {}
+        exec(compile(wrapped, "wrapper", "exec"), ns)                 # what Fusion runs
+        ns["_NS"]["RESULT"] = result
+        ns["run"](None)
+        return result
+
+    def test_two_worktrees_under_different_parents_both_orders(self):
+        self.assertEqual(self.run_as("A", []) + self.run_as("B", []) + self.run_as("A", []), ["A", "B", "A"])
+        self.assertEqual(self.run_as("B", []) + self.run_as("A", []) + self.run_as("B", []), ["B", "A", "B"])
+
+    def test_a_run_from_the_main_checkout_gets_its_own(self):
+        self.assertEqual(self.run_as("A", []) + self.run_as("MAIN", []) + self.run_as("B", []),
+                         ["A", "MAIN", "B"])
+
+    def test_an_edited_own_helper_shows_on_the_next_run(self):
+        self.assertEqual(self.run_as("A", []), ["A"])
+        self.helper("A", "A, edited")
+        self.assertEqual(self.run_as("A", []), ["A, edited"])
+
+    def test_a_deleted_worktrees_module_still_drops(self):
+        # Reviewer 5's note on #157: a worktree removed after its run loaded a module
+        self.assertEqual(self.run_as("C", []), ["C"])
+        self.assertTrue(sys.modules["shared_helper"].__file__.startswith(self.trees["C"]))
+        del self.trees["C"]                                          # no longer in git's list
+        self.assertEqual(self.run_as("B", []), ["B"])                # its parent folder still covers it
+
+    def test_the_main_checkouts_parent_is_not_swept(self):
+        roots = rs.team_roots()
+        self.assertIn(os.path.dirname(self.trees["B"]), roots)         # the worktrees' folder
+        self.assertNotIn(os.path.dirname(self.trees["MAIN"]), roots)   # not the main checkout's parent
+
+    def test_a_failing_git_list_warns(self):
+        rs.git_worktrees = self.keep[1]
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            trees = rs.git_worktrees("/nonexistent-folder-for-a-test")
+        self.assertEqual(trees, ["/nonexistent-folder-for-a-test"])
+        self.assertIn("warning: git worktree list failed", err.getvalue())
+
+    def test_main_python_and_odd_modules_are_safe(self):
+        import json as _json
+        main = sys.modules.get("__main__")
+
+        class Odd:                                                    # its __file__ can't be read
+            @property
+            def __file__(self):
+                raise RuntimeError("odd module")
+
+        sys.modules["odd_test_module"] = Odd()
+        try:
+            self.assertEqual(self.run_as("A", []), ["A"])           # the run still works
+        finally:
+            sys.modules.pop("odd_test_module", None)
+        self.assertIs(sys.modules["json"], _json)                     # Python's own: kept
+        self.assertIs(sys.modules.get("__main__"), main)              # never dropped
+        self.assertIn("fusion_folder", sys.modules)                   # given to every run, fresh
+
+    def test_the_team_roots(self):
+        rs.git_worktrees = self.keep[1]
+        roots = rs.team_roots()
+        self.assertIn(rs.REPO_ROOT, [os.path.abspath(r) for r in roots] + [rs.REPO_ROOT])
+        self.assertIn("/private/tmp", roots)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

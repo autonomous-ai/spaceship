@@ -86,7 +86,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 4](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (11.6 kg).
+- **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (11.7 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
 - **Person A:** Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1. B2 carries the power unit, wired and tested at the factory (11.6 kg).
 - **Person B:** From inside, through the fill pockets: first the 3 pins of the B1-B2 closing seam, snug only; then B1's and B2's 4 base bolts each (pins first: joints register 2.7, R-J11).
@@ -119,7 +119,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 7](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-07_IMG.png)
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-09** WALL - PANEL ASSY - SIDE UPPER - LH (11.1 kg), **1-10** WALL - PANEL ASSY - SIDE UPPER - RH (11.1 kg).
+- **Parts:** **1-09** WALL - PANEL ASSY - SIDE UPPER - LH (11.3 kg), **1-10** WALL - PANEL ASSY - SIDE UPPER - RH (11.3 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the 5 mm hex key.
 - **Person A:** Lifts L2 onto L1's spigots against B3's edge, then R2 onto R1 against B4.
 - **Person B:** Drives the 4 horizontal-seam bolts each (L1-L2, R1-R2), then the 3 upper back-corner bolts each side (L2-B3, R2-B4) FINGER-TIGHT only.
@@ -183,7 +183,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 13. Electrics, first fix (power off)
 
 - **Time:** about 1 min for 2 people.
-- **Parts:** **2-13** ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS (2.1 kg).
+- **Parts:** **2-13** ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS (2.2 kg).
 - **Fasteners:** none.
 - **Person A:** Plugs the factory-tested harness together at each panel seam and runs the plug-in feeds for the light shelf and the hub to their ends (D-87).
 - **Person B:** Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).
@@ -194,7 +194,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 14](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png)
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (10.0 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (10.0 kg), **1-17** LINING - CASSETTE - BACK LOWER - LH (8.4 kg), **1-18** LINING - CASSETTE - BACK LOWER - RH (8.4 kg), **1-19** LINING - CASSETTE - BACK UPPER - LH (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - RH (8.4 kg).
+- **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-17** LINING - CASSETTE - BACK LOWER - LH (8.4 kg), **1-18** LINING - CASSETTE - BACK LOWER - RH (8.4 kg), **1-19** LINING - CASSETTE - BACK UPPER - LH (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - RH (8.4 kg).
 - **Fasteners:** none.
 - **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips.
 - **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
@@ -241,7 +241,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 19. Light shelf
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-14** INTERIOR - LIGHT SHELF (2.0 kg).
+- **Parts:** **2-14** INTERIOR - LIGHT SHELF (1.6 kg).
 - **Fasteners:** the light shelf's fixings (INTERIOR design, not designed yet).
 - **Person A:** Fits the light shelf trims along the tops of the side and back walls (INTERIOR design).
 - **Person B:** Plugs the light shelf feed.
@@ -268,7 +268,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 22. Work-wall ledge and screen mount, after the clock
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-16** INTERIOR - LEDGE AND SCREEN MOUNT CARTON (2.4 kg).
+- **Parts:** **2-16** INTERIOR - LEDGE AND SCREEN MOUNT CARTON (2.9 kg).
 - **Fasteners:** their fixings to the work wall's mounting points (INTERIOR design, not designed yet).
 - **Person A:** Holds the 1000 mm ledge on the right (work) wall at its mounting points.
 - **Person B:** Fixes the ledge and the screen mount (INTERIOR design, D-70).

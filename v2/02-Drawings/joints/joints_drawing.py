@@ -44,7 +44,7 @@ PARTS = {
             "1. UNITS MM. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS STATED.",
             "2. MATERIAL STAINLESS STEEL A2 (1.4301 OR 1.4305). FINISH PASSIVATED, DEBURRED.",
             "3. PIN Ø8 h9 (0 / -0.036), 7.24 ABOVE ITS SHOULDER, LEAD-IN 1 x 45°.",
-            "4. STUD M6x1-6g, 8 LONG. HEX SOCKET 4 AF x 3.5 DEEP IN THE PIN'S TOP.",
+            "4. STUD M6x1-6g, 8 LONG (SHOWN AT THE 6g MEAN MAJOR Ø5.88). HEX SOCKET 4 AF x 3.5 DEEP.",
             "5. FITTED AT THE FACTORY INTO RIVNUT 838003 WITH THREADLOCKER; THE SHOULDER SITS ON",
             "   THE RIVNUT'S 0.76 HEAD, SO THE PIN'S TOP IS 8.00 ABOVE THE TUBE FACE.",
             "6. JOINTS REGISTER H-05. STEP: v2/03-Manufacturing/joints/831001_P01_..._STEP.step",
@@ -69,6 +69,7 @@ PARTS = {
             "   111214  7.25°   LH    32.23      27.77       1        LEFT KNEE",
             "4. H01, H02: M6x1-6H THROUGH, SQUARE TO THE STUD FACE ON ITS CENTRE LINE, 26 AND 60",
             "   ABOVE THE BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°.",
+            "   THE VIEWS SHOW THE TAPPED HOLES AT THE 6H MEAN MINOR Ø5.04 (TAP DRILL Ø5.0).",
             "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, 10.5 FROM THE",
             "   BACK FACE, 7.0 EITHER SIDE OF THE CENTRE LINE.",
             "6. JOINTS REGISTER J-BASE-02; POSITIONS v2/01-CAD-Native/joints/corner-keys.csv;",
@@ -144,9 +145,9 @@ def plan_dims(part, view, lines, circles, scale):
             bl = corner(pts, "bl")
             out.append(("linear", bl, (cs[0][0], cs[0][1]), ((x0 + cs[0][0]) / 2, y0 - 8.0)))   # 10 from the back
             out.append(("linear", bl, (cs[0][0], cs[0][1]), (x0 - 8.0, (y0 + cs[0][1]) / 2)))   # 10 from the side
-            if len(cs) > 1:
-                out.append(("linear", (cs[0][0], cs[0][1]), (cs[-1][0], cs[-1][1]),
-                            (x1 + 8.0, (cs[0][1] + cs[-1][1]) / 2)))                              # 15 between
+            if len(cs) > 1:     # from the corner, never centre to centre: two hidden circles' centres
+                # gave a dimension with no model link, which showed the sheet distance (28 for 14)
+                out.append(("linear", bl, (cs[-1][0], cs[-1][1]), (x1 + 8.0, (y0 + cs[-1][1]) / 2)))  # 24.5
             out.append(("diameter", cs[-1], None, (cs[-1][0] + 12.0, cs[-1][1] + 10.0)))
     return out
 
