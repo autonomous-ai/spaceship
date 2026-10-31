@@ -114,7 +114,8 @@ def run(_context):
         try:
             fd = adsk.fusion.Design.cast(f.products.itemByProductType("DesignProductType"))
             tl = fd.timeline
-            bad = [tl.item(i).name for i in range(tl.count)
+            n_items = tl.count             # read everything before the copy is closed: its
+            bad = [tl.item(i).name for i in range(n_items)     # objects are gone after (live 2026-10-31)
                    if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
             fbox = solid_box(fd)
         finally:
@@ -122,7 +123,7 @@ def run(_context):
             doc.activate()
         fdiff = max(abs(a - b) for a, b in zip(want, fbox)) if fbox else None
         print(".f3d opens on its own: %%d timeline items, unhealthy %%s, box difference %%s mm" %% (
-            tl.count, bad, fdiff))
+            n_items, bad, fdiff))
         if bad or fdiff is None or fdiff > 0.05:
             raise RuntimeError("the exported .f3d does not reopen healthy and the same size")
     # Undo the broken links: a script that raises has all its changes rolled
