@@ -26,6 +26,7 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
   - **R-J15** the register owns the bolt lines: on the bolt-side tube's centre, Z 2374 for wall to ceiling;
   - **R-J16** the pinned closing seam is accepted: frames at B1–B2, B3–B4 and C1–C2 are 1198.99 wide, with a 5.5 mm frame gap (4.0–7.0) and the 9.53 gasket (the seal is replaced by a bulb, R-J17); the look doesn't change: the ACP skins stay 1200.61 wide and overhang their frame by 1.62 mm at the closing seam, so the visible skin seam stays 2.26 nominal (0.76–3.76) like every other seam; the same on the ceiling, one part design.
   - **R-J17** fit-up (Reviewer 7's second hold): the side panels' back-end spigots are slotted along X, so each side panel drops in clear of the corner gasket and the corner bolts pull it shut; the closing seams B1–B2, B3–B4 and C1–C2 take a low-force hollow bulb seal (EPDM or TPE) sized for the 4.0–7.0 mm gap instead of foam, reusable when the pod is moved; J-T5's pass mark includes a fit-up force of 150 N or less per edge by hand, overhead included; the joint gasket sits on the nut side (the band at the base joint), gasket names don't start with HARDWARE, and the base seal belongs to family 11 (BASE).
+  - **R-J18** (Reviewer 7) the cassette edge seal H-14 seals at near-zero squeeze in the 2.26 mm gap, carrying no load (J-LIN-01): a very soft strip about 2.0–2.2 mm thick, or a fin, that only touches; a 3.18 mm strip at 29% would push about 0.6 kN along a 1.45 m edge and lift the upper cassette off its clips.
 - **HOLD:** a part or number that waits for data or a test. CAD may reserve a space for it, marked UNVERIFIED, but doesn't use its hole pattern until it's released (guideline §4.3 step 4; D-56). Section 6 lists every HOLD with its question.
 - **Not covered here:** the ACP-to-frame bond is in [`bond-spec-acp-aluminium.md`](bond-spec-acp-aluminium.md). Door hinges, the fixed glass and the decor top block's joint to the ceiling (IF-08, IF-09) belong to FRONT; the base band's corner keys and the thin floor to BASE.
 - No supplier was contacted and nothing was ordered. Data comes from the files below and from public pages, each linked with the date read.
@@ -38,8 +39,8 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 4. **Seals:** at every stopped joint, PORON 4701-40 foam, 8 mm wide, beside the washer line on the outer (skin) side of the nut-side face, so no seal is cut (R-J7): **3.97 mm thick, squeezed 33–51%** (43% nominal). At the three closing seams, **a low-force hollow bulb seal (EPDM or TPE) whose working gap covers 4.0–7.0 mm** (R-J17), which needs no squeeze at fit-up and can be reused when the pod is moved; the part is HOLD-12. **Fit-up:** every part drops in or slides past a seal with 150 N or less per edge by hand (J-T5, R-J17): the side panels' back-end spigots are slotted along X so they drop clear of the corner gasket, and the side walls' tops lean out for the ceiling (R-J9).
 5. **Holes:** clearance Ø7.0 positioned to ±0.2 from the spigot hole (R-J6), leaving 0.05 mm to spare worst case (stack ST-03, section 4); access Ø19, so the Ø18 head washer goes in with the bolt (section 2.2).
 6. **Findings carried from the first pass:** F1, no room-side hardware in the 4 mm frame-to-lining gap; F2, the 90° joints overlap only 14 mm with 20 × 40 tubes, 34 mm with the 40 × 40 edge members (R-J3); F3, seams need clamping force (R-J1); F4, the bond doesn't fit the 20 mm face as Sika lays it out (bond spec B1); F5, the back-top gap (closed by R-J4); F6, one head type (R-J2).
-7. **Part numbers and per-pod counts** for all 15 hardware items, in 2.1: bolts 838001 (72) and 838002 (10), rivnut 838003 (102), head washer 838004 (82), retainer 838005 (72), spigot 831001 (20), stop washer 831002 (72), joint gasket 848001 (25.2 m), closing-seam bulb seal 848004 (3.73 m), base seal 118001 (7.1 m), key 108001 (1), cassette clip 518001 (44), ceiling safety catch 518002 (4), ACP bond set 108002 (4.4 kg), hook-and-loop 848011 (1.6 m on the walls), cassette edge gasket 848012. 848002 and 848003 are cancelled (never used again, conventions §6).
-8. **HOLDs: 10 open, 2 closed** (section 6). **Tests** take the sample package's numbers: rivnut spin-out **T06**, bond **T09**, timed access **T11**; the joint tests the package doesn't have are **J-T1 to J-T5**, for the PM to route (section 5).
+7. **Part numbers and per-pod counts** for all 25 hardware items, in 2.1: bolts 838001 (72) and 838002 (10), rivnut 838003 (102), head washer 838004 (82), retainer 838005 (72), spigot 831001 (20), stop washer 831002 (72), joint gasket 848001 (25.2 m), closing-seam bulb seal 848004 (3.73 m), base seal 118001 (7.1 m), key 108001 (1), cassette clip 518001 (44), ceiling safety catch 518002 (4), ACP bond set 108002 (4.4 kg), hook-and-loop 848011 (1.6 m on the walls), cassette edge gasket 848012. 848002 and 848003 are cancelled (never used again, conventions §6); and FRONT's 10 bought items, 368001 to 368007 and 368101 to 368103, adopted as FRONT numbered them (2.1).
+8. **HOLDs: 11 open, 2 closed** (section 6). **Tests** take the sample package's numbers: rivnut spin-out **T06**, bond **T09**, timed access **T11**; the joint tests the package doesn't have are **J-T1 to J-T5**, for the PM to route (section 5).
 
 ## 1. Sources
 
@@ -47,7 +48,7 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 |---|---|---|
 | GL | `docs/engineering-guideline.md` §6.3, §7, §8, §8.1, §8.2, §10 | Register fields, bolt and bond rules, test status |
 | DL | `v2/00-Control/decision-log.md`, D-01 to D-60 | Decided stack, clips, holds, the D-60 air layout |
-| PM | PM rulings R-J1 to R-J17 in the joints group, 2026-10-31 | As listed above |
+| PM | PM rulings R-J1 to R-J18 in the joints group, 2026-10-31 | As listed above |
 | REQ | `v2/00-Control/requirements.md` | REQ-ASM-02 to -11, REQ-BLD-01, -02 |
 | IF | `v2/00-Control/assembly-tree.md` §4 | IF-01, IF-03 to IF-07, IF-10 |
 | ISS | `v2/00-Control/issue-register.csv` | ISS-003, -011, -014, -015, -016, -034, -036, -045, -054, -064, -076, -079 |
@@ -83,7 +84,7 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 | H-11 | **Ceiling cassette safety catch.** A steel wire lanyard with a rated working load and its two end fixings, from the ceiling cassette's return to a 20 × 40 ceiling tube (D-47) | At least 48 kg working load per lanyard (the package's T08 limit: 3 × a 16 kg cassette; the P04 cassette is 9.8 kg, CEILING PR #32, so this covers it) | DECIDED requirement (D-47); part **HOLD-08** |
 | H-12 | **ACP bond set.** The bond spec's system as one bought set: SikaTack Panel-50 adhesive, Sika Aktivator-205, SikaTack Panel Primer and SikaTack Panel Fixing Tape 3 × 12 | About 0.49 kg per side panel, 4.4 kg per pod (bond spec section 2, calculation) | source (bond spec); in-line tape layout HOLD-B2 |
 | H-13 | **Hook-and-loop, locating only.** Lines a cassette up on its frame before the clips take it; never holds it (D-47) | VELCRO® Brand PS14 hook 25 mm, or 3M Dual Lock SJ3560 (SEL A8; no load rating, locating only) | source (candidates); choice open |
-| H-14 | **Cassette edge gasket.** PORON 4701-40 Soft with pressure-sensitive adhesive, 3.18 mm thick, 10 mm wide, on a cassette's edge where it meets the next cassette across the 2.26 mm gap (the sample package's P14) | Squeezed (3.18 − 2.26) / 3.18 = 29% (calculation; SEL D data) | source; converter HOLD-05 |
+| H-14 | **Cassette edge seal.** Seals the 2.26 mm gap where a cassette meets the next one, **at near-zero squeeze and with no load** (R-J18): a very soft foam strip with pressure-sensitive adhesive, 2.0–2.2 mm thick and 10 mm wide, that only touches, or a flexible fin that wipes the other edge | Its push at the smallest gap must stay under a quarter of the upper cassette's weight per length: about 0.02 N per mm of edge (assumption; the cassette is about 11 kg on a 1.45 m edge, 0.075 N/mm, calculation), so about 2 kPa at 20% compression for a 10 mm strip. PORON 4701-40 is about 20 times too stiff (41 kPa at 25%, SEL D) | requirement DECIDED (R-J18); part **HOLD-13** |
 
 Every rivnut, stop washer, spigot, gasket, retainer and pre-fitted bolt is fitted in the factory (D-08, REQ-ASM-10); on site only the bolts are turned. Every joint rivnut sits on a 40 mm tube face (or the decor's back plate).
 
@@ -106,9 +107,24 @@ Every rivnut, stop washer, spigot, gasket, retainer and pre-fitted bolt is fitte
 | H-11 | **518002** | LINING - CEILING SAFETY CATCH · Dây an toàn cassette trần | bought, used only in LINING | **4**: 2 on each ceiling cassette | number as CEILING uses it (PR #32); part HOLD-08 |
 | H-12 | **108002** | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE · Bộ keo dán ACP | bought set, used by WALL and CEILING | about 4.4 kg (0.49 kg per side panel, bond spec) | PROPOSED number; system source (bond spec) |
 | H-13 | **848011** | SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY · Băng gai dính định vị cassette | bought by length | 1.6 m for the 8 wall cassettes (0.2 m each, WALL's figure); CEILING adds its own if it uses it | PROPOSED number (WALL's placeholder kept) |
-| H-14 | **848012** | SEALS - CASSETTE EDGE GASKET - 10 X 3.18 - PORON 4701-40 PSA · Gioăng mép cassette | bought by length | WALL's count; about 5.2 m for the horizontal joints between stacked wall cassettes (calculation: 2 × 1448 + 2 × 1169) | PROPOSED number (WALL's placeholder kept); strip HOLD-05 |
+| H-14 | **848012** | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN · Gioăng mép cassette (rất mềm) | bought by length | WALL's count; about 5.2 m for the horizontal joints between stacked wall cassettes (calculation: 2 × 1448 + 2 × 1169) | PROPOSED number (kept: same function, nothing made yet); part HOLD-13 |
 
 **Cancelled numbers, never to be reused (conventions §6):** 848002, the 9.53 mm foam strip first proposed for the closing seams, replaced by the bulb seal 848004; 848003, the base seal's first number, moved to 118001 in family 11, BASE (R-J17); and 848010, WALL's placeholder for the bond, which is not a seal or tape and takes 108002 in family 10 instead (a bought set used by both WALL and CEILING, so it belongs to neither family alone). WALL's placeholders 848011 and 848012 are kept for the hook-and-loop and the edge gasket, which family 84 covers (gaskets, hook-and-loop, adhesive tapes).
+
+**FRONT's bought items** (family 36, FRONT - DOOR AND GLAZING, which conventions §6 gives the door seals, glazing profiles, hinges, handle and catch; NNNN 8000–8999, bought items used only in FRONT). FRONT proposed these numbers in its parts lists (PRs #27 and #28 and its next ones) and the register adopts them unchanged (D-63): they fit the band, none is on the reserved list (D-28), and none is used by another team. Counts and masses are FRONT's; products are FRONT's picks from the hardware selection where named.
+
+| Item | Part number | Name · Vietnamese | Class | Per pod | Status |
+|---|---|---|---|---|---|
+| H-15 | **368001** | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 · Ron chân cửa tự động | bought | 1 (about 0.6 kg) | adopted; product source (SEL C4); mass assumption (D-56) |
+| H-16 | **368002** | FRONT - GLAZING U-SEAL - BOHLE BO5201735 · Gioăng chữ U silicone | bought by length | 4.5 m (about 0.39 kg) | adopted; product source (SEL C5) |
+| H-17 | **368003** | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD · Gioăng từ 180° (nửa 1) | bought | 1 (FRONT's count) | adopted; product HOLD (FRONT; it replaces the push-on BO5281018 in FRONT's first list) |
+| H-18 | **368006** | FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD · Gioăng từ 180° (nửa 2) | bought | 1 (FRONT's count) | adopted; product HOLD (FRONT); which half sits on which pane is in FRONT's parts list |
+| H-19 | **368004** | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 · Thanh U nhôm kẹp kính | bought by length; aluminium as supplied, hidden | 3.3 m (about 0.56 kg) | adopted; product source (SEL C5; 0.17 kg/m, calculation) |
+| H-20 | **368005** | FRONT - FRAME-STOP SEAL · Gioăng chặn khung cửa | bought by length | 2.9 m | adopted; product per FRONT's parts list (SEL C3 lists athmer PS 1515 P Flex) |
+| H-21 | **368101** | FRONT - DOOR HINGE - HOLD · Bản lề cửa kính | bought | 3 (about 0.6 kg each) | adopted; product HOLD (D-46, ISS-002) |
+| H-22 | **368102** | FRONT - DOOR STRIKE · Đế hít cửa | bought | 1 (about 0.023 kg) | adopted; product per FRONT's parts list |
+| H-23 | **368007** | FRONT - DOOR CATCH - IN DT · Nam châm hít cửa (trong khối DT) | bought | 1 (about 0.052 kg) | adopted; product per FRONT's parts list |
+| H-24 | **368103** | FRONT - DOOR PULL PAIR - HOLD · Tay nắm cửa (cặp) | bought | 1 pair (about 0.8 kg) | adopted; product HOLD (hole sizes on the laminate, SEL C2) |
 
 ### 2.2 The in-member bolt (stopped joints)
 
@@ -260,9 +276,8 @@ Worst case, all mm, positions along X. Every part stands on its own spigots (rou
 | B1's and B2's round spigots on the back band, spacing | ±0.1 | PROPOSED (CNC band) |
 | B1: round spigot hole to its right face; B2: round spigot hole to its left face | ±0.1 each | PROPOSED (CNC frame) |
 | **Closing gap B1–B2, nominal 5.5** | **±0.3, so 5.2–5.8** | calculation: well inside 4.0–7.0 |
-| Corner gap: the side panel's back spigot on BAND-L to the back panel's round spigot on BAND-BACK, across the band's corner key | ±0.1 | PROPOSED (CNC band and key) |
-| Side panel: back spigot to its back member's face; back panel: round spigot to its outer face | ±0.1 each | PROPOSED |
-| **Corner gap at the stop, nominal 2.26** | **±0.3**, taken up by the ±0.25 spigot play and the ±0.26 bolt-hole float, so the stop seats (2.7) | calculation |
+| Band-to-panel mismatch at the corner: the side panel's back spigot on BAND-L to the back panel's round spigot on BAND-BACK, and each panel's spigot to its joint face | up to ±0.3 | PROPOSED (±0.1 each, CNC) |
+| **Corner gap: set by the corner bolts, not the band (R-J17).** The side panel's back-end spigot slot runs along X (±3), so it drops in about 2.5 mm out and the corner bolts pull its back member onto the stops; the slot covers the 2.5 mm offset plus the ±0.3 mismatch with 0.2 to spare | **2.26 ±0.13**, the stop's own tolerance (stop washer and rivnut head) | calculation |
 
 **ST-04, ceiling (L2 top member, stop, C1, closing seam, C2, stop, R2 top member).** C1 and C2 stand on their back spigots on B3 and B4, which stand on B1 and B2:
 
@@ -401,7 +416,7 @@ Each entry has the guideline's fields (§8). Joint IDs here differ from the layo
 | Field | Entry |
 |---|---|
 | Parts | Each wall and ceiling cassette to its outer panel's frame: 8 wall cassettes and 2 ceiling cassettes. Clip 518001 (H-10), 44 per pod: 4 on each wall cassette, 6 on each ceiling cassette. Safety catch 518002 (H-11), 4 per pod: 2 on each ceiling cassette. |
-| Function and load path | Hangs the cassette with no screw through it, so the inner leaf floats (D-17); holds it under its weight and knocks; ceiling cassettes can't drop (D-47). **Clip-only fixing, no rails (D-81):** the clips are the cassette's only load path; hook-and-loop only lines it up. Load: tray → clip → frame tube. The perimeter gasket in the 4 mm gap seals the cassette edge and carries no load. |
+| Function and load path | Hangs the cassette with no screw through it, so the inner leaf floats (D-17); holds it under its weight and knocks; ceiling cassettes can't drop (D-47). **Clip-only fixing, no rails (D-81):** the clips are the cassette's only load path; hook-and-loop only lines it up. Load: tray → clip → frame tube. The perimeter gasket in the 4 mm gap seals the cassette edge and carries no load. Where two cassettes meet, the edge seal H-14 (848012) only touches across the 2.26 mm gap (R-J18), so it can't push a cassette off its clips. |
 | Loads | Per clip, with a safety factor of 3 (assumption, as SEL A8 and the package's T07): a wall cassette of 11.1 kg (layout study) on 4 clips needs **8.3 kg rated in shear** per clip; a ceiling cassette on 6 clips needs 4.9 kg in pull-out for the P04 cassette of 9.77 kg (CEILING PR #32), and **8.0 kg** for the older 16 kg figure, which the package's T07 keeps. The catch: **48 kg working load per lanyard** (T08; 3 × 9.77 = 29.3 kg would do for the P04 cassette). Clip mass about 40 g, so 1.76 kg per pod (D-81's working figure; calculation). |
 | Choice and reason | **HOLD (D-56, ISS-076, HOLD-08).** What the clip must meet, so CAD can reserve its space: (1) those rated loads; (2) captive: no unhooking without a deliberate lift (D-47); (3) fits the 4 mm frame-to-tray gap (`cav_gap`, D-16, D-42), or sits on the tray's 25 mm returns, clear of the Ø19 access holes and the pockets; (4) fixes to the 0.5 mm tray return and to a frame tube's face with small rivnuts or blind rivets, never through the ACP; (5) soft enough not to bridge the floating leaf (HW §10); (6) the ceiling catch anchors to a 20 × 40 ceiling tube, not the 20 × 100 SEL A8 names (ISS-079). |
 | Assembly | Last, after every bolt is in and checked (LAY step 11); no tool. |
@@ -479,6 +494,7 @@ Physical tests stay PLANNED until real data exists (guideline §10); the factory
 | HOLD-10 | Decor back plate at the J-FRONT-01 bolts: aluminium 1.0–2.7 mm with the frame behind (ISS-045) | None: FRONT design | FRONT engineer | FRONT CAD shows it |
 | HOLD-11 | The back wall's top edge under the ceiling | — | — | **Closed** (R-J4) |
 | HOLD-12 | Closing-seam bulb seal (H-04B, 848004) | Which EPDM or TPE hollow bulb has a published working gap covering 4.0–7.0 mm and a closure force low enough for a 150 N fit-up per edge, and survives being reused? (The tesamoll D-Profile's 3–7 mm range is published; it is consumer grade, with no force data) | Hardware Engineer | Part named with its range and force; J-T5 and J-T3 passed |
+| HOLD-13 | Cassette edge seal (H-14, 848012) | Which PSA foam strip 2.0–2.2 mm thick pushes no more than about 2 kPa at 20% compression (or which fin seal) and still closes a 2.26 mm gap against light? | Hardware Engineer | Part named with its force data; the wall sample's cassettes stay seated on their clips with it fitted (T07, J-T3) |
 
 ## 7. Open for others
 

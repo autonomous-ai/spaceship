@@ -11,7 +11,7 @@ One master BOM for the whole pod, built by a script from every team's parts list
 | File | Doc code | What it is |
 |---|---|---|
 | `build_master_bom.py` | V2-BOM-001 | Reads the parts lists and the joints register, writes the four outputs below, and checks them. Standard library only. |
-| `test_build_master_bom.py` | V2-BOM-003 | One planted fault per check rule, plus the readers (15 tests). |
+| `test_build_master_bom.py` | V2-BOM-003 | One planted fault per check rule, plus the readers and the register match. |
 | `100000_P01_POD-MASTER_BOM.csv` | generated | POD, then each assembly with its parts, then the joints register's hardware that has no number yet. |
 | `100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv` | generated | Made parts, sorted by process. |
 | `100000_P01_POD-BOUGHT-PARTS_BOM.csv` | generated | Bought parts, one row per part number, with their HOLD status and register row. |
@@ -27,11 +27,11 @@ python3 v2/04-BOM/build_master_bom.py --no-write --ref origin/main --ref origin/
 python3 v2/04-BOM/test_build_master_bom.py
 ```
 
-With `--ref`, the script reads the files straight from those git refs, so open branches can be checked without merging them; for the same path, a later ref wins. Exit code 1 means the check failed.
+With `--ref`, the script reads the files straight from those git refs, so open branches can be checked without merging them. The first ref (main) gives every file; each later ref adds only the files its own branch changed since it left the first, and those win. So an old, untouched copy of the joints register on a team branch never hides main's newer one. Exit code 1 means the check failed.
 
 ## What each team's parts list needs
 
-A parts list is any `*_BOM.csv` under `v2/03-Manufacturing/<team>/` or `v2/07-Packaging/` with a `part_number` column (cut lists without one are skipped and named in the report). The script reads these columns, by name, in any order:
+A parts list is any `*_BOM.csv` under `v2/03-Manufacturing/<team>/` with a `part_number` column (cut lists without one are skipped and named in the report). Under `v2/07-Packaging/` only the packaging items (family 91: pallets, crates, protection, labels) are read: a packing list names other teams' parts, which their own lists already carry. The script reads these columns, by name, in any order:
 
 | Column | Meaning |
 |---|---|
@@ -53,7 +53,7 @@ The joints register (`v2/05-Engineering/joints/joints-register.md`) gives the ha
 
 It fails on:
 1. a part with no number;
-2. one number for two different items (the same item in two lists is fine, and its quantities add up);
+2. one number for two different items: the same item in two lists is fine, and its quantities add up; a line that uses a joints-register number must describe the register's item (its sizes must agree, M6 × 16 is not M6 × 25, and most of its numbered tokens and at least one word must match);
 3. a part with no mass;
 4. a hardware item with no joints-register row: hardware is every bought item except AIR (61), ELECTRICAL (71) and PACKAGING (91) items, which their own teams number (PM, 2026-10-31);
 5. a reserved old number (D-28).

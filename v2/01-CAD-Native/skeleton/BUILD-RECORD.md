@@ -13,6 +13,17 @@ Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the Fusion lock: `python3 too
 - export `v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON-PARAMETERS.csv`: True, written by the build from the design's own parameter values (65 rows)
 - Edit test: `EDIT-TEST-RECORD.md`, PASS (every envelope and all 25 anchors follow pod_w and pod_h, then revert)
 
+## Versions of P04 (updated in place, the same cloud file)
+
+Parts link to `100000_P04_POD-SKELETON_CAD` through Derive, so value changes no longer rebuild the skeleton (a rebuild makes a new file and would cut every link). `skeleton_update.py` opens the cloud file, adds missing parameters and sets every expression, comment and favorite flag from `PARAMS` in `pod_skeleton.py`, checks the timeline, sketches, every envelope and anchor against its expressions and the clash list, saves a new version, and exports the f3d, the STEP and the CSV from it. A failed check rolls everything back. Linked parts take the new values with `Document.updateAllReferences()`.
+
+| Update (2026-10-31) | What changed | Checks |
+|---|---|---|
+| 1 | `floor_t` 9 (was 15) and `thresh_h` 13 (was 20), a US-accessible threshold; the kick strip keeps its `kick_gap` above it (Z 20 to 105). F-014: `glass_gap` 4.0, and `fix_xbl`, `fix_xtl` are now expressions that put the fixed glass's free edge parallel to the door's slanted edge, 4.0 mm away (was v1's 2.40 to 4.6). Wall-to-band bolt rule: `base_bolt_edge` 220, `n_base_bolt` 4, `base_spigot_inset` 100, pitches `side_base_pitch` 350.91 and `back_base_pitch` 253.54 | 147 items healthy, no loose sketch, all envelopes and anchors on their expressions, 0 clashes |
+| 2 | The outer panel split into `skin_t` 3 + `bond_t` 3 + `frame_t` 40 (still 46). Closing seams B1-B2, B3-B4, C1-C2: `close_gap` 5.5 frame gap, frame width `half_fw` **1198.99**, skin width `half_pw` 1200.61 (skins overhang their frames 1.62 at that seam). The 220 mm rule on every bolted edge: `bolt_edge_inset` 220 and `spigot_inset` 100 (the base names now point at them). Wall to ceiling: bolt line `ceil_bolt_z` **2374** on the ceiling frame's centre; counts `n_ceil_side_bolt` 4 and `n_ceil_back_bolt` 3 are assumptions from WALL's proposal, to be confirmed | the same; 83 parameters, all favorites |
+
+Fusion keeps the first description of each part number: the root and the eight assembly components still read "... | P01" in Fusion and in the STEP, and setting them by script reads back unchanged. The script no longer writes a revision into descriptions; a person edits the nine descriptions in Fusion (Properties), for the title blocks.
+
 ## Pass D (PM rulings, DECIDED 2026-10-31)
 
 | # | Ruling | In the model |
@@ -42,7 +53,7 @@ Measured from the v1 STEP (`V1-FRONT-FACETS.md`); nothing from v1 is pasted in. 
 | DOOR | true trapezoid 1175 at the bottom, 893 at the top, right edge slanted; 4+4 laminate 8.76 (D-46) | v1 body 221 |
 | FIXED | true pentagon, left edge parallel to the door's right edge, right edge with v1's knee at Z 1521 | v1 body 222 |
 
-Heights (DECIDED on PR #16): v1's front runs from Z 115 to 2417 in the v2 frame; the skeleton lowers it by `fr_dz` = 17 mm so its top meets the 2400 datum (D-21). DL and now DR stand on the base band top (Z 110). The door bottom lands at Z 105; the kick strip is 78 tall above the 7 mm running gap.
+Heights (DECIDED on PR #16): v1's front runs from Z 115 to 2417 in the v2 frame; the skeleton lowers it by `fr_dz` = 17 mm so its top meets the 2400 datum (D-21). DL and now DR stand on the base band top (Z 110). The door bottom lands at Z 105; the kick strip is 85 tall (Z 20 to 105) above the 7 mm running gap over the 13 mm threshold.
 
 Depth (DECIDED on PR #16, ruling 3; D-49): the decor blocks are **205 mm** deep (`decor_d`), front face Y -850, back face Y -645.
 
@@ -80,12 +91,12 @@ The inner points are computed by Fusion from parameter expressions (offset lines
 | B4-CASS | LINING | 1166 x 34 x 1116.87 | 1233.13 to 2350 | L-CASS-BACK-UP |
 | C1 | CEILING | 1200.61 x 1495 x 46 | 2354 to 2400 | C-HALF |
 | C1-CASS | LINING | 1166 x 1411 x 34 | 2316 to 2350 | L-CASS-HALF |
-| F1 | BASE | 1210 x 1455 x 15 | 0 to 15 | B-FLOOR |
+| F1 | BASE | 1210 x 1455 x 9 | 0 to 9 | B-FLOOR |
 | C2 | CEILING | 1200.61 x 1495 x 46 | 2354 to 2400 | C-HALF |
 | C2-CASS | LINING | 1166 x 1411 x 34 | 2316 to 2350 | L-CASS-HALF |
-| F2 | BASE | 1210 x 1455 x 15 | 0 to 15 | B-FLOOR |
-| THRESHOLD | BASE | 1175 x 60 x 20 | 0 to 20 | B-THRESH |
-| KICK | GLAZING | 1175 x 20 x 78 | 27 to 105 | D-40 |
+| F2 | BASE | 1210 x 1455 x 9 | 0 to 9 | B-FLOOR |
+| THRESHOLD | BASE | 1175 x 60 x 13 | 0 to 13 | B-THRESH |
+| KICK | GLAZING | 1175 x 20 x 85 | 20 to 105 | D-40 |
 
 ## Decided values that hold
 
@@ -95,8 +106,8 @@ The inner points are computed by Fusion from parameter expressions (offset lines
 | Wall depth 1495 | 1492.74 of side panel (Y −642.74 to 850) plus the 2.26 seam at the decor | D-49 (v1 1496); joints register 2.8 |
 | Decor depth 205 | front face Y -850, back face Y -645 | D-49 |
 | Height datum 2400 | roof skin top Z 2400 | D-21 |
-| Inside height about 2301 | ceiling cassette face Z 2316 - floor top Z 15 = 2301 (about 2298 with a 3 mm underlay, not modelled) | D-42; outer 46 (pass D) |
-| Thin floor | F1, F2 15 mm on the room floor, out to the band (pass D); threshold 20 | D-05, D-18 |
+| Inside height about 2307 | ceiling cassette face Z 2316 - floor top Z 9 = 2307 (about 2304 with a 3 mm underlay, not modelled) | D-42; outer 46, floor 9 (P04 updates) |
+| Thin floor | F1, F2 9 mm on the room floor, out to the band (pass D); threshold 13 (P04 update 1) | D-05, D-18; PM ruling 2026-10-31 |
 | Door glass 4+4 laminate 8.76 | DOOR, v1's measured trapezoid | D-46 |
 
 ## Not modelled yet
