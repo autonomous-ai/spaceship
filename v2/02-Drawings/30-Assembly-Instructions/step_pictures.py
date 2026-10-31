@@ -1,14 +1,16 @@
-"""Step pictures for the assembly guide, from the Fusion model (UNVERIFIED: not run yet, the Mac's screen was locked).
+"""Step pictures for the assembly guide, from the Fusion model.
 
     python3 tools/fusion/run_script.py v2/02-Drawings/30-Assembly-Instructions/step_pictures.py \
         --label "Packing and Assembly Engineer"
     python3 v2/07-Packaging/pack.py          # puts each picture under its step in the guide
 
 Reads 100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json, which v2/07-Packaging/pack.py writes from its label map.
-Opens skeleton P04's STEP as a new document of its own, never the shared cloud skeleton. For each step it shows the
-bodies fitted so far: the step's new bodies solid, the earlier ones faded. It turns the camera (from behind for the
-shell, from the front for the decor and the glass, from above with the ceiling and front hidden for the linings) and
-saves img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-NN_IMG.png. It closes its document without saving.
+Opens the skeleton's cloud design 100000_P04_POD-SKELETON_CAD from "Default Project/FocusPod v2" itself, because a STEP
+import drops the body names (first run, 2026-10-31). It refuses to start when that design is already open in Fusion, so
+it never touches anyone's session; it changes only what shows (light bulbs, opacity, the camera), never saves, and
+closes the design without saving. For each step it shows the bodies fitted so far: the step's new bodies solid, the
+earlier ones faded. It turns the camera (from behind for the shell, from the front for the decor and the glass, from
+above with the ceiling and front hidden for the linings) and saves img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-NN_IMG.png.
 
 Fusion draws pictures only on a live screen, so run it when the screen is unlocked (D-84). The bodies are the
 skeleton's envelopes; pictures of the parts themselves replace these as each part's CAD merges.
@@ -22,6 +24,8 @@ import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(__file__))
+DOC_NAME = "100000_P04_POD-SKELETON_CAD"
+FOLDER = "Default Project/FocusPod v2"
 DATA = os.path.join(HERE, "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json")
 WIDTH, HEIGHT = 1600, 1000
 # Eye positions in mm, pod coordinates (conventions section 4: +X right, +Y back, +Z up); every view looks at TARGET.
@@ -46,6 +50,61 @@ def bodies_by_name(root):
     return out
 
 
+def open_skeleton(app):
+    """Open the skeleton's cloud design; refuse when it is open already (someone else's session)."""
+    for i in range(app.documents.count):
+        if app.documents.item(i).name == DOC_NAME:
+            raise RuntimeError("%s is open in Fusion already; not touching it. Close it, then run again." % DOC_NAME)
+    parts = FOLDER.split("/")
+    proj = next((app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
+                 if app.data.dataProjects.item(i).name == parts[0]), None)
+    if proj is None:
+        raise RuntimeError("no Fusion project called %r" % parts[0])
+    folder = proj.rootFolder
+    for name in parts[1:]:
+        folder = folder.dataFolders.itemByName(name)
+        if folder is None:
+            raise RuntimeError("no folder %r in %r" % (name, FOLDER))
+    files, unreadable = [], 0
+    for i in range(folder.dataFiles.count):
+        try:   # one unreadable entry (being uploaded, deleted) must not stop the rest (as the runner does, PR #86)
+            f = folder.dataFiles.item(i)
+            if f.name == DOC_NAME:
+                files.append(f)
+        except Exception:
+            unreadable += 1
+    if unreadable:
+        print("%d entries of %s could not be read; skipped" % (unreadable, FOLDER))
+    if len(files) != 1:
+        raise RuntimeError("%d files called %s in %s" % (len(files), DOC_NAME, FOLDER))
+    app.data.activeProject = proj
+    doc = app.documents.open(files[0], True)
+    if doc is None:
+        raise RuntimeError("could not open %s" % DOC_NAME)
+    doc.activate()
+    print("opened %s version %s (read only in practice: never saved)" % (DOC_NAME, files[0].versionNumber))
+    return doc
+
+
+def hide_helpers(root):
+    comps = [root] + [o.component for o in root.allOccurrences]
+    for c in comps:
+        for attr in ("isSketchFolderLightBulbOn", "isConstructionFolderLightBulbOn", "isOriginFolderLightBulbOn",
+                     "isJointsFolderLightBulbOn"):
+            try:
+                setattr(c, attr, False)
+            except Exception:   # a folder this component doesn't have; nothing to hide
+                pass
+
+
+def set_opacity(body, value):
+    """Fade a body; if Fusion won't set opacity on this body, it just stays solid (the picture still shows the step)."""
+    try:
+        body.opacity = value
+    except Exception:
+        pass
+
+
 def point_cm(p_mm):
     return adsk.core.Point3D.create(p_mm[0] / 10.0, p_mm[1] / 10.0, p_mm[2] / 10.0)
 
@@ -55,10 +114,10 @@ def run(_context):
     repo = ARGS.get("repo_root") or os.path.abspath(os.path.join(HERE, "..", "..", ".."))
     with open(DATA, encoding="utf-8") as f:
         data = json.load(f)
-    step_file = os.path.join(repo, data["source"])
-    doc = app.importManager.importToNewDocument(app.importManager.createSTEPImportOptions(step_file))
+    doc = open_skeleton(app)
     try:
         design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
+        hide_helpers(design.rootComponent)
         named = bodies_by_name(design.rootComponent)
         wanted = {b for s in data["steps"] for b in s["new"]}
         missing = sorted(wanted - set(named))
@@ -72,10 +131,10 @@ def run(_context):
         for s in data["steps"]:
             for name in shown:
                 for body in named[name]:
-                    body.opacity = FADED
+                    set_opacity(body, FADED)
             for name in s["new"]:
                 for body in named[name]:
-                    body.opacity = 1.0
+                    set_opacity(body, 1.0)
             shown += s["new"]
             hide = INSIDE_HIDE if s["view"] == "inside" else ()
             for name in shown:

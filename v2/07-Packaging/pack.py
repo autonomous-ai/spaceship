@@ -153,10 +153,9 @@ OTHER_FIXINGS = [
          text="the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named)"),
     dict(step=15, where="Intake riser and supply fan box in DR", owner="AIR and FRONT", count=0, size="not designed yet (HOLD)",
          status="HOLD in the register", note="time is in the step", text="their fixings in DR (AIR and FRONT design, on hold)"),
-    dict(step=16, where="Air column", owner="AIR", count=0, size="tool-free hooks (D-87)", status="not designed yet",
-         note="time is in the step", text="the column hangs on tool-free hooks (D-87; AIR design)"),
-    dict(step=17, where="Soffit with its exhaust fan box", owner="AIR", count=0, size="tool-free hooks (D-87)", status="not designed yet",
-         note="time is in the step", text="the soffit hangs on tool-free hooks (D-87; AIR design)"),
+    dict(step=16, where="Air column on DR and the floor", owner="AIR", count=0, size="none on site: 2 hook studs set in the factory, 2 spigots",
+         status="registered: J-AIR-02 (0 on site)", note="D-87: the column hangs on its hook studs",
+         text="the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02)"),
     dict(step=19, where="Light shelf", owner="INTERIOR", count=0, size="not designed yet (HOLD)", status="HOLD (D-70)",
          note="time is in the step", text="the light shelf's fixings (INTERIOR design, not designed yet)"),
     dict(step=22, where="Ledge and screen mount", owner="INTERIOR", count=0, size="not designed yet (HOLD)",
@@ -625,14 +624,14 @@ STEPS = [
               op("plug the hub", 1, lay("t_connector_s"), 1, "t_connector_s")],
          joints={}),
     dict(n=17, title="Soffit and exhaust cartridge", tags=["2-10", "2-19"],
-         A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its tool-free hooks under the ceiling frame, the fan box under C2's roof sleeve.",
-         B="With A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.",
+         A="With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof sleeve.",
+         B="Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.",
          check="Soffit underside at Z 2120, level; the fan box meets the roof sleeve; the door still clears.",
-         ops=[carry("2-10"), op("hang the soffit on its hooks", 2, TIME["t_hook_s"].value, 1, "t_hook_s"),
+         ops=[carry("2-10"), op("hang the soffit on its hanger studs", 2, TIME["t_hook_s"].value, 1, "t_hook_s"),
               carry("2-19"), op("lift the cartridge in", 2, lay("t_place_overhead_s"), 1, "t_place_overhead_s"),
               op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s"),
               op("close the hinged underside", 1, TIME["t_face_s"].value, 1, "t_face_s")],
-         joints={}),
+         joints={"J-AIR-01": 2}),
     dict(n=18, title="Ceiling linings: 2 cassettes", tags=["2-20", "2-21"],
          A="With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.",
          B="Hooks the 2 safety catches of each cassette before A lets go.",
@@ -702,9 +701,11 @@ def read_register(path):
         if len(cells) < 3:
             continue
         jm = re.match(r"(J-[A-Z]+-\d+)", cells[0])
-        if jm and cells[1].isdigit():
-            size = "M6 x 25" if "25" in cells[2] else "M6 x 16"
-            rows[jm.group(1)] = (int(cells[1]), size)
+        nm = re.match(r"\**\s*(\d+)", cells[1])   # the leading count: "16", "2 (the lock screws; ...)", "0 on site (...)"
+        if jm and nm:
+            sm = re.search(r"M6\s*[×x]\s*(\d+)", cells[2])   # the site bolt's size is the first one the row names
+            size = "M6 x %s" % (sm.group(1) if sm else "16")
+            rows[jm.group(1)] = (int(nm.group(1)), size)
         elif "Total" in cells[0]:
             total = int(re.sub(r"\D", "", cells[1]))
     return rows, total
