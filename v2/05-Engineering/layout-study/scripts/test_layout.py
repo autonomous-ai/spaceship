@@ -105,7 +105,7 @@ def test_p04_rollup_lines():
     """ISS-081, F-010: every roll-up line has a status word and a source and every piece but the glass is 20 kg or less
     (D-03); the pod as shipped is the CSV's sum less the voice kit's line, which the mechanical check leaves out by its
     name (PR #40); at 32 kg/m3 the air parts are the air report's 61.8 kg with fans; the allowances are assumptions; each
-    applied saving is priced from the list itself (D-81)."""
+    applied saving is priced from the list itself (D-81, D-85)."""
     import re
     import csv
     import rollup
@@ -132,13 +132,14 @@ def test_p04_rollup_lines():
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
     assert len([r for r in rows if "ships loose" in r[1]]) == 2
     ap = rollup.applied()
-    assert len(ap) == 4 and all(a[0] > 0 for a in ap), ap
-    off = rollup.lines(fill=p("fill_pet_kgm3"), clip_only=False, band_t=p("t_al_base"), kit_outside=False)
-    assert abs(rollup.pod_kg(off) - rollup.pod_kg(rows) - sum(a[0] for a in ap)) < 0.01
-    op = rollup.open_savings()
-    assert len(op) == 9 and all(o[0] > 0 and o[2] and o[3] for o in op), op
-    assert [o[0] for o in op[:4]] == sorted((o[0] for o in op[:4]), reverse=True), "the low-risk items ranked by kg"
-    assert any(name.startswith("Fixed glass") for name, _ in rollup.REJECTED), "3+3 fixed glass is out (PM)"
+    assert len(ap) == 9 and all(a[0] > 0 for a in ap), ap                    # D-81's four and D-85's five
+    off = rollup.lines(**rollup.OFF)
+    assert abs(rollup.pod_kg(off) - rollup.pod_kg(rows) - sum(a[0] for a in ap)) < 1e-6, "the table adds up exactly"
+    assert set(rollup.OFF) == set(rollup.ADOPTED)
+    op = rollup.parked()
+    assert len(op) == 3 and all(o[0] > 0 and o[2] and o[3] for o in op), op
+    names = [name for name, _ in rollup.REJECTED]
+    assert any(n.startswith("Fixed glass") for n in names) and any("perimeters" in n for n in names), names   # D-82, D-85
 
 
 P_DEFAULT_CEIL = p("ceil_t")

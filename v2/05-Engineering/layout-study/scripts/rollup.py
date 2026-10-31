@@ -43,25 +43,28 @@ FLOOR_T, FOAM_KG = 9.0, 2.1   # confirmed, D-72 (9 mm plywood); calculation, D-7
 SKEL_STACK = 84.0             # mm: outer panel 46 + the floating lining, wall face to lining face (S33)
 # D-81, the PM's weight ruling on PR #38 (S40): adopted now, two of them provisional on a test or a check
 FILL_LIGHT = 24.0             # kg/m3: the default now, provisional on T02 (D-54, D-81); the grade Pyrotek lists and the
-                              # sample tests, as the PM's brief says (D-81's text says 25)
+                              # sample tests
 CLIP_KG, CATCH_KG = 0.04, 0.10  # assumption: clip-only fixing, no rails (adopted), about 40 g a clip and 100 g a catch
                                 # lanyard until H03 and H04 name them
 BAND_T_LIGHT = 1.5            # mm: the base band's wall (adopted, provisional on BASE's check; this study's 2.0 is S07's)
-# Allowances for parts that aren't designed yet (assumption)
-SHELF_KGM = 0.6               # kg/m: slim aluminium light shelf with its LED strip, along the side and back wall tops (D-70)
+# Budgets and allowances for parts that aren't designed yet (assumption)
+SHELF_KGM_ALLOW, SHELF_KGM = 0.6, 0.4  # kg/m: the light shelf with its LED strip (D-70): the first allowance, and D-85's
+                                       # budget as a 1.2 mm aluminium angle
 SHELF_BRACKETS_KG = 0.4       # kg: its brackets at about 400 mm
-LEDGE_KG = 2.3                # kg: the work wall's 1000 mm ledge, 200 mm deep in 12 mm ply at 650 kg/m3 with 2 brackets (D-70)
-# Candidates toward the 410 kg target, for the PM to decide (assumption unless marked)
+LEDGE_KG_ALLOW, LEDGE_KG = 2.3, 1.4    # kg: the work wall's 1000 mm ledge (D-70): 12 mm ply at 650 kg/m3 with 2 brackets,
+                                       # and D-85's budget in 1.5 mm folded aluminium (1000 x 240 developed) with 2 brackets
+# D-85, the PM's pick toward the 410 kg target (S41)
+T_STUD_LIGHT = 1.0            # mm: inner studs of the 20 x 40 frames; the perimeters keep D-34's 1.2 for the rivnuts
+BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
+CEIL_STUDS = 2                # inner studs in each ceiling outer panel, along its 1495 mm (assumption, from PR #32's frame)
+KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36) and a hollow profile, same outside, 2 mm walls (assumption)
+FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood (assumption) against this study's 600 (S13); provisional on
+                              # BASE's castor and 1000 N edge tests (D-76, D-85)
+# Parked by D-85, and the rejected glass options
 LAM33_T, LAM44_T = 6.76, 8.76  # mm: 3+3 and 4+4 laminate (glass 3 + 0.76 PVB + 3, as the 4+4 is 4 + 0.76 + 4)
-FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar or falcata-core plywood, against this study's 600 (S13)
-T_STUD_LIGHT = 1.0            # mm: inner studs of the 20 x 40 frames; perimeters keep D-34's 1.2 for the rivnuts
-SHELF_KGM_LIGHT = 0.4         # kg/m: the light shelf as a 1.2 mm aluminium angle with its LED strip
-LEDGE_KG_LIGHT = 1.4          # kg: the ledge in 1.5 mm folded aluminium (1000 x 240 developed) with 2 brackets
-KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36, calculation) and a hollow profile, same outside, 2 mm walls
 FELT_KGM2_LIGHT = 1.4         # kg/m2: a lighter 9 mm PET felt, against Polyx Board 9's 1.8 (S11)
 FILL_LIGHTER = 18.0           # kg/m3: Pyrotek's lightest listed grade (hardware selection, fill row: 18, 24, 32, 48, 60)
 DECOR_TUBE_CUT = 0.25         # share of the decor blocks' frame tube a FRONT design could leave out (assumption)
-
 
 def base_parts():
     """This study's decided build on skeleton P03 (option B1 with the final stack)."""
@@ -105,15 +108,23 @@ def shelf_m():
     return (2 * side + (x1 - x0)) / 1000
 
 
-ADOPTED = dict(fill=FILL_LIGHT, clip_only=True, band_t=BAND_T_LIGHT, kit_outside=True)
+ADOPTED = dict(fill=FILL_LIGHT, clip_only=True, band_t=BAND_T_LIGHT, kit_outside=True,     # D-81
+               budgets=True, back2=True, studs10=True, kick=True, floor=True)               # D-85
+OFF = dict(fill=p("fill_pet_kgm3"), clip_only=False, band_t=p("t_al_base"), kit_outside=False,
+           budgets=False, back2=False, studs10=False, kick=False, floor=False)
 
 
 def lines(**adopt):
     """[(group, item, qty, kg_each, status, source)] for the pod on skeleton P04: tonight's numbers with the PM's adopted
-    savings. Group LATER is outside the 420 kg cap (the voice kit, D-11). A keyword switches one adopted saving back off
-    (fill=32, clip_only=False, band_t=2.0, kit_outside=False); applied() prices each saving that way."""
+    savings (D-81, D-85). Group LATER is outside the 420 kg cap (the voice kit, D-11). A keyword switches an adopted
+    saving back off (its value in OFF); applied() prices each saving that way."""
     a = dict(ADOPTED, **adopt)
     fill, rails, band_t = a["fill"], not a["clip_only"], a["band_t"]
+    kgm12 = al_rhs(20, P04["frame_d"], p("t_al_final"))
+    kgm_s = al_rhs(20, P04["frame_d"], T_STUD_LIGHT) if a["studs10"] else kgm12
+    stud_d = kgm12 - kgm_s                                   # kg/m less on each inner stud (D-85)
+    n_back = BACK_STUDS if a["back2"] else 3
+    studs_txt = f"; inner studs at {T_STUD_LIGHT:.1f} mm (D-85)" if a["studs10"] else ""
     lighter = fill != p("fill_pet_kgm3")
     prov = "; fill provisional" if lighter else ""
     base = {pt.pid: pt for pt in base_parts()}
@@ -123,13 +134,17 @@ def lines(**adopt):
     with override(fill_pet_kgm3=fill):
         up = final_outer_kg(P04["side_w"], P04["side_up_h"], P04["frame_d"], FINAL)
         back = final_outer_kg(P04["back_w"], P04["back_h"], P04["frame_d"], FINAL)
-    L.append(("WALL", "L1 and R1, lower side outer panels (R1 is L1's mirror)", 2, WALL_L1_MADE + WALL_L1_BOND - fill_d * side_a,
+    L.append(("WALL", "L1 and R1, lower side outer panels (R1 is L1's mirror)", 2,
+              WALL_L1_MADE + WALL_L1_BOND - fill_d * side_a - 3 * P04["side_h"] * 1e-3 * stud_d,
               "calculation (CAD)" + prov, "S34: 11.35 kg of made parts + 0.49 kg of bond"
-              + (f", less the fill from 32 to {fill:g} kg/m3" if lighter else "")))
-    L.append(("WALL", "L2 and R2, upper side outer panels, the same size and build", 2, up, "calculation" + prov,
-              f"this study's model at the P04 size (S33), fill {fill:g} kg/m3"))
-    L.append(("WALL", "B1 to B4, back outer panels", 4, back, "calculation" + prov,
-              f"this study's model at the P04 size (S33), fill {fill:g} kg/m3"))
+              + (f", less the fill from 32 to {fill:g} kg/m3" if lighter else "") + studs_txt))
+    L.append(("WALL", "L2 and R2, upper side outer panels, the same size and build", 2,
+              up - 3 * P04["side_up_h"] * 1e-3 * stud_d, "calculation" + prov,
+              f"this study's model at the P04 size (S33), fill {fill:g} kg/m3" + studs_txt))
+    L.append(("WALL", f"B1 to B4, back outer panels, {n_back} inner studs", 4,
+              back - 3 * P04["back_h"] * 1e-3 * kgm12 + n_back * P04["back_h"] * 1e-3 * kgm_s, "calculation" + prov,
+              f"this study's model at the P04 size (S33), fill {fill:g} kg/m3"
+              + ("; 2 inner studs at 393 mm centres, inside D-16 (D-85)" if a["back2"] else "") + studs_txt))
     L.append(("WALL", "40 x 40 corner edge tubes beyond L1 and R1's back stiles", 1,
               CORNER_TUBES_KG - 2 * stile_delta_kg(), "calculation", "D-63's 1.3 kg less L1 and R1's two stiles (S34, S39)"))
     L.append(("WALL", "Bond over this study's 0.25 kg/m2, beyond L1 and R1", 1,
@@ -145,8 +160,10 @@ def lines(**adopt):
                   + ("" if rails else " without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81)")
                   + ", + 0.43 kg of lips (D-69)"))
     ceil_bond = p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6
-    L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2, CEIL_PANEL + ceil_bond,
-              "calculation (CAD); bond assumption", "S35 + this study's 0.25 kg/m2 bond on the P04 46 mm panel"))
+    L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2,
+              CEIL_PANEL + ceil_bond - CEIL_STUDS * P04["wall_depth"] * 1e-3 * stud_d, "calculation (CAD); bond assumption",
+              "S35 + this study's 0.25 kg/m2 bond on the P04 46 mm panel"
+              + (f"; its {CEIL_STUDS} inner studs (assumption) at {T_STUD_LIGHT:.1f} mm (D-85)" if a["studs10"] else "")))
     rails_kg = p("leaf_clip_kgm2") * CEIL_TRAY[0] * CEIL_TRAY[1] * 1e-6 if rails else 0.0
     L.append(("LINING", "Ceiling cassettes, one part for both halves", 2, CEIL_CASS - CEIL_FILL_M2 * fill_d + rails_kg,
               "calculation (CAD)" + prov, "S35" + (f", its fill strips from 32 to {fill:g} kg/m3" if lighter else "")
@@ -167,15 +184,26 @@ def lines(**adopt):
         pt = base[pid]
         L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, note))
     fa = P04["floor_w"] * P04["floor_d"] * 1e-6
-    L.append(("BASE", "Floor panels, 9 mm plywood with a 0.3 kg/m2 finish", 2, plate_kg(fa, FLOOR_T, p("rho_ply")) + fa * 0.3,
-              "confirmed (9 mm); calculation", "D-72 (S39) at the P04 size (S33); plywood 600 kg/m3 (S13)"))
+    if a["floor"]:
+        L.append(("BASE", "Floor panels, 9 mm poplar-core plywood with a 0.3 kg/m2 finish", 2,
+                  plate_kg(fa, FLOOR_T, FLOOR_RHO_LIGHT) + fa * 0.3, "confirmed (9 mm); calculation; provisional",
+                  "D-72 (S39) at the P04 size (S33); poplar-core plywood about 450 kg/m3 (assumption), if BASE's castor and "
+                  "1000 N edge tests pass (D-76, D-85)"))
+    else:
+        L.append(("BASE", "Floor panels, 9 mm plywood with a 0.3 kg/m2 finish", 2, plate_kg(fa, FLOOR_T, p("rho_ply")) + fa * 0.3,
+                  "confirmed (9 mm); calculation", "D-72 (S39) at the P04 size (S33); plywood 600 kg/m3 (S13)"))
     L.append(("BASE", "Floor mat, 3 mm firm closed-cell foam", 1, FOAM_KG, "calculation", "D-76 (S39), BASE Engineer"))
     for pid in ("F-DL", "F-DR", "F-DT"):
         pt = base[pid]
         L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status,
                   "this study's model from v1's STEP shapes (S02)"))
-    L.append(("FRONT", "Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull", 1, DOOR_UNIT,
-              "calculation (CAD)", "S36"))
+    if a["kick"]:
+        L.append(("FRONT", "Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, lock, pull", 1,
+                  DOOR_UNIT - (KICK_KG - KICK_KG_HOLLOW), "calculation (CAD); kick strip assumption",
+                  f"S36, with the kick strip as a hollow profile, about {KICK_KG_HOLLOW:.1f} kg against {KICK_KG} (D-85)"))
+    else:
+        L.append(("FRONT", "Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull", 1, DOOR_UNIT,
+                  "calculation (CAD)", "S36"))
     L.append(("FRONT", "Fixed glass unit 360002: 4+4 pane, U-profiles and seals", 1, FIXED_UNIT, "calculation (CAD)", "S37"))
     for name, size, kg, basis in AA.d60_parts():
         filled = lighter and (name.startswith("Air column") or name.startswith("Soffit"))
@@ -191,12 +219,14 @@ def lines(**adopt):
     pt = base["E-KIT"]
     L.append(("ELECTRICAL", "Switches and harness (the two ceiling lights go, D-70)", 1, pt.kg - 2 * p("light_kg"), pt.status,
               "this study's model less 2 x 0.5 kg ceiling lights"))
+    shelf_kgm = SHELF_KGM if a["budgets"] else SHELF_KGM_ALLOW
     L.append(("INTERIOR", "Light shelf along the side and back wall tops, with its LED strip", 1,
-              SHELF_KGM * shelf_m() + SHELF_BRACKETS_KG, "assumption",
-              f"allowance until it's designed: {shelf_m():.2f} m (the back wall and the side walls back of the soffit) "
-              "at 0.6 kg/m plus 0.4 kg of brackets (D-70)"))
-    L.append(("INTERIOR", "Work-wall ledge, 1000 mm", 1, LEDGE_KG, "assumption",
-              "allowance until it's designed: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70)"))
+              shelf_kgm * shelf_m() + SHELF_BRACKETS_KG, "assumption",
+              ("budget (D-85)" if a["budgets"] else "allowance") + f" until it's designed: {shelf_m():.2f} m (the back wall "
+              f"and the side walls back of the soffit) at {shelf_kgm:g} kg/m plus 0.4 kg of brackets (D-70)"))
+    L.append(("INTERIOR", "Work-wall ledge, 1000 mm", 1, LEDGE_KG if a["budgets"] else LEDGE_KG_ALLOW, "assumption",
+              "budget (D-85) until it's designed: 1.5 mm folded aluminium, 1000 x 240 developed, plus 2 brackets (D-70)"
+              if a["budgets"] else "allowance until it's designed: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70)"))
     pt = base["K-FIX"]
     L.append(("WALL", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, "this study's model"))
     pt = base["E-VOICE-RESERVE"]
@@ -214,30 +244,43 @@ def pod_kg(rows=None):
 
 
 def applied():
-    """D-81's adopted savings (S40): (kg, what, status, owner). Each is priced by switching it back off
-    in lines(), so the table always matches the part list."""
-    now = pod_kg(lines())
-
-    def saved(**off):
-        return pod_kg(lines(**off)) - now
-
+    """The adopted savings, D-81 then D-85 (S40, S41): (kg, what, status, owner). Each is priced by switching it on in
+    lines(), in this order, from the build with none of them, so the table adds up to the part list exactly."""
     walls_m2, ceil_m2 = cassette_faces_m2()
     band_m = sum(pt.dims[0] * pt.qty for pt in base_parts() if pt.pid.startswith("B-BAND")) * 1e-3
-    return [
-        (saved(clip_only=False), f"Clip-only cassette fixing, no rails: 44 named clips and 4 catch lanyards "
-         f"({named_clips_kg():.1f} kg allowance) replace this study's 0.6 kg/m2 clip-and-rail allowance over "
-         f"{walls_m2 + ceil_m2:.1f} m2 of cassettes", "adopted; the clip gets named with a rated load and a captive lock "
-         "(H03), T01 and T07 confirm", "WALL and CEILING"),
-        (saved(fill=p("fill_pet_kgm3")), f"Cavity fill at {FILL_LIGHT:g} kg/m3 instead of {p('fill_pet_kgm3'):g} (D-81's text "
-         "says 25; 24 is the grade Pyrotek lists and the sample tests): the wall "
-         "panels, the ceiling cassettes, the air column and the soffit. The cartridges' 50 mm layers stay at 32, the "
-         "density their published absorption is for", "provisional: back to 32 kg/m3 if T02 fails (D-54)",
-         "WALL, CEILING, AIR"),
-        (saved(band_t=p("t_al_base")), f"Base band with a {BAND_T_LIGHT:g} mm wall instead of {p('t_al_base'):g} mm, "
-         f"{band_m:.1f} m of it; the same outside size and finish", "provisional on BASE's check", "BASE"),
-        (saved(kit_outside=False), "The voice kit's reserve moves outside the cap: the kit ships later as an add-on (D-11)",
-         "adopted; the cap is for the pod as shipped", "PM"),
+    items = [
+        ("clip_only", f"Clip-only cassette fixing, no rails: 44 named clips and 4 catch lanyards ({named_clips_kg():.1f} kg "
+         f"allowance) replace this study's 0.6 kg/m2 clip-and-rail allowance over {walls_m2 + ceil_m2:.1f} m2 of cassettes",
+         "adopted (D-81); the clip gets named with a rated load and a captive lock (H03), T01 and T07 confirm",
+         "WALL and CEILING"),
+        ("fill", f"Cavity fill at {FILL_LIGHT:g} kg/m3 instead of {p('fill_pet_kgm3'):g}: the wall panels, the ceiling "
+         "cassettes, the air column and the soffit. The cartridges' 50 mm layers stay at 32, the density their published "
+         "absorption is for", "provisional (D-81): back to 32 kg/m3 if T02 fails (D-54)", "WALL, CEILING, AIR"),
+        ("band_t", f"Base band with a {BAND_T_LIGHT:g} mm wall instead of {p('t_al_base'):.1f} mm, {band_m:.1f} m of it; the "
+         "same outside size and finish", "provisional on BASE's check (D-81)", "BASE"),
+        ("kit_outside", "The voice kit's reserve moves outside the cap: the kit ships later as an add-on (D-11)",
+         "adopted (D-81); the cap is for the pod as shipped", "PM"),
+        ("budgets", f"Weight budgets for the parts not designed yet: the light shelf at {SHELF_KGM:g} kg/m, the ledge in "
+         "1.5 mm folded aluminium", "adopted (D-85): the designs keep to them", "INTERIOR, WALL"),
+        ("back2", f"Back outer panels with {BACK_STUDS} inner studs, not 3: 393 mm centres, inside D-16's 400 mm (this study "
+         "counted from the outer width)", "adopted (D-85)", "WALL"),
+        ("studs10", f"Inner studs at {T_STUD_LIGHT:.1f} mm wall; the perimeter members keep 1.2 mm for the rivnuts (D-34)",
+         "adopted (D-85)", "WALL, CEILING"),
+        ("kick", "Door kick strip as a hollow profile with 2 mm walls; the same outside and finish", "adopted (D-85)",
+         "FRONT"),
+        ("floor", f"Floor panels in poplar-core 9 mm plywood, about {FLOOR_RHO_LIGHT:.0f} kg/m3 against "
+         f"{p('rho_ply'):.0f}; the same finish on top", "provisional (D-85): BASE's castor and 1000 N edge tests (D-76) "
+         "decide", "BASE"),
     ]
+    state = dict(OFF)
+    prev = pod_kg(lines(**state))
+    out = []
+    for key, what, status, owner in items:
+        state[key] = ADOPTED[key]
+        now = pod_kg(lines(**state))
+        out.append((prev - now, what, status, owner))
+        prev = now
+    return out
 
 
 def col_soffit_faces_m2():
@@ -253,45 +296,34 @@ def decor_tube_kg():
     return sum(decor_kg(b, FINAL) - decor_skin_area(b) * p("acp3_kgm2") - 4 * 0.05 for b in ("DL", "DR", "DT"))
 
 
-def open_savings():
-    """Candidates toward the 410 kg target for the PM to decide: (kg, what, risk, owner), in the order recommended: low
-    risk first, then the ones a test or a check decides. None changes the look or the sound targets."""
+def perimeter_saving_kg():
+    """The 20 x 40 perimeter members of the wall and ceiling outer panels at T_STUD_LIGHT instead of 1.2 mm (rejected)."""
     P = P04
-    kgm12, dk = al_rhs(20, 40, p("t_al_final")), al_rhs(20, 40, p("t_al_final")) - al_rhs(20, 40, T_STUD_LIGHT)
-    fa = P["floor_w"] * P["floor_d"] * 1e-6
-    studs_m = 4 * 3 * P["side_h"] + 4 * 2 * P["back_h"] + 2 * 2 * P["wall_depth"]     # with 2 studs in each back panel
     perim_m = 4 * 2 * (P["side_w"] + P["side_h"]) + 4 * 2 * (P["back_w"] + P["back_h"]) + 2 * 2 * (P["ceil_w"] + P["wall_depth"])
+    return (al_rhs(20, 40, p("t_al_final")) - al_rhs(20, 40, T_STUD_LIGHT)) * perim_m * 1e-3
+
+
+def parked():
+    """The candidates D-85 parks: (kg, what, what settles it, owner)."""
     felt_m2 = sum(cassette_faces_m2()) + col_soffit_faces_m2()
     return [
-        ((SHELF_KGM - SHELF_KGM_LIGHT) * shelf_m() + LEDGE_KG - LEDGE_KG_LIGHT, f"Weight budgets for the parts not designed "
-         f"yet: the light shelf at {SHELF_KGM_LIGHT:g} kg/m, the ledge in 1.5 mm folded aluminium", "low", "INTERIOR, WALL"),
-        (dk * studs_m * 1e-3, f"Inner studs at {T_STUD_LIGHT:.1f} mm wall; the perimeter members keep 1.2 mm for the rivnuts "
-         "(D-34)", "low: the studs only carry the ACP's bond", "WALL, CEILING"),
-        (4 * P["back_h"] * 1e-3 * kgm12, "Back outer panels with 2 inner studs, not 3: 393 mm centres, inside D-16's 400 mm "
-         "(this study counted from the outer width)", "low", "WALL"),
-        (KICK_KG - KICK_KG_HOLLOW, "Door kick strip as a hollow profile with 2 mm walls; the same outside and finish",
-         "low", "FRONT"),
-        (2 * plate_kg(fa, FLOOR_T, p("rho_ply") - FLOOR_RHO_LIGHT), f"Floor panels in poplar or falcata-core 9 mm plywood, "
-         f"about {FLOOR_RHO_LIGHT:.0f} kg/m3 against {p('rho_ply'):.0f}; the same finish on top", "medium: less stiff; D-76's "
-         "castor and 1000 N edge test (1 mm or less) decides", "BASE"),
-        (dk * perim_m * 1e-3, f"The perimeter members at {T_STUD_LIGHT:.1f} mm too", "medium: reopens D-34; a rivnut pull-out "
-         "test on the wall sample decides", "WALL, CEILING"),
         (DECOR_TUBE_CUT * decor_tube_kg(), f"Decor block frames lighter than v1's steel layout ({decor_tube_kg():.1f} kg of "
-         "tube in this study's model)", "medium: FRONT's CAD decides; the right block carries the riser and fan box",
-         "FRONT"),
+         "tube in this study's model; a quarter of it, assumption)", "FRONT's CAD; the right block carries the riser and the "
+         "fan box", "FRONT"),
         (pod_kg(lines()) - pod_kg(lines(fill=FILL_LIGHTER)), f"Cavity fill at {FILL_LIGHTER:g} kg/m3 instead of "
-         f"{FILL_LIGHT:g}", "medium to high: no published absorption and it may slump in the upright panels; T02 would need "
-         "an 18 kg/m3 arm", "WALL, CEILING"),
+         f"{FILL_LIGHT:g}", "the wall sample: no published absorption, and it may slump in the upright panels",
+         "WALL, CEILING"),
         ((p("pet9_kgm2") - FELT_KGM2_LIGHT) * felt_m2, f"A lighter 9 mm felt, {FELT_KGM2_LIGHT:g} kg/m2 against "
-         f"{p('pet9_kgm2'):g}, the same Dark Gray, on {felt_m2:.1f} m2", "medium to high: the sound model counts no felt mass "
-         "in the walls, but the inside absorption uses Polyx Board 9's 1.8 kg/m2 data, and the face is the look; the sample "
-         "decides", "Hardware, LINING"),
+         f"{p('pet9_kgm2'):g}, the same Dark Gray, on {felt_m2:.1f} m2", "the wall sample: the inside absorption uses Polyx "
+         "Board 9's 1.8 kg/m2 data, and the face is the look", "Hardware, LINING"),
     ]
 
 
 REJECTED = (
-    ("Fixed glass in 3+3 laminate", f"saves about {FIXED_GLASS * (1 - LAM33_T / LAM44_T):.1f} kg, but the pane bends "
-     "58 mm; it stays 4+4 (FRONT's calculation, PM)"),
+    ("Fixed glass in 3+3 laminate", f"saves about {FIXED_GLASS * (1 - LAM33_T / LAM44_T):.1f} kg, but a 3+3 pane bends "
+     "58 mm at its free edge under a person leaning on it; it stays 4+4 (D-82)"),
+    ("The frame perimeters at 1.0 mm", f"saves about {perimeter_saving_kg():.1f} kg, but the 1.2 mm perimeters carry every "
+     "rivnut joint (D-85)"),
     ("Door leaf in 3+3 laminate", f"saves about {DOOR_GLASS * (1 - LAM33_T / LAM44_T):.1f} kg; rejected in D-81, D-46 "
      "stands"),
     ("Lighter faces on the air column and soffit", "2 mm ACP gives 26.1 dB(A) at 53 l/s and 30.5 at the boost, against "
@@ -319,7 +351,7 @@ def rollup_md(rows):
     by = {}
     for g, _i, q, kg, _s, _src in rows:
         by[g] = by.get(g, 0.0) + q * kg
-    ap, op = applied(), open_savings()
+    ap, op = applied(), parked()
     model_l1 = final_outer_kg(P04["side_w"], P04["side_h"], P04["frame_d"], FINAL)
     shipped = [r for r in rows if r[0] != "LATER" and "glass" not in r[1].lower() and "door unit" not in r[1].lower()]
     heavy = max(shipped, key=lambda r: r[3])
@@ -336,7 +368,8 @@ def rollup_md(rows):
     md.append("")
     md.append("- **Basis.** This study's decided build on skeleton P03, recounted on P04 with tonight's numbers: the teams' CAD "
               "masses where they exist (CEILING PR #32, FRONT PRs #27 and #28, WALL's L1), D-60's air parts as sized (the air "
-              "report), the PM's adopted savings, allowances for parts not designed yet, and this study's model at P04's sizes "
+              "report), the PM's adopted savings (D-81, D-85), budgets and allowances for parts not designed yet, and this "
+              "study's model at P04's sizes "
               "for the rest. Every line has its status and source below and in `out/parts-decided-P04.csv`.")
     md.append(f"- **Cross-check.** This study's model gives L1 {model_l1:.2f} kg at the P04 size with 32 kg/m3 fill; WALL's CAD "
               f"gives {WALL_L1_MADE + WALL_L1_BOND:.2f} kg.")
@@ -349,8 +382,9 @@ def rollup_md(rows):
               f"glass is the {nm} at {heavy[3]:.1f} kg; the door unit and the fixed glass unit are glass and exempt.")
     allow = {r[1].split(",")[0].split(" along")[0]: r[2] * r[3] for r in rows if r[4] == "assumption"
              and ("Light shelf" in r[1] or "ledge" in r[1] or "Named clips" in r[1])}
-    md.append(f"- **Allowances (assumption)** for parts not designed yet: the light shelf {allow['Light shelf']:.1f} kg and the "
-              f"work-wall ledge {allow['Work-wall ledge']:.1f} kg (D-70), and the named clips "
+    md.append(f"- **Budgets and allowances (assumption)** for parts not designed yet: the light shelf "
+              f"{allow['Light shelf']:.1f} kg and the work-wall ledge {allow['Work-wall ledge']:.1f} kg (D-70; budgets from "
+              f"D-85), and the named clips "
               f"{allow['Named clips and catches: 44 clips and 4 catch lanyards']:.1f} kg; the two ceiling lights go (D-70), "
               f"{2 * p('light_kg'):.1f} kg less.")
     md.append("")
@@ -373,7 +407,7 @@ def rollup_md(rows):
     md.append("")
     md.append("Sources S33 to S39 are in section 10 of the report (`scripts/inputs.py`).")
     md.append("")
-    md.append("## Savings applied (D-81)")
+    md.append("## Savings applied (D-81, D-85)")
     md.append("")
     md.append("| Saves kg | What changes | Status | Owner |")
     md.append("|---:|---|---|---|")
@@ -381,20 +415,15 @@ def rollup_md(rows):
         md.append(f"| {kg:.1f} | {what} | {st} | {owner} |")
     md.append(f"| **{sum(a[0] for a in ap):.1f}** | **in all** | | |")
     md.append("")
-    md.append(f"## Candidates toward the {TARGET_KG:.0f} kg target, for the PM to decide")
+    md.append("## Parked (D-85)")
     md.append("")
-    md.append(f"{gap(tot - TARGET_KG).capitalize()} the target. Each keeps the look exactly and the sound targets (19.3 dB "
-              "speech reduction; fan noise 26 dB(A) at 53 l/s and 30 at the boost). Ranked as recommended: low risk "
-              "first, then the ones a test or a check decides.")
+    md.append(f"{gap(tot - TARGET_KG).capitalize()} the {TARGET_KG:.0f} kg target, which stays (D-85). The wall sample "
+              "settles the fill and the felt; FRONT's CAD settles the decor frames. Each keeps the look and the sound targets.")
     md.append("")
-    md.append("| # | Saves kg | What changes | Risk | Owner |")
-    md.append("|---:|---:|---|---|---|")
-    for n, (kg, what, risk, owner) in enumerate(op, 1):
-        md.append(f"| {n} | {kg:.1f} | {what} | {risk} | {owner} |")
-    md.append("")
-    first5 = sum(o[0] for o in op[:5])
-    md.append(f"Items 1 to 5 save {first5:.1f} kg: {tot - first5:.1f} kg as shipped, {gap(tot - first5 - TARGET_KG)} the "
-              f"target. With item 6 as well: {tot - first5 - op[5][0]:.1f} kg.")
+    md.append("| Saves kg | What changes | What settles it | Owner |")
+    md.append("|---:|---|---|---|")
+    for kg, what, risk, owner in op:
+        md.append(f"| {kg:.1f} | {what} | {risk} | {owner} |")
     md.append("")
     md.append("Looked at and rejected:")
     md.append("")
@@ -411,7 +440,10 @@ def rollup_md(rows):
               "is recounted once the register gives masses.")
     md.append(f"- **BASE's support behind the intake mesh:** if it leaves less than {AA.D60_FREE['intake']:.3f} m2 free, the air "
               "report re-runs the fan noise (25.3 / 29.7 dB(A) now).")
-    md.append("- **The tests:** T02 (fill), T07 (clips) and T10 (weights) replace the provisional and assumed lines.")
+    md.append("- **D-83:** a 35 N magnetic catch in DT and a magnetic seal pair on the glass edges replace the door lock "
+              "(0.84 kg in FRONT's door unit); the door line follows FRONT's CAD.")
+    md.append("- **The tests:** T02 (fill), T07 (clips), T10 (weights) and BASE's castor and 1000 N edge tests (the floor, "
+              "D-85) replace the provisional and assumed lines.")
     md.append("")
     return "\n".join(md)
 

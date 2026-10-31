@@ -2,7 +2,7 @@
 
 Weight, panel split, pallets and 2-person assembly for Spaceship (v2). Read [report.md](report.md) first.
 
-**Current weight: [weight-rollup.md](weight-rollup.md)**, the live count on skeleton P04: tonight's CAD masses, the PM's adopted savings, allowances for parts not designed yet, and what is still open toward the 410 kg target (ISS-081, F-010). Its part list is `out/parts-decided-P04.csv`; the mechanical check sums it for F-010 and leaves out the voice kit's line, which is outside the cap (D-81). The report's other sections still describe the P03 build.
+**Current weight: [weight-rollup.md](weight-rollup.md)**, the live count on skeleton P04: tonight's CAD masses, the PM's adopted savings, allowances for parts not designed yet, and what D-85 parks toward the 410 kg target (ISS-081, F-010). Its part list is `out/parts-decided-P04.csv`; the mechanical check sums it for F-010 and leaves out the voice kit's line, which is outside the cap (D-81). The report's other sections still describe the P03 build.
 
 - `report.md` is generated: edit `report_template.md` or `scripts/`, then run `python3 scripts/run_all.py`.
 - `python3 scripts/run_all.py --check` fails if the report or any file in `out/` no longer matches the scripts.
