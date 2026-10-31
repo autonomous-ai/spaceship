@@ -123,22 +123,22 @@
    "expression": "kick_x0 + hinge_clamp_w"
   },
   {
-   "component": "368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10",
+   "component": "368102 FRONT - DOOR STRIKE - ENVELOPE",
    "index": 5,
    "expression": "leaf_zt + st_top"
   },
   {
-   "component": "368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10",
+   "component": "368102 FRONT - DOOR STRIKE - ENVELOPE",
    "index": 2,
    "expression": "leaf_zt - st_h"
   },
   {
-   "component": "368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD",
+   "component": "368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD",
    "index": 2,
    "expression": "door_zb"
   },
   {
-   "component": "368006 FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD",
+   "component": "368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD",
    "index": 5,
    "expression": "leaf_zt"
   },
