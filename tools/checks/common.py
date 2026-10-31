@@ -78,10 +78,13 @@ PATH_OWNERS = [
 
 # Part-number family -> owner group, from the briefs (LINING follows the
 # assembly its cassettes hang in; AIR sits in DR; ELECTRICAL and INTERIOR
-# are with CEILING).
+# are with CEILING). Hardware and seals (83, 84) are the joints register's:
+# a shared made part such as the spigot 831001 gets its drawing from the
+# Joints Engineer, while a team's parts-list row stays that team's (path first).
 FAMILY_OWNERS = {
     "10": "Fusion Engineer 2", "11": "BASE", "21": "WALL", "35": "FRONT", "36": "FRONT",
     "41": "CEILING", "51": "WALL", "61": "FRONT", "71": "CEILING", "81": "CEILING",
+    "83": "Joints Engineer", "84": "Joints Engineer",
 }
 
 

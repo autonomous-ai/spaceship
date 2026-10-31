@@ -475,6 +475,25 @@ def test_cad_and_parts_list_names_must_match(tmp_path):
     assert ("name-mismatch", "211102") in got and ("name-mismatch", "211101") not in got
 
 
+def test_parts_list_rows_are_matched_only_against_their_own_teams_cad(tmp_path):
+    # WALL has exported STEP files, BASE hasn't yet; the master BOM lists every team's parts
+    row = {"part_number": "211101", "name": "WALL - PANEL FRAME - SIDE LOWER - LH", "name_vi": "x", "material": "EN AW-6063 T6",
+           "finish": "mill finish", "qty": "1", "mass_kg": "2", "status": "calculation", "source": "CAD"}
+    for folder, rows in (("v2/03-Manufacturing/wall", [row, dict(row, part_number="211301", name="WALL - SKIN - SIDE LOWER - LH")]),
+                         ("v2/03-Manufacturing/base", [dict(row, part_number="111401", name="BASE - FLOOR PANEL - F1")])):
+        (tmp_path / folder).mkdir(parents=True)
+        _write_csv(tmp_path / folder / "parts.csv", rows)
+    (tmp_path / "v2/04-BOM").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+               [dict(row, part_number="100000", name="POD - SPACESHIP"), dict(row, part_number="210000", name="WALL")])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"211101": {"files": {"v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step"},
+                        "count": 1, "name": "211101 WALL - PANEL FRAME - SIDE LOWER - LH"}}
+    got = {(f.rule, f.subject) for f in c_parts.check_cad_match(str(tmp_path), plists, prods)}
+    assert ("bom-not-in-cad", "211301") in got                       # WALL's own list, WALL has STEP files
+    assert not {s for r, s in got if r == "bom-not-in-cad"} & {"111401", "100000", "210000"}
+
+
 def test_bolt_patterns_across_assemblies_must_match():
     def body(label, file, holes):
         b = _B(label, None, "x", holes)
@@ -559,3 +578,52 @@ def test_shipping_reads_the_packing_list_when_there_is_one(tmp_path):
     got = {(f.rule, f.subject) for f in fs}
     assert ("pallet-fit", "1-02") in got                 # a 2290 mm block put on the 48 x 40 pallet
     assert not any(s in ("1-01", "2-01") for _r, s in got)  # the glass unit is exempt from 20 kg; both fit
+
+
+def test_shared_hardware_drawings_go_to_the_joints_engineer_but_list_rows_stay_with_the_team():
+    from common import owner_for
+    assert owner_for("", "831001") == "Joints Engineer"                  # the spigot's drawing: no team path
+    assert owner_for("v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", "838003") == "WALL"   # WALL's own row
+    assert owner_for("", "211101") == "WALL" and owner_for("", "999999") == "PM"
+
+
+def test_d89_a_tabulated_drawing_covers_the_numbers_it_lists(tmp_path):
+    d = tmp_path / "v2/02-Drawings/wall"
+    d.mkdir(parents=True)
+    (tmp_path / "v2/03-Manufacturing/wall").mkdir(parents=True)
+    base = "UNITS: mm\nMATERIAL: EN AW-6063 T6  FINISH: mill finish\nGENERAL TOLERANCES ISO 2768-m\n"
+    _pdf(d / "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER_DWG.pdf",
+         base + "TABULATED DRAWING\nPART NO | SIDE\n211101 | LH\n211102 | RH\nRIVNUT 838003 IN EVERY H01")
+    _pdf(d / "210101_P01_WALL-PANEL-ASSY_DWG.pdf", base + "TABULATED\nPARTS LIST: 211301 SKIN")
+    names = {"211101": "WALL - PANEL FRAME - SIDE LOWER - LH", "211102": "WALL - PANEL FRAME - SIDE LOWER - RH",
+             "211301": "WALL - SKIN - SIDE LOWER - LH", "210101": "WALL - PANEL ASSY - SIDE LOWER - LH"}
+    got = {(f.rule, f.subject) for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert ("no-drawing", "211102") not in got           # listed in 211101's tabulated drawing
+    assert ("no-drawing", "211301") in got               # an assembly drawing's parts list doesn't cover a part
+    # the covered part's CAD at another revision: the drawing is out of date for it
+    (tmp_path / "v2/03-Manufacturing/wall/211102_P02_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step").write_text("x")
+    got = {(f.rule, f.subject) for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert ("rev-mismatch", "211102") in got
+    # without the word TABULATED, a number in the text is only a reference
+    _pdf(d / "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER_DWG.pdf", base + "MIRROR OF 211102")
+    got = {(f.rule, f.subject) for f in c_drawings.check_drawings(str(tmp_path), set(names), {}, names)}
+    assert ("no-drawing", "211102") in got
+
+
+def test_d89_felt_and_fill_rectangles_pass_on_a_complete_cut_list_row(tmp_path):
+    m = tmp_path / "v2/03-Manufacturing/wall"
+    m.mkdir(parents=True)
+    with open(m / "510000_P01_LINING-CUT-LIST_SPEC.csv", "w") as fh:
+        fh.write("part_number,name,size_mm,material,tolerance_mm\n"
+                 "511301,felt,1445 x 1142.74 x 9,PET felt 9 mm Dark Gray,±1.0\n"
+                 "511401,fill,1100 x 1050 x 40,PET fill 24 kg/m3,\n"
+                 "511302,felt,1445 x 1142.74 x 9,PET felt 9 mm Dark Gray,±1.0\n")
+    (m / "511303_P01_LINING-FELT-BACK_DXF.dxf").write_text("x")
+    names = {"511301": "LINING - FELT - SIDE LOWER - LH", "511401": "LINING - FILL - SIDE LOWER - BAY A",
+             "511302": "LINING - FELT - SIDE LOWER - RH", "511303": "LINING - FELT - BACK LOWER - LH"}
+    holes = {"511302": [sf.Hole(1, (0, 240.5, 1180.0), (1, 0, 0), 60.0, 9.0, [])]}
+    fs = {f.subject: f.message for f in c_drawings.check_drawings(str(tmp_path), set(names), holes, names)}
+    assert "511301" not in fs                              # complete row, plain rectangle: no drawing needed
+    assert "doesn't give tolerance" in fs["511401"]
+    assert "isn't a plain rectangle" in fs["511302"]       # the felt has a hole: it needs a drawing
+    assert "no cut list has a row" in fs["511303"]         # a DXF alone isn't D-89's route
