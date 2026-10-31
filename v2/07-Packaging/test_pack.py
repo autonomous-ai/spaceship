@@ -185,6 +185,17 @@ def test_register_parser_reads_counts_with_notes(tmp=Path(__file__).resolve().pa
     assert total == 84 and sum(c for c, _ in rows.values()) == 84
 
 
+def test_power_unit_share_from_electrical():
+    # B2 carries the power unit's mass from ELECTRICAL's parts list, not a typed share
+    import csv
+    with open(pack.ELEC_PARTS, encoding="utf-8") as f:
+        unit = next(float(r["mass_each_kg"]) for r in csv.DictReader(f) if r["part_number"] == "710001")
+    m = pack.Model()
+    b2 = pack.PIECE["1-04"]
+    back = m.roll[pack.resolve(m.roll, "B")]["kg_each"]
+    assert abs(b2.kg - (back + unit)) < 1e-9, (b2.kg, back, unit)
+
+
 if __name__ == "__main__":
     tests = [(n, f) for n, f in sorted(globals().items()) if n.startswith("test_") and callable(f)]
     bad = 0

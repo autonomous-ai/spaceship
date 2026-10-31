@@ -259,8 +259,19 @@ def S(*a):
 
 P04 = "skeleton P04 named values (100000_P04_POD-SKELETON-PARAMETERS.csv)"
 FLOOR_W_MAX = 1219   # the floor panel with its lap, at most (PM ruling, packing group, 2026-10-31)
-# ELECTRICAL's roll-up line (S43) is 4.94 kg: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, lights 0.26.
-POWER_UNIT_SHARE = 2.80 / 4.94
+ELEC_PARTS = REPO / "v2" / "03-Manufacturing" / "electrical" / "710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv"
+
+
+def power_unit_share(parts=ELEC_PARTS):
+    """B2's share of ELECTRICAL's roll-up line: the power unit 710001's mass in ELECTRICAL's parts list over the line's mass.
+    Both are read from their files on every run, so a new ELECTRICAL CAD mass flows through (no typed share)."""
+    with open(parts, encoding="utf-8") as f:
+        unit = next(float(r["mass_each_kg"]) for r in csv.DictReader(f) if r["part_number"] == "710001")
+    roll = read_rollup()
+    return unit / roll[resolve(roll, "ELEC")]["kg_each"]
+
+
+POWER_UNIT_SHARE = power_unit_share()
 # The fixed glass unit's roll-up line is FRONT's 29.58 kg (PR #28 parts list): pane 28.584, 180 seal 0.2, U-profile 0.557 and
 # U-seal 0.241 in four pieces, 745 bottom, 1446 right, 804 diagonal and 303 top (mm). The channels ship fitted in the parts
 # that hold them: the bottom one on BASE's sill (PM ruling), the right and diagonal in DR, the top in DT (D-68).
@@ -283,7 +294,7 @@ PIECES = [
           [("B", 1), ("ELEC", POWER_UNIT_SHARE)], S(sk("half_pw"), sk("back_ph"), sk("outer_t") + sk("cav_gap") + sk("cass_t")),
           "skeleton named values; the power unit's face is flush with the felt (ELECTRICAL), so it stands cav_gap + cass_t = 38 mm proud of the frame face",
           1, 4, "WALL",
-          note="carries the power unit 710001, fitted, wired and tested at the factory: 2.80 kg of ELECTRICAL's roll-up line (S43); foam block over the unit's face in the stack"),
+          note="carries the power unit 710001, fitted, wired and tested at the factory: its mass from ELECTRICAL's parts list, as a share of ELECTRICAL's roll-up line; foam block over the unit's face in the stack"),
     Piece("1-05", "210101", "WALL - PANEL ASSY - SIDE LOWER - LH", "Vách trái - cụm tấm dưới", "L1", [("L1R1", 1)],
           S(sk("side_l"), sk("side_h"), sk("outer_t")), P04 + "; WALL L1 CAD", 1, 5, "WALL"),
     Piece("1-06", "TBD (WALL)", "WALL - PANEL ASSY - SIDE LOWER - RH", "Vách phải - cụm tấm dưới", "R1", [("L1R1", 1)],

@@ -39,7 +39,7 @@ Every piece stands on edge with its along-size on the 48 in side; the stack runs
 | 1 | **1-01** | F1 | BASE - FLOOR PANEL - F1 | 8.2 | 1219 × 1455 | 12 | 3 |
 | 2 | **1-02** | F2 | BASE - FLOOR PANEL - F2 | 8.2 | 1219 × 1455 | 12 | 3 |
 | 3 | **1-03** | B1 | WALL - PANEL ASSY - BACK LOWER - LH | 8.8 | 1200.61 × 1118.61 | 46 | 4 |
-| 4 | **1-04** | B2 | WALL - PANEL ASSY - BACK LOWER - RH | 11.7 | 1200.61 × 1118.61 | 84 | 4 |
+| 4 | **1-04** | B2 | WALL - PANEL ASSY - BACK LOWER - RH | 11.6 | 1200.61 × 1118.61 | 84 | 4 |
 | 5 | **1-05** | L1 | WALL - PANEL ASSY - SIDE LOWER - LH | 11.2 | 1142.74 × 1492.74 | 46 | 5 |
 | 6 | **1-06** | R1 | WALL - PANEL ASSY - SIDE LOWER - RH | 11.2 | 1142.74 × 1492.74 | 46 | 5 |
 | 7 | **1-07** | B3 | WALL - PANEL ASSY - BACK UPPER - LH | 8.8 | 1200.61 × 1118.61 | 46 | 6 |
@@ -85,7 +85,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 3: DL, soffit, air column, DT | 360 | **2-10** | AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.9 | 2332 × 360 × 220 | 17 |
 | Tier 3: DL, soffit, air column, DT | 217 | **2-11** | AIR - AIR COLUMN | 9.7 | 2105 × 217 × 360 | 16 |
 | Tier 3: DL, soffit, air column, DT | 280 | **2-12** | FRONT - DECOR BLOCK - DT | 7.1 | 1697 × 280 × 205 | 12 |
-| Tier 3: DL, soffit, air column, DT | 280 | **2-13** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.2 | 600 × 250 × 200 | 13 |
+| Tier 3: DL, soffit, air column, DT | 280 | **2-13** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.3 | 600 × 250 × 200 | 13 |
 | Tier 3: DL, soffit, air column, DT | 80 | **2-14** | INTERIOR - LIGHT SHELF | 2.1 | 2332 × 80 × 50 | 19 |
 | Tier 4: air parts and cartons | 460 | **2-17** | AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.9 | 1845 × 460 × 155 | 15 |
 | Tier 4: air parts and cartons | 400 | **2-15** | BASE - SMALL PARTS CARTON | 2.0 | 600 × 400 × 150 | 2 |
@@ -137,7 +137,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-01** | 111401 | F1 | BASE - FLOOR PANEL - F1 | 8.2 | 1 | 3 |
 | **1-02** | TBD (BASE) | F2 | BASE - FLOOR PANEL - F2 | 8.2 | 1 | 3 |
 | **1-03** | TBD (WALL) | B1 | WALL - PANEL ASSY - BACK LOWER - LH | 8.8 | 1 | 4 |
-| **1-04** | TBD (WALL) | B2 | WALL - PANEL ASSY - BACK LOWER - RH | 11.7 | 1 | 4 |
+| **1-04** | TBD (WALL) | B2 | WALL - PANEL ASSY - BACK LOWER - RH | 11.6 | 1 | 4 |
 | **1-05** | 210101 | L1 | WALL - PANEL ASSY - SIDE LOWER - LH | 11.2 | 1 | 5 |
 | **1-06** | TBD (WALL) | R1 | WALL - PANEL ASSY - SIDE LOWER - RH | 11.2 | 1 | 5 |
 | **1-07** | TBD (WALL) | B3 | WALL - PANEL ASSY - BACK UPPER - LH | 8.8 | 1 | 6 |
@@ -166,7 +166,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-10** | TBD (AIR) | - | AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.9 | 2 | 17 |
 | **2-11** | TBD (AIR) | - | AIR - AIR COLUMN | 9.7 | 2 | 16 |
 | **2-12** | TBD (FRONT) | DT | FRONT - DECOR BLOCK - DT | 7.1 | 2 | 12 |
-| **2-13** | TBD (ELECTRICAL) | - | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.2 | 1 | 13 |
+| **2-13** | TBD (ELECTRICAL) | - | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.3 | 1 | 13 |
 | **2-14** | TBD (INTERIOR) | - | INTERIOR - LIGHT SHELF | 2.1 | 2 | 19 |
 | **2-15** | TBD (BASE) | - | BASE - SMALL PARTS CARTON | 2.0 | 1 | 2 |
 | **2-16** | TBD (INTERIOR) | - | INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 2.4 | 1 | 22 |
@@ -186,7 +186,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-01** | 111401 | BASE - FLOOR PANEL - F1 | Tấm sàn mỏng - F1 | F1 | 8.18 | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) | 1455 × 1219 × 12 | 3 |
 | **1-02** | TBD (BASE) | BASE - FLOOR PANEL - F2 | Tấm sàn mỏng - F2 | F2 | 8.18 | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) | 1455 × 1219 × 12 | 3 |
 | **1-03** | TBD (WALL) | WALL - PANEL ASSY - BACK LOWER - LH | Vách hậu - cụm tấm dưới trái | B1 | 8.76 | calculation; fill provisional | 1200.61 × 1118.61 × 46 | 4 |
-| **1-04** | TBD (WALL) | WALL - PANEL ASSY - BACK LOWER - RH | Vách hậu - cụm tấm dưới phải | B2 | 11.69 | calculation (CAD); calculation; fill provisional | 1200.61 × 1118.61 × 84 | 4 |
+| **1-04** | TBD (WALL) | WALL - PANEL ASSY - BACK LOWER - RH | Vách hậu - cụm tấm dưới phải | B2 | 11.64 | calculation (CAD); calculation; fill provisional | 1200.61 × 1118.61 × 84 | 4 |
 | **1-05** | 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | Vách trái - cụm tấm dưới | L1 | 11.16 | calculation (CAD); fill provisional | 1492.74 × 1142.74 × 46 | 5 |
 | **1-06** | TBD (WALL) | WALL - PANEL ASSY - SIDE LOWER - RH | Vách phải - cụm tấm dưới | R1 | 11.16 | calculation (CAD); fill provisional | 1492.74 × 1142.74 × 46 | 5 |
 | **1-07** | TBD (WALL) | WALL - PANEL ASSY - BACK UPPER - LH | Vách hậu - cụm tấm trên trái | B3 | 8.76 | calculation; fill provisional | 1200.61 × 1118.61 × 46 | 6 |
@@ -227,7 +227,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-10** | TBD (AIR) | AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | Hộp gió trên cửa + hộp quạt thải | - | 13.87 | assumption; calculation; calculation; fill provisional | 2332 × 360 × 220 | 17 |
 | **2-11** | TBD (AIR) | AIR - AIR COLUMN | Cột dẫn gió | - | 9.73 | calculation; fill provisional | 2105 × 360 × 217 | 16 |
 | **2-12** | TBD (FRONT) | FRONT - DECOR BLOCK - DT | Khung trang trí - khối trên | DT | 7.09 | calculation; calculation (CAD); magnetic seal HOLD | 1697 × 280 × 205 | 12 |
-| **2-13** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.24 | calculation (CAD) | 600 × 250 × 200 | 13 |
+| **2-13** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.28 | calculation (CAD) | 600 × 250 × 200 | 13 |
 | **2-14** | TBD (INTERIOR) | INTERIOR - LIGHT SHELF | Kệ đèn | - | 2.08 | assumption | 2332 × 80 × 50 | 19 |
 | **2-15** | TBD (BASE) | BASE - SMALL PARTS CARTON | Thùng phụ kiện đế | - | 1.97 | calculation (CAD); calculation; confirmed (1.5 mm) | 600 × 400 × 150 | 2 |
 | **2-16** | TBD (INTERIOR) | INTERIOR - LEDGE AND SCREEN MOUNT CARTON | Kệ làm việc + giá màn hình | - | 2.40 | assumption | 1000 × 250 × 120 | 22 |
@@ -289,7 +289,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | AIR | Roof slot grille and sleeve | 1 | 0.50 | calculation | 1-12 |
 | AIR | Four 12 V fans | 1 | 1.20 | assumption | 2-10 × 0.5, 2-17 × 0.5 |
 | BASE | Door edge seals, base seal, cable grommets | 1 | 1.60 | source | A-4 |
-| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.17 | calculation (CAD) | 1-04 × 0.566802, 2-13 × 0.433198 |
+| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.17 | calculation (CAD) | 1-04 × 0.558607, 2-13 × 0.441393 |
 | INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 2.08 | assumption | 2-14 |
 | INTERIOR | Work-wall ledge, 1000 mm | 1 | 1.40 | assumption | 2-16 |
 | WALL | M6 bolts, rivnuts, cam connectors, joint gaskets, spigots and stop washers | 1 | 4.87 | calculation (part CAD) | A-3 |
