@@ -6,10 +6,14 @@ drawing shows only that part):
     711005 ELECTRICAL - HUB ZONE COVER PLATE          (1.5 mm 5052-H32, flat, black anodised AA20)
 
     python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_parts_cad.py \
-        --label "ELECTRICAL Engineer" --doc 711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD --doc-new \
-        --arg part=body --arg save=1 --arg export=1 --close --discard
-    (part=front with 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD,
-     part=hub with 711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_CAD)
+        --label "ELECTRICAL Engineer" --arg parts=front,hub,body --arg export=1
+
+One run builds all three, the flat plates first (fair-share queue rule). Each part opens its design
+from Default Project / FocusPod v2, or makes it the way the PM set while the runner's --doc-new is
+paused (2026-11-01): the script lists the folder first and makes nothing if any entry can't be read
+(that entry could be this very design); a new design gets a name never used before and is saved
+there at once, empty. Then the part is built, checked, saved, exported and closed. A part that
+fails doesn't stop the others; the run fails at the end and names it.
 
 Sizes come from the route model's parameters (electrical_model.py: pu_w, pu_h,
 pu_d, hub_w) and are written here as this part's own user parameters with
@@ -19,8 +23,9 @@ the button and knob holes (the hub's size, ISS-060), the earth stud hole
 (PEM data) and the mounting to B2's frame (WALL, IF-12, not cut yet). Every
 sketch is fully constrained by the parameters; every feature is named.
 
-Exports after the save: the .f3d, the STEP (Fusion writes cm, D-13) and a DXF
-(the body's flat pattern; the plates' outline sketch), all in mm except the STEP.
+Exports after the save: the .f3d, the STEP (Fusion writes cm, D-13) and a DXF in mm: the body's
+flat pattern (Fusion's export), the plates' outline sketch written by flat_dxf.py with every line
+and circle on the CUT layer only (D-89 part 4).
 """
 
 import importlib
@@ -36,8 +41,11 @@ HERE = os.path.dirname(os.path.abspath(ARGS.get("script_path", globals().get("__
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 import electrical_model as M  # noqa: E402
+import flat_dxf  # noqa: E402
 
 importlib.reload(M)
+importlib.reload(flat_dxf)
+FOLDER = "FocusPod v2"
 MM = 0.1
 V = M.values()
 HOLD = "HOLD"
@@ -244,9 +252,7 @@ def body_tray(design, comp, occ):
         ret = None
         for pos in (adsk.fusion.BendPositionTypes.InsideBendPositionType, adsk.fusion.BendPositionTypes.OutsideBendPositionType):
             for flip in (False, True):
-                efi = ff.createEdgeFlangeInput([], vi("d - t - t"))
-                for e in eds:
-                    efi.edgeDefinitions.addFullLengthEdge(e)
+                efi = ff.createEdgeFlangeInput(eds, vi("d - 2 * t"))
                 efi.heightDatumType = adsk.fusion.FlangeHeightDatumTypes.OuterFacesFlangeHeightDatumType
                 efi.bendPositionType = pos
                 efi.isFlipped = flip
@@ -277,15 +283,13 @@ def body_tray(design, comp, occ):
             raise RuntimeError("body: expected 4 inner front edges, got %d" % len(inner))
         lip = None
         for flip in (False, True):
-            efi = ff.createEdgeFlangeInput([], vi("lip"))
-            for e in inner:
-                efi.edgeDefinitions.addFullLengthEdge(e)
+            efi = ff.createEdgeFlangeInput(inner, vi("lip"))
             efi.isFlipped = flip
             efi.isMiteredCorners = True
             efi.heightDatumType = adsk.fusion.FlangeHeightDatumTypes.OuterFacesFlangeHeightDatumType
             f = ff.add(efi)
             b2 = box(comp.bRepBodies.item(0))
-            inside = all(abs(b2[k] - b[k]) < 0.05 for k in range(6))
+            inside = all(abs(b2[k] - b[k]) < 0.05 for k in (0, 1, 3, 4))
             print("body lips, flipped %s: box %s, %s" % (flip, b2, "inside" if inside else "rejected"))
             if inside and f.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState:
                 lip = f
@@ -294,6 +298,24 @@ def body_tray(design, comp, occ):
         if lip is None:
             raise RuntimeError("body: no lip direction keeps the lips inside the box")
         lip.name = "FLANGE - FRONT LIPS"
+        # depth back to front must be d: the lips' bend (radius t) adds to the returns' height, by how
+        # much depends on Fusion's bend position, so measure it and fix the returns' height in whole t
+        for _try in range(2):
+            b3 = box(comp.bRepBodies.item(0))
+            off = (b3[5] - b3[2]) - ev(design, "d")
+            if abs(off) < 0.05:
+                break
+            k = round(off / ev(design, "t"))
+            if abs(off - k * ev(design, "t")) > 0.05 or abs(k) > 3:
+                raise RuntimeError("body: depth %.3f, not d; off by %.3f (not whole t)" % (b3[5] - b3[2], off))
+            dist = ret.definition.distance
+            n = 2 + k + (round((ev(design, "d") - dist.value * 10.0) / ev(design, "t")) - 2)
+            dist.expression = "d - %d * t" % n
+            adsk.doEvents()
+            print("body: depth was off by %.3f mm; returns' height set to d - %d * t" % (off, n))
+        b3 = box(comp.bRepBodies.item(0))
+        if abs((b3[5] - b3[2]) - ev(design, "d")) > 0.05:
+            raise RuntimeError("body: depth %.3f, not d %.3f" % (b3[5] - b3[2], ev(design, "d")))
     finally:
         design.activateRootComponent()
     return comp.bRepBodies.item(0)
@@ -380,72 +402,193 @@ def export(design, root, comp, key, repo, stem):
         ok = em.execute(em.createDXFFlatPatternExportOptions(path, fp))
     else:
         sk = comp.sketches.itemByName("OUTLINE AND CUT-OUTS - %s" % key.upper())
-        ok = sk.saveAsDXF(path)
+        lines, circles, other = [], [], 0
+        for i in range(sk.sketchCurves.count):
+            c = sk.sketchCurves.item(i)
+            if c.isConstruction:
+                continue
+            ln, ci = adsk.fusion.SketchLine.cast(c), adsk.fusion.SketchCircle.cast(c)
+            if ln:
+                a, b = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+                lines.append(((a.x * 10.0, a.y * 10.0), (b.x * 10.0, b.y * 10.0)))
+            elif ci:
+                g = ci.centerSketchPoint.geometry
+                circles.append(((g.x * 10.0, g.y * 10.0), ci.radius * 10.0))
+            else:
+                other += 1
+        if other:
+            raise RuntimeError("%s: %d curves that are neither lines nor circles" % (sk.name, other))
+        n = flat_dxf.write(path, lines, circles)
+        ok = os.path.getsize(path) > 200
+        print("DXF: %d lines and %d circles on layer %s, mm" % (n[0], n[1], flat_dxf.LAYER))
     print("export %s: %s" % (out["dxf"], ok))
     if not ok:
         raise RuntimeError("DXF export failed")
 
 
-def run(_context):
-    key = ARGS.get("part")
-    if key not in PARTS:
-        raise RuntimeError("part must be body, front or hub")
-    pn, name, vn, stem, params = PARTS[key]
-    app = adsk.core.Application.get()
-    doc = app.activeDocument
-    if doc.name != stem + "_CAD":
-        raise RuntimeError("active document is %r, not %r" % (doc.name, stem + "_CAD"))
-    design = adsk.fusion.Design.cast(app.activeProduct)
-    root = design.rootComponent
-    if root.occurrences.count or design.userParameters.count or root.bRepBodies.count:
-        raise RuntimeError("%s is not empty" % doc.name)
-    design.designType = adsk.fusion.DesignTypes.ParametricDesignType
-    design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
-    for pname, expr, unit, status, src in params:
-        design.userParameters.add(pname, vi(expr), unit, "%s: %s" % (status.upper(), src))
-    root.partNumber = pn
-    root.description = "%s | %s | %s" % (name, vn, M.REV)
-    if key == "body":
-        occ = root.occurrences.addNewSheetMetalComponent(adsk.core.Matrix3D.create())
-        comp = occ.component
-        comp.name, comp.partNumber = "%s %s" % (pn, name), pn
-        comp.description = root.description
-        body = body_tray(design, comp, occ)
-        bb = box(body)
-        zs = 1 if bb[5] > ev(design, "d") / 2 else -1     # the returns fold toward +Z or -Z
-        z = lambda e: "(%s) * (%d)" % (e, zs)  # noqa: E731
-        front = "d * (%d)" % zs if zs < 0 else "d"
-        # holes: right side (two lead exits), top (light feed), bottom (sleeve), lips (4 clinch nuts)
-        cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z1", z("d - lead_y"), "hole_b", "LEAD EXIT 1 RIGHT SIDE", ("y", "z"))
-        cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z2", z("d - lead_y"), "hole_b", "LEAD EXIT 2 RIGHT SIDE", ("y", "z"))
-        cut_hole(design, comp, body, "xZConstructionPlane", "h", "top_x", z("d - lead_y"), "hole_b", "LIGHT FEED EXIT TOP", ("x", "z"))
-        cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "sleeve_x", z("d - sleeve_y"), "sleeve_d", "SLEEVE ENTRY BOTTOM", ("x", "z"))
-        for i, (cx, cy) in enumerate((("clinch_x", "clinch_y"), ("w - clinch_x", "clinch_y"),
-                                      ("clinch_x", "h - clinch_y"), ("w - clinch_x", "h - clinch_y")), start=1):
-            cut_hole(design, comp, body, "xYConstructionPlane", front + " - (%d) * t / 2" % zs, cx, cy, "clinch_d",
-                     "CLINCH NUT HOLE %d IN THE LIP" % i, ("x", "y"))
-        print("body box after holes %s (returns toward %sZ)" % (box(body), "+" if zs > 0 else "-"))
-        body.name = name
-    else:
-        occ = root.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-        comp = occ.component
-        comp.name, comp.partNumber = "%s %s" % (pn, name), pn
-        comp.description = root.description
-        body, _sk = flat_plate(design, comp, key)
-    lib = app.materialLibraries.itemByName("Fusion Material Library")
-    mat = design.materials.itemByName("Aluminum 5052") or design.materials.addByCopy(lib.materials.itemByName("Aluminum"), "Aluminum 5052")
-    mat.materialProperties.itemById("structural_Density").value = 2680.0
-    body.material = mat
+def _folder(app):
+    proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
+    return proj, proj.rootFolder.dataFolders.itemByName(FOLDER)
+
+
+def open_or_create(app, name):
+    """The design called `name`: activated if open, opened from FocusPod v2 if there, else made.
+    PM ruling 2026-11-01: read every entry of the folder first, and make nothing if any can't be read
+    (that entry could be this very design); a new design is saved there at once, empty."""
+    docs = [app.documents.item(i) for i in range(app.documents.count)]
+    docs = [d for d in docs if d.name == name or d.name.split(" v")[0] == name]
+    if len(docs) > 1:
+        raise RuntimeError("%d open documents are called %s" % (len(docs), name))
+    if docs:
+        docs[0].activate()
+        return docs[0], "activated"
+    proj, folder = _folder(app)
+    n = folder.dataFiles.count
+    found, unreadable = [], 0
+    for i in range(n):
+        try:
+            f = folder.dataFiles.item(i)
+            if f.name == name:
+                found.append(f)
+        except Exception:
+            unreadable += 1
+    app.data.activeProject = proj
+    if len(found) > 1:
+        raise RuntimeError("%d files are called %s in %s" % (len(found), name, FOLDER))
+    if found:
+        d = app.documents.open(found[0], True)
+        if d is None:
+            raise RuntimeError("could not open %s" % name)
+        d.activate()
+        return d, "opened (version %s)" % found[0].versionNumber
+    if unreadable:
+        raise RuntimeError("%d of the %d entries of %s can't be read, so %s isn't made (PM ruling 2026-11-01)"
+                           % (unreadable, n, FOLDER, name))
+    print("%s: all %d entries read, %s is not there: making it" % (FOLDER, n, name))
+    d = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
+    if not d.saveAs(name, folder, "new, made by electrical_parts_cad.py", ""):
+        d.close(False)
+        raise RuntimeError("saveAs %s into %s failed" % (name, FOLDER))
+    d.activate()
+    return d, "made"
+
+
+def clear_design(design):
+    """Empty a design that is opened again: the timeline and the components. User parameters stay and
+    are updated in place (a parameter a feature used can't be deleted and re-added in the same run)."""
     tl = design.timeline
-    unhealthy = [tl.item(i).name for i in range(tl.count)
-                 if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
-    loose = [s.name for c in design.allComponents for s in c.sketches if not s.isFullyConstrained]
-    mass = comp.getPhysicalProperties(adsk.fusion.CalculationAccuracy.MediumCalculationAccuracy).mass
-    print("%s: box %s, mass %.3f kg, timeline %d, unhealthy %d, loose sketches %d, parameters %d" % (
-        pn, box(body), mass, tl.count, len(unhealthy), len(loose), design.userParameters.count))
-    if unhealthy or loose:
-        raise RuntimeError("checks failed: unhealthy %s, loose %s" % (unhealthy, loose))
-    if ARGS.get("save") == "1":
-        print("saved:", doc.save("%s %s" % (name, M.REV)))
-    if ARGS.get("export") == "1":
-        export(design, root, comp, key, ARGS["repo_root"], stem)
+    if tl.count:
+        tl.markerPosition = 0
+        tl.deleteAllAfterMarker()
+    root = design.rootComponent
+    for i in range(root.occurrences.count - 1, -1, -1):
+        root.occurrences.item(i).deleteMe()
+    left = design.timeline.count + root.occurrences.count + root.bRepBodies.count + root.sketches.count
+    if left:
+        raise RuntimeError("%d timeline items, components, bodies or sketches left after clearing" % left)
+
+
+def set_param(design, name, expr, unit, comment):
+    p = design.userParameters.itemByName(name)
+    if p is None:
+        return design.userParameters.add(name, vi(expr), unit, comment)
+    p.expression = expr
+    p.comment = comment
+    return p
+
+
+def build_part(app, key):
+    pn, name, vn, stem, params = PARTS[key]
+    t0 = time.time()
+    doc, how = open_or_create(app, stem + "_CAD")
+    print("=== %s %s: %s" % (pn, name, how))
+    try:
+        design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
+        design.designType = adsk.fusion.DesignTypes.ParametricDesignType
+        design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
+        root = design.rootComponent
+        clear_design(design)
+        for pname, expr, unit, status, src in params:
+            set_param(design, pname, expr, unit, "%s: %s" % (status.upper(), src))
+        root.partNumber = pn
+        root.description = "%s | %s | %s" % (name, vn, M.REV)
+        if key == "body":
+            occ = root.occurrences.addNewSheetMetalComponent(adsk.core.Matrix3D.create())
+            comp = occ.component
+            comp.name, comp.partNumber = "%s %s" % (pn, name), pn
+            comp.description = root.description
+            body = body_tray(design, comp, occ)
+            bb = box(body)
+            t = ev(design, "t")
+            zs = 1 if abs(bb[2]) < abs(bb[5]) else -1      # the returns fold toward +Z or -Z
+            back_z = bb[2] if zs > 0 else bb[5]               # the back's outer face: Z 0, t or -t
+            back = [e for e, v in (("0 mm", 0.0), ("t", t), ("-t", -t)) if abs(back_z - v) < 0.05]
+            if not back:
+                raise RuntimeError("body: the back's outer face is at Z %.3f, not 0 or +-t" % back_z)
+            z = lambda e: "(%s) + (%s) * (%d)" % (back[0], e, zs)  # noqa: E731
+            print("body: back face Z %s, returns toward %sZ" % (back[0], "+" if zs > 0 else "-"))
+            # holes: right side (two lead exits), top (light feed), bottom (sleeve), lips (4 clinch nuts)
+            cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z1", z("d - lead_y"), "hole_b", "LEAD EXIT 1 RIGHT SIDE", ("y", "z"))
+            cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z2", z("d - lead_y"), "hole_b", "LEAD EXIT 2 RIGHT SIDE", ("y", "z"))
+            cut_hole(design, comp, body, "xZConstructionPlane", "h", "top_x", z("d - lead_y"), "hole_b", "LIGHT FEED EXIT TOP", ("x", "z"))
+            cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "sleeve_x", z("d - sleeve_y"), "sleeve_d", "SLEEVE ENTRY BOTTOM", ("x", "z"))
+            for i, (cx, cy) in enumerate((("clinch_x", "clinch_y"), ("w - clinch_x", "clinch_y"),
+                                          ("clinch_x", "h - clinch_y"), ("w - clinch_x", "h - clinch_y")), start=1):
+                cut_hole(design, comp, body, "xYConstructionPlane", z("d - t / 2"), cx, cy, "clinch_d",
+                         "CLINCH NUT HOLE %d IN THE LIP" % i, ("x", "y"))
+            body = comp.bRepBodies.item(0)
+            print("body box after holes %s" % box(body))
+            body.name = name
+        else:
+            occ = root.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+            comp = occ.component
+            comp.name, comp.partNumber = "%s %s" % (pn, name), pn
+            comp.description = root.description
+            body, _sk = flat_plate(design, comp, key)
+        mat = design.materials.itemByName("Aluminum 5052")
+        if mat is None:
+            lib = app.materialLibraries.itemByName("Fusion Material Library")
+            src = lib.materials.itemByName("Aluminum") if lib else None
+            if src is not None:
+                mat = design.materials.addByCopy(src, "Aluminum 5052")
+                mat.materialProperties.itemById("structural_Density").value = 2680.0
+        if mat is not None:
+            body.material = mat
+        tl = design.timeline
+        unhealthy = [tl.item(i).name for i in range(tl.count)
+                     if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+        loose = [sk.name for c in design.allComponents for sk in c.sketches if not sk.isFullyConstrained]
+        props = comp.getPhysicalProperties(adsk.fusion.CalculationAccuracy.MediumCalculationAccuracy)
+        vol = props.volume * 1000.0                          # cm3 -> mm3
+        print("%s: box %s, volume %.0f mm3, mass %.3f kg (%s), timeline %d, unhealthy %d, loose sketches %d, "
+              "parameters %d" % (pn, box(body), vol, props.mass, mat.name if mat else "no material: 2.68 g/cm3 by hand",
+                                 tl.count, len(unhealthy), len(loose), design.userParameters.count))
+        print("MASS|%s|%.4f" % (pn, vol * 2.68e-6))
+        if unhealthy or loose:
+            raise RuntimeError("checks failed: unhealthy %s, loose %s" % (unhealthy, loose))
+        if not doc.save("%s %s, by electrical_parts_cad.py" % (name, M.REV)):
+            raise RuntimeError("save failed")
+        print("saved %s_CAD in %s" % (stem, FOLDER))
+        if ARGS.get("export") == "1":
+            export(design, root, comp, key, ARGS["repo_root"], stem)
+        print("%s done in %.0f s" % (pn, time.time() - t0))
+    finally:
+        print("closed:", doc.close(False))      # the saved version stays in the cloud
+
+
+def run(_context):
+    keys = [k for k in ARGS.get("parts", "front,hub,body").split(",") if k]
+    bad = [k for k in keys if k not in PARTS]
+    if bad:
+        raise RuntimeError("parts must be among %s, not %s" % (sorted(PARTS), bad))
+    app = adsk.core.Application.get()
+    failed = []
+    for key in keys:
+        try:
+            build_part(app, key)
+        except Exception:
+            import traceback
+            print("PART FAILED %s\n%s" % (key, traceback.format_exc()))
+            failed.append(key)
+    if failed:
+        raise RuntimeError("parts that failed: %s (the others built, saved and exported)" % ", ".join(failed))

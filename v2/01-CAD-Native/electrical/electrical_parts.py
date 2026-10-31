@@ -340,7 +340,7 @@ part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện -
 part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
      AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.26,
      "calculation (0.063 m2 net x 1.5 mm x 2.68 g/cm3)", size="300 x 260",
-     process="laser cut from 1.5 mm sheet, flat, no bends; anodised", status="DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04)",
+     process="laser cut from 1.5 mm sheet as a flat plate; anodised", status="DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04)",
      source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD; DXF 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_DXF.dxf (no drawing, D-89 part 4)",
      note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
           "ISO 2768-m; critical holes: the 4 x Ø4.5 M4 holes on the body's clinch nuts (15 and 5 mm from the edges, true "
@@ -541,7 +541,7 @@ part("hub", "718060", "ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE)", "Đi�
      status="HOLD (in-house module: interface data ISS-060)", source="REQ-ELE-02, D-09; cited by name only")
 part("hub_plate", "711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến", "MP", "710041", 1,
      AL + " 1.5 mm", "black anodised AA20 (D-67)", 0.11, "calculation (0.027 m2 net x 1.5 mm x 2.68 g/cm3)",
-     size="180 x 180", process="laser cut from 1.5 mm sheet, flat, no bends; anodised",
+     size="180 x 180", process="laser cut from 1.5 mm sheet as a flat plate; anodised",
      status="DRAFT; HOLD features: the hub window, button and knob holes (ISS-060) and the fixing holes (CEILING's column)",
      source="711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_CAD; DXF 711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_DXF.dxf (no drawing, D-89 part 4)",
      note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
