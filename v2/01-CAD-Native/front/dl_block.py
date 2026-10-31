@@ -168,7 +168,7 @@ def frame_members():
     bot, door = FL.line(0, 1, ZB), FL.line(-1, 0, "-(%s + dl_w)" % XL)
     slope = FL.line("-dl_m / dl_k", "-1 / dl_k", "-(dt_zb + dl_m * (%s + dl_w)) / dl_k" % XL)
     left = FL.line(1, 0, XL)
-    back = FL.ring([(bot, "dl_skin_t", "fr_w"), (door, "dl_skin_t", "fr_w"), (slope, "dl_skin_t", "fr_w"),
+    back = FL.ring([(bot, "0 mm", "fr_w"), (door, "dl_skin_t", "fr_w"), (slope, "dl_skin_t", "fr_w"),
                     (left, "dl_skin_t", "fr_wb")])
     for k, (key, nm, sec) in enumerate((("B01", "BACK RING BOTTOM", S20), ("B02", "BACK RING DOOR SIDE", S20),
                                         ("B03", "BACK RING SLOPE UNDER DT", S20), ("B04", "BACK RING BOLT LINE", S60))):
@@ -194,7 +194,7 @@ def frame_members():
     G, G2, K, K2 = FL.meet(k0, o3), FL.meet(k20, o23), FL.meet(o3, q3), FL.meet(o23, q23)
     ring_parts = (("D", "DOOR SIDE", [E, A, B, C, D], (1, 2)), ("K", "BACK", [B, G, G2, C], (0, 1)),
                   ("O", "OUTER FACET", [G, K, K2, G2], (0, 1)), ("F", "FRONT FACET", [K, D, D2, K2], (0, 1)))
-    levels = [("1", "BOTTOM", "%s + dl_skin_t" % ZB), ("2", "BETWEEN HINGES 1 AND 2", "fr_z2"),
+    levels = [("1", "BOTTOM", ZB), ("2", "BETWEEN HINGES 1 AND 2", "fr_z2"),
               ("3", "BETWEEN HINGES 2 AND 3", "fr_z3"), ("4", "TOP", "fr_z4")]
     for n, lv, z0 in levels:
         for tag, nm, pts, ax in ring_parts:
@@ -260,7 +260,7 @@ def build(app):
     skin = f.bodies.item(0)
     prism(c, ("x", "z"), [(XL, "dl_zo"), (XL + " + dl_w", "dt_zb"), (XL + " + dl_w", "pod_h"), (XL, "pod_h")],
           "y", YF, YB, "SLOPE - DL TOP UNDER DT", "CUT - DL TOP SLOPE", CUT, skin)
-    yb = L.ev(design, YB)
+    yb, zb = L.ev(design, YB), L.ev(design, ZB)
     open_faces, kinds = adsk.core.ObjectCollection.create(), []
     for fc in skin.faces:
         p = fc.pointOnFace
@@ -269,10 +269,12 @@ def build(app):
             kinds.append("back")
         elif n.x > 0.2 and n.z > 0.2:
             kinds.append("DT joint")
+        elif abs(n.z + 1) < 1e-6 and abs(p.z * 10 - zb) < 0.05:
+            kinds.append("bottom")      # open: the frame's bottom ring stands on the band (J-FRONT-02, as DR's base)
         else:
             continue
         open_faces.add(fc)
-    if sorted(kinds) != ["DT joint", "back"]:
+    if sorted(kinds) != ["DT joint", "back", "bottom"]:
         raise RuntimeError("faces to leave open: found %s" % kinds)
     si = c.features.shellFeatures.createInput(open_faces, False)
     si.insideThickness = L.vi("dl_skin_t")
@@ -284,18 +286,6 @@ def build(app):
                               ("hinge_x0 - hinge_clear", GY + " + hinge_clamp_t / 2 + hinge_clear")],
               "z", "%s - hinge_clamp_h / 2 - hinge_clear" % zc, "%s + hinge_clamp_h / 2 + hinge_clear" % zc,
               "POCKET - HINGE H%d (HOLD SPACE)" % (i + 1), "CUT - HINGE POCKET H%d IN THE SKIN" % (i + 1), CUT, skin)
-    # J-FRONT-02: clearance in the bottom skin round the band spigots' rivnut heads (the slot's runs along the facet)
-    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "CLEARANCE - BAND SPIGOT (ROUND HOLE)",
-                   [("sp_ax", "sp_ay")], "sp_skin")
-    L.extrude_span(c, sk, "z", ZB + " - 1 mm", ZB + " + dl_skin_t + 1 mm", CUT, [skin], "CUT - SPIGOT CLEARANCE ROUND",
-                   profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
-    hl, hw = "((sp_slot - sp_hole) / 2 + sp_skin / 2)", "(sp_skin / 2)"
-    prism(c, ("x", "y"), [("sp_bx - %s * sp_d2x - %s * sp_n2x" % (hl, hw), "sp_by - %s * sp_d2y - %s * sp_n2y" % (hl, hw)),
-                          ("sp_bx + %s * sp_d2x - %s * sp_n2x" % (hl, hw), "sp_by + %s * sp_d2y - %s * sp_n2y" % (hl, hw)),
-                          ("sp_bx + %s * sp_d2x + %s * sp_n2x" % (hl, hw), "sp_by + %s * sp_d2y + %s * sp_n2y" % (hl, hw)),
-                          ("sp_bx - %s * sp_d2x + %s * sp_n2x" % (hl, hw), "sp_by - %s * sp_d2y + %s * sp_n2y" % (hl, hw))],
-          "z", ZB + " - 1 mm", ZB + " + dl_skin_t + 1 mm", "CLEARANCE - BAND SPIGOT (SLOT)", "CUT - SPIGOT CLEARANCE SLOT",
-          CUT, skin)
     skin.name = "DL SKIN ACP 3"
     bodies["SKIN"] = skin
 
@@ -349,7 +339,7 @@ def build(app):
                    "CUT - J-FRONT-01 RIVNUT TAILS AND BOLT TIPS",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     # J-FRONT-02: the spigot hole in the outer facet's bottom ring tube and the slot (along the facet) in the front's
-    zr0 = ZB + " + dl_skin_t"
+    zr0 = ZB
     sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLE - J-FRONT-02 SPIGOT (ROUND)",
                    [("sp_ax", "sp_ay")], "sp_hole")
     L.extrude_span(c, sk, "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", CUT, [tubes["R1O"]], "CUT - J-FRONT-02 SPIGOT HOLE",
@@ -414,7 +404,7 @@ ANCHORS = [
     ("SKIN", 1, "-dl_y3"), ("SKIN", 4, "-pod_d / 2 + decor_d"),
     ("BACK", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("PS", 0, "door_xl - pod_w / 2"), ("PS", 5, "dt_zb - ps_s"),
     ("STOP", 3, "dl_w + stop_reach - pod_w / 2"),
-    ("FRAME", 0, "-pod_w / 2 + dl_skin_t"), ("FRAME", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("FRAME", 2, "wall_z0 + dl_skin_t"),
+    ("FRAME", 0, "-pod_w / 2 + dl_skin_t"), ("FRAME", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("FRAME", 2, "wall_z0"),
     ("FRAME", 4, "-pod_d / 2 + decor_d - dl_back_t"), ("FRAME", 1, "-dl_y3 + dl_skin_t"),
 ]
 
@@ -438,8 +428,8 @@ def export_all(app):
          "skin bonded to the welded tube frame 351104; ships with the hinges' frame halves fitted (packing plan)"),
         ("351101", PARTS["SKIN"][1], PARTS["SKIN"][2], 1, "made: ACP panels, 45 deg mitred joints as v1, bonded to "
          "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 3.5 kg/m2: selection VT01)", "DRAFT",
-         "D-12, D-49; skeleton DL shape", "three hinge pockets (HOLD sizes); 2 clearance holes in the bottom over the "
-         "band spigots (J-FRONT-02); one flat panel per outside face: " +
+         "D-12, D-49; skeleton DL shape", "three hinge pockets (HOLD sizes); open at the bottom, where the frame's bottom "
+         "ring stands on the band and takes its spigots (J-FRONT-02); one flat panel per outside face: " +
          DXF_SKIN_REL.split("/")[-1] + "; bond to the frame per the joints register's ACP bond spec"),
         (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "made: welded frame, %d tubes (cut list %s)" % (
             len(members), CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5, "
