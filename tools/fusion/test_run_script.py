@@ -663,6 +663,33 @@ class FreshModulesTests(unittest.TestCase):
         self.assertEqual(trees, ["/nonexistent-folder-for-a-test"])
         self.assertIn("warning: git worktree list failed", err.getvalue())
 
+    def test_the_home_folder_and_above_are_never_swept(self):
+        # PM, after #157: a worktree right in the home folder must not make home a root
+        home = os.path.realpath(os.path.expanduser("~"))
+        rs.git_worktrees = lambda repo_root=None: [self.trees["MAIN"], os.path.join(home, "a-worktree"),
+                                                   self.trees["A"]]
+        roots = [os.path.realpath(r) for r in rs.team_roots()]
+        self.assertNotIn(home, roots)
+        self.assertFalse(any(home.startswith(r.rstrip("/") + "/") for r in roots), roots)
+        self.assertIn(os.path.realpath(self.trees["A"]), roots)
+
+    def test_modules_under_fusions_add_in_folder_are_never_dropped(self):
+        # a team folder that happens to hold a Fusion add-in: the add-in's module stays
+        addins = os.path.join(self.trees["B"], "Autodesk", "AddIns")
+        os.makedirs(addins)
+        with open(os.path.join(addins, "fake_addin_module.py"), "w") as fh:
+            fh.write("LOADED = True\n")
+        sys.path.insert(0, addins)
+        import fake_addin_module
+        keep_roots = rs.keep_roots
+        rs.keep_roots = lambda: keep_roots() + [addins]
+        try:
+            self.assertEqual(self.run_as("B", []), ["B"])
+            self.assertIs(sys.modules.get("fake_addin_module"), fake_addin_module)   # not dropped
+        finally:
+            rs.keep_roots = keep_roots
+            sys.modules.pop("fake_addin_module", None)
+
     def test_main_python_and_odd_modules_are_safe(self):
         import json as _json
         main = sys.modules.get("__main__")
