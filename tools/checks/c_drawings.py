@@ -150,6 +150,7 @@ NOT_FLAT = re.compile(r"bend|bent|fold|brake|groove|\blap\b|half-lap|rebate|pock
                       r"\btap(?:ped|ping)?\b|thread|countersink|counterbore|ream|\bturn(?:ed|ing)?\b|lathe|chamfer|weld|"
                       r"bond", re.I)
 BEND_LAYER = re.compile(r"\b(?:BEND|FOLD)", re.I)
+METAL = re.compile(r"alumin|steel|zinc", re.I)     # D-99: part 4 is for flat metal sheet (the checklist's METAL)
 
 
 def dxf_other_layers(text):
@@ -218,6 +219,7 @@ def flat_row_lacks(root, pn):
             re.search(r"\d+(?:\.\d+)?\s*mm\b", material))
         not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(process)})
         lacks = [n for n, ok in (
+            ("metal sheet (D-99)", bool(METAL.search(material))),
             ("a cut by laser, waterjet or router in its process", bool(SHEET_CUT.search(process))),
             ("no bends or machined features (its process names %s)" % ", ".join(not_flat), not not_flat),
             ("material", bool(material)), ("thickness", thick), ("finish", bool(has(r"finish"))),
@@ -410,6 +412,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   label, "/".join(sorted(revs)), "/".join(sorted(cad_revs))),
                               "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
                               rp, owner))
+        if "WIRING-DIAGRAM" in os.path.basename(pdf).upper():
+            continue        # D-93: ELECTRICAL's wiring diagram draws 710000 (routes and joints on sheet 3); a schematic
         text = pdf_text(pdf)
         if text is None:
             continue

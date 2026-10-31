@@ -1,5 +1,5 @@
 {
- "next": 32,
+ "next": 33,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -909,7 +909,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -934,15 +934,15 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C06",
    "rule": "name-mismatch",
    "subject": "368006",
    "severity": "minor",
-   "message": "368006 is named 'FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD' in the CAD (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step) but 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD' in the parts list (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv); the guideline wants one name everywhere (section 4.2).",
-   "fix": "Use the same name in the CAD component and the parts list.",
+   "message": "368006 is named 'FRONT - 180 MAGNETIC SEAL - DOOR SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
    "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
    "owner": "FRONT",
    "evidence": {},
@@ -959,15 +959,15 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C06",
    "rule": "name-mismatch",
    "subject": "368102",
    "severity": "minor",
-   "message": "368102 is named 'FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10' in the CAD (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step) but 'FRONT - DOOR STRIKE' in the parts list (v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv); the guideline wants one name everywhere (section 4.2).",
-   "fix": "Use the same name in the CAD component and the parts list.",
+   "message": "368102 is named 'FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10' in the CAD and 'FRONT - DOOR STRIKE' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - DOOR STRIKE', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
    "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
    "owner": "FRONT",
    "evidence": {},
@@ -984,7 +984,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -1009,14 +1009,14 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
    "rule": "no-drawing",
    "subject": "361001",
    "severity": "severe",
-   "message": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance.",
+   "message": "361001 FRONT - DOOR LEAF - 4+4 LAMINATED has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal sheet (D-99); a cut by laser, waterjet or router in its process; thickness; finish; an ISO 2768 general tolerance.",
    "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
    "file": "",
    "owner": "FRONT",
@@ -1034,7 +1034,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
   },
   {
    "check": "C05",
@@ -1059,7 +1059,37 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 847075f"
+   "last_seen": "2026-11-01 a58e9e8"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "368101",
+   "severity": "minor",
+   "message": "368101 is named 'FRONT - DOOR HINGE - HOLD - H1 BOTTOM' in the CAD and 'FRONT - DOOR HINGE - HOLD' in v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv; the joints register names it 'FRONT - DOOR HINGE - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD.",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C06|name-mismatch|368101",
+   "id": "F-032",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 63cefe0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "63cefe0",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "a58e9e8",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 a58e9e8"
   }
  ]
 }
