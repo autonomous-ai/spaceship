@@ -269,8 +269,9 @@ def calc_md(v, mass_of, harness):
     A("| **Not yet in C4's 240 W** (losses + hub + supply fans) | **%.1f** |" % extra)
     A("")
     A("At the 53 l/s normal flow that adds **%.2f K** to C4's 3.8 K (ΔT = P / (1.2 × 1005 × 0.053), calculation). "
-      "With the voice kit at 60 W, its own supply's loss adds about %.1f W more (calculation). For the Air "
-      "Engineer's 4 K check (D-50)." % (dT, 60 / eff - 60))
+      "The lights are %.1f W: the shelf capped at 71.5 %% (PM heat request) and the call light. With the voice kit at "
+      "its 40 W average (D-88), the kit adds 40 W and its supply's loss about %.1f W more (calculation). For the Air "
+      "Engineer's 4 K check (D-50)." % (dT, lights, 40 / eff - 40))
     A("")
     A("## 5. Mass")
     A("")

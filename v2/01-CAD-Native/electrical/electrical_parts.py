@@ -28,6 +28,8 @@ SUPPLIES = [
 # ------------------------------------------------------------------ loads (the load table)
 # id, load, supply, branch fuse, qty, W each max, W each typical, status of W, source, note
 FAN_W_MAX = 6.6        # Noctua's maximum input power, 0.55 A at 12 V (maker page via retailer copies, 2026-10-31: unverified)
+SHELF_CAP = 0.715      # PM heat request: lights about 22 W; 71.5 kOhm (E96) on PS2's resistance-dimming input
+SHELF_W = round(4.434 * 6.0 * SHELF_CAP, 1)   # 19.0 W (calculation)
 FAN_W_53 = 2.6         # at about 73 % speed for 53 l/s (air report §7d): cube law 0.73^3 x 6.6 (calculation)
 LOADS = [
     ("LD01", "Supply fan pair (2 x Noctua NF-A14 industrialPPC-3000 PWM), high in DR", "PS3", "F3a 2 A", 2,
@@ -42,11 +44,14 @@ LOADS = [
     ("LD04", "Call light, 900 mm bar of Häfele Loox5 2165 strip (3.0 W/m)", "PS3", "F3d 1 A", 1,
      2.7, 2.7, "calculation (0.9 m x 3.0 W/m, maker data)", "REQ-AIR-06, D-70; Häfele 25L1-18",
      "switched by the hub from the CALL button; about 440 lm"),
-    ("LD05", "Light shelf, 4.434 m of Häfele Loox5 2168 strip (6.0 W/m)", "PS2", "F2 3 A", 1,
-     26.6, 26.6, "calculation (strip length from the model x 6.0 W/m, maker data)", "REQ-AIR-06, D-70; Häfele 25L1-18",
-     "dimmed by the hub (0-10 V) from the LIGHT knob; about 4300 lm at 3000 K; lights 29.3 W in all, inside the 30 W budget"),
+    ("LD05", "Light shelf, 4.434 m of Häfele Loox5 2168 strip (6.0 W/m, 970 lm/m at 3000 K: 162 lm/W)", "PS2", "F2 3 A", 1,
+     SHELF_W, SHELF_W, "calculation (strip length from the model x 6.0 W/m x the 71.5 % cap; maker data)",
+     "REQ-AIR-06, D-70; Häfele 25L1-18; PM heat request 2026-11-01 (about 22 W for the lights)",
+     "capped at 71.5 % (hub's 0-10 V limit; a 71.5 kOhm resistor on DIM holds it if the hub link opens): about 3130 lm; "
+     "the full strip would be 26.6 W, 4300 lm; lights 21.7 W in all"),
     ("LD06", "Voice cockpit hook, 12 V 5 A reserved outlet", "PS1", "F1 5 A", 1,
-     60.0, 0.0, "DECIDED (D-11)", "REQ-VCK-04", "kit not fitted in v2: 0 W typical"),
+     60.0, 0.0, "DECIDED (D-11 peak; D-88 average)", "REQ-VCK-04; D-88",
+     "60 W peak on the hook, 40 W average budget (D-88); kit not fitted in v2, so 0 W typical"),
     ("LD07", "Supply fan inlet temperature sensor", "PS3", "via the hub", 1,
      0.05, 0.05, "assumption", "REQ-ELE-04, D-50", "powered from the hub's sensor port"),
 ]
@@ -113,7 +118,7 @@ def _len(v, *codes):
     return tot
 
 
-LIGHT_A = 26.6 / 12.0       # shelf at full (load table LD05), calculation
+LIGHT_A = 26.6 / 12.0       # shelf strip at full, the wiring's design current even with the cap (calculation)
 PS3_A = (4 * 6.6 + 5.0 + 2.7) / 12.0   # PS3's maximum (LD01-LD04), calculation
 
 
@@ -378,6 +383,11 @@ part("fuse5", "718012", "ELECTRICAL - FUSE - ATO 5 A 32 V", "Điện - cầu ch�
      source="ISO 8820-3", note="F1, the voice kit outlet (REQ-VCK-04)")
 part("fuse3", "718013", "ELECTRICAL - FUSE - ATO 3 A 32 V", "Điện - cầu chì 3 A", "PI", "710001", 1, "", "", 0.002,
      "assumption", maker="Littelfuse", sku="0287003 (unverified)", status=HOLD_BUY, source="ISO 8820-3", note="F2, lights")
+part("dimcap", "718018", "ELECTRICAL - RESISTOR - 71.5 KOHM 1 % 0.25 W - DIM CAP", "Điện - điện trở giới hạn độ sáng",
+     "PI", "710001", 1, "metal film", "", 0.0003, "assumption", sku="maker HOLD (E96 71.5 kOhm 1 %, axial)", status=HOLD_BUY,
+     source="Mean Well PWM-60 resistance dimming (0-100 kOhm); PM heat request 2026-11-01",
+     note="across PS2's DIM+ and DIM-: caps the shelf at about 71.5 % if the hub's 0-10 V link opens (open DIM = 100 %); "
+          "the curve is to calibrate on the prototype")
 part("pestud", "718014", "ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING", "Điện - vít tiếp địa M5", "PI", "710001", 1,
      "aluminium", "plain, as supplied", 0.005, "assumption", maker="PennEngineering", sku="FHA-M5-12 (unverified)", status=HOLD_BUY,
      source="PEM catalogue", note="the enclosure's PE point: inlet, socket and bond lugs")

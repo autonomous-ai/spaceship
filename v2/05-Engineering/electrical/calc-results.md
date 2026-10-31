@@ -11,15 +11,15 @@ Every number here is a **calculation** from the load table (`710000_P01_ELECTRIC
 | Supply | Rated W | Load max W | Load typical W | Max load / rating | Feeds |
 |---|---:|---:|---:|---:|---|
 | PS1 | 60 | 60.0 | 0.0 | 100 % | voice cockpit hook, fused 5 A (REQ-VCK-04) |
-| PS2 | 60 | 26.6 | 26.6 | 44 % | light shelf (the hub sets its 0-10 V dimming) |
+| PS2 | 60 | 19.0 | 19.0 | 32 % | light shelf (the hub sets its 0-10 V dimming) |
 | PS3 | 60 | 34.1 | 14.6 | 57 % | four fans, the sensor hub and the call light (column fuse block) |
-| **All** | **180** | **120.8** | **41.2** | 67 % | REQ-ELE-03: about 125 W load, supply at least 150 W |
+| **All** | **180** | **113.2** | **33.6** | 63 % | REQ-ELE-03: about 125 W load, supply at least 150 W |
 
 Typical = one or two people, lights full, fans near the 53 l/s normal flow, no voice kit fitted. Max = every load at its maximum at once, which the control never asks for (the fans reach full speed only above the 65 l/s boost).
 
 ## 2. Mains side
 
-- Supplies' input at maximum load: 147 W at 83 % efficiency (assumption from the maker's typical figure, parts list) plus 0.5 W no-load each: about **0.67 A at 220 V**.
+- Supplies' input at maximum load: 138 W at 83 % efficiency (assumption from the maker's typical figure, parts list) plus 0.5 W no-load each: about **0.63 A at 220 V**.
 - The RCBO is C10, 30 mA: 10 A x 220 V = 2.2 kW for the user socket and the supplies together. A laptop charger takes about 0.3 A; a 2 kW heater would still hold (9.1 A), which is the worst case a user might plug in (assumption).
 - Mains conductors 1.5 mm² (H07V-K in the sleeve, 0.82 m): rated well above 10 A in free air (IEC 60364-5-52, to confirm by the factory's electrician); the RCBO protects them.
 
@@ -69,13 +69,13 @@ The supplies sit inside the pod (in the power unit), so their losses heat the po
 
 | Heat source, typical | W |
 |---|---:|
-| Lights (already in C4's 30 W) | 29.3 |
-| Supply losses, 3 units | 9.9 |
+| Lights (already in C4's 30 W) | 21.7 |
+| Supply losses, 3 units | 8.4 |
 | Sensor hub | 3.0 |
 | Supply fan pair at 53 l/s | 5.2 |
-| **Not yet in C4's 240 W** (losses + hub + supply fans) | **18.1** |
+| **Not yet in C4's 240 W** (losses + hub + supply fans) | **16.6** |
 
-At the 53 l/s normal flow that adds **0.28 K** to C4's 3.8 K (ΔT = P / (1.2 × 1005 × 0.053), calculation). With the voice kit at 60 W, its own supply's loss adds about 12.3 W more (calculation). For the Air Engineer's 4 K check (D-50).
+At the 53 l/s normal flow that adds **0.26 K** to C4's 3.8 K (ΔT = P / (1.2 × 1005 × 0.053), calculation). The lights are 21.7 W: the shelf capped at 71.5 % (PM heat request) and the call light. With the voice kit at its 40 W average (D-88), the kit adds 40 W and its supply's loss about 8.2 W more (calculation). For the Air Engineer's 4 K check (D-50).
 
 ## 5. Mass
 
