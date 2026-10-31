@@ -316,7 +316,7 @@ def service_parts(m):
         cart = (p("cart_l") + p("fanbox_l"), p("cart_w"), p("cart_d"))
         parts = [Part("A-CART-SUPPLY", "AIR - SUPPLY SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM)",
                       "Ống tiêu âm cấp gió + 2 quạt thông gió 12 V", "AIR", cart, 1, p("cart_kg") + fans_per_cart * p("fan12_kg"), "long",
-                      "calculation", "fan box at the top, grille low on the right block's inner face; slides in from inside (D-36); CAD fit HOLD"),
+                      "calculation", "room-side intake low on the right block, at least 1 m from the exhaust's top slot (D-58); grille low on the inner face; slides in from inside (D-36); CAD fit HOLD"),
                  Part("A-CART-EXHAUST", "AIR - EXHAUST SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM)",
                       "Ống tiêu âm thải gió + 2 quạt thông gió 12 V", "AIR", cart, 1, p("cart_kg") + fans_per_cart * p("fan12_kg"), "long",
                       "calculation", "grille high, fans at the foot blowing up the riser; slides in from inside (D-36); CAD fit HOLD"),
