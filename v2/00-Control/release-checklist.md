@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (deeecf9), PR #27 (4696390), PR #28 (04ac4dd), PR #55 (9028182), PR #32 (40c7c5d), PR #64 (4d4f9e3), PR #41 (2a503fc). The Mac's screen at run time: **unlocked**. 171 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
+Read from: main (7b9b36f), PR #27 (4696390), PR #28 (04ac4dd), PR #55 (9028182), PR #41 (9e318c5), PR #32 (742fe11), PR #64 (d459495). The Mac's screen at run time: **unlocked**. 172 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -87,7 +87,7 @@ What the open made numbers miss: drawing 45, CAD 12, STEP 12, DXF or cut list 6.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 360001 | FRONT - DOOR UNIT | PR #28 | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
 | 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | PR #28 | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
-| 361002 | FRONT - DOOR KICK STRIP | PR #28 | yes | yes | yes | n/a | no | yes | yes | K-F05, K-F06 | open: drawing |
+| 361002 | FRONT - DOOR KICK STRIP | PR #28 | yes | yes | yes | yes | no | yes | yes | K-F05, K-F06 | open: drawing |
 | 360002 | FRONT - FIXED GLASS UNIT | PR #28 | yes | yes | yes | n/a | no | yes | n/a | K-F03, K-F04 | open: drawing |
 | 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED | PR #28 | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
 
@@ -240,7 +240,7 @@ What the open made numbers miss: drawing 45, CAD 12, STEP 12, DXF or cut list 6.
 
 `python3 v2/00-Control/build_release_checklist.py --open-prs` reads origin/main and every open PR that changes parts, through the master BOM's reader (a later branch adds only the files it changed), the files named `PARTNO_REV_NAME_DOCTYPE.ext` in `v2/01-CAD-Native`, `v2/02-Drawings` and `v2/03-Manufacturing`, the FAI plan (`v2/06-Verification/fai-plan.md`) and the test plans. Without `--open-prs` it reads this working tree.
 
-- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing carry its own number, except as D-89 allows, read as the mechanical check reads them: a drawing whose text says TABULATED covers the other numbers of its family and kind that it lists; a felt or fill piece needs no drawing or DXF when a cut-list or parts-list row gives its number, size, material and tolerance and names no pockets, notches or holes (the mechanical check also counts the holes and faces in its STEP); another soft good cut from sheet or roll (foam, gasket, seal or tape, by the name's last word in its function field) needs no drawing when its DXF gives the outline, or, as a plain strip or rectangle, when such a row also gives its thickness.
+- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing carry its own number, except as D-89 allows, read as the mechanical check reads them: a drawing whose text says TABULATED covers the other numbers of its family and kind that it lists; a felt or fill piece needs no drawing or DXF when a cut-list or parts-list row gives its number, size, material and tolerance and names no pockets, notches or holes (the mechanical check also counts the holes and faces in its STEP); another soft good cut from sheet or roll (foam, gasket, seal or tape, by the name's last word in its function field) needs no drawing when its DXF gives the outline, or, as a plain strip or rectangle, when such a row also gives its thickness; a flat part cut from sheet needs no drawing when it has its own DXF and its row's process names laser, waterjet or router cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole note is left to the drawing review. Assemblies always keep their drawings.
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.

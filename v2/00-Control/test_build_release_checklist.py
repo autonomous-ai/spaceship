@@ -276,6 +276,54 @@ class D89SoftGoods(unittest.TestCase):
             self.assertEqual(rc.soft_kind(n) == "felt or fill", common.is_soft(n, kinds=("FELT", "FILL")), n)
 
 
+class D89FlatSheetParts(unittest.TestCase):
+    """D-89 (4): a flat part cut from sheet goes without a drawing on its own DXF and a full parts-list row."""
+    LIST = "v2/03-Manufacturing/front/360000_P01_FRONT_BOM.csv"
+    HEAD = "part_number,name,material,thickness_mm,finish,process,tolerance,note"
+    GOOD = "361101,FRONT - COVER PLATE,aluminium 5754-H22,2,black anodised AA20,laser cut,ISO 2768-m,"
+
+    def plate(self, line=GOOD, head=HEAD, dxf=True, make_buy="make", pn="361101"):
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row(pn, make_buy, "FRONT - COVER PLATE", "aluminium 5754-H22", team="FRONT", src=self.LIST)
+        part["finish"] = "black anodised AA20"
+        names = [f"{pn}_P01_FRONT-COVER-PLATE_CAD.f3d", f"{pn}_P01_FRONT-COVER-PLATE_STEP.step"]
+        names += [f"{pn}_P01_FRONT-COVER-PLATE_DXF.dxf"] if dxf else []
+        file_map = files(*names, folder="v2/03-Manufacturing/front/")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {self.LIST: head + "\n" + line + "\n"})
+        return made[0]
+
+    def test_a_laser_cut_plate_with_its_dxf_and_a_full_row_is_drawn(self):
+        line = self.plate()
+        self.assertEqual((line["flat"], line["dwg"]), ("yes", "DXF and row (D-89)"))
+        self.assertNotIn("drawing", line["gaps"])
+
+    def test_each_missing_item_keeps_the_drawing(self):
+        self.assertEqual(self.plate(dxf=False)["dwg"], "no")
+        self.assertEqual(self.plate(self.GOOD.replace("ISO 2768-m", "±0.2"))["dwg"], "no")
+        self.assertEqual(self.plate(self.GOOD.replace("black anodised AA20", ""))["dwg"], "no")
+        self.assertEqual(self.plate(self.GOOD.replace(",2,", ",,"))["dwg"], "no")
+        self.assertEqual(self.plate(self.GOOD.replace("laser cut", "punch"))["dwg"], "no")
+
+    def test_bent_machined_or_bonded_parts_keep_the_drawing(self):
+        for process in ("laser cut, brake bend", "laser cut, tap M6", "CNC router: outline and the seam half-lap",
+                        "router cut, then bonded to the frame", "waterjet, countersink 4 holes"):
+            self.assertEqual(self.plate(self.GOOD.replace("laser cut", '"%s"' % process))["dwg"], "no", process)
+
+    def test_a_mill_finish_is_not_milling(self):
+        line = self.plate(self.GOOD.replace("black anodised AA20", "mill finish"))
+        self.assertEqual(line["dwg"], "DXF and row (D-89)")
+
+    def test_thickness_may_sit_in_the_material(self):
+        head = "part_number,name,material,finish,process,tolerance"
+        line = "361101,FRONT - COVER PLATE,aluminium 5754-H22 2 mm,black anodised AA20,waterjet,ISO 2768-m"
+        self.assertEqual(self.plate(line, head)["dwg"], "DXF and row (D-89)")
+
+    def test_an_assembly_always_keeps_its_drawing(self):
+        line = self.GOOD.replace("361101", "360101")
+        self.assertEqual(self.plate(line, make_buy="assembly", pn="360101")["dwg"], "no")
+
+
 class Render(unittest.TestCase):
     def test_totals_count_each_number_once_and_name_the_screen(self):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]
