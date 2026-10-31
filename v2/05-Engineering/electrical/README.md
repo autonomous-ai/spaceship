@@ -15,7 +15,7 @@ The pod's electrical design: mains, the 12 V bus, the sensor hub, lights, fans, 
 5. **CAD:** 41 reserved spaces (routes, pockets, bushings, the unit, the inlet, the hub zone) in `710000_P01_ELECTRICAL_CAD`, derived from skeleton P04. Its own clash check runs against the skeleton's real bodies. The three sheet-metal parts we make each have their own design: the folded enclosure body 711001 has a drawing; the flat front plate 711002 and hub zone plate 711005 are defined by their DXF and parts-list row (D-89 part 4). Cut-outs that wait on module data are marked HOLD (PM ruling). See `v2/01-CAD-Native/electrical/MANIFEST.md` and `BUILD-RECORD.md`.
 6. **Every 12 V path stays under 3 % voltage drop** at full load; the worst is 2.9 %, to the supply fans (calc-results §3). The air feed and the kit feed use two conductors per pole.
 7. **Mass:** ELECTRICAL is 4.94 kg against the layout study's 3.05 kg allowance (calc-results §5): the power unit 2.80, the harness parts 1.00, the cord set 0.50, the hub zone 0.38, the lights 0.26. B2 with the unit inside is about 11.9 kg, under the 20 kg limit (D-03).
-8. **Open:** the hub's interface (ISS-060), the parts on HOLD (§10), and the interfaces the other teams draw (§12). The route model has no separate Fusion drawing: sheet 3 of the wiring diagram is its drawing (PM ruling 2026-11-01). The folded enclosure body's Fusion drawing follows on its own branch (D-91).
+8. **Open:** the hub's interface (ISS-060), the parts on HOLD (§10), and the interfaces the other teams draw (§12). The route model has no separate Fusion drawing: sheet 3 of the wiring diagram is its drawing (PM ruling 2026-11-01). The folded enclosure body has its Fusion drawing (711001, A2).
 
 ## Files
 
@@ -30,7 +30,7 @@ The pod's electrical design: mains, the 12 V bus, the sensor hub, lights, fans, 
 | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL-HARNESS-LIST_SPEC.csv` | Harness list: every segment with its conductors, length, plugs, grommets and voltage drop (generated) |
 | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step` | The route model (Fusion writes cm, declared in the file, D-13) |
 | `../../01-CAD-Native/electrical/` | The model data, the Fusion builds (route model; sheet-metal parts), the edit test, the offline tests, the manifest and the build record |
-| `../../02-Drawings/electrical/711001_P01_…_DWG.pdf` | Fusion drawing of the folded enclosure body (follows on its own branch, D-91). The route model's drawing is sheet 3 of the wiring diagram (PM ruling 2026-11-01). The flat front plate 711002 and hub plate 711005 have no drawing: their DXF and parts-list row define them (D-89 part 4). |
+| `../../02-Drawings/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG.pdf` | Fusion drawing of the folded enclosure body (A2: views, dimensions, datums; notes and the hole list H01-H08 in its text block). The route model's drawing is sheet 3 of the wiring diagram (PM ruling 2026-11-01). The flat front plate 711002 and hub plate 711005 have no drawing: their DXF and parts-list row define them (D-89 part 4). |
 | `../../03-Manufacturing/electrical/*_STEP.step`, `*_DXF.dxf` | STEP of each design (cm, declared, D-13); DXF flat pattern of the body and the plates' outlines (mm) |
 
 ## 1. Sources

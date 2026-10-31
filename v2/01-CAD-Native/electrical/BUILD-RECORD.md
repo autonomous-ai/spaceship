@@ -45,4 +45,4 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_build.
 
 ## Not in this run
 
-- The Fusion drawing of the folded enclosure body 711001 follows on its own branch (D-91). The route model has no separate Fusion drawing: sheet 3 of the wiring diagram is its drawing (PM ruling 2026-11-01).
+- The Fusion drawing of the folded enclosure body 711001 is made on its own branch (D-91): started 2026-10-31 21:39 UTC in the held session; its views run is `v2/02-Drawings/electrical/make_body_drawing.py`. The route model has no separate Fusion drawing: sheet 3 of the wiring diagram is its drawing (PM ruling 2026-11-01).
