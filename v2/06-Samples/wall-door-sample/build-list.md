@@ -31,13 +31,13 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 | How it fits | It clips onto S1 from inside with a 4 mm gap and never screws to the frame (D-17). Any cable in the 25 mm gap clips to the cassette only (D-26). |
 | Tests | T01, T02, T10, T11; T07's clip coupons are cut from the same return |
 
-### S3 · Ceiling cassette C1-CASS with its safety catch · Cassette trần trái + dây an toàn
+### S3 · Ceiling cassette (510301, one part for both halves) with its safety catches · Cassette trần (dùng chung trái/phải) + dây an toàn
 
 | | |
 |---|---|
-| Size | 34 × 1169 × 1414 (skeleton C1-CASS), plus 40 mm of fill on its back (D-24): 74 thick as shipped (LS) |
-| Mass | 13.2 kg with the fill (calculation, LS). The hardware selection's older figure is about 16 kg (HW-SEL A8); T07 and T08 use the larger until T10 weighs it. |
-| Build | As S2, plus 40 mm PET fill (P03) fixed to the tray's back (H10), 6 captive clips (P11, H03), and 2 steel lanyards with a rated working load (P12, H04). Each lanyard is fixed to a cassette return and to a 20 × 40 ceiling member (D-42). |
+| Size | The real ceiling cassette from the CEILING Engineer's PR #32: one part serves both halves, and it stops behind the D-60 soffit. Tray outline 1163 × 1048 × 34 in PR #32's current build, made on skeleton P03's parameters; PR #32's model gives 1160 × 1045 × 34 on skeleton P04, and S3 is built to that rebuild. Flat blank 1251.53 × 1136.52 × 0.5 (PR #32's build). 40 mm fill strips on its back (D-24): 74 thick as shipped (source: PR #32) |
+| Mass | About 9.8 kg with its fill: 9.816 kg in PR #32 (tray 5.548, 2 ribs at 0.370, felt 2.182, fill strips 1.346; calculation from its CAD), plus clips and catches (HOLD). The layout study's 13.2 kg was the full 1414 length with no soffit. The hardware selection's older figure is about 16 kg (HW-SEL A8); T07 and T08 keep ISS-076's 16 kg, the larger, until T10 weighs S3. |
+| Build | PR #32's parts: the 0.5 mm galvanised tray (P08), its returns the full 34 mm deep and turned in as 12 mm lips that hold the felt's edges; 2 hat ribs, 0.5 mm (P08), so the felt spans three equal widths; the 9 mm felt on the lips (P09); the gasket on the returns' outer faces (P14); 40 mm PET fill strips on the tray's back (P03, fixing H10); 6 captive clips (P11, H03) and 2 steel lanyards with a rated working load (P12, H04). Each lanyard is fixed to the cassette and to a 20 × 40 ceiling member (D-42). |
 | Tests | T07, T08, T10 |
 
 ### S4 · Door unit (HOLD) · Cửa kính + thanh nhôm chân cửa
@@ -82,6 +82,6 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 | Rig | What | Test |
 |---|---|---|
 | R1 | Base band rig: a base band piece, aluminium 100 × 40 × 2.0 (P24; LS), with the panel's locating features and 4 holes matching S1's rivnuts, per the BASE drawing (H17) | T11 |
-| R2 | Ceiling hanging frame: 20 × 40 × 1.2 members (P02) at C1's clip and catch positions, on a stand at the pod's ceiling height, about 2.3 m inside (D-42) | T07, T08 |
+| R2 | Ceiling hanging frame: 20 × 40 × 1.2 members (P02) at the cassette's clip and catch positions (PR #32: 6 clips on the back faces of the three cross members, over the ribs, and 2 catches on the middle member's front face), on a stand at the pod's ceiling height, about 2.3 m inside (D-42) | T07, T08 |
 | R3 | The D-60 air mock-up for S5 (above): the air column with its backboard, riser box and supply fans, and the soffit with its exhaust fans and roof sleeve | T04, T05, T12 |
 | R4 | Heated chamber on R3's inner side: a closed box over the column's kick grille and the soffit's exhaust grille that takes the supply air and feeds the exhaust, as the pod's inside would, with an adjustable heater (P21) | T05 |

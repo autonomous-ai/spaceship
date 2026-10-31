@@ -20,7 +20,7 @@ Nothing here is released for production. Every physical test stays PLANNED until
 
 ## The sample on one page
 
-- **What gets built** (build list): one full lower side wall panel, L1, with its lining cassette (S1, S2); one ceiling cassette, C1, with its safety catch (S3); the door unit (S4), on HOLD until its hinges and lock are named. The tests also need the air sample: both D-60 cartridges with their fan boxes and fans and the intake riser, in mock-ups of the air column and the soffit (S5, rig R3), a felt specimen for the absorption test (S6), and coupons (S7).
+- **What gets built** (build list): one full lower side wall panel, L1, with its lining cassette (S1, S2); one ceiling cassette, the one part both ceiling halves use (PR #32), with its safety catches (S3); the door unit (S4), on HOLD until its hinges and lock are named. The tests also need the air sample: both D-60 cartridges with their fan boxes and fans and the intake riser, in mock-ups of the air column and the soffit (S5, rig R3), a felt specimen for the absorption test (S6), and coupons (S7).
 - **What gets measured** (test plan): wall sound transmission from 100 Hz (T01); the lighter fill next to the 32 kg/m³ one (T02); felt absorption on its 25 mm gap (T03); the 12 V fans' flow and octave noise in their cartridges (T04); recirculation at boost (T05); rivnut spin-out in the real 1.2 mm tube (T06); clip pull-out (T07); the ceiling catch's drop test (T08); the ACP-to-aluminium bond (T09); weight per m² (T10); timed assembly of the panel (T11); taking a cartridge out into the pod and back (T12). The door's tests (T13) wait for its hardware.
 - **What it decides:**
   - whether the pod lands at or under the 420 kg cap (D-54). The layout study's estimate is 426.7 kg, and about 438.5 kg with D-60's air parts (+11.8 kg, HW-AA section 7f), open against the cap.
@@ -38,6 +38,7 @@ Nothing here is released for production. Every physical test stays PLANNED until
 | LS | Layout study, `v2/05-Engineering/layout-study/`, as updated by PR #20 (revision d2662a9): part sizes, weights, joint counts, assembly times |
 | HW-SEL | Hardware selection, `v2/05-Engineering/hardware/selection.md` (PR #11, merged): products, interface data, clip loads, sample tests |
 | HW-AA | Sound and air check, `v2/05-Engineering/acoustics-air/report.md` and `calc.py` (PR #11, merged; the D-60 recheck, its sizes and weight in PR #26): stack, R per band, felt data, fan duty, noise |
+| CEIL | The CEILING Engineer's PR #32 (open): the ceiling cassette 510301, one part for both halves; its sizes, flat blank, parts and masses. Built on skeleton P03's parameters; its model follows P04 |
 | SKL | Pod skeleton P03, `v2/01-CAD-Native/skeleton/BUILD-RECORD.md` and its parameter register: envelopes |
 | DL | Decision log, `v2/00-Control/decision-log.md`, D-01 to D-59 (the control pack's PR #19 added D-49 to D-59) |
 | REQ | Requirements, `v2/00-Control/requirements.md` |
