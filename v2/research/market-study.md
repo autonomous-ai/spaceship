@@ -60,6 +60,42 @@ People love: real privacy ("I heard nothing"), fast setup with no building work,
 | US rules come later, but they shape the roof and the door | Don't design them out. The roof should be able to take a sprinkler head or open on alarm (as Air3's does). Keep the threshold low, the door wide and the door pull light. |
 | Makers quote sound four different ways | Test v1 and v2 in the same lab to ISO 23351-1 before claiming "as quiet as v1". |
 
+## Big-brand scorecard
+
+From maker spec sheets, planning guides, price lists and warranty terms. "Person-hours" is crew size times hours.
+
+| Model (seats) | Install | Heaviest piece or crate | Lead time | US price (per seat) | kg (kg/m²) | Air | Sound | Warranty |
+|---|---|---|---|---|---|---|---|---|
+| Framery One Compact (1) | Framery-trained crew | 1 crate, 310 kg | 4–5 wk | $9,690 | 253 (246) | 26–36 l/s, occupancy sensor | D_S,A 30, Class A | 5 yr |
+| Framery One (1) | dealer quotes 4–6 h | 1 crate, 430 kg | 4–5 wk | $13,090 | 357 (293) | 26 l/s | Class A, 30 | 5 yr |
+| Framery Four (1–4) | trained crew | 2 crates, up to 395 kg | 4–5 wk | $23,090 ($5,773) | 520 (171) | 78–100 l/s, radar people count | Class A, 30 | 5 yr |
+| Room Phone Booth (1) | 2 people, under 1 h (≤2 person-hours) | box of 73 kg | 4 wk | $6,495 | 208 (177) | 28 l/s | NIC 30 (field) | 5 yr |
+| Room S (≤2) | pro crew, 12–20 person-hours | box of 81 kg | n/f | $19,995 ($9,998) | 681 (247) | 46 l/s | NIC 30 | 5 yr |
+| Room M (≤4) | pro crew, 12–20 person-hours | box of 81 kg | n/f | $29,495 ($7,374) | 826 (156) | 91 l/s | NIC 30 | 5 yr |
+| Herman Miller Bay (1) | dealer install | flat-packed, ships 189 kg | not quick-ship | $14,026 | 157 (88) | fan, no figure | no rating | 12 yr |
+| Orangebox AIR-23 (≤4) | certified installer | n/f | 6–8 wk | about $51k (3P) | about 461 (99) | up to 105 l/s | no lab rating | 5 yr structure |
+| hushFree XM (2) | n/f | n/f | 10 days from US stock | $32,225 | n/f | air swapped every 33–210 s | D_S,A 28.7 (XS 30.3) | 5 yr |
+| BuzziNest Pod (≤4) | 2 people, 2 h (4 person-hours) | crates of 460 and 483 kg | n/f | n/f | 590 (197) | 15 l/s | D_S,A 27.8–28.4 | n/f |
+| Zenbooth Duo (1–2) | DIY, 2–3 people, 1–3 h | 1 pallet | 30 days | $10,490 ($5,245) | 379 (150) | 2 fans | "up to 30 dB", no method | 5 yr |
+| Zenbooth Quad (≤4) | DIY | 2 pallets | 30 days | $16,490 ($4,123) | 508 (91) | 4 fans | "up to 30 dB" | 5 yr |
+| Silen Space Meet 2 (1–4) | Silen crew, 0.5–4 h | crates or pallets | about 6 wk | n/f | 556 (210) | boost, no figure | Class A, no number | 2–5 yr |
+
+**Where 10x is real:**
+- Install labor: one person-hour against 12–20 for the pro-install leaders.
+- Piece weight: 20 kg against 310–483 kg crates, with no pallet jack.
+- Lead time: days against 4–8 weeks.
+- Moving inside the office: castors or a quick unbolt, against a pro rebuild.
+
+**Where it isn't:**
+- Sound: 10x quieter would mean +10 dB, about 40 dB, which needs roughly 3x heavier walls.
+- Weight per m²: 71 is 1.2x better than the lightest (88–91, unrated) and 2.4x better than lab-rated Class A (151–171).
+- Shipped volume: about 3x is realistic.
+- Price: about 1.5–2x.
+
+**Firsts on offer:** no big brand publishes CO2 readings or fan noise. Only Framery and hushoffice publish ISO 23351-1 lab numbers.
+
+Sources: framery.com tech specs, product guide and warranty terms · get.room.com Room Series planning guide · room.com spec sheets, preparation and warranty pages · hermanmiller.com Bay price book and specs · steelcase.com Air3 summary and cut sheet · haworth.com hushPhone, hushMeet specs and HushFree FAQ · intera.ee BuzziNest Pod spec sheet · community.zenbooth.net product guides · silen.com product pages and warranty terms.
+
 ## Main sources
 
 - Orangebox Air3: steelcase.com/resources/documents/air-23-cutsheet · steelcase.com/resources/documents/air3-postcard · steelcase.com/products/pods/air3

@@ -20,18 +20,19 @@ It's built from a complete, editable design package, so the prototype matches th
 
 ## 10x better than the big guys
 
-We benchmark against the leaders: Framery, Room, Herman Miller, Steelcase (Orangebox) and Haworth (hushoffice). The numbers are from `v2/research/market-study.md`, and a fuller big-brand scorecard comes in during Milestone 1.
+We benchmark against the leaders: Framery, Room, Herman Miller, Steelcase (Orangebox), Haworth (hushoffice), Zenbooth and Silen. The numbers come from the big-brand scorecard in `v2/research/market-study.md`.
 
-| What buyers feel | Big guys today | FocusPod v2 target | Better by |
+| What buyers feel | Best of the big guys today | Spaceship target | Better by |
 |---|---|---|---|
-| Installing it | Pro crews. Room S needs 4 people for 3–5 hours (12–20 person-hours). hushMeet needs 2 installers for 2.5–3 hours. Air3 needs certified installers. | 2 people in about 1 hour with one hand tool (2 person-hours) | 3–10x less effort |
-| Getting it delivered and inside | Crates 2.2–2.4 m long, up to about 970 kg gross, liftgate or white glove, big elevators | Standard 48 × 40 pallets. Every part 20 kg or less except the glass, and everything fits through a normal door. | Two people can carry it up the stairs |
-| Weight | 150–250 kg per m² of floor (Air3 is 99) | about 70 kg per m² (300 kg) | 2–3x lighter |
-| Fresh air | Users' top complaint; nobody publishes fan noise | CO2 at or under 800 ppm with 2 people all day; fans start by themselves; fan noise published and at or under 30 dB(A) | Best in class |
-| Quiet | 28–30 dB speech reduction (ISO 23351-1) | At least as quiet as v1, aim 30 dB, at about a third of their weight per m² | Match the best |
-| Price | $14k–23k for 1–4 person pods | At or below v1's $9,900 for 2 people | About 2x better per seat |
+| Installing it | Pro-install leaders: Room S/M take 12–20 person-hours, Framery uses trained crews quoting 4–6 hours, and Air3 needs certified installers. The best DIY is Room's 1-person booth at 2 person-hours and BuzziNest Pod at 4. | 2 people in about 1 hour with one hand tool (2 person-hours). Stretch: 1 person-hour. | 10x against the pro-install leaders, 2–4x against the best DIY |
+| Getting it delivered and inside | Framery ships one crate of 310–430 kg that needs a pallet jack. Room's heaviest box is 73–81 kg. | Standard pallets to the door, then every piece carried by hand. Every part is 20 kg or less except the glass and fits an 81 cm door and a normal elevator. | 3–20x lighter pieces, and no pallet jack inside |
+| Moving it inside the office | Room S/M need a pro teardown and rebuild, and Framery needs a kit and partial disassembly | Under study: castors, or a quick unbolt of the light panels | Up to 10x |
+| Weight | The lightest are about 88–91 kg/m² of floor with no lab sound rating (Bay, Zenbooth Quad). Lab-rated Class A pods are 151–171 (Framery Four). | about 70 kg/m² (300 kg) | 1.2x lighter than the lightest, 2.4x lighter than lab-rated Class A pods |
+| Fresh air | Best is about 25 l/s per person. Nobody publishes CO2 readings or fan noise. | About 35 l/s per person (70 l/s for 2), with a CO2 sensor that drives the fans and shows the reading. Fan noise at or under 25 dB(A) at full flow, published. | Best in class, and first to publish CO2 and fan noise |
+| Quiet | 30–30.3 dB speech reduction is the best lab result (hushFree XS, Framery) | At least as quiet as v1, aim 30 dB, stretch 33 dB, with a published lab report | Match or beat the best at 40% less weight per m² |
+| Price | Zenbooth $5,245 per seat (2 seats). Big-brand pods run $13k–30k. | At or below v1's $9,900 for 2 people ($4,950 per seat) | Best per seat |
 
-Dee sets the price; the rest are design targets.
+Ten times better is real on installing, handling, lead time and moving the pod. It isn't physically possible on sound (10x quieter means +10 dB), on weight, or on price; the honest margin there is 1.2–3x. Dee sets the price; the rest are design targets.
 
 ## Targets
 
@@ -42,7 +43,7 @@ Agents work to these from day one. The hardware engineering lead and the indoor 
 | 1 | Light | 300 kg or less, about half of v1 (about 550 kg from its BOM). Every part 20 kg or less, so one person can carry it, except the glass. That's about 40% lighter than any acoustically rated pod this size, and no maker claims 20 kg parts. | Weights from the CAD and BOM, then the prototype on a scale |
 | 2 | Easy to assemble | 2 people in about 1 hour with one hand tool, and never more than 4 hours. One bolt size (M6), joints that find their own place, no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
 | 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. Nobody on the market ships pods on 48 × 40. | Pallet layout from the CAD |
-| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 800 ppm with 2 people all day, which needs at least 26 l/s; we aim for about 70 l/s, a full air change every 2 minutes, which keeps CO2 near 550 ppm. Fans start by themselves when someone is inside, have speed control and boost, and are wired in so nobody unplugs them. Fan noise inside at or under 30 dB(A), through silenced vents. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |
+| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 800 ppm with 2 people all day, which needs at least 26 l/s; we aim for about 70 l/s, a full air change every 2 minutes, which keeps CO2 near 550 ppm. A CO2 sensor drives the fans, and the reading is shown inside. The fans start by themselves, have boost, and are wired in so nobody unplugs them. Fan noise inside is at or under 25 dB(A) at full flow through silenced vents, and we publish it. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |
 | 5 | Quiet (guardrail) | At least as quiet as v1, with 30 dB as the aim. v1 and v2 get tested in the same lab to ISO 23351-1. | Calculation, then the lab test |
 | 6 | Healthy materials | Low-emission certified felt, boards and glue | Supplier certificates |
 | 7 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM, joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
