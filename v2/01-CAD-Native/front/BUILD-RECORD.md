@@ -111,3 +111,87 @@ The U-profile's box is X -66.63 to 964.13, Y -706.5 to -691.5 (15 on the glass p
 | Door unit | The free edge runs 4 mm from the door's latch edge; the magnetic seal pair (368003 here, 368006 on the door) closes it. |
 
 Fit order (PM ruling 2026-11-01): the bottom channel comes factory-fitted on BASE's sill; on site the pane drops into it, then DR slides in from the right onto the pane's right edges, then DT is lowered onto its top edge.
+
+## 350003 FRONT - DECOR BLOCK ASSY - DR, P01 stage 2 (DRAFT)
+
+Run 2026-10-31 20:2x UTC on Mac 1, Fusion 2706, through the shared lock, one run per design (build, save, export, pictures and the edit test), on skeleton P04 v4:
+
+```sh
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/dr_block.py --doc 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD \
+    --arg step=all --arg "desc=P01 stage 2: every frame tube shelled" \
+    --arg "edits=decor_d=215 mm;fix_xk=511 mm;fix_zk=1531 mm" --close
+python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step
+```
+
+### Result
+
+- bodies 38, timeline 146 items, unhealthy 0, loose sketches 0, parameters 181; clash pairs 0 (frame against skin, plates, panels, air parts and the glass channel)
+- frame 351306: 26 tubes of 20 × 20 × 1.5 (80 × 20 at the bolt line, 40 and 60 × 20 at the bottom and the band), every tube shelled with its ends open (0 failed), 5.72 kg, 15.05 m of tube (cut list `351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv`)
+- air intake past the frame: base opening 0.0422 m² gross, 0.0129 m² under the frame's bottom tubes, 0.0293 m² free (rule: 0.028 or more, PM ruling)
+- flat parts (D-89 part 4, DXF 1:1 in mm, layer CUT): back plate 351302 798.0 × 2284.0 with 6 holes; access panel 351305 255.4 × 2042.0 with 12 holes (7.0 for M6, and the column's two hook studs at X 971, Z 1700 and 1850); inner panel 351303 715.0 × 2038.5
+- felt 351304: same outline as the inner panel (stepped and slanted), so it keeps a drawing (D-89); its DXF is for the cutter
+- STEP: length unit cm, declared in the file (D-13); box X 230 to 1250, Y -850 to -635, Z 110 to 2400 (`step_check.py`), equal to the model's when re-read in Fusion (0.000 mm)
+- f3d 820,702 bytes; STEP 566,889 bytes; no names in the exports (f3d entries, STEP, CSV, DXF, picture metadata scanned)
+- edit test PASS (`EDIT-TEST-RECORD.md`); pictures checked by eye: `350003_P01_FRONT-DECOR-BLOCK-ASSY-DR-FRONT_IMG.png`, `...-ISO_IMG.png`
+
+### Mass (calculation)
+
+| Item | kg |
+|---|---|
+| 351301 skin, ACP 3 mm at 1300 kg/m³ | 7.71 |
+| 351306 frame, 26 tubes shelled, 2700 kg/m³ | 5.72 |
+| 351302 back plate | 1.51 |
+| 351305 access panel | 3.87 |
+| 351303 inner panel | 1.67 |
+| 351304 felt, 1.8 kg/m² | 0.77 |
+| 350004 air supply assembly: riser 5.47, transitions 1.5 + 1.5 (assumption), fan box 3.6 (D-60 table's 5.1 less the upper transition), fans 2 × 0.3 | 12.67 |
+| **DR block** | **33.92** |
+
+### Interfaces to other assemblies
+
+| With | What |
+|---|---|
+| BASE | Stands on the band top (Z 110); the riser's open foot sits 140 mm over the base air opening. |
+| Fixed glass | The right and diagonal channels sit behind the 17 mm slot in DR's inner-edge skin; no frame tube crosses the channel. |
+| Air column | Hooks onto 2 studs on the access panel (X 971, Z 1700 and 1850, rivnut 838003), pushed back and dropped 10 mm onto BASE's floor spigots; the access panel is screwed to the frame to carry about 10 kg (PM ruling). |
+| DT | Meets DT at X 449 under the top; joint HOLD (joints register). |
+
+## 350002 FRONT - DECOR BLOCK ASSY - DT, P01 stage 2 (DRAFT)
+
+Run 2026-10-31 20:2x UTC on Mac 1, Fusion 2706, through the shared lock, one run per design, on skeleton P04 v4:
+
+```sh
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/dt_block.py --doc 350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD \
+    --arg step=all --arg "desc=P01 stage 2: welded tube frame 351204 (13 tubes); back plate corner on the slope" \
+    --arg "edits=decor_d=215 mm;dt_xr=1690 mm;dl_w=283 mm" --close
+python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step
+```
+
+### Result
+
+- bodies 18, timeline 62 items, unhealthy 0, loose sketches 0, parameters 148; clash pairs 0
+- frame 351204: 13 tubes of 20 × 20 × 1.5, every tube shelled (0 failed), 2.51 kg, 8.52 m of tube (cut list `351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv`); its rail F02 carries the catch 368007 and the top stop 351203
+- back plate 351202 (D-89 part 4): 1694.75 × 274.0, no holes; its corner sits on the slope so it clears the skin
+- STEP: length unit cm, declared in the file (D-13); box X -1250 to 449, Y -850 to -645, Z 2094 to 2400 (`step_check.py`), equal to the model's when re-read in Fusion (0.000 mm)
+- f3d 364,297 bytes; STEP 243,290 bytes; no names in the exports
+- edit test PASS (`EDIT-TEST-RECORD.md`); pictures checked by eye: `350002_P01_FRONT-DECOR-BLOCK-ASSY-DT-FRONT_IMG.png`, `...-ISO_IMG.png`
+
+### Mass (calculation)
+
+| Item | kg |
+|---|---|
+| 351201 skin, ACP 3 mm at 1300 kg/m³ | 2.85 |
+| 351204 frame, 13 tubes shelled | 2.51 |
+| 351202 back plate | 1.66 |
+| 351203 door top stop | 0.08 |
+| 368005 frame-stop seal, top run 796 mm (assumption) | 0.05 |
+| 368007 door catch (datasheet) | 0.05 |
+| **DT block** | **7.20** |
+
+### Interfaces to other assemblies
+
+| With | What |
+|---|---|
+| Door unit | The top stop 351203 and the seal 368005 stop the leaf; the catch 368007 holds its strike 368102 (35 N). |
+| Fixed glass | The top channel sits behind the 17 mm slot in DT's underside; the catch rail stands 3.5 behind it. |
+| DR, DL, ceiling | Joints HOLD (joints register); DT goes on last, after the door hangs (fit order: glass, DR, DT). |

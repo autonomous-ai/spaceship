@@ -133,7 +133,8 @@ One script per block (`dl_block.py`, `dt_block.py`, `dr_block.py`); `--arg step=
 | `v2/03-Manufacturing/front/3500nn_P01_FRONT-DECOR-BLOCK-ASSY-Dx_BOM.csv` | Parts lists for the master BOM, written from the model |
 | `v2/03-Manufacturing/front/351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv`, `351204_...-DT-...`, `351104_...-DL-...` | Tube cut lists (frame, member, name, section, length, ends) |
 | `v2/03-Manufacturing/front/3513n1_P01_FRONT-DECOR-SKIN-Dx_DXF.dxf` | The skins laid flat, one panel per outside face, 1:1 in mm (layers CUT and MARK) |
-| `v2/03-Manufacturing/front/351302_...BACK-PLATE-DR_DXF.dxf`, `351305_...ACCESS-PANEL-DR_DXF.dxf`, `351303_...INNER-PANEL-DR_DXF.dxf`, `351304_...INNER-PANEL-FELT-DR_DXF.dxf`, `351202_...BACK-PLATE-DT_DXF.dxf`, `351102_...BACK-PLATE-DL_DXF.dxf` | Flat parts cut from sheet: outline and every hole, 1:1 in mm, layer CUT; no drawing (D-89 part 4) |
+| `v2/03-Manufacturing/front/351302_...BACK-PLATE-DR_DXF.dxf`, `351305_...ACCESS-PANEL-DR_DXF.dxf`, `351303_...INNER-PANEL-DR_DXF.dxf`, `351202_...BACK-PLATE-DT_DXF.dxf`, `351102_...BACK-PLATE-DL_DXF.dxf` | Flat parts cut from sheet: outline and every hole, 1:1 in mm, layer CUT; no drawing (D-89 part 4) |
+| `v2/03-Manufacturing/front/351304_...INNER-PANEL-FELT-DR_DXF.dxf` | The felt's outline for the cutter, 1:1 in mm; the felt keeps a drawing, since its outline is stepped and slanted, not a rectangle (D-89) |
 | `v2/01-CAD-Native/front/3500nn_P01_FRONT-DECOR-BLOCK-ASSY-Dx_ANCHORS.json` | Edit-test anchors |
 | `v2/01-CAD-Native/front/3500nn_P01_FRONT-DECOR-BLOCK-ASSY-Dx-FRONT_IMG.png`, `...-ISO_IMG.png` | Pictures, checked by eye |
 

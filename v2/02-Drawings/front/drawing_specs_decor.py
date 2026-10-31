@@ -50,7 +50,7 @@ SPECS["dt"] = {
     "dims": [("front", (_XL, V_DT["pod_h"]), (_dtx1, V_DT["pod_h"]), "above", 10)],
     "notes": [
         "DT: 3 mm ACP skin 351201 from the skeleton's measured v1 shape, bonded to the welded 6063-T6 tube frame "
-        "351204 (13 tubes); back plate 351202 (flat, from its DXF, D-89 part 4).",
+        "351204 (13 tubes); back plate 351202 bonded to the frame's back ring (its own drawing: bond area, surface prep).",
         "Slot in the underside for the fixed pane's top channel (PM ruling). Door's top: the magnetic door-stop catch "
         "368007 (Sugatsune HT-MSG62, 35 N) behind the leaf's top latch corner; the top stop 351203 with the frame-stop "
         "seal 368005 along the leaf's top, 10 short of the catch. Gap leaf to DT: 6 (PM ruling).",

@@ -25,3 +25,27 @@ In the same Fusion run as the build (`--arg step=all`, `--arg edits=...`), on a 
 | Reverted | 1030.8 x 15.0 x 2040.0 | 0 | 0 | none | 0.010 |
 
 RESULT: PASS. 16 anchors (pane, U-profile, U-seal and seal half sides against their expressions) follow the four skeleton edits at once, with the bottom channel's screw holes in the model, and return exactly.
+
+## 350003 FRONT - DECOR BLOCK ASSY - DR, P01 stage 2
+
+In the same Fusion run as the build, on a copy of the exported f3d opened as a new unsaved document and closed without saving, skeleton P04 v4:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1020.0 x 215.0 x 2290.1 | 0 | 0 | none | 0.020 |
+| decor_d 215 mm; fix_xk 511 mm; fix_zk 1531 mm | 1020.0 x 225.0 x 2290.1 | 0 | 0 | none | 0.020 |
+| Reverted | 1020.0 x 215.0 x 2290.1 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS. 28 anchors (skin, frame tubes, plates, panels and air parts against their expressions) follow the three skeleton edits at once, with the tube frame in the model, and return exactly.
+
+## 350002 FRONT - DECOR BLOCK ASSY - DT, P01 stage 2
+
+Same method and run as its build:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1699.0 x 205.0 x 306.0 | 0 | 0 | none | 0.020 |
+| decor_d 215 mm; dt_xr 1690 mm; dl_w 283 mm | 1690.0 x 215.0 x 306.0 | 0 | 0 | none | 0.020 |
+| Reverted | 1699.0 x 205.0 x 306.0 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS. 15 anchors follow the three skeleton edits at once and return exactly.

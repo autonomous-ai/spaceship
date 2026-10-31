@@ -395,9 +395,12 @@ def export_all(app):
          "v1 decor frame drawing (front and back frames); D-79",
          "%.1f m of tube; the rail F02 carries the catch 368007 and the top stop 351203; DT to DR and DL, and DT to "
          "the ceiling: joints HOLD (joints register)" % tube_m),
-        ("351202", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (CNC-routed ACP, no drawing: D-89 part 4)",
-         "ACP 3 mm, finish EV3038 Dark Yellow face (D-12); " + gt, "cad", "calculation (CAD)", "DRAFT",
-         "this build", "DXF " + DXF_BACK_REL.split("/")[-1] + "; behind it the soffit (D-60); bonded to the frame"),
+        ("351202", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (CNC-routed ACP, bonded to the frame: keeps a "
+         "drawing with the bond area and surface prep, PM ruling 2026-11-01)",
+         "ACP 3 mm EV3038 Dark Yellow, PE core, finish EV3038 Dark Yellow face as supplied (D-12); " + gt, "cad",
+         "calculation (CAD)", "DRAFT", "this build; PM ruling 2026-11-01 (bonded, so drawn)",
+         "outline cut from DXF " + DXF_BACK_REL.split("/")[-1] + "; behind it the soffit (D-60); bonded to the "
+         "frame's back ring per the joints register's ACP bond spec (bond area and surface prep on its drawing)"),
         ("351203", PARTS["STOP"][1], PARTS["STOP"][2], 1, "made (aluminium angle, cut to length)",
          "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20)", "cad", "calculation (CAD)", "DRAFT",
          "selection C3 (frame gap 2 to 6)", "screwed up through DT's underside into the frame's rail F02"),
