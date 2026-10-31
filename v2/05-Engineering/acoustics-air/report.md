@@ -141,12 +141,12 @@ Effect in the DECIDED pod (all else equal):
 
 | Front pane (door + fixed) | kg | D_S,A low | central | high | vs 8 mm |
 |---|---:|---:|---:|---:|---:|
-| Tempered 8 mm | 68 | 21.4 | 24.0 | 26.4 | +0.0 |
-| Tempered 10 mm (v1) | 86 | 21.5 | 24.0 | 26.5 | +0.0 |
-| Laminated acoustic 4+4 (8.76 mm) | 72 | 21.5 | 24.0 | 26.5 | +0.0 |
-| Smoked acrylic 8 mm | 33 | 20.9 | 23.4 | 25.9 | -0.6 |
-| Smoked acrylic 10 mm | 41 | 21.2 | 23.7 | 26.1 | -0.3 |
-| Smoked acrylic 12 mm | 49 | 21.3 | 23.8 | 26.3 | -0.2 |
+| Tempered 8 mm | 68 | 14.6 | 19.2 | 21.6 | +0.0 |
+| Tempered 10 mm (v1) | 86 | 14.6 | 19.3 | 21.7 | +0.0 |
+| Laminated acoustic 4+4 (8.76 mm) | 72 | 14.6 | 19.3 | 21.7 | +0.0 |
+| Smoked acrylic 8 mm | 33 | 14.3 | 18.7 | 21.1 | -0.6 |
+| Smoked acrylic 10 mm | 41 | 14.5 | 18.9 | 21.3 | -0.3 |
+| Smoked acrylic 12 mm | 49 | 14.6 | 19.1 | 21.5 | -0.1 |
 
 - **DECIDED front: 4+4 acoustic laminated glass**, frameless like v1. It's the quietest pane, and in this pod 0.3 dB better than acrylic.
   - Acrylic would save about 27 kg, but on hinges rated for glass it needs an 80 mm opaque aluminium stile down the hinge edge. That breaks the look rule (D-01).
@@ -163,20 +163,20 @@ D_S,A is the ISO 23351-1 single number: the reduction in A-weighted sound power 
 
 | Pod | D_S,A low | central | high |
 |---|---:|---:|---:|
-| v1 as drawn (inner ply 15) | 11.6 | 14.9 | 18.3 |
-| v1 per BOM (inner ply 9) | 11.6 | 14.9 | 18.4 |
-| Spaceship as planned (10 mm glass) | 15.8 | 18.7 | 21.6 |
-| Spaceship as planned, 8 mm glass | 15.7 | 18.7 | 21.5 |
-| + all light fixes (plan wall) | 18.2 | 20.8 | 23.2 |
-| + fixes, plan wall without plywood | 13.4 | 15.8 | 18.2 |
-| + fixes, light double wall DL-HDF | 17.0 | 19.3 | 21.7 |
-| + fixes, DL-HDF decoupled | 17.0 | 19.4 | 21.8 |
-| + fixes, DL-ST (steel 0.5 inner skin) | 18.5 | 21.0 | 23.4 |
-| + fixes, DL-ST decoupled | 18.5 | 21.0 | 23.4 |
-| + fixes, honeycomb sandwich SW-HC20 | 6.4 | 8.5 | 10.7 |
-| + fixes, foam sandwich + inner skin | 16.3 | 18.7 | 21.1 |
-| DECIDED stack, 4+4 laminated front | 21.5 | 24.0 | 26.5 |
-| DECIDED stack with the acrylic experiment | 21.2 | 23.7 | 26.1 |
+| v1 as drawn (inner ply 15) | 11.5 | 14.9 | 18.3 |
+| v1 per BOM (inner ply 9) | 11.4 | 14.9 | 18.4 |
+| Spaceship as planned (10 mm glass) | 11.3 | 14.5 | 17.4 |
+| Spaceship as planned, 8 mm glass | 11.2 | 14.5 | 17.3 |
+| + all light fixes (plan wall) | 12.9 | 16.2 | 18.7 |
+| + fixes, plan wall without plywood | 8.8 | 11.4 | 13.6 |
+| + fixes, light double wall DL-HDF | 13.0 | 17.6 | 20.0 |
+| + fixes, DL-HDF decoupled | 13.0 | 17.7 | 20.0 |
+| + fixes, DL-ST (steel 0.5 inner skin) | 14.6 | 19.2 | 21.6 |
+| + fixes, DL-ST decoupled | 14.6 | 19.2 | 21.6 |
+| + fixes, honeycomb sandwich SW-HC20 | 3.4 | 5.0 | 6.8 |
+| + fixes, foam sandwich + inner skin | 12.0 | 16.9 | 19.3 |
+| DECIDED stack, 4+4 laminated front | 14.6 | 19.3 | 21.7 |
+| DECIDED stack with the acrylic experiment | 14.5 | 18.9 | 21.3 |
 
 Where the sound gets out (share of the speech energy, central case):
 
@@ -184,14 +184,14 @@ Where the sound gets out (share of the speech energy, central case):
 |---|---:|---:|---:|---:|
 | walls | 6% | 41% | 70% | 63% |
 | ceiling | 2% | 12% | 20% | 18% |
-| glass | 2% | 1% | 2% | 4% |
-| front decor | 2% | 3% | 5% | 12% |
+| glass | 2% | 2% | 3% | 4% |
+| front decor | 2% | 3% | 6% | 11% |
 | floor | 14% | 6% | 0% | 0% |
 | door edge gaps | 22% | 12% | 0% | 0% |
 | door bottom | 11% | 6% | 0% | 0% |
 | fixed glass edges | 1% | 1% | 0% | 0% |
 | panel joints | 5% | 3% | 0% | 0% |
-| vents | 35% | 13% | 1% | 3% |
+| vents | 35% | 14% | 1% | 3% |
 | cable holes | 1% | 0% | 0% | 0% |
 
 The weak points move as the pod improves:
@@ -208,14 +208,14 @@ Applied one after another to the plan with 8 mm glass. kg is the added mass for 
 
 | Step | Change | D_S,A low | central | high | Gain (central) | kg added |
 |---|---|---:|---:|---:|---:|---:|
-| 0 | Spaceship as planned, 8 mm glass | 15.7 | 18.7 | 21.5 |  |  |
-| 1 | Door edge seals on 3 sides | 16.2 | 19.2 | 22.1 | +0.5 | 1.0 |
-| 2 | Door drop seal | 16.4 | 19.5 | 22.4 | +0.3 | 1.0 |
-| 3 | Fixed glass in sealed U-profiles | 16.4 | 19.6 | 22.5 | +0.0 | 0.0 |
-| 4 | Gaskets on every panel joint | 16.6 | 19.7 | 22.6 | +0.2 | 1.0 |
-| 5 | Silenced vents (splitter silencers in the decor blocks) | 17.5 | 20.5 | 23.2 | +0.8 | 26.8 |
-| 6 | Thin floor with base seal (DECIDED, D-05) | 18.2 | 20.7 | 23.2 | +0.2 | 0.5 |
-| 7 | Sealed cable holes | 18.2 | 20.8 | 23.2 | +0.0 | 0.1 |
+| 0 | Spaceship as planned, 8 mm glass | 11.2 | 14.5 | 17.3 |  |  |
+| 1 | Door edge seals on 3 sides | 11.6 | 15.0 | 17.9 | +0.5 | 1.0 |
+| 2 | Door drop seal | 11.8 | 15.3 | 18.2 | +0.3 | 1.0 |
+| 3 | Fixed glass in sealed U-profiles | 11.8 | 15.4 | 18.2 | +0.0 | 0.0 |
+| 4 | Gaskets on every panel joint | 12.0 | 15.5 | 18.4 | +0.2 | 1.0 |
+| 5 | Silenced vents (splitter cartridges in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 34.2 |
+| 6 | Thin floor with base seal (DECIDED, D-05) | 12.9 | 16.2 | 18.7 | -0.1 | 0.5 |
+| 7 | Sealed cable holes | 12.9 | 16.2 | 18.7 | +0.0 | 0.1 |
 
 The gains are small one at a time because the plan's single-leaf walls dominate. The same fixes on v1's leaky pod would gain about 6 dB, so they matter as soon as the walls are double. A thick ceiling absorber was also tried and gained nothing over felt on a gap, so it isn't listed.
 
@@ -236,46 +236,46 @@ Glass front (8 mm tempered or 4+4 laminated):
 |---:|---|---:|---|
 | 280 | nothing fits |  |  |
 | 300 | nothing fits |  |  |
-| 320 | SW-FOAM20 / SW-FOAM20 / Tempered 8 mm | 317 | 13.4 / 15.8 / 18.1 |
-| 340 | SW-FOAM20 / DL-ST4-40-FLG-12 / Tempered 8 mm | 335 | 14.2 / 16.6 / 19.0 |
-| 360 | SW-FOAM20 / DL-ST-40-FLG-12 / Laminated acoustic 4+4 (8.76 mm) | 342 | 14.2 / 16.7 / 19.0 |
-| 380 | DL-ST4-40-FLG-12 / SW-FOAM20 / Tempered 8 mm | 379 | 17.5 / 20.0 / 22.4 |
-| 400 | DL-ST4-40-FLG-12 / DL-ST4-40-FLG-12 / Tempered 8 mm | 398 | 20.5 / 23.0 / 25.4 |
-| 420 | DL-ST-40-FLG-12 / DL-ST-40-FLG-12 / Tempered 8 mm | 411 | 21.4 / 24.0 / 26.4 |
-| 440 | DL-ST-40-FLG-12 / DL-ST-100-FLG / Laminated acoustic 4+4 (8.76 mm) | 432 | 21.9 / 24.4 / 26.8 |
-| 460 | DL-ST-40-FLG-12 / DL-ST-100-FLG / Laminated acoustic 4+4 (8.76 mm) | 432 | 21.9 / 24.4 / 26.8 |
-| 480 | DL-ST-100-FLG / DL-ST-40-FLG-12 / Tempered 8 mm | 470 | 22.9 / 25.4 / 27.8 |
-| 500 | DL-ST-100-FLG / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 498 | 23.4 / 26.0 / 28.4 |
-| 520 | DL-ST-100-FLG / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 498 | 23.4 / 26.0 / 28.4 |
+| 320 | SW-FOAM20 / SW-FOAM20 / Tempered 8 mm | 314 | 8.7 / 11.4 / 13.6 |
+| 340 | SW-FOAM20 / DL-ST-40-FLG-12 / Tempered 8 mm | 335 | 9.4 / 12.2 / 14.4 |
+| 360 | PLAN-NOPLY / DL-ST-60-FL / Tempered 8 mm | 350 | 9.5 / 12.3 / 14.5 |
+| 380 | DL-ST4-40-FLG-12 / PLAN-NOPLY / Tempered 8 mm | 379 | 11.9 / 15.4 / 17.7 |
+| 400 | DL-ST4-40-FLG-12 / DL-ST-40-FLG-12 / Tempered 8 mm | 397 | 14.0 / 18.5 / 20.8 |
+| 420 | DL-ST-40-FLG-12 / DL-2HDF-60-FL / Tempered 8 mm | 419 | 14.8 / 19.6 / 22.0 |
+| 440 | DL-ST-60-FL / DL-2HDF-60-FL / Tempered 8 mm | 439 | 14.8 / 20.3 / 22.7 |
+| 460 | DL-2HDF-60-FL / DL-2HDF-60-FL / Tempered 8 mm | 457 | 15.6 / 21.3 / 23.8 |
+| 480 | DL-P6-HDF-60-FL / DL-P6-P9-DEC / Tempered 8 mm | 476 | 16.1 / 21.9 / 24.4 |
+| 500 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Tempered 8 mm | 497 | 17.3 / 22.9 / 25.4 |
+| 520 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 518 | 18.3 / 23.7 / 26.3 |
 
 Smoked acrylic 10 mm front:
 
 | Pod budget kg | Best wall / ceiling / front | Total kg | D_S,A low / central / high |
 |---:|---|---:|---|
 | 280 | nothing fits |  |  |
-| 300 | SW-FOAM20 / PLAN-NOPLY / Smoked acrylic 10 mm | 296 | 13.4 / 15.8 / 18.1 |
-| 320 | SW-FOAM20 / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 312 | 14.1 / 16.6 / 18.9 |
-| 340 | PLAN-NOPLY / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 324 | 14.2 / 16.7 / 19.1 |
-| 360 | DL-ST4-40-FLG-12 / PLAN-NOPLY / Smoked acrylic 10 mm | 358 | 17.4 / 19.9 / 22.3 |
-| 380 | DL-ST4-40-FLG-12 / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 377 | 20.4 / 22.9 / 25.4 |
-| 400 | DL-ST-40-FLG-12 / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 387 | 21.2 / 23.7 / 26.1 |
-| 420 | DL-ST-40-FLG-12 / DL-ST-100-FLG / Smoked acrylic 10 mm | 404 | 21.5 / 24.0 / 26.5 |
-| 440 | DL-ST-40-FLG-12 / DL-ST-100-FLG / Smoked acrylic 10 mm | 404 | 21.5 / 24.0 / 26.5 |
-| 460 | DL-ST-100-FLG / DL-2HDF-60-FL / Smoked acrylic 10 mm | 457 | 22.5 / 25.0 / 27.5 |
-| 480 | DL-ST-100-FLG / DL-ST-100-FLG / Smoked acrylic 10 mm | 464 | 22.9 / 25.4 / 27.8 |
-| 500 | DL-ST-100-FLG / DL-ST-100-FLG / Smoked acrylic 10 mm | 464 | 22.9 / 25.4 / 27.8 |
-| 520 | DL-ST-100-FLG / DL-ST-100-FLG / Smoked acrylic 10 mm | 464 | 22.9 / 25.4 / 27.8 |
+| 300 | SW-FOAM20 / PLAN-NOPLY / Smoked acrylic 10 mm | 293 | 8.7 / 11.4 / 13.5 |
+| 320 | PLAN-NOPLY / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 317 | 9.4 / 12.2 / 14.4 |
+| 340 | PLAN-NOPLY / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 335 | 9.5 / 12.3 / 14.5 |
+| 360 | PLAN / SW-FOAM20-DL / Smoked acrylic 10 mm | 360 | 12.6 / 16.2 / 18.7 |
+| 380 | DL-ST-40-FLG-12 / DL-HDF-DEC / Smoked acrylic 10 mm | 380 | 14.1 / 18.6 / 20.9 |
+| 400 | DL-ST-40-FLG-12 / DL-2HDF-60-FL / Smoked acrylic 10 mm | 395 | 14.7 / 19.3 / 21.7 |
+| 420 | DL-2HDF-60-FL / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 419 | 14.9 / 20.0 / 22.4 |
+| 440 | DL-2HDF-60-FL / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 437 | 15.5 / 20.9 / 23.4 |
+| 460 | DL-P6-P9-DEC / DL-2HDF-60-FL / Smoked acrylic 10 mm | 460 | 16.4 / 21.7 / 24.2 |
+| 480 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 473 | 17.0 / 22.2 / 24.7 |
+| 500 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 491 | 17.8 / 22.8 / 25.3 |
+| 520 | DL-P6-P9-60-FL / DL-P6-P9-100-DEC / Smoked acrylic 10 mm | 501 | 18.1 / 22.9 / 25.4 |
 
 Best builds inside the DECIDED rules:
 
 | Case | Walls | Ceiling | Front | Silencer casing | Total kg | D_S,A low / central / high |
 |---|---|---|---|---|---:|---|
-| DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 414 | 21.5 / 24.0 / 26.5 |
-| Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 421 | 21.5 / 24.0 / 26.5 |
-| Same with a 0.4 mm tray (rejected: costs 1 dB) | DL-ST4-40-FLG-12 | DL-ST4-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 401 | 20.5 / 23.0 / 25.5 |
-| Same, felt flat on the ceiling lining (no gap) | DL-ST-40-FLG-12 | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 415 | 21.0 / 23.6 / 26.0 |
-| Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 387 | 21.2 / 23.7 / 26.1 |
-| Light 0.8 mm casings (fails the noise target) | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 0.8 mm | 400 | 21.5 / 24.0 / 26.5 |
+| DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 411 | 14.6 / 19.3 / 21.7 |
+| Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 418 | 14.6 / 19.3 / 21.7 |
+| Same with a 0.4 mm tray (rejected: costs 1 dB) | DL-ST4-40-FLG-12 | DL-ST4-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 398 | 13.9 / 18.3 / 20.7 |
+| Same, felt flat on the ceiling lining (no gap) | DL-ST-40-FLG-12 | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 412 | 14.6 / 19.3 / 21.7 |
+| Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 384 | 14.5 / 18.9 / 21.3 |
+| Light 0.8 mm cartridge casings | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 0.8 mm | 394 | 14.6 / 19.3 / 21.7 |
 
 - **The curve rises fastest from about 360 to 400 kg:** about 3 dB for 40 kg. Beyond 420 kg, each dB costs 30–40 kg.
 - **30 dB isn't reached in this search.** At 500 kg the walls are 100 mm double leaves with plywood, and the pod still stops at about 26 dB.
@@ -285,15 +285,16 @@ Best builds inside the DECIDED rules:
 
 ### 7a. CO2 and heat
 
-Inside volume 8.35 m3; CO2 from 2 people 10.4 ml/s.
+Inside volume 8.35 m3; CO2 from 2 people 10.4 ml/s. The last column uses a mixing effectiveness of 0.8 (PM ruling 8); the others assume perfect mixing.
 
-| Fresh air l/s | Air changes /h | Minutes per change | CO2 rise ppm | CO2 ppm, room 400 | CO2 ppm, room 600 | Minutes to 95% | Heat rise K | Heat rise K with voice kit |
-|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 26 | 11 | 5.4 | 400 | 800 | 1000 | 16 | 7.4 | 9.3 |
-| 40 | 17 | 3.5 | 260 | 660 | 860 | 10 | 4.8 | 6.1 |
-| 53 | 23 | 2.6 | 196 | 596 | 796 | 8 | 3.6 | 4.6 |
-| 70 | 30 | 2.0 | 149 | 549 | 749 | 6 | 2.8 | 3.5 |
+| Fresh air l/s | Air changes /h | Minutes per change | CO2 rise ppm | CO2 ppm, room 400 | CO2 ppm, room 600 | Minutes to 95% | Heat rise K | Heat rise K with voice kit | CO2 ppm, room 600, mixing 0.8 |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 26 | 11 | 5.4 | 400 | 800 | 1000 | 16 | 7.4 | 9.3 | 1100 |
+| 40 | 17 | 3.5 | 260 | 660 | 860 | 10 | 4.8 | 6.1 | 925 |
+| 53 | 23 | 2.6 | 196 | 596 | 796 | 8 | 3.6 | 4.6 | 845 |
+| 70 | 30 | 2.0 | 149 | 549 | 749 | 6 | 2.8 | 3.5 | 786 |
 
+Flow that keeps the inside 4 K or less over the room: one person 27 l/s, two people 48 l/s, two with the voice-kit reserve 61 l/s. One person at the 26 l/s floor (D-44), room 600, mixing 0.8: 850 ppm.
 CO2 after 2 h at 40 l/s from 400 ppm (room 400): 660 ppm; after 3 h at 26 l/s, room 600: 1000 ppm.
 
 - 800 ppm needs 26 l/s **only when the room air is at outdoor CO2 (400 ppm)**. Real offices sit at 500–700 ppm, and at 600 ppm the pod needs about 52 l/s to stay at 800.
@@ -304,20 +305,20 @@ CO2 after 2 h at 40 l/s from 400 ppm (room 400): 660 ppm; after 3 h at 26 l/s, r
 
 Targets (DECIDED): 25 dB(A) or less at the normal 53 l/s, published, and about 31 dB(A) at the 70 l/s boost.
 
-| Splitter (2 mm aluminium casing unless noted) | Two cartridges kg | Supply path IL 125 | 250 | 500 | 1k | 2k | 4k dB | Inside at 53 l/s dB(A) | at 70 l/s | Flow for 25 dB(A) l/s |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| lining 25 mm | 27.6 | 2 | 11 | 24 | 35 | 40 | 40 | 27.3 | 33.3 | 48 |
-| lining 37.5 mm (DECIDED) | 29.8 | 3 | 17 | 37 | 40 | 40 | 40 | 24.7 | 30.8 | 54 |
-| lining 50 mm | 31.9 | 5 | 23 | 40 | 40 | 40 | 40 | 23.4 | 29.5 | 57 |
-| lining 37.5 mm, casing aluminium 0.8 mm | 15.7 | 3 | 17 | 37 | 40 | 40 | 40 | 31.7 | 37.8 | 39 |
-| lining 37.5 mm, casing steel 1.0 mm | 40.4 | 3 | 17 | 37 | 40 | 40 | 40 | 22.5 | 28.5 | 59 |
+| Cartridge casing | Cartridges with fill kg | Fill toward the pod mm | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + fill + inner face R 125 | 250 | 500 | 1k | 2k | 4k dB |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| aluminium 2.0 mm (pick) | 37.2 | 40 | 2 | 12 | 27 | 40 | 40 | 40 | 14 | 20 | 34 | 50 | 55 | 46 |
+| aluminium 0.8 mm | 19.8 | 42 | 2 | 12 | 27 | 40 | 40 | 40 | 10 | 16 | 27 | 44 | 51 | 42 |
 
-Pressure drop at 70 l/s: supply 9 Pa, exhaust 28 Pa. The 50 mm lining needs a 250 mm deep cartridge, which does not fit the decor blocks.
+Pressure drop per path, supply / exhaust: 26 l/s 2 / 2 Pa; 53 l/s 10 / 10 Pa; 70 l/s 17 / 17 Pa. Each fan pair reaches 88 l/s at full speed.
 
-| Fan, 2 mm aluminium casings | Duct LwA dB(A) at its data point | Inside at 53 l/s: duct / breakout / total dB(A) | Inside at 70 l/s: duct / breakout / total | Flow for 25 dB(A) l/s |
-|---|---:|---|---|---:|
-| S&P TD-350/100-125 ECOWATT, 8 V (69 l/s @ 30 Pa) | 54 | 23.1 / 26.2 / 27.9 | 29.2 / 32.2 / 34.0 | 46 |
-| S&P TD-500/150-160 ECOWATT, 4 V (56 l/s @ 42 Pa) (DECIDED) | 51 | 18.4 / 23.6 / 24.7 | 24.5 / 29.6 / 30.8 | 54 |
+| Fans and cartridges | Fits the 205 mm decor | Fans kg | Cartridges with fill kg | At 53 l/s: fan speed supply / exhaust | At 53 l/s: duct / breakout / total dB(A) | Boost flow at 30 dB(A) l/s | At 70 l/s: total dB(A) |
+|---|---|---:|---:|---|---|---:|---:|
+| 2 x S&P TD-500/150-160 SILENT, 4 V, as at 5c1003b, with casing sound | no (ØD 221 mm) | 12.0 | 29.8 | 4 V | 23.4 / 35.5 / 35.8 | 41 | 41.8 |
+| 2 x 2 Noctua NF-A14 iPPC-3000, 12 V, 2 mm Al casings, both grilles low (pick) | yes | 1.2 | 37.2 | 60% / 60% | 20.2 / 19.4 / 22.8 | 74 | 28.9 |
+| Same, 0.8 mm Al casings | yes | 1.2 | 19.8 | 60% / 60% | 20.2 / 25.2 / 26.4 | 63 | 32.4 |
+| Same as the pick, with a 5 dB fan tone at 250 Hz (risk) | yes | 1.2 | 37.2 | 60% / 60% | 23.8 / 22.6 / 26.3 | 63 | 32.3 |
+| Exhaust grille high: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges | yes | 1.2 | 43.8 | 64% / 72% | 22.6 / 22.5 / 25.6 | 65 | 31.6 |
 
 - **Breakout drives this design.** Sound leaves a silencer through its walls as well as through its end. A silencer box under the pod's ceiling, with a 0.5 mm steel face, would give about 43 dB(A) at 70 l/s. So the silencers sit outside the pod's sound shell, inside the hollow front decor blocks, next to their fans. Only the grilles open into the pod.
 - **Splitter cartridges (DECIDED; fit HOLD for CAD):**

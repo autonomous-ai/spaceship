@@ -294,6 +294,27 @@ class Build:
                                  + finite_gain(f, self.panel_m2))
         return self._r
 
+    def r_low(self):
+        """Low case for the 125-250 Hz risks (Reviewer 3 P2-4, PM ruling 5): no finite-panel gain, and an
+        F0_DIP_DB dip in the one-third octaves within 1/3 octave of the mass-air-mass resonance f0."""
+        if self.r_data is not None:
+            return self.r()
+        if len(self.leaves) == 1:
+            lf = self.leaves[0]
+            return octave(lambda f: r_single(lf, f))
+        l1, l2 = self.leaves
+        d = self.cavity / 1000
+        filled = self.fill >= 0.5 * self.cavity
+        f0 = math.sqrt(1.8 * RHO0 * C0 ** 2 * (l1.m + l2.m) / (d * l1.m * l2.m)) / (2 * math.pi)
+
+        def r(f):
+            dip = F0_DIP_DB if abs(math.log2(f / f0)) <= 1 / 3 + 1e-9 else 0.0
+            return r_double(l1, l2, d, filled, self.conn, f) - dip
+        return octave(r)
+
+
+F0_DIP_DB = 4.0   # ASSUME (Reviewer 3): measured double walls often dip about 4 dB at f0; the central model has none
+
 
 # ---------------------------------------------------------------------------
 # Frames (kg per m2 of wall) = tube kg/m x 3.7 m of tube per m2
@@ -481,11 +502,20 @@ def extras(wb):
 # ---------------------------------------------------------------------------
 # Absorption inside (alpha 125..4k)
 # ---------------------------------------------------------------------------
+# PM ruling 5 (2026-10-31): use the published absorption, down to 100 Hz, of the felt picked. The pick is the
+# factory's 9 mm PET felt (DECIDED, tested in the wall sample), which has no data; Polyx Board 9 is the same
+# thickness and mass (9 mm, 1800 g/m2) and publishes ISO 354 data from 100 Hz (type A: no insulation, no air gap).
+# One-third octaves 100..5000 Hz read from the vector chart in its data sheet (path coordinates, +/-0.01); they
+# give its printed NRC 0.30 and alpha_w 0.25 (H). Source: https://aid.co/wp-content/uploads/2024/10/Polyx-Board-9-No-Insulation-No-Air-Gap.pdf
+POLYX9_THIRDS = (0.02, 0.01, 0.00, 0.03, 0.05, 0.09, 0.11, 0.17, 0.24,
+                 0.35, 0.40, 0.51, 0.57, 0.66, 0.78, 0.90, 0.95, 0.98)
+POLYX9 = tuple(round(sum(POLYX9_THIRDS[3 * i:3 * i + 3]) / 3, 3) for i in range(6))
 ALPHA = {
-    # PET felt: no 9 mm panel with published octave data was found (HW felt rows). Autex Cube ISO 354 data is
-    # used as the proxy (source; 12 mm is 3 mm thicker than the plan's 9 mm, so slightly optimistic):
-    "felt_gap": (0.05, 0.30, 0.60, 0.95, 0.95, 0.85),        # Autex Cube 12 mm + 25 mm air gap (HW felt row)
-    "felt_direct": (0.05, 0.10, 0.30, 0.65, 0.90, 0.95),     # Autex Cube 12 mm, direct on a hard face
+    # The felt sits on the cassette face with a 25 mm gap behind it; the published data has no gap, so the gap's
+    # extra absorption at 250-1000 Hz is not counted (conservative). The wall sample measures it down to 100 Hz.
+    "felt_gap": POLYX9,
+    "felt_direct": POLYX9,
+    "cube_gap": (0.05, 0.30, 0.60, 0.95, 0.95, 0.85),        # Autex Cube 12 mm + 25 mm air gap (HW felt row), old proxy
     "pet_thick": (0.05, 0.20, 0.60, 0.90, 1.00, 1.00),       # Autex Cube 24 mm, direct
     "glass": (0.18, 0.06, 0.04, 0.03, 0.02, 0.02),           # ASI_ABS heavy plate glass
     "ply": (0.28, 0.22, 0.17, 0.09, 0.10, 0.11),             # ASI_ABS plywood paneling
@@ -542,19 +572,37 @@ VENT_OPEN = {"v1": 2 * 0.0295,        # calculation from V1_DWG sheet 9: per fan
 # perimeter over free area P/S = 40 per metre (calculation). Supply: right block, vertical, 175 x 500 x 2000 mm.
 # Exhaust: top block, horizontal, 175 x 280 x 1500 mm. The fan's sound also breaks out through the cartridge
 # casing into the felt-lined decor cavity and then through the decor's inner ACP face into the pod.
-SIL_PS = 40.0
 LINING_DATA = {   # absorption of the splitter lining layers, 125..4k Hz
     25.0: (0.08, 0.27, 0.48, 0.63, 0.71, 0.75),   # Pyrotek Sorberpoly 2D 25 mm, 32 kg/m3, ISO 354 (HW fill row)
     37.5: (0.12, 0.37, 0.65, 0.77, 0.78, 0.79),   # ASSUME: linear between the 25 and 50 mm data (custom thickness)
     50.0: (0.16, 0.47, 0.82, 0.90, 0.84, 0.83),   # Pyrotek Sorberpoly 2D 50 mm, ISO 354 (HW fill row)
 }
-SIL_LINING_MM = 37.5                               # DECIDED with the PM: three 37.5 mm layers, two 50 mm gaps
+# Fix pass (PM rulings 1, 2, 8; 2026-10-31). The decor is 205 mm deep (measured from v1, PM brief; D-39 is
+# being corrected), so the 212 mm cartridges and both S&P fans (ØD 221 and 204) no longer fit. New cartridge:
+# three 25 mm Pyrotek layers (published data, no interpolation) around two 40 mm passages = 155 mm + casing.
+# The space left in front of it, toward the pod, is filled with the walls' 40 mm polyester fill, so casing, fill
+# and the decor's inner ACP face act as a filled double wall. Both paths sit side by side in the right decor
+# block, which is 1016 mm wide (layout study parts list F-DR 2290 x 1016 x 235); the top block (280 mm) is
+# too small for the flow. Supply grille low, exhaust grille high (PM ruling 8).
+DECOR_DEPTH = 0.205                     # m, source: PM brief (measured from v1)
+DECOR_CLEAR = DECOR_DEPTH - 2 * 0.003   # m inside the 3 mm ACP faces: calculation
+SIL_GAP = 0.040                         # m, each air passage
+SIL_PS = 2 / SIL_GAP                    # lined perimeter over free area, per metre: calculation
+SIL_LINING_MM = 25.0
 SIL_LINING_ALPHA = LINING_DATA[SIL_LINING_MM]
 SIL_CAP_DB = 40.0                                         # ASSUME: flanking limit per band
 SIL_DERATE = 0.8                                          # ASSUME: Sabine formula derated (central case)
-SIL_PATHS = {   # name: (length m, free area m2, casing face width toward the decor cavity m, depth x width m)
-    "supply": (2.0, 0.050, 0.5, (0.2125, 0.500)),    # 3 x 37.5 lining + 2 x 50 gaps = 212.5 mm deep
-    "exhaust": (1.5, 0.028, 0.5, (0.2125, 0.280)),
+SIL_W = 0.45                            # m, cartridge width, two side by side in the 1016 mm block: calculation
+# Option for "exhaust high" (PM ruling 8) with the slots kept on the top face (D-29): the exhaust passage runs down
+# from a high grille to its fans at the foot of the block, which blow up a riser between the cartridges to the slot.
+RISER_ON = False
+RISER = (0.15, 3 * 0.025 + 2 * 0.040, 2.0)   # m: width, depth, length (CAD HOLD)
+RISER_KG_M2 = 7850 * 0.0010                  # riser casing, 1.0 mm galvanised steel: calculation
+SIL_L = 1.8                             # m of lined passage; plus a 0.3 m fan box at the top
+FANBOX_L = 0.3
+SIL_PATHS = {   # name: (length m, free area m2, casing face width toward the pod m, depth x width m)
+    "supply": (SIL_L, 2 * SIL_GAP * SIL_W, SIL_W, (3 * 0.025 + 2 * SIL_GAP, SIL_W)),
+    "exhaust": (SIL_L, 2 * SIL_GAP * SIL_W, SIL_W, (3 * 0.025 + 2 * SIL_GAP, SIL_W)),
 }
 CASINGS = {     # DECIDED: al20
     "al08": ("aluminium 0.8 mm", "alu", 0.8),
@@ -569,11 +617,16 @@ def silencer_il(length, derate=1.0):
 
 
 def cartridge_kg(casing):
+    """Both cartridges: casing with end caps over the lined passages and the fan box, the 25 mm linings, and the
+    polyester fill between each cartridge and the decor's inner face (calculation)."""
     _, mat, t = CASINGS[casing]
     kg_m2 = MAT[mat][0] * t / 1000
     tot = 0.0
     for L, area, b, (dep, wid) in SIL_PATHS.values():
-        tot += 2 * (dep + wid) * L * kg_m2 + 3 * wid * L * LINING_KG_M3 * SIL_LINING_MM / 1000
+        dep_o = dep + 2 * t / 1000
+        tot += (2 * (dep_o + wid) * (L + FANBOX_L) + 2 * dep_o * wid) * kg_m2
+        tot += (3 * wid * L + 2 * (wid + dep) * FANBOX_L) * LINING_KG_M3 * SIL_LINING_MM / 1000
+        tot += wid * (L + FANBOX_L) * (DECOR_CLEAR - dep_o) * FILL_KG_M3
     return tot
 
 
@@ -590,10 +643,13 @@ def elements(cfg, sc, wb, gb):
     a = areas(g)
     s = SCEN[sc]
     off = s["r_off"]
-    el = [("walls", a["walls"], taus(wb[cfg["wall"]].r(), off)),
-          ("ceiling", a["ceiling"], taus(wb[cfg.get("ceiling", cfg["wall"])].r(), off)),
+
+    def rr(key):   # the low case carries the 125-250 Hz risks (PM ruling 5)
+        return wb[key].r_low() if sc == "low" else wb[key].r()
+    el = [("walls", a["walls"], taus(rr(cfg["wall"]), off)),
+          ("ceiling", a["ceiling"], taus(rr(cfg.get("ceiling", cfg["wall"])), off)),
           ("glass", a["glass"], taus(gb[cfg["glass"]].r(), off)),
-          ("front decor", a["decor"], taus(wb["_DECOR_FILL" if cfg.get("decor_fill") else "_DECOR"].r(), off))]
+          ("front decor", a["decor"], taus(rr("_DECOR_FILL" if cfg.get("decor_fill") else "_DECOR"), off))]
     if cfg["floor"] == "raised":
         el.append(("floor", a["floor"], taus(wb["_FLOOR_RAISED"].r(), off + s["floor_bonus"])))
     else:
@@ -670,8 +726,8 @@ FIXES = [
     ("Door drop seal", dict(drop_seal=True), 1.0, "HW drop-seal row"),
     ("Fixed glass in sealed U-profiles", dict(glass_seals=True), 0.0, "profiles are already in the layout study's rest"),
     ("Gaskets on every panel joint", dict(gaskets=True), 1.0, "HW gasket row, about 0.03 kg/m x 34 m"),
-    ("Silenced vents (splitter silencers in the decor blocks)", dict(vents="silenced"), round(cartridge_kg("al20") - 3.0, 1),
-     "calculation: two cartridges with 2 mm aluminium casings, less the 3 kg already in the layout study's rest"),
+    ("Silenced vents (splitter cartridges in the right decor block)", dict(vents="silenced"), round(cartridge_kg("al20") - 3.0, 1),
+     "calculation: two cartridges with 2 mm aluminium casings and their fill, less the 3 kg already in the layout study's rest"),
     ("Thin floor with base seal (DECIDED, D-05)", dict(floor="thin", base_seal=True), 0.5,
      "HW base-seal row; the floor itself is in the weight study"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
@@ -685,7 +741,6 @@ FIX_KG = sum(k for _, _, k, _ in FIXES)
 # Fix mass not already inside REST_KG (layout study): door edge seals 1.0, joint gaskets 1.0, base seal 0.5,
 # grommets 0.1 (calculation); the silencer cartridges are added by casing, less the study's 2 x 1.5 kg boxes.
 EXTRA_FIX_KG = 2.6
-FAN_KG = 6.0           # S&P TD-500/150-160 ECOWATT, 6.0 kg (HW fan row); the PM asked to use 6 kg per fan
 
 
 def pod_total_kg(cfg, wb, gb):
@@ -693,8 +748,8 @@ def pod_total_kg(cfg, wb, gb):
     kg = REST_KG + EXTRA_FIX_KG
     kg += wb[cfg["wall"]].kg_m2 * OUT_WALL_M2 + wb[cfg.get("ceiling", cfg["wall"])].kg_m2 * OUT_CEIL_M2
     kg += gb[cfg["glass"]].kg_m2 * GLASS_M2 + FRONT_EXTRA_KG.get(cfg["glass"], 0.0)
-    kg += cartridge_kg(cfg.get("casing", "al20")) - 3.0
-    kg += 2 * (FAN_KG - 1.5)           # TD-500 fans at 6 kg each; the layout study's rest carries 1.5 kg each
+    kg += cartridge_kg(cfg.get("casing", "al20")) - 3.0   # less the layout study's 2 x 1.5 kg silencer boxes
+    kg += fans_kg() - 3.0                                  # 12 V fans; less the study's 2 x 1.5 kg fans
     return kg
 
 
@@ -729,21 +784,30 @@ AIR = dict(
 SYS_K = 7.5   # ASSUME: entry 0.5 + outside slot grille 2.0 + inside diffuser 2.0 + exit 1.0 + splitter 2.0
 # The plan's Panasonic FV-15AUL1 has no published curve and its manual forbids ceiling mounting (HW): not used.
 
-# Duct-side sound power per octave, A-weighted per band, dB(A), 125..4000 Hz, at a duty point near
-# 70 l/s (S&P TD-350/100-125 SILENT ECOWATT, 8 V, point 5, about 250 m3/h = 69 l/s at about 30 Pa;
-# S&P catalogue values via HW fan rows, duty point read off the curve figure: source, approximate).
+# Duct-side sound power per octave, A-weighted per band, dB(A), 125..4000 Hz (S&P TD SILENT ECOWATT catalogue via
+# HW fan rows, duty points read off the curve figure: source, approximate). Kept to show the 5c1003b design.
 FAN_BANDS = {
     "S&P TD-350/100-125 ECOWATT, 8 V (69 l/s @ 30 Pa)": dict(
         inlet=(25, 44, 53, 45, 39, 34), outlet=(27, 42, 54, 44, 37, 32), lwa=54, watts=15, kg=5.0),
     "S&P TD-500/150-160 ECOWATT, 4 V (56 l/s @ 42 Pa)": dict(
-        inlet=(25, 37, 49, 46, 37, 29), outlet=(25, 37, 49, 46, 37, 29), lwa=51, watts=10, kg=6.0),
-}
+        inlet=(25, 37, 49, 46, 37, 29), outlet=(25, 37, 49, 46, 37, 29), lwa=51, watts=10, kg=6.0,
+        casing=(25, 36, 40, 41, 24, 21)),   # radiated (casing) sound at 4 V, 44 dB(A): same catalogue, as read by
+}                                           # Reviewer 3 (source)
+TD500 = "S&P TD-500/150-160 ECOWATT, 4 V (56 l/s @ 42 Pa)"
 
 
 def sys_dp(q_ls, area):
     """Pressure drop of one vent path at q_ls through a splitter of free area `area` (square law)."""
     v = q_ls / 1000 / area
     return SYS_K * 0.5 * RHO0 * v * v
+
+
+MIX_EFF = 0.8   # PM ruling 8: assumed mixing (ventilation) effectiveness for CO2
+
+
+def heat_w(people, kit=False):
+    return (people * (AIR["sensible_w_person"] + AIR["laptop_w"]) + AIR["lights_w"] + AIR["front_light_w"]
+            + AIR["controls_w"] + (AIR["voice_kit_w"] if kit else 0.0))
 
 
 def co2_rows():
@@ -753,10 +817,8 @@ def co2_rows():
     for q in (26.0, 40.0, 53.0, 70.0):
         rise = g / q * 1e6
         tau_min = v / (q / 1000) / 60
-        heat = (AIR["people"] * (AIR["sensible_w_person"] + AIR["laptop_w"]) + AIR["lights_w"]
-                + AIR["front_light_w"] + AIR["controls_w"])
-        dt = heat / (RHO0 * CP_AIR * q / 1000)
-        dt_kit = (heat + AIR["voice_kit_w"]) / (RHO0 * CP_AIR * q / 1000)
+        dt = heat_w(2) / (RHO0 * CP_AIR * q / 1000)
+        dt_kit = heat_w(2, True) / (RHO0 * CP_AIR * q / 1000)
         ach = q / 1000 * 3600 / v
         rows.append((q, ach, 60 / ach, rise, AIR["room_ppm"][0] + rise, AIR["room_ppm"][1] + rise,
                      3 * tau_min, dt, dt_kit))
@@ -777,8 +839,7 @@ def end_reflection(f, area_m2):
     return 10 * math.log10(1 + (0.7 * C0 / (math.pi * f * d)) ** 2)
 
 
-FAN_SPEED_DB = {"supply": 0.0, "exhaust": 2.5}   # ASSUME: the exhaust path (28 Pa at 70 l/s) needs a little
-                                                  # more speed than the TD-500 4 V point; the supply (9 Pa) less
+FAN_SPEED_DB = {"supply": 0.0, "exhaust": 2.5}   # ASSUME (5c1003b design): exhaust path needed a little more speed
 
 
 def inside_room_terms():
@@ -794,43 +855,170 @@ def inside_room_terms():
     return room
 
 
-def fan_noise_inside(fan_key, casing="al20", q_ls=70.0, derate=SIL_DERATE):
-    """LpA at a seated head (1.0 m from the supply grille, 1.5 m from the exhaust grille, 1.2 m from the decor
-    faces) from both fans: the duct path through each splitter plus breakout through the cartridge casing,
-    the felt-lined decor cavity and the decor's inner ACP face. Returns (duct dB(A), breakout dB(A), total)."""
+def fan_noise_old(fan_key, q_ls, derate=SIL_DERATE):
+    """The 5c1003b design (212 mm cartridges with 37.5 mm linings in 230-235 mm blocks, TD fans loose in the
+    felt-lined cavity), now with the fans' casing sound added (Reviewer 3 P1-1), with today's felt data.
+    Returns (duct, breakout + casing, total) dB(A)."""
     room = inside_room_terms()
     fan = FAN_BANDS[fan_key]
-    _, mat, t = CASINGS[casing]
-    casing_leaf = plate(casing, [layer(mat, t)])
+    casing_leaf = plate("al20", [layer("alu", 2.0)])
     face = acp()
     flow_db = 50 * math.log10(q_ls / 70.0)
+    alpha = LINING_DATA[37.5]
     duct = brk = 0.0
-    for name, side, r in (("supply", "outlet", 1.0), ("exhaust", "inlet", 1.5)):
-        L, area, b, _ = SIL_PATHS[name]
+    for name, side, r, L, area in (("supply", "outlet", 1.0, 2.0, 0.050), ("exhaust", "inlet", 1.5, 1.5, 0.028)):
         bands = [x + flow_db + FAN_SPEED_DB[name] for x in fan[side]]
-        il = silencer_il(L, derate)
+        cas = [x + flow_db + FAN_SPEED_DB[name] for x in fan.get("casing", (-99,) * 6)]
         for i, f in enumerate(BANDS):
-            duct += 10 ** ((bands[i] - il[i] - end_reflection(f, area) + room(r, i)) / 10)
-            a_db = max(1.05 * SIL_LINING_ALPHA[i] ** 1.4 * SIL_PS * derate, 0.5)
+            a_db = max(1.05 * alpha[i] ** 1.4 * 40.0 * derate, 0.5)
+            duct += 10 ** ((bands[i] - min(a_db * L, SIL_CAP_DB) - end_reflection(f, area) + room(r, i)) / 10)
             k = a_db / 4.343
             tau = 10 ** (-(r_single(casing_leaf, f) + finite_gain(f, 1.0)) / 10)
-            lw_cav = bands[i] + 10 * math.log10(tau * (b / area) * (1 - math.exp(-k * L)) / k)
+            w_cav = 10 ** (bands[i] / 10) * tau * (0.5 / area) * (1 - math.exp(-k * L)) / k + 10 ** (cas[i] / 10)
             a_cav = 1.5 * ALPHA["felt_direct"][i] + 0.05      # ASSUME: 1.5 m2 of felt lining in the block
             r_face = r_single(face, f) + finite_gain(f, 0.8)
-            lw_pod = lw_cav - r_face + 10 * math.log10(0.8 / a_cav)
-            brk += 10 ** ((lw_pod + room(1.2, i)) / 10)
+            brk += 10 ** ((10 * math.log10(w_cav) - r_face + 10 * math.log10(0.8 / a_cav) + room(1.2, i)) / 10)
     return 10 * math.log10(duct), 10 * math.log10(brk), 10 * math.log10(duct + brk)
 
 
-def flow_for(target_dba, fan_key, casing="al20"):
+def old_flow_for(target_dba, fan_key):
     lo, hi = 10.0, 120.0
     for _ in range(60):
         mid = (lo + hi) / 2
-        if fan_noise_inside(fan_key, casing, mid)[2] > target_dba:
+        if fan_noise_old(fan_key, mid)[2] > target_dba:
             hi = mid
         else:
             lo = mid
     return lo
+
+
+# 12 V fans (PM ruling 1: recheck at the new low pressure, use 12 V if it meets both targets). Two per path in
+# parallel, on a bulkhead in the cartridge's lined fan box, so no fan casing radiates into the decor cavity:
+# the side toward the pod goes down the lined passages, the other side is ducted airtight to the top slot.
+G0 = 9.81
+FAN12 = {   # Noctua spec page (search result, 2026-10-31): 3000 rpm, 269.3 m3/h, 6.58 mm H2O, 41.3 dB(A)
+    "Noctua NF-A14 industrialPPC-3000 PWM": dict(qmax=269.3, pmax=6.58 * G0, lpa=41.3, kg=0.3),  # kg: ASSUME
+}
+FAN_PICK = "Noctua NF-A14 industrialPPC-3000 PWM"
+FAN12_N = 2                 # per path, side by side in the 400 mm wide fan box
+LW_FROM_LP = 11.0           # ASSUME: maker's dB(A) taken as sound pressure 1 m away in a free field (Lw = Lp + 11)
+SPEED_LAW = 50.0            # dB per decade of speed (fan law; the same law as the flow scaling above)
+_td = FAN_BANDS[TD500]["inlet"]
+_tot = 10 * math.log10(sum(10 ** (x / 10) for x in _td))
+FAN12_REL = tuple(x - _tot for x in _td)   # ASSUME: spectrum shape of the TD-500 (no octave data for 12 V fans)
+RISER_K = 1.5   # ASSUME: riser entry and two bends, at the riser's own speed
+AIR_CASING = "al20"
+
+
+def path_dp(name, q_ls):
+    _, area, _, _ = SIL_PATHS[name]
+    v = q_ls / 1000 / area
+    k = SYS_K + (RISER_K * (area / (RISER[0] * RISER[1])) ** 2 if RISER_ON and name == "exhaust" else 0.0)
+    return k * 0.5 * RHO0 * v * v
+
+
+def fan_speed(fan, q_ls, dp, n=FAN12_N):
+    """Speed fraction of each of n parallel fans for q_ls at dp, on a straight-line fan curve between the
+    published free-air flow and maximum pressure (ASSUME shape), scaled by the fan laws. None if out of reach."""
+    qf = q_ls * 3.6 / n
+
+    def p(s):
+        return fan["pmax"] * s * s * (1 - qf / (fan["qmax"] * s))
+    if p(1.0) < dp:
+        return None
+    lo, hi = qf / fan["qmax"], 1.0
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        if p(mid) >= dp:
+            hi = mid
+        else:
+            lo = mid
+    return hi
+
+
+def double_wall_r(casing):
+    """R of casing | polyester fill | decor inner ACP face, octaves; ties at 0.6 m points (ASSUME). No
+    finite-panel gain here (conservative). Returns (R list, fill depth m)."""
+    _, mat, t = CASINGS[casing]
+    leaf = plate(casing, [layer(mat, t)])
+    d = DECOR_CLEAR - (SIL_PATHS["supply"][3][0] + 2 * t / 1000)
+    return octave(lambda f: r_double(leaf, acp(), d, True, ("point", 0.6), f)), d
+
+
+def breakout_tl(f, kg_m2, a_m, b_m):
+    """Breakout TL of a rectangular duct wall: ASHRAE Handbook, HVAC Applications, noise chapter (Cummings):
+    10 lg(f q^2 / (a + b)) + 17 below f_L = 24134 / sqrt(a b), else 20 lg(q f) - 31; q in lb/ft2, a and b in
+    inches (formula source, not re-checked online). It counts the poor coupling of plane waves to the walls."""
+    q = kg_m2 / 4.882
+    a, b = a_m / 0.0254, b_m / 0.0254
+    if f < 24134 / math.sqrt(a * b):
+        return 10 * math.log10(f * q * q / (a + b)) + 17
+    return 20 * math.log10(q * f) - 31
+
+
+def fan12_noise(fan_key, q_ls, casing=AIR_CASING, derate=SIL_DERATE, tone_250=0.0):
+    """LpA at a seated head (1.0 m from the supply grille, 1.5 m from the exhaust grille, 1.2 m from the decor
+    face) from both paths: the duct path through cartridge and grille, plus breakout toward the pod. Passages:
+    ASHRAE duct breakout through the casing alone (the inner face's mass is not counted below f0), then the
+    filled double wall's extra loss only in bands fully above f0. Fan box: diffuse field through the double wall.
+    Returns (duct, breakout, total, speeds), or None if out of reach."""
+    fan = FAN12[fan_key]
+    room = inside_room_terms()
+    rdw, gap = double_wall_r(casing)
+    _, mat, t = CASINGS[casing]
+    leaf = plate(casing, [layer(mat, t)])
+    rc = octave(lambda f: r_single(leaf, f))
+    face = acp()
+    f0 = math.sqrt(1.8 * RHO0 * C0 ** 2 * (leaf.m + face.m) / (gap * leaf.m * face.m)) / (2 * math.pi)
+    duct = brk = 0.0
+    speeds = {}
+    for name, r in (("supply", 1.0), ("exhaust", 1.5)):
+        L, area, b, (dep, wid) = SIL_PATHS[name]
+        s = fan_speed(fan, q_ls, path_dp(name, q_ls))
+        if s is None:
+            return None
+        speeds[name] = s
+        lw = fan["lpa"] + LW_FROM_LP + SPEED_LAW * math.log10(s) + 10 * math.log10(FAN12_N)
+        side = [lw - 3.0 + x + (tone_250 if i == 1 else 0.0) for i, x in enumerate(FAN12_REL)]
+        box_lined = 2 * (wid + dep) * FANBOX_L + wid * dep
+        s_over_a = 10 * math.log10(2 * (wid + dep) * L / (wid * dep))
+        to_pod = 10 * math.log10(wid / (2 * (wid + dep)))          # only the face toward the pod
+        tl_min = 10 * math.log10(2 * L * (1 / wid + 1 / dep))
+        rw, rd, rl = RISER
+        for i, f in enumerate(BANDS):
+            a_db = max(1.05 * SIL_LINING_ALPHA[i] ** 1.4 * SIL_PS * derate, 0.5)
+            duct += 10 ** ((side[i] - min(a_db * L, SIL_CAP_DB) - end_reflection(f, area) + room(r, i)) / 10)
+            kl = a_db * L / 4.343
+            mean = (1 - math.exp(-kl)) / kl                          # mean duct power along the lined length
+            il_face = max(0.0, rdw[i] - rc[i]) if f / math.sqrt(2) > f0 else 0.0
+            tl = max(breakout_tl(f, leaf.m, wid, dep), tl_min)
+            lw_pass = side[i] + 10 * math.log10(mean) + s_over_a + to_pod - tl - il_face
+            al = SIL_LINING_ALPHA[i]
+            lw_box = side[i] + 10 * math.log10(wid * FANBOX_L / (box_lined * al / (1 - al))) - rdw[i]
+            w = 10 ** (lw_pass / 10) + 10 ** (lw_box / 10)
+            if RISER_ON and name == "exhaust":   # riser: the fans' slot side, unattenuated, behind the same fill and face
+                tl_r = max(breakout_tl(f, RISER_KG_M2, rw, rd), 10 * math.log10(2 * rl * (1 / rw + 1 / rd)))
+                w += 10 ** ((side[i] + 10 * math.log10(2 * (rw + rd) * rl / (rw * rd))
+                             + 10 * math.log10(rw / (2 * (rw + rd))) - tl_r - il_face) / 10)
+            brk += w * 10 ** (room(1.2, i) / 10)
+    return 10 * math.log10(duct), 10 * math.log10(brk), 10 * math.log10(duct + brk), speeds
+
+
+def fan12_flow_for(target_dba, fan_key=FAN_PICK, casing=AIR_CASING, tone_250=0.0):
+    """Highest flow at or under target_dba that the fans can reach."""
+    lo, hi = 10.0, 150.0
+    for _ in range(50):
+        mid = (lo + hi) / 2
+        res = fan12_noise(fan_key, mid, casing, tone_250=tone_250)
+        if res is None or res[2] > target_dba:
+            hi = mid
+        else:
+            lo = mid
+    return lo
+
+
+def fans_kg(fan_key=FAN_PICK):
+    return len(SIL_PATHS) * FAN12_N * FAN12[fan_key]["kg"]
 
 
 # ---------------------------------------------------------------------------
@@ -990,7 +1178,7 @@ def t_recommend(wb, gb, base):
             ("Same with a 0.4 mm tray (rejected: costs 1 dB)", dict(base, **dict(DECIDED_STACK, wall="DL-ST4-40-FLG-12", ceiling="DL-ST4-40-FLG-12"))),
             ("Same, felt flat on the ceiling lining (no gap)", dict(base, **dict(DECIDED_STACK, ceiling="DL-ST-40-FL"))),
             ("Acrylic experiment: 10 mm with hinge stile", dict(base, **dict(DECIDED_STACK, glass="A10"))),
-            ("Light 0.8 mm casings (fails the noise target)", dict(base, **dict(DECIDED_STACK, casing="al08")))]
+            ("Light 0.8 mm cartridge casings", dict(base, **dict(DECIDED_STACK, casing="al08")))]
     for label, cfg in rows:
         kg = pod_total_kg(cfg, wb, gb)
         b = band(cfg, wb, gb)
@@ -1001,51 +1189,65 @@ def t_recommend(wb, gb, base):
 
 def t_air():
     rows, v, g = co2_rows()
-    out = [f"Inside volume {v:.2f} m3; CO2 from 2 people {g * 1000:.1f} ml/s.", "",
-           "| Fresh air l/s | Air changes /h | Minutes per change | CO2 rise ppm | CO2 ppm, room 400 | CO2 ppm, room 600 | Minutes to 95% | Heat rise K | Heat rise K with voice kit |",
-           "|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    out = [f"Inside volume {v:.2f} m3; CO2 from 2 people {g * 1000:.1f} ml/s. The last column uses a mixing "
+           f"effectiveness of {MIX_EFF} (PM ruling 8); the others assume perfect mixing.", "",
+           "| Fresh air l/s | Air changes /h | Minutes per change | CO2 rise ppm | CO2 ppm, room 400 | CO2 ppm, room 600 | Minutes to 95% | Heat rise K | Heat rise K with voice kit | CO2 ppm, room 600, mixing 0.8 |",
+           "|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for q, ach, mins, rise, c4, c6, t95, dt, dtk in rows:
         out.append(row([f"{q:.0f}", f"{ach:.0f}", f"{mins:.1f}", f"{rise:.0f}", f"{c4:.0f}", f"{c6:.0f}",
-                        f"{t95:.0f}", f"{dt:.1f}", f"{dtk:.1f}"]))
+                        f"{t95:.0f}", f"{dt:.1f}", f"{dtk:.1f}", f"{600 + rise / MIX_EFF:.0f}"]))
+    k4 = RHO0 * CP_AIR * 4.0 / 1000
+    one = 600 + AIR["co2_per_person_ls"] / 26.0 * 1e6 / MIX_EFF
     out.append("")
+    out.append(f"Flow that keeps the inside 4 K or less over the room: one person {heat_w(1) / k4:.0f} l/s, two people "
+               f"{heat_w(2) / k4:.0f} l/s, two with the voice-kit reserve {heat_w(2, True) / k4:.0f} l/s. One person at the "
+               f"26 l/s floor (D-44), room 600, mixing 0.8: {one:.0f} ppm.")
     out.append(f"CO2 after 2 h at 40 l/s from 400 ppm (room 400): {co2_after(40, 120, 400, 400):.0f} ppm; "
                f"after 3 h at 26 l/s, room 600: {co2_after(26, 180, 600, 600):.0f} ppm.")
     return "\n".join(out)
 
 
-FAN_DECIDED = "S&P TD-500/150-160 ECOWATT, 4 V (56 l/s @ 42 Pa)"
-
-
 def t_fans():
-    out = ["| Fan, 2 mm aluminium casings | Duct LwA dB(A) at its data point | Inside at 53 l/s: duct / breakout / total dB(A) | Inside at 70 l/s: duct / breakout / total | Flow for 25 dB(A) l/s |",
-           "|---|---:|---|---|---:|"]
-    for k, fan in FAN_BANDS.items():
-        a = fan_noise_inside(k, "al20", 53.0)
-        b = fan_noise_inside(k, "al20", 70.0)
-        out.append(row([k + (" (DECIDED)" if k == FAN_DECIDED else ""), f"{fan['lwa']}",
-                        " / ".join(f"{x:.1f}" for x in a), " / ".join(f"{x:.1f}" for x in b),
-                        f"{flow_for(25.0, k, 'al20'):.0f}"]))
+    out = ["| Fans and cartridges | Fits the 205 mm decor | Fans kg | Cartridges with fill kg | At 53 l/s: fan speed supply / exhaust | At 53 l/s: duct / breakout / total dB(A) | Boost flow at 30 dB(A) l/s | At 70 l/s: total dB(A) |",
+           "|---|---|---:|---:|---|---|---:|---:|"]
+    a, b = fan_noise_old(TD500, 53.0), fan_noise_old(TD500, 70.0)
+    out.append(row(["2 x S&P TD-500/150-160 SILENT, 4 V, as at 5c1003b, with casing sound", "no (ØD 221 mm)", "12.0",
+                    "29.8", "4 V", " / ".join(f"{x:.1f}" for x in a), f"{old_flow_for(30.0, TD500):.0f}", f"{b[2]:.1f}"]))
+    global SIL_W, SIL_PATHS, RISER_ON
+    keep = (SIL_W, SIL_PATHS, RISER_ON)
+    for label, ck, tone, riser in (
+            ("2 x 2 Noctua NF-A14 iPPC-3000, 12 V, 2 mm Al casings, both grilles low (pick)", "al20", 0.0, False),
+            ("Same, 0.8 mm Al casings", "al08", 0.0, False),
+            ("Same as the pick, with a 5 dB fan tone at 250 Hz (risk)", "al20", 5.0, False),
+            ("Exhaust grille high: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges", "al20", 0.0, True)):
+        if riser:
+            SIL_W, RISER_ON = (0.96 - RISER[0]) / 2, True
+            SIL_PATHS = {k: (v[0], 2 * SIL_GAP * SIL_W, SIL_W, (v[3][0], SIL_W)) for k, v in SIL_PATHS.items()}
+        r53 = fan12_noise(FAN_PICK, 53.0, ck, tone_250=tone)
+        r70 = fan12_noise(FAN_PICK, 70.0, ck, tone_250=tone)
+        sp = r53[3]
+        kg = cartridge_kg(ck) + (2 * (RISER[0] + RISER[1]) * RISER[2] * RISER_KG_M2 if riser else 0.0)
+        out.append(row([label, "yes", f"{fans_kg():.1f}", f"{kg:.1f}",
+                        f"{sp['supply'] * 100:.0f}% / {sp['exhaust'] * 100:.0f}%",
+                        " / ".join(f"{x:.1f}" for x in r53[:3]),
+                        f"{fan12_flow_for(30.0, FAN_PICK, ck, tone):.0f}",
+                        f"{r70[2]:.1f}" if r70 else "out of reach"]))
+        SIL_W, SIL_PATHS, RISER_ON = keep
     return "\n".join(out)
 
 
 def t_silencer():
-    out = ["| Splitter (2 mm aluminium casing unless noted) | Two cartridges kg | Supply path IL 125 | 250 | 500 | 1k | 2k | 4k dB | Inside at 53 l/s dB(A) | at 70 l/s | Flow for 25 dB(A) l/s |",
-           "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
-    global SIL_LINING_ALPHA, SIL_LINING_MM
-    keep = (SIL_LINING_ALPHA, SIL_LINING_MM)
-    cases = [(f"lining {mm:g} mm" + (" (DECIDED)" if mm == keep[1] else ""), mm, "al20") for mm in (25.0, 37.5, 50.0)]
-    cases += [("lining 37.5 mm, casing aluminium 0.8 mm", 37.5, "al08"), ("lining 37.5 mm, casing steel 1.0 mm", 37.5, "st10")]
-    for label, mm, ck in cases:
-        SIL_LINING_MM, SIL_LINING_ALPHA = mm, LINING_DATA[mm]
-        il = silencer_il(SIL_PATHS["supply"][0], SIL_DERATE)
-        out.append(row([label, f"{cartridge_kg(ck):.1f}"] + [f"{x:.0f}" for x in il]
-                       + [f"{fan_noise_inside(FAN_DECIDED, ck, 53.0)[2]:.1f}", f"{fan_noise_inside(FAN_DECIDED, ck, 70.0)[2]:.1f}",
-                          f"{flow_for(25.0, FAN_DECIDED, ck):.0f}"]))
-    SIL_LINING_ALPHA, SIL_LINING_MM = keep
+    il = silencer_il(SIL_L, SIL_DERATE)
+    out = ["| Cartridge casing | Cartridges with fill kg | Fill toward the pod mm | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + fill + inner face R 125 | 250 | 500 | 1k | 2k | 4k dB |",
+           "|---|---:|---:|" + "---:|" * 12]
+    for ck in ("al20", "al08"):
+        rdw, d = double_wall_r(ck)
+        out.append(row([CASINGS[ck][0] + (" (pick)" if ck == AIR_CASING else ""), f"{cartridge_kg(ck):.1f}",
+                        f"{d * 1000:.0f}"] + [f"{x:.0f}" for x in il] + [f"{x:.0f}" for x in rdw]))
     out.append("")
-    out.append(f"Pressure drop at 70 l/s: supply {sys_dp(70, SIL_PATHS['supply'][1]):.0f} Pa, exhaust "
-               f"{sys_dp(70, SIL_PATHS['exhaust'][1]):.0f} Pa. The 50 mm lining needs a 250 mm deep cartridge, "
-               f"which does not fit the decor blocks.")
+    out.append("Pressure drop per path, supply / exhaust: " + "; ".join(
+        f"{q:.0f} l/s {path_dp('supply', q):.0f} / {path_dp('exhaust', q):.0f} Pa" for q in (26, 53, 70))
+        + f". Each fan pair reaches {fan12_flow_for(99.0):.0f} l/s at full speed.")
     return "\n".join(out)
 
 
