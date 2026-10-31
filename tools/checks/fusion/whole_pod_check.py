@@ -120,7 +120,9 @@ def clash_pairs(bodies, allow, min_mm3):
                 continue
             allowed = None
             for ra, rb, vmax, r in rules:
-                if ((ra.search(la) and rb.search(lb)) or (ra.search(lb) and rb.search(la))) and (vmax <= 0 or vol <= vmax):
+                same = la.split(" / ")[0] == lb.split(" / ")[0]     # scope same-file: one assembly file (D-104)
+                if ((ra.search(la) and rb.search(lb)) or (ra.search(lb) and rb.search(la))) and \
+                        (vmax <= 0 or vol <= vmax) and ((r.get("scope") or "").strip() != "same-file" or same):
                     allowed = r.get("id")
                     break
             out.append({"a": la, "b": lb, "mm3": round(vol, 2), "allowed": allowed})

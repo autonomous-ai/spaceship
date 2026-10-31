@@ -325,6 +325,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     idx = index_files(root)
     missing_sev = missing_drawing_severity(root)          # PM rulings D-73, D-84: see config/policy.csv
     tab = tabulated_cover(idx)                            # D-89
+    from common import reserved_spaces
+    reserved = reserved_spaces(root)
     for pn in sorted(part_numbers):
         cls = pn_class(pn)
         if cls not in ("part", "assembly"):
@@ -338,6 +340,14 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         if pn[:2] in ("83", "84"):        # shared hardware: its drawing is the joints register's, wherever it's modelled
             owner = owner_for("", pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
+        if pn in reserved:                          # a reserved space: open under its designer, no drawing yet
+            rr = reserved[pn]
+            fs.append(Finding("C05", "reserved-space", pn, "major",
+                              "%s is a reserved space until %s designs it (%s): %s." % (
+                                  label, rr.get("owner") or "its designer", rr.get("ruling") or "", rr.get("why") or ""),
+                              "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing "
+                              "and seams are checked from then on.", r_where, rr.get("owner") or owner))
+            continue
         if not pdfs and pn in tab:                 # D-89: listed in a tabulated drawing, so drawn
             cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}
             tab_revs = {rv for rv, _p, _own in tab[pn]}
