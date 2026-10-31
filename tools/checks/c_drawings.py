@@ -63,6 +63,15 @@ def hole_axes(step_holes):
     return axes
 
 
+def _in_cut_list(root, pn):
+    for p in walk_files(root, "v2/03-Manufacturing", exts=(".csv",)):
+        if "cut" in os.path.basename(p).lower():
+            with open(p, encoding="utf-8", errors="replace") as fh:
+                if re.search(r"\b%s\b" % pn, fh.read()):
+                    return True
+    return False
+
+
 def check_drawings(root, part_numbers, holes_by_pn, names=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes."""
@@ -80,8 +89,11 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None):
         r_where = rel(root, where) if where else ""
         owner = owner_for(r_where, pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
+        soft = re.search(r"FILL|FELT|GASKET|SEAL|TAPE|FOAM", names.get(pn, ""), re.I)
+        if not pdfs and soft and (files.get("DXF") or _in_cut_list(root, pn)):
+            continue        # soft goods may be defined by a DXF or a cut list line instead of a drawing
         if not pdfs:
-            fs.append(Finding("C05", "no-drawing", pn, "severe" if cls == "part" else "major",
+            fs.append(Finding("C05", "no-drawing", pn, "severe" if cls == "part" and not soft else "major",
                               "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s." % (
                                   label, pn, " though its CAD is in %s" % r_where if r_where else ""),
                               "Make the ISO first-angle drawing, export it through the name strip, and commit it.",

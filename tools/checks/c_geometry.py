@@ -174,8 +174,20 @@ def _glob_exists(root, pattern):
     return any(fnmatch.fnmatch(f, os.path.basename(pattern)) for f in os.listdir(d))
 
 
+FAMILIES_FOR_SHELL = ("21", "41")     # the assembled shell is checked once WALL and CEILING both exist
+
+
+def shell_ready(mdl, bodies):
+    if mdl == "skeleton":
+        return True
+    have = {(b.part_number or "")[:2] for b in bodies}
+    return all(f in have for f in FAMILIES_FOR_SHELL)
+
+
 def check_shell(root, mdl, bodies):
     fs = []
+    if not shell_ready(mdl, bodies):
+        return fs
     for g in shell_gaps(bodies, root=root):
         an, bn = g["axes"]
         (a0, a1), (b0, b1) = g["a"], g["b"]

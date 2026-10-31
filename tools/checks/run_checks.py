@@ -67,7 +67,8 @@ def run(root, rev):
         if not bodies:
             continue
         findings += c_geometry.check_shell(root, mdl, bodies)
-        ran |= {"C01", "C01:" + mdl}
+        if c_geometry.shell_ready(mdl, bodies):
+            ran |= {"C01", "C01:" + mdl}
         if rules:
             findings += c_geometry.check_gap_rules(root, mdl, bodies, rules)
             ran |= {"C02:" + mdl}

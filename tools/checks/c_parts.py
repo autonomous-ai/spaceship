@@ -50,8 +50,11 @@ STATUS_WORDS = ("confirmed", "source", "calculation", "assumption", "unverified"
                 "review", "decided", "proposed")
 GRADE_HINT = re.compile(r"\d|\b(A2|A4|ABS|PET|PE|PVC|EPDM|PU|PUR|ACP|MDF|HPL|LVL|felt|glass|toughened|laminat)\b",
                         re.I)
-FINISH_WORDS = re.compile(r"anodi[sz]|powder|paint|galvani|zinc|zn|plated|passivat|black oxide|e-?coat|mill|raw|"
-                          r"natural|lacquer|PVDF|coated|polished|brushed|none|as supplied|bare|self.colou?r", re.I)
+FINISH_WORDS = re.compile(r"anodi[sz]|powder|paint|galvani|zinc|\bzn\b|plated|passivat|black oxide|e-?coat|mill finish|"
+                          r"\braw\b|natural|lacquer|PVDF|coated|polished|brushed|as supplied|bare|self.colou?r|\bRAL\s*\d|"
+                          r"\bblack\b|\bwhite\b|\bgr[ae]y\b|colou?r|\bclear\b|ground|arris|seamed|\+Z\d|Z275|Z140|Z100", re.I)
+SKU_RE = re.compile(r"\b[A-Z][A-Z0-9]*[- ]?\d[\d-]{2,}[A-Z0-9-]*\b|\b\d{4,}[A-Z0-9-]*\b")
+VAGUE_FINISH = re.compile(r"finish (to )?match|as (the )?(base band|v1)|tbd|to be (set|decided|confirmed)", re.I)
 
 
 def _norm_key(k):
@@ -135,17 +138,31 @@ def check_parts_lists(root, plists):
                 fs.append(Finding("C06", "row-incomplete", pn, sev,
                                   "%s %s in %s is missing: %s." % (pn, name, r, ", ".join(missing)),
                                   "Fill them in, each number with its status and source.", r, owner))
-            # C11: material grade and finish on every part and bought item (assemblies inherit)
-            if cls in ("part", "bought") or (cls == "bad" and pn):
+            # C11: material grade and finish on every part and bought item (assemblies inherit).
+            # A bought item named by maker and exact SKU carries its material and finish in the SKU;
+            # a HOLD item gets them when it is released.
+            held = "HOLD" in " ".join((row["status"], row["material"], name)).upper() or \
+                "not named" in (row["material"] or "").lower()
+            sku_named = bool(row["sku"] or SKU_RE.search(" ".join((name, row["material"]))))
+            if (cls == "part" or (cls == "bad" and pn) or (cls == "bought" and not sku_named)) and not held:
                 mat = " ".join(x for x in (row["material"], row["grade"]) if x)
-                fin = row["finish"] or (FINISH_WORDS.search(row["material"] or "") or [None])[0] or ""
+                fin_text = row["finish"] or row["material"] or ""
+                if re.search(r"glass|laminat", mat, re.I):      # a glass part's finish is its edge work
+                    fin = re.search(r"ground|polish|arris|seamed|edge", fin_text, re.I)
+                else:
+                    fin = FINISH_WORDS.search(fin_text) and not VAGUE_FINISH.search(fin_text)
                 lacks = []
                 if not mat:
                     lacks.append("material")
                 elif not GRADE_HINT.search(mat):
                     lacks.append("material grade (a named grade or alloy and temper, not just a family)")
                 if not fin:
-                    lacks.append("finish")
+                    if re.search(r"glass|laminat", mat, re.I):
+                        lacks.append("edge finish for the glass (ground, polished, arrised)")
+                    elif VAGUE_FINISH.search(fin_text):
+                        lacks.append("finish (it says only '%s')" % VAGUE_FINISH.search(fin_text).group(0))
+                    else:
+                        lacks.append("finish")
                 if lacks:
                     fs.append(Finding("C11", "material-finish", pn, "major",
                                       "%s %s in %s has no %s. Material given: '%s'." % (
@@ -153,7 +170,7 @@ def check_parts_lists(root, plists):
                                       "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and "
                                       "the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, "
                                       "mill finish) in the parts list and on the drawing.", r, owner))
-            if cls == "bought" and not (row["maker"] and row["sku"]) and "HOLD" not in (row["status"] or "").upper():
+            if cls == "bought" and not (row["maker"] and row["sku"]) and not sku_named and not held:
                 fs.append(Finding("C06", "bought-no-sku", pn, "major",
                                   "%s %s in %s is a bought item with no maker and exact SKU, and it isn't marked "
                                   "HOLD (guideline section 4.2)." % (pn, name, r),
