@@ -1,0 +1,451 @@
+"""The three sheet-metal parts ELECTRICAL makes, each in its own design (so its
+drawing shows only that part):
+
+    711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY   (1.0 mm 5052-H32, folded tray with front lips)
+    711002 ELECTRICAL - POWER UNIT - FRONT PLATE      (1.5 mm 5052-H32, flat, black anodised AA20)
+    711005 ELECTRICAL - HUB ZONE COVER PLATE          (1.5 mm 5052-H32, flat, black anodised AA20)
+
+    python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_parts_cad.py \
+        --label "ELECTRICAL Engineer" --doc 711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD --doc-new \
+        --arg part=body --arg save=1 --arg export=1 --close --discard
+    (part=front with 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD,
+     part=hub with 711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_CAD)
+
+Sizes come from the route model's parameters (electrical_model.py: pu_w, pu_h,
+pu_d, hub_w) and are written here as this part's own user parameters with
+their status. Cut-outs that wait on module data are HOLD (PM ruling
+2026-11-01): the 86-plate openings (UTEN codes, H-ELE-04), the hub window and
+the button and knob holes (the hub's size, ISS-060), the earth stud hole
+(PEM data) and the mounting to B2's frame (WALL, IF-12, not cut yet). Every
+sketch is fully constrained by the parameters; every feature is named.
+
+Exports after the save: the .f3d, the STEP (Fusion writes cm, D-13) and a DXF
+(the body's flat pattern; the plates' outline sketch), all in mm except the STEP.
+"""
+
+import importlib
+import os
+import sys
+import time
+
+import adsk.core
+import adsk.fusion
+
+ARGS = globals().get("SCRIPT_ARGS", {})
+HERE = os.path.dirname(os.path.abspath(ARGS.get("script_path", globals().get("__file__", "."))))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import electrical_model as M  # noqa: E402
+
+importlib.reload(M)
+MM = 0.1
+V = M.values()
+HOLD = "HOLD"
+
+# part key: part number, name, Vietnamese, doc name stem, parameters (name, expression, unit, status, source)
+PARTS = {
+    "body": ("711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp",
+             "711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY", [
+                 ("t", "1.0 mm", "mm", "PROPOSED", "5052-H32 aluminium 1.0 mm (README section 3)"),
+                 ("w", "%.1f mm" % V["pu_w"], "mm", "assumption", "route model pu_w (300)"),
+                 ("h", "%.1f mm" % V["pu_h"], "mm", "assumption", "route model pu_h (260)"),
+                 ("d", "%.1f mm" % V["pu_d"], "mm", "calculation", "route model pu_d (72): felt face to 6 mm short of the skin"),
+                 ("lip", "10 mm", "mm", "assumption", "front lips that carry the front plate's 4 screws"),
+                 ("hole_b", "19.1 mm", "mm", "source", "Heyco 2836 bushing hole (maker page, 2026-10-31)"),
+                 ("lead_z1", "%.1f mm" % (V["trunk_z"] - 30 - V["pu_z0"]), "mm", "calculation",
+                  "first lead exit up the right side from the bottom: Z 1070 (trunk Z 1100 less 30) less the unit's bottom Z 870"),
+                 ("lead_z2", "%.1f mm" % (V["trunk_z"] + 10 - V["pu_z0"]), "mm", "calculation",
+                  "second lead exit: Z 1110, 10 mm clear of the top bend"),
+                 ("lead_y", "%.1f mm" % (V["y_bg"] - V["y_bf"]), "mm", "calculation",
+                  "lead exits in the cassette's cable gap: 21.5 mm behind the unit's front"),
+                 ("top_x", "%.1f mm" % (V["lt_x"] - V["pu_x0"]), "mm", "calculation", "light feed exit in the top: X 355 less the unit's left side X 95"),
+                 ("sleeve_x", "%.1f mm" % (V["sl_x"] - V["pu_x0"]), "mm", "calculation", "mains and LAN sleeve entry in the bottom: X 146 less 95"),
+                 ("sleeve_d", "25 mm", "mm", "assumption", "entry for the 20 mm flexible conduit"),
+                 ("sleeve_y", "%.1f mm" % (V["sl_y"] - V["y_bf"]), "mm", "calculation", "sleeve centre 58 mm behind the unit's front"),
+                 ("clinch_d", "5.4 mm", "mm", HOLD, "M4 clinch nut hole in each lip; nut and hole to confirm (H-ELE-11 family)"),
+                 ("clinch_x", "15 mm", "mm", "assumption", "clinch nut centre from each side edge, along the top and bottom lips"),
+                 ("clinch_y", "lip / 2", "mm", "calculation", "clinch nut centre in the middle of the lip"),
+             ]),
+    "front": ("711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước",
+              "711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE", [
+                  ("t", "1.5 mm", "mm", "PROPOSED", "5052-H32 aluminium 1.5 mm, black anodised AA20 (D-67)"),
+                  ("w", "%.1f mm" % V["pu_w"], "mm", "assumption", "route model pu_w (300)"),
+                  ("h", "%.1f mm" % V["pu_h"], "mm", "assumption", "route model pu_h (260)"),
+                  ("box_a", "73 mm", "mm", HOLD, "opening for an 86-type back box mouth; the UTEN code and its box set it (H-ELE-04)"),
+                  ("box_zc", "195 mm", "mm", "assumption", "86-plate openings' centre height from the plate's bottom (unit centre Z 1000 + 65)"),
+                  ("box_x1", "80 mm", "mm", "assumption", "socket opening centre from the left edge"),
+                  ("box_x2", "190 mm", "mm", "assumption", "LAN opening centre from the left edge"),
+                  ("din_w", "37 mm", "mm", "source", "RCBO window: 2 modules of 18 mm + 1 (Schneider A9D32610 is 36 mm wide)"),
+                  ("din_h", "45 mm", "mm", "source", "DIN 43880 front height 45 mm"),
+                  ("din_x", "265 mm", "mm", "assumption", "RCBO window centre from the left edge"),
+                  ("din_zc", "195 mm", "mm", "assumption", "RCBO window centre height, level with the plates"),
+                  ("vent_l", "40 mm", "mm", "assumption", "vent slot length"),
+                  ("vent_w", "4 mm", "mm", "assumption", "vent slot width"),
+                  ("vent_n", "5", "", "assumption", "vent slots per row (two rows: bottom and top)"),
+                  ("vent_p", "50 mm", "mm", "assumption", "vent slot pitch"),
+                  ("vent_z1", "25 mm", "mm", "assumption", "bottom vent row centre from the bottom edge"),
+                  ("vent_z2", "130 mm", "mm", "assumption", "top vent row centre (between the supplies and the plates)"),
+                  ("screw_d", "4.5 mm", "mm", "assumption", "M4 screw clearance hole"),
+                  ("screw_x", "15 mm", "mm", "assumption", "screw centre from each side edge, along the width (the body's clinch nuts)"),
+                  ("screw_y", "5 mm", "mm", "calculation", "screw centre from the top and bottom edges: the middle of the body's 10 mm lips"),
+              ]),
+    "hub": ("711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến",
+            "711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE", [
+                ("t", "1.5 mm", "mm", "PROPOSED", "5052-H32 aluminium 1.5 mm, black anodised AA20 (D-67)"),
+                ("w", "%.1f mm" % V["hub_w"], "mm", "DECIDED", "D-61, D-70: the 180 x 180 zone"),
+                ("h", "%.1f mm" % V["hub_w"], "mm", "DECIDED", "D-61, D-70"),
+                ("win_w", "120 mm", "mm", HOLD, "hub window width: the hub's size (ISS-060)"),
+                ("win_h", "70 mm", "mm", HOLD, "hub window height (ISS-060)"),
+                ("win_zc", "125 mm", "mm", "assumption", "hub window centre from the bottom edge"),
+                ("btn_d", "16.2 mm", "mm", HOLD, "16 mm panel push button hole (button SKU HOLD)"),
+                ("btn_p", "40 mm", "mm", "assumption", "button pitch (BOOST, TEST, CALL)"),
+                ("btn_zc", "50 mm", "mm", "assumption", "button row centre from the bottom edge"),
+                ("btn_x1", "30 mm", "mm", "assumption", "first button centre from the left edge"),
+                ("knob_d", "7.5 mm", "mm", HOLD, "potentiometer bush hole (part HOLD)"),
+                ("knob_x", "150 mm", "mm", "assumption", "LIGHT knob centre from the left edge"),
+                ("screw_d", "4.5 mm", "mm", HOLD, "M4 fixing holes into the column (CEILING models the column)"),
+                ("screw_e", "10 mm", "mm", "assumption", "fixing hole centre from each corner"),
+            ]),
+}
+
+
+def vi(e):
+    return adsk.core.ValueInput.createByString(e)
+
+
+def ev(design, e):
+    return design.unitsManager.evaluateExpression(e, "mm") * 10.0
+
+
+def box(b):
+    bb = b.boundingBox
+    return [round(x * 10.0, 3) for x in (bb.minPoint.x, bb.minPoint.y, bb.minPoint.z, bb.maxPoint.x, bb.maxPoint.y, bb.maxPoint.z)]
+
+
+H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+VO = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+
+
+def rect(sk, design, x0, y0, x1, y1, name):
+    """Rectangle (sketch coordinates in mm expressions), dimensioned to the sketch origin."""
+    a, b, c, d = (ev(design, e) for e in (x0, y0, x1, y1))
+    r = sk.sketchCurves.sketchLines.addTwoPointRectangle(adsk.core.Point3D.create(a * MM, b * MM, 0),
+                                                         adsk.core.Point3D.create(c * MM, d * MM, 0))
+    gc = sk.geometricConstraints
+    for ln in r:
+        if not any(k.objectType in (adsk.fusion.HorizontalConstraint.classType(), adsk.fusion.VerticalConstraint.classType())
+                   for k in ln.geometricConstraints):
+            s0, s1 = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+            (gc.addHorizontal if abs(s0.y - s1.y) < 1e-9 else gc.addVertical)(ln)
+    pts = []
+    for ln in r:
+        for p in (ln.startSketchPoint, ln.endSketchPoint):
+            if all(p != q for q in pts):
+                pts.append(p)
+    near = lambda x, y: min(pts, key=lambda p: (p.geometry.x - x * MM) ** 2 + (p.geometry.y - y * MM) ** 2)  # noqa: E731
+    p00, p10, p01 = near(a, b), near(c, b), near(a, d)
+    tp = adsk.core.Point3D.create((a + c) / 2 * MM, (b + d) / 2 * MM, 0)
+    dims = sk.sketchDimensions
+    dims.addDistanceDimension(p00, p10, H, tp).parameter.expression = "(%s) - (%s)" % (x1, x0)
+    dims.addDistanceDimension(p00, p01, VO, tp).parameter.expression = "(%s) - (%s)" % (y1, y0)
+    for val, ex, orient, coinc in ((a, x0, H, gc.addVerticalPoints), (b, y0, VO, gc.addHorizontalPoints)):
+        if abs(val) < 1e-9:
+            coinc(p00, sk.originPoint)
+        else:
+            dims.addDistanceDimension(sk.originPoint, p00, orient, tp).parameter.expression = "abs(%s)" % ex
+    return r
+
+
+def circle(sk, design, cx, cy, d):
+    x, y = ev(design, cx), ev(design, cy)
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(x * MM, y * MM, 0), ev(design, d) / 2 * MM)
+    g = c.centerSketchPoint.geometry
+    tp = adsk.core.Point3D.create(g.x + 0.8, g.y + 0.8, 0)
+    sk.sketchDimensions.addDiameterDimension(c, tp).parameter.expression = d
+    for val, ex, orient, coinc in ((x, cx, H, sk.geometricConstraints.addVerticalPoints),
+                                   (y, cy, VO, sk.geometricConstraints.addHorizontalPoints)):
+        if abs(val) < 1e-9:
+            coinc(c.centerSketchPoint, sk.originPoint)
+        else:
+            sk.sketchDimensions.addDistanceDimension(sk.originPoint, c.centerSketchPoint, orient, tp).parameter.expression = "abs(%s)" % ex
+    return c
+
+
+def flat_plate(design, comp, key):
+    """A flat plate in the XZ plane (X along the width, Z up), thickness along -Y... built on XY for simplicity:
+    X = width, Y = height, extruded t along +Z. The drawing's front view looks at it."""
+    sk = comp.sketches.add(comp.xYConstructionPlane)
+    sk.name = "OUTLINE AND CUT-OUTS - %s" % key.upper()
+    rect(sk, design, "0 mm", "0 mm", "w", "h", "OUTLINE")
+    if key == "front":
+        for xc in ("box_x1", "box_x2"):
+            rect(sk, design, "(%s) - box_a / 2" % xc, "box_zc - box_a / 2", "(%s) + box_a / 2" % xc, "box_zc + box_a / 2",
+                 "86 PLATE OPENING (HOLD)")
+        rect(sk, design, "din_x - din_w / 2", "din_zc - din_h / 2", "din_x + din_w / 2", "din_zc + din_h / 2", "RCBO WINDOW")
+        for zc in ("vent_z1", "vent_z2"):
+            for i in range(5):
+                xc = "w / 2 + (%d - (vent_n - 1) / 2) * vent_p" % i
+                rect(sk, design, "(%s) - vent_l / 2" % xc, "(%s) - vent_w / 2" % zc, "(%s) + vent_l / 2" % xc,
+                     "(%s) + vent_w / 2" % zc, "VENT")
+        for cx, cy in (("screw_x", "screw_y"), ("w - screw_x", "screw_y"), ("screw_x", "h - screw_y"), ("w - screw_x", "h - screw_y")):
+            circle(sk, design, cx, cy, "screw_d")
+    else:
+        rect(sk, design, "w / 2 - win_w / 2", "win_zc - win_h / 2", "w / 2 + win_w / 2", "win_zc + win_h / 2", "HUB WINDOW (HOLD)")
+        for i in range(3):
+            circle(sk, design, "btn_x1 + %d * btn_p" % i, "btn_zc", "btn_d")
+        circle(sk, design, "knob_x", "btn_zc", "knob_d")
+        for cx, cy in (("screw_e", "screw_e"), ("w - screw_e", "screw_e"), ("screw_e", "h - screw_e"), ("w - screw_e", "h - screw_e")):
+            circle(sk, design, cx, cy, "screw_d")
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    # the plate is the profile with the most area that contains holes: pick the outer region
+    outer = max((sk.profiles.item(i) for i in range(sk.profiles.count)),
+                key=lambda p: p.areaProperties(adsk.fusion.CalculationAccuracy.MediumCalculationAccuracy).area)
+    ei = comp.features.extrudeFeatures.createInput(outer, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    ei.setDistanceExtent(False, vi("t"))
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "EXTRUDE - PLATE %s" % key.upper()
+    b = f.bodies.item(0)
+    b.name = PARTS[key][1]
+    return b, sk
+
+
+def body_tray(design, comp, occ):
+    """Folded tray: base (the back, w x h on XY at Z 0), four returns of depth d (outer faces on the outline,
+    toward +Z = toward the room), four lips of `lip` turned inward at the front."""
+    rule = design.designSheetMetalRules.itemByName("AL 5052 1.0 - POWER UNIT")
+    if rule is None:
+        rule = design.designSheetMetalRules.addByCopy(comp.activeSheetMetalRule, "AL 5052 1.0 - POWER UNIT")
+    rule.thickness.expression = "%.4f mm" % ev(design, "t")
+    rule.bendRadius.expression = "Thickness"
+    rule.kFactor = 0.44
+    rule.twoBendReliefShape = adsk.fusion.TwoBendReliefShapes.SquareTwoBendReliefShape
+    comp.activeSheetMetalRule = rule
+    occ.activate()
+    try:
+        sk = comp.sketches.add(comp.xYConstructionPlane)
+        sk.name = "OUTLINE - BACK"
+        rect(sk, design, "0 mm", "0 mm", "w", "h", "OUTLINE")
+        if not sk.isFullyConstrained:
+            raise RuntimeError("sketch not fully constrained: " + sk.name)
+        ff = comp.features.flangeFeatures
+        bfi = ff.createBaseFlangeInput([sk.profiles.item(0)])
+        bfi.orientation = adsk.fusion.FlangeOrientations.SideOneFlangeOrientation
+        bf = ff.add(bfi)
+        bf.name = "BASE - BACK"
+        body = bf.bodies.item(0)
+        b0 = box(body)
+        ztop = b0[5]                      # the base's face toward the room
+        eds = [e for e in body.edges if e.geometry.objectType == adsk.core.Line3D.classType()
+               and abs(e.startVertex.geometry.z * 10 - ztop) < 0.01 and abs(e.endVertex.geometry.z * 10 - ztop) < 0.01]
+        if len(eds) != 4:
+            raise RuntimeError("body: expected 4 edges on the base's room face, got %d" % len(eds))
+        want = [0.0, 0.0, ev(design, "w"), ev(design, "h")]
+        ret = None
+        for pos in (adsk.fusion.BendPositionTypes.InsideBendPositionType, adsk.fusion.BendPositionTypes.OutsideBendPositionType):
+            for flip in (False, True):
+                efi = ff.createEdgeFlangeInput([], vi("d - t - t"))
+                for e in eds:
+                    efi.edgeDefinitions.addFullLengthEdge(e)
+                efi.heightDatumType = adsk.fusion.FlangeHeightDatumTypes.OuterFacesFlangeHeightDatumType
+                efi.bendPositionType = pos
+                efi.isFlipped = flip
+                ef = ff.add(efi)
+                b = box(comp.bRepBodies.item(0))
+                ok = all(abs(g - w_) < 0.05 for g, w_ in zip([b[0], b[1], b[3], b[4]], want)) and b[5] - b[2] > 20
+                print("body returns, bend position %d flipped %s: box %s %s" % (pos, flip, b, "ok" if ok else "rejected"))
+                if ok:
+                    ret = ef
+                    break
+                ef.deleteMe()
+            if ret:
+                break
+        if ret is None:
+            raise RuntimeError("body: no return placement keeps the outer faces on the outline")
+        ret.name = "FLANGE - RETURNS"
+        body = comp.bRepBodies.item(0)
+        b = box(body)
+        zfront = b[5] if abs(b[5] - b0[5]) > 1 else b[2]
+        eds = [e for e in body.edges if e.geometry.objectType == adsk.core.Line3D.classType()
+               and abs(e.startVertex.geometry.z * 10 - zfront) < 0.01 and abs(e.endVertex.geometry.z * 10 - zfront) < 0.01]
+
+        def on_outline(e):
+            s0 = e.startVertex.geometry
+            return min(abs(s0.x * 10 - b[0]), abs(s0.x * 10 - b[3]), abs(s0.y * 10 - b[1]), abs(s0.y * 10 - b[4])) < 0.05
+        inner = [e for e in eds if not on_outline(e) and e.length * 10 > 100]
+        if len(inner) != 4:
+            raise RuntimeError("body: expected 4 inner front edges, got %d" % len(inner))
+        lip = None
+        for flip in (False, True):
+            efi = ff.createEdgeFlangeInput([], vi("lip"))
+            for e in inner:
+                efi.edgeDefinitions.addFullLengthEdge(e)
+            efi.isFlipped = flip
+            efi.isMiteredCorners = True
+            efi.heightDatumType = adsk.fusion.FlangeHeightDatumTypes.OuterFacesFlangeHeightDatumType
+            f = ff.add(efi)
+            b2 = box(comp.bRepBodies.item(0))
+            inside = all(abs(b2[k] - b[k]) < 0.05 for k in range(6))
+            print("body lips, flipped %s: box %s, %s" % (flip, b2, "inside" if inside else "rejected"))
+            if inside and f.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState:
+                lip = f
+                break
+            f.deleteMe()
+        if lip is None:
+            raise RuntimeError("body: no lip direction keeps the lips inside the box")
+        lip.name = "FLANGE - FRONT LIPS"
+    finally:
+        design.activateRootComponent()
+    return comp.bRepBodies.item(0)
+
+
+AXIS_OF_PLANE = {"yZConstructionPlane": "x", "xZConstructionPlane": "y", "xYConstructionPlane": "z"}
+
+
+def plane_at(design, comp, plane_base, offset, name):
+    """A construction plane parallel to plane_base at model coordinate `offset` along its normal axis
+    (tries +offset and -(offset), keeps the one that lands there), or the base plane itself at 0."""
+    base = getattr(comp, plane_base)
+    want = ev(design, offset)
+    if abs(want) < 1e-9:
+        return base
+    ax = AXIS_OF_PLANE[plane_base]
+    for e in (offset, "-(%s)" % offset):
+        pin = comp.constructionPlanes.createInput()
+        pin.setByOffset(base, vi(e))
+        pl = comp.constructionPlanes.add(pin)
+        o = pl.geometry.origin
+        got = {"x": o.x, "y": o.y, "z": o.z}[ax] * 10.0
+        if abs(got - want) < 0.01:
+            pl.name = "PLANE - " + name
+            pl.isLightBulbOn = False
+            return pl
+        pl.deleteMe()
+    raise RuntimeError("could not place the plane for " + name)
+
+
+def cut_hole(design, comp, body, plane_base, offset, c1, c2, d, name, axis_map):
+    """A through hole: circle on a plane at `offset`, cut symmetric 3 x t (the wall it crosses)."""
+    pl = plane_at(design, comp, plane_base, offset, name)
+    sk = comp.sketches.add(pl)
+    sk.name = "HOLE - " + name
+    # place the circle at the model point, then dimension along the sketch axes the model axes map to
+    m = {"x": 0.0, "y": 0.0, "z": 0.0}
+    m[axis_map[0]], m[axis_map[1]] = ev(design, c1), ev(design, c2)
+    p = sk.modelToSketchSpace(adsk.core.Point3D.create(m["x"] * MM, m["y"] * MM, m["z"] * MM))
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(p.x, p.y, 0), ev(design, d) / 2 * MM)
+    g = c.centerSketchPoint.geometry
+    tp = adsk.core.Point3D.create(g.x + 0.8, g.y + 0.8, 0)
+    sk.sketchDimensions.addDiameterDimension(c, tp).parameter.expression = d
+    o = sk.modelToSketchSpace(adsk.core.Point3D.create(0, 0, 0))
+    for ax, ex in ((axis_map[0], c1), (axis_map[1], c2)):
+        v = {"x": (1, 0, 0), "y": (0, 1, 0), "z": (0, 0, 1)}[ax]
+        e = sk.modelToSketchSpace(adsk.core.Point3D.create(*v))
+        sa = "x" if abs(e.x - o.x) > abs(e.y - o.y) else "y"
+        sk.sketchDimensions.addDistanceDimension(sk.originPoint, c.centerSketchPoint, H if sa == "x" else VO,
+                                                 tp).parameter.expression = "abs(%s)" % ex
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setSymmetricExtent(vi("3 * t"), True)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
+def export(design, root, comp, key, repo, stem):
+    em = design.exportManager
+    out = {"f3d": "v2/01-CAD-Native/electrical/%s_CAD.f3d" % stem,
+           "step": "v2/03-Manufacturing/electrical/%s_STEP.step" % stem,
+           "dxf": "v2/03-Manufacturing/electrical/%s_DXF.dxf" % stem}
+    for kind, mk in (("f3d", em.createFusionArchiveExportOptions), ("step", em.createSTEPExportOptions)):
+        path = os.path.join(repo, out[kind])
+        ok = False
+        for _try in range(10):
+            if em.execute(mk(path, root)) and os.path.getsize(path) > 500:
+                ok = True
+                break
+            adsk.doEvents()
+            time.sleep(3)
+        print("export %s: %s" % (out[kind], ok))
+        if not ok:
+            raise RuntimeError("export failed: " + out[kind])
+    path = os.path.join(repo, out["dxf"])
+    if key == "body":
+        b0 = comp.bRepBodies.item(0)
+        planar = [f for f in b0.faces if f.geometry.objectType == adsk.core.Plane.classType()]
+        stationary = max(planar, key=lambda f: f.area)
+        fp = comp.flatPattern or comp.createFlatPattern(stationary)
+        ok = em.execute(em.createDXFFlatPatternExportOptions(path, fp))
+    else:
+        sk = comp.sketches.itemByName("OUTLINE AND CUT-OUTS - %s" % key.upper())
+        ok = sk.saveAsDXF(path)
+    print("export %s: %s" % (out["dxf"], ok))
+    if not ok:
+        raise RuntimeError("DXF export failed")
+
+
+def run(_context):
+    key = ARGS.get("part")
+    if key not in PARTS:
+        raise RuntimeError("part must be body, front or hub")
+    pn, name, vn, stem, params = PARTS[key]
+    app = adsk.core.Application.get()
+    doc = app.activeDocument
+    if doc.name != stem + "_CAD":
+        raise RuntimeError("active document is %r, not %r" % (doc.name, stem + "_CAD"))
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    root = design.rootComponent
+    if root.occurrences.count or design.userParameters.count or root.bRepBodies.count:
+        raise RuntimeError("%s is not empty" % doc.name)
+    design.designType = adsk.fusion.DesignTypes.ParametricDesignType
+    design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
+    for pname, expr, unit, status, src in params:
+        design.userParameters.add(pname, vi(expr), unit, "%s: %s" % (status.upper(), src))
+    root.partNumber = pn
+    root.description = "%s | %s | %s" % (name, vn, M.REV)
+    if key == "body":
+        occ = root.occurrences.addNewSheetMetalComponent(adsk.core.Matrix3D.create())
+        comp = occ.component
+        comp.name, comp.partNumber = "%s %s" % (pn, name), pn
+        comp.description = root.description
+        body = body_tray(design, comp, occ)
+        bb = box(body)
+        zs = 1 if bb[5] > ev(design, "d") / 2 else -1     # the returns fold toward +Z or -Z
+        z = lambda e: "(%s) * (%d)" % (e, zs)  # noqa: E731
+        front = "d * (%d)" % zs if zs < 0 else "d"
+        # holes: right side (two lead exits), top (light feed), bottom (sleeve), lips (4 clinch nuts)
+        cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z1", z("d - lead_y"), "hole_b", "LEAD EXIT 1 RIGHT SIDE", ("y", "z"))
+        cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z2", z("d - lead_y"), "hole_b", "LEAD EXIT 2 RIGHT SIDE", ("y", "z"))
+        cut_hole(design, comp, body, "xZConstructionPlane", "h", "top_x", z("d - lead_y"), "hole_b", "LIGHT FEED EXIT TOP", ("x", "z"))
+        cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "sleeve_x", z("d - sleeve_y"), "sleeve_d", "SLEEVE ENTRY BOTTOM", ("x", "z"))
+        for i, (cx, cy) in enumerate((("clinch_x", "clinch_y"), ("w - clinch_x", "clinch_y"),
+                                      ("clinch_x", "h - clinch_y"), ("w - clinch_x", "h - clinch_y")), start=1):
+            cut_hole(design, comp, body, "xYConstructionPlane", front + " - (%d) * t / 2" % zs, cx, cy, "clinch_d",
+                     "CLINCH NUT HOLE %d IN THE LIP" % i, ("x", "y"))
+        print("body box after holes %s (returns toward %sZ)" % (box(body), "+" if zs > 0 else "-"))
+        body.name = name
+    else:
+        occ = root.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+        comp = occ.component
+        comp.name, comp.partNumber = "%s %s" % (pn, name), pn
+        comp.description = root.description
+        body, _sk = flat_plate(design, comp, key)
+    lib = app.materialLibraries.itemByName("Fusion Material Library")
+    mat = design.materials.itemByName("Aluminum 5052") or design.materials.addByCopy(lib.materials.itemByName("Aluminum"), "Aluminum 5052")
+    mat.materialProperties.itemById("structural_Density").value = 2680.0
+    body.material = mat
+    tl = design.timeline
+    unhealthy = [tl.item(i).name for i in range(tl.count)
+                 if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    loose = [s.name for c in design.allComponents for s in c.sketches if not s.isFullyConstrained]
+    mass = comp.getPhysicalProperties(adsk.fusion.CalculationAccuracy.MediumCalculationAccuracy).mass
+    print("%s: box %s, mass %.3f kg, timeline %d, unhealthy %d, loose sketches %d, parameters %d" % (
+        pn, box(body), mass, tl.count, len(unhealthy), len(loose), design.userParameters.count))
+    if unhealthy or loose:
+        raise RuntimeError("checks failed: unhealthy %s, loose %s" % (unhealthy, loose))
+    if ARGS.get("save") == "1":
+        print("saved:", doc.save("%s %s" % (name, M.REV)))
+    if ARGS.get("export") == "1":
+        export(design, root, comp, key, ARGS["repo_root"], stem)

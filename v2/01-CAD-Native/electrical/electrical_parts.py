@@ -329,16 +329,18 @@ JNT = "v2/05-Engineering/joints/joints-register.md 2.1"
 AL = "aluminium 5052-H32"
 
 # ---- power unit 710001: made parts
-part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "HOLD", "710001", 1,
+part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "MP", "710001", 1,
      AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.46, "calculation (0.172 m2 x 1.0 mm x 2.68 g/cm3)",
      size="300 x 260 x 72, 25 mm side flanges", process="sheet metal: laser cut, folded",
-     status="HOLD (made part: CAD and drawing after WALL sets B2's bay and its rivnuts, IF-12)",
-     source="this design (README section 3)", note="PE stud pressed in; 4 slotted holes for M6 into B2's members; envelope PU in the CAD")
-part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "HOLD", "710001", 1,
+     status="DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data)",
+     source="711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD (electrical_parts_cad.py)",
+     note="folded tray 300 x 260 x 72 with 10 mm front lips; two Ø19.1 lead exits (right), Ø19.1 light feed exit (top), "
+          "Ø25 sleeve entry (bottom), 4 M4 clinch nut holes in the lips")
+part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
      AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.26,
      "calculation (0.063 m2 net x 1.5 mm x 2.68 g/cm3)", size="300 x 260",
-     process="sheet metal: laser cut; anodised", status="HOLD (made part: cut-outs after the UTEN codes, H-ELE-04)",
-     source="this design (README section 3)",
+     process="sheet metal: laser cut; anodised", status="DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04)",
+     source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD (electrical_parts_cad.py)",
      note="cut-outs for two 86 x 86 plates, the RCBO toggle (45 mm window) and vent slots")
 # ---- power unit 710001: bought parts
 part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - nguồn 12 V 60 W", "PI", "710001", 3,
@@ -388,6 +390,16 @@ part("fuse5", "718012", "ELECTRICAL - FUSE - ATO 5 A 32 V", "Điện - cầu ch�
 part("fuse3", "718013", "ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS", "Điện - cầu chì 5 A đèn", "PI", "710001", 1, "", "", 0.002,
      "assumption", maker="Littelfuse", sku="0287005 (unverified)", status=HOLD_BUY, source="ISO 8820-3",
      note="F2, the light controller's feed (hardware max 41.6 W)")
+part("m4screw", "718019", "ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD", "Điện - vít M4 x 8 inox", "PI", "710001", 4,
+     "stainless steel", "plain (A2 stainless)", 0.0015, "assumption", maker="HOLD: standard part",
+     sku="ISO 7045 M4 x 8 H, A2-70", size="M4", status=HOLD_BUY, source="this design (README section 3)",
+     note="the front plate onto the body's lips")
+P["m4screw"].update(length_mm="8", grade="A2-70", torque_nm="HOLD (set on the first unit: A2 M4 into a clinch nut in 1.0 mm aluminium)")
+part("m4nut", "718047", "ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM", "Điện - đai ốc ép M4", "PI", "710001", 4,
+     "aluminium", "plain, as supplied", 0.0008, "assumption", maker="PennEngineering",
+     sku="CLA-M4-1 (unverified: the aluminium clinch nut for 1.0 mm sheet)", size="M4", status=HOLD_BUY,
+     source="PEM catalogue", note="pressed into the body's lips")
+P["m4nut"].update(grade="aluminium", torque_nm="HOLD (as the screw)")
 part("pestud", "718014", "ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING", "Điện - vít tiếp địa M5", "PI", "710001", 1,
      "aluminium", "plain, as supplied", 0.005, "assumption", maker="PennEngineering", sku="FHA-M5-12 (unverified)", status=HOLD_BUY,
      source="PEM catalogue", note="the enclosure's PE point: inlet, socket and bond lugs")
@@ -516,13 +528,19 @@ part("call_profile", "718052", "ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0
      status=HOLD_BUY, source=HAFELE, note="the maker recommends a diffuser profile for even light")
 
 # ---- hub and controls zone 710041
+part("m4hub", "718048", "ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK", "Điện - vít M4 x 12 đen", "PI", "710041", 4,
+     "stainless steel", "black oxide (visible)", 0.0018, "assumption", maker="HOLD: standard part",
+     sku="ISO 7045 M4 x 12 H, A2-70, black", size="M4", status=HOLD_BUY, source="this design (README section 7)",
+     note="the hub zone plate into the column; what it screws into is CEILING's (HOLD)")
+P["m4hub"].update(length_mm="12", grade="A2-70", torque_nm="HOLD (with CEILING's column fixing)")
 part("hub", "718060", "ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE)", "Điện - bộ cảm biến Desk Pro AI", "PI", "710041", 1,
      "", "", 0.15, "assumption", maker="Autonomous (in-house)", sku="Desk Pro AI sensor hub",
      status="HOLD (in-house module: interface data ISS-060)", source="REQ-ELE-02, D-09; cited by name only")
-part("hub_plate", "711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến", "HOLD", "710041", 1,
+part("hub_plate", "711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến", "MP", "710041", 1,
      AL + " 1.5 mm", "black anodised AA20 (D-67)", 0.11, "calculation (0.027 m2 net x 1.5 mm x 2.68 g/cm3)",
      size="180 x 180", process="sheet metal: laser cut; anodised",
-     status="HOLD (made part: cut-outs after the hub's size and controls, ISS-060)", source="this design (README section 7)",
+     status="DRAFT; HOLD features: the hub window, button and knob holes (ISS-060) and the fixing holes (CEILING's column)",
+     source="711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_CAD (electrical_parts_cad.py)",
      note="window for the hub, holes for BOOST, CALL and the DIM knob; removable for the fuses behind it")
 for key, pn, name, vi, qty, note in (
         ("btn_boost", "718061", "ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST", "Điện - nút nhấn tăng gió", 1, "hub input (D-33)"),

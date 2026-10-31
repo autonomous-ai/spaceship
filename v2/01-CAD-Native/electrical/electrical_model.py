@@ -88,7 +88,8 @@ PARAMS = [
     ("inlet_l", "35 mm", "mm", "source",
      "depth behind the skin: powerCON TRUE1 TOP 31.2 mm behind its 4.5 mm flange; etherCON NE8FDP 34.55 mm (Neutrik drawings, read 2026-10-31)"),
     ("sl_x", "inlet_x + 26 mm", "mm", "calculation", "mains and LAN sleeve, beside the inlet column, X 146 (centre)"),
-    ("sl_y", "pod_d / 2 - 26 mm", "mm", "calculation", "sleeve centre in the frame bay (frame Y 804-844), Y 824"),
+    ("sl_y", "pod_d / 2 - 30 mm", "mm", "calculation",
+     "sleeve centre in the frame bay (frame Y 804-844), Y 820: its entry hole in the unit's bottom stays clear of the back bend"),
     # ---- the trunk to the right wall and the air column
     ("trunk_z", "1100 mm", "mm", "assumption",
      "trunk height in B2-CASS and R1-CASS: above a ledge at about 1000 mm and its brackets, below the R1/R2 joint at Z 1255; INTERIOR keeps the ledge and screen fixings 15 mm clear"),
