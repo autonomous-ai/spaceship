@@ -364,7 +364,7 @@
    "evidence": {},
    "key": "C08|bolt-hole-position|joints register (PR #23) bolt holes",
    "id": "F-009",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "manual",
    "found": "2026-10-31 c9ae2a4",
    "posted": "Joints group 2026-10-31",
@@ -373,8 +373,15 @@
      "date": "2026-10-31",
      "rev": "c9ae2a4",
      "event": "opened by hand"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "9881d71",
+     "event": "set CLOSED by hand: joints register merged on main 9881d71 (PR #23): R-J6, clearance holes Ø7.0 positioned to Ø0.4 (±0.2) from the spigot hole by CNC or jig, the rule for every site joint; stack ST-03 passes worst case with 0.05 mm"
     }
-   ]
+   ],
+   "note": "joints register merged on main 9881d71 (PR #23): R-J6, clearance holes Ø7.0 positioned to Ø0.4 (±0.2) from the spigot hole by CNC or jig, the rule for every site joint; stack ST-03 passes worst case with 0.05 mm",
+   "closed": "2026-10-31 9881d71 joints register merged on main 9881d71 (PR #23): R-J6, clearance holes Ø7.0 positioned to Ø0.4 (±0.2) from the spigot hole by CNC or jig, the rule for every site joint; stack ST-03 passes worst case with 0.05 mm"
   },
   {
    "check": "C04",
@@ -402,7 +409,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-10-31 fbdfc73"
+   "last_seen": "2026-10-31 6ae0cd3"
   },
   {
    "check": "C02",
@@ -514,7 +521,7 @@
    "evidence": {},
    "key": "C07|sample-fasteners-stale|sample package P06, P07",
    "id": "F-013",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "manual",
    "found": "2026-10-31 0cb764f",
    "posted": "Lead in the mechanical check group 2026-10-31",
@@ -528,9 +535,15 @@
      "date": "2026-10-31",
      "rev": "0cb764f",
      "event": "owner set to the Joints Engineer by the PM"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "9881d71",
+     "event": "set CLOSED by hand: sample package fixed on main 9881d71 (PR #23): P06 is M6 x 16 ISO 4762 class 8.8 zinc, P07 the 1.5 mm aluminium stop washer"
     }
    ],
-   "note": "PM ruling (P2-4): the Joints Engineer fixes the sample package's fastener rows in PR #23 (P06 M6 x 16 ISO 4762, P07 the 1.5 mm stop washer, an ISO 7093 washer under the head, the captive retainer HOLD); merge order #26, #29, #23 rebased"
+   "note": "sample package fixed on main 9881d71 (PR #23): P06 is M6 x 16 ISO 4762 class 8.8 zinc, P07 the 1.5 mm aluminium stop washer",
+   "closed": "2026-10-31 9881d71 sample package fixed on main 9881d71 (PR #23): P06 is M6 x 16 ISO 4762 class 8.8 zinc, P07 the 1.5 mm aluminium stop washer"
   },
   {
    "check": "C02",
@@ -581,7 +594,7 @@
    "evidence": {},
    "key": "C06|row-incomplete|100000",
    "id": "F-015",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-10-31 fbdfc73",
    "posted": "",
@@ -590,8 +603,15 @@
      "date": "2026-10-31",
      "rev": "fbdfc73",
      "event": "opened"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "6ae0cd3",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
-   ]
+   ],
+   "last_seen": "2026-10-31 9881d71",
+   "closed": "2026-10-31 6ae0cd3"
   },
   {
    "check": "C06",
@@ -605,7 +625,7 @@
    "evidence": {},
    "key": "C06|rows-incomplete|100000_P01_POD-MASTER_BOM.csv: Vietnamese name, source",
    "id": "F-016",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-10-31 fbdfc73",
    "posted": "",
@@ -614,8 +634,15 @@
      "date": "2026-10-31",
      "rev": "fbdfc73",
      "event": "opened"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "6ae0cd3",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
-   ]
+   ],
+   "last_seen": "2026-10-31 9881d71",
+   "closed": "2026-10-31 6ae0cd3"
   }
  ]
 }

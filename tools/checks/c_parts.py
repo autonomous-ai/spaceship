@@ -33,6 +33,7 @@ ALIASES = {
     "finish": ("finish", "coating", "surface", "surface_finish", "treatment"),
     "qty": ("qty", "quantity", "qty_per_pod", "count"),
     "mass": ("mass_kg", "mass", "kg", "kg_each", "weight_kg", "unit_mass_kg", "mass_each_kg", "weight"),
+    "mass_total": ("mass_total_kg", "kg_total", "total_mass_kg", "mass_total"),
     "status": ("status", "number_status", "mass_status"),
     "source": ("source", "sources", "source_file", "source_doc"),
     "rev": ("rev", "revision"),
@@ -73,6 +74,11 @@ def normalise(row):
         else:
             out.setdefault(field, "")
     out["_raw"] = nk
+    if not out["mass"] and out.get("mass_total"):          # a row that gives only its total mass
+        q = num(out["qty"]) or 1.0
+        t = num(out["mass_total"])
+        if t is not None and q > 0:
+            out["mass"] = "%g" % (t / q)
     return out
 
 
@@ -111,6 +117,8 @@ def check_parts_lists(root, plists):
             rtype = (row["_raw"].get("row_type") or "").lower()
             if not pn and rtype in ("assembly", "pod", "group", "heading", "family"):
                 continue            # a master BOM heading row, not a part
+            if not pn and (row["class"] or "").lower() == "cut":
+                continue            # a cut-length member of a made frame: the frame's drawing and cut list define it
             if not pn:
                 fs.append(Finding("C06", "no-part-number", "%s line %d" % (r, i), "major",
                                   "Row %d of %s has no part number (%s)." % (i, r, name or "no name"),
@@ -190,7 +198,7 @@ def check_parts_lists(root, plists):
                                   "issue that releases it.", r, owner))
             if is_fastener(pn, name):
                 fs.extend(_fastener_row(r, pn, name, row, owner))
-    fs = _fold_minor_rows(fs)
+    fs = _fold_unnumbered(_fold_minor_rows(fs))
     for pn, uses in seen.items():
         names = {n for _f, n in uses}
         if len(names) > 1:
@@ -200,6 +208,23 @@ def check_parts_lists(root, plists):
                               "One number is one form, fit and function (conventions section 6).", uses[0][0],
                               owner_for(uses[0][0], pn)))
     return fs
+
+
+def _fold_unnumbered(fs):
+    """One finding per file for rows with no part number yet (often bought hardware waiting for its numbers)."""
+    keep, groups = [], {}
+    for f in fs:
+        if f.check == "C06" and f.rule == "no-part-number":
+            groups.setdefault(f.file, []).append(f)
+        else:
+            keep.append(f)
+    for file, items in groups.items():
+        what = "; ".join(re.sub(r"^Row \d+ of .*? has no part number \((.*)\)\.$", r"\1", x.message) for x in items)
+        keep.append(Finding("C06", "no-part-number", "%s: %d rows" % (os.path.basename(file), len(items)), "major",
+                            "%d rows of %s have no part number: %s." % (len(items), file, what),
+                            "Give each a number from conventions section 6 (bought hardware: family 83 or 84, from the "
+                            "joints register and the master BOM).", file, items[0].owner))
+    return keep
 
 
 def _fold_minor_rows(fs):
@@ -496,6 +521,8 @@ def check_mixed_metals(root, plists, contacts):
         r = rel(root, p)
         for row in rows:
             pn = row["part_number"]
+            if not pn:
+                mat[""] = " ".join(x for x in (row["material"], row["grade"], row["finish"]) if x)
             if is_fastener(pn, row["name"]) and metal_class(mat.get(pn, "")) == "unknown":
                 fs.append(Finding("C10", "fastener-metal-unknown", pn, "major",
                                   "Fastener %s %s in %s has no material or finish, so it can't be checked against "
