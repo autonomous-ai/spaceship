@@ -962,9 +962,11 @@ def run_parts(app, scopes):
         for name, expr, unit, status, src in params:
             design.userParameters.add(name, vi(expr), unit, "%s: %s" % (status.upper(), src))
         ctx.vals = M.evaluate(params)
-        run_part(app, doc, design, design.rootComponent, scope, ctx)       # checks, then saves (save=1)
+        try:
+            run_part(app, doc, design, design.rootComponent, scope, ctx)       # checks, then saves (save=1)
+        finally:
+            doc.close(False)               # each run closes what it opened (PM rule 2026-11-01)
         print("part %s (%s) in %.0f s" % (scope, how, time.time() - t0))
-        doc.close(False)
 
 
 def run(_context):
@@ -989,6 +991,13 @@ def run(_context):
         doc = app.activeDocument
         if doc.name.split(" v")[0] != doc_name:
             raise RuntimeError("active document is %r, not %s (use the runner's --doc)" % (doc.name, doc_name))
+        if doc.isModified:
+            # PM rule 2026-11-01: never reuse an open document with unsaved changes; start from
+            # the saved cloud version instead
+            print("%s was open with unsaved changes from an earlier run: closed without saving, reopened" % doc.name)
+            doc.close(False)
+            doc, how = open_or_create(app, doc_name)
+            print("reopened %s (%s)" % (doc.name, how))
     else:
         doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     keep = ARGS.get("keep") == "1" or into_active
@@ -1089,7 +1098,9 @@ def run(_context):
         print("stopped after", ARGS.get("stop_after"))
         ok = True
     finally:
-        if not keep:
+        # PM rule 2026-11-01: each run closes what it opened; a failed run never leaves the
+        # design open with unsaved changes
+        if not keep or not ok:
             doc.close(False)
     if not ok:
         raise RuntimeError("build did not finish")

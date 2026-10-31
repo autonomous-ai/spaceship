@@ -35,6 +35,8 @@ def run(_context):
     doc = app.activeDocument
     if doc.name.split(" v")[0] != CB.DOC_NAME:
         raise RuntimeError("active document is %r, not %s (use the runner's --doc)" % (doc.name, CB.DOC_NAME))
+    if doc.isModified:
+        raise RuntimeError("%s has unsaved changes: the report reads saved versions only (PM rule 2026-11-01)" % doc.name)
     design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
     root = design.rootComponent
     print("document %s, version %s" % (doc.name, doc.dataFile.versionNumber if doc.dataFile else "unsaved"))
