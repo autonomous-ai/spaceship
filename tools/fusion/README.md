@@ -12,6 +12,11 @@ Found on 2026-10-31 with Fusion 2706.1.17. Proof part: `v2/01-CAD-Native/proof/`
 | `test_run_script.py` | Offline tests of the lock and the document steps against a fake Fusion MCP server: `python3 tools/fusion/test_run_script.py`. |
 | `start_drawing.py` | **Starts a new drawing of a saved design with nobody at the Mac**: under the Fusion lock it opens the design, runs Fusion's Create Drawing, presses OK and then Cancel in the Base View dialog through macOS accessibility, sets the sheet size, saves the drawing into FocusPod v2 and closes it. On any failure it presses Cancel until Fusion is idle and closes the unsaved drawing. Exit 0 saved, 1 failed (Fusion idle), 2 Fusion unreachable, 3 lock busy, 4 a dialog was left open. |
 | `test_start_drawing.py` | Offline tests of the drawing-start sequence against a fake Fusion: `python3 tools/fusion/test_start_drawing.py`. |
+| `export_design.py` | **Exports a saved design for the repo**: the .f3d (opens on its own) and the STEP, under the lock. Breaks the Derive links in memory for the export, checks the STEP and the reopened .f3d, then lets Fusion roll the broken links back, so the cloud design keeps its link (WALL Engineer's method, one shared copy). |
+| `export_drawing.py` | **Exports a drawing for the repo**: PDF with the "Created by" name removed and checked for any account name, plus a PNG per sheet to check by eye. |
+| `sheet_notes.py` | **Puts notes on a sheet as an image** rendered from a text file kept in the repo (Arial Unicode, ISO text height, exact width in mm). |
+| `hatch.py` | Hatch lines for a cut face (the API has no hatch): parallel lines clipped to a polygon, drawn as sheet-sketch lines. |
+| `test_export_drawing.py`, `test_sheet_notes.py`, `test_hatch.py` | Offline tests of the three helpers. |
 | `step_check.py` | Reads a STEP file without Fusion: declared length unit, products, solids and the bounding box in mm. `--expect xmin,ymin,zmin,xmax,ymax,zmax` checks it. Never edits the file. |
 | `pdf_clear_field.py` | Removes a title block field's value (default "Created by", which Fusion fills with the account holder's name) from an exported drawing PDF, then re-reads it to prove the text is gone. Needs PyMuPDF. |
 
@@ -113,6 +118,33 @@ design.userParameters.add("panel_h", ValueInput.createByString("side_h_Ref"), "m
 ## Saving to the Fusion cloud
 
 Drawings need a saved design (`DrawingManager.createDrawingInput` takes a cloud `DataFile`). Save with `document.saveAs(name, folder, description, "")` into **Default Project / FocusPod v2**. The proof script refuses to save when a file with the same name is already there, so the folder keeps one copy.
+
+## Exporting for the repo (one copy for every team)
+
+**A design** (.f3d that opens on its own, and STEP):
+
+```sh
+python3 tools/fusion/export_design.py 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD 210101 \
+    v2/01-CAD-Native/wall v2/03-Manufacturing/wall
+```
+
+A design linked to the skeleton by Derive exports an .f3d that won't open on its own ("New design cannot be created from a local file containing external references"; WALL Engineer, 2026-10-31). The command, under the lock: refuses unless the design is saved, unmodified and has the given root part number; breaks every Derive link **in memory**; exports the .f3d and the STEP (cm, D-13), retrying while Fusion uploads; re-reads the STEP (solid box within 0.05 mm) and reopens the .f3d as a new document (healthy timeline, same box); then ends its Fusion script with a planned error, so Fusion **rolls the broken links back** and the design is again saved and linked (checked). It closes the design only if it opened it. Never break links and save by hand: the cloud design must keep its link.
+
+**A drawing** (PDF without the account name, plus PNGs to check by eye):
+
+```sh
+python3 tools/fusion/export_drawing.py 100000_P04_POD-GENERAL-ASSEMBLY_DWG v2/02-Drawings/00-General-Assembly
+```
+
+Exports the PDF to a private temp folder, removes the "Created by" value (`pdf_clear_field.py`), checks that no word of the Fusion account's user or display name is left anywhere in the text (whole words; the names are read from Fusion and never printed), then writes `DRAWING.pdf` and `DRAWING-render.png` (`-render-p2.png` ... for more sheets).
+
+**Notes on a sheet** (text as an image; the API can't write text on sheets):
+
+```sh
+python3 tools/fusion/sheet_notes.py DRAWING NOTES.txt --sheet 1 --x 600 --y 250 --width 200
+```
+
+Keep the note's source text in the repo next to its drawing (PM ruling 2026-10-31). The command renders it at 300 dpi in Arial Unicode (Vietnamese renders) at an ISO capital height (`--text-mm`, default 2.5), inserts it with its lower-left corner at (x, y) sheet mm and exactly `--width` mm wide, and saves a new version. Images can't be moved or deleted by the API: place notes once, on a settled sheet. `--render-only PNG` writes the image and stops.
 
 ## Starting a drawing (no clicks)
 
