@@ -398,8 +398,26 @@ def _fits(dims, pallet):
 
 
 def load_shipping_list(root):
-    """The layout study's list of the decided build (each row a piece that
-    ships on its own)."""
+    """The pieces that ship on their own: the packing list in v2/07-Packaging when it exists (each row with
+    its pallet, size and mass), else the layout study's list of the decided build. Rows are normalised to
+    id, name, size_mm, kg_each, ships_as, status."""
+    pk = sorted(walk_files(root, "v2/07-Packaging", exts=(".csv",)))
+    pk = [p for p in pk if "PACKING-LIST" in os.path.basename(p).upper()]
+    if pk:
+        types = {}
+        for f in walk_files(root, "v2/07-Packaging", exts=(".svg", ".md", ".pdf")):
+            m = re.search(r"PALLET-(\d+)-(48X40|96X48|48X96)", os.path.basename(f).upper())
+            if m:
+                types[m.group(1)] = "48x40" if m.group(2) == "48X40" else "48x96"
+        rows = []
+        for r in read_csv(pk[0]):
+            glass = (r.get("glass") or "").strip().lower() in ("yes", "y", "true", "1")
+            pal = types.get((r.get("pallet") or "").strip(), "")
+            rows.append({"id": r.get("label") or r.get("part_number", ""), "name": r.get("name", ""),
+                         "size_mm": r.get("size_mm", ""), "kg_each": r.get("kg", ""),
+                         "ships_as": "glass" if glass else ("long" if pal == "48x96" else "upright"),
+                         "pallet": pal, "status": r.get("kg_status", ""), "assembly": (r.get("name") or "").split(" - ")[0]})
+        return rel(root, pk[0]), rows
     p = os.path.join(root, "v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv")
     if not os.path.exists(p):
         return None, []
@@ -493,8 +511,8 @@ def check_shipping(root, door=(914.0, 2032.0), door_req=(810.0, 2032.0), limit_k
                                   "smallest size is %g." % (sid, name, a), "PM to confirm which door rule holds.",
                                   src, owner))
             has_long = any((r.get("ships_as") or "").strip().lower() in ("long", "glass") for r in rows)
-            want = "48x96" if ships in ("long", "glass") else ("kit-carton" if ships == "box" and has_long
-                                                                 else "48x40")
+            want = row.get("pallet") or ("48x96" if ships in ("long", "glass") else
+                                         ("kit-carton" if ships == "box" and has_long else "48x40"))
             if not _fits(dims, want):
                 other = "48x40" if want != "48x40" else "48x96"
                 fs.append(Finding("C04", "pallet-fit", sid, "major" if _fits(dims, other) else "severe",
