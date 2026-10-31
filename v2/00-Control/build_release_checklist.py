@@ -330,23 +330,53 @@ DXF_STRUCTURE = ("BLOCK", "ENDBLK", "SEQEND", "VERTEX", "ENDSEC", "EOF")  # reco
 
 def dxf_other_layers(text):
     """D-89 (4): the layers other than CUT and MARK that an ASCII DXF has lines on, upper-cased; None when it can't
-    be read (empty or binary), so the part can't be shown flat. Read the way the mechanical check reads it
-    (tools/checks/c_drawings.py, dxf_summary): every entity in the ENTITIES and BLOCKS sections counts, except the
-    records BLOCK, ENDBLK, VERTEX and SEQEND, so a block header on layer 0 doesn't."""
+    be read (empty or binary), so the part can't be shown flat. Every entity in the ENTITIES section counts, except
+    the records BLOCK, ENDBLK, VERTEX and SEQEND (as the mechanical check reads it, tools/checks/c_drawings.py). A
+    stored block counts only where the drawing places it with an INSERT, nested inserts included, and its shapes on
+    layer 0 take the INSERT's layer (PM ruling 2026-11-01), so arrow-head blocks a DXF library writes and never
+    places don't hold a flat part back."""
     if not text or not text.strip() or text.startswith("AutoCAD Binary DXF"):
         return None
     lines = text.splitlines()
     pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
-    sec, cur, other = None, None, set()
-    for k, (code, val) in enumerate(pairs):
-        if code == "2" and k and pairs[k - 1] == ("0", "SECTION"):
-            sec, cur = val.upper(), None
-        elif code == "0" and val == "ENDSEC":
-            sec, cur = None, None
-        elif sec in ("ENTITIES", "BLOCKS") and code == "0":
-            cur = None if val.upper() in DXF_STRUCTURE else val.upper()
-        elif sec in ("ENTITIES", "BLOCKS") and cur and code == "8" and val.upper() not in FLAT_LAYERS:
-            other.add(val.upper())
+    sec, ent, block, naming, blocks, drawn = None, None, None, False, {}, []
+    for k, (code, val) in enumerate(pairs + [("0", "EOF")]):
+        if code == "0":
+            if ent is not None and sec == "ENTITIES":
+                drawn.append(tuple(ent))
+            elif ent is not None and sec == "BLOCKS" and block:
+                blocks.setdefault(block, []).append(tuple(ent))
+            v, ent, naming = val.upper(), None, False
+            if v == "ENDSEC":
+                sec, block = None, None
+            elif sec == "BLOCKS" and v == "BLOCK":
+                block, naming = None, True
+            elif sec == "BLOCKS" and v == "ENDBLK":
+                block = None
+            elif sec in ("ENTITIES", "BLOCKS") and v not in DXF_STRUCTURE:
+                ent = [v, "0", ""]
+        elif code == "2" and k and pairs[k - 1] == ("0", "SECTION"):
+            sec = val.upper()
+        elif code == "2" and naming:
+            block, naming = val.upper(), False
+        elif code == "2" and ent is not None and ent[0] == "INSERT":
+            ent[2] = val.upper()
+        elif code == "8" and ent is not None:
+            ent[1] = val.upper()
+
+    def placed(name, layer, seen):
+        out = set()
+        for typ, lay, ref in ([] if name in seen else blocks.get(name, [])):
+            own = layer if lay == "0" else lay
+            out.add(own)
+            if typ == "INSERT":
+                out |= placed(ref, own, seen | {name})
+        return out
+
+    other = set()
+    for typ, lay, ref in drawn:
+        layers = {lay} | (placed(ref, lay, frozenset()) if typ == "INSERT" else set())
+        other |= {x for x in layers if x not in FLAT_LAYERS}
     return other
 
 
@@ -592,8 +622,8 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, "
             "thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole "
             "note is left to the drawing review. The DXF may draw only on the CUT and MARK layers (the guideline's layers, section 9; "
-            "every entity in its ENTITIES and BLOCKS sections counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, as the "
-            "mechanical check reads it): "
+            "every entity in its ENTITIES section counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, and a stored block only "
+            "where an INSERT places it, its layer-0 shapes taking the INSERT's layer): "
             "a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing whatever the process says. "
             "Assemblies always keep their drawings.",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",

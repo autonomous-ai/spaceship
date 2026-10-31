@@ -349,17 +349,44 @@ class D89Layers(unittest.TestCase):
         self.assertIsNone(rc.dxf_other_layers(""))
         self.assertIsNone(rc.dxf_other_layers("AutoCAD Binary DXF\r\n\x1a\x00"))
 
-    BLOCKS = ("0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n8\n0\n2\n*Model_Space\n0\nENDBLK\n8\n0\n"
-              "0\nBLOCK\n8\n0\n2\nTAB\n0\nLINE\n8\nBEND\n0\nENDBLK\n8\n0\n0\nENDSEC\n")
+    @staticmethod
+    def blocks(*defs):
+        """A BLOCKS section: the *Model_Space header, then (name, [(type, layer, inserted block)]) per block."""
+        out = "0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n8\n0\n2\n*Model_Space\n0\nENDBLK\n8\n0\n"
+        for name, ents in defs:
+            out += f"0\nBLOCK\n8\n0\n2\n{name}\n"
+            for typ, layer, ref in ents:
+                out += f"0\n{typ}\n8\n{layer}\n" + (f"2\n{ref}\n" if ref else "")
+            out += "0\nENDBLK\n8\n0\n"
+        return out + "0\nENDSEC\n"
 
-    def test_block_records_are_not_lines_but_block_lines_are(self):
-        header_only = self.BLOCKS.replace("0\nBLOCK\n8\n0\n2\nTAB\n0\nLINE\n8\nBEND\n0\nENDBLK\n8\n0\n", "")
-        self.assertEqual(rc.dxf_other_layers(header_only + dxf_doc(("LINE", "CUT"))), set())
-        self.assertEqual(rc.dxf_other_layers(self.BLOCKS + dxf_doc(("LINE", "CUT"))), {"BEND"})
+    @staticmethod
+    def placing(*inserts):
+        """A DXF whose ENTITIES hold a CUT line and one INSERT per (block, layer)."""
+        tail = "".join(f"0\nINSERT\n8\n{layer}\n2\n{name}\n" for name, layer in inserts)
+        return dxf_doc(("LINE", "CUT")).replace("0\nENDSEC\n0\nEOF", tail + "0\nENDSEC\n0\nEOF")
+
+    def test_a_stored_block_counts_only_where_it_is_placed(self):
+        arrows = self.blocks(("_ARCHTICK", [("LWPOLYLINE", "0", "")]), ("_CLOSEDFILLED", [("SOLID", "0", "")]))
+        self.assertEqual(rc.dxf_other_layers(arrows + dxf_doc(("LINE", "CUT"))), set())  # written, never placed
+        tab = self.blocks(("TAB", [("LINE", "BEND", "")]))
+        self.assertEqual(rc.dxf_other_layers(tab + dxf_doc(("LINE", "CUT"))), set())
+        self.assertEqual(rc.dxf_other_layers(tab + self.placing(("TAB", "CUT"))), {"BEND"})
+
+    def test_layer_0_shapes_take_the_insert_layer_and_nesting_counts(self):
+        plain = self.blocks(("HOLE", [("CIRCLE", "0", "")]))
+        self.assertEqual(rc.dxf_other_layers(plain + self.placing(("HOLE", "CUT"))), set())
+        self.assertEqual(rc.dxf_other_layers(plain + self.placing(("HOLE", "ENGRAVE"))), {"ENGRAVE"})
+        nested = self.blocks(("TAB", [("LINE", "BEND", "")]), ("OUTER", [("INSERT", "0", "TAB"), ("LINE", "0", "")]))
+        self.assertEqual(rc.dxf_other_layers(nested + self.placing(("OUTER", "CUT"))), {"BEND"})
+
+    def test_polyline_records_are_not_lines(self):
         polyline = dxf_doc(("POLYLINE", "CUT")).replace("0\nENDSEC\n0\nEOF", "0\nVERTEX\n8\n0\n0\nSEQEND\n8\n0\n0\nENDSEC\n0\nEOF")
         self.assertEqual(rc.dxf_other_layers(polyline), set())
 
     def test_the_layer_reading_matches_the_mechanical_check(self):
+        """On DXFs whose blocks hold only records the two readings agree; the check is being taught the placed-blocks
+        rule (PM ruling 2026-11-01), after which the block samples above apply to it too."""
         checks = rc.ROOT / "tools/checks"
         if not (checks / "c_drawings.py").exists():
             self.skipTest("no mechanical check in this tree")
@@ -370,8 +397,7 @@ class D89Layers(unittest.TestCase):
             sys.path.remove(str(checks))
         import tempfile
         samples = [dxf_doc(("LINE", "CUT"), ("TEXT", "MARK")), dxf_doc(("LINE", "CUT"), ("LINE", "BEND")),
-                   dxf_doc(("LWPOLYLINE", "cut"), ("LWPOLYLINE", "POCKET-HALF-DEPTH")), self.BLOCKS + dxf_doc(("LINE", "CUT")),
-                   self.BLOCKS.replace("8\nBEND", "8\n0") + dxf_doc(("LINE", "CUT"))]
+                   dxf_doc(("LWPOLYLINE", "cut"), ("LWPOLYLINE", "POCKET-HALF-DEPTH")), self.blocks() + dxf_doc(("LINE", "CUT"))]
         with tempfile.TemporaryDirectory() as tmp:
             for i, text in enumerate(samples):
                 path = Path(tmp) / f"s{i}.dxf"
