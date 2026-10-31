@@ -461,3 +461,16 @@ def test_cad_and_parts_list_names_must_match(tmp_path):
              "211102": {"files": {"a.step"}, "count": 1, "name": "211102 WALL - FRAME - UPPER"}}
     got = {(f.rule, f.subject) for f in c_parts.check_cad_match(str(tmp_path), plists, prods)}
     assert ("name-mismatch", "211102") in got and ("name-mismatch", "211101") not in got
+
+
+def test_bolt_patterns_across_assemblies_must_match():
+    def body(label, file, holes):
+        b = _B(label, None, "x", holes)
+        b.file = file
+        return b
+    wall = body("wall rail", "wall.step", [sf.Hole(1, (-1227.0, y, 111.0), (0, 0, 1), 6.6, 1.2, []) for y in (-452.2, 278.8)])
+    band = body("band tube", "base.step", [sf.Hole(2, (-1227.0, y, 109.0), (0, 0, 1), 9.53, 2.0, []) for y in (-425.0, 278.3)])
+    fs = c_geometry.check_unmatched(ROOT, "assembly", [wall, band])
+    offs = sorted(round(f.evidence["offset_mm"], 1) for f in fs)
+    assert offs == [27.2, 27.2]                 # the -452.2 / -425 pair, reported on both sides; 278.8 / 278.3 matches
+    assert all(f.severity == "severe" for f in fs)

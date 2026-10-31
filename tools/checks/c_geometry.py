@@ -333,6 +333,60 @@ def check_alignment(root, mdl, bodies, capture=4.0, axial_gap=40.0):
     return fs
 
 
+JOINT_HOLE_SIZES = ((5.9, 6.1), (6.3, 7.3), (9.4, 9.8))    # rivnut thread bore, M6 clearance, rivnut hole
+
+
+def _box_hits_segment(box, p0, p1, pad=0.5):
+    lo = [min(p0[k], p1[k]) - pad for k in range(3)]
+    hi = [max(p0[k], p1[k]) + pad for k in range(3)]
+    return all(box[k] <= hi[k] and box[k + 3] >= lo[k] for k in range(3))
+
+
+def check_unmatched(root, mdl, bodies, capture=4.0, search=60.0, plane=15.0):
+    """Bolt patterns across assemblies: a joint hole (rivnut thread, M6
+    clearance or rivnut hole) in one STEP file whose partner file has joint
+    holes on the same joint plane (parallel axes, within `plane` mm along
+    the axis) nearby, but none within `capture` mm of its axis. That is a
+    pattern that doesn't match (the nearest candidate is reported). Holes
+    with no candidates at all within `search` mm are left alone: the other
+    side may not be modelled yet. Only holes in different files are paired,
+    so a panel's own factory joints don't count."""
+    fs = []
+    hs = [(b, h) for b, h in world_holes(bodies) if any(lo <= h.diameter <= hi for lo, hi in JOINT_HOLE_SIZES)]
+    seen = set()
+    for b, h in hs:
+        best = None
+        for ob, x in hs:
+            if ob.file == b.file or abs(sf.dot(x.axis, h.axis)) < 0.9999:
+                continue
+            d_ax = abs(sf.dot(tuple(x.center[k] - h.center[k] for k in range(3)), h.axis))
+            if d_ax > plane:
+                continue
+            lat = sf.line_distance(x.center, h.center, h.axis)
+            if best is None or lat < best[0]:
+                best = (lat, ob, x)
+        if best is None or best[0] <= capture or best[0] > search:
+            continue
+        lat, ob, x = best
+        # one finding per joint axis in each file (a rivnut's hole and its thread bore share one)
+        t = sf.dot(h.center, h.axis)
+        foot = tuple(h.center[k] - h.axis[k] * t for k in range(3))
+        key = (b.file, round(foot[0]), round(foot[1]), round(foot[2]))
+        if key in seen:
+            continue
+        seen.add(key)
+        fs.append(Finding(
+            "C08", "hole-unmatched", "%s %s hole Ø%.1f at %s" % (mdl, b.label.split(" / ")[-1], h.diameter,
+                                                               _pt(h.center)),
+            "severe",
+            "The Ø%.2f joint hole in %s at %s has no partner on its axis in %s: the nearest joint hole there "
+            "(Ø%.2f in %s at %s) is %.1f mm off, so the bolt can't go in." % (
+                h.diameter, b.label, _pt(h.center), ob.file, x.diameter, ob.label.split(" / ")[-1], _pt(x.center), lat),
+            "Take both sides' hole patterns from one shared source (one parameter set both link to).",
+            b.file, owner_for(b.file, b.part_number), {"model": mdl, "offset_mm": round(lat, 1), "other": ob.file}))
+    return fs
+
+
 def _pt(p):
     return "X %.0f Y %.0f Z %.0f" % p
 
