@@ -381,12 +381,12 @@
    "rule": "pod-mass-over-cap",
    "subject": "POD total mass",
    "severity": "major",
-   "message": "The pod is about 429.3 kg against the 420 kg cap (D-37, D-54): 9.3 kg over. The layout study's list gives 426.7 kg (v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv); adjustments since: +11.8 kg AIR-D60 (confirmed, D-61 and D-71 (decision log, 2026-10-31)); +3.4 kg WALL-TRAY-LIPS (confirmed, D-69 and D-71 (decision log, 2026-10-31)); -12.6 kg FLOOR-9MM (confirmed, D-72 and D-71 (decision log, 2026-10-31)). Open against the cap until the wall sample settles it (ISS-080).",
+   "message": "The pod is about 436.3 kg against the 420 kg cap (D-37, D-54): 16.3 kg over. The layout study's list gives 436.3 kg (v2/05-Engineering/layout-study/out/parts-decided-P04.csv). Open against the cap until the wall sample settles it (ISS-080).",
    "fix": "Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill would save 4.3 kg).",
-   "file": "v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv",
+   "file": "v2/05-Engineering/layout-study/out/parts-decided-P04.csv",
    "owner": "PM (Lead)",
    "evidence": {
-    "total_kg": 429.33,
+    "total_kg": 436.26,
     "cap_kg": 420.0
    },
    "key": "C04|pod-mass-over-cap|POD total mass",
@@ -402,7 +402,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-10-31 8d51f12"
+   "last_seen": "2026-10-31 e4cc460"
   },
   {
    "check": "C02",

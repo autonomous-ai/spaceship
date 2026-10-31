@@ -25,7 +25,9 @@ import register  # noqa: E402
 from common import Finding, pn_class, pn_problems, parse_file_name, owner_for  # noqa: E402
 
 PROOF = os.path.join(ROOT, "v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step")
-SKEL = os.path.join(ROOT, "v2/03-Manufacturing/skeleton/100000_P03_POD-SKELETON_STEP.step")
+# skeleton P03 as it was on main at c9ae2a4, kept as a fixed test model: it has the seam, kick-strip
+# and back-slot faults F-001, F-002 and F-004 that P04 fixed
+SKEL = os.path.join(HERE, "fixtures", "skeleton-P03.step")
 
 
 # ----------------------------------------------------------------- STEP reader
@@ -343,11 +345,16 @@ def test_pod_mass_against_the_cap(tmp_path):
     assert fs == []
 
 
-def test_repo_pod_mass_includes_the_air_adjustment():
-    fs, info = c_parts.check_pod_mass(ROOT, c_parts.load_shipping_list(ROOT)[1], "list")
-    # 426.73 in the layout list + 11.8 air + 3.4 wall trays - 12.6 floor (D-71)
-    assert info["total_kg"] == pytest.approx(429.33, abs=0.01)
-    assert fs and "429.3" in fs[0].message
+def test_repo_pod_mass_from_the_newest_list_without_double_counting():
+    src, rows = c_parts.load_mass_list(ROOT)
+    fs, info = c_parts.check_pod_mass(ROOT, rows, src)
+    if src.endswith("parts-decided-P04.csv"):
+        # the P04 roll-up already holds the air parts, the tray lips and the 9 mm floor: no adjustments on top
+        assert info["adjustments"] == [] and info["total_kg"] == pytest.approx(436.26, abs=0.01)
+    else:
+        # the older list: 426.73 + 11.8 air + 3.4 wall trays - 12.6 floor (D-71)
+        assert info["total_kg"] == pytest.approx(429.33, abs=0.01)
+    assert fs and fs[0].rule == "pod-mass-over-cap"
 
 
 def test_skip_rules_use_whole_words_and_their_own_columns(tmp_path):
@@ -507,3 +514,13 @@ def test_soft_goods_by_head_noun():
     assert is_soft("FRONT - GLAZING U-SEAL - BOHLE BO5201735") and is_soft("FRONT - GLASS-TO-GLASS SEAL 180 - BOHLE")
     assert not is_soft("FRONT - SEALED GLAZING PROFILE") and not is_soft("FRONT - FILLER PANEL")
     assert is_soft("LINING - FELT - CEILING", ("FELT",)) and not is_soft("LINING - FELT - CEILING", ("FILL",))
+
+
+def test_current_skeleton_on_main_passes_the_shell_and_gap_rules():
+    import glob
+    cur = sorted(glob.glob(os.path.join(ROOT, "v2/03-Manufacturing/skeleton/*.step")))
+    if not cur or cur[-1].endswith("P03_POD-SKELETON_STEP.step"):
+        pytest.skip("no later skeleton in this checkout")
+    bodies = c_geometry.bodies_of(ROOT, cur[-1])
+    assert c_geometry.shell_gaps(bodies, root=ROOT) == []
+    assert c_geometry.check_gap_rules(ROOT, "skeleton", bodies, c_geometry.load_gap_rules(ROOT)) == []

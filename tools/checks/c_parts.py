@@ -318,19 +318,36 @@ def load_shipping_list(root):
     return rel(root, p), read_csv(p)
 
 
-def load_adjustments(root):
+MASS_LISTS = ("v2/05-Engineering/layout-study/out/parts-decided-P04.csv",          # newest first
+              "v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv")
+
+
+def load_mass_list(root):
+    """The layout study's newest decided part list with masses: (repo path, rows)."""
+    for r in MASS_LISTS:
+        p = os.path.join(root, r)
+        if os.path.exists(p):
+            return r, read_csv(p)
+    return None, []
+
+
+def load_adjustments(root, list_path=None):
+    """Owners' weight changes not yet in the given part list (column applies_to names the list)."""
     p = os.path.join(root, "v2/04-Checks/config/mass-adjustments.csv")
-    return read_csv(p) if os.path.exists(p) else []
+    rows = read_csv(p) if os.path.exists(p) else []
+    if list_path:
+        rows = [a for a in rows if not a.get("applies_to") or os.path.basename(list_path) == a["applies_to"]]
+    return rows
 
 
 def check_pod_mass(root, rows, src, cap_kg=420.0):
-    """The pod total from the shipping list (every row, as the layout study
-    sums it) plus the adjustments the owners have given since, against the
+    """The pod total from the layout study's part list (every row, as it sums
+    them) plus the owners' weight changes not yet in that list, against the
     cap (D-37, D-54)."""
     if not rows:
         return [], None
     base = sum(num(r.get("kg_total")) or 0.0 for r in rows)
-    adj = load_adjustments(root)
+    adj = load_adjustments(root, src)
     extra = sum(num(a.get("kg")) or 0.0 for a in adj)
     total = base + extra
     info = {"list_kg": round(base, 2), "adjustments": adj, "total_kg": round(total, 2), "cap_kg": cap_kg}
@@ -391,7 +408,19 @@ def check_shipping(root, door=(914.0, 2032.0), door_req=(810.0, 2032.0), limit_k
                                       "; it fits the %s pallet" % other if _fits(dims, other) else
                                       "; it fits no standard pallet"),
                                   "Move it to the right pallet in the layout study, or change the piece.", src, owner))
-    mass_fs, _info = check_pod_mass(root, rows, src)
+    msrc, mrows = load_mass_list(root)
+    mass_fs, _info = check_pod_mass(root, mrows, msrc)
+    # the 20 kg rule also on the newest list, which has no sizes (glass exempt, D-03)
+    if msrc and msrc != src:
+        for row in mrows:
+            kg = num(row.get("kg_each"))
+            item = row.get("item") or row.get("name") or ""
+            if kg is not None and kg > limit_kg + 1e-6 and not re.search(r"glass|door unit", item, re.I):
+                fs.append(Finding("C04", "mass-over-20kg", item[:60], "severe",
+                                  "%s weighs %.2f kg (%s, %s), over the 20 kg rule (D-03)." % (
+                                      item, kg, row.get("status", ""), msrc),
+                                  "Split the piece or take weight out so one person can carry it.", msrc,
+                                  owner_for(msrc)))
     return fs + mass_fs, report, src
 
 
