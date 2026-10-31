@@ -10,6 +10,7 @@ Found on 2026-10-31 with Fusion 2706.1.17. Proof part: `v2/01-CAD-Native/proof/`
 |---|---|
 | `run_script.py` | Sends a Fusion API script file to Fusion's MCP server and prints what the script printed. Exit 0 = ran, 1 = the script raised (traceback with the real file and line), 2 = Fusion not reachable. `--arg KEY=VALUE` reaches the script as `SCRIPT_ARGS`; `--read-only` for inspect-only scripts; `--screenshot out.png --direction front` saves a zoomed-to-fit picture. Standard library only. |
 | `step_check.py` | Reads a STEP file without Fusion: declared length unit, products, solids and the bounding box in mm. `--expect xmin,ymin,zmin,xmax,ymax,zmax` checks it. Never edits the file. |
+| `pdf_clear_field.py` | Removes a title block field's value (default "Created by", which Fusion fills with the account holder's name) from an exported drawing PDF, then re-reads it to prove the text is gone. Needs PyMuPDF. |
 
 ```sh
 python3 tools/fusion/run_script.py v2/01-CAD-Native/proof/wall_panel_frame.py --arg close_previous=1
@@ -49,11 +50,22 @@ The proof script `v2/01-CAD-Native/proof/wall_panel_frame.py` follows these step
 
 Drawings need a saved design (`DrawingManager.createDrawingInput` takes a cloud `DataFile`). Save with `document.saveAs(name, folder, description, "")` into **Default Project / FocusPod v2**. The proof script refuses to save when a file with the same name is already there, so the folder keeps one copy.
 
+## Drawings: the sequence that worked (2026-10-31)
+
+1. Point the Data Panel at the right project first: `app.data.activeProject = <Default Project>`, then open the saved design. Without this, Fusion's Create Drawing command logged "No valid project id, using first project and root folder path" (the first project is the special Assets project) and **Fusion crashed** a second later.
+2. Start Create Drawing outside your script: `ui.commandDefinitions.itemById("FusionDrawingCreateFromComponentsCommand").execute()` queues it to run after the script returns. Its dialog defaults to Manual, From scratch, ISO, mm.
+3. One click on OK. Fusion's MCP refuses every script while a dialog is open ("Cannot perform 'script' while a command dialog is open"), so a script can't press OK or Cancel. Fusion then opens the Base View dialog by itself: one click on Cancel. On 2026-10-31 the Lead made both clicks through the macOS accessibility controls. These two clicks are the only steps done outside the API.
+4. `make_drawing.py --arg step=save`: sets A2 and saves the empty drawing into FocusPod v2.
+5. `--arg step=front`, then `top`, then `right`: one view per call, each saved. Then `dims_front`, `dims_top`, `dims_right`, and `export`. See `v2/02-Drawings/proof/DRAWING-RECORD.md`.
+6. `python3 tools/fusion/pdf_clear_field.py <raw pdf> <repo pdf>`: removes the account holder's name that Fusion prints under "Created by" (text removed, not covered). Only that copy goes into the repo; raw exports go to the git-ignored `.raw/` folder.
+
+Keep every call small, and save after each step. Fusion hung twice during this work and lost an unsaved drawing once.
+
 ## Drawings: what works and what needs a person
 
 The drawing API (`adsk.drawing`) is a preview API in this build. Tested on 2026-10-31:
 
-- **Starting a drawing needs a person once.** Manual creation needs a drawing template with view placeholders, and none exists (no `.f2t` ships with the install, none in the hub). Automatic creation hung. So a person makes the first sheet in Fusion: open the saved design, File > New Drawing > From Design, ISO, mm, A2, save. After that, scripts do the rest on the open drawing (`v2/02-Drawings/proof/make_drawing.py`).
+- **Starting a drawing takes two clicks.** `DrawingManager.createDrawing` can't do it here: manual creation needs a drawing template with view placeholders (none ships with the install, none in the hub), and automatic creation hung. Fusion's own Create Drawing command works when started as in the sequence above, with one OK and one Cancel click.
 - **Templates can't be made by script.** `DrawingDocument.saveAs` writes a normal drawing (`.f2d`), and `DrawingExportManager` exports PDF, DWG and DXF only. To start later drawings by script, a person saves one drawing as a template once in Fusion. `CreateDrawingInput.templateFile` then takes it (a cloud `DataFile`), and `DataFolder.uploadFile` can upload a template file kept in the repo.
 - **Views.** `Views.add` makes base views only. Projected, section and detail views can't be created by the API. The PM ruled that base views at the same scale, aligned in the first-angle layout, are fine. Sections go on the person list. A base view shows the whole design (`BaseViewInput` "uses the drawing's active model reference"), so make the drawing from the design you want to show.
 - **Dimensions** attach to view geometry: `DrawingDimensions.addLinearDimension(a, b, place, False)` with `a`, `b` taken from `ViewCurve.startPoint`, `endPoint` or `centerPoint`. Take datum points from line ends and hole centres from circles. A hole through two tube walls can show as two coincident circles; keep one per centre.
@@ -75,4 +87,14 @@ The drawing API (`adsk.drawing`) is a preview API in this build. Tested on 2026-
 | Drawing templates | No API call saves a template; no `.f2t` in the install or the hub | A person saves one template once |
 | Projected, section, detail views | `adsk.drawing.Views` has only `createBaseViewInput` and `add` | Aligned base views; sections listed for a person |
 | Text and hatch on sheets | `DrawingSketch` has no text or hatch collections | Custom tables for notes |
+| Sheet units | The API help says sheet points are in cm; in this build `Sheet.width`, view curve points and `BaseViewInput.placementPoint` are all mm (A2 = 594 x 420) | Work in mm; `make_drawing.py` checks it on the front view |
+| Placement point type | `BaseViewInput.placementPoint = Point2D` raises `TypeError ... argument 2 of type 'adsk::core::Ptr< adsk::drawing::DrawingPoint > const &'` | `DrawingPoint.create(Point2D.create(x, y))` |
+| View scale | `viewParameters.scaleValue = 0.2` on the input was ignored; the view came out 1:10 | Set `View.scaleValue` after `Views.add` |
+| View orientation | Reading `View.orientation` of a view the API had just added raised `RuntimeError: 3 : failed to read view orientation`; Fusion hung soon after | Tell views apart by their size on the sheet |
+| Hole table, view from above | `HoleTables.add` succeeded but the table has no rows (the view from the right worked, tags A1-A4) | Dimensions on the view carry the positions; listed for a person |
+| Hole tags, table position | No API for the tag letters (Fusion uses A1, A2, ... per table) or for where tables go: both landed stacked at the top right, over the front view | Listed for a person |
+| Text in custom tables | `CustomTable.setCellData(row, col, text)` returns True, but `getCellData` reads back `''` and the PDF cells are blank | No free text on sheets by API |
+| Deleting anything | `HoleTables.item(i)` and `Drawing.deleteEntities(...)` raise `RuntimeError: 5 : API Function not yet implemented` | Views and tables can't be removed or moved by API |
+| Title block text | `TitleBlock.setAttributes` places tags only; values come from properties. "Created by" prints the Fusion account holder's name | `pdf_clear_field.py` strips it from the PDF; a person fills the fields once and saves a template |
+| After a restart | A "Recovered Documents" dialog blocks every script until someone closes it | Check `activeCommand` first |
 | **Fusion froze** | A wide API help search (`fusion_mcp_read`, `queryType: apiDocumentation`, pattern `[Tt]emplate`, category `all`, no filter) timed out and Fusion sat at 100% CPU until restarted | Always give API help searches a narrow `filter` such as `adsk.drawing.Views`. The Python stubs on disk (`Autodesk Fusion.app/Contents/Api/Python/packages/adsk/*.py`) can be searched offline with grep |

@@ -104,15 +104,15 @@ def extent(view):
 
 
 def describe(sheet):
-    print("sheet '%s' %s x %s cm, %d views, %d dims, %d hole tables, %d tables" % (
+    print("sheet '%s' %s x %s mm, %d views, %d dims, %d hole tables, %d tables" % (
         sheet.name, round(sheet.width, 2), round(sheet.height, 2), sheet.views.count,
         sheet.drawingDimensions.count, sheet.holeTables.count, sheet.customTables.count))
     for i in range(sheet.views.count):
         v = sheet.views.item(i)
         lines, circles = view_curves(v)
         e = extent(v)
-        print("  view %d type %s orient %s scale %s: %d lines, %d circles, extent %s" % (
-            i, v.type, v.orientation, v.scaleValue, len(lines), len(circles),
+        print("  view %d scale %s: %d lines, %d circles, extent %s" % (
+            i, v.scaleValue, len(lines), len(circles),
             tuple(round(a, 3) for a in e) if e else None))
     tb = sheet.titleBlock
     if tb:
@@ -132,12 +132,26 @@ def reset_views(dwg, sheet):
     print("reset: deleted %d views: %s; %d left" % (n, ok, sheet.views.count))
 
 
-def find_view(sheet, orientation):
+def classify_views(sheet):
+    """Tell the three views apart by their size on the sheet, not by
+    View.orientation: reading that failed ("failed to read view orientation")
+    on a view the API had just added, and Fusion hung soon after. At 1:5 the
+    front view is about 300 x 230 mm, the view from above 300 x 5, the view
+    from the right 5 x 230."""
+    found = {}
     for i in range(sheet.views.count):
         v = sheet.views.item(i)
-        if v.orientation == orientation:
-            return v
-    return None
+        e = extent(v)
+        if not e:
+            continue
+        w, h = e[2] - e[0], e[3] - e[1]
+        if w > cm(20) and h > cm(15):
+            found["front"] = v
+        elif w > cm(20) and h < cm(2):
+            found["top"] = v
+        elif h > cm(15) and w < cm(2):
+            found["right"] = v
+    return found
 
 
 def add_view(sheet, orientation, center):
@@ -152,6 +166,10 @@ def add_view(sheet, orientation, center):
     v = sheet.views.add(inp)
     if v is None:
         raise RuntimeError("Views.add returned None for orientation %s" % orientation)
+    if abs(v.scaleValue - SCALE) > 1e-6:
+        # the scale set on the input was ignored (the view came out 1:10);
+        # setting it on the placed view works
+        v.scaleValue = SCALE
     return v
 
 
@@ -179,32 +197,43 @@ def detect_units(front, placed_at):
           % ("cm" if U == 1.0 else "mm", w))
 
 
+def add_one_view(sheet, which):
+    """Add one view ('front', 'top' or 'right') if it isn't there yet. The
+    view from above and the view from the right are aligned to the front
+    view (first-angle: above-view below it, right-view left of it)."""
+    views = classify_views(sheet)
+    if which in views:
+        print("%s view already there" % which)
+    elif which == "front":
+        add_view(sheet, VO.FrontViewOrientationType, FRONT_CENTER)
+        views = classify_views(sheet)
+        if "front" not in views:
+            raise RuntimeError("front view not found after adding it")
+        detect_units(views["front"], FRONT_CENTER)
+    else:
+        if "front" not in views:
+            raise RuntimeError("add the front view first")
+        detect_units(views["front"], None)
+        e = extent(views["front"])
+        cx, cy = (e[0] + e[2]) / 2, (e[1] + e[3]) / 2
+        if which == "top":
+            add_view(sheet, VO.TopViewOrientationType, (cx / PLACE, (e[1] - cm(GAP_BELOW)) / PLACE))
+        else:
+            add_view(sheet, VO.RightViewOrientationType, ((e[0] - cm(GAP_LEFT)) / PLACE, cy / PLACE))
+        views = classify_views(sheet)
+        if which not in views:
+            raise RuntimeError("%s view not found after adding it" % which)
+    for name, v in sorted(classify_views(sheet).items()):
+        print("  %-5s view extent (sheet mm): %s" % (name, tuple(round(a, 2) for a in extent(v))))
+
+
 def ensure_views(sheet):
-    front = find_view(sheet, VO.FrontViewOrientationType)
-    placed_at = None
-    if front is None:
-        front = add_view(sheet, VO.FrontViewOrientationType, FRONT_CENTER)
-        placed_at = FRONT_CENTER
-        print("added front view (base) at %s" % (FRONT_CENTER,))
-    if abs(front.scaleValue - SCALE) > 1e-6:
-        front.scaleValue = SCALE
-    detect_units(front, placed_at)
-    e = extent(front)
-    cx, cy = (e[0] + e[2]) / 2, (e[1] + e[3]) / 2
-    top = find_view(sheet, VO.TopViewOrientationType)
-    if top is None:
-        top = add_view(sheet, VO.TopViewOrientationType,
-                       (cx / PLACE, (e[1] - cm(GAP_BELOW)) / PLACE))
-        print("added view from above (base view aligned below the front view)")
-    right = find_view(sheet, VO.RightViewOrientationType)
-    if right is None:
-        right = add_view(sheet, VO.RightViewOrientationType,
-                         ((e[0] - cm(GAP_LEFT)) / PLACE, cy / PLACE))
-        print("added view from the right (base view aligned left of the front view)")
-    for name, v in (("front", front), ("above", top), ("right", right)):
-        ev = extent(v)
-        print("  %-6s view extent (sheet units): %s" % (name, tuple(round(a, 3) for a in ev)))
-    return front, top, right
+    views = classify_views(sheet)
+    missing = [k for k in ("front", "top", "right") if k not in views]
+    if missing:
+        raise RuntimeError("views missing: %s (add them with --arg step=front|top|right)" % missing)
+    detect_units(views["front"], None)
+    return views["front"], views["top"], views["right"]
 
 
 # ------------------------------------------------------------------ geometry
@@ -380,6 +409,103 @@ def parts_rows(app):
     return rows
 
 
+def open_design(app):
+    for i in range(app.documents.count):
+        d = app.documents.item(i)
+        if d.name == DESIGN_NAME:
+            return adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
+    raise RuntimeError("open the design %s too (it is the source of the tables)" % DESIGN_NAME)
+
+
+def model_holes(design):
+    """Hole centres read from the model (cylindrical faces of the joint hole
+    diameter), per tube: {part number: sorted [(x, y, z)] in part mm}."""
+    dia = design.userParameters.itemByName("hole_dia").value * 10.0
+    out = {}
+    for comp in design.allComponents:
+        for b in comp.bRepBodies:
+            pts = set()
+            for f in b.faces:
+                g = f.geometry
+                if g.surfaceType == adsk.core.SurfaceTypes.CylinderSurfaceType and \
+                        abs(g.radius * 20.0 - dia) < 0.01:
+                    ax = (abs(round(g.axis.x)), abs(round(g.axis.y)), abs(round(g.axis.z)))
+                    o = [round(v * 10.0, 2) for v in (g.origin.x, g.origin.y, g.origin.z)]
+                    for i in range(3):
+                        if ax[i]:
+                            o[i] = None      # along the axis: not a position
+                    pts.add(tuple(o))
+            if pts:
+                out[comp.partNumber] = sorted(pts, key=lambda p: [v if v is not None else 0 for v in p])
+    return out, dia
+
+
+def hole_rows(app):
+    """Hole table rows from the model, tags H01-H12, 2D X/Y per view with
+    the origin on the datums (mapping in the notes)."""
+    design = open_design(app)
+    holes, dia = model_holes(design)
+    W = design.userParameters.itemByName("frame_width").value * 10.0
+    rows = [("Tag", "Part", "View", "X (mm)", "Y (mm)", "Hole", "Joins")]
+    n = 0
+    size = "dia %g through both tube walls (M6 clearance, ISO 273)" % dia
+    for pn, view, mates in (("V2-SWL-14", "from above", "upper frame"),
+                            ("V2-SWL-13", "from above (hidden)", "base, HOLD"),
+                            ("V2-SWL-11", "from the right", "back wall, HOLD")):
+        for (x, y, z) in holes.get(pn, []):
+            n += 1
+            if pn == "V2-SWL-11":
+                x2, y2 = y, z            # view from the right: X-2D = Y, Y-2D = Z
+            else:
+                x2, y2 = x, y            # view from above: X-2D = X, Y-2D = Y
+            rows.append(("H%02d" % n, pn, view, "%g" % x2, "%g" % y2, size, mates))
+    if n != 12:
+        raise RuntimeError("expected 12 joint holes in the model, found %d" % n)
+    return rows, W
+
+
+def title_rows():
+    return [
+        ("PROOF TITLE BLOCK", "(replaces the stock fields the API can't fill)"),
+        ("Part no.", "V2-SWL-00 (frame V2-SWL-10, skin V2-SWL-20), PROPOSED numbering"),
+        ("Name", "WALL - PANEL ASSY - SIDE LOWER - LH"),
+        ("Tên (VN)", "Vách bên dưới - trái (cụm)"),
+        ("Rev / status", "P01 / DRAFT, proof only, not for manufacture"),
+        ("Scale", "1:5, all views"),
+        ("Units", "mm"),
+        ("Projection", "ISO first angle (ISO 5456-2), symbol above the title block"),
+        ("Material", "see parts list"),
+        ("Tolerances", "see note 5 (PROPOSED)"),
+        ("Sheet", "1 of 1, A2"),
+        ("Made by", "Fusion Engineer (AI agent), v2/02-Drawings/proof/make_drawing.py"),
+        ("Date", "2026-10-31"),
+    ]
+
+
+def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
+    """ISO first-angle symbol from sheet-sketch lines and circles (mm): the
+    truncated cone's front view with its narrow end left, and its end view
+    (two concentric circles) to the right, next to the wide end."""
+    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
+    cy = y0
+    pts = [p2(x0, cy - d / 2), p2(x0 + length, cy - big / 2), p2(x0 + length, cy + big / 2),
+           p2(x0, cy + d / 2), p2(x0, cy - d / 2)]
+    sk.lines.add(pts)
+    cx = x0 + length + gap + big / 2
+    sk.circles.addByCenterRadius(p2(cx, cy), big / 2)
+    sk.circles.addByCenterRadius(p2(cx, cy), d / 2)
+    return sk
+
+
+def delete_stock_hole_tables(dwg, sheet):
+    coll = adsk.core.ObjectCollection.create()
+    for i in range(sheet.holeTables.count):
+        coll.add(sheet.holeTables.item(i))
+    n = coll.count
+    ok = dwg.deleteEntities(coll) if n else True
+    print("stock hole tables: %d, deleteEntities -> %s, left %d" % (n, ok, sheet.holeTables.count))
+
+
 def text_table(sheet, rows):
     inp = sheet.customTables.createInput()
     inp.rowCount = len(rows)
@@ -413,17 +539,60 @@ def run(_context):
     describe(sheet)
     if ARGS.get("inspect") == "1":
         return
-    step = ARGS.get("step", "all")     # reset | views | save | annotate | all
+    # steps, one small call each: save (A2, save empty drawing) | front | top
+    # | right (one view, then save) | annotate (rest, PDF, save) | reset
+    step = ARGS.get("step", "annotate")
     if step == "reset":
         reset_views(dwg, sheet)
         return
-    if sheet.sheetSize != adsk.drawing.SheetSizes.A2ISOSheetSize:
-        sheet.sheetSize = adsk.drawing.SheetSizes.A2ISOSheetSize
-        print("sheet size set to A2")
-    front, top, right = ensure_views(sheet)
-    if step == "views":
-        return
     if step == "save":
+        if sheet.sheetSize != adsk.drawing.SheetSizes.A2ISOSheetSize:
+            sheet.sheetSize = adsk.drawing.SheetSizes.A2ISOSheetSize
+            print("sheet size set to A2")
+        save_drawing(app)
+        return
+    if step in ("front", "top", "right"):
+        add_one_view(sheet, step)
+        save_drawing(app)
+        return
+    front, top, right = ensure_views(sheet)
+    if step in ("del_stock_tables", "hole_table", "title_table", "symbol"):
+        if step == "del_stock_tables":
+            delete_stock_hole_tables(dwg, sheet)
+        elif step == "hole_table":
+            rows, _w = hole_rows(app)
+            text_table(sheet, rows)
+            for r in rows:
+                print("  " + " | ".join(r))
+        elif step == "title_table":
+            text_table(sheet, title_rows())
+        else:
+            projection_symbol(sheet, float(ARGS.get("sx", "410")), float(ARGS.get("sy", "70")))
+            print("projection symbol drawn at", ARGS.get("sx", "410"), ARGS.get("sy", "70"))
+        describe(sheet)
+        save_drawing(app)
+        return
+    if step in ("dims_front", "dims_top", "dims_right", "tables", "export"):
+        if step == "dims_front":
+            annotate_front(sheet, front)
+        elif step == "dims_top":
+            o_top = annotate_top(sheet, top)
+            hole_table(sheet, top, o_top, "HOLE TABLE 1 - VIEW FROM ABOVE (X-2D = X, Y-2D = Y, ORIGIN O)")
+            print("hole table 1 added")
+        elif step == "dims_right":
+            o_right = annotate_right(sheet, right)
+            hole_table(sheet, right, o_right, "HOLE TABLE 2 - VIEW FROM THE RIGHT (X-2D = Y, Y-2D = Z)")
+            print("hole table 2 added")
+        elif step == "tables":
+            parts = parts_rows(app)
+            text_table(sheet, [(n,) for n in NOTES])
+            text_table(sheet, parts)
+            print("notes (%d rows) and parts list from the CAD (%d rows) added" % (len(NOTES), len(parts)))
+            for r in parts:
+                print("  " + " | ".join(r))
+        else:
+            export_pdf(dwg)
+        describe(sheet)
         save_drawing(app)
         return
     describe(sheet)
@@ -439,15 +608,26 @@ def run(_context):
     for r in parts:
         print("  " + " | ".join(r))
     describe(sheet)
-    path = "%s/%s" % (ARGS["repo_root"], PDF_REL)
-    opts = dwg.exportManager.createPDFExportOptions(path)
+    export_pdf(dwg)
+    if ARGS.get("save") == "1":
+        save_drawing(app)
+
+
+def export_pdf(dwg):
+    """Export the raw PDF into .raw/ (git-ignored): Fusion prints the account
+    holder's name under "Created by" and the API can't change it. Make the
+    repo copy with:
+      python3 tools/fusion/pdf_clear_field.py <raw pdf> <repo pdf>"""
+    import os
+    raw = "%s/%s" % (ARGS["repo_root"], PDF_REL.replace("proof/", "proof/.raw/"))
+    os.makedirs(os.path.dirname(raw), exist_ok=True)
+    opts = dwg.exportManager.createPDFExportOptions(raw)
     opts.openPDF = False
     opts.useLineWeights = True
     if not dwg.exportManager.execute(opts):
         raise RuntimeError("PDF export failed")
-    print("PDF: %s" % PDF_REL)
-    if ARGS.get("save") == "1":
-        save_drawing(app)
+    print("raw PDF (not for the repo): %s" % raw)
+    print("next: python3 tools/fusion/pdf_clear_field.py '%s' '%s/%s'" % (raw, ARGS["repo_root"], PDF_REL))
 
 
 def save_drawing(app):
