@@ -351,7 +351,7 @@ def sheet3(doc, rows, harness, v):
     notes = [
         "1. Every coordinate in these views is computed from electrical_model.py (skeleton P04 parameters), so they follow the CAD.",
         "2. Bushings (Heyco 2836, 19.1 hole): G-PU-TOP, G-B2-B4 x2, FX-CEIL, G-CEIL-B/F, G-DR (DR back plate), G-SOFFIT; slots get an edge strip.",
-        "3. Felt-only holes (FX-*, FS-CNR, FA-KIT) pass felt on the lips with the 24 mm gap behind: no steel edge, no bushing.",
+        "3. Felt-only holes (FX-*, FS-CNR, FA-KIT) go through the felt only, clear of the 12 mm lips: no steel edge, no bushing (no hole through a lip, D-69).",
         "4. These views are the route drawing of 710000; there is no separate Fusion drawing of the route model (PM ruling 2026-11-01).",
     ]
     s.frame_and_title("ELECTRICAL - ROUTES AND JOINTS", 3, "1:20 (views)", notes)
