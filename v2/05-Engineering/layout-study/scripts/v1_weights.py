@@ -6,6 +6,7 @@ Control Engineer's issue list): the BOM lists 9 mm inner and floor boards, the
 drawings and the STEP show 15 mm ply.
 """
 import csv
+import functools
 import os
 from collections import OrderedDict
 
@@ -41,6 +42,12 @@ SCREW_KG = {"Vít M8x60": 0.035, "Vít M8x40": 0.026, "Tán cấy M8x20": 0.010}
 
 
 def read_bom():
+    """BOM lines (read once; callers must not change the returned rows)."""
+    return _read_bom()
+
+
+@functools.lru_cache(maxsize=1)
+def _read_bom():
     wb = openpyxl.load_workbook(BOM_PATH, data_only=True)
     ws = wb["BOM"]
     rows, group = [], None
@@ -53,7 +60,7 @@ def read_bom():
         code, item, mat, spec, L, W, T, qty, tot_len, area, note = r[1:12]
         rows.append(dict(code=code, item=item, mat=mat, spec=spec, L=L, W=W, T=T, qty=qty,
                          tot_len=tot_len, area=area, note=note, group=group))
-    return rows
+    return tuple(rows)
 
 
 def line_mass(r, case):

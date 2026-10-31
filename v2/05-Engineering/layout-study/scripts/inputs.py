@@ -27,6 +27,8 @@ SOURCES = {
     "S16": ("NMFTA: ClassIT+ is the official source for NMFC classes; since the 2025 NMFC changes density plays a larger role (density scale widened from 11 to 13 sub-provisions, per carrier summaries)", "https://info.nmfta.org/2025-nmfc-changes (read 2026-10-31)"),
     "S17": ("2010 ADA Standards section 404.2.3: door clear width 32 in (813 mm) minimum", "https://www.access-board.gov/ada/#ada-404 (read 2026-10-31)"),
     "S18": ("Market study, 2026-10-31", "v2/research/market-study.md"),
+    "S20": ("Hardware Engineer's sound and air calc (branch super-tab/09f4617f, commit e22cab1): total-pod kg vs D_S,A curve; at a 380 kg budget with a 10 mm smoked acrylic front: walls DL-ST (ACP 3 / 40 mm fill, shared studs / 0.5 mm steel + felt 9), ceiling DL-2HDF-60-FL (ACP 3 / 60 mm fill / 2 x HDF 3 floating + felt 9), 377 kg, D_S,A 22.5 dB central", "v2/05-Engineering/acoustics-air/calc.py on that branch (read 2026-10-31)"),
+    "S21": ("Hardware Engineer's final wall stack, relayed by the PM in the layout chat, 2026-10-31: ACP 3 / 20x40 aluminium frame at 400 mm with 40 mm PET fill / floating lining cassette (0.5 mm steel tray, 25 mm deep, 9 mm felt across its face); 81 mm and 13.1 kg/m2. Ceiling the same on 20x100, 141 mm. Pod about 385 kg and 24.2 dB with the acrylic front", "layout conversation, PM message of 2026-10-31"),
     "S19": ("LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff)", "https://logisticsplus.com/?p=25575 (read 2026-10-31)"),
 }
 
@@ -108,6 +110,7 @@ P = {
     "gasket_kgm": V(0.06, "kg/m", "assumption", "S05", "EPDM/foam gasket on panel joints"),
     "fill_kgm2": V(0.6, "kg/m2", "assumption", "S05", "20 mm PET cavity fill at 30 kg/m3 (light; sound group sizes it)"),
     "bolt_kg": V(0.012, "kg", "assumption", "", "M6 bolt + washer + rivnut"),
+    "bolt_pitch": V(400, "mm", "assumption", "", "bolt spacing used only to count bolts; the joint register sets real pitches"),
     "voice_kit_kg": V(4.0, "kg", "assumption", "", "reserve for the later voice cockpit kit: mic array, speakers, screen, status light"),
     "voice_kit_w": V(60, "W", "assumption", "", "power reserve for the voice cockpit kit"),
     "table_v1_kg": V(0, "kg", "calculation", "S01", "computed from the BOM in v1_weights.py"),
@@ -150,12 +153,63 @@ P = {
     "t_final_min": V(10, "min", "assumption", "", "check door swing and seals, clean"),
     "t_connector_s": V(20, "s", "assumption", "", "mate one plug-in cable connector at a panel seam"),
     "inefficiency": V(0.15, "-", "assumption", "", "added to elapsed time for hand-offs and checking"),
+    # ---- levers towards about 1 hour (each an assumption until timed on the prototype)
+    "cam_seams": V(0, "flag", "assumption", "", "1 = panel-to-panel seams use tool-free cam or clip connectors instead of bolts"),
+    "t_cam_s": V(10, "s", "assumption", "", "close one cam or clip connector by hand"),
+    "t_bolt_captive_s": V(18, "s", "assumption", "", "captive M6 bolt already started in its panel: no picking up, no dropping"),
+    "t_place_hung_s": V(20, "s", "assumption", "", "panel hung on hooks or seated on pins holds itself: no second person holding"),
+    "t_door_prehung_min": V(6, "min", "assumption", "", "door arrives hung on the left decor post: set the post, check swing"),
+    "t_fixed_preglazed_min": V(5, "min", "assumption", "", "fixed glass arrives in its profile frame: set and fix the frame"),
+    "t_unpack_std_ordered_min": V(4, "min", "assumption", "", "48x40 packed in assembly order, parts numbered"),
+    "t_unpack_long_ordered_min": V(6, "min", "assumption", "", "long pallet packed in assembly order"),
+    "t_felt_strip_s": V(20, "s", "assumption", "", "felt pre-fitted on its panel; only the strip over a joint goes on site"),
+    "cam_kg": V(0.05, "kg", "assumption", "", "one cam or clip connector pair"),
+    "strip_w": V(150, "mm", "assumption", "", "loose felt strip over each joint, so the joint stays reachable"),
+    # ---- quiet build re-check (Lead's ruling 2026-10-31: about 380 kg, acrylic front, deeper filled cavities)
+    "frame_depth": V(20, "mm", "source", "S04", "wall frame tube depth (20x20); the quiet build deepens it"),
+    "quiet_total": V(380, "kg", "confirmed", "S20", "PM ruling from the Hardware Engineer's sound curve"),
+    "hw_380_total": V(377, "kg", "source", "S20", "Hardware Engineer's best build within a 380 kg budget"),
+    "hw_380_dsa": V(22.5, "dB", "source", "S20", "its central D_S,A estimate"),
+    "quiet_cap": V(400, "kg", "confirmed", "", "Lead's ruling: heavier walls allowed up to 400 kg in total"),
+    "rho_mass_layer": V(1600, "kg/m3", "assumption", "", "dense sound layer (MLV-like) used only to size the inner leaf thickness"),
+    "leaf_clip_kgm2": V(0.6, "kg/m2", "assumption", "", "clip rail and clips of an inner leaf"),
+    "ceil_t": V(0, "mm", "assumption", "", "ceiling thickness; 0 means the same as the walls"),
+    "final_wall_t": V(81, "mm", "source", "S21", "final wall: outer panel 3 + 40, cassette 25 + 9, 4 mm gaps"),
+    "final_ceil_t": V(141, "mm", "source", "S21"),
+    "final_wall_depth": V(40, "mm", "source", "S21", "20x40 aluminium wall frame"),
+    "final_ceil_depth": V(100, "mm", "source", "S21", "20x100 aluminium ceiling frame"),
+    "final_kgm2_hw": V(13.1, "kg/m2", "source", "S21", "the sound study's wall mass with frame, fill and cassette"),
+    "fill_pet_kgm3": V(32, "kg/m3", "source", "S20", "PET cavity fill (the sound study's fill row)"),
+    "tray_t": V(0.5, "mm", "source", "S21", "steel lining tray"),
+    "tray_depth": V(25, "mm", "source", "S21"),
+    "hw_385_total": V(385, "kg", "source", "S21"),
+    "hw_385_dsa": V(24.2, "dB", "source", "S21"),
+    "t_leaf_s": V(60, "s", "assumption", "", "clip one inner leaf (sound mass + felt) onto its frame from inside"),
 }
 
 
+_OVERRIDE = {}
+
+
 def p(name):
-    """Value of a parameter."""
+    """Value of a parameter (or of a temporary override used for what-if levers)."""
+    if name in _OVERRIDE:
+        return _OVERRIDE[name]
     return P[name].value
+
+
+class override:
+    """with override(t_door_min=6): ... runs the model with changed assumptions."""
+
+    def __init__(self, **kw):
+        self.kw = kw
+
+    def __enter__(self):
+        _OVERRIDE.update(self.kw)
+
+    def __exit__(self, *exc):
+        for k in self.kw:
+            _OVERRIDE.pop(k, None)
 
 
 SPACESHIP_NOTE = "Spaceship is the working name of v2 (folders keep their v2 names)."

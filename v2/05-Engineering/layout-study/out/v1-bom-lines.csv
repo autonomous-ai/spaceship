@@ -1,0 +1,148 @@
+code,spec,kind,assembly,kg_bom_case
+FL-01,Hộp thép 100x50,steel tube,BASE,11.00
+FL-02,Hộp thép 100x50,steel tube,BASE,9.26
+FL-03,Hộp thép 100x50,steel tube,BASE,12.56
+FL-04,Hộp thép 100x50,steel tube,BASE,1.23
+FL-05,Hộp thép 100x50,steel tube,BASE,0.97
+FL-06,Hộp thép 100x50,steel tube,BASE,1.38
+FL-07,Hộp thép 100x50,steel tube,BASE,0.57
+FL-08,Hộp thép 100x50,steel tube,BASE,1.39
+FL-09,Hộp thép 20x20,steel tube,BASE,0.41
+FL-10,Hộp thép 60x30,steel tube,BASE,13.80
+FL-11,Tấm nhôm 3 mm màu vàng,ACP skin,BASE,1.49
+FL-12,Bản mã thép 3 mm,steel plate,BASE,0.03
+FL-13,Pát thép bẻ góc 3 mm,steel plate,BASE,0.49
+FLR-01,Ván gỗ 9 mm,board,BASE,18.28
+LW-01,Thanh gỗ 40x40,timber,WALL,3.82
+LW-02,Thanh gỗ 40x40,timber,WALL,2.55
+LW-03,Thanh gỗ 40x40,timber,WALL,1.20
+LW-04,Ván gỗ 9 mm,board,LINING,17.25
+LW-05,Ván gỗ 6 mm,board,WALL,2.29
+LW-06,Ván gỗ 6 mm,board,WALL,10.10
+LW-07,Tấm nhôm 2 mm màu vàng,ACP skin,WALL,1.84
+LW-08,Tấm nhôm 2 mm màu vàng,ACP skin,WALL,8.14
+RW-01,Thanh gỗ 40x40,timber,WALL,3.82
+RW-02,Thanh gỗ 40x40,timber,WALL,2.55
+RW-03,Thanh gỗ 40x40,timber,WALL,1.20
+RW-04,Ván gỗ 9 mm,board,LINING,17.25
+RW-05,Ván gỗ 6 mm,board,WALL,10.10
+RW-06,Ván gỗ 6 mm,board,WALL,2.29
+RW-07,Tấm nhôm 2 mm màu vàng,ACP skin,WALL,1.84
+RW-08,Tấm nhôm 2 mm màu vàng,ACP skin,WALL,8.14
+BWL-01,Thanh gỗ 40x40,timber,WALL,1.91
+BWL-02,Thanh gỗ 40x40,timber,WALL,1.91
+BWL-03,Thanh gỗ 40x40,timber,WALL,1.65
+BWL-04,Thanh gỗ 40x40,timber,WALL,0.76
+BWL-05,Ván gỗ 9 mm,board,LINING,10.85
+BWL-06,Ván gỗ 6 mm,board,WALL,7.61
+BWL-07,Tấm nhôm 2 mm màu vàng,ACP skin,WALL,6.13
+BWC-01,Thanh gỗ 40x40,timber,WALL,3.82
+BWC-02,Thanh gỗ 40x40,timber,WALL,1.13
+BWC-03,Thanh gỗ 40x40,timber,WALL,0.49
+BWC-04,Ván gỗ 9 mm,board,LINING,7.24
+BWC-05,Ván gỗ 6 mm,board,WALL,5.30
+BWC-06,Tấm nhôm 2 mm màu vàng,ACP skin,WALL,4.27
+BWC-07,Tấm nhôm 2 mm màu vàng,ACP skin,LINING,3.89
+BWR-01,Thanh gỗ 40x40,timber,WALL,1.91
+BWR-02,Thanh gỗ 40x40,timber,WALL,1.91
+BWR-03,Thanh gỗ 40x40,timber,WALL,1.65
+BWR-04,Thanh gỗ 40x40,timber,WALL,0.76
+BWR-05,Ván gỗ 9 mm,board,LINING,10.85
+BWR-06,Ván gỗ 6 mm,board,WALL,7.61
+BWR-07,Tấm nhôm 2 mm màu vàng,ACP skin,WALL,6.13
+CL-01,Thanh gỗ 40x40,timber,CEILING,4.36
+CL-02,Thanh gỗ 40x40,timber,CEILING,6.18
+CL-03,Ván gỗ 9 mm,board,LINING,18.73
+CL-04,Ván gỗ 6 mm,board,CEILING,13.25
+CL-05,Tấm nhôm 2 mm màu vàng,ACP skin,CEILING,10.68
+DL-01,Hộp thép 16x16,steel tube,FRONT,0.43
+DL-02,Hộp thép 16x16,steel tube,FRONT,0.41
+DL-03,Hộp thép 16x16,steel tube,FRONT,0.33
+DL-04,Hộp thép 16x16,steel tube,FRONT,1.84
+DL-05,Hộp thép 16x16,steel tube,FRONT,0.18
+DL-06,Hộp thép 16x16,steel tube,FRONT,0.38
+DL-07,Hộp thép 16x16,steel tube,FRONT,0.13
+DL-08,Hộp thép 16x16,steel tube,FRONT,0.28
+DL-09,Hộp thép 16x16,steel tube,FRONT,0.24
+DL-10,Hộp thép 16x16,steel tube,FRONT,0.07
+DL-11,Hộp thép 16x16,steel tube,FRONT,0.07
+DL-12,Hộp thép 16x16,steel tube,FRONT,0.17
+DL-13,Hộp thép 60x20,steel tube,FRONT,2.86
+DL-14,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,2.39
+DL-15,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,0.28
+DL-16,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,4.45
+DL-17,Pát thép 2 mm,steel plate,FRONT,0.05
+DR-01,Hộp thép 16x16,steel tube,FRONT,1.08
+DR-02,Hộp thép 16x16,steel tube,FRONT,0.99
+DR-03,Hộp thép 16x16,steel tube,FRONT,1.36
+DR-04,Hộp thép 16x16,steel tube,FRONT,0.40
+DR-05,Hộp thép 16x16,steel tube,FRONT,0.38
+DR-06,Hộp thép 16x16,steel tube,FRONT,0.75
+DR-07,Hộp thép 16x16,steel tube,FRONT,0.37
+DR-08,Hộp thép 16x16,steel tube,FRONT,0.37
+DR-09,Hộp thép 16x16,steel tube,FRONT,0.34
+DR-10,Hộp thép 16x16,steel tube,FRONT,0.31
+DR-11,Hộp thép 16x16,steel tube,FRONT,0.31
+DR-12,Hộp thép 16x16,steel tube,FRONT,0.28
+DR-13,Hộp thép 16x16,steel tube,FRONT,0.22
+DR-14,Hộp thép 16x16,steel tube,FRONT,0.21
+DR-15,Hộp thép 16x16,steel tube,FRONT,0.17
+DR-16,Hộp thép 16x16,steel tube,FRONT,0.17
+DR-17,Hộp thép 16x16,steel tube,FRONT,0.14
+DR-18,Hộp thép 16x16,steel tube,FRONT,1.02
+DR-19,Hộp thép 16x16,steel tube,FRONT,0.12
+DR-20,Hộp thép 16x16,steel tube,FRONT,0.12
+DR-21,Hộp thép 16x16,steel tube,FRONT,0.08
+DR-22,Hộp thép 16x16,steel tube,FRONT,0.47
+DR-23,Hộp thép 16x16,steel tube,FRONT,0.07
+DR-24,Hộp thép 16x16,steel tube,FRONT,0.03
+DR-25,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,8.87
+DR-26,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,1.12
+DR-27,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,0.62
+DR-28,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,0.22
+DR-29,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,0.06
+DR-30,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,4.79
+DR-31,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,1.22
+DR-32,Pát thép 2 mm,steel plate,FRONT,0.08
+DT-01,Hộp thép 16x16,steel tube,FRONT,0.79
+DT-02,Hộp thép 16x16,steel tube,FRONT,0.64
+DT-03,Hộp thép 16x16,steel tube,FRONT,0.55
+DT-04,Hộp thép 16x16,steel tube,FRONT,0.55
+DT-05,Hộp thép 16x16,steel tube,FRONT,0.38
+DT-06,Hộp thép 16x16,steel tube,FRONT,0.34
+DT-07,Hộp thép 16x16,steel tube,FRONT,0.17
+DT-08,Hộp thép 16x16,steel tube,FRONT,0.13
+DT-09,Hộp thép 16x16,steel tube,FRONT,0.11
+DT-10,Hộp thép 16x16,steel tube,FRONT,0.11
+DT-11,Hộp thép 16x16,steel tube,FRONT,0.08
+DT-12,Hộp thép 16x16,steel tube,FRONT,0.08
+DT-13,Hộp thép 16x16,steel tube,FRONT,0.12
+DT-14,Hộp thép 16x16,steel tube,FRONT,0.04
+DT-15,Hộp thép 16x16,steel tube,FRONT,0.08
+DT-16,Hộp thép 16x16,steel tube,FRONT,0.04
+DT-17,Hộp thép 16x16,steel tube,FRONT,0.03
+DT-18,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,1.77
+DT-19,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,0.93
+DT-20,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,0.17
+DT-21,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,0.22
+DT-22,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,0.06
+DT-23,Tấm nhôm 3 mm màu vàng,ACP skin,FRONT,1.98
+DT-24,Pát thép 2 mm,steel plate,FRONT,0.05
+TB-01,Ván gỗ 20 mm,board,INTERIOR,7.20
+TB-02,Ống thép Ø100,steel tube,INTERIOR,3.85
+TB-03,Bản thép 3 mm,steel plate,INTERIOR,0.94
+GL-01,Kính xám khói 10 mm,glass,FRONT,59.10
+GW-01,Kính xám khói 10 mm,glass,FRONT,38.69
+VT-01,Vít M8x60,fasteners,WALL,0.63
+VT-02,Vít M8x40,fasteners,WALL,0.21
+VT-03,Tán cấy M8x20,fasteners,WALL,0.26
+MUA-01,Chân tăng chỉnh D50 ren M12,bought,BASE,1.50
+MUA-02,Quạt thông gió 200x200x60,bought,AIR,4.00
+MUA-03,Đèn ốp trần vuông 170x170,bought,ELECTRICAL,1.00
+MUA-04,Công tắc (mặt 86x86),bought,ELECTRICAL,0.15
+MUA-05,Ổ cắm điện (mặt 86x86),bought,ELECTRICAL,0.15
+MUA-06,Ổ mạng LAN (mặt 86x86),bought,ELECTRICAL,0.15
+MUA-07,Jack LAN,bought,ELECTRICAL,0.15
+MUA-08,Jack nguồn,bought,ELECTRICAL,0.15
+MUA-09,Bản lề cửa kính,bought,FRONT,1.80
+MUA-10,Tay nắm cửa kính 300 mm,bought,FRONT,0.80

@@ -28,6 +28,14 @@ def orient_upright(dims):
     return along, up, t
 
 
+class _Flat:
+    """An upright-stack item moved to the long pallet, shaped like a Part for the flat packer."""
+
+    def __init__(self, it):
+        self.pid, self.name, self.kg = it["pid"], it["label"], it["kg"]
+        self.dims = (it["along"], it["up"], it["t"])
+
+
 def units(parts):
     out = []
     for pt in parts:
@@ -47,7 +55,7 @@ def carton_for(boxes):
                 along=along, up=up, t=float(depth), kg=sum(b.kg for b in boxes) + 1.5)
 
 
-def pack(parts):
+def pack(parts, rebalance=True):
     """Returns a list of pallets. Each pallet: kind, slots or layers, gross kg, loaded height mm."""
     upright, longs, glass, boxes = [], [], [], []
     for u in units(parts):
@@ -64,8 +72,19 @@ def pack(parts):
     if boxes and not long_pallet:
         upright.append(carton_for(boxes))
 
-    # ---- 48 x 40: slots across the 40 in depth, items side by side along the 48 in length
+    # ---- if the upright stack needs a second 48x40 and a long pallet goes anyway, the thickest panels that can
+    #      lie flat on the long pallet move there (one per layer), until the rest fits one 48x40
     usable = p("pal_std_w") - 2 * p("edge_board")
+    if long_pallet and rebalance:
+        def depth_needed(items):
+            return sum(i["t"] + p("pack_gap") for i in items)
+        movable = sorted([i for i in upright if max(i["along"], i["up"]) <= p("pal_long_l") and min(i["along"], i["up"]) <= p("pal_long_w")
+                          and i["pid"] != "KIT-CARTON"], key=lambda i: (-i["t"], i["pid"]))
+        while depth_needed(upright) > usable and movable:
+            it = movable.pop(0)
+            upright.remove(it)
+            longs.append(_Flat(it))
+
     upright.sort(key=lambda d: (-d["t"], -d["up"], d["pid"]))
     pallets, cur = [], None
     for it in upright:
@@ -116,8 +135,11 @@ def pack(parts):
             kit = dict(pid="KIT-CARTON", label="kit carton: " + ", ".join(sorted({b.pid for b in boxes})),
                        l=L, kg=sum(b.kg for b in boxes) + 1.5)
             if h_need is not None and h_need <= best["h"]:
-                kit.update(w=free, h=h_need)
-                best["items"].append(kit); best["used"] += free
+                n = max(1, math.ceil(kit["kg"] / 20.0))          # every box one person can carry
+                for i in range(n):
+                    box = dict(kit, pid=f"KIT-BOX-{i + 1}", w=free / n, h=h_need, kg=kit["kg"] / n)
+                    best["items"].append(box)
+                best["used"] += free
             else:
                 kit.update(w=600.0, h=float(math.ceil(vol / (L * 1e-3 * 0.6) * 1000 / 10) * 10))
                 pal["layers"].append(dict(items=[kit], used=600.0, h=kit["h"]))
@@ -178,7 +200,7 @@ def svg(pal, title):
         ex, ey = ox + plan_w + 60, 70
         H = pal["height"]
         out.append(_svg_text(ex, ey - 10, "End view (40 in across, height up)", 11, weight="bold"))
-        base = ey + H * k
+        base = ey + 10 + max(H, p("max_load_h")) * k
         out.append(f'<rect x="{ex}" y="{base - p("pal_std_h") * k:.1f}" width="{pal["W"] * k:.1f}" height="{p("pal_std_h") * k:.1f}" fill="#b08a55" stroke="#7a5c2e"/>')
         y = p("edge_board")
         n = 0
@@ -194,25 +216,33 @@ def svg(pal, title):
         out.append(_svg_text(ex + pal["W"] * k + 14, base - lim * k + 4, f"{lim:.0f} mm limit", 10))
         top = max(oy + plan_h, base) + 30
     else:
+        k = 0.14
         plan_w, plan_h = pal["L"] * k, pal["W"] * k
-        ox, oy = 30, 70
-        out.append(_svg_text(ox, oy - 10, "Plan view (96 in along X, 48 in along Y); layers drawn bottom to top", 11, weight="bold"))
-        out.append(f'<rect x="{ox}" y="{oy}" width="{plan_w:.1f}" height="{plan_h:.1f}" fill="#f3e9d2" stroke="#7a5c2e"/>')
         colors = ["#c9d6ea", "#d9ead3", "#fde2c8", "#e6d3f0", "#f4cccc"]
         n = 0
+        oy = 70
         for li, lay in enumerate(pal["layers"]):
+            col, row = li % 2, li // 2
+            ox = 30 + col * (plan_w + 40)
+            oyl = oy + row * (plan_h + 40)
+            out.append(_svg_text(ox, oyl - 8, f"Layer {li + 1} plan" + (" (glass, lites stacked flat with foam)" if lay.get("glass") else "") + (" (bottom)" if li == 0 else ""), 11, weight="bold"))
+            out.append(f'<rect x="{ox}" y="{oyl}" width="{plan_w:.1f}" height="{plan_h:.1f}" fill="#f3e9d2" stroke="#7a5c2e"/>')
             y = 0.0
             for it in lay["items"]:
                 n += 1
                 x = (pal["L"] - it["l"]) / 2
                 if lay.get("glass"):
                     y = 0.0
-                out.append(f'<rect x="{ox + x * k:.1f}" y="{oy + y * k:.1f}" width="{it["l"] * k:.1f}" height="{it["w"] * k:.1f}" fill="{colors[li % 5]}" fill-opacity="0.55" stroke="#1f3b63" stroke-width="0.8"/>')
-                out.append(_svg_text(ox + x * k + 4, oy + y * k + 12, str(n), 10, weight="bold"))
+                out.append(f'<rect x="{ox + x * k:.1f}" y="{oyl + y * k:.1f}" width="{it["l"] * k:.1f}" height="{it["w"] * k:.1f}" fill="{colors[li % 5]}" fill-opacity="0.7" stroke="#1f3b63" stroke-width="0.8"/>')
+                out.append(_svg_text(ox + x * k + 4, oyl + y * k + 12, str(n), 10, weight="bold"))
                 legend.append((n, it, it["h"], li + 1))
                 if not lay.get("glass"):
                     y += it["w"]
-        ex, ey = ox, oy + plan_h + 50
+        rows_used = (len(pal["layers"]) + 1) // 2
+        k = 0.2
+        plan_w = pal["L"] * k
+        ox = 30
+        ex, ey = ox, oy + rows_used * (pal["W"] * 0.14 + 40) + 20
         out.append(_svg_text(ex, ey - 8, "Side view (96 in along X, height up)", 11, weight="bold"))
         H = pal["height"]
         base = ey + H * k

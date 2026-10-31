@@ -5,6 +5,7 @@ X to the right seen from outside the door, Y from front to back, Z up, origin at
 the front-left corner of the footprint on the room floor. Sizes are mm, masses kg.
 """
 import csv
+import functools
 import math
 import os
 from collections import OrderedDict
@@ -39,7 +40,13 @@ class Part:
 PLAN = dict(key="plan", label="v2 as planned", frame="steel", ply=True, core=None, floor="raised",
             front="glass10", table=True, seals=False, vents=False, fill=False, voice=False, sensor=False)
 LIGHT = dict(key="light", label="Spaceship light indoor build", frame="al", ply=False, core=None, floor="thin",
-             front="glass8", table=False, seals=True, vents=True, fill=True, voice=True, sensor=True)
+             front="glass8", table=False, seals=True, vents=True, fill=True, voice=True, sensor=True,
+             prefit=False, captive=False, cams=False, prehung=False, ordered=False, sound_kgm2=0.0, ceiling_sound=True)
+# PROPOSED fast-assembly build (Lead's ruling): same parts and weight, more done in the factory
+FAST = dict(LIGHT, key="fast", label="Spaceship light build, fast assembly (PROPOSED)",
+            prefit=True, captive=True, cams=True, prehung=True, ordered=True)
+PLAN.update(prefit=False, captive=False, cams=False, prehung=False, ordered=False, sound_kgm2=0.0, ceiling_sound=True)
+CAM_JOINTS = ("J-WALL-01", "J-WALL-02", "J-WALL-03", "J-WALL-04", "J-CEIL-02")
 
 
 def variant(base, **kw):
@@ -52,23 +59,30 @@ def variant(base, **kw):
 def geom():
     wall_h = p("pod_h") - p("glide_h") - p("base_h")          # 2290
     t = p("wall_t_plan")
+    tc = p("ceil_t") or t
     inner_w = p("pod_w") - 2 * t                               # 2424, back wall and ceiling between side walls
-    back_h = wall_h - t                                        # back wall stands under the ceiling
-    return dict(wall_h=wall_h, t=t, inner_w=inner_w, back_h=back_h, depth=p("wall_depth"),
+    back_h = wall_h - tc                                       # back wall stands under the ceiling
+    return dict(wall_h=wall_h, t=t, tc=tc, inner_w=inner_w, back_h=back_h, depth=p("wall_depth"),
                 inner_d=p("wall_depth") - t)
 
 
 # ---------------------------------------------------------------- unit masses
-def frame_kgm(m):
+def frame_kgm(m, depth=None):
+    """kg/m of a wall or ceiling frame member; the decor core keeps 20 x 20 (depth=20)."""
+    d = p("frame_depth") if depth is None else depth
     if m["frame"] == "steel":
-        return steel_rhs(20, 20, p("t_steel_20"))
-    return al_rhs(20, 20, p("t_al_20"))
+        return steel_rhs(20, d, p("t_steel_20"))
+    return al_rhs(20, d, p("t_al_20"))
 
 
-def panel_kg(w, h, m):
-    """One wall or ceiling panel without felt (the felt ships separately and goes on last)."""
+def panel_kg(w, h, m, felt_area=0.0, ceiling=False):
+    """One wall or ceiling panel. Felt is included only when it is pre-fitted in the factory (m['prefit'])."""
     area = w * h * 1e-6
     kg = area * p("acp3_kgm2")
+    if m.get("prefit") and not m.get("leaf"):
+        kg += felt_area * (p("pet9_kgm2") + p("felt_fix_kgm2"))
+    if m.get("sound_kgm2") and not m.get("leaf") and (not ceiling or m.get("ceiling_sound", True)):
+        kg += area * m["sound_kgm2"]
     if m["core"] is None:
         pitch = p("stud_pitch_ply") if m["ply"] else p("stud_pitch_acp")
         kg += frame_length_mm(w, h, pitch) * 1e-3 * frame_kgm(m)
@@ -77,7 +91,7 @@ def panel_kg(w, h, m):
         else:
             kg += area * p("bond_kgm2")
         if m["fill"]:
-            kg += area * p("fill_kgm2")
+            kg += area * p("fill_kgm2") * p("frame_depth") / 20.0      # fill scales with cavity depth
     else:
         perim = 2 * (w + h) * 1e-3 * frame_kgm(m)            # edge frame only; the core carries the skin
         core = p("foam25_kgm2") + p("al05_kgm2") if m["core"] == "foam" else p("hc10_kgm2")
@@ -103,6 +117,7 @@ FRONT_LABEL = {"glass10": "10 mm tempered glass", "glass8": "8 mm tempered glass
 
 
 # ---------------------------------------------------------------- v1-derived inputs
+@functools.lru_cache(maxsize=1)
 def step_solids():
     with open(STEP_CSV) as f:
         return {int(r["solid"]): {k: float(v) for k, v in r.items()} for r in csv.DictReader(f)}
@@ -132,7 +147,7 @@ def decor_tube_length(block):
 
 
 def decor_kg(block, m):
-    kg = decor_skin_area(block) * p("acp3_kgm2") + decor_tube_length(block) * frame_kgm(m)
+    kg = decor_skin_area(block) * p("acp3_kgm2") + decor_tube_length(block) * frame_kgm(m, depth=20)
     kg += 4 * 0.05   # 4 V-brackets per block, assumption
     return kg
 
@@ -180,15 +195,15 @@ def base_parts(m, split_long):
     rails = [("BACK", back_l, 1), ("SIDE", side_l, 2), ("FRONT-L", 300, 1), ("FRONT-R", 1050, 1)]
     for name, L, q in rails:
         if split_long and L > p("pal_std_l") and L <= 1683:
-            parts.append(Part(f"B-RAIL-{name}", f"BASE - BASE RAIL 100x40 - {name}", "Thanh đế nhôm - viền chân", "BASE",
+            parts.append(Part(f"B-BAND-{name}", f"BASE - BASE BAND PIECE 100x40 - {name}", "Viền chân nhôm", "BASE",
                               (L, 100, 40), q, L * 1e-3 * kgm, "upright", note="stands upright on the 48x40"))
         elif split_long and L > 1683:
             n = math.ceil(L / 1683)
-            parts.append(Part(f"B-RAIL-{name}", f"BASE - BASE RAIL 100x40 - {name} (1/{n})", "Thanh đế nhôm - viền chân",
+            parts.append(Part(f"B-BAND-{name}", f"BASE - BASE BAND PIECE 100x40 - {name} (1/{n})", "Viền chân nhôm",
                               "BASE", (L / n, 100, 40), q * n, L / n * 1e-3 * kgm + 0.1, "upright",
                               note="split with a splice plate"))
         else:
-            parts.append(Part(f"B-RAIL-{name}", f"BASE - BASE RAIL 100x40 - {name}", "Thanh đế nhôm - viền chân", "BASE",
+            parts.append(Part(f"B-BAND-{name}", f"BASE - BASE BAND PIECE 100x40 - {name}", "Viền chân nhôm", "BASE",
                               (L, 100, 40), q, L * 1e-3 * kgm, "long" if L > p("pal_std_l") else "upright"))
     parts.append(Part("B-KEY", "BASE - CORNER KEY", "Ke góc đế", "BASE", (120, 80, 40), 6, 0.15, "box", "assumption"))
     parts.append(Part("B-GLIDE", "BASE - LEVELLING GLIDE (hex from above)", "Chân chỉnh cao", "BASE", (50, 50, 40), 8,
@@ -208,15 +223,19 @@ def wall_layout(split):
     """Returns [(pid, name, name_vi, assy, w, h, qty)] for walls and ceiling."""
     g = geom()
     out = []
-    if split == "bands":
-        n = 5
-        out.append(("W-SIDE-BAND", "WALL - SIDE BAND", "Vách hông - băng", "WALL", g["depth"], g["wall_h"] / n, 2 * n))
-        out.append(("W-BACK-BAND", "WALL - BACK BAND", "Vách hậu - băng", "WALL", g["inner_w"] / 2, g["back_h"] / n, 2 * n))
+    if split in ("bands", "rows3"):
+        n = rows_of(split)[0]
+        tag = "BAND" if split == "bands" else "ROW"
+        out.append((f"W-SIDE-{tag}", f"WALL - SIDE {tag}", "Vách hông - băng", "WALL", g["depth"], g["wall_h"] / n, 2 * n))
+        out.append((f"W-BACK-{tag}", f"WALL - BACK {tag}", "Vách hậu - băng", "WALL", g["inner_w"] / 2, g["back_h"] / n, 2 * n))
     else:
         out.append(("W-SIDE-LO", "WALL - SIDE PANEL - LOWER", "Vách hông - khung dưới", "WALL", g["depth"], g["wall_h"] / 2, 2))
         out.append(("W-SIDE-UP", "WALL - SIDE PANEL - UPPER", "Vách hông - khung trên", "WALL", g["depth"], g["wall_h"] / 2, 2))
-        out.append(("W-BACK-LO", "WALL - BACK PANEL - LOWER", "Vách hậu - khung dưới", "WALL", g["inner_w"] / 2, g["back_h"] / 2, 2))
-        out.append(("W-BACK-UP", "WALL - BACK PANEL - UPPER", "Vách hậu - khung trên", "WALL", g["inner_w"] / 2, g["back_h"] / 2, 2))
+        if split == "tallback":
+            out.append(("W-BACK-FULL", "WALL - BACK PANEL - FULL HEIGHT", "Vách hậu - khung cao", "WALL", g["inner_w"] / 2, g["back_h"], 2))
+        else:
+            out.append(("W-BACK-LO", "WALL - BACK PANEL - LOWER", "Vách hậu - khung dưới", "WALL", g["inner_w"] / 2, g["back_h"] / 2, 2))
+            out.append(("W-BACK-UP", "WALL - BACK PANEL - UPPER", "Vách hậu - khung trên", "WALL", g["inner_w"] / 2, g["back_h"] / 2, 2))
     out.append(("C-HALF", "CEILING - HALF PANEL WITH FAN OPENING", "Trần - nửa khung", "CEILING", g["inner_w"] / 2, g["depth"], 2))
     return out
 
@@ -289,17 +308,21 @@ def service_parts(m):
 
 
 # ---------------------------------------------------------------- joints
+def rows_of(split):
+    """Panel rows in (side wall, back wall)."""
+    return {"bands": (5, 5), "tallback": (2, 1), "rows3": (3, 3)}.get(split, (2, 2))
+
+
 def bolts_on(length_mm):
     """Bolt count along one joint edge. Count estimate only: the joint register sets the real pitch."""
-    return max(2, math.ceil(length_mm / 400))
+    return max(2, math.ceil(length_mm / p("bolt_pitch")))
 
 
 def joints(split, m, split_long):
     """Joint list: (joint id, description, edges, bolts, access, step). Lengths in mm."""
     g = geom()
     J = []
-    side_rows = 5 if split == "bands" else 2
-    back_rows = 5 if split == "bands" else 2
+    side_rows, back_rows = rows_of(split)
     sh, bh = g["wall_h"] / side_rows, g["back_h"] / back_rows
     J.append(("J-WALL-01", "side wall: panel to panel, horizontal seam", 2 * (side_rows - 1), bolts_on(g["depth"])))
     J.append(("J-WALL-02", "back wall: panel to panel, horizontal seam", 2 * (back_rows - 1), bolts_on(g["inner_w"] / 2)))
@@ -317,9 +340,9 @@ def joints(split, m, split_long):
         J.append(("J-BASE-02", "raised frame corners and joists", 4 + 4, 4))
     else:
         corners = 4 + (2 if True else 0)
-        J.append(("J-BASE-02", "base ring corner keys and front joints", corners, 2))
+        J.append(("J-BASE-02", "base band corner keys and front joints", corners, 2))
         if split_long:
-            J.append(("J-BASE-03", "base rail splices", 1, 4))
+            J.append(("J-BASE-03", "base band splices", 1, 4))
     if split_long:
         J.append(("J-FRONT-03", "decor half to decor half", 3, 4))
     # fix the edge-based counts
@@ -341,8 +364,7 @@ def joints(split, m, split_long):
 def gasket_length_m(split):
     """Gasket on every panel joint (seal before mass), m."""
     g = geom()
-    side_rows = 5 if split == "bands" else 2
-    back_rows = 5 if split == "bands" else 2
+    side_rows, back_rows = rows_of(split)
     L = 2 * (side_rows - 1) * g["depth"] + 2 * (back_rows - 1) * g["inner_w"] / 2 + g["back_h"]   # in-wall seams
     L += 2 * g["back_h"] + 2 * g["depth"] + g["inner_w"]                                       # corners, base
     L += 2 * g["depth"] + g["inner_w"] + g["depth"]                                            # ceiling edges and seam
@@ -353,29 +375,74 @@ def gasket_length_m(split):
 def connectors(split):
     """Cable connectors where the harness crosses a panel seam (power inlet low on the back wall, switches at
     the back wall centre, fans and lights in the ceiling). The voice cockpit route shares the same crossings."""
-    back_rows = 5 if split == "bands" else 2
+    back_rows = rows_of(split)[1]
     return (back_rows - 1) + 1 + 1   # back wall seams, back wall to ceiling, ceiling half to half
 
 
 # ---------------------------------------------------------------- full part list
+def felt_on(pid, w, h):
+    """Felt area pre-fitted on one wall or ceiling panel (inner face, less the strip left loose over each joint)."""
+    g = geom()
+    if pid.startswith("W-SIDE"):
+        w_eff = w * g["inner_d"] / g["depth"]
+    elif pid.startswith("C-"):
+        w, h = w, h * g["inner_d"] / g["depth"]
+        w_eff = w
+    else:
+        w_eff = w
+    return max(0.0, (w_eff - p("strip_w")) * (h - p("strip_w")) * 1e-6)
+
+
 def parts_for(split, m, split_long=False):
     parts = []
+    felt_area_on_panels = 0.0
+    if m.get("stack") == "final":
+        return final_stack_parts(split, m, split_long)
     for pid, name, vi, assy, w, h, q in wall_layout(split):
-        parts.append(Part(pid, name, vi, assy, (h, w, p("wall_t_plan")), q, panel_kg(w, h, m), "upright"))
-    for pid, name, vi, w, h, q in felt_layout():
-        a = w * h * 1e-6
-        parts.append(Part(pid, name, vi, "LINING", (h, w, 9), q, a * (p("pet9_kgm2") + p("felt_fix_kgm2")), "upright"))
+        fa = felt_on(pid, w, h)
+        felt_area_on_panels += fa * q
+        on_panel = m.get("prefit") and not m.get("leaf")
+        t = p("wall_t_plan") + (9 if on_panel else 0)
+        parts.append(Part(pid, name + (" WITH FELT" if on_panel else ""), vi, assy, (h, w, t), q,
+                          panel_kg(w, h, m, fa, assy == "CEILING"), "upright"))
+        if m.get("leaf"):
+            # inner leaf: the sound mass and the felt as one piece clipped on from inside (keeps outside seams as planned)
+            x = m.get("sound_kgm2", 0.0) if (assy != "CEILING" or m.get("ceiling_sound", True)) else 0.0
+            area = w * h * 1e-6
+            kg = fa * (p("pet9_kgm2") + p("felt_fix_kgm2")) + area * x + area * 0.6   # 0.6 kg/m2 clip rail, assumption
+            lt = 9 + 3 + x / p("rho_mass_layer") * 1000
+            parts.append(Part("L-LEAF-" + pid[2:], "LINING - INNER LEAF (sound mass + felt) FOR " + pid, "Lớp trong: khối lượng + tiêu âm",
+                              "LINING", (h, w, lt), q, kg, "upright", "calculation", "clips onto the panel frame from inside"))
+    if m.get("leaf"):
+        pass
+    elif m.get("prefit"):
+        total_felt = sum(w * h * q for _, _, _, w, h, q in felt_layout()) * 1e-6
+        strip = max(0.0, total_felt - felt_area_on_panels)
+        parts.append(Part("L-STRIP", "LINING - LOOSE FELT STRIPS OVER JOINTS", "Dải tiêu âm che mối nối", "LINING", (1500, 300, 60), 1,
+                          strip * (p("pet9_kgm2") + p("felt_fix_kgm2")), "box", "calculation",
+                          "the rest of the felt is pre-fitted on the panels (weight counted in WALL and CEILING)"))
+    else:
+        for pid, name, vi, w, h, q in felt_layout():
+            a = w * h * 1e-6
+            parts.append(Part(pid, name, vi, "LINING", (h, w, 9), q, a * (p("pet9_kgm2") + p("felt_fix_kgm2")), "upright"))
     parts += base_parts(m, split_long)
     parts += front_parts(m, split_long)
     parts += service_parts(m)
-    J = joints(split, m, split_long)
-    nb = sum(j[3] for j in J)
-    fixings = nb * p("bolt_kg")
+    nb, nc = fastener_counts(split, m, split_long)
+    fixings = nb * p("bolt_kg") + nc * p("cam_kg")
     if m["seals"]:
         fixings += gasket_length_m(split) * p("gasket_kgm")
-    parts.append(Part("K-FIX", "KIT - M6 BOLTS, RIVNUTS" + (", JOINT GASKETS" if m["seals"] else ""), "Bộ bu lông M6, gioăng",
-                      "WALL", (400, 300, 150), 1, fixings, "box", "calculation", f"{nb} M6 bolts"))
+    parts.append(Part("K-FIX", "KIT - M6 BOLTS, RIVNUTS" + (", CAM CONNECTORS" if nc else "") + (", JOINT GASKETS" if m["seals"] else ""),
+                      "Bộ bu lông M6, gioăng", "WALL", (400, 300, 150), 1, fixings, "box", "calculation",
+                      f"{nb} M6 bolts" + (f", {nc} cam or clip connectors" if nc else "")))
     return parts
+
+
+def fastener_counts(split, m, split_long=False):
+    """(M6 bolts, cam or clip connectors) on site."""
+    J = joints(split, m, split_long)
+    cams = sum(j[3] for j in J if m.get("cams") and j[0] in CAM_JOINTS)
+    return sum(j[3] for j in J) - cams, cams
 
 
 def by_assembly(parts):
@@ -387,3 +454,56 @@ def by_assembly(parts):
 
 def total(parts):
     return sum(pt.total for pt in parts)
+
+
+# ---------------------------------------------------------------- final wall stack (sound study, DECIDED)
+FINAL = dict(FAST, key="final", label="Spaceship final stack: light build, fast assembly, sound walls, acrylic front",
+             front="acrylic10", stack="final", leaf=True, fill=True)
+
+
+def final_outer_kg(w, h, depth, m, with_fill=True):
+    """Outer panel: ACP 3 mm bonded to a 20 x depth aluminium frame at 400 mm, cavity filled with PET."""
+    area = w * h * 1e-6
+    frame = frame_length_mm(w, h, p("stud_pitch_acp")) * 1e-3 * al_rhs(20, depth, p("t_al_20"))
+    fill = depth * 1e-3 * p("fill_pet_kgm3") if with_fill else 0.0
+    return area * (p("acp3_kgm2") + p("bond_kgm2") + fill) + frame
+
+
+def final_leaf_kg(w, h, fill_depth=0.0):
+    """Lining cassette (inner leaf): 0.5 mm steel tray 25 mm deep with 9 mm felt across its face, on clips.
+    fill_depth > 0: the cavity fill rides on the back of the cassette (used for the ceiling, see report)."""
+    area = w * h * 1e-6
+    tray = (area + 2 * (w + h) * 1e-3 * p("tray_depth") * 1e-3) * p("tray_t") * 1e-3 * p("rho_steel")
+    return tray + area * (p("pet9_kgm2") + p("felt_fix_kgm2") + p("leaf_clip_kgm2") + fill_depth * 1e-3 * p("fill_pet_kgm3"))
+
+
+def final_stack_parts(split, m, split_long=False):
+    """Parts of the final stack: outer panels and their cassettes ship separately; the rest as the fast build."""
+    with_t = dict(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t"))
+    from inputs import override
+    with override(**with_t):
+        g = geom()
+        parts = []
+        for pid, name, vi, assy, w, h, q in wall_layout(split):
+            depth = p("final_ceil_depth") if assy == "CEILING" else p("final_wall_depth")
+            fill_on_cassette = assy == "CEILING" and m.get("ceil_fill_on_cassette", True)
+            parts.append(Part(pid, name + (" (outer: ACP + frame)" if fill_on_cassette else " (outer: ACP + frame + fill)"), vi, assy,
+                              (h, w, 3 + depth), q, final_outer_kg(w, h, depth, m, not fill_on_cassette), "upright"))
+            if assy == "CEILING":
+                lw, lh = w, g["inner_d"]
+            elif pid.startswith("W-SIDE"):
+                lw, lh = g["inner_d"], h
+            else:
+                lw, lh = w, h
+            fd = depth if fill_on_cassette else 0.0
+            parts.append(Part("L-CASS-" + pid[2:], "LINING - CASSETTE FOR " + pid + (" (steel tray + felt + ceiling fill)" if fd else " (steel tray + felt)"),
+                              "Khay lót trong + tiêu âm", "LINING", (lh, lw, p("tray_depth") + 9 + fd), q, final_leaf_kg(lw, lh, fd),
+                              "upright", "calculation", "floating inner leaf, clips on from inside"))
+        parts += base_parts(m, split_long)
+        parts += front_parts(m, split_long)
+        parts += service_parts(m)
+        nb, nc = fastener_counts(split, m, split_long)
+        fixings = nb * p("bolt_kg") + nc * p("cam_kg") + gasket_length_m(split) * p("gasket_kgm")
+        parts.append(Part("K-FIX", "KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS", "Bộ bu lông M6, gioăng", "WALL",
+                          (400, 300, 150), 1, fixings, "box", "calculation", f"{nb} M6 bolts, {nc} cam or clip connectors"))
+        return parts
