@@ -62,48 +62,46 @@ Listed overlaps (the HOLD spaces wrap the glass where the named hardware will cl
 
 ## 360002 FRONT - FIXED GLASS UNIT, P01 (DRAFT)
 
-Run 2026-10-31 on Mac 1, Fusion 2706.1.17, through the shared lock:
+Run 2026-10-31 18:3x UTC on Mac 1, Fusion 2706.1.17, through the shared lock, one run per design (PM fair-share rule): build, save, export, pictures and the edit test in one run, on skeleton P04 updated in place (v4, #94):
 
 ```sh
-python3 tools/fusion/run_script.py v2/01-CAD-Native/front/fixed_glass.py --doc 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD --doc-new --save "P01 build"
-python3 tools/fusion/run_script.py v2/01-CAD-Native/front/fixed_glass.py --doc 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD --arg step=export
-python3 tools/fusion/step_check.py v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step --expect=-68.564,-706.5,95,964.128,-691.5,2135
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/fixed_glass.py --doc 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD \
+    --arg step=all --arg "desc=P01: bottom channel screw holes to BASE's sill (PM ruling 2026-11-01)" \
+    --arg "edits=pod_w=2600 mm;fr_dz=12 mm;fix_xk=511 mm;door_xtr=1192 mm" --close
+python3 tools/fusion/step_check.py v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step \
+    --expect=-66.6252,-706.5,95,964.1285,-691.5,2135
 ```
+
+Cloud copy: Default Project / FocusPod v2 / `360002_P01_FRONT-FIXED-GLASS-UNIT_CAD`, the version this run saved (the exports come from it).
 
 ### Result
 
-- skeleton parameters: P03, 60 loaded; bodies 4, timeline 16 items, unhealthy 0, loose sketches 0, parameters 84
+- skeleton parameters: `100000_P04_POD-SKELETON-PARAMETERS.csv` (P04, v4); bodies 4, timeline 18 items, unhealthy 0, loose sketches 0, parameters 119
 - clash pairs 0
-- gap from the door's latch edge to the pane's free edge: 4.00 mm square to the edge at the band top, mid-height and the door top (4.04 mm horizontally); before the ruling, on the skeleton's own points, it ran 3.57 to 2.42 mm
-- STEP: length unit cm, declared in the file (D-13); 5 products, 4 solids; `step_check.py` box MATCH (0.0031 mm); re-read in Fusion, box equal to the model's (0.000 mm); no names in the exports
-- edit test PASS (`EDIT-TEST-RECORD.md`); renders checked by eye
+- gap from the door's latch edge to the pane's free edge: 4.00 mm square to the edge at the band top, mid-height and the door top (4.04 mm horizontally)
+- STEP: length unit cm, declared in the file (D-13); `step_check.py` box MATCH against the box computed from the parameters (largest difference 0.0000 mm); re-read in Fusion, box equal to the model's (0.000 mm)
+- f3d 202,381 bytes; STEP 91,936 bytes; no names in the exports (f3d entries, STEP, CSV, DXF, pictures scanned)
+- edit test PASS (`EDIT-TEST-RECORD.md`); pictures checked by eye: `360002_P01_FRONT-FIXED-GLASS-UNIT-FRONT_IMG.png` (front, from outside), `...-ISO_IMG.png`: the channel shows on the four held edges, none on the free edge
 
-| Body | Size X × Y × Z (mm) | Box (mm) |
-|---|---|---|
-| FIXED GLASS 4+4 | 1026.23 × 8.76 × 2033 | -66.13, -703.38, 98.5 → 960.1, -694.62, 2131.5 |
-| GLAZING U-PROFILE (4 PIECES, MITRED) | 1030.76 × 15 × 2040 | -66.63, -706.5, 95 → 964.13, -691.5, 2135 |
-| GLAZING U-SEAL (4 PIECES) | 1028.81 × 12 × 2037 | -66.41, -705, 96.5 → 962.4, -693, 2133.5 |
-| 180 SEAL ENVELOPE (THE 4 MM GAP) | 285.9 × 11.76 × 2010 | -68.56, -704.88, 110 → 217.34, -693.12, 2120 |
-
-Pane corners in its DXF (X from its leftmost point, Y from its bottom): (285.09, 0), (1026.24, 0), (826.05, 1427.47), (300.51, 2033), (0, 2033). U-profile cut lengths, long point / short point: bottom 744.7 / 729.5, right 1446.5 / 1424.8, diagonal 804.4 / 793.1, top 302.6 / 293.7.
+The U-profile's box is X -66.63 to 964.13, Y -706.5 to -691.5 (15 on the glass plane), Z 95 to 2135. Pane corners in its DXF (X from its leftmost point, Y from its bottom): (285.09, 0), (1026.24, 0), (826.05, 1427.46), (301.39, 2033), (0, 2033). U-profile cut lengths, base / mouth: bottom 744.7 / 729.5, right 1446.5 / 1424.8, diagonal 803.8 / 792.6, top 303.5 / 294.5; mitres 41.0°, 73.5°, 65.5°. Bottom piece: 4 holes 3.4, countersunk 90° to 7 inside, at X 269.4, 484.3, 699.2, 914.1 (50 from each end, 214.9 apart).
 
 ### Mass (calculation)
 
 | Item | kg |
 |---|---|
-| 361003 pane, 8.76 mm at 2376 kg/m³ | 28.58 |
+| 361003 pane, 8.76 mm at 2376 kg/m³ | 28.59 |
 | 368004 U-profile, 4 pieces | 0.56 |
 | 368002 U-seal | 0.24 |
-| 368003 180° seal (assumption) | 0.20 |
-| **Fixed glass unit** | **29.58** |
+| 368003 magnetic seal, the pane's half (assumption, HOLD product) | 0.15 |
+| **Fixed glass unit** | **29.54** |
 
-### Interfaces to other assemblies (PM rulings, 2026-10-31)
+### Interfaces to other assemblies
 
 | With | What |
 |---|---|
-| BASE | The bottom channel: the U-profile centred on the glass plane (Y -706.5 to -691.5), top flush with the band top at Z 110, bottom Z 95, from the free edge (X about -66 at the top, 217 at the band) to X 964 at the bottom-right mitre. The band piece under the pane needs room and fixings for it. |
-| DR | The right and diagonal channels sit inside DR, 15 mm deep behind a 15 mm slot in DR's inner skin along the glass edge, fixed to DR's frame. |
-| DT | The top channel sits inside DT behind a 15 mm slot in its underside, from X about -67 to 235. |
-| Door unit | The free edge runs 4 mm from the door's latch edge, the 180° seal between. |
+| BASE | The bottom channel sits on BASE's sill seat (top Z 95), screwed down with 4 ISO 10642 M3 × 8 A2 into flush-head M3 rivnuts in the seat, at the factory; it ships on the sill (PM rulings 2026-11-01). The pane's 28.6 kg bears on it. |
+| DR | The right and diagonal channels sit inside DR behind the 17 mm slot in its inner-edge skin; no DR frame tube crosses the channel's Y range. |
+| DT | The top channel sits inside DT behind the 17 mm slot in its underside; DT's catch rail stands 3.5 behind it. |
+| Door unit | The free edge runs 4 mm from the door's latch edge; the magnetic seal pair (368003 here, 368006 on the door) closes it. |
 
-Fit order (DECIDED): the band's channel, then the pane set in it and held, then DR slid in from the right onto the pane's right edges, then DT lowered onto its top edge.
+Fit order (PM ruling 2026-11-01): the bottom channel comes factory-fitted on BASE's sill; on site the pane drops into it, then DR slides in from the right onto the pane's right edges, then DT is lowered onto its top edge.
