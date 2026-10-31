@@ -51,8 +51,8 @@ def expected_boxes(b, design):
                         v("wall_z0")),
         "floor_f1": (v("%s + band_t + fl_gap" % XL), v(YW), v("mat_t"), v("-fl_seam / 2 + lap_w"),
                      v("%s - band_t - fl_gap" % YB), v("mat_t + fl_t")),
-        "mat_f1": (v("%s + band_t + fl_gap" % XL), v(YW), 0.0, v("-fl_seam / 2"), v("%s - band_t - fl_gap" % YB),
-                   v("mat_t")),
+        "mat_f1": (v("%s + band_t + fl_gap" % XL), v(YW), 0.0, v("-fl_seam / 2 + lap_w"),
+                   v("%s - band_t - fl_gap" % YB), v("mat_t")),
     }
 
 

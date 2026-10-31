@@ -34,7 +34,11 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(globals().get("__file__", ARGS.get("script_path", "."))))
 VO = adsk.drawing.ViewOrientationTypes
 
-# pn: drawing name, kind, views [(name, orientation, scale, (x, y) sheet mm)]
+# pn: drawing name, kind, views [(name, orientation, scale, (x, y) sheet mm)], and for an
+# assembly the views that get its overall sizes [(view, below)].
+# No drawing (D-89): the glide doubler 111601 (part 4: its DXF and parts-list row) and the
+# foam mats 111501 (part 3: DXF and cut-list row). Every assembly keeps one. The corner keys
+# 111211 to 111214 are the Joints Engineer's (their tabulated drawing; PM ruling 2026-11-01).
 SPEC = {
     "111101": ("111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG", "tube", [
         ("front", VO.FrontViewOrientationType, 0.2, (215.0, 300.0)),
@@ -48,15 +52,7 @@ SPEC = {
         ("bottom", VO.BottomViewOrientationType, 0.2, (300.0, 490.0)),
         ("left", VO.LeftViewOrientationType, 0.5, (640.0, 430.0)),
     ]),
-    "111601": ("111601_P01_BASE-GLIDE-DOUBLER-COMMON_DWG", "plate", [
-        ("front", VO.FrontViewOrientationType, 2.0, (110.0, 160.0)),
-        ("top", VO.TopViewOrientationType, 2.0, (110.0, 100.0)),
-    ]),
     "111401": ("111401_P01_BASE-FLOOR-PANEL-F1_DWG", "plate", [
-        ("front", VO.FrontViewOrientationType, 0.1, (170.0, 250.0)),
-        ("top", VO.TopViewOrientationType, 0.1, (170.0, 150.0)),
-    ]),
-    "111501": ("111501_P01_BASE-SEAL-MAT-F1_DWG", "plate", [
         ("front", VO.FrontViewOrientationType, 0.1, (170.0, 250.0)),
         ("top", VO.TopViewOrientationType, 0.1, (170.0, 150.0)),
     ]),
@@ -64,7 +60,23 @@ SPEC = {
         ("front", VO.FrontViewOrientationType, 0.1, (200.0, 330.0)),
         ("top", VO.TopViewOrientationType, 0.1, (200.0, 200.0)),
         ("iso", VO.IsoTopRightViewOrientationType, 0.05, (480.0, 330.0)),
-    ]),
+    ], [("top", True), ("front", False)]),
+    # subassemblies, in pod coordinates as built (their own designs, saved by base_build.py)
+    "110101": ("110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG", "assembly", [      # A2; runs along Y
+        ("left", VO.LeftViewOrientationType, 0.2, (260.0, 300.0)),
+        ("top", VO.TopViewOrientationType, 0.2, (520.0, 215.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.1, (260.0, 150.0)),
+    ], [("left", True), ("top", False)]),
+    "110103": ("110103_P01_BASE-BAND-ASSY-BACK_DWG", "assembly", [         # A1; runs along X
+        ("front", VO.FrontViewOrientationType, 0.2, (420.0, 430.0)),
+        ("top", VO.TopViewOrientationType, 0.2, (420.0, 370.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.1, (420.0, 200.0)),
+    ], [("front", True), ("top", False)]),
+    "110401": ("110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG", "assembly", [    # A3
+        ("front", VO.FrontViewOrientationType, 0.1, (170.0, 250.0)),
+        ("top", VO.TopViewOrientationType, 0.1, (170.0, 150.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.05, (340.0, 230.0)),
+    ], [("top", True), ("front", False)]),
 }
 
 
@@ -256,7 +268,8 @@ def run(_context):
     if dwg is None:
         raise RuntimeError("the active document is not a drawing (run with --doc <drawing name>)")
     pn = ARGS["pn"]
-    name, kind, views = SPEC[pn]
+    name, kind, views = SPEC[pn][:3]
+    dims = SPEC[pn][3] if len(SPEC[pn]) > 3 else [("top", True), ("front", False)]
     if app.activeDocument.name != name:
         raise RuntimeError("the active drawing is %r, not %r" % (app.activeDocument.name, name))
     sheet = dwg.activeSheet
@@ -295,14 +308,15 @@ def run(_context):
             n_holes += hole_dims(sheet, made["top"], o, side="above")
             n_dims += diameters(sheet, made["top"])
             tables += hole_table(sheet, made["top"], o, "HOLES (VIEW FROM ABOVE), ORIGIN O")
-        if "detail" in made:
-            o3, n = overall(sheet, made["detail"], below=True, left=False, gap=5.0)
+        if "left" in made:
+            o3, n = overall(sheet, made["left"], below=True, left=False, gap=5.0)
             n_dims += n
+            if holes(made["left"]):
+                n_holes += hole_dims(sheet, made["left"], o3, side="above")
     else:
-        o, n = overall(sheet, made["top"])
-        n_dims += n
-        o2, n = overall(sheet, made["front"], below=False)
-        n_dims += n
+        for vname, below in dims:
+            _o, n = overall(sheet, made[vname], below=below)
+            n_dims += n
     projection_symbol(sheet, sheet.width - 60.0, 70.0)
     print("  %d overall dimensions, %d hole-centre dimensions, %d hole table(s), projection symbol" % (
         n_dims, n_holes, tables))

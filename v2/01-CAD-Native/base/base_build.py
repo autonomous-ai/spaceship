@@ -85,27 +85,56 @@ BASE_PARAMS = [
     # levelling glides (bought, HOLD: no product named yet)
     ("gl_n_side", "2", "", "calculation", "glides per side band: span about 1.3 m, sag under 0.5 mm (see feature rationale)"),
     ("gl_n_back", "3", "", "calculation", "glides on the back band: 2 spans of 1060 (see feature rationale)"),
-    ("gl_e_f", "45 mm", "mm", "assumption", "front glide of a side band, behind the band's outer front corner (Y = -dl_y1), so it stays under the band's front end"),
+    ("gl_e_f", "75 mm", "mm", "calculation",
+     "front glide of a side band, behind the band's outer front corner (Y = -dl_y1): its doubler (26 each way) stays 15 behind the front corner key's back face "
+     "(Y -636.03) and out of the keyed end's last 30 mm, which the joints register asks BASE to keep clear (PR #99, J-BASE-02)"),
     ("gl_e_b", "150 mm", "mm", "assumption", "back glide of a side band from the back face"),
     ("gl_e_bb", "150 mm", "mm", "assumption", "end glides of the back band from its ends"),
-    ("gl_key_hole", "10 mm", "mm", "assumption", "hole in the band top for the 5 mm hex key that turns the glide (levelled before the walls go on); stays inboard of the wall gasket line"),
-    ("gl_dx", "3 mm", "mm", "assumption", "glide axis 3 mm inboard of the band's centre line, so its key hole clears the wall gasket strip (joints register 2.4)"),
+    ("gl_key_hole", "8 mm", "mm", "assumption",
+     "hole in the band top for the 5 mm hex key that turns the glide (5.77 across corners, so 1.1 clear each side; levelled before the walls go on). "
+     "On the band's centre line it spans 16 to 24 from the outer face, inboard of the PORON strip that runs beside the washer line on its outer side (8 to 16, joints register FR-11)"),
+    ("gl_dx", "0 mm", "mm", "confirmed",
+     "PM ruling 2026-10-31 (BASE group): the doubler's hole centred across its 36 mm width, so the glide stands on the band's centre line"),
     ("gl_nut_hole", "13 mm", "mm", "assumption", "hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD"),
     ("gl_pad", "36 mm", "mm", "assumption", "glide pad diameter (envelope, HOLD); stays inside the band's 40 mm width"),
     ("gl_stem", "10 mm", "mm", "assumption", "glide stem M10 (envelope, HOLD)"),
     ("gl_nut_t", "2 mm", "mm", "assumption", "M10 rivet nut head under the band, between the band and the glide pad (HOLD)"),
-    ("gd_l", "30 mm", "mm", "assumption", "glide doubler length along the band"),
+    ("gl_min", "8.5 mm", "mm", "source",
+     "lowest glide setting: the corner keys' button heads hang 3.3 under the band and nothing may come within 5 of the floor (PM ruling on F-018; "
+     "joints register PR #99 via the Lead, 2026-11-01)"),
+    ("gl_base_min", "gl_min - gl_nut_t", "mm", "calculation",
+     "the glide's base must stand this tall (6.5), so that screwed fully home against the M10 rivnut's head it holds the band at gl_min: a hard stop (glide spec, HOLD)"),
+    ("gd_l", "52 mm", "mm", "confirmed",
+     "PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 26 (2 hole diameters) from the hole"),
     ("gd_w", "band_t - 2 * band_wall - 1 mm", "mm", "calculation",
      "glide doubler width: the band's bore less 1 mm, so it bears on the bottom face right next to both side walls"),
     ("gd_t", "3 mm", "mm", "assumption",
      "glide doubler thickness: clamped with the 1.5 mm bottom face by the glide's M10 rivnut (grip 4.5); bending at 500 N falls from about 123 MPa to about 31 MPa (calculation, feature rationale)"),
-    # back corners: hook-in corner keys designed by the Joints Engineer (D-87); the band
-    # ends stay square and the key's features are on HOLD until it is designed
+    # back corners: hook-in corner key 111211 (joints register J-BASE-02, D-87; PROPOSED geometry)
+    ("ck_x", "25 mm", "mm", "source",
+     "back corner key length into the back band: 25 (the Joints Engineer, via the Lead 2026-11-01; the register PR follows)"),
+    ("ck_y", "35 mm", "mm", "source", "back corner key width across the band (J-BASE-02)"),
+    ("ck_z", "75 mm", "mm", "source",
+     "back corner key height, standing on the band's bottom wall: 75 (the Joints Engineer, via the Lead 2026-11-01)"),
+    ("ck_e", "10 mm", "mm", "source", "key fixing holes 10 in from its back face (inside the band) and 7.5 either side of its centre line, so 10 in from its Y faces (joints register PR #99, J-BASE-02)"),
+    ("ck_fix_hole", "7 mm", "mm", "source", "fixing bolt holes in the back band's bottom wall, Ø7.0 (J-BASE-02)"),
+    ("ck_tap", "5 mm", "mm", "source", "M6 tap drill in the key (J-BASE-02)"),
+    ("ck_thr_b", "15 mm", "mm", "confirmed",
+     "M6 thread in the key's bottom at least 15 deep: the M6 x 16 fixing bolt reaches 12.9 (PM ruling 2026-11-01 on F-017, joints group)"),
+    ("ck_tap_d", "18 mm", "mm", "source", "tap drill Ø5.0, 18 deep, under the 15 of full thread (joints register PR #99, J-BASE-02)"),
+    ("st_z1", "26 mm", "mm", "source",
+     "lower hook stud above the key's bottom: pod Z 37.5 with glide_h 10 and band_wall 1.5, so the keyhole's entry below it clears the tube's bottom corner "
+     "(the Joints Engineer, via the Lead 2026-11-01)"),
+    ("st_z2", "60 mm", "mm", "source", "upper hook stud above the key's bottom: pod Z 71.5 (the Joints Engineer, via the Lead 2026-11-01)"),
+    ("st_gap", "1.8 mm", "mm", "source", "hook stud head's underside off the key's end face: 1.5 wall + 0.3 clearance (J-BASE-02)"),
+    ("kh_entry", "12 mm", "mm", "source", "keyhole entry in the side band's inner wall, Ø12 (J-BASE-02)"),
+    ("kh_slot", "6.5 mm", "mm", "source", "keyhole slot width, 6.5, locates the corner in Y to ±0.25 (J-BASE-02)"),
+    ("kh_drop", "10 mm", "mm", "source",
+     "entry centre 10 BELOW the stud's final spot, the slot running 10 up to it: the side band goes on 10 high, then drops onto the studs "
+     "(the Joints Engineer's fix, via the Lead 2026-11-01)"),
     # thin floor
     ("fl_t", "floor_t", "mm", "confirmed",
      "skeleton floor_t 9 (D-72): 9 mm floor panels, as v1 (FLR-01 9 mm), floor top 12, threshold 13 (US accessibility)"),
-    ("mat_t", "3 mm", "mm", "confirmed",
-     "PM ruling 2026-10-31: a firm closed-cell foam mat (cross-linked PE or EPDM), 3 mm, about 200 kg/m3, under the floor panels; product HOLD"),
     ("fl_gap", "4 mm", "mm", "assumption", "gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)"),
     ("fl_seam", "1 mm", "mm", "assumption", "gap at the F1 / F2 seam on X = 0"),
     ("lap_w", "13 mm", "mm", "confirmed",
@@ -123,9 +152,14 @@ PARTS = {
     "washer": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP", None),
     "floor_assy": ("110401", "BASE - FLOOR PANEL ASSY - F1", "Tấm sàn F1 (cụm dán)", "BS", None),
     "floor_f1": ("111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "MP", "floor_assy"),
-    "mat_f1": ("111501", "BASE - SEAL MAT - F1", "Tấm lót kín sàn - F1", "MP", "floor_assy"),
+    "mat_f1": ("111501", "BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM", "Tấm lót sàn F1 - xốp kín 3 mm", "MP",
+               "floor_assy"),
     "glide": ("118002", "BASE - LEVELLING GLIDE - M10 (HOLD)", "Chân chỉnh cao", "PI", None),
     "doubler": ("111601", "BASE - GLIDE DOUBLER - COMMON", "Tấm tăng cứng chân chỉnh", "MP", None),
+    "key": ("111211", "BASE - CORNER KEY - BACK - COMMON", "Ke góc đế - góc sau", "MP", None),
+    "bolt": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI", None),
+    "bscrew": ("838010", "HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2", "Vít đầu tròn có vành M6 × 12 inox",
+               "PI", None),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", None),
 }
 CLASS_NAME = {"HS": "hardware-fitted subassembly", "BS": "bonded subassembly", "MP": "part we make", "PI": "bought item"}
@@ -133,9 +167,11 @@ CLASS_NAME = {"HS": "hardware-fitted subassembly", "BS": "bonded subassembly", "
 XL, XR = "-pod_w / 2", "pod_w / 2"
 YB, YW = "pod_d / 2", "pod_d / 2 - wall_depth"     # back face; side walls' front edge
 XOL = "-pod_w / 2 + outer_t"                        # back panels span frame to frame (D-55)
-# P04 panel ranges on the band (skeleton BL_X, BR_X; D-64, D-66): one seam_gap at each stop
-B1_X0 = "(-pod_w / 2 + outer_t + seam_gap)"         # B1's FRAME from here, half_fw wide (to the closing seam)
-B2_X0 = "(pod_w / 2 - outer_t - seam_gap - half_fw)"  # B2's FRAME from here, half_fw wide
+# P04 panel ranges on the band, linked to the skeleton's named start points (skeleton v4, #94):
+# the back bolt lines start at each back FRAME's outer end, X -/+ base_back_x0; the side bolt
+# line starts at the side panel's front end, Y base_side_y0 (one seam_gap behind Y -645)
+B1_X0 = "(-base_back_x0)"                           # B1's FRAME from here, half_fw wide (to the closing seam)
+B2_X0 = "(base_back_x0 - half_fw)"                  # B2's FRAME from here, half_fw wide
 # inner point of the mitre between the left side band and DL's outer facet band
 # piece (both band_t wide): Y = -dl_y1 + band_t * (L - dy) / dl_x2 with
 # L = facet length, dy = dl_y2 - dl_y1 (the bisector of the two outer lines)
@@ -177,6 +213,17 @@ def bbox_mm(entity):
 
 def fmt_box(b):
     return "X %.2f..%.2f  Y %.2f..%.2f  Z %.2f..%.2f" % (b[0], b[3], b[1], b[4], b[2], b[5])
+
+
+def add_base_params(up):
+    """BASE's own parameters. A name the skeleton already defines is skipped:
+    the skeleton is the single source, so its value wins (printed)."""
+    for name, expr, unit, status, src in BASE_PARAMS:
+        if up.itemByName(name) is not None:
+            print("  BASE parameter %s skipped: the skeleton defines it (%s)" % (name, up.itemByName(name).expression))
+            continue
+        if up.add(name, vi(expr), unit, "BASE %s: %s" % (status.upper(), src)) is None:
+            raise RuntimeError("could not add parameter " + name)
 
 
 def skeleton_params():
@@ -443,12 +490,10 @@ def build_tree(doc, design):
     up = design.userParameters
     n_skel = 0
     for name, expr, unit, status, src in skeleton_params():
-        if up.add(name, vi(expr), unit, "SKELETON P03 %s: %s" % (status.upper(), src)) is None:
+        if up.add(name, vi(expr), unit, "SKELETON %s: %s" % (status.upper(), src)) is None:
             raise RuntimeError("could not add skeleton parameter " + name)
         n_skel += 1
-    for name, expr, unit, status, src in BASE_PARAMS:
-        if up.add(name, vi(expr), unit, "BASE %s: %s" % (status.upper(), src)) is None:
-            raise RuntimeError("could not add parameter " + name)
+    add_base_params(up)
     root = design.rootComponent
     root.partNumber = ASSEMBLY[0]
     # the root component takes the document name; it can't be renamed by script
@@ -494,6 +539,12 @@ def band_tube(design, key, label, outline, bore, axis_note):
             op=adsk.fusion.FeatureOperations.CutFeatureOperation, start_expr="band_wall", body=body)
     print("  %-30s %s  (%s)" % (PARTS[key][1], fmt_box(bbox_mm(body)), axis_note))
     return body
+
+
+def P3(design, ex, ey, ez):
+    """(expr along the plane's first axis, expr along its second, xyz mm) for a
+    polygon on a YZ plane: the dimensioned pair is (Y, Z)."""
+    return (ey, ez, (ev(design, ex), ev(design, ey), ev(design, ez)))
 
 
 def P(design, ex, ey, ez="0 mm"):
@@ -611,6 +662,7 @@ def step4_band_holes(design):
 
 
 def holes_side_lh(design):
+    keyholes_side(design, "band_l_tube", "%s + band_t" % XL, "BL")
     v = lambda e: ev(design, e)  # noqa: E731
     c = find_comp(design, "band_l_tube")
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
@@ -619,18 +671,77 @@ def holes_side_lh(design):
     down.scaleBy(-1)
     out_x.scaleBy(-1)
     xb = "%s + jb_x" % XL
-    y1b = "%s + seam_gap + jb_e" % YW                       # L1 starts one seam_gap behind Y -645 (P04)
+    y1b = "base_side_y0 + jb_e"                             # L1 starts at the skeleton's base_side_y0
     hole(design, "band_l_tube", top, "J-BASE-01 RIVNUT - L1", (v(xb), v(y1b), v("wall_z0")),
          [(X, xb), (Y, y1b)], "rn_hole", "band_wall", down, ("yConstructionAxis", "jb_n", "side_l - 2 * jb_e"))
-    y1s = "%s + seam_gap + sp_e" % YW
+    y1s = "base_side_y0 + sp_e"
     hole(design, "band_l_tube", top, "SPIGOT RIVNUT - L1", (v(xb), v(y1s), v("wall_z0")),
          [(X, xb), (Y, y1s)], "rn_hole", "band_wall", down, ("yConstructionAxis", "2", "side_l - 2 * sp_e"))
+    # J-BASE-02: the front corner key 111212 sits in this band's front end (its carrier, joints
+    # register PR #99): 2 x Ø7.0 in the bottom wall, 10 from the key's back face, which is ck_x
+    # behind the mitre face's centre, 7.5 either side of the band's centre line
+    yk = "(-dl_y1 + %s) / 2 + ck_x - ck_e" % Y_MITRE_IN
+    xk = "%s + band_t / 2 - (ck_y / 2 - ck_e)" % XL
+    hole(design, "band_l_tube", bot, "CORNER KEY FIXING - FL (111212)", (v(xk), v(yk), v("glide_h")),
+         [(X, xk), (Y, yk)], "ck_fix_hole", "band_wall", up, ("xConstructionAxis", "2", "ck_y - 2 * ck_e"))
     xg = "%s + band_t / 2 + gl_dx" % XL
     yg0, gext = "-dl_y1 + gl_e_f", "pod_d / 2 - gl_e_b + dl_y1 - gl_e_f"
     hole(design, "band_l_tube", top, "GLIDE KEY ACCESS - SIDE LH", (v(xg), v(yg0), v("wall_z0")),
          [(X, xg), (Y, yg0)], "gl_key_hole", "band_wall", down, ("yConstructionAxis", "gl_n_side", gext))
     hole(design, "band_l_tube", bot, "GLIDE NUT - SIDE LH", (v(xg), v(yg0), v("glide_h")),
          [(X, xg), (Y, yg0)], "gl_nut_hole", "band_wall", up, ("yConstructionAxis", "gl_n_side", gext))
+
+
+def keyholes_side(design, key, x_face_expr, label):
+    """J-BASE-02 keyholes in a side band's inner wall at its back corner: a Ø12
+    entry kh_drop below each hook stud's final spot (its seat) and a 6.5 slot
+    running up to the seat, for the back key's two studs. The side band goes on
+    kh_drop high, its entries over the stud heads, then drops onto them (the
+    Joints Engineer's fix of 2026-11-01 to register 3.11 and FR-15). Made as two
+    hole features (the entry and the slot's round end at the seat) and one cut for
+    the slot between them, each from its own one-point or one-rectangle sketch (two
+    circles in one sketch over-constrained in Fusion on 2026-11-01), all patterned
+    for the second stud."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    c = find_comp(design, key)
+    body = c.bRepBodies.item(0)
+    pl = offset_plane(c, "yz", x_face_expr, v(x_face_expr), "PLANE - BAND INNER FACE (KEYHOLES) - %s" % label)
+    yk = "%s - band_t / 2" % YB
+    z_seat = "glide_h + band_wall + st_z1"
+    z_entry = "glide_h + band_wall + st_z1 - kh_drop"
+    xf = v(x_face_expr)
+    into = X.copy()
+    if xf < 0:
+        into.scaleBy(-1)                  # into the band: -X on the left, +X on the right
+    pat = ("zConstructionAxis", "2", "st_z2 - st_z1")
+    hole(design, key, pl, "KEYHOLE ENTRY D12 - %s" % label, (xf, v(yk), v(z_entry)), [(Y, yk), (Z, z_entry)],
+         "kh_entry", "band_wall", into, pat)
+    hole(design, key, pl, "KEYHOLE SEAT (SLOT END) - %s" % label, (xf, v(yk), v(z_seat)), [(Y, yk), (Z, z_seat)],
+         "kh_slot", "band_wall", into, pat)
+    sk = c.sketches.add(pl)
+    sk.name = "KEYHOLE SLOT - %s - FROM THE ENTRY UP TO THE SEAT" % label
+    half = "kh_slot / 2"
+    polygon(design, sk, [P3(design, x_face_expr, "%s - %s" % (yk, half), z_entry),
+                         P3(design, x_face_expr, "%s + %s" % (yk, half), z_entry),
+                         P3(design, x_face_expr, "%s + %s" % (yk, half), z_seat),
+                         P3(design, x_face_expr, "%s - %s" % (yk, half), z_seat)], Y, Z)
+    check_sketch(sk)
+    ei = c.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    n = pl.geometry.normal
+    direc = adsk.fusion.ExtentDirections.PositiveExtentDirection if n.x * into.x > 0 else \
+        adsk.fusion.ExtentDirections.NegativeExtentDirection
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("band_wall")), direc)
+    ei.participantBodies = [body]
+    f = c.features.extrudeFeatures.add(ei)
+    f.name = "CUT - KEYHOLE SLOT - %s" % label
+    coll = adsk.core.ObjectCollection.create()
+    coll.add(f)
+    pats = c.features.rectangularPatternFeatures
+    pin = pats.createInput(coll, c.zConstructionAxis, vi("2"), vi("st_z2 - st_z1"),
+                           adsk.fusion.PatternDistanceType.ExtentPatternDistanceType)
+    pin.setDirectionTwo(c.xConstructionAxis, vi("1"), vi("1 mm"))
+    pf = pats.add(pin)
+    pf.name = "PATTERN - KEYHOLE SLOTS - %s" % label
 
 
 def holes_back(design):
@@ -652,6 +763,12 @@ def holes_back(design):
     hole(design, "band_b_tube", top, "GLIDE KEY ACCESS - BACK", (v(xg0), v(yg), v("wall_z0")),
          [(X, xg0), (Y, yg)], "gl_key_hole", "band_wall", down,
          ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
+    # J-BASE-02: Ø7.0 holes in the bottom wall for the back keys' fixing bolts, at both ends
+    yk0 = "%s - band_t / 2 - (ck_y / 2 - ck_e)" % YB
+    for corner, xk in (("BL", "%s + band_t + ck_x - ck_e" % XL), ("BR", "%s - band_t - (ck_x - ck_e)" % XR)):
+        hole(design, "band_b_tube", bot, "CORNER KEY FIXING - %s" % corner, (v(xk), v(yk0), v("glide_h")),
+             [(X, xk), (Y, yk0)], "ck_fix_hole", "band_wall", up,
+             ("yConstructionAxis", "2", "ck_y - 2 * ck_e"))
     hole(design, "band_b_tube", bot, "GLIDE NUT - BACK", (v(xg0), v(yg), v("glide_h")),
          [(X, xg0), (Y, yg)], "gl_nut_hole", "band_wall", up,
          ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
@@ -674,9 +791,10 @@ def report_holes(design):
 
 def step5_corner_key(design):
     """The back corners join on hook-in corner keys that the Joints Engineer
-    designs (D-87, 12 fewer bolts than a bolted bracket). Nothing is modelled
-    until the key is drawn; the band ends stay square (HOLD)."""
-    print("step 5: back corner joint: hook-in corner key by the Joints Engineer (D-87), HOLD; band ends square")
+    designs (D-87, 12 fewer bolts than a bolted bracket): the key 111211 is
+    built and placed with the hardware in step 7, its keyholes and fixing holes
+    in step 4; the band ends stay square."""
+    print("step 5: back corner joint: hook-in key 111211 (J-BASE-02, sizes of 2026-11-01), placed in step 7")
 
 
 # ---------------------------------------------------------------- floor
@@ -712,7 +830,9 @@ def floor_panel_f1(design):
 
 
 def seal_mat_f1(design):
-    x0, x1 = "%s + band_t + fl_gap" % XL, "-fl_seam / 2"
+    # the mat runs under F1's lower lap too (to the lap's end), so the lap is carried
+    # by the room floor and F2's upper lap can rest on it
+    x0, x1 = "%s + band_t + fl_gap" % XL, "-fl_seam / 2 + lap_w"
     y0, y1 = YW, "%s - band_t - fl_gap" % YB
     comp = find_comp(design, "mat_f1")
     sk = comp.sketches.add(comp.xYConstructionPlane)
@@ -790,7 +910,8 @@ def build_doubler(design):
     """Glide doubler: a 3 mm plate inside the band on its bottom face, under the
     glide's M10 rivnut, so the glide load reaches the side walls without bending
     the 1.5 mm face. Width across the band along local X, length along local Y;
-    the hole sits gl_dx toward local +X (the pod side, as the glide)."""
+    the hole is centred (gl_dx = 0, PM ruling 2026-10-31: 18 mm to each long
+    side, 26 to each end)."""
     comp = find_comp(design, "doubler")
     v = lambda e: ev(design, e)  # noqa: E731
     sk = comp.sketches.add(comp.xYConstructionPlane)
@@ -802,6 +923,49 @@ def build_doubler(design):
     ring = [pr for pr in sk.profiles if pr.profileLoops.count == 2][0]
     extrude(comp, ring, "gd_t", "EXTRUDE - GLIDE DOUBLER - PLATE gd_t")
     single_body(comp, "GLIDE DOUBLER")
+
+
+def build_back_key(design):
+    """Back corner key 111211, placed by reference (the Joints Engineer owns its model,
+    STEP and drawing; PM ruling 2026-11-01): joints register J-BASE-02, sizes of 2026-11-01: a
+    6061-T6 block in the back band's open end. Local system: end face at X 0, the
+    block running +X into the band, Y across it (centred), Z up from its bottom.
+    Threads (PM ruling on F-017): the end-face stud holes tapped M6 through the
+    block; the bottom fixing holes M6 with ck_thr_b of full thread."""
+    comp = find_comp(design, "key")
+    v = lambda e: ev(design, e)  # noqa: E731
+    sk = comp.sketches.add(comp.xYConstructionPlane)
+    sk.name = "PLAN - CORNER KEY - BACK"
+    polygon(design, sk, [P(design, "0 mm", "-ck_y / 2"), P(design, "ck_x", "-ck_y / 2"),
+                         P(design, "ck_x", "ck_y / 2"), P(design, "0 mm", "ck_y / 2")], X, Y)
+    check_sketch(sk)
+    extrude(comp, one_profile(sk), "ck_z", "EXTRUDE - CORNER KEY - BLOCK ck_z")
+    single_body(comp, "CORNER KEY - BACK")
+    up, intox = Z.copy(), X.copy()
+    hole(design, "key", comp.xYConstructionPlane, "KEY FIXING - M6 TAP DRILL FROM BELOW",
+         (v("ck_x - ck_e"), -v("ck_y / 2 - ck_e"), 0.0), [(X, "ck_x - ck_e"), (Y, "-(ck_y / 2 - ck_e)")], "ck_tap", "ck_tap_d", up,
+         ("yConstructionAxis", "2", "ck_y - 2 * ck_e"))
+    hole(design, "key", comp.yZConstructionPlane, "HOOK STUD - M6 TAP DRILL THROUGH THE END FACE",
+         (0.0, 0.0, v("st_z1")), [(Y, "0 mm"), (Z, "st_z1")], "ck_tap", "ck_x", intox,
+         ("zConstructionAxis", "2", "st_z2 - st_z1"))
+
+
+def build_bolt(design):
+    """M6 x 16 ISO 4762 envelope: head bearing face at Z 0, head up, shank down."""
+    comp = find_comp(design, "bolt")
+    revolve_section(design, comp, "SOCKET HEAD BOLT M6 X 16 - ENVELOPE", [
+        PZ(design, "0 mm", "-16 mm"), PZ(design, "3 mm", "-16 mm"), PZ(design, "3 mm", "0 mm"),
+        PZ(design, "5 mm", "0 mm"), PZ(design, "5 mm", "6 mm"), PZ(design, "0 mm", "6 mm")])
+
+
+def build_bscrew(design):
+    """M6 x 12 ISO 7380-2 flanged button head envelope (joints register H-31): head bearing face
+    at Z 0, head up (flange Ø13.6 x 1, button Ø10.5 to 3.3 tall; sizes unverified), shank down."""
+    comp = find_comp(design, "bscrew")
+    revolve_section(design, comp, "FLANGED BUTTON HEAD SCREW M6 X 12 - ENVELOPE", [
+        PZ(design, "0 mm", "-12 mm"), PZ(design, "3 mm", "-12 mm"), PZ(design, "3 mm", "0 mm"),
+        PZ(design, "6.8 mm", "0 mm"), PZ(design, "6.8 mm", "1 mm"), PZ(design, "5.25 mm", "1 mm"),
+        PZ(design, "5.25 mm", "3.3 mm"), PZ(design, "0 mm", "3.3 mm")])
 
 
 def build_glide(design):
@@ -828,6 +992,12 @@ def place(design, host_key, key, xyz, rot=None):
         m.setToRotation(math.pi / 2, X, adsk.core.Point3D.create(0, 0, 0))
     elif rot == "z-90":
         m.setToRotation(-math.pi / 2, Z, adsk.core.Point3D.create(0, 0, 0))
+    elif rot == "x-":
+        m.setToRotation(-math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
+    elif rot == "z-":
+        m.setToRotation(math.pi, X, adsk.core.Point3D.create(0, 0, 0))
+    elif rot == "z180":
+        m.setToRotation(math.pi, Z, adsk.core.Point3D.create(0, 0, 0))
     m.translation = adsk.core.Vector3D.create(xyz[0] * CM, xyz[1] * CM, xyz[2] * CM)
     host = design.rootComponent if host_key is None else find_comp(design, host_key)
     occ = host.occurrences.addExistingComponent(find_comp(design, key), m)
@@ -856,9 +1026,21 @@ def hardware_points(design):
         for t in (sp_e, length - sp_e):
             out.append((host, "rivnut", pt(t, z_top), None))
             out.append((host, "pin", pt(t, z_top + head), None))
-    edge("band_l", "y", v("%s + seam_gap" % YW), v("side_l"), v("%s + jb_x" % XL))            # L1
+    edge("band_l", "y", v("base_side_y0"), v("side_l"), v("%s + jb_x" % XL))                  # L1
     for x0 in (B1_X0, B2_X0):                                                                 # B1, B2
         edge("band_b", "x", v(x0), v("half_fw"), v("%s - jb_x" % YB))
+    # J-BASE-02 back corner keys, fitted to the back band at the factory: the block, its 2
+    # flanged button head fixing screws from below (no washer), and its 2 hook studs set st_gap proud
+    zk, yk = v("glide_h + band_wall"), v("%s - band_t / 2" % YB)
+    for sign, krot, srot in ((-1, None, "x-"), (1, "z180", "x+")):
+        xe = sign * v("pod_w / 2 - band_t")          # the back band's end face
+        out.append(("band_b", "key", (xe, yk, zk), krot))
+        for zz in ("st_z1", "st_z2"):
+            out.append(("band_b", "bolt", (xe + sign * v("st_gap"), yk, zk + v(zz)), srot))
+        for dy in (-1, 1):
+            xf = xe - sign * v("ck_x - ck_e")
+            yf = yk + dy * v("ck_y / 2 - ck_e")
+            out.append(("band_b", "bscrew", (xf, yf, v("glide_h")), "z-"))
     # glides, screwed into the bands at the factory
     xg = v("%s + band_t / 2 + gl_dx" % XL)
     ng = int(round(v("gl_n_side")))
@@ -881,6 +1063,9 @@ def step7_hardware(design):
     build_pin(design)
     build_washer(design)
     build_doubler(design)
+    build_back_key(design)
+    build_bolt(design)
+    build_bscrew(design)
     build_glide(design)
     counts = {}
     for host, key, xyz, rot in hardware_points(design):
@@ -891,7 +1076,8 @@ def step7_hardware(design):
     for i in range(root.occurrences.count - 1, -1, -1):
         occ = root.occurrences.item(i)
         if occ.component.partNumber in (PARTS["pin"][0], PARTS["glide"][0], PARTS["rivnut"][0],
-                                        PARTS["washer"][0], PARTS["doubler"][0]):
+                                        PARTS["washer"][0], PARTS["doubler"][0], PARTS["key"][0],
+                                        PARTS["bolt"][0], PARTS["bscrew"][0]):
             occ.deleteMe()
     print("step 7: hardware placed")
     for (host, key), n in sorted(counts.items()):
@@ -909,6 +1095,9 @@ MATERIALS = {
     "rivnut": ("Aluminum", None, None),
     "floor_f1": ("Aluminum", "Poplar-core plywood 450 kg/m3 (ASSUMPTION)", 450.0),
     "doubler": ("Aluminum", None, None),
+    "key": ("Aluminum", None, None),
+    "bolt": ("Steel", None, None),
+    "bscrew": ("Steel", None, None),
     "mat_f1": ("Aluminum", "Closed-cell foam 200 kg/m3 (ASSUMPTION)", 200.0),
     "glide": ("Aluminum", "Glide envelope 0.15 kg (ASSUMPTION)", None),
 }
@@ -928,7 +1117,7 @@ def step8_materials(design):
                 comp = find_comp(design, key)
                 vol_cm3 = sum(b.volume for b in comp.bRepBodies)
                 rho = 0.15 / (vol_cm3 * 1e-6)
-            mat.materialProperties.itemById("structural_Density").value = rho
+            adsk.core.FloatProperty.cast(mat.materialProperties.itemById("structural_Density")).value = rho
         for b in find_comp(design, key).bRepBodies:
             b.material = mat
     alib = app.materialLibraries.itemByName("Fusion Appearance Library")
@@ -1028,6 +1217,8 @@ EXPECTED_WITH_SKELETON = [
 ]
 EXPECTED_OWN = [
     ("838003", "831001", "spigot stud in the rivnut thread (both modelled as envelopes)"),
+    ("838001", "111211", "hook stud threads in the corner key's tapped holes (tap drill modelled, J-BASE-02)"),
+    ("838010", "111211", "fixing screw threads in the corner key's tapped holes (tap drill modelled, J-BASE-02)"),
 ]
 
 
@@ -1124,23 +1315,83 @@ def cloud_folder(app):
     raise RuntimeError("no project " + CLOUD[0])
 
 
+def named_files(folder, name):
+    """The folder's files called name, read one entry at a time: an entry Fusion
+    can't read (being uploaded or deleted) is counted and skipped instead of
+    stopping the save (as tools/fusion/run_script.py does since PR #86)."""
+    found, unreadable = [], 0
+    for i in range(folder.dataFiles.count):
+        try:
+            df = folder.dataFiles.item(i)
+            if df.name == name:
+                found.append(df)
+        except Exception:
+            unreadable += 1
+    return found, unreadable
+
+
+def replace_own(app, folder, name):
+    """Before saving `name`: delete our own previous cloud copy (BASE's files only,
+    each made by this script; no drawing links them yet), closing it first if it
+    is open. Warns when unreadable entries mean an old copy may have been missed."""
+    found, unreadable = named_files(folder, name)
+    if found and ARGS.get("replace") != "1":
+        raise RuntimeError("'%s' is already in %s/%s; pass --arg replace=1 to replace it" % (name, *CLOUD))
+    for i in range(app.documents.count - 1, -1, -1):
+        d = app.documents.item(i)
+        if d.name == name and d.isSaved:
+            d.close(False)
+    for df in found:
+        df.deleteMe()
+        print("save: deleted the previous cloud file %s (our own)" % name)
+    if unreadable and not found:
+        print("save: WARNING %d folder entr%s could not be read; if one is an old %s, the folder will hold two"
+              % (unreadable, "y" if unreadable == 1 else "ies", name))
+
+
+def count_after_save(folder, name):
+    found, unreadable = named_files(folder, name)
+    print("save: the folder now holds %d file(s) named %s%s" % (
+        len(found), name, (" (%d unreadable entries)" % unreadable) if unreadable else ""))
+
+
 def step_save(app, doc):
     proj, folder = cloud_folder(app)
-    for df in folder.dataFiles:
-        if df.name == DOC_NAME:
-            if ARGS.get("replace") != "1":
-                raise RuntimeError("'%s' is already in %s/%s; pass --arg replace=1 to replace it" % (DOC_NAME, *CLOUD))
-            for i in range(app.documents.count - 1, -1, -1):   # our own copy, if it is open
-                d = app.documents.item(i)
-                if d.name == DOC_NAME and d.isSaved:
-                    d.close(False)
-            df.deleteMe()
-            print("save: deleted the previous cloud file %s (our own; no drawing links it yet)" % DOC_NAME)
+    replace_own(app, folder, DOC_NAME)
     app.data.activeProject = proj
     if not doc.saveAs(DOC_NAME, folder, "Spaceship BASE rev %s, DRAFT, built by "
                       "v2/01-CAD-Native/base/base_build.py" % REV, ""):
         raise RuntimeError("saveAs failed")
     print("save: %s saved to %s / %s" % (DOC_NAME, *CLOUD))
+    count_after_save(folder, DOC_NAME)
+
+
+def save_subassemblies(app, design, keys):
+    """Each hardware-fitted or bonded subassembly as its own cloud design (Fusion's
+    Save Copy As on its component), for its assembly drawing: every assembly keeps
+    a drawing (D-89). The copy is the component as built here, in pod coordinates,
+    with its parts and hardware; it is remade by every build."""
+    import time
+    proj, folder = cloud_folder(app)
+    app.data.activeProject = proj
+    for key in keys:
+        pn, name, _vn, _cls, _parent = PARTS[key]
+        doc_name = file_name(pn, name, "CAD")
+        try:
+            replace_own(app, folder, doc_name)
+            fut = find_comp(design, key).saveCopyAs(
+                doc_name, folder, "Spaceship %s rev %s, DRAFT, copy of %s from base_build.py" % (pn, REV, DOC_NAME), "")
+            t0 = time.time()
+            while fut.uploadState == adsk.core.UploadStates.UploadProcessing and time.time() - t0 < 240:
+                adsk.doEvents()
+                time.sleep(1)
+            state = {adsk.core.UploadStates.UploadFinished: "saved",
+                     adsk.core.UploadStates.UploadFailed: "FAILED",
+                     adsk.core.UploadStates.UploadProcessing: "STILL UPLOADING after 240 s"}.get(fut.uploadState, "?")
+            print("copy: subassembly %s -> %s: %s (%.0f s)" % (pn, doc_name, state, time.time() - t0))
+            count_after_save(folder, doc_name)
+        except Exception as e:  # report and go on: the assembly and part designs stay valid
+            print("copy: subassembly %s -> %s FAILED: %s" % (pn, doc_name, e))
 
 
 def step_export(app, design):
@@ -1255,8 +1506,8 @@ def holes_of_all(body):
     """Every hole axis in a body: (centre mm, axis), diameter rounded to 0.01."""
     out = []
     for f in body.faces:
-        g = f.geometry
-        if g.surfaceType == adsk.core.SurfaceTypes.CylinderSurfaceType:
+        if f.geometry.surfaceType == adsk.core.SurfaceTypes.CylinderSurfaceType:
+            g = adsk.core.Cylinder.cast(f.geometry)
             d = round(g.radius * 20.0, 2)
             a = (round(abs(g.axis.x), 3), round(abs(g.axis.y), 3), round(abs(g.axis.z), 3))
             o = [round(c * 10.0, 2) for c in (g.origin.x, g.origin.y, g.origin.z)]
@@ -1272,6 +1523,12 @@ def holes_of_all(body):
 
 # Each part we make also gets its own saved design, STEP and drawing (a drawing's
 # base view shows its whole design; the mechanical check C05 wants a STEP per part).
+# Parts BASE places by reference only: another engineer owns their model, STEP and drawing.
+BY_REFERENCE = {
+    "key": "the corner keys 111211 to 111214 are the Joints Engineer's (model, STEP and tabulated drawing; "
+           "PM ruling 2026-11-01); BASE places them in its band assemblies by reference, at the register's sizes",
+}
+
 PART_BUILDS = {
     "band_l_tube": ("step2_band_side_lh", "holes_side_lh"),
     "band_b_tube": ("step3_band_back", "holes_back"),
@@ -1280,6 +1537,7 @@ PART_BUILDS = {
     "mat_f1": ("seal_mat_f1",),
     "pin": ("build_pin",),
     "washer": ("build_washer",),
+    "key": ("build_back_key",),
 }
 
 
@@ -1335,9 +1593,8 @@ def build_part(app, key):
     design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
     up = design.userParameters
     for pname, expr, unit, status, src in skeleton_params():
-        up.add(pname, vi(expr), unit, "SKELETON P04 %s: %s" % (status.upper(), src))
-    for pname, expr, unit, status, src in BASE_PARAMS:
-        up.add(pname, vi(expr), unit, "BASE %s: %s" % (status.upper(), src))
+        up.add(pname, vi(expr), unit, "SKELETON %s: %s" % (status.upper(), src))
+    add_base_params(up)
     root = design.rootComponent
     root.partNumber = pn
     root.description = "%s | %s | %s | rev %s | DRAFT" % (name, vn, CLASS_NAME.get(cls, cls), REV)
@@ -1352,7 +1609,7 @@ def build_part(app, key):
     if dname:
         mat = design.materials.itemByName(dname) or design.materials.addByCopy(mat, dname)
         if rho:
-            mat.materialProperties.itemById("structural_Density").value = rho
+            adsk.core.FloatProperty.cast(mat.materialProperties.itemById("structural_Density")).value = rho
     for b in root.bRepBodies:
         b.material = mat
     tl = design.timeline
@@ -1366,19 +1623,12 @@ def build_part(app, key):
         raise RuntimeError("part %s failed its checks" % pn)
     if ARGS.get("save") == "1":
         proj, folder = cloud_folder(app)
-        for df in folder.dataFiles:
-            if df.name == doc_name:
-                if ARGS.get("replace") != "1":
-                    raise RuntimeError("%s exists; pass --arg replace=1" % doc_name)
-                for i in range(app.documents.count - 1, -1, -1):
-                    d = app.documents.item(i)
-                    if d.name == doc_name and d.isSaved:
-                        d.close(False)
-                df.deleteMe()
+        replace_own(app, folder, doc_name)
         app.data.activeProject = proj
         if not doc.saveAs(doc_name, folder, "Spaceship %s rev %s, DRAFT, built by base_build.py" % (pn, REV), ""):
             raise RuntimeError("saveAs failed")
         print("  saved %s" % doc_name)
+        count_after_save(folder, doc_name)
     if ARGS.get("export") == "1":
         em = design.exportManager
         f3d = os.path.join(REPO, "v2/01-CAD-Native/base/%s.f3d" % doc_name)
@@ -1435,6 +1685,17 @@ def run(_context):
         if ARGS.get("export") == "1":
             step_export(app, design)
             export_data(design)
+        if ARGS.get("save") == "1" and ARGS.get("sub_assys"):
+            save_subassemblies(app, design, [k.strip() for k in ARGS["sub_assys"].split(",") if k.strip()])
     if ARGS.get("in_place") != "1" and ARGS.get("keep") != "1" and ARGS.get("save") != "1":
         doc.close(False)
         print("closed the unsaved build document (pass --arg keep=1 to keep it open)")
+    elif ARGS.get("save") == "1" and ARGS.get("in_place") != "1":
+        doc.close(False)          # saved and exported: free Fusion for the next run
+    if ARGS.get("also_parts"):
+        # one run for the assembly and every part design keeps the shared queue short
+        for key in ARGS["also_parts"].split(","):
+            if key.strip() in BY_REFERENCE:
+                print("part %s: not built here: %s" % (PARTS[key.strip()][0], BY_REFERENCE[key.strip()]))
+                continue
+            build_part(app, key.strip())
