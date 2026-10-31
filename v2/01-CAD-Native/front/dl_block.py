@@ -111,7 +111,7 @@ PARTS = {
     "SKIN": ("351101", "FRONT - DECOR SKIN - DL", "Tấm ốp alu khối trái"),
     "BACK": ("351102", "FRONT - DECOR BACK PLATE - DL", "Tấm hậu khối trái"),
     "STOP": ("351103", "FRONT - DOOR HINGE-SIDE STOP - DL", "Nẹp chặn cửa phía bản lề"),
-    "PS": ("368005", "FRONT - DOOR SEAL - FRAME STOP - ATHMER PS 1515 P FLEX - HINGE SIDE", "Gioăng chặn cửa phía bản lề"),
+    "PS": ("368005", "FRONT - FRAME-STOP SEAL", "Gioăng chặn cửa phía bản lề"),
     "FRAME": ("351104", "FRONT - DECOR FRAME - DL", "Khung trang trí trái (hàn)"),
 }
 
@@ -380,7 +380,7 @@ def export_all(app):
         ("351103", PARTS["STOP"][1], PARTS["STOP"][2], 1, "made (aluminium angle, 4 lengths between the hinges)",
          "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20)", "cad", "calculation (CAD)", "DRAFT",
          "selection C3 (frame gap 2 to 6)", "screwed through DL's door-side skin into the frame's door-side tubes"),
-        ("368005", "FRONT - DOOR SEAL - FRAME STOP - ATHMER PS 1515 P FLEX", "Gioăng chặn cửa", 1, "bought by length",
+        ("368005", "FRONT - FRAME-STOP SEAL", "Gioăng chặn cửa", 1, "bought by length",
          "athmer PS 1515 P Flex, PVC co-extrusion, self-adhesive", 0.07, "assumption", "source (product)",
          "hardware selection C3; joints register", "hinge-side run %.0f mm in 4 pieces (DT's run in DT's list)" % seal_len),
     ]

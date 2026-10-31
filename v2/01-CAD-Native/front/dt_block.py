@@ -127,8 +127,8 @@ PARTS = {
     "SKIN": ("351201", "FRONT - DECOR SKIN - DT", "Tấm ốp alu khối trên"),
     "BACK": ("351202", "FRONT - DECOR BACK PLATE - DT", "Tấm hậu khối trên"),
     "STOP": ("351203", "FRONT - DOOR TOP STOP - DT", "Nẹp chặn cửa trên"),
-    "PS": ("368005", "FRONT - DOOR SEAL - FRAME STOP - ATHMER PS 1515 P FLEX - TOP", "Gioăng chặn cửa trên"),
-    "CATCH": ("368007", "FRONT - DOOR CATCH - SUGATSUNE HT-MSG62", "Nam châm hít cửa"),
+    "PS": ("368005", "FRONT - FRAME-STOP SEAL", "Gioăng chặn cửa trên"),
+    "CATCH": ("368007", "FRONT - DOOR CATCH - IN DT", "Nam châm hít cửa"),
     "FRAME": ("351204", "FRONT - DECOR FRAME - DT", "Khung trang trí trên (hàn)"),
 }
 
@@ -401,7 +401,7 @@ def export_all(app):
         ("351203", PARTS["STOP"][1], PARTS["STOP"][2], 1, "made (aluminium angle, cut to length)",
          "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20)", "cad", "calculation (CAD)", "DRAFT",
          "selection C3 (frame gap 2 to 6)", "screwed up through DT's underside into the frame's rail F02"),
-        ("368005", "FRONT - DOOR SEAL - FRAME STOP - ATHMER PS 1515 P FLEX", "Gioăng chặn cửa", 1,
+        ("368005", "FRONT - FRAME-STOP SEAL", "Gioăng chặn cửa", 1,
          "bought by length", "athmer PS 1515 P Flex, PVC co-extrusion, self-adhesive", 0.05, "assumption",
          "source (product)", "hardware selection C3; joints register", "top run %.0f mm (DL's run in DL's list)" % seal_len),
         ("368007", PARTS["CATCH"][1], PARTS["CATCH"][2], 1, "bought", "Sugatsune HT-MSG62: silicone body, SUS304 "

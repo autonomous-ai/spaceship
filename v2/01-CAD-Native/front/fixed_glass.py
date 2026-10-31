@@ -70,7 +70,7 @@ PARTS = {
     "GLASS": ("361003", "FRONT - FIXED GLASS - 4+4 LAMINATED", "Tấm kính cố định 4+4"),
     "UPROF": ("368004", "FRONT - GLAZING U-PROFILE - BOHLE BO5201571", "Thanh U nhôm kẹp kính"),
     "USEAL": ("368002", "FRONT - GLAZING U-SEAL - BOHLE BO5201735", "Gioăng chữ U silicone"),
-    "S180": ("368003", "FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD", "Gioăng nam châm 180° phía vách (chờ chọn)"),
+    "S180": ("368003", "FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD", "Gioăng nam châm 180° phía vách (chờ chọn)"),
 }
 
 EXPECTED = []
