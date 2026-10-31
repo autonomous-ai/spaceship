@@ -1,0 +1,81 @@
+{
+ "document": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD",
+ "f3d": "v2/01-CAD-Native/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD.f3d",
+ "anchors": [
+  {
+   "component": "351201 FRONT - DECOR SKIN - DT",
+   "index": 0,
+   "expression": "-pod_w / 2"
+  },
+  {
+   "component": "351201 FRONT - DECOR SKIN - DT",
+   "index": 3,
+   "expression": "dt_xr - pod_w / 2"
+  },
+  {
+   "component": "351201 FRONT - DECOR SKIN - DT",
+   "index": 2,
+   "expression": "dt_zb"
+  },
+  {
+   "component": "351201 FRONT - DECOR SKIN - DT",
+   "index": 5,
+   "expression": "pod_h"
+  },
+  {
+   "component": "351201 FRONT - DECOR SKIN - DT",
+   "index": 1,
+   "expression": "-pod_d / 2"
+  },
+  {
+   "component": "351201 FRONT - DECOR SKIN - DT",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d"
+  },
+  {
+   "component": "351202 FRONT - DECOR BACK PLATE - DT",
+   "index": 3,
+   "expression": "dt_xr - pod_w / 2"
+  },
+  {
+   "component": "368007 FRONT - DOOR CATCH - IN DT",
+   "index": 5,
+   "expression": "dt_zb"
+  },
+  {
+   "component": "368007 FRONT - DOOR CATCH - IN DT",
+   "index": 2,
+   "expression": "dt_zb - ca_h"
+  },
+  {
+   "component": "368005 FRONT - FRAME-STOP SEAL",
+   "index": 1,
+   "expression": "-glass_y + glass_t / 2"
+  },
+  {
+   "component": "351203 FRONT - DOOR TOP STOP - DT",
+   "index": 2,
+   "expression": "dt_zb - stop_h"
+  },
+  {
+   "component": "351204 FRONT - DECOR FRAME - DT",
+   "index": 3,
+   "expression": "dt_xr - pod_w / 2"
+  },
+  {
+   "component": "351204 FRONT - DECOR FRAME - DT",
+   "index": 2,
+   "expression": "dt_zb + dt_skin_t"
+  },
+  {
+   "component": "351204 FRONT - DECOR FRAME - DT",
+   "index": 5,
+   "expression": "pod_h - dt_skin_t"
+  },
+  {
+   "component": "351204 FRONT - DECOR FRAME - DT",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d - dt_back_t"
+  }
+ ]
+}
