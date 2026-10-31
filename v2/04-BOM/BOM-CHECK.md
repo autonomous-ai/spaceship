@@ -6,12 +6,13 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 45 part lines (20 made, 25 bought, 18 on HOLD) and 7 sub-assembly lines from 4 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 84.4 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 49 part lines (21 made, 28 bought, 20 on HOLD) and 8 sub-assembly lines from 5 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 113.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
 - `v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv` @ working tree
 - `v2/05-Engineering/joints/joints-register.md` @ working tree
 - `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv` @ working tree
@@ -47,6 +48,8 @@ Read from: this working tree.
 - 368102 FRONT - DOOR STRIKE: HOLD (source (product); on the 8.76 laminate with a 1.2 mm shim: HOLD)
 - 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD: HOLD (HOLD: product for the 8.76 laminate and a 4 mm gap)
 - 368103 FRONT - DOOR PULL PAIR - HOLD: HOLD (HOLD)
+- 361003 FRONT - FIXED GLASS - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
+- 368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD: HOLD (HOLD: product for the 8.76 laminate and a 4 mm gap)
 - no 350000 FRONT - DECOR parts listed yet
 
 **CEILING**
