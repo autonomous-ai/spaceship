@@ -5,7 +5,7 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
 - **Status:** calculation, not a test. Every number below comes from `calc.py` in this folder, and every input there carries its own status and source. Bought-part data and links are in [`../hardware/selection.md`](../hardware/selection.md).
 - **Date:** 2026-10-31.
 - **Rerun:** `python3 calc.py` prints every table in this report. `python3 calc.py --verify` rebuilds them and checks that this file quotes each one exactly.
-- **Decisions:** DECIDED means the PM ruled on it on 2026-10-31 (it goes into `v2/00-Control/decision-log.md`). PROPOSED means it still needs a call. HOLD means a supplier or a sample has to confirm it.
+- **Decisions:** DECIDED means the PM ruled on it on 2026-10-31. Decision IDs (D-xx) refer to `v2/00-Control/decision-log.md`; the other rulings were made in the project chat and are being logged. PROPOSED means it still needs a call. HOLD means a supplier or a sample has to confirm it.
 
 ## Results first
 
@@ -13,12 +13,12 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
 2. **Spaceship as planned comes out at about 19 dB (16–22).** That's already above v1, mostly because of the felt lining. Light fixes take it to about 21 dB for about 15 kg: perimeter and drop seals, sealed glass, joint gaskets, silenced vents, and the thin floor with a base seal. After that, the walls and ceiling carry about 90% of the sound that gets out.
 3. **DECIDED build: about 385 kg and 24.2 dB (22–27).** Walls are ACP 3 mm on an aluminium 20×40 frame at 400 mm with 40 mm PET fill, plus a floating lining cassette (0.5 mm steel tray, 25 mm air gap, 9 mm felt). The ceiling is the same stack on 20×100. The front is smoked acrylic 10 mm, and every light fix is on. The fallback front, 4+4 acoustic laminate, gives 24.6 dB at about 416 kg, which is over the 400 kg cap unless the ceiling drops to 40 mm (23.8 dB at 400 kg).
 4. **30 dB isn't reached anywhere in this search, up to 520 kg (best about 26.5 dB).** Above about 380 kg each extra dB costs about 25–40 kg of wall. What limits a light pod is low voices (125–250 Hz). Only mass, cavity depth and low-frequency absorption help there.
-5. **Air: 70 l/s is the right target, because of heat rather than CO2.** At 26 l/s two people hold 800 ppm only if the room air is outdoor-fresh, and the pod runs 8 °C warmer than the room. At 70 l/s it is about 550 ppm and 3 °C warmer. A CO2 sensor drives both EC fans and shows the reading inside.
+5. **Air: 70 l/s is the right target, because of heat rather than CO2.** At 26 l/s two people hold 800 ppm only if the room air is outdoor-fresh, and the pod runs 8 °C warmer than the room. At 70 l/s it is about 550 ppm and 3 °C warmer. The in-house Desk Pro AI sensor hub reads CO2, shows it, and drives both EC fans (D-09).
 6. **25 dB(A) fan noise at full flow is reachable:** about 24 dB(A) with two S&P TD-350/100-125 ECOWATT fans, each behind a 2.4 m lined U-channel in a ceiling half (calculation). The plan's Panasonic FV-15AUL1 can't be used. Its manual forbids ceiling mounting and it has no published fan curve.
 
 ## 1. The DECIDED stack, for the Layout and Fusion Engineers
 
-Outside to inside. DECIDED by the PM on 2026-10-31: aluminium frames, no plywood behind the ACP, frame members at 400 mm, frame depth set by this build, smoked acrylic front with 4+4 laminate as fallback, fans in the front decor blocks, dormakaba OFFICE 11.233 hinges.
+Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target, D-05 thin floor, D-07 front, D-09 air, plus chat rulings): aluminium frames, no plywood behind the ACP, frame members at 400 mm, frame depth set by this build, smoked acrylic front with 4+4 laminate as fallback, fans in the front decor blocks, dormakaba OFFICE 11.233 hinges.
 
 **Walls (vách), 81 mm, 13.1 kg/m² including frame and felt**
 
@@ -27,7 +27,7 @@ Outside to inside. DECIDED by the PM on 2026-10-31: aluminium frames, no plywood
 | 1 | ACP skin, Alcorest EV3038 Dark Yellow, 3 × 0.21 mm skins, PE core (tấm ốp alu VT01) | 3 | 3.5 | calculation from the maker's skin spec; the maker publishes no kg/m² (selection.md VT01) |
 | 2 | Bond, ACP to frame: SikaTack Panel-50 system or equivalent, factory only (keo dán) | — | ~0.1, not in total | source for substrates (selection.md glue row); bond pattern HOLD for a coupon test |
 | 3 | Aluminium frame 20 × 40 × 1.5 mm, members at 400 mm (khung nhôm) | 40 | 2.3 | calculation: 0.462 kg/m × 5.0 m of tube per m² |
-| 4 | PET insulation fill between members, about 32 kg/m³ (bông PET) | (40) | 1.3 | assumption; no sourced product yet (selection.md fill row is open) |
+| 4 | PET insulation fill between members, about 32 kg/m³ (bông PET) | (40) | 1.3 | assumption inside the 25–60 kg/m³ range of the sourced product, CSR Martini dECO (selection.md B); grade HOLD |
 | 5 | Resilient gap: perimeter gasket PORON 4701-40, 3.2 mm, plus hook-and-loop pads; no screws through (gioăng) | 3 | ~0.1, not in total | source for the gasket (selection.md); decoupling is a calculation assumption, HOLD for the wall-sample test |
 | 6 | Lining cassette: galvanised steel 0.5 mm tray with 25 mm returns (khay thép lót) | 0.5 | 4.2 | calculation: 3.93 kg/m² sheet + 0.26 kg/m² returns |
 | 7 | Air gap inside the cassette (spare cable path) | 25 | — | calculation: this gap lets the felt absorb at 250–500 Hz |
@@ -93,7 +93,7 @@ Matching v1's wall alone, element for element, would cost 16–17 kg/m² (about 
 | V1-BOM (32.9) | DL-2HDF-60-FL: ACP 3 / 60 fill / 2 x HDF 3 floating + felt 9 | 15.7 | 78 | 33.0 | 251 |
 | V1-DWG (33.6) | DL-P6-HDF-60-FL: ACP 3 + ply 6 / 60 fill / HDF 3 floating + felt 9 | 16.6 | 81 | 33.6 | 266 |
 
-**Floor.** The thin floor (PROPOSED in the plan) sits on the room's slab, so sound doesn't get out through it. Only its edge joint counts, and the base seal closes that. The plan's raised floor lets sound out through 15 mm boards over an open frame: 14% of what leaves v1.
+**Floor.** The thin floor (DECIDED, D-05) sits on the room's slab, so sound doesn't get out through it. Only its edge joint counts, and the base seal closes that. The plan's raised floor lets sound out through 15 mm boards over an open frame: 14% of what leaves v1.
 
 ## 3. The front: glass against acrylic
 
@@ -182,7 +182,7 @@ Applied one after another to the plan with 8 mm glass. kg is the added mass for 
 | 3 | Fixed glass in sealed U-profiles | 16.4 | 19.6 | 22.5 | +0.0 | 0.0 |
 | 4 | Gaskets on every panel joint | 16.6 | 19.7 | 22.6 | +0.2 | 1.0 |
 | 5 | Silenced vents (2 lined ceiling plenums) | 17.5 | 20.5 | 23.2 | +0.8 | 7.0 |
-| 6 | Thin floor with base seal (PROPOSED) | 18.2 | 20.7 | 23.2 | +0.2 | 0.5 |
+| 6 | Thin floor with base seal (DECIDED, D-05) | 18.2 | 20.7 | 23.2 | +0.2 | 0.5 |
 | 7 | Sealed cable holes | 18.2 | 20.8 | 23.2 | +0.0 | 0.1 |
 | 8 | PET fill in the front decor | 18.3 | 20.8 | 23.3 | +0.1 | 4.0 |
 
@@ -280,12 +280,12 @@ Target: 25 dB(A) or less inside at full flow (70 l/s), published.
 - **Servicing:** the decor block's top face is a screwed lid, M6 into rivnuts, with the slot grille in it. Lift the lid, undo the two duct clamps and the fan's mounting bracket, unplug the fan's connector, and lift the fan out. The fan's own dirt filter, if added, is reached the same way. Nothing on the pod's walls or ceiling has to come off. The block's inside should be lined with felt so casing noise (about 48 dB(A)) stays in.
 - **Pressure balance and the door:** supply and exhaust run on the same 0–10 V signal so the pod stays near room pressure. A 5 Pa difference would add about 6 N at the door handle.
 - **12 V option:** the PM asked for a quick look at a 12 V EC fan first. Result: no 12 V fan found does the job, so the mains EC fan (TD-350 class, 0–10 V from the sensor hub, on the outlet circuit) is the pick, as the PM's ruling allows. The 12 V axial fans with published data are Noctua NF-A14 industrialPPC-3000 (269 m³/h at 0 Pa, 41.3 dB(A)) and San Ace 109E5712M501 (248 m³/h at 0 Pa, 67.6 Pa maximum, 41.0 dB(A)). They give 250–270 m³/h only at zero pressure, so it would take two per path at full speed. The 12–28 V centrifugal ebm-papst RG 160-28/14 N makes 209 m³/h at 66 dB sound power, about 20 dB louder than the TD-350 at this duty (research notes, checked 2026-10-31). Unlike the 12 V figures, the TD-350's published octave data lets the silencer be sized properly: most of its energy sits at 500 Hz–1 kHz, where the lined channel works best. That's why it reaches about 24 dB(A) inside even though its total LwA is 54 dB(A).
-- **Controls:** CO2 sensor with display inside (DECIDED). It drives both fans 0–10 V, with a minimum speed when occupied, boost on CO2 or temperature, and a run-on of 15–30 min after the last presence. The fans are hard-wired from the pod's distribution with no user switch, only boost. The plan's UTEN S300 "triết áp quạt" (S300G-1D/S, a 25–300 W phase-cut speed control for ceiling fans) doesn't suit EC fans and is replaced. Products are in selection.md.
+- **Controls:** the in-house Desk Pro AI sensor hub (D-09) measures CO2, shows it inside, and drives both fans 0–10 V, with a minimum speed when occupied, boost on CO2 or temperature, and a run-on of 15–30 min after the last presence. The fans are hard-wired on the outlet (mains) circuit with no user switch, only boost. That's an exception to the 12 V bus (D-10), ruled by the PM because no 12 V fan performs well enough. Lights, sensors and the voice kit stay on the 12 V bus. The plan's UTEN S300 "triết áp quạt" (S300G-1D/S, a 25–300 W phase-cut speed control for ceiling fans) doesn't suit EC fans and is replaced. Products are in selection.md.
 
 ## 8. Hooks for the later voice cockpit kit
 
 Mic array, speakers, screen and status light. Reserved here; the kit itself isn't designed.
-- **Power:** 60 W reserve, the same as the layout study. It's in the heat figures above (+0.7 °C at 70 l/s).
+- **Power:** 12 V 5 A (60 W) on the 12 V bus (D-11), the same as the layout study. It's in the heat figures above (+0.7 °C at 70 l/s).
 - **Cable path:** the 25 mm gap inside each lining cassette carries cables behind the felt without touching the outer wall. Cassettes lift off with no tools, and the ceiling's 100 mm zone links the back wall to the front.
 - **Mounting points:** M6 rivnuts in the 20 × 40 aluminium members, one bolt size, at positions the Layout Engineer fixes. The screen goes on the back wall and the status light on the front decor top block.
 - **Sound:** speakers and mics mount on the lining cassette, never through the ACP skin. A hole through the outer leaf would be a new leak, about 0.1 dB for a 28 mm hole. The 25 dB(A) fan target also helps the mic array.

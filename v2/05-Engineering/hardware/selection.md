@@ -4,7 +4,7 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod"). This is the parts 
 
 - **Checked:** every link on 2026-10-31. Public pages only. No supplier was contacted, nothing was ordered, and no prices were collected.
 - **Number status:** source (read on the maker's or a distributor's page), calculation (our arithmetic, method shown), assumption, or unverified (not on any page opened).
-- **Decision status:** DECIDED (the PM ruled on it, 2026-10-31), PROPOSED (still needs a call), HOLD (a supplier or a sample must confirm it before CAD uses the geometry).
+- **Decision status:** DECIDED (the PM ruled on it, 2026-10-31; D-xx = entry in `v2/00-Control/decision-log.md`, other rulings are from the project chat), PROPOSED (still needs a call), HOLD (a supplier or a sample must confirm it before CAD uses the geometry).
 - **Related:** the sound and air numbers are in [`../acoustics-air/report.md`](../acoustics-air/report.md) and [`calc.py`](../acoustics-air/calc.py). Plan codes VT01–VT12 come from `v2/00-Control/v2-build-plan.pdf`.
 
 ## Summary
@@ -18,8 +18,8 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod"). This is the parts 
 | Front | Smoked cast acrylic 10 mm (Perspex Neutral 9T56); fallback 4+4 acoustic laminate (AGC Stratophone 44.2 with Planibel Grey) | DECIDED; acrylic hinge fixing HOLD |
 | Door hinges | dormakaba OFFICE 11.233 (70 kg, 1200 mm), 160 mm pocket in the left decor block | DECIDED; acrylic fixing HOLD |
 | Door seals | Frame stop seal (athmer PS 1515 class, but in EPDM or silicone if the door is acrylic), drop seal athmer Schall-Ex GSA cut to 1176 mm, 180° glass-to-glass seal on the fixed pane | source; HOLD on acrylic-safe materials |
-| Fans (VT06) | S&P TD-350/100-125 SILENT ECOWATT (EC, 0–10 V), two, inside the front decor blocks; FV-15AUL1 rejected | DECIDED location; 12 V check below |
-| Fan control | CO2 sensor with display driving both fans 0–10 V; presence sensor for start and run-on | DECIDED concept; product rows in section F |
+| Fans (VT06) | S&P TD-350/100-125 SILENT ECOWATT (EC, 0–10 V, mains outlet circuit), two, inside the front decor blocks; FV-15AUL1 rejected | DECIDED; exception to the 12 V bus (D-10) because no 12 V fan performs (F1) |
+| Fan control | In-house Desk Pro AI sensor hub reads and shows CO2 and drives both fans 0–10 V (D-09); presence sensor for start and run-on | DECIDED; third-party CO2 controllers listed as reference (F3) |
 | Power inlet | Neutrik powerCON TRUE1 TOP NAC3MPX-TOP + etherCON NE8FDP | source |
 | Thread in thin tube (VT11) | M6 rivet nut in the aluminium members: Sherex CAH3-610-4.2 (aluminium 5056); M6 ISO 4017 8.8 bolts | source; HOLD fit test in the tube |
 
@@ -60,7 +60,7 @@ HOLD: the felt product needs ISO 354 octave data and an emission certificate. Th
 | 30 × 60 | t1.2 1.64 · t1.4 1.91 · t1.5 2.04 · t2.0 2.68 · t3.0 3.90 | 60 × 30 × 2: 0.93 | as above; Voss rectangular https://www.voss-edelstahl.com/online/en/Aluminium/profiles-tubes/Rectangular/3/?lang=1 | source |
 | 50 × 100 | t1.5 3.45 · t2.0 4.56 · t3.0 6.73 · t4.0 8.82 | 100 × 50 × 2: 1.57; × 3: 2.33 | as above | source |
 
-The plan's raised steel floor (VT03/VT04) goes if the thin floor is chosen (PROPOSED in the plan, owned by the layout study). Open question: a Vietnamese extruder table for 6063-T5 tubes with 1.5 mm walls. The aluminium data above is 6060 from a German stockist.
+The plan's raised steel floor (VT03/VT04) goes with the thin floor (DECIDED, D-05; the layout study owns it). Open question: a Vietnamese extruder table for 6063-T5 tubes with 1.5 mm walls. The aluminium data above is 6060 from a German stockist.
 
 ### A5. VT11 M6 × 60 bolts and what they thread into (bulong M6, tán rive)
 
@@ -256,14 +256,14 @@ Plan items VT07 to VT09: UTEN S300 switch and socket (code S300GK12Z12Z13/N on u
 
 **Power budget** (calculation; the electrical design itself belongs to the electrical scope):
 
-| Load | W |
-|---|---:|
-| 2 fans at 70 l/s (S&P TD-350 ECOWATT, about 15–19 W each) | 38 |
-| Ceiling lights (2) | {{LIGHT_W}} |
-| Front light | {{FRONT_W}} |
-| CO2 controller, presence sensor | 5 |
-| Voice cockpit kit reserve | 60 |
-| Sockets for users (laptops) | up to 2 × 100 |
+| Circuit | Load | W |
+|---|---|---:|
+| 12 V DC bus (D-10) | Ceiling lights (2) | {{LIGHT_W}} |
+| 12 V DC bus | Soft front light | {{FRONT_W}} |
+| 12 V DC bus | Sensor hub with CO2 display, presence sensor | about 5 (assumption) |
+| 12 V DC bus | Voice cockpit kit reserve, 12 V 5 A (D-11) | 60 |
+| Mains, outlet circuit | 2 fans at 70 l/s (S&P TD-350 ECOWATT, 15–19 W each), the PM's exception to D-10 | 38 |
+| Mains, outlet circuit | User sockets (laptops) | up to 2 × 100 |
 
 ## F. Air: fans, silencer, controls
 

@@ -629,7 +629,7 @@ FIXES = [
     ("Gaskets on every panel joint", dict(gaskets=True), 1.0, "HW gasket row, about 0.03 kg/m x 34 m"),
     ("Silenced vents (2 lined ceiling plenums)", dict(vents="silenced", sil_len=1.2), 7.0,
      "calculation: 2 x (0.6 m2 HDF 3 box + 1.2 m2 lining 25 mm at 1.2 kg/m2)"),
-    ("Thin floor with base seal (PROPOSED)", dict(floor="thin", base_seal=True), 0.5,
+    ("Thin floor with base seal (DECIDED, D-05)", dict(floor="thin", base_seal=True), 0.5,
      "HW base-seal row; the floor itself is in the weight study"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
     ("PET fill in the front decor", dict(decor_fill=True), 4.0, "calculation: 1.65 m2 x 75 mm x 32 kg/m3"),
