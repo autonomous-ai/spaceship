@@ -857,3 +857,11 @@ def test_seam_rules_leave_out_electricals_reserved_spaces():
         assert not re.search(r["a"], elec) and not re.search(r["b"], elec), r["id"]
     corner = next(r for r in seams if r["id"] == "SEAM-BACK-CORNER-R")
     assert re.search(corner["b"], "210000 WALL:1 / 210202 WALL - PANEL ASSY - BACK LOWER - B2:1 / FRAME")
+
+
+def test_a_shared_hardware_drawing_stays_with_the_joints_engineer_when_a_team_models_it(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    (d / "831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step").write_text("x")
+    fs = c_drawings.check_drawings(str(tmp_path), {"831001"}, {}, {"831001": "HARDWARE - LOCATING SPIGOT - M6 X Ø8"})
+    assert [f.owner for f in fs if f.rule == "no-drawing"] == ["Joints Engineer"]
