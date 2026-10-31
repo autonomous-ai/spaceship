@@ -7,10 +7,11 @@ Run it through the Fusion runner (tools/fusion/run_script.py):
 
 Scope of revision P01 (the sample, built first because the factory's wall
 sample stands on it): the back-left corner of the base. The left side band
-(also the factory's base band rig R1, sample hold H17), the back band, the
-back-left corner bracket, the levelling glides under those two bands, and
-floor panel F1 with its seal mat. The front band pieces, the right side, F2
-and the threshold follow in the next revision.
+(also the factory's base band rig R1, sample hold H17), the back band with
+its J-BASE-01 hardware, the levelling glides and their doublers under those
+two bands, and floor panel F1 bonded to its foam mat (D-87). The back corners
+join on the Joints Engineer's hook-in corner key (D-87, HOLD). The front band
+pieces, the right side, F2 and the threshold follow in the next revision.
 
 Every size comes from parameters. The pod's own sizes are not copied here:
 the script reads the skeleton P03 parameter list (PARAMS in
@@ -27,8 +28,8 @@ Steps (--arg stop_after=N stops after step N):
   1 document, parameters, components     6 floor panel F1 and its seal mat
   2 left side band                       7 hardware: rivet nuts, pins, glides
   3 back band                            8 materials and masses
-  4 band holes (joints, pins, glides)    9 checks: sketches, timeline, boxes,
-  5 corner bracket BL                      holes, clashes (own parts and skeleton)
+  4 band holes (joints, spigots, glides)  9 checks: sketches, timeline, boxes,
+  5 corner key (HOLD, Joints Engineer)     holes, clashes (own parts and skeleton)
 Optional after step 9: --arg export=1 (f3d, STEP), --arg save=1 (cloud).
 """
 
@@ -55,8 +56,8 @@ CM = 0.1  # Fusion API lengths are in cm; multiply mm by CM
 # a named item (joints register, WALL frame bays, a bought part's data sheet).
 BASE_PARAMS = [
     # base band section (100 x 40 is the skeleton's band_h x band_t)
-    ("band_wall", "2 mm", "mm", "assumption",
-     "layout study inputs.py t_al_base 2.0 mm (aluminium 100x40 base band); alloy, temper and dark finish HOLD (ISS-034, sample hold H15)"),
+    ("band_wall", "1.5 mm", "mm", "confirmed",
+     "PM ruling 2026-10-31 (BASE group): 100 x 40 x 1.5 base band (was 2.0), with a doubler at each glide; rivnut coupon in 1.5 mm added to the rivnut test"),
     ("band_finish", "'Black anodised, matte, 20 um (class AA20, EN ISO 7599)'", "Text", "confirmed",
      "PM ruling 2026-10-31 (BASE group): every base band piece and the door's kick strip"),
     ("cap_t", "3 mm", "mm", "assumption",
@@ -93,14 +94,13 @@ BASE_PARAMS = [
     ("gl_pad", "36 mm", "mm", "assumption", "glide pad diameter (envelope, HOLD); stays inside the band's 40 mm width"),
     ("gl_stem", "10 mm", "mm", "assumption", "glide stem M10 (envelope, HOLD)"),
     ("gl_nut_t", "2 mm", "mm", "assumption", "M10 rivet nut head under the band, between the band and the glide pad (HOLD)"),
-    # back corner bracket (aluminium angle 60 x 60 x 5, inside the corner, pod side)
-    ("br_leg", "60 mm", "mm", "assumption", "angle leg, standard extruded aluminium angle 60 x 60 x 5"),
-    ("br_t", "5 mm", "mm", "assumption", "angle thickness"),
-    ("br_len", "70 mm", "mm", "assumption", "bracket height, Z 25 to 95: above the floor top, below the walls"),
-    ("br_z0", "25 mm", "mm", "assumption", "bracket bottom: 13 mm above the floor top (mat_t + fl_t)"),
-    ("br_e", "35 mm", "mm", "assumption", "bolt holes from the bracket's heel: clears the other leg and the bolt head"),
-    ("br_zh", "15 mm", "mm", "assumption", "bolt holes from the bracket's top and bottom ends"),
-    ("br_hole", "6.6 mm", "mm", "source", "ISO 273 medium clearance hole for M6"),
+    ("gd_l", "30 mm", "mm", "assumption", "glide doubler length along the band"),
+    ("gd_w", "band_t - 2 * band_wall - 1 mm", "mm", "calculation",
+     "glide doubler width: the band's bore less 1 mm, so it bears on the bottom face right next to both side walls"),
+    ("gd_t", "3 mm", "mm", "assumption",
+     "glide doubler thickness: clamped with the 1.5 mm bottom face by the glide's M10 rivnut (grip 4.5); bending at 500 N falls from about 123 MPa to about 31 MPa (calculation, feature rationale)"),
+    # back corners: hook-in corner keys designed by the Joints Engineer (D-87); the band
+    # ends stay square and the key's features are on HOLD until it is designed
     # thin floor
     ("fl_t", "9 mm", "mm", "confirmed",
      "PM ruling 2026-10-31 (BASE group): 9 mm plywood floor panels, as v1 (FLR-01 9 mm), so the floor top is 12 and the threshold 13 (US accessibility). Replaces the skeleton's floor_t 15 until its next update; then fl_t = floor_t"),
@@ -119,15 +119,16 @@ PARTS = {
     "band_l_tube": ("111101", "BASE - BAND TUBE - SIDE - LH", "Viền chân nhôm 100x40 - cạnh trái", "MP", "band_l"),
     "band_b": ("110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "HS", None),
     "band_b_tube": ("111103", "BASE - BAND TUBE - BACK", "Viền chân nhôm 100x40 - cạnh sau", "MP", "band_b"),
-    "bracket": ("111201", "BASE - CORNER BRACKET - BACK - COMMON", "Ke góc đế - góc sau", "MP", None),
     "pin": ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8", "MP", None),
     "washer": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP", None),
-    "floor_f1": ("111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "MP", None),
-    "mat_f1": ("111501", "BASE - SEAL MAT - F1", "Tấm lót kín sàn - F1", "MP", None),
+    "floor_assy": ("110401", "BASE - FLOOR PANEL ASSY - F1", "Tấm sàn F1 (cụm dán)", "BS", None),
+    "floor_f1": ("111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "MP", "floor_assy"),
+    "mat_f1": ("111501", "BASE - SEAL MAT - F1", "Tấm lót kín sàn - F1", "MP", "floor_assy"),
     "glide": ("118002", "BASE - LEVELLING GLIDE - M10 (HOLD)", "Chân chỉnh cao", "PI", None),
+    "doubler": ("111601", "BASE - GLIDE DOUBLER - COMMON", "Tấm tăng cứng chân chỉnh", "MP", None),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", None),
 }
-CLASS_NAME = {"HS": "hardware-fitted subassembly", "MP": "part we make", "PI": "bought item"}
+CLASS_NAME = {"HS": "hardware-fitted subassembly", "BS": "bonded subassembly", "MP": "part we make", "PI": "bought item"}
 
 XL, XR = "-pod_w / 2", "pod_w / 2"
 YB, YW = "pod_d / 2", "pod_d / 2 - wall_depth"     # back face; side walls' front edge
@@ -608,8 +609,6 @@ def step4_band_holes(design):
     c = find_comp(design, "band_l_tube")
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
-    inner = offset_plane(c, "yz", "%s + band_t" % XL, v("%s + band_t" % XL),
-                         "PLANE - BAND INNER FACE X = -pod_w/2 + band_t")
     down, up, out_x = Z.copy(), Z.copy(), X.copy()
     down.scaleBy(-1)
     out_x.scaleBy(-1)
@@ -626,17 +625,10 @@ def step4_band_holes(design):
          [(X, xg), (Y, yg0)], "gl_key_hole", "band_wall", down, ("yConstructionAxis", "gl_n_side", gext))
     hole(design, "band_l_tube", bot, "GLIDE NUT - SIDE LH", (v(xg), v(yg0), v("glide_h")),
          [(X, xg), (Y, yg0)], "gl_nut_hole", "band_wall", up, ("yConstructionAxis", "gl_n_side", gext))
-    yb = "%s - band_t - br_e" % YB
-    hole(design, "band_l_tube", inner, "BRACKET RIVNUT - BL - SIDE LH",
-         (v("%s + band_t" % XL), v(yb), v("br_z0 + br_zh")),
-         [(Y, yb), (Z, "br_z0 + br_zh")], "rn_hole", "band_wall", out_x,
-         ("zConstructionAxis", "2", "br_len - 2 * br_zh"))
     # -- back band
     c = find_comp(design, "band_b_tube")
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
-    inner = offset_plane(c, "xz", "%s - band_t" % YB, v("%s - band_t" % YB),
-                         "PLANE - BAND INNER FACE Y = pod_d/2 - band_t")
     yb_line = "%s - jb_x" % YB
     for panel, x0 in (("B1", B1_X0), ("B2", B2_X0)):
         hole(design, "band_b_tube", top, "J-BASE-01 RIVNUT - %s" % panel, (v("%s + jb_e" % x0), v(yb_line), v("wall_z0")),
@@ -652,12 +644,6 @@ def step4_band_holes(design):
     hole(design, "band_b_tube", bot, "GLIDE NUT - BACK", (v(xg0), v(yg), v("glide_h")),
          [(X, xg0), (Y, yg)], "gl_nut_hole", "band_wall", up,
          ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
-    into_back = Y.copy()
-    for corner, xb_ in (("BL", "%s + band_t + br_e" % XL), ("BR", "%s - band_t - br_e" % XR)):
-        hole(design, "band_b_tube", inner, "BRACKET RIVNUT - %s - BACK" % corner,
-             (v(xb_), v("%s - band_t" % YB), v("br_z0 + br_zh")),
-             [(X, xb_), (Z, "br_z0 + br_zh")], "rn_hole", "band_wall", into_back,
-             ("zConstructionAxis", "2", "br_len - 2 * br_zh"))
     print("step 4: band holes")
     report_holes(design)
 
@@ -675,48 +661,13 @@ def report_holes(design):
             centres(body, gk, "z"), centres(body, gn, "z")))
 
 
-# ---------------------------------------------------------------- bracket
+# ---------------------------------------------------------------- corner key
 
-def step5_bracket(design):
-    v = lambda e: ev(design, e)  # noqa: E731
-    comp = find_comp(design, "bracket")
-    plane = offset_plane(comp, "xy", "br_z0", v("br_z0"), "PLANE - BRACKET BOTTOM Z = br_z0")
-    # heel: the bands' inside corner, standing off by the rivnut heads it bears on
-    xh, yh = "%s + band_t + rn_head_t" % XL, "%s - band_t - rn_head_t" % YB
-    pts = [
-        P(design, xh, yh),
-        P(design, "%s + br_leg" % xh, yh),
-        P(design, "%s + br_leg" % xh, "%s - br_t" % yh),
-        P(design, "%s + br_t" % xh, "%s - br_t" % yh),
-        P(design, "%s + br_t" % xh, "%s - br_leg" % yh),
-        P(design, xh, "%s - br_leg" % yh),
-    ]
-    sk = comp.sketches.add(plane)
-    sk.name = "SECTION - CORNER BRACKET - ANGLE br_leg x br_leg x br_t"
-    polygon(design, sk, pts, X, Y)
-    check_sketch(sk)
-    f = extrude(comp, one_profile(sk), "br_len", "EXTRUDE - CORNER BRACKET - ANGLE")
-    body = f.bodies.item(0)
-    body.name = "%s - ANGLE" % PARTS["bracket"][1]
-    # leg on the side band: holes along X through br_t, from the pod side
-    pl1 = offset_plane(comp, "yz", "%s + br_t" % xh, v("%s + br_t" % xh),
-                       "PLANE - BRACKET LEG 1 POD-SIDE FACE")
-    to_mx = X.copy()
-    to_mx.scaleBy(-1)
-    # hole positions use the same expressions as the bands' rivnut holes
-    y1 = "%s - band_t - br_e" % YB
-    hole(design, "bracket", pl1, "BRACKET - LEG 1 - M6 CLEARANCE",
-         (v("%s + br_t" % xh), v(y1), v("br_z0 + br_zh")), [(Y, y1), (Z, "br_z0 + br_zh")],
-         "br_hole", "br_t", to_mx, ("zConstructionAxis", "2", "br_len - 2 * br_zh"))
-    pl2 = offset_plane(comp, "xz", "%s - br_t" % yh, v("%s - br_t" % yh),
-                       "PLANE - BRACKET LEG 2 POD-SIDE FACE")
-    x2 = "%s + band_t + br_e" % XL
-    hole(design, "bracket", pl2, "BRACKET - LEG 2 - M6 CLEARANCE",
-         (v(x2), v("%s - br_t" % yh), v("br_z0 + br_zh")), [(X, x2), (Z, "br_z0 + br_zh")],
-         "br_hole", "br_t", Y, ("zConstructionAxis", "2", "br_len - 2 * br_zh"))
-    print("step 5: corner bracket BL  %s" % fmt_box(bbox_mm(body)))
-    d = ev(design, "br_hole")
-    print("  holes leg 1 (Y, Z): %s   leg 2 (X, Z): %s" % (centres(body, d, "x"), centres(body, d, "y")))
+def step5_corner_key(design):
+    """The back corners join on hook-in corner keys that the Joints Engineer
+    designs (D-87, 12 fewer bolts than a bolted bracket). Nothing is modelled
+    until the key is drawn; the band ends stay square (HOLD)."""
+    print("step 5: back corner joint: hook-in corner key by the Joints Engineer (D-87), HOLD; band ends square")
 
 
 # ---------------------------------------------------------------- floor
@@ -816,6 +767,24 @@ def build_washer(design):
     ])
 
 
+def build_doubler(design):
+    """Glide doubler: a 3 mm plate inside the band on its bottom face, under the
+    glide's M10 rivnut, so the glide load reaches the side walls without bending
+    the 1.5 mm face. Width across the band along local X, length along local Y;
+    the hole sits gl_dx toward local +X (the pod side, as the glide)."""
+    comp = find_comp(design, "doubler")
+    v = lambda e: ev(design, e)  # noqa: E731
+    sk = comp.sketches.add(comp.xYConstructionPlane)
+    sk.name = "PLAN - GLIDE DOUBLER"
+    polygon(design, sk, [P(design, "-gd_w / 2", "-gd_l / 2"), P(design, "gd_w / 2", "-gd_l / 2"),
+                         P(design, "gd_w / 2", "gd_l / 2"), P(design, "-gd_w / 2", "gd_l / 2")], X, Y)
+    circle_at(sk, (v("gl_dx"), 0.0, 0.0), "gl_nut_hole", v("gl_nut_hole"), X, Y, "gl_dx", "0 mm")
+    check_sketch(sk)
+    ring = [pr for pr in sk.profiles if pr.profileLoops.count == 2][0]
+    extrude(comp, ring, "gd_t", "EXTRUDE - GLIDE DOUBLER - PLATE gd_t")
+    single_body(comp, "GLIDE DOUBLER")
+
+
 def build_glide(design):
     comp = find_comp(design, "glide")
     revolve_section(design, comp, "LEVELLING GLIDE - ENVELOPE (HOLD)", [
@@ -838,6 +807,8 @@ def place(design, host_key, key, xyz, rot=None):
         m.setToRotation(math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
     elif rot == "y-":
         m.setToRotation(math.pi / 2, X, adsk.core.Point3D.create(0, 0, 0))
+    elif rot == "z-90":
+        m.setToRotation(-math.pi / 2, Z, adsk.core.Point3D.create(0, 0, 0))
     m.translation = adsk.core.Vector3D.create(xyz[0] * CM, xyz[1] * CM, xyz[2] * CM)
     host = design.rootComponent if host_key is None else find_comp(design, host_key)
     occ = host.occurrences.addExistingComponent(find_comp(design, key), m)
@@ -869,22 +840,20 @@ def hardware_points(design):
     edge("band_l", "y", v("%s + seam_gap" % YW), v("side_l"), v("%s + jb_x" % XL))            # L1
     for x0 in (B1_X0, B2_X0):                                                                 # B1, B2
         edge("band_b", "x", v(x0), v("half_pw"), v("%s - jb_x" % YB))
-    # corner bracket rivnuts in the bands' inner walls (BL on both bands, BR on the back band)
-    zb, dz = v("br_z0 + br_zh"), v("br_len - 2 * br_zh")
-    for k in range(2):
-        out.append(("band_l", "rivnut", (v("%s + band_t" % XL), v("%s - band_t - br_e" % YB), zb + k * dz), "x+"))
-        for xb_ in (v("%s + band_t + br_e" % XL), v("%s - band_t - br_e" % XR)):
-            out.append(("band_b", "rivnut", (xb_, v("%s - band_t" % YB), zb + k * dz), "y-"))
     # glides, screwed into the bands at the factory
     xg = v("%s + band_t / 2 + gl_dx" % XL)
     ng = int(round(v("gl_n_side")))
     yg0, gext = v("-dl_y1 + gl_e_f"), v("pod_d / 2 - gl_e_b + dl_y1 - gl_e_f")
+    xd = v("%s + band_t / 2" % XL)                  # the doubler sits centred in the bore
+    zd = v("glide_h + band_wall")
     for i in range(ng):
         out.append(("band_l", "glide", (xg, yg0 + i * gext / (ng - 1), 0.0), None))
+        out.append(("band_l", "doubler", (xd, yg0 + i * gext / (ng - 1), zd), None))
     nb = int(round(v("gl_n_back")))
     x0, ext = v("%s + band_t + gl_e_bb" % XL), v("pod_w - 2 * band_t - 2 * gl_e_bb")
     for i in range(nb):
         out.append(("band_b", "glide", (x0 + i * ext / (nb - 1), v("%s - band_t / 2 - gl_dx" % YB), 0.0), None))
+        out.append(("band_b", "doubler", (x0 + i * ext / (nb - 1), v("%s - band_t / 2" % YB), zd), "z-90"))
     return out
 
 
@@ -892,6 +861,7 @@ def step7_hardware(design):
     build_rivnut(design)
     build_pin(design)
     build_washer(design)
+    build_doubler(design)
     build_glide(design)
     counts = {}
     for host, key, xyz, rot in hardware_points(design):
@@ -902,7 +872,7 @@ def step7_hardware(design):
     for i in range(root.occurrences.count - 1, -1, -1):
         occ = root.occurrences.item(i)
         if occ.component.partNumber in (PARTS["pin"][0], PARTS["glide"][0], PARTS["rivnut"][0],
-                                        PARTS["washer"][0]):
+                                        PARTS["washer"][0], PARTS["doubler"][0]):
             occ.deleteMe()
     print("step 7: hardware placed")
     for (host, key), n in sorted(counts.items()):
@@ -915,11 +885,11 @@ MATERIALS = {
     # key: (library material, design material name or None, density kg/m3 or None)
     "band_l_tube": ("Aluminum", None, None),
     "band_b_tube": ("Aluminum", None, None),
-    "bracket": ("Aluminum", None, None),
     "pin": ("Steel", None, None),
     "washer": ("Aluminum", None, None),
     "rivnut": ("Aluminum", None, None),
-    "floor_f1": ("Aluminum", "Plywood 600 kg/m3 (ASSUMPTION)", 600.0),
+    "floor_f1": ("Aluminum", "Poplar-core plywood 450 kg/m3 (ASSUMPTION)", 450.0),
+    "doubler": ("Aluminum", None, None),
     "mat_f1": ("Aluminum", "Closed-cell foam 200 kg/m3 (ASSUMPTION)", 200.0),
     "glide": ("Aluminum", "Glide envelope 0.15 kg (ASSUMPTION)", None),
 }
@@ -1231,7 +1201,7 @@ def export_data(design):
         k = "%s>%s" % (parent, occ.component.partNumber)
         copies[k] = copies.get(k, 0) + 1
     holes = {}
-    for key in ("band_l_tube", "band_b_tube", "bracket"):
+    for key in ("band_l_tube", "band_b_tube"):
         body = find_comp(design, key).bRepBodies.item(0)
         rows = set()
         for org, d in holes_of_all(body):
@@ -1250,10 +1220,6 @@ def export_data(design):
         PARTS["band_b_tube"][0]: {
             "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "X",
             "outer_face_length": round(v("pod_w - 2 * band_t"), 2), "inner_face_length": round(v("pod_w - 2 * band_t"), 2),
-            "front_end": "square", "back_end": "square"},
-        PARTS["bracket"][0]: {
-            "section": "angle %.0f x %.0f x %.0f" % (v("br_leg"), v("br_leg"), v("br_t")), "axis": "Z",
-            "outer_face_length": round(v("br_len"), 2), "inner_face_length": round(v("br_len"), 2),
             "front_end": "square", "back_end": "square"},
     }
     floor = {"x0": v("%s + band_t + fl_gap" % XL), "x_seam": v("-fl_seam / 2"), "x_lap": v("-fl_seam / 2 + lap_w"),
@@ -1288,7 +1254,7 @@ def holes_of_all(body):
 def run(_context):
     app = adsk.core.Application.get()
     doc, design = step1_document(app)
-    steps = [None, None, step2_band_side_lh, step3_band_back, step4_band_holes, step5_bracket,
+    steps = [None, None, step2_band_side_lh, step3_band_back, step4_band_holes, step5_corner_key,
              step6_floor, step7_hardware, step8_materials, step9_checks]
     last = min(STOP_AFTER, len(steps) - 1)
     for n in range(2, last + 1):

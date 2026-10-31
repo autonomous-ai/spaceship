@@ -30,8 +30,7 @@ EDITS = [
     ("band section and glide height (skeleton + BASE)", {"band_h": "120 mm", "glide_h": "15 mm", "band_wall": "2.5 mm"}),
     ("DL facet, joint and pin spacing (skeleton + BASE)", {"dl_x2": "110 mm", "dl_y1": "650 mm", "jb_e": "260 mm",
                                                            "sp_e": "120 mm", "jb_n": "5"}),
-    ("floor and bracket (BASE)", {"fl_gap": "6 mm", "fl_t": "12 mm", "lap_w": "25 mm", "br_leg": "50 mm",
-                                  "br_len": "60 mm"}),
+    ("floor (BASE)", {"fl_gap": "6 mm", "fl_t": "12 mm", "lap_w": "10 mm"}),
 ]
 
 
@@ -50,8 +49,6 @@ def expected_boxes(b, design):
         "band_l_tube": (v(XL), ym, v("glide_h"), v("%s + band_t" % XL), v("%s - cap_t" % YB), v("wall_z0")),
         "band_b_tube": (v("%s + band_t" % XL), v("%s - band_t" % YB), v("glide_h"), v("%s - band_t" % XR), v(YB),
                         v("wall_z0")),
-        "bracket": (v("%s + band_t + rn_head_t" % XL), v("%s - band_t - rn_head_t - br_leg" % YB), v("br_z0"),
-                    v("%s + band_t + rn_head_t + br_leg" % XL), v("%s - band_t - rn_head_t" % YB), v("br_z0 + br_len")),
         "floor_f1": (v("%s + band_t + fl_gap" % XL), v(YW), v("mat_t"), v("-fl_seam / 2 + lap_w"),
                      v("%s - band_t - fl_gap" % YB), v("mat_t + fl_t")),
         "mat_f1": (v("%s + band_t + fl_gap" % XL), v(YW), 0.0, v("-fl_seam / 2"), v("%s - band_t - fl_gap" % YB),
@@ -71,7 +68,7 @@ def expected_side_holes(b, design):
 
 def measure(b, design):
     boxes = {}
-    for key in ("band_l_tube", "band_b_tube", "bracket", "floor_f1", "mat_f1"):
+    for key in ("band_l_tube", "band_b_tube", "floor_f1", "mat_f1"):
         comp = b["find_comp"](design, key)
         boxes[key] = b["bbox_mm"](comp.bRepBodies.item(0))
     body = b["find_comp"](design, "band_l_tube").bRepBodies.item(0)

@@ -40,20 +40,20 @@ PART_INFO = {
                "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD", "hardware-fitted subassembly (guideline 4.1)"),
     "110103": ("assembly: band tube with its rivnuts, stop washers, spigots and glides fitted at the factory", "", "",
                "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD", "hardware-fitted subassembly; carries the BR bracket rivnuts too"),
-    "111101": ("aluminium 6063-T6 rectangular tube 100 x 40 x 2.0 (wall: assumption, HOLD-07; alloy: assumption)", AA20,
+    "111101": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 (PM ruling; alloy: assumption)", AA20,
                "saw cut (front mitre, back square), CNC drill, deburr, anodise", "calculation", "DRAFT",
                "CAD; finish D-67; section layout study B-BAND", "front end mitred to DL's facet band piece (P02)"),
-    "111103": ("aluminium 6063-T6 rectangular tube 100 x 40 x 2.0 (wall: assumption, HOLD-07; alloy: assumption)", AA20,
+    "111103": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 (PM ruling; alloy: assumption)", AA20,
                "saw cut (square), CNC drill, deburr, anodise", "calculation", "DRAFT",
                "CAD; finish D-67; section layout study B-BAND", "2420 long: fits the 96 x 48 in pallet (layout study B1)"),
-    "111201": ("aluminium 6063-T6 equal angle 60 x 60 x 5 (assumption)", AA20 + " (visible inside at floor level; assumption)",
-               "saw cut, drill, deburr, anodise", "calculation", "DRAFT", "CAD",
-               "COMMON: BL in P01, BR (same part, turned) in P02"),
-    "111401": ("plywood 9 mm, low-emission (E1 / CARB P2 class, HOLD), 600 kg/m3 (assumption, layout study rho_ply)",
+    "110401": ("bonded subassembly: F1 plywood with its foam mat bonded underneath at the factory (D-87); adhesive spec HOLD",
+               "", "bond (spec HOLD)", "calculation", "DRAFT", "CAD; D-87", "ships as one piece"),
+    "111401": ("poplar-core plywood 9 mm with a hard face veneer, low-emission (E1 / CARB P2 class, HOLD), about 450 kg/m3 (assumption, D-85)",
                "factory wood-look finish (HOLD)", "CNC router: outline and the seam half-lap", "calculation", "DRAFT",
                "CAD; D-72 (9 mm floor), packing plan (1219 max with the lap)", "1218.5 wide including the 13 mm lap"),
     "111501": ("closed-cell foam, cross-linked PE or EPDM, 3 mm, about 200 kg/m3 (assumption; product HOLD, ISS-085)",
-               "", "cut to the panel outline", "calculation", "HOLD", "CAD; D-76", "under F1"),
+               "", "cut to the panel outline, bonded under F1 at the factory (D-87)", "calculation", "HOLD", "CAD; D-76, D-87",
+               "under F1"),
     "831001": ("stainless steel A2 round bar, turned, M6 stud (assumption)", "", "lathe, thread, chamfer",
                "calculation", "DRAFT", "CAD; joints register H-05 (PROPOSED sizes)",
                "screwed into its rivnut with threadlocker at the factory"),
@@ -61,6 +61,9 @@ PART_INFO = {
                "calculation", "DRAFT", "CAD; joints register H-08", "under each J-BASE-01 bolt rivnut's head"),
     "838003": ("aluminium 5056 (maker)", "", "", "calculation", "DRAFT",
                "CAD envelope; joints register H-03; Sherex CAH3-610-4.2", "set at the factory; torque HOLD-01"),
+    "111601": ("aluminium plate 3 mm, 5754 or 6082 (assumption)", "mill finish (hidden)", "shear or laser, drill",
+               "calculation", "DRAFT", "CAD; PM ruling (band at 1.5 mm with a doubler at each glide)",
+               "inside the band on its bottom face, clamped by the glide's M10 rivnut"),
     "118002": ("levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad (product HOLD)", "", "",
                "assumption", "HOLD", "layout study B-GLIDE 0.15 kg", "adjusted from above through the band top before the walls go on"),
 }
@@ -68,15 +71,9 @@ PART_INFO = {
 # items not modelled in the CAD: (part number, name, name_vi, type, parent, qty rule, unit,
 # material, finish, mass each kg, mass_status, status, source, note)
 EXTRA = [
-    ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI", "110000",
-     "bracket", "pcs", "steel 8.8, zinc plated", "", 0.0065, "calculation", "DRAFT",
-     "joints register H-01 (D-63); mass from nominal ISO 4762 geometry", "corner bracket BL: 2 per leg, site fitted"),
-    ("838004", "HARDWARE - HEAD WASHER - 6.4 X 18 X 1.6 - ISO 7093-1 A2", "Long đen lớn M6", "PI", "110000",
-     "bracket", "pcs", "stainless A2", "", 0.0028, "calculation", "DRAFT",
-     "joints register H-09 (D-63); mass pi/4 (18^2 - 6.4^2) 1.6 x 7.9 g/cm3", "under each bracket bolt head"),
     ("838006", "HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD)", "Tán rút M10 cho chân chỉnh", "PI", "band",
      "glides", "pcs", "aluminium or steel (HOLD)", "", 0.006, "assumption", "HOLD",
-     "number PROPOSED for the joints register (glide nut)", "set in the band's bottom wall at the factory"),
+     "number PROPOSED for the joints register (glide nut)", "set through the band's 1.5 bottom face and the 3 mm doubler (grip 4.5) at the factory"),
     ("118003", "BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD)", "Nút bịt đầu ống 100x40", "PI", "110101",
      "endcap", "pcs", "PE or PP insert cap for a 100 x 40 x 2.0 tube, black (product HOLD)", "", 0.01, "assumption", "HOLD",
      "number PROPOSED for the joints register", "closes the side band's back end, face flush with Y = pod_d / 2"),
@@ -101,8 +98,6 @@ def param(d, name):
 
 
 def extra_qty(d, rule, parent_counts):
-    if rule == "bracket":
-        return 4 * parent_counts.get("111201", 0)
     if rule == "glides":
         return parent_counts.get("118002", 0)
     if rule == "endcap":
@@ -137,7 +132,7 @@ def make_bom(d):
         if rec.get("mass_kg") is not None:
             mass_of[pn] = rec["mass_kg"]
     # assembly masses: children's copies x mass (calculation)
-    for asm in ("110101", "110103"):
+    for asm in sorted({k.split(">")[0] for k in copies} - {"110000"}):
         tot = 0.0
         for k, n in copies.items():
             parent, child = k.split(">")

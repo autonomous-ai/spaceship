@@ -3,19 +3,21 @@
  "copies": {
   "110000>110101": 1,
   "110000>110103": 1,
-  "110000>111201": 1,
-  "110000>111401": 1,
-  "110000>111501": 1,
+  "110000>110401": 1,
   "110101>111101": 1,
+  "110101>111601": 2,
   "110101>118002": 2,
   "110101>831001": 2,
   "110101>831002": 4,
-  "110101>838003": 8,
+  "110101>838003": 6,
   "110103>111103": 1,
+  "110103>111601": 3,
   "110103>118002": 3,
   "110103>831001": 4,
   "110103>831002": 8,
-  "110103>838003": 16
+  "110103>838003": 12,
+  "110401>111401": 1,
+  "110401>111501": 1
  },
  "doc": "110000_P01_BASE_CAD",
  "floor_f1": {
@@ -156,32 +158,6 @@
      0.0,
      0.0,
      1.0
-    ],
-    "dia": 9.53
-   },
-   {
-    "at": [
-     null,
-     775.0,
-     40.0
-    ],
-    "axis": [
-     1.0,
-     0.0,
-     0.0
-    ],
-    "dia": 9.53
-   },
-   {
-    "at": [
-     null,
-     775.0,
-     80.0
-    ],
-    "axis": [
-     1.0,
-     0.0,
-     0.0
     ],
     "dia": 9.53
    }
@@ -420,112 +396,6 @@
      1.0
     ],
     "dia": 9.53
-   },
-   {
-    "at": [
-     -1175.0,
-     null,
-     40.0
-    ],
-    "axis": [
-     0.0,
-     1.0,
-     0.0
-    ],
-    "dia": 9.53
-   },
-   {
-    "at": [
-     -1175.0,
-     null,
-     80.0
-    ],
-    "axis": [
-     0.0,
-     1.0,
-     0.0
-    ],
-    "dia": 9.53
-   },
-   {
-    "at": [
-     1175.0,
-     null,
-     40.0
-    ],
-    "axis": [
-     0.0,
-     1.0,
-     0.0
-    ],
-    "dia": 9.53
-   },
-   {
-    "at": [
-     1175.0,
-     null,
-     80.0
-    ],
-    "axis": [
-     0.0,
-     1.0,
-     0.0
-    ],
-    "dia": 9.53
-   }
-  ],
-  "111201": [
-   {
-    "at": [
-     -1175.0,
-     null,
-     40.0
-    ],
-    "axis": [
-     0.0,
-     1.0,
-     0.0
-    ],
-    "dia": 6.6
-   },
-   {
-    "at": [
-     -1175.0,
-     null,
-     80.0
-    ],
-    "axis": [
-     0.0,
-     1.0,
-     0.0
-    ],
-    "dia": 6.6
-   },
-   {
-    "at": [
-     null,
-     775.0,
-     40.0
-    ],
-    "axis": [
-     1.0,
-     0.0,
-     0.0
-    ],
-    "dia": 6.6
-   },
-   {
-    "at": [
-     null,
-     775.0,
-     80.0
-    ],
-    "axis": [
-     1.0,
-     0.0,
-     0.0
-    ],
-    "dia": 6.6
    }
   ]
  },
@@ -986,11 +856,11 @@
    "value": 2332.0
   },
   {
-   "comment": "BASE ASSUMPTION: layout study inputs.py t_al_base 2.0 mm (aluminium 100x40 base band); alloy, temper and dark finish HOLD (ISS-034, sample hold H15)",
-   "expression": "2 mm",
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group): 100 x 40 x 1.5 base band (was 2.0), with a doubler at each glide; rivnut coupon in 1.5 mm added to the rivnut test",
+   "expression": "1.5 mm",
    "name": "band_wall",
    "unit": "mm",
-   "value": 2.0
+   "value": 1.5
   },
   {
    "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group): every base band piece and the door's kick strip",
@@ -1196,53 +1066,25 @@
    "value": 2.0
   },
   {
-   "comment": "BASE ASSUMPTION: angle leg, standard extruded aluminium angle 60 x 60 x 5",
-   "expression": "60 mm",
-   "name": "br_leg",
+   "comment": "BASE ASSUMPTION: glide doubler length along the band",
+   "expression": "30 mm",
+   "name": "gd_l",
    "unit": "mm",
-   "value": 60.0
+   "value": 30.0
   },
   {
-   "comment": "BASE ASSUMPTION: angle thickness",
-   "expression": "5 mm",
-   "name": "br_t",
+   "comment": "BASE CALCULATION: glide doubler width: the band's bore less 1 mm, so it bears on the bottom face right next to both side walls",
+   "expression": "band_t - 2 * band_wall - 1 mm",
+   "name": "gd_w",
    "unit": "mm",
-   "value": 5.0
+   "value": 36.0
   },
   {
-   "comment": "BASE ASSUMPTION: bracket height, Z 25 to 95: above the floor top, below the walls",
-   "expression": "70 mm",
-   "name": "br_len",
+   "comment": "BASE ASSUMPTION: glide doubler thickness: clamped with the 1.5 mm bottom face by the glide's M10 rivnut (grip 4.5); bending at 500 N falls from about 123 MPa to about 31 MPa (calculation, feature rationale)",
+   "expression": "3 mm",
+   "name": "gd_t",
    "unit": "mm",
-   "value": 70.0
-  },
-  {
-   "comment": "BASE ASSUMPTION: bracket bottom: 13 mm above the floor top (mat_t + fl_t)",
-   "expression": "25 mm",
-   "name": "br_z0",
-   "unit": "mm",
-   "value": 25.0
-  },
-  {
-   "comment": "BASE ASSUMPTION: bolt holes from the bracket's heel: clears the other leg and the bolt head",
-   "expression": "35 mm",
-   "name": "br_e",
-   "unit": "mm",
-   "value": 35.0
-  },
-  {
-   "comment": "BASE ASSUMPTION: bolt holes from the bracket's top and bottom ends",
-   "expression": "15 mm",
-   "name": "br_zh",
-   "unit": "mm",
-   "value": 15.0
-  },
-  {
-   "comment": "BASE SOURCE: ISO 273 medium clearance hole for M6",
-   "expression": "6.6 mm",
-   "name": "br_hole",
-   "unit": "mm",
-   "value": 6.6
+   "value": 3.0
   },
   {
    "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group): 9 mm plywood floor panels, as v1 (FLR-01 9 mm), so the floor top is 12 and the threshold 13 (US accessibility). Replaces the skeleton's floor_t 15 until its next update; then fl_t = floor_t",
@@ -1297,6 +1139,14 @@
    "parent": "110000",
    "pn": "110103"
   },
+  "110401": {
+   "class": "BS",
+   "key": "floor_assy",
+   "name": "BASE - FLOOR PANEL ASSY - F1",
+   "name_vi": "Tấm sàn F1 (cụm dán)",
+   "parent": "110000",
+   "pn": "110401"
+  },
   "111101": {
    "box_mm": [
     -1250.0,
@@ -1308,13 +1158,13 @@
    ],
    "class": "MP",
    "key": "band_l_tube",
-   "mass_kg": 2.2096,
+   "mass_kg": 1.67,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - SIDE - LH",
    "name_vi": "Viền chân nhôm 100x40 - cạnh trái",
    "parent": "110101",
    "pn": "111101",
-   "volume_mm3": 818384.6
+   "volume_mm3": 618526.5
   },
   "111103": {
    "box_mm": [
@@ -1327,32 +1177,13 @@
    ],
    "class": "MP",
    "key": "band_b_tube",
-   "mass_kg": 3.5449,
+   "mass_kg": 2.6794,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - BACK",
    "name_vi": "Viền chân nhôm 100x40 - cạnh sau",
    "parent": "110103",
    "pn": "111103",
-   "volume_mm3": 1312929.8
-  },
-  "111201": {
-   "box_mm": [
-    -1209.24,
-    749.24,
-    25.0,
-    -1149.24,
-    809.24,
-    95.0
-   ],
-   "class": "MP",
-   "key": "bracket",
-   "mass_kg": 0.1068,
-   "material": "Aluminum",
-   "name": "BASE - CORNER BRACKET - BACK - COMMON",
-   "name_vi": "Ke góc đế - góc sau",
-   "parent": "110000",
-   "pn": "111201",
-   "volume_mm3": 39565.8
+   "volume_mm3": 992385.3
   },
   "111401": {
    "box_mm": [
@@ -1365,11 +1196,11 @@
    ],
    "class": "MP",
    "key": "floor_f1",
-   "mass_kg": 9.4965,
-   "material": "Plywood 600 kg/m3 (ASSUMPTION)",
+   "mass_kg": 7.1224,
+   "material": "Poplar-core plywood 450 kg/m3 (ASSUMPTION)",
    "name": "BASE - FLOOR PANEL - F1",
    "name_vi": "Tấm sàn mỏng - F1",
-   "parent": "110000",
+   "parent": "110401",
    "pn": "111401",
    "volume_mm3": 15827508.0
   },
@@ -1388,9 +1219,28 @@
    "material": "Closed-cell foam 200 kg/m3 (ASSUMPTION)",
    "name": "BASE - SEAL MAT - F1",
    "name_vi": "Tấm lót kín sàn - F1",
-   "parent": "110000",
+   "parent": "110401",
    "pn": "111501",
    "volume_mm3": 5247541.5
+  },
+  "111601": {
+   "box_mm": [
+    -18.0,
+    -15.0,
+    0.0,
+    18.0,
+    15.0,
+    3.0
+   ],
+   "class": "MP",
+   "key": "doubler",
+   "mass_kg": 0.0077,
+   "material": "Aluminum",
+   "name": "BASE - GLIDE DOUBLER - COMMON",
+   "name_vi": "Tấm tăng cứng chân chỉnh",
+   "parent": "110000",
+   "pn": "111601",
+   "volume_mm3": 2841.8
   },
   "118002": {
    "box_mm": [
@@ -1477,7 +1327,7 @@
    "front_end": "mitre to DL's outer facet band piece: 24.14 deg from square, long point on the outer face",
    "inner_face_length": 1499.07,
    "outer_face_length": 1517.0,
-   "section": "100 x 40 x 2.0"
+   "section": "100 x 40 x 1.5"
   },
   "111103": {
    "axis": "X",
@@ -1485,15 +1335,7 @@
    "front_end": "square",
    "inner_face_length": 2420.0,
    "outer_face_length": 2420.0,
-   "section": "100 x 40 x 2.0"
-  },
-  "111201": {
-   "axis": "Z",
-   "back_end": "square",
-   "front_end": "square",
-   "inner_face_length": 70.0,
-   "outer_face_length": 70.0,
-   "section": "angle 60 x 60 x 5"
+   "section": "100 x 40 x 1.5"
   }
  }
 }
