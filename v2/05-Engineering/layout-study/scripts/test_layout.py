@@ -101,6 +101,23 @@ def test_only_the_five_status_words():
             assert any(c in v.source for c in ("D-", "PR #", "S05")), f"{k}: a confirmed value cites its decision ({v.source})"
 
 
+def test_p04_rollup_lines():
+    """ISS-081: every roll-up line has a status word and a source, the total is their sum, every piece but the glass is
+    20 kg or less (D-03), the air parts are the air report's 61.8 kg with fans, and the five savings are ranked."""
+    import rollup
+    rows = rollup.lines()
+    for g, item, q, kg, st, src in rows:
+        assert any(w in st for w in STATUS_WORDS), (item, st)
+        assert src.strip(), item
+        assert kg <= 20.0 or "glass" in item.lower() or "door unit" in item.lower(), (item, kg)
+    assert abs(rollup.pod_kg(rows) - sum(q * kg for _, _, q, kg, _, _ in rows)) < 1e-9
+    air = sum(q * kg for g, _, q, kg, _, _ in rows if g == "AIR")
+    assert abs(air - 61.8) < 0.05, air
+    sv = rollup.savings()
+    assert len(sv) == 5 and all(s[0] > 0 for s in sv)
+    assert [s[0] for s in sv[:4]] == sorted((s[0] for s in sv[:4]), reverse=True), "savings 1 to 4 ranked by kg"
+
+
 P_DEFAULT_CEIL = p("ceil_t")
 
 if __name__ == "__main__":
