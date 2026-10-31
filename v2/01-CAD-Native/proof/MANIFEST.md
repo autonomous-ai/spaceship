@@ -43,7 +43,7 @@ Top and bottom rails are the same geometry today (same length, same hole pattern
 | frame_height | 1150 mm | CALCULATION: wall height 2300 (SOURCE: v1 BOM) / 2 frames (SOURCE: build plan II). HOLD: a thin floor makes walls about 80 mm taller |
 | tube_size | 20 mm | SOURCE: build plan VT10, box section 20x20 |
 | tube_wall | 1.2 mm | ASSUMPTION: the plan gives none; UNVERIFIED with a supplier |
-| frame_material | Steel | SOURCE: build plan VT10. Aluminium is PROPOSED in the v2 plan; switch the text parameter and rebuild |
+| frame_material | Steel | SOURCE: build plan VT10, as built for this proof. DECIDED by the PM (2026-10-31): v2 uses aluminium tube 20 x 40 x 1.2; Milestone 2 changes the parameters |
 | hole_dia | 6.6 mm | SOURCE: ISO 273 medium clearance for M6. Bolt M6x60 (SOURCE: build plan VT11) |
 | hole_edge_dist | 60 mm | ASSUMPTION: stile 20 + weld 3 + washer radius 6 + wrench swing 25 = 54, rounded up. To check in the joint register |
 | rail_hole_pitch_max | 500 mm | ASSUMPTION until the joint and gasket calculation (J-WALL-01) |
@@ -65,5 +65,5 @@ Steel frame 4.66 kg (tubes 20x20x1.2, density 7850, square corners: real tube co
 2. Front stile to decor frame: no holes yet, the decor bracket interface is not designed.
 3. ACP bonded straight to the frame with no plywood (PROPOSED in the v2 plan): bond spec, and the sound check, decide it.
 4. Skin seam to the upper panel, tube end caps, tube corner radii, weld spec.
-5. The horizontal split puts a seam across the side wall at about 1150 mm. v1's side wall has a vertical seam instead. The look rule needs a decision on this.
+5. DECIDED by the PM (2026-10-31): the horizontal side-wall seam stays, with aligned reveals (the layout study's split).
 6. Wall height follows the floor choice (thin floor PROPOSED).
