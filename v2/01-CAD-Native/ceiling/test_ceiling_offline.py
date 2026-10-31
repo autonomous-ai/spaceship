@@ -157,8 +157,9 @@ class Joints(unittest.TestCase):
                     if face == "bottom":
                         self.assertAlmostEqual(z, b[4])
                         self.assertTrue(b[0] + r + 9 <= x <= b[1] - r - 9 or member == "BACK", (half, n, x))
-                        self.assertGreaterEqual(y - r - b[2], 9.0, (half, n, "rivnut edge distance"))
-                        self.assertGreaterEqual(b[3] - (y + r), 9.0, (half, n))
+                        edge = 5.0 if n.startswith("SOFFIT HANGER") else 9.0   # hangers on 20 mm faces (HOLD-04)
+                        self.assertGreaterEqual(y - r - b[2], edge, (half, n, "rivnut edge distance"))
+                        self.assertGreaterEqual(b[3] - (y + r), edge, (half, n))
                     else:
                         self.assertTrue(abs(x - b[0]) < 1e-6 or abs(x - b[1]) < 1e-6, (half, n, x, b))
                         self.assertGreaterEqual(z - r, b[4] + v["tube_t"], (half, n))
@@ -234,8 +235,7 @@ class Cassette(unittest.TestCase):
             xc = (b[0] + b[1]) / 2
             self.assertAlmostEqual(abs(xc), VALS["rib_off"], msg=name)
             k = int(name.split()[1][1])
-            self.assertAlmostEqual(b[2], k * VALS["fr_pitch"] - VALS["cs_front"] + VALS["tube_w"],
-                                   msg=name + " on the member's back face")
+            self.assertAlmostEqual(b[2], ev(M.member_back_cs(k)), msg=name + " on the member's back face")
             self.assertGreaterEqual(b[2], ev(M.CS_Y0))
             self.assertLessEqual(b[3], ev(M.CS_Y1))
         self.assertEqual(len(M.clip_boxes()), 6)
@@ -279,9 +279,19 @@ class Cassette(unittest.TestCase):
             sb = tuple(ev(e) for e in b)
             sizes.setdefault(key, set()).add(round(sb[3] - sb[2], 6))
             self.assertGreaterEqual(sb[3] - sb[2], VALS["fill_min"])
-        self.assertEqual(sizes["fill_a"], {338.75})
-        self.assertEqual(sizes["fill_b"], {338.75})
-        self.assertEqual(len(sizes["fill_c"]), 1)
+        self.assertEqual(len(sizes), 3)
+        for k in sizes:
+            self.assertEqual(len(sizes[k]), 1)
+
+    def test_x1_over_the_soffit(self):
+        """D-87 hangers: X1 overlaps the soffit's back edge by x1_ov, and its back face (the
+        clips' face) stays over the cassette."""
+        v = VALS
+        x1 = dict(M.boxes_mm(v, [(c, b) for c, _n, _a, b in M.frame_members("C1")]))["X1"]
+        soffit_back = ev(M.YW) + v["cs_front"]
+        self.assertAlmostEqual(soffit_back - x1[2], v["x1_ov"])
+        self.assertGreater(x1[3], soffit_back + v["cs_gap"] - 1.0 - 1e-9, "clip face over the cassette")
+        self.assertLessEqual(x1[2] - (ev(M.YW) + v["tube_w"]), 400.0)
 
 
 class Sprinkler(unittest.TestCase):

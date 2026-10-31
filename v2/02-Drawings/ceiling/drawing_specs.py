@@ -144,14 +144,16 @@ def frame_hole_notes(half):
     where = {"SIDE BOLT CLEARANCE": "side member, outer wall", "SIDE BOLT ACCESS": "side member, inner wall",
              "SEAM PIN CLEARANCE": "seam member, closing face", "SEAM PIN RIVNUT": "seam member, closing face (rivnut 838003)",
              "SEAM PIN ACCESS": "seam member, inner wall", "BACK RIVNUT": "back member, underside (rivnut 838003 on stop washer 831002)",
-             "BACK SPIGOT ROUND": "back member, underside", "BACK SPIGOT SLOT": "back member, underside, slot 14 long along X"}
+             "BACK SPIGOT ROUND": "back member, underside", "BACK SPIGOT SLOT": "back member, underside, slot 14 long along X",
+             "SOFFIT HANGER FRONT": "front member, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
+             "SOFFIT HANGER X1": "cross member X1, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)"}
     out = []
     for (name, d), pts in rows.items():
-        if name.startswith("BACK"):
-            pos = "from A: %s; from B: %.2f" % (", ".join("%.2f" % p[0] for p in pts), pts[0][1])
+        if name.startswith(("BACK", "SOFFIT")):
+            pos = "from A: %s; from B: %s" % (", ".join("%.2f" % p[0] for p in pts), ", ".join(sorted({"%.2f" % p[1] for p in pts})))
         else:
             pos = "from B: %s; from C: %.2f" % (", ".join("%.2f" % p[1] for p in pts), pts[0][2])
-        out.append("%s: D%.2f x %d, %s; %s." % (name, d, len(pts), where[name], pos))
+        out.append("%s: Ø%.2f x %d, %s; %s." % (name, d, len(pts), where[name], pos))
     return out
 
 
