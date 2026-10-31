@@ -68,13 +68,13 @@ The supplies sit inside the pod (in the power unit), so their losses heat the po
 
 | Heat source, typical | W |
 |---|---:|
-| Lights (already in C4's 30 W) | 9.7 |
+| Lights (already in C4's 30 W) | 22.0 |
 | Supply losses, 3 units | 8.4 |
 | Sensor hub | 3.0 |
 | Supply fan pair at 53 l/s | 5.2 |
 | **Not yet in C4's 240 W** (losses + hub + supply fans) | **16.6** |
 
-At the 53 l/s normal flow that adds **0.26 K** to C4's 3.8 K (ΔT = P / (1.2 × 1005 × 0.053), calculation). The lights are 9.7 W: the shelf capped at 71.5 % (PM heat request) and the call light. With the voice kit at its 40 W average (D-88), the kit adds 40 W and its supply's loss about 8.2 W more (calculation). For the Air Engineer's 4 K check (D-50).
+At the 53 l/s normal flow that adds **0.26 K** to C4's 3.8 K (ΔT = P / (1.2 × 1005 × 0.053), calculation). The lights are 22.0 W in the work scene: the down-light at full and the uplight on the rest of the 22 W the hub holds them to (PM ruling 2026-11-01), inside C4's 30 W for lights. With the voice kit at its 40 W average (D-88), the kit adds 40 W and its supply's loss about 8.2 W more (calculation). For the Air Engineer's 4 K check (D-50).
 
 ## 5. Mass
 

@@ -255,7 +255,7 @@ def calc_md(v, mass_of, harness):
       "hub's power is heat inside too, and so is the supply fans' power (it ends up in the supply air). The "
       "exhaust fans' power leaves with the exhaust.")
     A("")
-    lights = sum(q * t for (_i, _n, s, _f, q, _w, t, _st, _src, _no) in EP.LOADS if _i in ("LD04", "LD05"))
+    lights = sum(q * t for (_i, _n, s, _f, q, _w, t, _st, _src, _no) in EP.LOADS if _i in ("LD04", "LD05", "LD08"))
     hub = sum(q * t for (_i, _n, s, _f, q, _w, t, _st, _src, _no) in EP.LOADS if _i == "LD03")
     fan_s = sum(q * t for (_i, _n, s, _f, q, _w, t, _st, _src, _no) in EP.LOADS if _i == "LD01")
     extra = loss_typ + hub + fan_s
@@ -269,7 +269,8 @@ def calc_md(v, mass_of, harness):
     A("| **Not yet in C4's 240 W** (losses + hub + supply fans) | **%.1f** |" % extra)
     A("")
     A("At the 53 l/s normal flow that adds **%.2f K** to C4's 3.8 K (ΔT = P / (1.2 × 1005 × 0.053), calculation). "
-      "The lights are %.1f W: the shelf capped at 71.5 %% (PM heat request) and the call light. With the voice kit at "
+      "The lights are %.1f W in the work scene: the down-light at full and the uplight on the rest of the 22 W the "
+      "hub holds them to (PM ruling 2026-11-01), inside C4's 30 W for lights. With the voice kit at "
       "its 40 W average (D-88), the kit adds 40 W and its supply's loss about %.1f W more (calculation). For the Air "
       "Engineer's 4 K check (D-50)." % (dT, lights, 40 / eff - 40))
     A("")
