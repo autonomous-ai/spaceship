@@ -59,9 +59,55 @@ class NotesTests(unittest.TestCase):
         _x, _y, scale = sn.placement(0, 0, 116.04, 1000, 500, width_at_scale_1=116.04)
         self.assertAlmostEqual(scale, 1.0)
 
+    def run_insert(self, sheet_w, sheet_h, width_at_scale_1=None):
+        """INSERT_SCRIPT itself against a fake Fusion API; returns the inserted (position, scale)."""
+        import types
+        inserted = []
+        inp = types.SimpleNamespace()
+        sheet = types.SimpleNamespace(name="Sheet1", width=sheet_w, height=sheet_h, images=types.SimpleNamespace(
+            createInput=lambda: inp, insert=lambda ii: inserted.append((ii.position, ii.scale)) or True))
+        doc = types.SimpleNamespace(name="D_DWG", drawing=types.SimpleNamespace(
+            sheets=types.SimpleNamespace(count=1, item=lambda i: sheet)))
+        adsk = types.ModuleType("adsk")
+        adsk.core = types.SimpleNamespace(Application=types.SimpleNamespace(get=lambda: types.SimpleNamespace(activeDocument=doc)),
+                                          Point2D=types.SimpleNamespace(create=lambda x, y: (x, y)))
+        adsk.drawing = types.SimpleNamespace(DrawingDocument=types.SimpleNamespace(cast=lambda d: d))
+        src = sn.INSERT_SCRIPT % {"args": {"name": "D_DWG", "sheet": 1, "png": "/x.png", "px": 340.0, "py": 90.0,
+                                           "width_mm": 280.0, "width_at_scale_1": width_at_scale_1,
+                                           "measured": sn.MEASURED, "sheet_mm": sn.SHEET_MM, "label": "n.txt"}}
+        keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.drawing")}
+        sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.drawing": adsk.drawing})
+        try:
+            ns = {}
+            exec(compile(src, "insert", "exec"), ns)
+            ns["run"](None)
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+        return inserted
+
+    def test_a_measured_sheet_size_gets_its_measured_scale(self):
+        [(pos, scale)] = self.run_insert(420.0, 297.0)                 # A3, measured
+        self.assertEqual(pos, (340.0, 90.0))
+        self.assertAlmostEqual(scale, 280.0 / 58.02)
+
+    def test_a_sheet_size_not_yet_measured_is_refused(self):
+        # PM and Reviewer 5, 2026-10-31: no insert on a size the mapping wasn't measured on
+        with self.assertRaises(RuntimeError) as cm:
+            self.run_insert(841.0, 594.0)                               # A1
+        self.assertIn("hasn't been measured on that sheet size", str(cm.exception))
+
+    def test_a_width_measured_in_the_same_run_is_used(self):
+        [(_pos, scale)] = self.run_insert(841.0, 594.0, width_at_scale_1=58.0)
+        self.assertAlmostEqual(scale, 280.0 / 58.0)
+
     def test_insert_script_compiles(self):
-        compile(sn.INSERT_SCRIPT % {"args": {"name": "N", "sheet": 1, "png": "/x.png", "px": 1.0,
-                                             "py": 2.0, "scale": 0.5, "label": "n.txt"}}, "f", "exec")
+        compile(sn.INSERT_SCRIPT % {"args": {"name": "N", "sheet": 1, "png": "/x.png", "px": 1.0, "py": 2.0,
+                                             "width_mm": 100.0, "width_at_scale_1": None, "measured": sn.MEASURED,
+                                             "sheet_mm": sn.SHEET_MM, "label": "n.txt"}}, "f", "exec")
 
 
 if __name__ == "__main__":

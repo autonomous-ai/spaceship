@@ -47,6 +47,11 @@ CAP_RATIO = 0.716            # Arial capital height / font size (ISO 3098 text h
 # other sheet sizes pass --width-at-scale-1 until measured there.
 WIDTH_AT_SCALE_1_MM = 58.02
 ANCHOR = "lower-left"
+# Sheet sizes it was measured on: the insert refuses any other size until it is
+# measured there too (PM and Reviewer 5, 2026-10-31), unless the run passes a
+# width it measured itself (--width-at-scale-1).
+MEASURED = {"A3": WIDTH_AT_SCALE_1_MM}
+SHEET_MM = {"A0": (1189, 841), "A1": (841, 594), "A2": (594, 420), "A3": (420, 297), "A4": (297, 210)}
 
 INSERT_SCRIPT = '''import adsk.core, adsk.drawing
 A = %(args)r
@@ -59,14 +64,24 @@ def run(_c):
     if not 1 <= A["sheet"] <= dwg.sheets.count:
         raise RuntimeError("the drawing has %%d sheet(s), not %%d" %% (dwg.sheets.count, A["sheet"]))
     sh = dwg.sheets.item(A["sheet"] - 1)
+    size = next((k for k, (w, h) in sorted(A["sheet_mm"].items())
+                 if abs(sh.width - w) <= 1 and abs(sh.height - h) <= 1), None)
+    at1 = A["width_at_scale_1"] or A["measured"].get(size)
+    if not at1:
+        raise RuntimeError("sheet %%d is %%s (%%g x %%g mm): how Images.insert sizes an image hasn't been "
+                           "measured on that sheet size (measured: %%s); nothing inserted" %% (
+                               A["sheet"], size or "a custom size", sh.width, sh.height,
+                               ", ".join(sorted(A["measured"])) or "none"))
+    scale = A["width_mm"] / at1
     ii = sh.images.createInput()
     ii.imageFilePath = A["png"]
     ii.position = adsk.core.Point2D.create(A["px"], A["py"])
-    ii.scale = A["scale"]
+    ii.scale = scale
     if not sh.images.insert(ii):
         raise RuntimeError("Images.insert returned False")
-    print("inserted %%s on sheet %%d (%%s) at %%s, scale %%.5f" %% (A["label"], A["sheet"], sh.name,
-                                                                     (A["px"], A["py"]), A["scale"]))
+    print("inserted %%s on sheet %%d (%%s, %%s) at %%s, %%g mm wide: scale %%.5f (%%g mm at scale 1, %%s)" %% (
+        A["label"], A["sheet"], sh.name, size, (A["px"], A["py"]), A["width_mm"], scale, at1,
+        "measured in this run" if A["width_at_scale_1"] else "measured on %%s" %% size))
 '''
 
 
@@ -187,7 +202,8 @@ def main(argv=None):
         opened_here = any(line.startswith("run_script: opened") for line in (out or "").splitlines())   # the runner may warn first
         ok, out = rs.run_in_fusion(mcp, INSERT_SCRIPT % {"args": {
             "name": opts.drawing, "sheet": opts.sheet, "png": png, "px": px, "py": py,
-            "scale": scale, "label": os.path.basename(opts.notes)}})
+            "width_mm": opts.width, "width_at_scale_1": opts.width_at_scale_1,
+            "measured": MEASURED, "sheet_mm": SHEET_MM, "label": os.path.basename(opts.notes)}})
         print("sheet_notes: %s" % (out or "").strip())
         if not ok:
             return 1
