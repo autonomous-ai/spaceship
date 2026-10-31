@@ -74,7 +74,7 @@ def panel_rows(rep):
                      rep["document"], rep["version"]), "outer panel; the lining cassette is a separate part (D-17)"])
     fm = round(sum(b["mass_kg"] for b in frame["bodies"]), 3)
     rows.append([1, frame["part_number"], en_name(frame), vi_name(frame["description"]), "MP",
-                 "aluminium tube 20 x 40 x 1.2 and 40 x 40 x 1.2; alloy, temper and finish HOLD (ISS-034, H15)", 1, "pc",
+                 "aluminium tube 6063-T6 mill finish, 20 x 40 x 1.2 and 40 x 40 x 1.2 (PM ruling 2026-10-31)", 1, "pc",
                  "", size_of([min(b["box"][i] for b in frame["bodies"]) for i in range(3)] +
                              [max(b["box"][i + 3] for b in frame["bodies"]) for i in range(3)]), fm, fm, "calculation",
                  "CAD body masses at 2700 kg/m3", "member joints HOLD (H11): butt joints modelled, rails full length"])
@@ -161,7 +161,8 @@ def cassette_rows(rep):
                  "inside the tray, held by its lips over the 24 mm air gap (settles H09 for the walls)"])
     rows += [
         [1, "", "CASSETTE CLIP, CAPTIVE, RATED (HOLD)", "kẹp treo cassette", "PI", "HOLD", len(clips["bodies"]), "pc", "",
-         "zones reserved in the CAD", "", "", "HOLD (H03, HOLD-08)", "D-47; HW-SEL A8; %s J-LIN-01" % REG,
+         "zones reserved in the CAD", 0.25, round(0.25 * len(clips["bodies"]), 2), "HOLD (H03, HOLD-08); mass assumption",
+         "D-47; HW-SEL A8; %s J-LIN-01; mass: layout study clip-and-rail allowance, 1.0 kg per wall cassette" % REG,
          "7.7 kg rated in shear each (HW-SEL A8 calculation); candidate Häfele KEKU EH, unrated"],
         [1, "", "HOOK-AND-LOOP, LOCATING ONLY", "miếng dán Velcro", "PI", "VELCRO PS14 hook 25 mm or 3M Dual Lock SJ3560",
          "", "m", "", "25 wide", "", "", "source (products); quantity not designed", "HW-SEL A8; D-47",

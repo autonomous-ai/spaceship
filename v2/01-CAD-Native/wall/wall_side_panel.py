@@ -12,13 +12,17 @@ document (open your own document first, for example with the runner's
         --arg part=panel --arg side=L --arg row=1 --save "build P01" --close
 
 Options (--arg KEY=VALUE):
-    part=panel|cassette   which document to build (default panel)
+    part=panel|cassette   which document to build (default panel): the outer panel assembly, or the cassette
+    part=frame|skin|fill|tray|felt   one manufactured part alone in its own design, for its part drawing
+                          (a Fusion drawing view always shows the whole design); same code, same parameters
     side=L|R              left (-X) or right (+X) wall, seen from outside facing the door
     row=1|2               lower (1) or upper (2) panel
     stop_after=N          stop after step N, for step-by-step checks
     rebuild=1             empty the active design first (only a design this script built:
                           its root part number must be the one this run builds)
     skeleton=NAME         skeleton cloud file to derive from (default 100000_P04_POD-SKELETON_CAD)
+    post=1                after a clean build, save the document here and run post_wall_doc.py's steps in the
+                          same run (export, report, flat DXF, edit test); close with --close --discard
     link=derive|parse     how the skeleton parameters come in (default derive)
 
 Coordinates: the pod system of conventions.md section 4 (origin on the room
@@ -59,8 +63,11 @@ S = -1 if SIDE == "L" else 1          # sign of X for this side
 SKELETON_REL = "v2/01-CAD-Native/skeleton/pod_skeleton.py"
 MM = 0.1                               # Fusion API lengths are cm
 
-if SIDE not in ("L", "R") or ROW not in (1, 2) or PART not in ("panel", "cassette"):
-    raise ValueError("side must be L or R, row 1 or 2, part panel or cassette")
+WANT = {"panel": ("frame", "skin", "fill"), "frame": ("frame",), "skin": ("skin",), "fill": ("fill",),
+        "cassette": ("tray", "felt", "clip"), "tray": ("tray",), "felt": ("felt",)}
+if SIDE not in ("L", "R") or ROW not in (1, 2) or PART not in WANT:
+    raise ValueError("side must be L or R, row 1 or 2, part one of %s" % sorted(WANT))
+PANEL_SIDE = PART in ("panel", "frame", "skin", "fill")
 
 # ---------------------------------------------------------------- part numbers and names
 
@@ -98,7 +105,7 @@ RESERVED = {"110006", "110002", "120001", "211000", "210001", "210003", "210005"
 for _k, (_pn, _n, _v) in PARTS.items():
     if _pn in RESERVED:
         raise RuntimeError("reserved part number %s (D-28)" % _pn)
-ROOT_KEY = "assy" if PART == "panel" else "cass"
+ROOT_KEY = {"panel": "assy", "cassette": "cass"}.get(PART, PART)
 DOC_NAME = "%s_%s_%s_CAD" % (PARTS[ROOT_KEY][0], REV, re.sub(r"[^A-Z0-9]+", "-", PARTS[ROOT_KEY][1]).strip("-"))
 
 # ---------------------------------------------------------------- wall parameters
@@ -136,7 +143,13 @@ WALL_PARAMS = [
      "intermediate stiles so that no stile pitch (centre to centre) exceeds stile_pitch_max"),
     ("stile_pitch", "(frm_len - tube_w / 2 - corner_w / 2) / (stile_n_mid + 1)", "mm", "calculation",
      "equal stile pitch, centre to centre, from the front stile to the 40 mm back stile"),
-    ("stile_len", "frm_h - 2 * tube_w", "mm", "calculation", "stiles fit between the full-length rails (butt joints)"),
+    ("top_h", "tube_w" if ROW == 1 else "corner_w", "mm", "confirmed" if ROW == 2 else "calculation",
+     "top member height: 20 on a lower panel; 40 x 40 on an upper panel, where the ceiling bolts in (PM ruling "
+     "R-J3, joints register FR-06)"),
+    ("stile_len", "frm_h - tube_w - top_h", "mm", "calculation", "stiles fit between the full-length rails (butt joints)"),
+    ("ceil_bolt_dz", "(corner_w + skin_t + bond_t) / 2", "mm", "calculation",
+     "J-CEIL-01 side bolts: the middle of the overlap between the 40 x 40 top member (pod_h - 40 to pod_h) and the "
+     "ceiling frame (pod_h - outer_t to pod_h - 6), below pod_h; Z 2377 on P04 (proposed to CEILING, 2026-10-31)"),
     ("fill_t", "tube_d", "mm", "calculation", "40 mm PET fill fills the frame depth (D-34; layout study 40 mm)"),
     # site joints, joints register V2-ENG-JNT-01 P01 (ce1f415): M6 x 20 ISO 4762 captive bolts into Sherex
     # CAH3-610-4.2 rivnuts, bolts and corner members DECIDED by the PM (2026-10-31); positions PROPOSED there
@@ -181,7 +194,7 @@ WALL_PARAMS = [
 
 # kg/m3, status, source; used for body materials (mass properties)
 DENSITY = {
-    "frame": (2700.0, "source", "aluminium 2.70 g/cm3 (HW-SEL A4 calculation basis); alloy HOLD (ISS-034, H15)"),
+    "frame": (2700.0, "source", "6063-T6 mill finish (PM ruling 2026-10-31, hidden frame tubes): 2.70 g/cm3"),
     "skin": (3.5 / 0.003, "calculation", "HW-SEL A1: 3.5 kg/m2 for 3 mm Alcorest / 3 mm; real kg/m2 HOLD (H16)"),
     "fill": (32.0, "confirmed", "D-54: 32 kg/m3 fill until the wall sample tests 25"),
     "tray": (7850.0, "source", "steel 7850 kg/m3 (EN 10346 DX51D+Z)"),
@@ -638,19 +651,36 @@ Z_CASS1 = Z1 if ROW == 1 else "pod_h - outer_t - lin_gap"
 
 def build_panel(design, root):
     out = {}
-    frame, skin, fill = new_comp(root, "frame"), new_comp(root, "skin"), new_comp(root, "fill")
-    print("step 1: components %s" % ", ".join(c.name for c in (root, frame, skin, fill)))
+    want = WANT[PART]
+    frame, skin, fill = (new_comp(root, k) if k in want else None for k in ("frame", "skin", "fill"))
+    print("step 1: components %s" % ", ".join(c.name for c in (root, frame, skin, fill) if c))
     if STOP_AFTER <= 1:
         return out
     xf = (X_FRAME_OUT, X_FRAME_IN)
     yf = (Y_FRONT, Y_FRAME_BACK)
+    zs = ("(%s) + tube_w" % Z0, "(%s) - top_h" % Z1)
+    if frame:
+        build_frame(design, frame, out, xf, yf, zs)
+    if skin:
+        build_skin(design, skin, out)
+    if fill:
+        build_fill(design, fill, out, xf, zs)
+    if frame:
+        joint_features(design, frame, fill, out)
+    set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
+                 "ALUMINIUM TUBE 6063-T6 MILL")
+    set_material(design, [b for k, b in out.items() if k.startswith("SKIN")], "skin", "ACP 3 MM EV3038")
+    set_material(design, [b for k, b in out.items() if k.startswith("FILL")], "fill", "PET FILL 40 MM")
+    return out
+
+
+def build_frame(design, frame, out, xf, yf, zs):
     # rails run the full frame length; stiles fit between them (butt joints, member joint method HOLD H11)
     out["RAIL - BOTTOM"] = tube(design, frame, "RAIL - BOTTOM", xf, yf, (Z0, "(%s) + tube_w" % Z0), "y")
-    out["RAIL - TOP"] = tube(design, frame, "RAIL - TOP", xf, yf, ("(%s) - tube_w" % Z1, Z1), "y")
+    out["RAIL - TOP"] = tube(design, frame, "RAIL - TOP", xf, yf, ("(%s) - top_h" % Z1, Z1), "y")
     print("step 2: rails", [(k, size(bbox(v))) for k, v in out.items()])
     if STOP_AFTER <= 2:
         return out
-    zs = ("(%s) + tube_w" % Z0, "(%s) - tube_w" % Z1)
     out["STILE - FRONT"] = tube(design, frame, "STILE - FRONT", xf, (Y_FRONT, "(%s) + tube_w" % Y_FRONT), zs, "z")
     out["STILE - BACK"] = tube(design, frame, "STILE - BACK", xf, ("(%s) - corner_w" % Y_FRAME_BACK, Y_FRAME_BACK),
                                zs, "z")
@@ -662,8 +692,9 @@ def build_panel(design, root):
     print("step 3: stiles, %d mid at pitch %.2f" % (
         round(design.userParameters.itemByName("stile_n_mid").value),
         design.userParameters.itemByName("stile_pitch").value * 10.0))
-    if STOP_AFTER <= 3:
-        return out
+
+
+def build_skin(design, skin, out):
     yskin = (Y_FRONT, Y_BACK)
     zskin = (Z_SKIN0, Z_SKIN1)
     plate = box(design, skin, "SKIN PLATE", (X_OUT, X_SKIN_IN), yskin, zskin).bodies.item(0)
@@ -672,8 +703,9 @@ def build_panel(design, root):
     plate.name = "SKIN - ACP 3 WITH BACK RETURN"
     out[plate.name] = plate
     print("step 4: skin", size(bbox(plate)))
-    if STOP_AFTER <= 4:
-        return out
+
+
+def build_fill(design, fill, out, xf, zs):
     # fill bays: one per bay between the stiles; the last bay (against the 40 mm back stile) is its own box
     bay = box(design, fill, "FILL BAY 1", xf, ("(%s) + tube_w" % Y_FRONT, "(%s) + stile_pitch" % Y_FRONT),
               zs).bodies.item(0)
@@ -685,9 +717,10 @@ def build_panel(design, root):
                                                     "(%s) - corner_w" % Y_FRAME_BACK), zs).bodies.item(0)
     last.name = "FILL - BAY %d" % (sum(1 for k in out if k.startswith("FILL")) + 1)
     out[last.name] = last
-    # pockets beside every bolt this panel drives (FR-10): one cut per bolt, at the bolt's own rule, each
-    # allowed to cut any fill bay (a pattern of a cut can't reach other bodies: PATTERN_FEATURES_NO_PASTE_INT_EDGES)
-    bays = [b for k, b in out.items() if k.startswith("FILL")]
+    # pockets beside every bolt this panel drives (FR-10): one cut per bolt, at the bolt's own rule, with no
+    # fixed target, so it cuts whichever fill piece it meets in the fill component, also after an edit changes
+    # the stile count (a pattern of a cut can't reach other bodies: PATTERN_FEATURES_NO_PASTE_INT_EDGES; a fixed
+    # target list misses the pieces an edit adds)
     z_rail_top = "(%s) + tube_w" % Z0
     if ROW == 1:
         n_now = int(round(design.userParameters.itemByName("n_base_bolt").value))
@@ -698,22 +731,14 @@ def build_panel(design, root):
     for i, yc in enumerate(ys):
         box(design, fill, "FILL POCKET BOTTOM BOLT %d" % (i + 1), xf,
             ("(%s) - pocket_w / 2" % yc, "(%s) + pocket_w / 2" % yc), (z_rail_top, "(%s) + pocket_w" % z_rail_top),
-            "cut", bays)
+            "cut")
     z_j1 = "(%s) + jnt_edge" % Z0
     for j in range(3):
         zc = "(%s) + %d * side_jnt_pitch" % (z_j1, j)
         box(design, fill, "FILL POCKET DECOR BOLT %d" % (j + 1), xf,
             ("(%s) + tube_w" % Y_FRONT, "(%s) + tube_w + pocket_w" % Y_FRONT),
-            ("(%s) - pocket_w / 2" % zc, "(%s) + pocket_w / 2" % zc), "cut", bays)
+            ("(%s) - pocket_w / 2" % zc, "(%s) + pocket_w / 2" % zc), "cut")
     print("step 5: fill, %d bays, pockets at every bolt this panel drives" % sum(1 for k in out if k.startswith("FILL")))
-    if STOP_AFTER <= 5:
-        return out
-    joint_features(design, frame, fill, out)
-    set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
-                 "ALUMINIUM TUBE (alloy HOLD)")
-    set_material(design, [plate], "skin", "ACP 3 MM EV3038")
-    set_material(design, [b for k, b in out.items() if k.startswith("FILL")], "fill", "PET FILL 40 MM")
-    return out
 
 
 def joint_features(design, frame, fill, out):
@@ -752,6 +777,11 @@ def joint_features(design, frame, fill, out):
              "TOP RAIL SPIGOT RIVNUT FRONT")
         hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": "(%s) - spigot_edge" % Y_BACK}, "rivnut_d", t,
              "TOP RAIL SPIGOT RIVNUT BACK")
+    if ROW == 2:
+        # 40 x 40 top member, nut side of J-CEIL-01 side edges: a rivnut in its room-side face at each bay middle
+        r = hole(design, frame, top, "x", X_FRAME_IN, S, {"y": y_bay1, "z": "pod_h - ceil_bolt_dz"}, "rivnut_d", t,
+                 "TOP MEMBER CEILING RIVNUT 1")
+        pattern_feat(frame, [r], "y", n_bays, "stile_pitch", "TOP MEMBER CEILING RIVNUTS")
     z_j1 = "(%s) + jnt_edge" % Z0
     # front stile, bolt side of J-FRONT-01 (decor block): FR-02 in the front wall, FR-03 in the back wall
     a = hole(design, frame, front, "y", Y_FRONT, +1, {"x": xc, "z": z_j1}, "bolt_d", t, "FRONT STILE BOLT CLEARANCE 1")
@@ -873,24 +903,29 @@ def build_tray(design, root, tray, yc, zc):
 
 def build_cassette(design, root):
     out = {}
-    tray, felt, clip = new_comp(root, "tray", sheet_metal=True), new_comp(root, "felt"), new_comp(root, "clip")
-    print("step 1: components %s" % ", ".join(c.name for c in (root, tray, felt, clip)))
+    want = WANT[PART]
+    tray = new_comp(root, "tray", sheet_metal=True) if "tray" in want else None
+    felt = new_comp(root, "felt") if "felt" in want else None
+    clip = new_comp(root, "clip") if "clip" in want else None
+    print("step 1: components %s" % ", ".join(c.name for c in (root, tray, felt, clip) if c))
     if STOP_AFTER <= 1:
         return out
     yc = (Y_CASS_FRONT, Y_CASS_BACK)
     zc = (Z0, Z_CASS1)
-    pan = build_tray(design, root, tray, yc, zc)
-    out[pan.name] = pan
-    print("step 2: tray", size(bbox(pan)))
-    if STOP_AFTER <= 2:
-        return out
-    fb = box(design, felt, "FELT", (X_FELT_FACE, X_FELT_BACK),
-             ("(%s) + tray_t + felt_c" % yc[0], "(%s) - tray_t - felt_c" % yc[1]),
-             ("(%s) + tray_t + felt_c" % zc[0], "(%s) - tray_t - felt_c" % zc[1])).bodies.item(0)
-    fb.name = "FELT - PET 9 HELD BY THE TRAY LIPS"
-    out[fb.name] = fb
-    print("step 3: felt", size(bbox(fb)))
-    if STOP_AFTER <= 3:
+    if tray:
+        pan = build_tray(design, root, tray, yc, zc)
+        out[pan.name] = pan
+        print("step 2: tray", size(bbox(pan)))
+        set_material(design, [pan], "tray", "GALVANISED STEEL 0.5")
+    if felt:
+        fb = box(design, felt, "FELT", (X_FELT_FACE, X_FELT_BACK),
+                 ("(%s) + tray_t + felt_c" % yc[0], "(%s) - tray_t - felt_c" % yc[1]),
+                 ("(%s) + tray_t + felt_c" % zc[0], "(%s) - tray_t - felt_c" % zc[1])).bodies.item(0)
+        fb.name = "FELT - PET 9 HELD BY THE TRAY LIPS"
+        out[fb.name] = fb
+        print("step 3: felt", size(bbox(fb)))
+        set_material(design, [fb], "felt", "PET FELT 9 MM DARK GRAY")
+    if not clip:
         return out
     # reserved zones for the captive clips (H03): in the 4 mm gap between the frame's inner face and the
     # tray back, on the first and last intermediate stiles of the panel frame, near the top and bottom
@@ -906,8 +941,6 @@ def build_cassette(design, root):
             b.name = "HOLD - CLIP ZONE %d (%s %s)" % (n, "BOTTOM" if zi == 0 else "TOP", "FRONT" if yi == 0 else "BACK")
             out[b.name] = b
     print("step 4: %d clip zones (HOLD H03)" % n)
-    set_material(design, [pan], "tray", "GALVANISED STEEL 0.5")
-    set_material(design, [fb], "felt", "PET FELT 9 MM")
     set_material(design, [b for k, b in out.items() if k.startswith("HOLD")], "zone", "RESERVED ZONE")
     return out
 
@@ -934,7 +967,7 @@ def run(_context):
     root.description = "%s | %s | %s | position %s" % (PARTS[ROOT_KEY][1], PARTS[ROOT_KEY][2], REV, CODE)
     print("document %s (expected name %s): %d skeleton + %d wall parameters" % (
         app.activeDocument.name, DOC_NAME, n_skel, n_wall))
-    bodies = build_panel(design, root) if PART == "panel" else build_cassette(design, root)
+    bodies = build_panel(design, root) if PANEL_SIDE else build_cassette(design, root)
     tl = design.timeline
     bad_items = [tl.item(i).name for i in range(tl.count)
                  if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
@@ -956,3 +989,13 @@ def run(_context):
                                                                     for i in range(3)]))
     if bad_items or loose or bad:
         raise RuntimeError("checks failed (unhealthy %s, loose %s, clashes %s)" % (bad_items, loose, bad))
+    if ARGS.get("post") == "1":
+        doc = app.activeDocument
+        if not doc.save("%s build: %s" % (REV, ARGS.get("note", "wall_side_panel.py"))):
+            raise RuntimeError("save failed")
+        print("saved %s (version %s)" % (doc.name, doc.dataFile.versionNumber if doc.dataFile else "?"))
+        path = os.path.join(ARGS["repo_root"], "v2/01-CAD-Native/wall/post_wall_doc.py")
+        ns = {"__name__": "__fusion_post__", "__file__": path, "SCRIPT_ARGS": dict(ARGS, pn=pn)}
+        with open(path, "r", encoding="utf-8") as fh:
+            exec(compile(fh.read(), path, "exec"), ns)
+        ns["run"](None)

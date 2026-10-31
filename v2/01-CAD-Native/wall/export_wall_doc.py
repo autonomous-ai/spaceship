@@ -61,8 +61,11 @@ def run(_context):
     broken = []
     for c in design.allComponents:
         for d in c.features.deriveFeatures:
-            ref = d.documentReference
-            src = "%s v%s" % (ref.dataFile.name, ref.version) if ref and ref.dataFile else "?"
+            try:                             # DocumentReference.version raises InternalValidationError here
+                df = d.documentReference.dataFile
+                src = "%s v%s" % (df.name, df.versionNumber)
+            except Exception:
+                src = "skeleton (version not readable)"
             if not d.breakLink():
                 raise RuntimeError("could not break the derive link to %s for the export" % src)
             broken.append(src)

@@ -78,7 +78,7 @@ def record(design, rel):
         n, len(bad), sketches, sketches - len(loose),
         "parametric" if design.designType == adsk.fusion.DesignTypes.ParametricDesignType else "DIRECT"))
     names = ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch", "cass_len",
-             "cass_h")
+             "cass_h", "top_h")
     before_p = {k: pv(design, k) for k in names}
     before = snapshot(design)
     exprs = {k: design.userParameters.itemByName(k).expression for k, _e in EDITS}
@@ -104,40 +104,52 @@ def record(design, rel):
         p("| %s | %s | %s |" % (k, before.get(k, "-"), after.get(k, "-")))
     p("")
     checks = []
-    y0 = 850.0 - after_p["wall_depth"]
-    z0 = 110.0
-    if any("RAIL" in k for k in after):      # a panel (an imported copy gets a new root part number)
-        rails = [v for k, v in after.items() if "RAIL" in k]
-        stiles = [v for k, v in after.items() if "STILE" in k]
-        mids = sorted(v for k, v in after.items() if "STILE - MID" in k)
-        bays = [v for k, v in after.items() if "FILL" in k]
-        skin = [v for k, v in after.items() if "SKIN" in k][0]
-        n_mid = math.ceil((after_p["wall_depth"] - 3 - 10 - 20) / 300.0) - 1
+    seam = 2.26
+    y0p = 850.0 - after_p["wall_depth"] + seam          # panel front end (2.26 behind the decor back plate)
+    y0c = 850.0 - after_p["wall_depth"]                 # the lining starts at the decor back plate
+    z0 = 110.0 + seam                                    # walls stand one seam gap above the band top
+    rails = [v for k, v in after.items() if "RAIL" in k]
+    stiles = [v for k, v in after.items() if "STILE" in k]
+    mids = sorted(v for k, v in after.items() if "STILE - MID" in k)
+    bays = [v for k, v in after.items() if "FILL" in k]
+    skins = [v for k, v in after.items() if "SKIN" in k]
+    trays = [v for k, v in after.items() if "TRAY" in k]
+    felts = [v for k, v in after.items() if "FELT" in k]
+    zones = [v for k, v in after.items() if "CLIP ZONE" in k]
+    n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / 300.0) - 1
+    if rails:
         checks += [
-            ("rails run wall_depth - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - 3)) < 0.01 for r in rails)),
-            ("frame starts at the decor back plate (Y = 850 - wall_depth)", all(abs(r[1] - y0) < 0.01 for r in rails)),
-            ("stiles span side_h - 40", all(abs((s[5] - s[2]) - (after_p["side_h"] - 40)) < 0.01 for s in stiles)),
+            ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
+                                                    for r in rails)),
+            ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
+            ("stiles span side_h - 20 - top_h", all(abs((st[5] - st[2]) - (after_p["side_h"] - 20 - after_p["top_h"]))
+                                                    < 0.01 for st in stiles)),
             ("mid stile count follows the 300 mm rule (%d)" % n_mid, len(mids) == n_mid),
-            ("fill bays = mid stiles + 1", len(bays) == len(mids) + 1),
             ("no stile pitch over 300", all(b[1] - a[1] <= 300.01 for a, b in zip(mids, mids[1:]))),
-            ("skin runs wall_depth and side_h - reveal", abs((skin[4] - skin[1]) - after_p["wall_depth"]) < 0.01 and
-             abs((skin[5] - skin[2]) - (after_p["side_h"] - 4)) < 0.01),
         ]
-    else:
-        tray = [v for k, v in after.items() if "TRAY" in k][0]
-        felt = [v for k, v in after.items() if "FELT" in k][0]
-        zones = [v for k, v in after.items() if "CLIP ZONE" in k]
+    if bays:
+        checks.append(("fill bays = mid stile count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
+    if skins:
+        sk = skins[0]
+        checks.append(("skin runs wall_depth - 2.26 and side_h", abs((sk[4] - sk[1]) - (after_p["wall_depth"] - seam))
+                       < 0.01 and abs((sk[5] - sk[2]) - after_p["side_h"]) < 0.01))
+    if trays:
+        tr = trays[0]
+        checks += [("tray runs cass_len", abs((tr[4] - tr[1]) - after_p["cass_len"]) < 0.01),
+                   ("tray starts at the decor back plate", abs(tr[1] - y0c) < 0.01),
+                   ("tray height follows side_h", abs((tr[5] - tr[2]) - after_p["side_h"]) < 0.01)]
+    if felts:
+        fe = felts[0]
+        checks.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
+                       abs((fe[4] - fe[1]) - (after_p["cass_len"] - 3)) < 0.01 and
+                       abs((fe[5] - fe[2]) - (after_p["side_h"] - 3)) < 0.01))
+    if zones:
         checks += [
-            ("tray runs cass_len", abs((tray[4] - tray[1]) - after_p["cass_len"]) < 0.01),
-            ("tray starts at the decor back plate", abs(tray[1] - y0) < 0.01),
-            ("tray and felt height follow side_h", abs((tray[5] - tray[2]) - after_p["side_h"]) < 0.01 and
-             abs((felt[5] - felt[2]) - after_p["side_h"]) < 0.01),
             ("clip zones sit on the first and last mid stile",
-             sorted({round(zz[1], 2) for zz in zones}) == sorted({round(y0 + after_p["stile_pitch"], 2),
-                                                                  round(y0 + after_p["stile_n_mid"] *
+             sorted({round(zz[1], 2) for zz in zones}) == sorted({round(y0p + after_p["stile_pitch"], 2),
+                                                                  round(y0p + after_p["stile_n_mid"] *
                                                                         after_p["stile_pitch"], 2)})),
-            ("top clip zones follow the top edge", max(zz[5] for zz in zones) == round(
-                z0 + after_p["side_h"] - 100 + 30, 2)),
+            ("top clip zones follow the top edge", abs(max(zz[5] for zz in zones) - (z0 + after_p["side_h"] - 70)) < 0.01),
         ]
     for k, e in exprs.items():
         design.userParameters.itemByName(k).expression = e
