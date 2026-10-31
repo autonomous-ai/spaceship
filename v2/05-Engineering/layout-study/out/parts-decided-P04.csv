@@ -1,43 +1,43 @@
-group,item,qty,kg_each,kg_total,status,source
-WALL,"L1 and R1, lower side outer panels (R1 is L1's mirror)",2,11.088,22.18,calculation (CAD); fill provisional,"S34: 11.35 kg of made parts + 0.49 kg of bond, less the fill from 32 to 24 kg/m3; inner studs at 1.0 mm (D-85)"
-WALL,"L2 and R2, upper side outer panels, the same size and build",2,11.075,22.15,calculation; fill provisional,"this study's model at the P04 size (S33), fill 24 kg/m3; inner studs at 1.0 mm (D-85)"
-WALL,"B1 to B4, back outer panels",4,8.756,35.03,calculation; fill provisional,"this study's model at the P04 size (S33), frame 1198.99 under the 1200.61 skin, fill 24 kg/m3; 2 inner studs at 393 mm centres, inside D-16 (D-85); inner studs at 1.0 mm (D-85)"
-WALL,40 x 40 corner edge tubes beyond L1 and R1's back stiles,1,1.004,1.00,calculation,"D-63's 1.3 kg less L1 and R1's two stiles (S34, S39)"
-WALL,"Bond over this study's 0.25 kg/m2, beyond L1 and R1",1,0.373,0.37,calculation,"D-71's 0.5 kg (PR #23) less L1 and R1's share (S34, S39)"
-LINING,"Wall cassette, side, lower, with 12 mm lips, no clip rails",2,10.474,20.95,calculation; lips confirmed,"this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69)"
-LINING,"Wall cassette, side, upper, with 12 mm lips, no clip rails",2,10.047,20.09,calculation; lips confirmed,"this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69)"
-LINING,"Wall cassette, back, lower, with 12 mm lips, no clip rails",2,8.411,16.82,calculation; lips confirmed,"this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69)"
-LINING,"Wall cassette, back, upper, with 12 mm lips, no clip rails",2,8.399,16.80,calculation; lips confirmed,"this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69)"
-CEILING,"Ceiling outer panels C1 and C2, with their bond line",2,10.035,20.07,calculation (CAD); bond assumption,S35 + this study's 0.25 kg/m2 bond on the P04 46 mm panel; its inner members stay 1.2 mm for the overhead clips and catches (D-85)
-LINING,"Ceiling cassettes, one part for both halves",2,9.476,18.95,calculation (CAD); fill provisional,"S35, its fill strips from 32 to 24 kg/m3"
-LINING,Named clips and catches: 44 clips and 4 catch lanyards,1,2.160,2.16,assumption,"allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, D-81)"
-BASE,"Base band piece 100x40 - back, 1.5 mm wall",1,2.685,2.69,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter"
-BASE,"Base band piece 100x40 - side, 1.5 mm wall",2,1.842,3.68,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter"
-BASE,"Base band piece 100x40 - front-l, 1.5 mm wall",1,0.333,0.33,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter"
-BASE,"Base band piece 100x40 - front-r, 1.5 mm wall",1,1.165,1.17,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter"
-BASE,Corner key,6,0.150,0.90,assumption,this study's model
-BASE,Levelling glide (hex from above),8,0.150,1.20,assumption,this study's model
-BASE,"Door threshold, low",1,1.200,1.20,assumption,this study's model (D-72's 13 mm profile isn't modelled yet)
-BASE,"Glide load blocks, aluminium, one inside the band at each glide",1,0.400,0.40,calculation,"D-86 (S42): about 0.4 kg per pod, BASE's calculation; they carry each glide into both side walls"
-BASE,"Floor panels, 9 mm plywood with a 0.3 kg/m2 finish",2,7.658,15.32,"confirmed (9 mm, poplar core); calculation","D-72 (S39) at the P04 size (S33); poplar-core plywood with a hard face veneer, about 450 kg/m3 (D-85, D-86; BASE: about 0.6 mm at a panel edge under 1000 N); the castor and edge tests on the sample are planned"
-BASE,"Floor mat, 3 mm firm closed-cell foam",1,2.100,2.10,calculation,"D-76 (S39), BASE Engineer"
-FRONT,Decor block - left,1,9.976,9.98,calculation,this study's model from v1's STEP shapes (S02)
-FRONT,Decor block - right,1,18.056,18.06,calculation,this study's model from v1's STEP shapes (S02)
-FRONT,Decor block - top,1,7.015,7.02,calculation,this study's model from v1's STEP shapes (S02)
-FRONT,"Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull",1,49.076,49.08,calculation (CAD); kick strip assumption,"S36, with the kick strip as a hollow profile, about 1.0 kg against 2.094 (D-85)"
-FRONT,"Fixed glass unit 360002: 4+4 pane, U-profiles and seals",1,29.580,29.58,calculation (CAD),S37
-AIR,"Supply cartridge, in the air column",1,11.155,11.15,calculation,"S38: aluminium 2.0 mm casing, three 50 mm layers at 40 kg/m3"
-AIR,"Exhaust cartridge, in the soffit",1,11.155,11.15,calculation,S38: same part
-AIR,"Air column: felt-covered faces, fill, frame, kick grille, hub plate",1,9.779,9.78,calculation; fill provisional,S38: faces 3 mm ACP + 9 mm felt; 30 mm fill; 4 corner angles; 0.6 kg grille and plate (assumption); fill 24 kg/m3
-AIR,"Soffit: felt-covered faces, fill, frame, exhaust grille",1,9.833,9.83,calculation; fill provisional,S38: underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption); fill 24 kg/m3
-AIR,"Supply fan box and transition, in the right block; ships loose, fitted on site",1,5.066,5.07,calculation,"S38: 2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation); goes into the right block through its removable inner face (D-59), so the block ships at 20 kg or less (D-03)"
-AIR,"Exhaust fan box and roof sleeve, in the soffit",1,3.475,3.48,calculation,"S38: 2 mm aluminium, 50 mm lining"
-AIR,"Intake riser with a mesh allowance, in the right block; ships loose, fitted on site",1,9.229,9.23,calculation,"S38: 1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption); goes into the right block through its removable inner face (D-59), so the block ships at 20 kg or less (D-03)"
-AIR,Roof slot grille and sleeve,1,0.500,0.50,calculation,S38: assumption
-AIR,Four 12 V fans,1,1.200,1.20,assumption,S38: 0.3 kg each until the sample is weighed
-BASE,"Door edge seals, base seal, cable grommets",1,1.600,1.60,source,this study's model
-ELECTRICAL,"Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL)",1,4.940,4.94,calculation (ELECTRICAL),"S43: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, lights 0.26 kg, replacing this study's 3.05 kg allowance. The light shelf's LED strip is counted here only; the shelf's line leaves it out (PM, 2026-11-01)"
-INTERIOR,Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line),1,1.957,1.96,assumption,"budget (D-85) until it's designed: 4.43 m (the back wall and the side walls back of the soffit) at 0.4 kg/m plus 0.4 kg of brackets (D-70), less its LED strip, 0.22 kg, which ELECTRICAL's line carries (S43: 0.26 kg of lights over the shelf strip and the 0.9 m call light)"
-INTERIOR,"Work-wall ledge, 1000 mm",1,1.400,1.40,assumption,"budget (D-85) until it's designed: 1.5 mm folded aluminium, 1000 x 240 developed, plus 2 brackets (D-70)"
-WALL,"M6 bolts, rivnuts, cam connectors, joint gaskets",1,4.673,4.67,calculation,this study's model
-LATER,"Voice cockpit kit reserve, outside the 420 kg cap",1,4.000,4.00,assumption,the kit ships later as an add-on (D-11); the cap is for the pod as shipped (D-81)
+group,item,qty,kg_each,kg_total,status,source,basis
+WALL,"L1 and R1, lower side outer panels (R1 is L1's mirror)",2,11.163,22.33,calculation (CAD); fill provisional,"S34, CAD on main: WALL parts list 210101 P01: frame 3.105 (its 3 mid stiles at 1 mm), skin 6.142, fill 1.426 at 24 kg/m3, bond set 0.49; its hardware (0.13 kg) stays in the fixings kit's line","CAD, main"
+WALL,"L2 and R2, upper side outer panels, the same size and build",2,11.075,22.15,calculation; fill provisional,"this study's model at the P04 size (S33), fill 24 kg/m3; inner studs at 1.0 mm (D-85)",estimate
+WALL,"B1 to B4, back outer panels",4,8.756,35.03,calculation; fill provisional,"this study's model at the P04 size (S33), frame 1198.99 under the 1200.61 skin, fill 24 kg/m3; 2 inner studs at 393 mm centres, inside D-16 (D-85); inner studs at 1.0 mm (D-85)",estimate
+WALL,40 x 40 corner edge tubes beyond L1 and R1's back stiles,1,1.004,1.00,calculation,"D-63's 1.3 kg less L1 and R1's two stiles (S34, S39)",estimate
+WALL,"Bond over this study's 0.25 kg/m2, beyond L1 and R1",1,0.373,0.37,calculation,"D-71's 0.5 kg (PR #23) less L1 and R1's share (S34, S39)",estimate
+LINING,"Wall cassette, side, lower, with 12 mm lips, no clip rails",2,10.346,20.69,calculation (CAD),"S34, CAD on main: WALL parts list 510101 P01: tray 7.379 with its lips, felt 2.958, hook-and-loop and edge seal 0.009; its 4 clips are in the named clips' line","CAD, main"
+LINING,"Wall cassette, side, upper, with 12 mm lips, no clip rails",2,10.047,20.09,calculation; lips confirmed,"this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69)",estimate
+LINING,"Wall cassette, back, lower, with 12 mm lips, no clip rails",2,8.411,16.82,calculation; lips confirmed,"this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69)",estimate
+LINING,"Wall cassette, back, upper, with 12 mm lips, no clip rails",2,8.399,16.80,calculation; lips confirmed,"this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69)",estimate
+CEILING,"Ceiling outer panels C1 and C2, with their bond line",2,10.035,20.07,calculation (CAD); bond assumption,S35 + this study's 0.25 kg/m2 bond on the P04 46 mm panel; its inner members stay 1.2 mm for the overhead clips and catches (D-85),"CAD, open PR"
+LINING,"Ceiling cassettes, one part for both halves",2,9.476,18.95,calculation (CAD); fill provisional,"S35, its fill strips from 32 to 24 kg/m3","CAD, open PR"
+LINING,Named clips and catches: 44 clips and 4 catch lanyards,1,2.160,2.16,assumption,"allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, D-81)",estimate
+BASE,"Base band piece 100x40 - back, 1.5 mm wall",1,2.685,2.69,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter",estimate
+BASE,"Base band piece 100x40 - side, 1.5 mm wall",2,1.842,3.68,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter",estimate
+BASE,"Base band piece 100x40 - front-l, 1.5 mm wall",1,0.333,0.33,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter",estimate
+BASE,"Base band piece 100x40 - front-r, 1.5 mm wall",1,1.165,1.17,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter",estimate
+BASE,Corner key,6,0.150,0.90,assumption,this study's model,estimate
+BASE,Levelling glide (hex from above),8,0.150,1.20,assumption,this study's model,estimate
+BASE,"Door threshold, low",1,1.200,1.20,assumption,this study's model (D-72's 13 mm profile isn't modelled yet),estimate
+BASE,"Glide load blocks, aluminium, one inside the band at each glide",1,0.400,0.40,calculation,"D-86 (S42): about 0.4 kg per pod, BASE's calculation; they carry each glide into both side walls",estimate
+BASE,"Floor panels, 9 mm plywood with a 0.3 kg/m2 finish",2,7.658,15.32,"confirmed (9 mm, poplar core); calculation","D-72 (S39) at the P04 size (S33); poplar-core plywood with a hard face veneer, about 450 kg/m3 (D-85, D-86; BASE: about 0.6 mm at a panel edge under 1000 N); the castor and edge tests on the sample are planned",estimate
+BASE,"Floor mat, 3 mm firm closed-cell foam",1,2.100,2.10,calculation,"D-76 (S39), BASE Engineer",estimate
+FRONT,Decor block - left,1,9.976,9.98,calculation,this study's model from v1's STEP shapes (S02),estimate
+FRONT,Decor block - right,1,18.056,18.06,calculation,this study's model from v1's STEP shapes (S02),estimate
+FRONT,Decor block - top,1,7.015,7.02,calculation,this study's model from v1's STEP shapes (S02),estimate
+FRONT,"Door unit 360001: 4+4 leaf, kick strip, drop seal, hinges, lock, pull",1,49.076,49.08,calculation (CAD); kick strip assumption,"S36, with the kick strip as a hollow profile, about 1.0 kg against 2.094 (D-85)","CAD, open PR"
+FRONT,"Fixed glass unit 360002: 4+4 pane, U-profiles and seals",1,29.580,29.58,calculation (CAD),S37,"CAD, open PR"
+AIR,"Supply cartridge, in the air column",1,11.155,11.15,calculation,"S38: aluminium 2.0 mm casing, three 50 mm layers at 40 kg/m3",estimate
+AIR,"Exhaust cartridge, in the soffit",1,11.155,11.15,calculation,S38: same part,estimate
+AIR,"Air column: felt-covered faces, fill, frame, kick grille, hub plate",1,9.779,9.78,calculation; fill provisional,S38: faces 3 mm ACP + 9 mm felt; 30 mm fill; 4 corner angles; 0.6 kg grille and plate (assumption); fill 24 kg/m3,estimate
+AIR,"Soffit: felt-covered faces, fill, frame, exhaust grille",1,9.833,9.83,calculation; fill provisional,S38: underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption); fill 24 kg/m3,estimate
+AIR,"Supply fan box and transition, in the right block; ships loose, fitted on site",1,5.066,5.07,calculation,"S38: 2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation); goes into the right block through its removable inner face (D-59), so the block ships at 20 kg or less (D-03)",estimate
+AIR,"Exhaust fan box and roof sleeve, in the soffit",1,3.475,3.48,calculation,"S38: 2 mm aluminium, 50 mm lining",estimate
+AIR,"Intake riser with a mesh allowance, in the right block; ships loose, fitted on site",1,9.229,9.23,calculation,"S38: 1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption); goes into the right block through its removable inner face (D-59), so the block ships at 20 kg or less (D-03)",estimate
+AIR,Roof slot grille and sleeve,1,0.500,0.50,calculation,S38: assumption,estimate
+AIR,Four 12 V fans,1,1.200,1.20,assumption,S38: 0.3 kg each until the sample is weighed,estimate
+BASE,"Door edge seals, base seal, cable grommets",1,1.600,1.60,source,this study's model,estimate
+ELECTRICAL,"Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL)",1,4.940,4.94,calculation (ELECTRICAL),"S43: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, lights 0.26 kg, replacing this study's 3.05 kg allowance. The light shelf's LED strip is counted here only; the shelf's line leaves it out (PM, 2026-11-01)","CAD, open PR"
+INTERIOR,Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line),1,1.957,1.96,assumption,"budget (D-85) until it's designed: 4.43 m (the back wall and the side walls back of the soffit) at 0.4 kg/m plus 0.4 kg of brackets (D-70), less its LED strip, 0.22 kg, which ELECTRICAL's line carries (S43: 0.26 kg of lights over the shelf strip and the 0.9 m call light)",estimate
+INTERIOR,"Work-wall ledge, 1000 mm",1,1.400,1.40,assumption,"budget (D-85) until it's designed: 1.5 mm folded aluminium, 1000 x 240 developed, plus 2 brackets (D-70)",estimate
+WALL,"M6 bolts, rivnuts, cam connectors, joint gaskets",1,4.673,4.67,calculation,this study's model,estimate
+LATER,"Voice cockpit kit reserve, outside the 420 kg cap",1,4.000,4.00,assumption,the kit ships later as an add-on (D-11); the cap is for the pod as shipped (D-81),estimate

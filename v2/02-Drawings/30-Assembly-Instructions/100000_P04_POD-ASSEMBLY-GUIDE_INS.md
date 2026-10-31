@@ -89,7 +89,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 5. Lower side walls: L1, R1
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **1-05** WALL - PANEL ASSY - SIDE LOWER - LH (11.1 kg), **1-06** WALL - PANEL ASSY - SIDE LOWER - RH (11.1 kg).
+- **Parts:** **1-05** WALL - PANEL ASSY - SIDE LOWER - LH (11.2 kg), **1-06** WALL - PANEL ASSY - SIDE LOWER - RH (11.2 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the 5 mm hex key.
 - **Person A:** Stands L1 on its band spigots against B1's edge and holds it; then R1 against B2.
 - **Person B:** Drives the 4 base bolts of each, then the 3 lower back-corner bolts each side (L1-B1, R1-B2), from the back panels' bays.
@@ -170,7 +170,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 14. Wall linings: 8 cassettes
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.5 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (10.0 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.5 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (10.0 kg), **1-17** LINING - CASSETTE - BACK LOWER - LH (8.4 kg), **1-18** LINING - CASSETTE - BACK LOWER - RH (8.4 kg), **1-19** LINING - CASSETTE - BACK UPPER - LH (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - RH (8.4 kg).
+- **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (10.0 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (10.0 kg), **1-17** LINING - CASSETTE - BACK LOWER - LH (8.4 kg), **1-18** LINING - CASSETTE - BACK LOWER - RH (8.4 kg), **1-19** LINING - CASSETTE - BACK UPPER - LH (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - RH (8.4 kg).
 - **Fasteners:** none.
 - **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips.
 - **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
