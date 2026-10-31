@@ -26,6 +26,7 @@ Standard library only.
 
 import json
 import math
+import os
 import re
 import sys
 import zlib
@@ -39,10 +40,20 @@ def _objects(data):
 
 
 def _streams(data):
-    for m in re.finditer(rb"stream\r?\n(.*?)\r?\nendstream", data, re.S):
-        raw = m.group(1)
+    """Each stream's bytes, inflated: cut by its /Length when that is a number (the
+    data can end in a CR or LF byte of its own), else up to "endstream"."""
+    for m in re.finditer(rb"stream\r?\n", data):
+        if data[max(0, m.start() - 3):m.start()] == b"end":
+            continue
+        head = data[max(0, m.start() - 300):m.start()]
+        n = re.findall(rb"/Length\s+(\d+)(?!\s+\d+\s+R)", head)
+        if n and m.end() + int(n[-1]) <= len(data):
+            raw = data[m.end():m.end() + int(n[-1])]
+        else:
+            e = data.find(b"endstream", m.end())
+            raw = data[m.end():e if e >= 0 else len(data)].rstrip(b"\r\n")
         try:
-            yield zlib.decompress(raw)
+            yield zlib.decompressobj().decompress(raw)
         except zlib.error:
             yield raw
 
@@ -155,6 +166,12 @@ MODES = [("plain", ("01 2pt", "02 2pt x5")), ("mid", ("06 mid x5",)), ("dup-firs
 
 
 def probe(pdf_path, out_path):
+    if not os.path.exists(pdf_path) or not os.path.exists(pdf_path + ".json"):
+        # the probe didn't run (a locked screen skips it): draw no lines this session
+        with open(out_path, "w", encoding="utf-8") as fh:
+            json.dump({"mode": "none", "why": "no probe export at %s" % pdf_path}, fh)
+        print("line mode: none (no probe export at %s)" % pdf_path)
+        return "none"
     with open(pdf_path, "rb") as fh:
         lay = layers(fh.read())
     with open(pdf_path + ".json", encoding="utf-8") as fh:

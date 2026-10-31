@@ -43,7 +43,7 @@ def load_layout(full=False):
     sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.drawing": adsk.drawing,
                         "adsk.fusion": adsk.fusion})
     try:
-        ns = {"__name__": "ga_elevations"}
+        ns = {"__name__": "ga_elevations", "SCRIPT_ARGS": {"repo_root": REPO}}
         with open(os.path.join(HERE, "ga_elevations.py"), encoding="utf-8") as fh:
             exec(compile(fh.read(), "ga_elevations.py", "exec"), ns)
     finally:
@@ -145,6 +145,18 @@ class LayoutTests(unittest.TestCase):
         got = [ns["xy"](p) for p in ns["extremes"](None)]
         self.assertEqual(got, [lo_x, hi_x, lo_y, hi_y])
         self.assertEqual(got, [(0, 5), (10, 1), (3, 0), (9, 12)])
+
+    def test_the_symbol_is_a_closed_trapezoid_and_the_pdf_check_expects_it(self):
+        ns = load_layout(full=True)
+        sides = ns["SYMBOL_SIDES"]
+        self.assertEqual(len(sides), 4)
+        for k in range(4):                                       # each side starts where the last ended
+            self.assertEqual(sides[k][1], sides[(k + 1) % 4][0])
+        ends = sorted({p for s in sides for p in s})
+        self.assertEqual(ends, [(560.0, 37.5), (560.0, 42.5), (570.0, 35.0), (570.0, 45.0)])
+        sys.path.insert(0, HERE)
+        import ga_pdf_check
+        self.assertEqual(ns["SYMBOL_SIDES"], ga_pdf_check.SYMBOL)
 
     def test_the_sizes_come_from_the_skeleton(self):
         w, d, h = pod_size()

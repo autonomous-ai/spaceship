@@ -8,8 +8,17 @@
         v2/02-Drawings/00-General-Assembly
 
     or in one run: --arg step=all [--arg notes_png=... --arg notes_px=... --arg notes_py=...
-    --arg notes_scale=...], the notes PNG rendered from
+    --arg notes_scale=...] [--arg line_mode_file=PROBE.json], the notes PNG rendered from
     100000_P04_POD-GENERAL-ASSEMBLY_NOTES.txt by tools/fusion/sheet_notes.py.
+
+To make sheet 1 again, never delete a sheet (2026-10-31: deleting the old sheet
+and saving crashed Fusion): promote the drawing's first version, the empty sheet
+start_drawing saved (ga_promote.py), then run step=all on it. The versions in
+between stay in the drawing's history.
+
+The projection symbol's sides are drawn in the form of Lines.add (a preview API)
+that the session's line probe found to work (ga_pdf_check.py probe, passed as
+--arg line_mode_file); check the export with ga_pdf_check.py symbol.
 
 The drawing was started from the skeleton design with start_drawing.py's
 sequence, so every base view shows the whole pod. ISO, first-angle
@@ -27,6 +36,7 @@ block fields can't be set by script (a person fills them: DWG No.
 100000-GA, Rev. P04, DRAFT, scale 1:20, units mm).
 """
 
+import os
 import time
 
 import adsk
@@ -35,6 +45,13 @@ import adsk.drawing
 import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
+# tools/fusion/hatch.py, pasted in: the form of Lines.add a live probe showed
+# Fusion keeps (a preview API: on 2026-10-31 this symbol's closed 5-point chain
+# came out as a triangle in the PDF)
+_hatch_ns: dict = {}
+with open(os.path.join(ARGS.get("repo_root", "."), "tools", "fusion", "hatch.py"), encoding="utf-8") as _fh:
+    exec(compile(_fh.read(), "hatch.py", "exec"), _hatch_ns)
+chain_for, read_line_mode = _hatch_ns["chain_for"], _hatch_ns["read_line_mode"]
 SCALE = 1.0 / 20.0
 SHEET_NAME = "GA-1 ELEVATIONS"
 VO = adsk.drawing.ViewOrientationTypes
@@ -59,6 +76,17 @@ NOTES_AT = (340.0, 90.0)
 NOTES_WIDTH = 280.0
 NOTES_TEXT_MM = 3.5
 NOTES_MAX_HEIGHT = 110.0     # assumption: room kept for the text to grow a little
+
+# ISO first-angle symbol (ISO 128-30 / ISO 5456-2), left of the title block, in sheet mm:
+# the truncated cone seen from the side (small end 5, big end 10, 10 long), then the
+# view of it from its end, 4 mm to the right. Each side is its own straight line.
+SYMBOL_NAME = "PROJECTION SYMBOL - FIRST ANGLE"
+_X0, _CY, _D, _BIG, _LEN, _GAP = 560.0, 40.0, 5.0, 10.0, 10.0, 4.0
+SYMBOL_SIDES = [((_X0, _CY - _D / 2), (_X0 + _LEN, _CY - _BIG / 2)),
+                ((_X0 + _LEN, _CY - _BIG / 2), (_X0 + _LEN, _CY + _BIG / 2)),
+                ((_X0 + _LEN, _CY + _BIG / 2), (_X0, _CY + _D / 2)),
+                ((_X0, _CY + _D / 2), (_X0, _CY - _D / 2))]
+SYMBOL_CIRCLES = [((_X0 + _LEN + _GAP + _BIG / 2, _CY), _BIG / 2), ((_X0 + _LEN + _GAP + _BIG / 2, _CY), _D / 2)]
 
 
 def p2(x, y):
@@ -224,34 +252,30 @@ def step_dims(sheet: "adsk.drawing.Sheet"):
     dim(lx, hx, dpt((le[0] + le[2]) / 2, le[1] - 12.0), 0, pod_d, "overall depth, view from the left")
     _lx, _hx, ly, hy = extremes(top)
     dim(ly, hy, dpt(te[0] - 14.0, (te[1] + te[3]) / 2), 1, pod_d, "overall depth, view from above")
-    # ISO first-angle symbol, left of the title block
-    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
-    x0, cy, d, big, length, gap = 560.0, 40.0, 5.0, 10.0, 10.0, 4.0
-    sk.lines.add([p2(x0, cy - d / 2), p2(x0 + length, cy - big / 2), p2(x0 + length, cy + big / 2),
-                  p2(x0, cy + d / 2), p2(x0, cy - d / 2)])
-    cx = x0 + length + gap + big / 2
-    sk.circles.addByCenterRadius(p2(cx, cy), big / 2)
-    sk.circles.addByCenterRadius(p2(cx, cy), d / 2)
     describe(sheet)
 
 
-def step_redo(dwg: "adsk.drawing.Drawing", old: "adsk.drawing.Sheet"):
-    """Sheet 1 again: views and dimensions can't be moved, read or deleted by script, so a
-    new sheet gets the views and the checked dimensions, then the old sheet is deleted and
-    the new one becomes sheet 1 (its notes go on after, with sheet_notes.py)."""
-    inp = dwg.sheets.createInput()
-    inp.name = SHEET_NAME + " (NEW)"
-    new = dwg.sheets.add(inp)
-    step_views(new)
-    step_dims(new)
-    old_name = old.name
-    if not old.deleteMe():
-        raise RuntimeError("couldn't delete the old sheet %s" % old_name)
-    try:
-        new.name = SHEET_NAME
-    except Exception as e:  # noqa: BLE001 - a name is nice to have
-        print("sheet name not set: %s" % e)
-    print("sheet 1 made again; old sheet %r deleted; %d sheet(s) now" % (old_name, dwg.sheets.count))
+def step_symbol(sheet: "adsk.drawing.Sheet"):
+    """The first-angle symbol, its sides drawn in the form the session's line probe
+    found (--arg line_mode_file); none found: left out, and a GAP line says so."""
+    mode = read_line_mode(ARGS.get("line_mode_file"), ARGS.get("line_mode", "plain"))
+    have = [sheet.sketches.item(i).name for i in range(sheet.sketches.count)]
+    if any(n.startswith(SYMBOL_NAME) for n in have):
+        raise RuntimeError("the sheet has the projection symbol already: %s" % have)
+    if mode == "none":
+        print("GAP: projection symbol left out: the line probe found no form of Lines.add "
+              "that draws a straight line")
+        return
+    sk = None
+    for k, (a, b) in enumerate(SYMBOL_SIDES):
+        if sk is None or mode == "own-sketch":
+            sk = sheet.sketches.add(SYMBOL_NAME if sk is None else "%s %d" % (SYMBOL_NAME, k))
+        if sk.lines.add([p2(*q) for q in chain_for(a, b, mode)]) is None:
+            raise RuntimeError("side %d of the projection symbol wasn't made" % k)
+    for (cx, cy), r in SYMBOL_CIRCLES:
+        if sk.circles.addByCenterRadius(p2(cx, cy), r) is None:
+            raise RuntimeError("a circle of the projection symbol wasn't made")
+    print("projection symbol: 4 sides in the %r form, 2 circles, at %s" % (mode, SYMBOL_SIDES[0][0]))
 
 
 def step_notes(sheet: "adsk.drawing.Sheet"):
@@ -275,12 +299,12 @@ def run(_context):
         step_views(sheet)
     elif step == "dims":
         step_dims(sheet)
-    elif step == "redo":
-        refresh_references(adsk.core.Application.get().activeDocument)
-        step_redo(dwg, sheet)
-    elif step == "all":          # one run: views, dimensions, notes (keeps the Fusion queue lean)
+    elif step == "symbol":
+        step_symbol(sheet)
+    elif step == "all":          # one run: views, dimensions, symbol, notes (keeps the Fusion queue lean)
         step_views(sheet)
         step_dims(sheet)
+        step_symbol(sheet)
         if ARGS.get("notes_png"):
             step_notes(sheet)
     else:
