@@ -1,8 +1,8 @@
 {
- "rev": "07416cb",
+ "rev": "a35af8f",
  "date": "2026-11-01",
  "inputs": {
-  "bodies_skeleton": 34,
+  "bodies_skeleton": 36,
   "bodies_assembly": 0,
   "parts_lists": [
    "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
