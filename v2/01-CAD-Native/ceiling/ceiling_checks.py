@@ -3,7 +3,7 @@
 check(design) compares every body in the root context with the box the layout
 (ceiling_model.py) gives for the design's current parameter values: frame
 members, both skins, and in both cassettes the tray, felt, ribs, fill strips,
-light plates, clips and catches. Repeated parts are paired by nearest fit.
+clips and catches. Repeated parts are paired by nearest fit.
 """
 
 import adsk.core
@@ -46,9 +46,6 @@ def expected(design):
             cs(b, n)
         for key, bay, b, _n in M.fill_strips():
             cs(b, "FILL BAY %d" % bay)
-        for i, (x, y) in enumerate(M.light_points()):
-            cs(("%s - ring_od / 2" % x, "%s + ring_od / 2" % x, "%s - ring_od / 2" % y, "%s + ring_od / 2" % y,
-                M.FELT_Z1, "%s + ring_t" % M.FELT_Z1), "LIGHT PLATE %d" % (i + 1))
         for n, b in M.clip_boxes() + M.catch_boxes():
             cs(b, n)
     return out
@@ -108,9 +105,9 @@ def check(design):
         if d > TOL:
             bad.append((k, round(d, 3)))
     groups = {"513102": "RIB", "513301": "FILL BAY", "513302": "FILL BAY", "513303": "FILL BAY",
-              "513401": "LIGHT PLATE", "518001": "CLIP", "518002": "CATCH"}
+              "518001": "CLIP", "518002": "CATCH"}
     for half in ("C1", "C2"):
-        for prefix in ("RIB", "FILL BAY", "LIGHT PLATE", "CLIP", "CATCH"):
+        for prefix in ("RIB", "FILL BAY", "CLIP", "CATCH"):
             keys = [k for k in exp if k.startswith("%s %s" % (half, prefix))]
             acts = []
             for pn, pre in groups.items():

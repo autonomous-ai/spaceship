@@ -107,12 +107,10 @@ CEILING_PARAMS = [
     ("catch_w", "40 mm", "mm", "assumption", "safety catch space along X; HOLD H04 / ISS-076"),
     ("catch_d", "30 mm", "mm", "assumption", "safety catch space out from the member face; HOLD H04 / ISS-076"),
     ("catch_h", "40 mm", "mm", "assumption", "safety catch space above the tray, up the member face; HOLD H04 / ISS-076"),
-    # ---- lights, cables, sprinkler reserve
-    ("light_hole", "58 mm", "mm", "source", "Haefele Loox5 LED 2094: recess in a 58 mm hole (selection E, 20D5-115A)"),
-    ("light_n", "3", "", "calculation", "6 downlights over the ceiling (selection E plan row) = 3 per cassette, on its centre line"),
-    ("ring_od", "100 mm", "mm", "assumption", "light plate size (square): a rigid seat on the felt for the light's springs"),
-    ("ring_t", "1 mm", "mm", "assumption", "light plate thickness, galvanised steel; the light's clamping range is unverified (selection E)"),
-    ("cable_hole", "20 mm", "mm", "assumption", "cable hole in the front and back returns for a grommet; grommet HOLD"),
+    # ---- cables, sprinkler reserve (no lights in the cassettes: PM ruling 2026-10-31, the lights
+    #      move to a light shelf along the tops of the side and back walls)
+    ("cable_hole", "20 mm", "mm", "assumption",
+     "cable hole in the front and back returns for a grommet: the voice cockpit route from the back wall to the front (REQ-VCK-03, D-41) and the spare path (ISS-069); grommet HOLD"),
     ("sprk_d", "150 mm", "mm", "assumption", "reserved round zone for a later sprinkler drop (REQ-US-01)"),
 ]
 
@@ -138,7 +136,6 @@ PARTS = {
     "fill_b": ("513302", "LINING - FILL - CEILING - BAY B", "Bông PET 40 mm - trần - ô B", "MP", "fill"),
     "fill_c": ("513303", "LINING - FILL - CEILING - BAY C", "Bông PET 40 mm - trần - ô C", "MP", "fill"),
     "fill_d": ("513304", "LINING - FILL - CEILING - BAY D", "Bông PET 40 mm - trần - ô D", "MP", "fill"),
-    "ring": ("513401", "LINING - LIGHT PLATE - CEILING", "Tấm đỡ đèn âm trần", "MP", "steel"),
     "clip": ("518001", "LINING - CASSETTE CLIP - HOLD", "Kẹp treo cassette (chờ chọn)", "HOLD", "hold"),
     "catch": ("518002", "LINING - CEILING SAFETY CATCH - HOLD", "Dây an toàn cassette trần (chờ chọn)", "HOLD", "hold"),
 }
@@ -190,7 +187,15 @@ def all_params(skeleton_rows=None):
     clash = [p[0] for p in CEILING_PARAMS if p[0] in have and p[0] not in SKELETON_MAY_DEFINE]
     if clash:
         raise ValueError("ceiling parameter names clash with the skeleton: %s" % clash)
-    return list(sk) + [p for p in CEILING_PARAMS if p[0] not in have]
+    own = []
+    for p in CEILING_PARAMS:
+        if p[0] in have:
+            continue
+        if p[0] == "c_w" and "half_pw" in have:
+            # the skeleton names the ceiling half's width itself (from P04): link to it
+            p = ("c_w", "half_pw", "mm", "calculation", "skeleton %s half_pw: the back and ceiling panels' width" % SKELETON_REV)
+        own.append(p)
+    return list(sk) + own
 
 
 def evaluate(params, overrides=None):
@@ -326,15 +331,10 @@ def fill_strips(vals=None):
     return strips
 
 
-def light_points():
-    """Light centres in CS-510301 (X, Y): on the centre line, at 1/6, 3/6, 5/6 of the length."""
-    return [("0 mm", "cs_gap + cs_d * %d / 6" % (2 * i + 1)) for i in range(3)]
-
-
 def sprinkler_points():
     """Two candidate zones for a later sprinkler drop (REQ-US-01), one each side so the
     cassette stays one part: in the middle of the outer felt spans (X' +-cs_w / 3) and of the
-    first frame bay over the cassette, clear of ribs, lights, clips and members."""
+    first frame bay over the cassette, clear of ribs, clips and members."""
     y = "%s + (fr_pitch - tube_w) / 2" % member_back_cs(1)
     return [("-cs_w / 3", y), ("cs_w / 3", y)]
 

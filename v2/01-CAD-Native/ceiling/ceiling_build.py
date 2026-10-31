@@ -11,8 +11,8 @@ Builds one new design, 410000 CEILING (pod coordinates, conventions.md s4):
   410102 CEILING - PANEL ASSY - C2 (+X half): 411102 frame (mirror) + 411301 skin
   510301 LINING - CASSETTE - CEILING - COMMON, at C1-CASS and at C2-CASS:
       513101 tray (sheet metal, 0.5 mm, returns turned in under the felt as a 12 mm lip)
-      2 x 513102 rib, 513201 felt, 2 x 513301 + 513302 + 513303 fill strips,
-      3 x 513401 light ring, 6 x 518001 clip and 2 x 518002 safety catch (HOLD envelopes)
+      2 x 513102 rib, 513201 felt, 513301 + 513302 + 513303 fill strips,
+      6 x 518001 clip and 2 x 518002 safety catch (HOLD envelopes)
 
 Every size is a user parameter: the skeleton P03's own list, loaded from its CSV,
 then the ceiling's (ceiling_model.py), each with its status and source. Repeated
@@ -480,8 +480,6 @@ def build_felt(cass_comp, ctx):
     b = ("-(cs_w / 2 - tray_t - felt_c)", "(cs_w / 2 - tray_t - felt_c)",
          "(%s + tray_t + felt_c)" % M.CS_Y0, "(%s - tray_t - felt_c)" % M.CS_Y1, M.FELT_Z0, M.FELT_Z1)
     body = box_body(comp, "FELT 9", b, ctx)
-    for i, (x, y) in enumerate(M.light_points()):
-        circle_cut(comp, body, "LIGHT %d" % (i + 1), x, y, "light_hole", M.FELT_Z0, M.FELT_Z1, ctx)
     # reserved sprinkler zones (REQ-US-01): fully constrained sketches, nothing cut
     for i, (x, y) in enumerate(M.sprinkler_points()):
         pl = offset_plane(comp, comp.xYConstructionPlane, M.FELT_Z0, "PLANE - SPRINKLER ZONE %d" % (i + 1))
@@ -509,14 +507,6 @@ def build_fill(cass_comp, key, bay_box, notches, ctx):
         loc = (nb[0], nb[1], "(%s) - (%s)" % (nb[2], y0), "(%s) - (%s)" % (nb[3], y0), "0 mm", "fill_t")
         box_body(comp, "NOTCH %s" % name, loc, ctx, op=adsk.fusion.FeatureOperations.CutFeatureOperation, bodies=[body])
     set_material(comp, ctx, "fill")
-    return occ, comp
-
-
-def build_ring(cass_comp, ctx):
-    occ, comp = new_comp(cass_comp, "ring", ctx)
-    body = box_body(comp, "LIGHT PLATE", ("-ring_od / 2", "ring_od / 2", "-ring_od / 2", "ring_od / 2", "0 mm", "ring_t"), ctx)
-    circle_cut(comp, body, "LIGHT PLATE BORE", "0 mm", "0 mm", "light_hole", "0 mm", "ring_t", ctx)
-    set_material(comp, ctx, "steel")
     return occ, comp
 
 
@@ -564,17 +554,20 @@ def clash_check(bodies, allowed=()):
 # ---------------------------------------------------------------- save and export
 
 def clear_design(design):
-    """Empty the active design (a rebuild into the same cloud file keeps its history of saves)."""
+    """Empty the active design, so a rebuild goes into the same cloud file as a new version.
+    The whole timeline goes first (features, sketches, joints, occurrences), then the
+    parameters, which nothing references any more."""
     root = design.rootComponent
+    tl = design.timeline
+    if tl.count:
+        tl.moveToBeginning()
+        tl.deleteAllAfterMarker()
     for j in list(root.joints):
         j.deleteMe()
     for occ in list(root.occurrences):
         occ.deleteMe()
-    for coll in (root.sketches, root.constructionPlanes):
-        for i in range(coll.count - 1, -1, -1):
-            coll.item(i).deleteMe()
     params = design.userParameters
-    for _round in range(5):
+    for _round in range(10):
         for i in range(params.count - 1, -1, -1):
             try:
                 params.item(i).deleteMe()
@@ -582,9 +575,9 @@ def clear_design(design):
                 pass
         if params.count == 0:
             break
-    if params.count or root.occurrences.count:
-        raise RuntimeError("could not clear the design (%d parameters, %d occurrences left)" % (
-            params.count, root.occurrences.count))
+    if params.count or root.occurrences.count or tl.count:
+        raise RuntimeError("could not clear the design (%d parameters, %d occurrences, %d timeline items left)" % (
+            params.count, root.occurrences.count, tl.count))
 
 
 def export_all(design, tray_comp):
@@ -702,13 +695,6 @@ def run(_context):
                 o, c = build_fill(cass, key, bbox, use, ctx)
                 fill_occ[key] = c
             place(cass, o, ("0 mm", bbox[2], "0 mm"), "FILL BAY %d" % bay, ctx)
-        ring_comp = None
-        for i, (x, y) in enumerate(M.light_points()):
-            if ring_comp is None:
-                o, ring_comp = build_ring(cass, ctx)
-            else:
-                o = cass.occurrences.addExistingComponent(ring_comp, adsk.core.Matrix3D.create())
-            place(cass, o, (x, y, M.FELT_Z1), "LIGHT PLATE %d" % (i + 1), ctx)
         clip_comp = None
         for name, b in M.clip_boxes():
             if clip_comp is None:

@@ -30,8 +30,8 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-513101-03 | Lips, 12 mm inward, mitred corners | felt seat at Z' −33.5 | Hold the felt's edges mechanically, so the felt can't drop on people even if a bond fails (guideline §8.2) | PM ruling 2026-10-31 (12 mm lip) | confirmed |
 | F-513101-04 | Bend radius and K-factor | r = 0.5 (= t), K 0.44 | Flat pattern size | Assumption until the factory's tooling and a bend coupon set them (guideline §9) | assumption |
 | F-513101-05 | Corner relief | square, from the sheet metal rule | Lets the four returns fold without tearing | Fusion rule (relief = thickness) | assumption |
-| F-513101-06 | Cable hole, back return | Ø20 at X' 0, Z' −12.5 (mid gap) | Ceiling cables come in at the back-wall top corner and run in the gap (D-41, D-26) | Ø20 for a grommet: grommet not named | assumption; grommet HOLD |
-| F-513101-07 | Cable hole, front return | Ø20 at X' 0, Z' −12.5 | Opens toward the soffit: feed to the face light, the soffit's exhaust fans and the voice cockpit's front zone (D-60, REQ-VCK-02, REQ-VCK-03) | as F-513101-06 | assumption; grommet HOLD |
+| F-513101-06 | Cable hole, back return | Ø20 at X' 0, Z' −12.5 (mid gap) | The reserved voice cockpit route comes in at the back-wall top corner and runs in the gap (D-41, D-26, REQ-VCK-03); also the spare path (ISS-069) | Ø20 for a grommet: grommet not named | assumption; grommet HOLD |
+| F-513101-07 | Cable hole, front return | Ø20 at X' 0, Z' −12.5 | Opens toward the soffit: the cockpit route on to its front zone (mic array and status light, REQ-VCK-02, REQ-VCK-03) | as F-513101-06 | assumption; grommet HOLD |
 | F-513101-08 | Clip fixing zones (6) | 40 × 30 at X' ±193.83, against the back faces of X1, X2, X3: Y' 28.75…58.75, 397.5…427.5, 766.25…796.25 | Hang the cassette from the frame (D-47) | Over the ribs, so the load goes into the stiffened zone; on cross members so both cassettes match; on the back faces so every clip stays over the cassette for any soffit up to about 385 mm | HOLD (H03, ISS-076): no holes until a clip is named with its rating |
 | F-513101-09 | Catch anchor zones (2) | 40 × 30 at X' ±193.83, Y' 347.5…377.5 (in front of X2) | Safety catch: a cassette over people can't drop (D-47) | Over the ribs, near the cassette's middle (524) so it hangs level; on X2's front face while the clips use its back face, so catch and clips never share a fixing | HOLD (H04, ISS-076) |
 
@@ -48,9 +48,8 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 
 | Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|
-| F-513201-01 | Panel | 1160 × 1045 × 9, on the lips | The room face; sound absorption on the 24 mm gap (D-17, D-53) | Inside the returns less 1 mm each side (`felt_c`, assumption), so it drops onto the lips | calculation |
-| F-513201-02 | Light holes (3) | Ø58 at X' 0, Y' 177.67, 527, 876.33 | The 12 V downlights (D-20): 6 over the ceiling, 3 per cassette on its centre line, at 1/6, 1/2 and 5/6 of its length for even light | Ø58: Häfele Loox5 LED 2094 recess (selection E) | source (hole); calculation (positions) |
-| F-513201-03 | Sprinkler reserve (2 candidates) | Ø150 zones at X' ±387.67, Y' 203.13 (mark only, nothing cut) | Keeps a clear path for a later sprinkler drop (REQ-US-01) | One each side so the cassette stays one part: the middle of the outer felt spans and of the first frame bay over the cassette, clear of ribs, lights, clips and members (checked by the tests) | assumption |
+| F-513201-01 | Panel | 1160 × 1045 × 9, on the lips, no holes | The room face; sound absorption on the 24 mm gap (D-17, D-53). No lights in the ceiling: they sit on a light shelf along the tops of the side and back walls (PM ruling 2026-10-31, interior design) | Inside the returns less 1 mm each side (`felt_c`, assumption), so it drops onto the lips | calculation |
+| F-513201-02 | Sprinkler reserve (2 candidates) | Ø150 zones at X' ±387.67, Y' 203.13 (mark only, nothing cut) | Keeps a clear path for a later sprinkler drop (REQ-US-01) | One each side so the cassette stays one part: the middle of the outer felt spans and of the first frame bay over the cassette, clear of ribs, clips and members (checked by the tests) | assumption |
 
 ## Fill 513301, 513302, 513303, PET 40 mm at 32 kg/m³
 
@@ -59,12 +58,6 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-5133-01 | Strips in the frame bays over the cassette | 1116.74 long (X' ±558.37); widths 338.75 (bays 1 and 2), 274.75 (bay 3); 40 thick; bay 0 lies over the soffit and gets none | Fill the outer panel's cavity (D-24: the fill rides on the cassette, so each outer panel stays at 20 kg or less) | 5 mm clear of every member (`fill_c`, assumption) so the cassette never touches the frame (D-17); both ends trimmed by the seam member, so the strip and the cassette stay symmetric | calculation |
 | F-5133-02 | Notches | 50 × 40 round each clip (front edges of bays 1, 2, 3) and each catch (back edge of bay 1) | Room for the clips and catches | clip or catch space + 5 mm each side | calculation (HOLD sizes) |
 | F-5133-03 | Fixing to the tray back | — | Keep the strips in place while the cassette ships upright | Not designed: H10. In service the strips lie on the tray, so gravity holds them; a fixing failure can't drop anything into the room | HOLD |
-
-## Light plate 513401 (3 per cassette), galvanised steel 1 mm
-
-| Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
-|---|---|---|---|---|---|
-| F-513401-01 | Plate with bore | 100 × 100 × 1, Ø58 bore, on the felt's back at each light | A rigid seat for the downlight's springs; 9 mm felt alone would crush | The light's clamping range isn't published in the selection | assumption |
 
 ## What the cassette never has
 

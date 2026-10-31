@@ -7,8 +7,7 @@ Opens 410000_P01_CEILING_CAD.f3d as a new document and changes skeleton
 parameters (pod_w +100, wall_depth +25) and the soffit depth (cs_front 360 ->
 330, D-60). After each change it rebuilds and checks every body against the
 box the layout gives for the new values: frame members, both skins, and in
-both cassettes the tray, felt, ribs, fill strips, light plates, clips and
-catches. Then it reverts, checks again, and closes the copy without saving.
+both cassettes the tray, felt, ribs, fill strips, clips and catches. Then it reverts, checks again, and closes the copy without saving.
 Prints a Markdown record.
 """
 

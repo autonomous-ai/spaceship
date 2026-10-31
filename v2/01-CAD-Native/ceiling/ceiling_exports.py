@@ -7,8 +7,7 @@ Writes into v2/03-Manufacturing/ceiling/:
 
 - 513101 tray: Fusion's own flat-pattern DXF (from .raw/), put on the CUT /
   BEND / MARK layers; geometry unchanged.
-- 513102 rib blank, 513201 felt, 513301-513303 fill strips, 513401 light
-  plate, 411301 skin: 1:1 mm DXF cut files drawn from the parameters (these
+- 513102 rib blank, 513201 felt, 513301-513303 fill strips, 411301 skin: 1:1 mm DXF cut files drawn from the parameters (these
   parts are flat or bent from a plain strip).
 - the parts list for the master BOM and the tube cut list (CSV).
 
@@ -55,13 +54,11 @@ def rect(x0, y0, x1, y1):
 
 def write_flat_parts(v):
     out = {}
-    # felt: outline, 3 light holes, sprinkler reserve as a MARK circle; origin at its front-left corner
+    # felt: outline, the sprinkler reserves as MARK circles; origin at its front-left corner
     fw = v["cs_w"] - 2 * (v["tray_t"] + v["felt_c"])
     fd = v["cs_d"] - 2 * (v["tray_t"] + v["felt_c"])
     y_off = v["cs_gap"] + v["tray_t"] + v["felt_c"]
     ents = [("POLY", "CUT", rect(0, 0, fw, fd))]
-    for x, y in M.light_points():
-        ents.append(("CIRCLE", "CUT", (fw / 2 + M.ev(v, x), M.ev(v, y) - y_off), v["light_hole"] / 2))
     for sx, sy in M.sprinkler_points():
         ents.append(("CIRCLE", "MARK", (fw / 2 + M.ev(v, sx), M.ev(v, sy) - y_off), v["sprk_d"] / 2))
     p = os.path.join(OUT, fname("felt", "DXF", "dxf"))
@@ -85,11 +82,6 @@ def write_flat_parts(v):
         p = os.path.join(OUT, fname(key, "DXF", "dxf"))
         D.write_dxf(p, ents)
         out[key] = p
-    # light plate: square with the light bore
-    a = v["ring_od"]
-    p = os.path.join(OUT, fname("ring", "DXF", "dxf"))
-    D.write_dxf(p, [("POLY", "CUT", rect(0, 0, a, a)), ("CIRCLE", "CUT", (a / 2, a / 2), v["light_hole"] / 2)])
-    out["ring"] = p
     # skin: plain rectangle
     p = os.path.join(OUT, fname("skin", "DXF", "dxf"))
     D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["c_w"], v["wall_depth"]))])
@@ -154,7 +146,6 @@ def parts_list(v, mass):
         "ceiling": (1, None), "assy_c1": (1, "ceiling"), "assy_c2": (1, "ceiling"),
         "frame_c1": (1, "assy_c1"), "frame_c2": (1, "assy_c2"), "skin": (1, "assy_c1|assy_c2"),
         "cassette": (2, "ceiling"), "tray": (1, "cassette"), "rib": (2, "cassette"), "felt": (1, "cassette"),
-        "ring": (3, "cassette"),
         "clip": (6, "cassette"), "catch": (2, "cassette"),
     }
     for key, _bay, _b, _n in M.fill_strips():
@@ -184,7 +175,6 @@ def parts_list(v, mass):
             "felt": "D-17, D-31; felt fixing HOLD H09",
             "fill_a": "D-24, D-54; fixing HOLD H10", "fill_b": "D-24, D-54; fixing HOLD H10",
             "fill_c": "D-24, D-54; fixing HOLD H10", "fill_d": "D-24, D-54; fixing HOLD H10",
-            "ring": "selection E (Loox5 2094, 58 mm hole); plate assumption",
             "clip": "D-47; H03, ISS-076", "catch": "D-47; H04, ISS-076",
             "cassette": "D-17, D-24, D-41, D-47; PM ruling 2026-10-31 (one part for both halves)",
         }.get(key, "assembly tree; conventions s6")

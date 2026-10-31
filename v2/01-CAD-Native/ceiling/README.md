@@ -15,7 +15,6 @@ One native Fusion design, `410000_P01_CEILING_CAD`, built by script from named p
 | 513102 | LINING - RIB - CEILING · Gân đỡ tấm tiêu âm trần | made (0.5 mm hat) | 4 |
 | 513201 | LINING - FELT - CEILING · Tấm tiêu âm PET 9 mm - trần | made (cut felt) | 2 |
 | 513301 / 513302 / 513303 | LINING - FILL - CEILING - BAY A / B / C · Bông PET 40 mm - trần | made (cut fill; bays 1, 2, 3 behind the D-60 soffit) | 2 / 2 / 2 |
-| 513401 | LINING - LIGHT PLATE - CEILING · Tấm đỡ đèn âm trần | made (1 mm steel) | 6 |
 | 518001 | LINING - CASSETTE CLIP - HOLD · Kẹp treo cassette (chờ chọn) | bought, HOLD envelope (H03) | 12 |
 | 518002 | LINING - CEILING SAFETY CATCH - HOLD · Dây an toàn cassette trần (chờ chọn) | bought, HOLD envelope (H04) | 4 |
 
@@ -38,7 +37,7 @@ Part numbers follow conventions §6 and the PM's ruling of 2026-10-31 (CEILING 4
 python3 v2/01-CAD-Native/ceiling/test_ceiling_offline.py
 # build, save and export (needs the Fusion lock; the runner opens or makes the cloud file)
 python3 tools/fusion/run_script.py v2/01-CAD-Native/ceiling/ceiling_build.py --label "CEILING Engineer" \
-    --doc 410000_P01_CEILING_CAD --doc-new --arg into_active=1 --arg save=1 --arg export=1 --close
+    --doc 410000_P01_CEILING_CAD --doc-new --arg into_active=1 --arg save=1 --arg export=1 --close --discard
 python3 v2/01-CAD-Native/ceiling/ceiling_exports.py BUILD_LOG
 python3 tools/fusion/step_check.py v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step
 python3 tools/fusion/run_script.py v2/01-CAD-Native/ceiling/edit_test_ceiling.py --label "CEILING Engineer"

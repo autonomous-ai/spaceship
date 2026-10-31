@@ -52,6 +52,7 @@ def relayer(src, dst, mapping=LAYER_MAP, default="MARK"):
             seen[v] = new
             val = val.replace(v, new)
         out.append((code, val))
+    out = world_circles(out)
     # merge duplicate layer records that now share a name: keep the first
     result, names, skip = [], set(), False
     i = 0
@@ -74,6 +75,35 @@ def relayer(src, dst, mapping=LAYER_MAP, default="MARK"):
         for code, val in result:
             fh.write("%s\n%s\n" % (code, val))
     return seen
+
+
+def world_circles(pairs):
+    """Circles that Fusion writes with the extrusion direction (0, 0, -1) have a mirrored
+    object coordinate system (X(world) = -X(file)). Rewrite them in world coordinates
+    (negate X, extrusion (0, 0, 1)), so every CAM reader places them the same way.
+    Same circle, same size; only how the file states it changes."""
+    out = list(pairs)
+    i = 0
+    while i < len(out):
+        c, v = out[i][0].strip(), out[i][1].strip()
+        if c == "0" and v in ("CIRCLE", "ARC"):
+            j = i + 1
+            while j < len(out) and out[j][0].strip() != "0":
+                j += 1
+            ent = out[i + 1:j]
+            codes = {p[0].strip(): k for k, p in enumerate(ent)}
+            if "230" in codes and float(ent[codes["230"]][1]) < -0.5:
+                if v == "ARC":
+                    raise ValueError("ARC with a mirrored OCS: not handled")
+                k = codes["10"]
+                ent[k] = (ent[k][0], repr(-float(ent[k][1])))
+                k = codes["230"]
+                ent[k] = (ent[k][0], "1")
+                out[i + 1:j] = ent
+            i = j
+            continue
+        i += 1
+    return out
 
 
 def in_table_layer(out, i):

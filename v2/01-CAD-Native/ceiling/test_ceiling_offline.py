@@ -43,14 +43,18 @@ def gap(a, b):
 
 class Stack(unittest.TestCase):
     def test_values(self):
-        self.assertAlmostEqual(VALS["c_w"], 1203.61)
-        self.assertEqual(VALS["inner_w"], 2338.0)
-        self.assertAlmostEqual(VALS["fr_pitch"], 368.75)
-        self.assertEqual(VALS["cs_w"], 1163.0)
-        self.assertEqual(VALS["cs_d"], 1414.0 - 360.0 - 6.0)
-        self.assertEqual(VALS["gap_h"], 24.0)
-        self.assertAlmostEqual(VALS["rib_off"], 1163.0 / 6)
-        self.assertAlmostEqual(VALS["fill_hw"], 584.5 - 1.13 - 20 - 5)
+        """The ceiling's sizes from the skeleton's own numbers (any skeleton revision)."""
+        v = VALS
+        self.assertAlmostEqual(v["c_w"], (v["pod_w"] - 2 * v["outer_t"] - 3 * v["seam_gap"]) / 2)
+        self.assertAlmostEqual(v["inner_w"], v["pod_w"] - 2 * v["stack_t"])
+        self.assertAlmostEqual(v["fr_pitch"], (v["wall_depth"] - v["tube_w"]) / 4)
+        self.assertAlmostEqual(v["cs_w"], v["inner_w"] / 2 - 2 * v["cs_gap"])
+        self.assertAlmostEqual(v["cs_d"], v["wall_depth"] - v["stack_t"] - v["cs_front"] - 2 * v["cs_gap"])
+        self.assertAlmostEqual(v["gap_h"], 24.0)
+        self.assertAlmostEqual(v["rib_off"], v["cs_w"] / 6)
+        self.assertAlmostEqual(v["fill_hw"], v["inner_w"] / 4 - v["seam_gap"] / 2 - v["tube_w"] - v["fill_c"])
+        self.assertEqual(v["cs_front"], 360.0)
+        self.assertEqual(v["seam_gap"], 2.26)
 
     def test_stack_closes(self):
         v = VALS
@@ -75,8 +79,9 @@ class Stack(unittest.TestCase):
                     self.assertGreaterEqual(gap(ms[i][1], ms[j][1]), -1e-9, "%s overlaps %s" % (ms[i][0], ms[j][0]))
             xs = [x for _c, b in ms for x in (b[0], b[1])]
             sign = -1 if half == "C1" else 1
-            self.assertAlmostEqual(min(xs) if sign < 0 else max(xs), sign * (1207.0 - 2.26))
-            self.assertAlmostEqual(max(xs) if sign < 0 else min(xs), sign * 1.13)
+            outer = VALS["pod_w"] / 2 - VALS["outer_t"] - VALS["seam_gap"]
+            self.assertAlmostEqual(min(xs) if sign < 0 else max(xs), sign * outer)
+            self.assertAlmostEqual(max(xs) if sign < 0 else min(xs), sign * VALS["seam_gap"] / 2)
 
 
 class Cassette(unittest.TestCase):
@@ -84,19 +89,20 @@ class Cassette(unittest.TestCase):
         return (ev(M.CS_X0), ev(M.CS_X1), ev(M.CS_Y0), ev(M.CS_Y1), -VALS["tray_h"], 0.0)
 
     def test_inside_envelope(self):
-        # skeleton C1-CASS / C2-CASS envelopes: X -1169..0 / 0..1169, Y -645..769, Z 2319..2353
-        f = VALS["cs_front"]      # the D-60 soffit takes the front strip
-        env = {"C1": (-1169.0, 0.0, -645.0 + f, 769.0, 2319.0, 2353.0), "C2": (0.0, 1169.0, -645.0 + f, 769.0, 2319.0, 2353.0)}
+        """Inside the skeleton's ceiling cassette envelope (C1-CASS / C2-CASS) behind the
+        D-60 soffit, with the edge gap all round; top 4 mm under the ceiling frame."""
+        v = VALS
+        xi = v["pod_w"] / 2 - v["stack_t"]
+        y0 = v["pod_d"] / 2 - v["wall_depth"] + v["cs_front"]
+        y1 = v["pod_d"] / 2 - v["stack_t"]
+        z0 = v["pod_h"] - v["stack_t"]
+        env = {"C1": (-xi, 0.0, y0, y1, z0, z0 + v["cass_t"]), "C2": (0.0, xi, y0, y1, z0, z0 + v["cass_t"])}
         for half in ("C1", "C2"):
             b = to_pod(self.cassette_outer(), half)
             e = env[half]
-            g = VALS["cs_gap"]
-            self.assertAlmostEqual(b[0], e[0] + g)
-            self.assertAlmostEqual(b[1], e[1] - g)
-            self.assertAlmostEqual(b[2], e[2] + g)
-            self.assertAlmostEqual(b[3], e[3] - g)
-            self.assertAlmostEqual(b[4], e[4])
-            self.assertAlmostEqual(b[5], e[5])
+            g = v["cs_gap"]
+            for got, want in zip(b, (e[0] + g, e[1] - g, e[2] + g, e[3] - g, e[4], e[5])):
+                self.assertAlmostEqual(got, want)
 
     def parts(self):
         """Every cassette body we can describe as a box, in CS-510301."""
@@ -160,8 +166,6 @@ class Cassette(unittest.TestCase):
         for key, bay, b, _n in M.fill_strips():
             sb = tuple(ev(e) for e in b)
             self.assertAlmostEqual(sb[0], -sb[1])
-        for x, _y in M.light_points():
-            self.assertEqual(ev(x), 0.0)
         xs = sorted(ev(x) for x, _y in M.sprinkler_points())
         self.assertAlmostEqual(xs[0], -xs[1])
 
@@ -178,16 +182,6 @@ class Cassette(unittest.TestCase):
         self.assertEqual(sizes["fill_b"], {338.75})
         self.assertEqual(len(sizes["fill_c"]), 1)
 
-    def test_lights_clear(self):
-        ribs = M.boxes_mm(VALS, M.rib_boxes())
-        r = VALS["ring_od"] / 2
-        for x, y in M.light_points():
-            cx, cy = ev(x), ev(y)
-            for rn, rb in ribs:
-                self.assertGreater(min(abs(cx - rb[0]), abs(cx - rb[1])), r, "light plate over " + rn)
-            self.assertGreater(cy - r, ev(M.CS_Y0) + VALS["lip_w"])
-            self.assertLess(cy + r, ev(M.CS_Y1) - VALS["lip_w"])
-
 
 class Sprinkler(unittest.TestCase):
     def test_zones_clear(self):
@@ -199,8 +193,6 @@ class Sprinkler(unittest.TestCase):
             zone = (cx - r, cx + r, cy - r, cy + r, -1e9, 1e9)
             for n, b in ribs + hold:
                 self.assertFalse(M.overlap(zone, b), "sprinkler zone over " + n)
-            for lx, ly in M.light_points():
-                self.assertGreater(math.hypot(cx - ev(lx), cy - ev(ly)), r + VALS["ring_od"] / 2 * math.sqrt(2))
             for half in ("C1", "C2"):
                 pz = to_pod(zone, half)
                 for mc, mb in M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members(half)]):
@@ -262,12 +254,13 @@ class EditFollows(unittest.TestCase):
     def test_pod_width_change(self):
         """Change a skeleton parameter: the layout follows (cassette, frame, fill)."""
         v2 = M.evaluate(P, {"pod_w": "2600 mm"})
-        self.assertAlmostEqual(v2["c_w"], 1257.0 - 3.39)
-        self.assertAlmostEqual(v2["cs_w"], (2600 - 162) / 2 - 6)
-        self.assertAlmostEqual(v2["fill_hw"], (2600 - 162) / 4 - 1.13 - 25)
+        st, ot = v2["stack_t"], v2["outer_t"]
+        self.assertAlmostEqual(v2["c_w"], (2600 - 2 * ot - 3 * 2.26) / 2)
+        self.assertAlmostEqual(v2["cs_w"], (2600 - 2 * st) / 2 - 6)
+        self.assertAlmostEqual(v2["fill_hw"], (2600 - 2 * st) / 4 - 1.13 - 25)
         v3 = M.evaluate(P, {"wall_depth": "1520 mm"})
         self.assertAlmostEqual(v3["fr_pitch"], (1520 - 20) / 4)
-        self.assertAlmostEqual(v3["cs_d"], 1520 - 81 - 360 - 6)
+        self.assertAlmostEqual(v3["cs_d"], 1520 - st - 360 - 6)
 
 
 if __name__ == "__main__":
