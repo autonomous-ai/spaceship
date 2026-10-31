@@ -6,7 +6,7 @@
 Opens the exported .f3d as a new, unsaved document (the saved design is never
 touched) and prints a Markdown record:
   1. Reopen check: timeline health, every sketch fully constrained, design type.
-  2. Edit two skeleton parameters (wall_depth 1495 -> 1300, side_h -> 1000) and,
+  2. Edit two skeleton parameters (wall_depth 1495 -> 1300, side_h -> 1120) and,
      on designs with no fill, one wall rule (stile_pitch_max 400 -> 300), rebuild,
      check health again. A fill pocket is a cut, and a Fusion cut keeps the bodies
      it first cut: when the stud count changes, a pocket can land on a fill piece
@@ -26,7 +26,10 @@ import adsk.core
 import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
-EDITS = [("wall_depth", "1300 mm"), ("side_h", "1000 mm"), ("stile_pitch_max", "300 mm")]
+# side_h 1120, not 1000: ELECTRICAL's trunk holes in R1-CASS sit at fixed heights up to Z 1210 (el_trunk_z +
+# el_kit_dz + el_kit_d / 2), and a lower row 1000 high would put its top (Z 1112) under them; ELECTRICAL moves
+# the trunk before the rows change that much
+EDITS = [("wall_depth", "1300 mm"), ("side_h", "1120 mm"), ("stile_pitch_max", "300 mm")]
 # back wall panels B1-B4 (wall_back_panel.py): the panel width, the row height and the stud rule
 # (pod_w 2300 with the skin and frame widths the skeleton would give it: (2300 - 92 - 3 x 2.26) / 2 and
 # (2300 - 92 - 2 x 2.26 - 5.5) / 2)
@@ -58,6 +61,59 @@ def pv(design, name, default=None):
     if p is None:                       # a design built before the parameter existed
         return default
     return round(p.value * 10.0, 3) if p.unit == "mm" else round(p.value, 3)
+
+
+def round_holes(design, prefix):
+    """(diameter, axis, centre) of the round holes in the bodies whose names start with `prefix`; the centre
+    holds the two coordinates across the axis (the one along it is None)."""
+    out = []
+    for c in design.allComponents:
+        for b in c.bRepBodies:
+            if not b.name.startswith(prefix):
+                continue
+            for f in b.faces:
+                if f.geometry.surfaceType != adsk.core.SurfaceTypes.CylinderSurfaceType:
+                    continue
+                g = adsk.core.Cylinder.cast(f.geometry)
+                ax = max(range(3), key=lambda i: abs((g.axis.x, g.axis.y, g.axis.z)[i]))
+                ctr = [round(v * 10.0, 2) for v in (g.origin.x, g.origin.y, g.origin.z)]
+                ctr[ax] = None
+                out.append((round(g.radius * 20.0, 2), "xyz"[ax], tuple(ctr)))
+    return out
+
+
+def has_hole(holes, d, axis, **at):
+    """A hole of diameter d along `axis` whose centre matches every coordinate in `at` (mm) within 0.02."""
+    k = {"x": 0, "y": 1, "z": 2}
+    return any(abs(hd - d) < 0.02 and ha == axis and all(c[k[a]] is not None and abs(c[k[a]] - v) < 0.02
+                                                           for a, v in at.items()) for hd, ha, c in holes)
+
+
+EL_SIDE = {"510102": ("el_y_kit", "el_y_cx", "el_trunk_z", "el_kit_dz", "el_kit_d", "el_grm_d"),
+           "510104": ("el_call_y", "el_call_z", "el_shelf_z", "el_grm_s", "el_y_kit")}
+
+
+def el_side_checks(design, root_pn, before_p, after_p):
+    """ELECTRICAL's felt holes in R1-CASS and R2-CASS follow the skeleton (the column's back face moves with
+    wall_depth, so the kit, column and call light holes move half or all of the change; heights stay)."""
+    if root_pn not in EL_SIDE:
+        return []
+    holes = round_holes(design, "FELT")
+    a = after_p
+    dwd = before_p["wall_depth"] - a["wall_depth"]
+    out = [("el_y_kit moves half the wall_depth change (%+.2f)" % (dwd / 2.0),
+            abs((a["el_y_kit"] - before_p["el_y_kit"]) - dwd / 2.0) < 0.01)]
+    if root_pn == "510102":
+        out += [("FA-KIT %g hole at Y el_y_kit, Z trunk + %g" % (a["el_kit_d"], a["el_kit_dz"]),
+                 has_hole(holes, a["el_kit_d"], "x", y=a["el_y_kit"], z=a["el_trunk_z"] + a["el_kit_dz"])),
+                ("FX-COL %g hole follows the column's back face (Y %.2f)" % (a["el_grm_d"], a["el_y_cx"]),
+                 has_hole(holes, a["el_grm_d"], "x", y=a["el_y_cx"], z=a["el_trunk_z"]) and
+                 abs((a["el_y_cx"] - before_p["el_y_cx"]) - dwd) < 0.01)]
+    else:
+        out += [("FX-CALL0 and FX-CALL2 %g holes follow the call light line (Y %.2f)" % (a["el_grm_s"], a["el_call_y"]),
+                 has_hole(holes, a["el_grm_s"], "x", y=a["el_call_y"], z=a["el_shelf_z"]) and
+                 has_hole(holes, a["el_grm_s"], "x", y=a["el_call_y"], z=a["el_call_z"]))]
+    return out
 
 
 def back_checks(after, p):
@@ -149,7 +205,7 @@ def record(design, rel):
     names = ("pod_w", "half_pw", "half_fw", "back_ph", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch",
              "cass_len", "cass_h", "pnl_h") if back_wall else ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid",
                                          "stile_pitch", "cass_len", "cass_h", "top_h", "pod_h", "panel_z0",
-                                         "seam_gap", "outer_t", "lin_gap")
+                                         "seam_gap", "outer_t", "lin_gap") + EL_SIDE.get(root_pn, ())
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
     if any(k.split(" / ", 1)[-1].startswith("FILL") for k in before):
@@ -260,6 +316,7 @@ def record(design, rel):
             sp = spig_front[0]
             checks.append(("front spigot follows the panel's front end (+100)",
                            abs((sp[1] + sp[4]) / 2.0 - (y0p + 100.0)) < 0.02))
+        checks += el_side_checks(design, root_pn, before_p, after_p)
     for k, e in exprs.items():
         design.userParameters.itemByName(k).expression = e
     adsk.doEvents()

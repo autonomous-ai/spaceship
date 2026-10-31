@@ -231,6 +231,101 @@ WALL_PARAMS = [
      "M6 thread into the spigot rivnut; H-05 gives no length; 10 stays inside the rivnut's 10.16"),
 ]
 
+# ELECTRICAL's interface features in WALL parts (ELECTRICAL P01, electrical_model.py, PR #64, and the PM's
+# messages of 2026-10-31 20:30-20:45 UTC): the power unit's cut-out in B2-CASS, cable slots and bushing holes in
+# the cassette returns, felt-only holes, and the inlet holes and fill cut-outs in panel B2. Same names as
+# ELECTRICAL's model with an el_ prefix, same expressions, so a skeleton edit moves them as it moves ELECTRICAL's.
+_EL = "ELECTRICAL P01 (electrical_model.py, PR #64)"
+EL_PARAMS = [
+    ("el_trunk_z", "1100 mm", "mm", "assumption", _EL + " trunk_z: the cable trunk height in B2-CASS and R1-CASS, "
+                                                         "above the ledge (about Z 1000), below the R1/R2 joint"),
+    ("el_col_d", "360 mm", "mm", "confirmed", _EL + " col_d; D-61: the air column is 217 x 360"),
+    ("el_col_skin", "1 mm", "mm", "assumption", _EL + " col_skin: the column casing in front of its fill"),
+    ("el_ch_w", "24 mm", "mm", "assumption", _EL + " ch_w: the 24 x 24 cable chase in the column's fill"),
+    ("el_y_kit", "((pod_d / 2 - wall_depth + el_col_d) + (pod_d / 2 - stack_t)) / 2", "mm", "calculation",
+     _EL + " y_kit: the voice kit drop, halfway between the column's back face and the back lining (Y 240.5, D-70)"),
+    ("el_y_cx", "pod_d / 2 - wall_depth + el_col_d - el_col_skin - el_ch_w / 2", "mm", "calculation",
+     _EL + " y_cx: where the trunk leaves R1-CASS's felt into the column chase (Y -298)"),
+    ("el_grm_d", "19.1 mm", "mm", "source", _EL + " grm_d: the hole for the Heyco 2836 SB 750-625 bushing (maker "
+                                                  "page); PM 2026-10-31: 19.1, not 20"),
+    ("el_grm_s", "12 mm", "mm", "assumption", _EL + " grm_s: felt-only hole for a single cable"),
+    ("el_fs_y0", "2 mm", "mm", "assumption", _EL + " FS-CNR: the corner felt slot starts 2 mm behind the back "
+                                                   "lining's face plane"),
+    ("el_fs_y1", "20 mm", "mm", "assumption", _EL + " FS-CNR: and ends 20 mm behind it, clear of R1-CASS's back lip"),
+    ("el_fs_dz", "60 mm", "mm", "assumption", _EL + " FS-CNR: half the corner felt slot's height (trunk_z +- 60)"),
+    ("el_kit_d", "60 mm", "mm", "assumption", _EL + " kit_d: felt access hole for the kit drop, with a felt plug"),
+    ("el_kit_dz", "80 mm", "mm", "assumption", _EL + " FA-KIT: the access hole's centre 80 above the trunk"),
+    ("el_call_dy", "450 mm", "mm", "assumption", _EL + " call_y = y_kit - 450: the front end of a 900 mm bar"),
+    ("el_call_y", "el_y_kit - el_call_dy", "mm", "calculation", _EL + " call_y: the call light feed (Y -209.5)"),
+    ("el_call_z", "1450 mm", "mm", "assumption", _EL + " call_z: call light feed height, above the screen zone"),
+    ("el_shelf_z", "2250 mm", "mm", "assumption", _EL + " shelf_z: the light shelf height (CEILING sets the shelf)"),
+    ("el_shelf_d", "16 mm", "mm", "assumption", _EL + " FX-SHELF: felt hole for the light shelf feed"),
+    ("el_pu_x0", "95 mm", "mm", "assumption", _EL + " pu_x0: the power unit's left side, clear of the closing seam "
+                                                    "member and its pin-bolt pocket"),
+    ("el_pu_w", "296 mm", "mm", "source", "ELECTRICAL's final unit size 296 x 260 x 72 (PM 2026-10-31 20:38 UTC): "
+                                          "X 95 to 391, 4.75 clear of B2's first stud"),
+    ("el_pu_h", "260 mm", "mm", "source", "ELECTRICAL's final unit size (PM 2026-10-31 20:38 UTC): Z 870 to 1130"),
+    ("el_pu_zc", "1000 mm", "mm", "confirmed", _EL + " pu_zc: the socket and LAN at the ledge height (D-70)"),
+    ("el_pu_clr", "4 mm", "mm", "assumption", _EL + " pu_clr: the gap round the frame-mounted unit, so the cassette "
+                                                    "stays floating (= cav_gap)"),
+    ("el_cut_x0", "el_pu_x0 - el_pu_clr", "mm", "calculation", "B2-CASS cut-out: its left return's inner face (X 91)"),
+    ("el_cut_x1", "el_pu_x0 + el_pu_w + el_pu_clr", "mm", "calculation",
+     _EL + " cut_x1: B2-CASS cut-out: its right return's inner face (X 395)"),
+    ("el_cut_z0", "el_pu_zc - el_pu_h / 2 - el_pu_clr", "mm", "calculation",
+     "B2-CASS cut-out: its bottom return's inner face (Z 866)"),
+    ("el_cut_z1", "el_pu_zc + el_pu_h / 2 + el_pu_clr", "mm", "calculation",
+     _EL + " cut_z1: B2-CASS cut-out: its top return's inner face (Z 1134)"),
+    ("el_lt_x", "346 mm", "mm", "source", "ELECTRICAL via the PM 2026-10-31 20:38 UTC: the light feed moves from "
+                                          "X 355 to X 346"),
+    ("el_y_bg", "pod_d / 2 - stack_t + tray_t + felt_t + gap_h / 2", "mm", "calculation",
+     _EL + " y_bg: the middle of the back lining's cable gap (Y 787.5)"),
+    ("el_slot_h", "10 mm", "mm", "assumption", _EL + " slot_h: half the 20 x 70 slot in the cut-out's right return"),
+    ("el_slot_l", "70 mm", "mm", "assumption", _EL + " slot_l: the slot's length along Z, past both lead exits"),
+    ("el_lx_z2", "el_trunk_z - 15 mm", "mm", "calculation", _EL + " lx_z2: the unit's upper lead exit (Z 1085)"),
+    ("el_lx_z1", "el_lx_z2 - 40 mm", "mm", "calculation", _EL + " lx_z1: the unit's lower lead exit (Z 1045)"),
+    ("el_cs_h", "5.5 mm", "mm", "calculation", _EL + " cs_h: half the corner slot in B2-CASS's end return (Y 776-787)"),
+    ("el_cs_dz", "40 mm", "mm", "assumption", _EL + " S-CNR: half the corner slot's length (trunk_z +- 40)"),
+    ("el_y_xc", "pod_d / 2 - stack_t + tray_t + felt_t + 6 mm", "mm", "calculation",
+     _EL + " y_xc: the corner crossing (Y 781.5), clear of R1-CASS's back lip"),
+    ("el_ceil_x", "(pod_w - 2 * stack_t) / 4", "mm", "calculation",
+     _EL + " ceil_x = inner_w / 4: the ceiling cassette's cable holes (X 583, CEILING P01)"),
+    ("el_z_cg", "pod_h - stack_t + tray_t + felt_t + gap_h / 2", "mm", "calculation",
+     _EL + " z_cg: the middle of the ceiling lining's cable gap (Z 2337.5)"),
+    ("el_inlet_x", "120 mm", "mm", "assumption", _EL + " inlet_x: the inlet column, just clear of the closing seam"),
+    ("el_inlet_z", "313 mm", "mm", "source", _EL + " inlet_z: v1's 'Power Jack' centre Z 298.3 + 15"),
+    ("el_lan_z", "375 mm", "mm", "source", _EL + " lan_z: v1's 'Jack LAN' centre Z 360 + 15"),
+    ("el_inlet_d", "24 mm", "mm", "source", _EL + " inlet_d: powerCON TRUE1 TOP cut-out 23.8, etherCON NE8FDP 24"),
+    ("el_sl_x", "el_inlet_x + 30 mm", "mm", "calculation", _EL + " sl_x: the mains and LAN sleeve's centre (X 150)"),
+    ("el_sl_w", "20 mm", "mm", "assumption", _EL + " SLEEVE: the sleeve's 20 x 20 envelope"),
+]
+# what each design needs, by position and kind (the el_ names these refer to come with them)
+EL_USE = {
+    ("R1", "cass"): ("el_fs_y0", "el_fs_y1", "el_fs_dz", "el_trunk_z", "el_kit_d", "el_kit_dz", "el_y_kit",
+                     "el_grm_d", "el_y_cx"),
+    ("R2", "cass"): ("el_grm_s", "el_call_y", "el_call_z", "el_shelf_z"),
+    ("B2", "cass"): ("el_cut_x0", "el_cut_x1", "el_cut_z0", "el_cut_z1", "el_lt_x", "el_grm_d", "el_y_bg",
+                     "el_slot_h", "el_slot_l", "el_lx_z1", "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z"),
+    ("B2", "panel"): ("el_cut_x0", "el_cut_z0", "el_cut_z1", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d",
+                      "el_sl_x", "el_sl_w"),
+    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d", "el_ceil_x", "el_z_cg"),
+}
+
+
+def el_params(code, kind):
+    """The ELECTRICAL parameters one design needs, with every el_ name they refer to, in table order."""
+    table = {p[0]: p for p in EL_PARAMS}
+    want = set(EL_USE.get((code, kind), ()))
+    todo = list(want)
+    while todo:
+        for ref in re.findall(r"\bel_\w+", table[todo.pop()][1]):
+            if ref not in want:
+                want.add(ref)
+                todo.append(ref)
+    return [p for p in EL_PARAMS if p[0] in want]
+
+
+WALL_PARAMS = WALL_PARAMS + el_params(CODE, "panel" if PANEL_SIDE else "cass")
+
 # kg/m3, status, source; used for body materials (mass properties)
 DENSITY = {
     "frame": (2700.0, "source", "6063-T6 mill finish (PM ruling 2026-10-31, hidden frame tubes): 2.70 g/cm3"),
@@ -1151,6 +1246,50 @@ def build_tray(design, root, tray, yc, zc):
     return tray.bRepBodies.item(0)
 
 
+def el_inside(design, label, lo_hi, keep):
+    """Refuse an ELECTRICAL feature that would not lie wholly inside its part (a skeleton or ELECTRICAL change
+    moved one of them): [(feature low, feature high, part low, part high), ...] per axis, `keep` mm of part
+    left round it."""
+    for f0, f1, p0, p1 in lo_hi:
+        a, b, c, d = (ev(design, e) for e in (f0, f1, p0, p1))
+        if min(a, b) < min(c, d) + keep - 1e-6 or max(a, b) > max(c, d) - keep + 1e-6:
+            raise RuntimeError("%s (%.2f to %.2f) does not lie inside its part (%.2f to %.2f) with %g mm round it" % (
+                label, min(a, b), max(a, b), min(c, d), max(c, d), keep))
+
+
+def el_felt_cuts(design, felt, fb, yc, zc):
+    """ELECTRICAL's felt-only openings in the right linings (R1-CASS, R2-CASS; EL_PARAMS): through the 9 mm felt
+    from its room face. No steel is there: the tray's lips are only at its edges, so no bushing; the felt hole
+    is the whole feature (ELECTRICAL's model, note on felt holes)."""
+    if CODE not in ("R1", "R2"):
+        return fb
+    fy = ("(%s) + tray_t + felt_c" % yc[0], "(%s) - tray_t - felt_c" % yc[1])
+    fz = ("(%s) + tray_t + felt_c" % zc[0], "(%s) - tray_t - felt_c" % zc[1])
+    holes = []
+    if CODE == "R1":
+        sy = ("pod_d / 2 - stack_t + el_fs_y0", "pod_d / 2 - stack_t + el_fs_y1")
+        sz = ("el_trunk_z - el_fs_dz", "el_trunk_z + el_fs_dz")
+        el_inside(design, "FS-CNR", [(sy[0], sy[1], fy[0], fy[1]), (sz[0], sz[1], fz[0], fz[1])], 1.0)
+        box(design, felt, "FELT SLOT FS-CNR", (sx("pod_w / 2 - stack_t"), sx("pod_w / 2 - stack_t + tray_t + felt_t + 1 mm")),
+            sy, sz, "cut", fb)
+        fb = felt.bRepBodies.item(0)
+        holes = [("FA-KIT VOICE KIT ACCESS", "el_y_kit", "el_trunk_z + el_kit_dz", "el_kit_d"),
+                 ("FX-COL EXIT INTO THE AIR COLUMN", "el_y_cx", "el_trunk_z", "el_grm_d")]
+    else:
+        holes = [("FX-CALL0 CALL LIGHT FEED BEHIND THE SHELF", "el_call_y", "el_shelf_z", "el_grm_s"),
+                 ("FX-CALL2 CALL LIGHT EXIT", "el_call_y", "el_call_z", "el_grm_s")]
+    for label, y, z, d in holes:
+        el_inside(design, label.split()[0], [("(%s) - (%s) / 2" % (y, d), "(%s) + (%s) / 2" % (y, d), fy[0], fy[1]),
+                                             ("(%s) - (%s) / 2" % (z, d), "(%s) + (%s) / 2" % (z, d), fz[0], fz[1])], 1.0)
+        hole(design, felt, fb, "x", X_FELT_FACE, S, {"y": y, "z": z}, d, "felt_t + 1 mm", "FELT " + label)
+        fb = felt.bRepBodies.item(0)
+    if felt.bRepBodies.count != 1:
+        raise RuntimeError("the felt split into %d bodies at ELECTRICAL's openings" % felt.bRepBodies.count)
+    print("step 3b: ELECTRICAL felt openings in %s: %s" % (CODE, ", ".join(h[0].split()[0] for h in holes) +
+                                                           (", FS-CNR" if CODE == "R1" else "")))
+    return fb
+
+
 def build_cassette(design, root):
     out = {}
     want = WANT[PART]
@@ -1175,6 +1314,7 @@ def build_cassette(design, root):
         out[fb.name] = fb
         print("step 3: felt", size(bbox(fb)))
         set_material(design, [fb], "felt", "PET FELT 9 MM DARK GRAY")
+        out[fb.name] = el_felt_cuts(design, felt, fb, yc, zc)
     if not clip:
         return out
     # reserved zones for the captive clips (H03): in the 4 mm gap between the frame's inner face and the
