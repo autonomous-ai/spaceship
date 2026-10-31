@@ -1,7 +1,7 @@
 <!-- report.md is generated from report_template.md by scripts/run_all.py. Edit the template or the scripts, never report.md. -->
 # Spaceship layout study: weight, pallets and 2-person assembly
 
-Status words: every number carries one of confirmed, source, calculation, assumption or unverified (guideline section 10). A value the PM decided is confirmed and cites its decision, D-xx in `v2/00-Control/decision-log.md`; D-49 to D-59 come from the control pack's PR #19, not merged yet (LS-17). Under AGENTS.md the PM decides and the log records it. HOLD marks a part or interface that a supplier or a sample must confirm first. Spaceship is the working name of v2 (folders keep their v2 names).
+Status words: every number carries one of confirmed, source, calculation, assumption or unverified (guideline section 10). A value the PM decided is confirmed and cites its decision, D-xx in `v2/00-Control/decision-log.md`. Under AGENTS.md the PM decides and the log records it. HOLD marks a part or interface that a supplier or a sample must confirm first. Spaceship is the working name of v2 (folders keep their v2 names).
 
 Every number below comes from the scripts in `scripts/`. `python3 scripts/run_all.py --check` proves that this report and the files in `out/` reproduce exactly. Section 10 lists the inputs, their status and their sources.
 
@@ -12,11 +12,11 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 2. **Parts.** Every part is 20 kg or less except the glass. The door ships as one unit {{door_unit_l}} mm long and {{final_door_kg}} kg: 4+4 laminated glass ({{door_glass_h}} mm), a kick strip {{kick_strip_h}} mm tall holding the drop seal, and the hinges and pull fitted in the factory. Its hinges and lock are on HOLD until a set rated for this glass, 47.5 kg and 1176 mm is named (D-46, D-56). Two people carry it with 2 suction lifters ({{final_door_each}} kg each). The fixed panel weighs {{final_fixed_kg}} kg. Each splitter cartridge weighs {{cart_each}} kg with its 2 fans fitted, and the riser {{riser_kg}} kg. They slide into the mounted right decor block ({{final_dr}} kg) from inside, through its removable inner panel (D-59), so no lift carries the block and its air parts together ({{dr_plus_carts}} kg).
 3. **Shipping (confirmed, D-04).** One 48 x 40 pallet and one 96 x 48 pallet, {{final_gross}} kg gross, {{final_pcf}} lb/ft3. The 48 x 40 weighs {{final_std_kg}} kg and stands {{final_std_h}} mm high. The 96 x 48 weighs {{final_long_kg}} kg and stands {{final_long_h}} mm high, with both lites flat on top in their frame. Walls and ceiling are {{final_wall_t}} mm thick.
 4. **Assembly (confirmed changes, D-08).** Two people with one 5 mm hex key. The light build takes {{before_min}} min before the fast-assembly changes and {{after_min}} min after. The decided build takes **{{final_min}} min** ({{final_ph}} person-hours): {{final_bolts}} M6 bolts, {{final_cams}} tool-free clips and {{final_cassettes}} clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
-5. **Decisions.** Every layout choice is confirmed by a decision; the table below cites it. D-49 to D-59 are in the control pack's open PR #19 (LS-17).
+5. **Decisions.** Every layout choice is confirmed by a decision; the table below cites it.
 
 ## Decisions
 
-Decided specs, each citing the decision log (`v2/00-Control/decision-log.md`): D-01 to D-48 as merged, D-49 to D-59 as the control pack's PR #19 adds them.
+Decided specs, each citing the decision log (`v2/00-Control/decision-log.md`, D-01 to D-59).
 
 | Decision | Status | Log |
 | --- | --- | --- |
@@ -255,7 +255,7 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 | LS-15 | Removable, felt-covered inner panel of the right decor block, carrying both grilles: the cartridges and riser slide in after the block is mounted and come out into the pod for service; inside only. If a full-length cartridge is awkward to handle inside the 2.3 m pod, it splits in two with a sealed slip joint; the wall sample's handling check shows which | confirmed (D-59) | Decor CAD, wall sample |
 | LS-16 | Cartridges and riser inside the {{decor_depth}} mm right block: CAD fit, and the fan sample (flow against pressure, octave sound power at 53 and 70 l/s, any tone at 125 to 250 Hz, and at boost the intake air within 0.5 K of the room, D-58). The fans' {{fan12_kg}} kg each is an assumption until weighed (D-56, ISS-077, ISS-078) | HOLD | Sound study, Milestone 2 |
 | LS-14 | The upright stack on the 48 x 40 does not fill its depth: centre it and strap through the deck, or put the kit boxes beside it | note | Packaging |
-| LS-17 | This study cites D-49 to D-59 as the control pack's PR #19 adds them (decor and wall depth, 12 V fans, weight, frame-to-frame back wall and ceiling, HOLD list, kick strip and linings, air openings, cartridge service). Check the numbers when PR #19 merges | open | Control pack |
+| LS-17 | The control pack's PR #19 logged the rulings this study first cited by PR, as D-49 to D-59 (decor and wall depth, 12 V fans, weight, frame-to-frame back wall and ceiling, HOLD list, kick strip and linings, air openings, cartridge service); the numbers cited here match the merged log. This update also settles the layout study's part of ISS-079 (the 230-235 decor and the 1169 back and ceiling panels) | closed | Control pack |
 
 ## 9. How to reproduce
 
