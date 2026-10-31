@@ -295,11 +295,20 @@ def derive_skeleton(app, design, name):
     tools/fusion/README.md 'Linking a part to the skeleton' describes. Returns the version derived."""
     proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
     folder = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
-    files = [f for f in folder.dataFiles if f.name == name]
+    files = None
+    for _attempt in range(3):           # the file list can change under us while others save (17:32 glitch)
+        try:
+            files = [folder.dataFiles.item(i) for i in range(folder.dataFiles.count)]
+            break
+        except RuntimeError:
+            adsk.doEvents()
+    files = [f for f in (files or []) if f.name == name]
     if not files:
         raise RuntimeError("skeleton %r not found in Default Project / FocusPod v2" % name)
     part_doc = app.activeDocument
-    skel_doc = app.documents.open(files[0], False)          # invisible
+    # if the skeleton is already open (its owner may be working in it), use that and never close it
+    already = [app.documents.item(i) for i in range(app.documents.count) if app.documents.item(i).name == name]
+    skel_doc = already[0] if already else app.documents.open(files[0], False)          # invisible
     try:
         skel = adsk.fusion.Design.cast(skel_doc.products.itemByProductType("DesignProductType"))
         part_doc.activate()
@@ -313,7 +322,8 @@ def derive_skeleton(app, design, name):
             if pl.isLightBulbOn and "PLANE - " not in pl.name:
                 pl.isLightBulbOn = False
     finally:
-        skel_doc.close(False)
+        if not already:
+            skel_doc.close(False)
         part_doc.activate()
     return files[0].versionNumber
 
