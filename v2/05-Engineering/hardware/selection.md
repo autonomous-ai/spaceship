@@ -271,10 +271,10 @@ Plan items VT07 to VT09: UTEN S300 switch and socket (code S300GK12Z12Z13/N on u
 
 | Opt | Maker · SKU | Duty near 70 l/s | Sound | Power | Size, weight | VN | Source | Status |
 |---|---|---|---|---|---|---|---|---|
-| 1 (pick) | Soler & Palau **TD-350/100-125 SILENT ECOWATT** (EC, 0–10 V input) | 10 V: about 260 m³/h (72 l/s) at 42 Pa (calculation from the curve); 8 V: about 250 m³/h at 30 Pa | octave LwA at 8 V: inlet 25/44/53/45/39/34, outlet 27/42/54/44/37/32 dB(A) per band, 54 dB(A) total; inside the pod with the 2.4 m channel about 24 dB(A) (calculation) | 19 W at 10 V, 15 W at 8 V | ØD 204, length 462 (Ø125 spigots), 5.0 kg | unverified in VN | S&P catalogue (via the air research notes; page links in the research file) | source; fit in the decor block HOLD for CAD |
-| 2 | Soler & Palau **TD-500/150-160 SILENT ECOWATT** (EC) | 4 V: about 200 m³/h at 42 Pa | 51 dB(A) at 4 V; quieter per l/s | 10 W at 4 V | ØD 221, length 484, 6.0 kg | unverified in VN | as above | source; bigger body |
-| plan, rejected | Panasonic **FV-15AUL1** wall fan | 255 m³/h at 0 Pa; no fan curve published | 36 dB(A) (method not stated) | 12.5 W | 1.2 kg; cutout 200 × 200 | VN | Panasonic VN spec sheet and manual (research notes) | source: the manual says "Prohibit to install this fan in the ceiling" |
-| 12 V | {{TWELVE_V_ROW}} |
+| 1 (pick) | Soler & Palau **TD-350/100-125 SILENT ECOWATT** (EC, 0–10 V input) | 10 V: about 260 m³/h (72 l/s) at 42 Pa (calculation from the curve); 8 V: about 250 m³/h at 30 Pa | octave LwA at 8 V: inlet 25/44/53/45/39/34, outlet 27/42/54/44/37/32 dB(A) per band, 54 dB(A) total; inside the pod with the 2.4 m channel about 24 dB(A) (calculation) | 19 W at 10 V, 15 W at 8 V | ØD 204, length 462 (Ø125 spigots), 5.0 kg | unverified in VN | S&P TD SILENT ECOWATT catalogue https://statics.solerpalau.com/media/import/documentation/EN_TD-SILENT-ECOWATT.pdf (duty points read off the curve figure) | source; fit in the decor block HOLD for CAD |
+| 2 | Soler & Palau **TD-500/150-160 SILENT ECOWATT** (EC) | 4 V: about 200 m³/h at 42 Pa | 51 dB(A) at 4 V; quieter per l/s | 10 W at 4 V | ØD 221, length 484, 6.0 kg | unverified in VN | same catalogue | source; bigger body |
+| plan, rejected | Panasonic **FV-15AUL1** wall fan | 255 m³/h at 0 Pa; no fan curve published | 36 dB(A) (method not stated) | 12.5 W | 1.2 kg; cutout 200 × 200 | VN | spec sheet https://www.panasonic.com/content/dam/panasonic/vn/vi/pim/dam/FV/FV-15A/FV-15AUL1-PP/ast-2125349.pdf ; manual https://www.panasonic.com/content/dam/panasonic/vn/vi/pim/dam/FV/FV-15A/FV-15AUL1-PP/ast-2353437.pdf ; product page https://www.panasonic.com/vn/air-solutions/products/fan-ventilating-fan/vf/wall-mounted-type/wall-mount-vf-automatic-shutter-luver-series/fv-15aul1.html | source: the manual says "Prohibit to install this fan in the ceiling" |
+| 12 V (checked, rejected) | Noctua **NF-A14 industrialPPC-3000 PWM** (140 mm); San Ace **109E5712M501** (172 × 150 mm); ebm-papst **RG 160-28/14 N** (12–28 V centrifugal) | 269 / 248 m³/h at 0 Pa; San Ace max 67.6 Pa; RG 160: 209 m³/h | 41.3 / 41.0 dB(A) (condition not stated); RG 160: LwA 66 dB | San Ace 5.76 W; RG 160 20 W | 140 × 140 × 25; 172 × 150; 220 × 220 × 56, 1.4 kg | unverified in VN | https://ldlc.com/en/product/PB00169921.html ; https://www.digikey.com/en/products/detail/sanyo-denki-america-inc/109E5712M501/6191765 ; https://img.ebmpapst.com/products/datasheets/DC-centrifugal-fan-RG1602814N-ENU.pdf | source; on published data no 12 V fan gives 70 l/s at 42 Pa quietly, so mains EC is DECIDED (PM's rule: performance beats 12 V) |
 
 DECIDED location: inside the hollow front decor blocks, with slots on their top faces. Service is through the decor block's screwed top lid (report §7b).
 
@@ -287,7 +287,7 @@ The pick is a site-built lined U-channel in each ceiling half. It's 100 mm deep,
 | SR 125/1200 | 125 / 225 / 1200 | 5.9 | 9 | 16 | 27 | 48 | 27 | 21 |
 | SRF 150/2000 | 149 / 270 / 2000 | 6.8 | 10 | 21 | 42 | 50 | 48 | 26 |
 
-These come from a published silencer table in the air research notes (status: source). They need about 230–270 mm of depth, so they don't fit the ceiling zone. They could fit inside a decor block.
+Source: Vents SR / SRF datasheet https://ventilation-system.com/download/sr-round-datasheet-20663.pdf (status: source; VN availability unverified). They need about 230–270 mm of depth, so they don't fit the ceiling zone. They could fit inside a decor block.
 
 ### F3. Controls
 
