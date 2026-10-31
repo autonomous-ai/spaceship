@@ -302,10 +302,14 @@ BOM_ROWS = [
     ("368002", "FRONT - GLAZING U-SEAL - BOHLE BO5201735", "Gioăng chữ U silicone", 1, "bought by length", "Bohle BO5201735 silicone U-profile seal", "cad",
      "calculation (CAD, 1200 kg/m3 assumption)", "source (product); fit on 8.76 laminate unverified",
      "hardware selection C5", "length = kick_len"),
-    ("368101", "FRONT - DOOR HINGE - HOLD", "Bản lề cửa (chờ chọn)", 3, "bought, HOLD", "not named: rated for the 8.76 laminate, the unit's mass and 1176 width", 0.6,
-     "assumption (D-56)", "HOLD (D-46, ISS-002)", "hardware selection C1", "reserved space only"),
-    ("368102", "FRONT - DOOR LOCK - HOLD", "Khóa cửa (chờ chọn)", 1, "bought, HOLD", "not named", 0.84, "source (HOLD candidate STUDIO 10.200, selection C7)",
-     "HOLD (D-46, ISS-002)", "hardware selection C7", "reserved space only; the latch side has no frame for a strike"),
+    ("368101", "FRONT - DOOR HINGE - HOLD", "Bản lề cửa (chờ chọn)", 3, "bought, HOLD",
+     "not named: the set must be rated for the 8.76 laminate, at least 60 kg (PM ruling: the 50.2 kg unit plus a "
+     "margin) and the 1176 mm width", 0.6, "assumption (D-56)", "HOLD (D-46, ISS-002)", "hardware selection C1",
+     "reserved space only"),
+    ("368102", "FRONT - DOOR LOCK - HOLD", "Khóa cửa (chờ chọn)", 1, "bought, HOLD",
+     "not named: rated with the hinges for at least 60 kg and the 1176 mm width (PM ruling)", 0.84,
+     "source (HOLD candidate STUDIO 10.200, selection C7)", "HOLD (D-46, ISS-002)", "hardware selection C7",
+     "reserved space only; the latch side has no frame for a strike"),
     ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought, HOLD", "not named", 0.8, "assumption (D-56)", "HOLD", "hardware selection C2",
      "reserved space only"),
 ]

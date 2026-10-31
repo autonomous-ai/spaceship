@@ -48,7 +48,7 @@ Listed overlaps (the HOLD spaces wrap the glass where the named hardware will cl
 | 368103 pull pair | 0.80 | assumption (D-56) |
 | **Door unit** | **50.17** | calculation |
 
-**This is 2.7 kg over D-56's 47.5 kg**, which REQ-BLD-05 uses as the rating for the hinges and lock: +0.61 kg for the 25 mm of glass inside the strip, +1.09 kg because the strip is machined from 20 × 80 flat bar (4 mm walls, 2.09 kg) where D-56 assumed 1.0 kg, +0.15 kg for the U-seal, and +0.84 kg for a lock, which D-56 doesn't count. The hinges and lock must be rated for at least 50.2 kg. An extruded strip with 2.5 mm walls would weigh about 1.35 kg (calculation), for a later production die.
+**This is 2.7 kg over D-56's 47.5 kg**, which REQ-BLD-05 uses as the rating for the hinges and lock: +0.61 kg for the 25 mm of glass inside the strip, +1.09 kg because the strip is machined from 20 × 80 flat bar (4 mm walls, 2.09 kg) where D-56 assumed 1.0 kg, +0.15 kg for the U-seal, and +0.84 kg for a lock, which D-56 doesn't count. DECIDED by the PM on 2026-10-31: the door unit is 50.2 kg, and the hinge and lock set must be rated for at least 60 kg (50.2 kg plus a margin); the HOLD rows in the parts list say so. An extruded strip with 2.5 mm walls would weigh about 1.35 kg (calculation), for a later production die.
 
 ### Interfaces to other assemblies
 
