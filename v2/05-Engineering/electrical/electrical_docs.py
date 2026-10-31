@@ -114,15 +114,16 @@ def parts_rows():
         r = dict(p)
         r["qty_per_pod"] = fmt(qty_pod.get(k, 0), 3)
         r["qty_per_parent"] = fmt(p["qty_per_parent"], 3)
-        r["mass_each_kg"] = fmt(m(k), 3)
+        r["mass_each_kg"] = fmt(m(k), 4)
+        r["unit"] = EP.unit_of(k)
         r["revision"] = M.REV
         rows.append(r)
     return rows, m, qty_pod
 
 
 BOM_HEADER = ["part_number", "name", "name_vi", "kind", "parent", "qty_per_parent", "qty_per_pod", "unit",
-              "material", "finish", "mass_each_kg", "mass_status", "maker", "sku", "size", "process",
-              "revision", "status", "source", "note"]
+              "material", "grade", "finish", "mass_each_kg", "mass_status", "maker", "sku", "size", "length_mm",
+              "torque_nm", "process", "revision", "status", "source", "note"]
 
 
 # ------------------------------------------------------------------ routes and harness lengths

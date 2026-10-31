@@ -67,7 +67,7 @@ LAN ─ etherCON (B2 skin) ─ LAN socket port 1 (unit face); port 2 ─ trunk �
 
 | Item | Value | Status |
 |---|---|---|
-| Box | 300 W × 260 H × 72 D mm; front flush with the felt (Y 766), back 6 mm short of the skin side | assumption (sizes); calculation (depth) |
+| Box | 300 W × 260 H × 72 D mm; front flush with the felt (Y 766), back 6 mm short of the skin side | assumption (sizes); calculation (depth). The body (711001), front plate (711002) and the hub zone plate (711005) are HOLD as made parts: their CAD and drawings follow once WALL sets B2's bay and its rivnuts, the UTEN codes are confirmed (H-ELE-04) and the hub's size is known (ISS-060). The CAD holds the unit's envelope now. |
 | Position | X 95–395, Z 870–1130, in one bay of B2 | DECIDED height (PM: about 1000 mm); assumption (X, clear of the B1–B2 closing seam member and its pin pocket); WALL confirms the bay |
 | Face (1.5 mm aluminium, black anodised AA20 as the visible aluminium, D-67) | user socket (UTEN S300, plan VT07) and LAN socket (plan VT09), 86 × 86 each; the RCBO toggle behind a clear flap; vent slots top and bottom | PROPOSED |
 | Inside | RCBO on a DIN rail; PS1, PS2, PS3; F1 and F2 in a fuse holder; PE terminal; the 12 V output leads leave through a grommeted slot in B2-CASS's cut-out (right) and a Ø20 grommet (top) | PROPOSED |
@@ -100,6 +100,10 @@ Routes are reserved spaces in the cassettes' 24 mm gap: 16 mm deep, which leaves
 | X5 | B4-CASS to the light shelf | Light feed | A Ø16 felt exit behind the shelf (pocket P6) |
 | X6 | Air column to R2-CASS | Call light | A Ø12 felt hole behind the column, then a felt exit behind the call light bar |
 | X7 | Voice kit drop, R1-CASS behind the screen | Kit power (capped 4-way outlet), Cat6 (capped keystone), draw wire | A Ø60 felt plug (FA-KIT) |
+
+**Holes:** every hole through a sheet gets a bushing: the six in the cassettes' 0.5 mm steel returns and lips, the hole through DR's back plate where the supply-fan and sensor run enters DR (G-DR, Y −645, Z 2108), and the hole through the soffit's casing above the column chase (G-SOFFIT, Z 2120). The two slots get an edge strip. The felt holes (FX-SHELF, FA-KIT, FX-COL, FX-CALL1, FX-CALL2, FS-CNR) pass the felt only. In WALL's and CEILING's cassette models the felt sits on 12 mm edge lips with the 24 mm gap behind it, so there is no steel edge at those spots, and a bushing (made for 0.5–1.6 mm panels) has nothing to sit in.
+
+**Slack across the floating gap:** the power unit's leads cross the 4 mm gap to the floating B2-CASS, so they run slack to their first clip, with no clip within 150 mm of the cut-out.
 
 **Site order, two people, one 5 mm key, no electrician:**
 1. Hang R1-CASS and R2-CASS. Their corner and column tails stay out.
@@ -143,7 +147,7 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 
 | ID | Item | Question or check | Release condition |
 |---|---|---|---|
-| H-ELE-01 | Grommets (Ø20 and Ø12 in 0.5 mm steel; the 20 × 40 slot edge) | Part with its panel range and its hole | Sample fit in a cassette return |
+| H-ELE-01 | Bushings and edge strip: Heyco 2836 in Ø19.1 holes through 0.5 mm steel (6), DR's back plate (G-DR, 1.0–2.7 mm, FRONT HOLD-10) and the soffit's casing (G-SOFFIT); an edge strip on the two slots | The 2836 is listed for panels up to 1.6 mm with no minimum given; G-DR and G-SOFFIT need a thicker-panel bushing if the plate is over 1.6 mm | Sample fit in a cassette return; FRONT and CEILING name their plate thickness |
 | H-ELE-02 | 12 V supplies and the dimmable driver | Data confirmed; Class 2 marking checked for the US phase | Datasheets on file (parts list) |
 | H-ELE-03 | Inlet and etherCON fit in the 46 mm outer panel (skin 3 + bond 3 + frame bay) | Panel-thickness range and depth behind the panel | Datasheet check; sample in a B2 skin |
 | H-ELE-04 | UTEN S300 socket-only code and the plate in the unit's face | Exact code (the plan's VT07 set includes a switch P01 doesn't use) | Code from the UTEN catalogue pp. 58–61 |
@@ -169,7 +173,7 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 |---|---|---|
 | WALL | B2: one clear bay X 95–395, Z 870–1130 for the unit, with 4 × 838003 rivnuts in its vertical members; the sleeve's path X 136–156, Z 301–870; the inlet and etherCON cut-outs in B2's skin at X 120, Z 313 and 375 (Ø23.8 + 2 × Ø3.2 and Ø24 + 2 × Ø3.2). B2-CASS: the cut-out with returns (304 × 264 mm), the 20 × 40 slot and the Ø20 hole in its returns, 4 × Ø12 in its right end return at Y 781.5, a Ø20 in its top return at X 355. B4-CASS: a Ø20 in its bottom return at X 355, a Ø16 felt exit at X 355, Z 2250, a Ø12 hole through its top lip at X 583, Z 2337.5. R1-CASS: the felt slot at the corner (Y 768–786, Z 1040–1160), the Ø20 felt exit at Y −298, Z 1100, the Ø60 kit plug at Y 240.5, Z 1180. R2-CASS: Ø12 felt holes at Y −298 and Y −209.5, Z 1450. | Wiring diagram sheet 2; model bodies |
 | CEILING (AIR, INTERIOR) | The column's 24 × 24 chase against the right wall (X 1140–1164, Y −310 to −286) and its open side at the trunk entry; the hub zone (X 957–1137, Z 1110–1290, 30 deep); the soffit entry above the chase; the ceiling cassette's existing Ø20 holes at X 583 (D-41 route); the light shelf's channel and its feed point at X 355, Z 2250; the call light bar on R2; the ledge and screen fixings kept 15 mm off the trunk band Z 1085–1115 | Model bodies CHASE, HUB, TO-SOFFIT, C1-CEIL |
-| FRONT | An opening in DR's back plate at the column top for W40 and W42: Y −665 to −645, Z 2100–2116, X 1140–1164 | Body TO-DR |
+| FRONT | A Ø19.1 bushed hole in DR's back plate at the column top for W40 and W42: X 1152, Z 2108 (G-DR); the run inside DR to the supply fan box (IN-DR) | Bodies G-DR, IN-DR |
 | AIR | The fans' leads and Y-cables at each fan box; the fan sample checks the 0 % PWM behaviour | W40, W41 |
 | Control pack | Register rows for the four electrical folders (D-78); ISS-005, ISS-061 and ISS-062 can move to DECIDED on the PM's ruling; ISS-025: the inlet's protrusion (about 20 mm with its cap, assumption) goes on the GA as a listed protrusion | — |
 | In-house team (via the PM) | The hub's supply, fan outputs, tach and sensor inputs, size and mounting (ISS-060) | §7 |

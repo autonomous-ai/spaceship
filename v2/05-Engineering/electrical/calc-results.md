@@ -46,7 +46,7 @@ Loop resistance = 2 x length x ρ / area, divided by the number of parallel pair
 | W24c R1-CASS | hub I/O | 1260 | 0.205 x 1 | 0.01 | 0.003 |
 | W20d COLUMN | PS3 air | 420 | 0.823 x 2 | 2.84 | 0.03 |
 | W24d COLUMN | hub I/O | 420 | 0.205 x 1 | 0.01 | 0.001 |
-| W40 COLUMN | PS3 fan S | 1580 | 0.519 x 1 | 1.1 | 0.138 |
+| W40 COLUMN | PS3 fan S | 1550 | 0.519 x 1 | 1.1 | 0.135 |
 | W41 COLUMN | PS3 fan E | 1260 | 0.519 x 1 | 1.1 | 0.11 |
 | W43 COLUMN | PS3 hub | 300 | 0.326 x 1 | 0.42 | 0.016 |
 | W12a COLUMN | PS3 call | 550 | 0.519 x 1 | 0.5 | 0.022 |
@@ -56,7 +56,7 @@ Loop resistance = 2 x length x ρ / area, divided by the number of parallel pair
 |---|---:|---:|---|
 | PS1 to the voice kit outlet (W30a + W30b + W30c) | 0.28 | 2.4 | within |
 | PS2 to the left wall strip (the longest light path) (W10a + W10b + W10c + W11a + W11b) | 0.29 | 2.4 | within |
-| PS3 to the supply fans (W20a + W20b + W20c + W20d + W40) | 0.34 | 2.9 | within |
+| PS3 to the supply fans (W20a + W20b + W20c + W20d + W40) | 0.34 | 2.8 | within |
 | PS3 to the exhaust fans (W20a + W20b + W20c + W20d + W41) | 0.32 | 2.6 | within |
 | PS3 to the sensor hub (W20a + W20b + W20c + W20d + W43) | 0.22 | 1.8 | within |
 | PS3 to the call light (W20a + W20b + W20c + W20d + W12a + W12b) | 0.25 | 2.1 | within |

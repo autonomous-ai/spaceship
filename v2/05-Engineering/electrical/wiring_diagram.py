@@ -343,7 +343,7 @@ def sheet3(doc, rows, harness, v):
         ("INTERIOR: ledge and screen fixings 15 mm off the trunk band Z 1085-1115.", False),
         ("CEILING: column chase 24 x 24 (X 1140-1164, Y -310 to -286), hub zone,", False),
         ("soffit entry; the ceiling cassette's holes at X 583 (D-41 route).", False),
-        ("FRONT: an opening in DR's back plate, Y -665 to -645, Z 2100-2116.", False),
+        ("FRONT: a 19.1 mm bushed hole in DR's back plate, X 1152, Z 2108 (G-DR).", False),
     ]
     yy = 22
     for t, bold in lines:
@@ -351,8 +351,8 @@ def sheet3(doc, rows, harness, v):
         yy += 4.1
     notes = [
         "1. Every coordinate in these views is computed from electrical_model.py (skeleton P04 parameters), so they follow the CAD.",
-        "2. Bushings: Heyco 2836 in a 19.1 mm hole (G-PU-TOP, G-B2-B4, FX-CEIL, G-CEIL-B/F); slots S-PU-X and S-CNR get an edge strip.",
-        "3. Felt-only holes (FX-*, FS-CNR, FA-KIT) need no bushing: no steel edge.",
+        "2. Bushings (Heyco 2836, 19.1 hole): G-PU-TOP, G-B2-B4 x2, FX-CEIL, G-CEIL-B/F, G-DR (DR back plate), G-SOFFIT; slots get an edge strip.",
+        "3. Felt-only holes (FX-*, FS-CNR, FA-KIT) pass felt on the lips with the 24 mm gap behind: no steel edge, no bushing.",
         "4. The Fusion drawing of the route model replaces these views when the drawing start is allowed (screen unlocked).",
     ]
     s.frame_and_title("ELECTRICAL - ROUTES AND JOINTS", 3, "1:20 (views)", notes)

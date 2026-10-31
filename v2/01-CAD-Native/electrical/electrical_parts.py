@@ -158,7 +158,8 @@ def harnesses(v):
         to="pocket P5 in B2-CASS", route="out of the unit's top, G-PU-TOP", circuit="PS2 lights",
         conductors="+12 V dim, 0 V", cable="2 x 18 AWG, Class 2 (CL2 or equivalent)", area_mm2=AWG18,
         length_mm=PU_IN + cross_top + LOOP, end_a="PS2 output terminals", end_b="Mini-Fit Jr 2-way receptacle",
-        grommets="G-PU-TOP", amps_max=LIGHT_A, note="through the shelf's current sense (self-test, D-87)")
+        grommets="G-PU-TOP", amps_max=LIGHT_A,
+        note="through the shelf's current sense (self-test, D-87); slack to the first clip: it crosses the 4 mm floating gap")
     add(id="W10b", harness_pn="710011", segment="B2-CASS", function="light feed", frm="P5", to="B2/B4 joint",
         route="P5, L1-B2, G-B2-B4", circuit="PS2 lights", conductors="+12 V dim, 0 V",
         cable="2 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=80 + L("L1-B2", "G-B2-B4") + TAIL,
@@ -205,7 +206,8 @@ def harnesses(v):
             conductors=cond, cable=cable, area_mm2=area, parallel=par, length_mm=PU_IN + cross_side + LOOP,
             end_a={"W20": "PS3 output", "W30": "F1 5 A", "W24": "PS2 DIM input, shelf current sense, PS1 and PS2 rail taps",
                    "W31": "LAN socket port 2"}[wid],
-            end_b=end("receptacle"), grommets="S-PU-X", amps_max=amps, note="")
+            end_b=end("receptacle"), grommets="S-PU-X", amps_max=amps,
+            note="slack to the first clip: it crosses the 4 mm floating gap, so no clip within 150 mm of the cut-out")
         add(id=wid + "b", harness_pn="710021", segment="B2-CASS", function=fn, frm="P1", to="back-right corner",
             route="P1, T1-B2, S-CNR", circuit=circ, conductors=cond, cable=cable, area_mm2=area, parallel=par,
             length_mm=LOOP + L("T1-B2") + TAIL, end_a=end("plug"),
@@ -246,19 +248,19 @@ def harnesses(v):
         conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG", area_mm2=AWG20,
         length_mm=up_chase + L("TO-DR") + 300, end_a="fuse block and hub terminals",
         end_b="4-way PWM fan connector into a Y-cable at the fan pair (housing HOLD H-ELE-07)",
-        grommets="DR opening (FRONT)", amps_max=2 * FAN_W_MAX / 12.0,
+        grommets="G-DR", amps_max=2 * FAN_W_MAX / 12.0,
         note="PWM fail-safe: an open PWM line runs the fans at full speed")
     add(id="W41", harness_pn="710023", segment="COLUMN", function="exhaust fan pair", frm="F3b 2 A + hub PWM 2, tach 2",
         to="exhaust fan box, soffit right end", route="CHASE, TO-SOFFIT", circuit="PS3 fan E",
         conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG", area_mm2=AWG20,
         length_mm=up_chase + L("TO-SOFFIT") + 300, end_a="fuse block and hub terminals",
-        end_b="4-way PWM fan connector into a Y-cable (housing HOLD H-ELE-07)", grommets="soffit entry (CEILING)",
+        end_b="4-way PWM fan connector into a Y-cable (housing HOLD H-ELE-07)", grommets="G-SOFFIT",
         amps_max=2 * FAN_W_MAX / 12.0, note="two signals, balanced flow (D-61)")
     add(id="W42", harness_pn="710023", segment="COLUMN", function="inlet temperature sensor",
         frm="hub sensor port", to="supply fan box inlet (DR)", route="CHASE, TO-DR", circuit="hub sensor",
         conductors="4 cores (sensor supply, ground, two signal)", cable="4 x 24 AWG shielded", area_mm2=AWG24,
         length_mm=up_chase + L("TO-DR") + 500, end_a="hub sensor connector (HOLD, ISS-060)",
-        end_b="sensor probe (HOLD H-ELE-06)", grommets="DR opening (FRONT)", amps_max=None,
+        end_b="sensor probe (HOLD H-ELE-06)", grommets="G-DR", amps_max=None,
         note="the 4 K limit's room reading (D-50, REQ-ELE-04)")
     add(id="W43", harness_pn="710023", segment="COLUMN", function="hub supply", frm="F3c 1 A", to="sensor hub",
         route="hub zone", circuit="PS3 hub", conductors="+12 V, 0 V", cable="2 x 22 AWG", area_mm2=AWG22,
@@ -284,7 +286,7 @@ def harnesses(v):
         frm="kit drop P3-KIT", to="soffit right end", route="T1-R1B, FX-COL, CHASE, TO-SOFFIT", circuit="reserve",
         conductors="cord", cable="nylon draw cord 3 mm", area_mm2=None,
         length_mm=L("T1-R1B", "FX-COL", "CHASE", "TO-SOFFIT") + 2 * TAIL, end_a="tied at P3-KIT",
-        end_b="tied at the soffit entry", grommets="FX-COL", amps_max=None, note="REQ-VCK-02, -03")
+        end_b="tied at the soffit entry", grommets="FX-COL, G-SOFFIT", amps_max=None, note="REQ-VCK-02, -03")
     add(id="W33", harness_pn="710031", segment="B4-CASS + CEILING", function="draw wire: ceiling route (D-41)",
         frm="shelf feed pocket P6", to="soffit back face, top", route="C1-UP, C1-JOG, C1-RISE, FX-CEIL, G-CEIL-B, C1-CEIL, G-CEIL-F",
         circuit="reserve", conductors="cord", cable="nylon draw cord 3 mm", area_mm2=None,
@@ -317,14 +319,16 @@ JNT = "v2/05-Engineering/joints/joints-register.md 2.1"
 AL = "aluminium 5052-H32"
 
 # ---- power unit 710001: made parts
-part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "MP", "710001", 1,
+part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "HOLD", "710001", 1,
      AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.46, "calculation (0.172 m2 x 1.0 mm x 2.68 g/cm3)",
      size="300 x 260 x 72, 25 mm side flanges", process="sheet metal: laser cut, folded",
-     source="this design (README section 3)", note="PE stud pressed in; 4 slotted holes for M6 into B2's members")
-part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
+     status="HOLD (made part: CAD and drawing after WALL sets B2's bay and its rivnuts, IF-12)",
+     source="this design (README section 3)", note="PE stud pressed in; 4 slotted holes for M6 into B2's members; envelope PU in the CAD")
+part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "HOLD", "710001", 1,
      AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.26,
      "calculation (0.063 m2 net x 1.5 mm x 2.68 g/cm3)", size="300 x 260",
-     process="sheet metal: laser cut; anodised", source="this design",
+     process="sheet metal: laser cut; anodised", status="HOLD (made part: cut-outs after the UTEN codes, H-ELE-04)",
+     source="this design (README section 3)",
      note="cut-outs for two 86 x 86 plates, the RCBO toggle (45 mm window) and vent slots")
 # ---- power unit 710001: bought parts
 part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - nguồn 12 V 60 W", "PI", "710001", 2,
@@ -387,13 +391,20 @@ part("sleeve", "718017", "ELECTRICAL - CONDUIT - PVC FLEXIBLE - 20 MM", "Điện
      "PVC", "", 0.08, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY, source="",
      note="the sleeve in B2's bay, inlet to unit, 0.57 m (route model); qty in m")
 part("bolt", "838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI",
-     "710001", 4, "steel 8.8", "zinc plated", 0.0055, "assumption", sku="ISO 4762 M6 x 16 8.8", status=HOLD_BUY,
-     source=JNT, note="the unit's 4 fixings into B2's members: the pod's one bolt, one 5 mm key (D-63)")
+     "710001", 4, "steel", "zinc plated", 0.0055, "assumption", maker="HOLD: standard part, maker picked with the joints register",
+     sku="ISO 4762 M6 x 16, 8.8, zinc plated", size="M6", status=HOLD_BUY, source=JNT,
+     note="the unit's 4 fixings into B2's members: the pod's one bolt, one 5 mm key (D-63)")
+P["bolt"].update(length_mm="16", grade="8.8", torque_nm="HOLD (D-48: set by the rivnut spin-out test T06)")
 part("washer", "838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", "Long đen to M6 inox", "PI", "710001", 4,
-     "stainless A2", "", 0.0028, "assumption", sku="ISO 7093-1 6.4 x 18 A2", status=HOLD_BUY, source=JNT)
+     "stainless steel", "plain (A2 stainless)", 0.0028, "assumption",
+     maker="HOLD: standard part, maker picked with the joints register", sku="ISO 7093-1 6.4 x 18 x 1.6, A2", size="M6",
+     status=HOLD_BUY, source=JNT)
+P["washer"].update(grade="A2")
 part("rivnut", "838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", "710001", 4,
-     "aluminium 5056", "plain, as supplied", 0.003, "assumption", maker="Sherex", sku="CAH3-610-4.2", status=HOLD_BUY, source=JNT,
+     "aluminium", "plain, as supplied", 0.003, "assumption", maker="Sherex", sku="CAH3-610-4.2", size="M6",
+     status=HOLD_BUY, source=JNT,
      note="set in B2's vertical members by the factory before the unit goes in (WALL's frame drawing shows the holes)")
+P["rivnut"].update(grade="5056", torque_nm="HOLD (D-48: spin-out test T06)", length_mm="14.86")
 
 # ---- wire and cable by length (unit: m; mass each = kg per m)
 def cable(key, pn, name, vi, parent, metres, kgm, sku, note):
@@ -460,9 +471,12 @@ for key, pn, name, vi, qty, note in (
          status=HOLD_BUY, source="", note=note)
 
 # ---- protection where cables pass steel, clips, draw cord
-part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Điện - vòng đệm luồn dây", "PI", "710000", 6,
-     "nylon 6/6 UL94 V-2", "", 0.001, "assumption", maker="Heyco", sku="2836 (SB 750-625, black)", status=HOLD_BUY,
-     source=HEYCO, note="G-PU-TOP, G-B2-B4 x 2, FX-CEIL, G-CEIL-B, G-CEIL-F; panels to 1.6 mm, passes 15.9; fit on 0.5 mm HOLD H-ELE-01")
+part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Điện - vòng đệm luồn dây", "PI", "710000", 8,
+     "nylon 6/6 UL94 V-2", "black, as supplied", 0.001, "assumption", maker="Heyco", sku="2836 (SB 750-625, black)",
+     status=HOLD_BUY, source=HEYCO,
+     note="every hole through a sheet: G-PU-TOP, G-B2-B4 x 2, FX-CEIL, G-CEIL-B, G-CEIL-F (0.5 mm steel), G-DR (DR's back "
+          "plate, 1.0-2.7 mm, FRONT HOLD-10), G-SOFFIT (the soffit's casing). Panels to 1.6 mm, passes 15.9: the 0.5 mm fit and "
+          "a thicker-panel bushing for G-DR or G-SOFFIT if over 1.6 mm are HOLD H-ELE-01. Felt-only holes take none: no steel edge")
 part("edge", "718042", "ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET", "Điện - nẹp bảo vệ mép tôn", "PI", "710000", 0.32,
      "PVC or nylon", "", 0.02, "assumption (kg per m)", sku="maker HOLD (H-ELE-01)", status=HOLD_BUY, source="",
      note="the two slots S-PU-X (120 mm edge) and S-CNR (182 mm); qty in m")
@@ -489,9 +503,10 @@ part("call_profile", "718052", "ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0
 part("hub", "718060", "ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE)", "Điện - bộ cảm biến Desk Pro AI", "PI", "710041", 1,
      "", "", 0.15, "assumption", maker="Autonomous (in-house)", sku="Desk Pro AI sensor hub",
      status="HOLD (in-house module: interface data ISS-060)", source="REQ-ELE-02, D-09; cited by name only")
-part("hub_plate", "711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến", "MP", "710041", 1,
+part("hub_plate", "711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến", "HOLD", "710041", 1,
      AL + " 1.5 mm", "black anodised AA20 (D-67)", 0.11, "calculation (0.027 m2 net x 1.5 mm x 2.68 g/cm3)",
-     size="180 x 180", process="sheet metal: laser cut; anodised", source="this design",
+     size="180 x 180", process="sheet metal: laser cut; anodised",
+     status="HOLD (made part: cut-outs after the hub's size and controls, ISS-060)", source="this design (README section 7)",
      note="window for the hub, holes for BOOST, CALL and the DIM knob; removable for the fuses behind it")
 for key, pn, name, vi, qty, note in (
         ("btn_boost", "718061", "ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST", "Điện - nút nhấn tăng gió", 1, "hub input (D-33)"),
@@ -526,6 +541,22 @@ part("cord_wire", "718071", "ELECTRICAL - CORD - H05VV-F 3G1.5", "Điện - dây
      0.12, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY, source="", note="3 m; qty in m")
 part("plug_vn", "718072", "ELECTRICAL - MAINS PLUG - VN OFFICE SOCKET", "Điện - phích cắm", "PI", "710051", 1, "", "", 0.06,
      "assumption", sku="HOLD: plug type checked with the factory's office sockets", status=HOLD_BUY, source="")
+
+
+def _fill_sources():
+    """Every row names where its numbers come from (C06)."""
+    for k, p in P.items():
+        if p["source"]:
+            continue
+        if p["kind"] == "HS":
+            p["source"] = "this design: README (sections 3 to 8) and the harness list"
+        elif "qty in m" in p["note"]:
+            p["source"] = "harness list lengths (route model); mass: typical catalogue value (assumption)"
+        else:
+            p["source"] = "function and HOLD per README section 10; mass: assumption"
+
+
+_fill_sources()
 
 
 def unit_of(key):

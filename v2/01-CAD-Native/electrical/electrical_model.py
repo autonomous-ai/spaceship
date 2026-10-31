@@ -161,7 +161,12 @@ COMPONENTS = [
 
 # ------------------------------------------------------------------ bodies
 # Each body is a reserved space (a route, a connector pocket, a grommet, a
-# unit), not a manufactured shape: guideline 4.3 step 4 lets CAD reserve the
+# unit), not a manufactured shape. Felt holes (FX-*, FS-CNR, FA-KIT) pass the
+# felt only: the felt sits on the tray's 12 mm edge lips with the 24 mm gap
+# behind it (WALL and CEILING cassette models), so no steel edge is there and
+# a bushing (which needs a 0.5-1.6 mm panel) has nothing to sit in. Their span
+# starts at the cassette face plane, 0.5 mm in front of the felt (the lip
+# plane), which is air at these spots: guideline 4.3 step 4 lets CAD reserve the
 # space of a part on HOLD. Boxes: x, y, z as (low, high) expressions.
 # Cylinders: axis, centre (the two other coordinates in x, y, z order),
 # diameter and span along the axis. `allow` names the skeleton P04 envelopes
@@ -209,7 +214,7 @@ BODIES = [
     dict(code="P6", comp="LIGHT", name="POCKET - LIGHT SHELF FEED", kind=B,
          x=("lt_x - pk_h", "lt_x + pk_h"), y=("y_bg - rt_h", "y_bg + rt_h"), z=("shelf_z - 60 mm", "shelf_z + 40 mm"),
          allow=[IN_B4CASS]),
-    dict(code="FX-SHELF", comp="LIGHT", name="FELT EXIT - LIGHT SHELF", kind=C, axis="y",
+    dict(code="FX-SHELF", comp="LIGHT", name="FELT HOLE - LIGHT SHELF EXIT (FELT ONLY, NO STEEL)", kind=C, axis="y",
          c=("lt_x", "shelf_z"), d="16 mm", a=("y_bf", "y_bf + tray_t + felt_t"), allow=[IN_B4CASS]),
     # ---- trunk: unit side -> B2-CASS -> corner -> R1-CASS -> kit drop and air column (W20, W24, W30, W31)
     dict(code="S-PU-X", comp="TRUNK", name="GROMMETED SLOT - CUT-OUT RIGHT RETURN", kind=B,
@@ -238,33 +243,42 @@ BODIES += [
     dict(code="P3-KIT", comp="TRUNK", name="POCKET - VOICE KIT DROP", kind=B,
          x=("x_rg - rt_h", "x_rg + rt_h"), y=("y_kit - pk_l / 2", "y_kit + pk_l / 2"),
          z=("trunk_z - rt_w / 2", "trunk_z + rt_w / 2 + 120 mm"), allow=[IN_R1CASS]),
-    dict(code="FA-KIT", comp="TRUNK", name="FELT ACCESS - VOICE KIT DROP", kind=C, axis="x",
+    dict(code="FA-KIT", comp="TRUNK", name="FELT HOLE - VOICE KIT ACCESS (FELT ONLY, NO STEEL)", kind=C, axis="x",
          c=("y_kit", "trunk_z + 80 mm"), d="kit_d", a=("x_rf", "x_rf + tray_t + felt_t"), allow=[IN_R1CASS]),
     dict(code="T1-R1B", comp="TRUNK", name="ROUTE - TRUNK - R1-CASS - KIT TO COLUMN", kind=B,
          x=("x_rg - rt_h", "x_rg + rt_h"), y=("y_cx - grm_d / 2", "y_kit - pk_l / 2"),
          z=("trunk_z - rt_w / 2", "trunk_z + rt_w / 2"), allow=[IN_R1CASS]),
-    dict(code="FX-COL", comp="TRUNK", name="FELT EXIT - INTO THE AIR COLUMN", kind=C, axis="x",
+    dict(code="FX-COL", comp="TRUNK", name="FELT HOLE - EXIT INTO THE AIR COLUMN (FELT ONLY, NO STEEL)", kind=C, axis="x",
          c=("y_cx", "trunk_z"), d="grm_d", a=("x_rf - ch_off", "x_rf + tray_t + felt_t"), allow=[IN_R1CASS]),
     # ---- air column: chase, hub zone, fan leads (W20 to W24, W32)
     dict(code="CHASE", comp="COLUMN", name="ROUTE - CABLE CHASE IN THE AIR COLUMN", kind=B,
          x=("x_rf - ch_off - ch_w", "x_rf - ch_off"), y=("col_y1 - col_skin - ch_w", "col_y1 - col_skin"),
-         z=("trunk_z - grm_d", "col_z1"), allow=[]),
-    dict(code="TO-DR", comp="COLUMN", name="ROUTE - TO THE SUPPLY FANS AND INLET SENSOR IN DR", kind=B,
-         x=("x_rf - ch_off - ch_w", "x_rf - ch_off"), y=("col_y0 - 20 mm", "col_y1 - col_skin - ch_w"),
+         z=("trunk_z - grm_d", "col_z1 - grm_c"), allow=[]),
+    dict(code="TO-DR", comp="COLUMN", name="ROUTE - ACROSS THE COLUMN TOP TO DR", kind=B,
+         x=("x_rf - ch_off - ch_w", "x_rf - ch_off"), y=("col_y0 + grm_c", "col_y1 - col_skin - ch_w"),
+         z=("col_z1 - 20 mm", "col_z1 - 4 mm"), allow=[]),
+    dict(code="G-DR", comp="COLUMN", name="BUSHED HOLE - DR BACK PLATE", kind=C, axis="y",
+         c=("x_rf - ch_off - ch_w / 2", "col_z1 - 12 mm"), d="grm_d", a=("col_y0 - grm_c", "col_y0 + grm_c"),
+         allow=[("DR", "the bushed hole through DR's back plate into the supply fan box (D-61)")]),
+    dict(code="IN-DR", comp="COLUMN", name="ROUTE - INSIDE DR TO THE SUPPLY FAN BOX AND INLET SENSOR", kind=B,
+         x=("x_rf - ch_off - ch_w", "x_rf - ch_off"), y=("col_y0 - 20 mm", "col_y0 - grm_c"),
          z=("col_z1 - 20 mm", "col_z1 - 4 mm"), allow=[IN_DR]),
+    dict(code="G-SOFFIT", comp="COLUMN", name="BUSHED HOLE - SOFFIT UNDERSIDE CASING", kind=C, axis="z",
+         c=("x_rf - ch_off - ch_w / 2", "col_y1 - col_skin - ch_w / 2"), d="grm_d", a=("col_z1 - grm_c", "col_z1 + grm_c"),
+         allow=[]),
     dict(code="TO-SOFFIT", comp="COLUMN", name="ROUTE - TO THE EXHAUST FANS IN THE SOFFIT", kind=B,
          x=("x_rf - ch_off - ch_w", "x_rf - ch_off"), y=("col_y1 - col_skin - ch_w", "col_y1 - col_skin"),
-         z=("col_z1", "col_z1 + 40 mm"), allow=[]),
+         z=("col_z1 + grm_c", "col_z1 + 40 mm"), allow=[]),
     dict(code="HUB", comp="HUB", name="SENSOR HUB AND CONTROLS ZONE", kind=B,
          x=("hub_x0", "hub_x0 + hub_w"), y=("col_y1 - hub_rec", "col_y1"), z=("hub_zc - hub_w / 2", "hub_zc + hub_w / 2"),
          allow=[]),
     # ---- call light: column -> R2-CASS -> the light bar on the work wall (W12)
-    dict(code="FX-CALL1", comp="CALL", name="FELT HOLE - R2-CASS BEHIND THE COLUMN", kind=C, axis="x",
+    dict(code="FX-CALL1", comp="CALL", name="FELT HOLE - R2-CASS BEHIND THE COLUMN (FELT ONLY, NO STEEL)", kind=C, axis="x",
          c=("y_cx", "call_z"), d="grm_s", a=("x_rf - ch_off", "x_rf + tray_t + felt_t"), allow=[IN_R2CASS]),
     dict(code="CALL-R2", comp="CALL", name="ROUTE - CALL LIGHT - R2-CASS", kind=B,
          x=("x_rg - rt_h", "x_rg + rt_h"), y=("y_cx - grm_s / 2", "call_y + grm_s / 2"),
          z=("call_z - rt_h", "call_z + rt_h"), allow=[IN_R2CASS]),
-    dict(code="FX-CALL2", comp="CALL", name="FELT EXIT - CALL LIGHT", kind=C, axis="x",
+    dict(code="FX-CALL2", comp="CALL", name="FELT HOLE - CALL LIGHT EXIT (FELT ONLY, NO STEEL)", kind=C, axis="x",
          c=("call_y", "call_z"), d="grm_s", a=("x_rf", "x_rf + tray_t + felt_t"), allow=[IN_R2CASS]),
     # ---- ceiling route (D-41): back-wall top -> ceiling cassette gap -> soffit back face (W33)
     dict(code="C1-UP", comp="CEIL", name="DRAW WIRE - B4-CASS UP", kind=B,
