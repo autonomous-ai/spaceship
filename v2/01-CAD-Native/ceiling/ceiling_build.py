@@ -467,7 +467,7 @@ def material(ctx, key):
         lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
         base = lib.materials.itemByName("Steel" if key in ("steel",) else "Aluminum")
         m = d.materials.addByCopy(base, name)
-        m.materialProperties.itemById("structural_Density").value = density
+        adsk.core.FloatProperty.cast(m.materialProperties.itemById("structural_Density")).value = density
     return m
 
 

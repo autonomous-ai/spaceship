@@ -121,7 +121,7 @@ CEILING_PARAMS = [
     ("rib_crown", "20 mm", "mm", "assumption", "flat width of the rib that carries the felt"),
     ("rib_fl", "12 mm", "mm", "assumption", "rib top flange width against the tray base; the rib-to-tray joint is HOLD"),
     ("rib_end", "5 mm", "mm", "assumption", "clearance from each rib end to the returns"),
-    ("fill_t", "40 mm", "mm", "confirmed", "D-24: 40 mm PET fill rides on the cassette back (25 kg/m3 by default, PM ruling 2026-10-31)"),
+    ("fill_t", "40 mm", "mm", "confirmed", "D-24: 40 mm PET fill rides on the cassette back (24 kg/m3 by default, D-81)"),
     ("fill_c", "5 mm", "mm", "assumption",
      "fill clearance to the frame members, clips and catches, so the cassette never touches the frame (D-17)"),
     ("fill_min", "100 mm", "mm", "assumption", "a fill strip shorter than this isn't made (a bay mostly over the soffit)"),
@@ -226,8 +226,8 @@ MATERIALS = {
     "steel": ("Galvanised steel DX51D+Z", 7850.0, "source", "EN 10346 DX51D+Z (selection B): 0.5 mm = 3.93 kg/m2"),
     "acp": ("ACP 3 mm EV3038, 3.5 kg/m2", 3.5 / 0.003, "calculation", "3.5 kg/m2 (layout study acp3_kgm2, PM ruling) / 3 mm"),
     "felt": ("PET felt 9 mm, 1.8 kg/m2", 1.8 / 0.009, "calculation", "1.8 kg/m2 (layout study pet9_kgm2) / 9 mm; the factory's felt is unverified (D-31)"),
-    "fill": ("PET fill 25 kg/m3 (Sorberpoly 2D)", 25.0, "confirmed",
-             "PM ruling 2026-10-31 (linings, weight): 25 kg/m3 by default; the wall sample's T02 confirms it, else back to 32 (D-54)"),
+    "fill": ("PET fill 24 kg/m3 (Sorberpoly 2D)", 24.0, "confirmed",
+             "D-81: 24 kg/m3 by default, the grade Pyrotek lists and the wall sample's T02 tests; else back to 32 (D-54)"),
     "hold": ("HOLD envelope - no mass", 1.0, "assumption", "space only; the real part's mass comes with its datasheet"),
 }
 
