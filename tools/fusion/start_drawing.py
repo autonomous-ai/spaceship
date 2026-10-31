@@ -50,6 +50,7 @@ import run_script as rs  # noqa: E402
 CREATE_CMD = "FusionDrawingCreateFromComponentsCommand"
 BASE_VIEW_CMD = "FusionDrawingViewBaseCommand"
 IDLE_CMD = "SelectCommand"
+IDLE_CMDS = (IDLE_CMD, "")    # with no document open (Home screen) Fusion reports no active command
 TITLES = {CREATE_CMD: "Create Drawing", BASE_VIEW_CMD: "Base View"}
 # ISO landscape sheet sizes, mm
 SHEETS = {"A0": (1189, 841), "A1": (841, 594), "A2": (594, 420), "A3": (420, 297), "A4": (297, 210)}
@@ -279,7 +280,7 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
         except (StartError, rs.McpError) as e:
             log("cleanup: can't read Fusion's state (%s)" % e)
             cmd, mcp_ok = None, False
-        if mcp_ok and cmd == IDLE_CMD:
+        if mcp_ok and cmd in IDLE_CMDS:
             try:
                 left = steps.dialogs()
             except StartError:
@@ -296,7 +297,7 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
             time.sleep(poll_s)
             try:
                 cmd, _u = steps.state()
-                if cmd == IDLE_CMD:
+                if cmd in IDLE_CMDS:
                     continue          # recheck the dialogs at the top
             except (StartError, rs.McpError):
                 pass
@@ -307,7 +308,7 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
         time.sleep(poll_s)
     try:
         cmd, _u = steps.state()
-        return cmd == IDLE_CMD
+        return cmd in IDLE_CMDS
     except (StartError, rs.McpError):
         return False
 
@@ -315,7 +316,7 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
 def precheck(steps):
     """Refuse before opening anything; None when it's safe to start."""
     cmd, unsaved = steps.state()
-    if cmd != IDLE_CMD:
+    if cmd not in IDLE_CMDS:
         return "Fusion isn't idle (active command %s); nothing was started" % cmd
     if unsaved:
         return "%d unsaved drawing(s) already open; save or close them first" % unsaved
