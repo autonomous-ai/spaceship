@@ -1,5 +1,6 @@
 {
-  "mm_per_px_at_scale_1": null,
+  "sheet": "A2",
+  "width_at_scale_1_mm": null,
   "anchor": null,
-  "source": "not measured yet: Fusion Engineer 2's image test (Images.insert on Mac 1, Fusion 2706.1.17) fills these in; until then the drawings get no note images (they are added later by an images-only run, since an inserted image can't be moved or deleted)"
+  "source": "Fusion Engineer 2's Images.insert measurement (#67): an image inserted at scale 1 comes out a fixed width, set by the sheet (58.02 mm on A3), anchored at its lower-left corner. The A2 width isn't measured yet; until it is, the drawings get no note images (an inserted image can't be moved or deleted), and an images-only run adds them afterwards."
 }

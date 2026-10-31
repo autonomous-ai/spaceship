@@ -294,8 +294,12 @@ def images(sheet, pn, cfg):
     placed: an inserted image can't be moved or deleted, so a guess would cost the drawing."""
     with open(os.path.join(ARGS["repo_root"], MAPPING)) as fh:
         mp = json.load(fh)
-    if not mp.get("mm_per_px_at_scale_1") or not mp.get("anchor"):
-        print("IMAGES|skipped: the Images.insert mapping isn't measured yet (%s)" % MAPPING)
+    if not mp.get("width_at_scale_1_mm") or not mp.get("anchor"):
+        print("IMAGES|skipped: the Images.insert mapping for %s isn't measured yet (%s)" % (mp.get("sheet"), MAPPING))
+        return 0
+    width_mm = sheet.width * 10.0 if sheet.width < 100 else sheet.width     # the API may report cm
+    if abs(width_mm - {"A2": 594.0, "A3": 420.0, "A1": 841.0}.get(mp.get("sheet"), -1)) > 1.0:
+        print("IMAGES|skipped: the mapping is for %s, this sheet is %.1f mm wide" % (mp.get("sheet"), width_mm))
         return 0
     with open(os.path.join(ARGS["repo_root"], HERE, ".images", "%s_images.json" % pn)) as fh:
         meta = json.load(fh)
@@ -303,10 +307,9 @@ def images(sheet, pn, cfg):
     y, placed = STACK_Y0, 0
     for name in names:
         m = meta[name]
-        w_px = m["w_mm"] / 25.4 * 300.0                  # make_sheet_images.py renders at 300 dpi
-        h_px = m["h_mm"] / 25.4 * 300.0
-        scale = m["w_mm"] / (w_px * mp["mm_per_px_at_scale_1"])
-        w, h = m["w_mm"], h_px * mp["mm_per_px_at_scale_1"] * scale
+        # at scale 1 an image comes out width_at_scale_1_mm wide (the sheet sets it), keeping its aspect ratio
+        scale = m["w_mm"] / mp["width_at_scale_1_mm"]
+        w, h = m["w_mm"], m["h_mm"]
         if y + h > STACK_TOP:
             raise RuntimeError("note images don't fit the right column (%s ends at %.1f mm)" % (name, y + h))
         dx, dy = {"lower-left": (0.0, 0.0), "upper-left": (0.0, h), "center": (w / 2, h / 2)}[mp["anchor"]]
