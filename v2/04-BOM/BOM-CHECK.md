@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 49 part lines (21 made, 28 bought, 20 on HOLD) and 8 sub-assembly lines from 5 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 114.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 93 part lines (40 made, 53 bought, 33 on HOLD) and 14 sub-assembly lines from 8 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 178.7 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -14,6 +14,9 @@ Read from: this working tree.
 - `v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv` @ working tree
+- `v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv` @ working tree
+- `v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv` @ working tree
+- `v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv` @ working tree
 - `v2/05-Engineering/joints/joints-register.md` @ working tree
 - `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv` @ working tree
 
@@ -38,6 +41,19 @@ Read from: this working tree.
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 - 848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN: HOLD (HOLD)
+- 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
+- 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
+- 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
+- 848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN: HOLD (HOLD)
+- 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
+- 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
+- 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
+- 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
+- 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
+- 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
+- 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 
 **FRONT**
 - 361001 FRONT - DOOR LEAF - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
