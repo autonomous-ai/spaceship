@@ -157,7 +157,7 @@ class Joints(unittest.TestCase):
                     if face == "bottom":
                         self.assertAlmostEqual(z, b[4])
                         self.assertTrue(b[0] + r + 9 <= x <= b[1] - r - 9 or member == "BACK", (half, n, x))
-                        edge = 5.0 if n.startswith("SOFFIT HANGER") else 9.0   # hangers on 20 mm faces (HOLD-04)
+                        edge = 5.0 if n.startswith("SOFFIT") else 9.0   # soffit hangers and locks on 20 mm faces (HOLD-04)
                         self.assertGreaterEqual(y - r - b[2], edge, (half, n, "rivnut edge distance"))
                         self.assertGreaterEqual(b[3] - (y + r), edge, (half, n))
                     else:

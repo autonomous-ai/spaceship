@@ -146,7 +146,9 @@ def frame_hole_notes(half):
              "SEAM PIN ACCESS": "seam member, inner wall", "BACK RIVNUT": "back member, underside (rivnut 838003 on stop washer 831002)",
              "BACK SPIGOT ROUND": "back member, underside", "BACK SPIGOT SLOT": "back member, underside, slot 14 long along X",
              "SOFFIT HANGER FRONT": "front member, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
-             "SOFFIT HANGER X1": "cross member X1, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)"}
+             "SOFFIT HANGER X1": "cross member X1, underside (rivnut 838003 for the AIR soffit's hanger stud, D-87)",
+             "SOFFIT LOCK FRONT": "front member, underside (rivnut 838003 for the soffit's captive lock screw, D-87)",
+             "SOFFIT LOCK X1": "cross member X1, underside (rivnut 838003 for the soffit's captive lock screw, D-87)"}
     out = []
     for (name, d), pts in rows.items():
         if name.startswith(("BACK", "SOFFIT")):
