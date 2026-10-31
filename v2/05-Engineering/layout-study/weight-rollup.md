@@ -111,7 +111,7 @@ Looked at and rejected:
 
 ## When this is re-run
 
-- **Skeleton P04, updated in place (PR #58):** taken here: the 9 mm floor, and the back panels' frames at 1198.99 mm under their 1200.61 mm skins. The 13 mm threshold profile (D-72) and the bolt counts of the 220 mm rule follow BASE's CAD and the joints register. The next skeleton update re-runs this count.
+- **Skeleton P04, updated in place (PRs #58 and #94):** this count reads the skeleton's named values for the panel sizes (side_l, side_h, back_ph, half_pw, half_fw, wall_depth, frame_t, stack_t, floor_t), so a skeleton change reaches it on the next run. The linings and the floor panels aren't named in the skeleton and come from its build record. The 13 mm threshold profile and the bolt counts (86 in the joints register) follow BASE's CAD and the register.
 - **Each part PR that merges:** its CAD masses replace this study's model masses line by line (today the walls other than L1, the base, the decor blocks and the kits are still model masses). The fixings kit is this study's 78 bolts and 38 cam connectors; the joints register (PR #23) has 82 bolts, 102 rivnuts and no cams, so the kit is recounted once the register gives masses.
 - **BASE's support behind the intake mesh:** if it leaves less than 0.028 m2 free, the air report re-runs the fan noise (25.3 / 29.7 dB(A) now).
 - **D-83:** a 35 N magnetic catch in DT and a magnetic seal pair on the glass edges replace the door lock (0.84 kg in FRONT's door unit); the door line follows FRONT's CAD.

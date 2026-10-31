@@ -19,16 +19,36 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "acoustics-air"))
 import calc as AA  # noqa: E402  (the air report's own model: D-60's air parts)
 
+SKELETON_CSV = os.path.join(HERE, "..", "..", "..", "01-CAD-Native", "skeleton", "100000_P04_POD-SKELETON-PARAMETERS.csv")
+
+
+def _skeleton():
+    import csv
+    with open(SKELETON_CSV, encoding="utf-8") as f:
+        return {r["parameter"]: float(r["value"]) for r in csv.DictReader(f)}
+
+
+SKEL = _skeleton()
+
+
+def skel(name):
+    """A named value of skeleton P04 (S33), linked by its name; a missing name stops the study."""
+    if name not in SKEL:
+        raise KeyError(f"skeleton P04 has no parameter {name!r} ({SKELETON_CSV})")
+    return SKEL[name]
+
 CAP_KG = 420.0          # confirmed, D-37 and D-54
 TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
 D71_KG = 429.3          # the PM's running estimate (D-71, S39), for the cross-check
 D71_LEFT_OUT = 1.3 + 0.5 + 2.1   # corner tubes, bond, floor foam: D-71's "not in the sum yet" (S39)
 
 # Skeleton P04 sizes, mm (S33)
-P04 = dict(side_w=1492.74, side_h=1142.74, side_up_h=1142.74, back_w=1200.61, back_h=1118.61,
+P04 = dict(side_w=skel("side_l"), side_h=skel("side_h"), side_up_h=skel("side_h"), back_w=skel("half_pw"),
+           back_h=skel("back_ph"), ceil_w=skel("half_pw"), wall_depth=skel("wall_depth"), frame_d=skel("frame_t"),
+           back_fw=skel("half_fw"),                    # linked to the skeleton's named values (S33)
+           # not named in the skeleton: the linings and the floor panels, from its build record (S33)
            side_cass_l=1445.0, side_cass_lo_h=1142.74, side_cass_up_h=1092.74, back_cass_w=1166.0,
-           back_cass_lo_h=1118.61, back_cass_up_h=1116.87, floor_w=1210.0, floor_d=1455.0, ceil_w=1200.61,
-           wall_depth=1495.0, frame_d=40.0, back_fw=1198.99)      # back_fw: frame width under the 1200.61 skin (PR #58)
+           back_cass_lo_h=1118.61, back_cass_up_h=1116.87, floor_w=1210.0, floor_d=1455.0)
 # The teams' CAD masses, kg (status calculation: CAD geometry x density)
 WALL_L1_MADE, WALL_L1_BOND = 11.35, 0.49                      # S34
 CEIL_PANEL, CEIL_CASS = 9.586, 9.816                          # S35 (P03 build; the P04 cassette is 1160 x 1045)
@@ -39,8 +59,8 @@ FIXED_UNIT, FIXED_GLASS = 29.58, 28.584                       # S37
 LIP_KG = 0.43                 # confirmed, D-69: each wall cassette with the 12 mm lips (S39)
 CORNER_TUBES_KG = 1.3         # confirmed, D-63 (S39)
 BOND_OVER_KG = 0.5            # calculation, PR #23 via D-71: bond over this study's 0.25 kg/m2 (S39)
-FLOOR_T, FOAM_KG = 9.0, 2.1   # confirmed, D-72 (9 mm plywood); calculation, D-76 (3 mm foam at about 200 kg/m3) (S39)
-SKEL_STACK = 84.0             # mm: outer panel 46 + the floating lining, wall face to lining face (S33)
+FLOOR_T, FOAM_KG = skel("floor_t"), 2.1  # confirmed, D-72 (9 mm plywood); calculation, D-76 (3 mm foam, about 200 kg/m3)
+SKEL_STACK = skel("stack_t")  # mm: outer panel 46 + the floating lining, wall face to lining face (S33)
 # D-81, the PM's weight ruling on PR #38 (S40): adopted now, two of them provisional on a test or a check
 FILL_LIGHT = 24.0             # kg/m3: the default now, provisional on T02 (D-54, D-81); the grade Pyrotek lists and the
                               # sample tests
@@ -450,9 +470,11 @@ def rollup_md(rows):
     md.append("")
     md.append("## When this is re-run")
     md.append("")
-    md.append("- **Skeleton P04, updated in place (PR #58):** taken here: the 9 mm floor, and the back panels' frames at "
-              "1198.99 mm under their 1200.61 mm skins. The 13 mm threshold profile (D-72) and the bolt counts of the 220 mm "
-              "rule follow BASE's CAD and the joints register. The next skeleton update re-runs this count.")
+    md.append("- **Skeleton P04, updated in place (PRs #58 and #94):** this count reads the skeleton's named values for the "
+              "panel sizes (side_l, side_h, back_ph, half_pw, half_fw, wall_depth, frame_t, stack_t, floor_t), so a skeleton "
+              "change reaches it on the next run. The linings and the floor panels aren't named in the skeleton and come from "
+              "its build record. The 13 mm threshold profile and the bolt counts (86 in the joints register) follow BASE's CAD "
+              "and the register.")
     md.append("- **Each part PR that merges:** its CAD masses replace this study's model masses line by line (today the walls "
               "other than L1, the base, the decor blocks and the kits are still model masses). The fixings kit is this study's 78 "
               "bolts and 38 cam connectors; the joints register (PR #23) has 82 bolts, 102 rivnuts and no cams, so the kit "
