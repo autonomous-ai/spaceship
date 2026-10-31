@@ -81,8 +81,9 @@ ZB, ZT = "fg_vis_zb", "fg_vis_zt"                  # band top and DT's underside
 
 OWN = [
     ("dr_skin_t", "3 mm", "mm", "source", "ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)"),
-    ("dr_back_t", "2 mm", "mm", "source",
-     "joints register J-FRONT-01: the back plate is aluminium 1.0 to 2.7 thick at each bolt, for the rivnuts (HOLD-10)"),
+    ("dr_back_t", "1.5 mm", "mm", "confirmed",
+     "joints register J-FRONT-01: the back plate is aluminium 1.0 to 2.7 thick at each bolt, for the rivnuts (HOLD-10); "
+     "1.5, not 2, so DR stays under 20 kg (D-03; PM ruling 2026-11-01)"),
     ("dr_strip_x0", "jf_x - 2 * jf_hole - 0.5 mm", "mm", "calculation",
      "the fixed back strip's inner edge, 2 hole diameters plus 0.5 from the J-FRONT-01 rivnut holes (mechanical "
      "check C09); the rest of the back comes off for the air unit (D-87)"),
@@ -140,7 +141,14 @@ OWN = [
     ("fr_w", "20 mm", "mm", "calculation",
      "frame tube 20 x 20 x 1.5, 6063-T6 (D-79): bending stiffness E*I = 4.5e8 N.mm2, about v1's 16 x 16 x 1 steel box "
      "(4.7e8), at 0.30 kg/m against 0.47"),
-    ("fr_t", "1.5 mm", "mm", "calculation", "frame tube wall, as fr_w"),
+    ("fr_t", "1.5 mm", "mm", "calculation",
+     "frame tube wall 1.5 where AIR's supply fan box (8.8 kg) stands: the shelf tubes F08 and C03"),
+    ("fr_t_rn", "1.2 mm", "mm", "confirmed",
+     "wall of the tubes that carry rivnuts (bottom B01, bolt line B02, band B08): 1.2, as D-85 kept the wall panels' "
+     "perimeter members for their rivnuts (PM ruling 2026-11-01, DR under 20 kg, D-03)"),
+    ("fr_t_sk", "1.0 mm", "mm", "confirmed",
+     "wall of the tubes that only hold the skin and the plates: 1.0, as D-85's inner studs (PM ruling 2026-11-01, DR "
+     "under 20 kg, D-03); E*I 3.2e8 N.mm2, two thirds of v1's 16 x 16 x 1 steel box, with the ACP bonded on"),
     ("fr_wb", "80 mm", "mm", "calculation",
      "bolt-line tube 80 x 20 x 1.5 behind the fixed strip: the J-FRONT-01 rivnut tails and bolt tips go into it "
      "through 14 mm holes (HOLD-10: the plate with the frame behind), and the access panel lands 37 on its other "
@@ -211,7 +219,11 @@ EXPECTED = [
 
 FRAME_PN = "351306"
 FRAME = ("351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)")
-S20, S40, S60, S80 = "20 x 20 x 1.5", "40 x 20 x 1.5", "60 x 20 x 1.5", "80 x 20 x 1.5"
+# tube sections and walls (PM ruling 2026-11-01): skin-only tubes 1.0, rivnut tubes 1.2, the fan box shelf 1.5
+S20, S40, S60, S80 = "20 x 20 x 1.0", "40 x 20 x 1.2", "60 x 20 x 1.2", "80 x 20 x 1.2"
+S20_SHELF = "20 x 20 x 1.5"
+WALL = {"20 x 20 x 1.0": "fr_t_sk", "40 x 20 x 1.2": "fr_t_rn", "60 x 20 x 1.2": "fr_t_rn", "80 x 20 x 1.2": "fr_t_rn",
+        "20 x 20 x 1.5": "fr_t"}
 ACCESS_BOLTS = ([("ab_x", "ab_z0 + %d * ab_p" % k) for k in range(6)] + [("ab_x1", "ab_zb"), ("ab_x2", "ab_zb")] +
                 [("ab_x1", "ab_zt"), ("ab_x2", "ab_zt")])
 
@@ -235,7 +247,7 @@ def frame_members():
 
     def add(key, name, axes, pts, along, a, b, section=S20, axis=(0, 1), ends=None):
         M.append({"key": key, "name": name, "axes": axes, "pts": pts, "along": along, "a": a, "b": b,
-                  "section": section, "axis": axis,
+                  "section": section, "t": WALL[section], "axis": axis,
                   "ends": ends or "mitred to its neighbours (angles on the frame drawing)"})
 
     front = FL.ring([(bot, "0 mm", "fr_w"), (facf, "0 mm", "fr_w"), (chf, "0 mm", "fr_w"), (dtjf, "0 mm", "fr_w"),
@@ -253,11 +265,11 @@ def frame_members():
         add(key, nm, ("x", "z"), back[k], "y", yb0, yb1, sec)
     # cross tubes in the front ring: v1's 724, and the shelf the fan box stands on
     rl23, dg23 = FL.push(rl, sk23), FL.push(diag, sk23)
-    for key, nm, edge, z0 in (("F07", "FRONT RING CROSS 724", rl23, "%s + fr_h1" % ZB),
-                              ("F08", "FRONT RING FAN BOX SHELF", dg23, "fb_z0 - fr_w")):
+    for key, nm, edge, z0, sec in (("F07", "FRONT RING CROSS 724", rl23, "%s + fr_h1" % ZB, S20),
+                                   ("F08", "FRONT RING FAN BOX SHELF", dg23, "fb_z0 - fr_w", S20_SHELF)):
         z1 = "%s + fr_w" % z0
         add(key, nm, ("x", "z"), [FL.meet(edge, FL.line(0, 1, z0)), ("(%s - fr_w)" % xf, z0), ("(%s - fr_w)" % xf, z1),
-                                  FL.meet(edge, FL.line(0, 1, z1))], "y", yf0, yf1,
+                                  FL.meet(edge, FL.line(0, 1, z1))], "y", yf0, yf1, sec,
             ends="left end cut to the glass-edge tube's slope, right end square")
     # band tube under the back plate's top band, between the DT joint tube and the bolt-line tube
     xb0, xb1 = "(%s + dt_xr + fr_w)" % XL, "(%s - dr_skin_t - fr_wb)" % XR
@@ -273,7 +285,7 @@ def frame_members():
     for key, nm, z0 in (("C01", "FACET TUBE BOTTOM", ZB), ("C02", "FACET TUBE KNEE", "fix_zk - fr_w / 2"),
                         ("C03", "FACET TUBE FAN BOX SHELF", "fb_z0 - fr_w"), ("C04", "FACET TUBE FAN BOX TOP", "fb_z0 + fb_h - fr_w"),
                         ("C05", "FACET TUBE TOP", "%s - fr_w" % zch)):
-        add(key, nm, ("x", "y"), fac_pts, "z", z0, "%s + fr_w" % z0,
+        add(key, nm, ("x", "y"), fac_pts, "z", z0, "%s + fr_w" % z0, S20_SHELF if key == "C03" else S20,
             ends="front end square to the facet tube's side, back end square, back corner cut to the side skin")
     # along the top chamfer (side view), from the front ring's top tube up to the back ring's top tube
     chl = FL.line("-dr_cny", "-dr_cnz", "-dr_cc")
@@ -514,7 +526,7 @@ def build(app):
             ("B01", "HOLES - ACCESS PANEL RIVNUTS ON THE BOTTOM TUBE (2)", ACCESS_BOLTS[6:8], "fr_hole_rn"),
             ("B08", "HOLES - ACCESS PANEL RIVNUTS ON THE BAND TUBE (2)", ACCESS_BOLTS[8:10], "fr_hole_rn")):
         sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, name, centres, dia)
-        L.extrude_span(c, sk, "y", yb1 + " - fr_t - 1 mm", yb1 + " + 0.5 mm", CUT, [tubes[key]],
+        L.extrude_span(c, sk, "y", yb1 + " - fr_t_rn - 1 mm", yb1 + " + 0.5 mm", CUT, [tubes[key]],
                        "CUT - " + name.split(" - ", 1)[1],
                        profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
 
@@ -624,14 +636,15 @@ def export_all(app):
          "D-12, D-49; skeleton DR shape", "one flat panel per outside face: " + DXF_SKIN_REL.split("/")[-1] +
          "; bond to the frame per the joints register's ACP bond spec"),
         (FRAME_PN, FRAME[1], FRAME[2], 1, "made: welded frame, %d tubes (cut list %s)" % (len(members),
-         CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5, 40 x 20 x 1.5, 60 x 20 x 1.5 and 80 x 20 x 1.5, "
-         "finish: mill finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
+         CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.2 "
+         "(rivnuts), 20 x 20 x 1.5 (fan box shelf), finish: mill finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
          "v1 decor frame drawing (front and back frames); D-79; joints register HOLD-10",
          "%.1f m of tube; rivnuts 838003 fitted in the factory: 10 for the access panel bolts; the bolt-line tube has "
          "6 holes 14 for the J-FRONT-01 rivnut tails" % tube_m),
         ("351302", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
-         "aluminium EN AW-5754-H22 sheet 2.0 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
-         "calculation (CAD, 2700 kg/m3)", "DRAFT", "joints register J-FRONT-01 (HOLD-10 answered: 2 mm aluminium)",
+         "aluminium EN AW-5754-H22 sheet 1.5 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
+         "calculation (CAD, 2700 kg/m3)", "DRAFT", "joints register J-FRONT-01 (1.0 to 2.7 at each bolt, HOLD-10); "
+         "1.5 mm by PM ruling 2026-11-01 (DR under 20 kg)",
          "DXF " + DXF_FLAT["BACK"] + "; fixed: the strip on X +1224 with 6 holes 9.53 +0.10/0 for the rivnuts 838003 "
          "(critical: on the wall's bolt line), and the band behind the soffit; blind-riveted to the frame (HOLD: rivet)"),
         ("351305", PARTS["ACCESS"][1], PARTS["ACCESS"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4), "

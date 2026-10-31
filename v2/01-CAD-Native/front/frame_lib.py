@@ -149,7 +149,8 @@ def axis3(axes, u, v):
 # ---- Fusion
 
 def build_members(design, comp, L, members, t_expr):
-    """Each member: a fully constrained polygon, extruded, then shelled to a tube with its end faces open.
+    """Each member: a fully constrained polygon, extruded, then shelled to a tube with its end faces open, to its own
+    wall m["t"] when it has one (a parameter name or expression), else t_expr.
     Returns {key: body}. A member whose shell fails stays solid and is reported (FRAME SHELL FAILED)."""
     import adsk.core
     import adsk.fusion
@@ -180,7 +181,7 @@ def build_members(design, comp, L, members, t_expr):
             if ends.count < 2:
                 raise RuntimeError("%d end faces" % ends.count)
             si = comp.features.shellFeatures.createInput(ends, False)
-            si.insideThickness = adsk.core.ValueInput.createByString(t_expr)
+            si.insideThickness = adsk.core.ValueInput.createByString(m.get("t", t_expr))
             sh = comp.features.shellFeatures.add(si)
             sh.name = "SHELL - TUBE %s (ENDS OPEN)" % m["key"]
         except Exception as exc:
