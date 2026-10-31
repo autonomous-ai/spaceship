@@ -9,8 +9,8 @@ Opens the skeleton's cloud design 100000_P04_POD-SKELETON_CAD from "Default Proj
 import drops the body names (first run, 2026-10-31). It refuses to start when that design is already open in Fusion, so
 it never touches anyone's session; it changes only what shows (light bulbs, opacity, the camera), never saves, and
 closes the design without saving. For each step it shows the bodies fitted so far: the step's new bodies solid, the
-earlier ones faded. It turns the camera (from behind for the shell, from the front for the decor and the glass, from
-above with the ceiling and front hidden for the linings) and saves img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-NN_IMG.png.
+earlier ones faded. It hides the layout grid and its ruler labels (and turns them back on at the end), turns the camera (from behind for
+the shell, from the front for the decor and the glass, from above with the ceiling and front hidden for the linings) and saves img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-NN_IMG.png.
 
 Fusion draws pictures only on a live screen, so run it when the screen is unlocked (D-84). The bodies are the
 skeleton's envelopes; pictures of the parts themselves replace these as each part's CAD merges.
@@ -105,6 +105,52 @@ def set_opacity(body, value):
         pass
 
 
+def hide_grid(app):
+    """Turn the layout grid and its ruler labels off for the pictures; returns a function that turns them back on.
+    The grid is an application-wide setting, so the run always puts it back for everyone else using Fusion.
+    It prints what it finds, so a run that can't switch it off still tells us where to look."""
+    ui = app.userInterface
+    undo, report = [], []
+    for i in range(ui.commandDefinitions.count):
+        try:
+            cd = ui.commandDefinitions.item(i)
+            name = (cd.name or "").lower()
+            if "grid" not in name and "grid" not in cd.id.lower():
+                continue
+            ctl = cd.controlDefinition
+            checked = getattr(ctl, "isChecked", None)
+            report.append("%s | %s | %s | checked=%r" % (cd.id, cd.name, type(ctl).__name__ if ctl else None, checked))
+            if checked is True and "layout grid" in name and "lock" not in name and "snap" not in name:
+                cd.execute()
+                for _ in range(3):
+                    adsk.doEvents()
+                after = getattr(ctl, "isChecked", None)
+                if after is True:   # the command didn't toggle it: try the check box itself
+                    try:
+                        ctl.isChecked = False
+                        adsk.doEvents()
+                    except Exception:
+                        pass
+                    after = getattr(ctl, "isChecked", None)
+                report.append("  turned off: %r" % (after is False))
+                if after is False:
+                    undo.append(cd)
+        except Exception as e:   # one odd command must not stop the pictures
+            report.append("  (skipped one command: %s)" % type(e).__name__)
+    print("GRID: " + "; ".join(report) if report else "GRID: no grid command found")
+
+    def restore():
+        for cd in undo:
+            try:
+                cd.execute()
+                for _ in range(3):
+                    adsk.doEvents()
+                print("GRID: %s back on" % cd.name)
+            except Exception as e:
+                print("GRID: could not turn %s back on: %s" % (cd.name, e))
+    return restore
+
+
 def point_cm(p_mm):
     return adsk.core.Point3D.create(p_mm[0] / 10.0, p_mm[1] / 10.0, p_mm[2] / 10.0)
 
@@ -115,7 +161,9 @@ def run(_context):
     with open(DATA, encoding="utf-8") as f:
         data = json.load(f)
     doc = open_skeleton(app)
+    restore_grid = lambda: None
     try:
+        restore_grid = hide_grid(app)
         design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
         hide_helpers(design.rootComponent)
         named = bodies_by_name(design.rootComponent)
@@ -155,4 +203,5 @@ def run(_context):
             print("STEP %d: %s (%d new bodies, %s view)" % (s["step"], s["image"], len(s["new"]), s["view"]))
         print("PICTURES: %d of %d" % (made, len(data["steps"])))
     finally:
+        restore_grid()
         doc.close(False)
