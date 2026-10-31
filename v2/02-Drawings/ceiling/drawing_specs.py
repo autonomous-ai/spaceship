@@ -211,9 +211,47 @@ def skin_spec(key, half):
     return spec(key, 0.2, notes, views=FRAME_VIEWS, scales={"iso": 0.1})
 
 
+def fill_table():
+    """D-89 tabulated drawing: the three fill strips (one drawing, drawn from 513301)."""
+    v = _vals()
+    rows, seen = [], set()
+    for key, bay, box, notches in M.fill_strips(v):
+        if key in seen:
+            continue
+        seen.add(key)
+        b = [M.ev(v, e) for e in box]
+        ns = []
+        for _n, nb in notches:
+            n = [M.ev(v, e) for e in nb]
+            if M.overlap(tuple(b), tuple(n)):
+                ns.append("%.1f x %.1f at X' %.1f, %s edge" % (min(n[1], b[1]) - max(n[0], b[0]), min(n[3], b[3]) - max(n[2], b[2]),
+                                                             (max(n[0], b[0]) + min(n[1], b[1])) / 2,
+                                                             "front" if abs(max(n[2], b[2]) - b[2]) < 1e-6 else "back"))
+        rows.append("%s %s: %.1f x %.1f x %.0f, notches %s." % (
+            M.PARTS[key][0], M.PARTS[key][1].split(" - ")[-1], b[1] - b[0], b[3] - b[2], v["fill_t"], "; ".join(ns) or "none"))
+    return rows
+
+
+def tabulated(sp, drawing, covers, extra_notes):
+    sp = dict(sp)
+    sp["drawing"] = drawing
+    sp["title"] = [(k, ("%s (this sheet also covers %s)" % (val, ", ".join(covers)) if k == "PART NO." else val))
+                   for k, val in sp["title"]]
+    sp["notes"] = list(extra_notes) + sp["notes"]
+    return sp
+
+
 SPECS.update({
     "frame_c1": frame_spec("frame_c1", "C1"), "frame_c2": frame_spec("frame_c2", "C2"),
-    "skin_c1": skin_spec("skin_c1", "C1"), "skin_c2": skin_spec("skin_c2", "C2"),
 })
+# D-89 (PM ruling 2026-11-01): identical or mirrored parts share one tabulated drawing; a plain
+# knife-cut felt or fill rectangle needs none when the cut list gives its size, material,
+# tolerance and part number (the felt 513201: 410000_P01_CEILING-FLAT-CUT-LIST_BOM.csv)
+SPECS["skins"] = tabulated(skin_spec("skin_c2", "C2"), "411302_P01_CEILING-SKIN-C1-C2_DWG", ["411301"], [
+    "TABULATED (D-89): drawn as 411302 C2. 411301 C1 is the same outline mirrored about X 0, with no roof slot.",
+])
+SPECS["fills"] = tabulated(SPECS["fill_a"], "513301_P01_LINING-FILL-CEILING-BAYS-A-B-C_DWG", ["513302", "513303"], [
+    "TABULATED (D-89): drawn as 513301. Sizes X' x Y' x thickness and notches (X' from the strip's centre):",
+] + fill_table())
 
-ORDER = ["cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c", "frame_c1", "frame_c2", "skin_c1", "skin_c2"]
+ORDER = ["cassette", "tray", "rib", "fills", "frame_c1", "frame_c2", "skins"]
