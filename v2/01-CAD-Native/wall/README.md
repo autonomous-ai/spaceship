@@ -8,7 +8,7 @@ Spaceship is the working name of v2 (FocusPod v2, the team's "Indoor Pod"). This
 
 ## What is in it
 
-One design per part number, each built by script into its own cloud document (`<pn>_P01_<NAME>_CAD`), so each part's drawing shows only that part.
+One design per part number that needs one, each built by script into its own cloud document (`<pn>_P01_<NAME>_CAD`), so each drawing shows only its part. Drawings follow D-89 (`../../02-Drawings/wall/DRAWING-INDEX.md`): each position's panel assembly, frame and cassette assembly has its own; the side skins, back skins, side trays, back trays, side fills and back fills each share one tabulated drawing; the felts are defined by their parts-list rows.
 
 | Position | Panel assembly | Frame | Skin | Fill | Cassette | Tray | Felt |
 |---|---|---|---|---|---|---|---|
@@ -75,7 +75,7 @@ Add `--arg rebuild=1` to rebuild a design this script made (it refuses any other
 |---|---|---|
 | Rectangular pattern with only direction one | direction two defaults to 3 instances at 0 mm: 3 identical bodies on every instance, found only by a clash check | sets direction two to 1 instance |
 | A pattern of a cut over separate bodies | `PATTERN_FEATURES_NO_PASTE_INT_EDGES`: no instance may cut a body other than the seed's | one cut per position, each allowed to cut any fill piece |
-| Root part number right after `--doc-new` | the first upload can finish after a short build (a 2-feature skin) and overwrite the number with the document's timestamp name | waits for the upload and sets the number again before the save; the export refuses a wrong one |
+| Root part number and description after a save | the first upload can finish after a short build (a 2-feature skin) and overwrite the number with the document's timestamp name; new documents came out of their first save with an empty description | sets both before the save, waits for the upload (the data file's version moves on), checks both, and saves again if the cloud reset them; the export refuses a wrong number |
 | A script that raises | all its changes are rolled back, so the document is as it was | nothing to clean up after a failed run |
 | A derived skeleton plane | stretches the root component's box to Z 0 | boxes are taken from the solid bodies only |
 | Construction plane offset from the XZ plane | the offset runs along that plane's normal, which needn't point along +Y | the sign follows the normal, and every plane is checked to land on its coordinate |
