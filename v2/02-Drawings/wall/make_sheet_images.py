@@ -175,10 +175,80 @@ def tray_blocks(pn, src=None):
     return [("data", data, 150.0, None), ("notes", notes, 150.0, None)]
 
 
+def parts_rows(bom_csv, top_pn):
+    """Rows of the BOM CSV under one assembly (level 0 row = top_pn), for the drawing's parts list."""
+    import csv
+    rows, inside = [], False
+    with open(bom_csv, encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            if r["level"] == "0":
+                inside = r["part_number"] == top_pn
+                continue
+            if inside and r["level"] == "1":
+                rows.append(r)
+    return rows
+
+
+def assembly_blocks(pn, kind, src=None):
+    rep = load(src or pn)
+    root = [c for c in rep["components"] if c["is_root"]][0]
+    bom = os.path.join(OUT_JSON, "..", "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv")
+    rows = parts_rows(bom, pn)
+    mass = sum(b["mass_kg"] for c in rep["components"] if not c["part_number"].startswith("NO-PN")
+               for b in c["bodies"])
+    name_en, name_vi = root["description"].split(" | ")[:2]
+    data = [
+        "**%s_P01_%s_DWG" % (pn, name_en.replace(" - ", "-").replace(" ", "-")),
+        "%s · %s" % (name_en, name_vi),
+        "Assembly %s · Rev P01 · Status DRAFT, not released for manufacture" % pn,
+        "Units mm · Scale 1:5 on A2 · ISO first-angle projection (symbol below)",
+        "Made parts %.2f kg (CAD) plus the bought items in the list" % mass,
+        "Native CAD %s v%s · BOM %s" % (rep["document"], rep["version"], os.path.basename(bom)),
+    ]
+    plist = ["**PARTS LIST (item · part number · name · qty · status)"]
+    for i, r in enumerate(rows, 1):
+        plist.append("%d · %s · %s · %s %s · %s" % (i, r["part_number"] or "no PN yet", r["name_en"], r["qty"],
+                                                  r["unit"], r["status"].split(";")[0]))
+    if kind == "panel":
+        notes = [
+            "**GENERAL NOTES",
+            "1. " + VIEWS_NOTE,
+            "2. Stack outside to inside: ACP skin 3 (211301), bond line 3 (SikaTack Panel-50, 12 × 3 on every member), "
+            "frame 40 (211101, 6063-T6), PET fill 40 in the bays (211501): outer panel 46. Then the 4 mm gap and the "
+            "lining cassette 34 (510101, a separate part): 84 in all (PM ruling 2026-10-31).",
+            "3. Site joints (joints register, PR #23): J-BASE-01 to the base band, 4 captive M6 × 16 driven down "
+            "through the bottom rail; J-FRONT-01 to the decor block, 3 driven forward through the front stile; "
+            "J-WALL-01 to L2, 4 rivnuts in the top rail (L2 drives); J-WALL-02 to B1, 3 rivnuts in the 40 × 40 back "
+            "stile (B1 drives). Seam gap 2.26 at each, set by the 1.5 mm stop washers.",
+            "4. Factory fits: rivnuts with stop washers, the 2 spigots in the top rail, the captive bolts with their "
+            "retainers (HOLD-02), the gaskets on the nut-side faces (PORON 4701-40, HOLD-05). Fill pockets 60 × 60 "
+            "left open beside every bolt this panel drives.",
+            "5. Bond: panel bonded face down on a flat table; no standing, stacking or shipping before 72 h (bond spec).",
+            "6. HOLD: member joints (H11), retainer (HOLD-02), torque (HOLD-01), gasket converter (HOLD-05).",
+        ]
+    else:
+        notes = [
+            "**GENERAL NOTES",
+            "1. " + VIEWS_NOTE,
+            "2. Floating inner leaf (D-17): tray 511101 (0.5 mm, 34 mm returns, 12 mm lips) holds the 9 mm felt "
+            "511301 behind its lips over a 24 mm air gap. It hangs on captive clips with a rated load (D-47), never a "
+            "screw; 4 mm clear of the frame.",
+            "3. Clips HOLD (H03): 4 zones reserved on the first and last intermediate stiles of the panel frame, 100 "
+            "from the top and bottom, clear of every key access hole and fill pocket.",
+            "4. Hook-and-loop only to line it up (D-47). PORON gasket round the outer edge (HOLD-05, H14).",
+            "5. It runs from the decor back plate (pod Y -645) to past the back lining's face (Y 800), closing the "
+            "inside corner (D-57). Cables in the air gap clip to the tray only (D-26).",
+        ]
+    return [("data", data, 150.0, None), ("parts", plist, 150.0, None), ("notes", notes, 150.0, None)]
+
+
 def main(argv):
     kind, pn = argv[1], argv[2]
     src = argv[3] if len(argv) > 3 else None      # read another design's report (the part sits in it too)
-    blocks = {"frame": frame_blocks, "skin": skin_blocks, "tray": tray_blocks}[kind](pn, src)
+    if kind in ("panel", "cassette"):
+        blocks = assembly_blocks(pn, kind, src)
+    else:
+        blocks = {"frame": frame_blocks, "skin": skin_blocks, "tray": tray_blocks}[kind](pn, src)
     meta = {}
     for name, lines, width, title in blocks:
         path, w, h = render("%s_%s" % (pn, name), lines, width, title=title)

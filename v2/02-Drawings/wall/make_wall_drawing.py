@@ -54,6 +54,19 @@ KINDS = {
                        ("left", VO.LeftViewOrientationType, "right")],
              "tables": [], "images": [("data", (410.0, 108.0)), ("notes", (410.0, 150.0))],
              "symbol_at": (440.0, 95.0)},
+    "panel": {"scale": 0.2, "front_at": (205.0, 235.0), "gap": 14.0,
+              "views": [("front", VO.FrontViewOrientationType, "centre"),
+                        ("top", VO.TopViewOrientationType, "below"),
+                        ("left", VO.LeftViewOrientationType, "right"),
+                        ("right", VO.RightViewOrientationType, "left")],
+              "tables": [], "images": [("data", (410.0, 100.0)), ("parts", (410.0, 140.0)), ("notes", (410.0, 195.0))],
+              "symbol_at": (440.0, 90.0)},
+    "cassette": {"scale": 0.2, "front_at": (205.0, 235.0), "gap": 14.0,
+                 "views": [("front", VO.FrontViewOrientationType, "centre"),
+                           ("top", VO.TopViewOrientationType, "below"),
+                           ("left", VO.LeftViewOrientationType, "right")],
+                 "tables": [], "images": [("data", (410.0, 100.0)), ("parts", (410.0, 130.0)), ("notes", (410.0, 170.0))],
+                 "symbol_at": (440.0, 90.0)},
 }
 
 
@@ -270,7 +283,7 @@ def run(_context):
     cfg = KINDS[ARGS["kind"]]
     print("sheet %s: %s x %s" % (sheet.name, round(sheet.width, 2), round(sheet.height, 2)))
     views = place_views(sheet, cfg)
-    if ARGS["kind"] in ("skin", "tray"):
+    if ARGS["kind"] in ("skin", "tray", "panel", "cassette"):
         overall_dims(sheet, views)
         f = views["front"]
         datum(sheet, "A", edge_line(f, "bottom"), (extent(f)[0] + 40.0, extent(f)[1] - 26.0))

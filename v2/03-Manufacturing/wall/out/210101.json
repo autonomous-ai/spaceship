@@ -1,88 +1,9 @@
 {
  "document": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD",
- "version": 5,
+ "version": 6,
  "saved": true,
  "modified": true,
  "components": [
-  {
-   "part_number": "210101",
-   "name": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD",
-   "description": "WALL - PANEL ASSY - SIDE LOWER - LH | Vách trái - cụm tấm dưới | P01 | position L1",
-   "is_root": true,
-   "bodies": []
-  },
-  {
-   "part_number": "211501",
-   "name": "211501 WALL - CAVITY FILL - SIDE LOWER - LH",
-   "description": "WALL - CAVITY FILL - SIDE LOWER - LH | Vách trái - bông PET dưới | P01",
-   "is_root": false,
-   "bodies": [
-    {
-     "name": "FILL - BAY 1",
-     "box": [
-      -1244.0,
-      -622.74,
-      132.26,
-      -1204.0,
-      -277.81,
-      1235.0
-     ],
-     "volume_mm3": 14638944.9,
-     "area_mm2": 866961.2,
-     "mass_kg": 0.4684,
-     "material": "PET FILL 40 MM 32 kg/m3 (confirmed)",
-     "holes": []
-    },
-    {
-     "name": "FILL - BAY 2",
-     "box": [
-      -1244.0,
-      -257.81,
-      132.26,
-      -1204.0,
-      87.13,
-      1235.0
-     ],
-     "volume_mm3": 15070944.9,
-     "area_mm2": 874161.2,
-     "mass_kg": 0.4823,
-     "material": "PET FILL 40 MM 32 kg/m3 (confirmed)",
-     "holes": []
-    },
-    {
-     "name": "FILL - BAY 3",
-     "box": [
-      -1244.0,
-      107.13,
-      132.26,
-      -1204.0,
-      452.06,
-      1235.0
-     ],
-     "volume_mm3": 15070944.9,
-     "area_mm2": 874161.2,
-     "mass_kg": 0.4823,
-     "material": "PET FILL 40 MM 32 kg/m3 (confirmed)",
-     "holes": []
-    },
-    {
-     "name": "FILL - BAY 4",
-     "box": [
-      -1244.0,
-      472.06,
-      132.26,
-      -1204.0,
-      807.0,
-      1235.0
-     ],
-     "volume_mm3": 14629848.9,
-     "area_mm2": 851306.4,
-     "mass_kg": 0.4682,
-     "material": "PET FILL 40 MM 32 kg/m3 (confirmed)",
-     "holes": []
-    }
-   ]
-  },
   {
    "part_number": "211101",
    "name": "211101 WALL - PANEL FRAME - SIDE LOWER - LH",
@@ -102,7 +23,7 @@
      "volume_mm3": 205108.5,
      "area_mm2": 342472.7,
      "mass_kg": 0.5538,
-     "material": "ALUMINIUM TUBE (alloy HOLD) 2700 kg/m3 (source)",
+     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": [
       {
        "d": 8.5,
@@ -251,7 +172,7 @@
      "volume_mm3": 205428.1,
      "area_mm2": 342872.2,
      "mass_kg": 0.5547,
-     "material": "ALUMINIUM TUBE (alloy HOLD) 2700 kg/m3 (source)",
+     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": [
       {
        "d": 9.53,
@@ -340,7 +261,7 @@
      "volume_mm3": 151962.1,
      "area_mm2": 253750.2,
      "mass_kg": 0.4103,
-     "material": "ALUMINIUM TUBE (alloy HOLD) 2700 kg/m3 (source)",
+     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": [
       {
        "d": 11.0,
@@ -429,7 +350,7 @@
      "volume_mm3": 205117.5,
      "area_mm2": 342342.8,
      "mass_kg": 0.5538,
-     "material": "ALUMINIUM TUBE (alloy HOLD) 2700 kg/m3 (source)",
+     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": [
       {
        "d": 9.53,
@@ -482,7 +403,7 @@
      "volume_mm3": 152442.8,
      "area_mm2": 254347.8,
      "mass_kg": 0.4116,
-     "material": "ALUMINIUM TUBE (alloy HOLD) 2700 kg/m3 (source)",
+     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": []
     },
     {
@@ -498,7 +419,7 @@
      "volume_mm3": 152442.8,
      "area_mm2": 254347.8,
      "mass_kg": 0.4116,
-     "material": "ALUMINIUM TUBE (alloy HOLD) 2700 kg/m3 (source)",
+     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
      "holes": []
     },
     {
@@ -514,7 +435,79 @@
      "volume_mm3": 152442.8,
      "area_mm2": 254347.8,
      "mass_kg": 0.4116,
-     "material": "ALUMINIUM TUBE (alloy HOLD) 2700 kg/m3 (source)",
+     "material": "ALUMINIUM TUBE 6063-T6 MILL 2700 kg/m3 (source)",
+     "holes": []
+    }
+   ]
+  },
+  {
+   "part_number": "211501",
+   "name": "211501 WALL - CAVITY FILL - SIDE LOWER - LH",
+   "description": "WALL - CAVITY FILL - SIDE LOWER - LH | Vách trái - bông PET dưới | P01",
+   "is_root": false,
+   "bodies": [
+    {
+     "name": "FILL - BAY 1",
+     "box": [
+      -1244.0,
+      -622.74,
+      132.26,
+      -1204.0,
+      -277.81,
+      1235.0
+     ],
+     "volume_mm3": 14638944.9,
+     "area_mm2": 866961.2,
+     "mass_kg": 0.4684,
+     "material": "PET FILL 40 MM 32 kg/m3 (confirmed)",
+     "holes": []
+    },
+    {
+     "name": "FILL - BAY 2",
+     "box": [
+      -1244.0,
+      -257.81,
+      132.26,
+      -1204.0,
+      87.13,
+      1235.0
+     ],
+     "volume_mm3": 15070944.9,
+     "area_mm2": 874161.2,
+     "mass_kg": 0.4823,
+     "material": "PET FILL 40 MM 32 kg/m3 (confirmed)",
+     "holes": []
+    },
+    {
+     "name": "FILL - BAY 3",
+     "box": [
+      -1244.0,
+      107.13,
+      132.26,
+      -1204.0,
+      452.06,
+      1235.0
+     ],
+     "volume_mm3": 15070944.9,
+     "area_mm2": 874161.2,
+     "mass_kg": 0.4823,
+     "material": "PET FILL 40 MM 32 kg/m3 (confirmed)",
+     "holes": []
+    },
+    {
+     "name": "FILL - BAY 4",
+     "box": [
+      -1244.0,
+      472.06,
+      132.26,
+      -1204.0,
+      807.0,
+      1235.0
+     ],
+     "volume_mm3": 14629848.9,
+     "area_mm2": 851306.4,
+     "mass_kg": 0.4682,
+     "material": "PET FILL 40 MM 32 kg/m3 (confirmed)",
      "holes": []
     }
    ]
@@ -542,6 +535,13 @@
      "holes": []
     }
    ]
+  },
+  {
+   "part_number": "210101",
+   "name": "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD",
+   "description": "WALL - PANEL ASSY - SIDE LOWER - LH | Vách trái - cụm tấm dưới | P01 | position L1",
+   "is_root": true,
+   "bodies": []
   }
  ],
  "parameters": [
@@ -550,84 +550,84 @@
    "expression": "pod_w_Ref",
    "unit": "mm",
    "value": 2500.0,
-   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: pod_w_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "pod_d",
    "expression": "pod_d_Ref",
    "unit": "mm",
    "value": 1700.0,
-   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: pod_d_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "pod_h",
    "expression": "pod_h_Ref",
    "unit": "mm",
    "value": 2400.0,
-   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: pod_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "wall_depth",
    "expression": "wall_depth_Ref",
    "unit": "mm",
    "value": 1495.0,
-   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: wall_depth_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "wall_z0",
    "expression": "wall_z0_Ref",
    "unit": "mm",
    "value": 110.0,
-   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: wall_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "panel_z0",
    "expression": "panel_z0_Ref",
    "unit": "mm",
    "value": 112.26,
-   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: panel_z0_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "side_h",
    "expression": "side_h_Ref",
    "unit": "mm",
    "value": 1142.74,
-   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: side_h_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "stack_t",
    "expression": "stack_t_Ref",
    "unit": "mm",
    "value": 84.0,
-   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: stack_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "outer_t",
    "expression": "outer_t_Ref",
    "unit": "mm",
    "value": 46.0,
-   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: outer_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "cass_t",
    "expression": "cass_t_Ref",
    "unit": "mm",
    "value": 34.0,
-   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: cass_t_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "lin_gap",
    "expression": "lin_gap_Ref",
    "unit": "mm",
    "value": 4.0,
-   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: lin_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "seam_gap",
    "expression": "seam_gap_Ref",
    "unit": "mm",
    "value": 2.26,
-   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v1 (skeleton is the single source)"
+   "comment": "LINKED: seam_gap_Ref, derived from 100000_P04_POD-SKELETON_CAD v2 (skeleton is the single source)"
   },
   {
    "name": "skin_t",

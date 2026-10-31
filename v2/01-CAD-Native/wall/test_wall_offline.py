@@ -107,6 +107,18 @@ class WallSidePanelTest(unittest.TestCase):
         v = resolve(load(part="cassette", row="2"))
         self.assertAlmostEqual(v["cass_h"], 1142.74 - 46 - 4)   # D-57: lin_gap under the roof frame
 
+    def test_upper_panel_has_the_40_mm_top_member_and_ceiling_bolt_height(self):
+        v = resolve(load(row="2"))
+        self.assertEqual(v["top_h"], 40)                 # R-J3: 40 x 40 top member on L2, R2
+        self.assertAlmostEqual(v["stile_len"], 1142.74 - 20 - 40)
+        self.assertAlmostEqual(2400 - v["ceil_bolt_dz"], 2377)   # middle of the 34 mm overlap with the ceiling frame
+        self.assertEqual(resolve(load(row="1"))["top_h"], 20)
+
+    def test_part_designs_have_their_own_names(self):
+        self.assertEqual(load(part="frame")["DOC_NAME"], "211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_CAD")
+        self.assertEqual(load(part="tray")["DOC_NAME"], "511101_P01_LINING-TRAY-SIDE-LOWER-LH_CAD")
+        self.assertEqual(load(part="skin", side="R", row="2")["DOC_NAME"], "211304_P01_WALL-SKIN-SIDE-UPPER-RH_CAD")
+
     def test_stile_rule_holds_when_the_wall_depth_changes(self):
         ns = load()
         for depth in (1200, 1495, 1600, 2000):

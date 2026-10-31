@@ -36,7 +36,7 @@ def main(argv):
     panel, cass = load(argv[1]), load(argv[2])
     out = []
     # tray: Fusion's flat pattern, relayered
-    tray = comp(cass, "511")
+    tray = [c for c in cass["components"] if " - TRAY - " in c["name"]][0]
     raws = glob.glob(os.path.join(HERE, ".raw", "%s_P01_*_flat-fusion.dxf" % tray["part_number"]))
     if len(raws) != 1:
         raise SystemExit("expected one raw flat pattern for %s in .raw/, found %d (run export_flat_dxf.py)" % (

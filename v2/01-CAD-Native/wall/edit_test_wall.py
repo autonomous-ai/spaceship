@@ -43,8 +43,10 @@ def health(design):
     return tl.count, bad, loose
 
 
-def pv(design, name):
+def pv(design, name, default=None):
     p = design.userParameters.itemByName(name)
+    if p is None:                       # a design built before the parameter existed
+        return default
     return round(p.value * 10.0, 3) if p.unit == "mm" else round(p.value, 3)
 
 
@@ -79,14 +81,14 @@ def record(design, rel):
         "parametric" if design.designType == adsk.fusion.DesignTypes.ParametricDesignType else "DIRECT"))
     names = ("wall_depth", "side_h", "stile_pitch_max", "frm_len", "stile_n_mid", "stile_pitch", "cass_len",
              "cass_h", "top_h")
-    before_p = {k: pv(design, k) for k in names}
+    before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
     exprs = {k: design.userParameters.itemByName(k).expression for k, _e in EDITS}
     for k, e in EDITS:
         design.userParameters.itemByName(k).expression = e
     adsk.doEvents()
     n2, bad2, loose2 = health(design)
-    after_p = {k: pv(design, k) for k in names}
+    after_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     after = snapshot(design)
     p("2. Edit %s: rebuild %d items, %d not healthy, %d sketches not fully constrained." % (
         ", ".join("%s -> %s" % (k, e) for k, e in EDITS), n2, len(bad2), len(loose2)))
