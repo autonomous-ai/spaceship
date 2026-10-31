@@ -93,6 +93,9 @@ OWN = [
     ("dr_acc_face_y", "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t", "mm", "calculation",
      "named value for AIR (PM ruling 2026-11-01): the room-side face of DR's access panel, where AIR's air column "
      "starts; Y -643.5 with the 1.5 mm back plate and the 3 mm panel"),
+    ("dr_piece_x0", "1150 mm", "mm", "confirmed",
+     "with the band behind the soffit dropped, the back plate keeps a short piece from here to the side above the "
+     "access panel: the soffit stops at X 1161 (AIR), 11 short of it (PM ruling 2026-11-01)"),
     ("dr_band_dz", "35 mm", "mm", "calculation",
      "the back plate's top band starts this far above DT's underside: the removable panels' top edges land 35 on the "
      "frame's band tube, so the access panel's top bolts sit 2 hole diameters from its edge and the rivnuts 2 from "
@@ -193,6 +196,10 @@ OWN = [
 ]
 
 AIR_ASSY = ("350004", "FRONT - AIR SUPPLY ASSY - DR", "Cụm cấp gió khối phải")
+# the back plate's band behind the soffit: dropped once CEILING confirms the soffit's own 2 mm door-side plate closes
+# that area with no gap for air or sound (PM ruling 2026-11-01: one structure there, not two); a short piece from
+# dr_piece_x0 to the side stays above the access panel, where the soffit (X up to 1161) doesn't reach
+DROP_BAND = False
 # every air part is an AIR number in AIR's tree, designed by AIR (PM ruling 2026-11-01, so nothing is counted twice):
 # DR keeps only the spaces the riser, the fan box and the two transitions take. They are typed "reserved air space",
 # carry no mass and need no drawing; the CAD names say so too
@@ -428,8 +435,13 @@ def build(app):
     zs = ZB + " + dr_skin_t"
     c = comp("BACK")
     zband = ZT + " + dr_band_dz"
-    back = [("dr_strip_x0", zs), (XR + " - dr_skin_t", zs), (XR + " - dr_skin_t", "pod_h - dr_skin_t"),
-            (XL + " + dt_xr", "pod_h - dr_skin_t"), (XL + " + dt_xr", zband), ("dr_strip_x0", zband)]
+    if DROP_BAND:   # the strip, and above the access panel a short piece from dr_piece_x0 to the side
+        back = [("dr_strip_x0", zs), (XR + " - dr_skin_t", zs), (XR + " - dr_skin_t", "pod_h - dr_skin_t"),
+                ("dr_piece_x0", "pod_h - dr_skin_t"), ("dr_piece_x0", zband), ("dr_strip_x0", zband)]
+    else:           # the strip and the band behind the soffit, down to the soffit's underside over the inner panel
+        back = [("dr_strip_x0", zs), (XR + " - dr_skin_t", zs), (XR + " - dr_skin_t", "pod_h - dr_skin_t"),
+                (XL + " + dt_xr", "pod_h - dr_skin_t"), (XL + " + dt_xr", ZT), ("dr_col_x0", ZT), ("dr_col_x0", zband),
+                ("dr_strip_x0", zband)]
     f = prism(c, ("x", "z"), back, "y", YB + " - dr_back_t", YB, "OUTLINE - DR BACK PLATE (FIXED STRIP AND TOP BAND)",
               "EXTRUDE - DR BACK PLATE")
     bp = f.bodies.item(0)
@@ -461,9 +473,10 @@ def build(app):
     ap.name = "DR ACCESS PANEL AL 3"
     bodies["ACCESS"] = ap
 
-    # ---- 351303 removable inner panel and 351304 its felt: the part of the back face seen from inside
-    inner = [("dr_col_x0", tip_z), ("dr_col_x0", zband), (XL + " + dt_xr", zband), (XL + " + dt_xr", ZT),
-             (L.diag_x(ZT, "dr_skin_t"), ZT), L.g_K("dr_skin_t")]
+    # ---- 351303 removable inner panel and 351304 its felt: the part of the back face seen from inside, up to the
+    # soffit's underside at DT's underside (Z 2120, D-61); above it they would only be hidden in the soffit (PM ruling
+    # 2026-11-01)
+    inner = [("dr_col_x0", tip_z), ("dr_col_x0", ZT), (L.diag_x(ZT, "dr_skin_t"), ZT), L.g_K("dr_skin_t")]
     yi0, yi1 = YB + " - dr_back_t", YB + " - dr_back_t + dr_skin_t"
     c = comp("INNER")
     f = prism(c, ("x", "z"), inner, "y", yi0, yi1, "OUTLINE - DR INNER PANEL (SEEN FROM INSIDE)",
@@ -607,10 +620,10 @@ def build(app):
 ANCHORS = [
     ("SKIN", 0, "fix_xtr - pod_w / 2"), ("SKIN", 3, "pod_w / 2"), ("SKIN", 2, "fg_vis_zb"), ("SKIN", 5, "pod_h"),
     ("SKIN", 1, "-pod_d / 2"), ("SKIN", 4, "-pod_d / 2 + decor_d"),
-    ("BACK", 0, "dt_xr - pod_w / 2"), ("BACK", 3, "pod_w / 2 - dr_skin_t"), ("BACK", 5, "pod_h - dr_skin_t"),
+    ("BACK", 0, "dr_piece_x0" if DROP_BAND else "dt_xr - pod_w / 2"), ("BACK", 3, "pod_w / 2 - dr_skin_t"), ("BACK", 5, "pod_h - dr_skin_t"),
     ("ACCESS", 3, "dr_strip_x0"), ("ACCESS", 5, "fg_vis_zt + dr_band_dz"),
     ("ACCESS", 4, "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t"),
-    ("INNER", 3, "dr_col_x0"), ("INNER", 5, "fg_vis_zt + dr_band_dz"),
+    ("INNER", 3, "dr_col_x0"), ("INNER", 5, "fg_vis_zt"),
     ("FELT", 4, "-pod_d / 2 + decor_d - dr_back_t + dr_skin_t + felt_t"),
     ("RISER", 2, "fg_vis_zb + dr_skin_t + ri_gap"), ("RISER", 5, "ri_zt"), ("RISER", 0, "ri_x0"),
     ("FBOX", 0, "fb_x0"), ("FBOX", 2, "fb_z0"), ("FBOX", 5, "fb_z0 + fb_h"),
