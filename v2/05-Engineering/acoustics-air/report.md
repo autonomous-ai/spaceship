@@ -6,35 +6,45 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
 - **Date:** 2026-10-31.
 - **Rerun:** `python3 calc.py` prints every table in this report. `python3 calc.py --verify` rebuilds them and checks that this file quotes each one exactly.
 - **Decisions:** DECIDED means the PM ruled on it on 2026-10-31. Decision IDs (D-xx) refer to `v2/00-Control/decision-log.md`; the other rulings were made in the project chat and are being logged. PROPOSED means it still needs a call. HOLD means a supplier or a sample has to confirm it.
+- **Fix pass:** this version answers Reviewer 3's hold at 5c1003b and applies the PM's 8 rulings on it (2026-10-31). The answers table is in the PR.
 
 ## Results first
 
-1. **v1 as built is predicted at about 15 dB speech reduction (D_S,A, range 12–18), not the 30 dB on the product page.** Its open vent slots (35%), door gaps (33%) and raised floor (14%) let out most of the sound, and its bare wood interior adds to it. v1's lab test will settle this.
-2. **Spaceship as planned comes out at about 19 dB (16–22).** That's already above v1, mostly because of the felt lining. The light fixes take it to about 21 dB: perimeter and drop seals, sealed glass, joint gaskets, silenced vents, and the thin floor with a base seal. After that, the walls and ceiling carry about 90% of the sound that gets out.
-3. **DECIDED build: about 414 kg in this model, 24.0 dB (21.5–26.5).** The PM's figure with Layout's clips is about 418 kg, under the 420 kg cap.
+1. **v1 as built: about 15 dB speech reduction (D_S,A, range 11–18), not the 30 dB on the product page.** Its open vent slots (35%), door gaps (33%) and raised floor (14%) let out most of the sound. v1's lab test will settle this.
+2. **Spaceship as planned: about 14.5 dB (11–17), level with v1.** The light fixes take it to about 16 dB: perimeter and drop seals, sealed glass, joint gaskets, silenced vents, and the thin floor with a base seal. After that, the walls and ceiling carry about 90% of the sound that gets out.
+3. **DECIDED build: about 411 kg in this model, 19.3 dB (14.6–21.7), under the 420 kg cap.**
    - Walls and ceiling: ACP 3 mm on a 20×40×1.2 aluminium frame at 400 mm, 40 mm PET fill, and a floating lining cassette (0.5 mm steel tray, 25 mm air gap, 9 mm felt).
-   - Front: 4+4 acoustic laminated glass, frameless like v1.
-   - Air: fans and splitter silencers inside the hollow front decor blocks.
-   - Smoked acrylic is now only an optional experiment on the factory sample: 23.7 dB at about 387 kg.
-4. **30 dB isn't reached anywhere in this search, up to 520 kg (best about 26 dB).** Each extra dB costs about 25–40 kg of wall. What limits a light pod is low voices (125–250 Hz). Only mass, cavity depth and low-frequency absorption help there.
-5. **Air (DECIDED):**
-   - 53 l/s normal at 25 dB(A) or less, which is the published figure.
-   - 70 l/s boost at about 31 dB(A). The CO2 reading triggers it automatically, or people trigger it by hand.
-   - At 53 l/s, two people stay at or under 800 ppm even in a 600 ppm office, and the pod runs 3.6 °C over the room.
-   - Heat, more than CO2, is why the flow is this high: at 26 l/s the pod would run about 7 °C warm.
-6. **Correction to an earlier figure:** my first fan-noise result (24 dB(A) at 70 l/s) left out sound breaking out through the silencer's thin walls. That breakout is why the silencers now sit outside the pod's sound shell, inside the decor blocks, with 2 mm aluminium casings and 37.5 mm linings. The plan's Panasonic FV-15AUL1 can't be used: its manual forbids ceiling mounting, and it has no published fan curve.
+   - Front: 4+4 laminated glass of toughened, heat-soaked panes, frameless like v1. Hinges and lock are on HOLD until a rated set is named.
+   - Air: four 12 V fans and two splitter cartridges in the right decor block (PROPOSED in this fix pass).
+   - Smoked acrylic stays an optional experiment on the factory sample: 18.9 dB at about 384 kg.
+4. **Why the headline fell from 24.0 to 19.3 dB: the felt data.**
+   - The 24.0 used Autex Cube 12 mm data on a 25 mm gap as a stand-in.
+   - Ruling 5 asks for the published data of the felt picked. The only published data for a 9 mm, 1.8 kg/m² felt is Polyx Board 9, and it's measured glued flat, which absorbs far less at 125–500 Hz.
+   - Our felt sits on a 25 mm gap, which absorbs more, but no data for that is published. So 19.3 is on the safe side and 24.0 is roughly the best case.
+   - The wall sample measures the real felt down to 100 Hz and settles it.
+   - The range also widened at the bottom: the low case now carries the 125–250 Hz risks (no finite-panel gain, and a 4 dB dip at each double wall's resonance).
+5. **30 dB isn't reached anywhere in this search, up to 500 kg (best about 23 dB).** Beyond 420 kg each extra dB costs about 20–30 kg. Low voices (125–250 Hz) limit a light pod, and only mass, cavity depth and low-frequency absorption help there. A thicker felt on the ceiling (24 mm Autex Cube) would add about 1.2 dB; its weight isn't sourced yet.
+6. **Air (targets DECIDED, fan design PROPOSED):**
+   - 53 l/s normal at 22.8 dB(A) (target 25 or less).
+   - The boost reaches 74 l/s at 30 dB(A) (target 30 or less, aiming for 70); 70 l/s gives 28.9 dB(A).
+   - Two people in a 600 ppm office: 796 ppm at 53 l/s with perfect mixing, 845 ppm at the PM's mixing effectiveness of 0.8. Holding 800 ppm at 0.8 takes about 65 l/s, at about 27 dB(A).
+   - Heat: two people need at least 48 l/s to stay within 4 K of the room, and one person 27 l/s, so the 26 l/s floor (D-44) sits right at the heat limit.
+7. **Corrections in this fix pass:**
+   - The 5c1003b fans were 6 kg S&P TD-500s loose in the decor cavity. Their own casings radiate 44 dB(A), which the old model left out. With it, that design gives 35.8 dB(A) at 53 l/s. They also don't fit: the decor is 205 mm deep (measured from v1), not 230–235.
+   - Four 12 V fans at about 0.3 kg each replace them. That saves about 11 kg, which pays for the bigger cartridges.
+   - D-10's 12 V check was argued at 42 Pa. At the new 10–17 Pa a 12 V pair per path works, so the mains fan exception isn't needed.
 
 ## 1. The DECIDED stack, for the Layout and Fusion Engineers
 
-Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target, D-05 thin floor, D-07 front, D-09 air, plus rulings in the project chat):
+Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target, D-05 thin floor, D-09 air, plus rulings in the project chat). D-07 still reads acrylic-first, but the PM's later ruling made 4+4 laminated glass the baseline; that is to be logged.
 - aluminium frames at 400 mm, 20 × 40 × 1.2 (the rivnut grip check passed);
 - no plywood behind the ACP;
 - 0.5 mm lining tray (0.4 mm would cost 1 dB);
 - fill at 32 kg/m³ (the lighter 24–25 kg/m³ grade has no published absorption data);
-- 4+4 laminated front;
-- fans and silencers in the decor blocks;
-- dormakaba OFFICE 11.233 hinges;
-- decor depth from v1's real geometry, 230–235 mm;
+- 4+4 laminated front of toughened, heat-soaked panes (8.76 mm), with the door hardware on HOLD until it's rated (ruling 3);
+- fans and silencers in the decor, outside the sound shell (this fix pass puts both paths in the right block, PROPOSED);
+- every lining cassette on captive mechanical clips with a rated load, plus a safety catch on the ceiling ones; hook-and-loop only to line them up (ruling 4);
+- decor 205 mm deep, measured from v1 (D-39 is being corrected);
 - cap 420 kg.
 
 **Walls and ceiling (vách, trần), 81 mm, 12.6 kg/m² including frame and felt**
@@ -45,10 +55,10 @@ Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target
 | 2 | Bond, ACP to frame: SikaTack Panel-50 system or equivalent, factory only (keo dán) | — | ~0.1, not in total | source for substrates (selection.md glue row); bond pattern HOLD for a coupon test |
 | 3 | Aluminium frame 20 × 40 × 1.2 mm, members at 400 mm (khung nhôm) | 40 | 1.9 | calculation: 0.373 kg/m × 5.0 m of tube per m² |
 | 4 | Polyester fill between members, Pyrotek Sorberpoly 2D 32 kg/m³ or equal (bông PET) | (40) | 1.3 | source for the product and its absorption (selection.md B) |
-| 5 | Resilient gap: perimeter gasket PORON 4701-40, 3.2 mm, plus hook-and-loop pads; no screws through (gioăng) | 3 | ~0.1, not in total | source for the gasket (selection.md); decoupling is a calculation assumption, HOLD for the wall-sample test |
+| 5 | Resilient gap: perimeter gasket PORON 4701-40, 3.2 mm; captive clips hold the cassette, hook-and-loop only locates it (ruling 4); no screws through (gioăng) | 3 | ~0.1, not in total | source for the gasket (selection.md); decoupling is a calculation assumption, HOLD for the wall-sample test |
 | 6 | Lining cassette: galvanised steel 0.5 mm tray with 25 mm returns (khay thép lót) | 0.5 | 4.2 | calculation: 3.93 kg/m² sheet + 0.26 kg/m² returns |
 | 7 | Air gap inside the cassette (spare cable path) | 25 | — | calculation: this gap lets the felt absorb at 250–500 Hz |
-| 8 | PET felt 9 mm, Dark Gray, on the cassette face (tấm tiêu âm PET VT03); the factory's felt, tested in the wall sample first (DECIDED) | 9 | 1.8 | source for 9 mm at 1.8 kg/m² (Polyx Board 9, layout study S11); absorption data from Autex Cube (proxy) |
+| 8 | PET felt 9 mm, Dark Gray, on the cassette face (tấm tiêu âm PET VT03); the factory's felt, tested in the wall sample first (DECIDED) | 9 | 1.8 | source for 9 mm at 1.8 kg/m² (Polyx Board 9, layout study S11); absorption from Polyx Board 9's published data, glued flat (conservative; ruling 5); emission certificate HOLD |
 | | **Total** | **81** | **12.6** | the outer panel (layers 1–4) and the lining cassette (5–8) ship as separate parts |
 
 **Part weights for the 20 kg rule** (calculation):
@@ -58,10 +68,10 @@ Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target
 | Side-wall outer panel | 1500 × 1145 | 11.4 |
 | Lining cassette for it | — | 10.3 |
 | Ceiling half outer panel | 1212 × 1500 | 12.1 |
-| Supply silencer cartridge | — | 19.6 |
-| Exhaust silencer cartridge | — | 10.2 |
-| Each fan | — | 6.0 |
-| Door (4+4) | — | about 50, glass is exempt |
+| Supply cartridge with its fill | 159 × 450 × 2100 | 18.6 |
+| Exhaust cartridge with its fill | 159 × 450 × 2100 | 18.6 |
+| Each 12 V fan | 140 × 140 × 25 | about 0.3 (assumption) |
+| Door (4+4) | 1176 × 2011 | 47.5 (PM figure), glass is exempt |
 
 The inside ends up about 2338 × 1460 × 2301 mm: about 3 cm narrower and shallower than v1 (2372 × 1480), and 8 cm taller (2223).
 
@@ -148,18 +158,20 @@ Effect in the DECIDED pod (all else equal):
 | Smoked acrylic 10 mm | 41 | 14.5 | 18.9 | 21.3 | -0.3 |
 | Smoked acrylic 12 mm | 49 | 14.6 | 19.1 | 21.5 | -0.1 |
 
-- **DECIDED front: 4+4 acoustic laminated glass**, frameless like v1. It's the quietest pane, and in this pod 0.3 dB better than acrylic.
+- **DECIDED front: 4+4 acoustic laminated glass**, frameless like v1. It's the quietest pane, and in this pod 0.4 dB better than 10 mm acrylic.
   - Acrylic would save about 27 kg, but on hinges rated for glass it needs an 80 mm opaque aluminium stile down the hinge edge. That breaks the look rule (D-01).
   - Acrylic also brings creep, scratch, fire-class and flatness risks.
   - It stays as an optional experiment on the factory sample.
 - **Scratches:** cast acrylic is pencil hardness 3H (ACRYLITE cast), far softer than glass. Plan a hard-coated sheet, or accept wear on the door face. The factory sample decides.
-- **Look:** the grey cast sheet is Perspex Neutral 9T56, 46% light transmission at 3 mm. The value at 10 mm isn't published (darker), so the sample decides the match with v1's smoked glass.
+- **Look:** the grey cast sheet is Perspex Neutral 9T56, with 46% light transmission, which Perspex gives as the same at any thickness. The sample decides the match with v1's smoked glass.
 - **Fire, for later US rules:** PMMA is Euroclass E / UL 94 HB, while glass is A1 and PVB laminate is "no performance declared". A 2.4 m² acrylic door may be a problem for US interior-finish rules later, one more reason the baseline is glass.
-- **Hinges:** dormakaba OFFICE 11.233 clamps the 4+4 laminate directly (rated 70 kg and 1200 mm; the door is about 50 kg). The acrylic experiment's hinge-edge stile is detailed in selection.md C9.
+- **Hinges and lock: HOLD (ruling 3).** The glass is 4+4 laminate of toughened, heat-soaked panes (8.76 mm), and the door is 47.5 kg and 1176 mm wide. dormakaba lists OFFICE 11.233 for toughened glass 8/10 only, and offers laminated glass only with its MUNDUS patch fittings. The STUDIO lock 10.200 is for doors up to 1000 mm. A rated set is still to be named; the supplier questions are in selection.md. The look stays frameless, with the hinges in the left decor block.
 
 ## 4. The whole pod: predicted speech reduction
 
-D_S,A is the ISO 23351-1 single number: the reduction in A-weighted sound power of standard speech, measured in a reverberation room. Here it's estimated from an energy balance inside the pod: IL = 10 lg(1 + A_in / Σ Sτ) per octave, then weighted with the speech spectrum. "low / high" combine pessimistic and optimistic values of the uncertain inputs: gap widths, seal quality, silencer performance, ±2 dB on every element, and ±15% absorption.
+D_S,A is the ISO 23351-1 single number: the reduction in A-weighted sound power of standard speech, measured in a reverberation room. Here it's estimated from an energy balance inside the pod: IL = 10 lg(1 + A_in / Σ Sτ) per octave, then weighted with the speech spectrum. "low / high" combine pessimistic and optimistic values of the uncertain inputs: gap widths, seal quality, silencer performance, ±2 dB on every element, and ±15% absorption. The low case also carries the 125–250 Hz risks Reviewer 3 listed (ruling 5): no finite-panel gain, and a 4 dB dip at each double wall's mass-air-mass resonance. Inside absorption uses the felt's published data (Polyx Board 9, glued flat, from 100 Hz).
+
+**Why the range is wide at the bottom (ruling 5).** About 80% of the speech that gets out is at 125–250 Hz, where the model is weakest. Three inputs there push the low end down: the finite-panel gain (about 1.8 dB in the central case), a dip at the walls' resonance near 300 Hz, and the felt's real absorption. The felt matters most. With 12 mm Cube data on a 25 mm gap the central case would be 24.0 dB; with the published 9 mm data, glued flat, it's 19.3. The wall sample is measured down to 100 Hz to settle all three.
 
 | Pod | D_S,A low | central | high |
 |---|---:|---:|---:|
@@ -198,7 +210,7 @@ The weak points move as the pod improves:
 - In **v1** the vents and the door gaps dominate.
 - In the **plan as drawn** the single-leaf walls dominate, then the door gaps and vents.
 - With **seals and silencers** the walls and ceiling carry about 90%.
-- In the **DECIDED pod** the front decor becomes visible (12%), because its faces are single 3 mm ACP over a hollow block, and the 4+4 glass is only 4%. If the wall sample tests better than calculated, the next step is the decor faces (felt lining or added mass), not the glass.
+- In the **DECIDED pod** the front decor becomes visible (11%), because its faces are single 3 mm ACP over a hollow block, and the 4+4 glass is only 4%. If the wall sample tests better than calculated, the next step is the decor faces (felt lining or added mass), not the glass.
 
 **Cable holes and panel joints are small once sealed.** An unsealed cable opening of 600 mm² (about one 28 mm hole) costs about 0.1 dB in the DECIDED pod. Unsealed panel joints at 0.15 mm cost about 0.2 dB in the plan pod and 0.5 dB in the DECIDED pod, so gaskets go on every joint. Leaving out the door seals would cost the DECIDED pod 2.2 dB, and open vents 1.7 dB.
 
@@ -217,18 +229,18 @@ Applied one after another to the plan with 8 mm glass. kg is the added mass for 
 | 6 | Thin floor with base seal (DECIDED, D-05) | 12.9 | 16.2 | 18.7 | -0.1 | 0.5 |
 | 7 | Sealed cable holes | 12.9 | 16.2 | 18.7 | +0.0 | 0.1 |
 
-The gains are small one at a time because the plan's single-leaf walls dominate. The same fixes on v1's leaky pod would gain about 6 dB, so they matter as soon as the walls are double. A thick ceiling absorber was also tried and gained nothing over felt on a gap, so it isn't listed.
+The gains are small one at a time because the plan's single-leaf walls dominate. The same fixes on v1's leaky pod would gain about 6 dB, so they matter as soon as the walls are double. A thicker ceiling absorber (Autex Cube 24 mm) would add about 1.2 dB with today's felt data. Its weight isn't sourced, so it isn't in the stack.
 
 ## 6. What each dB costs: the total-pod curve
 
 Total pod kg is the sum of:
 - the rest of the pod from the layout study, 102.4 kg: thin floor and base band, decor blocks, door hardware with drop seal and glazing profiles, fans at 1.5 kg, silencer boxes at 1.5 kg each, electrics and the voice-kit reserve;
 - the fixes the study doesn't carry, 2.6 kg;
-- the silencer cartridges beyond the study's boxes;
-- the fans at 6 kg each, beyond the study's 1.5 kg;
+- the silencer cartridges and their fill, beyond the study's boxes;
+- the four 12 V fans at about 0.3 kg each, against the study's 2 × 1.5 kg;
 - the walls, ceiling and front from this report.
 
-All light fixes are on. The search covers every wall and ceiling in table 2 with each front. The PM's own total with Layout's clips is about 418 kg.
+All light fixes are on. The search covers every wall and ceiling in table 2 with each front. The PM's earlier total with Layout's clips was about 418 kg with the 6 kg fans; this fix pass takes about 3 kg off it.
 
 Glass front (8 mm tempered or 4+4 laminated):
 
@@ -277,9 +289,9 @@ Best builds inside the DECIDED rules:
 | Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 384 | 14.5 / 18.9 / 21.3 |
 | Light 0.8 mm cartridge casings | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 0.8 mm | 394 | 14.6 / 19.3 / 21.7 |
 
-- **The curve rises fastest from about 360 to 400 kg:** about 3 dB for 40 kg. Beyond 420 kg, each dB costs 30–40 kg.
-- **30 dB isn't reached in this search.** At 500 kg the walls are 100 mm double leaves with plywood, and the pod still stops at about 26 dB.
-- **The curve is a calculation with about ±2.5 dB of spread.** The factory's wall-and-door sample is the physical check, and it comes before any further weight goes in.
+- **The curve rises fastest from about 380 to 400 kg:** about 3 dB for 20 kg. Beyond 420 kg, each dB costs about 20–30 kg.
+- **30 dB isn't reached in this search.** At 500 kg the walls are 100 mm double leaves with plywood, and the pod still stops at about 23 dB.
+- **The curve is a calculation with about −5 / +2.5 dB of spread.** The low side carries the 125–250 Hz risks and the felt data. The factory's wall-and-door sample is the physical check, and it comes before any further weight goes in.
 
 ## 7. Fresh air
 
@@ -297,13 +309,14 @@ Inside volume 8.35 m3; CO2 from 2 people 10.4 ml/s. The last column uses a mixin
 Flow that keeps the inside 4 K or less over the room: one person 27 l/s, two people 48 l/s, two with the voice-kit reserve 61 l/s. One person at the 26 l/s floor (D-44), room 600, mixing 0.8: 850 ppm.
 CO2 after 2 h at 40 l/s from 400 ppm (room 400): 660 ppm; after 3 h at 26 l/s, room 600: 1000 ppm.
 
-- 800 ppm needs 26 l/s **only when the room air is at outdoor CO2 (400 ppm)**. Real offices sit at 500–700 ppm, and at 600 ppm the pod needs about 52 l/s to stay at 800.
-- **Heat sets the flow.** Two people plus laptops, lights and controls give about 234 W, and 294 W with the voice-kit reserve. At 26 l/s the pod runs about 7 °C over the room. At 70 l/s it's about 3 °C. So aim for 70 l/s, as DECIDED.
-- With CO2 control alone the fans would sit at low speed while the pod gets hot. The controller needs a minimum flow when occupied (about 40 l/s) and should boost on temperature as well as on CO2.
+- 800 ppm needs 26 l/s **only when the room air is at outdoor CO2 (400 ppm)** and the air is perfectly mixed. In a 600 ppm office two people need about 52 l/s with perfect mixing, and about 65 l/s at the mixing effectiveness of 0.8 the PM set (ruling 8).
+- **Heat also drives the fans (D-44):** the inside stays at most 4 K over the room. That takes 48 l/s for two people, 61 l/s with the voice-kit reserve, and 27 l/s for one person.
+- **Control (D-44):** CO2 leads, with a floor of 26 l/s while one person is inside. Temperature can raise the flow. 53 l/s for two, and a boost of up to 74 l/s inside 30 dB(A).
+- **Supply low, exhaust high (ruling 8):** the supply grille sits low on the right block's inner face, so the cool room air spreads across the floor. A high exhaust grille needs a riser in the decor block and costs about 3 dB(A); see 7b.
 
 ### 7b. Fans, silencers and noise inside
 
-Targets (DECIDED): 25 dB(A) or less at the normal 53 l/s, published, and about 31 dB(A) at the 70 l/s boost.
+Targets (PM ruling 1): 25 dB(A) or less inside at 53 l/s, and 30 dB(A) or less at boost, aiming for 70 l/s. Both tables include the fans' casing (or fan-box) sound and the real 205 mm decor section. The first table is the cartridge, the second the fans.
 
 | Cartridge casing | Cartridges with fill kg | Fill toward the pod mm | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + fill + inner face R 125 | 250 | 500 | 1k | 2k | 4k dB |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -320,23 +333,32 @@ Pressure drop per path, supply / exhaust: 26 l/s 2 / 2 Pa; 53 l/s 10 / 10 Pa; 70
 | Same as the pick, with a 5 dB fan tone at 250 Hz (risk) | yes | 1.2 | 37.2 | 60% / 60% | 23.8 / 22.6 / 26.3 | 63 | 32.3 |
 | Exhaust grille high: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges | yes | 1.2 | 43.8 | 64% / 72% | 22.6 / 22.5 / 25.6 | 65 | 31.6 |
 
-- **Breakout drives this design.** Sound leaves a silencer through its walls as well as through its end. A silencer box under the pod's ceiling, with a 0.5 mm steel face, would give about 43 dB(A) at 70 l/s. So the silencers sit outside the pod's sound shell, inside the hollow front decor blocks, next to their fans. Only the grilles open into the pod.
-- **Splitter cartridges (DECIDED; fit HOLD for CAD):**
-  - Construction: two 50 mm air passages between three 37.5 mm polyester layers, inside a 2 mm aluminium casing, 212 mm deep.
-  - Supply: vertical in the right decor block, 212 × 500 × 2000 mm, about 19.6 kg.
-  - Exhaust: horizontal in the top decor block, 212 × 280 × 1500 mm, about 10.2 kg.
-  - The decor blocks follow v1's real depth (230–235 mm), which leaves room (DECIDED).
-  - The 37.5 mm absorption is interpolated between Pyrotek's 25 and 50 mm data, so the factory mock-up must confirm it.
-- **Fans (DECIDED):** two S&P TD-500/150-160 SILENT ECOWATT (EC, 0–10 V, 6 kg each), run slow: about 4 V for the supply (9 Pa at 70 l/s) and a little more for the exhaust (28 Pa). Intake and exhaust slots sit on the decor blocks' top faces, above eye level like v1's roof grilles.
-  - Air path: the supply grille is on the right block's inner face, so air enters at the front and is thrown towards the back. The exhaust grille is on the top block's inner face, high at the front.
-- **Servicing:** each decor block's top face is a screwed lid, M6 into rivnuts, with the slot grille in it. Lift the lid, undo the duct clamps and the fan bracket, unplug the fan, and lift it out. A cartridge slides out the same way. Nothing on the pod's walls or ceiling comes off. The decor block's inside is lined with felt, so casing noise stays in.
-- **Pressure balance and the door:** both fans take the same 0–10 V signal so the pod stays near room pressure. A 5 Pa difference would add about 6 N at the door handle.
-- **12 V option:** the PM asked for a quick look at a 12 V EC fan first. Result: no 12 V fan found does the job, so the mains EC fan (TD-350 class, 0–10 V from the sensor hub, on the outlet circuit) is the pick, as the PM's ruling allows. The 12 V axial fans with published data are Noctua NF-A14 industrialPPC-3000 (269 m³/h at 0 Pa, 41.3 dB(A)) and San Ace 109E5712M501 (248 m³/h at 0 Pa, 67.6 Pa maximum, 41.0 dB(A)). They give 250–270 m³/h only at zero pressure, so it would take two per path at full speed. The 12–28 V centrifugal ebm-papst RG 160-28/14 N makes 209 m³/h at 66 dB sound power, about 20 dB louder than the TD-350 at this duty (research notes, checked 2026-10-31). Unlike the 12 V figures, the TD-350's published octave data lets the silencer be sized properly: most of its energy sits at 500 Hz–1 kHz, where the lined channel works best. That's why it reaches about 24 dB(A) inside even though its total LwA is 54 dB(A).
-- **Controls:** the in-house Desk Pro AI sensor hub (D-09) measures CO2, shows it inside, and drives both fans 0–10 V.
-  - 53 l/s while occupied, with boost to 70 l/s triggered by CO2, by temperature or by hand.
+- **What changed and why.** The decor is 205 mm deep (measured from v1), so 199 mm inside its two 3 mm faces. The 5c1003b cartridges (212 mm) and both S&P fans (ØD 221 and 204) don't fit. Their casing sound, left out before, puts that design at 35.8 dB(A) at 53 l/s (first fan row).
+- **Cartridges (PROPOSED; CAD fit HOLD):** two side by side in the right decor block, which is 1016 mm wide (layout study F-DR). The top block's 280 mm face is too small for the flow.
+  - Each one: two 40 mm passages between three 25 mm Pyrotek layers (published data, so nothing is interpolated), a 2 mm aluminium casing, 159 × 450 × 1800 mm, plus a 300 mm lined fan box at the top.
+  - The 40 mm between each cartridge and the decor's inner face is packed with the walls' polyester fill. Casing, fill and face then act as a filled double wall (f0 about 280 Hz). This replaces the felt-lined cavity of the old model, which couldn't be backed up.
+  - 18.6 kg each with fill, 37.2 kg for both, under the 20 kg part rule.
+- **Fans (PROPOSED under ruling 1):** two Noctua NF-A14 industrialPPC-3000 PWM per path, 12 V, side by side on a bulkhead in the fan box. At 53 l/s they run at about 60% speed against 10 Pa.
+  - Each fan's far side is ducted airtight to its slot on the block's top face (ruling 1), so no fan port opens into the decor cavity.
+  - Four fans weigh about 1.2 kg, against 12 kg for two TD-500s. That pays for the bigger cartridges, and the pod still ends about 3 kg lighter than at 5c1003b.
+  - They run on the 12 V bus (D-10), driven by the sensor hub, so mains feeds only the outlets.
+- **Where the noise comes from at 53 l/s:** about half through the grilles and half through the cartridge walls, nearly all at 125–250 Hz, where splitters and light walls are weakest.
+- **Risks, and the test that closes them (HOLD):**
+  - The 12 V fans have no octave data. The model uses the TD-500's spectrum shape and reads the maker's 41.3 dB(A) as sound pressure at 1 m. A 5 dB tone at 250 Hz would give 26.3 dB(A) at 53 l/s (third fan row).
+  - The fan curve is a straight line between the maker's free-air flow and maximum pressure.
+  - The fan-sample test (selection.md, Sample tests) measures a fan pair in its box: flow, octave sound power at 53 and 70 l/s, and tones.
+  - If it tests loud: 1 mm steel casings (about +13 kg for about 1 dB), or a third fan per path running slower.
+- **Exhaust high (ruling 8) is a PM call.** With the slots on the top face (D-29) and straight cartridges, both grilles end up low.
+  - A high exhaust grille needs the exhaust fans at the foot of the block, blowing up a 150 mm steel riser between the cartridges to the slot. That gives 25.6 dB(A) at 53 l/s and 65 l/s at 30 dB(A) (last fan row), and adds about 7 kg.
+  - The PROPOSED pick is the straight layout: supply grille low at the door side, exhaust grille low at the far side, about 0.5 m apart. Its mixing rests on the 0.8 the PM set.
+- **Breakout method:** ASHRAE's rectangular-duct formula through the casing alone; the fill and inner face count only in bands fully above f0. The fan box is a reverberant box behind the same double wall.
+- **Servicing:** the right block's top face is a screwed lid, M6 into rivnuts, with both slot grilles in it. Lift the lid and the fans come out of their boxes; a cartridge lifts out the same way. Nothing on the walls or ceiling comes off.
+- **Pressure balance and the door:** both fan pairs take the same signal, so the pod stays near room pressure. A 5 Pa difference would add about 6 N at the door handle.
+- **Controls:** the in-house Desk Pro AI sensor hub (D-09) measures CO2 and temperature, shows CO2 inside, and drives both fan pairs.
+  - 26 l/s floor with one person (D-44), 53 l/s for two, more on CO2 or temperature, boost by hand, up to 74 l/s inside 30 dB(A).
   - Run-on of 15–30 min after the last presence.
-  - The fans are hard-wired on the outlet (mains) circuit with no user switch, only boost. That's an exception to the 12 V bus (D-10), ruled by the PM because no 12 V fan performs well enough. Lights, sensors and the voice kit stay on the 12 V bus.
-  - The plan's UTEN S300 "triết áp quạt" (S300G-1D/S, a 25–300 W phase-cut speed control for ceiling fans) doesn't suit EC fans and is replaced. Products are in selection.md.
+  - The hub's fan output has to suit PWM fans; the exact interface belongs to the electrical scope (HOLD).
+  - The plan's UTEN S300 "triết áp quạt" (S300G-1D/S, phase-cut for 25–300 W) doesn't suit these fans and is replaced.
 
 ## 8. Hooks for the later voice cockpit kit
 
@@ -349,7 +371,7 @@ Mic array, speakers, screen and status light. Reserved here; the kit itself isn'
 ## 9. Low-emission materials
 
 Details and links are in selection.md, section G.
-- **Felt:** Autex Cube (CDPH-compliant, Declare Red List free, HPD and EPD) or Woven Image EchoPanel (GreenTag Level A).
+- **Felt:** Autex Cube (CDPH-compliant, Declare Red List free, HPD and EPD) or Woven Image EchoPanel (GreenTag Level A). The factory's 9 mm felt needs an emission certificate: HOLD (Target 6).
 - **Boards:** the DECIDED stack has no wood board at all. If plywood or HDF comes back, use E0 or CARB P2 / TSCA Title VI with a certificate number. The VN maker found only self-declares it.
 - **Glue:** SikaTack Panel-50 (EMICODE EC1 PLUS, Indoor Air Comfort GOLD, M1, A+) suits ACP to aluminium. Sikaflex-118 Extreme Grab (EC1 PLUS) is not for full-surface or structural bonding.
 
@@ -360,28 +382,31 @@ Details and links are in selection.md, section G.
 | v1's door gaps, vent path loss and raised-floor leak | sides 2–5 mm, bottom 5–10 mm; vents 0–6 dB; floor +0–6 dB | v1 drawings show no seals; vent slots measured from sheet 9 | v1 lab test (ISO 23351-1), already planned |
 | Seal and gasket performance | 25–38 dB per 10 mm strip | athmer data 52–56 dB per joint is for frame seals in a test door; pod fitting is worse | door sample test |
 | Sharp model accuracy | ±2 dB on every element | the model is about ±3 dB against lab data | wall-sample test |
-| Floating lining is fully decoupled | no stud bridge | perimeter gasket and hook-and-loop, no screws | wall-sample test; if it fails, the 'point' model costs about 0.5 dB |
+| Floating lining is fully decoupled | no stud bridge | perimeter gasket and captive clips, no screws through; clip stiffness unknown | wall-sample test with the real clips; if they bridge, the 'point' model costs about 0.5 dB |
 | PET fill density | 32 kg/m³ | typical polyester insulation; no product sourced | pick a product with data |
-| Felt absorption | Autex Cube 12 mm data | no 9 mm panel with octave data found | test the chosen felt to ISO 354, or buy Cube |
-| Silencer attenuation | Sabine formula × 0.6–1.0, capped at 40 dB per band; 37.5 mm lining absorption interpolated from Pyrotek's 25 and 50 mm data | no product data for this splitter | factory mock-up of one cartridge with its fan |
-| Breakout through the silencer casing and decor face | casing 2 mm aluminium, felt-lined decor cavity (1.5 m² of felt), 0.8 m² of decor face | simple energy model | the same mock-up, measured inside the pod |
-| Fan sound at our duty | S&P octave data at 4 V; exhaust +2.5 dB for its higher pressure | catalogue points only | measure on the mock-up |
-| Fan duty point | read off S&P's curve figure | catalogue plots only | measure flow on the mock-up |
+| Felt absorption | Polyx Board 9 published data from 100 Hz, glued flat; the 25 mm gap's extra absorption isn't counted | the only published data for a 9 mm, 1.8 kg/m² felt (ruling 5) | the wall sample: ISO 354 on the 25 mm gap, down to 100 Hz |
+| Silencer attenuation | Sabine formula × 0.6–1.0, capped at 40 dB per band; 25 mm Pyrotek lining, P/S 50 per m | no product data for this splitter | factory mock-up of one cartridge with its fans |
+| Breakout from the cartridges | ASHRAE duct breakout through the 2 mm casing alone; fill and inner face count only above f0; the side faces' flanking is taken as covered by the face mass left out | standard method, conservative at 125–250 Hz | the same mock-up, measured inside the pod |
+| Fan sound at our duty | maker's 41.3 dB(A) read as sound pressure at 1 m (LwA = LpA + 11), TD-500 spectrum shape, 50 lg of speed | no octave data for 12 V fans | fan-sample test: octave sound power and tones |
+| Fan duty point | straight-line curve between the maker's free-air flow and maximum pressure; system loss K = 7.5 | the maker gives two points only | fan-sample test: flow against pressure |
 | CO2 per person | 5.2 ml/s | matches the brief's 26 l/s for 800 ppm | CO2 logger on the prototype |
 | Heat per person | 75 W sensible + 30 W laptop | seated office work | temperature logger on the prototype |
 | Acrylic sound data | Sharp model | published PMMA figures contradict each other | door sample test |
+| 125–250 Hz model risks | low case: no finite-panel gain, 4 dB dip at f0 | Reviewer 3 P2-4, ruling 5 | wall sample measured down to 100 Hz |
+| Mixing effectiveness | 0.8 for CO2 | PM ruling 8 | CO2 logger on the prototype |
+| Decor section | 205 mm deep, 3 mm faces, 199 mm clear | measured from v1 (PM brief) | CAD |
 
 ## 11. Method notes
 
 - **Single leaf:** Sharp (1978). Field-incidence mass law below fc/2; damped coincidence above fc, with loss factor = material + radiation (σ ≤ 3); a straight line on log f between. A Sewell (1970) finite-panel correction is added below 500 Hz for 1.7 m² panels: +3.6 dB at 125 Hz and +1.7 dB at 250 Hz.
 - **Sandwich panels:** fc comes from the bending and shear dispersion. A core whose shear wave speed is below the speed of sound has no coincidence. A soft core gets a dilatational dip (−6 dB) near f_d.
 - **Double leaf:** Sharp (1978). f0 with the 1.8 factor. R1 + R2 + 20 lg(fd) − 29 up to c/2πd, then R1 + R2 + 6. An unfilled cavity loses 8 dB. Studs (line, b) or points (e) cap it. The stud term averages the two leaf orders, so it is the same from either side.
-- **Pod:** diffuse-field energy balance inside. Absorption: Autex Cube data for felt, Acoustical Surfaces tables for glass, wood and tile. ISO 3382-3 normal-effort speech spectrum and IEC 61672 A-weighting. The 8 kHz band is left out (under 0.05 dB).
+- **Pod:** diffuse-field energy balance inside. Absorption: Polyx Board 9 published data for the felt (one-third octaves from 100 Hz, averaged into octaves), Acoustical Surfaces tables for glass, wood and tile. ISO 3382-3 normal-effort speech spectrum and IEC 61672 A-weighting. The 8 kHz band is left out (under 0.05 dB).
 - **Leaks:** open area with τ = 1. Seals and gaskets are 10 mm strips with their own R.
 - **Air:** well-mixed CO2 and heat balance. Fan noise reaches a seated head two ways:
   - Duct path: the fan's octave LwA, minus the splitter loss (Sabine 1.05 α^1.4 P/S per metre, derated) and the duct end reflection (ASHRAE).
-  - Breakout path: through the cartridge casing (Sharp R + Sewell) into the felt-lined decor cavity, then through the decor's inner ACP face. The power lost through the casing is integrated along the decaying sound in the passage.
-  - Both paths then get direct and reverberant room terms. Flow changes scale the fan sound by 50 lg(Q/70).
+  - Breakout path: ASHRAE's rectangular-duct breakout through the casing (Cummings), on the mean duct power along the lined length, toward the pod only; the filled double wall (casing, fill, inner face; Sharp) adds loss only above f0. The fan box is a reverberant box behind the same double wall. The 5c1003b row keeps its old cavity model, with the casing sound added.
+  - Both paths then get direct and reverberant room terms. 12 V fans: operating point on a straight-line fan curve, sound by 50 lg of speed.
 - **Weights:** the rest of the pod comes from the layout study (branch super-tab/7667a51, commit cb7009f, work in progress). Wall build-ups, glass and fixes come from this report.
 
 ## 12. Issues for the issue register (Control Engineer)
@@ -393,3 +418,6 @@ Details and links are in selection.md, section G.
 5. The plan's felt page (DHG, VT03) gives a density of 20–30 kg/m³. That's loose-wool data, not a 9 mm panel, and there's no test standard or certificate.
 6. UTEN S300G-1D/S fan speed control is rated 25–300 W phase-cut. It suits neither one FV-15AUL1 (12.5 W) nor EC fans.
 7. VT03 is used for both the felt and the 50 × 100 tube in the plan (already on the register).
+8. Decor depth: D-39 says 230–235 mm, but v1 measures 205 mm (PM brief; D-39 is being corrected). The 5c1003b fans and cartridges don't fit 205.
+9. D-07 still reads acrylic-first; the PM's later ruling made 4+4 laminated glass of toughened, heat-soaked panes the baseline.
+10. The 4+4 door has no rated hinge or lock yet (ruling 3, HOLD).

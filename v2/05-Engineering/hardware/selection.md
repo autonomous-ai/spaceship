@@ -16,13 +16,13 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod"). This is the parts 
 | Wall and ceiling frame (VT10) | Aluminium 20 × 40 × 1.2, members at 400 mm, 40 mm deep for walls and ceiling | DECIDED (1.2 mm wall after the rivnut grip check passed) |
 | Cavity fill | Pyrotek Sorberpoly 2D polyester, 32 kg/m³, 40 mm | DECIDED; the 24 kg/m³ grade has no published absorption, so it isn't used |
 | Inner leaf | Floating lining cassette: 0.5 mm galvanised steel tray, 25 mm deep, with 9 mm felt across its face | DECIDED; 0.4 mm rejected because it costs 1 dB |
-| Felt (VT03) | The factory's 9 mm PET felt, tested in the wall sample first; buy Autex Cube 12 mm only if it falls short | DECIDED (test-first) |
-| Front | 4+4 acoustic laminated glass, grey, frameless like v1: AGC Stratophone 44.2 with Planibel Grey or Saint-Gobain Stadip Silence 44.2 on PARSOL | DECIDED (PM, 2026-10-31); smoked acrylic 10 mm only as an optional experiment on the factory sample (C9) |
-| Door hinges | dormakaba OFFICE 11.233 (70 kg, 1200 mm), clamping the 4+4 laminate, with a 160 mm pocket in the left decor block; the door is about 50 kg | DECIDED |
+| Felt (VT03) | The factory's 9 mm PET felt, tested in the wall sample first; buy Autex Cube 12 mm only if it falls short. Absorption in the calc: Polyx Board 9 published data (same 9 mm and 1.8 kg/m²) | DECIDED (test-first); **emission certificate HOLD** (Target 6, Reviewer 3 P3-8) |
+| Front | 4+4 laminated glass of **toughened, heat-soaked panes** (8.76 mm), grey, frameless like v1 (PM ruling 3). Product HOLD: none of the cited acoustic laminates is shown offered with toughened panes, so the supplier names one | DECIDED build; product HOLD; smoked acrylic 10 mm only as an optional experiment on the factory sample (C9) |
+| Door hinges and lock | HOLD (PM ruling 3): the glass is 4+4 laminate of toughened, heat-soaked panes (8.76 mm), the door 47.5 kg and 1176 mm wide. dormakaba lists OFFICE 11.233 for toughened glass 8/10 only and offers laminated glass only with its MUNDUS patch fittings; the STUDIO lock 10.200 is for doors up to 1000 mm. Frameless look kept, hinges in the left decor block. Supplier questions below | HOLD until a rated set is named |
 | Door seals | Frame stop seal athmer PS 1515 P Flex, drop seal athmer Schall-Ex GSA (rated for VSG 8.76) cut to 1176 mm, 180° glass-to-glass seal on the fixed pane | source |
-| Fans (VT06) | S&P TD-500/150-160 SILENT ECOWATT (EC, 0–10 V, 6 kg, mains outlet circuit), two, run slow inside the front decor blocks; FV-15AUL1 rejected | DECIDED; exception to the 12 V bus (D-10) because no 12 V fan performs (F1) |
-| Silencers | Splitter cartridges inside the decor blocks: two 50 mm passages between three 37.5 mm polyester layers in a 2 mm aluminium casing; supply 212 × 500 × 2000 mm (right block), exhaust 212 × 280 × 1500 mm (top block) | DECIDED; the 37.5 mm absorption is interpolated, so the factory mock-up confirms it; CAD fit in the 230–235 mm deep decor blocks |
-| Fan control | In-house Desk Pro AI sensor hub reads and shows CO2 and drives both fans 0–10 V (D-09): 53 l/s normal (≤ 25 dB(A), published), 70 l/s boost (about 31 dB(A)) by CO2, temperature or hand; presence sensor for start and run-on | DECIDED; third-party CO2 controllers listed as reference (F3) |
+| Fans (VT06) | 12 V: four Noctua NF-A14 industrialPPC-3000 PWM, two per path, in the lined fan box of each cartridge; on the 12 V bus, so mains feeds the outlets only. The 5c1003b S&P TD-500 (ØD 221) and TD-350 (ØD 204) don't fit the 205 mm decor | PROPOSED by the fix pass under ruling 1 (12 V if it meets both targets: 22.8 dB(A) at 53 l/s, 28.9 at 70 l/s); fan-sample test HOLD |
+| Silencers | Two splitter cartridges side by side in the right decor block (1016 mm wide): two 40 mm passages between three 25 mm Pyrotek layers in a 2 mm aluminium casing, 159 × 450 × 1800 mm plus a 300 mm fan box; 40 mm polyester fill between each cartridge and the decor's inner face | PROPOSED (fix pass); 25 mm lining data is published, so nothing is interpolated; CAD fit HOLD |
+| Fan control | In-house Desk Pro AI sensor hub reads and shows CO2 and temperature and drives both 12 V fan pairs with one shared signal (D-09): CO2 leads with a 26 l/s floor for one person (D-44), heat keeps the inside within 4 K, 53 l/s for two at 22.8 dB(A), boost up to 74 l/s inside 30 dB(A), run-on after presence | DECIDED control logic; PWM interface of the hub HOLD (electrical scope) |
 | Power inlet | Neutrik powerCON TRUE1 TOP NAC3MPX-TOP + etherCON NE8FDP | source |
 | Thread in thin tube (VT11) | M6 rivet nut in the aluminium members: Sherex CAH3-610-4.2 (aluminium 5056, grip 0.70–4.20 mm, so it covers the 1.2 mm wall); M6 ISO 4017 8.8 bolts | source; grip check passed; spin-out and bulge clearance HOLD for a sample in the tube |
 
@@ -48,7 +48,7 @@ The PM ruled "no plywood behind the ACP" on 2026-10-31. For reference: HCPLY 6 m
 |---|---|---|---:|---|---|---|---|
 | 1 (plan) | Nội Thất DHG · "Tấm Polyester Fiber" 9 mm | 1220 × 2420 × 9; density stated "20–30 kg/m³" (that's loose-wool data, not a 9 mm panel); absorption "< 0.94" with no standard; "chống cháy hạng B" with no standard; no certificate | unverified | VN distributor | https://noithatdhg.com/products/tam-polyester-fiber | source, but the data can't be used | Real kg/m², ISO 354 report, fire test, emission certificate, real maker |
 | 2 | Polyx Board 9 (9 mm PET board) | 1800 g/m² | 1.8 | unverified in VN | https://aid.co/wp-content/uploads/2024/10/Polyx-Board-9-No-Insulation-No-Air-Gap.pdf (via the layout study, S11) | source | Absorption per octave; emissions |
-| 3 (reference data) | Autex **Cube 12 mm** | ISO 354: direct 0.05/0.10/0.30/0.65/0.90/0.95 (NRC 0.45); with 25 mm gap 0.05/0.30/0.60/0.95/0.95/0.85 (NRC 0.70); EN 13501-1 B-s1,d0; CDPH-compliant, Declare Red List free, HPD, EPD; 1220 × 2440 | 2.4 (older sheet) | unverified in VN | https://cdn.mediavalet.com/aunsw/autex/v7u3NcemSkmPcPN5VuEQ9Q/cXKq4VBRsEGhTdPqme4gJA/Original/Cube%20Datasheet.pdf | source | 9 mm or custom thickness; VN reseller |
+| 3 (reference data) | Autex **Cube 12 mm** | ISO 354: direct 0.05/0.10/0.30/0.65/0.90/0.95 (NRC 0.45); with 25 mm gap 0.05/0.30/0.60/0.95/0.95/0.85 (NRC 0.70); EN 13501-1 B-s1,d0; CDPH-compliant, Declare Red List free, HPD, EPD; 1220 × 2440 | not stated on the cited sheet | unverified in VN | https://cdn.mediavalet.com/aunsw/autex/v7u3NcemSkmPcPN5VuEQ9Q/cXKq4VBRsEGhTdPqme4gJA/Original/Cube%20Datasheet.pdf | source | 9 mm or custom thickness; VN reseller |
 | 4 | EASYfelt PET felt Panel 9 mm | 120 × 60 / 120 / 240 cm; B-s1,d0; absorption shown only as a graph | unverified | unverified in VN | https://easy-noise-control.files.prepr.io/64s9qhr374wk-easyfelt-product-sheet-panel-9mm.pdf | source (numbers unverified) | Octave numbers; emissions |
 
 DECIDED (PM, 2026-10-31): test the factory's 9 mm PET felt in the wall sample first, and buy Autex Cube only if it falls short. The calc uses Autex Cube 12 mm data as a proxy, which is slightly optimistic for 9 mm. Still ask the factory for the felt's emission certificate.
@@ -57,7 +57,7 @@ DECIDED (PM, 2026-10-31): test the factory's 9 mm PET felt in the wall sample fi
 
 | Size | Steel, Hòa Phát (kg/m by wall) | Aluminium (kg/m) | Source | Status |
 |---|---|---|---|---|
-| 20 × 20 | t1.0 0.59 · t1.2 0.70 · t1.4 0.81 · t1.5 0.86 · t1.8 1.01 · t2.0 1.10 | 6060 T66: t1.5 0.30 · t2 0.39 | Hòa Phát catalogue 2025 p. 21 https://file.hoaphat.com.vn/ongthep/2026/03/catalogue-ong-thep-2025-in-170326.pdf ; Voss https://www.voss-edelstahl.com/online/en/Aluminium/profiles-tubes/Squares/ | source (steel kg/pc ÷ 6 m = calculation) |
+| 20 × 20 | t1.0 0.59 · t1.2 0.70 · t1.4 0.81 · t1.5 0.86 · t1.8 1.01 · t2.0 1.10 | 6060 T66: t1.5 0.30 · t2 0.39 | Hòa Phát catalogue 2025 p. 21 (link dead on 2026-10-31, so these figures are unverified until the catalogue is found again) https://file.hoaphat.com.vn/ongthep/2026/03/catalogue-ong-thep-2025-in-170326.pdf ; Voss https://www.voss-edelstahl.com/online/en/Aluminium/profiles-tubes/Squares/ | source (steel kg/pc ÷ 6 m = calculation) |
 | 20 × 40 × 1.2 (DECIDED wall and ceiling frame) | — | t1.2 0.37 (t1.5 0.46) | calculation: (2 × (20 + 40) − 4 × 1.2) × 1.2 × 2.70 g/cm³ | calculation |
 | 20 × 100 (ceiling option, not used) | — | t1.5 0.95 | calculation | calculation |
 | 30 × 60 | t1.2 1.64 · t1.4 1.91 · t1.5 2.04 · t2.0 2.68 · t3.0 3.90 | 60 × 30 × 2: 0.93 | as above; Voss rectangular https://www.voss-edelstahl.com/online/en/Aluminium/profiles-tubes/Rectangular/3/?lang=1 | source |
@@ -75,7 +75,7 @@ The plan's raised steel floor (VT03/VT04) goes with the thin floor (DECIDED, D-0
 | 4 | Sherex **CLM2-610-3.0**, steel, knurled | M6; grip 0.50–3.00; hole 9.00 | thin steel wall | unverified in VN | https://fasteners.sherex.com/viewitems/nd-rivet-nuts-european-style-rivet-nuts-clm-series/clm-series-steel?plpver=30 | source | — |
 | Bolt | **M6 ISO 4017 class 8.8, zinc** (example: Ahlsell 300237, M6 × 60) | full thread; head 4.0 mm; 10 mm A/F | — | standard part | https://www.ahlsell.se/en/products/mounting/machine-threaded-screw/hexagon-bolt-zpl/300237/ | source | Length per joint is set by the joint register: through one 40 mm member into a rivnut needs about M6 × 50 |
 
-Rule: tightening torque into a rivnut stays below the insert's limit (about 12 N·m for the Avdel steel parts). Use one bolt size, M6, throughout (DECIDED in the plan). HOLD: a sample in the actual tube must confirm the rivnut's formed bulge clears the inside.
+Rule: one bolt size, M6, throughout (DECIDED in the plan). **Tightening torque: HOLD until a spin-out test in the real 20 × 40 × 1.2 tube (PM ruling 6; listed under Sample tests).** The 12 N·m quoted before is the steel Avdel part's maximum; Reviewer 3 found that the FS58 starts to spin at 3.4 N·m, and the aluminium pick has no published torque (guideline §8.1). HOLD also: the sample must confirm the formed bulge clears the inside.
 
 ### A6. VT12 M10 leveling feet (chân tăng chỉnh)
 
@@ -91,21 +91,30 @@ With the thin floor, the base band's levelling glides (layout study) replace the
 
 | Opt | Maker · part | Data | Source | Status |
 |---|---|---|---|---|
-| 1 | Simpson Strong-Tie **ABR7015** | 70 × 70 × 55, t 1.5, galvanised S250GD+Z275; holes 8 × Ø5 + 1 × Ø7 (Ø7 suits M6) | https://www.sitebox.ltd.uk/docs/sst/SST_ABR.pdf | source |
+| 1 | Simpson Strong-Tie **ABR7015** | 70 × 70 × 55, t 1.5, galvanised S250GD+Z275; holes 8 × Ø5 + 1 × Ø7 + 1 × Ø9 (corrected: Reviewer 3 found the second bolt hole is Ø9) | https://www.sitebox.ltd.uk/docs/sst/SST_ABR.pdf | source |
 | 2 | Simpson Strong-Tie **A33** | 75 × 75 × 38, t 2.5, pre-galvanised; 4 × Ø4.0 per flange | https://www.sitebox.ltd.uk/docs/sst/SST_A.pdf | source |
 
 Use ABR7015 with M6 through the Ø7 hole so the one-bolt rule holds. VN stock is unverified.
 
-### A8. Velcro for the felt (băng dính gai)
+### A8. Cassette clips (kẹp treo cassette), hook-and-loop only to line up
 
-With the lining cassette (DECIDED), the felt is bonded to the cassette in the factory, and hook-and-loop holds the cassettes to the frame.
+PM ruling 4: every lining cassette hangs on captive mechanical clips with a rated load, and every ceiling cassette also gets a safety catch. Hook-and-loop stays only to locate a cassette, never to hold it (guideline §8.2 forbids tape-only retention on a ceiling; Velcro PS14 has no load rating, and 3M suggests about 57 cm² of Dual Lock per kg).
+
+Load each clip must carry (calculation, safety factor 3 as an assumption until the guideline's factor is applied):
+
+| Cassette | kg | Clips | Load per clip | Rated load needed per clip |
+|---|---:|---:|---:|---:|
+| Wall cassette, 1500 × 1145 | 10.3 | 4, hooked in (shear) | 2.6 kg | 7.7 kg in shear |
+| Ceiling cassette with its fill | about 16 | 6, captive (pull-out) | 2.7 kg | 8.0 kg in pull-out |
+| Ceiling safety catch | about 16 | 2 steel lanyards | 8 kg each if all clips let go | 48 kg each (3 × the whole cassette) |
 
 | Opt | Maker · part | Data | Source | Status |
 |---|---|---|---|---|
-| 1 | VELCRO® Brand **PS14 hook**, self-adhesive, 25 mm (Silmid VELHOOK25B) | 25 mm × 25 m; −15 to 60 °C | https://www.silmid.com/es/tapes/velcro-brand-tapes/Velcro-Brand-Tapes-Hook-Self-Adhesive-Tape-Black-25mm-x-25Mt-Roll/ | source |
-| 2 | 3M **Dual Lock SJ3560** type 250, clear acrylic adhesive | −30 to 70 °C long term; mates with itself | https://silmid.com/fr/tapes/velcro-brand-tapes/3m-dual-lock-sj3560-clear-reclosable-fastener-25mm-x-45-7mt-roll-type-250 | source |
+| 1 (candidate) | Häfele **KEKU EH** suspension fitting, hook-in, polycarbonate | 20 kg vertical, 8 kg horizontal; at least 4 pairs per rectangular panel; per fitting or per pair not stated; made for wood panels in the System 32 grid | distributor page https://www.ostermann.eu/en_GB/product/suspension-fitting-keku-eh-s-area-component | source (distributor, not Häfele); rating basis, pull-out rating, captive lock and fixing to a 0.5 mm steel tray HOLD |
+| safety catch | steel wire lanyard with a rated working load, cassette return to the 20 × 100 ceiling member | no product picked yet | none | HOLD: part number and rating; the Layout Engineer's clip study asks for the same |
+| locate only | VELCRO® Brand **PS14 hook** 25 mm, or 3M **Dual Lock SJ3560** | no load rating (PS14); about 57 cm² per kg static (3M guidance) | https://www.silmid.com/es/tapes/velcro-brand-tapes/Velcro-Brand-Tapes-Hook-Self-Adhesive-Tape-Black-25mm/ ; https://silmid.com/fr/tapes/velcro-brand-tapes/3m-dual-lock-sj3560-clear-reclosable-fastener-25mm/ | source; locating only |
 
-HOLD: pull test. No maker documents hook-only tape gripping PET felt directly.
+HOLD: pull test of the picked clip on a real cassette return, and a drop test of the safety catch (Sample tests).
 
 ### A9. Adhesive, ACP to frame (keo dán), factory only
 
@@ -129,19 +138,19 @@ HOLD: coupon test on PVDF-coated Alcorest against the chosen aluminium finish, p
 | Cavity fill and silencer lining (bông PET) | 1 (DECIDED) | Pyrotek **Sorberpoly 2D** polyester, 32 kg/m³ | densities 18, 24, 32, 48, 60 kg/m³ (commonly sold as 32/48/60); 25 and 50 mm standard, custom thicknesses available. ISO 354 (University of Canterbury, reports 323 and 324), 32 kg/m³: 25 mm 0.08/0.27/0.48/0.63/0.71/0.75 (NRC 0.50), 50 mm 0.16/0.47/0.82/0.90/0.84/0.83 (NRC 0.75); UL94 HF-1 | 1.3 at 40 mm (calculation) | https://www.pyroteknc.com/dmsdocument/58/SORBERPOLY-2D-TDS-215IP.pdf | source; "Acoustic results are based on 32 kg/m3 density material", so 24 kg/m³ is not used |
 | | 2 | CSR **Martini dECO Quiet Panel 50 mm** | thermally bonded polyester, 25–60 kg/m³ | — | https://www.branz.co.nz/design-build/certified-products/csr-martini-deco-quiet-panel-50-mm | source (density range only) |
 | Lining cassette sheet | 1 | Galvanised steel sheet 0.5 mm (EN 10346 DX51D+Z or equal; VN coil makers) | 3.93 kg/m² for 0.5 mm steel | 3.93 | standard material; supplier unverified | calculation; supplier HOLD |
-| Front, smoked acrylic (optional experiment only) | 1 | Perspex **Neutral 9T56** cast acrylic | 6, 8, 10, 12 mm; 3050 × 2030; 1.19 g/cm³; LT 46% at 3 mm; Euroclass E, UL 94 HB | 11.9 at 10 mm | https://www.perspex.co.uk/materials/perspex-cast-acrylic/colours-transparent-and-tints/ ; data sheet https://www.perspex.co.uk/Perspex/media/General/technical-library/PDFs/Perspex-Cell-Cast-Acrylic-Technical-Data-Sheet-(Complete)_EN-2019.pdf | source |
+| Front, smoked acrylic (optional experiment only) | 1 | Perspex **Neutral 9T56** cast acrylic | 6, 8, 10, 12 mm; 3050 × 2030; 1.19 g/cm³; LT 46%, the same at any thickness (Perspex); Euroclass E, UL 94 HB | 11.9 at 10 mm | https://www.perspex.co.uk/materials/perspex-cast-acrylic/colours-transparent-and-tints/ ; data sheet https://www.perspex.co.uk/Perspex/media/General/technical-library/PDFs/Perspex-Cell-Cast-Acrylic-Technical-Data-Sheet-(Complete)_EN-2019.pdf | source |
 | | 2 | Röhm/Polyvantis **PLEXIGLAS GS** grey (7C83 / 7C82) | 1.19 g/cm³; Euroclass E; grey codes seen only in snippets, 3–8 mm | 11.9 | EPD https://www.zenit.cz/public/media/Plasty/Zenit_Bezpecnostni_List_Plasty_Plexiglas_EPD.pdf | source; grey in 10 mm unverified |
 | | 3 | VN "mica" (Taiwan FS / Chochen) | 2–50 mm, 1220 × 2440; no grey code shown | — | https://mica.com.vn/san-pham/mica-acrylic-dai-loan-fs-fusheng/ | source (sizes); grey unverified |
-| Front, 4+4 acoustic laminate (DECIDED) | 1 | AGC **Stratophone Planibel Coloured 44.2** (Grey or Dark Grey panes) | Rw 37 (0;−2); 9 mm, 21 kg/m²; panes toughened before laminating | 21 | https://www.agc-yourglass.com/en-UG/brands/stratophone ; https://www.agc-yourglass.com/sites/default/files/2025-04/Showpad_Planibel%20Coloured_EN_LR.pdf | source |
-| | 2 | Saint-Gobain **SGG STADIP SILENCE 44.2** on PARSOL grey | Rw 37 (0;−3) | 21 | https://www.saint-gobain.pt/assets/download/media/54856 | source |
-| | 3 | Pilkington **Optiphon 8.8** | Rw 37 (0;−2); tint not stated | ~21 | https://www.pilkington.com/en/global/products/product-categories/noise-control/pilkington-optiphon | source; tint unverified |
+| Front, 4+4 acoustic laminate (DECIDED) | 1 | AGC **Stratophone Planibel Coloured 44.2** (Grey or Dark Grey panes) | the cited pages offer it neither with toughened panes nor with "Rw 37 (0;−2), 9 mm, 21 kg/m²" (Reviewer 3), so those figures are removed | 21 (calculation, 2.5 g/cm³) | https://www.agc-yourglass.com/en-UG/brands/stratophone ; https://www.agc-yourglass.com/sites/default/files/2025-04/Showpad_Planibel%20Coloured_EN_LR.pdf | unverified for toughened panes |
+| | 2 | Saint-Gobain **SGG STADIP SILENCE 44.2** on PARSOL grey | Rw 37 (0;−3); a toughened, heat-soaked version is not shown | 21 | https://www.saint-gobain.pt/assets/download/media/54856 | source for Rw; toughened version unverified |
+| | 3 | Pilkington **Optiphon 8.8** | Rw 37 (0;−2); tint and a toughened version not stated | ~21 | https://www.pilkington.com/en/global/products/product-categories/noise-control/pilkington-optiphon | source; tint unverified |
 | Front reference, toughened 8 / 10 mm | — | float glass data (toughening assumed neutral) | 8 mm Rw 32–34; 10 mm Rw 35; 1/3-octave data in the calc | 20 / 25 | Eastman acoustic glazing booklet https://saflex-vanceva.eastman.com/content/dam/saflex/pdf-documents/arch/saflex/brochures/ai-arch-7807_-_acoustic_glazing_performance_data_booklet_low-res.pdf | source |
 
 VN availability: none of the tinted acoustic laminates or grey cast acrylic were found on a VN page. VFG (Vietnam Float Glass) lists no grey tint.
 
 ## C. Door and glass hardware (the plan leaves these out)
 
-Door: 1176 × 2011 mm. 4+4 laminate (DECIDED) is about 50 kg. 8 mm glass would be 47 kg, 10 mm glass 59 kg, and the optional acrylic experiment about 32 kg with its hinge stile.
+Door: 1176 × 2011 mm. 4+4 laminate (DECIDED) is 47.5 kg (PM figure). 8 mm glass would be 47 kg, 10 mm glass 59 kg, and the optional acrylic experiment about 32 kg with its hinge stile.
 
 ### C1. Hinges
 
@@ -149,7 +158,7 @@ Door: 1176 × 2011 mm. 4+4 laminate (DECIDED) is about 50 kg. 8 mm glass would b
 
 | Opt | Maker · article | Rating | Interface | Weight | VN | Source | Status |
 |---|---|---|---|---|---|---|---|
-| 1 (DECIDED) | dormakaba **OFFICE 11.233**, hinge for project doors with 160 mm frame portion | 70 kg, door width max 1200 mm | Needs a 160 mm frame pocket ("reception element VN 7608/160 3D or VZK 060-1/3, or equivalent – not included"); Ø20 frame pin; TSG 8/10 mm | Al 0.519 kg | dormakaba SG serves VN; stock unverified | https://dormakaba-res.cloudinary.com/image/upload/v1745406852/dormakaba-prod/1505294593-tb-054432-man-sa-da-door-systems-low-gb-2001.pdf (p. 68) | source; pocket in the left decor block DECIDED; HOLD for acrylic (C8) |
+| 1 (HOLD, was DECIDED) | dormakaba **OFFICE 11.233**, hinge for project doors with 160 mm frame portion | 70 kg, door width max 1200 mm | Needs a 160 mm frame pocket ("reception element VN 7608/160 3D or VZK 060-1/3, or equivalent – not included"); Ø20 frame pin; TSG 8/10 mm | Al 0.519 kg | dormakaba SG serves VN; stock unverified | https://dormakaba-res.cloudinary.com/image/upload/v1745406852/dormakaba-prod/1505294593-tb-054432-man-sa-da-door-systems-low-gb-2001.pdf (p. 68) | source; **not rated for the 4+4 laminate** (TSG 8/10 only; laminated only with MUNDUS patch fittings, which recommend heat-soaked panes): HOLD (ruling 3) |
 | 2 | dormakaba **UNIVERSAL** pivots: PT 10 03.100 + floor bearing 01.137 (no floor recess, 80 kg) + PT 20 03.110 + PT 24 01.123 | range 130 kg / 1300 mm, but doors ≥ 1100 mm need an EN 4+ closer that the thin floor can't take | glass prep p. 29; pivot 55 or 65 mm from the frame | 0.564 + 0.195 + 0.477 + 0.042 kg | as above | https://dormakaba-res.cloudinary.com/image/upload/v1745424952/dormakaba-prod/1508255179-tbr-054433-universal-gb-170817.pdf | source; not chosen |
 | 3 | Simonswerk **BILOBA BL 8910** (Bohle BO5210388), hydraulic, self-closing from 80° | 100 kg per pair, width 500–1000 mm | TSG 8–12, LSG 8.76–13.52; wall plate 59 × 110, 4 holes 40 × 80 | not published | unverified in VN | https://www.bohle.com/uk-EN/Biloba-BL-8910-hydraulic-swing-door-hinge-glass-wall-900/BO5210388 | source; width over |
 | 4 | Kinlong **WHY11010**, SS304 | 65 kg per pair, 600–800 mm, glass 8–12 | no drawing | not published | **listed on kinlong.vn** | https://kinlong.vn/ban-le-carbin-tam-why11010/ | source; width over |
@@ -180,7 +189,7 @@ On acrylic, the holes follow C8: about 2 × the bolt Ø, PE sleeve, EPDM washers
 
 | Opt | Maker · article | Data | Rating | Source | Status |
 |---|---|---|---|---|---|
-| 1 (pick) | athmer **Schall-Ex GSA** 1-1112 black RAL 9005, side-bonded, glass from 8 mm, ESG and VSG | 11.6 × 40 mm; travel 20 mm; stock 1208 mm cut back up to 125 mm, so **1176 works**; tape-bonded | 51 dB joint at 7 mm floor gap (2024 brochure: 47 dB); "up to 37 dB Rw,P" | https://athmer.com/asia-en/schall-ex-gsa/Schall-Ex-GSA ; https://athmer.com/media/d9/c4/80/1746739483/EN_SchallExGSAnew.pdf | source; bond on acrylic HOLD |
+| 1 (pick) | athmer **Schall-Ex GSA** 1-1112 black RAL 9005, side-bonded, glass from 8 mm, ESG and VSG | 11.6 × 40 mm; travel 20 mm; stock 1208 mm cut back up to 125 mm, so **1176 works**; tape-bonded | 51 dB joint at 7 mm floor gap (a 47 dB figure quoted before isn't on the cited pages, so it is removed); "up to 37 dB Rw,P" | https://athmer.com/asia-en/schall-ex-gsa/Schall-Ex-GSA ; https://athmer.com/media/d9/c4/80/1746739483/EN_SchallExGSAnew.pdf | source; bond on acrylic HOLD |
 | 2 | athmer **Schall-Ex GSH-10** 1-1132 black, push-on, ESG 10 mm | 13 × 40 mm; same lengths | 49 dB joint | https://athmer.com/asia-en/schall-ex-gsh-10/Schall-Ex-GSH-10 | source |
 | 3 | Planet **KG-A10 schmal** 1209 mm (Planet 35121-A10, SFS 2137398) | 12.9 × 38 mm, stroke 16 mm, push-on + VHB, cut back 125 mm | 48 dB at 7 mm floor gap | https://www.assaabloy.com/ch/de/documents/service/downloads/planet/drop-down-seals/broschuere-planet-absenkdichtung-kg.pdf | source |
 
@@ -208,7 +217,7 @@ Pick: option 2 (silicone seal) for both acrylic and glass. The slanted edge foll
 
 | Opt | Maker · article | Data | Source | Status |
 |---|---|---|---|---|
-| 1 (pick) | dormakaba **STUDIO Rondo lock 10.200**, non-locking latch, DIN EN 12209 | lock 159 × 65 mm; needs a strike in the frame and a lever pair; Al 0.840 kg | dormakaba TB PDF as C1 (pp. 12, 16) | source; positive latch keeps the seals compressed |
+| 1 (HOLD, was the pick) | dormakaba **STUDIO Rondo lock 10.200**, non-locking latch, DIN EN 12209 | lock 159 × 65 mm; needs a strike in the frame and a lever pair; Al 0.840 kg | dormakaba TB PDF as C1 (pp. 12, 16) | source; **not rated for this door: STUDIO is for doors up to 1000 mm, ours is 1176 mm.** HOLD (ruling 3): the OFFICE Junior lock 11.264 / 11.265 in the same catalogue is the candidate Reviewer 3 found; its rating for 1176 mm and laminated glass goes to dormakaba |
 | 2 | Sugatsune **HT-MSG62** magnetic catch + strike HT-MSG62-U10 | 35 N; strike on the upper door | https://www.marek.eu/katalog-obrazku/produkt-36377/85606-ht-msg62.pdf | source; 35 N is likely too weak for the seals alone |
 | 3 | Simonswerk **KEEP CLOSED KCM 50 / KCM 50/G** | for 8 and 10 mm glass; force not published | https://selector.simonswerk.com/en/products/detail/kcm-50-g | source; force unverified |
 
@@ -273,7 +282,7 @@ Lights run on the 12 V DC bus (D-10) and stay low-heat. In v1 the pod had two 17
 |---|---|---|---|---|---|
 | Ceiling light | 1 (pick) | Häfele **Loox5 12V LED 2094** downlight, Ø65 mm; white 3000 K **833.72.539** / 4000 K **833.72.540** (black 833.72.535 / .536); surface bezel 833.72.807 (white) | 12 V, 2.5 W, dimmable, IP20; 150 lm (3000 K), 160 lm (4000 K); CRI Ra > 90, R9 > 50; recess in a Ø58 hole, at least 13.5 mm deep, which fits inside the lining cassette's 25 mm gap; 2 m lead with Loox5 12 V connector | https://files.hafele.co.uk/CatalogFiles/www/20D5-115A.pdf | source; Häfele has a VN company, but stock of these UK article numbers is unverified |
 | | plan | six downlights over the ceiling: 15 W, about 900–960 lm in total (calculation) | — | — | calculation; light level to confirm on the prototype |
-| Soft front light for video calls | 1 (pick) | Häfele **Loox5 LED 2162** 8 mm strip, 12 V; 3000 K **833.74.056** / 4000 K **833.74.057** (5 m rolls 833.74.246 / .247), in an aluminium diffuser profile | 3.0 W/m; 465 lm/m (3000 K), 490 lm/m (4000 K); CRI Ra 92, R9 > 50; Häfele recommends a profile "for appealing design, diffuse" light | https://files.hafele.co.uk/CatalogFiles/www/25L1-18.pdf | source; profile article and VN stock unverified |
+| Soft front light for video calls | 1 (pick) | Häfele **Loox5 LED 2162** 8 mm strip, 12 V; 3000 K **833.74.056** / 4000 K **833.74.057** (833.74.246 / .247 are 50 m reels, corrected), in an aluminium diffuser profile | 3.0 W/m; 465 lm/m (3000 K), 490 lm/m (4000 K); CRI Ra 92, R9 > 50; Häfele recommends a profile "for appealing design, diffuse" light | https://files.hafele.co.uk/CatalogFiles/www/25L1-18.pdf | source; profile article and VN stock unverified |
 | | plan | 2 m of strip on the back wall or the ceiling front edge, facing the user: 6 W, about 950 lm (calculation) | — | — | calculation; position decided with the Control Engineer (open question on lights) |
 | Driver | — | Loox5 12 V driver from the same system, or the pod's 12 V bus (D-10) | — | catalogue reference in the 25L1-18 sheet | unverified |
 
@@ -281,7 +290,7 @@ Power inlet (outside, back wall):
 
 | Opt | Maker · part | Data | Source | Status |
 |---|---|---|---|---|
-| 1 (pick) | Neutrik **NAC3MPX-TOP** powerCON TRUE1 TOP locking inlet + **NAC3F-TRUE1-S** cord connector | 16 A 250 V (EN 60320-1); IP65 mated or capped; can be unplugged under load; cutout Ø23.8 + 2 × Ø3.2 at 19 × 24 mm | https://www.neutrik.com/en/product/nac3f-true1-s ; https://www.neutrik.com/en/product/nac3fx-w-top | source; VN stockist unverified |
+| 1 (pick) | Neutrik **NAC3MPX-TOP** powerCON TRUE1 TOP locking inlet + **NAC3F-TRUE1-S** cord connector | 16 A 250 V (EN 60320-1); IP65 only mated or with its **SCNAC-01** cap, so the cap is on the parts list; can be unplugged under load; cutout Ø23.8 + 2 × Ø3.2 at 19 × 24 mm | https://www.neutrik.com/en/product/nac3f-true1-s ; https://www.neutrik.com/en/product/nac3fx-w-top | source; VN stockist unverified |
 | 2 | Schurter **6162.0156** IEC C14 V-Lock inlet | 10 A 250 V; IP20; snap-in 27.5 × 20 mm; needs a V-Lock cord | https://www.digikey.at/en/products/detail/schurter-inc/6162-0156/2646983 | source (distributor) |
 | LAN | Neutrik **NE8FDP** etherCON feed-through | CAT5e; cutout Ø24 + 2 × Ø3.2; panel ≤ 4 mm | https://www.neutrik.com/en/product/ne8fdp | source |
 
@@ -295,7 +304,7 @@ Plan items VT07 to VT09: UTEN S300 switch and socket (code S300GK12Z12Z13/N on u
 | 12 V DC bus | Soft front light, 2 m Loox5 2162 | 6 |
 | 12 V DC bus | Sensor hub with CO2 display, presence sensor | about 5 (assumption) |
 | 12 V DC bus | Voice cockpit kit reserve, 12 V 5 A (D-11) | 60 |
-| Mains, outlet circuit | 2 fans (S&P TD-500 ECOWATT, about 10 W each at 53 l/s, up to about 18 W at the 70 l/s boost), the PM's exception to D-10 | 20–36 |
+| 12 V DC bus (D-10) | 4 fans, Noctua NF-A14 industrialPPC-3000 PWM, two per path (fix pass; the mains fan exception is no longer needed) | power at our duty unverified (maker figure not found); HOLD for the fan-sample test |
 | Mains, outlet circuit | User sockets (laptops) | up to 2 × 100 |
 
 ## F. Air: fans, silencer, controls
@@ -304,23 +313,24 @@ Plan items VT07 to VT09: UTEN S300 switch and socket (code S300GK12Z12Z13/N on u
 
 | Opt | Maker · SKU | Duty near 70 l/s | Sound | Power | Size, weight | VN | Source | Status |
 |---|---|---|---|---|---|---|---|---|
-| 1 (DECIDED) | Soler & Palau **TD-500/150-160 SILENT ECOWATT** (EC, 0–10 V input), run slow | 4 V curve: about 255 m³/h (70 l/s) at the supply path's 9 Pa; the exhaust path (28 Pa) needs a little more speed | octave LwA at 4 V (200 m³/h, 42 Pa): 25/37/49/46/37/29 dB(A) per band, 51 dB(A) total; inside the pod with the decor splitters 24.7 dB(A) at 53 l/s and 30.8 dB(A) at 70 l/s (calculation, report §7b) | 10 W at 4 V, 18 W at 6 V | ØD 221, length 484 (Ø150 spigots, gasket for 160), 6.0 kg | unverified in VN | S&P TD SILENT ECOWATT catalogue https://statics.solerpalau.com/media/import/documentation/EN_TD-SILENT-ECOWATT.pdf (duty points read off the curve figure) | source; fit in the 230–235 mm deep decor blocks HOLD for CAD |
-| 2 | Soler & Palau **TD-350/100-125 SILENT ECOWATT** (EC) | 10 V: about 260 m³/h at 42 Pa; 8 V: about 250 m³/h at 30 Pa | 54 dB(A) at 8 V; about 3 dB louder inside than option 1 at the same flow | 19 W at 10 V, 15 W at 8 V | ØD 204, length 462 (Ø125 spigots), 5.0 kg | unverified in VN | same catalogue | source |
+| 1 (pick, PROPOSED by the fix pass under ruling 1) | Noctua **NF-A14 industrialPPC-3000 PWM**, 12 V, **two per path** (four in all), side by side on a bulkhead in each cartridge's lined fan box; the side away from the pod is ducted airtight to the top slot | maker: 3000 rpm, 269.3 m³/h at 0 Pa, 6.58 mm H₂O (64.5 Pa) maximum. Each pair runs at about 60% speed for 53 l/s against 10 Pa, 80% for 70 l/s, and reaches about 88 l/s at full speed (straight-line curve, calculation) | 41.3 dB(A) at full speed, condition not stated (taken as sound pressure at 1 m: LwA = LpA + 11, assumption); no octave data. Inside the pod 22.8 dB(A) at 53 l/s, 28.9 at 70 l/s (report §7b) | 12 V bus (D-10); power at our duty unverified | 140 × 140 × 25; about 0.3 kg each (assumption: weigh the sample) | unverified in VN | maker page https://www.noctua.at/cn/products/nf-a14-industrialppc-3000-pwm/specifications | source; octave spectrum, tones and flow in the box HOLD for the fan-sample test |
+| rejected (DECIDED at 5c1003b) | Soler & Palau **TD-500/150-160 SILENT ECOWATT** (EC, 0–10 V) | 4 V curve: about 70 l/s at 9 Pa | duct side 25/37/49/46/37/29 dB(A) per band at 4 V; the casing radiates 44 dB(A) (25/36/40/41/24/21). With the casing sound the 5c1003b layout gives 35.8 dB(A) at 53 l/s (report §7b) | 10 W at 4 V | ØD 221, length 484, 6.0 kg: **doesn't fit** the 199 mm clear depth of the 205 mm decor | unverified in VN | S&P TD SILENT ECOWATT catalogue https://statics.solerpalau.com/media/import/documentation/EN_TD-SILENT-ECOWATT.pdf (duty points read off the curve figure; casing data as read by Reviewer 3) | source; rejected on fit and noise |
+| rejected | Soler & Palau **TD-350/100-125 SILENT ECOWATT** (EC) | 8 V: about 250 m³/h at 30 Pa | 54 dB(A) at 8 V | 15 W at 8 V | ØD 204 (doesn't fit 199 mm), length 462, 5.0 kg | unverified in VN | same catalogue | source; rejected on fit |
 | plan, rejected | Panasonic **FV-15AUL1** wall fan | 255 m³/h at 0 Pa; no fan curve published | 36 dB(A) (method not stated) | 12.5 W | 1.2 kg; cutout 200 × 200 | VN | spec sheet https://www.panasonic.com/content/dam/panasonic/vn/vi/pim/dam/FV/FV-15A/FV-15AUL1-PP/ast-2125349.pdf ; manual https://www.panasonic.com/content/dam/panasonic/vn/vi/pim/dam/FV/FV-15A/FV-15AUL1-PP/ast-2353437.pdf ; product page https://www.panasonic.com/vn/air-solutions/products/fan-ventilating-fan/vf/wall-mounted-type/wall-mount-vf-automatic-shutter-luver-series/fv-15aul1.html | source: the manual says "Prohibit to install this fan in the ceiling" |
-| 12 V (checked, rejected) | Noctua **NF-A14 industrialPPC-3000 PWM** (140 mm); San Ace **109E5712M501** (172 × 150 mm); ebm-papst **RG 160-28/14 N** (12–28 V centrifugal) | 269 / 248 m³/h at 0 Pa; San Ace max 67.6 Pa; RG 160: 209 m³/h | 41.3 / 41.0 dB(A) (condition not stated); RG 160: LwA 66 dB | San Ace 5.76 W; RG 160 20 W | 140 × 140 × 25; 172 × 150; 220 × 220 × 56, 1.4 kg | unverified in VN | https://ldlc.com/en/product/PB00169921.html ; https://www.digikey.com/en/products/detail/sanyo-denki-america-inc/109E5712M501/6191765 ; https://img.ebmpapst.com/products/datasheets/DC-centrifugal-fan-RG1602814N-ENU.pdf | source; on published data no 12 V fan gives 70 l/s at 42 Pa quietly, so mains EC is DECIDED (PM's rule: performance beats 12 V) |
+| 12 V, not picked | San Ace **109E5712M501** (172 × 150 mm); ebm-papst **RG 160-28/14 N** (12–28 V centrifugal) | San Ace 248 m³/h at 0 Pa, 67.6 Pa maximum; RG 160: 209 m³/h at 24 V | San Ace 41.0 dB(A) (condition not stated); RG 160: LwA 66 dB at 24 V | San Ace 5.76 W; RG 160 20 W at 24 V | 172 × 150 (too big for the 155 mm passage stack); 220 × 220 × 56, 1.4 kg | unverified in VN | https://www.digikey.com/en/products/detail/sanyo-denki-america-inc/109E5712M501/6191765 ; https://img.ebmpapst.com/products/datasheets/DC-centrifugal-fan-RG1602814N-ENU.pdf | source; the RG 160 figures are at 24 V, not 12 V (corrected) |
 
-DECIDED location: inside the hollow front decor blocks, with slots on their top faces: supply fan and cartridge in the right block, exhaust in the top block. Service is through the decor block's screwed top lid (report §7b).
+Location (PROPOSED by the fix pass): both paths in the right decor block, which is 1016 mm wide (layout study parts list F-DR); the top block's 280 mm face is too small for the flow. Fans in the fan boxes at the top, slots on the block's top face (D-29), supply grille low on the block's inner face. Exhaust grille: low on the straight layout; high needs a riser and costs about 3 dB(A) (report §7b), so it goes to the PM. Service: lift the block's screwed top lid; the fans come out of the fan box.
 
 ### F2. Silencer (ống tiêu âm)
 
-DECIDED (PM, 2026-10-31): splitter cartridges inside the hollow front decor blocks, outside the pod's sound shell. A silencer under the pod's ceiling would break out about 43 dB(A) into the pod (report §7b).
+Splitter cartridges stay outside the pod's sound shell, in the decor (DECIDED on 2026-10-31). The fix pass resizes them for the 205 mm decor (PROPOSED): the 5c1003b cartridges were 212 mm deep and don't fit.
 
 | Cartridge | Size (depth × width × length) mm | Build | kg | Source of the data | Status |
 |---|---|---|---:|---|---|
-| Supply, right decor block, vertical | 212 × 500 × 2000 | two 50 mm passages between three 37.5 mm Pyrotek Sorberpoly 2D layers (32 kg/m³, custom thickness), 2 mm aluminium casing | 19.6 | absorption interpolated between Pyrotek's 25 and 50 mm ISO 354 data (B) | calculation; HOLD for the factory mock-up and the CAD fit |
-| Exhaust, top decor block, horizontal | 212 × 280 × 1500 | same | 10.2 | same | same |
+| Supply, right decor block, vertical, fan box at the top, grille low | 159 × 450 × 1800, plus a 300 mm fan box | two 40 mm passages between three 25 mm Pyrotek Sorberpoly 2D layers (32 kg/m³), 2 mm aluminium casing, 40 mm polyester fill toward the pod | 18.6 with its fill | Pyrotek's 25 mm ISO 354 data (B), published | calculation; HOLD for the factory mock-up and the CAD fit |
+| Exhaust, right decor block, beside the supply | 159 × 450 × 1800, plus a 300 mm fan box | same | 18.6 with its fill | same | same |
 
-Bought circular silencers with published insertion loss, for comparison only. At 230–270 mm outside diameter they're about as deep as the decor blocks:
+Bought circular silencers with published insertion loss, for comparison only. At 225–270 mm outside diameter they're deeper than the 205 mm decor:
 
 | SKU | D / D1 / L mm | kg | 125 | 250 | 500 | 1k | 2k | 4k dB |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
@@ -331,7 +341,7 @@ Source: Vents SR / SRF datasheet https://ventilation-system.com/download/sr-roun
 
 ### F3. Controls
 
-The CO2 sensing and display come from the in-house Desk Pro AI sensor hub (DECIDED, D-09). The hub's 0–10 V output drives both fans, using the same signal for supply and exhaust so the pod stays at room pressure. Required behaviour:
+The CO2 sensing and display come from the in-house Desk Pro AI sensor hub (DECIDED, D-09). It drives both 12 V fan pairs with the same signal for supply and exhaust, so the pod stays near room pressure. The fans take PWM, so the hub needs a PWM output or a 0–10 V to PWM converter: HOLD for the electrical scope.
 - start on presence;
 - minimum flow about 40 l/s while occupied;
 - ramp to 70 l/s as CO2 rises (800 ppm limit);
@@ -351,8 +361,8 @@ Presence sensor for automatic start and run-on:
 
 | Opt | Maker · SKU | Data | VN | Source | Status |
 |---|---|---|---|---|---|
-| 1 (pick) | Schneider **CCT551012** ARGUS Presence Dual-Tech, 2 channels | PIR + ultrasonic; output 2 (HVAC) relay 5 A, motor load 100 W, motion only, delay up to 60 min | VN distributors list the 1-channel CCT551011 | research notes, section 3a (se.com pages) | source; keep it away from vents and glass (maker warning) |
-| 2 | Hager **EE805A** | PIR; 10 A AC1 230 V; Ø90 × 61 mm; 5 s–30 min | unverified | research notes | source |
+| 1 (pick) | Schneider **CCT551012** ARGUS Presence Dual-Tech, 2 channels | PIR + ultrasonic; output 2 (HVAC) relay 5 A, motor load 100 W, motion only, delay up to 60 min | VN distributors list the 1-channel CCT551011 | se.com product pages, links not kept | unverified; keep it away from vents and glass (maker warning) |
+| 2 | Hager **EE805A** | PIR; 10 A AC1 230 V; Ø90 × 61 mm; 5 s–30 min | unverified | no link kept | unverified |
 | 3 | Legrand **048803** ceiling PIR | 8.5 A; 360°, about 8 m; 5 s–30 min | VN distributor (knxstore.vn) | https://knxstore.vn/products/cam-bien-gan-tran-8-5a-legrand-048803 | source |
 
 ## G. Low-emission certified options
@@ -378,11 +388,20 @@ Mic array, speakers, screen and status light. Reserved here; the kit itself isn'
 ## Open questions for suppliers (no contact yet; for the PM to send)
 
 1. Nhôm Việt Dũng (Alcorest): kg/m² and core type of 3 mm × 0.21 EV3038; V-groove rest thickness; whether 3 mm FR exists.
-2. dormakaba: 11.233 on a 10 mm acrylic leaf (hole, sleeve, pads, torque, rating); the frame reception element that fits the decor block; VN stock.
-3. athmer: Schall-Ex GSA on acrylic; PS 1515 in EPDM or silicone; actuator strike detail.
-4. Perspex or Röhm: approval of a sleeved hinge-edge strip on 10 mm cast acrylic; light transmission of Neutral 9T56 at 10 mm; a hard-coated grade.
-5. AGC or Saint-Gobain VN: Stratophone 44.2 with Planibel Grey, or Stadip Silence on PARSOL, in VN.
-6. Soler & Palau: VN distributor; octave data at 10 V and 72 l/s; whether the 0–10 V input accepts a shared signal for two fans.
-7. Felt supplier: ISO 354 octave data and an emission certificate for a 9 mm panel, or Autex Cube in VN.
-8. Rivnut supplier: sample fit of CAH3-610-4.2 in a 20 × 40 × 1.5 member.
+2. dormakaba (PM ruling 3): a frameless side-hung hinge set and a lock rated for a 4+4 (8.76 mm) laminate of toughened, heat-soaked panes, a 47.5 kg door and 1176 mm width, with the hinges clamped in a pocket in the left decor block. Does OFFICE 11.233 accept that laminate, or only the MUNDUS patch fittings? Is the OFFICE Junior lock 11.264 / 11.265 rated for 1176 mm and laminated glass? Hole and step sizes for the 21.267 handle on laminate (Reviewer 3: a stepped Ø28 / 26 hole); the frame reception element; VN stock.
+3. athmer: Schall-Ex GSA on the 8.76 mm laminate; PS 1515 in EPDM or silicone; actuator strike detail.
+4. Perspex or Röhm (acrylic experiment only): approval of a sleeved hinge-edge strip on 10 mm cast acrylic; a hard-coated grade.
+5. AGC, Saint-Gobain or a VN laminator: a grey 4+4 (8.76 mm) laminate of toughened, heat-soaked panes, with an acoustic interlayer if it is offered toughened; its Rw; VN stock.
+6. Noctua or its distributor: octave-band sound power of the NF-A14 industrialPPC-3000 PWM at 1500–2500 rpm, and the measurement method behind 41.3 dB(A); VN stock.
+7. Felt supplier: ISO 354 data from 100 Hz for the 9 mm felt with a 25 mm air gap behind it, and an emission certificate (HOLD, Target 6); or Autex Cube in VN.
+8. Rivnut supplier: sample fit of CAH3-610-4.2 in a 20 × 40 × 1.2 member, and its spin-out torque there.
 9. UTEN: switch code K11 vs K12; LAN category.
+10. Häfele: KEKU EH load ratings from Häfele (per fitting or per pair; pull-out for a ceiling), a captive or locking version, and a fixing to a 0.5 mm steel tray return; a rated safety lanyard.
+
+## Sample tests (factory, before CAD freezes)
+
+1. **Wall sample:** sound insulation and the felt's absorption on its 25 mm gap, both measured down to 100 Hz (PM ruling 5).
+2. **Rivnut spin-out:** M6 rivnuts in the real 20 × 40 × 1.2 tube, torque to spin-out; this sets the tightening torque (PM ruling 6).
+3. **Fan sample:** one fan pair in its lined box on a cartridge: flow against pressure, octave sound power at 53 and 70 l/s, and any tone at 125–250 Hz (report §7b).
+4. **Cassette clips:** pull test of the picked clip on a real cassette return; drop test of the ceiling safety catch.
+5. **Door sample:** the rated hinge set and lock on the 8.76 mm laminate, with the seals.
