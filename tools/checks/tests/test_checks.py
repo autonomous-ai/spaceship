@@ -475,6 +475,25 @@ def test_cad_and_parts_list_names_must_match(tmp_path):
     assert ("name-mismatch", "211102") in got and ("name-mismatch", "211101") not in got
 
 
+def test_parts_list_rows_are_matched_only_against_their_own_teams_cad(tmp_path):
+    # WALL has exported STEP files, BASE hasn't yet; the master BOM lists every team's parts
+    row = {"part_number": "211101", "name": "WALL - PANEL FRAME - SIDE LOWER - LH", "name_vi": "x", "material": "EN AW-6063 T6",
+           "finish": "mill finish", "qty": "1", "mass_kg": "2", "status": "calculation", "source": "CAD"}
+    for folder, rows in (("v2/03-Manufacturing/wall", [row, dict(row, part_number="211301", name="WALL - SKIN - SIDE LOWER - LH")]),
+                         ("v2/03-Manufacturing/base", [dict(row, part_number="111401", name="BASE - FLOOR PANEL - F1")])):
+        (tmp_path / folder).mkdir(parents=True)
+        _write_csv(tmp_path / folder / "parts.csv", rows)
+    (tmp_path / "v2/04-BOM").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+               [dict(row, part_number="100000", name="POD - SPACESHIP"), dict(row, part_number="210000", name="WALL")])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"211101": {"files": {"v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step"},
+                        "count": 1, "name": "211101 WALL - PANEL FRAME - SIDE LOWER - LH"}}
+    got = {(f.rule, f.subject) for f in c_parts.check_cad_match(str(tmp_path), plists, prods)}
+    assert ("bom-not-in-cad", "211301") in got                       # WALL's own list, WALL has STEP files
+    assert not {s for r, s in got if r == "bom-not-in-cad"} & {"111401", "100000", "210000"}
+
+
 def test_bolt_patterns_across_assemblies_must_match():
     def body(label, file, holes):
         b = _B(label, None, "x", holes)
@@ -559,3 +578,10 @@ def test_shipping_reads_the_packing_list_when_there_is_one(tmp_path):
     got = {(f.rule, f.subject) for f in fs}
     assert ("pallet-fit", "1-02") in got                 # a 2290 mm block put on the 48 x 40 pallet
     assert not any(s in ("1-01", "2-01") for _r, s in got)  # the glass unit is exempt from 20 kg; both fit
+
+
+def test_shared_hardware_drawings_go_to_the_joints_engineer_but_list_rows_stay_with_the_team():
+    from common import owner_for
+    assert owner_for("", "831001") == "Joints Engineer"                  # the spigot's drawing: no team path
+    assert owner_for("v2/03-Manufacturing/wall/210101_P01_X_BOM.csv", "838003") == "WALL"   # WALL's own row
+    assert owner_for("", "211101") == "WALL" and owner_for("", "999999") == "PM"
