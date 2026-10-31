@@ -39,7 +39,8 @@ def _evaluate(script):
     exec(compile(open(g["__file__"], encoding="utf-8").read(), g["__file__"], "exec"), g)
     lib = g["L"]
     params, _path, _rev = lib.load_skeleton_params(REPO)
-    lists = [params, lib.LIB_PARAMS, lib.GLASS_PARAMS] + ([g["OWN"]] if "OWN" in g else [])
+    lists = [params, lib.LIB_PARAMS, lib.GLASS_PARAMS] + ([lib.JF_PARAMS] if "JF_PARAMS" in open(
+        g["__file__"], encoding="utf-8").read() else []) + ([g["OWN"]] if "OWN" in g else [])
     env = {"abs": abs, "sqrt": math.sqrt}
     for lst in lists:
         for name, expr, *_ in lst:
