@@ -120,6 +120,10 @@ def run(root, rev):
             d["count"] = max(d["count"], counts.get(pn, 0))
         for inst in s.instances():
             so = s.solid(inst["solid"])
+            if so.voids:                # a sealed void inside: read by its outer shell, noted here
+                inputs.setdefault("solids_with_voids", []).append(
+                    "%s: %s (%d void%s; outer shell used)" % (os.path.basename(p), inst["name"], so.voids,
+                                                            "s" if so.voids > 1 else ""))
             holes_by_pn.setdefault(inst["part_number"], so.holes)
             faces_by_pn.setdefault(inst["part_number"], []).append(len(so.faces))
             fl = sf.flat_plate(so)
