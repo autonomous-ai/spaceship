@@ -113,3 +113,14 @@ def test_live_fusion_result_on_the_bolt_fixture():
     assert any(r == "tool-blocked" and "ISO 4762 D" in s for r, s in rules), rules
     assert any(r == "clash" and "FAR WALL B" in s for r, s in rules), rules   # the long bolt also clashes
     assert not any(r == "clash" and "RIVNUT" in s for r, s in rules), rules   # bolt in thread is allowed
+
+
+def test_door_swing_hit_is_severe_and_a_free_swing_is_quiet():
+    hit = {"door_swing": [{"rule": "r", "max_deg": 90, "step_deg": 2, "direction": "outward", "moving": ["door"],
+                           "first_hit": {"angle_deg": 96, "moving": "x / DOOR LEAF:1 / b",
+                                         "hits": "x / DL FRONT - DECOR BLOCK - LEFT:1 / b", "mm3": 12.0}}]}
+    fs = rf.findings_from(hit, "skeleton")
+    assert [f.rule for f in fs] == ["door-swing"] and fs[0].severity == "severe" and "96" in fs[0].message
+    free = {"door_swing": [{"rule": "r", "max_deg": 90, "step_deg": 2, "direction": "outward", "moving": ["door"],
+                            "first_hit": None}]}
+    assert rf.findings_from(free, "skeleton") == []

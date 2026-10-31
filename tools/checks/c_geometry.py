@@ -352,9 +352,15 @@ def _rule_for(material, rules):
     return next((r for r in rules if r["match"] in ("", "*", "default")), None)
 
 
-def check_part_features(root, path, materials, rules, edge_factor=2.0):
+def load_hole_rules(root):
+    p = os.path.join(root, "v2/04-Checks/config/hole-rules.csv")
+    return read_csv(p) if os.path.exists(p) else []
+
+
+def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None):
     """Per-part checks on a STEP file. materials: part number -> material text."""
     fs = []
+    hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
     s = load_step(path)
     r = rel(root, path)
     done = set()
@@ -367,7 +373,19 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0):
         pn = inst["part_number"]
         part = "%s %s" % (pn, (so.name or "").strip())
         holes = so.holes
+        flagged = set()
         for h in holes:
+            for hr in hole_rules:
+                lo, hi = num(hr.get("min_dia_mm")), num(hr.get("max_dia_mm"))
+                if lo is not None and hi is not None and lo <= h.diameter <= hi and (pn, hr["id"]) not in flagged:
+                    flagged.add((pn, hr["id"]))
+                    n = sum(1 for x in holes if lo <= x.diameter <= hi)
+                    fs.append(Finding(
+                        "C08", "hole-size-" + hr["id"], "%s holes Ø%.2f" % (part, h.diameter),
+                        hr.get("severity") or "major",
+                        "%s has %d hole(s) of Ø%.2f. %s. Rule: %s." % (part, n, h.diameter, hr.get("message", ""),
+                                                                      hr.get("status_source", "")),
+                        hr.get("fix", ""), r, owner_for(r, pn), {"dia_mm": round(h.diameter, 2), "count": n}))
             e, _kind = sf.edge_distance(so, h)
             if e is None:
                 continue

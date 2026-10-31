@@ -417,3 +417,21 @@ def test_run_with_ref_leaves_no_export_behind():
     before = set(glob.glob(pattern))
     run_checks.main(["--ref", "HEAD", "--json"])
     assert set(glob.glob(pattern)) == before
+
+
+def test_hole_size_rule_flags_6_6_mm_m6_clearance_holes(monkeypatch, tmp_path):
+    bad = _plate_with_hole(hole_x=30.0, d=6.6)
+    good = _plate_with_hole(hole_x=30.0, d=7.0)
+    rules = [{"id": "M6-CLEARANCE-7", "min_dia_mm": "6.3", "max_dia_mm": "6.95", "severity": "major",
+              "status_source": "F-009", "message": "m", "fix": "f"}]
+    for plate, expect in ((bad, ["hole-size-M6-CLEARANCE-7"]), (good, [])):
+        class FakeStep:
+            def instances(self):
+                return [{"solid": 1, "part_number": "111201", "name": "x", "path": ["111201"], "frame": sf.Frame()}]
+
+            def solid(self, sid, plate=plate):
+                return plate
+        key = str(tmp_path / ("x%d.step" % len(expect)))
+        monkeypatch.setitem(c_geometry.load_step.__defaults__[0], key, FakeStep())
+        fs = c_geometry.check_part_features(str(tmp_path), key, {}, [], hole_rules=rules)
+        assert [f.rule for f in fs] == expect

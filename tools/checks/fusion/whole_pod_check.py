@@ -277,6 +277,57 @@ def fasteners(app, bodies, tools, later_re, step_mm=0.25, ring_extra_mm=0.6, pas
     return out
 
 
+def door_swing(bodies, cfg):
+    """Turn the door's moving bodies about the hinge axis in steps and
+    report the first angle at which they hit anything else (guideline
+    section 10: clearances in motion, not only in the closed position)."""
+    if not cfg:
+        return []
+    tbm = adsk.fusion.TemporaryBRepManager.get()
+    out = []
+    for c in cfg:
+        mv = re.compile(c["moving"], re.I)
+        ex = re.compile(c["fixed_exclude"], re.I) if c.get("fixed_exclude") else None
+        moving = [(l, b) for l, b in bodies if mv.search(l) and not (ex and ex.search(l))]
+        fixed = [(l, b) for l, b in bodies if not mv.search(l) and not (ex and ex.search(l))]
+        if not moving:
+            continue
+        ax_pt = P_mm(_f(c["axis_x_mm"]), _f(c["axis_y_mm"]), 0.0)
+        axis = adsk.core.Vector3D.create(0, 0, 1)
+        sgn = -1.0 if c.get("direction", "outward") == "outward" else 1.0   # outward: toward -Y
+        step = _f(c.get("step_deg"), 2.0)
+        maxd = _f(c.get("max_deg"), 90.0)
+        fixed_boxes = [(l, b, bbox_mm(b)) for l, b in fixed]
+        hit = None
+        ang = step
+        while ang <= maxd + 1e-6 and hit is None:
+            m = adsk.core.Matrix3D.create()
+            m.setToRotation(math.radians(sgn * ang), axis, ax_pt)
+            for lm, bm in moving:
+                t = tbm.copy(bm)
+                tbm.transform(t, m)
+                tb = bbox_mm(t)
+                for lf, bf, fb in fixed_boxes:
+                    if box_gap(tb, fb) >= 0:
+                        continue
+                    t1 = tbm.copy(t)
+                    t2 = tbm.copy(bf)
+                    if tbm.booleanOperation(t1, t2, adsk.fusion.BooleanTypes.IntersectionBooleanType) and t1 \
+                            and t1.volume * 1000.0 > 0.1:
+                        hit = {"angle_deg": ang, "moving": lm, "hits": lf, "mm3": round(t1.volume * 1000.0, 1)}
+                        break
+                if hit:
+                    break
+            ang += step
+        out.append({"rule": c.get("status_source", ""), "max_deg": maxd, "step_deg": step,
+                    "direction": c.get("direction"), "moving": [l for l, _b in moving], "first_hit": hit})
+    return out
+
+
+def P_mm(x, y, z):
+    return adsk.core.Point3D.create(x / CM, y / CM, z / CM)
+
+
 def touching(app, bodies, tol_mm=0.05):
     mm = app.measureManager
     boxes = [bbox_mm(b) for _l, b in bodies]
@@ -316,6 +367,7 @@ def run(_context):
         result["fasteners"] = fasteners(app, bodies, tools, re.compile(later, re.I) if later else None)
         print("fasteners %d" % len(result["fasteners"]))
         result["touching"] = touching(app, bodies)
+        result["door_swing"] = door_swing(bodies, _csv(ARGS.get("swing")))
     except Exception:            # record, then re-raise so the runner reports a failure
         result["errors"].append(traceback.format_exc())
         raise

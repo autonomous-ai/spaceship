@@ -1,0 +1,2 @@
+moving,fixed_exclude,axis_x_mm,axis_y_mm,direction,max_deg,step_deg,status_source
+"DOOR LEAF|DOOR UNIT|KICK STRIP|DROP SEAL|DOOR PULL|DOOR LOCK|\bKICK\b","HINGE",-961,-699,outward,90,2,"assumption: hinge axis on the leaf's hinge-side edge in the glass plane (skeleton door_xl, glass_y) until the hinges are named (D-46 HOLD); outward swing PROPOSED (open-questions Q3); 90 degrees for the clear width on the GA (REQ-US-03)"

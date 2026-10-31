@@ -56,7 +56,8 @@ def run_fusion(root, steps, out_json, cfg_root):
     cfg = os.path.join(cfg_root, CHECKS_DIR, "config")
     cmd = [sys.executable, runner, script, "--arg", "steps=" + ",".join(os.path.abspath(p) for p in steps),
            "--arg", "out=" + out_json, "--arg", "rules=" + os.path.join(cfg, "gap-rules.csv"),
-           "--arg", "allow=" + os.path.join(cfg, "clash-allow.csv"), "--arg", "tools=" + os.path.join(cfg, "tools.csv")]
+           "--arg", "allow=" + os.path.join(cfg, "clash-allow.csv"), "--arg", "tools=" + os.path.join(cfg, "tools.csv"),
+           "--arg", "swing=" + os.path.join(cfg, "door-swing.csv")]
     env = dict(os.environ, FUSION_MCP_LABEL=os.environ.get("FUSION_MCP_LABEL", "Mechanical Checker"))
     p = subprocess.run(cmd, env=env, capture_output=True, text=True)
     return p.returncode, p.stdout[-4000:], p.stderr[-4000:]
@@ -99,6 +100,17 @@ def findings_from(res, model, file_hint=""):
                       for g in items),
             "See the rule's fix in v2/04-Checks/config/gap-rules.csv.", file_hint, owner_for(file_hint),
             {"model": scope, "rules": items}))
+    for d in res.get("door_swing", []):
+        h = d.get("first_hit")
+        if h:
+            fs.append(Finding(
+                "C01", "door-swing", "%s door swing %s" % (model, d.get("direction")), "severe",
+                "Opening %s, the door hits %s at %g degrees (%s, %.1f mm3 overlap); it must open to %g degrees "
+                "freely. Swing assumptions: %s" % (d.get("direction"), _short(h["hits"]), h["angle_deg"],
+                                                   _short(h["moving"]), h["mm3"], d["max_deg"], d["rule"]),
+                "Move the hinge axis, trim the part it hits, or add a door stop before that angle if the "
+                "clear width at the stop still meets REQ-US-03.", file_hint, owner_for(file_hint, "35"),
+                {"model": scope, "swing": d}))
     for b in res.get("fasteners", []):
         if b.get("error"):
             continue
