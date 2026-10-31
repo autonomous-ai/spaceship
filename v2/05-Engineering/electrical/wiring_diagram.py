@@ -81,6 +81,7 @@ class Sheet:
         nx, ny = 12, H - 10 - 38
         self.rect(10, ny, x0 - 2, H - 10, INK, 0.3)
         self.text(nx, ny + 3.5, "NOTES", 2.0, INK, bold=True)
+        notes = ["UNITS: mm. GENERAL TOLERANCE: harness lengths +20/-0 mm per segment; route positions +/-5 mm."] + list(notes)
         for i, s in enumerate(notes):
             self.text(nx, ny + 7.0 + i * 2.75, s, 1.8, INK)
 

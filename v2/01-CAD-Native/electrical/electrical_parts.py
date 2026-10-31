@@ -94,11 +94,12 @@ part("w_col", "710023", "ELECTRICAL - HARNESS - AIR COLUMN", "Điện - bó dây
      "", "", None, "calculation (sum of its parts)", process="harness assembly; fitted in the column's chase in the factory")
 part("w_call", "710024", "ELECTRICAL - HARNESS - CALL LIGHT - R2", "Điện - bó dây đèn gọi video", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)", process="harness assembly; clipped into R2-CASS in the factory")
-part("w_draw", "710031", "ELECTRICAL - DRAW WIRE SET", "Điện - bộ dây mồi", "HS", "710000", 1,
-     "", "", None, "calculation (sum of its parts)", process="draw cords tied off at each grommet (REQ-VCK-03)")
+part("w_draw", "710031", "ELECTRICAL - DRAW WIRE - CEILING ROUTE", "Điện - dây mồi - đường trần", "HS", "710000", 1,
+     "", "", None, "calculation (sum of its parts)",
+     process="draw cords tied off at each hole (REQ-VCK-03): the ceiling route W33 and the column route W32")
 part("hubzone", "710041", "ELECTRICAL - HUB AND CONTROLS ZONE", "Điện - vùng cảm biến và nút bấm", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)", process="fitted in the air column's 180 x 180 zone (D-61, D-70)")
-part("cord", "710051", "ELECTRICAL - CORD SET - 220 V VN - 3 M", "Điện - dây nguồn 220 V - 3 m", "HS", "710000", 1,
+part("cord", "719001", "ELECTRICAL - CORD SET - 220 V VN - 3 M (KIT)", "Điện - bộ dây nguồn 220 V - 3 m", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)", process="ships loose in the installation kit; the US version changes only this cord, the inlet side and the socket (REQ-ELE-01)")
 
 
@@ -570,13 +571,13 @@ part("ycable", "718068", "ELECTRICAL - FAN Y-CABLE - 4-PIN PWM", "Điện - cáp
      "assumption", maker="Noctua", sku="NA-SYC1 (unverified; harness end housing H-ELE-07)", status=HOLD_BUY,
      source="", note="one per fan pair, at the fan box")
 
-# ---- cord set 710051 (ships loose; the US version changes only this, the inlet side and the socket)
-part("cord_conn", "718070", "ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP", "Điện - giắc dây nguồn", "PI", "710051", 1,
+# ---- cord set kit 719001 (ships loose; the US version changes only this, the inlet side and the socket)
+part("cord_conn", "718070", "ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP", "Điện - giắc dây nguồn", "PI", "719001", 1,
      "", "", 0.08, "assumption", maker="Neutrik", sku="mate of NAC3MPX-TOP, as selection E (NAC3F-TRUE1-S / NAC3FX-W-TOP): confirm",
      status=HOLD_BUY, source=SEL, note="locking")
-part("cord_wire", "718071", "ELECTRICAL - CORD - H05VV-F 3G1.5", "Điện - dây nguồn mềm 3 x 1.5", "PI", "710051", 3.0, "PVC", "",
+part("cord_wire", "718071", "ELECTRICAL - CORD - H05VV-F 3G1.5", "Điện - dây nguồn mềm 3 x 1.5", "PI", "719001", 3.0, "PVC", "",
      0.12, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY, source="", note="3 m; qty in m")
-part("plug_vn", "718072", "ELECTRICAL - MAINS PLUG - VN OFFICE SOCKET", "Điện - phích cắm", "PI", "710051", 1, "", "", 0.06,
+part("plug_vn", "718072", "ELECTRICAL - MAINS PLUG - VN OFFICE SOCKET", "Điện - phích cắm", "PI", "719001", 1, "", "", 0.06,
      "assumption", sku="HOLD: plug type checked with the factory's office sockets", status=HOLD_BUY, source="")
 
 

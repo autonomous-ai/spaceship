@@ -279,7 +279,7 @@ def calc_md(v, mass_of, harness):
     tot = mass_of("ele")
     groups = [("710001 power unit (with its mains wiring and fixings)", ["pu"]),
               ("710041 hub and controls zone", ["hubzone"]),
-              ("710051 cord set (ships loose; counts in the pod as shipped)", ["cord"]),
+              ("719001 cord set kit (ships loose; counts in the pod as shipped)", ["cord"]),
               ("lights: shelf strip, call strip and profile", ["strip_shelf", "w_call"]),
               ("harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses",
                [k for k, p in EP.P.items() if p["parent"] == "710000" and p["kind"] != "HS" and k != "strip_shelf"]
@@ -338,6 +338,9 @@ def main():
         import wiring_diagram as WD
         WD.write(os.path.join(REPO, OUT_PDF), os.path.join(REPO, OUT_PNG), v, rows, harness)
         print("wrote %s and its sheet images" % OUT_PDF)
+        import assembly_sheets as AS
+        for path in AS.write(os.path.join(REPO, "v2/02-Drawings/electrical"), v, harness):
+            print("wrote %s" % os.path.relpath(path, REPO))
     for rel in stale:
         print(("stale: " if opts.check else "wrote: ") + rel)
     if opts.check and stale:

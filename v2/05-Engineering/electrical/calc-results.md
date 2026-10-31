@@ -82,7 +82,7 @@ At the 53 l/s normal flow that adds **0.26 K** to C4's 3.8 K (ΔT = P / (1.2 × 
 |---|---:|---|
 | 710001 power unit (with its mains wiring and fixings) | 2.83 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 710041 hub and controls zone | 0.37 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| 710051 cord set (ships loose; counts in the pod as shipped) | 0.50 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| 719001 cord set kit (ships loose; counts in the pod as shipped) | 0.50 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | lights: shelf strip, call strip and profile | 0.30 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.13 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | **710000 ELECTRICAL** | **5.13** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
