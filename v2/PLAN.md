@@ -28,6 +28,35 @@ Agents work to these from day one. The hardware engineering lead and the indoor 
 | 4 | Guardrails: quiet and fresh air | At least as quiet as v1, with 30 dB as the aim. CO2 at or under 1,000 ppm with 2 people inside (about 62 m³/h). Fan noise inside at or under 30 dB(A). | Calculation, then a check on the prototype |
 | 5 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM, joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
 
+## What changes from the last attempt
+
+The team already tried Fusion's Python API with an AI model, and the engineers weren't happy with the output. The guideline reads like a list of what went wrong:
+- part sheets made before the assembly drawings
+- imported solids with decorative sketches
+- sizes taken from bounding boxes instead of hole centres
+- hardware invented to fit
+- one tolerance on everything
+- hole positions with no reason behind them
+- PASS with no evidence
+
+Python wasn't the problem. Scripts written blind, in one shot and shipped without checks were. This time:
+
+1. **Engineering first.** The pallet layout, real hardware part numbers and joint choices are settled before CAD (§4.3, §8).
+2. **Real design intent.** Each part gets named parameters, fully constrained sketches, named features, and its own component. The edit test runs on every part family (§4.4).
+3. **Small steps, checked.** Each feature is built, then measured (dimensions, clearances, mass) and screenshotted against the spec before the next one starts. No big blind scripts.
+4. **Drawings dimensioned on purpose.** Each part gets a dimension plan first:
+   - datums from how the part is held and fitted
+   - tagged hole centres
+   - tolerances set by function
+   - the right sheet size
+
+   Auto-dimension is only a draft (§6). Every sheet is rendered and looked at before review.
+5. **Automatic checks on every revision.** Units, names, BOM against CAD by part number, every hole a true circle, every dimension on a centre, and the title block filled.
+6. **A separate Reviewer.** A different agent from the one that built the work checks every sheet against the guideline's checklist (§13).
+7. **Engineers see it early.** One part and its drawing go to the hardware leads on day 2. We tune the template to their taste while the rest keeps going.
+
+All Engineers run Opus 5.5 at max effort on this Mac.
+
 ## Design for the pallet
 
 Shipping sets the panel sizes, so we decide the split before the CAD. A panel ships best standing upright on a standard 48 × 40 in pallet, which allows up to about 1200 mm wide and 1700 mm tall. Here's how the build plan's parts measure up:
@@ -75,7 +104,7 @@ There are no gates. Work runs straight through, and phases overlap where they ca
 
 Fusion's built-in MCP server already works on this Mac. I ran a test script through it, and it's now registered with Claude Code and Codex. It only answers locally, so all Engineers run on this Mac (Mac 1, already in the Swarm).
 - Prove the guideline's edit test (§4.4). Build one part from a fully constrained sketch with named parameters, save it as .f3d, export it to STEP, then change a parameter and confirm it rebuilds cleanly.
-- Drawing proof: produce one ISO drawing sheet through Fusion's drawing API. This Fusion version has the API we need: drawings in ISO first-angle; base, projected, section and detail views; dimensions and auto-dimensions; hole tables; datum and tolerance symbols; title blocks and revision tables; and PDF, DXF and DWG export. So agents script native drawings that update when the model changes, which is what the guideline prefers (§6.1). Computer use handles the visual check of each sheet and anything the API can't do.
+- Drawing proof: produce one ISO drawing sheet through Fusion's drawing API. This Fusion version has the API we need: drawings in ISO first-angle; base, projected, section and detail views; dimensions and auto-dimensions; hole tables; datum and tolerance symbols; title blocks and revision tables; and PDF, DXF and DWG export. So agents script native drawings that update when the model changes, which is what the guideline prefers (§6.1). Every sheet is exported, rendered and checked by eye. Anything the API can't do goes on a short list for a person to finish in Fusion.
 
 ### Milestone 1: decide the layout (about 1 day, 3 Engineers, starting alongside Phase 0)
 
@@ -138,13 +167,15 @@ About 1.5 weeks to a prototype-ready package, with no waiting on reviews. The cr
 
 ## Risks
 
-1. **Drawings.** The API covers what we need, but auto-placed dimensions usually need cleanup to be readable. Every sheet gets a visual check. A Codex Engineer with computer use fixes what the API can't.
-2. **Light vs quiet.** Light fixes come first, and any heavy fix goes to Dee with its cost in kg.
-3. **Late feedback.** With no gates, a late "no" can mean rework. Parametric CAD and small review packets after each milestone keep that cheap.
-4. **One Fusion.** A single Fusion on this Mac is the bottleneck for CAD and drawings. Fusion runs scripts one at a time from a queue. If that's too slow, we add a second Fusion seat on another machine.
+1. **Drawings.** The API covers what we need, but readable dimension placement is where the last attempt fell short. Each part gets a dimension plan, every rendered sheet gets checked by eye, and the hardware leads tune the template on day 2.
+2. **Claude allowance.** This Mac's weekly Claude allowance is 70% used until Nov 3, and Opus at max effort uses it fast. If it runs low, the non-Fusion Engineers can move to another Swarm machine with a Claude account, if Dee agrees.
+3. **Light vs quiet.** Light fixes come first, and any heavy fix goes to Dee with its cost in kg.
+4. **Late feedback.** With no gates, a late "no" can mean rework. Parametric CAD and small review packets after each milestone keep that cheap.
+5. **One Fusion.** A single Fusion on this Mac is the bottleneck for CAD and drawings. Fusion runs scripts one at a time from a queue. If that's too slow, we add a second Fusion seat on another machine.
 
 ## Decisions for Dee
 
-1. Approve the goals and this plan. Everything else is ready: Fusion's MCP is registered, and this Mac can run both Claude and Codex Engineers.
+1. Approve the goals and this plan. Everything else is ready: Fusion's MCP is registered, and this Mac can run the Engineers.
+2. Send last attempt's output and the engineers' top complaints about it. That's the fastest way not to repeat them.
 
 Rulings that need no answer: documents are in English with the team's Vietnamese part names alongside, and v2 files follow the guideline's folder layout (§12) under `v2/`.
