@@ -732,23 +732,49 @@ def build_hardware(design, root, out):
         len(out) - n0, len(comps), ", ".join(c.partNumber for c in comps.values())))
 
 
-def settle_part_number(app, root, pn, seconds=30.0):
-    """--doc-new's first upload can finish after a short build and overwrite the root part number with the
-    document's timestamp name (seen on the skin, a 2-feature build, 2026-10-31). Before saving, wait until the
-    upload has given the document its data file and the number has held for a second, setting it again if not."""
+def settle_props(app, root, pn, desc, seconds=30.0):
+    """The cloud can overwrite the root component's part number and description: --doc-new's first upload
+    finishing after a short build (the skin, 2026-10-31) put the document's timestamp name in the part
+    number, and new documents came out of their save with an empty description (B1, R1). Wait until the
+    document has its data file and both have held for a second, setting them again when they change."""
     import time
     t0, held = time.time(), 0
     while time.time() - t0 < seconds:
         adsk.doEvents()
-        if root.partNumber != pn:
+        if root.partNumber != pn or root.description != desc:
             root.partNumber = pn
+            root.description = desc
             held = 0
         elif app.activeDocument.dataFile is not None:
             held += 1
             if held >= 5:
                 return True
         time.sleep(0.2)
-    return root.partNumber == pn
+    return root.partNumber == pn and root.description == desc
+
+
+def save_holding_props(app, doc, root, pn, desc, note, tries=3):
+    """Save, wait for the upload to finish (the data file's version moves on), and check the part number and
+    description came through; if the upload reset them, set them again and save again."""
+    import time
+    for attempt in range(1, tries + 1):
+        if not settle_props(app, root, pn, desc):
+            raise RuntimeError("root part number / description would not hold before the save (%r, %r)" % (
+                root.partNumber, root.description))
+        before = doc.dataFile.versionNumber if doc.dataFile else 0
+        if not doc.save(note if attempt == 1 else "%s (part number and description set again)" % note):
+            raise RuntimeError("save failed")
+        t0 = time.time()
+        while time.time() - t0 < 90.0 and not (doc.dataFile and doc.dataFile.versionNumber > before):
+            adsk.doEvents()
+            time.sleep(0.25)
+        for _i in range(12):                    # 3 s more for the cloud to send any property back
+            adsk.doEvents()
+            time.sleep(0.25)
+        if root.partNumber == pn and root.description == desc:
+            return doc.dataFile.versionNumber if doc.dataFile else None
+        print("the save reset the root properties (%r, %r); setting them again" % (root.partNumber, root.description))
+    raise RuntimeError("root part number / description did not survive %d saves" % tries)
 
 
 def name_by_y(comp, known, first, prefix):
@@ -1167,7 +1193,8 @@ def run(_context):
     design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
     n_skel, n_wall = add_params(design, ARGS["repo_root"])
     root.partNumber = pn
-    root.description = "%s | %s | %s | position %s" % (PARTS[ROOT_KEY][1], PARTS[ROOT_KEY][2], REV, CODE)
+    desc = "%s | %s | %s | position %s" % (PARTS[ROOT_KEY][1], PARTS[ROOT_KEY][2], REV, CODE)
+    root.description = desc
     print("document %s (expected name %s): %d skeleton + %d wall parameters" % (
         app.activeDocument.name, DOC_NAME, n_skel, n_wall))
     bodies = build_panel(design, root) if PANEL_SIDE else build_cassette(design, root)
@@ -1185,7 +1212,8 @@ def run(_context):
         if c.bRepBodies.count:
             pp = c.getPhysicalProperties(adsk.fusion.CalculationAccuracy.HighCalculationAccuracy)
             print("MASS|%s|%s|%.3f kg|%d bodies" % (c.partNumber, c.name, pp.mass, c.bRepBodies.count))
-    root.partNumber = pn            # again at the end, in case an upload overwrote it (see above)
+    root.partNumber = pn            # again at the end, in case an upload overwrote them (see settle_props)
+    root.description = desc
     allb = list(bodies.values())
     print("root part number %s, bodies box %s" % (root.partNumber, [
         round(min(bbox(b)[i] for b in allb), 2) for i in range(3)] + [round(max(bbox(b)[i + 3] for b in allb), 2)
@@ -1200,11 +1228,9 @@ def run(_context):
         with open(sf, "r", encoding="utf-8") as fh:
             exec(compile(fh.read(), sf, "exec"), sf_ns)
         sf_ns["run"](None)
-        if not settle_part_number(app, root, pn):
-            raise RuntimeError("root part number %r would not hold at %s before the save" % (root.partNumber, pn))
-        if not doc.save("%s build: %s" % (REV, ARGS.get("note", "wall_side_panel.py"))):
-            raise RuntimeError("save failed")
-        print("saved %s (version %s)" % (doc.name, doc.dataFile.versionNumber if doc.dataFile else "?"))
+        ver = save_holding_props(app, doc, root, pn, desc, "%s build: %s" % (REV, ARGS.get("note", "wall_side_panel.py")))
+        print("saved %s (version %s), part number %s, description %r" % (doc.name, ver, root.partNumber,
+                                                                         root.description[:60]))
         path = os.path.join(ARGS["repo_root"], "v2/01-CAD-Native/wall/post_wall_doc.py")
         ns = {"__name__": "__fusion_post__", "__file__": path, "SCRIPT_ARGS": dict(ARGS, pn=pn)}
         with open(path, "r", encoding="utf-8") as fh:

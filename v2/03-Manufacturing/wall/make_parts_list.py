@@ -2,6 +2,7 @@
 
     python3 v2/03-Manufacturing/wall/make_parts_list.py 210101 510101      # side panel L1 and its cassette
     python3 v2/03-Manufacturing/wall/make_parts_list.py 210202 510202      # back panel B2 and its cassette
+    (the cassette's rows are left out until its report exists)
 
 Reads out/<pn>.json (written in Fusion by v2/01-CAD-Native/wall/report_wall_doc.py) for the outer panel
 assembly and its cassette, and writes <panel document name>_BOM.csv next to this script, in the columns
@@ -358,17 +359,21 @@ def cassette_rows(rep):
 
 
 def main(argv):
-    panel, cass = load(argv[1]), load(argv[2])
+    panel = load(argv[1])
+    have_cass = len(argv) > 2 and os.path.exists(os.path.join(HERE, "out", "%s.json" % argv[2]))
+    if len(argv) > 2 and not have_cass:
+        print("no report for %s yet: the panel's rows only" % argv[2])
     out = os.path.join(HERE, "%s_BOM.csv" % panel["document"].rsplit("_CAD", 1)[0])
-    rows = panel_rows(panel) + cassette_rows(cass)
+    rows = panel_rows(panel) + (cassette_rows(load(argv[2])) if have_cass else [])
     with open(out, "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=FIELDS)
         w.writeheader()
         for r in rows:
             w.writerow(r)
     top = [r for r in rows if r["level"] == 0]
-    print("wrote %s: %d rows; panel %s kg with its hardware, cassette %s kg" % (
-        os.path.basename(out), len(rows), top[0]["mass_total_kg"], top[1]["mass_total_kg"]))
+    print("wrote %s: %d rows; panel %s kg with its hardware%s" % (
+        os.path.basename(out), len(rows), top[0]["mass_total_kg"],
+        ", cassette %s kg" % top[1]["mass_total_kg"] if len(top) > 1 else ", no cassette yet"))
 
 
 if __name__ == "__main__":
