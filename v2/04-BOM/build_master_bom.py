@@ -91,6 +91,22 @@ def git(*args):
     return subprocess.run(["git", "-C", str(ROOT), *args], check=True, capture_output=True, text=True).stdout
 
 
+def branch_changes(base, ref, *paths, diff_filter=None):
+    """The files ref changed since its merge-base with base, less those base changed later. A branch stacked on a PR
+    that has since been squash-merged still carries that PR's older copies (AIR's branch kept CEILING's old lists
+    after #32 merged); base's newer copy wins for those. Later means a newer author time: a rebase keeps it, and a
+    squash merge sets it to the merge."""
+    mb = git("merge-base", base, ref).strip()
+    flt = [f"--diff-filter={diff_filter}"] if diff_filter else []
+    changed = git("diff", "--name-only", *flt, mb, ref, "--", *paths).splitlines()
+    later = set(git("diff", "--name-only", mb, base, "--", *paths).splitlines())
+
+    def last(tip, path):
+        return int(git("log", "-1", "--format=%at", f"{mb}..{tip}", "--", path).strip() or 0)
+
+    return [f for f in changed if f not in later or last(ref, f) > last(base, f)]
+
+
 def wanted(path):
     if path == REGISTER:
         return True
@@ -118,9 +134,9 @@ def load_sources(refs):
         names = git("ls-tree", "-r", "--name-only", ref, "--", *BOM_GLOBS, REGISTER).splitlines()
         if i:
             # A later ref adds only the files its own branch changed: an old, untouched copy of a file
-            # (the joints register on a branch cut before the register moved on) never overrides the first ref.
-            mb = git("merge-base", base, ref).strip()
-            changed = set(git("diff", "--name-only", mb, ref, "--", *BOM_GLOBS, REGISTER).splitlines())
+            # (the joints register on a branch cut before the register moved on) never overrides the first ref,
+            # and neither does a stacked branch's old copy of a file the first ref has replaced since.
+            changed = set(branch_changes(base, ref, *BOM_GLOBS, REGISTER))
             names = [n for n in names if n in changed]
         for rel in names:
             if wanted(rel):
