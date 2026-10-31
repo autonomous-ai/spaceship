@@ -134,11 +134,17 @@ FAMILIES_EL = {
         ELS + ": inlet_x, inlet_z, lan_z, inlet_d", "fill cut-out F47 behind them", "±0.2 (CNC router, assumption)",
         "routed with the skin blank (DXF)", "source (ELECTRICAL)"),
     (TRAY, 19.1, "z"): (
-        "F39", "Bushing holes for the light feed: G-PU-TOP in the cut-out's top return, G-B2-B4 in B2-CASS's top return "
-        "and B4-CASS's bottom return", "Heyco 2836 SB 750-625 bushing (ELECTRICAL)",
+        "F39", "Bushing holes for the light feed across the B2/B4 lining joint: G-B2-B4 in B2-CASS's top return and "
+        "B4-CASS's bottom return", "Heyco 2836 SB 750-625 bushing (ELECTRICAL)",
         "X 346, the light feed (PM 2026-10-31 20:38 UTC); Y 787.5, the middle of the 24 cable gap",
         ELS + ": grm_d 19.1 (the bushing's hole, PM: 19.1), y_bg", "in the return's flat, clear of its bends",
         "±0.2 (assumption)", "punched in the flat blank (DXF)", "source (ELECTRICAL)"),
+    (FELT, 12.0, "y"): (
+        "F40", "FX-CEIL: the ceiling route's crossing into B4-CASS, felt only",
+        "ELECTRICAL draw wire, ceiling route 710031",
+        "X el_ceil_x = (pod_w - 2 stack_t) / 4, under the ceiling cassette's cable holes; Z 2330, its top edge 2 under "
+        "the 12 lip", "ELECTRICAL via the PM 2026-10-31 21:10 UTC; PM rule: no cable hole through a lip",
+        "felt only: 2 clear of the lip, no steel, no bushing", "±1 (assumption)", "knife", "source (ELECTRICAL)"),
     (FELT, 16.0, "y"): (
         "F42", "FX-SHELF: the light shelf feed's way out of B4-CASS", "ELECTRICAL light feed harness 710011",
         "X 346 (the light feed), Z 2250 (the shelf; CEILING sets it)", ELS + ": shelf_z, FX-SHELF 16", "felt only",
@@ -148,31 +154,24 @@ OTHER_EL = {
     "R1": [("F43", "{felt}", "FS-CNR: felt slot 18 x 120 at the back-right corner (Y 768 to 786, Z 1040 to 1160), "
             "hidden behind B2-CASS's end", "the trunk turns the corner from B2-CASS's gap into R1-CASS's gap",
             ELS + ": FS-CNR", "stays on the back lining's plane", "±1 (knife, assumption)", "assumption (ELECTRICAL)")],
-    "B2": [("F44", "{tray}", "Power unit cut-out 304 x 268 (X 91 to 395, Z 866 to 1134) through the base, its edges "
-            "turned toward the room as returns the full 34, no lips",
-            "the frame-mounted unit (296 x 260 x 72) passes 4 clear all round, so the lining stays floating; the returns "
-            "close the cable gap and carry the slot F45 and a bushing hole F39",
-            ELS + " and its final size (PM 2026-10-31 20:38 UTC)", "fixed at ELECTRICAL's place",
-            "±0.5 (assumption)", "source (ELECTRICAL)"),
-           ("F45", "{tray}", "Slots: S-PU-X 20 x 70 in the cut-out's right return (Y 777.5 to 797.5, Z 1030 to 1100); "
-            "S-CNR 11 x 80 in the end return (Y 776 to 787, Z 1060 to 1140)",
-            "the unit's two lead exits, and the trunk's turn into R1-CASS; ELECTRICAL fits the edge grommets",
-            ELS + ": slot_h, slot_l, lx_z1, lx_z2, cs_h, y_xc, trunk_z", "S-CNR follows the side lining's face (pod_w)",
-            "±0.5 (assumption)", "assumption (ELECTRICAL)"),
-           ("F46", "{felt}", "Felt cut 1 clear round the cut-out's returns", "the felt edge there has no lip; the unit's "
-            "face covers it", "felt_c 1 (assumption)", "", "±1", "assumption"),
+    "B2": [("F44", "{tray}", "Power unit cut-out 304 x 268 (X 91 to 395, Z 866 to 1134) through the base, plain "
+            "edges, no returns", "the frame-mounted unit (296 x 260 x 72) passes 4 clear all round, so the lining stays "
+            "floating; its leads go straight into the cable gap with no steel on their path. Folded returns round a "
+            "rectangular hole can't come from a flat blank (their tabs overlap at the corners)",
+            ELS + " and its final size; plain cut-out PM ruling 2026-10-31 21:12 UTC", "fixed at ELECTRICAL's place",
+            "±0.5 (assumption)", "source (ELECTRICAL); DECIDED (plain)"),
+           ("F45", "{tray}", "Corner slot S-CNR 11 x 80 in the end return (Y 776 to 787, Z 1060 to 1140)",
+            "the trunk's turn into R1-CASS; ELECTRICAL fits the edge grommet", ELS + ": cs_h, y_xc, trunk_z",
+            "follows the side lining's face (pod_w)", "±0.5 (assumption)", "assumption (ELECTRICAL)"),
+           ("F46", "{felt}", "Felt cut flush with the tray's cut-out, 4 clear of the unit", "the felt edge there has no "
+            "lip; the unit's face plate covers it (ELECTRICAL to confirm)", ELS, "", "±1", "assumption"),
            ("F47", "{fill}", "Fill left out in the first bay: the unit (the cut-out's size, run on to the first stud so "
             "no sliver stays), the sleeve 20 wide down to Z 301, the inlet and LAN connectors (X 108 to 160, Z 301 to "
             "387)", "room for ELECTRICAL's factory-fitted parts; knife cut through the 40 fill", ELS,
             "the unit's cut-out runs to the first stud as it moves", "±2 (knife, assumption)",
             "source (ELECTRICAL); the unit's fixing HOLD (IF-12)"),
-           ("F48", "NO-PN-HOLD-H03", "The top clip zone on the first stud sits beside the cut-out's right return",
-            "the clip (H03) must clear the return's bend (X 395 to 396)", "HOLD H03", "", "", "HOLD")],
-    "B4": [("F40", "{felt}", "FX-CEIL: the ceiling route's crossing into B4-CASS, under the ceiling cassette's cable "
-            "holes (X (pod_w - 2 stack_t) / 4 = 583): not modelled yet", "ELECTRICAL's model put a 19.1 bushed hole "
-            "through the top lip, wider than the 12 lip; PM rule 2026-10-31 21:01 UTC: no cable hole through a lip, "
-            "felt only or a full steel face with its bushing, never a notch", ELS + ": ceil_x, z_cg",
-            "ELECTRICAL sets a felt-only height under the lip", "", "HOLD")],
+           ("F48", "NO-PN-HOLD-H03", "The top clip zone on the first stud starts 0.75 from the cut-out's edge (X 395)",
+            "the clip (H03) needs its edge distance on the tray base there", "HOLD H03", "", "", "HOLD")],
 }
 POSITIONS = {"2101": ("L1", "R1", "L2", "R2"), "2102": ("B1", "B2", "B3", "B4")}
 

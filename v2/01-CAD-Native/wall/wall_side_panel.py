@@ -291,6 +291,9 @@ EL_PARAMS = [
      _EL + " ceil_x = inner_w / 4: the ceiling cassette's cable holes (X 583, CEILING P01)"),
     ("el_z_cg", "pod_h - stack_t + tray_t + felt_t + gap_h / 2", "mm", "calculation",
      _EL + " z_cg: the middle of the ceiling lining's cable gap (Z 2337.5)"),
+    ("el_ceil_z", "pod_h - outer_t - lin_gap - lip_w - 2 mm - el_grm_s / 2", "mm", "source",
+     "ELECTRICAL via the PM 2026-10-31 21:10 UTC: the ceiling route's crossing into B4-CASS is a felt-only 12 hole at "
+     "Z 2330, its top edge 2 below the 12 lip (no cable hole through a lip, PM rule)"),
     ("el_inlet_x", "120 mm", "mm", "assumption", _EL + " inlet_x: the inlet column, just clear of the closing seam"),
     ("el_inlet_z", "313 mm", "mm", "source", _EL + " inlet_z: v1's 'Power Jack' centre Z 298.3 + 15"),
     ("el_lan_z", "375 mm", "mm", "source", _EL + " lan_z: v1's 'Jack LAN' centre Z 360 + 15"),
@@ -303,12 +306,12 @@ EL_USE = {
     ("R1", "cass"): ("el_fs_y0", "el_fs_y1", "el_fs_dz", "el_trunk_z", "el_kit_d", "el_kit_dz", "el_y_kit",
                      "el_grm_d", "el_y_cx"),
     ("R2", "cass"): ("el_grm_s", "el_call_y", "el_call_z", "el_shelf_z"),
+    # a plain cut-out (no returns, so no slot or bushing in them): PROPOSED by WALL 2026-10-31 21:08 UTC
     ("B2", "cass"): ("el_cut_x0", "el_cut_x1", "el_cut_z0", "el_cut_z1", "el_lt_x", "el_grm_d", "el_y_bg",
-                     "el_slot_h", "el_slot_l", "el_lx_z1", "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z"),
+                     "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z"),
     ("B2", "panel"): ("el_cut_x0", "el_cut_z0", "el_cut_z1", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d",
                       "el_sl_x", "el_sl_w"),
-    # the ceiling route's crossing (el_ceil_x, el_z_cg) waits for ELECTRICAL's new height under the top lip: HOLD
-    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d"),
+    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d", "el_ceil_x", "el_ceil_z", "el_grm_s"),
 }
 
 

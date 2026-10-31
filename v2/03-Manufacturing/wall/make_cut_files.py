@@ -12,7 +12,7 @@
   round holes the CAD has in it (B2: ELECTRICAL's inlet and LAN holes).
 - The felt, when it has ELECTRICAL's openings (R1, R2, B2, B4): seen from the room, its outline with the
   round holes the CAD has in it and the rectangular openings from the design's el_ parameters (R1's corner
-  slot, B2's cut-out round the unit's returns). A felt with no openings stays a parts-list row (D-89).
+  slot, B2's cut-out for the power unit). A felt with no openings stays a parts-list row (D-89).
 Each file is re-read and its unit, layers and extents printed.
 """
 
@@ -66,9 +66,8 @@ def felt_file(cass):
         yb = pv["pod_d"] / 2.0 - pv["stack_t"]
         rects.append(((yb + pv["el_fs_y0"], yb + pv["el_fs_y1"]), (pv["el_trunk_z"] - pv["el_fs_dz"],
                                                                    pv["el_trunk_z"] + pv["el_fs_dz"])))
-    if back and "el_cut_x0" in pv:                 # B2: round the power unit cut-out's returns, felt_c clear
-        e = pv["tray_t"] + pv["felt_c"]
-        rects.append(((pv["el_cut_x0"] - e, pv["el_cut_x1"] + e), (pv["el_cut_z0"] - e, pv["el_cut_z1"] + e)))
+    if back and "el_cut_x0" in pv:                 # B2: the power unit cut-out, flush with the tray's
+        rects.append(((pv["el_cut_x0"], pv["el_cut_x1"]), (pv["el_cut_z0"], pv["el_cut_z1"])))
     for (a0, a1), (z0, z1) in rects:
         pts = [view(a, a, z) for a, z in ((a0, z0), (a1, z0), (a1, z1), (a0, z1))]
         ents.append(("POLY", "CUT", pts))

@@ -124,7 +124,8 @@ def el_side_checks(design, root_pn, before_p, after_p):
 
 EL_BACK = {"510202": ("panel_z0", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_cut_x0", "el_cut_x1", "el_cut_z0",
                       "el_cut_z1"),
-           "510204": ("panel_z0", "seam_gap", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_shelf_z", "el_shelf_d"),
+           "510204": ("panel_z0", "seam_gap", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_shelf_z", "el_shelf_d",
+                      "el_ceil_x", "el_ceil_z", "el_grm_s"),
            "210202": ("close_gap", "tube_w", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d", "el_cut_z0",
                       "el_cut_z1")}
 
@@ -149,23 +150,25 @@ def el_back_checks(design, root_pn, before_p, after_p):
         holes = round_holes(design, "TRAY")
         top = a["panel_z0"] + a["back_ph"]
         ym, zm = a["el_y_bg"], (a["el_cut_z0"] + a["el_cut_z1"]) / 2.0
+        yb, yf = 850.0 - 84.0 + 34.0 - a["tray_t"] / 2, 850.0 - 84.0 + a["tray_t"] + 4.5     # base and felt mid-planes
+        x0, x1 = a["el_cut_x0"], a["el_cut_x1"]
         out += [("G-B2-B4 %g hole in the top return follows the row top (Z %.2f)" % (a["el_grm_d"], top),
                  has_hole(holes, a["el_grm_d"], "z", (top - a["tray_t"], top), x=a["el_lt_x"], y=ym)),
-                ("G-PU-TOP %g hole in the cut-out's top return (Z %.2f)" % (a["el_grm_d"], a["el_cut_z1"]),
-                 has_hole(holes, a["el_grm_d"], "z", (a["el_cut_z1"], a["el_cut_z1"] + a["tray_t"]),
-                          x=a["el_lt_x"], y=ym)),
-                ("power unit cut-out open at X %g to %g, its returns outside it" % (a["el_cut_x0"], a["el_cut_x1"]),
-                 not inside_of(design, "TRAY", a["el_cut_x0"] + 0.2, ym, zm) and
-                 not inside_of(design, "TRAY", a["el_cut_x1"] - 0.2, ym, zm) and
-                 inside_of(design, "TRAY", a["el_cut_x0"] - a["tray_t"] / 2, ym, zm) and
-                 inside_of(design, "TRAY", a["el_cut_x1"] + a["tray_t"] / 2, ym, zm))]
+                ("plain power unit cut-out at X %g to %g through the tray base and the felt" % (x0, x1),
+                 not any(inside_of(design, pre, x, y, zm) for pre, y in (("TRAY", yb), ("FELT", yf))
+                         for x in (x0 + 0.5, x1 - 0.5)) and
+                 all(inside_of(design, pre, x, y, zm) for pre, y in (("TRAY", yb), ("FELT", yf))
+                     for x in (x0 - 1.0, x1 + 1.0)))]
     elif root_pn == "510204":
         bot = a["panel_z0"] + a["back_ph"] + a["seam_gap"]
         tray, felt = round_holes(design, "TRAY"), round_holes(design, "FELT")
         out += [("G-B2-B4 %g hole in the bottom return follows the row seam (Z %.2f)" % (a["el_grm_d"], bot),
                  has_hole(tray, a["el_grm_d"], "z", (bot, bot + a["tray_t"]), x=a["el_lt_x"], y=a["el_y_bg"])),
-                ("no cable hole through the top lip (FX-CEIL waits for its felt-only height)",
-                 not [h for h in tray if h[1] == "y" and h[0] > 3.0]),
+                ("no cable hole through the top lip", not [h for h in tray if h[1] == "y" and h[0] > 3.0]),
+                ("FX-CEIL %g felt hole follows the pod width (X (pod_w - 2 stack_t) / 4 = %.2f), 2 under the lip" % (
+                    a["el_grm_s"], a["el_ceil_x"]),
+                 has_hole(felt, a["el_grm_s"], "y", x=a["el_ceil_x"], z=a["el_ceil_z"]) and
+                 abs((a["el_ceil_x"] - before_p["el_ceil_x"]) - (a["pod_w"] - before_p["pod_w"]) / 4.0) < 0.01),
                 ("FX-SHELF %g felt hole at X %g, Z %g" % (a["el_shelf_d"], a["el_lt_x"], a["el_shelf_z"]),
                  has_hole(felt, a["el_shelf_d"], "y", x=a["el_lt_x"], z=a["el_shelf_z"]))]
     else:

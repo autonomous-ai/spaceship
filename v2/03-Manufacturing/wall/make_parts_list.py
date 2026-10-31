@@ -330,8 +330,8 @@ def cassette_rows(rep):
     lower = "LOWER" in tray["name"]
     # ELECTRICAL's features (el_ parameters in the design; ELECTRICAL P01, PR #64)
     el = {q["name"] for q in rep.get("parameters", []) if q["name"].startswith("el_")}
-    tray_el = ("; ELECTRICAL's power unit cut-out (304 x 268) with full-depth returns, the two cable slots and two "
-               "bushing holes, all in the flat blank" if "el_cut_x0" in el else
+    tray_el = ("; ELECTRICAL's power unit cut-out (304 x 268, plain), the corner slot and the joint's bushing hole, "
+               "all in the flat blank" if "el_cut_x0" in el else
                "; ELECTRICAL's light feed bushing hole in the bottom return, in the flat blank" if "el_lt_x" in el else "")
     felt_el = bool(el & {"el_fs_y0", "el_call_y", "el_cut_x0", "el_shelf_d"})
     name_en, name_vi = root_names(root, tray, lambda n: n.replace(" - TRAY - ", " - CASSETTE - "),
