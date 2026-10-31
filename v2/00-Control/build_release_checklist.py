@@ -16,7 +16,11 @@ Writes v2/00-Control/release-checklist.md, or --out.
 
 A made part or assembly is done when it has native CAD (its own file or its assembly's), STEP, a DXF if it
 is sheet or cut from sheet (a cut list if it is tube), its own drawing, a BOM row with its mass and, for
-metal, its finish, and FAI characteristics. A part found only in the folders has no BOM row. When the
+metal, its finish, and FAI characteristics. D-89, read as the mechanical check reads it (tools/checks/c_drawings.py):
+a part counts as drawn when a drawing whose text says TABULATED lists its number (same family and kind), and a
+plain knife-cut rectangle of felt or fill counts as drawn, and cut, when a cut list (a .csv with "cut" in its
+name) has a row with its number, size, material and tolerance. A part found only in the folders has no BOM
+row. When the
 drawing is a made part's only gap and the Mac's screen is locked, the part is blocked by the locked screen:
 the drawing start needs it unlocked (D-84). Otherwise a part with a gap is open.
 A bought part is done when it has a joints-register row (hardware only, D-63), a maker and SKU, and a
@@ -28,13 +32,17 @@ Usage:  python3 v2/00-Control/build_release_checklist.py [--open-prs | --ref REF
 Nothing here releases anything: it lists what is missing (guideline milestone 4; REQ-DOC-02).
 """
 import argparse
+import csv
 import datetime
 import importlib.util
+import io
 import json
 import plistlib
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -54,6 +62,9 @@ TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
 FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL",
                "air": "CEILING (builds AIR, D-80)", "interior": "CEILING (builds INTERIOR, D-80)"}
 BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"
+FELT_FILL = re.compile(r"\bfelt\b|\bfill\b", re.I)
+FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
+TABULATED = re.compile(r"\bTABULATED\b", re.I)
 
 
 def load_bom():
@@ -118,6 +129,16 @@ def read_text(path, refs, local_first=False):
     return ""
 
 
+def local_copy(path, where, refs, tmp):
+    """A file on disk: this working tree's, or the bytes from the ref that gave it, written under tmp."""
+    if not refs or where == "working tree":
+        return ROOT / path
+    out = Path(tmp) / path
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_bytes(subprocess.run(["git", "-C", str(ROOT), "show", f"{where}:{path}"], check=True, capture_output=True).stdout)
+    return out
+
+
 def screen_state(choice):
     if choice in ("locked", "unlocked"):
         return choice
@@ -178,16 +199,94 @@ def files_by_pn(paths):
     return by
 
 
+def is_cut_list(path):
+    """A cut list, as the mechanical check reads one: a .csv with "cut" in its name, in the drawing or
+    manufacturing folders."""
+    name = path.rsplit("/", 1)[-1].lower()
+    return name.endswith(".csv") and "cut" in name and path.startswith(("v2/02-Drawings/", "v2/03-Manufacturing/"))
+
+
+def kind_of(pn):
+    n = int(pn[2:])
+    return "assembly" if n <= 999 else ("part" if n <= 7999 else "other")
+
+
+def pdf_text(path):
+    """A PDF's text: PyMuPDF if it is installed, else pdftotext; None when neither is there."""
+    try:
+        import fitz  # PyMuPDF
+        with fitz.open(path) as doc:
+            return "\n".join(page.get_text() for page in doc)
+    except ImportError:
+        pass
+    exe = shutil.which("pdftotext")
+    if exe:
+        return subprocess.run([exe, "-layout", str(path), "-"], capture_output=True, text=True, timeout=60).stdout
+    return None
+
+
+def tabulated_cover(by_pn, text_of):
+    """D-89: {number: drawing number} for every number that a tabulated drawing lists. A tabulated drawing's
+    text says TABULATED; it covers the other numbers of its own family and kind in its text, so a mating part
+    named in a note doesn't count (as the mechanical check reads it)."""
+    cover = {}
+    for own, kinds in by_pn.items():
+        if kind_of(own) not in ("part", "assembly"):
+            continue
+        for path in kinds.get("DWG", []):
+            text = text_of(path) if path.lower().endswith(".pdf") else None
+            if not text or not TABULATED.search(text):
+                continue
+            for n in sorted(set(re.findall(r"(?<!\d)(\d{6})(?!\d)", text))):
+                if n != own and n[:2] == own[:2] and kind_of(n) == kind_of(own):
+                    cover.setdefault(n, own)
+    return cover
+
+
+def cut_rows(cut_texts):
+    """{number: [(row, path)]}: the cut-list rows with a cell that is exactly the number."""
+    out = {}
+    for path, text in cut_texts.items():
+        try:
+            for row in csv.DictReader(io.StringIO(text)):
+                cells = {(k or "").strip(): (v or "").strip() for k, v in row.items() if isinstance(k, str) and isinstance(v, str)}
+                for n in {v for v in cells.values() if re.fullmatch(r"\d{6}", v)}:
+                    out.setdefault(n, []).append((cells, path))
+        except csv.Error:
+            continue
+    return out
+
+
+def cut_list_lacks(rows):
+    """What the best cut-list row lacks of size, material and tolerance (the mechanical check's columns), or
+    None when no cut list has a row for the number."""
+    best = None
+    for cells, _path in rows:
+        def has(pattern):
+            return [v for k, v in cells.items() if re.search(pattern, k, re.I) and v]
+        lacks = [n for n, ok in (
+            ("size", any(re.search(r"\d", v) for v in has(r"size|dimension|length|width|thick|^[lwt]_?mm$"))),
+            ("material", bool(has(r"material|grade"))),
+            ("tolerance", bool(has(r"tol")) or any(re.search(r"±|\+/-", v) for v in cells.values()))) if not ok]
+        if FEATURES.search(" ".join(cells.values())):
+            lacks.append("a plain rectangle (it names pockets, notches or holes)")
+        if best is None or len(lacks) < len(best):
+            best = lacks
+    return best
+
+
 def where_of(r, labels):
     where = r["source_file"].split(" @ ", 1)[-1]
     ref = where.split(" (", 1)[0]
     return labels.get(ref, "this tree" if ref == "working tree" else ref)
 
 
-def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts):
+def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None):
     chars, _, accept = fai
+    tab_cover = tab_cover or {}
+    by_cut_row = cut_rows(cut_texts)
     reg = {i["part_number"]: i for i in register if i["part_number"]}
-    cut_lists = [p for p in paths if "CUT-LIST" in p]
+    cut_lists = [p for p in paths if is_cut_list(p)]
     made, bought, last_unit, seen = [], [], {}, {}
     for r in parts:
         pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
@@ -203,8 +302,12 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             text = " ".join([r["material"], r["process"], r["name"]])
             cad = any(by_pn.get(h, {}).get("CAD") for h in holders)
             step = any(by_pn.get(h, {}).get("STEP") for h in holders)
+            felt_fill = r["make_buy"] != "assembly" and bool(FELT_FILL.search(r["name"]))
+            by_cut = felt_fill and cut_list_lacks(by_cut_row.get(pn, [])) == []
             if r["make_buy"] == "assembly":
                 flat = "n/a"
+            elif by_cut:
+                flat = "cut list"
             elif SHEET.search(text):
                 flat = "yes" if by_pn.get(pn, {}).get("DXF") else "no"
             elif TUBE.search(text):
@@ -213,13 +316,20 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 flat = "yes" if listed or r.get("cut_rows") else "no"
             else:
                 flat = "n/a"
-            dwg = bool(by_pn.get(pn, {}).get("DWG"))
+            if by_pn.get(pn, {}).get("DWG"):
+                dwg = "yes"
+            elif pn in tab_cover:
+                dwg = f"on {tab_cover[pn]}, tabulated (D-89)"
+            elif by_cut:
+                dwg = "cut list (D-89)"
+            else:
+                dwg = "no"
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"
             metal = METAL.search(r["material"] or "")
             finish = "n/a" if not metal or r["make_buy"] == "assembly" else (
                 "yes" if r["finish"] or COATED.search(r["material"]) else "no")
             ids = [i for i, pats in chars if any(p.fullmatch(pn) for p in pats)]
-            gaps = [n for n, ok in (("CAD", cad), ("STEP", step), ("DXF or cut list", flat != "no"), ("drawing", dwg),
+            gaps = [n for n, ok in (("CAD", cad), ("STEP", step), ("DXF or cut list", flat != "no"), ("drawing", not dwg.startswith("no")),
                                     ("mass", mass), ("finish", finish != "no"), ("FAI", bool(ids))) if not ok]
             line = {**r, "bom_row": True, "cad": cad, "step": step, "flat": flat, "dwg": dwg, "mass_ok": mass,
                     "finish_ok": finish, "fai": ids, "gaps": gaps, "from": {where_of(r, labels)}}
@@ -361,7 +471,11 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "parts, through the master BOM's reader (a later branch adds only the files it changed), the files named "
             "`PARTNO_REV_NAME_DOCTYPE.ext` in `v2/01-CAD-Native`, `v2/02-Drawings` and `v2/03-Manufacturing`, the FAI plan "
             "(`v2/06-Verification/fai-plan.md`) and the test plans. Without `--open-prs` it reads this working tree.", "",
-            "- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing must carry its own number.",
+            "- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing carry its own number, with two exceptions (D-89), "
+            "read as the mechanical check reads them: a drawing whose text says TABULATED covers the other numbers of its family and kind "
+            "that it lists; a felt or fill piece needs no drawing or DXF when a cut list (a .csv with \"cut\" in its name) has a row with its "
+            "number, size, material and tolerance, and the row names no pockets, notches or holes (the mechanical check also looks for holes "
+            "in its STEP).",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
@@ -394,14 +508,16 @@ def main(argv=None):
                 if r["source_file"].startswith(path) and TUBE.search(r["material"] or ""):
                     r["cut_rows"] = True
     files = list_files(refs)
-    cut_texts = {p: read_text(p, refs) for p in files if "CUT-LIST" in p}
+    cut_texts = {p: read_text(p, refs) for p in files if is_cut_list(p) or "CUT-LIST" in p}
     fai = fai_plan(read_text(FAI, refs, local_first=True), bom)
     register_text = sources.get(bom.REGISTER, ("", ""))[0]
     tests = test_rows(read_text(TEST_PLAN, refs), register_text, fai[1], bom)
     screen = screen_state(a.screen)
     by_pn = files_by_pn(files)
+    with tempfile.TemporaryDirectory() as tmp:
+        tab_cover = tabulated_cover(by_pn, lambda path: pdf_text(local_copy(path, files[path], refs, tmp)))
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
-                               screen, bom, labels, cut_texts)
+                               screen, bom, labels, cut_texts, tab_cover)
     made += files_only(by_pn, parts, files, labels, screen)
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
