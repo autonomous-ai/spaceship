@@ -1,0 +1,44 @@
+# Drawing record: V2-SWL-00 proof panel (frame V2-SWL-10 + skin V2-SWL-20)
+
+Phase 0 proof. **DRAFT P01, not for manufacture.**
+
+- PDF: `V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG.pdf` (A2, cleaned: see "Personal data")
+- Render checked by eye: `V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG-render.png` (150 dpi)
+- Native drawing: Fusion cloud, Default Project / FocusPod v2 / `V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG`, made from the design's version 1
+- Made 2026-10-31 on Mac 1, Fusion 2706.1.17, by `make_drawing.py` (steps below). The repo PDF is sheet CLEAN2 (sheet 3 of the Fusion drawing): a clean rebuild on a new sheet, added by script with no dialog. Sheets 1 and 2 are earlier tries the API can't delete
+
+## How it was made
+
+| Step | How | Result |
+|---|---|---|
+| Start the drawing | Fusion's Create Drawing command, started by script with the Data Panel on Default Project; **one OK click and one Cancel click** (Base View dialog) by the Lead through macOS accessibility. These two clicks are the only steps outside the API | ISO, mm, first-angle drawing |
+| Sheet | `step=save`: sheet set to A2, saved into FocusPod v2 | A2 landscape 594 x 420 mm |
+| Front view | `step=front`: base view "Front" (looks along +Y: the frame from inside the pod), 1:5, centred at (330, 255) mm | 180..480 x 140..370 mm |
+| View from above | `step=top`: base view "Top", 1:5, aligned below the front view (first angle). The API can't make projected views; the PM ruled aligned base views are fine | 180..480 x 77.7..82.3 mm, 4 hole circles |
+| View from the right | `step=right`: base view "Right" (from +X, the back of the pod), 1:5, aligned left of the front view (first angle) | 107.7..112.3 x 140..370 mm, 4 hole circles |
+| Dimensions | `dims_front`, `dims_top`, `dims_right`: linear dimensions from view geometry: datum corners (line ends) to hole centres (circle centre points), baseline style | 14 dimensions: 1470, 30, 1150, 565; holes 60 / 510 / 960 / 1410 from datum C and 10 from datum A; holes 60 / 403.33 / 746.67 / 1090 from datum B and 10 from datum A |
+| Hole tables | Fusion hole tables on the two side views, origins on the datum corners | View from the right: 4 rows, tags A1-A4 on the view. View from above: table came out empty |
+| Projection symbol | Sheet sketch, lines and circles: truncated cone, narrow end left, end view circles on the right (ISO first angle) | Drawn above the title block |
+| Export | `step=export`: PDF to `.raw/` (git-ignored), then `tools/fusion/pdf_clear_field.py` | Repo PDF without the account holder's name |
+
+## Checks (CAD and render checks; nothing here is a physical test)
+
+| Check | Result |
+|---|---|
+| ISO, first-angle, projection symbol | Pass: ISO drawing standard (first-angle); symbol drawn. Its layout follows the sources below |
+| Holes dimensioned to centres from datums | Pass: every hole dimension starts on a datum corner of the view and ends on the circle's centre point; values match the model |
+| Holes are true circles | Pass: the view curves are circles (type Circle), and they render round at 150 dpi |
+| Hole table tags match the view | Pass for the one table kept: tags A1-A4 on the view from the right = H09-H12 (said in its title). The view-from-above table came out empty in Fusion, so it was left out; those holes are dimensioned on the view. Tags can't be set to H01... by API; the H01-H12 list is in `FEATURE-RATIONALE.md` |
+| Title block filled | Fail by API: values come from document properties the API can't set. Title, sheet and date are filled; part no., rev, status, scale and material are not |
+| No overlaps | Pass on CLEAN2 (render checked): the front view sits 10 mm lower so the hole table, which Fusion puts top right, clears it |
+| Readable at A2 | Pass (render checked) |
+| Personal data | Pass after cleaning: "Created by" value removed from the text layer; checked by re-reading the PDF |
+
+## Leftover clicks
+
+The list is in `tools/fusion/README.md` ("Leftover clicks"): delete sheets 1 and 2, fill the title block, save as our template, add the two sections, re-export. The general notes (units, datums, 2D axis mapping per view, scoped tolerance proposal) are in `make_drawing.py` NOTES; the API can't put free text on a sheet.
+
+## Sources for the projection symbol
+
+- RMIT Learning Lab, mechanical drawings, views: first-angle symbol has the view from the left drawn to the right of the front view. https://learninglab.rmit.edu.au/dlsweb/Toolbox/electrotech/toolbox1204/resources/03workshop/02drawings/03views.htm
+- ISO 128-3:2020 preview (clause 4.7, first-angle symbol). https://webstore.ansi.org/preview-pages/ISO/preview_ISO+128-3-2020.pdf

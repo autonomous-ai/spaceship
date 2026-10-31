@@ -1,0 +1,3 @@
+# Raw Fusion PDF exports carry the account holder's name; only cleaned copies go in the repo.
+.raw/
+__pycache__/
