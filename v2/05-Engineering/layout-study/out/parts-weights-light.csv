@@ -15,9 +15,9 @@ B-KEY,BASE - CORNER KEY,Ke góc đế,BASE,120 x 80 x 40,6,0.15,0.90,box,assumpt
 B-GLIDE,BASE - LEVELLING GLIDE (hex from above),Chân chỉnh cao,BASE,50 x 50 x 40,8,0.15,1.20,box,assumption,
 B-THRESH,"BASE - DOOR THRESHOLD, LOW",Ngưỡng cửa thấp,BASE,1176 x 60 x 20,1,1.20,1.20,upright,assumption,about 20 mm high; replaces the 100 mm band across the door only
 B-FLOOR,BASE - THIN FLOOR PANEL 15 mm,Tấm sàn mỏng,BASE,1462 x 1212 x 15,2,16.48,32.96,upright,calculation,15 mm ply + 0.3 kg/m2 finish; lies on the room floor on a 3 mm seal mat
-F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 200,1,9.98,9.98,long,calculation,
-F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 200,1,18.06,18.06,long,calculation,
-F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 200,1,7.02,7.02,long,calculation,
+F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 235,1,9.98,9.98,long,calculation,
+F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 235,1,18.06,18.06,long,calculation,
+F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 235,1,7.02,7.02,long,calculation,
 F-GLASS-DOOR,FRONT - GLASS DOOR (8 mm tempered glass),Cửa kính,FRONT,2011 x 1176 x 8,1,41.60,41.60,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
 F-GLASS-FIXED,FRONT - FIXED GLASS (8 mm tempered glass),Vách kính cố định,FRONT,2139 x 724 x 8,1,26.88,26.88,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
 F-HW,FRONT - DOOR AND GLAZING HARDWARE KIT,Phụ kiện cửa và kính,FRONT,600 x 400 x 150,1,5.78,5.78,box,assumption,"3 hinges, pull, drop seal, sealed glazing profiles"

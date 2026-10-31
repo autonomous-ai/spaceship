@@ -7,11 +7,11 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 
 ## Result
 
-1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 441 kg, and the light build 296 kg (298 kg with the fast-assembly hardware). The decided build comes to **403 kg** here and about 398 kg in the sound study. That build has the sound study's final walls, splitter silencers in the decor blocks and a frameless 4+4 laminated front. The PM's ruling carries it as 400 ± 10 kg until the CAD parts list settles it, and this study's figure is inside that band. Most of the gap to the sound study is two items its total leaves out: the TD-500 fans at 6.0 kg each instead of the plan's 1.5 kg (+9.0 kg), and the clips and rails of the lining cassettes (+9.0 kg). The PM's 0.4 mm inner steel tray (DECIDED) saves 12.7 kg against 0.5 mm and keeps the build inside the band. If the sound study shows the thinner tray costs more than 0.5 dB, it goes back to 0.5 mm (416 kg) and the cap becomes 420 kg, which that build is inside. The win-backs are confirmed: 20 x 40 x 1.2 frames save 7.0 kg and 25 kg/m3 fill saves 5.2 kg.
-2. **Parts.** In the decided build every part is 20 kg or less except the glass. The glass door weighs 43.3 kg and the fixed panel 28.0 kg; two people carry each with 2 suction lifters (21.6 kg each on the door). The right decor block (18.1 kg) and its splitter silencer (18.0 kg) ship as separate parts; together they would weigh 36.1 kg. The top block (7.0 kg) and its silencer (9.0 kg) also ship apart, though together they would still be 16.0 kg. The decor's PET fill (3.1 kg) ships loose: inside the right decor block it would make that block 19.7 kg, too close to the limit for the assumptions behind it.
-3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet, 502 kg gross, 6.1 lb/ft3. The 48 x 40 weighs 228 kg and stands 1,646 mm high. The 96 x 48 weighs 274 kg and stands 1,056 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
+1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 441 kg, and the light build 296 kg (298 kg with the fast-assembly hardware). The decided build comes to **419 kg**, 1.0 kg under the PM's 420 kg cap; the sound study expects 418 to 420 kg. That build has the sound study's final walls with the 0.5 mm inner tray, splitter silencers in the decor blocks with the thicker linings (+3.5 kg), and a frameless 4+4 laminated front. The 0.4 mm tray would have saved 12.7 kg but cost 1 dB, so it was dropped. Against the sound study's earlier total, this study also counts the TD-500 fans at 6.0 kg each (+9.0 kg against the plan's 1.5 kg fans) and the clips and rails of the lining cassettes (+9.0 kg). The win-backs are confirmed: 20 x 40 x 1.2 frames save 7.0 kg and 25 kg/m3 fill saves 5.2 kg.
+2. **Parts.** Every part is 20 kg or less except the glass and, by 0.3 kg, the right splitter silencer (20.3 kg). That figure assumes the extra lining splits between the two silencers in proportion to their mass. PROPOSED: its splitter baffles ship separately from the casing and slide in after it, which keeps every piece well under 20 kg. The glass door weighs 43.3 kg and the fixed panel 28.0 kg; two people carry each with 2 suction lifters (21.6 kg each on the door). The right decor block (18.1 kg) and its silencer ship apart; together they would weigh 38.4 kg. The top block (7.0 kg) and its silencer (10.2 kg) also ship apart. The decor's PET fill (3.1 kg) ships loose: inside the right decor block it would make that block 19.7 kg, too close to the limit for the assumptions behind it.
+3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet, 518 kg gross, 6.0 lb/ft3. The 48 x 40 weighs 238 kg and stands 1,646 mm high. The 96 x 48 weighs 280 kg and stands 1,126 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
 4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **125 min** (4.2 person-hours): 76 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
-5. **Decisions.** Everything in the layout is DECIDED, including carrying the ceiling fill on its cassette and the 400 ± 10 kg total.
+5. **Decisions.** Everything in the layout is DECIDED except shipping the right silencer's baffles separately (item 2).
 
 ## Decisions
 
@@ -24,7 +24,9 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 | No plywood behind the ACP; frame members at 400 mm keep the ACP flat | DECIDED |
 | Fast-assembly changes: factory subassemblies, captive bolts, tool-free clips on panel seams, felt pre-fitted (section 4) | DECIDED |
 | Front: 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look). Door and fixed glass are carried by two people with suction lifters | DECIDED |
-| Quiet build: the sound study's final stack with a 0.4 mm inner steel tray; splitter silencers inside the right and top decor blocks, shipped as separate parts and slid in through felt-covered access panels (inside only); 400 kg cap (420 kg if the tray goes back to 0.5 mm), 20 kg part limit and pallet layout kept | DECIDED |
+| Quiet build: the sound study's final stack with the 0.5 mm inner steel tray (0.4 mm cost 1 dB); splitter silencers with thicker linings inside the right and top decor blocks, shipped as separate parts and slid in through felt-covered access panels (inside only); 420 kg cap, 20 kg part limit and pallet layout kept | DECIDED |
+| Decor block depth follows v1's real geometry, 230 to 235 mm, not the plan's 200 | DECIDED |
+| The right splitter silencer ships with its baffles separate from the casing, so no piece is over 20 kg | PROPOSED |
 | The inner skin and felt ship as separate clip-on inner leaves (the sound study's lining cassettes), one per panel, 19 kg or less, with the outside seams as planned | DECIDED |
 | Ceiling fill carried on the back of the ceiling cassettes, so the ceiling panel stays at 20 kg or less (section 5) | DECIDED |
 | Rejected: split decor blocks (B2), 5 bands per wall (C), full-height walls, castors in v2, no floor | DECIDED |
@@ -138,9 +140,9 @@ Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 2
 | B-GLIDE | BASE - LEVELLING GLIDE (hex from above) / Chân chỉnh cao | BASE | 50 x 50 x 40 | 8 | 0.1 | 1.2 |  | assumption |
 | B-THRESH | BASE - DOOR THRESHOLD, LOW / Ngưỡng cửa thấp | BASE | 1,176 x 60 x 20 | 1 | 1.2 | 1.2 |  | assumption |
 | B-FLOOR | BASE - THIN FLOOR PANEL 15 mm / Tấm sàn mỏng | BASE | 1,462 x 1,212 x 15 | 2 | 16.5 | 33.0 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.0 | 10.0 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 18.1 | 18.1 |  | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.0 | 7.0 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 235 | 1 | 10.0 | 10.0 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 235 | 1 | 18.1 | 18.1 |  | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 235 | 1 | 7.0 | 7.0 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (8 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 8 | 1 | 41.6 | 41.6 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (8 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 8 | 1 | 26.9 | 26.9 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 5.8 | 5.8 |  | assumption |
@@ -178,9 +180,9 @@ Light build: no part is over 20 kg except the glass (door 41.6 kg, fixed panel 2
 | B-BRACKET | BASE - CORNER BRACKET / Pát góc khung sàn | BASE | 150 x 100 x 60 | 4 | 0.3 | 1.4 |  | assumption |
 | B-BOARD | BASE - FLOOR BOARD / Ván sàn | BASE | 1,428 x 1,184 x 15 | 2 | 15.2 | 30.4 |  | calculation |
 | B-THRESH | BASE - FRONT EDGE TRIM / Ốp mép sàn trước | BASE | 1,917 x 204 x 3 | 1 | 1.4 | 1.4 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 14.7 | 14.7 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 26.5 | 26.5 | OVER 20 kg | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 10.7 | 10.7 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 235 | 1 | 14.7 | 14.7 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 235 | 1 | 26.5 | 26.5 | OVER 20 kg | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 235 | 1 | 10.7 | 10.7 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (10 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 10 | 1 | 52.0 | 52.0 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (10 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 10 | 1 | 33.6 | 33.6 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 2.6 | 2.6 |  | assumption |
@@ -198,13 +200,13 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | Option | What it is | Pod kg | Parts | M6 bolts + clips | Cable connectors | Pallets 48x40 + 96x48 | Shipped kg (gross) | Max loaded height mm | Density lb/ft3 | Assembly, min (2 people) | Person-hours |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| **A** | Plan as written | 441 | 59 | 134 + 0 | 3 | 1 + 1 | 544 | 1,646 | 7.7 | 191 | 6.4 |
-| **B1** | Plan split, light build, fast assembly, 2 pallets (DECIDED) | 298 | 45 | 76 + 38 | 3 | 1 + 1 | 397 | 1,646 | 6.4 | 104 | 3.5 |
+| **A** | Plan as written | 441 | 59 | 134 + 0 | 3 | 1 + 1 | 544 | 1,646 | 7.4 | 191 | 6.4 |
+| **B1** | Plan split, light build, fast assembly, 2 pallets (DECIDED) | 298 | 45 | 76 + 38 | 3 | 1 + 1 | 397 | 1,646 | 6.1 | 104 | 3.5 |
 | **B2** | As B1, decor and base band split to fit 48x40 (rejected) | 300 | 49 | 92 + 38 | 3 | 2 + 1 | 425 | 1,806 | 4.9 | 113 | 3.8 |
-| **C** | Horizontal bands, light build, fast assembly (rejected) | 311 | 57 | 76 + 98 | 6 | 1 + 1 | 410 | 1,646 | 4.7 | 124 | 4.1 |
+| **C** | Horizontal bands, light build, fast assembly (rejected) | 311 | 57 | 76 + 98 | 6 | 1 + 1 | 410 | 1,646 | 4.5 | 124 | 4.1 |
 
 - **A, plan as written.** Fits 2 pallets only if the raised floor frame ships as knock-down bars; welded as in v1 (2500 x 1703 mm per the v1 BOM, 55 kg), it fits no standard pallet. Heaviest option (441 kg). The right decor block is over 20 kg, and the floor boards need screws and a driver.
-- **B1, DECIDED.** Panels, short base band pieces, floor panels and the felt strips go on the 48 x 40 (180 kg, 1,646 mm high). The decor blocks, the long base band pieces, the kit boxes and the glass go on the 96 x 48 (217 kg, 608 mm high). Its longest piece is 2,420 mm (95.3 in), under the 96 in length where most LTL carriers start overlength charges. One long pallet is needed anyway: the glass is 2011 and 2139 mm long.
+- **B1, DECIDED.** Panels, short base band pieces, floor panels and the felt strips go on the 48 x 40 (180 kg, 1,646 mm high). The decor blocks, the long base band pieces, the kit boxes and the glass go on the 96 x 48 (217 kg, 678 mm high). Its longest piece is 2,420 mm (95.3 in), under the 96 in length where most LTL carriers start overlength charges. One long pallet is needed anyway: the glass is 2011 and 2139 mm long.
 - **B2, rejected.** Cutting the decor blocks and standing the base band up puts everything except the glass on 48 x 40 pallets. But it needs two of them, and the glass still takes the long pallet alone: 3 pallets, 425 kg gross. The cut also puts seams across the faceted front.
 - **C, rejected.** Five stacked bands per wall (like Orangebox Air3) give light 4 to 5 kg parts. But they add 60 fixings, 3 extra visible seams per wall, 3 more cable connectors and more gasket to seal. With the plan's split, parts are already under 20 kg, so bands buy nothing.
 - **Fewer, larger panels, rejected where the 20 kg limit bites.** A full-height side wall weighs 19 kg even without felt. A full-height back panel with felt pre-fitted weighs 19.9 kg. Both are over 20 kg.
@@ -234,9 +236,9 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | B-BRACKET | BASE - CORNER BRACKET / Pát góc khung sàn | BASE | 150 x 100 x 60 | 4 | 0.3 | 1.4 |  | assumption |
 | B-BOARD | BASE - FLOOR BOARD / Ván sàn | BASE | 1,428 x 1,184 x 15 | 2 | 15.2 | 30.4 |  | calculation |
 | B-THRESH | BASE - FRONT EDGE TRIM / Ốp mép sàn trước | BASE | 1,917 x 204 x 3 | 1 | 1.4 | 1.4 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 14.7 | 14.7 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 26.5 | 26.5 | OVER 20 kg | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 10.7 | 10.7 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 235 | 1 | 14.7 | 14.7 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 235 | 1 | 26.5 | 26.5 | OVER 20 kg | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 235 | 1 | 10.7 | 10.7 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (10 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 10 | 1 | 52.0 | 52.0 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (10 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 10 | 1 | 33.6 | 33.6 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 2.6 | 2.6 |  | assumption |
@@ -264,7 +266,7 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | [1: 48x40 in](out/pallets-A-1-48x40.svg) | 1,219 x 1,016 | 258 | 570 | 1,646 (64.8 in) | 72.0 | 7.9 | B-BOARD, B-RAIL-FL-06, B-RAIL-FL-07, B-RAIL-FL-08, C-HALF, L-FELT-BACK, L-FELT-CEIL, L-FELT-SIDE, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
-| [2: 96x48 in](out/pallets-A-2-96x48.svg) | 2,438 x 1,219 | 285 | 629 | 788 (31.0 in) | 82.7 | 7.6 | B-JOIST, B-RAIL-FL-01, B-RAIL-FL-02, B-RAIL-FL-03, B-RAIL-FL-04, B-RAIL-FL-05, B-THRESH, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, I-TABLE, KIT-CARTON |
+| [2: 96x48 in](out/pallets-A-2-96x48.svg) | 2,438 x 1,219 | 285 | 629 | 858 (33.8 in) | 90.0 | 7.0 | B-JOIST, B-RAIL-FL-01, B-RAIL-FL-02, B-RAIL-FL-03, B-RAIL-FL-04, B-RAIL-FL-05, B-THRESH, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, I-TABLE, KIT-CARTON |
 
 | # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
@@ -302,9 +304,9 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | B-GLIDE | BASE - LEVELLING GLIDE (hex from above) / Chân chỉnh cao | BASE | 50 x 50 x 40 | 8 | 0.1 | 1.2 |  | assumption |
 | B-THRESH | BASE - DOOR THRESHOLD, LOW / Ngưỡng cửa thấp | BASE | 1,176 x 60 x 20 | 1 | 1.2 | 1.2 |  | assumption |
 | B-FLOOR | BASE - THIN FLOOR PANEL 15 mm / Tấm sàn mỏng | BASE | 1,462 x 1,212 x 15 | 2 | 16.5 | 33.0 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.0 | 10.0 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 18.1 | 18.1 |  | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.0 | 7.0 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 235 | 1 | 10.0 | 10.0 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 235 | 1 | 18.1 | 18.1 |  | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 235 | 1 | 7.0 | 7.0 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (8 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 8 | 1 | 41.6 | 41.6 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (8 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 8 | 1 | 26.9 | 26.9 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 5.8 | 5.8 |  | assumption |
@@ -333,7 +335,7 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | [1: 48x40 in](out/pallets-B1-1-48x40.svg) | 1,219 x 1,016 | 180 | 396 | 1,646 (64.8 in) | 72.0 | 5.5 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
-| [2: 96x48 in](out/pallets-B1-2-96x48.svg) | 2,438 x 1,219 | 217 | 479 | 608 (23.9 in) | 63.8 | 7.5 | B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-BOX-1, KIT-BOX-2 |
+| [2: 96x48 in](out/pallets-B1-2-96x48.svg) | 2,438 x 1,219 | 217 | 479 | 678 (26.7 in) | 71.2 | 6.7 | B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-BOX-1, KIT-BOX-2 |
 
 </details>
 
@@ -355,9 +357,9 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | B-GLIDE | BASE - LEVELLING GLIDE (hex from above) / Chân chỉnh cao | BASE | 50 x 50 x 40 | 8 | 0.1 | 1.2 |  | assumption |
 | B-THRESH | BASE - DOOR THRESHOLD, LOW / Ngưỡng cửa thấp | BASE | 1,176 x 60 x 20 | 1 | 1.2 | 1.2 |  | assumption |
 | B-FLOOR | BASE - THIN FLOOR PANEL 15 mm / Tấm sàn mỏng | BASE | 1,462 x 1,212 x 15 | 2 | 16.5 | 33.0 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT (half) / Khung trang trí - khối trái (nửa) | FRONT | 1,145 x 278 x 200 | 2 | 5.3 | 10.6 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT (half) / Khung trang trí - khối phải (nửa) | FRONT | 1,145 x 1,016 x 200 | 2 | 9.3 | 18.7 |  | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP (half) / Khung trang trí - khối trên (nửa) | FRONT | 848 x 280 x 200 | 2 | 3.8 | 7.6 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT (half) / Khung trang trí - khối trái (nửa) | FRONT | 1,145 x 278 x 235 | 2 | 5.3 | 10.6 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT (half) / Khung trang trí - khối phải (nửa) | FRONT | 1,145 x 1,016 x 235 | 2 | 9.3 | 18.7 |  | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP (half) / Khung trang trí - khối trên (nửa) | FRONT | 848 x 280 x 235 | 2 | 3.8 | 7.6 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (8 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 8 | 1 | 41.6 | 41.6 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (8 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 8 | 1 | 26.9 | 26.9 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 5.8 | 5.8 |  | assumption |
@@ -387,8 +389,8 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-B2-1-48x40.svg) | 1,219 x 1,016 | 150 | 330 | 1,646 (64.8 in) | 72.0 | 4.6 | C-HALF, F-DL, F-DR, F-DT, W-BACK-LO, W-SIDE-LO, W-SIDE-UP |
-| [2: 48x40 in](out/pallets-B2-2-48x40.svg) | 1,219 x 1,016 | 102 | 224 | 1,806 (71.1 in) | 79.0 | 2.8 | B-BAND-BACK, B-BAND-FRONT-L, B-BAND-FRONT-R, B-BAND-SIDE, B-FLOOR, B-THRESH, W-BACK-LO, W-BACK-UP |
+| [1: 48x40 in](out/pallets-B2-1-48x40.svg) | 1,219 x 1,016 | 127 | 279 | 1,646 (64.8 in) | 72.0 | 3.9 | C-HALF, F-DL, F-DR, F-DT, W-SIDE-LO, W-SIDE-UP |
+| [2: 48x40 in](out/pallets-B2-2-48x40.svg) | 1,219 x 1,016 | 124 | 274 | 1,806 (71.1 in) | 79.0 | 3.5 | B-BAND-BACK, B-BAND-FRONT-L, B-BAND-FRONT-R, B-BAND-SIDE, B-FLOOR, B-THRESH, W-BACK-LO, W-BACK-UP, W-SIDE-UP |
 | [3: 96x48 in](out/pallets-B2-3-96x48.svg) | 2,438 x 1,219 | 174 | 383 | 398 (15.7 in) | 41.8 | 9.2 | F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON |
 
 | # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
@@ -425,9 +427,9 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | B-GLIDE | BASE - LEVELLING GLIDE (hex from above) / Chân chỉnh cao | BASE | 50 x 50 x 40 | 8 | 0.1 | 1.2 |  | assumption |
 | B-THRESH | BASE - DOOR THRESHOLD, LOW / Ngưỡng cửa thấp | BASE | 1,176 x 60 x 20 | 1 | 1.2 | 1.2 |  | assumption |
 | B-FLOOR | BASE - THIN FLOOR PANEL 15 mm / Tấm sàn mỏng | BASE | 1,462 x 1,212 x 15 | 2 | 16.5 | 33.0 |  | calculation |
-| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 200 | 1 | 10.0 | 10.0 |  | calculation |
-| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 200 | 1 | 18.1 | 18.1 |  | calculation |
-| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 200 | 1 | 7.0 | 7.0 |  | calculation |
+| F-DL | FRONT - DECOR BLOCK - LEFT / Khung trang trí - khối trái | FRONT | 2,290 x 278 x 235 | 1 | 10.0 | 10.0 |  | calculation |
+| F-DR | FRONT - DECOR BLOCK - RIGHT / Khung trang trí - khối phải | FRONT | 2,290 x 1,016 x 235 | 1 | 18.1 | 18.1 |  | calculation |
+| F-DT | FRONT - DECOR BLOCK - TOP / Khung trang trí - khối trên | FRONT | 1,697 x 280 x 235 | 1 | 7.0 | 7.0 |  | calculation |
 | F-GLASS-DOOR | FRONT - GLASS DOOR (8 mm tempered glass) / Cửa kính | FRONT | 2,011 x 1,176 x 8 | 1 | 41.6 | 41.6 | glass (exempt) | calculation |
 | F-GLASS-FIXED | FRONT - FIXED GLASS (8 mm tempered glass) / Vách kính cố định | FRONT | 2,139 x 724 x 8 | 1 | 26.9 | 26.9 | glass (exempt) | calculation |
 | F-HW | FRONT - DOOR AND GLAZING HARDWARE KIT / Phụ kiện cửa và kính | FRONT | 600 x 400 x 150 | 1 | 5.8 | 5.8 |  | assumption |
@@ -456,7 +458,7 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | [1: 48x40 in](out/pallets-C-1-48x40.svg) | 1,219 x 1,016 | 142 | 312 | 1,646 (64.8 in) | 72.0 | 4.3 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, W-BACK-BAND, W-SIDE-BAND |
-| [2: 96x48 in](out/pallets-C-2-96x48.svg) | 2,438 x 1,219 | 269 | 593 | 1,132 (44.6 in) | 118.8 | 5.0 | B-BAND-BACK, B-BAND-SIDE, C-HALF, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, W-BACK-BAND |
+| [2: 96x48 in](out/pallets-C-2-96x48.svg) | 2,438 x 1,219 | 269 | 593 | 1,237 (48.7 in) | 129.8 | 4.6 | B-BAND-BACK, B-BAND-SIDE, C-HALF, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, W-BACK-BAND |
 
 | # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
@@ -511,37 +513,45 @@ Benchmark: Room S needs 4 people for 3 to 5 hours (12 to 20 person-hours), and h
 
 ## 5. The decided build: final wall stack (re-check)
 
-The sound study's final stack (DECIDED): ACP 3 mm on a 20 x 40 aluminium frame at 400 mm with 40 mm PET fill, then a floating lining cassette: a steel tray, 25 mm deep, with 9 mm felt across its face (0.5 mm in the sound study's stack, 0.4 mm by the PM's ruling). That makes 81 mm and 13.1 kg/m2 in the sound study. The ceiling now uses the same 20 x 40 frame (was 20 x 100). Frames are 20 x 40 x 1.2 mm and the fill is 25 kg/m3 (win-backs). The silencers are splitter silencers with 2 mm aluminium casings inside the right and top decor blocks, next to the TD-500 fans. The front is frameless 4+4 laminated glass. The sound study puts the pod at about 398 kg.
+The sound study's final stack (DECIDED): ACP 3 mm on a 20 x 40 aluminium frame at 400 mm with 40 mm PET fill, then a floating lining cassette: a 0.5 mm steel tray, 25 mm deep, with 9 mm felt across its face. That makes 81 mm and 13.1 kg/m2 in the sound study. The ceiling now uses the same 20 x 40 frame (was 20 x 100). Frames are 20 x 40 x 1.2 mm and the fill is 25 kg/m3 (win-backs). The silencers are splitter silencers with 2 mm aluminium casings inside the right and top decor blocks, next to the TD-500 fans. The front is frameless 4+4 laminated glass. The sound study expects 418 to 420 kg after its thicker splitter linings.
 
-This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts; the cassette is the DECIDED clip-on inner leaf. The outside size stays the same; the inside narrows to 2,338 mm. The wall here comes to 12.2 kg/m2 with clips and tray returns (the sound study: 13.1). The fans and silencers are the sound study's: two TD-500 inline fans at 6.0 kg and splitter silencers of 18.0 kg (right block) and 9.0 kg (top block). Its door edge seals, base seal and cable grommets are counted too.
+This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts; the cassette is the DECIDED clip-on inner leaf. The outside size stays the same; the inside narrows to 2,338 mm. The wall here comes to 13.0 kg/m2 with clips and tray returns (the sound study: 13.1). The fans and silencers are the sound study's: two TD-500 inline fans at 6.0 kg and splitter silencers of 20.3 kg (right block) and 10.2 kg (top block), including the thicker linings. The decor blocks are 235 mm deep, as in v1. Their weights already came from v1's real shapes in the STEP, so only the packing changes. Its door edge seals, base seal and cable grommets are counted too.
 
-Result: **403 kg**, 0 parts over 20 kg except the glass, heaviest F-DR at 18.1 kg, 1 + 1 pallets, 502 kg gross, 1,646 mm at most, assembly 125 min.
+Result: **419 kg**, 1 parts over 20 kg except the glass, heaviest A-SIL-DR at 20.3 kg, 1 + 1 pallets, 518 kg gross, 1,646 mm at most, assembly 125 min.
 
 - **Glass.** Door 43.3 kg and fixed panel 28.0 kg in 4+4 laminated. They ride flat on top of the long pallet in their timber frame, with nothing on them. On site, each is carried by two people with 2 suction lifters. The door's hinges and pull are fitted in the factory, so it lifts straight onto its hinge pins. The fixed glass's profiles sit hidden in the decor and base, so the front stays frameless like v1.
-- **Decor blocks and silencers (DECIDED).** Each decor block is mounted empty. Then its splitter silencer slides in from inside the pod through a felt-covered access panel in the right and top blocks, and the fan connects to it. Every lift stays at 20 kg or less, and the same panel gives fan service access later. The right block with its silencer inside would weigh 36.1 kg. The panels are inside only, so the look is untouched.
+- **Decor blocks and silencers (DECIDED).** Each decor block is mounted empty. Then its splitter silencer slides in from inside the pod through a felt-covered access panel in the right and top blocks, and the fan connects to it. Every lift stays at 20 kg or less, and the same panel gives fan service access later. The right block with its silencer inside would weigh 38.4 kg. The panels are inside only, so the look is untouched.
 - **Decor fill.** The sound study fills the decor blocks with PET (3.1 kg). Inside the right decor block it would make that block 19.7 kg, too close to the limit for the assumptions behind it, so the fill ships loose in the kit and is pushed into each block's open back just before it is mounted.
 - **Ceiling (DECIDED).** The fill still rides on the back of the ceiling cassette. With 40 mm frames, both ceiling parts are well under 20 kg either way.
-- **Pallets.** The 48 x 40 carries the wall and ceiling panels, the wall cassettes, the floor panels and the short band pieces (228 kg, 1,646 mm). The long pallet carries the decor blocks, the long band pieces, the kit, the ceiling cassettes that don't fit the upright stack, and the glass on top (274 kg, 1,056 mm). The two silencers go wherever the packer finds room; the pallet tables below list them. Still 1 + 1.
+- **Pallets.** The 48 x 40 carries the wall and ceiling panels, the wall cassettes, the floor panels and the short band pieces (238 kg, 1,646 mm). The long pallet carries the decor blocks, the long band pieces, the kit, the ceiling cassettes that don't fit the upright stack, and the glass on top (280 kg, 1,126 mm). The two silencers go wherever the packer finds room; the pallet tables below list them. Still 1 + 1.
 
-Wall and ceiling parts of the decided build:
+Wall, ceiling, decor, silencer and glass parts of the decided build:
 
 | Part | Size mm | Qty | kg each | 20 kg check |
 | --- | --- | ---: | ---: | --- |
 | W-SIDE-LO: WALL - SIDE PANEL - LOWER (outer: ACP + frame + fill) | 1,500 x 1,145 x 43 | 2 | 11.4 |  |
-| L-CASS-SIDE-LO: LINING - CASSETTE FOR W-SIDE-LO (steel tray + felt) | 1,419 x 1,145 x 34 | 2 | 9.5 |  |
+| L-CASS-SIDE-LO: LINING - CASSETTE FOR W-SIDE-LO (steel tray + felt) | 1,419 x 1,145 x 34 | 2 | 10.9 |  |
 | W-SIDE-UP: WALL - SIDE PANEL - UPPER (outer: ACP + frame + fill) | 1,500 x 1,145 x 43 | 2 | 11.4 |  |
-| L-CASS-SIDE-UP: LINING - CASSETTE FOR W-SIDE-UP (steel tray + felt) | 1,419 x 1,145 x 34 | 2 | 9.5 |  |
+| L-CASS-SIDE-UP: LINING - CASSETTE FOR W-SIDE-UP (steel tray + felt) | 1,419 x 1,145 x 34 | 2 | 10.9 |  |
 | W-BACK-LO: WALL - BACK PANEL - LOWER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 8.7 |  |
-| L-CASS-BACK-LO: LINING - CASSETTE FOR W-BACK-LO (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 7.6 |  |
+| L-CASS-BACK-LO: LINING - CASSETTE FOR W-BACK-LO (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 8.7 |  |
 | W-BACK-UP: WALL - BACK PANEL - UPPER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 8.7 |  |
-| L-CASS-BACK-UP: LINING - CASSETTE FOR W-BACK-UP (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 7.6 |  |
+| L-CASS-BACK-UP: LINING - CASSETTE FOR W-BACK-UP (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 8.7 |  |
 | C-HALF: CEILING - HALF PANEL WITH FAN OPENING (outer: ACP + frame) | 1,500 x 1,169 x 43 | 2 | 9.9 |  |
-| L-CASS-HALF: LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill) | 1,419 x 1,169 x 74 | 2 | 11.3 |  |
+| L-CASS-HALF: LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill) | 1,419 x 1,169 x 74 | 2 | 12.7 |  |
+| F-DL: FRONT - DECOR BLOCK - LEFT | 2,290 x 278 x 235 | 1 | 10.0 |  |
+| F-DR: FRONT - DECOR BLOCK - RIGHT | 2,290 x 1,016 x 235 | 1 | 18.1 |  |
+| F-DT: FRONT - DECOR BLOCK - TOP | 1,697 x 280 x 235 | 1 | 7.0 |  |
+| F-GLASS-DOOR: FRONT - GLASS DOOR (4+4 laminated glass, frameless) | 2,011 x 1,176 x 9 | 1 | 43.3 | glass (exempt) |
+| F-GLASS-FIXED: FRONT - FIXED GLASS (4+4 laminated glass, frameless) | 2,139 x 724 x 9 | 1 | 28.0 | glass (exempt) |
+| A-SIL-DR: AIR - SPLITTER SILENCER FOR THE RIGHT DECOR BLOCK (2 mm Al casing) | 1,100 x 300 x 160 | 1 | 20.3 | OVER 20 kg |
+| A-SIL-DT: AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing) | 1,000 x 240 x 160 | 1 | 10.2 |  |
+| F-DECOR-FILL: FRONT - PET FILL PIECES FOR THE DECOR BLOCKS (loose) | 1,200 x 400 x 300 | 1 | 3.1 |  |
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-B1F-1-48x40.svg) | 1,219 x 1,016 | 228 | 503 | 1,646 (64.8 in) | 72.0 | 7.0 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, L-CASS-BACK-LO, L-CASS-BACK-UP, L-CASS-SIDE-LO, L-CASS-SIDE-UP, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
-| [2: 96x48 in](out/pallets-B1F-2-96x48.svg) | 2,438 x 1,219 | 274 | 603 | 1,056 (41.6 in) | 110.8 | 5.4 | A-SIL-DR, A-SIL-DT, B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, L-CASS-HALF |
+| [1: 48x40 in](out/pallets-B1F-1-48x40.svg) | 1,219 x 1,016 | 238 | 525 | 1,646 (64.8 in) | 72.0 | 7.3 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, L-CASS-BACK-LO, L-CASS-BACK-UP, L-CASS-SIDE-LO, L-CASS-SIDE-UP, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
+| [2: 96x48 in](out/pallets-B1F-2-96x48.svg) | 2,438 x 1,219 | 280 | 617 | 1,126 (44.3 in) | 118.2 | 5.2 | A-SIL-DR, A-SIL-DT, B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, L-CASS-HALF |
 
 Step by step, with the access check. A step fails the check if a part fitted earlier blocks its fixings; none does in this order. The check is at layout level and is repeated on the CAD in Milestone 2.
 
@@ -614,9 +624,9 @@ Every part must pass a 914 x 2032 mm (36 x 80 in) doorway. A part is carried on 
 | B-GLIDE | 50 x 50 x 40 | 0.1 | 120 | passes | passes |
 | B-THRESH | 1,176 x 60 x 20 | 1.2 | 100 | passes | passes |
 | B-FLOOR | 1,462 x 1,212 x 15 | 16.5 | 95 | passes | passes |
-| F-DL | 2,290 x 278 x 200 | 10.0 | 280 | passes | passes |
-| F-DR | 2,290 x 1,016 x 200 | 18.1 | 280 | passes | passes |
-| F-DT | 1,697 x 280 x 200 | 7.0 | 280 | passes | passes |
+| F-DL | 2,290 x 278 x 235 | 10.0 | 315 | passes | passes |
+| F-DR | 2,290 x 1,016 x 235 | 18.1 | 315 | passes | passes |
+| F-DT | 1,697 x 280 x 235 | 7.0 | 315 | passes | passes |
 | F-GLASS-DOOR | 2,011 x 1,176 x 8 | 41.6 | 88 | passes | passes |
 | F-GLASS-FIXED | 2,139 x 724 x 8 | 26.9 | 88 | passes | passes |
 | F-HW | 600 x 400 x 150 | 5.8 | 230 | passes | passes |
@@ -651,7 +661,7 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 
 | ID | Item | Status | Who |
 | --- | --- | --- | --- |
-| LS-01 | Total carried as 400 ± 10 kg (403 kg here, about 398 kg in the sound study); settle from the CAD parts list. If over 400 kg, trim the inner steel tray or the fans, not the sound | DECIDED | Milestone 2 |
+| LS-01 | 419 kg here against a 420 kg cap (418 to 420 kg expected by the sound study); settle from the CAD parts list | open | Milestone 2 |
 | LS-02 | 400 mm frame pitch and full-face bond keep the ACP flat without plywood; prove on the early wall sample | PLANNED | Prototype team |
 | LS-03 | Tool-free cam or clip connector and captive bolt: real part numbers, loads and pull-out on the aluminium frame | open | Hardware group |
 | LS-04 | Cassette clips: part numbers, and how the cassette floats (no stud bridge) while it carries a 19 kg leaf | open | Hardware group |
@@ -665,7 +675,7 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 | LS-12 | Decor cladding colour (yellow in the materials list, black in the plan's pictures); no weight effect | issue | Control pack |
 | LS-13 | Room floor flatness must stay within the glides' adjustment range; check on site before install | assumption | Install guide |
 | LS-15 | Felt-covered access panel on the pod side of the right and top decor blocks: silencers slide in after the blocks are mounted, and it gives fan service access; inside only | DECIDED | Decor CAD |
-| LS-16 | dB cost of the 0.4 mm inner tray; if over 0.5 dB, back to 0.5 mm and a 420 kg cap | open | Sound study |
+| LS-16 | Right splitter silencer at 20.3 kg: ship its baffles separately from the casing, or confirm how the thicker lining splits between the two silencers | PROPOSED | PM, sound study |
 | LS-14 | The upright stack on the 48 x 40 does not fill its depth: centre it and strap through the deck, or put the kit boxes beside it | note | Packaging |
 
 ## 9. How to reproduce
@@ -686,7 +696,7 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | pod_w | 2500 | mm | confirmed | S04 | overall width X |
 | pod_d | 1700 | mm | confirmed | S04 | overall depth Y |
 | pod_h | 2400 | mm | confirmed | S04 | overall height Z |
-| decor_depth | 200 | mm | confirmed | S04 | front decor frame depth |
+| decor_depth | 235 | mm | confirmed | S27 | front decor block depth, v1's real geometry (BOM 230-235; the plan said 200) |
 | wall_depth | 1500 | mm | confirmed | S04 | side wall depth = 1700 - 200 |
 | wall_t_plan | 38 | mm | source | S04 | 3 ACP + 6 ply + 20 tube + 9 PET (plan joint detail) |
 | base_h | 100 | mm | source | S04 | base band: 50x100 tube on edge |
@@ -809,19 +819,20 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | final_kgm2_hw | 13.1 | kg/m2 | source | S21 | the sound study's wall mass with frame, fill and cassette |
 | fill_pet_kgm3 | 25 | kg/m3 | source | S25 | PET cavity fill (was 32) |
 | t_al_final | 1.2 | mm | source | S25 | wall of the 20x40 aluminium frames in the final stack (was 1.5) |
-| tray_t | 0.4 | mm | confirmed | S26 | steel lining tray (was 0.5 in the sound study's stack) |
-| tray_t_fallback | 0.5 | mm | confirmed | S26 | back to this if 0.4 mm costs more than 0.5 dB |
-| cap_fallback | 420 | kg | confirmed | S26 | cap that goes with the 0.5 mm tray |
+| tray_t | 0.5 | mm | confirmed | S27 | steel lining tray (0.4 mm cost 1 dB, so back to 0.5) |
+| tray_t_thin | 0.4 | mm | confirmed | S26 | the thinner tray tried and dropped |
 | tray_depth | 25 | mm | source | S21 |  |
 | hw_385_total | 385 | kg | source | S21 |  |
 | hw_385_dsa | 24.2 | dB | source | S21 |  |
 | hw_400_total | 400 | kg | source | S22 | sound study's total with 4+4 laminated glass |
 | hw_400_dsa | 23.8 | dB | source | S22 |  |
-| carry_total | 400 | kg | confirmed | S24 | total to carry until the CAD parts list |
-| carry_tol | 10 | kg | confirmed | S24 |  |
+| cap_kg | 420 | kg | confirmed | S27 | weight cap with the 0.5 mm tray |
+| hw_expect_lo | 418 | kg | source | S27 |  |
+| hw_expect_hi | 420 | kg | source | S27 |  |
 | fan_final_kg | 6 | kg | source | S20 | S&P TD-500/150-160 ECOWATT inline fan (sound study's fan table) |
-| sil_right_kg | 18 | kg | source | S25 | splitter silencer in the right decor block, 2 mm aluminium casing |
-| sil_top_kg | 9 | kg | source | S25 | splitter silencer in the top decor block |
+| sil_right_base_kg | 18 | kg | source | S25 | splitter silencer in the right decor block, 2 mm aluminium casing |
+| sil_top_base_kg | 9 | kg | source | S25 | splitter silencer in the top decor block |
+| sil_lining_extra_kg | 3.5 | kg | source | S27 | thicker splitter linings, across both silencers |
 | decor_fill_m2 | 1.65 | m2 | calculation | S20 | decor faces lined with 75 mm PET fill |
 | door_edge_seal_kg | 1 | kg | source | S20 | door edge seals on 3 sides |
 | base_seal_kg | 0.5 | kg | source | S20 | seal under the thin floor and band |
@@ -858,4 +869,5 @@ Sources:
 | S24 | PM ruling 2026-10-31: the 400 kg cap stays; carry the total as 400 +/- 10 kg until the CAD parts list settles it; if the CAD BOM lands over 400 kg, trim the inner steel tray or the fans, not the sound | `layout conversation, PM message of 2026-10-31` |
 | S25 | Sound study update relayed by the PM, 2026-10-31: silencers move inside the decor blocks as splitter silencers with 2 mm aluminium casings, 18 kg in the right block and 9 kg in the top block, next to the S&P TD-500 fans; weight win-backs: 20x40x1.2 aluminium frames and 25 kg/m3 fill; expected total about 398 kg | `layout conversation, PM message of 2026-10-31` |
 | S26 | PM rulings 2026-10-31: inner steel tray 0.4 mm (about 403 kg, inside 400 +/- 10); if the sound study shows it costs more than 0.5 dB, back to 0.5 mm and the cap becomes 420 kg. Silencers ship as separate parts and slide in from inside the pod through a felt-covered access panel in the right and top decor blocks, which also gives fan service access; inside only, so the look is untouched | `layout conversation, PM message of 2026-10-31` |
+| S27 | PM ruling change 2026-10-31: the 0.4 mm tray costs 1 dB, so it reverts to 0.5 mm and the cap is 420 kg; the splitter linings get thicker, about +3.5 kg across both silencers (expect about 418-420 kg); decor block depth follows v1's real geometry, 230-235 mm, not the plan's 200 | `layout conversation, PM message of 2026-10-31` |
 | S19 | LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff) | https://logisticsplus.com/?p=25575 (read 2026-10-31) |

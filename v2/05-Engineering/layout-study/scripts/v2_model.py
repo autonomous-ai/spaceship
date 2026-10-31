@@ -296,10 +296,11 @@ def service_parts(m):
                       p("fan_kg"), "box", "unverified")]
     if m["vents"] and final:
         # splitter silencers that sit inside the decor blocks, shipped as their own parts (sizes assumed to fit the blocks)
+        r, t = silencer_kg()
         parts.append(Part("A-SIL-DR", "AIR - SPLITTER SILENCER FOR THE RIGHT DECOR BLOCK (2 mm Al casing)", "Bộ tiêu âm khối phải", "AIR",
-                          (1100, 300, 160), 1, p("sil_right_kg"), "upright", "source", "slides into the mounted block from inside"))
+                          (1100, 300, 160), 1, r, "upright", "calculation", "slides into the mounted block from inside"))
         parts.append(Part("A-SIL-DT", "AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing)", "Bộ tiêu âm khối trên", "AIR",
-                          (1000, 240, 160), 1, p("sil_top_kg"), "upright", "source", "slides into the mounted block from inside"))
+                          (1000, 240, 160), 1, t, "upright", "calculation", "slides into the mounted block from inside"))
     elif m["vents"]:
         parts.append(Part("A-SILENCER", "AIR - SILENCED VENT BOX", "Hộp tiêu âm cửa gió", "AIR", (450, 300, 120), 2,
                           p("silencer_kg"), "box", "assumption"))
@@ -529,3 +530,9 @@ def final_stack_parts(split, m, split_long=False):
 def decor_fill_kg():
     """PET fill lining the decor blocks: area x 75 mm x fill density."""
     return p("decor_fill_m2") * 0.075 * p("fill_pet_kgm3")
+
+
+def silencer_kg():
+    """Right and top splitter silencers. The extra lining is split in proportion to silencer mass (assumption)."""
+    r0, t0, extra = p("sil_right_base_kg"), p("sil_top_base_kg"), p("sil_lining_extra_kg")
+    return r0 + extra * r0 / (r0 + t0), t0 + extra * t0 / (r0 + t0)

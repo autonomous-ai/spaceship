@@ -355,7 +355,7 @@ def build():
     N["final_bolts"], N["final_cams"] = str(ft["bolts"]), str(ft["cams"])
     N["final_pallets"] = pallets_table("B1F", fpals)
     N["final_steps"] = steps_table(fsteps, ft)
-    shell = [pt for pt in fparts if pt.pid.startswith(("W-", "C-", "L-CASS"))]
+    shell = [pt for pt in fparts if pt.pid.startswith(("W-", "C-", "L-CASS", "F-D", "A-SIL", "F-GLASS"))]
     N["final_shell_table"] = table(["Part", "Size mm", "Qty", "kg each", "20 kg check"],
                                    [[f"{pt.pid}: {pt.name}", " x ".join(f0(d) for d in sorted(pt.dims, reverse=True)), pt.qty, f1(pt.kg), flag(pt)]
                                     for pt in shell], ["l", "l", "r", "r", "l"])
@@ -378,12 +378,13 @@ def build():
     N["gap_fans"] = f1(gap(fan_final_kg=p("fan_kg")))
     N["gap_clips"] = f1(gap(leaf_clip_kgm2=0.0))
     N["final_over_cap"] = f0(base_total - p("quiet_cap"))
-    N["carry_total"], N["carry_tol"] = f0(p("carry_total")), f0(p("carry_tol"))
-    lo, hi = p("carry_total") - p("carry_tol"), p("carry_total") + p("carry_tol")
-    N["final_in_band"] = "inside" if lo <= base_total <= hi else "outside"
+    N["cap_kg"] = f0(p("cap_kg"))
+    N["decor_depth"] = f0(p("decor_depth"))
+    N["final_vs_cap"] = "under" if base_total <= p("cap_kg") else "over"
+    N["cap_margin"] = f1(abs(p("cap_kg") - base_total))
+    N["hw_expect_lo"], N["hw_expect_hi"] = f0(p("hw_expect_lo")), f0(p("hw_expect_hi"))
     tray = [pt for pt in fparts if pt.pid.startswith("L-CASS")]
-    with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t"), tray_t=0.4):
-        N["tray04_saving"] = f1(base_total - total(parts_for("plan", FINAL)))
+    N["tray_thin_saving"] = f1(gap(tray_t=p("tray_t_thin")))
     lp = [pl for pl in fpals if pl["kind"] == "96x48"][0]
     N["final_long_kg"], N["final_long_h"] = f0(lp["gross"]), f0(lp["height"])
     sp = [pl for pl in fpals if pl["kind"] == "48x40"][0]
@@ -401,10 +402,9 @@ def build():
     N["hw_398_total"] = f0(p("hw_398_total"))
     N["fan_final_kg"] = f1(p("fan_final_kg"))
     N["without_gap_items"] = f0(base_total - gap(fan_final_kg=p("fan_kg"), leaf_clip_kgm2=0.0))
-    N["tray05_total"] = f0(base_total - gap(tray_t=p("tray_t_fallback")))
-    N["tray_saving"] = f1(-gap(tray_t=p("tray_t_fallback")))
-    N["cap_fallback"] = f0(p("cap_fallback"))
-    N["fallback_in_cap"] = "inside" if base_total - gap(tray_t=p("tray_t_fallback")) <= p("cap_fallback") else "outside"
+    N["sil_extra"] = f1(p("sil_lining_extra_kg"))
+    N["sil_right_over"] = f1(max(0.0, byid["A-SIL-DR"].kg - 20.0))
+    N["sil_right_status"] = "OVER 20 kg" if byid["A-SIL-DR"].kg > 20.0 else "within 20 kg"
     with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
         cf = parts_for("plan", variant(FINAL, ceil_fill_on_cassette=False))
     N["ceil_outer_with_fill"] = f1([pt for pt in cf if pt.pid == "C-HALF"][0].kg)
