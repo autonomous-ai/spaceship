@@ -4,8 +4,8 @@ Fusion queue; fold work into fewer, bigger runs).
     python3 tools/fusion/run_script.py v2/01-CAD-Native/wall/wall_batch.py --label "WALL Engineer: batch" \
         --timeout 3000 --arg specs="new:side:panel:R1;rebuild:side:frame:R1;new:back:cassette:B1"
 
-Each spec is MODE:BUILDER:PART:POSITION. MODE is new (make the document) or rebuild (open it and rebuild
-the design the script made); BUILDER is side (wall_side_panel.py, positions L1 R1 L2 R2) or back
+Each spec is MODE:BUILDER:PART:POSITION. MODE is new (make the document), rebuild (open it and rebuild
+the design the script made) or front (only save the drawings' Front, seen from inside the pod); BUILDER is side (wall_side_panel.py, positions L1 R1 L2 R2) or back
 (wall_back_panel.py, positions B1-B4); PART is panel, cassette, frame, skin, fill, tray or felt. The document
 name is the builder's own (`<pn>_P01_<NAME>_CAD`) in Default Project / FocusPod v2, opened the way
 run_script.py --doc opens one. For each spec the builder runs in a fresh namespace with post=1, so it
@@ -66,6 +66,16 @@ def doc_name(app, builder, part, position):
     with open(path, "r", encoding="utf-8") as fh:
         exec(compile(fh.read(), path, "exec"), ns)
     return ns["DOC_NAME"]
+
+
+def inside_of(builder, part, position):
+    """The room side the builder uses for the drawings' Front (its INSIDE)."""
+    path = os.path.join(ARGS["repo_root"], BUILDERS[builder])
+    ns = {"__name__": "__wall_inside__", "__file__": path,
+          "SCRIPT_ARGS": dict(builder_args(builder, part, position), repo_root=ARGS["repo_root"])}
+    with open(path, "r", encoding="utf-8") as fh:
+        exec(compile(fh.read(), path, "exec"), ns)
+    return ns["INSIDE"]
 
 
 def open_or_make(app, name, make):
@@ -146,8 +156,8 @@ def run(_context):
     app = adsk.core.Application.get()
     specs = [s.strip() for s in ARGS.get("specs", "").split(";") if s.strip()]
     done, failed = [], []
-    try:
-        missing, ver = preflight(app)
+    try:                                   # a batch of front-only specs needs no skeleton
+        missing, ver = preflight(app) if any(not s_.startswith("front:") for s_ in specs) else ([], "not needed")
     except Exception as exc:                              # noqa: BLE001
         missing, ver = ["(pre-flight failed: %s)" % exc], "?"
     if missing:
@@ -159,11 +169,25 @@ def run(_context):
         doc, opened = None, False
         try:
             mode, builder, part, position = spec.split(":")
-            if mode not in ("new", "rebuild") or builder not in BUILDERS:
+            if mode not in ("new", "rebuild", "front") or builder not in BUILDERS:
                 raise RuntimeError("bad spec %r" % spec)
             name = doc_name(app, builder, part, position)
             print("BATCH|start %s -> %s" % (spec, name))
             doc, opened = open_or_make(app, name, mode == "new")
+            if mode == "front":                # the drawings' Front only (designs built before it was saved)
+                if doc.isModified:
+                    raise RuntimeError("%r has unsaved changes" % name)
+                sf = os.path.join(ARGS["repo_root"], "v2/02-Drawings/wall/set_front.py")
+                inside = inside_of(builder, part, position)
+                sf_ns = {"__name__": "__fusion_set_front__", "__file__": sf, "SCRIPT_ARGS": {"inside": inside}}
+                with open(sf, "r", encoding="utf-8") as fh:
+                    exec(compile(fh.read(), sf, "exec"), sf_ns)
+                sf_ns["run"](None)
+                if not doc.save("front = seen from inside the pod"):
+                    raise RuntimeError("save failed")
+                done.append(name)
+                print("BATCH|done %s (front %s)" % (name, inside))
+                continue
             path = os.path.join(ARGS["repo_root"], BUILDERS[builder])
             sargs = dict(builder_args(builder, part, position), repo_root=ARGS["repo_root"], post="1",
                          note=ARGS.get("note", "batch build"))

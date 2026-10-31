@@ -32,7 +32,7 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 VO = adsk.drawing.ViewOrientationTypes
 HERE = "v2/02-Drawings/wall"
 
-KINDS = {
+KINDS: "dict[str, dict]" = {
     # views: (orientation, where): where = centre | below | above | right | left (first-angle positions)
     "frame": {"scale": 0.2, "front_at": (205.0, 235.0), "gap": 14.0,
               "views": [("front", VO.FrontViewOrientationType, "centre"),
@@ -342,10 +342,33 @@ def annotate(app, kind, pn, datum_b):
         sheet.views.count, sheet.drawingDimensions.count, sheet.holeTables.count))
 
 
+def open_drawing(app, name):
+    """Open the saved drawing NAME from Default Project / FocusPod v2 (the screen is unlocked: PM rule)."""
+    proj = [app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
+            if app.data.dataProjects.item(i).name == "Default Project"][0]
+    fold = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
+    files = []
+    for _attempt in range(3):            # the list can change while others save
+        try:
+            files = [fold.dataFiles.item(i) for i in range(fold.dataFiles.count)]
+            break
+        except RuntimeError:
+            adsk.doEvents()
+    files = [f for f in files if f.name == name]
+    if len(files) != 1:
+        raise RuntimeError("%d saved drawings are called %r" % (len(files), name))
+    app.data.activeProject = proj
+    doc = app.documents.open(files[0], True)
+    if doc is None:
+        raise RuntimeError("could not open %r" % name)
+    print("BATCH|opened %s (version %s)" % (name, files[0].versionNumber))
+    return doc
+
+
 def run(_context):
     """One drawing (the active one: --doc DWG with --save and --close on the runner), or, with
-    --arg batch="KIND:PN:DWG:DATUM_B;...", every listed drawing that start_drawing.py left open: each is
-    activated, annotated, saved and closed. A failing one is reported (BATCH|FAIL) and closed unsaved, so it
+    --arg batch="KIND:PN:DWG:DATUM_B;...", every listed drawing start_drawing.py saved: each is opened (or
+    activated, if open and unmodified), annotated, saved and closed. A failing one is reported (BATCH|FAIL) and closed unsaved, so it
     stays as start_drawing.py made it; the batch goes on and never raises (PM fair-share ruling 2026-10-31:
     fewer, bigger runs)."""
     import traceback
@@ -359,10 +382,11 @@ def run(_context):
         try:
             kind, pn, name, datum_b = item.split(":")
             docs = [app.documents.item(i) for i in range(app.documents.count) if app.documents.item(i).name == name]
-            if len(docs) != 1:
-                raise RuntimeError("%d open documents are called %r (start_drawing.py --keep-open leaves one)" % (
-                    len(docs), name))
-            doc = docs[0]
+            if len(docs) > 1:
+                raise RuntimeError("%d open documents are called %r" % (len(docs), name))
+            if docs and docs[0].isModified:
+                raise RuntimeError("%r is open with unsaved changes; not reused (PM rule 4)" % name)
+            doc = docs[0] if docs else open_drawing(app, name)
             doc.activate()
             print("BATCH|annotate %s" % name)
             annotate(app, kind, pn, datum_b)

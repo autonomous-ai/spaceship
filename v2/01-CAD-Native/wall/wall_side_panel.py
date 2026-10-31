@@ -1140,7 +1140,7 @@ def build_tray(design, root, tray, yc, zc):
         lip.name = "FLANGE - TRAY LIPS HOLDING THE FELT"
         body = tray.bRepBodies.item(0)
         big = max((fc for fc in body.faces if fc.geometry.objectType == adsk.core.Plane.classType()
-                   and abs(fc.geometry.normal.x) > 0.99), key=lambda fc: fc.area)
+                   and abs(adsk.core.Plane.cast(fc.geometry).normal.x) > 0.99), key=lambda fc: fc.area)
         fp = tray.flatPattern or tray.createFlatPattern(big)
         print("FLAT|%s|%s" % (tray.partNumber, size(bbox(fp.flatBody))))
     finally:
