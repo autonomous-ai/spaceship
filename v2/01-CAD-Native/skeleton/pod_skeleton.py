@@ -76,7 +76,10 @@ ASSEMBLIES = [  # key, part number, name, Vietnamese name, parent key
 
 XL, XR = "-pod_w / 2", "pod_w / 2"
 YB, YW, YF = "pod_d / 2", "pod_d / 2 - wall_depth", "-pod_d / 2"
-XIL, XIR = "-pod_w / 2 + stack_t", "pod_w / 2 - stack_t"
+XIL, XIR = "-pod_w / 2 + stack_t", "pod_w / 2 - stack_t"    # inner faces: linings span between these
+XOL, XOR = "-pod_w / 2 + outer_t", "pod_w / 2 - outer_t"    # side frames' inner faces: back and ceiling
+# frames span frame to frame between these, with the side skins over their edges (PM ruling on
+# PR #15, build plan rule 4)
 
 # envelope: assembly, code, name, layout-study id, (x0, x1), (y0, y1), (z0, z1)
 ENVELOPES = []
@@ -89,27 +92,30 @@ def env(asm, code, name, sid, x, y, z):
 for side, x0, x1, cx0, cx1 in (("L", XL, XL + " + outer_t", XIL + " - cass_t", XIL),
                                ("R", XR + " - outer_t", XR, XIR, XIR + " + cass_t")):
     for row, z0, z1 in ((1, "wall_z0", "wall_z0 + side_h"), (2, "wall_z0 + side_h", "pod_h")):
+        cz1 = z1 if row == 1 else "pod_h - outer_t"   # upper lining stops under the ceiling frame
         lo = "LOWER" if row == 1 else "UPPER"
         env("WALL", "%s%d" % (side, row), "WALL - SIDE PANEL - %s - %s" % (lo, "LH" if side == "L" else "RH"),
             "W-SIDE-" + lo[:2], (x0, x1), (YW, YB), (z0, z1))
         env("LINING", "%s%d-CASS" % (side, row), "LINING - CASSETTE - SIDE %s - %s" % (lo, side),
-            "L-CASS-SIDE-" + lo[:2], (cx0, cx1), (YW, YB + " - stack_t"), (z0, z1))
-for code, x0, x1, z0, z1 in (("B1", XIL, "0 mm", "wall_z0", "wall_z0 + back_ph"),
-                             ("B2", "0 mm", XIR, "wall_z0", "wall_z0 + back_ph"),
-                             ("B3", XIL, "0 mm", "wall_z0 + back_ph", "wall_z0 + back_h"),
-                             ("B4", "0 mm", XIR, "wall_z0 + back_ph", "wall_z0 + back_h")):
+            "L-CASS-SIDE-" + lo[:2], (cx0, cx1), (YW, YB + " - stack_t"), (z0, cz1))
+for code, x0, x1, z0, z1 in (("B1", -1, "0 mm", "wall_z0", "wall_z0 + back_ph"),
+                             ("B2", "0 mm", 1, "wall_z0", "wall_z0 + back_ph"),
+                             ("B3", -1, "0 mm", "wall_z0 + back_ph", "wall_z0 + back_h"),
+                             ("B4", "0 mm", 1, "wall_z0 + back_ph", "wall_z0 + back_h")):
     lo = "LOWER" if code in ("B1", "B2") else "UPPER"
+    ox0, ox1 = (XOL if x0 == -1 else x0), (XOR if x1 == 1 else x1)
+    ix0, ix1 = (XIL if x0 == -1 else x0), (XIR if x1 == 1 else x1)
     env("WALL", code, "WALL - BACK PANEL - %s - %s" % (lo, code), "W-BACK-" + lo[:2],
-        (x0, x1), (YB + " - outer_t", YB), (z0, z1))
+        (ox0, ox1), (YB + " - outer_t", YB), (z0, z1))
     env("LINING", code + "-CASS", "LINING - CASSETTE - BACK %s - %s" % (lo, code), "L-CASS-BACK-" + lo[:2],
-        (x0, x1), (YB + " - stack_t", YB + " - stack_t + cass_t"), (z0, z1))
-for code, x0, x1 in (("C1", XIL, "0 mm"), ("C2", "0 mm", XIR)):
+        (ix0, ix1), (YB + " - stack_t", YB + " - stack_t + cass_t"), (z0, z1))
+for code, ox0, ox1, ix0, ix1 in (("C1", XOL, "0 mm", XIL, "0 mm"), ("C2", "0 mm", XOR, "0 mm", XIR)):
     env("CEILING", code, "CEILING - HALF PANEL - " + code, "C-HALF",
-        (x0, x1), (YW, YB), ("pod_h - outer_t", "pod_h"))
+        (ox0, ox1), (YW, YB), ("pod_h - outer_t", "pod_h"))
     env("LINING", code + "-CASS", "LINING - CASSETTE - CEILING - " + code, "L-CASS-HALF",
-        (x0, x1), (YW, YB + " - stack_t"), ("pod_h - stack_t", "pod_h - stack_t + cass_t"))
+        (ix0, ix1), (YW, YB + " - stack_t"), ("pod_h - stack_t", "pod_h - stack_t + cass_t"))
     env("BASE", "F" + code[1], "BASE - THIN FLOOR PANEL - F" + code[1], "B-FLOOR",
-        (x0, x1), (YW, YB + " - stack_t"), ("0 mm", "floor_t"))
+        (ix0, ix1), (YW, YB + " - stack_t"), ("0 mm", "floor_t"))
 env("BASE", "BAND-BACK", "BASE - BASE BAND - BACK", "B-BAND-BACK",
     (XL + " + band_t", XR + " - band_t"), (YB + " - band_t", YB), ("glide_h", "wall_z0"))
 env("BASE", "BAND-L", "BASE - BASE BAND - SIDE - LH", "B-BAND-SIDE",

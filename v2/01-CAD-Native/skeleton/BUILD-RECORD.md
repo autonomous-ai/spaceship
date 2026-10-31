@@ -22,24 +22,24 @@ Coordinates: conventions.md section 4 (origin on the room floor at the pod centr
 | L1 | WALL | 43 x 1500 x 1145 | W-SIDE-LO | OK (within 1 mm) |
 | L1-CASS | LINING | 34 x 1419 x 1145 | L-CASS-SIDE-LO | OK (within 1 mm) |
 | L2 | WALL | 43 x 1500 x 1145 | W-SIDE-UP | OK (within 1 mm) |
-| L2-CASS | LINING | 34 x 1419 x 1145 | L-CASS-SIDE-UP | OK (within 1 mm) |
+| L2-CASS | LINING | 34 x 1419 x 1102 | L-CASS-SIDE-UP | 1419 x 1145 x 34 DIFF 43.0 |
 | R1 | WALL | 43 x 1500 x 1145 | W-SIDE-LO | OK (within 1 mm) |
 | R1-CASS | LINING | 34 x 1419 x 1145 | L-CASS-SIDE-LO | OK (within 1 mm) |
 | R2 | WALL | 43 x 1500 x 1145 | W-SIDE-UP | OK (within 1 mm) |
-| R2-CASS | LINING | 34 x 1419 x 1145 | L-CASS-SIDE-UP | OK (within 1 mm) |
-| B1 | WALL | 1169 x 43 x 1104.5 | W-BACK-LO | OK (within 1 mm) |
+| R2-CASS | LINING | 34 x 1419 x 1102 | L-CASS-SIDE-UP | 1419 x 1145 x 34 DIFF 43.0 |
+| B1 | WALL | 1207 x 43 x 1104.5 | W-BACK-LO | 1169 x 1104 x 43 DIFF 38.0 |
 | B1-CASS | LINING | 1169 x 34 x 1104.5 | L-CASS-BACK-LO | OK (within 1 mm) |
-| B2 | WALL | 1169 x 43 x 1104.5 | W-BACK-LO | OK (within 1 mm) |
+| B2 | WALL | 1207 x 43 x 1104.5 | W-BACK-LO | 1169 x 1104 x 43 DIFF 38.0 |
 | B2-CASS | LINING | 1169 x 34 x 1104.5 | L-CASS-BACK-LO | OK (within 1 mm) |
-| B3 | WALL | 1169 x 43 x 1104.5 | W-BACK-UP | OK (within 1 mm) |
+| B3 | WALL | 1207 x 43 x 1104.5 | W-BACK-UP | 1169 x 1104 x 43 DIFF 38.0 |
 | B3-CASS | LINING | 1169 x 34 x 1104.5 | L-CASS-BACK-UP | OK (within 1 mm) |
-| B4 | WALL | 1169 x 43 x 1104.5 | W-BACK-UP | OK (within 1 mm) |
+| B4 | WALL | 1207 x 43 x 1104.5 | W-BACK-UP | 1169 x 1104 x 43 DIFF 38.0 |
 | B4-CASS | LINING | 1169 x 34 x 1104.5 | L-CASS-BACK-UP | OK (within 1 mm) |
-| C1 | CEILING | 1169 x 1500 x 43 | C-HALF | OK (within 1 mm) |
-| C1-CASS | LINING | 1169 x 1419 x 34 | L-CASS-HALF | 1419 x 1169 x 74     DIFF 40.0 |
+| C1 | CEILING | 1207 x 1500 x 43 | C-HALF | 1500 x 1169 x 43 DIFF 38.0 |
+| C1-CASS | LINING | 1169 x 1419 x 34 | L-CASS-HALF | 1419 x 1169 x 74 DIFF 40.0 |
 | F1 | BASE | 1169 x 1419 x 15 | B-FLOOR | OK (within 1 mm) |
-| C2 | CEILING | 1169 x 1500 x 43 | C-HALF | OK (within 1 mm) |
-| C2-CASS | LINING | 1169 x 1419 x 34 | L-CASS-HALF | 1419 x 1169 x 74     DIFF 40.0 |
+| C2 | CEILING | 1207 x 1500 x 43 | C-HALF | 1500 x 1169 x 43 DIFF 38.0 |
+| C2-CASS | LINING | 1169 x 1419 x 34 | L-CASS-HALF | 1419 x 1169 x 74 DIFF 40.0 |
 | F2 | BASE | 1169 x 1419 x 15 | B-FLOOR | OK (within 1 mm) |
 | BAND-BACK | BASE | 2420 x 40 x 100 | B-BAND-BACK | OK (within 1 mm) |
 | BAND-L | BASE | 40 x 1660 x 100 | B-BAND-SIDE | OK (within 1 mm) |
@@ -49,9 +49,12 @@ Coordinates: conventions.md section 4 (origin on the room floor at the pod centr
 | DR | FRONT | 1016 x 235 x 2290 | F-DR | OK (within 1 mm) |
 | DT | FRONT | 1697 x 235 x 280 | F-DT | OK (within 1 mm) |
 | DOOR | GLAZING | 1176 x 8.76 x 2011 | F-GLASS-DOOR | OK (within 1 mm) |
-| KICK | GLAZING | 1176 x 20 x 89 | D-40 | not in the list: D-40 |
+| KICK | GLAZING | 1176 x 20 x 89 | D-40 | not in the list |
 
 ## Differences from the layout study, explained
+
+- **Back panels B1-B4 and ceiling halves C1, C2: 1207 wide, list 1169.** DECIDED by the PM on PR #15 (from the review): back wall and ceiling frames span frame to frame, between the side frames (X +-1207), with the side skins covering their edges, as the build plan's rule 4 says. Their linings stay 1169, between the side linings. This closes the 38 x 81 mm open strip at each back corner and the 4 mm roof-edge slot, and no frame rests on a floating lining. The Layout Engineer corrects the study's list and weights.
+- **Upper side linings L2-CASS, R2-CASS: 1102 tall, list 1145.** Same ruling: they stop under the ceiling frame (Z 2357) instead of running to the roof, so the ceiling frame never sits on a floating lining.
 
 - **Ceiling cassettes C1-CASS, C2-CASS: 34 mm, list 74 mm.** The list's 74 includes the 40 mm ceiling fill that rides on the cassette (D-24). In the assembled ceiling that fill sits inside the outer panel's 40 mm frame cavity, so the cassette envelope is the tray, gap and felt only (34). Status: calculation.
 - **Back panels: 1104.5 mm, list 1104.** The list rounds back_h / 2 = 2209 / 2. Within 1 mm.
@@ -97,5 +100,5 @@ Every pair of envelopes is intersected; any overlap over 1 mm3 that is not liste
 
 ## Renders (checked by eye)
 
-`100000_P01_POD-SKELETON-FRONT-ISO_IMG.png` (from the front, right and above), `...-BACK-ISO_IMG.png` (from the back, left and above), `...-TOP_IMG.png` (looking down, front at the bottom). They show the overall form, 2 sheets per side wall and 4 on the back with aligned seams (D-23), and the ceiling halves split at X = 0. **The front in these renders is placeholder boxes, not the look.** Small open corners at the top back edges are envelope gaps (the 4 mm stack gap), not design.
+`100000_P01_POD-SKELETON-FRONT-ISO_IMG.png` (from the front, right and above), `...-BACK-ISO_IMG.png` (from the back, left and above), `...-TOP_IMG.png` (looking down, front at the bottom). They show the overall form, 2 sheets per side wall and 4 on the back with aligned seams (D-23), and the ceiling halves split at X = 0. **The front in these renders is placeholder boxes, not the look.** The top back corners are closed: the ceiling spans frame to frame (PM ruling on PR #15).
 

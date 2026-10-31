@@ -1,4 +1,4 @@
-Run 2026-10-31 on Mac 1, Fusion 2706.1.17, `python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/edit_test_skeleton.py`.
+Run 2026-10-31 on Mac 1, Fusion 2706.1.17, `python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/edit_test_skeleton.py`, after the frame-to-frame sizing ruling.
 
 ## Skeleton edit test record
 
