@@ -116,8 +116,8 @@ PARTS = {
     "TLOW": ("351403", "FRONT - AIR TRANSITION - LOWER - DR", "Ống chuyển hướng dưới"),
     "FBOX": ("351404", "FRONT - SUPPLY FAN BOX - DR", "Hộp quạt cấp"),
     "TUP": ("351405", "FRONT - AIR TRANSITION - UPPER - DR", "Ống chuyển hướng trên"),
-    "FAN1": ("358401", "FRONT - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM - 1", "Quạt 12 V"),
-    "FAN2": ("358401", "FRONT - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM - 2", "Quạt 12 V"),
+    "FAN1": ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM - 1", "Quạt 12 V"),
+    "FAN2": ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM - 2", "Quạt 12 V"),
 }
 
 # Overlaps made on purpose, with the reason; any other clash over 1 mm3 fails the build.
@@ -370,8 +370,8 @@ def export_all(app):
          "D-60 air table", "mounts stage 2"),
         ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, "reserved duct space", "-", 0.0, "included in 351404's 5.1 kg",
          "HOLD: the Air Engineer's transition detail", "D-60 air table", ""),
-        ("358401", "FRONT - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", 2, "bought",
-         "Noctua NF-A14 industrialPPC-3000 PWM, 12 V", 0.3, "assumption (D-60 air table)", "source (product); fan test HOLD",
+        ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V", 2, "bought",
+         "Noctua NF-A14 industrialPPC-3000 PWM, 12 V", 0.3, "assumption (D-60 air table)", "HOLD: product (PM ruling, one number for all four fans)",
          "hardware selection F1", "on the fan box bulkhead, blowing up"),
     ]
     total = L.write_parts_list(design, os.path.join(root_dir, BOM_REL), rows, PN, NAME, VN)
