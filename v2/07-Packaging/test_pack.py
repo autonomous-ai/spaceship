@@ -76,9 +76,9 @@ def test_heavy_piece_is_caught():
 
 
 def test_rollup_line_lost_is_caught():
-    p = pack.PIECE["2-21"]
+    p = pack.PIECE["2-10"]
     saved = list(p.mass)
-    p.mass = [("FANBOX_E", 1)]   # drops the exhaust fans' half of the fans line
+    p.mass = [("SOFFIT", 1), ("FANBOX_E", 1)]   # drops the exhaust fans' half of the fans line
     try:
         assert "K1" in failing(pack.Model())
     finally:
@@ -86,9 +86,9 @@ def test_rollup_line_lost_is_caught():
 
 
 def test_overhang_is_caught():
-    p = pack.PIECE["1-03"]
+    p = pack.PIECE["1-01"]
     saved = p.dims
-    p.dims = pack.S(1455, 1225.5, 9)   # the floor panel with BASE P01's 19.5 mm lap
+    p.dims = pack.S(1455, 1225.5, 12)   # the floor panel with BASE P01's 19.5 mm lap
     try:
         assert "K4" in failing(pack.Model())
     finally:
@@ -129,16 +129,21 @@ def test_no_reserved_part_numbers():
     assert not (used & reserved), used & reserved
 
 
-def test_what_if_prices():
-    base = pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS)
+def test_clock_matches_model():
     m = pack.Model()
-    assert abs(base - m.time_total(pack.CLOCK_LAST_STEP) / 60) < 1e-9
-    assert abs(pack.what_if([]) - base) < 1e-9
-    for f in pack.FIXES:
-        assert pack.what_if([f]) < base, f["id"]
-    assert pack.what_if(pack.FIXES) < min(pack.what_if([f]) for f in pack.FIXES)
-    # what_if works on copies: the guide's own steps are unchanged
-    assert abs(pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS) - base) < 1e-9
+    assert abs(pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS) - m.time_total(pack.CLOCK_LAST_STEP) / 60) < 1e-9
+
+
+def test_d87_in_the_steps():
+    # D-87: corner keys hook in, the fan boxes ride in their parts, the floor foam is bonded, a self-test replaces the 10 min test
+    assert all(f["count"] == 0 for f in pack.OTHER_FIXINGS if f["step"] == 2)
+    tags = {p.tag for p in pack.PIECES if p.kind == "piece"}
+    names = " ".join(p.name for p in pack.PIECES)
+    assert "SEAL MAT" not in names and "EXHAUST FAN BOX, WITH" not in names
+    assert pack.PIECE["2-10"].kg <= 20 and pack.PIECE["2-17"].kg <= 20
+    assert len(tags) == 42
+    step20 = next(s for s in pack.STEPS if s["n"] == 20)
+    assert all(o["secs"] < 600 for o in step20["ops"])
 
 
 if __name__ == "__main__":
