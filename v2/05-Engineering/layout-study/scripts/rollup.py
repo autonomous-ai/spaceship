@@ -406,7 +406,9 @@ def rollup_md(rows):
     md.append("- **The next skeleton update** (ISS-086): the 9 mm floor and 13 mm threshold (D-72), and the back and ceiling "
               "frames at 1198.99 mm at the closing seams.")
     md.append("- **Each part PR that merges:** its CAD masses replace this study's model masses line by line (today the walls "
-              "other than L1, the base, the decor blocks and the kits are still model masses).")
+              "other than L1, the base, the decor blocks and the kits are still model masses). The fixings kit is this study's 78 "
+              "bolts and 38 cam connectors; the joints register (PR #23) has 82 bolts, 102 rivnuts and no cams, so the kit "
+              "is recounted once the register gives masses.")
     md.append(f"- **BASE's support behind the intake mesh:** if it leaves less than {AA.D60_FREE['intake']:.3f} m2 free, the air "
               "report re-runs the fan noise (25.3 / 29.7 dB(A) now).")
     md.append("- **The tests:** T02 (fill), T07 (clips) and T10 (weights) replace the provisional and assumed lines.")
