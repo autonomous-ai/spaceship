@@ -384,8 +384,8 @@ def build_keys(app):
         ("cut_angle", DRAWN, "deg",
          "SOURCE: stud face cut from square, signed: 0 (111211), -24.14 (111212), +24.02 (111213), -7.25 (111214); "
          "BASE's front geometry (corner-keys.csv)"),
-        ("fix_x", "10 mm", "mm", "PROPOSED: fixing holes from the key's back face (FR-16)"),
-        ("fix_y", "7.5 mm", "mm", "PROPOSED: fixing holes either side of the centre line (FR-16)"),
+        ("fix_x", "10.5 mm", "mm", "PROPOSED: fixing holes from the key's back face, over 2 x the hole (C09) (FR-16)"),
+        ("fix_y", "7 mm", "mm", "PROPOSED: fixing holes either side of the centre line, 10.5 from the side faces (C09) (FR-16)"),
         ("stud_z1", "26 mm", "mm", "PROPOSED: lower hook stud above the key's bottom; Z 37.5 in the pod (FR-15)"),
         ("stud_z2", "60 mm", "mm", "PROPOSED: upper hook stud above the key's bottom; Z 71.5 in the pod (FR-15)"),
         ("tap_d", "5 mm", "mm", "SOURCE: M6 x 1 tap drill 5.0 (ISO 2306, unverified)"),
@@ -436,7 +436,7 @@ def build_keys(app):
         bottom = face_where(body, lambda n: n.z < -0.99)
         back = line_edge(bottom, lambda q: abs(q[0]) < 0.01)
         edge_y = line_edge(bottom, lambda q: abs(q[1] - side * 17.5) < 0.01)
-        hole(comp, body, bottom, (10, side * 7.5, 0), back, "fix_x", edge_y, "key_w / 2 - fix_y", "fix_drill",
+        hole(comp, body, bottom, (10.5, side * 7.0, 0), back, "fix_x", edge_y, "key_w / 2 - fix_y", "fix_drill",
              "HOLE - %s M6 (DRILL 5.0 X 18)" % name)
     for name, zp, z in (("HOOK STUD LOW", "stud_z1", 26.0), ("HOOK STUD HIGH", "stud_z2", 60.0)):
         face = stud_face(body)
@@ -457,9 +457,17 @@ def build_keys(app):
     print("KEYS (skeleton %s): drawn 111211 %s, material %s, mass %.4f kg" % (
         rev, fmt(box(body)), mat, body.physicalProperties.mass))
 
+    names = {"111211": "BASE - CORNER KEY - SQUARE - COMMON", "111212": "BASE - CORNER KEY - FRONT - LH",
+             "111213": "BASE - CORNER KEY - FRONT - RH", "111214": "BASE - CORNER KEY - KNEE - LH"}
+    family = (root.partNumber, root.description)
+
     def state(expr, pn):
         def go():
             design.userParameters.itemByName("cut_angle").expression = expr
+            num = pn.split()[0]
+            if num in names:            # each STEP carries its own part number (C06)
+                root.partNumber = num
+                root.description = "%s | rev %s | cut %s | joints register J-BASE-02 | PROPOSED" % (names[num], REV, expr)
             adsk.doEvents()
             health(design)
             b = comp.bRepBodies.item(0)
@@ -472,6 +480,7 @@ def build_keys(app):
                 "0 (111211). Built by joints_hardware_build.py",
                 [(step, state(ang, pn)) for pn, step, ang in KEY_VARIANTS])
     state(DRAWN, "111211 (back to the drawn state)")()
+    root.partNumber, root.description = family
     edit_test(design, lambda: box(comp.bRepBodies.item(0)), [("key_h", "80 mm")],
               lambda b, a: abs((a[5] - a[2]) - 80.0) < 0.01)
     doc.close(False)

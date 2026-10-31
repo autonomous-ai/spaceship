@@ -3,10 +3,9 @@
     # 1. start the empty drawing (needs the unlocked screen; tools/fusion/README.md)
     python3 tools/fusion/start_drawing.py 831001_P01_HARDWARE-LOCATING-SPIGOT_CAD \\
         831001_P01_HARDWARE-LOCATING-SPIGOT_DWG --folder "Default Project/FocusPod v2/joints" --sheet A3
-    # 2. one annotate run: base views, dimensions, the projection symbol, raw PDF
-    python3 tools/fusion/run_script.py v2/02-Drawings/joints/joints_drawing.py \\
-        --doc 831001_P01_HARDWARE-LOCATING-SPIGOT_DWG --folder "Default Project/FocusPod v2/joints" \\
-        --arg part=spigot --save "views, dimensions, PDF" --close
+    # 2. one annotate run: it checks the screen is unlocked, opens the drawing itself, adds the
+    #    base views, dimensions and projection symbol, exports the raw PDF, saves and closes
+    python3 tools/fusion/run_script.py v2/02-Drawings/joints/joints_drawing.py --arg part=spigot
     # 3. local finish: clear "Created by", add the notes as PDF text, render a PNG
     python3 v2/02-Drawings/joints/joints_drawing.py finish spigot
 
@@ -70,8 +69,8 @@ PARTS = {
             "   111214  7.25°   LH    27.23      22.77       1        LEFT KNEE",
             "4. H01, H02: M6x1-6H THROUGH, SQUARE TO THE STUD FACE ON ITS CENTRE LINE, 26 AND 60",
             "   ABOVE THE BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°.",
-            "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, 10 FROM THE",
-            "   BACK FACE, 7.5 EITHER SIDE OF THE CENTRE LINE.",
+            "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, 10.5 FROM THE",
+            "   BACK FACE, 7.0 EITHER SIDE OF THE CENTRE LINE.",
             "6. JOINTS REGISTER J-BASE-02; POSITIONS v2/01-CAD-Native/joints/corner-keys.csv;",
             "   ONE STEP PER PART NUMBER IN v2/03-Manufacturing/joints/.",
         ],
@@ -245,15 +244,64 @@ def projection_symbol(sheet, x0=236.0, y0=72.0, d=5.0, big=10.0, length=10.0, ga
     sk.circles.addByCenterRadius(p2(cx, y0), d / 2)
 
 
+FOLDER = ("Default Project", "FocusPod v2", "joints")
+
+
+def screen_locked():
+    """True while the Mac's screen is locked: opening a drawing then has hung Fusion (README)."""
+    import plistlib
+    import subprocess
+    out = subprocess.run(["ioreg", "-n", "Root", "-d1", "-a"], capture_output=True, timeout=30).stdout
+    users = plistlib.loads(out).get("IOConsoleUsers") or []
+    return any(u.get("CGSSessionScreenIsLocked") for u in users)
+
+
+def open_drawing(app, name):
+    proj = next(p for p in app.data.dataProjects if p.name == FOLDER[0])
+    folder = proj.rootFolder
+    for part in FOLDER[1:]:
+        folder = folder.dataFolders.itemByName(part)
+        if folder is None:
+            raise RuntimeError("no folder %s" % "/".join(FOLDER))
+    found = []
+    for i in range(folder.dataFiles.count):
+        try:
+            df = folder.dataFiles.item(i)
+            if df.name == name and df.fileExtension == "f2d":
+                found.append(df)
+        except Exception:
+            continue                    # an entry that can't be read now isn't ours to open
+    if len(found) != 1:
+        raise RuntimeError("%d drawings called %s in %s" % (len(found), name, "/".join(FOLDER)))
+    return app.documents.open(found[0], True)
+
+
 def run(_context):
     part = ARGS.get("part")
     if part not in PARTS:
         raise RuntimeError("--arg part=spigot or part=keys")
     cfg = PARTS[part]
+    if screen_locked():
+        raise RuntimeError("the screen is locked: not opening %s (it could hang Fusion)" % cfg["drawing"])
     app = adsk.core.Application.get()
+    doc = open_drawing(app, cfg["drawing"])
+    try:
+        annotate_and_export(app, doc, part, cfg)
+        if not doc.save("Views, dimensions and PDF by v2/02-Drawings/joints/joints_drawing.py"):
+            raise RuntimeError("saving the drawing failed")
+        print("saved %s (new version)" % cfg["drawing"])
+    finally:
+        print("closed %s: %s" % (cfg["drawing"], doc.close(False)))
+
+
+def annotate_and_export(app, doc, part, cfg):
     dwg = adsk.drawing.Drawing.cast(app.activeProduct)
     if dwg is None:
-        raise RuntimeError("the active document isn't a drawing: open it with --doc %s" % cfg["drawing"])
+        raise RuntimeError("%s didn't open as a drawing" % cfg["drawing"])
+    try:                              # draw the design's newest saved version
+        print("references updated: %s" % doc.updateAllReferences())
+    except Exception as ex:
+        print("  NOTE: references not updated (%s)" % ex)
     sheet = dwg.activeSheet
     if sheet.views.count:
         raise RuntimeError("the sheet already has %d views: views can't be deleted by the API, so start a new "
