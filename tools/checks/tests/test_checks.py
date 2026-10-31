@@ -775,7 +775,24 @@ class TestD89FlatSheetParts:
     # what only the files show
     def test_a_line_on_the_bend_layer_keeps_the_drawing_whatever_the_row_says(self, tmp_path):
         msg = self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), ("BEND", "LINE", 0)))["361101"]
-        assert "BEND layer, so it is folded" in msg
+        assert "BEND layer; only CUT and MARK are allowed, so it is folded" in msg
+
+    def test_only_the_cut_and_mark_layers_are_allowed(self, tmp_path):
+        assert self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), ("MARK", "TEXT", 0))) == {}
+        for layer in ("POCKET-HALF-DEPTH", "ENGRAVE", "HALF-LAP", "0"):
+            msg = self.plate(tmp_path, layers=(("CUT", "LWPOLYLINE", 0), (layer, "LINE", 0)))["361101"]
+            assert "%s layer; only CUT and MARK" % layer in msg, layer
+
+    def test_block_records_on_layer_0_are_not_lines(self, tmp_path):
+        d = tmp_path / "v2/03-Manufacturing/front"
+        self.plate(tmp_path)                       # writes the list, the CAD, the STEP and a plain DXF
+        dxf = d / "361101_P01_FRONT-COVER-PLATE_DXF.dxf"
+        text = dxf.read_text().replace("0\nSECTION\n2\nENTITIES", "0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n8\n0\n2\n*Model_Space"
+                                       "\n0\nENDBLK\n8\n0\n0\nENDSEC\n0\nSECTION\n2\nENTITIES")
+        dxf.write_text(text)
+        assert c_drawings.dxf_summary(str(dxf))["layers"] == {"CUT": 1}
+        dxf.write_bytes(b"AutoCAD Binary DXF\r\n\x1a\x00")
+        assert c_drawings.dxf_summary(str(dxf)) is None
 
     def test_the_dxf_must_hold_every_hole_of_the_step(self, tmp_path):
         holes = [sf.Hole(1, (50, 50, 0), (0, 0, 1), 7.0, 2.0, [])]
