@@ -345,9 +345,9 @@ def test_pod_mass_against_the_cap(tmp_path):
 
 def test_repo_pod_mass_includes_the_air_adjustment():
     fs, info = c_parts.check_pod_mass(ROOT, c_parts.load_shipping_list(ROOT)[1], "list")
-    # 426.73 in the layout list + 12.0 air + 3.4 wall trays - 12.6 floor (rulings of 2026-10-31)
-    assert info["total_kg"] == pytest.approx(429.53, abs=0.01)
-    assert fs and "429.5" in fs[0].message
+    # 426.73 in the layout list + 11.8 air + 3.4 wall trays - 12.6 floor (D-71)
+    assert info["total_kg"] == pytest.approx(429.33, abs=0.01)
+    assert fs and "429.3" in fs[0].message
 
 
 def test_skip_rules_use_whole_words_and_their_own_columns(tmp_path):

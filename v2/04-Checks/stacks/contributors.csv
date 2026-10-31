@@ -3,10 +3,10 @@ ST-01,Door bottom height (glass bottom),1,105,,,source,skeleton P03 door_zb (v1 
 ST-01,Kick strip height below the glass,-1,78,,,source,skeleton P04 (main 0cb764f): KICK from Z 27 (threshold + 7 mm floor gap; PM ruling on the FRONT plan) to door_zb 105
 ST-01,Threshold height,-1,20,,,confirmed,D-18; extrusion tolerance to come from the BASE drawing
 ST-01,Floor height under the threshold,1,0,,,assumption,room floor datum Z 0; flatness from the install sheet (IF-17) still to set
-ST-03,Clearance hole radius at its smallest,1,3.5,0,0,confirmed,PM ruling on F-009 (joints group 2026-10-31): Ø7.0 clearance holes at every site joint; a +0.1/0 hole tolerance loses nothing at the small end
+ST-03,Clearance hole radius at its smallest,1,3.5,0,0,confirmed,D-64 and D-75: Ø7.0 clearance holes at every site joint; a +0.1/0 hole tolerance loses nothing at the small end
 ST-03,M6 bolt major radius at its largest,-1,2.987,0,0,source,ISO 965-1 6g: major diameter max 5.974 mm
-ST-03,Clearance hole position (radial),-1,0,0.2,0,confirmed,PM ruling on F-009: position Ø0.4 (±0.2) from the spigot hole by CNC or a drill jig
-ST-03,Rivnut hole position (radial),-1,0,0.2,0,confirmed,PM ruling on F-009: position Ø0.4 (±0.2) from the spigot hole by CNC or a drill jig
+ST-03,Clearance hole position (radial),-1,0,0.2,0,confirmed,F-009 ruling: position Ø0.4 (±0.2) from the spigot hole by CNC or a drill jig
+ST-03,Rivnut hole position (radial),-1,0,0.2,0,confirmed,F-009 ruling: position Ø0.4 (±0.2) from the spigot hole by CNC or a drill jig
 ST-03,Rivnut float in its hole (radial),-1,0,0.065,0,calculation,Sherex CAH3-610-4.2: hole 9.53 +0.10 less body 9.50 max over 2 (joints register PR #23 H-03); spigot play is not a contributor: the panel shifts to the bolts within it
 ST-02,Space between the side frames,1,2408,,,calculation,pod_w 2500 - 2 x outer_t 46 (skeleton P04 on main 0cb764f); its tolerance from the BASE band corners and the WALL drawings
 ST-02,Back panel B1 width,-1,1200.61,,,source,skeleton P04 (main 0cb764f): (2408 - 3 x 2.26) / 2; cut tolerance from the WALL drawing
