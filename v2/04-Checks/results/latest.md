@@ -1,6 +1,6 @@
-# Mechanical check run: bc1798e on 2026-11-01
+# Mechanical check run: c53b1eb on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `bc1798e`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `c53b1eb`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 8** (5 severe, 3 major, 0 minor). Register numbers in brackets.
 
@@ -54,17 +54,17 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 36, "parts_lists": ["v2/03-Ma
 | 1-02 BASE - FLOOR PANEL - F2 | 8.708 | 1455 x 1219 x 12 | upright | calculation; confirmed (9 mm, poplar core); calculation |
 | 1-03 WALL - PANEL ASSY - BACK LOWER - LH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
 | 1-04 WALL - PANEL ASSY - BACK LOWER - RH | 11.556 | 1200.61 x 1118.61 x 84 | upright | calculation (ELECTRICAL); calculation; fill provisional |
-| 1-05 WALL - PANEL ASSY - SIDE LOWER - LH | 11.088 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
-| 1-06 WALL - PANEL ASSY - SIDE LOWER - RH | 11.088 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
+| 1-05 WALL - PANEL ASSY - SIDE LOWER - LH | 11.163 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
+| 1-06 WALL - PANEL ASSY - SIDE LOWER - RH | 11.163 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-07 WALL - PANEL ASSY - BACK UPPER - LH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
 | 1-08 WALL - PANEL ASSY - BACK UPPER - RH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
 | 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.075 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
 | 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.075 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
 | 1-11 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1200.61 x 46 | upright | calculation (CAD); bond assumption |
 | 1-12 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1200.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
-| 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
+| 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.346 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
 | 1-14 LINING - CASSETTE - SIDE UPPER - RH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
-| 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
+| 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.346 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
 | 1-16 LINING - CASSETTE - SIDE UPPER - LH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
 | 1-17 LINING - CASSETTE - BACK LOWER - LH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
 | 1-18 LINING - CASSETTE - BACK LOWER - RH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |

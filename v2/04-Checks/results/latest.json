@@ -1,5 +1,5 @@
 {
- "rev": "bc1798e",
+ "rev": "c53b1eb",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -288,7 +288,7 @@
   {
    "id": "1-05",
    "name": "WALL - PANEL ASSY - SIDE LOWER - LH",
-   "kg": 11.088,
+   "kg": 11.163,
    "dims": [
     1492.74,
     1142.74,
@@ -300,7 +300,7 @@
   {
    "id": "1-06",
    "name": "WALL - PANEL ASSY - SIDE LOWER - RH",
-   "kg": 11.088,
+   "kg": 11.163,
    "dims": [
     1492.74,
     1142.74,
@@ -384,14 +384,14 @@
   {
    "id": "1-13",
    "name": "LINING - CASSETTE - SIDE LOWER - RH",
-   "kg": 10.474,
+   "kg": 10.346,
    "dims": [
     1445.0,
     1142.74,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-14",
@@ -408,14 +408,14 @@
   {
    "id": "1-15",
    "name": "LINING - CASSETTE - SIDE LOWER - LH",
-   "kg": 10.474,
+   "kg": 10.346,
    "dims": [
     1445.0,
     1142.74,
     34.0
    ],
    "ships_as": "upright",
-   "status": "calculation; lips confirmed"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-16",

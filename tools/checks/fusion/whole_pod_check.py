@@ -394,7 +394,7 @@ def run(_context):
     app = adsk.core.Application.get()
     t_start = time.time()
     steps = [p for p in (ARGS.get("steps") or "").split(",") if p]
-    result = {"steps": steps, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "errors": []}
+    result: dict = {"steps": steps, "started": time.strftime("%Y-%m-%d %H:%M:%S"), "errors": []}
     doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     try:
         design = adsk.fusion.Design.cast(app.activeProduct)
