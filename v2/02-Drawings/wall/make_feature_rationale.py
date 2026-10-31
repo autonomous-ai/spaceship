@@ -163,8 +163,10 @@ OTHER_EL = {
            ("F45", "{tray}", "Corner slot S-CNR 11 x 80 in the end return (Y 776 to 787, Z 1060 to 1140)",
             "the trunk's turn into R1-CASS; ELECTRICAL fits the edge grommet", ELS + ": cs_h, y_xc, trunk_z",
             "follows the side lining's face (pod_w)", "±0.5 (assumption)", "assumption (ELECTRICAL)"),
-           ("F46", "{felt}", "Felt cut flush with the tray's cut-out, 4 clear of the unit", "the felt edge there has no "
-            "lip; the unit's face plate covers it (ELECTRICAL to confirm)", ELS, "", "±1", "assumption"),
+           ("F46", "{felt}", "Felt cut flush with the tray's cut-out, 4 clear of the unit; the lining face kept clear "
+            "of other features in the 8 band round it", "the felt edge there has no lip: the unit's front plate 320 x 284 "
+            "covers it by 8 all round, 2 off the felt on four nylon spacers (ELECTRICAL)",
+            "ELECTRICAL via the PM 2026-10-31 21:20 UTC", "", "±1", "source (ELECTRICAL)"),
            ("F47", "{fill}", "Fill left out in the first bay: the unit (the cut-out's size, run on to the first stud so "
             "no sliver stays), the sleeve 20 wide down to Z 301, the inlet and LAN connectors (X 108 to 160, Z 301 to "
             "387)", "room for ELECTRICAL's factory-fitted parts; knife cut through the 40 fill", ELS,

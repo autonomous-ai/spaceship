@@ -71,7 +71,7 @@ Add `--arg rebuild=1` to rebuild a design this script made (it refuses any other
 | Bolt and rivnut torque (HOLD-01, D-48) | the parts lists say HOLD-01 | test T06 |
 | Cassette edge seal (HOLD-13), closing-seam bulb seal (HOLD-12) | numbered (848012, 848004), product not named | the Hardware Engineer's pick with force data |
 | ACP V-groove rule (H16) | the side skin blanks use outer-face lengths, fold allowance 0 | the maker's rule |
-| Power unit fixing (IF-12) | panel B2's fill is cut out for the unit, which ELECTRICAL fixes to the frame; B2-CASS's felt edge round it is covered by the unit's face plate (ELECTRICAL to confirm) | ELECTRICAL's fixing and face plate |
+| Power unit fixing (IF-12) | panel B2's fill is cut out for the unit, which ELECTRICAL fixes to the frame; B2-CASS's felt edge round it is covered by the unit's 320 × 284 front plate (8 all round, 2 off the felt) | ELECTRICAL's fixing |
 
 ## Fusion 2706.1 traps found here (for the next engineer)
 

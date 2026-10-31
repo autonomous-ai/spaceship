@@ -444,7 +444,9 @@ def el_lines(rep, pos, kind):
             pv["el_grm_s"], at(pv["el_call_y"], pv["el_shelf_z"]), at(pv["el_call_y"], pv["el_call_z"]))]
     elif kind == "cassette" and code == "B2":
         out += ["power unit cut-out %g × %g through the tray base and the felt, plain, lower corner at %s; the unit "
-                "stays 4 clear all round (F44, F46)" % (pv["el_cut_x1"] - pv["el_cut_x0"], pv["el_cut_z1"] - pv["el_cut_z0"],
+                "stays 4 clear all round; its front plate 320 × 284 covers the felt edge by 8 all round, 2 off the felt "
+                "on four nylon spacers, so the lining face stays clear of other features in that band (F44, F46)" % (
+                    pv["el_cut_x1"] - pv["el_cut_x0"], pv["el_cut_z1"] - pv["el_cut_z0"],
                                                        at(pv["el_cut_x0"], pv["el_cut_z0"])),
                 "bushing hole G-B2-B4 Ø%g in the top return at %.2f from B, Y %g (the cable gap's middle) (F39)" % (
                     pv["el_grm_d"], abs(pv["el_lt_x"] - pv["seam_gap"] / 2.0), pv["el_y_bg"]),
