@@ -255,6 +255,91 @@ def annotate_right(sheet, view):
     return o
 
 
+NOTES = [
+    "GENERAL NOTES (DRAFT P01, proof only, not for manufacture)",
+    "1. Units mm. ISO first-angle projection (ISO 5456-2). Do not scale the drawing.",
+    "2. Part system: origin O = front-bottom corner of the frame outer face. Datums: A = frame "
+    "outer face (Y = 0), B = bottom face (Z = 0), C = front face (X = 0). +X toward the back of "
+    "the pod, +Y outward, +Z up. Left-hand (LH) wall; RH is the mirror image.",
+    "3. Views and 2D axes: front view from inside the pod, X-2D = X, Y-2D = Z. View from above "
+    "(below the front view), X-2D = X, Y-2D = Y. View from the right (left of the front view), "
+    "X-2D = Y, Y-2D = Z, origin at the rear face X = 1470.",
+    "4. Holes H01-H12: dia 6.6 through both tube walls (M6 clearance, ISO 273 medium). H01-H04 top "
+    "rail to the upper frame; H05-H08 bottom rail to the base, under H01-H04; H09-H12 rear stile "
+    "to the back wall. Reasons: FEATURE-RATIONALE.md.",
+    "5. General tolerances, PROPOSED and to be confirmed by the shop: single tubes (cut length, "
+    "hole position) ISO 2768-1 m; welded frame ISO 13920 class B. Hole position for H01-H12 "
+    "proposed dia 0.6 to A|B|C (floating fastener: 6.6 - 6.0). Not for the ACP skin.",
+    "6. Frame V2-SWL-10: steel tube 20x20x1.2 (VT10), welded. Skin V2-SWL-20: ACP 3 mm, Dark "
+    "Yellow EV3038 (VT01), bonded to datum A (bond spec HOLD).",
+    "7. For a person in Fusion (no API): section A-A through H01 and section B-B through H09, "
+    "both 2:1, showing the hole through both tube walls.",
+]
+
+PARTS_ORDER = [("1", "V2-SWL-10"), ("1.1", "V2-SWL-11"), ("1.2", "V2-SWL-12"),
+               ("1.3", "V2-SWL-13"), ("1.4", "V2-SWL-14"), ("1.5", "V2-SWL-15"),
+               ("2", "V2-SWL-20")]
+
+
+def parts_rows(app):
+    """Parts list built from the open design (the CAD is the source):
+    part number, English and Vietnamese names from the component, material,
+    cut length of each tube and mass (CALCULATION from CAD)."""
+    design = None
+    for i in range(app.documents.count):
+        d = app.documents.item(i)
+        if d.name == DESIGN_NAME:
+            design = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
+    if design is None:
+        # open the saved design without showing it; the drawing stays active
+        active = app.activeDocument
+        proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
+        folder = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
+        src = [df for df in folder.dataFiles if df.name == DESIGN_NAME and df.fileExtension == "f3d"][0]
+        d = app.documents.open(src, False)
+        design = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
+        if active and active.isValid:
+            active.activate()
+    if design is None:
+        raise RuntimeError("could not open the design %s (parts list source)" % DESIGN_NAME)
+    comps = {c.partNumber: c for c in design.allComponents}
+    acc = adsk.fusion.CalculationAccuracy.HighCalculationAccuracy
+    rows = [("Item", "Part no.", "Name", "Tên (VN)", "Material", "Length mm", "Qty", "Mass kg")]
+    frame_mass = 0.0
+    for item, pn in PARTS_ORDER[1:6]:
+        frame_mass += comps[pn].getPhysicalProperties(acc).mass
+    for item, pn in PARTS_ORDER:
+        c = comps[pn]
+        name, vn = (c.description.split(" | ") + ["", ""])[:2]
+        bodies = [c.bRepBodies.item(k) for k in range(c.bRepBodies.count)]
+        if pn == "V2-SWL-10":
+            mat, length, mass = "welded, see 1.1-1.5", "", frame_mass
+        else:
+            b = bodies[0]
+            mat = b.material.name
+            bb = b.boundingBox
+            ext = sorted((bb.maxPoint.x - bb.minPoint.x, bb.maxPoint.y - bb.minPoint.y,
+                          bb.maxPoint.z - bb.minPoint.z))
+            length = "%g" % round(ext[2] * 10.0, 1) if pn != "V2-SWL-20" else \
+                "%g x %g" % (round(ext[2] * 10.0, 1), round(ext[1] * 10.0, 1))
+            mass = c.getPhysicalProperties(acc).mass
+        rows.append((item, pn, name, vn, mat, length, "1", "%.2f" % mass))
+    return rows
+
+
+def text_table(sheet, rows):
+    inp = sheet.customTables.createInput()
+    inp.rowCount = len(rows)
+    inp.columnCount = max(len(r) for r in rows)
+    t = sheet.customTables.add(inp)
+    if t is None:
+        raise RuntimeError("CustomTables.add returned None")
+    for r, row in enumerate(rows):
+        for c, text in enumerate(row):
+            t.setCellData(r, c, text)
+    return t
+
+
 def hole_table(sheet, view, origin, title):
     inp = sheet.holeTables.createInput()
     inp.view = view
@@ -282,6 +367,12 @@ def run(_context):
     o_right = annotate_right(sheet, right)
     hole_table(sheet, top, o_top, "HOLE TABLE 1 - VIEW FROM ABOVE (X-2D = X, Y-2D = Y, ORIGIN O)")
     hole_table(sheet, right, o_right, "HOLE TABLE 2 - VIEW FROM THE RIGHT (X-2D = Y, Y-2D = Z)")
+    parts = parts_rows(app)
+    text_table(sheet, [(n,) for n in NOTES])
+    text_table(sheet, parts)
+    print("notes table (%d rows) and parts list from the CAD (%d rows) added" % (len(NOTES), len(parts)))
+    for r in parts:
+        print("  " + " | ".join(r))
     describe(sheet)
     path = "%s/%s" % (ARGS["repo_root"], PDF_REL)
     opts = dwg.exportManager.createPDFExportOptions(path)
