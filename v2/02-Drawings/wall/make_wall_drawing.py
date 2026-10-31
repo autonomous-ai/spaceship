@@ -6,6 +6,11 @@
     python3 tools/fusion/run_script.py v2/02-Drawings/wall/make_wall_drawing.py \
         --doc 211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_DWG --arg kind=frame --arg pn=211101 --save "views, dims, tables"
 
+Options: --arg kind=frame|frame_back|skin|tray|panel|cassette, --arg pn=PN, --arg datum_b=left|right (the
+FRONT view edge that is datum B: the side panels' front end, which is on the right for the right wall, and
+the back panels' closing-seam face, on the right for B1/B3 and the left for B2/B4). Dimensions and hole
+table origins start from datum B's corner.
+
 Runs on the open, empty drawing that start_drawing.py made from the design (whose Front was set to "seen
 from inside the pod" by set_front.py). The drawing API makes base views only, so the projected views are
 base views at the same scale, placed in the ISO first-angle layout: TOP below the FRONT, BOTTOM above it,
@@ -41,6 +46,19 @@ KINDS = {
                          ("left", "HOLE TABLE 4 - LEFT VIEW, FRONT STILE FRONT FACE (ORIGIN: VIEW LOWER LEFT CORNER)")],
               "images": [("data", (410.0, 108.0)), ("notes", (410.0, 155.0))],
               "symbol_at": (440.0, 95.0)},
+    # back panel frame (B1-B4): no hole along Y; tables on the rails' faces and both stiles' end walls
+    "frame_back": {"scale": 0.2, "front_at": (205.0, 235.0), "gap": 14.0,
+                   "views": [("front", VO.FrontViewOrientationType, "centre"),
+                             ("top", VO.TopViewOrientationType, "below"),
+                             ("bottom", VO.BottomViewOrientationType, "above"),
+                             ("left", VO.LeftViewOrientationType, "right"),
+                             ("right", VO.RightViewOrientationType, "left")],
+                   "tables": [("top", "HOLE TABLE 1 - TOP VIEW, TOP RAIL TOP FACE"),
+                              ("bottom", "HOLE TABLE 2 - BOTTOM VIEW, BOTTOM RAIL BOTTOM FACE"),
+                              ("left", "HOLE TABLE 3 - LEFT VIEW, STILE END WALL"),
+                              ("right", "HOLE TABLE 4 - RIGHT VIEW, STILE END WALL")],
+                   "images": [("data", (410.0, 108.0)), ("notes", (410.0, 155.0))],
+                   "symbol_at": (440.0, 95.0)},
     "skin": {"scale": 0.2, "front_at": (205.0, 235.0), "gap": 14.0,
              "views": [("front", VO.FrontViewOrientationType, "centre"),
                        ("top", VO.TopViewOrientationType, "below"),
@@ -70,14 +88,15 @@ KINDS = {
 }
 
 
-def overall_dims(sheet, views):
-    """Overall length and height on the FRONT view from its lower left corner (datums B and A), and the
-    overall depth on the TOP view."""
+def overall_dims(sheet, views, right=False):
+    """Overall length and height on the FRONT view from its lower corner at datum B (left, or right) and A,
+    and the overall depth on the TOP view."""
     v = views["front"]
     e = extent(v)
-    o = nearest_end(v, (e[0], e[1]))
-    dim(sheet, o, nearest_end(v, (e[2], e[1])), ((e[0] + e[2]) / 2, e[1] - 18.0))
-    dim(sheet, o, nearest_end(v, (e[0], e[3])), (e[0] - 14.0, (e[1] + e[3]) / 2))
+    xb, xo = (e[2], e[0]) if right else (e[0], e[2])
+    o = nearest_end(v, (xb, e[1]))
+    dim(sheet, o, nearest_end(v, (xo, e[1])), ((e[0] + e[2]) / 2, e[1] - 18.0))
+    dim(sheet, o, nearest_end(v, (xb, e[3])), (xb + (14.0 if right else -14.0), (e[1] + e[3]) / 2))
     t = views["top"]
     et = extent(t)
     dim(sheet, nearest_end(t, (et[2], et[1])), nearest_end(t, (et[2], et[3])), (et[2] + 12.0, (et[1] + et[3]) / 2))
@@ -198,32 +217,33 @@ def dim(sheet, a, b, place):
     return d
 
 
-def frame_dims(sheet, views, scale):
-    """FRONT view: overall length and height from datums B (left edge) and A (bottom edge), and the left
-    edge of every stile from B, stacked under the view."""
+def frame_dims(sheet, views, scale, right=False):
+    """FRONT view: overall length and height from datums B (left or right edge) and A (bottom edge), and the
+    near edge of every stile from B, stacked under the view."""
     v = views["front"]
     e = extent(v)
-    o = nearest_end(v, (e[0], e[1]))
+    xb, xo = (e[2], e[0]) if right else (e[0], e[2])
+    o = nearest_end(v, (xb, e[1]))
     n = 0
-    dim(sheet, o, nearest_end(v, (e[2], e[1])), ((e[0] + e[2]) / 2, e[1] - 22.0))
-    dim(sheet, o, nearest_end(v, (e[0], e[3])), (e[0] - 14.0, (e[1] + e[3]) / 2))
+    dim(sheet, o, nearest_end(v, (xo, e[1])), ((e[0] + e[2]) / 2, e[1] - 22.0))
+    dim(sheet, o, nearest_end(v, (xb, e[3])), (xb + (14.0 if right else -14.0), (e[1] + e[3]) / 2))
     n += 2
     # stile left edges: vertical lines spanning most of the height, left edge x values (not the outline)
     lines, _ = curves(v)
     xs = sorted({round(xy(ln.startPoint)[0], 3) for ln in lines
                  if abs(xy(ln.startPoint)[0] - xy(ln.endPoint)[0]) < 0.01
                  and abs(xy(ln.startPoint)[1] - xy(ln.endPoint)[1]) > 0.8 * (e[3] - e[1])})
-    lefts = [x for i, x in enumerate(xs) if i % 2 == 0 and e[0] + 0.5 < x < e[2] - 0.5]
-    for k, x in enumerate(lefts):
+    near = [x for i, x in enumerate(xs) if i % 2 == (1 if right else 0) and e[0] + 0.5 < x < e[2] - 0.5]
+    for k, x in enumerate(near):
         tgt = nearest_end(v, (x, e[1] + 20.0 * scale), tol=20.0 * scale + 0.6)
-        dim(sheet, o, tgt, ((e[0] + x) / 2, e[1] - 8.0 - 4.5 * (k % 3)))
+        dim(sheet, o, tgt, ((xb + x) / 2, e[1] - 8.0 - 4.5 * (k % 3)))
         n += 1
-    print("front view: %d dimensions (length, height, %d stile edges from B)" % (n, len(lefts)))
+    print("front view: %d dimensions (length, height, %d stile edges from B)" % (n, len(near)))
 
 
 def hole_table(sheet, view, title, corner):
     e = extent(view)
-    origin = nearest_end(view, {"bl": (e[0], e[1]), "tl": (e[0], e[3])}[corner])
+    origin = nearest_end(view, {"bl": (e[0], e[1]), "tl": (e[0], e[3]), "br": (e[2], e[1])}[corner])
     inp = sheet.holeTables.createInput()
     inp.view = view
     inp.originPoint = origin
@@ -283,20 +303,24 @@ def run(_context):
     cfg = KINDS[ARGS["kind"]]
     print("sheet %s: %s x %s" % (sheet.name, round(sheet.width, 2), round(sheet.height, 2)))
     views = place_views(sheet, cfg)
+    right = ARGS.get("datum_b", "left") == "right"
+    side = "right" if right else "left"
+    f = views["front"]
+    fe = extent(f)
+    b_at = (fe[2] + 26.0, fe[1] + 40.0) if right else (fe[0] - 26.0, fe[1] + 40.0)
     if ARGS["kind"] in ("skin", "tray", "panel", "cassette"):
-        overall_dims(sheet, views)
-        f = views["front"]
-        datum(sheet, "A", edge_line(f, "bottom"), (extent(f)[0] + 40.0, extent(f)[1] - 26.0))
-        datum(sheet, "B", edge_line(f, "left"), (extent(f)[0] - 26.0, extent(f)[1] + 40.0))
-    if ARGS["kind"] == "frame":
-        frame_dims(sheet, views, cfg["scale"])
-        f = views["front"]
-        datum(sheet, "A", edge_line(f, "bottom"), (extent(f)[0] + 40.0, extent(f)[1] - 30.0))
-        datum(sheet, "B", edge_line(f, "left"), (extent(f)[0] - 26.0, extent(f)[1] + 40.0))
+        overall_dims(sheet, views, right)
+        datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 40.0, fe[1] - 26.0))
+        datum(sheet, "B", edge_line(f, side), b_at)
+    if ARGS["kind"] in ("frame", "frame_back"):
+        frame_dims(sheet, views, cfg["scale"], right)
+        datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 40.0, fe[1] - 30.0))
+        datum(sheet, "B", edge_line(f, side), b_at)
         t = views["top"]
         datum(sheet, "C", edge_line(t, "top"), (extent(t)[0] + 60.0, extent(t)[3] + 10.0))
     for vname, title in cfg["tables"]:
-        hole_table(sheet, views[vname], title, "bl")
+        hole_table(sheet, views[vname], "%s (ORIGIN: VIEW LOWER %s CORNER)" % (title, side.upper())
+                   if "ORIGIN" not in title else title, "br" if right else "bl")
     projection_symbol(sheet, *cfg["symbol_at"])
     images(sheet, ARGS["pn"], cfg)
     raw = os.path.join(ARGS["repo_root"], HERE, ".raw", app.activeDocument.name + ".pdf")

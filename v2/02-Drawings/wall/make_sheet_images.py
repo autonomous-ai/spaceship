@@ -1,6 +1,7 @@
 """Notes and drawing-data blocks for a WALL drawing, as PNG images the drawing script inserts on the sheet.
 
-    python3 v2/02-Drawings/wall/make_sheet_images.py frame 211101
+    python3 v2/02-Drawings/wall/make_sheet_images.py frame 211101         # kinds: frame frame_back skin tray
+    python3 v2/02-Drawings/wall/make_sheet_images.py panel 210101         #        panel cassette (any position)
 
 Fusion's drawing API can't put text on a sheet (custom tables stay blank, title block fields come only
 from properties), but it can insert images (Sheet.images). So the drawing's general notes, its data
@@ -66,88 +67,153 @@ def render(name, lines, width_mm, size_pt=7.0, lead=1.35, title=None, border=Tru
     return path, round(w / PT, 2), round(h / PT, 2)
 
 
-def frame_blocks(pn, src=None):
-    rep = load(src or pn)
-    frame = [c for c in rep["components"] if not c["is_root"] and c["part_number"] == pn][0]
-    bodies = sorted(frame["bodies"], key=lambda b: b["name"])
-    mass = sum(b["mass_kg"] for b in bodies)
-    cut = {}
-    for b in bodies:
-        bx = b["box"]
-        length = round(max(bx[i + 3] - bx[i] for i in range(3)), 2)
-        sec = "40 × 40 × 1.2" if "BACK" in b["name"] else "20 × 40 × 1.2"
-        key = (b["name"].rstrip("0123456789 ").strip(), sec, length)
-        cut[key] = cut.get(key, 0) + 1
-    name_en, name_vi = frame["description"].split(" | ")[:2]
-    data = [
-        "**%s_P01_%s_DWG" % (pn, name_en.replace(" - ", "-").replace(" ", "-")),
-        "%s · %s" % (name_en, name_vi),
-        "Part %s · Rev P01 · Status DRAFT, not released for manufacture" % pn,
-        "Units mm · Scale 1:5 on A2 · ISO first-angle projection (symbol below)",
-        "Material: aluminium tube 6063-T6 mill finish (PM ruling 2026-10-31) · Mass %.2f kg (CAD)" % mass,
-        "Native CAD %s v%s · STEP and parts list in v2/03-Manufacturing/wall/" % (rep["document"], rep["version"]),
-    ]
-    notes = [
-        "**GENERAL NOTES",
-        "1. Views. FRONT = the frame seen from inside the pod: X(2D) along the panel, +Y of the pod, from the "
-        "front end; Y(2D) = +Z. TOP below it, BOTTOM above it, LEFT (the front end) on its right, RIGHT (the back "
-        "end) on its left. Pod position L1: left wall, lower row; pod system per conventions.md section 4.",
-        "2. Datums. A = bottom face of the bottom rail (stands on the base band, pod Z 112.26). B = front face of the "
-        "front stile (pod Y -642.74, 2.26 seam to the decor block). C = outer face (pod X -1244, bonded to the skin).",
-        "3. Hole tables: one per drilled face, origin at that view's lower left corner, X/Y in mm. Ø7.0 = M6 bolt "
-        "clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer). Ø19 = key access and grommet retainer. "
-        "Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut over a 1.5 mm stop washer. Ø8.5 and the 8.5 × 14 slot (along X) = "
-        "locating spigots. Bolts at the 220 rule on every edge; corner rivnuts on the bolt line Y 824 (pod). Reasons: "
-        "FEATURE-RATIONALE-210101.md.",
-        "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (PM ruling F-009).",
-        "5. Cut list (square ends, tube 6063-T6): " + "; ".join(
-            "%s %s × %g × %d" % (k[0], k[1], k[2], q) for k, q in sorted(cut.items())) + ".",
-        "6. Member joints HOLD (H11): butt joints shown, rails run the full length. Cut lengths ±0.5 (assumption) "
-        "until the frame maker's capability is known (guideline 6.3).",
-        "7. HOLD: member joints (H11), captive bolt retainer (HOLD-02), rivnut torque (HOLD-01). P01 DRAFT.",
-    ]
-    return [("data", data, 150.0, None), ("notes", notes, 150.0, None)]
+POS_WORDS = {"L1": "left wall, lower row", "R1": "right wall, lower row", "L2": "left wall, upper row",
+             "R2": "right wall, upper row", "B1": "back wall, lower row, left half", "B2": "back wall, lower row, "
+             "right half", "B3": "back wall, upper row, left half", "B4": "back wall, upper row, right half"}
 
 
 def comp_of(rep, pn):
     return [c for c in rep["components"] if not c["is_root"] and c["part_number"] == pn][0]
 
 
-def data_block(pn, comp, rep, scale, sheet, material, mass):
+def position(rep):
+    """Position code and its facts, from the design's part number: 21/51, an odd 4th digit for the side walls
+    (2101, 2111, 2113, 2115, 5101, 5111, 5113) and an even one for the back (2102, 2112, ...), then 01-04
+    (side L1 R1 L2 R2, back B1 B2 B3 B4)."""
+    pn = rep["document"].split("_")[0]
+    back = int(pn[3]) % 2 == 0
+    code = ("B%d" % int(pn[4:])) if back else ["L1", "R1", "L2", "R2"][int(pn[4:]) - 1]
+    return {"code": code, "back": back, "row": 1 if code in ("L1", "R1", "B1", "B2") else 2,
+            "right": code in ("R1", "R2", "B2", "B4"), "words": POS_WORDS.get(code, code)}
+
+
+def views_note(pos):
+    if pos["back"]:
+        ends = ("the corner end on the left, the closing seam on the right" if not pos["right"] else
+                "the closing seam on the left, the corner end on the right")
+        return ("Views. FRONT = seen from inside the pod: X(2D) = +X of the pod (%s); Y(2D) = +Z. TOP below it, "
+                "BOTTOM above it, LEFT (the view from the left end) on its right, RIGHT on its left. Position %s: %s "
+                "(pod system, conventions.md section 4)." % (ends, pos["code"], pos["words"]))
+    if pos["right"]:
+        return ("Views. FRONT = seen from inside the pod: X(2D) = -Y of the pod (the back end on the left, the front "
+                "end on the right); Y(2D) = +Z. TOP below it, BOTTOM above it, LEFT (the back end) on its right, RIGHT "
+                "(the front end) on its left. Position %s: %s (pod system, conventions.md section 4)." % (
+                    pos["code"], pos["words"]))
+    return ("Views. FRONT = seen from inside the pod: X(2D) = +Y of the pod (the front end on the left); Y(2D) = +Z. "
+            "TOP below it, BOTTOM above it, LEFT (the front end) on its right, RIGHT (the back end) on its left. "
+            "Position %s: %s (pod system, conventions.md section 4)." % (pos["code"], pos["words"]))
+
+
+def box_of(bodies):
+    return [min(b["box"][i] for b in bodies) for i in range(3)] + [max(b["box"][i + 3] for b in bodies) for i in range(3)]
+
+
+def data_block(pn, comp, rep, scale, sheet, material, mass, kind="Part"):
     name_en, name_vi = comp["description"].split(" | ")[:2]
     return [
         "**%s_P01_%s_DWG" % (pn, name_en.replace(" - ", "-").replace(" ", "-")),
         "%s · %s" % (name_en, name_vi),
-        "Part %s · Rev P01 · Status DRAFT, not released for manufacture" % pn,
+        "%s %s · Rev P01 · Status DRAFT, not released for manufacture" % (kind, pn),
         "Units mm · Scale %s on %s · ISO first-angle projection (symbol below)" % (scale, sheet),
         "Material: %s · Mass %.2f kg (CAD)" % (material, mass),
         "Native CAD %s v%s · STEP, DXF and parts list in v2/03-Manufacturing/wall/" % (rep["document"], rep["version"]),
     ]
 
 
-VIEWS_NOTE = ("Views. FRONT = seen from inside the pod: X(2D) along the panel (+Y of the pod, from the front end); "
-              "Y(2D) = +Z. TOP below it, BOTTOM above it, LEFT (the front end) on its right, RIGHT (the back end) on "
-              "its left. Position L1: left wall, lower row (pod system, conventions.md section 4).")
+def frame_blocks(pn, src=None):
+    rep = load(src or pn)
+    pos = position(rep)
+    frame = comp_of(rep, pn)
+    bodies = sorted(frame["bodies"], key=lambda b: b["name"])
+    prm = {p["name"]: p["value"] for p in rep["parameters"]}
+    mass = sum(b["mass_kg"] for b in bodies)
+    bx = box_of(bodies)
+    cut = {}
+    for b in bodies:
+        d = sorted(round(b["box"][i + 3] - b["box"][i], 2) for i in range(3))
+        wall = prm.get("stud_t", 1.0) if b["name"].startswith("STILE - MID") else prm.get("tube_t", 1.2)
+        sec = "%s × %.1f" % ("40 × 40" if d[0] >= 39.9 else "20 × 40", wall)
+        key = (b["name"].rstrip("0123456789 ").strip(), sec, d[2])
+        cut[key] = cut.get(key, 0) + 1
+    data = data_block(pn, frame, rep, "1:5", "A2", "aluminium tube 6063-T6, mill finish (D-79)", mass)
+    if pos["back"]:
+        seam_x = bx[3] if not pos["right"] else bx[0]
+        datums = ("2. Datums. A = bottom face of the bottom rail (pod Z %.2f, on the %s). B = the closing-seam face "
+                  "of the centre stile (pod X %.2f: half the 5.5 closing gap, R-J11), the drawing's %s edge. C = outer "
+                  "face (pod Y %.2f, bonded to the skin)." % (bx[2], "base band" if pos["row"] == 1 else "lower panel",
+                                                                seam_x, "left" if pos["right"] else "right", bx[4]))
+        holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
+                 "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer): bottom rail, outer "
+                 "stile (corner)%s. Ø19 = key access and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut: "
+                 "top rail%s. %s Ø8.5 round by the closing seam and the 8.5 × 14 slot along the edge at the corner end "
+                 "= locating spigots (ST-02). Bolts at 220, 473.00, 725.99, 978.99 from the frame's ends; corner bolts "
+                 "at 220, 559.31, 898.61 on Y 824. Reasons: FEATURE-RATIONALE-%s.md." % (
+                     ", top rail (ceiling)" if pos["row"] == 2 else "",
+                     " (4 for the panel above with stop washers, 2 spigot)" if pos["row"] == 1 else " (2 spigot, for the ceiling)",
+                     "Centre stile: 3 plain Ø7.0 that the next panel's pins pass through." if not pos["right"] else
+                     "Centre stile: 3 Ø9.53 pin rivnuts (no stop washer) with Ø19 access behind them.",
+                     rep["document"].split("_")[0].replace("2112", "2102")))
+        extra = "1 × 45° lead-in on the top edge of the closing-seam face (R-J9). "
+    else:
+        datums = ("2. Datums. A = bottom face of the bottom rail (pod Z %.2f, on the %s). B = front face of the front "
+                  "stile (pod Y %.2f, 2.26 seam to the decor block), the drawing's %s edge. C = outer face (pod X %.0f, "
+                  "bonded to the skin)." % (bx[2], "base band" if pos["row"] == 1 else "lower panel", bx[1],
+                                            "right" if pos["right"] else "left", bx[0] if not pos["right"] else bx[3]))
+        holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
+                 "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer). Ø19 = key access "
+                 "and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH3-610-4.2 rivnut over a 1.5 mm stop washer. Ø8.5 "
+                 "and the 8.5 × 14 slot (along X) = locating spigots. Bolts at the 220 rule on every edge; corner "
+                 "rivnuts on the bolt line Y 824 (pod)%s. Reasons: FEATURE-RATIONALE-%s.md." % (
+                     "; ceiling rivnuts on Z 2374 from Y -645 at 351.67 (the ceiling's rule)" if pos["row"] == 2 else "",
+                     rep["document"].split("_")[0].replace("2111", "2101")))
+        extra = ""
+    notes = [
+        "**GENERAL NOTES",
+        "1. " + views_note(pos),
+        datums,
+        holes,
+        "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009).",
+        "5. Cut list (square ends, tube 6063-T6; studs 1.0 wall, D-85): " + "; ".join(
+            "%s %s × %g × %d" % (k[0], k[1], k[2], q) for k, q in sorted(cut.items())) + ".",
+        "6. Member joints HOLD (H11): butt joints shown, rails run the full length. %sCut lengths ±0.5 "
+        "(assumption) until the frame maker's capability is known (guideline 6.3)." % extra,
+        "7. Rivnuts and stop washers are set at the factory (see the panel assembly). HOLD: member joints (H11), "
+        "captive bolt retainer (HOLD-02), torque (HOLD-01). P01 DRAFT.",
+    ]
+    return [("data", data, 150.0, None), ("notes", notes, 150.0, None)]
 
 
 def skin_blocks(pn, src=None):
     rep = load(src or pn)
+    pos = position(rep)
     c = comp_of(rep, pn)
     b = c["bodies"][0]["box"]
-    length, ret, height = b[4] - b[1], b[3] - b[0], b[5] - b[2]
     mass = sum(x["mass_kg"] for x in c["bodies"])
     data = data_block(pn, c, rep, "1:5", "A2", "ACP 3 mm Alcorest outdoor EV3038 Dark Yellow (HW-SEL A1; D-12)", mass)
-    notes = [
-        "**GENERAL NOTES",
-        "1. " + VIEWS_NOTE,
-        "2. Datums. A = bottom edge (pod Z 112.26); B = front edge (pod Y -642.74, 2.26 seam to the decor block); "
-        "C = back face (bonded to the frame through the 3 mm bond line).",
-        "3. Blank %.2f × %.2f (DXF %s_P01_..._DXF.dxf): main face %.2f plus the %.2f back return, outer-face lengths. "
-        "The return is V-grooved on the back face along the BEND line and folded 90° to cover the frame's back end "
-        "at the corner (D-55). Fold allowance 0 and the groove rest thickness: HOLD H16 (the ACP maker's rule)." % (
-            ret + length, height, pn, length, ret),
+    if pos["back"]:
+        w, height = b[3] - b[0], b[5] - b[2]
+        body = [
+            "2. Datums. A = bottom edge (pod Z %.2f); B = the closing-seam edge (pod X %.2f, 1.62 past the frame), the "
+            "drawing's %s edge; C = back face (bonded to the frame through the 3 mm bond line)." % (
+                b[2], b[3] if not pos["right"] else b[0], "left" if pos["right"] else "right"),
+            "3. Blank %.2f × %.2f, flat (DXF %s_P01_..._DXF.dxf). Flush with the frame at the corner, top and bottom; "
+            "1.62 past the frame at the closing seam, so the skin seam there is 2.26 like every other (R-J16)." % (
+                w, height, pn),
+        ]
+    else:
+        length, ret, height = b[4] - b[1], b[3] - b[0], b[5] - b[2]
+        body = [
+            "2. Datums. A = bottom edge (pod Z %.2f); B = front edge (pod Y %.2f, 2.26 seam to the decor block), the "
+            "drawing's %s edge; C = back face (bonded to the frame through the 3 mm bond line)." % (
+                b[2], b[1], "right" if pos["right"] else "left"),
+            "3. Blank %.2f × %.2f (DXF %s_P01_..._DXF.dxf): main face %.2f plus the %.2f back return, outer-face "
+            "lengths. The return is V-grooved on the back face along the BEND line and folded 90° to cover the frame's "
+            "back end at the corner (D-55). Fold allowance 0 and the groove rest thickness: HOLD H16." % (
+                ret + length, height, pn, length, ret),
+        ]
+    notes = ["**GENERAL NOTES", "1. " + views_note(pos)] + body + [
         "4. Bond to the frame: SikaTack Panel-50, one 12 × 3 joint on every frame member, laid face down on a flat "
-        "table with the ACP face as datum (bond spec, joints register PR #23; in-line tape HOLD-B2).",
+        "table with the ACP face as datum (bond spec, joints register; in-line tape HOLD-B2).",
         "5. Edges flush with the frame's top and bottom: the outside reveal is the 2.26 seam gap (D-23).",
         "6. Protect the coloured face; film stays on until the panel is installed.",
     ]
@@ -156,22 +222,33 @@ def skin_blocks(pn, src=None):
 
 def tray_blocks(pn, src=None):
     rep = load(src or pn)
+    pos = position(rep)
     c = comp_of(rep, pn)
     mass = sum(x["mass_kg"] for x in c["bodies"])
     b = c["bodies"][0]["box"]
+    felt = pn[:3] + "3" + pn[4:] if pn.startswith("5111") else pn[:3] + "4" + pn[4:]
     data = data_block(pn, c, rep, "1:5", "A2", "galvanised steel sheet 0.5, EN 10346 DX51D+Z", mass)
+    if pos["back"]:
+        datum = ("2. Datums. A = bottom return's outer face (pod Z %.2f); B = the return at the X 0 end (pod X %.2f, "
+                 "1.13 short of X 0: a 2.26 gap to the next back cassette, PM ruling 2026-10-31), the drawing's %s edge; "
+                 "C = back face of the base (4 mm from the frame)." % (
+                     b[2], b[3] if not pos["right"] else b[0], "left" if pos["right"] else "right"))
+        depth = b[4] - b[1]
+    else:
+        datum = ("2. Datums. A = bottom return's outer face (pod Z %.2f); B = front return's outer face (the decor "
+                 "back plate line, pod Y %.2f), the drawing's %s edge; C = back face of the base (4 mm from the frame)." % (
+                     b[2], b[1], "right" if pos["right"] else "left"))
+        depth = b[3] - b[0]
     notes = [
         "**GENERAL NOTES",
-        "1. " + VIEWS_NOTE,
-        "2. Datums. A = bottom return's outer face; B = front return's outer face (the decor back plate line, pod Y "
-        "-645); C = back face of the base (4 mm from the frame).",
+        "1. " + views_note(pos),
+        datum,
         "3. Sheet metal 0.5 mm: returns %.0f deep overall, turned in as 12 mm lips that hold the felt (PM ruling "
         "2026-10-31, option 1). Inside bend radius 0.5 (1 × t), K-factor 0.44, square corner relief: assumptions "
-        "until the factory's tooling sets them (guideline 9). Flat blank in the DXF from Fusion's flat pattern." % (
-            b[3] - b[0]),
-        "4. The felt (511301) drops in behind the lips, 1 mm clear inside the returns; no glue (settles H09 for the walls).",
-        "5. Clip fixings on the base: HOLD (H03, HOLD-08), zones reserved on the first and last intermediate stiles "
-        "of the frame; nothing else fixes the tray to the frame (floating, D-17).",
+        "until the factory's tooling sets them (guideline 9). Flat blank in the DXF from Fusion's flat pattern." % depth,
+        "4. The felt (%s) drops in behind the lips, 1 mm clear inside the returns; no glue." % felt,
+        "5. Clip fixings on the base: HOLD (H03, HOLD-08), zones reserved on the panel frame's first and last studs; "
+        "nothing else fixes the tray to the frame (floating, D-17).",
         "6. Burr-free edges; zinc coating mass to confirm with the supplier.",
     ]
     return [("data", data, 150.0, None), ("notes", notes, 150.0, None)]
@@ -191,55 +268,102 @@ def parts_rows(bom_csv, top_pn):
     return rows
 
 
+def panel_bom(pn):
+    """The panel's parts list CSV, which also holds its cassette: 5101 0n -> 2101 0n, 5102 0n -> 2102 0n."""
+    import glob
+    panel = ("210" + pn[3:]) if pn.startswith("510") else pn
+    found = glob.glob(os.path.join(OUT_JSON, "..", "%s_P01_*_BOM.csv" % panel))
+    if len(found) != 1:
+        raise SystemExit("no parts list for %s (run make_parts_list.py first)" % panel)
+    return found[0]
+
+
+JOINTS = {
+    "L1": "J-BASE-01 to the base band, 4 captive M6 × 16 driven down through the bottom rail; J-FRONT-01 to the decor "
+          "block, 3 driven forward through the front stile; J-WALL-01 to L2, 4 rivnuts in the top rail (L2 drives); "
+          "J-WALL-02 to B1, 3 rivnuts in the 40 × 40 back stile (B1 drives).",
+    "L2": "J-WALL-01 to L1, 4 captive M6 × 16 driven down through the bottom rail; J-FRONT-01 to the decor block, 3 "
+          "driven forward through the front stile; J-CEIL-01, 4 rivnuts in the 40 × 40 top member's room face on the "
+          "ceiling's rule (the ceiling drives); J-WALL-02 to B3, 3 rivnuts in the 40 × 40 back stile (B3 drives).",
+    "B1": "J-BASE-01 to the base band, 4 captive M6 × 16 driven down through the bottom rail; J-WALL-02 to L1, 3 "
+          "driven out through the outer stile into L1's rivnuts; J-WALL-01 to B3, 4 rivnuts in the top rail (B3 "
+          "drives); closing seam to B2: 3 plain Ø7.0 for B2's pins.",
+    "B3": "J-WALL-01 to B1, 4 captive M6 × 16 driven down through the bottom rail; J-WALL-02 to L2, 3 driven out "
+          "through the outer stile; J-CEIL-01, 4 driven up through the top rail into the ceiling's back member, and 2 "
+          "spigots for the ceiling; closing seam to B4: 3 plain Ø7.0 for B4's pins.",
+}
+JOINTS["R1"] = JOINTS["L1"].replace("L2", "R2").replace("B1", "B2")
+JOINTS["R2"] = JOINTS["L2"].replace("L1", "R1").replace("B3", "B4")
+JOINTS["B2"] = JOINTS["B1"].replace("L1", "R1").replace("B3", "B4").replace(
+    "closing seam to B2: 3 plain Ø7.0 for B2's pins", "closing seam to B1: 3 rivnuts with factory-fitted M6 × 25 pins "
+    "(no stop washer), driven across on site")
+JOINTS["B4"] = JOINTS["B3"].replace("L2", "R2").replace("B1", "B2").replace(
+    "closing seam to B4: 3 plain Ø7.0 for B4's pins", "closing seam to B3: 3 rivnuts with factory-fitted M6 × 25 pins")
+
+
 def assembly_blocks(pn, kind, src=None):
     rep = load(src or pn)
+    pos = position(rep)
     root = [c for c in rep["components"] if c["is_root"]][0]
-    bom = os.path.join(OUT_JSON, "..", "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv")
+    bom = panel_bom(pn)
     rows = parts_rows(bom, pn)
-    mass = sum(b["mass_kg"] for c in rep["components"] if not c["part_number"].startswith("NO-PN")
-               for b in c["bodies"])
+    mass = sum(float(r["mass_total_kg"] or 0) for r in rows)
     name_en, name_vi = root["description"].split(" | ")[:2]
     data = [
         "**%s_P01_%s_DWG" % (pn, name_en.replace(" - ", "-").replace(" ", "-")),
         "%s · %s" % (name_en, name_vi),
         "Assembly %s · Rev P01 · Status DRAFT, not released for manufacture" % pn,
         "Units mm · Scale 1:5 on A2 · ISO first-angle projection (symbol below)",
-        "Made parts %.2f kg (CAD) plus the bought items in the list" % mass,
+        "Mass %.2f kg: the parts list's rows (CAD bodies and hardware)" % mass,
         "Native CAD %s v%s · BOM %s" % (rep["document"], rep["version"], os.path.basename(bom)),
     ]
     plist = ["**PARTS LIST (item · part number · name · qty · status)"]
     for i, r in enumerate(rows, 1):
-        plist.append("%d · %s · %s · %s %s · %s" % (i, r["part_number"] or "no PN yet", r["name_en"], r["qty"],
-                                                  r["unit"], r["status"].split(";")[0]))
+        plist.append("%d · %s · %s · %s %s · %s" % (i, r["part_number"] or "no PN yet", r.get("name") or r.get("name_en"),
+                                                  r["qty"], r["unit"], r["status"].split(";")[0]))
+    pns = {r["part_number"][:4]: r["part_number"] for r in rows if r["part_number"]}
     if kind == "panel":
+        frame = pns.get("2112") or pns.get("2111")
+        skin = pns.get("2114") or pns.get("2113")
+        fill = pns.get("2116") or pns.get("2115")
+        cass = "51" + pn[2:]
         notes = [
             "**GENERAL NOTES",
-            "1. " + VIEWS_NOTE,
-            "2. Stack outside to inside: ACP skin 3 (211301), bond line 3 (SikaTack Panel-50, 12 × 3 on every member), "
-            "frame 40 (211101, 6063-T6), PET fill 40 in the bays (211501): outer panel 46. Then the 4 mm gap and the "
-            "lining cassette 34 (510101, a separate part): 84 in all (PM ruling 2026-10-31).",
-            "3. Site joints (joints register, PR #23): J-BASE-01 to the base band, 4 captive M6 × 16 driven down "
-            "through the bottom rail; J-FRONT-01 to the decor block, 3 driven forward through the front stile; "
-            "J-WALL-01 to L2, 4 rivnuts in the top rail (L2 drives); J-WALL-02 to B1, 3 rivnuts in the 40 × 40 back "
-            "stile (B1 drives). Seam gap 2.26 at each, set by the 1.5 mm stop washers.",
-            "4. Factory fits: rivnuts with stop washers, the 2 spigots in the top rail, the captive bolts with their "
-            "retainers (HOLD-02), the gaskets on the nut-side faces (PORON 4701-40, HOLD-05). Fill pockets 60 × 60 "
-            "left open beside every bolt this panel drives.",
+            "1. " + views_note(pos),
+            "2. Stack outside to inside: ACP skin 3 (%s), bond line 3 (SikaTack Panel-50, 12 × 3 on every member), "
+            "frame 40 (%s, 6063-T6), PET fill 40 in the bays (%s): outer panel 46. Then the 4 mm gap and the lining "
+            "cassette 34 (%s, a separate part): 84 in all." % (skin, frame, fill, cass),
+            "3. Site joints (joints register): %s Seam gap 2.26 at each stopped joint, set by the 1.5 mm stop washers."
+            % JOINTS.get(pos["code"], ""),
+            "4. Factory fits: rivnuts with stop washers, the spigots in the top rail, the captive bolts with their "
+            "retainers (HOLD-02), the gaskets on the nut-side faces (PORON 4701-40, HOLD-05)%s. Fill pockets 60 × 60 "
+            "left open beside every bolt this panel drives." % (
+                ", the closing-seam bulb seal (HOLD-12)" if pos["code"] in ("B2", "B4") else ""),
             "5. Bond: panel bonded face down on a flat table; no standing, stacking or shipping before 72 h (bond spec).",
             "6. HOLD: member joints (H11), retainer (HOLD-02), torque (HOLD-01), gasket converter (HOLD-05).",
         ]
     else:
+        tray = pns.get("5112") or pns.get("5111")
+        felt = pns.get("5114") or pns.get("5113")
+        if pos["back"]:
+            run = ("It runs from the side lining's face to 1.13 short of X 0: a 2.26 gap to the next back cassette with "
+                   "the soft edge seal H-14 (PM ruling 2026-10-31).")
+        else:
+            run = ("It runs from the decor back plate (pod Y -645) to past the back lining's face (Y 800), closing the "
+                   "inside corner (D-57).")
+        if pos["row"] == 2:
+            run += " The upper cassette floats 4 mm under the ceiling frame (D-57)."
         notes = [
             "**GENERAL NOTES",
-            "1. " + VIEWS_NOTE,
-            "2. Floating inner leaf (D-17): tray 511101 (0.5 mm, 34 mm returns, 12 mm lips) holds the 9 mm felt "
-            "511301 behind its lips over a 24 mm air gap. It hangs on captive clips with a rated load (D-47), never a "
-            "screw; 4 mm clear of the frame.",
-            "3. Clips HOLD (H03): 4 zones reserved on the first and last intermediate stiles of the panel frame, 100 "
-            "from the top and bottom, clear of every key access hole and fill pocket.",
-            "4. Hook-and-loop only to line it up (D-47). PORON gasket round the outer edge (HOLD-05, H14).",
-            "5. It runs from the decor back plate (pod Y -645) to past the back lining's face (Y 800), closing the "
-            "inside corner (D-57). Cables in the air gap clip to the tray only (D-26).",
+            "1. " + views_note(pos),
+            "2. Floating inner leaf (D-17): tray %s (0.5 mm, 34 mm returns, 12 mm lips) holds the 9 mm felt %s behind "
+            "its lips over a 24 mm air gap. It hangs on captive clips with a rated load (D-47), never a screw; 4 mm "
+            "clear of the frame." % (tray, felt),
+            "3. Clips HOLD (H03): 4 zones reserved on the panel frame's first and last studs, 100 from the top and "
+            "bottom, clear of every key access hole and fill pocket.",
+            "4. Hook-and-loop only to line it up (D-47). Where it meets another cassette, the very soft edge seal "
+            "848012 only touches across the 2.26 gap (R-J18, HOLD-13).",
+            "5. " + run + " Cables in the air gap clip to the tray only (D-26).",
         ]
     return [("data", data, 150.0, None), ("parts", plist, 150.0, None), ("notes", notes, 150.0, None)]
 
@@ -250,7 +374,8 @@ def main(argv):
     if kind in ("panel", "cassette"):
         blocks = assembly_blocks(pn, kind, src)
     else:
-        blocks = {"frame": frame_blocks, "skin": skin_blocks, "tray": tray_blocks}[kind](pn, src)
+        blocks = {"frame": frame_blocks, "frame_back": frame_blocks, "skin": skin_blocks,
+                  "tray": tray_blocks}[kind](pn, src)
     meta = {}
     for name, lines, width, title in blocks:
         path, w, h = render("%s_%s" % (pn, name), lines, width, title=title)
