@@ -299,27 +299,27 @@ def images(sheet, pn, cfg):
         print("IMAGE|%s|at %s|%s x %s mm|scale %.5f" % (name, at, m["w_mm"], m["h_mm"], ii.scale))
 
 
-def run(_context):
-    app = adsk.core.Application.get()
+def annotate(app, kind, pn, datum_b):
+    """Views, dimensions, datums, hole tables, symbol, images and the raw PDF on the active, empty drawing."""
     dwg = adsk.drawing.Drawing.cast(app.activeProduct)
     if dwg is None:
         raise RuntimeError("the active document is not a drawing")
     sheet = dwg.activeSheet
     if sheet.views.count:
         raise RuntimeError("the sheet already has %d views; start a new drawing" % sheet.views.count)
-    cfg = KINDS[ARGS["kind"]]
+    cfg = KINDS[kind]
     print("sheet %s: %s x %s" % (sheet.name, round(sheet.width, 2), round(sheet.height, 2)))
     views = place_views(sheet, cfg)
-    right = ARGS.get("datum_b", "left") == "right"
+    right = datum_b == "right"
     side = "right" if right else "left"
     f = views["front"]
     fe = extent(f)
     b_at = (fe[2] + 26.0, fe[1] + 40.0) if right else (fe[0] - 26.0, fe[1] + 40.0)
-    if ARGS["kind"] in ("skin", "tray", "panel", "cassette", "fill"):
+    if kind in ("skin", "tray", "panel", "cassette", "fill"):
         overall_dims(sheet, views, right)
         datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 40.0, fe[1] - 26.0))
         datum(sheet, "B", edge_line(f, side), b_at)
-    if ARGS["kind"] in ("frame", "frame_back"):
+    if kind in ("frame", "frame_back"):
         frame_dims(sheet, views, cfg["scale"], right)
         datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 40.0, fe[1] - 30.0))
         datum(sheet, "B", edge_line(f, side), b_at)
@@ -329,7 +329,7 @@ def run(_context):
         hole_table(sheet, views[vname], "%s (ORIGIN: VIEW LOWER %s CORNER)" % (title, side.upper())
                    if "ORIGIN" not in title else title, "br" if right else "bl")
     projection_symbol(sheet, *cfg["symbol_at"])
-    images(sheet, ARGS["pn"], cfg)
+    images(sheet, pn, cfg)
     raw = os.path.join(ARGS["repo_root"], HERE, ".raw", app.activeDocument.name + ".pdf")
     os.makedirs(os.path.dirname(raw), exist_ok=True)
     opts = dwg.exportManager.createPDFExportOptions(raw)
@@ -340,3 +340,44 @@ def run(_context):
     print("raw PDF: %s" % os.path.relpath(raw, ARGS["repo_root"]))
     print("sheet now: %d views, %d dimensions, %d hole tables" % (
         sheet.views.count, sheet.drawingDimensions.count, sheet.holeTables.count))
+
+
+def run(_context):
+    """One drawing (the active one: --doc DWG with --save and --close on the runner), or, with
+    --arg batch="KIND:PN:DWG:DATUM_B;...", every listed drawing that start_drawing.py left open: each is
+    activated, annotated, saved and closed. A failing one is reported (BATCH|FAIL) and closed unsaved, so it
+    stays as start_drawing.py made it; the batch goes on and never raises (PM fair-share ruling 2026-10-31:
+    fewer, bigger runs)."""
+    import traceback
+    app = adsk.core.Application.get()
+    if not ARGS.get("batch"):
+        annotate(app, ARGS["kind"], ARGS["pn"], ARGS.get("datum_b", "left"))
+        return
+    done, failed = [], []
+    for item in [x.strip() for x in ARGS["batch"].split(";") if x.strip()]:
+        doc = None
+        try:
+            kind, pn, name, datum_b = item.split(":")
+            docs = [app.documents.item(i) for i in range(app.documents.count) if app.documents.item(i).name == name]
+            if len(docs) != 1:
+                raise RuntimeError("%d open documents are called %r (start_drawing.py --keep-open leaves one)" % (
+                    len(docs), name))
+            doc = docs[0]
+            doc.activate()
+            print("BATCH|annotate %s" % name)
+            annotate(app, kind, pn, datum_b)
+            if not doc.save("views, dimensions, hole tables, notes"):
+                raise RuntimeError("save failed")
+            done.append(name)
+            print("BATCH|done %s" % name)
+        except Exception as exc:                          # noqa: BLE001  (report, close, go on)
+            failed.append(item)
+            print("BATCH|FAIL %s: %s" % (item, exc))
+            print(traceback.format_exc()[-1200:])
+        finally:
+            if doc is not None and doc.isValid:
+                try:
+                    doc.close(False)
+                except Exception as exc:                  # noqa: BLE001
+                    print("BATCH|could not close %s: %s" % (doc.name, exc))
+    print("BATCH|summary: %d done, %d failed%s" % (len(done), len(failed), (": " + ", ".join(failed)) if failed else ""))
