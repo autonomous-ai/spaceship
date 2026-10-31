@@ -1,7 +1,7 @@
 """Checks and exports of the saved ceiling design, without rebuilding it.
 
     python3 tools/fusion/run_script.py v2/01-CAD-Native/ceiling/ceiling_report.py \\
-        --doc 410000_P01_CEILING_CAD --label "CEILING Engineer" [--arg export=1] --close --discard
+        --doc 410000_P01_CEILING_CAD --label "CEILING Engineer" [--arg save=1] [--arg export=1] --close --discard
 
 The build (ceiling_build.py) and its checks can run past the runner's call limit on a busy
 day, so they can be split: the build saves, and this run reports on the saved version with
@@ -70,6 +70,9 @@ def run(_context):
         raise RuntimeError("ceiling checks failed (unhealthy %s, loose %s, clashes %s, off layout %s, holes %s)" % (
             bad, loose, hits, pos["bad"], holes["bad"]))
     design.activateRootComponent()
+    if ARGS.get("save") == "1":
+        print("saved:", doc.save("CEILING %s build (checked by ceiling_report.py), skeleton %s" % (M.REV, M.SKELETON_REV)))
+        adsk.doEvents()
     if ARGS.get("export") == "1":
         CB.ARGS = ARGS
         CB.export_all(design, tray)
