@@ -99,9 +99,9 @@ SPECS = {
         "The supply cartridge (610301) slides in on site with 5 clear all round.",
     ], bbox(names=[n for n, (k, _b) in BOXES.items() if k in COL] + ["CARTRIDGE SUPPLY"])),
     "soffit": spec("soffit", [
-        "Soffit: X -1161 to 1161, Y -645 to -285, Z 2120 to 2340; ships with the exhaust fan box fitted (D-87).",
+        "Soffit: X -1161 to 1161, Y -645 to -285, underside Z 2120, rails' top Z 2349.24; ships with the exhaust fan box fitted (D-87).",
         "Underside in three pieces: left and right hinged (2 hinges on the door side, 2 push latches each, HOLD), a fixed strip over the column; the top band's dark tone (D-60).",
-        "Top rails 3 x 24 with open forks at X -583 and 583: lift 24 mm behind its place, hook, slide toward the door; two captive M6 x 25 lock screws at X -1100 and -950 (5 mm key through the left section).",
+        "Top rails 3 x 24 at Z 2346.24 on the heads of four M6 x 16 studs (HOLD-18: 6 mm heads, 1.5 clear under each), open forks at X -583 and 583: lift 24 mm behind its place, hook, slide toward the door; two captive M6 x 25 lock screws at X -1100 and -950 (5 mm key through the left section). A door-side plate and the front face carry the rails.",
         "Exhaust grille 265 x 336 at X -1150 in the left section; the exhaust cartridge (610301) slides in; the fan box under C2's roof slot.",
     ], bbox(names=[n for n, (k, _b) in BOXES.items() if k in ("sof_under", "sof_under_r", "sof_under_f", "sof_front",
                                                                 "sof_rail_d", "sof_rail_r", "sof_end", "sof_fill",
