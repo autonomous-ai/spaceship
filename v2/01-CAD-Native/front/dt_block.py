@@ -390,8 +390,8 @@ def export_all(app):
          "D-12, D-49; skeleton DT shape", "one flat panel per outside face: " + DXF_SKIN_REL.split("/")[-1] +
          "; bond to the frame per the joints register's ACP bond spec"),
         (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "made: welded frame, %d tubes (cut list %s)" % (
-            len(members), CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5, finish mill "
-         "(hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
+            len(members), CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5, finish: mill "
+         "finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
          "v1 decor frame drawing (front and back frames); D-79",
          "%.1f m of tube; the rail F02 carries the catch 368007 and the top stop 351203; DT to DR and DL, and DT to "
          "the ceiling: joints HOLD (joints register)" % tube_m),

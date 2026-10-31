@@ -155,9 +155,9 @@ OWN = [
      "hole in the bolt-line tube's back wall round each J-FRONT-01 rivnut: body 9.50 max and its bulge (SHX), and the "
      "bolt tip, go into the tube"),
     ("fr_hole_rn", "9.53 mm", "mm", "source", "joints register H-03: hole for the rivnut 838003 (Sherex CAH3-610-4.2)"),
-    ("ab_hole", "6.6 mm", "mm", "source",
-     "ISO 273 medium clearance hole for the M6 bolts 838001; the frame's rivnut heads (0.76 proud, SHX) sit in the "
-     "access panel's 1 mm perimeter gasket (HOLD), which also seals the plenum"),
+    ("ab_hole", "7 mm", "mm", "source",
+     "the pod's M6 clearance hole, 7.0 (D-64, D-75; the mechanical check's hole rule M6-CLEARANCE-7) for the bolts "
+     "838001; the frame's rivnut heads (0.76 proud, SHX) sit in the access panel's 1 mm perimeter gasket (HOLD)"),
     ("ab_x", "pod_w / 2 - dr_skin_t - fr_wb + 2 * fr_hole_rn + 2 mm", "mm", "calculation",
      "access panel bolts on the bolt-line tube: the rivnut 2 diameters plus 2 from the tube's inner edge (C09)"),
     ("ab_z0", "300 mm", "mm", "assumption", "lowest access panel bolt on the bolt-line tube"),
@@ -618,20 +618,20 @@ def export_all(app):
          "; bond to the frame per the joints register's ACP bond spec"),
         (FRAME_PN, FRAME[1], FRAME[2], 1, "made: welded frame, %d tubes (cut list %s)" % (len(members),
          CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5, 40 x 20 x 1.5, 60 x 20 x 1.5 and 80 x 20 x 1.5, "
-         "finish mill (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
+         "finish: mill finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
          "v1 decor frame drawing (front and back frames); D-79; joints register HOLD-10",
          "%.1f m of tube; rivnuts 838003 fitted in the factory: 10 for the access panel bolts; the bolt-line tube has "
          "6 holes 14 for the J-FRONT-01 rivnut tails" % tube_m),
         ("351302", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
-         "aluminium EN AW-5754-H22 sheet 2.0 mm, finish mill (hidden, D-79); " + gt, "cad",
+         "aluminium EN AW-5754-H22 sheet 2.0 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "joints register J-FRONT-01 (HOLD-10 answered: 2 mm aluminium)",
          "DXF " + DXF_FLAT["BACK"] + "; fixed: the strip on X +1224 with 6 holes 9.53 +0.10/0 for the rivnuts 838003 "
          "(critical: on the wall's bolt line), and the band behind the soffit; blind-riveted to the frame (HOLD: rivet)"),
         ("351305", PARTS["ACCESS"][1], PARTS["ACCESS"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4), "
-         "removable", "aluminium EN AW-5754-H22 sheet 3.0 mm, finish mill (hidden, D-79); " + gt, "cad",
+         "removable", "aluminium EN AW-5754-H22 sheet 3.0 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "D-60 air table (opening 203 x 215); D-87; PM ruling 2026-11-01 "
          "(column hook studs, panel carries the 10 kg column)",
-         "DXF " + DXF_FLAT["ACCESS"] + "; 10 bolts M6 x 16 838001 with washers 838004 through holes 6.6 into rivnuts "
+         "DXF " + DXF_FLAT["ACCESS"] + "; 10 bolts M6 x 16 838001 with washers 838004 through holes 7.0 into rivnuts "
          "838003 in the frame, a 1 mm perimeter gasket over the rivnut heads (HOLD: gasket tape); 2 holes 9.53 "
          "+0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 "
          "with the column's 2 hook studs (this joint to be added to the joints register); comes off after the column "
