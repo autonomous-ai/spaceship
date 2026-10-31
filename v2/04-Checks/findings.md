@@ -8,15 +8,18 @@ Every finding has an owner group and a status. **Severe findings block the owner
 
 Severity: **severe** = can't be made, assembled or used as drawn; **major** = will cause rework or a wrong part; **minor** = record keeping. Check codes: C01 clash and minimum gaps (Fusion); C02 tolerance stack-ups; C03 fastener and tool access; C04 weight, doorway and pallet fit; C05 drawing completeness; C06 BOM completeness; C07 fastener schedule and thread engagement; C08 hole-to-hole alignment; C09 edge distance, bend radius, hole-to-bend; C10 mixed metals; C11 material grade and finish.
 
-## Open: 1 (0 severe, 1 major, 0 minor)
+## Open: 3 (1 severe, 2 major, 0 minor)
 
 By owner group:
 
 - Fusion Engineer 2: F-014
+- Joints Engineer: F-017, F-018
 
 | ID | Severity | Check | Part | Finding | File | Fix | Owner group | Found | Posted |
 |---|---|---|---|---|---|---|---|---|---|
+| F-017 | severe | C07 | 111211 BASE - CORNER KEY - BACK - COMMON: M6 x 16 bolts in holes tapped 12 deep | The joints register's back corner key (J-BASE-02, section 3.11) takes M6 x 16 ISO 4762 bolts (838001) in M6 holes tapped 12 deep. The fixing bolts reach 16 - 1.6 (washer 838004) - 1.5 (band wall) = 12.9 mm into a 12 mm thread, 0.9 mm too far. The hook studs are set with their heads 1.8 mm off the face, so they reach 16 - 1.8 = 14.2 mm into a 12 mm thread, 2.2 mm too far. A stud bottoms at about 4 mm proud, which leaves the side band's 1.5 mm wall about 2.5 mm of play instead of 0.3. The front and inline keys 111212 to 111214 (geometry HOLD-14) use the same bolts. Calculation from the register's own sizes and ISO 4762 / ISO 7093 (source). | `v2/05-Engineering/joints/joints-register.md` | Thread each hole deeper than its bolt reaches. The end-face holes can be tapped through the 20 mm block: the studs reach 14.2, so they don't come out the back. The bottom holes need at least 15 mm of full thread (the block is 60 tall). Or use a shorter bolt there, if the PM allows a second length (D-63 keeps one bolt). | Joints Engineer | 2026-11-01 b35fe8f |  |
 | F-014 | major | C02 | skeleton GLASS-TO-GLASS | Skeleton P04's fixed glass keeps v1's edge: its closest point to the door is 2.40 mm (true distance, Fusion), and the gap isn't parallel. The PM decided a 4 mm parallel free edge (FRONT group, 2026-10-31), which FRONT's fixed glass in PR #28 has (measured 4.0 mm). The skeleton is the single source of sizes, so the two disagree. | `v2/03-Manufacturing/skeleton/100000_P04_POD-SKELETON_STEP.step` | Move the skeleton's fixed glass free edge (fix_xbl, fix_xtl) to run parallel to the door edge at 4 mm, so FRONT links to it. | Fusion Engineer 2 | 2026-10-31 0cb764f | Fusion Engineer 2 group 2026-10-31 |
+| F-018 | major | C03 | 111211 BASE - CORNER KEY - BACK - COMMON: bolt heads under the band | The back corner key's fixing bolts go in from below (J-BASE-02), so their heads sit under the band's bottom face. An ISO 4762 M6 head is 6 mm tall and its ISO 7093 washer 1.6 mm, so 7.6 mm hangs below the band. The band stands on glides with glide_h 10 mm (skeleton P04, assumption), which leaves 2.4 mm to the floor at the nominal setting. Any glide set lower than about 8.6 mm, or a floor high spot near a corner, puts a head within 1 mm of the floor, where the band can rest on it. The front and inline keys use the same bolts. Calculation from ISO 4762, ISO 7093 and the skeleton (source). | `v2/05-Engineering/joints/joints-register.md` | Give the heads room: a low-head screw for these bolts (DIN 7984 or ISO 7380, needs a PM ruling because D-63 keeps one bolt), no washer under a flanged head, fixing the key from inside, or a stated minimum glide height with margin in the assembly guide and J-T6. | Joints Engineer | 2026-11-01 b35fe8f |  |
 
 ## Closed and accepted: 15
 
