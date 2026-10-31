@@ -236,7 +236,7 @@ def main(argv):
                     pns[key] = c["part_number"]
     pns["assy"] = panel["document"].split("_")[0]
     back = pns["frame"].startswith("2112")
-    families = dict(FAMILIES, **FAMILIES_BACK) if back else FAMILIES
+    families = {**FAMILIES, **FAMILIES_BACK} if back else FAMILIES
     found = holes(panel)
     unexplained = []
     for key, hs in sorted(found.items()):
