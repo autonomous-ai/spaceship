@@ -11,7 +11,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 1. **Two people, one 5 mm hex key, 21 steps: about 127 minutes (4.2 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **88 bolts of the joints register, each captive in its part: 76 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
-3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.8 kg) are carried by both people with 2 suction lifters.
+3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
 5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
 
@@ -32,7 +32,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## 2. Safety
 
-- **Glass.** The door unit is 48.6 kg and the fixed glass 28.8 kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
+- **Glass.** The door unit is 48.6 kg and the fixed glass 28.7 kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
 - **Weight.** Every other part is 20 kg or less (D-03); parts longer than 1.6 m or heavier than 15 kg are carried by both people.
 - **Height.** One person on a step stool at a time, the other hands up. The ceiling halves, the soffit, its cartridge, DT and the ceiling linings are lifted by both people.
 - **Hands.** Keep fingers off the joint faces while a panel is lowered onto its spigots and while a bolt pulls a seam shut.
@@ -152,7 +152,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 10](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.8 kg), **2-03** FRONT - DECOR BLOCK - DR (18.6 kg).
+- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK - DR (18.6 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DR stands on its spigots on its support, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
 - **Person A:** Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.
 - **Person B:** Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.
