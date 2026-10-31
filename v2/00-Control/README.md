@@ -24,7 +24,7 @@ Nothing here is released for production.
 2. `docs/engineering-guideline.md`: the hardware team's guideline (Vietnamese), mandatory for every version.
 3. `v2/PLAN.md`: the approved plan and targets. Where it disagrees, the decision log wins.
 4. `v2-build-plan.pdf` (this folder): the v2 build plan, with pictures. It's in Vietnamese; `requirements.md` §G translates every line.
-5. [`decision-log.md`](decision-log.md): the PM's decisions D-01 to D-108, with reasons.
+5. [`decision-log.md`](decision-log.md): the PM's decisions D-01 to D-109, with reasons.
 6. [`requirements.md`](requirements.md): what v2 must meet, with a status and a source for each line.
 7. [`conventions.md`](conventions.md): units, the ISO list, axes (with a [diagram](pod-coordinate-system.svg)), names, part numbers (with the reserved old numbers), file names, revisions and status values.
 8. [`assembly-tree.md`](assembly-tree.md): how the pod splits, where every plan code goes, the interfaces, and the v1 counterparts.
