@@ -43,8 +43,12 @@ The proof script `v2/01-CAD-Native/proof/wall_panel_frame.py` follows these step
 - **.f3d**: `exportManager.createFusionArchiveExportOptions(path, rootComponent)`. It keeps the timeline, sketches and parameters.
 - **STEP**: `createSTEPExportOptions(path, rootComponent)`. Fusion writes it in **centimetres**, even with the design in mm and the units set again right before the export, and `STEPExportOptions` has no unit setting. The unit is declared in the file, so every CAD reads it at true size. DECIDED by the PM (2026-10-31): keep Fusion's STEP as written, don't convert it, and record "STEP length unit: cm, declared in the file". Drawings and DXF must be in mm.
 - **Re-read the STEP twice**: in Fusion (`importManager.importToNewDocument(createSTEPImportOptions(path))`, compare `rootComponent.boundingBox`, close the copy with `close(False)`), and with `step_check.py`, which applies the declared unit.
-- **Export before you save.** A STEP export started right after `Document.saveAs` (while Fusion is still uploading) returned False and wrote a file with only the header. Five seconds later the same call worked.
+- **Save first, then export with retries.** Save the design before exporting, so the exports come from a saved version (review note on PR #6). A STEP export started right after `Document.saveAs` (while Fusion is still uploading) returned False and wrote a header-only file, so retry: call `adsk.doEvents()`, wait 3 s, try again, up to 10 times (`pod_skeleton.py` does this).
 - **Edit test (guideline section 4.4)**: open the exported .f3d as a copy (`importToNewDocument(createFusionArchiveImportOptions(path))`), change parameters, call `adsk.doEvents()`, check timeline health and measure every body, revert, compare with the "before" values, close without saving. See `v2/01-CAD-Native/proof/edit_test.py`.
+
+## Pod skeleton (Milestone 2)
+
+`v2/01-CAD-Native/skeleton/pod_skeleton.py` builds the whole pod as envelope bodies, one component per panel, block or pane, under the assembly tree's components. Each envelope is a rectangle on an XY plane offset by a parameter, dimensioned from the origin with `abs(<coordinate expression>)` (or aligned to the origin when the coordinate is 0), and extruded by a parameter, so every sketch is fully constrained and every size follows the parameter table. Two rules from the PR #6 review are built in: **the clash check fails the run** (every pair of envelopes is intersected; an overlap over 1 mm3 that is not on the script's list of intended overlaps, each with its reason, raises an error), and the design is **saved before the STEP export**. The thin floor is DECIDED (D-05, D-18) and is modelled as such. `edit_test_skeleton.py` checks every envelope against its own expressions after an edit.
 
 ## Saving to the Fusion cloud
 
@@ -66,7 +70,7 @@ Keep every call small, and save after each step. Fusion hung twice during this w
 In Fusion, Default Project / FocusPod v2 / `V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG`:
 
 1. Delete sheets 1 and 2: Sheet1 is the first try and CLEAN is the second try. Keep CLEAN2, the sheet in the repo PDF.
-2. Title block on CLEAN2: DWG No. V2-SWL-00, Rev. P01, Document status DRAFT, Document type ASSEMBLY DRAWING; clear "Created by". The API can't set these: the design's part number is set but DWG No. doesn't read it, and there is no revision property.
+2. Title block on CLEAN2: DWG No. V2-SWL-00, Rev. P01, Document status DRAFT, Document type ASSEMBLY DRAWING, units mm, scale 1:5, material "see parts list"; clear "Created by". The API can't set these: the design's part number is set but DWG No. doesn't read it, and there is no revision property.
 3. Save, then save the sheet as our drawing template (Fusion's New Drawing Template or Output Drawing Template command), so later drawings start without the two clicks.
 4. Add sections A-A (through H01) and B-B (through H09) at 2:1; the API can't make section views.
 5. Re-export: `make_drawing.py --arg step=export --arg sheet=CLEAN2 --arg sheet_range=1` (after the old sheets are gone), then `pdf_clear_field.py`.
@@ -89,9 +93,9 @@ The drawing API (`adsk.drawing`) is a preview API in this build. Tested on 2026-
 |---|---|---|
 | STEP unit | `ExportManager.createSTEPExportOptions` writes `SI_UNIT(.CENTI.,.METRE.)`; `STEPExportOptions` has only `wantTempIds` | Keep it (unit declared in the file); check with `step_check.py` |
 | STEP of one occurrence | `createSTEPExportOptions(path, occurrence)` raises `RuntimeError: 3 : invlid argument geometry` | Export the root component |
-| STEP right after save | `execute()` returns False; the file has only the header | Export before `saveAs` |
+| STEP right after save | `execute()` returns False; the file has only the header | Save first, then retry the export (doEvents, 3 s wait, up to 10 tries) |
 | Screenshot framing | The MCP screenshot `direction` turns the camera but doesn't zoom to fit | `run_script.py --screenshot` turns and fits first |
-| Named views | Fusion's "Front" looks along +Y; both iso views look from the -Y side | Put the side you want to see in drawings toward -Y |
+| Named views | Fusion's "Front" looks along +Y; both iso views look from the -Y side | Name views and renders by pod direction (conventions.md section 4: front = the door side, -Y; left/right as seen from outside facing the door), never by Fusion's view names. In the pod system Fusion's "Front" is the pod's front view; in the proof part's own system it was the view from inside the pod |
 | Manual drawing creation | `DrawingManager.createDrawing(input)` with `ManualDrawingCreationMode` raises `RuntimeError: 3 : Manual drawing creation requires a template with view placeholder information.` | A person starts the first sheet once |
 | Automatic drawing creation | `createDrawing` with `AutomaticDrawingCreationMode` (sub-assembly sheet only, auto dimensions off) never returned: over 10 minutes, Fusion idle, a second copy of the design opened, no drawing made | Same |
 | Drawing templates | No API call saves a template; no `.f2t` in the install or the hub | A person saves one template once |
