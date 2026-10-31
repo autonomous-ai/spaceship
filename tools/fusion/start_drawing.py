@@ -206,7 +206,7 @@ def _list_folder(folder):
     return names, unknown, others
 '''
 
-SAVE_SCRIPT = '''import adsk.core, adsk.drawing
+SAVE_SCRIPT = '''import adsk.core, adsk.drawing, time
 def run(_c):
     app = adsk.core.Application.get()
     docs = [app.documents.item(i) for i in range(app.documents.count)]
@@ -227,13 +227,29 @@ def run(_c):
     if %(name)r in names:
         raise RuntimeError("%%s is already in the folder" %% %(name)r)
     sheet = doc.drawing.sheets.item(0)
-    sheet.sheetSize = getattr(adsk.drawing.SheetSizes, %(sheet)r + "ISOSheetSize")
+    want = getattr(adsk.drawing.SheetSizes, %(sheet)r + "ISOSheetSize")
+    sheet.sheetSize = want
     w, h = %(size)r
-    if abs(sheet.width - w) > 1 or abs(sheet.height - h) > 1:
-        raise RuntimeError("sheet is %%g x %%g mm, not %(sheet)s %%g x %%g" %% (sheet.width, sheet.height, w, h))
-    print("sheet %%s: %%g x %%g mm, %%d views" %% (sheet.name, sheet.width, sheet.height, sheet.views.count))
+    # Fusion applies a new size in steps (live 2026-10-31: read 420 x 420 just
+    # after setting A2), so let it finish and look again before judging; the
+    # size value itself must be right too
+    seen = []
+    for attempt in range(10):
+        adsk.doEvents()
+        got = (sheet.sheetSize, sheet.width, sheet.height)
+        seen.append("value %%s, %%g x %%g" %% got)
+        if got[0] == want and abs(got[1] - w) <= 1 and abs(got[2] - h) <= 1:
+            break
+        time.sleep(0.5)
+    else:
+        raise RuntimeError("the sheet isn't %(sheet)s %%g x %%g mm (size value %%s) after %%d looks; last seen: %%s"
+                           %% (w, h, want, len(seen), "; ".join(seen[-3:])))
+    print("sheet %%s: %%g x %%g mm, size value %%s, after %%d look(s); %%d views" %% (
+        sheet.name, sheet.width, sheet.height, sheet.sheetSize, len(seen), sheet.views.count))
     if not doc.saveAs(%(name)r, folder, %(desc)r, ""):
         raise RuntimeError("saveAs failed")
+    adsk.doEvents()
+    print("SAVED_SHEET=%%s: %%g x %%g mm, size value %%s" %% (sheet.name, sheet.width, sheet.height, sheet.sheetSize))
     print("saved %%s" %% %(name)r)
     if %(close)r:
         print("closed: %%s" %% doc.close(False))
@@ -581,7 +597,7 @@ def main(argv=None):
                          script="start_drawing.py %s -> %s" % (opts.design, opts.drawing),
                          front=opts.lock_front)
     try:
-        lock.acquire(opts.lock_wait)
+        lock.acquire(opts.lock_wait, token=os.environ.get(rs.TOKEN_ENV) or None)
     except rs.LockTimeout as e:
         print("start_drawing: %s" % e, file=sys.stderr)
         return 3

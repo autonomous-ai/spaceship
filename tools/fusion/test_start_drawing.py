@@ -10,6 +10,8 @@ by itself), plus the screen lock, accessibility and Fusion's own cancel.
 """
 
 import json
+import contextlib
+import io
 import os
 import shutil
 import signal
@@ -508,6 +510,99 @@ class SequenceTests(unittest.TestCase):
         self.assertIn(sd.session_locked(), (True, False))
 
 
+class SaveScriptTests(unittest.TestCase):
+    """SAVE_SCRIPT itself, run against a fake Fusion API: the sheet-size read-back
+    (Reviewer 5's live run, 2026-10-31: A2 read 420 x 420 just after setting it)."""
+
+    def run_save(self, script, settle_after=2, final_value=None):
+        events = {"n": 0}
+        sizes = {"A2ISOSheetSize": (594.0, 420.0), "A3ISOSheetSize": (420.0, 297.0)}
+
+        class Sheet:
+            name = "Sheet1"
+            views = types.SimpleNamespace(count=0)
+
+            def __init__(self):
+                self._value, self._wh, self._target, self._at = "A3ISOSheetSize", (420.0, 297.0), None, 0
+
+            @property
+            def sheetSize(self):
+                return self._value
+
+            @sheetSize.setter
+            def sheetSize(self, v):
+                self._value = final_value or v
+                self._target = sizes[v]
+                self._wh = (self._wh[0], sizes[v][1])         # half applied, as seen live
+                self._at = events["n"] + settle_after
+
+            def _now(self):
+                if self._target and events["n"] >= self._at:
+                    self._wh = self._target
+                return self._wh
+
+            @property
+            def width(self):
+                return self._now()[0]
+
+            @property
+            def height(self):
+                return self._now()[1]
+
+        sheet, saved = Sheet(), []
+        doc = types.SimpleNamespace(
+            isSaved=False, objectType="Drawing", activate=lambda: True,
+            drawing=types.SimpleNamespace(sheets=types.SimpleNamespace(item=lambda i: sheet)),
+            saveAs=lambda name, folder, desc, tag: saved.append(name) or True, close=lambda save: True)
+        folder = types.SimpleNamespace(dataFiles=types.SimpleNamespace(count=0, item=None))
+        folder.dataFolders = types.SimpleNamespace(itemByName=lambda n: folder)
+        app = types.SimpleNamespace(
+            documents=types.SimpleNamespace(count=1, item=lambda i: doc),
+            data=types.SimpleNamespace(dataProjects=[types.SimpleNamespace(name="P", rootFolder=folder)]))
+        adsk = types.ModuleType("adsk")
+        adsk.doEvents = lambda: events.__setitem__("n", events["n"] + 1)
+        adsk.core = types.SimpleNamespace(Application=types.SimpleNamespace(get=lambda: app))
+        adsk.drawing = types.SimpleNamespace(
+            DrawingDocument=types.SimpleNamespace(classType=lambda: "Drawing", cast=lambda d: d),
+            SheetSizes=types.SimpleNamespace(**{k: k for k in sizes}))
+        src = sd.LIST_FOLDER + script % {"project": "P", "subfolders": ["F"], "name": "N", "sheet": "A2",
+                                         "size": (594, 420), "close": True, "desc": "d"}
+        keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.drawing")}
+        sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.drawing": adsk.drawing})
+        real_sleep, out = time.sleep, io.StringIO()
+        time.sleep = lambda s: None
+        try:
+            ns = {}
+            exec(compile(src, "save", "exec"), ns)
+            with contextlib.redirect_stdout(out):
+                ns["run"](None)
+        finally:
+            time.sleep = real_sleep
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+        return saved, out.getvalue()
+
+    def test_a_size_that_settles_after_a_moment_is_saved(self):
+        saved, out = self.run_save(sd.SAVE_SCRIPT, settle_after=2)
+        self.assertEqual(saved, ["N"])
+        self.assertIn("after 2 look(s)", out)
+        self.assertIn("SAVED_SHEET=Sheet1: 594 x 420 mm, size value A2ISOSheetSize", out)
+
+    def test_a_wrong_size_value_is_refused(self):
+        with self.assertRaises(RuntimeError) as cm:
+            self.run_save(sd.SAVE_SCRIPT, settle_after=0, final_value="A3ISOSheetSize")
+        self.assertIn("isn't A2", str(cm.exception))
+
+    def test_a_size_that_never_settles_is_refused_after_ten_looks(self):
+        with self.assertRaises(RuntimeError) as cm:
+            self.run_save(sd.SAVE_SCRIPT, settle_after=10 ** 6)
+        self.assertIn("after 10 looks", str(cm.exception))
+        self.assertIn("420 x 420", str(cm.exception))
+
+
 class CommandLineTests(unittest.TestCase):
     def test_busy_lock_exits_3_without_touching_fusion(self):
         tmp = tempfile.mkdtemp(prefix="startdwg-test-")
@@ -521,6 +616,19 @@ class CommandLineTests(unittest.TestCase):
                            capture_output=True, text=True, timeout=60)
         self.assertEqual(p.returncode, 3)
         self.assertIn("WALL engineer", p.stderr)
+
+    def test_it_runs_inside_a_held_lock_with_its_token_and_leaves_the_hold(self):
+        tmp = tempfile.mkdtemp(prefix="startdwg-test-")
+        lockdir = os.path.join(tmp, "fusion.lock")
+        hold = rs.FusionLock(lockdir, label="held for a live test", pid=None, hold_s=60, log=lambda m: None)
+        hold.acquire(1)
+        env = dict(os.environ, **{rs.TOKEN_ENV: hold.token})
+        p = subprocess.run([sys.executable, os.path.join(HERE, "start_drawing.py"), "D", "N",
+                            "--lock", lockdir, "--lock-wait", "0.3", "--url", "http://127.0.0.1:9/mcp",
+                            "--timeout", "2"], capture_output=True, text=True, timeout=60, env=env)
+        self.assertEqual(p.returncode, 2, p.stderr)              # got past the lock to Fusion
+        self.assertEqual(hold.read_owner()["token"], hold.token)  # the hold is still there
+        self.assertTrue(hold.release_held(hold.token))
 
     def test_unreachable_fusion_exits_2_and_gives_the_lock_back(self):
         tmp = tempfile.mkdtemp(prefix="startdwg-test-")
