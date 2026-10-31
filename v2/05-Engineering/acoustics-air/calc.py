@@ -592,10 +592,11 @@ SIL_LINING_MM = 25.0
 SIL_LINING_ALPHA = LINING_DATA[SIL_LINING_MM]
 SIL_CAP_DB = 40.0                                         # ASSUME: flanking limit per band
 SIL_DERATE = 0.8                                          # ASSUME: Sabine formula derated (central case)
-SIL_W = 0.45                            # m, cartridge width, two side by side in the 1016 mm block: calculation
-# Option for "exhaust high" (PM ruling 8) with the slots kept on the top face (D-29): the exhaust passage runs down
-# from a high grille to its fans at the foot of the block, which blow up a riser between the cartridges to the slot.
-RISER_ON = False
+# DECIDED (PM, 2026-10-31, after the fix pass): exhaust high. With the slots kept on the top face (D-29), the
+# exhaust passage runs down from a high grille to its fans at the foot of the block, which blow up a riser between
+# the two cartridges to the slot. The top block can't take the exhaust without a riser (t_fans shows why).
+RISER_ON = True
+SIL_W = (0.96 - 0.15) / 2               # m, cartridge width: two cartridges and the riser in ~960 mm clear: calculation
 RISER = (0.15, 3 * 0.025 + 2 * 0.040, 2.0)   # m: width, depth, length (CAD HOLD)
 RISER_KG_M2 = 7850 * 0.0010                  # riser casing, 1.0 mm galvanised steel: calculation
 SIL_L = 1.8                             # m of lined passage; plus a 0.3 m fan box at the top
@@ -726,8 +727,9 @@ FIXES = [
     ("Door drop seal", dict(drop_seal=True), 1.0, "HW drop-seal row"),
     ("Fixed glass in sealed U-profiles", dict(glass_seals=True), 0.0, "profiles are already in the layout study's rest"),
     ("Gaskets on every panel joint", dict(gaskets=True), 1.0, "HW gasket row, about 0.03 kg/m x 34 m"),
-    ("Silenced vents (splitter cartridges in the right decor block)", dict(vents="silenced"), round(cartridge_kg("al20") - 3.0, 1),
-     "calculation: two cartridges with 2 mm aluminium casings and their fill, less the 3 kg already in the layout study's rest"),
+    ("Silenced vents (splitter cartridges and exhaust riser in the right decor block)", dict(vents="silenced"),
+     round(cartridge_kg("al20") + (2 * (RISER[0] + RISER[1]) * RISER[2] * RISER_KG_M2 if RISER_ON else 0.0) - 3.0, 1),
+     "calculation: two cartridges with 2 mm aluminium casings and their fill, the exhaust riser, less the 3 kg in the layout study's rest"),
     ("Thin floor with base seal (DECIDED, D-05)", dict(floor="thin", base_seal=True), 0.5,
      "HW base-seal row; the floor itself is in the weight study"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
@@ -748,7 +750,7 @@ def pod_total_kg(cfg, wb, gb):
     kg = REST_KG + EXTRA_FIX_KG
     kg += wb[cfg["wall"]].kg_m2 * OUT_WALL_M2 + wb[cfg.get("ceiling", cfg["wall"])].kg_m2 * OUT_CEIL_M2
     kg += gb[cfg["glass"]].kg_m2 * GLASS_M2 + FRONT_EXTRA_KG.get(cfg["glass"], 0.0)
-    kg += cartridge_kg(cfg.get("casing", "al20")) - 3.0   # less the layout study's 2 x 1.5 kg silencer boxes
+    kg += cartridge_kg(cfg.get("casing", "al20")) + riser_kg() - 3.0   # less the study's 2 x 1.5 kg silencer boxes
     kg += fans_kg() - 3.0                                  # 12 V fans; less the study's 2 x 1.5 kg fans
     return kg
 
@@ -900,7 +902,8 @@ FAN12 = {   # Noctua spec page (search result, 2026-10-31): 3000 rpm, 269.3 m3/h
     "Noctua NF-A14 industrialPPC-3000 PWM": dict(qmax=269.3, pmax=6.58 * G0, lpa=41.3, kg=0.3),  # kg: ASSUME
 }
 FAN_PICK = "Noctua NF-A14 industrialPPC-3000 PWM"
-FAN12_N = 2                 # per path, side by side in the 400 mm wide fan box
+FAN12_N = 2                 # per path, side by side in the fan box
+FAN_ARR = {"supply": "parallel", "exhaust": "parallel"}   # "series" only for the top-block check
 LW_FROM_LP = 11.0           # ASSUME: maker's dB(A) taken as sound pressure 1 m away in a free field (Lw = Lp + 11)
 SPEED_LAW = 50.0            # dB per decade of speed (fan law; the same law as the flow scaling above)
 _td = FAN_BANDS[TD500]["inlet"]
@@ -974,7 +977,8 @@ def fan12_noise(fan_key, q_ls, casing=AIR_CASING, derate=SIL_DERATE, tone_250=0.
     speeds = {}
     for name, r in (("supply", 1.0), ("exhaust", 1.5)):
         L, area, b, (dep, wid) = SIL_PATHS[name]
-        s = fan_speed(fan, q_ls, path_dp(name, q_ls))
+        dp = path_dp(name, q_ls)
+        s = fan_speed(fan, q_ls, dp) if FAN_ARR[name] == "parallel" else fan_speed(fan, q_ls, dp / FAN12_N, 1)
         if s is None:
             return None
         speeds[name] = s
@@ -1019,6 +1023,10 @@ def fan12_flow_for(target_dba, fan_key=FAN_PICK, casing=AIR_CASING, tone_250=0.0
 
 def fans_kg(fan_key=FAN_PICK):
     return len(SIL_PATHS) * FAN12_N * FAN12[fan_key]["kg"]
+
+
+def riser_kg():
+    return 2 * (RISER[0] + RISER[1]) * RISER[2] * RISER_KG_M2 if RISER_ON else 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -1208,41 +1216,50 @@ def t_air():
 
 
 def t_fans():
-    out = ["| Fans and cartridges | Fits the 205 mm decor | Fans kg | Cartridges with fill kg | At 53 l/s: fan speed supply / exhaust | At 53 l/s: duct / breakout / total dB(A) | Boost flow at 30 dB(A) l/s | At 70 l/s: total dB(A) |",
+    out = ["| Fans and cartridges | Fits the 205 mm decor | Fans kg | Cartridges, fill, riser kg | At 53 l/s: fan speed supply / exhaust | At 53 l/s: duct / breakout / total dB(A) | Boost flow at 30 dB(A) l/s | At 70 l/s: total dB(A) |",
            "|---|---|---:|---:|---|---|---:|---:|"]
     a, b = fan_noise_old(TD500, 53.0), fan_noise_old(TD500, 70.0)
     out.append(row(["2 x S&P TD-500/150-160 SILENT, 4 V, as at 5c1003b, with casing sound", "no (ØD 221 mm)", "12.0",
                     "29.8", "4 V", " / ".join(f"{x:.1f}" for x in a), f"{old_flow_for(30.0, TD500):.0f}", f"{b[2]:.1f}"]))
-    global SIL_W, SIL_PATHS, RISER_ON
-    keep = (SIL_W, SIL_PATHS, RISER_ON)
-    for label, ck, tone, riser in (
-            ("2 x 2 Noctua NF-A14 iPPC-3000, 12 V, 2 mm Al casings, both grilles low (pick)", "al20", 0.0, False),
-            ("Same, 0.8 mm Al casings", "al08", 0.0, False),
-            ("Same as the pick, with a 5 dB fan tone at 250 Hz (risk)", "al20", 5.0, False),
-            ("Exhaust grille high: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges", "al20", 0.0, True)):
-        if riser:
-            SIL_W, RISER_ON = (0.96 - RISER[0]) / 2, True
-            SIL_PATHS = {k: (v[0], 2 * SIL_GAP * SIL_W, SIL_W, (v[3][0], SIL_W)) for k, v in SIL_PATHS.items()}
+    global SIL_W, SIL_PATHS, RISER_ON, FAN_ARR
+    keep = (SIL_W, SIL_PATHS, RISER_ON, FAN_ARR)
+    dep = keep[1]["supply"][3][0]
+
+    def paths(ws, we, le=SIL_L):
+        return {"supply": (SIL_L, 2 * SIL_GAP * ws, ws, (dep, ws)), "exhaust": (le, 2 * SIL_GAP * we, we, (dep, we))}
+    cases = (
+        ("Exhaust high with a riser: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges (DECIDED)",
+         "al20", 0.0, dict(riser=True, w=(keep[0], keep[0]), le=SIL_L, arr="parallel")),
+        ("Same, with a 5 dB fan tone at 250 Hz (risk)", "al20", 5.0,
+         dict(riser=True, w=(keep[0], keep[0]), le=SIL_L, arr="parallel")),
+        ("Both grilles low, no riser, 450 mm cartridges (not chosen: exhaust low)", "al20", 0.0,
+         dict(riser=False, w=(0.45, 0.45), le=SIL_L, arr="parallel")),
+        ("Exhaust in the top block, no riser: 266 mm wide, 1.35 m, two fans in series (they can't sit side by side)",
+         "al20", 0.0, dict(riser=False, w=(0.45, 0.266), le=1.35, arr="series")))
+    for label, ck, tone, v in cases:
+        SIL_W, RISER_ON = v["w"][0], v["riser"]
+        SIL_PATHS = paths(v["w"][0], v["w"][1], v["le"])
+        FAN_ARR = {"supply": "parallel", "exhaust": v["arr"]}
         r53 = fan12_noise(FAN_PICK, 53.0, ck, tone_250=tone)
         r70 = fan12_noise(FAN_PICK, 70.0, ck, tone_250=tone)
-        sp = r53[3]
-        kg = cartridge_kg(ck) + (2 * (RISER[0] + RISER[1]) * RISER[2] * RISER_KG_M2 if riser else 0.0)
-        out.append(row([label, "yes", f"{fans_kg():.1f}", f"{kg:.1f}",
-                        f"{sp['supply'] * 100:.0f}% / {sp['exhaust'] * 100:.0f}%",
-                        " / ".join(f"{x:.1f}" for x in r53[:3]),
-                        f"{fan12_flow_for(30.0, FAN_PICK, ck, tone):.0f}",
-                        f"{r70[2]:.1f}" if r70 else "out of reach"]))
-        SIL_W, SIL_PATHS, RISER_ON = keep
+        kg = cartridge_kg(ck) + riser_kg()
+        if r53 is None:
+            cells = ["out of reach", "out of reach"]
+        else:
+            cells = [f"{r53[3]['supply'] * 100:.0f}% / {r53[3]['exhaust'] * 100:.0f}%", " / ".join(f"{x:.1f}" for x in r53[:3])]
+        out.append(row([label, "yes", f"{fans_kg():.1f}", f"{kg:.1f}"] + cells +
+                       [f"{fan12_flow_for(30.0, FAN_PICK, ck, tone):.0f}", f"{r70[2]:.1f}" if r70 else "out of reach"]))
+        SIL_W, SIL_PATHS, RISER_ON, FAN_ARR = keep
     return "\n".join(out)
 
 
 def t_silencer():
     il = silencer_il(SIL_L, SIL_DERATE)
-    out = ["| Cartridge casing | Cartridges with fill kg | Fill toward the pod mm | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + fill + inner face R 125 | 250 | 500 | 1k | 2k | 4k dB |",
+    out = ["| Cartridge casing | Cartridges, fill and riser kg | Fill toward the pod mm | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + fill + inner face R 125 | 250 | 500 | 1k | 2k | 4k dB |",
            "|---|---:|---:|" + "---:|" * 12]
     for ck in ("al20", "al08"):
         rdw, d = double_wall_r(ck)
-        out.append(row([CASINGS[ck][0] + (" (pick)" if ck == AIR_CASING else ""), f"{cartridge_kg(ck):.1f}",
+        out.append(row([CASINGS[ck][0] + (" (pick)" if ck == AIR_CASING else ""), f"{cartridge_kg(ck) + riser_kg():.1f}",
                         f"{d * 1000:.0f}"] + [f"{x:.0f}" for x in il] + [f"{x:.0f}" for x in rdw]))
     out.append("")
     out.append("Pressure drop per path, supply / exhaust: " + "; ".join(

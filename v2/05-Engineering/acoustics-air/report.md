@@ -12,11 +12,11 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
 
 1. **v1 as built: about 15 dB speech reduction (D_S,A, range 11–18), not the 30 dB on the product page.** Its open vent slots (35%), door gaps (33%) and raised floor (14%) let out most of the sound. v1's lab test will settle this.
 2. **Spaceship as planned: about 14.5 dB (11–17), level with v1.** The light fixes take it to about 16 dB: perimeter and drop seals, sealed glass, joint gaskets, silenced vents, and the thin floor with a base seal. After that, the walls and ceiling carry about 90% of the sound that gets out.
-3. **DECIDED build: about 411 kg in this model, 19.3 dB (14.6–21.7), under the 420 kg cap.**
+3. **DECIDED build: about 418 kg in this model, 19.3 dB (14.6–21.7), under the 420 kg cap.**
    - Walls and ceiling: ACP 3 mm on a 20×40×1.2 aluminium frame at 400 mm, 40 mm PET fill, and a floating lining cassette (0.5 mm steel tray, 25 mm air gap, 9 mm felt).
    - Front: 4+4 laminated glass of toughened, heat-soaked panes, frameless like v1. Hinges and lock are on HOLD until a rated set is named.
-   - Air: four 12 V fans and two splitter cartridges in the right decor block (PROPOSED in this fix pass).
-   - Smoked acrylic stays an optional experiment on the factory sample: 18.9 dB at about 384 kg.
+   - Air: four 12 V fans and two splitter cartridges in the right decor block, supply grille low, exhaust grille high with a riser to the top slot (DECIDED).
+   - Smoked acrylic stays an optional experiment on the factory sample: 19.0 dB at about 390 kg.
 4. **Why the headline fell from 24.0 to 19.3 dB: the felt data.**
    - The 24.0 used Autex Cube 12 mm data on a 25 mm gap as a stand-in.
    - Ruling 5 asks for the published data of the felt picked. The only published data for a 9 mm, 1.8 kg/m² felt is Polyx Board 9, and it's measured glued flat, which absorbs far less at 125–500 Hz.
@@ -24,15 +24,15 @@ Spaceship is the working name for FocusPod v2 ("Indoor Pod").
    - The wall sample measures the real felt down to 100 Hz and settles it.
    - The range also widened at the bottom: the low case now carries the 125–250 Hz risks (no finite-panel gain, and a 4 dB dip at each double wall's resonance).
 5. **30 dB isn't reached anywhere in this search, up to 500 kg (best about 23 dB).** Beyond 420 kg each extra dB costs about 20–30 kg. Low voices (125–250 Hz) limit a light pod, and only mass, cavity depth and low-frequency absorption help there. A thicker felt on the ceiling (24 mm Autex Cube) would add about 1.2 dB; its weight isn't sourced yet.
-6. **Air (targets DECIDED, fan design PROPOSED):**
-   - 53 l/s normal at 22.8 dB(A) (target 25 or less).
-   - The boost reaches 74 l/s at 30 dB(A) (target 30 or less, aiming for 70); 70 l/s gives 28.9 dB(A).
-   - Two people in a 600 ppm office: 796 ppm at 53 l/s with perfect mixing, 845 ppm at the PM's mixing effectiveness of 0.8. Holding 800 ppm at 0.8 takes about 65 l/s, at about 27 dB(A).
+6. **Air (DECIDED):**
+   - 53 l/s normal at 25.6 dB(A). The PM set this target at 26 dB(A) or less when choosing exhaust high.
+   - The boost reaches 65 l/s at 30 dB(A) (target 30 or less, aiming for 70); 70 l/s would give 31.6 dB(A).
+   - Two people in a 600 ppm office: 796 ppm at 53 l/s with perfect mixing, 845 ppm at the PM's mixing effectiveness of 0.8. Holding 800 ppm at 0.8 takes about 65 l/s, which is the boost limit. Exhaust high should mix better than 0.8.
    - Heat: two people need at least 48 l/s to stay within 4 K of the room, and one person 27 l/s, so the 26 l/s floor (D-44) sits right at the heat limit.
 7. **Corrections in this fix pass:**
    - The 5c1003b fans were 6 kg S&P TD-500s loose in the decor cavity. Their own casings radiate 44 dB(A), which the old model left out. With it, that design gives 35.8 dB(A) at 53 l/s. They also don't fit: the decor is 205 mm deep (measured from v1), not 230–235.
-   - Four 12 V fans at about 0.3 kg each replace them. That saves about 11 kg, which pays for the bigger cartridges.
-   - D-10's 12 V check was argued at 42 Pa. At the new 10–17 Pa a 12 V pair per path works, so the mains fan exception isn't needed.
+   - Four 12 V fans at about 0.3 kg each replace them. That saves about 11 kg, which pays for the bigger cartridges and the exhaust riser.
+   - D-10's 12 V check was argued at 42 Pa. At the new 12–17 Pa (53 l/s, riser included) a 12 V pair per path works, so the mains fan exception isn't needed.
 
 ## 1. The DECIDED stack, for the Layout and Fusion Engineers
 
@@ -42,7 +42,7 @@ Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target
 - 0.5 mm lining tray (0.4 mm would cost 1 dB);
 - fill at 32 kg/m³ (the lighter 24–25 kg/m³ grade has no published absorption data);
 - 4+4 laminated front of toughened, heat-soaked panes (8.76 mm), with the door hardware on HOLD until it's rated (ruling 3);
-- fans and silencers in the decor, outside the sound shell (this fix pass puts both paths in the right block, PROPOSED);
+- fans and silencers in the right decor block, outside the sound shell, with the supply grille low and the exhaust grille high, plus a riser to the top slot;
 - every lining cassette on captive mechanical clips with a rated load, plus a safety catch on the ceiling ones; hook-and-loop only to line them up (ruling 4);
 - decor 205 mm deep, measured from v1 (D-39 is being corrected);
 - cap 420 kg.
@@ -68,8 +68,9 @@ Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target
 | Side-wall outer panel | 1500 × 1145 | 11.4 |
 | Lining cassette for it | — | 10.3 |
 | Ceiling half outer panel | 1212 × 1500 | 12.1 |
-| Supply cartridge with its fill | 159 × 450 × 2100 | 18.6 |
-| Exhaust cartridge with its fill | 159 × 450 × 2100 | 18.6 |
+| Supply cartridge with its fill | 159 × 405 × 2100 | 17.1 |
+| Exhaust cartridge with its fill | 159 × 405 × 2100 | 17.1 |
+| Exhaust riser, 1 mm steel | 150 × 155 × 2000 | 9.6 |
 | Each 12 V fan | 140 × 140 × 25 | about 0.3 (assumption) |
 | Door (4+4) | 1176 × 2011 | 47.5 (PM figure), glass is exempt |
 
@@ -151,11 +152,11 @@ Effect in the DECIDED pod (all else equal):
 
 | Front pane (door + fixed) | kg | D_S,A low | central | high | vs 8 mm |
 |---|---:|---:|---:|---:|---:|
-| Tempered 8 mm | 68 | 14.6 | 19.2 | 21.6 | +0.0 |
+| Tempered 8 mm | 68 | 14.6 | 19.3 | 21.7 | +0.0 |
 | Tempered 10 mm (v1) | 86 | 14.6 | 19.3 | 21.7 | +0.0 |
 | Laminated acoustic 4+4 (8.76 mm) | 72 | 14.6 | 19.3 | 21.7 | +0.0 |
 | Smoked acrylic 8 mm | 33 | 14.3 | 18.7 | 21.1 | -0.6 |
-| Smoked acrylic 10 mm | 41 | 14.5 | 18.9 | 21.3 | -0.3 |
+| Smoked acrylic 10 mm | 41 | 14.5 | 19.0 | 21.3 | -0.3 |
 | Smoked acrylic 12 mm | 49 | 14.6 | 19.1 | 21.5 | -0.1 |
 
 - **DECIDED front: 4+4 acoustic laminated glass**, frameless like v1. It's the quietest pane, and in this pod 0.4 dB better than 10 mm acrylic.
@@ -184,11 +185,11 @@ D_S,A is the ISO 23351-1 single number: the reduction in A-weighted sound power 
 | + fixes, light double wall DL-HDF | 13.0 | 17.6 | 20.0 |
 | + fixes, DL-HDF decoupled | 13.0 | 17.7 | 20.0 |
 | + fixes, DL-ST (steel 0.5 inner skin) | 14.6 | 19.2 | 21.6 |
-| + fixes, DL-ST decoupled | 14.6 | 19.2 | 21.6 |
+| + fixes, DL-ST decoupled | 14.6 | 19.3 | 21.6 |
 | + fixes, honeycomb sandwich SW-HC20 | 3.4 | 5.0 | 6.8 |
 | + fixes, foam sandwich + inner skin | 12.0 | 16.9 | 19.3 |
 | DECIDED stack, 4+4 laminated front | 14.6 | 19.3 | 21.7 |
-| DECIDED stack with the acrylic experiment | 14.5 | 18.9 | 21.3 |
+| DECIDED stack with the acrylic experiment | 14.5 | 19.0 | 21.3 |
 
 Where the sound gets out (share of the speech energy, central case):
 
@@ -225,7 +226,7 @@ Applied one after another to the plan with 8 mm glass. kg is the added mass for 
 | 2 | Door drop seal | 11.8 | 15.3 | 18.2 | +0.3 | 1.0 |
 | 3 | Fixed glass in sealed U-profiles | 11.8 | 15.4 | 18.2 | +0.0 | 0.0 |
 | 4 | Gaskets on every panel joint | 12.0 | 15.5 | 18.4 | +0.2 | 1.0 |
-| 5 | Silenced vents (splitter cartridges in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 34.2 |
+| 5 | Silenced vents (splitter cartridges and exhaust riser in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 40.8 |
 | 6 | Thin floor with base seal (DECIDED, D-05) | 12.9 | 16.2 | 18.7 | -0.1 | 0.5 |
 | 7 | Sealed cable holes | 12.9 | 16.2 | 18.7 | +0.0 | 0.1 |
 
@@ -236,11 +237,11 @@ The gains are small one at a time because the plan's single-leaf walls dominate.
 Total pod kg is the sum of:
 - the rest of the pod from the layout study, 102.4 kg: thin floor and base band, decor blocks, door hardware with drop seal and glazing profiles, fans at 1.5 kg, silencer boxes at 1.5 kg each, electrics and the voice-kit reserve;
 - the fixes the study doesn't carry, 2.6 kg;
-- the silencer cartridges and their fill, beyond the study's boxes;
+- the silencer cartridges, their fill and the exhaust riser, beyond the study's boxes;
 - the four 12 V fans at about 0.3 kg each, against the study's 2 × 1.5 kg;
 - the walls, ceiling and front from this report.
 
-All light fixes are on. The search covers every wall and ceiling in table 2 with each front. The PM's earlier total with Layout's clips was about 418 kg with the 6 kg fans; this fix pass takes about 3 kg off it.
+All light fixes are on. The search covers every wall and ceiling in table 2 with each front. The PM's earlier total with Layout's clips was about 418 kg with the 6 kg fans; in this model the fix pass, riser included, goes from 414 to 418 kg.
 
 Glass front (8 mm tempered or 4+4 laminated):
 
@@ -248,46 +249,46 @@ Glass front (8 mm tempered or 4+4 laminated):
 |---:|---|---:|---|
 | 280 | nothing fits |  |  |
 | 300 | nothing fits |  |  |
-| 320 | SW-FOAM20 / SW-FOAM20 / Tempered 8 mm | 314 | 8.7 / 11.4 / 13.6 |
-| 340 | SW-FOAM20 / DL-ST-40-FLG-12 / Tempered 8 mm | 335 | 9.4 / 12.2 / 14.4 |
-| 360 | PLAN-NOPLY / DL-ST-60-FL / Tempered 8 mm | 350 | 9.5 / 12.3 / 14.5 |
-| 380 | DL-ST4-40-FLG-12 / PLAN-NOPLY / Tempered 8 mm | 379 | 11.9 / 15.4 / 17.7 |
-| 400 | DL-ST4-40-FLG-12 / DL-ST-40-FLG-12 / Tempered 8 mm | 397 | 14.0 / 18.5 / 20.8 |
-| 420 | DL-ST-40-FLG-12 / DL-2HDF-60-FL / Tempered 8 mm | 419 | 14.8 / 19.6 / 22.0 |
-| 440 | DL-ST-60-FL / DL-2HDF-60-FL / Tempered 8 mm | 439 | 14.8 / 20.3 / 22.7 |
-| 460 | DL-2HDF-60-FL / DL-2HDF-60-FL / Tempered 8 mm | 457 | 15.6 / 21.3 / 23.8 |
-| 480 | DL-P6-HDF-60-FL / DL-P6-P9-DEC / Tempered 8 mm | 476 | 16.1 / 21.9 / 24.4 |
-| 500 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Tempered 8 mm | 497 | 17.3 / 22.9 / 25.4 |
-| 520 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 518 | 18.3 / 23.7 / 26.3 |
+| 320 | SW-FOAM20 / SW-HC10 / Tempered 8 mm | 320 | 7.7 / 10.3 / 12.5 |
+| 340 | SW-FOAM20 / SW-FOAM20-DL / Tempered 8 mm | 337 | 9.2 / 12.1 / 14.3 |
+| 360 | PLAN-NOPLY / DL-ST-60-FL / Tempered 8 mm | 357 | 9.5 / 12.3 / 14.5 |
+| 380 | DL-HDF / SW-FOAM20 / Tempered 8 mm | 380 | 11.4 / 15.1 / 17.4 |
+| 400 | DL-ST4-40-FLG-12 / DL-PLY4 / Tempered 8 mm | 399 | 13.5 / 18.0 / 20.4 |
+| 420 | DL-ST-40-FLG-12 / DL-ST-40-FLG-12 / Tempered 8 mm | 414 | 14.6 / 19.3 / 21.7 |
+| 440 | DL-ST-60-FL / DL-ST-40-FLG-12 / Laminated acoustic 4+4 (8.76 mm) | 438 | 14.6 / 19.9 / 22.3 |
+| 460 | DL-2HDF-60-FL / DL-ST-60-FL / Tempered 8 mm | 458 | 15.3 / 21.0 / 23.5 |
+| 480 | DL-2HDF-60-FL / DL-P6-P9-60-FL / Tempered 8 mm | 477 | 16.0 / 21.8 / 24.2 |
+| 500 | DL-P6-P9-DEC / DL-P6-P9-DEC / Tempered 8 mm | 498 | 17.1 / 22.7 / 25.3 |
+| 520 | DL-P6-P9-60-FL / DL-P6-P9-DEC / Laminated acoustic 4+4 (8.76 mm) | 519 | 18.0 / 23.5 / 26.1 |
 
 Smoked acrylic 10 mm front:
 
 | Pod budget kg | Best wall / ceiling / front | Total kg | D_S,A low / central / high |
 |---:|---|---:|---|
 | 280 | nothing fits |  |  |
-| 300 | SW-FOAM20 / PLAN-NOPLY / Smoked acrylic 10 mm | 293 | 8.7 / 11.4 / 13.5 |
-| 320 | PLAN-NOPLY / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 317 | 9.4 / 12.2 / 14.4 |
-| 340 | PLAN-NOPLY / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 335 | 9.5 / 12.3 / 14.5 |
-| 360 | PLAN / SW-FOAM20-DL / Smoked acrylic 10 mm | 360 | 12.6 / 16.2 / 18.7 |
-| 380 | DL-ST-40-FLG-12 / DL-HDF-DEC / Smoked acrylic 10 mm | 380 | 14.1 / 18.6 / 20.9 |
-| 400 | DL-ST-40-FLG-12 / DL-2HDF-60-FL / Smoked acrylic 10 mm | 395 | 14.7 / 19.3 / 21.7 |
-| 420 | DL-2HDF-60-FL / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 419 | 14.9 / 20.0 / 22.4 |
-| 440 | DL-2HDF-60-FL / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 437 | 15.5 / 20.9 / 23.4 |
-| 460 | DL-P6-P9-DEC / DL-2HDF-60-FL / Smoked acrylic 10 mm | 460 | 16.4 / 21.7 / 24.2 |
-| 480 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 473 | 17.0 / 22.2 / 24.7 |
-| 500 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 491 | 17.8 / 22.8 / 25.3 |
-| 520 | DL-P6-P9-60-FL / DL-P6-P9-100-DEC / Smoked acrylic 10 mm | 501 | 18.1 / 22.9 / 25.4 |
+| 300 | SW-FOAM20 / PLAN-NOPLY / Smoked acrylic 10 mm | 299 | 8.7 / 11.4 / 13.5 |
+| 320 | SW-FOAM20 / DL-HDF / Smoked acrylic 10 mm | 314 | 9.3 / 12.1 / 14.3 |
+| 340 | PLAN-NOPLY / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 324 | 9.4 / 12.2 / 14.4 |
+| 360 | DL-ST4-40-FLG-12 / SW-FOAM20 / Smoked acrylic 10 mm | 359 | 11.8 / 15.2 / 17.5 |
+| 380 | DL-ST4-40-FLG-12 / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 380 | 13.9 / 18.2 / 20.6 |
+| 400 | DL-ST-40-FLG-12 / DL-ST-60-FL / Smoked acrylic 10 mm | 396 | 14.5 / 19.1 / 21.5 |
+| 420 | DL-ST-60-FL / DL-ST-60-FL / Smoked acrylic 10 mm | 416 | 14.4 / 19.7 / 22.1 |
+| 440 | DL-2HDF-60-FL / DL-2HDF-60-FL / Smoked acrylic 10 mm | 440 | 15.4 / 20.9 / 23.3 |
+| 460 | DL-P6-HDF-60-FL / DL-P6-P9-DEC / Smoked acrylic 10 mm | 459 | 15.9 / 21.3 / 23.8 |
+| 480 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 480 | 17.0 / 22.2 / 24.7 |
+| 500 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 497 | 17.8 / 22.8 / 25.3 |
+| 520 | DL-P6-P9-60-FL / DL-P6-P9-100-DEC / Smoked acrylic 10 mm | 508 | 18.1 / 22.9 / 25.4 |
 
 Best builds inside the DECIDED rules:
 
 | Case | Walls | Ceiling | Front | Silencer casing | Total kg | D_S,A low / central / high |
 |---|---|---|---|---|---:|---|
-| DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 411 | 14.6 / 19.3 / 21.7 |
-| Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 418 | 14.6 / 19.3 / 21.7 |
-| Same with a 0.4 mm tray (rejected: costs 1 dB) | DL-ST4-40-FLG-12 | DL-ST4-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 398 | 13.9 / 18.3 / 20.7 |
-| Same, felt flat on the ceiling lining (no gap) | DL-ST-40-FLG-12 | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 412 | 14.6 / 19.3 / 21.7 |
-| Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 384 | 14.5 / 18.9 / 21.3 |
-| Light 0.8 mm cartridge casings | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 0.8 mm | 394 | 14.6 / 19.3 / 21.7 |
+| DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 418 | 14.6 / 19.3 / 21.7 |
+| Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 425 | 14.6 / 19.3 / 21.7 |
+| Same with a 0.4 mm tray (rejected: costs 1 dB) | DL-ST4-40-FLG-12 | DL-ST4-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 404 | 13.9 / 18.3 / 20.7 |
+| Same, felt flat on the ceiling lining (no gap) | DL-ST-40-FLG-12 | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 418 | 14.6 / 19.3 / 21.7 |
+| Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 390 | 14.5 / 19.0 / 21.3 |
+| Light 0.8 mm cartridge casings | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 0.8 mm | 401 | 14.6 / 19.3 / 21.7 |
 
 - **The curve rises fastest from about 380 to 400 kg:** about 3 dB for 20 kg. Beyond 420 kg, each dB costs about 20–30 kg.
 - **30 dB isn't reached in this search.** At 500 kg the walls are 100 mm double leaves with plywood, and the pod still stops at about 23 dB.
@@ -311,51 +312,51 @@ CO2 after 2 h at 40 l/s from 400 ppm (room 400): 660 ppm; after 3 h at 26 l/s, r
 
 - 800 ppm needs 26 l/s **only when the room air is at outdoor CO2 (400 ppm)** and the air is perfectly mixed. In a 600 ppm office two people need about 52 l/s with perfect mixing, and about 65 l/s at the mixing effectiveness of 0.8 the PM set (ruling 8).
 - **Heat also drives the fans (D-44):** the inside stays at most 4 K over the room. That takes 48 l/s for two people, 61 l/s with the voice-kit reserve, and 27 l/s for one person.
-- **Control (D-44):** CO2 leads, with a floor of 26 l/s while one person is inside. Temperature can raise the flow. 53 l/s for two, and a boost of up to 74 l/s inside 30 dB(A).
-- **Supply low, exhaust high (ruling 8):** the supply grille sits low on the right block's inner face, so the cool room air spreads across the floor. A high exhaust grille needs a riser in the decor block and costs about 3 dB(A); see 7b.
+- **Control (D-44):** CO2 leads, with a floor of 26 l/s while one person is inside. Temperature can raise the flow. 53 l/s for two, and a boost of up to 65 l/s inside 30 dB(A).
+- **Supply low, exhaust high (DECIDED):** the supply grille sits low on the right block's inner face, so the cool room air spreads across the floor. The exhaust grille sits high on the same face and takes the warm, stale air out. That should mix better than the 0.8 used here.
 
 ### 7b. Fans, silencers and noise inside
 
-Targets (PM ruling 1): 25 dB(A) or less inside at 53 l/s, and 30 dB(A) or less at boost, aiming for 70 l/s. Both tables include the fans' casing (or fan-box) sound and the real 205 mm decor section. The first table is the cartridge, the second the fans.
+Targets: 26 dB(A) or less inside at 53 l/s (DECIDED with exhaust high; it was 25), and 30 dB(A) or less at boost, aiming for 70 l/s. Both tables include the fans' casing (or fan-box) sound and the real 205 mm decor section. The first table is the cartridge, the second the fans.
 
-| Cartridge casing | Cartridges with fill kg | Fill toward the pod mm | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + fill + inner face R 125 | 250 | 500 | 1k | 2k | 4k dB |
+| Cartridge casing | Cartridges, fill and riser kg | Fill toward the pod mm | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + fill + inner face R 125 | 250 | 500 | 1k | 2k | 4k dB |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| aluminium 2.0 mm (pick) | 37.2 | 40 | 2 | 12 | 27 | 40 | 40 | 40 | 14 | 20 | 34 | 50 | 55 | 46 |
-| aluminium 0.8 mm | 19.8 | 42 | 2 | 12 | 27 | 40 | 40 | 40 | 10 | 16 | 27 | 44 | 51 | 42 |
+| aluminium 2.0 mm (pick) | 43.8 | 40 | 2 | 12 | 27 | 40 | 40 | 40 | 14 | 20 | 34 | 50 | 55 | 46 |
+| aluminium 0.8 mm | 27.7 | 42 | 2 | 12 | 27 | 40 | 40 | 40 | 10 | 16 | 27 | 44 | 51 | 42 |
 
-Pressure drop per path, supply / exhaust: 26 l/s 2 / 2 Pa; 53 l/s 10 / 10 Pa; 70 l/s 17 / 17 Pa. Each fan pair reaches 88 l/s at full speed.
+Pressure drop per path, supply / exhaust: 26 l/s 3 / 4 Pa; 53 l/s 12 / 17 Pa; 70 l/s 21 / 29 Pa. Each fan pair reaches 74 l/s at full speed.
 
-| Fans and cartridges | Fits the 205 mm decor | Fans kg | Cartridges with fill kg | At 53 l/s: fan speed supply / exhaust | At 53 l/s: duct / breakout / total dB(A) | Boost flow at 30 dB(A) l/s | At 70 l/s: total dB(A) |
+| Fans and cartridges | Fits the 205 mm decor | Fans kg | Cartridges, fill, riser kg | At 53 l/s: fan speed supply / exhaust | At 53 l/s: duct / breakout / total dB(A) | Boost flow at 30 dB(A) l/s | At 70 l/s: total dB(A) |
 |---|---|---:|---:|---|---|---:|---:|
 | 2 x S&P TD-500/150-160 SILENT, 4 V, as at 5c1003b, with casing sound | no (ØD 221 mm) | 12.0 | 29.8 | 4 V | 23.4 / 35.5 / 35.8 | 41 | 41.8 |
-| 2 x 2 Noctua NF-A14 iPPC-3000, 12 V, 2 mm Al casings, both grilles low (pick) | yes | 1.2 | 37.2 | 60% / 60% | 20.2 / 19.4 / 22.8 | 74 | 28.9 |
-| Same, 0.8 mm Al casings | yes | 1.2 | 19.8 | 60% / 60% | 20.2 / 25.2 / 26.4 | 63 | 32.4 |
-| Same as the pick, with a 5 dB fan tone at 250 Hz (risk) | yes | 1.2 | 37.2 | 60% / 60% | 23.8 / 22.6 / 26.3 | 63 | 32.3 |
-| Exhaust grille high: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges | yes | 1.2 | 43.8 | 64% / 72% | 22.6 / 22.5 / 25.6 | 65 | 31.6 |
+| Exhaust high with a riser: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges (DECIDED) | yes | 1.2 | 43.8 | 64% / 72% | 22.6 / 22.5 / 25.6 | 65 | 31.6 |
+| Same, with a 5 dB fan tone at 250 Hz (risk) | yes | 1.2 | 43.8 | 64% / 72% | 26.2 / 25.9 / 29.0 | 55 | 35.1 |
+| Both grilles low, no riser, 450 mm cartridges (not chosen: exhaust low) | yes | 1.2 | 37.2 | 60% / 60% | 20.2 / 19.4 / 22.8 | 74 | 28.9 |
+| Exhaust in the top block, no riser: 266 mm wide, 1.35 m, two fans in series (they can't sit side by side) | yes | 1.2 | 28.5 | 60% / 94% | 29.8 / 25.6 / 31.2 | 50 | out of reach |
 
 - **What changed and why.** The decor is 205 mm deep (measured from v1), so 199 mm inside its two 3 mm faces. The 5c1003b cartridges (212 mm) and both S&P fans (ØD 221 and 204) don't fit. Their casing sound, left out before, puts that design at 35.8 dB(A) at 53 l/s (first fan row).
-- **Cartridges (PROPOSED; CAD fit HOLD):** two side by side in the right decor block, which is 1016 mm wide (layout study F-DR). The top block's 280 mm face is too small for the flow.
-  - Each one: two 40 mm passages between three 25 mm Pyrotek layers (published data, so nothing is interpolated), a 2 mm aluminium casing, 159 × 450 × 1800 mm, plus a 300 mm lined fan box at the top.
+- **Cartridges (DECIDED; CAD fit HOLD):** two side by side in the right decor block, which is 1016 mm wide (layout study F-DR). The top block's 280 mm face is too small for the flow.
+  - Each one: two 40 mm passages between three 25 mm Pyrotek layers (published data, so nothing is interpolated), a 2 mm aluminium casing, 159 × 405 × 1800 mm, plus a 300 mm lined fan box (at the top for the supply, at the foot for the exhaust).
   - The 40 mm between each cartridge and the decor's inner face is packed with the walls' polyester fill. Casing, fill and face then act as a filled double wall (f0 about 280 Hz). This replaces the felt-lined cavity of the old model, which couldn't be backed up.
-  - 18.6 kg each with fill, 37.2 kg for both, under the 20 kg part rule.
-- **Fans (PROPOSED under ruling 1):** two Noctua NF-A14 industrialPPC-3000 PWM per path, 12 V, side by side on a bulkhead in the fan box. At 53 l/s they run at about 60% speed against 10 Pa.
+  - 17.1 kg each with fill, plus the 9.6 kg riser: 43.8 kg in all, every part under the 20 kg rule.
+- **Fans (DECIDED, 12 V under ruling 1):** two Noctua NF-A14 industrialPPC-3000 PWM per path, 12 V, side by side on a bulkhead in the fan box. At 53 l/s the supply pair runs at about 64% speed against 12 Pa, and the exhaust pair at 72% against 17 Pa with the riser.
   - Each fan's far side is ducted airtight to its slot on the block's top face (ruling 1), so no fan port opens into the decor cavity.
-  - Four fans weigh about 1.2 kg, against 12 kg for two TD-500s. That pays for the bigger cartridges, and the pod still ends about 3 kg lighter than at 5c1003b.
+  - Four fans weigh about 1.2 kg, against 12 kg for two TD-500s. That pays for the bigger cartridges and the riser, and the pod ends at about 418 kg, under the 420 cap.
   - They run on the 12 V bus (D-10), driven by the sensor hub, so mains feeds only the outlets.
 - **Where the noise comes from at 53 l/s:** about half through the grilles and half through the cartridge walls, nearly all at 125–250 Hz, where splitters and light walls are weakest.
 - **Risks, and the test that closes them (HOLD):**
-  - The 12 V fans have no octave data. The model uses the TD-500's spectrum shape and reads the maker's 41.3 dB(A) as sound pressure at 1 m. A 5 dB tone at 250 Hz would give 26.3 dB(A) at 53 l/s (third fan row).
+  - The 12 V fans have no octave data. The model uses the TD-500's spectrum shape and reads the maker's 41.3 dB(A) as sound pressure at 1 m. A 5 dB tone at 250 Hz would give 29.0 dB(A) at 53 l/s (second fan row).
   - The fan curve is a straight line between the maker's free-air flow and maximum pressure.
   - The fan-sample test (selection.md, Sample tests) measures a fan pair in its box: flow, octave sound power at 53 and 70 l/s, and tones.
   - If it tests loud: 1 mm steel casings (about +13 kg for about 1 dB), or a third fan per path running slower.
-- **Exhaust high (ruling 8) is a PM call.** With the slots on the top face (D-29) and straight cartridges, both grilles end up low.
-  - A high exhaust grille needs the exhaust fans at the foot of the block, blowing up a 150 mm steel riser between the cartridges to the slot. That gives 25.6 dB(A) at 53 l/s and 65 l/s at 30 dB(A) (last fan row), and adds about 7 kg.
-  - The PROPOSED pick is the straight layout: supply grille low at the door side, exhaust grille low at the far side, about 0.5 m apart. Its mixing rests on the 0.8 the PM set.
+- **Exhaust high (DECIDED by the PM):** the exhaust grille sits high on the right block's inner face. Its passage runs down to the exhaust fans at the foot of the block, which blow up a 150 mm riser in 1 mm steel, between the cartridges, to the slot on the top face (D-29 kept).
+  - The top block can't take the exhaust without a riser. At 266 mm wide and 1.35 m long, with two fans in series because they can't sit side by side, it gives 31.2 dB(A) at 53 l/s and can't reach 70 l/s (last fan row).
+  - The riser fit is a CAD HOLD.
 - **Breakout method:** ASHRAE's rectangular-duct formula through the casing alone; the fill and inner face count only in bands fully above f0. The fan box is a reverberant box behind the same double wall.
-- **Servicing:** the right block's top face is a screwed lid, M6 into rivnuts, with both slot grilles in it. Lift the lid and the fans come out of their boxes; a cartridge lifts out the same way. Nothing on the walls or ceiling comes off.
+- **Servicing:** the right block's top face is a screwed lid, M6 into rivnuts, with both slot grilles in it. Lift the lid and the supply fans come out of their box; the exhaust fans at the foot come out through a screwed access panel low on the inner face (CAD HOLD). A cartridge lifts out through the lid. Nothing on the walls or ceiling comes off.
 - **Pressure balance and the door:** both fan pairs take the same signal, so the pod stays near room pressure. A 5 Pa difference would add about 6 N at the door handle.
 - **Controls:** the in-house Desk Pro AI sensor hub (D-09) measures CO2 and temperature, shows CO2 inside, and drives both fan pairs.
-  - 26 l/s floor with one person (D-44), 53 l/s for two, more on CO2 or temperature, boost by hand, up to 74 l/s inside 30 dB(A).
+  - 26 l/s floor with one person (D-44), 53 l/s for two, more on CO2 or temperature, boost by hand, up to 65 l/s inside 30 dB(A).
   - Run-on of 15–30 min after the last presence.
   - The hub's fan output has to suit PWM fans; the exact interface belongs to the electrical scope (HOLD).
   - The plan's UTEN S300 "triết áp quạt" (S300G-1D/S, phase-cut for 25–300 W) doesn't suit these fans and is replaced.
@@ -395,6 +396,7 @@ Details and links are in selection.md, section G.
 | 125–250 Hz model risks | low case: no finite-panel gain, 4 dB dip at f0 | Reviewer 3 P2-4, ruling 5 | wall sample measured down to 100 Hz |
 | Mixing effectiveness | 0.8 for CO2 | PM ruling 8 | CO2 logger on the prototype |
 | Decor section | 205 mm deep, 3 mm faces, 199 mm clear | measured from v1 (PM brief) | CAD |
+| Exhaust riser loss | K = 1.5 at the riser's own speed | entry and two bends | fan-sample test with the riser |
 
 ## 11. Method notes
 
