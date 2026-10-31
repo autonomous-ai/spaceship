@@ -54,9 +54,9 @@ SHELF_BRACKETS_KG = 0.4       # kg: its brackets at about 400 mm
 LEDGE_KG_ALLOW, LEDGE_KG = 2.3, 1.4    # kg: the work wall's 1000 mm ledge (D-70): 12 mm ply at 650 kg/m3 with 2 brackets,
                                        # and D-85's budget in 1.5 mm folded aluminium (1000 x 240 developed) with 2 brackets
 # D-85, the PM's pick toward the 410 kg target (S41)
-T_STUD_LIGHT = 1.0            # mm: inner studs of the 20 x 40 frames; the perimeters keep D-34's 1.2 for the rivnuts
+T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 frames; the perimeters keep D-34's 1.2 for the
+                              # rivnuts, and the ceiling's inner members stay 1.2 for the overhead clips and catches (D-85)
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
-CEIL_STUDS = 2                # inner studs in each ceiling outer panel, along its 1495 mm (assumption, from PR #32's frame)
 KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36) and a hollow profile, same outside, 2 mm walls (assumption)
 FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood (assumption) against this study's 600 (S13); provisional on
                               # BASE's castor and 1000 N edge tests (D-76, D-85)
@@ -161,9 +161,9 @@ def lines(**adopt):
                   + ", + 0.43 kg of lips (D-69)"))
     ceil_bond = p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6
     L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2,
-              CEIL_PANEL + ceil_bond - CEIL_STUDS * P04["wall_depth"] * 1e-3 * stud_d, "calculation (CAD); bond assumption",
+              CEIL_PANEL + ceil_bond, "calculation (CAD); bond assumption",
               "S35 + this study's 0.25 kg/m2 bond on the P04 46 mm panel"
-              + (f"; its {CEIL_STUDS} inner studs (assumption) at {T_STUD_LIGHT:.1f} mm (D-85)" if a["studs10"] else "")))
+              + ("; its inner members stay 1.2 mm for the overhead clips and catches (D-85)" if a["studs10"] else "")))
     rails_kg = p("leaf_clip_kgm2") * CEIL_TRAY[0] * CEIL_TRAY[1] * 1e-6 if rails else 0.0
     L.append(("LINING", "Ceiling cassettes, one part for both halves", 2, CEIL_CASS - CEIL_FILL_M2 * fill_d + rails_kg,
               "calculation (CAD)" + prov, "S35" + (f", its fill strips from 32 to {fill:g} kg/m3" if lighter else "")
@@ -264,8 +264,9 @@ def applied():
          "1.5 mm folded aluminium", "adopted (D-85): the designs keep to them", "INTERIOR, WALL"),
         ("back2", f"Back outer panels with {BACK_STUDS} inner studs, not 3: 393 mm centres, inside D-16's 400 mm (this study "
          "counted from the outer width)", "adopted (D-85)", "WALL"),
-        ("studs10", f"Inner studs at {T_STUD_LIGHT:.1f} mm wall; the perimeter members keep 1.2 mm for the rivnuts (D-34)",
-         "adopted (D-85)", "WALL, CEILING"),
+        ("studs10", f"Wall panels' inner studs at {T_STUD_LIGHT:.1f} mm wall; the perimeter members keep 1.2 mm for the "
+         "rivnuts (D-34), and the ceiling's inner members stay 1.2 mm for the overhead cassette clips and safety catches",
+         "adopted (D-85)", "WALL"),
         ("kick", "Door kick strip as a hollow profile with 2 mm walls; the same outside and finish", "adopted (D-85)",
          "FRONT"),
         ("floor", f"Floor panels in poplar-core 9 mm plywood, about {FLOOR_RHO_LIGHT:.0f} kg/m3 against "
