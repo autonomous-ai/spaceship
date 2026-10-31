@@ -11,8 +11,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 ## Result
 
-1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **227 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **323 kg gross, 1,439 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 550 kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, 412.7 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 416.7 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 414.2 kg of pod: the roll-up plus 1.5 kg it doesn't carry (the screen mount and the installation kit; assumptions). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **226 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **323 kg gross, 1,439 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 549 kg gross in all.
+2. **Masses are the layout study's P04 roll-up**, 412.3 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 416.3 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 413.8 kg of pod: the roll-up plus 1.5 kg it doesn't carry (the screen mount and the installation kit; assumptions). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
 3. **42 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK - DR (2-03) at 18.6 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: floor, back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 10; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels.
@@ -22,9 +22,9 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 | Pallet | Deck mm (in) | Pieces | Net kg | Gross kg (lb) | Loaded height mm (in) | Volume ft3 (reference) | Density lb/ft3 (reference) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 200.5 | 227 (499) | 1,641 (64.6) | 71.8 | 7.0 |
-| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 213.7 | 323 (713) | 1,439 (56.6) | 151.1 | 4.7 |
-| **Both** |  | 42 | **414.2** | **550** (1,212) |  |  |  |
+| 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 200.1 | 226 (499) | 1,641 (64.6) | 71.8 | 6.9 |
+| 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 213.6 | 323 (712) | 1,439 (56.6) | 151.1 | 4.7 |
+| **Both** |  | 42 | **413.8** | **549** (1,211) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -193,8 +193,8 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-08** | TBD (WALL) | WALL - PANEL ASSY - BACK UPPER - RH | Vách hậu - cụm tấm trên phải | B4 | 8.76 | calculation; fill provisional | 1200.61 × 1118.61 × 46 | 6 |
 | **1-09** | TBD (WALL) | WALL - PANEL ASSY - SIDE UPPER - LH | Vách trái - cụm tấm trên | L2 | 11.29 | calculation (CAD); fill provisional | 1492.74 × 1142.74 × 46 | 7 |
 | **1-10** | TBD (WALL) | WALL - PANEL ASSY - SIDE UPPER - RH | Vách phải - cụm tấm trên | R2 | 11.29 | calculation (CAD); fill provisional | 1492.74 × 1142.74 × 46 | 7 |
-| **1-11** | 410101 | CEILING - PANEL ASSY - C1 | Trần - tấm trái (cụm) | C1 | 10.04 | calculation (CAD); bond assumption | 1495 × 1200.61 × 46 | 8 |
-| **1-12** | 410102 | CEILING - PANEL ASSY - C2 | Trần - tấm phải (cụm) | C2 | 10.54 | calculation; calculation (CAD); bond assumption | 1495 × 1200.61 × 60 | 8 |
+| **1-11** | 410101 | CEILING - PANEL ASSY - C1 | Trần - tấm trái (cụm) | C1 | 10.05 | calculation (CAD) | 1495 × 1200.61 × 46 | 8 |
+| **1-12** | 410102 | CEILING - PANEL ASSY - C2 | Trần - tấm phải (cụm) | C2 | 10.55 | calculation; calculation (CAD) | 1495 × 1200.61 × 60 | 8 |
 | **1-13** | TBD (WALL) | LINING - CASSETTE - SIDE LOWER - RH | Cassette tiêu âm - vách phải dưới | R1 | 10.34 | calculation (CAD) | 1445 × 1142.74 × 34 | 14 |
 | **1-14** | TBD (WALL) | LINING - CASSETTE - SIDE UPPER - RH | Cassette tiêu âm - vách phải trên | R2 | 9.91 | calculation (CAD) | 1445 × 1092.74 × 34 | 14 |
 | **1-15** | 510101 | LINING - CASSETTE - SIDE LOWER - LH | Cassette tiêu âm - vách trái dưới | L1 | 10.34 | calculation (CAD) | 1445 × 1142.74 × 34 | 14 |
@@ -203,13 +203,13 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-18** | TBD (WALL) | LINING - CASSETTE - BACK LOWER - RH | Cassette tiêu âm - vách hậu dưới phải | B2 | 8.41 | calculation; lips confirmed | 1166 × 1118.61 × 34 | 14 |
 | **1-19** | TBD (WALL) | LINING - CASSETTE - BACK UPPER - LH | Cassette tiêu âm - vách hậu trên trái | B3 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 34 | 14 |
 | **1-20** | TBD (WALL) | LINING - CASSETTE - BACK UPPER - RH | Cassette tiêu âm - vách hậu trên phải | B4 | 8.40 | calculation; lips confirmed | 1166 × 1116.87 × 34 | 14 |
-| - | - | 40 × 40 corner edge tubes in L2, R2, C1, C2 (D-63) |  | - | 0.32 | calculation | inside the pieces | - |
-| - | - | Bond beyond L1 and R1 (D-71) |  | - | 0.25 | calculation | inside the pieces | - |
+| - | - | 40 × 40 corner edge tubes in L2, R2, C1, C2 (D-63) |  | - | 0.01 | calculation | inside the pieces | - |
+| - | - | Bond beyond L1 and R1 (D-71) |  | - | 0.14 | calculation | inside the pieces | - |
 | - | - | Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels |  | - | 4.87 | calculation (part CAD) | inside the pieces | - |
 | - | - | Wall cassette clips: 32 of the 44 named clips, on the wall panels and cassettes |  | - | 1.28 | assumption | inside the pieces | - |
 | - | 918001 (PROPOSED) | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, 4-WAY (GMA) |  | - | 20.00 | source | - | - |
 | - | 918010 (PROPOSED) | PACKAGING - PROTECTION SET, 48 X 40: edge boards, corner guards, foam interleaf, PE sheets, cap board, straps, film |  | - | 6.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **226.5** |  |  |  |
+|  |  | **Gross** |  |  | **226.1** |  |  |  |
 
 ### Pallet 2: 96 × 48 in
 
@@ -234,8 +234,8 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-17** | TBD (AIR) | AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | Ống hút gió đứng + hộp quạt cấp | - | 14.89 | assumption; calculation | 1845 × 460 × 155 | 15 |
 | **2-18** | TBD (AIR) | AIR - CARTRIDGE - SUPPLY | Ống tiêu âm cấp gió | - | 11.15 | calculation | 1750 × 314 × 173 | 16 |
 | **2-19** | TBD (AIR) | AIR - CARTRIDGE - EXHAUST | Ống tiêu âm thải gió | - | 11.15 | calculation | 1750 × 314 × 173 | 17 |
-| **2-20** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung) | C1 | 9.48 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
-| **2-21** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung) | C2 | 9.48 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
+| **2-20** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung) | C1 | 9.46 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
+| **2-21** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung) | C2 | 9.46 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
 | **2-22** | 109000 | POD - INSTALLATION KIT (OPEN FIRST) | Bộ phụ kiện lắp (mở trước) | - | 0.50 | assumption | 300 × 150 × 80 | 1 |
 | - | - | Door edge seals, base seal, grommets, fitted on the band, DL, DT and the panels |  | - | 1.60 | source | inside the pieces | - |
 | - | - | Ceiling clips and catches: 12 clips and 4 lanyards, with the ceiling cassettes |  | - | 0.88 | assumption | inside the pieces | - |
@@ -244,7 +244,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | 911002 (PROPOSED) | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) |  | - | 6.00 | assumption | - | - |
 | - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR (BATTENS ON POSTS) |  | - | 16.00 | assumption | - | - |
 | - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: corner guards, foam, PE sheets, cap board, straps, film |  | - | 9.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **323.2** |  |  |  |
+|  |  | **Gross** |  |  | **323.1** |  |  |  |
 
 The same list, one row per piece with its mass source and size source, is [`910000_P01_PACKING-LIST_BOM.csv`](910000_P01_PACKING-LIST_BOM.csv).
 
@@ -255,14 +255,14 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | WALL | L1 and R1, lower side outer panels | 2 | 22.33 | calculation (CAD); fill provisional | 1-05, 1-06 |
 | WALL | L2 and R2, upper side outer panels | 2 | 22.59 | calculation (CAD); fill provisional | 1-09, 1-10 |
 | WALL | B1 to B4, back outer panels | 4 | 35.03 | calculation; fill provisional | 1-03, 1-04, 1-07, 1-08 |
-| WALL | 40 × 40 corner edge tubes beyond the side panels' own | 1 | 0.32 | calculation | A-1 |
-| WALL | Bond over this study's 0.25 kg/m2, beyond the side panels | 1 | 0.25 | calculation | A-2 |
+| WALL | 40 × 40 corner edge tubes beyond the panels' own | 1 | 0.01 | calculation | A-1 |
+| WALL | Bond over this study's 0.25 kg/m2, beyond the side and ceiling panels | 1 | 0.14 | calculation | A-2 |
 | LINING | Wall cassette, side, lower, with 12 mm lips, no clip rails | 2 | 20.68 | calculation (CAD) | 1-13, 1-15 |
 | LINING | Wall cassette, side, upper, with 12 mm lips, no clip rails | 2 | 19.82 | calculation (CAD) | 1-14, 1-16 |
 | LINING | Wall cassette, back, lower, with 12 mm lips, no clip rails | 2 | 16.82 | calculation; lips confirmed | 1-17, 1-18 |
 | LINING | Wall cassette, back, upper, with 12 mm lips, no clip rails | 2 | 16.80 | calculation; lips confirmed | 1-19, 1-20 |
-| CEILING | Ceiling outer panels C1 and C2, with their bond line | 2 | 20.07 | calculation (CAD); bond assumption | 1-11, 1-12 |
-| LINING | Ceiling cassettes, one part for both halves | 2 | 18.95 | calculation (CAD); fill provisional | 2-20, 2-21 |
+| CEILING | Ceiling outer panels C1 and C2, with their bond line | 2 | 20.09 | calculation (CAD) | 1-11, 1-12 |
+| LINING | Ceiling cassettes, one part for both halves | 2 | 18.91 | calculation (CAD); fill provisional | 2-20, 2-21 |
 | LINING | Named clips and catches: 44 clips and 4 catch lanyards | 1 | 2.16 | assumption | A-5 × 0.592593, A-6 × 0.407407 |
 | BASE | Base band piece 100x40 - back, 1.5 mm wall | 1 | 2.68 | calculation (CAD); confirmed (1.5 mm) | 2-04 |
 | BASE | Base band piece 100x40 - side, 1.5 mm wall | 2 | 3.34 | calculation (CAD); confirmed (1.5 mm) | 2-05, 2-06 |
@@ -303,7 +303,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 
 | Check | What | Result | Pass |
 | --- | --- | --- | --- |
-| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 416.7 kg; 0 lines miscounted, 0 unknown | yes |
+| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 42 lines, 416.3 kg; 0 lines miscounted, 0 unknown | yes |
 | K2 | Every piece 20 kg or less except the glass (D-03) | heaviest non-glass piece 2-03 FRONT - DECOR BLOCK - DR 18.6 kg; over 20 kg: 0 | yes |
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 42 pieces, 0 fail | yes |
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 904 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
@@ -340,7 +340,7 @@ Numbers in the 91 band follow conventions §6 (PACKAGING; 1000–7999 made, 8000
 
 The controlling numbers are metric (guideline §3.1; conventions §2). For US LTL quotes:
 
-- Pallet 1: 48 × 40 in, 1,641 mm loaded, 227 kg gross (section 1 gives inches, pounds, cubic feet and lb/ft³).
+- Pallet 1: 48 × 40 in, 1,641 mm loaded, 226 kg gross (section 1 gives inches, pounds, cubic feet and lb/ft³).
 - Pallet 2: 96 × 48 in, 1,439 mm loaded, 323 kg gross.
 - No piece over 96 in; no piece over 20 kg except the glass; nothing stackable on top of either pallet.
 
