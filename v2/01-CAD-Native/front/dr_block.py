@@ -90,6 +90,9 @@ OWN = [
     ("dr_acc_t", "3 mm", "mm", "calculation",
      "access panel 3 mm aluminium: it carries the air column's 10 kg on two hook studs 222 mm from its screwed edge "
      "(PM ruling 2026-11-01); 2 mm would see about 110 MPa if the column pulls 50 N, 3 mm about 50 MPa"),
+    ("dr_acc_face_y", "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t", "mm", "calculation",
+     "named value for AIR (PM ruling 2026-11-01): the room-side face of DR's access panel, where AIR's air column "
+     "starts; Y -643.5 with the 1.5 mm back plate and the 3 mm panel"),
     ("dr_band_dz", "35 mm", "mm", "calculation",
      "the back plate's top band starts this far above DT's underside: the removable panels' top edges land 35 on the "
      "frame's band tube, so the access panel's top bolts sit 2 hole diameters from its edge and the rivnuts 2 from "
