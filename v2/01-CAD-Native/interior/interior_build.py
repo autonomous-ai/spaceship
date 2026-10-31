@@ -177,8 +177,113 @@ def circle_cut_y(comp, body, name, cx, cz, y0, y1, dia, ctx):
     return f
 
 
+FOLDER = "Default Project/FocusPod v2"
+PART_SCOPES = ("ledge", "shelf_back", "shelf_rh", "dchan")      # part-only designs for drawings (D-89 plan)
+
+
+def part_doc_name(key):
+    import re
+    pn, name, _vn, _k, _m = I.PARTS[key]
+    return "%s_%s_%s_CAD" % (pn, I.REV, re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-"))
+
+
+def open_or_create(app, name):
+    """The design called `name` in FOLDER: activate it if open, open it from the cloud, or
+    make it there (the same steps as run_script.py --doc NAME --doc-new)."""
+    for i in range(app.documents.count):
+        d = app.documents.item(i)
+        if d.name.split(" v")[0] == name:
+            d.activate()
+            return d, "activated"
+    parts = [p for p in FOLDER.split("/") if p]
+    proj = next(app.data.dataProjects.item(i) for i in range(app.data.dataProjects.count)
+                if app.data.dataProjects.item(i).name == parts[0])
+    folder = proj.rootFolder
+    for n in parts[1:]:
+        folder = folder.dataFolders.itemByName(n)
+    files = [folder.dataFiles.item(i) for i in range(folder.dataFiles.count)]
+    files = [f for f in files if f.name == name]
+    app.data.activeProject = proj
+    if files:
+        d = app.documents.open(files[0], True)
+        d.activate()
+        return d, "opened"
+    if ARGS.get("create") != "1":
+        # PM ruling 2026-11-01: no new designs until the runner's folder fix lands, since an
+        # entry Fusion can't read could make a second, empty design with a real one's name
+        raise RuntimeError("%r is not in %s; pass create=1 to make it (only once that's allowed)" % (name, FOLDER))
+    d = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
+    if not d.saveAs(name, folder, "new, made by interior_build.py parts=", ""):
+        raise RuntimeError("saveAs %r failed" % name)
+    d.activate()
+    return d, "made"
+
+
+def build_bodies(root, design, ctx, keys):
+    """Build the layout bodies of the given part keys straight into `root` (part-only design)."""
+    made = {}
+    for key, name, kind, data in I.layout():
+        if key not in keys:
+            continue
+        if kind == "box":
+            made[name] = (root, CB.box_body(root, name, data, ctx))
+        else:
+            sec, a0, a1 = data
+            sk = poly(root, "SECTION - " + name, sec, kind, ctx)
+            made[name] = (root, extrude_along(root, sk, "y" if kind == "xz" else "x", a0, a1, name))
+    for k, (bname, kind, a) in enumerate(I.features()):
+        if bname not in made:
+            continue
+        c, body = made[bname]
+        label = "%s CABLE HOLE %d" % (bname, k + 1)
+        if kind == "ycircle":
+            circle_cut_y(c, body, label, a[0], a[1], a[2], a[3], a[4], ctx)
+        else:
+            CB.circle_cut_x(c, body, label, a[0], a[1], a[2], a[4], "2 * sh_t", int(a[3]), ctx)
+    return made
+
+
+def run_parts(app, keys):
+    """One run, several part-only designs (fair-share queue rule, PM ruling 2026-11-01)."""
+    for key in keys:
+        if key not in PART_SCOPES:
+            raise RuntimeError("part scope must be one of %s" % (PART_SCOPES,))
+        name = part_doc_name(key)
+        doc, how = open_or_create(app, name)
+        design = adsk.fusion.Design.cast(app.activeProduct)
+        CB.clear_design(design)
+        design.designType = adsk.fusion.DesignTypes.ParametricDesignType
+        design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
+        ctx = CB.Ctx(design)
+        params = I.all_params()
+        for pname, expr, unit, status, src in params:
+            design.userParameters.add(pname, CB.vi(expr), unit, "%s: %s" % (status.upper(), src))
+        ctx.vals = I.evaluate(params)
+        root = design.rootComponent
+        pn, pname_, vn, kind, _m = I.PARTS[key]
+        root.partNumber = pn
+        root.description = "%s | %s | %s | %s | drawing source, built by interior_build.py" % (pname_, vn, kind, I.REV)
+        build_bodies(root, design, ctx, (key,))
+        set_material(design, root, key)
+        adsk.doEvents()
+        tl = design.timeline
+        bad = [tl.item(i).name for i in range(tl.count)
+               if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+        loose = [sk.name for sk in root.sketches if not sk.isFullyConstrained]
+        print("PART %s %s (%s): timeline %d, unhealthy %d, loose %d, bodies %d, box %s" % (
+            pn, pname_, how, tl.count, len(bad), len(loose), root.bRepBodies.count, CB.body_box(root)))
+        if bad or loose:
+            raise RuntimeError("part %s checks failed (unhealthy %s, loose %s)" % (key, bad, loose))
+        print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, I.REV, ceiling_model.SKELETON_REV)))
+        adsk.doEvents()
+        doc.close(False)
+
+
 def run(_context):
     app = adsk.core.Application.get()
+    if ARGS.get("parts"):
+        run_parts(app, [k for k in ARGS["parts"].split(",") if k])
+        return
     into_active = ARGS.get("into_active") == "1"
     if into_active:
         doc = app.activeDocument
