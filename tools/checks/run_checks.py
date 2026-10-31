@@ -121,7 +121,8 @@ def run(root, rev):
         ran.add("C04")
     # drawings
     # parts we make need drawings; assemblies only once they exist in CAD (not the skeleton, a reference)
-    made = {row["part_number"] for _p, rows in plists for row in rows if pn_class(row["part_number"]) == "part"}
+    made = {row["part_number"] for p, rows in plists for row in rows if pn_class(row["part_number"]) == "part"
+            and not (c_parts.is_master(rel(root, p)) and c_parts.is_placeholder(row))}
     made |= {pn for pn, d in step_products.items() if pn_class(pn) in ("part", "assembly")
              and not all("/skeleton/" in f for f in d["files"])}
     names = {row["part_number"]: row["name"] for _p, rows in plists for row in rows}
