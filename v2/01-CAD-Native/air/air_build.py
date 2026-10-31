@@ -180,6 +180,28 @@ def circle_cut_y(comp, body, name, cx, cz, y0, y1, dia, ctx):
     return f
 
 
+def cyl_body(comp, name, bx, ctx):
+    """A round envelope (a stud or screw shank) filling the box's XY square, extruded up Z."""
+    x0, x1, y0, y1, z0, z1 = bx
+    cx, cy, d = "((%s) + (%s)) / 2" % (x0, x1), "((%s) + (%s)) / 2" % (y0, y1), "(%s) - (%s)" % (x1, x0)
+    plane = CB.offset_plane(comp, comp.xYConstructionPlane, z0, "PLANE - %s Z0" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "OUTLINE - " + name
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(
+        adsk.core.Point3D.create(ctx.ev(cx) * CB.MM, ctx.ev(cy) * CB.MM, 0), ctx.ev(d) / 2 * CB.MM)
+    g = c.centerSketchPoint.geometry
+    sk.sketchDimensions.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = d
+    CB.dim_point(sk, c.centerSketchPoint, cx, cy, ctx)
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: OUTLINE - " + name)
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), NEW)
+    ei.setDistanceExtent(False, CB.vi("(%s) - (%s)" % (z1, z0)))
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "EXTRUDE - " + name
+    f.bodies.item(0).name = name
+    return f.bodies.item(0)
+
+
 def build_cartridge(parent, design, ctx, bx, along, tag):
     """Casing (2 mm tube open at both ends) and three 50 mm layers parallel to the
     front face, with two passages between them. bx: outer box; along: 'z' or 'x'."""
@@ -284,7 +306,7 @@ def build_scope(root, design, ctx, scope):
     made = {}
 
     def body(name):
-        b = CB.box_body(root, name, lay[name][1], ctx)
+        b = (cyl_body if name.endswith("SHANK") else CB.box_body)(root, name, lay[name][1], ctx)
         for i, cb in enumerate(cuts.get(name, [])):
             CB.box_body(root, "%s OPENING %d" % (name, i + 1), cb, ctx, op=CUT, bodies=[b])
         made[name] = b
@@ -434,7 +456,7 @@ def run(_context):
             cuts.setdefault(target, []).append(cb)
 
         def body_in(comp, name, key=None):
-            b = CB.box_body(comp, name, lay[name][1], ctx)
+            b = (cyl_body if name.endswith("SHANK") else CB.box_body)(comp, name, lay[name][1], ctx)
             for i, cb in enumerate(cuts.get(name, [])):
                 CB.box_body(comp, "%s OPENING %d" % (name, i + 1), cb, ctx, op=CUT, bodies=[b])
             return b
