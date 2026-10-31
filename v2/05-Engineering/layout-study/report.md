@@ -82,10 +82,10 @@ How the light build gets there, one change at a time:
 | --- | --- | ---: | ---: |
 | v2 as planned (steel frames, 6 mm plywood, raised steel floor, 10 mm glass, table) | source + calculation |  | 447.4 |
 | Remove the table; the pod ships empty | confirmed (Dee) | -12.0 | 435.4 |
-| Thin floor inside an aluminium base band instead of the raised steel frame | PROPOSED | -36.0 | 399.4 |
-| Aluminium 20x20 frames instead of steel (walls, ceiling, decor) | PROPOSED | -47.0 | 352.4 |
-| No plywood behind the ACP; frame members at 400 mm to keep the ACP flat | PROPOSED | -54.0 | 298.4 |
-| 8 mm tempered glass instead of 10 mm | PROPOSED | -17.1 | 281.3 |
+| Thin floor inside an aluminium base band instead of the raised steel frame | DECIDED | -36.0 | 399.4 |
+| Aluminium 20x20 frames instead of steel (walls, ceiling, decor) | DECIDED | -47.0 | 352.4 |
+| No plywood behind the ACP; frame members at 400 mm to keep the ACP flat | DECIDED | -54.0 | 298.4 |
+| 8 mm tempered glass instead of 10 mm | light build only; the decided build uses 10 mm acrylic | -17.1 | 281.3 |
 | Add gaskets on every panel joint, sealed glazing profiles, door drop seal | plan requirement | 5.0 | 286.3 |
 | Add 2 silenced vents and an occupancy sensor for automatic fans | plan requirement | 3.1 | 289.4 |
 | Add light cavity fill (20 mm PET) in wall and ceiling bays | assumption (sound group sizes it) | 9.6 | 299.0 |
@@ -481,7 +481,7 @@ Weighed as the BASE assembly (khung sàn / sàn) under the light build. Step hei
 | Floor | BASE kg (light build) | vs thin floor, kg | Step at the door, mm | Sound | Square and stiff | Levelling | Cables | Assembly | Look | Status |
 | --- | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- |
 | Raised steel floor (plan as written) | 82.4 | +35.7 | 125 | Closed box: boards over a 100 mm cavity; seal the board joints and perimeter. | Best: the welded or bolted frame sets square and level; walls bolt to it. | 6 M10 feet under the frame; needs a spanner unless the feet adjust from above. | Under the floor, easy. | Longest: 6 frame bars, 2 joists, 4 bolted corners, 6 feet, then 2 boards screwed to the joists (a second fastener type and tool). | Same as v1. | calculation |
-| Thin floor inside an aluminium base band (PROPOSED) | 46.7 | +0.0 | 21 | Closed box: floor panels on a 3 mm seal mat, gasket to the base band; the room slab adds mass under it. | Good: the aluminium base band with corner keys sets square; floor panels float inside it. | 8 glides adjusted from above with the same hex key; floor panels follow the room floor and carry no walls. | Inside the back wall cavity and along the base band channel. | Quick: 4 rails and 6 corner keys, level, drop in 2 floor panels. | Base band unchanged except across the door, where it becomes a low threshold. | calculation |
+| Thin floor inside an aluminium base band (DECIDED) | 46.7 | +0.0 | 21 | Closed box: floor panels on a 3 mm seal mat, gasket to the base band; the room slab adds mass under it. | Good: the aluminium base band with corner keys sets square; floor panels float inside it. | 8 glides adjusted from above with the same hex key; floor panels follow the room floor and carry no walls. | Inside the back wall cavity and along the base band channel. | Quick: 4 rails and 6 corner keys, level, drop in 2 floor panels. | Base band unchanged except across the door, where it becomes a low threshold. | calculation |
 | No floor (base band only) | 13.7 | -33.0 | 0 | Open box: sound and air leak under the walls into the room floor; floorless pods post the weakest numbers (market study). | As the thin floor (same base band). | As the thin floor. | Base band channel only. | Quickest: 4 rails and 6 corner keys, level. | As the thin floor. | calculation |
 | Castor platform (optional, Lead's request) | 67.1 | +20.4 | 93 | Closed box like the raised floor, but the gap under the pod needs a skirt or drop seal when parked. | Needs a stiffer platform: the pod racks while rolling, and the glass door can go out of line. | Castors do not level; 4 parking feet are added. | Under the platform; the power cord must be long and loose enough to move the pod. | Like the raised floor (knock-down platform), plus 6 castors. | Base band hides the castors if the frame stays 100 mm; a ramp is needed at the door. | assumption |
 

@@ -42,8 +42,8 @@ PLAN = dict(key="plan", label="v2 as planned", frame="steel", ply=True, core=Non
 LIGHT = dict(key="light", label="Spaceship light indoor build", frame="al", ply=False, core=None, floor="thin",
              front="glass8", table=False, seals=True, vents=True, fill=True, voice=True, sensor=True,
              prefit=False, captive=False, cams=False, prehung=False, ordered=False, sound_kgm2=0.0, ceiling_sound=True)
-# PROPOSED fast-assembly build (Lead's ruling): same parts and weight, more done in the factory
-FAST = dict(LIGHT, key="fast", label="Spaceship light build, fast assembly (PROPOSED)",
+# DECIDED fast-assembly build (PM ruling 2026-10-31): same parts and weight, more done in the factory
+FAST = dict(LIGHT, key="fast", label="Spaceship light build, fast assembly (DECIDED)",
             prefit=True, captive=True, cams=True, prehung=True, ordered=True)
 PLAN.update(prefit=False, captive=False, cams=False, prehung=False, ordered=False, sound_kgm2=0.0, ceiling_sound=True)
 CAM_JOINTS = ("J-WALL-01", "J-WALL-02", "J-WALL-03", "J-WALL-04", "J-CEIL-02")
