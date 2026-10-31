@@ -72,6 +72,13 @@ KINDS = {
                        ("left", VO.LeftViewOrientationType, "right")],
              "tables": [], "images": [("data", (410.0, 108.0)), ("notes", (410.0, 150.0)), ("table", (410.0, 200.0))],
              "symbol_at": (440.0, 95.0)},
+    # cavity fill (D-89: the bays have pockets): overall sizes here, pockets in a table image from the frame
+    "fill": {"scale": 0.2, "front_at": (205.0, 235.0), "gap": 14.0,
+             "views": [("front", VO.FrontViewOrientationType, "centre"),
+                       ("top", VO.TopViewOrientationType, "below")],
+             "tables": [], "images": [("data", (410.0, 108.0)), ("notes", (410.0, 150.0)),
+                                      ("pockets", (410.0, 200.0)), ("table", (410.0, 235.0))],
+             "symbol_at": (440.0, 95.0)},
     "panel": {"scale": 0.2, "front_at": (205.0, 235.0), "gap": 14.0,
               "views": [("front", VO.FrontViewOrientationType, "centre"),
                         ("top", VO.TopViewOrientationType, "below"),
@@ -308,7 +315,7 @@ def run(_context):
     f = views["front"]
     fe = extent(f)
     b_at = (fe[2] + 26.0, fe[1] + 40.0) if right else (fe[0] - 26.0, fe[1] + 40.0)
-    if ARGS["kind"] in ("skin", "tray", "panel", "cassette"):
+    if ARGS["kind"] in ("skin", "tray", "panel", "cassette", "fill"):
         overall_dims(sheet, views, right)
         datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 40.0, fe[1] - 26.0))
         datum(sheet, "B", edge_line(f, side), b_at)

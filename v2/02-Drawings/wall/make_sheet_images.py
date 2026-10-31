@@ -285,6 +285,78 @@ def tray_blocks(pn, src=None):
     return [("data", data, 150.0, None), ("notes", notes, 150.0, None), ("table", table, 150.0, None)]
 
 
+def fill_blocks(pn, src=None):
+    """Cavity fill (D-89: the fill bays have pockets, so they get a drawing; one tabulated drawing per family).
+    Pocket positions come from the panel's own frame: one 60 x 60 x 40 pocket beside each Ø19 access hole,
+    given from datum A (the fill's bottom face) and datum B (its front edge on a side panel, its closing-seam
+    edge on a back panel)."""
+    rep = load(src or pn)
+    pos = position(rep)
+    c = comp_of(rep, pn)
+    bodies = c["bodies"]
+    fb = box_of(bodies)
+    mass = sum(b["mass_kg"] for b in bodies)
+    panel = load(("2101" if pn.startswith("2115") else "2102") + pn[4:])
+    frame = [k for k in panel["components"] if k["part_number"].startswith(("2111", "2112"))][0]
+    prm = {q["name"]: q["value"] for q in panel["parameters"]}
+    pw = prm.get("pocket_w", 60.0)
+    along = 0 if pos["back"] else 1                      # x for the back wall, y for a side wall
+    if pos["back"]:
+        b_edge = fb[3] if not pos["right"] else fb[0]    # the closing-seam edge of the fill
+    else:
+        b_edge = fb[1]                                   # the front edge
+    a_edge, height = fb[2], fb[5] - fb[2]
+    width = fb[3 + along] - fb[along]
+    rows = []
+    for b in frame["bodies"]:
+        for h in b["holes"]:
+            if abs(h["d"] - prm.get("access_d", 19.0)) > 0.01 or not h["full_circle"]:
+                continue
+            ctr = h["centre"]
+            if b["name"] in ("RAIL - BOTTOM", "RAIL - TOP"):
+                u = abs(ctr[along] - b_edge)
+                v = (0.0, pw) if b["name"] == "RAIL - BOTTOM" else (height - pw, height)
+                kind = "bottom bolt" if b["name"] == "RAIL - BOTTOM" else "ceiling bolt"
+                rows.append((kind, (u - pw / 2, u + pw / 2), v))
+            else:
+                z = ctr[2] - a_edge
+                at_b = b["name"] in ("STILE - FRONT", "STILE - CENTRE")
+                kind = {"STILE - FRONT": "decor bolt", "STILE - CENTRE": "closing-seam pin",
+                        "STILE - OUTER": "corner bolt"}.get(b["name"], b["name"])
+                rows.append((kind, (0.0, pw) if at_b else (width - pw, width), (z - pw / 2, z + pw / 2)))
+    rows.sort(key=lambda r: (r[0], r[1][0], r[2][0]))
+    data = data_block(pn, c, rep, "1:5", "A2", "PET fill 40 mm, 24 kg/m³, Pyrotek Sorberpoly 2D (HW-SEL B)", mass)
+    notes = [
+        "**GENERAL NOTES",
+        "1. " + views_note(pos),
+        "2. Datums. A = bottom face of the pieces (pod Z %.2f, on the bottom rail). B = the %s (pod %s %.2f). "
+        "Pieces are knife-cut to the bays between the studs, 40 thick, friction fit (D-34)." % (
+            a_edge, "closing-seam edge" if pos["back"] else "front edge", "X" if pos["back"] else "Y", b_edge),
+        "3. %d pieces, %s; overall %.2f × %.2f × 40. Tolerance ±2 on length and width (assumption: knife-cut PET "
+        "batt), thickness as supplied." % (len(bodies), "; ".join(sorted({"%.1f × %.1f" % tuple(sorted(
+            (bb["box"][3 + along] - bb["box"][along], bb["box"][5] - bb["box"][2]), reverse=True)) for bb in bodies})),
+            width, height),
+        "4. Pockets: 60 × 60 × 40 left out beside each bolt this panel drives, so the 5 mm key reaches its Ø19 access "
+        "hole from inside before the cassette goes on (joints register FR-10, 2.3). Positions below, in mm from B "
+        "(along the panel) and A (up).",
+    ]
+    pockets = ["**POCKETS (kind · from B · from A), each 60 × 60 × 40 through the fill"] + [
+        "%s · %.2f–%.2f · %.2f–%.2f" % (k, u[0], u[1], v[0], v[1]) for k, u, v in rows]
+    if pos["back"]:
+        tab = ["**TABULATED DRAWING (D-89): THE BACK FILLS (part · position · pockets)",
+               "211601 · B1 · as shown: bottom bolts, corner bolts",
+               "211602 · B2 · as B1 (mirrored), plus 3 closing-seam pin pockets at B, at the corner pockets' heights",
+               "211603 · B3 · as B1, plus 4 ceiling bolt pockets at the top, at the bottom pockets' positions from B",
+               "211604 · B4 · as B3 (mirrored), plus the 3 closing-seam pin pockets"]
+    else:
+        tab = ["**TABULATED DRAWING (D-89): THE SIDE FILLS (part · position · hand)",
+               "211501 · L1 · LH · as shown", "211502 · R1 · RH · mirror of 211501",
+               "211503 · L2 · LH · same as 211501 (the upper panel's bolts and pockets sit at the same places)",
+               "211504 · R2 · RH · mirror of 211501"]
+    return [("data", data, 150.0, None), ("notes", notes, 150.0, None), ("pockets", pockets, 150.0, None),
+            ("table", tab, 150.0, None)]
+
+
 def parts_rows(bom_csv, top_pn):
     """Rows of the BOM CSV under one assembly (level 0 row = top_pn), for the drawing's parts list."""
     import csv
@@ -411,7 +483,7 @@ def main(argv):
         blocks = assembly_blocks(pn, kind, src)
     else:
         blocks = {"frame": frame_blocks, "frame_back": frame_blocks, "skin": skin_blocks,
-                  "tray": tray_blocks}[kind](pn, src)
+                  "tray": tray_blocks, "fill": fill_blocks}[kind](pn, src)
     meta = {}
     for name, lines, width, title in blocks:
         path, w, h = render("%s_%s" % (pn, name), lines, width, title=title)

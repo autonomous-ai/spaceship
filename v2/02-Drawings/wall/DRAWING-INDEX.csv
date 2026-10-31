@@ -27,7 +27,7 @@ drawing,covers,status,note
 211401_P01_WALL-SKIN-BACK-LOWER-B1_DWG,211401 211402 211403 211404,to do,tabulated: the back skins (one flat rectangle)
 511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG,511101 511102 511103 511104,to do,tabulated: the side trays (LH = RH; upper ones shorter)
 511201_P01_LINING-TRAY-BACK-LOWER-B1_DWG,511201 511202 511203 511204,to do,tabulated: the back trays (LH = RH; upper ones shorter)
-"(no drawing, D-89)",211501 211502 211503 211504,cut list,"side fill: plain knife-cut pieces; size, material, tolerance and part number in the parts list"
-"(no drawing, D-89)",211601 211602 211603 211604,cut list,"back fill: plain knife-cut pieces; size, material, tolerance and part number in the parts list"
+211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_DWG,211501 211502 211503 211504,to do,"tabulated: the side fills (the bays have pockets, so they get a drawing)"
+211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_DWG,211601 211602 211603 211604,to do,tabulated: the back fills (pin and ceiling pockets listed per part)
 "(no drawing, D-89)",511301 511302 511303 511304,cut list,"side felt: plain knife-cut pieces; size, material, tolerance and part number in the parts list"
 "(no drawing, D-89)",511401 511402 511403 511404,cut list,"back felt: plain knife-cut pieces; size, material, tolerance and part number in the parts list"

@@ -222,8 +222,8 @@ def panel_rows(rep):
                      for b in fill["bodies"])
     rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill), name_vi=vi_name(fill["description"]),
                     kind="MP", material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
-                    process="knife cut to the bays, 60 x 60 x 40 pockets left out beside each bolt this panel drives "
-                            "(at the bolt positions in the frame drawing's hole tables); no drawing (D-89)",
+                    process="knife cut to the bays, 60 x 60 x 40 pockets left out beside each bolt this panel drives; "
+                            "sizes and pockets on the tabulated fill drawing (D-89)",
                     qty=1, unit="set",
                     size_mm="; ".join("%d pieces %g x %g x 40" % (q, a, b) for (a, b), q in sorted(pieces.items())),
                     tolerance="±2 on length and width, thickness as supplied (assumption: knife-cut PET batt)",
