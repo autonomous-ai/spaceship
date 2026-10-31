@@ -117,7 +117,7 @@ def main(argv=None):
                          script="export_drawing.py %s" % opts.drawing)
     try:
         try:
-            lock.acquire(opts.lock_wait)
+            lock.acquire(opts.lock_wait, token=os.environ.get(rs.TOKEN_ENV) or None)   # also inside a held lock
         except (rs.LockTimeout, KeyboardInterrupt) as e:
             print("export_drawing: %s" % (e or "stopped while waiting"), file=sys.stderr)
             return 3
@@ -128,7 +128,7 @@ def main(argv=None):
             if not ok:
                 print("export_drawing: couldn't open %s: %s" % (opts.drawing, out), file=sys.stderr)
                 return 1
-            opened_here = (out or "").startswith("run_script: opened")
+            opened_here = any(line.startswith("run_script: opened") for line in (out or "").splitlines())   # the runner may warn first
             ok, out = rs.run_in_fusion(mcp, EXPORT_SCRIPT % {
                 "name": opts.drawing, "raw": raw, "sheets": opts.sheets, "names": names})
             print("export_drawing: %s" % (out or "").strip())

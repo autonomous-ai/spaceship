@@ -18,6 +18,7 @@ import fitz  # PyMuPDF
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import export_drawing as ed  # noqa: E402
+import run_script as rs  # noqa: E402
 
 
 def make_pdf(path, pages=1, name_under_label="Jane Roe", stray=None):
@@ -76,6 +77,23 @@ class ExportTests(unittest.TestCase):
         make_pdf(raw, name_under_label="DD HH", stray="add a padded note")
         pdf, _p, _n = ed.check_and_render(raw, ed.account_words(self.names), self.out, "Y_DWG", 40)
         self.assertTrue(os.path.isfile(pdf))
+
+    def test_the_tools_run_inside_a_held_lock_with_its_token(self):
+        # one session can hold the lock for several steps (open, draw, export)
+        import subprocess
+        for tool, args in (("export_drawing.py", ["D_DWG", self.tmp]),
+                           ("export_design.py", ["D_CAD", "D", self.tmp, self.tmp])):
+            lockdir = os.path.join(tempfile.mkdtemp(prefix="exp-lock-"), "fusion.lock")
+            hold = rs.FusionLock(lockdir, label="held", pid=None, hold_s=60, log=lambda m: None)
+            hold.acquire(1)
+            env = dict(os.environ, **{rs.TOKEN_ENV: hold.token})
+            p = subprocess.run([sys.executable, os.path.join(HERE, tool)] + args + [
+                "--lock", lockdir, "--lock-wait", "0.3", "--url", "http://127.0.0.1:9/mcp", "--timeout", "2"],
+                capture_output=True, text=True, timeout=120, env=env)
+            self.assertEqual(p.returncode, 2, "%s: %s" % (tool, p.stderr[-300:]))     # past the lock, to Fusion
+            self.assertIn("cannot reach Fusion", p.stderr, tool)
+            self.assertEqual(hold.read_owner()["token"], hold.token, tool)
+            self.assertTrue(hold.release_held(hold.token))
 
     def test_export_script_compiles(self):
         compile(ed.EXPORT_SCRIPT % {"name": "N", "raw": "/x/raw.pdf", "sheets": "1-2",

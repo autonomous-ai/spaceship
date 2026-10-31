@@ -173,7 +173,7 @@ def main(argv=None):
                          label=opts.label or "export_design", hold_s=4 * opts.timeout + 300,
                          script="export_design.py %s" % opts.design)
     try:
-        lock.acquire(opts.lock_wait)
+        lock.acquire(opts.lock_wait, token=os.environ.get(rs.TOKEN_ENV) or None)   # also inside a held lock
     except (rs.LockTimeout, KeyboardInterrupt) as e:
         print("export_design: %s" % (e or "stopped while waiting"), file=sys.stderr)
         return 3
@@ -184,7 +184,7 @@ def main(argv=None):
         if not ok:
             print("export_design: couldn't open %s: %s" % (opts.design, out), file=sys.stderr)
             return 1
-        opened_here = (out or "").startswith("run_script: opened")
+        opened_here = any(line.startswith("run_script: opened") for line in (out or "").splitlines())   # the runner may warn first
         try:
             ok, out = rs.run_in_fusion(mcp, EXPORT_SCRIPT % {"args": {
                 "name": opts.design, "pn": opts.part_number, "repo": rs.REPO_ROOT,

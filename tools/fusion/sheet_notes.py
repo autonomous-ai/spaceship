@@ -163,7 +163,7 @@ def main(argv=None):
                          label=opts.label or "sheet_notes", hold_s=3 * opts.timeout + 300,
                          script="sheet_notes.py %s %s" % (opts.drawing, os.path.basename(opts.notes)))
     try:
-        lock.acquire(opts.lock_wait)
+        lock.acquire(opts.lock_wait, token=os.environ.get(rs.TOKEN_ENV) or None)   # also inside a held lock
     except (rs.LockTimeout, KeyboardInterrupt) as e:
         print("sheet_notes: %s" % (e or "stopped while waiting"), file=sys.stderr)
         return 3
@@ -174,7 +174,7 @@ def main(argv=None):
         if not ok:
             print("sheet_notes: couldn't open %s: %s" % (opts.drawing, out), file=sys.stderr)
             return 1
-        opened_here = (out or "").startswith("run_script: opened")
+        opened_here = any(line.startswith("run_script: opened") for line in (out or "").splitlines())   # the runner may warn first
         ok, out = rs.run_in_fusion(mcp, INSERT_SCRIPT % {"args": {
             "name": opts.drawing, "sheet": opts.sheet, "png": png, "px": px, "py": py,
             "scale": scale, "label": os.path.basename(opts.notes)}})
