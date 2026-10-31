@@ -11,6 +11,7 @@ by itself), plus the screen lock, accessibility and Fusion's own cancel.
 
 import json
 import os
+import shutil
 import signal
 import subprocess
 import sys
@@ -30,7 +31,8 @@ class FakeFusion:
     def __init__(self, dialog_opens=True, ok_found=True, base_view=True, drawing_after=3,
                  base_view_after=4, start_cmd=sd.IDLE_CMD, unsaved=0, opened=False,
                  locked=False, ax_windows=3, modified=False, fusion_cancel_works=True,
-                 mcp_dies_after_queue=False, ax_works=True):
+                 mcp_dies_after_queue=False, ax_works=True, ax_sees_dialogs=True,
+                 folder_bad=(), drawing_exists=False):
         self.opened = opened
         self.cmd = start_cmd
         self.unsaved = unsaved
@@ -45,6 +47,10 @@ class FakeFusion:
         self.fusion_cancel_works = fusion_cancel_works
         self.mcp_dies_after_queue = mcp_dies_after_queue
         self.ax_works = ax_works
+        self.ax_sees_dialogs = ax_sees_dialogs
+        self.folder_bad = list(folder_bad)
+        self.drawing_exists = drawing_exists
+        self.folder_checks = 0
         self.queued = False
         self.pending = []          # (polls left, action)
         self.ran, self.clicks, self.saved, self.cancels = [], [], [], 0
@@ -98,6 +104,11 @@ class FakeFusion:
             return True, ""
         raise AssertionError("unexpected script")
 
+    def folder(self, project, subfolders, design, name):
+        self._mcp()
+        self.folder_checks += 1
+        return [str(b) for b in self.folder_bad], True, self.drawing_exists
+
     def fusion_cancel(self):
         self._mcp()
         self.cancels += 1
@@ -115,6 +126,9 @@ class FakeFusion:
     def dialogs(self):
         if not self.ax_works:
             raise sd.StartError("accessibility call failed (fake)")
+        self._tick()                  # Fusion's UI moves on even when MCP doesn't answer
+        if not self.ax_sees_dialogs:
+            return []
         return ["395x445"] if self.cmd in (sd.CREATE_CMD, sd.BASE_VIEW_CMD) else []
 
     def click(self, button, title):
@@ -186,23 +200,42 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(go(f)[0], 1)
         self.assertEqual((f.ran, f.clicks), ([], []))
 
-    def test_cleanup_uses_fusions_own_cancel_first(self):
+    def test_cleanup_presses_cancel_through_accessibility_first(self):
+        # PM ruling 2026-10-31: ending an open Create Drawing by script killed Fusion
         f = FakeFusion(ok_found=False)                          # OK can't be pressed
         code, _logs = go(f)
         self.assertEqual(code, 1)
         self.assertEqual(f.cmd, sd.IDLE_CMD)
-        self.assertGreaterEqual(f.cancels, 1)
-        self.assertEqual(f.clicks, ["OK"])                      # no accessibility Cancel needed
+        self.assertEqual(f.clicks, ["OK", "Cancel"])
+        self.assertEqual(f.cancels, 0)                          # Fusion's own cancel never used
 
-    def test_cleanup_falls_back_to_accessibility_cancel(self):
-        f = FakeFusion(ok_found=False, fusion_cancel_works=False)
-        code, _logs = go(f)
+    def test_fusions_own_cancel_only_when_accessibility_sees_no_dialog(self):
+        f = FakeFusion(ok_found=False)
+        f.ax_sees_dialogs = False                               # the dialog is up, accessibility can't see it
+        code, logs = go(f)
         self.assertEqual(code, 1)
+        self.assertGreaterEqual(f.cancels, 1)
         self.assertEqual(f.cmd, sd.IDLE_CMD)
-        self.assertIn("Cancel", f.clicks)
+        self.assertTrue(any("Fusion's own cancel" in m for m in logs))
+
+    def test_the_fusion_cancel_script_does_not_terminate_the_command(self):
+        self.assertNotIn("terminateActiveCommand(", sd.FUSION_CANCEL_SCRIPT)
+        self.assertIn('itemById("SelectCommand").execute()', sd.FUSION_CANCEL_SCRIPT)
+
+    # the folder guard (Reviewer 5 on #86)
+    def test_unreadable_folder_entry_is_refused_before_anything_opens(self):
+        f = FakeFusion(folder_bad=[7])
+        code, logs = go(f)
+        self.assertEqual(code, 1)
+        self.assertEqual((f.ran, f.clicks), ([], []))
+
+    def test_an_existing_drawing_name_is_refused_before_anything_opens(self):
+        f = FakeFusion(drawing_exists=True)
+        self.assertEqual(go(f)[0], 1)
+        self.assertEqual((f.ran, f.clicks), ([], []))
 
     def test_dialog_left_open_exits_4(self):
-        f = FakeFusion(ok_found=False, fusion_cancel_works=False)
+        f = FakeFusion(ok_found=False, fusion_cancel_works=False, ax_sees_dialogs=False)
         f.click = lambda button, title: "none"                  # nothing can close it
         sd_cancel = sd.cancel_dialogs
         try:
@@ -242,9 +275,14 @@ class SequenceTests(unittest.TestCase):
         f = FakeFusion(ok_found=False)
         orig = f.click
 
+        hits = []
+
         def killed(button, title):
-            orig(button, title)
-            raise KeyboardInterrupt                              # as the handler does
+            res = orig(button, title)
+            if not hits:                                         # the kill lands once, mid-run
+                hits.append(button)
+                raise KeyboardInterrupt                          # as the handler does
+            return res
         f.click = killed
         self.assertEqual(go(f)[0], 1)
         self.assertEqual(f.cmd, sd.IDLE_CMD)                     # cleaned up
@@ -280,9 +318,24 @@ class SequenceTests(unittest.TestCase):
             sd.cancel_dialogs = sd_cancel
         self.assertEqual(code, 4)                               # never claims Fusion is idle
 
+    @unittest.skipUnless(shutil.which("osacompile"), "osacompile is macOS only")
+    def test_every_applescript_compiles(self):
+        # Reviewer 5 / WALL, 2026-10-31: AX_CLICK used the reserved word "named" and
+        # never compiled, which the offline fakes could not see.
+        # found, not listed, so a new AppleScript can't be left out
+        scripts = {k: v for k, v in vars(sd).items()
+                   if isinstance(v, str) and 'tell application "' in v}
+        self.assertGreaterEqual(set(scripts), {"AX_CLICK", "AX_DIALOGS", "AX_WINDOW_COUNT"})
+        for label, src in sorted(scripts.items()):
+            with tempfile.TemporaryDirectory() as d:
+                p = subprocess.run(["osacompile", "-o", os.path.join(d, "x.scpt"), "-e", src],
+                                   capture_output=True, text=True, timeout=60)
+            self.assertEqual(p.returncode, 0, "%s: %s" % (label, p.stderr))
+
     def test_scripts_compile(self):
         for src in (sd.STATE_SCRIPT, sd.CLOSE_UNSAVED_SCRIPT, sd.FUSION_CANCEL_SCRIPT,
                     sd.QUEUE_SCRIPT % {"project": "P", "design": "D", "cmd": sd.CREATE_CMD},
+                    sd.FOLDER_SCRIPT % {"project": "P", "subfolders": ["F"], "design": "D", "name": "N"},
                     sd.SAVE_SCRIPT % {"project": "P", "subfolders": ["F"], "name": "N",
                                       "sheet": "A2", "size": (594, 420), "close": True, "desc": "d"}):
             compile(src, "fusion", "exec")

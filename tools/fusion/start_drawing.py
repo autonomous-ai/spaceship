@@ -10,9 +10,10 @@ So this command uses Fusion's own Create Drawing command and presses its two
 buttons through macOS accessibility, all inside the Fusion lock:
 
 1. take the Fusion lock (it waits its turn like any run);
-2. refuse, before opening anything, unless Fusion is idle, no unsaved drawing
-   is open, the Mac's screen isn't locked and accessibility can see Fusion's
-   windows (it can't while the screen is locked);
+2. refuse, before opening anything, unless every entry of --folder can be read
+   and DRAWING_NAME isn't one of them, Fusion is idle (Home screen included),
+   no unsaved drawing is open, the Mac's screen isn't locked and accessibility
+   can see Fusion's windows (it can't while the screen is locked);
 3. open or activate DESIGN_NAME (refused if it has unsaved changes) and queue
    Create Drawing (its dialog defaults: Manual, From scratch, ISO, mm);
 4. press OK in that dialog and wait for the new drawing;
@@ -23,11 +24,12 @@ buttons through macOS accessibility, all inside the Fusion lock:
 7. check that no dialog is left, and give the lock back.
 
 Cleanup, whenever a step fails after the dialog was queued (also on SIGTERM,
-SIGHUP, Ctrl-C and lost contact with Fusion): first Fusion's own cancel, from
-a read-only script that needs no accessibility (it terminates the active
-command and starts Fusion's Select command, which closed a Create Drawing
-dialog on a locked screen on 2026-10-31); then Cancel through accessibility;
-then the unsaved drawing it made is closed.
+SIGHUP, Ctrl-C and lost contact with Fusion): Cancel through accessibility
+first, as a person would press it; Fusion's own cancel (a read-only script
+that starts Fusion's Select command) only when accessibility sees no dialog
+while Fusion is still in a command; then the unsaved drawing it made is
+closed. Nothing ends a command by script any more: terminateActiveCommand()
+on an open Create Drawing killed Fusion on 2026-10-31.
 
 Exit 0 = saved, 1 = failed or refused (Fusion left idle), 2 = Fusion not
 reachable, 3 = the Fusion lock was busy past --lock-wait, 4 = Fusion was left
@@ -69,19 +71,19 @@ AX_CLICK = '''on run argv
       repeat with w in (every window whose subrole is "AXDialog")
         set bn to name of every button of w
         if bn contains "OK" and bn contains "Cancel" then
-          set named to false
+          set isNamed to false
           try
-            if (title of w as text) contains hint then set named to true
+            if (title of w as text) contains hint then set isNamed to true
           end try
           try
-            if (name of w as text) contains hint then set named to true
+            if (name of w as text) contains hint then set isNamed to true
           end try
           try
             repeat with t in (value of every static text of w)
-              if (t as text) contains hint then set named to true
+              if (t as text) contains hint then set isNamed to true
             end repeat
           end try
-          if named then
+          if isNamed then
             click (first button of w whose name is target)
             return "clicked by title"
           end if
@@ -135,14 +137,16 @@ def run(_c):
 '''
 
 # Fusion's own cancel, needing no accessibility; runs read-only, so it works
-# while a dialog is open.
+# while a dialog is open. LAST RESORT only, when accessibility can't see the
+# dialog: on 2026-10-31 terminateActiveCommand() on an open Create Drawing
+# killed Fusion, so it is no longer used; starting the Select command closed
+# a Create Drawing dialog safely once (locked screen, same day).
 FUSION_CANCEL_SCRIPT = '''import adsk.core
 def run(_c):
     ui = adsk.core.Application.get().userInterface
     before = ui.activeCommand
-    t = ui.terminateActiveCommand()
     s = ui.commandDefinitions.itemById("SelectCommand").execute()
-    print("Fusion cancel: active %s, terminate %s, Select queued %s" % (before, t, s))
+    print("Fusion cancel (Select queued): active %s, queued %s" % (before, s))
 '''
 
 QUEUE_SCRIPT = '''import adsk.core
@@ -159,7 +163,7 @@ def run(_c):
     print("queued Create Drawing for %%s: %%s" %% (doc.name, ok))
 '''
 
-SAVE_SCRIPT = '''import adsk.core, adsk.drawing
+SAVE_SCRIPT = '''import adsk.core, adsk.drawing, time
 def run(_c):
     app = adsk.core.Application.get()
     docs = [app.documents.item(i) for i in range(app.documents.count)]
@@ -172,7 +176,21 @@ def run(_c):
     folder = proj.rootFolder
     for part in %(subfolders)r:
         folder = folder.dataFolders.itemByName(part)
-    names = [folder.dataFiles.item(i).name for i in range(folder.dataFiles.count)]
+    for attempt in range(4):          # an unreadable entry may be the name: look again, then refuse
+        names, bad = [], 0
+        for i in range(folder.dataFiles.count):
+            try:
+                names.append(folder.dataFiles.item(i).name)
+            except Exception:
+                bad += 1
+        if not bad:
+            break
+        if attempt < 3:
+            adsk.doEvents()
+            time.sleep(2)
+    if bad:
+        raise RuntimeError("%%d folder entr%%s can't be read, so the name can't be checked; not saved" %% (
+            bad, "y" if bad == 1 else "ies"))
     if %(name)r in names:
         raise RuntimeError("%%s is already in the folder" %% %(name)r)
     sheet = doc.drawing.sheets.item(0)
@@ -187,6 +205,34 @@ def run(_c):
     if %(close)r:
         print("closed: %%s" %% doc.close(False))
 '''
+
+# Lists the folder entry by entry: one entry Fusion can't read (seen after a
+# restart, 2026-10-31) must neither hide a name that is taken nor stop the run.
+# Retries a few times; reports what stays unreadable.
+FOLDER_SCRIPT = '''import adsk.core, time
+def run(_c):
+    app = adsk.core.Application.get()
+    proj = [p for p in app.data.dataProjects if p.name == %(project)r][0]
+    folder = proj.rootFolder
+    for part in %(subfolders)r:
+        folder = folder.dataFolders.itemByName(part)
+    for attempt in range(4):
+        names, bad = [], []
+        for i in range(folder.dataFiles.count):
+            try:
+                names.append(folder.dataFiles.item(i).name)
+            except Exception:
+                bad.append(i)
+        if not bad:
+            break
+        if attempt < 3:
+            adsk.doEvents()
+            time.sleep(2)
+    print("FOLDER_UNREADABLE=%%s" %% ",".join(str(i) for i in bad))
+    print("FOLDER_HAS_DESIGN=%%d" %% (%(design)r in names))
+    print("FOLDER_HAS_DRAWING=%%d" %% (%(name)r in names))
+'''
+
 
 CLOSE_UNSAVED_SCRIPT = '''import adsk.core, adsk.drawing
 def run(_c):
@@ -227,6 +273,15 @@ class Steps:
             raise StartError("couldn't read Fusion's state: %s" % out)
         vals = dict(line.split("=", 1) for line in (out or "").splitlines() if "=" in line)
         return vals.get("CMD", ""), int(vals.get("UNSAVED_DRAWINGS", "0"))
+
+    def folder(self, project, subfolders, design, name):
+        ok, out = self.run(FOLDER_SCRIPT % {"project": project, "subfolders": subfolders,
+                                            "design": design, "name": name}, read_only=True)
+        if not ok:
+            raise StartError("couldn't list the folder: %s" % out)
+        vals = dict(line.split("=", 1) for line in (out or "").splitlines() if "=" in line)
+        bad = [b for b in vals.get("FOLDER_UNREADABLE", "").split(",") if b]
+        return bad, vals.get("FOLDER_HAS_DESIGN") == "1", vals.get("FOLDER_HAS_DRAWING") == "1"
 
     def fusion_cancel(self):
         ok, out = self.run(FUSION_CANCEL_SCRIPT, read_only=True)
@@ -270,9 +325,11 @@ def wait_for(steps, pred, timeout_s, poll_s=1.0):
 
 
 def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
-    """Get Fusion back to idle: Fusion's own cancel first (no accessibility),
-    then Cancel through accessibility. True when Fusion is idle and no OK/Cancel
-    dialog is listed. Works without MCP too (accessibility only)."""
+    """Get Fusion back to idle. Cancel through accessibility FIRST (what a person
+    would press); Fusion's own cancel only when accessibility can't see any
+    dialog while Fusion is still busy (PM ruling 2026-10-31, after ending an
+    open Create Drawing by script killed Fusion). True when Fusion is idle and
+    no OK/Cancel dialog is listed. Works without MCP too (accessibility only)."""
     for _ in range(tries):
         try:
             cmd, _u = steps.state()
@@ -280,41 +337,51 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
         except (StartError, rs.McpError) as e:
             log("cleanup: can't read Fusion's state (%s)" % e)
             cmd, mcp_ok = None, False
-        if mcp_ok and cmd in IDLE_CMDS:
+        try:
+            left = steps.dialogs()
+            ax_ok = True
+        except StartError as e:
+            log("cleanup: accessibility can't list dialogs (%s)" % e)
+            left, ax_ok = [], False
+        if mcp_ok and cmd in IDLE_CMDS and not left:
+            return True
+        if left:
             try:
-                left = steps.dialogs()
-            except StartError:
-                left = []
-            if not left:
-                return True
-            log("cleanup: Fusion is idle but a dialog is listed (%s)" % " ".join(left))
-        if mcp_ok:
+                log("cleanup: accessibility Cancel: %s" % steps.click("Cancel", TITLES.get(cmd, "")))
+            except StartError as e:
+                log("cleanup: %s" % e)
+        elif mcp_ok and cmd not in IDLE_CMDS:
+            # nothing visible to press, but Fusion is still in a command: last resort
+            log("cleanup: no dialog visible to accessibility (%s); Fusion's own cancel"
+                % ("it answers" if ax_ok else "it fails"))
             try:
                 ok, out = steps.fusion_cancel()
                 log("cleanup: %s" % (out or "").strip() if ok else "cleanup: Fusion cancel failed: %s" % out)
             except (StartError, rs.McpError) as e:
                 log("cleanup: Fusion cancel failed: %s" % e)
-            time.sleep(poll_s)
-            try:
-                cmd, _u = steps.state()
-                if cmd in IDLE_CMDS:
-                    continue          # recheck the dialogs at the top
-            except (StartError, rs.McpError):
-                pass
-        try:
-            log("cleanup: accessibility Cancel: %s" % steps.click("Cancel", TITLES.get(cmd, "")))
-        except StartError as e:
-            log("cleanup: %s" % e)
         time.sleep(poll_s)
     try:
         cmd, _u = steps.state()
-        return cmd in IDLE_CMDS
     except (StartError, rs.McpError):
         return False
+    try:
+        left = steps.dialogs()
+    except StartError:
+        left = []                 # accessibility unavailable: trust Fusion's own state
+    return cmd in IDLE_CMDS and not left
 
 
-def precheck(steps):
+def precheck(steps, design="", name="", folder=rs.DEFAULT_FOLDER):
     """Refuse before opening anything; None when it's safe to start."""
+    if name:
+        project, *subfolders = [p for p in folder.split("/") if p]
+        bad, has_design, has_drawing = steps.folder(project, subfolders, design, name)
+        if bad:
+            return ("%d entr%s of %s can't be read (positions %s), so the drawing name can't be "
+                    "checked; nothing was started" % (len(bad), "y" if len(bad) == 1 else "ies",
+                                                      folder, ", ".join(bad)))
+        if has_drawing:
+            return "%s is already in %s; nothing was started" % (name, folder)
     cmd, unsaved = steps.state()
     if cmd not in IDLE_CMDS:
         return "Fusion isn't idle (active command %s); nothing was started" % cmd
@@ -339,7 +406,7 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     status = status if status is not None else {}
     project, *subfolders = [p for p in folder.split("/") if p]
 
-    why = precheck(steps)
+    why = precheck(steps, design, name, folder)
     if why:
         raise StartError(why)
 

@@ -579,7 +579,7 @@ def run(_context):
 # Document steps for --doc, --save and --close. Runs inside Fusion; ARGS is
 # filled in by doc_script(). It never closes or saves a document with
 # another name, and never calls close(True) (that opens a dialog).
-DOC_SCRIPT = '''import adsk.core, adsk.fusion
+DOC_SCRIPT = '''import adsk.core, adsk.fusion, time
 ARGS = %(args)r
 
 def _folder(app, path):
@@ -618,17 +618,27 @@ def run(_context):
             print("run_script: activated %%r" %% name)
             return
         proj, folder = _folder(app, ARGS["folder"])
-        files, unreadable = [], 0
-        for i in range(folder.dataFiles.count):
-            try:                  # one unreadable entry (being uploaded, deleted) must not stop the rest
-                f = folder.dataFiles.item(i)
-                if f.name == name:
-                    files.append(f)
-            except Exception:
-                unreadable += 1
-        if unreadable:
-            print("run_script: %%d entr%%s of %%s could not be read; skipped" %% (
-                unreadable, "y" if unreadable == 1 else "ies", ARGS["folder"]))
+        for attempt in range(4):
+            files, bad = [], []
+            for i in range(folder.dataFiles.count):
+                try:              # one unreadable entry (being uploaded, deleted) must not stop the rest
+                    f = folder.dataFiles.item(i)
+                    if f.name == name:
+                        files.append(f)
+                except Exception:
+                    bad.append(i)
+            if files or not bad:
+                break
+            if attempt < 3:
+                adsk.doEvents()   # the name may be the unreadable entry: look again
+                time.sleep(2)
+        if bad:
+            print("run_script: %%d entr%%s of %%s could not be read (positions %%s); skipped" %% (
+                len(bad), "y" if len(bad) == 1 else "ies", ARGS["folder"], ", ".join(map(str, bad))))
+        if not files and bad:
+            raise RuntimeError("%%r is not in %%s, but %%d entr%%s there can't be read and it may be "
+                               "one of them; nothing was opened or made (try again later)" %% (
+                                   name, ARGS["folder"], len(bad), "y" if len(bad) == 1 else "ies"))
         if len(files) > 1:
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:
