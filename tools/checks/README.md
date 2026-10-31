@@ -11,6 +11,16 @@ python3 tools/checks/register.py set F-004 ACCEPTED --note "D-60: ..."  # change
 
 Standard library only, plus PyMuPDF (or `pdftotext`) to read drawing PDFs. Nothing here edits another group's files. Exit code 1 when a severe finding is open in the run.
 
+## After every merge to main
+
+```sh
+python3 tools/checks/run_checks.py --ref origin/main --update                        # offline checks, register
+python3 tools/checks/run_fusion_checks.py --ref origin/main --model skeleton --update  # exact, through the lock
+python3 tools/checks/run_fusion_checks.py --ref origin/main --update                   # the assembled design, once it exists
+```
+
+Each run checks exactly that revision in a clean export (deleted afterwards), updates `v2/04-Checks/findings.md`, and closes what it no longer finds, with the revision as evidence. New findings go to their owner groups with the file and the fix. Open PRs get the same runs on their head before they merge (`--ref origin/<branch>`, without `--update`).
+
 ## The checks
 
 | Code | Check | How | Runs |
