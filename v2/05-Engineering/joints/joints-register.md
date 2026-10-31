@@ -151,6 +151,13 @@ Every rivnut, stop washer, spigot, gasket, retainer and pre-fitted bolt is fitte
 | H-30 | **838009** | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD · Ốc cấy M6 cho ván ép 9 mm | bought | 2 | PROPOSED number; product HOLD-17 (BASE: how F2's spigots fix into the ply) |
 | H-31 | **838010** | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 · Vít đầu tròn có vành M6 × 12 inox | bought | 12 | PROPOSED number; part per the PM ruling on F-018 (a low head for the factory-fitted corner keys, 3.3 tall); fitted in the factory with a 4 mm key (J-BASE-02) |
 
+**INTERIOR's bought items** (family 81 INTERIOR, NNNN 8000–8999, bought items used only in INTERIOR; INTERIOR's parts list in PR #92, which the CEILING Engineer builds, D-80). The register adopts INTERIOR's numbers and names unchanged (D-63, D-99), so its parts list matches; both are product HOLD until INTERIOR names them.
+
+| Item | Part number | Name · Vietnamese | Class | Per pod | Status |
+|---|---|---|---|---|---|
+| H-32 | **818101** | INTERIOR - LEDGE BRACKET - HOLD · Ke đỡ bàn tựa (chờ) | bought, used only in INTERIOR | 2 | adopted; product HOLD (INTERIOR): a concealed shelf bracket rated for a 225 N lean at the ledge's front edge × 3 (INTERIOR's requirement); about 0.1 kg each (assumption) |
+| H-33 | **818102** | INTERIOR - SCREEN RAIL - HOLD · Thanh treo màn hình (chờ) | bought, used only in INTERIOR | 1 | adopted; product HOLD (INTERIOR): a VESA rail for a screen up to 900 wide, about 10 kg (D-70); about 0.5 kg (assumption) |
+
 ### 2.2 The in-member bolt (stopped joints)
 
 Each joint has a **nut side** (the part with the rivnut) and a **bolt side** (the part whose edge tube holds the captive bolt). The bolt side is the part whose frame bay the person inside the pod can reach; each joint entry says which is which.

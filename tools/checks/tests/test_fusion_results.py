@@ -144,3 +144,17 @@ def test_saved_results_have_no_absolute_paths(tmp_path):
     out = rf._relative(res, rf.REPO_ROOT)
     assert out["steps"] == ["v2/03-Manufacturing/a.step", "b.step"]
     assert out["imports"][0]["file"] == "v2/03-Manufacturing/a.step"
+
+
+def test_door_swing_a_seal_it_only_touches_is_not_a_collision():
+    def swing(hits, first=None):
+        return {"door_swing": [{"direction": "outward", "max_deg": 90.0, "rule": "x", "hits": hits, "first_hit": first}]}
+    seal = {"hits": "360002 / 368003 FRONT - GLASS-TO-GLASS SEAL 180", "moving": "361001 FRONT - DOOR LEAF",
+            "first_deg": 0.5, "last_deg": 0.5, "max_mm3": 0.3, "soft": True}
+    assert rf.findings_from(swing([seal]), "assembly") == []          # the door wipes its seal: no finding
+    crushed = dict(seal, max_mm3=650.0)
+    fs = rf.findings_from(swing([crushed]), "assembly")
+    assert [f.rule for f in fs] == ["door-swing"] and "650.0 mm3" in fs[0].message
+    wall = {"angle_deg": 63.5, "moving": "361001 FRONT - DOOR LEAF", "hits": "350002 FRONT - DECOR BLOCK - DL", "mm3": 12.0}
+    fs = rf.findings_from(swing([seal], wall), "assembly")
+    assert len(fs) == 1 and "63.5 degrees" in fs[0].message
