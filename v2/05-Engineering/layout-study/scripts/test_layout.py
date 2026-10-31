@@ -127,7 +127,7 @@ def test_p04_rollup_lines():
     assert abs(csv_kg - shipped) < 0.05, (csv_kg, shipped)
     air32 = sum(q * kg for g, _, q, kg, _, _ in rollup.lines(fill=p("fill_pet_kgm3")) if g == "AIR")
     assert abs(air32 - (rollup.AA.d60_air_kg() + rollup.AA.fans_kg())) < 0.05, air32
-    for name in ("Light shelf", "Work-wall ledge", "Named clips"):
+    for name in ("Named clips",):                                  # the light shelf and ledge are INTERIOR's CAD now
         hit = [r for r in rows if r[1].startswith(name)]
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
     assert len([r for r in rows if "ships loose" in r[1]]) == 2
@@ -176,7 +176,13 @@ def test_cad_masses_from_main():
     assert abs(cp[3] - (cg["c1"] + cg["c2"]) / 2) < 1e-9 and rollup.basis(cp) == "CAD, main", cp
     cc = rows["Ceiling cassettes, one part for both halves"]
     assert rollup.basis(cc) == "CAD, main", cc
-    assert len(rollup.cad_swaps()) == 15
+    el = next(r for k, r in rows.items() if k.startswith("Switches and harness"))
+    assert abs(el[3] - rollup.ELEC["total"]) < 1e-9 and rollup.basis(el) == "CAD, main", el
+    sh = next(r for k, r in rows.items() if k.startswith("Light shelf"))
+    ld = next(r for k, r in rows.items() if k.startswith("Work-wall ledge"))
+    assert abs(sh[3] - rollup.INTERIOR["shelf"]) < 1e-9 and rollup.basis(sh) == "CAD, main", sh
+    assert abs(ld[3] - rollup.INTERIOR["ledge"] - rollup.INTERIOR["rail"]) < 1e-9 and rollup.basis(ld) == "CAD, main", ld
+    assert len(rollup.cad_swaps()) == 19
 
 
 def test_rollup_items_the_packing_plan_reads():
