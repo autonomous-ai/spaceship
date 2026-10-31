@@ -46,8 +46,9 @@ def load_skeleton_params(repo_root):
     path, rev = skeleton_csv(repo_root)
     with open(path, encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
-    params = [(r["parameter"], r["expression"], "mm", "skeleton %s %s" % (rev, r["status"]), r["source"])
-              for r in rows]
+    # the list carries a unit column since skeleton v4 (#94): "-" marks a count, so it goes in without a unit
+    params = [(r["parameter"], r["expression"], "" if (r.get("unit") or "mm").strip() in ("-", "") else "mm",
+               "skeleton %s %s" % (rev, r["status"]), r["source"]) for r in rows]
     return params, path, rev
 
 
@@ -586,7 +587,9 @@ def circles(design, comp, plane, plane_axes, fixed, name, centers, dia_expr):
 # J-FRONT-01 (joints register 3.7): decor block to side wall, 3 bolts per side panel on the panel's front member
 # centre line, the end bolts bolt_edge_inset from each panel end; the rivnuts sit in the decor's aluminium back plate
 JF_PARAMS = [
-    ("jf_x", "1224 mm", "mm", "source", "joints register J-FRONT-01: the side panel's front member centre line, X -/+1224"),
+    ("jf_x", "pod_w / 2 - skin_t - bond_t - frame_t / 2", "mm", "calculation",
+     "joints register J-FRONT-01: the side panel's front member centre line, X -/+1224 (skin, bond line and half the "
+     "40 frame in from the outside, skeleton named values)"),
     ("jf_hole", "9.53 mm", "mm", "source", "rivnut 838003 (Sherex CAH3-610-4.2) hole 9.53 +0.10/0 (hardware selection A5; joints register H-03)"),
     ("jf_z1", "panel_z0 + bolt_edge_inset", "mm", "calculation", "lower panel, bottom bolt (220 rule)"),
     ("jf_z2", "panel_z0 + side_h / 2", "mm", "calculation", "lower panel, middle bolt"),
