@@ -8,12 +8,12 @@ Every finding has an owner group and a status. **Severe findings block the owner
 
 Severity: **severe** = can't be made, assembled or used as drawn; **major** = will cause rework or a wrong part; **minor** = record keeping. Check codes: C01 clash and minimum gaps (Fusion); C02 tolerance stack-ups; C03 fastener and tool access; C04 weight, doorway and pallet fit; C05 drawing completeness; C06 BOM completeness; C07 fastener schedule and thread engagement; C08 hole-to-hole alignment; C09 edge distance, bend radius, hole-to-bend; C10 mixed metals; C11 material grade and finish.
 
-## Open: 42 (21 severe, 20 major, 1 minor)
+## Open: 41 (20 severe, 20 major, 1 minor)
 
 By owner group:
 
 - BASE: F-043, F-039, F-040, F-041, F-098
-- FRONT: F-030, F-031, F-097, F-103, F-029, F-096
+- FRONT: F-030, F-031, F-097, F-029, F-096
 - Joints Engineer: F-045, F-100, F-101, F-102
 - WALL: F-020, F-021, F-024, F-109, F-110, F-111, F-112, F-113, F-114, F-121, F-122, F-123, F-019, F-022, F-023, F-106, F-107, F-108, F-115, F-116, F-117, F-118, F-119, F-120, F-124, F-125, F-104
 
@@ -30,7 +30,6 @@ By owner group:
 | F-100 | severe | C05 | 111212 | 111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step. | `v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | Joints Engineer | 2026-11-01 8c3aca4 | Joints group 2026-11-01 |
 | F-101 | severe | C05 | 111213 | 111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step. | `v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | Joints Engineer | 2026-11-01 8c3aca4 | Joints group 2026-11-01 |
 | F-102 | severe | C05 | 111214 | 111214 BASE - CORNER KEY - KNEE - LH has no drawing PDF (111214_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step. | `v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | Joints Engineer | 2026-11-01 8c3aca4 | Joints group 2026-11-01 |
-| F-103 | severe | C01 | assembly 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 x 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 | 360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1 and 360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1 overlap by 11948.6 mm3 in the assembly (Fusion, exact intersection). |  | Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason. | FRONT | 2026-11-01 97a1aeb | FRONT group 2026-11-01 |
 | F-109 | severe | C05 | 211102 | 211102 WALL - PANEL FRAME - SIDE LOWER - RH has no drawing PDF (211102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step. | `v2/03-Manufacturing/wall/211102_P01_WALL-PANEL-FRAME-SIDE-LOWER-RH_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | WALL | 2026-11-01 87586c1 | WALL group 2026-11-01 |
 | F-110 | severe | C05 | 211103 | 211103 WALL - PANEL FRAME - SIDE UPPER - LH has no drawing PDF (211103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step. | `v2/03-Manufacturing/wall/211103_P01_WALL-PANEL-FRAME-SIDE-UPPER-LH_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | WALL | 2026-11-01 87586c1 | WALL group 2026-11-01 |
 | F-111 | severe | C05 | 211104 | 211104 WALL - PANEL FRAME - SIDE UPPER - RH has no drawing PDF (211104_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step. | `v2/03-Manufacturing/wall/211104_P01_WALL-PANEL-FRAME-SIDE-UPPER-RH_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | WALL | 2026-11-01 87586c1 | WALL group 2026-11-01 |
@@ -62,7 +61,7 @@ By owner group:
 | F-125 | major | C05 | 511304 | 511304 LINING - FELT - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes). |  | For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing. | WALL | 2026-11-01 87586c1 | WALL group 2026-11-01 |
 | F-104 | minor | C06 | 211102 | 211102 WALL - PANEL FRAME - SIDE LOWER - RH in v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv is missing: Vietnamese name. | `v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv` | Fill them in, each number with its status and source. | WALL | 2026-11-01 87586c1 | WALL group 2026-11-01 |
 
-## Closed and accepted: 83
+## Closed and accepted: 84
 
 | ID | Status | Severity | Check | Part | Finding | Owner group | Found | Closed or accepted |
 |---|---|---|---|---|---|---|---|---|
@@ -148,5 +147,6 @@ By owner group:
 | F-094 | CLOSED | major | C09 | 368004 GLAZING U-PROFILE (4 PIECES, MITRED) hole Ø3.4 at X 914 Y -699 Z 96 | Hole Ø3.40 in 368004 GLAZING U-PROFILE (4 PIECES, MITRED) is 6.0 mm from the free edge (centre to edge), 1.76 diameters; the rule is at least 2 diameters (6.8 mm). Hole centre X 914 Y -699 Z 96 in the part's own coordinates. | FRONT | 2026-11-01 284dae7 | 2026-11-01 284dae7 |
 | F-095 | CLOSED | minor | C06 | 368003 | 368003 is named 'FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD' in the CAD and 'FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD' in v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv; the joints register names it 'FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD', and hardware names come from the register (D-99). | FRONT | 2026-11-01 284dae7 | 2026-11-01 11d9b51 |
 | F-099 | CLOSED | major | C06 | 111501 | Part number 111501 is used for different names: 'BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. | Control | 2026-11-01 8c3aca4 | 2026-11-01 02cfe83 |
+| F-103 | CLOSED | severe | C01 | assembly 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 x 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 | 360001_P01_FRONT-DOOR-UNIT_CAD:1 / 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 / Body1 and 360001_P01_FRONT-DOOR-UNIT_CAD:1 / 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1 / Body1 overlap by 11948.6 mm3 in the assembly (Fusion, exact intersection). | FRONT | 2026-11-01 97a1aeb | 2026-11-01 11d9b51 |
 | F-105 | CLOSED | severe | C09 | 511302 FELT - PET 9 HELD BY THE TRAY LIPS hole Ø60.0 at X 1171 Y 240 Z 1180 | Hole Ø60.00 in 511302 FELT - PET 9 HELD BY THE TRAY LIPS is 73.5 mm from the free edge (centre to edge), 1.23 diameters; the rule is at least 2 diameters (120.0 mm). Hole centre X 1171 Y 240 Z 1180 in the part's own coordinates. | WALL | 2026-11-01 87586c1 | 2026-11-01 87586c1 |
 

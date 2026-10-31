@@ -3272,7 +3272,7 @@
    },
    "key": "C01|clash|assembly 361001 FRONT - DOOR LEAF - 4+4 LAMINATED:1 x 368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10:1",
    "id": "F-103",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 97a1aeb",
    "posted": "FRONT group 2026-11-01",
@@ -3281,8 +3281,14 @@
      "date": "2026-11-01",
      "rev": "97a1aeb",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "11d9b51",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
-   ]
+   ],
+   "closed": "2026-11-01 11d9b51"
   },
   {
    "check": "C06",
