@@ -40,9 +40,11 @@ def rows():
              "tabulated: the side fills (the bays have pockets, so they get a drawing)"),
             ("211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_DWG", ["211601", "211602", "211603", "211604"],
              "tabulated: the back fills (pin and ceiling pockets listed per part)")]
-    for code_list, fam, what in ((range(1, 5), "5113", "side felt"), (range(1, 5), "5114", "back felt")):
+    for code_list, fam, what, el in ((range(1, 5), "5113", "side felt", "511302 (R1) and 511304 (R2)"),
+                                     (range(1, 5), "5114", "back felt", "511402 (B2) and 511404 (B4)")):
         out.append(("(no drawing, D-89)", ["%s%02d" % (fam, i) for i in code_list],
-                    "%s: plain knife-cut pieces; size, material, tolerance and part number in the parts list" % what))
+                    "%s: knife-cut pieces; size, material, tolerance and part number in the parts list; %s carry "
+                    "ELECTRICAL's openings and are cut from their DXFs (a flat part with its DXF, D-89 part 4)" % (what, el)))
     return out
 
 

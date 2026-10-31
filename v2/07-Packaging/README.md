@@ -20,4 +20,6 @@ python3 v2/07-Packaging/pack.py --check    # fail if an output is stale or a che
 python3 v2/07-Packaging/test_pack.py       # regression tests
 ```
 
-Edit `templates/` or `pack.py`, never the generated files. When a team's CAD replaces a roll-up line, regenerate the roll-up, then run `pack.py`.
+Part numbers come from the master BOM (`../04-BOM/100000_P01_POD-MASTER_BOM.csv`): a piece marked "TBD (owner)" takes its number as soon as the owner's parts list carries its exact name, and check K13 holds every number on a label to the BOM's name.
+
+Edit `templates/` or `pack.py`, never the generated files. When a team's CAD replaces a roll-up line, regenerate the roll-up, then run `pack.py`; run it again after the master BOM changes.

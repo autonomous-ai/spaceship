@@ -136,9 +136,9 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | PK-03 | The glass crate's sizes and 30 kg are this plan's assumptions; the 17 mm side rails leave 5 mm of edge foam each side of the 1175 mm door. The glass supplier's packer sets the real crate. | Packing | assumption |
 | PK-04 | DL, DR and DT are packed as the layout study's bounding boxes; FRONT's models set their real envelopes. Tier 2 has 13 mm spare across the deck. | FRONT | calculation on boxes |
 | PK-05 | The intake riser joined to the supply fan box (D-87) is packed as 1845 × 460 × 155, from the air report's positions; the AIR and FRONT models set it. | AIR, FRONT | calculation |
-| PK-06 | The light shelf and the ledge (D-70) aren't designed: their masses are the roll-up's allowances. The screen mount isn't in the roll-up: 1.0 kg assumed. | INTERIOR | assumption |
-| PK-07 | Part numbers marked TBD come from their owners or the master BOM; labels print them when they exist. | WALL, BASE, FRONT, AIR, INTERIOR, ELECTRICAL | open |
-| PK-08 | Re-run `pack.py` when a team's CAD mass replaces a roll-up line (the roll-up's own regeneration carries it through). | Packing | process |
+| PK-06 | The light shelf 810201 and the ledge 810101 are INTERIOR's CAD; the ledge's 2 brackets 818101 and the screen rail 818102 are on HOLD (0.1 kg each and 0.5 kg, assumed, inside the roll-up's ledge line), and so are their screws. The light shelf bundle and the ledge carton sizes are this plan's assumptions. | INTERIOR | calculation; HOLD parts assumption |
+| PK-07 | A piece marked TBD takes its number from the master BOM (`v2/04-BOM/100000_P01_POD-MASTER_BOM.csv`) as soon as the owner's parts list carries its exact name; check K13 holds every number on a label to the BOM's name. Still TBD: {{TBD_LEFT}}. | WALL, BASE, FRONT, AIR, ELECTRICAL | open |
+| PK-08 | Re-run `pack.py` when a team's CAD mass replaces a roll-up line, or when the master BOM changes (each regeneration carries it through). | Packing | process |
 
 ## 12. Numbers this plan uses
 

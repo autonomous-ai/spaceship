@@ -18,6 +18,12 @@ SHEET=(110000 A2 110101 A2 110103 A1 110401 A3 111101 A2 111103 A1 111401 A3)
 pns=("$@")
 (( ${#pns} )) || pns=(111101 111103 111401 110101 110103 110401 110000)
 for pn in $pns; do
+  # a part number listed in the skip file is skipped when its turn comes, e.g. while
+  # its hole positions are about to change (read at run time, so a queued session can be trimmed)
+  skip=${BASE_DRAWING_SKIP:-v2/02-Drawings/base/.raw/skip.txt}      # .raw is git-ignored
+  if [ -f "$skip" ] && grep -qx "$pn" "$skip"; then
+    echo "== $pn: skipped (listed in $skip)"; continue
+  fi
   d=${DESIGN[$pn]}
   w=${d%_CAD}_DWG
   echo "== $pn: $d -> $w (${SHEET[$pn]})"
