@@ -212,6 +212,14 @@ AIR_ASSY = ("350004", "FRONT - AIR SUPPLY ASSY - DR", "Cụm cấp gió khối p
 # that area with no gap for air or sound (PM ruling 2026-11-01: one structure there, not two); a short piece from
 # dr_piece_x0 to the side stays above the access panel, where the soffit (X up to 1161) doesn't reach
 DROP_BAND = False
+# the air parts' spaces carry this after their name in the CAD (PM ruling 2026-11-01: AIR designs and lists the parts)
+RESERVED_AIR = ("RISER", "TLOW", "FBOX", "TUP")
+RESERVED_SUFFIX = " - RESERVED AIR SPACE"
+
+
+def cad_name(key):
+    """The component's name in the CAD: number, name, and the reserved-space mark for the air parts."""
+    return "%s %s%s" % (PARTS[key][0], PARTS[key][1], RESERVED_SUFFIX if key in RESERVED_AIR else "")
 # every air part is an AIR number in AIR's tree, designed by AIR (PM ruling 2026-11-01, so nothing is counted twice):
 # DR keeps only the spaces the riser, the fan box and the two transitions take. They are typed "reserved air space",
 # carry no mass and need no drawing; the CAD names say so too
@@ -372,12 +380,11 @@ def build(app):
     # slide into DR through its inner face on site, so they form one sub-assembly
     air = L.new_comp(root, AIR_ASSY[0], AIR_ASSY[1] + " - RESERVED AIR SPACE", AIR_ASSY[2], REV)
     AIR_KEYS = ("RISER", "TLOW", "FBOX", "TUP")
-    RESERVED_AIR = ("RISER", "TLOW", "FBOX", "TUP")
 
     def comp(key):
         pn, nm, vn = PARTS[key]
         if key in RESERVED_AIR:       # PM ruling 2026-11-01: AIR designs and lists these parts
-            nm += " - RESERVED AIR SPACE"
+            nm += RESERVED_SUFFIX
         c = L.new_comp(air if key in AIR_KEYS else root, pn, nm, vn, REV)
         comps[key] = c
         return c
@@ -758,7 +765,7 @@ def export_all(app):
             print("DXF %s FAILED: %r" % (fn, exc))
     with open(os.path.join(root_dir, ANCHORS_REL), "w", encoding="utf-8") as fh:
         json.dump({"document": DOC_NAME, "f3d": F3D_REL, "anchors": [
-            {"component": "%s %s" % (PARTS[k][0], PARTS[k][1]), "index": i, "expression": e} for k, i, e in ANCHORS]},
+            {"component": cad_name(k), "index": i, "expression": e} for k, i, e in ANCHORS]},
             fh, indent=1, ensure_ascii=False)
     print("anchors %s: %d" % (ANCHORS_REL, len(ANCHORS)))
     before, after, diff = L.step_reread(app, doc, design, step)
