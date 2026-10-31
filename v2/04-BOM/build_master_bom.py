@@ -139,12 +139,14 @@ def split_finish(material):
 
 
 def make_buy_of(kind):
+    """Part classes (assembly-tree.md, guideline 4.1): MP made, BS bonded subassembly, HS subassembly
+    with hardware, PI bought, KIT the installation kit; or words such as 'made ...', 'bought ...'."""
     k = kind.strip()
-    if k.upper() in ("MP",):
+    if k.upper() == "MP":
         return "make"
-    if k.upper() in ("HS",):
+    if k.upper() in ("BS", "HS", "KIT"):
         return "assembly"
-    if k.upper() in ("BS", "PI", "HOLD"):
+    if k.upper() in ("PI", "HOLD"):
         return "buy"
     low = k.lower()
     if "assembly" in low:
@@ -202,18 +204,20 @@ def parse_parts_list(path, text, where):
     # The top assembly of the file: its quantity per pod multiplies the children's "qty".
     top_qty = 1.0
     if raw and "qty_per_pod" not in cols:
-        kind0 = first(raw[0], "type", "kind")
+        kind0 = first(raw[0], "type", "kind", "class")
         if make_buy_of(kind0) == "assembly":
             top_qty = num(first(raw[0], "qty")) or 1.0
     rows = []
     for i, r in enumerate(raw):
-        kind = first(r, "make_buy", "type", "kind")
+        kind = first(r, "make_buy", "type", "kind", "class")
+        if kind.strip().lower() == "cut":
+            continue  # a cut length of the made part above it (its own cut list), not a BOM line
         mb = first(r, "make_buy").lower() or make_buy_of(kind)
         if "qty_per_pod" in cols:
             q, qs = num(first(r, "qty_per_pod")), "source (parts list)"
         else:
             q = num(first(r, "qty"))
-            is_top = i == 0 and make_buy_of(first(raw[0], "type", "kind")) == "assembly"
+            is_top = i == 0 and make_buy_of(first(raw[0], "type", "kind", "class")) == "assembly"
             if q is not None and not is_top and top_qty != 1.0:
                 q, qs = q * top_qty, "calculation (qty x its unit's qty per pod)"
             else:
@@ -222,15 +226,21 @@ def parse_parts_list(path, text, where):
         if not finish:
             material, finish = split_finish(material)
         mass = num(first(r, "unit_mass_kg", "mass_each_kg", "mass_kg", "mass"))
+        mtot, qraw = num(first(r, "mass_total_kg")), num(first(r, "qty"))
+        derived = mass is None and mtot is not None and qraw
+        if derived:
+            mass = mtot / qraw
         process, pstatus = ("", "")
         if mb == "make":
             process, pstatus = (first(r, "process"), "source (parts list)") if first(r, "process") else process_of(kind, material)
         status = first(r, "status")
-        text_all = " ".join([status, kind, first(r, "name"), first(r, "mass_each_kg", "unit_mass_kg")])
+        name = first(r, "name", "name_en")
+        text_all = " ".join([status, kind, name, first(r, "mass_each_kg", "unit_mass_kg")])
         rows.append({
-            "part_number": first(r, "part_number"), "name": first(r, "name"), "name_vi": first(r, "name_vi"),
+            "part_number": first(r, "part_number"), "name": name, "name_vi": first(r, "name_vi"),
             "qty_per_pod": q, "qty_status": qs, "material": material, "finish": finish,
-            "mass_each_kg": mass, "mass_status": first(r, "mass_status") or ("" if mass is None else "unknown"),
+            "mass_each_kg": mass,
+            "mass_status": first(r, "mass_status") or ("calculation (mass total / qty)" if derived else (first(r, "status") if mass is not None else "")),
             "make_buy": mb, "process": process, "process_status": pstatus,
             "product_status": status, "hold": "HOLD" in text_all, "team": team_of(path),
             "source_file": f"{path} @ {where}", "note": first(r, "note", "source"), "kind": kind,
@@ -258,12 +268,12 @@ def clean(s):
 
 
 def parse_register(text, where):
-    """Hardware items of the joints register, one per ID (or per number when a table has no ID column):
-    [{'id', 'name', 'part_number', 'qty_per_pod', 'mass_each_kg', 'source_file'}].
-    Reads the hardware set table (ID | Item | ...) and any table with a part-number column; the rows
-    of one ID are merged, so an item numbered in a later table isn't also listed as unnumbered."""
+    """Hardware items of the joints register: one per part number, plus one per ID that has no number yet.
+    [{'id', 'name', 'part_number', 'qty_per_pod', 'mass_each_kg', 'source_file'}]. Reads the hardware set
+    table (ID | Item | ...) and any table with a part-number column; an ID's first cell may sit under any
+    header (ID or Item). One ID may have several numbers (a gasket in two thicknesses)."""
     fam = "|".join(FAMILY)
-    items = {}
+    numbered, unnumbered = {}, {}
     for hdr, cells in table_rows(text):
         h = [x.lower() for x in hdr]
         pn_col = next((i for i, x in enumerate(h) if re.search(r"part\s*(number|no)\b|^pn$", x)), None)
@@ -271,7 +281,8 @@ def parse_register(text, where):
         if not is_set and pn_col is None:
             continue
         row = dict(zip(h, cells))
-        rid = cells[0] if h[0] == "id" and re.fullmatch(r"H-\d+\w*", cells[0]) else ""
+        rid = cells[0] if re.fullmatch(r"H-\d+\w*", clean(cells[0])) else ""
+        rid = clean(rid)
         if is_set and not rid:
             continue
         if pn_col is not None:
@@ -279,23 +290,29 @@ def parse_register(text, where):
         else:
             m = next((re.search(r"\b(?:%s)\d{4}\b" % fam, c) for c in cells if re.search(r"\b(?:%s)\d{4}\b" % fam, c)), None)
         pn = m.group(0) if m else ""
-        name = clean(row.get("item") or row.get("name") or (cells[1] if len(cells) > 1 else ""))
+        ncol = next((x for x in h if "name" in x), None)
+        name = clean(row.get(ncol, "")) if ncol else ""
+        if not name:
+            item = clean(row.get("item", ""))
+            name = "" if re.fullmatch(r"H-\d+\w*", item) else item
+        name = name.split(" · ")[0].strip()
         if is_set:
             name = re.split(r"(?<=\.)\s", name, maxsplit=1)[0].rstrip(".")
-        key = rid or pn or name
-        if not key:
-            continue
         qcol = next((x for x in h if "qty" in x or "per pod" in x), None)
         mcol = next((x for x in h if "mass" in x), None)
-        it = items.setdefault(key, {"id": rid, "name": "", "part_number": "", "qty_per_pod": None,
-                                    "mass_each_kg": None, "source_file": f"{REGISTER} @ {where}"})
-        it["name"] = it["name"] or name
-        it["part_number"] = it["part_number"] or pn
-        if it["qty_per_pod"] is None and qcol:
-            it["qty_per_pod"] = num(row.get(qcol))
-        if it["mass_each_kg"] is None and mcol:
-            it["mass_each_kg"] = num(row.get(mcol))
-    return list(items.values())
+        entry = {"id": rid, "name": name, "part_number": pn,
+                 "qty_per_pod": num(row.get(qcol)) if qcol else None,
+                 "mass_each_kg": num(row.get(mcol)) if mcol else None,
+                 "source_file": f"{REGISTER} @ {where}"}
+        if pn:
+            old = numbered.setdefault(pn, entry)
+            for k in ("id", "name", "qty_per_pod", "mass_each_kg"):
+                old[k] = old[k] if old[k] not in ("", None) else entry[k]
+        elif rid or name:
+            old = unnumbered.setdefault(rid or name, entry)
+            old["name"] = old["name"] or name
+    have = {e["id"] for e in numbered.values() if e["id"]}
+    return list(numbered.values()) + [e for k, e in unnumbered.items() if not e["id"] or e["id"] not in have]
 
 
 # ------------------------------------------------------------------ building and checking
@@ -346,7 +363,7 @@ def check(parts, register, reg_where):
                 miss(r["team"], f"{label}: family {family_of(pn)} is not in conventions section 6")
         if r["make_buy"] != "assembly" and r["mass_each_kg"] is None:
             fails.append(f"no mass: {label} in {where}")
-        if is_hardware(r) and pn not in reg_numbers:
+        if is_hardware(r) and re.fullmatch(r"\d{6}", pn) and pn not in reg_numbers:
             fails.append(f"hardware with no joints-register row: {label} in {where}")
         if r["make_buy"] == "":
             miss(r["team"], f"{label}: make or buy not stated (type '{r['kind']}')")
@@ -360,7 +377,7 @@ def check(parts, register, reg_where):
         if r["hold"]:
             miss(r["team"], f"{label}: HOLD ({r['product_status'] or r['kind']})")
     for pn, names in sorted(names_by_pn.items()):
-        if len(names) > 1:
+        if len(names) > 1 and pn not in reg_numbers:  # a register number names its item there (D-63)
             uses = "; ".join(f"'{n}' in {', '.join(sorted(set(w)))}" for n, w in names.items())
             fails.append(f"duplicate number {pn}: {uses}")
     if reg_where is None:

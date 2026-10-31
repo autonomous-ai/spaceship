@@ -134,5 +134,61 @@ class Readers(unittest.TestCase):
         self.assertEqual(len(missing["Joints register"]), 2)
 
 
+WALL = "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv"
+WALL_HDR = "level,part_number,name_en,name_vi,class,material,qty,unit,cut_length_mm,size_mm,mass_each_kg,mass_total_kg,status,source,notes\n"
+REGISTER_V3 = """### 2.1 Hardware set
+
+| ID | Item | Data | Status |
+|---|---|---|---|
+| H-01 | **Bolt, stopped joints.** M6 x 16 | data | DECIDED |
+| H-04 | **Joint gasket.** PORON | data | source |
+
+**Part numbers**
+
+| Item | Part number | Name · Vietnamese | Class | Status |
+|---|---|---|---|---|
+| H-01 | **838001** | HARDWARE - SOCKET HEAD BOLT - M6 X 16 · Bulong | bought | PROPOSED |
+| H-04 | **848001** | HARDWARE - JOINT GASKET - 8 X 3.97 · Gioang | bought by length | PROPOSED |
+| H-04 | **848002** | HARDWARE - JOINT GASKET - 8 X 9.53 · Gioang | bought by length | PROPOSED |
+"""
+
+
+class WallAndRegisterV3(unittest.TestCase):
+    def test_wall_classes_cut_rows_and_mass_totals(self):
+        wall = WALL_HDR + (
+            "0,210101,WALL - PANEL ASSY - SIDE LOWER - LH,,BS,see parts below,1,pc,,,,11.351,calculation,CAD,\n"
+            "1,211101,WALL - PANEL FRAME - SIDE LOWER - LH,,MP,\"aluminium tube 20 x 40 x 1.2, finish mill (D-79)\",1,pc,,,3.307,3.307,calculation,CAD,\n"
+            "2,,RAIL - BOTTOM (cut length),,cut,aluminium tube,1,pc,1489.74,,0.554,0.554,calculation,CAD,\n"
+            "1,211501,WALL - CAVITY FILL - SIDE LOWER - LH,,MP,PET fill 40 mm,4,pc,,,,1.901,calculation,CAD,\n"
+            "1,838001,CAPTIVE BOLT - M6 x 16,,PI,steel 8.8 zinc,7,pc,,,0.007,0.049,source,register H-01,\n")
+        parts, _, _, fails, _ = run({WALL: wall, bom.REGISTER: REGISTER_V3})
+        self.assertEqual(fails, [])
+        by = {r["part_number"]: r for r in parts}
+        self.assertEqual(by["210101"]["make_buy"], "assembly")          # BS is a bonded subassembly
+        self.assertEqual(by["211101"]["make_buy"], "make")
+        self.assertNotIn("", by)                                         # the cut row is not a BOM line
+        self.assertAlmostEqual(by["211501"]["mass_each_kg"], 1.901 / 4)  # mass each from the total
+        self.assertEqual(by["838001"]["make_buy"], "buy")
+
+    def test_register_item_column_and_two_numbers_for_one_id(self):
+        _, _, register, _, missing = run({bom.REGISTER: REGISTER_V3})
+        self.assertEqual(sorted(i["part_number"] for i in register), ["838001", "848001", "848002"])
+        self.assertEqual({i["id"] for i in register}, {"H-01", "H-04"})
+        self.assertTrue(all(i["name"].startswith("HARDWARE") for i in register), register)
+        self.assertNotIn("Joints register", missing)                     # every ID has a number
+
+    def test_register_number_named_differently_is_not_a_duplicate(self):
+        a = door("838001,BOLT M6 X 16,,bought,steel,4,0.007,source,DRAFT,x,\n")
+        b = door("838001,CAPTIVE SOCKET SCREW M6,,bought,steel,2,0.007,source,DRAFT,x,\n")
+        _, _, _, fails, _ = run({FRONT: a, FRONT.replace("360001_P01_FRONT-DOOR-UNIT", "360002_P01_FIXED"): b, bom.REGISTER: REGISTER_V3})
+        self.assertFalse(any(f.startswith("duplicate") for f in fails), fails)
+
+    def test_unnumbered_hardware_fails_once(self):
+        wall = WALL_HDR + "1,,RIVNUT - M6,,PI,aluminium 5056,9,pc,,,0.004,0.036,source,register H-03,\n"
+        _, _, _, fails, _ = run({WALL: wall, bom.REGISTER: REGISTER_V3})
+        self.assertEqual(len(fails), 1, fails)
+        self.assertTrue(fails[0].startswith("no part number"), fails)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
