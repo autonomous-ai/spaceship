@@ -16,12 +16,17 @@ Options (--arg KEY=VALUE):
     save=1            save to the Fusion cloud: Default Project / FocusPod v2
                       (refuses if a file of the same name is already there)
     export=1          export .f3d and STEP into the repo, then re-read the STEP
-                      in a new document and compare bounding boxes
+                      in a new document and compare bounding boxes (runs
+                      before save=1)
+    export_active=1   no build: re-export the open, unmodified proof document
 
-Part coordinate system (right-handed, mm): origin O = rear-bottom-outer corner
-of the frame. +X along the wall toward the pod front (door side), +Y from the
-outer face into the pod, +Z up. Datums: A = outer face (Y = 0), B = bottom
-face (Z = 0), C = rear face (X = 0). The RH frame is the mirror image.
+Part coordinate system (right-handed, mm), shown for the left-hand (LH) wall:
+origin O = front-bottom corner of the frame's outer face. +X along the wall
+toward the back of the pod, +Y outward (toward the skin), +Z up. So Fusion's
+"Front" view looks at the frame from inside the pod. Datums: A = frame outer
+face (Y = 0, the skin side), B = bottom face (Z = 0), C = front face (X = 0);
+all three meet at O. The frame sits in Y -20..0, the skin in Y 0..3. The RH
+frame is the mirror image.
 
 Every number in PARAMS carries its status (SOURCE, CALCULATION, ASSUMPTION,
 PROPOSED, HOLD) in its comment, which Fusion shows in the parameters dialog.
@@ -329,16 +334,18 @@ def step1_document(app):
 X = adsk.core.Vector3D.create(1, 0, 0)
 Y = adsk.core.Vector3D.create(0, 1, 0)
 Z = adsk.core.Vector3D.create(0, 0, 1)
+INWARD = adsk.core.Vector3D.create(0, -1, 0)   # frame depth runs from Y = 0 to -tube_size
 
 
 def stile(design, key, x_expr, label):
-    """Vertical tube: section on the XY plane, extruded up by frame_height."""
+    """Vertical tube: section on the XY plane (outer face on datum A, Y = 0),
+    extruded up by frame_height."""
     comp = find_component(design, key)
     T, t = pval(design, "tube_size"), pval(design, "tube_wall")
-    x0 = 0.0 if x_expr is None else design.userParameters.itemByName("frame_width").value * 10 - T
+    x0 = 0.0 if x_expr is None else pval(design, "frame_width") - T
     sk = comp.sketches.add(comp.xYConstructionPlane)
     sk.name = "SECTION - %s TUBE" % label
-    tube_section(sk, (x0, 0, 0), X, Y, T, t, x_expr, None)
+    tube_section(sk, (x0, 0, 0), X, INWARD, T, t, x_expr, None)
     msg = check_sketch(sk)
     ext_in = comp.features.extrudeFeatures.createInput(
         ring_profile(sk), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
@@ -357,7 +364,7 @@ def rail(design, key, z_expr, z_mm, label):
     T, t = pval(design, "tube_size"), pval(design, "tube_wall")
     sk = comp.sketches.add(comp.yZConstructionPlane)
     sk.name = "SECTION - %s TUBE" % label
-    tube_section(sk, (0, 0, z_mm), Y, Z, T, t, None, z_expr)
+    tube_section(sk, (0, 0, z_mm), INWARD, Z, T, t, None, z_expr)
     msg = check_sketch(sk)
     ext_in = comp.features.extrudeFeatures.createInput(
         ring_profile(sk), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
@@ -378,16 +385,16 @@ def report_bodies(design, keys):
             print("  %-34s %s" % (b.name, fmt_box(bbox_mm(b))))
 
 
-def step2_stile_rear(design):
-    body, msg = stile(design, "stile_rear", None, "STILE REAR")
-    print("step 2: rear stile.", msg)
-    report_bodies(design, ["stile_rear"])
-
-
-def step3_stile_front(design):
-    body, msg = stile(design, "stile_front", "frame_width - tube_size", "STILE FRONT")
-    print("step 3: front stile.", msg)
+def step2_stile_front(design):
+    body, msg = stile(design, "stile_front", None, "STILE FRONT")
+    print("step 2: front stile (on datums A, B, C).", msg)
     report_bodies(design, ["stile_front"])
+
+
+def step3_stile_rear(design):
+    body, msg = stile(design, "stile_rear", "frame_width - tube_size", "STILE REAR")
+    print("step 3: rear stile.", msg)
+    report_bodies(design, ["stile_rear"])
 
 
 def step4_rails(design):
@@ -425,8 +432,11 @@ def hole_centres(body, dia_mm, axis):
 
 
 def hole_row(design, key, plane_base, plane_offset, pt_model, dims, count_expr, extent_expr,
-             pattern_axis, label):
-    """One parametric hole through both tube walls, patterned along an axis."""
+             pattern_axis, label, reverse=False):
+    """One parametric hole through both tube walls, patterned along an axis.
+    The hole starts on the entry plane (the bolt-head side) and runs
+    tube_size deep; reverse=True drills along the plane normal instead of
+    against it."""
     comp = find_component(design, key)
     body = comp.bRepBodies.item(0)
     planes = comp.constructionPlanes
@@ -445,6 +455,8 @@ def hole_row(design, key, plane_base, plane_offset, pt_model, dims, count_expr, 
     hin = holes.createSimpleInput(vi("hole_dia"))
     hin.setPositionBySketchPoint(pt)
     hin.setDistanceExtent(vi("tube_size"))
+    if reverse:
+        hin.isDefaultDirection = False
     hin.participantBodies = [body]
     hf = holes.add(hin)
     hf.name = "HOLE - M6 CLEARANCE - %s" % label
@@ -464,13 +476,13 @@ def step5_rail_holes(design):
     msgs = []
     # top rail: bolts come down from the upper frame; entry face = top face Z = frame_height
     b_top, m = hole_row(design, "rail_top", lambda c: c.xYConstructionPlane, "frame_height",
-                        (e, T / 2, H), [(X, "hole_edge_dist"), (Y, "tube_size / 2")],
+                        (e, -T / 2, H), [(X, "hole_edge_dist"), (Y, "tube_size / 2")],
                         "rail_hole_count", "frame_width - 2 * hole_edge_dist",
                         lambda c: c.xConstructionAxis, "TOP RAIL TO UPPER FRAME")
     msgs.append(m)
     # bottom rail: bolts go down into the base; entry face = top face Z = tube_size
     b_bot, m = hole_row(design, "rail_bottom", lambda c: c.xYConstructionPlane, "tube_size",
-                        (e, T / 2, T), [(X, "hole_edge_dist"), (Y, "tube_size / 2")],
+                        (e, -T / 2, T), [(X, "hole_edge_dist"), (Y, "tube_size / 2")],
                         "rail_hole_count", "frame_width - 2 * hole_edge_dist",
                         lambda c: c.xConstructionAxis, "BOTTOM RAIL TO BASE")
     msgs.append(m)
@@ -484,12 +496,14 @@ def step5_rail_holes(design):
 
 def step6_stile_holes(design):
     T, e, dia = pval(design, "tube_size"), pval(design, "hole_edge_dist"), pval(design, "hole_dia")
-    # rear stile: bolts go from the frame bay (front face X = tube_size) back into
-    # the back wall frame; entry face = front face of the stile
-    b, m = hole_row(design, "stile_rear", lambda c: c.yZConstructionPlane, "tube_size",
-                    (T, T / 2, e), [(Y, "tube_size / 2"), (Z, "hole_edge_dist")],
+    W = pval(design, "frame_width")
+    # rear stile: bolts go from the frame bay through the stile into the back
+    # wall frame; entry face = the stile's bay-side face, X = frame_width - tube_size
+    b, m = hole_row(design, "stile_rear", lambda c: c.yZConstructionPlane,
+                    "frame_width - tube_size",
+                    (W - T, -T / 2, e), [(Y, "tube_size / 2"), (Z, "hole_edge_dist")],
                     "stile_hole_count", "frame_height - 2 * hole_edge_dist",
-                    lambda c: c.zConstructionAxis, "REAR STILE TO BACK WALL")
+                    lambda c: c.zConstructionAxis, "REAR STILE TO BACK WALL", reverse=True)
     print("step 6: rear stile holes.", m)
     c = hole_centres(b, dia, "x")
     print("  %-34s %d holes (expect %d), centres Y,Z: %s" % (
@@ -507,26 +521,27 @@ def step7_skin(design):
     W, H, ov = pval(design, "frame_width"), pval(design, "frame_height"), pval(design, "skin_overhang_rear")
     sk = comp.sketches.add(comp.xZConstructionPlane)
     sk.name = "OUTLINE - ACP SKIN"
-    a, b = sk.modelToSketchSpace(p3(-ov, 0, 0)), sk.modelToSketchSpace(p3(W, 0, H))
+    # front-bottom corner on the origin (datums B, C); runs back past the frame
+    # by skin_overhang_rear (inside skin_width)
+    a, b = sk.modelToSketchSpace(p3(0, 0, 0)), sk.modelToSketchSpace(p3(W + ov, 0, H))
     rect = sk.sketchCurves.sketchLines.addTwoPointRectangle(a, b)
     ensure_hv(sk, rect)
     pts = rect_points(rect)
     c0 = nearest_point(pts, a)
-    cx = nearest_point(pts, sk.modelToSketchSpace(p3(W, 0, 0)))
-    cz = nearest_point(pts, sk.modelToSketchSpace(p3(-ov, 0, H)))
+    cx = nearest_point(pts, sk.modelToSketchSpace(p3(W + ov, 0, 0)))
+    cz = nearest_point(pts, sk.modelToSketchSpace(p3(0, 0, H)))
     ax, _ = sketch_axis(sk, X)
     az, _ = sketch_axis(sk, Z)
     add_dim(sk, c0, cx, ax, "skin_width", (0, -1.0) if ax == "x" else (-1.0, 0))
     add_dim(sk, c0, cz, az, "skin_height", (0, -1.0) if az == "x" else (-1.0, 0))
-    add_dim(sk, c0, sk.originPoint, ax, "skin_overhang_rear", (0, -2.0) if ax == "x" else (-2.0, 0))
-    align_to_origin(sk, c0, az)
+    sk.geometricConstraints.addCoincident(c0, sk.originPoint)
     msg = check_sketch(sk)
     prof = sk.profiles.item(0)
     ext_in = comp.features.extrudeFeatures.createInput(
         prof, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
-    # extrude away from the frame, toward -Y (outside)
+    # extrude away from the frame, toward +Y (outside)
     nx = sk.xDirection.crossProduct(sk.yDirection)
-    direction = (adsk.fusion.ExtentDirections.PositiveExtentDirection if nx.y < 0
+    direction = (adsk.fusion.ExtentDirections.PositiveExtentDirection if nx.y > 0
                  else adsk.fusion.ExtentDirections.NegativeExtentDirection)
     ext_in.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("skin_thk")), direction)
     ext = comp.features.extrudeFeatures.add(ext_in)
@@ -689,11 +704,19 @@ def step_export(app, design):
     step = "%s/%s" % (root_dir, STEP_REL)
     if not em.execute(em.createFusionArchiveExportOptions(f3d, design.rootComponent)):
         raise RuntimeError("f3d export failed")
+    # Fusion's API writes STEP in cm even with the design in mm and the units
+    # set again right before the export (checked 2026-10-31, Fusion 2706.1.17).
+    # The file declares cm, so every CAD reads it at true size; keep it as is.
+    design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
     if not em.execute(em.createSTEPExportOptions(step, design.rootComponent)):
         raise RuntimeError("STEP export failed")
+    with open(step, "r", encoding="utf-8", errors="replace") as fh:
+        text = fh.read().replace(" ", "")
+    declared = "cm" if "SI_UNIT(.CENTI.,.METRE.)" in text else (
+        "mm" if "SI_UNIT(.MILLI.,.METRE.)" in text else "other")
     box = root_box(design)
     print("export: %s" % F3D_REL)
-    print("export: %s" % STEP_REL)
+    print("export: %s  (STEP length unit: %s, declared in the file)" % (STEP_REL, declared))
     print("  model bounding box (assembly):  %s" % fmt_box(box))
     # re-read the STEP in a new document and compare
     src_doc = app.activeDocument
@@ -714,15 +737,28 @@ def step_export(app, design):
 
 def run(_context):
     app = adsk.core.Application.get()
+    if ARGS.get("export_active") == "1":
+        # re-export the open, unmodified proof document (no rebuild)
+        design = adsk.fusion.Design.cast(app.activeProduct)
+        if design is None or design.rootComponent.partNumber != PARTS["assy"][0] or \
+                app.activeDocument.isModified:
+            raise RuntimeError("the active document is not the unmodified proof part")
+        print("re-export from '%s' (version %s)" % (
+            app.activeDocument.name,
+            app.activeDocument.dataFile.versionNumber if app.activeDocument.dataFile else "unsaved"))
+        step_export(app, design)
+        return
     doc, design = step1_document(app)
-    steps = [None, None, step2_stile_rear, step3_stile_front, step4_rails, step5_rail_holes,
+    steps = [None, None, step2_stile_front, step3_stile_rear, step4_rails, step5_rail_holes,
              step6_stile_holes, step7_skin, step8_materials, step9_checks]
     last = min(STOP_AFTER, len(steps) - 1)
     for n in range(2, last + 1):
         steps[n](design)
     print("done through step %d" % last)
     if last == len(steps) - 1:
-        if ARGS.get("save") == "1":
-            step_save(app, doc)
+        # export before saving: a STEP export started while Fusion is still
+        # uploading a fresh save fails (seen 2026-10-31, Fusion 2706.1.17)
         if ARGS.get("export") == "1":
             step_export(app, design)
+        if ARGS.get("save") == "1":
+            step_save(app, doc)

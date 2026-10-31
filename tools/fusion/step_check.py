@@ -3,12 +3,17 @@
 
     python3 tools/fusion/step_check.py FILE.step [--expect "xmin,ymin,zmin,xmax,ymax,zmax"]
 
-The bounding box is taken from every VERTEX_POINT, so it is exact for
-straight-edged parts. It ignores assembly transforms, so it is only right when
-all components sit at the origin (true for the proof part; the tool says so
-when it finds a transform). Exit 1 if --expect is given and differs by more
-than 0.01 mm, or if the length unit is not millimetre. Standard library only.
+It reports the length unit the file declares (Fusion's API writes STEP in cm
+even when the design is in mm; that is exact, since every CAD reads the unit
+from the file) and prints the bounding box in mm by applying that unit. The
+box is taken from every VERTEX_POINT, so it is exact for straight-edged parts.
+It ignores assembly transforms, so it is only right when all components sit
+at the origin (true for the proof part; the tool says so when it finds a
+transform). Exit 1 if --expect is given and differs by more than 0.01 mm, or
+if no length unit is declared. Standard library only. It never edits the file.
 """
+
+UNIT_MM = {".MILLI.": 1.0, ".CENTI.": 10.0, "$": 1000.0, ".DECI.": 100.0}
 
 import argparse
 import re
@@ -33,10 +38,24 @@ def main(argv=None):
 
     schema = re.search(r"FILE_SCHEMA\s*\(\s*\(\s*'([^']+)'", text)
     print("schema:   %s" % (schema.group(1) if schema else "?"))
-    milli = any("SI_UNIT(.MILLI.,.METRE.)" in v.replace(" ", "") for v in ents.values())
-    inch = any("'INCH'" in v.upper() for v in ents.values())
-    unit = "mm" if milli and not inch else ("inch" if inch else "other")
-    print("length:   %s" % unit)
+    # the length unit used by the geometry context(s)
+    scale, unit = None, None
+    for v in ents.values():
+        flat = v.replace(" ", "")
+        if "GLOBAL_UNIT_ASSIGNED_CONTEXT" in flat and "GEOMETRIC_REPRESENTATION_CONTEXT" in flat:
+            refs = re.search(r"GLOBAL_UNIT_ASSIGNED_CONTEXT\(\(([^)]*)\)\)", flat)
+            for ref in (refs.group(1).split(",") if refs else []):
+                u = ents.get(int(ref.strip("#")), "").replace(" ", "")
+                m = re.search(r"LENGTH_UNIT\(\).*SI_UNIT\(([^,]*),\.METRE\.\)", u)
+                if m:
+                    scale, unit = UNIT_MM.get(m.group(1)), m.group(1)
+                elif "LENGTH_UNIT" in u and "CONVERSION_BASED_UNIT" in u:
+                    unit = "conversion-based (e.g. inch): not handled"
+    names = {".MILLI.": "mm", ".CENTI.": "cm", "$": "m", ".DECI.": "dm"}
+    print("length:   %s, declared in the file" % names.get(unit, unit))
+    if scale is None:
+        print("no SI length unit found for the geometry")
+        return 1
     products = sorted({re.match(r"PRODUCT\s*\(\s*'([^']*)'", v).group(1)
                        for v in ents.values() if re.match(r"PRODUCT\s*\(", v)})
     print("products: %d" % len(products))
@@ -57,16 +76,15 @@ def main(argv=None):
     if not pts:
         print("no vertices found")
         return 1
-    box = [min(p[i] for p in pts) for i in range(3)] + [max(p[i] for p in pts) for i in range(3)]
+    box = [min(p[i] for p in pts) * scale for i in range(3)] + \
+          [max(p[i] for p in pts) * scale for i in range(3)]
     print("vertices: %d" % len(pts))
-    print("bbox mm:  X %.3f..%.3f  Y %.3f..%.3f  Z %.3f..%.3f" % (
-        box[0], box[3], box[1], box[4], box[2], box[5]))
+    print("bbox mm:  X %.3f..%.3f  Y %.3f..%.3f  Z %.3f..%.3f  (file values x %g)" % (
+        box[0], box[3], box[1], box[4], box[2], box[5], scale))
     if transforms:
-        ident = all(re.search(r"\(\s*0\.?0*E?\+?0*\s*,\s*0\.?0*E?\+?0*\s*,\s*0\.?0*E?\+?0*\s*\)", t)
-                    for t in transforms)
         print("note:     %d assembly transforms found; the box assumes components at the origin"
               % len(transforms))
-    rc = 0 if unit == "mm" else 1
+    rc = 0
     if o.expect:
         want = [float(x) for x in o.expect.split(",")]
         diff = max(abs(a - b) for a, b in zip(box, want))

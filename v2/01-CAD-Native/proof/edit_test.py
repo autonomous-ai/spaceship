@@ -11,9 +11,10 @@ What it does, and prints as a Markdown record:
   2. Before: bounding box, volume and hole centres of every body.
   3. Edit: frame_width 1470 -> 1170 mm and rail_hole_pitch_max 500 -> 300 mm,
      rebuild, check the timeline again, measure again.
-  4. Which bodies changed. Expected: front stile moves, the three rails get
-     shorter, the two drilled rails get 5 holes at the new pitch, the skin
-     gets narrower; the rear stile does not change.
+  4. Which bodies changed. Expected: the rear stile moves (X runs from the
+     front datum C toward the back), the three rails get shorter, the two
+     drilled rails get 5 holes at the new pitch, the skin gets narrower; the
+     front stile (on the datums) does not change.
   5. Revert both parameters, rebuild, and confirm every body is back to the
      "before" values. Then close the copy without saving.
 """
@@ -25,10 +26,10 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 F3D_REL = "v2/01-CAD-Native/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD.f3d"
 EDITS = [("frame_width", "1170 mm"), ("rail_hole_pitch_max", "300 mm")]
 HOLE_DIA_MM = 6.6
-EXPECT_CHANGED = {"WALL - FRAME STILE - FRONT - TUBE", "WALL - FRAME RAIL - BOTTOM - TUBE",
+EXPECT_CHANGED = {"WALL - FRAME STILE - REAR - TUBE", "WALL - FRAME RAIL - BOTTOM - TUBE",
                   "WALL - FRAME RAIL - TOP - TUBE", "WALL - FRAME RAIL - MID - TUBE",
                   "WALL - SKIN ACP 3 - SIDE LOWER - LH - SHEET"}
-EXPECT_SAME = {"WALL - FRAME STILE - REAR - TUBE"}
+EXPECT_SAME = {"WALL - FRAME STILE - FRONT - TUBE"}
 
 
 def mm(v):
