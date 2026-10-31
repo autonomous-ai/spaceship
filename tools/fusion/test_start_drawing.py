@@ -35,7 +35,7 @@ class FakeFusion:
                  base_view_after=4, start_cmd=sd.IDLE_CMD, unsaved=0, opened=False,
                  locked=False, ax_windows=3, modified=False, fusion_cancel_works=True,
                  mcp_dies_after_queue=False, ax_works=True, ax_sees_dialogs=True,
-                 folder_bad=(), folder_others=(), drawing_exists=False):
+                 folder_bad=(), folder_others=(), drawing_exists=False, open_warning=""):
         self.opened = opened
         self.cmd = start_cmd
         self.unsaved = unsaved
@@ -54,6 +54,7 @@ class FakeFusion:
         self.folder_bad = list(folder_bad)
         self.folder_others = list(folder_others)
         self.drawing_exists = drawing_exists
+        self.open_warning = open_warning
         self.folder_checks = 0
         self.queued = False
         self.pending = []          # (polls left, action)
@@ -85,8 +86,8 @@ class FakeFusion:
             self.ran.append(mode)
             if mode == "close":
                 return True, "run_script: closed 'X'"
-            return True, ("run_script: opened 'X' (version 1)" if self.opened
-                          else "run_script: activated 'X'")
+            return True, self.open_warning + ("run_script: opened 'X' (version 1)" if self.opened
+                                              else "run_script: activated 'X'")
         if sd.CREATE_CMD in source and "execute()" in source:
             self.ran.append("queue")
             if self.modified:
@@ -202,6 +203,13 @@ class SequenceTests(unittest.TestCase):
         self.assertIn("'A1' + \"ISOSheetSize\"", f.saved[0])
         self.assertIn("(841, 594)", f.saved[0])                 # read back and checked
         self.assertTrue(any("pressed Cancel in Base View" in m for m in logs))
+
+    def test_a_design_opened_after_a_runner_warning_is_still_closed_again(self):
+        # live 2026-10-31: the open step printed "1 entry ... could not be read;
+        # skipped" first, and the design was left open
+        f = FakeFusion(opened=True, open_warning="run_script: 1 entry of F could not be read (positions 40); skipped\n")
+        self.assertEqual(go(f)[0], 0)
+        self.assertEqual(f.ran, ["open", "queue", "save", "close"])
 
     def test_a_design_it_opened_is_closed_again(self):
         f = FakeFusion(opened=True)

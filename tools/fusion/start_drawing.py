@@ -484,7 +484,9 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     if not ok:
         raise StartError("couldn't open %s: %s" % (design, out))
     log((out or "").strip())
-    opened_here = (out or "").startswith("run_script: opened")
+    # any line: the runner may print a warning first (live 2026-10-31: "1 entry
+    # ... could not be read; skipped", and the design was then left open)
+    opened_here = any(line.startswith("run_script: opened") for line in (out or "").splitlines())
     status["opened_here"] = opened_here
     ok, out = steps.run(QUEUE_SCRIPT % {"project": project, "design": design, "cmd": CREATE_CMD})
     if not ok:
