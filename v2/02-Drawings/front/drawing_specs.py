@@ -39,7 +39,8 @@ def _evaluate(script):
     exec(compile(open(g["__file__"], encoding="utf-8").read(), g["__file__"], "exec"), g)
     lib = g["L"]
     params, _path, _rev = lib.load_skeleton_params(REPO)
-    lists = [params, lib.LIB_PARAMS, lib.GLASS_PARAMS] + ([g["OWN"]] if "OWN" in g else [])
+    lists = [params, lib.LIB_PARAMS, lib.GLASS_PARAMS] + ([lib.JF_PARAMS] if "JF_PARAMS" in open(
+        g["__file__"], encoding="utf-8").read() else []) + ([g["OWN"]] if "OWN" in g else [])
     env = {"abs": abs, "sqrt": math.sqrt}
     for lst in lists:
         for name, expr, *_ in lst:
@@ -173,7 +174,12 @@ SPECS = {
                        "1:10", "A2", [("DOC TYPE", "ASSEMBLY DRAWING")]),
     },
 }
-ORDER = ["door_unit", "leaf", "kick"]
+# the other sub-assemblies' specs, when their files are on this branch
+for _part in ("drawing_specs_glass.py", "drawing_specs_decor.py"):
+    _path = os.path.join(HERE, _part)
+    if os.path.exists(_path):
+        exec(compile(open(_path, encoding="utf-8").read(), _path, "exec"), globals())
+ORDER = [_k for _k in ("door_unit", "leaf", "kick", "fixed_unit", "pane", "uprof", "dr", "dt", "dl") if _k in SPECS]
 
 for _k, _sp in SPECS.items():
     _sp["images"] = image_places(_sp["sheet"])

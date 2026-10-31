@@ -407,6 +407,8 @@ def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
             raise RuntimeError("%s: CAD name %r does not start with %r" % (pn, comps[0].name, name))
         if mass == "cad":
             mass = round(comp_mass(comps[0]), 3)
+        if mass is None:              # a sub-assembly row: its parts carry the mass
+            mass, mstat = "", mstat or "sum of its parts (rows below)"
         out.append([pn, name, vn, typ, mat, qty, mass, mstat, status, src, note])
     total = sum((r[5] if isinstance(r[5], int) else 1) * r[6] for r in out if r[0] != root_pn and r[6] != "")
     for r in out:
@@ -542,3 +544,205 @@ def g_outline(d):
 def g_band(d):
     """C-shaped band between the visible outline and offset d, open along the free edge."""
     return g_outline("0 mm") + [g_TL(d), g_TR(d), g_K(d), g_BR(d), g_BL(d)]
+
+
+def circles(design, comp, plane, plane_axes, fixed, name, centers, dia_expr):
+    """Circles on an origin plane, fully constrained: each centre dimensioned from the -sk_ref reference point along
+    both plane axes by "(coordinate expression) + sk_ref", each diameter by dia_expr. Returns the sketch."""
+    sk = comp.sketches.add(plane)
+    sk.name = name
+    third = ({"x", "y", "z"} - set(plane_axes)).pop()
+    expr_on = {}
+    for k, ax in enumerate(plane_axes):
+        expr_on[_axis_of(sk, ax)] = k
+    dims = sk.sketchDimensions
+    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+    off = ev(design, "sk_ref")
+    c = {plane_axes[0]: -off, plane_axes[1]: -off, third: fixed}
+    ref = sk.sketchPoints.add(sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM)))
+    for sa in ("x", "y"):
+        g = ref.geometry
+        dims.addDistanceDimension(sk.originPoint, ref, H if sa == "x" else V,
+                                  adsk.core.Point3D.create(g.x / 2, g.y / 2, 0)).parameter.expression = "sk_ref"
+    r = ev(design, dia_expr) / 2
+    for ea, eb in centers:
+        c = {plane_axes[0]: ev(design, ea), plane_axes[1]: ev(design, eb), third: fixed}
+        p = sk.modelToSketchSpace(adsk.core.Point3D.create(c["x"] * MM, c["y"] * MM, c["z"] * MM))
+        circ = sk.sketchCurves.sketchCircles.addByCenterRadius(p, r * MM)
+        cp = circ.centerSketchPoint
+        for sa in ("x", "y"):
+            ex = (ea, eb)[expr_on[sa]]
+            g = cp.geometry
+            dims.addDistanceDimension(ref, cp, H if sa == "x" else V,
+                                      adsk.core.Point3D.create(g.x + 0.5, g.y + 0.5, 0)).parameter.expression = \
+                "(%s) + sk_ref" % ex
+        dims.addDiameterDimension(circ, adsk.core.Point3D.create(p.x + r * MM, p.y + r * MM, 0)).parameter.expression = dia_expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + name)
+    return sk
+
+
+# J-FRONT-01 (joints register 3.7): decor block to side wall, 3 bolts per side panel on the panel's front member
+# centre line, the end bolts bolt_edge_inset from each panel end; the rivnuts sit in the decor's aluminium back plate
+JF_PARAMS = [
+    ("jf_x", "1224 mm", "mm", "source", "joints register J-FRONT-01: the side panel's front member centre line, X -/+1224"),
+    ("jf_hole", "9.53 mm", "mm", "source", "rivnut 838003 (Sherex CAH3-610-4.2) hole 9.53 +0.10/0 (hardware selection A5; joints register H-03)"),
+    ("jf_z1", "panel_z0 + bolt_edge_inset", "mm", "calculation", "lower panel, bottom bolt (220 rule)"),
+    ("jf_z2", "panel_z0 + side_h / 2", "mm", "calculation", "lower panel, middle bolt"),
+    ("jf_z3", "panel_z0 + side_h - bolt_edge_inset", "mm", "calculation", "lower panel, top bolt"),
+    ("jf_z4", "panel_z0 + side_h + seam_gap + bolt_edge_inset", "mm", "calculation", "upper panel, bottom bolt"),
+    ("jf_z5", "panel_z0 + side_h + seam_gap + side_h / 2", "mm", "calculation", "upper panel, middle bolt"),
+    ("jf_z6", "panel_z0 + 2 * side_h + seam_gap - bolt_edge_inset", "mm", "calculation", "upper panel, top bolt"),
+]
+
+
+# ---------------------------------------------------------------- ACP skin panels laid flat
+def skin_panels(body, probe_mm=60.0):
+    """The skin's outside faces as flat panels: [(name, area_mm2, [loop, ...])] with each loop a list of (u, v) in mm.
+
+    The skin is a shell, so each planar outside face is one ACP panel, joined to its neighbours with 45 degree mitred
+    edges as in v1 ("ghép mí 45°"); the panel's outline is the face's outline on the outside surface. A face is on the
+    outside when a short ray along its outward normal does not hit the skin again (an inside face looks across the
+    hollow at the opposite wall). u runs along the face's longest outer edge, v square to it, origin at its corner."""
+    import math
+    root = body.parentComponent
+    out = []
+    for i, fc in enumerate(body.faces):
+        if fc.geometry.surfaceType != adsk.core.SurfaceTypes.PlaneSurfaceType:
+            continue
+        p = fc.pointOnFace
+        _ok, n = fc.evaluator.getNormalAtPoint(p)
+        o = adsk.core.Point3D.create(p.x + n.x * 0.01, p.y + n.y * 0.01, p.z + n.z * 0.01)
+        hp = adsk.core.ObjectCollection.create()
+        hits = root.findBRepUsingRay(o, n, adsk.fusion.BRepEntityTypes.BRepFaceEntityType, -1.0, False, hp)
+        again = []
+        for k in range(hits.count if hits else 0):
+            h, q = hits.item(k), hp.item(k) if k < hp.count else None
+            if h.body == body and h != fc and q is not None and q.distanceTo(o) * 10 < probe_mm:
+                again.append(h)
+        if again:
+            continue
+        loops = []
+        edge0 = None
+        for lp in fc.loops:
+            pts = []
+            for coedge in lp.coEdges:
+                e = coedge.edge
+                a, b = (e.startVertex.geometry, e.endVertex.geometry) if not coedge.isOpposedToEdge else \
+                       (e.endVertex.geometry, e.startVertex.geometry)
+                pts.append(a)
+                if lp.isOuter and (edge0 is None or e.length > edge0[2]):
+                    edge0 = (a, b, e.length)
+            loops.append((lp.isOuter, pts))
+        a, b, _l = edge0
+        ux = adsk.core.Vector3D.create(b.x - a.x, b.y - a.y, b.z - a.z)
+        ux.normalize()
+        vy = n.crossProduct(ux)
+        vy.normalize()
+        flat = []
+        for outer, pts in sorted(loops, key=lambda t: not t[0]):
+            flat.append([((q.x - a.x) * ux.x + (q.y - a.y) * ux.y + (q.z - a.z) * ux.z,
+                          (q.x - a.x) * vy.x + (q.y - a.y) * vy.y + (q.z - a.z) * vy.z) for q in pts])
+        flat = [[(u * 10.0, v * 10.0) for u, v in lp] for lp in flat]
+        out.append(("F%02d" % (i + 1), fc.area * 100.0, flat, (round(n.x, 3), round(n.y, 3), round(n.z, 3))))
+    return out
+
+
+def write_panels_dxf(path, panels, gap=60.0, row_w=3000.0):
+    """All panels side by side on layer CUT, each with a TEXT label on layer MARK (name, size, outward normal)."""
+    out = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "9", "$MEASUREMENT", "70", "1",
+           "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    x0 = y0 = 0.0
+    row_h = 0.0
+    placed = []
+    for name, area, loops, nrm in panels:
+        us = [u for lp in loops for u, _v in lp]
+        vs = [v for lp in loops for _u, v in lp]
+        w, h = max(us) - min(us), max(vs) - min(vs)
+        if x0 > 0 and x0 + w > row_w:
+            x0, y0, row_h = 0.0, y0 + row_h + gap * 2, 0.0
+        dx, dy = x0 - min(us), y0 - min(vs)
+        for lp in loops:
+            for i in range(len(lp)):
+                (a, b), (c, d) = lp[i], lp[(i + 1) % len(lp)]
+                out += ["0", "LINE", "8", "CUT", "10", "%.3f" % (a + dx), "20", "%.3f" % (b + dy), "30", "0.0",
+                        "11", "%.3f" % (c + dx), "21", "%.3f" % (d + dy), "31", "0.0"]
+        label = "%s %.0f x %.0f n%s" % (name, w, h, nrm)
+        out += ["0", "TEXT", "8", "MARK", "10", "%.3f" % x0, "20", "%.3f" % (y0 - 25.0), "30", "0.0", "40", "15.0",
+                "1", label]
+        placed.append((name, round(w, 1), round(h, 1), round(area / 1e6, 4)))
+        x0 += w + gap
+        row_h = max(row_h, h)
+    out += ["0", "ENDSEC", "0", "EOF"]
+    with open(path, "w", encoding="ascii", errors="replace") as fh:
+        fh.write("\n".join(out) + "\n")
+    return placed
+
+
+# ---- one Fusion run per design (PM fair-share rule 2026-11-01): build, save, export, pictures and the edit test
+# in the same run, so each team keeps at most 3 runs in the queue
+
+VIEWS = {"front": "FrontViewOrientation", "top": "TopViewOrientation", "left": "LeftViewOrientation",
+         "right": "RightViewOrientation", "iso-top-right": "IsoTopRightViewOrientation"}
+
+
+def save_doc(app, desc):
+    """Save the active document as a new version (it was saved once when the runner made it)."""
+    doc = app.activeDocument
+    if not doc.save(desc):
+        raise RuntimeError("could not save %r" % doc.name)
+    print("saved %r: %s" % (doc.name, desc))
+
+
+def take_shots(app, root_dir, doc, shots, size=(1600, 1000)):
+    """Pictures of a design: shots = [(repo-relative .png, view name in VIEWS)]."""
+    doc.activate()
+    adsk.doEvents()
+    vp = app.activeViewport
+    for rel, view in shots:
+        cam = vp.camera
+        cam.viewOrientation = getattr(adsk.core.ViewOrientations, VIEWS[view])
+        cam.isFitView = True
+        cam.isSmoothTransition = False
+        vp.camera = cam
+        vp.fit()
+        vp.refresh()
+        adsk.doEvents()
+        path = os.path.join(root_dir, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if not vp.saveAsImageFile(path, size[0], size[1]):
+            raise RuntimeError("picture failed: " + rel)
+        print("picture %s (%s)" % (rel, view))
+
+
+def load_sibling(here, filename, modname):
+    """Load another script in this folder as a module (its run() is not called)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(modname, os.path.join(here, filename))
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def run_steps(app, args, here, step, build_fn, export_fn, shots, anchors_rel=None):
+    """step build | export | post (export, pictures, edit test) | all (build, save, post).
+    The edit test runs when args has "edits" (skeleton edits "name=value;..."), on a copy of the exported f3d."""
+    doc = app.activeDocument
+    if step in ("build", "all"):
+        build_fn(app)
+    if step == "all":
+        save_doc(app, args.get("desc", "P01 build"))
+    if step in ("export", "post", "all"):
+        export_fn(app)
+    if step in ("post", "all"):
+        take_shots(app, args["repo_root"], doc, shots)
+        if args.get("edits"):
+            et = load_sibling(here, "edit_test_front.py", "edit_test_front_run")
+            et.test(app, args["repo_root"], anchors_rel, args["edits"])
+            doc.activate()
+        if doc.isModified:           # the part number stamp or the view: keep it, so --close needs no --discard
+            doc.activate()
+            save_doc(app, "P01 after the export")
+    if step not in ("build", "export", "post", "all"):
+        raise RuntimeError("unknown step " + step)
