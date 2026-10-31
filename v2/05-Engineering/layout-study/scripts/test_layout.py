@@ -8,8 +8,8 @@ from inputs import P, SOURCES, override, p  # noqa: E402
 
 STATUS_WORDS = {"confirmed", "source", "calculation", "assumption", "unverified"}
 # The decided build in this study's own parts list, at this revision (LS-01). It is over the 420 kg cap: the clip
-# and bond allowances that the sound and air check leaves out settle on the wall sample. PM ruling (S33): the cap
-# stays and this estimate stays open against it, so the total may not grow past this figure.
+# and bond allowances that the sound and air check leaves out settle on the wall sample. D-54: the cap stays and
+# this estimate stays open against it (ISS-080), so the total may not grow past this figure.
 DECIDED_KG_CEILING = 426.71
 
 
@@ -56,7 +56,7 @@ def test_decided_build_counts_and_limits():
 
 
 def test_decided_shell_follows_the_skeleton():
-    """PR #15, #16 and #17 rulings (S32): frame-to-frame back wall and ceiling, 1495 side walls, decor 205."""
+    """D-49, D-55, D-57: frame-to-frame back wall and ceiling, 1495 side walls, decor 205, 85 mm kick strip."""
     byid = {pt.pid: pt for pt in decided_parts()}
     for pid in ("W-BACK-LO", "W-BACK-UP", "C-HALF"):
         assert round(byid[pid].dims[1]) == 1207, (pid, byid[pid].dims)
@@ -67,11 +67,11 @@ def test_decided_shell_follows_the_skeleton():
     assert [round(d) for d in byid["L-CASS-SIDE-UP"].dims[:2]] == [1098, 1448], byid["L-CASS-SIDE-UP"].dims
     for pid in ("F-DL", "F-DR", "F-DT"):
         assert min(byid[pid].dims) == 205, (pid, byid[pid].dims)
-    assert round(max(byid["F-GLASS-DOOR"].dims)) == 2101, byid["F-GLASS-DOOR"].dims
+    assert round(max(byid["F-GLASS-DOOR"].dims)) == 2096, byid["F-GLASS-DOOR"].dims   # 2011 glass + 85 kick strip
 
 
 def test_decided_air_is_four_12v_fans_in_two_cartridges():
-    """PR #11 (S30): both paths in the right decor block, a riser for the exhaust; no TD-500, no old silencers."""
+    """D-51: both paths in the right decor block, a riser for the exhaust; no TD-500, no old silencers."""
     parts = decided_parts()
     air = [pt for pt in parts if pt.assy == "AIR"]
     assert sorted(pt.pid for pt in air) == ["A-CART-EXHAUST", "A-CART-SUPPLY", "A-RISER"], [pt.pid for pt in air]

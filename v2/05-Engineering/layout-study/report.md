@@ -1,22 +1,22 @@
 <!-- report.md is generated from report_template.md by scripts/run_all.py. Edit the template or the scripts, never report.md. -->
 # Spaceship layout study: weight, pallets and 2-person assembly
 
-Status words: every number carries one of confirmed, source, calculation, assumption or unverified (guideline section 10). A value the PM decided is confirmed and cites its decision: D-xx in `v2/00-Control/decision-log.md`, or the PR ruling until its log row is merged (S30 to S32 in section 10). Under AGENTS.md the PM decides and the log records it. HOLD marks a part or interface that a supplier or a sample must confirm first. Spaceship is the working name of v2 (folders keep their v2 names).
+Status words: every number carries one of confirmed, source, calculation, assumption or unverified (guideline section 10). A value the PM decided is confirmed and cites its decision, D-xx in `v2/00-Control/decision-log.md`; D-49 to D-57 come from the control pack's PR #19, not merged yet (LS-17). Under AGENTS.md the PM decides and the log records it. HOLD marks a part or interface that a supplier or a sample must confirm first. Spaceship is the working name of v2 (folders keep their v2 names).
 
 Every number below comes from the scripts in `scripts/`. `python3 scripts/run_all.py --check` proves that this report and the files in `out/` reproduce exactly. Section 10 lists the inputs, their status and their sources.
 
 ## Result
 
-1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 440 kg, and the light build 296 kg (297 kg with the fast-assembly hardware). The decided build comes to **426.7 kg** against the PM's 420 kg cap (**6.7 kg over**, open item LS-01). The sound and air check (PR #11) puts the same build at 417.5 kg in its own model, about 418. The 9.2 kg between the two is almost all in the walls and ceiling: this study carries the lining cassettes' clips and rails (9.0 kg) and the bond lines (3.9 kg), and that check leaves both out; without them this study's walls and ceiling are 3.7 kg lighter than the check's. Both are assumptions. By the PM's ruling (S33) the cap stays at 420 kg and 426.7 kg is the current estimate, open against it; two wall-sample tests settle it: weigh a real cassette with its clips, rails and bond lines per m2, and test the 25 kg/m3 fill next to the 32 kg/m3 (section 5.1).
-   - In the build: the sound study's final walls and ceiling with the 0.5 mm tray (the 0.4 mm tray would have saved 12.7 kg but cost 1 dB, D-37); 20 x 40 x 1.2 frames (save 7.5 kg against 1.5 mm, D-34); fill at 32 kg/m3 (25 kg/m3 would save 4.3 kg, but that grade has no published absorption, so D-34's lighter fill doesn't apply); back wall and ceiling frames that span frame to frame, 1,207 mm per half with 1,169 mm linings; four 12 V fans in two cartridges with the exhaust riser, all in the right decor block; and a frameless 4+4 laminated front.
-2. **Parts.** Every part is 20 kg or less except the glass. The door ships as one unit 2,101 mm long and 47.5 kg: 4+4 laminated glass (2,011 mm), a 90 mm kick strip holding the drop seal, and the hinges and pull fitted in the factory. Its hinges and lock are on HOLD until a set rated for this glass, 47.5 kg and 1176 mm is named (D-46). Two people carry it with 2 suction lifters (23.7 kg each). The fixed panel weighs 28.0 kg. Each splitter cartridge weighs 17.7 kg with its 2 fans fitted, and the riser 9.6 kg. They slide into the mounted right decor block (18.1 kg) from inside, so no lift carries the block and its air parts together (63.1 kg).
+1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 440 kg, and the light build 296 kg (297 kg with the fast-assembly hardware). The decided build comes to **426.7 kg** against the PM's 420 kg cap (**6.7 kg over**, open item LS-01, ISS-080). The sound and air check (PR #11) puts the same build at 417.5 kg in its own model, about 418. The 9.2 kg between the two is almost all in the walls and ceiling: this study carries the lining cassettes' clips and rails (9.0 kg) and the bond lines (3.9 kg), and that check leaves both out; without them this study's walls and ceiling are 3.7 kg lighter than the check's. Both are assumptions. By D-54 the cap stays at 420 kg and 426.7 kg is the current estimate, open against it; two wall-sample tests settle it: weigh a real cassette with its clips, rails and bond lines per m2, and test the 25 kg/m3 fill next to the 32 kg/m3 (section 5.1).
+   - In the build: the sound study's final walls and ceiling with the 0.5 mm tray (the 0.4 mm tray would have saved 12.7 kg but cost 1 dB, D-37); 20 x 40 x 1.2 frames (save 7.5 kg against 1.5 mm, D-34); fill at 32 kg/m3 (25 kg/m3 would save 4.3 kg, but that grade has no published absorption, so the wall sample tests it first, D-54); back wall and ceiling frames that span frame to frame, 1,207 mm per half with 1,169 mm linings; four 12 V fans in two cartridges with the exhaust riser, all in the right decor block; and a frameless 4+4 laminated front.
+2. **Parts.** Every part is 20 kg or less except the glass. The door ships as one unit 2,096 mm long and 47.5 kg: 4+4 laminated glass (2,011 mm), a kick strip 85 mm tall holding the drop seal, and the hinges and pull fitted in the factory. Its hinges and lock are on HOLD until a set rated for this glass, 47.5 kg and 1176 mm is named (D-46, D-56). Two people carry it with 2 suction lifters (23.7 kg each). The fixed panel weighs 28.0 kg. Each splitter cartridge weighs 17.7 kg with its 2 fans fitted, and the riser 9.6 kg. They slide into the mounted right decor block (18.1 kg) from inside, so no lift carries the block and its air parts together (63.1 kg).
 3. **Shipping (confirmed, D-04).** One 48 x 40 pallet and one 96 x 48 pallet, 526 kg gross, 6.7 lb/ft3. The 48 x 40 weighs 244 kg and stands 1,641 mm high. The 96 x 48 weighs 281 kg and stands 971 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
 4. **Assembly (confirmed changes, D-08).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **126 min** (4.2 person-hours): 78 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
-5. **Decisions.** Every layout choice is confirmed by a decision; the table below cites it. The decision log doesn't yet carry the rulings on decor depth, wall depth, the frame-to-frame back wall and ceiling, and the 12 V fans (LS-17).
+5. **Decisions.** Every layout choice is confirmed by a decision; the table below cites it. D-49 to D-57 are in the control pack's open PR #19 (LS-17).
 
 ## Decisions
 
-Decided specs, each citing the decision log (`v2/00-Control/decision-log.md`, D-01 to D-48 as merged) or, for rulings made on a PR after it, that PR's ruling until its log row is merged (sources S30 to S32 in section 10).
+Decided specs, each citing the decision log (`v2/00-Control/decision-log.md`): D-01 to D-48 as merged, D-49 to D-57 as the control pack's PR #19 adds them.
 
 | Decision | Status | Log |
 | --- | --- | --- |
@@ -25,17 +25,17 @@ Decided specs, each citing the decision log (`v2/00-Control/decision-log.md`, D-
 | Ship on one 48 x 40 and one 96 x 48 pallet. Don't split the decor blocks: a seam across the faceted front breaks the look rule, and a third pallet costs more than it saves | confirmed | D-04 |
 | Thin floor inside an aluminium base band (viền chân); the band drops to a 20 mm threshold across the door only. Castors are a possible later accessory, not part of v2 | confirmed | D-05, D-18 |
 | Aluminium frames, 20 x 40 x 1.2 mm at 400 mm, in the walls and in the ceiling; walls and ceiling on the same 81 mm stack | confirmed | D-16, D-34, D-42 |
-| Back wall (vách hậu) and ceiling (trần) frames span frame to frame between the side frames: 1,207 mm per half, with their lining cassettes at 1,169 mm | confirmed | PR #15 ruling (S32) |
-| Side walls (vách hông) 1,495 mm deep, starting at the decor back plate as in v1. Side lining cassettes 1,448 mm long to close the inside corner; the upper ones 1,098 mm tall, stopping 4 mm under the roof frame so they float | confirmed | PR #17 rulings (S32) |
+| Back wall (vách hậu) and ceiling (trần) frames span frame to frame between the side frames: 1,207 mm per half, with their lining cassettes at 1,169 mm | confirmed | D-55 |
+| Side walls (vách hông) 1,495 mm deep, starting at the decor back plate as in v1. Side lining cassettes 1,448 mm long to close the inside corner; the upper ones 1,098 mm tall, stopping 4 mm under the roof frame so they float | confirmed | D-49, D-57 |
 | No plywood behind the ACP; the sound mass sits in the floating lining cassette with a 0.5 mm steel tray (0.4 mm cost 1 dB) | confirmed | D-17, D-37 |
-| Cavity fill (bông PET) at 32 kg/m3: the lighter grade has no published absorption, so D-34's 25 kg/m3 doesn't apply yet. The wall sample tests it next to the 32 kg/m3, and the build switches if it matches on sound | confirmed | PR #11 decided stack (S30, S31); sample test by PM ruling (S33) |
+| Cavity fill (bông PET) at 32 kg/m3: the lighter grade has no published absorption, so D-34's 25 kg/m3 doesn't apply yet. The wall sample tests it next to the 32 kg/m3, and the build switches if it matches on sound | confirmed | D-54 |
 | Fast-assembly changes: factory subassemblies, captive bolts, tool-free clips on panel seams, felt pre-fitted (section 4) | confirmed | D-08 |
-| Front: 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look). The door is left-hinged; it carries a 90 mm aluminium kick strip in the base band's dark finish, holding the drop seal, so the door unit is 2,101 mm long. Door and fixed glass are carried by two people with suction lifters. Door hinges and lock on HOLD until a rated set is named | confirmed | D-19, D-27, D-40, D-46 |
-| Weight: cap 420 kg with the 0.5 mm tray. This study's 426.7 kg is the current estimate, open against it until the wall sample is weighed; the PM rules on trims if the sample still lands over | confirmed | D-37; PM ruling (S33) |
-| Air (thông gió): four 12 V fans (quạt thông gió), two per path, in the lined fan boxes of two splitter cartridges (ống tiêu âm) side by side in the right decor block, supply grille low, exhaust grille high with a 150 mm riser to the slot on the block's top face. The cartridges and riser slide in from inside through a felt-covered access panel (inside only) | confirmed | D-29, D-36, D-45; PR #11 rulings (S30) |
-| Lining cassettes ship as separate clip-on inner leaves, one per panel, with the outside seams as planned; captive mechanical clips with a rated load, plus a safety catch on the ceiling ones | confirmed | D-17, D-23, D-47 |
+| Front: 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look). The door is left-hinged; it carries an aluminium kick strip 85 mm tall in the base band's dark finish, holding the drop seal, so the door unit is 2,096 mm long. Door and fixed glass are carried by two people with suction lifters. Door hinges and lock on HOLD until a rated set is named | confirmed | D-19, D-27, D-40, D-46, D-56, D-57 |
+| Weight: cap 420 kg with the 0.5 mm tray. This study's 426.7 kg is the current estimate, open against it until the wall sample is weighed; the PM rules on trims if the sample still lands over | confirmed | D-37, D-54 |
+| Air (thông gió): four 12 V fans (quạt thông gió), two per path, in the lined fan boxes of two splitter cartridges (ống tiêu âm) side by side in the right decor block, supply grille low, exhaust grille high with a 150 mm riser to the slot on the block's top face. The cartridges and riser slide in from inside through a felt-covered access panel (inside only). Fan sample and the riser's CAD fit on HOLD | confirmed | D-29, D-36, D-51, D-52, D-56 |
+| Lining cassettes ship as separate clip-on inner leaves, one per panel, with the outside seams as planned; captive mechanical clips with a rated load, plus a safety catch on the ceiling ones; the clip and catch on HOLD | confirmed | D-17, D-23, D-47, D-56 |
 | Ceiling fill carried on the back of the ceiling cassettes | confirmed | D-24 |
-| Decor block (khối trang trí) depth 205 mm, as v1 (measured from its drawings and STEP); not the 230 to 235 in D-39's text, nor the plan's 200 | confirmed | D-39 as ruled on PR #16 (S32) |
+| Decor block (khối trang trí) depth 205 mm, as v1 (measured from its drawings and STEP); not D-39's 230 to 235, nor the plan's 200 | confirmed | D-49 (replaces D-39) |
 | Decor cladding in Dark Yellow ACP EV3038 (no weight effect) | confirmed | D-12 |
 | Rejected: split decor blocks (B2), 5 bands per wall (C), full-height walls, castors in v2, no floor | confirmed | D-04, D-05, D-18, D-23 |
 
@@ -524,13 +524,13 @@ Benchmark: Room S needs 4 people for 3 to 5 hours (12 to 20 person-hours), and h
 The sound study's final stack (confirmed, D-16, D-17, D-34, D-37, D-42): ACP 3 mm on a 20 x 40 x 1.2 aluminium frame at 400 mm with 40 mm PET fill at 32 kg/m3, then a floating lining cassette: a 0.5 mm steel tray, 25 mm deep, with 9 mm felt across its face. That makes 81 mm and 12.6 kg/m2 in the sound study. The ceiling uses the same stack. The front is frameless 4+4 laminated glass.
 
 This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts; the cassette is the clip-on inner leaf (D-17). Sizes follow the pod skeleton P03 (S32):
-- side walls (vách hông) 1,495 mm deep, starting at the decor back plate as in v1; side cassettes 1,448 mm long, running past the back cassettes' face to close the inside corner; the upper ones 1,098 mm tall, stopping 4 mm under the roof frame so they float;
-- back wall (vách hậu) and ceiling (trần) outer panels 1,207 mm per half, frame to frame between the side frames, with the side skins covering their edges; their cassettes 1,169 mm;
-- decor blocks (khối trang trí) 205 mm deep, as v1. Their weights already came from v1's real shapes in the STEP, so only the packing changes.
+- side walls (vách hông) 1,495 mm deep, starting at the decor back plate as in v1 (D-49); side cassettes 1,448 mm long, running past the back cassettes' face to close the inside corner; the upper ones 1,098 mm tall, stopping 4 mm under the roof frame so they float (D-57);
+- back wall (vách hậu) and ceiling (trần) outer panels 1,207 mm per half, frame to frame between the side frames, with the side skins covering their edges; their cassettes 1,169 mm (D-55);
+- decor blocks (khối trang trí) 205 mm deep, as v1 (D-49). Their weights already came from v1's real shapes in the STEP, so only the packing changes.
 
 The inside narrows to 2,338 mm. The wall here comes to 13.4 kg/m2 with clips and tray returns (the sound study: 12.6). The door edge seals, base seal and cable grommets are counted too.
 
-Air (thông gió), as the sound and air check picked it (S30): four 12 V fans (quạt thông gió; Noctua NF-A14 industrialPPC-3000 PWM, 0.3 kg each, an assumption until the sample is weighed), two per path on a bulkhead in each cartridge's lined fan box; two splitter cartridges (ống tiêu âm), 2,100 x 405 x 159 mm, 17.1 kg each with their fill and 17.7 kg with their fans; and the 2,000 x 155 x 150 mm exhaust riser, 9.6 kg. That is 45.0 kg, all in the right decor block. The top block carries no air parts, and there is no loose decor fill: the 40 mm fill in front of each cartridge replaces the old felt-lined decor cavity (S31).
+Air (thông gió), as the sound and air check picked it (D-51, S30): four 12 V fans (quạt thông gió; Noctua NF-A14 industrialPPC-3000 PWM, 0.3 kg each, an assumption until the sample is weighed), two per path on a bulkhead in each cartridge's lined fan box; two splitter cartridges (ống tiêu âm), 2,100 x 405 x 159 mm, 17.1 kg each with their fill and 17.7 kg with their fans; and the 2,000 x 155 x 150 mm exhaust riser, 9.6 kg. That is 45.0 kg, all in the right decor block. The top block carries no air parts, and there is no loose decor fill: the 40 mm fill in front of each cartridge replaces the old felt-lined decor cavity (S31).
 
 Result: **426.7 kg** against the 420 kg cap (6.7 kg over), 0 parts over 20 kg except the glass, heaviest F-DR at 18.1 kg, 1 + 1 pallets, 526 kg gross, 1,641 mm at most, assembly 126 min.
 
@@ -546,10 +546,10 @@ Same build, two models. The check (PR #11) multiplies its wall and ceiling mass 
 | Everything else | 99.6 | 99.0 | +0.6 | base, decor blocks, door hardware, kits, electrics and the voice-kit reserve; the check takes them from an older copy of this study |
 | **Total** | **426.7** | **417.5** | **+9.2** |  |
 
-The gap is the clip and bond allowances, which neither model can source yet: the clip is still a candidate (Häfele KEKU EH, HOLD) and the bond pattern waits for its coupon test. By the PM's ruling (S33) the cap stays at 420 kg and this study carries 426.7 kg as the current estimate, open against it (LS-01). The factory's wall sample (D-32) settles it with two tests: weigh a real cassette with its clips, rails and bond lines per m2, and test the 25 kg/m3 fill next to the 32 kg/m3; if the lighter fill matches on sound, the build switches and saves 4.3 kg. If the sample still lands over 420 kg, the PM rules on trims then. The CAD parts list in Milestone 2 settles the rest.
+The gap is the clip and bond allowances, which neither model can source yet: the clip is still a candidate (Häfele KEKU EH, HOLD) and the bond pattern waits for its coupon test. By D-54 the cap stays at 420 kg and this study carries 426.7 kg as the current estimate, open against it (LS-01, ISS-080). The factory's wall sample (D-32) settles it with two tests: weigh a real cassette with its clips, rails and bond lines per m2, and test the 25 kg/m3 fill next to the 32 kg/m3; if the lighter fill matches on sound, the build switches and saves 4.3 kg. If the sample still lands over 420 kg, the PM rules on trims then. The CAD parts list in Milestone 2 settles the rest.
 
-- **Glass.** The door unit (2,101 mm, 47.5 kg: glass, kick strip with drop seal, hinges, pull) and the fixed panel (28.0 kg) ride flat on top of the long pallet in their timber frame, with nothing on them. On site, each is carried by two people with 2 suction lifters. The door lifts straight onto its hinge pins once a rated hinge set is named (HOLD, D-46). The fixed glass's profiles sit hidden in the decor and base, so the front stays frameless like v1.
-- **Decor blocks and air parts (confirmed, D-36).** Each decor block is mounted empty. The two cartridges, with their fans fitted, and the riser then slide into the right block from inside the pod through its felt-covered access panel. That is the only place the fans appear: the ceiling has no fan opening and no fan joint. Every lift stays at 20 kg or less; the right block with its air parts inside would weigh 63.1 kg. The same panel gives fan service access, and it is inside only, so the look is untouched. How the cartridges and riser fit inside the 205 mm block is a CAD HOLD.
+- **Glass.** The door unit (2,096 mm, 47.5 kg: glass, kick strip with drop seal, hinges, pull) and the fixed panel (28.0 kg) ride flat on top of the long pallet in their timber frame, with nothing on them. On site, each is carried by two people with 2 suction lifters. The door lifts straight onto its hinge pins once a rated hinge set is named (HOLD, D-46, D-56). The fixed glass's profiles sit hidden in the decor and base, so the front stays frameless like v1.
+- **Decor blocks and air parts (confirmed, D-36).** Each decor block is mounted empty. The two cartridges, with their fans fitted, and the riser then slide into the right block from inside the pod through its felt-covered access panel. That is the only place the fans appear: the ceiling has no fan opening and no fan joint. Every lift stays at 20 kg or less; the right block with its air parts inside would weigh 63.1 kg. The same panel gives fan service access, and it is inside only, so the look is untouched. How the cartridges and riser fit inside the 205 mm block is a CAD HOLD (D-56, ISS-078).
 - **Ceiling (confirmed, D-24).** The fill still rides on the back of the ceiling cassette. With 40 mm frames, both ceiling parts are well under 20 kg either way.
 - **Pallets.** The 48 x 40 carries the wall and ceiling panels, the wall cassettes, the floor panels and the short band pieces (244 kg, 1,641 mm). The long pallet carries the decor blocks, the long band pieces, the two cartridges and the riser, the kit, the ceiling cassettes that don't fit the upright stack, and the glass on top (281 kg, 971 mm). The pallet tables below list every part. Still 1 + 1.
 
@@ -570,7 +570,7 @@ Wall, ceiling, decor, air and glass parts of the decided build:
 | F-DL: FRONT - DECOR BLOCK - LEFT | 2,290 x 278 x 205 | 1 | 10.0 |  |
 | F-DR: FRONT - DECOR BLOCK - RIGHT | 2,290 x 1,016 x 205 | 1 | 18.1 |  |
 | F-DT: FRONT - DECOR BLOCK - TOP | 1,697 x 280 x 205 | 1 | 7.0 |  |
-| F-GLASS-DOOR: FRONT - GLASS DOOR UNIT (4+4 laminated glass, frameless, 90 mm kick strip with drop seal, hinges, pull) | 2,101 x 1,176 x 20 | 1 | 47.5 | glass (exempt) |
+| F-GLASS-DOOR: FRONT - GLASS DOOR UNIT (4+4 laminated glass, frameless, 85 mm kick strip with drop seal, hinges, pull) | 2,096 x 1,176 x 20 | 1 | 47.5 | glass (exempt) |
 | F-GLASS-FIXED: FRONT - FIXED GLASS (4+4 laminated glass, frameless) | 2,139 x 724 x 9 | 1 | 28.0 | glass (exempt) |
 | A-CART-SUPPLY: AIR - SUPPLY SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM) | 2,100 x 405 x 159 | 1 | 17.7 |  |
 | A-CART-EXHAUST: AIR - EXHAUST SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM) | 2,100 x 405 x 159 | 1 | 17.7 |  |
@@ -659,7 +659,7 @@ Every part must pass a 914 x 2032 mm (36 x 80 in) doorway. A part is carried on 
 | F-DL | 2,290 x 278 x 205 | 10.0 | 285 | passes | passes |
 | F-DR | 2,290 x 1,016 x 205 | 18.1 | 285 | passes | passes |
 | F-DT | 1,697 x 280 x 205 | 7.0 | 285 | passes | passes |
-| F-GLASS-DOOR | 2,101 x 1,176 x 20 | 47.5 | 100 | passes | passes |
+| F-GLASS-DOOR | 2,096 x 1,176 x 20 | 47.5 | 100 | passes | passes |
 | F-GLASS-FIXED | 2,139 x 724 x 9 | 28.0 | 89 | passes | passes |
 | F-HW | 2,200 x 120 x 60 | 2.6 | 140 | passes | passes |
 | A-CART-SUPPLY | 2,100 x 405 x 159 | 17.7 | 239 | passes | passes |
@@ -684,11 +684,11 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 
 | ID | Item | State | Who |
 | --- | --- | --- | --- |
-| LS-01 | 426.7 kg here against the 420 kg cap (6.7 kg over); the sound and air check gives 417.5 kg for the same build (section 5.1). PM ruling (S33): the cap stays; this estimate stays open until the wall sample weighs a real cassette with its clips, rails and bond lines per m2 and tests the 25 kg/m3 fill next to the 32 kg/m3; then the CAD parts list | open | Wall sample, PM, Milestone 2 |
+| LS-01 | 426.7 kg here against the 420 kg cap (6.7 kg over); the sound and air check gives 417.5 kg for the same build (section 5.1). D-54, ISS-080: the cap stays; this estimate stays open until the wall sample weighs a real cassette with its clips, rails and bond lines per m2 and tests the 25 kg/m3 fill next to the 32 kg/m3; then the CAD parts list | open | Wall sample, PM, Milestone 2 |
 | LS-02 | 400 mm frame pitch and full-face bond keep the ACP flat without plywood; prove on the early wall sample | PLANNED | Prototype team |
 | LS-03 | Tool-free cam or clip connector and captive bolt: real part numbers, loads and pull-out on the aluminium frame | open | Hardware group |
-| LS-04 | Cassette clips: captive mechanical clips with a rated load, plus a safety catch on each ceiling cassette (D-47). Candidate Häfele KEKU EH; its rating basis, pull-out rating and fixing to the 0.5 mm tray are HOLD. Its real weight replaces the 0.6 kg/m2 allowance | HOLD | Hardware group |
-| LS-05 | Door hinges and lock rated for the 4+4 laminate of toughened, heat-soaked panes (8.76 mm), 47.5 kg and 1176 mm, fitted in the factory, with the door lifting onto its pins | HOLD (D-46) | Hardware group |
+| LS-04 | Cassette clips: captive mechanical clips with a rated load, plus a safety catch on each ceiling cassette (D-47). Candidate Häfele KEKU EH; its rating basis, pull-out rating and fixing to the 0.5 mm tray are HOLD (D-56, ISS-076). Its real weight replaces the 0.6 kg/m2 allowance | HOLD | Hardware group |
+| LS-05 | Door hinges and lock rated for the 4+4 laminate of toughened, heat-soaked panes (8.76 mm), 47.5 kg and 1176 mm, fitted in the factory, with the door lifting onto its pins | HOLD (D-46, D-56, ISS-002) | Hardware group |
 | LS-06 | The plan uses code VT03 for both the PET felt and the 50 x 100 steel tube | issue | Control pack |
 | LS-07 | v1 BOM 9 mm boards vs 15 mm in the drawings and STEP (already listed by the control pack) | issue | Control pack |
 | LS-08 | Panasonic FV-15AUL1 weight not published on the pages read; 1.5 kg assumed | unverified | Hardware group |
@@ -698,9 +698,9 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 | LS-12 | Decor cladding colour: Dark Yellow ACP EV3038 (D-12); no weight effect | confirmed | Control pack |
 | LS-13 | Room floor flatness must stay within the glides' adjustment range; check on site before install | assumption | Install guide |
 | LS-15 | Felt-covered access panel on the pod side of the right decor block: the cartridges and riser slide in after the block is mounted, and it gives fan service access; inside only | confirmed (D-36) | Decor CAD |
-| LS-16 | Cartridges and riser inside the 205 mm right block: CAD fit, and the fan sample (flow against pressure, octave sound power at 53 and 70 l/s, any tone at 125 to 250 Hz). The fans' 0.3 kg each is an assumption until weighed | HOLD | Sound study, Milestone 2 |
+| LS-16 | Cartridges and riser inside the 205 mm right block: CAD fit, and the fan sample (flow against pressure, octave sound power at 53 and 70 l/s, any tone at 125 to 250 Hz). The fans' 0.3 kg each is an assumption until weighed (D-56, ISS-077, ISS-078) | HOLD | Sound study, Milestone 2 |
 | LS-14 | The upright stack on the 48 x 40 does not fill its depth: centre it and strap through the deck, or put the kit boxes beside it | note | Packaging |
-| LS-17 | The decision log (D-01 to D-48) doesn't yet carry the rulings on decor depth 205 (PR #16), wall depth 1495 and the side cassettes (PR #17), the frame-to-frame back wall and ceiling (PR #15), and the 12 V fans and 32 kg/m3 fill (PR #11). This study cites those PR rulings until their rows, D-49 onward, are merged | open | Control pack |
+| LS-17 | This study cites D-49 to D-57 as the control pack's PR #19 adds them (decor and wall depth, 12 V fans, weight, frame-to-frame back wall and ceiling, HOLD list, kick strip and linings). Check the numbers when PR #19 merges | open | Control pack |
 
 ## 9. How to reproduce
 
@@ -721,8 +721,8 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | pod_w | 2500 | mm | confirmed | S04, D-01 | overall width X |
 | pod_d | 1700 | mm | confirmed | S04, D-01 | overall depth Y |
 | pod_h | 2400 | mm | confirmed | S04, D-21 | overall height Z, room floor to the top of the roof skin |
-| decor_depth | 205 | mm | confirmed | D-39 as ruled on PR #16 (S32) | front decor block depth as v1: v1 decor-frame drawing and STEP, Y -850 to -645 (D-39's 230-235 came from the v1 BOM; the plan said 200) |
-| wall_depth | 1495 | mm | confirmed | PR #17 pass C ruling (S32) | side walls start at the decor back plate (Y -645), as v1 (1496); was 1500 = 1700 - 200 |
+| decor_depth | 205 | mm | confirmed | D-49 (replaces D-39; S32) | front decor block depth as v1: v1 decor-frame drawing and STEP, Y -850 to -645 (D-39's 230-235 came from the v1 BOM; the plan said 200) |
+| wall_depth | 1495 | mm | confirmed | D-49 (S32) | side walls start at the decor back plate (Y -645), as v1 (1496); was 1500 = 1700 - 200 |
 | acp_t | 3 | mm | source | S23 | ACP skin thickness (Alcorest 3 mm) |
 | wall_t_plan | 38 | mm | source | S04 | 3 ACP + 6 ply + 20 tube + 9 PET (plan joint detail) |
 | base_h | 100 | mm | source | S04 | base band: 50x100 tube on edge |
@@ -830,8 +830,8 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | t_unpack_long_ordered_min | 6 | min | assumption |  | long pallet packed in assembly order |
 | t_felt_strip_s | 20 | s | assumption |  | felt pre-fitted on its panel; only the strip over a joint goes on site |
 | cam_kg | 0.05 | kg | assumption |  | one cam or clip connector pair |
-| kick_strip_kg | 1 | kg | assumption | S29 | aluminium kick strip at the door bottom, base band finish, houses the drop seal; the PM's 'about 1 kg' |
-| kick_strip_h | 90 | mm | confirmed | D-40 | about 90 mm; the skeleton models 85 (door bottom Z 105) and leaves 89 under DT's line |
+| kick_strip_kg | 1 | kg | assumption | S29, D-56 | aluminium kick strip at the door bottom, base band finish, houses the drop seal; the PM's 'about 1 kg' |
+| kick_strip_h | 85 | mm | confirmed | D-40, D-57 | v1's front drops 17 mm to the 2400 datum, so the door bottom sits at Z 105 and the strip is 85 tall (D-40 said about 90) |
 | kick_strip_d | 20 | mm | assumption | S32 | kick strip envelope depth, as the skeleton's kick_d (D-40 gives the height only) |
 | strip_w | 150 | mm | assumption |  | loose felt strip over each joint, so the joint stays reachable |
 | frame_depth | 20 | mm | source | S04 | wall frame tube depth (20x20); the quiet build deepens it |
@@ -846,11 +846,11 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | final_ceil_t | 81 | mm | confirmed | D-42 | the ceiling uses the wall stack |
 | final_wall_depth | 40 | mm | confirmed | D-16, D-34 | 20x40 aluminium wall frame |
 | final_ceil_depth | 40 | mm | confirmed | D-42 | 20x40 aluminium ceiling frame (replaces D-16's 20x100 and D-27's 53 mm ceiling) |
-| lin_gap | 4 | mm | assumption | S32 | gap between the roof frame and the upper side linings, so they float (PR #17 ruling; the same 4 mm as the stack gap) |
+| lin_gap | 4 | mm | assumption | D-57 (S32) | gap between the roof frame and the upper side linings, so they float; the same 4 mm as the stack gap |
 | final_kgm2_hw | 12.6 | kg/m2 | calculation | S31 | the sound study's wall and ceiling mass with frame, 32 kg/m3 fill, cassette and felt |
-| fill_pet_kgm3 | 32 | kg/m3 | confirmed | S30, S31 (PR #11 decided stack) | Pyrotek Sorberpoly 2D; D-34's 25 kg/m3 needed published absorption, and the 24 kg/m3 grade has none |
-| fill_pet_light_kgm3 | 25 | kg/m3 | source | D-34 | the lighter fill D-34 allowed if its absorption checked out; it has no published data, so what-if only |
-| t_al_final | 1.2 | mm | confirmed | D-34 | wall of the 20x40 aluminium frames (was 1.5); the rivnut grip check passed (S30) |
+| fill_pet_kgm3 | 32 | kg/m3 | confirmed | D-54 (S30, S31) | Pyrotek Sorberpoly 2D; D-34's 25 kg/m3 needs absorption data that isn't published, so its condition moves to the wall sample |
+| fill_pet_light_kgm3 | 25 | kg/m3 | source | D-34, D-54 | the lighter fill: the wall sample tests it next to the 32, and the pod switches if it matches on sound |
+| t_al_final | 1.2 | mm | confirmed | D-34, D-54 | wall of the 20x40 aluminium frames (was 1.5); the rivnut grip check passed, which settles D-34's frame condition |
 | tray_t | 0.5 | mm | confirmed | D-37 | steel lining tray (0.4 mm cost 1 dB, so back to 0.5) |
 | tray_t_thin | 0.4 | mm | confirmed | D-35 (replaced by D-37) | the thinner tray tried and dropped |
 | tray_depth | 25 | mm | confirmed | D-17 | tray returns and the air gap behind the felt |
@@ -858,19 +858,19 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | hw_385_dsa | 24.2 | dB | source | S21 |  |
 | hw_400_total | 400 | kg | source | S22 | sound study's total with 4+4 laminated glass |
 | hw_400_dsa | 23.8 | dB | source | S22 |  |
-| cap_kg | 420 | kg | confirmed | D-37, S33 | weight cap with the 0.5 mm tray; the study's estimate stays open against it until the wall sample (S33) |
+| cap_kg | 420 | kg | confirmed | D-37, D-54 | weight cap with the 0.5 mm tray; the study's estimate stays open against it until the wall sample |
 | hw_total | 417.5 | kg | calculation | S31 | the sound and air check's decided build in its own model ('about 418 kg') |
 | hw_shell_kg | 201.6 | kg | calculation | S31 | its walls and ceiling: 12.63 kg/m2 x (12.33 + 3.64) m2 of outside area, cassettes and felt included |
 | hw_glass_kg | 71.9 | kg | calculation | S31 | its glass: 21 kg/m2 x 3.425 m2 |
 | hw_air_kg | 45 | kg | calculation | S31 | its cartridges 34.2, riser 9.6 and four fans 1.2 |
 | hw_rest_kg | 99 | kg | calculation | S31 | its rest of the pod: 102.4 from an older copy of this study, plus 2.6 of fixes, less 6.0 of that copy's fans and boxes |
-| fan12_kg | 0.3 | kg | assumption | S30 | Noctua NF-A14 industrialPPC-3000 PWM, 12 V, 140 x 140 x 25 mm; weight not published: weigh the sample |
-| cart_kg | 17.1 | kg | calculation | S30 | one splitter cartridge with its 40 mm fill toward the pod, without fans |
+| fan12_kg | 0.3 | kg | assumption | S30, D-51 | Noctua NF-A14 industrialPPC-3000 PWM, 12 V, 140 x 140 x 25 mm; weight not published: weigh the sample |
+| cart_kg | 17.1 | kg | calculation | S30, D-51 | one splitter cartridge with its 40 mm fill toward the pod, without fans |
 | cart_d | 159 | mm | calculation | S30 | cartridge depth: three 25 mm layers, two 40 mm passages, 2 mm casing |
 | cart_w | 405 | mm | calculation | S30 | cartridge width: two cartridges and the riser side by side in the right block |
 | cart_l | 1800 | mm | calculation | S30 | lined passage length |
 | fanbox_l | 300 | mm | calculation | S30 | lined fan box at one end of the cartridge, 2 fans on a bulkhead |
-| riser_kg | 9.6 | kg | calculation | S30 | exhaust riser, 1 mm galvanised steel |
+| riser_kg | 9.6 | kg | calculation | S30, D-51 | exhaust riser, 1 mm galvanised steel |
 | riser_w | 150 | mm | calculation | S30 | the 150 mm exhaust riser |
 | riser_d | 155 | mm | calculation | S30 | riser depth, the cartridges' layer stack |
 | riser_l | 2000 | mm | calculation | S30 | from the exhaust fans at the foot to the slot on the block's top face |
@@ -906,10 +906,9 @@ Sources:
 | S22 | PM ruling relayed in the layout chat, 2026-10-31: front is 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look); the sound study puts the pod at about 400 kg and 23.8 dB with 40 mm ceiling frames and separate silencer boxes; the door is handled by two people with suction lifters | `layout conversation, PM message of 2026-10-31` |
 | S23 | Alcorest outdoor ACP, colour EV3038 Dark Yellow (the plan's VT01), 3 mm with 0.21 mm skins: maker's catalogue gives skins, not kg/m2; the sound study calculates 3.5 kg/m2 from the skin spec (selection.md VT01). PM ruling 2026-10-31: use 3.5 | https://vietdung.com.vn/wp-content/uploads/2026/07/CTL-ACP-ALCOREST-07.08.25.pdf (via the sound study's selection table) |
 | S24 | PM ruling 2026-10-31: the 400 kg cap stays; carry the total as 400 +/- 10 kg until the CAD parts list settles it; if the CAD BOM lands over 400 kg, trim the inner steel tray or the fans, not the sound | `layout conversation, PM message of 2026-10-31` |
-| S28 | Decision log D-01 to D-48, as merged on main (7bb659c). Rulings made on PRs after it are cited by PR (S30 to S32) until their log rows, D-49 onward, are merged | `v2/00-Control/decision-log.md (read 2026-10-31)` |
+| S28 | Decision log: D-01 to D-48 as merged on main (7bb659c), and D-49 to D-57 as the control pack's PR #19 adds them (open when read) | `v2/00-Control/decision-log.md on main and on PR #19 (read 2026-10-31)` |
 | S29 | PM ruling after Reviewer 2, 2026-10-31, now logged as D-40: the door gets a ~90 mm aluminium kick strip at the bottom in the base band's dark finish, housing the drop seal, about 1 kg | `layout conversation, PM message of 2026-10-31` |
 | S30 | Hardware Engineer's bought-parts selection after the PR #11 fix pass: four Noctua NF-A14 industrialPPC-3000 PWM 12 V fans, two per path on a bulkhead in each cartridge's lined fan box, 140 x 140 x 25 mm, about 0.3 kg each (assumption: weigh the sample); two splitter cartridges side by side in the right decor block, 159 x 405 x 1800 mm plus a 300 mm fan box, 2 mm aluminium casing, three 25 mm Pyrotek layers, 40 mm polyester fill toward the pod, 17.1 kg each with that fill (calculation); exhaust riser between them, 150 x 155 x 2000 mm, 1 mm galvanised steel, 9.6 kg (calculation; CAD fit HOLD); cavity fill Pyrotek Sorberpoly 2D at 32 kg/m3, because the 24 kg/m3 grade has no published absorption | `v2/05-Engineering/hardware/selection.md, summary, B, F1 and F2 (PR #11, merged 39c5c3e; read 2026-10-31)` |
 | S31 | Hardware Engineer's sound and air check after the PR #11 fix pass: the decided stack is 81 mm at 12.6 kg/m2 with frame, 32 kg/m3 fill and felt; the decided build is about 418 kg in its own model (417.5 kg: 102.4 kg rest of pod from an older copy of this study, 2.6 kg fixes, 12.63 kg/m2 over 12.33 m2 of walls and 3.64 m2 of ceiling, 71.9 kg glass, 34.2 kg cartridges, 9.6 kg riser, 1.2 kg fans, less 6 kg of the old study's fans and boxes); decor 205 mm deep; the 40 mm fill in front of each cartridge replaces the old felt-lined decor cavity | `v2/05-Engineering/acoustics-air/report.md sections 1, 6 and 7b, and calc.py pod_total_kg (PR #11; read 2026-10-31)` |
 | S32 | Pod skeleton P03 build record, PM rulings: PR #15, back wall and ceiling frames span frame to frame between the side frames (X +-1207), so 1207 per half, with their linings staying 1169; PR #16 ruling 3, D-39 means as v1, and the v1 decor-frame drawing and STEP give 205 mm (front face Y -850, back face Y -645); PR #17 pass C, wall depth 1495 (side walls start at the decor back plate, as v1's 1496), side linings 1448 long to close the inside corner, upper side linings stop 4 mm under the roof frame (1098 tall) | `v2/01-CAD-Native/skeleton/BUILD-RECORD.md and 100000_P03_POD-SKELETON-PARAMETERS.csv (read 2026-10-31)` |
-| S33 | PM ruling on the layout group, 2026-10-31 (option 1 of the weight question): the cap stays at 420 kg; report 427 kg as the current estimate, open against the cap, since the extra comes from honest corrections plus about 13 kg of unsourced allowances; two sample tests settle it: weigh a real cassette with its clips, rails and bond lines per m2, and test the 25 kg/m3 fill next to the 32 kg/m3 in the wall sample, switching if the lighter fill matches on sound (saves 4.3 kg); if the sample still lands over 420, the PM rules on trims then | `layout group conversation, PM message of 2026-10-31` |
 | S19 | LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff) | https://logisticsplus.com/?p=25575 (read 2026-10-31) |

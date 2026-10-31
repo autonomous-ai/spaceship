@@ -390,14 +390,14 @@ def build():
     N["final_std_kg"], N["final_std_h"] = f0(sp["gross"]), f0(sp["height"])
     byid = {pt.pid: pt for pt in fparts}
     N["final_dr"], N["final_dt"] = f1(byid["F-DR"].kg), f1(byid["F-DT"].kg)
-    # shell sizes in the decided build (PR #15 and PR #17 rulings, S32)
+    # shell sizes in the decided build (D-49, D-55, D-57)
     N["back_w_final"] = f0(byid["W-BACK-LO"].dims[1])
     N["lin_back_w"] = f0(byid["L-CASS-BACK-LO"].dims[1])
     N["side_cass_l"] = f0(byid["L-CASS-SIDE-LO"].dims[1])
     N["side_cass_up_h"] = f0(byid["L-CASS-SIDE-UP"].dims[0])
     N["door_unit_l"] = f0(max(gd.dims))
     N["door_glass_h"] = f0(p("glass_door_h"))
-    # air: both paths in the right decor block (S30)
+    # air: both paths in the right decor block (D-51)
     carts = [pt for pt in fparts if pt.pid.startswith("A-CART")]
     N["n_fans"] = {2: "two", 4: "four"}.get(2 * len(carts), str(2 * len(carts)))
     N["fan12_kg"] = f1(p("fan12_kg"))

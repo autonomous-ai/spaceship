@@ -68,7 +68,7 @@ def geom():
 
 def back_w(m):
     """Width of one back wall panel or ceiling half. In the decided build their frames span frame to frame between
-    the side frames, with the side skins covering their edges (PR #15, S32): 1207, wider than their 1169 linings."""
+    the side frames, with the side skins covering their edges (D-55): 1207, wider than their 1169 linings."""
     if m.get("stack") == "final":
         return (p("pod_w") - 2 * (p("acp_t") + p("final_wall_depth"))) / 2
     return geom()["inner_w"] / 2
@@ -310,7 +310,7 @@ def front_parts(m, split_long):
 def service_parts(m):
     final = m.get("stack") == "final"
     if final:
-        # both air paths sit side by side in the right decor block (S30); each splitter cartridge carries its 40 mm fill
+        # both air paths sit side by side in the right decor block (D-51, S30); each splitter cartridge carries its 40 mm fill
         # toward the pod and, in its lined fan box, 2 of the 4 12 V fans on a bulkhead, fitted in the factory (D-08)
         fans_per_cart = 2
         cart = (p("cart_l") + p("fanbox_l"), p("cart_w"), p("cart_d"))
@@ -544,7 +544,7 @@ def final_stack_parts(split, m, split_long=False):
                 lw, lh = w, g["inner_d"]
             elif pid.startswith("W-SIDE"):
                 # side cassettes run past the back cassettes' face to close the inside corner; the upper ones stop
-                # lin_gap under the roof frame so they float (PR #17, S32)
+                # lin_gap under the roof frame so they float (D-57)
                 lw = g["inner_d"] + cass_t
                 lh = h - (roof + p("lin_gap") if pid.endswith("-UP") else 0.0)
             else:
