@@ -64,8 +64,8 @@ def actual(design):
             half = "C1" if (box[0] + box[3]) / 2 < 0 else "C2"
             if pn in ("411101", "411102"):
                 out[b.name] = box
-            elif pn == "411301":
-                out["SKIN %s" % half] = box
+            elif pn in ("411301", "411302"):
+                out["SKIN %s" % ("C1" if pn == "411301" else "C2")] = box
             elif pn == "513101":
                 out["%s TRAY" % half] = box
             elif pn == "513201":
@@ -120,3 +120,64 @@ def check(design):
     unhealthy = [tl.item(i).name for i in range(tl.count)
                  if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
     return {"checked": len(exp), "worst": round(worst, 3), "bad": bad, "unhealthy": unhealthy}
+
+
+def param_values(design):
+    """{name: value} in mm (or plain numbers) from the design's user parameters."""
+    out = {}
+    for i in range(design.userParameters.count):
+        p = design.userParameters.item(i)
+        out[p.name] = p.value * 10.0 if p.unit == "mm" else p.value
+    return out
+
+
+def hole_check(design, tol=TOL):
+    """Every site-joint hole of both frames where ceiling_model.hole_positions puts it for the
+    design's current values (joints register 2.9): a cylindrical face of the right diameter
+    whose axis passes through the expected centre, in the right frame. The slot is matched by
+    its two end arcs. No other cylindrical faces are allowed on a frame."""
+    vals = param_values(design)
+    root = design.rootComponent
+    cyl = {"C1": [], "C2": []}
+    for occ in root.allOccurrences:
+        pn = occ.component.partNumber
+        if pn not in ("411101", "411102"):
+            continue
+        half = "C1" if pn == "411101" else "C2"
+        for b in occ.bRepBodies:
+            for f in b.faces:
+                g = f.geometry
+                if g.objectType != adsk.core.Cylinder.classType():
+                    continue
+                cyl[half].append((g.radius * 20.0, [g.origin.x * 10, g.origin.y * 10, g.origin.z * 10],
+                                  [g.axis.x, g.axis.y, g.axis.z], b.name))
+    worst, bad, checked = 0.0, [], 0
+    for half in ("C1", "C2"):
+        want = []
+        for name, d, xyz in M.hole_positions(vals, half):
+            if name == "BACK SPIGOT SLOT":
+                run = (vals["spig_slot"] - vals["spig_hole"]) / 2
+                want += [(name + " END 1", d, (xyz[0] - run, xyz[1], xyz[2])), (name + " END 2", d, (xyz[0] + run, xyz[1], xyz[2]))]
+            else:
+                want.append((name, d, xyz))
+        left = list(cyl[half])
+        for name, d, xyz in want:
+            checked += 1
+            best, dist = None, None
+            for c in left:
+                if abs(c[0] - d) > tol:
+                    continue
+                o, a = c[1], c[2]
+                v = [xyz[i] - o[i] for i in range(3)]
+                t = sum(v[i] * a[i] for i in range(3))
+                off = sum((v[i] - t * a[i]) ** 2 for i in range(3)) ** 0.5
+                if dist is None or off < dist:
+                    best, dist = c, off
+            if best is None or dist > tol:
+                bad.append(("%s %s at %s" % (half, name, tuple(round(c, 2) for c in xyz)), "missing" if best is None else round(dist, 3)))
+                continue
+            worst = max(worst, dist)
+            left.remove(best)
+        for c in left:
+            bad.append(("%s extra cylinder D%.2f on %s" % (half, c[0], c[3]), "extra"))
+    return {"checked": checked, "worst": round(worst, 3), "bad": bad}

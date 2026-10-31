@@ -127,4 +127,90 @@ SPECS = {
     ], holes="front"),
 }
 
-ORDER = ["cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c"]
+
+
+def _vals():
+    return M.evaluate(M.all_params())
+
+
+def frame_hole_notes(half):
+    """The frame's joint holes as text lines, from datums A (the closing face), B (the front
+    member's front face) and C (the frame's underside), from ceiling_model.hole_positions."""
+    v = _vals()
+    a, b, c = v["close_gap"] / 2, M.ev(v, M.YW), M.ev(v, M.ZF0)
+    rows = {}
+    for name, d, (x, y, z) in M.hole_positions(v, half):
+        rows.setdefault((name, d), []).append((abs(x) - a, y - b, z - c))
+    where = {"SIDE BOLT CLEARANCE": "side member, outer wall", "SIDE BOLT ACCESS": "side member, inner wall",
+             "SEAM PIN CLEARANCE": "seam member, closing face", "SEAM PIN RIVNUT": "seam member, closing face (rivnut 838003)",
+             "SEAM PIN ACCESS": "seam member, inner wall", "BACK RIVNUT": "back member, underside (rivnut 838003 on stop washer 831002)",
+             "BACK SPIGOT ROUND": "back member, underside", "BACK SPIGOT SLOT": "back member, underside, slot 14 long along X"}
+    out = []
+    for (name, d), pts in rows.items():
+        if name.startswith("BACK"):
+            pos = "from A: %s; from B: %.2f" % (", ".join("%.2f" % p[0] for p in pts), pts[0][1])
+        else:
+            pos = "from B: %s; from C: %.2f" % (", ".join("%.2f" % p[1] for p in pts), pts[0][2])
+        out.append("%s: D%.2f x %d, %s; %s." % (name, d, len(pts), where[name], pos))
+    return out
+
+
+FRAME_VIEWS = {"front": (170, 520), "top": (170, 300), "left": (470, 520), "iso": (470, 250)}
+
+
+def frame_spec(key, half):
+    v = _vals()
+    side = "C1 (-X half)" if half == "C1" else "C2 (+X half)"
+    fit = ("4 rivnuts 838003 on stop washers 831002 in the back member; 4 captive M6 x 16 bolts 838001 with "
+           "washers 838004 and retainers 838005 in the side member; joint gasket 848001 on the back member's "
+           "underside; bulb seal 848004 on the closing face") if half == "C1" else \
+          ("8 rivnuts 838003 (4 on stop washers 831002 in the back member, 4 for the pins in the seam member); "
+           "4 captive M6 x 16 bolts 838001 with washers 838004 and retainers 838005 in the side member; "
+           "4 M6 x 25 pins 838002 with washers 838004 in the seam member's rivnuts; joint gasket 848001 on "
+           "the back member's underside")
+    return spec(key, 0.2, [
+        "Tolerances (assumption until the factory confirms): tube cut length +/-0.5; holes +/-0.2 from the round "
+        "spigot hole (R-J6); spigot positions and round spigot hole to the closing face +/-0.1 (ST-04).",
+        "Aluminium 6063-T6 tube (alloy ISS-034): 20 x 40 x 1.2, back member 40 x 40 x 1.2 (R-J3). Mill finish "
+        "with the bond prep (D-79). Frame %s, %.2f wide (skeleton half_fw), %.2f deep." % (side, v["half_fw"], v["wall_depth"]),
+        "Datums: A = the closing face (the seam member's outer face, %.2f from X 0); B = the front member's front "
+        "face (Y %.2f); C = the frame's underside (Z %.2f)." % (v["close_gap"] / 2, M.ev(v, M.YW), M.ev(v, M.ZF0)),
+        "Members (cut list 410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): side and seam %.2f, front and cross members "
+        "X1-X3 %.2f, back %.2f; cross members at %.2f pitch from B. Frame joints HOLD (H11)." % (
+            v["wall_depth"] - v["back_w"], v["half_fw"] - 2 * v["tube_w"], v["half_fw"], v["fr_pitch"]),
+        "Joint holes (joints register 2.9; the register owns the bolt lines, PM ruling 2026-10-31):",
+    ] + frame_hole_notes(half) + [
+        "1 x 45 deg lead-in on the closing face's lower edge, seam member and back member end (R-J9).",
+        "Every bolt is 30 or more from any member that meets its own (R-J14); none sits under the roof slot (D-60).",
+        "Fitted in the factory: " + fit + ".",
+    ], holes="left", views=FRAME_VIEWS, scales={"iso": 0.1})
+
+
+def skin_spec(key, half):
+    v = _vals()
+    notes = [
+        "Tolerances (assumption until the factory confirms): routed outline and cut-outs +/-0.5.",
+        "ACP 3, EV3038 Dark Yellow (D-12; build plan VT01), %.2f x %.2f (skeleton half_pw x wall_depth)." % (
+            v["half_pw"], v["wall_depth"]),
+        "Datums: A = the closing-seam edge (X %s%.2f); B = the front edge (Y %.2f)." % (
+            "-" if half == "C1" else "", v["seam_gap"] / 2, M.ev(v, M.YW)),
+        "Bonded to frame %s with the bond set 108002 (bond line %.0f, skeleton bond_t); it overhangs its frame by "
+        "%.2f at the closing seam (half_pw - half_fw) and is flush with it at the side." % (
+            "411101" if half == "C1" else "411102", v["bond_t"], v["half_pw"] - v["half_fw"]),
+        "Cut file: %s_P01_CEILING-SKIN-%s_DXF.dxf (seen from above, origin at A on B)." % (M.PARTS[key][0], half),
+    ]
+    if half == "C2":
+        x0 = v["slot_x0"] - v["seam_gap"] / 2
+        y0 = v["slot_y0"] - M.ev(v, M.YW)
+        notes.append("Roof exhaust slot %.0f x %.0f (D-61), through: from A %.2f to %.2f, from B %.2f to %.2f; "
+                     "the roof grille and sleeve belong to AIR (610000)." % (
+                         v["slot_w"], v["slot_d"], x0, x0 + v["slot_w"], y0, y0 + v["slot_d"]))
+    return spec(key, 0.2, notes, views=FRAME_VIEWS, scales={"iso": 0.1})
+
+
+SPECS.update({
+    "frame_c1": frame_spec("frame_c1", "C1"), "frame_c2": frame_spec("frame_c2", "C2"),
+    "skin_c1": skin_spec("skin_c1", "C1"), "skin_c2": skin_spec("skin_c2", "C2"),
+})
+
+ORDER = ["cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c", "frame_c1", "frame_c2", "skin_c1", "skin_c2"]

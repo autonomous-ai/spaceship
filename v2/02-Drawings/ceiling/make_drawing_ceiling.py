@@ -250,11 +250,21 @@ def run(_context):
     holes = []
     if sp["holes"]:
         holes = hole_dims(sheet, views[sp["holes"]])
-        hole_table(sheet, views[sp["holes"]], "HOLES - %s VIEW" % sp["holes"].upper())
-    projection_symbol(sheet, 20.0, 20.0)
     notes_dir = os.path.join(HERE, ".notes")
-    insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_NOTES.png"), sp["images"]["notes"])
-    insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_TITLE.png"), sp["images"]["title"])
+    # extras: a failure here must not lose the views and dimensions above (the drawing is
+    # saved only when the run ends without an error), so each is tried on its own
+    extras = [("projection symbol", lambda: projection_symbol(sheet, 20.0, 20.0)),
+              ("notes image", lambda: insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_NOTES.png"),
+                                                   sp["images"]["notes"])),
+              ("title image", lambda: insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_TITLE.png"),
+                                                   sp["images"]["title"]))]
+    if sp["holes"]:
+        extras.insert(0, ("hole table", lambda: hole_table(sheet, views[sp["holes"]], "HOLES - %s VIEW" % sp["holes"].upper())))
+    for what, fn in extras:
+        try:
+            fn()
+        except Exception as e:      # noqa: BLE001 (report and go on)
+            print("WARNING: %s not added: %s" % (what, e))
     print("dimensions %d, holes dimensioned %d, hole tables %d" % (
         sheet.drawingDimensions.count, len(holes), sheet.holeTables.count))
     raw = os.path.join(HERE, ".raw", "%s.pdf" % sp["drawing"])

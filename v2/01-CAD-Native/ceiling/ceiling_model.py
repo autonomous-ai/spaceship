@@ -6,9 +6,11 @@ is written once.
 
 Parameters come from two places:
 
-1. The pod skeleton P03 (`../skeleton/100000_P03_POD-SKELETON-PARAMETERS.csv`),
-   loaded at build time with its own names, expressions, statuses and sources.
-   No skeleton number is copied here.
+1. The pod skeleton (the highest revision in `../skeleton/`, P04 as updated in
+   place by PR #58), loaded at build time with its own names, expressions,
+   statuses and sources: skin_t, bond_t, frame_t, outer_t, half_pw (skin width),
+   half_fw (frame width), close_gap, ceil_bolt_z, bolt_edge_inset, spigot_inset
+   and the rest. No skeleton number is copied here.
 2. The ceiling's own parameters (`CEILING_PARAMS` below), written as
    expressions of the skeleton's. Each carries its status and source
    (conventions.md section 9).
@@ -60,17 +62,43 @@ CEILING_PARAMS = [
     # ---- outer panel C1 / C2: frame and skin (D-16, D-34, D-42, D-55)
     ("seam_gap", "2.26 mm", "mm", "confirmed",
      "PM ruling 2026-10-31 (Fusion group): the Joints Engineer's 2.26 mm, set by a metal stop washer, on every frame-to-frame seam; the skeleton's own value replaces this one once it carries it"),
-    ("acp_t", "3 mm", "mm", "source", "build plan VT01: ACP 3 mm, Dark Yellow EV3038 (selection A1); in the 81 mm stack (D-42)"),
     ("tube_w", "20 mm", "mm", "confirmed", "D-34, D-54: aluminium 20 x 40 x 1.2 members (the 20 mm face lies in the plane of the panel)"),
     ("tube_t", "1.2 mm", "mm", "confirmed", "D-54: the frames stay 1.2 mm (rivnut grip check passed); D-85 keeps the ceiling's cross members at 1.2 too, since they carry the overhead clips and catches (T07, T08 test on 1.2)"),
-    ("fr_d", "40 mm", "mm", "confirmed", "D-34, D-42: the frame is the 40 mm face of the 20 x 40 tube"),
-    ("bond_t", "outer_t - acp_t - fr_d", "mm", "calculation",
-     "bond line between the frame and the skin: the skeleton's outer panel less skin and frame (0 at P03's 43; 3 at outer_t 46, PM ruling 2026-10-31: 3 ACP + 3 bond + 40 frame)"),
+    ("back_w", "40 mm", "mm", "confirmed",
+     "R-J3 (joints register 2.4): the ceiling's back member is 40 x 40, so the back panel's top tube overlaps it by 34 and its rivnuts sit on a 40 mm face"),
     ("fr_n", "3", "", "confirmed", PM_RULING + ": 3 cross members between the side and seam members"),
     ("fr_pitch", "(wall_depth - tube_w) / (fr_n + 1)", "mm", "calculation",
      "centre spacing of the cross members, front member to back member: (1495 - 20) / 4 = 368.75, 400 or less (D-16)"),
-    ("c_w", "pod_w / 2 - outer_t - 3 * seam_gap / 2", "mm", "calculation",
-     "ceiling half width between the side frame and the centre seam, less a seam gap at the side and half a gap at the centre (D-55, seam ruling): 1203.61"),
+    # ---- site joints (joints register V2-ENG-JNT-01; the register owns the bolt lines, PM ruling 2026-10-31)
+    ("hole_clr", "7 mm", "mm", "confirmed", "R-J6 (joints register 2.9): bolt clearance hole, positioned to +/-0.2 from the spigot hole"),
+    ("hole_acc", "19 mm", "mm", "confirmed", "joints register 2.2, 2.9: access hole, so the 18 mm head washer goes in with the bolt"),
+    ("hole_rvn", "9.53 mm", "mm", "source", "H-03 Sherex CAH3-610-4.2 rivnut: hole 9.53 +0.10 (joints register 2.1, SHX)"),
+    ("spig_hole", "8.5 mm", "mm", "confirmed", "R-J13: spigot hole 8.5, round at one end of the edge, an 8.5 x 14 slot along it at the other"),
+    ("spig_slot", "14 mm", "mm", "confirmed", "R-J13: the spigot slot's length along the edge (+/-2.75 of travel for the 8 mm spigot)"),
+    ("lead_in", "1 mm", "mm", "confirmed", "R-J9 (joints register 2.10): 1 x 45 deg lead-in on the lower edges of the C1-C2 faces, so C2 drops past C1 without catching the seal"),
+    ("cj_side_y0", "pod_d / 2 - wall_depth + bolt_edge_inset", "mm", "confirmed",
+     "PM ruling 2026-10-31 (the register owns the bolt lines): J-CEIL-01 side edges run along the ceiling from its front end, first bolt 220 in (Y -425; joints register 2.9)"),
+    ("cj_side_pitch", "(wall_depth - 2 * bolt_edge_inset) / (n_ceil_side_bolt - 1)", "mm", "calculation",
+     "J-CEIL-01 side edges along the ceiling's 1495: 351.67 (joints register 2.9)"),
+    ("cj_back_n", "4", "", "confirmed",
+     "PM correction 2026-10-31: 4 bolts per back panel, as the joints register 3.5 (16 on the ceiling's edges); the skeleton's n_ceil_back_bolt (3) is being corrected"),
+    ("cj_back_x0", "close_gap / 2 + bolt_edge_inset", "mm", "calculation",
+     "J-CEIL-01 back edges on the frame (PM ruling 2026-10-31): first bolt 220 in from the frame's centre-seam end (|X| 222.75; joints register 2.9)"),
+    ("cj_back_pitch", "(half_fw - 2 * bolt_edge_inset) / (cj_back_n - 1)", "mm", "calculation",
+     "J-CEIL-01 back edges along the 1198.99 frame: 253.00 (joints register 2.9)"),
+    ("cj_back_y", "pod_d / 2 - outer_t + frame_t / 2", "mm", "confirmed",
+     "R-J15 (joints register 2.4): the back edges' bolt line on the back panel's top tube centre (Y +824)"),
+    ("cj_pin_n", "4", "", "confirmed", "J-CEIL-02 (joints register 3.6): 4 pins at the 220 mm rule along the C1-C2 seam"),
+    ("cj_pin_pitch", "(wall_depth - 2 * bolt_edge_inset) / (cj_pin_n - 1)", "mm", "calculation",
+     "J-CEIL-02 pins along the ceiling's 1495 from Y -645 + 220, as the side edges (joints register 2.9)"),
+    ("cj_spig_x0", "close_gap / 2 + spigot_inset", "mm", "calculation",
+     "R-J13: spigots 100 in from each frame end. The round hole sits at the centre-seam end, since ST-04 runs from the round hole to the closing face (+/-0.1); the slot at the side end lets the side bolts pull C1 and C2 onto their stops"),
+    ("cj_spig_x1", "close_gap / 2 + half_fw - spigot_inset", "mm", "calculation", "R-J13: the slot 100 in from the frame's side end"),
+    # ---- roof exhaust slot in C2 only (D-60, D-61; PM ruling 2026-10-31: the two skins are two parts)
+    ("slot_x0", "872 mm", "mm", "source", "air report 7e (sized on skeleton P04): roof slot X 872 to 1157, over the soffit's exhaust fan box"),
+    ("slot_w", "285 mm", "mm", "source", "air report 7e: roof slot 285 x 294"),
+    ("slot_d", "294 mm", "mm", "source", "air report 7e: roof slot 285 x 294"),
+    ("slot_y0", "-620 mm", "mm", "confirmed", "D-61, PM ruling 2026-10-31: roof slot Y -620 to -326, 5 mm clear of the frame's front member"),
     # ---- the cassette: one part for both halves (CS-510301)
     ("cs_front", "360 mm", "mm", "confirmed",
      "D-60 soffit over the door head, 360 deep and 220 tall (Z 2120 to 2340), flush with the air column's face (PM rulings 2026-10-31, air group); the cassettes stop at its back face (PM ruling 2026-10-31)"),
@@ -98,7 +126,7 @@ CEILING_PARAMS = [
     ("fill_c", "5 mm", "mm", "assumption",
      "fill clearance to the frame members, clips and catches, so the cassette never touches the frame (D-17)"),
     ("fill_min", "100 mm", "mm", "assumption", "a fill strip shorter than this isn't made (a bay mostly over the soffit)"),
-    ("fill_hw", "inner_w / 4 - seam_gap / 2 - tube_w - fill_c", "mm", "calculation",
+    ("fill_hw", "inner_w / 4 - close_gap / 2 - tube_w - fill_c", "mm", "calculation",
      "half length of a fill strip, set by the seam member over the cassette's inner edge and used on both sides, so both cassettes stay the same part"),
     # ---- HOLD envelopes: space kept for parts not yet named (guideline 4.3)
     ("clip_w", "40 mm", "mm", "assumption", "clip space along X; HOLD H03 / ISS-076 until a clip is named with its rating"),
@@ -127,7 +155,8 @@ PARTS = {
     "assy_c2": ("410102", "CEILING - PANEL ASSY - C2", "Trần - tấm phải (cụm)", "HS", None),
     "frame_c1": ("411101", "CEILING - PANEL FRAME - C1", "Trần trái - khung nhôm", "MP", "al"),
     "frame_c2": ("411102", "CEILING - PANEL FRAME - C2", "Trần phải - khung nhôm", "MP", "al"),
-    "skin": ("411301", "CEILING - SKIN - COMMON", "Trần - tấm ốp alu (dùng chung trái/phải)", "MP", "acp"),
+    "skin_c1": ("411301", "CEILING - SKIN - C1", "Trần trái - tấm ốp alu", "MP", "acp"),
+    "skin_c2": ("411302", "CEILING - SKIN - C2", "Trần phải - tấm ốp alu (có khe thoát gió)", "MP", "acp"),
     "cassette": ("510301", "LINING - CASSETTE - CEILING - COMMON", "Cassette trần (dùng chung trái/phải)", "HS", None),
     "tray": ("513101", "LINING - TRAY - CEILING", "Khay thép cassette trần", "MP", "steel"),
     "rib": ("513102", "LINING - RIB - CEILING", "Gân đỡ tấm tiêu âm trần", "MP", "steel"),
@@ -144,17 +173,52 @@ PARTS = {
 # the joints register (H-10, H-11)
 FINISH = {
     "frame_c1": "mill finish with the bond prep (D-79)", "frame_c2": "mill finish with the bond prep (D-79)",
-    "skin": "ACP EV3038 Dark Yellow (D-12)", "tray": "galvanised (Z coating, grade to confirm)",
+    "skin_c1": "ACP EV3038 Dark Yellow (D-12)", "skin_c2": "ACP EV3038 Dark Yellow (D-12)", "tray": "galvanised (Z coating, grade to confirm)",
     "rib": "galvanised (Z coating, grade to confirm)", "felt": "Dark Gray (D-79)",
 }
 PROCESS = {
-    "frame_c1": "tube cut to length, frame joint HOLD (H11)", "frame_c2": "tube cut to length, frame joint HOLD (H11)",
-    "skin": "CNC routed ACP", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
+    "frame_c1": "tube cut to length, CNC or jig drilled (holes +/-0.2 from the spigot hole, R-J6), frame joint HOLD (H11)",
+    "frame_c2": "tube cut to length, CNC or jig drilled (holes +/-0.2 from the spigot hole, R-J6), frame joint HOLD (H11)",
+    "skin_c1": "CNC routed ACP", "skin_c2": "CNC routed ACP, roof slot routed", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
     "felt": "CNC knife cut", "fill_a": "cut", "fill_b": "cut", "fill_c": "cut", "fill_d": "cut",
 }
 HOLD_MASS = {   # kg each, status, source
     "clip": (0.040, "assumption", "joints register H-10 and PM ruling 2026-10-31: 0.040 kg each (D-81's working figure) until a named clip is weighed (HOLD-08)"),
     "catch": (0.100, "assumption", "PM ruling 2026-10-31 for the BOM check: 0.100 kg each until a named catch is weighed (joints register H-11, HOLD-08)"),
+}
+
+# Joint hardware fitted in the factory to each ceiling half (joints register 2.1 numbers and
+# names, D-63; every rivnut, stop washer, retainer and pre-fitted bolt goes in at the factory,
+# REQ-ASM-10). key: part number, name, Vietnamese name, class, unit, count per half as an
+# expression for C1 and for C2, mass each (kg, per m for lengths), mass status and source.
+# J-CEIL-01 side edges: the wall is the nut side, the ceiling's side tube holds the captive
+# M6 x 16 bolts. Back edges: the ceiling is the nut side (rivnuts with stop washers in its back
+# member; the joint gasket on that face). J-CEIL-02: C1 has plain holes and the bulb seal, C2
+# the rivnuts with the captive M6 x 25 pins.
+HARDWARE = {
+    "bolt16": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16",
+               "PI", "pc", "n_ceil_side_bolt", "n_ceil_side_bolt", 0.0062,
+               "calculation: head 10 x 6 less the socket, shank 6 x 16 at 85% for the thread, steel 7850 kg/m3"),
+    "bolt25": ("838002", "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 25 (chốt mối nối khép)",
+               "PI", "pc", "0", "cj_pin_n", 0.0079,
+               "calculation: head 10 x 6 less the socket, shank 6 x 25 at 85% for the thread, steel 7850 kg/m3"),
+    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6",
+               "PI", "pc", "cj_back_n", "cj_back_n + cj_pin_n", 0.0023,
+               "calculation: body 9.5 x 14.86 with an M6 bore and a 12.96 x 0.76 head (SHX sizes), 2700 kg/m3"),
+    "washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", "Long đen to M6 inox",
+               "PI", "pc", "n_ceil_side_bolt", "n_ceil_side_bolt + cj_pin_n", 0.0028,
+               "calculation: 6.4 x 18 x 1.6 (ISO 7093-1), 7900 kg/m3"),
+    "retainer": ("838005", "HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE", "Vòng giữ đầu bulong",
+                 "HOLD", "pc", "n_ceil_side_bolt", "n_ceil_side_bolt", 0.001,
+                 "assumption: a small grommet; part not chosen (HOLD-02)"),
+    "stopw": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm",
+              "MP", "pc", "cj_back_n", "cj_back_n", 0.0009, "calculation: 10.5 x 20 x 1.5, 2700 kg/m3"),
+    "gasket": ("848001", "SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA", "Gioăng mối nối 3.97",
+               "PI", "m", "half_fw / 1000 mm", "half_fw / 1000 mm", 0.0076,
+               "calculation: per metre, 8 x 3.97 at 240 kg/m3 (assumption for the foam's density)"),
+    "bulb": ("848004", "SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE", "Gioăng ống mối nối khép",
+             "HOLD", "m", "wall_depth / 1000 mm", "0", 0.07,
+             "assumption: per metre, a hollow EPDM bulb of about 60 mm2 at 1200 kg/m3; part HOLD-12"),
 }
 
 # material key: name in the CAD, density kg/m3, status, source
@@ -209,9 +273,6 @@ def all_params(skeleton_rows=None):
     for p in CEILING_PARAMS:
         if p[0] in have:
             continue
-        if p[0] == "c_w" and "half_pw" in have:
-            # the skeleton names the ceiling half's width itself (from P04): link to it
-            p = ("c_w", "half_pw", "mm", "calculation", "skeleton %s half_pw: the back and ceiling panels' width" % SKELETON_REV)
         own.append(p)
     return list(sk) + own
 
@@ -239,42 +300,107 @@ def ev(vals, expr):
 YW = "(pod_d / 2 - wall_depth)"      # front plane of the walls and ceiling (decor back plate)
 YB = "(pod_d / 2)"                   # back face
 ZF0 = "(pod_h - outer_t)"            # underside of the ceiling frame
-ZF1 = "(pod_h - outer_t + fr_d)"     # top of the frame (the bond line and the skin sit above it)
-ZSKIN = "(pod_h - acp_t)"            # underside of the skin
+ZF1 = "(pod_h - outer_t + frame_t)"  # top of the frame (the bond line and the skin sit above it)
+ZSKIN = "(pod_h - skin_t)"           # underside of the skin
+
+
+def side_sign(half):
+    return -1 if half == "C1" else 1
+
+
+def xr(half, a, b):
+    """X range of a member of one ceiling frame, a and b measured outward from the frame's
+    closing-seam edge (X = +-close_gap / 2), as expressions."""
+    a, b = "close_gap / 2 + %s" % a, "close_gap / 2 + %s" % b
+    return ("-(%s)" % b, "-(%s)" % a) if side_sign(half) < 0 else ("(%s)" % a, "(%s)" % b)
 
 
 def frame_members(half):
     """Members of one ceiling frame in the pod system. half 'C1' (-X) or 'C2' (+X).
+    The frame is half_fw wide: from the closing seam (X = +-close_gap / 2, the 5.5 mm frame
+    gap, R-J11) to the side wall's stop (one seam_gap inside the side frames). The 40 x 40
+    back member runs the frame's full width (R-J3); the side and seam members stop at it.
     Returns [(code, name, axis, (x0, x1, y0, y1, z0, z1))]; axis = the long axis."""
-    s = -1 if half == "C1" else 1
-
-    def xr(a, b):            # a, b measured outward from the seam edge (X = seam_gap / 2), as expressions
-        a, b = "seam_gap / 2 + %s" % a, "seam_gap / 2 + %s" % b
-        lo, hi = ("-(%s)" % b, "-(%s)" % a) if s < 0 else ("(%s)" % a, "(%s)" % b)
-        return lo, hi
     out = []
-    side = xr("c_w - tube_w", "c_w")
-    seam = xr("0 mm", "tube_w")
-    inner = xr("tube_w", "c_w - tube_w")
-    out.append(("SIDE", "SIDE MEMBER", "y", side + (YW, YB, ZF0, ZF1)))
-    out.append(("SEAM", "SEAM MEMBER", "y", seam + (YW, YB, ZF0, ZF1)))
+    yb0 = YB + " - back_w"
+    side = xr(half, "half_fw - tube_w", "half_fw")
+    seam = xr(half, "0 mm", "tube_w")
+    inner = xr(half, "tube_w", "half_fw - tube_w")
+    out.append(("SIDE", "SIDE MEMBER", "y", side + (YW, yb0, ZF0, ZF1)))
+    out.append(("SEAM", "SEAM MEMBER", "y", seam + (YW, yb0, ZF0, ZF1)))
     out.append(("FRONT", "FRONT MEMBER", "x", inner + (YW, YW + " + tube_w", ZF0, ZF1)))
-    out.append(("BACK", "BACK MEMBER", "x", inner + (YB + " - tube_w", YB, ZF0, ZF1)))
+    out.append(("BACK", "BACK MEMBER 40X40", "x", xr(half, "0 mm", "half_fw") + (yb0, YB, ZF0, ZF1)))
     for k in range(1, 4):
         y0 = "%s + %d * fr_pitch" % (YW, k)
         out.append(("X%d" % k, "CROSS MEMBER %d" % k, "x", inner + (y0, y0 + " + tube_w", ZF0, ZF1)))
     return out
 
 
+def joint_holes(half):
+    """The site-joint holes of one ceiling frame (joints register 3.5, 3.6, 2.9), as hole rows:
+    (name, member code, face, (x, y, z) of the row's first hole centre, diameter, count, pitch,
+    pattern axis). face: the member face the hole goes through, 'out' (the face toward the
+    side wall or the seam), 'in' (the opposite face, toward the frame's own bay) or 'bottom'.
+    A row's first hole is the one with the lowest coordinate along its pattern axis, and the
+    row runs toward +axis. The slot of the spigot pair is a separate item (spigot_slot)."""
+    s = side_sign(half)
+    zc = "ceil_bolt_z"
+    side_x_out = "%s(close_gap / 2 + half_fw)" % ("-" if s < 0 else "")
+    side_x_in = "%s(close_gap / 2 + half_fw - tube_w)" % ("-" if s < 0 else "")
+    seam_x_out = "%s(close_gap / 2)" % ("-" if s < 0 else "")
+    seam_x_in = "%s(close_gap / 2 + tube_w)" % ("-" if s < 0 else "")
+    ys = "cj_side_y0"
+    rows = [
+        ("SIDE BOLT CLEARANCE", "SIDE", "out", (side_x_out, ys, zc), "hole_clr", "n_ceil_side_bolt", "cj_side_pitch", "y"),
+        ("SIDE BOLT ACCESS", "SIDE", "in", (side_x_in, ys, zc), "hole_acc", "n_ceil_side_bolt", "cj_side_pitch", "y"),
+    ]
+    if s < 0:
+        rows.append(("SEAM PIN CLEARANCE", "SEAM", "out", (seam_x_out, ys, zc), "hole_clr", "cj_pin_n", "cj_pin_pitch", "y"))
+    else:
+        rows.append(("SEAM PIN RIVNUT", "SEAM", "out", (seam_x_out, ys, zc), "hole_rvn", "cj_pin_n", "cj_pin_pitch", "y"))
+        rows.append(("SEAM PIN ACCESS", "SEAM", "in", (seam_x_in, ys, zc), "hole_acc", "cj_pin_n", "cj_pin_pitch", "y"))
+    bx0 = "-(close_gap / 2 + half_fw - bolt_edge_inset)" if s < 0 else "cj_back_x0"
+    rows.append(("BACK RIVNUT", "BACK", "bottom", (bx0, "cj_back_y", ZF0), "hole_rvn", "cj_back_n", "cj_back_pitch", "x"))
+    rows.append(("BACK SPIGOT ROUND", "BACK", "bottom", ("%scj_spig_x0" % ("-" if s < 0 else ""), "cj_back_y", ZF0),
+                 "spig_hole", "1", "0 mm", "x"))
+    return rows
+
+
+def spigot_slot(half):
+    """The 8.5 x 14 spigot slot along X in the back member's bottom face, at the side end:
+    (centre x, y, z, width, length) as expressions."""
+    return ("%scj_spig_x1" % ("-" if side_sign(half) < 0 else ""), "cj_back_y", ZF0, "spig_hole", "spig_slot")
+
+
+def hole_positions(vals, half):
+    """Every joint hole centre of one half in mm: [(row name, diameter, (x, y, z))], the slot as
+    one item at its centre."""
+    out = []
+    for name, _m, _f, (x, y, z), dia, n, pitch, axis in joint_holes(half):
+        x0, y0, z0, d, nn, p = (ev(vals, e) for e in (x, y, z, dia, n, pitch))
+        for k in range(int(round(nn))):
+            out.append((name, d, (x0 + (k * p if axis == "x" else 0), y0 + (k * p if axis == "y" else 0), z0)))
+    sx, sy, sz, sw, _sl = (ev(vals, e) for e in spigot_slot(half))
+    out.append(("BACK SPIGOT SLOT", sw, (sx, sy, sz)))
+    return out
+
+
 def skin_box():
-    """The skin (COMMON) in its own system: origin at one end of its front edge, Z = 0
-    on the frame top, running toward -X. Placed at C1 with its origin on the seam edge
-    (X = -seam_gap / 2) and at C2 with its origin on the side edge (X = seam_gap / 2 + c_w):
-    a plain rectangle, so the same part fits both."""
-    return ("-c_w", "0 mm", "0 mm", "wall_depth", "0 mm", "acp_t")
+    """A ceiling skin in its own system: origin at one end of its front edge, Z = 0 on its
+    underside (the bond line), running toward -X. C1's skin has its origin on the seam
+    edge (X = -seam_gap / 2), C2's on its side edge (X = seam_gap / 2 + half_pw), so both
+    are the same rectangle; C2's carries the roof slot (PM ruling 2026-10-31: two parts)."""
+    return ("-half_pw", "0 mm", "0 mm", "wall_depth", "0 mm", "skin_t")
 
 
-SKIN_PLACES = {"C1": ("-seam_gap / 2", YW, ZSKIN), "C2": ("seam_gap / 2 + c_w", YW, ZSKIN)}
+SKIN_PLACES = {"C1": ("-seam_gap / 2", YW, ZSKIN), "C2": ("seam_gap / 2 + half_pw", YW, ZSKIN)}
+
+
+def roof_slot_box():
+    """The roof slot (D-61) in the C2 skin's own system, as a through cut."""
+    ox = "(seam_gap / 2 + half_pw)"
+    return ("slot_x0 - %s" % ox, "slot_x0 + slot_w - %s" % ox, "slot_y0 - %s" % YW, "slot_y0 + slot_d - %s" % YW,
+            "0 mm", "skin_t")
 
 
 # cassette, in CS-510301
@@ -285,8 +411,10 @@ FELT_Z0, FELT_Z1 = "(-tray_h + tray_t)", "(-tray_h + tray_t + felt_t)"
 
 def member_front_cs(k):
     """Y in CS-510301 of the front face of frame member k (0 = front member,
-    1..3 = cross members, 4 = back member). The cassette origin sits cs_front
-    behind the front plane YW (D-60 soffit)."""
+    1..3 = cross members, 4 = the 40 x 40 back member). The cassette origin sits
+    cs_front behind the front plane YW (D-60 soffit)."""
+    if k == 4:
+        return "(wall_depth - back_w - cs_front)"
     return "(%d * fr_pitch - cs_front)" % k
 
 
@@ -398,6 +526,10 @@ def tray_flat(vals, k=0.44):
 if __name__ == "__main__":
     p = all_params()
     v = evaluate(p)
-    for n in ("c_w", "fr_pitch", "cs_w", "cs_d", "gap_h", "rib_off", "fill_hw", "inner_w"):
+    for n in ("half_pw", "half_fw", "fr_pitch", "cs_w", "cs_d", "gap_h", "rib_off", "fill_hw", "inner_w",
+              "cj_side_y0", "cj_side_pitch", "cj_back_x0", "cj_back_pitch", "cj_back_y", "ceil_bolt_z"):
         print(n, round(v[n], 3))
     print(tray_flat(v))
+    for half in ("C1", "C2"):
+        for name, d, xyz in hole_positions(v, half):
+            print(half, name, d, tuple(round(c, 2) for c in xyz))

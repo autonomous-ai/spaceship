@@ -3,8 +3,10 @@
     python3 v2/01-CAD-Native/ceiling/test_ceiling_offline.py
 
 They read the same parameters and layout as the Fusion build
-(ceiling_model.py, with the skeleton P03's parameters from its CSV) and check
-the design intent: the stack closes, the frame pitch is 400 or less, the
+(ceiling_model.py, with the skeleton's parameters from its CSV, P04 as
+updated by PR #58) and check the design intent: the stack closes, the frames
+are half_fw wide with the 5.5 mm closing gap, the joint holes sit where the
+joints register puts them (2.9), the frame pitch is 400 or less, the
 cassette sits inside its envelope with its gaps, it never touches the frame,
 the fill clears every member, clip and catch, everything on the cassette is
 symmetric about its centre line (so one part serves both halves), and the
@@ -45,20 +47,23 @@ class Stack(unittest.TestCase):
     def test_values(self):
         """The ceiling's sizes from the skeleton's own numbers (any skeleton revision)."""
         v = VALS
-        self.assertAlmostEqual(v["c_w"], (v["pod_w"] - 2 * v["outer_t"] - 3 * v["seam_gap"]) / 2)
+        self.assertAlmostEqual(v["half_pw"], (v["pod_w"] - 2 * v["outer_t"] - 3 * v["seam_gap"]) / 2)
+        self.assertAlmostEqual(v["half_fw"], (v["pod_w"] - 2 * v["outer_t"] - 2 * v["seam_gap"] - v["close_gap"]) / 2)
+        self.assertAlmostEqual(round(v["half_fw"], 2), 1198.99)
+        self.assertAlmostEqual(round(v["half_pw"], 2), 1200.61)
         self.assertAlmostEqual(v["inner_w"], v["pod_w"] - 2 * v["stack_t"])
         self.assertAlmostEqual(v["fr_pitch"], (v["wall_depth"] - v["tube_w"]) / 4)
         self.assertAlmostEqual(v["cs_w"], v["inner_w"] / 2 - 2 * v["cs_gap"])
         self.assertAlmostEqual(v["cs_d"], v["wall_depth"] - v["stack_t"] - v["cs_front"] - 2 * v["cs_gap"])
         self.assertAlmostEqual(v["gap_h"], 24.0)
         self.assertAlmostEqual(v["rib_off"], v["cs_w"] / 6)
-        self.assertAlmostEqual(v["fill_hw"], v["inner_w"] / 4 - v["seam_gap"] / 2 - v["tube_w"] - v["fill_c"])
+        self.assertAlmostEqual(v["fill_hw"], v["inner_w"] / 4 - v["close_gap"] / 2 - v["tube_w"] - v["fill_c"])
         self.assertEqual(v["cs_front"], 360.0)
         self.assertEqual(v["seam_gap"], 2.26)
 
     def test_stack_closes(self):
         v = VALS
-        self.assertAlmostEqual(v["acp_t"] + v["bond_t"] + v["fr_d"], v["outer_t"])
+        self.assertAlmostEqual(v["skin_t"] + v["bond_t"] + v["frame_t"], v["outer_t"])
         self.assertGreaterEqual(v["bond_t"], 0.0)
         self.assertAlmostEqual(v["outer_t"] + v["lin_gap"] + v["cass_t"], v["stack_t"])
         top = ev(M.CASSETTE_CS["C1"][2])
@@ -81,7 +86,103 @@ class Stack(unittest.TestCase):
             sign = -1 if half == "C1" else 1
             outer = VALS["pod_w"] / 2 - VALS["outer_t"] - VALS["seam_gap"]
             self.assertAlmostEqual(min(xs) if sign < 0 else max(xs), sign * outer)
-            self.assertAlmostEqual(max(xs) if sign < 0 else min(xs), sign * VALS["seam_gap"] / 2)
+            self.assertAlmostEqual(max(xs) if sign < 0 else min(xs), sign * VALS["close_gap"] / 2)
+            self.assertAlmostEqual(max(xs) - min(xs), VALS["half_fw"])
+            back = dict(ms)["BACK"]
+            self.assertAlmostEqual(back[1] - back[0], VALS["half_fw"], msg="40 x 40 back member over the full width")
+            self.assertAlmostEqual(back[3] - back[2], 40.0)
+
+    def test_skins_overhang_at_the_closing_seam(self):
+        """Skins 1200.61 over frames 1198.99: flush at the side, 1.62 over the frame at X 0."""
+        v = VALS
+        for half in ("C1", "C2"):
+            sx = ev(M.SKIN_PLACES[half][0])
+            b = [ev(e) for e in M.skin_box()]
+            x0, x1 = b[0] + sx, b[1] + sx
+            fx = [x for _c, mb in M.boxes_mm(v, [(c, bb) for c, _n, _a, bb in M.frame_members(half)]) for x in mb[:2]]
+            if half == "C1":
+                self.assertAlmostEqual(x0, min(fx))
+                self.assertAlmostEqual(x1 - max(fx), v["half_pw"] - v["half_fw"])
+            else:
+                self.assertAlmostEqual(x1, max(fx))
+                self.assertAlmostEqual(x0 - min(fx), -(v["half_pw"] - v["half_fw"]))
+
+
+class Joints(unittest.TestCase):
+    """J-CEIL-01 and J-CEIL-02 holes against the joints register (2.9, 3.5, 3.6) and the PM
+    ruling of 2026-10-31 (side edges from Y -645 along the ceiling, back edges on the frame)."""
+
+    def rows(self, half, name):
+        return [xyz for n, _d, xyz in M.hole_positions(VALS, half) if n == name]
+
+    def test_register_positions(self):
+        for half in ("C1", "C2"):
+            ys = [round(p[1] + 645, 2) for p in self.rows(half, "SIDE BOLT CLEARANCE")]
+            self.assertEqual(ys, [220.0, 571.67, 923.33, 1275.0])
+            pins = [round(p[1] + 645, 2) for p in self.rows(half, "SEAM PIN CLEARANCE" if half == "C1" else "SEAM PIN RIVNUT")]
+            self.assertEqual(pins, [220.0, 571.67, 923.33, 1275.0])
+            xs = sorted(round(abs(p[0]) - VALS["close_gap"] / 2, 2) for p in self.rows(half, "BACK RIVNUT"))
+            self.assertEqual(xs, [220.0, 473.0, 725.99, 978.99])
+            for p in self.rows(half, "BACK RIVNUT"):
+                self.assertAlmostEqual(p[1], 824.0)
+            for p in self.rows(half, "SIDE BOLT ACCESS"):
+                self.assertAlmostEqual(p[2], 2374.0)
+
+    def test_counts(self):
+        names = {}
+        for half in ("C1", "C2"):
+            for n, _d, _p in M.hole_positions(VALS, half):
+                names[(half, n)] = names.get((half, n), 0) + 1
+        self.assertEqual(names[("C1", "SIDE BOLT CLEARANCE")], 4)
+        self.assertEqual(names[("C2", "SIDE BOLT ACCESS")], 4)
+        self.assertEqual(names[("C1", "BACK RIVNUT")], 4)
+        self.assertEqual(names[("C2", "SEAM PIN RIVNUT")], 4)
+        self.assertEqual(names[("C2", "SEAM PIN ACCESS")], 4)
+        self.assertNotIn(("C2", "SEAM PIN CLEARANCE"), names)
+        self.assertEqual(names[("C1", "BACK SPIGOT ROUND")], 1)
+        self.assertEqual(names[("C1", "BACK SPIGOT SLOT")], 1)
+
+    def test_holes_inside_their_faces_and_clear_of_stiles(self):
+        """Every hole lies on its member's face with its edge inside the face; every bolt is
+        30 mm or more from any member that meets the one it is in (R-J14)."""
+        v = VALS
+        for half in ("C1", "C2"):
+            mem = dict(M.boxes_mm(v, [(c, b) for c, _n, _a, b in M.frame_members(half)]))
+            for name, member, face, _xyz, _dia, _n, _p, axis in M.joint_holes(half):
+                for n, d, (x, y, z) in M.hole_positions(v, half):
+                    if n != name:
+                        continue
+                    b = mem[member]
+                    r = d / 2
+                    if face == "bottom":
+                        self.assertAlmostEqual(z, b[4])
+                        self.assertTrue(b[0] + r + 9 <= x <= b[1] - r - 9 or member == "BACK", (half, n, x))
+                        self.assertGreaterEqual(y - r - b[2], 9.0, (half, n, "rivnut edge distance"))
+                        self.assertGreaterEqual(b[3] - (y + r), 9.0, (half, n))
+                    else:
+                        self.assertTrue(abs(x - b[0]) < 1e-6 or abs(x - b[1]) < 1e-6, (half, n, x, b))
+                        self.assertGreaterEqual(z - r, b[4] + v["tube_t"], (half, n))
+                        self.assertLessEqual(z + r, b[5] - v["tube_t"], (half, n))
+                        self.assertTrue(b[2] < y < b[3], (half, n, y))
+                        for other, ob in mem.items():
+                            if other in ("SIDE", "SEAM"):
+                                continue
+                            g = max(ob[2] - y, y - ob[3])
+                            self.assertGreaterEqual(g, 30.0, "%s %s at Y %.2f: %.1f from %s" % (half, n, y, g, other))
+
+    def test_roof_slot_clear_of_c2_bolts(self):
+        """D-60 (joints register 3.5): C2's side bolts and access holes stay clear of the roof slot."""
+        v = VALS
+        slot_x1 = v["slot_x0"] + v["slot_w"]
+        for n, d, (x, y, z) in M.hole_positions(v, "C2"):
+            if n == "SIDE BOLT ACCESS":
+                self.assertGreaterEqual(x - slot_x1, 20.0, "access hole %.1f from the slot" % (x - slot_x1))
+        sb = [ev(e) for e in M.roof_slot_box()]
+        ox = ev(M.SKIN_PLACES["C2"][0])
+        self.assertGreater(sb[0] + ox, 0.0)
+        self.assertAlmostEqual(sb[1] + ox, slot_x1)
+        self.assertAlmostEqual(sb[2] + ev(M.YW), v["slot_y0"])
+        self.assertGreaterEqual(v["slot_y0"] - (ev(M.YW) + v["tube_w"]), 5.0 - 1e-9, "slot clear of the front member")
 
 
 class Cassette(unittest.TestCase):
@@ -226,10 +327,12 @@ class Weight(unittest.TestCase):
         v = VALS
         rho = {k: m[1] for k, m in M.MATERIALS.items()}
         # outer panel: 7 tubes + skin
-        tube = (2 * (v["tube_w"] + v["fr_d"]) - 4 * v["tube_t"]) * v["tube_t"] * 1e-6 * rho["al"]   # kg/m
-        length = 2 * v["wall_depth"] + 5 * (v["c_w"] - 2 * v["tube_w"])
-        frame = tube * length * 1e-3
-        skin = v["c_w"] * v["wall_depth"] * 1e-6 * 3.5
+        tube = (2 * (v["tube_w"] + v["frame_t"]) - 4 * v["tube_t"]) * v["tube_t"] * 1e-6 * rho["al"]   # kg/m
+        tube40 = (2 * (v["back_w"] + v["frame_t"]) - 4 * v["tube_t"]) * v["tube_t"] * 1e-6 * rho["al"]
+        length = 2 * (v["wall_depth"] - v["back_w"]) + 4 * (v["half_fw"] - 2 * v["tube_w"])
+        frame = tube * length * 1e-3 + tube40 * v["half_fw"] * 1e-3
+        self.assertAlmostEqual(tube40, 0.503, places=3)
+        skin = v["half_pw"] * v["wall_depth"] * 1e-6 * 3.5
         self.assertLess(frame + skin, 20.0)
         # cassette: tray + felt + fill + ribs, plus the layout study's clip allowance
         area = v["cs_w"] * v["cs_d"] * 1e-6
@@ -255,9 +358,11 @@ class EditFollows(unittest.TestCase):
         """Change a skeleton parameter: the layout follows (cassette, frame, fill)."""
         v2 = M.evaluate(P, {"pod_w": "2600 mm"})
         st, ot = v2["stack_t"], v2["outer_t"]
-        self.assertAlmostEqual(v2["c_w"], (2600 - 2 * ot - 3 * 2.26) / 2)
+        self.assertAlmostEqual(v2["half_pw"], (2600 - 2 * ot - 3 * 2.26) / 2)
+        self.assertAlmostEqual(v2["half_fw"], (2600 - 2 * ot - 2 * 2.26 - 5.5) / 2)
         self.assertAlmostEqual(v2["cs_w"], (2600 - 2 * st) / 2 - 6)
-        self.assertAlmostEqual(v2["fill_hw"], (2600 - 2 * st) / 4 - 1.13 - 25)
+        self.assertAlmostEqual(v2["fill_hw"], (2600 - 2 * st) / 4 - 2.75 - 25)
+        self.assertAlmostEqual(v2["cj_back_pitch"], (v2["half_fw"] - 440) / 3)
         v3 = M.evaluate(P, {"wall_depth": "1520 mm"})
         self.assertAlmostEqual(v3["fr_pitch"], (1520 - 20) / 4)
         self.assertAlmostEqual(v3["cs_d"], 1520 - st - 360 - 6)
