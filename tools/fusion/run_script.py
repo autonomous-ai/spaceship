@@ -751,6 +751,16 @@ WRAPPER = '''import base64 as _b64, os as _os, sys as _sys, types as _types
 # files fresh and a team's own edits show at once. Never __main__; Fusion's and
 # Python's own modules are never touched; one odd module can't fail the run.
 _TEAM = [_os.path.realpath(p) for p in %(team)r]
+# never dropped, even under a team folder: Fusion's add-ins and install, and Python's own
+_KEEP = [_os.path.realpath(p) for p in %(keep)r]
+for _p in (getattr(_sys, "prefix", ""), getattr(_sys, "base_prefix", ""), _os.path.dirname(_os.__file__)):
+    if _p:
+        _KEEP.append(_os.path.realpath(_p))
+try:
+    import adsk as _adsk
+    _KEEP.append(_os.path.realpath(_os.path.dirname(_os.path.dirname(_adsk.__file__))))
+except Exception:
+    pass
 
 def _under(f, roots):
     return any(f == r or f.startswith(r.rstrip("/") + "/") for r in roots)
@@ -761,7 +771,8 @@ for _n in list(_sys.modules):
         continue
     try:
         _f = getattr(_sys.modules.get(_n), "__file__", None)
-        if isinstance(_f, str) and _under(_os.path.realpath(_f), _TEAM):
+        if isinstance(_f, str) and _under(_os.path.realpath(_f), _TEAM) \
+                and not _under(_os.path.realpath(_f), _KEEP):
             _sys.modules.pop(_n, None)
             _dropped.append(_n)
     except Exception:
@@ -808,7 +819,20 @@ def team_roots(repo_root=None):
     /tmp (where agents' scratch worktrees live)."""
     trees = git_worktrees(repo_root)
     parents = sorted({os.path.dirname(os.path.abspath(t)) for t in trees[1:]})
-    return trees + parents + ["/tmp", "/private/tmp"]
+    home = os.path.realpath(os.path.expanduser("~"))
+
+    def holds_home(root):            # never sweep the home folder or a folder above it
+        r = os.path.realpath(root)
+        return r == home or home.startswith(r.rstrip("/") + "/")
+
+    return [r for r in trees + parents if not holds_home(r)] + ["/tmp", "/private/tmp"]
+
+
+def keep_roots():
+    """Folders whose modules are never dropped, even inside a team folder: Fusion's
+    add-ins and install (Application Support/Autodesk). The wrapper adds Python's own
+    and the adsk package's folders inside Fusion."""
+    return [os.path.join(os.path.expanduser("~"), "Library", "Application Support", "Autodesk")]
 
 
 def wrap_script(source, path, args):
@@ -817,7 +841,7 @@ def wrap_script(source, path, args):
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
                       "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
                       "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii"),
-                      "team": team_roots()}
+                      "team": team_roots(), "keep": keep_roots()}
 
 
 def run_in_fusion(mcp, source, read_only=False):
