@@ -309,11 +309,11 @@ Other site fixings that the joints register doesn't count (its section 3.9). The
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
 
-1. Step 21, final check and film: 12 min.
-2. Step 1, unpack and set the parts down at their places: 12 min.
-3. Step 10, fixed glass, then the right decor block dr: 10 min.
-4. Step 8, ceiling: c1, c2: 10 min.
-5. Step 22, work-wall ledge and screen mount: 8 min.
+1. Step 21 (Final check and film): 12 min.
+2. Step 1 (Unpack and set the parts down at their places): 12 min.
+3. Step 10 (Fixed glass, then the right decor block DR): 10 min.
+4. Step 8 (Ceiling: C1, C2): 10 min.
+5. Step 2 (Base band): 8 min.
 
 **D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the 127 above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
 
@@ -328,11 +328,11 @@ The fifth, moving the film peeling after the clock, was rejected so the number s
 
 Where the time goes now:
 
-1. Step 21, final check and film: 12 min.
-2. Step 1, unpack and set the parts down at their places: 12 min.
-3. Step 10, fixed glass, then the right decor block dr: 10 min.
-4. Step 8, ceiling: c1, c2: 10 min.
-5. Step 22, work-wall ledge and screen mount: 8 min.
+1. Step 21 (Final check and film): 12 min.
+2. Step 1 (Unpack and set the parts down at their places): 12 min.
+3. Step 10 (Fixed glass, then the right decor block DR): 10 min.
+4. Step 8 (Ceiling: C1, C2): 10 min.
+5. Step 2 (Base band): 8 min.
 
 The 1-hour target needs more than this: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 82 register bolts alone take about 14 minutes of the clock. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
 

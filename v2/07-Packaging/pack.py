@@ -928,7 +928,8 @@ def gen_tables(m):
     rollup_total = sum(r["kg_total"] for r in m.roll.values())
     not_in = sum(p.extra_kg for p in PIECES if p.kind == "piece")
     reg_bolts = sum(c for c, _ in m.register.values())
-    T["ROLLUP_TOTAL"] = f1(rollup_total)
+    T["ROLLUP_TOTAL"] = f1(rollup_total - later)
+    T["ROLLUP_CSV_TOTAL"] = f1(rollup_total)
     T["LATER_KG"] = f1(later)
     T["NOT_IN_ROLLUP_KG"] = f1(not_in)
     T["SHIPPED_NET"] = f1(n1 + n2)
@@ -1127,8 +1128,8 @@ def guide_tables(m, T):
         ut.append([f"`{k}`", f"{v.value:g} {v.unit}", v.status, v.source, v.note])
     G["UNIT_TIMES"] = md_table(["Name", "Value", "Status", "Source", "What it is"], ut)
     # biggest time sinks
-    top = sorted(zip(STEPS, m.steps), key=lambda x: -x[1]["elapsed"])[:5]
-    G["TOP_STEPS"] = "\n".join(f"{i}. Step {st['n']}, {st['title'].lower()}: {tr['elapsed'] / 60:.0f} min." for i, (st, tr) in enumerate(top, 1))
+    top = sorted(((st, tr) for st, tr in zip(STEPS, m.steps) if st["n"] <= CLOCK_LAST_STEP), key=lambda x: -x[1]["elapsed"])[:5]
+    G["TOP_STEPS"] = "\n".join(f"{i}. Step {st['n']} ({st['title']}): {tr['elapsed'] / 60:.0f} min." for i, (st, tr) in enumerate(top, 1))
     return G
 
 
