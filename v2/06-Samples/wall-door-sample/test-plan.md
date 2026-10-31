@@ -8,6 +8,8 @@ Every test stays PLANNED until it has real data (guideline §10). A test on HOLD
 
 Each pass or fail limit comes from a requirement or a decision. Where the plan had to choose a number with no source (a sample size, a hold time, a margin), the number is marked assumption, so the PM can change it before testing.
 
+**PM ruling, 2026-10-31 (DECIDED):** the assumed limits are confirmed as written: the 0.5 dB switch rule (T02), torque at most half the lowest spin-out torque (T06), 2000 mm head clearance after a drop (T08), adhesive (cohesive) failure as the bond pass (T09), and the sample sizes and hold times. T01 and T02 on the 1.71 m² panel are screening tests that compare fill and felt; bands at or below the lab's flanking limit are indicative only. The decision-grade sound result is the whole prototype pod tested to ISO 23351-1. T04, T05 and T12 follow the air layout ruling that is pending after the right decor block's fit check.
+
 ## The tests
 
 | ID | Test | On | Method | Who measures | Pass or fail limit | Ties to | Status |
