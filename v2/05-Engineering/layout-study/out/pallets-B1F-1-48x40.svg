@@ -1,85 +1,82 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="848" viewBox="0 0 1000 848">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="834" viewBox="0 0 1000 834">
 <rect width="100%" height="100%" fill="white"/>
 <text x="30.0" y="24.0" font-size="14" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Option B1 with the final wall stack, pallet 1 of 2</text>
-<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">48x40 in pallet · gross 246 kg (542 lb) · loaded height 1646 mm (64.8 in) · 7.5 lb/ft3</text>
+<text x="30.0" y="42.0" font-size="11" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">48x40 in pallet · gross 244 kg (539 lb) · loaded height 1641 mm (64.6 in) · 7.5 lb/ft3</text>
 <text x="30.0" y="60.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Plan view (48 in along X, 40 in along Y)</text>
 <rect x="30" y="70" width="243.8" height="203.2" fill="#f3e9d2" stroke="#7a5c2e"/>
-<rect x="125.9" y="72.0" width="52.0" height="12.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="35.0" y="84.8" width="233.8" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="35.0" y="94.2" width="233.8" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="37.4" y="103.6" width="229.0" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="37.4" y="113.0" width="229.0" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="37.4" y="122.4" width="229.0" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="37.4" y="131.8" width="229.0" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="41.5" y="141.2" width="220.9" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="41.5" y="150.6" width="220.9" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="41.5" y="160.0" width="220.9" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="41.5" y="169.4" width="220.9" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="131.9" y="178.8" width="20.0" height="8.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="151.9" y="178.8" width="20.0" height="8.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="37.4" y="187.6" width="229.0" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="37.4" y="195.2" width="229.0" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="37.4" y="202.8" width="229.0" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="37.4" y="210.4" width="229.0" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="41.5" y="218.0" width="220.9" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="41.5" y="225.6" width="220.9" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="41.5" y="233.2" width="220.9" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="41.5" y="240.8" width="220.9" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="145.9" y="248.4" width="12.0" height="4.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="35.0" y="253.2" width="233.8" height="3.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="35.0" y="257.0" width="233.8" height="3.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="31.2" y="72.0" width="241.4" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="31.2" y="81.4" width="241.4" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="37.4" y="90.8" width="229.0" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="37.4" y="100.2" width="229.0" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="37.4" y="109.6" width="229.0" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="37.4" y="119.0" width="229.0" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="41.5" y="128.4" width="220.9" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="41.5" y="137.8" width="220.9" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="41.5" y="147.2" width="220.9" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="41.5" y="156.6" width="220.9" height="8.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="131.9" y="166.0" width="20.0" height="8.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="151.9" y="166.0" width="20.0" height="8.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="37.4" y="174.8" width="229.0" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="37.4" y="182.4" width="229.0" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="42.1" y="190.0" width="219.6" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="42.1" y="197.6" width="219.6" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="41.5" y="205.2" width="220.9" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="41.5" y="212.8" width="220.9" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="41.5" y="220.4" width="220.9" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="41.5" y="228.0" width="220.9" height="6.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="145.9" y="235.6" width="12.0" height="4.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="35.0" y="240.4" width="233.8" height="3.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="35.0" y="244.2" width="233.8" height="3.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
 <text x="333.8" y="60.0" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">End view (40 in across, height up)</text>
 <rect x="333.8" y="421.6" width="203.2" height="24.2" fill="#b08a55" stroke="#7a5c2e"/>
-<rect x="335.8" y="201.6" width="12.0" height="220.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="348.6" y="121.6" width="8.6" height="300.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="358.0" y="121.6" width="8.6" height="300.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="367.4" y="121.6" width="8.6" height="300.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="376.8" y="121.6" width="8.6" height="300.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="386.2" y="121.6" width="8.6" height="300.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="395.6" y="121.6" width="8.6" height="300.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="405.0" y="187.8" width="8.6" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="414.4" y="187.8" width="8.6" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="423.8" y="187.8" width="8.6" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="433.2" y="187.8" width="8.6" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="442.6" y="211.6" width="8.0" height="210.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="451.4" y="137.8" width="6.8" height="283.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="459.0" y="137.8" width="6.8" height="283.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="466.6" y="137.8" width="6.8" height="283.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="474.2" y="137.8" width="6.8" height="283.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="481.8" y="187.8" width="6.8" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="489.4" y="187.8" width="6.8" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="497.0" y="187.8" width="6.8" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="504.6" y="187.8" width="6.8" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="512.2" y="186.4" width="4.0" height="235.2" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="517.0" y="137.8" width="3.0" height="283.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<rect x="520.8" y="137.8" width="3.0" height="283.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
-<line x1="323.8" y1="116.6" x2="547.0" y2="116.6" stroke="#b00" stroke-dasharray="4 3"/>
-<text x="551.0" y="120.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1646 mm loaded</text>
+<rect x="335.8" y="122.6" width="8.6" height="299.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="345.2" y="122.6" width="8.6" height="299.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="354.6" y="122.6" width="8.6" height="299.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="364.0" y="122.6" width="8.6" height="299.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="373.4" y="122.6" width="8.6" height="299.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="382.8" y="122.6" width="8.6" height="299.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="392.2" y="180.2" width="8.6" height="241.4" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="401.6" y="180.2" width="8.6" height="241.4" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="411.0" y="180.2" width="8.6" height="241.4" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="420.4" y="180.2" width="8.6" height="241.4" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="429.8" y="211.6" width="8.0" height="210.0" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="438.6" y="132.0" width="6.8" height="289.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="446.2" y="132.0" width="6.8" height="289.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="453.8" y="132.0" width="6.8" height="289.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="461.4" y="132.0" width="6.8" height="289.6" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="469.0" y="187.8" width="6.8" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="476.6" y="187.8" width="6.8" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="484.2" y="187.8" width="6.8" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="491.8" y="187.8" width="6.8" height="233.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="499.4" y="186.4" width="4.0" height="235.2" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="504.2" y="138.8" width="3.0" height="282.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<rect x="508.0" y="138.8" width="3.0" height="282.8" fill="#c9d6ea" stroke="#1f3b63" stroke-width="0.6"/>
+<line x1="323.8" y1="117.6" x2="547.0" y2="117.6" stroke="#b00" stroke-dasharray="4 3"/>
+<text x="551.0" y="121.6" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1641 mm loaded</text>
 <line x1="323.8" y1="80.0" x2="547.0" y2="80.0" stroke="#555" stroke-dasharray="1 3"/>
 <text x="551.0" y="84.0" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1829 mm limit</text>
 <text x="30.0" y="475.8" font-size="11" text-anchor="start" font-weight="bold" font-family="Helvetica, Arial, sans-serif">Legend (part id, size as stacked, kg each)</text>
-<text x="30.0" y="491.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. A-SIL-DR-BAFFLE: 260 along x 1100 up x 60 thick, 7.4 kg</text>
-<text x="30.0" y="505.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">2. C-HALF: 1169 along x 1500 up x 43 thick, 9.9 kg</text>
-<text x="30.0" y="519.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">3. C-HALF: 1169 along x 1500 up x 43 thick, 9.9 kg</text>
-<text x="30.0" y="533.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">4. W-SIDE-LO: 1145 along x 1500 up x 43 thick, 11.4 kg</text>
-<text x="30.0" y="547.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. W-SIDE-LO: 1145 along x 1500 up x 43 thick, 11.4 kg</text>
-<text x="30.0" y="561.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. W-SIDE-UP: 1145 along x 1500 up x 43 thick, 11.4 kg</text>
-<text x="30.0" y="575.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. W-SIDE-UP: 1145 along x 1500 up x 43 thick, 11.4 kg</text>
-<text x="30.0" y="589.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. W-BACK-LO: 1104 along x 1169 up x 43 thick, 8.7 kg</text>
-<text x="30.0" y="603.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. W-BACK-LO: 1104 along x 1169 up x 43 thick, 8.7 kg</text>
-<text x="30.0" y="617.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. W-BACK-UP: 1104 along x 1169 up x 43 thick, 8.7 kg</text>
-<text x="30.0" y="631.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. W-BACK-UP: 1104 along x 1169 up x 43 thick, 8.7 kg</text>
-<text x="30.0" y="645.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">12. B-BAND-FRONT-R: 100 along x 1050 up x 40 thick, 1.5 kg</text>
-<text x="30.0" y="659.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">13. B-BAND-FRONT-L: 100 along x 300 up x 40 thick, 0.4 kg</text>
-<text x="30.0" y="673.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">14. L-CASS-SIDE-LO: 1145 along x 1419 up x 34 thick, 10.9 kg</text>
-<text x="30.0" y="687.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">15. L-CASS-SIDE-LO: 1145 along x 1419 up x 34 thick, 10.9 kg</text>
-<text x="30.0" y="701.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">16. L-CASS-SIDE-UP: 1145 along x 1419 up x 34 thick, 10.9 kg</text>
-<text x="30.0" y="715.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">17. L-CASS-SIDE-UP: 1145 along x 1419 up x 34 thick, 10.9 kg</text>
+<text x="30.0" y="491.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">1. C-HALF: 1207 along x 1495 up x 43 thick, 10.1 kg</text>
+<text x="30.0" y="505.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">2. C-HALF: 1207 along x 1495 up x 43 thick, 10.1 kg</text>
+<text x="30.0" y="519.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">3. W-SIDE-LO: 1145 along x 1495 up x 43 thick, 11.9 kg</text>
+<text x="30.0" y="533.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">4. W-SIDE-LO: 1145 along x 1495 up x 43 thick, 11.9 kg</text>
+<text x="30.0" y="547.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">5. W-SIDE-UP: 1145 along x 1495 up x 43 thick, 11.9 kg</text>
+<text x="30.0" y="561.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">6. W-SIDE-UP: 1145 along x 1495 up x 43 thick, 11.9 kg</text>
+<text x="30.0" y="575.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">7. W-BACK-LO: 1104 along x 1207 up x 43 thick, 9.7 kg</text>
+<text x="30.0" y="589.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">8. W-BACK-LO: 1104 along x 1207 up x 43 thick, 9.7 kg</text>
+<text x="30.0" y="603.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">9. W-BACK-UP: 1104 along x 1207 up x 43 thick, 9.7 kg</text>
+<text x="30.0" y="617.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">10. W-BACK-UP: 1104 along x 1207 up x 43 thick, 9.7 kg</text>
+<text x="30.0" y="631.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">11. B-BAND-FRONT-R: 100 along x 1050 up x 40 thick, 1.5 kg</text>
+<text x="30.0" y="645.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">12. B-BAND-FRONT-L: 100 along x 300 up x 40 thick, 0.4 kg</text>
+<text x="30.0" y="659.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">13. L-CASS-SIDE-LO: 1145 along x 1448 up x 34 thick, 11.1 kg</text>
+<text x="30.0" y="673.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">14. L-CASS-SIDE-LO: 1145 along x 1448 up x 34 thick, 11.1 kg</text>
+<text x="30.0" y="687.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">15. L-CASS-SIDE-UP: 1098 along x 1448 up x 34 thick, 10.6 kg</text>
+<text x="30.0" y="701.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">16. L-CASS-SIDE-UP: 1098 along x 1448 up x 34 thick, 10.6 kg</text>
+<text x="30.0" y="715.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">17. L-CASS-BACK-LO: 1104 along x 1169 up x 34 thick, 8.7 kg</text>
 <text x="30.0" y="729.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">18. L-CASS-BACK-LO: 1104 along x 1169 up x 34 thick, 8.7 kg</text>
-<text x="30.0" y="743.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">19. L-CASS-BACK-LO: 1104 along x 1169 up x 34 thick, 8.7 kg</text>
+<text x="30.0" y="743.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">19. L-CASS-BACK-UP: 1104 along x 1169 up x 34 thick, 8.7 kg</text>
 <text x="30.0" y="757.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">20. L-CASS-BACK-UP: 1104 along x 1169 up x 34 thick, 8.7 kg</text>
-<text x="30.0" y="771.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">21. L-CASS-BACK-UP: 1104 along x 1169 up x 34 thick, 8.7 kg</text>
-<text x="30.0" y="785.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">22. B-THRESH: 60 along x 1176 up x 20 thick, 1.2 kg</text>
-<text x="30.0" y="799.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">23. B-FLOOR: 1169 along x 1419 up x 15 thick, 15.4 kg</text>
-<text x="30.0" y="813.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">24. B-FLOOR: 1169 along x 1419 up x 15 thick, 15.4 kg</text>
+<text x="30.0" y="771.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">21. B-THRESH: 60 along x 1176 up x 20 thick, 1.2 kg</text>
+<text x="30.0" y="785.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">22. B-FLOOR: 1169 along x 1414 up x 15 thick, 15.4 kg</text>
+<text x="30.0" y="799.8" font-size="10" text-anchor="start" font-weight="normal" font-family="Helvetica, Arial, sans-serif">23. B-FLOOR: 1169 along x 1414 up x 15 thick, 15.4 kg</text>
 </svg>
