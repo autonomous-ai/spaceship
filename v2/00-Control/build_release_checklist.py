@@ -60,7 +60,7 @@ SKU = re.compile(r"\b(?=[A-Z0-9.\-]*\d)(?=[A-Z0-9.\-]*[A-Z])[A-Z0-9][A-Z0-9.\-]{
 PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD", re.I)
 PRODUCT_NAMED = re.compile(r"\b(?:part|product|system)\b[^;]*\b(?:DECIDED|source)\b", re.I)
 TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
-FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL",
+FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL", "joints": "JOINTS",
                "air": "CEILING (builds AIR, D-80)", "interior": "CEILING (builds INTERIOR, D-80)"}
 BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"
 SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
