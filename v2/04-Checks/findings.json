@@ -1,5 +1,5 @@
 {
- "next": 11,
+ "next": 13,
  "findings": [
   {
    "check": "C02",
@@ -397,6 +397,88 @@
     }
    ],
    "last_seen": "2026-10-31 0cb764f"
+  },
+  {
+   "check": "C02",
+   "rule": "stack-ST-02A",
+   "subject": "ST-02A",
+   "severity": "major",
+   "message": "As ST-02, with the panels and the side-frame spacing taken as perfect, so only the three metal stops vary (IF-03 and IF-04 back wall across its width: perfect panels): worst case -0.39 to 0.39 mm (nominal 0.00; RSS -0.23 to 0.23, for information), the joint needs 0 to 0.125 mm. Source of the limit: as ST-02.",
+   "fix": "as ST-02",
+   "file": "v2/04-Checks/stacks/contributors.csv",
+   "owner": "Joints Engineer; WALL",
+   "evidence": {
+    "model": "stacks",
+    "result": {
+     "nominal": 2.007283228522283e-13,
+     "wc_min": -0.38999999999979895,
+     "wc_max": 0.3900000000002004,
+     "rss_min": -0.22516660498375335,
+     "rss_max": 0.2251666049841548,
+     "missing": [],
+     "stack_id": "ST-02A",
+     "joint": "IF-03 and IF-04 back wall across its width: perfect panels",
+     "what": "As ST-02, with the panels and the side-frame spacing taken as perfect, so only the three metal stops vary",
+     "min": 0.0,
+     "max": 0.125,
+     "owner": "Joints Engineer; WALL",
+     "state": "FAIL"
+    }
+   },
+   "key": "C02|stack-ST-02A|ST-02A",
+   "id": "F-011",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-10-31 0cb764f",
+   "posted": "Joints and WALL groups 2026-10-31",
+   "history": [
+    {
+     "date": "2026-10-31",
+     "rev": "0cb764f",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C02",
+   "rule": "stack-ST-04A",
+   "subject": "ST-04A",
+   "severity": "major",
+   "message": "As ST-04, with the halves and the side-member spacing taken as perfect, so only the three metal stops vary (IF-05 and IF-06 ceiling across its width: perfect halves): worst case -0.39 to 0.39 mm (nominal 0.00; RSS -0.23 to 0.23, for information), the joint needs 0 to 0.125 mm. Source of the limit: as ST-02.",
+   "fix": "as ST-02",
+   "file": "v2/04-Checks/stacks/contributors.csv",
+   "owner": "Joints Engineer; CEILING",
+   "evidence": {
+    "model": "stacks",
+    "result": {
+     "nominal": 2.007283228522283e-13,
+     "wc_min": -0.38999999999979895,
+     "wc_max": 0.3900000000002004,
+     "rss_min": -0.22516660498375335,
+     "rss_max": 0.2251666049841548,
+     "missing": [],
+     "stack_id": "ST-04A",
+     "joint": "IF-05 and IF-06 ceiling across its width: perfect halves",
+     "what": "As ST-04, with the halves and the side-member spacing taken as perfect, so only the three metal stops vary",
+     "min": 0.0,
+     "max": 0.125,
+     "owner": "Joints Engineer; CEILING",
+     "state": "FAIL"
+    }
+   },
+   "key": "C02|stack-ST-04A|ST-04A",
+   "id": "F-012",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-10-31 0cb764f",
+   "posted": "Joints and CEILING groups 2026-10-31",
+   "history": [
+    {
+     "date": "2026-10-31",
+     "rev": "0cb764f",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }

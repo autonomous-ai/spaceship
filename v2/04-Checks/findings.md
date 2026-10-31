@@ -8,11 +8,13 @@ Every finding has an owner group and a status. **Severe findings block the owner
 
 Severity: **severe** = can't be made, assembled or used as drawn; **major** = will cause rework or a wrong part; **minor** = record keeping. Check codes: C01 clash and minimum gaps (Fusion); C02 tolerance stack-ups; C03 fastener and tool access; C04 weight, doorway and pallet fit; C05 drawing completeness; C06 BOM completeness; C07 fastener schedule and thread engagement; C08 hole-to-hole alignment; C09 edge distance, bend radius, hole-to-bend; C10 mixed metals; C11 material grade and finish.
 
-## Open: 3 (1 severe, 2 major, 0 minor)
+## Open: 5 (1 severe, 4 major, 0 minor)
 
 By owner group:
 
 - BASE: F-006
+- Joints Engineer; CEILING: F-012
+- Joints Engineer; WALL: F-011
 - Joints Engineer; WALL; CEILING: F-009
 - PM (Lead): F-010
 
@@ -21,6 +23,8 @@ By owner group:
 | F-006 | severe | C01 | skeleton BAND-R BASE - BASE BAND - SIDE - RH:1 x DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 | 100000_P03_POD-SKELETON_CAD:1 / 110000 BASE:1 / BAND-R BASE - BASE BAND - SIDE - RH:1 / Body1 and 100000_P03_POD-SKELETON_CAD:1 / 350000 FRONT:1 / DR FRONT - DECOR BLOCK - RIGHT (FACETED, v1 MEASURED):1 / Body1 overlap by 14393.5 mm3 in the skeleton (Fusion, exact intersection). | `v2/03-Manufacturing/skeleton/100000_P03_POD-SKELETON_STEP.step` | Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason. | BASE | 2026-10-31 1eec888 | already in the BASE brief (not re-posted) |
 | F-009 | major | C08 | joints register (PR #23) bolt holes | With Ø6.6 clearance holes and an M6 bolt (major diameter 5.974 max, ISO 965-1 6g) the float is 0.31 mm radial. The rivnut can sit up to 0.07 off in its Ø9.53 +0.10 hole (Sherex body Ø9.50 max), leaving 0.24 mm for both hole positions: about ±0.12 mm each (Ø0.24 positional from the spigot hole), which needs CNC or a drill jig. The register gives no hole position tolerance. Spigot play doesn't add: the panel shifts to the bolts within it. | `v2/05-Engineering/joints/joints-register.md` | State ±0.12 (Ø0.24 positional) in the register for the WALL and CEILING drawings, or open the clearance holes to Ø7.0 (float 0.51, about ±0.22 each). Stack ST-03. | Joints Engineer; WALL; CEILING | 2026-10-31 c9ae2a4 | Joints group 2026-10-31 |
 | F-010 | major | C04 | POD total mass | The pod is about 442.1 kg against the 420 kg cap (D-37, D-54): 22.1 kg over. The layout study's list gives 426.7 kg (v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv); adjustments since: +12.0 kg AIR-D60 (calculation, Air Engineer, passed on by the PM on 2026-10-31); +3.4 kg WALL-TRAY-LIPS (confirmed, PM ruling in the WALL group, 2026-10-31). Open against the cap until the wall sample settles it (ISS-080). | `v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv` | Find the weight, or the PM rules on the cap after the wall sample (D-54: the 25 kg/m3 fill would save 4.3 kg). | PM (Lead) | 2026-10-31 c9ae2a4 | tracked for the PM (Lead) in the mechanical check group 2026-10-31 |
+| F-011 | major | C02 | ST-02A | As ST-02, with the panels and the side-frame spacing taken as perfect, so only the three metal stops vary (IF-03 and IF-04 back wall across its width: perfect panels): worst case -0.39 to 0.39 mm (nominal 0.00; RSS -0.23 to 0.23, for information), the joint needs 0 to 0.125 mm. Source of the limit: as ST-02. | `v2/04-Checks/stacks/contributors.csv` | as ST-02 | Joints Engineer; WALL | 2026-10-31 0cb764f | Joints and WALL groups 2026-10-31 |
+| F-012 | major | C02 | ST-04A | As ST-04, with the halves and the side-member spacing taken as perfect, so only the three metal stops vary (IF-05 and IF-06 ceiling across its width: perfect halves): worst case -0.39 to 0.39 mm (nominal 0.00; RSS -0.23 to 0.23, for information), the joint needs 0 to 0.125 mm. Source of the limit: as ST-02. | `v2/04-Checks/stacks/contributors.csv` | as ST-02 | Joints Engineer; CEILING | 2026-10-31 0cb764f | Joints and CEILING groups 2026-10-31 |
 
 ## Closed and accepted: 7
 
