@@ -89,7 +89,7 @@ Edit test PASS on a copy (`EDIT-TEST-RECORD.md`): pod_w 2600, fr_dz 12 and door_
 
 | File | What |
 |---|---|
-| `v2/01-CAD-Native/front/fixed_glass.py` | Build script: `step=build`, then `step=export` |
+| `v2/01-CAD-Native/front/fixed_glass.py` | Build script: `step=all` builds, saves, exports, takes the pictures and runs the edit test in one Fusion run; `scope=pane` and `scope=uprof` make the part-only designs for the part drawings |
 | `v2/01-CAD-Native/front/360002_P01_FRONT-FIXED-GLASS-UNIT_CAD.f3d` | Native design, exported from the saved cloud version |
 | `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step` | STEP AP214, length unit cm, declared in the file (D-13) |
 | `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` | Parts list, written from the model, with the U-profile cut lengths |
@@ -105,7 +105,7 @@ The visible outline is the skeleton's pentagon with two rulings applied (PM, 202
 | 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED · Tấm kính cố định 4+4 | FIXED GLASS 4+4 | OUTLINE - FIXED GLASS (SKELETON PENTAGON + BITE ON 4 EDGES) (XZ) | EXTRUDE - FIXED GLASS 8.76 | skeleton: pod_w, fix_xbr, fix_xk, fix_zk, fix_xtr, fix_zb, fix_zt, door_xbr, door_xtr, door_zb, door_zt, wall_z0, dt_zb, glass_y, glass_t; own: fg_gap, fg_bite and the line parameters |
 | 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 · Thanh U nhôm kẹp kính | GLAZING U-PROFILE (4 PIECES, MITRED) | BAND - U-PROFILE OUTER (4 EDGES, MITRED), BAND - U-PROFILE CHANNEL (XZ) | EXTRUDE - U-PROFILE BAR, CUT - U-PROFILE CHANNEL 12 X 13.5 | gu_prof_w, gu_prof_d, gu_prof_t, gu_w, gu_in_d |
 | 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 · Gioăng chữ U silicone | GLAZING U-SEAL (4 PIECES) | BAND - U-SEAL OUTER, BAND - U-SEAL GLASS SLOT (XZ) | EXTRUDE - U-SEAL, CUT - U-SEAL GLASS SLOT | gu_w, gu_in_d, fg_bite, glass_t |
-| 368003 | FRONT - GLASS-TO-GLASS SEAL 180 - BOHLE BO5281018 · Gioăng kính-kính 180° | 180 SEAL ENVELOPE (THE 4 MM GAP) | OUTLINE - 180 SEAL SPACE ON THE FREE EDGE (XZ) | EXTRUDE - 180 SEAL SPACE | fg_gap and the door edge line |
+| 368003 | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD · Gioăng từ 180° (nửa 1) | 180 MAGNETIC SEAL - FIXED PANE HALF (HOLD PRODUCT) | OUTLINE - 180 SEAL SPACE ON THE FREE EDGE (XZ), half the 4 mm gap | EXTRUDE - 180 SEAL SPACE | fg_gap and the door edge line |
 
 | Parameter | Value | Status · source |
 |---|---|---|
@@ -117,4 +117,6 @@ The visible outline is the skeleton's pentagon with two rulings applied (PM, 202
 | gu_base | 2 | assumption: HOLD for Bohle's BO5201735 section |
 | fg_bite = gu_in_d - gu_base | 11.5 | calculation, decided as the hidden depth (PM ruling); HOLD for the glass supplier's minimum cover |
 
-Edit test PASS on a copy (`EDIT-TEST-RECORD.md`).
+The bottom U-profile piece has 4 screw holes to BASE's sill (`gs_end`, `gs_hole`, `gs_csk`, `gs_xl`, `gs_xr`, `gs_p`: PM ruling 2026-11-01, 50 from each end, 300 or less apart; ISO 10642 M3 × 8 A2). Parts-list names follow the joints register (H-15 to H-24), with maker and SKU.
+
+Edit test PASS on a copy (`EDIT-TEST-RECORD.md`), in the same run as the build, skeleton P04 v4.
