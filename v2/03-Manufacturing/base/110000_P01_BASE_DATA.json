@@ -1,0 +1,1422 @@
+{
+ "band_finish": "Black anodised, matte, 20 um (class AA20, EN ISO 7599)",
+ "copies": {
+  "110000>110101": 1,
+  "110000>110103": 1,
+  "110000>111201": 1,
+  "110000>111401": 1,
+  "110000>111501": 1,
+  "110101>111101": 1,
+  "110101>111301": 2,
+  "110101>118001": 2,
+  "110101>838001": 8,
+  "110103>111103": 1,
+  "110103>111301": 4,
+  "110103>118001": 3,
+  "110103>838001": 16
+ },
+ "doc": "110000_P01_BASE_CAD",
+ "floor_f1": {
+  "lap_depth": 4.5,
+  "t": 9.0,
+  "x0": -1206.0,
+  "x_lap": 19.5,
+  "x_seam": -0.5,
+  "y0": -645.0,
+  "y1": 806.0
+ },
+ "holes": {
+  "111101": [
+   {
+    "at": [
+     -1230.0,
+     -625.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 12.0
+   },
+   {
+    "at": [
+     -1230.0,
+     -625.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     -1230.0,
+     700.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 12.0
+   },
+   {
+    "at": [
+     -1230.0,
+     700.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     -1227.0,
+     -545.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1227.0,
+     -425.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1227.0,
+     -73.33,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1227.0,
+     278.33,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1227.0,
+     630.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1227.0,
+     750.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     null,
+     775.0,
+     40.0
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     null,
+     775.0,
+     80.0
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "dia": 9.53
+   }
+  ],
+  "111103": [
+   {
+    "at": [
+     -1107.0,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1060.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 12.0
+   },
+   {
+    "at": [
+     -1060.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     -987.0,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -731.33,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -475.67,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -220.0,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -100.0,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     0.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 12.0
+   },
+   {
+    "at": [
+     0.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     100.0,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     220.0,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     475.67,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     731.33,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     987.0,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     1060.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 12.0
+   },
+   {
+    "at": [
+     1060.0,
+     830.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 13.0
+   },
+   {
+    "at": [
+     1107.0,
+     827.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1175.0,
+     null,
+     40.0
+    ],
+    "axis": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     -1175.0,
+     null,
+     80.0
+    ],
+    "axis": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     1175.0,
+     null,
+     40.0
+    ],
+    "axis": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "dia": 9.53
+   },
+   {
+    "at": [
+     1175.0,
+     null,
+     80.0
+    ],
+    "axis": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "dia": 9.53
+   }
+  ],
+  "111201": [
+   {
+    "at": [
+     -1175.0,
+     null,
+     40.0
+    ],
+    "axis": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "dia": 6.6
+   },
+   {
+    "at": [
+     -1175.0,
+     null,
+     80.0
+    ],
+    "axis": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "dia": 6.6
+   },
+   {
+    "at": [
+     null,
+     775.0,
+     40.0
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "dia": 6.6
+   },
+   {
+    "at": [
+     null,
+     775.0,
+     80.0
+    ],
+    "axis": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "dia": 6.6
+   }
+  ]
+ },
+ "params": [
+  {
+   "comment": "SKELETON P03 DECIDED: D-01; conventions s4 (X = +-1250)",
+   "expression": "2500 mm",
+   "name": "pod_w",
+   "unit": "mm",
+   "value": 2500.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: D-01; conventions s4 (Y = +-850)",
+   "expression": "1700 mm",
+   "name": "pod_d",
+   "unit": "mm",
+   "value": 1700.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: D-21 (room floor to roof skin top)",
+   "expression": "2400 mm",
+   "name": "pod_h",
+   "unit": "mm",
+   "value": 2400.0
+  },
+  {
+   "comment": "SKELETON P03 ASSUMPTION: layout study inputs.py glide_h",
+   "expression": "10 mm",
+   "name": "glide_h",
+   "unit": "mm",
+   "value": 10.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: layout study B1 list B-BAND 100x40; inputs.py base_h",
+   "expression": "100 mm",
+   "name": "band_h",
+   "unit": "mm",
+   "value": 100.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: layout study B1 list B-BAND 100x40",
+   "expression": "40 mm",
+   "name": "band_t",
+   "unit": "mm",
+   "value": 40.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: D-16, D-42 (walls and ceiling)",
+   "expression": "81 mm",
+   "name": "stack_t",
+   "unit": "mm",
+   "value": 81.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: layout study B1 final list W-SIDE 43 (ACP 3 + frame 40)",
+   "expression": "43 mm",
+   "name": "outer_t",
+   "unit": "mm",
+   "value": 43.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)",
+   "expression": "34 mm",
+   "name": "cass_t",
+   "unit": "mm",
+   "value": 34.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)",
+   "expression": "1495 mm",
+   "name": "wall_depth",
+   "unit": "mm",
+   "value": 1495.0
+  },
+  {
+   "comment": "SKELETON P03 ASSUMPTION: PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)",
+   "expression": "4 mm",
+   "name": "lin_gap",
+   "unit": "mm",
+   "value": 4.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: layout study B1 list B-FLOOR 15",
+   "expression": "15 mm",
+   "name": "floor_t",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: D-18",
+   "expression": "20 mm",
+   "name": "thresh_h",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: layout study B1 list B-THRESH 1176 x 60 x 20",
+   "expression": "60 mm",
+   "name": "thresh_d",
+   "unit": "mm",
+   "value": 60.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02",
+   "expression": "205 mm",
+   "name": "decor_d",
+   "unit": "mm",
+   "value": 205.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: B1 list F-DL 278 (v1 BOM DL)",
+   "expression": "278 mm",
+   "name": "dl_w",
+   "unit": "mm",
+   "value": 278.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: B1 list F-DR 1016 (v1 STEP solid 78)",
+   "expression": "1016 mm",
+   "name": "dr_w",
+   "unit": "mm",
+   "value": 1016.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: B1 list F-DT 1697 (v1 BOM DT)",
+   "expression": "1697 mm",
+   "name": "dt_w",
+   "unit": "mm",
+   "value": 1697.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: B1 list F-DT 280",
+   "expression": "280 mm",
+   "name": "dt_h",
+   "unit": "mm",
+   "value": 280.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: D-46",
+   "expression": "1176 mm",
+   "name": "door_w",
+   "unit": "mm",
+   "value": 1176.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: B1 list F-GLASS-DOOR 2011; v1 STEP solid 238",
+   "expression": "2011 mm",
+   "name": "door_h",
+   "unit": "mm",
+   "value": 2011.0
+  },
+  {
+   "comment": "SKELETON P03 DECIDED: D-46 (4+4 laminate)",
+   "expression": "8.76 mm",
+   "name": "glass_t",
+   "unit": "mm",
+   "value": 8.76
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: v1 STEP solid 238 centre Y = -699 (layout study data)",
+   "expression": "699 mm",
+   "name": "glass_y",
+   "unit": "mm",
+   "value": 699.0
+  },
+  {
+   "comment": "SKELETON P03 ASSUMPTION: kick strip envelope depth (D-40 gives the height only)",
+   "expression": "20 mm",
+   "name": "kick_d",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: v1 front top 2417 (v2 frame) - pod_h 2400",
+   "expression": "17 mm",
+   "name": "fr_dz",
+   "unit": "mm",
+   "value": 17.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: door left edge X -961 = -1250 + 289",
+   "expression": "289 mm",
+   "name": "door_xl",
+   "unit": "mm",
+   "value": 289.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: door bottom-right X 214",
+   "expression": "1464 mm",
+   "name": "door_xbr",
+   "unit": "mm",
+   "value": 1464.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: door top-right X -68",
+   "expression": "1182 mm",
+   "name": "door_xtr",
+   "unit": "mm",
+   "value": 1182.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: door bottom Z 122",
+   "expression": "122 mm - fr_dz",
+   "name": "door_zb",
+   "unit": "mm",
+   "value": 105.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: door top Z 2133",
+   "expression": "2133 mm - fr_dz",
+   "name": "door_zt",
+   "unit": "mm",
+   "value": 2116.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: fixed glass bottom-left X 218",
+   "expression": "1468 mm",
+   "name": "fix_xbl",
+   "unit": "mm",
+   "value": 1468.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: fixed glass bottom-right X 948 = 1250 - 302",
+   "expression": "302 mm",
+   "name": "fix_xbr",
+   "unit": "mm",
+   "value": 302.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: fixed glass knee X 749 = 1250 - 501",
+   "expression": "501 mm",
+   "name": "fix_xk",
+   "unit": "mm",
+   "value": 501.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: fixed glass knee Z 1538",
+   "expression": "1538 mm - fr_dz",
+   "name": "fix_zk",
+   "unit": "mm",
+   "value": 1521.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: fixed glass top-right X 230 = -1250 + 1480",
+   "expression": "1480 mm",
+   "name": "fix_xtr",
+   "unit": "mm",
+   "value": 1480.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: fixed glass top-left X -66",
+   "expression": "1184 mm",
+   "name": "fix_xtl",
+   "unit": "mm",
+   "value": 1184.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: fixed glass bottom Z 119",
+   "expression": "119 mm - fr_dz",
+   "name": "fix_zb",
+   "unit": "mm",
+   "value": 102.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: fixed glass top Z 2136",
+   "expression": "2136 mm - fr_dz",
+   "name": "fix_zt",
+   "unit": "mm",
+   "value": 2119.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DT and DR edge above the glass Z 2137",
+   "expression": "2137 mm - fr_dz",
+   "name": "dt_zb",
+   "unit": "mm",
+   "value": 2120.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: top chamfer front edge Z 2217 at Y -848",
+   "expression": "2217 mm - fr_dz",
+   "name": "ch_zlo",
+   "unit": "mm",
+   "value": 2200.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: top chamfer back edge Y -672",
+   "expression": "672 mm",
+   "name": "ch_yb",
+   "unit": "mm",
+   "value": 672.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DL facet knee X -1158 = -1250 + 92",
+   "expression": "92 mm",
+   "name": "dl_x2",
+   "unit": "mm",
+   "value": 92.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DL facet knee Y -752",
+   "expression": "752 mm",
+   "name": "dl_y2",
+   "unit": "mm",
+   "value": 752.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DL front corner X -979",
+   "expression": "271 mm",
+   "name": "dl_x3",
+   "unit": "mm",
+   "value": 271.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DL front corner Y -844",
+   "expression": "844 mm",
+   "name": "dl_y3",
+   "unit": "mm",
+   "value": 844.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DL outer facet start Y -670",
+   "expression": "670 mm",
+   "name": "dl_y1",
+   "unit": "mm",
+   "value": 670.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DL top at the outer corner Z 2414",
+   "expression": "2414 mm - fr_dz",
+   "name": "dl_zo",
+   "unit": "mm",
+   "value": 2397.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DT lower facet left X -969 = -1250 + 281",
+   "expression": "281 mm",
+   "name": "dt_x2",
+   "unit": "mm",
+   "value": 281.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DT lower facet left Y -767",
+   "expression": "767 mm",
+   "name": "dt_y2",
+   "unit": "mm",
+   "value": 767.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DT lower facet outer Y -753 at X -1154",
+   "expression": "753 mm",
+   "name": "dt_y3",
+   "unit": "mm",
+   "value": 753.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DR corner facet front X 1052 = 1250 - 198",
+   "expression": "198 mm",
+   "name": "dr_xc",
+   "unit": "mm",
+   "value": 198.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -1250 + 1699 (PM ruling pass C)",
+   "expression": "1699 mm",
+   "name": "dt_xr",
+   "unit": "mm",
+   "value": 1699.0
+  },
+  {
+   "comment": "SKELETON P03 SOURCE: V1-FRONT-FACETS: DR corner facet back Y -672",
+   "expression": "672 mm",
+   "name": "dr_yc",
+   "unit": "mm",
+   "value": 672.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: walls stand on the base band",
+   "expression": "glide_h + band_h",
+   "name": "wall_z0",
+   "unit": "mm",
+   "value": 110.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: 2290 = layout study v2_model wall_h",
+   "expression": "pod_h - wall_z0",
+   "name": "wall_h",
+   "unit": "mm",
+   "value": 2290.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: D-23: 2 sheets per side wall; B1 list 1145",
+   "expression": "wall_h / 2",
+   "name": "side_h",
+   "unit": "mm",
+   "value": 1145.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: back wall stands under the ceiling (v2_model back_h)",
+   "expression": "wall_h - stack_t",
+   "name": "back_h",
+   "unit": "mm",
+   "value": 2209.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: D-23: 4 sheets on the back; B1 list 1104",
+   "expression": "back_h / 2",
+   "name": "back_ph",
+   "unit": "mm",
+   "value": 1104.5
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: 2338 between the side walls",
+   "expression": "pod_w - 2 * stack_t",
+   "name": "inner_w",
+   "unit": "mm",
+   "value": 2338.0
+  },
+  {
+   "comment": "SKELETON P03 CALCULATION: door meets DT; leaves 89 above the threshold (D-40 about 90)",
+   "expression": "pod_h - dt_h - door_h",
+   "name": "door_z0",
+   "unit": "mm",
+   "value": 109.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: layout study inputs.py t_al_base 2.0 mm (aluminium 100x40 base band); alloy, temper and dark finish HOLD (ISS-034, sample hold H15)",
+   "expression": "2 mm",
+   "name": "band_wall",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group): every base band piece and the door's kick strip",
+   "expression": "'Black anodised, matte, 20 um (class AA20, EN ISO 7599)'",
+   "name": "band_finish",
+   "unit": "Text",
+   "value": "Black anodised, matte, 20 um (class AA20, EN ISO 7599)"
+  },
+  {
+   "comment": "BASE ASSUMPTION: head of the plastic end cap closing the side band's back end, so the cap face is flush with the back face Y = pod_d/2; cap product HOLD",
+   "expression": "3 mm",
+   "name": "cap_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE SOURCE: ACP skin 3 mm (plan VT01); skeleton outer_t = ACP 3 + frame 40 (D-16, D-34)",
+   "expression": "3 mm",
+   "name": "acp_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE CALCULATION: wall frame member depth, 40 (D-34: 20 x 40 x 1.2)",
+   "expression": "outer_t - acp_t",
+   "name": "frame_d",
+   "unit": "mm",
+   "value": 40.0
+  },
+  {
+   "comment": "BASE CALCULATION: J-BASE-01 bolt line: centre of the wall's bottom member, measured in from the pod's outer face",
+   "expression": "acp_t + frame_d / 2",
+   "name": "jb_x",
+   "unit": "mm",
+   "value": 23.0
+  },
+  {
+   "comment": "BASE SOURCE: Sherex CAH3-610-4.2 M6 rivet nut: hole 9.53 +0.10/0 (hardware selection A5)",
+   "expression": "9.53 mm",
+   "name": "rn_hole",
+   "unit": "mm",
+   "value": 9.53
+  },
+  {
+   "comment": "BASE SOURCE: CAH3-610-4.2 head diameter 12.96 (hardware selection A5)",
+   "expression": "12.96 mm",
+   "name": "rn_flange",
+   "unit": "mm",
+   "value": 12.96
+  },
+  {
+   "comment": "BASE SOURCE: CAH3-610-4.2 length 14.86 (hardware selection A5)",
+   "expression": "14.86 mm",
+   "name": "rn_len",
+   "unit": "mm",
+   "value": 14.86
+  },
+  {
+   "comment": "BASE ASSUMPTION: CAH3 large-flange head height; read it from the maker's drawing (HOLD)",
+   "expression": "1 mm",
+   "name": "rn_head_t",
+   "unit": "mm",
+   "value": 1.0
+  },
+  {
+   "comment": "BASE SOURCE: layout study J-BASE-01: 4 bolts per wall panel on the band; sample parts list P05",
+   "expression": "4",
+   "name": "jb_n",
+   "unit": "",
+   "value": 4.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: J-BASE-01 end bolts from the panel ends; HOLD until the joints register and the WALL frame bays fix it",
+   "expression": "220 mm",
+   "name": "jb_e",
+   "unit": "mm",
+   "value": 220.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: locating pins from the panel ends: 2 per panel, outside the bolts",
+   "expression": "100 mm",
+   "name": "pin_e",
+   "unit": "mm",
+   "value": 100.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: locating pin shank; enters a 12.5 hole and a 12.5 x 20 slot in the wall member (WALL)",
+   "expression": "12 mm",
+   "name": "pin_dia",
+   "unit": "mm",
+   "value": 12.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: pin height above the rivnut head; the wall member's bore is 17.6 tall (20 x 1.2)",
+   "expression": "12 mm",
+   "name": "pin_h",
+   "unit": "mm",
+   "value": 12.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: lead-in chamfer on the pin top",
+   "expression": "2 mm",
+   "name": "pin_ch",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: M6 stud length into the rivnut",
+   "expression": "8 mm",
+   "name": "pin_stud",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE CALCULATION: glides per side band: span about 1.3 m, sag under 0.5 mm (see feature rationale)",
+   "expression": "2",
+   "name": "gl_n_side",
+   "unit": "",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE CALCULATION: glides on the back band: 2 spans of 1060 (see feature rationale)",
+   "expression": "3",
+   "name": "gl_n_back",
+   "unit": "",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: front glide of a side band, behind the band's outer front corner (Y = -dl_y1), so it stays under the band's front end",
+   "expression": "45 mm",
+   "name": "gl_e_f",
+   "unit": "mm",
+   "value": 45.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: back glide of a side band from the back face",
+   "expression": "150 mm",
+   "name": "gl_e_b",
+   "unit": "mm",
+   "value": 150.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: end glides of the back band from its ends",
+   "expression": "150 mm",
+   "name": "gl_e_bb",
+   "unit": "mm",
+   "value": 150.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: hole in the band top for the 5 mm hex key that turns the glide (levelled before the walls go on)",
+   "expression": "12 mm",
+   "name": "gl_key_hole",
+   "unit": "mm",
+   "value": 12.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD",
+   "expression": "13 mm",
+   "name": "gl_nut_hole",
+   "unit": "mm",
+   "value": 13.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: glide pad diameter (envelope, HOLD)",
+   "expression": "40 mm",
+   "name": "gl_pad",
+   "unit": "mm",
+   "value": 40.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: glide stem M10 (envelope, HOLD)",
+   "expression": "10 mm",
+   "name": "gl_stem",
+   "unit": "mm",
+   "value": 10.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: M10 rivet nut head under the band, between the band and the glide pad (HOLD)",
+   "expression": "2 mm",
+   "name": "gl_nut_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: angle leg, standard extruded aluminium angle 60 x 60 x 5",
+   "expression": "60 mm",
+   "name": "br_leg",
+   "unit": "mm",
+   "value": 60.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: angle thickness",
+   "expression": "5 mm",
+   "name": "br_t",
+   "unit": "mm",
+   "value": 5.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: bracket height, Z 25 to 95: above the floor top, below the walls",
+   "expression": "70 mm",
+   "name": "br_len",
+   "unit": "mm",
+   "value": 70.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: bracket bottom: 13 mm above the floor top (mat_t + fl_t)",
+   "expression": "25 mm",
+   "name": "br_z0",
+   "unit": "mm",
+   "value": 25.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: bolt holes from the bracket's heel: clears the other leg and the bolt head",
+   "expression": "35 mm",
+   "name": "br_e",
+   "unit": "mm",
+   "value": 35.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: bolt holes from the bracket's top and bottom ends",
+   "expression": "15 mm",
+   "name": "br_zh",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE SOURCE: ISO 273 medium clearance hole for M6",
+   "expression": "6.6 mm",
+   "name": "br_hole",
+   "unit": "mm",
+   "value": 6.6
+  },
+  {
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group): 9 mm plywood floor panels, as v1 (FLR-01 9 mm), so the floor top is 12 and the threshold 13 (US accessibility). Replaces the skeleton's floor_t 15 until its next update; then fl_t = floor_t",
+   "expression": "9 mm",
+   "name": "fl_t",
+   "unit": "mm",
+   "value": 9.0
+  },
+  {
+   "comment": "BASE CONFIRMED: PM ruling 2026-10-31: a firm closed-cell foam mat (cross-linked PE or EPDM), 3 mm, about 200 kg/m3, under the floor panels; product HOLD",
+   "expression": "3 mm",
+   "name": "mat_t",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)",
+   "expression": "4 mm",
+   "name": "fl_gap",
+   "unit": "mm",
+   "value": 4.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: gap at the F1 / F2 seam on X = 0",
+   "expression": "1 mm",
+   "name": "fl_seam",
+   "unit": "mm",
+   "value": 1.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: half-lap at the F1 / F2 seam: F1's lower half runs 20 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls)",
+   "expression": "20 mm",
+   "name": "lap_w",
+   "unit": "mm",
+   "value": 20.0
+  }
+ ],
+ "parts": {
+  "110101": {
+   "class": "HS",
+   "key": "band_l",
+   "name": "BASE - BAND ASSY - SIDE - LH",
+   "name_vi": "Viền chân nhôm - cạnh trái (cụm)",
+   "parent": "110000",
+   "pn": "110101"
+  },
+  "110103": {
+   "class": "HS",
+   "key": "band_b",
+   "name": "BASE - BAND ASSY - BACK",
+   "name_vi": "Viền chân nhôm - cạnh sau (cụm)",
+   "parent": "110000",
+   "pn": "110103"
+  },
+  "111101": {
+   "box_mm": [
+    -1250.0,
+    -670.0,
+    10.0,
+    -1210.0,
+    847.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "band_l_tube",
+   "mass_kg": 2.2093,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - SIDE - LH",
+   "name_vi": "Viền chân nhôm 100x40 - cạnh trái",
+   "parent": "110101",
+   "pn": "111101",
+   "volume_mm3": 818246.4
+  },
+  "111103": {
+   "box_mm": [
+    -1210.0,
+    810.0,
+    10.0,
+    1210.0,
+    850.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "band_b_tube",
+   "mass_kg": 3.5444,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - BACK",
+   "name_vi": "Viền chân nhôm 100x40 - cạnh sau",
+   "parent": "110103",
+   "pn": "111103",
+   "volume_mm3": 1312722.4
+  },
+  "111201": {
+   "box_mm": [
+    -1209.0,
+    749.0,
+    25.0,
+    -1149.0,
+    809.0,
+    95.0
+   ],
+   "class": "MP",
+   "key": "bracket",
+   "mass_kg": 0.1068,
+   "material": "Aluminum",
+   "name": "BASE - CORNER BRACKET - BACK - COMMON",
+   "name_vi": "Ke góc đế - góc sau",
+   "parent": "110000",
+   "pn": "111201",
+   "volume_mm3": 39565.8
+  },
+  "111301": {
+   "box_mm": [
+    -6.0,
+    -6.0,
+    -8.0,
+    6.0,
+    6.0,
+    12.0
+   ],
+   "class": "MP",
+   "key": "pin",
+   "mass_kg": 0.0041,
+   "material": "Aluminum",
+   "name": "BASE - LOCATING PIN - COMMON",
+   "name_vi": "Chốt định vị vách",
+   "parent": "110000",
+   "pn": "111301",
+   "volume_mm3": 1516.3
+  },
+  "111401": {
+   "box_mm": [
+    -1206.0,
+    -645.0,
+    3.0,
+    19.5,
+    806.0,
+    12.0
+   ],
+   "class": "MP",
+   "key": "floor_f1",
+   "mass_kg": 9.5239,
+   "material": "Plywood 600 kg/m3 (ASSUMPTION)",
+   "name": "BASE - FLOOR PANEL - F1",
+   "name_vi": "Tấm sàn mỏng - F1",
+   "parent": "110000",
+   "pn": "111401",
+   "volume_mm3": 15873214.5
+  },
+  "111501": {
+   "box_mm": [
+    -1206.0,
+    -645.0,
+    0.0,
+    -0.5,
+    806.0,
+    3.0
+   ],
+   "class": "MP",
+   "key": "mat_f1",
+   "mass_kg": 1.0495,
+   "material": "Closed-cell foam 200 kg/m3 (ASSUMPTION)",
+   "name": "BASE - SEAL MAT - F1",
+   "name_vi": "Tấm lót kín sàn - F1",
+   "parent": "110000",
+   "pn": "111501",
+   "volume_mm3": 5247541.5
+  },
+  "118001": {
+   "box_mm": [
+    -20.0,
+    -20.0,
+    0.0,
+    20.0,
+    20.0,
+    60.0
+   ],
+   "class": "PI",
+   "key": "glide",
+   "mass_kg": 0.15,
+   "material": "Glide envelope 0.15 kg (ASSUMPTION)",
+   "name": "BASE - LEVELLING GLIDE - M10 (HOLD)",
+   "name_vi": "Chân chỉnh cao",
+   "parent": "110000",
+   "pn": "118001",
+   "volume_mm3": 14137.2
+  },
+  "838001": {
+   "box_mm": [
+    -6.48,
+    -6.48,
+    -13.86,
+    6.48,
+    6.48,
+    1.0
+   ],
+   "class": "PI",
+   "key": "rivnut",
+   "mass_kg": 0.0018,
+   "material": "Aluminum",
+   "name": "HARDWARE - RIVET NUT - M6 - CAH3-610-4.2",
+   "name_vi": "Tán rút M6",
+   "parent": "110000",
+   "pn": "838001",
+   "volume_mm3": 673.6
+  }
+ },
+ "rev": "P01",
+ "tubes": {
+  "111101": {
+   "axis": "Y",
+   "back_end": "square, for the end cap",
+   "front_end": "mitre to DL's outer facet band piece: 24.14 deg from square, long point on the outer face",
+   "inner_face_length": 1499.07,
+   "outer_face_length": 1517.0,
+   "section": "100 x 40 x 2.0"
+  },
+  "111103": {
+   "axis": "X",
+   "back_end": "square",
+   "front_end": "square",
+   "inner_face_length": 2420.0,
+   "outer_face_length": 2420.0,
+   "section": "100 x 40 x 2.0"
+  },
+  "111201": {
+   "axis": "Z",
+   "back_end": "square",
+   "front_end": "square",
+   "inner_face_length": 70.0,
+   "outer_face_length": 70.0,
+   "section": "angle 60 x 60 x 5"
+  }
+ }
+}

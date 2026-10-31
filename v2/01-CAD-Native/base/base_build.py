@@ -57,6 +57,8 @@ BASE_PARAMS = [
     # base band section (100 x 40 is the skeleton's band_h x band_t)
     ("band_wall", "2 mm", "mm", "assumption",
      "layout study inputs.py t_al_base 2.0 mm (aluminium 100x40 base band); alloy, temper and dark finish HOLD (ISS-034, sample hold H15)"),
+    ("band_finish", "'Black anodised, matte, 20 um (class AA20, EN ISO 7599)'", "Text", "confirmed",
+     "PM ruling 2026-10-31 (BASE group): every base band piece and the door's kick strip"),
     ("cap_t", "3 mm", "mm", "assumption",
      "head of the plastic end cap closing the side band's back end, so the cap face is flush with the back face Y = pod_d/2; cap product HOLD"),
     # the wall above (WALL owns it; these say where its bottom member sits)
@@ -80,7 +82,7 @@ BASE_PARAMS = [
     # levelling glides (bought, HOLD: no product named yet)
     ("gl_n_side", "2", "", "calculation", "glides per side band: span about 1.3 m, sag under 0.5 mm (see feature rationale)"),
     ("gl_n_back", "3", "", "calculation", "glides on the back band: 2 spans of 1060 (see feature rationale)"),
-    ("gl_e_f", "20 mm", "mm", "assumption", "front glide of a side band from the side wall's front edge (Y = pod_d/2 - wall_depth)"),
+    ("gl_e_f", "45 mm", "mm", "assumption", "front glide of a side band, behind the band's outer front corner (Y = -dl_y1), so it stays under the band's front end"),
     ("gl_e_b", "150 mm", "mm", "assumption", "back glide of a side band from the back face"),
     ("gl_e_bb", "150 mm", "mm", "assumption", "end glides of the back band from its ends"),
     ("gl_key_hole", "12 mm", "mm", "assumption", "hole in the band top for the 5 mm hex key that turns the glide (levelled before the walls go on)"),
@@ -92,16 +94,19 @@ BASE_PARAMS = [
     ("br_leg", "60 mm", "mm", "assumption", "angle leg, standard extruded aluminium angle 60 x 60 x 5"),
     ("br_t", "5 mm", "mm", "assumption", "angle thickness"),
     ("br_len", "70 mm", "mm", "assumption", "bracket height, Z 25 to 95: above the floor top, below the walls"),
-    ("br_z0", "25 mm", "mm", "assumption", "bracket bottom: 7 mm above the floor top (mat_t + floor_t)"),
+    ("br_z0", "25 mm", "mm", "assumption", "bracket bottom: 13 mm above the floor top (mat_t + fl_t)"),
     ("br_e", "35 mm", "mm", "assumption", "bolt holes from the bracket's heel: clears the other leg and the bolt head"),
     ("br_zh", "15 mm", "mm", "assumption", "bolt holes from the bracket's top and bottom ends"),
     ("br_hole", "6.6 mm", "mm", "source", "ISO 273 medium clearance hole for M6"),
     # thin floor
-    ("mat_t", "3 mm", "mm", "assumption", "closed-cell seal mat under the floor panels (layout study B-FLOOR: 3 mm seal mat); product HOLD"),
+    ("fl_t", "9 mm", "mm", "confirmed",
+     "PM ruling 2026-10-31 (BASE group): 9 mm plywood floor panels, as v1 (FLR-01 9 mm), so the floor top is 12 and the threshold 13 (US accessibility). Replaces the skeleton's floor_t 15 until its next update; then fl_t = floor_t"),
+    ("mat_t", "3 mm", "mm", "confirmed",
+     "PM ruling 2026-10-31: a firm closed-cell foam mat (cross-linked PE or EPDM), 3 mm, about 200 kg/m3, under the floor panels; product HOLD"),
     ("fl_gap", "4 mm", "mm", "assumption", "gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)"),
     ("fl_seam", "1 mm", "mm", "assumption", "gap at the F1 / F2 seam on X = 0"),
-    ("tg_t", "5 mm", "mm", "assumption", "tongue thickness on F1's seam edge, in a groove in F2"),
-    ("tg_len", "8 mm", "mm", "assumption", "tongue length; F2's groove is 9 deep"),
+    ("lap_w", "20 mm", "mm", "assumption",
+     "half-lap at the F1 / F2 seam: F1's lower half runs 20 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls)"),
 ]
 
 ASSEMBLY = ("110000", "BASE", "Đế / sàn")
@@ -609,12 +614,11 @@ def step4_band_holes(design):
          [(X, xb), (Y, "%s + pin_e" % YW)], "rn_hole", "band_wall", down,
          ("yConstructionAxis", "2", "wall_depth - 2 * pin_e"))
     xg = "%s + band_t / 2" % XL
-    hole(design, "band_l_tube", top, "GLIDE KEY ACCESS - SIDE LH", (v(xg), v("%s + gl_e_f" % YW), v("wall_z0")),
-         [(X, xg), (Y, "%s + gl_e_f" % YW)], "gl_key_hole", "band_wall", down,
-         ("yConstructionAxis", "gl_n_side", "wall_depth - gl_e_f - gl_e_b"))
-    hole(design, "band_l_tube", bot, "GLIDE NUT - SIDE LH", (v(xg), v("%s + gl_e_f" % YW), v("glide_h")),
-         [(X, xg), (Y, "%s + gl_e_f" % YW)], "gl_nut_hole", "band_wall", up,
-         ("yConstructionAxis", "gl_n_side", "wall_depth - gl_e_f - gl_e_b"))
+    yg0, gext = "-dl_y1 + gl_e_f", "pod_d / 2 - gl_e_b + dl_y1 - gl_e_f"
+    hole(design, "band_l_tube", top, "GLIDE KEY ACCESS - SIDE LH", (v(xg), v(yg0), v("wall_z0")),
+         [(X, xg), (Y, yg0)], "gl_key_hole", "band_wall", down, ("yConstructionAxis", "gl_n_side", gext))
+    hole(design, "band_l_tube", bot, "GLIDE NUT - SIDE LH", (v(xg), v(yg0), v("glide_h")),
+         [(X, xg), (Y, yg0)], "gl_nut_hole", "band_wall", up, ("yConstructionAxis", "gl_n_side", gext))
     yb = "%s - band_t - br_e" % YB
     hole(design, "band_l_tube", inner, "BRACKET RIVNUT - BL - SIDE LH",
          (v("%s + band_t" % XL), v(yb), v("br_z0 + br_zh")),
@@ -714,27 +718,24 @@ def step5_bracket(design):
 def step6_floor(design):
     v = lambda e: ev(design, e)  # noqa: E731
     x0, x1 = "%s + band_t + fl_gap" % XL, "-fl_seam / 2"
-    xt = "-fl_seam / 2 + tg_len"                       # tongue tip, inside F2's groove
+    xl = "-fl_seam / 2 + lap_w"                        # end of F1's lower lap, under F2
     y0, y1 = YW, "%s - band_t - fl_gap" % YB
     comp = find_comp(design, "floor_f1")
     plane = offset_plane(comp, "xy", "mat_t", v("mat_t"), "PLANE - FLOOR UNDERSIDE Z = mat_t")
     sk = comp.sketches.add(plane)
-    sk.name = "PLAN - FLOOR PANEL F1 (WITH THE TONGUE ZONE)"
-    polygon(design, sk, [P(design, x0, y0), P(design, xt, y0), P(design, xt, y1), P(design, x0, y1)], X, Y)
+    sk.name = "PLAN - FLOOR PANEL F1 (WITH THE SEAM LAP)"
+    polygon(design, sk, [P(design, x0, y0), P(design, xl, y0), P(design, xl, y1), P(design, x0, y1)], X, Y)
     check_sketch(sk)
-    f = extrude(comp, one_profile(sk), "floor_t", "EXTRUDE - FLOOR PANEL F1 - PLYWOOD floor_t")
+    f = extrude(comp, one_profile(sk), "fl_t", "EXTRUDE - FLOOR PANEL F1 - PLYWOOD fl_t")
     f.bodies.item(0).name = "%s - PANEL" % PARTS["floor_f1"][1]
-    # the tongue: cut the shoulders above and below it along the seam edge
+    # the half-lap: cut the upper half along the seam edge; F2's upper half lies on it
     sk2 = comp.sketches.add(plane)
-    sk2.name = "PLAN - F1 SEAM TONGUE ZONE"
-    polygon(design, sk2, [P(design, x1, y0), P(design, xt, y0), P(design, xt, y1), P(design, x1, y1)], X, Y)
+    sk2.name = "PLAN - F1 SEAM LAP ZONE"
+    polygon(design, sk2, [P(design, x1, y0), P(design, xl, y0), P(design, xl, y1), P(design, x1, y1)], X, Y)
     check_sketch(sk2)
     body = single_body(comp)
-    extrude(comp, one_profile(sk2), "(floor_t - tg_t) / 2", "CUT - F1 TONGUE - LOWER SHOULDER",
-            op=adsk.fusion.FeatureOperations.CutFeatureOperation, body=body)
-    body = single_body(comp)
-    extrude(comp, one_profile(sk2), "(floor_t - tg_t) / 2", "CUT - F1 TONGUE - UPPER SHOULDER",
-            op=adsk.fusion.FeatureOperations.CutFeatureOperation, start_expr="(floor_t + tg_t) / 2", body=body)
+    extrude(comp, one_profile(sk2), "fl_t / 2", "CUT - F1 SEAM HALF-LAP - UPPER HALF",
+            op=adsk.fusion.FeatureOperations.CutFeatureOperation, start_expr="fl_t / 2", body=body)
     body = single_body(comp, "%s - PANEL" % PARTS["floor_f1"][1])
     print("step 6: floor panel F1  %s" % fmt_box(bbox_mm(body)))
     comp = find_comp(design, "mat_f1")
@@ -859,9 +860,9 @@ def hardware_points(design):
     # glides, screwed into the bands at the factory
     xg = v("%s + band_t / 2" % XL)
     ng = int(round(v("gl_n_side")))
+    yg0, gext = v("-dl_y1 + gl_e_f"), v("pod_d / 2 - gl_e_b + dl_y1 - gl_e_f")
     for i in range(ng):
-        out.append(("band_l", "glide", (xg, yw + v("gl_e_f") + i * (wd - v("gl_e_f") - v("gl_e_b")) / (ng - 1), 0.0),
-                    None))
+        out.append(("band_l", "glide", (xg, yg0 + i * gext / (ng - 1), 0.0), None))
     nb = int(round(v("gl_n_back")))
     x0, ext = v("%s + band_t + gl_e_bb" % XL), v("pod_w - 2 * band_t - 2 * gl_e_bb")
     for i in range(nb):
@@ -897,9 +898,9 @@ MATERIALS = {
     "bracket": ("Aluminum", None, None),
     "pin": ("Aluminum", None, None),
     "rivnut": ("Aluminum", None, None),
-    "floor_f1": ("Aluminum", "Plywood 15 mm, 600 kg/m3 (ASSUMPTION: layout study rho_ply)", 600.0),
-    "mat_f1": ("Aluminum", "Closed-cell seal mat, 150 kg/m3 (ASSUMPTION)", 150.0),
-    "glide": ("Aluminum", "Glide envelope, mass 0.15 kg (ASSUMPTION: layout study B-GLIDE)", None),
+    "floor_f1": ("Aluminum", "Plywood 600 kg/m3 (ASSUMPTION)", 600.0),
+    "mat_f1": ("Aluminum", "Closed-cell foam 200 kg/m3 (ASSUMPTION)", 200.0),
+    "glide": ("Aluminum", "Glide envelope 0.15 kg (ASSUMPTION)", None),
 }
 
 
@@ -922,8 +923,12 @@ def step8_materials(design):
             b.material = mat
     alib = app.materialLibraries.itemByName("Fusion Appearance Library")
     dark = None
-    for nm in ("Paint - Enamel Glossy (Black)", "Aluminum - Anodized Glossy (Black)", "Plastic - Matte (Black)"):
-        a = alib.appearances.itemByName(nm)
+    for nm in ("Aluminum - Anodized Rough (Black)", "Aluminum - Anodized Matte (Black)",
+               "Aluminum - Anodized Glossy (Black)", "Paint - Enamel Glossy (Black)", "Plastic - Matte (Black)"):
+        try:   # an unknown name raises instead of returning None
+            a = alib.appearances.itemByName(nm)
+        except RuntimeError:
+            a = None
         if a is not None:
             dark = design.appearances.itemByName(nm) or design.appearances.addByCopy(a, nm)
             break
@@ -1034,7 +1039,7 @@ def step9_checks(design):
         "band_b_tube": (v("%s + band_t" % XL), v("%s - band_t" % YB), v("glide_h"),
                         v("%s - band_t" % XR), v(YB), v("wall_z0")),
         "floor_f1": (v("%s + band_t + fl_gap" % XL), v(YW), v("mat_t"),
-                     v("-fl_seam / 2 + tg_len"), v("%s - band_t - fl_gap" % YB), v("mat_t + floor_t")),
+                     v("-fl_seam / 2 + lap_w"), v("%s - band_t - fl_gap" % YB), v("mat_t + fl_t")),
     }
     box_bad = []
     for key, want in expect.items():
@@ -1106,7 +1111,14 @@ def step_save(app, doc):
     proj, folder = cloud_folder(app)
     for df in folder.dataFiles:
         if df.name == DOC_NAME:
-            raise RuntimeError("'%s' is already in %s/%s; save a new version of it instead" % (DOC_NAME, *CLOUD))
+            if ARGS.get("replace") != "1":
+                raise RuntimeError("'%s' is already in %s/%s; pass --arg replace=1 to replace it" % (DOC_NAME, *CLOUD))
+            for i in range(app.documents.count - 1, -1, -1):   # our own copy, if it is open
+                d = app.documents.item(i)
+                if d.name == DOC_NAME and d.isSaved:
+                    d.close(False)
+            df.deleteMe()
+            print("save: deleted the previous cloud file %s (our own; no drawing links it yet)" % DOC_NAME)
     app.data.activeProject = proj
     if not doc.saveAs(DOC_NAME, folder, "Spaceship BASE rev %s, DRAFT, built by "
                       "v2/01-CAD-Native/base/base_build.py" % REV, ""):
@@ -1158,6 +1170,91 @@ def step_export(app, design):
         raise RuntimeError("STEP box does not match the model")
 
 
+DATA_REL = "v2/03-Manufacturing/base/110000_%s_BASE_DATA.json" % REV
+
+
+def export_data(design):
+    """Facts read from the CAD for the parts list, cut list and DXF (made
+    offline by v2/03-Manufacturing/base/make_outputs.py): parameters, parts
+    with mass and box, copies per parent, hole centres, tube cuts, F1 outline."""
+    import json
+    v = lambda e: ev(design, e)  # noqa: E731
+    up = design.userParameters
+    params = []
+    for p in up:
+        text = p.valueType == adsk.fusion.ParameterValueTypes.TextParameterValueType if hasattr(
+            adsk.fusion, "ParameterValueTypes") else False
+        val = p.textValue if text else (round(p.value * 10.0, 4) if p.unit == "mm" else round(p.value, 4))
+        params.append({"name": p.name, "expression": p.expression, "unit": p.unit, "value": val,
+                       "comment": p.comment})
+    parts = {}
+    for key, (pn, name, vn, cls, parent) in PARTS.items():
+        comp = find_comp(design, key)
+        rec = {"key": key, "pn": pn, "name": name, "name_vi": vn, "class": cls,
+               "parent": PARTS[parent][0] if parent else ASSEMBLY[0]}
+        if comp.bRepBodies.count:
+            b = comp.bRepBodies.item(0)
+            rec.update({"mass_kg": round(comp_mass(comp), 4), "box_mm": bbox_mm(b),
+                        "volume_mm3": round(b.volume * 1000.0, 1), "material": b.material.name})
+        parts[pn] = rec
+    copies = {}
+    for occ in design.rootComponent.allOccurrences:
+        parent = occ.assemblyContext.component.partNumber if occ.assemblyContext else ASSEMBLY[0]
+        k = "%s>%s" % (parent, occ.component.partNumber)
+        copies[k] = copies.get(k, 0) + 1
+    holes = {}
+    for key in ("band_l_tube", "band_b_tube", "bracket"):
+        body = find_comp(design, key).bRepBodies.item(0)
+        rows = set()
+        for org, d in holes_of_all(body):
+            rows.add((d[0], d[1], d[2], org[0], org[1], org[2], org[3]))
+        holes[PARTS[key][0]] = [{"dia": r[6], "axis": [r[0], r[1], r[2]], "at": [r[3], r[4], r[5]]}
+                                for r in sorted(rows, key=lambda r: tuple(-1e9 if x is None else x for x in r))]
+    yi, yo = v(Y_MITRE_IN), v("-dl_y1")
+    tubes = {
+        PARTS["band_l_tube"][0]: {
+            "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "Y",
+            "outer_face_length": round(v("%s - cap_t" % YB) - yo, 2),
+            "inner_face_length": round(v("%s - cap_t" % YB) - yi, 2),
+            "front_end": "mitre to DL's outer facet band piece: %.2f deg from square, long point on the outer face"
+                         % math.degrees(math.atan2(yi - yo, v("band_t"))),
+            "back_end": "square, for the end cap"},
+        PARTS["band_b_tube"][0]: {
+            "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "X",
+            "outer_face_length": round(v("pod_w - 2 * band_t"), 2), "inner_face_length": round(v("pod_w - 2 * band_t"), 2),
+            "front_end": "square", "back_end": "square"},
+        PARTS["bracket"][0]: {
+            "section": "angle %.0f x %.0f x %.0f" % (v("br_leg"), v("br_leg"), v("br_t")), "axis": "Z",
+            "outer_face_length": round(v("br_len"), 2), "inner_face_length": round(v("br_len"), 2),
+            "front_end": "square", "back_end": "square"},
+    }
+    floor = {"x0": v("%s + band_t + fl_gap" % XL), "x_seam": v("-fl_seam / 2"), "x_lap": v("-fl_seam / 2 + lap_w"),
+             "y0": v(YW), "y1": v("%s - band_t - fl_gap" % YB), "t": v("fl_t"), "lap_depth": v("fl_t / 2")}
+    out = {"doc": DOC_NAME, "rev": REV, "params": params, "parts": parts, "copies": copies, "holes": holes,
+           "tubes": tubes, "floor_f1": floor, "band_finish": up.itemByName("band_finish").textValue}
+    path = os.path.join(REPO, DATA_REL)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(out, fh, indent=1, ensure_ascii=False, sort_keys=True)
+    print("export: %s (%d parameters, %d parts, %d copy rows)" % (DATA_REL, len(params), len(parts), len(copies)))
+
+
+def holes_of_all(body):
+    """Every hole axis in a body: (centre mm, axis), diameter rounded to 0.01."""
+    out = []
+    for f in body.faces:
+        g = f.geometry
+        if g.surfaceType == adsk.core.SurfaceTypes.CylinderSurfaceType:
+            d = round(g.radius * 20.0, 2)
+            a = (round(abs(g.axis.x), 3), round(abs(g.axis.y), 3), round(abs(g.axis.z), 3))
+            o = [round(c * 10.0, 2) for c in (g.origin.x, g.origin.y, g.origin.z)]
+            # keep the two coordinates across the axis; drop the one along it
+            for k in range(3):
+                if a[k] > 0.99:
+                    o[k] = None
+            out.append(((o[0], o[1], o[2], d), a))
+    return out
+
+
 # ---------------------------------------------------------------- main
 
 def run(_context):
@@ -1179,6 +1276,7 @@ def run(_context):
             step_save(app, doc)
         if ARGS.get("export") == "1":
             step_export(app, design)
+            export_data(design)
     if ARGS.get("in_place") != "1" and ARGS.get("keep") != "1" and ARGS.get("save") != "1":
         doc.close(False)
         print("closed the unsaved build document (pass --arg keep=1 to keep it open)")
