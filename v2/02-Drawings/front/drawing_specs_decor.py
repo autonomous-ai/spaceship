@@ -175,7 +175,7 @@ SPECS["dt_skin"] = {
         "deg and joined as v1. Flat patterns 1:1 in 351201_P01_FRONT-DECOR-SKIN-DT_DXF.dxf (layers CUT and MARK).",
         "Open at the back, at DR and over DL's slope. Slot 17 wide in the underside at the glass plane for the fixed "
         "pane's top channel, its left end where the pane's free edge leaves the skin (PM ruling). The underside is "
-        "notched open to its back edge over DR's ledge spigots, X 254 to 442, from Y -673.9 back (J-FRONT-03).",
+        "notched open to its back edge over DR's ledge spigots, X 254 to 428.8, from Y -673.9 back (J-FRONT-03).",
         "Bonded to the frame 351204 per the joints register's ACP bond spec. Outline +/-1 (PROPOSED).",
     ],
     "title": title("351201", "FRONT - DECOR SKIN - DT", "Tấm ốp alu khối trên", "ACP 3 mm EV3038 Dark Yellow",
