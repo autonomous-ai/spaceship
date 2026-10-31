@@ -5,7 +5,8 @@ Fusion queue; fold work into fewer, bigger runs).
         --timeout 3000 --arg specs="new:side:panel:R1;rebuild:side:frame:R1;new:back:cassette:B1"
 
 Each spec is MODE:BUILDER:PART:POSITION. MODE is new (make the document), rebuild (open it and rebuild
-the design the script made) or front (only save the drawings' Front, seen from inside the pod); BUILDER is side (wall_side_panel.py, positions L1 R1 L2 R2) or back
+the design the script made), auto (rebuild it if it is in the folder, else make it) or front (only save the
+drawings' Front, seen from inside the pod); BUILDER is side (wall_side_panel.py, positions L1 R1 L2 R2) or back
 (wall_back_panel.py, positions B1-B4); PART is panel, cassette, frame, skin, fill, tray or felt. The document
 name is the builder's own (`<pn>_P01_<NAME>_CAD`) in Default Project / FocusPod v2, opened the way
 run_script.py --doc opens one. For each spec the builder runs in a fresh namespace with post=1, so it
@@ -87,20 +88,22 @@ def inside_of(builder, part, position):
     return ns["INSIDE"]
 
 
-def open_or_make(app, name, make):
+def open_or_make(app, name, make, allow_existing=False):
+    """(document, opened by us, existed before). make: create it when it is not in the folder; an existing one
+    is refused unless allow_existing (mode auto)."""
     docs = [app.documents.item(i) for i in range(app.documents.count)]
     docs = [d for d in docs if d.name == name]
     if len(docs) > 1:
         raise RuntimeError("%d open documents are called %r" % (len(docs), name))
     if docs:
         docs[0].activate()
-        return docs[0], False
+        return docs[0], False, True
     proj, fold = folder(app)
     files = find_file(fold, name)
     if len(files) > 1:
         raise RuntimeError("%d files are called %r" % (len(files), name))
     if files:
-        if make:
+        if make and not allow_existing:
             raise RuntimeError("%r already exists; use rebuild" % name)
         app.data.activeProject = proj
         doc = app.documents.open(files[0], True)
@@ -108,7 +111,7 @@ def open_or_make(app, name, make):
             raise RuntimeError("could not open %r" % name)
         doc.activate()
         print("BATCH|opened %s (version %s)" % (name, files[0].versionNumber))
-        return doc, True
+        return doc, True, True
     if not make:
         raise RuntimeError("%r is not in %s (use new)" % (name, FOLDER[1]))
     doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
@@ -120,7 +123,7 @@ def open_or_make(app, name, make):
         raise RuntimeError("saveAs %r failed" % name)
     doc.activate()
     print("BATCH|made %s" % name)
-    return doc, True
+    return doc, True, False
 
 
 SKELETON = "100000_P04_POD-SKELETON_CAD"
@@ -178,11 +181,11 @@ def run(_context):
         doc, opened = None, False
         try:
             mode, builder, part, position = spec.split(":")
-            if mode not in ("new", "rebuild", "front") or builder not in BUILDERS:
+            if mode not in ("new", "rebuild", "front", "auto") or builder not in BUILDERS:
                 raise RuntimeError("bad spec %r" % spec)
             name = doc_name(app, builder, part, position)
             print("BATCH|start %s -> %s" % (spec, name))
-            doc, opened = open_or_make(app, name, mode == "new")
+            doc, opened, existed = open_or_make(app, name, mode in ("new", "auto"), allow_existing=mode == "auto")
             if mode == "front":                # the drawings' Front only (designs built before it was saved)
                 if doc.isModified:
                     raise RuntimeError("%r has unsaved changes" % name)
@@ -200,7 +203,7 @@ def run(_context):
             path = os.path.join(ARGS["repo_root"], BUILDERS[builder])
             sargs = dict(builder_args(builder, part, position), repo_root=ARGS["repo_root"], post="1",
                          note=ARGS.get("note", "batch build"))
-            if mode == "rebuild":
+            if mode == "rebuild" or (mode == "auto" and existed):
                 sargs["rebuild"] = "1"
             ns = {"__name__": "__fusion_script__", "__file__": path, "SCRIPT_ARGS": sargs}
             with open(path, "r", encoding="utf-8") as fh:
