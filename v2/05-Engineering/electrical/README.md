@@ -9,9 +9,9 @@ The pod's electrical design: mains, the 12 V bus, the sensor hub, lights, fans, 
 ## Result
 
 1. **Mains in one place, made in the factory (DECIDED, PM ruling 2026-10-31).** One earthed aluminium power unit sits in the lower back panel B2, its face flush with the felt at the ledge height (centre Z 1000). It holds the user socket and the LAN socket on its face, a 30 mA RCBO behind a window, and the three 12 V supplies. The inlet and the LAN feed-through use v1's back-wall spot. v1 had them at X 0, which is now the B1–B2 closing seam (D-65), so they move into B2 at X 120, at v1's heights (Z 313 and 375). On site, nothing mains is connected. Only B2's frame is bonded to earth.
-2. **Three 60 W Class 2 supplies, 180 W in all (DECIDED).** The load is 113.2 W at its maximum and about 34 W typical (calc-results §1): PS1 (Mean Well LPV-60-12) for the voice kit hook (12 V 5 A), PS2 (Mean Well PWM-60-12, dims to off) for the light shelf, PS3 (LPV-60-12) for the four fans, the hub and the call light. 60 W is the Class 2 limit at 12 V, so every cable in the walls, ceiling and air column is power-limited. A later 120 V US version changes only the mains side ([compliance note](compliance-note.md)).
+2. **Three 60 W Class 2 supplies, 180 W in all (DECIDED).** The load is 133.1 W at its hardware maximum and about 34 W typical (calc-results §1). All three are Mean Well LPV-60-12: PS1 for the voice kit hook (12 V 5 A), PS2 for all the lights through a 3-channel light controller, PS3 for the four fans and the hub. A light fault can't stall the fresh air. 60 W is the Class 2 limit at 12 V, so every cable in the walls, ceiling and air column is power-limited. A later 120 V US version changes only the mains side ([compliance note](compliance-note.md)).
 3. **Cables in the lining cassettes' 24 mm gap, clipped to the cassettes only (D-26, D-41), with a plug pair at every joint (DECIDED).** The trunk runs from the unit along B2's lining to the back-right corner, then along R1's lining at Z 1100, past the voice-kit drop, into a cable chase in the air column. The light feed runs up B2 and B4 to the light shelf. A draw-wire route runs through the ceiling cassette (D-41). Every hole in sheet steel has a grommet. 7 joints carry 13 plug pairs.
-4. **The hub runs the air and the lights, and tests them (D-09, D-44, D-50, D-61, D-87).** The fans and the hub sit at the air column, with short cables. Two PWM signals drive the two balanced fan pairs, with tach back. The hub also sets the shelf's 0–10 V dimming and switches the call light. Its **self-test button (D-87)** checks the three 12 V rails, runs both fan pairs and reads their tach, cycles both lights and reads their current, reads the sensors, and shows PASS or the failing item. If a PWM line opens, the fans run at full speed, so a hub fault never stops the fresh air. Every harness segment is tested in the factory before it ships (D-87).
+4. **The hub runs the air and the lights, and tests them (D-09, D-44, D-50, D-61, D-87).** The fans and the hub sit at the air column, with short cables. Two PWM signals drive the two balanced fan pairs, with tach back. The hub also sets the three light channels (uplight, down-light, call light) over RS-485 and keeps them at about 22 W in all (PM ruling). Its **self-test button (D-87)** checks the three 12 V rails, runs both fan pairs and reads their tach, steps each light channel and reads PS2's current change, reads the sensors, and shows PASS or the failing item. If a PWM line opens, the fans run at full speed, so a hub fault never stops the fresh air. Every harness segment is tested in the factory before it ships (D-87).
 5. **CAD: 40 reserved spaces** (routes, pockets, grommets, the unit, the inlet, the hub zone) in `710000_P01_ELECTRICAL_CAD`, derived from skeleton P04. Its own clash check runs against the skeleton's real bodies. See `v2/01-CAD-Native/electrical/BUILD-RECORD.md`.
 6. **Every 12 V path stays under 3 % voltage drop** at full load; the worst is 2.9 %, to the supply fans (calc-results §3). The air feed and the kit feed use two conductors per pole.
 7. **Mass:** ELECTRICAL is 4.94 kg against the layout study's 3.05 kg allowance (calc-results §5): the power unit 2.80, the harness parts 1.00, the cord set 0.50, the hub zone 0.38, the lights 0.26. B2 with the unit inside is about 11.9 kg, under the 20 kg limit (D-03).
@@ -54,8 +54,8 @@ ROOM SOCKET ─ cord set ─ INLET (B2 skin, v1 spot) ─┐
                                                   │  POWER UNIT 710001 in B2 (earthed, factory wired)
                                      RCBO C10 30 mA ─┬─ USER SOCKET (unit face, Z 1000)
                                                      ├─ PS1 60 W ─ F1 5 A ─ trunk ─ VOICE KIT DROP (12 V 5 A, capped)
-                                                     ├─ PS2 60 W dimmable ─ F2 3 A ─ up B2, B4 ─ LIGHT SHELF
-                                                     └─ PS3 60 W ─ trunk ─ AIR COLUMN fuse block ─ fans S, fans E, hub, call light
+                                                     ├─ PS2 60 W ─ F2 5 A ─ 3-ch LIGHT CONTROLLER ─ up B2, B4 ─ SHELF: uplight, down-light, call drop
+                                                     └─ PS3 60 W ─ trunk ─ AIR COLUMN fuse block ─ fans S, fans E, hub
 LAN ─ etherCON (B2 skin) ─ LAN socket port 1 (unit face); port 2 ─ trunk ─ voice kit drop (Cat6, capped)
 ```
 
@@ -84,8 +84,8 @@ The load table is in [`710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv`](710000_P01_EL
 | Supply | Feeds | Protection |
 |---|---|---|
 | PS1, 60 W | The voice kit's reserved 12 V 5 A outlet (D-11, REQ-VCK-04) | F1 5 A in the unit; the supply's own Class 2 limit |
-| PS2, 60 W dimmable | Light shelf, 24 W | F2 3 A in the unit |
-| PS3, 60 W | The column fuse block behind the hub zone cover: F3a 2 A supply fans, F3b 2 A exhaust fans, F3c 1 A hub, F3d 1 A call light | Branch fuses protect the thinner branch cables; the 18 AWG feed is protected by the supply's own limit |
+| PS2, 60 W | The 3-channel light controller: uplight (26.6 W at full), down-light (12.3 W), call light (2.7 W); the hub holds the three at about 22 W | F2 5 A in the unit |
+| PS3, 60 W | The column fuse block behind the hub zone cover: F3a 2 A supply fans, F3b 2 A exhaust fans, F3c 1 A hub | Branch fuses protect the thinner branch cables; the feed is protected by the supply's own limit |
 
 ## 5. Routes, joints and site assembly
 
@@ -98,7 +98,7 @@ Routes are reserved spaces in the cassettes' 24 mm gap: 16 mm deep, which leaves
 | X3 | R1-CASS into the air column | Air feed, dimming | A Ø20 felt exit behind the column; mated before the column is placed |
 | X4 | B2-CASS to B4-CASS (horizontal seam) | Light feed | A Ø20 grommet pair through both returns; mated, then pushed up into pocket P4 |
 | X5 | B4-CASS to the light shelf | Light feed | A Ø16 felt exit behind the shelf (pocket P6) |
-| X6 | Air column to R2-CASS | Call light | A Ø12 felt hole behind the column, then a felt exit behind the call light bar |
+| X6 | Light shelf to R2-CASS | Call light drop | A Ø12 felt hole behind the shelf at Y −209.5; mated, pushed into pocket P7, then straight down R2-CASS to a felt exit behind the call bar |
 | X7 | Voice kit drop, R1-CASS behind the screen | Kit power (capped 4-way outlet), Cat6 (capped keystone), draw wire | A Ø60 felt plug (FA-KIT) |
 
 **Holes:** every hole through a sheet gets a bushing: the six in the cassettes' 0.5 mm steel returns and lips, the hole through DR's back plate where the supply-fan and sensor run enters DR (G-DR, Y −645, Z 2108), and the hole through the soffit's casing above the column chase (G-SOFFIT, Z 2120). The two slots get an edge strip. The felt holes (FX-SHELF, FA-KIT, FX-COL, FX-CALL1, FX-CALL2, FS-CNR) pass the felt only. In WALL's and CEILING's cassette models the felt sits on 12 mm edge lips with the 24 mm gap behind it, so there is no steel edge at those spots, and a bushing (made for 0.5–1.6 mm panels) has nothing to sit in.
@@ -121,11 +121,11 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 ## 7. Sensor hub, controls and the fans
 
 - **Hub placement (REQ-ELE-04, D-70):** in the air column's 180 × 180 zone on its back face (Y −285), X 957–1137, Z 1110–1290. It is centred at Z 1200, seated eye height (SEL F3). It looks across the work-wall seat and sits 1 m above the kick grille, away from the exhaust grille at the soffit's far end. The zone is recessed 30 mm into the column's fill. CEILING models the column and keeps the zone and the chase.
-- **Controls, in the same zone, all hub inputs (W44):** BOOST (D-33), TEST (the self-test, D-87), CALL and the LIGHT knob. The hub sets PS2's 0–10 V dimming over W24 (dim to off) and switches the call light through a current sense.
-- **Self-test (D-87), what the wiring gives the hub to check:** the three 12 V rails (PS1 and PS2 sensed in the power unit over W24; PS3 is the hub's own supply), both fan pairs (PWM out, tach in: each pair at 30 % and 100 %, rpm within the maker's band), the shelf light (current sense on PS2's output, ramped 0 to 100 %), the call light (current sense on its branch), the inlet temperature sensor against the hub's own (within 2 K at start), and CO2, presence and sound in plausible ranges. It shows PASS, or the item that failed, on the hub's display in about 2 minutes (assumption). The test logic is the in-house team's (ISS-060); P01 wires every signal it needs.
+- **Controls, in the same zone, all hub inputs (W44):** BOOST (D-33), TEST (the self-test, D-87), CALL and the LIGHT knob. The hub sets the light controller's three channels over RS-485 on W24.
+- **Self-test (D-87), what the wiring gives the hub to check:** the three 12 V rails (PS1 and PS2 sensed in the power unit over W24; PS3 is the hub's own supply), both fan pairs (PWM out, tach in: each pair at 30 % and 100 %, rpm within the maker's band), each light channel in turn (the current change on PS2's output), the inlet temperature sensor against the hub's own (within 2 K at start), and CO2, presence and sound in plausible ranges. It shows PASS, or the item that failed, on the hub's display in about 2 minutes (assumption). The test logic is the in-house team's (ISS-060); P01 wires every signal it needs.
 - **Fans:** two 4-core leads (W40, W41): 12 V through F3a and F3b, a PWM signal each from the hub, and a tach each back to it. Two signals keep the two pairs balanced (D-61). The fans' PWM input is pulled up inside the fan, so an open PWM line means full speed (fail-safe; the fan sample confirms the iPPC's behaviour, H-ELE-07).
 - **Inlet temperature sensor (D-50):** in the supply fan box inlet, on W42 to the hub's sensor port. The sensor part is on HOLD until the hub's sensor interface is known (H-ELE-06, ISS-060).
-- **Interface the hub must give (for the in-house team; nothing about its insides goes here):** 12 V input (5 W assumed); 2 × PWM out (25 kHz, open drain); 2 × tach in (open collector); 1 × 0–10 V out (PS2's dimming); 1 × switched 12 V out, 0.5 A (call light); 5 × analog in (light knob, two light currents, PS1 and PS2 rails); 3 × button in (BOOST, TEST, CALL); 1 × temperature sensor port; a display for PASS or FAIL. If the hub lacks some of these, a small I/O board in the hub zone adds them and talks to the hub over one link (H-ELE-05).
+- **Interface the hub must give (for the in-house team; nothing about its insides goes here):** 12 V input (5 W assumed); 2 × PWM out (25 kHz, open drain); 2 × tach in (open collector); 1 × RS-485 out (the light controller); 4 × analog in (light knob, PS2's current, PS1 and PS2 rails); 3 × button in (BOOST, TEST, CALL); 1 × temperature sensor port; a display for PASS or FAIL. If the hub lacks some of these, a small I/O board in the hub zone adds them and talks to the hub over one link (H-ELE-05).
 
 ## 8. Voice cockpit hooks (REQ-VCK-01 to 06)
 
@@ -138,10 +138,12 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 
 ## 9. Lights
 
-- **Light shelf (D-70):** Häfele Loox5 2168 strip (6.0 W/m, 970 lm/m at 3000 K: 162 lm/W, Ra over 90) along the tops of the side and back walls. It is 4.434 m long: the back 2332 mm, and each side 1051 mm, from the soffit's back face to the back lining. It is **capped at 71.5 %: 19.0 W, about 3,080 lm** (PM heat request: the lights at about 22 W keep the pod under 4 K with two people at 53 l/s). The hub limits its 0–10 V output, and a 71.5 kΩ resistor on PS2's dimming input holds the cap if the hub link opens. The uncapped strip would be 26.6 W and 4,300 lm. It is fed at X 355 on the back wall: the back strip runs both ways from there, with jumpers in the shelf's channel to each side wall. Every run is 1.5 m or less, inside the maker's 3.5 m per feed. The strip weighs about 0.02 kg/m, inside D-85's 0.4 kg/m shelf budget.
-- **Call scene (D-70):** a 900 mm bar of Loox5 2165 strip (3.0 W/m, about 155 lm/W, about 420 lm) in a diffuser profile above the screen on the work wall, 2.7 W. The hub switches it from the CALL button. It lights the face from the screen side.
-- **Total 21.7 W**, inside REQ-AIR-06's 30 W budget and the PM's about 22 W for heat.
-- **Risk, for the PM:** uplight onto dark grey felt gives little light on the ledge. The lumen method (assumption: the ceiling and walls reflect about 15 %, utilisation about 0.15) gives roughly 120 lx from the capped shelf alone (165 lx uncapped), against the 300–500 lx usual for desk work. The call bar and the office light through the glass add to it. The 30 W budget can't fix that with indirect light alone. A down-lighting strip on the shelf's underside on the same channel, or a lighter ceiling felt, would. Measure on the prototype (ISS-004).
+- **Uplight on the light shelf (D-70):** Häfele Loox5 2168 strip (6.0 W/m, 970 lm/m at 3000 K: 162 lm/W, Ra over 90) along the tops of the side and back walls, 4.434 m. It runs from the soffit's back face to the back lining, fed at X 355 on the back wall, with jumpers in the shelf's channel. It is 26.6 W and 4,300 lm at full.
+- **Down-light (PM ruling 2026-11-01):** two rows of the same strip, 2 × 1.026 m, under the right-wall shelf, aimed at the ledge: 12.3 W and about 1,990 lm. That gives about 350 lx on the ledge at full. This is a calculation: a Lambertian strip 1.2 m above a 1000 × 350 mm ledge at Z 1000, with no reflections. One row would give only about 176 lx, because most of a strip's light falls beside a 350 mm ledge.
+- **Call light (D-70):** a 900 mm bar of Loox5 2165 (3.0 W/m, about 155 lm/W, about 420 lm) in a diffuser profile above the screen, 2.7 W. Its feed drops from the shelf straight down R2-CASS.
+- **About 22 W in all, balanced by the hub (PM ruling):** in the work scene the down-light is full and the uplight runs at 9.7 W (about 1,570 lm), so the ledge gets about 350 + 60 ≈ 410 lx (calculation). In the call scene the call light is on and the hub trims the down-light to 9.6 W, about 335 lx. The three channels come from one 12 V supply through a 3-channel PWM controller set by the hub (H-ELE-14). Every strip run is 1.5 m or less, inside the maker's 3.5 m per feed. The strips weigh about 0.02 kg/m, inside D-85's 0.4 kg/m shelf budget.
+- **CEILING owns the shelf:** it needs an up-facing channel for one 8 mm strip all round, a down-facing channel with a diffuser for two 8 mm strips along the right wall, a wiring channel for the jumpers, the feed entry at X 355 on the back wall and the call drop at Y −209.5 on the right wall, both at Z 2250 behind the shelf.
+- **Check:** the light level on the ledge, measured on the prototype (ISS-004); the target is about 300 lx (PM ruling).
 
 ## 10. HOLD list
 
@@ -159,7 +161,8 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 | H-ELE-10 | Cable clips on 0.5 mm galvanised steel | Adhesive mount or clip, with its hold on the tray | Pull test on a cassette tray |
 | H-ELE-11 | ATO blade fuse holders (unit and column) | Part to name | Datasheet on file |
 | H-ELE-12 | Cat6 RJ45 plugs, inline couplers, keystone | Part to name | Datasheet on file |
-| H-ELE-13 | Current sense modules for the two lights | Part to name, output to suit the hub's input | ISS-060 data |
+| H-ELE-13 | Current sense module on PS2's output | Part to name, output to suit the hub's input | ISS-060 data |
+| H-ELE-14 | 3-channel 12 V PWM light controller, RS-485 | Part to name: at least 3 A per channel, common +12 V, holds or goes dark on a lost link | Datasheet on file; bench test with the strips |
 
 ## 11. Tests (planned, not run: PLANNED / NOT TESTED)
 

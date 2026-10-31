@@ -19,17 +19,20 @@ DATE = "2026-10-31"
 SUPPLIES = [
     ("PS1", "ps_cv", "12 V DC", 60.0, 5.0, "voice cockpit hook, fused 5 A (REQ-VCK-04)",
      "the kit's 12 V 5 A is exactly one Class 2 source at 12 V (NEC Chapter 9 Table 11(B): 5.0 x Vmax VA, 5.0 A)"),
-    ("PS2", "ps_dim", "12 V DC, PWM dimmed", 60.0, 5.0, "light shelf (the hub sets its 0-10 V dimming)",
-     "a dimmable constant-voltage driver; the shelf takes 24 W of its 60"),
-    ("PS3", "ps_cv", "12 V DC", 60.0, 5.0, "four fans, the sensor hub and the call light (column fuse block)",
-     "air and hub kept on their own source, so a lighting or kit fault can't stop the fresh air"),
+    ("PS2", "ps_cv", "12 V DC", 60.0, 5.0, "all lights: uplight, down-light and call light, through the 3-channel light controller",
+     "lights on their own source, so a light fault can't stall the fresh air; the hub holds the lights at about 22 W"),
+    ("PS3", "ps_cv", "12 V DC", 60.0, 5.0, "four fans and the sensor hub (column fuse block)",
+     "air and hub on their own source, so a lighting or kit fault can't stop the fresh air"),
 ]
 
 # ------------------------------------------------------------------ loads (the load table)
 # id, load, supply, branch fuse, qty, W each max, W each typical, status of W, source, note
 FAN_W_MAX = 6.6        # Noctua's maximum input power, 0.55 A at 12 V (maker page via retailer copies, 2026-10-31: unverified)
-SHELF_CAP = 0.715      # PM heat request: lights about 22 W; 71.5 kOhm (E96) on PS2's resistance-dimming input
-SHELF_W = round(4.434 * 6.0 * SHELF_CAP, 1)   # 19.0 W (calculation)
+LIGHT_BUDGET_W = 22.0  # DECIDED (PM 2026-11-01): uplight, down-light and call light together, the hub balancing them
+UP_W = round(4.434 * 6.0, 1)      # 26.6 W, the uplight strip at full (calculation)
+DOWN_W = round(2 * 1.026 * 6.0, 1)  # 12.3 W, two rows of the down strip at full (calculation)
+CALL_W = 2.7
+UP_TYP = round(LIGHT_BUDGET_W - DOWN_W, 1)   # 9.7 W: the work scene, down-light full, the uplight takes the rest
 FAN_W_53 = 2.6         # at about 73 % speed for 53 l/s (air report §7d): cube law 0.73^3 x 6.6 (calculation)
 LOADS = [
     ("LD01", "Supply fan pair (2 x Noctua NF-A14 industrialPPC-3000 PWM), high in DR", "PS3", "F3a 2 A", 2,
@@ -41,14 +44,17 @@ LOADS = [
     ("LD03", "Desk Pro AI sensor hub (in-house), air column zone", "PS3", "F3c 1 A", 1,
      5.0, 3.0, "assumption (ISS-060: in-house data still to collect)", "REQ-ELE-03, C8",
      "12 V input assumed; if the hub takes 5 V, a 12-to-5 V converter sits in the hub zone (HOLD H-ELE-08)"),
-    ("LD04", "Call light, 900 mm bar of Häfele Loox5 2165 strip (3.0 W/m)", "PS3", "F3d 1 A", 1,
-     2.7, 2.7, "calculation (0.9 m x 3.0 W/m, maker data)", "REQ-AIR-06, D-70; Häfele 25L1-18",
-     "switched by the hub from the CALL button; about 440 lm"),
-    ("LD05", "Light shelf, 4.434 m of Häfele Loox5 2168 strip (6.0 W/m, 970 lm/m at 3000 K: 162 lm/W)", "PS2", "F2 3 A", 1,
-     SHELF_W, SHELF_W, "calculation (strip length from the model x 6.0 W/m x the 71.5 % cap; maker data)",
-     "REQ-AIR-06, D-70; Häfele 25L1-18; PM heat request 2026-11-01 (about 22 W for the lights)",
-     "capped at 71.5 % (hub's 0-10 V limit; a 71.5 kOhm resistor on DIM holds it if the hub link opens): about 3130 lm; "
-     "the full strip would be 26.6 W, 4300 lm; lights 21.7 W in all"),
+    ("LD04", "Call light, 900 mm bar of Häfele Loox5 2165 strip (3.0 W/m, about 155 lm/W)", "PS2", "light controller CH3", 1,
+     CALL_W, 0.0, "calculation (0.9 m x 3.0 W/m, maker data)", "REQ-AIR-06, D-70; Häfele 25L1-18",
+     "about 420 lm; on in the call scene, when the hub trims the down-light to stay inside the 22 W"),
+    ("LD05", "Uplight on the light shelf, 4.434 m of Häfele Loox5 2168 (6.0 W/m, 970 lm/m at 3000 K: 162 lm/W)", "PS2",
+     "light controller CH1", 1, UP_W, UP_TYP, "calculation (strip length from the model x 6.0 W/m; maker data)",
+     "REQ-AIR-06, D-70; Häfele 25L1-18",
+     "26.6 W and 4300 lm at full; in the work scene the hub runs it at 9.7 W, about 1570 lm"),
+    ("LD08", "Down-light under the right-wall shelf, 2 rows x 1.026 m of Loox5 2168, aimed at the ledge", "PS2",
+     "light controller CH2", 1, DOWN_W, DOWN_W, "calculation (2.052 m x 6.0 W/m; maker data)",
+     "PM ruling 2026-11-01 (down-light, about 22 W in all, about 300 lx on the ledge); Häfele 25L1-18",
+     "about 1990 lm; about 350 lx on the ledge at full (calculation, Lambertian strip 1.2 m above it, no reflections)"),
     ("LD06", "Voice cockpit hook, 12 V 5 A reserved outlet", "PS1", "F1 5 A", 1,
      60.0, 0.0, "DECIDED (D-11 peak; D-88 average)", "REQ-VCK-04; D-88",
      "60 W peak on the hook, 40 W average budget (D-88); kit not fitted in v2, so 0 W typical"),
@@ -118,8 +124,8 @@ def _len(v, *codes):
     return tot
 
 
-LIGHT_A = 26.6 / 12.0       # shelf strip at full, the wiring's design current even with the cap (calculation)
-PS3_A = (4 * 6.6 + 5.0 + 2.7) / 12.0   # PS3's maximum (LD01-LD04), calculation
+LIGHT_A = LIGHT_BUDGET_W / 12.0   # the lights' 22 W, held by the hub (calculation); hardware max 41.6 W in the note
+PS3_A = (4 * 6.6 + 5.0) / 12.0   # PS3's maximum: four fans and the hub (LD01-LD03), calculation
 
 
 def harnesses(v):
@@ -159,44 +165,47 @@ def harnesses(v):
         end_a="RJ45 plug into the feed-through", end_b="punched down at the socket", grommets="sleeve end bushes",
         amps_max=None, note="plan VT09; the building LAN comes in at v1's position")
     # ---- light feed (PS2) to the light shelf: PU -> B2-CASS -> B4-CASS -> shelf
-    add(id="W10a", harness_pn="710001", segment="PU", function="light feed", frm="PS2 output via F2 3 A",
+    add(id="W10a", harness_pn="710001", segment="PU", function="light feed", frm="light controller outputs (PS2) via F2 5 A",
         to="pocket P5 in B2-CASS", route="out of the unit's top, G-PU-TOP", circuit="PS2 lights",
-        conductors="+12 V dim, 0 V", cable="2 x 18 AWG, Class 2 (CL2 or equivalent)", area_mm2=AWG18,
-        length_mm=PU_IN + cross_top + LOOP, end_a="PS2 output terminals", end_b="Mini-Fit Jr 2-way receptacle",
+        conductors="+12 V x 2, UP-, DOWN-, CALL-, spare", cable="6 x 18 AWG, Class 2 (CL2 or equivalent)", area_mm2=AWG18,
+        length_mm=PU_IN + cross_top + LOOP, end_a="light controller terminals", end_b="Mini-Fit Jr 6-way receptacle",
         grommets="G-PU-TOP", amps_max=LIGHT_A,
         note="through the shelf's current sense (self-test, D-87); slack to the first clip: it crosses the 4 mm floating gap")
     add(id="W10b", harness_pn="710011", segment="B2-CASS", function="light feed", frm="P5", to="B2/B4 joint",
-        route="P5, L1-B2, G-B2-B4", circuit="PS2 lights", conductors="+12 V dim, 0 V",
-        cable="2 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=80 + L("L1-B2", "G-B2-B4") + TAIL,
-        end_a="Mini-Fit Jr 2-way plug (mates W10a)", end_b="Mini-Fit Jr 2-way receptacle (tail out of the top grommet)",
+        route="P5, L1-B2, G-B2-B4", circuit="PS2 lights", conductors="+12 V x 2, UP-, DOWN-, CALL-, spare",
+        cable="6 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=80 + L("L1-B2", "G-B2-B4") + TAIL,
+        end_a="Mini-Fit Jr 6-way plug (mates W10a)", end_b="Mini-Fit Jr 6-way receptacle (tail out of the top grommet)",
         grommets="G-B2-B4", amps_max=LIGHT_A, note="clipped to the cassette tray only (D-26)")
     add(id="W10c", harness_pn="710011", segment="B4-CASS", function="light feed", frm="P4 (above the joint)",
-        to="P6 (shelf feed)", route="P4, L1-B4, P6, FX-SHELF", circuit="PS2 lights", conductors="+12 V dim, 0 V",
-        cable="2 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=LOOP + L("L1-B4") + 100 + 300,
-        end_a="Mini-Fit Jr 2-way plug (mates W10b in P4)", end_b="Mini-Fit Jr 2-way receptacle, tail into the shelf",
+        to="P6 (shelf feed)", route="P4, L1-B4, P6, FX-SHELF", circuit="PS2 lights",
+        conductors="+12 V x 2, UP-, DOWN-, CALL-, spare", cable="6 x 18 AWG, Class 2", area_mm2=AWG18,
+        length_mm=LOOP + L("L1-B4") + 100 + 300,
+        end_a="Mini-Fit Jr 6-way plug (mates W10b in P4)", end_b="Mini-Fit Jr 6-way receptacle, tail into the shelf",
         grommets="G-B2-B4, FX-SHELF", amps_max=LIGHT_A, note="")
-    side_a = 1.051 * 6.0 / 12.0           # one side-wall strip: 1.051 m x 6.0 W/m (calculation)
+    up_side_a = 1.051 * 6.0 / 12.0        # one side-wall uplight run at full (calculation)
+    right_a = (DOWN_W + CALL_W) / 12.0 + up_side_a   # the right-wall jumper: down-light, call light, right uplight
     add(id="W11a", harness_pn="710011", segment="SHELF", function="light shelf feed lead",
-        frm="P6 felt exit (X 355, Z 2250)", to="back strip feed point", route="FX-SHELF, the shelf's channel",
-        circuit="PS2 lights", conductors="+12 V dim, 0 V", cable="2 x 18 AWG, Class 2", area_mm2=AWG18,
-        length_mm=300, length_status="assumption", end_a="Mini-Fit Jr 2-way plug (mates W10c)",
-        end_b="strip feed: back strip both ways", grommets="FX-SHELF", amps_max=LIGHT_A, note="")
-    add(id="W11b", harness_pn="710011", segment="SHELF", function="jumper to the left wall strip",
-        frm="back strip feed point", to="left wall strip, back end", route="the shelf's channel",
-        circuit="PS2 lights", conductors="+12 V dim, 0 V", cable="2 x 18 AWG, Class 2", area_mm2=AWG18,
+        frm="P6 felt exit (X 355, Z 2250)", to="back uplight feed point", route="FX-SHELF, the shelf's channel",
+        circuit="PS2 lights", conductors="+12 V x 2, UP-, DOWN-, CALL-, spare", cable="6 x 18 AWG, Class 2", area_mm2=AWG18,
+        length_mm=300, length_status="assumption", end_a="Mini-Fit Jr 6-way plug (mates W10c)",
+        end_b="strip feeds: back uplight both ways; jumpers W11b, W11c", grommets="FX-SHELF", amps_max=LIGHT_A, note="")
+    add(id="W11b", harness_pn="710011", segment="SHELF", function="jumper to the left wall uplight",
+        frm="back feed point", to="left wall uplight, back end", route="the shelf's channel",
+        circuit="PS2 lights", conductors="+12 V, UP-", cable="2 x 18 AWG, Class 2", area_mm2=AWG18,
         length_mm=v["lt_x"] + v["x_rf"] + 100, length_status="calculation (X 355 to X -1166) + assumption (100)",
-        end_a="strip feed connector", end_b="strip feed connector", grommets="", amps_max=side_a, note="")
-    add(id="W11c", harness_pn="710011", segment="SHELF", function="jumper to the right wall strip",
-        frm="back strip feed point", to="right wall strip, back end", route="the shelf's channel",
-        circuit="PS2 lights", conductors="+12 V dim, 0 V", cable="2 x 18 AWG, Class 2", area_mm2=AWG18,
-        length_mm=v["x_rf"] - v["lt_x"] + 100, length_status="calculation (X 355 to X 1166) + assumption (100)",
-        end_a="strip feed connector", end_b="strip feed connector", grommets="", amps_max=side_a,
-        note="every strip run is 1.5 m or less, inside the maker's 3.5 m per feed")
+        end_a="strip feed connector", end_b="strip feed connector", grommets="", amps_max=up_side_a, note="")
+    add(id="W11c", harness_pn="710011", segment="SHELF", function="jumper to the right wall: uplight, down-light, call drop",
+        frm="back feed point", to="right wall shelf: uplight, down-light rows, call drop at Y -209.5", route="the shelf's channel",
+        circuit="PS2 lights", conductors="+12 V, UP-, DOWN-, CALL-", cable="4 x 18 AWG, Class 2", area_mm2=AWG18,
+        length_mm=v["x_rf"] - v["lt_x"] + 100 + 300, length_status="calculation (X 355 to X 1166 and along the right wall) + assumption",
+        end_a="strip feed connector", end_b="strip feed connectors; Mini-Fit Jr 2-way receptacle for the call drop (X6)",
+        grommets="", amps_max=right_a,
+        note="every strip run is 1.5 m or less, inside the maker's 3.5 m per feed; down-light rows fed in parallel")
     # ---- trunk: air feed (PS3), cockpit (PS1), dimming signal, Cat6: PU -> B2-CASS -> R1-CASS
     for wid, fn, circ, cond, cable, area, par, amps, endb in (
             ("W20", "air feed", "PS3 air", "+12 V x 2, 0 V x 2", "4 x 18 AWG (2 per pole), Class 2", AWG18, 2, PS3_A, "column fuse block"),
             ("W30", "voice kit feed", "PS1 kit", "+12 V x 2, 0 V x 2", "4 x 18 AWG (2 per pole), Class 2", AWG18, 2, 5.0, "kit drop"),
-            ("W24", "hub link to the power unit", "hub I/O", "DIM+, DIM- (0-10 V to PS2), light current, 0 V, PS1 and PS2 rail senses",
+            ("W24", "hub link to the power unit", "hub I/O", "RS-485 A, B (to the light controller), 0 V, light current, PS1 and PS2 rail senses",
              "6 x 24 AWG screened, Class 2", AWG24, 1, 0.01, "hub I/O"),
             ("W31", "voice kit data", "LAN", "4 pairs", "Cat6 U/UTP", None, 1, None, "kit drop")):
         def end(kind):
@@ -209,7 +218,7 @@ def harnesses(v):
         add(id=wid + "a", harness_pn="710001", segment="PU", function=fn, frm="power unit",
             to="pocket P1 in B2-CASS", route="out of the unit's right side, S-PU-X", circuit=circ,
             conductors=cond, cable=cable, area_mm2=area, parallel=par, length_mm=PU_IN + cross_side + LOOP,
-            end_a={"W20": "PS3 output", "W30": "F1 5 A", "W24": "PS2 DIM input, shelf current sense, PS1 and PS2 rail taps",
+            end_a={"W20": "PS3 output", "W30": "F1 5 A", "W24": "light controller link, PS2 current sense, PS1 and PS2 rail taps",
                    "W31": "LAN socket port 2"}[wid],
             end_b=end("receptacle"), grommets="S-PU-X", amps_max=amps,
             note="slack to the first clip: it crosses the 4 mm floating gap, so no clip within 150 mm of the cut-out")
@@ -244,10 +253,10 @@ def harnesses(v):
         end_b="fuse block input", grommets="", amps_max=PS3_A, note="F3a 2 A, F3b 2 A, F3c 1 A, F3d 1 A in the column")
     add(id="W24d", harness_pn="710023", segment="COLUMN", function="hub link to the power unit", frm="chase entry",
         to="hub I/O (hub zone)", route="CHASE", circuit="hub I/O",
-        conductors="DIM+, DIM-, light current, 0 V, PS1 and PS2 rail senses", cable="6 x 24 AWG screened",
+        conductors="RS-485 A, B, 0 V, light current, PS1 and PS2 rail senses", cable="6 x 24 AWG screened",
         area_mm2=AWG24, length_mm=LOOP + hub_rise + 150, end_a="shares W20d's 10-way plug",
         end_b="hub I/O (HOLD H-ELE-05)", grommets="", amps_max=0.01,
-        note="lets the hub dim the shelf, check its current and check every 12 V rail in the self-test (D-87)")
+        note="the hub sets the three light channels over RS-485, reads PS2's current and every 12 V rail for the self-test (D-87)")
     add(id="W40", harness_pn="710023", segment="COLUMN", function="supply fan pair", frm="F3a 2 A + hub PWM 1, tach 1",
         to="supply fan box, high in DR", route="CHASE, TO-DR", circuit="PS3 fan S",
         conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG", area_mm2=AWG20,
@@ -276,16 +285,12 @@ def harnesses(v):
         cable="6 x 24 AWG screened", area_mm2=AWG24, length_mm=300, length_status="assumption", end_a="button and knob tags",
         end_b="hub inputs (HOLD H-ELE-05)", grommets="", amps_max=None,
         note="boost by hand (D-33); TEST runs the self-test (D-87)")
-    add(id="W12a", harness_pn="710023", segment="COLUMN", function="call light", frm="F3d 1 A via the hub's switched output and a current sense",
-        to="behind the column, R2", route="CHASE, FX-CALL1", circuit="PS3 call", conductors="+12 V, 0 V",
-        cable="2 x 20 AWG, Class 2", area_mm2=AWG20, length_mm=(v["call_z"] - v["hub_zc"]) + 150 + TAIL,
-        end_a="hub switched output (or the I/O board's switch, H-ELE-05)", end_b="Mini-Fit Jr 2-way receptacle, tail out of the column",
-        grommets="", amps_max=0.5, note="")
-    add(id="W12b", harness_pn="710024", segment="R2-CASS", function="call light", frm="FX-CALL1 (behind the column)",
-        to="call light bar", route="FX-CALL1, CALL-R2, FX-CALL2", circuit="PS3 call", conductors="+12 V, 0 V",
-        cable="2 x 20 AWG, Class 2", area_mm2=AWG20, length_mm=TAIL + L("FX-CALL1", "CALL-R2", "FX-CALL2") + 300,
-        end_a="Mini-Fit Jr 2-way plug (mates W12a)", end_b="strip feed of the call bar", grommets="FX-CALL1, FX-CALL2",
-        amps_max=0.5, note="")
+    add(id="W12", harness_pn="710024", segment="R2-CASS", function="call light drop",
+        frm="the shelf's call branch at FX-CALL0 (behind the shelf, Y -209.5)", to="call light bar (Y -209.5, Z 1450)",
+        route="FX-CALL0, P7, CALL-R2, FX-CALL2", circuit="PS2 lights", conductors="+12 V, CALL-",
+        cable="2 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=TAIL + LOOP + L("CALL-R2", "FX-CALL2") + 300,
+        end_a="Mini-Fit Jr 2-way plug (mates W11c's call branch in P7)", end_b="strip feed of the call bar",
+        grommets="FX-CALL0, FX-CALL2 (felt only)", amps_max=CALL_W / 12.0, note="")
     # ---- draw wires (REQ-VCK-03): a cord in each cassette or column segment, tied off at its holes
     add(id="W32", harness_pn="710031", segment="R1-CASS + COLUMN", function="draw wire: kit zone to the soffit (mic, status light)",
         frm="kit drop P3-KIT", to="soffit right end", route="T1-R1B, FX-COL, CHASE, TO-SOFFIT", circuit="reserve",
@@ -336,17 +341,16 @@ part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - h
      source="this design (README section 3)",
      note="cut-outs for two 86 x 86 plates, the RCBO toggle (45 mm window) and vent slots")
 # ---- power unit 710001: bought parts
-part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - nguồn 12 V 60 W", "PI", "710001", 2,
+part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - nguồn 12 V 60 W", "PI", "710001", 3,
      "potted plastic case, IP67", "", 0.40, "source", maker="Mean Well", sku="LPV-60-12",
      size="162.5 x 42.5 x 32", status=HOLD_BUY, source=MW_LPV,
-     note="PS1 (kit) and PS3 (air, hub, call light). 12 V 0-5 A; 90-264 VAC; 83 %; 'Class 2 power unit', UL1310, Class II; "
-          "inrush 60 A 525 us at 230 VAC. The maker says not for LED luminaires in the EU or China (the call light on PS3 is 2.7 W; "
-          "check before an EU version)")
-part("ps_dim", "718002", "ELECTRICAL - 12 V LED DRIVER - 60 W DIMMABLE", "Điện - nguồn đèn 12 V 60 W chỉnh sáng", "PI",
-     "710001", 1, "potted plastic case, IP67", "", 0.49, "source", maker="Mean Well", sku="PWM-60-12",
-     size="150 x 53 x 35", status=HOLD_BUY, source=MW_PWM,
-     note="PS2, light shelf only: its output is PWM-switched, for LEDs, not fans. Dim-to-off by resistance on DIM+/DIM- "
-          "(never tie DIM- to V-); 90-305 VAC; 86 %; UL8750; Class II/2 design")
+     note="PS1 (kit), PS2 (lights, through the light controller) and PS3 (air, hub). 12 V 0-5 A; 90-264 VAC; 83 %; 'Class 2 power unit', UL1310, Class II; "
+          "inrush 60 A 525 us at 230 VAC. The maker says not for LED luminaires in the EU or China: check PS2 before an EU version")
+part("lightctl", "718002", "ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485", "Điện - bộ điều khiển đèn 3 kênh",
+     "PI", "710001", 1, "", "", 0.10, "assumption", sku="maker HOLD (H-ELE-14)", status=HOLD_BUY,
+     source="PM ruling 2026-11-01 (the hub balances uplight, down-light and call light at about 22 W)",
+     note="constant-voltage PWM dimmer for 12 V strips, 3 channels (uplight, down-light, call), at least 3 A per channel, "
+          "common +12 V, set by the hub over RS-485 (DMX or Modbus); on a lost link it holds its level or goes dark, never brighter")
 part("rcbo", "718003", "ELECTRICAL - RCBO - 1P+N C10 30 MA TYPE A", "Điện - CB chống giật 1P+N 10 A 30 mA", "PI", "710001", 1,
      "", "", 0.20, "assumption", maker="Schneider Electric", sku="A9D32610 (Acti9 iDPN Vigi)", size="36 W x 73 D",
      status=HOLD_BUY, source=SE + " (Vietnam datasheet)",
@@ -381,13 +385,9 @@ part("fuseholder", "718011", "ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE", "�
 part("fuse5", "718012", "ELECTRICAL - FUSE - ATO 5 A 32 V", "Điện - cầu chì 5 A", "PI", "710001", 1, "", "", 0.002,
      "assumption", maker="Littelfuse", sku="0287005 (ATO 287 series; unverified)", status=HOLD_BUY,
      source="ISO 8820-3", note="F1, the voice kit outlet (REQ-VCK-04)")
-part("fuse3", "718013", "ELECTRICAL - FUSE - ATO 3 A 32 V", "Điện - cầu chì 3 A", "PI", "710001", 1, "", "", 0.002,
-     "assumption", maker="Littelfuse", sku="0287003 (unverified)", status=HOLD_BUY, source="ISO 8820-3", note="F2, lights")
-part("dimcap", "718018", "ELECTRICAL - RESISTOR - 71.5 KOHM 1 % 0.25 W - DIM CAP", "Điện - điện trở giới hạn độ sáng",
-     "PI", "710001", 1, "metal film", "", 0.0003, "assumption", sku="maker HOLD (E96 71.5 kOhm 1 %, axial)", status=HOLD_BUY,
-     source="Mean Well PWM-60 resistance dimming (0-100 kOhm); PM heat request 2026-11-01",
-     note="across PS2's DIM+ and DIM-: caps the shelf at about 71.5 % if the hub's 0-10 V link opens (open DIM = 100 %); "
-          "the curve is to calibrate on the prototype")
+part("fuse3", "718013", "ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS", "Điện - cầu chì 5 A đèn", "PI", "710001", 1, "", "", 0.002,
+     "assumption", maker="Littelfuse", sku="0287005 (unverified)", status=HOLD_BUY, source="ISO 8820-3",
+     note="F2, the light controller's feed (hardware max 41.6 W)")
 part("pestud", "718014", "ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING", "Điện - vít tiếp địa M5", "PI", "710001", 1,
      "aluminium", "plain, as supplied", 0.005, "assumption", maker="PennEngineering", sku="FHA-M5-12 (unverified)", status=HOLD_BUY,
      source="PEM catalogue", note="the enclosure's PE point: inlet, socket and bond lugs")
@@ -436,11 +436,13 @@ cable("w10", "718021", "ELECTRICAL - WIRE - H05V-K 1.0 MM2", "Điện - dây đ�
 cable("w25", "718022", "ELECTRICAL - WIRE - H07V-K 2.5 MM2 GREEN-YELLOW", "Điện - dây tiếp địa 2.5", "710001", 0.3, 0.032,
       "maker HOLD", "W03 bond lead")
 cable("c218", "718023", "ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2", "Điện - cáp 2 x 18 AWG", "710000",
-      _m(["W10a", "W10b", "W10c", "W11a", "W11b", "W11c", "W12a", "W12b", "W43"]), 0.025,
+      _m(["W11b", "W12", "W43"]), 0.025,
       "maker HOLD: 300 V PVC, CL2 or CL3 listed for the US phase", "12 V feeds")
 cable("c418", "718024", "ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2", "Điện - cáp 4 x 18 AWG", "710000",
-      _m(["W30a", "W30b", "W30c", "W20a", "W20b", "W20c", "W20d"]), 0.045, "maker HOLD: as 718023",
-      "voice kit feed and the air feed, 2 cores per pole")
+      _m(["W30a", "W30b", "W30c", "W20a", "W20b", "W20c", "W20d", "W11c"]), 0.045, "maker HOLD: as 718023",
+      "voice kit feed and the air feed (2 cores per pole), the right-wall light jumper")
+cable("c618", "718029", "ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2", "Điện - cáp 6 x 18 AWG", "710000",
+      _m(["W10a", "W10b", "W10c", "W11a"]), 0.065, "maker HOLD: as 718023", "the light feed: +12 V x 2 and the three channel returns")
 cable("c624", "718025", "ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2", "Điện - cáp tín hiệu 6 x 24 AWG", "710000",
       _m(["W24a", "W24b", "W24c", "W24d", "W44"]), 0.035, "maker HOLD", "the hub's link to the power unit, and the controls loom")
 cable("c420", "718026", "ELECTRICAL - CABLE - 4 X 20 AWG", "Điện - cáp quạt 4 x 20 AWG", "710023",
@@ -452,10 +454,14 @@ cable("cat6", "718028", "ELECTRICAL - CABLE - CAT6 U/UTP", "Điện - cáp mạn
 
 # ---- plugs, terminals and RJ45 parts, counted joint by joint (harness list ends)
 for key, pn, name, vi, parent, qty, sku, mass, note in (
-        ("rec2", "718030", "ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0", "Điện - giắc cái 2 chân", "710000", 4,
-         "39-01-2025", 0.0015, "supply side of X1 (light feed), X4, X5, X6"),
-        ("plug2", "718031", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0", "Điện - giắc đực 2 chân", "710000", 4,
-         "39-01-2026", 0.0015, "load side of the same joints"),
+        ("rec2", "718030", "ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0", "Điện - giắc cái 2 chân", "710000", 1,
+         "39-01-2025", 0.0015, "supply side of X6, the call light drop"),
+        ("plug2", "718031", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0", "Điện - giắc đực 2 chân", "710000", 1,
+         "39-01-2026", 0.0015, "load side of X6"),
+        ("rec6", "718045", "ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 6 WAY V-0", "Điện - giắc cái 6 chân", "710000", 3,
+         "39-01-2065", 0.0035, "the light feed at X1 (unit top), X4 (B2/B4) and X5 (shelf)"),
+        ("plug6", "718046", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 6 WAY V-0", "Điện - giắc đực 6 chân", "710000", 3,
+         "39-01-2066", 0.0035, "the same joints"),
         ("rec4", "718032", "ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 4 WAY V-0", "Điện - giắc cái 4 chân", "710000", 3,
          "39-01-2045", 0.0025, "voice kit feed at X1 and X2, and the kit outlet X7"),
         ("plug4", "718033", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 4 WAY V-0", "Điện - giắc đực 4 chân", "710000", 3,
@@ -465,10 +471,10 @@ for key, pn, name, vi, parent, qty, sku, mass, note in (
          "air feed (2 + 2) and the hub link (6) in one housing at X1, X2, X3"),
         ("plug10", "718035", "ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0", "Điện - giắc đực 10 chân", "710000", 3,
          "39-01-2106 (unverified: as above)", 0.005, "the same joints"),
-        ("term_f", "718036", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN", "Điện - chân giắc cái", "710000", 50,
-         "39-00-0039", 0.0003, "4 x 2 + 3 x 4 + 3 x 10"),
-        ("term_m", "718037", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN", "Điện - chân giắc đực", "710000", 46,
-         "39-00-0041", 0.0003, "4 x 2 + 2 x 4 + 3 x 10 (the cap housing has none)")):
+        ("term_f", "718036", "ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN", "Điện - chân giắc cái", "710000", 62,
+         "39-00-0039", 0.0003, "1 x 2 + 3 x 6 + 3 x 4 + 3 x 10"),
+        ("term_m", "718037", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN", "Điện - chân giắc đực", "710000", 58,
+         "39-00-0041", 0.0003, "1 x 2 + 3 x 6 + 2 x 4 + 3 x 10 (the cap housing has none)")):
     part(key, pn, name, vi, "PI", parent, qty, "nylon UL94 V-0" if "term" not in key else "tin-plated brass", "", mass,
          "assumption", maker="Molex", sku=sku, status=HOLD_BUY, source=MOLEX,
          note=note + "; 18 AWG: 9 A (2 way), 8 A (4 and 6 way) per circuit, 600 V; UL E29179 (10 way: rating to confirm)")
@@ -499,9 +505,9 @@ part("drawcord", "718044", "ELECTRICAL - DRAW CORD - NYLON 3 MM", "Điện - dâ
 
 # ---- lights
 part("strip_shelf", "718050", "ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K", "Điện - LED dây kệ đèn",
-     "PI", "710000", 4.434, "", "", 0.02, "assumption (kg per m)", maker="Häfele", sku="833.74.176 (3000 K: confirm the article order 175-178)",
+     "PI", "710000", 6.486, "", "", 0.02, "assumption (kg per m)", maker="Häfele", sku="833.74.176 (3000 K: confirm the article order 175-178)",
      size="8 mm wide", status=HOLD_BUY, source=HAFELE,
-     note="970 lm/m, Ra > 90, R9 > 50; max 3.5 m per feed (every run here is 1.5 m or less); qty in m")
+     note="uplight 4.434 m and down-light 2 x 1.026 m; 970 lm/m, Ra > 90, R9 > 50; max 3.5 m per feed (every run here is 1.5 m or less); qty in m")
 part("strip_call", "718051", "ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K", "Điện - LED dây đèn gọi video",
      "PI", "710024", 0.9, "", "", 0.02, "assumption (kg per m)", maker="Häfele", sku="833.74.156 (3000 K: confirm)",
      size="8 mm wide", status=HOLD_BUY, source=HAFELE, note="about 440 lm for the 0.9 m bar; qty in m")
@@ -526,19 +532,19 @@ for key, pn, name, vi, qty, note in (
          "hub analog input; the hub sets PS2's 0-10 V dimming (value set by the hub's input, H-ELE-05)"),
         ("btn_test", "718069", "ELECTRICAL - PUSH BUTTON - MOMENTARY - SELF-TEST", "Điện - nút tự kiểm tra", 1,
          "hub input: runs the fans, lights and sensors and shows pass or fail (D-87)"),
-        ("fh_col", "718064", "ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - COLUMN", "Điện - đế cầu chì cột gió", 4,
-         "F3a to F3d behind the cover"),
+        ("fh_col", "718064", "ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - COLUMN", "Điện - đế cầu chì cột gió", 3,
+         "F3a to F3c behind the cover"),
         ("sensor", "718065", "ELECTRICAL - INLET TEMPERATURE SENSOR", "Điện - cảm biến nhiệt cửa gió vào", 1,
          "type set by the hub's sensor port (H-ELE-06, D-50)")):
     part(key, pn, name, vi, "PI", "710041", qty, "", "", 0.01, "assumption", sku="maker HOLD", status=HOLD_BUY, source="",
          note=note)
 part("fuse2", "718066", "ELECTRICAL - FUSE - ATO 2 A 32 V", "Điện - cầu chì 2 A", "PI", "710041", 2, "", "", 0.002,
      "assumption", maker="Littelfuse", sku="0287002 (unverified)", status=HOLD_BUY, source="ISO 8820-3", note="F3a, F3b fans")
-part("fuse1", "718067", "ELECTRICAL - FUSE - ATO 1 A 32 V", "Điện - cầu chì 1 A", "PI", "710041", 2, "", "", 0.002,
-     "assumption", maker="Littelfuse", sku="0287001 (unverified)", status=HOLD_BUY, source="ISO 8820-3", note="F3c hub, F3d call light")
-part("isense", "718073", "ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A", "Điện - mô-đun đo dòng", "PI", "710000", 2,
+part("fuse1", "718067", "ELECTRICAL - FUSE - ATO 1 A 32 V", "Điện - cầu chì 1 A", "PI", "710041", 1, "", "", 0.002,
+     "assumption", maker="Littelfuse", sku="0287001 (unverified)", status=HOLD_BUY, source="ISO 8820-3", note="F3c hub")
+part("isense", "718073", "ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A", "Điện - mô-đun đo dòng", "PI", "710001", 1,
      "", "", 0.01, "assumption", sku="maker HOLD (H-ELE-13)", status=HOLD_BUY, source="",
-     note="one on PS2's output in the power unit (shelf), one on the call branch in the hub zone: the self-test reads them (D-87)")
+     note="on PS2's output in the power unit: the self-test steps each light channel and reads the current change (D-87)")
 part("ycable", "718068", "ELECTRICAL - FAN Y-CABLE - 4-PIN PWM", "Điện - cáp chia quạt", "PI", "710041", 2, "", "", 0.01,
      "assumption", maker="Noctua", sku="NA-SYC1 (unverified; harness end housing H-ELE-07)", status=HOLD_BUY,
      source="", note="one per fan pair, at the fan box")
@@ -577,9 +583,9 @@ def unit_of(key):
 # ------------------------------------------------------------------ voltage-drop paths (supply to the farthest load)
 CIRCUIT_PATHS = [
     ("PS1 to the voice kit outlet", ["W30a", "W30b", "W30c"]),
-    ("PS2 to the left wall strip (the longest light path)", ["W10a", "W10b", "W10c", "W11a", "W11b"]),
+    ("PS2 to the left wall uplight", ["W10a", "W10b", "W10c", "W11a", "W11b"]),
+    ("PS2 to the call light", ["W10a", "W10b", "W10c", "W11a", "W11c", "W12"]),
     ("PS3 to the supply fans", ["W20a", "W20b", "W20c", "W20d", "W40"]),
     ("PS3 to the exhaust fans", ["W20a", "W20b", "W20c", "W20d", "W41"]),
     ("PS3 to the sensor hub", ["W20a", "W20b", "W20c", "W20d", "W43"]),
-    ("PS3 to the call light", ["W20a", "W20b", "W20c", "W20d", "W12a", "W12b"]),
 ]

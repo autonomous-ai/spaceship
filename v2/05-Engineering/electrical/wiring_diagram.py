@@ -100,7 +100,7 @@ def sheet1(doc, rows, harness):
     s.line(96, 32, 106, 32, MAINS, 0.5)
     s.text(55, 44.5, "W01 3x1.5", 1.8, MAINS)
     for i, (ps, ttl, sub) in enumerate((("PS1", "PS1  60 W", "12 V 5 A, Class 2"),
-                                        ("PS2", "PS2  60 W DIMMABLE", "12 V PWM, Class 2"),
+                                        ("PS2", "PS2  60 W + LIGHT CTRL", "3 ch PWM, RS-485, Class 2"),
                                         ("PS3", "PS3  60 W", "12 V 5 A, Class 2"))):
         y = 60 + i * 42
         s.box(62, y, 104, y + 26, ttl, [sub, "input 100-240 V", "Class II (no PE)"], SELV)
@@ -115,7 +115,7 @@ def sheet1(doc, rows, harness):
     s.fuse(116, 73, "F1 5 A")
     s.line(104, 73, 113.8, 73, SELV, 0.5)
     s.line(118.2, 73, 150, 73, SELV, 0.5)
-    s.fuse(116, 115, "F2 3 A")
+    s.fuse(116, 115, "F2 5 A")
     s.line(104, 115, 113.8, 115, SELV, 0.5)
     s.line(118.2, 115, 150, 115, SELV, 0.5)
     s.line(104, 157, 150, 157, SELV, 0.5)
@@ -123,7 +123,7 @@ def sheet1(doc, rows, harness):
     s.line(104, 124, 112, 124, SIG, 0.3)
     s.line(112, 124, 112, 190, SIG, 0.3)
     s.line(112, 190, 150, 190, SIG, 0.3)
-    s.text(105, 128, "DIM 0-10 V", 1.8, SIG)
+    s.text(105, 128, "RS-485", 1.8, SIG)
     s.line(52, 115, 60, 115, SIG, 0.3)
     s.line(60, 115, 60, 210, SIG, 0.3)
     s.line(60, 210, 150, 210, SIG, 0.3)
@@ -153,10 +153,10 @@ def sheet1(doc, rows, harness):
     s.line(176.4, 115, 221.6, 115, SELV, 0.5)
     s.line(150.4, 115, 175.6, 115, SELV, 0.5)
     s.line(222.4, 115, 300, 115, SELV, 0.5)
-    s.text(224, 113.5, "W11 in the shelf", 1.8, SELV)
+    s.text(224, 113.5, "W11 in the shelf (6 x 18 AWG feed)", 1.8, SELV)
     s.box(300, 104, 405, 128, "LIGHT SHELF  (back and side wall tops, D-70)",
-          ["Loox5 2168 strip 4.43 m, 26.6 W, uplight onto the felt", "fed at X 355 on the back wall: back strip both ways,",
-           "jumpers to the left and right wall strips"], SELV, 1.8)
+          ["uplight 4.43 m and down-light 2 x 1.03 m (Loox5 2168),", "call drop at Y -209.5 (X6) down R2-CASS to the bar;",
+           "hub keeps up + down + call at about 22 W"], SELV, 1.8)
     # air feed (PS3) + dimming signal to the column
     for x in (150, 200, 250):
         s.plug(x, 157, "", SELV)
@@ -167,7 +167,7 @@ def sheet1(doc, rows, harness):
     s.line(150.4, 157, 199.6, 157, SELV, 0.5)
     s.line(200.4, 157, 249.6, 157, SELV, 0.5)
     s.line(250.4, 157, 262, 157, SELV, 0.5)
-    s.text(152, 188.5, "W24b hub link 6x24 AWG: DIM, light current, rails", 1.8, SIG)
+    s.text(152, 188.5, "W24b hub link 6x24 AWG: RS-485, light current, rails", 1.8, SIG)
     s.text(152, 166.5, "W20 and W24 share one 10-way plug at X1, X2 and X3", 1.8, GREY)
     s.text(202, 188.5, "W24c", 1.8, SIG)
     s.text(252, 188.5, "W24d", 1.8, SIG)
@@ -186,28 +186,26 @@ def sheet1(doc, rows, harness):
     s.rect(262, 136, 405, 236, INK, 0.45, dashes="[2 1] 0")
     s.text(264, 140, "AIR COLUMN  (front-right inside corner; hub zone 180 x 180 at Z 1200, D-61, D-70)", 1.9, INK, bold=True)
     s.box(264, 146, 300, 176, "FUSE BLOCK", ["behind the hub zone cover", "F3a 2 A  supply fans", "F3b 2 A  exhaust fans",
-                                             "F3c 1 A  hub", "F3d 1 A  call light"], SELV, 1.8)
+                                             "F3c 1 A  hub"], SELV, 1.8)
     s.box(306, 146, 352, 176, "DESK PRO AI SENSOR HUB", ["in-house, cited by name; CO2, presence",
-                                                       "out: PWM 1, 2; DIM 0-10 V; CALL", "in: tach 1, 2; inlet sensor; buttons;",
-                                                       "light currents; PS1-PS3 rails (H-ELE-05)"],
+                                                       "out: PWM 1, 2; RS-485 to the lights", "in: tach 1, 2; inlet sensor; buttons;",
+                                                       "light current; PS1-PS3 rails (H-ELE-05)"],
           SIG, 1.8)
     s.box(358, 146, 403, 160, "SUPPLY FANS S1 S2", ["high in DR; W40 4 x 20 AWG"], SELV, 1.8)
     s.box(358, 163, 403, 177, "EXHAUST FANS E1 E2", ["soffit right end; W41"], SELV, 1.8)
     s.box(358, 180, 403, 194, "INLET TEMP SENSOR", ["supply fan box inlet; W42"], SIG, 1.8)
     s.box(264, 182, 300, 200, "CONTROLS (hub zone)", ["BOOST, TEST, CALL buttons", "LIGHT knob: all hub inputs",
                                                       "(W44); TEST = self-test D-87"], SIG, 1.8)
-    s.box(306, 182, 352, 200, "CALL LIGHT  (R2, above the screen)", ["900 mm bar, 2.7 W; hub switches and",
-                                                                    "senses it; W12a column, W12b R2-CASS",
-                                                                    "X6 behind the column"], SELV, 1.8)
+    s.box(306, 182, 352, 200, "CALL LIGHT  (R2, above the screen)", ["900 mm bar, 2.7 W, on light controller CH3;",
+                                                                    "fed down from the shelf (X6, W12)", "see the light shelf box"], SELV, 1.8)
     s.line(262, 157, 264, 157, SELV, 0.5)
     s.line(300, 152, 306, 152, SELV, 0.4)
     s.line(352, 153, 358, 153, SELV, 0.4)
     s.line(352, 170, 358, 170, SELV, 0.4)
     s.line(352, 187, 358, 187, SIG, 0.3)
     s.line(262, 190, 264, 190, SIG, 0.3)
-    s.line(300, 195, 306, 195, SELV, 0.4)
     s.box(264, 205, 403, 232, "SAFETY AND RESERVES",
-          ["SELF-TEST (D-87): TEST checks the 3 rails, runs both fan pairs (tach), cycles both lights (current), reads",
+          ["SELF-TEST (D-87): TEST checks the 3 rails, runs both fan pairs (tach), steps each light channel (current), reads",
            "the sensors and shows PASS or the failing item. PWM fail-safe: an open PWM line runs the fans at full speed.",
            "Draw wires: W32 kit drop -> column -> soffit (mic, status light); W33 back wall top -> ceiling cassette (D-41,",
            "and the sprinkler or alarm wiring point, ISS-052). Nothing is cut on site later (REQ-VCK-03)."], INK, 1.8)
