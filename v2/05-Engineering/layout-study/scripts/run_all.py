@@ -401,7 +401,10 @@ def build():
     N["hw_398_total"] = f0(p("hw_398_total"))
     N["fan_final_kg"] = f1(p("fan_final_kg"))
     N["without_gap_items"] = f0(base_total - gap(fan_final_kg=p("fan_kg"), leaf_clip_kgm2=0.0))
-    N["tray04_total"] = f0(base_total - gap(tray_t=0.4))
+    N["tray05_total"] = f0(base_total - gap(tray_t=p("tray_t_fallback")))
+    N["tray_saving"] = f1(-gap(tray_t=p("tray_t_fallback")))
+    N["cap_fallback"] = f0(p("cap_fallback"))
+    N["fallback_in_cap"] = "inside" if base_total - gap(tray_t=p("tray_t_fallback")) <= p("cap_fallback") else "outside"
     with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
         cf = parts_for("plan", variant(FINAL, ceil_fill_on_cassette=False))
     N["ceil_outer_with_fill"] = f1([pt for pt in cf if pt.pid == "C-HALF"][0].kg)
