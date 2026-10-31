@@ -741,7 +741,31 @@ def doc_script(mode, name, folder=DEFAULT_FOLDER, create=False, description="",
         "description": description, "discard": bool(discard)}}
 
 
-WRAPPER = '''import base64 as _b64, sys as _sys, types as _types
+WRAPPER = '''import base64 as _b64, os as _os, sys as _sys, types as _types
+# Fusion keeps Python modules loaded between runs, so a module another team's run
+# imported from its own folder would be used again by a run that imports the same
+# name (live 2026-10-31: CEILING got AIR's older module). Drop every cached module
+# that lies in another run's folder (another worktree, or the temp area where
+# scratch folders live) and not in this run's own folders, so this run imports its
+# own files. Fusion's and Python's own modules are never touched.
+_OWN = [_os.path.realpath(p) for p in %(own)r]
+_FOREIGN = [_os.path.realpath(p) for p in %(foreign)r]
+
+def _under(f, roots):
+    return any(f == r or f.startswith(r.rstrip("/") + "/") for r in roots)
+
+_dropped = []
+for _n, _m in list(_sys.modules.items()):
+    _f = getattr(_m, "__file__", None)
+    if not isinstance(_f, str):
+        continue
+    _rf = _os.path.realpath(_f)
+    if _under(_rf, _FOREIGN) and not _under(_rf, _OWN):
+        del _sys.modules[_n]
+        _dropped.append(_n)
+if _dropped:
+    print("run_script: dropped %%d module(s) loaded by another run from another folder: %%s" %% (
+        len(_dropped), ", ".join(sorted(_dropped)[:12])))
 # the shared folder check, from this runner's repo, fresh on every run: a
 # script's "from fusion_folder import safe_to_create" finds it (one copy for all)
 _FF = _types.ModuleType("fusion_folder")
@@ -758,12 +782,24 @@ def run(context):
 '''
 
 
+def module_roots(path, repo_root=None):
+    """(own, foreign) folders for the wrapper's module cleanup: this run's repo and
+    its script's folder are its own; the folder holding all worktrees (the repo's
+    parent) and the temp area (agents' scratch folders) belong to other runs."""
+    repo_root = repo_root or REPO_ROOT
+    own = [repo_root, os.path.dirname(os.path.abspath(path))]
+    foreign = [os.path.dirname(os.path.abspath(repo_root)), "/tmp", "/private/tmp"]
+    return own, foreign
+
+
 def wrap_script(source, path, args):
     """Wrap the file so it compiles under its real path (true line numbers)."""
     compile(source, path, "exec")  # fail fast on syntax errors, locally
+    own, foreign = module_roots(path)
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
                       "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
-                      "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii")}
+                      "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii"),
+                      "own": own, "foreign": foreign}
 
 
 def run_in_fusion(mcp, source, read_only=False):

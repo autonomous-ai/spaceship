@@ -32,7 +32,19 @@ python3 v2/03-Manufacturing/base/make_outputs.py --dxf
 | Edit test | PASS (see EDIT-TEST-RECORD.md) |
 | Names in exports | none: the .f3d and STEP files, DXFs, CSVs and the data file scanned for account names and e-mail strings, 0 hits |
 
-The mechanical check (`tools/checks/run_checks.py`) on run A's outputs then asked for three changes: the doubler's ends sat exactly on the 2-diameter line (next: 54 long, ends 27 from the hole), the foam's name must carry FOAM in its function field for D-89 part 3 (`BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM`), and the glide, glide nut and end cap take the joints register's names. The Lead merges this run with the three tracked; they follow on a new branch from main, with the front key's fixing holes moved by the Joints Engineer (3.4 mm toward the key's back face, so 2 diameters from the mitred end; no exception, Lead 2026-11-01).
+The mechanical check (`tools/checks/run_checks.py`) on run A's outputs then asked for three changes: the doubler's ends sat exactly on the 2-diameter line (54 long in run B, ends 27 from the hole), the foam's name must carry FOAM in its function field for D-89 part 3 (`BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM`), and the glide, glide nut and end cap take the joints register's names. The Lead merged run A (PR #55) with the three tracked; run B makes them, on a new branch from main, with the corner keys of joints register #127.
+
+## Run B, 2026-11-01 20:57 to 21:04 UTC: the tracked fixes, the 30 mm keys, subassembly designs
+
+Same checks as run A, all passing: 169 timeline items healthy, 33 sketches fully constrained, own clashes 8 (all expected), skeleton clashes 6 (all expected), STEP re-read 0.000 mm (63 occurrences), edit test PASS (largest difference after the revert 0.0000 mm).
+
+| Change | Result |
+|---|---|
+| Glide doubler 54 long (ends 27 from the hole) | 111601 part design X ±18, Y ±27, Z 0…3, 0.0147 kg; DXF 36.0 × 54.0, hole Ø13 at the centre |
+| Foam renamed `BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM` (D-89 part 3 reads the FOAM function) | DXF `111501_P01_BASE-FLOOR-FOAM-F1-CLOSED-CELL-3-MM_DXF.dxf` |
+| Register names: glide 118002, glide nut 838006 (and its finish), end cap 118003 | parts list |
+| Corner keys 30 long, fixing holes 10.5 from the key's back face (joints register #127) | back band X ∓1190.5, Y 830 ± 7.0; left band's front end X −1237 and −1223, Y −641.53. Part designs 111101 and 111103 rebuilt with them, STEP MATCH |
+| Subassembly designs for the assembly drawings (by rebuilding and trimming, not Save Copy As) | 110101 and 110401 saved. 110103 failed its health check after the trim (its rivnuts and stop washers are pasted copies of the side band's), so a trim now hides that host instead of deleting it; 110103 follows in the next run |
 
 ## Earlier runs (no files kept)
 
