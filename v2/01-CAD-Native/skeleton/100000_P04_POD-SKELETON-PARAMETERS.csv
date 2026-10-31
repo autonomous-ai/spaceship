@@ -5,7 +5,10 @@ pod_h,2400,2400 mm,decided,D-21 (room floor to roof skin top)
 glide_h,10,10 mm,assumption,layout study inputs.py glide_h
 band_h,100,100 mm,source,layout study B1 list B-BAND 100x40; inputs.py base_h
 band_t,40,40 mm,source,layout study B1 list B-BAND 100x40
-outer_t,46,46 mm,decided,"PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)"
+skin_t,3,3 mm,decided,"ACP skin, walls and ceiling (D-16; PM ruling 2026-10-31 on outer_t)"
+bond_t,3,3 mm,decided,bond line between the ACP and the frame (PM ruling 2026-10-31 on outer_t)
+frame_t,40,40 mm,decided,"aluminium frame tube depth, walls and ceiling (PM ruling 2026-10-31 on outer_t)"
+outer_t,46,skin_t + bond_t + frame_t,decided,"PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)"
 cav_gap,4,4 mm,decided,"D-16, D-42: the gap between the outer panel and the lining cassette in the wall and ceiling stack"
 cass_t,34,34 mm,source,layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)
 stack_t,84,outer_t + cav_gap + cass_t,calculation,"D-16, D-42 stack, walls and ceiling: outer panel + cavity gap + cassette (PM ruling 2026-10-31 on outer_t)"
@@ -63,10 +66,19 @@ side_h,1142.74,(wall_h - 2 * seam_gap) / 2,calculation,D-23: 2 sheets per side w
 side_l,1492.74,wall_depth - seam_gap,calculation,"side panel length along Y: the seam_gap at the decor's back plate (joints register 2.8, IF-07)"
 back_oh,2239.48,pod_h - outer_t - seam_gap - panel_z0,calculation,"PM ruling 2026-10-31 (pass D, F-004): the back outer frames run up to the ceiling frame (pod_h - outer_t), less the seam_gap under it, closing the slot at the back top edge"
 back_ph,1118.61,(back_oh - seam_gap) / 2,calculation,"D-23: 4 sheets on the back, two equal rows with one seam_gap between them (joints register 2.8); the lower back linings match the lower row, as on the side walls"
-half_pw,1200.61,(pod_w - 2 * outer_t - 3 * seam_gap) / 2,calculation,"width of each back and ceiling panel: two panels and three seams between the side frames (F-001, joints register 2.8)"
+half_pw,1200.61,(pod_w - 2 * outer_t - 3 * seam_gap) / 2,calculation,"SKIN width of each back and ceiling panel: two skins and three seam_gap seams between the side frames (F-001, joints register 2.8)"
+close_gap,5.5,5.5 mm,decided,"PM ruling 2026-10-31 (joints register, F-011/F-012): frame gap at the closing seams B1-B2, B3-B4 and C1-C2, which have no hard stop (slotted holes, thicker gasket)"
+half_fw,1198.99,(pod_w - 2 * outer_t - 2 * seam_gap - close_gap) / 2,calculation,FRAME width of each back and ceiling panel: the skins overhang their frames by half_pw - half_fw at the closing seam (PM ruling 2026-10-31)
 inner_w,2332,pod_w - 2 * stack_t,calculation,inside width between the side linings
-base_bolt_edge,220,220 mm,decided,"PM ruling 2026-10-31, J-BASE-01 wall to band: the end bolts sit this far in from each panel end"
+bolt_edge_inset,220,220 mm,decided,"PM ruling 2026-10-31: on every bolted edge the end bolts sit this far in from each panel end, the rest evenly spaced"
+spigot_inset,100,100 mm,decided,"PM ruling 2026-10-31: locating spigots this far in from each panel end (round hole at one end, slot at the other)"
+base_bolt_edge,220,bolt_edge_inset,decided,J-BASE-01 wall to band: the edge rule (kept by this name for parts already linked)
 n_base_bolt,40,4,decided,"PM ruling 2026-10-31, J-BASE-01: bolts per panel along the band, evenly spaced"
-base_spigot_inset,100,100 mm,decided,"PM ruling 2026-10-31, J-BASE-01: locating spigots this far in from each panel end (round hole at one end, slot at the other)"
+base_spigot_inset,100,spigot_inset,decided,J-BASE-01: the spigot rule (kept by this name for parts already linked)
 side_base_pitch,350.913,(side_l - 2 * base_bolt_edge) / (n_base_bolt - 1),calculation,J-BASE-01 bolt pitch along a side panel
 back_base_pitch,253.537,(half_pw - 2 * base_bolt_edge) / (n_base_bolt - 1),calculation,J-BASE-01 bolt pitch along a back panel
+ceil_bolt_z,2374,pod_h - outer_t + frame_t / 2,decided,"PM ruling 2026-10-31, J-CEIL-01 wall to ceiling: the bolt line on the ceiling frame's centre (Z 2374)"
+n_ceil_side_bolt,40,4,assumption,J-CEIL-01 bolts along each side wall top (WALL's proposal 2026-10-31); count per edge to be confirmed
+n_ceil_back_bolt,30,3,assumption,J-CEIL-01 bolts along each back panel top (WALL's proposal 2026-10-31); count per edge to be confirmed
+ceil_side_pitch,350.913,(side_l - 2 * bolt_edge_inset) / (n_ceil_side_bolt - 1),calculation,J-CEIL-01 bolt pitch along a side wall top
+ceil_back_pitch,380.305,(half_pw - 2 * bolt_edge_inset) / (n_ceil_back_bolt - 1),calculation,J-CEIL-01 bolt pitch along a back panel top

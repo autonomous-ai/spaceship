@@ -18,6 +18,11 @@ clash over 1 mm3 fails the run. P01 (stage A, box placeholders), P02
 (BUILD-RECORD.md). Every user parameter is a favorite, so a part design can
 derive them from the saved skeleton (they arrive as <name>_Ref) and follow it
 (tools/fusion/README.md, "Linking a part to the skeleton").
+
+Parts are linked to the cloud file 100000_P04_POD-SKELETON_CAD. To change a
+value, edit PARAMS here and run skeleton_update.py, which saves a new version
+of that same file. This build makes a NEW file and would cut every link: use
+it only for a new revision of the shape.
 """
 
 import time
@@ -40,7 +45,10 @@ PARAMS = [
     ("glide_h", "10 mm", "mm", "assumption", "layout study inputs.py glide_h"),
     ("band_h", "100 mm", "mm", "source", "layout study B1 list B-BAND 100x40; inputs.py base_h"),
     ("band_t", "40 mm", "mm", "source", "layout study B1 list B-BAND 100x40"),
-    ("outer_t", "46 mm", "mm", "decided", "PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)"),
+    ("skin_t", "3 mm", "mm", "decided", "ACP skin, walls and ceiling (D-16; PM ruling 2026-10-31 on outer_t)"),
+    ("bond_t", "3 mm", "mm", "decided", "bond line between the ACP and the frame (PM ruling 2026-10-31 on outer_t)"),
+    ("frame_t", "40 mm", "mm", "decided", "aluminium frame tube depth, walls and ceiling (PM ruling 2026-10-31 on outer_t)"),
+    ("outer_t", "skin_t + bond_t + frame_t", "mm", "decided", "PM ruling 2026-10-31: ACP 3 + bond line 3 + frame 40, walls and ceiling (was 43)"),
     ("cav_gap", "4 mm", "mm", "decided", "D-16, D-42: the gap between the outer panel and the lining cassette in the wall and ceiling stack"),
     ("cass_t", "34 mm", "mm", "source", "layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)"),
     ("stack_t", "outer_t + cav_gap + cass_t", "mm", "calculation", "D-16, D-42 stack, walls and ceiling: outer panel + cavity gap + cassette (PM ruling 2026-10-31 on outer_t)"),
@@ -102,14 +110,23 @@ PARAMS = [
     ("side_l", "wall_depth - seam_gap", "mm", "calculation", "side panel length along Y: the seam_gap at the decor's back plate (joints register 2.8, IF-07)"),
     ("back_oh", "pod_h - outer_t - seam_gap - panel_z0", "mm", "calculation", "PM ruling 2026-10-31 (pass D, F-004): the back outer frames run up to the ceiling frame (pod_h - outer_t), less the seam_gap under it, closing the slot at the back top edge"),
     ("back_ph", "(back_oh - seam_gap) / 2", "mm", "calculation", "D-23: 4 sheets on the back, two equal rows with one seam_gap between them (joints register 2.8); the lower back linings match the lower row, as on the side walls"),
-    ("half_pw", "(pod_w - 2 * outer_t - 3 * seam_gap) / 2", "mm", "calculation", "width of each back and ceiling panel: two panels and three seams between the side frames (F-001, joints register 2.8)"),
+    ("half_pw", "(pod_w - 2 * outer_t - 3 * seam_gap) / 2", "mm", "calculation", "SKIN width of each back and ceiling panel: two skins and three seam_gap seams between the side frames (F-001, joints register 2.8)"),
+    ("close_gap", "5.5 mm", "mm", "decided", "PM ruling 2026-10-31 (joints register, F-011/F-012): frame gap at the closing seams B1-B2, B3-B4 and C1-C2, which have no hard stop (slotted holes, thicker gasket)"),
+    ("half_fw", "(pod_w - 2 * outer_t - 2 * seam_gap - close_gap) / 2", "mm", "calculation", "FRAME width of each back and ceiling panel: the skins overhang their frames by half_pw - half_fw at the closing seam (PM ruling 2026-10-31)"),
     ("inner_w", "pod_w - 2 * stack_t", "mm", "calculation", "inside width between the side linings"),
     # team-to-team bolt rules: one copy, derived by both sides of the joint (PM rulings 2026-10-31)
-    ("base_bolt_edge", "220 mm", "mm", "decided", "PM ruling 2026-10-31, J-BASE-01 wall to band: the end bolts sit this far in from each panel end"),
+    ("bolt_edge_inset", "220 mm", "mm", "decided", "PM ruling 2026-10-31: on every bolted edge the end bolts sit this far in from each panel end, the rest evenly spaced"),
+    ("spigot_inset", "100 mm", "mm", "decided", "PM ruling 2026-10-31: locating spigots this far in from each panel end (round hole at one end, slot at the other)"),
+    ("base_bolt_edge", "bolt_edge_inset", "mm", "decided", "J-BASE-01 wall to band: the edge rule (kept by this name for parts already linked)"),
     ("n_base_bolt", "4", "", "decided", "PM ruling 2026-10-31, J-BASE-01: bolts per panel along the band, evenly spaced"),
-    ("base_spigot_inset", "100 mm", "mm", "decided", "PM ruling 2026-10-31, J-BASE-01: locating spigots this far in from each panel end (round hole at one end, slot at the other)"),
+    ("base_spigot_inset", "spigot_inset", "mm", "decided", "J-BASE-01: the spigot rule (kept by this name for parts already linked)"),
     ("side_base_pitch", "(side_l - 2 * base_bolt_edge) / (n_base_bolt - 1)", "mm", "calculation", "J-BASE-01 bolt pitch along a side panel"),
     ("back_base_pitch", "(half_pw - 2 * base_bolt_edge) / (n_base_bolt - 1)", "mm", "calculation", "J-BASE-01 bolt pitch along a back panel"),
+    ("ceil_bolt_z", "pod_h - outer_t + frame_t / 2", "mm", "decided", "PM ruling 2026-10-31, J-CEIL-01 wall to ceiling: the bolt line on the ceiling frame's centre (Z 2374)"),
+    ("n_ceil_side_bolt", "4", "", "assumption", "J-CEIL-01 bolts along each side wall top (WALL's proposal 2026-10-31); count per edge to be confirmed"),
+    ("n_ceil_back_bolt", "3", "", "assumption", "J-CEIL-01 bolts along each back panel top (WALL's proposal 2026-10-31); count per edge to be confirmed"),
+    ("ceil_side_pitch", "(side_l - 2 * bolt_edge_inset) / (n_ceil_side_bolt - 1)", "mm", "calculation", "J-CEIL-01 bolt pitch along a side wall top"),
+    ("ceil_back_pitch", "(half_pw - 2 * bolt_edge_inset) / (n_ceil_back_bolt - 1)", "mm", "calculation", "J-CEIL-01 bolt pitch along a back panel top"),
 ]
 
 ASSEMBLIES = [  # key, part number, name, Vietnamese name, parent key
