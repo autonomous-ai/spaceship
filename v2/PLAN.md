@@ -2,7 +2,7 @@
 
 Status: draft for Dee's approval. Nothing has started.
 
-Sources: the v2 build plan from the indoor pod lead engineer (`v2/00-Control/v2-build-plan.pdf`), the engineering guideline from the hardware engineering lead (`docs/engineering-guideline.md`), and v1 (`sources/v1/` plus the [product page](https://www.autonomous.ai/focus-pod)).
+Sources: the v2 build plan from the indoor pod lead engineer (`v2/00-Control/v2-build-plan.pdf`), the engineering guideline from the hardware engineering lead (`docs/engineering-guideline.md`), v1 (`sources/v1/` plus the [product page](https://www.autonomous.ai/focus-pod)), and the market study (`v2/research/market-study.md`).
 
 ## Goal
 
@@ -14,7 +14,7 @@ Get the v2 prototype design right. **The look stays exactly the same.** That mea
 
 It's built from a complete, editable design package, so the prototype matches the drawings.
 
-**Later, not in the v2 prototype:** US rules (electrical listing, fire ratings, sprinklers), US 120 V electrics, and updates to the product page.
+**Later, not in the v2 prototype:** US rules (electrical listing, fire ratings, sprinklers), US 120 V electrics, and updates to the product page. We don't design them out, though. The roof should be able to take a sprinkler head or open on alarm, and the threshold stays low, the door wide and the door pull light.
 
 ## Targets
 
@@ -22,11 +22,13 @@ Agents work to these from day one. The hardware engineering lead and the indoor 
 
 | # | Goal | Target | How we prove it |
 |---|---|---|---|
-| 1 | Light | 300 kg or less, about half of v1 (about 550 kg from its BOM). Every part 20 kg or less, so one person can carry it, except the glass. | Weights from the CAD and BOM, then the prototype on a scale |
+| 1 | Light | 300 kg or less, about half of v1 (about 550 kg from its BOM). Every part 20 kg or less, so one person can carry it, except the glass. That's about 40% lighter than any acoustically rated pod this size, and no maker claims 20 kg parts. | Weights from the CAD and BOM, then the prototype on a scale |
 | 2 | Easy to assemble | 2 people in 4 hours or less, hand tools only, one bolt size (M6), no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
-| 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. | Pallet layout from the CAD |
-| 4 | Guardrails: quiet and fresh air | At least as quiet as v1, with 30 dB as the aim. CO2 at or under 1,000 ppm with 2 people inside (about 62 m³/h). Fan noise inside at or under 30 dB(A). | Calculation, then a check on the prototype |
-| 5 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM, joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
+| 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. Nobody on the market ships pods on 48 × 40. | Pallet layout from the CAD |
+| 4 | Fresh air | Users' top complaint about pods, so a full requirement: CO2 at or under 1,000 ppm for 2 people over 2+ hours, which needs at least 20 l/s; we aim for about 70 l/s, a full air change every 2 minutes. Fans start by themselves when someone is inside, have speed control and boost, and are wired in so nobody unplugs them. Fan noise inside at or under 30 dB(A), through silenced vents. Lights stay low-heat. | Calculation, then a CO2 and noise check on the prototype |
+| 5 | Quiet (guardrail) | At least as quiet as v1, with 30 dB as the aim. v1 and v2 get tested in the same lab to ISO 23351-1. | Calculation, then the lab test |
+| 6 | Healthy materials | Low-emission certified felt, boards and glue | Supplier certificates |
+| 7 | Done right | Built to the guideline: native Fusion CAD with editable sketches and parameters, drawings that go GA then assemblies then parts, one master BOM, joint and feature registers, and a status on every number | A Reviewer runs the guideline's checklist (§13) on every pull request |
 
 ## What changes from the last attempt
 
@@ -75,7 +77,7 @@ FocusPod lives indoors: in a cool, air-conditioned room, on a flat, level floor.
 |---|---|---|
 | Floor | A thin floor: 2 to 3 cm panels lying on the room floor, with the walls fixed around them, instead of the raised 50×100 steel frame. The outside base band stays as trim, so the look doesn't change. The step into the pod drops from about 13 cm to about 2 cm, and the room inside gets about 10 cm taller. | about 50 kg |
 | Wall, ceiling and decor frames | Aluminum instead of steel | about 40 kg |
-| Skins | No plywood behind the ACP where sound doesn't need it | up to 58 kg |
+| Skins | No plywood behind the ACP where sound doesn't need it. Also study sandwich walls: a foam-core or honeycomb panel with the same yellow ACP face on an aluminum frame. That's how the lightest pods are built (Mamava XL at 318 kg, hushMeet's honeycomb). | up to 58 kg |
 | Glass | 8 mm instead of 10 mm, same smoked glass and same shape | about 20 kg |
 | Table | Removed. Customers put whatever they like in the pod. | about 20 kg |
 
@@ -83,7 +85,22 @@ That takes v2 from about 460 kg as planned to a little under 300 kg. The outside
 
 ## Quiet without the weight
 
-The walls are both the heaviest part and what stops sound. Mass is the cheap way to block sound. The light way is two thin skins with sound-absorbing fill between them, kept from touching where possible. The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, Dee gets the trade-off before we add weight.
+The walls are both the heaviest part and what stops sound. Mass is the cheap way to block sound. The light way is two thin skins with sound-absorbing fill between them, kept from touching where possible.
+
+The market says seals matter more than mass:
+- Spacestor lifted a pod from 22.7 to 24–28 dB with cavity absorber, a base seal, door drop seals and gaskets on panel joints.
+- Floorless pods post the weakest numbers.
+
+So v2 adds:
+- a gasket on every panel joint
+- a drop seal on the door
+- fill in the cavities
+- the glass seated in sealed profiles
+- a seal under the thin floor
+
+We also compare 8 mm tempered glass with 4+4 laminated acoustic glass, which weighs about the same and is quieter.
+
+The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, Dee gets the trade-off before we add weight. Because 300 kg is beyond anything rated on the market, the team should build one wall sample and the door early and test them.
 
 ## What we keep, add and leave out
 
@@ -127,9 +144,9 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
 
 1. **Weight, pallet and assembly study.** This is the heart of v2.
    - A weight budget by assembly, comparing v1 with v2 as planned.
-   - Panel split options that fit standard pallets.
+   - Panel split options that fit standard pallets, including wall bands about 1.2 m long that stand on 48 × 40 pallets. Orangebox Air3 stacks 5 bands per wall.
    - A pallet layout for each option.
-   - Part weights, with every part at 20 kg or less, plus the lighter indoor material options (aluminum frames, no plywood backing, 8 mm glass) against the 300 kg target.
+   - Part weights, with every part at 20 kg or less, plus the lighter indoor options against the 300 kg target: aluminum frames, no plywood backing, sandwich walls, and 8 mm or 4+4 laminated glass.
    - Floor options compared on weight, step height, sound, stiffness and assembly time: the plan's raised floor, a thin floor, and no floor.
    - A 2-person assembly sequence with step count, fastener count and estimated time.
    - A recommendation for the layout the CAD should follow.
@@ -139,12 +156,14 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - Interfaces between the assemblies.
    - A file register and an issue register.
    - Conventions: units, axes, naming, part numbers, file names and revisions.
-   - A proposed answer to each open question: door and glass, lights, door hand and floor board thickness.
+   - A proposed answer to each open question: door and glass, lights (including a soft front light for video calls), door hand, and the thin floor's build.
 3. **Bought parts, hardware, and a sound and air check.**
    - Real part numbers and fit data for every bought item, lightest options first.
    - The parts the plan doesn't cover yet: glass door hinges, handle, seals, glass clamps, latch, lights and power inlet.
    - Fasteners for the 20×20 tube.
-   - A sound and air check: the lightest wall that's at least as quiet as v1 (two skins with fill), the light fixes, the effect of 8 mm glass, and what 30 dB would cost in kg.
+   - A sound check: the lightest wall that's at least as quiet as v1, comparing two skins with fill against sandwich panels; seals and gaskets; 8 mm tempered against 4+4 laminated glass; and what 30 dB would cost in kg.
+   - An air design that meets the fresh-air requirement: airflow with a 2-person load, self-starting fans with boost, silenced vents, and noise inside.
+   - Low-emission certified options for the felt, boards and glue.
 
 ### Milestone 2: sample set (about 2 days, 2 to 3 Engineers, starting once Phase 0 passes)
 
@@ -195,5 +214,6 @@ About 1.5 weeks to a prototype-ready package, with no waiting on reviews. The cr
 
 1. Approve the goals and this plan. Everything else is ready: Fusion's MCP is registered, and this Mac can run the Engineers.
 2. Send last attempt's output and the engineers' top complaints about it. That's the fastest way not to repeat them.
+3. Ask the team to build one wall sample and the door as soon as Milestone 1 picks the wall build, so we can measure sound early instead of trusting a calculation.
 
 Rulings that need no answer: documents are in English with the team's Vietnamese part names alongside, and v2 files follow the guideline's folder layout (§12) under `v2/`.
