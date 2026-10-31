@@ -129,8 +129,13 @@ def nearest_end(view, target, tol=1.0):
             d = (x - target[0]) ** 2 + (y - target[1]) ** 2
             if dist is None or d < dist:
                 best, dist = p, d
-    if best is None or dist > tol ** 2:
-        raise RuntimeError("no view corner near (%.2f, %.2f)" % target)
+    if best is None:
+        raise RuntimeError("the view has no line ends (%.2f, %.2f)" % target)
+    if dist > tol ** 2:
+        # a mitred end or a round part has no line end at its extent's corner: use the nearest real
+        # corner (the overall size is then measured between line ends, as the shop measures it)
+        print("  note: no line end within %.1f of (%.1f, %.1f); using the nearest, %.1f away" % (
+            tol, target[0], target[1], dist ** 0.5))
     return best
 
 

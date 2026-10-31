@@ -105,6 +105,10 @@ HOLES = {
 }
 
 
+# sheets whose views reach the bottom left: their notes go on the right, above the title block
+NOTES_RIGHT = {"111401", "110401"}
+
+
 def kind_of(pn):
     if pn[2:4] == "00" or pn[2] == "0":             # xx0000 to xx0999: assemblies (conventions section 5)
         return "assembly"
@@ -162,7 +166,10 @@ def finish(pn):
     bh = (len(lines) + 2) * fs * 1.6
     # bottom left, inside the frame and clear of the title block; a font with the Vietnamese letters
     mm = 72.0 / 25.4
-    box = fitz.Rect(22 * mm, h - 14 * mm - bh, w * 0.545, h - 14 * mm)     # the frame is 20 mm in on the left
+    if pn in NOTES_RIGHT:     # the views fill the bottom left: right side, above the projection symbol and title block
+        box = fitz.Rect(w * 0.56, h - 75 * mm - bh, w - 12 * mm, h - 75 * mm)
+    else:
+        box = fitz.Rect(22 * mm, h - 14 * mm - bh, w * 0.545, h - 14 * mm)     # the frame is 20 mm in on the left
     font = next((f for f in ("/System/Library/Fonts/Supplemental/Arial Unicode.ttf", "/Library/Fonts/Arial Unicode.ttf")
                  if os.path.exists(f)), None)
     if font:
