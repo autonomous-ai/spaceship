@@ -219,6 +219,49 @@ def circle_cut_x(comp, body, name, xf, cy, cz, dia, depth, into, ctx):
     return f
 
 
+def circles_cut(comp, body, name, plane, coord, centres, dia, depth, into, ctx):
+    """A row of round holes in one sketch and one cut: plane 'z' (an XY-type plane at Z =
+    coord, centres as (x, y) expressions) or 'x' (a YZ-type plane at X = coord, centres as
+    (y, z)); every circle's size and centre dimensioned by expressions; cut by depth toward
+    `into` (+1 or -1 along the plane's model axis), into one body only."""
+    base = comp.xYConstructionPlane if plane == "z" else comp.yZConstructionPlane
+    pl = offset_plane(comp, base, coord, "PLANE - %s" % name)
+    sk = comp.sketches.add(pl)
+    sk.name = "HOLES - " + name
+    dims, gc = sk.sketchDimensions, sk.geometricConstraints
+    axes = ("x", "y") if plane == "z" else ("y", "z")
+    for u, v in centres:
+        mv = {axes[0]: ctx.ev(u), axes[1]: ctx.ev(v), plane: ctx.ev(coord)}
+        cen = sk.modelToSketchSpace(adsk.core.Point3D.create(mv["x"] * MM, mv["y"] * MM, mv["z"] * MM))
+        c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(cen.x, cen.y, 0),
+                                                            ctx.ev(dia) / 2 * MM)
+        g = c.centerSketchPoint.geometry
+        dims.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = dia
+        for model_axis, expr in ((axes[0], u), (axes[1], v)):
+            sa, _sign = model_to_sketch_axis(sk, model_axis)
+            if abs(ctx.ev(expr)) < EPS:
+                (gc.addVerticalPoints if sa == "x" else gc.addHorizontalPoints)(c.centerSketchPoint, sk.originPoint)
+            else:
+                tp = adsk.core.Point3D.create(g.x + 0.6, g.y + 0.6, 0)
+                dims.addDistanceDimension(sk.originPoint, c.centerSketchPoint, H if sa == "x" else V,
+                                          tp).parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: HOLES - " + name)
+    coll = adsk.core.ObjectCollection.create()
+    for pr in sk.profiles:
+        coll.add(pr)
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    normal = n.z if plane == "z" else n.x
+    ei = comp.features.extrudeFeatures.createInput(coll, adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(depth)),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if normal * into > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
 def pattern(comp, feature, axis, n, pitch, name):
     """Rectangular pattern of one feature along a component axis: n instances, pitch apart
     (both expressions), toward +axis."""
@@ -427,12 +470,19 @@ def build_frame_bodies(comp, half, ctx):
     into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s}
     for name, member, face, (x, y, z), dia, n, pitch, axis in M.joint_holes(half):
         label = "%s %s" % (half, name)
+        # one sketch per row: hole k at the row's first centre + k pitches (the start, pitch and
+        # count are the skeleton's named values, so a rebuild follows them; Fusion's identical
+        # pattern can't paste onto these hollow tubes, and an adjusted one is too slow)
+        count = int(round(M.ev(ctx.vals, n)))
+        def at(e, a):
+            return e if a != axis else "(%s) + %d * (%s)" % (e, k, pitch)
+        cs = []
+        for k in range(count):
+            cs.append((at(x, "x"), at(y, "y")) if face == "bottom" else (at(y, "y"), at(z, "z")))
         if face == "bottom":
-            f = circle_cut(comp, bodies[member], label, x, y, dia, z, "%s + 2 * tube_t" % z, ctx)
+            circles_cut(comp, bodies[member], label, "z", z, cs, dia, "2 * tube_t", 1, ctx)
         else:
-            f = circle_cut_x(comp, bodies[member], label, x, y, z, dia, "2 * tube_t", into[(member, face)], ctx)
-        if not (n.strip() == "1"):
-            pattern(comp, f, axis, n, pitch, label)
+            circles_cut(comp, bodies[member], label, "x", x, cs, dia, "2 * tube_t", into[(member, face)], ctx)
     sx, sy, sz, sw, sl = M.spigot_slot(half)
     label = "%s BACK SPIGOT SLOT" % half
     half_run = "(%s - %s) / 2" % (sl, sw)
