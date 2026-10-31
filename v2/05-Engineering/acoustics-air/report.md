@@ -77,9 +77,9 @@ Outside to inside. DECIDED by the PM on 2026-10-31 (D-02 weight and sound target
 | Ceiling half outer panel | 1212 × 1500 | 12.1 |
 | Supply cartridge, in the air column (D-60) | 173 × 314 × 1750 | 11.2 |
 | Exhaust cartridge, in the soffit (same part) | 173 × 314 × 1750 | 11.2 |
-| Air column: faces, fill, frame, grille | 220 × 360 × 2105 | 10.1 |
-| Soffit: faces, fill, frame, grille | 2338 × 360 × 220 | 10.1 |
-| Intake riser, 1 mm steel, with its mesh | 139–250 × 155 × 1740 | 9.2 |
+| Air column: faces, fill, frame, grille | 217 × 360 × 2105 | 10.0 |
+| Soffit: faces, fill, frame, grille | 2332 × 360 × 220 | 10.0 |
+| Intake riser, 1 mm steel, with a mesh allowance | 139–250 × 155 × 1740 | 9.2 |
 | Each 12 V fan | 140 × 140 × 25 | about 0.3 (assumption) |
 | Door (4+4) | 1176 × 2011 | 47.5 (PM figure), glass is exempt |
 
@@ -445,7 +445,7 @@ The band piece under the block is 371 mm long (skeleton P04). Open heights and f
 | Soffit: felt-covered faces, fill, frame, exhaust grille | 2332 x 360 x 220 | 10.0 | underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption) |
 | Supply fan box and transition, in the right block | 300 x 155 x 300 + transition | 5.1 | 2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation) |
 | Exhaust fan box and roof sleeve, in the soffit | 294 x 314 x 173 | 3.5 | 2 mm aluminium, 50 mm lining |
-| Intake riser with the intake mesh, in the right block | 139-250 x 155 x 1740 | 9.2 | 1 mm galvanised steel; 0.5 kg mesh and frame (assumption) |
+| Intake riser with a mesh allowance, in the right block | 139-250 x 155 x 1740 | 9.2 | 1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption) |
 | Roof slot grille and sleeve | 285 x 294 | 0.5 | assumption |
 | Four 12 V fans | 140 x 140 x 25 | 1.2 | 0.3 kg each (assumption) |
 | **Air parts in all** |  | **61.8** | heaviest part under the 20 kg rule: 11.2 kg |

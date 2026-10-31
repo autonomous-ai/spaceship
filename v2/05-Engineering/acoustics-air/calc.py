@@ -788,8 +788,9 @@ def d60_parts(casing="al20"):
          (box + 0.35) * al + 0.6 * 0.050 * LINING_KG_M3, "2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation)"),
         ("Exhaust fan box and roof sleeve, in the soffit", "294 x 314 x 173",
          (ebox + 0.093) * al + 0.42 * 0.050 * LINING_KG_M3, "2 mm aluminium, 50 mm lining"),
-        ("Intake riser with the intake mesh, in the right block", f"{lo_w*1000:.0f}-{up_w*1000:.0f} x {lo_d*1000:.0f} x {(lo_l+up_l)*1000:.0f}",
-         (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5, "1 mm galvanised steel; 0.5 kg mesh and frame (assumption)"),
+        ("Intake riser with a mesh allowance, in the right block", f"{lo_w*1000:.0f}-{up_w*1000:.0f} x {lo_d*1000:.0f} x {(lo_l+up_l)*1000:.0f}",
+         (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5,
+         "1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption)"),
         ("Roof slot grille and sleeve", "285 x 294", 0.5, "assumption"),
     ]
     return rows
