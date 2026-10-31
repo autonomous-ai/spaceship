@@ -15,8 +15,8 @@ What to inspect on the first article of each made part and assembly, the functio
 
 | ID | Applies to | Characteristic | Nominal | Limits | Datum | Method and gauge | Source and status | Result | Conclusion | Evidence |
 |---|---|---|---|---|---|---|---|---|---|---|
-| K-J01 | `2111xx` `4111xx` `1111xx` `1112xx` | Bolt clearance hole diameter | Ø7.0 | set on the drawing | — | pin gauges, go and no-go | DECIDED (D-64, joints register R-J6) | | PLANNED | |
-| K-J02 | `2111xx` `4111xx` `1111xx` `1112xx` | Bolt hole position from the spigot hole | 0 | Ø0.4 (±0.2) | the spigot hole | CMM, or the drill jig's check fixture | DECIDED (D-64, R-J6); calculation (stack ST-03: 0.05 to spare) | | PLANNED | |
+| K-J01 | `2111xx` `4111xx` `1111xx` `11120x` | Bolt clearance hole diameter | Ø7.0 | set on the drawing | — | pin gauges, go and no-go | DECIDED (D-64, joints register R-J6) | | PLANNED | |
+| K-J02 | `2111xx` `4111xx` `1111xx` `11120x` | Bolt hole position from the spigot hole | 0 | Ø0.4 (±0.2) | the spigot hole | CMM, or the drill jig's check fixture | DECIDED (D-64, R-J6); calculation (stack ST-03: 0.05 to spare) | | PLANNED | |
 | K-J03 | `2111xx` `4111xx` | Spigot hole and slot | Ø8.5; slot 8.5 × 14 | set on the drawing | — | pin gauge Ø8.5; slot gauge | DECIDED (D-64) | | PLANNED | |
 | K-J04 | `2111xx` `4111xx` `1111xx` | Rivnut hole | Ø9.53 | +0.10 / 0 | — | pin gauges | source (maker's data, joints register H-03) | | PLANNED | |
 | K-J05 | `2111xx` `4111xx` `1111xx` | Frame flatness at a joint face | 0 | ±0.5 over a seam | the joint face | straightedge and feeler gauge | assumption (joints register; the frame drawings set it with the maker's capability) | | PLANNED | |
@@ -76,6 +76,7 @@ What to inspect on the first article of each made part and assembly, the functio
 | K-B05 | `110000` | Door threshold (in the BASE assembly until the profile has its own number): 13 high, a 6 mm upright, then a 1:2 bevel | 13; 6; 1:2 | set on the drawing | the room floor | height gauge; angle gauge | DECIDED (D-72) | | PLANNED | |
 | K-B06 | `110000` | Intake mesh band piece under the right decor block (in the BASE assembly until it has its own number): free area | 0.028 m² | ≥ | — | measure the open area | DECIDED (D-62) | | PLANNED | |
 | K-B07 | `110000` | Base seal (118001) at the floor's edge, against the band's inner face | 4 gap | sealed | — | feeler gauge; light test | DECIDED (D-86) | | PLANNED | |
+| K-B08 | `11121x` | Corner and inline keys: 6061-T6, mill finish, hidden, fixed in a band piece's open end at the factory; the back key 35 × 60 × 20, about 0.11 kg; each key's hook stud takes the next piece | 35 × 60 × 20 | set on the drawing | the band's bottom wall | caliper; trial fit in a band end | DECIDED (D-87, hook-in keys); calculation (joints register J-BASE-02, PR #69) | | PLANNED | |
 
 ## F. Air, electrical and interior
 
@@ -94,14 +95,14 @@ What to inspect on the first article of each made part and assembly, the functio
 | F-01 | The door swings outward to 90° and clears the soffit (door top Z 2116, soffit 4 mm above it) | no contact | swing the door; feeler at the top | calculation (the air report); the mechanical check's swing sweep | | PLANNED | |
 | F-02 | The door closes and stays shut: the 35 N catch, the drop seal on the threshold, the magnetic seal pair on the glass edge | closed, no gap | visual; light test from inside | DECIDED (D-40, D-83) | | PLANNED | |
 | F-03 | Every seam and seal: no light through any joint | no light | lamp inside, room dark | confirmed (REQ-SND-02) | | PLANNED | |
-| F-04 | Fans: 53 l/s at 26 dB(A) or less and the 65 l/s boost at 30 dB(A) or less, at seated ear height; with two people inside, 53 l/s holds the inside within 4 K of the room | as stated | flow hood; sound level meter; thermometers inside and in the room | DECIDED (D-50, D-52); calculation (25.3 and 29.7 dB(A), D-62; 257 W and 4.0 K at 53 l/s, PR #66); the fan sample's T04 | | PLANNED | |
+| F-04 | Fans: 53 l/s at 26 dB(A) or less and the 65 l/s boost at 30 dB(A) or less, at seated ear height; with two people inside, 53 l/s holds the inside within 4 K of the room | as stated | flow hood; sound level meter; thermometers inside and in the room | DECIDED (D-50, D-52); calculation (25.3 and 29.7 dB(A), D-62; 249 W and 3.9 K at 53 l/s, PR #72); the fan sample's T04 | | PLANNED | |
 | F-05 | Control: fans start on presence; CO2 and the 4 K limit drive the flow; boost by hand; with the voice kit fitted, the boost holds 4 K | as stated | logged readings over a session | DECIDED (D-44, D-50, D-88) | | PLANNED | |
 | F-06 | The hub's self-test button runs and passes | pass | press it; read the log | DECIDED (D-87) | | PLANNED | |
 | F-07 | Lights: the light shelf scenes, including a 'call' scene that lights the face from the screen side | as stated | visual | DECIDED (D-70) | | PLANNED | |
 | F-08 | Assembly: two people, one 5 mm key, every piece but the glass 20 kg or less | about 127 min; never over 4 h | timed trial with the guide | DECIDED (D-03, D-63; 4 h, REQ-ASM-01); calculation (the guide, PR #59; D-87's target about 126) | | PLANNED | |
-| F-09 | Mass as shipped | ≤ 420 kg (cap); 415.4 calculated | weigh every piece | DECIDED cap (D-37); calculation (the layout study's live count, PR #66) | | PLANNED | |
+| F-09 | Mass as shipped | ≤ 420 kg (cap); 415.2 calculated | weigh every piece | DECIDED cap (D-37); calculation (the layout study's live count, PR #68) | | PLANNED | |
 | F-10 | Sound: speech level reduction to ISO 23351-1 | the measured figure; about 19 dB calculated | lab, after the wall sample's T01 from 100 Hz | DECIDED (D-53); calculation | | PLANNED | |
-| F-11 | Voice kit, once it exists: average draw over a session and peak on its 12 V 5 A outlet; with it on, the inside within 4 K at 30 dB(A) or less | ≤ 40 W average; ≤ 60 W peak; ≤ 4 K | power logger on the outlet; thermometers; sound level meter | DECIDED (D-11, D-88); calculation (about 64.8 l/s holds 4 K, requirements C4) | | PLANNED | |
+| F-11 | Voice kit, once it exists: average draw over a session and peak on its 12 V 5 A outlet; with it on, the inside within 4 K at 30 dB(A) or less | ≤ 40 W average; ≤ 60 W peak; ≤ 4 K | power logger on the outlet; thermometers; sound level meter | DECIDED (D-11, D-88); calculation (4 K takes 62 l/s at 28.7 dB(A), PR #72) | | PLANNED | |
 
 ## H. Bought parts: the test that accepts each
 
