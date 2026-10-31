@@ -7,7 +7,7 @@ W-BACK-LO,WALL - BACK PANEL - LOWER (outer: ACP + frame + fill),Vách hậu - kh
 L-CASS-BACK-LO,LINING - CASSETTE FOR W-BACK-LO (steel tray + felt),Khay lót trong + tiêu âm,LINING,1169 x 1104 x 34,2,8.68,17.35,upright,calculation,"floating inner leaf, clips on from inside"
 W-BACK-UP,WALL - BACK PANEL - UPPER (outer: ACP + frame + fill),Vách hậu - khung trên,WALL,1169 x 1104 x 43,2,8.65,17.31,upright,calculation,
 L-CASS-BACK-UP,LINING - CASSETTE FOR W-BACK-UP (steel tray + felt),Khay lót trong + tiêu âm,LINING,1169 x 1104 x 34,2,8.68,17.35,upright,calculation,"floating inner leaf, clips on from inside"
-C-HALF,CEILING - HALF PANEL WITH FAN OPENING (outer: ACP + frame),Trần - nửa khung,CEILING,1500 x 1169 x 43,2,9.88,19.75,upright,calculation,
+C-HALF,CEILING - HALF PANEL (outer: ACP + frame),Trần - nửa khung,CEILING,1500 x 1169 x 43,2,9.88,19.75,upright,calculation,
 L-CASS-HALF,LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill),Khay lót trong + tiêu âm,LINING,1419 x 1169 x 74,2,12.74,25.48,upright,calculation,"floating inner leaf, clips on from inside"
 B-BAND-BACK,BASE - BASE BAND PIECE 100x40 - BACK,Viền chân nhôm,BASE,2420 x 100 x 40,1,3.55,3.55,long,calculation,
 B-BAND-SIDE,BASE - BASE BAND PIECE 100x40 - SIDE,Viền chân nhôm,BASE,1660 x 100 x 40,2,2.44,4.88,long,calculation,
@@ -20,11 +20,12 @@ B-FLOOR,BASE - THIN FLOOR PANEL 15 mm,Tấm sàn mỏng,BASE,1419 x 1169 x 15,2,
 F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 235,1,9.98,9.98,long,calculation,
 F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 235,1,18.06,18.06,long,calculation,
 F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 235,1,7.02,7.02,long,calculation,
-F-GLASS-DOOR,"FRONT - GLASS DOOR (4+4 laminated glass, frameless)",Cửa kính,FRONT,2011 x 1176 x 9,1,43.28,43.28,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
+F-GLASS-DOOR,"FRONT - GLASS DOOR UNIT (4+4 laminated glass, frameless, 90 mm kick strip with drop seal, hinges, pull)",Cửa kính,FRONT,2011 x 1176 x 9,1,47.48,47.48,glass,calculation,carried by two people with 2 suction lifters; glass exempt from the 20 kg rule
 F-GLASS-FIXED,"FRONT - FIXED GLASS (4+4 laminated glass, frameless)",Vách kính cố định,FRONT,2139 x 724 x 9,1,27.97,27.97,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
-F-HW,FRONT - DOOR AND GLAZING HARDWARE KIT,Phụ kiện cửa và kính,FRONT,600 x 400 x 150,1,5.78,5.78,box,assumption,"3 hinges, pull, drop seal, sealed glazing profiles"
-A-FAN,"AIR - INLINE FAN (S&P TD-350/100-125, sound study's pick)",Quạt thông gió,AIR,350 x 280 x 280,2,6.00,12.00,box,source,
-A-SIL-DR,AIR - SPLITTER SILENCER FOR THE RIGHT DECOR BLOCK (2 mm Al casing),Bộ tiêu âm khối phải,AIR,1100 x 300 x 160,1,20.33,20.33,upright,calculation,slides into the mounted block from inside
+F-HW,FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS,Nẹp kính có gioăng,FRONT,2200 x 120 x 60,1,2.58,2.58,box,assumption,"hidden in the decor and base, so the front stays frameless"
+A-FAN,AIR - INLINE FAN TD-500 (S&P TD-500/150-160) IN THE DECOR BLOCKS,Quạt thông gió TD-500,AIR,350 x 280 x 280,2,6.00,12.00,box,source,fitted with the splitter silencers in the right and top decor blocks
+A-SIL-DR-CASING,AIR - RIGHT SPLITTER SILENCER: CASING (2 mm Al),Vỏ bộ tiêu âm khối phải,AIR,1100 x 300 x 160,1,5.46,5.46,upright,calculation,slides into the mounted block first (size assumed)
+A-SIL-DR-BAFFLE,AIR - RIGHT SPLITTER SILENCER: BAFFLE,Tấm tiêu âm khối phải,AIR,1100 x 260 x 60,2,7.43,14.87,upright,calculation,"slides into the casing after it (DECIDED); the rest of the silencer's mass, split evenly"
 A-SIL-DT,AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing),Bộ tiêu âm khối trên,AIR,1000 x 240 x 160,1,10.17,10.17,upright,calculation,slides into the mounted block from inside
 K-SEALS,"KIT - DOOR EDGE SEALS, BASE SEAL, CABLE GROMMETS","Gioăng cửa, gioăng đế",BASE,600 x 300 x 100,1,1.60,1.60,box,source,
 F-DECOR-FILL,FRONT - PET FILL PIECES FOR THE DECOR BLOCKS (loose),Bông PET khối trang trí,FRONT,1200 x 400 x 300,1,3.09,3.09,box,calculation,ships loose: inside the right decor block it would make that block over 20 kg

@@ -102,17 +102,20 @@ def sequence(split, m, parts, split_long, n_std, n_long):
                           access="As the lower walls; top fixings at 2.2 m need the step stool."))
     n, two, one = carry_place("C-HALF", overhead=True)
     b, c, tb = fix(("J-CEIL-01", "J-CEIL-02", "J-AIR-01"))
-    steps.append(dict(name="Ceiling halves lifted onto the walls from inside; fans and silenced vents from below",
+    fans_in_ceiling = m.get("stack") != "final"
+    steps.append(dict(name="Ceiling halves lifted onto the walls from inside" + ("; fans and silenced vents from below" if fans_in_ceiling else ""),
                       lifts=n, bolts=b, cams=c, two=two, one=one + tb,
-                      access="Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening."))
+                      access="Upward from inside, ceiling felt (or its joint strips) not yet on" +
+                             ("; fans mount from below through their opening." if fans_in_ceiling else ".")))
     n, two, one = carry_place("F-D")
-    b, c, tb = fix(("J-FRONT-01", "J-FRONT-03"))
+    b, c, tb = fix(("J-FRONT-01", "J-FRONT-03", "J-AIR-02"))
     fill = sum(pt.qty for pt in parts if pt.pid == "F-DECOR-FILL")
-    sil = sum(pt.qty for pt in parts if pt.pid.startswith("A-SIL-"))
+    sil = sum(1 for pt in parts if pt.pid in ("A-SIL-DR", "A-SIL-DR-CASING", "A-SIL-DT"))
+    baffles = sum(pt.qty for pt in parts if pt.pid == "A-SIL-DR-BAFFLE")
     steps.append(dict(name="Decor blocks (skins on, factory-made): " + ("PET fill pushed into each open back, then " if fill else "")
-                      + "left door post, right, then top" + (f"; then {sil} splitter silencers slid in from inside and the fans connected" if sil else ""),
-                      lifts=n + sil, bolts=b, cams=c, two=two + sil * 120,
-                      one=one + tb + (3 * 30 if fill else 0),
+                      + "left door post, right, then top" + (f"; then {sil} splitter silencers slid in from inside through the felt-covered access panels, the right one's baffles after its casing, and the 2 TD-500 fans fitted next to them" if sil else ""),
+                      lifts=n + sil + baffles, bolts=b, cams=c, two=two + sil * 120,
+                      one=one + tb + (3 * 30 if fill else 0) + baffles * 30,
                       access="Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips."))
     pre = m.get("prehung")
     b = 4

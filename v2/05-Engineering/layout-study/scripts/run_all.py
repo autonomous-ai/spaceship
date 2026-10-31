@@ -86,15 +86,15 @@ def option_results():
 
 def waterfall():
     steps = [("v2 as planned (steel frames, 6 mm plywood, raised steel floor, 10 mm glass, table)", {}, "source + calculation"),
-             ("Remove the table; the pod ships empty", dict(table=False), "confirmed (Dee)"),
-             ("Thin floor inside an aluminium base band instead of the raised steel frame", dict(floor="thin"), "DECIDED"),
-             ("Aluminium 20x20 frames instead of steel (walls, ceiling, decor)", dict(frame="al"), "DECIDED"),
-             ("No plywood behind the ACP; frame members at 400 mm to keep the ACP flat", dict(ply=False), "DECIDED"),
+             ("Remove the table; the pod ships empty", dict(table=False), "DECIDED (D-06)"),
+             ("Thin floor inside an aluminium base band instead of the raised steel frame", dict(floor="thin"), "DECIDED (D-05, D-18)"),
+             ("Aluminium 20x20 frames instead of steel (walls, ceiling, decor)", dict(frame="al"), "DECIDED (D-16)"),
+             ("No plywood behind the ACP; frame members at 400 mm to keep the ACP flat", dict(ply=False), "DECIDED (D-17)"),
              ("8 mm tempered glass instead of 10 mm", dict(front="glass8"), "light build only; the decided build uses 10 mm acrylic"),
              ("Add gaskets on every panel joint, sealed glazing profiles, door drop seal", dict(seals=True), "plan requirement"),
              ("Add 2 silenced vents and an occupancy sensor for automatic fans", dict(vents=True, sensor=True), "plan requirement"),
              ("Add light cavity fill (20 mm PET) in wall and ceiling bays", dict(fill=True), "assumption (sound group sizes it)"),
-             ("Hold 4 kg for the later voice cockpit kit", dict(voice=True), "Dee's scope addition")]
+             ("Hold 4 kg for the later voice cockpit kit", dict(voice=True), "DECIDED (D-11)")]
     m = dict(PLAN)
     rows, prev = [], None
     for text, change, status in steps:
@@ -395,16 +395,20 @@ def build():
     dr, dt = byid["F-DR"].kg, byid["F-DT"].kg
     N["dr_with_fill"] = f1(dr + decor_fill_kg() * decor_skin_area("DR") / sum(decor_skin_area(b) for b in ("DL", "DR", "DT")))
     N["final_dr"], N["final_dt"] = f1(dr), f1(dt)
-    N["sil_right"], N["sil_top"] = f1(byid["A-SIL-DR"].kg), f1(byid["A-SIL-DT"].kg)
-    N["dr_plus_sil"], N["dt_plus_sil"] = f1(dr + byid["A-SIL-DR"].kg), f1(dt + byid["A-SIL-DT"].kg)
+    sil_r = byid["A-SIL-DR-CASING"].kg + byid["A-SIL-DR-BAFFLE"].kg * byid["A-SIL-DR-BAFFLE"].qty
+    N["sil_right"], N["sil_top"] = f1(sil_r), f1(byid["A-SIL-DT"].kg)
+    N["dr_plus_sil"], N["dt_plus_sil"] = f1(dr + sil_r), f1(dt + byid["A-SIL-DT"].kg)
     N["winback_frames"] = f1(-gap(t_al_final=1.5))
     N["winback_fill"] = f1(-gap(fill_pet_kgm3=32))
     N["hw_398_total"] = f0(p("hw_398_total"))
     N["fan_final_kg"] = f1(p("fan_final_kg"))
     N["without_gap_items"] = f0(base_total - gap(fan_final_kg=p("fan_kg"), leaf_clip_kgm2=0.0))
     N["sil_extra"] = f1(p("sil_lining_extra_kg"))
-    N["sil_right_over"] = f1(max(0.0, byid["A-SIL-DR"].kg - 20.0))
-    N["sil_right_status"] = "OVER 20 kg" if byid["A-SIL-DR"].kg > 20.0 else "within 20 kg"
+    N["sil_casing"] = f1(byid["A-SIL-DR-CASING"].kg)
+    N["sil_baffle"] = f1(byid["A-SIL-DR-BAFFLE"].kg)
+    N["n_baffles"] = str(byid["A-SIL-DR-BAFFLE"].qty)
+    N["kick_strip_h"] = f0(p("kick_strip_h"))
+    N["cap_note"] = "at the cap" if abs(base_total - p("cap_kg")) < 0.05 else (f"{f1(p('cap_kg') - base_total)} kg under" if base_total < p("cap_kg") else f"{f1(base_total - p('cap_kg'))} kg over")
     with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
         cf = parts_for("plan", variant(FINAL, ceil_fill_on_cassette=False))
     N["ceil_outer_with_fill"] = f1([pt for pt in cf if pt.pid == "C-HALF"][0].kg)
@@ -415,7 +419,8 @@ def build():
     N["hw_380_dsa"] = f1(p("hw_380_dsa"))
 
     # ---------------- doorway
-    d = doorway(res["B1"]["parts"]) + [r for r in doorway(res["A"]["parts"]) if r["pid"].startswith(("B-RAIL", "B-JOIST", "B-BOARD", "I-"))]
+    with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
+        d = doorway(parts_for("plan", FINAL))
     N["table_doorway"] = table(["Part", "Size mm (long x mid x thin)", "kg", "Width needed on edge, mm", "914 x 2032 doorway", "813 mm clear (ADA)"],
                                [[r["pid"], " x ".join(f0(x) for x in r["dims"]), f1(r["kg"]), f0(r["need_w"]),
                                  "passes" if r["ok_nom"] else "FAILS", "passes" if r["ok_clear"] else "FAILS"] for r in d],
@@ -460,8 +465,8 @@ def build():
     N["v1_solid_al_delta"] = f0(sum(solid.values()) - sum(v1["bom"].values()))
     N["hand_clear"] = f0(p("hand_clear"))
     N["door_clear_w"] = f0(p("door_clear_w"))
-    N["tool_power"] = (f"Hold {p('voice_kit_w'):.0f} W for the kit on its own fused circuit from the power inlet, "
-                       "and add it to the electrical group's power budget next to the fans and lights.")
+    N["tool_power"] = (f"12 V 5 A ({p('voice_kit_w'):.0f} W) for the kit on the pod's 12 V bus, which also feeds the fans, lights and "
+                       "sensors (D-10, D-11); the electrical group adds it to the power budget.")
     N["pitch_acp"] = f0(p("stud_pitch_acp"))
     tmpl = open(os.path.join(ROOT, "report_template.md"), encoding="utf-8").read()
     missing = sorted(set(re.findall(r"\{\{(\w+)\}\}", tmpl)) - set(N))

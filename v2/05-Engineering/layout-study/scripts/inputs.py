@@ -1,7 +1,8 @@
 """Every input number of the layout study, with its status and source.
 
 Status words follow the guideline (section 10): confirmed, source, calculation,
-assumption, unverified. Nothing in the other scripts may introduce a number that
+assumption, unverified. "decided" marks a PM ruling, which AGENTS.md makes the confirmed
+requirement; its source cites the decision log entry (D-xx) or the dated ruling. Nothing in the other scripts may introduce a number that
 is not either defined here or calculated from what is defined here, except plain
 counts that the scripts state next to the code (for example "2 hinges").
 """
@@ -13,7 +14,7 @@ SOURCES = {
     "S02": ("v1 STEP assembly, exported 2026-10-14 (older than the BOM; cross-check only)", "sources/v1/indoor-pod-v3-assembly.step"),
     "S03": ("v1 drawings: wood parts, floor frame, decor frame", "sources/v1/drawings/"),
     "S04": ("v2 build plan from the indoor pod lead engineer", "v2/00-Control/v2-build-plan.pdf"),
-    "S05": ("v2 plan approved by Dee, 2026-10-31 (targets, light options, pallet sizes)", "v2/PLAN.md"),
+    "S05": ("v2 plan approved by the product owner, 2026-10-31 (targets, light options, pallet sizes)", "v2/PLAN.md"),
     "S06": ("EN 1993-1-1 section 3.2.6: steel density 7850 kg/m3", "EN 1993-1-1:2005"),
     "S07": ("EN 1999-1-1 section 3.2.3.1: aluminium alloy density 2700 kg/m3", "EN 1999-1-1:2007"),
     "S08": ("EN 572-1: soda-lime silicate glass, density 2500 kg/m3", "EN 572-1:2012+A1:2016"),
@@ -35,6 +36,8 @@ SOURCES = {
     "S25": ("Sound study update relayed by the PM, 2026-10-31: silencers move inside the decor blocks as splitter silencers with 2 mm aluminium casings, 18 kg in the right block and 9 kg in the top block, next to the S&P TD-500 fans; weight win-backs: 20x40x1.2 aluminium frames and 25 kg/m3 fill; expected total about 398 kg", "layout conversation, PM message of 2026-10-31"),
     "S26": ("PM rulings 2026-10-31: inner steel tray 0.4 mm (about 403 kg, inside 400 +/- 10); if the sound study shows it costs more than 0.5 dB, back to 0.5 mm and the cap becomes 420 kg. Silencers ship as separate parts and slide in from inside the pod through a felt-covered access panel in the right and top decor blocks, which also gives fan service access; inside only, so the look is untouched", "layout conversation, PM message of 2026-10-31"),
     "S27": ("PM ruling change 2026-10-31: the 0.4 mm tray costs 1 dB, so it reverts to 0.5 mm and the cap is 420 kg; the splitter linings get thicker, about +3.5 kg across both silencers (expect about 418-420 kg); decor block depth follows v1's real geometry, 230-235 mm, not the plan's 200", "layout conversation, PM message of 2026-10-31"),
+    "S28": ("Decision log D-01 to D-26 (Control Engineer's control pack, branch super-tab/8178188a, commit 4a4783d); PM rulings made after it are cited by date and wait for their log entries", "v2/00-Control/decision-log.md on that branch (read 2026-10-31)"),
+    "S29": ("PM rulings after Reviewer 2, 2026-10-31: the right silencer's baffles ship separately from its casing; the door gets a ~90 mm aluminium kick strip at the bottom in the base band's dark finish, housing the drop seal, about 1 kg; fans are the TD-500 in the decor blocks, not in the ceiling", "layout conversation, PM message of 2026-10-31"),
     "S19": ("LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff)", "https://logisticsplus.com/?p=25575 (read 2026-10-31)"),
 }
 
@@ -53,7 +56,7 @@ P = {
     "pod_w": V(2500, "mm", "confirmed", "S04", "overall width X"),
     "pod_d": V(1700, "mm", "confirmed", "S04", "overall depth Y"),
     "pod_h": V(2400, "mm", "confirmed", "S04", "overall height Z"),
-    "decor_depth": V(235, "mm", "confirmed", "S27", "front decor block depth, v1's real geometry (BOM 230-235; the plan said 200)"),
+    "decor_depth": V(235, "mm", "decided", "S27", "front decor block depth, v1's real geometry (BOM 230-235; the plan said 200)"),
     "wall_depth": V(1500, "mm", "confirmed", "S04", "side wall depth = 1700 - 200"),
     "wall_t_plan": V(38, "mm", "source", "S04", "3 ACP + 6 ply + 20 tube + 9 PET (plan joint detail)"),
     "base_h": V(100, "mm", "source", "S04", "base band: 50x100 tube on edge"),
@@ -72,7 +75,7 @@ P = {
     "pvb_kgm2": V(0.81, "kg/m2", "calculation", "S08", "0.76 mm PVB at 1070 kg/m3 (assumption on PVB density)"),
     # ---- sheet products (areal mass)
     "acp2_kgm2": V(2.9, "kg/m2", "source", "S10", "2 mm ACP"),
-    "acp3_kgm2": V(3.5, "kg/m2", "calculation", "S23", "Spaceship: 3 mm Alcorest EV3038 ACP, 0.21 mm skins (PM ruling; was 3.8)"),
+    "acp3_kgm2": V(3.5, "kg/m2", "decided", "S23, S24", "Spaceship: 3 mm Alcorest EV3038 ACP, 0.21 mm skins (PM ruling; was 3.8)"),
     "acp3_v1_kgm2": V(3.8, "kg/m2", "source", "S10", "v1's 3 mm decor skins: maker unknown, kept at the 0.3 mm-skin figure"),
     "pet9_kgm2": V(1.8, "kg/m2", "source", "S11", "9 mm PET felt"),
     "hc10_kgm2": V(4.0, "kg/m2", "source", "S12", "10 mm Al honeycomb, 0.5+0.5 skins"),
@@ -92,7 +95,7 @@ P = {
     "t_al_base": V(2.0, "mm", "assumption", "S07", "aluminium 100x40 base rail (the base band)"),
     # ---- frames
     "stud_pitch_ply": V(600, "mm", "assumption", "", "max frame member spacing with plywood backing"),
-    "stud_pitch_acp": V(400, "mm", "assumption", "", "max spacing when ACP is bonded to the frame without plywood, to keep it flat (oil-canning risk)"),
+    "stud_pitch_acp": V(400, "mm", "decided", "D-16", "max spacing when ACP is bonded to the frame without plywood, to keep it flat (oil-canning risk)"),
     # ---- glass and front
     "glass_door_w": V(1176, "mm", "source", "S01"),
     "glass_door_h": V(2011, "mm", "source", "S01"),
@@ -118,8 +121,8 @@ P = {
     "fill_kgm2": V(0.6, "kg/m2", "assumption", "S05", "20 mm PET cavity fill at 30 kg/m3 (light; sound group sizes it)"),
     "bolt_kg": V(0.012, "kg", "assumption", "", "M6 bolt + washer + rivnut"),
     "bolt_pitch": V(400, "mm", "assumption", "", "bolt spacing used only to count bolts; the joint register sets real pitches"),
-    "voice_kit_kg": V(4.0, "kg", "assumption", "", "reserve for the later voice cockpit kit: mic array, speakers, screen, status light"),
-    "voice_kit_w": V(60, "W", "assumption", "", "power reserve for the voice cockpit kit"),
+    "voice_kit_kg": V(4.0, "kg", "assumption", "D-11", "reserve for the later voice cockpit kit: mic array, speakers, screen, status light"),
+    "voice_kit_w": V(60, "W", "decided", "D-11", "12 V 5 A for the voice cockpit kit on the 12 V bus (D-10)"),
     "table_v1_kg": V(0, "kg", "calculation", "S01", "computed from the BOM in v1_weights.py"),
     # ---- shipping
     "pal_std_l": V(1219, "mm", "confirmed", "S05", "48 in"),
@@ -171,31 +174,33 @@ P = {
     "t_unpack_long_ordered_min": V(6, "min", "assumption", "", "long pallet packed in assembly order"),
     "t_felt_strip_s": V(20, "s", "assumption", "", "felt pre-fitted on its panel; only the strip over a joint goes on site"),
     "cam_kg": V(0.05, "kg", "assumption", "", "one cam or clip connector pair"),
+    "kick_strip_kg": V(1.0, "kg", "decided", "S29", "aluminium kick strip at the door bottom, about 90 mm, base band finish, houses the drop seal"),
+    "kick_strip_h": V(90, "mm", "decided", "S29"),
     "strip_w": V(150, "mm", "assumption", "", "loose felt strip over each joint, so the joint stays reachable"),
     # ---- quiet build re-check (Lead's ruling 2026-10-31: about 380 kg, acrylic front, deeper filled cavities)
     "frame_depth": V(20, "mm", "source", "S04", "wall frame tube depth (20x20); the quiet build deepens it"),
-    "quiet_total": V(380, "kg", "confirmed", "S20", "PM ruling from the Hardware Engineer's sound curve"),
+    "quiet_total": V(380, "kg", "decided", "D-02", "PM ruling from the Hardware Engineer's sound curve"),
     "hw_380_total": V(377, "kg", "source", "S20", "Hardware Engineer's best build within a 380 kg budget"),
     "hw_380_dsa": V(22.5, "dB", "source", "S20", "its central D_S,A estimate"),
-    "quiet_cap": V(400, "kg", "confirmed", "", "Lead's ruling: heavier walls allowed up to 400 kg in total"),
+    "quiet_cap": V(400, "kg", "decided", "D-02", "Lead's ruling: heavier walls allowed up to 400 kg in total"),
     "rho_mass_layer": V(1600, "kg/m3", "assumption", "", "dense sound layer (MLV-like) used only to size the inner leaf thickness"),
     "leaf_clip_kgm2": V(0.6, "kg/m2", "assumption", "", "clip rail and clips of an inner leaf"),
     "ceil_t": V(0, "mm", "assumption", "", "ceiling thickness; 0 means the same as the walls"),
-    "final_wall_t": V(81, "mm", "source", "S21", "final wall: outer panel 3 + 40, cassette 25 + 9, 4 mm gaps"),
+    "final_wall_t": V(81, "mm", "decided", "D-17, S21", "final wall: outer panel 3 + 40, cassette 25 + 9, 4 mm gaps"),
     "final_ceil_t": V(81, "mm", "calculation", "S22", "40 mm ceiling frames: the same 81 mm stack as the walls"),
-    "final_wall_depth": V(40, "mm", "source", "S21", "20x40 aluminium wall frame"),
-    "final_ceil_depth": V(40, "mm", "source", "S22", "20x40 aluminium ceiling frame (was 20x100)"),
+    "final_wall_depth": V(40, "mm", "decided", "D-16", "20x40 aluminium wall frame"),
+    "final_ceil_depth": V(40, "mm", "decided", "S22 (D-16 said 20x100)", "20x40 aluminium ceiling frame (was 20x100)"),
     "final_kgm2_hw": V(13.1, "kg/m2", "source", "S21", "the sound study's wall mass with frame, fill and cassette"),
-    "fill_pet_kgm3": V(25, "kg/m3", "source", "S25", "PET cavity fill (was 32)"),
-    "t_al_final": V(1.2, "mm", "source", "S25", "wall of the 20x40 aluminium frames in the final stack (was 1.5)"),
-    "tray_t": V(0.5, "mm", "confirmed", "S27", "steel lining tray (0.4 mm cost 1 dB, so back to 0.5)"),
-    "tray_t_thin": V(0.4, "mm", "confirmed", "S26", "the thinner tray tried and dropped"),
+    "fill_pet_kgm3": V(25, "kg/m3", "decided", "S25", "PET cavity fill (was 32)"),
+    "t_al_final": V(1.2, "mm", "decided", "S25", "wall of the 20x40 aluminium frames in the final stack (was 1.5)"),
+    "tray_t": V(0.5, "mm", "decided", "S27, D-17", "steel lining tray (0.4 mm cost 1 dB, so back to 0.5)"),
+    "tray_t_thin": V(0.4, "mm", "decided", "S26, S27", "the thinner tray tried and dropped"),
     "tray_depth": V(25, "mm", "source", "S21"),
     "hw_385_total": V(385, "kg", "source", "S21"),
     "hw_385_dsa": V(24.2, "dB", "source", "S21"),
     "hw_400_total": V(400, "kg", "source", "S22", "sound study's total with 4+4 laminated glass"),
     "hw_400_dsa": V(23.8, "dB", "source", "S22"),
-    "cap_kg": V(420, "kg", "confirmed", "S27", "weight cap with the 0.5 mm tray"),
+    "cap_kg": V(420, "kg", "decided", "D-25, S27", "weight cap with the 0.5 mm tray"),
     "hw_expect_lo": V(418, "kg", "source", "S27"),
     "hw_expect_hi": V(420, "kg", "source", "S27"),
     "fan_final_kg": V(6.0, "kg", "source", "S20", "S&P TD-500/150-160 ECOWATT inline fan (sound study's fan table)"),
@@ -222,17 +227,26 @@ def p(name):
 
 
 class override:
-    """with override(t_door_min=6): ... runs the model with changed assumptions."""
+    """with override(t_door_min=6): ... runs the model with changed assumptions.
+
+    Nests safely: on exit each key goes back to the value it had before (an outer override's value, or none)."""
+
+    _MISSING = object()
 
     def __init__(self, **kw):
         self.kw = kw
+        self.saved = {}
 
     def __enter__(self):
+        self.saved = {k: _OVERRIDE.get(k, self._MISSING) for k in self.kw}
         _OVERRIDE.update(self.kw)
 
     def __exit__(self, *exc):
-        for k in self.kw:
-            _OVERRIDE.pop(k, None)
+        for k, old in self.saved.items():
+            if old is self._MISSING:
+                _OVERRIDE.pop(k, None)
+            else:
+                _OVERRIDE[k] = old
 
 
 SPACESHIP_NOTE = "Spaceship is the working name of v2 (folders keep their v2 names)."

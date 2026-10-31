@@ -277,6 +277,17 @@ def front_parts(m, split_long):
         t = {"glass10": 10, "glass8": 8, "lam44": 9, "acrylic8": 8, "acrylic10": 10}[m["front"]]
         parts.append(Part(pid, f"{name} ({FRONT_LABEL[m['front']]})", vi, "FRONT", (h, w, t), 1, glass_kg(glass_area(which), m),
                           "glass", note="weight from the finished shape in the STEP; exempt from the 20 kg rule"))
+    final = m.get("stack") == "final"
+    if final:
+        # the door ships as one unit: glass, kick strip housing the drop seal, hinges and pull fitted in the factory
+        door = [pt for pt in parts if pt.pid == "F-GLASS-DOOR"][0]
+        door.kg += p("kick_strip_kg") + p("drop_seal_kg") + 3 * p("hinge_kg") + p("handle_kg")
+        door.name = f"FRONT - GLASS DOOR UNIT ({FRONT_LABEL[m['front']]}, {p('kick_strip_h'):.0f} mm kick strip with drop seal, hinges, pull)"
+        door.note = "carried by two people with 2 suction lifters; glass exempt from the 20 kg rule"
+        g_len = 2 * (p("glass_fixed_h") + p("glass_fixed_w")) * 1e-3
+        parts.append(Part("F-HW", "FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS", "Nẹp kính có gioăng", "FRONT", (2200, 120, 60), 1,
+                          g_len * p("glazing_profile_kgm"), "box", "assumption", "hidden in the decor and base, so the front stays frameless"))
+        return parts
     hw = 3 * p("hinge_kg") + p("handle_kg")
     if m["seals"]:
         g_len = 2 * (p("glass_fixed_h") + p("glass_fixed_w")) * 1e-3
@@ -289,16 +300,22 @@ def front_parts(m, split_long):
 def service_parts(m):
     final = m.get("stack") == "final"
     if final:
-        parts = [Part("A-FAN", "AIR - INLINE FAN (S&P TD-350/100-125, sound study's pick)", "Quạt thông gió", "AIR", (350, 280, 280), 2,
-                      p("fan_final_kg"), "box", "source")]
+        parts = [Part("A-FAN", "AIR - INLINE FAN TD-500 (S&P TD-500/150-160) IN THE DECOR BLOCKS", "Quạt thông gió TD-500", "AIR", (350, 280, 280), 2,
+                      p("fan_final_kg"), "box", "source", "fitted with the splitter silencers in the right and top decor blocks")]
     else:
         parts = [Part("A-FAN", "AIR - CEILING FAN (Panasonic FV-15AUL1 per plan)", "Quạt thông gió", "AIR", (300, 300, 200), 2,
                       p("fan_kg"), "box", "unverified")]
     if m["vents"] and final:
         # splitter silencers that sit inside the decor blocks, shipped as their own parts (sizes assumed to fit the blocks)
         r, t = silencer_kg()
-        parts.append(Part("A-SIL-DR", "AIR - SPLITTER SILENCER FOR THE RIGHT DECOR BLOCK (2 mm Al casing)", "Bộ tiêu âm khối phải", "AIR",
-                          (1100, 300, 160), 1, r, "upright", "calculation", "slides into the mounted block from inside"))
+        L, W, H = 1100, 300, 160       # assumed outside size of the right silencer, to fit the right decor block
+        casing = 2 * (L * W + L * H) * 1e-6 * 2e-3 * p("rho_al")          # 2 mm aluminium shell, open ends
+        n_baffle = 2
+        parts.append(Part("A-SIL-DR-CASING", "AIR - RIGHT SPLITTER SILENCER: CASING (2 mm Al)", "Vỏ bộ tiêu âm khối phải", "AIR",
+                          (L, W, H), 1, casing, "upright", "calculation", "slides into the mounted block first (size assumed)"))
+        parts.append(Part("A-SIL-DR-BAFFLE", "AIR - RIGHT SPLITTER SILENCER: BAFFLE", "Tấm tiêu âm khối phải", "AIR",
+                          (L, W - 40, 60), n_baffle, (r - casing) / n_baffle, "upright", "calculation",
+                          "slides into the casing after it (DECIDED); the rest of the silencer's mass, split evenly"))
         parts.append(Part("A-SIL-DT", "AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing)", "Bộ tiêu âm khối trên", "AIR",
                           (1000, 240, 160), 1, t, "upright", "calculation", "slides into the mounted block from inside"))
     elif m["vents"]:
@@ -353,7 +370,10 @@ def joints(split, m, split_long):
     J.append(("J-CEIL-02", "ceiling half to ceiling half", 1, bolts_on(g["depth"])))
     J.append(("J-FRONT-01", "decor blocks to walls, ceiling and base", 3, 0))
     J.append(("J-FRONT-02", "door hinges and fixed-glass profiles", 1, 3 * 2 + 4))
-    J.append(("J-AIR-01", "fans into ceiling halves", 2, 2))
+    if m.get("stack") != "final":
+        J.append(("J-AIR-01", "fans into ceiling halves", 2, 2))
+    else:
+        J.append(("J-AIR-02", "TD-500 fans into the right and top decor blocks", 2, 2))   # counted once, in the decor step
     if m["floor"] == "raised":
         J.append(("J-BASE-02", "raised frame corners and joists", 4 + 4, 4))
     else:
@@ -505,6 +525,8 @@ def final_stack_parts(split, m, split_long=False):
         for pid, name, vi, assy, w, h, q in wall_layout(split):
             depth = p("final_ceil_depth") if assy == "CEILING" else p("final_wall_depth")
             fill_on_cassette = assy == "CEILING" and m.get("ceil_fill_on_cassette", True)
+            if assy == "CEILING":
+                name = "CEILING - HALF PANEL"
             parts.append(Part(pid, name + (" (outer: ACP + frame)" if fill_on_cassette else " (outer: ACP + frame + fill)"), vi, assy,
                               (h, w, 3 + depth), q, final_outer_kg(w, h, depth, m, not fill_on_cassette), "upright"))
             if assy == "CEILING":

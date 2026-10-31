@@ -7,29 +7,33 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 
 ## Result
 
-1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 441 kg, and the light build 296 kg (298 kg with the fast-assembly hardware). The decided build comes to **419 kg**, 1.0 kg under the PM's 420 kg cap; the sound study expects 418 to 420 kg. That build has the sound study's final walls with the 0.5 mm inner tray, splitter silencers in the decor blocks with the thicker linings (+3.5 kg), and a frameless 4+4 laminated front. The 0.4 mm tray would have saved 12.7 kg but cost 1 dB, so it was dropped. Against the sound study's earlier total, this study also counts the TD-500 fans at 6.0 kg each (+9.0 kg against the plan's 1.5 kg fans) and the clips and rails of the lining cassettes (+9.0 kg). The win-backs are confirmed: 20 x 40 x 1.2 frames save 7.0 kg and 25 kg/m3 fill saves 5.2 kg.
-2. **Parts.** Every part is 20 kg or less except the glass and, by 0.3 kg, the right splitter silencer (20.3 kg). That figure assumes the extra lining splits between the two silencers in proportion to their mass. PROPOSED: its splitter baffles ship separately from the casing and slide in after it, which keeps every piece well under 20 kg. The glass door weighs 43.3 kg and the fixed panel 28.0 kg; two people carry each with 2 suction lifters (21.6 kg each on the door). The right decor block (18.1 kg) and its silencer ship apart; together they would weigh 38.4 kg. The top block (7.0 kg) and its silencer (10.2 kg) also ship apart. The decor's PET fill (3.1 kg) ships loose: inside the right decor block it would make that block 19.7 kg, too close to the limit for the assumptions behind it.
-3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet, 518 kg gross, 6.0 lb/ft3. The 48 x 40 weighs 238 kg and stands 1,646 mm high. The 96 x 48 weighs 280 kg and stands 1,126 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
-4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **125 min** (4.2 person-hours): 76 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
-5. **Decisions.** Everything in the layout is DECIDED except shipping the right silencer's baffles separately (item 2).
+1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 441 kg, and the light build 296 kg (298 kg with the fast-assembly hardware). The decided build comes to **420 kg** against the PM's 420 kg cap (at the cap); the sound study expects 418 to 420 kg. That build has the sound study's final walls with the 0.5 mm inner tray, splitter silencers in the decor blocks with the thicker linings (+3.5 kg), and a frameless 4+4 laminated front. The 0.4 mm tray would have saved 12.7 kg but cost 1 dB, so it was dropped. Against the sound study's earlier total, this study also counts the TD-500 fans at 6.0 kg each (+9.0 kg against the plan's 1.5 kg fans) and the clips and rails of the lining cassettes (+9.0 kg). The win-backs are confirmed: 20 x 40 x 1.2 frames save 7.0 kg and 25 kg/m3 fill saves 5.2 kg.
+2. **Parts.** Every part is 20 kg or less except the glass. The door ships as one unit of 47.5 kg: 4+4 laminated glass, a 90 mm kick strip holding the drop seal, and the hinges and pull fitted in the factory. Two people carry it with 2 suction lifters (23.7 kg each). The fixed panel weighs 28.0 kg. The right splitter silencer (20.3 kg in all) ships as its casing (5.5 kg) and 2 baffles (7.4 kg each). The right decor block (18.1 kg) and its silencer would weigh 38.4 kg together, so they ship apart. The top block (7.0 kg) and its silencer (10.2 kg) also ship apart. The decor's PET fill (3.1 kg) ships loose: inside the right decor block it would make that block 19.7 kg, too close to the limit for the assumptions behind it.
+3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet, 519 kg gross, 5.6 lb/ft3. The 48 x 40 weighs 246 kg and stands 1,646 mm high. The 96 x 48 weighs 273 kg and stands 1,266 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
+4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **125 min** (4.2 person-hours): 72 M6 bolts, 36 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
+5. **Decisions.** Everything in the layout is DECIDED; the table below cites the decision log for each.
 
 ## Decisions
 
-| Decision | Status |
-| --- | --- |
-| Keep the plan's panel split: 2 frames per side wall (vách hông), 4 back wall frames (vách hậu), 2 ceiling halves (trần), 3 decor blocks (khung trang trí) | DECIDED |
-| Ship on one 48 x 40 and one 96 x 48 pallet. Don't split the decor blocks: a seam across the faceted front breaks the look rule, and a third pallet costs more than it saves | DECIDED |
-| Thin floor inside an aluminium base band (viền chân); the band drops to a 20 mm threshold across the door only. Castors are a possible later accessory, not part of v2 | DECIDED |
-| Aluminium frames, with the section depth set by the sound study's wall: 20 x 40 in the walls and in the ceiling | DECIDED |
-| No plywood behind the ACP; frame members at 400 mm keep the ACP flat | DECIDED |
-| Fast-assembly changes: factory subassemblies, captive bolts, tool-free clips on panel seams, felt pre-fitted (section 4) | DECIDED |
-| Front: 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look). Door and fixed glass are carried by two people with suction lifters | DECIDED |
-| Quiet build: the sound study's final stack with the 0.5 mm inner steel tray (0.4 mm cost 1 dB); splitter silencers with thicker linings inside the right and top decor blocks, shipped as separate parts and slid in through felt-covered access panels (inside only); 420 kg cap, 20 kg part limit and pallet layout kept | DECIDED |
-| Decor block depth follows v1's real geometry, 230 to 235 mm, not the plan's 200 | DECIDED |
-| The right splitter silencer ships with its baffles separate from the casing, so no piece is over 20 kg | PROPOSED |
-| The inner skin and felt ship as separate clip-on inner leaves (the sound study's lining cassettes), one per panel, 19 kg or less, with the outside seams as planned | DECIDED |
-| Ceiling fill carried on the back of the ceiling cassettes, so the ceiling panel stays at 20 kg or less (section 5) | DECIDED |
-| Rejected: split decor blocks (B2), 5 bands per wall (C), full-height walls, castors in v2, no floor | DECIDED |
+Decided specs, each citing the decision log (`v2/00-Control/decision-log.md`, D-01 to D-26 in the control pack) or, for rulings made after it, the dated PM ruling that waits for its log entry (sources S22 to S29 in section 10).
+
+| Decision | Status | Log |
+| --- | --- | --- |
+| Keep the plan's panel split: 2 frames per side wall (vách hông), 4 back wall frames (vách hậu), 2 ceiling halves (trần), 3 decor blocks (khung trang trí) | DECIDED | D-23 |
+| Every part 20 kg or less except the glass | DECIDED | D-03 |
+| Ship on one 48 x 40 and one 96 x 48 pallet. Don't split the decor blocks: a seam across the faceted front breaks the look rule, and a third pallet costs more than it saves | DECIDED | D-04 |
+| Thin floor inside an aluminium base band (viền chân); the band drops to a 20 mm threshold across the door only. Castors are a possible later accessory, not part of v2 | DECIDED | D-05, D-18 |
+| Aluminium frames, 20 x 40 x 1.2 mm at 400 mm, in the walls and in the ceiling | DECIDED | D-16; ceiling 20 x 40 and 1.2 mm wall by PM rulings of 2026-10-31 (S22, S25) |
+| No plywood behind the ACP; the sound mass sits in the floating lining cassette with a 0.5 mm steel tray (0.4 mm cost 1 dB) | DECIDED | D-17; tray by PM ruling (S27) |
+| Fast-assembly changes: factory subassemblies, captive bolts, tool-free clips on panel seams, felt pre-fitted (section 4) | DECIDED | D-08 |
+| Front: 4+4 laminated glass, frameless like v1, not acrylic (acrylic needed an opaque 80 mm band down the door, which breaks the look). The door is left-hinged; it carries a 90 mm aluminium kick strip in the base band's dark finish, holding the drop seal. Door and fixed glass are carried by two people with suction lifters | DECIDED | D-19; front by PM ruling (S22), replacing D-07; kick strip (S29) |
+| Weight: cap 420 kg with the laminated front | DECIDED | D-02, D-25; PM ruling (S27) |
+| Splitter silencers with thicker linings inside the right and top decor blocks, next to the TD-500 fans. They ship as separate parts and slide in through felt-covered access panels on the pod side (inside only); the right one's baffles ship separately from its casing | DECIDED | PM rulings (S25, S26, S29) |
+| Lining cassettes ship as separate clip-on inner leaves, one per panel, with the outside seams as planned | DECIDED | D-17, D-23 |
+| Ceiling fill carried on the back of the ceiling cassettes | DECIDED | D-24 |
+| Decor block depth follows v1's real geometry, 230 to 235 mm, not the plan's 200 | DECIDED | PM ruling (S27) |
+| Decor cladding in Dark Yellow ACP EV3038 (no weight effect) | DECIDED | D-12 |
+| Rejected: split decor blocks (B2), 5 bands per wall (C), full-height walls, castors in v2, no floor | DECIDED | D-04, D-05, D-18, D-23 |
 
 ## 1. Weight
 
@@ -84,15 +88,15 @@ How the light build gets there, one change at a time:
 | Step | Status | Change, kg | Running total, kg |
 | --- | --- | ---: | ---: |
 | v2 as planned (steel frames, 6 mm plywood, raised steel floor, 10 mm glass, table) | source + calculation |  | 440.6 |
-| Remove the table; the pod ships empty | confirmed (Dee) | -12.0 | 428.6 |
-| Thin floor inside an aluminium base band instead of the raised steel frame | DECIDED | -35.8 | 392.7 |
-| Aluminium 20x20 frames instead of steel (walls, ceiling, decor) | DECIDED | -47.0 | 345.7 |
-| No plywood behind the ACP; frame members at 400 mm to keep the ACP flat | DECIDED | -54.0 | 291.7 |
+| Remove the table; the pod ships empty | DECIDED (D-06) | -12.0 | 428.6 |
+| Thin floor inside an aluminium base band instead of the raised steel frame | DECIDED (D-05, D-18) | -35.8 | 392.7 |
+| Aluminium 20x20 frames instead of steel (walls, ceiling, decor) | DECIDED (D-16) | -47.0 | 345.7 |
+| No plywood behind the ACP; frame members at 400 mm to keep the ACP flat | DECIDED (D-17) | -54.0 | 291.7 |
 | 8 mm tempered glass instead of 10 mm | light build only; the decided build uses 10 mm acrylic | -17.1 | 274.6 |
 | Add gaskets on every panel joint, sealed glazing profiles, door drop seal | plan requirement | 5.0 | 279.6 |
 | Add 2 silenced vents and an occupancy sensor for automatic fans | plan requirement | 3.1 | 282.7 |
 | Add light cavity fill (20 mm PET) in wall and ceiling bays | assumption (sound group sizes it) | 9.6 | 292.3 |
-| Hold 4 kg for the later voice cockpit kit | Dee's scope addition | 4.0 | 296.3 |
+| Hold 4 kg for the later voice cockpit kit | DECIDED (D-11) | 4.0 | 296.3 |
 
 Notes:
 - Glass weights use the finished shapes from the STEP: door 2.08 m2, fixed panel 1.34 m2. Decor skins use the STEP's finished areas too (6.30 m2, against 7.67 m2 of cutting rectangles in the BOM).
@@ -517,13 +521,13 @@ The sound study's final stack (DECIDED): ACP 3 mm on a 20 x 40 aluminium frame a
 
 This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts; the cassette is the DECIDED clip-on inner leaf. The outside size stays the same; the inside narrows to 2,338 mm. The wall here comes to 13.0 kg/m2 with clips and tray returns (the sound study: 13.1). The fans and silencers are the sound study's: two TD-500 inline fans at 6.0 kg and splitter silencers of 20.3 kg (right block) and 10.2 kg (top block), including the thicker linings. The decor blocks are 235 mm deep, as in v1. Their weights already came from v1's real shapes in the STEP, so only the packing changes. Its door edge seals, base seal and cable grommets are counted too.
 
-Result: **419 kg**, 1 parts over 20 kg except the glass, heaviest A-SIL-DR at 20.3 kg, 1 + 1 pallets, 518 kg gross, 1,646 mm at most, assembly 125 min.
+Result: **420 kg**, 0 parts over 20 kg except the glass, heaviest F-DR at 18.1 kg, 1 + 1 pallets, 519 kg gross, 1,646 mm at most, assembly 125 min.
 
-- **Glass.** Door 43.3 kg and fixed panel 28.0 kg in 4+4 laminated. They ride flat on top of the long pallet in their timber frame, with nothing on them. On site, each is carried by two people with 2 suction lifters. The door's hinges and pull are fitted in the factory, so it lifts straight onto its hinge pins. The fixed glass's profiles sit hidden in the decor and base, so the front stays frameless like v1.
-- **Decor blocks and silencers (DECIDED).** Each decor block is mounted empty. Then its splitter silencer slides in from inside the pod through a felt-covered access panel in the right and top blocks, and the fan connects to it. Every lift stays at 20 kg or less, and the same panel gives fan service access later. The right block with its silencer inside would weigh 38.4 kg. The panels are inside only, so the look is untouched.
+- **Glass.** The door unit (47.5 kg: glass, kick strip with drop seal, hinges, pull) and the fixed panel (28.0 kg) ride flat on top of the long pallet in their timber frame, with nothing on them. On site, each is carried by two people with 2 suction lifters. The door lifts straight onto its hinge pins. The fixed glass's profiles sit hidden in the decor and base, so the front stays frameless like v1.
+- **Decor blocks and silencers (DECIDED).** Each decor block is mounted empty. Its silencer then slides in from inside the pod through a felt-covered access panel; the right one goes in as its casing and then its baffles. The TD-500 fan is fitted next to each silencer. That is the only place the fans appear: the ceiling has no fan opening and no fan joint. Every lift stays at 20 kg or less, and the same panels give fan service access. The right block with its silencer inside would weigh 38.4 kg. The panels are inside only, so the look is untouched.
 - **Decor fill.** The sound study fills the decor blocks with PET (3.1 kg). Inside the right decor block it would make that block 19.7 kg, too close to the limit for the assumptions behind it, so the fill ships loose in the kit and is pushed into each block's open back just before it is mounted.
 - **Ceiling (DECIDED).** The fill still rides on the back of the ceiling cassette. With 40 mm frames, both ceiling parts are well under 20 kg either way.
-- **Pallets.** The 48 x 40 carries the wall and ceiling panels, the wall cassettes, the floor panels and the short band pieces (238 kg, 1,646 mm). The long pallet carries the decor blocks, the long band pieces, the kit, the ceiling cassettes that don't fit the upright stack, and the glass on top (280 kg, 1,126 mm). The two silencers go wherever the packer finds room; the pallet tables below list them. Still 1 + 1.
+- **Pallets.** The 48 x 40 carries the wall and ceiling panels, the wall cassettes, the floor panels and the short band pieces (246 kg, 1,646 mm). The long pallet carries the decor blocks, the long band pieces, the kit, the ceiling cassettes that don't fit the upright stack, and the glass on top (273 kg, 1,266 mm). The two silencers go wherever the packer finds room; the pallet tables below list them. Still 1 + 1.
 
 Wall, ceiling, decor, silencer and glass parts of the decided build:
 
@@ -537,21 +541,22 @@ Wall, ceiling, decor, silencer and glass parts of the decided build:
 | L-CASS-BACK-LO: LINING - CASSETTE FOR W-BACK-LO (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 8.7 |  |
 | W-BACK-UP: WALL - BACK PANEL - UPPER (outer: ACP + frame + fill) | 1,169 x 1,104 x 43 | 2 | 8.7 |  |
 | L-CASS-BACK-UP: LINING - CASSETTE FOR W-BACK-UP (steel tray + felt) | 1,169 x 1,104 x 34 | 2 | 8.7 |  |
-| C-HALF: CEILING - HALF PANEL WITH FAN OPENING (outer: ACP + frame) | 1,500 x 1,169 x 43 | 2 | 9.9 |  |
+| C-HALF: CEILING - HALF PANEL (outer: ACP + frame) | 1,500 x 1,169 x 43 | 2 | 9.9 |  |
 | L-CASS-HALF: LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill) | 1,419 x 1,169 x 74 | 2 | 12.7 |  |
 | F-DL: FRONT - DECOR BLOCK - LEFT | 2,290 x 278 x 235 | 1 | 10.0 |  |
 | F-DR: FRONT - DECOR BLOCK - RIGHT | 2,290 x 1,016 x 235 | 1 | 18.1 |  |
 | F-DT: FRONT - DECOR BLOCK - TOP | 1,697 x 280 x 235 | 1 | 7.0 |  |
-| F-GLASS-DOOR: FRONT - GLASS DOOR (4+4 laminated glass, frameless) | 2,011 x 1,176 x 9 | 1 | 43.3 | glass (exempt) |
+| F-GLASS-DOOR: FRONT - GLASS DOOR UNIT (4+4 laminated glass, frameless, 90 mm kick strip with drop seal, hinges, pull) | 2,011 x 1,176 x 9 | 1 | 47.5 | glass (exempt) |
 | F-GLASS-FIXED: FRONT - FIXED GLASS (4+4 laminated glass, frameless) | 2,139 x 724 x 9 | 1 | 28.0 | glass (exempt) |
-| A-SIL-DR: AIR - SPLITTER SILENCER FOR THE RIGHT DECOR BLOCK (2 mm Al casing) | 1,100 x 300 x 160 | 1 | 20.3 | OVER 20 kg |
+| A-SIL-DR-CASING: AIR - RIGHT SPLITTER SILENCER: CASING (2 mm Al) | 1,100 x 300 x 160 | 1 | 5.5 |  |
+| A-SIL-DR-BAFFLE: AIR - RIGHT SPLITTER SILENCER: BAFFLE | 1,100 x 260 x 60 | 2 | 7.4 |  |
 | A-SIL-DT: AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing) | 1,000 x 240 x 160 | 1 | 10.2 |  |
 | F-DECOR-FILL: FRONT - PET FILL PIECES FOR THE DECOR BLOCKS (loose) | 1,200 x 400 x 300 | 1 | 3.1 |  |
 
 | Pallet (diagram) | Deck mm | Gross kg | Gross lb | Loaded height mm | ft3 | lb/ft3 | Carries |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| [1: 48x40 in](out/pallets-B1F-1-48x40.svg) | 1,219 x 1,016 | 238 | 525 | 1,646 (64.8 in) | 72.0 | 7.3 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, L-CASS-BACK-LO, L-CASS-BACK-UP, L-CASS-SIDE-LO, L-CASS-SIDE-UP, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
-| [2: 96x48 in](out/pallets-B1F-2-96x48.svg) | 2,438 x 1,219 | 280 | 617 | 1,126 (44.3 in) | 118.2 | 5.2 | A-SIL-DR, A-SIL-DT, B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, L-CASS-HALF |
+| [1: 48x40 in](out/pallets-B1F-1-48x40.svg) | 1,219 x 1,016 | 246 | 542 | 1,646 (64.8 in) | 72.0 | 7.5 | A-SIL-DR-BAFFLE, B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, C-HALF, L-CASS-BACK-LO, L-CASS-BACK-UP, L-CASS-SIDE-LO, L-CASS-SIDE-UP, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
+| [2: 96x48 in](out/pallets-B1F-2-96x48.svg) | 2,438 x 1,219 | 273 | 603 | 1,266 (49.8 in) | 132.9 | 4.5 | A-SIL-DR-BAFFLE, A-SIL-DR-CASING, A-SIL-DT, B-BAND-BACK, B-BAND-SIDE, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, L-CASS-HALF |
 
 Step by step, with the access check. A step fails the check if a part fitted earlier blocks its fixings; none does in this order. The check is at layout level and is repeated on the CAD in Milestone 2.
 
@@ -560,16 +565,16 @@ Step by step, with the access check. A step fails the check if a part fitted ear
 | 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 0 | 10.0 | 0.0 | - |
 | 2 | Base band: 4 pieces and corner keys on 8 glides; level from above | 5 | 12 | 0 | 13.9 | 5.1 | Corner keys from above and inside; closed later by the wall panels, so bolted first. |
 | 3 | Seal mat and 2 thin floor panels dropped inside the band (no fixings) | 2 | 0 | 0 | 2.2 | 0.0 | - |
-| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, cam or clip connectors at seam and corners | 4 | 16 | 9 | 1.3 | 9.3 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
-| 5 | Upper walls: back pair, then sides; cam or clip connectors at horizontal seams, vertical seam and corners | 4 | 0 | 25 | 1.3 | 7.2 | As the lower walls; top fixings at 2.2 m need the step stool. |
-| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4 | 4.0 | 8.2 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
-| 7 | Decor blocks (skins on, factory-made): PET fill pushed into each open back, then left door post, right, then top; then 2 splitter silencers slid in from inside and the fans connected | 6 | 18 | 0 | 7.6 | 7.7 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
+| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, cam or clip connectors at seam and corners | 4 | 14 | 9 | 1.3 | 8.7 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
+| 5 | Upper walls: back pair, then sides; cam or clip connectors at horizontal seams, vertical seam and corners | 4 | 0 | 23 | 1.3 | 6.8 | As the lower walls; top fixings at 2.2 m need the step stool. |
+| 6 | Ceiling halves lifted onto the walls from inside | 2 | 14 | 4 | 4.0 | 6.4 | Upward from inside, ceiling felt (or its joint strips) not yet on. |
+| 7 | Decor blocks (skins on, factory-made): PET fill pushed into each open back, then left door post, right, then top; then 2 splitter silencers slid in from inside through the felt-covered access panels, the right one's baffles after its casing, and the 2 TD-500 fans fitted next to them | 8 | 22 | 0 | 7.6 | 9.8 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
 | 8 | Fixed glass in its factory profile frame: set and fix (2 people, 2 suction lifters) | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
 | 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust (2 people, 2 suction lifters) | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
 | 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
 | 11 | 10 lining cassettes (steel tray + felt) clipped on from inside, ceiling ones from below | 10 | 0 | 0 | 6.7 | 17.5 | Close every bay and joint: last. Joints stay reachable until then. |
 | 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
-|  | **Elapsed for 2 people, with 15 % for hand-offs** | 36 | 76 | 38 |  |  | **125 min (4.2 person-hours)** |
+|  | **Elapsed for 2 people, with 15 % for hand-offs** | 38 | 72 | 36 |  |  | **125 min (4.2 person-hours)** |
 
 <details><summary>Sensitivity: the same layout at 380 and 400 kg with an even added mass (before the final stack was known)</summary>
 
@@ -610,12 +615,16 @@ Every part must pass a 914 x 2032 mm (36 x 80 in) doorway. A part is carried on 
 
 | Part | Size mm (long x mid x thin) | kg | Width needed on edge, mm | 914 x 2032 doorway | 813 mm clear (ADA) |
 | --- | --- | ---: | ---: | --- | --- |
-| W-SIDE-LO | 1,500 x 1,145 x 47 | 12.5 | 127 | passes | passes |
-| W-SIDE-UP | 1,500 x 1,145 x 47 | 12.5 | 127 | passes | passes |
-| W-BACK-LO | 1,212 x 1,126 x 47 | 10.3 | 127 | passes | passes |
-| W-BACK-UP | 1,212 x 1,126 x 47 | 10.3 | 127 | passes | passes |
-| C-HALF | 1,500 x 1,212 x 47 | 13.2 | 127 | passes | passes |
-| L-STRIP | 1,500 x 300 x 60 | 6.6 | 140 | passes | passes |
+| W-SIDE-LO | 1,500 x 1,145 x 43 | 11.4 | 123 | passes | passes |
+| L-CASS-SIDE-LO | 1,419 x 1,145 x 34 | 10.9 | 114 | passes | passes |
+| W-SIDE-UP | 1,500 x 1,145 x 43 | 11.4 | 123 | passes | passes |
+| L-CASS-SIDE-UP | 1,419 x 1,145 x 34 | 10.9 | 114 | passes | passes |
+| W-BACK-LO | 1,169 x 1,104 x 43 | 8.7 | 123 | passes | passes |
+| L-CASS-BACK-LO | 1,169 x 1,104 x 34 | 8.7 | 114 | passes | passes |
+| W-BACK-UP | 1,169 x 1,104 x 43 | 8.7 | 123 | passes | passes |
+| L-CASS-BACK-UP | 1,169 x 1,104 x 34 | 8.7 | 114 | passes | passes |
+| C-HALF | 1,500 x 1,169 x 43 | 9.9 | 123 | passes | passes |
+| L-CASS-HALF | 1,419 x 1,169 x 74 | 12.7 | 154 | passes | passes |
 | B-BAND-BACK | 2,420 x 100 x 40 | 3.6 | 120 | passes | passes |
 | B-BAND-SIDE | 1,660 x 100 x 40 | 2.4 | 120 | passes | passes |
 | B-BAND-FRONT-L | 300 x 100 x 40 | 0.4 | 120 | passes | passes |
@@ -623,28 +632,21 @@ Every part must pass a 914 x 2032 mm (36 x 80 in) doorway. A part is carried on 
 | B-KEY | 120 x 80 x 40 | 0.1 | 120 | passes | passes |
 | B-GLIDE | 50 x 50 x 40 | 0.1 | 120 | passes | passes |
 | B-THRESH | 1,176 x 60 x 20 | 1.2 | 100 | passes | passes |
-| B-FLOOR | 1,462 x 1,212 x 15 | 16.5 | 95 | passes | passes |
+| B-FLOOR | 1,419 x 1,169 x 15 | 15.4 | 95 | passes | passes |
 | F-DL | 2,290 x 278 x 235 | 10.0 | 315 | passes | passes |
 | F-DR | 2,290 x 1,016 x 235 | 18.1 | 315 | passes | passes |
 | F-DT | 1,697 x 280 x 235 | 7.0 | 315 | passes | passes |
-| F-GLASS-DOOR | 2,011 x 1,176 x 8 | 41.6 | 88 | passes | passes |
-| F-GLASS-FIXED | 2,139 x 724 x 8 | 26.9 | 88 | passes | passes |
-| F-HW | 600 x 400 x 150 | 5.8 | 230 | passes | passes |
-| A-FAN | 300 x 300 x 200 | 1.5 | 280 | passes | passes |
-| A-SILENCER | 450 x 300 x 120 | 1.5 | 200 | passes | passes |
+| F-GLASS-DOOR | 2,011 x 1,176 x 9 | 47.5 | 89 | passes | passes |
+| F-GLASS-FIXED | 2,139 x 724 x 9 | 28.0 | 89 | passes | passes |
+| F-HW | 2,200 x 120 x 60 | 2.6 | 140 | passes | passes |
+| A-FAN | 350 x 280 x 280 | 6.0 | 360 | passes | passes |
+| A-SIL-DR-CASING | 1,100 x 300 x 160 | 5.5 | 240 | passes | passes |
+| A-SIL-DR-BAFFLE | 1,100 x 260 x 60 | 7.4 | 140 | passes | passes |
+| A-SIL-DT | 1,000 x 240 x 160 | 10.2 | 240 | passes | passes |
+| K-SEALS | 600 x 300 x 100 | 1.6 | 180 | passes | passes |
+| F-DECOR-FILL | 1,200 x 400 x 300 | 3.1 | 380 | passes | passes |
 | E-KIT | 600 x 400 x 200 | 3.1 | 280 | passes | passes |
-| K-FIX | 400 x 300 x 150 | 4.7 | 230 | passes | passes |
-| B-RAIL-FL-01 | 2,400 x 100 x 50 | 11.0 | 130 | passes | passes |
-| B-RAIL-FL-02 | 2,020 x 100 x 50 | 9.3 | 130 | passes | passes |
-| B-RAIL-FL-03 | 1,370 x 100 x 50 | 6.3 | 130 | passes | passes |
-| B-RAIL-FL-04 | 269 x 100 x 50 | 1.2 | 130 | passes | passes |
-| B-RAIL-FL-05 | 212 x 100 x 50 | 1.0 | 130 | passes | passes |
-| B-RAIL-FL-06 | 150 x 100 x 50 | 0.7 | 130 | passes | passes |
-| B-RAIL-FL-07 | 124 x 100 x 50 | 0.6 | 130 | passes | passes |
-| B-RAIL-FL-08 | 100 x 76 x 50 | 0.3 | 130 | passes | passes |
-| B-JOIST | 2,400 x 60 x 30 | 4.6 | 110 | passes | passes |
-| B-BOARD | 1,428 x 1,184 x 15 | 15.2 | 95 | passes | passes |
-| I-TABLE | 1,000 x 600 x 120 | 12.0 | 200 | passes | passes |
+| K-FIX | 400 x 300 x 150 | 4.5 | 230 | passes | passes |
 
 Corridor corners: the longest piece (2,420 mm) must also turn corners carried flat. The longest thin part that turns a 90-degree corner is 3,394 mm between two 1200 mm corridors, and 2,980 mm between a 1200 mm corridor and a 914 mm one, so every part passes.
 
@@ -653,15 +655,15 @@ Corridor corners: the longest piece (2,420 mm) must also turn corners carried fl
 Reserve now; don't design the kit (mic array, speakers, screen, status light).
 
 - **Mounting points.** M6 rivnuts in the frame members, placed in the CAD at Milestone 2: a 100 x 100 mm pattern on the back wall centre for a screen at seated eye height; 4 points on a ceiling-half frame for a mic array and speaker plate; 2 behind the top decor block for a status light seen from outside. Each point gets a matching hole in the cassette in front of it.
-- **Cable path.** One vertical cable channel with a pull cord in the back wall bay that holds the switches. It runs from the base band (power inlet) to the ceiling. It crosses the same 3 seams as the main harness, so the seam connectors get spare pins instead of new crossings; the bands option would have needed 6 crossings. The channel runs in the outer frame's cavity, behind the cassette.
-- **Power.** Hold 60 W for the kit on its own fused circuit from the power inlet, and add it to the electrical group's power budget next to the fans and lights.
+- **Cable path.** One vertical cable channel with a pull cord in the back wall bay that holds the switches. It runs from the base band (power inlet) to the ceiling. It crosses the same 3 seams as the main harness, so the seam connectors get spare pins instead of new crossings; the bands option would have needed 6 crossings. The channel runs in the outer frame's cavity, behind the cassette; any cable in the cassette gap clips to the cassette only (D-26).
+- **Power.** 12 V 5 A (60 W) for the kit on the pod's 12 V bus, which also feeds the fans, lights and sensors (D-10, D-11); the electrical group adds it to the power budget.
 - **Weight.** 4 kg is already held in the weight budget.
 
 ## 8. Open items and issues found
 
 | ID | Item | Status | Who |
 | --- | --- | --- | --- |
-| LS-01 | 419 kg here against a 420 kg cap (418 to 420 kg expected by the sound study); settle from the CAD parts list | open | Milestone 2 |
+| LS-01 | 420 kg here against a 420 kg cap (418 to 420 kg expected by the sound study); settle from the CAD parts list | open | Milestone 2 |
 | LS-02 | 400 mm frame pitch and full-face bond keep the ACP flat without plywood; prove on the early wall sample | PLANNED | Prototype team |
 | LS-03 | Tool-free cam or clip connector and captive bolt: real part numbers, loads and pull-out on the aluminium frame | open | Hardware group |
 | LS-04 | Cassette clips: part numbers, and how the cassette floats (no stud bridge) while it carries a 19 kg leaf | open | Hardware group |
@@ -672,10 +674,10 @@ Reserve now; don't design the kit (mic array, speakers, screen, status light).
 | LS-09 | Tube wall thicknesses assumed (20 x 20 steel 1.2 mm, aluminium 1.5 mm); the plan gives none | assumption | Hardware group |
 | LS-10 | Bolt counts use a 400 mm pitch only for counting; the joint register sets the real pitch from loads | assumption | Milestone 2 |
 | LS-11 | Assembly times are assumptions until the timed prototype trial | PLANNED | Prototype team |
-| LS-12 | Decor cladding colour (yellow in the materials list, black in the plan's pictures); no weight effect | issue | Control pack |
+| LS-12 | Decor cladding colour: Dark Yellow ACP EV3038 (D-12); no weight effect | DECIDED | Control pack |
 | LS-13 | Room floor flatness must stay within the glides' adjustment range; check on site before install | assumption | Install guide |
 | LS-15 | Felt-covered access panel on the pod side of the right and top decor blocks: silencers slide in after the blocks are mounted, and it gives fan service access; inside only | DECIDED | Decor CAD |
-| LS-16 | Right splitter silencer at 20.3 kg: ship its baffles separately from the casing, or confirm how the thicker lining splits between the two silencers | PROPOSED | PM, sound study |
+| LS-16 | Right splitter silencer as casing and baffles: real sizes and the split of its 20.3 kg (casing size assumed here) | open | Sound study |
 | LS-14 | The upright stack on the 48 x 40 does not fill its depth: centre it and strap through the deck, or put the kit boxes beside it | note | Packaging |
 
 ## 9. How to reproduce
@@ -685,6 +687,7 @@ From this folder, with Python 3.10+ and openpyxl:
 ```
 python3 scripts/run_all.py           # writes report.md, out/*.csv and out/*.svg
 python3 scripts/run_all.py --check   # rebuilds in memory; fails if anything differs
+python3 scripts/test_layout.py       # regression tests: nested overrides, decided-build counts and limits
 ```
 
 The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_crosscheck.py`, which reads the v1 STEP with cadquery-ocp in a separate virtualenv (see the script header). Unit note: 1 lb = 0.4536 kg; imperial values are reference data for US freight only.
@@ -696,7 +699,7 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | pod_w | 2500 | mm | confirmed | S04 | overall width X |
 | pod_d | 1700 | mm | confirmed | S04 | overall depth Y |
 | pod_h | 2400 | mm | confirmed | S04 | overall height Z |
-| decor_depth | 235 | mm | confirmed | S27 | front decor block depth, v1's real geometry (BOM 230-235; the plan said 200) |
+| decor_depth | 235 | mm | decided | S27 | front decor block depth, v1's real geometry (BOM 230-235; the plan said 200) |
 | wall_depth | 1500 | mm | confirmed | S04 | side wall depth = 1700 - 200 |
 | wall_t_plan | 38 | mm | source | S04 | 3 ACP + 6 ply + 20 tube + 9 PET (plan joint detail) |
 | base_h | 100 | mm | source | S04 | base band: 50x100 tube on edge |
@@ -713,7 +716,7 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | rho_timber_hi | 600 | kg/m3 | assumption | S13 |  |
 | pvb_kgm2 | 0.81 | kg/m2 | calculation | S08 | 0.76 mm PVB at 1070 kg/m3 (assumption on PVB density) |
 | acp2_kgm2 | 2.9 | kg/m2 | source | S10 | 2 mm ACP |
-| acp3_kgm2 | 3.5 | kg/m2 | calculation | S23 | Spaceship: 3 mm Alcorest EV3038 ACP, 0.21 mm skins (PM ruling; was 3.8) |
+| acp3_kgm2 | 3.5 | kg/m2 | decided | S23, S24 | Spaceship: 3 mm Alcorest EV3038 ACP, 0.21 mm skins (PM ruling; was 3.8) |
 | acp3_v1_kgm2 | 3.8 | kg/m2 | source | S10 | v1's 3 mm decor skins: maker unknown, kept at the 0.3 mm-skin figure |
 | pet9_kgm2 | 1.8 | kg/m2 | source | S11 | 9 mm PET felt |
 | hc10_kgm2 | 4 | kg/m2 | source | S12 | 10 mm Al honeycomb, 0.5+0.5 skins |
@@ -731,7 +734,7 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | t_al_20 | 1.5 | mm | assumption | S07 | 20x20 aluminium tube for light frames |
 | t_al_base | 2 | mm | assumption | S07 | aluminium 100x40 base rail (the base band) |
 | stud_pitch_ply | 600 | mm | assumption |  | max frame member spacing with plywood backing |
-| stud_pitch_acp | 400 | mm | assumption |  | max spacing when ACP is bonded to the frame without plywood, to keep it flat (oil-canning risk) |
+| stud_pitch_acp | 400 | mm | decided | D-16 | max spacing when ACP is bonded to the frame without plywood, to keep it flat (oil-canning risk) |
 | glass_door_w | 1176 | mm | source | S01 |  |
 | glass_door_h | 2011 | mm | source | S01 |  |
 | glass_fixed_w | 724 | mm | source | S01 | cut rectangle; real shape is bevelled to the decor |
@@ -755,8 +758,8 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | fill_kgm2 | 0.6 | kg/m2 | assumption | S05 | 20 mm PET cavity fill at 30 kg/m3 (light; sound group sizes it) |
 | bolt_kg | 0.012 | kg | assumption |  | M6 bolt + washer + rivnut |
 | bolt_pitch | 400 | mm | assumption |  | bolt spacing used only to count bolts; the joint register sets real pitches |
-| voice_kit_kg | 4 | kg | assumption |  | reserve for the later voice cockpit kit: mic array, speakers, screen, status light |
-| voice_kit_w | 60 | W | assumption |  | power reserve for the voice cockpit kit |
+| voice_kit_kg | 4 | kg | assumption | D-11 | reserve for the later voice cockpit kit: mic array, speakers, screen, status light |
+| voice_kit_w | 60 | W | decided | D-11 | 12 V 5 A for the voice cockpit kit on the 12 V bus (D-10) |
 | pal_std_l | 1219 | mm | confirmed | S05 | 48 in |
 | pal_std_w | 1016 | mm | confirmed | S05 | 40 in |
 | pal_std_h | 121 | mm | source | S14 | 4.75 in |
@@ -803,30 +806,32 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | t_unpack_long_ordered_min | 6 | min | assumption |  | long pallet packed in assembly order |
 | t_felt_strip_s | 20 | s | assumption |  | felt pre-fitted on its panel; only the strip over a joint goes on site |
 | cam_kg | 0.05 | kg | assumption |  | one cam or clip connector pair |
+| kick_strip_kg | 1 | kg | decided | S29 | aluminium kick strip at the door bottom, about 90 mm, base band finish, houses the drop seal |
+| kick_strip_h | 90 | mm | decided | S29 |  |
 | strip_w | 150 | mm | assumption |  | loose felt strip over each joint, so the joint stays reachable |
 | frame_depth | 20 | mm | source | S04 | wall frame tube depth (20x20); the quiet build deepens it |
-| quiet_total | 380 | kg | confirmed | S20 | PM ruling from the Hardware Engineer's sound curve |
+| quiet_total | 380 | kg | decided | D-02 | PM ruling from the Hardware Engineer's sound curve |
 | hw_380_total | 377 | kg | source | S20 | Hardware Engineer's best build within a 380 kg budget |
 | hw_380_dsa | 22.5 | dB | source | S20 | its central D_S,A estimate |
-| quiet_cap | 400 | kg | confirmed |  | Lead's ruling: heavier walls allowed up to 400 kg in total |
+| quiet_cap | 400 | kg | decided | D-02 | Lead's ruling: heavier walls allowed up to 400 kg in total |
 | rho_mass_layer | 1600 | kg/m3 | assumption |  | dense sound layer (MLV-like) used only to size the inner leaf thickness |
 | leaf_clip_kgm2 | 0.6 | kg/m2 | assumption |  | clip rail and clips of an inner leaf |
 | ceil_t | 0 | mm | assumption |  | ceiling thickness; 0 means the same as the walls |
-| final_wall_t | 81 | mm | source | S21 | final wall: outer panel 3 + 40, cassette 25 + 9, 4 mm gaps |
+| final_wall_t | 81 | mm | decided | D-17, S21 | final wall: outer panel 3 + 40, cassette 25 + 9, 4 mm gaps |
 | final_ceil_t | 81 | mm | calculation | S22 | 40 mm ceiling frames: the same 81 mm stack as the walls |
-| final_wall_depth | 40 | mm | source | S21 | 20x40 aluminium wall frame |
-| final_ceil_depth | 40 | mm | source | S22 | 20x40 aluminium ceiling frame (was 20x100) |
+| final_wall_depth | 40 | mm | decided | D-16 | 20x40 aluminium wall frame |
+| final_ceil_depth | 40 | mm | decided | S22 (D-16 said 20x100) | 20x40 aluminium ceiling frame (was 20x100) |
 | final_kgm2_hw | 13.1 | kg/m2 | source | S21 | the sound study's wall mass with frame, fill and cassette |
-| fill_pet_kgm3 | 25 | kg/m3 | source | S25 | PET cavity fill (was 32) |
-| t_al_final | 1.2 | mm | source | S25 | wall of the 20x40 aluminium frames in the final stack (was 1.5) |
-| tray_t | 0.5 | mm | confirmed | S27 | steel lining tray (0.4 mm cost 1 dB, so back to 0.5) |
-| tray_t_thin | 0.4 | mm | confirmed | S26 | the thinner tray tried and dropped |
+| fill_pet_kgm3 | 25 | kg/m3 | decided | S25 | PET cavity fill (was 32) |
+| t_al_final | 1.2 | mm | decided | S25 | wall of the 20x40 aluminium frames in the final stack (was 1.5) |
+| tray_t | 0.5 | mm | decided | S27, D-17 | steel lining tray (0.4 mm cost 1 dB, so back to 0.5) |
+| tray_t_thin | 0.4 | mm | decided | S26, S27 | the thinner tray tried and dropped |
 | tray_depth | 25 | mm | source | S21 |  |
 | hw_385_total | 385 | kg | source | S21 |  |
 | hw_385_dsa | 24.2 | dB | source | S21 |  |
 | hw_400_total | 400 | kg | source | S22 | sound study's total with 4+4 laminated glass |
 | hw_400_dsa | 23.8 | dB | source | S22 |  |
-| cap_kg | 420 | kg | confirmed | S27 | weight cap with the 0.5 mm tray |
+| cap_kg | 420 | kg | decided | D-25, S27 | weight cap with the 0.5 mm tray |
 | hw_expect_lo | 418 | kg | source | S27 |  |
 | hw_expect_hi | 420 | kg | source | S27 |  |
 | fan_final_kg | 6 | kg | source | S20 | S&P TD-500/150-160 ECOWATT inline fan (sound study's fan table) |
@@ -848,7 +853,7 @@ Sources:
 | S02 | v1 STEP assembly, exported 2026-10-14 (older than the BOM; cross-check only) | `sources/v1/indoor-pod-v3-assembly.step` |
 | S03 | v1 drawings: wood parts, floor frame, decor frame | `sources/v1/drawings/` |
 | S04 | v2 build plan from the indoor pod lead engineer | `v2/00-Control/v2-build-plan.pdf` |
-| S05 | v2 plan approved by Dee, 2026-10-31 (targets, light options, pallet sizes) | `v2/PLAN.md` |
+| S05 | v2 plan approved by the product owner, 2026-10-31 (targets, light options, pallet sizes) | `v2/PLAN.md` |
 | S06 | EN 1993-1-1 section 3.2.6: steel density 7850 kg/m3 | `EN 1993-1-1:2005` |
 | S07 | EN 1999-1-1 section 3.2.3.1: aluminium alloy density 2700 kg/m3 | `EN 1999-1-1:2007` |
 | S08 | EN 572-1: soda-lime silicate glass, density 2500 kg/m3 | `EN 572-1:2012+A1:2016` |
@@ -870,4 +875,6 @@ Sources:
 | S25 | Sound study update relayed by the PM, 2026-10-31: silencers move inside the decor blocks as splitter silencers with 2 mm aluminium casings, 18 kg in the right block and 9 kg in the top block, next to the S&P TD-500 fans; weight win-backs: 20x40x1.2 aluminium frames and 25 kg/m3 fill; expected total about 398 kg | `layout conversation, PM message of 2026-10-31` |
 | S26 | PM rulings 2026-10-31: inner steel tray 0.4 mm (about 403 kg, inside 400 +/- 10); if the sound study shows it costs more than 0.5 dB, back to 0.5 mm and the cap becomes 420 kg. Silencers ship as separate parts and slide in from inside the pod through a felt-covered access panel in the right and top decor blocks, which also gives fan service access; inside only, so the look is untouched | `layout conversation, PM message of 2026-10-31` |
 | S27 | PM ruling change 2026-10-31: the 0.4 mm tray costs 1 dB, so it reverts to 0.5 mm and the cap is 420 kg; the splitter linings get thicker, about +3.5 kg across both silencers (expect about 418-420 kg); decor block depth follows v1's real geometry, 230-235 mm, not the plan's 200 | `layout conversation, PM message of 2026-10-31` |
+| S28 | Decision log D-01 to D-26 (Control Engineer's control pack, branch super-tab/8178188a, commit 4a4783d); PM rulings made after it are cited by date and wait for their log entries | `v2/00-Control/decision-log.md on that branch (read 2026-10-31)` |
+| S29 | PM rulings after Reviewer 2, 2026-10-31: the right silencer's baffles ship separately from its casing; the door gets a ~90 mm aluminium kick strip at the bottom in the base band's dark finish, housing the drop seal, about 1 kg; fans are the TD-500 in the decor blocks, not in the ceiling | `layout conversation, PM message of 2026-10-31` |
 | S19 | LTL overlength rules: most carriers start excessive-length charges for a piece over 96 in (summary; check each carrier's rules tariff) | https://logisticsplus.com/?p=25575 (read 2026-10-31) |
