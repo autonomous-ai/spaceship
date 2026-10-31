@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (dc61ad9), PR #28 (52174f1), PR #32 (cec14ba), PR #105 (f456061), PR #91 (38342c1), PR #92 (46e7ee6), PR #64 (d704dd4), PR #104 (5c6e527). The Mac's screen at run time: **unlocked**. 290 files in the CAD, drawing and manufacturing folders; the FAI plan's 60 characteristics, 11 functional checks and 18 bought-part test lines.
+Read from: main (dc61ad9), PR #28 (52174f1), PR #32 (cec14ba), PR #105 (f456061), PR #91 (38342c1), PR #92 (46e7ee6), PR #64 (d704dd4), PR #104 (5c6e527). The Mac's screen at run time: **unlocked**. 290 files in the CAD, drawing and manufacturing folders; the FAI plan's 60 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -14,7 +14,7 @@ Read from: main (dc61ad9), PR #28 (52174f1), PR #32 (cec14ba), PR #105 (f456061)
 
 | Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |
 |---|---:|---:|---:|---:|---:|---:|
-| BASE | 1 | 10 | 0 | 2 | 1 | 4 |
+| BASE | 1 | 10 | 0 | 3 | 0 | 4 |
 | CEILING | 0 | 13 | 0 | 1 | 0 | 2 |
 | CEILING (builds AIR, D-80) | — | — | — | — | — | — |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 2 |
@@ -22,7 +22,7 @@ Read from: main (dc61ad9), PR #28 (52174f1), PR #32 (cec14ba), PR #105 (f456061)
 | FRONT | 0 | 15 | 0 | 3 | 0 | 6 |
 | JOINTS | 0 | 1 | 0 | 0 | 0 | 0 |
 | WALL | 2 | 14 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 11 | 64 | 0 | 7 | 2 | 81 |
+| **All, each number once** | 11 | 64 | 0 | 8 | 1 | 81 |
 
 No parts list yet: CEILING (builds AIR, D-80).
 
@@ -159,7 +159,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) | main | H-26 | HOLD | no | HOLD |
 | 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD) | main | H-27 | HOLD | no | HOLD |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
-| 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | main | H-31 | yes | no | open: test |
+| 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | main | H-31 | yes | J-T6 | done |
 | 118001 | BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP | main | H-06 | HOLD | J-T4 | HOLD |
 
 ### CEILING

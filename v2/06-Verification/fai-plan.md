@@ -133,6 +133,7 @@ What to inspect on the first article of each made part and assembly, the functio
 | `838003` | Rivnut M6 | T06, J-T1 | test plan T06; joints register J-T1 |
 | `838004` | Head washer 6.4 × 18 | T06 | test plan T06 |
 | `838005` | Captive retainer | J-T2 | joints register J-T2 |
+| `838010` | Flanged button head screw M6 × 12, the corner keys' fixing screws | J-T6 | joints register J-T6 (the hook-in corner key mock-up); they carry the joint's pull (D-102) |
 | `848001` | Joint gasket | J-T3 | joints register J-T3 |
 | `848004` | Closing-seam seal | J-T3, J-T5 | joints register J-T3, J-T5 |
 | `848012` | Cassette edge seal | F-03 | the light test |
