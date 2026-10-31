@@ -49,3 +49,15 @@ Same method and run as its build:
 | Reverted | 1699.0 x 205.0 x 306.0 | 0 | 0 | none | 0.020 |
 
 RESULT: PASS. 15 anchors follow the three skeleton edits at once and return exactly.
+
+## 350001 FRONT - DECOR BLOCK ASSY - DL, P01 stage 2
+
+Same method and run as its build:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 304.0 x 199.0 x 2292.0 | 0 | 0 | none | 0.020 |
+| decor_d 215 mm; dl_w 283 mm; dl_y3 848 mm | 304.0 x 213.0 x 2292.0 | 0 | 0 | none | 0.020 |
+| Reverted | 304.0 x 199.0 x 2292.0 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS. 15 anchors follow the three skeleton edits at once and return exactly.

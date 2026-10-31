@@ -197,3 +197,42 @@ python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350002_P01_FRONT-DE
 | Door unit | The top stop 351203 and the seal 368005 stop the leaf; the catch 368007 holds its strike 368102 (35 N). |
 | Fixed glass | The top channel sits behind the 17 mm slot in DT's underside; the catch rail stands 3.5 behind it. |
 | DR, DL, ceiling | Joints HOLD (joints register); DT goes on last, after the door hangs (fit order: glass, DR, DT). |
+
+## 350001 FRONT - DECOR BLOCK ASSY - DL, P01 stage 2 (DRAFT)
+
+Run 2026-10-31 21:1x UTC on Mac 1, Fusion 2706, through the shared lock, one run per design, on skeleton P04 v4:
+
+```sh
+python3 tools/fusion/run_script.py v2/01-CAD-Native/front/dl_block.py --doc 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD \
+    --arg step=all --arg "desc=P01 stage 2: welded tube frame 351104 (hinge post, bolt-line post, rings)" \
+    --arg "edits=decor_d=215 mm;dl_w=283 mm;dl_y3=848 mm" --close
+python3 tools/fusion/step_check.py v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step
+```
+
+### Result
+
+- bodies 36, timeline 116 items, unhealthy 0, loose sketches 0, parameters 150; clash pairs 0
+- frame 351104: 26 tubes of 20 × 20 × 1.5 with the 60 × 20 hinge post and bolt-line post, every tube shelled (0 failed), 4.67 kg, 11.76 m of tube (cut list `351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv`); the bolt-line post has 6 holes 14 round the J-FRONT-01 rivnut tails
+- back plate 351102 (D-89 part 4): 272.0 × 2281.0, 6 holes 9.53 for the J-FRONT-01 rivnuts
+- STEP: length unit cm, declared in the file (D-13); box X -1250 to -946, Y -844 to -645, Z 105 to 2397 (`step_check.py`), equal to the model's when re-read in Fusion (0.000 mm)
+- f3d 591,773 bytes; STEP 457,704 bytes; no names in the exports
+- edit test PASS (`EDIT-TEST-RECORD.md`); pictures checked by eye: `350001_P01_FRONT-DECOR-BLOCK-ASSY-DL-FRONT_IMG.png`, `...-ISO_IMG.png`
+
+### Mass (calculation)
+
+| Item | kg |
+|---|---|
+| 351101 skin, ACP 3 mm at 3.9 kg/m² (this build; 3.5 kg/m², the selected sheet's, from the next build) | 4.59 |
+| 351104 frame, 26 tubes shelled | 4.67 |
+| 351102 back plate, 2 mm aluminium | 3.15 |
+| 351103 hinge-side stop, 4 lengths | 0.22 |
+| 368005 frame-stop seal, hinge-side run 1589 mm (assumption) | 0.07 |
+| **DL block** | **12.70** |
+
+### Interfaces to other assemblies
+
+| With | What |
+|---|---|
+| Door unit | The hinges' frame halves screw into the hinge post behind the three pockets (holes when the hinge is named, HOLD H01); the stop 351103 and the seal 368005 close the hinge side. |
+| WALL | J-FRONT-01: 6 bolts from the left wall into rivnuts in the back plate on X -1224. |
+| BASE, DT | J-FRONT-02 and J-FRONT-03 spigots: built into the blocks on the drawings branch (PM ruling 2026-11-01). |
