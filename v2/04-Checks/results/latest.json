@@ -1,5 +1,5 @@
 {
- "rev": "284dae7",
+ "rev": "433bc95",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -748,14 +748,14 @@
   {
    "id": "2-01",
    "name": "FRONT - FIXED GLASS UNIT",
-   "kg": 28.782,
+   "kg": 28.743,
    "dims": [
     2033.0,
     1031.0,
     12.0
    ],
    "ships_as": "glass",
-   "status": "calculation (CAD)"
+   "status": "calculation (CAD); magnetic seal HOLD"
   },
   {
    "id": "2-02",
@@ -779,7 +779,7 @@
     205.0
    ],
    "ships_as": "long",
-   "status": "calculation; calculation (CAD)"
+   "status": "calculation; calculation (CAD); magnetic seal HOLD"
   },
   {
    "id": "2-04",
@@ -827,7 +827,7 @@
     40.0
    ],
    "ships_as": "long",
-   "status": "assumption (CAD, HOLD); calculation (CAD); calculation; confirmed (1.5 mm)"
+   "status": "assumption (CAD, HOLD); calculation (CAD); calculation (CAD); magnetic seal HOLD; calculation; confirmed (1.5 mm)"
   },
   {
    "id": "2-08",
@@ -887,7 +887,7 @@
     205.0
    ],
    "ships_as": "long",
-   "status": "calculation; calculation (CAD)"
+   "status": "calculation; calculation (CAD); magnetic seal HOLD"
   },
   {
    "id": "2-13",

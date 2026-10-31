@@ -58,7 +58,7 @@ python3 tools/checks/run_fusion_checks.py --from-json result.json --update      
 
 Fusion runs only through `tools/fusion/run_script.py`, which takes the machine-wide lock and waits its turn (PM rule: never call the Fusion MCP tools directly). `fusion/whole_pod_check.py` makes its own new document, imports the STEP files, and:
 
-- intersects every pair of bodies whose boxes overlap; an overlap over 0.1 mm3 that isn't in `v2/04-Checks/config/clash-allow.csv` is a severe clash (guideline §10: a 1 mm3 threshold can hide small clashes, so the gap rules add minimum clearances);
+- intersects every pair of bodies whose boxes overlap; an overlap over 0.1 mm3 that isn't in `v2/04-Checks/config/clash-allow.csv` is a severe clash (D-104: a hardware stand-in, a bought number whose name carries ENVELOPE, may overlap the part it clamps in its own assembly file until the maker's model goes in) (guideline §10: a 1 mm3 threshold can hide small clashes, so the gap rules add minimum clearances);
 - measures the gap rules as true minimum distances;
 - walks each bolt or screw from its head to 30 mm past its tip: what surrounds the shank (clamped parts, the nut, rivnut or insert), what sits on the axis with no hole (a collision; past the tip, the tip clearance), engagement in the thread, at least one thread past a through nut, tip clearance at least 1 mm;
 - sweeps the tool envelope (`v2/04-Checks/config/tools.csv`: the decided 5 mm hex key, ruling R-J2, the short arm on the bolt axis through the access hole, then the long arm and the hand turned 90 degrees toward the room through the fill pocket's open face) out from each bolt head; any body in place when the bolt is tightened (all but the lining cassettes, which go on last) that it hits blocks the tool;

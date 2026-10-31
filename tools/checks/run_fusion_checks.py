@@ -92,8 +92,9 @@ def _allowed(c, allow_rows):
     for r in allow_rows or []:
         ra, rb = re.compile(r["a"], re.I), re.compile(r["b"], re.I)
         vmax = float(r.get("max_mm3") or 0)
+        same = c["a"].split(" / ")[0] == c["b"].split(" / ")[0]     # scope same-file: one assembly file (D-104)
         if ((ra.search(c["a"]) and rb.search(c["b"])) or (ra.search(c["b"]) and rb.search(c["a"]))) and \
-                (vmax <= 0 or c["mm3"] <= vmax):
+                (vmax <= 0 or c["mm3"] <= vmax) and ((r.get("scope") or "").strip() != "same-file" or same):
             return r["id"]
     return None
 

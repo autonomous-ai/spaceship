@@ -1,6 +1,6 @@
-# Mechanical check run: 284dae7 on 2026-11-01
+# Mechanical check run: 433bc95 on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `284dae7`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `433bc95`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 29** (13 severe, 13 major, 3 minor). Register numbers in brackets.
 
@@ -91,18 +91,18 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 111, "parts_lists": ["v2/03-M
 | 1-18 LINING - CASSETTE - BACK LOWER - RH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
 | 1-19 LINING - CASSETTE - BACK UPPER - LH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
 | 1-20 LINING - CASSETTE - BACK UPPER - RH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
-| 2-01 FRONT - FIXED GLASS UNIT | 28.782 | 2033 x 1031 x 12 | glass | calculation (CAD) |
+| 2-01 FRONT - FIXED GLASS UNIT | 28.743 | 2033 x 1031 x 12 | glass | calculation (CAD); magnetic seal HOLD |
 | 2-02 FRONT - DOOR UNIT | 48.59 | 2089 x 1175 x 149 | glass | calculation (CAD); hinges and pull HOLD |
-| 2-03 FRONT - DECOR BLOCK - DR | 18.6 | 2290 x 1016 x 205 | long | calculation; calculation (CAD) |
+| 2-03 FRONT - DECOR BLOCK - DR | 18.6 | 2290 x 1016 x 205 | long | calculation; calculation (CAD); magnetic seal HOLD |
 | 2-04 BASE - BAND ASSY - BACK | 3.171 | 2420 x 110 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm) |
 | 2-05 BASE - BAND ASSY - SIDE - LH | 1.997 | 1517 x 110 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm) |
 | 2-06 BASE - BAND ASSY - SIDE - RH | 1.997 | 1517 x 110 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm) |
-| 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 1.117 | 729 x 110 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation; confirmed (1.5 mm) |
+| 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 1.117 | 729 x 110 x 40 | long | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); magnetic seal HOLD; calculation; confirmed (1.5 mm) |
 | 2-08 BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1175 x 60 x 13 | long | assumption |
 | 2-09 FRONT - DECOR BLOCK - DL | 9.976 | 2290 x 278 x 205 | long | calculation |
 | 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.873 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
 | 2-11 AIR - AIR COLUMN | 9.735 | 2105 x 360 x 217 | long | calculation; fill provisional |
-| 2-12 FRONT - DECOR BLOCK - DT | 7.088 | 1697 x 280 x 205 | long | calculation; calculation (CAD) |
+| 2-12 FRONT - DECOR BLOCK - DT | 7.088 | 1697 x 280 x 205 | long | calculation; calculation (CAD); magnetic seal HOLD |
 | 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.14 | 600 x 250 x 200 | long | calculation (ELECTRICAL) |
 | 2-14 INTERIOR - LIGHT SHELF | 1.954 | 2332 x 80 x 50 | long | assumption |
 | 2-15 BASE - SMALL PARTS CARTON | 1.674 | 600 x 400 x 150 | long | calculation (part CAD); calculation; confirmed (1.5 mm) |
