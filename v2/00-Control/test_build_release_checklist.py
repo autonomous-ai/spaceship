@@ -525,6 +525,48 @@ class FlatPartColumns(unittest.TestCase):
         self.assertEqual(self.lacks(line), ["no bends or machined features (its process names bond)"])
 
 
+class OpenPrFiles(unittest.TestCase):
+    """A branch stacked on a PR that squash-merged since keeps that PR's older copies; main's newer files win."""
+
+    def test_a_stacked_branch_old_copies_do_not_hide_main_newer_files(self):
+        import os
+        import subprocess
+        import tempfile
+        skin = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
+        own = "v2/03-Manufacturing/air/611101_P01_AIR-COLUMN-FACE-FRONT_DXF.dxf"
+        with tempfile.TemporaryDirectory() as d:
+            def g(*a, when):
+                env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when}
+                subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                               check=True, capture_output=True, text=True, env=env)
+
+            def put(path, text, when):
+                Path(d, path).parent.mkdir(parents=True, exist_ok=True)
+                Path(d, path).write_text(text, encoding="utf-8")
+                g("add", "-A", when=when)
+                g("commit", "-q", "-m", path, when=when)
+
+            g("init", "-q", when="2026-11-01T00:00:00")
+            g("checkout", "-q", "-b", "main", when="2026-11-01T00:00:00")
+            put("v2/01-CAD-Native/README.md", "start", "2026-11-01T00:00:00")
+            g("checkout", "-q", "-b", "ceiling", when="2026-11-01T01:00:00")
+            put(skin, "old outline", "2026-11-01T01:00:00")
+            g("checkout", "-q", "-b", "air", when="2026-11-01T02:00:00")
+            put(own, "AIR's face", "2026-11-01T02:00:00")
+            g("checkout", "-q", "main", when="2026-11-01T05:00:00")
+            put(skin, "merged outline", "2026-11-01T05:00:00")
+            old = rc.ROOT, BOM.ROOT
+            rc.ROOT = BOM.ROOT = Path(d)
+            try:
+                files = rc.list_files(["main", "air"], BOM)
+                text = rc.text_at(skin, files[skin], ["main", "air"])
+            finally:
+                rc.ROOT, BOM.ROOT = old
+        self.assertEqual(files[skin], "main")
+        self.assertEqual(text, "merged outline")
+        self.assertEqual(files[own], "air")
+
+
 class Render(unittest.TestCase):
     def test_totals_count_each_number_once_and_name_the_screen(self):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]
