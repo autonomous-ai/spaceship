@@ -178,7 +178,9 @@ def circle_cut_y(comp, body, name, cx, cz, y0, y1, dia, ctx):
 
 
 FOLDER = "Default Project/FocusPod v2"
-PART_SCOPES = ("ledge", "shelf_back", "shelf_rh", "dchan")      # part-only designs for drawings (D-89 plan)
+# part-only designs for drawings (D-89 parts 1 to 4): scope -> the layout keys it holds
+PART_SCOPES = {"ledge_assy": ("ledge", "bracket"), "shelf_assy": ("shelf_back", "shelf_lh", "shelf_rh", "dchan", "diffuser"),
+               "ledge": ("ledge",), "shelf_back": ("shelf_back",), "shelf_rh": ("shelf_rh",), "dchan": ("dchan",)}
 
 
 def part_doc_name(key):
@@ -263,8 +265,9 @@ def run_parts(app, keys):
         pn, pname_, vn, kind, _m = I.PARTS[key]
         root.partNumber = pn
         root.description = "%s | %s | %s | %s | drawing source, built by interior_build.py" % (pname_, vn, kind, I.REV)
-        build_bodies(root, design, ctx, (key,))
-        set_material(design, root, key)
+        build_bodies(root, design, ctx, PART_SCOPES[key])
+        if I.PARTS[key][4]:
+            set_material(design, root, key)
         adsk.doEvents()
         tl = design.timeline
         bad = [tl.item(i).name for i in range(tl.count)
