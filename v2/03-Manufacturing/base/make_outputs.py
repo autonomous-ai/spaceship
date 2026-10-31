@@ -61,7 +61,7 @@ PART_INFO = {
                "calculation", "DRAFT", "CAD; joints register H-08", "under each J-BASE-01 bolt rivnut's head"),
     "838003": ("aluminium 5056 (maker)", "", "", "calculation", "DRAFT",
                "CAD envelope; joints register H-03; Sherex CAH3-610-4.2", "set at the factory; torque HOLD-01"),
-    "118001": ("levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad (product HOLD)", "", "",
+    "118002": ("levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad (product HOLD)", "", "",
                "assumption", "HOLD", "layout study B-GLIDE 0.15 kg", "adjusted from above through the band top before the walls go on"),
 }
 
@@ -77,13 +77,13 @@ EXTRA = [
     ("838006", "HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD)", "Tán rút M10 cho chân chỉnh", "PI", "band",
      "glides", "pcs", "aluminium or steel (HOLD)", "", 0.006, "assumption", "HOLD",
      "number PROPOSED for the joints register (glide nut)", "set in the band's bottom wall at the factory"),
-    ("118002", "BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD)", "Nút bịt đầu ống 100x40", "PI", "110101",
+    ("118003", "BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD)", "Nút bịt đầu ống 100x40", "PI", "110101",
      "endcap", "pcs", "PE or PP insert cap for a 100 x 40 x 2.0 tube, black (product HOLD)", "", 0.01, "assumption", "HOLD",
      "number PROPOSED for the joints register", "closes the side band's back end, face flush with Y = pod_d / 2"),
-    ("848003", "HARDWARE - BASE SEAL - FLOOR EDGE - PEMKO S88BL (HOLD)", "Gioăng mép sàn", "PI", "110000",
+    ("118001", "BASE - BASE SEAL - FLOOR EDGE - PEMKO S88BL (HOLD)", "Gioăng mép sàn", "PI", "110000",
      "edgeseal", "m", "silicone bulb 12.7 x 6.4, self-adhesive (hardware selection D pick 1; gap range unverified)", "",
      0.05, "assumption", "HOLD",
-     "joints register H-06 number; BASE proposes the seal at the floor's edge against the band's inner face",
+     "joints register H-06 (118001); BASE proposes the seal at the floor's edge against the band's inner face, not under the band",
      "along F1's edges at the band; keeps v1's open shadow line under the band"),
 ]
 
@@ -104,7 +104,7 @@ def extra_qty(d, rule, parent_counts):
     if rule == "bracket":
         return 4 * parent_counts.get("111201", 0)
     if rule == "glides":
-        return parent_counts.get("118001", 0)
+        return parent_counts.get("118002", 0)
     if rule == "endcap":
         return 1
     if rule == "edgeseal":
@@ -150,7 +150,7 @@ def make_bom(d):
         if parent == "band":
             # one per glide, in the band assembly that holds the glide
             for asm in ("110101", "110103"):
-                q = copies.get("%s>118001" % asm, 0)
+                q = copies.get("%s>118002" % asm, 0)
                 if q:
                     extra_rows.append((pn, name, vn, typ, asm, q, unit, mat, fin, m, ms, st, src, note))
                     mass_of[asm] = round(mass_of[asm] + q * m, 4)

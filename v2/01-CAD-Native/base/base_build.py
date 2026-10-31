@@ -124,7 +124,7 @@ PARTS = {
     "washer": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP", None),
     "floor_f1": ("111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "MP", None),
     "mat_f1": ("111501", "BASE - SEAL MAT - F1", "Tấm lót kín sàn - F1", "MP", None),
-    "glide": ("118001", "BASE - LEVELLING GLIDE - M10 (HOLD)", "Chân chỉnh cao", "PI", None),
+    "glide": ("118002", "BASE - LEVELLING GLIDE - M10 (HOLD)", "Chân chỉnh cao", "PI", None),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", None),
 }
 CLASS_NAME = {"HS": "hardware-fitted subassembly", "MP": "part we make", "PI": "bought item"}
