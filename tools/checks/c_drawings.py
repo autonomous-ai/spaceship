@@ -63,15 +63,6 @@ def hole_axes(step_holes):
     return axes
 
 
-def _in_cut_list(root, pn):
-    for p in walk_files(root, "v2/03-Manufacturing", exts=(".csv",)):
-        if "cut" in os.path.basename(p).lower():
-            with open(p, encoding="utf-8", errors="replace") as fh:
-                if re.search(r"\b%s\b" % pn, fh.read()):
-                    return True
-    return False
-
-
 # D-89 (PM rule, 2026-11-01): a part covered by a tabulated drawing that lists its part number counts
 # as drawn; a plain knife-cut felt or fill rectangle needs no drawing when the cut list gives its size,
 # material, tolerance and part number.
@@ -107,16 +98,16 @@ def _cell(row, pattern):
 FEATURE_WORDS = re.compile(r"\b(?:pockets?|notch(?:es)?|holes?|slots?|cut-?outs?)\b", re.I)     # D-89: these keep the drawing
 
 
-def cut_list_lacks(root, pn):
-    """For a felt or fill piece (D-89): None when no cut list (a .csv with "cut" in its name, as D-89 defines
-    it) has a row for pn (a cell that is exactly the number), else (what the most complete row lacks of size,
-    material and tolerance, its file, the features the row names: pockets, notches, holes)."""
+def cut_list_lacks(root, pn, thickness=False):
+    """D-89: None when no list has a row for pn (a cell that is exactly the number), else (what the most
+    complete row lacks of size, thickness when asked (soft goods other than felt and fill), material and
+    tolerance, its file, the features the row names: pockets, notches, holes). A cut list is a .csv with "cut"
+    in its name, and a parts-list row that gives the same serves as one (PM ruling 2026-11-01, as the release
+    checklist reads it): every .csv under v2/03-Manufacturing and v2/02-Drawings counts."""
     from common import read_csv
     best = None
     for top in ("v2/03-Manufacturing", "v2/02-Drawings"):
         for p in walk_files(root, top, exts=(".csv",)):
-            if "cut" not in os.path.basename(p).lower():
-                continue
             for row in read_csv(p):
                 if not any((v or "").strip() == pn for v in row.values() if isinstance(v, str)):
                     continue
@@ -124,6 +115,10 @@ def cut_list_lacks(root, pn):
                 sizes = _cell(row, r"size|dimension|length|width|thick|^[lwt]_?mm$")
                 if not any(re.search(r"\d", v) for _k, v in sizes):
                     lacks.append("size")
+                thick = any(re.search(r"\d", v) for _k, v in _cell(row, r"thick|^t_?mm$")) or any(
+                    len(re.findall(r"\d+(?:\.\d+)?", v)) >= 3 and re.search(r"[x×]", v, re.I) for _k, v in sizes)
+                if thickness and not thick:
+                    lacks.append("thickness")
                 if not _cell(row, r"material|grade"):
                     lacks.append("material")
                 if not _cell(row, r"tol") and not any(re.search(r"±|\+/-", v or "") for v in row.values()
@@ -131,9 +126,16 @@ def cut_list_lacks(root, pn):
                     lacks.append("tolerance")
                 feats = sorted({m.group(0).lower() for v in row.values() if isinstance(v, str)
                                 for m in FEATURE_WORDS.finditer(v)})
-                if best is None or len(lacks) < len(best[0]):
+                if best is None or len(lacks) + len(feats) < len(best[0]) + len(best[2]):
                     best = (lacks, rel(root, p), feats)
     return best
+
+
+def soft_kind(name):
+    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89)."""
+    if not is_soft(name):
+        return ""
+    return "felt or fill" if is_soft(name, kinds=("FELT", "FILL")) else "soft"
 
 
 def policy(root, key, default):
@@ -192,7 +194,6 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         r_where = rel(root, where) if where else ""
         owner = owner_for(r_where or src_by_pn.get(pn, ""), pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
-        soft = is_soft(names.get(pn, ""))          # by the name's head noun: SEAL HOLDER is a holder
         if not pdfs and pn in tab:                 # D-89: listed in a tabulated drawing, so drawn
             cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}
             tab_revs = {rv for rv, _p, _own in tab[pn]}
@@ -205,38 +206,41 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
                                   rel(root, tp), owner))
             continue
-        if not pdfs and is_soft(names.get(pn, ""), kinds=("FELT", "FILL")):
-            # D-89: a plain knife-cut felt or fill rectangle needs no drawing when its cut-list row gives
-            # size, material, tolerance and part number; one with holes needs a drawing
-            row = cut_list_lacks(root, pn)
+        kind = soft_kind(names.get(pn, ""))
+        if not pdfs and kind == "soft" and files.get("DXF"):
+            continue        # D-89 (3): a DXF gives the outline of a foam, gasket, seal or tape, any shape
+        if not pdfs and kind:
+            # D-89 (2) felt or fill, (3) other soft goods: a plain knife-cut rectangle or strip needs no drawing
+            # when its cut-list or parts-list row gives size (thickness too, for (3)), material, tolerance and
+            # part number; a piece with pockets, notches or holes keeps its drawing (or, for (3), a DXF)
+            row = cut_list_lacks(root, pn, thickness=(kind == "soft"))
             n_holes = len(hole_axes(holes_by_pn.get(pn, [])))
             n_faces = max(faces_by_pn.get(pn) or [0])
             if row is not None and not row[0] and not row[2] and not n_holes and n_faces <= 6:
                 continue
             why = []
             if row is not None and row[2]:
-                why.append("its cut-list row names %s, so it isn't a plain rectangle and needs a drawing" %
-                           " and ".join(row[2]))
+                why.append("its row names %s, so it isn't a plain rectangle" % " and ".join(row[2]))
             elif n_holes:
-                why.append("it isn't a plain rectangle (its STEP has %d hole axes), so it needs a drawing" % n_holes)
+                why.append("it isn't a plain rectangle (its STEP has %d hole axes)" % n_holes)
             elif n_faces > 6:
                 why.append("it isn't a plain rectangle (a body in its STEP has %d faces, a block has 6: pockets "
-                           "or notches), so it needs a drawing" % n_faces)
+                           "or notches)" % n_faces)
             if row is None:
-                why.append("no cut list (a .csv with CUT in its name) has a row for it")
+                why.append("no cut list or parts list has a row for it")
             elif row[0]:
-                why.append("its cut-list row in %s doesn't give %s" % (row[1], ", ".join(row[0])))
+                why.append("its row in %s doesn't give %s" % (row[1], ", ".join(row[0])))
+            need = ("a drawing" if kind == "felt or fill" else "a DXF of its outline or a drawing")
             fs.append(Finding("C05", "no-drawing", pn, "major",
                               "%s has no drawing, and D-89's cut-list route doesn't apply: %s." % (
                                   label, "; ".join(why)),
-                              "For a plain knife-cut rectangle, give part number, size, material and tolerance in "
-                              "a cut list, a .csv with CUT in its name (D-89); otherwise make its drawing.",
+                              "For a plain knife-cut rectangle or strip, give part number, size%s, material and "
+                              "tolerance in its parts-list or cut-list row (D-89); otherwise make %s." % (
+                                  ", thickness" if kind == "soft" else "", need),
                               r_where, owner))
             continue
-        if not pdfs and soft and (files.get("DXF") or _in_cut_list(root, pn)):
-            continue        # other soft goods may be defined by a DXF or a cut list line instead of a drawing
         if not pdfs:
-            fs.append(Finding("C05", "no-drawing", pn, missing_sev if cls == "part" and not soft else "major",
+            fs.append(Finding("C05", "no-drawing", pn, missing_sev if cls == "part" else "major",
                               "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s." % (
                                   label, pn, " though its CAD is in %s" % r_where if r_where else ""),
                               "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
