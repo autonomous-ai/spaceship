@@ -8,9 +8,20 @@ The drawing is of the cut copy made by ga_section_design.py, so its base view
 from the viewer's side shows the cut faces. This script places that view at
 1:20, then hatches every cut face: it opens the section design, finds the
 planar faces lying on the section plane, maps their loops onto the sheet
-through the view's extent, and draws 45 degree lines 3 mm apart in a sheet
-sketch (tools/fusion/hatch.py, pasted in; the API has no hatch). Adjacent
-bodies alternate 45 and 135 degrees so their boundary reads.
+through the view's extent, and draws lines in a sheet sketch
+(tools/fusion/hatch.py, pasted in; the API has no hatch). ISO 128-50: a face
+narrower than 2 mm on the sheet (a skin, frame or cassette layer at 1:20) is
+filled with lines 0.5 mm apart, so it reads solid; wider faces get 45 degree
+lines 2 mm apart. Adjacent bodies alternate 45 and 135 degrees.
+
+Lines.add is a preview API, and what it keeps can differ from what was asked
+(2026-10-31: 2-point lines came out as scraps in the PDF). So the session first
+probes it (ga_pdf_check.py probe) and passes the form that works:
+    --arg line_mode_file=PROBE.json
+With no working form, the view is placed and the hatch is left out (a GAP
+line says so). Check the export with ga_pdf_check.py hatch. A sheet that is
+hatched already is refused: redo it from the drawing's first version
+(ga_promote.py), never by deleting (a delete then save crashed Fusion).
 """
 
 import os
@@ -36,6 +47,7 @@ _hatch_src = open(os.path.join(ARGS.get("repo_root", "."), "tools/fusion/hatch.p
 _ns = {}
 exec(compile(_hatch_src, "hatch.py", "exec"), _ns)
 hatch_segments = _ns["hatch_segments"]
+chain_for, read_line_mode, spacing_for = _ns["chain_for"], _ns["read_line_mode"], _ns["spacing_for"]
 
 
 def find_in_folder(folder, name):
@@ -143,12 +155,17 @@ def run(_context):
     ex = extent(view)
     old = [sheet.sketches.item(i) for i in range(sheet.sketches.count)]
     print("sketches on the sheet: %s" % ([(k.name, k.lines.count) for k in old] or "none"))
-    hatched = [k for k in old if k.name.startswith("HATCH - SECTION")]
-    if hatched and ARGS.get("rehatch") != "1":
-        raise RuntimeError("the sheet is hatched already; add --arg rehatch=1 to draw it again")
-    for k in hatched:
-        name, n = k.name, k.lines.count
-        print("deleted the old hatch sketch %r (%d lines): %s" % (name, n, k.deleteMe()))
+    if any(k.name.startswith("HATCH - SECTION") for k in old):
+        # no deletes (2026-10-31: a delete then save crashed Fusion): to draw it again,
+        # promote the drawing's first version (ga_promote.py) and run this again
+        raise RuntimeError("the sheet is hatched already; promote the drawing's first version to redo it")
+    # the form of Lines.add that draws a straight line, from this session's live probe
+    mode = read_line_mode(ARGS.get("line_mode_file"), ARGS.get("line_mode", "plain"))
+    if mode in ("none", "own-sketch"):
+        print("GAP: no hatch drawn: the line probe found %s, so the hatch waits for a fix "
+              "(the view is placed)" % ("no form that draws a straight line" if mode == "none"
+                                        else "only one line per sketch works"))
+        return
 
     # the section design, for the cut faces
     sdoc = None
@@ -180,18 +197,23 @@ def run(_context):
         return (ex[0] + coord(sx) * SCALE, ex[1] + coord(sy) * SCALE)
 
     sk = sheet.sketches.add("HATCH - SECTION %s" % sec)
-    n_seg, failed, first = 0, 0, None
+    n_seg, failed, first, filled = 0, 0, None, 0
     for i, (body, body_loops) in enumerate(loops):
         poly = [[to_sheet(p) for p in lp] for lp in body_loops]
-        for a, b in hatch_segments(poly, spacing=3.0, angle_deg=45.0 if i % 2 == 0 else 135.0):
+        gap = spacing_for(poly)          # ISO 128-50: thin faces filled, the rest hatched
+        filled += gap < 1.0
+        for a, b in hatch_segments(poly, spacing=gap, angle_deg=45.0 if i % 2 == 0 else 135.0):
             first = first or (a, b)
-            if sk.lines.add([p2(*a), p2(*b)]) is None:     # the API returns None when it fails
+            if sk.lines.add([p2(*q) for q in chain_for(a, b, mode)]) is None:   # None when it fails
                 failed += 1
             n_seg += 1
+            if n_seg % 250 == 0:
+                adsk.doEvents()
     adsk.doEvents()
-    print("section %s at %.2f mm: %d cut bodies, %d hatch lines asked, %d failed; the sketch holds %d; "
-          "first %s; view extent %s" % (sec, at, len(loops), n_seg, failed, sk.lines.count,
-                                        tuple(tuple(round(v, 1) for v in pt) for pt in first) if first else None,
-                                        tuple(round(v, 1) for v in ex)))
+    print("section %s at %.2f mm: %d cut bodies (%d thin, filled), %d hatch lines asked in the %r form, "
+          "%d failed; the sketch holds %d; first %s; view extent %s" % (
+              sec, at, len(loops), filled, n_seg, mode, failed, sk.lines.count,
+              tuple(tuple(round(v, 1) for v in pt) for pt in first) if first else None,
+              tuple(round(v, 1) for v in ex)))
     if failed or sk.lines.count < n_seg:
         raise RuntimeError("only %d of %d hatch lines were made; nothing kept" % (sk.lines.count, n_seg))

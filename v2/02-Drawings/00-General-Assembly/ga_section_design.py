@@ -27,8 +27,8 @@ B-B: plane Y = 0 (mid depth), viewer at the front (-Y): the cross-section
      through both side walls, the floor, the ceiling and their linings.
 
 Then start_drawing.py makes each design's drawing (screen unlocked), and the
-section views go on it. Hatching can't be drawn by the API (no hatch on
-sheets); that is on the person list.
+section views go on it, hatched with sheet sketch lines by
+ga_section_sheet.py (the API has no hatch).
 """
 
 import time
