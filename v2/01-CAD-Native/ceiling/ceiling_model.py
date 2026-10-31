@@ -95,9 +95,11 @@ CEILING_PARAMS = [
      "R-J13: spigots 100 in from each frame end. The round hole sits at the centre-seam end, since ST-04 runs from the round hole to the closing face (+/-0.1); the slot at the side end lets the side bolts pull C1 and C2 onto their stops"),
     ("cj_spig_x1", "close_gap / 2 + half_fw - spigot_inset", "mm", "calculation", "R-J13: the slot 100 in from the frame's side end"),
     # ---- soffit hangers (D-87: the soffit hangs on tool-free hooks; PROPOSED by CEILING/AIR 2026-11-01)
-    ("x1_ov", "16 mm", "mm", "assumption",
-     "cross member X1 sits this far over the soffit's back edge, so the soffit's back hangers have a member above them (D-87); its back face stays over the cassette for the clips"),
-    ("hang_x", "inner_w / 4", "mm", "calculation", "soffit hanger studs at the middle of each ceiling half's front member and X1 (clear of the clips, the catches and the roof slot)"),
+    ("x1_ov", "16 mm", "mm", "confirmed",
+     "PM ruling 2026-11-01 (D-87 hooks): cross member X1 sits this far over the soffit's back edge, so the soffit's back hangers have a member above them; its back face stays over the cassette for the clips"),
+    ("hang_x", "inner_w / 4", "mm", "calculation", "PM ruling 2026-11-01: soffit keyhole studs at the middle of each ceiling half's front member and X1 (clear of the clips, the catches and the roof slot)"),
+    ("lock_x", "inner_w / 2 - 120 mm", "mm", "assumption",
+     "PM ruling 2026-11-01: two captive screws (5 mm key) lock the soffit, so taking a cassette out can never free it; both over the soffit's left inlet plenum, where no cartridge is, reached through the left hinged underside"),
     # ---- roof exhaust slot in C2 only (D-60, D-61; PM ruling 2026-10-31: the two skins are two parts)
     ("slot_x0", "872 mm", "mm", "source", "air report 7e (sized on skeleton P04): roof slot X 872 to 1157, over the soffit's exhaust fan box"),
     ("slot_w", "285 mm", "mm", "source", "air report 7e: roof slot 285 x 294"),
@@ -207,7 +209,7 @@ HARDWARE = {
                "PI", "pc", "0", "cj_pin_n", 0.0079,
                "calculation: head 10 x 6 less the socket, shank 6 x 25 at 85% for the thread, steel 7850 kg/m3"),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6",
-               "PI", "pc", "cj_back_n + 2", "cj_back_n + cj_pin_n + 2", 0.0023,
+               "PI", "pc", "cj_back_n + 4", "cj_back_n + cj_pin_n + 2", 0.0023,
                "calculation: body 9.5 x 14.86 with an M6 bore and a 12.96 x 0.76 head (SHX sizes), 2700 kg/m3"),
     "washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", "Long đen to M6 inox",
                "PI", "pc", "n_ceil_side_bolt", "n_ceil_side_bolt + cj_pin_n", 0.0028,
@@ -378,6 +380,9 @@ def joint_holes(half):
     hx = "%shang_x" % ("-" if s < 0 else "")
     rows.append(("SOFFIT HANGER FRONT", "FRONT", "bottom", (hx, "%s + tube_w / 2" % YW, ZF0), "hole_rvn", "1", "0 mm", "x"))
     rows.append(("SOFFIT HANGER X1", "X1", "bottom", (hx, "%s + tube_w / 2" % cross_y0(1), ZF0), "hole_rvn", "1", "0 mm", "x"))
+    if s < 0:
+        rows.append(("SOFFIT LOCK FRONT", "FRONT", "bottom", ("-lock_x", "%s + tube_w / 2" % YW, ZF0), "hole_rvn", "1", "0 mm", "x"))
+        rows.append(("SOFFIT LOCK X1", "X1", "bottom", ("-lock_x", "%s + tube_w / 2" % cross_y0(1), ZF0), "hole_rvn", "1", "0 mm", "x"))
     return rows
 
 
