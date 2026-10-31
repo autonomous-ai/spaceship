@@ -1,8 +1,8 @@
-Run 2026-10-31 on Mac 1, Fusion 2706.1.17, `python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/edit_test_skeleton.py` on the P02 skeleton.
+Run 2026-10-31 on Mac 1, Fusion 2706.1.17, `python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/edit_test_skeleton.py` on the P03 skeleton.
 
 ## Skeleton edit test record
 
-Copy of `v2/01-CAD-Native/skeleton/100000_P02_POD-SKELETON_CAD.f3d`, opened as a new unsaved document and closed without saving.
+Copy of `v2/01-CAD-Native/skeleton/100000_P03_POD-SKELETON_CAD.f3d`, opened as a new unsaved document and closed without saving.
 
 | State | pod size X x Y x Z (mm) | Unhealthy items | Envelopes off their expressions | Worst (mm) |
 |---|---|---|---|---|

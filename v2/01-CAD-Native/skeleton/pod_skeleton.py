@@ -1,20 +1,20 @@
-"""Spaceship (FocusPod v2) pod skeleton, stage A: native, parameter-driven.
+"""Spaceship (FocusPod v2) pod skeleton P03: native, parameter-driven.
 
     python3 tools/fusion/run_script.py v2/01-CAD-Native/skeleton/pod_skeleton.py
         [--arg close_previous=1] [--arg save=1] [--arg export=1]
 
 One Fusion design, components per v2/00-Control/assembly-tree.md (POD with
 BASE, WALL, FRONT > DOOR AND GLAZING, CEILING, LINING, AIR, ELECTRICAL,
-INTERIOR). Every panel, block and glass pane is an envelope body in its own
+INTERIOR). Every panel, lining, band and floor is an envelope body in its own
 component: a fully constrained rectangle on an XY plane offset by a
-parameter, extruded by a parameter. Coordinates follow conventions.md
-section 4: origin on the room floor at the pod centre, +X right (seen from
-outside facing the door), +Y back, +Z up.
+parameter, extruded by a parameter. The front decor blocks and the glass are
+faceted bodies measured from the v1 STEP (V1-FRONT-FACETS.md). Coordinates
+follow conventions.md section 4: origin on the room floor at the pod centre,
++X right (seen from outside facing the door), +Y back, +Z up.
 
-Stage A places the front decor blocks and the door as boxes. The faceted
-front (true decor facets and the fixed glass outline, measured from the v1
-STEP) is stage B; the overlaps that the boxes cause are listed in EXPECTED
-with reasons. Any other clash fails the run.
+Overlaps made on purpose are listed in EXPECTED with the reason; any other
+clash over 1 mm3 fails the run. P01 (stage A, box placeholders) and P02
+(stage B) are superseded and live only in git history (BUILD-RECORD.md).
 """
 
 import time
@@ -22,7 +22,7 @@ import adsk.core
 import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
-REV = "P02" if ARGS.get("stage", "B") == "B" else "P01"     # P02 = stage B, the measured faceted front
+REV = "P03"     # pass C on the measured faceted front
 DOC_NAME = "100000_%s_POD-SKELETON_CAD" % REV
 CLOUD_FOLDER = "FocusPod v2"
 F3D_REL = "v2/01-CAD-Native/skeleton/%s.f3d" % DOC_NAME
@@ -39,7 +39,8 @@ PARAMS = [
     ("stack_t", "81 mm", "mm", "decided", "D-16, D-42 (walls and ceiling)"),
     ("outer_t", "43 mm", "mm", "source", "layout study B1 final list W-SIDE 43 (ACP 3 + frame 40)"),
     ("cass_t", "34 mm", "mm", "source", "layout study B1 final list L-CASS 34 (tray + 25 gap + felt 9)"),
-    ("wall_depth", "1500 mm", "mm", "source", "build plan II; conventions s4 (wall front edge Y = -650)"),
+    ("wall_depth", "1495 mm", "mm", "decided", "PM ruling pass C: side walls start at the decor back plate (Y -645), as v1 (1496)"),
+    ("lin_gap", "4 mm", "mm", "assumption", "PM ruling pass C: gap above the upper side linings so they stay floating (= the 4 mm stack gap)"),
     ("floor_t", "15 mm", "mm", "source", "layout study B1 list B-FLOOR 15"),
     ("thresh_h", "20 mm", "mm", "decided", "D-18"),
     ("thresh_d", "60 mm", "mm", "source", "layout study B1 list B-THRESH 1176 x 60 x 20"),
@@ -82,6 +83,7 @@ PARAMS = [
     ("dt_y2", "767 mm", "mm", "source", "V1-FRONT-FACETS: DT lower facet left Y -767"),
     ("dt_y3", "753 mm", "mm", "source", "V1-FRONT-FACETS: DT lower facet outer Y -753 at X -1154"),
     ("dr_xc", "198 mm", "mm", "source", "V1-FRONT-FACETS: DR corner facet front X 1052 = 1250 - 198"),
+    ("dt_xr", "1699 mm", "mm", "source", "V1-FRONT-FACETS: DT/DR joint at the top, X 449 = -1250 + 1699 (PM ruling pass C)"),
     ("dr_yc", "672 mm", "mm", "source", "V1-FRONT-FACETS: DR corner facet back Y -672"),
     # derived
     ("wall_z0", "glide_h + band_h", "mm", "calculation", "walls stand on the base band"),
@@ -123,12 +125,12 @@ def env(asm, code, name, sid, x, y, z):
 for side, x0, x1, cx0, cx1 in (("L", XL, XL + " + outer_t", XIL + " - cass_t", XIL),
                                ("R", XR + " - outer_t", XR, XIR, XIR + " + cass_t")):
     for row, z0, z1 in ((1, "wall_z0", "wall_z0 + side_h"), (2, "wall_z0 + side_h", "pod_h")):
-        cz1 = z1 if row == 1 else "pod_h - outer_t"   # upper lining stops under the ceiling frame
+        cz1 = z1 if row == 1 else "pod_h - outer_t - lin_gap"   # stops under the roof frame, floating
         lo = "LOWER" if row == 1 else "UPPER"
         env("WALL", "%s%d" % (side, row), "WALL - SIDE PANEL - %s - %s" % (lo, "LH" if side == "L" else "RH"),
             "W-SIDE-" + lo[:2], (x0, x1), (YW, YB), (z0, z1))
         env("LINING", "%s%d-CASS" % (side, row), "LINING - CASSETTE - SIDE %s - %s" % (lo, side),
-            "L-CASS-SIDE-" + lo[:2], (cx0, cx1), (YW, YB + " - stack_t"), (z0, cz1))
+            "L-CASS-SIDE-" + lo[:2], (cx0, cx1), (YW, YB + " - stack_t + cass_t"), (z0, cz1))   # closes the inside corner
 for code, x0, x1, z0, z1 in (("B1", -1, "0 mm", "wall_z0", "wall_z0 + back_ph"),
                              ("B2", "0 mm", 1, "wall_z0", "wall_z0 + back_ph"),
                              ("B3", -1, "0 mm", "wall_z0 + back_ph", "wall_z0 + back_h"),
@@ -156,20 +158,9 @@ env("BASE", "BAND-R", "BASE - BASE BAND - SIDE - RH", "B-BAND-SIDE",
 env("BASE", "THRESHOLD", "BASE - DOOR THRESHOLD", "B-THRESH",
     (XL + " + door_xl", XL + " + door_xbr"), ("-glass_y - thresh_d / 2", "-glass_y + thresh_d / 2"),
     ("0 mm", "thresh_h"))
-STAGE = ARGS.get("stage", "B")
-if STAGE == "A":
-  env("FRONT", "DL", "FRONT - DECOR BLOCK - LEFT - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DL",
-    (XL, XL + " + dl_w"), (YF, YF + " + decor_d"), ("wall_z0", "pod_h"))
-  env("FRONT", "DR", "FRONT - DECOR BLOCK - RIGHT - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DR",
-    (XR + " - dr_w", XR), (YF, YF + " + decor_d"), ("wall_z0", "pod_h"))
-  env("FRONT", "DT", "FRONT - DECOR BLOCK - TOP - PLACEHOLDER BOX (STAGE A, NOT THE LOOK)", "F-DT",
-    (XL + " + dl_w", XL + " + dl_w + dt_w"), (YF, YF + " + decor_d"), ("pod_h - dt_h", "pod_h"))
-  env("GLAZING", "DOOR", "FRONT - DOOR LEAF GLASS 4+4", "F-GLASS-DOOR",
-    (XL + " + dl_w", XL + " + dl_w + door_w"), ("-glass_y - glass_t / 2", "-glass_y + glass_t / 2"),
-    ("door_z0", "door_z0 + door_h"))
 env("GLAZING", "KICK", "FRONT - DOOR KICK STRIP", "D-40",
     (XL + " + door_xl", XL + " + door_xbr"), ("-glass_y - kick_d / 2", "-glass_y + kick_d / 2"),
-    ("thresh_h", "door_zb" if STAGE == "B" else "door_z0"))
+    ("thresh_h", "door_zb"))
 
 # Stage B bodies have no box expressions; the edit test checks these anchors
 # (code, bounding-box index 0..5 = xmin ymin zmin xmax ymax zmax, expression).
@@ -179,21 +170,11 @@ FACET_ANCHORS = [
     ("FIXED", 3, XR + " - fix_xbr"), ("FIXED", 5, "fix_zt"),
 ]
 
-# Overlaps the stage A boxes make on purpose, with the reason. Any other
+# Overlaps made on purpose, with the reason. Any other
 # clash fails the run.
 EXPECTED = [
-    (("DL", "L1"), "decor wraps the side wall front edge by 35 mm (D-39, conventions s4)"),
-    (("DL", "L2"), "same"), (("DL", "L1-CASS"), "same"), (("DL", "L2-CASS"), "same"),
-    (("DR", "R1"), "same"), (("DR", "R2"), "same"), (("DR", "R1-CASS"), "same"), (("DR", "R2-CASS"), "same"),
-    (("DT", "DR"), "boxes of faceted blocks overlap; the facets don't (stage B)"),
-    (("DT", "C1"), "DT covers the ceiling front edge (v1); boxes only (stage B)"),
-    (("DT", "C2"), "same"), (("DT", "C1-CASS"), "same"), (("DT", "C2-CASS"), "same"),
-    (("DL", "BAND-L"), "decor stands on the base band corner; boxes only (stage B)"),
-    (("DR", "BAND-R"), "same"),
-    (("DL", "C1"), "box corner reaches the ceiling front edge (stage B)"),
-    (("DR", "C2"), "same"), (("DL", "C1-CASS"), "same"), (("DR", "C2-CASS"), "same"),
-    (("DT", "L2"), "DT wraps the left wall's upper front edge (v1 measured, stage B)"),
-    (("DT", "L2-CASS"), "same"),
+    (("DR", "BAND-R"), "DR's bottom follows the fixed glass bottom (Z 102), 8 mm into the right base band's front end "
+                       "(Z 10..110); the band gets a notch or stops short when the base is designed (HOLD)"),
 ]
 
 MM = 0.1
@@ -217,7 +198,7 @@ def new_comp(parent, pn, name, vn):
     c = occ.component
     c.name = ("%s %s" % (pn, name)).strip()
     c.partNumber = pn
-    c.description = "%s | %s | P01" % (name, vn)
+    c.description = "%s | %s | %s" % (name, vn, REV)
     return c
 
 
@@ -306,7 +287,7 @@ def clash_check(bodies):
 
 
 
-# ---------------------------------------------------------------- stage B: faceted front
+# ---------------------------------------------------------------- the faceted front
 
 def _axis_of(sk, model_axis):
     """Which sketch axis ('x' or 'y') a model axis ('x', 'y' or 'z') maps to."""
@@ -433,7 +414,7 @@ def faceted_front(design, asm):
     c = comp_for("FRONT", "DT", "FRONT - DECOR BLOCK - TOP (FACETED, v1 MEASURED)", "F-DT")
     sk = poly(design, c, c.xYConstructionPlane, ("x", "y"), 0, "PLAN - DT FACETS",
               [(XL, back), (XL, "-dl_y1"), (XL + " + dl_x2 + 4 mm", "-dt_y3"), (XL + " + dt_x2", "-dt_y2"),
-               (XL + " + fix_xtr", YF), (XL + " + fix_xtr", back)])
+               (XL + " + fix_xtr", YF), (XL + " + dt_xr", "-ch_yb"), (XL + " + dt_xr", back)])
     f = extrude_span(c, sk, "z", "dt_zb", "pod_h", NEW, name="EXTRUDE - DT PLAN")
     b = f.bodies.item(0)
     sk = poly(design, c, c.xZConstructionPlane, ("x", "z"), 0, "SLOPE - DT BOTTOM",
@@ -454,6 +435,9 @@ def faceted_front(design, asm):
     sk = poly(design, c, c.xYConstructionPlane, ("x", "y"), 0, "CORNER FACET - DR",
               [(XR + " - dr_xc", YF), (XR, "-dr_yc"), (XR, YF)])
     extrude_span(c, sk, "z", "0 mm", "pod_h", CUT, [b], "CUT - DR CORNER FACET")
+    sk = poly(design, c, c.xYConstructionPlane, ("x", "y"), 0, "JOINT - DR TO DT (v1 LINE TO X 449)",
+              [(XL + " + fix_xtr", YF), (XL + " + dt_xr", "-ch_yb"), (XL + " + dt_xr", back), (XL + " + fix_xtr", back)])
+    extrude_span(c, sk, "z", "dt_zb", "pod_h", CUT, [b], "CUT - DR TO DT JOINT")
     sk = poly(design, c, c.yZConstructionPlane, ("y", "z"), 0, "CHAMFER - DR TOP FRONT", chamfer)
     extrude_span(c, sk, "x", XL, XR, CUT, [b], "CUT - DR TOP CHAMFER")
     b.name = "DR FACETED"
@@ -493,7 +477,7 @@ def run(_context):
     add_params(design)
     root = design.rootComponent
     root.partNumber = "100000"
-    root.description = "POD - SPACESHIP (FocusPod v2) skeleton | Pod hoàn chỉnh | P01"
+    root.description = "POD - SPACESHIP (FocusPod v2) skeleton | Pod hoàn chỉnh | " + REV
     asm = {}
     for key, pn, name, vn, parent in ASSEMBLIES:
         asm[key] = new_comp(asm[parent] if parent else root, pn, name, vn)
@@ -501,8 +485,7 @@ def run(_context):
     for a, code, name, sid, x, y, z in ENVELOPES:
         comp = new_comp(asm[a], "", "%s %s" % (code, name), sid)
         bodies[code] = build_envelope(design, comp, code, name, sid, x, y, z)
-    if STAGE == "B":
-        bodies.update(faceted_front(design, asm))
+    bodies.update(faceted_front(design, asm))
     tl = design.timeline
     bad_items = [tl.item(i).name for i in range(tl.count)
                  if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
@@ -515,8 +498,10 @@ def run(_context):
                                                  round(b[5] - b[2], 2), b))
     hits, bad = clash_check(bodies)
     print("clash pairs %d, expected %d, unexpected %d" % (len(hits), len(hits) - len(bad), len(bad)))
-    for a, b, v in bad:
-        print("UNEXPECTED CLASH %s x %s: %d mm3" % (a, b, v))
+    for a, b, v in hits:
+        print("CLASH|%s|%s|%d mm3|%s" % (a, b, v, "UNEXPECTED" if (a, b, v) in bad else "listed"))
+    hit_set = {frozenset((a, b)) for a, b, _v in hits}
+    print("listed pairs that do not clash:", [k for k, _r in EXPECTED if frozenset(k) not in hit_set])
     rb = box(root)
     print("pod box", rb)
     if bad_items or loose or bad:
