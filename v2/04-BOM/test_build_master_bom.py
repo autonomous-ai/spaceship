@@ -215,6 +215,12 @@ class RegisterItems(unittest.TestCase):
     def test_same_item_helper(self):
         self.assertTrue(bom.same_item("WASHER ISO 7093-1 6.4 x 18 x 1.6 A2", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2"))
         self.assertFalse(bom.same_item("RIVNUT - M6 - SHEREX CAH3-610-4.2", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC"))
+        # a product name for a register item described by its requirement is the same item
+        self.assertTrue(bom.same_item("BASE - BASE SEAL - FLOOR EDGE - PEMKO S88BL (HOLD)", "BASE - BASE SEAL - GAP 10 ±5"))
+        # a different thread is a different item, however much else matches
+        self.assertFalse(bom.same_item("HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2"))
+        # the old cassette-edge gasket is not the new soft seal
+        self.assertFalse(bom.same_item("SEALS - CASSETTE EDGE GASKET - 10 X 3.18 - PSA FOAM", "SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN"))
 
 
 class RefsAndPacking(unittest.TestCase):
