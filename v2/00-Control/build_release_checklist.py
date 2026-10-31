@@ -67,6 +67,8 @@ TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
 FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL", "joints": "JOINTS",
                "air": "CEILING (builds AIR, D-80)", "interior": "CEILING (builds INTERIOR, D-80)"}
 BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"
+ACP = re.compile(r"\bACP\b|aluminium composite", re.I)  # a flat ACP part counts under D-89 part (4) (D-100)
+JOINTS_KEYS = re.compile(r"^11121[1-4]$")  # the base corner and inline keys: made by the Joints Engineer (D-95)
 SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
 FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
 TABULATED = re.compile(r"\bTABULATED\b", re.I)
@@ -358,6 +360,7 @@ def flat_lacks(rows):
             re.search(r"\d+(?:\.\d+)?\s*mm\b", material))
         not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(process)})
         lacks = [n for n, ok in (
+            ("metal or ACP sheet (D-99, D-100)", bool(METAL.search(material) or ACP.search(material))),
             ("a cut by laser, waterjet or router in its process", bool(SHEET_CUT.search(process))),
             ("no bends or machined features (its process names %s)" % ", ".join(not_flat), not not_flat),
             ("material", bool(material)), ("thickness", thick), ("finish", bool(has(r"finish"))),
@@ -378,6 +381,8 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
     made, bought, last_unit, seen = [], [], {}, {}
     for r in parts:
         pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
+        if JOINTS_KEYS.match(pn or "") or any("/joints/" in p for k in ("CAD", "STEP") for p in by_pn.get(pn, {}).get(k, [])):
+            r = {**r, "team": "JOINTS"}  # made by the Joints Engineer, placed by reference (D-95)
         unit = src.rsplit("/", 1)[-1][:6]
         if r["make_buy"] == "assembly":
             last_unit[src] = pn
@@ -406,7 +411,9 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 flat = "yes" if listed or r.get("cut_rows") else "no"
             else:
                 flat = "n/a"
-            if by_pn.get(pn, {}).get("DWG"):
+            if any("WIRING-DIAGRAM" in d.rsplit("/", 1)[-1] for d in by_pn.get(pn, {}).get("DWG", [])):
+                dwg = "yes: its wiring diagram, routes and joints on sheet 3 (D-93)"
+            elif by_pn.get(pn, {}).get("DWG"):
                 dwg = "yes"
             elif pn in tab_cover:
                 dwg = f"on {tab_cover[pn]}, tabulated (D-89)"
@@ -539,6 +546,14 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
     if gap_count:
         out += ["", "What the open made numbers miss: " + ", ".join(f"{g} {n}" for g, n in
                                                                   sorted(gap_count.items(), key=lambda x: -x[1])) + "."]
+    no_fai = [r for r in um if not r["fai"]]
+    out += ["", "## Made parts with no FAI line", ""]
+    if no_fai:
+        out += [f"{len(no_fai)} made numbers have no line in the FAI plan (`v2/06-Verification/fai-plan.md`) yet:", "",
+                "| Team | Part | Name | From |", "|---|---|---|---|"]
+        out += [f"| {r['team']} | {r['part_number'] or '(no number)'} | {r['name']} | {', '.join(sorted(r['from']))} |" for r in no_fai]
+    else:
+        out += ["Every made number has at least one line in the FAI plan (`v2/06-Verification/fai-plan.md`)."]
     out += ["", "## Made parts and assemblies", ""]
     for t in teams:
         m = [r for r in made if r["team"] == t]
@@ -586,7 +601,10 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "every entity in its ENTITIES section counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, and a stored block only "
             "where an INSERT places it, its layer-0 shapes taking the INSERT's layer): "
             "a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing whatever the process says. "
-            "Assemblies always keep their drawings.",
+            "Assemblies always keep their drawings. Part (4) is for flat metal sheet and flat ACP (D-99, D-100): glass and other materials keep their drawings, and a routed-and-folded ACP part keeps its own through its groove and fold layers.",
+            "- ELECTRICAL's 710000 is drawn by its wiring diagram, whose sheet 3 holds the route and joint views (D-93).",
+            "- The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: "
+            "the Joints Engineer makes them and the teams place them by reference (D-95).",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
