@@ -13,7 +13,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 2. **88 bolts of the joints register, each captive in its part: 76 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (49.1 kg) and the fixed glass (28.8 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
-5. **Pictures:** the skeleton P04 renders below show where each part goes. Step pictures from the Fusion model follow as each part's CAD lands; Fusion runs wait while the Mac's screen is locked (PM, 2026-10-31).
+5. **Pictures:** each step with parts in the skeleton has a picture from the Fusion model (skeleton P04's part envelopes): the step's new parts solid, the parts fitted before faded. The four renders below show the whole pod. Pictures of the real parts replace the envelopes as each part's CAD merges.
 
 | Front, from the right and above | Back, from the left and above |
 |---|---|
@@ -61,6 +61,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 2. Base band
 
+![Step 2](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-02_IMG.png)
+
 - **Time:** about 8 min for 2 people.
 - **Parts:** **2-04** BASE - BAND ASSY - BACK (3.3 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.2 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.2 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.2 kg), **2-15** BASE - SMALL PARTS CARTON (1.6 kg).
 - **Fasteners:** the 6 corner keys hook in, no site bolts (J-BASE-02).
@@ -69,6 +71,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Band level within the spirit level's bubble; every corner key hooked home; the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.
 
 ### Step 3. Floor and threshold
+
+![Step 3](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-03_IMG.png)
 
 - **Time:** about 4 min for 2 people.
 - **Parts:** **1-01** BASE - FLOOR PANEL - F1 (8.7 kg), **1-02** BASE - FLOOR PANEL - F2 (8.7 kg), **2-08** BASE - DOOR THRESHOLD - 13 MM (1.2 kg).
@@ -79,6 +83,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 4. Lower back wall: B1, B2
 
+![Step 4](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png)
+
 - **Time:** about 4 min for 2 people.
 - **Parts:** **1-03** WALL - PANEL ASSY - BACK LOWER - LH (8.8 kg), **1-04** WALL - PANEL ASSY - BACK LOWER - RH (11.6 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
@@ -87,6 +93,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Both panels sit down on their stops; the B1-B2 gap looks even top to bottom (5.5 mm nominal).
 
 ### Step 5. Lower side walls: L1, R1
+
+![Step 5](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-05_IMG.png)
 
 - **Time:** about 4 min for 2 people.
 - **Parts:** **1-05** WALL - PANEL ASSY - SIDE LOWER - LH (11.2 kg), **1-06** WALL - PANEL ASSY - SIDE LOWER - RH (11.2 kg).
@@ -97,6 +105,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 6. Upper back wall: B3, B4
 
+![Step 6](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-06_IMG.png)
+
 - **Time:** about 4 min for 2 people.
 - **Parts:** **1-07** WALL - PANEL ASSY - BACK UPPER - LH (8.8 kg), **1-08** WALL - PANEL ASSY - BACK UPPER - RH (8.8 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 3 × 838002 M6 × 25 (J-WALL-03). Tool: the 5 mm hex key.
@@ -105,6 +115,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Seams closed; skins flush across the horizontal seam.
 
 ### Step 7. Upper side walls: L2, R2
+
+![Step 7](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-07_IMG.png)
 
 - **Time:** about 4 min for 2 people.
 - **Parts:** **1-09** WALL - PANEL ASSY - SIDE UPPER - LH (11.1 kg), **1-10** WALL - PANEL ASSY - SIDE UPPER - RH (11.1 kg).
@@ -115,6 +127,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 8. Ceiling: C1, C2
 
+![Step 8](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-08_IMG.png)
+
 - **Time:** about 10 min for 2 people.
 - **Parts:** **1-11** CEILING - PANEL ASSY - C1 (10.0 kg), **1-12** CEILING - PANEL ASSY - C2 (10.5 kg).
 - **Fasteners:** 4 × 838002 M6 × 25 (J-CEIL-02); 16 × 838001 M6 × 16 (J-CEIL-01). Tool: the 5 mm hex key.
@@ -123,6 +137,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Ceiling seams closed; the C1-C2 gap even (4.3 to 6.7 mm); all 6 upper corner bolts now tight.
 
 ### Step 9. Left decor block DL
+
+![Step 9](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-09_IMG.png)
 
 - **Time:** about 2 min for 2 people.
 - **Parts:** **2-09** FRONT - DECOR BLOCK - DL (10.0 kg).
@@ -133,6 +149,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 10. Fixed glass, then the right decor block DR
 
+![Step 10](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png)
+
 - **Time:** about 10 min for 2 people.
 - **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.8 kg), **2-03** FRONT - DECOR BLOCK - DR (18.6 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DR stands on its spigots on its support, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
@@ -142,6 +160,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ### Step 11. Door (before DT)
 
+![Step 11](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-11_IMG.png)
+
 - **Time:** about 7 min for 2 people.
 - **Parts:** **2-02** FRONT - DOOR UNIT (49.1 kg).
 - **Fasteners:** the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named).
@@ -150,6 +170,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub.
 
 ### Step 12. Top decor block DT, from above
+
+![Step 12](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-12_IMG.png)
 
 - **Time:** about 3 min for 2 people.
 - **Parts:** **2-12** FRONT - DECOR BLOCK - DT (7.1 kg).
@@ -168,6 +190,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Every seam connector latched before any cassette closes its bay.
 
 ### Step 14. Wall linings: 8 cassettes
+
+![Step 14](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png)
 
 - **Time:** about 8 min for 2 people.
 - **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (10.0 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (10.0 kg), **1-17** LINING - CASSETTE - BACK LOWER - LH (8.4 kg), **1-18** LINING - CASSETTE - BACK LOWER - RH (8.4 kg), **1-19** LINING - CASSETTE - BACK UPPER - LH (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - RH (8.4 kg).
@@ -204,6 +228,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Check before the next step:** Soffit underside at Z 2120, level; the fan box meets the roof sleeve; the door still clears.
 
 ### Step 18. Ceiling linings: 2 cassettes
+
+![Step 18](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-18_IMG.png)
 
 - **Time:** about 7 min for 2 people.
 - **Parts:** **2-20** LINING - CASSETTE - CEILING - COMMON (9.5 kg), **2-21** LINING - CASSETTE - CEILING - COMMON (9.5 kg).
