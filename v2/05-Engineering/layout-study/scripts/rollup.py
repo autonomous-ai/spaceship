@@ -116,6 +116,19 @@ def base_cad(path=BASE_LIST):
 
 
 BASE_CAD = base_cad()
+JOINTS_LIST = os.path.join(MANUF, "joints", "V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv")  # PR #139 (S45)
+
+
+def joints_cad(path=JOINTS_LIST):
+    """The joints' made hardware from its merged list (PR #139): the corner key family and the spigots and stop washers,
+    as (count per pod, kg each) by part number."""
+    import csv
+    with open(path, encoding="utf-8") as f:
+        return {r["part_number"]: (int(float(r["qty_per_pod"])), float(r["mass_each_kg"])) for r in csv.DictReader(f)}
+
+
+JOINTS = joints_cad()
+KEY_PNS = ("111211", "111212", "111213", "111214")            # the corner key family: square, front LH and RH, knee LH
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
 TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
@@ -302,9 +315,12 @@ def lines(**adopt):
                   "this study's model" + (f", {band_t:g} mm wall (D-81; BASE's check passed, D-86)" if thin else "")
                   + "; P03 lengths, P04's faceted front band is about 0.2 m shorter; BASE P02 models it"))
     key = base["B-KEY"]
-    L.append(("BASE", "Corner key", key.qty, (2 * bc["key_back"] + (key.qty - 2) * key.kg) / key.qty, "calculation (part CAD)",
-              f"part CAD on main: the 2 back keys from BASE parts list 111211 P01 ({bc['key_back']:.3f} kg); the "
-              f"{key.qty - 2} others this study's {key.kg:.2f} kg until BASE P02"))
+    keys = [JOINTS[pn] for pn in KEY_PNS]
+    n_keys = sum(q for q, _ in keys)
+    assert n_keys == key.qty, (n_keys, key.qty)
+    L.append(("BASE", "Corner key", key.qty, sum(q * kg for q, kg in keys) / n_keys, "calculation (CAD)",
+              "S45, CAD on main: the joints' made hardware list, the corner key family 111211 to 111214, 30 mm thick (3 square, "
+              "front LH and RH, knee LH)"))
     glide = base["B-GLIDE"]
     L.append(("BASE", glide.name.split(" - ", 1)[1].capitalize(), glide.qty, bc["glide"], "assumption (CAD, HOLD)",
               "S44, CAD on main: BASE parts list 118002 P01, a levelling glide on HOLD"))
@@ -364,7 +380,12 @@ def lines(**adopt):
               "budget (D-85) until it's designed: 1.5 mm folded aluminium, 1000 x 240 developed, plus 2 brackets (D-70)"
               if a["budgets"] else "allowance until it's designed: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70)"))
     pt = base["K-FIX"]
-    L.append(("WALL", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, "this study's model"))
+    (ns, ks), (nw, kw) = JOINTS["831001"], JOINTS["831002"]
+    L.append(("WALL", pt.name.split(" - ", 1)[1].capitalize() + ", spigots and stop washers", pt.qty,
+              pt.kg + ns * ks + nw * kw, "calculation (part CAD)",
+              f"part CAD on main: {ns} spigots 831001 and {nw} stop washers 831002 from the joints' made hardware list "
+              f"({ns * ks + nw * kw:.2f} kg, S45); the bolts, rivnuts, cam connectors and gaskets this study's model "
+              f"({pt.kg:.2f} kg) until the joints register gives their masses"))
     pt = base["E-VOICE-RESERVE"]
     if a["kit_outside"]:
         L.append(("LATER", "Voice cockpit kit reserve, outside the 420 kg cap", 1, pt.kg, pt.status,
@@ -412,9 +433,13 @@ def base_swaps():
     bc = BASE_CAD
     return [("Base band piece, back", 1, base["B-BAND-BACK"].dims[0] * 1e-3 * kgm, bc["band_back"], "BASE 111103 P01, PR #55"),
             ("Base band piece, side", 2, base["B-BAND-SIDE"].dims[0] * 1e-3 * kgm, bc["band_side"], "BASE 111101 P01, PR #55"),
-            ("Corner key, back", 2, base["B-KEY"].kg, bc["key_back"], "BASE 111211 P01, PR #55"),
+            ("Corner keys, the 30 mm family", 6, base["B-KEY"].kg, sum(q * kg for q, kg in (JOINTS[pn] for pn in KEY_PNS)) / 6,
+             "joints 111211 to 111214 P01, PR #139"),
             ("Glide load blocks (D-86's 0.4 kg), now glide doublers", 8, LOAD_BLOCKS_KG / 8, bc["doubler"],
-             "BASE 111601 P01, PR #55"),
+             "BASE 111601 P01, PRs #55 and #138"),
+            ("Spigots and stop washers (not in this study's fixings kit)", 1, 0.0,
+             JOINTS["831001"][0] * JOINTS["831001"][1] + JOINTS["831002"][0] * JOINTS["831002"][1],
+             "joints 831001 and 831002 P01, PR #139"),
             ("Floor panel", 2, plate_kg(fa, FLOOR_T, FLOOR_RHO_LIGHT) + fa * 0.3, bc["floor"], "BASE 111401 P01, PR #55"),
             ("Floor mat", 1, FOAM_KG, 2 * bc["mat"], "BASE 111501 P01, PR #55")]
 

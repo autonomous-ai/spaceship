@@ -162,11 +162,14 @@ def test_cad_masses_from_main():
     fl = next(r for k, r in rows.items() if k.startswith("Floor panels, 9 mm"))
     assert abs(fl[3] - b["floor"]) < 1e-9 and rollup.basis(fl) == "CAD, main", fl
     key = rows["Corner key"]
-    assert rollup.basis(key) == "CAD, main (part)", key
+    assert rollup.basis(key) == "CAD, main", key
+    assert abs(key[2] * key[3] - sum(q * kg for q, kg in (rollup.JOINTS[pn] for pn in rollup.KEY_PNS))) < 1e-9, key
+    hw = next(r for k, r in rows.items() if k.startswith("M6 bolts, rivnuts"))
+    assert rollup.basis(hw) == "CAD, main (part)", hw
     fx = next(r for k, r in rows.items() if k.startswith("Fixed glass unit 360002"))
     f = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_FIXED_LIST) if r["pn"]}
     assert abs(fx[3] - f["360002"]) < 1e-9 and rollup.basis(fx) == "CAD, main", fx
-    assert len(rollup.cad_swaps()) == 10
+    assert len(rollup.cad_swaps()) == 11
 
 
 def test_rollup_items_the_packing_plan_reads():
