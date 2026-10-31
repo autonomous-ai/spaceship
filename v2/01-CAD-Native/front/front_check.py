@@ -34,6 +34,17 @@ GAPS = [
     ("door leaf to the fixed pane", "DOOR LEAF GLASS 4+4", "FIXED GLASS 4+4"),
     ("kick strip to the fixed glass channel", "KICK STRIP", "GLAZING U-PROFILE"),
     ("door leaf to DR's skin", "DOOR LEAF GLASS 4+4", "DR SKIN ACP 3"),
+    ("door leaf top to DT's skin (the catch gap, 6 by ruling)", "DOOR LEAF GLASS 4+4", "DT SKIN ACP 3"),
+    ("catch to the strike (0 = the door stop touches)", "CATCH HT-MSG62", "CATCH STRIKE HT-MSG62"),
+    ("catch to the door leaf", "CATCH HT-MSG62", "DOOR LEAF GLASS 4+4"),
+    ("top seal to the door leaf (0 = sealing)", "FRAME-STOP SEAL PS 1515 - TOP", "DOOR LEAF GLASS 4+4"),
+    ("hinge-side seal to the door leaf (0 = sealing)", "FRAME-STOP SEAL PS 1515 - HINGE SIDE", "DOOR LEAF GLASS 4+4"),
+    ("hinge-side stop to the hinge spaces", "HINGE-SIDE STOP", "HOLD HINGE SPACE"),
+    ("DL's skin to the hinge spaces (pocket clearance)", "DL SKIN ACP 3", "HOLD HINGE SPACE"),
+    ("door leaf to DL's skin", "DOOR LEAF GLASS 4+4", "DL SKIN ACP 3"),
+    ("fixed glass channel to DT's skin (slot clearance)", "GLAZING U-PROFILE", "DT SKIN ACP 3"),
+    ("fixed pane to DT's skin", "FIXED GLASS 4+4", "DT SKIN ACP 3"),
+    ("pull spaces to DR's skin", "HOLD PULL SPACE", "DR SKIN ACP 3"),
 ]
 
 # the soffit (CEILING), D-60 air table: X -1169 to 1169, Y -645 to -285, Z 2120 to 2340 (source)
