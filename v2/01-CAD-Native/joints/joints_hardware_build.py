@@ -24,8 +24,9 @@ Each design is saved, exported (.f3d to v2/01-CAD-Native/joints/, STEP and DXF t
 v2/03-Manufacturing/joints/), edit-tested (guideline 4.4: change a driving
 parameter, rebuild, measure, revert, measure) and closed without keeping the test.
 An error raises, so Fusion rolls the run back; a design already saved stays, and
---arg only=... reruns the rest. It refuses to create anything if a design of the
-same name exists or any entry of its folder can't be read.
+--arg only=... reruns the rest. Before making each design it runs the shared safe-to-create
+check (tools/fusion/fusion_folder.py): a name already there, or an unreadable entry that could
+be the new file, stops it.
 
 Sign of cut_angle: in the key's frame (x along the carrier toward the joint, z up,
 y = z cross x) a positive angle makes the key longer on its +y side; the long side
@@ -133,28 +134,24 @@ def folder(app):
     return parent.dataFolders.itemByName(FOLDER) or parent.dataFolders.add(FOLDER)
 
 
-def names_in(f):
-    names, unreadable = [], 0
-    for i in range(f.dataFiles.count):
-        try:
-            names.append(f.dataFiles.item(i).name)
-        except Exception:
-            unreadable += 1
-    return names, unreadable
+def _safe_to_create():
+    """The shared check (tools/fusion/fusion_folder.py, #121): run_script.py gives it to every run;
+    a runner queued before #121 doesn't, so it is then loaded from this checkout."""
+    try:
+        from fusion_folder import safe_to_create
+        return safe_to_create
+    except ImportError:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("fusion_folder", os.path.join(REPO, "tools/fusion/fusion_folder.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod.safe_to_create
 
 
 def new_design(app, name):
     f = folder(app)
-    for attempt in range(3):
-        names, unreadable = names_in(f)
-        if not unreadable:
-            break
-        adsk.doEvents()
-        time.sleep(2)
-    if unreadable:
-        raise RuntimeError("%d entries of %s/%s can't be read: not creating %s" % (unreadable, PARENT, FOLDER, name))
-    if name in names:
-        raise RuntimeError("%s already exists in %s/%s" % (name, PARENT, FOLDER))
+    for w in _safe_to_create()(f, name, "f3d"):        # raises if a new NAME.f3d isn't safe to make
+        print("  warning: %s" % w)
     doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     design = adsk.fusion.Design.cast(app.activeProduct)
     design.designType = adsk.fusion.DesignTypes.ParametricDesignType
