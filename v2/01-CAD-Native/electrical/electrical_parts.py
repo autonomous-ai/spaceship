@@ -505,7 +505,7 @@ for key, pn, name, vi, qty, note in (
 part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Điện - vòng đệm luồn dây", "PI", "710000", 8,
      "nylon 6/6 UL94 V-2", "black, as supplied", 0.001, "assumption", maker="Heyco", sku="2836 (SB 750-625, black)",
      status=HOLD_BUY, source=HEYCO,
-     note="every hole through a sheet: G-PU-TOP, G-B2-B4 x 2, FX-CEIL, G-CEIL-B, G-CEIL-F (0.5 mm steel), G-DR (DR's back "
+     note="the panel hole is Ø19.1 (WALL and CEILING cut 19.1 for it; PM 2026-10-31). Every hole through a sheet: G-PU-TOP, G-B2-B4 x 2, FX-CEIL, G-CEIL-B, G-CEIL-F (0.5 mm steel), G-DR (DR's back "
           "plate, 1.0-2.7 mm, FRONT HOLD-10), G-SOFFIT (the soffit's casing). Panels to 1.6 mm, passes 15.9: the 0.5 mm fit and "
           "a thicker-panel bushing for G-DR or G-SOFFIT if over 1.6 mm are HOLD H-ELE-01. Felt-only holes take none: no steel edge")
 part("edge", "718042", "ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET", "Điện - nẹp bảo vệ mép tôn", "PI", "710000", 0.32,
