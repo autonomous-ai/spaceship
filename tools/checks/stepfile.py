@@ -253,6 +253,7 @@ class Solid:
         self.bends = []
         self.box = None
         self.thickness = None     # most common distance between parallel opposite planes
+        self.voids = 0            # sealed inner shells (BREP_WITH_VOIDS): noted, not used for boxes or features
 
     def points(self):
         for f in self.faces:
@@ -487,10 +488,19 @@ class StepFile:
         if n == "MANIFOLD_SOLID_BREP":
             shells = [a[1]]
         elif n == "BREP_WITH_VOIDS":
-            shells = [a[1]] + list(a[2] or [])
+            # a solid with a sealed void inside (an inner shell, valid STEP): its outer shell gives the box, the
+            # faces, the holes and the clashes; the void is only counted (an ORIENTED_CLOSED_SHELL, whose face list
+            # is derived, '*')
+            shells = [a[1]]
+            s.voids = len([v for v in (a[2] if len(a) > 2 and isinstance(a[2], list) else []) if v is not None])
         for sh in shells:
+            if not isinstance(sh, Ref):
+                continue
             _sn, sa = self.first(sh)
-            for fref in (sa[1] if sa else []):
+            faces = sa[1] if sa and len(sa) > 1 and isinstance(sa[1], list) else []
+            for fref in faces:
+                if not isinstance(fref, Ref):
+                    continue
                 f = self._face(fref)
                 if f is not None:
                     s.faces.append(f)
