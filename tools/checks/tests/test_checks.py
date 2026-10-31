@@ -1027,11 +1027,16 @@ def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
         assert bool(fs) == flagged, name
 
 
-def test_the_assembled_shell_waits_for_every_shell_assembly_and_reports_an_l_as_its_strips():
-    wall = _B("210102 WALL - SKIN - RH", (1204.0, -642.7, 112.3, 1250.0, 850.0, 2400.0), "211302")
-    assert not c_geometry.shell_ready("assembly", [wall, _B("c", (0, 0, 0, 1, 1, 1), "411301")])
-    every = [_B(pn, (0, 0, 0, 1, 1, 1), pn) for pn in ("111101", "211101", "351101", "361001", "411301")]
-    assert c_geometry.shell_ready("assembly", every)
-    # the right face: the skin leaves a thin strip at the bottom (no band yet) and at the front edge (no DR yet)
-    gaps = [g for g in c_geometry.shell_gaps([wall]) if g["zone"] == "right"]
+def test_the_assembled_shell_is_checked_face_by_face_once_its_parts_are_on_main():
+    lo = _B("210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_CAD:1 / 210102 WALL - PANEL ASSY - SIDE LOWER - RH:1 / SKIN",
+            (1204.0, -642.7, 112.3, 1250.0, 850.0, 1255.0), "211302")
+    up = _B("210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_CAD:1 / 210104 WALL - PANEL ASSY - SIDE UPPER - RH:1 / SKIN",
+            (1204.0, -642.7, 1257.3, 1250.0, 850.0, 2400.0), "211304")
+    dr = _B("350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350003 FRONT - DECOR BLOCK ASSY - DR:1 / BODY",
+            (950.0, -850.0, 110.0, 1250.0, -645.0, 2400.0), "351301")
+    assert "right" not in c_geometry.shell_faces_ready("assembly", [lo, up])        # DR not on main yet
+    assert "right" in c_geometry.shell_faces_ready("assembly", [lo, up, dr])
+    assert "back" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr])      # no back walls yet
+    # an L of thin strips (no band below, no decor at the front edge) reports as its two strips
+    gaps = [g for g in c_geometry.shell_gaps([lo, up]) if g["zone"] == "right"]
     assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 5 for g in gaps)

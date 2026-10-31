@@ -172,7 +172,7 @@ def _components(rects):
     return groups
 
 
-def shell_gaps(bodies, inset=1.0, seam=SEAM_GAP, root=None):
+def shell_gaps(bodies, inset=1.0, seam=SEAM_GAP, root=None, faces=None):
     """Open regions on the pod's outer faces. Each body's box, where it
     reaches 1 mm inside a face, is grown by just over half a seam in the
     face's plane, so a decided 2.26 mm seam closes and anything wider stays
@@ -185,6 +185,8 @@ def shell_gaps(bodies, inset=1.0, seam=SEAM_GAP, root=None):
     for zone, ax, val, sign, (aa, a0, a1), (bb, b0, b1), needs in SHELL_ZONES:
         if needs and not (root and _glob_exists(root, needs)):
             continue
+        if faces is not None and zone not in faces:
+            continue                # its parts aren't all on main yet
         plane = val + sign * inset
         face_bodies = [b for b in bodies if b.box[ax] - 1e-6 <= plane <= b.box[ax + 3] + 1e-6]
         open_ = [(a0, a1, b0, b1)]
@@ -216,24 +218,42 @@ def _glob_exists(root, pattern):
     return any(fnmatch.fnmatch(f, os.path.basename(pattern)) for f in os.listdir(d))
 
 
-# the outer shell is checked once every assembly that covers it is on main: BASE, WALL, the FRONT decor and the
-# door with its glass, and CEILING. Before that, an "opening" is mostly a part not merged yet (the back walls, a band,
-# a decor block), not a gap in what is there; the seams between parts that are there are the gap rules' job.
-FAMILIES_FOR_SHELL = ("11", "21", "35", "36", "41")
+# the assembled shell is checked face by face, once the parts that cover a face are all on main: before that, an
+# "opening" there is mostly a part not merged yet (the back walls, a band, a decor block), not a gap in what is there.
+# Each face lists the parts it needs, by the words in their names; the seams between parts already there are the
+# gap rules' job. The skeleton is complete and is always checked.
+SHELL_FACE_NEEDS = {
+    "back": (r"PANEL ASSY\W+BACK LOWER\W+LH", r"PANEL ASSY\W+BACK LOWER\W+RH", r"PANEL ASSY\W+BACK UPPER\W+LH",
+             r"PANEL ASSY\W+BACK UPPER\W+RH", r"CEILING\W+PANEL ASSY"),
+    "left": (r"PANEL ASSY\W+SIDE LOWER\W+LH", r"PANEL ASSY\W+SIDE UPPER\W+LH", r"DECOR BLOCK\W+(ASSY\W+)?DL\b"),
+    "right": (r"PANEL ASSY\W+SIDE LOWER\W+RH", r"PANEL ASSY\W+SIDE UPPER\W+RH", r"DECOR BLOCK\W+(ASSY\W+)?DR\b"),
+    "top": (r"CEILING\W+PANEL ASSY\W+C1\b", r"CEILING\W+PANEL ASSY\W+C2\b", r"DECOR BLOCK\W+(ASSY\W+)?DT\b"),
+    # the back corners of the base are the side bands' ends, so each base face needs the bands that meet it
+    "back-base": (r"BAND\W+(ASSY\W+)?BACK", r"BAND\W+(ASSY\W+)?SIDE\W+LH", r"BAND\W+(ASSY\W+)?SIDE\W+RH"),
+    "left-base": (r"BAND\W+(ASSY\W+)?SIDE\W+LH", r"BAND\W+(ASSY\W+)?BACK"),
+    "right-base": (r"BAND\W+(ASSY\W+)?SIDE\W+RH", r"BAND\W+(ASSY\W+)?BACK"),
+}
+
+
+def shell_faces_ready(mdl, bodies):
+    """The shell faces whose parts are all on main (every face for the skeleton)."""
+    zones = [z[0] for z in SHELL_ZONES]
+    if mdl == "skeleton":
+        return set(zones)
+    labels = [b.label.upper() for b in bodies]
+    return {z for z in zones if all(any(re.search(p, l) for l in labels) for p in SHELL_FACE_NEEDS.get(z, ()))}
 
 
 def shell_ready(mdl, bodies):
-    if mdl == "skeleton":
-        return True
-    have = {(b.part_number or "")[:2] for b in bodies}
-    return all(f in have for f in FAMILIES_FOR_SHELL)
+    return bool(shell_faces_ready(mdl, bodies))
 
 
 def check_shell(root, mdl, bodies):
     fs = []
-    if not shell_ready(mdl, bodies):
+    faces = shell_faces_ready(mdl, bodies)
+    if not faces:
         return fs
-    for g in shell_gaps(bodies, root=root):
+    for g in shell_gaps(bodies, root=root, faces=faces):
         an, bn = g["axes"]
         (a0, a1), (b0, b1) = g["a"], g["b"]
         fs.append(Finding(
@@ -243,9 +263,18 @@ def check_shell(root, mdl, bodies):
             "(a slot %.0f x %.0f mm). Bordered by: %s. Checked exactly, 1 mm inside the face, bodies "
             "as their boxes." % (g["zone"], mdl, an, a0, a1, bn, b0, b1, a1 - a0, b1 - b0,
                                ", ".join(g["near"]) or "nothing"),
-            "Close it: extend the bordering panels to meet, or add the part that belongs there.",
-            _file_of(bodies), owner_for(_file_of(bodies)), {"model": mdl, "near": g["near"]}))
+            "Close it: extend the bordering panels to meet, or add the part that belongs there (a bought part that "
+            "closes it, like an end cap, needs its body in the CAD, an ENVELOPE if the product is HOLD).",
+            _near_file(bodies, g["near"]) or _file_of(bodies), owner_for(_near_file(bodies, g["near"]) or _file_of(bodies)),
+            # the scope is the face, so a run that skips a face (its parts not on main) can't close what it found
+            {"model": mdl if mdl == "skeleton" else "%s-%s" % (mdl, g["zone"]), "near": g["near"]}))
     return fs
+
+
+def _near_file(bodies, near):
+    """The one STEP file the bodies bordering an opening come from, or '' when they come from several."""
+    files = sorted({b.file for b in bodies if b.label.split(" / ")[-1] in set(near or ())})
+    return files[0] if len(files) == 1 else ""
 
 
 def _file_of(bodies):
