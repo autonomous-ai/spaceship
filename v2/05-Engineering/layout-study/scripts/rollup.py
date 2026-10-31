@@ -54,7 +54,8 @@ def read_parts_list(path):
             if not kg and each:
                 kg = float(each) * float(r.get("qty") or 1)
             out.append(dict(level=int(r.get("level") or 0), pn=(r.get("part_number") or "").strip(), name=r.get("name", ""),
-                            material=r.get("material", ""), qty=float(r.get("qty") or 0), kg=float(kg or 0)))
+                            material=r.get("material", ""), qty=float(r.get("qty") or r.get("qty_per_parent") or 0),
+                            kg=float(kg or 0), each=float(each or 0)))
     return out
 
 
@@ -88,6 +89,23 @@ def front_door_cad(path=FRONT_DOOR_LIST):
 
 
 FRONT_DOOR = front_door_cad()
+BASE_LIST = os.path.join(MANUF, "base", "110000_P01_BASE_BOM.csv")                           # PR #55 (S44)
+
+
+def base_cad(path=BASE_LIST):
+    """BASE's P01 sample from its merged parts list (PR #55): the back-left corner and F1, unit masses by part number. The
+    right side band and F2 are taken as the mirrors of the left side band and F1; the front bands and front corner keys
+    come in BASE P02."""
+    by = {}
+    for r in read_parts_list(path):
+        if r["pn"] and r["pn"] not in by:
+            by[r["pn"]] = r
+    return dict(band_side=by["111101"]["each"], band_back=by["111103"]["each"], key_back=by["111211"]["each"],
+                doubler=by["111601"]["each"], glide=by["118002"]["each"], floor=by["111401"]["each"],
+                mat=by["111501"]["each"])
+
+
+BASE_CAD = base_cad()
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
 TARGET_KG = 410.0       # confirmed: D-81's target for the pod as shipped (S40)
@@ -258,30 +276,43 @@ def lines(**adopt):
                   "allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, D-81)"))
     kgm_band = al_rhs(100, 40, band_t)
     thin = band_t != p("t_al_base")
-    for pid in ("B-BAND-BACK", "B-BAND-SIDE", "B-BAND-FRONT-L", "B-BAND-FRONT-R"):
+    bc = BASE_CAD
+    scale = kgm_band / al_rhs(100, 40, BAND_T_LIGHT)           # BASE's tubes are 1.5 mm; a 2.0 mm wall scales them
+    for pid, cad, pn in (("B-BAND-BACK", bc["band_back"], "111103"), ("B-BAND-SIDE", bc["band_side"], "111101")):
+        pt = base[pid]
+        L.append(("BASE", f"{pt.name.split(' - ', 1)[1].capitalize()}, {band_t:g} mm wall", pt.qty, cad * scale,
+                  "calculation (CAD)" + ("; confirmed (1.5 mm)" if thin else ""),
+                  f"S44, CAD on main: BASE parts list {pn} P01" + (" (the right side as the left's mirror)" if pn == "111101" else "")
+                  + ("" if thin else f", scaled to a {band_t:g} mm wall") + "; its hardware stays in the fixings kit's line"))
+    for pid in ("B-BAND-FRONT-L", "B-BAND-FRONT-R"):
         pt = base[pid]
         L.append(("BASE", f"{pt.name.split(' - ', 1)[1].capitalize()}, {band_t:g} mm wall", pt.qty, pt.dims[0] * 1e-3 * kgm_band,
                   "calculation" + ("; confirmed (1.5 mm)" if thin else ""),
                   "this study's model" + (f", {band_t:g} mm wall (D-81; BASE's check passed, D-86)" if thin else "")
-                  + "; P03 lengths, P04's faceted front band is about 0.2 m shorter"))
-    for pid, note in (("B-KEY", "this study's model"), ("B-GLIDE", "this study's model"),
-                      ("B-THRESH", "this study's model (D-72's 13 mm profile isn't modelled yet)")):
-        pt = base[pid]
-        L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, note))
+                  + "; P03 lengths, P04's faceted front band is about 0.2 m shorter; BASE P02 models it"))
+    key = base["B-KEY"]
+    L.append(("BASE", "Corner key", key.qty, (2 * bc["key_back"] + (key.qty - 2) * key.kg) / key.qty, "calculation (part CAD)",
+              f"part CAD on main: the 2 back keys from BASE parts list 111211 P01 ({bc['key_back']:.3f} kg); the "
+              f"{key.qty - 2} others this study's {key.kg:.2f} kg until BASE P02"))
+    glide = base["B-GLIDE"]
+    L.append(("BASE", glide.name.split(" - ", 1)[1].capitalize(), glide.qty, bc["glide"], "assumption (CAD, HOLD)",
+              "S44, CAD on main: BASE parts list 118002 P01, a levelling glide on HOLD"))
+    thr = base["B-THRESH"]
+    L.append(("BASE", thr.name.split(" - ", 1)[1].capitalize(), thr.qty, thr.kg, thr.status,
+              "this study's model (D-72's 13 mm profile isn't modelled yet)"))
     if thin:
-        L.append(("BASE", "Glide load blocks, aluminium, one inside the band at each glide", 1, LOAD_BLOCKS_KG, "calculation",
-                  "D-86 (S42): about 0.4 kg per pod, BASE's calculation; they carry each glide into both side walls"))
+        L.append(("BASE", "Glide load blocks: BASE's glide doublers, one at each glide", 1, glide.qty * bc["doubler"],
+                  "calculation (CAD)", f"S44, CAD on main: BASE parts list 111601 P01, {glide.qty} x {bc['doubler']:.4f} kg, a "
+                  "52 x 36 x 3 aluminium doubler inside the band at each glide (D-86's load block); one line, as the packing "
+                  "plan shares it out by glide"))
     fa = P04["floor_w"] * P04["floor_d"] * 1e-6
-    if a["floor"]:
-        L.append(("BASE", "Floor panels, 9 mm plywood with a 0.3 kg/m2 finish", 2,
-                  plate_kg(fa, FLOOR_T, FLOOR_RHO_LIGHT) + fa * 0.3, "confirmed (9 mm, poplar core); calculation",
-                  "D-72 (S39) at the P04 size (S33); poplar-core plywood with a hard face veneer, about 450 kg/m3 "
-                  "(D-85, D-86; BASE: about 0.6 mm at a panel edge under 1000 N); the castor and edge tests on the sample "
-                  "are planned"))
-    else:
-        L.append(("BASE", "Floor panels, 9 mm plywood with a 0.3 kg/m2 finish", 2, plate_kg(fa, FLOOR_T, p("rho_ply")) + fa * 0.3,
-                  "confirmed (9 mm); calculation", "D-72 (S39) at the P04 size (S33); plywood 600 kg/m3 (S13)"))
-    L.append(("BASE", "Floor mat, 3 mm firm closed-cell foam", 1, FOAM_KG, "calculation", "D-76 (S39), BASE Engineer"))
+    L.append(("BASE", "Floor panels, 9 mm poplar-core plywood with a hard face veneer", 2,
+              bc["floor"] + (0.0 if a["floor"] else plate_kg(fa, FLOOR_T, p("rho_ply") - FLOOR_RHO_LIGHT)),
+              "confirmed (9 mm, poplar core); calculation (CAD)",
+              "S44, CAD on main: BASE parts list 111401 P01 (F2 as F1's mirror), D-85, D-86; the castor and edge tests on the "
+              "sample are planned" + ("" if a["floor"] else "; + 600 kg/m3 plywood's extra")))
+    L.append(("BASE", "Floor mat, 3 mm firm closed-cell foam", 1, 2 * bc["mat"], "calculation (CAD)",
+              "S44, CAD on main: BASE parts list 111501 P01 under F1, and F2's the same (D-76)"))
     for pid in ("F-DL", "F-DR", "F-DT"):
         pt = base[pid]
         L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status,
@@ -333,6 +364,8 @@ def lines(**adopt):
 def basis(row):
     """Where a line's mass comes from: CAD merged on main, CAD in a team's open PR, or this study's estimate."""
     _g, _item, _q, _kg, st, src = row
+    if src.startswith("part CAD on main"):
+        return "CAD, main (part)"
     if "CAD on main" in src:
         return "CAD, main"
     if "(CAD)" in st or "(ELECTRICAL)" in st:
@@ -353,7 +386,22 @@ def cad_swaps():
              "WALL 210101 P01, PR #41"),
             ("Wall cassette, side, lower", 2, cass_est, rows["Wall cassette, side, lower"][3], "WALL 510101 P01, PR #41"),
             ("Door unit 360001", 1, DOOR_UNIT_DRAFT - (KICK_KG - KICK_KG_HOLLOW), door[3],
-             "FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip)")]
+             "FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip)")] + base_swaps()
+
+
+def base_swaps():
+    """BASE's swaps (PR #55): (line, qty, this study's estimate kg each, CAD kg each, source)."""
+    base = {pt.pid: pt for pt in base_parts()}
+    kgm = al_rhs(100, 40, BAND_T_LIGHT)
+    fa = P04["floor_w"] * P04["floor_d"] * 1e-6
+    bc = BASE_CAD
+    return [("Base band piece, back", 1, base["B-BAND-BACK"].dims[0] * 1e-3 * kgm, bc["band_back"], "BASE 111103 P01, PR #55"),
+            ("Base band piece, side", 2, base["B-BAND-SIDE"].dims[0] * 1e-3 * kgm, bc["band_side"], "BASE 111101 P01, PR #55"),
+            ("Corner key, back", 2, base["B-KEY"].kg, bc["key_back"], "BASE 111211 P01, PR #55"),
+            ("Glide load blocks (D-86's 0.4 kg), now glide doublers", 8, LOAD_BLOCKS_KG / 8, bc["doubler"],
+             "BASE 111601 P01, PR #55"),
+            ("Floor panel", 2, plate_kg(fa, FLOOR_T, FLOOR_RHO_LIGHT) + fa * 0.3, bc["floor"], "BASE 111401 P01, PR #55"),
+            ("Floor mat", 1, FOAM_KG, 2 * bc["mat"], "BASE 111501 P01, PR #55")]
 
 
 def pod_kg(rows=None):
@@ -537,9 +585,9 @@ def rollup_md(rows):
         md.append(f"| {line} | {q} | {est:.2f} | {cad:.2f} | {cad - est:+.2f} | {src} |")
     md.append(f"| **In all** | | | | **{sum(q * (cad - est) for _l, q, est, cad, _s in sw):+.2f}** | |")
     md.append("")
-    n = {b: sum(1 for r in rows if basis(r) == b) for b in ("CAD, main", "CAD, open PR", "estimate")}
-    md.append(f"Lines by basis: {n['CAD, main']} from CAD on main, {n['CAD, open PR']} from CAD in a team's open PR, "
-              f"{n['estimate']} estimated.")
+    n = {b: sum(1 for r in rows if basis(r) == b) for b in ("CAD, main", "CAD, main (part)", "CAD, open PR", "estimate")}
+    md.append(f"Lines by basis: {n['CAD, main']} from CAD on main, {n['CAD, main (part)']} partly, {n['CAD, open PR']} from "
+              f"CAD in a team's open PR, {n['estimate']} estimated.")
     md.append("")
     md.append("## Every line")
     md.append("")
