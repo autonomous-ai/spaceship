@@ -1,17 +1,17 @@
-# Mechanical check run: c9ae2a4 on 2026-10-31
+# Mechanical check run: 0cb764f on 2026-10-31
 
-Offline checks (`tools/checks/run_checks.py`) on revision `c9ae2a4`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `0cb764f`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 6** (3 severe, 3 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 1** (0 severe, 1 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
 | Check | Ran on this revision | Findings |
 |---|---|---|
-| C01 clash and minimum gaps (Fusion) | yes | 1 |
-| C02 tolerance stack-ups | yes | 3 |
+| C01 clash and minimum gaps (Fusion) | yes | 0 |
+| C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
-| C04 weight, doorway and pallet fit | yes | 2 |
+| C04 weight, doorway and pallet fit | yes | 1 |
 | C05 drawing completeness | no inputs yet | 0 |
 | C06 BOM completeness | no inputs yet | 0 |
 | C07 fastener schedule and thread engagement | no inputs yet | 0 |
@@ -20,18 +20,13 @@ Offline checks (`tools/checks/run_checks.py`) on revision `c9ae2a4`. The Fusion 
 | C10 mixed metals | no inputs yet | 0 |
 | C11 material grade and finish | no inputs yet | 0 |
 
-Inputs: {"bodies_skeleton": 32, "bodies_assembly": 0, "parts_lists": [], "part_steps": []}
+Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": [], "part_steps": []}
 
 ## Findings
 
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
-| F-004 | severe | C01 | skeleton shell back X -1207..1207 Z 2319..2357 | The outer shell is open on the back face of the skeleton: nothing covers X -1207 to 1207, Z 2319 to 2357 (a slot 2414 x 38 mm). Bordered by: B3 ENVELOPE, B4 ENVELOPE, C1 ENVELOPE, C2 ENVELOPE, L2 ENVELOPE, R2 ENVELOPE. Checked 1 mm inside the face on a 5 mm grid, bodies as their boxes. | Fusion Engineer 2 |
-| F-001 | severe | C02 | skeleton SEAM-GAPS | SEAM-BACK-CENTRE: B1 ENVELOPE to B2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-BACK-CORNER-L: L1 ENVELOPE to B1 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-BACK-CORNER-R: R1 ENVELOPE to B2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-CEILING-CENTRE: C1 ENVELOPE to C2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-CEILING-SIDE: C1 ENVELOPE to L2 ENVELOPE is 0.0 mm, needs at least 1 mm. Rule source: assumption: 1.0 mm stands in until the joints register gives the compressed gasket thickness. Why: IF-04 asks for a seam gasket between B1 and B2 (and B3, B4); a gasket needs a gap of at least its compressed thickness, and frames cut to plus tolerance must still fit | Joints Engineer; Fusion Engineer 2 |
-| F-002 | severe | C02 | skeleton KICK-OVER-THRESHOLD | KICK-OVER-THRESHOLD: KICK ENVELOPE to THRESHOLD ENVELOPE is 0.0 mm, needs at least 7 mm. Rule source: confirmed: FRONT's 7 mm floor gap for the drop seal, approved by the PM in the FRONT group on 2026-10-31. Why: The door swings over the threshold; with no running gap it rubs, and the drop seal needs the gap to close | FRONT; Fusion Engineer 2 |
-| F-005 | major | C02 | skeleton SEAM-GAPS-HORIZONTAL | SEAM-SIDE-HORIZONTAL: L1 ENVELOPE to L2 ENVELOPE is 0.0 mm, needs at least 1 mm; SEAM-BACK-HORIZONTAL: B1 ENVELOPE to B3 ENVELOPE is 0.0 mm, needs at least 1 mm. Rule source: assumption: as SEAM-BACK-CENTRE. Why: IF-04 asks for a seam gasket between the lower and upper side panels; under the upper panel's weight it needs its compressed thickness or a groove | Joints Engineer; Fusion Engineer 2 |
-| F-007 | major | C04 | F-HW | F-HW FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS (2200 x 120 x 60 mm) doesn't fit the 48x40 pallet it ships on (1219 x 1016, at most 1679 tall loaded above a 150 mm deck); it fits the 48x96 pallet. | Layout Engineer |
-| F-010 | major | C04 | POD total mass | The pod is about 438.7 kg against the 420 kg cap (D-37, D-54): 18.7 kg over. The layout study's list gives 426.7 kg (v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv); adjustments since: +12.0 kg AIR-D60 (calculation, Air Engineer, passed on by the PM on 2026-10-31). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
+| F-010 | major | C04 | POD total mass | The pod is about 442.1 kg against the 420 kg cap (D-37, D-54): 22.1 kg over. The layout study's list gives 426.7 kg (v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv); adjustments since: +12.0 kg AIR-D60 (calculation, Air Engineer, passed on by the PM on 2026-10-31); +3.4 kg WALL-TRAY-LIPS (confirmed, PM ruling in the WALL group, 2026-10-31). Open against the cap until the wall sample settles it (ISS-080). | PM (Lead) |
 
 ## Tolerance stacks (C02)
 
@@ -39,7 +34,7 @@ Inputs: {"bodies_skeleton": 32, "bodies_assembly": 0, "parts_lists": [], "part_s
 |---|---|---|---|---|---|---|---|---|
 | ST-01 | IF-02 door to threshold | Running gap between the door's kick strip and the threshold | 3.0 to 10.0 | 0.00 | 0.00 to 0.00 | 0.00 to 0.00 | OPEN | Door bottom height (glass bottom); Kick strip height below the glass; Threshold height; Floor height under the threshold |
 | ST-02 | IF-03 and IF-04 back wall across its width | Gasket room left across the back wall: the space between the side frames less two back panels and three seams | >= 0.0 | 0.00 | 0.00 to 0.00 | 0.00 to 0.00 | OPEN | Space between the side frames; Back panel B1 width; Back panel B2 width; Three seam gaskets compressed |
-| ST-03 | IF-01 IF-03 IF-04 IF-05 M6 bolt into a rivnut through a clearance hole | Radial clearance left for an M6 bolt after both hole positions and the locating feature's play (fixed-fastener case) | >= 0.0 | 0.31 | 0.25 to 0.31 | 0.25 to 0.31 | OPEN | Clearance hole position (radial); Rivnut position (radial) |
+| ST-03 | IF-01 IF-03 IF-04 IF-05 M6 bolt into a rivnut through a clearance hole | Radial clearance left for an M6 bolt after both hole positions and the rivnut's float (fixed-fastener case; the panel shifts to the bolts within the spigot play) | >= 0.0 | 0.51 | 0.05 to 0.51 | 0.14 to 0.43 | PASS |  |
 
 ## Shipping pieces (C04), from `v2/05-Engineering/layout-study/out/parts-option-B1-final-stack.csv`
 

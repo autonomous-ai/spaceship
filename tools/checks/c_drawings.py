@@ -89,7 +89,7 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None):
         r_where = rel(root, where) if where else ""
         owner = owner_for(r_where, pn)
         label = ("%s %s" % (pn, names.get(pn, ""))).strip()
-        soft = re.search(r"FILL|FELT|GASKET|SEAL|TAPE|FOAM", names.get(pn, ""), re.I)
+        soft = re.search(r"\b(FILL|FELT|GASKET|SEAL|TAPE|FOAM)\b", names.get(pn, ""), re.I)
         if not pdfs and soft and (files.get("DXF") or _in_cut_list(root, pn)):
             continue        # soft goods may be defined by a DXF or a cut list line instead of a drawing
         if not pdfs:
@@ -114,7 +114,7 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None):
             continue
         up = text.upper()
         lacks = []
-        if not re.search(r"UNITS?\s*:?\s*MM|\bMM\b", up):
+        if not re.search(r"\bUNITS?\s*[:=]?\s*MM\b", up):
             lacks.append("units (mm)")
         if cls == "part":
             if not re.search(r"MATERIAL", up) or re.search(r"MATERIAL\s*:?\s*(SEE PARTS LIST)?\s*$", up, re.M) and \

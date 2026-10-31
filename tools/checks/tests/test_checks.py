@@ -243,13 +243,17 @@ def test_shipping_rules(tmp_path):
          "ships_as": "long", "status": "assumption"},
         {"id": "LONGBOX", "name": "FRONT - PROFILES", "assembly": "FRONT", "size_mm": "2200 x 120 x 60",
          "kg_each": "2.6", "ships_as": "box", "status": "assumption"},
+        {"id": "TOOLONGBOX", "name": "FRONT - PROFILES", "assembly": "FRONT", "size_mm": "2500 x 120 x 60",
+         "kg_each": "2.6", "ships_as": "box", "status": "assumption"},
     ]
     _write_csv(d / "parts-option-B1-final-stack.csv", rows)
     fs, rep, src = c_parts.check_shipping(str(tmp_path))
     got = {(f.rule, f.subject) for f in fs}
     assert ("mass-over-20kg", "HEAVY") in got and ("mass-over-20kg", "GLASS") not in got
     assert ("doorway", "WIDE") in got                       # 950 and 950: passes 914? no
-    assert ("pallet-fit", "LONGBOX") in got and not any(s == "OK" for _r, s in got)
+    # the layout packer puts box pieces in its 2400 mm kit carton on the long pallet (pallets.py)
+    assert ("pallet-fit", "LONGBOX") not in got and ("pallet-fit", "TOOLONGBOX") in got
+    assert not any(s == "OK" for _r, s in got)
 
 
 # ----------------------------------------------------------------- stacks
@@ -269,9 +273,10 @@ def test_stack_worst_case_and_open_state():
 
 def test_repo_stacks_are_open_until_tolerances_exist():
     fs, rep = c_stacks.check_stacks(ROOT)
-    assert {r["stack_id"]: r["state"] for r in rep} == {"ST-01": "OPEN", "ST-02": "OPEN", "ST-03": "OPEN"}
+    assert {r["stack_id"]: r["state"] for r in rep} == {"ST-01": "OPEN", "ST-02": "OPEN", "ST-03": "PASS"}
     st3 = [r for r in rep if r["stack_id"] == "ST-03"][0]
-    assert st3["nominal"] == pytest.approx(0.313)         # (6.6 - 5.974) / 2
+    # F-009 ruling: Ø7.0 holes, positions Ø0.4 each: (7.0 - 5.974) / 2 - 0.2 - 0.2 - 0.065 rivnut float
+    assert st3["nominal"] == pytest.approx(0.513) and st3["wc_min"] == pytest.approx(0.048)
     assert fs == []
 
 
@@ -335,5 +340,76 @@ def test_pod_mass_against_the_cap(tmp_path):
 
 def test_repo_pod_mass_includes_the_air_adjustment():
     fs, info = c_parts.check_pod_mass(ROOT, c_parts.load_shipping_list(ROOT)[1], "list")
-    assert info["total_kg"] == pytest.approx(438.73, abs=0.01)
-    assert fs and "438.7" in fs[0].message
+    assert info["total_kg"] == pytest.approx(442.13, abs=0.01)     # 426.73 + 12.0 air + 3.4 wall trays
+    assert fs and "442.1" in fs[0].message
+
+
+def test_skip_rules_use_whole_words_and_their_own_columns(tmp_path):
+    d = tmp_path / "v2/03-Manufacturing/base"
+    d.mkdir(parents=True)
+    base = {"part_number": "", "name": "", "name_vi": "x", "material": "", "finish": "", "qty": "1", "mass_kg": "1",
+            "status": "calculation", "source": "CAD", "maker": "", "sku": ""}
+    rows = [
+        dict(base, part_number="111001", name="BASE - DOOR THRESHOLD", material="EN AW-6063 T6"),        # THRESHOLD
+        dict(base, part_number="111002", name="BASE - SEAL HOLDER", material="EN AW-6063 T6"),           # HOLDER
+        dict(base, part_number="118001", name="BASE - PROFILE", material="EN AW-6063 T6"),               # 4 digits, bought
+        dict(base, part_number="118002", name="BASE - HINGE - HOLD", material="not named", status="HOLD (ISS-002)"),
+        dict(base, part_number="118003", name="BASE - SEAL", material="EPDM", finish="black", maker="Acme",
+             sku="SEAL-123", status="source"),
+    ]
+    _write_csv(d / "parts.csv", rows)
+    fs = c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
+    got = {(f.rule, f.subject) for f in fs}
+    assert ("material-finish", "111001") in got              # THRESHOLD is not HOLD
+    assert ("material-finish", "111002") in got              # HOLDER is not HOLD
+    assert ("bought-no-sku", "118001") in got                # EN AW-6063 is not an SKU
+    assert ("material-finish", "118001") in got
+    assert not any(s == "118002" for _r, s in got)          # HOLD in its status column: skipped
+    assert not any(s == "118003" for _r, s in got)          # maker and SKU in their columns
+
+
+def test_soft_goods_rule_uses_whole_words(tmp_path):
+    (tmp_path / "v2/03-Manufacturing/front").mkdir(parents=True)
+    with open(tmp_path / "v2/03-Manufacturing/front/cut-list.csv", "w") as fh:
+        fh.write("part_number,name\n351001,x\n351002,x\n351003,x\n351004,x\n")
+    names = {"351001": "FRONT - SEALED GLAZING PROFILE", "351002": "FRONT - TAPERED BLOCK",
+             "351003": "FRONT - FILLER PANEL", "351004": "FRONT - DOOR SEAL"}
+    fs = c_drawings.check_drawings(str(tmp_path), set(names), {}, names)
+    got = {f.subject: f.severity for f in fs}
+    assert got == {"351001": "severe", "351002": "severe", "351003": "severe"}   # real parts need drawings
+    # 351004 is a seal: its cut-list line defines it
+
+
+def _pdf(path, text):
+    fitz = pytest.importorskip("fitz")
+    doc = fitz.open()
+    page = doc.new_page()
+    y = 50
+    for line in text.split("\n"):
+        page.insert_text((40, y), line)
+        y += 20
+    doc.save(str(path))
+
+
+def test_units_rule(tmp_path):
+    (tmp_path / "v2/02-Drawings/wall").mkdir(parents=True)
+    good = "UNITS: mm\nMATERIAL: EN AW-6063 T6  FINISH: anodised 15 um\nGENERAL TOLERANCES ISO 2768-m"
+    bad = "MATERIAL: EN AW-6063 T6  FINISH: anodised 15 um  X (mm) Y (mm)\nGENERAL TOLERANCES ISO 2768-m"
+    _pdf(tmp_path / "v2/02-Drawings/wall/211101_P01_A_DWG.pdf", good)
+    _pdf(tmp_path / "v2/02-Drawings/wall/211102_P01_B_DWG.pdf", bad)
+    fs = c_drawings.check_drawings(str(tmp_path), {"211101", "211102"}, {})
+    got = {f.subject: f.message for f in fs if f.rule == "drawing-content"}
+    assert "211101" not in got
+    assert "units (mm)" in got["211102"]          # a column header in mm is not the title block's UNITS: mm
+
+
+def test_run_with_ref_leaves_no_export_behind():
+    import glob
+    import subprocess
+    import tempfile
+    import run_checks
+    sha = subprocess.run(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+    pattern = os.path.join(tempfile.gettempdir(), "checks-%s-*" % sha)
+    before = set(glob.glob(pattern))
+    run_checks.main(["--ref", "HEAD", "--json"])
+    assert set(glob.glob(pattern)) == before

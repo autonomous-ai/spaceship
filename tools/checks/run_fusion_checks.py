@@ -176,10 +176,21 @@ def main(argv=None):
     ap.add_argument("--from-json", default="")
     a = ap.parse_args(argv)
     root = os.path.abspath(a.root)
+    export_dir = None
     if a.ref:
         from common import export_ref
         root, sha = export_ref(a.ref)
+        export_dir = root
         a.rev = a.rev or sha
+    try:
+        return _main(a, root)
+    finally:
+        if export_dir:                      # the export is about 22 MB: never leave it behind
+            import shutil
+            shutil.rmtree(export_dir, ignore_errors=True)
+
+
+def _main(a, root):
     if a.from_json:
         with open(a.from_json, encoding="utf-8") as fh:
             res = json.load(fh)
@@ -197,9 +208,10 @@ def main(argv=None):
             return 2
         with open(out_json, encoding="utf-8") as fh:
             res = json.load(fh)
+        import shutil
         if a.save_json:
-            import shutil
             shutil.copyfile(out_json, a.save_json)
+        shutil.rmtree(os.path.dirname(out_json), ignore_errors=True)
         res["rev"] = a.rev
         res["model"] = a.model
     model = res.get("model", a.model)

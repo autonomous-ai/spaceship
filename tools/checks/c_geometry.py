@@ -108,62 +108,71 @@ def _covered(p, boxes, eps=1e-6):
     return False
 
 
-def shell_gaps(bodies, step=5.0, inset=1.0, min_size=10.0, root=None):
-    """Open regions on the pod's outer faces. Each is a dict: zone, axes
-    (names of the two in-face axes), a and b (exact open ranges, found from
-    the boxes on either side), near (labels of the bodies bordering it)."""
+def _subtract(r, c):
+    """Rectangle r minus rectangle c, both (a0, a1, b0, b1): up to 4 pieces."""
+    a0, a1, b0, b1 = r
+    c0, c1, d0, d1 = c
+    if c1 <= a0 or c0 >= a1 or d1 <= b0 or d0 >= b1:
+        return [r]
+    out = []
+    if c0 > a0:
+        out.append((a0, c0, b0, b1))
+    if c1 < a1:
+        out.append((c1, a1, b0, b1))
+    m0, m1 = max(a0, c0), min(a1, c1)
+    if d0 > b0:
+        out.append((m0, m1, b0, d0))
+    if d1 < b1:
+        out.append((m0, m1, d1, b1))
+    return out
+
+
+def _merge(rects, tol=1e-6):
+    """Join open rectangles that share a full edge, so one slot reads as one."""
+    rects = list(rects)
+    changed = True
+    while changed:
+        changed = False
+        for i in range(len(rects)):
+            for j in range(i + 1, len(rects)):
+                a, b = rects[i], rects[j]
+                if abs(a[2] - b[2]) < tol and abs(a[3] - b[3]) < tol and (abs(a[1] - b[0]) < tol or abs(b[1] - a[0]) < tol):
+                    rects[i] = (min(a[0], b[0]), max(a[1], b[1]), a[2], a[3])
+                elif abs(a[0] - b[0]) < tol and abs(a[1] - b[1]) < tol and (abs(a[3] - b[2]) < tol or abs(b[3] - a[2]) < tol):
+                    rects[i] = (a[0], a[1], min(a[2], b[2]), max(a[3], b[3]))
+                else:
+                    continue
+                rects.pop(j)
+                changed = True
+                break
+            if changed:
+                break
+    return rects
+
+
+def shell_gaps(bodies, inset=1.0, min_size=10.0, root=None):
+    """Open regions on the pod's outer faces, exactly: each face rectangle
+    minus the boxes of the bodies that reach 1 mm inside it. Open pieces
+    narrower than `min_size` in either direction are seams (gasket gaps),
+    not openings. Each result: zone, axes, a and b (open ranges), near (the
+    bodies bordering it)."""
     out = []
     for zone, ax, val, sign, (aa, a0, a1), (bb, b0, b1), needs in SHELL_ZONES:
         if needs and not (root and _glob_exists(root, needs)):
             continue
-        face_bodies = [b for b in bodies if b.box[ax] - 1e-6 <= val + sign * inset <= b.box[ax + 3] + 1e-6]
-        boxes = [b.box for b in face_bodies]
-        na = int(round((a1 - a0) / step))
-        nb = int(round((b1 - b0) / step))
-
-        def sample(i, j):
-            p = [0.0, 0.0, 0.0]
-            p[ax] = val + sign * inset
-            p[aa] = min(max(a0 + i * step, a0 + 0.5), a1 - 0.5)
-            p[bb] = min(max(b0 + j * step, b0 + 0.5), b1 - 0.5)
-            return p
-        grid = [[not _covered(sample(i, j), boxes) for j in range(nb + 1)] for i in range(na + 1)]
-        seen = set()
-        for i in range(na + 1):
-            for j in range(nb + 1):
-                if not grid[i][j] or (i, j) in seen:
-                    continue
-                stack, cells = [(i, j)], []
-                seen.add((i, j))
-                while stack:
-                    ci, cj = stack.pop()
-                    cells.append((ci, cj))
-                    for di, dj in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                        ni, nj = ci + di, cj + dj
-                        if 0 <= ni <= na and 0 <= nj <= nb and grid[ni][nj] and (ni, nj) not in seen:
-                            seen.add((ni, nj))
-                            stack.append((ni, nj))
-                ia = [c[0] for c in cells]
-                jb = [c[1] for c in cells]
-                lo_a, hi_a = a0 + min(ia) * step, a0 + max(ia) * step
-                lo_b, hi_b = b0 + min(jb) * step, b0 + max(jb) * step
-                # exact edges: the box faces just outside the open samples
-                mid_a, mid_b = (lo_a + hi_a) / 2.0, (lo_b + hi_b) / 2.0
-                ea0 = max([bx[aa + 3] for bx in boxes if bx[aa + 3] <= lo_a + 1e-6 and bx[bb] <= mid_b <= bx[bb + 3]]
-                          or [a0])
-                ea1 = min([bx[aa] for bx in boxes if bx[aa] >= hi_a - 1e-6 and bx[bb] <= mid_b <= bx[bb + 3]] or [a1])
-                eb0 = max([bx[bb + 3] for bx in boxes if bx[bb + 3] <= lo_b + 1e-6 and bx[aa] <= mid_a <= bx[aa + 3]]
-                          or [b0])
-                eb1 = min([bx[bb] for bx in boxes if bx[bb] >= hi_b - 1e-6 and bx[aa] <= mid_a <= bx[aa + 3]] or [b1])
-                if (ea1 - ea0) < min_size or (eb1 - eb0) < min_size:
-                    continue
-                near = sorted({b.label.split(" / ")[-1] for b in face_bodies
-                               if (abs(b.box[bb + 3] - eb0) < 1e-3 or abs(b.box[bb] - eb1) < 1e-3
-                                   or abs(b.box[aa + 3] - ea0) < 1e-3 or abs(b.box[aa] - ea1) < 1e-3)
-                               and b.box[aa] <= ea1 + 1e-3 and b.box[aa + 3] >= ea0 - 1e-3
-                               and b.box[bb] <= eb1 + 1e-3 and b.box[bb + 3] >= eb0 - 1e-3})
-                out.append({"zone": zone, "axes": ("XYZ"[aa], "XYZ"[bb]), "a": (ea0, ea1), "b": (eb0, eb1),
-                            "near": near})
+        plane = val + sign * inset
+        face_bodies = [b for b in bodies if b.box[ax] - 1e-6 <= plane <= b.box[ax + 3] + 1e-6]
+        open_ = [(a0, a1, b0, b1)]
+        for b in face_bodies:
+            c = (b.box[aa], b.box[aa + 3], b.box[bb], b.box[bb + 3])
+            open_ = [piece for r in open_ for piece in _subtract(r, c)]
+        fat = [r for r in open_ if r[1] - r[0] >= min_size - 1e-6 and r[3] - r[2] >= min_size - 1e-6]
+        for r in _merge(fat):
+            near = sorted({b.label.split(" / ")[-1] for b in face_bodies
+                           if b.box[aa] <= r[1] + 1e-3 and b.box[aa + 3] >= r[0] - 1e-3
+                           and b.box[bb] <= r[3] + 1e-3 and b.box[bb + 3] >= r[2] - 1e-3})
+            out.append({"zone": zone, "axes": ("XYZ"[aa], "XYZ"[bb]), "a": (r[0], r[1]), "b": (r[2], r[3]),
+                        "near": near})
     return out
 
 
@@ -195,8 +204,8 @@ def check_shell(root, mdl, bodies):
             "C01", "shell-open", "%s shell %s %s %.0f..%.0f %s %.0f..%.0f" % (mdl, g["zone"], an, a0, a1, bn, b0, b1),
             "severe",
             "The outer shell is open on the %s face of the %s: nothing covers %s %.0f to %.0f, %s %.0f to %.0f "
-            "(a slot %.0f x %.0f mm). Bordered by: %s. Checked 1 mm inside the face on a 5 mm grid, bodies as "
-            "their boxes." % (g["zone"], mdl, an, a0, a1, bn, b0, b1, a1 - a0, b1 - b0,
+            "(a slot %.0f x %.0f mm). Bordered by: %s. Checked exactly, 1 mm inside the face, bodies "
+            "as their boxes." % (g["zone"], mdl, an, a0, a1, bn, b0, b1, a1 - a0, b1 - b0,
                                ", ".join(g["near"]) or "nothing"),
             "Close it: extend the bordering panels to meet, or add the part that belongs there.",
             _file_of(bodies), owner_for(_file_of(bodies)), {"model": mdl, "near": g["near"]}))

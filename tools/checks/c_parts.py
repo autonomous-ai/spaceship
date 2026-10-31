@@ -53,7 +53,6 @@ GRADE_HINT = re.compile(r"\d|\b(A2|A4|ABS|PET|PE|PVC|EPDM|PU|PUR|ACP|MDF|HPL|LVL
 FINISH_WORDS = re.compile(r"anodi[sz]|powder|paint|galvani|zinc|\bzn\b|plated|passivat|black oxide|e-?coat|mill finish|"
                           r"\braw\b|natural|lacquer|PVDF|coated|polished|brushed|as supplied|bare|self.colou?r|\bRAL\s*\d|"
                           r"\bblack\b|\bwhite\b|\bgr[ae]y\b|colou?r|\bclear\b|ground|arris|seamed|\+Z\d|Z275|Z140|Z100", re.I)
-SKU_RE = re.compile(r"\b[A-Z][A-Z0-9]*[- ]?\d[\d-]{2,}[A-Z0-9-]*\b|\b\d{4,}[A-Z0-9-]*\b")
 VAGUE_FINISH = re.compile(r"finish (to )?match|as (the )?(base band|v1)|tbd|to be (set|decided|confirmed)", re.I)
 
 
@@ -141,9 +140,8 @@ def check_parts_lists(root, plists):
             # C11: material grade and finish on every part and bought item (assemblies inherit).
             # A bought item named by maker and exact SKU carries its material and finish in the SKU;
             # a HOLD item gets them when it is released.
-            held = "HOLD" in " ".join((row["status"], row["material"], name)).upper() or \
-                "not named" in (row["material"] or "").lower()
-            sku_named = bool(row["sku"] or SKU_RE.search(" ".join((name, row["material"]))))
+            held = bool(re.search(r"\bHOLD\b", row["status"] or ""))       # the status column only, whole word
+            sku_named = bool(row["sku"])                                     # the SKU column only
             if (cls == "part" or (cls == "bad" and pn) or (cls == "bought" and not sku_named)) and not held:
                 mat = " ".join(x for x in (row["material"], row["grade"]) if x)
                 fin_text = row["finish"] or row["material"] or ""
@@ -170,7 +168,7 @@ def check_parts_lists(root, plists):
                                       "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and "
                                       "the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, "
                                       "mill finish) in the parts list and on the drawing.", r, owner))
-            if cls == "bought" and not (row["maker"] and row["sku"]) and not sku_named and not held:
+            if cls == "bought" and not (row["maker"] and row["sku"]) and not held:
                 fs.append(Finding("C06", "bought-no-sku", pn, "major",
                                   "%s %s in %s is a bought item with no maker and exact SKU, and it isn't marked "
                                   "HOLD (guideline section 4.2)." % (pn, name, r),
@@ -267,6 +265,10 @@ PALLETS = {
     # name: (length, width, max piece height) mm; height = 1829 loaded - 150 deck (REQ-SHP-01, REQ-SHP-03)
     "48x40": (1219.0, 1016.0, 1679.0),
     "48x96": (2438.0, 1219.0, 1679.0),
+    # the layout study's packer puts every 'box' piece in one kit carton, 2400 long, on the long pallet
+    # whenever the build has one (layout-study scripts/pallets.py: carton_for; the long flat kit carton);
+    # its cross-section is the free width of a layer (600 when it gets its own layer) by the layer height
+    "kit-carton": (2400.0, 600.0, 1679.0),
 }
 
 
@@ -349,9 +351,11 @@ def check_shipping(root, door=(914.0, 2032.0), door_req=(810.0, 2032.0), limit_k
                                   "%s %s passes 914 x 2032 but not the 810 mm door of REQ-ASM-06 (PROPOSED): its "
                                   "smallest size is %g." % (sid, name, a), "PM to confirm which door rule holds.",
                                   src, owner))
-            want = "48x96" if ships in ("long", "glass") else "48x40"
+            has_long = any((r.get("ships_as") or "").strip().lower() in ("long", "glass") for r in rows)
+            want = "48x96" if ships in ("long", "glass") else ("kit-carton" if ships == "box" and has_long
+                                                                 else "48x40")
             if not _fits(dims, want):
-                other = "48x40" if want == "48x96" else "48x96"
+                other = "48x40" if want != "48x40" else "48x96"
                 fs.append(Finding("C04", "pallet-fit", sid, "major" if _fits(dims, other) else "severe",
                                   "%s %s (%s mm) doesn't fit the %s pallet it ships on (%g x %g, at most %g tall "
                                   "loaded above a 150 mm deck)%s." % (

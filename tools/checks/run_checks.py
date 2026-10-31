@@ -184,10 +184,21 @@ def main(argv=None):
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     root = os.path.abspath(a.root)
+    export_dir = None
     if a.ref:
         from common import export_ref
         root, sha = export_ref(a.ref)
+        export_dir = root
         a.rev = a.rev or sha
+    try:
+        return _main(a, root)
+    finally:
+        if export_dir:                      # the export is about 22 MB: never leave it behind
+            import shutil
+            shutil.rmtree(export_dir, ignore_errors=True)
+
+
+def _main(a, root):
     rev = a.rev or git_rev(root)
     res = run(root, rev)
     reg_ids = {}
