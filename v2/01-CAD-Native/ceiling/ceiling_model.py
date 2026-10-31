@@ -62,7 +62,7 @@ CEILING_PARAMS = [
      "PM ruling 2026-10-31 (Fusion group): the Joints Engineer's 2.26 mm, set by a metal stop washer, on every frame-to-frame seam; the skeleton's own value replaces this one once it carries it"),
     ("acp_t", "3 mm", "mm", "source", "build plan VT01: ACP 3 mm, Dark Yellow EV3038 (selection A1); in the 81 mm stack (D-42)"),
     ("tube_w", "20 mm", "mm", "confirmed", "D-34, D-54: aluminium 20 x 40 x 1.2 members (the 20 mm face lies in the plane of the panel)"),
-    ("tube_t", "1.2 mm", "mm", "confirmed", "D-54: the frames stay 1.2 mm (rivnut grip check passed)"),
+    ("tube_t", "1.2 mm", "mm", "confirmed", "D-54: the frames stay 1.2 mm (rivnut grip check passed); D-85 keeps the ceiling's cross members at 1.2 too, since they carry the overhead clips and catches (T07, T08 test on 1.2)"),
     ("fr_d", "40 mm", "mm", "confirmed", "D-34, D-42: the frame is the 40 mm face of the 20 x 40 tube"),
     ("bond_t", "outer_t - acp_t - fr_d", "mm", "calculation",
      "bond line between the frame and the skin: the skeleton's outer panel less skin and frame (0 at P03's 43; 3 at outer_t 46, PM ruling 2026-10-31: 3 ACP + 3 bond + 40 frame)"),
@@ -136,13 +136,30 @@ PARTS = {
     "fill_b": ("513302", "LINING - FILL - CEILING - BAY B", "Bông PET 40 mm - trần - ô B", "MP", "fill"),
     "fill_c": ("513303", "LINING - FILL - CEILING - BAY C", "Bông PET 40 mm - trần - ô C", "MP", "fill"),
     "fill_d": ("513304", "LINING - FILL - CEILING - BAY D", "Bông PET 40 mm - trần - ô D", "MP", "fill"),
-    "clip": ("518001", "LINING - CASSETTE CLIP - HOLD", "Kẹp treo cassette (chờ chọn)", "HOLD", "hold"),
-    "catch": ("518002", "LINING - CEILING SAFETY CATCH - HOLD", "Dây an toàn cassette trần (chờ chọn)", "HOLD", "hold"),
+    "clip": ("518001", "LINING - CASSETTE CLIP", "Kẹp treo cassette", "HOLD", "hold"),
+    "catch": ("518002", "LINING - CEILING SAFETY CATCH", "Dây an toàn cassette trần", "HOLD", "hold"),
+}
+
+# finish and process per part (master BOM columns); bought HOLD items' masses come from
+# the joints register (H-10, H-11)
+FINISH = {
+    "frame_c1": "mill finish with the bond prep (D-79)", "frame_c2": "mill finish with the bond prep (D-79)",
+    "skin": "ACP EV3038 Dark Yellow (D-12)", "tray": "galvanised (Z coating, grade to confirm)",
+    "rib": "galvanised (Z coating, grade to confirm)", "felt": "Dark Gray (D-79)",
+}
+PROCESS = {
+    "frame_c1": "tube cut to length, frame joint HOLD (H11)", "frame_c2": "tube cut to length, frame joint HOLD (H11)",
+    "skin": "CNC routed ACP", "tray": "sheet metal: laser cut, bent", "rib": "sheet metal: cut, bent",
+    "felt": "CNC knife cut", "fill_a": "cut", "fill_b": "cut", "fill_c": "cut", "fill_d": "cut",
+}
+HOLD_MASS = {   # kg each, status, source
+    "clip": (0.040, "assumption", "joints register H-10 and PM ruling 2026-10-31: 0.040 kg each (D-81's working figure) until a named clip is weighed (HOLD-08)"),
+    "catch": (0.100, "assumption", "PM ruling 2026-10-31 for the BOM check: 0.100 kg each until a named catch is weighed (joints register H-11, HOLD-08)"),
 }
 
 # material key: name in the CAD, density kg/m3, status, source
 MATERIALS = {
-    "al": ("Aluminium 6063-T6 (alloy HOLD, ISS-034)", 2700.0, "source", "aluminium density; alloy and temper open (ISS-034, H15)"),
+    "al": ("Aluminium 6063-T6, mill finish (D-79)", 2700.0, "source", "6063-T6, mill finish with the bond spec's surface prep (D-79)"),
     "steel": ("Galvanised steel DX51D+Z", 7850.0, "source", "EN 10346 DX51D+Z (selection B): 0.5 mm = 3.93 kg/m2"),
     "acp": ("ACP 3 mm EV3038, 3.5 kg/m2", 3.5 / 0.003, "calculation", "3.5 kg/m2 (layout study acp3_kgm2, PM ruling) / 3 mm"),
     "felt": ("PET felt 9 mm, 1.8 kg/m2", 1.8 / 0.009, "calculation", "1.8 kg/m2 (layout study pet9_kgm2) / 9 mm; the factory's felt is unverified (D-31)"),

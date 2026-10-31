@@ -30,7 +30,9 @@ The 2D mapping (guideline 3.3), each view in its own X/Y:
   view from left:  X(2D) = -Y(part), Y(2D) = Z(part)
 """
 
+import importlib
 import os
+import sys
 
 import adsk.core
 import adsk.drawing
@@ -42,31 +44,12 @@ VISIBLE = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
 HIDDEN = adsk.drawing.DrawingViewStyleTypes.VisibleAndHiddenEdgesDrawingViewStyleType
 TOL = 0.05   # mm on the sheet, when matching points
 
-# per part: sheet, scale, view centres on the sheet (mm), styles, and which views
-# carry hole dimensions. A2 is 594 x 420; Fusion's title block sits bottom right.
-SPECS = {
-    "tray": dict(name="513101_P01_LINING-TRAY-CEILING", scale=0.2,
-                 front=(180, 345), top=(180, 200), left=(450, 345), iso=(455, 205),
-                 styles={"front": HIDDEN, "top": HIDDEN, "left": HIDDEN}, holes="front"),
-    "rib": dict(name="513102_P01_LINING-RIB-CEILING", scale=0.5,
-                front=(150, 330), top=(150, 230), left=(420, 330), iso=(450, 200),
-                styles={}, holes=None),
-    "felt": dict(name="513201_P01_LINING-FELT-CEILING", scale=0.2,
-                 front=(180, 345), top=(180, 200), left=(450, 345), iso=(455, 205),
-                 styles={}, holes=None),
-    "fill_a": dict(name="513301_P01_LINING-FILL-CEILING-BAY-A", scale=0.2,
-                   front=(180, 345), top=(180, 250), left=(430, 345), iso=(450, 200),
-                   styles={}, holes=None),
-    "fill_b": dict(name="513302_P01_LINING-FILL-CEILING-BAY-B", scale=0.2,
-                   front=(180, 345), top=(180, 250), left=(430, 345), iso=(450, 200),
-                   styles={}, holes=None),
-    "fill_c": dict(name="513303_P01_LINING-FILL-CEILING-BAY-C", scale=0.2,
-                   front=(180, 345), top=(180, 250), left=(430, 345), iso=(450, 200),
-                   styles={}, holes=None),
-    "cassette": dict(name="510301_P01_LINING-CASSETTE-CEILING-COMMON", scale=0.2,
-                     front=(180, 350), top=(180, 200), left=(450, 350), iso=(455, 200),
-                     styles={"top": HIDDEN}, holes="front"),
-}
+HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import drawing_specs as S  # noqa: E402
+importlib.reload(S)
+STYLES = {"tray": {"front": HIDDEN, "top": HIDDEN, "left": HIDDEN}, "cassette": {"top": HIDDEN}}
 
 
 def p2(x, y):
@@ -210,45 +193,71 @@ def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
     return sk
 
 
+def insert_image(sheet, path, top_left):
+    """Insert a PNG made by render_notes.py with its top left corner at top_left (sheet mm).
+    The images are drawn at 10 px per mm; Fusion places an image by its bottom left
+    corner, at its own size per pixel, so the first unlocked run checks the size by eye."""
+    if not os.path.exists(path):
+        raise RuntimeError("missing %s: run render_notes.py first" % path)
+    from_png = _png_size(path)
+    h_mm = from_png[1] / 10.0
+    inp = sheet.images.createInput()
+    inp.imageFilePath = path
+    inp.position = p2(top_left[0], top_left[1] - h_mm)
+    inp.scale = float(ARGS.get("img_scale", "1.0"))
+    ok = sheet.images.insert(inp)
+    print("image %s at %s: %s" % (os.path.basename(path), (top_left[0], round(top_left[1] - h_mm, 1)), ok))
+    return ok
+
+
+def _png_size(path):
+    with open(path, "rb") as fh:
+        head = fh.read(24)
+    return int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big")
+
+
 def run(_context):
     app = adsk.core.Application.get()
     part = ARGS["part"]
-    spec = SPECS[part]
+    sp = S.SPECS[part]
     dwg = adsk.drawing.Drawing.cast(app.activeProduct)
     if dwg is None:
         raise RuntimeError("the active document is not a drawing")
     doc = app.activeDocument
-    if not doc.name.startswith(spec["name"] + "_DWG"):
-        raise RuntimeError("active drawing is %r, expected %s_DWG" % (doc.name, spec["name"]))
+    if not doc.name.startswith(sp["drawing"]):
+        raise RuntimeError("active drawing is %r, expected %s" % (doc.name, sp["drawing"]))
     sheet = dwg.activeSheet
     if sheet.views.count:
         raise RuntimeError("the sheet already has %d views; start a new drawing" % sheet.views.count)
-    print("sheet %s x %s" % (round(sheet.width, 1), round(sheet.height, 1)))
-    sc = spec["scale"]
-    st = spec["styles"]
+    print("sheet %s x %s (spec %s)" % (round(sheet.width, 1), round(sheet.height, 1), sp["sheet"]))
+    want = S.SHEETS[sp["sheet"]]
+    if abs(sheet.width - want[0]) > 1 or abs(sheet.height - want[1]) > 1:
+        raise RuntimeError("sheet is %s x %s, the spec wants %s" % (sheet.width, sheet.height, sp["sheet"]))
+    sc = sp["scale"]
+    st = STYLES.get(part, {})
     views = {}
     for key, orient in (("front", VO.FrontViewOrientationType), ("top", VO.TopViewOrientationType),
                         ("left", VO.LeftViewOrientationType), ("iso", VO.IsoTopRightViewOrientationType)):
-        views[key] = add_view(sheet, orient, spec[key], sc, st.get(key, VISIBLE))
+        views[key] = add_view(sheet, orient, sp["views"][key], sp["scales"].get(key, sc), st.get(key, VISIBLE))
         e = extent(views[key])
         print("view %-5s extent %s" % (key, tuple(round(v, 2) for v in e) if e else None))
-    # first-angle alignment check: the view from above shares the front view's X range,
-    # the view from the left shares its Y range (Z)
     ef, et, el = extent(views["front"]), extent(views["top"]), extent(views["left"])
     print("alignment: front/top x %.2f %.2f, front/left y %.2f %.2f" % (
         ef[0] - et[0], ef[2] - et[2], ef[1] - el[1], ef[3] - el[3]))
-    n = 0
-    n += len(overall_dims(sheet, views["top"], below=True, left=True))
-    n += len(overall_dims(sheet, views["front"], below=False, left=True))
-    n += len(overall_dims(sheet, views["left"], below=False, left=False))
+    overall_dims(sheet, views["top"], below=True, left=True)
+    overall_dims(sheet, views["front"], below=False, left=True)
+    overall_dims(sheet, views["left"], below=False, left=False)
     holes = []
-    if spec["holes"]:
-        holes = hole_dims(sheet, views[spec["holes"]])
-        hole_table(sheet, views[spec["holes"]], "HOLES - %s VIEW" % spec["holes"].upper())
+    if sp["holes"]:
+        holes = hole_dims(sheet, views[sp["holes"]])
+        hole_table(sheet, views[sp["holes"]], "HOLES - %s VIEW" % sp["holes"].upper())
     projection_symbol(sheet, 20.0, 20.0)
+    notes_dir = os.path.join(HERE, ".notes")
+    insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_NOTES.png"), sp["images"]["notes"])
+    insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_TITLE.png"), sp["images"]["title"])
     print("dimensions %d, holes dimensioned %d, hole tables %d" % (
         sheet.drawingDimensions.count, len(holes), sheet.holeTables.count))
-    raw = os.path.join(ARGS["repo_root"], "v2/02-Drawings/ceiling/.raw/%s_DWG.pdf" % spec["name"])
+    raw = os.path.join(HERE, ".raw", "%s.pdf" % sp["drawing"])
     os.makedirs(os.path.dirname(raw), exist_ok=True)
     opts = dwg.exportManager.createPDFExportOptions(raw)
     opts.openPDF = False

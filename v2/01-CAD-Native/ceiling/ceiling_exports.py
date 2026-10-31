@@ -160,7 +160,8 @@ def parts_list(v, mass):
         m = mass.get(pn)
         each = round(m[0], 3) if m else None
         if kind == "HOLD":
-            mass_txt, status = "HOLD", "HOLD (no part named; envelope only)"
+            hm, hst, hsrc = M.HOLD_MASS[key]
+            mass_txt, status = "%.3f" % hm, hst
         elif kind == "HS":
             mass_txt, status = "", "calculation (sum of its parts)"
         else:
@@ -175,22 +176,40 @@ def parts_list(v, mass):
             "felt": "D-17, D-31; felt fixing HOLD H09",
             "fill_a": "D-24, D-54; fixing HOLD H10", "fill_b": "D-24, D-54; fixing HOLD H10",
             "fill_c": "D-24, D-54; fixing HOLD H10", "fill_d": "D-24, D-54; fixing HOLD H10",
-            "clip": "D-47; H03, ISS-076", "catch": "D-47; H04, ISS-076",
+            "clip": "D-47, D-81; joints register H-10; HOLD-08, ISS-076", "catch": "D-47; joints register H-11; HOLD-08, ISS-076",
             "cassette": "D-17, D-24, D-41, D-47; PM ruling 2026-10-31 (one part for both halves)",
         }.get(key, "assembly tree; conventions s6")
+        if kind == "HOLD":
+            src = "%s; mass: %s" % (src, M.HOLD_MASS[key][2])
         rows.append({
             "part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": q[key][1] or "",
             "qty_per_parent": q[key][0], "qty_per_pod": per_pod[key], "material": matname,
+            "finish": M.FINISH.get(key, ""), "process": M.PROCESS.get(key, ""),
             "mass_each_kg": mass_txt, "mass_status": status, "revision": REV,
             "status": "DRAFT" if kind != "HOLD" else "HOLD", "source": src,
         })
+    # the ACP bond set, shared with WALL (joints register H-12, number 108002): one bonded
+    # skin per ceiling outer panel, mass from the bond spec's 0.28 kg/m2
+    bond_each = v["c_w"] * v["wall_depth"] * 1e-6 * 0.28
+    rows.append({
+        "part_number": "108002",
+        "name": "POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE",
+        "name_vi": "Bộ keo dán ACP", "kind": "PI", "parent": "assy_c1|assy_c2", "qty_per_parent": 1,
+        "qty_per_pod": 2, "material": "SikaTack Panel-50 system (bond spec)", "finish": "", "process": "",
+        "mass_each_kg": "%.3f" % bond_each,
+        "mass_status": "calculation", "revision": REV, "status": "DRAFT",
+        "source": "joints register H-12 (108002); bond spec: 0.28 kg/m2 x %.3f m2 per ceiling outer panel" % (
+            v["c_w"] * v["wall_depth"] * 1e-6),
+    })
+    q["bond"] = (1, "assy_c1|assy_c2")
     # assemblies: sum of parts (HOLD envelopes not counted)
-    by_key = {k: r for k, r in zip([k for k in M.PARTS if k in q], rows)}
+    keys = [k for k in M.PARTS if k in q] + ["bond"]
+    by_key = {k: r for k, r in zip(keys, rows)}
 
     def total(key):
         r = by_key[key]
         if r["kind"] != "HS":
-            return float(r["mass_each_kg"]) if r["mass_each_kg"] not in ("", "HOLD") else 0.0
+            return float(r["mass_each_kg"]) if r["mass_each_kg"] not in ("",) else 0.0
         s = 0.0
         for k2, (n, parent) in q.items():
             if parent and key in parent.split("|"):
