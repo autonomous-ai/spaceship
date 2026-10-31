@@ -32,6 +32,7 @@ import time
 import adsk
 import adsk.core
 import adsk.drawing
+import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 SCALE = 1.0 / 20.0
@@ -177,6 +178,27 @@ def step_views(sheet: "adsk.drawing.Sheet"):
     describe(sheet)
 
 
+def extremes(view: "adsk.drawing.View"):
+    """The view-curve end points furthest left, right, down and up: the overall size is
+    measured between these (2026-10-31: the end point nearest a corner of the extent
+    missed the faceted front, giving 2390 for 2400 and 1602 for 1700)."""
+    pts = line_ends(view)
+    return (min(pts, key=lambda p: xy(p)[0]), max(pts, key=lambda p: xy(p)[0]),
+            min(pts, key=lambda p: xy(p)[1]), max(pts, key=lambda p: xy(p)[1]))
+
+
+def pod_size():
+    """pod_w, pod_d, pod_h (mm) from the skeleton this drawing shows (its reference)."""
+    doc = adsk.core.Application.get().activeDocument
+    refs = doc.documentReferences
+    for i in range(refs.count):
+        ref = refs.item(i).referencedDocument
+        if ref is not None and ref.name.startswith("100000_P04_POD-SKELETON"):
+            design = adsk.fusion.Design.cast(ref.products.itemByProductType("DesignProductType"))
+            return tuple(design.userParameters.itemByName(n).value * 10.0 for n in ("pod_w", "pod_d", "pod_h"))
+    raise RuntimeError("the drawing doesn't reference the skeleton, so its size can't be checked")
+
+
 def step_dims(sheet: "adsk.drawing.Sheet"):
     if sheet.views.count < 5:
         raise RuntimeError("run step=views first")
@@ -184,17 +206,24 @@ def step_dims(sheet: "adsk.drawing.Sheet"):
         raise RuntimeError("the sheet already has dimensions")
     right, front, left, back, top = (sheet.views.item(i) for i in range(5))
     dims = sheet.drawingDimensions
+    pod_w, pod_d, pod_h = pod_size()
     fe, le, te = extent(front), extent(left), extent(top)
-    # overall width and height on the front view, depth on the view from the left
-    dims.addLinearDimension(corner(front, 0, 0), corner(front, 1, 0),
-                            dpt((fe[0] + fe[2]) / 2, fe[1] - 12.0), False)
-    dims.addLinearDimension(corner(front, 0, 0), corner(front, 0, 1),
-                            dpt(fe[0] - 14.0, (fe[1] + fe[3]) / 2), False)
-    dims.addLinearDimension(corner(left, 0, 0), corner(left, 1, 0),
-                            dpt((le[0] + le[2]) / 2, le[1] - 12.0), False)
-    # footprint on the view from above
-    dims.addLinearDimension(corner(top, 0, 0), corner(top, 0, 1),
-                            dpt(te[0] - 14.0, (te[1] + te[3]) / 2), False)
+
+    def dim(a, b, place, axis, want, label):
+        # the API can't read a dimension's value back, so check the points first
+        got = abs(xy(b)[axis] - xy(a)[axis]) / SCALE
+        if abs(got - want) > 0.5:
+            raise RuntimeError("%s would read %.1f mm, not %.1f; nothing kept" % (label, got, want))
+        dims.addLinearDimension(a, b, place, False)
+        print("  dimension %s: %.1f mm (skeleton %.1f)" % (label, got, want))
+
+    lx, hx, ly, hy = extremes(front)
+    dim(lx, hx, dpt((fe[0] + fe[2]) / 2, fe[1] - 12.0), 0, pod_w, "overall width, front view")
+    dim(ly, hy, dpt(fe[0] - 14.0, (fe[1] + fe[3]) / 2), 1, pod_h, "overall height, front view")
+    lx, hx, _ly, _hy = extremes(left)
+    dim(lx, hx, dpt((le[0] + le[2]) / 2, le[1] - 12.0), 0, pod_d, "overall depth, view from the left")
+    _lx, _hx, ly, hy = extremes(top)
+    dim(ly, hy, dpt(te[0] - 14.0, (te[1] + te[3]) / 2), 1, pod_d, "overall depth, view from above")
     # ISO first-angle symbol, left of the title block
     sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
     x0, cy, d, big, length, gap = 560.0, 40.0, 5.0, 10.0, 10.0, 4.0
@@ -204,12 +233,25 @@ def step_dims(sheet: "adsk.drawing.Sheet"):
     sk.circles.addByCenterRadius(p2(cx, cy), big / 2)
     sk.circles.addByCenterRadius(p2(cx, cy), d / 2)
     describe(sheet)
-    for i in range(dims.count):
-        dd = dims.item(i)
-        try:
-            print("  dimension %d: %s" % (i, round(dd.value * 10.0, 2) if hasattr(dd, "value") else "?"))
-        except Exception as e:  # noqa: BLE001 - reading back is informative only
-            print("  dimension %d: (value not readable: %s)" % (i, e))
+
+
+def step_redo(dwg: "adsk.drawing.Drawing", old: "adsk.drawing.Sheet"):
+    """Sheet 1 again: views and dimensions can't be moved, read or deleted by script, so a
+    new sheet gets the views and the checked dimensions, then the old sheet is deleted and
+    the new one becomes sheet 1 (its notes go on after, with sheet_notes.py)."""
+    inp = dwg.sheets.createInput()
+    inp.name = SHEET_NAME + " (NEW)"
+    new = dwg.sheets.add(inp)
+    step_views(new)
+    step_dims(new)
+    old_name = old.name
+    if not old.deleteMe():
+        raise RuntimeError("couldn't delete the old sheet %s" % old_name)
+    try:
+        new.name = SHEET_NAME
+    except Exception as e:  # noqa: BLE001 - a name is nice to have
+        print("sheet name not set: %s" % e)
+    print("sheet 1 made again; old sheet %r deleted; %d sheet(s) now" % (old_name, dwg.sheets.count))
 
 
 def step_notes(sheet: "adsk.drawing.Sheet"):
@@ -233,6 +275,9 @@ def run(_context):
         step_views(sheet)
     elif step == "dims":
         step_dims(sheet)
+    elif step == "redo":
+        refresh_references(adsk.core.Application.get().activeDocument)
+        step_redo(dwg, sheet)
     elif step == "all":          # one run: views, dimensions, notes (keeps the Fusion queue lean)
         step_views(sheet)
         step_dims(sheet)

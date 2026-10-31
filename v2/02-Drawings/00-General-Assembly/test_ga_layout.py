@@ -38,8 +38,10 @@ def load_layout(full=False):
     adsk.core = types.ModuleType("adsk.core")
     adsk.drawing = types.ModuleType("adsk.drawing")
     adsk.drawing.ViewOrientationTypes = vo
-    keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.drawing")}
-    sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.drawing": adsk.drawing})
+    adsk.fusion = types.ModuleType("adsk.fusion")
+    keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.drawing", "adsk.fusion")}
+    sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.drawing": adsk.drawing,
+                        "adsk.fusion": adsk.fusion})
     try:
         ns = {"__name__": "ga_elevations"}
         with open(os.path.join(HERE, "ga_elevations.py"), encoding="utf-8") as fh:
@@ -128,6 +130,21 @@ class LayoutTests(unittest.TestCase):
         self.assertGreater(gap(notes, TITLE_BLOCK), 0)
         symbol = (560.0, 35.0, 589.0, 45.0)                    # step_dims draws it there
         self.assertGreater(gap(notes, symbol), 0)
+
+    def test_overall_sizes_are_measured_between_the_true_extremes(self):
+        # live 2026-10-31: the end point nearest a corner of the extent gave 2390 for 2400
+        # and 1602 for 1700 on the faceted front; now the extreme end points, checked
+        ns = load_layout(full=True)
+        P = types.SimpleNamespace
+        pts = [P(coordinate=P(x=x, y=y)) for x, y in ((0, 5), (3, 0), (10, 1), (9, 12), (1, 11))]
+        lo_x, hi_x, lo_y, hi_y = (ns["xy"](p) for p in (lambda v: [min(pts, key=lambda p: p.coordinate.x),
+                                                                     max(pts, key=lambda p: p.coordinate.x),
+                                                                     min(pts, key=lambda p: p.coordinate.y),
+                                                                     max(pts, key=lambda p: p.coordinate.y)])(None))
+        ns["line_ends"] = lambda view: pts                          # the view's curve end points
+        got = [ns["xy"](p) for p in ns["extremes"](None)]
+        self.assertEqual(got, [lo_x, hi_x, lo_y, hi_y])
+        self.assertEqual(got, [(0, 5), (10, 1), (3, 0), (9, 12)])
 
     def test_the_sizes_come_from_the_skeleton(self):
         w, d, h = pod_size()
