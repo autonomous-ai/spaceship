@@ -282,6 +282,26 @@ class WallBackPanelTest(unittest.TestCase):
         for name, _e, _u, _s, _src in load_back("B2")["WALL_PARAMS"]:
             self.assertNotIn(name, skel_names, name)
 
+    def test_bolt_lines_match_the_skeleton(self):
+        """WALL's own formulas give the skeleton's bolt lines (skeleton v4, #94): drift fails here."""
+        params = list(load()["skeleton_params"](REPO))
+        if "ceil_side_pitch" not in [q[0] for q in params]:
+            self.skipTest("skeleton before v4")
+        sk = {}
+        for _pass in range(3):                       # the skeleton's own order, a few passes for forward names
+            for name, expr, _u, _st, _src in params:
+                if name not in sk:
+                    try:
+                        sk[name] = evaluate(expr, sk)
+                    except NameError:
+                        pass
+        side, back = resolve(load(row="2")), resolve(load_back("B3"))
+        self.assertAlmostEqual(side["ceil_bolt_pitch"], sk["ceil_side_pitch"], places=3)
+        self.assertAlmostEqual(850 - side["wall_depth"], sk["ceil_side_y0"], places=3)
+        self.assertAlmostEqual(side["len_bolt_pitch"], sk["side_base_pitch"], places=3)
+        self.assertAlmostEqual(back["len_bolt_pitch"], sk["back_base_pitch"], places=3)
+        self.assertAlmostEqual(back["len_bolt_pitch"], sk["ceil_back_pitch"], places=3)
+
     def test_back_parameters_have_status_and_source(self):
         for pos in ("B1", "B4"):
             ns = load_back(pos)
