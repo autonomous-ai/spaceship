@@ -51,7 +51,7 @@ Fusion runs only through `tools/fusion/run_script.py`, which takes the machine-w
 - intersects every pair of bodies whose boxes overlap; an overlap over 0.1 mm3 that isn't in `v2/04-Checks/config/clash-allow.csv` is a severe clash (guideline §10: a 1 mm3 threshold can hide small clashes, so the gap rules add minimum clearances);
 - measures the gap rules as true minimum distances;
 - walks each bolt or screw from its head to 30 mm past its tip: what surrounds the shank (clamped parts, the nut, rivnut or insert), what sits on the axis with no hole (a collision; past the tip, the tip clearance), engagement in the thread, at least one thread past a through nut, tip clearance at least 1 mm;
-- sweeps the tool envelope (`v2/04-Checks/config/tools.csv`) out from each bolt head; any body in place when the bolt is tightened (all but the lining cassettes, which go on last) that it hits blocks the tool;
+- sweeps the tool envelope (`v2/04-Checks/config/tools.csv`: the decided 5 mm hex key, ruling R-J2, as an 8 mm shaft for 70 mm through the access hole and fill pocket, then a 40 mm hand and handle) out from each bolt head; any body in place when the bolt is tightened (all but the lining cassettes, which go on last) that it hits blocks the tool;
 - lists bodies that touch, for the mixed-metal check;
 
 then writes JSON and closes its document without saving. Its findings carry the scope `<model>/fusion`, so an offline run never closes them and the reverse.

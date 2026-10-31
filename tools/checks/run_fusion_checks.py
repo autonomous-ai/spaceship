@@ -168,7 +168,9 @@ def main(argv=None):
     ap.add_argument("--root", default=REPO_ROOT)
     ap.add_argument("--ref", default="", help="check this git ref (e.g. origin/main) in a fresh export instead of --root")
     ap.add_argument("--register-root", default=REPO_ROOT)
-    ap.add_argument("--model", choices=("assembly", "skeleton"), default="assembly")
+    ap.add_argument("--model", default="assembly", help="assembly, skeleton, or a label for --steps")
+    ap.add_argument("--steps", default="", help="comma-separated STEP files to check instead of picking them")
+    ap.add_argument("--save-json", default="", help="also copy the raw Fusion result here")
     ap.add_argument("--rev", default="")
     ap.add_argument("--update", action="store_true")
     ap.add_argument("--from-json", default="")
@@ -182,7 +184,7 @@ def main(argv=None):
         with open(a.from_json, encoding="utf-8") as fh:
             res = json.load(fh)
     else:
-        steps = pick_steps(root, a.model)
+        steps = [os.path.abspath(p) for p in a.steps.split(",") if p] if a.steps else pick_steps(root, a.model)
         if not steps:
             print("no %s STEP files to check" % a.model)
             return 0
@@ -195,6 +197,9 @@ def main(argv=None):
             return 2
         with open(out_json, encoding="utf-8") as fh:
             res = json.load(fh)
+        if a.save_json:
+            import shutil
+            shutil.copyfile(out_json, a.save_json)
         res["rev"] = a.rev
         res["model"] = a.model
     model = res.get("model", a.model)

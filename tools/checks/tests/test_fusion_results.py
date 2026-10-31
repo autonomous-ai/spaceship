@@ -87,3 +87,29 @@ def test_offline_run_cannot_close_a_fusion_clash():
     assert closed == [] and reg["findings"][0]["status"] == "OPEN"
     _n, _r, closed = register.merge(reg, [], "ccc", "2026-10-31", ["C01:skeleton/fusion"])   # Fusion run, fixed
     assert closed == ["F-001"]
+
+
+def test_live_fusion_result_on_the_bolt_fixture():
+    """A recorded live run (tools/checks/tests/fixtures/bolt-joints-result.json,
+    made by make_bolt_fixture.py and whole_pod_check.py through the lock):
+    A M6 x 16 right, B M6 x 25 into the far wall, C M6 x 8 short in the
+    rivnut, D M6 x 16 with a plate over its head."""
+    import json
+    import pytest
+    p = os.path.join(HERE, "fixtures", "bolt-joints-result.json")
+    if not os.path.exists(p):
+        pytest.skip("no recorded Fusion run")
+    res = json.load(open(p, encoding="utf-8"))
+    fs = rf.findings_from(res, "fixture")
+    by_case = {}
+    for f in fs:
+        for tag in "ABCD":
+            if f.subject.endswith(" %s:1" % tag) or (" %s:1 " % tag) in f.subject or f.subject.split(" at ")[0].endswith(tag):
+                by_case.setdefault(tag, set()).add(f.rule)
+    rules = [(f.rule, f.subject) for f in fs]
+    assert not any("X 16 ISO 4762 A" in s for _r, s in rules), rules          # the right bolt is clean
+    assert any(r == "bolt-collides" and "X 25" in s for r, s in rules), rules
+    assert any(r == "short-engagement" and "X 8" in s for r, s in rules), rules
+    assert any(r == "tool-blocked" and "ISO 4762 D" in s for r, s in rules), rules
+    assert any(r == "clash" and "FAR WALL B" in s for r, s in rules), rules   # the long bolt also clashes
+    assert not any(r == "clash" and "RIVNUT" in s for r, s in rules), rules   # bolt in thread is allowed
