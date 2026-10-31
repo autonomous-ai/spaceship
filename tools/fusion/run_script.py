@@ -679,23 +679,32 @@ def run(_context):
             app.data.activeProject = proj
             # a version saved a moment ago may not open yet (live 2026-10-31, 4 s after
             # a save and close: "Missing key for PIMOpenWorkflowTracker"): try again
-            # every 10 s for up to a minute, then give the error
+            # every 10 s for up to a minute, then give the error. Each new try looks the
+            # file up afresh and opens its latest version: the same reference kept
+            # failing for a full minute (live 2026-10-31, the #140 batch test)
+            target = files[0]
             for attempt in range(7):
                 try:
-                    doc = app.documents.open(files[0], True)
+                    doc = app.documents.open(target, True)
                     break
                 except Exception as e:
                     if attempt == 6:
                         raise
-                    print("run_script: opening %%r failed (%%s); trying again in 10 s" %% (
+                    print("run_script: opening %%r failed (%%s); looking it up again in 10 s" %% (
                         name, str(e).strip().splitlines()[-1][:120] if str(e).strip() else type(e).__name__))
                     adsk.doEvents()
                     time.sleep(10)
+                    again, _u, _o = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: name in fs)
+                    fresh = again.get(name) or files
+                    try:
+                        target = fresh[0].latestVersion or fresh[0]
+                    except Exception:
+                        target = fresh[0]
             if doc is None:
                 raise RuntimeError("could not open %%r from %%s" %% (name, ARGS["folder"]))
             doc.activate()
             print("run_script: opened %%r (version %%s) from %%s" %% (
-                name, files[0].versionNumber, ARGS["folder"]))
+                name, target.versionNumber, ARGS["folder"]))
             return
         if not ARGS.get("create"):
             raise RuntimeError("%%r is not open and not in %%s%%s (add --doc-new to make it)"

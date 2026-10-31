@@ -5,6 +5,8 @@
 """
 
 import base64
+import contextlib
+import io
 import os
 import sys
 import types
@@ -285,6 +287,66 @@ class DocStepTests(unittest.TestCase):
         finally:
             _time.sleep = real_sleep
         self.assertEqual((opened, made, waits), (["NEW_CAD"], [], [10, 10]))
+
+    def test_each_new_try_opens_a_fresh_reference(self):
+        # live 2026-10-31 (#140 batch test): the same reference kept failing for a full
+        # minute; a reference looked up again opens
+        import time as _time
+        handed = []
+
+        class FreshFile(File):
+            latestVersion = None                             # the fake has no version history
+
+        class FreshFiles(Files):
+            def item(self, i):
+                f = FreshFile("NEW_CAD", "f3d")              # a new reference on every look
+                handed.append(f)
+                return f
+
+        folder = types.SimpleNamespace(dataFiles=FreshFiles([None]))
+        stale = []
+
+        def open_doc(f, v):
+            if f is handed[0]:                               # the first reference never opens
+                stale.append(f)
+                raise RuntimeError("1 : Missing key for PIMOpenWorkflowTracker")
+            return types.SimpleNamespace(name=f.name, activate=lambda: True)
+
+        real_sleep = _time.sleep
+        _time.sleep = lambda s: None
+        try:
+            opened = self.run_open_with(folder, open_doc)
+        finally:
+            _time.sleep = real_sleep
+        self.assertEqual((len(stale), opened), (1, "NEW_CAD"))  # one failure, then the fresh one opened
+
+    def run_open_with(self, folder, open_doc):
+        """The --doc open step against a fake Fusion with this folder and open()."""
+        folder.dataFolders = types.SimpleNamespace(itemByName=lambda n: None)
+        proj = types.SimpleNamespace(name="Default Project", rootFolder=folder)
+        app = types.SimpleNamespace(
+            documents=types.SimpleNamespace(count=0, item=None, open=open_doc),
+            data=types.SimpleNamespace(dataProjects=types.SimpleNamespace(count=1, item=lambda i: proj),
+                                       activeProject=None))
+        adsk = types.ModuleType("adsk")
+        adsk.doEvents = lambda: None
+        adsk.core = types.SimpleNamespace(Application=types.SimpleNamespace(get=lambda: app))
+        adsk.fusion = types.SimpleNamespace()
+        keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.fusion")}
+        sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.fusion": adsk.fusion})
+        out = io.StringIO()
+        try:
+            ns = {}
+            exec(compile(rs.doc_script("open", "NEW_CAD", "Default Project"), "doc_step", "exec"), ns)
+            with contextlib.redirect_stdout(out):
+                ns["run"](None)
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+        return "NEW_CAD" if "opened 'NEW_CAD'" in out.getvalue() else out.getvalue()
 
     def test_a_design_that_is_there_opens_despite_an_unreadable_entry(self):
         opened, made = self.run_doc([File("NEW_CAD", "f3d"), "boom"], create=True)
