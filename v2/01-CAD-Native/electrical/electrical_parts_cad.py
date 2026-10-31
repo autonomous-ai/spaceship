@@ -263,7 +263,10 @@ def body_tray(design, comp, occ):
                 efi.isFlipped = flip
                 ef = ff.add(efi)
                 b = box(comp.bRepBodies.item(0))
-                ok = all(abs(g - w_) < 0.05 for g, w_ in zip([b[0], b[1], b[3], b[4]], want)) and b[5] - b[2] > 20
+                # outer faces on the outline, and folded toward +Z: the open side must be +Z, or the part is the
+                # mirror image of the design (the lead exits at X = w must face the pod's +X corner as fitted)
+                ok = all(abs(g - w_) < 0.05 for g, w_ in zip([b[0], b[1], b[3], b[4]], want)) and b[5] - b[2] > 20 \
+                    and b[5] > b0[5] + 10
                 print("body returns, bend position %d flipped %s: box %s %s" % (pos, flip, b, "ok" if ok else "rejected"))
                 if ok:
                     ret = ef
@@ -272,7 +275,7 @@ def body_tray(design, comp, occ):
             if ret:
                 break
         if ret is None:
-            raise RuntimeError("body: no return placement keeps the outer faces on the outline")
+            raise RuntimeError("body: no return placement keeps the outer faces on the outline and folds toward +Z")
         ret.name = "FLANGE - RETURNS"
         body = comp.bRepBodies.item(0)
         b = box(body)
@@ -548,6 +551,8 @@ def build_part(app, key):
             bb = box(body)
             t = ev(design, "t")
             zs = 1 if abs(bb[2]) < abs(bb[5]) else -1      # the returns fold toward +Z or -Z
+            if zs != 1:
+                raise RuntimeError("body opens toward -Z: that is the mirror image of the design; nothing saved")
             back_z = bb[2] if zs > 0 else bb[5]               # the back's outer face: Z 0, t or -t
             back = [e for e, v in (("0 mm", 0.0), ("t", t), ("-t", -t)) if abs(back_z - v) < 0.05]
             if not back:
