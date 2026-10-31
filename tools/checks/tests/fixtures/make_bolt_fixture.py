@@ -11,7 +11,11 @@ thread modelled as a 5.0 bore, installed length 10.16), and the far wall of
 a 20-deep tube (inner face 18.8 below the nut-side wall's outer face).
 Bolts: M6 x 16 (right), M6 x 25 (runs into the far wall), M6 x 8 (engages
 only part of the rivnut), M6 x 16 with a plate 20 mm above its head (tool
-blocked). Known answers are in tests/test_fusion_results.py.
+blocked). Then two at X 1100, near the pod's right face so the room is -X,
+as in a wall bay: E with fill over the joint and a 60 x 60 pocket open
+toward the room (the joints register's pocket, the key must get in), and F
+with the same fill and no pocket (the key can't). Known answers are in
+tests/test_fusion_results.py.
 The script makes its own document, exports, and closes it without saving.
 """
 
@@ -89,6 +93,27 @@ def run(_context):
             if blocked:
                 add(root, "21193%d" % i, "WALL - TEST BLOCKING PLATE %s" % tag,
                     box(tbm, x - 30, -30, 27.2, x + 30, 30, 30.2))
+        for tag, pn, pocket in (("E", 4, True), ("F", 5, False)):
+            x = 1100.0 if tag == "E" else 1100.0
+            y = 0.0 if tag == "E" else 200.0
+            add(root, "2119%d0" % (4 + pn), "WALL - TEST WALL BOLT SIDE %s" % tag,
+                cut(tbm, box(tbm, x - 30, y - 30, 0, x + 30, y + 30, 1.2), cyl(tbm, x, y, -1, 3, 6.6)))
+            add(root, "2119%d1" % (4 + pn), "WALL - TEST WALL NUT SIDE %s" % tag,
+                cut(tbm, box(tbm, x - 30, y - 30, -3.46, x + 30, y + 30, -2.26), cyl(tbm, x, y, -5, 0, 9.53)))
+            add(root, "8381%02d" % pn, "HARDWARE - RIVNUT - M6 %s" % tag,
+                cut(tbm, cyl(tbm, x, y, -12.42, -2.26, 9.5), cyl(tbm, x, y, -13, -1, 5.0)))
+            add(root, "2119%d2" % (4 + pn), "WALL - TEST FAR WALL %s" % tag,
+                box(tbm, x - 30, y - 30, -22.26, x + 30, y + 30, -21.06))
+            bolt = cyl(tbm, x, y, 1.2 - 16.0, 1.2, 6.0)
+            tbm.booleanOperation(bolt, cyl(tbm, x, y, 1.2, 7.2, 10.0), adsk.fusion.BooleanTypes.UnionBooleanType)
+            add(root, "8380%02d" % pn, "HARDWARE - BOLT - M6 X 16 ISO 4762 %s" % tag, bolt)
+            # the outer skin behind the joint (+X side) and the fill of the bay on the room side of it
+            add(root, "2119%d3" % (4 + pn), "WALL - TEST SKIN %s" % tag, box(tbm, x + 50, y - 60, -30, x + 53, y + 60, 80))
+            fill = box(tbm, x - 40, y - 60, 7.3, x + 50, y + 60, 80)
+            if pocket:      # 60 x 60 pocket around the bolt, open on the fill's room-side face (-X)
+                tbm.booleanOperation(fill, box(tbm, x - 41, y - 30, 7.0, x + 30, y + 30, 60),
+                                     adsk.fusion.BooleanTypes.DifferenceBooleanType)
+            add(root, "2119%d4" % (4 + pn), "WALL - TEST FILL %s" % tag, fill)
         em = design.exportManager
         ok = em.execute(em.createSTEPExportOptions(ARGS["out"], root))
         print("export %s: %s" % (ARGS["out"], ok))

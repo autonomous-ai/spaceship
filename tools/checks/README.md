@@ -25,7 +25,7 @@ Each run checks exactly that revision in a clean export (deleted afterwards), up
 
 | Code | Check | How | Runs |
 |---|---|---|---|
-| C01 | Clash and minimum gaps | Offline: the pod's outer shell must be closed (back, sides and roof sampled every 5 mm, 1 mm inside; open regions of 10 mm or more are findings). Exact interference with an allow-list of intended contacts goes through Fusion (below). | offline and Fusion |
+| C01 | Clash and minimum gaps | Offline: the pod's outer shell must be closed, checked exactly 1 mm inside the back, sides and roof: each body's box grows by just over half the decided 2.26 mm seam, so seams close and any wider opening is a finding. Exact interference with an allow-list of intended contacts goes through Fusion (below). | offline and Fusion |
 | C02 | Tolerance stack-ups | Gap rules between named bodies (`v2/04-Checks/config/gap-rules.csv`, the same file the Fusion check reads), and worst-case stacks per joint (`v2/04-Checks/stacks/`). RSS is shown for information only (guideline §6.3). A stack with a missing tolerance stays OPEN and is listed, not failed. | offline |
 | C03 | Fastener and tool access | Every bolt reachable with the one hand tool from the side the assembly order uses: a tool envelope along each bolt axis must miss every part already in place at that step. | Fusion |
 | C04 | Weight, doorway, pallet | Every shipping piece 20 kg or less except glass (D-03); passes a 914 × 2032 doorway (PLAN Target 2; the 810 mm door of REQ-ASM-06, PROPOSED, is a note); fits its pallet, 48 × 40 in or the standard long 48 × 96 in, at most 1679 mm tall above a 150 mm deck (REQ-SHP-01, REQ-SHP-03). Today from the layout study's decided list; from the CAD and parts lists as they merge. | offline |
@@ -61,7 +61,7 @@ Fusion runs only through `tools/fusion/run_script.py`, which takes the machine-w
 - intersects every pair of bodies whose boxes overlap; an overlap over 0.1 mm3 that isn't in `v2/04-Checks/config/clash-allow.csv` is a severe clash (guideline §10: a 1 mm3 threshold can hide small clashes, so the gap rules add minimum clearances);
 - measures the gap rules as true minimum distances;
 - walks each bolt or screw from its head to 30 mm past its tip: what surrounds the shank (clamped parts, the nut, rivnut or insert), what sits on the axis with no hole (a collision; past the tip, the tip clearance), engagement in the thread, at least one thread past a through nut, tip clearance at least 1 mm;
-- sweeps the tool envelope (`v2/04-Checks/config/tools.csv`: the decided 5 mm hex key, ruling R-J2, as an 8 mm shaft for 70 mm through the access hole and fill pocket, then a 40 mm hand and handle) out from each bolt head; any body in place when the bolt is tightened (all but the lining cassettes, which go on last) that it hits blocks the tool;
+- sweeps the tool envelope (`v2/04-Checks/config/tools.csv`: the decided 5 mm hex key, ruling R-J2, the short arm on the bolt axis through the access hole, then the long arm and the hand turned 90 degrees toward the room through the fill pocket's open face) out from each bolt head; any body in place when the bolt is tightened (all but the lining cassettes, which go on last) that it hits blocks the tool;
 - lists bodies that touch, for the mixed-metal check;
 
 then writes JSON and closes its document without saving. Its findings carry the scope `<model>/fusion`, so an offline run never closes them and the reverse.

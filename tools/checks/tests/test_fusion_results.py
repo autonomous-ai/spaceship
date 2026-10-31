@@ -113,6 +113,10 @@ def test_live_fusion_result_on_the_bolt_fixture():
     assert any(r == "tool-blocked" and "ISO 4762 D" in s for r, s in rules), rules
     assert any(r == "clash" and "FAR WALL B" in s for r, s in rules), rules   # the long bolt also clashes
     assert not any(r == "clash" and "RIVNUT" in s for r, s in rules), rules   # bolt in thread is allowed
+    # the hex key turns 90 degrees toward the room: through the fill pocket it gets in (E), with no pocket not (F)
+    assert not any(r == "tool-blocked" and "ISO 4762 E" in s for r, s in rules), rules
+    assert any(r == "tool-blocked" and "ISO 4762 F" in s for r, s in rules), rules
+    assert not any(x.startswith("/") for x in res["steps"] + [i["file"] for i in res["imports"]])   # no local paths
 
 
 def test_door_swing_hit_is_severe_and_a_free_swing_is_quiet():
@@ -132,3 +136,11 @@ def test_exact_only_gap_on_the_skeleton_is_major():
                      "max_mm": 4.1, "severity": "severe", "method": "exact"}]}
     assert [f.severity for f in rf.findings_from(res, "skeleton")] == ["major"]
     assert [f.severity for f in rf.findings_from(res, "assembly")] == ["severe"]
+
+
+def test_saved_results_have_no_absolute_paths(tmp_path):
+    res = {"steps": [os.path.join(rf.REPO_ROOT, "v2/03-Manufacturing/a.step"), "/elsewhere/b.step"],
+           "imports": [{"file": os.path.join(rf.REPO_ROOT, "v2/03-Manufacturing/a.step"), "ok": True}]}
+    out = rf._relative(res, rf.REPO_ROOT)
+    assert out["steps"] == ["v2/03-Manufacturing/a.step", "b.step"]
+    assert out["imports"][0]["file"] == "v2/03-Manufacturing/a.step"

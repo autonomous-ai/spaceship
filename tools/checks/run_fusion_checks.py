@@ -64,6 +64,21 @@ def run_fusion(root, steps, out_json, cfg_root):
     return p.returncode, p.stdout[-4000:], p.stderr[-4000:]
 
 
+def _relative(res, root):
+    """A copy of a Fusion result with file paths relative to the repo (or bare names), never absolute."""
+    out = dict(res)
+
+    def rp(p):
+        p = os.path.abspath(p)
+        for base in (root, REPO_ROOT):
+            if p.startswith(os.path.abspath(base) + os.sep):
+                return os.path.relpath(p, base).replace(os.sep, "/")
+        return os.path.basename(p)
+    out["steps"] = [rp(p) for p in res.get("steps", [])]
+    out["imports"] = [dict(i, file=rp(i["file"])) for i in res.get("imports", [])]
+    return out
+
+
 def _short(label):
     return label.split(" / ")[-2] if " / " in label else label
 
@@ -238,7 +253,9 @@ def _main(a, root):
             res = json.load(fh)
         import shutil
         if a.save_json:
-            shutil.copyfile(out_json, a.save_json)
+            with open(a.save_json, "w", encoding="utf-8") as fh:
+                json.dump(_relative(res, root), fh, indent=1)
+                fh.write("\n")
         shutil.rmtree(os.path.dirname(out_json), ignore_errors=True)
         res["rev"] = a.rev
         res["model"] = a.model
@@ -260,10 +277,7 @@ def _main(a, root):
     if a.update:
         out = os.path.join(a.register_root, CHECKS_DIR, "results")
         os.makedirs(out, exist_ok=True)
-        slim = dict(res)
-        slim["steps"] = [rel(root, p) if os.path.abspath(p).startswith(root) else os.path.basename(p)
-                         for p in res.get("steps", [])]
-        slim["imports"] = [dict(i, file=os.path.basename(i["file"])) for i in res.get("imports", [])]
+        slim = _relative(res, root)
         with open(os.path.join(out, "fusion-%s-latest.json" % model), "w", encoding="utf-8") as fh:
             json.dump(slim, fh, indent=1)
             fh.write("\n")

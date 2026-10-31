@@ -191,6 +191,26 @@ def bolt_axis(body):
     return {"origin": o, "axis": ax, "t0": t0, "t1": t1, "radius": rmin, "head_at_t1": head_at_t1}
 
 
+POD_FACES = [  # (coordinate index, value in mm, inward normal) of the pod's outer faces (conventions section 4)
+    (0, -1250.0, (1.0, 0.0, 0.0)), (0, 1250.0, (-1.0, 0.0, 0.0)), (1, 850.0, (0.0, -1.0, 0.0)),
+    (1, -850.0, (0.0, 1.0, 0.0)), (2, 2400.0, (0.0, 0.0, -1.0)),
+]
+
+
+def room_direction(head, out_dir):
+    """Toward the room from a bolt: the inward normal of the pod face nearest the head, made square to the
+    bolt axis. None when the bolt itself points at the room (the key then goes straight in)."""
+    h = (head.x * CM, head.y * CM, head.z * CM)
+    k, v, n = min(POD_FACES, key=lambda f: abs(h[f[0]] - f[1]))
+    nv = adsk.core.Vector3D.create(*n)
+    along = nv.dotProduct(out_dir)
+    r = adsk.core.Vector3D.create(nv.x - out_dir.x * along, nv.y - out_dir.y * along, nv.z - out_dir.z * along)
+    if r.length < 0.3:
+        return None
+    r.normalize()
+    return r
+
+
 def _pt(o, ax, t, u=None, r=0.0):
     p = adsk.core.Point3D.create(o.x + ax.x * t, o.y + ax.y * t, o.z + ax.z * t)
     if u is not None:
@@ -222,9 +242,11 @@ def fasteners(app, bodies, tools, later_re, step_mm=0.25, ring_extra_mm=0.6, pas
     n_bolts = sum(1 for l, _b in bodies if FASTENER_RE.search(l) and not NUT_RE.search(l))
     if n_bolts > 20:                 # the whole pod: a coarser walk keeps the run to minutes
         step_mm, past_tip_mm = max(step_mm, 0.5), min(past_tip_mm, 15.0)
-    # the tool: one or more coaxial segments out from the head (diameter, start, end in mm)
-    segs = [(_f(t.get("diameter_mm"), 8.0), _f(t.get("start_mm"), 0.0), _f(t.get("end_mm"), _f(t.get("length_mm"), 80.0)))
-            for t in tools] or [(8.0, 0.0, 70.0), (40.0, 70.0, 170.0)]
+    # the tool: segments out from the head, either on the bolt axis ('axis') or turned 90 degrees toward
+    # the room from the end of the axis part ('room'), each (diameter, along, from, to) in mm
+    segs = [(_f(t.get("diameter_mm"), 8.0), (t.get("along") or "axis").strip(), _f(t.get("from_mm"), 0.0),
+             _f(t.get("to_mm"), 30.0)) for t in tools] or \
+        [(8.0, "axis", 0.0, 30.0), (8.0, "room", 0.0, 40.0), (40.0, "room", 40.0, 140.0)]
     tool = {"name": (tools[0].get("name") if tools else "5 mm hex key")}
     out = []
     for lb, bb in bodies:
@@ -270,16 +292,20 @@ def fasteners(app, bodies, tools, later_re, step_mm=0.25, ring_extra_mm=0.6, pas
                              for l, ks in axis_hits.items() if min(ks) <= length_mm), key=lambda x: x["from_head_mm"])
         ahead = sorted((min(ks) - length_mm, l) for l, ks in axis_hits.items() if min(ks) > length_mm)
         tip_clear = {"body": ahead[0][1], "mm": round(ahead[0][0], 2)} if ahead else None
-        # tool envelope: coaxial segments from the head outward
+        # tool envelope: the axis part out from the head, then the part turned toward the room
         out_dir = a.copy()
         out_dir.scaleBy(-sgn)
         p0 = _pt(o, a, head_t)
+        room = room_direction(p0, out_dir)
+        axis_end = max([s1 for _d, al, _s0, s1 in segs if al == "axis"] or [0.0])
+        elbow = adsk.core.Point3D.create(p0.x + out_dir.x * axis_end / CM, p0.y + out_dir.y * axis_end / CM,
+                                         p0.z + out_dir.z * axis_end / CM)
         blocked = []
-        for dia, s0, s1 in segs:
-            q0 = adsk.core.Point3D.create(p0.x + out_dir.x * max(s0, 0.5) / CM, p0.y + out_dir.y * max(s0, 0.5) / CM,
-                                          p0.z + out_dir.z * max(s0, 0.5) / CM)
-            q1 = adsk.core.Point3D.create(p0.x + out_dir.x * s1 / CM, p0.y + out_dir.y * s1 / CM,
-                                          p0.z + out_dir.z * s1 / CM)
+        for dia, along, s0, s1 in segs:
+            base, d = (p0, out_dir) if along == "axis" or room is None else (elbow, room)
+            q0 = adsk.core.Point3D.create(base.x + d.x * max(s0, 0.5) / CM, base.y + d.y * max(s0, 0.5) / CM,
+                                          base.z + d.z * max(s0, 0.5) / CM)
+            q1 = adsk.core.Point3D.create(base.x + d.x * s1 / CM, base.y + d.y * s1 / CM, base.z + d.z * s1 / CM)
             cyl = tbm.createCylinderOrCone(q0, dia / 2.0 / CM, q1, dia / 2.0 / CM)
             cb = bbox_mm(cyl)
             for l, b in bodies:
@@ -289,7 +315,8 @@ def fasteners(app, bodies, tools, later_re, step_mm=0.25, ring_extra_mm=0.6, pas
                 t2 = tbm.copy(b)
                 if tbm.booleanOperation(t1, t2, adsk.fusion.BooleanTypes.IntersectionBooleanType) and t1 \
                         and t1.volume * 1000.0 > 1.0:
-                    blocked.append({"body": l, "segment_mm": [s0, s1], "mm3": round(t1.volume * 1000.0, 1)})
+                    blocked.append({"body": l, "segment": along, "segment_mm": [s0, s1],
+                                    "mm3": round(t1.volume * 1000.0, 1)})
         out.append({"bolt": lb, "length_mm": round(length_mm, 2), "dia_mm": round(ax["radius"] * 2 * CM, 2),
                     "head": [round(p0.x * CM, 1), round(p0.y * CM, 1), round(p0.z * CM, 1)],
                     "axis": [round(a.x, 4), round(a.y, 4), round(a.z, 4)], "layers": layers,

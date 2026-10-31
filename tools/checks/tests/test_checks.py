@@ -162,8 +162,8 @@ def test_shell_check_quiet_when_panels_meet():
     walls = [_B("back", (-1250, 807, 110, 1250, 850, 2400)), _B("left", (-1250, -645, 110, -1207, 850, 2400)),
              _B("right", (1207, -645, 110, 1250, 850, 2400)), _B("roof", (-1250, -645, 2357, 1250, 850, 2400))]
     assert c_geometry.shell_gaps(walls) == []
-    # a 3 mm seam is below the 10 mm reporting size
-    seam = [_B("b1", (-1250, 807, 110, -1.5, 850, 2400)), _B("b2", (1.5, 807, 110, 1250, 850, 2400))] + walls[1:]
+    # the decided 2.26 mm seam is a seam, not an opening
+    seam = [_B("b1", (-1250, 807, 110, -1.13, 850, 2400)), _B("b2", (1.13, 807, 110, 1250, 850, 2400))] + walls[1:]
     assert c_geometry.shell_gaps(seam) == []
 
 
@@ -380,6 +380,7 @@ def test_soft_goods_rule_uses_whole_words(tmp_path):
         fh.write("part_number,name\n351001,x\n351002,x\n351003,x\n351004,x\n")
     names = {"351001": "FRONT - SEALED GLAZING PROFILE", "351002": "FRONT - TAPERED BLOCK",
              "351003": "FRONT - FILLER PANEL", "351004": "FRONT - DOOR SEAL"}
+    plural = {"351005": "FRONT - DOOR SEALS - SET", "351006": "FRONT - GASKETS - KIT"}
     fs = c_drawings.check_drawings(str(tmp_path), set(names), {}, names)
     got = {f.subject: f.severity for f in fs}
     assert got == {"351001": "severe", "351002": "severe", "351003": "severe"}   # real parts need drawings
@@ -388,7 +389,10 @@ def test_soft_goods_rule_uses_whole_words(tmp_path):
     (tmp_path / "v2/04-Checks/config/policy.csv").write_text("key,value,status_source\nmissing_drawing_severity,major,x\n")
     fs = c_drawings.check_drawings(str(tmp_path), set(names), {}, names)
     assert {f.subject: f.severity for f in fs} == {"351001": "major", "351002": "major", "351003": "major"}
-    # 351004 is a seal: its cut-list line defines it
+    # 351004 is a seal: its cut-list line defines it; plurals count too
+    with open(tmp_path / "v2/03-Manufacturing/front/cut-list.csv", "a") as fh:
+        fh.write("351005,x\n351006,x\n")
+    assert c_drawings.check_drawings(str(tmp_path), set(plural), {}, plural) == []
 
 
 def _pdf(path, text):
@@ -426,23 +430,19 @@ def test_run_with_ref_leaves_no_export_behind():
     assert set(glob.glob(pattern)) == before
 
 
-def test_hole_size_rule_flags_6_6_mm_m6_clearance_holes(monkeypatch, tmp_path):
-    bad = _plate_with_hole(hole_x=30.0, d=6.6)
-    good = _plate_with_hole(hole_x=30.0, d=7.0)
+def test_hole_size_rule_only_for_holes_facing_a_rivnut():
     rules = [{"id": "M6-CLEARANCE-7", "min_dia_mm": "6.3", "max_dia_mm": "6.95", "severity": "major",
               "status_source": "F-009", "message": "m", "fix": "f"}]
-    for plate, expect in ((bad, ["hole-size-M6-CLEARANCE-7"]), (good, [])):
-        class FakeStep:
-            def instances(self):
-                return [{"solid": 1, "part_number": "111201", "name": "x", "path": ["111201"], "frame": sf.Frame()}]
-
-            def solid(self, sid, plate=plate):
-                return plate
-        key = str(tmp_path / ("x%d.step" % len(expect)))
-        monkeypatch.setitem(c_geometry.load_step.__defaults__[0], key, FakeStep())
-        fs = c_geometry.check_part_features(str(tmp_path), key, {}, [], hole_rules=rules)
-        assert [f.rule for f in fs] == expect
-
+    def body(label, pn, holes):
+        b = _B(label, None, pn, holes)
+        b.file = label + ".step"
+        return b
+    frame = body("frame", "211101", [sf.Hole(1, (0.0, 0.0, 0.0), (0, 0, 1), 6.6, 1.2, [])])
+    band = body("band", "111101", [sf.Hole(2, (0.0, 0.0, -3.4), (0, 0, 1), 9.53, 2.0, [])])
+    rivet = body("trim", "211301", [sf.Hole(3, (100.0, 0.0, 0.0), (0, 0, 1), 6.5, 1.0, [])])     # a 6.4 blind rivet's hole
+    fs = c_geometry.check_hole_sizes(ROOT, "assembly", [frame, band, rivet], hole_rules=rules)
+    assert [f.evidence["dia_mm"] for f in fs] == [6.6]                 # only the hole facing the rivnut
+    assert c_geometry.check_hole_sizes(ROOT, "assembly", [frame, rivet], hole_rules=rules) == []
 
 def test_update_refuses_a_revision_label_for_another_tree(capsys):
     import run_checks
@@ -474,3 +474,27 @@ def test_bolt_patterns_across_assemblies_must_match():
     offs = sorted(round(f.evidence["offset_mm"], 1) for f in fs)
     assert offs == [27.2, 27.2]                 # the -452.2 / -425 pair, reported on both sides; 278.8 / 278.3 matches
     assert all(f.severity == "severe" for f in fs)
+
+
+def test_shell_reports_a_split_slot_and_ignores_the_decided_seam():
+    side = [_B("left", (-1250, -645, 110, -1204, 850, 2400)), _B("right", (1204, -645, 110, 1250, 850, 2400)),
+            _B("roof", (-1250, -645, 2354, 1250, 850, 2400))]
+    # back wall: a 15 mm horizontal slot (Z 1200 to 1215) with a small bracket over part of its lower side
+    slot = [_B("lower", (-1250, 804, 110, 1250, 850, 1200)), _B("upper", (-1250, 804, 1215, 1250, 850, 2354)),
+            _B("bracket", (-100, 804, 1199, 100, 850, 1208))]
+    gaps = c_geometry.shell_gaps(side + slot)
+    assert len(gaps) == 1 and gaps[0]["zone"] == "back"
+    assert gaps[0]["b"][0] == pytest.approx(1200, abs=0.01) and gaps[0]["b"][1] == pytest.approx(1215, abs=0.01)
+    # the same back wall with the decided 2.26 mm seam instead: closed
+    seam = [_B("lower", (-1250, 804, 110, 1250, 850, 1200)), _B("upper", (-1250, 804, 1202.26, 1250, 850, 2354))]
+    assert c_geometry.shell_gaps(side + seam) == []
+    # a 2.6 mm gap is wider than the seam: reported
+    wide = [_B("lower", (-1250, 804, 110, 1250, 850, 1200)), _B("upper", (-1250, 804, 1202.6, 1250, 850, 2354))]
+    assert len(c_geometry.shell_gaps(side + wide)) == 1
+
+
+def test_door_swing_steps_leave_no_big_unchecked_gap():
+    rows = c_parts.read_csv(os.path.join(ROOT, "v2/04-Checks/config/door-swing.csv"))
+    for r in rows:
+        travel = math.radians(float(r["step_deg"])) * 1176.0          # the door's free edge (D-46 width)
+        assert travel <= 12.0, travel

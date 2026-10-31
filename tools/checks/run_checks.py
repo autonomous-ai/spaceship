@@ -76,6 +76,7 @@ def run(root, rev):
     if any(b.solid.holes for b in asm):
         findings += c_geometry.check_alignment(root, "assembly", asm)
         findings += c_geometry.check_unmatched(root, "assembly", asm)
+        findings += c_geometry.check_hole_sizes(root, "assembly", asm)
         ran |= {"C08", "C08:assembly"}
     stack_fs, stack_report = c_stacks.check_stacks(root)
     findings += stack_fs

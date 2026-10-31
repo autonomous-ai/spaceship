@@ -150,12 +150,34 @@ def _merge(rects, tol=1e-6):
     return rects
 
 
-def shell_gaps(bodies, inset=1.0, min_size=10.0, root=None):
-    """Open regions on the pod's outer faces, exactly: each face rectangle
-    minus the boxes of the bodies that reach 1 mm inside it. Open pieces
-    narrower than `min_size` in either direction are seams (gasket gaps),
-    not openings. Each result: zone, axes, a and b (open ranges), near (the
-    bodies bordering it)."""
+SEAM_GAP = 2.26          # the decided metal-stop seam (PM ruling on F-008): narrower gaps are seams, not openings
+
+
+def _touch(a, b, tol=1e-6):
+    """Two rectangles overlap or share a boundary of positive length."""
+    oa = min(a[1], b[1]) - max(a[0], b[0])
+    ob = min(a[3], b[3]) - max(a[2], b[2])
+    return (oa >= -tol and ob > tol) or (oa > tol and ob >= -tol)
+
+
+def _components(rects):
+    groups = []
+    for r in rects:
+        hit = [g for g in groups if any(_touch(r, x) for x in g)]
+        merged = [r] + [x for g in hit for x in g]
+        groups = [g for g in groups if g not in hit] + [merged]
+    return groups
+
+
+def shell_gaps(bodies, inset=1.0, seam=SEAM_GAP, root=None):
+    """Open regions on the pod's outer faces. Each body's box, where it
+    reaches 1 mm inside a face, is grown by just over half a seam in the
+    face's plane, so a decided 2.26 mm seam closes and anything wider stays
+    open; every piece left is an opening (no size cut-off before joining).
+    Touching pieces are joined into one region; its reported extent is
+    grown back by the same margin. Each result: zone, axes, a and b (open
+    ranges), near (the bodies bordering it)."""
+    grow = seam / 2.0 + 0.1
     out = []
     for zone, ax, val, sign, (aa, a0, a1), (bb, b0, b1), needs in SHELL_ZONES:
         if needs and not (root and _glob_exists(root, needs)):
@@ -164,10 +186,12 @@ def shell_gaps(bodies, inset=1.0, min_size=10.0, root=None):
         face_bodies = [b for b in bodies if b.box[ax] - 1e-6 <= plane <= b.box[ax + 3] + 1e-6]
         open_ = [(a0, a1, b0, b1)]
         for b in face_bodies:
-            c = (b.box[aa], b.box[aa + 3], b.box[bb], b.box[bb + 3])
+            c = (b.box[aa] - grow, b.box[aa + 3] + grow, b.box[bb] - grow, b.box[bb + 3] + grow)
             open_ = [piece for r in open_ for piece in _subtract(r, c)]
-        fat = [r for r in open_ if r[1] - r[0] >= min_size - 1e-6 and r[3] - r[2] >= min_size - 1e-6]
-        for r in _merge(fat):
+        open_ = [r for r in open_ if r[1] - r[0] > 1e-3 and r[3] - r[2] > 1e-3]
+        for g in _components(open_):
+            r = (max(a0, min(x[0] for x in g) - grow), min(a1, max(x[1] for x in g) + grow),
+                 max(b0, min(x[2] for x in g) - grow), min(b1, max(x[3] for x in g) + grow))
             near = sorted({b.label.split(" / ")[-1] for b in face_bodies
                            if b.box[aa] <= r[1] + 1e-3 and b.box[aa + 3] >= r[0] - 1e-3
                            and b.box[bb] <= r[3] + 1e-3 and b.box[bb + 3] >= r[2] - 1e-3})
@@ -342,6 +366,46 @@ def _box_hits_segment(box, p0, p1, pad=0.5):
     return all(box[k] <= hi[k] and box[k + 3] >= lo[k] for k in range(3))
 
 
+RIVNUT_LABEL = re.compile(r"\b(RIVNUT|RIVET NUT)\b", re.I)
+
+
+def check_hole_sizes(root, mdl, bodies, hole_rules=None, capture=4.0, plane=15.0):
+    """Hole-size rules that depend on the mate: a clearance hole in the rule's
+    size band is flagged only when it faces a rivnut in another part (a
+    rivnut's hole or its thread bore on the same axis), so a blind rivet's
+    6.5 mm hole is left alone. Needs the assembled model."""
+    hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
+    fs = []
+    hs = world_holes(bodies)
+    rivnut_axes = [(b, h) for b, h in hs if (9.4 <= h.diameter <= 9.8) or
+                   (RIVNUT_LABEL.search(b.label) and 5.9 <= h.diameter <= 6.1)]
+    done = set()
+    for hr in hole_rules:
+        lo, hi = num(hr.get("min_dia_mm")), num(hr.get("max_dia_mm"))
+        if lo is None or hi is None:
+            continue
+        for b, h in hs:
+            if not lo <= h.diameter <= hi:
+                continue
+            faces = [rb for rb, rh in rivnut_axes if rb.part_number != b.part_number
+                     and abs(sf.dot(rh.axis, h.axis)) > 0.9999
+                     and sf.line_distance(rh.center, h.center, h.axis) <= capture
+                     and abs(sf.dot(tuple(rh.center[k] - h.center[k] for k in range(3)), h.axis)) <= plane]
+            if not faces or (b.part_number, hr["id"]) in done:
+                continue
+            done.add((b.part_number, hr["id"]))
+            n = sum(1 for bb, x in hs if bb.part_number == b.part_number and lo <= x.diameter <= hi)
+            fs.append(Finding(
+                "C08", "hole-size-" + hr["id"], "%s %s holes Ø%.2f" % (mdl, b.label.split(" / ")[-1], h.diameter),
+                hr.get("severity") or "major",
+                "%s has %d hole(s) of Ø%.2f facing a rivnut (%s). %s. Rule: %s." % (
+                    b.label, n, h.diameter, faces[0].label.split(" / ")[-1], hr.get("message", ""),
+                    hr.get("status_source", "")),
+                hr.get("fix", ""), b.file, owner_for(b.file, b.part_number),
+                {"model": mdl, "dia_mm": round(h.diameter, 2), "count": n}))
+    return fs
+
+
 def check_unmatched(root, mdl, bodies, capture=4.0, search=60.0, plane=15.0):
     """Bolt patterns across assemblies: a joint hole (rivnut thread, M6
     clearance or rivnut hole) in one STEP file whose partner file has joint
@@ -427,19 +491,7 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
         pn = inst["part_number"]
         part = "%s %s" % (pn, (so.name or "").strip())
         holes = so.holes
-        flagged = set()
         for h in holes:
-            for hr in hole_rules:
-                lo, hi = num(hr.get("min_dia_mm")), num(hr.get("max_dia_mm"))
-                if lo is not None and hi is not None and lo <= h.diameter <= hi and (pn, hr["id"]) not in flagged:
-                    flagged.add((pn, hr["id"]))
-                    n = sum(1 for x in holes if lo <= x.diameter <= hi)
-                    fs.append(Finding(
-                        "C08", "hole-size-" + hr["id"], "%s holes Ø%.2f" % (part, h.diameter),
-                        hr.get("severity") or "major",
-                        "%s has %d hole(s) of Ø%.2f. %s. Rule: %s." % (part, n, h.diameter, hr.get("message", ""),
-                                                                      hr.get("status_source", "")),
-                        hr.get("fix", ""), r, owner_for(r, pn), {"dia_mm": round(h.diameter, 2), "count": n}))
             e, _kind = sf.edge_distance(so, h)
             if e is None:
                 continue
