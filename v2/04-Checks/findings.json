@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -909,7 +909,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -965,7 +965,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C06",
@@ -990,7 +990,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -1015,7 +1015,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -1040,7 +1040,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -1065,7 +1065,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C06",
@@ -1319,7 +1319,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -1344,7 +1344,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -1369,7 +1369,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -1425,7 +1425,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -1481,7 +1481,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -1526,7 +1526,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111501",
    "id": "F-047",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1535,9 +1535,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "02cfe83",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 e54dce6",
+   "closed": "2026-11-01 02cfe83"
   },
   {
    "check": "C11",
@@ -3027,7 +3033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -3052,7 +3058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -3077,7 +3083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C06",
@@ -3107,7 +3113,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C06",
@@ -3121,7 +3127,7 @@
    "evidence": {},
    "key": "C06|duplicate-number|111501",
    "id": "F-099",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "Lead group 2026-11-01",
@@ -3140,9 +3146,15 @@
      "date": "2026-11-01",
      "rev": "983bb96",
      "event": "owner set by hand to Control: the master BOM rebuild is the control pack's (the Lead)"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "02cfe83",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 e54dce6",
+   "closed": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -3167,7 +3179,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -3192,7 +3204,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C05",
@@ -3217,7 +3229,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e54dce6"
+   "last_seen": "2026-11-01 02cfe83"
   },
   {
    "check": "C01",

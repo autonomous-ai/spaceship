@@ -1,5 +1,5 @@
 {
- "rev": "e54dce6",
+ "rev": "02cfe83",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -62,18 +62,6 @@
    "owner": "BASE",
    "evidence": {},
    "key": "C06|duplicate-number|111211"
-  },
-  {
-   "check": "C06",
-   "rule": "duplicate-number",
-   "subject": "111501",
-   "severity": "major",
-   "message": "Part number 111501 is used for different names: 'BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv.",
-   "fix": "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py).",
-   "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
-   "owner": "Control",
-   "evidence": {},
-   "key": "C06|duplicate-number|111501"
   },
   {
    "check": "C06",
@@ -206,18 +194,6 @@
    "owner": "Joints Engineer",
    "evidence": {},
    "key": "C05|no-drawing|111214"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "111501",
-   "severity": "severe",
-   "message": "111501 BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; finish; an ISO 2768 general tolerance.",
-   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
-   "file": "",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|no-drawing|111501"
   },
   {
    "check": "C05",
@@ -1506,11 +1482,11 @@
   },
   {
    "part_number": "838006",
-   "name": "HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD)",
+   "name": "HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD",
    "size": "",
    "length_mm": "",
    "grade": "aluminium or steel (HOLD)",
-   "finish": "",
+   "finish": "zinc plated steel or plain aluminium, with the product (HOLD)",
    "torque_nm": "",
    "qty_parts_list": "2",
    "qty_cad": "",
@@ -1523,11 +1499,11 @@
   },
   {
    "part_number": "838006",
-   "name": "HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD)",
+   "name": "HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD",
    "size": "",
    "length_mm": "",
    "grade": "aluminium or steel (HOLD)",
-   "finish": "",
+   "finish": "zinc plated steel or plain aluminium, with the product (HOLD)",
    "torque_nm": "",
    "qty_parts_list": "3",
    "qty_cad": "",
