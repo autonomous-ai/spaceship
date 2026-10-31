@@ -25,7 +25,6 @@ R7E = "air report 7e (sized on skeleton P04)"
 
 AIR_PARAMS = [
     # ---- floor and linings (PM rulings 2026-11-01 from BASE)
-    ("mat_t", "3 mm", "mm", "confirmed", "PM ruling 2026-11-01 (BASE): a 3 mm mat over the 9 mm ply, so the floor top is Z 12; the skeleton's own value replaces this one once it carries it"),
     ("col_gap", "5 mm", "mm", "confirmed", "PM ruling 2026-11-01 (BASE): the column keeps 5 mm off the floating side lining (D-17), X up to 1161; the soffit's ends the same"),
     # ---- faces of the column and the soffit
     ("face_acp", "3 mm", "mm", "source", R7E + ": faces 3 mm ACP + 9 mm felt"),
@@ -80,10 +79,15 @@ AIR_PARAMS = [
     # ---- soffit hanging (D-87; PM ruling 2026-11-01): open forks in two top rails on 4 studs in
     #      the ceiling frame, lift and slide toward the door, 2 captive lock screws; the underside
     #      in two hinged sections and a fixed strip over the column
-    ("rail_t", "3 mm", "mm", "assumption", "soffit top rails, aluminium flat bar"),
+    ("rail_t", "3 mm", "mm", "assumption", "soffit top rails, aluminium flat bar, riveted to the door-side plate and the front face"),
+    ("dp_t", "2 mm", "mm", "assumption", "soffit door-side plate: carries the door-side rail, closes the soffit against DT's back plate"),
     ("rail_w", "24 mm", "mm", "assumption", "soffit top rail width: holds the 6.5 fork with 8 each side, and the door-side rail stays 1 mm clear of the roof sleeve"),
-    ("hd_h", "4 mm", "mm", "assumption", "hanger stud and lock screw head space under the rails"),
-    ("stud_d", "10 mm", "mm", "assumption", "hanger stud head, HOLD (joints register to number it, D-63)"),
+    ("stud_l", "16 mm", "mm", "confirmed", "PM ruling 2026-11-01 (HOLD-18, joints register #99): the hanger studs are M6 x 16 socket head bolts"),
+    ("stud_eng", "9 mm", "mm", "assumption", "thread engaged in the ceiling's rivnut (10.16 installed length less the lead-in)"),
+    ("rvn_head", "0.76 mm", "mm", "source", "H-03 rivnut head under the frame face (Sherex CAH3-610-4.2, 0.76)"),
+    ("hd_h", "6 mm", "mm", "source", "ISO 4762 M6 head height 6 (the studs and the lock screws)"),
+    ("hd_c", "1.5 mm", "mm", "confirmed", "PM ruling 2026-11-01 (HOLD-18): 1.5 clear under each head"),
+    ("stud_d", "10 mm", "mm", "source", "ISO 4762 M6 head diameter 10"),
     ("slide", "24 mm", "mm", "calculation", "the soffit is lifted this far behind its place and slid toward the door: the studs start clear of both rails' edges"),
     ("us_gap", "2 mm", "mm", "assumption", "gap between the underside sections"),
     ("hinge_l", "60 mm", "mm", "assumption", "hinge envelope along the door-side edge, HOLD"),
@@ -135,6 +139,7 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "sof_rail_d": ("611205", "AIR - SOFFIT TOP RAIL - DOOR SIDE", "Hộp gió - thanh treo phía cửa", "MP", "al"),
     "sof_rail_r": ("611209", "AIR - SOFFIT TOP RAIL - ROOM SIDE", "Hộp gió - thanh treo phía trong", "MP", "al"),
     "sof_end": ("611206", "AIR - SOFFIT END PLATE - LEFT", "Hộp gió - tấm đầu trái", "MP", "al"),
+    "sof_door": ("611210", "AIR - SOFFIT DOOR-SIDE PLATE", "Hộp gió - tấm phía cửa", "MP", "al"),
     "sof_front": ("611202", "AIR - SOFFIT FACE - FRONT", "Hộp gió - mặt trước", "MP", "face"),
     "sof_fill": ("611203", "AIR - SOFFIT FILL", "Hộp gió - bông", "MP", "pfill"),
     "egrille": ("611204", "AIR - EXHAUST GRILLE", "Lưới gió thải", "MP", "perf40"),
@@ -181,14 +186,16 @@ YW = "(pod_d / 2 - wall_depth)"
 YF = "(-pod_d / 2)"
 ZS0 = "dt_zb"                        # soffit underside, flush with the top block's underside (D-61)
 ZS1 = "(dt_zb + sof_h)"
-ZC0 = "(floor_t + mat_t)"            # floor top (the mat's top), PM ruling 2026-11-01
+ZC0 = "floor_top"                    # floor top Z 12 (skeleton v4: mat 3 + ply 9)
 ZCB = "(%s + foot_t)" % ZC0          # top of the column's foot plate
 XR = "(pod_w / 2 - stack_t - col_gap)"    # the column's and the soffit's right limit, 5 mm off the lining
 XL = "(-pod_w / 2 + stack_t + col_gap)"   # the soffit's left limit
+ZRB = "(pod_h - outer_t - rvn_head - (stud_l - stud_eng))"   # rails' underside: on the M6 x 16 studs' heads (HOLD-18)
+ZBT = "(%s - hd_h - hd_c)" % ZRB                           # top of what sits under a stud head
 YFACE = "(%s + col_d)" % YW          # the column's and the soffit's front face (Y -285)
 
 
-AIR_MAY_DEFINE = {"mat_t"}    # the skeleton's own value wins once it carries it
+AIR_MAY_DEFINE = set()        # AIR parameters the skeleton may take over (none now: v4 carries the mat)
 
 
 def all_params():
@@ -262,27 +269,28 @@ def layout():
     b.append(("hub", "SENSOR HUB ZONE", box("%s - hub_w / 2" % hx, "%s + hub_w / 2" % hx, "%s - hub_t" % YFACE,
                                              YFACE, "hub_z - hub_w / 2", "hub_z + hub_w / 2")))
     # soffit: underside sections (dark tone), front face, top rails, left end plate
-    zf1 = "%s - rail_t - hd_h - 1 mm" % ZS1        # front face top: hidden above the ceiling felt (Z 2316)
+    zf1 = ZRB                                      # front face up to the rail (riveted); pockets round the studs
     for key, name, x0, x1 in soffit_sections():
         b.append((key, name, box(x0, x1, YW, "%s - face_t" % YFACE, ZS0, "%s + face_t" % ZS0)))
     b.append(("sof_front", "SOFFIT FACE FRONT", box(XL, XR, "%s - face_t" % YFACE, YFACE, ZS0, zf1)))
-    zr0 = "%s - rail_t" % ZS1
-    b.append(("sof_rail_d", "SOFFIT RAIL DOOR", box(XL, XR, YW, "%s + rail_w" % YW, zr0, ZS1)))
-    b.append(("sof_rail_r", "SOFFIT RAIL ROOM", box(XL, XR, "%s - rail_w" % YFACE, YFACE, zr0, ZS1)))
-    b.append(("sof_end", "SOFFIT END PLATE LEFT", box(XL, "%s + box_t" % XL, YW, "%s - face_t" % YFACE,
-                                                      "%s + face_t" % ZS0, zr0)))
+    zr0, zr1 = ZRB, "%s + rail_t" % ZRB
+    b.append(("sof_rail_d", "SOFFIT RAIL DOOR", box(XL, XR, YW, "%s + rail_w" % YW, zr0, zr1)))
+    b.append(("sof_rail_r", "SOFFIT RAIL ROOM", box(XL, XR, "%s - rail_w" % YFACE, YFACE, zr0, zr1)))
+    b.append(("sof_door", "SOFFIT DOOR PLATE", box(XL, XR, YW, "%s + dp_t" % YW, "%s + face_t + hl_h" % ZS0, zr0)))
+    b.append(("sof_end", "SOFFIT END PLATE LEFT", box(XL, "%s + box_t" % XL, "%s + dp_t" % YW, "%s - face_t" % YFACE,
+                                                      "%s + face_t" % ZS0, ZBT)))
     ex1 = "%s - fb_w" % XR
     ez0 = "%s + face_t + sof_fill_t" % ZS0
     b.append(("cart", "CARTRIDGE EXHAUST", box("%s - cart_l" % ex1, ex1, cy0, cy1, ez0, "%s + cart_w" % ez0)))
     b.append(("box", "EXHAUST FAN BOX", box(ex1, XR, cy0, cy1, ez0, "%s + cart_w" % ez0)))
     b.append(("sof_fill", "SOFFIT FILL UNDER", box("%s - cart_l" % ex1, XR, cy0, "%s - face_t" % YFACE,
                                                     "%s + face_t" % ZS0, ez0)))
-    b.append(("sof_fill", "SOFFIT FILL FRONT", box("%s - cart_l" % ex1, XR, cy1, "%s - face_t" % YFACE, ez0, zr0)))
+    b.append(("sof_fill", "SOFFIT FILL FRONT", box("%s - cart_l" % ex1, XR, cy1, "%s - face_t" % YFACE, ez0, ZBT)))
     b.append(("egrille", "EXHAUST GRILLE", box("%s + eg_x0" % XIL, "%s + eg_x0 + eg_l" % XIL, "%s + face_t" % YW,
                                                 "%s + face_t + eg_w" % YW, ZS0, "%s + grille_t" % ZS0)))
     # hanging: 4 studs (head under the rail, shank up through the fork to the ceiling frame),
     # 2 captive lock screws in the door-side rail (838002, retainer HOLD), hinges and latches
-    zf = "(pod_h - outer_t)"
+    zf = "(pod_h - outer_t - rvn_head)"
     for name, x, y in stud_points():
         b.append(("stud", name + " HEAD", box("%s - stud_d / 2" % x, "%s + stud_d / 2" % x, "%s - stud_d / 2" % y,
                                               "%s + stud_d / 2" % y, "%s - hd_h" % zr0, zr0)))
@@ -291,7 +299,7 @@ def layout():
         y = "%s + tube_w / 2" % YW
         b.append(("lock", "LOCK SCREW %d HEAD" % (k + 1), box("%s - stud_d / 2" % x, "%s + stud_d / 2" % x,
                                                               "%s - stud_d / 2" % y, "%s + stud_d / 2" % y,
-                                                              "%s - hd_h - 2 mm" % zr0, zr0)))
+                                                              "%s - hd_h" % zr0, zr0)))
         b.append(("lock", "LOCK SCREW %d SHANK" % (k + 1), box("%s - 3 mm" % x, "%s + 3 mm" % x, "%s - 3 mm" % y,
                                                                "%s + 3 mm" % y, zr0, zf)))
     zh0, zh1 = "%s + face_t" % ZS0, "%s + face_t + hl_h" % ZS0
@@ -336,14 +344,14 @@ def features():
     for sign in ("-", "+"):
         out.append(("COLUMN FOOT PLATE", "zcircle", ("spg2_x", "spg2_y %s %s" % (sign, run), ZC0, ZCB, "spg_hole")))
     # rails: an open fork from the rail's door-side edge to each stud's place
-    zr0 = "%s - rail_t" % ZS1
+    zr0, zr1 = ZRB, "%s + rail_t" % ZRB
     for name, x, y in stud_points():
         rail = "SOFFIT RAIL DOOR" if name.endswith("DOOR") else "SOFFIT RAIL ROOM"
         edge = YW if rail.endswith("DOOR") else "%s - rail_w" % YFACE
-        out.append((rail, "box", ("%s - key_w / 2" % x, "%s + key_w / 2" % x, edge, y, zr0, ZS1)))
-        out.append((rail, "zcircle", (x, y, zr0, ZS1, "key_w")))
+        out.append((rail, "box", ("%s - key_w / 2" % x, "%s + key_w / 2" % x, edge, y, zr0, zr1)))
+        out.append((rail, "zcircle", (x, y, zr0, zr1, "key_w")))
     for x in ("-lock_x", "-lock_x + lock_dx"):
-        out.append(("SOFFIT RAIL DOOR", "zcircle", (x, "%s + tube_w / 2" % YW, zr0, ZS1, "6.6 mm")))
+        out.append(("SOFFIT RAIL DOOR", "zcircle", (x, "%s + tube_w / 2" % YW, zr0, zr1, "6.6 mm")))
     return out
 
 
@@ -359,6 +367,10 @@ def cutouts():
     for _k, name, bx in layout():
         if " LATCH " in name:
             out.append(("SOFFIT FILL UNDER", bx))       # the fill clears each latch
+    for name, x, y in stud_points():
+        if name.endswith("ROOM"):                       # a head pocket: the head plus 1.5 all round
+            out.append(("SOFFIT FACE FRONT", ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x,
+                                              "%s - face_t" % YFACE, YFACE, ZBT, ZRB)))
     return out
 
 

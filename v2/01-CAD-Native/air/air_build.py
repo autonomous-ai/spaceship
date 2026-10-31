@@ -214,7 +214,7 @@ FOLDER = "Default Project/FocusPod v2"
 SCOPE_KEYS = {
     "column": ["col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "kick", "hub", "col_ang",
                "CART:SUPPLY"],
-    "soffit": ["sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_end", "sof_fill",
+    "soffit": ["sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_door", "sof_end", "sof_fill",
                "egrille", "stud", "hinge", "latch", "lock", "CART:EXHAUST", "BOX:EXHAUST"],
     "cart": ["CART:SUPPLY"], "sbox": ["BOX:SUPPLY", "trans", "riser", "rtrans"], "ebox": ["BOX:EXHAUST"],
     "col_ang": ["col_ang"], "casing": ["CASING"], "box": ["BOXCASE:EXHAUST"], "box_s": ["BOXCASE:SUPPLY"],
@@ -471,8 +471,8 @@ def run(_context):
         # ---- soffit (ships with its exhaust fan box fitted, D-87): underside sections, face,
         #      rails, end plate, fill, grille, hanging and service hardware envelopes
         _o, sof = new_comp(root, "soffit")
-        for key in ("sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_end",
-                    "sof_fill", "egrille", "stud", "hinge", "latch"):
+        for key in ("sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_door",
+                    "sof_end", "sof_fill", "egrille", "stud", "hinge", "latch"):
             comp_with(sof, key, names_of(key))
         lo = sof.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         lk = lo.component

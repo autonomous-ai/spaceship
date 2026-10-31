@@ -37,8 +37,8 @@ class Sizes(unittest.TestCase):
         self.assertAlmostEqual(col[1] - col[0], V["pod_w"] / 2 - V["stack_t"] - V["col_gap"] - 949.0)
         sof = b6("SOFFIT FACE FRONT")
         top = b6("SOFFIT RAIL ROOM")
-        self.assertAlmostEqual(top[5] - sof[4], 220.0, msg="soffit Z 2120 to 2340, rails on top")
-        self.assertAlmostEqual(sof[4], 2120.0)
+        self.assertAlmostEqual(sof[4], 2120.0, msg="the underside stays at Z 2120 (D-61)")
+        self.assertGreaterEqual(V["pod_h"] - V["outer_t"] - top[5], 4.0, "rails clear of the ceiling frame")
         self.assertGreater(sof[5], V["pod_h"] - V["stack_t"], "front face reaches above the ceiling's felt face")
         self.assertAlmostEqual(sof[1] - sof[0], V["pod_w"] - 2 * V["stack_t"] - 2 * V["col_gap"])
         for name in ("CARTRIDGE SUPPLY", "CARTRIDGE EXHAUST"):
@@ -74,6 +74,7 @@ class Fits(unittest.TestCase):
         cut |= {("SOFFIT FILL UNDER", n) for n in LAY if " LATCH " in n}
         # the stud and lock shanks pass through the rails' forks and holes (cut features)
         cut |= {(r, n) for r in ("SOFFIT RAIL DOOR", "SOFFIT RAIL ROOM") for n in LAY if n.endswith("SHANK")}
+        cut |= {("SOFFIT FACE FRONT", n) for n in LAY if n.startswith("STUD") and n.endswith("ROOM HEAD")}   # head pockets
         names = list(LAY)
         for i in range(len(names)):
             for j in range(i + 1, len(names)):
@@ -101,7 +102,7 @@ class Fits(unittest.TestCase):
         self.assertAlmostEqual(cass_front - sof[3], cv["cs_gap"])
         self.assertAlmostEqual(cv["cs_front"], V["col_d"])
         roof = V["pod_h"] - V["outer_t"]
-        self.assertGreater(roof - sof[5], 10.0)
+        self.assertGreater(roof - sof[5], 4.0)
         self.assertAlmostEqual(b6("COLUMN FACE FRONT")[3], sof[3])
 
     def test_sleeve_clear_of_ceiling_members(self):
@@ -149,7 +150,7 @@ class D87(unittest.TestCase):
             bx = b6(name)
             c = ((bx[0] + bx[1]) / 2, (bx[2] + bx[3]) / 2)
             self.assertTrue(any(abs(p[0] - c[0]) < 1e-6 and abs(p[1] - c[1]) < 1e-6 for _n, p in holes), name)
-            self.assertAlmostEqual(bx[5], cv["pod_h"] - cv["outer_t"])
+            self.assertAlmostEqual(bx[5], cv["pod_h"] - cv["outer_t"] - V["rvn_head"])   # up to the rivnut head
         self.assertEqual(len(holes), 6)
 
     def test_forks_open_toward_the_door_and_slide_clear(self):
@@ -175,6 +176,26 @@ class D87(unittest.TestCase):
         for a in ks:
             self.assertAlmostEqual(A.ev(V, a[5]) - A.ev(V, a[4]), V["key_drop"])
         self.assertLess(V["key_drop"] - 8.0, 3.0, "the column drops onto BASE's 8 mm spigots as it hooks on")
+
+
+class Hold18(unittest.TestCase):
+    """PM ruling 2026-11-01 (HOLD-18): M6 x 16 socket head studs, 6 mm heads, 1.5 clear under each,
+    the soffit underside kept at Z 2120."""
+
+    def test_stud_reaches_the_rivnut(self):
+        exposed = V["pod_h"] - V["outer_t"] - V["rvn_head"] - b6("SOFFIT RAIL DOOR")[4]
+        self.assertAlmostEqual(exposed + V["stud_eng"], V["stud_l"])
+        self.assertGreaterEqual(V["stud_eng"], 6.0, "at least one diameter of thread engaged")
+
+    def test_head_room(self):
+        for name in [n for n in LAY if n.startswith(("STUD", "LOCK")) and n.endswith("HEAD")]:
+            h = b6(name)
+            self.assertAlmostEqual(h[5] - h[4], V["hd_h"])
+            room = (h[0], h[1], h[2], h[3], h[4] - V["hd_c"], h[4])
+            for other, (_k, ob) in LAY.items():
+                if other == name or (other == "SOFFIT FACE FRONT" and "ROOM" in name):
+                    continue
+                self.assertGreaterEqual(gap(room, ob), -1e-9, "%s: %s under its head" % (name, other))
 
 
 class Numbers(unittest.TestCase):

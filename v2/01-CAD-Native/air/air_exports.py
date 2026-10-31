@@ -50,6 +50,7 @@ TREE = [
     ("sof_under_r", "soffit", 1, "D-87: hinged section"), ("sof_under_f", "soffit", 1, "D-87: fixed over the column"),
     ("sof_front", "soffit", 1, "D-61"), ("sof_rail_d", "soffit", 1, "D-87 hooks, PM ruling 2026-11-01"),
     ("sof_rail_r", "soffit", 1, "D-87 hooks, PM ruling 2026-11-01"), ("sof_end", "soffit", 1, "D-87"),
+    ("sof_door", "soffit", 1, "PM ruling 2026-11-01 (HOLD-18): carries the door-side rail on the studs' heads"),
     ("sof_fill", "soffit", 1, "air report 7e (2 pieces, see the flat cut list)"),
     ("egrille", "soffit", 1, "air report 7e: exhaust grille 265 x 336"),
     ("stud", "soffit", 4, "PM ruling 2026-11-01: 4 hanger studs into the ceiling's rivnuts (number from the joints register, D-63)"),
@@ -69,6 +70,7 @@ FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left":
           "col_ang": "mill finish (hidden, D-79)", "col_side_lo": "mill finish (hidden, D-79)",
           "col_side_hi": "mill finish (hidden, D-79)", "sof_rail_d": "mill finish (hidden, D-79)",
           "sof_rail_r": "mill finish (hidden, D-79)", "sof_end": "mill finish (hidden, D-79)",
+          "sof_door": "mill finish (hidden, D-79)",
           "casing": "mill finish (hidden, D-79)", "box": "mill finish (hidden, D-79)", "box_s": "mill finish (hidden, D-79)",
           "riser": "galvanised", "sleeve": "galvanised"}
 PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "laser cut", "col_ang": "extruded angle, cut, keyholes milled",
@@ -127,6 +129,7 @@ def write_dxfs(v):
     for key, bodies in (("col_foot", ["COLUMN FOOT PLATE"]), ("col_side_lo", ["COLUMN PLENUM PLATE LOW"]),
                         ("col_side_hi", ["COLUMN PLENUM PLATE HIGH"]), ("sof_rail_d", ["SOFFIT RAIL DOOR"]),
                         ("sof_rail_r", ["SOFFIT RAIL ROOM"]), ("sof_end", ["SOFFIT END PLATE LEFT"]),
+                        ("sof_door", ["SOFFIT DOOR PLATE"]),
                         ("col_front", ["COLUMN FACE FRONT"]), ("col_left", ["COLUMN FACE LEFT"]),
                         ("sof_under", ["SOFFIT UNDERSIDE LEFT"]), ("sof_under_r", ["SOFFIT UNDERSIDE RIGHT"]),
                         ("sof_under_f", ["SOFFIT UNDERSIDE FIXED"]), ("sof_front", ["SOFFIT FACE FRONT"]),
