@@ -322,62 +322,23 @@ def where_of(r, labels):
     return labels.get(ref, "this tree" if ref == "working tree" else ref)
 
 
-FLAT_LAYERS = {"CUT", "MARK"}
+def load_dxf_layers():
+    """The DXF layer reader shared with the mechanical check (tools/checks/dxf_layers.py), so both tools read a DXF
+    the same way (PM, 2026-11-01)."""
+    spec = importlib.util.spec_from_file_location("dxf_layers", ROOT / "tools/checks/dxf_layers.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.dont_write_bytecode = True
+    spec.loader.exec_module(mod)
+    return mod
 
 
-DXF_STRUCTURE = ("BLOCK", "ENDBLK", "SEQEND", "VERTEX", "ENDSEC", "EOF")  # records, not lines
+DXF_LAYERS = load_dxf_layers()
 
 
 def dxf_other_layers(text):
-    """D-89 (4): the layers other than CUT and MARK that an ASCII DXF has lines on, upper-cased; None when it can't
-    be read (empty or binary), so the part can't be shown flat. Every entity in the ENTITIES section counts, except
-    the records BLOCK, ENDBLK, VERTEX and SEQEND (as the mechanical check reads it, tools/checks/c_drawings.py). A
-    stored block counts only where the drawing places it with an INSERT, nested inserts included, and its shapes on
-    layer 0 take the INSERT's layer (PM ruling 2026-11-01), so arrow-head blocks a DXF library writes and never
-    places don't hold a flat part back."""
-    if not text or not text.strip() or text.startswith("AutoCAD Binary DXF"):
-        return None
-    lines = text.splitlines()
-    pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
-    sec, ent, block, naming, blocks, drawn = None, None, None, False, {}, []
-    for k, (code, val) in enumerate(pairs + [("0", "EOF")]):
-        if code == "0":
-            if ent is not None and sec == "ENTITIES":
-                drawn.append(tuple(ent))
-            elif ent is not None and sec == "BLOCKS" and block:
-                blocks.setdefault(block, []).append(tuple(ent))
-            v, ent, naming = val.upper(), None, False
-            if v == "ENDSEC":
-                sec, block = None, None
-            elif sec == "BLOCKS" and v == "BLOCK":
-                block, naming = None, True
-            elif sec == "BLOCKS" and v == "ENDBLK":
-                block = None
-            elif sec in ("ENTITIES", "BLOCKS") and v not in DXF_STRUCTURE:
-                ent = [v, "0", ""]
-        elif code == "2" and k and pairs[k - 1] == ("0", "SECTION"):
-            sec = val.upper()
-        elif code == "2" and naming:
-            block, naming = val.upper(), False
-        elif code == "2" and ent is not None and ent[0] == "INSERT":
-            ent[2] = val.upper()
-        elif code == "8" and ent is not None:
-            ent[1] = val.upper()
-
-    def placed(name, layer, seen):
-        out = set()
-        for typ, lay, ref in ([] if name in seen else blocks.get(name, [])):
-            own = layer if lay == "0" else lay
-            out.add(own)
-            if typ == "INSERT":
-                out |= placed(ref, own, seen | {name})
-        return out
-
-    other = set()
-    for typ, lay, ref in drawn:
-        layers = {lay} | (placed(ref, lay, frozenset()) if typ == "INSERT" else set())
-        other |= {x for x in layers if x not in FLAT_LAYERS}
-    return other
+    """D-89 (4): the layers other than CUT and MARK that a DXF draws on; None when it can't be read. The shared
+    reader's rule: ENTITIES only, records skipped, a stored block only where an INSERT places it."""
+    return DXF_LAYERS.other_layers(text)
 
 
 def flat_lacks(rows):

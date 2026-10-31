@@ -384,26 +384,20 @@ class D89Layers(unittest.TestCase):
         polyline = dxf_doc(("POLYLINE", "CUT")).replace("0\nENDSEC\n0\nEOF", "0\nVERTEX\n8\n0\n0\nSEQEND\n8\n0\n0\nENDSEC\n0\nEOF")
         self.assertEqual(rc.dxf_other_layers(polyline), set())
 
-    def test_the_layer_reading_matches_the_mechanical_check(self):
-        """On DXFs whose blocks hold only records the two readings agree; the check is being taught the placed-blocks
-        rule (PM ruling 2026-11-01), after which the block samples above apply to it too."""
+    def test_both_tools_use_the_one_shared_reader(self):
+        """The checklist and the mechanical check import tools/checks/dxf_layers.py, so they can't drift."""
         checks = rc.ROOT / "tools/checks"
-        if not (checks / "c_drawings.py").exists():
-            self.skipTest("no mechanical check in this tree")
+        self.assertEqual(Path(rc.DXF_LAYERS.__file__).resolve(), (checks / "dxf_layers.py").resolve())
         sys.path.insert(0, str(checks))
         try:
             import c_drawings
         finally:
             sys.path.remove(str(checks))
-        import tempfile
         samples = [dxf_doc(("LINE", "CUT"), ("TEXT", "MARK")), dxf_doc(("LINE", "CUT"), ("LINE", "BEND")),
-                   dxf_doc(("LWPOLYLINE", "cut"), ("LWPOLYLINE", "POCKET-HALF-DEPTH")), self.blocks() + dxf_doc(("LINE", "CUT"))]
-        with tempfile.TemporaryDirectory() as tmp:
-            for i, text in enumerate(samples):
-                path = Path(tmp) / f"s{i}.dxf"
-                path.write_text(text, encoding="utf-8")
-                theirs = {k.upper() for k in c_drawings.dxf_summary(str(path))["layers"] if k.upper() not in ("CUT", "MARK")}
-                self.assertEqual(rc.dxf_other_layers(text), theirs, i)
+                   self.blocks(("_ARCHTICK", [("LWPOLYLINE", "0", "")])) + dxf_doc(("LINE", "CUT")),
+                   self.blocks(("TAB", [("LINE", "BEND", "")])) + self.placing(("TAB", "CUT")), ""]
+        for i, text in enumerate(samples):
+            self.assertEqual(c_drawings.dxf_other_layers(text), rc.dxf_other_layers(text), i)
 
     def run_part(self, dxf_text, process="laser", pn="511101", name="LINING - TRAY - SIDE LOWER - LH"):
         fai = rc.fai_plan(PLAN, BOM)

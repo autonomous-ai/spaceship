@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (8aa50c0), PR #55 (9028182), PR #64 (dd87af5), PR #41 (b0d5a9a), PR #32 (a734e7e), PR #27 (d3b7de9), PR #28 (bf9730c), PR #91 (dd92d53), PR #92 (84a0ab7). The Mac's screen at run time: **unlocked**. 198 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
+Read from: main (8aa50c0), PR #55 (9028182), PR #41 (b0d5a9a), PR #27 (d3b7de9), PR #28 (bf9730c), PR #32 (35d45d9), PR #91 (b08b7e1), PR #92 (dea59dd), PR #94 (e570f8a), PR #64 (487e6cc). The Mac's screen at run time: **unlocked**. 209 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -18,16 +18,16 @@ Read from: main (8aa50c0), PR #55 (9028182), PR #64 (dd87af5), PR #41 (b0d5a9a),
 | CEILING | 0 | 13 | 0 | 1 | 0 | 2 |
 | CEILING (builds AIR, D-80) | — | — | — | — | — | — |
 | CEILING (builds INTERIOR, D-80) | — | — | — | — | — | — |
-| ELECTRICAL | 0 | 12 | 0 | 3 | 0 | 64 |
+| ELECTRICAL | 8 | 4 | 0 | 3 | 0 | 64 |
 | FRONT | 0 | 5 | 0 | 3 | 0 | 4 |
 | WALL | 1 | 8 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 1 | 46 | 0 | 7 | 1 | 77 |
+| **All, each number once** | 9 | 38 | 0 | 7 | 1 | 77 |
 
 No parts list yet: CEILING (builds AIR, D-80), CEILING (builds INTERIOR, D-80).
 
-45 of the 47 made numbers have no drawing yet; for 31 of them the drawing is the only gap, so their drawings can start now (D-84).
+38 of the 47 made numbers have no drawing yet; for 32 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 45, CAD 12, STEP 12, DXF or cut list 6.
+What the open made numbers miss: drawing 38, DXF or cut list 6.
 
 ## Made parts and assemblies
 
@@ -68,18 +68,18 @@ What the open made numbers miss: drawing 45, CAD 12, STEP 12, DXF or cut list 6.
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 710000 | ELECTRICAL | PR #64 | yes | no | no | n/a | yes | yes | n/a | K-E01 | open: CAD, STEP |
-| 710001 | ELECTRICAL - POWER UNIT - B2 | PR #64 | yes | no | no | n/a | no | yes | n/a | K-E01 | open: CAD, STEP, drawing |
-| 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | PR #64 | yes | no | no | no | no | yes | yes | K-E01 | open: CAD, STEP, DXF or cut list, drawing |
-| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | PR #64 | yes | no | no | no | no | yes | yes | K-E01 | open: CAD, STEP, DXF or cut list, drawing |
-| 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | PR #64 | yes | no | no | n/a | no | yes | n/a | K-E01 | open: CAD, STEP, drawing |
-| 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | PR #64 | yes | no | no | n/a | no | yes | n/a | K-E01 | open: CAD, STEP, drawing |
-| 710023 | ELECTRICAL - HARNESS - AIR COLUMN | PR #64 | yes | no | no | n/a | no | yes | n/a | K-E01 | open: CAD, STEP, drawing |
-| 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | PR #64 | yes | no | no | n/a | no | yes | n/a | K-E01 | open: CAD, STEP, drawing |
-| 710031 | ELECTRICAL - DRAW WIRE SET | PR #64 | yes | no | no | n/a | no | yes | n/a | K-E01 | open: CAD, STEP, drawing |
-| 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | PR #64 | yes | no | no | n/a | no | yes | n/a | K-E01 | open: CAD, STEP, drawing |
-| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | PR #64 | yes | no | no | no | no | yes | yes | K-E01 | open: CAD, STEP, DXF or cut list, drawing |
-| 710051 | ELECTRICAL - CORD SET - 220 V VN - 3 M | PR #64 | yes | no | no | n/a | no | yes | n/a | K-E01 | open: CAD, STEP, drawing |
+| 710000 | ELECTRICAL | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710001 | ELECTRICAL - POWER UNIT - B2 | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | PR #64 | yes | yes | yes | no | no | yes | yes | K-E01 | open: DXF or cut list, drawing |
+| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | PR #64 | yes | yes | yes | no | no | yes | yes | K-E01 | open: DXF or cut list, drawing |
+| 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710023 | ELECTRICAL - HARNESS - AIR COLUMN | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | PR #64 | yes | yes | yes | no | no | yes | yes | K-E01 | open: DXF or cut list, drawing |
+| 719001 | ELECTRICAL - CORD SET - 220 V VN - 3 M (KIT) | PR #64 | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
 
 ### FRONT
 
