@@ -142,6 +142,22 @@ def test_p04_rollup_lines():
     assert any(n.startswith("Fixed glass") for n in names) and any("perimeters" in n for n in names), names   # D-82, D-85
 
 
+def test_rollup_items_the_packing_plan_reads():
+    """The packing plan (v2/07-Packaging/pack.py) reads the roll-up's lines by their exact item text, so those texts stay
+    fixed: a change goes in the status or the source column (PR #50 renamed three and broke it)."""
+    import ast
+    import rollup
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "07-Packaging", "pack.py")
+    if not os.path.exists(path):
+        return
+    tree = ast.parse(open(path, encoding="utf-8").read())
+    handles = next(ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
+                   and any(isinstance(t, ast.Name) and t.id == "R" for t in n.targets))
+    items = {r[1] for r in rollup.lines()}
+    missing = sorted(v for v in handles.values() if v not in items)
+    assert not missing, missing
+
+
 P_DEFAULT_CEIL = p("ceil_t")
 
 if __name__ == "__main__":
