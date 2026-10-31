@@ -1,5 +1,5 @@
 part_number,name,name_vi,kind,parent,qty_per_parent,qty_per_pod,material,finish,process,mass_each_kg,mass_status,revision,status,source
-610000,AIR,Thông gió,HS,,1,1,,,,54.523,calculation (sum of its parts),P01,DRAFT,"D-60 to D-62, D-87; assembly tree"
+610000,AIR,Thông gió,HS,,1,1,,,,55.123,calculation (sum of its parts),P01,DRAFT,"D-60 to D-62, D-87; assembly tree"
 610101,AIR - AIR COLUMN,Cột gió (cụm),HS,610000,1,1,,,,8.354,calculation (sum of its parts),P01,DRAFT,"D-60, D-61; PM rulings 2026-11-01 (5 mm off the lining, foot on the mat, hooks on DR)"
 611106,AIR - COLUMN FOOT PLATE,Cột gió - tấm chân,MP,610101,1,1,Aluminium (alloy HOLD),"mill finish (hidden, D-79)",laser cut,0.411,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,PM ruling 2026-11-01 (BASE's two spigots)
 611101,AIR - COLUMN FACE - FRONT,Cột gió - mặt trước (ACP + nỉ),MP,610101,1,1,ACP 3 + felt 9 face (5.3 kg/m2),ACP EV3038 face with Dark Gray felt (D-79),"CNC routed ACP, felt laminated",2.071,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,D-61; air report 7e
@@ -30,8 +30,9 @@ part_number,name,name_vi,kind,parent,qty_per_parent,qty_per_pod,material,finish,
 610402,AIR - EXHAUST FAN BOX,Hộp quạt thải (cụm),HS,610201,1,1,,,,2.699,calculation (sum of its parts),P01,DRAFT,D-87: fitted in the soffit at the factory
 611401,AIR - FAN BOX CASING - EXHAUST,Vỏ hộp quạt thải nhôm 2 mm,MP,610402,1,1,Aluminium (alloy HOLD),"mill finish (hidden, D-79)","sheet metal: cut, folded, riveted (blank HOLD)",2.099,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"air report 7e: 294 x 314 x 173, 2 mm"
 618401,AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM,Quạt 12 V 140 mm,PI,610402,2,2,Fan envelope 0.3 kg (assumption),,,0.300,"assumption (PM ruling 2026-11-01, HOLD until weighed)",P01,HOLD,PM ruling 2026-11-01: 618401 for all four fans
-610401,AIR - SUPPLY FAN BOX,Hộp quạt cấp (cụm),HS,610000,1,1,,,,8.787,calculation (sum of its parts),P01,DRAFT,"D-62, D-87: joined with the intake riser; the supply fan box's two fans are in FRONT's list (DR), PM ruling 2026-11-01"
+610401,AIR - SUPPLY FAN BOX,Hộp quạt cấp (cụm),HS,610000,1,1,,,,9.387,calculation (sum of its parts),P01,DRAFT,"D-62, D-87: joined with the intake riser"
 611402,AIR - FAN BOX CASING - SUPPLY,Vỏ hộp quạt cấp nhôm 2 mm,MP,610401,1,1,Aluminium (alloy HOLD),"mill finish (hidden, D-79)","sheet metal: cut, folded, riveted (blank HOLD)",1.944,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,"air report 7e: 300 x 155 x 300, 2 mm"
+618401,AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM,Quạt 12 V 140 mm,PI,610401,2,2,Fan envelope 0.3 kg (assumption),,,0.300,"assumption (PM ruling 2026-11-01, HOLD until weighed)",P01,HOLD,PM ruling 2026-11-01: the two supply fans belong to AIR's supply box only (FRONT drops them from DR)
 611501,AIR - INTAKE RISER,Ống hút gió đứng,MP,610401,1,1,Galvanised steel DX51D+Z,galvanised,"sheet metal: cut, folded into a tube (blank HOLD)",6.143,"calculation (Fusion, CAD geometry x density)",P01,DRAFT,D-61: 1 mm steel
 618102,AIR - SUPPLY TRANSITION - HOLD,Ống chuyển cấp (chờ),HOLD,610401,1,1,HOLD envelope - no mass,,,0.400,"assumption: 1 mm steel duct, about 0.4 kg",P01,HOLD,air report 7e (opening into the column top)
 618103,AIR - RISER TRANSITION - HOLD,Ống chuyển hút (chờ),HOLD,610401,1,1,HOLD envelope - no mass,,,0.300,assumption: about 0.3 kg,P01,HOLD,air report 7e

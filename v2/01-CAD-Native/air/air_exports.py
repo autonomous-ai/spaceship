@@ -58,7 +58,9 @@ TREE = [
     ("ebox", "soffit", 1, "D-87: fitted in the soffit at the factory"),
     ("box", "ebox", 1, "air report 7e: 294 x 314 x 173, 2 mm"), ("fan", "ebox", 2, "PM ruling 2026-11-01: 618401 for all four fans"),
     ("sbox", "air", 1, "D-62, D-87: joined with the intake riser"),
-    ("box_s", "sbox", 1, "air report 7e: 300 x 155 x 300, 2 mm"), ("riser", "sbox", 1, "D-61: 1 mm steel"),
+    ("box_s", "sbox", 1, "air report 7e: 300 x 155 x 300, 2 mm"),
+    ("fan_sup", "sbox", 2, "PM ruling 2026-11-01: the two supply fans belong to AIR's supply box only (FRONT drops them from DR)", "fan"),
+    ("riser", "sbox", 1, "D-61: 1 mm steel"),
     ("trans", "sbox", 1, "air report 7e (opening into the column top)"), ("rtrans", "sbox", 1, "air report 7e"),
     ("sleeve", "air", 1, "D-61: through C2's roof slot"), ("rgrille", "air", 1, "D-61"),
 ]
@@ -185,19 +187,21 @@ def parts_list(v, mass):
     def qty_pod(key):
         if key in per:
             return per[key]
-        k, parent, q, _s = next(t for t in TREE if t[0] == key)
+        k, parent, q, _s = next(t for t in TREE if t[0] == key)[:4]
         per[key] = q * (qty_pod(parent) if parent else 1)
         return per[key]
     rows, by_key = [], {}
-    for key, parent, q, src in TREE:
-        pn, name, vn, kind, mat = A.PARTS[key]
+    for t in TREE:
+        key, parent, q, src = t[:4]
+        pkey = t[4] if len(t) > 4 else key          # a second row of the same part under another parent
+        pn, name, vn, kind, mat = A.PARTS[pkey]
         m = mass.get(pn)
         if kind == "HS":
             mass_txt, mstat = "", "calculation (sum of its parts)"
         elif kind == "HOLD":
             hm, hs = HOLD_MASS.get(key, (0.0, "assumption: space only"))
             mass_txt, mstat = "%.3f" % hm, hs
-        elif key == "fan":
+        elif pkey == "fan":
             mass_txt, mstat = "0.300", "assumption (PM ruling 2026-11-01, HOLD until weighed)"
         elif key == "casing":   # a body inside the cartridge component: from its walls
             perim = 2 * (v["cart_w"] + v["cart_d"]) - 4 * v["cart_t"]
@@ -213,8 +217,8 @@ def parts_list(v, mass):
         r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": A.PARTS[parent][0] if parent else "",
              "qty_per_parent": q, "qty_per_pod": qty_pod(key), "material": A.MATERIALS[mat][0] if mat else "",
              "finish": FINISH.get(key, ""), "process": PROCESS.get(key, ""), "mass_each_kg": mass_txt,
-             "mass_status": mstat, "revision": REV, "status": "HOLD" if kind == "HOLD" or key == "fan" else "DRAFT",
-             "source": src + ("; the supply fan box's two fans are in FRONT's list (DR), PM ruling 2026-11-01" if key == "sbox" else "")}
+             "mass_status": mstat, "revision": REV, "status": "HOLD" if kind == "HOLD" or pkey == "fan" else "DRAFT",
+             "source": src}
         rows.append(r)
         by_key[key] = r
     hp = A.HARDWARE["lock"]
@@ -225,7 +229,8 @@ def parts_list(v, mass):
                  "source": "PM ruling 2026-11-01: two captive lock screws, the 5 mm key; captive retainer HOLD (joints register, D-63)"})
     by_key["lock"] = rows[-1]
     kids = {}
-    for key, parent, q, _s in TREE:
+    for t in TREE:
+        key, parent, q = t[:3]
         if parent:
             kids.setdefault(parent, []).append((key, q))
     kids.setdefault("soffit", []).append(("lock", hp[3]))

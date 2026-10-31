@@ -20,7 +20,7 @@ Run 2026-10-31 20:33 UTC on Mac 1 (Fusion 2706.1.17), through the Fusion lock:
 | 610201 soffit with the exhaust fan box and its 2 fans fitted | 14.70 kg |
 | 610101 column (without its cartridge) | 8.35 kg |
 | 610301 cartridge (each of 2) | 10.90 kg |
-| 610401 supply fan box with the riser and transitions (its 2 fans are in FRONT's list) | 8.79 kg |
+| 610401 supply fan box with its 2 fans, the riser and transitions (PM ruling 2026-11-01: AIR carries all four fans) | 9.39 kg |
 
 The soffit is 0.8 kg over the assembly guide's 13.9 kg: the 2 mm door-side plate that carries the door-side rail on the D-90 stud heads weighs 2.59 kg. A 1 mm plate would bring it to about 13.4 kg.
 
