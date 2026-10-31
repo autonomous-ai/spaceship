@@ -11,16 +11,16 @@ LINING,"Wall cassette, back, upper, with 12 mm lips, no clip rails",2,8.399,16.8
 CEILING,"Ceiling outer panels C1 and C2, with their bond line",2,10.035,20.07,calculation (CAD); bond assumption,S35 + this study's 0.25 kg/m2 bond on the P04 46 mm panel; its inner members stay 1.2 mm for the overhead clips and catches (D-85),"CAD, open PR"
 LINING,"Ceiling cassettes, one part for both halves",2,9.476,18.95,calculation (CAD); fill provisional,"S35, its fill strips from 32 to 24 kg/m3","CAD, open PR"
 LINING,Named clips and catches: 44 clips and 4 catch lanyards,1,2.160,2.16,assumption,"allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, D-81)",estimate
-BASE,"Base band piece 100x40 - back, 1.5 mm wall",1,2.685,2.69,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter",estimate
-BASE,"Base band piece 100x40 - side, 1.5 mm wall",2,1.842,3.68,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter",estimate
-BASE,"Base band piece 100x40 - front-l, 1.5 mm wall",1,0.333,0.33,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter",estimate
-BASE,"Base band piece 100x40 - front-r, 1.5 mm wall",1,1.165,1.17,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter",estimate
-BASE,Corner key,6,0.150,0.90,assumption,this study's model,estimate
-BASE,Levelling glide (hex from above),8,0.150,1.20,assumption,this study's model,estimate
+BASE,"Base band piece 100x40 - back, 1.5 mm wall",1,2.679,2.68,calculation (CAD); confirmed (1.5 mm),"S44, CAD on main: BASE parts list 111103 P01; its hardware stays in the fixings kit's line","CAD, main"
+BASE,"Base band piece 100x40 - side, 1.5 mm wall",2,1.669,3.34,calculation (CAD); confirmed (1.5 mm),"S44, CAD on main: BASE parts list 111101 P01 (the right side as the left's mirror); its hardware stays in the fixings kit's line","CAD, main"
+BASE,"Base band piece 100x40 - front-l, 1.5 mm wall",1,0.333,0.33,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter; BASE P02 models it",estimate
+BASE,"Base band piece 100x40 - front-r, 1.5 mm wall",1,1.165,1.17,calculation; confirmed (1.5 mm),"this study's model, 1.5 mm wall (D-81; BASE's check passed, D-86); P03 lengths, P04's faceted front band is about 0.2 m shorter; BASE P02 models it",estimate
+BASE,Corner key,6,0.158,0.95,calculation (part CAD),part CAD on main: the 2 back keys from BASE parts list 111211 P01 (0.173 kg); the 4 others this study's 0.15 kg until BASE P02,"CAD, main (part)"
+BASE,Levelling glide (hex from above),8,0.150,1.20,"assumption (CAD, HOLD)","S44, CAD on main: BASE parts list 118002 P01, a levelling glide on HOLD","CAD, main"
 BASE,"Door threshold, low",1,1.200,1.20,assumption,this study's model (D-72's 13 mm profile isn't modelled yet),estimate
-BASE,"Glide load blocks, aluminium, one inside the band at each glide",1,0.400,0.40,calculation,"D-86 (S42): about 0.4 kg per pod, BASE's calculation; they carry each glide into both side walls",estimate
-BASE,"Floor panels, 9 mm plywood with a 0.3 kg/m2 finish",2,7.658,15.32,"confirmed (9 mm, poplar core); calculation","D-72 (S39) at the P04 size (S33); poplar-core plywood with a hard face veneer, about 450 kg/m3 (D-85, D-86; BASE: about 0.6 mm at a panel edge under 1000 N); the castor and edge tests on the sample are planned",estimate
-BASE,"Floor mat, 3 mm firm closed-cell foam",1,2.100,2.10,calculation,"D-76 (S39), BASE Engineer",estimate
+BASE,"Glide load blocks: BASE's glide doublers, one at each glide",1,0.113,0.11,calculation (CAD),"S44, CAD on main: BASE parts list 111601 P01, 8 x 0.0141 kg, a 52 x 36 x 3 aluminium doubler inside the band at each glide (D-86's load block); one line, as the packing plan shares it out by glide","CAD, main"
+BASE,"Floor panels, 9 mm poplar-core plywood with a hard face veneer",2,7.122,14.24,"confirmed (9 mm, poplar core); calculation (CAD)","S44, CAD on main: BASE parts list 111401 P01 (F2 as F1's mirror), D-85, D-86; the castor and edge tests on the sample are planned","CAD, main"
+BASE,"Floor mat, 3 mm firm closed-cell foam",1,2.122,2.12,calculation (CAD),"S44, CAD on main: BASE parts list 111501 P01 under F1, and F2's the same (D-76)","CAD, main"
 FRONT,Decor block - left,1,9.976,9.98,calculation,this study's model from v1's STEP shapes (S02),estimate
 FRONT,Decor block - right,1,18.056,18.06,calculation,this study's model from v1's STEP shapes (S02),estimate
 FRONT,Decor block - top,1,7.015,7.02,calculation,this study's model from v1's STEP shapes (S02),estimate
