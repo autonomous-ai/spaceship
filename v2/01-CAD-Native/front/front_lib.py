@@ -459,9 +459,9 @@ GLASS_PARAMS = [
     ("fg_vis_zb", "wall_z0", "mm", "calculation",
      "visible bottom of the fixed pane = the base band top (DL and DR stop there too, PM ruling 2026-10-31)"),
     ("fg_vis_zt", "dt_zb", "mm", "calculation", "visible top of the fixed pane = DT's underside"),
-    ("fg_gap", "4 mm", "mm", "decided",
-     "PM ruling 2026-10-31: the pane's free edge runs parallel to the door's latch edge at the 4 mm the 180 deg "
-     "seal needs (Bohle BO5281018, hardware selection C3)"),
+    ("fg_gap", "glass_gap", "mm", "calculation",
+     "= the skeleton's glass_gap: the pane's free edge runs parallel to the door's latch edge, 4 mm off (PM ruling "
+     "2026-10-31; the skeleton's fix_xbl and fix_xtl follow the same rule since its update #58)"),
     ("gu_prof_w", "15 mm", "mm", "source", "Bohle BO5201571 aluminium U-profile 15 x 15 x 1.5 (hardware selection C5)"),
     ("gu_prof_d", "15 mm", "mm", "source", "as gu_prof_w"),
     ("gu_prof_t", "1.5 mm", "mm", "source", "as gu_prof_w"),

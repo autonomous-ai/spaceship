@@ -163,8 +163,22 @@ ANCHORS = [
 ENVELOPE_MAT = "ENVELOPE - mass carried in the parts list (1 kg/m3)"
 
 
+SCOPES = {"unit": None, "leaf": "LEAF", "kick": "KICK"}   # part-only designs for the part drawings
+
+
+def scope_doc(scope):
+    """Document name for a scope: the unit, or one part on its own (same parameters, same sketches)."""
+    if scope == "unit":
+        return DOC_NAME
+    pn, nm, _vn = PARTS[SCOPES[scope]]
+    return "%s_%s_%s_CAD" % (pn, REV, nm.replace("+", "-").replace(" - ", "-").replace(" ", "-"))
+
+
 def build(app):
-    design = L.start_design(app, PN, "%s | %s | %s" % (NAME, VN, REV))
+    scope = ARGS.get("scope", "unit")
+    only = SCOPES[scope]
+    rpn, rname, rvn = (PN, NAME, VN) if only is None else PARTS[only]
+    design = L.start_design(app, rpn, "%s | %s | %s" % (rname, rvn, REV))
     sk_params, sk_path, sk_rev = L.load_skeleton_params(ARGS["repo_root"])
     L.add_params(design, sk_params)
     L.add_params(design, L.LIB_PARAMS)
@@ -176,6 +190,9 @@ def build(app):
             raise RuntimeError("%s (%.1f) is smaller than %s (%.1f)" % (name, L.ev(design, name), expr, L.ev(design, expr)))
     comps, bodies = {}, {}
 
+    def want(key):
+        return only is None or key == only
+
     def comp(key):
         pn, nm, vn = PARTS[key]
         c = L.new_comp(root, pn, nm, vn, REV)
@@ -184,83 +201,83 @@ def build(app):
 
     # 361001 leaf: the skeleton's trapezoid, extended 25 mm down into the strip with a vertical latch-side
     # end (the extension sits inside the strip, so the visible outline is the skeleton's).
-    c = comp("LEAF")
-    bodies["LEAF"] = L.prism(design, c, "LEAF", ("x", "z"), [
-        ("kick_x0", "door_zb - door_glass_engage"), ("kick_x1", "door_zb - door_glass_engage"),
-        ("kick_x1", "door_zb"), (latch_x("leaf_zt"), "leaf_zt"), ("kick_x0", "leaf_zt")],
-        "y", GY0, GY1, "DOOR LEAF GLASS 4+4", "OUTLINE - DOOR LEAF (SKELETON TRAPEZOID + 25 MM INTO THE KICK STRIP)",
-        "EXTRUDE - DOOR LEAF 8.76")
+    if want("LEAF"):
+        c = comp("LEAF")
+        bodies["LEAF"] = L.prism(design, c, "LEAF", ("x", "z"), [
+            ("kick_x0", "door_zb - door_glass_engage"), ("kick_x1", "door_zb - door_glass_engage"),
+            ("kick_x1", "door_zb"), (latch_x("leaf_zt"), "leaf_zt"), ("kick_x0", "leaf_zt")],
+            "y", GY0, GY1, "DOOR LEAF GLASS 4+4", "OUTLINE - DOOR LEAF (SKELETON TRAPEZOID + 25 MM INTO THE KICK STRIP)",
+            "EXTRUDE - DOOR LEAF 8.76")
 
-    # 361002 kick strip: H section, glazing pocket on top, drop-seal cavity below, extruded along the door
-    c = comp("KICK")
-    bodies["KICK"] = L.prism(design, c, "KICK", ("y", "z"), [
-        (KY0, "kick_zb"), (UY0, "kick_zb"), (UY0, "kick_zb + kick_cav_h"), (UY1, "kick_zb + kick_cav_h"),
-        (UY1, "kick_zb"), (KY1, "kick_zb"), (KY1, "door_zb"), (UY1, "door_zb"),
-        (UY1, "door_zb - kick_pocket_d"), (UY0, "door_zb - kick_pocket_d"), (UY0, "door_zb"), (KY0, "door_zb")],
-        "x", "kick_x0", "kick_x1", "KICK STRIP", "SECTION - KICK STRIP (H: GLAZING POCKET OVER DROP-SEAL CAVITY)",
-        "EXTRUDE - KICK STRIP LENGTH")
-    for side, y0 in (("OUTSIDE", KY0 + " + kick_skin"), ("POD SIDE", UY1 + " + kick_skin")):
-        sk = L.poly(design, c, c.yZConstructionPlane, ("y", "z"), 0, "SECTION - KICK STRIP CHAMBER - " + side,
-                    [(y0, "kick_zb + kick_skin"), (y0 + " + kick_ch_w", "kick_zb + kick_skin"),
-                     (y0 + " + kick_ch_w", "door_zb - kick_skin"), (y0, "door_zb - kick_skin")])
-        L.extrude_span(c, sk, "x", "kick_x0", "kick_x1", adsk.fusion.FeatureOperations.CutFeatureOperation,
-                       [bodies["KICK"]], "CUT - KICK STRIP CHAMBER - " + side + " (D-85)")
+    # 361002 kick strip: H section, glazing pocket on top, drop-seal cavity below, hollow side walls (D-85)
+    if want("KICK"):
+        c = comp("KICK")
+        bodies["KICK"] = L.prism(design, c, "KICK", ("y", "z"), [
+            (KY0, "kick_zb"), (UY0, "kick_zb"), (UY0, "kick_zb + kick_cav_h"), (UY1, "kick_zb + kick_cav_h"),
+            (UY1, "kick_zb"), (KY1, "kick_zb"), (KY1, "door_zb"), (UY1, "door_zb"),
+            (UY1, "door_zb - kick_pocket_d"), (UY0, "door_zb - kick_pocket_d"), (UY0, "door_zb"), (KY0, "door_zb")],
+            "x", "kick_x0", "kick_x1", "KICK STRIP", "SECTION - KICK STRIP (H: GLAZING POCKET OVER DROP-SEAL CAVITY)",
+            "EXTRUDE - KICK STRIP LENGTH")
+        for side, y0 in (("OUTSIDE", KY0 + " + kick_skin"), ("POD SIDE", UY1 + " + kick_skin")):
+            sk = L.poly(design, c, c.yZConstructionPlane, ("y", "z"), 0, "SECTION - KICK STRIP CHAMBER - " + side,
+                        [(y0, "kick_zb + kick_skin"), (y0 + " + kick_ch_w", "kick_zb + kick_skin"),
+                         (y0 + " + kick_ch_w", "door_zb - kick_skin"), (y0, "door_zb - kick_skin")])
+            L.extrude_span(c, sk, "x", "kick_x0", "kick_x1", adsk.fusion.FeatureOperations.CutFeatureOperation,
+                           [bodies["KICK"]], "CUT - KICK STRIP CHAMBER - " + side + " (D-85)")
 
     # 368002 silicone U-seal round the glass edge in the pocket
-    c = comp("USEAL")
-    bodies["USEAL"] = L.prism(design, c, "USEAL", ("y", "z"), [
-        (UY0, "door_zb - kick_pocket_d"), (UY1, "door_zb - kick_pocket_d"), (UY1, "door_zb"), (GY1, "door_zb"),
-        (GY1, "door_zb - door_glass_engage"), (GY0, "door_zb - door_glass_engage"), (GY0, "door_zb"),
-        (UY0, "door_zb")],
-        "x", "kick_x0", "kick_x1", "GLAZING U-SEAL", "SECTION - GLAZING U-SEAL", "EXTRUDE - GLAZING U-SEAL LENGTH")
+    if want("USEAL"):
+        c = comp("USEAL")
+        bodies["USEAL"] = L.prism(design, c, "USEAL", ("y", "z"), [
+            (UY0, "door_zb - kick_pocket_d"), (UY1, "door_zb - kick_pocket_d"), (UY1, "door_zb"), (GY1, "door_zb"),
+            (GY1, "door_zb - door_glass_engage"), (GY0, "door_zb - door_glass_engage"), (GY0, "door_zb"),
+            (UY0, "door_zb")],
+            "x", "kick_x0", "kick_x1", "GLAZING U-SEAL", "SECTION - GLAZING U-SEAL", "EXTRUDE - GLAZING U-SEAL LENGTH")
 
     # 368001 drop seal: catalogue section, bonded to the pod-side wall of the cavity, flush with the strip bottom
-    c = comp("GSA")
-    bodies["GSA"] = L.prism(design, c, "GSA", ("y", "z"), [
-        (UY1 + " - gsa_t", "kick_zb"), (UY1, "kick_zb"), (UY1, "kick_zb + gsa_h"), (UY1 + " - gsa_t", "kick_zb + gsa_h")],
-        "x", "kick_x0", "kick_x1", "DROP SEAL ENVELOPE (CATALOGUE SECTION)", "SECTION - DROP SEAL GSA 11.6 X 40",
-        "EXTRUDE - DROP SEAL CUT LENGTH")
+    if want("GSA"):
+        c = comp("GSA")
+        bodies["GSA"] = L.prism(design, c, "GSA", ("y", "z"), [
+            (UY1 + " - gsa_t", "kick_zb"), (UY1, "kick_zb"), (UY1, "kick_zb + gsa_h"), (UY1 + " - gsa_t", "kick_zb + gsa_h")],
+            "x", "kick_x0", "kick_x1", "DROP SEAL ENVELOPE (CATALOGUE SECTION)", "SECTION - DROP SEAL GSA 11.6 X 40",
+            "EXTRUDE - DROP SEAL CUT LENGTH")
 
-    # HOLD spaces: hinges (into the DL pocket), lock and pull. No holes in the glass for them.
+    # HOLD spaces for the hinges (into the DL pocket) and the pull; the catch's strike; the seal half
     for key, zc in (("H1", "hinge_z1"), ("H2", "hinge_z2"), ("H3", "hinge_z3")):
-        c = comp(key)
-        bodies[key] = L.box_body(design, c, key, ("hinge_x0", "kick_x0 + hinge_clamp_w"),
-                                 ("-glass_y - hinge_clamp_t / 2", "-glass_y + hinge_clamp_t / 2"),
-                                 ("%s - hinge_clamp_h / 2" % zc, "%s + hinge_clamp_h / 2" % zc),
-                                 "HOLD HINGE SPACE " + key, "PLAN - HOLD HINGE SPACE " + key)
-    c = comp("STRIKE")
-    sx1 = "(%s - st_end)" % latch_x("leaf_zt")
-    bodies["STRIKE"] = L.box_body(design, c, "STRIKE", ("%s - st_l" % sx1, sx1),
-                                  ("-glass_y - st_a / 2", "-glass_y + st_a / 2"), ("leaf_zt - st_h", "leaf_zt + st_top"),
-                                  "CATCH STRIKE HT-MSG62-U10")
-    c = comp("MSEAL")
-    dx = lambda z: "((fg_lc + ms_w - fg_lnz * (%s)) / fg_lnx)" % z
-    bodies["MSEAL"] = L.prism(design, c, "MSEAL", ("x", "z"), [
-        (L.door_x("door_zb"), "door_zb"), (dx("door_zb"), "door_zb"), (dx("leaf_zt"), "leaf_zt"),
-        (L.door_x("leaf_zt"), "leaf_zt")], "y", GY0 + " - ms_t", GY1 + " + ms_t",
-        "180 MAGNETIC SEAL - DOOR HALF (HOLD PRODUCT)", "OUTLINE - 180 MAGNETIC SEAL DOOR HALF",
-        "EXTRUDE - 180 MAGNETIC SEAL DOOR HALF")
-    c = comp("PULL")
-    out = L.box_body(design, c, "PULL-OUT", ("pull_x - pull_w / 2", "pull_x + pull_w / 2"),
-                     (GY0 + " - pull_stand", GY0), ("pull_zc - pull_len / 2", "pull_zc + pull_len / 2"),
-                     "HOLD PULL SPACE - OUTSIDE")
-    ins = L.box_body(design, c, "PULL-IN", ("pull_x - pull_w / 2", "pull_x + pull_w / 2"),
-                     (GY1, GY1 + " + pull_stand"), ("pull_zc - pull_len / 2", "pull_zc + pull_len / 2"),
-                     "HOLD PULL SPACE - POD SIDE")
-    bodies["PULL"] = out
-    bodies["PULL-IN"] = ins
+        if want(key):
+            c = comp(key)
+            bodies[key] = L.box_body(design, c, key, ("hinge_x0", "kick_x0 + hinge_clamp_w"),
+                                     ("-glass_y - hinge_clamp_t / 2", "-glass_y + hinge_clamp_t / 2"),
+                                     ("%s - hinge_clamp_h / 2" % zc, "%s + hinge_clamp_h / 2" % zc),
+                                     "HOLD HINGE SPACE " + key, "PLAN - HOLD HINGE SPACE " + key)
+    if want("STRIKE"):
+        c = comp("STRIKE")
+        sx1 = "(%s - st_end)" % latch_x("leaf_zt")
+        bodies["STRIKE"] = L.box_body(design, c, "STRIKE", ("%s - st_l" % sx1, sx1),
+                                      ("-glass_y - st_a / 2", "-glass_y + st_a / 2"), ("leaf_zt - st_h", "leaf_zt + st_top"),
+                                      "CATCH STRIKE HT-MSG62-U10")
+    if want("MSEAL"):
+        c = comp("MSEAL")
+        dx = lambda z: "((fg_lc + ms_w - fg_lnz * (%s)) / fg_lnx)" % z
+        bodies["MSEAL"] = L.prism(design, c, "MSEAL", ("x", "z"), [
+            (L.door_x("door_zb"), "door_zb"), (dx("door_zb"), "door_zb"), (dx("leaf_zt"), "leaf_zt"),
+            (L.door_x("leaf_zt"), "leaf_zt")], "y", GY0 + " - ms_t", GY1 + " + ms_t",
+            "180 MAGNETIC SEAL - DOOR HALF (HOLD PRODUCT)", "OUTLINE - 180 MAGNETIC SEAL DOOR HALF",
+            "EXTRUDE - 180 MAGNETIC SEAL DOOR HALF")
+    if want("PULL"):
+        c = comp("PULL")
+        bodies["PULL"] = L.box_body(design, c, "PULL-OUT", ("pull_x - pull_w / 2", "pull_x + pull_w / 2"),
+                                    (GY0 + " - pull_stand", GY0), ("pull_zc - pull_len / 2", "pull_zc + pull_len / 2"),
+                                    "HOLD PULL SPACE - OUTSIDE")
+        bodies["PULL-IN"] = L.box_body(design, c, "PULL-IN", ("pull_x - pull_w / 2", "pull_x + pull_w / 2"),
+                                       (GY1, GY1 + " + pull_stand"), ("pull_zc - pull_len / 2", "pull_zc + pull_len / 2"),
+                                       "HOLD PULL SPACE - POD SIDE")
 
     # materials and looks
-    glass = L.material(design, "Glass 4+4 laminated (2376 kg/m3, calculation)", "Glass", 2376.0)
-    alu = L.material(design, "Aluminium EN AW-6082-T6 (2700 kg/m3)", "Aluminum", 2700.0)
-    sil = L.material(design, "Silicone rubber (1200 kg/m3, assumption)", "Rubber, Silicone", 1200.0)
-    env = L.material(design, ENVELOPE_MAT, "Aluminum", 1.0)
-    bodies["LEAF"].material = glass
-    bodies["KICK"].material = alu
-    bodies["USEAL"].material = sil
-    bodies["STRIKE"].material = L.material(design, "Stainless steel SUS430 (7700 kg/m3)", "Steel", 7700.0)
-    for k in ("GSA", "H1", "H2", "H3", "MSEAL", "PULL", "PULL-IN"):
-        bodies[k].material = env
+    mats = {"LEAF": ("Glass 4+4 laminated (2376 kg/m3, calculation)", "Glass", 2376.0),
+            "KICK": ("Aluminium EN AW-6063-T6 (2700 kg/m3)", "Aluminum", 2700.0),
+            "USEAL": ("Silicone rubber (1200 kg/m3, assumption)", "Rubber, Silicone", 1200.0),
+            "STRIKE": ("Stainless steel SUS430 (7700 kg/m3)", "Steel", 7700.0)}
     looks = {"LEAF": ["Glass - Smoked", "Glass (Smoked)", "Glass - Window", "Glass"],
              "KICK": ["Paint - Enamel Glossy (Black)", "Aluminum - Anodized Glossy (Black)", "Plastic - Matte (Black)"],
              "USEAL": ["Rubber - Soft (Black)", "Plastic - Matte (Black)"],
@@ -269,13 +286,16 @@ def build(app):
              "STRIKE": ["Steel - Satin", "Stainless Steel - Satin"],
              "MSEAL": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"]}
     for k, b in bodies.items():
+        b.material = L.material(design, *mats[k]) if k in mats else L.material(design, ENVELOPE_MAT, "Aluminum", 1.0)
         a = L.appearance(design, looks.get(k) or looks["HOLD"])
         if a:
             b.appearance = a
 
     # checks
+    expected = [(k, r) for k, r in EXPECTED if all(x in bodies for x in k)]
     n_tl, bad, loose = L.health(design)
-    hits, bad_clash = L.clash_check(bodies, EXPECTED)
+    hits, bad_clash = L.clash_check(bodies, expected)
+    print("scope %s: design for %s %s" % (scope, rpn, rname))
     print("skeleton parameters: %s (%s), %d loaded" % (os.path.relpath(sk_path, ARGS["repo_root"]), sk_rev, len(sk_params)))
     print("bodies %d, timeline %d items, unhealthy %d, loose sketches %d, parameters %d" % (
         len(bodies), n_tl, len(bad), len(loose), design.userParameters.count))
@@ -287,10 +307,11 @@ def build(app):
     for a, b, v in hits:
         print("CLASH|%s|%s|%d mm3|%s" % (a, b, v, "UNEXPECTED" if (a, b, v) in bad_clash else "listed"))
     hit_set = {frozenset((a, b)) for a, b, _v in hits}
-    missing = [k for k, _r in EXPECTED if frozenset(k) not in hit_set]
+    missing = [k for k, _r in expected if frozenset(k) not in hit_set]
     print("listed pairs that do not clash:", missing)
     for key in ("LEAF", "KICK", "USEAL"):
-        print("MASS|%s|%s|%.3f kg" % (key, PARTS[key][0], L.comp_mass(comps[key])))
+        if key in comps:
+            print("MASS|%s|%s|%.3f kg" % (key, PARTS[key][0], L.comp_mass(comps[key])))
     print("unit box", L.box(root))
     for name in ("kick_h", "kick_len", "kick_cav_h", "kick_wall", "leaf_zt", "pull_x", "hinge_z1", "hinge_z2", "hinge_z3"):
         print("PARAM|%s|%.2f" % (name, L.ev(design, name)))
@@ -362,7 +383,10 @@ def export_all(app):
     y0, kz = L.ev(design, KY0), L.ev(design, "kick_zb")
     kick = [(y - y0, z - kz) for y, z in outline_mm(design, "SECTION - KICK STRIP (H: GLAZING POCKET OVER DROP-SEAL CAVITY)",
                                                     "361002 FRONT - DOOR KICK STRIP", ("y", "z"))]
-    L.write_dxf_polyline(os.path.join(root_dir, DXF_KICK_REL), [kick])
+    chambers = [[(y - y0, z - kz) for y, z in outline_mm(design, "SECTION - KICK STRIP CHAMBER - " + side,
+                                                         "361002 FRONT - DOOR KICK STRIP", ("y", "z"))]
+                for side in ("OUTSIDE", "POD SIDE")]
+    L.write_dxf_polyline(os.path.join(root_dir, DXF_KICK_REL), [kick] + chambers)
     print("DXF leaf corners:", [(round(a, 2), round(b, 2)) for a, b in leaf])
     print("DXF kick strip section corners:", [(round(a, 2), round(b, 2)) for a, b in kick])
     # parts list: names and masses from the model
@@ -415,9 +439,10 @@ def run(_context):
     app = adsk.core.Application.get()
     step = ARGS.get("step", "build")
     doc = app.activeDocument
-    if doc is None or not doc.name.startswith(DOC_NAME):
+    want_doc = scope_doc(ARGS.get("scope", "unit"))
+    if doc is None or not doc.name.startswith(want_doc):
         raise RuntimeError("active document is %r, not %s: open it with the runner's --doc" % (
-            doc.name if doc else None, DOC_NAME))
+            doc.name if doc else None, want_doc))
     if step == "build":
         build(app)
     elif step == "export":
