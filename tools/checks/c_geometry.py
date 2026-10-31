@@ -1,0 +1,557 @@
+#!/usr/bin/env python3
+"""Geometry checks that run on the STEP files in the repo, without Fusion.
+
+- C01 (offline part): outer shell closure. Points on the pod's back, side and
+  top faces must each sit inside some body; open regions bigger than the
+  reporting size are findings. Bodies are taken as their boxes, so a gap
+  inside a faceted body's box is not seen (Fusion's exact check covers it).
+- C02 (gap rules): minimum and maximum gaps between named bodies, from
+  v2/04-Checks/config/gap-rules.csv (the same file the Fusion check reads).
+  Offline, a gap is the gap between boxes, exact for box-shaped bodies.
+- C08: mating holes across parts line up: coaxial holes in different parts
+  must be nominally on one axis.
+- C09: edge distance at least 2 hole diameters, hole spacing, sheet-metal
+  bend radius and hole-to-bend distance, per part.
+
+Models: the skeleton (v2/03-Manufacturing/skeleton/*.step, envelopes) and the
+assembled design (every other assembly STEP in pod coordinates) are checked
+separately, so envelopes never clash with the real parts.
+"""
+
+import csv
+import fnmatch
+import math
+import os
+import re
+from collections import defaultdict
+
+from common import Finding, owner_for, rel, walk_files, num, pn_class, read_csv
+import stepfile as sf
+
+POD_BOX = (-1250.0, -850.0, 0.0, 1250.0, 850.0, 2400.0)
+
+
+# ----------------------------------------------------------------- loading
+
+class Body:
+    __slots__ = ("label", "solid", "frame", "box", "file", "part_number", "step")
+
+    def __init__(self, label, solid, frame, box, file, part_number, step):
+        self.label, self.solid, self.frame, self.box = label, solid, frame, box
+        self.file, self.part_number, self.step = file, part_number, step
+
+
+def load_step(path, cache={}):
+    if path not in cache:
+        cache[path] = sf.StepFile(path)
+    return cache[path]
+
+
+def bodies_of(root, path):
+    s = load_step(path)
+    out = []
+    for inst in s.instances():
+        so = s.solid(inst["solid"])
+        box = sf.world_box(so, inst["frame"])
+        if box is None:
+            continue
+        label = " / ".join([p for p in inst["path"] if p] + [so.name or ""])
+        out.append(Body(label, so, inst["frame"], box, rel(root, path), inst["part_number"], s))
+    return out
+
+
+def in_pod(box, tol=5.0):
+    return all(box[k] >= POD_BOX[k] - tol for k in range(3)) and all(box[k + 3] <= POD_BOX[k + 3] + tol
+                                                                      for k in range(3))
+
+
+def models(root):
+    """{'skeleton': [bodies], 'assembly': [bodies]} plus a list of per-part
+    STEP files (not in pod coordinates) for the per-part checks."""
+    steps = walk_files(root, "v2/03-Manufacturing", exts=(".step", ".stp"))
+    out = {"skeleton": [], "assembly": []}
+    per_part = []
+    for p in steps:
+        r = rel(root, p)
+        bs = bodies_of(root, p)
+        if "/skeleton/" in r:
+            out["skeleton"].extend(bs)
+            continue
+        s = load_step(p)
+        _c, tops = s.usage_counts()
+        is_asm = any(pn_class(t) == "assembly" for t in tops)
+        if is_asm and bs and all(in_pod(b.box) for b in bs):
+            out["assembly"].extend(bs)
+        per_part.append(p)
+    return out, per_part
+
+
+# ----------------------------------------------------------------- C01 shell
+
+SHELL_ZONES = [
+    # face, fixed axis, value, inward sign, (axis a, lo, hi), (axis b, lo, hi), needs (glob of files)
+    ("back", 1, 850.0, -1, (0, -1250.0, 1250.0), (2, 110.0, 2400.0), None),
+    ("left", 0, -1250.0, +1, (1, -645.0, 850.0), (2, 110.0, 2400.0), None),
+    ("right", 0, 1250.0, -1, (1, -645.0, 850.0), (2, 110.0, 2400.0), None),
+    ("top", 2, 2400.0, -1, (0, -1250.0, 1250.0), (1, -645.0, 850.0), None),
+    # the base zone (Z 10 to 110) once the BASE assembly exists; Z 0 to 10 is the glide gap
+    ("back-base", 1, 850.0, -1, (0, -1250.0, 1250.0), (2, 10.0, 110.0), "v2/03-Manufacturing/base/*.step"),
+    ("left-base", 0, -1250.0, +1, (1, -850.0, 850.0), (2, 10.0, 110.0), "v2/03-Manufacturing/base/*.step"),
+    ("right-base", 0, 1250.0, -1, (1, -850.0, 850.0), (2, 10.0, 110.0), "v2/03-Manufacturing/base/*.step"),
+]
+
+
+def _covered(p, boxes, eps=1e-6):
+    for b in boxes:
+        if b[0] - eps <= p[0] <= b[3] + eps and b[1] - eps <= p[1] <= b[4] + eps and b[2] - eps <= p[2] <= b[5] + eps:
+            return True
+    return False
+
+
+def _subtract(r, c):
+    """Rectangle r minus rectangle c, both (a0, a1, b0, b1): up to 4 pieces."""
+    a0, a1, b0, b1 = r
+    c0, c1, d0, d1 = c
+    if c1 <= a0 or c0 >= a1 or d1 <= b0 or d0 >= b1:
+        return [r]
+    out = []
+    if c0 > a0:
+        out.append((a0, c0, b0, b1))
+    if c1 < a1:
+        out.append((c1, a1, b0, b1))
+    m0, m1 = max(a0, c0), min(a1, c1)
+    if d0 > b0:
+        out.append((m0, m1, b0, d0))
+    if d1 < b1:
+        out.append((m0, m1, d1, b1))
+    return out
+
+
+def _merge(rects, tol=1e-6):
+    """Join open rectangles that share a full edge, so one slot reads as one."""
+    rects = list(rects)
+    changed = True
+    while changed:
+        changed = False
+        for i in range(len(rects)):
+            for j in range(i + 1, len(rects)):
+                a, b = rects[i], rects[j]
+                if abs(a[2] - b[2]) < tol and abs(a[3] - b[3]) < tol and (abs(a[1] - b[0]) < tol or abs(b[1] - a[0]) < tol):
+                    rects[i] = (min(a[0], b[0]), max(a[1], b[1]), a[2], a[3])
+                elif abs(a[0] - b[0]) < tol and abs(a[1] - b[1]) < tol and (abs(a[3] - b[2]) < tol or abs(b[3] - a[2]) < tol):
+                    rects[i] = (a[0], a[1], min(a[2], b[2]), max(a[3], b[3]))
+                else:
+                    continue
+                rects.pop(j)
+                changed = True
+                break
+            if changed:
+                break
+    return rects
+
+
+SEAM_GAP = 2.26          # the decided metal-stop seam (PM ruling on F-008): narrower gaps are seams, not openings
+
+
+def _touch(a, b, tol=1e-6):
+    """Two rectangles overlap or share a boundary of positive length."""
+    oa = min(a[1], b[1]) - max(a[0], b[0])
+    ob = min(a[3], b[3]) - max(a[2], b[2])
+    return (oa >= -tol and ob > tol) or (oa > tol and ob >= -tol)
+
+
+def _components(rects):
+    groups = []
+    for r in rects:
+        hit = [g for g in groups if any(_touch(r, x) for x in g)]
+        merged = [r] + [x for g in hit for x in g]
+        groups = [g for g in groups if g not in hit] + [merged]
+    return groups
+
+
+def shell_gaps(bodies, inset=1.0, seam=SEAM_GAP, root=None):
+    """Open regions on the pod's outer faces. Each body's box, where it
+    reaches 1 mm inside a face, is grown by just over half a seam in the
+    face's plane, so a decided 2.26 mm seam closes and anything wider stays
+    open; every piece left is an opening (no size cut-off before joining).
+    Touching pieces are joined into one region; its reported extent is
+    grown back by the same margin. Each result: zone, axes, a and b (open
+    ranges), near (the bodies bordering it)."""
+    grow = seam / 2.0 + 0.1
+    out = []
+    for zone, ax, val, sign, (aa, a0, a1), (bb, b0, b1), needs in SHELL_ZONES:
+        if needs and not (root and _glob_exists(root, needs)):
+            continue
+        plane = val + sign * inset
+        face_bodies = [b for b in bodies if b.box[ax] - 1e-6 <= plane <= b.box[ax + 3] + 1e-6]
+        open_ = [(a0, a1, b0, b1)]
+        for b in face_bodies:
+            c = (b.box[aa] - grow, b.box[aa + 3] + grow, b.box[bb] - grow, b.box[bb + 3] + grow)
+            open_ = [piece for r in open_ for piece in _subtract(r, c)]
+        open_ = [r for r in open_ if r[1] - r[0] > 1e-3 and r[3] - r[2] > 1e-3]
+        for g in _components(open_):
+            r = (max(a0, min(x[0] for x in g) - grow), min(a1, max(x[1] for x in g) + grow),
+                 max(b0, min(x[2] for x in g) - grow), min(b1, max(x[3] for x in g) + grow))
+            near = sorted({b.label.split(" / ")[-1] for b in face_bodies
+                           if b.box[aa] <= r[1] + 1e-3 and b.box[aa + 3] >= r[0] - 1e-3
+                           and b.box[bb] <= r[3] + 1e-3 and b.box[bb + 3] >= r[2] - 1e-3})
+            out.append({"zone": zone, "axes": ("XYZ"[aa], "XYZ"[bb]), "a": (r[0], r[1]), "b": (r[2], r[3]),
+                        "near": near})
+    return out
+
+
+def _glob_exists(root, pattern):
+    d = os.path.join(root, os.path.dirname(pattern))
+    if not os.path.isdir(d):
+        return False
+    return any(fnmatch.fnmatch(f, os.path.basename(pattern)) for f in os.listdir(d))
+
+
+FAMILIES_FOR_SHELL = ("21", "41")     # the assembled shell is checked once WALL and CEILING both exist
+
+
+def shell_ready(mdl, bodies):
+    if mdl == "skeleton":
+        return True
+    have = {(b.part_number or "")[:2] for b in bodies}
+    return all(f in have for f in FAMILIES_FOR_SHELL)
+
+
+def check_shell(root, mdl, bodies):
+    fs = []
+    if not shell_ready(mdl, bodies):
+        return fs
+    for g in shell_gaps(bodies, root=root):
+        an, bn = g["axes"]
+        (a0, a1), (b0, b1) = g["a"], g["b"]
+        fs.append(Finding(
+            "C01", "shell-open", "%s shell %s %s %.0f..%.0f %s %.0f..%.0f" % (mdl, g["zone"], an, a0, a1, bn, b0, b1),
+            "severe",
+            "The outer shell is open on the %s face of the %s: nothing covers %s %.0f to %.0f, %s %.0f to %.0f "
+            "(a slot %.0f x %.0f mm). Bordered by: %s. Checked exactly, 1 mm inside the face, bodies "
+            "as their boxes." % (g["zone"], mdl, an, a0, a1, bn, b0, b1, a1 - a0, b1 - b0,
+                               ", ".join(g["near"]) or "nothing"),
+            "Close it: extend the bordering panels to meet, or add the part that belongs there.",
+            _file_of(bodies), owner_for(_file_of(bodies)), {"model": mdl, "near": g["near"]}))
+    return fs
+
+
+def _file_of(bodies):
+    files = sorted({b.file for b in bodies})
+    return files[0] if len(files) == 1 else ""
+
+
+# ----------------------------------------------------------------- C02 gap rules
+
+def load_gap_rules(root):
+    p = os.path.join(root, "v2/04-Checks/config/gap-rules.csv")
+    return read_csv(p) if os.path.exists(p) else []
+
+
+def check_gap_rules(root, mdl, bodies, rules):
+    """One finding per rule group (the `group` column, else the rule id),
+    listing every rule in it that fails."""
+    fails = {}
+    for r in rules:
+        if r.get("models") and mdl not in r["models"].split():
+            continue
+        if (r.get("method") or "box").strip() == "exact":
+            continue            # needs true distances (slanted or curved parts): the Fusion check measures it
+        ra = re.compile(r["a"], re.I)
+        rb = re.compile(r["b"], re.I)
+        A = [b for b in bodies if ra.search(b.label)]
+        B = [b for b in bodies if rb.search(b.label)]
+        if not A or not B:
+            continue
+        lo, hi = num(r.get("min_gap_mm")), num(r.get("max_gap_mm"))
+        worst = None
+        for a in A:
+            for b in B:
+                if a is b:
+                    continue
+                g = sf.box_gap(a.box, b.box)
+                if g > 50.0:              # only neighbours
+                    continue
+                if worst is None or g < worst[0]:
+                    worst = (g, a, b)
+        if worst is None:
+            continue
+        g, a, b = worst
+        if (lo is not None and g < lo - 1e-6) or (hi is not None and g > hi + 1e-6):
+            fails.setdefault(r.get("group") or r["id"], []).append((r, g, a, b, lo, hi))
+    fs = []
+    for grp, items in fails.items():
+        r0 = items[0][0]
+        sev = "severe" if any(it[0].get("severity") == "severe" for it in items) else (r0.get("severity") or "major")
+        parts = []
+        for r, g, a, b, lo, hi in items:
+            parts.append("%s: %s to %s is %.1f mm, needs %s" % (
+                r["id"], a.label.split(" / ")[-1], b.label.split(" / ")[-1], g, _range_text(lo, hi)))
+        fs.append(Finding(
+            "C02", "gap-" + grp, "%s %s" % (mdl, grp), sev,
+            "%s. Rule source: %s. Why: %s" % ("; ".join(parts), r0.get("status_source", ""), r0.get("why", "")),
+            r0.get("fix", ""), items[0][2].file, r0.get("owner") or owner_for(items[0][2].file),
+            {"model": mdl, "rules": [{"id": r["id"], "gap_mm": round(g, 2), "a": a.label, "b": b.label}
+                                     for r, g, a, b, lo, hi in items]}))
+    return fs
+
+
+def _range_text(lo, hi):
+    if lo is not None and hi is not None:
+        return "%g to %g mm" % (lo, hi)
+    if lo is not None:
+        return "at least %g mm" % lo
+    return "at most %g mm" % hi
+
+
+# ----------------------------------------------------------------- C08 alignment
+
+def world_holes(bodies):
+    out = []
+    for b in bodies:
+        for h in b.solid.holes:
+            out.append((b, h.moved(b.frame)))
+    return out
+
+
+def check_alignment(root, mdl, bodies, capture=4.0, axial_gap=40.0):
+    """Coaxial holes in different parts (axes parallel within 0.5 degrees,
+    centres within `capture` mm sideways, within `axial_gap` mm along the
+    axis) are taken as mating holes; a nominal offset over 0.05 mm is a
+    finding."""
+    fs = []
+    hs = world_holes(bodies)
+    cos_tol = math.cos(math.radians(0.5))
+    seen = set()
+    for i, (ba, ha) in enumerate(hs):
+        for bb, hb in hs[i + 1:]:
+            if ba is bb or ba.part_number == bb.part_number and ba.solid is bb.solid:
+                continue
+            if abs(sf.dot(ha.axis, hb.axis)) < cos_tol:
+                continue
+            lateral = sf.line_distance(hb.center, ha.center, ha.axis)
+            if lateral > capture:
+                continue
+            along = abs(sf.dot((hb.center[0] - ha.center[0], hb.center[1] - ha.center[1], hb.center[2] - ha.center[2]),
+                               ha.axis))
+            if along - (ha.length + hb.length) / 2.0 > axial_gap:
+                continue
+            if lateral <= 0.05:
+                continue
+            key = tuple(sorted((ba.label, bb.label))) + (round(ha.center[0]), round(ha.center[1]), round(ha.center[2]))
+            if key in seen:
+                continue
+            seen.add(key)
+            clear = min(ha.diameter, hb.diameter)
+            sev = "severe" if lateral > (max(ha.diameter, hb.diameter) - 6.0) / 2.0 else "major"
+            fs.append(Finding(
+                "C08", "hole-offset", "%s %s x %s at %s" % (mdl, ba.label.split(" / ")[-1], bb.label.split(" / ")[-1],
+                                                           _pt(ha.center)),
+                sev,
+                "Mating holes are %.2f mm off axis in the CAD: %s (Ø%.2f) and %s (Ø%.2f) at %s. Holes that take the "
+                "same bolt should share one nominal axis; tolerances come on top." % (
+                    lateral, ba.label, ha.diameter, bb.label, hb.diameter, _pt(ha.center)),
+                "Put both holes on the same axis, driven by one shared parameter or sketch point.",
+                ba.file, owner_for(ba.file, ba.part_number),
+                {"model": mdl, "offset_mm": round(lateral, 3)}))
+    return fs
+
+
+JOINT_HOLE_SIZES = ((5.9, 6.1), (6.3, 7.3), (9.4, 9.8))    # rivnut thread bore, M6 clearance, rivnut hole
+
+
+def _box_hits_segment(box, p0, p1, pad=0.5):
+    lo = [min(p0[k], p1[k]) - pad for k in range(3)]
+    hi = [max(p0[k], p1[k]) + pad for k in range(3)]
+    return all(box[k] <= hi[k] and box[k + 3] >= lo[k] for k in range(3))
+
+
+RIVNUT_LABEL = re.compile(r"\b(RIVNUT|RIVET NUT)\b", re.I)
+
+
+def check_hole_sizes(root, mdl, bodies, hole_rules=None, capture=4.0, plane=15.0):
+    """Hole-size rules that depend on the mate: a clearance hole in the rule's
+    size band is flagged only when it faces a rivnut in another part (a
+    rivnut's hole or its thread bore on the same axis), so a blind rivet's
+    6.5 mm hole is left alone. Needs the assembled model."""
+    hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
+    fs = []
+    hs = world_holes(bodies)
+    rivnut_axes = [(b, h) for b, h in hs if (9.4 <= h.diameter <= 9.8) or
+                   (RIVNUT_LABEL.search(b.label) and 5.9 <= h.diameter <= 6.1)]
+    done = set()
+    for hr in hole_rules:
+        lo, hi = num(hr.get("min_dia_mm")), num(hr.get("max_dia_mm"))
+        if lo is None or hi is None:
+            continue
+        for b, h in hs:
+            if not lo <= h.diameter <= hi:
+                continue
+            faces = [rb for rb, rh in rivnut_axes if rb.part_number != b.part_number
+                     and abs(sf.dot(rh.axis, h.axis)) > 0.9999
+                     and sf.line_distance(rh.center, h.center, h.axis) <= capture
+                     and abs(sf.dot(tuple(rh.center[k] - h.center[k] for k in range(3)), h.axis)) <= plane]
+            if not faces or (b.part_number, hr["id"]) in done:
+                continue
+            done.add((b.part_number, hr["id"]))
+            n = sum(1 for bb, x in hs if bb.part_number == b.part_number and lo <= x.diameter <= hi)
+            fs.append(Finding(
+                "C08", "hole-size-" + hr["id"], "%s %s holes Ø%.2f" % (mdl, b.label.split(" / ")[-1], h.diameter),
+                hr.get("severity") or "major",
+                "%s has %d hole(s) of Ø%.2f facing a rivnut (%s). %s. Rule: %s." % (
+                    b.label, n, h.diameter, faces[0].label.split(" / ")[-1], hr.get("message", ""),
+                    hr.get("status_source", "")),
+                hr.get("fix", ""), b.file, owner_for(b.file, b.part_number),
+                {"model": mdl, "dia_mm": round(h.diameter, 2), "count": n}))
+    return fs
+
+
+def check_unmatched(root, mdl, bodies, capture=4.0, search=60.0, plane=15.0):
+    """Bolt patterns across assemblies: a joint hole (rivnut thread, M6
+    clearance or rivnut hole) in one STEP file whose partner file has joint
+    holes on the same joint plane (parallel axes, within `plane` mm along
+    the axis) nearby, but none within `capture` mm of its axis. That is a
+    pattern that doesn't match (the nearest candidate is reported). Holes
+    with no candidates at all within `search` mm are left alone: the other
+    side may not be modelled yet. Only holes in different files are paired,
+    so a panel's own factory joints don't count."""
+    fs = []
+    hs = [(b, h) for b, h in world_holes(bodies) if any(lo <= h.diameter <= hi for lo, hi in JOINT_HOLE_SIZES)]
+    seen = set()
+    for b, h in hs:
+        best = None
+        for ob, x in hs:
+            if ob.file == b.file or abs(sf.dot(x.axis, h.axis)) < 0.9999:
+                continue
+            d_ax = abs(sf.dot(tuple(x.center[k] - h.center[k] for k in range(3)), h.axis))
+            if d_ax > plane:
+                continue
+            lat = sf.line_distance(x.center, h.center, h.axis)
+            if best is None or lat < best[0]:
+                best = (lat, ob, x)
+        if best is None or best[0] <= capture or best[0] > search:
+            continue
+        lat, ob, x = best
+        # one finding per joint axis in each file (a rivnut's hole and its thread bore share one)
+        t = sf.dot(h.center, h.axis)
+        foot = tuple(h.center[k] - h.axis[k] * t for k in range(3))
+        key = (b.file, round(foot[0]), round(foot[1]), round(foot[2]))
+        if key in seen:
+            continue
+        seen.add(key)
+        fs.append(Finding(
+            "C08", "hole-unmatched", "%s %s hole Ø%.1f at %s" % (mdl, b.label.split(" / ")[-1], h.diameter,
+                                                               _pt(h.center)),
+            "severe",
+            "The Ø%.2f joint hole in %s at %s has no partner on its axis in %s: the nearest joint hole there "
+            "(Ø%.2f in %s at %s) is %.1f mm off, so the bolt can't go in." % (
+                h.diameter, b.label, _pt(h.center), ob.file, x.diameter, ob.label.split(" / ")[-1], _pt(x.center), lat),
+            "Take both sides' hole patterns from one shared source (one parameter set both link to).",
+            b.file, owner_for(b.file, b.part_number), {"model": mdl, "offset_mm": round(lat, 1), "other": ob.file}))
+    return fs
+
+
+def _pt(p):
+    return "X %.0f Y %.0f Z %.0f" % p
+
+
+# ----------------------------------------------------------------- C09 per part
+
+def load_bend_rules(root):
+    p = os.path.join(root, "v2/04-Checks/config/sheet-rules.csv")
+    return read_csv(p) if os.path.exists(p) else []
+
+
+def _rule_for(material, rules):
+    m = (material or "").lower()
+    for r in rules:
+        if r["match"] and re.search(r["match"], m, re.I):
+            return r
+    return next((r for r in rules if r["match"] in ("", "*", "default")), None)
+
+
+def load_hole_rules(root):
+    p = os.path.join(root, "v2/04-Checks/config/hole-rules.csv")
+    return read_csv(p) if os.path.exists(p) else []
+
+
+def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None):
+    """Per-part checks on a STEP file. materials: part number -> material text."""
+    fs = []
+    hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
+    s = load_step(path)
+    r = rel(root, path)
+    done = set()
+    for inst in s.instances():
+        so = s.solid(inst["solid"])
+        k = (inst["part_number"], so.id)
+        if k in done:
+            continue
+        done.add(k)
+        pn = inst["part_number"]
+        part = "%s %s" % (pn, (so.name or "").strip())
+        holes = so.holes
+        for h in holes:
+            e, _kind = sf.edge_distance(so, h)
+            if e is None:
+                continue
+            need = edge_factor * h.diameter
+            if e + 1e-6 < need:
+                sev = "severe" if e < 1.5 * h.diameter else "major"
+                fs.append(Finding(
+                    "C09", "edge-distance", "%s hole Ø%.1f at %s" % (part, h.diameter, _pt(h.center)), sev,
+                    "Hole Ø%.2f in %s is %.1f mm from the free edge (centre to edge), %.2f diameters; the rule is at "
+                    "least %g diameters (%.1f mm). Hole centre %s in the part's own coordinates." % (
+                        h.diameter, part, e, e / h.diameter, edge_factor, need, _pt(h.center)),
+                    "Move the hole to at least %.1f mm from the edge, or justify a smaller distance with a "
+                    "calculation in the feature rationale." % need,
+                    r, owner_for(r, pn), {"edge_mm": round(e, 2), "dia_mm": round(h.diameter, 2)}))
+        # spacing between holes in the same wall
+        for i, a in enumerate(holes):
+            for b in holes[i + 1:]:
+                if abs(abs(sf.dot(a.axis, b.axis)) - 1.0) > 1e-4:
+                    continue
+                if abs(sf.dot((b.center[0] - a.center[0], b.center[1] - a.center[1], b.center[2] - a.center[2]),
+                              a.axis)) > 0.5:
+                    continue        # different walls
+                c2c = sf.line_distance(b.center, a.center, a.axis)
+                need = 2.0 * max(a.diameter, b.diameter)
+                if 1e-3 < c2c < need:
+                    fs.append(Finding(
+                        "C09", "hole-spacing", "%s holes at %s and %s" % (part, _pt(a.center), _pt(b.center)), "major",
+                        "Holes Ø%.2f and Ø%.2f in %s are %.1f mm apart centre to centre, under 2 diameters (%.1f mm), "
+                        "leaving %.1f mm of material between them." % (
+                            a.diameter, b.diameter, part, c2c, need, c2c - (a.diameter + b.diameter) / 2.0),
+                        "Space the holes at least %.1f mm apart or merge them into a slot." % need,
+                        r, owner_for(r, pn), {"c2c_mm": round(c2c, 2)}))
+        # sheet-metal bends
+        if so.bends:
+            mat = materials.get(pn, "")
+            rule = _rule_for(mat, rules)
+            kmin = num(rule["min_inner_radius_t"]) if rule else 1.0
+            hb_t = num(rule.get("hole_to_bend_t")) if rule else 2.0
+            for bd in so.bends:
+                t = bd.thickness
+                if bd.inner_radius + 1e-6 < kmin * t:
+                    fs.append(Finding(
+                        "C09", "bend-radius", "%s bend at %s" % (part, _pt(bd.axis_point)), "severe",
+                        "Bend inner radius %.2f mm in %s (%s, t %.2f) is under the minimum %.2f x t = %.2f mm (%s)." % (
+                            bd.inner_radius, part, mat or "material not in a parts list", t, kmin, kmin * t,
+                            (rule or {}).get("status_source", "default 1.0 x t, assumption")),
+                        "Raise the inner bend radius to at least %.2f mm or change the material or temper." % (kmin * t),
+                        r, owner_for(r, pn), {"r_mm": round(bd.inner_radius, 2), "t_mm": t}))
+                for h in holes:
+                    d = sf.hole_to_bend(h, bd)
+                    if d is None:
+                        continue
+                    need = hb_t * t + bd.inner_radius
+                    if d < need - 1e-6 and d > -h.diameter:
+                        fs.append(Finding(
+                            "C09", "hole-to-bend", "%s hole Ø%.1f at %s" % (part, h.diameter, _pt(h.center)), "major",
+                            "Hole Ø%.2f in %s has %.1f mm from its edge to the bend; the rule is %.1f x t + r = %.1f mm "
+                            "(t %.2f, r %.2f; %s). The hole will distort when the part is bent." % (
+                                h.diameter, part, d, hb_t, need, t, bd.inner_radius,
+                                (rule or {}).get("status_source", "assumption")),
+                            "Move the hole at least %.1f mm from the bend or add a relief cut." % need,
+                            r, owner_for(r, pn), {"hole_to_bend_mm": round(d, 2)}))
+    return fs

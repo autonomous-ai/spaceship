@@ -10,6 +10,8 @@ Found on 2026-10-31 with Fusion 2706.1.17. Proof part: `v2/01-CAD-Native/proof/`
 |---|---|
 | `run_script.py` | Sends a Fusion API script file to Fusion's MCP server and prints what the script printed. Every run takes **the Fusion lock** first (below), so only one script drives Fusion at a time. Exit 0 = ran, 1 = the script or a document step raised (traceback with the real file and line), 2 = Fusion not reachable, 3 = the lock was busy past `--lock-wait`. `--arg KEY=VALUE` reaches the script as `SCRIPT_ARGS`; `--read-only` for inspect-only scripts; `--screenshot out.png --direction front` saves a zoomed-to-fit picture; `--doc NAME` / `--doc-new` / `--save` / `--close` open your own document, save it and close it. Standard library only. |
 | `test_run_script.py` | Offline tests of the lock and the document steps against a fake Fusion MCP server: `python3 tools/fusion/test_run_script.py`. |
+| `start_drawing.py` | **Starts a new drawing of a saved design with nobody at the Mac**: under the Fusion lock it opens the design, runs Fusion's Create Drawing, presses OK and then Cancel in the Base View dialog through macOS accessibility, sets the sheet size, saves the drawing into FocusPod v2 and closes it. On any failure it presses Cancel until Fusion is idle and closes the unsaved drawing. Exit 0 saved, 1 failed (Fusion idle), 2 Fusion unreachable, 3 lock busy, 4 a dialog was left open. |
+| `test_start_drawing.py` | Offline tests of the drawing-start sequence against a fake Fusion: `python3 tools/fusion/test_start_drawing.py`. |
 | `step_check.py` | Reads a STEP file without Fusion: declared length unit, products, solids and the bounding box in mm. `--expect xmin,ymin,zmin,xmax,ymax,zmax` checks it. Never edits the file. |
 | `pdf_clear_field.py` | Removes a title block field's value (default "Created by", which Fusion fills with the account holder's name) from an exported drawing PDF, then re-reads it to prove the text is gone. Needs PyMuPDF. |
 
@@ -83,13 +85,53 @@ The proof script `v2/01-CAD-Native/proof/wall_panel_frame.py` follows these step
 
 ## Pod skeleton (Milestone 2)
 
-`v2/01-CAD-Native/skeleton/pod_skeleton.py` builds the whole pod as envelope bodies, one component per panel, block or pane, under the assembly tree's components. Each envelope is a rectangle on an XY plane offset by a parameter, dimensioned from the origin with `abs(<coordinate expression>)` (or aligned to the origin when the coordinate is 0), and extruded by a parameter, so every sketch is fully constrained and every size follows the parameter table. Two rules from the PR #6 review are built in: **the clash check fails the run** (every pair of envelopes is intersected; an overlap over 1 mm3 that is not on the script's list of intended overlaps, each with its reason, raises an error), and the design is **saved before the STEP export**. The thin floor is DECIDED (D-05, D-18) and is modelled as such. `edit_test_skeleton.py` checks every envelope against its own expressions after an edit.
+`v2/01-CAD-Native/skeleton/pod_skeleton.py` builds the whole pod as envelope bodies, one component per panel, block, band or pane, under the assembly tree's components. Each envelope is a polygon on an XY plane offset by a parameter, its corners dimensioned from the origin with `abs(<coordinate expression>)` (or aligned to the origin when the coordinate is 0), and extruded by a parameter, so every sketch is fully constrained and every size follows the parameter table. Two rules from the PR #6 review are built in: **the clash check fails the run** (every pair of envelopes is intersected; an overlap over 1 mm3 that is not on the script's list of intended overlaps, each with its reason, raises an error), and the design is **saved before the STEP export**. The current revision is **P04** (`BUILD-RECORD.md`). `edit_test_skeleton.py` checks every envelope against its own expressions after an edit; `skeleton_view.py` sets the cameras for the renders.
+
+## Linking a part to the skeleton
+
+The skeleton is the single source for the pod's sizes. Every user parameter in `100000_P04_POD-SKELETON_CAD` is a **favorite**, so a part design takes them with Fusion's Derive and stays linked:
+
+```python
+skel_file = <the DataFile "100000_P04_POD-SKELETON_CAD" in Default Project / FocusPod v2>
+skel_doc = app.documents.open(skel_file, False)          # invisible
+skel = adsk.fusion.Design.cast(skel_doc.products.itemByProductType("DesignProductType"))
+part_doc.activate()
+di = root.features.deriveFeatures.createInput(skel)
+di.isIncludeFavoriteParameters = True
+di.sourceEntities = [skel.rootComponent.xYConstructionPlane]   # parameters only; add a body if you want it
+root.features.deriveFeatures.add(di)
+skel_doc.close(False)
+design.userParameters.add("panel_h", ValueInput.createByString("side_h_Ref"), "mm", "SOURCE: skeleton P04 side_h (1142.74)")
+```
+
+- Derived parameters arrive as **`<name>_Ref`** (`side_h_Ref`, `wall_depth_Ref`) and work in the part's own expressions; only favorites come across.
+- When the skeleton saves a new version, the part reports `Document.isUpToDate == False`; `Document.updateAllReferences()` brings the new values in and the part's expressions follow. Tested 2026-10-31 on throwaway designs (300 -> 400 mm after the source changed).
+- A script that raises an exception has all its changes rolled back (found twice on 2026-10-31), so derive and use the parameters in the same successful run.
+- **Changing the skeleton without cutting links:** `v2/01-CAD-Native/skeleton/skeleton_update.py` (run with `--doc 100000_P04_POD-SKELETON_CAD --close`) syncs the parameters from the table in `pod_skeleton.py` into the cloud file, checks it, saves a **new version of the same file** and exports. Never rebuild with `pod_skeleton.py` once parts are linked: a rebuild is a new file. A change of shape needs a new revision; `DataFile.name` can be set, so the same file can be renamed (P05) and keep its links.
+- A closed document that another open design derives from can stay loaded (with its changes): close it with `--discard` after a dry run, and expect the next run to find it already open.
 
 ## Saving to the Fusion cloud
 
 Drawings need a saved design (`DrawingManager.createDrawingInput` takes a cloud `DataFile`). Save with `document.saveAs(name, folder, description, "")` into **Default Project / FocusPod v2**. The proof script refuses to save when a file with the same name is already there, so the folder keeps one copy.
 
-## Drawings: the sequence that worked (2026-10-31)
+## Starting a drawing (no clicks)
+
+```sh
+python3 tools/fusion/start_drawing.py 360001_P01_FRONT-DOOR-UNIT_CAD 360001_P01_FRONT-DOOR-UNIT_DWG --sheet A2
+```
+
+The design must be saved in Default Project / FocusPod v2 (`--folder` for another one) and the drawing name must be new. The command waits for the Fusion lock like any run, then does in one go what took a person two clicks: open the design, run Create Drawing (Manual, From scratch, ISO, mm), press **OK**, wait for the drawing, press **Cancel** in the Base View dialog Fusion opens by itself, set `--sheet` (A0 to A4, default A2), save, close. Then add views and annotations with the drawing API: `run_script.py your_views.py --doc <drawing name> --save --close`.
+
+- **Why clicks.** The API can't create a drawing here: manual creation needs a drawing template (.f2t) with view placeholders, a saved drawing (.f2d) is refused as `templateFile` ("Passed file type should be of type template and have extension as .f2t", tested 2026-10-31), automatic creation hung, and no script call saves a template. Base views always show the drawing's own design ("specifying a reference will be supported in a future release"), so each design needs its own drawing.
+- **How the clicks work.** `osascript` and System Events press the named button in the Fusion dialog with OK and Cancel (by its title or text when Fusion exposes one, else the only such dialog; it refuses when there are several). Fusion answers accessibility **only while it is idle**, which the lock guarantees; between the steps the command polls Fusion's active command with read-only scripts (they run while a dialog is open).
+- **Refusals before anything opens** (exit 1): Fusion not idle, an unsaved drawing already open, the screen locked (`CGSSessionScreenIsLocked` under `IOConsoleUsers` in `ioreg`), accessibility seeing no Fusion window, or a design with unsaved changes (Create Drawing could ask to save it). With the screen locked on 2026-10-31 the command refused at once, as it should.
+- **Cleanup** whenever a step fails after the dialog was queued, also on SIGTERM, SIGHUP, Ctrl-C and lost contact with Fusion: first Fusion's own cancel, from a read-only script that needs no accessibility (`terminateActiveCommand()` plus starting Fusion's Select command); tested on a locked screen on 2026-10-31, starting Select closed an open Create Drawing dialog. Then Cancel through accessibility, then the unsaved drawing is closed. Exit 4 only when Fusion can't be shown idle: then a person presses Cancel in Fusion.
+- **Needs** the Mac awake and unlocked and the accessibility permission for the terminal. While the screen is locked, drawings can't be started; adding sheets and base views to an existing drawing still works by script.
+- **Nobody else scripts dialog clicks** (PM ruling 2026-10-31). Use this command.
+- Tested live on Mac 1 (Fusion 2706.1.17): the GA drawing `100000_P04_POD-GENERAL-ASSEMBLY_DWG` was started this way, and a full run of the command on a throwaway drawing (deleted after) logged: queued, OK, drawing open, Cancel in Base View, saved, closed. The Base View dialog came up a few seconds after the drawing, so the command waits for it (30 s). With the screen locked, a queued Create Drawing opened about 10 s late, so the command waits up to 30 s for it.
+- **A base view can't pick a component.** `BaseViewInput` "uses the drawing's active model reference; specifying a reference will be supported in a future release", and the API has no call to change a drawing's model reference. So part sheets can't be added to another design's drawing; each design needs its own drawing (and so this command).
+
+## Drawings: the Phase 0 sequence (2026-10-31, by hand; superseded by start_drawing.py)
 
 1. Point the Data Panel at the right project first: `app.data.activeProject = <Default Project>`, then open the saved design. Without this, Fusion's Create Drawing command logged "No valid project id, using first project and root folder path" (the first project is the special Assets project) and **Fusion crashed** a second later.
 2. Start Create Drawing outside your script: `ui.commandDefinitions.itemById("FusionDrawingCreateFromComponentsCommand").execute()` queues it to run after the script returns. Its dialog defaults to Manual, From scratch, ISO, mm.

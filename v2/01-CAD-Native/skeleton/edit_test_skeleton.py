@@ -13,8 +13,10 @@ import adsk.core
 import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
-F3D_REL = "v2/01-CAD-Native/skeleton/100000_P03_POD-SKELETON_CAD.f3d"
-EDITS = [("pod_w", "2600 mm", "2500 mm"), ("pod_h", "2450 mm", "2400 mm")]
+F3D_REL = "v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON_CAD.f3d"
+# pod size, and the two stack rules every seam hangs on (Reviewer 5, P3-4 on PR #24)
+EDITS = [("pod_w", "2600 mm", "2500 mm"), ("pod_h", "2450 mm", "2400 mm"),
+         ("seam_gap", "4 mm", "2.26 mm"), ("outer_t", "50 mm", "46 mm")]
 TOL = 0.05   # mm
 
 
@@ -91,7 +93,7 @@ def run(_context):
     print("Copy of `%s`, opened as a new unsaved document and closed without saving.\n" % F3D_REL)
     print("| State | pod size X x Y x Z (mm) | Unhealthy items | Envelopes off their expressions | Worst (mm) |")
     print("|---|---|---|---|---|")
-    for label, r in (("Before", before), ("pod_w 2600, pod_h 2450", after), ("Reverted", back)):
+    for label, r in (("Before", before), ("pod_w 2600, pod_h 2450, seam_gap 4, outer_t 50", after), ("Reverted", back)):
         print("| %s | %s | %d | %s | %g |" % (label, " x ".join(map(str, r["size"])), r["unhealthy"],
                                               r["bad"] or "none (all %d envelopes and %d faceted anchors follow)" % (len(envs), len(anchors)), r["worst"]))
     print("\n**RESULT: %s**" % ("PASS (CAD check on a copy)" if ok else "FAIL"))
