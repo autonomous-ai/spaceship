@@ -331,7 +331,7 @@ AL = "aluminium 5052-H32"
 
 # ---- power unit 710001: made parts
 part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "MP", "710001", 1,
-     AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.46, "calculation (0.172 m2 x 1.0 mm x 2.68 g/cm3)",
+     AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.469, "CAD (Fusion volume 175,106 mm3 x 2.68 g/cm3, 711001 P01 design)",
      size="300 x 260 x 72, 25 mm side flanges", process="sheet metal: laser cut, folded",
      status="DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data)",
      source="711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD (electrical_parts_cad.py)",

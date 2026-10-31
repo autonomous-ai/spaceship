@@ -337,7 +337,7 @@ def sheet3(doc, rows, harness, v):
         ("7  Room cord into the inlet, RCBO on, press TEST: PASS (D-87).", False),
         ("", False),
         ("KEEP-OUTS FOR OTHER TEAMS", True),
-        ("WALL: B2 bay X 95-395, Z 870-1130 for the unit; sleeve X 136-156,", False),
+        ("WALL: B2 bay X 95-395, Z 870-1130 for the unit; sleeve X 140-160,", False),
         ("Z 301-870; the holes and slots in B2-CASS, B4-CASS, R1-CASS, R2-CASS.", False),
         ("INTERIOR: ledge and screen fixings 15 mm off the trunk band Z 1085-1115.", False),
         ("CEILING: column chase 24 x 24 (X 1140-1164, Y -310 to -286), hub zone,", False),
