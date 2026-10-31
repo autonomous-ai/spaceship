@@ -141,6 +141,14 @@ def run(_context):
         print("placed the %s view at %s, 1:%g" % (sec, center, 1 / v.scaleValue))
     view = sheet.views.item(0)
     ex = extent(view)
+    old = [sheet.sketches.item(i) for i in range(sheet.sketches.count)]
+    print("sketches on the sheet: %s" % ([(k.name, k.lines.count) for k in old] or "none"))
+    hatched = [k for k in old if k.name.startswith("HATCH - SECTION")]
+    if hatched and ARGS.get("rehatch") != "1":
+        raise RuntimeError("the sheet is hatched already; add --arg rehatch=1 to draw it again")
+    for k in hatched:
+        name, n = k.name, k.lines.count
+        print("deleted the old hatch sketch %r (%d lines): %s" % (name, n, k.deleteMe()))
 
     # the section design, for the cut faces
     sdoc = None
@@ -172,11 +180,18 @@ def run(_context):
         return (ex[0] + coord(sx) * SCALE, ex[1] + coord(sy) * SCALE)
 
     sk = sheet.sketches.add("HATCH - SECTION %s" % sec)
-    n_seg = 0
+    n_seg, failed, first = 0, 0, None
     for i, (body, body_loops) in enumerate(loops):
         poly = [[to_sheet(p) for p in lp] for lp in body_loops]
         for a, b in hatch_segments(poly, spacing=3.0, angle_deg=45.0 if i % 2 == 0 else 135.0):
-            sk.lines.add([p2(*a), p2(*b)])
+            first = first or (a, b)
+            if sk.lines.add([p2(*a), p2(*b)]) is None:     # the API returns None when it fails
+                failed += 1
             n_seg += 1
-    print("section %s at %.2f mm: %d cut bodies hatched, %d lines; view extent %s" % (
-        sec, at, len(loops), n_seg, tuple(round(v, 1) for v in ex)))
+    adsk.doEvents()
+    print("section %s at %.2f mm: %d cut bodies, %d hatch lines asked, %d failed; the sketch holds %d; "
+          "first %s; view extent %s" % (sec, at, len(loops), n_seg, failed, sk.lines.count,
+                                        tuple(tuple(round(v, 1) for v in pt) for pt in first) if first else None,
+                                        tuple(round(v, 1) for v in ex)))
+    if failed or sk.lines.count < n_seg:
+        raise RuntimeError("only %d of %d hatch lines were made; nothing kept" % (sk.lines.count, n_seg))
