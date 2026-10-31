@@ -195,6 +195,10 @@ def open_or_create(app, name):
     for i in range(app.documents.count):
         d = app.documents.item(i)
         if d.name.split(" v")[0] == name:
+            if d.isModified:
+                # PM rule 2026-11-01: never reuse an open document with unsaved changes
+                d.close(False)
+                break
             d.activate()
             return d, "activated"
     parts = [p for p in FOLDER.split("/") if p]
@@ -272,25 +276,27 @@ def run_parts(app, keys):
         for pname, expr, unit, status, src in params:
             design.userParameters.add(pname, CB.vi(expr), unit, "%s: %s" % (status.upper(), src))
         ctx.vals = I.evaluate(params)
-        root = design.rootComponent
-        pn, pname_, vn, kind, _m = I.PARTS[key]
-        root.partNumber = pn
-        root.description = "%s | %s | %s | %s | drawing source, built by interior_build.py" % (pname_, vn, kind, I.REV)
-        build_bodies(root, design, ctx, PART_SCOPES[key])
-        if I.PARTS[key][4]:
-            set_material(design, root, key)
-        adsk.doEvents()
-        tl = design.timeline
-        bad = [tl.item(i).name for i in range(tl.count)
-               if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
-        loose = [sk.name for sk in root.sketches if not sk.isFullyConstrained]
-        print("PART %s %s (%s): timeline %d, unhealthy %d, loose %d, bodies %d, box %s" % (
-            pn, pname_, how, tl.count, len(bad), len(loose), root.bRepBodies.count, CB.body_box(root)))
-        if bad or loose:
-            raise RuntimeError("part %s checks failed (unhealthy %s, loose %s)" % (key, bad, loose))
-        print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, I.REV, ceiling_model.SKELETON_REV)))
-        adsk.doEvents()
-        doc.close(False)
+        try:
+            root = design.rootComponent
+            pn, pname_, vn, kind, _m = I.PARTS[key]
+            root.partNumber = pn
+            root.description = "%s | %s | %s | %s | drawing source, built by interior_build.py" % (pname_, vn, kind, I.REV)
+            build_bodies(root, design, ctx, PART_SCOPES[key])
+            if I.PARTS[key][4]:
+                set_material(design, root, key)
+            adsk.doEvents()
+            tl = design.timeline
+            bad = [tl.item(i).name for i in range(tl.count)
+                   if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+            loose = [sk.name for sk in root.sketches if not sk.isFullyConstrained]
+            print("PART %s %s (%s): timeline %d, unhealthy %d, loose %d, bodies %d, box %s" % (
+                pn, pname_, how, tl.count, len(bad), len(loose), root.bRepBodies.count, CB.body_box(root)))
+            if bad or loose:
+                raise RuntimeError("part %s checks failed (unhealthy %s, loose %s)" % (key, bad, loose))
+            print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, I.REV, ceiling_model.SKELETON_REV)))
+            adsk.doEvents()
+        finally:
+            doc.close(False)        # each run closes what it opened (PM rule 2026-11-01)
 
 
 def run(_context):
