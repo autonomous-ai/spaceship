@@ -152,6 +152,16 @@ def hw_row(pn, qty, unit, note, bodies=None, source=REG):
                source=source, note=note)
 
 
+def root_names(root, part, assy_en, assy_vi):
+    """English and Vietnamese names of a design's root: its description, or, when the cloud left it empty
+    (new documents, 2026-10-31), the names made from its frame's or tray's description."""
+    names = (root["description"].split(" | ") + ["", ""])[:2]
+    if names[0]:
+        return names
+    en, vi = (part["description"].split(" | ") + ["", ""])[:2]
+    return assy_en(en), assy_vi(vi)
+
+
 def hw_bodies(comps, pn):
     c = comps.get(pn)
     return c["bodies"] if c else []
@@ -168,7 +178,8 @@ def panel_rows(rep):
     back = frame["part_number"].startswith("2112")
     lower = "LOWER" in frame["name"]
     pn = rep["document"].split("_")[0]
-    name_en, name_vi = (root["description"].split(" | ") + ["", ""])[:2]
+    name_en, name_vi = root_names(root, frame, lambda n: n.replace("PANEL FRAME", "PANEL ASSY"),
+                                  lambda n: n.replace("khung", "cụm tấm"))
     rows.append(None)                                      # the assembly row, once its parts are summed
     fm = round(sum(b["mass_kg"] for b in frame["bodies"]), 3)
     t, ts = prm.get("tube_t", 1.2), prm.get("stud_t", prm.get("tube_t", 1.2))
@@ -317,7 +328,8 @@ def cassette_rows(rep):
     pn = rep["document"].split("_")[0]
     back = pn.startswith("5102")
     lower = "LOWER" in tray["name"]
-    name_en, name_vi = (root["description"].split(" | ") + ["", ""])[:2]
+    name_en, name_vi = root_names(root, tray, lambda n: n.replace(" - TRAY - ", " - CASSETTE - "),
+                                  lambda n: n.replace("Khay thép lót", "Cassette lót") + " (khay thép + tấm tiêu âm)")
     length = round(max(tb["box"][3] - tb["box"][0], tb["box"][4] - tb["box"][1]), 2)
     height = round(tb["box"][5] - tb["box"][2], 2)
     rows.append(row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="BS", material="see the parts below",

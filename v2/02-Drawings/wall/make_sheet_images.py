@@ -339,7 +339,12 @@ def assembly_blocks(pn, kind, src=None):
     bom = panel_bom(pn)
     rows = parts_rows(bom, pn)
     mass = sum(float(r["mass_total_kg"] or 0) for r in rows)
-    name_en, name_vi = root["description"].split(" | ")[:2]
+    name_en, name_vi = (root["description"].split(" | ") + ["", ""])[:2]
+    if not name_en:                       # the cloud left the root description empty: the parts list's name
+        import csv
+        with open(bom, encoding="utf-8") as fh:
+            top = [r for r in csv.DictReader(fh) if r["level"] == "0" and r["part_number"] == pn][0]
+        name_en, name_vi = top["name"], top["name_vi"]
     data = [
         "**%s_P01_%s_DWG" % (pn, name_en.replace(" - ", "-").replace(" ", "-")),
         "%s · %s" % (name_en, name_vi),
