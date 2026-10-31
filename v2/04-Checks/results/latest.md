@@ -1,8 +1,8 @@
-# Mechanical check run: a35af8f on 2026-11-01
+# Mechanical check run: bc1798e on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `a35af8f`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `bc1798e`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 0** (0 severe, 0 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 8** (5 severe, 3 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,20 +12,28 @@ Offline checks (`tools/checks/run_checks.py`) on revision `a35af8f`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | no inputs yet | 0 |
+| C05 drawing completeness | yes | 8 |
 | C06 BOM completeness | yes | 0 |
 | C07 fastener schedule and thread engagement | yes | 0 |
-| C08 hole-to-hole alignment | no inputs yet | 0 |
-| C09 edge distance, bend radius, hole-to-bend | no inputs yet | 0 |
+| C08 hole-to-hole alignment | yes | 0 |
+| C09 edge distance, bend radius, hole-to-bend | yes | 0 |
 | C10 mixed metals | yes | 0 |
 | C11 material grade and finish | yes | 0 |
 
-Inputs: {"bodies_skeleton": 36, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": []}
+Inputs: {"bodies_skeleton": 36, "bodies_assembly": 36, "parts_lists": ["v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv", "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"], "part_steps": ["v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211301_P01_WALL-SKIN-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step", "v2/03-Manufacturing/wall/511101_P01_LINING-TRAY-SIDE-LOWER-LH_STEP.step"]}
 
 ## Findings
 
 | Register | Severity | Check | Subject | Finding | Owner |
 |---|---|---|---|---|---|
+| F-020 | severe | C05 | 211101 | 211101 WALL - PANEL FRAME - SIDE LOWER - LH has no drawing PDF (211101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/211101_P01_WALL-PANEL-FRAME-SIDE-LOWER-LH_STEP.step. | WALL |
+| F-021 | severe | C05 | 211301 | 211301 WALL - SKIN - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (46.0 thick across 1142.7); its row's process names fold, groove. | WALL |
+| F-024 | severe | C05 | 511101 | 511101 LINING - TRAY - SIDE LOWER - LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bend, brake. | WALL |
+| F-025 | severe | C05 | 831001 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS has no drawing PDF (831001_REV_NAME_DWG.pdf under v2/02-Drawings). | Joints Engineer |
+| F-026 | severe | C05 | 831002 | 831002 HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL has no drawing PDF (831002_REV_NAME_DWG.pdf under v2/02-Drawings). | Joints Engineer |
+| F-019 | major | C05 | 210101 | 210101 WALL - PANEL ASSY - SIDE LOWER - LH has no drawing PDF (210101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step. | WALL |
+| F-022 | major | C05 | 211501 | 211501 WALL - CAVITY FILL - SIDE LOWER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle. | WALL |
+| F-023 | major | C05 | 510101 | 510101 LINING - CASSETTE - SIDE LOWER - LH has no drawing PDF (510101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/wall/510101_P01_LINING-CASSETTE-SIDE-LOWER-LH_STEP.step. | WALL |
 
 ## Tolerance stacks (C02)
 
@@ -52,8 +60,8 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 | 1-08 WALL - PANEL ASSY - BACK UPPER - RH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
 | 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.075 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
 | 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.075 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
-| 1-11 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1203.61 x 46 | upright | calculation (CAD); bond assumption |
-| 1-12 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1203.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
+| 1-11 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1200.61 x 46 | upright | calculation (CAD); bond assumption |
+| 1-12 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1200.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
 | 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
 | 1-14 LINING - CASSETTE - SIDE UPPER - RH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
 | 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
@@ -87,5 +95,5 @@ Inputs: {"bodies_skeleton": 36, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 
 ## Fastener schedule (C07)
 
-7 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+13 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 
