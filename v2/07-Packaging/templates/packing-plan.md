@@ -67,6 +67,7 @@ How to load it (factory): crate first, then tier by tier, each lane against the 
 | Decor blocks DL, DR, DT | On their back plates, skins up, corner guards on facet edges, foam wrap, separators above | Faceted skins are the iconic front (D-01) |
 | Glass: door unit and fixed glass | Crate with 5 mm edge foam all round, foam pads above and below, setting-block edges marked; film on both faces with quick-release tabs (D-87), on until the final check; no tape or label on the glass itself | Laminated toughened glass breaks at its edges; the door's hinge halves and pull need free space |
 | Air cartridges, the riser with its fan box, the soffit with its fan box | End caps on the cartridges; each fan box bagged inside its part, its plug-in connector taped to the box (not to the fans); the riser unit in foam | Keeps fill, fans and connectors clean and dry |
+| The power unit in B2 (ELECTRICAL) | A foam block over the unit's black face, which stands 38 mm proud of B2's frame; B2 stands with that face toward L1's frame side, so the block takes the gap | The unit ships wired and tested; its face plate is visible aluminium (D-67) |
 | Kits and cartons | Cartons with the contents list on the side | One place for small parts |
 | The whole load | Straps over edge protectors, cap board, three layers of stretch film, "DO NOT STACK" on both pallets | Fork and stacking damage |
 

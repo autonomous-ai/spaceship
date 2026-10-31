@@ -233,6 +233,7 @@ class Piece:
     group: str
     extra_kg: float = 0.0       # mass not in the roll-up (assumption), with its note
     extra_note: str = ""
+    extra_status: str = "assumption"
     glass: bool = False
     kind: str = "piece"         # piece | allowance | later
     note: str = ""
@@ -255,7 +256,12 @@ PIECES = [
     Piece("1-03", "TBD (WALL)", "WALL - PANEL ASSY - BACK LOWER - LH", "Vách hậu - cụm tấm dưới trái", "B1", [("B", 1)],
           S(1200.61, 1118.61, 46), P04, 1, 4, "WALL"),
     Piece("1-04", "TBD (WALL)", "WALL - PANEL ASSY - BACK LOWER - RH", "Vách hậu - cụm tấm dưới phải", "B2", [("B", 1)],
-          S(1200.61, 1118.61, 46), P04, 1, 4, "WALL"),
+          S(1200.61, 1118.61, 84),
+          "skeleton P04 (S33); the power unit's face stands 38 mm proud of the frame face: felt plane Y 766 against the frame at Y 804 (ELECTRICAL PR #64, calculation)",
+          1, 4, "WALL", extra_kg=2.804,
+          extra_note="power unit 710001, fitted, wired and tested in B2 at the factory: 2.804 kg (ELECTRICAL PR #64 parts list, calculation); not in the roll-up yet",
+          extra_status="calculation (ELECTRICAL)",
+          note="carries the power unit 710001 (ELECTRICAL PR #64): 11.56 kg; foam block over the unit's face in the stack"),
     Piece("1-05", "210101", "WALL - PANEL ASSY - SIDE LOWER - LH", "Vách trái - cụm tấm dưới", "L1", [("L1R1", 1)],
           S(1492.74, 1142.74, 46), P04 + "; WALL L1 CAD", 1, 5, "WALL"),
     Piece("1-06", "TBD (WALL)", "WALL - PANEL ASSY - SIDE LOWER - RH", "Vách phải - cụm tấm dưới", "R1", [("L1R1", 1)],
@@ -505,7 +511,7 @@ STEPS = [
               op("lay each floor panel and the threshold", 2, lay("t_place_s"), 3, "t_place_s")],
          joints={}),
     dict(n=4, title="Lower back wall: B1, B2", tags=["1-03", "1-04"],
-         A="Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1.",
+         A="Stands B1 on its band spigots (round hole and slot), skin out, and holds it upright; then B2 the same, against B1. B2 carries the power unit, wired and tested at the factory (11.6 kg).",
          B="From inside, through the fill pockets: first the 3 pins of the B1-B2 closing seam, snug only; then B1's and B2's 4 base bolts each (pins first: joints register 2.7, R-J11).",
          check="Both panels sit down on their stops; the B1-B2 gap looks even top to bottom (5.5 mm nominal).",
          ops=[carry("1-03"), carry("1-04"),
@@ -718,7 +724,7 @@ class Model:
                 stat.add(r["status"])
             kg += p.extra_kg
             if p.extra_kg:
-                stat.add("assumption")
+                stat.add(p.extra_status)
             p.kg = kg
             p.status = "; ".join(sorted(stat))
         # register
