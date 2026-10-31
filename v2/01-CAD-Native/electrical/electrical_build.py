@@ -177,12 +177,21 @@ def find_file(app, name):
     last = None
     for _try in range(6):
         try:
-            hits = [f for f in folder.dataFiles.asArray() if f.name == name]
+            entries = folder.dataFiles.asArray()
         except RuntimeError as e:   # the list changed under us
             last = e
             adsk.doEvents()
             time.sleep(2)
             continue
+        hits, unreadable = [], 0
+        for f in entries:
+            try:                    # one unreadable entry must not stop the rest (as run_script, PR #86)
+                if f.name == name:
+                    hits.append(f)
+            except RuntimeError:
+                unreadable += 1
+        if unreadable:
+            print("find_file: %d entries of %s could not be read; skipped" % (unreadable, CLOUD_FOLDER))
         if len(hits) != 1:
             raise RuntimeError("expected one %r in %s, found %d" % (name, CLOUD_FOLDER, len(hits)))
         return hits[0]
