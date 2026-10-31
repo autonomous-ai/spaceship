@@ -1,5 +1,5 @@
 {
- "next": 33,
+ "next": 48,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -909,7 +909,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -934,7 +934,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C06",
@@ -959,7 +959,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C06",
@@ -984,7 +984,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -1009,7 +1009,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -1034,7 +1034,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C05",
@@ -1059,7 +1059,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 a58e9e8"
+   "last_seen": "2026-11-01 dc61ad9"
   },
   {
    "check": "C06",
@@ -1090,6 +1090,406 @@
     }
    ],
    "closed": "2026-11-01 a58e9e8"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-spec",
+   "subject": "838006",
+   "severity": "major",
+   "message": "Fastener 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv has no finish.",
+   "fix": "Complete the row: size, length, grade, finish, torque with its basis, maker and SKU (guideline sections 4.2 and 8.1).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C07|fastener-spec|838006",
+   "id": "F-033",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C06",
+   "rule": "duplicate-number",
+   "subject": "118001",
+   "severity": "major",
+   "message": "Part number 118001 is used for different names: 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - BASE SEAL - GAP 10 ±5' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The joints register names it 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP' (D-99).",
+   "fix": "Use the register's name in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv.",
+   "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|duplicate-number|118001",
+   "id": "F-034",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "Lead group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "owner set by hand to PM: BASE's name matches the joints register; the master BOM's is stale (D-99)"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1222 Y -646 Z 11",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111101 BASE - BAND TUBE - SIDE - LH - TUBE is 10.6 mm from the free edge (centre to edge), 1.52 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X -1222 Y -646 Z 11 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 10.62,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1222 Y -646 Z 11",
+   "id": "F-035",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111601 GLIDE DOUBLER hole Ø13.0 at X 0 Y 0 Z 2",
+   "severity": "severe",
+   "message": "Hole Ø13.00 in 111601 GLIDE DOUBLER is 18.0 mm from the free edge (centre to edge), 1.38 diameters; the rule is at least 2 diameters (26.0 mm). Hole centre X 0 Y 0 Z 2 in the part's own coordinates. PM ruling 2026-11-01 (BASE glide doubler, Lead) accepts this hole only as: At least 52 mm long so the ends are 2 diameters (26 mm) away; the hole centred across the 36 mm width, 18 mm (1.38 diameters) to each long side. Justified in the feature rationale: the glide load pushes the plate into the band and does not pull the edge.",
+   "fix": "Move the hole to at least 26.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/111601_P01_BASE-GLIDE-DOUBLER-COMMON_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 18.0,
+    "dia_mm": 13.0
+   },
+   "key": "C09|edge-distance|111601 GLIDE DOUBLER hole Ø13.0 at X 0 Y 0 Z 2",
+   "id": "F-036",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9",
+   "closed": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 1493 Y 27 Z 1",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111101 BASE - BAND TUBE - SIDE - LH - TUBE is 10.6 mm from the free edge (centre to edge), 1.52 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X 1493 Y 27 Z 1 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 10.62,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 1493 Y 27 Z 1",
+   "id": "F-037",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "118002",
+   "severity": "minor",
+   "message": "118002 is named 'BASE - LEVELLING GLIDE - M10 (HOLD)' in the CAD and 'BASE - LEVELLING GLIDE - M10 (HOLD)' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; the joints register names it 'BASE - LEVELLING GLIDE - M10 - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the CAD and the parts list (v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|name-mismatch|118002",
+   "id": "F-038",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "closed": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110000",
+   "severity": "major",
+   "message": "110000 BASE has no drawing PDF (110000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/110000_P01_BASE_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110000",
+   "id": "F-039",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110101",
+   "severity": "major",
+   "message": "110101 BASE - BAND ASSY - SIDE - LH has no drawing PDF (110101_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110101",
+   "id": "F-040",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110103",
+   "severity": "major",
+   "message": "110103 BASE - BAND ASSY - BACK has no drawing PDF (110103_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110103",
+   "id": "F-041",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110401",
+   "severity": "major",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 has no drawing PDF (110401_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110401",
+   "id": "F-042",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111101",
+   "severity": "severe",
+   "message": "111101 BASE - BAND TUBE - SIDE - LH has no drawing PDF (111101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111101",
+   "id": "F-043",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111103",
+   "severity": "severe",
+   "message": "111103 BASE - BAND TUBE - BACK has no drawing PDF (111103_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111103",
+   "id": "F-044",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111211",
+   "severity": "severe",
+   "message": "111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111211",
+   "id": "F-045",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111401",
+   "severity": "severe",
+   "message": "111401 BASE - FLOOR PANEL - F1 has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on POCKET-HALF-DEPTH; only CUT and MARK pass; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names half-lap.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111401",
+   "id": "F-046",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111501",
+   "severity": "severe",
+   "message": "111501 BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its row lacks metal or ACP sheet (D-99, D-100); a cut by laser, waterjet or router in its process; finish; an ISO 2768 general tolerance.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111501",
+   "id": "F-047",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 dc61ad9",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "dc61ad9",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 dc61ad9"
   }
  ]
 }

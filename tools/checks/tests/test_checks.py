@@ -905,3 +905,21 @@ def test_d93_to_d99(tmp_path, monkeypatch):
                         "name": "368102 FRONT - DOOR CATCH STRIKE - SUGATSUNE HT-MSG62-U10"}}
     fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, prods) if f.rule == "name-mismatch"]
     assert len(fs) == 1 and "'FRONT - DOOR STRIKE'" in fs[0].message and "the CAD" in fs[0].fix
+
+
+def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_path):
+    from common import name_words
+    assert name_words("BASE - LEVELLING GLIDE - M10 (HOLD)") == name_words("BASE - LEVELLING GLIDE - M10 - HOLD")
+    assert name_words("FRONT - DOOR STRIKE") != name_words("FRONT - DOOR LOCK")
+    j = tmp_path / "v2/05-Engineering/joints"
+    j.mkdir(parents=True)
+    (j / "joints-register.md").write_text("| H-06 | **118001** | BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP · x | bought |\n")
+    row = {"part_number": "118001", "name": "BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP", "name_vi": "x",
+           "material": "silicone", "finish": "none", "qty": "1", "mass_kg": "0.1", "status": "HOLD", "source": "register"}
+    (tmp_path / "v2/03-Manufacturing/base").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv", [row])
+    (tmp_path / "v2/04-BOM").mkdir(parents=True)
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [dict(row, name="BASE - BASE SEAL - GAP 10 ±5")])
+    fs = [f for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
+          if f.rule == "duplicate-number"]
+    assert len(fs) == 1 and fs[0].owner == "PM" and "MASTER_BOM" in fs[0].fix

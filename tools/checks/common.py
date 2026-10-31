@@ -264,3 +264,9 @@ def register_names(root):
             if m:
                 out.setdefault(m.group(1), m.group(2).split(" · ")[0].strip())
     return out
+
+
+def name_words(name):
+    """A part name as its words, for comparing names: case, hyphens, brackets and spacing don't count
+    ('BASE - LEVELLING GLIDE - M10 (HOLD)' and 'BASE - LEVELLING GLIDE - M10 - HOLD' are one name)."""
+    return " ".join(re.findall(r"[A-Z0-9Ø±×.,+/°]+", (name or "").upper()))
