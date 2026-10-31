@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import types
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +33,7 @@ class FakeFusion:
                  base_view_after=4, start_cmd=sd.IDLE_CMD, unsaved=0, opened=False,
                  locked=False, ax_windows=3, modified=False, fusion_cancel_works=True,
                  mcp_dies_after_queue=False, ax_works=True, ax_sees_dialogs=True,
-                 folder_bad=(), drawing_exists=False):
+                 folder_bad=(), folder_others=(), drawing_exists=False):
         self.opened = opened
         self.cmd = start_cmd
         self.unsaved = unsaved
@@ -49,6 +50,7 @@ class FakeFusion:
         self.ax_works = ax_works
         self.ax_sees_dialogs = ax_sees_dialogs
         self.folder_bad = list(folder_bad)
+        self.folder_others = list(folder_others)
         self.drawing_exists = drawing_exists
         self.folder_checks = 0
         self.queued = False
@@ -107,7 +109,8 @@ class FakeFusion:
     def folder(self, project, subfolders, design, name):
         self._mcp()
         self.folder_checks += 1
-        return [str(b) for b in self.folder_bad], True, self.drawing_exists
+        return ([str(b) for b in self.folder_bad], [str(o) for o in self.folder_others],
+                True, self.drawing_exists)
 
     def fusion_cancel(self):
         self._mcp()
@@ -266,6 +269,81 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual((f.ran, f.clicks), ([], []))
 
+    def test_an_unreadable_entry_that_is_not_a_drawing_only_warns(self):
+        # PM ruling 2026-10-31: one bad entry must not block every team
+        f = FakeFusion(folder_others=["entry 4 (a .f3d file, name unreadable)"])
+        code, logs = go(f)
+        self.assertEqual(code, 0)
+        self.assertTrue(any("warning" in m and "entry 4" in m for m in logs))
+
+    def test_the_folder_lister_sorts_bad_entries(self):
+        class E(Exception):
+            pass
+
+        class File:
+            def __init__(self, name=None, ext=None):
+                self._n, self._e = name, ext
+
+            @property
+            def name(self):
+                if self._n is None:
+                    raise E("name")
+                return self._n
+
+            @property
+            def fileExtension(self):
+                if self._e is None:
+                    raise E("ext")
+                return self._e
+
+        class Files:
+            def __init__(self, items, heal_after=None):
+                self.items, self.calls, self.heal_after = items, 0, heal_after
+
+            @property
+            def count(self):
+                return len(self.items)
+
+            def item(self, i):
+                self.calls += 1
+                it = self.items[i]
+                if it == "boom" and not (self.heal_after and self.calls > self.heal_after):
+                    raise E("InternalValidationError : invalid argument index")
+                return File("HEALED") if it == "boom" else it
+
+        class Folder:
+            def __init__(self, files):
+                self.dataFiles = files
+
+        fake_adsk = types.SimpleNamespace(doEvents=lambda: None)
+        sys.modules["adsk"] = fake_adsk
+        try:
+            ns = {}
+            exec(compile(sd.LIST_FOLDER, "list_folder", "exec"), ns)
+        finally:
+            del sys.modules["adsk"]
+        ns["time"] = types.SimpleNamespace(sleep=lambda s: None)
+        items = [File("A_CAD", "f3d"), "boom", File(None, "f3d"), File(None, "f2d"), File(None, None)]
+        names, unknown, others = ns["_list_folder"](Folder(Files(items)))
+        self.assertEqual(names, ["A_CAD"])
+        self.assertEqual([u.split(" (")[0] for u in unknown], ["entry 1", "entry 3", "entry 4"])
+        self.assertIn("invalid argument index", unknown[0])
+        self.assertEqual(others, ["entry 2 (a .f3d file, name unreadable)"])
+        # an entry that heals on a second look is just read
+        names, unknown, others = ns["_list_folder"](Folder(Files([File("A_CAD", "f3d"), "boom"], heal_after=2)))
+        self.assertEqual((names, unknown, others), (["A_CAD", "HEALED"], [], []))
+
+    def test_steps_folder_reads_the_result_line(self):
+        st = sd.Steps.__new__(sd.Steps)                         # no MCP needed
+        seen = []
+        st.run = lambda src, read_only=False: (seen.append((src, read_only)) or True, (
+            'note\nFOLDER_JSON={"unknown": ["entry 3 (kind unknown, name unreadable)"], '
+            '"others": [], "has_design": true, "has_drawing": false}\n'))
+        self.assertEqual(st.folder("P", ["F"], "D", "N"),
+                         (["entry 3 (kind unknown, name unreadable)"], [], True, False))
+        self.assertTrue(seen[0][1])                             # read-only
+        self.assertIn("def _list_folder", seen[0][0])
+
     def test_an_existing_drawing_name_is_refused_before_anything_opens(self):
         f = FakeFusion(drawing_exists=True)
         self.assertEqual(go(f)[0], 1)
@@ -373,9 +451,11 @@ class SequenceTests(unittest.TestCase):
     def test_scripts_compile(self):
         for src in (sd.STATE_SCRIPT, sd.CLOSE_UNSAVED_SCRIPT, sd.FUSION_CANCEL_SCRIPT,
                     sd.QUEUE_SCRIPT % {"project": "P", "design": "D", "cmd": sd.CREATE_CMD},
-                    sd.FOLDER_SCRIPT % {"project": "P", "subfolders": ["F"], "design": "D", "name": "N"},
-                    sd.SAVE_SCRIPT % {"project": "P", "subfolders": ["F"], "name": "N",
-                                      "sheet": "A2", "size": (594, 420), "close": True, "desc": "d"}):
+                    sd.LIST_FOLDER + sd.FOLDER_SCRIPT % {"project": "P", "subfolders": ["F"],
+                                                         "design": "D", "name": "N"},
+                    sd.LIST_FOLDER + sd.SAVE_SCRIPT % {"project": "P", "subfolders": ["F"], "name": "N",
+                                                       "sheet": "A2", "size": (594, 420), "close": True,
+                                                       "desc": "d"}):
             compile(src, "fusion", "exec")
 
     def test_session_lock_reader_parses_ioreg(self):

@@ -10,8 +10,10 @@ So this command uses Fusion's own Create Drawing command and presses its two
 buttons through macOS accessibility, all inside the Fusion lock:
 
 1. take the Fusion lock (it waits its turn like any run);
-2. refuse, before opening anything, unless every entry of --folder can be read
-   and DRAWING_NAME isn't one of them, Fusion is idle (Home screen included),
+2. refuse, before opening anything, when DRAWING_NAME is already in --folder or
+   an entry there can't be read and could be it (an unreadable entry known to
+   be another kind of file only gets a warning), and unless Fusion is idle
+   (Home screen included),
    no unsaved drawing is open, the Mac's screen isn't locked and accessibility
    can see Fusion's windows (it can't while the screen is locked);
 3. open or activate DESIGN_NAME (refused if it has unsaved changes) and queue
@@ -40,6 +42,7 @@ Then add views with the drawing API (base views only): run_script.py with
 """
 
 import argparse
+import json
 import os
 import plistlib
 import signal
@@ -164,7 +167,46 @@ def run(_c):
     print("queued Create Drawing for %%s: %%s" %% (doc.name, ok))
 '''
 
-SAVE_SCRIPT = '''import adsk.core, adsk.drawing, time
+# Lists a folder entry by entry, inside Fusion; put in front of the scripts
+# that need it (a plain string, no % templating). An entry Fusion can't read
+# (seen after a restart, 2026-10-31) is looked at again, 4 times 2 s apart.
+# One that stays unreadable blocks only when it could be the drawing being
+# made (PM ruling 2026-10-31): its name can't be read and it isn't known to be
+# another kind of file. Returns (names, unknown, others): unknown entries
+# could be anything; others can't be read by name but aren't drawings.
+LIST_FOLDER = '''import adsk, time
+
+def _list_folder(folder):
+    for attempt in range(4):
+        names, unknown, others = [], [], []
+        for i in range(folder.dataFiles.count):
+            try:
+                f = folder.dataFiles.item(i)
+            except Exception as e:
+                unknown.append("entry %d (%s)" % (i, str(e).strip().splitlines()[0][:100] if str(e).strip() else type(e).__name__))
+                continue
+            try:
+                names.append(f.name)
+                continue
+            except Exception:
+                pass
+            try:
+                ext = (f.fileExtension or "").lower()
+            except Exception:
+                ext = ""
+            if ext and ext != "f2d":
+                others.append("entry %d (a .%s file, name unreadable)" % (i, ext))
+            else:
+                unknown.append("entry %d (%s, name unreadable)" % (i, ("a .%s file" % ext) if ext else "kind unknown"))
+        if not unknown and not others:
+            break
+        if attempt < 3:
+            adsk.doEvents()
+            time.sleep(2)
+    return names, unknown, others
+'''
+
+SAVE_SCRIPT = '''import adsk.core, adsk.drawing
 def run(_c):
     app = adsk.core.Application.get()
     docs = [app.documents.item(i) for i in range(app.documents.count)]
@@ -177,21 +219,11 @@ def run(_c):
     folder = proj.rootFolder
     for part in %(subfolders)r:
         folder = folder.dataFolders.itemByName(part)
-    for attempt in range(4):          # an unreadable entry may be the name: look again, then refuse
-        names, bad = [], 0
-        for i in range(folder.dataFiles.count):
-            try:
-                names.append(folder.dataFiles.item(i).name)
-            except Exception:
-                bad += 1
-        if not bad:
-            break
-        if attempt < 3:
-            adsk.doEvents()
-            time.sleep(2)
-    if bad:
-        raise RuntimeError("%%d folder entr%%s can't be read, so the name can't be checked; not saved" %% (
-            bad, "y" if bad == 1 else "ies"))
+    names, unknown, others = _list_folder(folder)
+    if unknown:
+        raise RuntimeError("not saved: %%s can't be read and could be %%s" %% ("; ".join(unknown), %(name)r))
+    if others:
+        print("warning: %%s; not drawings, so not %%s" %% ("; ".join(others), %(name)r))
     if %(name)r in names:
         raise RuntimeError("%%s is already in the folder" %% %(name)r)
     sheet = doc.drawing.sheets.item(0)
@@ -207,31 +239,17 @@ def run(_c):
         print("closed: %%s" %% doc.close(False))
 '''
 
-# Lists the folder entry by entry: one entry Fusion can't read (seen after a
-# restart, 2026-10-31) must neither hide a name that is taken nor stop the run.
-# Retries a few times; reports what stays unreadable.
-FOLDER_SCRIPT = '''import adsk.core, time
+# The precheck's look at the folder (read-only), with LIST_FOLDER in front.
+FOLDER_SCRIPT = '''import adsk.core, json
 def run(_c):
     app = adsk.core.Application.get()
     proj = [p for p in app.data.dataProjects if p.name == %(project)r][0]
     folder = proj.rootFolder
     for part in %(subfolders)r:
         folder = folder.dataFolders.itemByName(part)
-    for attempt in range(4):
-        names, bad = [], []
-        for i in range(folder.dataFiles.count):
-            try:
-                names.append(folder.dataFiles.item(i).name)
-            except Exception:
-                bad.append(i)
-        if not bad:
-            break
-        if attempt < 3:
-            adsk.doEvents()
-            time.sleep(2)
-    print("FOLDER_UNREADABLE=%%s" %% ",".join(str(i) for i in bad))
-    print("FOLDER_HAS_DESIGN=%%d" %% (%(design)r in names))
-    print("FOLDER_HAS_DRAWING=%%d" %% (%(name)r in names))
+    names, unknown, others = _list_folder(folder)
+    print("FOLDER_JSON=" + json.dumps({"unknown": unknown, "others": others,
+                                       "has_design": %(design)r in names, "has_drawing": %(name)r in names}))
 '''
 
 
@@ -276,13 +294,16 @@ class Steps:
         return vals.get("CMD", ""), int(vals.get("UNSAVED_DRAWINGS", "0"))
 
     def folder(self, project, subfolders, design, name):
-        ok, out = self.run(FOLDER_SCRIPT % {"project": project, "subfolders": subfolders,
-                                            "design": design, "name": name}, read_only=True)
+        """(unknown, others, has_design, has_drawing); see LIST_FOLDER."""
+        ok, out = self.run(LIST_FOLDER + FOLDER_SCRIPT % {"project": project, "subfolders": subfolders,
+                                                          "design": design, "name": name}, read_only=True)
         if not ok:
             raise StartError("couldn't list the folder: %s" % out)
-        vals = dict(line.split("=", 1) for line in (out or "").splitlines() if "=" in line)
-        bad = [b for b in vals.get("FOLDER_UNREADABLE", "").split(",") if b]
-        return bad, vals.get("FOLDER_HAS_DESIGN") == "1", vals.get("FOLDER_HAS_DRAWING") == "1"
+        for line in (out or "").splitlines():
+            if line.startswith("FOLDER_JSON="):
+                v = json.loads(line.split("=", 1)[1])
+                return v["unknown"], v["others"], v["has_design"], v["has_drawing"]
+        raise StartError("the folder check printed no result: %s" % (out or "").strip()[:200])
 
     def fusion_cancel(self):
         ok, out = self.run(FUSION_CANCEL_SCRIPT, read_only=True)
@@ -386,17 +407,22 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
     return cmd in IDLE_CMDS and not left
 
 
-def precheck(steps, design="", name="", folder=rs.DEFAULT_FOLDER):
-    """Refuse before opening anything; None when it's safe to start."""
+def precheck(steps, design="", name="", folder=rs.DEFAULT_FOLDER, log=None):
+    """Refuse before opening anything; None when it's safe to start. An entry
+    of the drawing's folder that Fusion can't read refuses only when it could
+    be the new drawing; otherwise it is logged and the start goes on (PM ruling
+    2026-10-31: one bad entry must not block every team)."""
     if name:
         project, *subfolders = [p for p in folder.split("/") if p]
-        bad, has_design, has_drawing = steps.folder(project, subfolders, design, name)
-        if bad:
-            return ("%d entr%s of %s can't be read (positions %s), so the drawing name can't be "
-                    "checked; nothing was started" % (len(bad), "y" if len(bad) == 1 else "ies",
-                                                      folder, ", ".join(bad)))
+        unknown, others, _has_design, has_drawing = steps.folder(project, subfolders, design, name)
         if has_drawing:
             return "%s is already in %s; nothing was started" % (name, folder)
+        if unknown:
+            return ("%s of %s can't be read, so it could be %s; nothing was started (try again "
+                    "later, or move that entry out)" % ("; ".join(unknown), folder, name))
+        if others and log:
+            log("warning: %s of %s can't be read by name, but %s not a drawing, so not %s; going on"
+                % ("; ".join(others), folder, "it is" if len(others) == 1 else "they are", name))
     cmd, unsaved = steps.state()
     if cmd not in IDLE_CMDS:
         return "Fusion isn't idle (active command %s); nothing was started" % cmd
@@ -421,7 +447,7 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     status = status if status is not None else {}
     project, *subfolders = [p for p in folder.split("/") if p]
 
-    why = precheck(steps, design, name, folder)
+    why = precheck(steps, design, name, folder, log)
     if why:
         raise StartError(why)
 
@@ -463,7 +489,7 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     if not idle:
         raise StartError("Fusion didn't go idle after the dialogs (active command %s)" % cmd)
 
-    ok, out = steps.run(SAVE_SCRIPT % {"project": project, "subfolders": subfolders, "name": name,
+    ok, out = steps.run(LIST_FOLDER + SAVE_SCRIPT % {"project": project, "subfolders": subfolders, "name": name,
                                        "sheet": sheet, "size": SHEETS[sheet], "close": not keep_open,
                                        "desc": "drawing of %s, started by start_drawing.py" % design})
     if not ok:
