@@ -6,8 +6,12 @@
 Opens the exported .f3d as a new, unsaved document (the saved design is never
 touched) and prints a Markdown record:
   1. Reopen check: timeline health, every sketch fully constrained, design type.
-  2. Edit two skeleton parameters (wall_depth 1495 -> 1300, side_h -> 1000) and
-     one wall rule (stile_pitch_max 400 -> 300), rebuild, check health again.
+  2. Edit two skeleton parameters (wall_depth 1495 -> 1300, side_h -> 1000) and,
+     on designs with no fill, one wall rule (stile_pitch_max 400 -> 300), rebuild,
+     check health again. A fill pocket is a cut, and a Fusion cut keeps the bodies
+     it first cut: when the stud count changes, a pocket can land on a fill piece
+     it doesn't know. So the stud rule isn't edited on designs with fill; a change
+     in the stud count is a rebuild by the script (rebuild=1).
   3. Every body's box before and after, and the checks that the parts follow:
      lengths follow wall_depth, heights follow side_h, the stile and fill-bay
      counts follow the pitch rule, no stile pitch over the rule.
@@ -66,7 +70,8 @@ def back_checks(after, p):
     bays, skins, trays, felts = pick("FILL"), pick("SKIN"), pick("TRAY"), pick("FELT")
     zones = sorted((v for k, v in after.items() if "CLIP ZONE" in nm(k)), key=lambda b: b[0])
     rivs = [r for k, r in sorted(after.items()) if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k)]
-    n_mid = math.ceil((p["frm_len"] - 20) / 300.0) - 1
+    rule = p["stile_pitch_max"]
+    n_mid = math.ceil((p["frm_len"] - 20) / rule) - 1
     out = []
     if rails:
         out += [("frame width follows half_fw (%g)" % p["frm_len"],
@@ -77,8 +82,8 @@ def back_checks(after, p):
                  all(abs(max(abs(r[0]), abs(r[3])) - (p["pod_w"] / 2 - 46 - seam)) < 0.01 for r in rails)),
                 ("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
                                                          for st in stiles)),
-                ("stud count follows the 300 mm rule (%d)" % n_mid, len(mids) == n_mid),
-                ("no stud pitch over 300", all(b[0] - a[0] <= 300.01 for a, b in zip(mids, mids[1:])))]
+                ("stud count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
+                ("no stud pitch over %g" % rule, all(b[0] - a[0] <= rule + 0.01 for a, b in zip(mids, mids[1:])))]
     if bays:
         out.append(("fill bays = stud count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
     if skins:
@@ -144,6 +149,8 @@ def record(design, rel):
                                          "stile_pitch", "cass_len", "cass_h", "top_h")
     before_p = {k: pv(design, k, 20.0 if k == "top_h" else 0.0) for k in names}
     before = snapshot(design)
+    if any(k.split(" / ", 1)[-1].startswith("FILL") for k in before):
+        edits = [e for e in edits if e[0] != "stile_pitch_max"]      # see step 2 in the docstring
     exprs = {k: design.userParameters.itemByName(k).expression for k, _e in edits}
     for k, e in edits:
         design.userParameters.itemByName(k).expression = e
@@ -191,7 +198,8 @@ def record(design, rel):
         rivs = sorted(v for k, v in after.items() if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k))
         washers = sorted(v for k, v in after.items() if nm(k).startswith("STOP WASHER - TOP RAIL "))
         spig_front = [v for k, v in after.items() if nm(k) == "SPIGOT - TOP RAIL SPIGOT FRONT"]
-        n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / 300.0) - 1
+        rule = after_p["stile_pitch_max"]
+        n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / rule) - 1
         if rails:
             checks += [
                 ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
@@ -199,8 +207,8 @@ def record(design, rel):
                 ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
                 ("stiles span side_h - 20 - top_h", all(abs((st[5] - st[2]) - (after_p["side_h"] - 20 - after_p["top_h"]))
                                                         < 0.01 for st in stiles)),
-                ("mid stile count follows the 300 mm rule (%d)" % n_mid, len(mids) == n_mid),
-                ("no stile pitch over 300", all(b[1] - a[1] <= 300.01 for a, b in zip(mids, mids[1:]))),
+                ("mid stile count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
+                ("no stile pitch over %g" % rule, all(b[1] - a[1] <= rule + 0.01 for a, b in zip(mids, mids[1:]))),
             ]
         if bays:
             checks.append(("fill bays = mid stile count + 1 (%d)" % (n_mid + 1), len(bays) == n_mid + 1))
