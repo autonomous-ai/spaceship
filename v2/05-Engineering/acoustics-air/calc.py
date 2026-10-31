@@ -95,7 +95,9 @@ ACP3_KG_M2 = 3.5         # Alcorest EV3038 3 mm x 0.21 mm skins (the plan's VT01
 ACP3_SKIN_MM = 0.21      # Alcorest catalogue, HW VT01 row (source)
 PET_FELT9_KG_M2 = 1.8    # HW VT03 felt row
 FILL_KG_M3 = 32.0        # Pyrotek Sorberpoly 2D polyester, 32 kg/m3: the density its ISO 354 data is for (HW fill row).
-                         # 24 kg/m3 exists but has no published absorption, so the lighter fill is not used (PM rule).
+                         # The PM's weight ruling after PR #38 makes 24 kg/m3 the cavity fill's default, back to 32 if
+                         # T02 fails; the cartridges' 50 mm layers stay at 32 for their published absorption. This model
+                         # keeps 32 for its masses; the layout study's weight roll-up counts the lighter cavity fill.
 TRAY_KG_M2 = 0.26        # calculation: 25 mm steel tray returns, 4.6 m edge per 1.72 m2 x 0.025 m x 3.93 kg/m2
 HC_CORE_KG_M3 = 60.0     # ASSUME: aluminium honeycomb core density (HW sandwich rows give panel kg/m2)
 HC_CORE_G = 150e6        # ASSUME: honeycomb core shear modulus, low end of typical aluminium honeycomb
