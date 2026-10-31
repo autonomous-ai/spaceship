@@ -843,3 +843,17 @@ def test_door_swing_moves_everything_in_the_door_unit_but_the_hinges():
     assert moves(unit % "361001 FRONT - DOOR LEAF - 4+4 LAMINATED")
     assert not moves(unit % "368101 FRONT - DOOR HINGE - HOLD - H1 BOTTOM")      # half fixed, half moving: left out
     assert not moves("360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1")
+
+
+def test_seam_rules_leave_out_electricals_reserved_spaces():
+    # ELECTRICAL's 71xxxx bodies are reserved spaces (routes, pockets, grommets), not wall panels, though their
+    # names carry position codes such as B2/R1 (PM, 2026-11-01)
+    import csv as _csv
+    with open(os.path.join(ROOT, "v2/04-Checks/config/gap-rules.csv"), newline="") as fh:
+        seams = [r for r in _csv.DictReader(fh) if r["id"].startswith("SEAM-")]
+    elec = ("710000_P01_ELECTRICAL_CAD:1 / 710021 ELECTRICAL - HARNESS - TRUNK - B2/R1:1 / "
+            "S-PU-X GROMMETED SLOT - CUT-OUT RIGHT RETURN B2 R1 B4 B1 B3 L1 R2 L2")
+    for r in seams:
+        assert not re.search(r["a"], elec) and not re.search(r["b"], elec), r["id"]
+    corner = next(r for r in seams if r["id"] == "SEAM-BACK-CORNER-R")
+    assert re.search(corner["b"], "210000 WALL:1 / 210202 WALL - PANEL ASSY - BACK LOWER - B2:1 / FRAME")
