@@ -873,6 +873,8 @@ def t_pods(wb, gb, fixed):
         ("+ fixes, DL-ST decoupled", dict(fixed, wall="DL-ST-DEC")),
         ("+ fixes, honeycomb sandwich SW-HC20", dict(fixed, wall="SW-HC20")),
         ("+ fixes, foam sandwich + inner skin", dict(fixed, wall="SW-FOAM20-DL")),
+        ("DECIDED stack, smoked acrylic 10 mm front", dict(fixed, **DECIDED_STACK)),
+        ("DECIDED stack, fallback 4+4 laminated front", dict(fixed, **dict(DECIDED_STACK, glass="L44"))),
     ]
     out = ["| Pod | D_S,A low | central | high |", "|---|---:|---:|---:|"]
     res = {}
@@ -1078,9 +1080,9 @@ def tables():
     out["fixes"], fixed = t_fixes(wb, gb)
     out["pods"], res = t_pods(wb, gb, fixed)
     v1b = res["v1 as drawn (inner ply 15)"][0]
-    out["fronts"] = t_fronts(wb, gb, fixed)
+    out["fronts"] = t_fronts(wb, gb, dict(fixed, **DECIDED_STACK))
     out["share"] = t_share(wb, gb, {"v1": V1, "Plan, 8 mm": dict(PLAN, glass="G8"),
-                                    "Plan + fixes": fixed, "DL-ST + fixes": dict(fixed, wall="DL-ST")})
+                                    "Plan + fixes": fixed, "DECIDED stack": dict(fixed, **DECIDED_STACK)})
     ref_kg = pod_kg(dict(PLAN, glass="G8"), wb, gb)
     out["curve"] = t_curve(wb, gb, fixed)
     out["recommend"], _ = t_recommend(wb, gb, fixed)
