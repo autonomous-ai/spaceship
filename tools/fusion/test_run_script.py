@@ -199,6 +199,102 @@ class LockTests(unittest.TestCase):
         self.assertTrue(self.lock().release_held(token))
         self.assertFalse(os.path.exists(self.path))
 
+    def test_joined_run_moves_the_hold_expiry_out(self):
+        # review P2: a 1 s hold and a joined run of 3 s must not let a waiter in
+        holder = self.lock(pid=None, hold_s=1)
+        holder.acquire(1)
+        joiner = self.lock(hold_s=3)
+        owner = joiner.acquire(0.2, token=holder.token)
+        self.assertGreaterEqual(owner["expires"], time.time() + 2.5)
+        self.assertEqual(self.lock().read_owner()["joined"]["pid"], os.getpid())
+        t0 = time.time()
+        with self.assertRaises(rs.LockTimeout):
+            self.lock().acquire(1.5, poll_s=0.05)        # the original hold ran out at 1 s
+        self.assertGreaterEqual(time.time() - t0, 1.4)
+        self.assertFalse(any("cleared" in m for m in self.logs))
+        time.sleep(max(0, owner["expires"] - time.time()) + 0.1)
+        late = self.lock()
+        late.acquire(2, poll_s=0.05)                      # once the joined run's time is up
+        self.assertTrue(late.owned)
+        late.release()
+
+    def test_a_plain_file_at_the_lock_path_counts_as_held(self):
+        # review P2: no spin, no "cleared" flood, give up on time
+        with open(self.path, "w") as fh:
+            fh.write("not a lock")
+        old = time.time() - 3600
+        os.utime(self.path, (old, old))
+        lk = self.lock()
+        self.assertTrue(lk.exists())
+        t0 = time.time()
+        with self.assertRaises(rs.LockTimeout) as cm:
+            lk.acquire(1.0, poll_s=0.05, note_every_s=100)
+        self.assertLess(time.time() - t0, 2.0)
+        self.assertIn("not a Fusion lock", str(cm.exception))
+        self.assertTrue(os.path.isfile(self.path))       # left alone
+        self.assertLessEqual(len(self.logs), 2)
+
+    def test_a_stale_lock_that_cannot_be_removed_ends_the_wait_on_time(self):
+        write_owner(self.path, token="old", pid=dead_pid(), since=time.time(),
+                    expires=time.time() + 3600)
+        os.chmod(self.path, 0o555)                       # owner.json can't be deleted
+        try:
+            lk = self.lock()
+            t0 = time.time()
+            with self.assertRaises(rs.LockTimeout):
+                lk.acquire(1.0, poll_s=0.05, note_every_s=100)
+            self.assertLess(time.time() - t0, 2.0)
+            self.assertEqual(sum("can't clear" in m for m in self.logs), 1)
+            self.assertFalse(any("cleared a stale" in m for m in self.logs))
+        finally:
+            os.chmod(self.path, 0o755)
+
+    def test_dead_process_is_cleared_whatever_hostname_it_reports(self):
+        write_owner(self.path, token="old", pid=dead_pid(), host="another-name.lan",
+                    since=time.time(), expires=time.time() + 3600)
+        lk = self.lock()
+        lk.acquire(2, poll_s=0.05)
+        self.assertTrue(any("has ended" in m for m in self.logs))
+        lk.release()
+
+    def test_waiters_get_the_lock_oldest_first(self):
+        holder = self.lock()
+        holder.acquire(1)
+        order, threads = [], []
+
+        def waiter(i):
+            lk = rs.FusionLock(self.path, label="w%d" % i, log=lambda m: None)
+            lk.acquire(20, poll_s=0.02)
+            order.append(i)
+            time.sleep(0.05)
+            lk.release()
+
+        for i in range(5):
+            th = threading.Thread(target=waiter, args=(i,))
+            th.start()
+            threads.append(th)
+            time.sleep(0.15)                              # tickets in a known order
+        self.assertEqual(len(self.lock().queue()), 5)
+        holder.release()
+        for th in threads:
+            th.join(30)
+        self.assertEqual(order, [0, 1, 2, 3, 4])
+        self.assertEqual(self.lock().queue(), [])
+
+    def test_a_dead_waiters_ticket_is_dropped(self):
+        holder = self.lock()
+        holder.acquire(1)
+        os.makedirs(self.path + ".queue", exist_ok=True)
+        ghost = "%020d-%d-deadbeef" % (1, dead_pid())          # oldest, but its run is gone
+        with open(os.path.join(self.path + ".queue", ghost), "w") as fh:
+            json.dump({"pid": 0, "give_up": time.time() + 999}, fh)
+        threading.Timer(0.3, holder.release).start()
+        lk = self.lock()
+        lk.acquire(5, poll_s=0.05)
+        self.assertTrue(lk.owned)
+        self.assertNotIn(ghost, os.listdir(self.path + ".queue"))
+        lk.release()
+
     def test_racing_takers_get_it_one_at_a_time(self):
         inside, peak, done = [0], [0], []
         mutex = threading.Lock()
@@ -331,6 +427,40 @@ class RunnerTests(unittest.TestCase):
         p.terminate()
         p.communicate(timeout=10)
         self.assertFalse(os.path.exists(self.lockdir))
+
+    def test_bad_direction_is_refused_before_the_lock(self):
+        code, _out, err = self.runner(self.script, "--url", self.fake.url,
+                                      "--screenshot", os.path.join(self.tmp, "x.png"),
+                                      "--direction", "sideways")
+        self.assertEqual(code, 2)
+        self.assertIn("--direction", err)
+        self.assertEqual(self.fake.scripts, [])
+        self.assertFalse(os.path.exists(self.lockdir))
+
+    def test_screenshot_then_save_and_close(self):
+        code, _out, err = self.runner(self.script, "--url", self.fake.url, "--doc", "X_P01_CAD",
+                                      "--screenshot", os.path.join(self.tmp, "x.png"),
+                                      "--save", "--close")
+        self.assertEqual(code, 0, err)
+        kinds = []
+        for _t, s in self.fake.scripts:
+            if "ARGS = {" in s:
+                kinds.append(eval(s.split("ARGS = ", 1)[1].split("\n", 1)[0])["mode"])
+            elif "viewOrientation" in s:
+                kinds.append("fit")
+            elif s == "":
+                kinds.append("shot")
+            else:
+                kinds.append("script")
+        self.assertEqual(kinds, ["open", "script", "fit", "shot", "save", "close"])
+
+    def test_status_reports_a_plain_file_as_held(self):
+        with open(self.lockdir, "w") as fh:
+            fh.write("x")
+        code, out, _ = self.runner("--lock-status")
+        self.assertEqual(code, 0)
+        self.assertIn("held:", out)
+        self.assertIn("not a Fusion lock", out)
 
     def test_doc_options_need_doc(self):
         code, _out, err = self.runner(self.script, "--url", self.fake.url, "--save")

@@ -31,8 +31,9 @@ python3 tools/fusion/step_check.py v2/03-Manufacturing/proof/V2-SWL-00_P01_WALL-
 Several Engineers write Fusion scripts at once, and the one Fusion runs them one after the other. `run_script.py` makes that safe:
 
 - **The lock.** Before it talks to Fusion, every run makes the directory `/tmp/fusion-mcp-27182.lock` (`mkdir` is atomic, so exactly one run gets it) and writes `owner.json` in it: label, script, worktree, process id, since and expiry. It keeps the lock for the whole run (document steps, script, screenshot) and removes it at the end, also after an error, Ctrl-C or SIGTERM. Every worktree on this Mac uses the same path; `--lock DIR` or `$FUSION_MCP_LOCK` changes it (tests only).
-- **Waiting.** A run that finds the lock taken waits, printing who holds it every 30 s, and gives up after `--lock-wait` seconds (default 1200) with exit 3. Set `--label` or `$FUSION_MCP_LABEL` (for example `"WALL engineer"`) so the others see who they wait for. A long wait can pass a tool call's time limit, so start long runs in the background.
-- **Crashed runs.** A lock whose process has ended, or that is past its expiry, is stale: the next waiting run clears it (guarded by a second `mkdir`, so two waiters can't clear a fresh lock) and says so. Fusion may still be finishing a killed run's script; the next script then waits inside Fusion.
+- **Waiting, oldest first.** A run that finds the lock taken takes a ticket in `/tmp/fusion-mcp-27182.lock.queue` and waits its turn: only the oldest live ticket may take the lock, so no run loses every race. It prints who holds the lock and how many runs are ahead every 30 s, and gives up after `--lock-wait` seconds (default 1200) with exit 3. Tickets of runs that have ended are dropped. Set `--label` or `$FUSION_MCP_LABEL` (for example `"WALL engineer"`) so the others see who they wait for. A long wait can pass a tool call's time limit, so start long runs in the background.
+- **Crashed runs.** A lock whose process has ended (checked by process id; `/tmp` is local to this Mac, so the hostname doesn't matter), or that is past its expiry, is stale: the next run in line clears it, under a guard directory (`.guard`), so two runs can't clear a fresh lock, and says so. Anything else at the lock path (a plain file, a link, a lock it can't delete) counts as held: the run says once that it can't clear it and gives up at `--lock-wait` with exit 3.
+- **UNVERIFIED:** whether Fusion finishes a killed run's script before it starts the next one. Not tested; if a run is killed mid-script, check the document before the next run builds on it.
 - **Who has it now:** `python3 tools/fusion/run_script.py --lock-status`.
 
 Each run looks after its own document, so it never depends on what the run before it left active:
@@ -57,7 +58,7 @@ python3 tools/fusion/run_script.py step2.py
 python3 tools/fusion/run_script.py --lock-release
 ```
 
-A held lock has no live process behind it, so only its expiry ends it if you forget `--lock-release`.
+A held lock has no live process behind it, so only its expiry ends it if you forget `--lock-release`. Each run that joins it moves the expiry out to cover that run (under the guard), so a hold can't run out while one of its runs is still in Fusion.
 
 ## Recipe that worked: a native, editable part
 

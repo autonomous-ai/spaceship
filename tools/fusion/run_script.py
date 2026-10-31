@@ -80,7 +80,8 @@ TOKEN_ENV = "FUSION_MCP_LOCK_TOKEN"    # run inside a lock held with --lock-hold
 LABEL_ENV = "FUSION_MCP_LABEL"         # who is running, shown to waiting runs
 OWNER_FILE = "owner.json"
 NO_OWNER_GRACE_S = 60      # a lock without owner file older than this is stale
-CLEAR_GUARD_STALE_S = 60   # a leftover clearing guard older than this is removed
+GUARD_STALE_S = 60         # a leftover guard directory older than this is removed
+TICKET_GRACE_S = 60        # a ticket this long past its run's give-up time is dropped
 HOLD_MAX_S = 3600          # longest --lock-hold
 
 
@@ -124,29 +125,40 @@ def describe_owner(owner, now=None):
     who = owner.get("label") or "a run"
     what = owner.get("script") or "held lock"
     mins = max(0, int((now - owner.get("since", now)) // 60))
-    return "%s (%s, pid %s) since %s, %d min ago" % (
+    text = "%s (%s, pid %s) since %s, %d min ago" % (
         who, what, owner.get("pid") or "none, held", owner.get("since_utc", "?"), mins)
+    joined = owner.get("joined")
+    if isinstance(joined, dict):
+        text += "; now running %s (pid %s)" % (joined.get("script", "?"), joined.get("pid", "?"))
+    return text
 
 
 class FusionLock:
-    """An atomic mkdir lock with an owner file, a wait and stale clearing.
+    """An atomic mkdir lock with an owner file, a wait in a queue, stale clearing.
 
     pid is the process that keeps the lock alive: this run (default), or None
-    for a lock held across runs with --lock-hold (then only `expires` ends it).
+    for a lock held across runs with --lock-hold (then only `expires` ends it;
+    each run that joins the hold moves `expires` out to cover itself).
+    Waiters queue: each makes a ticket in <lock>.queue and only the oldest
+    live ticket may take the lock, so nobody loses every race.
     """
 
     def __init__(self, path, label="", script="", hold_s=3600.0, pid="self",
                  host=None, log=None):
         self.path = path
+        self.queue_dir = path + ".queue"
+        self.guard = path + ".guard"
         self.label = label
         self.script = script
         self.hold_s = float(hold_s)
         self.pid = os.getpid() if pid == "self" else pid
-        self.host = host or socket.gethostname()
+        self.host = host or socket.gethostname()   # for people reading the file only
         self.log = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
         self.token = None
+        self.ticket = None
         self.owned = False       # we made the lock directory
         self.joined = False      # we run inside a lock held with --lock-hold
+        self._said = set()       # messages logged once
 
     # -- reading ------------------------------------------------------------
     def read_owner(self):
@@ -158,14 +170,26 @@ class FusionLock:
             return None
 
     def exists(self):
-        return os.path.isdir(self.path)
+        """Anything at the lock path counts as held, even if it isn't our lock."""
+        return os.path.lexists(self.path)
+
+    def is_foreign(self):
+        """Something at the path that this tool didn't make (a file, a link)."""
+        return self.exists() and (os.path.islink(self.path) or not os.path.isdir(self.path))
+
+    def describe(self, owner, now=None):
+        if self.is_foreign():
+            return "something that is not a Fusion lock (a file or a link): remove %s" % self.path
+        return describe_owner(owner, now)
 
     def stale_reason(self, owner, now=None):
         """Why the lock as described by `owner` is stale, or None if it is live."""
         now = time.time() if now is None else now
+        if self.is_foreign():
+            return None                       # held by something unknown; never touched
         if owner is None:
             try:
-                age = now - os.stat(self.path).st_mtime
+                age = now - os.lstat(self.path).st_mtime
             except OSError:
                 return None
             return ("no owner file for %d s" % age) if age > NO_OWNER_GRACE_S else None
@@ -173,95 +197,211 @@ class FusionLock:
         if not isinstance(expires, (int, float)) or now > expires:
             return "expired at %s" % owner.get("expires_utc", expires)
         pid = owner.get("pid")
-        if pid and owner.get("host") == self.host and not pid_alive(pid):
+        # /tmp is local to this Mac, so a pid is checked whatever hostname it reports
+        if pid and not pid_alive(pid):
             return "its process %s has ended" % pid
         return None
 
+    def _say_once(self, msg):
+        if msg not in self._said:
+            self._said.add(msg)
+            self.log(msg)
+
+    # -- the guard: one clearer or extender at a time -------------------------
+    def _take_guard(self, wait_s=5.0):
+        t0 = time.time()
+        while True:
+            try:
+                os.mkdir(self.guard)
+                return True
+            except FileExistsError:
+                try:
+                    if time.time() - os.lstat(self.guard).st_mtime > GUARD_STALE_S:
+                        os.rmdir(self.guard)
+                        continue
+                except OSError:
+                    pass
+            except OSError as e:
+                self._say_once("run_script: can't make %s (%s)" % (self.guard, e))
+                return False
+            if time.time() - t0 >= wait_s:
+                return False
+            time.sleep(0.05)
+
+    def _drop_guard(self):
+        try:
+            os.rmdir(self.guard)
+        except OSError:
+            pass
+
+    # -- the queue ------------------------------------------------------------
+    def _take_ticket(self, deadline):
+        os.makedirs(self.queue_dir, exist_ok=True)
+        name = "%020d-%d-%s" % (time.time_ns(), os.getpid(), uuid.uuid4().hex[:8])
+        fd = os.open(os.path.join(self.queue_dir, name), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump({"pid": os.getpid(), "label": self.label, "script": self.script,
+                       "give_up": deadline}, fh)
+        self.ticket = name
+
+    def _drop_ticket(self):
+        if self.ticket:
+            try:
+                os.remove(os.path.join(self.queue_dir, self.ticket))
+            except OSError:
+                pass
+            self.ticket = None
+
+    def queue(self, now=None):
+        """Live tickets, oldest first. Tickets of ended runs are removed."""
+        now = time.time() if now is None else now
+        try:
+            names = sorted(os.listdir(self.queue_dir))
+        except OSError:
+            return []
+        live = []
+        for n in names:
+            parts = n.split("-")
+            if len(parts) != 3 or not parts[0].isdigit() or not parts[1].isdigit():
+                continue
+            if n != self.ticket:
+                try:
+                    with open(os.path.join(self.queue_dir, n), "r", encoding="utf-8") as fh:
+                        give_up = float(json.load(fh).get("give_up", 0))
+                except (OSError, ValueError, TypeError, AttributeError):
+                    give_up = None              # still being written; keep it
+                dead = not pid_alive(int(parts[1])) or (
+                    give_up is not None and now > give_up + TICKET_GRACE_S)
+                if dead:
+                    try:
+                        os.remove(os.path.join(self.queue_dir, n))
+                    except OSError:
+                        pass
+                    continue
+            live.append(n)
+        return live
+
     # -- taking and giving back --------------------------------------------
+    def _write_owner(self, owner):
+        tmp = os.path.join(self.path, "%s.%s.tmp" % (OWNER_FILE, uuid.uuid4().hex[:8]))
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(owner, fh, indent=1)
+        os.replace(tmp, os.path.join(self.path, OWNER_FILE))
+
     def acquire(self, wait_s, poll_s=1.0, token=None, note_every_s=30.0):
         if token:
             return self._join(token)
         deadline = time.time() + float(wait_s)
         last_note = 0.0
-        while True:
-            try:
-                os.mkdir(self.path)
-            except FileExistsError:
-                owner = self.read_owner()
-                why = self.stale_reason(owner)
-                if why:
-                    self._clear_stale(owner, why)
-                    continue
+        self._take_ticket(deadline)
+        try:
+            while True:
+                q = self.queue()
+                if self.ticket not in q:          # removed by someone: take a new one
+                    self._take_ticket(deadline)
+                    q = self.queue()
+                ahead = q.index(self.ticket) if self.ticket in q else 0
+                owner = None
+                if ahead == 0:
+                    try:
+                        os.mkdir(self.path)
+                    except FileExistsError:
+                        owner = self.read_owner()
+                        why = self.stale_reason(owner)
+                        if why and self._clear_stale(owner, why):
+                            continue              # the path is gone: try again at once
+                    except OSError as e:
+                        self._say_once("run_script: can't make the lock %s (%s)" % (self.path, e))
+                    else:
+                        return self._own()
+                else:
+                    owner = self.read_owner()
                 now = time.time()
                 if now >= deadline:
-                    raise LockTimeout("Fusion is busy: the lock %s is held by %s" % (
-                        self.path, describe_owner(owner, now)))
+                    raise LockTimeout("Fusion is busy: the lock %s is held by %s%s" % (
+                        self.path, self.describe(owner, now),
+                        ("; %d run(s) were ahead in the queue" % ahead) if ahead else ""))
                 if now - last_note >= note_every_s:
-                    self.log("run_script: waiting for Fusion, held by %s; giving up in %d s"
-                             % (describe_owner(owner, now), deadline - now))
+                    self.log("run_script: waiting for Fusion, held by %s%s; giving up in %d s"
+                             % (self.describe(owner, now),
+                                ("; %d run(s) ahead in the queue" % ahead) if ahead else "",
+                                deadline - now))
                     last_note = now
                 time.sleep(max(0.01, min(poll_s, deadline - now)))
-                continue
-            try:
-                self.token = uuid.uuid4().hex
-                now = time.time()
-                owner = {
-                    "token": self.token, "label": self.label, "script": self.script,
-                    "pid": self.pid, "host": self.host,
-                    "since": now, "since_utc": _utc(now),
-                    "expires": now + self.hold_s, "expires_utc": _utc(now + self.hold_s),
-                }
-                tmp = os.path.join(self.path, OWNER_FILE + ".tmp")
-                with open(tmp, "w", encoding="utf-8") as fh:
-                    json.dump(owner, fh, indent=1)
-                os.replace(tmp, os.path.join(self.path, OWNER_FILE))
-            except BaseException:
-                shutil.rmtree(self.path, ignore_errors=True)
-                raise
-            self.owned = True
-            return owner
+        finally:
+            self._drop_ticket()
+
+    def _own(self):
+        try:
+            self.token = uuid.uuid4().hex
+            now = time.time()
+            owner = {
+                "token": self.token, "label": self.label, "script": self.script,
+                "pid": self.pid, "host": self.host,
+                "since": now, "since_utc": _utc(now),
+                "expires": now + self.hold_s, "expires_utc": _utc(now + self.hold_s),
+            }
+            self._write_owner(owner)
+        except BaseException:
+            shutil.rmtree(self.path, ignore_errors=True)
+            raise
+        self.owned = True
+        return owner
 
     def _join(self, token):
-        owner = self.read_owner()
-        if not owner or owner.get("token") != token:
-            raise LockTimeout("%s is set, but the Fusion lock %s is not held with that "
-                              "token (it is held by %s)" % (
-                                  TOKEN_ENV, self.path,
-                                  describe_owner(owner) if self.exists() else "nobody"))
-        why = self.stale_reason(owner)
-        if why:
-            raise LockTimeout("the held Fusion lock %s is stale (%s); hold it again"
-                              % (self.path, why))
+        """Run inside a held lock: check the token and move the expiry out far
+        enough to cover this run, under the guard, so no waiter can clear the
+        hold while this run is in Fusion."""
+        if not self._take_guard():
+            raise LockTimeout("couldn't check the held Fusion lock %s (its guard %s is busy)"
+                              % (self.path, self.guard))
+        try:
+            owner = self.read_owner()
+            if not owner or owner.get("token") != token:
+                raise LockTimeout("%s is set, but the Fusion lock %s is not held with that "
+                                  "token (it is held by %s)" % (
+                                      TOKEN_ENV, self.path,
+                                      self.describe(owner) if self.exists() else "nobody"))
+            why = self.stale_reason(owner)
+            if why:
+                raise LockTimeout("the held Fusion lock %s is stale (%s); hold it again"
+                                  % (self.path, why))
+            now = time.time()
+            if owner["expires"] < now + self.hold_s:
+                owner["expires"] = now + self.hold_s
+                owner["expires_utc"] = _utc(owner["expires"])
+            owner["joined"] = {"label": self.label, "script": self.script,
+                               "pid": os.getpid(), "since_utc": _utc(now)}
+            self._write_owner(owner)
+        finally:
+            self._drop_guard()
         self.token = token
         self.joined = True
         return owner
 
     def _clear_stale(self, seen, why):
-        """Remove a stale lock, unless it changed hands since we looked."""
-        guard = self.path + ".clear"
-        try:
-            os.mkdir(guard)
-        except FileExistsError:
-            try:
-                if time.time() - os.stat(guard).st_mtime > CLEAR_GUARD_STALE_S:
-                    os.rmdir(guard)
-            except OSError:
-                pass
-            time.sleep(0.2)
-            return
+        """Remove a stale lock, unless it changed hands since we looked.
+        True only when the path is really gone."""
+        if not self._take_guard(wait_s=0.5):
+            return False
         try:
             cur = self.read_owner()
             same = (cur is None and seen is None) or (
                 cur is not None and seen is not None and cur.get("token") == seen.get("token"))
-            if same and self.stale_reason(cur):
+            if not (same and self.stale_reason(cur)):
+                return False
+            if os.path.isdir(self.path) and not os.path.islink(self.path):
                 shutil.rmtree(self.path, ignore_errors=True)
-                self.log("run_script: cleared a stale Fusion lock (%s), left by %s"
-                         % (why, describe_owner(seen)))
+            if self.exists():
+                self._say_once("run_script: can't clear the stale Fusion lock %s (%s): "
+                               "remove it by hand; waiting until --lock-wait runs out"
+                               % (self.path, why))
+                return False
+            self.log("run_script: cleared a stale Fusion lock (%s), left by %s"
+                     % (why, describe_owner(seen)))
+            return True
         finally:
-            try:
-                os.rmdir(guard)
-            except OSError:
-                pass
+            self._drop_guard()
 
     def release(self):
         """Give the lock back if we made it and still own it."""
@@ -579,10 +719,9 @@ def build_parser():
                     help="passed to the script in SCRIPT_ARGS (repeatable)")
     ap.add_argument("--screenshot", metavar="PNG",
                     help="after the script, save a screenshot of the active view")
-    ap.add_argument("--direction", default="iso-top-right",
-                    help="camera for --screenshot: front, back, top, bottom, left, "
-                         "right, iso-top-right, iso-top-left, ..., or current. The "
-                         "view is turned and zoomed to fit first (default iso-top-right)")
+    ap.add_argument("--direction", default="iso-top-right", choices=sorted(VIEWS) + ["current"],
+                    help="camera for --screenshot (default iso-top-right); the view is "
+                         "turned and zoomed to fit first, except for current")
     ap.add_argument("--width", type=int, default=1600)
     ap.add_argument("--height", type=int, default=1000)
     ap.add_argument("--url", default=DEFAULT_URL)
@@ -627,13 +766,16 @@ def build_parser():
 def lock_commands(opts, lock):
     """--lock-status, --lock-hold, --lock-release; returns an exit code."""
     if opts.lock_status:
+        waiting = len(lock.queue())
+        queued = ("; %d run(s) waiting" % waiting) if waiting else ""
         if not lock.exists():
-            print("free: %s" % lock.path)
+            print("free: %s%s" % (lock.path, queued))
             return 0
         owner = lock.read_owner()
         why = lock.stale_reason(owner)
-        print("held: %s by %s%s" % (lock.path, describe_owner(owner),
-                                   ("; STALE (%s), the next run clears it" % why) if why else ""))
+        print("held: %s by %s%s%s" % (lock.path, lock.describe(owner),
+                                     ("; STALE (%s), the next run clears it" % why) if why else "",
+                                     queued))
         return 0
     if opts.lock_hold is not None:
         if not 0 < opts.lock_hold <= HOLD_MAX_S:
@@ -742,30 +884,9 @@ def _run_locked(opts, source):
     if not ok:
         print("run_script: the script raised an exception (see above)", file=sys.stderr)
 
+    shot_rc = 0
     if opts.screenshot:
-        try:
-            if opts.direction != "current":
-                view = VIEWS.get(opts.direction)
-                if view is None:
-                    print("run_script: unknown --direction %r" % opts.direction, file=sys.stderr)
-                    return 1
-                mcp.call_tool("fusion_mcp_execute", {"featureType": "script", "object": {
-                    "script": FIT_SCRIPT % {"view": view}}})
-            shot = mcp.call_tool("fusion_mcp_read", {
-                "queryType": "screenshot", "direction": "current",
-                "width": opts.width, "height": opts.height,
-                "transparentBackground": False, "antiAliasing": True})
-        except McpError as e:
-            print("run_script: screenshot failed: %s" % e, file=sys.stderr)
-            return 1 if not ok else 2
-        _, png = tool_payload(shot)
-        if png:
-            os.makedirs(os.path.dirname(os.path.abspath(opts.screenshot)), exist_ok=True)
-            with open(opts.screenshot, "wb") as fh:
-                fh.write(png)
-            print("run_script: screenshot saved to %s" % opts.screenshot)
-        else:
-            print("run_script: no image in screenshot reply", file=sys.stderr)
+        shot_rc = take_screenshot(mcp, opts)
 
     if opts.doc and ok:
         steps = []
@@ -786,7 +907,33 @@ def _run_locked(opts, source):
     elif opts.doc and (opts.save is not None or opts.close):
         print("run_script: the script failed, so %r was not saved or closed" % opts.doc,
               file=sys.stderr)
-    return 0 if ok else 1
+    if not ok:
+        return 1
+    return shot_rc
+
+
+def take_screenshot(mcp, opts):
+    """Save a screenshot; 0 when saved, 1 when no image came back, 2 on an MCP error."""
+    try:
+        if opts.direction != "current":
+            mcp.call_tool("fusion_mcp_execute", {"featureType": "script", "object": {
+                "script": FIT_SCRIPT % {"view": VIEWS[opts.direction]}}})
+        shot = mcp.call_tool("fusion_mcp_read", {
+            "queryType": "screenshot", "direction": "current",
+            "width": opts.width, "height": opts.height,
+            "transparentBackground": False, "antiAliasing": True})
+    except McpError as e:
+        print("run_script: screenshot failed: %s" % e, file=sys.stderr)
+        return 2
+    _, png = tool_payload(shot)
+    if not png:
+        print("run_script: no image in screenshot reply", file=sys.stderr)
+        return 0
+    os.makedirs(os.path.dirname(os.path.abspath(opts.screenshot)), exist_ok=True)
+    with open(opts.screenshot, "wb") as fh:
+        fh.write(png)
+    print("run_script: screenshot saved to %s" % opts.screenshot)
+    return 0
 
 
 if __name__ == "__main__":
