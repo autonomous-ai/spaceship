@@ -1,5 +1,5 @@
 {
- "next": 98,
+ "next": 103,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -884,16 +884,16 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
    "rule": "no-drawing",
    "subject": "831001",
    "severity": "severe",
-   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS has no drawing PDF (831001_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS has no drawing PDF (831001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step.",
    "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
+   "file": "v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step",
    "owner": "Joints Engineer",
    "evidence": {},
    "key": "C05|no-drawing|831001",
@@ -909,7 +909,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -923,7 +923,7 @@
    "evidence": {},
    "key": "C05|no-drawing|831002",
    "id": "F-026",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 6ccbfac",
    "posted": "Joints group 2026-11-01",
@@ -932,9 +932,15 @@
      "date": "2026-11-01",
      "rev": "6ccbfac",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 22a7955",
+   "closed": "2026-11-01 8c3aca4"
   },
   {
    "check": "C06",
@@ -959,7 +965,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C06",
@@ -984,7 +990,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1009,7 +1015,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1034,7 +1040,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1059,7 +1065,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C06",
@@ -1103,7 +1109,7 @@
    "evidence": {},
    "key": "C07|fastener-spec|838006",
    "id": "F-033",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1112,9 +1118,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 22a7955",
+   "closed": "2026-11-01 8c3aca4"
   },
   {
    "check": "C06",
@@ -1167,7 +1179,7 @@
    },
    "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1222 Y -646 Z 11",
    "id": "F-035",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1176,9 +1188,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 22a7955",
+   "closed": "2026-11-01 8c3aca4"
   },
   {
    "check": "C09",
@@ -1229,7 +1247,7 @@
    },
    "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 1493 Y 27 Z 1",
    "id": "F-037",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1238,9 +1256,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 22a7955",
+   "closed": "2026-11-01 8c3aca4"
   },
   {
    "check": "C06",
@@ -1295,7 +1319,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1320,7 +1344,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1345,7 +1369,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1370,7 +1394,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1395,7 +1419,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1420,16 +1444,16 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
    "rule": "no-drawing",
    "subject": "111211",
    "severity": "severe",
-   "message": "111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "message": "111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step.",
    "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
+   "file": "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step",
    "owner": "Joints Engineer",
    "evidence": {},
    "key": "C05|no-drawing|111211",
@@ -1445,7 +1469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1470,7 +1494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -1495,7 +1519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C11",
@@ -2985,7 +3009,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -3010,7 +3034,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
   },
   {
    "check": "C05",
@@ -3035,7 +3059,142 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5824c50"
+   "last_seen": "2026-11-01 8c3aca4"
+  },
+  {
+   "check": "C06",
+   "rule": "duplicate-number",
+   "subject": "111211",
+   "severity": "major",
+   "message": "Part number 111211 is used for different names: 'BASE - CORNER KEY - BACK - COMMON' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - CORNER KEY - SQUARE - COMMON' in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv; 'BASE - CORNER KEY - BACK - COMMON' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv. The Joints Engineer's list names it 'BASE - CORNER KEY - SQUARE - COMMON', and the teams place the keys by reference (D-95).",
+   "fix": "Use 'BASE - CORNER KEY - SQUARE - COMMON' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/04-BOM/100000_P01_POD-MASTER_BOM.csv.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|duplicate-number|111211",
+   "id": "F-098",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 8c3aca4",
+   "posted": "BASE group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
+    }
+   ],
+   "last_seen": "2026-11-01 8c3aca4"
+  },
+  {
+   "check": "C06",
+   "rule": "duplicate-number",
+   "subject": "111501",
+   "severity": "major",
+   "message": "Part number 111501 is used for different names: 'BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM' in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; 'BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM' in v2/04-BOM/100000_P01_POD-MASTER_BOM.csv.",
+   "fix": "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py).",
+   "file": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "owner": "PM",
+   "evidence": {},
+   "key": "C06|duplicate-number|111501",
+   "id": "F-099",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 8c3aca4",
+   "posted": "Lead group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "owner set by hand to PM: BASE renamed 111501; only the master BOM still has the old name and needs a rebuild"
+    }
+   ],
+   "last_seen": "2026-11-01 8c3aca4"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111212",
+   "severity": "severe",
+   "message": "111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111212",
+   "id": "F-100",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 8c3aca4",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 8c3aca4"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111213",
+   "severity": "severe",
+   "message": "111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111213",
+   "id": "F-101",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 8c3aca4",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 8c3aca4"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111214",
+   "severity": "severe",
+   "message": "111214 BASE - CORNER KEY - KNEE - LH has no drawing PDF (111214_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111214",
+   "id": "F-102",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 8c3aca4",
+   "posted": "Joints group 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "8c3aca4",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 8c3aca4"
   }
  ]
 }

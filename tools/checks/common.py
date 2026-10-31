@@ -276,10 +276,24 @@ def reserved_spaces(root):
     """{part number: row} from v2/04-Checks/config/reserved-spaces.csv: bodies that only hold space for a part
     another team designs later (the Lead's rulings, like D-92's ELECTRICAL routes). No drawing and no seam rules
     for them; each is listed open under its designer until it's designed."""
+    out = {}
+    # D-105: a row a team types "reserved air space" is one too, as the master BOM and the checklist read it
+    for f in walk_files(root, "v2/03-Manufacturing", exts=(".csv",)):
+        try:
+            rows = read_csv(f)
+        except (UnicodeDecodeError, OSError):
+            continue
+        for r in rows:
+            pn = (r.get("part_number") or "").strip()
+            kinds = " ".join((v or "") for k, v in r.items() if isinstance(k, str) and isinstance(v, str)
+                             and re.search(r"type|kind", k, re.I))
+            if PN_RE.match(pn) and re.search(r"\breserved air space\b", kinds, re.I):
+                out.setdefault(pn, {"part_number": pn, "owner": "AIR", "ruling": "D-105",
+                                    "why": "typed reserved air space in %s" % rel(root, f)})
     p = os.path.join(root, CHECKS_DIR, "config", "reserved-spaces.csv")
-    if not os.path.exists(p):
-        return {}
-    return {r["part_number"].strip(): r for r in read_csv(p) if (r.get("part_number") or "").strip()}
+    if os.path.exists(p):
+        out.update({r["part_number"].strip(): r for r in read_csv(p) if (r.get("part_number") or "").strip()})
+    return out
 
 
 def reserved_label(label, reserved):

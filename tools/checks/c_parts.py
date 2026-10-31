@@ -21,7 +21,7 @@ import os
 import re
 from collections import defaultdict
 
-from common import (register_names, name_words, reserved_spaces, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
+from common import (register_names, name_words, reserved_spaces, JOINTS_KEYS, Finding, owner_for, rel, walk_files, read_csv, num, pn_class, pn_problems, is_fastener,
                     parse_file_name, is_soft)
 
 ALIASES = {
@@ -228,15 +228,33 @@ def check_parts_lists(root, plists):
         # the same words in the same order are one name: 'HOOK-AND-LOOP' and 'HOOK AND LOOP' don't differ
         names = {name_words(n) for _f, n in uses}
         if len(names) > 1:
-            # a hardware number takes the joints register's name (D-99): the lists that differ from it own the fix
-            off = [(f, n) for f, n in uses if pn in reg and name_words(n) != name_words(reg[pn])] or uses
+            # which name is right: the joints register's for hardware (D-99); the Joints Engineer's own list for the
+            # base keys (D-95); else the name the team lists agree on. The master BOM copies the team lists, so a
+            # name only it differs on means it needs a rebuild (the PM's).
+            team = [(f, n) for f, n in uses if not is_master(f)]
+            if pn in reg:
+                ref, why = reg[pn], " The joints register names it '%s' (D-99)." % reg[pn]
+            elif JOINTS_KEYS.match(pn) and any("/joints/" in f for f, _n in team):
+                ref = next(n for f, n in team if "/joints/" in f)
+                why = " The Joints Engineer's list names it '%s', and the teams place the keys by reference (D-95)." % ref
+            elif team and len({name_words(n) for _f, n in team}) == 1:
+                ref, why = team[0][1], ""
+            else:
+                ref, why = None, ""
+            off = [(f, n) for f, n in uses if ref is not None and name_words(n) != name_words(ref)] or uses
+            if ref is not None and all(is_master(f) for f, _n in off):
+                owner, fix = "PM", "Rebuild the master BOM from the team lists (v2/04-BOM/build_master_bom.py)."
+            elif ref is not None:
+                f0 = next(f for f, _n in off if not is_master(f))
+                owner = owner_for(f0, "" if JOINTS_KEYS.match(pn) else pn)
+                fix = "Use '%s' in %s." % (ref, ", ".join(sorted({f for f, _n in off})))
+            else:
+                owner = owner_for(uses[0][0], pn)
+                fix = "One number is one form, fit and function (conventions section 6)."
             fs.append(Finding("C06", "duplicate-number", pn, "major",
                               "Part number %s is used for different names: %s.%s" % (
-                                  pn, "; ".join("'%s' in %s" % (n, f) for f, n in uses),
-                                  " The joints register names it '%s' (D-99)." % reg[pn] if pn in reg else ""),
-                              ("Use the register's name in %s." % ", ".join(sorted({f for f, _n in off})) if pn in reg
-                               else "One number is one form, fit and function (conventions section 6)."),
-                              off[0][0], owner_for(off[0][0], pn)))
+                                  pn, "; ".join("'%s' in %s" % (n, f) for f, n in uses), why),
+                              fix, off[0][0], owner))
     return fs
 
 
