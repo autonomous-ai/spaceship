@@ -112,7 +112,7 @@ def sheet1(doc, rows, harness):
     s.text(18, 92, "W03 2.5 mm2 G/Y to B2's frame", 1.7, MAINS)
     s.text(18, 95, "(only B2 carries a mains part)", 1.7, MAINS)
     s.box(18, 104, 52, 126, "LAN", ["etherCON NE8FDP in B2,", "W04 Cat6 to port 1", "port 2: W31 to the kit"], SIG)
-    # 12 V outputs leave the unit on the right side (slot S-PU-X) and the top (G-PU-TOP)
+    # 12 V outputs leave the unit on the right side (H01, H02) and the top (H03), straight into the cable gap (plain cut-out)
     s.fuse(116, 73, "F1 5 A")
     s.line(104, 73, 113.8, 73, SELV, 0.5)
     s.line(118.2, 73, 150, 73, SELV, 0.5)
@@ -286,9 +286,9 @@ def sheet3(doc, rows, harness, v):
                             color=MAINS if c == "INLET" else SIG, width=0.3 * MMPT)
         elif c == "SLEEVE":
             s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), MAINS, 0.25, dashes="[1 1] 0")
-        elif c in ("P1", "P4", "P5", "P6", "T1-B2", "L1-B2", "L1-B4", "S-PU-X", "G-PU-TOP", "G-B2-B4", "S-CNR"):
+        elif c in ("P1", "P4", "P5", "P6", "T1-B2", "L1-B2", "L1-B4", "G-B2-B4", "S-CNR"):
             s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), SELV, 0.3)
-        elif c.startswith("C1") or c in ("FX-CEIL", "FX-SHELF"):
+        elif c.startswith("C1") or c in ("FX-CEIL", "FX-SHELF", "PU-PLATE"):
             s.rect(X(bx[0]), Z(bx[5]), X(bx[3]), Z(bx[2]), GREY, 0.3)
     lab(X(-1240), Z(313) + 0.8, "inlet X 120 Z 313, LAN Z 375 (v1's spot, off the X 0 closing seam)", MAINS)
     lab(X(400), Z(1100) - 2.0, "trunk Z 1100 to the corner", SELV)
@@ -350,7 +350,7 @@ def sheet3(doc, rows, harness, v):
         yy += 4.1
     notes = [
         "1. Every coordinate in these views is computed from electrical_model.py (skeleton P04 parameters), so they follow the CAD.",
-        "2. Bushings (Heyco 2836, 19.1 hole): G-PU-TOP, G-B2-B4 x2, FX-CEIL, G-CEIL-B/F, G-DR (DR back plate), G-SOFFIT; slots get an edge strip.",
+        "2. Bushings (Heyco 2836, 19.1 hole): the unit's H01-H03, G-B2-B4 x2, G-CEIL-B/F, G-DR (DR back plate), G-SOFFIT; the slot S-CNR gets an edge strip.",
         "3. Felt-only holes (FX-*, FS-CNR, FA-KIT) go through the felt only, clear of the 12 mm lips: no steel edge, no bushing (no hole through a lip, D-69).",
         "4. These views are the route drawing of 710000; there is no separate Fusion drawing of the route model (PM ruling 2026-11-01).",
     ]

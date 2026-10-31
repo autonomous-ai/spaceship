@@ -167,10 +167,10 @@ def harnesses(v):
         amps_max=None, note="plan VT09; the building LAN comes in at v1's position")
     # ---- light feed (PS2) to the light shelf: PU -> B2-CASS -> B4-CASS -> shelf
     add(id="W10a", harness_pn="710001", segment="PU", function="light feed", frm="light controller outputs (PS2) via F2 5 A",
-        to="pocket P5 in B2-CASS", route="out of the unit's top, G-PU-TOP", circuit="PS2 lights",
+        to="pocket P5 in B2-CASS", route="out of the unit's top (bushed hole H03) straight up into B2-CASS's cable gap: the cut-out is plain, no steel on the path", circuit="PS2 lights",
         conductors="+12 V x 2, UP-, DOWN-, CALL-, spare", cable="6 x 18 AWG, Class 2 (CL2 or equivalent)", area_mm2=AWG18,
         length_mm=PU_IN + cross_top + LOOP, end_a="light controller terminals", end_b="Mini-Fit Jr 6-way receptacle",
-        grommets="G-PU-TOP", amps_max=LIGHT_A,
+        grommets="the unit's H03", amps_max=LIGHT_A,
         note="through the shelf's current sense (self-test, D-87); slack to the first clip: it crosses the 4 mm floating gap")
     add(id="W10b", harness_pn="710011", segment="B2-CASS", function="light feed", frm="P5", to="B2/B4 joint",
         route="P5, L1-B2, G-B2-B4", circuit="PS2 lights", conductors="+12 V x 2, UP-, DOWN-, CALL-, spare",
@@ -217,11 +217,11 @@ def harnesses(v):
             return "%s %s%s" % ({"W20": "Mini-Fit Jr 10-way", "W30": "Mini-Fit Jr 4-way"}[wid], kind,
                                 " (with W24)" if wid == "W20" else "")
         add(id=wid + "a", harness_pn="710001", segment="PU", function=fn, frm="power unit",
-            to="pocket P1 in B2-CASS", route="out of the unit's right side, S-PU-X", circuit=circ,
+            to="pocket P1 in B2-CASS", route="out of the unit's right side (bushed holes H01, H02) straight into B2-CASS's cable gap: the cut-out is plain", circuit=circ,
             conductors=cond, cable=cable, area_mm2=area, parallel=par, length_mm=PU_IN + cross_side + LOOP,
             end_a={"W20": "PS3 output", "W30": "F1 5 A", "W24": "light controller link, PS2 current sense, PS1 and PS2 rail taps",
                    "W31": "LAN socket port 2"}[wid],
-            end_b=end("receptacle"), grommets="S-PU-X", amps_max=amps,
+            end_b=end("receptacle"), grommets="the unit's H01/H02", amps_max=amps,
             note="slack to the first clip: it crosses the 4 mm floating gap, so no clip within 150 mm of the cut-out")
         add(id=wid + "b", harness_pn="710021", segment="B2-CASS", function=fn, frm="P1", to="back-right corner",
             route="P1, T1-B2, S-CNR", circuit=circ, conductors=cond, cable=cable, area_mm2=area, parallel=par,
@@ -338,12 +338,13 @@ part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện -
      note="folded tray 296 x 260 x 72 with 22 mm front lips; two Ø19.1 lead exits (right), Ø19.1 light feed exit (top), "
           "Ø25 sleeve entry (bottom), 4 M4 clinch nut holes in the lips")
 part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
-     AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.257,
-     "CAD (Fusion volume 96,020 mm3 x 2.68 g/cm3, 711002 P01 design)", size="296 x 260",
+     AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.31,
+     "calculation (320 x 284 less the openings, about 0.077 m2 x 1.5 mm x 2.68 g/cm3; the Fusion mass follows the rebuild)", size="320 x 284",
      process="laser cut from 1.5 mm sheet as a flat plate; anodised", status="DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04)",
      source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD; DXF 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_DXF.dxf (no drawing, D-89 part 4)",
      note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
-          "ISO 2768-m; critical holes: the 4 x Ø4.5 M4 holes on the body's clinch nuts (30 and 11 mm from the edges, true "
+          "ISO 2768-m; covers B2-CASS's cut felt edge 8 mm all round and stands 2 mm off the felt on 4 spacers (718049); critical holes: "
+          "the 4 x Ø4.5 M4 holes on the body's clinch nuts (42 and 23 mm from the plate's edges, true "
           "position Ø0.3), the RCBO window 37 x 45 +0.5/0; HOLD: the two 86-plate openings (UTEN codes)")
 # ---- power unit 710001: bought parts
 part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - nguồn 12 V 60 W", "PI", "710001", 3,
@@ -398,6 +399,11 @@ part("m4screw", "718019", "ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD", 
      sku="ISO 7045 M4 x 8 H, A2-70", size="M4", status=HOLD_BUY, source="this design (README section 3)",
      note="the front plate onto the body's lips")
 P["m4screw"].update(length_mm="8", grade="A2-70", torque_nm="HOLD (set on the first unit: A2 M4 into a clinch nut in 1.0 mm aluminium)")
+part("m4spacer", "718049", "ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK", "Điện - vòng đệm cách M4 x 2", "PI", "710001", 4,
+     "nylon 6/6", "black, as supplied", 0.0002, "assumption", maker="HOLD: standard part",
+     sku="M4 round spacer 4.3 ID x 8 OD x 2 mm", size="M4 x 2", status=HOLD_BUY, source="this design (README section 3)",
+     note="under the front plate at its 4 screws: the plate stands 2 mm off the felt, so the floating lining never touches the unit (D-17)")
+P["m4spacer"].update(length_mm="2")
 part("m4nut", "718047", "ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM", "Điện - đai ốc ép M4", "PI", "710001", 4,
      "aluminium", "plain, as supplied", 0.0008, "assumption", maker="PennEngineering",
      sku="CLA-M4-1 (unverified: the aluminium clinch nut for 1.0 mm sheet)", size="M4", status=HOLD_BUY,
@@ -502,17 +508,18 @@ for key, pn, name, vi, qty, note in (
          status=HOLD_BUY, source="", note=note)
 
 # ---- protection where cables pass steel, clips, draw cord
-part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Điện - vòng đệm luồn dây", "PI", "710000", 10,
+part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Điện - vòng đệm luồn dây", "PI", "710000", 9,
      "nylon 6/6 UL94 V-2", "black, as supplied", 0.001, "assumption", maker="Heyco", sku="2836 (SB 750-625, black)",
      status=HOLD_BUY, source=HEYCO,
      note="the panel hole is Ø19.1 (WALL and CEILING cut 19.1 for it; PM 2026-10-31). Every hole through a sheet: the power unit "
-          "body's H01-H03 (two lead exits, the light feed exit; 1.0 mm aluminium), G-PU-TOP, G-B2-B4 x 2, G-CEIL-B, G-CEIL-F "
-          "(0.5 mm steel), G-DR (DR's back plate, 1.0-2.7 mm, FRONT HOLD-10), G-SOFFIT (the soffit's casing): 10. Panels to 1.6 mm, "
+          "body's H01-H03 (two lead exits, the light feed exit; 1.0 mm aluminium), G-B2-B4 x 2, G-CEIL-B, G-CEIL-F "
+          "(0.5 mm steel), G-DR (DR's back plate, 1.0-2.7 mm, FRONT HOLD-10), G-SOFFIT (the soffit's casing): 9 (B2-CASS's cut-out "
+          "is plain, WALL, so its top return and its bushing are gone). Panels to 1.6 mm, "
           "passes 15.9: the 0.5 mm fit and "
           "a thicker-panel bushing for G-DR or G-SOFFIT if over 1.6 mm are HOLD H-ELE-01. Felt-only holes take none: no steel edge")
-part("edge", "718042", "ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET", "Điện - nẹp bảo vệ mép tôn", "PI", "710000", 0.32,
+part("edge", "718042", "ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET", "Điện - nẹp bảo vệ mép tôn", "PI", "710000", 0.2,
      "PVC or nylon", "", 0.02, "assumption (kg per m)", sku="maker HOLD (H-ELE-01)", status=HOLD_BUY, source="",
-     note="the two slots S-PU-X (120 mm edge) and S-CNR (182 mm); qty in m")
+     note="the slot S-CNR (182 mm edge); qty in m (B2-CASS's cut-out is plain, WALL, so its slot is gone)")
 part("clip", "718043", "ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY", "Điện - kẹp giữ cáp", "PI", "710000", 24,
      "", "", 0.002, "assumption", sku="maker HOLD (H-ELE-10)", status=HOLD_BUY, source="",
      note="one per 300 mm of route and two per pocket (calculation from the route model); clips to the tray only (D-26)")

@@ -138,7 +138,7 @@ def sheet_power_unit(doc, v):
     pn = "710001"
     k = 1.0 / 3.0
     ox, oy = 20.0, 108.0
-    W, Hh = v["pu_w"], v["pu_h"]
+    W, Hh = p["w"], p["h"]                  # the front plate, which covers the cut-out's felt edge
     s.text(ox, 16, "FACE OF THE POWER UNIT, seen from inside the pod (looking toward +Y), 1:3", 2.2, INK, bold=True)
     s.rect(ox, oy - Hh * k, ox + W * k, oy, INK, 0.5)
     ha, bz = p["box_a"] / 2, p["box_zc"]
@@ -157,8 +157,8 @@ def sheet_power_unit(doc, v):
     sx_, sy_ = p["screw_x"], p["screw_y"]
     for cx, cy in ((sx_, sy_), (W - sx_, sy_), (sx_, Hh - sy_), (W - sx_, Hh - sy_)):
         s.p.draw_circle(s.pt(ox + cx * k, oy - cy * k), p["screw_d"] / 2 * k * MMPT, color=INK, width=0.2 * MMPT)
-    s.text(ox, oy + 4.5, "%.0f x %.0f (X %.0f-%.0f, Z %.0f-%.0f in the pod); 4 x M4 at %.0f / %.0f from the edges" % (
-        W, Hh, v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], sx_, sy_), 1.9, INK)
+    s.text(ox, oy + 4.5, "plate %.0f x %.0f over the unit (X %.0f-%.0f, Z %.0f-%.0f in the pod), 2 mm off the felt; 4 x M4 at %.0f / %.0f "
+           "from the plate's edges" % (W, Hh, v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], sx_, sy_), 1.9, INK)
     # depth section
     sx, sy = 200.0, 22.0
     s.text(sx, 16, "DEPTH SECTION THROUGH B2, 2:1 (toward the skin to the right)", 2.2, INK, bold=True)
