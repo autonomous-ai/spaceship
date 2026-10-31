@@ -17,7 +17,7 @@ import sys
 import types
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-S = 0.02          # sheet cm per model mm at 1:5
+S = 0.2           # sheet mm per model mm at 1:5 (this Fusion build uses mm on sheets)
 
 
 # ------------------------------------------------------------- fake adsk
@@ -189,8 +189,8 @@ def near(p, q, tol=1e-6):
 
 def main():
     md = load_script()
-    fx0, fy0 = 16.0, 14.5                 # front view origin O on the sheet
-    gb, gl = md.GAP_BELOW, md.GAP_LEFT
+    fx0, fy0 = 180.0, 140.0               # front view origin O on the sheet, mm
+    gb, gl = md.cm(md.GAP_BELOW), md.cm(md.GAP_LEFT)
     front = front_view(fx0, fy0)
     top = top_view(fx0, fy0 - gb)         # below, X aligned
     right = right_view(fx0 - gl, fy0)     # left, Z aligned
@@ -238,7 +238,7 @@ def main():
     # dimension lines sit outside every view's geometry and clear of the other views
     boxes = [md.extent(v) for v in (front, top, right)]
 
-    def inside(p, b, pad=0.1):
+    def inside(p, b, pad=1.0):
         return b[0] - pad < p.x < b[2] + pad and b[1] - pad < p.y < b[3] + pad
     clash = [d for d in dims if any(inside(d[2].coordinate, b) for b in boxes)]
     check(not clash, "no dimension placed inside a view (%d inside)" % len(clash))

@@ -40,10 +40,21 @@ PDF_REL = "v2/02-Drawings/proof/V2-SWL-00_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_DWG.
 
 SCALE = 0.2                     # 1:5
 FRAME_W, FRAME_H, SKIN_W = 1470.0, 1150.0, 1500.0   # mm, model values at P01
-FRONT_CENTER = (31.0, 26.0)     # sheet cm (A2 landscape is 59.4 x 42.0)
-GAP_BELOW = 6.0                 # sheet cm, front view edge to the view from above
-GAP_LEFT = 7.0                  # sheet cm, front view edge to the view from the right
-TOL = 0.02                      # sheet cm when matching points
+# Units, measured on 2026-10-31 (Fusion 2706.1.17): the API help says sheet
+# points are in cm, but this build uses mm for Sheet.width/height, view curve
+# points and placement points alike. U = sheet units per cm (10 = mm) is
+# measured again on the front view (detect_units); offsets below are in cm.
+FRONT_CENTER = (330.0, 255.0)   # sheet units (mm); A2 landscape is 594 x 420
+GAP_BELOW = 6.0                 # cm, front view edge to the view from above
+GAP_LEFT = 7.0                  # cm, front view edge to the view from the right
+TOL = 0.02                      # cm, when matching points
+U = 10.0
+PLACE = 1.0                     # placement units per sheet unit (both mm)
+
+
+def cm(v):
+    """A distance given in cm, in sheet-coordinate units."""
+    return v * U
 
 VO = adsk.drawing.ViewOrientationTypes
 
@@ -111,6 +122,16 @@ def describe(sheet):
 
 # ------------------------------------------------------------------ views
 
+def reset_views(dwg, sheet):
+    """Delete every view on the sheet (views can't be moved by the API)."""
+    coll = adsk.core.ObjectCollection.create()
+    for i in range(sheet.views.count):
+        coll.add(sheet.views.item(i))
+    n = coll.count
+    ok = dwg.deleteEntities(coll) if n else True
+    print("reset: deleted %d views: %s; %d left" % (n, ok, sheet.views.count))
+
+
 def find_view(sheet, orientation):
     for i in range(sheet.views.count):
         v = sheet.views.item(i)
@@ -127,30 +148,62 @@ def add_view(sheet, orientation, center):
     vp.style = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
     vp.centerMarkOptions.isAppliedToHoles = True
     vp.centerLineOptions.isAppliedToHoles = True
-    inp.placementPoint = p2(*center)
+    inp.placementPoint = dpt(*center)    # a DrawingPoint, not a Point2D
     v = sheet.views.add(inp)
     if v is None:
         raise RuntimeError("Views.add returned None for orientation %s" % orientation)
     return v
 
 
+def detect_units(front, placed_at):
+    """Measure the front view to learn the sheet-coordinate unit (U, per cm)
+    and the placement unit (PLACE). The skin makes the view 1500 mm wide in
+    the model, so 30 cm on the sheet at 1:5."""
+    global U, PLACE
+    e = extent(front)
+    w = e[2] - e[0]
+    want_cm = SKIN_W * SCALE / 10.0
+    if abs(w / want_cm - 1.0) < 0.05:
+        U = 1.0
+    elif abs(w / want_cm - 10.0) < 0.5:
+        U = 10.0
+    else:
+        raise RuntimeError("front view is %.3f wide in sheet units; expected %.1f (cm) or %.0f (mm)"
+                           % (w, want_cm, want_cm * 10))
+    if placed_at:
+        cx = (e[0] + e[2]) / 2
+        PLACE = cx / placed_at[0]
+        if abs(PLACE - 1.0) > 0.05:
+            raise RuntimeError("placement and sheet units differ (ratio %.3f); fix FRONT_CENTER" % PLACE)
+    print("units: sheet coordinates are %s (front view %.3f wide); placement units match"
+          % ("cm" if U == 1.0 else "mm", w))
+
+
 def ensure_views(sheet):
     front = find_view(sheet, VO.FrontViewOrientationType)
+    placed_at = None
     if front is None:
         front = add_view(sheet, VO.FrontViewOrientationType, FRONT_CENTER)
+        placed_at = FRONT_CENTER
         print("added front view (base) at %s" % (FRONT_CENTER,))
     if abs(front.scaleValue - SCALE) > 1e-6:
         front.scaleValue = SCALE
+    detect_units(front, placed_at)
     e = extent(front)
     cx, cy = (e[0] + e[2]) / 2, (e[1] + e[3]) / 2
     top = find_view(sheet, VO.TopViewOrientationType)
     if top is None:
-        top = add_view(sheet, VO.TopViewOrientationType, (cx, e[1] - GAP_BELOW))
+        top = add_view(sheet, VO.TopViewOrientationType,
+                       (cx / PLACE, (e[1] - cm(GAP_BELOW)) / PLACE))
         print("added view from above (base view aligned below the front view)")
     right = find_view(sheet, VO.RightViewOrientationType)
     if right is None:
-        right = add_view(sheet, VO.RightViewOrientationType, (e[0] - GAP_LEFT, cy))
+        right = add_view(sheet, VO.RightViewOrientationType,
+                         ((e[0] - cm(GAP_LEFT)) / PLACE, cy / PLACE))
         print("added view from the right (base view aligned left of the front view)")
+    for name, v in (("front", front), ("above", top), ("right", right)):
+        ev = extent(v)
+        print("  %-6s view extent (sheet units): %s" % (name, tuple(round(a, 3) for a in ev)))
     return front, top, right
 
 
@@ -166,14 +219,14 @@ def nearest_end(view, target):
             d = (x - target[0]) ** 2 + (y - target[1]) ** 2
             if dist is None or d < dist:
                 best, dist = p, d
-    if best is None or dist > TOL ** 2:
+    if best is None or dist > cm(TOL) ** 2:
         raise RuntimeError("no view vertex near %s (closest %.4f cm)" % (
             target, dist ** 0.5 if dist is not None else -1))
     return best
 
 
 def mm_to_sheet(v_mm):
-    return v_mm * SCALE / 10.0
+    return v_mm * SCALE / 10.0 * U
 
 
 def front_map(view):
@@ -220,11 +273,11 @@ def annotate_front(sheet, view):
     m = front_map(view)
     o = nearest_end(view, m(0, 0))
     e = extent(view)
-    dim(sheet, o, nearest_end(view, m(FRAME_W, 0)), (m(FRAME_W / 2, 0)[0], e[1] - 1.2))
+    dim(sheet, o, nearest_end(view, m(FRAME_W, 0)), (m(FRAME_W / 2, 0)[0], e[1] - cm(1.2)))
     dim(sheet, nearest_end(view, m(FRAME_W, 0)), nearest_end(view, m(SKIN_W, 0)),
-        (m(SKIN_W, 0)[0] + 1.0, e[1] - 1.2))
-    dim(sheet, o, nearest_end(view, m(0, FRAME_H)), (e[0] - 1.6, m(0, FRAME_H / 2)[1]))
-    dim(sheet, o, nearest_end(view, m(20, 565)), (e[0] - 0.8, m(0, 282)[1]))
+        (m(SKIN_W, 0)[0] + cm(1.0), e[1] - cm(1.2)))
+    dim(sheet, o, nearest_end(view, m(0, FRAME_H)), (e[0] - cm(1.6), m(0, FRAME_H / 2)[1]))
+    dim(sheet, o, nearest_end(view, m(20, 565)), (e[0] - cm(0.8), m(0, 282)[1]))
     print("front view: 4 dimensions (1470 frame, 30 skin overhang, 1150 height, 565 mid rail)")
 
 
@@ -234,9 +287,9 @@ def annotate_top(sheet, view):
     holes = circles_sorted(view, 0)
     e = extent(view)
     for i, c in enumerate(holes):
-        dim(sheet, o, c.centerPoint, (xy(c.centerPoint)[0] - 0.3, e[3] + 0.8 + 0.7 * i))
+        dim(sheet, o, c.centerPoint, (xy(c.centerPoint)[0] - cm(0.3), e[3] + cm(0.8 + 0.7 * i)))
     if holes:
-        dim(sheet, o, holes[0].centerPoint, (e[0] - 1.0, xy(holes[0].centerPoint)[1]))
+        dim(sheet, o, holes[0].centerPoint, (e[0] - cm(1.0), xy(holes[0].centerPoint)[1]))
     print("view from above: %d hole-centre dimensions from datum C, 1 from datum A" % len(holes))
     return o
 
@@ -248,9 +301,9 @@ def annotate_right(sheet, view):
     e = extent(view)
     # baseline dimensions on the far (left) side, away from the front view
     for i, c in enumerate(holes):
-        dim(sheet, o, c.centerPoint, (e[0] - 0.8 - 0.7 * i, xy(c.centerPoint)[1] - 0.3))
+        dim(sheet, o, c.centerPoint, (e[0] - cm(0.8 + 0.7 * i), xy(c.centerPoint)[1] - cm(0.3)))
     if holes:
-        dim(sheet, o, holes[0].centerPoint, (xy(holes[0].centerPoint)[0], e[1] - 1.0))
+        dim(sheet, o, holes[0].centerPoint, (xy(holes[0].centerPoint)[0], e[1] - cm(1.0)))
     print("view from the right: %d hole-centre dimensions from datum B, 1 from datum A" % len(holes))
     return o
 
@@ -360,10 +413,19 @@ def run(_context):
     describe(sheet)
     if ARGS.get("inspect") == "1":
         return
+    step = ARGS.get("step", "all")     # reset | views | save | annotate | all
+    if step == "reset":
+        reset_views(dwg, sheet)
+        return
     if sheet.sheetSize != adsk.drawing.SheetSizes.A2ISOSheetSize:
         sheet.sheetSize = adsk.drawing.SheetSizes.A2ISOSheetSize
         print("sheet size set to A2")
     front, top, right = ensure_views(sheet)
+    if step == "views":
+        return
+    if step == "save":
+        save_drawing(app)
+        return
     describe(sheet)
     annotate_front(sheet, front)
     o_top = annotate_top(sheet, top)
@@ -384,12 +446,20 @@ def run(_context):
     if not dwg.exportManager.execute(opts):
         raise RuntimeError("PDF export failed")
     print("PDF: %s" % PDF_REL)
-    doc = app.activeDocument
     if ARGS.get("save") == "1":
-        if doc.isSaved:
-            print("saved new version:", doc.save("Annotated by v2/02-Drawings/proof/make_drawing.py"))
-        else:
-            proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
-            folder = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
-            print("saved as:", doc.saveAs(DESIGN_NAME + "_DWG", folder,
-                                          "FocusPod v2 proof drawing, rev P01, DRAFT", ""))
+        save_drawing(app)
+
+
+def save_drawing(app):
+    """Save the drawing into Default Project / FocusPod v2 under the drawing
+    name, or a new version when it is already saved."""
+    doc = app.activeDocument
+    if doc.isSaved:
+        print("saved new version:", doc.save("Annotated by v2/02-Drawings/proof/make_drawing.py"))
+        return
+    proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
+    folder = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
+    name = DESIGN_NAME + "_DWG"
+    if any(df.name == name for df in folder.dataFiles):
+        raise RuntimeError("a file named %s is already in FocusPod v2" % name)
+    print("saved as:", doc.saveAs(name, folder, "FocusPod v2 proof drawing, rev P01, DRAFT", ""), name)
