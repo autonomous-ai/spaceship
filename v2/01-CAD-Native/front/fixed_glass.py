@@ -69,7 +69,7 @@ PARTS = {
     "GLASS": ("361003", "FRONT - FIXED GLASS - 4+4 LAMINATED", "Tấm kính cố định 4+4"),
     "UPROF": ("368004", "FRONT - GLAZING U-PROFILE - BOHLE BO5201571", "Thanh U nhôm kẹp kính"),
     "USEAL": ("368002", "FRONT - GLAZING U-SEAL - BOHLE BO5201735", "Gioăng chữ U silicone"),
-    "S180": ("368003", "FRONT - GLASS-TO-GLASS SEAL 180 - BOHLE BO5281018", "Gioăng kính-kính 180°"),
+    "S180": ("368003", "FRONT - 180 MAGNETIC SEAL - FIXED PANE SIDE - HOLD", "Gioăng nam châm 180° phía vách (chờ chọn)"),
 }
 
 EXPECTED = []
@@ -87,8 +87,21 @@ ANCHORS = [
 ]
 
 
+SCOPES = {"unit": None, "pane": "GLASS"}
+
+
+def scope_doc(scope):
+    if scope == "unit":
+        return DOC_NAME
+    pn, nm, _vn = PARTS[SCOPES[scope]]
+    return "%s_%s_%s_CAD" % (pn, REV, nm.replace("+", "-").replace(" - ", "-").replace(" ", "-"))
+
+
 def build(app):
-    design = L.start_design(app, PN, "%s | %s | %s" % (NAME, VN, REV))
+    scope = ARGS.get("scope", "unit")
+    only = SCOPES[scope]
+    rpn, rname, rvn = (PN, NAME, VN) if only is None else PARTS[only]
+    design = L.start_design(app, rpn, "%s | %s | %s" % (rname, rvn, REV))
     sk_params, sk_path, sk_rev = L.load_skeleton_params(ARGS["repo_root"])
     L.add_params(design, sk_params)
     L.add_params(design, L.LIB_PARAMS)
@@ -97,6 +110,9 @@ def build(app):
     comps, bodies = {}, {}
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
     CUT = adsk.fusion.FeatureOperations.CutFeatureOperation
+
+    def want(key):
+        return only is None or key == only
 
     def comp(key):
         pn, nm, vn = PARTS[key]
@@ -109,47 +125,54 @@ def build(app):
         return L.extrude_span(c, sk, "y", y0, y1, op, [body] if body else None, feat)
 
     # 361003 the pane: the skeleton pentagon pushed fg_bite into the four channels
-    c = comp("GLASS")
-    f = slab(c, outline("fg_bite"), GY + " - glass_t / 2", GY + " + glass_t / 2",
-             "OUTLINE - FIXED GLASS (SKELETON PENTAGON + BITE ON 4 EDGES)", "EXTRUDE - FIXED GLASS 8.76")
-    bodies["GLASS"] = f.bodies.item(0)
-    bodies["GLASS"].name = "FIXED GLASS 4+4"
+    if want("GLASS"):
+        c = comp("GLASS")
+        f = slab(c, outline("fg_bite"), GY + " - glass_t / 2", GY + " + glass_t / 2",
+                 "OUTLINE - FIXED GLASS (SKELETON PENTAGON + BITE ON 4 EDGES)", "EXTRUDE - FIXED GLASS 8.76")
+        bodies["GLASS"] = f.bodies.item(0)
+        bodies["GLASS"].name = "FIXED GLASS 4+4"
 
     # 368004 U-profile: a 15 mm band round the four held edges, then the 12 x 13.5 channel cut out of it
-    c = comp("UPROF")
-    f = slab(c, band("gu_prof_d"), GY + " - gu_prof_w / 2", GY + " + gu_prof_w / 2",
-             "BAND - U-PROFILE OUTER (4 EDGES, MITRED)", "EXTRUDE - U-PROFILE BAR")
-    b = f.bodies.item(0)
-    slab(c, band("gu_in_d"), GY + " - gu_w / 2", GY + " + gu_w / 2",
-         "BAND - U-PROFILE CHANNEL", "CUT - U-PROFILE CHANNEL 12 X 13.5", CUT, b)
-    b.name = "GLAZING U-PROFILE (4 PIECES, MITRED)"
-    bodies["UPROF"] = b
+    if want("UPROF"):
+        c = comp("UPROF")
+        f = slab(c, band("gu_prof_d"), GY + " - gu_prof_w / 2", GY + " + gu_prof_w / 2",
+                 "BAND - U-PROFILE OUTER (4 EDGES, MITRED)", "EXTRUDE - U-PROFILE BAR")
+        b = f.bodies.item(0)
+        slab(c, band("gu_in_d"), GY + " - gu_w / 2", GY + " + gu_w / 2",
+             "BAND - U-PROFILE CHANNEL", "CUT - U-PROFILE CHANNEL 12 X 13.5", CUT, b)
+        b.name = "GLAZING U-PROFILE (4 PIECES, MITRED)"
+        bodies["UPROF"] = b
 
     # 368002 silicone U-seal: fills the channel, less the glass edge
-    c = comp("USEAL")
-    f = slab(c, band("gu_in_d"), GY + " - gu_w / 2", GY + " + gu_w / 2",
-             "BAND - U-SEAL OUTER", "EXTRUDE - U-SEAL")
-    b = f.bodies.item(0)
-    slab(c, band("fg_bite"), GY + " - glass_t / 2", GY + " + glass_t / 2",
-         "BAND - U-SEAL GLASS SLOT", "CUT - U-SEAL GLASS SLOT", CUT, b)
-    b.name = "GLAZING U-SEAL (4 PIECES)"
-    bodies["USEAL"] = b
+    if want("USEAL"):
+        c = comp("USEAL")
+        f = slab(c, band("gu_in_d"), GY + " - gu_w / 2", GY + " + gu_w / 2",
+                 "BAND - U-SEAL OUTER", "EXTRUDE - U-SEAL")
+        b = f.bodies.item(0)
+        slab(c, band("fg_bite"), GY + " - glass_t / 2", GY + " + glass_t / 2",
+             "BAND - U-SEAL GLASS SLOT", "CUT - U-SEAL GLASS SLOT", CUT, b)
+        b.name = "GLAZING U-SEAL (4 PIECES)"
+        bodies["USEAL"] = b
 
-    # 368003 180 deg seal: fills the 4 mm gap between the door's latch edge and the pane's free edge
-    c = comp("S180")
-    lb, lt = BL("0 mm"), TL("0 mm")
-    pts = [lb, lt, (door_x(lt[1]), lt[1]), (door_x(lb[1]), lb[1])]
-    f = slab(c, pts, GY + " - glass_t / 2 - 1.5 mm", GY + " + glass_t / 2 + 1.5 mm",
-             "OUTLINE - 180 SEAL SPACE ON THE FREE EDGE", "EXTRUDE - 180 SEAL SPACE")
-    bodies["S180"] = f.bodies.item(0)
-    bodies["S180"].name = "180 SEAL ENVELOPE (THE 4 MM GAP)"
+    # 368003 the fixed pane's half of the 180 deg magnetic seal pair (PM ruling 2026-10-31): half the 4 mm gap,
+    # from the pane's free edge toward the door; the door's half (368006) is in the door unit
+    if want("S180"):
+        c = comp("S180")
+        lb, lt = BL("0 mm"), TL("0 mm")
+        half = lambda z: "((fg_lc + fg_gap / 2 - fg_lnz * (%s)) / fg_lnx)" % z
+        pts = [lb, lt, (half(lt[1]), lt[1]), (half(lb[1]), lb[1])]
+        f = slab(c, pts, GY + " - glass_t / 2 - 1.5 mm", GY + " + glass_t / 2 + 1.5 mm",
+                 "OUTLINE - 180 SEAL SPACE ON THE FREE EDGE", "EXTRUDE - 180 SEAL SPACE")
+        bodies["S180"] = f.bodies.item(0)
+        bodies["S180"].name = "180 MAGNETIC SEAL - FIXED PANE HALF (HOLD PRODUCT)"
 
     glass = L.material(design, "Glass 4+4 laminated (2376 kg/m3, calculation)", "Glass", 2376.0)
     alu = L.material(design, "Aluminium (2700 kg/m3)", "Aluminum", 2700.0)
     sil = L.material(design, "Silicone rubber (1200 kg/m3, assumption)", "Rubber, Silicone", 1200.0)
     env = L.material(design, "ENVELOPE - mass carried in the parts list (1 kg/m3)", "Aluminum", 1.0)
     for k, m in (("GLASS", glass), ("UPROF", alu), ("USEAL", sil), ("S180", env)):
-        bodies[k].material = m
+        if k in bodies:
+            bodies[k].material = m
     looks = {"GLASS": ["Glass - Smoked", "Glass (Smoked)", "Glass - Window", "Glass"],
              "UPROF": ["Aluminum - Anodized Glossy (Black)", "Paint - Enamel Glossy (Black)"],
              "USEAL": ["Rubber - Soft (Black)", "Plastic - Matte (Black)"],
@@ -172,7 +195,8 @@ def build(app):
     for a, b, v in hits:
         print("CLASH|%s|%s|%d mm3" % (a, b, v))
     for key in ("GLASS", "UPROF", "USEAL"):
-        print("MASS|%s|%s|%.3f kg" % (key, PARTS[key][0], L.comp_mass(comps[key])))
+        if key in comps:
+            print("MASS|%s|%s|%.3f kg" % (key, PARTS[key][0], L.comp_mass(comps[key])))
     for name in ("fg_bite", "fg_rnx", "fg_rnz", "fg_dnx", "fg_dnz", "fg_vis_zb", "fg_vis_zt"):
         print("PARAM|%s|%.4f" % (name, L.ev(design, name) if name.startswith("fg_v") or name == "fg_bite"
                                  else design.userParameters.itemByName(name).value))
@@ -222,16 +246,18 @@ def export_all(app):
          "DRAFT; product HOLD (ISS-074)", "D-27, D-46; skeleton outline (v1 STEP body 222)",
          "visible outline = skeleton; +fg_bite on the 4 held edges; no holes"),
         ("368004", PARTS["UPROF"][1], PARTS["UPROF"][2], 1, "bought by length, 4 pieces mitred",
-         "Bohle BO5201571 aluminium U-profile 15 x 15 x 1.5", "cad", "calculation (CAD, 2700 kg/m3)",
+         "Bohle BO5201571 aluminium U-profile 15 x 15 x 1.5, finish as supplied by Bohle (hidden in the channels)", "cad",
+         "calculation (CAD, 2700 kg/m3)",
          "source (product)", "hardware selection C5",
          "outer lengths %s mm (bottom, right, diagonal, top)" % " / ".join("%.0f" % v for v in outer)),
         ("368002", PARTS["USEAL"][1], PARTS["USEAL"][2], 1, "bought by length, 4 pieces",
          "Bohle BO5201735 silicone U-profile seal", "cad", "calculation (CAD, 1200 kg/m3 assumption)",
          "source (product); fit on 8.76 laminate unverified", "hardware selection C5",
          "about %.0f mm in all" % seal_len),
-        ("368003", PARTS["S180"][1], PARTS["S180"][2], 1, "bought, cut to length", "Bohle BO5281018, clear PVC", 0.2,
-         "assumption", "HOLD: fit on the 8.76 laminate unverified; no dB data (the 4 mm gap is now designed in)",
-         "hardware selection C3", "length about %.0f mm on the pane's free edge" % free_len),
+        ("368003", PARTS["S180"][1], PARTS["S180"][2], 1, "bought, HOLD",
+         "magnetic 180 deg glass-to-glass seal, fixed pane half; product not named", 0.15, "assumption",
+         "HOLD: product for the 8.76 laminate and a 4 mm gap", "PM ruling 2026-10-31",
+         "length about %.0f mm on the pane's free edge; pairs with 368006 on the door" % free_len),
     ]
     total = L.write_parts_list(design, os.path.join(root_dir, BOM_REL), rows, PN, NAME, VN)
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), total))
@@ -248,9 +274,10 @@ def run(_context):
     app = adsk.core.Application.get()
     step = ARGS.get("step", "build")
     doc = app.activeDocument
-    if doc is None or not doc.name.startswith(DOC_NAME):
+    want_doc = scope_doc(ARGS.get("scope", "unit"))
+    if doc is None or not doc.name.startswith(want_doc):
         raise RuntimeError("active document is %r, not %s: open it with the runner's --doc" % (
-            doc.name if doc else None, DOC_NAME))
+            doc.name if doc else None, want_doc))
     if step == "build":
         build(app)
     elif step == "export":
