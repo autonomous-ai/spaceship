@@ -37,7 +37,8 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 4. **Gaskets:** PORON 4701-40, 8 mm wide, beside the washer line on the outer (skin) side of every joint face, so no seal is cut (R-J7). **3.97 mm thick at the stopped seams, squeezed 33–51%** (43% nominal); **9.53 mm at the closing seams, 27–58% over the 4.0–7.0 mm range** (calculation; thicknesses inside SEL's 3.18–12.70 range, stock HOLD-05).
 5. **Holes:** clearance Ø7.0 positioned to ±0.2 from the spigot hole (R-J6), leaving 0.05 mm to spare worst case (stack ST-03, section 4); access Ø19, so the Ø18 head washer goes in with the bolt (section 2.2).
 6. **Findings carried from the first pass:** F1, no room-side hardware in the 4 mm frame-to-lining gap; F2, the 90° joints overlap only 14 mm with 20 × 40 tubes, 34 mm with the 40 × 40 edge members (R-J3); F3, seams need clamping force (R-J1); F4, the bond doesn't fit the 20 mm face as Sika lays it out (bond spec B1); F5, the back-top gap (closed by R-J4); F6, one head type (R-J2).
-7. **HOLDs: 9 open, 2 closed** (section 6). **Tests** take the sample package's numbers: rivnut spin-out **T06**, bond **T09**, timed access **T11**; the joint tests the package doesn't have are **J-T1 to J-T5**, for the PM to route (section 5).
+7. **Part numbers** for all 10 hardware items (11 numbers: the gasket has two thicknesses), in 2.1: bolts 838001 and 838002, rivnut 838003, head washer 838004, retainer 838005, spigot 831001, stop washer 831002, gaskets 848001 and 848002, base seal 848003, key 108001.
+8. **HOLDs: 9 open, 2 closed** (section 6). **Tests** take the sample package's numbers: rivnut spin-out **T06**, bond **T09**, timed access **T11**; the joint tests the package doesn't have are **J-T1 to J-T5**, for the PM to route (section 5).
 
 ## 1. Sources
 
@@ -78,6 +79,22 @@ This is the joint register the guideline asks for (§8, and Milestone 2 item 6),
 | H-09 | **Head washer.** ISO 7093-1 large series, 6.4 × 18 × 1.6, A2 stainless, under every bolt head (R-J10) | (ISO7093) | DECIDED (R-J10); dimensions source |
 
 Every rivnut, stop washer, spigot, gasket, retainer and pre-fitted bolt is fitted in the factory (D-08, REQ-ASM-10); on site only the bolts are turned. Every joint rivnut sits on a 40 mm tube face (or the decor's back plate).
+
+**Part numbers** (conventions §5 and §6: 6 digits, FF NNNN; family 83 HARDWARE, 84 SEALS AND TAPES, 10 POD general items and the installation kit; NNNN 1000–7999 for parts we make, 8000–8999 for bought catalogue items). Given here at the PM's request so the master BOM can match every team's hardware to this register; the master BOM adopts them. None is on the reserved list (D-28), and none was in use on main or in the open pull requests on 2026-10-31. H-04 gets two numbers, one per thickness, because one number covers one form, fit and function (conventions §6).
+
+| Item | Part number | Name · Vietnamese | Class | Status |
+|---|---|---|---|---|
+| H-01 | **838001** | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 16 | bought | PROPOSED number; part DECIDED (R-J2) |
+| H-01P | **838002** | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC · Bulong lục giác chìm M6 × 25 (chốt mối nối khép) | bought | PROPOSED number; part DECIDED (R-J16) |
+| H-02 | **838005** | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE · Vòng giữ đầu bulong | bought | PROPOSED number; part HOLD-02 (number kept for it) |
+| H-03 | **838003** | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 · Tán rút M6 | bought | PROPOSED number; part source (SHX) |
+| H-04 | **848001** | HARDWARE - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA · Gioăng mối nối 3.97 | bought by length | PROPOSED number; strip HOLD-05 |
+| H-04 | **848002** | HARDWARE - JOINT GASKET - 8 X 9.53 - PORON 4701-40 PSA · Gioăng mối nối khép 9.53 | bought by length | PROPOSED number; strip HOLD-05 |
+| H-05 | **831001** | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS · Chốt định vị Ø8 | made | PROPOSED number and part |
+| H-06 | **848003** | HARDWARE - BASE SEAL - GAP 10 ±5 · Gioăng chân đế | bought by length | PROPOSED number; part HOLD-06 (number kept for it) |
+| H-07 | **108001** | POD - HEX KEY - 5 MM BALL END · Lục giác 5 mm đầu bi | bought, in the installation kit 109000 | PROPOSED number; part DECIDED (R-J2) |
+| H-08 | **831002** | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL · Long đen chặn nhôm | made | PROPOSED number and part |
+| H-09 | **838004** | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 · Long đen to M6 inox | bought | PROPOSED number; part DECIDED (R-J10) |
 
 ### 2.2 The in-member bolt (stopped joints)
 
@@ -483,6 +500,6 @@ Rules for the Fusion check (each can be a scripted check):
 - R4. Every bolt tip clears the far wall of its tube by at least 3 (2.2, 2.10).
 - R5. Every FR-03 in a wall panel has its FR-10 pocket, with no fill or cable in it, and every stile at least 30 mm from the bolt (R-J14).
 - R6. Every part that goes on site stands on an FR-04/FR-05 pair before its first bolt (REQ-ASM-04).
-- R7. Two bolts in the BOM for every site joint: M6 × 16 and M6 × 25, ISO 4762, 8.8, each with an ISO 7093 6.4 × 18 A2 washer (REQ-ASM-02, R-J2, R-J10).
+- R7. Two bolts in the BOM for every site joint: 838001 (M6 × 16) and 838002 (M6 × 25), ISO 4762, 8.8, each with an 838004 washer (REQ-ASM-02, R-J2, R-J10); every hardware item in the CAD and BOM carries its part number from 2.1.
 - R8. No clip (FR-12) over an FR-03 hole or an FR-10 pocket.
 - R9. Every stopped joint's frames are 2.26 apart and every closing seam's 5.5; every visible skin seam is 2.26 (R-J16); every stopped rivnut with its washer sits on a 40 mm face.
