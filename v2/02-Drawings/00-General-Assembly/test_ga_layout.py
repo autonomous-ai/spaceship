@@ -28,8 +28,9 @@ TITLE_BLOCK = (651.0, 10.0, 831.0, 80.0)   # ISO 7200 title block, 180 mm wide a
 MIN_GAP = 20.0                          # space between views for dimension lines (assumption)
 
 
-def load_layout():
-    """LAYOUT and SCALE from ga_elevations.py, run with a stand-in for Fusion's adsk."""
+def load_layout(full=False):
+    """LAYOUT and SCALE from ga_elevations.py, run with a stand-in for Fusion's adsk
+    (with full=True, the whole namespace)."""
     vo = types.SimpleNamespace(**{n: n for n in (
         "FrontViewOrientationType", "BackViewOrientationType", "LeftViewOrientationType",
         "RightViewOrientationType", "TopViewOrientationType", "IsoTopRightViewOrientationType")})
@@ -49,7 +50,7 @@ def load_layout():
                 sys.modules.pop(k, None)
             else:
                 sys.modules[k] = v
-    return ns["LAYOUT"], ns["SCALE"]
+    return ns if full else (ns["LAYOUT"], ns["SCALE"])
 
 
 def pod_size():
@@ -115,6 +116,18 @@ class LayoutTests(unittest.TestCase):
         self.assertAlmostEqual(c["top"][0], c["front"][0])
         for n in ("right", "left", "back"):
             self.assertAlmostEqual(c[n][1], c["front"][1])
+
+    def test_the_notes_keep_clear_of_the_views_the_title_block_and_the_symbol(self):
+        ns = load_layout(full=True)
+        x, y = ns["NOTES_AT"]
+        notes = (x, y, x + ns["NOTES_WIDTH"], y + ns["NOTES_MAX_HEIGHT"])
+        self.assertTrue(FRAME[0] <= notes[0] and notes[2] <= FRAME[2] and FRAME[1] <= notes[1]
+                        and notes[3] <= FRAME[3], notes)
+        for name, box in self.b.items():
+            self.assertGreaterEqual(gap(box, notes), 10.0, name)
+        self.assertGreater(gap(notes, TITLE_BLOCK), 0)
+        symbol = (560.0, 35.0, 589.0, 45.0)                    # step_dims draws it there
+        self.assertGreater(gap(notes, symbol), 0)
 
     def test_the_sizes_come_from_the_skeleton(self):
         w, d, h = pod_size()

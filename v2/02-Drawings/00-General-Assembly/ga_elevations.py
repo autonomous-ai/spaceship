@@ -51,6 +51,15 @@ LAYOUT = [
 ]
 
 
+# General notes (sheet_notes.py, PR #67): the text file next to this script,
+# rendered at 3.5 mm capitals (ISO 3098 for A1) and 280 mm wide; its lower-left
+# corner here, in sheet mm. 102.6 mm tall as rendered on 2026-10-31.
+NOTES_AT = (340.0, 90.0)
+NOTES_WIDTH = 280.0
+NOTES_TEXT_MM = 3.5
+NOTES_MAX_HEIGHT = 110.0     # assumption: room kept for the text to grow a little
+
+
 def p2(x, y):
     return adsk.core.Point2D.create(x, y)
 
