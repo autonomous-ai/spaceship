@@ -63,8 +63,7 @@ BASE_PARAMS = [
     ("cap_t", "3 mm", "mm", "assumption",
      "head of the plastic end cap closing the side band's back end, so the cap face is flush with the back face Y = pod_d/2; cap product HOLD"),
     # the wall above (WALL owns it; these say where its bottom member sits)
-    ("frame_d", "40 mm", "mm", "source", "wall frame member depth (D-34: 20 x 40 x 1.2); the outer panel is ACP 3 + bond 3 + frame 40 = outer_t (D-66)"),
-    ("jb_x", "outer_t - frame_d / 2", "mm", "calculation",
+    ("jb_x", "outer_t - frame_t / 2", "mm", "calculation",
      "J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)"),
     # J-BASE-01, wall to base band
     ("rn_hole", "9.53 mm", "mm", "source", "Sherex CAH3-610-4.2 M6 rivet nut: hole 9.53 +0.10/0 (hardware selection A5)"),
@@ -75,9 +74,10 @@ BASE_PARAMS = [
     ("sw_d", "20 mm", "mm", "source", "stop washer outside diameter (joints register H-08, PROPOSED)"),
     ("sw_t", "1.5 mm", "mm", "source",
      "stop washer, under each bolt rivnut's head: washer 1.5 + head 0.76 = seam_gap 2.26, so the walls stand at panel_z0 (D-64)"),
-    ("jb_n", "4", "", "confirmed", "D-75 and joints register R-J13: 4 bolts per wall panel on the band"),
-    ("jb_e", "220 mm", "mm", "confirmed", "D-75 and joints register R-J13: end bolts 220 in from each panel end, evenly spaced"),
-    ("sp_e", "100 mm", "mm", "confirmed", "D-75 and joints register R-J13: spigots 100 in from each panel end"),
+    ("jb_n", "n_base_bolt", "", "confirmed", "skeleton n_base_bolt (D-75, joints register R-J13): 4 bolts per wall panel on the band"),
+    ("jb_e", "base_bolt_edge", "mm", "confirmed",
+     "skeleton base_bolt_edge (D-75, R-J13): end bolts 220 in from each panel FRAME end, evenly spaced (PM ruling: measured on the frame, not the skin)"),
+    ("sp_e", "base_spigot_inset", "mm", "confirmed", "skeleton base_spigot_inset (D-75, R-J13): spigots 100 in from each panel frame end"),
     ("sp_dia", "8 mm", "mm", "source", "locating spigot, stainless, M6 thread (joints register H-05, PROPOSED sizes)"),
     ("sp_proud", "8 mm", "mm", "source", "spigot stands 8 proud of the band top (joints register H-05, PROPOSED)"),
     ("sp_ch", "1 mm", "mm", "assumption", "lead-in chamfer on the spigot top"),
@@ -102,8 +102,8 @@ BASE_PARAMS = [
     # back corners: hook-in corner keys designed by the Joints Engineer (D-87); the band
     # ends stay square and the key's features are on HOLD until it is designed
     # thin floor
-    ("fl_t", "9 mm", "mm", "confirmed",
-     "PM ruling 2026-10-31 (BASE group): 9 mm plywood floor panels, as v1 (FLR-01 9 mm), so the floor top is 12 and the threshold 13 (US accessibility). Replaces the skeleton's floor_t 15 until its next update; then fl_t = floor_t"),
+    ("fl_t", "floor_t", "mm", "confirmed",
+     "skeleton floor_t 9 (D-72): 9 mm floor panels, as v1 (FLR-01 9 mm), floor top 12, threshold 13 (US accessibility)"),
     ("mat_t", "3 mm", "mm", "confirmed",
      "PM ruling 2026-10-31: a firm closed-cell foam mat (cross-linked PE or EPDM), 3 mm, about 200 kg/m3, under the floor panels; product HOLD"),
     ("fl_gap", "4 mm", "mm", "assumption", "gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)"),
@@ -134,8 +134,8 @@ XL, XR = "-pod_w / 2", "pod_w / 2"
 YB, YW = "pod_d / 2", "pod_d / 2 - wall_depth"     # back face; side walls' front edge
 XOL = "-pod_w / 2 + outer_t"                        # back panels span frame to frame (D-55)
 # P04 panel ranges on the band (skeleton BL_X, BR_X; D-64, D-66): one seam_gap at each stop
-B1_X0 = "(-pod_w / 2 + outer_t + seam_gap)"         # B1 from here, half_pw wide
-B2_X0 = "(pod_w / 2 - outer_t - seam_gap - half_pw)"  # B2 from here, half_pw wide
+B1_X0 = "(-pod_w / 2 + outer_t + seam_gap)"         # B1's FRAME from here, half_fw wide (to the closing seam)
+B2_X0 = "(pod_w / 2 - outer_t - seam_gap - half_fw)"  # B2's FRAME from here, half_fw wide
 # inner point of the mitre between the left side band and DL's outer facet band
 # piece (both band_t wide): Y = -dl_y1 + band_t * (L - dy) / dl_x2 with
 # L = facet length, dy = dl_y2 - dl_y1 (the bisector of the two outer lines)
@@ -604,8 +604,14 @@ def centres(body, dia_mm, along):
 
 
 def step4_band_holes(design):
+    holes_side_lh(design)
+    holes_back(design)
+    print("step 4: band holes")
+    report_holes(design)
+
+
+def holes_side_lh(design):
     v = lambda e: ev(design, e)  # noqa: E731
-    # -- left side band
     c = find_comp(design, "band_l_tube")
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
@@ -625,7 +631,12 @@ def step4_band_holes(design):
          [(X, xg), (Y, yg0)], "gl_key_hole", "band_wall", down, ("yConstructionAxis", "gl_n_side", gext))
     hole(design, "band_l_tube", bot, "GLIDE NUT - SIDE LH", (v(xg), v(yg0), v("glide_h")),
          [(X, xg), (Y, yg0)], "gl_nut_hole", "band_wall", up, ("yConstructionAxis", "gl_n_side", gext))
-    # -- back band
+
+
+def holes_back(design):
+    v = lambda e: ev(design, e)  # noqa: E731
+    down, up = Z.copy(), Z.copy()
+    down.scaleBy(-1)
     c = find_comp(design, "band_b_tube")
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
@@ -633,10 +644,10 @@ def step4_band_holes(design):
     for panel, x0 in (("B1", B1_X0), ("B2", B2_X0)):
         hole(design, "band_b_tube", top, "J-BASE-01 RIVNUT - %s" % panel, (v("%s + jb_e" % x0), v(yb_line), v("wall_z0")),
              [(X, "%s + jb_e" % x0), (Y, yb_line)], "rn_hole", "band_wall", down,
-             ("xConstructionAxis", "jb_n", "half_pw - 2 * jb_e"))
+             ("xConstructionAxis", "jb_n", "half_fw - 2 * jb_e"))
         hole(design, "band_b_tube", top, "SPIGOT RIVNUT - %s" % panel, (v("%s + sp_e" % x0), v(yb_line), v("wall_z0")),
              [(X, "%s + sp_e" % x0), (Y, yb_line)], "rn_hole", "band_wall", down,
-             ("xConstructionAxis", "2", "half_pw - 2 * sp_e"))
+             ("xConstructionAxis", "2", "half_fw - 2 * sp_e"))
     xg0, yg = "%s + band_t + gl_e_bb" % XL, "%s - band_t / 2 - gl_dx" % YB
     hole(design, "band_b_tube", top, "GLIDE KEY ACCESS - BACK", (v(xg0), v(yg), v("wall_z0")),
          [(X, xg0), (Y, yg)], "gl_key_hole", "band_wall", down,
@@ -644,8 +655,6 @@ def step4_band_holes(design):
     hole(design, "band_b_tube", bot, "GLIDE NUT - BACK", (v(xg0), v(yg), v("glide_h")),
          [(X, xg0), (Y, yg)], "gl_nut_hole", "band_wall", up,
          ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
-    print("step 4: band holes")
-    report_holes(design)
 
 
 def report_holes(design):
@@ -673,6 +682,11 @@ def step5_corner_key(design):
 # ---------------------------------------------------------------- floor
 
 def step6_floor(design):
+    floor_panel_f1(design)
+    seal_mat_f1(design)
+
+
+def floor_panel_f1(design):
     v = lambda e: ev(design, e)  # noqa: E731
     x0, x1 = "%s + band_t + fl_gap" % XL, "-fl_seam / 2"
     xl = "-fl_seam / 2 + lap_w"                        # end of F1's lower lap, under F2
@@ -695,6 +709,11 @@ def step6_floor(design):
             op=adsk.fusion.FeatureOperations.CutFeatureOperation, start_expr="fl_t / 2", body=body)
     body = single_body(comp, "%s - PANEL" % PARTS["floor_f1"][1])
     print("step 6: floor panel F1  %s" % fmt_box(bbox_mm(body)))
+
+
+def seal_mat_f1(design):
+    x0, x1 = "%s + band_t + fl_gap" % XL, "-fl_seam / 2"
+    y0, y1 = YW, "%s - band_t - fl_gap" % YB
     comp = find_comp(design, "mat_f1")
     sk = comp.sketches.add(comp.xYConstructionPlane)
     sk.name = "PLAN - SEAL MAT F1"
@@ -839,7 +858,7 @@ def hardware_points(design):
             out.append((host, "pin", pt(t, z_top + head), None))
     edge("band_l", "y", v("%s + seam_gap" % YW), v("side_l"), v("%s + jb_x" % XL))            # L1
     for x0 in (B1_X0, B2_X0):                                                                 # B1, B2
-        edge("band_b", "x", v(x0), v("half_pw"), v("%s - jb_x" % YB))
+        edge("band_b", "x", v(x0), v("half_fw"), v("%s - jb_x" % YB))
     # glides, screwed into the bands at the factory
     xg = v("%s + band_t / 2 + gl_dx" % XL)
     ng = int(round(v("gl_n_side")))
@@ -988,7 +1007,7 @@ def skeleton_boxes(design):
     xl, yb, yw, z0 = v(XL), v(YB), v(YW), v("panel_z0")
     ot, st, ct = v("outer_t"), v("stack_t"), v("cass_t")
     sh, bh, hp = v("side_h"), v("back_ph"), v("half_pw")
-    b1, b2 = v(B1_X0), v(B2_X0)
+    b1, b2 = v(B1_X0), v("pod_w / 2 - outer_t - seam_gap - half_pw")   # the skeleton's skin envelopes
     return [
         ("skeleton L1", (xl, yw + v("seam_gap"), z0, xl + ot, yb, z0 + sh)),
         ("skeleton L1-CASS", (xl + st - ct, yw, z0, xl + st, yb - st + ct, z0 + sh)),
@@ -1249,10 +1268,155 @@ def holes_of_all(body):
     return out
 
 
+# ---------------------------------------------------------------- one part per design
+
+# Each part we make also gets its own saved design, STEP and drawing (a drawing's
+# base view shows its whole design; the mechanical check C05 wants a STEP per part).
+PART_BUILDS = {
+    "band_l_tube": ("step2_band_side_lh", "holes_side_lh"),
+    "band_b_tube": ("step3_band_back", "holes_back"),
+    "doubler": ("build_doubler",),
+    "floor_f1": ("floor_panel_f1",),
+    "mat_f1": ("seal_mat_f1",),
+    "pin": ("build_pin",),
+    "washer": ("build_washer",),
+}
+
+
+# Parts whose length runs along the pod's Y axis are turned into their own part
+# system for their part design, so the drawing's standard views (Front, Top, Left)
+# give a first-angle layout with the length horizontal: two Move features driven by
+# parameter expressions. CS-111101: X along the band from its back end (pod Y =
+# pod_d/2 - cap_t), Y from the outer face (pod X = -pod_w/2) inward, Z from the
+# band's bottom face (pod Z = glide_h) up. The assembly keeps pod coordinates.
+PART_SYSTEM = {
+    "band_l_tube": ("90 deg", "pod_d / 2 - cap_t", "pod_w / 2", "-glide_h"),
+}
+
+
+def to_part_system(design, comp, key):
+    angle, tx, ty, tz = PART_SYSTEM[key]
+    bodies = adsk.core.ObjectCollection.create()
+    bodies.add(comp.bRepBodies.item(0))
+    mf = comp.features.moveFeatures
+    mi = mf.createInput2(bodies)
+    mi.defineAsRotate(comp.zConstructionAxis, vi(angle))
+    f1 = mf.add(mi)
+    f1.name = "MOVE - PART SYSTEM: TURN %s ABOUT Z" % angle.upper()
+    bodies = adsk.core.ObjectCollection.create()
+    bodies.add(comp.bRepBodies.item(0))
+    mi = mf.createInput2(bodies)
+    mi.defineAsTranslateXYZ(vi(tx), vi(ty), vi(tz), True)
+    f2 = mf.add(mi)
+    f2.name = "MOVE - PART SYSTEM: ORIGIN AT THE BACK END, OUTER FACE, BOTTOM"
+    print("  part system: turned %s about Z, moved by (%s, %s, %s): %s" % (
+        angle, tx, ty, tz, fmt_box(bbox_mm(comp.bRepBodies.item(0)))))
+
+
+def file_name(pn, name, doctype):
+    """PARTNO_REV_DESCRIPTIVE-NAME_DOCTYPE (conventions section 7): ASCII
+    capitals, words joined by hyphens."""
+    t = name.replace("Ø", "D").replace("(HOLD)", "").upper()
+    words = []
+    for w in t.replace(" - ", " ").split():
+        w = "".join(ch for ch in w if ch.isalnum() or ch == ".")
+        if w:
+            words.append(w)
+    return "%s_%s_%s_%s" % (pn, REV, "-".join(words), doctype)
+
+
+def build_part(app, key):
+    pn, name, vn, cls, _parent = PARTS[key]
+    doc_name = file_name(pn, name, "CAD")
+    close_unsaved_builds(app)
+    doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    design.designType = adsk.fusion.DesignTypes.ParametricDesignType
+    design.fusionUnitsManager.distanceDisplayUnits = adsk.fusion.DistanceUnits.MillimeterDistanceUnits
+    up = design.userParameters
+    for pname, expr, unit, status, src in skeleton_params():
+        up.add(pname, vi(expr), unit, "SKELETON P04 %s: %s" % (status.upper(), src))
+    for pname, expr, unit, status, src in BASE_PARAMS:
+        up.add(pname, vi(expr), unit, "BASE %s: %s" % (status.upper(), src))
+    root = design.rootComponent
+    root.partNumber = pn
+    root.description = "%s | %s | %s | rev %s | DRAFT" % (name, vn, CLASS_NAME.get(cls, cls), REV)
+    print("part %s: %s (%d parameters)" % (pn, doc_name, up.count))
+    for fn in PART_BUILDS[key]:
+        globals()[fn](design)
+    if key in PART_SYSTEM:
+        to_part_system(design, root, key)
+    lib = app.materialLibraries.itemByName("Fusion Material Library")
+    libname, dname, rho = MATERIALS[key]
+    mat = lib.materials.itemByName(libname)
+    if dname:
+        mat = design.materials.itemByName(dname) or design.materials.addByCopy(mat, dname)
+        if rho:
+            mat.materialProperties.itemById("structural_Density").value = rho
+    for b in root.bRepBodies:
+        b.material = mat
+    tl = design.timeline
+    bad = [tl.item(i).name for i in range(tl.count)
+           if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    loose = [sk.name for sk in root.sketches if not sk.isFullyConstrained]
+    body = root.bRepBodies.item(0)
+    print("  %s  mass %.4f kg; timeline %d items, unhealthy %s; sketches %d, loose %s" % (
+        fmt_box(bbox_mm(body)), comp_mass(root), tl.count, bad or 0, root.sketches.count, loose or 0))
+    if bad or loose or root.bRepBodies.count != 1:
+        raise RuntimeError("part %s failed its checks" % pn)
+    if ARGS.get("save") == "1":
+        proj, folder = cloud_folder(app)
+        for df in folder.dataFiles:
+            if df.name == doc_name:
+                if ARGS.get("replace") != "1":
+                    raise RuntimeError("%s exists; pass --arg replace=1" % doc_name)
+                for i in range(app.documents.count - 1, -1, -1):
+                    d = app.documents.item(i)
+                    if d.name == doc_name and d.isSaved:
+                        d.close(False)
+                df.deleteMe()
+        app.data.activeProject = proj
+        if not doc.saveAs(doc_name, folder, "Spaceship %s rev %s, DRAFT, built by base_build.py" % (pn, REV), ""):
+            raise RuntimeError("saveAs failed")
+        print("  saved %s" % doc_name)
+    if ARGS.get("export") == "1":
+        em = design.exportManager
+        f3d = os.path.join(REPO, "v2/01-CAD-Native/base/%s.f3d" % doc_name)
+        step = os.path.join(REPO, "v2/03-Manufacturing/base/%s.step" % file_name(pn, name, "STEP"))
+        if not em.execute(em.createFusionArchiveExportOptions(f3d, root)):
+            raise RuntimeError("f3d export failed")
+        ok = False
+        for _ in range(10):
+            if em.execute(em.createSTEPExportOptions(step, root)) and os.path.exists(step) \
+                    and os.path.getsize(step) > 1000:
+                ok = True
+                break
+            adsk.doEvents()
+            import time
+            time.sleep(3)
+        if not ok:
+            raise RuntimeError("STEP export failed")
+        imp = app.importManager.importToNewDocument(app.importManager.createSTEPImportOptions(step))
+        d2 = adsk.fusion.Design.cast(imp.products.itemByProductType("DesignProductType"))
+        diff = max(abs(a - b) for a, b in zip(bbox_mm(root), bbox_mm(d2.rootComponent)))
+        imp.close(False)
+        doc.activate()
+        print("  exported %s and %s; STEP re-read box difference %.3f mm -> %s" % (
+            os.path.relpath(f3d, REPO), os.path.relpath(step, REPO), diff, "MATCH" if diff < 0.05 else "MISMATCH"))
+        if diff >= 0.05:
+            raise RuntimeError("STEP box mismatch")
+    if ARGS.get("save") == "1" or ARGS.get("keep") != "1":
+        doc.close(False)
+
+
 # ---------------------------------------------------------------- main
 
 def run(_context):
     app = adsk.core.Application.get()
+    if ARGS.get("part"):
+        for key in ARGS["part"].split(","):
+            build_part(app, key.strip())
+        return
     doc, design = step1_document(app)
     steps = [None, None, step2_band_side_lh, step3_band_back, step4_band_holes, step5_corner_key,
              step6_floor, step7_hardware, step8_materials, step9_checks]
