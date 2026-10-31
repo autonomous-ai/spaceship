@@ -60,6 +60,7 @@ SIDE = ARGS.get("side", "L").upper()
 ROW = int(ARGS.get("row", "1"))
 STOP_AFTER = int(ARGS.get("stop_after", "99"))
 S = -1 if SIDE == "L" else 1          # sign of X for this side
+INSIDE = "+x" if SIDE == "L" else "-x"   # the room side, for the drawings' Front (set_front.py)
 SKELETON_REL = "v2/01-CAD-Native/skeleton/pod_skeleton.py"
 MM = 0.1                               # Fusion API lengths are cm
 
@@ -1193,6 +1194,12 @@ def run(_context):
         raise RuntimeError("checks failed (unhealthy %s, loose %s, clashes %s)" % (bad_items, loose, bad))
     if ARGS.get("post") == "1":
         doc = app.activeDocument
+        # the drawings' Front = the panel seen from inside the pod, saved with the build (set_front.py)
+        sf = os.path.join(ARGS["repo_root"], "v2/02-Drawings/wall/set_front.py")
+        sf_ns = {"__name__": "__fusion_set_front__", "__file__": sf, "SCRIPT_ARGS": {"inside": INSIDE}}
+        with open(sf, "r", encoding="utf-8") as fh:
+            exec(compile(fh.read(), sf, "exec"), sf_ns)
+        sf_ns["run"](None)
         if not settle_part_number(app, root, pn):
             raise RuntimeError("root part number %r would not hold at %s before the save" % (root.partNumber, pn))
         if not doc.save("%s build: %s" % (REV, ARGS.get("note", "wall_side_panel.py"))):

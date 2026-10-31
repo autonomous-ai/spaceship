@@ -40,6 +40,7 @@ import adsk.core      # noqa: E402  (already imported by the library; named here
 import adsk.fusion    # noqa: E402
 
 COL = "L" if POSITION in ("B1", "B3") else "R"
+INSIDE = "-y"                              # the room side of the back wall, for the drawings' Front
 ROW = _ROW
 BPOS = int(POSITION[1])
 CODE = POSITION
