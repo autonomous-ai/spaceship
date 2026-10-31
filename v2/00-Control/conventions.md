@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | V2-CTL-005 | P01 | DRAFT. Items marked PROPOSED are working rules until the PM decides them. | 2026-10-31 | Control pack |
 
-Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-23. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum) and D-22 (part numbers).
+Every v2 file follows these rules: CAD, drawings, BOM, registers, assembly guide and packing plan. They come from the engineering guideline (`docs/engineering-guideline.md`, cited as "guideline §n"). Where the guideline leaves a choice open, this file makes it and marks it PROPOSED: a working rule that every file follows until the PM decides it in `decision-log.md`. Nothing waits for outside approval (`AGENTS.md`). The PM's decisions so far are D-01 to D-36. The ones that touch these rules are D-13 (units in STEP files), D-21 (height datum), D-22 and D-28 (part numbers), and D-32 (no outside approvals).
 
 Spaceship is the working name for v2 (FocusPod v2). The team calls the product "Indoor Pod", and v1 is "Indoor Pod V3" in `sources/v1/`. Folder names stay as they are.
 
@@ -80,7 +80,7 @@ Spaceship is the working name for v2 (FocusPod v2). The team calls the product "
                      left = -X   right = +X   front = -Y   up = +Z
 ```
 
-**Why this origin.** X and Y match the v1 STEP exactly (`sources/v1/indoor-pod-v3-assembly.step` has X = −1250…+1250 and Y = −850 at the front to +850 at the back). So v1 and v2 outlines overlay with no conversion, and that matters because the look must stay the same. Z = 0 moves to the room floor, because the thin floor (PROPOSED) removes the floor frame that v1 measured from.
+**Why this origin.** X and Y match the v1 STEP exactly (`sources/v1/indoor-pod-v3-assembly.step` has X = −1250…+1250 and Y = −850 at the front to +850 at the back). So v1 and v2 outlines overlay with no conversion, and that matters because the look must stay the same. Z = 0 moves to the room floor, because the thin floor (D-05) removes the floor frame that v1 measured from.
 
 **v1 to v2:** X(v2) = X(v1), Y(v2) = Y(v1), Z(v2) = Z(v1) + 15. In the v1 STEP, Z = 0 is the underside of the 50×100 floor-frame tubes and the leveling feet reach Z = −15 at their modelled setting. Status: calculation from the v1 STEP.
 
@@ -90,8 +90,8 @@ Spaceship is the working name for v2 (FocusPod v2). The team calls the product "
 |---|---|---|
 | Outer faces of the side walls | X = ±1250 | source: build plan 2500 W |
 | Outer face of the back wall | Y = +850 | source: build plan 1700 D |
-| Front edge of the side walls | Y = −650 | calculation: 850 − 1500 (build plan II: wall depth 1500). See issue ISS-012. |
-| Front-most face of the decor | Y = −850 | source: build plan (decor depth 200) |
+| Front edge of the side walls | Y = −650 | calculation: 850 − 1500 (build plan II: wall depth 1500). The decor blocks overlap it by about 30–35 mm (D-39, ISS-012). |
+| Front-most face of the decor | Y = −850 | DECIDED (D-39): decor blocks 230–235 mm deep as in v1, not the plan's 200 |
 | Top of the roof skin | Z = 2400 | DECIDED (D-21): the build plan's 2400 H, measured from the room floor. v1 is 2405 without feet and 2417 with them (ISS-013, ISS-020). |
 
 **2D views use X and Y only** (guideline §3.3). Each view says how its X and Y map to 3D:
@@ -153,9 +153,9 @@ Rules:
 - The same name appears in the BOM, the CAD component, the drawing title block, the STEP product name, the DXF and the label on the part.
 - A standard part needs maker, exact SKU, size, material or grade, finish and its source document. "M6", "good glue" or "or equal" is not a part definition.
 
-## 6. Part numbers — DECIDED (D-22)
+## 6. Part numbers — DECIDED (D-22, D-28)
 
-The guideline asks to keep existing numbers where they still identify the item correctly, and not to renumber for looks. v2 is a new design, so it gets new numbers. They use the same 6-digit **FF NNNN** shape as the team's existing numbers (110006, 211000, 350011, 830001), so the format is familiar.
+The guideline asks to keep existing numbers where they still identify the item correctly, and not to renumber for looks. v2 is a new design, so every v2 item gets a new number. The numbers use the familiar 6-digit **FF NNNN** shape, and the bands below apply to **new v2 numbers only** (D-22, D-28). The team's old numbers don't follow them: 110006 and 350011 are parts and 830001 is a bought item.
 
 | FF | Family |
 |---|---|
@@ -163,14 +163,14 @@ The guideline asks to keep existing numbers where they still identify the item c
 | 11 | BASE: thin floor or floor frame, base trim band, base seal, leveling |
 | 12 | Reserved. The guideline uses it for FRAME corner posts. v2 has no separate posts, so it stays unused unless they come back. |
 | 21 | WALL: side and back panels, their frames, skins, backers and cavity fill |
-| 35 | FRONT - DECOR: decor blocks DL, DR, DT and their brackets. Same family as the guideline's 350011 FRONT FASCIA. |
+| 35 | FRONT - DECOR: decor blocks DL, DR, DT and their brackets, fans and silencers inside them (D-29, D-36). The family code echoes the guideline's FRONT FASCIA numbers; none of those numbers is reused. |
 | 36 | FRONT - DOOR AND GLAZING: door leaf, fixed glass, hinges, handle, catch, glazing profiles, door seals |
 | 41 | CEILING |
 | 51 | LINING: PET felt panels and their fixing |
 | 61 | AIR: fans, silencers, vents, grilles |
 | 71 | ELECTRICAL: lights, switches, sockets, controller, sensors, wiring, power inlet, and hooks for the voice cockpit kit |
 | 81 | INTERIOR: inside trims only. The pod ships empty. |
-| 83 | HARDWARE: standard fasteners, inserts, nuts, washers. Same family as the guideline's 830001 insert and 830005 nut. |
+| 83 | HARDWARE: standard fasteners, inserts, nuts, washers. The family code echoes the guideline's insert and nut numbers; none of those numbers is reused. |
 | 84 | SEALS AND TAPES bought by length: gaskets, hook-and-loop, adhesive tapes |
 | 91 | PACKAGING: pallets, crates, protection, labels |
 
@@ -187,7 +187,7 @@ Rules:
 - Never reuse a number. A cancelled number stays cancelled in the master BOM.
 - Revision and status aren't part of the number.
 - The master BOM (`v2/04-BOM/`) assigns numbers. CAD components are named `PARTNO NAME`, for example `211101 WALL - PANEL FRAME - SIDE LOWER - LH`.
-- A part carried over unchanged from v1 or the V5 rework keeps its existing number, with the source given in the BOM.
+- **Never reuse an old number (D-28).** These numbers from the guideline's examples and the earlier V5 attempt are reserved and must not appear as v2 part numbers: 110006, 110002, 120001, 211000, 210001, 210003, 210005, 350011, 830001, 830005. Check every new number against this list first; `check_control_pack.py` enforces it.
 
 **Codes from the input documents are references, never v2 part numbers:**
 
@@ -247,9 +247,9 @@ A PASS or VALIDATED needs its method, conditions, source file and revision, resu
 
 **Document status** (guideline §4.2), kept in its own field: `DRAFT`, `HOLD`, `REVIEW`, `FA-APPROVED`, `PRODUCTION-APPROVED`. Two more for the register only: `REFERENCE` for files received from outside the project (v1, the build plan), which are read only and never edited; and `PLANNED` for a file or folder another group is writing that isn't in main yet.
 
-**Decision status:** `PROPOSED` is our working answer: the work goes ahead on it until the PM rules. `DECIDED` means the PM has ruled; the decision is logged in `decision-log.md` (D-nn) with its date and reason. Nothing waits for outside approval (`AGENTS.md`). The hardware engineering lead and the indoor pod lead engineer review alongside, and their comments go to the PM.
+**Decision status:** `PROPOSED` is our working answer: the work goes ahead on it until the PM rules. `DECIDED` means the PM has ruled; the decision is logged in `decision-log.md` (D-nn) with its date and reason. Nothing waits for outside approval (`AGENTS.md`). There are no human hardware leads on this project (D-32), and the factory's wall-and-door sample is the physical check.
 
-**Issue status** (`issue-register.csv`): `OPEN` (no answer yet), `PROPOSED` (an answer is proposed and work follows it), `DECIDED` (the PM has ruled, D-nn; work follows, and the issue closes when its close condition is met), `CLOSED` (the close condition is met and the evidence is linked).
+**Issue status** (`issue-register.csv`): `OPEN` (no answer yet), `PROPOSED` (an answer is proposed and work follows it), `DECIDED` (the PM has ruled, D-nn; work follows), `CLOSED` (the PM's logged decision plus its evidence, linked in the row). Nobody outside the project is waited on (D-32).
 
 **Test status** (guideline §10): `PLANNED`, `NOT TESTED`, `PASS`, `FAIL`. Physical tests stay `PLANNED` or `NOT TESTED` until real data exists.
 

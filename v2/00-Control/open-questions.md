@@ -8,7 +8,7 @@ Each question gets an answer and the reasons for it. Where the PM has ruled, the
 
 | Q | Question | Answer in one line | Status | Issues |
 |---|---|---|---|---|
-| Q1 | Door and glass | Keep v1's front layout and outline; smoked acrylic, with laminated glass as the fallback, chosen by dB per kg; hinges on the left decor block; sealed all round; fixed panel in sealed profiles | DECIDED material (D-07); rest PROPOSED | ISS-001, -002, -003, -023, -043 |
+| Q1 | Door and glass | Keep v1's front layout and outline; 4+4 laminated glass, frameless as v1; dormakaba OFFICE 11.233 hinges in a 160 mm pocket in the left decor block; sealed all round; fixed panel in sealed profiles | DECIDED material (D-27) and hinges (D-30); rest PROPOSED | ISS-001, -002, -003, -023, -043 |
 | Q2 | Lights | One dimmable, low-heat LED ceiling light plus a soft front face light for video calls, all on 12 V; the Hardware Engineer picks the parts | DECIDED (D-20); 30 W budget PROPOSED | ISS-004, -061 |
 | Q3 | Door hand | Left-hinged as v1, seen from outside facing the door, with the hinge pocket in the left decor block; handle and catch on the right; opens outward | DECIDED hinge (D-19); swing PROPOSED | ISS-055 |
 | Q4 | Floor type | Thin floor inside the aluminium base band, 20 mm threshold at the door, walls standing around it on a base rail, packers for leveling | DECIDED (D-05, D-18); layer build PROPOSED | ISS-040, -050, -053, -054 |
@@ -17,21 +17,21 @@ Each question gets an answer and the reasons for it. Where the PM has ruled, the
 
 The build plan has no glass at all (ISS-001). The look needs v1's glass layout (REQ-LOOK-04).
 
-**Answer** (material DECIDED, D-07; the rest PROPOSED)
+**Answer** (material DECIDED, D-27; hinges DECIDED, D-30; the rest PROPOSED)
 1. **Same layout and outline as v1.** One hinged door leaf and one fixed panel in the same plane, smoked gray. The door is a trapezoid, 1175.6 wide at the bottom and 892.9 at the top, 2011.1 tall, with a slanted leading edge that meets the fixed panel's slanted edge. The fixed panel has 5 sides and follows the inner edge of the right decor block. Status: source (v1 STEP outline). The v2 cut sizes come from the v2 decor and floor once the depth chain and height are fixed (ISS-012, ISS-013).
-2. **Material, DECIDED (D-07): smoked acrylic, with laminated glass as the fallback.** Choose the one with the most dB per kg, and confirm it on the factory sample (ISS-043). Same smoked look either way. Acrylic is the light option (PLAN.md: about 60 kg lighter than 10 mm glass for the door and fixed panel together) but it scratches more, so the sample has to pass on look and feel as well as sound. Laminated acoustic glass, for example 4+4, weighs about the same as 8 mm tempered and is quieter. Until the sample decides, the CAD keeps the panel thickness as a parameter.
+2. **Material, DECIDED (D-27): 4+4 laminated glass (8.76 mm), frameless as in v1.** It replaces the earlier acrylic baseline (D-07): acrylic needed an aluminium stile along its hinge edge, which added an opaque band about 80 mm wide down the door and broke the look rule (D-01). Laminated glass also removes the creep, scratch, fire-class and flatness risks. Acrylic stays only as an optional experiment on the factory sample. The laminate's smoked tint is matched to v1 on the sample.
 3. **Hardware, by function.** Each item gets a real part number from the hardware selection first.
-   - Hinges: hinges fixed to the left decor block DL, as in v1, rated for the chosen leaf (about 41.6 kg if it were 8 mm glass; much less in acrylic) and 1175.6 wide, and suited to the leaf material, since acrylic needs different clamping than glass. The rating sets how many and where. v1 lists 3 hinges, but its CAD has only 2 positions (ISS-024). Prefer self-closing hinges, so the door always comes back onto its seals.
+   - Hinges: dormakaba OFFICE 11.233 (D-30), in a 160 mm pocket inside the left decor block DL. The door in laminated glass is about 43 kg (calculation C5 in `requirements.md`); the hinges' clamping range for 8.76 mm laminate goes on the factory's question list. v1 lists 3 hinges, but its CAD has only 2 positions (ISS-024).
    - Handle: a back-to-back pull handle, inside and outside, about 300 mm long like v1. The v1 CAD shows only the outside half (ISS-056).
    - Catch: a magnetic catch on the leading edge, with no lock or latch. It keeps the pull light (REQ-US-04).
-   - Seals: a perimeter seal on the hinge side and top; a seal on the slanted joint between the door and the fixed panel; an automatic drop seal at the bottom onto the threshold.
+   - Seals: a perimeter seal on the hinge side and top; a seal on the slanted joint between the door and the fixed panel; an automatic drop seal at the bottom onto the threshold, housed in a 90 mm aluminium kick strip in the base band's dark finish (D-40).
    - Fixed panel: held in sealed U profiles with gaskets, sitting on setting blocks, at the base, DT and DR. No glue, so the panel can be replaced.
 4. **Handling:** two people with suction lifters. The door and fixed panel travel on the standard long pallet, because 2011 is taller than a 48 × 40 pallet takes (layout study).
 
 **Reasons**
-- Weight: the front is the heaviest single item. Even in glass, the real outline gives 68.5 kg at 8 mm against 85.6 kg at 10 mm (calculation C5 in `requirements.md`), and the BOM's rectangles overstated the door at 47 kg (ISS-023). Acrylic cuts that further, which is why D-07 ranks the options by dB per kg.
+- Weight: the front is the heaviest single item. In 4+4 laminated glass the door is about 43.3 kg and the fixed panel about 28.0 kg (calculation C5); the BOM's rectangles overstated the door (ISS-023). D-27 frees the weight for it by moving the ceiling to 40 mm frames, so the pod stays at about 400 kg.
 - Look: same outline, same smoked colour, same plane.
-- Safety: a glass door must be safety glass, tempered or laminated, as is standard practice. Acrylic doesn't shatter.
+- Safety: a glass door must be safety glass, tempered or laminated, as is standard practice. Laminated glass holds together if it breaks.
 - Sound: the front is the weak spot. Sealing every edge does more than adding thickness (PLAN.md "Quiet without the weight"), and the quiet target is about 24 dB (REQ-SND-01).
 
 ## Q2. Lights
@@ -98,7 +98,7 @@ The PM's decisions: 2–3 cm panels lying on the room floor, the walls fixed aro
 **Reasons**
 - Weight: no steel frame, joists, feet or boards. PLAN.md estimates about 50 kg saved.
 - Step: 20 mm instead of about 130 mm (calculation C7). Easier to walk in, and closer to a later US threshold.
-- Headroom: about 100 mm more inside, at the same 2400 outside height.
+- Headroom: about 10 cm more inside than v1, at the same 2400 outside height: about 2329 mm against v1's 2223, with D-27's 53 mm ceiling (REQ-BLD-06, calculation).
 - Sound: it still closes the bottom of the box, with a seal. Floorless pods post the weakest numbers (market study).
 - Square and quick: the floor sets the wall positions, and the walls locate themselves on the rail.
 
@@ -112,7 +112,7 @@ The PM's decisions: 2–3 cm panels lying on the room floor, the walls fixed aro
 | Question | Working default | Issue |
 |---|---|---|
 | Decor colour: yellow or black? | DECIDED (D-12): Dark Yellow EV3038, matching the plan's material list and v1's product photos | ISS-031 |
-| Quiet target and weight | DECIDED (D-02, D-25): the quiet build at about 385 kg and 24.2 dB calculated (Class C) with the final stack; the factory sample decides; never over 400 kg with the acrylic front, 420 kg only with the laminated fallback | ISS-063, ISS-065, ISS-068 |
+| Quiet target and weight | DECIDED (D-27, D-37): 4+4 laminated front; the pod at about 418 kg against a 420 kg cap; 23.8 dB calculated (Class C), with the factory sample deciding. The 0.4 mm lining tray was tried and dropped because it cost 1 dB. | ISS-063, ISS-065, ISS-068 |
 | Assembly method | DECIDED (D-08): tool-free connectors, captive bolts, factory-made subassemblies, felt pre-fitted at the factory | ISS-064 |
 | Overall height and its datum | DECIDED (D-21): 2400 from the room floor to the top of the roof skin | ISS-013 |
 | Depth chain between the walls and the decor | Back face at Y = +850, decor front at Y = −850, overlap set by the bracket joint | ISS-012 |
