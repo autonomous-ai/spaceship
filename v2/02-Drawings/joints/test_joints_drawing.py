@@ -51,21 +51,21 @@ def view_geometry(part, view, scale, centre):
         v = [(r * math.cos(math.radians(60 * k)), r * math.sin(math.radians(60 * k))) for k in range(6)]
         segs += [(v[k][0], v[k][1], v[(k + 1) % 6][0], v[(k + 1) % 6][1]) for k in range(6)]
         off = (0.0, 0.0)
-    elif part == "keys" and view == "front":           # X right, Z up: 25 x 75
-        segs += [(0, 0, 25, 0), (25, 0, 25, 75), (25, 75, 0, 75), (0, 75, 0, 0)]
+    elif part == "keys" and view == "front":           # X right, Z up: 30 x 75
+        segs += [(0, 0, 30, 0), (30, 0, 30, 75), (30, 75, 0, 75), (0, 75, 0, 0)]
         for z in (26, 60):                              # hidden: stud holes along X
-            segs += [(0, z - 2.5, 25, z - 2.5), (0, z + 2.5, 25, z + 2.5)]
+            segs += [(0, z - 2.5, 30, z - 2.5), (0, z + 2.5, 30, z + 2.5)]
         segs += [(8.0, 0, 8.0, 18), (13.0, 0, 13.0, 18)]  # hidden: fixing holes
-        off = (12.5, 37.5)
+        off = (15.0, 37.5)
     elif part == "keys" and view == "right":           # Y right, Z up: the stud face 35 x 75
         segs += [(-17.5, 0, 17.5, 0), (17.5, 0, 17.5, 75), (17.5, 75, -17.5, 75), (-17.5, 75, -17.5, 0)]
         circs += [(0, 26, 2.5), (0, 60, 2.5)]
         off = (0.0, 37.5)
-    elif part == "keys" and view == "top":             # X right, Y up: 25 x 35
-        segs += [(0, -17.5, 25, -17.5), (25, -17.5, 25, 17.5), (25, 17.5, 0, 17.5), (0, 17.5, 0, -17.5)]
-        segs += [(0, -2.5, 25, -2.5), (0, 2.5, 25, 2.5)]  # hidden: stud holes seen from above
+    elif part == "keys" and view == "top":             # X right, Y up: 30 x 35
+        segs += [(0, -17.5, 30, -17.5), (30, -17.5, 30, 17.5), (30, 17.5, 0, 17.5), (0, 17.5, 0, -17.5)]
+        segs += [(0, -2.5, 30, -2.5), (0, 2.5, 30, 2.5)]  # hidden: stud holes seen from above
         circs += [(10.5, -7.0, 2.5), (10.5, 7.0, 2.5)]    # hidden: fixing holes
-        off = (12.5, 0.0)
+        off = (15.0, 0.0)
     to = lambda x, y: (cx + (x - off[0]) * scale, cy + (y - off[1]) * scale)
     lines = [to(a, b) + to(c, d) for a, b, c, d in segs]
     circles = [to(x, y) + (r * scale,) for x, y, r in circs]
@@ -83,7 +83,7 @@ def measured(kind, a, b, place, scale):
 WANT = {
     ("spigot", "front"): [15.24, 7.24, 8.0, 8.0, 6.0],
     ("spigot", "top"): [4.0],
-    ("keys", "front"): [75.0, 25.0],
+    ("keys", "front"): [75.0, 30.0],
     ("keys", "right"): [35.0, 26.0, 60.0, 17.5, 5.0],
     ("keys", "top"): [10.5, 10.5, 14.0, 5.0],
 }

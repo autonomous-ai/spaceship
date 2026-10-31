@@ -380,7 +380,7 @@ def build_keys(app):
         ("key_w", "band_t - 2 * band_wall - 2 * key_clear", "mm",
          "CALCULATION: across the band, 40 - 3 - 2 = 35 (skeleton band_t)"),
         ("key_h", "75 mm", "mm", "PROPOSED: height, in the band's 97 bore (joints register J-BASE-02)"),
-        ("key_len", "25 mm", "mm", "PROPOSED: length along the carrier on the key's centre line (J-BASE-02)"),
+        ("key_len", "30 mm", "mm", "PROPOSED: length along the carrier on the centre line; 30 keeps the carrier's Ø7.0 fixing holes 2 x 7 from its cut end (J-BASE-02)"),
         ("cut_angle", DRAWN, "deg",
          "SOURCE: stud face cut from square, signed: 0 (111211), -24.14 (111212), +24.02 (111213), -7.25 (111214); "
          "BASE's front geometry (corner-keys.csv)"),
@@ -400,7 +400,7 @@ def build_keys(app):
     sk = comp.sketches.add(comp.xYConstructionPlane)
     sk.name = "SKETCH - KEY PLAN"
     lines, gc, dims = sk.sketchCurves.sketchLines, sk.geometricConstraints, sk.sketchDimensions
-    w, L, t = 17.5, 25.0, math.tan(math.radians(float(DRAWN.split()[0])))
+    w, L, t = 17.5, 30.0, math.tan(math.radians(float(DRAWN.split()[0])))
     lab = lines.addByTwoPoints(p3(0, -w), p3(0, w))
     lbc = lines.addByTwoPoints(lab.endSketchPoint, p3(L + w * t, w))
     lcd = lines.addByTwoPoints(lbc.endSketchPoint, p3(L - w * t, -w))
