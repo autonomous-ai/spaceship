@@ -39,7 +39,8 @@ def _evaluate(script):
     exec(compile(open(g["__file__"], encoding="utf-8").read(), g["__file__"], "exec"), g)
     lib = g["L"]
     params, _path, _rev = lib.load_skeleton_params(REPO)
-    lists = [params, lib.LIB_PARAMS, lib.GLASS_PARAMS] + ([g["OWN"]] if "OWN" in g else [])
+    lists = [params, lib.LIB_PARAMS, lib.GLASS_PARAMS] + ([lib.JF_PARAMS] if "JF_PARAMS" in open(
+        g["__file__"], encoding="utf-8").read() else []) + ([g["OWN"]] if "OWN" in g else [])
     env = {"abs": abs, "sqrt": math.sqrt}
     for lst in lists:
         for name, expr, *_ in lst:
@@ -173,66 +174,12 @@ SPECS = {
                        "1:10", "A2", [("DOC TYPE", "ASSEMBLY DRAWING")]),
     },
 }
-V_FIX, G_FIX = _evaluate("fixed_glass.py")
-
-
-def gx(expr_pt, env=V_FIX):
-    """Evaluate a front_lib.g_* corner (a pair of expression strings) to model mm."""
-    f = lambda e: eval(re.sub(r"(\d)\s*mm\b", r"\1", e), {"__builtins__": {}, "sqrt": math.sqrt}, env)
-    return f(expr_pt[0]), f(expr_pt[1])
-
-
-_L = G_FIX["L"]
-PB = [gx(p) for p in _L.g_outline("fg_bite")]          # the pane as cut: BL, BR, K, TR, TL
-PV = [gx(p) for p in _L.g_outline("0 mm")]             # its visible outline
-UP = [gx(p) for p in _L.g_outline("gu_prof_d")]        # the channels' outer line
-xs = [p[0] for p in PB]
-SPECS["pane"] = {
-    "design": doc("361003", "FRONT - FIXED GLASS - 4+4 LAMINATED", "CAD"),
-    "drawing": doc("361003", "FRONT - FIXED GLASS - 4+4 LAMINATED", "DWG"),
-    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (190, 225), "iso": (320, 100)},
-    "box": {"front": (min(xs), PB[0][1], max(xs), PB[4][1])},
-    "dims": [
-        ("front", PB[0], PB[1], "below", 12), ("front", PB[1], (PB[1][0], PB[3][1]), "right", 15),
-        ("front", PB[4], PB[3], "above", 10), ("front", PB[0], PB[4], "left", 12),
-        ("front", PB[1], PB[2], "right", 30), ("front", PB[2], PB[3], "right", 45),
-    ],
-    "notes": [
-        "Glass: 4+4 laminated safety glass, two toughened, heat-soaked panes (EN 12150, EN 14179) with 0.76 mm grey "
-        "PVB, 8.76 nominal (D-27, D-46); it stays 4+4 (PM ruling 2026-10-31). Product HOLD until named (ISS-074).",
-        "Outline 1:1 in 361003_P01_FRONT-FIXED-GLASS-4-4-LAMINATED_DXF.dxf. The visible outline is the skeleton's "
-        "measured v1 pentagon; the four held edges run %.1f past it into hidden channels in the base band, DR and DT; "
-        "the free edge runs parallel to the door's latch edge, %.1f off (PM rulings)." % (V_FIX["fg_bite"], V_FIX["fg_gap"]),
-        "No holes. Edges ground and arrised before toughening. Tolerances (PROPOSED, the supplier confirms): sizes and "
-        "diagonals +/-1; corners at the knee and bottom right to the DXF.",
-        "Fit order: the band's channel, the pane, DR from the side, DT from above (PM ruling).",
-    ],
-    "title": title("361003", "FRONT - FIXED GLASS - 4+4 LAMINATED", "Tấm kính cố định 4+4",
-                   "4+4 laminated toughened heat-soaked glass, grey PVB", "edges ground and arrised", "1:10", "A2",
-                   [("MASS", "28.6 kg (calculation)")]),
-}
-SPECS["fixed_unit"] = {
-    "design": doc("360002", "FRONT - FIXED GLASS UNIT", "CAD"),
-    "drawing": doc("360002", "FRONT - FIXED GLASS UNIT", "DWG"),
-    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (170, 240), "top": (170, 105),
-                                                                     "left": (300, 240), "iso": (340, 95)},
-    "box": {"front": (min(p[0] for p in UP + PV) - V_FIX["fg_gap"] / 2, UP[0][1], max(p[0] for p in UP), UP[4][1])},
-    "dims": [
-        ("front", PV[0], PV[1], "below", 20), ("front", PV[1], PV[2], "right", 20), ("front", PV[4], PV[3], "above", 15),
-    ],
-    "notes": [
-        "Fixed glass unit: pane 361003 in the Bohle U-profile 368004 (4 pieces, mitred) with the silicone U-seal "
-        "368002 on its four held edges; the pane's half 368003 of the 180 deg magnetic seal on its free edge (HOLD).",
-        "The channels sit hidden: in the base band (bottom, BASE), inside DR behind a slot in its skin (right edge and "
-        "diagonal) and inside DT behind a slot in its underside (top). Their fixings come with those designs.",
-        "The pane carries no closing load on its free edge: the door is held by its hinges and the catch in DT, and "
-        "the magnetic seal pulls in the glass plane (PM ruling). Edge movement under 16 N spread along it: 2 mm or less.",
-        "Mass about 29.6 kg (calculation; parts list).",
-    ],
-    "title": title("360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "see the parts list",
-                   "see the parts list", "1:10", "A2", [("DOC TYPE", "ASSEMBLY DRAWING")]),
-}
-ORDER = ["door_unit", "leaf", "kick", "fixed_unit", "pane"]
+# the other sub-assemblies' specs, when their files are on this branch
+for _part in ("drawing_specs_glass.py", "drawing_specs_decor.py"):
+    _path = os.path.join(HERE, _part)
+    if os.path.exists(_path):
+        exec(compile(open(_path, encoding="utf-8").read(), _path, "exec"), globals())
+ORDER = [_k for _k in ("door_unit", "leaf", "kick", "fixed_unit", "pane", "uprof", "dr", "dt", "dl") if _k in SPECS]
 
 for _k, _sp in SPECS.items():
     _sp["images"] = image_places(_sp["sheet"])

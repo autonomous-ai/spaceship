@@ -1,6 +1,6 @@
-# Mechanical check run: fc6192e on 2026-10-31
+# Mechanical check run: fbecb5d on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `fc6192e`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `fbecb5d`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 0** (0 severe, 0 major, 0 minor). Register numbers in brackets.
 
@@ -42,52 +42,48 @@ Inputs: {"bodies_skeleton": 34, "bodies_assembly": 0, "parts_lists": ["v2/04-BOM
 
 | Piece | kg | Size mm | Ships as | Status |
 |---|---|---|---|---|
-| 1-01 BASE - SEAL MAT - F1 | 1.05 | 1451 x 1205.5 x 3 | upright | calculation |
-| 1-02 BASE - SEAL MAT - F2 | 1.05 | 1451 x 1205.5 x 3 | upright | calculation |
-| 1-03 BASE - FLOOR PANEL - F1 | 10.035 | 1455 x 1219 x 9 | upright | confirmed (9 mm); calculation |
-| 1-04 BASE - FLOOR PANEL - F2 | 10.035 | 1455 x 1219 x 9 | upright | confirmed (9 mm); calculation |
-| 1-05 WALL - PANEL ASSY - BACK LOWER - LH | 9.309 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
-| 1-06 WALL - PANEL ASSY - BACK LOWER - RH | 9.309 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
-| 1-07 WALL - PANEL ASSY - SIDE LOWER - LH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
-| 1-08 WALL - PANEL ASSY - SIDE LOWER - RH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
-| 1-09 WALL - PANEL ASSY - BACK UPPER - LH | 9.309 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
-| 1-10 WALL - PANEL ASSY - BACK UPPER - RH | 9.309 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
-| 1-11 WALL - PANEL ASSY - SIDE UPPER - LH | 11.281 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
-| 1-12 WALL - PANEL ASSY - SIDE UPPER - RH | 11.281 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
-| 1-13 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1203.61 x 46 | upright | calculation (CAD); bond assumption |
-| 1-14 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1203.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
-| 1-15 LINING - CASSETTE - SIDE LOWER - RH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
-| 1-16 LINING - CASSETTE - SIDE UPPER - RH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
-| 1-17 LINING - CASSETTE - SIDE LOWER - LH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
-| 1-18 LINING - CASSETTE - SIDE UPPER - LH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
-| 1-19 LINING - CASSETTE - BACK LOWER - LH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
-| 1-20 LINING - CASSETTE - BACK LOWER - RH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
-| 1-21 LINING - CASSETTE - BACK UPPER - LH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
-| 1-22 LINING - CASSETTE - BACK UPPER - RH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
-| 2-01 FRONT - FIXED GLASS UNIT | 29.58 | 2033 x 1031 x 12 | glass | calculation (CAD) |
-| 2-02 FRONT - DOOR UNIT | 50.17 | 2089 x 1175 x 149 | glass | calculation (CAD) |
-| 2-03 FRONT - DECOR BLOCK - DR | 18.056 | 2290 x 1016 x 205 | long | calculation |
-| 2-04 BASE - BAND ASSY - BACK | 3.135 | 2420 x 110 x 40 | long | assumption; calculation; provisional |
-| 2-05 BASE - BAND ASSY - SIDE - LH | 2.142 | 1517 x 110 x 40 | long | assumption; calculation; provisional |
-| 2-06 BASE - BAND ASSY - SIDE - RH | 2.142 | 1517 x 110 x 40 | long | assumption; calculation; provisional |
-| 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 0.922 | 729 x 110 x 40 | long | assumption; calculation; provisional |
+| 1-01 BASE - FLOOR PANEL - F1 | 8.708 | 1455 x 1219 x 12 | upright | calculation; confirmed (9 mm, poplar core); calculation |
+| 1-02 BASE - FLOOR PANEL - F2 | 8.708 | 1455 x 1219 x 12 | upright | calculation; confirmed (9 mm, poplar core); calculation |
+| 1-03 WALL - PANEL ASSY - BACK LOWER - LH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
+| 1-04 WALL - PANEL ASSY - BACK LOWER - RH | 11.556 | 1200.61 x 1118.61 x 84 | upright | calculation (ELECTRICAL); calculation; fill provisional |
+| 1-05 WALL - PANEL ASSY - SIDE LOWER - LH | 11.088 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
+| 1-06 WALL - PANEL ASSY - SIDE LOWER - RH | 11.088 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
+| 1-07 WALL - PANEL ASSY - BACK UPPER - LH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
+| 1-08 WALL - PANEL ASSY - BACK UPPER - RH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
+| 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.075 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
+| 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.075 | 1492.74 x 1142.74 x 46 | upright | calculation; fill provisional |
+| 1-11 CEILING - PANEL ASSY - C1 | 10.035 | 1495 x 1203.61 x 46 | upright | calculation (CAD); bond assumption |
+| 1-12 CEILING - PANEL ASSY - C2 | 10.535 | 1495 x 1203.61 x 60 | upright | calculation; calculation (CAD); bond assumption |
+| 1-13 LINING - CASSETTE - SIDE LOWER - RH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
+| 1-14 LINING - CASSETTE - SIDE UPPER - RH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
+| 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.474 | 1445 x 1142.74 x 34 | upright | calculation; lips confirmed |
+| 1-16 LINING - CASSETTE - SIDE UPPER - LH | 10.047 | 1445 x 1092.74 x 34 | upright | calculation; lips confirmed |
+| 1-17 LINING - CASSETTE - BACK LOWER - LH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
+| 1-18 LINING - CASSETTE - BACK LOWER - RH | 8.411 | 1166 x 1118.61 x 34 | upright | calculation; lips confirmed |
+| 1-19 LINING - CASSETTE - BACK UPPER - LH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
+| 1-20 LINING - CASSETTE - BACK UPPER - RH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
+| 2-01 FRONT - FIXED GLASS UNIT | 28.782 | 2033 x 1031 x 12 | glass | calculation (CAD) |
+| 2-02 FRONT - DOOR UNIT | 49.076 | 2089 x 1175 x 149 | glass | calculation (CAD); kick strip assumption |
+| 2-03 FRONT - DECOR BLOCK - DR | 18.6 | 2290 x 1016 x 205 | long | calculation; calculation (CAD) |
+| 2-04 BASE - BAND ASSY - BACK | 3.285 | 2420 x 110 x 40 | long | assumption; calculation; calculation; confirmed (1.5 mm) |
+| 2-05 BASE - BAND ASSY - SIDE - LH | 2.242 | 1517 x 110 x 40 | long | assumption; calculation; calculation; confirmed (1.5 mm) |
+| 2-06 BASE - BAND ASSY - SIDE - RH | 2.242 | 1517 x 110 x 40 | long | assumption; calculation; calculation; confirmed (1.5 mm) |
+| 2-07 BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | 1.153 | 729 x 110 x 40 | long | assumption; calculation; calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-08 BASE - DOOR THRESHOLD - 13 MM | 1.2 | 1175 x 60 x 13 | long | assumption |
 | 2-09 FRONT - DECOR BLOCK - DL | 9.976 | 2290 x 278 x 205 | long | calculation |
-| 2-10 AIR - SOFFIT | 9.833 | 2332 x 360 x 220 | long | calculation; fill provisional |
+| 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.908 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
 | 2-11 AIR - AIR COLUMN | 9.779 | 2105 x 360 x 217 | long | calculation; fill provisional |
-| 2-12 FRONT - DECOR BLOCK - DT | 7.015 | 1697 x 280 x 205 | long | calculation |
-| 2-13 ELECTRICAL - KIT - SWITCHES AND HARNESS | 2.05 | 600 x 250 x 200 | long | assumption |
-| 2-14 INTERIOR - LIGHT SHELF WITH LED STRIP | 3.06 | 2332 x 80 x 50 | long | assumption |
-| 2-15 AIR - SUPPLY FAN BOX AND TRANSITION, WITH 2 FANS | 5.666 | 516 x 460 x 155 | long | assumption; calculation |
-| 2-16 BASE - SMALL PARTS CARTON | 1.626 | 600 x 400 x 150 | long | assumption; calculation; provisional |
-| 2-17 INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 3.3 | 1000 x 250 x 120 | long | assumption |
-| 2-18 AIR - INTAKE RISER | 9.229 | 1740 x 250 x 155 | long | calculation |
-| 2-19 AIR - CARTRIDGE - SUPPLY | 11.155 | 1750 x 314 x 173 | long | calculation |
-| 2-20 AIR - CARTRIDGE - EXHAUST | 11.155 | 1750 x 314 x 173 | long | calculation |
-| 2-21 AIR - EXHAUST FAN BOX, WITH 2 FANS | 4.075 | 314 x 294 x 173 | long | assumption; calculation |
-| 2-22 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
-| 2-23 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
-| 2-24 POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 300 x 150 x 80 | long | assumption |
+| 2-12 FRONT - DECOR BLOCK - DT | 7.088 | 1697 x 280 x 205 | long | calculation; calculation (CAD) |
+| 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.14 | 600 x 250 x 200 | long | calculation (ELECTRICAL) |
+| 2-14 INTERIOR - LIGHT SHELF | 1.957 | 2332 x 80 x 50 | long | assumption |
+| 2-15 BASE - SMALL PARTS CARTON | 1.626 | 600 x 400 x 150 | long | assumption; calculation; confirmed (1.5 mm) |
+| 2-16 INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 2.4 | 1000 x 250 x 120 | long | assumption |
+| 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.895 | 1845 x 460 x 155 | long | assumption; calculation |
+| 2-18 AIR - CARTRIDGE - SUPPLY | 11.155 | 1750 x 314 x 173 | long | calculation |
+| 2-19 AIR - CARTRIDGE - EXHAUST | 11.155 | 1750 x 314 x 173 | long | calculation |
+| 2-20 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
+| 2-21 LINING - CASSETTE - CEILING - COMMON | 9.476 | 1163 x 1048 x 74 | long | calculation (CAD); fill provisional |
+| 2-22 POD - INSTALLATION KIT (OPEN FIRST) | 0.5 | 300 x 150 x 80 | long | assumption |
 
 ## Fastener schedule (C07)
 
