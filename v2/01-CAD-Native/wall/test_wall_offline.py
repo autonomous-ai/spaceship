@@ -310,5 +310,112 @@ class WallBackPanelTest(unittest.TestCase):
                 self.assertTrue(source, name)
 
 
+# ELECTRICAL P01 (electrical_model.py, PR #64) with the PM's final sizes of 2026-10-31 20:38 UTC: where its
+# features sit in the right linings (mm)
+EL_SIDE_EXPECT = {"1": {"el_y_kit": 240.5, "el_y_cx": -298.0, "el_trunk_z": 1100.0, "el_kit_d": 60.0, "el_grm_d": 19.1,
+                        "el_fs_y0": 2.0, "el_fs_y1": 20.0, "el_fs_dz": 60.0, "el_kit_dz": 80.0},
+                  "2": {"el_call_y": -209.5, "el_call_z": 1450.0, "el_shelf_z": 2250.0, "el_grm_s": 12.0}}
+
+
+class ElectricalInterfaceSideTest(unittest.TestCase):
+
+    def test_side_values_match_electrical(self):
+        for row, want in EL_SIDE_EXPECT.items():
+            v = resolve(load("cassette", "R", row))
+            for k, x in want.items():
+                self.assertAlmostEqual(v[k], x, places=3, msg=k)
+
+    def test_only_the_right_cassettes_carry_them(self):
+        for part, side, row in (("cassette", "L", "1"), ("cassette", "L", "2"), ("panel", "R", "1"),
+                                ("frame", "R", "2"), ("fill", "R", "1")):
+            ns = load(part, side, row)
+            self.assertEqual([q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")], [], (part, side, row))
+
+    def test_felt_openings_stay_inside_the_felt_before_and_after_the_edit_test(self):
+        """As built and under the edit test's skeleton edit (wall_depth 1300, side_h 1120), every felt opening
+        lies inside its felt with 1 mm round it (the build refuses otherwise)."""
+        for row in ("1", "2"):
+            for over in (None, {"wall_depth": 1300.0, "side_h": 1120.0}):
+                v = resolve(load("cassette", "R", row), over)
+                fy = (850.0 - v["wall_depth"] + 1.5, v["pod_d"] / 2 - v["stack_t"] + v["cass_t"] - 1.5)
+                z0 = v["panel_z0"] + (0.0 if row == "1" else v["side_h"] + v["seam_gap"])
+                z1 = v["panel_z0"] + v["side_h"] if row == "1" else v["pod_h"] - v["outer_t"] - v["lin_gap"]
+                fz = (z0 + 1.5, z1 - 1.5)
+                if row == "1":
+                    yb = v["pod_d"] / 2 - v["stack_t"]
+                    boxes = {"FS-CNR": (yb + v["el_fs_y0"], yb + v["el_fs_y1"], v["el_trunk_z"] - v["el_fs_dz"],
+                                        v["el_trunk_z"] + v["el_fs_dz"])}
+                    holes = {"FA-KIT": (v["el_y_kit"], v["el_trunk_z"] + v["el_kit_dz"], v["el_kit_d"]),
+                             "FX-COL": (v["el_y_cx"], v["el_trunk_z"], v["el_grm_d"])}
+                else:
+                    boxes = {}
+                    holes = {"FX-CALL0": (v["el_call_y"], v["el_shelf_z"], v["el_grm_s"]),
+                             "FX-CALL2": (v["el_call_y"], v["el_call_z"], v["el_grm_s"])}
+                for k, (y, z, d) in holes.items():
+                    boxes[k] = (y - d / 2, y + d / 2, z - d / 2, z + d / 2)
+                for k, (y0, y1, za, zb) in boxes.items():
+                    self.assertTrue(fy[0] + 1 <= y0 and y1 <= fy[1] - 1 and fz[0] + 1 <= za and zb <= fz[1] - 1,
+                                    "%s row %s %s: %s not inside %s %s" % (k, row, over, (y0, y1, za, zb), fy, fz))
+
+
+# B2 and B4 (ELECTRICAL P01, PR #64; the PM's rulings of 2026-10-31 20:38 to 21:20 UTC)
+EL_BACK_EXPECT = {("B2", "cassette"): {"el_cut_x0": 91.0, "el_cut_x1": 395.0, "el_cut_z0": 866.0, "el_cut_z1": 1134.0,
+                                       "el_lt_x": 346.0, "el_y_bg": 787.5, "el_y_xc": 781.5, "el_grm_d": 19.1},
+                  ("B4", "cassette"): {"el_lt_x": 346.0, "el_shelf_z": 2250.0, "el_ceil_x": 583.0, "el_ceil_z": 2330.0,
+                                       "el_grm_s": 12.0, "el_shelf_d": 16.0},
+                  ("B2", "panel"): {"el_inlet_x": 120.0, "el_inlet_z": 313.0, "el_lan_z": 375.0, "el_inlet_d": 24.0,
+                                    "el_sl_x": 150.0, "el_cut_x0": 91.0, "el_cut_z0": 866.0, "el_cut_z1": 1134.0}}
+
+
+class ElectricalInterfaceBackTest(unittest.TestCase):
+
+    def resolved(self, pos, part, over=None):
+        ns = load_back(pos, part)
+        if not any(q[0].startswith("el_") for q in ns["WALL_PARAMS"]):
+            self.skipTest("this branch's back builder has no ELECTRICAL features yet")
+        return resolve(ns, over)
+
+    def test_back_values_match_electrical(self):
+        for (pos, part), want in EL_BACK_EXPECT.items():
+            v = self.resolved(pos, part)
+            for k, x in want.items():
+                self.assertAlmostEqual(v[k], x, places=3, msg="%s %s %s" % (pos, part, k))
+
+    def test_only_b2_and_b4_carry_them(self):
+        for pos, part in (("B1", "cassette"), ("B3", "cassette"), ("B1", "panel"), ("B4", "panel"), ("B2", "frame")):
+            ns = load_back(pos, part)
+            self.assertEqual([q[0] for q in ns["WALL_PARAMS"] if q[0].startswith("el_")], [], (pos, part))
+
+    def test_unit_clears_the_first_stud_by_4_75(self):
+        """PM ruling 2026-10-31 20:35 UTC: 0.75 is too tight; the unit stands 4.75 clear of B2's first stud (the
+        stud's face is at X 395.747, which the messages round to 395.75)."""
+        cass, panel = self.resolved("B2", "cassette"), self.resolved("B2", "panel")
+        stud = panel["close_gap"] / 2 + panel["stile_pitch"]
+        self.assertAlmostEqual(stud - (cass["el_pu_x0"] + cass["el_pu_w"]), 4.75, delta=0.005)
+
+    def test_openings_stay_inside_through_the_edit_test(self):
+        """As built and under the back edit (pod_w 2300, back_ph 1080): the cut-out lies 30 inside B2-CASS and
+        under its top lip; B4's felt holes lie inside its felt, FX-CEIL 2 under the top lip."""
+        edit = {"pod_w": 2300.0, "half_pw": 1100.61, "half_fw": 1098.99, "back_ph": 1080.0}
+        for over in (None, edit):
+            v = self.resolved("B2", "cassette", over)
+            top, x_end = v["panel_z0"] + v["back_ph"], v["pod_w"] / 2 - v["stack_t"]
+            self.assertTrue(v["seam_gap"] / 2 + 30 <= v["el_cut_x0"] and v["el_cut_x1"] <= x_end - 30, over)
+            self.assertTrue(v["panel_z0"] + 30 <= v["el_cut_z0"] and v["el_cut_z1"] <= top - v["lip_w"] - 30, over)
+            w = self.resolved("B4", "cassette", over)
+            lip = w["pod_h"] - w["outer_t"] - w["lin_gap"] - w["lip_w"]
+            self.assertAlmostEqual(lip - (w["el_ceil_z"] + w["el_grm_s"] / 2), 2.0, places=6)
+            felt_x = (w["seam_gap"] / 2 + 1.5, w["pod_w"] / 2 - w["stack_t"] - 1.5)
+            for x, d in ((w["el_ceil_x"], w["el_grm_s"]), (w["el_lt_x"], w["el_shelf_d"])):
+                self.assertTrue(felt_x[0] + 1 <= x - d / 2 and x + d / 2 <= felt_x[1] - 1, (over, x))
+
+    def test_front_plate_band_is_clear_of_the_lips(self):
+        """ELECTRICAL's front plate covers the felt edge by 8 all round: that band stays clear of B2-CASS's lips."""
+        v = self.resolved("B2", "cassette")
+        self.assertGreater(v["el_cut_x0"] - 8, v["seam_gap"] / 2 + v["lip_w"])
+        self.assertLess(v["el_cut_z1"] + 8, v["panel_z0"] + v["back_ph"] - v["lip_w"])
+        self.assertGreater(v["el_cut_z0"] - 8, v["panel_z0"] + v["lip_w"])
+
+
 if __name__ == "__main__":
     unittest.main()

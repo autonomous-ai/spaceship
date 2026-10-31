@@ -1,6 +1,9 @@
 """BUILD-RECORD.md and EDIT-TEST-RECORD.md for the WALL designs, from the post-run outputs.
 
-    python3 v2/01-CAD-Native/wall/make_records.py
+    python3 v2/01-CAD-Native/wall/make_records.py [committed]
+
+With `committed`, only the designs whose reports git tracks (or has staged) are listed, so a branch's records
+match the files it carries.
 
 Reads v2/03-Manufacturing/wall/out/<pn>.json (CAD reports) and v2/01-CAD-Native/wall/out/edit-<pn>.md
 (edit test records), both written in Fusion by post_wall_doc.py, and writes the two records here.
@@ -9,14 +12,29 @@ Reads v2/03-Manufacturing/wall/out/<pn>.json (CAD reports) and v2/01-CAD-Native/
 import glob
 import json
 import os
+import subprocess
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPORTS = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall", "out")
 
 
+def tracked():
+    """Report and edit-record paths git tracks or has staged (None: no filter)."""
+    if "committed" not in sys.argv[1:]:
+        return None
+    out = subprocess.run(["git", "ls-files", "--cached", "--full-name", "v2/03-Manufacturing/wall/out",
+                          "v2/01-CAD-Native/wall/out"], capture_output=True, text=True,
+                         cwd=os.path.join(HERE, "..", "..", ".."), check=True).stdout
+    return {os.path.basename(p) for p in out.split()}
+
+
 def main():
+    keep = tracked()
     reps = []
     for path in sorted(glob.glob(os.path.join(REPORTS, "*.json"))):
+        if keep is not None and os.path.basename(path) not in keep:
+            continue
         with open(path, encoding="utf-8") as fh:
             reps.append(json.load(fh))
     lines = ["# Build record: WALL designs", "",
@@ -43,7 +61,8 @@ def main():
                                                           sum(b["mass_kg"] for b in c["bodies"]), len(c["bodies"])))
     with open(os.path.join(HERE, "BUILD-RECORD.md"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
-    edits = sorted(glob.glob(os.path.join(HERE, "out", "edit-*.md")))
+    edits = sorted(p for p in glob.glob(os.path.join(HERE, "out", "edit-*.md"))
+                   if keep is None or os.path.basename(p) in keep)
     out = ["# Edit test record: WALL designs", "",
            "Guideline section 4.4. `edit_test_wall.py` (run by `post_wall_doc.py`) opens each exported .f3d as a "
            "new, unsaved copy, changes two skeleton values and one wall rule (wall_depth 1495 -> 1300, side_h -> "
