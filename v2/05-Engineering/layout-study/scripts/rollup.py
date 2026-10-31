@@ -60,6 +60,7 @@ BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm cen
 KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the kick strip (S36) and a hollow profile, same outside, 2 mm walls (assumption)
 FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood against this study's 600 (S13); D-85, settled by D-86
 ELEC_KG = 4.94                # kg as shipped: ELECTRICAL P01 (S43), against this study's 3.05 kg allowance
+ELEC_LIGHTS_KG, CALL_LIGHT_M = 0.26, 0.9  # kg and m: ELECTRICAL's lights, the shelf strip and the 0.9 m call light (S43)
 LOAD_BLOCKS_KG = 0.4          # kg per pod: an aluminium load block inside the band at each glide (D-86, BASE's calculation)
 # Parked by D-85, and the rejected glass options
 LAM33_T, LAM44_T = 6.76, 8.76  # mm: 3+3 and 4+4 laminate (glass 3 + 0.76 PVB + 3, as the 4+4 is 4 + 0.76 + 4)
@@ -224,13 +225,16 @@ def lines(**adopt):
     L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, "this study's model"))
     L.append(("ELECTRICAL", "Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL)", 1, ELEC_KG,
               "calculation (ELECTRICAL)", "S43: the power unit in B2 2.80, harness parts 1.00, cord set 0.50, hub zone 0.38, "
-              "lights 0.26 kg, replacing this study's 3.05 kg allowance. The light shelf's budget (D-85) also carries its LED "
-              "strip, so about 0.2 kg may be counted twice until INTERIOR and ELECTRICAL settle which list holds it"))
+              "lights 0.26 kg, replacing this study's 3.05 kg allowance. The light shelf's LED strip is counted here only; "
+              "the shelf's line leaves it out (PM, 2026-11-01)"))
     shelf_kgm = SHELF_KGM if a["budgets"] else SHELF_KGM_ALLOW
-    L.append(("INTERIOR", "Light shelf along the side and back wall tops, with its LED strip", 1,
-              shelf_kgm * shelf_m() + SHELF_BRACKETS_KG, "assumption",
+    strip = ELEC_LIGHTS_KG * shelf_m() / (shelf_m() + CALL_LIGHT_M)      # the shelf's LED strip, in ELECTRICAL's line
+    L.append(("INTERIOR", "Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line)", 1,
+              shelf_kgm * shelf_m() + SHELF_BRACKETS_KG - strip, "assumption",
               ("budget (D-85)" if a["budgets"] else "allowance") + f" until it's designed: {shelf_m():.2f} m (the back wall "
-              f"and the side walls back of the soffit) at {shelf_kgm:g} kg/m plus 0.4 kg of brackets (D-70)"))
+              f"and the side walls back of the soffit) at {shelf_kgm:g} kg/m plus 0.4 kg of brackets (D-70), less its LED "
+              f"strip, {strip:.2f} kg, which ELECTRICAL's line carries (S43: 0.26 kg of lights over the shelf strip and the "
+              "0.9 m call light)"))
     L.append(("INTERIOR", "Work-wall ledge, 1000 mm", 1, LEDGE_KG if a["budgets"] else LEDGE_KG_ALLOW, "assumption",
               "budget (D-85) until it's designed: 1.5 mm folded aluminium, 1000 x 240 developed, plus 2 brackets (D-70)"
               if a["budgets"] else "allowance until it's designed: 1000 x 200 x 12 mm ply at 650 kg/m3 plus 2 brackets (D-70)"))
