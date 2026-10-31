@@ -40,5 +40,5 @@ The cloud copy is Default Project / FocusPod v2 / `710000_P01_ELECTRICAL_CAD`. I
 ## Not in this run
 
 - The edit test runs as its own run on the exported `.f3d` (`EDIT-TEST-RECORD.md`).
-- The Fusion drawing of the route model, and the start of the enclosure body's drawing, wait for the PM's all-clear on drawing starts.
+- The enclosure body's Fusion drawing follows on its own branch after this PR merges (D-91). The route model has no separate Fusion drawing: sheet 3 of the wiring diagram is its drawing (PM ruling 2026-11-01).
 - The three sheet-metal parts (711001, 711002, 711005) need new designs. That waits for the PM's all-clear on making new designs (paused after the 17:54 Fusion crash).

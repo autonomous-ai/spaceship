@@ -244,15 +244,20 @@ def body_tray(design, comp, occ):
         body = bf.bodies.item(0)
         b0 = box(body)
         ztop = b0[5]                      # the base's face toward the room
-        eds = [e for e in body.edges if e.geometry.objectType == adsk.core.Line3D.classType()
-               and abs(e.startVertex.geometry.z * 10 - ztop) < 0.01 and abs(e.endVertex.geometry.z * 10 - ztop) < 0.01]
-        if len(eds) != 4:
-            raise RuntimeError("body: expected 4 edges on the base's room face, got %d" % len(eds))
+
+        def edges_at(zv, keep=lambda e: True):
+            """Straight edges lying at Z zv, read again from the body as it is now (a deleted trial
+            feature can leave earlier edge objects stale)."""
+            return [e for e in comp.bRepBodies.item(0).edges if e.geometry.objectType == adsk.core.Line3D.classType()
+                    and abs(e.startVertex.geometry.z * 10 - zv) < 0.01 and abs(e.endVertex.geometry.z * 10 - zv) < 0.01
+                    and keep(e)]
+        if len(edges_at(ztop)) != 4:
+            raise RuntimeError("body: expected 4 edges on the base's room face, got %d" % len(edges_at(ztop)))
         want = [0.0, 0.0, ev(design, "w"), ev(design, "h")]
         ret = None
         for pos in (adsk.fusion.BendPositionTypes.InsideBendPositionType, adsk.fusion.BendPositionTypes.OutsideBendPositionType):
             for flip in (False, True):
-                efi = ff.createEdgeFlangeInput(eds, vi("d - 2 * t"))
+                efi = ff.createEdgeFlangeInput(edges_at(ztop), vi("d - 2 * t"))
                 efi.heightDatumType = adsk.fusion.FlangeHeightDatumTypes.OuterFacesFlangeHeightDatumType
                 efi.bendPositionType = pos
                 efi.isFlipped = flip
@@ -272,18 +277,18 @@ def body_tray(design, comp, occ):
         body = comp.bRepBodies.item(0)
         b = box(body)
         zfront = b[5] if abs(b[5] - b0[5]) > 1 else b[2]
-        eds = [e for e in body.edges if e.geometry.objectType == adsk.core.Line3D.classType()
-               and abs(e.startVertex.geometry.z * 10 - zfront) < 0.01 and abs(e.endVertex.geometry.z * 10 - zfront) < 0.01]
 
         def on_outline(e):
             s0 = e.startVertex.geometry
             return min(abs(s0.x * 10 - b[0]), abs(s0.x * 10 - b[3]), abs(s0.y * 10 - b[1]), abs(s0.y * 10 - b[4])) < 0.05
-        inner = [e for e in eds if not on_outline(e) and e.length * 10 > 100]
-        if len(inner) != 4:
-            raise RuntimeError("body: expected 4 inner front edges, got %d" % len(inner))
+
+        def inner():
+            return edges_at(zfront, lambda e: not on_outline(e) and e.length * 10 > 100)
+        if len(inner()) != 4:
+            raise RuntimeError("body: expected 4 inner front edges, got %d" % len(inner()))
         lip = None
         for flip in (False, True):
-            efi = ff.createEdgeFlangeInput(inner, vi("lip"))
+            efi = ff.createEdgeFlangeInput(inner(), vi("lip"))
             efi.isFlipped = flip
             efi.isMiteredCorners = True
             efi.heightDatumType = adsk.fusion.FlangeHeightDatumTypes.OuterFacesFlangeHeightDatumType
@@ -308,7 +313,7 @@ def body_tray(design, comp, occ):
             k = round(off / ev(design, "t"))
             if abs(off - k * ev(design, "t")) > 0.05 or abs(k) > 3:
                 raise RuntimeError("body: depth %.3f, not d; off by %.3f (not whole t)" % (b3[5] - b3[2], off))
-            dist = ret.definition.distance
+            dist = adsk.fusion.EdgeFlangeFeatureDefinition.cast(ret.definition).distance
             n = 2 + k + (round((ev(design, "d") - dist.value * 10.0) / ev(design, "t")) - 2)
             dist.expression = "d - %d * t" % n
             adsk.doEvents()
@@ -370,7 +375,7 @@ def cut_hole(design, comp, body, plane_base, offset, c1, c2, d, name, axis_map):
         raise RuntimeError("sketch not fully constrained: " + sk.name)
     ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), adsk.fusion.FeatureOperations.CutFeatureOperation)
     ei.setSymmetricExtent(vi("3 * t"), True)
-    ei.participantBodies = [body]
+    ei.participantBodies = [comp.bRepBodies.item(0) if comp.bRepBodies.count == 1 else body]  # fresh, after earlier cuts
     f = comp.features.extrudeFeatures.add(ei)
     f.name = "CUT - " + name
     return f
