@@ -49,7 +49,7 @@ importlib.reload(C)
 
 DOC_NAME = "410000_%s_CEILING_CAD" % M.REV
 SCOPES = ("cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c",
-          "frame_c1", "frame_c2", "skin_c1", "skin_c2")   # part-only designs for drawings
+          "frame_c1", "frame_c2", "skin_c1", "skin_c2", "assy_c1", "assy_c2")   # part-only designs for drawings
 
 
 def part_doc_name(key):
@@ -816,6 +816,11 @@ def run_part(app, doc, design, root, scope, ctx):
     elif scope in ("skin_c1", "skin_c2"):
         build_skin_bodies(root, scope, ctx)
         set_material(root, ctx, "acp")
+    elif scope in ("assy_c1", "assy_c2"):
+        half = "C1" if scope == "assy_c1" else "C2"
+        build_frame(root, half, ctx)
+        skin_occ, _skin = build_skin(root, "skin_c1" if half == "C1" else "skin_c2", ctx)
+        place(root, skin_occ, M.SKIN_PLACES[half], "SKIN " + half, ctx)
     else:
         for key, bay, bbox, notches in M.fill_strips(ctx.vals):
             if key == scope:
