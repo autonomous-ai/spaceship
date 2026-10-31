@@ -60,6 +60,19 @@ SCOPES = ("cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c",
           "frame_c1", "frame_c2", "skin_c1", "skin_c2", "assy_c1", "assy_c2")   # part-only designs for drawings
 
 
+
+def keep_part_number(doc, comp, pn, what):
+    """Fusion can put back a new design's own part number (a timestamp) when the run that made
+    the design saves it, so the STEP and the drawing would carry that (INTERIOR's first build
+    did): check after the save and, if so, set the part number again and save once more."""
+    if comp.partNumber != pn:
+        print("part number after the save: %r, set again to %s" % (comp.partNumber, pn))
+        comp.partNumber = pn
+        print("saved:", doc.save("%s: part number %s" % (what, pn)))
+        adsk.doEvents()
+    if comp.partNumber != pn:
+        raise RuntimeError("the root part number won't stay %s (it is %r)" % (pn, comp.partNumber))
+
 def part_doc_name(key):
     pn, name, _vn, _k, _m = M.PARTS[key]
     return "%s_%s_%s_CAD" % (pn, M.REV, re.sub(r"[^A-Z0-9]+", "-", name.upper()).strip("-"))
@@ -909,6 +922,7 @@ def run_part(app, doc, design, root, scope, ctx):
     if ARGS.get("save") == "1":
         print("saved:", doc.save("%s %s drawing source, skeleton %s" % (pn, M.REV, M.SKELETON_REV)))
         adsk.doEvents()
+        keep_part_number(doc, root, pn, "%s drawing source" % pn)
 
 
 FOLDER = "Default Project/FocusPod v2"
