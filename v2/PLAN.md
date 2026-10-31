@@ -6,9 +6,9 @@ Sources: the v2 build plan from the indoor pod lead engineer (`v2/00-Control/v2-
 
 ## Goal
 
-Get the v2 prototype design right. It keeps the same size (2500 × 1700 × 2400 mm) and the same faceted yellow front, but it is:
+Get the v2 prototype design right. **The look stays exactly the same.** That means the team's iconic faceted front, the same size (2500 × 1700 × 2400 mm), the same proportions, colors and glass layout. Underneath, it is:
 
-1. **Lighter**, which saves on shipping and makes it easier to handle.
+1. **Much lighter**, which saves on shipping and makes it easier to handle.
 2. **Easy to assemble**: two people put it up in a few hours.
 3. **Easy to ship**: it fits on standard 48 × 40 in LTL pallets. Long parts can go on standard long pallets, but never on odd sizes.
 
@@ -22,7 +22,7 @@ Agents work to these from day one. The hardware engineering lead and the indoor 
 
 | # | Goal | Target | How we prove it |
 |---|---|---|---|
-| 1 | Light | 450 kg or less, and as light as we can make it (v1 comes to about 550 kg from its BOM). Every part one person can carry (25 kg or less), except the glass. | Weights from the CAD and BOM, then the prototype on a scale |
+| 1 | Light | 300 kg or less, about half of v1 (about 550 kg from its BOM). Every part 20 kg or less, so one person can carry it, except the glass. | Weights from the CAD and BOM, then the prototype on a scale |
 | 2 | Easy to assemble | 2 people in 4 hours or less, hand tools only, one bolt size (M6), no glue or welding on site. Every part fits through a 914 × 2032 mm (36 × 80 in) doorway. | Step-by-step assembly sequence with fastener count, then a timed trial on the prototype |
 | 3 | Easy to ship | Fits standard 48 × 40 in (1219 × 1016 mm) pallets, about 6 ft loaded height or less. Anything longer goes on a standard long pallet (such as 48 × 96 in), never a custom size. | Pallet layout from the CAD |
 | 4 | Guardrails: quiet and fresh air | At least as quiet as v1, with 30 dB as the aim. CO2 at or under 1,000 ppm with 2 people inside (about 62 m³/h). Fan noise inside at or under 30 dB(A). | Calculation, then a check on the prototype |
@@ -67,15 +67,30 @@ Shipping sets the panel sizes, so we decide the split before the CAD. A panel sh
 
 The likely answer is one 48 × 40 pallet for the panels, plus one standard long pallet for the glass and long pieces. The other option is to split the decor blocks and floor rails so only the glass needs the long pallet. No custom pallet sizes either way. Milestone 1 picks whichever layout is lightest, cheapest to ship and quickest to assemble, and the CAD follows it.
 
+## Same look, lighter bones
+
+FocusPod lives indoors: in a cool, air-conditioned room, on a flat, level floor. There's no rain, sun, snow, wind or uneven ground, so the structure only has to handle indoor loads (people leaning on it, shipping, and being put together more than once). The weight comes out of what nobody sees:
+
+| Where | Change | Rough saving |
+|---|---|---|
+| Floor | A light frame instead of 50×100 steel (a flat floor carries no ground loads), and lighter boards | about 35 kg |
+| Wall, ceiling and decor frames | Aluminum instead of steel | about 40 kg |
+| Skins | No plywood behind the ACP where sound doesn't need it | up to 58 kg |
+| Glass | 8 mm instead of 10 mm, same smoked glass and same shape | about 20 kg |
+| Table | A lighter build | about 12 kg |
+
+That takes v2 from about 460 kg as planned to roughly 300 kg. The outside looks identical. These are material changes to the build plan, so they go in marked PROPOSED for the hardware engineering lead while we keep building.
+
 ## Quiet without the weight
 
-Mass stops sound, and the plan's wall has about half of v1's sound-blocking mass: about 7.6 kg/m² against 14.4. We won't add heavy layers silently. Milestone 1 lists the light fixes first: seals, quiet vents and where the felt goes. It also shows what reaching 30 dB would cost in kg. If it costs real weight, Dee gets the trade-off before we add it.
+The walls are both the heaviest part and what stops sound. Mass is the cheap way to block sound. The light way is two thin skins with sound-absorbing fill between them, kept from touching where possible. The sound check designs the lightest wall that's still at least as quiet as v1, then shows what each extra dB toward 30 dB costs in kg. If the light wall can't match v1, Dee gets the trade-off before we add weight.
 
 ## What we keep, add and leave out
 
 **Kept from the v2 build plan:**
-- Steel frames: 50×100 and 30×60 tube for the floor, 20×20 tube for the walls, ceiling and decor.
-- 3 mm ACP glued to 6 mm plywood, and 9 mm PET felt fixed with Velcro.
+- The look: the faceted front, proportions, colors and glass layout, unchanged.
+- The frame layout. The material may go from steel to aluminum (see above).
+- 3 mm ACP outside and 9 mm PET felt inside on Velcro. The plywood backing stays only where sound needs it.
 - M6 bolts throughout.
 - Small wall frames: 2 per side, 4 at the back and 2 in the ceiling, adjusted to fit the pallet.
 - A 3-block decor frame.
@@ -112,7 +127,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - A weight budget by assembly, comparing v1 with v2 as planned.
    - Panel split options that fit standard pallets.
    - A pallet layout for each option.
-   - Part weights, with every part at 25 kg or less.
+   - Part weights, with every part at 20 kg or less, plus the lighter indoor material options (aluminum frames, no plywood backing, 8 mm glass, light floor) against the 300 kg target.
    - A 2-person assembly sequence with step count, fastener count and estimated time.
    - A recommendation for the layout the CAD should follow.
 2. **Control pack.** Covers:
@@ -126,7 +141,7 @@ Fusion's built-in MCP server already works on this Mac. I ran a test script thro
    - Real part numbers and fit data for every bought item, lightest options first.
    - The parts the plan doesn't cover yet: glass door hinges, handle, seals, glass clamps, latch, lights and power inlet.
    - Fasteners for the 20×20 tube.
-   - A quick sound and air check: the light fixes, and what 30 dB would cost in kg.
+   - A sound and air check: the lightest wall that's at least as quiet as v1 (two skins with fill), the light fixes, the effect of 8 mm glass, and what 30 dB would cost in kg.
 
 ### Milestone 2: sample set (about 2 days, 2 to 3 Engineers, starting once Phase 0 passes)
 
@@ -169,7 +184,7 @@ About 1.5 weeks to a prototype-ready package, with no waiting on reviews. The cr
 
 1. **Drawings.** The API covers what we need, but readable dimension placement is where the last attempt fell short. Each part gets a dimension plan, every rendered sheet gets checked by eye, and the hardware leads tune the template on day 2.
 2. **Claude allowance.** This Mac's weekly Claude allowance is 70% used until Nov 3, and Opus at max effort uses it fast. If it runs low, the non-Fusion Engineers can move to another Swarm machine with a Claude account, if Dee agrees.
-3. **Light vs quiet.** Light fixes come first, and any heavy fix goes to Dee with its cost in kg.
+3. **Light vs quiet.** At 300 kg the walls lose most of their mass. The two-skin wall with fill is the light answer, and light fixes come first. Any heavy fix goes to Dee with its cost in kg.
 4. **Late feedback.** With no gates, a late "no" can mean rework. Parametric CAD and small review packets after each milestone keep that cheap.
 5. **One Fusion.** A single Fusion on this Mac is the bottleneck for CAD and drawings. Fusion runs scripts one at a time from a queue. If that's too slow, we add a second Fusion seat on another machine.
 
