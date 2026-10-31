@@ -89,6 +89,16 @@ def front_door_cad(path=FRONT_DOOR_LIST):
 
 
 FRONT_DOOR = front_door_cad()
+FRONT_FIXED_LIST = os.path.join(MANUF, "front", "360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv")  # PR #28 (S37)
+
+
+def front_fixed_cad(path=FRONT_FIXED_LIST):
+    """FRONT's fixed glass unit from its merged parts list (PR #28): the unit's total and the pane."""
+    by = {r["pn"]: r for r in read_parts_list(path) if r["pn"]}
+    return dict(unit=by["360002"]["kg"], pane=by["361003"]["kg"])
+
+
+FRONT_FIXED = front_fixed_cad()
 BASE_LIST = os.path.join(MANUF, "base", "110000_P01_BASE_BOM.csv")                           # PR #55 (S44)
 
 
@@ -126,7 +136,8 @@ CEIL_TRAY = (1163.0, 1048.0)                                  # S35: the cassett
 CEIL_FILL_M2 = 1.11674 * (0.33875 + 0.33875 + 0.27475)        # S35: the three fill strips on each cassette's back
 DOOR_UNIT_DRAFT = 50.17       # kg: the door unit in PR #27's first parts list (S36), the estimate before its CAD merged
 DOOR_GLASS = FRONT_DOOR["leaf"]                               # S36: the 4+4 leaf, CAD on main
-FIXED_UNIT, FIXED_GLASS = 29.58, 28.584                       # S37
+FIXED_UNIT_DRAFT = 29.58      # kg: the fixed glass unit in PR #28's first parts list (S37), the estimate before its CAD merged
+FIXED_GLASS = FRONT_FIXED["pane"]                             # S37: the 4+4 pane, CAD on main
 LIP_KG = 0.43                 # confirmed, D-69: each wall cassette with the 12 mm lips (S39)
 CORNER_TUBES_KG = 1.3         # confirmed, D-63 (S39)
 BOND_OVER_KG = 0.5            # calculation, PR #23 via D-71: bond over this study's 0.25 kg/m2 (S39)
@@ -323,7 +334,9 @@ def lines(**adopt):
               f"S36, CAD on main: FRONT parts list 360001 P01: leaf {fd['leaf']:.3f}, kick strip {fd['kick']:.3f} (hollow, "
               "D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair"
               + ("" if a["kick"] else f"; + the solid strip's {KICK_KG - fd['kick']:.2f} kg")))
-    L.append(("FRONT", "Fixed glass unit 360002: 4+4 pane, U-profiles and seals", 1, FIXED_UNIT, "calculation (CAD)", "S37"))
+    L.append(("FRONT", "Fixed glass unit 360002: 4+4 pane, U-profile, U-seal and magnetic seal half", 1, FRONT_FIXED["unit"],
+              "calculation (CAD); magnetic seal HOLD", f"S37, CAD on main: FRONT parts list 360002 P01: pane "
+              f"{FRONT_FIXED['pane']:.3f}, U-profile, U-seal and one half of the magnetic seal (D-83)"))
     for name, size, kg, basis in AA.d60_parts():
         filled = lighter and (name.startswith("Air column") or name.startswith("Soffit"))
         loose = name.startswith("Intake riser") or name.startswith("Supply fan box")
@@ -386,7 +399,9 @@ def cad_swaps():
              "WALL 210101 P01, PR #41"),
             ("Wall cassette, side, lower", 2, cass_est, rows["Wall cassette, side, lower"][3], "WALL 510101 P01, PR #41"),
             ("Door unit 360001", 1, DOOR_UNIT_DRAFT - (KICK_KG - KICK_KG_HOLLOW), door[3],
-             "FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip)")] + base_swaps()
+             "FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip)"),
+            ("Fixed glass unit 360002", 1, FIXED_UNIT_DRAFT, FRONT_FIXED["unit"],
+             "FRONT 360002 P01, PR #28 (the estimate: its first list)")] + base_swaps()
 
 
 def base_swaps():

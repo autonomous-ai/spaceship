@@ -88,7 +88,7 @@ def is_placeholder(row):
     raw = row.get("_raw", {})
     rtype = (raw.get("row_type") or "").lower()
     note = (raw.get("note") or raw.get("notes") or "").lower()
-    src = (raw.get("source_file") or "")
+    src = (raw.get("source_file") or "").split(" @ ")[0].strip()      # 'path.csv @ working tree' since #122
     return ("register only" in rtype or "not in any parts list" in note
             or (src.startswith("v2/03-Manufacturing/") and src.endswith(".csv")))
 
@@ -105,6 +105,8 @@ def find_parts_lists(root):
         for p in walk_files(root, top, exts=(".csv",)):
             if "/skeleton/" in rel(root, p):
                 continue          # the skeleton parameter table is not a parts list
+            if "/04-BOM/" in "/" + rel(root, p) and "MASTER" not in os.path.basename(p).upper():
+                continue          # the master BOM's generated views (bought parts, made parts by process) copy it
             try:
                 rows = read_csv(p)
             except (UnicodeDecodeError, OSError):

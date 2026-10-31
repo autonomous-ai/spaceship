@@ -25,7 +25,7 @@ FRONT,Decor block - left,1,9.976,9.98,calculation,this study's model from v1's S
 FRONT,Decor block - right,1,18.056,18.06,calculation,this study's model from v1's STEP shapes (S02),estimate
 FRONT,Decor block - top,1,7.015,7.02,calculation,this study's model from v1's STEP shapes (S02),estimate
 FRONT,"Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull",1,48.590,48.59,calculation (CAD); hinges and pull HOLD,"S36, CAD on main: FRONT parts list 360001 P01: leaf 43.854, kick strip 1.218 (hollow, D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair","CAD, main"
-FRONT,"Fixed glass unit 360002: 4+4 pane, U-profiles and seals",1,29.580,29.58,calculation (CAD),S37,"CAD, open PR"
+FRONT,"Fixed glass unit 360002: 4+4 pane, U-profile, U-seal and magnetic seal half",1,29.540,29.54,calculation (CAD); magnetic seal HOLD,"S37, CAD on main: FRONT parts list 360002 P01: pane 28.590, U-profile, U-seal and one half of the magnetic seal (D-83)","CAD, main"
 AIR,"Supply cartridge, in the air column",1,11.155,11.15,calculation,"S38: aluminium 2.0 mm casing, three 50 mm layers at 40 kg/m3",estimate
 AIR,"Exhaust cartridge, in the soffit",1,11.155,11.15,calculation,S38: same part,estimate
 AIR,"Air column: felt-covered faces, fill, frame, kick grille, hub plate",1,9.735,9.74,calculation; fill provisional,S38: faces 3 mm ACP + 9 mm felt; 30 mm fill; 4 corner angles; 0.6 kg grille and plate (assumption); fill 24 kg/m3,estimate

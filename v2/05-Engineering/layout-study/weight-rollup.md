@@ -32,15 +32,16 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | L1 and R1, lower side outer panels | 2 | 11.08 | 11.16 | +0.09 | WALL 210101 P01, PR #41 |
 | Wall cassette, side, lower | 2 | 10.47 | 10.35 | -0.13 | WALL 510101 P01, PR #41 |
 | Door unit 360001 | 1 | 49.08 | 48.59 | -0.49 | FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip) |
+| Fixed glass unit 360002 | 1 | 29.58 | 29.54 | -0.04 | FRONT 360002 P01, PR #28 (the estimate: its first list) |
 | Base band piece, back | 1 | 2.69 | 2.68 | -0.01 | BASE 111103 P01, PR #55 |
 | Base band piece, side | 2 | 1.84 | 1.67 | -0.17 | BASE 111101 P01, PR #55 |
 | Corner key, back | 2 | 0.15 | 0.17 | +0.02 | BASE 111211 P01, PR #55 |
 | Glide load blocks (D-86's 0.4 kg), now glide doublers | 8 | 0.05 | 0.01 | -0.04 | BASE 111601 P01, PR #55 |
 | Floor panel | 2 | 7.66 | 7.12 | -0.54 | BASE 111401 P01, PR #55 |
 | Floor mat | 1 | 2.10 | 2.12 | +0.02 | BASE 111501 P01, PR #55 |
-| **In all** | | | | **-2.21** | |
+| **In all** | | | | **-2.25** | |
 
-Lines by basis: 9 from CAD on main, 1 partly, 4 from CAD in a team's open PR, 28 estimated.
+Lines by basis: 10 from CAD on main, 1 partly, 3 from CAD in a team's open PR, 28 estimated.
 
 ## Every line
 
@@ -72,7 +73,7 @@ Lines by basis: 9 from CAD on main, 1 partly, 4 from CAD in a team's open PR, 28
 | FRONT | Decor block - right | 1 | 18.06 | 18.06 | calculation | this study's model from v1's STEP shapes (S02) | estimate |
 | FRONT | Decor block - top | 1 | 7.02 | 7.02 | calculation | this study's model from v1's STEP shapes (S02) | estimate |
 | FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.59 | 48.59 | calculation (CAD); hinges and pull HOLD | S36, CAD on main: FRONT parts list 360001 P01: leaf 43.854, kick strip 1.218 (hollow, D-85), drop seal, U-seal, 3 hinges, the strike and the magnetic seal half (D-83), the pull pair | CAD, main |
-| FRONT | Fixed glass unit 360002: 4+4 pane, U-profiles and seals | 1 | 29.58 | 29.58 | calculation (CAD) | S37 | CAD, open PR |
+| FRONT | Fixed glass unit 360002: 4+4 pane, U-profile, U-seal and magnetic seal half | 1 | 29.54 | 29.54 | calculation (CAD); magnetic seal HOLD | S37, CAD on main: FRONT parts list 360002 P01: pane 28.590, U-profile, U-seal and one half of the magnetic seal (D-83) | CAD, main |
 | AIR | Supply cartridge, in the air column | 1 | 11.15 | 11.15 | calculation | S38: aluminium 2.0 mm casing, three 50 mm layers at 40 kg/m3 | estimate |
 | AIR | Exhaust cartridge, in the soffit | 1 | 11.15 | 11.15 | calculation | S38: same part | estimate |
 | AIR | Air column: felt-covered faces, fill, frame, kick grille, hub plate | 1 | 9.74 | 9.74 | calculation; fill provisional | S38: faces 3 mm ACP + 9 mm felt; 30 mm fill; 4 corner angles; 0.6 kg grille and plate (assumption); fill 24 kg/m3 | estimate |
