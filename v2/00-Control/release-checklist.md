@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (afcedb9), PR #55 (9028182), PR #105 (87b36ff), PR #28 (52174f1), PR #64 (ea8c58b), PR #104 (843f86b), PR #32 (6d0e4d2), PR #91 (3b891cf), PR #92 (543dda3). The Mac's screen at run time: **unlocked**. 250 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
+Read from: main (63cefe0), PR #55 (9028182), PR #28 (52174f1), PR #91 (3b891cf), PR #92 (543dda3), PR #64 (3e5c9f3), PR #104 (c96dffc), PR #32 (cec14ba), PR #105 (623a6d8). The Mac's screen at run time: **unlocked**. 262 files in the CAD, drawing and manufacturing folders; the FAI plan's 47 characteristics, 11 functional checks and 18 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -19,15 +19,15 @@ Read from: main (afcedb9), PR #55 (9028182), PR #105 (87b36ff), PR #28 (52174f1)
 | CEILING (builds AIR, D-80) | — | — | — | — | — | — |
 | CEILING (builds INTERIOR, D-80) | — | — | — | — | — | — |
 | ELECTRICAL | 8 | 4 | 0 | 3 | 0 | 64 |
-| FRONT | 0 | 5 | 0 | 3 | 0 | 5 |
+| FRONT | 0 | 15 | 0 | 3 | 0 | 6 |
 | WALL | 2 | 14 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 10 | 44 | 0 | 7 | 1 | 78 |
+| **All, each number once** | 10 | 54 | 0 | 7 | 1 | 79 |
 
 No parts list yet: CEILING (builds AIR, D-80), CEILING (builds INTERIOR, D-80).
 
-44 of the 54 made numbers have no drawing yet; for 37 of them the drawing is the only gap, so their drawings can start now (D-84).
+54 of the 64 made numbers have no drawing yet; for 37 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 44, DXF or cut list 7.
+What the open made numbers miss: drawing 54, FAI 10, DXF or cut list 8, finish 1.
 
 ## Made parts and assemblies
 
@@ -50,19 +50,19 @@ What the open made numbers miss: drawing 44, DXF or cut list 7.
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 410000 | CEILING | PR #92 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
-| 410101 | CEILING - PANEL ASSY - C1 | PR #92 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
-| 410102 | CEILING - PANEL ASSY - C2 | PR #92 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
-| 411101 | CEILING - PANEL FRAME - C1 | PR #92 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
-| 411102 | CEILING - PANEL FRAME - C2 | PR #92 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
-| 411301 | CEILING - SKIN - COMMON | PR #92 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
-| 510301 | LINING - CASSETTE - CEILING - COMMON | PR #92 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
-| 513101 | LINING - TRAY - CEILING | PR #92 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 513102 | LINING - RIB - CEILING | PR #92 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 513201 | LINING - FELT - CEILING | PR #92 | yes | yes | yes | yes | no | yes | n/a | K-L04 | open: drawing |
-| 513301 | LINING - FILL - CEILING - BAY A | PR #92 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
-| 513302 | LINING - FILL - CEILING - BAY B | PR #92 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
-| 513303 | LINING - FILL - CEILING - BAY C | PR #92 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
+| 410000 | CEILING | PR #32 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
+| 410101 | CEILING - PANEL ASSY - C1 | PR #32 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
+| 410102 | CEILING - PANEL ASSY - C2 | PR #32 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
+| 411101 | CEILING - PANEL FRAME - C1 | PR #32 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
+| 411102 | CEILING - PANEL FRAME - C2 | PR #32 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
+| 411301 | CEILING - SKIN - COMMON | PR #32 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
+| 510301 | LINING - CASSETTE - CEILING - COMMON | PR #32 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 513101 | LINING - TRAY - CEILING | PR #32 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 513102 | LINING - RIB - CEILING | PR #32 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 513201 | LINING - FELT - CEILING | PR #32 | yes | yes | yes | yes | no | yes | n/a | K-L04 | open: drawing |
+| 513301 | LINING - FILL - CEILING - BAY A | PR #32 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
+| 513302 | LINING - FILL - CEILING - BAY B | PR #32 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
+| 513303 | LINING - FILL - CEILING - BAY C | PR #32 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
 
 ### ELECTRICAL
 
@@ -85,11 +85,21 @@ What the open made numbers miss: drawing 44, DXF or cut list 7.
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #105 | yes | yes | yes | n/a | no | yes | n/a | no | open: drawing, FAI |
+| 351301 | FRONT - DECOR SKIN - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | no | open: drawing, FAI |
+| 351306 | FRONT - DECOR FRAME - DR | PR #105 | yes | yes | yes | yes | no | yes | yes | no | open: drawing, FAI |
+| 351302 | FRONT - DECOR BACK PLATE - DR | PR #105 | yes | yes | yes | yes | no | yes | yes | no | open: drawing, FAI |
+| 351305 | FRONT - DECOR ACCESS PANEL - DR | PR #105 | yes | yes | yes | yes | no | yes | yes | no | open: drawing, FAI |
+| 351303 | FRONT - DECOR INNER PANEL - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | no | open: drawing, FAI |
+| 351304 | FRONT - DECOR INNER PANEL FELT - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | no | open: drawing, FAI |
+| 350004 | FRONT - AIR SUPPLY ASSY - DR | PR #105 | yes | yes | yes | n/a | no | yes | n/a | no | open: drawing, FAI |
+| 351402 | FRONT - AIR INTAKE RISER - DR | PR #105 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 351404 | FRONT - SUPPLY FAN BOX - DR | PR #105 | yes | yes | yes | n/a | no | yes | no | no | open: drawing, finish, FAI |
 | 360001 | FRONT - DOOR UNIT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
 | 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
 | 361002 | FRONT - DOOR KICK STRIP | PR #105 | yes | yes | yes | yes | no | yes | yes | K-F05, K-F06 | open: drawing |
-| 360002 | FRONT - FIXED GLASS UNIT | PR #28 | yes | yes | yes | n/a | no | yes | n/a | K-F03, K-F04 | open: drawing |
-| 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED | PR #28 | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
+| 360002 | FRONT - FIXED GLASS UNIT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-F03, K-F04 | open: drawing |
+| 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
 
 ### WALL
 
@@ -130,9 +140,9 @@ What the open made numbers miss: drawing 44, DXF or cut list 7.
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 518001 | LINING - CASSETTE CLIP | PR #92 | H-10 | HOLD | T07 | HOLD |
-| 518002 | LINING - CEILING SAFETY CATCH | PR #92 | H-11 | HOLD | T08 | HOLD |
-| 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | PR #92 | H-12 | yes | T09 | done |
+| 518001 | LINING - CASSETTE CLIP | PR #32 | H-10 | HOLD | T07 | HOLD |
+| 518002 | LINING - CEILING SAFETY CATCH | PR #32 | H-11 | HOLD | T08 | HOLD |
+| 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | PR #32 | H-12 | yes | T09 | done |
 
 ### ELECTRICAL
 
@@ -210,14 +220,15 @@ What the open made numbers miss: drawing 44, DXF or cut list 7.
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
+| 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | PR #105 | n/a (team-numbered) | HOLD | T04 | HOLD |
 | 368001 | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 | PR #105 | H-15 | yes | T13 | done |
-| 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | PR #105, PR #28 | H-16 | yes | F-03 | done |
+| 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | PR #105 | H-16 | yes | F-03 | done |
 | 368101 | FRONT - DOOR HINGE - HOLD | PR #105 | H-21 | HOLD | T13 | HOLD |
 | 368102 | FRONT - DOOR STRIKE | PR #105 | H-22 | HOLD | F-02 | HOLD |
 | 368006 | FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD | PR #105 | H-18 | HOLD | T13 | HOLD |
 | 368103 | FRONT - DOOR PULL PAIR - HOLD | PR #105 | H-24 | HOLD | T13 | HOLD |
-| 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 | PR #28 | H-19 | yes | F-03 | done |
-| 368003 | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD | PR #28 | H-17 | HOLD | T13 | HOLD |
+| 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 | PR #105 | H-19 | yes | F-03 | done |
+| 368003 | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD | PR #105 | H-17 | HOLD | T13 | HOLD |
 
 ### WALL
 
@@ -251,7 +262,7 @@ What the open made numbers miss: drawing 44, DXF or cut list 7.
 
 `python3 v2/00-Control/build_release_checklist.py --open-prs` reads origin/main and every open PR that changes parts, through the master BOM's reader (a later branch adds only the files it changed), the files named `PARTNO_REV_NAME_DOCTYPE.ext` in `v2/01-CAD-Native`, `v2/02-Drawings` and `v2/03-Manufacturing`, the FAI plan (`v2/06-Verification/fai-plan.md`) and the test plans. Without `--open-prs` it reads this working tree.
 
-- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing carry its own number, except as D-89 allows, read as the mechanical check reads them: a drawing whose text says TABULATED covers the other numbers of its family and kind that it lists; a felt or fill piece needs no drawing or DXF when a cut-list or parts-list row gives its number, size, material and tolerance and names no pockets, notches or holes (the mechanical check also counts the holes and faces in its STEP); another soft good cut from sheet or roll (foam, gasket, seal or tape, by the name's last word in its function field) needs no drawing when its DXF gives the outline, or, as a plain strip or rectangle, when such a row also gives its thickness; a flat part cut from sheet needs no drawing when it has its own DXF and its row's process names laser, waterjet or router cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole note is left to the drawing review. The DXF may draw only on the CUT and MARK layers (the guideline's layers, section 9; every entity in its ENTITIES section counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, and a stored block only where an INSERT places it, its layer-0 shapes taking the INSERT's layer): a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing whatever the process says. Assemblies always keep their drawings. Part (4) is for flat metal sheet: glass and other materials keep their drawings (D-99).
+- A part's CAD and STEP may sit in its assembly's file; its DXF and drawing carry its own number, except as D-89 allows, read as the mechanical check reads them: a drawing whose text says TABULATED covers the other numbers of its family and kind that it lists; a felt or fill piece needs no drawing or DXF when a cut-list or parts-list row gives its number, size, material and tolerance and names no pockets, notches or holes (the mechanical check also counts the holes and faces in its STEP); another soft good cut from sheet or roll (foam, gasket, seal or tape, by the name's last word in its function field) needs no drawing when its DXF gives the outline, or, as a plain strip or rectangle, when such a row also gives its thickness; a flat part cut from sheet needs no drawing when it has its own DXF and its row's process names laser, waterjet or router cutting and no bend, fold, groove, lap, machining, drilling, tapping, welding or bonding, and the row gives material, thickness, finish and an ISO 2768 general tolerance. The checklist can't tell which holes are critical, so a critical-hole note is left to the drawing review. The DXF may draw only on the CUT and MARK layers (the guideline's layers, section 9; every entity in its ENTITIES section counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, and a stored block only where an INSERT places it, its layer-0 shapes taking the INSERT's layer): a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing whatever the process says. Assemblies always keep their drawings. Part (4) is for flat metal sheet and flat ACP (D-99, D-100): glass and other materials keep their drawings, and a routed-and-folded ACP part keeps its own through its groove and fold layers.
 - ELECTRICAL's 710000 is drawn by its wiring diagram, whose sheet 3 holds the route and joint views (D-93).
 - The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: the Joints Engineer makes them and the teams place them by reference (D-95).
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.

@@ -67,6 +67,7 @@ TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
 FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL", "joints": "JOINTS",
                "air": "CEILING (builds AIR, D-80)", "interior": "CEILING (builds INTERIOR, D-80)"}
 BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"
+ACP = re.compile(r"\bACP\b|aluminium composite", re.I)  # a flat ACP part counts under D-89 part (4) (D-100)
 JOINTS_KEYS = re.compile(r"^11121[1-4]$")  # the base corner and inline keys: made by the Joints Engineer (D-95)
 SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
 FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
@@ -359,7 +360,7 @@ def flat_lacks(rows):
             re.search(r"\d+(?:\.\d+)?\s*mm\b", material))
         not_flat = sorted({m.group(0).lower() for m in NOT_FLAT.finditer(process)})
         lacks = [n for n, ok in (
-            ("metal sheet (D-99)", bool(METAL.search(material))),
+            ("metal or ACP sheet (D-99, D-100)", bool(METAL.search(material) or ACP.search(material))),
             ("a cut by laser, waterjet or router in its process", bool(SHEET_CUT.search(process))),
             ("no bends or machined features (its process names %s)" % ", ".join(not_flat), not not_flat),
             ("material", bool(material)), ("thickness", thick), ("finish", bool(has(r"finish"))),
@@ -592,7 +593,7 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
             "every entity in its ENTITIES section counts except the BLOCK, ENDBLK, VERTEX and SEQEND records, and a stored block only "
             "where an INSERT places it, its layer-0 shapes taking the INSERT's layer): "
             "a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the drawing whatever the process says. "
-            "Assemblies always keep their drawings. Part (4) is for flat metal sheet: glass and other materials keep their drawings (D-99).",
+            "Assemblies always keep their drawings. Part (4) is for flat metal sheet and flat ACP (D-99, D-100): glass and other materials keep their drawings, and a routed-and-folded ACP part keeps its own through its groove and fold layers.",
             "- ELECTRICAL's 710000 is drawn by its wiring diagram, whose sheet 3 holds the route and joint views (D-93).",
             "- The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: "
             "the Joints Engineer makes them and the teams place them by reference (D-95).",
