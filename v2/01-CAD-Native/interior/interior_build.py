@@ -203,13 +203,23 @@ def open_or_create(app, name):
     folder = proj.rootFolder
     for n in parts[1:]:
         folder = folder.dataFolders.itemByName(n)
-    files = [folder.dataFiles.item(i) for i in range(folder.dataFiles.count)]
-    files = [f for f in files if f.name == name]
+    found, unreadable = [], 0
+    for i in range(folder.dataFiles.count):
+        try:
+            f = folder.dataFiles.item(i)
+            if f.name == name:
+                found.append(f)
+        except RuntimeError:
+            unreadable += 1
     app.data.activeProject = proj
-    if files:
-        d = app.documents.open(files[0], True)
+    if found:
+        d = app.documents.open(found[0], True)
         d.activate()
         return d, "opened"
+    if unreadable:
+        # PM ruling 2026-11-01: list the folder first and stop before creating anything if any
+        # entry can't be read (that entry could be this very design)
+        raise RuntimeError("%d entries of %s can't be read, so %r isn't made" % (unreadable, FOLDER, name))
     if ARGS.get("create") != "1":
         # PM ruling 2026-11-01: no new designs until the runner's folder fix lands, since an
         # entry Fusion can't read could make a second, empty design with a real one's name
@@ -288,7 +298,12 @@ def run(_context):
         run_parts(app, [k for k in ARGS["parts"].split(",") if k])
         return
     into_active = ARGS.get("into_active") == "1"
-    if into_active:
+    own = ARGS.get("own_doc") == "1"          # the script opens or makes DOC_NAME itself
+    if own:
+        doc, how = open_or_create(app, DOC_NAME)
+        print("document %s: %s" % (DOC_NAME, how))
+        into_active = True
+    elif into_active:
         doc = app.activeDocument
         if doc.name.split(" v")[0] != DOC_NAME:
             raise RuntimeError("active document is %r, not %s" % (doc.name, DOC_NAME))
@@ -391,7 +406,7 @@ def run(_context):
                     raise RuntimeError("export failed: " + rel)
         ok = True
     finally:
-        if not (into_active or ARGS.get("keep") == "1"):
+        if own or not (into_active or ARGS.get("keep") == "1"):
             doc.close(False)
     if not ok:
         raise RuntimeError("build did not finish")
