@@ -471,11 +471,11 @@ def pallets_table(key, pals):
 def steps_table(steps, t):
     rows = []
     for i, s in enumerate(steps, 1):
-        rows.append([i, s["name"], s["lifts"], s["bolts"], f1(s["two"] / 60), f1(s["one"] / 60), s["access"]])
-    rows.append(["", f"**Elapsed for 2 people, with {p('inefficiency') * 100:.0f} % for hand-offs**", t["lifts"], t["bolts"], "", "",
+        rows.append([i, s["name"], s["lifts"], s["bolts"], s.get("cams", 0), f1(s["two"] / 60), f1(s["one"] / 60), s["access"]])
+    rows.append(["", f"**Elapsed for 2 people, with {p('inefficiency') * 100:.0f} % for hand-offs**", t["lifts"], t["bolts"], t["cams"], "", "",
                  f"**{t['elapsed_min']:.0f} min ({t['person_h']:.1f} person-hours)**"])
-    return table(["#", "Step", "Lifts", "M6 bolts", "2-person min", "1-person min (shared)", "Access check"], rows,
-                 ["r", "l", "r", "r", "r", "r", "l"])
+    return table(["#", "Step", "Lifts", "M6 bolts", "Clips", "2-person min", "1-person min (shared)", "Access check"], rows,
+                 ["r", "l", "r", "r", "r", "r", "r", "l"])
 
 
 def main():

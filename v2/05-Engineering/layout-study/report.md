@@ -10,7 +10,7 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 1. **Weight.** v1 weighs 480 kg by its BOM (range 459 to 574 kg). Spaceship as planned weighs 447 kg. The light build is 303 kg, and 304 kg with the fast-assembly hardware. The decided build, with the sound study's final walls and a 10 mm smoked acrylic front, is **378 kg** (the sound study says about 385 kg). That is inside the PM's 400 kg cap.
 2. **Parts.** In the decided build every part is 20 kg or less except the glass. The heaviest is F-DR at 19.1 kg. The ceiling fill rides on the back of its lining cassette; inside the ceiling panel it would make that panel 21.1 kg.
 3. **Shipping (DECIDED).** One 48 x 40 pallet and one 96 x 48 pallet: 477 kg gross, at most 1,646 mm high, 6.0 lb/ft3. That is with 81 mm walls and a 141 mm ceiling.
-4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **102 min** (3.4 person-hours): 76 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
+4. **Assembly (DECIDED changes).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **121 min** (4.0 person-hours): 76 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
 5. **Open call.** Carrying the ceiling fill on its cassette is PROPOSED. Everything else in the layout is DECIDED.
 
 ## Decisions
@@ -265,21 +265,21 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | [1: 48x40 in](out/pallets-A-1-48x40.svg) | 1,219 x 1,016 | 263 | 580 | 1,646 (64.8 in) | 72.0 | 8.1 | B-BOARD, B-RAIL-FL-06, B-RAIL-FL-07, B-RAIL-FL-08, C-HALF, L-FELT-BACK, L-FELT-CEIL, L-FELT-SIDE, W-BACK-LO, W-BACK-UP, W-SIDE-LO, W-SIDE-UP |
 | [2: 96x48 in](out/pallets-A-2-96x48.svg) | 2,438 x 1,219 | 287 | 633 | 788 (31.0 in) | 82.7 | 7.7 | B-JOIST, B-RAIL-FL-01, B-RAIL-FL-02, B-RAIL-FL-03, B-RAIL-FL-04, B-RAIL-FL-05, B-THRESH, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, I-TABLE, KIT-CARTON |
 
-| # | Step | Lifts | M6 bolts | 2-person min | 1-person min (shared) | Access check |
-| ---: | --- | ---: | ---: | ---: | ---: | --- |
-| 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 20.0 | 0.0 | - |
-| 2 | Raised frame: bars, corner brackets, joists, 6 feet; level | 15 | 32 | 24.2 | 24.2 | Corner bolts from above and inside before any wall stands on the frame. |
-| 3 | 2 floor boards screwed to the joists (plan: screws, a second fastener and a driver) | 2 | 0 | 3.0 | 5.3 | From above, open. |
-| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, bolts at seam and corners | 4 | 25 | 6.0 | 12.5 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
-| 5 | Upper walls: back pair, then sides; bolts at horizontal seams, vertical seam and corners | 4 | 25 | 6.0 | 12.5 | As the lower walls; top fixings at 2.2 m need the step stool. |
-| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 24 | 5.5 | 12.0 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
-| 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 4.5 | 9.0 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
-| 8 | Fixed glass into its sealed profiles | 1 | 4 | 12.8 | 2.0 | Profile frame bolted from inside; glass held by clip-in beads. |
-| 9 | Door: hinges on the left decor post, pull, drop seal; adjust swing | 1 | 6 | 18.8 | 3.0 | Hinge bolts reachable with the door open 90 degrees. |
-| 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
-| 11 | Felt lining: 10 panels pressed onto Velcro | 10 | 0 | 0.0 | 12.5 | Closes every bay: last. |
-| 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 10.0 | 0.0 | - |
-|  | **Elapsed for 2 people, with 15 % for hand-offs** | 43 | 134 |  |  | **193 min (6.4 person-hours)** |
+| # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 0 | 20.0 | 0.0 | - |
+| 2 | Raised frame: bars, corner brackets, joists, 6 feet; level | 15 | 32 | 0 | 24.2 | 24.2 | Corner bolts from above and inside before any wall stands on the frame. |
+| 3 | 2 floor boards screwed to the joists (plan: screws, a second fastener and a driver) | 2 | 0 | 0 | 3.0 | 5.3 | From above, open. |
+| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, bolts at seam and corners | 4 | 25 | 0 | 6.0 | 12.5 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
+| 5 | Upper walls: back pair, then sides; bolts at horizontal seams, vertical seam and corners | 4 | 25 | 0 | 6.0 | 12.5 | As the lower walls; top fixings at 2.2 m need the step stool. |
+| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 24 | 0 | 5.5 | 12.0 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
+| 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 0 | 4.5 | 9.0 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
+| 8 | Fixed glass into its sealed profiles | 1 | 4 | 0 | 12.8 | 2.0 | Profile frame bolted from inside; glass held by clip-in beads. |
+| 9 | Door: hinges on the left decor post, pull, drop seal; adjust swing | 1 | 6 | 0 | 18.8 | 3.0 | Hinge bolts reachable with the door open 90 degrees. |
+| 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
+| 11 | Felt lining: 10 panels pressed onto Velcro | 10 | 0 | 0 | 0.0 | 12.5 | Closes every bay: last. |
+| 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
+|  | **Elapsed for 2 people, with 15 % for hand-offs** | 43 | 134 | 0 |  |  | **193 min (6.4 person-hours)** |
 
 </details>
 
@@ -390,21 +390,21 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | [2: 48x40 in](out/pallets-B2-2-48x40.svg) | 1,219 x 1,016 | 103 | 227 | 1,806 (71.1 in) | 79.0 | 2.9 | B-BAND-BACK, B-BAND-FRONT-L, B-BAND-FRONT-R, B-BAND-SIDE, B-FLOOR, B-THRESH, W-BACK-LO, W-BACK-UP |
 | [3: 96x48 in](out/pallets-B2-3-96x48.svg) | 2,438 x 1,219 | 174 | 383 | 398 (15.7 in) | 41.8 | 9.2 | F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON |
 
-| # | Step | Lifts | M6 bolts | 2-person min | 1-person min (shared) | Access check |
-| ---: | --- | ---: | ---: | ---: | ---: | --- |
-| 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 14.0 | 0.0 | - |
-| 2 | Base band: 4 pieces and corner keys on 8 glides; level from above | 6 | 16 | 13.5 | 7.8 | Corner keys from above and inside; closed later by the wall panels, so bolted first. |
-| 3 | Seal mat and 2 thin floor panels dropped inside the band (no fixings) | 2 | 0 | 2.2 | 0.0 | - |
-| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, cam or clip connectors at seam and corners | 4 | 16 | 1.3 | 9.3 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
-| 5 | Upper walls: back pair, then sides; cam or clip connectors at horizontal seams, vertical seam and corners | 4 | 0 | 1.3 | 7.2 | As the lower walls; top fixings at 2.2 m need the step stool. |
-| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4.0 | 8.2 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
-| 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 6 | 30 | 2.0 | 13.5 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
-| 8 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
-| 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
-| 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
-| 11 | Felt: 15 loose strips over the joints (the rest came pre-fitted) | 0 | 0 | 0.0 | 5.0 | Closes the joints: last. |
-| 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 10.0 | 0.0 | - |
-|  | **Elapsed for 2 people, with 15 % for hand-offs** | 27 | 92 |  |  | **113 min (3.8 person-hours)** |
+| # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 0 | 14.0 | 0.0 | - |
+| 2 | Base band: 4 pieces and corner keys on 8 glides; level from above | 6 | 16 | 0 | 13.5 | 7.8 | Corner keys from above and inside; closed later by the wall panels, so bolted first. |
+| 3 | Seal mat and 2 thin floor panels dropped inside the band (no fixings) | 2 | 0 | 0 | 2.2 | 0.0 | - |
+| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, cam or clip connectors at seam and corners | 4 | 16 | 9 | 1.3 | 9.3 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
+| 5 | Upper walls: back pair, then sides; cam or clip connectors at horizontal seams, vertical seam and corners | 4 | 0 | 25 | 1.3 | 7.2 | As the lower walls; top fixings at 2.2 m need the step stool. |
+| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4 | 4.0 | 8.2 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
+| 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 6 | 30 | 0 | 2.0 | 13.5 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
+| 8 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
+| 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
+| 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
+| 11 | Felt: 15 loose strips over the joints (the rest came pre-fitted) | 0 | 0 | 0 | 0.0 | 5.0 | Closes the joints: last. |
+| 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
+|  | **Elapsed for 2 people, with 15 % for hand-offs** | 27 | 92 | 38 |  |  | **113 min (3.8 person-hours)** |
 
 </details>
 
@@ -457,20 +457,20 @@ All options use only standard pallets. On a 48 x 40 in pallet (1219 x 1016 mm), 
 | [1: 48x40 in](out/pallets-C-1-48x40.svg) | 1,219 x 1,016 | 145 | 319 | 1,646 (64.8 in) | 72.0 | 4.4 | B-BAND-FRONT-L, B-BAND-FRONT-R, B-FLOOR, B-THRESH, W-BACK-BAND, W-SIDE-BAND |
 | [2: 96x48 in](out/pallets-C-2-96x48.svg) | 2,438 x 1,219 | 273 | 601 | 1,132 (44.6 in) | 118.8 | 5.1 | B-BAND-BACK, B-BAND-SIDE, C-HALF, F-DL, F-DR, F-DT, F-GLASS-DOOR, F-GLASS-FIXED, KIT-CARTON, W-BACK-BAND |
 
-| # | Step | Lifts | M6 bolts | 2-person min | 1-person min (shared) | Access check |
-| ---: | --- | ---: | ---: | ---: | ---: | --- |
-| 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 10.0 | 0.0 | - |
-| 2 | Base band: 4 pieces and corner keys on 8 glides; level from above | 5 | 12 | 13.9 | 5.1 | Corner keys from above and inside; closed later by the wall panels, so bolted first. |
-| 3 | Seal mat and 2 thin floor panels dropped inside the band (no fixings) | 2 | 0 | 2.2 | 0.0 | - |
-| 4 | Walls row by row from the bottom: back pair, then each side, 5 rows | 20 | 16 | 6.7 | 35.5 | All from inside through open frame bays or the loose felt strips over the joints. |
-| 5 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4.0 | 8.2 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
-| 6 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 3.2 | 5.4 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
-| 7 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
-| 8 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
-| 9 | Electrics: 6 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 10.0 | 2.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
-| 10 | Felt: 36 loose strips over the joints (the rest came pre-fitted) | 0 | 0 | 0.0 | 12.0 | Closes the joints: last. |
-| 11 | Threshold, final check of door swing and seals, clean | 1 | 0 | 10.0 | 0.0 | - |
-|  | **Elapsed for 2 people, with 15 % for hand-offs** | 35 | 76 |  |  | **124 min (4.1 person-hours)** |
+| # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 0 | 10.0 | 0.0 | - |
+| 2 | Base band: 4 pieces and corner keys on 8 glides; level from above | 5 | 12 | 0 | 13.9 | 5.1 | Corner keys from above and inside; closed later by the wall panels, so bolted first. |
+| 3 | Seal mat and 2 thin floor panels dropped inside the band (no fixings) | 2 | 0 | 0 | 2.2 | 0.0 | - |
+| 4 | Walls row by row from the bottom: back pair, then each side, 5 rows | 20 | 16 | 94 | 6.7 | 35.5 | All from inside through open frame bays or the loose felt strips over the joints. |
+| 5 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4 | 4.0 | 8.2 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
+| 6 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 0 | 3.2 | 5.4 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
+| 7 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
+| 8 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
+| 9 | Electrics: 6 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 2.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
+| 10 | Felt: 36 loose strips over the joints (the rest came pre-fitted) | 0 | 0 | 0 | 0.0 | 12.0 | Closes the joints: last. |
+| 11 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
+|  | **Elapsed for 2 people, with 15 % for hand-offs** | 35 | 76 | 98 |  |  | **124 min (4.1 person-hours)** |
 
 </details>
 
@@ -506,7 +506,7 @@ The full-height back wall panel (fewer, larger panels) was also tried. With the 
 
 What remains is mostly work that does not shrink with fewer parts: unpacking, levelling, setting the glass and the door, and testing the electrics. The 1-hour target needs that work timed on the prototype, and possibly more done in the factory. Section 5 gives the step-by-step sequence and access check for the decided build.
 
-Benchmark: Room S needs 4 people for 3 to 5 hours (12 to 20 person-hours), and hushMeet 2 installers for 2.5 to 3 hours (market study). The decided build takes 3.4 person-hours.
+Benchmark: Room S needs 4 people for 3 to 5 hours (12 to 20 person-hours), and hushMeet 2 installers for 2.5 to 3 hours (market study). The decided build takes 4.0 person-hours.
 
 ## 5. The decided build: final wall stack (re-check)
 
@@ -514,7 +514,7 @@ The sound study's final stack (DECIDED): ACP 3 mm on a 20 x 40 aluminium frame a
 
 This study builds it on the B1 layout. The outer panel (ACP, frame and fill) and its cassette are separate parts, and the cassette is the DECIDED clip-on inner leaf. The outside size stays the same; the inside narrows to 2,338 mm. The wall here comes to 14.0 kg/m2 with clips and tray returns (the sound study: 13.1).
 
-Result: **378 kg**, 0 parts over 20 kg, heaviest F-DR at 19.1 kg, 1 + 1 pallets, 477 kg gross, 1,646 mm at most, assembly 102 min.
+Result: **378 kg**, 0 parts over 20 kg, heaviest F-DR at 19.1 kg, 1 + 1 pallets, 477 kg gross, 1,646 mm at most, assembly 121 min.
 
 - **Ceiling (PROPOSED).** With 100 mm of fill inside it, an outer ceiling half would weigh 21.1 kg. Carried on the back of its cassette, the fill fills the same cavity when the cassette clips up from below, and both parts stay under 20 kg. Nothing else changes.
 - **Pallets.** The 48 x 40 keeps the wall panels, cassettes, floor panels and short band pieces. One ceiling half and the two ceiling cassettes, too thick for the upright stack, lie flat on the long pallet under the decor blocks and the glass. Still 1 + 1.
@@ -541,21 +541,21 @@ Wall and ceiling parts of the decided build:
 
 Step by step, with the access check. A step fails the check if a part fitted earlier blocks its fixings; none does in this order. The check is at layout level and is repeated on the CAD in Milestone 2.
 
-| # | Step | Lifts | M6 bolts | 2-person min | 1-person min (shared) | Access check |
-| ---: | --- | ---: | ---: | ---: | ---: | --- |
-| 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 10.0 | 0.0 | - |
-| 2 | Base band: 4 pieces and corner keys on 8 glides; level from above | 5 | 12 | 13.9 | 5.1 | Corner keys from above and inside; closed later by the wall panels, so bolted first. |
-| 3 | Seal mat and 2 thin floor panels dropped inside the band (no fixings) | 2 | 0 | 2.2 | 0.0 | - |
-| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, cam or clip connectors at seam and corners | 4 | 16 | 1.3 | 9.3 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
-| 5 | Upper walls: back pair, then sides; cam or clip connectors at horizontal seams, vertical seam and corners | 4 | 0 | 1.3 | 7.2 | As the lower walls; top fixings at 2.2 m need the step stool. |
-| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 5.5 | 6.7 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
-| 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 3.2 | 5.4 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
-| 8 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
-| 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
-| 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
-| 11 | Inner leaves: 0 pieces (sound mass + felt) clipped on from inside | 0 | 0 | 0.0 | 0.0 | Close every bay and joint: last. Joints stay reachable until then. |
-| 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 10.0 | 0.0 | - |
-|  | **Elapsed for 2 people, with 15 % for hand-offs** | 23 | 76 |  |  | **102 min (3.4 person-hours)** |
+| # | Step | Lifts | M6 bolts | Clips | 2-person min | 1-person min (shared) | Access check |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | Unpack, check parts against the label list, stand the glass safely | 0 | 0 | 0 | 10.0 | 0.0 | - |
+| 2 | Base band: 4 pieces and corner keys on 8 glides; level from above | 5 | 12 | 0 | 13.9 | 5.1 | Corner keys from above and inside; closed later by the wall panels, so bolted first. |
+| 3 | Seal mat and 2 thin floor panels dropped inside the band (no fixings) | 2 | 0 | 0 | 2.2 | 0.0 | - |
+| 4 | Lower walls: back pair on its pins, then the two sides; bolts to the band, cam or clip connectors at seam and corners | 4 | 16 | 9 | 1.3 | 9.3 | From inside through open frame bays, or behind the loose felt strip over each joint; hex key swings in the 1.2 m bays. |
+| 5 | Upper walls: back pair, then sides; cam or clip connectors at horizontal seams, vertical seam and corners | 4 | 0 | 25 | 1.3 | 7.2 | As the lower walls; top fixings at 2.2 m need the step stool. |
+| 6 | Ceiling halves lifted onto the walls from inside; fans and silenced vents from below | 2 | 20 | 4 | 5.5 | 6.7 | Upward from inside, ceiling felt (or its joint strips) not yet on; fans mount from below through their opening. |
+| 7 | Decor blocks (skins on, factory-made): left door post, right, then top | 3 | 18 | 0 | 3.2 | 5.4 | Through the front frame members of the side walls and ceiling from inside, behind the loose felt strips. |
+| 8 | Fixed glass in its factory profile frame: set and fix | 1 | 4 | 0 | 5.8 | 1.2 | Profile frame bolted from inside; glass held by clip-in beads. |
+| 9 | Door: hinges and pull fitted in the factory; lift onto the hinge pins, fit drop seal, adjust | 1 | 6 | 0 | 6.8 | 1.8 | Hinge bolts reachable with the door open 90 degrees. |
+| 10 | Electrics: 3 plug-in connectors at panel seams, power in, test fans and lights | 0 | 0 | 0 | 10.0 | 1.0 | Connectors sit in the open bays, or behind the loose strip, next to each seam. |
+| 11 | 10 lining cassettes (steel tray + felt) clipped on from inside, ceiling ones from below | 10 | 0 | 0 | 8.2 | 16.0 | Close every bay and joint: last. Joints stay reachable until then. |
+| 12 | Threshold, final check of door swing and seals, clean | 1 | 0 | 0 | 10.0 | 0.0 | - |
+|  | **Elapsed for 2 people, with 15 % for hand-offs** | 33 | 76 | 38 |  |  | **121 min (4.0 person-hours)** |
 
 <details><summary>Sensitivity: the same layout at 380 and 400 kg with an even added mass (before the final stack was known)</summary>
 

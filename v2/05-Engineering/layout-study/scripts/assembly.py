@@ -128,8 +128,14 @@ def sequence(split, m, parts, split_long, n_std, n_long):
         n, two, one = carry_place("L-LEAF-SIDE")
         n2, two2, one2 = carry_place("L-LEAF-BACK")
         n3, two3, one3 = carry_place("L-LEAF-HALF", overhead=True)
+        c1, ct1, co1 = carry_place("L-CASS-SIDE")
+        c2, ct2, co2 = carry_place("L-CASS-BACK")
+        c3, ct3, co3 = carry_place("L-CASS-HALF", overhead=True)
+        n, two, one = n + c1 + c2, two + ct1 + ct2, one + co1 + co2
+        n3, two3, one3 = n3 + c3, two3 + ct3, one3 + co3
         leaves = n + n2 + n3
-        steps.append(dict(name=f"Inner leaves: {leaves} pieces (sound mass + felt) clipped on from inside", lifts=leaves, bolts=0, cams=0,
+        what = "lining cassettes (steel tray + felt)" if c1 + c2 + c3 else "inner leaves (sound mass + felt)"
+        steps.append(dict(name=f"{leaves} {what} clipped on from inside, ceiling ones from below", lifts=leaves, bolts=0, cams=0,
                           two=two + two2 + two3, one=one + one2 + one3 + leaves * p("t_leaf_s"),
                           access="Close every bay and joint: last. Joints stay reachable until then."))
     elif m.get("prefit"):
