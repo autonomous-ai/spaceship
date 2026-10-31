@@ -1,4 +1,4 @@
-id,kg,status,source,note
-AIR-D60,11.8,confirmed,"D-61 and D-71 (decision log, 2026-10-31)","D-60 air layout as sized (D-61): the air parts net of the ceiling lining they replace and of PR #11's 45.0 kg already in the layout study's list"
-WALL-TRAY-LIPS,3.4,confirmed,"D-69 and D-71 (decision log, 2026-10-31)","wall cassettes take the ceiling's tray with 34 mm returns and 12 mm lips, no ribs: +0.43 kg each, +3.4 kg on the pod"
-FLOOR-9MM,-12.6,confirmed,"D-72 and D-71 (decision log, 2026-10-31)","floor panels 15 to 9 mm plywood on a firm 3 mm rubber mat, for the 13 mm US-accessible threshold: both panels 31.5 to 18.9 kg"
+id,kg,status,source,note,applies_to
+AIR-D60,11.8,confirmed,"D-61 and D-71 (decision log, 2026-10-31)","D-60 air layout as sized (D-61): the air parts net of the ceiling lining they replace and of PR #11's 45.0 kg already in the layout study's list",parts-option-B1-final-stack.csv
+WALL-TRAY-LIPS,3.4,confirmed,"D-69 and D-71 (decision log, 2026-10-31)","wall cassettes take the ceiling's tray with 34 mm returns and 12 mm lips, no ribs: +0.43 kg each, +3.4 kg on the pod",parts-option-B1-final-stack.csv
+FLOOR-9MM,-12.6,confirmed,"D-72 and D-71 (decision log, 2026-10-31)","floor panels 15 to 9 mm plywood on a firm 3 mm rubber mat, for the 13 mm US-accessible threshold: both panels 31.5 to 18.9 kg",parts-option-B1-final-stack.csv
