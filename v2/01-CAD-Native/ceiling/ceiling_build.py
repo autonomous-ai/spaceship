@@ -909,6 +909,10 @@ def open_or_create(app, name):
     for i in range(app.documents.count):
         d = app.documents.item(i)
         if d.name.split(" v")[0] == name:
+            if d.isModified:
+                # PM rule 2026-11-01: never reuse an open document with unsaved changes
+                d.close(False)
+                break
             d.activate()
             return d, "activated"
     parts = [p for p in FOLDER.split("/") if p]
