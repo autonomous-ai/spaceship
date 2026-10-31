@@ -29,7 +29,7 @@ Nothing here is released for production.
 7. [`conventions.md`](conventions.md): units, the ISO list, axes (with a [diagram](pod-coordinate-system.svg)), names, part numbers (with the reserved old numbers), file names, revisions and status values.
 8. [`assembly-tree.md`](assembly-tree.md): how the pod splits, where every plan code goes, the interfaces, and the v1 counterparts.
 9. [`open-questions.md`](open-questions.md): answers for door and glass, lights, door hand and the thin floor.
-10. [`issue-register.csv`](issue-register.csv): 86 issues (38 open, 9 proposed, 27 decided, 12 closed). Each closes on the PM's logged decision plus evidence.
+10. [`issue-register.csv`](issue-register.csv): 87 issues (39 open, 9 proposed, 27 decided, 12 closed). Each closes on the PM's logged decision plus evidence.
 11. [`document-register.csv`](document-register.csv): every file in `sources/v1`, `docs` and `v2`, with code, revision, status, date, source and relation.
 12. [`release-checklist.md`](release-checklist.md): what stands between the design and a manufacturing release, part by part, with the totals per team. `build_release_checklist.py` writes it from the master BOM, the CAD, drawing and manufacturing folders, and the draft FAI plan ([`v2/06-Verification/fai-plan.md`](../06-Verification/fai-plan.md)); re-run it when parts merge.
 13. Background: `v2/research/market-study.md` and `sources/v1/README.md`.

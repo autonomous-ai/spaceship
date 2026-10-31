@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (11d9b51), PR #92 (a86c41a), PR #91 (2d221ad), PR #32 (78edd7f), PR #64 (e761d1d), PR #104 (404710d), PR #105 (5f7de28), PR #147 (1d4b0e5). The Mac's screen at run time: **unlocked**. 368 files in the CAD, drawing and manufacturing folders; the FAI plan's 71 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (2e8d194), PR #92 (a86c41a), PR #91 (2d221ad), PR #32 (78edd7f), PR #64 (e761d1d), PR #104 (404710d), PR #105 (5f7de28). The Mac's screen at run time: **unlocked**. 368 files in the CAD, drawing and manufacturing folders; the FAI plan's 71 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
