@@ -312,6 +312,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 | K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 14, never going back: True; crate top 2-01 (step 10) over 2-02 (step 11) | yes |
 | K10 | Every piece has a label (part number or owner, position code) and a place on a pallet | 42 labelled pieces; without a place: none; unknown tags: none | yes |
 | K11 | Every labelled piece is fitted in the step its label names | unfitted none; step mismatches none | yes |
+| K12 | Every skeleton body maps to exactly one label, for the step pictures | 34 bodies in the skeleton STEP; not in it none; unmapped none; twice none; unknown labels none | yes |
 
 The bolt check reads `v2/05-Engineering/joints/joints-register.md` section 3.9. When PR #23 merges, the script reads the file on main instead, by itself.
 

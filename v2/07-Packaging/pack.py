@@ -21,6 +21,7 @@ scripts/inputs.py, read at run time. Every other number is defined below with it
 import argparse
 import copy
 import csv
+import json
 import io
 import re
 import sys
@@ -361,6 +362,46 @@ PIECES = [
 ]
 
 PIECE = {p.tag: p for p in PIECES}
+
+# Each label's body in skeleton P04's STEP (v2/03-Manufacturing/skeleton/), for the step pictures. The air parts, kits and
+# cartons have no skeleton body yet; the step pictures show them when their own CAD lands.
+SKELETON_STEP = REPO / "v2" / "03-Manufacturing" / "skeleton" / "100000_P04_POD-SKELETON_STEP.step"
+SKEL = {
+    "1-01": ["F1 ENVELOPE"], "1-02": ["F2 ENVELOPE"],
+    "1-03": ["B1 ENVELOPE"], "1-04": ["B2 ENVELOPE"], "1-05": ["L1 ENVELOPE"], "1-06": ["R1 ENVELOPE"],
+    "1-07": ["B3 ENVELOPE"], "1-08": ["B4 ENVELOPE"], "1-09": ["L2 ENVELOPE"], "1-10": ["R2 ENVELOPE"],
+    "1-11": ["C1 ENVELOPE"], "1-12": ["C2 ENVELOPE"],
+    "1-13": ["R1-CASS ENVELOPE"], "1-14": ["R2-CASS ENVELOPE"], "1-15": ["L1-CASS ENVELOPE"], "1-16": ["L2-CASS ENVELOPE"],
+    "1-17": ["B1-CASS ENVELOPE"], "1-18": ["B2-CASS ENVELOPE"], "1-19": ["B3-CASS ENVELOPE"], "1-20": ["B4-CASS ENVELOPE"],
+    "2-01": ["FIXED GLASS"], "2-02": ["DOOR GLASS", "KICK ENVELOPE"], "2-03": ["DR FACETED"],
+    "2-04": ["BAND-BACK ENVELOPE"], "2-05": ["BAND-L ENVELOPE"], "2-06": ["BAND-R ENVELOPE"], "2-07": ["BAND-FR ENVELOPE"],
+    "2-08": ["THRESHOLD ENVELOPE"], "2-09": ["DL FACETED"], "2-12": ["DT FACETED"], "2-15": ["BAND-FL ENVELOPE"],
+    "2-20": ["C1-CASS ENVELOPE"], "2-21": ["C2-CASS ENVELOPE"],
+}
+# Camera per step for the pictures: "back" looks from behind, left and above; "front" from the front, right and above;
+# "inside" from above with the ceiling and the front hidden, to show the linings.
+STEP_VIEW = {2: "back", 3: "back", 4: "back", 5: "back", 6: "back", 7: "back", 8: "back", 9: "front", 10: "front", 11: "front",
+             12: "front", 14: "inside", 18: "inside"}
+OUT_STEP_BODIES = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json"
+
+
+def step_image(n):
+    return GUIDE_DIR / "img" / ("100000_P04_POD-ASSEMBLY-GUIDE-STEP-%02d_IMG.png" % n)
+
+
+def skeleton_bodies(path=SKELETON_STEP):
+    return sorted(set(re.findall(r"MANIFOLD_SOLID_BREP\('([^']*)'", Path(path).read_text(encoding="utf-8", errors="replace"))))
+
+
+def step_bodies_json():
+    rows = []
+    for st in STEPS:
+        new = [b for t in st["tags"] for b in SKEL.get(t, [])]
+        if not new:
+            continue
+        rows.append(dict(step=st["n"], title=st["title"], view=STEP_VIEW.get(st["n"], "front"), new=new,
+                         image=str(step_image(st["n"]).relative_to(REPO))))
+    return json.dumps(dict(source=str(SKELETON_STEP.relative_to(REPO)), steps=rows), indent=1) + "\n"
 
 # ---------------- packaging (910000 PACKAGING), part numbers PROPOSED in the 91 band (conventions section 6)
 PACKAGING = [
@@ -884,6 +925,21 @@ class Model:
         wrong = [p.tag for p in self.shipped() if p.tag in fitted and not any(p.tag in st["tags"] and st["n"] == p.step for st in STEPS)]
         self.check("K11", "Every labelled piece is fitted in the step its label names",
                    f"unfitted {unfitted or 'none'}; step mismatches {wrong or 'none'}", not unfitted and not wrong)
+        self.check_skeleton()
+
+    def check_skeleton(self):
+        if not SKELETON_STEP.exists():
+            self.check("K12", "Every skeleton body maps to one label (step pictures)", f"{SKELETON_STEP.name} not found", False)
+            return
+        have = skeleton_bodies()
+        mapped = [b for bs in SKEL.values() for b in bs]
+        missing = sorted(set(mapped) - set(have))
+        unmapped = sorted(set(have) - set(mapped))
+        twice = sorted({b for b in mapped if mapped.count(b) > 1})
+        bad_tags = [t for t in SKEL if t not in PIECE]
+        self.check("K12", "Every skeleton body maps to exactly one label, for the step pictures",
+                   f"{len(have)} bodies in the skeleton STEP; not in it {missing or 'none'}; unmapped {unmapped or 'none'}; "
+                   f"twice {twice or 'none'}; unknown labels {bad_tags or 'none'}", not (missing or unmapped or twice or bad_tags))
 
     def ok(self):
         return all(c["ok"] for c in self.checks)
@@ -1073,8 +1129,10 @@ def guide_tables(m, T):
                 bolts.append(ux(fx["text"]))
         tool = " Tool: the 5 mm hex key." if (st["joints"] or any(f["step"] == st["n"] and f["count"] for f in OTHER_FIXINGS)) else ""
         clock = "" if st["n"] <= CLOCK_LAST_STEP else ", after the clock"
+        img = step_image(st["n"])
+        pic = (f"![Step {st['n']}](img/{img.name})\n\n" if img.exists() else "")
         steps_md.append(
-            f"### Step {st['n']}. {st['title']}{clock}\n\n"
+            f"### Step {st['n']}. {st['title']}{clock}\n\n{pic}"
             f"- **Time:** about {tr['elapsed'] / 60:.0f} min for 2 people.\n"
             f"- **Parts:** {parts}.\n"
             f"- **Fasteners:** {'; '.join(bolts) if bolts else 'none'}.{tool}\n"
@@ -1288,6 +1346,7 @@ def outputs(m):
         OUT_SVG[1]: svg_pallet1(m),
         OUT_SVG[2]: svg_pallet2(m),
         OUT_GUIDE: fill(TPL_GUIDE.read_text(encoding="utf-8"), G),
+        OUT_STEP_BODIES: step_bodies_json(),
     }
 
 
