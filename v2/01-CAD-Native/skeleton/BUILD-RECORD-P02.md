@@ -40,23 +40,23 @@ Depth: the blocks run from the front face Y -850 back to Y -615 (235, D-39); v1'
 | L1 | WALL | 43 x 1500 x 1145 | W-SIDE-LO |
 | L1-CASS | LINING | 34 x 1419 x 1145 | L-CASS-SIDE-LO |
 | L2 | WALL | 43 x 1500 x 1145 | W-SIDE-UP |
-| L2-CASS | LINING | 34 x 1419 x 1145 | L-CASS-SIDE-UP |
+| L2-CASS | LINING | 34 x 1419 x 1102 | L-CASS-SIDE-UP |
 | R1 | WALL | 43 x 1500 x 1145 | W-SIDE-LO |
 | R1-CASS | LINING | 34 x 1419 x 1145 | L-CASS-SIDE-LO |
 | R2 | WALL | 43 x 1500 x 1145 | W-SIDE-UP |
-| R2-CASS | LINING | 34 x 1419 x 1145 | L-CASS-SIDE-UP |
-| B1 | WALL | 1169 x 43 x 1104.5 | W-BACK-LO |
+| R2-CASS | LINING | 34 x 1419 x 1102 | L-CASS-SIDE-UP |
+| B1 | WALL | 1207 x 43 x 1104.5 | W-BACK-LO |
 | B1-CASS | LINING | 1169 x 34 x 1104.5 | L-CASS-BACK-LO |
-| B2 | WALL | 1169 x 43 x 1104.5 | W-BACK-LO |
+| B2 | WALL | 1207 x 43 x 1104.5 | W-BACK-LO |
 | B2-CASS | LINING | 1169 x 34 x 1104.5 | L-CASS-BACK-LO |
-| B3 | WALL | 1169 x 43 x 1104.5 | W-BACK-UP |
+| B3 | WALL | 1207 x 43 x 1104.5 | W-BACK-UP |
 | B3-CASS | LINING | 1169 x 34 x 1104.5 | L-CASS-BACK-UP |
-| B4 | WALL | 1169 x 43 x 1104.5 | W-BACK-UP |
+| B4 | WALL | 1207 x 43 x 1104.5 | W-BACK-UP |
 | B4-CASS | LINING | 1169 x 34 x 1104.5 | L-CASS-BACK-UP |
-| C1 | CEILING | 1169 x 1500 x 43 | C-HALF |
+| C1 | CEILING | 1207 x 1500 x 43 | C-HALF |
 | C1-CASS | LINING | 1169 x 1419 x 34 | L-CASS-HALF |
 | F1 | BASE | 1169 x 1419 x 15 | B-FLOOR |
-| C2 | CEILING | 1169 x 1500 x 43 | C-HALF |
+| C2 | CEILING | 1207 x 1500 x 43 | C-HALF |
 | C2-CASS | LINING | 1169 x 1419 x 34 | L-CASS-HALF |
 | F2 | BASE | 1169 x 1419 x 15 | B-FLOOR |
 | BAND-BACK | BASE | 2420 x 40 x 100 | B-BAND-BACK |
@@ -70,3 +70,7 @@ The P01 record (`BUILD-RECORD.md`) has the size check against the layout study a
 ## Clash check
 
 Same rule as P01: any overlap over 1 mm3 not on the script's list fails the run. P02 adds two listed pairs: DT over L2 and L2-CASS (DT wraps the left wall's upper front edge, as in v1).
+
+## Decor depth (PM ruling 3 on the review)
+
+D-39 means "as v1", and where the v1 drawings and the STEP disagree the drawings win. In v1's decor-frame drawing (`sources/v1/drawings/decor-frame-assembly.pdf`), the core frames are 191 mm deep on the left block and 197 mm on the right. With the ACP skin and the back plate they give exactly the v1 STEP's shell: front face Y -850, back face Y -645, so **205 mm**. The drawing and the STEP agree, and v1's 1496 mm walls plus 204 mm decor make the 1700 mm depth. The 230-235 mm in D-39 and in the layout study's B1 list (taken from the v1 BOM) doesn't match v1's geometry, so the skeleton uses 205 (`decor_d`, status source). The decor's back face now sits at Y -645, 5 mm over the walls' front edge (Y -650) rather than 35. The Control Engineer corrects D-39's number; the Layout Engineer the B1 list.

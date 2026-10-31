@@ -43,7 +43,7 @@ PARAMS = [
     ("floor_t", "15 mm", "mm", "source", "layout study B1 list B-FLOOR 15"),
     ("thresh_h", "20 mm", "mm", "decided", "D-18"),
     ("thresh_d", "60 mm", "mm", "source", "layout study B1 list B-THRESH 1176 x 60 x 20"),
-    ("decor_d", "235 mm", "mm", "decided", "D-39 (230-235, v1); B1 list 235"),
+    ("decor_d", "205 mm", "mm", "source", "v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02"),
     ("dl_w", "278 mm", "mm", "source", "B1 list F-DL 278 (v1 BOM DL)"),
     ("dr_w", "1016 mm", "mm", "source", "B1 list F-DR 1016 (v1 STEP solid 78)"),
     ("dt_w", "1697 mm", "mm", "source", "B1 list F-DT 1697 (v1 BOM DT)"),
