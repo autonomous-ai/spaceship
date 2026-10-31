@@ -631,6 +631,156 @@ def cartridge_kg(casing):
     return tot
 
 
+# ---------------------------------------------------------------------------
+# The right decor block's real shape (skeleton P03) and the D-60 air parts
+# ---------------------------------------------------------------------------
+# PR #11 (D-51) sized the air path to the layout study's F-DR box, 2290 x 1016 x 235. Skeleton P03, measured from
+# v1, shows the block's glass-side edge following the fixed glass, so a cartridge behind its inner face has about
+# 145 mm of width at the foot; its flat top is the 27 mm strip behind the top chamfer. D-60 (PM, 2026-10-31) moves
+# the silencers inside the pod: an air column in the front-right corner and a soffit above the door head.
+# Skeleton P03 parameters, mm (v2/01-CAD-Native/skeleton/100000_P03_POD-SKELETON-PARAMETERS.csv; source, measured
+# from v1's STEP; the 81 mm stack is D-16/D-42; floor 15 mm and the side lining face X 1169 are calculations there):
+SKEL = dict(xr=1250.0, yf=-850.0, decor_d=205.0, fix_xbr=302.0, fix_zb=102.0, fix_xk=501.0, fix_zk=1521.0,
+            fix_xtr=1480.0, dt_zb=2120.0, dt_xr=1699.0, dr_xc=198.0, dr_yc=672.0, ch_zlo=2200.0, ch_yb=672.0,
+            stack_t=81.0, floor_t=15.0, pod_h=2400.0)
+DECOR_SKIN = 3.0   # mm, the decor's ACP faces (D-49: 199 mm clear inside two 3 mm faces)
+
+
+def dr_edge_x(z):
+    """X (mm) of the right block's glass-side edge at height z: the fixed glass's right edge, then its top edge."""
+    s = SKEL
+    if z <= s["fix_zk"]:
+        x0, z0, x1, z1 = s["xr"] - s["fix_xbr"], s["fix_zb"], s["xr"] - s["fix_xk"], s["fix_zk"]
+    else:
+        x0, z0, x1, z1 = s["xr"] - s["fix_xk"], s["fix_zk"], -s["xr"] + s["fix_xtr"], s["dt_zb"]
+    return x0 + (z - z0) * (x1 - x0) / (z1 - z0)
+
+
+def dr_facet_x(y):
+    """X (mm) of the corner facet's inside face at depth y (facet from (xr - dr_xc, yf) to (xr, -dr_yc))."""
+    s = SKEL
+    dx, dy = s["dr_xc"], s["yf"] * -1 - s["dr_yc"]
+    return s["xr"] - dx + (y - s["yf"]) * dx / dy - DECOR_SKIN * math.hypot(dx, dy) / dy
+
+
+def dr_clear_width(z, depth):
+    """Clear width (mm) at height z (below the top block) for a box `depth` mm deep set against the block's inner
+    face, between its glass-side face and the corner facet, inside the 3 mm skins (calculation)."""
+    s = SKEL
+    y_front = s["yf"] + s["decor_d"] - DECOR_SKIN - depth
+    return min(dr_facet_x(y_front), s["xr"] - DECOR_SKIN) - (dr_edge_x(z) + DECOR_SKIN)
+
+
+def dr_volume_m3():
+    """Volume inside the right block's skins, m3: plan sections from the skeleton outline, with the top-block joint
+    and the top chamfer above Z 2120 (calculation, 2 mm by 5 mm grid)."""
+    s = SKEL
+    y0, y1 = s["yf"] + DECOR_SKIN, s["yf"] + s["decor_d"] - DECOR_SKIN
+    vol = 0.0
+    for zi in range(int(s["fix_zb"] + DECOR_SKIN), int(s["pod_h"] - DECOR_SKIN), 5):
+        z = zi + 2.5
+        area = 0.0
+        for yi in range(int(y0), int(y1), 2):
+            y = yi + 1.0
+            if z > s["ch_zlo"] and y < s["yf"] + (z - s["ch_zlo"]) * (s["yf"] * -1 - s["ch_yb"]) / (s["pod_h"] - s["ch_zlo"]) + DECOR_SKIN:
+                continue                                      # cut by the top chamfer
+            xl = dr_edge_x(min(z, s["dt_zb"])) + DECOR_SKIN
+            if z > s["dt_zb"]:                                # joint to the top block: X 230 at the front to 449
+                xj = -s["xr"] + s["fix_xtr"] + (min(y, -s["ch_yb"]) - s["yf"]) * (s["dt_xr"] - s["fix_xtr"]) / (s["yf"] * -1 - s["ch_yb"])
+                xl = xj + DECOR_SKIN
+            xr = min(dr_facet_x(y), s["xr"] - DECOR_SKIN)
+            area += max(0.0, xr - xl) * 2
+        vol += area * 5
+    return vol * 1e-9
+
+
+# D-60 air parts (DECIDED by the PM on 2026-10-31; sizes are this calculation). Pod coordinates, mm.
+D60 = dict(
+    skin=12.0,                       # felt-covered faces: 3 mm ACP + 9 mm felt, as the linings (ASSUME construction)
+    fill=30.0,                       # polyester fill between each cartridge and the faces toward the pod
+    cart=(173.0, 314.0, 1750.0),     # one cartridge size for both paths: casing outer width, stack depth, length
+    gap=80.0, ngap=2, lin=50.0,      # two 80 mm passages between three 50 mm Pyrotek Sorberpoly 2D layers (HW fill row)
+    col=((949.0, 1169.0), (-645.0, -285.0), (15.0, 2120.0)),         # air column outer: X, Y, Z
+    soffit=((-1169.0, 1169.0), (-645.0, -285.0), (2120.0, 2340.0)),  # soffit outer: X, Y, Z
+    kick=(25.0, 125.0),              # supply kick grille on the column's front and left faces, Z
+    sup_box=((645.0, 945.0), (-847.0, -692.0), (1650.0, 1950.0)),    # supply fan box in the right block
+    dr_open=((961.0, 1164.0), (1895.0, 2110.0)),                     # opening in the block's inner face: X, Z
+    riser_lo=(139.0, 155.0, 1340.0),  # lower riser behind the column: width, depth, length
+    riser_up=(250.0, 155.0, 400.0),   # upper riser and turn into the fan box
+    intake=((960.0, 1200.0), (-835.0, -660.0)),                      # opening in the block's underside: X, Y
+    exh_grille=((-1150.0, -885.0), (-633.0, -297.0)),                # on the soffit's underside: X, Y
+    exh_box=((870.0, 1164.0), (-640.0, -326.0), (2162.0, 2335.0)),   # exhaust fan box in the soffit's right end
+    roof=((875.0, 1160.0), (-630.0, -336.0)),                        # roof slot: X, Y
+)
+D60_FREE = dict(kick=0.032, intake=0.030, exh_grille=0.036, roof=0.040)   # m2 free areas used (calculation, D60_SIZES)
+FRAME_ANGLE_KG_M = 0.26    # aluminium angle 25 x 25 x 2 mm for the column and soffit frames (calculation: 2.7 g/cm3)
+CASS_KG_M2 = 7850 * 0.0005 + TRAY_KG_M2 + PET_FELT9_KG_M2   # ceiling lining cassette: 0.5 mm tray, returns, felt
+
+
+def d60_cartridge_kg(casing="al20"):
+    """One D-60 cartridge: casing over the stack, end frames over 30% of each end, three 50 mm layers (calculation)."""
+    _, mat, t = CASINGS[casing]
+    kg_m2 = MAT[mat][0] * t / 1000
+    w, d, L = (x / 1000 for x in D60["cart"])
+    sheet = 2 * (w + d) * L + 2 * 0.3 * w * d
+    lining = (D60["ngap"] + 1) * D60["lin"] / 1000 * (w - 0.004) * L * LINING_KG_M3
+    return sheet * kg_m2 + lining
+
+
+def d60_parts(casing="al20"):
+    """(part, size, kg, basis) for the D-60 air parts; fans are counted apart in fans_kg (calculation)."""
+    al = MAT["alu"][0] * 2.0 / 1000
+    st = MAT["steel"][0] * 1.0 / 1000
+    face = ACP3_KG_M2 + PET_FELT9_KG_M2
+    (cx0, cx1), (cy0, cy1), (cz0, cz1) = D60["col"]
+    (sx0, sx1), (sy0, sy1), (sz0, sz1) = D60["soffit"]
+    w, d, L = (x / 1000 for x in D60["cart"])
+    fill = D60["fill"] / 1000
+    col_w, col_d, col_h = (cx1 - cx0) / 1000, (cy1 - cy0) / 1000, (cz1 - cz0) / 1000
+    sof_l, sof_d, sof_h = (sx1 - sx0) / 1000, (sy1 - sy0) / 1000, (sz1 - sz0) / 1000
+    lo_w, lo_d, lo_l = (x / 1000 for x in D60["riser_lo"])
+    up_w, up_d, up_l = (x / 1000 for x in D60["riser_up"])
+    box = 2 * (0.30 * 0.155 + 0.30 * 0.30 + 0.155 * 0.30)
+    ebox = 2 * (0.294 * d + 0.294 * w + d * w)
+    rows = [
+        ("Supply cartridge, in the air column", f"{D60['cart'][0]:.0f} x {D60['cart'][1]:.0f} x {D60['cart'][2]:.0f}",
+         d60_cartridge_kg(casing), f"{CASINGS[casing][0]} casing, three 50 mm layers at {LINING_KG_M3:.0f} kg/m3"),
+        ("Exhaust cartridge, in the soffit", "same", d60_cartridge_kg(casing), "same part"),
+        ("Air column: felt-covered faces, fill, frame, kick grille, hub plate", f"{col_w*1000:.0f} x {col_d*1000:.0f} x {col_h*1000:.0f}",
+         (col_w + col_d) * col_h * face + fill * (w + d) * L * FILL_KG_M3
+         + 4 * col_h * FRAME_ANGLE_KG_M + 0.6, "faces 3 mm ACP + 9 mm felt; 30 mm fill; 4 corner angles; 0.6 kg grille and plate (assumption)"),
+        ("Soffit: felt-covered faces, fill, frame, exhaust grille", f"{sof_l*1000:.0f} x {sof_d*1000:.0f} x {sof_h*1000:.0f}",
+         (sof_d + sof_h) * sof_l * face + fill * (w + d) * L * FILL_KG_M3 + 2 * sof_l * FRAME_ANGLE_KG_M + 0.9,
+         "underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption)"),
+        ("Supply fan box and transition, in the right block", "300 x 155 x 300 + transition",
+         (box + 0.35) * al + 0.6 * 0.050 * LINING_KG_M3, "2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation)"),
+        ("Exhaust fan box and roof sleeve, in the soffit", "294 x 314 x 173",
+         (ebox + 0.093) * al + 0.42 * 0.050 * LINING_KG_M3, "2 mm aluminium, 50 mm lining"),
+        ("Intake riser with the intake mesh, in the right block", f"{lo_w*1000:.0f}-{up_w*1000:.0f} x {lo_d*1000:.0f} x {(lo_l+up_l)*1000:.0f}",
+         (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5, "1 mm galvanised steel; 0.5 kg mesh and frame (assumption)"),
+        ("Roof slot grille and sleeve", "285 x 294", 0.5, "assumption"),
+    ]
+    return rows
+
+
+def d60_air_kg(casing="al20"):
+    return sum(r[2] for r in d60_parts(casing))
+
+
+def d60_ceiling_saving_kg():
+    """Ceiling lining the soffit replaces: its depth along the full inner width (calculation)."""
+    (sx0, sx1), (sy0, sy1), _ = D60["soffit"]
+    return (sx1 - sx0) / 1000 * (sy1 - sy0) / 1000 * CASS_KG_M2
+
+
+def d60_vents(derate):
+    """Speech path through the D-60 vents: [(free area m2, IL per band)] for the two cartridges (calculation)."""
+    w, d, L = (x / 1000 for x in D60["cart"])
+    area = D60["ngap"] * D60["gap"] / 1000 * (w - 0.004)
+    il = [min(1.05 * a ** 1.4 * 2 / (D60["gap"] / 1000) * L * derate, SIL_CAP_DB) for a in LINING_DATA[D60["lin"]]]
+    return [(area, il), (area, il)]
+
+
 def flat(x):
     return [x] * 6
 
@@ -680,8 +830,7 @@ def elements(cfg, sc, wb, gb):
     if cfg["vents"] == "silenced":
         st_v = [0.0] * 6
         ar_v = 0.0
-        for L, area, _, _ in SIL_PATHS.values():
-            il = silencer_il(L, s["sil_derate"])
+        for area, il in d60_vents(s["sil_derate"]):     # D-60 cartridges (the speech path out through the vents)
             st_v = [x + area * 10 ** (-y / 10) for x, y in zip(st_v, il)]
             ar_v += area
         el.append(("vents", ar_v, [x / ar_v for x in st_v]))
@@ -727,9 +876,9 @@ FIXES = [
     ("Door drop seal", dict(drop_seal=True), 1.0, "HW drop-seal row"),
     ("Fixed glass in sealed U-profiles", dict(glass_seals=True), 0.0, "profiles are already in the layout study's rest"),
     ("Gaskets on every panel joint", dict(gaskets=True), 1.0, "HW gasket row, about 0.03 kg/m x 34 m"),
-    ("Silenced vents (splitter cartridges and exhaust riser in the right decor block)", dict(vents="silenced"),
-     round(cartridge_kg("al20") + (2 * (RISER[0] + RISER[1]) * RISER[2] * RISER_KG_M2 if RISER_ON else 0.0) - 3.0, 1),
-     "calculation: two cartridges with 2 mm aluminium casings and their fill, the exhaust riser, less the 3 kg in the layout study's rest"),
+    ("Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block)",
+     dict(vents="silenced"), round(d60_air_kg("al20") - d60_ceiling_saving_kg() - 3.0, 1),
+     "calculation: the D-60 air parts less the ceiling lining the soffit replaces and the 3 kg in the layout study's rest"),
     ("Thin floor with base seal (DECIDED, D-05)", dict(floor="thin", base_seal=True), 0.5,
      "HW base-seal row; the floor itself is in the weight study"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
@@ -750,7 +899,8 @@ def pod_total_kg(cfg, wb, gb):
     kg = REST_KG + EXTRA_FIX_KG
     kg += wb[cfg["wall"]].kg_m2 * OUT_WALL_M2 + wb[cfg.get("ceiling", cfg["wall"])].kg_m2 * OUT_CEIL_M2
     kg += gb[cfg["glass"]].kg_m2 * GLASS_M2 + FRONT_EXTRA_KG.get(cfg["glass"], 0.0)
-    kg += cartridge_kg(cfg.get("casing", "al20")) + riser_kg() - 3.0   # less the study's 2 x 1.5 kg silencer boxes
+    kg += d60_air_kg(cfg.get("casing", "al20")) - d60_ceiling_saving_kg() - 3.0   # D-60 air parts, less the ceiling
+                                                        # lining the soffit replaces and the study's 2 x 1.5 kg boxes
     kg += fans_kg() - 3.0                                  # 12 V fans; less the study's 2 x 1.5 kg fans
     return kg
 
@@ -1030,6 +1180,216 @@ def riser_kg():
 
 
 # ---------------------------------------------------------------------------
+# Air paths built from parts (D-60 recheck). The same methods as fan12_noise, with each part's own size, so layouts
+# on the real right block can be compared. A path has the fans, the parts between the fans and the grille inside
+# the pod ("pod"), and the parts between the fans and the opening to the room ("room"). Sound inside comes from the
+# duct path through the "pod" parts and the grille, and from breakout of every part that faces the pod.
+# ---------------------------------------------------------------------------
+BEND_K = 0.8     # ASSUME: rectangular 90 degree bend, no turning vanes, at its own speed
+GRILLE_K = 2.0   # PR #11's inside diffuser and outside grille (SYS_K), each at its own free-area speed
+DUCT_F = 0.02    # ASSUME: friction factor of a smooth sheet-metal duct
+
+
+def part(kind, length, wid, dep, gap=SIL_GAP, ngap=2, lin=25.0, face=True, fill=0.040, bends=0, wall="al20",
+         free=None, ps=None, rad=None):
+    """One part of an air path, m. kind "split": ngap passages of `gap` between layers `lin` mm thick, passages
+    `wid` wide, `dep` the stack depth; "lined": a duct lined on its walls, with its free area and lined perimeter over
+    free area `ps` per metre; "plain": an unlined duct. face: it faces the pod; fill: the gap (m) between its wall and
+    the face toward the pod (filled with polyester if 20 mm or more); rad: its width radiating toward the pod
+    (default wid); wall: a CASINGS key."""
+    _, mat, t = CASINGS[wall]
+    p = dict(kind=kind, L=length, wid=wid, dep=dep, gap=gap, ngap=ngap, lin=lin, face=face, fill=fill, bends=bends,
+             wall=wall, kg_m2=MAT[mat][0] * t / 1000, rad=rad or wid)
+    if kind == "split":
+        p["free"], p["ps"] = ngap * gap * wid, 2 / gap
+    elif kind == "lined":
+        p["free"], p["ps"] = free, ps
+    else:
+        p["free"], p["ps"] = free or wid * dep, 0.0
+    return p
+
+
+def part_il(p, derate):
+    if p["kind"] == "plain":
+        return [0.0] * 6
+    return [min(1.05 * a ** 1.4 * p["ps"] * p["L"] * derate, SIL_CAP_DB) for a in LINING_DATA[p["lin"]]]
+
+
+def part_k(p):
+    """Loss coefficient at the part's own free-area speed. A splitter takes PR #11's entry 0.5, exit 1.0 and 2.0
+    per 1.8 m of 40 mm passages, scaled by length over passage width (calculation from SYS_K)."""
+    if p["kind"] == "split":
+        return 0.5 + 1.0 + 2.0 * p["L"] / 1.8 * 0.040 / p["gap"] + BEND_K * p["bends"]
+    if p["kind"] == "lined":
+        return 0.5 + 1.0 + 2.0 * p["L"] / 1.8 + BEND_K * p["bends"]
+    return DUCT_F * p["L"] * (p["wid"] + p["dep"]) / (2 * p["wid"] * p["dep"]) + BEND_K * p["bends"]
+
+
+def leaf_of(wall):
+    _, mat, t = CASINGS[wall]
+    return plate(wall, [layer(mat, t)])
+
+
+def wall_pair_r(wall, gap):
+    """R of a part's wall | gap | the felt-covered face toward the pod (ACP 3 mm), octaves, and f0 (Sharp, ties at
+    0.6 m points as in double_wall_r; the gap is filled if 20 mm or more)."""
+    w = leaf_of(wall)
+    face = acp()
+    r = octave(lambda f: r_double(w, face, gap, gap >= 0.020, ("point", 0.6), f))
+    f0 = math.sqrt(1.8 * RHO0 * C0 ** 2 * (w.m + face.m) / (gap * w.m * face.m)) / (2 * math.pi)
+    return r, f0
+
+
+def path_dp12(path, q_ls):
+    dp = 0.0
+    for p in path["pod"] + path["room"]:
+        v = q_ls / 1000 / p["free"]
+        dp += part_k(p) * 0.5 * RHO0 * v * v
+    for k, area in path.get("extra", ()):
+        v = q_ls / 1000 / area
+        dp += k * 0.5 * RHO0 * v * v
+    for area in (path["grille"], path["opening"]):
+        v = q_ls / 1000 / area
+        dp += GRILLE_K * 0.5 * RHO0 * v * v
+    return dp
+
+
+def path_noise12(path, q_ls, derate=SIL_DERATE, tone_250=0.0, fan_key=FAN_PICK):
+    """(duct, breakout, total dB(A), fan speed, pressure Pa) at a seated head, or None if out of the fans' reach."""
+    fan = FAN12[fan_key]
+    room = inside_room_terms()
+    dp = path_dp12(path, q_ls)
+    s = fan_speed(fan, q_ls, dp)
+    if s is None:
+        return None
+    lw = fan["lpa"] + LW_FROM_LP + SPEED_LAW * math.log10(s) + 10 * math.log10(FAN12_N)
+    side = [lw - 3.0 + x + (tone_250 if i == 1 else 0.0) for i, x in enumerate(FAN12_REL)]
+    cum = [0.0] * 6
+    for p in path["pod"]:
+        cum = [c + x for c, x in zip(cum, part_il(p, derate))]
+    duct = sum(10 ** ((side[i] - min(cum[i], 2 * SIL_CAP_DB) - end_reflection(f, path["grille"])
+                       + room(path["r"], i)) / 10) for i, f in enumerate(BANDS))
+    rf = path.get("r_face", 1.2)
+    brk = 0.0
+    for chain in (path["pod"], path["room"]):
+        cum = [0.0] * 6
+        for p in chain:
+            if p["face"]:
+                rdw, f0 = wall_pair_r(p["wall"], max(p["fill"], 0.005))
+                rc = octave(lambda f: r_single(leaf_of(p["wall"]), f))
+                rate = [max(1.05 * a ** 1.4 * p["ps"] * derate, 0.5) for a in LINING_DATA[p["lin"]]]
+                for i, f in enumerate(BANDS):
+                    kl = rate[i] * p["L"] / 4.343
+                    mean = 1.0 if p["kind"] == "plain" else (1 - math.exp(-kl)) / kl
+                    il_face = max(0.0, rdw[i] - rc[i]) if f / math.sqrt(2) > f0 else 0.0
+                    tl = max(breakout_tl(f, p["kg_m2"], p["wid"], p["dep"]),
+                             10 * math.log10(2 * p["L"] * (1 / p["wid"] + 1 / p["dep"])))
+                    lwb = (side[i] - cum[i] + 10 * math.log10(mean) + 10 * math.log10(p["rad"] * p["L"] / (p["wid"] * p["dep"]))
+                           - tl - il_face)
+                    brk += 10 ** ((lwb + room(rf, i)) / 10)
+            cum = [c + x for c, x in zip(cum, part_il(p, derate))]
+    bx = path.get("box")
+    if bx:   # lined fan box, reverberant, behind a filled double wall (as fan12_noise)
+        rdw, _ = wall_pair_r("al20", bx["fill"])
+        lined = 2 * (bx["wid"] + bx["dep"]) * bx["h"] + bx["wid"] * bx["dep"]
+        al = LINING_DATA[bx["lin"]]
+        for i in range(6):
+            lwb = side[i] + 10 * math.log10(bx["rad_area"] / (lined * al[i] / (1 - al[i]))) - rdw[i]
+            brk += 10 ** ((lwb + room(rf, i)) / 10)
+    return 10 * math.log10(duct), 10 * math.log10(brk), 10 * math.log10(duct + brk), s, dp
+
+
+def layout_noise12(paths, q_ls, **kw):
+    """Both paths at the same flow: (duct, breakout, total dB(A), [speeds], [Pa], [path totals]) or None."""
+    res = [path_noise12(p, q_ls, **kw) for p in paths]
+    if any(r is None for r in res):
+        return None
+    tot = [10 * math.log10(sum(10 ** (r[k] / 10) for r in res)) for k in range(3)]
+    return tot[0], tot[1], tot[2], [r[3] for r in res], [r[4] for r in res], [r[2] for r in res]
+
+
+def layout_flow_for(paths, target_dba, **kw):
+    """Highest flow at or under target_dba that the fans can reach."""
+    lo, hi = 10.0, 150.0
+    for _ in range(50):
+        mid = (lo + hi) / 2
+        r = layout_noise12(paths, mid, **kw)
+        if r is None or r[2] > target_dba:
+            hi = mid
+        else:
+            lo = mid
+    return lo
+
+
+# Layouts compared on the real right block. Sizes in m; widths from dr_clear_width for a 159 mm cartridge set
+# against the inner face, less 5 mm each side (calculation). The top strip slot: 21 mm clear (27 mm strip less two
+# skins) x 790 mm (X 452 to 1244), 75% free, 0.0124 m2 (calculation). Left block: a 100 mm deep box against its
+# inner face is 189 mm wide, a lined duct of 0.0135 m2 free (calculation from skeleton P03). Top block: its section
+# is 0.030 to 0.038 m2 inside the skins; lined 25 mm, 0.017 m2 free, P/S 33 per m (calculation).
+TOP_STRIP_FREE = 0.021 * 0.790 * 0.75
+CART_D = 3 * 0.025 + 2 * SIL_GAP          # PR #11's 155 mm stack
+
+
+def col_w(z0, z1):
+    """Mean clear width (m) of a 159 mm cartridge in the right block's column between z0 and z1, 5 mm each side."""
+    return (dr_clear_width(z0, 159) + 2 * dr_clear_width((z0 + z1) / 2, 159) + dr_clear_width(z1, 159)) / 4000 - 0.010
+
+
+def layouts():
+    lo, up = col_w(110, 700), col_w(700, 1300)
+    column = [part("split", 0.59, lo, CART_D, fill=0.005), part("split", 0.60, up, CART_D, fill=0.005)]
+    to_strip = part("plain", 0.2, 0.30, 0.12, fill=0.005, free=0.030)
+    sup_box = dict(wid=0.31, dep=0.155, h=0.30, fill=0.005, lin=25.0, rad_area=0.31 * 0.30)
+    exh_box = dict(wid=0.30, dep=0.155, h=0.20, fill=0.005, lin=25.0, rad_area=0.30 * 0.20)
+
+    def sup(pod_parts, room_parts=column, grille=0.03, opening=0.025):
+        return dict(pod=pod_parts, room=room_parts, box=sup_box, grille=grille, opening=opening, r=1.0)
+    a = [sup([part("split", 0.45, 0.39, CART_D, fill=0.005)]),
+         dict(pod=[part("split", 0.45, 0.26, CART_D, fill=0.005)], room=[to_strip], box=exh_box,
+              grille=0.0225, opening=TOP_STRIP_FREE, r=1.5)]
+    b = [sup([part("split", 0.65, 0.40, CART_D, fill=0.005), part("split", 0.45, 0.26, CART_D, fill=0.005, bends=2)]),
+         dict(pod=[part("lined", 1.55, 0.18, 0.10, fill=0.005, free=0.0135, ps=1 / 0.075 + 2 / 0.18)],
+              room=[part("plain", 1.6, 0.16, 0.12, fill=0.005, free=0.017, bends=2), to_strip], box=exh_box,
+              grille=0.0225, opening=TOP_STRIP_FREE, r=1.5)]
+    dt_exh = dict(pod=[part("lined", 1.25, 0.20, 0.16, fill=0.005, free=0.017, ps=33.0, bends=1)], room=[to_strip],
+                  box=exh_box, grille=0.0225, opening=TOP_STRIP_FREE, r=1.5)
+    c = [sup([part("split", 0.55, 0.40, CART_D, fill=0.005), part("split", 0.30, 0.26, CART_D, fill=0.005, bends=2)]),
+         dt_exh]
+    c_roof = [sup([part("split", 0.35, 0.40, CART_D, fill=0.005), part("split", 0.30, 0.30, CART_D, fill=0.005, bends=2)],
+                  [part("lined", 1.3, 0.25, 0.17, fill=0.005, free=0.040, ps=6.25, bends=1)], opening=0.030),
+              dict(dt_exh, grille=0.03, opening=0.05)]
+    pr11 = [dict(pod=[part("split", SIL_L, SIL_W, CART_D)], room=[], grille=2 * SIL_GAP * SIL_W,
+                 opening=2 * SIL_GAP * SIL_W, r=1.0, box=dict(wid=SIL_W, dep=CART_D, h=FANBOX_L, fill=0.040, lin=25.0,
+                                                               rad_area=SIL_W * FANBOX_L)),
+            dict(pod=[part("split", SIL_L, SIL_W, CART_D)], room=[part("plain", RISER[2], RISER[0], RISER[1], wall="st10")],
+                 grille=2 * SIL_GAP * SIL_W, opening=2 * SIL_GAP * SIL_W, r=1.5, extra=((RISER_K, RISER[0] * RISER[1]),),
+                 box=dict(wid=SIL_W, dep=CART_D, h=FANBOX_L, fill=0.040, lin=25.0, rad_area=SIL_W * FANBOX_L))]
+    return dict(a=a, b=b, c=c, c_roof=c_roof, pr11=pr11, d60=d60_paths())
+
+
+def d60_paths(casing="al20"):
+    """D-60 as sized here: supply up the riser in the right block, through its fans, down the air column's cartridge
+    to the kick grille; exhaust from the soffit's far-end grille along its cartridge to its fans and the roof slot."""
+    w, d, L = (x / 1000 for x in D60["cart"])
+    gap, n, lin = D60["gap"] / 1000, D60["ngap"], D60["lin"]
+    fill = D60["fill"] / 1000
+    lo_w, lo_d, lo_l = (x / 1000 for x in D60["riser_lo"])
+    up_w, up_d, up_l = (x / 1000 for x in D60["riser_up"])
+    supply = dict(
+        pod=[part("split", L, w - 0.004, d - 0.004, gap=gap, ngap=n, lin=lin, fill=fill, rad=w + d, bends=1, wall=casing)],
+        room=[part("plain", lo_l, lo_w, lo_d, fill=fill, free=(lo_w - 0.002) * (lo_d - 0.002), wall="st10"),   # behind the column
+              part("plain", up_l, up_w, up_d, fill=0.005, free=(up_w - 0.002) * (up_d - 0.002), bends=2, wall="st10")],
+        box=dict(wid=0.30, dep=0.155, h=0.30, fill=0.040, lin=50.0, rad_area=0.30 * 0.30),
+        grille=D60_FREE["kick"], opening=D60_FREE["intake"], r=1.0)
+    exhaust = dict(
+        pod=[part("split", L, w - 0.004, d - 0.004, gap=gap, ngap=n, lin=lin, fill=fill, rad=w + d, bends=1, wall=casing)],
+        room=[part("plain", 0.10, 0.285, 0.294, face=False)],
+        box=dict(wid=0.294, dep=d, h=w, fill=fill, lin=50.0, rad_area=0.294 * (d + w)),
+        grille=D60_FREE["exh_grille"], opening=D60_FREE["roof"], r=1.5)
+    return [supply, exhaust]
+
+
+# ---------------------------------------------------------------------------
 # Tables
 # ---------------------------------------------------------------------------
 def row(c):
@@ -1186,7 +1546,7 @@ def t_recommend(wb, gb, base):
             ("Same with a 0.4 mm tray (rejected: costs 1 dB)", dict(base, **dict(DECIDED_STACK, wall="DL-ST4-40-FLG-12", ceiling="DL-ST4-40-FLG-12"))),
             ("Same, felt flat on the ceiling lining (no gap)", dict(base, **dict(DECIDED_STACK, ceiling="DL-ST-40-FL"))),
             ("Acrylic experiment: 10 mm with hinge stile", dict(base, **dict(DECIDED_STACK, glass="A10"))),
-            ("Light 0.8 mm cartridge casings", dict(base, **dict(DECIDED_STACK, casing="al08")))]
+            ("Light 0.8 mm cartridge casings (rejected: misses the fan-noise target, section 7d)", dict(base, **dict(DECIDED_STACK, casing="al08")))]
     for label, cfg in rows:
         kg = pod_total_kg(cfg, wb, gb)
         b = band(cfg, wb, gb)
@@ -1216,7 +1576,7 @@ def t_air():
 
 
 def t_fans():
-    out = ["| Fans and cartridges | Fits the 205 mm decor | Fans kg | Cartridges, fill, riser kg | At 53 l/s: fan speed supply / exhaust | At 53 l/s: duct / breakout / total dB(A) | Boost flow at 30 dB(A) l/s | At 70 l/s: total dB(A) |",
+    out = ["| Fans and cartridges (PR #11, right block taken as a box) | Fits the real right block | Fans kg | Cartridges, fill, riser kg | At 53 l/s: fan speed supply / exhaust | At 53 l/s: duct / breakout / total dB(A) | Boost flow at 30 dB(A) l/s | At 70 l/s: total dB(A) |",
            "|---|---|---:|---:|---|---|---:|---:|"]
     a, b = fan_noise_old(TD500, 53.0), fan_noise_old(TD500, 70.0)
     out.append(row(["2 x S&P TD-500/150-160 SILENT, 4 V, as at 5c1003b, with casing sound", "no (ØD 221 mm)", "12.0",
@@ -1228,14 +1588,14 @@ def t_fans():
     def paths(ws, we, le=SIL_L):
         return {"supply": (SIL_L, 2 * SIL_GAP * ws, ws, (dep, ws)), "exhaust": (le, 2 * SIL_GAP * we, we, (dep, we))}
     cases = (
-        ("Exhaust high with a riser: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges (DECIDED)",
-         "al20", 0.0, dict(riser=True, w=(keep[0], keep[0]), le=SIL_L, arr="parallel")),
+        ("Exhaust high with a riser: exhaust fans at the foot, 150 mm steel riser, 405 mm cartridges (D-51, replaced by D-60)",
+         "al20", 0.0, dict(riser=True, w=(keep[0], keep[0]), le=SIL_L, arr="parallel", fits="no: needs 960 mm")),
         ("Same, with a 5 dB fan tone at 250 Hz (risk)", "al20", 5.0,
-         dict(riser=True, w=(keep[0], keep[0]), le=SIL_L, arr="parallel")),
+         dict(riser=True, w=(keep[0], keep[0]), le=SIL_L, arr="parallel", fits="no: needs 960 mm")),
         ("Both grilles low, no riser, 450 mm cartridges (not chosen: exhaust low)", "al20", 0.0,
-         dict(riser=False, w=(0.45, 0.45), le=SIL_L, arr="parallel")),
+         dict(riser=False, w=(0.45, 0.45), le=SIL_L, arr="parallel", fits="no: needs 900 mm")),
         ("Exhaust in the top block, no riser: 266 mm wide, 1.35 m, two fans in series (they can't sit side by side)",
-         "al20", 0.0, dict(riser=False, w=(0.45, 0.266), le=1.35, arr="series")))
+         "al20", 0.0, dict(riser=False, w=(0.45, 0.266), le=1.35, arr="series", fits="no: the top block is 119 to 199 mm deep")))
     for label, ck, tone, v in cases:
         SIL_W, RISER_ON = v["w"][0], v["riser"]
         SIL_PATHS = paths(v["w"][0], v["w"][1], v["le"])
@@ -1247,24 +1607,254 @@ def t_fans():
             cells = ["out of reach", "out of reach"]
         else:
             cells = [f"{r53[3]['supply'] * 100:.0f}% / {r53[3]['exhaust'] * 100:.0f}%", " / ".join(f"{x:.1f}" for x in r53[:3])]
-        out.append(row([label, "yes", f"{fans_kg():.1f}", f"{kg:.1f}"] + cells +
+        out.append(row([label, v["fits"], f"{fans_kg():.1f}", f"{kg:.1f}"] + cells +
                        [f"{fan12_flow_for(30.0, FAN_PICK, ck, tone):.0f}", f"{r70[2]:.1f}" if r70 else "out of reach"]))
         SIL_W, SIL_PATHS, RISER_ON, FAN_ARR = keep
     return "\n".join(out)
 
 
+def path_max_flow(path):
+    """Highest flow (l/s) the path's fan pair reaches at full speed."""
+    lo, hi = 10.0, 200.0
+    for _ in range(50):
+        mid = (lo + hi) / 2
+        if fan_speed(FAN12[FAN_PICK], mid, path_dp12(path, mid)) is None:
+            hi = mid
+        else:
+            lo = mid
+    return lo
+
+
 def t_silencer():
-    il = silencer_il(SIL_L, SIL_DERATE)
-    out = ["| Cartridge casing | Cartridges, fill and riser kg | Fill toward the pod mm | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + fill + inner face R 125 | 250 | 500 | 1k | 2k | 4k dB |",
-           "|---|---:|---:|" + "---:|" * 12]
+    """The D-60 cartridge, both paths, with each casing."""
+    w, d, L = (x / 1000 for x in D60["cart"])
+    il = part_il(d60_paths()[0]["pod"][0], SIL_DERATE)
+    out = ["| Cartridge casing | Air parts kg | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + 30 mm fill + felt-covered face R 125 | 250 | 500 | 1k | 2k | 4k dB | At 53 l/s dB(A) | Flow at 30 dB(A) l/s |",
+           "|---|---:|" + "---:|" * 14]
     for ck in ("al20", "al08"):
-        rdw, d = double_wall_r(ck)
-        out.append(row([CASINGS[ck][0] + (" (pick)" if ck == AIR_CASING else ""), f"{cartridge_kg(ck) + riser_kg():.1f}",
-                        f"{d * 1000:.0f}"] + [f"{x:.0f}" for x in il] + [f"{x:.0f}" for x in rdw]))
+        rdw, _ = wall_pair_r(ck, D60["fill"] / 1000)
+        paths = d60_paths(ck)
+        r = layout_noise12(paths, 53.0)
+        out.append(row([CASINGS[ck][0] + (" (pick)" if ck == AIR_CASING else ""), f"{d60_air_kg(ck):.1f}"]
+                       + [f"{x:.0f}" for x in il] + [f"{x:.0f}" for x in rdw]
+                       + [f"{r[2]:.1f}" if r else "out of reach", f"{layout_flow_for(paths, 30.0):.0f}"]))
+    sup, exh = d60_paths()
     out.append("")
-    out.append("Pressure drop per path, supply / exhaust: " + "; ".join(
-        f"{q:.0f} l/s {path_dp('supply', q):.0f} / {path_dp('exhaust', q):.0f} Pa" for q in (26, 53, 70))
-        + f". Each fan pair reaches {fan12_flow_for(99.0):.0f} l/s at full speed.")
+    out.append("Pressure per path, supply / exhaust: " + "; ".join(
+        f"{q:.0f} l/s {path_dp12(sup, q):.0f} / {path_dp12(exh, q):.0f} Pa" for q in (26, 53, 65))
+        + f". At full speed the supply pair reaches {path_max_flow(sup):.0f} l/s and the exhaust pair "
+          f"{path_max_flow(exh):.0f} l/s.")
+    return "\n".join(out)
+
+
+def t_dr():
+    """The right decor block's clear section by height (skeleton P03)."""
+    out = ["| Height Z mm | Glass-side edge X mm | Clear width for a 159 mm deep cartridge mm | Clear width at the full 199 mm depth mm | Inner face seen from inside mm |",
+           "|---:|---:|---:|---:|---:|"]
+    for z in (105, 500, 1000, 1521, 1800, 2117):
+        out.append(row([f"{z}", f"{dr_edge_x(z):.0f}", f"{dr_clear_width(z, 159):.0f}", f"{dr_clear_width(z, 199):.0f}",
+                        f"{SKEL['xr'] - SKEL['stack_t'] - dr_edge_x(z):.0f}"]))
+    need = 2 * (CART_D + 0.004) * SIL_W * (SIL_L + FANBOX_L) + RISER[0] * RISER[1] * RISER[2]
+    out.append("")
+    out.append(f"Inside its skins the block holds {dr_volume_m3():.2f} m3. Its flat top is the strip from Y "
+               f"-{SKEL['ch_yb']:.0f} to -{SKEL['yf'] * -1 - SKEL['decor_d']:.0f}, "
+               f"{SKEL['ch_yb'] - (SKEL['yf'] * -1 - SKEL['decor_d']):.0f} mm deep; the rest of the top is the "
+               f"chamfer. PR #11's layout needs {(2 * SIL_W + RISER[0]) * 1000:.0f} mm of width over "
+               f"{(SIL_L + FANBOX_L) * 1000:.0f} mm, {need:.2f} m3 with the fan boxes and riser.")
+    return "\n".join(out)
+
+
+LAYOUT_ROWS = (
+    ("pr11", "PR #11 (D-51), taking the right block as a 1016 x 2290 box",
+     "two 405 mm cartridges and a riser in the block: doesn't fit"),
+    ("a", "(a) right block only", "supply up the block's column; exhaust in its upper part, out the 27 mm top strip"),
+    ("b", "(b) right and left blocks", "supply in the right block; exhaust up the left block and across the top block"),
+    ("c", "(c) right and top blocks", "supply in the right block; exhaust along the top block"),
+    ("c_roof", "(c) improved, exhaust out a roof slot: the best inside the decor",
+     "as (c), with the column as a plain duct and bigger openings"),
+    ("d60", "(e) D-60 as sized here", "an air column in the front-right inside corner and a soffit above the door head"),
+)
+
+
+def t_layouts():
+    out = ["| Layout | Where the air path runs | At 53 l/s dB(A) | At 65 l/s dB(A) | At 33 l/s dB(A) | Flow at 26 dB(A) l/s | Flow at 30 dB(A) l/s | Fan speed at 53 l/s, supply / exhaust |",
+           "|---|---|---:|---:|---:|---:|---:|---|"]
+    lay = layouts()
+    for key, label, where in LAYOUT_ROWS:
+        paths = lay[key]
+        r53, r65, r33 = (layout_noise12(paths, q) for q in (53.0, 65.0, 33.0))
+        cell = lambda r: "out of reach" if r is None else f"{r[2]:.1f}"
+        speed = "out of reach" if r53 is None else " / ".join(f"{x:.0%}" for x in r53[3])
+        out.append(row([label, where, cell(r53), cell(r65), cell(r33), f"{layout_flow_for(paths, 26.0):.0f}",
+                        f"{layout_flow_for(paths, 30.0):.0f}", speed]))
+    return "\n".join(out)
+
+
+def t_d60():
+    """D-60 noise inside, path by path."""
+    paths = d60_paths()
+    out = ["| Flow l/s | Supply fans: speed, pressure | Supply duct / breakout / total dB(A) | Exhaust fans: speed, pressure | Exhaust duct / breakout / total dB(A) | Inside, both paths dB(A) |",
+           "|---:|---|---|---|---|---:|"]
+    for q in (26.0, 33.0, 53.0, 65.0, 70.0):
+        res = [path_noise12(p, q) for p in paths]
+        cells = []
+        for r in res:
+            cells += (["out of reach", ""] if r is None else
+                      [f"{r[3]:.0%}, {r[4]:.0f} Pa", " / ".join(f"{x:.1f}" for x in r[:3])])
+        tot = layout_noise12(paths, q)
+        out.append(row([f"{q:.0f}"] + cells + ["out of reach" if tot is None else f"{tot[2]:.1f}"]))
+    t53 = layout_noise12(paths, 53.0, tone_250=5.0)
+    out.append("")
+    out.append(f"Flow at 26 dB(A): {layout_flow_for(paths, 26.0):.0f} l/s; at 30 dB(A): {layout_flow_for(paths, 30.0):.0f} l/s "
+               f"(targets, D-52: 26 dB(A) or less at 53 l/s, 30 or less at the 65 l/s boost). With a 5 dB fan tone at "
+               f"250 Hz (risk): {t53[2]:.1f} dB(A) at 53 l/s and {layout_flow_for(paths, 30.0, tone_250=5.0):.0f} l/s at 30 dB(A).")
+    return "\n".join(out)
+
+
+def t_d60_parts(wb, gb):
+    out = ["| Part | Size mm | kg | Basis |", "|---|---|---:|---|"]
+    rows = d60_parts()
+    for name, size, kg, basis in rows:
+        out.append(row([name, size, f"{kg:.1f}", basis]))
+    fans = fans_kg()
+    air = d60_air_kg() + fans
+    old = cartridge_kg("al20") + riser_kg() + fans
+    save = d60_ceiling_saving_kg()
+    out.append(row(["Four 12 V fans", "140 x 140 x 25", f"{fans:.1f}", "0.3 kg each (assumption)"]))
+    out.append(row(["**Air parts in all**", "", f"**{air:.1f}**", "heaviest part under the 20 kg rule: "
+                    f"{max(r[2] for r in rows):.1f} kg"]))
+    out.append(row(["Less the ceiling lining the soffit replaces", f"{(D60['soffit'][0][1] - D60['soffit'][0][0]):.0f} x "
+                    f"{(D60['soffit'][1][1] - D60['soffit'][1][0]):.0f}", f"-{save:.1f}", "0.5 mm tray, returns and felt"]))
+    out.append(row(["Less PR #11's cartridges, fill, riser and fans", "", f"-{old:.1f}", "the model's earlier air parts"]))
+    out.append(row(["**Change to the pod**", "", f"**{air - save - old:+.1f}**", "the DECIDED stack in this model goes "
+                    f"to {pod_total_kg(dict(dict(PLAN, **FIX_ALL), **DECIDED_STACK), wb, gb):.0f} kg"]))
+    return "\n".join(out)
+
+
+def t_d60_sizes():
+    """The size table for the CEILING and FRONT Engineers (D-60): pod coordinates, mm."""
+    D = D60
+    w, d, L = D["cart"]
+    (cx0, cx1), (cy0, cy1), (cz0, cz1) = D["col"]
+    (sx0, sx1), (sy0, sy1), (sz0, sz1) = D["soffit"]
+    sk, fl, cl = D["skin"], D["fill"], 5.0
+    cart_x = (cx1 - cl - w, cx1 - cl)
+    cart_y = (cy0 + cl, cy0 + cl + d)
+    cart_z = (D["kick"][1] + 10, D["kick"][1] + 10 + L)
+    (bx0, bx1), (by0, by1), (bz0, bz1) = D["sup_box"]
+    (ox0, ox1), (oz0, oz1) = D["dr_open"]
+    lo_w, lo_d, lo_l = D["riser_lo"]
+    up_w, up_d, up_l = D["riser_up"]
+    (ix0, ix1), (iy0, iy1) = D["intake"]
+    (gx0, gx1), (gy0, gy1) = D["exh_grille"]
+    (ex0, ex1), (ey0, ey1), (ez0, ez1) = D["exh_box"]
+    (rx0, rx1), (ry0, ry1) = D["roof"]
+    kick_len = (cx1 - cx0 - 2 * sk) + (cy1 - cy0 - 2 * sk)
+    ex_cart_x = (ex0 - L, ex0)
+    ex_cart_z = (sz0 + sk + fl, sz0 + sk + fl + w)
+    riser_x0 = dr_edge_x(105) + DECOR_SKIN + 5
+    f = lambda a, b: f"{a:.0f} to {b:.0f}"
+    rows = [
+        ("Air column, outer", f"{cx1 - cx0:.0f} x {cy1 - cy0:.0f} x {cz1 - cz0:.0f}",
+         f"X {f(cx0, cx1)}, Y {f(cy0, cy1)}, Z {f(cz0, cz1)}",
+         f"front and left faces felt-covered ({sk:.0f} mm: 3 mm ACP + 9 mm felt); the front face lifts off full height for "
+         f"service; back on the right block's inner face, right side on the side lining"),
+        ("Supply cartridge", f"{w:.0f} x {d:.0f} x {L:.0f}, {d60_cartridge_kg():.1f} kg",
+         f"X {f(*cart_x)}, Y {f(*cart_y)}, Z {f(*cart_z)}",
+         f"2 mm aluminium casing; two {D['gap']:.0f} mm passages running up and down between three {D['lin']:.0f} mm "
+         f"Pyrotek Sorberpoly 2D layers parallel to the front face; {fl:.0f} mm polyester fill to the front and left "
+         f"faces; {cl:.0f} mm clear on the other sides to slide it out"),
+        ("Kick grille, supply out", f"{D['kick'][1] - D['kick'][0]:.0f} tall x {kick_len:.0f} along the front and left faces",
+         f"Z {f(*D['kick'])}", f"{D60_FREE['kick']:.3f} m2 free or more (60%); base plenum Z {f(cz0, cart_z[0])} under "
+         f"the cartridge"),
+        ("Opening from the right block into the column top", f"{ox1 - ox0:.0f} x {oz1 - oz0:.0f}",
+         f"in the block's inner face at X {f(ox0, ox1)}, Z {f(oz0, oz1)}",
+         f"supply air from the fan box; column top plenum Z {f(cart_z[1], cz1)}"),
+        ("Sensor hub and controls", "180 x 180 zone, up to 29 deep",
+         f"on the column's front face, centred X {(cx0 + cx1) / 2:.0f}, Z 1200",
+         "no fill behind it; a 30 x 30 mm cable chase in the column's front-left corner runs up to the top plenum and on "
+         "to the fans; the supply fan inlet sensor (D-50) sits in the fan box inlet"),
+        ("Supply fans and box", f"{bx1 - bx0:.0f} x {by1 - by0:.0f} x {bz1 - bz0:.0f}",
+         f"X {f(bx0, bx1)}, Y {f(by0, by1)}, Z {f(bz0, bz1)}, inside the right block",
+         "two Noctua NF-A14 industrialPPC-3000 PWM on a level bulkhead, blowing up; 2 mm aluminium, 50 mm lining; 44 mm "
+         "fill to the block's inner face, which lifts off here (D-59); a transition carries the air right to the opening"),
+        ("Intake riser", f"{lo_w:.0f} to {up_w:.0f} wide x {lo_d:.0f} deep x {lo_l + up_l:.0f}",
+         f"X {riser_x0:.0f} to {riser_x0 + lo_w:.0f}, Y {SKEL['yf'] + SKEL['decor_d'] - DECOR_SKIN - lo_d:.0f} to "
+         f"{SKEL['yf'] + SKEL['decor_d'] - DECOR_SKIN:.0f}, Z 105 to {105 + lo_l:.0f}, behind the column; then it widens "
+         f"and turns into the fan box inlet below Z {bz0:.0f}",
+         "1 mm galvanised steel, 0.021 m2 free or more"),
+        ("Intake opening (FRONT)", "0.033 m2",
+         f"the right block's underside at Z {SKEL['fix_zb']:.0f}: X {f(ix0, ix1)}, Y {f(iy0, iy1)}, cut 5 mm inside the "
+         "corner facet, clear of the base band (X 1210)",
+         f"coarse stainless mesh, 90% free or more, {D60_FREE['intake']:.3f} m2 free; the shadow gap under the block "
+         "stays open to the room, 0.034 m2 or more"),
+        ("Soffit, outer", f"{sx1 - sx0:.0f} x {sy1 - sy0:.0f} x {sz1 - sz0:.0f}",
+         f"X {f(sx0, sx1)}, Y {f(sy0, sy1)}, Z {f(sz0, sz1)}",
+         f"underside and front face felt-covered, front face flush with the column's; the underside lifts off in sections; "
+         f"the ceiling lining cassettes start at Y {sy1:.0f} ({1414 - (sy1 - sy0):.0f} long); headroom {sz0:.0f}, "
+         f"as the door head"),
+        ("Exhaust grille", f"{gx1 - gx0:.0f} x {gy1 - gy0:.0f}", f"soffit underside, X {f(gx0, gx1)}, Y {f(gy0, gy1)}",
+         f"{D60_FREE['exh_grille']:.3f} m2 free or more (40%)"),
+        ("Exhaust cartridge", "same part, lying along X", f"X {f(*ex_cart_x)}, Y {f(*cart_y)}, Z {f(*ex_cart_z)}",
+         "passages along X; fill and clearances as the column"),
+        ("Exhaust fans and box", f"{ex1 - ex0:.0f} x {ey1 - ey0:.0f} x {ez1 - ez0:.0f}",
+         f"X {f(ex0, ex1)}, Y {f(ey0, ey1)}, Z {f(ez0, ez1)}, the soffit's right end",
+         "two NF-A14 lying flat, blowing up into the roof sleeve; 2 mm aluminium, 50 mm lining"),
+        ("Roof slot (CEILING)", f"{rx1 - rx0:.0f} x {ry1 - ry0:.0f}",
+         f"through the roof panel above the exhaust box, X {f(rx0, rx1)}, Y {f(ry0, ry1)}",
+         f"sleeve through the 17 mm gap and the 43 mm roof panel; grille 50% free or more, {D60_FREE['roof']:.3f} m2 free; "
+         f"{(SKEL['pod_h'] - SKEL['fix_zb']) / 1000:.1f} m above the intake"),
+        ("Clearances", "", "", "5 mm round each cartridge and fan box; door top Z 2116 to the soffit 4 mm, so check the "
+         "door's swing; the soffit top, Z 2340, is 17 mm under the roof panel"),
+    ]
+    out = ["| Item | Size mm | Where (pod coordinates, mm) | Notes |", "|---|---|---|---|"]
+    out += [row(list(r)) for r in rows]
+    return "\n".join(out)
+
+
+GLASS_Y = -699.0   # mm, the door and fixed glass mid-plane (skeleton glass_y, source: v1 STEP)
+
+
+def soffit_view(eye_z, dist):
+    """For a viewer outside, eye at eye_z mm, dist mm in front of the glass: the band of glass height (Z mm) through
+    which the soffit's underside shows, and how deep (Y) into it the view reaches. The glass top is at Z 2119 and the
+    top block's underside, flush with the soffit's, runs at Z 2120 from the glass back to Y -645 (calculation)."""
+    (_, _), (sy0, sy1), (sz0, _) = D60["soffit"]
+    def z_glass(y_hit):   # height where the sight line to (y_hit, sz0) crosses the glass plane
+        return eye_z + (sz0 - eye_z) * dist / (dist + (y_hit - GLASS_Y))
+    lo, hi = z_glass(sy1), min(z_glass(sy0), SKEL["dt_zb"] - 1)
+    return lo, hi
+
+
+def t_soffit_view():
+    out = ["| Viewer outside | Glass band that shows the soffit's underside, Z mm | Glass height showing it mm |", "|---|---|---:|"]
+    for eye, label in ((1650.0, "standing"), (1200.0, "seated")):
+        for dist in (1000.0, 2000.0, 4000.0):
+            lo, hi = soffit_view(eye, dist)
+            out.append(row([f"{label}, eye {eye:.0f} mm, {dist / 1000:.0f} m from the glass", f"{lo:.0f} to {hi:.0f}", f"{hi - lo:.0f}"]))
+    return "\n".join(out)
+
+
+def t_recirc():
+    """Recirculation check (D-58, ISS-078): numbers for the method in report section 7f."""
+    q = 0.065
+    r_cap = math.sqrt(q / (math.pi * 0.1))
+    (cx0, cx1), (cy0, cy1), _ = D60["col"]
+    (gx0, gx1), (gy0, gy1) = D60["exh_grille"]
+    inside = math.sqrt(((cx0 + cx1) / 2 - (gx0 + gx1) / 2) ** 2 + (cy1 - (gy0 + gy1) / 2) ** 2
+                       + (D60["soffit"][2][0] - sum(D60["kick"]) / 2) ** 2) / 1000
+    rows = [
+        ("Intake to roof slot, height apart", f"{(SKEL['pod_h'] - SKEL['fix_zb']) / 1000:.2f} m",
+         "Z 102 to 2400 (skeleton P03); D-58 asks 1 m or more"),
+        ("Intake capture distance at 65 l/s, where its pull falls to 0.1 m/s", f"{r_cap:.2f} m",
+         "quarter-sphere sink at the floor and the pod's front, v = Q / (pi r^2); 0.1 m/s room air (assumption)"),
+        ("Exhaust leaving the roof slot at 65 l/s", f"{q / D60_FREE['roof']:.1f} m/s, upward", f"{D60_FREE['roof']:.3f} m2 free"),
+        ("Exhaust over the room at boost", "4 K or less", "D-50 holds the inside within 4 K of the room"),
+        ("Largest recirculated share that keeps the inlet within 0.5 K", f"{0.5 / 4.0:.1%}", "0.5 K / 4 K (D-58's test limit)"),
+        ("Supply kick grille to exhaust grille, inside the pod", f"{inside:.1f} m", "short-circuit inside the pod"),
+    ]
+    out = ["| Check | Value | Basis |", "|---|---|---|"]
+    out += [row(list(r)) for r in rows]
     return "\n".join(out)
 
 
@@ -1285,7 +1875,14 @@ def tables():
     out["curve"] = t_curve(wb, gb, fixed)
     out["recommend"], _ = t_recommend(wb, gb, fixed)
     out["air"] = t_air()
+    out["dr"] = t_dr()
+    out["layouts"] = t_layouts()
+    out["d60"] = t_d60()
     out["silencer"] = t_silencer()
+    out["d60_parts"] = t_d60_parts(wb, gb)
+    out["d60_sizes"] = t_d60_sizes()
+    out["soffit_view"] = t_soffit_view()
+    out["recirc"] = t_recirc()
     out["fans"] = t_fans()
     return out
 
