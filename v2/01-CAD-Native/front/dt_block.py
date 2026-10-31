@@ -109,9 +109,11 @@ OWN = [
     ("sp_slot", "14 mm", "mm", "source", "R-J13: the slot 14 long along the edge"),
     ("sp_skin", "16 mm", "mm", "calculation",
      "clearance in DT's underside skin round each spigot's rivnut head (12.96); the slot's is 16 x 22 for its play"),
-    ("stop_fl", "22 mm", "mm", "assumption",
-     "the top stop's flange under DT's underside, screwed up into the rail F02 (an aluminium angle 22 x 18 x 2)"),
-    ("stop_hole", "4.5 mm", "mm", "assumption", "M4 countersunk screws through the stop's flange (product HOLD)"),
+    ("stop_fl", "20 mm", "mm", "source",
+     "the top stop's flange under DT's underside (the 20 x 20 x 2 angle), screwed up into the rail F02"),
+    ("stop_hole", "4.3 mm", "mm", "source",
+     "ISO 273 fine clearance for M4 countersunk screws through the flange, 2.1 diameters from its free edge "
+     "(screw and rivnut: joints register numbers HOLD)"),
     ("dt_m", "(dl_zo - dt_zb) / dl_w", "", "calculation", "rise of the slope DT shares with DL, per unit of X"),
     ("dt_k", "sqrt(1 + dt_m * dt_m)", "", "calculation", "for pushing the slope line in by the skin"),
     ("slot_clear", "1 mm", "mm", "assumption", "fitting clearance each side of the glass channel in the skin slot"),
@@ -130,7 +132,8 @@ OWN = [
     ("stop_gap", "4 mm", "mm", "source", "athmer PS 1515 P Flex works in a 2 to 6 mm frame gap (selection C3): 4 nominal"),
     ("ps_s", "15 mm", "mm", "source", "athmer PS 1515 P Flex, 15 x 15 (selection C3)"),
     ("stop_t", "2 mm", "mm", "assumption", "top stop: an aluminium angle leg 2 thick"),
-    ("stop_h", "ps_s + 3 mm", "mm", "assumption", "top stop hangs 18 below DT's underside, past the seal"),
+    ("stop_h", "20 mm", "mm", "source",
+     "top stop: a standard 20 x 20 x 2 aluminium angle (EN 755-9); its leg hangs 20 below DT's underside, past the seal"),
     ("stop_end", "10 mm", "mm", "assumption", "the seal and stop stop 10 short of the catch"),
     # ---- the tube frame (stage 2): v1's front and back frames of 16 mm steel box (sources/v1 decor frame drawing),
     # in 6063-T6 aluminium tube (D-79), as DR's
@@ -312,10 +315,13 @@ def build(app):
     si.insideThickness = L.vi("dt_skin_t")
     c.features.shellFeatures.add(si).name = "SHELL - DT SKIN 3 MM (OPEN AT THE BACK AND AT DL, DR)"
     # slot in the underside for the fixed pane's top channel, from the pane's free edge to DR
-    slot = [(L.free_x(ZT + " - 1 mm"), GY + " - gu_prof_w / 2 - slot_clear"),
+    # its left end where the pane's free edge leaves the skin's top face: the edge leans left going up, so at the
+    # skin's bottom face the slot would leave a 0.6 mm sliver of the pane's corner in the skin (FRONT combined check)
+    zs1 = ZT + " + dt_skin_t + 1 mm"
+    slot = [(L.free_x(zs1), GY + " - gu_prof_w / 2 - slot_clear"),
             (L.diag_x(ZT, "gu_prof_d"), GY + " - gu_prof_w / 2 - slot_clear"),
             (L.diag_x(ZT, "gu_prof_d"), GY + " + gu_prof_w / 2 + slot_clear"),
-            (L.free_x(ZT + " - 1 mm"), GY + " + gu_prof_w / 2 + slot_clear")]
+            (L.free_x(zs1), GY + " + gu_prof_w / 2 + slot_clear")]
     prism(c, ("x", "y"), slot, "z", ZT + " - 1 mm", ZT + " + dt_skin_t + 1 mm",
           "SLOT - FIXED GLASS TOP CHANNEL", "CUT - SKIN SLOT FOR THE TOP CHANNEL", CUT, skin)
     # clearance round DR's two ledge spigots' rivnut heads (J-FRONT-03): round at the hole, long at the slot
@@ -376,7 +382,7 @@ def build(app):
                    "stop_hole")
     L.extrude_span(c, sk, "z", ZT + " - stop_t - 1 mm", ZT + " + 1 mm", CUT, [stp], "CUT - TOP STOP SCREW HOLES",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
-    stp.name = "DOOR TOP STOP ANGLE 22 X 18 X 2"
+    stp.name = "DOOR TOP STOP ANGLE 20 X 20 X 2"
     bodies["STOP"] = stp
 
     # ---- 351204 the welded tube frame (stage 2)

@@ -82,10 +82,13 @@ OWN = [
     ("stop_gap", "4 mm", "mm", "source", "athmer PS 1515 P Flex works in a 2 to 6 mm frame gap (selection C3): 4 nominal"),
     ("ps_s", "15 mm", "mm", "source", "athmer PS 1515 P Flex, 15 x 15 (selection C3)"),
     ("stop_t", "2 mm", "mm", "assumption", "stop: an aluminium angle leg 2 thick on DL's door-side face"),
-    ("stop_reach", "door_xl - dl_w + ps_s", "mm", "calculation", "the stop reaches from DL's face across the 11 mm gap and 15 over the glass"),
+    ("stop_reach", "30 mm", "mm", "source",
+     "the stop: a standard 30 x 20 x 2 aluminium angle (EN 755-9); its leg reaches from DL's face across the 11 mm gap "
+     "and 19 over the glass, past the 15 mm seal"),
     ("hinge_skip", "10 mm", "mm", "assumption", "the stop and seal stop 10 short of each hinge space"),
-    ("stop_fl", "22 mm", "mm", "assumption",
-     "the stop's flange on DL's door-side face, bonded (an aluminium angle 22 x stop_reach x 2; tape HOLD)"),
+    ("dt_stop_h", "20 mm", "mm", "source", "DT's top stop leg hangs 20 below DT's underside (its 20 x 20 x 2 angle)"),
+    ("stop_fl", "20 mm", "mm", "source",
+     "the stop's flange on DL's door-side face (the 30 x 20 x 2 angle), bonded with structural tape (product HOLD)"),
     # ---- the tube frame (stage 2): v1's DL frame (16 mm steel box, 60 x 20 hinge members; sources/v1 decor frame
     # drawing) in 6063-T6 aluminium tube (D-79). It carries the door: hinges -> hinge post -> rings -> bolt-line
     # post -> back plate -> J-FRONT-01 bolts -> left wall (ISS-045)
@@ -318,14 +321,17 @@ def build(app):
              ("hinge_z3 + hinge_clamp_h / 2 + hinge_skip", "leaf_zt")]
     c_ps, c_st = comp("PS"), comp("STOP")
     for i, (z0, z1) in enumerate(spans):
+        # at the top corner the seal runs up to DT's top seal and the stop to DT's top stop leg, so they butt there
+        # instead of crossing (FRONT combined check)
+        zp1, zs1 = (z1, z1) if i < 3 else ("dt_zb - ps_s", "dt_zb - dt_stop_h")
         b = L.box_body(design, c_ps, "PS%d" % (i + 1), (XL + " + door_xl", XL + " + door_xl + ps_s"), (gi, gi + " + stop_gap"),
-                       (z0, z1), "FRAME-STOP SEAL PS 1515 - HINGE SIDE %d" % (i + 1))
+                       (z0, zp1), "FRAME-STOP SEAL PS 1515 - HINGE SIDE %d" % (i + 1))
         bodies["PS%d" % (i + 1)] = b
         # an angle: the leg the seal sits on, and a flange bonded to DL's door-side face
         y0 = "(%s + stop_gap)" % gi
         ang = [(xs0, y0), (xs1, y0), (xs1, "%s + stop_t" % y0), ("%s + stop_t" % xs0, "%s + stop_t" % y0),
                ("%s + stop_t" % xs0, "%s + stop_fl" % y0), (xs0, "%s + stop_fl" % y0)]
-        f = prism(c_st, ("x", "y"), ang, "z", z0, z1, "SECTION - HINGE-SIDE STOP %d (ANGLE)" % (i + 1),
+        f = prism(c_st, ("x", "y"), ang, "z", z0, zs1, "SECTION - HINGE-SIDE STOP %d (ANGLE)" % (i + 1),
                   "EXTRUDE - HINGE-SIDE STOP %d" % (i + 1))
         b = f.bodies.item(0)
         b.name = "HINGE-SIDE STOP %d (ANGLE, BONDED)" % (i + 1)
@@ -404,8 +410,8 @@ def build(app):
 ANCHORS = [
     ("SKIN", 0, "-pod_w / 2"), ("SKIN", 3, "dl_w - pod_w / 2"), ("SKIN", 2, "wall_z0"), ("SKIN", 5, "dl_zo"),
     ("SKIN", 1, "-dl_y3"), ("SKIN", 4, "-pod_d / 2 + decor_d"),
-    ("BACK", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("PS", 0, "door_xl - pod_w / 2"), ("PS", 5, "leaf_zt"),
-    ("STOP", 3, "door_xl + ps_s - pod_w / 2"),
+    ("BACK", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("PS", 0, "door_xl - pod_w / 2"), ("PS", 5, "dt_zb - ps_s"),
+    ("STOP", 3, "dl_w + stop_reach - pod_w / 2"),
     ("FRAME", 0, "-pod_w / 2 + dl_skin_t"), ("FRAME", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("FRAME", 2, "wall_z0 + dl_skin_t"),
     ("FRAME", 4, "-pod_d / 2 + decor_d - dl_back_t"), ("FRAME", 1, "-dl_y3 + dl_skin_t"),
 ]
@@ -420,7 +426,7 @@ def export_all(app):
     step = L.export(design, root_dir, STEP_REL, "step")
     print("export %s: %d bytes" % (F3D_REL, os.path.getsize(f3d)))
     print("export %s: %d bytes" % (STEP_REL, os.path.getsize(step)))
-    seal_len = L.ev(design, "leaf_zt - door_zb - 3 * (hinge_clamp_h + 2 * hinge_skip)")
+    seal_len = L.ev(design, "dt_zb - ps_s - door_zb - 3 * (hinge_clamp_h + 2 * hinge_skip)")
     ev = lambda e: L.ev(design, e)
     members = frame_members()
     tube_m = sum(FL.member_numbers(m, ev)["length"] for m in members) / 1000.0
