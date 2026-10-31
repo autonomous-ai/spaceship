@@ -104,10 +104,54 @@ def open_or_make(app, name, make):
     return doc, True
 
 
+SKELETON = "100000_P04_POD-SKELETON_CAD"
+
+
+def preflight(app):
+    """Before making any document: every skeleton name the builders link must be a favorite of the cloud
+    skeleton's latest version (an 18:53 batch found skin_t gone and left three empty documents). Opens the
+    skeleton invisibly and closes it again, unless it was already open (then it is left as it was)."""
+    names = set()
+    for builder, args in (("side", {"part": "panel", "side": "L", "row": "1"}),
+                          ("back", {"part": "panel", "pos": "B1"})):
+        path = os.path.join(ARGS["repo_root"], BUILDERS[builder])
+        ns = {"__name__": "__wall_names__", "__file__": path, "SCRIPT_ARGS": dict(args, repo_root=ARGS["repo_root"])}
+        with open(path, "r", encoding="utf-8") as fh:
+            exec(compile(fh.read(), path, "exec"), ns)
+        names |= set(ns["SKELETON_NAMES"])
+    _proj, fold = folder(app)
+    files = find_file(fold, SKELETON)
+    if not files:
+        return sorted(names), "skeleton not found"
+    already = [app.documents.item(i) for i in range(app.documents.count) if app.documents.item(i).name == SKELETON]
+    active = app.activeDocument
+    doc = already[0] if already else app.documents.open(files[0], False)
+    try:
+        design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
+        favs = {design.userParameters.item(i).name for i in range(design.userParameters.count)
+                if design.userParameters.item(i).isFavorite}
+        missing = sorted(names - favs)
+        return missing, "version %s" % files[0].versionNumber
+    finally:
+        if not already:
+            doc.close(False)
+        if active is not None and active.isValid:
+            active.activate()
+
+
 def run(_context):
     app = adsk.core.Application.get()
     specs = [s.strip() for s in ARGS.get("specs", "").split(";") if s.strip()]
     done, failed = [], []
+    try:
+        missing, ver = preflight(app)
+    except Exception as exc:                              # noqa: BLE001
+        missing, ver = ["(pre-flight failed: %s)" % exc], "?"
+    if missing:
+        print("BATCH|FAIL pre-flight: skeleton %s %s lacks favorites %s; nothing made" % (SKELETON, ver, missing))
+        print("BATCH|summary: 0 done, %d failed: pre-flight" % len(specs))
+        return
+    print("BATCH|pre-flight: skeleton %s has every linked favorite" % ver)
     for spec in specs:
         doc, opened = None, False
         try:
