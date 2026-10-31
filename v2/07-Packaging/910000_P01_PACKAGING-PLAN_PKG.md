@@ -309,7 +309,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 904 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
 | K5 | Pallet 2: lanes within 1219 across and 2438 along, parts within their tier, loaded height 1829 or less | loaded height 1439 mm; widest tier 1219 mm; longest lane 2420 mm; failing tiers none | yes |
 | K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2110 × 1185 × 208 mm; outside height 238 mm; all fit | yes |
-| K7 | The guide's bolts match the joints register, joint by joint | guide 86 (76 × M6 × 16, 10 × M6 × 25); register 86; differences none | yes |
+| K7 | The guide's bolts match the joints register, joint by joint | guide 88 (76 × M6 × 16, 12 × M6 × 25); register 88; differences none | yes |
 | K8 | Assembly time within REQ-ASM-01's 4 hour limit (clock: steps 1 to 21) | 127 min for 2 people (4.2 person-hours); target about 60 min; limit 240 min | yes |
 | K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 14, never going back: True; crate top 2-01 (step 10) over 2-02 (step 11) | yes |
 | K10 | Every piece has a label (part number or owner, position code) and a place on a pallet | 42 labelled pieces; without a place: none; unknown tags: none | yes |
