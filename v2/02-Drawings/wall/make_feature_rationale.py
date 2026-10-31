@@ -107,6 +107,75 @@ OTHER_BACK = [
      "HOLD"),
 ]
 
+# ELECTRICAL's interface features (ELECTRICAL P01, electrical_model.py, PR #64; the PM's final sizes 2026-10-31
+# 20:38 UTC), in the parts of the positions that carry them (R1, R2, B2, B4); the build's el_ parameters
+ELS = "ELECTRICAL P01 (electrical_model.py, PR #64)"
+FELT = "FELT - PET 9 HELD BY THE TRAY LIPS"
+TRAY = "TRAY - STEEL 0.5 WITH RETURNS AND LIPS"
+FAMILIES_EL = {
+    (FELT, 60.0, "x"): (
+        "F35", "FA-KIT: felt access hole to the voice kit drop (R1-CASS), closed with a felt plug",
+        "ELECTRICAL's kit pocket P3-KIT behind it; the felt plug (ELECTRICAL)",
+        "halfway between the air column's back face and the back lining (Y el_y_kit), 80 above the trunk (Z 1180)",
+        ELS + ": kit_d, y_kit, trunk_z", "felt only: no steel there (the lips are at the tray's edges)",
+        "±1 (knife cut, assumption)", "knife or CNC knife", "assumption (ELECTRICAL)"),
+    (FELT, 19.1, "x"): (
+        "F36", "FX-COL: the trunk's way out of R1-CASS into the air column's cable chase",
+        "ELECTRICAL trunk harness 710021", "Y el_y_cx (13 behind the column's back face), at the trunk (Z 1100)",
+        ELS + ": y_cx, trunk_z, grm_d", "felt only", "±1 (assumption)", "knife", "assumption (ELECTRICAL)"),
+    (FELT, 12.0, "x"): (
+        "F37", "FX-CALL0 and FX-CALL2: the call light feed into R2-CASS behind the shelf and out above the screen",
+        "ELECTRICAL call light harness 710024", "Y el_call_y (the front end of a 900 bar), Z 2250 and 1450",
+        ELS + ": call_y, shelf_z, call_z, grm_s", "felt only", "±1 (assumption)", "knife", "assumption (ELECTRICAL)"),
+    ("SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM", 24.0, "y"): (
+        "F38", "Mains inlet and LAN feed-through holes in B2's skin",
+        "powerCON TRUE1 TOP (cut-out 23.8) and etherCON NE8FDP (24), ELECTRICAL's selection E",
+        "X 120, clear of the closing seam member and its pin pocket; Z 313 and 375 (v1's positions + 15)",
+        ELS + ": inlet_x, inlet_z, lan_z, inlet_d", "fill cut-out F47 behind them", "±0.2 (CNC router, assumption)",
+        "routed with the skin blank (DXF)", "source (ELECTRICAL)"),
+    (TRAY, 19.1, "z"): (
+        "F39", "Bushing holes for the light feed: G-PU-TOP in the cut-out's top return, G-B2-B4 in B2-CASS's top return "
+        "and B4-CASS's bottom return", "Heyco 2836 SB 750-625 bushing (ELECTRICAL)",
+        "X 346, the light feed (PM 2026-10-31 20:38 UTC); Y 787.5, the middle of the 24 cable gap",
+        ELS + ": grm_d 19.1 (the bushing's hole, PM: 19.1), y_bg", "in the return's flat, clear of its bends",
+        "±0.2 (assumption)", "punched in the flat blank (DXF)", "source (ELECTRICAL)"),
+    (FELT, 16.0, "y"): (
+        "F42", "FX-SHELF: the light shelf feed's way out of B4-CASS", "ELECTRICAL light feed harness 710011",
+        "X 346 (the light feed), Z 2250 (the shelf; CEILING sets it)", ELS + ": shelf_z, FX-SHELF 16", "felt only",
+        "±1 (assumption)", "knife", "assumption (ELECTRICAL)"),
+}
+OTHER_EL = {
+    "R1": [("F43", "{felt}", "FS-CNR: felt slot 18 x 120 at the back-right corner (Y 768 to 786, Z 1040 to 1160), "
+            "hidden behind B2-CASS's end", "the trunk turns the corner from B2-CASS's gap into R1-CASS's gap",
+            ELS + ": FS-CNR", "stays on the back lining's plane", "±1 (knife, assumption)", "assumption (ELECTRICAL)")],
+    "B2": [("F44", "{tray}", "Power unit cut-out 304 x 268 (X 91 to 395, Z 866 to 1134) through the base, its edges "
+            "turned toward the room as returns the full 34, no lips",
+            "the frame-mounted unit (296 x 260 x 72) passes 4 clear all round, so the lining stays floating; the returns "
+            "close the cable gap and carry the slot F45 and a bushing hole F39",
+            ELS + " and its final size (PM 2026-10-31 20:38 UTC)", "fixed at ELECTRICAL's place",
+            "±0.5 (assumption)", "source (ELECTRICAL)"),
+           ("F45", "{tray}", "Slots: S-PU-X 20 x 70 in the cut-out's right return (Y 777.5 to 797.5, Z 1030 to 1100); "
+            "S-CNR 11 x 80 in the end return (Y 776 to 787, Z 1060 to 1140)",
+            "the unit's two lead exits, and the trunk's turn into R1-CASS; ELECTRICAL fits the edge grommets",
+            ELS + ": slot_h, slot_l, lx_z1, lx_z2, cs_h, y_xc, trunk_z", "S-CNR follows the side lining's face (pod_w)",
+            "±0.5 (assumption)", "assumption (ELECTRICAL)"),
+           ("F46", "{felt}", "Felt cut 1 clear round the cut-out's returns", "the felt edge there has no lip; the unit's "
+            "face covers it", "felt_c 1 (assumption)", "", "±1", "assumption"),
+           ("F47", "{fill}", "Fill left out in the first bay: the unit (the cut-out's size, run on to the first stud so "
+            "no sliver stays), the sleeve 20 wide down to Z 301, the inlet and LAN connectors (X 108 to 160, Z 301 to "
+            "387)", "room for ELECTRICAL's factory-fitted parts; knife cut through the 40 fill", ELS,
+            "the unit's cut-out runs to the first stud as it moves", "±2 (knife, assumption)",
+            "source (ELECTRICAL); the unit's fixing HOLD (IF-12)"),
+           ("F48", "NO-PN-HOLD-H03", "The top clip zone on the first stud sits beside the cut-out's right return",
+            "the clip (H03) must clear the return's bend (X 395 to 396)", "HOLD H03", "", "", "HOLD")],
+    "B4": [("F40", "{felt}", "FX-CEIL: the ceiling route's crossing into B4-CASS, under the ceiling cassette's cable "
+            "holes (X (pod_w - 2 stack_t) / 4 = 583): not modelled yet", "ELECTRICAL's model put a 19.1 bushed hole "
+            "through the top lip, wider than the 12 lip; PM rule 2026-10-31 21:01 UTC: no cable hole through a lip, "
+            "felt only or a full steel face with its bushing, never a notch", ELS + ": ceil_x, z_cg",
+            "ELECTRICAL sets a felt-only height under the lip", "", "HOLD")],
+}
+POSITIONS = {"2101": ("L1", "R1", "L2", "R2"), "2102": ("B1", "B2", "B3", "B4")}
+
 # (body name, hole diameter, axis) -> id, function, mating part, rule (where and why there), source,
 # clearances, tolerance, make and check, status
 FAMILIES = {
@@ -209,10 +278,15 @@ def load(pn):
 def holes(rep):
     rows = {}
     for c in rep["components"]:
-        if not c["part_number"].startswith("21"):        # joint hardware (83xxxx): its bores are the maker's
+        # panel parts (21xxxx) and the cassette's tray and felt (511x, 512x... 5114); joint hardware (83xxxx) has
+        # the maker's bores; a tray's bends are cylinders too (Ø1 and Ø2), so only holes over 3 count there
+        lining = c["part_number"].startswith(("5111", "5112", "5113", "5114"))
+        if not (c["part_number"].startswith("21") or lining):
             continue
         for b in c["bodies"]:
             for h in b["holes"]:
+                if lining and h["d"] <= 3.0:
+                    continue
                 key = (b["name"], h["d"], h["axis"])
                 rows.setdefault(key, []).append(h)
     return rows
@@ -236,8 +310,10 @@ def main(argv):
                     pns[key] = c["part_number"]
     pns["assy"] = panel["document"].split("_")[0]
     back = pns["frame"].startswith("2112")
-    families = {**FAMILIES, **FAMILIES_BACK} if back else FAMILIES
+    families = {**FAMILIES, **FAMILIES_BACK, **FAMILIES_EL} if back else {**FAMILIES, **FAMILIES_EL}
+    code = POSITIONS[pns["assy"][:4]][int(pns["assy"][4:6]) - 1]
     found = holes(panel)
+    found.update(holes(cass))
     unexplained = []
     for key, hs in sorted(found.items()):
         body, d, ax = key
@@ -250,14 +326,16 @@ def main(argv):
                 unexplained.append(key)
                 continue
         cs = "; ".join("(%s)" % ", ".join("%g" % v for v in h["centre"] if v is not None) for h in hs)
+        part = pns["felt"] if body == FELT else pns["tray"] if body == TRAY else pns["skin"] if body.startswith("SKIN") \
+            else pns["frame"]
         lines.append("| %s | %s %s | Ø%g along %s, %d: %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
-            fam[0], pns["frame"], body, d, ax, len(hs), cs, fam[1], fam[2], fam[3], fam[4], fam[5], fam[6], fam[7],
+            fam[0], part, body, d, ax, len(hs), cs, fam[1], fam[2], fam[3], fam[4], fam[5], fam[6], fam[7],
             fam[8]))
     if unexplained:
         raise SystemExit("holes with no rationale: %s" % unexplained)
     lines += ["", "Other features:", "", "| ID | Part | Feature | Why | Source or calculation | Edit behaviour | Tolerance | Status |",
               "|---|---|---|---|---|---|---|---|"]
-    other = OTHER_BACK if back else OTHER
+    other = (OTHER_BACK if back else OTHER) + OTHER_EL.get(code, [])
     for row in other:
         lines.append("| %s |" % " | ".join(f.format(**pns) for f in row))
     lines += ["", "Joint hardware modelled in the panel (bodies at every rivnut hole, joints register 2.1): rivnut "

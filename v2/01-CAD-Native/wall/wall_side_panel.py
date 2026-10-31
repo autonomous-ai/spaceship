@@ -307,7 +307,8 @@ EL_USE = {
                      "el_slot_h", "el_slot_l", "el_lx_z1", "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z"),
     ("B2", "panel"): ("el_cut_x0", "el_cut_z0", "el_cut_z1", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d",
                       "el_sl_x", "el_sl_w"),
-    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d", "el_ceil_x", "el_z_cg"),
+    # the ceiling route's crossing (el_ceil_x, el_z_cg) waits for ELECTRICAL's new height under the top lip: HOLD
+    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d"),
 }
 
 

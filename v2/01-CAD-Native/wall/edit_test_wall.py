@@ -124,8 +124,7 @@ def el_side_checks(design, root_pn, before_p, after_p):
 
 EL_BACK = {"510202": ("panel_z0", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_cut_x0", "el_cut_x1", "el_cut_z0",
                       "el_cut_z1"),
-           "510204": ("panel_z0", "seam_gap", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_ceil_x", "el_z_cg",
-                      "el_shelf_z", "el_shelf_d"),
+           "510204": ("panel_z0", "seam_gap", "tray_t", "el_lt_x", "el_y_bg", "el_grm_d", "el_shelf_z", "el_shelf_d"),
            "210202": ("close_gap", "tube_w", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d", "el_cut_z0",
                       "el_cut_z1")}
 
@@ -163,13 +162,10 @@ def el_back_checks(design, root_pn, before_p, after_p):
     elif root_pn == "510204":
         bot = a["panel_z0"] + a["back_ph"] + a["seam_gap"]
         tray, felt = round_holes(design, "TRAY"), round_holes(design, "FELT")
-        dw = a["pod_w"] - before_p["pod_w"]
         out += [("G-B2-B4 %g hole in the bottom return follows the row seam (Z %.2f)" % (a["el_grm_d"], bot),
                  has_hole(tray, a["el_grm_d"], "z", (bot, bot + a["tray_t"]), x=a["el_lt_x"], y=a["el_y_bg"])),
-                ("FX-CEIL %g hole follows the pod width (X (pod_w - 2 stack_t) / 4 = %.2f)" % (a["el_grm_d"],
-                                                                                              a["el_ceil_x"]),
-                 has_hole(felt, a["el_grm_d"], "y", x=a["el_ceil_x"], z=a["el_z_cg"]) and
-                 abs((a["el_ceil_x"] - before_p["el_ceil_x"]) - dw / 4.0) < 0.01),
+                ("no cable hole through the top lip (FX-CEIL waits for its felt-only height)",
+                 not [h for h in tray if h[1] == "y" and h[0] > 3.0]),
                 ("FX-SHELF %g felt hole at X %g, Z %g" % (a["el_shelf_d"], a["el_lt_x"], a["el_shelf_z"]),
                  has_hole(felt, a["el_shelf_d"], "y", x=a["el_lt_x"], z=a["el_shelf_z"]))]
     else:
