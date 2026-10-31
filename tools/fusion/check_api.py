@@ -245,7 +245,7 @@ def _build(path, defs_dir, module):
     o = Options()
     o.check_untyped_defs = True
     o.follow_imports = "silent"
-    o.mypy_path = [defs_dir]
+    o.mypy_path = [defs_dir, os.path.dirname(os.path.abspath(__file__))]   # fusion_folder and friends
     o.export_types = True
     o.incremental = True
     o.cache_dir = os.path.join(defs_dir, ".mypy_cache")
