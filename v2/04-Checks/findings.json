@@ -398,7 +398,7 @@
    },
    "key": "C04|pod-mass-over-cap|POD total mass",
    "id": "F-010",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-10-31 c9ae2a4",
    "posted": "tracked for the PM (Lead) in the mechanical check group 2026-10-31",
@@ -407,9 +407,15 @@
      "date": "2026-10-31",
      "rev": "c9ae2a4",
      "event": "opened"
+    },
+    {
+     "date": "2026-10-31",
+     "rev": "fc6192e",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-10-31 e3bca55"
+   "last_seen": "2026-10-31 e3bca55",
+   "closed": "2026-10-31 fc6192e"
   },
   {
    "check": "C02",
