@@ -116,7 +116,7 @@ class ReadFolderTests(unittest.TestCase):
     def test_an_open_step_stops_as_soon_as_its_file_is_there(self):
         c = Clock()
         files, unknown, _ = ff.read_folder(Folder([File("A_CAD", "f3d"), "boom"]), sleep=c.sleep, now=c.now,
-                                           stop_when=lambda fs: "A_CAD" in fs)
+                                           stop_when=lambda fs, u, o: "A_CAD" in fs)
         self.assertIn("A_CAD", files)
         self.assertEqual(c.sleeps, [])                          # no waiting for the broken entry
 
@@ -147,6 +147,18 @@ class SafeToCreateTests(unittest.TestCase):
         self.assertEqual(len(warnings), 1)
         self.assertIn("isn't a .f3d", warnings[0])
 
+    def test_a_warn_only_entry_does_not_hold_fusion(self):
+        # Reviewer 5, P3 on #121: an unreadable .f2d can't be a new design, so no minute of waiting
+        warnings, c = check(Folder([File("A_CAD", "f3d"), File(None, "f2d")]), "NEW_CAD", "f3d")
+        self.assertEqual(len(warnings), 1)
+        self.assertEqual(c.sleeps, [])
+
+    def test_it_still_waits_while_an_unread_entry_could_be_the_new_file(self):
+        c = Clock()
+        with self.assertRaises(RuntimeError):
+            ff.safe_to_create(Folder([File(None, "f2d"), "boom"]), "NEW_CAD", "f3d", sleep=c.sleep, now=c.now)
+        self.assertEqual(sum(c.sleeps), 60.0)                   # the unknown entry is waited for
+
     def test_the_same_kind_is_refused(self):
         with self.assertRaises(RuntimeError):
             check(Folder([File(None, "f2d")]), "NEW_DWG", "f2d")
@@ -171,6 +183,11 @@ class SharedCopyTests(unittest.TestCase):
                 sys.modules["fusion_folder"] = keep
         self.assertEqual(result, [("safe_to_create", "fusion_folder")])
 
+    def test_the_drawing_starts_folder_look_stops_once_nothing_unread_could_be_the_drawing(self):
+        import start_drawing as sd
+        self.assertIn('not could_be(u, o, "f2d")', sd.FOLDER_SCRIPT)
+        self.assertIn('safe_to_create(folder, %(name)r, "f2d")', sd.SAVE_SCRIPT)   # stops the same way
+
     def test_the_runner_and_the_drawing_start_send_this_same_text(self):
         import start_drawing as sd
         with open(os.path.join(HERE, "fusion_folder.py"), encoding="utf-8") as fh:
@@ -184,7 +201,7 @@ class SharedCopyTests(unittest.TestCase):
 class DocStepTests(unittest.TestCase):
     """The runner's --doc step itself, against a fake Fusion API."""
 
-    def run_doc(self, items, create, heal_after=None):
+    def run_doc(self, items, create, heal_after=None, wait=False):
         folder = Folder(items, heal_after)
         folder.dataFolders = types.SimpleNamespace(itemByName=lambda n: None)
         opened, made = [], []
@@ -218,7 +235,8 @@ class DocStepTests(unittest.TestCase):
         keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.fusion")}
         sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.fusion": adsk.fusion})
         src = rs.doc_script("open", "NEW_CAD", "Default Project", create=create)
-        src = src.replace("WAIT_S = 60.0", "WAIT_S = 0.0")        # no real waiting in a test
+        if not wait:
+            src = src.replace("WAIT_S = 60.0", "WAIT_S = 0.0")    # no real waiting in a test
         try:
             ns = {}
             exec(compile(src, "doc_step", "exec"), ns)
@@ -239,6 +257,15 @@ class DocStepTests(unittest.TestCase):
     def test_a_new_design_is_made_when_the_only_unreadable_entry_is_a_drawing(self):
         opened, made = self.run_doc([File("A_CAD", "f3d"), File(None, "f2d")], create=True)
         self.assertEqual((opened, made), ([], ["NEW_CAD"]))
+
+    def test_a_new_design_does_not_wait_on_a_warn_only_entry(self):
+        # Reviewer 5, P3 on #121: with the real one-minute wait left on, an unreadable
+        # .f2d must not hold Fusion
+        import time
+        t0 = time.monotonic()
+        opened, made = self.run_doc([File("A_CAD", "f3d"), File(None, "f2d")], create=True, wait=True)
+        self.assertEqual(made, ["NEW_CAD"])
+        self.assertLess(time.monotonic() - t0, 2.0)
 
     def test_a_design_that_is_there_opens_despite_an_unreadable_entry(self):
         opened, made = self.run_doc([File("NEW_CAD", "f3d"), "boom"], create=True)

@@ -226,7 +226,7 @@ def run(_c):
     folder = proj.rootFolder
     for part in %(subfolders)r:
         folder = folder.dataFolders.itemByName(part)
-    files, unknown, others = read_folder(folder)
+    files, unknown, others = read_folder(folder, stop_when=lambda fs, u, o: %(name)r in fs or not could_be(u, o, "f2d"))
     print("FOLDER_JSON=" + json.dumps({"unknown": could_be(unknown, others, "f2d"),
                                        "others": cannot_be(others, "f2d"),
                                        "has_design": %(design)r in files, "has_drawing": %(name)r in files}))

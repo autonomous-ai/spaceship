@@ -355,7 +355,7 @@ class SequenceTests(unittest.TestCase):
         # the lister moved to fusion_folder.py (its own tests): one copy for every team
         self.assertTrue(sd.LIST_FOLDER.startswith(rs.FOLDER_HELPER_SRC))
         self.assertIn('safe_to_create(folder, %(name)r, "f2d")', sd.SAVE_SCRIPT)
-        self.assertIn("read_folder(folder)", sd.FOLDER_SCRIPT)
+        self.assertIn("read_folder(folder, stop_when=", sd.FOLDER_SCRIPT)
 
     def test_steps_folder_reads_the_result_line(self):
         st = sd.Steps.__new__(sd.Steps)                         # no MCP needed

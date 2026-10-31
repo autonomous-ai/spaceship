@@ -49,8 +49,10 @@ def read_folder(folder, wait_s=WAIT_S, pause_s=PAUSE_S, sleep=time.sleep, now=ti
     others: kept per extension, {extension: [text, ...]}, for entries whose
       name can't be read but whose kind can.
     While any entry can't be read, it reads the folder again, every pause_s,
-    until wait_s has gone by, or until stop_when(files) is true (an open step
-    that found its file needn't wait for the others)."""
+    until wait_s has gone by, or until stop_when(files, unknown, others) is
+    true: an open step that found its file, or a check where nothing still
+    unread could be the new file, needn't wait (Reviewer 5, P3 on #121: a
+    warn-only entry must not hold Fusion for a minute)."""
     t_end = now() + wait_s
     while True:
         files, unknown, others = {}, [], {}
@@ -73,7 +75,7 @@ def read_folder(folder, wait_s=WAIT_S, pause_s=PAUSE_S, sleep=time.sleep, now=ti
                 others.setdefault(ext, []).append("entry %d (a .%s file, name unreadable)" % (i, ext))
             else:
                 unknown.append("entry %d (kind unknown, name unreadable)" % i)
-        if (not unknown and not others) or now() >= t_end or (stop_when and stop_when(files)):
+        if (not unknown and not others) or now() >= t_end or (stop_when and stop_when(files, unknown, others)):
             return files, unknown, others
         if adsk is not None:
             adsk.doEvents()
@@ -97,7 +99,9 @@ def safe_to_create(folder, name, extension="f3d", wait_s=WAIT_S, pause_s=PAUSE_S
     a second copy: NAME isn't there, and no entry that still can't be read after
     up to wait_s could be it. Returns warnings about unreadable entries that
     can't be it (another kind of file)."""
-    files, unknown, others = read_folder(folder, wait_s, pause_s, sleep, now)
+    files, unknown, others = read_folder(          # stop as soon as nothing unread could be it
+        folder, wait_s, pause_s, sleep, now,
+        stop_when=lambda fs, u, o: name in fs or not could_be(u, o, extension))
     if name in files:
         raise RuntimeError("%s is already in the folder; not made again" % name)
     risky = could_be(unknown, others, extension)

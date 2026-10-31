@@ -659,7 +659,8 @@ def run(_context):
         # the shared check (fusion_folder.py, in front of this script): reads
         # again for up to a minute while an entry can't be read, unless the
         # name turns up
-        found, unknown, others = read_folder(folder, stop_when=lambda fs: name in fs)
+        found, unknown, others = read_folder(folder, stop_when=lambda fs, u, o: name in fs or (
+            ARGS.get("create") and not could_be(u, o, "f3d")))
         files = found.get(name, [])
         bad = unknown + [t for items in others.values() for t in items]
         if bad:
