@@ -190,6 +190,33 @@ class WallAndRegisterV3(unittest.TestCase):
         self.assertTrue(fails[0].startswith("no part number"), fails)
 
 
+REGISTER_V4 = REGISTER_V3 + """| H-05 | **831001** | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS · Chot | made | PROPOSED |
+"""
+
+
+class RegisterItems(unittest.TestCase):
+    def fails_for(self, rows):
+        _, _, _, fails, _ = run({WALL: WALL_HDR + rows, bom.REGISTER: REGISTER_V4})
+        return fails
+
+    def test_same_item_in_other_words_passes(self):
+        rows = ("1,838001,CAPTIVE BOLT - M6 x 16 - ISO 4762 - 8.8 - ZINC,,PI,steel 8.8 zinc,7,pc,,,0.007,0.049,source,x,\n"
+                "1,831001,LOCATING SPIGOT - D8 x M6 (H-05),,MP,stainless,2,pc,,,0.004,0.008,assumption,x,\n")
+        self.assertEqual(self.fails_for(rows), [])
+
+    def test_wrong_bolt_length_fails(self):
+        f = self.fails_for("1,838001,BOLT - M6 x 25 - ISO 4762 - 8.8,,PI,steel,2,pc,,,0.009,0.018,source,x,\n")
+        self.assertTrue(any(x.startswith("duplicate number 838001") for x in f), f)
+
+    def test_old_gasket_size_on_a_new_number_fails(self):
+        f = self.fails_for("1,848001,GASKET - PORON 4701-40 SOFT 3.18 x 10 WITH PSA,,PI,PORON,2.6,m,,,0.01,0.026,source,x,\n")
+        self.assertTrue(any(x.startswith("duplicate number 848001") for x in f), f)
+
+    def test_same_item_helper(self):
+        self.assertTrue(bom.same_item("WASHER ISO 7093-1 6.4 x 18 x 1.6 A2", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2"))
+        self.assertFalse(bom.same_item("RIVNUT - M6 - SHEREX CAH3-610-4.2", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC"))
+
+
 class FamilyRows(unittest.TestCase):
     def test_family_rows_have_vietnamese_names_and_sources(self):
         nodes = bom.node_names()

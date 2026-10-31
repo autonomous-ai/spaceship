@@ -323,6 +323,46 @@ def family_of(pn):
     return pn[:2] if re.fullmatch(r"\d{6}", pn or "") else ""
 
 
+GENERIC = {"HARDWARE", "THE", "FOR", "WITH", "AND", "OF", "A", "AN", "IN", "ON", "TO", "PC", "PCS"}
+SIZE = re.compile(r"[A-Z]?\d[\d.]*(?:\s*X\s*[A-Z]?\d[\d.]*)+")
+
+
+def _up(s):
+    s = re.sub(r"\(H-\d+\w*\)", " ", (s or "").upper())  # drop register ID tags such as (H-05)
+    s = s.replace("×", " X ").replace("Ø", "D")
+    return re.sub(r"(?<=\d)\s*X\s*(?=[\dDM])", " X ", s)
+
+
+def _sizes(s):
+    return [frozenset(p.strip() for p in m.group(0).split("X")) for m in SIZE.finditer(_up(s))]
+
+
+def _tokens(s, digits):
+    toks = {t.strip(".-") for t in re.findall(r"[A-Z0-9][A-Z0-9.\-]*", _up(s))}
+    return {t for t in toks if t and (bool(re.search(r"\d", t)) == digits) and t not in GENERIC and t != "X"}
+
+
+def same_item(a, b):
+    """True when a parts-list name and the joints register's name describe the same item: their size groups
+    agree (one inside the other, any order), and most of the shorter name's numbered tokens (or, with no
+    numbers, its words) appear in the other, with at least one word in common. Wording and order may differ."""
+    sa, sb = _sizes(a), _sizes(b)
+    if sa and sb:
+        def covered(xs, ys):
+            return all(any(x <= y or y <= x for y in ys) for x in xs)
+        if not (covered(sa, sb) or covered(sb, sa)):
+            return False
+    ta, tb = _tokens(a, True), _tokens(b, True)
+    wa, wb = _tokens(a, False), _tokens(b, False)
+    if ta and tb and len(ta & tb) / min(len(ta), len(tb)) < 0.5:
+        return False
+    if wa and wb:
+        if not (ta and tb):
+            return len(wa & wb) / min(len(wa), len(wb)) >= 0.5
+        return bool(wa & wb)  # with matching numbers, one shared word (bolt, rivnut, Sherex...) is enough
+    return True
+
+
 def is_hardware(r):
     return r["make_buy"] == "buy" and family_of(r["part_number"]) not in NOT_HARDWARE
 
@@ -352,6 +392,7 @@ def check(parts, register, reg_where):
         missing.setdefault(team, []).append(msg)
 
     reg_numbers = {i["part_number"] for i in register if i["part_number"]}
+    reg_by_pn = {i["part_number"]: i for i in register if i["part_number"]}
     names_by_pn = {}
     for r in parts:
         pn, where = r["part_number"], r["source_file"]
@@ -366,6 +407,9 @@ def check(parts, register, reg_where):
                 miss(r["team"], f"{label}: family {family_of(pn)} is not in conventions section 6")
         if r["make_buy"] != "assembly" and r["mass_each_kg"] is None:
             fails.append(f"no mass: {label} in {where}")
+        if pn in reg_by_pn and not same_item(r["name"], reg_by_pn[pn]["name"]):
+            ri = reg_by_pn[pn]
+            fails.append(f"duplicate number {pn}: '{r['name']}' in {where} is not the joints register's {ri['id']} '{ri['name']}'")
         if is_hardware(r) and re.fullmatch(r"\d{6}", pn) and pn not in reg_numbers:
             fails.append(f"hardware with no joints-register row: {label} in {where}")
         if r["make_buy"] == "":
@@ -380,7 +424,7 @@ def check(parts, register, reg_where):
         if r["hold"]:
             miss(r["team"], f"{label}: HOLD ({r['product_status'] or r['kind']})")
     for pn, names in sorted(names_by_pn.items()):
-        if len(names) > 1 and pn not in reg_numbers:  # a register number names its item there (D-63)
+        if len(names) > 1 and pn not in reg_numbers:  # register numbers are checked against the register's item above
             uses = "; ".join(f"'{n}' in {', '.join(sorted(set(w)))}" for n, w in names.items())
             fails.append(f"duplicate number {pn}: {uses}")
     if reg_where is None:
