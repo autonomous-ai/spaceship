@@ -25,7 +25,7 @@ import os
 import re
 from collections import defaultdict
 
-from common import Finding, owner_for, rel, walk_files, num, pn_class, read_csv
+from common import Finding, owner_for, rel, walk_files, num, pn_class, read_csv, reserved_spaces, reserved_label
 import stepfile as sf
 
 POD_BOX = (-1250.0, -850.0, 0.0, 1250.0, 850.0, 2400.0)
@@ -254,6 +254,8 @@ def check_gap_rules(root, mdl, bodies, rules):
     """One finding per rule group (the `group` column, else the rule id),
     listing every rule in it that fails."""
     fails = {}
+    reserved = reserved_spaces(root)
+    bodies = [b for b in bodies if not reserved_label(b.label, reserved)]   # reserved spaces have no seams yet
     for r in rules:
         if r.get("models") and mdl not in r["models"].split():
             continue
@@ -493,10 +495,15 @@ def load_edge_exceptions(root):
 def _edge_accepted(rows, hole, edges, need):
     """The accepting row for this hole, or None (see load_edge_exceptions)."""
     short = [e for e in edges if e[0] + 1e-6 < need]
+    ax = sf.norm(hole.axis)
+
+    def across(p):                  # the foot seen along the hole: a plate's top and bottom edge are one edge
+        t = sf.dot(sf._sub(p, hole.center), ax)
+        return sf._sub(p, sf._mul(ax, t))
     lines = []
     for e in short:
-        if not any(sum((e[2][k] - f[2][k]) ** 2 for k in range(3)) ** 0.5 < 0.5 for f in lines):
-            lines.append(e)         # one edge line, however many segments the face splits it into
+        if not any(sum((across(e[2])[k] - across(f[2])[k]) ** 2 for k in range(3)) ** 0.5 < 0.5 for f in lines):
+            lines.append(e)         # one edge line, however many segments or faces carry it
     for row in rows:
         if abs((num(row.get("hole_dia_mm")) or 0) - hole.diameter) > 0.05:
             continue

@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (8dab109), PR #55 (9028182), PR #28 (52174f1), PR #64 (3e5c9f3), PR #32 (cec14ba), PR #105 (f456061), PR #104 (4ceccab), PR #91 (38342c1), PR #92 (fd3ea9f). The Mac's screen at run time: **unlocked**. 273 files in the CAD, drawing and manufacturing folders; the FAI plan's 59 characteristics, 11 functional checks and 18 bought-part test lines.
+Read from: main (19f4221), PR #91 (e910c2d), PR #64 (75fa8d7), PR #32 (e134d0e), PR #104 (7068420), PR #105 (68527ba), PR #92 (a86c41a). The Mac's screen at run time: **unlocked**. 329 files in the CAD, drawing and manufacturing folders; the FAI plan's 66 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -14,24 +14,28 @@ Read from: main (8dab109), PR #55 (9028182), PR #28 (52174f1), PR #64 (3e5c9f3),
 
 | Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |
 |---|---:|---:|---:|---:|---:|---:|
-| BASE | 0 | 10 | 0 | 3 | 0 | 4 |
+| BASE | 1 | 10 | 0 | 3 | 0 | 4 |
 | CEILING | 0 | 13 | 0 | 1 | 0 | 2 |
-| CEILING (builds AIR, D-80) | — | — | — | — | — | — |
+| CEILING (builds AIR, D-80) | 2 | 29 | 0 | 1 | 0 | 7 |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 2 |
-| ELECTRICAL | 8 | 4 | 0 | 3 | 0 | 64 |
-| FRONT | 0 | 15 | 0 | 3 | 0 | 6 |
+| ELECTRICAL | 10 | 2 | 0 | 3 | 0 | 64 |
+| FRONT | 3 | 17 | 0 | 4 | 1 | 6 |
+| JOINTS | 0 | 1 | 0 | 0 | 0 | 0 |
 | WALL | 2 | 14 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 10 | 63 | 0 | 7 | 1 | 81 |
+| **All, each number once** | 18 | 93 | 0 | 10 | 2 | 87 |
 
-No parts list yet: CEILING (builds AIR, D-80).
+93 of the 111 made numbers have no drawing yet; for 79 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-63 of the 73 made numbers have no drawing yet; for 54 of them the drawing is the only gap, so their drawings can start now (D-84).
-
-What the open made numbers miss: drawing 63, DXF or cut list 8, finish 1.
+What the open made numbers miss: drawing 93, DXF or cut list 13, FAI 2, finish 1.
 
 ## Made parts with no FAI line
 
-Every made number has at least one line in the FAI plan (`v2/06-Verification/fai-plan.md`).
+2 made numbers have no line in the FAI plan (`v2/06-Verification/fai-plan.md`) yet:
+
+| Team | Part | Name | From |
+|---|---|---|---|
+| FRONT | 351402 | FRONT - AIR INTAKE RISER - DR | PR #105 |
+| FRONT | 351404 | FRONT - SUPPLY FAN BOX - DR | PR #105 |
 
 ## Made parts and assemblies
 
@@ -39,16 +43,17 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 110000 | BASE | PR #55 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | open: drawing |
-| 110101 | BASE - BAND ASSY - SIDE - LH | PR #55 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111101 | BASE - BAND TUBE - SIDE - LH | PR #55 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01 | open: drawing |
-| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #55 | yes | yes | yes | n/a | no | yes | yes | K-J07 | open: drawing |
-| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #55 | yes | yes | yes | no | no | yes | yes | K-J08 | open: DXF or cut list, drawing |
-| 110103 | BASE - BAND ASSY - BACK | PR #55 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111103 | BASE - BAND TUBE - BACK | PR #55 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01 | open: drawing |
-| 111201 | BASE - CORNER BRACKET - BACK - COMMON | PR #55 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02 | open: drawing |
-| 111401 | BASE - FLOOR PANEL - F1 | PR #55 | yes | yes | yes | yes | no | yes | n/a | K-B02, K-B03 | open: drawing |
-| 111501 | BASE - SEAL MAT - F1 | PR #55 | yes | yes | yes | no | no | yes | n/a | K-B04 | open: DXF or cut list, drawing |
+| 110000 | BASE | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | open: drawing |
+| 110101 | BASE - BAND ASSY - SIDE - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111101 | BASE - BAND TUBE - SIDE - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
+| 111601 | BASE - GLIDE DOUBLER - COMMON | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
+| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | main | yes | yes | yes | n/a | no | yes | yes | K-J07 | open: drawing |
+| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | main | yes | yes | yes | no | no | yes | yes | K-J08 | open: DXF or cut list, drawing |
+| 110103 | BASE - BAND ASSY - BACK | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
+| 110401 | BASE - FLOOR PANEL ASSY - F1 | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111401 | BASE - FLOOR PANEL - F1 | main | yes | yes | yes | yes | no | yes | n/a | K-B02, K-B03 | open: drawing |
+| 111501 | BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM | main | yes | yes | yes | yes | no | yes | n/a | K-B04 | open: drawing |
 
 ### CEILING
 
@@ -67,6 +72,42 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 513301 | LINING - FILL - CEILING - BAY A | PR #92 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
 | 513302 | LINING - FILL - CEILING - BAY B | PR #92 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
 | 513303 | LINING - FILL - CEILING - BAY C | PR #92 | yes | yes | yes | yes | no | yes | n/a | K-P05 | open: drawing |
+
+### CEILING (builds AIR, D-80)
+
+| Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 610000 | AIR | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 610101 | AIR - AIR COLUMN | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611106 | AIR - COLUMN FOOT PLATE | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611101 | AIR - COLUMN FACE - FRONT | PR #91 | yes | yes | yes | yes | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611102 | AIR - COLUMN FACE - LEFT | PR #91 | yes | yes | yes | yes | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611103 | AIR - COLUMN CORNER ANGLE | PR #91 | yes | yes | yes | n/a | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611107 | AIR - COLUMN PLENUM SIDE PLATE - LOW | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611108 | AIR - COLUMN PLENUM SIDE PLATE - HIGH | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611104 | AIR - COLUMN FILL | PR #91 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611105 | AIR - KICK GRILLE | PR #91 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 610301 | AIR - SPLITTER CARTRIDGE - COMMON | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611301 | AIR - CARTRIDGE CASING | PR #91 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611302 | AIR - CARTRIDGE LAYER 50 | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 610201 | AIR - SOFFIT | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611201 | AIR - SOFFIT UNDERSIDE - LEFT HINGED | PR #91 | yes | yes | yes | yes | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611207 | AIR - SOFFIT UNDERSIDE - RIGHT HINGED | PR #91 | yes | yes | yes | yes | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611208 | AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN | PR #91 | yes | yes | yes | yes | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611202 | AIR - SOFFIT FACE - FRONT | PR #91 | yes | yes | yes | yes | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611205 | AIR - SOFFIT TOP RAIL - DOOR SIDE | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611209 | AIR - SOFFIT TOP RAIL - ROOM SIDE | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611206 | AIR - SOFFIT END PLATE - LEFT | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611210 | AIR - SOFFIT DOOR-SIDE PLATE | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 611203 | AIR - SOFFIT FILL | PR #91 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
+| 611204 | AIR - EXHAUST GRILLE | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
+| 610402 | AIR - EXHAUST FAN BOX | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
+| 611401 | AIR - FAN BOX CASING - EXHAUST | PR #91 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 610401 | AIR - SUPPLY FAN BOX | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03, K-A05 | open: drawing |
+| 611402 | AIR - FAN BOX CASING - SUPPLY | PR #91 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611501 | AIR - INTAKE RISER | PR #91 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03, K-A04 | open: DXF or cut list, drawing |
+| 611601 | AIR - ROOF SLEEVE | PR #91 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
+| 611602 | AIR - ROOF GRILLE | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
 
 ### CEILING (builds INTERIOR, D-80)
 
@@ -89,35 +130,46 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 710000 | ELECTRICAL | PR #64 | yes | yes | yes | n/a | yes: its wiring diagram, routes and joints on sheet 3 (D-93) | yes | n/a | K-E01 | done |
 | 710001 | ELECTRICAL - POWER UNIT - B2 | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | PR #64 | yes | yes | yes | no | no | yes | yes | K-E01 | open: DXF or cut list, drawing |
-| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | PR #64 | yes | yes | yes | no | no | yes | yes | K-E01 | open: DXF or cut list, drawing |
+| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | PR #64 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-E01 | done |
 | 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710023 | ELECTRICAL - HARNESS - AIR COLUMN | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | PR #64 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | PR #64 | yes | yes | yes | no | no | yes | yes | K-E01 | open: DXF or cut list, drawing |
+| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | PR #64 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-E01 | done |
 | 719001 | ELECTRICAL - CORD SET - 220 V VN - 3 M (KIT) | PR #64 | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
 
 ### FRONT
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| 350002 | FRONT - DECOR BLOCK ASSY - DT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D13 | open: drawing |
+| 351201 | FRONT - DECOR SKIN - DT | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D14 | open: drawing |
+| 351204 | FRONT - DECOR FRAME - DT | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D15 | open: drawing |
+| 351202 | FRONT - DECOR BACK PLATE - DT | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D16 | open: drawing |
+| 351203 | FRONT - DOOR TOP STOP - DT | PR #105 | yes | yes | yes | no | no | yes | yes | K-D17 | open: DXF or cut list, drawing |
 | 350003 | FRONT - DECOR BLOCK ASSY - DR | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D01, K-D02 | open: drawing |
 | 351301 | FRONT - DECOR SKIN - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D03 | open: drawing |
 | 351306 | FRONT - DECOR FRAME - DR | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D04, K-D05 | open: drawing |
-| 351302 | FRONT - DECOR BACK PLATE - DR | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D06 | open: drawing |
-| 351305 | FRONT - DECOR ACCESS PANEL - DR | PR #105 | yes | yes | yes | yes | no | yes | yes | K-D07 | open: drawing |
-| 351303 | FRONT - DECOR INNER PANEL - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D08 | open: drawing |
+| 351302 | FRONT - DECOR BACK PLATE - DR | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D06 | done |
+| 351305 | FRONT - DECOR ACCESS PANEL - DR | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-D07 | done |
+| 351303 | FRONT - DECOR INNER PANEL - DR | PR #105 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-D08 | done |
 | 351304 | FRONT - DECOR INNER PANEL FELT - DR | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-D09 | open: drawing |
 | 350004 | FRONT - AIR SUPPLY ASSY - DR | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-D02, K-D10 | open: drawing |
-| 351402 | FRONT - AIR INTAKE RISER - DR | PR #105 | yes | yes | yes | no | no | yes | yes | K-D11 | open: DXF or cut list, drawing |
-| 351404 | FRONT - SUPPLY FAN BOX - DR | PR #105 | yes | yes | yes | n/a | no | yes | no | K-D12 | open: drawing, finish |
-| 360001 | FRONT - DOOR UNIT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
-| 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
-| 361002 | FRONT - DOOR KICK STRIP | PR #105 | yes | yes | yes | yes | no | yes | yes | K-F05, K-F06 | open: drawing |
-| 360002 | FRONT - FIXED GLASS UNIT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-F03, K-F04 | open: drawing |
-| 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
+| 351402 | FRONT - AIR INTAKE RISER - DR | PR #105 | yes | yes | yes | no | no | yes | yes | no | open: DXF or cut list, drawing, FAI |
+| 351404 | FRONT - SUPPLY FAN BOX - DR | PR #105 | yes | yes | yes | n/a | no | yes | no | no | open: drawing, finish, FAI |
+| 360001 | FRONT - DOOR UNIT | main | yes | yes | yes | n/a | no | yes | n/a | K-F07, K-F08 | open: drawing |
+| 361001 | FRONT - DOOR LEAF - 4+4 LAMINATED | main | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
+| 361002 | FRONT - DOOR KICK STRIP | main | yes | yes | yes | yes | no | yes | yes | K-F05, K-F06 | open: drawing |
+| 360002 | FRONT - FIXED GLASS UNIT | main | yes | yes | yes | n/a | no | yes | n/a | K-F03, K-F04 | open: drawing |
+| 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED | main | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
+
+### JOINTS
+
+| Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 111211 | BASE - CORNER KEY - BACK - COMMON | main | yes | yes | yes | no | no | yes | yes | K-B08 | open: DXF or cut list, drawing |
 
 ### WALL
 
@@ -146,13 +198,13 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 118002 | BASE - LEVELLING GLIDE - M10 (HOLD) | PR #55 | H-25 | HOLD | no | HOLD |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | PR #55 | H-03 | yes | J-T1, T06 | done |
-| 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) | PR #55 | H-26 | HOLD | no | HOLD |
-| 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD) | PR #55 | H-27 | HOLD | no | HOLD |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #55 | H-01 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - HEAD WASHER - 6.4 X 18 X 1.6 - ISO 7093-1 A2 | PR #55 | H-09 | yes | T06 | done |
-| 118001 | BASE - BASE SEAL - FLOOR EDGE - PEMKO S88BL (HOLD) | PR #55 | H-06 | HOLD | J-T4 | HOLD |
+| 118002 | BASE - LEVELLING GLIDE - M10 (HOLD) | main | H-25 | HOLD | no | HOLD |
+| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) | main | H-26 | HOLD | no | HOLD |
+| 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD) | main | H-27 | HOLD | no | HOLD |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
+| 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | main | H-31 | yes | J-T6 | done |
+| 118001 | BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP | main | H-06 | HOLD | J-T4 | HOLD |
 
 ### CEILING
 
@@ -162,12 +214,25 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 518002 | LINING - CEILING SAFETY CATCH | PR #92 | H-11 | HOLD | T08 | HOLD |
 | 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | PR #92 | H-12 | yes | T09 | done |
 
+### CEILING (builds AIR, D-80)
+
+| Part | Name | From | Register | Maker and SKU | Test | State |
+|---|---|---|---|---|---|---|
+| 618101 | AIR - SENSOR HUB ZONE - HOLD | PR #91 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618104 | AIR - SOFFIT HANGER STUD - HOLD | PR #91 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618105 | AIR - SOFFIT UNDERSIDE HINGE - HOLD | PR #91 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618106 | AIR - SOFFIT UNDERSIDE LATCH - HOLD | PR #91 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | PR #91 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618102 | AIR - SUPPLY TRANSITION - HOLD | PR #91 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 618103 | AIR - RISER TRANSITION - HOLD | PR #91 | n/a (team-numbered) | HOLD | T04 | HOLD |
+| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #91 | H-01P | yes | J-T1 | done |
+
 ### CEILING (builds INTERIOR, D-80)
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 818101 | INTERIOR - LEDGE BRACKET - HOLD | PR #92 | no | HOLD | no | HOLD |
-| 818102 | INTERIOR - SCREEN RAIL - HOLD | PR #92 | no | HOLD | no | HOLD |
+| 818101 | INTERIOR - LEDGE BRACKET - HOLD | PR #92 | H-32 | HOLD | no | HOLD |
+| 818102 | INTERIOR - SCREEN RAIL - HOLD | PR #92 | H-33 | HOLD | no | HOLD |
 
 ### ELECTRICAL
 
@@ -245,15 +310,17 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
+| 368005 | FRONT - FRAME-STOP SEAL | PR #105 | H-20 | no | F-03 | open: maker and SKU |
+| 368007 | FRONT - DOOR CATCH - IN DT | PR #105 | H-23 | yes | F-02 | done |
 | 618401 | AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM | PR #105 | n/a (team-numbered) | HOLD | T04 | HOLD |
-| 368001 | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 | PR #105 | H-15 | yes | T13 | done |
-| 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | PR #105 | H-16 | yes | F-03 | done |
-| 368101 | FRONT - DOOR HINGE - HOLD | PR #105 | H-21 | HOLD | T13 | HOLD |
-| 368102 | FRONT - DOOR STRIKE | PR #105 | H-22 | HOLD | F-02 | HOLD |
-| 368006 | FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD | PR #105 | H-18 | HOLD | T13 | HOLD |
-| 368103 | FRONT - DOOR PULL PAIR - HOLD | PR #105 | H-24 | HOLD | T13 | HOLD |
-| 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 | PR #105 | H-19 | yes | F-03 | done |
-| 368003 | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD | PR #105 | H-17 | HOLD | T13 | HOLD |
+| 368001 | FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112 | main | H-15 | yes | T13 | done |
+| 368002 | FRONT - GLAZING U-SEAL - BOHLE BO5201735 | main | H-16 | yes | F-03 | done |
+| 368101 | FRONT - DOOR HINGE - HOLD | main | H-21 | HOLD | T13 | HOLD |
+| 368102 | FRONT - DOOR STRIKE | main | H-22 | HOLD | F-02 | HOLD |
+| 368006 | FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD | main | H-18 | HOLD | T13 | HOLD |
+| 368103 | FRONT - DOOR PULL PAIR - HOLD | main | H-24 | HOLD | T13 | HOLD |
+| 368004 | FRONT - GLAZING U-PROFILE - BOHLE BO5201571 | main | H-19 | yes | F-03 | done |
+| 368003 | FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD | main | H-17 | HOLD | T13 | HOLD |
 
 ### WALL
 
@@ -273,15 +340,11 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Register | Name |
 |---|---|---|
-| 838002 | H-01P | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC |
 | 848004 | H-04B | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE |
 | 108001 | H-07 | POD - HEX KEY - 5 MM BALL END |
-| 368005 | H-20 | FRONT - FRAME-STOP SEAL |
-| 368007 | H-23 | FRONT - DOOR CATCH - IN DT |
 | 838007 | H-28 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 |
 | 838008 | H-29 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
-| 838010 | H-31 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 |
 
 ## How it's built
 

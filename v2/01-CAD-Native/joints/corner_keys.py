@@ -13,9 +13,9 @@ Inputs (status in brackets):
 - Back band centre line pod_d / 2 - band_t / 2 (Y +830), its ends at pod_w / 2 - band_t
   (X -/+1210) against the side bands' inner walls (skeleton P04) [calculation].
 - Front pieces: BASE's outer-face points, relayed by the PM on 2026-10-31 [source].
-- Key: 35 wide, 75 tall, 25 long on its centre line, its stud face cut at the
-  carrier's mitre; studs 26 and 60 above its bottom; fixing holes 10 from its back
-  face and 7.5 either side of its centre line (this register, PROPOSED).
+- Key: 35 wide, 75 tall, 30 long on its centre line, its stud face cut at the
+  carrier's mitre; studs 26 and 60 above its bottom; fixing holes 10.5 from its back
+  face and 7.0 either side of its centre line (this register, PROPOSED).
 
 Sign of the cut: in the key's own frame (x along the carrier toward the joint,
 z up, y = z cross x, so y points to the left of x), a positive cut makes the
@@ -49,11 +49,11 @@ BAND_BOTTOM_Z = SK["glide_h"]  # skeleton glide_h: the band's bottom on its pres
 BAND_WALL = 1.5                # D-86 (decided)
 BACK_Y = SK["pod_d"] / 2 - SK["band_t"] / 2      # back band centre line, Y +830
 BACK_X = SK["pod_w"] / 2 - SK["band_t"]          # back band ends against the side bands, X -/+1210
-KEY_LEN = 25.0         # PROPOSED
+KEY_LEN = 30.0         # PROPOSED: keeps the carrier's Ø7.0 holes 2 x 7 from its cut end
 STUD_Z = (26.0, 60.0)  # above the key's bottom, PROPOSED
 KEYHOLE_DROP = 10.0    # the moving piece is lowered 10 onto the studs (D-87)
-FIX_X = 10.0           # fixing holes from the key's back face, PROPOSED
-FIX_Y = 7.5            # either side of the centre line, PROPOSED
+FIX_X = 10.5           # fixing holes from the key's back face, PROPOSED (over 2 x the hole, C09)
+FIX_Y = 7.0            # either side of the centre line, PROPOSED (10.5 from the side faces)
 
 
 def unit(v):
@@ -112,10 +112,12 @@ def joints():
     rows.append(("111213", "front right corner (RH)", "right side band 111102, front end",
                  "intake support rail, end cap at the corner", c3, (0.0, -1.0), -turn3 / 2.0,
                  "BASE: outer (1250, -672), inner (1210, -654.17), turn 48.04"))
-    # inline: the intake support rail's end at X 947 meets FR1, square (FR1: Y -850 to -810)
-    rows.append(("111211", "front right inline (X 947)", "intake support rail, end at X 947",
-                 "FR1, end cap at X 947", (947.0, -830.0), (-1.0, 0.0), 0.0,
-                 "BASE: FR1 X 218 to 947, Y -850 to -810, square cut"))
+    # inline: the intake support rail's end at X 915 meets FR1, square (FR1: Y -850 to -810).
+    # BASE rulings 2026-11-01 (relayed by the PM): moved from X 947 to X 920 to keep the intake
+    # mesh fully open, then to X 915 (a 32 mm stub) for the 30 mm key; FR1 runs X 218 to 915
+    rows.append(("111211", "front right inline (X 915)", "intake support rail, end at X 915",
+                 "FR1, end cap at X 915", (915.0, -830.0), (-1.0, 0.0), 0.0,
+                 "BASE ruling 2026-11-01: FR1 X 218 to 915, Y -850 to -810, square cut (stub 32)"))
     checks = {"FL inner corner": (inner, (-1210.0, -652.07)), "FR inner corner": (inner3, (1210.0, -654.17))}
     return rows, checks, (turn, turn2, turn3)
 

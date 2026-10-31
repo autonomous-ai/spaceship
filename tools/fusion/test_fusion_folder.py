@@ -201,7 +201,7 @@ class SharedCopyTests(unittest.TestCase):
 class DocStepTests(unittest.TestCase):
     """The runner's --doc step itself, against a fake Fusion API."""
 
-    def run_doc(self, items, create, heal_after=None, wait=False):
+    def run_doc(self, items, create, heal_after=None, wait=False, open_fails=0):
         folder = Folder(items, heal_after)
         folder.dataFolders = types.SimpleNamespace(itemByName=lambda n: None)
         opened, made = [], []
@@ -219,8 +219,16 @@ class DocStepTests(unittest.TestCase):
 
         proj = types.SimpleNamespace(name="Default Project", rootFolder=folder)
         projects = types.SimpleNamespace(count=1, item=lambda i: proj)
-        docs = types.SimpleNamespace(count=0, item=None, open=lambda f, v: opened.append(f.name) or Doc(f.name),
-                                     add=lambda t: Doc("new"))
+        fails = [open_fails]
+
+        def open_doc(f, v):
+            if fails[0]:
+                fails[0] -= 1
+                raise RuntimeError("1 : Missing key for PIMOpenWorkflowTracker")
+            opened.append(f.name)
+            return Doc(f.name)
+
+        docs = types.SimpleNamespace(count=0, item=None, open=open_doc, add=lambda t: Doc("new"))
         app = types.SimpleNamespace(documents=docs, data=types.SimpleNamespace(dataProjects=projects,
                                                                                activeProject=None))
         design = types.SimpleNamespace(designType=None, fusionUnitsManager=types.SimpleNamespace())
@@ -266,6 +274,17 @@ class DocStepTests(unittest.TestCase):
         opened, made = self.run_doc([File("A_CAD", "f3d"), File(None, "f2d")], create=True, wait=True)
         self.assertEqual(made, ["NEW_CAD"])
         self.assertLess(time.monotonic() - t0, 2.0)
+
+    def test_a_design_saved_a_moment_ago_is_opened_on_a_second_try(self):
+        # live 2026-10-31: opening a design 4 s after its save raised "Missing key for PIMOpenWorkflowTracker"
+        import time as _time
+        real_sleep, waits = _time.sleep, []
+        _time.sleep = lambda s: waits.append(s)
+        try:
+            opened, made = self.run_doc([File("NEW_CAD", "f3d")], create=False, open_fails=2)
+        finally:
+            _time.sleep = real_sleep
+        self.assertEqual((opened, made, waits), (["NEW_CAD"], [], [10, 10]))
 
     def test_a_design_that_is_there_opens_despite_an_unreadable_entry(self):
         opened, made = self.run_doc([File("NEW_CAD", "f3d"), "boom"], create=True)
