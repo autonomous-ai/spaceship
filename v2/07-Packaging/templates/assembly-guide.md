@@ -81,10 +81,6 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 
 The fifth, moving the film peeling after the clock, was rejected so the number stays honest. Instead the film covers only the {{FILM_FACES}} faces that show (the 8 wall skins, the 3 decor blocks and both faces of both glass panes; none on the roof skins) and each panel has a quick-release tab. Peeling now takes about {{FILM_MIN}} minutes of the clock, against {{FILM_ALL_MIN}} for film on all {{FILM_FACES_ALL}} faces without tabs: {{FILM_SAVES}} minutes saved. The layout study's 168 minutes didn't count film at all, so this is time the clock now carries honestly.
 
-Where the time goes now:
-
-{{TOP_STEPS}}
-
 The 1-hour target needs more than this: the timed trial showing faster unit times than the layout study assumed, or fewer loose pieces and bolts. The 82 register bolts alone take about {{REG_BOLT_MIN}} minutes of the clock. For scale, hushMeet takes 2 installers 2.5 to 3 hours (source: the market study, as the layout study §4 quotes it).
 
 Unit times used:
@@ -93,7 +89,7 @@ Unit times used:
 
 ## 7. Final check list (step 21)
 
-- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes and latches (lock HOLD, ISS-002); the drop seal comes down onto the threshold's land when closed.
+- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the threshold's land when closed.
 - [ ] Seals: with the pod lit and the room dark, no light at any seam, at the door's edges or at the fixed glass's edges.
 - [ ] Bolts: all {{REG_BOLTS}} register bolts driven, the 10 pins snug, the 6 upper corner bolts tightened after the ceiling; the other fixings of section 5 done.
 - [ ] Linings: all 10 cassettes on their clips, both ceiling cassettes on their safety catches, none touching anything but its clips.
@@ -109,7 +105,7 @@ Power off at the mains first. Then the reverse order: ledge; ceiling linings (un
 
 | What | Owner | Status |
 |---|---|---|
-| Door hinges and lock: the set, how the door's hinge halves meet DL's, and the hinge fixings | FRONT | HOLD (D-46, ISS-002); the PM ruled the hinge halves that sit in DL ship in DL and the hinges must lift off |
+| Door hinges: the set, how the door's hinge halves meet DL's, the hinge fixings, and holding the door at its closed position (D-83 removed the lock) | FRONT | HOLD (D-46, ISS-002); the PM ruled the hinge halves that sit in DL ship in DL and the hinges must lift off |
 | Lining clips and the ceiling safety catch | WALL, CEILING, Hardware Engineer | HOLD (D-47, ISS-076) |
 | Bolt torque | Hardware Engineer | HOLD-01 until T06 (D-48) |
 | Captive bolt grommet | Joints Engineer | HOLD-02 |
