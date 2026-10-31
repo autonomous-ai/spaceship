@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (8dab109), PR #55 (9028182), PR #28 (52174f1), PR #64 (3e5c9f3), PR #32 (cec14ba), PR #105 (f456061), PR #104 (4ceccab), PR #91 (38342c1), PR #92 (fd3ea9f). The Mac's screen at run time: **unlocked**. 273 files in the CAD, drawing and manufacturing folders; the FAI plan's 59 characteristics, 11 functional checks and 18 bought-part test lines.
+Read from: main (dc61ad9), PR #28 (52174f1), PR #32 (cec14ba), PR #105 (f456061), PR #91 (38342c1), PR #92 (46e7ee6), PR #64 (d704dd4), PR #104 (5c6e527). The Mac's screen at run time: **unlocked**. 290 files in the CAD, drawing and manufacturing folders; the FAI plan's 60 characteristics, 11 functional checks and 18 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
 
@@ -14,20 +14,21 @@ Read from: main (8dab109), PR #55 (9028182), PR #28 (52174f1), PR #64 (3e5c9f3),
 
 | Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |
 |---|---:|---:|---:|---:|---:|---:|
-| BASE | 0 | 10 | 0 | 3 | 0 | 4 |
+| BASE | 1 | 10 | 0 | 2 | 1 | 4 |
 | CEILING | 0 | 13 | 0 | 1 | 0 | 2 |
 | CEILING (builds AIR, D-80) | — | — | — | — | — | — |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 4 | 0 | 3 | 0 | 64 |
 | FRONT | 0 | 15 | 0 | 3 | 0 | 6 |
+| JOINTS | 0 | 1 | 0 | 0 | 0 | 0 |
 | WALL | 2 | 14 | 0 | 4 | 1 | 4 |
-| **All, each number once** | 10 | 63 | 0 | 7 | 1 | 81 |
+| **All, each number once** | 11 | 64 | 0 | 7 | 2 | 81 |
 
 No parts list yet: CEILING (builds AIR, D-80).
 
-63 of the 73 made numbers have no drawing yet; for 54 of them the drawing is the only gap, so their drawings can start now (D-84).
+64 of the 75 made numbers have no drawing yet; for 55 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 63, DXF or cut list 8, finish 1.
+What the open made numbers miss: drawing 64, DXF or cut list 8, finish 1.
 
 ## Made parts with no FAI line
 
@@ -39,16 +40,17 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 110000 | BASE | PR #55 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | open: drawing |
-| 110101 | BASE - BAND ASSY - SIDE - LH | PR #55 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111101 | BASE - BAND TUBE - SIDE - LH | PR #55 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01 | open: drawing |
-| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #55 | yes | yes | yes | n/a | no | yes | yes | K-J07 | open: drawing |
-| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #55 | yes | yes | yes | no | no | yes | yes | K-J08 | open: DXF or cut list, drawing |
-| 110103 | BASE - BAND ASSY - BACK | PR #55 | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111103 | BASE - BAND TUBE - BACK | PR #55 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01 | open: drawing |
-| 111201 | BASE - CORNER BRACKET - BACK - COMMON | PR #55 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02 | open: drawing |
-| 111401 | BASE - FLOOR PANEL - F1 | PR #55 | yes | yes | yes | yes | no | yes | n/a | K-B02, K-B03 | open: drawing |
-| 111501 | BASE - SEAL MAT - F1 | PR #55 | yes | yes | yes | no | no | yes | n/a | K-B04 | open: DXF or cut list, drawing |
+| 110000 | BASE | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | open: drawing |
+| 110101 | BASE - BAND ASSY - SIDE - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111101 | BASE - BAND TUBE - SIDE - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01 | open: drawing |
+| 111601 | BASE - GLIDE DOUBLER - COMMON | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
+| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | main | yes | yes | yes | n/a | no | yes | yes | K-J07 | open: drawing |
+| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | main | yes | yes | yes | no | no | yes | yes | K-J08 | open: DXF or cut list, drawing |
+| 110103 | BASE - BAND ASSY - BACK | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01 | open: drawing |
+| 110401 | BASE - FLOOR PANEL ASSY - F1 | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
+| 111401 | BASE - FLOOR PANEL - F1 | main | yes | yes | yes | yes | no | yes | n/a | K-B02, K-B03 | open: drawing |
+| 111501 | BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM | main | yes | yes | yes | yes | no | yes | n/a | K-B04 | open: drawing |
 
 ### CEILING
 
@@ -119,6 +121,12 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 360002 | FRONT - FIXED GLASS UNIT | PR #105 | yes | yes | yes | n/a | no | yes | n/a | K-F03, K-F04 | open: drawing |
 | 361003 | FRONT - FIXED GLASS - 4+4 LAMINATED | PR #105 | yes | yes | yes | yes | no | yes | n/a | K-F01, K-F02 | open: drawing |
 
+### JOINTS
+
+| Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 111211 | BASE - CORNER KEY - BACK - COMMON | main | yes | yes | yes | no | no | yes | yes | K-B08 | open: DXF or cut list, drawing |
+
 ### WALL
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
@@ -146,13 +154,13 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 118002 | BASE - LEVELLING GLIDE - M10 (HOLD) | PR #55 | H-25 | HOLD | no | HOLD |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | PR #55 | H-03 | yes | J-T1, T06 | done |
-| 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) | PR #55 | H-26 | HOLD | no | HOLD |
-| 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD) | PR #55 | H-27 | HOLD | no | HOLD |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #55 | H-01 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - HEAD WASHER - 6.4 X 18 X 1.6 - ISO 7093-1 A2 | PR #55 | H-09 | yes | T06 | done |
-| 118001 | BASE - BASE SEAL - FLOOR EDGE - PEMKO S88BL (HOLD) | PR #55 | H-06 | HOLD | J-T4 | HOLD |
+| 118002 | BASE - LEVELLING GLIDE - M10 (HOLD) | main | H-25 | HOLD | no | HOLD |
+| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD) | main | H-26 | HOLD | no | HOLD |
+| 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD) | main | H-27 | HOLD | no | HOLD |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
+| 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | main | H-31 | yes | no | open: test |
+| 118001 | BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP | main | H-06 | HOLD | J-T4 | HOLD |
 
 ### CEILING
 
@@ -166,8 +174,8 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 818101 | INTERIOR - LEDGE BRACKET - HOLD | PR #92 | no | HOLD | no | HOLD |
-| 818102 | INTERIOR - SCREEN RAIL - HOLD | PR #92 | no | HOLD | no | HOLD |
+| 818101 | INTERIOR - LEDGE BRACKET - HOLD | PR #92 | H-32 | HOLD | no | HOLD |
+| 818102 | INTERIOR - SCREEN RAIL - HOLD | PR #92 | H-33 | HOLD | no | HOLD |
 
 ### ELECTRICAL
 
@@ -281,7 +289,6 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838007 | H-28 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 |
 | 838008 | H-29 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
-| 838010 | H-31 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 |
 
 ## How it's built
 
