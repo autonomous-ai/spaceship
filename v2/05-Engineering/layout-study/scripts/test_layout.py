@@ -176,7 +176,9 @@ def test_cad_masses_from_main():
     assert abs(cp[3] - (cg["c1"] + cg["c2"]) / 2) < 1e-9 and rollup.basis(cp) == "CAD, main", cp
     cc = rows["Ceiling cassettes, one part for both halves"]
     assert rollup.basis(cc) == "CAD, main", cc
-    assert len(rollup.cad_swaps()) == 15
+    el = next(r for k, r in rows.items() if k.startswith("Switches and harness"))
+    assert abs(el[3] - rollup.ELEC["total"]) < 1e-9 and rollup.basis(el) == "CAD, main", el
+    assert len(rollup.cad_swaps()) == 17
 
 
 def test_rollup_items_the_packing_plan_reads():
