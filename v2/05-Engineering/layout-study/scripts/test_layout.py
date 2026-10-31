@@ -4,7 +4,19 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from inputs import override, p  # noqa: E402
+from inputs import P, SOURCES, override, p  # noqa: E402
+
+STATUS_WORDS = {"confirmed", "source", "calculation", "assumption", "unverified"}
+# The decided build in this study's own parts list, at this revision (LS-01). It is over the 420 kg cap: the clip
+# and bond allowances that the sound and air check leaves out settle on the wall sample. PM ruling (S33): the cap
+# stays and this estimate stays open against it, so the total may not grow past this figure.
+DECIDED_KG_CEILING = 426.71
+
+
+def decided_parts():
+    from v2_model import FINAL, parts_for
+    with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
+        return parts_for("plan", FINAL)
 
 
 def test_nested_override_keeps_outer_values():
@@ -26,14 +38,67 @@ def test_decided_build_counts_and_limits():
         parts = parts_for("plan", FINAL)
         s = summary(pack(parts))
         t = timing(sequence("plan", FINAL, parts, False, s["n_std"], s["n_long"]))
-    assert t["bolts"] == 72 and t["cams"] == 36, (t["bolts"], t["cams"])
+    # 72 + 36 before the 1207 back and ceiling frames (one more bolt or clip per back and ceiling edge at the 400 mm
+    # counting pitch) and the third air part (2 cartridges and the riser, 2 bolts each)
+    assert t["bolts"] == 78 and t["cams"] == 38, (t["bolts"], t["cams"])
     assert 123 <= t["elapsed_min"] <= 127, t["elapsed_min"]
     heavy = [pt.pid for pt in parts if pt.ship not in ("glass", "none") and pt.kg > 20.0]
     assert not heavy, heavy
-    assert total(parts) <= p("cap_kg") + 0.05, total(parts)
+    kg = total(parts)
+    assert kg <= DECIDED_KG_CEILING + 0.05, f"decided build grew to {kg:.2f} kg (LS-01)"
+    if kg > p("cap_kg") + 0.05:
+        from run_all import build
+        report = build()["report.md"]
+        assert f"{kg - p('cap_kg'):,.1f} kg over" in report, "the report must say the decided build is over the cap"
     assert s["n_std"] == 1 and s["n_long"] == 1, (s["n_std"], s["n_long"])
     names = [pt.name for pt in parts]
     assert not any("FAN OPENING" in n for n in names), "fans sit in the decor blocks, not in the ceiling"
+
+
+def test_decided_shell_follows_the_skeleton():
+    """PR #15, #16 and #17 rulings (S32): frame-to-frame back wall and ceiling, 1495 side walls, decor 205."""
+    byid = {pt.pid: pt for pt in decided_parts()}
+    for pid in ("W-BACK-LO", "W-BACK-UP", "C-HALF"):
+        assert round(byid[pid].dims[1]) == 1207, (pid, byid[pid].dims)
+    for pid in ("L-CASS-BACK-LO", "L-CASS-BACK-UP", "L-CASS-HALF"):
+        assert round(byid[pid].dims[1]) == 1169, (pid, byid[pid].dims)
+    assert round(byid["W-SIDE-LO"].dims[1]) == 1495, byid["W-SIDE-LO"].dims
+    assert [round(d) for d in byid["L-CASS-SIDE-LO"].dims[:2]] == [1145, 1448], byid["L-CASS-SIDE-LO"].dims
+    assert [round(d) for d in byid["L-CASS-SIDE-UP"].dims[:2]] == [1098, 1448], byid["L-CASS-SIDE-UP"].dims
+    for pid in ("F-DL", "F-DR", "F-DT"):
+        assert min(byid[pid].dims) == 205, (pid, byid[pid].dims)
+    assert round(max(byid["F-GLASS-DOOR"].dims)) == 2101, byid["F-GLASS-DOOR"].dims
+
+
+def test_decided_air_is_four_12v_fans_in_two_cartridges():
+    """PR #11 (S30): both paths in the right decor block, a riser for the exhaust; no TD-500, no old silencers."""
+    parts = decided_parts()
+    air = [pt for pt in parts if pt.assy == "AIR"]
+    assert sorted(pt.pid for pt in air) == ["A-CART-EXHAUST", "A-CART-SUPPLY", "A-RISER"], [pt.pid for pt in air]
+    for pt in air:
+        if pt.pid.startswith("A-CART"):
+            assert "2 x 12 V FANS" in pt.name, pt.name
+            assert abs(pt.kg - (p("cart_kg") + 2 * p("fan12_kg"))) < 1e-9, pt.kg
+    assert not any(pt.pid in ("F-DECOR-FILL", "A-FAN") or pt.pid.startswith("A-SIL") for pt in parts)
+    text = " ".join(f"{pt.name} {pt.note}" for pt in parts)
+    text += " ".join(f"{v.source} {v.note}" for v in P.values()) + " ".join(a for a, _ in SOURCES.values())
+    assert "TD-500" not in text and "TD500" not in text
+
+
+def test_only_the_five_status_words():
+    """Brief: confirmed, source, calculation, assumption or unverified; a decided value is confirmed with its decision."""
+    from run_all import OPTIONS
+    from v2_model import parts_for
+    bad = [(k, v.status) for k, v in P.items() if v.status not in STATUS_WORDS]
+    assert not bad, bad
+    for o in OPTIONS.values():
+        bad = [(pt.pid, pt.status) for pt in parts_for(o["split"], o["m"], o["split_long"]) if pt.status not in STATUS_WORDS]
+        assert not bad, bad
+    bad = [(pt.pid, pt.status) for pt in decided_parts() if pt.status not in STATUS_WORDS]
+    assert not bad, bad
+    for k, v in P.items():   # confirmed = a PM decision (D-xx, or a PR ruling not logged yet) or the approved plan (S05)
+        if v.status == "confirmed":
+            assert any(c in v.source for c in ("D-", "PR #", "S05")), f"{k}: a confirmed value cites its decision ({v.source})"
 
 
 P_DEFAULT_CEIL = p("ceil_t")

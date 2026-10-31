@@ -30,7 +30,7 @@ OUT = os.path.join(ROOT, "out")
 OPTIONS = {
     "A": dict(split="plan", m=PLAN, split_long=False, title="Plan as written",
               desc="The plan's materials and split, raised steel floor as knock-down bars, decor blocks whole."),
-    "B1": dict(split="plan", m=FAST, split_long=False, title="Plan split, light build, fast assembly, 2 pallets (DECIDED)",
+    "B1": dict(split="plan", m=FAST, split_long=False, title="Plan split, light build, fast assembly, 2 pallets (confirmed, D-04)",
                desc="Same panel split as the plan, light build with the fast-assembly changes, thin floor inside an aluminium base band; decor blocks, long base band pieces and glass ride one 96x48 pallet."),
     "B2": dict(split="plan", m=FAST, split_long=True, title="As B1, decor and base band split to fit 48x40 (rejected)",
                desc="As B1, but the decor blocks are cut in half and the base band pieces stand upright, so everything except the glass goes on 48x40 pallets."),
@@ -86,15 +86,15 @@ def option_results():
 
 def waterfall():
     steps = [("v2 as planned (steel frames, 6 mm plywood, raised steel floor, 10 mm glass, table)", {}, "source + calculation"),
-             ("Remove the table; the pod ships empty", dict(table=False), "DECIDED (D-06)"),
-             ("Thin floor inside an aluminium base band instead of the raised steel frame", dict(floor="thin"), "DECIDED (D-05, D-18)"),
-             ("Aluminium 20x20 frames instead of steel (walls, ceiling, decor)", dict(frame="al"), "DECIDED (D-16)"),
-             ("No plywood behind the ACP; frame members at 400 mm to keep the ACP flat", dict(ply=False), "DECIDED (D-17)"),
-             ("8 mm tempered glass instead of 10 mm", dict(front="glass8"), "light build only; the decided build uses 10 mm acrylic"),
+             ("Remove the table; the pod ships empty", dict(table=False), "confirmed (D-06)"),
+             ("Thin floor inside an aluminium base band instead of the raised steel frame", dict(floor="thin"), "confirmed (D-05, D-18)"),
+             ("Aluminium 20x20 frames instead of steel (walls, ceiling, decor)", dict(frame="al"), "confirmed (D-16)"),
+             ("No plywood behind the ACP; frame members at 400 mm to keep the ACP flat", dict(ply=False), "confirmed (D-17)"),
+             ("8 mm tempered glass instead of 10 mm", dict(front="glass8"), "light build only; the decided build uses 4+4 laminated glass (D-27)"),
              ("Add gaskets on every panel joint, sealed glazing profiles, door drop seal", dict(seals=True), "plan requirement"),
              ("Add 2 silenced vents and an occupancy sensor for automatic fans", dict(vents=True, sensor=True), "plan requirement"),
              ("Add light cavity fill (20 mm PET) in wall and ceiling bays", dict(fill=True), "assumption (sound group sizes it)"),
-             ("Hold 4 kg for the later voice cockpit kit", dict(voice=True), "DECIDED (D-11)")]
+             ("Hold 4 kg for the later voice cockpit kit", dict(voice=True), "confirmed (D-11)")]
     m = dict(PLAN)
     rows, prev = [], None
     for text, change, status in steps:
@@ -135,14 +135,14 @@ def acp_sensitivity():
 
 
 def levers():
-    """Time saved by each DECIDED fast-assembly change, added one at a time to option B1 as first studied (light build)."""
+    """Time saved by each confirmed fast-assembly change (D-08), added one at a time to option B1 as first studied (light build)."""
     o = OPTIONS["B1"]
     changes = [("Factory subassemblies: decor blocks with skins on (already), door hinges and pull fitted in the factory so the door lifts onto its pins, fixed glass pre-glazed in its profile frame",
-                dict(prehung=True), "DECIDED"),
-               ("Captive M6 bolts, already started in their panels, that can't be dropped", dict(captive=True), "DECIDED"),
+                dict(prehung=True), "confirmed (D-08)"),
+               ("Captive M6 bolts, already started in their panels, that can't be dropped", dict(captive=True), "confirmed (D-08)"),
                ("Tool-free cam or clip connectors on every panel-to-panel seam; panels sit on pins or hooks and hold themselves (bolts stay where loads go to the base, ceiling, decor and hinges)",
-                dict(cams=True), "DECIDED"),
-               ("Felt pre-fitted on the panels; only a loose strip over each joint goes on site", dict(prefit=True), "DECIDED"),
+                dict(cams=True), "confirmed (D-08)"),
+               ("Felt pre-fitted on the panels; only a loose strip over each joint goes on site", dict(prefit=True), "confirmed (D-08)"),
                ("Pallets packed in assembly order, parts numbered", dict(ordered=True), "packaging, no design change")]
 
     def run(m):
@@ -332,7 +332,7 @@ def build():
     N["q_leaf60_min"] = f0(q_leaf60["time"]["elapsed_min"])
     N["q_leaf_std"] = f0(q_leaf["std_gross"])
     N["q_cap_ok"] = "every part stays at 20 kg or less" if not q_cap["over"] else f"{len(q_cap['over'])} parts go over 20 kg"
-    # ---------------- final stack (sound study's DECIDED wall), B1 layout
+    # ---------------- final stack (the sound study's wall; confirmed, D-16, D-17, D-42), B1 layout
     with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
         fparts = parts_for("plan", FINAL)
         fpals = pack(fparts)
@@ -342,7 +342,7 @@ def build():
     files["out/parts-option-B1-final-stack.csv"] = parts_csv(fparts)
     for i, pal in enumerate(fpals, 1):
         files[f"out/pallets-B1F-{i}-{pal['kind']}.svg"] = svg(pal, f"Option B1 with the final wall stack, pallet {i} of {len(fpals)}")
-    N["final_total"] = f0(total(fparts))
+    N["final_total"] = f1(total(fparts))
     fh = sorted((pt for pt in fparts if pt.ship not in ("glass", "none")), key=lambda pt: -pt.kg)
     N["final_heaviest"] = f"{fh[0].pid} at {f1(fh[0].kg)} kg"
     N["final_over20"] = str(sum(1 for pt in fh if pt.kg > 20.0))
@@ -355,7 +355,7 @@ def build():
     N["final_bolts"], N["final_cams"] = str(ft["bolts"]), str(ft["cams"])
     N["final_pallets"] = pallets_table("B1F", fpals)
     N["final_steps"] = steps_table(fsteps, ft)
-    shell = [pt for pt in fparts if pt.pid.startswith(("W-", "C-", "L-CASS", "F-D", "A-SIL", "F-GLASS"))]
+    shell = [pt for pt in fparts if pt.pid.startswith(("W-", "C-", "L-CASS", "F-D", "A-", "F-GLASS"))]
     N["final_shell_table"] = table(["Part", "Size mm", "Qty", "kg each", "20 kg check"],
                                    [[f"{pt.pid}: {pt.name}", " x ".join(f0(d) for d in sorted(pt.dims, reverse=True)), pt.qty, f1(pt.kg), flag(pt)]
                                     for pt in shell], ["l", "l", "r", "r", "l"])
@@ -375,40 +375,63 @@ def build():
     def gap(**kw):
         with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t"), **kw):
             return base_total - total(parts_for("plan", FINAL))
-    N["gap_fans"] = f1(gap(fan_final_kg=p("fan_kg")))
     N["gap_clips"] = f1(gap(leaf_clip_kgm2=0.0))
-    N["final_over_cap"] = f0(base_total - p("quiet_cap"))
+    N["gap_bond"] = f1(gap(bond_kgm2=0.0))
+    N["leaf_clip_kgm2"], N["bond_kgm2"] = f1(p("leaf_clip_kgm2")), f"{p('bond_kgm2'):.2f}"
     N["cap_kg"] = f0(p("cap_kg"))
     N["decor_depth"] = f0(p("decor_depth"))
-    N["final_vs_cap"] = "under" if base_total <= p("cap_kg") else "over"
-    N["cap_margin"] = f1(abs(p("cap_kg") - base_total))
-    N["hw_expect_lo"], N["hw_expect_hi"] = f0(p("hw_expect_lo")), f0(p("hw_expect_hi"))
-    tray = [pt for pt in fparts if pt.pid.startswith("L-CASS")]
+    N["wall_depth"] = f0(p("wall_depth"))
+    N["cap_note"] = "at the cap" if abs(base_total - p("cap_kg")) < 0.05 else (f"{f1(p('cap_kg') - base_total)} kg under" if base_total < p("cap_kg") else f"{f1(base_total - p('cap_kg'))} kg over")
+    N["hw_total"] = f1(p("hw_total"))
     N["tray_thin_saving"] = f1(gap(tray_t=p("tray_t_thin")))
     lp = [pl for pl in fpals if pl["kind"] == "96x48"][0]
     N["final_long_kg"], N["final_long_h"] = f0(lp["gross"]), f0(lp["height"])
     sp = [pl for pl in fpals if pl["kind"] == "48x40"][0]
     N["final_std_kg"], N["final_std_h"] = f0(sp["gross"]), f0(sp["height"])
-    from v2_model import decor_fill_kg  # noqa: E402
-    N["decor_fill_kg"] = f1(decor_fill_kg())
     byid = {pt.pid: pt for pt in fparts}
-    dr, dt = byid["F-DR"].kg, byid["F-DT"].kg
-    N["dr_with_fill"] = f1(dr + decor_fill_kg() * decor_skin_area("DR") / sum(decor_skin_area(b) for b in ("DL", "DR", "DT")))
-    N["final_dr"], N["final_dt"] = f1(dr), f1(dt)
-    sil_r = byid["A-SIL-DR-CASING"].kg + byid["A-SIL-DR-BAFFLE"].kg * byid["A-SIL-DR-BAFFLE"].qty
-    N["sil_right"], N["sil_top"] = f1(sil_r), f1(byid["A-SIL-DT"].kg)
-    N["dr_plus_sil"], N["dt_plus_sil"] = f1(dr + sil_r), f1(dt + byid["A-SIL-DT"].kg)
+    N["final_dr"], N["final_dt"] = f1(byid["F-DR"].kg), f1(byid["F-DT"].kg)
+    # shell sizes in the decided build (PR #15 and PR #17 rulings, S32)
+    N["back_w_final"] = f0(byid["W-BACK-LO"].dims[1])
+    N["lin_back_w"] = f0(byid["L-CASS-BACK-LO"].dims[1])
+    N["side_cass_l"] = f0(byid["L-CASS-SIDE-LO"].dims[1])
+    N["side_cass_up_h"] = f0(byid["L-CASS-SIDE-UP"].dims[0])
+    N["door_unit_l"] = f0(max(gd.dims))
+    N["door_glass_h"] = f0(p("glass_door_h"))
+    # air: both paths in the right decor block (S30)
+    carts = [pt for pt in fparts if pt.pid.startswith("A-CART")]
+    N["n_fans"] = {2: "two", 4: "four"}.get(2 * len(carts), str(2 * len(carts)))
+    N["fan12_kg"] = f1(p("fan12_kg"))
+    N["cart_kg"], N["cart_each"] = f1(p("cart_kg")), f1(carts[0].kg)
+    N["cart_size"] = " x ".join(f0(d) for d in sorted(carts[0].dims, reverse=True))
+    N["riser_kg"] = f1(byid["A-RISER"].kg)
+    N["riser_size"] = " x ".join(f0(d) for d in sorted(byid["A-RISER"].dims, reverse=True))
+    N["air_total"] = f1(sum(pt.total for pt in fparts if pt.assy == "AIR"))
+    N["dr_plus_carts"] = f1(byid["F-DR"].kg + sum(pt.total for pt in fparts if pt.assy == "AIR"))
     N["winback_frames"] = f1(-gap(t_al_final=1.5))
-    N["winback_fill"] = f1(-gap(fill_pet_kgm3=32))
-    N["hw_398_total"] = f0(p("hw_398_total"))
-    N["fan_final_kg"] = f1(p("fan_final_kg"))
-    N["without_gap_items"] = f0(base_total - gap(fan_final_kg=p("fan_kg"), leaf_clip_kgm2=0.0))
-    N["sil_extra"] = f1(p("sil_lining_extra_kg"))
-    N["sil_casing"] = f1(byid["A-SIL-DR-CASING"].kg)
-    N["sil_baffle"] = f1(byid["A-SIL-DR-BAFFLE"].kg)
-    N["n_baffles"] = str(byid["A-SIL-DR-BAFFLE"].qty)
+    N["light_fill_saving"] = f1(gap(fill_pet_kgm3=p("fill_pet_light_kgm3")))
+    N["fill_light"], N["fill_final"] = f0(p("fill_pet_light_kgm3")), f0(p("fill_pet_kgm3"))
     N["kick_strip_h"] = f0(p("kick_strip_h"))
-    N["cap_note"] = "at the cap" if abs(base_total - p("cap_kg")) < 0.05 else (f"{f1(p('cap_kg') - base_total)} kg under" if base_total < p("cap_kg") else f"{f1(base_total - p('cap_kg'))} kg over")
+    # the same build in the sound and air check's own model (PR #11, S31), group by group
+    door_hw = p("kick_strip_kg") + p("drop_seal_kg") + 3 * p("hinge_kg") + p("handle_kg")
+    grp = {}
+    grp["shell"] = sum(pt.total for pt in fparts if pt.pid.startswith(("W-", "C-", "L-CASS")))
+    grp["glass"] = sum(pt.total for pt in fparts if pt.pid.startswith("F-GLASS")) - door_hw
+    grp["air"] = sum(pt.total for pt in fparts if pt.assy == "AIR")
+    grp["rest"] = base_total - sum(grp.values())
+    core = grp["shell"] - gap(leaf_clip_kgm2=0.0) - gap(bond_kgm2=0.0) - p("hw_shell_kg")
+    N["shell_core_diff"] = f"{f1(abs(core))} kg " + ("lighter" if core < 0 else "heavier")
+    why = {"shell": f"this study carries the cassette clips and rails ({N['leaf_clip_kgm2']} kg/m2, {N['gap_clips']} kg) and the bond lines "
+                    f"({N['bond_kgm2']} kg/m2, {N['gap_bond']} kg), both assumptions that the check leaves out; without them this study's walls and "
+                    f"ceiling are {N['shell_core_diff']} than the check's {f1(p('final_kgm2_hw'))} kg/m2 over the outside areas",
+           "glass": "finished shapes from the v1 STEP here; 21 kg/m2 over 3.425 m2 there",
+           "air": "the same cartridges, riser and fans",
+           "rest": "base, decor blocks, door hardware, kits, electrics and the voice-kit reserve; the check takes them from an older copy of this study"}
+    names = {"shell": "Walls, ceiling and their lining cassettes", "glass": "Glass: door leaf and fixed panel", "air": "Air: 2 cartridges, riser, 4 fans",
+             "rest": "Everything else"}
+    rows = [[names[k], f1(v), f1(p(f"hw_{k}_kg")), f"{v - p(f'hw_{k}_kg'):+.1f}", why[k]] for k, v in grp.items()]
+    rows.append(["**Total**", f"**{f1(base_total)}**", f"**{f1(p('hw_total'))}**", f"**{base_total - p('hw_total'):+.1f}**", ""])
+    N["table_reconcile"] = table(["Group", "This study, kg", "Sound and air check, kg", "Difference, kg", "Why"], rows, ["l", "r", "r", "r", "l"])
+    N["reconcile_diff"] = f1(base_total - p("hw_total"))
     with override(wall_t_plan=p("final_wall_t"), ceil_t=p("final_ceil_t")):
         cf = parts_for("plan", variant(FINAL, ceil_fill_on_cassette=False))
     N["ceil_outer_with_fill"] = f1([pt for pt in cf if pt.pid == "C-HALF"][0].kg)

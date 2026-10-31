@@ -1,14 +1,14 @@
 id,name,name_vi,assembly,size_mm,qty,kg_each,kg_total,ships_as,status,note
-W-SIDE-LO,WALL - SIDE PANEL - LOWER (outer: ACP + frame + fill),Vách hông - khung dưới,WALL,1500 x 1145 x 43,2,11.41,22.83,upright,calculation,
-L-CASS-SIDE-LO,LINING - CASSETTE FOR W-SIDE-LO (steel tray + felt),Khay lót trong + tiêu âm,LINING,1419 x 1145 x 34,2,10.86,21.72,upright,calculation,"floating inner leaf, clips on from inside"
-W-SIDE-UP,WALL - SIDE PANEL - UPPER (outer: ACP + frame + fill),Vách hông - khung trên,WALL,1500 x 1145 x 43,2,11.41,22.83,upright,calculation,
-L-CASS-SIDE-UP,LINING - CASSETTE FOR W-SIDE-UP (steel tray + felt),Khay lót trong + tiêu âm,LINING,1419 x 1145 x 34,2,10.86,21.72,upright,calculation,"floating inner leaf, clips on from inside"
-W-BACK-LO,WALL - BACK PANEL - LOWER (outer: ACP + frame + fill),Vách hậu - khung dưới,WALL,1169 x 1104 x 43,2,8.65,17.31,upright,calculation,
+W-SIDE-LO,WALL - SIDE PANEL - LOWER (outer: ACP + frame + fill),Vách hông - khung dưới,WALL,1495 x 1145 x 43,2,11.86,23.73,upright,calculation,
+L-CASS-SIDE-LO,LINING - CASSETTE FOR W-SIDE-LO (steel tray + felt),Khay lót trong + tiêu âm,LINING,1448 x 1145 x 34,2,11.08,22.16,upright,calculation,"floating inner leaf, clips on from inside"
+W-SIDE-UP,WALL - SIDE PANEL - UPPER (outer: ACP + frame + fill),Vách hông - khung trên,WALL,1495 x 1145 x 43,2,11.86,23.73,upright,calculation,
+L-CASS-SIDE-UP,LINING - CASSETTE FOR W-SIDE-UP (steel tray + felt),Khay lót trong + tiêu âm,LINING,1448 x 1098 x 34,2,10.64,21.27,upright,calculation,"floating inner leaf, clips on from inside"
+W-BACK-LO,WALL - BACK PANEL - LOWER (outer: ACP + frame + fill),Vách hậu - khung dưới,WALL,1207 x 1104 x 43,2,9.67,19.34,upright,calculation,
 L-CASS-BACK-LO,LINING - CASSETTE FOR W-BACK-LO (steel tray + felt),Khay lót trong + tiêu âm,LINING,1169 x 1104 x 34,2,8.68,17.35,upright,calculation,"floating inner leaf, clips on from inside"
-W-BACK-UP,WALL - BACK PANEL - UPPER (outer: ACP + frame + fill),Vách hậu - khung trên,WALL,1169 x 1104 x 43,2,8.65,17.31,upright,calculation,
+W-BACK-UP,WALL - BACK PANEL - UPPER (outer: ACP + frame + fill),Vách hậu - khung trên,WALL,1207 x 1104 x 43,2,9.67,19.34,upright,calculation,
 L-CASS-BACK-UP,LINING - CASSETTE FOR W-BACK-UP (steel tray + felt),Khay lót trong + tiêu âm,LINING,1169 x 1104 x 34,2,8.68,17.35,upright,calculation,"floating inner leaf, clips on from inside"
-C-HALF,CEILING - HALF PANEL (outer: ACP + frame),Trần - nửa khung,CEILING,1500 x 1169 x 43,2,9.88,19.75,upright,calculation,
-L-CASS-HALF,LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill),Khay lót trong + tiêu âm,LINING,1419 x 1169 x 74,2,12.74,25.48,upright,calculation,"floating inner leaf, clips on from inside"
+C-HALF,CEILING - HALF PANEL (outer: ACP + frame),Trần - nửa khung,CEILING,1495 x 1207 x 43,2,10.14,20.27,upright,calculation,
+L-CASS-HALF,LINING - CASSETTE FOR C-HALF (steel tray + felt + ceiling fill),Khay lót trong + tiêu âm,LINING,1414 x 1169 x 74,2,13.16,26.32,upright,calculation,"floating inner leaf, clips on from inside"
 B-BAND-BACK,BASE - BASE BAND PIECE 100x40 - BACK,Viền chân nhôm,BASE,2420 x 100 x 40,1,3.55,3.55,long,calculation,
 B-BAND-SIDE,BASE - BASE BAND PIECE 100x40 - SIDE,Viền chân nhôm,BASE,1660 x 100 x 40,2,2.44,4.88,long,calculation,
 B-BAND-FRONT-L,BASE - BASE BAND PIECE 100x40 - FRONT-L,Viền chân nhôm,BASE,300 x 100 x 40,1,0.44,0.44,upright,calculation,
@@ -16,19 +16,17 @@ B-BAND-FRONT-R,BASE - BASE BAND PIECE 100x40 - FRONT-R,Viền chân nhôm,BASE,1
 B-KEY,BASE - CORNER KEY,Ke góc đế,BASE,120 x 80 x 40,6,0.15,0.90,box,assumption,
 B-GLIDE,BASE - LEVELLING GLIDE (hex from above),Chân chỉnh cao,BASE,50 x 50 x 40,8,0.15,1.20,box,assumption,
 B-THRESH,"BASE - DOOR THRESHOLD, LOW",Ngưỡng cửa thấp,BASE,1176 x 60 x 20,1,1.20,1.20,upright,assumption,about 20 mm high; replaces the 100 mm band across the door only
-B-FLOOR,BASE - THIN FLOOR PANEL 15 mm,Tấm sàn mỏng,BASE,1419 x 1169 x 15,2,15.43,30.85,upright,calculation,15 mm ply + 0.3 kg/m2 finish; lies on the room floor on a 3 mm seal mat
-F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 235,1,9.98,9.98,long,calculation,
-F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 235,1,18.06,18.06,long,calculation,
-F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 235,1,7.02,7.02,long,calculation,
-F-GLASS-DOOR,"FRONT - GLASS DOOR UNIT (4+4 laminated glass, frameless, 90 mm kick strip with drop seal, hinges, pull)",Cửa kính,FRONT,2011 x 1176 x 9,1,47.48,47.48,glass,calculation,carried by two people with 2 suction lifters; glass exempt from the 20 kg rule
+B-FLOOR,BASE - THIN FLOOR PANEL 15 mm,Tấm sàn mỏng,BASE,1414 x 1169 x 15,2,15.37,30.75,upright,calculation,15 mm ply + 0.3 kg/m2 finish; lies on the room floor on a 3 mm seal mat
+F-DL,FRONT - DECOR BLOCK - LEFT,Khung trang trí - khối trái,FRONT,2290 x 278 x 205,1,9.98,9.98,long,calculation,
+F-DR,FRONT - DECOR BLOCK - RIGHT,Khung trang trí - khối phải,FRONT,2290 x 1016 x 205,1,18.06,18.06,long,calculation,
+F-DT,FRONT - DECOR BLOCK - TOP,Khung trang trí - khối trên,FRONT,1697 x 280 x 205,1,7.02,7.02,long,calculation,
+F-GLASS-DOOR,"FRONT - GLASS DOOR UNIT (4+4 laminated glass, frameless, 90 mm kick strip with drop seal, hinges, pull)",Cửa kính,FRONT,2101 x 1176 x 20,1,47.48,47.48,glass,calculation,"glass plus kick strip, as one unit; carried by two people with 2 suction lifters; glass exempt from the 20 kg rule; hinges and lock HOLD until a set rated for this glass, 47.5 kg and 1176 mm is named (D-46)"
 F-GLASS-FIXED,"FRONT - FIXED GLASS (4+4 laminated glass, frameless)",Vách kính cố định,FRONT,2139 x 724 x 9,1,27.97,27.97,glass,calculation,weight from the finished shape in the STEP; exempt from the 20 kg rule
 F-HW,FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS,Nẹp kính có gioăng,FRONT,2200 x 120 x 60,1,2.58,2.58,box,assumption,"hidden in the decor and base, so the front stays frameless"
-A-FAN,AIR - INLINE FAN TD-500 (S&P TD-500/150-160) IN THE DECOR BLOCKS,Quạt thông gió TD-500,AIR,350 x 280 x 280,2,6.00,12.00,box,source,fitted with the splitter silencers in the right and top decor blocks
-A-SIL-DR-CASING,AIR - RIGHT SPLITTER SILENCER: CASING (2 mm Al),Vỏ bộ tiêu âm khối phải,AIR,1100 x 300 x 160,1,5.46,5.46,upright,calculation,slides into the mounted block first (size assumed)
-A-SIL-DR-BAFFLE,AIR - RIGHT SPLITTER SILENCER: BAFFLE,Tấm tiêu âm khối phải,AIR,1100 x 260 x 60,2,7.43,14.87,upright,calculation,"slides into the casing after it (DECIDED); the rest of the silencer's mass, split evenly"
-A-SIL-DT,AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing),Bộ tiêu âm khối trên,AIR,1000 x 240 x 160,1,10.17,10.17,upright,calculation,slides into the mounted block from inside
+A-CART-SUPPLY,AIR - SUPPLY SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM),Ống tiêu âm cấp gió + 2 quạt thông gió 12 V,AIR,2100 x 405 x 159,1,17.70,17.70,long,calculation,"fan box at the top, grille low on the right block's inner face; slides in from inside (D-36); CAD fit HOLD"
+A-CART-EXHAUST,AIR - EXHAUST SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM),Ống tiêu âm thải gió + 2 quạt thông gió 12 V,AIR,2100 x 405 x 159,1,17.70,17.70,long,calculation,"grille high, fans at the foot blowing up the riser; slides in from inside (D-36); CAD fit HOLD"
+A-RISER,AIR - EXHAUST RISER 150 mm (1 mm galvanised steel duct),Ống thải đứng 150,AIR,2000 x 155 x 150,1,9.60,9.60,long,calculation,"between the cartridges, from the exhaust fans up to the slot on the right block's top face; CAD fit HOLD"
 K-SEALS,"KIT - DOOR EDGE SEALS, BASE SEAL, CABLE GROMMETS","Gioăng cửa, gioăng đế",BASE,600 x 300 x 100,1,1.60,1.60,box,source,
-F-DECOR-FILL,FRONT - PET FILL PIECES FOR THE DECOR BLOCKS (loose),Bông PET khối trang trí,FRONT,1200 x 400 x 300,1,3.09,3.09,box,calculation,ships loose: inside the right decor block it would make that block over 20 kg
 E-KIT,"ELECTRICAL - SWITCHES, LIGHTS, HARNESS","Bộ điện: công tắc, đèn, dây",ELECTRICAL,600 x 400 x 200,1,3.05,3.05,box,assumption,
 E-VOICE-RESERVE,ELECTRICAL - VOICE COCKPIT KIT RESERVE (later),Dự phòng bộ voice cockpit,ELECTRICAL,0 x 0 x 0,1,4.00,4.00,none,assumption,weight held in the budget only; the kit ships later
-K-FIX,"KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS","Bộ bu lông M6, gioăng",WALL,400 x 300 x 150,1,4.49,4.49,box,calculation,"72 M6 bolts, 36 cam or clip connectors"
+K-FIX,"KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS","Bộ bu lông M6, gioăng",WALL,400 x 300 x 150,1,4.67,4.67,box,calculation,"78 M6 bolts, 38 cam or clip connectors"

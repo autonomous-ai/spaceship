@@ -42,8 +42,8 @@ PLAN = dict(key="plan", label="v2 as planned", frame="steel", ply=True, core=Non
 LIGHT = dict(key="light", label="Spaceship light indoor build", frame="al", ply=False, core=None, floor="thin",
              front="glass8", table=False, seals=True, vents=True, fill=True, voice=True, sensor=True,
              prefit=False, captive=False, cams=False, prehung=False, ordered=False, sound_kgm2=0.0, ceiling_sound=True)
-# DECIDED fast-assembly build (PM ruling 2026-10-31): same parts and weight, more done in the factory
-FAST = dict(LIGHT, key="fast", label="Spaceship light build, fast assembly (DECIDED)",
+# fast-assembly build (confirmed, D-08): same parts and weight, more done in the factory
+FAST = dict(LIGHT, key="fast", label="Spaceship light build, fast assembly (confirmed, D-08)",
             prefit=True, captive=True, cams=True, prehung=True, ordered=True)
 PLAN.update(prefit=False, captive=False, cams=False, prehung=False, ordered=False, sound_kgm2=0.0, ceiling_sound=True)
 CAM_JOINTS = ("J-WALL-01", "J-WALL-02", "J-WALL-03", "J-WALL-04", "J-CEIL-02")
@@ -64,6 +64,14 @@ def geom():
     back_h = wall_h - tc                                       # back wall stands under the ceiling
     return dict(wall_h=wall_h, t=t, tc=tc, inner_w=inner_w, back_h=back_h, depth=p("wall_depth"),
                 inner_d=p("wall_depth") - t)
+
+
+def back_w(m):
+    """Width of one back wall panel or ceiling half. In the decided build their frames span frame to frame between
+    the side frames, with the side skins covering their edges (PR #15, S32): 1207, wider than their 1169 linings."""
+    if m.get("stack") == "final":
+        return (p("pod_w") - 2 * (p("acp_t") + p("final_wall_depth"))) / 2
+    return geom()["inner_w"] / 2
 
 
 # ---------------------------------------------------------------- unit masses
@@ -282,8 +290,10 @@ def front_parts(m, split_long):
         # the door ships as one unit: glass, kick strip housing the drop seal, hinges and pull fitted in the factory
         door = [pt for pt in parts if pt.pid == "F-GLASS-DOOR"][0]
         door.kg += p("kick_strip_kg") + p("drop_seal_kg") + 3 * p("hinge_kg") + p("handle_kg")
+        door.dims = (p("glass_door_h") + p("kick_strip_h"), p("glass_door_w"), max(door.dims[2], p("kick_strip_d")))
         door.name = f"FRONT - GLASS DOOR UNIT ({FRONT_LABEL[m['front']]}, {p('kick_strip_h'):.0f} mm kick strip with drop seal, hinges, pull)"
-        door.note = "carried by two people with 2 suction lifters; glass exempt from the 20 kg rule"
+        door.note = ("glass plus kick strip, as one unit; carried by two people with 2 suction lifters; glass exempt from the 20 kg rule; "
+                     "hinges and lock HOLD until a set rated for this glass, 47.5 kg and 1176 mm is named (D-46)")
         g_len = 2 * (p("glass_fixed_h") + p("glass_fixed_w")) * 1e-3
         parts.append(Part("F-HW", "FRONT - SEALED GLAZING PROFILES FOR THE FIXED GLASS", "Nẹp kính có gioăng", "FRONT", (2200, 120, 60), 1,
                           g_len * p("glazing_profile_kgm"), "box", "assumption", "hidden in the decor and base, so the front stays frameless"))
@@ -300,33 +310,28 @@ def front_parts(m, split_long):
 def service_parts(m):
     final = m.get("stack") == "final"
     if final:
-        parts = [Part("A-FAN", "AIR - INLINE FAN TD-500 (S&P TD-500/150-160) IN THE DECOR BLOCKS", "Quạt thông gió TD-500", "AIR", (350, 280, 280), 2,
-                      p("fan_final_kg"), "box", "source", "fitted with the splitter silencers in the right and top decor blocks")]
+        # both air paths sit side by side in the right decor block (S30); each splitter cartridge carries its 40 mm fill
+        # toward the pod and, in its lined fan box, 2 of the 4 12 V fans on a bulkhead, fitted in the factory (D-08)
+        fans_per_cart = 2
+        cart = (p("cart_l") + p("fanbox_l"), p("cart_w"), p("cart_d"))
+        parts = [Part("A-CART-SUPPLY", "AIR - SUPPLY SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM)",
+                      "Ống tiêu âm cấp gió + 2 quạt thông gió 12 V", "AIR", cart, 1, p("cart_kg") + fans_per_cart * p("fan12_kg"), "long",
+                      "calculation", "fan box at the top, grille low on the right block's inner face; slides in from inside (D-36); CAD fit HOLD"),
+                 Part("A-CART-EXHAUST", "AIR - EXHAUST SPLITTER CARTRIDGE WITH 2 x 12 V FANS (Noctua NF-A14 industrialPPC-3000 PWM)",
+                      "Ống tiêu âm thải gió + 2 quạt thông gió 12 V", "AIR", cart, 1, p("cart_kg") + fans_per_cart * p("fan12_kg"), "long",
+                      "calculation", "grille high, fans at the foot blowing up the riser; slides in from inside (D-36); CAD fit HOLD"),
+                 Part("A-RISER", "AIR - EXHAUST RISER 150 mm (1 mm galvanised steel duct)", "Ống thải đứng 150", "AIR",
+                      (p("riser_l"), p("riser_d"), p("riser_w")), 1, p("riser_kg"), "long", "calculation",
+                      "between the cartridges, from the exhaust fans up to the slot on the right block's top face; CAD fit HOLD")]
     else:
         parts = [Part("A-FAN", "AIR - CEILING FAN (Panasonic FV-15AUL1 per plan)", "Quạt thông gió", "AIR", (300, 300, 200), 2,
                       p("fan_kg"), "box", "unverified")]
-    if m["vents"] and final:
-        # splitter silencers that sit inside the decor blocks, shipped as their own parts (sizes assumed to fit the blocks)
-        r, t = silencer_kg()
-        L, W, H = 1100, 300, 160       # assumed outside size of the right silencer, to fit the right decor block
-        casing = 2 * (L * W + L * H) * 1e-6 * 2e-3 * p("rho_al")          # 2 mm aluminium shell, open ends
-        n_baffle = 2
-        parts.append(Part("A-SIL-DR-CASING", "AIR - RIGHT SPLITTER SILENCER: CASING (2 mm Al)", "Vỏ bộ tiêu âm khối phải", "AIR",
-                          (L, W, H), 1, casing, "upright", "calculation", "slides into the mounted block first (size assumed)"))
-        parts.append(Part("A-SIL-DR-BAFFLE", "AIR - RIGHT SPLITTER SILENCER: BAFFLE", "Tấm tiêu âm khối phải", "AIR",
-                          (L, W - 40, 60), n_baffle, (r - casing) / n_baffle, "upright", "calculation",
-                          "slides into the casing after it (DECIDED); the rest of the silencer's mass, split evenly"))
-        parts.append(Part("A-SIL-DT", "AIR - SPLITTER SILENCER FOR THE TOP DECOR BLOCK (2 mm Al casing)", "Bộ tiêu âm khối trên", "AIR",
-                          (1000, 240, 160), 1, t, "upright", "calculation", "slides into the mounted block from inside"))
-    elif m["vents"]:
+    if m["vents"] and not final:
         parts.append(Part("A-SILENCER", "AIR - SILENCED VENT BOX", "Hộp tiêu âm cửa gió", "AIR", (450, 300, 120), 2,
                           p("silencer_kg"), "box", "assumption"))
     if final:
         parts.append(Part("K-SEALS", "KIT - DOOR EDGE SEALS, BASE SEAL, CABLE GROMMETS", "Gioăng cửa, gioăng đế", "BASE", (600, 300, 100), 1,
                           p("door_edge_seal_kg") + p("base_seal_kg") + p("grommet_kg"), "box", "source"))
-        parts.append(Part("F-DECOR-FILL", "FRONT - PET FILL PIECES FOR THE DECOR BLOCKS (loose)", "Bông PET khối trang trí", "FRONT",
-                          (1200, 400, 300), 1, decor_fill_kg(), "box", "calculation",
-                          "ships loose: inside the right decor block it would make that block over 20 kg"))
     elec = 3 * p("plate_kg") + 2 * p("light_kg") + p("harness_kg")
     if m["sensor"]:
         elec += p("sensor_kg")
@@ -356,11 +361,12 @@ def bolts_on(length_mm):
 def joints(split, m, split_long):
     """Joint list: (joint id, description, edges, bolts, access, step). Lengths in mm."""
     g = geom()
+    bw = back_w(m)
     J = []
     side_rows, back_rows = rows_of(split)
     sh, bh = g["wall_h"] / side_rows, g["back_h"] / back_rows
     J.append(("J-WALL-01", "side wall: panel to panel, horizontal seam", 2 * (side_rows - 1), bolts_on(g["depth"])))
-    J.append(("J-WALL-02", "back wall: panel to panel, horizontal seam", 2 * (back_rows - 1), bolts_on(g["inner_w"] / 2)))
+    J.append(("J-WALL-02", "back wall: panel to panel, horizontal seam", 2 * (back_rows - 1), bolts_on(bw)))
     J.append(("J-WALL-03", "back wall: left half to right half, vertical seam", back_rows, bolts_on(bh)))
     J.append(("J-WALL-04", "side wall to back wall, corner", 2 * back_rows, bolts_on(bh)))
     J.append(("J-BASE-01", "walls to base band", 2 + 2, None))   # filled below
@@ -373,7 +379,8 @@ def joints(split, m, split_long):
     if m.get("stack") != "final":
         J.append(("J-AIR-01", "fans into ceiling halves", 2, 2))
     else:
-        J.append(("J-AIR-02", "TD-500 fans into the right and top decor blocks", 2, 2))   # counted once, in the decor step
+        # 2 splitter cartridges and the riser, 2 bolts each (count estimate); counted once, in the decor step
+        J.append(("J-AIR-02", "splitter cartridges and exhaust riser into the right decor block", 3, 2))
     if m["floor"] == "raised":
         J.append(("J-BASE-02", "raised frame corners and joists", 4 + 4, 4))
     else:
@@ -387,10 +394,10 @@ def joints(split, m, split_long):
     out = []
     for jid, desc, edges, per_edge in J:
         if jid == "J-BASE-01":
-            bolts = 2 * bolts_on(g["depth"]) + 2 * bolts_on(g["inner_w"] / 2)
+            bolts = 2 * bolts_on(g["depth"]) + 2 * bolts_on(bw)
             out.append((jid, desc, 4, bolts))
         elif jid == "J-CEIL-01":
-            bolts = 2 * (bolts_on(g["depth"]) + bolts_on(g["inner_w"] / 2))
+            bolts = 2 * (bolts_on(g["depth"]) + bolts_on(bw))
             out.append((jid, desc, 4, bolts))
         elif jid == "J-FRONT-01":
             out.append((jid, desc, 3, 6 + 6 + 6))    # 6 per block: 4 to the wall or ceiling, 2 to base or block
@@ -399,13 +406,14 @@ def joints(split, m, split_long):
     return out
 
 
-def gasket_length_m(split):
-    """Gasket on every panel joint (seal before mass), m."""
+def gasket_length_m(split, m=None):
+    """Gasket on every panel joint (seal before mass), m. Back and ceiling runs follow the outer panels (back_w)."""
     g = geom()
     side_rows, back_rows = rows_of(split)
-    L = 2 * (side_rows - 1) * g["depth"] + 2 * (back_rows - 1) * g["inner_w"] / 2 + g["back_h"]   # in-wall seams
-    L += 2 * g["back_h"] + 2 * g["depth"] + g["inner_w"]                                       # corners, base
-    L += 2 * g["depth"] + g["inner_w"] + g["depth"]                                            # ceiling edges and seam
+    bw = back_w(m or {})
+    L = 2 * (side_rows - 1) * g["depth"] + 2 * (back_rows - 1) * bw + g["back_h"]               # in-wall seams
+    L += 2 * g["back_h"] + 2 * g["depth"] + 2 * bw                                             # corners, base
+    L += 2 * g["depth"] + 2 * bw + g["depth"]                                                  # ceiling edges and seam
     L += 2 * g["wall_h"] + 1697                                                                # decor to walls/ceiling
     return L * 1e-3
 
@@ -494,7 +502,7 @@ def total(parts):
     return sum(pt.total for pt in parts)
 
 
-# ---------------------------------------------------------------- final wall stack (sound study, DECIDED)
+# ---------------------------------------------------------------- final wall stack (sound study; confirmed, D-16, D-17, D-42)
 FINAL = dict(FAST, key="final", label="Spaceship decided build: light build, fast assembly, sound walls, 4+4 laminated front",
              front="lam44", stack="final", leaf=True, fill=True)
 
@@ -521,40 +529,35 @@ def final_stack_parts(split, m, split_long=False):
     from inputs import override
     with override(**with_t):
         g = geom()
+        cass_t = p("tray_depth") + p("felt_t")
+        roof = p("acp_t") + p("final_ceil_depth")      # the ceiling's outer panel sits between the side frames
         parts = []
         for pid, name, vi, assy, w, h, q in wall_layout(split):
             depth = p("final_ceil_depth") if assy == "CEILING" else p("final_wall_depth")
             fill_on_cassette = assy == "CEILING" and m.get("ceil_fill_on_cassette", True)
             if assy == "CEILING":
                 name = "CEILING - HALF PANEL"
+            ow = back_w(m) if (assy == "CEILING" or pid.startswith("W-BACK")) else w     # outer panel, frame to frame
             parts.append(Part(pid, name + (" (outer: ACP + frame)" if fill_on_cassette else " (outer: ACP + frame + fill)"), vi, assy,
-                              (h, w, 3 + depth), q, final_outer_kg(w, h, depth, m, not fill_on_cassette), "upright"))
+                              (h, ow, p("acp_t") + depth), q, final_outer_kg(ow, h, depth, m, not fill_on_cassette), "upright"))
             if assy == "CEILING":
                 lw, lh = w, g["inner_d"]
             elif pid.startswith("W-SIDE"):
-                lw, lh = g["inner_d"], h
+                # side cassettes run past the back cassettes' face to close the inside corner; the upper ones stop
+                # lin_gap under the roof frame so they float (PR #17, S32)
+                lw = g["inner_d"] + cass_t
+                lh = h - (roof + p("lin_gap") if pid.endswith("-UP") else 0.0)
             else:
                 lw, lh = w, h
             fd = depth if fill_on_cassette else 0.0
             parts.append(Part("L-CASS-" + pid[2:], "LINING - CASSETTE FOR " + pid + (" (steel tray + felt + ceiling fill)" if fd else " (steel tray + felt)"),
-                              "Khay lót trong + tiêu âm", "LINING", (lh, lw, p("tray_depth") + 9 + fd), q, final_leaf_kg(lw, lh, fd),
+                              "Khay lót trong + tiêu âm", "LINING", (lh, lw, cass_t + fd), q, final_leaf_kg(lw, lh, fd),
                               "upright", "calculation", "floating inner leaf, clips on from inside"))
         parts += base_parts(m, split_long)
         parts += front_parts(m, split_long)
         parts += service_parts(m)
         nb, nc = fastener_counts(split, m, split_long)
-        fixings = nb * p("bolt_kg") + nc * p("cam_kg") + gasket_length_m(split) * p("gasket_kgm")
+        fixings = nb * p("bolt_kg") + nc * p("cam_kg") + gasket_length_m(split, m) * p("gasket_kgm")
         parts.append(Part("K-FIX", "KIT - M6 BOLTS, RIVNUTS, CAM CONNECTORS, JOINT GASKETS", "Bộ bu lông M6, gioăng", "WALL",
                           (400, 300, 150), 1, fixings, "box", "calculation", f"{nb} M6 bolts, {nc} cam or clip connectors"))
         return parts
-
-
-def decor_fill_kg():
-    """PET fill lining the decor blocks: area x 75 mm x fill density."""
-    return p("decor_fill_m2") * 0.075 * p("fill_pet_kgm3")
-
-
-def silencer_kg():
-    """Right and top splitter silencers. The extra lining is split in proportion to silencer mass (assumption)."""
-    r0, t0, extra = p("sil_right_base_kg"), p("sil_top_base_kg"), p("sil_lining_extra_kg")
-    return r0 + extra * r0 / (r0 + t0), t0 + extra * t0 / (r0 + t0)
