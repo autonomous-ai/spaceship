@@ -29,7 +29,7 @@ SKELETON_DOC = "100000_P04_POD-SKELETON_CAD"
 SKELETON_PARAMS = [
     "pod_w", "pod_d", "pod_h", "outer_t", "cav_gap", "cass_t", "stack_t", "seam_gap",
     "lin_gap", "wall_depth", "side_h", "back_ph", "back_oh", "half_pw", "panel_z0",
-    "dt_zb",
+    "dt_zb", "inner_w",
 ]
 
 PM = "PM ruling 2026-10-31 in the ELECTRICAL group"
@@ -117,9 +117,9 @@ PARAMS = [
      "call light feed at the front end of a 900 mm bar centred on the work wall, Y -209.5; its drop from the shelf runs straight down here"),
     ("shelf_z", "2250 mm", "mm", "assumption",
      "light shelf height: its feed on the back wall and the call light's drop on the right wall sit behind it (Z 2200-2290 assumed; CEILING sets the shelf)"),
-    ("ceil_x", "583 mm", "mm", "source", "CEILING P01: the cassette's cable holes sit on its centre, X +583 for the right half (PR #32)"),
-    ("ceil_y0", "-282 mm", "mm", "source", "CEILING P01: the ceiling cassette's front return, behind the soffit (Y -282)"),
-    ("ceil_y1", "763 mm", "mm", "source", "CEILING P01: the ceiling cassette's back return, 3 mm off the back lining (Y 763)"),
+    ("ceil_x", "inner_w / 4", "mm", "calculation", "CEILING P01: the cassette's cable holes sit on the right ceiling cassette's centre, a quarter of the skeleton's inner width (X +583, PR #32)"),
+    ("ceil_y0", "col_y1 + 3 mm", "mm", "calculation", "CEILING P01: the ceiling cassette's front return, 3 mm behind the soffit's back face (Y -282)"),
+    ("ceil_y1", "y_bf - 3 mm", "mm", "calculation", "CEILING P01: the ceiling cassette's back return, 3 mm off the back lining's felt face (Y 763)"),
     ("soff_y", "col_y1", "mm", "DECIDED", "D-61: the soffit's back face is flush with the column's face, Y -285"),
 ]
 
@@ -129,7 +129,7 @@ SKELETON_VALUES = {
     "pod_w": 2500.0, "pod_d": 1700.0, "pod_h": 2400.0, "outer_t": 46.0, "cav_gap": 4.0, "cass_t": 34.0,
     "stack_t": 84.0, "seam_gap": 2.26, "lin_gap": 4.0, "wall_depth": 1495.0, "side_h": 1142.74,
     "back_ph": 1118.61, "back_oh": 2239.48, "half_pw": 1200.61, "panel_z0": 112.26,
-    "dt_zb": 2120.0,
+    "dt_zb": 2120.0, "inner_w": 2332.0,
 }
 
 _MM = re.compile(r"(\d)\s*mm\b")
@@ -374,3 +374,28 @@ def overlap(a, b):
     dy = min(a[4], b[4]) - max(a[1], b[1])
     dz = min(a[5], b[5]) - max(a[2], b[2])
     return max(dx, 0.0) * max(dy, 0.0) * max(dz, 0.0)
+
+
+# The edit test's edits (edit_test_electrical.py runs them on the exported .f3d; the offline test checks
+# first that each keeps every reserved space a real box). One moves the power unit (the socket height the PM
+# set; there is about 16 mm of room above its light-feed pocket, so it moves down), one the trunk, one a
+# skeleton size the routes follow, and one a pocket and grommet size.
+EDIT_TEST_EDITS = [
+    ("power unit down 50 mm", {"pu_zc": "950 mm"}),
+    ("trunk up 50 mm", {"trunk_z": "1150 mm"}),
+    ("pod 20 mm deeper (skeleton pod_d)", {"pod_d": "1720 mm"}),
+    ("bigger pockets and grommets", {"pk_l": "180 mm", "grm_d": "22 mm"}),
+]
+
+
+def values_with(overrides):
+    """All values with an edit applied the way the edit test applies it in Fusion: a skeleton parameter
+    replaces the derived value, any other parameter its expression; every dependant is evaluated again."""
+    sk = dict(SKELETON_VALUES)
+    for name, expr in overrides.items():
+        if name in SKELETON_PARAMS:
+            sk[name] = evaluate(expr, sk)
+    v = dict(sk)
+    for name, expr, _u, _s, _src in PARAMS:
+        v[name] = evaluate(overrides[name], v) if name in overrides and name not in SKELETON_PARAMS else evaluate(expr, v)
+    return v

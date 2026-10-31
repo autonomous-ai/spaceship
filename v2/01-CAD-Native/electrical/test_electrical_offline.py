@@ -47,6 +47,15 @@ class Model(unittest.TestCase):
         for k in M.SKELETON_PARAMS:
             self.assertAlmostEqual(rows[k], M.SKELETON_VALUES[k], places=6, msg=k)
 
+    def test_edit_test_edits_keep_every_body_a_box(self):
+        """Each edit the Fusion edit test makes must leave every reserved space with a positive size, or Fusion
+        (which turns an inside-out extrude the right way round) and this model disagree (run of 2026-10-31)."""
+        for label, ov in M.EDIT_TEST_EDITS:
+            v = M.values_with(ov)
+            for b in M.BODIES:
+                bx = M.body_box(b, v)
+                self.assertTrue(bx[0] < bx[3] and bx[1] < bx[4] and bx[2] < bx[5], "%s: %s %s" % (label, b["code"], bx))
+
     def test_bodies_positive_and_unique_codes(self):
         codes = [b["code"] for b in M.BODIES]
         self.assertEqual(len(codes), len(set(codes)))

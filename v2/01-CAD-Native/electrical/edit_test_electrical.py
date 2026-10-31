@@ -31,12 +31,7 @@ TOL = 0.01
 # Each edit: a name and {parameter: new expression}. One moves the power unit
 # (the socket height the PM set), one the trunk, one a skeleton size the
 # routes follow, and one a pocket and grommet size.
-EDITS = [
-    ("power unit up 100 mm", {"pu_zc": "1100 mm"}),
-    ("trunk up 50 mm", {"trunk_z": "1150 mm"}),
-    ("pod 20 mm deeper (skeleton pod_d)", {"pod_d": "1720 mm"}),
-    ("bigger pockets and grommets", {"pk_l": "180 mm", "grm_d": "22 mm"}),
-]
+EDITS = M.EDIT_TEST_EDITS      # defined with the model, so the offline test checks each edit first
 
 
 def box(body: "adsk.fusion.BRepBody"):
