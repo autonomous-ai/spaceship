@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 49 part lines (21 made, 28 bought, 20 on HOLD) and 8 sub-assembly lines from 5 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 113.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 49 part lines (21 made, 28 bought, 20 on HOLD) and 8 sub-assembly lines from 5 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 114.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -24,14 +24,12 @@ Read from: this working tree.
 ## Missing or on HOLD, per team
 
 **BASE**
-- 118002 BASE - LEVELLING GLIDE - M10 (HOLD): HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD): metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD): HOLD (HOLD)
-- 118003 BASE - TUBE END CAP - 100 X 40 - BLACK (HOLD): HOLD (HOLD)
-- 118002 BASE - LEVELLING GLIDE - M10 (HOLD): HOLD (HOLD)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD): metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
-- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE (HOLD): HOLD (HOLD)
-- 111501 BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM: HOLD (HOLD)
+- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
+- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP: HOLD (HOLD)
 
 **WALL**
