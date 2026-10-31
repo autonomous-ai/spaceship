@@ -154,11 +154,19 @@ def test_cad_masses_from_main():
     cs = next(r for k, r in rows.items() if k.startswith("Wall cassette, side, lower"))
     assert abs(cs[3] - (by["511101"] + by["511301"] + by["848011"] + by["848012"])) < 1e-9, cs
     assert rollup.basis(l1) == rollup.basis(cs) == "CAD, main"
-    assert all(rollup.basis(r) in ("CAD, main", "CAD, open PR", "estimate") for r in rows.values())
+    assert all(rollup.basis(r) in ("CAD, main", "CAD, main (part)", "CAD, open PR", "estimate") for r in rows.values())
     door = next(r for k, r in rows.items() if k.startswith("Door unit 360001"))
     d = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_DOOR_LIST) if r["pn"]}
     assert abs(door[3] - d["360001"]) < 1e-9 and rollup.basis(door) == "CAD, main", door
-    assert len(rollup.cad_swaps()) == 3
+    b = rollup.BASE_CAD
+    fl = next(r for k, r in rows.items() if k.startswith("Floor panels, 9 mm"))
+    assert abs(fl[3] - b["floor"]) < 1e-9 and rollup.basis(fl) == "CAD, main", fl
+    key = rows["Corner key"]
+    assert rollup.basis(key) == "CAD, main (part)", key
+    fx = next(r for k, r in rows.items() if k.startswith("Fixed glass unit 360002"))
+    f = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_FIXED_LIST) if r["pn"]}
+    assert abs(fx[3] - f["360002"]) < 1e-9 and rollup.basis(fx) == "CAD, main", fx
+    assert len(rollup.cad_swaps()) == 10
 
 
 def test_rollup_items_the_packing_plan_reads():

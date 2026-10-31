@@ -264,3 +264,24 @@ def register_names(root):
             if m:
                 out.setdefault(m.group(1), m.group(2).split(" · ")[0].strip())
     return out
+
+
+def name_words(name):
+    """A part name as its words, for comparing names: case, hyphens, brackets and spacing don't count
+    ('BASE - LEVELLING GLIDE - M10 (HOLD)' and 'BASE - LEVELLING GLIDE - M10 - HOLD' are one name)."""
+    return " ".join(re.findall(r"[A-Z0-9Ø±×.,+/°]+", (name or "").upper()))
+
+
+def reserved_spaces(root):
+    """{part number: row} from v2/04-Checks/config/reserved-spaces.csv: bodies that only hold space for a part
+    another team designs later (the Lead's rulings, like D-92's ELECTRICAL routes). No drawing and no seam rules
+    for them; each is listed open under its designer until it's designed."""
+    p = os.path.join(root, CHECKS_DIR, "config", "reserved-spaces.csv")
+    if not os.path.exists(p):
+        return {}
+    return {r["part_number"].strip(): r for r in read_csv(p) if (r.get("part_number") or "").strip()}
+
+
+def reserved_label(label, reserved):
+    """Does a body's label name one of the reserved part numbers?"""
+    return any(re.search(r"(?<!\d)%s(?!\d)" % pn, label or "") for pn in reserved)

@@ -79,7 +79,7 @@ SPECS = {
         "Flat pattern: 513101_P01_LINING-TRAY-CEILING_DXF.dxf (layers CUT, BEND, MARK).",
         "Datums: A = top face of the base; B = outer face of the front return; C = centre plane (X' = 0).",
         "Returns run the full 34 depth and turn in as 12 lips under the felt (PM ruling; guideline 8.2).",
-        "Two holes D20 for grommets in the front and back returns, centre 12.5 below datum A (grommet HOLD).",
+        "Two holes Ø19.1 for ELECTRICAL's cable bushings in the front and back returns, centre 12.5 below datum A (PM ruling 2026-11-01).",
         "Clip and catch fixing zones on the base: no holes until a clip and a catch are named (HOLD-08).",
         "Symmetric about datum C: one part for both ceiling halves.",
     ], holes="front"),

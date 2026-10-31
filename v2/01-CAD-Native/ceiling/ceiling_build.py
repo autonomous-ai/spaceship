@@ -40,8 +40,16 @@ import adsk.fusion
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(__file__))
-if HERE not in sys.path:
-    sys.path.insert(0, HERE)
+# Fusion keeps modules loaded between runs, and a run from another worktree may have loaded its
+# own copy of these (an AIR run loads the ceiling model too): drop any copy from another folder
+# and put this folder first, so the imports below take this folder's files
+for _n in ("ceiling_model", "ceiling_checks", "ceiling_build"):
+    _f = getattr(sys.modules.get(_n), "__file__", None)
+    if _f and os.path.dirname(os.path.abspath(_f)) != HERE:
+        del sys.modules[_n]
+if HERE in sys.path:
+    sys.path.remove(HERE)
+sys.path.insert(0, HERE)
 import ceiling_model as M  # noqa: E402
 importlib.reload(M)      # Fusion keeps modules loaded between runs
 import ceiling_checks as C  # noqa: E402
@@ -219,6 +227,49 @@ def circle_cut_x(comp, body, name, xf, cy, cz, dia, depth, into, ctx):
     return f
 
 
+def circles_cut(comp, body, name, plane, coord, centres, dia, depth, into, ctx):
+    """A row of round holes in one sketch and one cut: plane 'z' (an XY-type plane at Z =
+    coord, centres as (x, y) expressions) or 'x' (a YZ-type plane at X = coord, centres as
+    (y, z)); every circle's size and centre dimensioned by expressions; cut by depth toward
+    `into` (+1 or -1 along the plane's model axis), into one body only."""
+    base = comp.xYConstructionPlane if plane == "z" else comp.yZConstructionPlane
+    pl = offset_plane(comp, base, coord, "PLANE - %s" % name)
+    sk = comp.sketches.add(pl)
+    sk.name = "HOLES - " + name
+    dims, gc = sk.sketchDimensions, sk.geometricConstraints
+    axes = ("x", "y") if plane == "z" else ("y", "z")
+    for u, v in centres:
+        mv = {axes[0]: ctx.ev(u), axes[1]: ctx.ev(v), plane: ctx.ev(coord)}
+        cen = sk.modelToSketchSpace(adsk.core.Point3D.create(mv["x"] * MM, mv["y"] * MM, mv["z"] * MM))
+        c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(cen.x, cen.y, 0),
+                                                            ctx.ev(dia) / 2 * MM)
+        g = c.centerSketchPoint.geometry
+        dims.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = dia
+        for model_axis, expr in ((axes[0], u), (axes[1], v)):
+            sa, _sign = model_to_sketch_axis(sk, model_axis)
+            if abs(ctx.ev(expr)) < EPS:
+                (gc.addVerticalPoints if sa == "x" else gc.addHorizontalPoints)(c.centerSketchPoint, sk.originPoint)
+            else:
+                tp = adsk.core.Point3D.create(g.x + 0.6, g.y + 0.6, 0)
+                dims.addDistanceDimension(sk.originPoint, c.centerSketchPoint, H if sa == "x" else V,
+                                          tp).parameter.expression = "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: HOLES - " + name)
+    coll = adsk.core.ObjectCollection.create()
+    for pr in sk.profiles:
+        coll.add(pr)
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    normal = n.z if plane == "z" else n.x
+    ei = comp.features.extrudeFeatures.createInput(coll, adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(depth)),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if normal * into > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
 def pattern(comp, feature, axis, n, pitch, name):
     """Rectangular pattern of one feature along a component axis: n instances, pitch apart
     (both expressions), toward +axis."""
@@ -272,7 +323,7 @@ def hollow(comp, body, axis, name):
     for f in body.faces:
         if f.geometry.objectType != adsk.core.Plane.classType():
             continue
-        n = f.geometry.normal
+        n = adsk.core.Plane.cast(f.geometry).normal
         if abs({"x": n.x, "y": n.y}[axis]) > 0.99:
             ends.append(f)
     if len(ends) != 2:
@@ -427,12 +478,22 @@ def build_frame_bodies(comp, half, ctx):
     into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s}
     for name, member, face, (x, y, z), dia, n, pitch, axis in M.joint_holes(half):
         label = "%s %s" % (half, name)
-        if face == "bottom":
-            f = circle_cut(comp, bodies[member], label, x, y, dia, z, "%s + 2 * tube_t" % z, ctx)
-        else:
-            f = circle_cut_x(comp, bodies[member], label, x, y, z, dia, "2 * tube_t", into[(member, face)], ctx)
-        if not (n.strip() == "1"):
-            pattern(comp, f, axis, n, pitch, label)
+        # one sketch per row: hole k at the row's first centre + k pitches (the start, pitch and
+        # count are the skeleton's named values, so a rebuild follows them; Fusion's identical
+        # pattern can't paste onto these hollow tubes, and an adjusted one is too slow)
+        count = int(round(M.ev(ctx.vals, n)))
+        def at(e, a):
+            return e if a != axis else "(%s) + %d * (%s)" % (e, k, pitch)
+        cs = []
+        for k in range(count):
+            cs.append((at(x, "x"), at(y, "y")) if face == "bottom" else (at(y, "y"), at(z, "z")))
+        # one sketch per hole: several circles in one sketch came out over-constrained in Fusion
+        for k, (u, v) in enumerate(cs):
+            lab = label if count == 1 else "%s %d" % (label, k + 1)
+            if face == "bottom":
+                circle_cut(comp, bodies[member], lab, u, v, dia, z, "%s + 2 * tube_t" % z, ctx)
+            else:
+                circle_cut_x(comp, bodies[member], lab, x, u, v, dia, "2 * tube_t", into[(member, face)], ctx)
     sx, sy, sz, sw, sl = M.spigot_slot(half)
     label = "%s BACK SPIGOT SLOT" % half
     half_run = "(%s - %s) / 2" % (sl, sw)
@@ -788,7 +849,7 @@ def export_all(design, tray_comp):
 def make_flat_pattern(tray_comp):
     body = tray_comp.bRepBodies.item(0)
     top = max((f for f in body.faces if f.geometry.objectType == adsk.core.Plane.classType()
-               and f.geometry.normal.z > 0.99), key=lambda f: f.area)
+               and adsk.core.Plane.cast(f.geometry).normal.z > 0.99), key=lambda f: f.area)
     fp = tray_comp.flatPattern or tray_comp.createFlatPattern(top)
     fb = fp.flatBody
     print("FLAT|513101|%s" % body_box(fb))
@@ -859,6 +920,10 @@ def open_or_create(app, name):
     for i in range(app.documents.count):
         d = app.documents.item(i)
         if d.name.split(" v")[0] == name:
+            if d.isModified:
+                # PM rule 2026-11-01: never reuse an open document with unsaved changes
+                d.close(False)
+                break
             d.activate()
             return d, "activated"
     parts = [p for p in FOLDER.split("/") if p]
@@ -880,9 +945,10 @@ def open_or_create(app, name):
         d = app.documents.open(found[0], True)
         d.activate()
         return d, "opened"
-    if unreadable:
+    if unreadable and ARGS.get("new_name") != "1":
         # PM ruling 2026-11-01: list the folder first and stop before creating anything if any
-        # entry can't be read (that entry could be this very design)
+        # entry can't be read (that entry could be this very design), unless the name has never
+        # been used (new_name=1: the author checked it never existed, so no duplicate can arise)
         raise RuntimeError("%d entries of %s can't be read, so %r isn't made" % (unreadable, FOLDER, name))
     if ARGS.get("create") != "1":
         # PM ruling 2026-11-01: no new designs until the runner's folder fix lands, since an
@@ -911,9 +977,11 @@ def run_parts(app, scopes):
         for name, expr, unit, status, src in params:
             design.userParameters.add(name, vi(expr), unit, "%s: %s" % (status.upper(), src))
         ctx.vals = M.evaluate(params)
-        run_part(app, doc, design, design.rootComponent, scope, ctx)       # checks, then saves (save=1)
+        try:
+            run_part(app, doc, design, design.rootComponent, scope, ctx)       # checks, then saves (save=1)
+        finally:
+            doc.close(False)               # each run closes what it opened (PM rule 2026-11-01)
         print("part %s (%s) in %.0f s" % (scope, how, time.time() - t0))
-        doc.close(False)
 
 
 def run(_context):
@@ -938,6 +1006,13 @@ def run(_context):
         doc = app.activeDocument
         if doc.name.split(" v")[0] != doc_name:
             raise RuntimeError("active document is %r, not %s (use the runner's --doc)" % (doc.name, doc_name))
+        if doc.isModified:
+            # PM rule 2026-11-01: never reuse an open document with unsaved changes; start from
+            # the saved cloud version instead
+            print("%s was open with unsaved changes from an earlier run: closed without saving, reopened" % doc.name)
+            doc.close(False)
+            doc, how = open_or_create(app, doc_name)
+            print("reopened %s (%s)" % (doc.name, how))
     else:
         doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     keep = ARGS.get("keep") == "1" or into_active
@@ -1038,7 +1113,9 @@ def run(_context):
         print("stopped after", ARGS.get("stop_after"))
         ok = True
     finally:
-        if not keep:
+        # PM rule 2026-11-01: each run closes what it opened; a failed run never leaves the
+        # design open with unsaved changes
+        if not keep or not ok:
             doc.close(False)
     if not ok:
         raise RuntimeError("build did not finish")
