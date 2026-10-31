@@ -103,7 +103,8 @@ OWN = [
     ("hinge_z1", "door_zb + 250 mm", "mm", "assumption", "bottom hinge centre 250 above the visible glass bottom; HOLD H01"),
     ("hinge_z3", "leaf_zt - 250 mm", "mm", "assumption", "top hinge centre 250 below the glass top; HOLD H01"),
     ("hinge_z2", "(hinge_z1 + hinge_z3) / 2", "mm", "assumption", "middle hinge at mid-span; HOLD H01"),
-    ("lock_zc", "floor_t + 1050 mm", "mm", "assumption", "pull centre 1050 above the finished floor (usual handle height)"),
+    ("lock_zc", "floor_top + 1050 mm", "mm", "assumption",
+     "pull centre 1050 above the finished floor (usual handle height); floor_top is the skeleton's floor on its mat"),
     # no latch on the glass (PM ruling 2026-10-31): the door is held at the top by a magnetic door-stop catch in DT's
     # underside; its strike clips on the leaf's top edge at the latch corner
     ("st_l", "62 mm", "mm", "source", "Sugatsune HT-MSG62 strike plate, 62 long (datasheet D2, Dec 2020)"),

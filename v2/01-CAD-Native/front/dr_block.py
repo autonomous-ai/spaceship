@@ -600,12 +600,12 @@ def export_all(app):
          "%.1f m of tube; rivnuts 838003 fitted in the factory: 10 for the access panel bolts; the bolt-line tube has "
          "6 holes 14 for the J-FRONT-01 rivnut tails" % tube_m),
         ("351302", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
-         "aluminium EN AW-5754-H22 sheet 2.0, finish mill (hidden, D-79), " + gt, "cad",
+         "aluminium EN AW-5754-H22 sheet 2.0 mm, finish mill (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "joints register J-FRONT-01 (HOLD-10 answered: 2 mm aluminium)",
          "DXF " + DXF_FLAT["BACK"] + "; fixed: the strip on X +1224 with 6 holes 9.53 +0.10/0 for the rivnuts 838003 "
          "(critical: on the wall's bolt line), and the band behind the soffit; blind-riveted to the frame (HOLD: rivet)"),
         ("351305", PARTS["ACCESS"][1], PARTS["ACCESS"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4), "
-         "removable", "aluminium EN AW-5754-H22 sheet 3.0, finish mill (hidden, D-79), " + gt, "cad",
+         "removable", "aluminium EN AW-5754-H22 sheet 3.0 mm, finish mill (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "D-60 air table (opening 203 x 215); D-87; PM ruling 2026-11-01 "
          "(column hook studs, panel carries the 10 kg column)",
          "DXF " + DXF_FLAT["ACCESS"] + "; 10 bolts M6 x 16 838001 with washers 838004 into rivnuts 838003 in the "
@@ -613,11 +613,13 @@ def export_all(app):
          "with the column's 2 hook studs (this joint to be added to the joints register); comes off after the column "
          "and the inner panel, so the air unit 350004 slides in"),
         ("351303", PARTS["INNER"][1], PARTS["INNER"][2], 1, "made (CNC-routed ACP, no drawing: D-89 part 4), "
-         "removable", "ACP 3 mm, " + gt, "cad", "calculation (CAD)", "DRAFT", "D-59, D-60",
+         "removable", "ACP 3 mm, finish as supplied (the felt covers its face); " + gt, "cad", "calculation (CAD)",
+         "DRAFT", "D-59, D-60",
          "DXF " + DXF_FLAT["INNER"] + "; lifts off for the fan box; held on the frame by 4 clips (HOLD: clip, "
          "assumed 0.04 kg each)"),
-        ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (knife-cut felt, no drawing: D-89 part 4), bonded "
-         "to 351303", "9 mm PET felt, Dark Gray, +/-2 on the outline", "cad", "calculation (CAD, 1.8 kg/m2)",
+        ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (laser-cut PET felt sheet, no drawing: D-89 part 4), "
+         "glued to 351303 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
+         "calculation (CAD, 1.8 kg/m2)",
          "DRAFT; emission certificate HOLD", "D-31; hardware selection A3", "DXF " + DXF_FLAT["FELT"]),
         ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, "assembly, joined at the factory (D-87)", "-", None, "", "DRAFT",
          "D-87", "ships joined, 14.9 kg (D-60 table), slides into DR through its inner face; plug-in connectors; the "
