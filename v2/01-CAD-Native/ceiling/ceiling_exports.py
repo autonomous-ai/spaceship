@@ -7,8 +7,10 @@ Writes into v2/03-Manufacturing/ceiling/:
 
 - 513101 tray: Fusion's own flat-pattern DXF (from .raw/), put on the CUT /
   BEND / MARK layers; geometry unchanged.
-- 513102 rib blank, 513201 felt, 513301-513303 fill strips, 411301 skin: 1:1 mm DXF cut files drawn from the parameters (these
-  parts are flat or bent from a plain strip).
+- 513102 rib blank, 513201 felt, 513301-513303 fill strips, 411301 and 411302 skins (C2 with the
+  roof slot): 1:1 mm DXF cut files drawn from the parameters (these parts are flat or bent from
+  a plain strip). Skins are drawn seen from above, X right, Y toward the back, origin at the
+  skin's front edge on its closing-seam end (C1 mirrored so its seam end is at x = 0 too).
 - the parts list for the master BOM and the tube cut list (CSV).
 
 Masses in the parts list are Fusion's (the MASS lines of the build log),
@@ -29,6 +31,15 @@ import dxf_tools as D  # noqa: E402
 REPO = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 OUT = os.path.join(REPO, "v2", "03-Manufacturing", "ceiling")
 REV = M.REV
+
+
+# material and finish of the joint hardware, as the joints register 2.1 and WALL's lists give them
+HW_MATERIAL = {
+    "838001": ("steel 8.8", "zinc plated"), "838002": ("steel 8.8", "zinc plated"),
+    "838003": ("aluminium 5056", "plain"), "838004": ("stainless A2", "plain"),
+    "838005": ("elastomer (HOLD-02)", ""), "831002": ("aluminium sheet 1.5, 5000 or 6000 series", "mill"),
+    "848001": ("PORON 4701-40 Soft with PSA", ""), "848004": ("EPDM or TPE hollow bulb (HOLD-12)", ""),
+}
 
 
 def fname(key, doctype, ext):
@@ -82,10 +93,17 @@ def write_flat_parts(v):
         p = os.path.join(OUT, fname(key, "DXF", "dxf"))
         D.write_dxf(p, ents)
         out[key] = p
-    # skin: plain rectangle
-    p = os.path.join(OUT, fname("skin", "DXF", "dxf"))
-    D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["c_w"], v["wall_depth"]))])
-    out["skin"] = p
+    # skins: C1 a plain rectangle, C2 with the roof slot (D-61), from the C2 seam end
+    p = os.path.join(OUT, fname("skin_c1", "DXF", "dxf"))
+    D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["half_pw"], v["wall_depth"]))])
+    out["skin_c1"] = p
+    seam = v["seam_gap"] / 2
+    yw = M.ev(v, M.YW)
+    sx0, sy0 = v["slot_x0"] - seam, v["slot_y0"] - yw
+    p = os.path.join(OUT, fname("skin_c2", "DXF", "dxf"))
+    D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["half_pw"], v["wall_depth"])),
+                    ("POLY", "CUT", rect(sx0, sy0, sx0 + v["slot_w"], sy0 + v["slot_d"]))])
+    out["skin_c2"] = p
     # rib blank: developed width across the hat, length along the rib; bend lines on BEND
     rb = rib_blank(v)
     L = v["cs_d"] - 2 * v["tray_t"] - 2 * v["rib_end"]
@@ -144,13 +162,14 @@ def parts_list(v, mass):
     """Rows for the master BOM: the ceiling (both halves) as it ships."""
     q = {  # quantity per parent, parent
         "ceiling": (1, None), "assy_c1": (1, "ceiling"), "assy_c2": (1, "ceiling"),
-        "frame_c1": (1, "assy_c1"), "frame_c2": (1, "assy_c2"), "skin": (1, "assy_c1|assy_c2"),
+        "frame_c1": (1, "assy_c1"), "frame_c2": (1, "assy_c2"), "skin_c1": (1, "assy_c1"), "skin_c2": (1, "assy_c2"),
         "cassette": (2, "ceiling"), "tray": (1, "cassette"), "rib": (2, "cassette"), "felt": (1, "cassette"),
         "clip": (6, "cassette"), "catch": (2, "cassette"),
     }
     for key, _bay, _b, _n in M.fill_strips():
         q[key] = (q.get(key, (0, "cassette"))[0] + 1, "cassette")
-    per_pod = {"ceiling": 1, "assy_c1": 1, "assy_c2": 1, "frame_c1": 1, "frame_c2": 1, "skin": 2, "cassette": 2}
+    per_pod = {"ceiling": 1, "assy_c1": 1, "assy_c2": 1, "frame_c1": 1, "frame_c2": 1, "skin_c1": 1, "skin_c2": 1,
+               "cassette": 2}
     for k in [k for k in q if k not in per_pod]:
         per_pod[k] = q[k][0] * 2
     rows = []
@@ -160,37 +179,76 @@ def parts_list(v, mass):
         m = mass.get(pn)
         each = round(m[0], 3) if m else None
         if kind == "HOLD":
-            mass_txt, status = "HOLD", "HOLD (no part named; envelope only)"
+            hm, hst, hsrc = M.HOLD_MASS[key]
+            mass_txt, status = "%.3f" % hm, hst
         elif kind == "HS":
             mass_txt, status = "", "calculation (sum of its parts)"
         else:
             mass_txt, status = ("%.3f" % each) if each is not None else "", "calculation (Fusion, CAD geometry x density)"
         matname = M.MATERIALS[mat][0] if mat else ""
         src = {
-            "frame_c1": "D-16, D-34, D-54, D-55; PM ruling 2026-10-31 (3 cross members)",
-            "frame_c2": "D-16, D-34, D-54, D-55; PM ruling 2026-10-31 (3 cross members)",
-            "skin": "build plan VT01; D-12; D-42",
+            "frame_c1": "D-16, D-34, D-54, D-55; PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            "frame_c2": "D-16, D-34, D-54, D-55; PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            "skin_c1": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61",
+            "skin_c2": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61; D-61 roof slot 285 x 294 (PM ruling 2026-10-31: two skins)",
             "tray": "D-17, D-37; PM ruling 2026-10-31 (12 mm lip)",
             "rib": "PM ruling 2026-10-31 (2 ribs); rib joint HOLD",
             "felt": "D-17, D-31; felt fixing HOLD H09",
             "fill_a": "D-24, D-54; fixing HOLD H10", "fill_b": "D-24, D-54; fixing HOLD H10",
             "fill_c": "D-24, D-54; fixing HOLD H10", "fill_d": "D-24, D-54; fixing HOLD H10",
-            "clip": "D-47; H03, ISS-076", "catch": "D-47; H04, ISS-076",
+            "clip": "D-47, D-81; joints register H-10; HOLD-08, ISS-076", "catch": "D-47; joints register H-11; HOLD-08, ISS-076",
             "cassette": "D-17, D-24, D-41, D-47; PM ruling 2026-10-31 (one part for both halves)",
         }.get(key, "assembly tree; conventions s6")
+        if kind == "HOLD":
+            src = "%s; mass: %s" % (src, M.HOLD_MASS[key][2])
         rows.append({
             "part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": q[key][1] or "",
             "qty_per_parent": q[key][0], "qty_per_pod": per_pod[key], "material": matname,
+            "finish": M.FINISH.get(key, ""), "process": M.PROCESS.get(key, ""),
             "mass_each_kg": mass_txt, "mass_status": status, "revision": REV,
             "status": "DRAFT" if kind != "HOLD" else "HOLD", "source": src,
         })
-    # assemblies: sum of parts (HOLD envelopes not counted)
-    by_key = {k: r for k, r in zip([k for k in M.PARTS if k in q], rows)}
+    # the ACP bond set, shared with WALL (joints register H-12, number 108002): one bonded
+    # skin per ceiling outer panel, mass from the bond spec's 0.28 kg/m2
+    bond_each = v["half_pw"] * v["wall_depth"] * 1e-6 * 0.28
+    rows.append({
+        "part_number": "108002",
+        "name": "POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE",
+        "name_vi": "Bộ keo dán ACP", "kind": "PI", "parent": "assy_c1|assy_c2", "qty_per_parent": 1,
+        "qty_per_pod": 2, "material": "SikaTack Panel-50 system (bond spec)", "finish": "", "process": "",
+        "mass_each_kg": "%.3f" % bond_each,
+        "mass_status": "calculation", "revision": REV, "status": "DRAFT",
+        "source": "joints register H-12 (108002); bond spec: 0.28 kg/m2 x %.3f m2 per ceiling outer panel" % (
+            v["half_pw"] * v["wall_depth"] * 1e-6),
+    })
+    q["bond"] = (1, "assy_c1|assy_c2")
+    keys = [k for k in M.PARTS if k in q] + ["bond"]
+    by_key = {k: r for k, r in zip(keys, rows)}
+    # joint hardware fitted in the factory (joints register 2.1 numbers, D-63): one row per
+    # half, since C1 and C2 carry different sets
+    for hk, (pn, name, vn, kind, unit, n1, n2, kg, mstat) in M.HARDWARE.items():
+        for half, expr in (("assy_c1", n1), ("assy_c2", n2)):
+            n = M.ev(v, expr)
+            if n <= 0:
+                continue
+            qty = round(n, 3) if unit == "m" else int(round(n))
+            key = "%s_%s" % (hk, half)
+            q[key] = (qty, half)
+            mat, fin = HW_MATERIAL[pn]
+            r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": half,
+                 "qty_per_parent": qty, "qty_per_pod": qty, "material": mat, "finish": fin,
+                 "process": "punched (a part we make)" if kind == "MP" else "",
+                 "mass_each_kg": "%.4f" % kg, "mass_status": mstat.split(":")[0],
+                 "revision": REV, "status": "HOLD" if kind == "HOLD" else "DRAFT",
+                 "source": "joints register V2-ENG-JNT-01 2.1 (%s), 3.5 J-CEIL-01 / 3.6 J-CEIL-02; per %s; mass %s" % (
+                     pn, "metre" if unit == "m" else "piece", mstat)}
+            rows.append(r)
+            by_key[key] = r
 
     def total(key):
         r = by_key[key]
         if r["kind"] != "HS":
-            return float(r["mass_each_kg"]) if r["mass_each_kg"] not in ("", "HOLD") else 0.0
+            return float(r["mass_each_kg"]) if r["mass_each_kg"] not in ("",) else 0.0   # per piece or per metre
         s = 0.0
         for k2, (n, parent) in q.items():
             if parent and key in parent.split("|"):
@@ -206,12 +264,23 @@ def cut_list(v):
     rows = []
     for half, key in (("C1", "frame_c1"), ("C2", "frame_c2")):
         pn = M.PARTS[key][0]
+        holes = {}
+        for name, member, _f, _xyz, _d, n, _p, _a in M.joint_holes(half):
+            holes.setdefault(member, []).append("%s x %d" % (name.lower(), int(round(M.ev(v, n)))))
         for code, name, axis, b in M.frame_members(half):
             bb = [M.ev(v, e) for e in b]
             L = (bb[1] - bb[0]) if axis == "x" else (bb[3] - bb[2])
+            sec = "40 x 40 x 1.2" if code == "BACK" else "20 x 40 x 1.2"
+            extra = list(holes.get(code, []))
+            if code == "BACK":
+                extra.append("back spigot slot 8.5 x 14 x 1")
+            if code in ("SEAM", "BACK"):
+                extra.append("1 x 45 lead-in on the closing face's lower edge")
             rows.append({"frame": pn, "half": half, "member": code, "name": name,
-                         "section": "aluminium 20 x 40 x 1.2 (alloy HOLD, ISS-034)",
-                         "length_mm": "%.2f" % L, "qty": 1, "ends": "square cut; frame joint HOLD (H11)",
+                         "section": "aluminium %s (6063-T6; alloy ISS-034)" % sec,
+                         "length_mm": "%.2f" % L, "qty": 1,
+                         "ends": "square cut; frame joint HOLD (H11)",
+                         "holes": "; ".join(extra) or "none",
                          "status": "calculation (from the parameters)"})
     return rows
 

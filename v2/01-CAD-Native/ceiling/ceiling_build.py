@@ -6,15 +6,16 @@
 Builds one new design, 410000 CEILING (pod coordinates, conventions.md s4):
 
   410101 CEILING - PANEL ASSY - C1 (-X half)
-      411101 CEILING - PANEL FRAME - C1: 7 aluminium 20 x 40 x 1.2 members
-      411301 CEILING - SKIN - COMMON: ACP 3 mm
-  410102 CEILING - PANEL ASSY - C2 (+X half): 411102 frame (mirror) + 411301 skin
+      411101 CEILING - PANEL FRAME - C1: aluminium 20 x 40 x 1.2 members and a 40 x 40 x 1.2
+             back member, half_fw wide, with the site-joint holes (J-CEIL-01, J-CEIL-02)
+      411301 CEILING - SKIN - C1: ACP 3 mm, half_pw wide
+  410102 CEILING - PANEL ASSY - C2 (+X half): 411102 frame + 411302 skin with the roof slot
   510301 LINING - CASSETTE - CEILING - COMMON, at C1-CASS and at C2-CASS:
       513101 tray (sheet metal, 0.5 mm, returns turned in under the felt as a 12 mm lip)
       2 x 513102 rib, 513201 felt, 513301 + 513302 + 513303 fill strips,
       6 x 518001 clip and 2 x 518002 safety catch (HOLD envelopes)
 
-Every size is a user parameter: the skeleton P03's own list, loaded from its CSV,
+Every size is a user parameter: the skeleton's own list (P04), loaded from its CSV,
 then the ceiling's (ceiling_model.py), each with its status and source. Repeated
 parts are one component with several occurrences; each occurrence is placed by a
 rigid joint to a sketch point dimensioned by expressions, so placements follow the
@@ -47,7 +48,8 @@ import ceiling_checks as C  # noqa: E402
 importlib.reload(C)
 
 DOC_NAME = "410000_%s_CEILING_CAD" % M.REV
-SCOPES = ("cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c")   # part-only designs for drawings
+SCOPES = ("cassette", "tray", "rib", "felt", "fill_a", "fill_b", "fill_c",
+          "frame_c1", "frame_c2", "skin_c1", "skin_c2")   # part-only designs for drawings
 
 
 def part_doc_name(key):
@@ -178,6 +180,88 @@ def circle_cut(comp, body, name, cx, cy, dia, z0, z1, ctx):
     ei.participantBodies = [body]
     f = comp.features.extrudeFeatures.add(ei)
     f.name = "CUT - " + name
+    return f
+
+
+def circle_cut_x(comp, body, name, xf, cy, cz, dia, depth, into, ctx):
+    """A round hole through a face normal to X: sketch on the YZ plane offset to X = xf, the
+    centre dimensioned by expressions for model Y and Z, cut by depth toward into (+1 or -1
+    along model X), into one body only."""
+    plane = offset_plane(comp, comp.yZConstructionPlane, xf, "PLANE - %s" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "HOLE - " + name
+    c3 = adsk.core.Point3D.create(ctx.ev(xf) * MM, ctx.ev(cy) * MM, ctx.ev(cz) * MM)
+    cen = sk.modelToSketchSpace(c3)
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(adsk.core.Point3D.create(cen.x, cen.y, 0), ctx.ev(dia) / 2 * MM)
+    g = c.centerSketchPoint.geometry
+    sk.sketchDimensions.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = dia
+    dims = sk.sketchDimensions
+    for model_axis, expr in (("y", cy), ("z", cz)):
+        sa, _sign = model_to_sketch_axis(sk, model_axis)
+        if abs(ctx.ev(expr)) < EPS:
+            (sk.geometricConstraints.addVerticalPoints if sa == "x" else sk.geometricConstraints.addHorizontalPoints)(
+                c.centerSketchPoint, sk.originPoint)
+        else:
+            tp = adsk.core.Point3D.create(g.x + 0.6, g.y + 0.6, 0)
+            dims.addDistanceDimension(sk.originPoint, c.centerSketchPoint, H if sa == "x" else V, tp).parameter.expression = \
+                "abs(%s)" % expr
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: HOLE - " + name)
+    n = sk.xDirection.crossProduct(sk.yDirection)
+    prof = min(sk.profiles, key=lambda p: p.areaProperties().area)
+    ei = comp.features.extrudeFeatures.createInput(prof, adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(depth)),
+                        adsk.fusion.ExtentDirections.PositiveExtentDirection if n.x * into > 0
+                        else adsk.fusion.ExtentDirections.NegativeExtentDirection)
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - " + name
+    return f
+
+
+def pattern(comp, feature, axis, n, pitch, name):
+    """Rectangular pattern of one feature along a component axis: n instances, pitch apart
+    (both expressions), toward +axis."""
+    coll = adsk.core.ObjectCollection.create()
+    coll.add(feature)
+    ax = {"x": comp.xConstructionAxis, "y": comp.yConstructionAxis, "z": comp.zConstructionAxis}[axis]
+    pi = comp.features.rectangularPatternFeatures.createInput(
+        coll, ax, vi(n), vi(pitch), adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
+    try:
+        pi.patternComputeOption = adsk.fusion.PatternComputeOptions.AdjustPatternCompute
+    except Exception:
+        pass
+    f = comp.features.rectangularPatternFeatures.add(pi)
+    f.name = "PATTERN - " + name
+    return f
+
+
+def edge_at(body, along, fixed, ctx_tol=0.005):
+    """The straight edge of a body that runs along the model axis `along` with its other two
+    coordinates at fixed = {axis: value in mm}."""
+    for e in body.edges:
+        a, b = e.startVertex.geometry, e.endVertex.geometry
+        pa = {"x": a.x * 10, "y": a.y * 10, "z": a.z * 10}
+        pb = {"x": b.x * 10, "y": b.y * 10, "z": b.z * 10}
+        if all(abs(pa[k] - v) < ctx_tol and abs(pb[k] - v) < ctx_tol for k, v in fixed.items()) \
+                and abs(pa[along] - pb[along]) > 1.0:
+            return e
+    raise RuntimeError("no edge along %s at %s on %s" % (along, fixed, body.name))
+
+
+def chamfer(comp, edges, dist, name):
+    coll = adsk.core.ObjectCollection.create()
+    for e in edges:
+        coll.add(e)
+    cf = comp.features.chamferFeatures
+    try:
+        ci = cf.createInput2()
+        ci.chamferEdgeSets.addEqualDistanceChamferEdgeSet(coll, vi(dist), False)
+    except Exception:
+        ci = cf.createInput(coll, False)
+        ci.setToEqualDistance(vi(dist))
+    f = cf.add(ci)
+    f.name = "CHAMFER - " + name
     return f
 
 
@@ -330,19 +414,59 @@ def set_material(comp, ctx, key):
 
 # ---------------------------------------------------------------- the parts
 
-def build_frame(assy, half, ctx):
-    key = "frame_c1" if half == "C1" else "frame_c2"
-    occ, comp = new_comp(assy, key, ctx)
+def build_frame_bodies(comp, half, ctx):
+    """The members (tubes), then the site-joint holes as patterned cuts (J-CEIL-01, J-CEIL-02,
+    joints register 2.9), the spigot hole and slot, and the 1 x 45 lead-in on the closing face."""
+    s = M.side_sign(half)
+    bodies = {}
     for code, name, axis, b in M.frame_members(half):
         body = box_body(comp, "%s %s" % (half, name), b, ctx)
         hollow(comp, body, axis, "%s %s" % (half, name))
+        bodies[code] = body
+    into = {("SIDE", "out"): -s, ("SIDE", "in"): s, ("SEAM", "out"): s, ("SEAM", "in"): -s}
+    for name, member, face, (x, y, z), dia, n, pitch, axis in M.joint_holes(half):
+        label = "%s %s" % (half, name)
+        if face == "bottom":
+            f = circle_cut(comp, bodies[member], label, x, y, dia, z, "%s + 2 * tube_t" % z, ctx)
+        else:
+            f = circle_cut_x(comp, bodies[member], label, x, y, z, dia, "2 * tube_t", into[(member, face)], ctx)
+        if not (n.strip() == "1"):
+            pattern(comp, f, axis, n, pitch, label)
+    sx, sy, sz, sw, sl = M.spigot_slot(half)
+    label = "%s BACK SPIGOT SLOT" % half
+    half_run = "(%s - %s) / 2" % (sl, sw)
+    box_body(comp, label, ("%s - %s" % (sx, half_run), "%s + %s" % (sx, half_run), "%s - %s / 2" % (sy, sw),
+                           "%s + %s / 2" % (sy, sw), sz, "%s + 2 * tube_t" % sz), ctx,
+             op=adsk.fusion.FeatureOperations.CutFeatureOperation, bodies=[bodies["BACK"]])
+    for end, sign in (("END 1", "-"), ("END 2", "+")):
+        circle_cut(comp, bodies["BACK"], "%s %s" % (label, end), "%s %s %s" % (sx, sign, half_run), sy, sw, sz,
+                   "%s + 2 * tube_t" % sz, ctx)
+    xs, z0 = ctx.ev(M.xr(half, "0 mm", "tube_w")[1 if s < 0 else 0]), ctx.ev(M.ZF0)
+    for code in ("SEAM", "BACK"):
+        chamfer(comp, [edge_at(bodies[code], "y", {"x": xs, "z": z0})], "lead_in",
+                "%s %s LEAD-IN ON THE CLOSING FACE" % (half, code))
+    return bodies
+
+
+def build_frame(assy, half, ctx):
+    key = "frame_c1" if half == "C1" else "frame_c2"
+    occ, comp = new_comp(assy, key, ctx)
+    build_frame_bodies(comp, half, ctx)
     set_material(comp, ctx, "al")
     return occ, comp
 
 
-def build_skin(assy, ctx):
-    occ, comp = new_comp(assy, "skin", ctx)
-    box_body(comp, "SKIN ACP 3", M.skin_box(), ctx)
+def build_skin_bodies(comp, key, ctx):
+    body = box_body(comp, "SKIN ACP 3", M.skin_box(), ctx)
+    if key == "skin_c2":
+        box_body(comp, "ROOF SLOT", M.roof_slot_box(), ctx, op=adsk.fusion.FeatureOperations.CutFeatureOperation,
+                 bodies=[body])
+    return body
+
+
+def build_skin(assy, key, ctx):
+    occ, comp = new_comp(assy, key, ctx)
+    build_skin_bodies(comp, key, ctx)
     set_material(comp, ctx, "acp")
     return occ, comp
 
@@ -686,6 +810,12 @@ def run_part(app, doc, design, root, scope, ctx):
         build_rib(root, ctx)
     elif scope == "felt":
         build_felt(root, ctx)
+    elif scope in ("frame_c1", "frame_c2"):
+        build_frame_bodies(root, "C1" if scope == "frame_c1" else "C2", ctx)
+        set_material(root, ctx, "al")
+    elif scope in ("skin_c1", "skin_c2"):
+        build_skin_bodies(root, scope, ctx)
+        set_material(root, ctx, "acp")
     else:
         for key, bay, bbox, notches in M.fill_strips(ctx.vals):
             if key == scope:
@@ -765,10 +895,9 @@ def run(_context):
             o, c = new_comp(root, "assy_c1" if half == "C1" else "assy_c2", ctx)
             assy[half] = (o, c)
             build_frame(c, half, ctx)
-        skin_occ, skin = build_skin(assy["C1"][1], ctx)
-        place(assy["C1"][1], skin_occ, M.SKIN_PLACES["C1"], "SKIN C1", ctx)
-        skin_occ2 = assy["C2"][1].occurrences.addExistingComponent(skin, adsk.core.Matrix3D.create())
-        place(assy["C2"][1], skin_occ2, M.SKIN_PLACES["C2"], "SKIN C2", ctx)
+        for half in ("C1", "C2"):
+            skin_occ, _skin = build_skin(assy[half][1], "skin_c1" if half == "C1" else "skin_c2", ctx)
+            place(assy[half][1], skin_occ, M.SKIN_PLACES[half], "SKIN " + half, ctx)
         print("step outer panels done")
         if stop == "outer":
             raise StopIteration
@@ -805,9 +934,12 @@ def run(_context):
         pos = C.check(design)
         print("position check: %d bodies against the layout, worst %.3f mm, off %s" % (
             pos["checked"], pos["worst"], pos["bad"] or "none"))
-        if bad or loose or hits or pos["bad"]:
-            raise RuntimeError("ceiling checks failed (unhealthy %s, loose %s, clashes %s, off layout %s)" % (
-                bad, loose, hits, pos["bad"]))
+        holes = C.hole_check(design)
+        print("hole check: %d joint holes against the register's positions, worst %.3f mm, off %s" % (
+            holes["checked"], holes["worst"], holes["bad"] or "none"))
+        if bad or loose or hits or pos["bad"] or holes["bad"]:
+            raise RuntimeError("ceiling checks failed (unhealthy %s, loose %s, clashes %s, off layout %s, holes %s)" % (
+                bad, loose, hits, pos["bad"], holes["bad"]))
         make_flat_pattern(tray_comp)
         design.activateRootComponent()
         if ARGS.get("save") == "1":
