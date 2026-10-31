@@ -923,3 +923,20 @@ def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_pa
     fs = [f for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
           if f.rule == "duplicate-number"]
     assert len(fs) == 1 and fs[0].owner == "PM" and "MASTER_BOM" in fs[0].fix
+
+
+def test_a_master_bom_row_copied_from_a_team_list_is_checked_there_whatever_its_source_suffix():
+    row = {"_raw": {"row_type": "part", "source_file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv @ working tree"}}
+    assert c_parts.is_placeholder(row)
+    assert c_parts.is_placeholder({"_raw": {"row_type": "hardware (register only)", "source_file": "x @ main"}})
+    assert not c_parts.is_placeholder({"_raw": {"row_type": "part", "source_file": "v2/00-Control/assembly-tree.md"}})
+
+
+def test_the_master_boms_generated_views_are_not_parts_lists(tmp_path):
+    d = tmp_path / "v2/04-BOM"
+    d.mkdir(parents=True)
+    row = {"part_number": "118002", "name": "BASE - LEVELLING GLIDE - M10 - HOLD", "qty": "7"}
+    for name in ("100000_P01_POD-MASTER_BOM.csv", "100000_P01_POD-BOUGHT-PARTS_BOM.csv",
+                 "100000_P01_POD-MADE-PARTS-BY-PROCESS_BOM.csv"):
+        _write_csv(d / name, [row])
+    assert [os.path.basename(p) for p, _r in c_parts.find_parts_lists(str(tmp_path))] == ["100000_P01_POD-MASTER_BOM.csv"]
