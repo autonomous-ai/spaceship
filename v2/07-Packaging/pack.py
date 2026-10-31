@@ -182,6 +182,7 @@ R = {
     "BAND_FR": "Base band piece 100x40 - front-r",
     "KEY": "Corner key",
     "GLIDE": "Levelling glide",
+    "BLOCKS": "Glide load blocks",
     "THRESH": "Door threshold",
     "FLOOR": "Floor panels, 9 mm",
     "MAT": "Floor mat",
@@ -297,16 +298,18 @@ PIECES = [
           2, 11, "FRONT", glass=True),
     Piece("2-03", "TBD (FRONT)", "FRONT - DECOR BLOCK - DR", "Khung trang trí - khối phải", "DR", [("DR", 1)], S(2290, 1016, 205),
           "layout study bounding box (S02); the real block is faceted", 2, 10, "FRONT"),
-    Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-", [("BAND_B", 1), ("GLIDE", 3)],
-          S(2420, 110, 40), "BASE P01 CAD 111103 (2420 x 40 x 100) + glides 10 below", 2, 2, "BASE", note="3 glides fitted (BASE CAD)"),
-    Piece("2-05", "110101", "BASE - BAND ASSY - SIDE - LH", "Viền chân nhôm - cạnh trái (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2)],
-          S(1517, 110, 40), "BASE P01 CAD 111101 (outer face 1517) + glides", 2, 2, "BASE", note="2 glides fitted (BASE CAD)"),
-    Piece("2-06", "TBD (BASE)", "BASE - BAND ASSY - SIDE - RH", "Viền chân nhôm - cạnh phải (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2)],
-          S(1517, 110, 40), "LH's mirror (BASE P01 CAD)", 2, 2, "BASE", note="2 glides fitted"),
+    Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-", [("BAND_B", 1), ("GLIDE", 3), ("BLOCKS", 3 / 8)],
+          S(2420, 110, 40), "BASE P01 CAD 111103 (2420 x 40 x 100) + glides 10 below", 2, 2, "BASE", note="3 glides fitted, each on its aluminium load block inside the band (BASE CAD; D-86); blocks split by glide count, 3 of 8"),
+    Piece("2-05", "110101", "BASE - BAND ASSY - SIDE - LH", "Viền chân nhôm - cạnh trái (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2), ("BLOCKS", 2 / 8)],
+          S(1517, 110, 40), "BASE P01 CAD 111101 (outer face 1517) + glides", 2, 2, "BASE",
+          note="2 glides fitted, each on its load block inside the band (BASE CAD; D-86)"),
+    Piece("2-06", "TBD (BASE)", "BASE - BAND ASSY - SIDE - RH", "Viền chân nhôm - cạnh phải (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2), ("BLOCKS", 2 / 8)],
+          S(1517, 110, 40), "LH's mirror (BASE P01 CAD)", 2, 2, "BASE",
+          note="2 glides fitted, each on its load block inside the band (D-86)"),
     Piece("2-07", "TBD (BASE)", "BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS", "Viền chân nhôm - trước phải, dưới kính", "-",
-          [("BAND_FR", 0.663), ("GLIDE", 1)], S(729, 110, 40),
+          [("BAND_FR", 0.663), ("GLIDE", 1), ("BLOCKS", 1 / 8)], S(729, 110, 40),
           "X 218 to about 947 (skeleton P04 front band; air report 7e); carries the glass's bottom U-channel (D-68)", 2, 2, "BASE",
-          note="share of the front-r line by length, 729 of 1100 mm (calculation)"),
+          note="share of the front-r line by length, 729 of 1100 mm (calculation); 1 glide on its load block (D-86)"),
     Piece("2-08", "TBD (BASE)", "BASE - DOOR THRESHOLD - 13 MM", "Ngưỡng cửa thấp 13 mm", "-", [("THRESH", 1)], S(1175, 60, 13),
           "skeleton P04 1175 x 60; 13 mm high (D-72)", 2, 3, "BASE"),
     Piece("2-09", "TBD (FRONT)", "FRONT - DECOR BLOCK - DL", "Khung trang trí - khối trái", "DL", [("DL", 1)], S(2290, 278, 205),
@@ -857,7 +860,7 @@ class Model:
         bad = [k for k, r in self.roll.items() if abs(used.get(k, 0.0) - r["qty"]) > 1e-6]
         unknown = [k for k in used if k not in self.roll]
         self.check("K1", "Every roll-up line is shipped exactly once, or marked as shipping later",
-                   f"{len(self.roll)} lines, {sum(r['kg_total'] for r in self.roll.values()):.1f} kg; "
+                   f"{len(self.roll)} lines, {sum(r['qty'] * r['kg_each'] for r in self.roll.values()):.1f} kg; "
                    f"{len(bad)} lines miscounted, {len(unknown)} unknown", not bad and not unknown)
         # K2 20 kg
         heavy = [p for p in self.shipped() if p.kg > MINE["part_limit_kg"].value and not p.glass]
@@ -981,7 +984,7 @@ def gen_tables(m):
     clock = m.time_total(CLOCK_LAST_STEP)
     total = m.time_total()
     later = sum(p.kg for p in PIECES if p.kind == "later")
-    rollup_total = sum(r["kg_total"] for r in m.roll.values())
+    rollup_total = sum(r["qty"] * r["kg_each"] for r in m.roll.values())
     not_in = sum(p.extra_kg for p in PIECES if p.kind == "piece")
     reg_bolts = sum(c for c, _ in m.register.values())
     T["ROLLUP_TOTAL"] = f1(rollup_total - later)

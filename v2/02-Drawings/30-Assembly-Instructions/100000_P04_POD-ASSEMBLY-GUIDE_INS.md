@@ -62,7 +62,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 2. Base band
 
 - **Time:** about 8 min for 2 people.
-- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.1 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.1 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.1 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (0.9 kg), **2-15** BASE - SMALL PARTS CARTON (1.6 kg).
+- **Parts:** **2-04** BASE - BAND ASSY - BACK (3.3 kg), **2-05** BASE - BAND ASSY - SIDE - LH (2.2 kg), **2-06** BASE - BAND ASSY - SIDE - RH (2.2 kg), **2-07** BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS (1.0 kg), **2-15** BASE - SMALL PARTS CARTON (1.6 kg).
 - **Fasteners:** the 6 corner keys hook in, no bolts (D-87; BASE design).
 - **Person A:** Sets the back band on its glides, then the left and right side bands, each hooked onto its corner key, then the front pieces: front-left under DL, the piece under the fixed glass, and the mesh intake piece under DR with DR's support and closing plate. Every piece locates itself on its key.
 - **Person B:** Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03).
