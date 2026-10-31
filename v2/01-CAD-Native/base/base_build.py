@@ -104,19 +104,21 @@ BASE_PARAMS = [
      "joints register PR #99 via the Lead, 2026-11-01)"),
     ("gl_base_min", "gl_min - gl_nut_t", "mm", "calculation",
      "the glide's base must stand this tall (6.5), so that screwed fully home against the M10 rivnut's head it holds the band at gl_min: a hard stop (glide spec, HOLD)"),
-    ("gd_l", "52 mm", "mm", "confirmed",
-     "PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 26 (2 hole diameters) from the hole"),
+    ("gd_l", "54 mm", "mm", "confirmed",
+     "PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 2 hole diameters (26) from the hole; "
+     "54 gives 27, clear of that line"),
     ("gd_w", "band_t - 2 * band_wall - 1 mm", "mm", "calculation",
      "glide doubler width: the band's bore less 1 mm, so it bears on the bottom face right next to both side walls"),
     ("gd_t", "3 mm", "mm", "assumption",
      "glide doubler thickness: clamped with the 1.5 mm bottom face by the glide's M10 rivnut (grip 4.5); bending at 500 N falls from about 123 MPa to about 31 MPa (calculation, feature rationale)"),
     # back corners: hook-in corner key 111211 (joints register J-BASE-02, D-87; PROPOSED geometry)
-    ("ck_x", "25 mm", "mm", "source",
-     "back corner key length into the back band: 25 (the Joints Engineer, via the Lead 2026-11-01; the register PR follows)"),
+    ("ck_x", "30 mm", "mm", "source",
+     "corner key length into its carrier: 30, so the carrier's Ø7.0 fixing holes keep 2 diameters from its cut end (joints register #127)"),
     ("ck_y", "35 mm", "mm", "source", "back corner key width across the band (J-BASE-02)"),
     ("ck_z", "75 mm", "mm", "source",
      "back corner key height, standing on the band's bottom wall: 75 (the Joints Engineer, via the Lead 2026-11-01)"),
-    ("ck_e", "10 mm", "mm", "source", "key fixing holes 10 in from its back face (inside the band) and 7.5 either side of its centre line, so 10 in from its Y faces (joints register PR #99, J-BASE-02)"),
+    ("ck_e", "10.5 mm", "mm", "source",
+     "key fixing holes 10.5 from its back face (inside the band) and 7.0 either side of its centre line, so 10.5 from its side faces (joints register #127, J-BASE-02)"),
     ("ck_fix_hole", "7 mm", "mm", "source", "fixing bolt holes in the back band's bottom wall, Ø7.0 (J-BASE-02)"),
     ("ck_tap", "5 mm", "mm", "source", "M6 tap drill in the key (J-BASE-02)"),
     ("ck_thr_b", "15 mm", "mm", "confirmed",
@@ -152,9 +154,9 @@ PARTS = {
     "washer": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm", "MP", None),
     "floor_assy": ("110401", "BASE - FLOOR PANEL ASSY - F1", "Tấm sàn F1 (cụm dán)", "BS", None),
     "floor_f1": ("111401", "BASE - FLOOR PANEL - F1", "Tấm sàn mỏng - F1", "MP", "floor_assy"),
-    "mat_f1": ("111501", "BASE - FLOOR MAT - F1 - CLOSED-CELL 3 MM FOAM", "Tấm lót sàn F1 - xốp kín 3 mm", "MP",
+    "mat_f1": ("111501", "BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM", "Tấm lót sàn F1 - xốp kín 3 mm", "MP",
                "floor_assy"),
-    "glide": ("118002", "BASE - LEVELLING GLIDE - M10 (HOLD)", "Chân chỉnh cao", "PI", None),
+    "glide": ("118002", "BASE - LEVELLING GLIDE - M10 - HOLD", "Chân chỉnh cao", "PI", None),
     "doubler": ("111601", "BASE - GLIDE DOUBLER - COMMON", "Tấm tăng cứng chân chỉnh", "MP", None),
     "key": ("111211", "BASE - CORNER KEY - BACK - COMMON", "Ke góc đế - góc sau", "MP", None),
     "bolt": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI", None),
@@ -1055,6 +1057,8 @@ def hardware_points(design):
     for i in range(nb):
         out.append(("band_b", "glide", (x0 + i * ext / (nb - 1), v("%s - band_t / 2 - gl_dx" % YB), 0.0), None))
         out.append(("band_b", "doubler", (x0 + i * ext / (nb - 1), v("%s - band_t / 2" % YB), zd), "z-90"))
+    if P02_ON:
+        out += globals()["p02_hardware"](design)
     return out
 
 
@@ -1496,6 +1500,8 @@ def export_data(design):
              "y0": v(YW), "y1": v("%s - band_t - fl_gap" % YB), "t": v("fl_t"), "lap_depth": v("fl_t / 2")}
     out = {"doc": DOC_NAME, "rev": REV, "params": params, "parts": parts, "copies": copies, "holes": holes,
            "tubes": tubes, "floor_f1": floor, "band_finish": up.itemByName("band_finish").textValue}
+    if P02_ON:
+        globals()["p02_export"](design, out)
     path = os.path.join(REPO, DATA_REL)
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=1, ensure_ascii=False, sort_keys=True)
@@ -1523,6 +1529,10 @@ def holes_of_all(body):
 
 # Each part we make also gets its own saved design, STEP and drawing (a drawing's
 # base view shows its whole design; the mechanical check C05 wants a STEP per part).
+# Part designs rebuilt with every saved assembly: the band tubes carry the corner keys' holes,
+# which follow the joints register.
+WITH_ASSEMBLY = ("band_l_tube", "band_b_tube")
+
 # Parts BASE places by reference only: another engineer owns their model, STEP and drawing.
 BY_REFERENCE = {
     "key": "the corner keys 111211 to 111214 are the Joints Engineer's (model, STEP and tabulated drawing; "
@@ -1659,17 +1669,96 @@ def build_part(app, key):
         doc.close(False)
 
 
+# Subassemblies that get their own design, for their assembly drawings (D-89: every assembly keeps one)
+SUB_DESIGNS = ("band_l", "band_b", "floor_assy")
+# hosts whose hardware copies are the first ones (the others are pasted from them), so a trim hides them
+HOLDS_SHARED_COPIES = ("110101",)
+
+
+def build_subassembly(app, key):
+    """A subassembly as its own design: the whole build again in a new document, then every
+    top-level occurrence but this one deleted, so its parts and hardware stand in pod
+    coordinates as in the assembly. Made by rebuilding, not by Save Copy As (that hung
+    Fusion's cloud save on 2026-11-01)."""
+    pn, name, vn, cls, _parent = PARTS[key]
+    doc_name = file_name(pn, name, "CAD")
+    doc, design = step1_document(app)
+    for fn in (step2_band_side_lh, step3_band_back, step4_band_holes, step5_corner_key, step6_floor_and_more,
+               step7_hardware, step8_materials):
+        fn(design)
+    root = design.rootComponent
+    # trim to this subassembly: delete the others, unless one of them holds the first copy of shared
+    # hardware (the back band's rivnuts and stop washers are pasted copies of the side band's), in
+    # which case it is hidden instead; a drawing shows what is visible
+    hidden = []
+    for i in range(root.occurrences.count - 1, -1, -1):
+        occ = root.occurrences.item(i)
+        if occ.component.partNumber == pn:
+            continue
+        if occ.component.partNumber in HOLDS_SHARED_COPIES:
+            occ.isLightBulbOn = False
+            hidden.append(occ.component.partNumber)
+        else:
+            occ.deleteMe()
+    if hidden:
+        print("  hidden (they hold the first copies of shared hardware): %s" % ", ".join(hidden))
+    root.partNumber = pn
+    root.description = "%s | %s | %s | rev %s | DRAFT" % (name, vn, CLASS_NAME.get(cls, cls), REV)
+    tl = design.timeline
+    bad = [tl.item(i).name for i in range(tl.count)
+           if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    print("subassembly %s: %s, %d occurrences, %d timeline items, unhealthy %s" % (
+        pn, doc_name, root.allOccurrences.count, tl.count, bad or 0))
+    if bad:
+        doc.close(False)
+        raise RuntimeError("unhealthy timeline after trimming to %s" % pn)
+    proj, folder = cloud_folder(app)
+    replace_own(app, folder, doc_name)
+    app.data.activeProject = proj
+    if not doc.saveAs(doc_name, folder, "Spaceship %s rev %s, DRAFT, built by base_build.py" % (pn, REV), ""):
+        raise RuntimeError("saveAs failed")
+    print("  saved %s" % doc_name)
+    count_after_save(folder, doc_name)
+    doc.close(False)
+
+
+# ---------------------------------------------------------------- the next batch (P02)
+
+P02_ON = False
+
+
+def load_p02():
+    """The rest of BASE, batch by batch (base_p02.py, with --arg scope=p02): run in this module's
+    namespace, it adds its parameters, parts, steps, hardware and checks to the tables here."""
+    global P02_ON
+    path = os.path.join(HERE, "base_p02.py")
+    with open(path, encoding="utf-8") as fh:
+        exec(compile(fh.read(), path, "exec"), globals())
+    globals()["p02_setup"]()
+    P02_ON = True
+    print("scope p02: %d more parts, %d more steps" % (len(globals()["P02_BATCH_KEYS"]), len(globals()["P02_STEPS"])))
+
+
+def step6_floor_and_more(design):
+    step6_floor(design)
+    if P02_ON:
+        for fn in globals()["P02_STEPS"]:
+            fn(design)
+
+
 # ---------------------------------------------------------------- main
 
 def run(_context):
     app = adsk.core.Application.get()
+    if ARGS.get("scope") == "p02":
+        load_p02()
     if ARGS.get("part"):
         for key in ARGS["part"].split(","):
             build_part(app, key.strip())
         return
     doc, design = step1_document(app)
     steps = [None, None, step2_band_side_lh, step3_band_back, step4_band_holes, step5_corner_key,
-             step6_floor, step7_hardware, step8_materials, step9_checks]
+             step6_floor_and_more, step7_hardware, step8_materials, step9_checks]
     last = min(STOP_AFTER, len(steps) - 1)
     for n in range(2, last + 1):
         steps[n](design)
@@ -1692,9 +1781,28 @@ def run(_context):
         print("closed the unsaved build document (pass --arg keep=1 to keep it open)")
     elif ARGS.get("save") == "1" and ARGS.get("in_place") != "1":
         doc.close(False)          # saved and exported: free Fusion for the next run
-    if ARGS.get("also_parts"):
+    if ARGS.get("save") == "1" and ARGS.get("in_place") != "1" and ARGS.get("sub_designs", "1") == "1" \
+            and last == len(steps) - 1:
+        for key in SUB_DESIGNS:
+            try:
+                build_subassembly(app, key)
+            except Exception as e:  # report and go on: the assembly and part designs stay valid
+                print("subassembly %s FAILED: %s" % (PARTS[key][0], e))
+                close_unsaved_builds(app)
+                for i in range(app.documents.count - 1, -1, -1):     # our own unsaved trimmed copy
+                    d = app.documents.item(i)
+                    try:
+                        dd = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
+                    except RuntimeError:
+                        dd = None
+                    if dd and not d.isSaved and dd.rootComponent.partNumber == PARTS[key][0]:
+                        d.close(False)
+    parts = [k.strip() for k in ARGS.get("also_parts", "").split(",") if k.strip()]
+    if ARGS.get("save") == "1" and last == len(steps) - 1:
+        parts += [k for k in WITH_ASSEMBLY if k not in parts]
+    if parts:
         # one run for the assembly and every part design keeps the shared queue short
-        for key in ARGS["also_parts"].split(","):
+        for key in parts:
             if key.strip() in BY_REFERENCE:
                 print("part %s: not built here: %s" % (PARTS[key.strip()][0], BY_REFERENCE[key.strip()]))
                 continue
