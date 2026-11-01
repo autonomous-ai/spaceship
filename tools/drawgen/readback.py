@@ -261,6 +261,23 @@ def step_holes(step_path, pn):
     return out
 
 
+def two_wall_pairs(features, tol=0.05):
+    """Holes through two walls of one member: two holes of one body on one line, the line between their centres
+    running along their axis (parallel holes side by side in one wall are not a pair; BASE's FR1, 2026-11-01)."""
+    hs = [f for f in features if f["kind"] == "hole"]
+    out = []
+    for i, f in enumerate(hs):
+        for g in hs[i + 1:]:
+            if g["body"] != f["body"] or abs(abs(dot(g["axis"], f["axis"])) - 1) > 1e-6:
+                continue
+            d = sub(g["entry"], f["entry"])
+            along = abs(dot(d, f["axis"]))
+            across = math.sqrt(max(0.0, dot(d, d) - along * along))
+            if across < tol and along > 0.5:
+                out.append((f["tag"], g["tag"]))
+    return out
+
+
 def key_note_fails(text, matched, krows, tol=0.1, holes=None):
     """Each key row (corner-keys.csv) needs its note on the sheet ("Key PN, JOINT, ... meet Hxx and Hyy;"), and the
     two holes it names must be the part's holes at the key's screw positions there (centres from the STEP). A HOLD
@@ -410,8 +427,7 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("the title block's CREATED BY is not Autonomous")
     for pg, what in clashes(doc):
         fails.append("sheet %d: %s" % (pg, what))
-    two_wall = any(f["kind"] == "hole" and sum(1 for g in data["features"] if g["kind"] == "hole" and g["body"] == f["body"]
-                                               and abs(abs(dot(g["axis"], f["axis"])) - 1) < 1e-6) > 1 for f in data["features"])
+    two_wall = bool(two_wall_pairs(data["features"]))
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
         fails.append("holes through two walls but no SECTION label")
     if verbose:
