@@ -171,9 +171,10 @@ CEILING_PARAMS = [
      "PM ruling 2026-11-01: the panel hole ELECTRICAL's cable bushing needs, in the front and back returns: the voice cockpit route from the back wall to the front (REQ-VCK-03, D-41) and the spare path (ISS-069)"),
     ("sprk_d", "150 mm", "mm", "assumption", "reserved round zone for a later sprinkler drop (REQ-US-01)"),
     # the roof sleeve's flange lies on C2's skin round the slot with the roof grille's 4 rivnuts 838003 (J-AIR-03): the
-    # skin takes a hole_rvn hole under each (CEILING's layout 2026-11-01, HOLD-04's rule: each rivnut 2 hole diameters from
-    # every free edge, the skin's slot edge too): 2 on the slot's left side, 2 on its back side BEHIND cross member 1,
-    # whose front face is too near the slot for a set rivnut's bulge. AIR's model carries the same names (AIR's sleeve)
+    # skin takes a hole_slv clearance hole under each (D-177; the layout CEILING's, 2026-11-01, HOLD-04's rule: each rivnut
+    # 2 hole diameters from every free edge, the skin's slot edge too): 2 on the slot's left side, 2 on its back side
+    # BEHIND cross member 1, whose front face is too near the slot for a set rivnut's bulge. AIR's model carries the same
+    # names (AIR's sleeve)
     ("slv_rn_e", "20.0 mm", "mm", "calculation", "rivnut centre to any free edge: 2 x the Ø10.00 hole (D-163; HOLD-04's rule; "
      "was 19.2 for the Ø9.53)"),
     ("slv_rn_in", "20 mm", "mm", "assumption", "the rivnuts this far in from the slot's corners along their sides"),
@@ -182,6 +183,17 @@ CEILING_PARAMS = [
     ("slv_rn_clr", "1 mm", "mm", "assumption", "the bulge's clearance to cross member 1's back face"),
     ("slv_rn_yb", "(pod_d / 2 - wall_depth) + cs_front - x1_ov + tube_w + slv_bulge / 2 + slv_rn_clr", "mm", "calculation",
      "the back side's rivnuts behind cross member 1: its back face plus half the bulge plus the clearance (Y -273)"),
+    # D-177 (PM ruling 2026-11-01): each skin hole passes a set rivnut (its body and the bulge right under the 1 mm flange,
+    # which sits in the skin's thickness) wherever the sleeve lands in its slot. The flange's butyl ring, outside the four
+    # holes, seals them and the sleeve's gap in the slot (J-AIR-03; AIR's list)
+    ("slv_fit", "1.0 mm", "mm", "confirmed", "D-177: the roof sleeve is 1.0 smaller a side than the roof slot, so it drops in at "
+     "its size tolerance (AIR's walls take it; the flange, its rivnuts and the grille stay where they are)"),
+    ("slv_pos", "0.5 mm", "mm", "calculation", "the flange's rivnut hole and the skin's hole, each placed to +/-0.2 (laser and "
+     "CNC cut, assumption), rounded up"),
+    ("slv_rn_body", "9.91 mm", "mm", "source", "the set rivnut's knurled body at its largest, CAL2-610-4.2 (D-163; the joints "
+     "register's ST-03)"),
+    ("hole_slv", "slv_bulge + 2 * (slv_fit + slv_pos)", "mm", "calculation", "D-177: the Ø17 clearance hole in C2's skin under "
+     "each sleeve rivnut: the set bulge, plus the sleeve's play in its slot and the positions on each side"),
 ]
 
 # Part numbers: CEILING 41xxxx, ceiling cassette 5103xx (assemblies) and
@@ -675,7 +687,8 @@ def sleeve_rivnuts():
 
 
 def skin_c2_holes():
-    """[(name, x, y)] of the Ø hole_rvn holes under the sleeve's rivnuts, in the C2 skin's own system (roof_slot_box's)."""
+    """[(name, x, y)] of the Ø hole_slv clearance holes under the sleeve's rivnuts (D-177), in the C2 skin's own system
+    (roof_slot_box's)."""
     ox = "(seam_gap / 2 + half_pw)"
     return [(n, "(%s) - %s" % (x, ox), "(%s) - %s" % (y, YW)) for n, x, y in sleeve_rivnuts()]
 
