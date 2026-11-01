@@ -6,10 +6,11 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 254 part lines (89 made, 165 bought, 129 on HOLD) and 37 sub-assembly lines from 16 parts list(s); 36 hardware items in the joints register (36 with a part number). Listed parts weigh 300.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 288 part lines (114 made, 174 bought, 137 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 36 hardware items in the joints register (36 with a part number). Listed parts weigh 356.4 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
+- `v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv` @ working tree
 - `v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv` @ working tree
 - `v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv` @ working tree
 - `v2/03-Manufacturing/ceiling/410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv` @ working tree (skipped: a cut list (its rows are cut pieces of the parts in the parts lists))
@@ -96,7 +97,14 @@ Read from: this working tree.
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
 
 **CEILING (builds AIR, D-80)**
-- no parts list yet (expected *_BOM.csv files in v2/03-Manufacturing/air/)
+- 618101 AIR - SENSOR HUB ZONE - HOLD: HOLD (HOLD)
+- 618104 AIR - SOFFIT HANGER STUD - HOLD: HOLD (HOLD)
+- 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD: HOLD (HOLD)
+- 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD: HOLD (HOLD)
+- 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
+- 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
+- 618102 AIR - SUPPLY TRANSITION - HOLD: HOLD (HOLD)
+- 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
