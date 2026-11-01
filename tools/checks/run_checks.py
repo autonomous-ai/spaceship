@@ -127,13 +127,14 @@ def run(root, rev):
                 row_texts[row["part_number"]] = (row_texts.get(row["part_number"], "") + " " + " ".join(
                     str(raw.get(k, "")) for k in ("name", "process", "note", "notes", "type", "kind", "description"))).strip()
     if asm:
-        # D-174: a made part with no gap at both ends of a run; its row may mark the fit (any of its cells)
+        # D-174: a made part with no gap at both ends of a run; its row may state the fit, in its note or process
+        # cells only (never its name: Reviewer 14's P2 on #417)
         fit_texts = {}
         for _p, rows in plists:
             for row in rows:
                 if row["part_number"]:
-                    fit_texts[row["part_number"]] = (fit_texts.get(row["part_number"], "") + " " + " ".join(
-                        str(v) for v in row.get("_raw", {}).values() if isinstance(v, str))).strip()
+                    fit_texts[row["part_number"]] = " ; ".join(t for t in (
+                        fit_texts.get(row["part_number"], ""), c_geometry.fit_cells(row.get("_raw", {}))) if t)
         findings += c_geometry.check_tight_fits(root, "assembly", asm, fit_texts)
     for p in per_part:
         findings += c_geometry.check_part_features(root, p, materials, srules, row_texts=row_texts)

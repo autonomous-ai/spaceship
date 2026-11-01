@@ -919,9 +919,41 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
 # (the part sets where the others go, as frame members joined by welds or keys do).
 TIGHT_RUN = 100.0          # mm: a run, not a plate's thickness or a short block
 TIGHT_GAP = 1.0            # mm: the least gap at each end of a run (a hole: both sides together)
-FIT_MARK = re.compile(r"\bpress(?:ed)?[- ]?fit|\bpressed in\b|\badjustab|\bslotted\b|\bslots? (?:for|to) adjust|"
-                      r"\bshim(?:s|med)?\b|\bset at assembly\b|\bsets? (?:where|the position of) the others\b", re.I)
 SPACE_HOLDER = re.compile(r"\bRESERVED\b|\bZONE\b|\bROUTE\b|ENVELOPE", re.I)
+
+# A row marks the fit only by a statement in its note or process cells, never by the part's name, and a negated
+# statement doesn't count (Reviewer 14's P2 on #417, agreed by the Lead, 2026-11-01): "press fit", "adjustable"
+# said of the fit or of its slots or shims, or "set at assembly". So "not adjustable", "no shims", "slotted for the
+# cable" and FRONT's door strike shim 361004 (a shim by its name) don't clear a tight fit.
+FIT_CELLS = re.compile(r"^(?:process|(?:\w+_)?notes?)$")          # parts-list column names, as c_parts keys them
+FIT_STATEMENT = re.compile(
+    r"\bpress(?:ed)?[- ]?fit(?:ted)?\b|\bpressed in\b|\bset at assembly\b|"
+    r"\bfit\b\s*(?:[:=\-–]\s*|\s(?:is\s+)?)adjustable\b|"
+    r"\badjustable\b\W{0,3}(?:fit\b|(?:(?:by|with|on|in|using|via)\s+)?(?:slot|shim))", re.I)
+FIT_NEGATION = re.compile(r"\b(?:not|no|non|never|without|cannot|nor|neither|none|nothing|instead of|rather than)\b|"
+                          r"n['’]t\b", re.I)
+CLAUSE_END = re.compile(r"[;,.\n]|\b(?:but|and)\b", re.I)
+
+
+def fit_cells(raw):
+    """A parts-list row's note and process cells (c_parts' _raw keys), the only cells a fit mark is read from."""
+    return " ; ".join(v for k, v in (raw or {}).items() if isinstance(v, str) and v.strip() and FIT_CELLS.match(k))
+
+
+def fit_marked(text):
+    """True when the text states the part's fit as press fit, adjustable (by slots or shims) or set at assembly,
+    in a clause that doesn't negate it (D-174). An aside in brackets is not part of its clause."""
+    text = text or ""
+    for m in FIT_STATEMENT.finditer(text):
+        ends = [e.end() for e in CLAUSE_END.finditer(text, 0, m.start())]
+        a = ends[-1] if ends else 0
+        e = CLAUSE_END.search(text, m.end())
+        b = e.start() if e else len(text)
+        clause = text[a:m.start()] + "\0" + m.group(0) + "\0" + text[m.end():b]
+        clause = re.sub(r"\([^()\0]*\)", " ", clause)
+        if not FIT_NEGATION.search(clause.replace("\0", " ")):
+            return True
+    return False
 
 
 def _part_label(b):
@@ -985,7 +1017,7 @@ def check_tight_fits(root, mdl, bodies, row_texts=None):
     fs, seen = [], set()
     for b in use:
         pn = _part_pn(b)
-        if pn_class(pn) != "part" or FIT_MARK.search(row_texts.get(pn, "")):
+        if pn_class(pn) != "part" or fit_marked(row_texts.get(pn, "")):
             continue
         others = [q for q in use if not (q.file == b.file and _part_pn(q) == pn)]
         for k in range(3):
@@ -1018,7 +1050,8 @@ def check_tight_fits(root, mdl, bodies, row_texts=None):
                     "The parts are in one made assembly, fitted by its maker: confirm it, or add the gap."
                     if inside else "Those parts are fitted separately."),
                 "Leave a gap of 1 to 1.5 mm at each end of the run (a hole at least 1 mm over the part it takes), or "
-                "mark its row's fit as press fit, adjustable (slots or shims) or set at assembly (D-174)%s." % (
+                "state its fit in its row's note or process cell as press fit, adjustable (slots or shims) or set at "
+                "assembly (D-174)%s." % (
                     "; agree with %s which side changes" % " and ".join(sorted({_team_of(q) for _g, q in (lo, hi)
                                                                               if _team_of(q) != _team_of(b)}))
                     if any(_team_of(q) != _team_of(b) for _g, q in (lo, hi)) else ""),

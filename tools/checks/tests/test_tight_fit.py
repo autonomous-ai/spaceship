@@ -95,8 +95,41 @@ def test_inside_one_made_assembly_it_is_minor():
 
 def test_a_marked_fit_seals_fasteners_and_short_parts_are_left_alone():
     a, b = _fixed("611202 AIR - SOFFIT FACE - FRONT", -20, 0), _fixed("611209 AIR - SOFFIT TOP RAIL", 991, 1011)
-    for mark in ("press fit", "adjustable: slotted holes", "shimmed to fit", "set at assembly (welded into the frame)"):
-        assert run([_shelf(0, 991), a, b], {"811202": "INTERIOR - LIGHT SHELF - SIDE LH; fit: %s" % mark}) == [], mark
+    for mark in ("press fit", "fit: press-fit", "pressed in", "adjustable: slotted holes", "fit: adjustable (shims)",
+                 "adjustable by slots", "no gap; set at assembly (welded into the frame)",
+                 "set at assembly (no gap needed)"):
+        assert run([_shelf(0, 991), a, b], {"811202": mark}) == [], mark
     seal = _fixed("848001 HARDWARE - SEAM GASKET", 991, 1011)                # a seal at one end: nothing held there
     assert run([_shelf(0, 991), a, seal]) == []
     assert run([_shelf(0, 90), a, _fixed("611209 AIR - SOFFIT TOP RAIL", 90, 110)]) == []   # under 100 mm: no run
+
+
+def test_a_negated_or_loose_fit_word_does_not_clear_it():
+    """Reviewer 14's P2 on #417: only a fit statement counts, and not a negated one; a weld word alone is no excuse."""
+    a, b = _fixed("611202 AIR - SOFFIT FACE - FRONT", -20, 0), _fixed("611209 AIR - SOFFIT TOP RAIL", 991, 1011)
+    for text in ("not adjustable", "not adjustable (slots)", "non-adjustable fit", "fit: not adjustable",
+                 "no press fit", "press fit is not used", "isn’t press fit", "set at assembly? No",
+                 "never set at assembly", "no shims", "slotted for the cable", "shimmed to fit",
+                 "rests on two adjustable glides", "welded at both ends", "fit to the adjustable glides"):
+        (f,) = run([_shelf(0, 991), a, b], {"811202": text})
+        assert f.rule == "tight-fit", text
+        assert not cg.fit_marked(text), text
+
+
+def test_a_part_named_shim_is_read_by_its_note_and_process_only():
+    """FRONT's door strike shim 361004 was cleared by its own name; a row's name, status and maker cells don't count."""
+    raw = {"part_number": "361004", "name": "FRONT - DOOR STRIKE SHIM", "name_vi": "Miếng chêm", "kind": "MP",
+           "process": "laser cut", "note": "behind the strike", "status": "with a 1.2 mm shim: HOLD",
+           "sku": "adjustable: slotted holes"}
+    assert cg.fit_cells(raw) == "laser cut ; behind the strike"
+    shim = _box("360000_P01_FRONT_CAD:1 / 360001 FRONT - DOOR UNIT:1 / 361004 FRONT - DOOR STRIKE SHIM:1 / Body1",
+                (0, 0, 0, 120, 20, 40), "v2/03-Manufacturing/front/360000_P01_FRONT_STEP.step")
+    a, b = _fixed("611202 AIR - SOFFIT FACE - FRONT", -20, 0), _fixed("611209 AIR - SOFFIT TOP RAIL", 120, 140)
+    (f,) = run([shim, a, b], {"361004": cg.fit_cells(raw)})
+    assert f.subject == "assembly 361004 FRONT - DOOR STRIKE SHIM along X" and f.severity == "major"
+    assert "note or process cell" in f.fix
+    raw.update(note="behind the strike; set at assembly", critical_notes="")
+    assert cg.fit_cells(raw) == "laser cut ; behind the strike; set at assembly"
+    assert run([shim, a, b], {"361004": cg.fit_cells(raw)}) == []
+    assert cg.fit_cells({"critical_notes": "press fit", "notes": "x", "process_note": "y", "name": "z"}) == \
+        "press fit ; x ; y"
