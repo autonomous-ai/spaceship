@@ -525,6 +525,85 @@ class FlatPartColumns(unittest.TestCase):
         self.assertEqual(self.lacks(line), ["no bends or machined features (its process names bond)"])
 
 
+class D125PlainStrip(unittest.TestCase):
+    """D-125, read as C05 reads it: the checklist calls the mechanical check's own functions (tools/checks), so a
+    plain strip or sheet on a full parts-list row counts as drawn in both tools, or in neither."""
+    LIST = "v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv"
+
+    def strip_line(self, d125):
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row("811299", "make", "INTERIOR - TEST STRIP", "aluminium 5052-H32 sheet", team="CEILING (builds INTERIOR, D-80)", src=self.LIST)
+        part["finish"] = "mill finish"
+        file_map = files("811299_P01_INTERIOR-TEST-STRIP_CAD.f3d", "811299_P01_INTERIOR-TEST-STRIP_STEP.step",
+                         folder="v2/03-Manufacturing/interior/")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {}, {}, None, d125)
+        return made[0]
+
+    def test_it_uses_the_mechanical_checks_own_functions(self):
+        c_geometry, c_drawings = rc.load_checks()
+        here = Path(c_drawings.__file__).resolve()
+        self.assertEqual(here, (rc.ROOT / "tools/checks/c_drawings.py").resolve())
+        for name in ("cuboid_sides", "is_strip", "strip_row_lacks", "body_shape"):
+            self.assertTrue(callable(getattr(c_drawings, name)), name)
+        self.assertTrue(callable(c_geometry.load_step))
+
+    def test_a_full_row_counts_as_drawn(self):
+        line = self.strip_line({"811299": ([], self.LIST)})
+        self.assertEqual((line["flat"], line["dwg"]), ("row (D-125)", "row: a plain strip or sheet (D-125)"))
+        self.assertNotIn("drawing", line["gaps"])
+
+    def test_a_short_row_keeps_the_drawing_and_says_why(self):
+        line = self.strip_line({"811299": (["finish", "tolerance"], self.LIST)})
+        self.assertTrue(line["dwg"].startswith("no: as a plain strip or sheet (D-125)"), line["dwg"])
+        self.assertIn("finish, tolerance", line["dwg"])
+        self.assertIn("drawing", line["gaps"])
+
+    def test_no_strip_no_change(self):
+        self.assertEqual(self.strip_line({})["dwg"], "no")
+        self.assertEqual(self.strip_line(None)["dwg"], "no")
+
+
+class MadeHold(unittest.TestCase):
+    """A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD, not done
+    (PM, 2026-11-01); open gaps show first; the totals count it under Made: HOLD."""
+    LIST = WALL
+    HEAD = "part_number,name,material,grade,finish,status,mass_status"
+
+    def line(self, material="aluminium 5052-H32 sheet", rows="", drawn=True):
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row("211199", "make", "WALL - TEST STRIP", material, team="WALL", src=self.LIST)
+        part["finish"] = "mill finish"
+        file_map = files("211199_P01_WALL-TEST-STRIP_CAD.f3d", "211199_P01_WALL-TEST-STRIP_STEP.step")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {self.LIST: self.HEAD + "\n" + rows} if rows else {}, {}, None,
+                                 {"211199": ([], self.LIST)} if drawn else {})
+        return made[0]
+
+    def test_a_grade_on_hold_shows_hold(self):
+        self.assertEqual(self.line(material="opal polycarbonate (grade HOLD)")["state"], "HOLD")
+        own = "211199,WALL - TEST STRIP,polycarbonate,HOLD,mill finish,DRAFT,calculation\n"
+        self.assertEqual(self.line(rows=own)["state"], "HOLD")                     # a grade column
+        status = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,HOLD,calculation\n"
+        self.assertEqual(self.line(rows=status)["state"], "HOLD")                  # its status
+        self.assertEqual(self.line()["state"], "done")
+
+    def test_gaps_show_first(self):
+        self.assertEqual(self.line(material="aluminium (alloy HOLD)", drawn=False)["state"], "open: drawing")
+
+    def test_only_its_own_row_and_columns_count(self):
+        other = "218101,WALL - BRACKET 211199 - HOLD,,,,HOLD,calculation\n"      # another part's row naming it
+        massnote = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,DRAFT,real kg/m2 HOLD\n"
+        self.assertEqual(self.line(rows=other)["state"], "done")
+        self.assertEqual(self.line(rows=massnote)["state"], "done")
+
+    def test_the_totals_count_made_hold(self):
+        held = self.line(material="aluminium (alloy HOLD)")
+        text = rc.render([held], [], [], [], "main", "unlocked", {}, ([], [], []), "2026-11-01")
+        self.assertIn("| Made: HOLD |", text)
+        self.assertIn("| WALL | 0 | 0 | 0 | 1 | 0 | 0 | 0 |", text)
+
+
 class OpenPrFiles(unittest.TestCase):
     """A branch stacked on a PR that squash-merged since keeps that PR's older copies; main's newer files win."""
     SKIN = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
@@ -632,10 +711,10 @@ class Render(unittest.TestCase):
         a = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {}, tests=[("T06", "838001")])[1]
         b = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16", team="BASE")], {}, tests=[("T06", "838001")])[1]
         text = rc.render([], a + b, [], ["ELECTRICAL"], "this working tree", "locked", {}, rc.fai_plan(PLAN, BOM), "2026-11-01")
-        self.assertIn("| BASE | 0 | 0 | 0 | 1 | 0 | 0 |", text)
-        self.assertIn("| WALL | 0 | 0 | 0 | 1 | 0 | 0 |", text)
-        self.assertIn("| **All, each number once** | 0 | 0 | 0 | 1 | 0 | 0 |", text)
-        self.assertIn("| ELECTRICAL | — | — | — | — | — | — |", text)
+        self.assertIn("| BASE | 0 | 0 | 0 | 0 | 1 | 0 | 0 |", text)
+        self.assertIn("| WALL | 0 | 0 | 0 | 0 | 1 | 0 | 0 |", text)
+        self.assertIn("| **All, each number once** | 0 | 0 | 0 | 0 | 1 | 0 | 0 |", text)
+        self.assertIn("| ELECTRICAL | — | — | — | — | — | — | — |", text)
         self.assertIn("**locked**", text)
 
 
