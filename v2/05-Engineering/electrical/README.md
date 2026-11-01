@@ -79,7 +79,7 @@ LAN ─ etherCON (B2 skin) ─ keystone jack 1 (unit face); keystone jack 2 ─ 
 | Cassette | B2-CASS has a plain cut-out through its tray base and felt, 4 mm clear all round the unit (304 × 268), so the lining never touches the frame-mounted unit (D-17, D-26). No returns: WALL found they can't be folded from a flat blank (corner tabs overlap). The front plate covers the cut felt edge. | PROPOSED; WALL draws the cut-out |
 | Mass | see calc-results §5 | calculation |
 
-The inlet and the etherCON sit in B2's skin at X 120 (Z 313 and 375), with a 20 × 20 mm sleeve up the same bay to the unit's bottom. All of it is fitted in B2 at the factory, so B2 ships with the unit wired and tested.
+The inlet and the etherCON sit in B2's skin at X 120 (Z 313 and 375), the inlet's rear in its rear box 711003 (Neutrik makes no rear cover), with the 1/2 in conduit from that box up the same bay to the unit's bottom. All of it is fitted in B2 at the factory, so B2 ships with the unit wired and tested.
 
 ## 4. 12 V circuits and the load table
 
@@ -155,7 +155,7 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 |---|---|---|---|
 | H-ELE-01 | Bushings and edge strip | Named: Heyco 2836N thin panel bushing (locks in 0.5 to 1.6 mm sheet; the plain 2836 locks only at 1.6 mm), Heyco 12431 grommet channel (0.5 to 3.2 mm). Still open: DR's back plate (G-DR, 1.0-2.7 mm, FRONT HOLD-10) and the soffit's casing (G-SOFFIT) over 1.6 mm need a thicker-panel bushing | Sample fit in a cassette return; FRONT and CEILING give the plate thicknesses |
 | H-ELE-02 | 12 V supplies and the dimmable driver | Data confirmed; Class 2 marking checked for the US phase | Datasheets on file (parts list) |
-| H-ELE-03 | Inlet and etherCON fit in the 46 mm outer panel (skin 3 + bond 3 + frame bay) | Panel-thickness range and depth behind the panel | Datasheet check; sample in a B2 skin |
+| H-ELE-03 | Inlet and etherCON fit in the 46 mm outer panel (skin 3 + bond 3 + frame bay) | The inlet NAC3MPX-TOP reaches 31.2 mm behind its flange (38.2 overall; Neutrik ST-NAC3MPX-TOP), about 28 behind the skin's inside face; Neutrik gives no panel-thickness range. It is a UL 498 Recognized component, so its rear goes in the rear box 711003, where the conduit's second NMLT-11 ends. Straight disconnects and the 14 AWG bends need about 60 mm behind the skin, over the 43 mm bay: flag disconnects or a flatter lead dress, settled when 711003 is modelled | Model 711003 with the inlet; sample in a B2 skin |
 | H-ELE-04 | The US outlets' parts (D-133) | Named: Pass & Seymour 1597TRW GFCI (1595TRW is no longer listed; the same decorator body) and Panduit NK688MWH keystone jacks. Their sheets give no panel cut-out: prove the decorator 33.6 x 67 and keystone 14.9 x 19.4 openings in the 1.5 mm plate | A sample of the front plate with both parts fitted |
 | H-ELE-05 | The hub's fan outputs | PWM or 0–10 V; current; connector | ISS-060 data |
 | H-ELE-06 | Inlet temperature sensor | Type set by the hub's sensor port; accuracy for the 4 K limit | ISS-060 data |
@@ -167,7 +167,7 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 | H-ELE-12 | Cat6 RJ45 plugs, inline couplers, keystone | Named: Panduit SP688E-C plugs, CC688IW couplers (two per channel at most, X1 and X2), NK688MWH jacks, Belden 3612 cable | Closed: datasheets on file (the plate cut-out under H-ELE-04) |
 | H-ELE-13 | Current sense module on PS2's output | Part to name, output to suit the hub's input | ISS-060 data |
 | H-ELE-14 | 3-channel 12 V PWM light controller | Named: ENTTEC CVC4 (73926), 4 channels at 5 A, common VCC, DMX512 over RS-485; holds the last frame when the data stops. Its fit in the unit (88 x 117.5 x 31.5) to check in the layout | Bench test with the strips |
-| H-ELE-15 | The body's holes for the named parts | PEM CLA-M4-1 clinch nuts need Ø5.94 +0.08 holes (H05-H08 are Ø5.4); the PEM FHA-M5-12 earth stud a Ø5.0 +0.08 hole (not cut yet); the NMLT-11 conduit connector a 1/2 in trade-size knockout (7/8 in, 22.2 mm, by common practice; H04 is Ø25) | The body's next rebuild and its drawing (ELECTRICAL follow-up) |
+| H-ELE-15 | The body's holes for the named parts | Closed by #353 (merged): H05-H08 Ø5.94 +0.08 for the CLA-M4-1 nuts (10 mm from the lip's fold, 12 from its free edge, over PEM's 7.1), H09 Ø5.0 +0.08 for the FHA-M5-12 earth stud, H04 Ø22.2 for the NMLT-11 | Closed |
 
 ## 11. Tests (planned, not run: PLANNED / NOT TESTED)
 

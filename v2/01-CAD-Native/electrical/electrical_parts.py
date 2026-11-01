@@ -353,10 +353,20 @@ AL = "aluminium 5052-H32"
 part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện - hộp nguồn - thân hộp", "MP", "710001", 1,
      AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.465, "CAD (Fusion volume 173,405 mm3 x 2.68 g/cm3, 711001 P01 design version 5)",
      size="296 x 260 x 72, 25 mm side flanges", process="sheet metal: laser cut, folded",
-     status="DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data)",
+     status="DRAFT; HOLD feature: the fixing to B2's frame (WALL, IF-12)",
      source="711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD (electrical_parts_cad.py)",
      note="folded tray 296 x 260 x 72 with 22 mm front lips; two Ø19.1 lead exits (right), Ø19.1 light feed exit (top), "
-          "Ø25 sleeve entry (bottom), 4 M4 clinch nut holes in the lips")
+          "Ø22.2 conduit entry H04 for the NMLT-11 and Ø5.0 earth stud hole H09 (bottom), 4 Ø5.94 clinch nut holes in "
+          "the lips (#353)")
+part("inlet_box", "711003", "ELECTRICAL - POWER INLET - REAR BOX", "Điện - hộp che sau ổ cấp nguồn", "MP", "710001", 1,
+     AL + " 1.0 mm", "mill finish (hidden, D-79)", 0.045, "assumption (about 16,000 mm2 of 1.0 mm sheet)",
+     size="about 70 x 60 x 40 (assumption)", process="sheet metal: laser cut, folded",
+     status="HOLD (made part to model with the inlet in ELECTRICAL's next rebuild: its depth in the 43 mm bay, H-ELE-03)",
+     source="Neutrik ST-NAC3MPX-TOP and BDA 544 (the inlet's size and cut-out); Electri-Flex NMLT sheet (the knockout)",
+     note="a folded cover over the inlet's rear in B2's bay, clamped to the skin's inside face by the inlet's own two "
+          "screws: it encloses the 1/4 in tabs and their disconnects, and the conduit ends in its Ø22.2 knockout with "
+          "the second NMLT-11. Neutrik makes no rear cover for TRUE1 TOP, and the inlet is a UL 498 Recognized "
+          "component that the product must enclose; the inlet reaches 31.2 mm behind its flange")
 part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
      AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.344,
      "CAD (Fusion volume 128,264 mm3 x 2.68 g/cm3, 711002 P01 design, D-133 rebuild)", size="320 x 284",
@@ -443,6 +453,9 @@ P["m4nut"].update(grade="aluminium", torque_nm="HOLD (as the screw)")
 part("pestud", "718014", "ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING", "Điện - vít tiếp địa M5", "PI", "710001", 1,
      "aluminium", "plain, as supplied", 0.005, "assumption", maker="PennEngineering", sku="FHA-M5-12 (unverified)", status=HOLD_BUY,
      source="PEM catalogue", note="the enclosure's PE point: inlet, socket and bond lugs")
+part("pe_nut", "718079", "ELECTRICAL - NUT - M5 - SERRATED FLANGE - A2", "Điện - đai ốc M5 mặt bích răng", "PI", "710001", 1,
+     "stainless A2", "plain", 0.0014, "source", status=HOLD_BUY,
+     note="on the earth stud 718014, over its lugs")
 part("serrated", "718015", "ELECTRICAL - BONDING WASHER - SERRATED M6 A2", "Điện - long đen răng tiếp địa", "PI", "710001", 1,
      "stainless A2", "", 0.001, "assumption", sku="DIN 6798 A 6.4 A2, maker HOLD", status=HOLD_BUY, source="DIN 6798",
      note="under the bond lead's lug on one mounting bolt, so the lug bites through to bare aluminium")
@@ -452,8 +465,8 @@ part("lug", "718016", "ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG", "Đi�
 part("sleeve", "718017", "ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN", "Điện - ống luồn dây mềm 1/2 in", "PI", "710001", 0.6,
      "PVC, UL 1660 liquidtight flexible nonmetallic (LFNC-B)", "", 0.08, "assumption (kg per m)",
      sku="trade size 1/2 (21.3 OD); maker HOLD", status=HOLD_BUY, source="",
-     note="the sleeve in B2's bay, inlet to unit, 0.57 m (route model); its end bushes in the inlet and the unit's Ø25 entry H04 HOLD "
-          "(H-ELE-03); qty in m")
+     note="the sleeve in B2's bay, inlet to unit, 0.57 m (route model); an NMLT-11 (718075) at each end: into the unit's "
+          "H04 (Ø22.2) and into the inlet's rear box 711003; qty in m")
 part("bolt", "838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI",
      "710001", 4, "steel", "zinc plated", 0.0055, "assumption", maker="HOLD: standard part, maker picked with the joints register",
      sku="ISO 4762 M6 x 16, 8.8, zinc plated", size="M6", status=HOLD_BUY, source=JNT,
@@ -737,10 +750,10 @@ part("qd", "718074", "ELECTRICAL - FEMALE DISCONNECT - 0.250 IN - 16-14 AWG - IN
      "PI", "710001", 3, "tin-plated brass, nylon insulation", "", 0.001, "assumption", status=HOLD_BUY,
      note="the inlet NAC3MPX-TOP's three 1/4 in tabs (L, N, PE), on W01's 14 AWG")
 part("sleeve_fit", "718075", "ELECTRICAL - CONDUIT CONNECTOR - LFNC 1/2 IN - STRAIGHT", "Điện - đầu nối ống luồn dây 1/2 in",
-     "PI", "710001", 1, "nylon 6, as supplied", "as supplied", 0.01, "assumption", maker="Electri-Flex",
+     "PI", "710001", 2, "nylon 6, as supplied", "as supplied", 0.01, "assumption", maker="Electri-Flex",
      sku="NMLT-11 (UL and cUL E197675; 1/2 in trade-size knockout)", status=HOLD_BUY,
      source="https://www.electriflex.com/wp-content/uploads/2016/07/Type-NMLT-NMSC-Nonmetallic-Type-B-Connectors-_-Electri-Flex-2.pdf",
-     note="the conduit 718017 into the unit's H04")
+     note="the conduit 718017 into the unit's H04 and into the inlet's rear box 711003")
 part("call_caps", "718076", "ELECTRICAL - CALL LIGHT PROFILE END CAP (PAIR)", "Điện - nắp bịt thanh nhôm đèn gọi (cặp)",
      "PI", "710024", 1, "plastic, silver", "as supplied", 0.004, "assumption", status=HOLD_BUY,
      note="the 0.9 m call light bar's two ends")
@@ -774,7 +787,12 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'Molex',
             '39-00-0049: Mini-Fit male crimp terminal, 22-28 AWG, tin-plated brass, bag',
             'https://www.molex.com/en-us/products/part-detail/39000049 ; https://tools.molex.com/pdm_docs/ps/PS-5556-001.pdf',
-            ''),
+            ''), '718079': ('FABORY 51119.050.001',
+            'Fabory',
+            '51119.050.001: hexagon nut with serrated flange, DIN ~6923 (ISO ~4161), M5, stainless A2; flange 11.8 '
+            'max, height 5 max, 8 across flats, 1.4 g',
+            'https://www.fabory.com/en/p/51119050001/generatePdf',
+            'its serrations lock it on the top lug; 1.2 N m (see 718014)'),
  '718001': ('MEAN WELL LPV-60-12',
             'Mean Well',
             "LPV-60-12: 12 V 0-5 A, 60 W, 90-264 VAC; 'Class 2 power unit', UL1310, Class II",
@@ -806,11 +824,12 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             ''),
  '718007': ('P&S 1597TRW',
             'Pass & Seymour (Legrand)',
-            '1597TRW: radiant tamper-resistant 15 A 125 V self-test duplex GFCI, white; cULus listed E42190; 1.73 x '
-            '4.2 x 1.13 in',
-            'https://www.legrand.us/p/print/1597TRW.pdf (read 2026-11-01)',
-            "1595TRW is no longer listed (Legrand's search sends it to 1597TRW); the same 1.73 x 4.2 x 1.13 in body "
-            "and decorator face, so the front plate's opening stays"),
+            '1597TRW: radiant tamper-resistant 15 A 125 V self-test duplex GFCI, white; cULus listed E42190; 43.9 '
+            'wide, 106.7 long over the strap, 28.7 deep (1.73 x 4.20 x 1.13 in, the product page; the cutsheet '
+            "drawing gives 1.03 in deep, and its 1.25 in is the strap ear's width)",
+            'https://www.legrand.us/p/print/1597TRW.pdf ; cutsheet CS3339 p. 3 (read 2026-11-01)',
+            "1595TRW is no longer listed (Legrand's search sends it to 1597TRW); the same body and decorator face, so "
+            "the front plate's opening stays; 28.7 deep keeps inside the front devices' 30 mm"),
  '718010': ('PHOENIX CONTACT NS 35/7,5 PERF 2000MM',
             'Phoenix Contact',
             '0843103: NS 35/7,5 PERF 2000MM, pack of 10, EN 60715 steel; one rail cut to 100 mm',
@@ -836,9 +855,13 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             ''),
  '718014': ('PEM FHA-M5-12',
             'PennEngineering (PEM)',
-            'FHA-M5-12: aluminium self-clinching flush-head stud M5 x 12, sheet 1.0 mm min., hole 5.0 +0.08',
-            'https://www.pemnet.com/products/product-finder/fha-m5-12/',
-            'nut torque 1.5 N m in aluminium (sheet)'),
+            'FHA-M5-12: self-clinching flush-head stud M5 x 12, 2024-T4 aluminium; sheet 1.0 mm min. (PEM\'s least, '
+            'and ours), hole 5.0 +0.08, hole centre 7.2 mm from an edge at least; tested in 1.55 mm 5052-H34: '
+            'pushout 900 N, torque-out 2.6 N m, nut torque 1.5 N m',
+            'https://www.pemnet.com/wp-content/uploads/sites/2/2022/06/fhdata.pdf (FH-5, FH-18, FH-30)',
+            'PEM gives no figures for 1.0 mm sheet, so the nut 718079 goes on at 1.2 N m (assumption, under PEM\'s 1.5) '
+            'over at least 1.7 mm of lugs (the thread stops 2.7 mm from the head); pressed with PEM\'s anvil for '
+            'sheet up to 1.5 mm; a torque-out test in a 1.0 mm 5052-H32 sample must reach 1.8 N m (1.5 x 1.2)'),
  '718015': ('FABORY 51460.060.001 DIN 6798 A',
             'Fabory',
             '51460.060.001: serrated lock washer, external teeth, DIN 6798 A, M6 (6.4), stainless A2',
@@ -1020,10 +1043,12 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             "39-01-2066 was the panel-mount plug with ears; X5 is the light shelf's plug-in joint on site (D-148)"),
  '718047': ('PEM CLA-M4-1',
             'PennEngineering (PEM)',
-            'CLA-M4-1: aluminium self-clinching nut M4, shank code 1 (sheet 1.0 mm min.), hole 5.94 +0.08',
-            'https://www.pemnet.com/products/product-finder/cla-m4-1/',
-            "the body's H05-H08 are Ø5.4 today: the clinch hole is 5.94 +0.08 (follow-up with the body's next "
-            'rebuild)'),
+            'CLA-M4-1: self-clinching nut M4, 2024-T4 aluminium, shank code 1 (sheet 1.0 mm min.), hole 5.94 +0.08, '
+            'hole centre 7.1 mm from an edge at least; pushout 534 N, torque-out 3.05 N m in 5052-H34',
+            'https://www.pemnet.com/wp-content/uploads/sites/2/2022/06/cldata.pdf (CL-5, CL-13, CL-18)',
+            "in the body's H05-H08 (Ø5.94, 10 mm from the lip's fold and 12 from its free edge, #353); head inside "
+            'the box, so the plate screws pull each nut onto the lip (CL-18); screw torque 2.13 N m for an A2-70 '
+            "screw (PEM's metric torque table)"),
  '718050': ('HÄFELE 833.74.176',
             'Häfele',
             '833.74.176: Loox5 LED 2168, 12 V, 6.0 W/m, 3000 K, 970 lm/m, Ra 92, R9 > 50; 5 m roll; cULus mark, '
@@ -1116,6 +1141,14 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'No.153',
             'https://www.panduit.com/en/products/wire-termination/electrical-terminals/disconnects/p204674.html#pn=DNF14-250FIB-C',
             ''),
+ '718075': ('ELECTRI-FLEX NMLT-11',
+            'Electri-Flex',
+            'NMLT-11: straight connector for 1/2 in liquidtight flexible nonmetallic conduit Type B (NM, NMHT, NMFG, '
+            'NM2), 1/2 in trade-size knockout, nylon 6, 94V-2, 125 C, O-ring and steel locknut; UL and cUL listed '
+            'E197675',
+            'https://www.electriflex.com/wp-content/uploads/2016/07/Type-NMLT-NMSC-Nonmetallic-Type-B-Connectors-_-Electri-Flex-2.pdf',
+            "one into the unit's H04 (Ø22.2, the 7/8 in hole for a 1/2 in trade-size knockout), one into the inlet's "
+            'rear box 711003; not for Type A or steel conduit'),
  '718076': ('HÄFELE 833.72.853',
             'Häfele',
             '833.72.853: end caps for Loox5 profile 2191, plastic, silver, pack of 2',
@@ -1135,9 +1168,6 @@ HOLDS = {'718003': "the breaker's own sheet (Eaton FAZ-C15/1-NA-L) can't be read
  '718068': "Noctua's NA-SYC1 page can't be read automatically, so it isn't quoted from the maker; the harness end "
            'waits on H-ELE-07',
  '718073': "its output must suit the in-house hub's input (H-ELE-13, ISS-060): analog or I2C not known yet",
- '718075': "the connector's knockout: NMLT-11 takes a 1/2 in trade-size knockout (7/8 in, 22.2 mm, by common "
-           'practice; its sheet gives only the trade size) and H04 is Ø25 (assumption): the hole and the connector '
-           "are settled together in the body's next rebuild",
  '718101': 'no maker sheet read gives a surface profile about 23 x 12.5 mm (20 mm base) with a satin cover of 86 % '
            "or more; the one 86 % cover found (KLUS G-22S) fits a 24.5 mm high profile, which changes the shelf's "
            'look (a PM call, D-126, D-127)',
