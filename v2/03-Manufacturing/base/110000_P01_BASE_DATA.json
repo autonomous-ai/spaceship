@@ -42,9 +42,7 @@
   "110104>111601": 1,
   "110104>111602": 1,
   "110104>118001": 3,
-  "110104>831001": 2,
   "110104>838001": 2,
-  "110104>838003": 2,
   "110104>838010": 2,
   "110106>111106": 1,
   "110106>111111": 1,
@@ -1868,160 +1866,6 @@
    "name": "ch_rn_csk_a",
    "unit": "deg",
    "value": 1.5708
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's dl_l1 in v2/01-CAD-Native/front/dl_block.py: outer facet length in plan",
-   "expression": "sqrt(dl_x2 * dl_x2 + ( dl_y2 - dl_y1 ) * ( dl_y2 - dl_y1 ))",
-   "name": "dlf_dl_l1",
-   "unit": "mm",
-   "value": 123.2396
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_d1x in v2/01-CAD-Native/front/dl_block.py: outer facet direction, X",
-   "expression": "dl_x2 / dlf_dl_l1",
-   "name": "dlf_sp_d1x",
-   "unit": "",
-   "value": 0.7465
-  },
-  {
-   "comment": "BASE SOURCE: FRONT's dl_skin_t in v2/01-CAD-Native/front/dl_block.py: ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)",
-   "expression": "3 mm",
-   "name": "dlf_dl_skin_t",
-   "unit": "mm",
-   "value": 3.0
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's fr_w in v2/01-CAD-Native/front/dl_block.py: frame tube 20 x 20 x 1.5, 6063-T6 (D-79), as DR and DT",
-   "expression": "20 mm",
-   "name": "dlf_fr_w",
-   "unit": "mm",
-   "value": 20.0
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_c in v2/01-CAD-Native/front/dl_block.py: the bottom ring tube's centre line, in from the outer faces",
-   "expression": "dlf_dl_skin_t + dlf_fr_w / 2",
-   "name": "dlf_sp_c",
-   "unit": "mm",
-   "value": 13.0
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_n1x in v2/01-CAD-Native/front/dl_block.py: outer facet normal into DL, X",
-   "expression": "( dl_y2 - dl_y1 ) / dlf_dl_l1",
-   "name": "dlf_sp_n1x",
-   "unit": "",
-   "value": 0.6654
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_tk in v2/01-CAD-Native/front/dl_block.py: the knee on the ring's centre line, along the outer facet",
-   "expression": "dlf_sp_c * ( 1 - dlf_sp_n1x ) / dlf_sp_d1x",
-   "name": "dlf_sp_tk",
-   "unit": "mm",
-   "value": 5.8273
-  },
-  {
-   "comment": "BASE SOURCE: FRONT's sp_e in v2/01-CAD-Native/front/dl_block.py: R-J13: spigots 100 in from the ends of the edge a part is set down on",
-   "expression": "100 mm",
-   "name": "dlf_sp_e",
-   "unit": "mm",
-   "value": 100.0
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_d1y in v2/01-CAD-Native/front/dl_block.py: outer facet direction, Y",
-   "expression": "-( dl_y2 - dl_y1 ) / dlf_dl_l1",
-   "name": "dlf_sp_d1y",
-   "unit": "",
-   "value": -0.6654
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_n1y in v2/01-CAD-Native/front/dl_block.py: outer facet normal into DL, Y",
-   "expression": "dl_x2 / dlf_dl_l1",
-   "name": "dlf_sp_n1y",
-   "unit": "",
-   "value": 0.7465
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_side in v2/01-CAD-Native/front/dl_block.py: the bottom edge's run along the side, from the back to the knee",
-   "expression": "( -pod_d / 2 + decor_d ) - ( -dl_y1 + dlf_sp_d1y * dlf_sp_tk + dlf_sp_c * dlf_sp_n1y )",
-   "name": "dlf_sp_side",
-   "unit": "mm",
-   "value": 19.1727
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_ta in v2/01-CAD-Native/front/dl_block.py: the round hole, along the outer facet from its corner",
-   "expression": "dlf_sp_tk + dlf_sp_e - dlf_sp_side",
-   "name": "dlf_sp_ta",
-   "unit": "mm",
-   "value": 86.6547
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_ax in v2/01-CAD-Native/front/dl_block.py: the round hole, X (-1176.7)",
-   "expression": "-pod_w / 2 + dlf_sp_d1x * dlf_sp_ta + dlf_sp_c * dlf_sp_n1x",
-   "name": "dlf_sp_ax",
-   "unit": "mm",
-   "value": -1176.6613
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_ay in v2/01-CAD-Native/front/dl_block.py: the round hole, Y (-718.0)",
-   "expression": "-dl_y1 + dlf_sp_d1y * dlf_sp_ta + dlf_sp_c * dlf_sp_n1y",
-   "name": "dlf_sp_ay",
-   "unit": "mm",
-   "value": -717.9528
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's dl_l2 in v2/01-CAD-Native/front/dl_block.py: front facet length in plan",
-   "expression": "sqrt(( dl_x3 - dl_x2 ) * ( dl_x3 - dl_x2 ) + ( dl_y3 - dl_y2 ) * ( dl_y3 - dl_y2 ))",
-   "name": "dlf_dl_l2",
-   "unit": "mm",
-   "value": 201.2585
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_d2x in v2/01-CAD-Native/front/dl_block.py: front facet direction, X",
-   "expression": "( dl_x3 - dl_x2 ) / dlf_dl_l2",
-   "name": "dlf_sp_d2x",
-   "unit": "",
-   "value": 0.8894
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_n2x in v2/01-CAD-Native/front/dl_block.py: front facet normal into DL, X",
-   "expression": "( dl_y3 - dl_y2 ) / dlf_dl_l2",
-   "name": "dlf_sp_n2x",
-   "unit": "",
-   "value": 0.4571
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_te in v2/01-CAD-Native/front/dl_block.py: the front facet's end at the door side, on the ring's centre line",
-   "expression": "( dl_w - dlf_sp_c - dl_x2 - dlf_sp_c * dlf_sp_n2x ) / dlf_sp_d2x",
-   "name": "dlf_sp_te",
-   "unit": "mm",
-   "value": 187.8309
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_bx in v2/01-CAD-Native/front/dl_block.py: the slot's centre, X (-1073.9)",
-   "expression": "-pod_w / 2 + dl_x2 + dlf_sp_d2x * ( dlf_sp_te - dlf_sp_e ) + dlf_sp_c * dlf_sp_n2x",
-   "name": "dlf_sp_bx",
-   "unit": "mm",
-   "value": -1073.9403
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_d2y in v2/01-CAD-Native/front/dl_block.py: front facet direction, Y",
-   "expression": "-( dl_y3 - dl_y2 ) / dlf_dl_l2",
-   "name": "dlf_sp_d2y",
-   "unit": "",
-   "value": -0.4571
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_n2y in v2/01-CAD-Native/front/dl_block.py: front facet normal into DL, Y",
-   "expression": "( dl_x3 - dl_x2 ) / dlf_dl_l2",
-   "name": "dlf_sp_n2y",
-   "unit": "",
-   "value": 0.8894
-  },
-  {
-   "comment": "BASE CALCULATION: FRONT's sp_by in v2/01-CAD-Native/front/dl_block.py: the slot's centre, Y (-780.6)",
-   "expression": "-dl_y2 + dlf_sp_d2y * ( dlf_sp_te - dlf_sp_e ) + dlf_sp_c * dlf_sp_n2y",
-   "name": "dlf_sp_by",
-   "unit": "mm",
-   "value": -780.5873
   }
  ],
  "parts": {
@@ -2133,13 +1977,13 @@
    ],
    "class": "MP",
    "key": "fl1",
-   "mass_kg": 0.138,
+   "mass_kg": 0.1383,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - FRONT - FACET 1 - LH",
    "name_vi": "Viền chân trước - mặt vát 1",
    "parent": "110104",
    "pn": "111104",
-   "volume_mm3": 51113.7
+   "volume_mm3": 51231.5
   },
   "111105": {
    "box_mm": [
@@ -2152,13 +1996,13 @@
    ],
    "class": "MP",
    "key": "fl2",
-   "mass_kg": 0.3808,
+   "mass_kg": 0.3811,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - FRONT - FACET 2 - LH",
    "name_vi": "Viền chân trước - mặt vát 2",
    "parent": "110104",
    "pn": "111105",
-   "volume_mm3": 141033.6
+   "volume_mm3": 141151.5
   },
   "111106": {
    "box_mm": [
