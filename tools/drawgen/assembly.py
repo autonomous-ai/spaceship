@@ -356,9 +356,29 @@ def children_of(rows, pn, keys, path):
     return own, []
 
 
+def foreign_rows(pn, team):
+    """[(list file, [rows])]: the rows of other teams' lists that name assembly pn as their parent (a parent column
+    with its number), teams in name order and each list's rows in its order. They are the assembly's own parts (the
+    Lead's ruling, 2026-11-01: ELECTRICAL's list puts the light shelf's LED profile, cover, end caps and clips under
+    INTERIOR's 810201)."""
+    out = []
+    for t in sorted(d for d in os.listdir(inputs.MANUF) if d != team and os.path.isdir(os.path.join(inputs.MANUF, d))):
+        for p in inputs.team_lists(t):
+            with open(p, newline="", encoding="utf-8") as fh:
+                rows = list(csv.DictReader(fh))
+            if not rows or "parent" not in rows[0] or "part_number" not in rows[0]:
+                continue
+            mine = [r for r in rows if (r.get("part_number") or "").strip() and
+                    pn in {x.strip() for x in (r.get("parent") or "").split("|")}]
+            if mine:
+                out.append((p, mine))
+    return out
+
+
 def list_rows(pn, team, parent_keys=()):
     """(the assembly's own row, [the rows directly under it], the list file) from the team's lists; rows under it in
-    two lists are an error (one list owns an assembly's parts)."""
+    two of them are an error (one list owns an assembly's parts). Other teams' rows that name it as their parent
+    follow (foreign_rows)."""
     keys = {pn} | set(parent_keys)
     own, kids, src = None, [], None
     for p in inputs.team_lists(team):
@@ -371,6 +391,9 @@ def list_rows(pn, team, parent_keys=()):
             if kids and src != p:
                 raise NotDrawable("%s: rows under it in two lists (%s and %s)" % (pn, inputs.rel(src), inputs.rel(p)))
             kids, src = mine, p
+    for p, mine in foreign_rows(pn, team):
+        kids = kids + mine
+        src = src or p
     return own, kids, src
 
 
@@ -418,9 +441,12 @@ class Assy:
     kind = "assembly"           # the sheet's kind in its drawing data; check() reads only 'assembly'
 
     def sources(self):
-        """What the sheet was drawn from, with their hashes: the STEP and the parts list."""
-        return [{"role": "STEP", "path": inputs.rel(self.step), "sha256_12": inputs.sha12(self.step)},
-                {"role": "parts list", "path": inputs.rel(self.list_file), "sha256_12": inputs.sha12(self.list_file)}]
+        """What the sheet was drawn from, with their hashes: the STEP and the parts list, then each other team's list
+        that puts parts under it."""
+        return ([{"role": "STEP", "path": inputs.rel(self.step), "sha256_12": inputs.sha12(self.step)},
+                 {"role": "parts list", "path": inputs.rel(self.list_file), "sha256_12": inputs.sha12(self.list_file)}]
+                + [{"role": "parts list", "path": inputs.rel(p), "sha256_12": inputs.sha12(p)}
+                   for p in self.foreign_lists if p != self.list_file])
 
     def __init__(self, pn, team, entry, step=None):
         self.pn, self.team, self.entry = pn, team, entry
@@ -437,6 +463,7 @@ class Assy:
             raise NotDrawable("%s: its STEP has parts without a part number (%s): every body belongs to a numbered "
                               "part (guideline 4.1)" % (pn, ", ".join(sorted({o.name or "?" for o in loose}))))
         own, kids, self.list_file = list_rows(pn, team, entry.get("parent_keys", ()))
+        self.foreign_lists = [p_ for p_, _r in foreign_rows(pn, team)]     # other teams' lists with parts under it
         if own is None:
             raise NotDrawable("%s: no row in %s's parts lists" % (pn, team))
         if not kids:
@@ -1078,6 +1105,21 @@ class Side:
         self.overall = {}       # axis: (p1, p2, side, gap) of the overall size drawn on this view
 
 
+def _prim_points(p):
+    """Points on a primitive (view mm): a line's ends, an arc's ends and the quadrant points it passes, points along
+    a curve."""
+    if p.kind == "line":
+        return [p.p, p.q]
+    if p.kind == "arc":
+        angs = [p.a0, p.a1]
+        k = math.ceil(p.a0 / (math.pi / 2))
+        while k * math.pi / 2 < p.a1:
+            angs.append(k * math.pi / 2)
+            k += 1
+        return [(p.c[0] + p.r * math.cos(a), p.c[1] + p.r * math.sin(a)) for a in angs]
+    return [bez(p.pts, i / 16.0) for i in range(17)]
+
+
 def pod_axis(d):
     """The pod axis ('X', 'Y' or 'Z') a view direction runs along."""
     return "XYZ"[max(range(3), key=lambda k: abs(d[k]))]
@@ -1101,12 +1143,10 @@ def overall_dims(sh, views, sides, entry=None, occs=None):
             val, full = x1 - x0, fx1 - fx0
             ya, fa = (y1, fy1) if side == "up" else (y0, fy0)
             p1, p2 = av.S((x0, ya)), av.S((x1, ya))
-            q1, q2 = av.S((fx0, fa)), av.S((fx1, fa))
         else:
             val, full = y1 - y0, fy1 - fy0
             ya, fa = (x0, fx0) if side == "left" else (x1, fx1)
             p1, p2 = av.S((ya, y0)), av.S((ya, y1))
-            q1, q2 = av.S((fa, fy0)), av.S((fa, fy1))
         gap = 10.0 + abs(fa - ya) * av.scale       # the size line clears a reference outline beyond the parts
         txt = fmt(val, 1)
         sh.dim_linear(p1, p2, side, gap, txt, 2.5)
@@ -1114,10 +1154,37 @@ def overall_dims(sh, views, sides, entry=None, occs=None):
         sides[av.name].overall[axis] = (p1, p2, side, gap)
         out.append({"view": av.name, "axis": axis, "value": round(val, 3), "text": txt})
         if pod_axis(av.view.x if axis == "x" else av.view.y) in combined and full - val > 0.05:
-            ctxt = "(%s)" % fmt(full, 1)
-            sh.dim_linear(q1, q2, side, 18.0, ctxt, 2.5)
-            sides[av.name].dims[side] = max(sides[av.name].dims[side], 22.0)
-            out.append({"view": av.name, "axis": axis, "value": round(full, 3), "text": ctxt, "reference": True})
+            combined_dim(av, axis, side, (x0, y0, x1, y1))
+
+    def combined_dim(av, axis, own_side, own):
+        """The combined size with the reference outlines, in brackets, on the side where a reference outline sets
+        its extreme, its extension lines from the points that set each end (Reviewer 16 on #412: the shelf's (52.5)
+        is set by the LED profile at its right end), outside the overall size when that is on the same side."""
+        fx0, fy0, fx1, fy1 = av.extent
+        k = 0 if axis == "x" else 1             # the size runs along this view coordinate; j across it
+        j = 1 - k
+        pts = [q for ps in av.prims for p in ps for q in _prim_points(p)]
+        lo_v, hi_v = (fx0, fx1) if axis == "x" else (fy0, fy1)
+        own_lo, own_hi = (own[0], own[2]) if axis == "x" else (own[1], own[3])
+        lo_pts = [q for q in pts if q[k] <= lo_v + 0.05] or [min(pts, key=lambda q: q[k])]
+        hi_pts = [q for q in pts if q[k] >= hi_v - 0.05] or [max(pts, key=lambda q: q[k])]
+        refs = [q for o, ps in zip(occs or [], av.prims) if o.item.ref for p in ps for q in _prim_points(p)
+                if q[k] < own_lo - 0.05 or q[k] > own_hi + 0.05]
+        lo_j, hi_j = (fy0, fy1) if axis == "x" else (fx0, fx1)
+        across = sum(q[j] for q in refs) / len(refs) if refs else (lo_j + hi_j) / 2
+        far_side = across - lo_j > hi_j - across
+        cside = ("up" if far_side else "down") if axis == "x" else ("right" if far_side else "left")
+        pick = max if far_side else min
+        a_, b_ = pick(lo_pts, key=lambda q: q[j]), pick(hi_pts, key=lambda q: q[j])
+        a_, b_ = ((a_[0], lo_v), (b_[0], hi_v)) if axis == "y" else ((lo_v, a_[1]), (hi_v, b_[1]))
+        far = pick(a_[j], b_[j])
+        base = 18.0 if cside == own_side else 10.0
+        gap = base + abs((hi_j if far_side else lo_j) - far) * av.scale
+        ctxt = "(%s)" % fmt(hi_v - lo_v, 1)
+        sh.dim_linear(av.S(a_), av.S(b_), cside, gap, ctxt, 2.5)
+        sides[av.name].dims[cside] = max(sides[av.name].dims[cside], base + 4.0)
+        out.append({"view": av.name, "axis": axis, "value": round(hi_v - lo_v, 3), "text": ctxt, "reference": True,
+                    "side": cside})
 
     want = (entry or {}).get("overall_sides", {})     # the entry may move one (a datum's leader goes that way)
     put(P, "x", want.get("x") or ("up" if "below" not in views else ("down" if "above" not in views else "up")))
@@ -1482,8 +1549,14 @@ def _view_words(views, nm):
 
 def notes_for(assy, views, ifaces=None, datums=None):
     e = assy.entry
-    out = ["Parts, quantities, materials and finishes as the parts list %s (its rows under %s), word for word; each "
-           "part's own drawing holds its sizes and tolerances." % (os.path.basename(assy.list_file), assy.pn)]
+    lists = [assy.list_file] + [p_ for p_ in getattr(assy, "foreign_lists", ()) if p_ != assy.list_file]
+    if len(lists) == 1:
+        out = ["Parts, quantities, materials and finishes as the parts list %s (its rows under %s), word for word; "
+               "each part's own drawing holds its sizes and tolerances." % (os.path.basename(assy.list_file), assy.pn)]
+    else:       # other teams' rows that name the assembly as their parent are its parts too (the Lead, 2026-11-01)
+        out = ["Parts, quantities, materials and finishes as the parts lists %s and %s (their rows under %s, in that "
+               "order), word for word; each part's own drawing holds its sizes and tolerances." % (
+                   ", ".join(os.path.basename(p_) for p_ in lists[:-1]), os.path.basename(lists[-1]), assy.pn)]
     un = [it for it in assy.table_items if not it.occs]
     if un:
         out.append("Items marked * (%s) are not in the STEP %s %s: they have no balloon; their places are in their "
@@ -1506,6 +1579,9 @@ def notes_for(assy, views, ifaces=None, datums=None):
                                it.no, it.pn, plural, ", ".join(keys), (it.row.get("status") or "HOLD").strip()))
     for it in assy.refs:
         r, _k, _f = list_rows(it.pn, assy.team)
+        if r is None:       # another team's part: its row in that team's lists
+            r = next((x for x in (inputs.parts_row(it.pn, t_)[0] for t_ in sorted(os.listdir(inputs.MANUF))
+                                  if os.path.isdir(os.path.join(inputs.MANUF, t_))) if x), None)
         par = (r or {}).get("parent", "").strip() if r else ""
         why = (r or {}).get("source", "").strip() if r else ""
         out.append("%s %s is drawn as a reference outline (thin long dash double-dot line, ISO 128-20 type 05) and "
@@ -2168,6 +2244,9 @@ def check(pdf_path):
     keys = {pn} | set(data.get("parent_keys", ()))
     with open(lst, newline="", encoding="utf-8") as fh:
         _own, rows = children_of(list(csv.DictReader(fh)), pn, keys, lst)
+    # then every other team's rows that name it as their parent (its parts too: the Lead, 2026-11-01)
+    owner = os.path.basename(os.path.dirname(lst))
+    rows = rows + [r for _p, mine in foreign_rows(pn, owner) for r in mine]
     tab = table_text(page, data)
     if sorted(tab) != list(range(1, len(rows) + 1)):
         fails.append("the table's items %s are not 1 to %d (the list's rows under %s)" % (sorted(tab), len(rows), pn))
