@@ -192,7 +192,8 @@ def poly_prism(comp, name, plane_axes, pts, along, a, b, ctx, op=None, bodies=No
     joins share one dimension, and every corner is dimensioned from a reference point air_sk_ref off the origin on both
     axes, so no dimension flips side in an edit. Adapted from FRONT's front_lib.poly and extrude_span (the skeleton's
     pod_skeleton.py pattern), proven in FRONT's DR builds. Returns the new body, or the feature when op joins or cuts."""
-    op = op or NEW
+    if op is None:            # not `op or NEW`: JoinFeatureOperation is 0, so `or` would turn a join into a new body
+        op = NEW
     plane = {("x", "y"): comp.xYConstructionPlane, ("x", "z"): comp.xZConstructionPlane,
              ("y", "z"): comp.yZConstructionPlane}[tuple(plane_axes)]
     sk = comp.sketches.add(plane)
