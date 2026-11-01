@@ -1208,7 +1208,10 @@ def test_angled_face_gets_its_own_view():
     doc = fitz.open(p)
     text = doc[0].get_text()
     assert "looking square to the angled face" in text and "VIEW D" in text, text[:400]
-    assert text.count("THRU (34)") == 2 and text.count("18 deep, drill point 118°") == 2, text
+    # the key design's version 3 (#324) cuts 111212 at the mitre's exact -24.1446° (it was -24.14): the STEP's angled
+    # holes (Ø5.035) have their longest wall line 34.005 long (OCC, read from the STEP), so THRU (34.01); the two
+    # holes from below stay 18.000 deep
+    assert text.count("THRU (34.01)") == 2 and text.count("18 deep, drill point 118°") == 2, text
     # its own origin: X from the face's centre line, Y from its bottom (Joints' key sheet: 26 and 60 above it)
     import re as _re
     assert sorted(_re.findall(r"H0[34]\s+(-?[\d.]+)\s+(-?[\d.]+)", text)) == [("0.00", "26.00"), ("0.00", "60.00")], text
