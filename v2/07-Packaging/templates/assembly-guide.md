@@ -119,7 +119,7 @@ Unplug the pod's cord first. Then the reverse order: ledge; ceiling linings (unh
 | The dashed blocks in the step pictures (B3 and B4, their two cassettes, the band's front-left pieces): drawn from their CAD when it lands | WALL, BASE; Packing and Assembly redraws | the pictures' check fails while any picture is stale |
 | The driver's clutch value and the bit length for the captive bolts, with margin against the rivnut spinning out | Joints Engineer | the PM's ruling 2026-11-01 |
 | The seam prop's height and its spot under the front end of the C1-C2 seam ({{PROP_H}} mm from the skeleton for now), and that C2's seam corner shares its cap with C1's | CEILING | asked |
-| The kick strip's two end brushes 368008 and 368009: their products, and the lowest room temperature their adhesive takes | FRONT, Hardware Engineer | HOLD-23 and HOLD-25 (joints register H-43, H-46; D-153, D-154) |
+| The kick strip's two end brushes 368008 and 368009: their products (they go on with 3M VHB LSE tape at 10 °C or warmer, the PM's ruling) | FRONT, Hardware Engineer | HOLD-23 and HOLD-25 (joints register H-43, H-46; D-153, D-154) |
 | Which of the six overhead lifts already rest hands-free (the ceiling halves on the wall tops, DT on DL and DR, the exhaust cartridge in the soffit, the ceiling cassettes on their catches); a ledge or hook on an existing part where one is missing | CEILING, FRONT, AIR | the PM's ruling 2026-11-01 |
 | Lift-off hinges set in the factory (about 4 minutes) | FRONT, in the hinge HOLD's asks for the factory (D-138) | asked |
 | A plug-in light shelf (about 3 minutes) | ELECTRICAL, with its connector choice | asked |

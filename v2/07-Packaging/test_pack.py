@@ -147,6 +147,29 @@ def test_d87_in_the_steps():
     assert all(o["secs"] < 600 for o in power["ops"])
 
 
+def test_guide_rulings_d167_d169_d170_and_the_brush_tape():
+    # D-167: side panels land about 3.4 out and are pulled in; the walls lean out 3.4 (about 24 N) to take the ceiling.
+    # D-169: DL on 2 pins, no base spigots. D-170: lower wall cassettes sit on their ledges, the clips only hold. The
+    # PM's ruling: the brushes go on with 3M VHB LSE tape, IPA wipe first, 10 C or warmer; Reviewer 11: 368009 with
+    # the door wide open, the slip sheet taped on DL's top
+    by = {s["title"].split(":")[0]: s for s in pack.STEPS}
+    assert "3.4 mm out" in by["Lower side walls"]["A"] and "pull each side panel in" in by["Lower side walls"]["B"]
+    assert "3.4 mm out" in by["Upper side walls"]["A"]
+    ceiling = by["Ceiling"]["A"]
+    assert "3.4 mm" in ceiling and "24 N" in ceiling and "D-167" in ceiling, ceiling
+    dl = next(s for s in pack.STEPS if s["title"].startswith("Left decor block DL"))
+    assert "2 pins" in dl["A"] and "spigots" not in dl["A"] and "on its stops" in dl["check"], dl
+    fix8 = next(f for f in pack.OTHER_FIXINGS if f["step"] == dl["n"])
+    assert "pins" in fix8["text"] and "spigots" not in fix8["text"], fix8
+    lin = next(s for s in pack.STEPS if s["title"].startswith("Wall linings"))
+    assert "ledge" in lin["A"] and "only hold" in lin["A"] and "floats" not in lin["check"], lin
+    door = next(s for s in pack.STEPS if s["title"].startswith("Door"))
+    for words in ("3M VHB LSE", "10 °C or warmer", "IPA wipe", "only just open", "wide open"):
+        assert words in door["B"], words
+    dt = next(s for s in pack.STEPS if s["title"].startswith("Top decor block DT"))
+    assert "tapes it on DL's top" in dt["A"] and "takes the tape off" in dt["B"], dt
+
+
 def test_sizes_follow_the_skeleton():
     # a panel with no CAD yet is the skeleton's named values; one with CAD is at least that, plus what its CAD adds
     b3 = pack.PIECE["1-05"]
@@ -354,10 +377,10 @@ def test_kick_strip_brushes():
     assert len(brush) == 1 and brush[0]["n"] == 2 and brush[0]["secs"] * brush[0]["n"] == 60, brush
     srcs = [o["src"] for o in door["ops"]]
     assert srcs.index("t_door_prehung_min") < srcs.index("t_brush_s"), srcs
-    for words in ("alcohol wipe", "stands each brush on the room floor", "presses it firmly along its whole length", "368008"):
+    for words in ("IPA wipe", "stands the brush on the room floor", "presses it firmly along its whole length", "368008"):
         assert words in door["B"], words
     note = pack.PIECE["2-02"].note
-    assert "kit bag" in note and "368008" in note and "hinge-end brush 368009" in note and "alcohol wipe" in note, note   # D-154
+    assert "kit bag" in note and "368008" in note and "hinge-end brush 368009" in note and "IPA wipe" in note, note   # D-154
     assert [f for f in pack.OTHER_FIXINGS if f["step"] == door["n"] and "end brushes" in f["where"] and f["count"] == 0]
     without = [dict(s, ops=[o for o in s["ops"] if o["src"] != "t_brush_s"]) for s in pack.STEPS]
     delta = pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS) - pack.clock_min(without, pack.OTHER_FIXINGS)

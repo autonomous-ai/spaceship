@@ -89,8 +89,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 3 min for 2 people.
 - **Parts:** **1-03** WALL - PANEL ASSY - SIDE LOWER - LH (11.2 kg), **1-04** WALL - PANEL ASSY - SIDE LOWER - RH (11.2 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
-- **Person A:** Stands L1 on its band spigots against B1's edge and holds it; then R1 against B2.
-- **Person B:** Drives the 4 base bolts of each, then the 3 lower back-corner bolts each side (L1-B1, R1-B2), from the back panels' bays.
+- **Person A:** Stands L1 on its band spigots about 3.4 mm out from B1's edge, where the seam gasket stands proud (D-167), and holds it; then R1 the same at B2.
+- **Person B:** Drives the 4 base bolts of each, then the 3 lower back-corner bolts each side (L1-B1, R1-B2), from the back panels' bays: they pull each side panel in onto its stops, squeezing the gasket (D-167).
 - **Check before the next step:** Corners closed onto their stops; side panels' front edges in line with the band's front end.
 
 ### Step 5. Upper back wall: B3, B4
@@ -111,7 +111,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 3 min for 2 people.
 - **Parts:** **1-07** WALL - PANEL ASSY - SIDE UPPER - LH (11.3 kg), **1-08** WALL - PANEL ASSY - SIDE UPPER - RH (11.3 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-WALL-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
-- **Person A:** Lifts L2 onto L1's spigots against B3's edge, then R2 onto R1 against B4.
+- **Person A:** Lifts L2 onto L1's spigots about 3.4 mm out from B3's edge (D-167), then R2 onto R1 the same at B4.
 - **Person B:** Drives the 4 horizontal-seam bolts each (L1-L2, R1-R2), then the 3 upper back-corner bolts each side (L2-B3, R2-B4) FINGER-TIGHT only.
 - **Check before the next step:** The 6 upper corner bolts are finger-tight, so the wall tops can follow the ceiling (R-J9).
 
@@ -122,7 +122,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 6 min for 2 people.
 - **Parts:** **1-09** CEILING - PANEL ASSY - C1 (10.0 kg), **1-10** CEILING - PANEL ASSY - C2 (10.9 kg).
 - **Fasteners:** 4 × 838002 M6 × 25 (J-CEIL-02); 16 × 838001 M6 × 16 (J-CEIL-01). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
-- **Person A:** First stands the seam prop (the timber labelled SEAM PROP, kept from pallet 2's packing in step 1) upright on its plywood foot, on one 5 mm setting packer from the kit, midway between the side walls and in line with their front edges: under the front end of the C1-C2 seam. Its 150 mm cap straddles the seam with about 50 mm to spare either side, so nothing needs measuring, and it stands on its own. With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2 and its seam corner onto the prop's cap, and both let go: C1 rests on the wall tops and the prop before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in, its seam corner onto the cap beside C1's. C2 carries the roof slot. The prop is cut 5 mm short of the corners' 2354 mm, so where the floor is high under it, the packer stays out: the prop can't hold a corner up.
+- **Person A:** First stands the seam prop (the timber labelled SEAM PROP, kept from pallet 2's packing in step 1) upright on its plywood foot, on one 5 mm setting packer from the kit, midway between the side walls and in line with their front edges: under the front end of the C1-C2 seam. Its 150 mm cap straddles the seam with about 50 mm to spare either side, so nothing needs measuring, and it stands on its own. With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2 and its seam corner onto the prop's cap, and both let go: C1 rests on the wall tops and the prop before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in, its seam corner onto the cap beside C1's. C2 carries the roof slot. Each half leans its side wall's top out about 3.4 mm as it goes down (about 24 N, D-167): the upper corner bolts are still finger-tight for this, and the side-edge bolts pull the walls back in. The prop is cut 5 mm short of the corners' 2354 mm, so where the floor is high under it, the packer stays out: the prop can't hold a corner up.
 - **Person B:** Drives the 4 pins of the C1-C2 closing seam and, as soon as they are in, takes the seam prop and its packer away; the prop stays with the pod, as taking the ceiling down needs it again. Then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 6.
 - **Caution:** Nobody leans on the seam prop or brushes it while C1 goes up: on its foot alone it tips easily, until C1's corner sits on it.
 - **Check before the next step:** Ceiling seams closed; the C1-C2 gap even (4.3 to 6.7 mm); all 6 upper corner bolts now tight.
@@ -133,10 +133,10 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 - **Time:** about 2 min for 2 people.
 - **Parts:** **2-08** FRONT - DECOR BLOCK ASSY - DL (12.3 kg).
-- **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DL stands on its spigots on the band, no bolts (J-FRONT-02). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
-- **Person A:** With B, carries DL (2.3 m) from its place to the front-left and stands it on its spigots on the band, against L1 and L2's front edges, hinge halves toward the door opening.
-- **Person B:** Drives 3 bolts into DL from each of L1's and L2's front bays (6). DL stands on its spigots on the band and needs no bolt there (J-FRONT-02).
-- **Check before the next step:** DL plumb (spirit level on its door-side face); the hinge halves free.
+- **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DL locates on its 2 pins in L1's front member, no bolts at the band (D-169). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
+- **Person A:** With B, carries DL (2.3 m) from its place to the front-left and sets it on the band about 3.4 mm out from L1's and L2's front edges, hinge halves toward the door opening, and holds it there while B bolts it: its 2 pins go into the slots in L1's front member before the seam strip touches (D-169).
+- **Person B:** Drives 3 bolts into DL from each of L1's and L2's front bays (6); they pull DL in on its 2 pins onto its stops (D-169). DL has no spigots under it and needs no bolt at the band.
+- **Check before the next step:** DL on its stops all along; DL plumb (spirit level on its door-side face); the hinge halves free.
 
 ### Step 9. Fixed glass, then the right decor block DR
 
@@ -158,7 +158,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Parts:** **2-02** FRONT - DOOR UNIT (48.6 kg).
 - **Fasteners:** the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named); the kick strip's two end brushes, pressed on by hand (368008 at the fixed glass's end, 368009 at DL's end; both HOLD).
 - **Person A:** Stacks setting packers from the kit on the room floor where the door's bottom corners land, each stack as high as the base band's bottom edge beside it (about 10 mm; the door's kick strip hangs on that line and the room floor is not flat, D-132). With B, tilts the door unit up in the crate on its padded long edge, both suction lifters at its top edge (each lifts about 12 kg at the start), onto the padded glass rest; then both carry it upright (about 25 kg each) and stand it on the packers, so its hinge halves meet DL's at their height, and lower them on.
-- **Person B:** Secures the hinges as the named set requires (HOLD) and slides the packers out. Then fits the kick strip's two end brushes from the door's kit bag (taped to the kick strip), with the door only just open and held still (see the caution): wipes both end faces with the bag's alcohol wipe, stands each brush on the room floor against its end face (368008 at the fixed glass's end, 368009, the longer-pile hinge-end brush, at DL's end) and presses it firmly along its whole length (D-153, D-154). With the door only just open, each brush meets the floor close to where it seals. Then swings the door slowly to 90 degrees and back, checking that its kick strip runs level with the band's bottom edge, about 10 mm over the room floor, and that the drop seal comes down onto the floor and each brush closes against the end plate beside it when it shuts (D-132, D-150). The hinges hold the door at its closed position; there is no lock (D-83).
+- **Person B:** Secures the hinges as the named set requires (HOLD) and slides the packers out. Then fits the kick strip's two end brushes from the door's kit bag (taped to the kick strip), the door held still (see the caution). Each goes on with its 3M VHB LSE tape at 10 °C or warmer, per 3M's own sheet: first wipes the end face with the bag's IPA wipe, then stands the brush on the room floor against it and presses it firmly along its whole length (D-153, D-154). 368008, at the fixed glass's end, goes on with the door only just open, so it meets the floor close to where it seals; 368009, the longer-pile brush at DL's end, with the door wide open, as at the pivot it is out of reach otherwise. Then swings the door slowly to 90 degrees and back, checking that its kick strip runs level with the band's bottom edge, about 10 mm over the room floor, and that the drop seal comes down onto the floor and each brush closes against the end plate beside it when it shuts (D-132, D-150). The hinges hold the door at its closed position; there is no lock (D-83).
 - **Caution:** Pinch points: the door hangs on hinges still on HOLD and shuts to 11 mm at the hinge end and 4.5 mm at the latch end. While B works at the kick strip's ends, A holds the door, or a packer wedges its free corner, and fingers stay clear of the hinge side.
 - **Check before the next step:** The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub; both end brushes stand on the floor along their whole length.
 
@@ -169,8 +169,8 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 2 min for 2 people.
 - **Parts:** **2-11** FRONT - DECOR BLOCK ASSY - DT (7.9 kg).
 - **Fasteners:** 4 × 838001 M6 × 16 (J-FRONT-03). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
-- **Person A:** First lays a PE sheet from the packing over DL's 45 degree slope, where DT's end will bear: the slip sheet that keeps the two skins from scuffing (D-152). From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge, and both let go: DT rests on DL's slope and DR before its bolts.
-- **Person B:** Drives DT's 4 bolts to the ceiling (J-FRONT-03), then pulls the slip sheet out from between DT and DL's slope.
+- **Person A:** First drapes a PE sheet from the packing over DL's top and down its 45 degree slope, where DT's end will bear, and tapes it on DL's top so it can't slide off the slope: the slip sheet that keeps the two skins from scuffing (D-152). From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge, and both let go: DT rests on DL's slope and DR before its bolts.
+- **Person B:** Drives DT's 4 bolts to the ceiling (J-FRONT-03), then takes the tape off DL's top and pulls the slip sheet out from between DT and DL's slope.
 - **Check before the next step:** The slip sheet is out; the glass's top edge is in DT's channel; 4 mm head gap over the door all along; the top band line straight; the door's strike 368102 closes onto the 35 N magnetic catch 368007 in DT's underside (D-83).
 
 ### Step 12. Electrics, first fix (power off)
@@ -200,9 +200,9 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 8 min for 2 people.
 - **Parts:** **1-11** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-12** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-13** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-15** LINING - CASSETTE - BACK LOWER - B1 (8.0 kg), **1-16** LINING - CASSETTE - BACK LOWER - B2 (8.0 kg), **1-17** LINING - CASSETTE - BACK UPPER - B3 (8.4 kg), **1-18** LINING - CASSETTE - BACK UPPER - B4 (8.4 kg).
 - **Fasteners:** none.
-- **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).
+- **Person A:** Fits R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4. Each lower cassette (R1, L1, B1, B2) sits on its ledge, the steel angle along the panel's bottom rail, its bottom return on the ledge's pad, and is pressed onto its clips, which only hold (D-170); each upper cassette stands on the one below through the foam strip in their joint and is pressed onto its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).
 - **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
-- **Check before the next step:** Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.
+- **Check before the next step:** Every bolt in its bay was driven before the bay is closed. Each cassette touches nothing but its clips and, below it, its ledge's pad or the foam strip on the cassette below (D-170).
 
 ### Step 15. Air column and supply cartridge
 
@@ -316,7 +316,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | Step | Fixing | Owner | Count used here | Size | Status | Note |
 | ---: | --- | --- | ---: | --- | --- | --- |
 | 2 | Base band corner keys (6 keys; the side bands carry the back-corner keys, D-129) | BASE | 0 | none on site: hook studs and fixing bolts in the factory | registered: J-BASE-02 (0 on site, 20 in the factory) | D-87: the keys hook in; part numbers 111211 to 111214 (joints register) |
-| 8 | DL on the base band | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | DL stands on its spigots; its bolts are J-FRONT-01's, into the side walls |
+| 8 | DL on the base band | FRONT and WALL | 0 | none: 2 pins 831001 in L1's slots | D-169: DL's base spigots go | DL locates on its 2 pins along the pull; its bolts are J-FRONT-01's, into the side walls |
 | 9 | DR on its support behind the mesh band piece | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | D-62: the block's own support carries it; the mesh carries no load |
 | 10 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD in the register (D-46, ISS-002) | time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM) |
 | 10 | The kick strip's two end brushes | FRONT | 0 | self-adhesive brush strips, each about 105 long, from the room floor to Z 105 | HOLD-23 (368008) and HOLD-25 (368009): joints register H-43, H-46 (D-153, D-154) | time is in the door step (t_brush_s); they ship in the door's kit bag (the PM's ruling 2026-11-01) |
@@ -455,7 +455,7 @@ Unplug the pod's cord first. Then the reverse order: ledge; ceiling linings (unh
 | The dashed blocks in the step pictures (B3 and B4, their two cassettes, the band's front-left pieces): drawn from their CAD when it lands | WALL, BASE; Packing and Assembly redraws | the pictures' check fails while any picture is stale |
 | The driver's clutch value and the bit length for the captive bolts, with margin against the rivnut spinning out | Joints Engineer | the PM's ruling 2026-11-01 |
 | The seam prop's height and its spot under the front end of the C1-C2 seam (2354 mm from the skeleton for now), and that C2's seam corner shares its cap with C1's | CEILING | asked |
-| The kick strip's two end brushes 368008 and 368009: their products, and the lowest room temperature their adhesive takes | FRONT, Hardware Engineer | HOLD-23 and HOLD-25 (joints register H-43, H-46; D-153, D-154) |
+| The kick strip's two end brushes 368008 and 368009: their products (they go on with 3M VHB LSE tape at 10 °C or warmer, the PM's ruling) | FRONT, Hardware Engineer | HOLD-23 and HOLD-25 (joints register H-43, H-46; D-153, D-154) |
 | Which of the six overhead lifts already rest hands-free (the ceiling halves on the wall tops, DT on DL and DR, the exhaust cartridge in the soffit, the ceiling cassettes on their catches); a ledge or hook on an existing part where one is missing | CEILING, FRONT, AIR | the PM's ruling 2026-11-01 |
 | Lift-off hinges set in the factory (about 4 minutes) | FRONT, in the hinge HOLD's asks for the factory (D-138) | asked |
 | A plug-in light shelf (about 3 minutes) | ELECTRICAL, with its connector choice | asked |
