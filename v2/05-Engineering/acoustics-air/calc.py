@@ -848,6 +848,7 @@ def fanbox_r(bx, path, i, f, derate=None):
 # masses; the panel's outline from skeleton P04 (calculation).
 DR_TRANSITION = (0.30, 0.15, 0.40)   # m: the upper transition (HOLD) as a duct: width, depth, length (ASSUME)
 BOOT_TAPER_K = 0.05                  # ASSUME: the boot's tapered mouth into its throat, at the throat's speed
+BOOT_KG = 0.5                        # kg: D-130's sealed intake boot (AIR) and the cartridges' inlet-end gaskets (ASSUME)
 
 
 def boot_neck_k():
@@ -997,8 +998,9 @@ def d60_parts(casing="al20"):
          f"3 mm aluminium casing (D-124), a 2 mm bulkhead; 50 mm linings at 32 kg/m3 where they fit, "
          f"{rooms['exhaust']['lined']:.3f} m2 (D-121); sleeve 0.093 m2 of 2 mm aluminium"),
         ("Intake riser with a mesh allowance, in the right block", f"{lo_w*1000:.0f}-{up_w*1000:.0f} x {lo_d*1000:.0f} x {(lo_l+up_l)*1000:.0f}",
-         (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5,
-         "1 mm galvanised steel; 0.5 kg for its sealed intake boot from the mesh (D-130) and its foot (assumption)"),
+         (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5 + BOOT_KG,
+         f"1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces, and "
+         f"{BOOT_KG:g} kg for D-130's sealed intake boot and the cartridges' gaskets (assumptions)"),
         ("Roof slot grille and sleeve", "285 x 294", 0.5, "assumption"),
     ]
     return rows
