@@ -166,6 +166,20 @@ def holes(view):
     return sorted(seen.values(), key=lambda c: (xy(c.centerPoint)[0], xy(c.centerPoint)[1]))
 
 
+def round_centres(view):
+    """One arc or circle per centre. A keyhole's Ø12 entry and its slot's round end show as arcs (the
+    slot cuts each circle open), so they aren't holes() and only their centres place them."""
+    vc = view.viewCurves
+    kinds = (adsk.drawing.ViewCurveTypes.ArcViewCurveType, adsk.drawing.ViewCurveTypes.CircleViewCurveType)
+    seen = {}
+    for i in range(vc.count):
+        c = vc.item(i)
+        if c.type in kinds:
+            x, y = xy(c.centerPoint)
+            seen.setdefault((round(x, 3), round(y, 3)), c)
+    return sorted(seen.values(), key=lambda c: (xy(c.centerPoint)[0], xy(c.centerPoint)[1]))
+
+
 def dim(sheet, a, b, place):
     d = sheet.drawingDimensions.addLinearDimension(a, b, dpt(*place), False)
     if d is None:
@@ -215,11 +229,12 @@ def overall(sheet, view, below=True, left=True, gap=8.0, which="both"):
     return o, n
 
 
-def hole_dims(sheet, view, origin, side="below", step=6.0, gap=8.0):
+def hole_dims(sheet, view, origin, side="below", step=6.0, gap=8.0, hs=None):
     """Every hole centre from the datum corner: baseline dimensions along the
-    view's x, stacked on one side, plus the hole line's offset along y."""
+    view's x, stacked on one side, plus the hole line's offset along y.
+    hs: the curves whose centres to place (default: the view's holes)."""
     e = extent(view)
-    hs = holes(view)
+    hs = holes(view) if hs is None else hs
     done_x = set()
     i = 0
     for c in hs:
@@ -391,8 +406,9 @@ def run(_context):
         end = made["left"] if "left" in made else made["right"]
         o_l, n = overall(sheet, end, below=True, left=False, gap=6.0)
         n_dims += n
-        if holes(end):           # an end plate's keyhole entries, from the end view's corner
-            n_holes += hole_dims(sheet, end, o_l, side="above")
+        keys = round_centres(end)   # an end plate's keyhole entries and seats, from the end view's corner
+        if keys:
+            n_holes += hole_dims(sheet, end, o_l, side="above", hs=keys)
     elif kind == "plate":
         o, n = overall(sheet, made["top"])
         n_dims += n

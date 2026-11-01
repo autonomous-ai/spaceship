@@ -66,6 +66,30 @@ def expected_side_holes(b, design):
     return sorted((round(x, 2), round(y, 2)) for y in ys)
 
 
+def expected_back_corner(b, design):
+    """D-129: the back key's fixing holes (X, Y) and stud bolt holes (Y, Z) in the left side band, and the
+    back band's slot ends (Y, Z), from the same expressions as the build."""
+    v = lambda e: b["ev"](design, e)  # noqa: E731
+    yc = v("pod_d / 2 - band_t / 2")
+    xf = -v("pod_w / 2 - band_t + band_wall + ck_x - ck_e")
+    fix = [(xf, yc - v("ck_y / 2 - ck_e")), (xf, yc + v("ck_y / 2 - ck_e"))]
+    studs = [(yc, v("glide_h + band_wall + %s" % z)) for z in ("st_z1", "st_z2")]
+    slot = [(yc, v("glide_h + band_wall + st_z2 + bs_end"))]
+    return fix, studs, slot
+
+
+def measure_back_corner(b, design):
+    side = b["find_comp"](design, "band_l_tube").bRepBodies.item(0)
+    back = b["find_comp"](design, "band_b_tube").bRepBodies.item(0)
+    ev = b["ev"]
+    return (b["centres"](side, ev(design, "ck_fix_hole"), "z"), b["centres"](side, ev(design, "st_hole"), "x"),
+            b["centres"](back, ev(design, "kh_slot"), "x"))
+
+
+def found(got, want):
+    return all(any(abs(g[0] - w[0]) < 0.05 and abs(g[1] - w[1]) < 0.05 for g in got) for w in want)
+
+
 def measure(b, design):
     boxes = {}
     for key in ("band_l_tube", "band_b_tube", "floor_f1", "mat_f1"):
@@ -99,6 +123,7 @@ def run(_context):
         print("edit test on a copy of %s (root %s, %d user parameters, %d timeline items)" % (
             os.path.relpath(F3D, b["REPO"]), design.rootComponent.partNumber, up.count, design.timeline.count))
         before_boxes, before_holes = measure(b, design)
+        before_bc = measure_back_corner(b, design)
         original = {}
         for label, edits in EDITS:
             for name, expr in edits.items():
@@ -129,13 +154,20 @@ def run(_context):
                                                                "OFF: got %s want %s" % (holes, wh)))
             if not same:
                 failures.append(label + ": side band holes")
+            got_bc, want_bc = measure_back_corner(b, design), expected_back_corner(b, design)
+            ok_bc = all(found(g, w) for g, w in zip(got_bc, want_bc))
+            print("  back corner (D-129): key fixing and stud bolt holes, slot ends: %s" % (
+                "follow" if ok_bc else "OFF: got %s want %s" % (got_bc, want_bc)))
+            if not ok_bc:
+                failures.append(label + ": back corner holes")
         for name, expr in original.items():
             up.itemByName(name).expression = expr
         adsk.doEvents()
         design.computeAll()
         after_boxes, after_holes = measure(b, design)
         worst = max(compare(after_boxes[k], before_boxes[k]) for k in before_boxes)
-        back = worst < 0.01 and after_holes == before_holes and not unhealthy(design)
+        back = worst < 0.01 and after_holes == before_holes and measure_back_corner(b, design) == before_bc \
+            and not unhealthy(design)
         print("revert to the design values: largest difference %.4f mm, holes %s, timeline %s -> %s" % (
             worst, "same" if after_holes == before_holes else "DIFFERENT",
             "healthy" if not unhealthy(design) else "UNHEALTHY", "RESTORED" if back else "NOT RESTORED"))

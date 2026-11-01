@@ -107,13 +107,18 @@ BATCH1 = ("band_r", "band_r_tube", "floor_assy2", "floor_f2", "mat_f2", "loc_spi
           "front_r", "fr1", "sill")
 
 
-P02_BATCH_KEYS = BATCH1
+# batch 2: the front-left pieces under DL (with --arg batch2=1; its method sample first: --arg part=fl1)
+BATCH2 = ("front_l", "fl1", "fl2", "cap_l")
+
+P02_BATCH_KEYS = BATCH1 + (BATCH2 if ARGS.get("batch2") == "1" else ())
 
 
-def p02_setup(keys=BATCH1):
+def p02_setup(keys=P02_BATCH_KEYS):
     """Adds the P02 parameters and the parts of this batch (keys) to base_build's tables."""
     global SUB_DESIGNS, HOLDING_KEYS, WITH_ASSEMBLY
     BASE_PARAMS.extend(P02_PARAMS)
+    if "fl1" in keys or "fl2" in keys:
+        BASE_PARAMS.extend(front_dl_params())     # DL's spigot points, FRONT's named values (J-FRONT-02)
     if "loc_spigot" in keys:
         HOLDING_KEYS = tuple(HOLDING_KEYS) + ("loc_spigot",)
     PARTS.update({k: P02_PARTS[k] for k in keys})
@@ -127,7 +132,8 @@ def p02_setup(keys=BATCH1):
         WITH_ASSEMBLY = tuple(WITH_ASSEMBLY) + ("band_r_tube",)
     PART_BUILDS.update({k: fns for k, fns in (
         ("band_r_tube", ("step_p02_band_r",)), ("fr1", ("step_p02_fr1",)), ("sill", ("step_p02_sill",)),
-        ("floor_f2", ("floor_panel_f2",)), ("loc_spigot", ("loc_spigot_part",)), ("threshold", ("step_p02_threshold",)))
+        ("floor_f2", ("floor_panel_f2",)), ("loc_spigot", ("loc_spigot_part",)), ("threshold", ("step_p02_threshold",)),
+        ("fl1", ("step_p02_fl1",)))
         if k in keys})
 
 
@@ -579,3 +585,273 @@ def p02_export(design, out):
                        "rivnut_hole": v("ch_rn_hole")}
     if "threshold" in keys:
         out["threshold"] = {"length": round(v("fix_xbl - dl_w"), 2), "x0": v("%s + dl_w" % XL_)}
+
+
+# ---------------------------------------------------------------- batch 2: the front-left pieces under DL
+
+FRONT_DL = "v2/01-CAD-Native/front/dl_block.py"
+FRONT_DL_WANT = ("sp_ax", "sp_ay", "sp_bx", "sp_by")
+
+
+def front_dl_params(prefix="dlf_"):
+    """FRONT's named values for DL's two spigots on the band (J-FRONT-02: sp_ax, sp_ay on FL1, sp_bx, sp_by on
+    FL2), read from FRONT's DL model with every value they need, so one source drives both models (linked, not
+    copied). FRONT's own names get the prefix, as some clash with BASE's (sp_e); skeleton names stay. A name that
+    is neither FRONT's nor the skeleton's stops the build."""
+    import re
+    path = os.path.join(REPO, FRONT_DL)
+    with open(path, encoding="utf-8") as fh:
+        tree = ast.parse(fh.read(), path)
+    # FRONT's list mixes literals with its module's string constants (XL + " + dl_w - ..."): each entry is read
+    # on its own, with those constants and nothing else
+    consts, own = {}, None
+    for node in tree.body:
+        if not (isinstance(node, ast.Assign) and len(node.targets) == 1):
+            continue
+        tgt, val = node.targets[0], node.value
+        if isinstance(tgt, ast.Tuple) and isinstance(val, ast.Tuple) and len(tgt.elts) == len(val.elts):
+            pairs = list(zip(tgt.elts, val.elts))           # XL, XR = "-pod_w / 2", "pod_w / 2"
+        else:
+            pairs = [(tgt, val)]
+        for t, el in pairs:
+            if isinstance(t, ast.Name) and isinstance(el, ast.Constant) and isinstance(el.value, str):
+                consts[t.id] = el.value
+        if isinstance(tgt, ast.Name):
+            if tgt.id == "OWN" and isinstance(node.value, ast.List):
+                own = []
+                for el in node.value.elts:
+                    try:
+                        own.append(ast.literal_eval(el))
+                    except ValueError:
+                        own.append(eval(compile(ast.Expression(el), path, "eval"), {"__builtins__": {}}, dict(consts)))
+    if own is None:
+        raise RuntimeError("no OWN list in %s" % FRONT_DL)
+    rows = {r[0]: r for r in own}
+    skel = {r[0] for r in skeleton_params()}
+    ident = re.compile(r"[A-Za-z_][A-Za-z_0-9]*")
+    funcs = {"sqrt", "abs", "sin", "cos", "tan", "asin", "acos", "atan", "mm", "deg", "rad"}
+    order, seen = [], set()
+
+    def visit(n):
+        if n in seen:
+            return
+        seen.add(n)
+        for tok in ident.findall(rows[n][1]):
+            if tok in rows:
+                visit(tok)
+            elif tok not in skel and tok not in funcs:
+                raise RuntimeError("FRONT's %s uses %s, which is neither FRONT's nor the skeleton's" % (n, tok))
+        order.append(n)
+    for n in FRONT_DL_WANT:
+        visit(n)
+    out = []
+    for n in order:
+        name, expr, unit, status, desc = rows[n][:5]
+        expr2 = ident.sub(lambda m: prefix + m.group(0) if m.group(0) in rows else m.group(0), expr)
+        out.append((prefix + name, expr2, unit, status, "FRONT's %s in %s: %s" % (n, FRONT_DL, desc)))
+    print("  FRONT's DL spigot values linked: %s" % ", ".join(r[0] for r in out))
+    return out
+
+
+# FL1's corner mitre with the left side band and its knee mitre with FL2, in plan (expressions)
+D1X, D1Y = "(dl_x2 / %s)" % L1, "(-(dl_y2 - dl_y1) / %s)" % L1          # FL1's direction, corner to knee
+P1X, P1Y = "((dl_y2 - dl_y1) / %s)" % L1, D1X                           # Z x D1, to its left
+FC_CX, FC_CY = "(%s + band_t / 2)" % XL_, "((-dl_y1 + %s) / 2)" % Y_MITRE_IN     # corner face centre (-1230, -661.03)
+FC_KX, FC_KY = "((%s + dl_x2 + %s) / 2)" % (XL_, IL2_X), "((-dl_y2 + %s) / 2)" % IL2_Y   # knee face centre
+# a mitre face's width along it: band_t / cos(half the turn), cos(half) = sqrt((1 + cos(turn)) / 2)
+W_CORNER = "(band_t / sqrt((1 + (dl_y2 - dl_y1) / %s) / 2))" % L1
+W_KNEE = "(band_t / sqrt((1 + %s) / 2))" % DOT
+
+
+def unit_xy(x, y):
+    n = math.hypot(x, y)
+    return (x / n, y / n)
+
+
+def end_face(body, centre_xy, normal_xy, tol=1.0):
+    """The planar vertical face whose normal is +-normal_xy and whose plan centre is within tol of centre_xy
+    (the outer face of an end plate, not its inner face 1.5 behind)."""
+    best = None
+    for f in body.faces:
+        if f.geometry.surfaceType != adsk.core.SurfaceTypes.PlaneSurfaceType:
+            continue
+        n = adsk.core.Plane.cast(f.geometry).normal
+        if abs(n.z) > 1e-3 or abs(abs(n.x * normal_xy[0] + n.y * normal_xy[1]) - 1.0) > 1e-3:
+            continue
+        bb = f.boundingBox
+        d = math.hypot((bb.minPoint.x + bb.maxPoint.x) * 5.0 - centre_xy[0], (bb.minPoint.y + bb.maxPoint.y) * 5.0 - centre_xy[1])
+        if d < tol and (best is None or d < best[0]):
+            best = (d, f)
+    if best is None:
+        raise RuntimeError("no end face near (%.2f, %.2f)" % centre_xy)
+    return best[1]
+
+
+def face_edges(face, z_bottom):
+    """The face's straight bottom edge (at Z = z_bottom mm) and its longest vertical edge."""
+    bottom = side = None
+    for e in face.edges:
+        a, b = e.startVertex.geometry, e.endVertex.geometry
+        if e.geometry.curveType != adsk.core.Curve3DTypes.Line3DCurveType:
+            continue
+        if abs(a.z - b.z) < 1e-5 and abs(a.z * 10.0 - z_bottom) < 0.01:
+            if bottom is None or e.length > bottom.length:
+                bottom = e
+        elif abs(a.x - b.x) < 1e-5 and abs(a.y - b.y) < 1e-5:
+            if side is None or e.length > side.length:
+                side = e
+    if bottom is None or side is None:
+        raise RuntimeError("end face: no bottom or vertical edge")
+    return bottom, side
+
+
+def keyholes_on_face(design, key, centre_xy, normal_xy, width_expr, label):
+    """Keyholes for a front joint in an end plate on a mitred face (J-BASE-02): a Ø12 entry kh_drop below each
+    stud's seat and a 6.5 slot up to the seat, on the face's centre line, the second stud st_z2 - st_z1 higher.
+    No angles: the holes sit at offsets from the face's bottom edge and one vertical edge (half the face's
+    width, width_expr), and the slot is cut from a sketch on the face whose lines are tied to those two edges
+    and cut band_wall each way (only the plate is there). Each feature is patterned up Z for the second stud."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    c = find_comp(design, key)
+    body = c.bRepBodies.item(0)
+    z_off = {"entry": "band_wall + st_z1 - kh_drop", "seat": "band_wall + st_z1"}
+    w_off = "%s / 2" % width_expr
+    feats = []
+    for part, dia in (("entry", "kh_entry"), ("seat", "kh_slot")):
+        face = end_face(body, centre_xy, normal_xy)
+        bottom, side = face_edges(face, v("glide_h"))
+        before = body.volume
+        for default_dir in (True, False):
+            hin = c.features.holeFeatures.createSimpleInput(vi(dia))
+            pt = p3(centre_xy[0], centre_xy[1], v("glide_h + %s" % z_off[part]))
+            if not hin.setPositionByPlaneAndOffsets(face, pt, bottom, vi(z_off[part]), side, vi(w_off)):
+                raise RuntimeError("keyhole %s %s: could not place it on the end face" % (part, label))
+            hin.setDistanceExtent(vi("band_wall"))
+            hin.isDefaultDirection = default_dir
+            hin.participantBodies = [body]
+            hf = c.features.holeFeatures.add(hin)
+            if body.volume < before - 1e-6:
+                break
+            hf.deleteMe()                 # it went out of the plate, not into it: the other way
+            face = end_face(body, centre_xy, normal_xy)
+            bottom, side = face_edges(face, v("glide_h"))
+        else:
+            raise RuntimeError("keyhole %s %s cut nothing either way" % (part, label))
+        hf.name = "HOLE - KEYHOLE %s - %s" % ("ENTRY D12" if part == "entry" else "SEAT (SLOT END)", label)
+        feats.append(hf)
+    face = end_face(body, centre_xy, normal_xy)
+    bottom, side = face_edges(face, v("glide_h"))
+    sk = c.sketches.add(face)
+    sk.name = "KEYHOLE SLOT - %s - FROM THE ENTRY UP TO THE SEAT, ON THE MITRED END PLATE" % label
+    pb, ps = sk.project(bottom).item(0), sk.project(side).item(0)
+    ux, uy = -normal_xy[1], normal_xy[0]                     # along the face, level
+    hw = v("kh_slot") / 2
+    ze, zs = v("glide_h + %s" % z_off["entry"]), v("glide_h + %s" % z_off["seat"])
+    cx, cy = centre_xy
+    q = [(cx - ux * hw, cy - uy * hw, ze), (cx + ux * hw, cy + uy * hw, ze),
+         (cx + ux * hw, cy + uy * hw, zs), (cx - ux * hw, cy - uy * hw, zs)]
+    sp = [sk.modelToSketchSpace(p3(*pt)) for pt in q]
+    lines = sk.sketchCurves.sketchLines
+    l0 = lines.addByTwoPoints(sp[0], sp[1])                                  # the slot's bottom
+    l1 = lines.addByTwoPoints(l0.endSketchPoint, sp[2])                      # a long side
+    l2 = lines.addByTwoPoints(l1.endSketchPoint, sp[3])                      # its top
+    l3 = lines.addByTwoPoints(l2.endSketchPoint, l0.startSketchPoint)        # the other long side
+    gc = sk.geometricConstraints
+    for ln, ref in ((l0, pb), (l2, pb), (l1, ps), (l3, ps)):
+        gc.addParallel(ln, ref)
+    sd = sk.sketchDimensions
+    # the long side nearer the vertical edge sits at w / 2 - kh_slot / 2 from it, the other kh_slot further
+    se = side.startVertex.geometry
+    near, far = (l1, l3) if math.hypot(q[1][0] - se.x * 10.0, q[1][1] - se.y * 10.0) < \
+        math.hypot(q[0][0] - se.x * 10.0, q[0][1] - se.y * 10.0) else (l3, l1)
+
+    def tp(ln):
+        g = ln.startSketchPoint.geometry
+        return adsk.core.Point3D.create(g.x + 0.3, g.y + 0.3, 0)
+    for a, bb, expr in ((pb, l0, z_off["entry"]), (pb, l2, z_off["seat"]), (ps, near, "%s - kh_slot / 2" % w_off),
+                        (near, far, "kh_slot")):
+        sd.addOffsetDimension(a, bb, tp(bb)).parameter.expression = expr
+    check_sketch(sk)
+    ei = c.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setSymmetricExtent(vi("band_wall"), False)
+    ei.participantBodies = [body]
+    f = c.features.extrudeFeatures.add(ei)
+    f.name = "CUT - KEYHOLE SLOT - %s" % label
+    feats.append(f)
+    coll = adsk.core.ObjectCollection.create()
+    for ft in feats:
+        coll.add(ft)
+    pats = c.features.rectangularPatternFeatures
+    pin = pats.createInput(coll, c.zConstructionAxis, vi("2"), vi("st_z2 - st_z1"),
+                           adsk.fusion.PatternDistanceType.ExtentPatternDistanceType)
+    pin.setDirectionTwo(c.xConstructionAxis, vi("1"), vi("1 mm"))
+    pats.add(pin).name = "PATTERN - KEYHOLES - %s" % label
+
+
+def keyhole_check(design, key, row_pn, joint, centre_xy, normal_xy):
+    """The built keyholes against the Joints Engineer's corner-keys.csv: each round part's axis along the
+    face's normal, on the face's centre line, at the entry and seat heights. Returns what is off."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    with open(os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv"), encoding="utf-8") as fh:
+        r = [x for x in csv.DictReader(fh) if x["part_number"] == row_pn and x["joint"] == joint][0]
+    want_c = (float(r["face_centre_x"]), float(r["face_centre_y"]))
+    want = {v("kh_entry"): sorted([float(r["keyhole_entry_z_low"]), float(r["keyhole_entry_z_high"])]),
+            v("kh_slot"): sorted([float(r["stud_z_low"]), float(r["stud_z_high"])])}
+    body = find_comp(design, key).bRepBodies.item(0)
+    off = []
+    if math.hypot(centre_xy[0] - want_c[0], centre_xy[1] - want_c[1]) >= 0.05:
+        off.append("face centre (%.2f, %.2f) vs (%.2f, %.2f)" % (centre_xy + want_c))
+    for dia, zs in want.items():
+        got = []
+        for org, d in holes_of(body, dia):
+            if abs(abs(d[0] * normal_xy[0] + d[1] * normal_xy[1]) - 1.0) > 1e-3:
+                continue
+            # the axis line's distance from the face centre's vertical line, in plan
+            dx, dy = org[0] - centre_xy[0], org[1] - centre_xy[1]
+            across = abs(-dx * normal_xy[1] + dy * normal_xy[0])
+            got.append((round(org[2], 2), round(across, 3)))
+        zs_got = sorted({g[0] for g in got})
+        if zs_got != [round(z, 2) for z in zs] or any(g[1] >= 0.05 for g in got):
+            off.append("Ø%.1f at %s (want Z %s on the centre line)" % (dia, got, zs))
+    print("  %s keyholes against corner-keys.csv (%s, %s): %s" % (PARTS[key][0], row_pn, joint, "; ".join(off) or "MATCH"))
+    return off
+
+
+def step_p02_fl1(design):
+    """FL1 (111104): DL's outer facet piece, from the corner mitre with the left side band to the knee mitre with
+    FL2. Its corner end is closed by a 1.5 end plate with the keyholes for the side band's front key 111212; its
+    knee end carries the knee key 111214 (2 fixing holes in its bottom wall); its top wall has the rivnut hole for
+    DL's round-hole spigot at FRONT's named point (J-FRONT-02). Glides: with the batch (not in this sample)."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    fl1 = [P(design, XL_, "-dl_y1"), P(design, "%s + dl_x2" % XL_, "-dl_y2"), P(design, IL2_X, IL2_Y),
+           P(design, "%s + band_t" % XL_, Y_MITRE_IN)]
+    corner = (v(FC_CX), v(FC_CY))
+    plan_tube(design, "fl1", "FRONT FACET 1 LH", fl1, "", closed_near=corner)
+    n_corner = unit_xy(v(D1X), v(D1Y) - 1.0)          # the corner mitre's normal: side band (0, -1) + FL1's direction
+    keyholes_on_face(design, "fl1", corner, n_corner, W_CORNER, "FL1 CORNER (111212)")
+    c = find_comp(design, "fl1")
+    bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"]
+    bot = bot[0] if bot else offset_plane(c, "xy", "glide_h", v("glide_h"), "PLANE - BAND BOTTOM Z = glide_h")
+    top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
+    down = Z.copy()
+    down.scaleBy(-1)
+    # the knee key 111214's 2 fixing screws (J-BASE-02): ck_x - ck_e back from the knee face's centre along FL1,
+    # ck_y / 2 - ck_e either side
+    for sgn, lab in ((1, "1"), (-1, "2")):
+        xf = "%s - %s * (ck_x - ck_e) + %d * %s * (ck_y / 2 - ck_e)" % (FC_KX, D1X, sgn, P1X)
+        yf = "%s - %s * (ck_x - ck_e) + %d * %s * (ck_y / 2 - ck_e)" % (FC_KY, D1Y, sgn, P1Y)
+        hole(design, "fl1", bot, "KNEE KEY FIXING %s (111214)" % lab, (v(xf), v(yf), v("glide_h")),
+             [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z)
+    hole(design, "fl1", top, "DL SPIGOT RIVNUT - ROUND HOLE (J-FRONT-02)", (v("dlf_sp_ax"), v("dlf_sp_ay"), v("wall_z0")),
+         [(X, "dlf_sp_ax"), (Y, "dlf_sp_ay")], "rn_hole", "band_wall", down)
+    off = keyhole_check(design, "fl1", "111212", "front left corner (LH)", corner, n_corner)
+    with open(os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv"), encoding="utf-8") as fh:
+        r = [x for x in csv.DictReader(fh) if x["part_number"] == "111214"][0]
+    fix = centres(c.bRepBodies.item(0), v("ck_fix_hole"), "z")
+    want = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
+    ok = all(any(abs(g[0] - w[0]) < 0.05 and abs(g[1] - w[1]) < 0.05 for g in fix) for w in want)
+    print("  111104 knee key 111214's fixing holes against corner-keys.csv: %s (got %s, want %s)" % (
+        "MATCH" if ok else "OFF", fix, want))
+    if off or not ok:
+        raise RuntimeError("FL1 sample: off against corner-keys.csv")
+    print("P02: FL1 %s" % fmt_box(bbox_mm(single_body(c))))

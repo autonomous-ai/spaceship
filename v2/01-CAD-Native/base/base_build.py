@@ -662,9 +662,10 @@ def holes_of(body, dia_mm):
     (axis origin mm, axis direction)."""
     out = []
     for f in body.faces:
-        g = f.geometry
-        if g.surfaceType == adsk.core.SurfaceTypes.CylinderSurfaceType and \
-                abs(g.radius * 20.0 - dia_mm) < 0.01:
+        if f.geometry.surfaceType != adsk.core.SurfaceTypes.CylinderSurfaceType:
+            continue
+        g = adsk.core.Cylinder.cast(f.geometry)
+        if abs(g.radius * 20.0 - dia_mm) < 0.01:
             out.append(((mm(g.origin.x), mm(g.origin.y), mm(g.origin.z)),
                         (round(g.axis.x, 3), round(g.axis.y, 3), round(g.axis.z, 3))))
     return out
