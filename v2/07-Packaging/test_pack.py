@@ -54,7 +54,7 @@ def test_register_parser(tmp=Path(__file__).resolve().parent / "_register_test.m
 
 
 def test_bolt_change_is_caught():
-    st = next(s for s in pack.STEPS if s["n"] == 5)
+    st = next(s for s in pack.STEPS if s["n"] == 4)
     saved = copy.deepcopy(st["joints"])
     st["joints"]["J-WALL-02"] -= 1
     try:
@@ -68,7 +68,7 @@ def test_bolt_change_is_caught():
 def test_heavy_piece_is_caught():
     p = pack.PIECE["2-03"]
     saved = p.extra_kg
-    p.extra_kg = 8.1          # DR with its inner face panel and felt fitted would pass 20 kg (D-130: they ship loose, 2-23)
+    p.extra_kg = 8.1          # DR with its inner face panel and felt fitted would pass 20 kg (D-130: they ship loose, 2-22)
     try:
         assert "K2" in failing(pack.Model())
     finally:
@@ -76,7 +76,7 @@ def test_heavy_piece_is_caught():
 
 
 def test_rollup_line_lost_is_caught():
-    p = pack.PIECE["2-10"]
+    p = pack.PIECE["2-09"]
     saved = list(p.mass)
     p.mass = [("SOFFIT", 1), ("FANBOX_E", 1)]   # drops the exhaust fans' half of the fans line
     try:
@@ -86,10 +86,11 @@ def test_rollup_line_lost_is_caught():
 
 
 def test_overhang_is_caught():
-    p = pack.PIECE["1-01"]
+    p = pack.PIECE["1-03"]
     saved = p.dims
-    p.dims = pack.S(1455, 1225.5, 12)   # the floor panel with BASE P01's 19.5 mm lap
+    p.dims = pack.S(saved[0], 1225.5, saved[2])   # L1 made 6.5 mm wider than the 48 in deck it stands across
     try:
+        assert p.dims[1] == 1225.5, p.dims
         assert "K4" in failing(pack.Model())
     finally:
         p.dims = saved
@@ -107,13 +108,13 @@ def test_glass_order_in_crate():
 
 def test_door_before_dt():
     door = next(s["n"] for s in pack.STEPS if "2-02" in s["tags"])
-    dt = next(s["n"] for s in pack.STEPS if "2-12" in s["tags"])
+    dt = next(s["n"] for s in pack.STEPS if "2-11" in s["tags"])
     assert door < dt
 
 
 def test_dr_bolts_before_air_column():
     dr = next(s["n"] for s in pack.STEPS if "2-03" in s["tags"])
-    col = next(s["n"] for s in pack.STEPS if "2-11" in s["tags"])
+    col = next(s["n"] for s in pack.STEPS if "2-10" in s["tags"])
     assert dr < col
 
 
@@ -140,8 +141,8 @@ def test_d87_in_the_steps():
     tags = {p.tag for p in pack.PIECES if p.kind == "piece"}
     names = " ".join(p.name for p in pack.PIECES)
     assert "SEAL MAT" not in names and "EXHAUST FAN BOX, WITH" not in names
-    assert pack.PIECE["2-10"].kg <= 20 and pack.PIECE["2-17"].kg <= 20
-    assert len(tags) == 43    # with DR's loose inner face panel 2-23 (D-130)
+    assert pack.PIECE["2-09"].kg <= 20 and pack.PIECE["2-16"].kg <= 20
+    assert len(tags) == 40    # with DR's loose inner face panel 2-22 (D-130)
     power = next(s for s in pack.STEPS if s["title"].startswith("Power on"))
     assert all(o["secs"] < 600 for o in power["ops"])
 
@@ -163,24 +164,22 @@ def test_step_picture_script_and_data():
 
 def test_sizes_follow_the_skeleton():
     # a panel with no CAD yet is the skeleton's named values; one with CAD is at least that, plus what its CAD adds
-    b3 = pack.PIECE["1-07"]
+    b3 = pack.PIECE["1-05"]
     assert b3.dims == pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
-    b1, l1 = pack.PIECE["1-03"], pack.PIECE["1-05"]
+    b1, l1 = pack.PIECE["1-01"], pack.PIECE["1-03"]
     sk_b1 = pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
     sk_l1 = pack.S(pack.sk("side_l"), pack.sk("side_h"), pack.sk("outer_t"))
     assert all(d >= s for d, s in zip(b1.dims, sk_b1)) and all(d >= s for d, s in zip(l1.dims, sk_l1)), (b1.dims, l1.dims)
     assert b1.dims[0] == pack.sk("half_pw") and l1.dims[0] == pack.sk("side_l")
-    f1 = pack.PIECE["1-01"]
-    assert f1.dims[2] == pack.sk("floor_t") + pack.sk("mat_t")
 
 
 def test_cad_size_outgrowing_its_plan_is_caught():
     # K14: a planned size smaller than the merged CAD fails (the decor blocks were planned as boxes 30 mm too narrow)
     m = pack.Model()
     assert "K14" not in failing(m)
-    kind, dims, files = m.cad["2-09"]
+    kind, dims, files = m.cad["2-08"]
     assert kind == "box" and dims[1] > 300, dims          # DL with its hinge-side stops
-    dl = pack.PIECE["2-09"]
+    dl = pack.PIECE["2-08"]
     saved = dl.dims
     dl.dims = pack.S(2290, 278, 205)                       # the old box
     try:
@@ -192,9 +191,9 @@ def test_cad_size_outgrowing_its_plan_is_caught():
 def test_bundle_parts_each_fit():
     # a bundle or carton is checked part by part: a ledge carton too short for the ledge top fails
     m = pack.Model()
-    kind, parts, _ = m.cad["2-16"]
+    kind, parts, _ = m.cad["2-15"]
     assert kind == "parts" and {pn for pn, _ in parts} >= {"811101", "818101", "818102"}, parts
-    led = pack.PIECE["2-16"]
+    led = pack.PIECE["2-15"]
     saved = led.dims
     led.dims = pack.S(900, 250, 120)
     try:
@@ -206,7 +205,7 @@ def test_bundle_parts_each_fit():
 def test_d129_keys_on_the_side_bands():
     # D-129: the side bands carry the back-corner keys; the back band ships with keyholes only, 2420 long
     keys = {p.tag: sum(u for h, u in p.mass if h == "KEY") for p in pack.PIECES}
-    assert keys["2-04"] == 0 and keys["2-05"] == 2 and keys["2-06"] == 2 and keys["2-15"] == 2, keys
+    assert keys["2-04"] == 0 and keys["2-05"] == 2 and keys["2-06"] == 2 and keys["2-14"] == 2, keys
     m = pack.Model()
     assert m.cad["2-04"][1][0] <= 2420 + 1e-6, m.cad["2-04"]
     tiers, _ = m.tiers2()
@@ -217,10 +216,10 @@ def test_d129_keys_on_the_side_bands():
 def test_roof_sleeve_goes_on_after_the_soffit():
     # #263: the roof sleeve and grille ride loose with C2 and go on in their own step, after the soffit hangs
     m = pack.Model()
-    kind, c2, _ = m.cad["1-12"]
+    kind, c2, _ = m.cad["1-10"]
     assert kind == "box" and c2[2] > 60, c2                 # C2 with the sleeve seated in its slot
-    assert m.cad["2-10"][1][2] < 240, m.cad["2-10"]          # the soffit without it
-    soffit = next(s["n"] for s in pack.STEPS if "2-10" in s["tags"])
+    assert m.cad["2-09"][1][2] < 240, m.cad["2-09"]          # the soffit without it
+    soffit = next(s["n"] for s in pack.STEPS if "2-09" in s["tags"])
     sleeve = next(s for s in pack.STEPS if s["title"].startswith("Roof sleeve"))
     assert sleeve["n"] == soffit + 1 and sleeve["n"] <= pack.CLOCK_LAST_STEP
     assert [s["n"] for s in pack.STEPS] == list(range(1, len(pack.STEPS) + 1))
@@ -234,11 +233,33 @@ def test_design_review_glass_handling():
     assert any("glass stay on" in o for o in ten) and any("glass stay off" in o for o in ten), ten
     assert any("tilt" in o for o in ten) and any("tilt" in o for o in eleven), (ten, eleven)
     assert any("packers" in o for o in eleven), eleven
+    door = next(s for s in pack.STEPS if s["title"].startswith("Door"))
+    # D-132: the door hangs on the band's bottom line over an uneven room floor, so the packers stack to that line
+    assert pack.MINE["door_gap"].value == pack.sk("glide_h")
+    gap = "%g mm" % pack.MINE["door_gap"].value
+    assert gap in door["A"] and gap in door["B"] and "band's bottom edge" in door["A"] and "room floor" in door["A"], door
     dr = next(o for o in next(s for s in pack.STEPS if s["title"].startswith("Fixed glass"))["ops"] if "2-03" in o["text"])
     assert dr["who"] == 2, dr                      # DR (2.3 m) is carried by both people
-    kit = pack.PIECE["2-22"]
+    kit = pack.PIECE["2-21"]
     assert "glass stays" in kit.extra_note and "setting packers" in kit.extra_note, kit.extra_note
+    assert "up to %g mm" % pack.MINE["glide_max"].value in kit.extra_note, kit.extra_note
 
+
+
+def test_d132_no_floor():
+    # D-132: no floor panels, no foam, no threshold; the room floor is the pod's floor, so it is covered while the pod
+    # goes together and uncovered at the end, both in the clock
+    names = " ".join(p.name for p in pack.PIECES)
+    assert "FLOOR PANEL" not in names and "THRESHOLD" not in names, names
+    assert not {"FLOOR", "MAT", "THRESH"} & set(pack.R), sorted(pack.R)
+    assert not [s for s in pack.STEPS if "Floor" in s["title"] or "threshold" in s["title"].lower()]
+    bodies = {b for v in pack.SKEL.values() for b in v}
+    assert not [b for b in bodies if b.startswith(("F1", "F2", "THRESHOLD"))], bodies
+    band = next(s for s in pack.STEPS if s["title"] == "Base band")
+    final = next(s for s in pack.STEPS if s["title"].startswith("Final check"))
+    assert [o for o in band["ops"] if o["src"] == "t_floor_film_s"] and "soft lip" in band["check"], band
+    assert [o for o in final["ops"] if o["src"] == "t_floor_film_off_s"], final["ops"]
+    assert final["n"] <= pack.CLOCK_LAST_STEP
 
 def test_install_sheet_numbers():
     # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range
@@ -268,7 +289,7 @@ def test_export_wood_is_ispm15():
 
 
 def test_roof_grille_bolts_counted_once():
-    # J-AIR-03 (#275): step 18 drives the grille's 4 register bolts; no outside-fixing row and no second timing for them
+    # J-AIR-03 (#275): the roof sleeve step drives the grille's 4 register bolts; no outside-fixing row and no second timing for them
     st = next(s for s in pack.STEPS if s["title"].startswith("Roof sleeve"))
     assert st["joints"] == {"J-AIR-03": 4}, st["joints"]
     assert not [f for f in pack.OTHER_FIXINGS if f["step"] == st["n"]]
@@ -280,9 +301,9 @@ def test_roof_grille_bolts_counted_once():
 def test_dr_inner_face_before_the_right_linings():
     # the PM's ruling: DR's inner face can't come off past R1's and R2's cassettes, so the riser step (inner face off
     # and on) comes before the wall linings, and the take-down unclips R1's and R2's cassettes before the inner face
-    riser = next(s["n"] for s in pack.STEPS if "2-17" in s["tags"])
-    linings = next(s["n"] for s in pack.STEPS if "1-13" in s["tags"])
-    column = next(s["n"] for s in pack.STEPS if "2-11" in s["tags"])
+    riser = next(s["n"] for s in pack.STEPS if "2-16" in s["tags"])
+    linings = next(s["n"] for s in pack.STEPS if "1-11" in s["tags"])
+    column = next(s["n"] for s in pack.STEPS if "2-10" in s["tags"])
     assert riser < linings < column, (riser, linings, column)
     guide = pack.TPL_GUIDE.read_text(encoding="utf-8")
     assert guide.index("R1's and R2's cassettes off their clips first") < guide.index("then DR's inner face")
@@ -297,7 +318,7 @@ def test_lanes_follow_the_parts():
     assert abs(dr_lane["width"] - (pack.PIECE["2-03"].dims[1] + 2 * w)) < 1e-9, dr_lane["width"]
     assert all(t["width"] <= pack.MINE["pal_std_l_exact"].value for t in tiers)
     assert height <= pack.lay("max_load_h")
-    dt = pack.PIECE["2-12"]
+    dt = pack.PIECE["2-11"]
     saved = dt.dims
     dt.dims = pack.S(1699, 420, 203)                       # a DT 114 mm wider no longer fits tier 3
     try:
@@ -326,7 +347,7 @@ def test_power_unit_share_from_electrical():
     with open(pack.ELEC_PARTS, encoding="utf-8") as f:
         unit = next(float(r["mass_each_kg"]) for r in csv.DictReader(f) if r["part_number"] == "710001")
     m = pack.Model()
-    b2 = pack.PIECE["1-04"]
+    b2 = pack.PIECE["1-02"]
     back = m.roll[pack.resolve(m.roll, "B")]["kg_each"]
     assert abs(b2.kg - (back + unit)) < 1e-9, (b2.kg, back, unit)
 
@@ -348,15 +369,15 @@ def test_numbers_match_the_master_bom():
     # every number on a label is the BOM's number for that name (K13), and the ones the reviewer found are filled
     m = pack.Model()
     by_pn, _ = m.bom
-    for tag, pn in (("1-06", "210102"), ("1-09", "210103"), ("1-10", "210104"), ("1-13", "510102"), ("1-14", "510104"),
-                    ("1-16", "510103"), ("2-14", "810201"), ("2-16", "810101"), ("1-01", "110401"),
-                    ("1-03", "210201"), ("1-04", "210202"), ("1-17", "510201"), ("1-18", "510202"),
-                    ("2-09", "350001"), ("2-12", "350002"), ("2-03", "350003")):
+    for tag, pn in (("1-04", "210102"), ("1-07", "210103"), ("1-08", "210104"), ("1-11", "510102"), ("1-12", "510104"),
+                    ("1-14", "510103"), ("2-13", "810201"), ("2-15", "810101"),
+                    ("1-01", "210201"), ("1-02", "210202"), ("1-15", "510201"), ("1-16", "510202"),
+                    ("2-08", "350001"), ("2-11", "350002"), ("2-03", "350003")):
         p = pack.PIECE[tag]
         assert p.pn == pn and by_pn[pn][0] == p.name, (tag, p.pn, p.name)
     assert "K13" not in failing(m)
     # B3 and B4 carry WALL's names (its CAD files 210203/210204, 510203/510204), so their numbers fill in when WALL's lists merge
-    for tag, pos in (("1-07", "B3"), ("1-08", "B4"), ("1-19", "B3"), ("1-20", "B4")):
+    for tag, pos in (("1-05", "B3"), ("1-06", "B4"), ("1-17", "B3"), ("1-18", "B4")):
         assert pack.PIECE[tag].name.endswith("BACK UPPER - " + pos), (tag, pack.PIECE[tag].name)
 
 
@@ -397,7 +418,7 @@ def test_number_named_otherwise_is_caught(tmp=Path(__file__).resolve().parent / 
 def test_ledge_carton_counts_the_screen_rail_once():
     # the roll-up's ledge line carries the screen rail 818102 since INTERIOR's list merged; no extra mass on top
     m = pack.Model()
-    ledge = pack.PIECE["2-16"]
+    ledge = pack.PIECE["2-15"]
     assert ledge.extra_kg == 0 and abs(ledge.kg - m.roll[pack.resolve(m.roll, "LEDGE")]["kg_each"]) < 1e-9, ledge.kg
 
 

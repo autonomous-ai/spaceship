@@ -61,6 +61,19 @@ Run 2026-11-01, 09:25 to 09:26 UTC, on Mac 1 in one held Fusion session: `joints
 - **Edit test:** `plate_x0` 1.75 → 3.15: X 1.75..28.25 → 3.15..29.65 (the length kept), then back to 1.75..28.25: **PASS**. Closed without keeping it or the per-STEP changes.
 - **Checked against the exports:** `frame_steel_check.py --check` now reads each plate's STEP box and DXF extents and fails unless they are its blank (Reviewer 6 on #308); on main's full-size files it fails all six, on these it passes.
 
+## The 11 mm spigot 831010 (export run, 2026-11-01, 11:49 UTC)
+
+The Lead's ruling on J-FRONT-03: DT's two spigots on DR's ledge stand 11 proud, so they still engage DT's bottom back tube 5 now that its bottom face is at Z 2126, 6 above the ledge's top (FRONT's model). The saved spigot design already drives the pin from `pin_proud` (`pin_len` = `pin_proud` − the rivnut's 0.76 head), so `joints_spigot_variant_export.py` (late loader, the design opened with `--doc`, `check_api.py` 0 name errors) set `pin_proud` 11 and the part number 831010, checked the body against the expected box (X and Y ±4, Z −8 to 10.24), exported the STEP and closed the design **without saving**: its saved state, 831001 at 8 proud, doesn't change, so the spigot sheet's reference stays current. A fresh build makes both STEPs (`joints_hardware_build.py`, `SPIGOT_VARIANTS`).
+
+| Part | `pin_proud` | Body (mm) | Mass (Fusion, Stainless Steel) | STEP |
+|---|---|---|---|---|
+| 831001 (saved state) | 8 | Ø8 pin to Z 7.24, M6 stud to Z −8 | 0.00417 kg | unchanged |
+| 831010 | 11 | Ø8 pin to Z 10.24, M6 stud to Z −8 | 0.00538 kg | `831010_P01_HARDWARE-LOCATING-SPIGOT-11-PROUD_STEP.step`, its own part number |
+
+- **Checked from the STEP** (the mechanical check's own reader): the product is 831010; the cylinders are Ø8 and Ø5.884 (the stud at 6g's mean major, as 831001); the levels run −8, 0, 6.74, 9.24, 10.24, each of the pin's 3 above 831001's (3.74, 6.24, 7.24). `step_check.py`'s vertex box reads short in X and Y on any round part, 831001's included; its Z range is exact.
+- The run started a few seconds after Fusion's 11:48 server warning was cancelled; it opened, exported and closed normally, and the checks above are on its file.
+- The sheet: 831001's drawing becomes TABULATED for both numbers from its finish step only (the drawing record).
+
 ## Exports
 
 - `.f3d`: `v2/01-CAD-Native/joints/111211_P01_BASE-CORNER-KEY-TABULATED_CAD.f3d`, `831001_P01_HARDWARE-LOCATING-SPIGOT_CAD.f3d`, `831002_P01_HARDWARE-STOP-WASHER_CAD.f3d`, each exported right after its save.

@@ -1,6 +1,7 @@
 """Offline preflight for FRONT's three decor frames, before a Fusion run (no Fusion needed):
 
     python3 v2/01-CAD-Native/front/frame_preflight.py
+    python3 v2/01-CAD-Native/front/frame_preflight.py --cut-lists [dl_block.py ...]   # write the cut lists
 
 For each block (DL, DT, DR), at the nominal parameters and at its edit test's values (the edits in
 EDIT-TEST-RECORD.md):
@@ -100,7 +101,30 @@ def check(script, edits=None):
     return len(members), bad
 
 
+CUT_REL = {"dl_block.py": "351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv",
+           "dt_block.py": "351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv",
+           "dr_block.py": "351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv"}
+
+
+def write_cut_lists(scripts=None):
+    """Write the frames' tube cut lists (D-162) from the same frame data the builds use: the build writes the very same
+    file (frame_lib.write_cut_list), so a cut list can be brought up to date without a Fusion run."""
+    for script in scripts or CUT_REL:
+        g, env = load(script)
+        FL, MP = g["FL"], g["MP"]
+        frame_pn, member_pn = {"dl_block.py": ("DL_FRAME", "DL_MEMBERS"), "dt_block.py": ("DT_FRAME", "DT_MEMBERS"),
+                               "dr_block.py": ("DR_FRAME", "DR_MEMBERS")}[script]
+        mparts = FL.member_parts(REPO, getattr(MP, frame_pn), getattr(MP, member_pn))
+        path = os.path.join(REPO, "v2", "03-Manufacturing", "front", CUT_REL[script])
+        FL.write_cut_list(path, g["frame_members"](), FL.evaluator(env), getattr(MP, frame_pn), mparts,
+                          "aluminium EN AW-6063-T6")
+        print("wrote %s" % os.path.relpath(path, REPO))
+
+
 def main():
+    if "--cut-lists" in sys.argv[1:]:
+        write_cut_lists([a for a in sys.argv[1:] if a.endswith(".py")] or None)
+        return 0
     failed = 0
     for script in ("dl_block.py", "dt_block.py", "dr_block.py"):
         for label, edits in (("nominal", None), ("edit test", EDITS[script])):
