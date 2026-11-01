@@ -36,7 +36,7 @@ class Shelf(unittest.TestCase):
         xir, ybl = V["pod_w"] / 2 - V["stack_t"], V["pod_d"] / 2 - V["stack_t"]
         felt = V["pod_h"] - V["stack_t"]
         soffit_back = V["pod_d"] / 2 - V["wall_depth"] + V["cs_front"]
-        for n in ("LIGHT SHELF BACK", "LIGHT SHELF LH", "LIGHT SHELF RH", "DOWN CHANNEL RH"):
+        for n in ("LIGHT SHELF BACK", "LIGHT SHELF LH", "LIGHT SHELF RH", "LED PROFILE RH"):
             b = b6(n)
             self.assertLess(b[5], felt - 30.0, n + " clear of the felt ceiling")
             self.assertGreaterEqual(b[2], soffit_back - 1e-9, n + " behind the soffit")
@@ -45,17 +45,20 @@ class Shelf(unittest.TestCase):
             self.assertLessEqual(b[3], ybl + 1e-9)
 
     def test_budget(self):
-        """D-85: 0.4 kg/m with the strips, averaged over the shelf's length."""
-        al, pc = I.MATERIALS["al"][1], I.MATERIALS["pc"][1]
+        """D-85: 0.4 kg/m with the strips, averaged over the shelf's length; D-126 accepts up to 0.41 for this
+        shelf with the bought LED profile (its real mass replaces the estimate once ELECTRICAL names it)."""
+        al = I.MATERIALS["al"][1]
         a_shelf = I.section_area(V, I.shelf_section(I.XIR, -1, "xz"))
-        a_dc = I.section_area(V, I.down_channel_section())
         lb = b6("LIGHT SHELF BACK")[1] - b6("LIGHT SHELF BACK")[0]
         ls = b6("LIGHT SHELF RH")[3] - b6("LIGHT SHELF RH")[2]
+        lp = b6("LED PROFILE RH")[3] - b6("LED PROFILE RH")[2]
         length = lb + 2 * ls
-        kg = a_shelf * length * 1e-9 * al + a_dc * ls * 1e-9 * al
-        kg += (V["dc_w"] - 2 * V["sh_t"]) * V["df_t"] * ls * 1e-9 * pc
-        kg += I.STRIP_KG_M[0] * (length + 2 * ls) * 1e-3
-        self.assertLessEqual(kg / (length * 1e-3), 0.4, "%.3f kg/m" % (kg / (length * 1e-3)))
+        kg = a_shelf * length * 1e-9 * al
+        # D-126: the bought profile set under the right run (its masses are assumptions until it is named)
+        hm = I.HOLD_MASS
+        kg += hm["lprofile"][0] + hm["lcover"][0] + 2 * hm["lcap"][0] + 4 * hm["lclip"][0]
+        kg += I.STRIP_KG_M[0] * (length + 2 * lp) * 1e-3
+        self.assertLessEqual(kg / (length * 1e-3), 0.41, "%.3f kg/m" % (kg / (length * 1e-3)))
 
     def test_cable_points(self):
         f = dict((n, a) for n, _k, a in I.features())
@@ -98,7 +101,7 @@ class Fits(unittest.TestCase):
         names = list(B)
         # boxes of the U sections hold what sits inside them: the diffuser in the down channel,
         # the brackets under the ledge's top, between its folds (Fusion's clash check sees solids)
-        allowed = {("DOWN CHANNEL RH", "DIFFUSER RH"), ("LEDGE TOP", "LEDGE BRACKET 1"), ("LEDGE TOP", "LEDGE BRACKET 2")}
+        allowed = {("LEDGE TOP", "LEDGE BRACKET 1"), ("LEDGE TOP", "LEDGE BRACKET 2")}
         for i in range(len(names)):
             for j in range(i + 1, len(names)):
                 a, b = names[i], names[j]
@@ -114,10 +117,37 @@ class Fits(unittest.TestCase):
             self.assertGreaterEqual(gap(b, col), -1e-9, n)
 
 
+class DownLight(unittest.TestCase):
+    """D-126: the LED profile under the right run takes ELECTRICAL's two 8 mm strips (20 inside or more),
+    runs the side run's own length (from the soffit's face to the corner joint), so every clip fixes to
+    the side run and no end shows past it (Reviewer 6), and sits under the shelf, 15 off the lining."""
+
+    def test_profile(self):
+        b = b6("LED PROFILE RH")
+        side = b6("LIGHT SHELF RH")
+        self.assertGreaterEqual(V["lp_in"], 2 * 8.0 + 4.0 - 1e-9, "two 8 mm strips with room")
+        self.assertAlmostEqual(b[3] - b[2], 991.0, msg="991 long")
+        self.assertAlmostEqual(b[2], side[2], msg="from the soffit's face")
+        self.assertAlmostEqual(b[3], side[3], msg="to the side run's end: nothing past it")
+        self.assertGreaterEqual(b[0], side[0] - 1e-9, "within the side run's bottom")
+        led = b6("LEDGE TOP")
+        self.assertLessEqual(b[2], led[2])
+        self.assertLessEqual(led[3] - b[3], 35.0, "the ledge's last 34.5 lit from beside it")
+        xir = V["pod_w"] / 2 - V["stack_t"]
+        self.assertAlmostEqual(xir - b[1], V["lp_x0"])
+        self.assertAlmostEqual(b[5], V["sh_z0"], msg="on the shelf's underside")
+        self.assertAlmostEqual(b[5] - b[4], V["lp_h"])
+
+
 class Numbers(unittest.TestCase):
     def test_bands(self):
         seen = set()
         for key, (pn, name, vn, kind, mat) in I.PARTS.items():
+            if key in I.PROFILE_PN:
+                # D-126: the bought down-light profile takes ELECTRICAL's number (Control's allocation)
+                self.assertEqual(pn, "718101", key)
+                self.assertTrue(name.startswith("ELECTRICAL"), key)
+                continue
             self.assertTrue(pn.startswith("81"), key)
             self.assertNotIn(pn, CM.RESERVED)
             self.assertNotIn(pn, seen)

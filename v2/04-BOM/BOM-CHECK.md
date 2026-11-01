@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 318 part lines (141 made, 177 bought, 137 on HOLD) and 47 sub-assembly lines from 19 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.3 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -18,8 +18,6 @@ Read from: this working tree.
 - `v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
-- `v2/03-Manufacturing/front/351104_P01_FRONT-DECOR-FRAME-DL_BOM.csv` @ working tree
-- `v2/03-Manufacturing/front/351204_P01_FRONT-DECOR-FRAME-DT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv` @ working tree
@@ -113,7 +111,6 @@ Read from: this working tree.
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
-- 811205 INTERIOR - LIGHT SHELF - DIFFUSER RH: HOLD (HOLD)
 - 818102 INTERIOR - SCREEN RAIL - HOLD: HOLD (HOLD)
 
 **ELECTRICAL**
@@ -209,7 +206,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 146 numbers, 90 not in a team's list yet, 34 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 146 numbers, 120 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -299,36 +296,36 @@ From `v2/04-BOM/number-allocation.csv`: 146 numbers, 90 not in a team's list yet
 | 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | 351306 | 1 | ALLOCATED |
 | 352321 | FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT | 351306 | 1 | ALLOCATED |
 | 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | 351306 | 1 | ALLOCATED |
-| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | 351204 | 1 | in use |
-| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | 351204 | 1 | in use |
-| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | 351204 | 1 | in use |
-| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | 351204 | 1 | in use |
-| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | 351204 | 1 | in use |
-| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | 351204 | 1 | in use |
-| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | 351204 | 1 | in use |
-| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | 351204 | 1 | in use |
-| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | 351204 | 1 | in use |
-| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | 351204 | 1 | in use |
-| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | 351204 | 3 | in use |
-| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | 351104 | 1 | in use |
-| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | 351104 | 1 | in use |
-| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | 351104 | 1 | in use |
-| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | 351104 | 1 | in use |
-| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | 351104 | 4 | in use |
-| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | 351104 | 4 | in use |
-| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | 351104 | 1 | in use |
-| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | 351104 | 1 | in use |
-| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | 351104 | 3 | in use |
-| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | 351104 | 3 | in use |
-| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | 351104 | 1 | in use |
-| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | 351104 | 1 | in use |
-| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | 351104 | 1 | in use |
-| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | 351104 | 1 | in use |
-| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | 351104 | 1 | in use |
-| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | 351104 | 1 | in use |
-| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | 350001 | 1 | in use |
-| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | 350001 | 2 | in use |
-| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | 350001 | 1 | in use |
+| 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | 351204 | 1 | ALLOCATED |
+| 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | 351204 | 1 | ALLOCATED |
+| 352203 | FRONT - DECOR FRAME DT - BACK RING TOP | 351204 | 1 | ALLOCATED |
+| 352204 | FRONT - DECOR FRAME DT - BACK RING SLOPE OVER DL | 351204 | 1 | ALLOCATED |
+| 352205 | FRONT - DECOR FRAME DT - BACK RING POST | 351204 | 1 | ALLOCATED |
+| 352206 | FRONT - DECOR FRAME DT - FRONT FACET TUBE | 351204 | 1 | ALLOCATED |
+| 352207 | FRONT - DECOR FRAME DT - CATCH AND STOP RAIL | 351204 | 1 | ALLOCATED |
+| 352208 | FRONT - DECOR FRAME DT - CHAMFER TUBE ALONG X | 351204 | 1 | ALLOCATED |
+| 352209 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE LEFT | 351204 | 1 | ALLOCATED |
+| 352210 | FRONT - DECOR FRAME DT - UNDERSIDE CROSS TUBE OVER THE CATCH | 351204 | 1 | ALLOCATED |
+| 352211 | FRONT - DECOR FRAME DT - CHAMFER CROSS TUBE - 3 OFF | 351204 | 3 | ALLOCATED |
+| 352101 | FRONT - DECOR FRAME DL - BACK RING BOTTOM | 351104 | 1 | ALLOCATED |
+| 352102 | FRONT - DECOR FRAME DL - BACK RING DOOR SIDE | 351104 | 1 | ALLOCATED |
+| 352103 | FRONT - DECOR FRAME DL - BACK RING SLOPE UNDER DT | 351104 | 1 | ALLOCATED |
+| 352104 | FRONT - DECOR FRAME DL - BACK RING BOLT LINE | 351104 | 1 | ALLOCATED |
+| 352105 | FRONT - DECOR FRAME DL - RING DOOR SIDE - RINGS 1 TO 4 | 351104 | 4 | ALLOCATED |
+| 352106 | FRONT - DECOR FRAME DL - RING BACK - RINGS 1 TO 4 | 351104 | 4 | ALLOCATED |
+| 352107 | FRONT - DECOR FRAME DL - RING BOTTOM - OUTER FACET | 351104 | 1 | ALLOCATED |
+| 352108 | FRONT - DECOR FRAME DL - RING BOTTOM - FRONT FACET | 351104 | 1 | ALLOCATED |
+| 352109 | FRONT - DECOR FRAME DL - RING OUTER FACET - RINGS 2 TO 4 | 351104 | 3 | ALLOCATED |
+| 352110 | FRONT - DECOR FRAME DL - RING FRONT FACET - RINGS 2 TO 4 | 351104 | 3 | ALLOCATED |
+| 352111 | FRONT - DECOR FRAME DL - HINGE POST 1 | 351104 | 1 | ALLOCATED |
+| 352112 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 1 | 351104 | 1 | ALLOCATED |
+| 352113 | FRONT - DECOR FRAME DL - HINGE POST 2 | 351104 | 1 | ALLOCATED |
+| 352114 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 2 | 351104 | 1 | ALLOCATED |
+| 352115 | FRONT - DECOR FRAME DL - HINGE POST 3 | 351104 | 1 | ALLOCATED |
+| 352116 | FRONT - DECOR FRAME DL - DOOR-SIDE FRONT POST 3 | 351104 | 1 | ALLOCATED |
+| 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | 350001 | 1 | ALLOCATED |
+| 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | 350001 | 2 | ALLOCATED |
+| 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | 350001 | 1 | ALLOCATED |
 | 611403 | AIR - FAN BOX BULKHEAD - EXHAUST | 610402 | 1 | ALLOCATED |
 | 611404 | AIR - FAN BOX BULKHEAD - SUPPLY | 610401 | 1 | ALLOCATED |
 | 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | 610402 | 2 | ALLOCATED |
