@@ -36,7 +36,9 @@ on an open Create Drawing killed Fusion on 2026-10-31.
 
 Exit 0 = saved, 1 = failed or refused (Fusion left idle), 2 = Fusion not
 reachable, 3 = the Fusion lock was busy past --lock-wait, 4 = Fusion was left
-with a dialog open (a person must press Cancel in Fusion).
+with a dialog open (a person must press Cancel in Fusion), 5 = Fusion is flagged
+unhealthy (an open never finished; as run_script.py: this run refused, or it
+flagged Fusion after a timeout).
 Then add views with the drawing API (base views only): run_script.py with
 --doc DRAWING_NAME.
 """
@@ -641,6 +643,10 @@ def main(argv=None):
                          "running it, for up to S more seconds (default %(default)g; as run_script.py)")
     ap.add_argument("--busy-poll", type=float, default=rs.BUSY_POLL_S, metavar="S",
                     help="...trying a read-only check every S seconds (default %(default)g)")
+    ap.add_argument("--open-grace", type=float, default=rs.OPEN_GRACE_S, metavar="S",
+                    help="after a call times out, how much longer an open this run started may "
+                         "take to end before Fusion is flagged unhealthy (default %(default)g; "
+                         "as run_script.py)")
     ap.add_argument("--lock", default=None)
     ap.add_argument("--lock-wait", type=float, default=1200.0)
     ap.add_argument("--lock-front", default="", metavar="REASON",
@@ -664,13 +670,14 @@ def main(argv=None):
         print("start_drawing: %s" % msg, flush=True)
 
     install_signal_handlers()
+    lock_path = opts.lock or rs.default_lock_path(opts.url)
     if pairs:
         script = "start_drawing.py --batch %s (%d starts)" % (os.path.basename(opts.batch), len(pairs))
         hold_s = opts.budget_min * 60 + 900
     else:
         script = "start_drawing.py %s -> %s" % (opts.design, opts.drawing)
         hold_s = 900
-    lock = rs.FusionLock(opts.lock or rs.default_lock_path(opts.url),
+    lock = rs.FusionLock(lock_path,
                          label=opts.label or "start_drawing", hold_s=hold_s, script=script,
                          front=opts.lock_front)
     try:
@@ -682,38 +689,51 @@ def main(argv=None):
         print("start_drawing: stopped while waiting for the Fusion lock", file=sys.stderr)
         return 3
     mcp = rs.FusionMcp(opts.url, opts.timeout)
+    offset = rs.open_log_size(rs.open_log_path(lock_path))   # this run's open log lines start here
+    say = lambda m: print("start_drawing: %s" % m.replace("run_script: ", ""), file=sys.stderr, flush=True)
+    rc = 1
     try:
-        try:
-            steps = Steps(opts.url, opts.timeout, mcp=mcp)
-        except rs.McpError as e:
-            print("start_drawing: %s" % e, file=sys.stderr)
-            return 2
-        if not pairs:
-            return run_with_cleanup(steps, opts.design, opts.drawing, opts.folder, opts.sheet,
-                                    opts.keep_open, log)
-        code, done, failed, left = run_batch(steps, pairs, opts.folder, log, opts.max,
-                                             opts.budget_min * 60)
-        log("batch: %d of %d done%s" % (len(done), len(pairs), "; failed: %s (exit %d)" % (
-            failed[0][1], failed[1]) if failed else ""))
-        rest = opts.batch + ".rest"
-        if failed or left:
-            write_rest(rest, failed, left)
-            log("batch: %d start(s) for the next hold written to %s" % ((1 if failed else 0) + len(left), rest))
-        elif os.path.exists(rest):
-            os.remove(rest)
-        return code
+        refusal = rs.unhealthy_refusal(lock_path, log=say)
+        if refusal:
+            say("%s. This run did not start." % refusal)
+            rc = rs.EXIT_UNHEALTHY
+        else:
+            try:
+                steps = Steps(opts.url, opts.timeout, mcp=mcp)
+            except rs.McpError as e:
+                print("start_drawing: %s" % e, file=sys.stderr)
+                rc = 2
+            else:
+                if not pairs:
+                    rc = run_with_cleanup(steps, opts.design, opts.drawing, opts.folder, opts.sheet,
+                                          opts.keep_open, log)
+                else:
+                    rc, done, failed, left = run_batch(steps, pairs, opts.folder, log, opts.max,
+                                                       opts.budget_min * 60)
+                    log("batch: %d of %d done%s" % (len(done), len(pairs), "; failed: %s (exit %d)" % (
+                        failed[0][1], failed[1]) if failed else ""))
+                    rest = opts.batch + ".rest"
+                    if failed or left:
+                        write_rest(rest, failed, left)
+                        log("batch: %d start(s) for the next hold written to %s"
+                            % ((1 if failed else 0) + len(left), rest))
+                    elif os.path.exists(rest):
+                        os.remove(rest)
     finally:
         if mcp.timed_out:
             # as run_script.py (#181, PM ruling 2026-11-01): never hand Fusion to the
-            # next run while it may still be busy with a call of this one
+            # next run while it may still be busy with a call of this one, nor while it
+            # is stuck inside an open of this run (it may still answer then)
             try:
-                rs.wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll,
-                                   log=lambda m: print("start_drawing: %s" % m.replace("run_script: ", ""),
-                                                       file=sys.stderr, flush=True))
+                rs.wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll, log=say)
+                if rs.guard_opens(lock_path, offset, "%s: %s" % (lock.label, script),
+                                  grace_s=opts.open_grace, log=say):
+                    rc = rs.EXIT_UNHEALTHY
             except KeyboardInterrupt:
                 print("start_drawing: stopped while waiting for Fusion to answer; Fusion lock "
                       "given back", file=sys.stderr)
         lock.release()
+    return rc
 
 
 if __name__ == "__main__":
