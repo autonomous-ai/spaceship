@@ -38,3 +38,34 @@ PARTS = {
 }
 
 NO_DRAWING = {}
+
+# Assembly sheets (tools/drawgen/assembly.py): the band assembly with its factory-fitted hardware. What a STEP can't
+# give: which views, where the sections cut (through a glide, a spigot and a J-BASE-01 bolt rivnut, each at 2:1 over
+# the wall that holds it), the interface sizes along the band from the front spigot (datum B of 111101, R-J6), and
+# the fixing order from the parts list's notes.
+ASSEMBLIES = {
+    "110101": {
+        "views": ["above"],
+        "sections": [
+            {"letter": "A", "point": [-1230, -595, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+             "window": [-1256, -1204, -2, 62]},
+            {"letter": "B", "point": [-1230, -542.7, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+             "window": [-1256, -1204, 86, 121]},
+            {"letter": "C", "point": [-1230, -422.7, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+             "window": [-1256, -1204, 86, 121]},
+        ],
+        "interfaces": [
+            {"view": "above", "of": ["831001", "838003", "118002"], "along": "x",
+             "origin": {"pn": "831001", "pick": "-Y"}, "side": "down",
+             "words": "VIEW FROM ABOVE: the spigot, rivnut and glide centres along the band, from the front spigot "
+                      "(datum B of 111101, joints register R-J6)"},
+        ],
+        "notes": [
+            "Fitted at the factory (D-87), in this order: the six M6 rivnuts 838003 set in the band's top face "
+            "(torque HOLD-01), a stop washer 831002 under the head of each of the four J-BASE-01 bolt rivnuts "
+            "(joints register H-08); the two spigots 831001 screwed into their rivnuts with threadlocker; the M10 "
+            "rivnuts 838006 set through the band's bottom face and the doublers 111601 (grip 4.5); the glides "
+            "118002 preset; the end cap 118003 in the back end (BASE parts list notes).",
+        ],
+    },
+}
