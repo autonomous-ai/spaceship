@@ -102,21 +102,23 @@ SPEC = {
     # FL1 and FL2 in their own axes (all their side faces lie off the pod's axes; FL2 has the full round on its
     # hinge-side plate): CS-111104 / CS-111105, X along the outer face from the corner / knee end, Y inward, Z up from
     # the band's bottom; the glide, a turned part with a hex socket (its axis on Z)
+    # A3 with the notes on the right (finish_pdfs NOTES_RIGHT): the views on the left half, first angle, the view from
+    # above below the front view, the view from the left on its right, the iso below them; the hole table top right
     "111104": ("111104_P01_BASE-BAND-TUBE-FRONT-FACET-1-LH_DWG", "tube", [   # A3, 1:1 (CS-111104: from its corner end)
-        ("front", VO.FrontViewOrientationType, 1.0, (140.0, 210.0)),
-        ("top", VO.TopViewOrientationType, 1.0, (140.0, 115.0)),            # hidden lines: the bottom wall's holes
-        ("left", VO.LeftViewOrientationType, 1.0, (290.0, 210.0)),          # the corner end plate's keyholes
-        ("iso", VO.IsoTopRightViewOrientationType, 0.5, (300.0, 85.0)),
+        ("front", VO.FrontViewOrientationType, 1.0, (110.0, 220.0)),
+        ("top", VO.TopViewOrientationType, 1.0, (110.0, 128.0)),            # hidden lines: the bottom wall's holes
+        ("left", VO.LeftViewOrientationType, 1.0, (212.0, 220.0)),          # the corner end plate's keyholes
+        ("iso", VO.IsoTopRightViewOrientationType, 0.5, (110.0, 52.0)),
     ]),
-    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "tube", [   # A3, 1:2
-        ("front", VO.FrontViewOrientationType, 0.5, (150.0, 205.0)),
-        ("top", VO.TopViewOrientationType, 0.5, (150.0, 120.0)),            # hidden lines: the bottom wall's hole
-        ("left", VO.LeftViewOrientationType, 1.0, (300.0, 205.0)),          # the knee end plate's keyholes
-        ("iso", VO.IsoTopRightViewOrientationType, 0.5, (300.0, 85.0)),
+    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "tube", [   # A3, 1:2 (CS-111105: from its knee end)
+        ("front", VO.FrontViewOrientationType, 0.5, (105.0, 232.0)),
+        ("top", VO.TopViewOrientationType, 0.5, (105.0, 160.0)),            # hidden lines: the bottom wall's hole
+        ("left", VO.LeftViewOrientationType, 0.5, (198.0, 240.0)),          # the knee end plate's keyholes
+        ("iso", VO.IsoTopRightViewOrientationType, 0.25, (105.0, 70.0)),
     ]),
     "111602": ("111602_P01_BASE-LEVELLING-GLIDE-M10-D40_DWG", "turned", [     # A3, 2:1
-        ("front", VO.FrontViewOrientationType, 2.0, (120.0, 185.0)),        # hidden lines: the socket's depth
-        ("top", VO.TopViewOrientationType, 2.0, (120.0, 70.0)),
+        ("front", VO.FrontViewOrientationType, 2.0, (120.0, 200.0)),        # hidden lines: the socket's depth
+        ("top", VO.TopViewOrientationType, 2.0, (120.0, 75.0)),             # below it (first angle); notes on the right
     ]),
 }
 
@@ -353,36 +355,43 @@ def profile_dims(sheet, view, step=6.0, gap=8.0):
 
 def turned_dims(sheet, front, top, gap=8.0, step=6.0):
     """A turned part on the Z axis (the glide 111602): in the front view (hidden lines on) its overall height, the
-    base's height and the socket's depth, each from the line it starts on; in the view from above the base's and
-    the stem's diameters and the hex socket's size across flats. Each size once (ISO 129-1). A dimension that
-    can't be placed is reported in the log, and the rest go on."""
+    base's height and the socket's depth; in the view from above the base's and the stem's diameters and the hex
+    socket's size across flats. Each size once (ISO 129-1). Heights come from the vertical outline lines' ends, as
+    Fusion doesn't report a turned part's edges seen edge-on as horizontal lines (the glide's first sheet,
+    2026-11-01). A dimension that can't be placed is reported in the log, and the rest go on."""
     n = 0
     e = extent(front)
     lines, _ = curves(front)
-    hz = {}                 # each horizontal line's height -> its leftmost end
+    vert = []               # (x, low end, high end) of each vertical line
     for ln in lines:
         a, b = ln.startPoint, ln.endPoint
         (x1, y1), (x2, y2) = xy(a), xy(b)
-        if abs(y2 - y1) < 1e-3 and abs(x2 - x1) > 0.05:
-            k = round(y1, 3)
-            p = a if x1 < x2 else b
-            if k not in hz or xy(p)[0] < xy(hz[k])[0]:
-                hz[k] = p
-    ys = sorted(hz)
-    if len(ys) < 3:
-        print("  turned part: only %d horizontal lines in the front view; heights not dimensioned" % len(ys))
+        if abs(x2 - x1) < 1e-3 and abs(y2 - y1) > 0.05:
+            lo, hi = (a, b) if y1 < y2 else (b, a)
+            vert.append((x1, lo, hi))
+    def put(a, b, place, what):
+        try:
+            dim(sheet, a, b, place)
+            return 1
+        except RuntimeError as exc:
+            print("  %s not dimensioned (%s)" % (what, exc))
+            return 0
+    if not vert:
+        print("  turned part: no vertical lines in the front view; heights not dimensioned")
     else:
-        bottom, top_y = hz[ys[0]], hz[ys[-1]]
-        def put(a, b, x, what):
-            try:
-                dim(sheet, a, b, (x, (xy(a)[1] + xy(b)[1]) / 2))
-                return 1
-            except RuntimeError as exc:
-                print("  %s not dimensioned (%s)" % (what, exc))
-                return 0
-        n += put(bottom, top_y, e[0] - gap - step, "overall height")
-        n += put(bottom, hz[ys[1]], e[0] - gap, "base height")              # the base's top face
-        n += put(hz[ys[-2]], top_y, e[2] + gap, "socket depth")             # the socket's bottom (hidden) to the top
+        cx = (e[0] + e[2]) / 2
+        top_y = max(xy(hi)[1] for _x, _lo, hi in vert)
+        base = min(vert, key=lambda t: t[0])                         # the base's outline, leftmost
+        n += put(base[1], base[2], (e[0] - gap, (xy(base[1])[1] + xy(base[2])[1]) / 2), "base height")
+        tall = max(vert, key=lambda t: xy(t[2])[1])                  # a line reaching the top
+        n += put(base[1], tall[2], (e[0] - gap - step, (xy(base[1])[1] + top_y) / 2), "overall height")
+        sock = [t for t in vert if abs(xy(t[2])[1] - top_y) < 1e-3]  # lines reaching the top: the stem's and the socket's
+        if len(sock) >= 2:
+            inner = min(sock, key=lambda t: abs(t[0] - cx))          # the socket's wall (hidden), nearest the axis
+            if abs(inner[0] - cx) < abs(max(sock, key=lambda t: abs(t[0] - cx))[0] - cx) - 1e-3:
+                n += put(inner[1], inner[2], (e[2] + gap, (xy(inner[1])[1] + top_y) / 2), "socket depth")
+        print("  turned part: %d vertical lines, heights from the base's outline (x %.1f) and the top (y %.1f)" % (
+            len(vert), base[0], top_y))
     # from above: the circles (the base and the stem), and the hex socket's two flats parallel to the view's x
     tl, circles = curves(top)
     def radius(c):          # the API gives no circle radius: the distance from its centre to its start point

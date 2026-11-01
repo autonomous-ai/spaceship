@@ -51,7 +51,7 @@ DWG = {
     "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "1:5 (section 1:1)", "A3"),
     # Fusion sheets the generator can't draw yet (D-139; the Lead's ruling of 2026-11-01; DRAWING-RECORD.md)
     "111104": ("111104_P01_BASE-BAND-TUBE-FRONT-FACET-1-LH_DWG", "1:1 (iso 1:2)", "A3"),
-    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "1:2 (end view 1:1)", "A3"),
+    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "1:2 (iso 1:4)", "A3"),
     "111602": ("111602_P01_BASE-LEVELLING-GLIDE-M10-D40_DWG", "2:1", "A3"),
 }
 # No drawing (D-89): 111601 (part 4: DXF and parts-list row). No floor (D-132).
@@ -167,7 +167,7 @@ HOLES = {
 
 
 # sheets whose views reach the bottom left: their notes go on the right, above the title block
-NOTES_RIGHT = {"110000"}
+NOTES_RIGHT = {"110000", "111602", "111104", "111105"}
 
 
 def kind_of(pn):
