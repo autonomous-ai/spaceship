@@ -202,6 +202,34 @@ VIEW_WORDS = {"principal": "PRINCIPAL VIEW", "above": "VIEW FROM ABOVE", "below"
 POSITION = {"above": (0, -1), "below": (0, 1), "from_left": (1, 0), "from_right": (-1, 0), "rear": (2, 0)}
 
 
+def step_count_words(pn, occurrences, row, step, list_file):
+    """The quantity note for a part its STEP holds several times, checked against its parts list; NotDrawable when
+    they differ. A STEP named for its parts list's number holds the team as built into the pod, so where the list
+    gives qty_per_pod the count is the pod's: the sum over the part's rows (BASE's glide doubler 111601, a row per
+    band; CEILING's members shared by both frames in one row, frame_c1|frame_c2, and its tray and ribs, their cassette
+    placed twice). Any other STEP (a block's, a panel's) holds one assembly: its count is the row's qty."""
+    snm = inputs.parse_name(step)
+    lnm = inputs.parse_name(list_file) if list_file else None
+    pod = inputs.pod_qty(pn, list_file) if snm and lnm and snm["pn"] == lnm["pn"] else None
+    if pod is not None:
+        if pod[0] != occurrences:
+            raise NotDrawable("%s: %s holds it %d times, its parts list says %d per pod%s" % (
+                pn, os.path.basename(step), occurrences, pod[0], " (its %d rows)" % pod[1] if pod[1] > 1 else ""))
+        return "%d per pod (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
+            pod[0], os.path.basename(step), occurrences)
+    q = (row.get("qty") or row.get("qty_per_parent") or "").strip()
+    try:
+        qn = int(float(q))
+    except ValueError:
+        qn = None
+    if qn is not None and qn != occurrences:
+        raise NotDrawable("%s: %s holds it %d times, its parts list says %s" % (
+            pn, os.path.basename(step), occurrences, q))
+    return "%s per %s (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
+        q or occurrences, ("%s %s" % (lnm["pn"], lnm["name"])) if lnm else "assembly", os.path.basename(step),
+        occurrences)
+
+
 class Part:
     """Everything one drawing needs, read from the sources."""
 
@@ -233,18 +261,7 @@ class Part:
         self.occurrences = self.unit.get("occurrences", 1)
         self.qty_words = None
         if self.occurrences > 1:
-            q = (self.row.get("qty") or self.row.get("qty_per_parent") or "").strip()
-            try:
-                qn = int(float(q))
-            except ValueError:
-                qn = None
-            if qn is not None and qn != self.occurrences:
-                raise NotDrawable("%s: %s holds it %d times, its parts list says %s" % (
-                    pn, os.path.basename(self.step), self.occurrences, q))
-            par = inputs.parse_name(self.list_file) if self.list_file else None
-            self.qty_words = "%s per %s (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
-                q or self.occurrences, ("%s %s" % (par["pn"], par["name"])) if par else "assembly",
-                os.path.basename(self.step), self.occurrences)
+            self.qty_words = step_count_words(pn, self.occurrences, self.row, self.step, self.list_file)
         self.placement = None
         if pod_system:
             self._to_pod()

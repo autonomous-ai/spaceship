@@ -909,6 +909,47 @@ def test_a_repeated_part_is_drawn_once():
     assert want > 1 and len(bodies) == 1 and unit["occurrences"] == want, (want, len(bodies), unit)
 
 
+def test_a_repeated_part_counts_per_pod():
+    """A team's STEP holds the team as built into the pod, so its count of a part is the pod's: the sum of qty_per_pod
+    over the part's rows. BASE's glide doubler 111601 has a row per band (2 + 2 + 3 + 2) and BASE's STEP holds it 9
+    times (main's code read one row's 2 and refused it). CEILING's rows as #348 writes them: members shared by both
+    frames in one row (frame_c1|frame_c2) and ribs whose cassette sits twice count per pod, and a frame's count in the
+    team's STEP (one frame's members missing) is refused. A block's own STEP (FRONT's) and a list without qty_per_pod
+    (WALL's panels) still count the row's qty."""
+    base = os.path.join(drawgen.inputs.REPO, "v2", "03-Manufacturing", "base")
+    part = compose.Part("111601", "base", step=os.path.join(base, "110000_P01_BASE_STEP.step"))
+    assert part.occurrences == 9 and part.qty_words.startswith("9 per pod (its parts list)"), part.qty_words
+    lst = os.path.join(TMP, "410000_P01_TEST-PARTS-LIST_BOM.csv")
+    with open(lst, "w", encoding="utf-8") as fh:
+        fh.write("part_number,name,parent,qty_per_parent,qty_per_pod\n412101,SIDE,frame_c1|frame_c2,1,2\n"
+                 "412001,CROSS,frame_c1|frame_c2,2,4\n513102,RIB,cassette,2,4\n831007,PLATE,frame_c1,2,2\n"
+                 "831007,PLATE,frame_c2,2,2\n")
+    team = "/x/410000_P01_CEILING_STEP.step"
+    for pn, held in (("412101", 2), ("412001", 4), ("513102", 4), ("831007", 4)):
+        w = compose.step_count_words(pn, held, {"qty_per_parent": "1"}, team, lst)
+        assert w.startswith("%d per pod (its parts list)" % held), w
+    for pn, held, says in (("412001", 2, "4 per pod"), ("412101", 3, "2 per pod"),
+                           ("831007", 2, "4 per pod (its 2 rows)")):
+        try:
+            compose.step_count_words(pn, held, {"qty_per_parent": "2"}, team, lst)
+            raise AssertionError("%s passed, held %d times" % (pn, held))
+        except compose.NotDrawable as e:
+            assert "holds it %d times, its parts list says %s" % (held, says) in str(e), e
+    w = compose.step_count_words("352211", 3, {"qty": "3"}, "/x/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+                                 "/x/351204_P01_FRONT-DECOR-FRAME-DT_BOM.csv")
+    assert w.startswith("3 per 351204 FRONT-DECOR-FRAME-DT (its parts list)"), w
+    panel = os.path.join(TMP, "210101_P01_TEST-PANEL_BOM.csv")
+    with open(panel, "w", encoding="utf-8") as fh:
+        fh.write("level,part_number,name,qty\n1,838003,RIVET NUT,9\n")
+    step = "/x/210101_P01_TEST-PANEL_STEP.step"
+    assert compose.step_count_words("838003", 9, {"qty": "9"}, step, panel).startswith("9 per 210101 TEST-PANEL")
+    try:
+        compose.step_count_words("838003", 8, {"qty": "9"}, step, panel)
+        raise AssertionError("838003 passed, held 8 times")
+    except compose.NotDrawable as e:
+        assert "holds it 8 times, its parts list says 9" in str(e), e
+
+
 def _notched_band(path, length=1000.0, notch_w=12.0, window=False):
     """A test back band like BASE's D-129 111103: a 100 x 40 x 1.5 tube closed by 1.5 end plates, each plate with an
     open slot (12 wide at the bottom edge, 6.5 from 6 up, its R3.25 end centred 63.5 up), a notch_w x 9 notch
