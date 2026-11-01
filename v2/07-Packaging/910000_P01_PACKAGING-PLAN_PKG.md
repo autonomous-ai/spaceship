@@ -13,7 +13,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels, the wall linings and the floor standing upright: **224 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **325 kg gross, 1,563 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 548 kg gross in all.
 2. **Masses are the layout study's P04 roll-up**, 409.2 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 413.2 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 412.7 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
-3. **42 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.7 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
+3. **42 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is FRONT - DECOR BLOCK ASSY - DR (2-03) at 18.9 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: floor, back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 10; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
 6. **PM rulings this plan follows** (packing group, 2026-10-31): the floor panel is 1219 mm or less including its lap, so nothing overhangs the pallet; the hinge halves that sit in DL ship fitted in DL, so the door travels 1177 mm wide (its 1175 glass and the magnetic seal half, FRONT's CAD); the door hangs before DT; the intake riser and the supply fan box ship apart and go into DR on site, so DR ships at 20 kg or less. And (2026-11-01): nothing rests on DR's felt panel, so DR lies face down with its felt up; the side bands carry the two back-corner keys, so the back band ships 2420 mm long on the 2438 mm deck (D-129); nothing overhangs either deck.
@@ -22,7 +22,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 | Pallet | Deck mm (in) | Pieces | Net kg | Gross kg (lb) | Loaded height mm (in) | Volume ft3 (reference) | Density lb/ft3 (reference) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 197.6 | 224 (493) | 1,641 (64.6) | 71.8 | 6.9 |
+| 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 197.5 | 224 (493) | 1,641 (64.6) | 71.8 | 6.9 |
 | 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 215.2 | 325 (716) | 1,563 (61.5) | 164.1 | 4.4 |
 | **Both** |  | 42 | **412.7** | **548** (1,209) |  |  |  |
 
@@ -74,7 +74,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 
 | Tier | Lane mm | Label | Piece | kg | Along × across × up with its wrap and bed, mm | Fitted in step |
 | --- | ---: | --- | --- | ---: | --- | --- |
-| Tier 1: glass crate | crate | - | GLASS CRATE 911001 with 2-01, 2-02 | 113.5 | 2210 × 1219 × 238 | 10, 11 |
+| Tier 1: glass crate | crate | - | GLASS CRATE 911001 with 2-01, 2-02 | 113.3 | 2200 × 1219 × 238 | 10, 11 |
 | Tier 2: DR face down, felt up, and the base band | 1030 | **2-03** | FRONT - DECOR BLOCK ASSY - DR | 18.9 | 2300 × 1030 × 236 | 10 |
 | Tier 2: DR face down, felt up, and the base band | 50 | **2-04** | BASE - BAND ASSY - BACK | 3.2 | 2430 × 50 × 128 | 2 |
 | Tier 2: DR face down, felt up, and the base band | 58 | **2-05** | BASE - BAND ASSY - SIDE - LH | 2.4 | 1527 × 58 × 128 | 2 |
@@ -82,7 +82,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 2: DR face down, felt up, and the base band | 58 | **2-06** | BASE - BAND ASSY - SIDE - RH | 2.4 | 1527 × 58 × 128 | 2 |
 | Tier 3: DL on its side, DT, soffit, air column | 209 | **2-09** | FRONT - DECOR BLOCK ASSY - DL | 12.3 | 2302 × 209 × 318 | 9 |
 | Tier 3: DL on its side, DT, soffit, air column | 316 | **2-12** | FRONT - DECOR BLOCK ASSY - DT | 7.9 | 1709 × 316 × 213 | 12 |
-| Tier 3: DL on its side, DT, soffit, air column | 316 | **2-13** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.3 | 600 × 250 × 200 | 13 |
+| Tier 3: DL on its side, DT, soffit, air column | 316 | **2-13** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.4 | 600 × 250 × 200 | 13 |
 | Tier 3: DL on its side, DT, soffit, air column | 369 | **2-10** | AIR - SOFFIT | 14.8 | 2332 × 369 × 243 | 17 |
 | Tier 3: DL on its side, DT, soffit, air column | 222 | **2-11** | AIR - AIR COLUMN | 8.1 | 2118 × 222 × 369 | 16 |
 | Tier 4: air parts, light shelf, threshold and cartons | 526 | **2-17** | AIR - SUPPLY FAN BOX | 13.4 | 2015 × 526 × 213 | 14 |
@@ -96,7 +96,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-21** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1173 × 1058 × 94 | 19 |
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 150 | **2-22** | POD - INSTALLATION KIT (OPEN FIRST) | 3.5 | 900 × 150 × 80 | 1 |
 
-**Glass crate (911001), tier 1.** Outside 2210 x 1219 x 238 mm; inside 2,120 x 1,189 x 208 mm: the door layer 164 mm (door on 75 mm foam blocks so its lower pull hangs free), a 12 mm separator, then the fixed glass layer 32 mm on top, because it is fitted first (step 10). Door 2106 x 1177 mm and fixed glass 2034 x 1031 mm each keep 5 mm of edge foam all round. Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate.
+**Glass crate (911001), tier 1.** Outside 2200 x 1219 x 238 mm; inside 2,110 x 1,189 x 208 mm: the door layer 164 mm (door on 75 mm foam blocks so its lower pull hangs free), a 12 mm separator, then the fixed glass layer 32 mm on top, because it is fitted first (step 10). Door 2096 x 1177 mm and fixed glass 2034 x 1031 mm each keep 5 mm of edge foam all round. Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate.
 
 **Tier separators (911003).** Timber battens carried on posts at the corners and sides, so no tier rests on a decor skin, a felt face or the crate lid's span: the crate lid takes tier 2's load only over its frame.
 
@@ -157,7 +157,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-19** | TBD (WALL) | B3 | LINING - CASSETTE - BACK UPPER - B3 | 8.4 | 1 | 15 |
 | **1-20** | TBD (WALL) | B4 | LINING - CASSETTE - BACK UPPER - B4 | 8.4 | 1 | 15 |
 | **2-01** | 360002 | - | FRONT - FIXED GLASS UNIT | 28.7 | 2 | 10 |
-| **2-02** | 360001 | - | FRONT - DOOR UNIT | 48.7 | 2 | 11 |
+| **2-02** | 360001 | - | FRONT - DOOR UNIT | 48.6 | 2 | 11 |
 | **2-03** | 350003 | DR | FRONT - DECOR BLOCK ASSY - DR | 18.9 | 2 | 10 |
 | **2-04** | 110103 | - | BASE - BAND ASSY - BACK | 3.2 | 2 | 2 |
 | **2-05** | 110101 | - | BASE - BAND ASSY - SIDE - LH | 2.4 | 1 | 2 |
@@ -168,7 +168,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-10** | 610201 | - | AIR - SOFFIT | 14.8 | 2 | 17 |
 | **2-11** | 610101 | - | AIR - AIR COLUMN | 8.1 | 2 | 16 |
 | **2-12** | 350002 | DT | FRONT - DECOR BLOCK ASSY - DT | 7.9 | 2 | 12 |
-| **2-13** | TBD (ELECTRICAL) | - | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.3 | 1 | 13 |
+| **2-13** | TBD (ELECTRICAL) | - | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.4 | 1 | 13 |
 | **2-14** | 810201 | - | INTERIOR - LIGHT SHELF ASSY | 1.6 | 2 | 20 |
 | **2-15** | TBD (BASE) | - | BASE - SMALL PARTS CARTON | 1.1 | 1 | 2 |
 | **2-16** | 810101 | - | INTERIOR - WORK WALL LEDGE ASSY | 1.9 | 1 | 23 |
@@ -188,7 +188,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-01** | 110401 | BASE - FLOOR PANEL ASSY - F1 | Tấm sàn F1 (cụm dán) | F1 | 8.18 | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) | 1455 × 1219 × 12 | 3 |
 | **1-02** | TBD (BASE) | BASE - FLOOR PANEL ASSY - F2 | Tấm sàn F2 (cụm dán) | F2 | 8.18 | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) | 1455 × 1219 × 12 | 3 |
 | **1-03** | 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | Vách hậu - cụm tấm dưới trái | B1 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1127 × 46 | 4 |
-| **1-04** | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | Vách hậu - cụm tấm dưới phải | B2 | 11.53 | calculation (CAD); calculation (part CAD); fill provisional | 1200.61 × 1127 × 88 | 4 |
+| **1-04** | 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | Vách hậu - cụm tấm dưới phải | B2 | 11.51 | calculation (CAD); calculation (part CAD); fill provisional | 1200.61 × 1127 × 88 | 4 |
 | **1-05** | 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | Vách trái - cụm tấm dưới | L1 | 11.16 | calculation (CAD); fill provisional | 1492.74 × 1151 × 48.5 | 5 |
 | **1-06** | 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | Vách phải - cụm tấm dưới | R1 | 11.16 | calculation (CAD); fill provisional | 1492.74 × 1151 × 48.5 | 5 |
 | **1-07** | TBD (WALL) | WALL - PANEL ASSY - BACK UPPER - B3 | Vách hậu - cụm tấm trên trái | B3 | 8.64 | calculation (part CAD); fill provisional | 1200.61 × 1118.61 × 46 | 6 |
@@ -211,14 +211,14 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | - | Wall cassette clips: 32 of the 44 named clips, on the wall panels and cassettes |  | - | 1.28 | assumption | inside the pieces | - |
 | - | 918001 (PROPOSED) | PACKAGING - PALLET - 48 X 40 IN, NEW WOOD, HEAT-TREATED, ISPM 15 STAMPED, 4-WAY (GMA) |  | - | 20.00 | source | - | - |
 | - | 918010 (PROPOSED) | PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film |  | - | 6.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **223.6** |  |  |  |
+|  |  | **Gross** |  |  | **223.5** |  |  |  |
 
 ### Pallet 2: 96 × 48 in
 
 | Label | Part number | Piece | Vietnamese | Pos. | kg | Status | Size mm | Step |
 | --- | --- | --- | --- | --- | ---: | --- | --- | ---: |
 | **2-01** | 360002 | FRONT - FIXED GLASS UNIT | Cụm vách kính cố định | - | 28.74 | calculation (CAD); magnetic seal HOLD | 2034 × 1031 × 12 | 10 |
-| **2-02** | 360001 | FRONT - DOOR UNIT | Cụm cửa kính | - | 48.72 | calculation (CAD); hinges and pull HOLD | 2106 × 1177 × 149 | 11 |
+| **2-02** | 360001 | FRONT - DOOR UNIT | Cụm cửa kính | - | 48.59 | calculation (CAD); hinges and pull HOLD | 2096 × 1177 × 149 | 11 |
 | **2-03** | 350003 | FRONT - DECOR BLOCK ASSY - DR | Khối trang trí phải (cụm) | DR | 18.86 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 2290 × 1020 × 216 | 10 |
 | **2-04** | 110103 | BASE - BAND ASSY - BACK | Viền chân nhôm - cạnh sau (cụm) | - | 3.17 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm) | 2420 × 118 × 40 | 2 |
 | **2-05** | 110101 | BASE - BAND ASSY - SIDE - LH | Viền chân nhôm - cạnh trái (cụm) | - | 2.41 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm) | 1517 × 118 × 48 | 2 |
@@ -229,7 +229,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-10** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.76 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 17 |
 | **2-11** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2108 × 359 × 212 | 16 |
 | **2-12** | 350002 | FRONT - DECOR BLOCK ASSY - DT | Khối trang trí trên (cụm) | DT | 7.91 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 1699 × 306 × 203 | 12 |
-| **2-13** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.28 | calculation (CAD) | 600 × 250 × 200 | 13 |
+| **2-13** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.41 | calculation (CAD) | 600 × 250 × 200 | 13 |
 | **2-14** | 810201 | INTERIOR - LIGHT SHELF ASSY | Kệ đèn hắt (cụm) | - | 1.58 | calculation (CAD) | 2332 × 80 × 60 | 20 |
 | **2-15** | TBD (BASE) | BASE - SMALL PARTS CARTON | Thùng phụ kiện đế | - | 1.14 | calculation (CAD); calculation; confirmed (1.5 mm) | 600 × 400 × 150 | 2 |
 | **2-16** | 810101 | INTERIOR - WORK WALL LEDGE ASSY | Bàn tựa vách làm việc (cụm) | - | 1.90 | calculation (CAD); brackets and screen rail HOLD | 1000 × 250 × 120 | 23 |
@@ -279,7 +279,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | FRONT | Decor block - left | 1 | 12.30 | calculation (CAD) | 2-09 |
 | FRONT | Decor block - right | 1 | 18.32 | calculation (CAD) | 2-03 |
 | FRONT | Decor block - top | 1 | 7.84 | calculation (CAD) | 2-12 |
-| FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.72 | calculation (CAD); hinges and pull HOLD | 2-02 |
+| FRONT | Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull | 1 | 48.59 | calculation (CAD); hinges and pull HOLD | 2-02 |
 | FRONT | Fixed glass unit 360002: 4+4 pane, U-profile, U-seal and magnetic seal half | 1 | 29.54 | calculation (CAD); magnetic seal HOLD | 2-01 × 0.973022, 2-03 × 0.018405, 2-07 × 0.00609411, 2-12 × 0.00247854 |
 | AIR | Supply cartridge, in the air column | 1 | 10.55 | calculation (CAD) | 2-18 |
 | AIR | Exhaust cartridge, in the soffit | 1 | 10.55 | calculation (CAD) | 2-19 |
@@ -291,7 +291,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | AIR | Roof slot grille 611602 and roof sleeve 611601, with C2 | 1 | 0.88 | calculation (CAD) | 1-12 |
 | AIR | Four 12 V fans | 1 | 1.20 | assumption | 2-10 × 0.5, 2-17 × 0.5 |
 | BASE | Base seal and cable grommets | 1 | 0.60 | source | A-4 |
-| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.17 | calculation (CAD) | 1-04 × 0.558824, 2-13 × 0.441176 |
+| ELECTRICAL | Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL) | 1 | 5.28 | calculation (CAD) | 1-04 × 0.543858, 2-13 × 0.456142 |
 | INTERIOR | Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line) | 1 | 1.58 | calculation (CAD) | 2-14 |
 | INTERIOR | Work-wall ledge, 1000 mm, with the screen rail | 1 | 1.90 | calculation (CAD); brackets and screen rail HOLD | 2-16 |
 | WALL | M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats | 1 | 3.19 | calculation (part CAD); cleats assumption | A-3 |
@@ -310,7 +310,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 42 pieces, 0 fail | yes |
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 960 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
 | K5 | Pallet 2: lanes within 1219 across and 2438 along, parts within their tier, loaded height 1829 or less | loaded height 1563 mm; widest tier 1219 mm; longest lane 2430 mm; failing tiers none | yes |
-| K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2120 × 1189 × 208 mm; outside height 238 mm; all fit | yes |
+| K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2110 × 1189 × 208 mm; outside height 238 mm; all fit | yes |
 | K7 | The guide's bolts match the joints register, joint by joint | guide 92 (80 × M6 × 16, 12 × M6 × 25); register 92; differences none | yes |
 | K8 | Assembly time within REQ-ASM-01's 4 hour limit (clock: steps 1 to 22) | 135 min for 2 people (4.5 person-hours); target about 60 min; limit 240 min | yes |
 | K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 15, never going back: True; crate top 2-01 (step 10) over 2-02 (step 11) | yes |
@@ -348,7 +348,7 @@ Each piece's planned size (sorted, mm) against the box of its own CAD as it ship
 | **1-19** | LINING - CASSETTE - BACK UPPER - B3 | 1166 × 1116.87 × 38 | no CAD yet | - |
 | **1-20** | LINING - CASSETTE - BACK UPPER - B4 | 1166 × 1116.87 × 38 | no CAD yet | - |
 | **2-01** | FRONT - FIXED GLASS UNIT | 2034 × 1031 × 12 | 2033 × 1026.64 × 11.76 | `360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step` |
-| **2-02** | FRONT - DOOR UNIT | 2106 × 1177 × 149 | 2105.5 × 1177.02 × 148.76 | `360001_P01_FRONT-DOOR-UNIT_STEP.step` |
+| **2-02** | FRONT - DOOR UNIT | 2096 × 1177 × 149 | 2095.5 × 1177.02 × 148.76 | `360001_P01_FRONT-DOOR-UNIT_STEP.step` |
 | **2-03** | FRONT - DECOR BLOCK ASSY - DR | 2290 × 1020 × 216 | 2290 × 1020 × 215.5 | `350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step` |
 | **2-04** | BASE - BAND ASSY - BACK | 2420 × 118 × 40 | 2420 × 118 × 40 | `110000_P01_BASE_STEP.step` |
 | **2-05** | BASE - BAND ASSY - SIDE - LH | 1517 × 118 × 48 | 1517 × 118 × 40 | `110000_P01_BASE_STEP.step` |
@@ -430,7 +430,7 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | `pack_cap_h` | 25 mm | assumption | layout study | top cap board and corner protection |
 | `pack_kg_std` | 6 kg | assumption | layout study | corner boards, foam, straps, film per 48x40 pallet |
 | `pack_kg_long` | 9 kg | assumption | layout study | same for a 96x48 pallet |
-| `crate_l` | 2210 mm | calculation | this plan | door unit 2106 (D-132: the kick strip 10 lower) + 2 × 5 edge foam + 2 × 45 end rails = 2206, rounded up |
+| `crate_l` | 2200 mm | calculation | this plan | door unit 2089 + 2 × 5 edge foam + 2 × 45 end rails = 2189, rounded up |
 | `crate_w` | 1219 mm | calculation | this plan | the full 48 in deck: door 1177 + 2 × 5 edge foam + 2 × 15 side rails = 1217 |
 | `crate_side_rail` | 15 mm | assumption | this plan | plywood side rail, so the 1177 door (FRONT's CAD: its magnetic seal half 2 mm past the glass) fits a 1219 crate |
 | `crate_end_rail` | 45 mm | assumption | this plan | timber end rail |

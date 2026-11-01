@@ -156,9 +156,9 @@ DIA_WALL = re.compile(r"Ø\s*([\d.]+)[^Ø;]*?\b(top|bottom|inner|outer)\s+wall",
 NUM = re.compile(r"[-−+]?\d+(?:\.\d+)?")
 
 
-def feature_rows_b(team, pn=None):
+def feature_rows_b(team, pn=None, sizeless=False):
     """Rows of the other register layouts that name a hole size: [{id, title, dias, walls, numbers, function,
-    status, file, keyhole}]."""
+    status, file, keyhole}]; with sizeless, the rows that name none too (an open-ended slot's)."""
     out = []
     for p in sorted(glob.glob(os.path.join(DRAWINGS, team, "FEATURE-RATIONALE*.md"))):
         section, cols = "", None
@@ -191,16 +191,25 @@ def feature_rows_b(team, pn=None):
                 title, fn, size = get("feature"), get("function"), get("size")
                 both = title + " " + size
                 dias = [float(d.rstrip(".")) for d in DIA.findall(both)]
-                if not dias:
+                if not dias and not sizeless:
                     continue
                 walls = {float(d.rstrip(".")): w.lower() for d, w in DIA_WALL.findall(both)}
                 wall_any = next((w for w in ("top", "bottom", "inner", "outer") if w + " wall" in both.lower()), None)
                 nums = [float(n.replace("−", "-")) for n in NUM.findall(size.replace("−", "-").replace("∓", "-"))]
-                out.append({"id": cells[0], "title": title, "dias": dias, "dia": dias[0], "walls": walls,
+                out.append({"id": cells[0], "title": title, "dias": dias, "dia": dias[0] if dias else None, "walls": walls,
                             "wall": wall_any if not walls else None, "numbers": nums, "function": fn, "mating": fn,
                             "status": get("status"), "keyhole": "keyhole" in both.lower(), "file": rel(p),
                             "section": section.strip("# \n")})
     return out
+
+
+def match_open_slot_b(rows, width, mouth):
+    """The row for an open-ended slot: a slot its row calls open, whose size cell names its width and its mouth."""
+    def has(r, v):
+        return any(abs(abs(n) - v) < 0.006 for n in r["numbers"])
+    c = [r for r in rows if "slot" in r["title"].lower() and "open" in r["title"].lower() and has(r, width) and
+         has(r, mouth)]
+    return c[0] if len(c) == 1 else None
 
 
 def match_feature_b(rows, dia, wall, entry, keyhole=False, along=None):

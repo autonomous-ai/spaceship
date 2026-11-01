@@ -1,5 +1,5 @@
 {
- "rev": "6028cf8",
+ "rev": "cf96ecc",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -226,6 +226,76 @@
     "bays_over": 3
    },
    "key": "C09|acp-bay|assembly 211202 BACK LOWER - B2"
+  },
+  {
+   "check": "C02",
+   "rule": "gap-KICK-OVER-FLOOR",
+   "subject": "assembly KICK-OVER-FLOOR",
+   "severity": "severe",
+   "message": "KICK-OVER-FLOOR: KICK STRIP to ROOM FLOOR (Z 0) is 20.0 mm, needs 9.5 to 10.5 mm. Rule source: confirmed: D-151 (2026-11-01): the kick strip's bottom is the band's bottom line, glide_h (Z 10), over the room floor (D-132: no threshold, the drop seal closes on the floor); the 0.5 either way is the rule it replaces (KICK-OVER-THRESHOLD, D-68 and D-72; assumption); the assembly only, since the skeleton's thresh_h is no longer the kick strip's datum (D-151). Why: The door swings over the room floor: the kick strip runs on the band's bottom line so it clears the floor and the drop seal meets it",
+   "fix": "Kick strip bottom at glide_h (Z 10) in door_unit.py, keeping its 60 degree push-side taper (D-151)",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "rules": [
+     {
+      "id": "KICK-OVER-FLOOR",
+      "gap_mm": 20.0,
+      "a": "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
+      "b": "ROOM FLOOR (Z 0)"
+     }
+    ]
+   },
+   "key": "C02|gap-KICK-OVER-FLOOR|assembly KICK-OVER-FLOOR"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351101 FRONT - DECOR SKIN - DL:1",
+   "severity": "severe",
+   "message": "351101 FRONT - DECOR SKIN - DL:1: 17 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351104 FRONT - DECOR FRAME - DL:1 (B02 BACK RING DOOR SIDE 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (B04 BACK RING BOLT LINE 60 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P1 DOOR-SIDE FRONT POST 1 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P2 DOOR-SIDE FRONT POST 2 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P3 DOOR-SIDE FRONT POST 3 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (R1D RING BOTTOM - DOOR SIDE 20 x 20 x 1.5) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 17
+   },
+   "key": "C02|bond-line|assembly 351101 FRONT - DECOR SKIN - DL:1"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351201 FRONT - DECOR SKIN - DT:1",
+   "severity": "severe",
+   "message": "351201 FRONT - DECOR SKIN - DT:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351204 FRONT - DECOR FRAME - DT:1 (B01 BACK RING BOTTOM 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (B03 BACK RING TOP 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C03 CHAMFER CROSS TUBE RIGHT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (F01 FRONT FACET TUBE 20 x 20 x 1.5) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 11
+   },
+   "key": "C02|bond-line|assembly 351201 FRONT - DECOR SKIN - DT:1"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351301 FRONT - DECOR SKIN - DR:1",
+   "severity": "severe",
+   "message": "351301 FRONT - DECOR SKIN - DR:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351306 FRONT - DECOR FRAME - DR:1 (B01 BACK RING BOTTOM 40 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B02 BACK RING BOLT LINE 80 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B07 BACK RING GLASS EDGE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F01 FRONT RING BOTTOM 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F02 FRONT RING FACET SIDE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F03 FRONT RING TOP 20 x 20 x 1.0) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 11
+   },
+   "key": "C02|bond-line|assembly 351301 FRONT - DECOR SKIN - DR:1"
   },
   {
    "check": "C08",
@@ -1222,6 +1292,18 @@
    "key": "C06|bom-not-in-cad|611302"
   },
   {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "111215",
+   "severity": "major",
+   "message": "111215 BASE - CORNER KEY - SQUARE - INLINE is in v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/joints/V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|111215"
+  },
+  {
    "check": "C05",
    "rule": "no-drawing",
    "subject": "110000",
@@ -1283,27 +1365,63 @@
   },
   {
    "check": "C05",
-   "rule": "hidden-lines",
+   "rule": "no-drawing",
    "subject": "111211",
-   "severity": "minor",
-   "message": "111211 BASE - CORNER KEY - BACK - COMMON drawing 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: Hidden lines show in 9 view region(s) (189 dash pieces on Fusion's Hidden layer).",
-   "fix": "Set the view style again on the made view (Fusion ignores the input's style; tools/fusion/fusion_drawing.py base_view); or, if the drawing keeps them on purpose, list it with the number of views and the reason.",
-   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
+   "severity": "severe",
+   "message": "111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step",
    "owner": "Joints Engineer",
    "evidence": {},
-   "key": "C05|hidden-lines|111211"
+   "key": "C05|no-drawing|111211"
   },
   {
    "check": "C05",
-   "rule": "dimension-twice",
-   "subject": "111211",
-   "severity": "minor",
-   "message": "111211 BASE - CORNER KEY - BACK - COMMON drawing 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: Dimension value(s) printed more than once: 10.5, Ø5.04.",
-   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
-   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
+   "rule": "no-drawing",
+   "subject": "111212",
+   "severity": "severe",
+   "message": "111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step",
    "owner": "Joints Engineer",
    "evidence": {},
-   "key": "C05|dimension-twice|111211"
+   "key": "C05|no-drawing|111212"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111213",
+   "severity": "severe",
+   "message": "111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111213"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111214",
+   "severity": "severe",
+   "message": "111214 BASE - CORNER KEY - KNEE - LH has no drawing PDF (111214_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111214"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111215",
+   "severity": "severe",
+   "message": "111215 BASE - CORNER KEY - SQUARE - INLINE has no drawing PDF (111215_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|no-drawing|111215"
   },
   {
    "check": "C05",
@@ -1836,6 +1954,18 @@
   {
    "check": "C05",
    "rule": "no-drawing",
+   "subject": "368004",
+   "severity": "major",
+   "message": "368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571 has no drawing PDF (368004_REV_NAME_DWG.pdf under v2/02-Drawings). D-143: a bought profile cut into mitred lengths with holes is a made part, with one table drawing (D-89), not a cut list alone; FRONT's 368004 is held until the generator reads profiles.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|368004"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
    "subject": "410000",
    "severity": "major",
    "message": "410000 CEILING has no drawing PDF (410000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/ceiling/410000_P01_CEILING_STEP.step.",
@@ -2255,102 +2385,6 @@
   },
   {
    "check": "C05",
-   "rule": "letter-height",
-   "subject": "710000",
-   "severity": "major",
-   "message": "710000 ELECTRICAL drawing 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: 129 texts (sheet 1) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.15 mm: '710001 POWER UNIT - in panel B' 1.51 mm; 'INLET  (outside B2)' 1.51 mm; 'powerCON TRUE1 TOP' 1.36 mm. 255 texts (sheet 2) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HARNESS LIST  (every field, wi' 1.72 mm; 'ID' 1.44 mm; 'SEGMENT' 1.44 mm. 64 texts (sheet 3) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'VIEW A - BACK WALL FROM INSIDE' 1.65 mm; 'X view = +X, Y view = +Z; orig' 1.36 mm; 'B1-CASS' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710000"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710001",
-   "severity": "major",
-   "message": "710001 ELECTRICAL - POWER UNIT - B2 drawing 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: 235 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'FACE OF THE POWER UNIT, seen f' 1.58 mm; 'SOCKET (86, HOLD)' 1.29 mm; 'LAN 2-PORT (86, HOLD)' 1.29 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710001"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710011",
-   "severity": "major",
-   "message": "710011 ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 drawing 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: 104 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710011"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710021",
-   "severity": "major",
-   "message": "710021 ELECTRICAL - HARNESS - TRUNK - B2/R1 drawing 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: 143 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710021"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710023",
-   "severity": "major",
-   "message": "710023 ELECTRICAL - HARNESS - AIR COLUMN drawing 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: 121 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710023"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710024",
-   "severity": "major",
-   "message": "710024 ELECTRICAL - HARNESS - CALL LIGHT - R2 drawing 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: 51 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710024"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710031",
-   "severity": "major",
-   "message": "710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE drawing 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: 59 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710031"
-  },
-  {
-   "check": "C05",
-   "rule": "letter-height",
-   "subject": "710041",
-   "severity": "major",
-   "message": "710041 ELECTRICAL - HUB AND CONTROLS ZONE drawing 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: 112 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HUB AND CONTROLS ZONE PLATE 71' 1.58 mm; 'HUB WINDOW (HOLD)' 1.44 mm; 'BOOST' 1.36 mm.",
-   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
-   "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {},
-   "key": "C05|letter-height|710041"
-  },
-  {
-   "check": "C05",
    "rule": "no-drawing",
    "subject": "711001",
    "severity": "severe",
@@ -2512,118 +2546,6 @@
     "model": "pdf-people"
    },
    "key": "C05|drawing-author|111401_P01_BASE-FLOOR-PANEL-F1_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG",
-   "severity": "major",
-   "message": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG",
-   "severity": "major",
-   "message": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG",
-   "severity": "major",
-   "message": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG",
-   "severity": "major",
-   "message": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG",
-   "severity": "major",
-   "message": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG",
-   "severity": "major",
-   "message": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG",
-   "severity": "major",
-   "message": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG"
-  },
-  {
-   "check": "C05",
-   "rule": "drawing-author",
-   "subject": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG",
-   "severity": "major",
-   "message": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
-   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
-   "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
-   "owner": "ELECTRICAL",
-   "evidence": {
-    "model": "pdf-people"
-   },
-   "key": "C05|drawing-author|710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG"
   }
  ],
  "stacks": [
@@ -2771,7 +2693,7 @@
   {
    "id": "1-04",
    "name": "WALL - PANEL ASSY - BACK LOWER - B2",
-   "kg": 11.529,
+   "kg": 11.514,
    "dims": [
     1200.61,
     1127.0,
@@ -3119,7 +3041,7 @@
   {
    "id": "2-13",
    "name": "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS",
-   "kg": 2.28,
+   "kg": 2.41,
    "dims": [
     600.0,
     250.0,
@@ -3453,7 +3375,7 @@
    "torque_nm": "HOLD: into the corner key's M6 thread, from the joint test J-T6 (joints register)",
    "qty_parts_list": "4",
    "qty_cad": 4,
-   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:2; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:3; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:4; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:5",
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:2; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:3; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:4; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:5",
    "maker": "standard part, any maker (catalogue number at RFQ)",
    "sku": "ISO 7380-2 M6 x 12 - A2-70",
    "status": "DRAFT",
@@ -5408,7 +5330,7 @@
    "torque_nm": "",
    "qty_parts_list": "4",
    "qty_cad": 4,
-   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:2; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:3; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:4; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2\n:5",
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:2; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:3; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:4; 110103 BASE - BAND ASSY - BACK:1 / 838010 HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2:5",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -5458,6 +5380,23 @@
    "finish": "",
    "torque_nm": "",
    "qty_parts_list": "2",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838011",
+   "name": "HARDWARE - WASHER - M6 PLAIN - ISO 7089 6.4 X 12 200HV ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "",
+   "finish": "",
+   "torque_nm": "",
+   "qty_parts_list": "",
    "qty_cad": "",
    "where_cad": "",
    "maker": "",
