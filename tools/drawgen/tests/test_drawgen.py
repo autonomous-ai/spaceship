@@ -15,6 +15,7 @@
 4. drawgen never overwrites a PDF it didn't make (a Fusion drawing).
 5. A part with a feature it can't dimension (here a fillet) is refused, not drawn; so is a folded sheet, even
    with a sharp fold (D-113).
+6. The read-back fails a sheet where two texts touch, or a text touches a part outline.
 """
 
 import os
@@ -223,6 +224,24 @@ def test_refuses_a_folded_sheet():
         raise AssertionError("drew a folded sheet")
     except compose.NotDrawable as e:
         assert "folded" in str(e), e
+
+
+def test_clash_check_catches_touching_text():
+    """The read-back fails a sheet where two texts touch, or a text touches a part outline (PM, 2026-11-01)."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "clash")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    sh.text(100, 100, "H03", 2.5, bold=True)
+    sh.text(104, 100.5, "O2", 2.5, bold=True)            # runs into H03
+    sh.line((150, 90), (150, 110), 0.5)                  # an outline...
+    sh.text(149, 100, "H07", 2.5)                        # ...with a tag on it
+    sh.text(200, 100, "H09", 2.5)                        # clear of everything
+    sh.save(os.path.join(d, "c.pdf"))
+    found = [w for _p, w in readback.clashes(fitz.open(os.path.join(d, "c.pdf")))]
+    assert any("'H03'" in w and "'O2'" in w for w in found), found
+    assert any("'H07' touches an outline" in w for w in found), found
+    assert not any("H09" in w for w in found), found
 
 
 def main():

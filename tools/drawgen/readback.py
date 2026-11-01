@@ -111,6 +111,96 @@ def pdf_circles(page, sheet_h):
     return out
 
 
+def text_boxes(page, sheet_h):
+    """Every text item's box in sheet mm (x0, y0, x1, y1, text), one per span the PDF holds."""
+    out = []
+    for b in page.get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            upright = abs(ln.get("dir", (1, 0))[0]) < 0.5        # written up or down the sheet
+            for sp in ln.get("spans", []):
+                t = sp["text"].strip()
+                if not t:
+                    continue
+                x0, y0, x1, y1 = sp["bbox"]
+                out.append((x0 / MM, sheet_h - y1 / MM, x1 / MM, sheet_h - y0 / MM, t, upright))
+    return out
+
+
+def _ink_box(b, size_cut=0.2):
+    """A text box shrunk to its ink: the PDF's box reaches above the capitals and below the baseline (across the
+    line, which is the sheet's X for text written upward)."""
+    x0, y0, x1, y1, t, upright = b
+    if upright:
+        w = x1 - x0
+        return (x0 + w * size_cut, y0 + 0.1, x1 - w * size_cut, y1 - 0.1, t)
+    h = y1 - y0
+    return (x0 + 0.1, y0 + h * size_cut, x1 - 0.1, y1 - h * size_cut, t)
+
+
+def outline_paths(page, sheet_h, width_mm=0.5):
+    """The part's visible outlines (strokes of the visible-line width) as point lists in sheet mm (curves sampled
+    for the touch test only)."""
+    out = []
+    for d in page.get_drawings():
+        w = d.get("width") or 0
+        if d.get("type") not in ("s", "fs") or abs(w / MM - width_mm) > 0.02:
+            continue
+        for it in d["items"]:
+            if it[0] == "l":
+                pts = [it[1], it[2]]
+            elif it[0] == "c":
+                p0, c1, c2, p1 = it[1], it[2], it[3], it[4]
+                pts = []
+                for k in range(9):
+                    t = k / 8.0
+                    a, b_, c, e = (1 - t) ** 3, 3 * t * (1 - t) ** 2, 3 * t * t * (1 - t), t ** 3
+                    pts.append(fitz.Point(a * p0.x + b_ * c1.x + c * c2.x + e * p1.x,
+                                          a * p0.y + b_ * c1.y + c * c2.y + e * p1.y))
+            else:
+                continue
+            out.append([(p.x / MM, sheet_h - p.y / MM) for p in pts])
+    return out
+
+
+def _seg_hits_box(p, q, box):
+    """True when segment p-q passes through the box (Liang-Barsky clip)."""
+    x0, y0, x1, y1 = box[:4]
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    t0, t1 = 0.0, 1.0
+    for pp, qq in ((-dx, p[0] - x0), (dx, x1 - p[0]), (-dy, p[1] - y0), (dy, y1 - p[1])):
+        if abs(pp) < 1e-12:
+            if qq < 0:
+                return False
+        else:
+            r = qq / pp
+            if pp < 0:
+                t0 = max(t0, r)
+            else:
+                t1 = min(t1, r)
+            if t0 > t1:
+                return False
+    return True
+
+
+def clashes(doc):
+    """Texts that touch each other, and texts that touch a part outline, on every page: [(page, what)]."""
+    found = []
+    for pi, page in enumerate(doc):
+        H = page.rect.height / MM
+        boxes = [_ink_box(b) for b in text_boxes(page, H)]
+        for i, a in enumerate(boxes):
+            for b in boxes[i + 1:]:
+                if a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]:
+                    found.append((pi + 1, "text '%s' touches text '%s'" % (a[4][:30], b[4][:30])))
+        paths = outline_paths(page, H)
+        for a in boxes:
+            for pts in paths:
+                if any(_seg_hits_box(pts[k], pts[k + 1], a) for k in range(len(pts) - 1)):
+                    found.append((pi + 1, "text '%s' touches an outline" % a[4][:30]))
+                    break
+    return found
+
+
 def step_holes(step_path, pn):
     """Every hole run of the part's solids in the file's top coordinates, from the repo's STEP reader."""
     sf = _stepfile().StepFile(step_path)
@@ -227,6 +317,8 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("the text layer has non-breaking spaces or soft hyphens (search breaks)")
     if (doc.metadata or {}).get("creator") != "drawgen":
         fails.append("PDF Creator is not drawgen")
+    for pg, what in clashes(doc):
+        fails.append("sheet %d: %s" % (pg, what))
     two_wall = any(f["kind"] == "hole" and sum(1 for g in data["features"] if g["kind"] == "hole" and g["body"] == f["body"]
                                                and abs(abs(dot(g["axis"], f["axis"])) - 1) < 1e-6) > 1 for f in data["features"])
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
@@ -290,6 +382,8 @@ def check_tabulated(doc, data, fails, stats):
             stats["worst_table"] = max([stats["worst_table"]] + [abs(a - b) for a, b in zip(sorted(got), ext)])
     if (doc.metadata or {}).get("creator") != "drawgen":
         fails.append("PDF Creator is not drawgen")
+    for pg, what in clashes(doc):
+        fails.append("sheet %d: %s" % (pg, what))
     return fails, stats
 
 

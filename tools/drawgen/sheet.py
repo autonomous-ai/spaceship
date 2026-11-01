@@ -65,7 +65,53 @@ class Sheet:
         self.pages.append(self.page)
         self.shape = self.page.new_shape()
         self._registered = set()
+        self.boxes = []         # ink boxes of the text written on this page (x0, y0, x1, y1)
+        self.obstacles = []     # part outlines on this page, as segments, for placing labels clear of them
         return self.page
+
+    # ------------------------------------------------------------ keeping labels clear (the read-back checks it)
+    def add_obstacles(self, segs):
+        self.obstacles.extend(segs)
+
+    @staticmethod
+    def _boxes_touch(a, b, gap=0.4):
+        return a[0] - gap < b[2] and b[0] - gap < a[2] and a[1] - gap < b[3] and b[1] - gap < a[3]
+
+    @staticmethod
+    def _seg_box(p, q, box, gap=0.4):
+        x0, y0, x1, y1 = box[0] - gap, box[1] - gap, box[2] + gap, box[3] + gap
+        dx, dy = q[0] - p[0], q[1] - p[1]
+        t0, t1 = 0.0, 1.0
+        for pp, qq in ((-dx, p[0] - x0), (dx, x1 - p[0]), (-dy, p[1] - y0), (dy, y1 - p[1])):
+            if abs(pp) < 1e-12:
+                if qq < 0:
+                    return False
+            else:
+                r = qq / pp
+                if pp < 0:
+                    t0 = max(t0, r)
+                else:
+                    t1 = min(t1, r)
+                if t0 > t1:
+                    return False
+        return True
+
+    def is_free(self, box):
+        if box[0] < 22 or box[2] > self.W - 12 or box[1] < 12 or box[3] > self.H - 12:
+            return False
+        if any(self._boxes_touch(box, b) for b in self.boxes):
+            return False
+        return not any(self._seg_box(p, q, box) for p, q in self.obstacles)
+
+    def text_box(self, x, y, s, size=2.5, anchor="left", rotate=0, bold=False, valign="base"):
+        """The ink box text() would cover, without writing."""
+        w = self.text_width(str(s), size, bold)
+        dx = {"left": 0.0, "center": -w / 2, "right": -w}[anchor]
+        dy = -0.5 * size if valign == "mid" else 0.0
+        if rotate == 0:
+            return (x + dx, y + dy, x + dx + w, y + dy + size)
+        bx, by = x - dy, y + dx
+        return (bx - size, by, bx, by + w)
 
     def P(self, x, y):
         return fitz.Point(x * MM, (self.H - y) * MM)
@@ -175,6 +221,7 @@ class Sheet:
             pt = self.P(x - dy, y + dx)
         self.page.insert_text(pt, s, fontsize=size / CAP * MM, fontname=fname, fontfile=ffile, rotate=rotate,
                               color=BLACK)
+        self.boxes.append(self.text_box(x, y, s, size, anchor, rotate, bold, valign))
         return w
 
     def wrap(self, s, size, width, bold=False):
@@ -431,15 +478,36 @@ class Sheet:
             tip = (o[0] + d[0] * L, o[1] + d[1] * L)
             self.line((o[0] + d[0] * 1.2, o[1] + d[1] * 1.2), tip, W_THIN)
             self.arrow(tip, d, 2.2, 0.9)
-            self.text(tip[0] + d[0] * 1.2 + (0.3 if d[0] == 0 else 0), tip[1] + d[1] * 1.2 - (1.2 if d[1] == 0 else 0),
-                      lab, size, "left" if d[0] >= 0 else "right")
+            # beside the arrow's tip, on whichever side is clear
+            if d[1] == 0:
+                cands = [(tip[0] + d[0] * 1.2, tip[1] - size / 2, "left" if d[0] >= 0 else "right"),
+                         (tip[0] - d[0] * 1.5, tip[1] + 1.0, "right" if d[0] >= 0 else "left"),
+                         (tip[0] - d[0] * 1.5, tip[1] - size - 1.0, "right" if d[0] >= 0 else "left"),
+                         (tip[0] + d[0] * 1.2, tip[1] + 1.5, "left" if d[0] >= 0 else "right"),
+                         (tip[0] + d[0] * 1.2, tip[1] - size - 1.5, "left" if d[0] >= 0 else "right")]
+            else:
+                cands = [(tip[0] + 1.0, tip[1] + d[1] * 1.2 - (size if d[1] < 0 else 0), "left"),
+                         (tip[0] - 1.0, tip[1] - d[1] * 2.0, "right"),
+                         (tip[0] + 1.0, tip[1] - d[1] * 2.0 - (size if d[1] > 0 else 0), "left"),
+                         (tip[0] - 1.5, tip[1] + d[1] * 1.2 - (size if d[1] < 0 else 0), "right"),
+                         (tip[0], tip[1] + d[1] * (2.5 + (size if d[1] > 0 else 0)) - (0 if d[1] > 0 else size), "center"),
+                         (tip[0] + 4.0, tip[1] - d[1] * 4.0, "left"), (tip[0] - 4.0, tip[1] - d[1] * 4.0, "right")]
+            pick = next((c_ for c_ in cands if self.is_free(self.text_box(c_[0], c_[1], lab, size, c_[2]))), cands[0])
+            self.text(pick[0], pick[1], lab, size, pick[2])
         # the name outside the part's outline, on the corner's outer side (or at label_y, off the outline)
         if label_y is not None:
             self.line((o[0], o[1] - 1.2 if label_y < o[1] else o[1] + 1.2), (o[0], label_y + (size + 0.6 if label_y < o[1] else -0.6)), 0.18)
-            self.text(o[0], label_y, name, size, "center", bold=True)
+            cands = [(o[0], label_y, "center"), (o[0] - 2.0, label_y, "right"), (o[0] + 2.0, label_y, "left")]
         else:
-            self.text(o[0] + away[0] * 2.2, o[1] + (away[1] * 2.2 if away[1] > 0 else away[1] * 2.2 - size),
-                      name, size, "right" if away[0] < 0 else "left", bold=True)
+            cands = [(o[0] + away[0] * 2.2, o[1] + (away[1] * 2.2 if away[1] > 0 else away[1] * 2.2 - size),
+                      "right" if away[0] < 0 else "left"),
+                     (o[0] + away[0] * 2.2, o[1] - (away[1] * 2.2 if away[1] > 0 else away[1] * 2.2 - size) - size,
+                      "right" if away[0] < 0 else "left"),
+                     (o[0] - away[0] * 3.5, o[1] + (away[1] * 2.2 if away[1] > 0 else away[1] * 2.2 - size),
+                      "left" if away[0] < 0 else "right")]
+        pick = next((c_ for c_ in cands if self.is_free(self.text_box(c_[0], c_[1], name, size, c_[2], bold=True))),
+                    cands[0])
+        self.text(pick[0], pick[1], name, size, pick[2], bold=True)
 
     def datum(self, at, direction, letter, size=2.5):
         """ISO 5459 datum feature symbol: a filled triangle on the feature, a leader and the framed letter."""
@@ -459,17 +527,37 @@ class Sheet:
         self.text(bx + b / 2, by + b / 2, letter, size, "center", valign="mid", bold=True)
 
     def tag(self, c, r, label, direction=(1, 1), size=H_TEXT, leader=5.0):
-        """A hole tag: a thin leader from the hole's edge to the label."""
-        dx, dy = direction
-        L = math.hypot(dx, dy)
-        dx, dy = dx / L, dy / L
-        p0 = (c[0] + dx * r, c[1] + dy * r)
-        p1 = (c[0] + dx * (r + leader), c[1] + dy * (r + leader))
+        """A hole tag: a thin leader from the hole's edge to the label, which goes where it touches no other text
+        and no part outline (the preferred direction first, then the others, then longer leaders)."""
+        def place(d, lead):
+            dx, dy = d
+            L = math.hypot(dx, dy)
+            dx, dy = dx / L, dy / L
+            p0 = (c[0] + dx * r, c[1] + dy * r)
+            p1 = (c[0] + dx * (r + lead), c[1] + dy * (r + lead))
+            if dx >= 0:
+                tx, ty, an = p1[0] + 0.5, p1[1] + (0.4 if dy >= 0 else -size - 0.4), "left"
+            else:
+                tx, ty, an = p1[0] - 0.5, p1[1] + (0.4 if dy >= 0 else -size - 0.4), "right"
+            return p0, p1, (tx, ty, an), self.text_box(tx, ty, label, size, an, bold=True)
+        dirs = [direction, (direction[0], -direction[1]), (-direction[0], direction[1]), (-direction[0], -direction[1]),
+                (1, 0.2), (-1, 0.2), (1, -0.2), (-1, -0.2), (0.25, 1), (0.25, -1)]
+        choice = None
+        for lead in (leader, leader + 3, leader + 7, leader + 12, leader + 18):
+            for d in dirs:
+                p0, p1, t, box = place(d, lead)
+                lead_box = (min(p0[0], p1[0]), min(p0[1], p1[1]), max(p0[0], p1[0]), max(p0[1], p1[1]))
+                if self.is_free(box) and not any(self._boxes_touch(lead_box, b, 0.0) for b in self.boxes):
+                    choice = (p0, p1, t)
+                    break
+            if choice:
+                break
+        if choice is None:
+            p0, p1, t, _b = place(direction, leader)
+            choice = (p0, p1, t)
+        p0, p1, (tx, ty, an) = choice
         self.line(p0, p1, 0.18)
-        if dx >= 0:
-            self.text(p1[0] + 0.5, p1[1] + (0.4 if dy >= 0 else -2.2), label, size, "left", bold=True)
-        else:
-            self.text(p1[0] - 0.5, p1[1] + (0.4 if dy >= 0 else -2.2), label, size, "right", bold=True)
+        self.text(tx, ty, label, size, an, bold=True)
 
     def section_arrows(self, p, q, letter, look, size=3.5):
         """A cutting-plane line (thick at the ends, ISO 128-40) from p to q with arrows showing the viewing

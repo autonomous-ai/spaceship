@@ -158,6 +158,7 @@ def make(pns, team, spec, out_path):
         vd.place_ll(x, top - pc.h * scale)
         for p in pc.prims:
             sh.line(vd.S(p.p), vd.S(p.q), W_VIS)
+        sh.add_obstacles([(vd.S(p.p), vd.S(p.q)) for p in pc.prims])
         e = pc.ext
         a, b = vd.S((e[0], e[1])), vd.S((e[2], e[3]))
         sh.dim_linear((a[0], a[1]), (b[0], a[1]), "down", 8.0, fmt(pc.w), 2.5)

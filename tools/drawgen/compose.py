@@ -931,6 +931,7 @@ def draw(part, spec, out_path, today=None):
                         sh.arc(vd.S(p.c), p.r * vd.scale, p.a0, p.a1, W_VIS)
     for vd in list(vds.values()) + secs + removed + details:
         draw_prims(vd)
+        sh.add_obstacles(outline_segments(vd))
     sh.flush()
 
     # ---- marks, tags, origins
@@ -1040,6 +1041,24 @@ def draw(part, spec, out_path, today=None):
             sh.origin_mark(o2, dv.origin_name, away=away, label_y=lab_y)
     sh.flush()
     return sh, pl, vds, secs, removed, dat, scale, report, groups
+
+
+def outline_segments(vd):
+    """The view's visible outline (and a section's cut outline) as sheet segments, for keeping labels off it."""
+    segs = []
+    prims = [p for p in vd.prims if p.vis and p.src != "boundary"] + [p for lp in vd.hatch for p in lp]
+    for p in prims:
+        if p.kind == "line":
+            segs.append((vd.S(p.p), vd.S(p.q)))
+        elif p.kind == "arc":
+            n = max(4, int((p.a1 - p.a0) / (math.pi / 8)) + 1)
+            pts = [vd.S((p.c[0] + p.r * math.cos(p.a0 + (p.a1 - p.a0) * k / n),
+                         p.c[1] + p.r * math.sin(p.a0 + (p.a1 - p.a0) * k / n))) for k in range(n + 1)]
+            segs.extend(zip(pts, pts[1:]))
+        else:
+            pts = [vd.S(q) for q in p.pts]
+            segs.extend(zip(pts, pts[1:]))
+    return segs
 
 
 def crowded_window(vd, feats, part, near=7.0, reach=25.0):
@@ -1412,11 +1431,20 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             marks.append((pvd.S((cx, 0))[0], abs(cx - end)))
             # the stile's centre line through the view
             sh.centre_line(pvd.S((cx, be[1] + 4)), pvd.S((cx, be[3] - 4)))
-        sh.line((x_front, top + 1.0), (x_front, level + 1.5), W_THIN)
-        sh.text(x_front - 0.8, level + 2.0, "0", 2.5, "left", rotate=90)
-        for x, v in sorted(marks):
-            sh.line((x, top + 1.0), (x, level + 1.5), W_THIN)
-            sh.text(x - 0.8, level + 2.0, fmt(v), 2.5, "left", rotate=90)
+        # values written up their extension lines; one closer than a letter's height to the last is jogged sideways
+        # (ISO 129-1 ordinate dimensions)
+        items = sorted([(x_front, "0")] + [(x, fmt(v)) for x, v in marks], key=lambda t: t[0])
+        if end != e0[0]:
+            items = items[::-1]
+        last = None
+        for x, txt in items:
+            lx = x
+            if last is not None and abs(lx - last) < 5.0:
+                lx = last + (5.0 if end == e0[0] else -5.0)
+            sh.line((x, top + 1.0), (x, level - 1.0), W_THIN)
+            sh.line((x, level - 1.0), (lx, level + 1.5), W_THIN)
+            sh.text(lx + 1.25, level + 2.0, txt, 2.5, "left", rotate=90)
+            last = lx
         lab = "STILE CENTRE LINES FROM THE FRONT END"
         ymax = level + 2.0 + max(sh.text_width(fmt(v), 2.5) for _x, v in marks) + 3.0
         if end == e0[0]:
