@@ -548,6 +548,45 @@ class FillDxfTest(unittest.TestCase):
         self.assertNotIn("BAD ", out.getvalue())
 
 
+class TrayCableTieTest(unittest.TestCase):
+    """ELECTRICAL's 20 cable-tie holes (the Lead's relay of 2026-11-01 11:37 UTC): Ø6.4 in R1's, R2's, B4's and B2's tray
+    backs at ELECTRICAL's places, each inside its tray's back with room round it; none in L1, L2, B1 or B3."""
+
+    WANT = {"R1": ("y", [767.0, 657.0, 476.2, 295.5, 185.5, -41.5, -268.4], "el_trunk_z", 1100.0),
+            "R2": ("z", [1476.0, 1688.7, 1901.3, 2114.0, 2224.0], "el_call_y", -209.5)}
+
+    def test_side_trays_carry_electricals_ties(self):
+        for code, (axis, along, fixed, at) in self.WANT.items():
+            ns = load(part="cassette", side=code[0], row=code[1])
+            v = resolve(ns)
+            sites = ns["TIE_SITES"][code]
+            self.assertEqual(len(sites), len(along))
+            self.assertAlmostEqual(v["el_tie_d"], 6.4, places=6)
+            got = sorted(v[s_[0] if axis == "y" else s_[1]] for s_ in sites)
+            self.assertEqual(got, sorted(along))
+            self.assertAlmostEqual(v[fixed], at, places=1)
+            # inside the tray's back with 5 round it
+            y0 = v["pod_d"] / 2 - v["wall_depth"] + v["lin_front_dy"]
+            y1 = v["pod_d"] / 2 - v["stack_t"] + v["cass_t"]
+            z0 = v["panel_z0"] if code[1] == "1" else v["panel_z0"] + v["side_h"] + v["seam_gap"]
+            z1 = v["panel_z0"] + v["side_h"] if code[1] == "1" else v["pod_h"] - v["outer_t"] - v["lin_gap"]
+            for ye, ze in sites:
+                yy, zz = v[ye], v[ze]
+                self.assertTrue(y0 + 5 + 3.2 <= yy <= y1 - 5 - 3.2, (code, yy))
+                self.assertTrue(z0 + 5 + 3.2 <= zz <= z1 - 5 - 3.2, (code, zz))
+        for side, row in (("L", "1"), ("L", "2")):
+            self.assertNotIn(side + row, load(part="cassette", side=side, row=row)["TIE_SITES"])
+
+    def test_back_trays_name_electricals_ties(self):
+        v = resolve(load(part="cassette", side="R", row="1"))      # the table holds every el_ value
+        ns = load(part="cassette", side="R", row="1")
+        table = {p[0]: p for p in ns["EL_PARAMS"]}
+        self.assertEqual([float(table["el_tie_b4_z%d" % i][1].split()[0]) for i in range(1, 6)],
+                         [1363.6, 1645.8, 1927.9, 2210.0, 2270.0])
+        self.assertEqual([float(table["el_tie_b2_x%d" % i][1].split()[0]) for i in range(1, 4)], [545.0, 844.2, 1143.5])
+        self.assertTrue(v)
+
+
 class CassetteLedgeTest(unittest.TestCase):
     """The Lead's ruling of 2026-11-01: a wall cassette's weight sits on a ledge on the lower frame's bottom rail
     (WALL's sizes, accepted): one part for L1 and R1, its leg the 2.26 seam gap under the frame, lower panels only."""

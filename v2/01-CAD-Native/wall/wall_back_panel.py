@@ -608,6 +608,16 @@ def el_tray_features(design, tray):
         return
     body = tray.bRepBodies.item(0)
     outline = (span(design, XC_LOW, XC_HIGH), span(design, Z0, Z_CASS1))
+    # ELECTRICAL's cable-tie holes (Heyco 3904 push-mount, Ø el_tie_d) through the back sheet, cut from the frame
+    # side toward the room; their wings sit behind the sheet (check_tie_holes.py checks them clear of the members)
+    ties = ([("el_tie_b2_x%d" % i, "el_trunk_z") for i in range(1, 4)] if POSITION == "B2" else
+            [("el_lt_x", "el_tie_b4_z%d" % i) for i in range(1, 6)])
+    for k, (x, z) in enumerate(ties, 1):
+        el_inside(design, "TIE %d" % k, [("(%s) - el_tie_d / 2" % x, "(%s) + el_tie_d / 2" % x) + outline[0],
+                                         ("(%s) - el_tie_d / 2" % z, "(%s) + el_tie_d / 2" % z) + outline[1]], 5.0)
+        round_cut(design, tray, tray.bRepBodies.item(0), "y", "(%s) + 1 mm" % Y_TRAY_BACK, -1, {"x": x, "z": z},
+                  "el_tie_d", "tray_t + 2 mm", "TRAY CABLE TIE %d" % k)
+    body = tray.bRepBodies.item(0)
     grm = ("el_lt_x", "el_y_bg")
     if POSITION == "B2":
         el_inside(design, "the power unit cut-out", [("el_cut_x0", "el_cut_x1") + outline[0],
@@ -626,6 +636,7 @@ def el_tray_features(design, tray):
         round_cut(design, tray, body, "z", "(%s) - 1 mm" % Z0, +1, {"x": grm[0], "y": grm[1]}, "el_grm_d",
                   "tray_t + 2 mm", "HOLE G-B2-B4 IN THE BOTTOM RETURN")
         names = "G-B2-B4"
+    names += ", %d cable-tie holes" % len(ties)
     if tray.bRepBodies.count != 1:
         raise RuntimeError("the tray split into %d bodies at ELECTRICAL's features" % tray.bRepBodies.count)
     print("step 2b: ELECTRICAL features in %s's tray: %s" % (POSITION, names))

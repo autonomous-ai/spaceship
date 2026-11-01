@@ -365,18 +365,43 @@ EL_PARAMS = [
     ("el_inlet_d", "24 mm", "mm", "source", _EL + " inlet_d: powerCON TRUE1 TOP cut-out 23.8, etherCON NE8FDP 24"),
     ("el_sl_x", "el_inlet_x + 30 mm", "mm", "calculation", _EL + " sl_x: the mains and LAN sleeve's centre (X 150)"),
     ("el_sl_w", "20 mm", "mm", "assumption", _EL + " SLEEVE: the sleeve's 20 x 20 envelope"),
+    # ELECTRICAL's cable-tie holes in the trays (the Lead's relay of 2026-11-01 11:37 UTC)
+    ("el_tie_d", "6.4 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): a Heyco 3904 push-mount cable tie in a Ø6.4 hole through the tray's back sheet; its wings sit behind the sheet, so never in front of a frame member"),
+    ("el_tie_r1_y1", "767 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 1 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y2", "657 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 2 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y3", "476.2 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 3 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y4", "295.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 4 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y5", "185.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 5 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y6", "-41.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 6 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y7", "-268.4 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 7 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r2_z1", "1476 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 1 along the call light feed (Y el_call_y)"),
+    ("el_tie_r2_z2", "1688.7 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 2 along the call light feed (Y el_call_y)"),
+    ("el_tie_r2_z3", "1901.3 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 3 along the call light feed (Y el_call_y)"),
+    ("el_tie_r2_z4", "2114 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 4 along the call light feed (Y el_call_y)"),
+    ("el_tie_r2_z5", "2224 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 5 along the call light feed (Y el_call_y)"),
+    ("el_tie_b4_z1", "1363.6 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 1 along the light feed (X el_lt_x)"),
+    ("el_tie_b4_z2", "1645.8 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 2 along the light feed (X el_lt_x)"),
+    ("el_tie_b4_z3", "1927.9 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 3 along the light feed (X el_lt_x)"),
+    ("el_tie_b4_z4", "2210 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 4 along the light feed (X el_lt_x)"),
+    ("el_tie_b4_z5", "2270 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B4-CASS tie 5 along the light feed (X el_lt_x)"),
+    ("el_tie_b2_x1", "545 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 1 along the trunk (Z el_trunk_z)"),
+    ("el_tie_b2_x2", "844.2 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 2 along the trunk (Z el_trunk_z)"),
+    ("el_tie_b2_x3", "1143.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): B2-CASS tie 3 along the trunk (Z el_trunk_z)"),
 ]
 # what each design needs, by position and kind (the el_ names these refer to come with them)
 EL_USE = {
     ("R1", "cass"): ("el_fs_y0", "el_fs_y1", "el_fs_dz", "el_trunk_z", "el_kit_d", "el_kit_dz", "el_y_kit",
-                     "el_grm_d", "el_y_cx"),
-    ("R2", "cass"): ("el_grm_s", "el_call_y", "el_call_z", "el_shelf_z"),
+                     "el_grm_d", "el_y_cx", "el_tie_d") + tuple("el_tie_r1_y%d" % i for i in range(1, 8)),
+    ("R2", "cass"): ("el_grm_s", "el_call_y", "el_call_z", "el_shelf_z", "el_tie_d")
+                    + tuple("el_tie_r2_z%d" % i for i in range(1, 6)),
     # a plain cut-out (no returns, so no slot or bushing in them): PROPOSED by WALL 2026-10-31 21:08 UTC
     ("B2", "cass"): ("el_cut_x0", "el_cut_x1", "el_cut_z0", "el_cut_z1", "el_lt_x", "el_grm_d", "el_y_bg",
-                     "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z"),
+                     "el_cs_h", "el_cs_dz", "el_y_xc", "el_trunk_z", "el_tie_d")
+                    + tuple("el_tie_b2_x%d" % i for i in range(1, 4)),
     ("B2", "panel"): ("el_cut_x0", "el_cut_z0", "el_cut_z1", "el_inlet_x", "el_inlet_z", "el_lan_z", "el_inlet_d",
                       "el_sl_x", "el_sl_w"),
-    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d", "el_ceil_x", "el_ceil_z", "el_grm_s"),
+    ("B4", "cass"): ("el_lt_x", "el_grm_d", "el_y_bg", "el_shelf_z", "el_shelf_d", "el_ceil_x", "el_ceil_z", "el_grm_s",
+                     "el_tie_d") + tuple("el_tie_b4_z%d" % i for i in range(1, 6)),
 }
 
 
@@ -2283,6 +2308,29 @@ def el_inside(design, label, lo_hi, keep):
                 label, min(a, b), max(a, b), min(c, d), max(c, d), keep))
 
 
+TIE_SITES = {"R1": [("el_tie_r1_y%d" % i, "el_trunk_z") for i in range(1, 8)],
+             "R2": [("el_call_y", "el_tie_r2_z%d" % i) for i in range(1, 6)]}
+
+
+def el_tray_ties(design, tray, pan, yc, zc):
+    """ELECTRICAL's cable-tie holes (Heyco 3904 push-mount, Ø el_tie_d) through the side tray's back sheet: R1-CASS
+    along the trunk, R2-CASS along the call light feed (TIE_SITES), each inside the back with 5 round it, drilled from
+    the back face toward the room. Their wings sit behind the sheet: check_tie_holes.py checks them clear of the
+    frame's members on the STEPs."""
+    sites = TIE_SITES.get(CODE)
+    if not sites:
+        return pan
+    for k, (y, z) in enumerate(sites, 1):
+        el_inside(design, "TIE %d" % k, [("(%s) - el_tie_d / 2" % y, "(%s) + el_tie_d / 2" % y) + tuple(yc),
+                                         ("(%s) - el_tie_d / 2" % z, "(%s) + el_tie_d / 2" % z) + tuple(zc)], 5.0)
+        hole(design, tray, tray.bRepBodies.item(0), "x", X_TRAY_BACK, -S, {"y": y, "z": z}, "el_tie_d", "tray_t",
+             "TRAY CABLE TIE %d" % k)
+    if tray.bRepBodies.count != 1:
+        raise RuntimeError("the tray split into %d bodies at the tie holes" % tray.bRepBodies.count)
+    print("step 2b: %d of ELECTRICAL's cable-tie holes in %s's tray" % (len(sites), CODE))
+    return tray.bRepBodies.item(0)
+
+
 def el_felt_cuts(design, felt, fb, yc, zc):
     """ELECTRICAL's felt-only openings in the right linings (R1-CASS, R2-CASS; EL_PARAMS): through the 9 mm felt
     from its room face. No steel is there: the tray's lips are only at its edges, so no bushing; the felt hole
@@ -2329,6 +2377,7 @@ def build_cassette(design, root):
     zc = (Z0, Z_CASS1)
     if tray:
         pan = build_tray(design, root, tray, yc, zc)
+        pan = el_tray_ties(design, tray, pan, yc, zc)
         out[pan.name] = pan
         print("step 2: tray", size(bbox(pan)))
         set_material(design, [pan], "tray", "GALVANISED STEEL 0.5")

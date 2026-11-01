@@ -275,6 +275,16 @@ FAMILIES = {
         "±0.2 (assumption); drilled with the ledge held in place as the jig", "drilled after welding and the "
         "touch-up (J-FRAME-01)", "assumption (positions); DECIDED (the ledge)"),
 }
+for _ax in ("x", "y"):                      # side trays' backs face X, back trays' face Y
+    FAMILIES_EL[(TRAY, 6.4, _ax)] = (
+        "F53", "Cable-tie holes: ELECTRICAL's Heyco 3904 push-mount ties hold its cables in the 24 cable gap (R1 and B2 "
+        "along the trunk, R2 along the call light feed, B4 along the light feed)", "Heyco 3904 push-mount cable tie "
+        "(ELECTRICAL)", "a tie every 300 or closer along each cable, one 20 inside each connector pocket's end, none "
+        "within 150 of the power unit's cut-out (ELECTRICAL's rule); never in front of a frame member, since the tie's "
+        "wings sit behind the sheet (check_tie_holes.py)", ELS + ": positions as ELECTRICAL gave them (the Lead's "
+        "relay, 2026-11-01 11:37 UTC)", "each 5 or more inside the tray's back; its edge 20 or more from a member's "
+        "face (checked on the STEPs)", "±0.5 (assumption)", "punched or laser cut in the flat blank (DXF)",
+        "source (ELECTRICAL)")
 FAMILIES[("STILE - FRONT", 8.5, "y")] = (
     "F52", "D-169 pin slots: the decor block locates on two pins along its pull, in two Z slots in the front wall "
     "(lower panels: L1 for DL, R1 for DR)", "the block's two 831001 spigots in its back plate's rivnuts, 5.7 into the "
