@@ -489,7 +489,7 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                                     ("mass", mass), ("finish", finish != "no"), ("FAI", bool(ids))) if not ok]
             line = {**r, "bom_row": True, "cad": cad, "step": step, "flat": flat, "dwg": dwg, "mass_ok": mass,
                     "finish_ok": finish, "fai": ids, "gaps": gaps, "from": {where_of(r, labels)}}
-            line["state"] = state_of(gaps, screen)
+            line["state"] = state_of(gaps, screen, hold=made_hold(r, by_cut_row.get(pn, [])))
             made.append(line)
             seen[key] = line
         elif r["make_buy"] == "buy":
@@ -512,9 +512,26 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
     return made, bought
 
 
-def state_of(gaps, screen):
+def made_hold(r, rows):
+    """A made part on HOLD (PM, 2026-11-01): its own material, grade or status says HOLD. Read from the part's own
+    parts-list rows (its number in the part-number column, not a row of another part that names it) and their columns
+    named exactly material, grade or status (not mass_status or process_status), and from the BOM's material."""
+    if "HOLD" in (r.get("material") or "").upper():
+        return True
+    pn = r.get("part_number")
+    for cells, _p in rows:
+        if not any(re.fullmatch(r"part_?(?:number|no)|pn", (k or "").strip(), re.I) and v == pn for k, v in cells.items()):
+            continue
+        if any(re.fullmatch(r"material|grade|status", (k or "").strip(), re.I) and "HOLD" in (v or "").upper()
+               for k, v in cells.items()):
+            return True
+    return False
+
+
+def state_of(gaps, screen, hold=False):
+    """Open gaps show first; a made part with none that is on HOLD shows HOLD, not done."""
     if not gaps:
-        return "done"
+        return "HOLD" if hold else "done"
     if gaps == ["drawing"] and screen == "locked":
         return BLOCKED
     return "open: " + ", ".join(gaps)
@@ -584,25 +601,27 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
                 "once it rebases): " + "; ".join(fell_back) + ".", ""]
     out += ["**Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. "
             "**Open**: something missing that can be done now. **Blocked**: only the drawing is "
-            "missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.", "",
+            "missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: a bought part whose "
+            "product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD "
+            "(PM, 2026-11-01).", "",
             "## Totals per team", "",
-            "| Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |",
-            "|---|---:|---:|---:|---:|---:|---:|"]
+            "| Team | Made: done | Made: open | Made: blocked by the locked screen | Made: HOLD | Bought: done | Bought: open | Bought: HOLD |",
+            "|---|---:|---:|---:|---:|---:|---:|---:|"]
     teams = sorted({r["team"] for r in made + bought} | set(no_list))
     for t in teams:
         m = [r for r in made if r["team"] == t]
         b = [r for r in bought if r["team"] == t]
         if not m and not b:
-            out.append(f"| {t} | — | — | — | — | — | — |")
+            out.append(f"| {t} | — | — | — | — | — | — | — |")
             continue
-        md, mo, mb, _ = counts(m)
+        md, mo, mb, mh = counts(m)
         bd, bo, _, bh = counts(b)
-        out.append(f"| {t} | {md} | {mo} | {mb} | {bd} | {bo} | {bh} |")
+        out.append(f"| {t} | {md} | {mo} | {mb} | {mh} | {bd} | {bo} | {bh} |")
     um = list({r["part_number"] or r["name"]: r for r in made}.values())
     ub = list({r["part_number"] or r["name"]: r for r in bought}.values())
-    md, mo, mb, _ = counts(um)
+    md, mo, mb, mh = counts(um)
     bd, bo, _, bh = counts(ub)
-    out.append(f"| **All, each number once** | {md} | {mo} | {mb} | {bd} | {bo} | {bh} |")
+    out.append(f"| **All, each number once** | {md} | {mo} | {mb} | {mh} | {bd} | {bo} | {bh} |")
     if no_list:
         out += ["", "No parts list yet: " + ", ".join(sorted(no_list)) + "."]
     only_dwg = sum(r["gaps"] == ["drawing"] for r in um)
