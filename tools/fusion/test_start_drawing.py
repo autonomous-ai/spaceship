@@ -510,7 +510,7 @@ class SequenceTests(unittest.TestCase):
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 code = sd.main(what + ["--lock", lockdir,
-                                       "--busy-wait", "60", "--busy-poll", "2", "--open-grace", "0.3"])
+                                       "--busy-wait", "60", "--busy-poll", "2", "--open-limit", "0.3"])
         finally:
             (sd.Steps, rs.wait_for_fusion, sd.run_with_cleanup, sd.cancel_dialogs) = keep[:4]
             signal.signal(signal.SIGTERM, keep[4])
@@ -545,6 +545,28 @@ class SequenceTests(unittest.TestCase):
         self.assertFalse(os.path.exists(lockdir))
 
     BATCH = [("D%d_CAD" % i, "D%d_DWG" % i, "A2") for i in range(1, 4)]
+
+    def test_the_design_open_installs_the_open_logger(self):
+        # Reviewer 5 on #269: start_drawing's own scripts skip the runner's wrapper, so its
+        # design open was logged only after some run_script run had installed the logger
+        made = []
+
+        def make():
+            f = FakeFusion(opened=True)
+            f.sources, orig = [], f.run
+
+            def run(src, read_only=False):
+                f.sources.append(src)
+                return orig(src, read_only)
+            f.run = run
+            made.append(f)
+            return f
+        code, _wait, lockdir = self.run_main(make, timed_out_after_queue=False)
+        self.assertEqual(code, 0)
+        opens = [src for src in made[0].sources if "ARGS = {" in src and "'mode': 'open'" in src]
+        self.assertEqual(len(opens), 1)
+        self.assertIn("_OPENLOG = %r" % rs.open_log_path(lockdir), opens[0])
+        self.assertIn("start_drawing.py 100000_P04_POD-SKELETON_CAD -> X_P01_TEST_DWG", opens[0])
 
     def test_a_flagged_fusion_refuses_a_batch_before_any_start(self):
         # the hand merge of #140 and #269: the refusal comes before the batch's first start
@@ -730,6 +752,29 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(left, [("D3_CAD", "D3_DWG", "A2")])
         self.assertEqual(f.cmd, sd.IDLE_CMD)                    # the failed start cleaned up
         self.assertTrue(any("stopped at D2_DWG" in m for m in logs))
+
+    def test_a_start_that_saved_then_failed_is_not_written_back(self):
+        # Reviewer 5, P3 on #140: written back, its own check refuses it on the next hold
+        # ("already in the folder") and the list stalls there every hold
+        f = FakeFusion(opened=True)
+        real_dialogs = f.dialogs
+
+        def dialogs():
+            if len(f.saved) == 2 and not getattr(f, "late", False):     # a late dialog after the 2nd save
+                f.late = True
+                return ["a late dialog"]
+            return real_dialogs()
+        f.dialogs = dialogs
+        (code, done, failed, left), logs = self.batch(f)
+        self.assertEqual(code, 1)
+        self.assertEqual([d[1] for d in done], ["D1_DWG", "D2_DWG"])
+        self.assertIsNone(failed)                                       # nothing to start again
+        self.assertEqual(left, [("D3_CAD", "D3_DWG", "A2")])
+        self.assertTrue(any("D2_DWG was saved before it failed" in m for m in logs))
+        d = tempfile.mkdtemp(prefix="batch-test-")
+        rest = os.path.join(d, "starts.txt.rest")
+        sd.write_rest(rest, failed, left)
+        self.assertEqual(sd.read_batch(rest, "A2"), [("D3_CAD", "D3_DWG", "A2")])
 
     def test_at_most_six_starts_per_hold(self):
         pairs = [("D%d_CAD" % i, "D%d_DWG" % i, "A2") for i in range(1, 9)]
