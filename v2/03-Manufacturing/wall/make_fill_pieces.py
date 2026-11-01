@@ -251,31 +251,44 @@ def form_key(pc):
 
 
 def previous_forms(path):
-    """{form: (form key, number, the pockets in its DXF's frame)} of the list as last written (FILL-PIECES.csv)."""
+    """{form: (form key, number, the pockets in its DXF's frame, its bays {(position, bay)})} of the list as last
+    written (FILL-PIECES.csv)."""
     out = {}
     if not os.path.exists(path):
         return out
     with open(path, encoding="utf-8") as fh:
         for r in csv.DictReader(fh):
             if r["form"] in out:
+                out[r["form"]][3].add((r["position"], int(r["bay"])))
                 continue
             pk = sorted(tuple(float(x) for x in m)
                         for m in re.findall(r"u ([\d.]+)-([\d.]+), v ([\d.]+)-([\d.]+)", r["pockets"]))
             out[r["form"]] = (form_key({"w": float(r["w_mm"]), "h": float(r["h_mm"]), "pockets": pk}), r["number"],
-                              tuple(pk))
+                              tuple(pk), {(r["position"], int(r["bay"]))})
     return out
 
 
 def label_forms(groups, prev, live):
     """[(form, key, members)] in label order: a form found in the last list (same key: size and pockets, as made or
-    turned over) keeps its label; a new form takes the next label after every label in the last list and in the
-    live allocation (`live`), in (panel, bay) order."""
+    turned over) keeps its label; so does a form not yet numbered whose pieces are re-cut in the same bays (it has no
+    number and no DXF yet, so nothing was cut to its old shape: its allocation row, once posted, describes the new
+    one); any other new form takes the next label after every label in the last list and in the live allocation
+    (`live`), in (panel, bay) order."""
     by_key = {v[0]: f for f, v in prev.items()}
     nxt = max([int(f[1:]) for f in list(prev) + list(live)] + [0]) + 1
+    taken = {by_key[k] for k in groups if k in by_key}
     out = []
     for key, members in sorted(groups.items(), key=lambda kv: (kv[1][0]["panel"], kv[1][0]["bay"])):
+        bays = {(m.get("position"), m.get("bay")) for m in members}
+        recut = [f for f, v in prev.items()
+                 if f not in taken and not v[1] and f not in live and len(v) > 3 and v[3] == bays]
         if key in by_key:
             form = by_key[key]
+        elif len(recut) == 1:
+            form = recut[0]
+            taken.add(form)
+            print("form %s: re-cut in the same bays before it has a number (%s)" % (
+                form, ", ".join("%s bay %d" % b for b in sorted(bays))))
         else:
             form, nxt = "F%02d" % nxt, nxt + 1
         out.append((form, key, members))

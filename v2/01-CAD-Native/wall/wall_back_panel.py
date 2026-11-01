@@ -504,23 +504,24 @@ def back_bays(design, zs):
 
 # B2's fill behind the skin (ELECTRICAL's envelopes and channels; WALL's cut, 2026-11-01): in bay 1 below the unit,
 # cut right through the batt (D-128). The mains cord runs up the cleared strip by the centre stile (its channel X 80 to
-# 100, then over to its passage at X 113 in the jog under the lower cross member); the LAN leaves the jack's top along
-# a 16 band, over to X 199 to 215 and up to its passage at X 207, so the two stay 50 or more apart everywhere (62 at the
-# band, 76 at the jog). The fill between them is a piece of its own (B2_ISLAND, the 7th bay), so neither piece has a
-# thin bridge. Each cut (label, x range, z range), in pod X and Z.
+# 100) to Z 750, then over to its passage at X 127 in the jog under the lower cross member, an S-bend of about 70
+# radius; the LAN leaves the jack's top along a 49 band (Z 391 to 440, room for its 24 bend radius), over to X 199 to
+# 215 and up to its passage at X 207, so the two stay 50 or more apart everywhere (62 at the band and at the jog;
+# ELECTRICAL's bend check, 2026-11-01 18:05 UTC). The fill between them is a piece of its own (B2_ISLAND, the 7th bay),
+# so neither piece has a thin bridge. Each cut (label, x range, z range), in pod X and Z.
 _XIN = "(%s) + tube_w" % X_LOW                        # the centre stile's bay-side face
 B2_CUTS = [
     ("INLET REAR BOX", ("el_inlet_x - el_box_l", "el_inlet_x + el_box_r"), ("el_inlet_z - el_box_h", "el_inlet_z + el_box_h")),
     ("UNDER THE JACK", ("el_ch_m_x1", "el_lan_x + el_jack_h"), ("el_inlet_z + el_box_h", "el_lan_z + el_jack_h")),
-    ("MAINS CHANNEL", (_XIN, "el_ch_m_x1"), ("el_inlet_z - el_box_h", "xm_z0 - el_ch_jog")),
-    ("MAINS JOG", (_XIN, "el_ps_mains_x + el_ch_l_w / 2 + 2 mm"), ("xm_z0 - el_ch_jog", "xm_z0")),
+    ("MAINS CHANNEL", (_XIN, "el_ch_m_x1"), ("el_inlet_z - el_box_h", "el_ch_jog_z")),
+    ("MAINS JOG", (_XIN, "el_ch_jog_x1"), ("el_ch_jog_z", "xm_z0")),
     ("LAN CHANNEL AND THE ISLAND", ("el_ch_m_x1", "el_ps_lan_x + el_ch_l_w / 2"), ("el_lan_z + el_jack_h", "xm_z0")),
 ]
 B2_ISLAND = (("el_ch_m_x1", "el_ps_lan_x - el_ch_l_w / 2"), ("el_lan_z + el_jack_h", "xm_z0"))
 B2_ISLAND_NOTCHES = [
     ("LAN BAND", ("el_lan_x - el_ch_l_w / 2", "el_ps_lan_x - el_ch_l_w / 2"),
-     ("el_lan_z + el_jack_h", "el_lan_z + el_jack_h + el_ch_l_w")),
-    ("MAINS JOG", ("el_ch_m_x1", "el_ps_mains_x + el_ch_l_w / 2 + 2 mm"), ("xm_z0 - el_ch_jog", "xm_z0")),
+     ("el_lan_z + el_jack_h", "el_lan_z + el_jack_h + el_ch_l_band")),
+    ("MAINS JOG", ("el_ch_m_x1", "el_ch_jog_x1"), ("el_ch_jog_z", "xm_z0")),
 ]
 
 
