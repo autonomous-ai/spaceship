@@ -866,7 +866,9 @@ class DrawgenParts(unittest.TestCase):
 
     def test_the_list_is_drawgens_own_registry(self):
         got = rc.drawgen_parts()
-        self.assertTrue({"211101", "211102", "111101", "211501", "211504"} <= got, sorted(got))   # 211504: on 211501's sheet
+        # D-128 dropped the fill sheet (211501 to 211504 go on DXFs); 111103 joined with #225
+        self.assertTrue({"211101", "211102", "111101", "111103"} <= got, sorted(got))
+        self.assertFalse({"211501", "211504"} & got, sorted(got))
         import tempfile as _tempfile
         with _tempfile.TemporaryDirectory() as d:   # a planted registry, read through the same reader
             Path(d, "tools", "drawgen").mkdir(parents=True)

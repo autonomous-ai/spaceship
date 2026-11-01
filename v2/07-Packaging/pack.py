@@ -192,7 +192,7 @@ OTHER_FIXINGS = [
     dict(step=11, where="Door hinges on DL", owner="FRONT", count=0, size="per the named hinge set (HOLD)",
          status="HOLD in the register (D-46, ISS-002)", note="time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM)",
          text="the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named)"),
-    dict(step=15, where="Intake riser and supply fan box in DR", owner="AIR and FRONT", count=0, size="not designed yet (HOLD)",
+    dict(step=14, where="Intake riser and supply fan box in DR", owner="AIR and FRONT", count=0, size="not designed yet (HOLD)",
          status="HOLD in the register", note="time is in the step", text="their fixings in DR (AIR and FRONT design, on hold)"),
     dict(step=16, where="Air column on DR and the floor", owner="AIR", count=0, size="none on site: 2 hook studs set in the factory, 2 spigots",
          status="registered: J-AIR-02 (0 on site)", note="D-87: the column hangs on its hook studs",
@@ -358,21 +358,21 @@ PIECES = [
           S(sk("wall_depth"), sk("half_pw"), 70), "CEILING 410000 P01 STEP with AIR's roof sleeve 611601 seated loose in its roof slot (22 mm below the frame) and the grille 611602 over it (AIR 610000 P01 STEP): 70 thick", 1, 8, "CEILING",
           note="the roof sleeve and grille ride loose with C2 (#263), the grille's 4 bolts and washers (J-AIR-03) in a bag taped to the grille: the sleeve seated in C2's roof slot and taped, the grille taped flat over it; both come off at unpacking and go on after the soffit hangs (guide step 18)"),
     Piece("1-13", "510102", "LINING - CASSETTE - SIDE LOWER - RH", "Cassette tiêu âm - vách phải dưới", "R1", [("CS_LO", 1)],
-          S(1445, sk("side_h"), 38), "WALL 510102 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
+          S(1445, sk("side_h"), 38), "WALL 510102 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 15, "LINING"),
     Piece("1-14", "510104", "LINING - CASSETTE - SIDE UPPER - RH", "Cassette tiêu âm - vách phải trên", "R2", [("CS_UP", 1)],
-          S(1445, 1092.74, 38), "WALL 510104 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
+          S(1445, 1092.74, 38), "WALL 510104 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 15, "LINING"),
     Piece("1-15", "510101", "LINING - CASSETTE - SIDE LOWER - LH", "Cassette tiêu âm - vách trái dưới", "L1", [("CS_LO", 1)],
-          S(1445, sk("side_h"), 38), "WALL 510101 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
+          S(1445, sk("side_h"), 38), "WALL 510101 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 15, "LINING"),
     Piece("1-16", "510103", "LINING - CASSETTE - SIDE UPPER - LH", "Cassette tiêu âm - vách trái trên", "L2", [("CS_UP", 1)],
-          S(1445, 1092.74, 38), "WALL 510103 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
+          S(1445, 1092.74, 38), "WALL 510103 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 15, "LINING"),
     Piece("1-17", "510201", "LINING - CASSETTE - BACK LOWER - B1", "Cassette tiêu âm - vách hậu dưới trái", "B1", [("CB_LO", 1)],
-          S(1166, sk("back_ph"), 38), "WALL 510201 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
+          S(1166, sk("back_ph"), 38), "WALL 510201 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 15, "LINING"),
     Piece("1-18", "510202", "LINING - CASSETTE - BACK LOWER - B2", "Cassette tiêu âm - vách hậu dưới phải", "B2", [("CB_LO", 1)],
-          S(1166, sk("back_ph"), 38), "WALL 510202 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 14, "LINING"),
+          S(1166, sk("back_ph"), 38), "WALL 510202 P01 STEP: tray 34 and the HOLD clip zones 4 mm on its back", 1, 15, "LINING"),
     Piece("1-19", "TBD (WALL)", "LINING - CASSETTE - BACK UPPER - B3", "Cassette tiêu âm - vách hậu trên trái", "B3", [("CB_UP", 1)],
-          S(1166, 1116.87, 38), "skeleton P04; 38 thick as B1's cassette in CAD (no CAD of its own yet)", 1, 14, "LINING"),
+          S(1166, 1116.87, 38), "skeleton P04; 38 thick as B1's cassette in CAD (no CAD of its own yet)", 1, 15, "LINING"),
     Piece("1-20", "TBD (WALL)", "LINING - CASSETTE - BACK UPPER - B4", "Cassette tiêu âm - vách hậu trên phải", "B4", [("CB_UP", 1)],
-          S(1166, 1116.87, 38), "skeleton P04; 38 thick as B1's cassette in CAD (no CAD of its own yet)", 1, 14, "LINING"),
+          S(1166, 1116.87, 38), "skeleton P04; 38 thick as B1's cassette in CAD (no CAD of its own yet)", 1, 15, "LINING"),
     # ---------------- pallet 2, 96 x 48 in: tiers, bottom (tier 1) to top (tier 5)
     Piece("2-01", "360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "-", [("FIX", PANE_SHARE)], S(2034, 1031, 12),
           "FRONT 360002 P01 STEP: the pane with its 180 seal half, 2034 x 1027 x 12 (its U-channels and U-seals ship elsewhere)", 2, 10, "FRONT", glass=True,
@@ -424,7 +424,7 @@ PIECES = [
           note="one carton with the screen rail 818102 (HOLD), as the roll-up's ledge line carries both"),
     Piece("2-17", "610401", "AIR - SUPPLY FAN BOX", "Hộp quạt cấp", "-",
           [("RISER", 1), ("FANBOX_S", 1), ("FANS", 0.5)], S(2005, 516, 203),
-          "AIR 610000 P01 STEP: the supply fan box 610401 joined with the intake riser 611501, both transitions and its 2 fans; the Air Engineer's next pass makes it 189 deep, with D-130's intake boot under it", 2, 15, "AIR",
+          "AIR 610000 P01 STEP: the supply fan box 610401 joined with the intake riser 611501, both transitions and its 2 fans; the Air Engineer's next pass makes it 169 deep, plus D-130's intake boot under it", 2, 14, "AIR",
           note="the intake riser joined to the supply fan box at the factory, one plug-in connector (D-87)"),
     Piece("2-18", "610301", "AIR - SPLITTER CARTRIDGE - COMMON", "Ống tiêu âm (dùng chung)", "-", [("CART_S", 1)], S(1750, 314, 173),
           "AIR 610000 P01 STEP: the cartridge 610301 as it sits in the column", 2, 16, "AIR", note="the supply path's cartridge"),
@@ -474,7 +474,7 @@ SKEL = {
 # Camera per step for the pictures: "back" looks from behind, left and above; "front" from the front, right and above;
 # "inside" from above with the ceiling and the front hidden, to show the linings.
 STEP_VIEW = {2: "back", 3: "back", 4: "back", 5: "back", 6: "back", 7: "back", 8: "back", 9: "front", 10: "front", 11: "front",
-             12: "front", 14: "inside", 19: "inside"}
+             12: "front", 15: "inside", 19: "inside"}
 OUT_STEP_BODIES = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json"
 
 
@@ -672,20 +672,20 @@ STEPS = [
          check="Every seam connector latched before any cassette closes its bay.",
          ops=[carry("2-13"), op("plug one connector", 1, lay("t_connector_s"), 6, "t_connector_s")],
          joints={}),
-    dict(n=14, title="Wall linings: 8 cassettes", tags=["1-13", "1-14", "1-15", "1-16", "1-17", "1-18", "1-19", "1-20"],
-         A="Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips.",
-         B="Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.",
-         check="Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.",
-         ops=[*[carry(t) for t in ["1-13", "1-14", "1-15", "1-16", "1-17", "1-18", "1-19", "1-20"]],
-              op("hang one cassette on its clips", 1, lay("t_leaf_s"), 8, "t_leaf_s")],
-         joints={}),
-    dict(n=15, title="Air parts in DR: the intake riser with its supply fan box", tags=["2-17"],
-         A="Lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).",
+    dict(n=14, title="Air parts in DR: the intake riser with its supply fan box", tags=["2-17"],
+         A="Before the wall linings (DR's inner face can't come off past R1's and R2's cassettes), lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).",
          B="Mates the fan box's plug-in connector; refits the inner face.",
          check="Riser foot sits over the opening; fan box connector latched; inner face back on all round.",
          ops=[op("DR inner face off and on", 1, TIME["t_face_s"].value, 2, "t_face_s"),
               carry("2-17"), op("slide the riser and fan box in", 2, TIME["t_slide_long_s"].value, 1, "t_slide_long_s"),
               op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s")],
+         joints={}),
+    dict(n=15, title="Wall linings: 8 cassettes", tags=["1-13", "1-14", "1-15", "1-16", "1-17", "1-18", "1-19", "1-20"],
+         A="Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).",
+         B="Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.",
+         check="Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.",
+         ops=[*[carry(t) for t in ["1-13", "1-14", "1-15", "1-16", "1-17", "1-18", "1-19", "1-20"]],
+              op("hang one cassette on its clips", 1, lay("t_leaf_s"), 8, "t_leaf_s")],
          joints={}),
     dict(n=16, title="Air column and supply cartridge", tags=["2-11", "2-18"],
          A="With B, hangs the air column (2.1 m) on its tool-free hooks in the front-right corner (D-87), its back on DR's inner face and its right side on R1's and R2's linings; lifts its front face off.",
@@ -1547,7 +1547,8 @@ def guide_tables(m, T):
         srow.append([st["n"], st["title"], len(st["tags"]), tr["bolts"], tr["other"], f"{tr['two'] / 60:.1f}", f"{tr['one'] / 60:.1f}",
                      f"**{tr['elapsed'] / 60:.1f}**" + ("" if st["n"] <= CLOCK_LAST_STEP else " (after)")])
     G["STEPS"] = "\n".join(steps_md)
-    G["AIR_MIN"] = f0(sum(tr["elapsed"] for st, tr in zip(STEPS, m.steps) if st["n"] in (15, 16, 17, 18)) / 60)
+    G["AIR_MIN"] = f0(sum(tr["elapsed"] for st, tr in zip(STEPS, m.steps)
+                          if any(PIECE[t].group == "AIR" for t in st["tags"]) or st["title"].startswith("Roof sleeve")) / 60)
     G["LEVEL_MIN"] = f0(lay("t_level_min"))
     G["COLUMN_FITTED_KG"] = f1(PIECE["2-11"].kg + PIECE["2-18"].kg)
     G["COLUMN_OVER_KG"] = f1(PIECE["2-11"].kg + PIECE["2-18"].kg - MINE["part_limit_kg"].value)
