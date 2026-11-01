@@ -459,19 +459,32 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(f.cancels, 0)                          # never touched while busy
 
     @unittest.skipUnless(shutil.which("osacompile"), "osacompile is macOS only")
-    def run_main(self, make_fake, timed_out_after_queue):
+    def run_main(self, make_fake, timed_out_after_queue, open_stuck=False, flag_pid="none"):
         """start_drawing's main() with a fake Fusion and a lock in a temporary folder;
-        returns (exit code, the wait call seen or None, lock dir)."""
+        returns (exit code, the wait call seen or None, lock dir). open_stuck: the call
+        that times out has started an open that never ends (logged as the wrapper does);
+        flag_pid: write an unhealthy flag for that Fusion process first."""
         import signal
         import tempfile
         lockdir = os.path.join(tempfile.mkdtemp(prefix="sdlock-"), "fusion.lock")
-        seen = {}
+        seen = {"steps": 0}
+        if flag_pid != "none":
+            with open(rs.unhealthy_path(lockdir), "w") as fh:
+                json.dump({"flagged_utc": "2026-11-01 03:55:00 UTC", "fusion_pid": flag_pid,
+                           "opens": [{"started": "2026-11-01 03:39:45 UTC", "what": "ZZ_P00_X_DWG v1",
+                                      "run": "TEST"}]}, fh)
 
         def fake_steps(url, timeout, mcp=None):
+            seen["steps"] += 1
             f = make_fake()
             if timed_out_after_queue:
                 def _mcp():                             # Fusion stops answering in time
                     if f.queued:
+                        if open_stuck and not seen.get("logged"):
+                            seen["logged"] = True
+                            with open(rs.open_log_path(lockdir), "a") as fh:
+                                fh.write("2026-11-01 03:39:45 UTC start open 100000_P04_POD-SKELETON_CAD v4 "
+                                         "HIDDEN; run: TEST: start_drawing.py\n")
                         mcp.timed_out = True
                         raise rs.McpTimeout("Fusion MCP didn't answer within 1 s (fake)")
                 f._mcp = _mcp
@@ -491,13 +504,14 @@ class SequenceTests(unittest.TestCase):
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 code = sd.main(["100000_P04_POD-SKELETON_CAD", "X_P01_TEST_DWG", "--lock", lockdir,
-                                "--busy-wait", "60", "--busy-poll", "2"])
+                                "--busy-wait", "60", "--busy-poll", "2", "--open-grace", "0.3"])
         finally:
             (sd.Steps, rs.wait_for_fusion, sd.run_with_cleanup, sd.cancel_dialogs) = keep[:4]
             signal.signal(signal.SIGTERM, keep[4])
             signal.signal(signal.SIGHUP, keep[5])
             if env_token is not None:
                 os.environ[rs.TOKEN_ENV] = env_token
+        self.steps_made = seen["steps"]
         return code, seen.get("wait"), lockdir
 
     def test_a_timed_out_call_keeps_the_lock_until_fusion_answers(self):
@@ -506,6 +520,23 @@ class SequenceTests(unittest.TestCase):
         self.assertIn(code, (2, 4))
         self.assertEqual(wait, (True, 60.0, 2.0))             # waited while still holding the lock
         self.assertFalse(os.path.exists(lockdir))              # then gave it back
+
+    def test_an_open_that_never_ends_after_a_timeout_flags_fusion_unhealthy(self):
+        # as run_script.py (PM ruling 2026-11-01): Fusion answers, but the open never ended
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(), timed_out_after_queue=True, open_stuck=True)
+        self.assertEqual(code, rs.EXIT_UNHEALTHY)
+        self.assertIsNotNone(wait)
+        with open(rs.unhealthy_path(lockdir)) as fh:
+            self.assertEqual([o["what"] for o in json.load(fh)["opens"]], ["100000_P04_POD-SKELETON_CAD v4"])
+        self.assertFalse(os.path.exists(lockdir))
+
+    def test_a_flagged_fusion_is_refused_before_anything_is_sent(self):
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(), timed_out_after_queue=False,
+                                            flag_pid=rs.fusion_pid())
+        self.assertEqual(code, rs.EXIT_UNHEALTHY)
+        self.assertEqual(self.steps_made, 0)                   # never talked to Fusion
+        self.assertIsNone(wait)
+        self.assertFalse(os.path.exists(lockdir))
 
     def test_a_start_without_a_timeout_gives_the_lock_back_at_once(self):
         code, wait, lockdir = self.run_main(lambda: FakeFusion(), timed_out_after_queue=False)
