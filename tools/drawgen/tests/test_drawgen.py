@@ -622,10 +622,12 @@ def test_v_groove_with_its_outside_radius():
     assert any("no outside arc R2.5" in x_ for x_ in f4), f4
 
 
-def _spigot_rail(path, slot="along", width=20.0, hole_y=10.0, slot_y=10.0):
+def _spigot_rail(path, slot="along", width=20.0, hole_y=10.0, slot_y=10.0, side_slot=False):
     """A 600 long rail along X, a 40 high x width x 1.2 tube seated on its bottom face, with a Ø8.5 spigot hole at
     X 100 and an 8.5 x 14 spigot slot at X 500 through its bottom wall; the slot runs along the rail (toward the
-    hole when slot_y is hole_y) or across it. Returns the path and the slot's two end centres (X, Y)."""
+    hole when slot_y is hole_y) or across it. side_slot: also an 8.5 x 14 slot along X through the +Y side wall at
+    X 300, Z 20 (like WALL's D-169 pin slots: square to another wall). Returns the path and the bottom slot's two end
+    centres (X, Y)."""
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
     from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
     from OCP.IFSelect import IFSelect_RetDone
@@ -652,6 +654,16 @@ def _spigot_rail(path, slot="along", width=20.0, hole_y=10.0, slot_y=10.0):
         f = BRepAlgoAPI_Fuse(tool, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, -1), gp_Dir(0, 0, 1)), 4.25, 4).Shape())
         f.Build()
         tool = f.Shape()
+    if side_slot:
+        side = BRepPrimAPI_MakeBox(gp_Pnt(300 - half, width - 3, 20 - 4.25), 2 * half, 4, 8.5).Shape()
+        for x in (300 - half, 300 + half):
+            f = BRepAlgoAPI_Fuse(side, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, width - 3, 20), gp_Dir(0, 1, 0)), 4.25,
+                                                                4).Shape())
+            f.Build()
+            side = f.Shape()
+        f = BRepAlgoAPI_Fuse(tool, side)
+        f.Build()
+        tool = f.Shape()
     u = ShapeUpgrade_UnifySameDomain(cut(sh, tool), True, True, True)
     u.Build()
     w = STEPControl_Writer()
@@ -667,6 +679,7 @@ def _spigot_rail(path, slot="along", width=20.0, hole_y=10.0, slot_y=10.0):
 def _spigot_sheet(d, pn, slot, spec=None, **kw):
     """_spigot_rail drawn with spigot datums, its hole and slot named as spigots by a test register."""
     step, ends = _spigot_rail(os.path.join(d, "%s_P01_TEST-RAIL-SPIGOT_STEP.step" % pn), slot, **kw)
+    half = (14.0 - 8.5) / 2
     reg = os.path.join(d, "FEATURE-RATIONALE-%s.md" % pn)
     with open(reg, "w") as fh:
         fh.write("test register for %s\n" % pn)
@@ -674,6 +687,12 @@ def _spigot_sheet(d, pn, slot, spec=None, **kw):
             "mating": "the frame's spigot (test)"}
     rows = [dict(base, id="F-T-01", centres=[(100.0, kw.get("hole_y", 10.0))], function="spigot hole (test)"),
             dict(base, id="F-T-02", centres=ends, function="spigot slot (test)")]
+    if kw.get("side_slot"):
+        # as on WALL's L1: the spigot slot's own row doesn't say "spigot", and a pin slot's does (D-169's F52 names
+        # the decor block's 831001 spigots), so a choice by that word takes the pin slot
+        rows[1] = dict(rows[1], function="locating slot (test)", mating="the frame's locating pin (test)")
+        rows.append(dict(base, id="F-T-03", axis="Y", centres=[(300 - half, 20.0), (300 + half, 20.0)],
+                         function="pin slot for the decor block's spigots (test)"))
     real = compose.inputs.feature_rows
     compose.inputs.feature_rows = lambda pn_, team: rows if pn_ == pn else real(pn_, team)
     try:
@@ -720,6 +739,18 @@ def test_datum_c_is_the_spigot_slot_where_it_runs_along_the_rail():
             "stops the turn about B)" % slot["tag"])
     assert want in notes and "R-J17" not in notes, notes[notes.find("Datums"):][:400]
     assert _datum_near(doc, data, slot["tag"]), "no datum C symbol at the slot"
+    # Reviewer 6 on #385: a second slot whose register row names spigots too, square to another wall (WALL's L1, a
+    # pin slot in its front stile's end) is never taken for the spigot slot: the slot square to B's wall is (#409)
+    p2 = _spigot_sheet(d, "219973", "along", side_slot=True)
+    fails, _st = readback.check(p2)
+    assert not fails, fails
+    doc2 = fitz.open(p2)
+    data2 = readback.read_data(doc2)
+    slots2 = [f for f in data2["features"] if f["kind"] == "slot"]
+    bottom = next(f for f in slots2 if abs(abs(f["axis"][2]) - 1) < 1e-6)
+    assert len(slots2) == 2 and data2["datums"]["C"] == "slot %s" % bottom["tag"], (data2["datums"], slots2)
+    assert ("C = the spigot slot %s, the median plane" % bottom["tag"]) in " ".join(
+        " ".join(pg.get_text().split()) for pg in doc2)
     try:
         _spigot_sheet(d, "219979", "along", width=40.0, hole_y=10.0, slot_y=30.0)
         raise AssertionError("read datum C from a slot that misses B's line")
@@ -750,6 +781,27 @@ def test_datum_c_is_a_face_where_the_spigot_slot_runs_across_the_rail():
             "R-J17, so it locates along the rail only)" % slot["tag"])
     assert want in notes and "R-J13, so it stops" not in notes, notes[notes.find("Datums"):][:400]
     assert not _datum_near(doc, data, slot["tag"], within=8.0), "a datum C symbol on the slot"
+
+
+def test_a_datum_goes_only_where_its_face_is_drawn():
+    """Reviewer 6's P3 on #385: nothing tested that a section really shows a datum's face before the datum goes on
+    it. A section across a tray's bends, windowed to its first 20 mm (x along the base, 0 to 20, y up, 0 to 34),
+    shows a face across its window (the lip's top, y 34) and one along it (the wall's outside, x 0), but not the far
+    wall's outside (x 1142, cut away), a face above the part (y 50), or one it looks at face on."""
+    class View:
+        n, x, y = (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)
+
+        def to2d(self, p):
+            return (p[1], p[2])
+
+    class Section:
+        view, extent = View(), (0.0, 0.0, 20.0, 34.0)
+    sec = Section()
+    assert compose.face_line(sec, (0.0, 0.0, 1.0), (0.0, 5.0, 34.0))[:2] == ("x", 34.0)
+    assert compose.face_line(sec, (0.0, -1.0, 0.0), (0.0, 0.0, 10.0))[:2] == ("y", 0.0)
+    assert compose.face_line(sec, (0.0, 1.0, 0.0), (0.0, 1142.0, 10.0)) is None      # the far wall, cut away
+    assert compose.face_line(sec, (0.0, 0.0, 1.0), (0.0, 5.0, 50.0)) is None         # above what it draws
+    assert compose.face_line(sec, (1.0, 0.0, 0.0), (300.0, 5.0, 5.0)) is None        # face on
 
 
 def test_datums_are_never_dropped():
@@ -1293,16 +1345,22 @@ def test_the_spigot_slot_is_the_one_square_to_bs_wall():
     or of length 0, gets no dimension. 211101's own holes and slots, in its view from below."""
     from types import SimpleNamespace as NS
 
-    def feat(kind, entry, axis, words):
-        return NS(kind=kind, f=NS(entry=entry, axis=axis, dia=8.5, normal=tuple(-a for a in axis)),
+    def feat(kind, entry, axis, words, along=(1.0, 0.0, 0.0)):
+        return NS(kind=kind, f=NS(entry=entry, axis=axis, dia=8.5, normal=tuple(-a for a in axis), along=along),
                   reg={"function": words, "mating": "", "id": "F"}, body=NS(name="RAIL - BOTTOM"))
     b = feat("hole", (-1224.0, -542.74, 112.26), (0.0, 0.0, 1.0), "Locating: the fixed spigot hole (round)")
     pins = [feat("slot", (-1224.0, -642.74, z), (0.0, 1.0, 0.0), "D-169 pin slot") for z in (1155.0, 212.26)]
     spigot = feat("slot", (-1224.0, 750.0, 112.26), (0.0, 0.0, 1.0), "Locating: the spigot slot")
     part = NS(features=[b] + pins + [spigot], box=(-1244.0, -642.74, 100.0, -1204.0, 844.0, 1200.0),
               size=(40.0, 1486.74, 1100.0))
-    dat = compose.spigot_origin(part, {})
-    assert dat["slot"] is spigot, dat["slot"].f.entry
+    # the bottom rail runs along Y and its spigot slot across it (R-J17, as on L1), so datum C is the room-side face
+    member_axis = compose.geom.member_axis
+    compose.geom.member_axis = lambda body: (0.0, 1.0, 0.0)
+    try:
+        dat = compose.spigot_origin(part, {})
+    finally:
+        compose.geom.member_axis = member_axis
+    assert dat["slot"] is spigot and dat["runs"] == "across", dat["slot"].f.entry
     dot = lambda p, q: sum(x * y for x, y in zip(p, q))
     view = NS(x=(0.0, 1.0, 0.0), y=(1.0, 0.0, 0.0), to2d=lambda p: (dot(p, (0.0, 1.0, 0.0)), dot(p, (1.0, 0.0, 0.0))))
     below = NS(view=view, extent=(-642.74, -1244.0, 844.0, -1204.0))      # the view from below: X along +Y

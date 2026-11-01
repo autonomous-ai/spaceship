@@ -846,6 +846,12 @@ def spigot_origin(part, spec=None):
     par = [ft for ft in slots if abs(abs(vdot(ft.f.axis, b.f.axis)) - 1) < 1e-6]
     par.sort(key=lambda ft: not (ft.reg and "spigot" in (ft.reg["function"] + " " + ft.reg["mating"]).lower()))
     slot = par[0] if par else (slots[0] if slots else None)
+    # datum C follows the spigot slot (the Lead's ruling, 2026-11-01), and only a slot square to B's wall can be it:
+    # a frame whose slots all point another way has no spigot slot (Reviewer 6 on #385: WALL's L1 took a pin slot)
+    if slot is not None and abs(abs(vdot(slot.f.axis, b.f.axis)) - 1) > 1e-6:
+        if spec.get("spigot_slot", True):
+            return None
+        slot = None
     sl = slot
     runs = None
     if sl is not None:
@@ -918,6 +924,22 @@ def spigot_positions(dat, vd):
             continue
         out.append((f, end_x, c[0]))
     return out
+
+
+def face_line(vd, nrm, on):
+    """Where a datum's face (its outward normal nrm, `on` a point of its plane) shows edge on in view vd, inside what
+    the view draws: ("x", its y, its normal on paper) as a line along the view's x, ("y", its x, ...) as one along its
+    y; None where vd looks at it face on or at an angle, or where it lies outside what vd draws (a section or window
+    that cuts the part away from that face: a datum is never put where its face isn't drawn)."""
+    if abs(vdot(nrm, vd.view.n)) > 1e-6:
+        return None
+    n2 = vd.view.to2d(nrm)
+    e = vd.extent
+    if abs(n2[1]) > 0.5:
+        yy = vd.view.to2d(on)[1]
+        return ("x", yy, n2) if e[1] - 0.05 <= yy <= e[3] + 0.05 else None
+    xx = vd.view.to2d(on)[0]
+    return ("y", xx, n2) if e[0] - 0.05 <= xx <= e[2] + 0.05 else None
 
 
 def corner_origin(part, corner):
@@ -2658,22 +2680,17 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 list(removed) + list(secs)
             placed = False
             for vd in hosts:
-                if abs(vdot(nrm, vd.view.n)) > 1e-6:
+                line = face_line(vd, nrm, on)
+                if line is None:
                     continue
-                n2 = vd.view.to2d(nrm)
+                along, at, n2 = line
                 e = vd.extent
-                if abs(n2[1]) > 0.5:
-                    yy = vd.view.to2d(on)[1]
-                    if not e[1] - 0.05 <= yy <= e[3] + 0.05:
-                        continue        # the section cuts the part away from that face
+                if along == "x":
                     xs = [e[0] + t * (e[2] - e[0]) + 8 * (ord(letter) - 65) for t in (0.30, 0.2, 0.4, 0.6, 0.7, 0.8)]
-                    put_datum([(vd.S((x, yy)), (0, n2[1]), lead) for lead in (7.0, 10.0, 14.0) for x in xs], letter)
+                    put_datum([(vd.S((x, at)), (0, n2[1]), lead) for lead in (7.0, 10.0, 14.0) for x in xs], letter)
                 else:
-                    xx = vd.view.to2d(on)[0]
-                    if not e[0] - 0.05 <= xx <= e[2] + 0.05:
-                        continue
                     ys = [e[1] + t * (e[3] - e[1]) for t in (0.25, 0.4, 0.6, 0.75)]
-                    put_datum([(vd.S((xx, y_)), (n2[0], 0), lead) for lead in (7.0, 10.0, 14.0) for y_ in ys], letter)
+                    put_datum([(vd.S((at, y_)), (n2[0], 0), lead) for lead in (7.0, 10.0, 14.0) for y_ in ys], letter)
                 placed = True
                 break
             if not placed:
