@@ -17,6 +17,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall", "out")
 REG = "joints register V2-ENG-JNT-01 P01 (PR #23)"
+RIVNUT_KEY = 9.53             # the tables' key for a rivnut hole, whatever its size in the CAD (D-163: 10.00)
 
 # back panels B1-B4 (wall_back_panel.py): the families that differ from the side panels'
 FAMILIES_BACK = {
@@ -287,18 +288,64 @@ for _ax in ("x", "y"):                      # side trays' backs face X, back tra
         "source (ELECTRICAL)")
 FAMILIES[("STILE - FRONT", 8.5, "y")] = (
     "F52", "D-169 pin slots: the decor block locates on two pins along its pull, in two Z slots in the front wall "
-    "(lower panels: L1 for DL, R1 for DR)", "the block's two 831001 spigots in its back plate's rivnuts, 5.7 into the "
+    "(L1 only, for DL: as amended the same day, DR and DT keep their base locators)", "the block's two 831001 "
+    "spigots in its back plate's rivnuts, 5.7 into the "
     "member", "8.5 wide in X by 12 long in Z, on the bolt line, 100 from each end of the seam edge (the register's "
     "spigot rule)", "D-169 (ruled in the Joints group, 2026-11-01; Joints' places)",
     "120 clear of the nearest J-FRONT-01 bolt holes (F07)", "±0.2 to the bolt holes (Joints)",
     "drilled and slotted after welding (J-FRAME-01)", "DECIDED (D-169)")
 LEDGE_BODY = "LEDGE - STEEL ANGLE UNDER THE CASSETTE"
+# INTERIOR's fixings on R1's and R2's studs (the Lead's rulings of 2026-11-01 on CEILING's load check)
+INT = "the Lead's rulings of 2026-11-01 on INTERIOR's fixings (CEILING Engineer's load check, WALL group)"
+FAMILIES[("STILE - MID INTERIOR", RIVNUT_KEY, "x")] = (
+    "F54", "INTERIOR's fixing rivnuts: R1's work wall ledge brackets (818101, 4) and R2's screen rail (818102), each "
+    "an M6 into a rivnut on the stud's room face", "Sherex CAH2-610-4.2 (838003), no stop washer: its head takes "
+    "INTERIOR's Ø12 steel stand-off, which runs to 5 proud of the felt",
+    "2 per stud on the stud's centre line: R1 studs Y -240, 103.6, 329.1 and 700 at Z 815 and 1045; R2 studs "
+    "Y -121.8 and 580 at Z 1320 and 1380 (the studs that carry them are their own part, 212206 and 212406, D-120)",
+    INT + "; D-172", "15.2 to each side wall of the stud's 40 face; clear of the clip zones and ELECTRICAL's tie holes "
+    "(test_wall_offline.py)", "Ø9.53 +0.10 (Sherex); position ±0.5 (assumption: INTERIOR's bracket slots take it)",
+    "drilled after welding and the touch-up (J-FRAME-01); rivnuts set after", "DECIDED (the Lead's rulings)")
+FAMILIES_EL[(TRAY, 16.0, "x")] = (
+    "F55", "Stand-off clearance holes in the tray: INTERIOR's Ø12 stand-offs pass through the lining to the studs",
+    "INTERIOR's stand-offs (to its ledge brackets on R1, its screen rail on R2)", "one at each INTERIOR rivnut (F54)",
+    INT, "2 round the Ø12 stand-off, so the floating lining never touches it (D-17)", "±0.5 (assumption)",
+    "punched or laser cut in the flat blank (DXF)", "DECIDED (the Lead's rulings)")
+FAMILIES_EL[(FELT, 16.0, "x")] = (
+    "F56", "Stand-off clearance holes in the felt, in line with F55", "INTERIOR's stand-offs",
+    "one at each INTERIOR rivnut (F54)", INT, "as F55: 2 round the stand-off", "±1 (knife, assumption)", "knife",
+    "DECIDED (the Lead's rulings)")
+# B2 under D-131 (the Lead's approval of WALL's B2 frame, 2026-11-01): the power unit on two cross members
+B2F = "the Lead's approval of WALL's B2 frame (2026-11-01); ELECTRICAL's B2 inputs (WALL group, 2026-11-01)"
+FAMILIES_BACK[("CROSS - LOWER", RIVNUT_KEY, "z")] = (
+    "F57", "The power unit's fixing rivnuts: the unit sits on the lower cross member's 2 rivnut heads and fixes into "
+    "them and the upper member's 2", "Sherex CAH2-610-4.2 (838003), no stop washer; ELECTRICAL's M6 x 16 (838001) "
+    "with washers 838004, driven from inside the empty unit", "on the tubes' centre line Y 824: the lower member's top "
+    "at X 160 and 376, the upper member's underside at X 110 and 376", B2F,
+    "15.2 to each side wall; 32 or more from the cable passages (F58)", "Ø9.53 +0.10 (Sherex); position ±0.5",
+    "drilled after welding (J-FRAME-01); rivnuts set after", "source (ELECTRICAL); DECIDED (the frame)")
+FAMILIES_BACK[("CROSS - UPPER", RIVNUT_KEY, "z")] = FAMILIES_BACK[("CROSS - LOWER", RIVNUT_KEY, "z")]
+for _d, _what in ((15.9, "the mains passage's bottom wall, for the Heyco SB 625-7 bushing snapped in from below"),
+                  (20.0, "the mains passage's top wall, lined by the unit's own bushing from above"),
+                  (11.1, "the LAN passage's bottom wall, for the Heyco SB 437-5 bushing"),
+                  (14.0, "the LAN passage's top wall, lined by the unit's own bushing")):
+    FAMILIES_BACK[("CROSS - LOWER", _d, "z")] = (
+        "F58", "Cable passages through the lower cross member: the mains cord (SJOOW 14/3) and the LAN cable rise from "
+        "the inlet and the jack into the unit, apart (%s)" % _what, "ELECTRICAL's bushings and the unit's",
+        "the mains at X 113, the LAN at X 207, on the tube's centre line Y 824", B2F,
+        "32 or more from the unit's rivnuts; left of the first stud's T joint below", "±0.5 (assumption)",
+        "drilled after welding (J-FRAME-01)", "source (ELECTRICAL)")
+FAMILIES_BACK[("SKIN - ACP 3, OVERHANGS THE FRAME 1.62 AT THE CLOSING SEAM", 3.2, "y")] = (
+    "F59", "The connectors' screw holes: two per connector on the diagonal, +9.5/+12 and -9.5/-12 (X/Z) from its "
+    "centre", "M3 screws with nuts (ELECTRICAL), holding the inlet and the LAN jack (Neutrik's drawings)",
+    "beside F38's Ø24 holes", B2F + "; D-133", "the ACP's 3 thickness, the jack's panel limit", "±0.2 (CNC router, "
+    "assumption)", "routed with the skin blank (DXF)", "source (ELECTRICAL)")
 FAMILIES[(LEDGE_BODY, 3.3, "x")] = (
     "F51", "The ledge's own rivet holes, matching F50, countersunk on the upright's room face so the heads sit flush",
     "838012, closed-end countersunk blind rivets ISO 15974 Ø3.2 x 8, heads flush in Ø6.7 x 120 countersinks (D-166)",
     "as F50: 6, symmetric about the ledge's middle", "the Lead's rulings of 2026-11-01 (WALL group): the ledge, its "
     "1.5 upright and flush heads (0.40 clear of the tray at J-FRAME-01's worst case)",
-    "centre 9.0 from the upright's top edge (2.2 x d); the countersink's edge 5.4 from the top edge and 6.2 from the "
+    "centre 9.0 from the upright's top edge (2.8 x d); the countersink's edge 5.4 from the top edge and 6.2 from the "
     "bend (calculation)", "±0.2 (assumption); countersink Ø per its rivet", "laser cut in the flat blank (DXF), "
     "countersunk by machining", "assumption")
 FAMILIES[(LEDGE_BODY, 3.3, "y")] = FAMILIES[(LEDGE_BODY, 3.3, "x")]       # the back ledge's (211801), facing -Y
@@ -349,7 +396,6 @@ def load(pn):
         return json.load(fh)
 
 
-RIVNUT_KEY = 9.53             # the tables' key for a rivnut hole, whatever its size in the CAD (D-163: 10.00)
 
 
 def _subs(text, pairs):
