@@ -209,13 +209,13 @@ def frame_blocks(pn, src=None):
          "every joint hole is made after welding and the touch-up, the jig located on the joint faces and the spigot "
          "hole (J-FRAME-01)." if members else
          "4. Hole position Ø0.4 (±0.2) from the round spigot hole in the bottom rail, by CNC or drill jig (F-009)."),
-        ("5. Cut list, ends per note 6, steel box tube (walls per the Joints Engineer, D-131): " if members else
+        ("5. Cut list, ends per note 6, steel box tube (walls per J-FRAME-01, D-131): " if members else
          "5. Cut list, square ends: ") + "; ".join(
             "%s: %s tube, length %g, qty %d" % (k[0].title().replace(" - ", " "), k[1], k[2], q)
             for k, q in sorted(cut.items())) + ".",
         ("6. Welded frame (D-131): the 4 perimeter members run to the outer corners, mitred there (D-117: 45° where "
          "the two are the same size; 26.57° on a 40 × 40 meeting a 20 × 40, 63.43° on the 20 × 40), each member cut "
-         "back so a 2 mm mitre plate (the Joints Engineer's register part) fits in the mitre, centred on the mitre "
+         "back so a 2 mm mitre plate (joints register 831007 to 831009) fits in the mitre, centred on the mitre "
          "line: 1.41 off each member where the two are the same size, 2.24 off a 20 × 40 and 1.12 off a 40 × 40 where "
          "they meet. The plate is welded in, its edges ground flush on the skin and seam faces. The studs fit square "
          "between the rails and are welded there. Weld coupons prove the corner before the first frame is welded. "
@@ -224,7 +224,7 @@ def frame_blocks(pn, src=None):
          "member is its own part (D-120). %sCut lengths outer to outer after the cut-back, ±0.5 (assumption) until "
          "the frame maker's capability is known (guideline 6.3)." % extra) if members else
         ("6. Member joints: internal cleats per D-115 (internal corner and T cleats, crimped, with structural "
-         "adhesive; no welds); the cleats are the Joints Engineer's register parts, placed when they land. Rails run "
+         "adhesive; no welds); the cleats are the joints register's parts, placed when they land. Rails run "
          "the full length, stiles fit between them. %sCut lengths ±0.5 (assumption) until the frame maker's "
          "capability is known (guideline 6.3)." % extra),
         ("7. Rivnuts and stop washers are set at the factory after the zinc-rich touch-up (J-FRAME-01; see the panel "

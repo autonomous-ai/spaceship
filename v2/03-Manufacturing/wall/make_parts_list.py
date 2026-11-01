@@ -62,29 +62,35 @@ HW = {
                    material="stainless steel A2 (EN 1.4301) bar", finish="bare stainless, as machined; threadlocker on the thread "
                    "when fitted (H-05)",
                    maker="made (register H-05)", sku="", torque="", mass="cad", mstat="calculation",
-                   basis="CAD body: the Joints Engineer's STEP (one source, F-189): Ø8 pin to 8 proud of the "
+                   basis="CAD body: the joints STEP 831001 (one source, F-189): Ø8 pin to 8 proud of the "
                          "face, M6 x 8 stud, lead-in and hex socket (H-05 sizes PROPOSED)",
                    calc=0.00417, calc_basis="the Joints CAD's 0.00417 kg (BUILD-RECORD)"),
     "831002": dict(name="HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", vi="Long đen chặn nhôm", kind="MP",
                    material="aluminium sheet 1.5, 5000 or 6000 series", finish="mill finish (punched)",
                    maker="made (register H-08)", sku="", torque="", mass="cad", mstat="calculation",
-                   basis="CAD body: the Joints Engineer's STEP (one source, F-189): Ø10.5 x Ø20 x 1.5 (H-08)",
+                   basis="CAD body: the joints STEP 831002 (one source, F-189): Ø10.5 x Ø20 x 1.5 (H-08)",
                    calc=0.000915, calc_basis="the Joints CAD's 0.000915 kg (BUILD-RECORD)"),
     # the mitre plates (D-131, joints register H-40 to H-42): made hardware, welded into the frame's mitres
     "831007": dict(name="HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL", vi="Tấm đệm góc vát 20 × 40 - 45° - thép 2.0",
                    kind="MP", material="steel plate 2.0, galvanized Z100, yield 280 MPa or more (as the frame tube, J-FRAME-01)",
                    finish="galvanized Z100; its welds wire-brushed and coated with a 2-component zinc-rich epoxy", maker="made (register H-40)", sku="", torque="",
+                   process="laser cut from 2.0 galvanized sheet to its DXF (joints register part, D-146); welded "
+                           "into the frame's mitre (J-FRAME-01)",
                    mass="cad", mstat="calculation", basis="CAD body: 28.3 x 40 x 2.0 (H-40), 7850 kg/m3",
                    calc=0.0178, calc_basis="28.3 x 40 x 2.0 at 7850 kg/m3 (register: 17.8 g)"),
     "831008": dict(name="HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL",
                    vi="Tấm đệm góc vát 20 × 40 với 40 × 40 - thép 2.0", kind="MP",
                    material="steel plate 2.0, galvanized Z100, yield 280 MPa or more (as the frame tube, J-FRAME-01)",
                    finish="galvanized Z100; its welds wire-brushed and coated with a 2-component zinc-rich epoxy", maker="made (register H-41)", sku="", torque="",
+                   process="laser cut from 2.0 galvanized sheet to its DXF (joints register part, D-146); welded "
+                           "into the frame's mitre (J-FRAME-01)",
                    mass="cad", mstat="calculation", basis="CAD body: 44.7 x 40 x 2.0 (H-41), 7850 kg/m3",
                    calc=0.0281, calc_basis="44.7 x 40 x 2.0 at 7850 kg/m3 (register: 28.1 g)"),
     "831009": dict(name="HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL", vi="Tấm đệm góc vát 40 × 40 - 45° - thép 2.0",
                    kind="MP", material="steel plate 2.0, galvanized Z100, yield 280 MPa or more (as the frame tube, J-FRAME-01)",
                    finish="galvanized Z100; its welds wire-brushed and coated with a 2-component zinc-rich epoxy", maker="made (register H-42)", sku="", torque="",
+                   process="laser cut from 2.0 galvanized sheet to its DXF (joints register part, D-146); welded "
+                           "into the frame's mitre (J-FRAME-01)",
                    mass="cad", mstat="calculation", basis="CAD body: 56.6 x 40 x 2.0 (H-42), 7850 kg/m3",
                    calc=0.0355, calc_basis="56.6 x 40 x 2.0 at 7850 kg/m3 (register: 35.5 g)"),
     "848001": dict(name="SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA", vi="Gioăng mối nối 3.97",
@@ -134,10 +140,10 @@ def joints_plates(root=os.path.normpath(os.path.join(HERE, "..", "..", ".."))):
         pts = [i["frame"].point(q) for i in sf.instances() for q in sf.solid(i["solid"]).points()]
         # in the README's axes: X along the mitre, Y across the frame (its depth), Z the thickness
         size = [max(q[k] for q in pts) - min(q[k] for q in pts) for k in range(3)]
-        HW[pn]["basis"] = "CAD body: the Joints Engineer's STEP, %.2f x %.2f x %.2f (%s), 7850 kg/m3" % (
+        HW[pn]["basis"] = "CAD body: its joints STEP, %.2f x %.2f x %.2f (%s), 7850 kg/m3" % (
             size[0], size[1], size[2], reg)
         HW[pn]["calc"] = round(size[0] * size[1] * size[2] * 7850e-9, 5)
-        HW[pn]["calc_basis"] = "%.2f x %.2f x %.2f at 7850 kg/m3 (the Joints Engineer's STEP)" % tuple(size)
+        HW[pn]["calc_basis"] = "%.2f x %.2f x %.2f at 7850 kg/m3 (its joints STEP)" % tuple(size)
 
 
 joints_plates()
@@ -249,7 +255,8 @@ def hw_row(pn, qty, unit, note, bodies=None, source=REG):
         else:                            # a report from before the hardware was modelled
             mass, h["basis"] = h["calc"], h["calc_basis"]
     return row(level=1, part_number=pn, name=h["name"], name_vi=h["vi"], kind=h["kind"], material=h["material"],
-               finish=h["finish"], maker=h["maker"], sku=h["sku"], torque=h["torque"], qty=qty, unit=unit,
+               finish=h["finish"], process=h.get("process", ""), maker=h["maker"], sku=h["sku"], torque=h["torque"],
+               qty=qty, unit=unit,
                mass_each_kg=mass, mass_total_kg=round(mass * qty, 4),
                mass_status="%s: %s" % (h["mstat"], h["basis"]),
                status="HOLD" if h["kind"] == "HOLD" or h["maker"].startswith("HOLD") else "DRAFT",
@@ -321,7 +328,7 @@ def panel_rows(rep):
                     mass_each_kg=fm, mass_total_kg=fm,
                     mass_status="calculation: CAD at 2700 kg/m3", status="DRAFT",
                     source="CAD; tube confirmed (D-34, D-54, D-85%s)" % ("" if back else "; 40 x 40 R-J3"),
-                    note="member joints: internal cleats per D-115 (the Joints Engineer's register parts, placed when "
+                    note="member joints: internal cleats per D-115 (the joints register's parts, placed when "
                          "they land); rails full length" + (
                         "; 1 x 45 lead-in on the closing-seam face's top edge (R-J9)" if back else "")))
     cut = Counter()
@@ -442,7 +449,7 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                      key=lambda c: c["part_number"]):
         q = pc.get("copies", 1)
         r = hw_row(pc["part_number"], q, "pc", "welded into the frame's mitres, one at each corner where its members "
-                   "meet (the Joints Engineer's corner detail, D-131)", bodies=pc["bodies"])
+                   "meet (the joints register's corner detail, J-FRAME-01, D-131)", bodies=pc["bodies"])
         r["level"] = 2
         fm += r["mass_total_kg"]
         member_rows.append(r)
@@ -451,7 +458,7 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                     material="the steel box tube members below and the 4 mitre plates, welded (D-131)",
                     finish="pre-galvanized tube, zinc Z100; every weld and burnt zone wire-brushed and coated with a "
                            "2-component zinc-rich epoxy; no hot-dip (J-FRAME-01); the skin's bond prep per the bond spec",
-                    process="weld in a jig: each mitred corner with its 2 mm mitre plate (the Joints Engineer's register "
+                    process="weld in a jig: each mitred corner with its 2 mm mitre plate (the joints register's "
                             "part), and every stud's T joints (D-131; weld sizes and the coupons per the joints register); "
                             "grind the beads flush on the skin-side and seam faces; wire-brush and touch up every burnt "
                             "zone; check flatness and diagonals; then make every joint hole (spigot hole and slot, "
