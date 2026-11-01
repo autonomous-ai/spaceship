@@ -125,9 +125,11 @@ def cut_list_rows(team, cfg, pn):
         q = float((r.get("qty") or "1").strip() or 1)
         if num in by:
             o = by[num]
-            if (o["cut_length_mm"], o["note"], o.get("cuts")) != (length, ends, cuts):
+            lean = (r.get("lean") or "").strip().lower()
+            if (o["cut_length_mm"], o["note"], o.get("cuts"), o.get("lean", "")) != (length, ends, cuts,
+                                                                                     lean if cuts else ""):
                 raise ValueError("cut list %s: member %s has two lengths or two ends texts or two pairs of end "
-                                 "angles (D-120)" % (base, num))
+                                 "angles or two leans (D-120)" % (base, num))
             o["_q"] += q
             continue
         listed = (parts_row(num, team)[0] or {}).get("name", "").strip()
@@ -135,8 +137,10 @@ def cut_list_rows(team, cfg, pn):
              "size_mm": (r.get("section") or "").strip(), "material": (r.get("section") or "").strip(),
              "cut_length_mm": length, "tolerance": cfg.get("tolerance", ""), "note": ends,
              "holes": (r.get("holes") or "").strip(), "_q": q}
-        if cuts:
+        if cuts:        # FRONT's columns: each end's cuts, which end is A, and how the two cuts lean
             o["angles"], o["cuts"] = angles, cuts
+            o["a_dir"], o["a_words"] = end_directions(ends)
+            o["lean"] = (r.get("lean") or "").strip().lower()
         by[num] = o
         out.append(o)
     if not out:
@@ -159,6 +163,30 @@ def cut_list_rows(team, cfg, pn):
 
 ANGLE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:°|deg\b)")
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
+
+
+DIRS = {"left": (-1, 0, 0), "right": (1, 0, 0), "front": (0, -1, 0), "back": (0, 1, 0), "lower": (0, 0, -1),
+        "bottom": (0, 0, -1), "upper": (0, 0, 1), "top": (0, 0, 1)}
+END_WORDS = re.compile(r"((?:[A-Za-z]+[ -]+){0,4})end\s*\((A|B)\)")
+
+
+def end_directions(text):
+    """Which way end A lies, from the words before 'end (A)' and 'end (B)' in a cut list row's ends text ('left end
+    (A)', 'lower front end (A)'), in pod axes: left -X, right +X, front -Y, back +Y, lower -Z, upper +Z (FRONT's cut
+    lists, checked on all 63 members of #313's three frames). Returns (a unit vector pointing to end A's side, A's
+    words) or (None, '') when the text names neither end's side."""
+    vec, words = [0.0, 0.0, 0.0], {"A": [], "B": []}
+    for m in END_WORDS.finditer(text or ""):
+        ws = [w for w in re.split(r"[ -]+", m.group(1).lower()) if w in DIRS]
+        words[m.group(2)] += ws
+        for w in ws:
+            for i in range(3):
+                vec[i] += (1 if m.group(2) == "A" else -1) * DIRS[w][i]
+    size = sum(v * v for v in vec) ** 0.5
+    if size < 1e-9:
+        return None, ""
+    a_words = " ".join(words["A"]) or "away from its %s" % " ".join(words["B"])
+    return tuple(v / size for v in vec), a_words
 
 
 def column_cuts(a, b):
