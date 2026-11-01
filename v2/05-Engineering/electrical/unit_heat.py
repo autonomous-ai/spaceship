@@ -184,7 +184,9 @@ DEVICES = (   # name, limit °C, source
     ("Mean Well supplies, the units themselves", 70.0, "LPV-60 and CLG-100 sheets: -30 to +70 °C, by their derating curves"),
     ("LAN keystone jacks Panduit NK688MWH", 75.0, "Panduit COSP588: -10 to +75 °C"),
     ("Cat6 cable Belden 3612", 75.0, "Belden 3612 sheet: 75 °C"),
-    ("12 and 24 V leads, Southwire CL3R (the PU segments)", 60.0, "Southwire spec 13060 and 13066: 60 °C"),
+    ("12 and 24 V leads in the unit: Belden 5302UE and 5304UE (CMR), Southwire 94664 (CL3)", 75.0,
+     "Belden's sheets and Southwire spec 13090: 75 °C"),
+    ("hub link Belden 9536 in the unit", 80.0, "Belden 9536 sheet: 80 °C as UL AWM 2464, the rating for wiring inside equipment"),
     ("lever connectors WAGO 221-415", 85.0, "WAGO: T85, surrounding air 85 °C at most"),
     ("fuse holders Littelfuse FHAC0001ZXJ", 105.0, "Littelfuse OL-FHAC0001ZXJ: 105 °C"),
     ("bushings Heyco 2836N", 105.0, "Heyco: -18 to +105 °C"),
@@ -316,6 +318,21 @@ def section_md(EP):
         frac = derated(CLG_KNEE if key == "ps_kit" else LPV_KNEE, t_dev)
         A("| %s %s at its peak load, %.1f W | %.0f W at %.0f °C (%.0f %% of %.0f W, its maker's derating) | %.0f W |" % (
             sid, MODEL[key], peak, frac * rated, t_dev, 100 * frac, rated, frac * rated - peak))
+    A("")
+    A("Room temperature (the case above takes %.0f °C, a warm office): with the same worst loads, each room gives "
+      "these upper-air temperatures and the tightest part's margin:" % ROOM_C)
+    A("")
+    A("| Room | Upper air | Tightest part | Its margin |")
+    A("|---:|---:|---|---:|")
+    room0 = globals()["ROOM_C"]
+    try:
+        for room in (28.0, 30.0, 32.0):
+            globals()["ROOM_C"] = room
+            t = results(EP, 12.0, SHELL_PATH_WORST)[0] + STRAT_K
+            name, lim, _src = min(DEVICES, key=lambda d: d[1] - t)
+            A("| %.0f °C | %.1f °C | %s (%.0f °C) | %.0f K |" % (room, t, name, lim, lim - t))
+    finally:
+        globals()["ROOM_C"] = room0
     A("")
     A("The breaker is calibrated at 40 °C and carries 0.5 %% less per K above (Eaton): %.1f A at %.0f °C, over the "
       "outlets' 12 A continuous limit. These figures are a calculation; the prototype's test measures the box's air "

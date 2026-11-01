@@ -516,8 +516,8 @@ part("rivnut", "838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-6
 P["rivnut"].update(grade="steel 1008/1010", torque_nm="HOLD (D-48: spin-out test T06)", length_mm="14.86")
 
 # ---- wire and cable by length (unit: m; mass each = kg per m)
-def cable(key, pn, name, vi, parent, metres, kgm, sku, note):
-    part(key, pn, name, vi, "PI", parent, round(metres, 2), "", "", kgm, "assumption (kg per m, typical catalogue value)",
+def cable(key, pn, name, vi, parent, metres, kgm, sku, note, kgm_status="assumption (kg per m, typical catalogue value)"):
+    part(key, pn, name, vi, "PI", parent, round(metres, 2), "", "", kgm, kgm_status,
          sku=sku, status=HOLD_BUY, note=note + "; qty in m")
 
 
@@ -536,16 +536,18 @@ cable("w10", "718021", "ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE)", "Đi
 cable("w25", "718022", "ELECTRICAL - WIRE - UL 1015 14 AWG GREEN", "Điện - dây tiếp địa UL 1015 14 AWG", "710001", 0.3, 0.025,
       "maker HOLD: as 718020", "W03 bond lead (D-133: 14 AWG, the equipment ground for a 15 A circuit, NEC 250.122)")
 cable("c218", "718023", "ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2", "Điện - cáp 2 x 18 AWG", "710000",
-      _m(["W11b", "W12", "W43"]), 0.025,  # W43's row said 2 x 22 AWG, which had no line (Reviewer 7): it is this cable
-      "maker HOLD: 300 V PVC, CL2 or CL3 listed for the US phase", "12 V feeds")
+      _m(["W11b", "W12", "W43"]), 0.022,  # W43's row said 2 x 22 AWG, which had no line (Reviewer 7): it is this cable
+      "maker HOLD: 300 V PVC, CL2 or CL3 listed for the US phase", "12 V feeds",
+      kgm_status="source (Belden 5300UE: 15 lb per 1000 ft)")
 cable("c418", "718024", "ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2", "Điện - cáp 4 x 18 AWG", "710000",
-      _m(["W20a", "W20b", "W20c", "W20d", "W11c"]), 0.045, "maker HOLD: as 718023",
-      "the air feed (2 cores per pole), the right-wall light jumper")
+      _m(["W20a", "W20b", "W20c", "W20d", "W11c"]), 0.052, "maker HOLD: as 718023",
+      "the air feed (2 cores per pole), the right-wall light jumper", kgm_status="source (Belden 5302UE: 35 lb per 1000 ft)")
 cable("c416", "718055", "ELECTRICAL - CABLE - 4 X 16 AWG - CLASS 2", "Điện - cáp 4 x 16 AWG", "710000",
       _m(["W30a", "W30b", "W30c"]), 0.065, "maker HOLD: 300 V PVC, CL2 or CL3 listed",
       "the voice kit's 24 V feed, two cores per pole: the drop at its 2.5 A stays far inside 3 % (calc-results)")
 cable("c618", "718029", "ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2", "Điện - cáp 6 x 18 AWG", "710000",
-      _m(["W10a", "W10b", "W10c", "W11a"]), 0.065, "maker HOLD: as 718023", "the light feed: +24 V x 2 and the three channel returns")
+      _m(["W10a", "W10b", "W10c", "W11a"]), 0.064, "maker HOLD: as 718023", "the light feed: +24 V x 2 and the three channel returns",
+      kgm_status="source (Belden 5304UE: 43 lb per 1000 ft)")
 cable("c624", "718025", "ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2", "Điện - cáp tín hiệu 6 x 24 AWG", "710000",
       _m(["W24a", "W24b", "W24c", "W24d", "W44"]), 0.035, "maker HOLD", "the hub's link to the power unit, and the controls loom")
 cable("c420", "718026", "ELECTRICAL - CABLE - 4 X 20 AWG SCREENED - PLENUM", "Điện - cáp quạt 4 x 20 AWG chống cháy",
@@ -976,16 +978,18 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             '461419 GR005: UL 1015 AWM 105 C 600 V, 14 AWG, green, 100 ft spool',
             'https://www.alphawire.com/disteAPI/SpecPDF/DownloadProductSpecPdf?productPartNumber=461419',
             ''),
- '718023': ('SOUTHWIRE R40018-1',
-            'Southwire',
-            'R40018-1 (spec 13060): 2 x 18 AWG stranded, PVC, CL3R (also CMR, FPLR, CMG), 300 V, 60 C, OD 3.66 mm',
-            'https://cabletechsupport.southwire.com/en/tile/39/spec/13060/?country=US',
-            "cores about 1.3-1.45 mm (calculation), low in the terminal's 1.30-3.10 grip: prove a crimp sample"),
- '718024': ('SOUTHWIRE R40049-1',
-            'Southwire',
-            'R40049-1 (spec 13060): 4 x 18 AWG stranded, PVC, CL3R, 300 V, 60 C, OD 4.22 mm',
-            'https://cabletechsupport.southwire.com/en/tile/39/spec/13060/?country=US',
-            'prove a crimp sample (as 718023)'),
+ '718023': ('BELDEN 5300UE',
+            'Belden',
+            '5300UE: 2 x 18 AWG stranded (7x26) bare copper, polyolefin cores 1.6 mm, PVC jacket, CMR (UL 1666), 300 V, 75 C, '
+            'OD 4.01 mm, 5 A per conductor',
+            'https://catalog.belden.com/techdata/EN/5300UE_techdata.pdf',
+            "75 C, so the unit's heat leaves it a wide margin (Southwire's 60 C R40018-1 left 2 K at a 30 C room); its 1.6 mm "
+            "cores sit in the Mini-Fit terminal's 1.30-3.10 grip; " + "the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
+ '718024': ('BELDEN 5302UE',
+            'Belden',
+            '5302UE: 4 x 18 AWG stranded (7x26) bare copper, polypropylene cores 1.6 mm, PVC jacket, CMR (UL 1666), 300 V, 75 C, OD 4.67 mm, 4 A per conductor',
+            'https://catalog.belden.com/techdata/EN/5302UE_techdata.pdf',
+            "75 C (the power unit's leads: Southwire's 60 C R40049-1 left 2 K at a 30 C room); 1.6 mm cores in the terminal's grip; the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
  '718025': ('BELDEN 9536',
             'Belden',
             '9536 060100: 6 x 24 AWG stranded, overall foil and drain, PVC, CMG, 300 V (UL AWM 2464)',
@@ -1005,11 +1009,11 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'https://catalog.belden.com/techdata/EN/3612_techdata.pdf',
             "Belden doesn't publish its insulated core size and the SP688E-C plug takes 0.91-1.07 mm cores (Panduit "
             'PN649A): measure a sample before the plugs are crimped; 23 AWG solid suits the etherCON IDC (24-22 AWG)'),
- '718029': ('SOUTHWIRE R40015-1',
-            'Southwire',
-            'R40015-1 (spec 13060): 6 x 18 AWG stranded, PVC, CL3R, 300 V, 60 C, OD 5.38 mm',
-            'https://cabletechsupport.southwire.com/en/tile/39/spec/13060/?country=US',
-            ''),
+ '718029': ('BELDEN 5304UE',
+            'Belden',
+            '5304UE: 6 x 18 AWG stranded (7x26) bare copper, polyolefin cores 1.6 mm, PVC jacket, CMR (UL 1666), 300 V, 75 C, OD 5.59 mm',
+            'https://catalog.belden.com/techdata/EN/5304UE_techdata.pdf',
+            "75 C (the light feed's segment in the power unit: Southwire's 60 C R40015-1 left 2 K at a 30 C room); 1.6 mm cores in the terminal's grip; the NEC's cable substitution table lets CMR stand in for CL3R and CL2R (to confirm in the US rules phase, ISS-083)"),
  '718030': ('MOLEX 39-01-2025 (5557-02R)',
             'Molex',
             '39-01-2025 (5557-02R-210): Mini-Fit Jr receptacle housing, dual row, 2 circuits, UL 94V-0; 9 A per '

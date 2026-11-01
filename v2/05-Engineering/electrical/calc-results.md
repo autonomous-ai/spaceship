@@ -88,8 +88,8 @@ At the 53 l/s normal flow that adds **0.25 K** to C4's 3.8 K (ΔT = P / (1.2 × 
 | 710041 hub and controls zone | 0.36 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 719001 cord set kit (ships loose; counts in the pod as shipped) | 0.59 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | lights: shelf strip, call strip and profile | 0.30 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.27 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| **710000 ELECTRICAL** | **6.32** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
+| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.29 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| **710000 ELECTRICAL** | **6.34** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
 
 **B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 3.81 kg = **12.9 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
 
@@ -120,7 +120,8 @@ Other heat in the box: the light controller 2.0 W (assumption), the breaker 2.0 
 | Mean Well supplies, the units themselves | 70 °C (LPV-60 and CLG-100 sheets: -30 to +70 °C, by their derating curves) | 14 K |
 | LAN keystone jacks Panduit NK688MWH | 75 °C (Panduit COSP588: -10 to +75 °C) | 19 K |
 | Cat6 cable Belden 3612 | 75 °C (Belden 3612 sheet: 75 °C) | 19 K |
-| 12 and 24 V leads, Southwire CL3R (the PU segments) | 60 °C (Southwire spec 13060 and 13066: 60 °C) | 4 K |
+| 12 and 24 V leads in the unit: Belden 5302UE and 5304UE (CMR), Southwire 94664 (CL3) | 75 °C (Belden's sheets and Southwire spec 13090: 75 °C) | 19 K |
+| hub link Belden 9536 in the unit | 80 °C (Belden 9536 sheet: 80 °C as UL AWM 2464, the rating for wiring inside equipment) | 24 K |
 | lever connectors WAGO 221-415 | 85 °C (WAGO: T85, surrounding air 85 °C at most) | 29 K |
 | fuse holders Littelfuse FHAC0001ZXJ | 105 °C (Littelfuse OL-FHAC0001ZXJ: 105 °C) | 49 K |
 | bushings Heyco 2836N | 105 °C (Heyco: -18 to +105 °C) | 49 K |
@@ -128,6 +129,14 @@ Other heat in the box: the light controller 2.0 W (assumption), the breaker 2.0 
 | PS1 CLG-100-24 at its peak load, 60.0 W | 85 W at 56 °C (88 % of 96 W, its maker's derating) | 25 W |
 | PS2 LPV-60-24 at its peak load, 40.5 W | 50 W at 56 °C (83 % of 60 W, its maker's derating) | 9 W |
 | PS3 LPV-60-12 at its peak load, 31.4 W | 50 W at 56 °C (83 % of 60 W, its maker's derating) | 18 W |
+
+Room temperature (the case above takes 28 °C, a warm office): with the same worst loads, each room gives these upper-air temperatures and the tightest part's margin:
+
+| Room | Upper air | Tightest part | Its margin |
+|---:|---:|---|---:|
+| 28 °C | 55.9 °C | light controller LTECH LT-995 (65 °C) | 9 K |
+| 30 °C | 57.9 °C | light controller LTECH LT-995 (65 °C) | 7 K |
+| 32 °C | 59.8 °C | light controller LTECH LT-995 (65 °C) | 5 K |
 
 The breaker is calibrated at 40 °C and carries 0.5 % less per K above (Eaton): 13.8 A at 56 °C, over the outlets' 12 A continuous limit. These figures are a calculation; the prototype's test measures the box's air with the kit at 40 W (a dummy load) and the outlets loaded.
 
