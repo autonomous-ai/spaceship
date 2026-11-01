@@ -95,6 +95,10 @@ ZB, ZT = "fg_vis_zb", "fg_vis_zt"                  # band top and DT's underside
 
 OWN = [
     ("dr_skin_t", "3 mm", "mm", "source", "ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)"),
+    ("dr_fo", "dr_skin_t + bond_t", "mm", "calculation",
+     "a frame tube's face from the skin's outer face: the 3 mm ACP and the 3 mm bond line (skeleton bond_t; the bond "
+     "spec's joint, at least 12 wide x 3 thick, D-137), so every tube that bonds to the skin stands 3 mm off it "
+     "(PM ruling 2026-11-01)"),
     ("dr_back_t", "1.5 mm", "mm", "confirmed",
      "joints register J-FRONT-01: the back plate is aluminium 1.0 to 2.7 thick at each bolt, for the rivnuts (HOLD-10); "
      "1.5, not 2, so DR stays under 20 kg (D-03; PM ruling 2026-11-01)"),
@@ -145,14 +149,17 @@ OWN = [
     ("dr_fny", "-dr_xc / dr_f_len", "", "calculation", "corner facet outward normal, Y"),
     ("dr_fc", "dr_fnx * (pod_w / 2 - dr_xc) + dr_fny * (-pod_d / 2)", "mm", "calculation", "corner facet line constant"),
     # intake riser, 1 mm galvanised steel (D-60 air table)
-    ("ri_x0", "956 mm", "mm", "source", "D-60 air table: riser X 956 to 1095"),
+    ("ri_x0", "959 mm", "mm", "source",
+     "the D-60 air table's riser X 956 to 1095, moved 3 mm right with DR's 3 mm bond line so it keeps its 5.9 to B07 "
+     "(AIR's change, CEILING Engineer 2026-11-01)"),
     ("ri_w", "139 mm", "mm", "source", "D-60 air table: riser 139 wide"),
     ("ri_y0", "-803 mm", "mm", "source", "D-60 air table: riser Y -803 to -648"),
     ("ri_d", "155 mm", "mm", "source", "D-60 air table: riser 155 deep"),
     ("ri_zt", "1445 mm", "mm", "source", "D-60 air table: riser up to Z 1445"),
     ("ri_gap", "140 mm", "mm", "assumption",
      "the riser's open foot stands 140 mm over DR's open base, so the air rises straight into it and the riser clears "
-     "the back frame's inner-edge member by 6 mm (the glass line runs to X 950 there); was 60 before the frame"),
+     "the back frame's inner-edge member B07 by 5.9 mm (the glass line runs to X 950 there; the riser moved 3 mm right "
+     "with the 3 mm bond line); was 60 before the frame"),
     ("slot_clear", "1 mm", "mm", "assumption", "fitting clearance each side of the glass channel in DR's skin slot"),
     ("ri_t", "1 mm", "mm", "source", "D-60 air table: 1 mm galvanised steel"),
     # supply fan box (D-60 air table)
@@ -201,9 +208,9 @@ OWN = [
     # 100 N; one cross tube at its mid-height brings it to 1.7 (skin_spans.py), so AIR's fan box stands back from the
     # skin, behind that tube (which also keeps the fans' vibration off the skin)
     ("fb_gap", "5 mm", "mm", "assumption", "the fan box's front, clear behind the front ring's cross tube F09"),
-    ("fb_y0", "-pod_d / 2 + dr_skin_t + fr_w + fb_gap", "mm", "calculation",
-     "fan box front, Y -822: the D-60 table's -847 moved 25 back behind the cross tube F09 (PM ruling 2026-11-01, D-131); "
-     "AIR's model follows (sb_yf)"),
+    ("fb_y0", "-pod_d / 2 + dr_fo + fr_w + fb_gap", "mm", "calculation",
+     "fan box front, Y -819: the D-60 table's -847 moved back behind the cross tube F09 (PM ruling 2026-11-01, D-131), "
+     "and 3 more with the bond line so F09 keeps its 5 mm (PM ruling 2026-11-01); AIR's model follows (sb_yf)"),
     ("fr_hole_jf", "14 mm", "mm", "calculation",
      "hole in the bolt-line tube's back wall round each J-FRONT-01 rivnut: body 9.50 max and its bulge (SHX), and the "
      "bolt tip, go into the tube"),
@@ -224,15 +231,16 @@ OWN = [
     ("ab_hole", "7 mm", "mm", "source",
      "the pod's M6 clearance hole, 7.0 (D-64, D-75; the mechanical check's hole rule M6-CLEARANCE-7) for the inner "
      "face panel's screws 838001"),
-    ("ab_x", "pod_w / 2 - dr_skin_t - fr_wb + 2 * fr_hole_rn + 2 mm", "mm", "calculation",
+    ("ab_x", "pod_w / 2 - dr_fo - fr_wb + 2 * fr_hole_rn + 2 mm", "mm", "calculation",
      "the panel's screw line on the bolt-line tube: the rivnut 2 diameters plus 2 from the tube's inner edge (C09)"),
     ("ab_zt", "fg_vis_zt + 2 * fr_hole_rn + 1 mm", "mm", "calculation",
      "the panel's screw line on the band tube: its rivnuts 2 diameters plus 1 above the tube's lower edge (C09)"),
     ("dr_sc_clear", "40 mm", "mm", "calculation",
      "the panel's end screws 40 from the corners of its screw line, clear of the frame's welded corners (D-130)"),
     ("dr_hd_d", "12 mm", "mm", "source",
-     "a plain M6 washer under each panel screw's head, ISO 7089 6.4 x 12 x 1.6 (PM ruling 2026-11-01: the socket "
-     "heads stay, one 5 mm key on site; the 18 mm washer made every felt hole break out; Joints numbers it)"),
+     "a plain M6 washer 838011 under each panel screw's head, ISO 7089 6.4 x 12 x 1.6, 200 HV zinc-plated steel (PM "
+     "rulings 2026-11-01: the socket heads stay, one 5 mm key on site; the 18 mm washer made every felt hole break "
+     "out; joints register H-44)"),
     ("dr_felt_web", "3 mm", "mm", "calculation",
      "felt left between each felt hole and the felt's edge (PM ruling 2026-11-01)"),
     ("dr_felt_hole", "dr_hd_d + 2 mm", "mm", "calculation",
@@ -307,12 +315,12 @@ WALL = {"20 x 20 x 1.0": "fr_t_sk", "20 x 20 x 1.2": "fr_t_rn", "40 x 20 x 1.5":
 # line a*x + b*z = c with its normal into the panel; edge k runs along tube PANEL_LINES[k] from corner k to corner k+1
 PANEL_LINES = [
     ("B01", FL.line(0, 1, "fg_vis_zb + fr_wbot / 2")),                    # the bottom tube, Z 130
-    ("B02", FL.line(-1, 0, "-ab_x")),                                      # the bolt-line tube, X 1188
+    ("B02", FL.line(-1, 0, "-ab_x")),                                      # the bolt-line tube, X 1185
     ("B08", FL.line(0, -1, "-ab_zt")),                                     # the band tube, Z 2140
     ("B04", FL.line(1, 0, "-pod_w / 2 + dt_xr + fr_w / 2")),               # the DT joint tube: the 30 mm step
     ("B05", FL.line(0, -1, "-(fg_vis_zt - fr_w / 2)")),                    # DT's ledge tube, Z 2110
-    ("B06", FL.line("fg_dnx", "fg_dnz", "fg_dc + dr_skin_t + fr_w / 2")),  # the diagonal tube's middle
-    ("B07", FL.line("fg_rnx", "fg_rnz", "fg_rc + dr_skin_t + fr_w / 2")),  # the glass-edge tube's middle
+    ("B06", FL.line("fg_dnx", "fg_dnz", "fg_dc + dr_fo + fr_w / 2")),  # the diagonal tube's middle
+    ("B07", FL.line("fg_rnx", "fg_rnz", "fg_rc + dr_fo + fr_w / 2")),  # the glass-edge tube's middle
 ]
 # screws per edge, about dr_pitch apart (Joints' 400) and dr_sc_clear from the corners: 21 in all
 SCREWS_PER_EDGE = [2, 6, 3, 0, 2, 3, 5]
@@ -332,7 +340,7 @@ for _k in range(len(PANEL_LINES)):
     OWN.append(("dr_pe%d" % _k, "sqrt((dr_pl%dx - dr_pl%dx) * (dr_pl%dx - dr_pl%dx) + (dr_pl%dz - dr_pl%dz) * "
                 "(dr_pl%dz - dr_pl%dz))" % (_j, _k, _j, _k, _j, _k, _j, _k), "mm", "calculation",
                 "the inner face panel's screw line along tube %s, its length" % PANEL_LINES[_k][0]))
-OWN.append(("dr_sc_b08", "ab_x - (pod_w / 2 - dr_skin_t - fr_wb) + 2 * fr_hole_rn + 0.5 mm", "mm", "calculation",
+OWN.append(("dr_sc_b08", "ab_x - (pod_w / 2 - dr_fo - fr_wb) + 2 * fr_hole_rn + 0.5 mm", "mm", "calculation",
             "the band tube B08's screw by the bolt-line tube from the screw line's corner: two rivnut-hole diameters and "
             "0.5 from B08's square end at the bolt-line tube (C09's rule)"))
 OWN.append(("dr_sc_col", "(dr_pl0x - (dr_col_x0 - dr_felt_hole / 2 - dr_felt_web)) * dr_pe6 / (dr_pl0x - dr_pl6x)",
@@ -407,16 +415,16 @@ def frame_members():
     Front ring just inside the front skin, back ring just in front of the back plates, and tubes between them along
     the corner facet, the top chamfer and the DT joint, clear of the air parts and of the air unit's way in (D-87:
     no back-ring tube crosses the opening behind the access and inner panels)."""
-    yf0, yf1 = "(%s + dr_skin_t)" % YF, "(%s + dr_skin_t + fr_w)" % YF
+    yf0, yf1 = "(%s + dr_fo)" % YF, "(%s + dr_fo + fr_w)" % YF
     yb0, yb1 = "(%s - dr_back_t - fr_w)" % YB, "(%s - dr_back_t)" % YB
-    xf = "((dr_fc - dr_skin_t - dr_fny * %s) / dr_fnx)" % yf0           # inner facet face at the front ring's face
-    zch = "((dr_cc - dr_skin_t - dr_cny * %s) / dr_cnz)" % yf0          # inner chamfer face there
+    xf = "((dr_fc - dr_fo - dr_fny * %s) / dr_fnx)" % yf0               # the facet's bond face at the front ring's face
+    zch = "((dr_cc - dr_fo - dr_cny * %s) / dr_cnz)" % yf0              # the chamfer's bond face there
     xj = "(%s + fix_xtr + (%s - %s) * (dt_xr - fix_xtr) / (pod_d / 2 - ch_yb))" % (XL, yf1, YF)  # DT joint, ring back
     bot, top = FL.line(0, 1, ZB), FL.line(0, -1, "-pod_h")
     right, dtjb, ledge = FL.line(-1, 0, "-pod_w / 2"), FL.line(1, 0, "(%s + dt_xr)" % XL), FL.line(0, -1, "-dt_zb")
     diag, rl = FL.line("fg_dnx", "fg_dnz", "fg_dc"), FL.line("fg_rnx", "fg_rnz", "fg_rc")
     facf, chf, dtjf = FL.line(-1, 0, "-" + xf), FL.line(0, -1, "-" + zch), FL.line(1, 0, xj)
-    sk3, sk23 = "dr_skin_t", "dr_skin_t + fr_w"
+    sk3, sk23 = "dr_fo", "dr_fo + fr_w"         # a tube on a skin: the skin and the bond line, then the tube
     M = []
 
     def add(key, name, axes, pts, along, a, b, section=S20, axis=(0, 1), ends=None, t=None):
@@ -450,14 +458,14 @@ def frame_members():
                                   FL.meet(edge, FL.line(0, 1, z1))], "y", yf0, yf1, sec,
             ends="left end cut to the glass-edge tube's slope, right end square")
     # band tube under the back plate's top band, between the DT joint tube and the bolt-line tube
-    xb0, xb1 = "(%s + dt_xr + fr_w)" % XL, "(%s - dr_skin_t - fr_wb)" % XR
+    xb0, xb1 = "(%s + dt_xr + fr_w)" % XL, "(%s - dr_fo - fr_wb)" % XR
     add("B08", "BACK RING BAND", ("x", "z"), [(xb0, ZT), (xb1, ZT), (xb1, "%s + fr_wband" % ZT), (xb0, "%s + fr_wband" % ZT)],
         "y", yb0, yb1, S60, ends="square both ends")
     # along the corner facet (plan), from the front ring's facet tube to the bolt-line tube; none beside the riser,
     # which stands 3 mm inside the facet skin
     fac = FL.line("-dr_fnx", "-dr_fny", "-dr_fc")
     f3, f23 = FL.push(fac, sk3), FL.push(fac, sk23)
-    xs = "(%s - dr_skin_t)" % XR
+    xs = "(%s - dr_fo)" % XR
     fac_pts = [FL.meet(f3, FL.line(1, 0, xf)), FL.meet(f3, FL.line(1, 0, xs)), (xs, yb0), FL.meet(f23, FL.line(0, 1, yb0)),
                FL.meet(f23, FL.line(1, 0, xf))]
     # (no tube at the knee: the shelf tube C03 is 100 above it; dropped with the middle chamfer tube to keep DR under
@@ -470,7 +478,7 @@ def frame_members():
     # along the top chamfer (side view), from the front ring's top tube up to the back ring's top tube
     chl = FL.line("-dr_cny", "-dr_cnz", "-dr_cc")
     c3, c23 = FL.push(chl, sk3), FL.push(chl, sk23)
-    zs_top = "(pod_h - dr_skin_t)"
+    zs_top = "(pod_h - dr_fo)"
     ch_pts = [(yf0, zch), FL.meet(c3, FL.line(0, 1, zs_top)), (yb0, zs_top), FL.meet(c23, FL.line(1, 0, yb0)),
               FL.meet(c23, FL.line(0, 1, zch))]
     xc_l, xc_r = "(%s + dt_xr + fr_w)" % XL, "(%s - 2 * fr_w)" % xf
@@ -478,17 +486,16 @@ def frame_members():
                         ("C08", "CHAMFER TUBE RIGHT", xc_r)):
         add(key, nm, ("y", "z"), ch_pts, "x", x0, "%s + fr_w" % x0,
             ends="lower end sits on the front ring's top tube, upper end square to the back ring's top tube")
-    # along the DT joint (plan), on the ledge DT stands on: the joint turns at X 449 from v1's slanted line to
-    # straight back, so two tubes mitred at the turn
+    # along the DT joint (plan), on the ledge DT stands on: v1's slanted joint line turns at X 449 to run straight
+    # back, but only 5.5 mm before the back ring, so one slanted tube runs on to the back ring, its end cut along the
+    # ring's face; the skin's last 5.5 mm of straight edge is backed by the ring itself (the 15 x 5.5 mm wedge that was
+    # C10 is no part anyone can cut or weld: drawgen refused it; PM ruling 2026-11-01, 352321 cancelled)
     jl = FL.line("dr_jnx", "dr_jny", "dr_jc")
     j20 = FL.push(jl, "fr_w")
-    xdt, xdt20 = "(%s + dt_xr)" % XL, "(%s + dt_xr + fr_w)" % XL
-    turn_o, turn_i = FL.meet(jl, FL.line(1, 0, xdt)), FL.meet(j20, FL.line(1, 0, xdt20))
-    add("C09", "DT JOINT TUBE SLANTED", ("x", "y"), [FL.meet(jl, FL.line(0, 1, yf1)), turn_o, turn_i,
-                                                     FL.meet(j20, FL.line(0, 1, yf1))],
-        "z", ZT, "%s + fr_w" % ZT, ends="front end square to the front ring, back end mitred to C10")
-    add("C10", "DT JOINT TUBE STRAIGHT", ("x", "y"), [turn_o, (xdt, yb0), (xdt20, yb0), turn_i], "z", ZT, "%s + fr_w" % ZT,
-        axis=(0, 1), ends="front end mitred to C09, back end square to the back ring")
+    add("C09", "DT JOINT TUBE SLANTED", ("x", "y"), [FL.meet(jl, FL.line(0, 1, yf1)), FL.meet(jl, FL.line(0, 1, yb0)),
+                                                     FL.meet(j20, FL.line(0, 1, yb0)), FL.meet(j20, FL.line(0, 1, yf1))],
+        "z", ZT, "%s + fr_w" % ZT, ends="both ends cut along the rings' faces: the front ring's at the front, the "
+                                        "back ring's at the back")
     return M
 
 
@@ -890,9 +897,10 @@ ANCHORS = [
     ("FBOX", 0, "fb_x0"), ("FBOX", 2, "fb_z0"), ("FBOX", 5, "fb_z0 + fb_h"),
     ("TUP", 5, "op_z0 + op_h"),
     # the frame's sides, each on a single tube that reaches it (every tube its own component, D-120)
-    ("B06", 0, "((fg_dc + dr_skin_t - fg_dnz * (fg_vis_zt)) / fg_dnx)"), ("B02", 3, "pod_w / 2 - dr_skin_t"),
-    ("F02", 1, "-pod_d / 2 + dr_skin_t"), ("B04", 4, "-pod_d / 2 + decor_d - dr_back_t"),
-    ("F01", 2, "fg_vis_zb"), ("B03", 5, "pod_h - dr_skin_t"),
+    # (the tubes on a skin stand its 3 mm bond line off it: dr_fo)
+    ("B06", 0, "((fg_dc + dr_fo - fg_dnz * (fg_vis_zt)) / fg_dnx)"), ("B02", 3, "pod_w / 2 - dr_fo"),
+    ("F02", 1, "-pod_d / 2 + dr_fo"), ("B04", 4, "-pod_d / 2 + decor_d - dr_back_t"),
+    ("F01", 2, "fg_vis_zb"), ("B03", 5, "pod_h - dr_fo"),
 ]
 
 # what each tube's row says about its holes and fixings (the cuts in build(); none on the copies)
@@ -900,7 +908,7 @@ MEMBER_NOTES = {    # {n}: the inner face panel's rivnuts in that tube (D-130), 
     "B01": "40 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws (Z 130); J-FRONT-02: spigot hole 8.5 "
            "at X 1050 and slot 8.5 x 14 at X 1147 in its bottom wall, over BASE's support behind the mesh",
     "B02": "80 x 20 x 1.5; 6 holes 14 in its back wall round the J-FRONT-01 rivnut tails (X 1224); {n} rivnuts 838003 "
-           "for the inner face panel's screws (X 1188)",
+           "for the inner face panel's screws (X 1185)",
     "B05": "20 x 20 x 1.5; 2 rivnuts 838003 in its top for DT's spigots 831001 (J-FRONT-03, X 270 and 410) and {n} in "
            "its back wall for the inner face panel's screws (Z 2110)",
     "B06": "20 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws, on its middle",
@@ -952,7 +960,8 @@ def export_all(app):
         ("351301", PARTS["SKIN"][1], PARTS["SKIN"][2], 1, "made: ACP panels, 45 deg mitred joints as v1, bonded to "
          "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 3.5 kg/m2: selection VT01)", "DRAFT",
          "D-12, D-49; skeleton DR shape", "one flat panel per outside face: " + DXF_SKIN_REL.split("/")[-1] +
-         "; bond to the frame per the joints register's ACP bond spec"),
+         "; bond to the frame per the joints register's ACP bond spec (D-137): one 12 x 3 joint on every tube, the "
+         "tubes 3 mm off the skin"),
         (FRAME_PN, FRAME[1], FRAME[2], 1, "weldment assembly: welded frame, %d tubes as %d parts (parts list %s; cut list %s), TIG-welded" % (
             len(members), len(member_rows), WELD_BOM_REL.split("/")[-1], CUT_REL.split("/")[-1]),
          "aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.2 (rivnuts), 20 x 20 x 1.5 "
@@ -975,8 +984,8 @@ def export_all(app):
          "PM rulings 2026-11-01 (the column's hook studs, the panel carries the 10 kg column)",
          "one removable inner face panel (D-130) over the opening the air unit goes in by: DXF " + DXF_FLAT["ACCESS"] +
          "; on stops 2.36 off the frame (an 838004 washer on each rivnut head), sealed all round by 848013, held by "
-         "%d M6 x 16 socket heads 838001 (ISO 4762, the one 5 mm key on site), each on a plain washer 12 (ISO 7089; "
-         "Joints numbers it), about 400 apart into rivnuts 838003 in the frame's tube walls (Joints' counts); the "
+         "%d M6 x 16 socket heads 838001 (ISO 4762, the one 5 mm key on site), each on a plain washer 838011 (ISO "
+         "7089 6.4 x 12, 200 HV zinc), about 400 apart into rivnuts 838003 in the frame's tube walls (Joints' counts); the "
          "heads stand 7.6 proud of its room face and AIR clears the ones it covers (its supply cartridge lifted 6, "
          "reliefs at the soffit); the glass-edge tube's lowest screw stands 10 left of the air column's edge; 2 holes "
          "9.53 +0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 with the column's 2 hook studs (J-AIR-02); its "
@@ -1010,7 +1019,7 @@ def export_all(app):
         ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply fan box 610401 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
          "the space AIR's supply fan box takes; 12 from the fixed glass channel, so the frame's inner-edge tube fits; "
-         "its front 5 behind the cross tube F09 (Y -822; PM ruling 2026-11-01, D-131)"),
+         "its front 5 behind the cross tube F09 (Y -819 with the 3 mm bond line; PM rulings 2026-11-01, D-131)"),
         ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply transition 618102 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
          "the space AIR's supply transition takes, fan box outlet to the access panel's opening"),

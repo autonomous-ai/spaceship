@@ -38,7 +38,7 @@ SPECS["dr"] = {
         "frame's bottom tubes (PM ruling: at least 0.028 free). Air goes band, block, riser; the riser's open foot "
         "stands 140 above the base.",
         "Slot along the inner edge for the fixed pane's hidden channel: 17 wide at the glass plane (PM ruling).",
-        "Inner face panel 351305 (D-130): 3 mm, on %d M6 x 16 ISO 4762 socket heads on plain 12 washers (ISO 7089) into rivnuts "
+        "Inner face panel 351305 (D-130): 3 mm, on %d M6 x 16 ISO 4762 socket heads on plain washers 838011 (ISO 7089 6.4 x 12, zinc) into rivnuts "
         "838003 in the frame's tubes under its edges, about 400 apart; a washer 838004 on each rivnut head holds it "
         "%.2f off the frame, its room face at Y %.2f (AIR's named value); the seal 848013 runs round its edge, squeezed "
         "to %.2f, cut round each washer. Opening %.0f wide into the air column's top (X %.0f to %.0f); the column hangs "
@@ -99,9 +99,9 @@ SPECS["dl"] = {
         "frame halves ship fitted here.",
         "Hinge-side stop 351103 (aluminium angle 30 x 20 x 2, bonded to the door-side face) with the frame-stop seal "
         "368005 on the leaf's inner face, in 4 lengths between the hinges; at the top they butt DT's top stop and seal.",
-        "J-FRONT-02: DL stands on 2 spigots on the band: hole 8.5 at X -1176.7, Y -718.0 (outer facet) and slot "
-        "8.5 x 14 along the front facet at X -1073.9, Y -780.6, in the bottom ring tubes, 100 in from the ends of the "
-        "bottom edge on the tubes' centre line, 13 in from the outer faces. DL is open at the bottom: its frame's "
+        "J-FRONT-02: DL stands on 2 spigots on the band: hole 8.5 at X -1172.7, Y -717.5 (outer facet) and slot "
+        "8.5 x 14 along the front facet at X -1076.9, Y -775.7, in the bottom ring tubes, 100 in from the ends of the "
+        "bottom edge on the tubes' centre line, 16 in from the outer faces. DL is open at the bottom: its frame's "
         "bottom ring stands on the band (PM rulings 2026-11-01).",
         "The door's load: hinges, the 60 x 20 hinge post behind the pockets, the frame's rings, the 60 x 20 bolt-line "
         "post, the back plate and the J-FRONT-01 bolts into the left wall (ISS-045; hinge fixing holes HOLD H01).",
@@ -136,6 +136,7 @@ def _frame_spec(key, pn, name, vn, G, V, views, box, notes):
         "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": views, "box": box, "dims": [],
         "notes": notes + _cut_notes(G, V) + [
             "Weld all round at every tube joint (TIG, 6063-T6 filler 4043); grind flush where a skin or plate bonds. "
+            "Every tube that bonds to a skin stands 3 mm off it: the bond line (D-137). "
             "Tube lengths +/-0.5, angles +/-0.5 deg, frame +/-1 overall (PROPOSED). Ends open (no caps) unless noted.",
             "Tube positions and every end cut come from the build script's parameters (frame_members); the 3D model "
             "and STEP are the reference for the joints between tubes.",
@@ -149,7 +150,7 @@ SPECS["dr_frame"] = _frame_spec(
     "dr_frame", "351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)", G_DR, V_DR,
     {"front": (150, 255), "top": (150, 110), "left": (280, 255), "iso": (345, 95)},
     {"front": (_drx0, V_DR["wall_z0"], _XR, V_DR["pod_h"])},
-    ["DR's welded frame: a ring 20 inside the front skin, a ring in front of the back plates with the 80 x 20 "
+    ["DR's welded frame: a ring on the front skin's 3 mm bond line, a ring in front of the back plates with the 80 x 20 "
      "bolt-line tube (6 holes 14 in its back wall round the J-FRONT-01 rivnut tails) and the 60 x 20 band tube, "
      "facet, chamfer and DT-joint tubes between the rings. No back-ring tube crosses the opening the air unit slides "
      "through (D-87). Rivnuts 838003 set at the factory: %d for the inner face panel's screws, on the middles of the "

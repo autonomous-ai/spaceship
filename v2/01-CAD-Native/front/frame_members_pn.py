@@ -30,7 +30,8 @@ DR_MEMBERS = {
     "B07": "352313", "F07": "352314", "F08": "352315", "B08": "352316",
     "F09": "352322",        # the front ring's cross tube over the fan box (D-131 skin spans; Control, #287)
     "C01": "352317", "C04": "352317", "C05": "352317", "C03": "352318",
-    "C06": "352319", "C08": "352319", "C09": "352320", "C10": "352321",
+    "C06": "352319", "C08": "352319", "C09": "352320",
+    # 352321 (C10, the joint's straight end) cancelled: C09 runs on to the back ring (PM ruling 2026-11-01)
 }
 
 # DL's hinge-side stop 351103 splits into its pieces (D-120; 351103 cancelled): ST2 and ST3 are one shape

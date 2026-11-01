@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: FAIL.** 1 failure(s) on the five rules; 337 part lines (159 made, 178 bought, 137 on HOLD) and 49 sub-assembly lines from 20 parts list(s); 41 hardware items in the joints register (41 with a part number). Listed parts weigh 359.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 336 part lines (158 made, 178 bought, 137 on HOLD) and 49 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (41 with a part number). Listed parts weigh 359.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -36,7 +36,7 @@ Read from: this working tree.
 
 ## Failures
 
-- cancelled number 352321 used: 'FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT' in v2/03-Manufacturing/front/351306_P01_FRONT-DECOR-FRAME-DR_BOM.csv @ working tree (a cancelled number is never reused)
+- none
 
 ## Missing or on HOLD, per team
 
@@ -52,6 +52,7 @@ Read from: this working tree.
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 
 **WALL**
+- 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
@@ -99,6 +100,7 @@ Read from: this working tree.
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 - 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
+- 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
@@ -198,6 +200,9 @@ Read from: this working tree.
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
 
+**Joints register**
+- H-46 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD: no part number
+
 ## Reserved air spaces, not counted (D-105)
 
 Rows typed reserved air space in another team's block: the part is AIR's and is counted once, in AIR's list.
@@ -210,7 +215,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 147 numbers, 69 not in a team's list yet, 56 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 147 numbers, 69 not in a team's list yet, 55 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -298,7 +303,7 @@ From `v2/04-BOM/number-allocation.csv`: 147 numbers, 69 not in a team's list yet
 | 352318 | FRONT - DECOR FRAME DR - FACET TUBE FAN BOX SHELF | 351306 | 1 | in use |
 | 352319 | FRONT - DECOR FRAME DR - CHAMFER TUBE - 2 OFF | 351306 | 2 | in use |
 | 352320 | FRONT - DECOR FRAME DR - DT JOINT TUBE SLANTED | 351306 | 1 | in use |
-| 352321 | FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT | 351306 | 1 | in use |
+| 352321 | FRONT - DECOR FRAME DR - DT JOINT TUBE STRAIGHT | 351306 | 1 | CANCELLED |
 | 352322 | FRONT - DECOR FRAME DR - FRONT RING CROSS OVER THE FAN BOX | 351306 | 1 | in use |
 | 352201 | FRONT - DECOR FRAME DT - BACK RING BOTTOM | 351204 | 1 | in use |
 | 352202 | FRONT - DECOR FRAME DT - BACK RING DR JOINT | 351204 | 1 | in use |

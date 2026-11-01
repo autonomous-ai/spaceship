@@ -153,7 +153,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 10](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png)
 
 - **Time:** about 13 min for 2 people.
-- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK ASSY - DR (13.6 kg).
+- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK ASSY - DR (13.5 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DR stands on its spigots on its support, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
 - **Person A:** Opens the crate. With B, tilts the fixed glass up on its padded long edge, both suction lifters at its top edge, onto the padded glass rest; then both carry it upright and drop its bottom edge into the U-channel already fitted on the sill, onto its setting blocks. A clamps the 2 glass stays from the kit on its top edge and sets their props on the base band, so the glass stands on its own.
 - **Person B:** With A, carries DR (2.3 m, about 14 kg; its inner face panel comes later, in step 14) to the right of the opening; both slide it in from the side so its channels take the glass's right and diagonal edges, back onto its stops. Drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). Only then do the stays come off.

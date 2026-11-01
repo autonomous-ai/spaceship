@@ -4,12 +4,15 @@ PM's limit (2026-11-01): 2 mm or less under a 100 N push at a bay's centre, edge
     python3 v2/01-CAD-Native/front/skin_spans.py [--grid 2] [--no-selftest]
 
 Reads each block's STEP as built (v2/03-Manufacturing/front), so the bays are the real ones: the skin's inner faces,
-the frame tubes' faces bonded to them (coplanar, facing), the folds between faces and the skin's cut edges (pockets,
-slots, open joints). Writes SKIN-SPANS.md here. numpy only (the repo's checks python).
+the frame tubes' faces bonded to them (facing, the bond line BOND_T off the skin), the folds between faces and the
+skin's cut edges (pockets, slots, open joints). Writes SKIN-SPANS.md here. numpy only (the repo's checks python).
 
-A bay is a connected part of a skin face that no tube touches. Its edges are:
-- a tube's bonded strip: simply supported (the PM's rule), and in a second reading held flat by the bond (clamped);
+A bay is a connected part of a skin face that no bead holds. Its edges are:
+- a tube's bonded strip, the bond spec's bead: BEAD_W wide, centred on the tube's face, BOND_T off the skin (D-137;
+  the PM's ruling of 2026-11-01 on the bond line), simply supported (the PM's rule), and in a second reading held
+  flat by the bond (clamped); the rest of a wider tube face holds nothing;
 - a fold to the next face: an edge when the faces turn FOLD_MIN or more (a folded skin holds its fold line: the
+  next face may be a narrow skin wall too small to be a bay itself, as DL's 7 mm front face; the
   folded-plate check below shows it on DL's 15 deg fold); shallower folds are laid flat, so both faces form one bay;
 - a cut edge: free.
 Bays with no free edge are solved by skin_plates.ss_fd (exact for straight-edged convex bays, about 1 % high on a
@@ -43,7 +46,23 @@ P = 100.0
 FOLD_MIN = 10.0              # deg between two faces' normals for their fold to count as a bay edge
 SLIVER = 10.0                # mm: a strip narrower than this along a support is no span
 MIN_AREA = 1000.0            # mm2: a corner pocket smaller than this (10 cm2) is no span
+BEAD_W = 12.0                # mm: the bond spec's joint, at least 12 wide x 3 thick (D-137), centred on a tube's face
 MFG = os.path.join(REPO, "v2", "03-Manufacturing", "front")
+
+
+def _skeleton_mm(name):
+    """A skeleton parameter's value in mm, from the skeleton's parameter list."""
+    import csv
+    path = sorted(glob.glob(os.path.join(REPO, "v2", "01-CAD-Native", "skeleton", "100000_*_POD-SKELETON-PARAMETERS.csv")))[-1]
+    with open(path, encoding="utf-8") as fh:
+        for row in csv.reader(fh):
+            if row and row[0] == name:
+                return float(row[1])
+    raise KeyError(name)
+
+
+BOND_T = _skeleton_mm("bond_t")   # mm: the bond line between a skin and its tubes (D-137; PM ruling 2026-11-01)
+SKIN_T = _skeleton_mm("skin_t")   # mm: the ACP skin
 BLOCKS = [
     ("DL", "350001", "351101", [FPN.DL_FRAME] + sorted(set(FPN.DL_MEMBERS.values()))),
     ("DT", "350002", "351201", [FPN.DT_FRAME] + sorted(set(FPN.DT_MEMBERS.values()))),
@@ -98,6 +117,25 @@ def planar_faces(sf, inst):
             segs += list(zip(pts[:-1], pts[1:]))
         out.append(Face(fr.point(f.origin), fr.vector(f.normal), segs))
     return out
+
+
+def _hull_segs(pts):
+    """The convex outline of 2D points, as closed segments (monotone chain)."""
+    p = sorted(set((round(u, 6), round(v, 6)) for u, v in pts))
+    if len(p) < 3:
+        return [(p[0], p[-1])]
+    cross = lambda o, a, b: (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    lo, hi = [], []
+    for q in p:
+        while len(lo) >= 2 and cross(lo[-2], lo[-1], q) <= 0:
+            lo.pop()
+        lo.append(q)
+    for q in reversed(p):
+        while len(hi) >= 2 and cross(hi[-2], hi[-1], q) <= 0:
+            hi.pop()
+        hi.append(q)
+    h = lo[:-1] + hi[:-1]
+    return [(h[i], h[(i + 1) % len(h)]) for i in range(len(h))]
 
 
 def seg_key(a, b):
@@ -195,14 +233,19 @@ def block_bays(path, skin_pn, frame_pns, h=2.0, extra=None):
     sk = [f for i in skin for f in planar_faces(sf, i)]
     fr = [f for i in frame for f in planar_faces(sf, i)]
     cen = np.mean([f.pts.mean(0) for f in fr], axis=0)
-    inner = []
+    inner, narrow = [], {}
     for f in sk:
         e_u, e_v = frame2d(f.n)
         uv = np.array([[np.dot(p - f.o, e_u), np.dot(p - f.o, e_v)] for p in f.pts])
         w, hh = uv.max(0) - uv.min(0)
         if w * hh < 3000.0 or min(w, hh) < 8.0:
+            # too small for a bay; but if it is a skin wall (its outer face SKIN_T away, facing out), not a cut
+            # edge's thickness, a fold into it is an edge (DL's 7 mm front face between its two folds)
+            if np.dot(cen - f.o, f.n) > 0 and any(np.dot(g.n, f.n) < -0.9999 and abs(np.dot(f.o - g.o, g.n) + SKIN_T) < 0.05
+                                                  for g in sk):
+                narrow[id(f)] = f
             continue
-        cont = [m for m in fr if np.dot(m.n, f.n) < -0.9999 and abs(np.dot(m.o - f.o, f.n)) < 0.05]
+        cont = [m for m in fr if np.dot(m.n, f.n) < -0.9999 and abs(np.dot(m.o - f.o, f.n) - BOND_T) < 0.05]
         if cont or np.dot(cen - f.o, f.n) > 0:
             inner.append((f, cont))
     ids = {id(f): k for k, (f, _c) in enumerate(inner)}
@@ -261,14 +304,19 @@ def block_bays(path, skin_pn, frame_pns, h=2.0, extra=None):
                 pa, pb = P2(a, t), P2(b, t)
                 nb = [ids.get(id(o)) for o in segf[seg_key(a, b)] if o is not f]
                 nb = [j for j in nb if j is not None]
+                nw = [o for o in segf[seg_key(a, b)] if id(o) in narrow]
                 if nb:
                     ang = folds.get((i, nb[0]), (0.0,))[0]
                     if not (nb[0] in members and ang < FOLD_MIN):
                         fold_l.append((pa, pb, ang))
+                elif nw and math.degrees(math.acos(max(-1.0, min(1.0, float(np.dot(f.n, nw[0].n)))))) >= FOLD_MIN:
+                    fold_l.append((pa, pb, math.degrees(math.acos(max(-1.0, min(1.0, float(np.dot(f.n, nw[0].n))))))))
                 else:
                     free_l.append((pa, pb))
                 segs.append((i, pa, pb))
-            conts += [[(P2(a, t), P2(b, t)) for a, b in m.segs] for m in cont]
+            # each tube face by its outline (a tube's end cut along a facet is a C of 1.5 mm walls round the open
+            # tube; the bead runs across it as along the ring)
+            conts += [_hull_segs([P2(p, t) for p in m.pts]) for m in cont]
         us = [p[0] for _i, a, b in segs for p in (a, b)]
         vs = [p[1] for _i, a, b in segs for p in (a, b)]
         u0, v0 = min(us) - 4, min(vs) - 4
@@ -277,10 +325,20 @@ def block_bays(path, skin_pn, frame_pns, h=2.0, extra=None):
         for i in members:
             face |= fill([(a, b) for k, a, b in segs if k == i], u0, v0, nu, nv, h)
         con, slant = np.zeros_like(face), np.zeros_like(face)
+        U = u0 + (np.arange(nu) + 0.5) * h
+        V = v0 + (np.arange(nv) + 0.5) * h
         for poly in conts:
             mp = fill(poly, u0, v0, nu, nv, h)
-            con |= mp
             longest = max(poly, key=lambda s: math.hypot(s[1][0] - s[0][0], s[1][1] - s[0][1]))
+            # the bead: BEAD_W across the tube's face, centred, along its whole length
+            (pu, pv), (qu, qv) = longest
+            ln = math.hypot(qu - pu, qv - pv)
+            au, av = -(qv - pv) / ln, (qu - pu) / ln
+            w = [p[0] * au + p[1] * av for s in poly for p in s]
+            along = [p[0] * av - p[1] * au for s in poly for p in s]
+            if max(along) - min(along) >= 2 * (max(w) - min(w)):
+                mp &= np.abs(U[None, :] * au + V[:, None] * av - (min(w) + max(w)) / 2) <= BEAD_W / 2
+            con |= mp
             if not _aligned(*longest):
                 slant |= mp
         key = tuple(np.round(f0.n, 3))
@@ -463,10 +521,11 @@ def write_md(rows, fold, st, opts, h):
           "against the code), so DR's bays stand. The limit (PM ruling 2026-11-01, D-131): **2 mm or less under a "
           "100 N push at a bay's centre, edges simply supported**. The skin: 3 mm ACP with 0.21 mm aluminium skins, "
           "D = %.0f N·mm, as WALL's check. The tubes are taken as rigid, as WALL's check takes them. Grid %.0f mm." % (SP.D_ACP, h), "",
-          "A bay is a part of a skin face that no tube touches. Its edges: a tube's bonded strip (simply supported; "
+          "A bay is a part of a skin face that no bead holds. Its edges: a tube's bonded strip, the bond spec's bead "
+          "%.0f mm wide centred on the tube's face, %.0f mm off the skin (D-137) (simply supported; "
           "the second figure takes the bond as holding the edge flat, clamped), a fold to the next face (an edge when "
           "the faces turn %.0f° or more; see the fold check), or a cut edge (free: pockets, slots, open joints). The "
-          "load goes at the bay's centroid and at its deepest point, the larger counting." % FOLD_MIN, ""]
+          "load goes at the bay's centroid and at its deepest point, the larger counting." % (BEAD_W, BOND_T, FOLD_MIN), ""]
     def verdict(b):
         ss, bond = b["ss"], b["bond"]
         if ss is not None and ss <= LIMIT:

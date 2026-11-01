@@ -17,6 +17,7 @@ The aluminium frame, which takes the door's moment (ISS-045), is stage 2.
 
 import importlib.util
 import json
+import math
 import os
 
 import adsk.core
@@ -79,6 +80,10 @@ ZB = "wall_z0"
 
 OWN = [
     ("dl_skin_t", "3 mm", "mm", "source", "ACP 3 mm, EV3038 Dark Yellow (D-12; hardware selection A1)"),
+    ("dl_fo", "dl_skin_t + bond_t", "mm", "calculation",
+     "a frame tube's face from the skin's outer face: the 3 mm ACP and the 3 mm bond line (skeleton bond_t; the bond "
+     "spec's joint, at least 12 wide x 3 thick, D-137), so every tube that bonds to the skin stands 3 mm off it "
+     "(PM ruling 2026-11-01)"),
     ("dl_back_t", "2 mm", "mm", "source",
      "joints register J-FRONT-01: the back plate is aluminium 1.0 to 2.7 thick at each bolt, for the rivnuts (HOLD-10)"),
     ("door_top_cut", "2 mm", "mm", "decided", "PM ruling 2026-10-31: the leaf 2 mm short of the skeleton top (catch gap)"),
@@ -122,12 +127,14 @@ OWN = [
      "front facet length in plan"),
     ("fr_z2", "(hinge_z1 + hinge_z2) / 2 - fr_w / 2", "mm", "calculation", "ring between hinges 1 and 2"),
     ("fr_z3", "(hinge_z2 + hinge_z3) / 2 - fr_w / 2", "mm", "calculation", "ring between hinges 2 and 3"),
-    ("fr_z4", "dt_zb + dl_m * dl_skin_t - dl_skin_t * dl_k - fr_w", "mm", "calculation",
-     "top ring, just under the slope at DL's door-side face"),
+    ("fr_z4", "dt_zb + dl_m * dl_fo - dl_skin_t * dl_k - fr_w", "mm", "calculation",
+     "top ring, its top a skin thickness under the slope (DT's skin rests on DL's skins there, D-152) at the door-side "
+     "tube's outer face, which stands the bond line off the door-side skin"),
     # J-FRONT-02 (PM ruling 2026-11-01): DL stands on 2 spigots on the band, a round hole and a slot, 100 in from the
-    # ends of its bottom edge, measured on the bottom ring tube's centre line (13 in from the outer faces: a hole on
-    # the band's own centre line, 20 in, would break the 20 mm tube's inner wall)
-    ("sp_c", "dl_skin_t + fr_w / 2", "mm", "calculation", "the bottom ring tube's centre line, in from the outer faces"),
+    # ends of its bottom edge, measured on the bottom ring tube's centre line (16 in from the outer faces since the 3 mm
+    # bond line, 13 before; BASE reads these values for its spigots: a hole on the band's own centre line, 20 in,
+    # would break the 20 mm tube's inner wall)
+    ("sp_c", "dl_fo + fr_w / 2", "mm", "calculation", "the bottom ring tube's centre line, in from the outer faces"),
     ("sp_e", "100 mm", "mm", "source", "R-J13: spigots 100 in from the ends of the edge a part is set down on"),
     ("sp_hole", "8.5 mm", "mm", "source", "R-J13: spigot hole 8.5 round at one end, 8.5 x 14 slot at the other"),
     ("sp_slot", "14 mm", "mm", "source", "R-J13: the slot 14 long along the edge"),
@@ -144,13 +151,13 @@ OWN = [
     ("sp_side", "(-pod_d / 2 + decor_d) - (-dl_y1 + sp_d1y * sp_tk + sp_c * sp_n1y)", "mm", "calculation",
      "the bottom edge's run along the side, from the back to the knee"),
     ("sp_ta", "sp_tk + sp_e - sp_side", "mm", "calculation", "the round hole, along the outer facet from its corner"),
-    ("sp_ax", "-pod_w / 2 + sp_d1x * sp_ta + sp_c * sp_n1x", "mm", "calculation", "the round hole, X (-1176.7)"),
-    ("sp_ay", "-dl_y1 + sp_d1y * sp_ta + sp_c * sp_n1y", "mm", "calculation", "the round hole, Y (-718.0)"),
+    ("sp_ax", "-pod_w / 2 + sp_d1x * sp_ta + sp_c * sp_n1x", "mm", "calculation", "the round hole, X (-1172.7)"),
+    ("sp_ay", "-dl_y1 + sp_d1y * sp_ta + sp_c * sp_n1y", "mm", "calculation", "the round hole, Y (-717.5)"),
     ("sp_te", "(dl_w - sp_c - dl_x2 - sp_c * sp_n2x) / sp_d2x", "mm", "calculation",
      "the front facet's end at the door side, on the ring's centre line"),
     ("sp_bx", "-pod_w / 2 + dl_x2 + sp_d2x * (sp_te - sp_e) + sp_c * sp_n2x", "mm", "calculation",
-     "the slot's centre, X (-1073.9)"),
-    ("sp_by", "-dl_y2 + sp_d2y * (sp_te - sp_e) + sp_c * sp_n2y", "mm", "calculation", "the slot's centre, Y (-780.6)"),
+     "the slot's centre, X (-1076.9)"),
+    ("sp_by", "-dl_y2 + sp_d2y * (sp_te - sp_e) + sp_c * sp_n2y", "mm", "calculation", "the slot's centre, Y (-775.7)"),
 ]
 
 PARTS = {
@@ -163,6 +170,39 @@ PARTS = {
 EXPECTED = []
 FRAME_PN = "351104"
 S20, S60 = "20 x 20 x 1.5", "60 x 20 x 1.5"
+
+
+def front_facet():
+    """The front facet's outer face in plan, (a, b, c) with its unit normal into the block."""
+    return FL.line("(dl_y3 - dl_y2) / dl_l2", "(dl_x3 - dl_x2) / dl_l2",
+                   "(dl_y3 - dl_y2) / dl_l2 * (%s + dl_x2) + (dl_x3 - dl_x2) / dl_l2 * (-dl_y2)" % XL)
+
+
+BEAD_W = 12.0      # mm: the bond spec's joint width, on both faces (D-137, section 8: at least 12 wide x 3 thick)
+
+
+def post_bead(evf):
+    """The bond bead in the corner between the door-side front post's front face and the front facet (PM ruling
+    2026-11-01): from the post's inner front corner D, on the facet's bond face, along the front face toward the
+    door side for the bond spec's 12 mm, the bead fills the wedge to the facet skin. Returns a dict: the facet's
+    angle to the front face, the joint's thickness square to the skin at D and at 12 mm, its contact on the tube
+    and on the skin, and its section (mm2, = ml per metre); raises if it is under the bond spec's 12 wide x 3
+    thick on either face (D-137). evf: an expression's value in mm."""
+    p1 = [m for m in frame_members() if m["key"] == "P1"][0]["pts"]
+    (xa, ya), (xd, yd) = [(evf(u), evf(v)) for u, v in p1[:2]]
+    a, b, c = (evf(e) for e in front_facet())
+    skin, bond = evf("dl_skin_t"), evf("bond_t")
+    face = math.hypot(xa - xd, ya - yd)
+    ux, uy = (xa - xd) / face, (ya - yd) / face           # along the front face, D toward the door side
+    sin_t = abs(a * ux + b * uy)                            # the facet's angle to the front face
+    cos_t = math.sqrt(max(0.0, 1.0 - sin_t * sin_t))
+    t0 = a * xd + b * yd - c - skin                         # square to the skin, at D
+    t12 = t0 + BEAD_W * sin_t
+    out = {"angle": math.degrees(math.asin(sin_t)), "t0": t0, "t12": t12, "tube": BEAD_W, "skin": BEAD_W / cos_t,
+           "face": face, "section": BEAD_W * (t0 + t12) / 2.0 / cos_t}
+    if face < BEAD_W - 0.01 or out["skin"] < BEAD_W - 0.01 or t0 < bond - 0.01:
+        raise RuntimeError("the post's corner bead is under the bond spec's %.0f x %.0f: %s" % (BEAD_W, bond, out))
+    return out
 
 
 def frame_members():
@@ -179,8 +219,10 @@ def frame_members():
     bot, door = FL.line(0, 1, ZB), FL.line(-1, 0, "-(%s + dl_w)" % XL)
     slope = FL.line("-dl_m / dl_k", "-1 / dl_k", "-(dt_zb + dl_m * (%s + dl_w)) / dl_k" % XL)
     left = FL.line(1, 0, XL)
-    back = FL.ring([(bot, "0 mm", "fr_w"), (door, "dl_skin_t", "fr_w"), (slope, "dl_skin_t", "fr_w"),
-                    (left, "dl_skin_t", "fr_wb")])
+    # the tubes on a skin stand the bond line off it (dl_fo); the bottom is open, and the slope under DT has no DL skin
+    # (DT's skin rests on DL's skins' edges there, D-152), so its tube stays a skin thickness under the slope
+    back = FL.ring([(bot, "0 mm", "fr_w"), (door, "dl_fo", "fr_w"), (slope, "dl_skin_t", "fr_w"),
+                    (left, "dl_fo", "fr_wb")])
     for k, (key, nm, sec) in enumerate((("B01", "BACK RING BOTTOM", S20), ("B02", "BACK RING DOOR SIDE", S20),
                                         ("B03", "BACK RING SLOPE UNDER DT", S20), ("B04", "BACK RING BOLT LINE", S60))):
         add(key, nm, ("x", "z"), back[k], "y", yb0, yb1, sec)
@@ -189,21 +231,22 @@ def frame_members():
     p_back = FL.line(0, -1, "dl_y1")
     f1 = FL.line("(dl_y2 - dl_y1) / dl_l1", "dl_x2 / dl_l1",
                  "(dl_y2 - dl_y1) / dl_l1 * (%s) + dl_x2 / dl_l1 * (-dl_y1)" % XL)
-    f2 = FL.line("(dl_y3 - dl_y2) / dl_l2", "(dl_x3 - dl_x2) / dl_l2",
-                 "(dl_y3 - dl_y2) / dl_l2 * (%s + dl_x2) + (dl_x3 - dl_x2) / dl_l2 * (-dl_y2)" % XL)
+    f2 = front_facet()
     p_front = FL.line(0, 1, "-dl_y3")
-    # the 7 mm front face is too short for a tube: the door-side tube's front end follows the front skin and the
-    # front facet, and the front facet tube stops on the door-side tube's inner face
+    # the 7 mm front face gets no tube: at the tubes' depth (skin and bond line, dl_fo) it has no width left (the facet's
+    # and the door side's bond faces cross 0.45 in front of it), so the door-side tube's front end follows the front
+    # facet's bond face alone, and the front facet tube stops on the door-side tube's inner face
     P = FL.push
-    d3, d23 = P(p_door, "dl_skin_t"), P(p_door, "dl_skin_t + fr_w")
+    d3, d23 = P(p_door, "dl_fo"), P(p_door, "dl_fo + fr_w")
     k0, k20 = p_back, P(p_back, "fr_w")
-    o3, o23 = P(f1, "dl_skin_t"), P(f1, "dl_skin_t + fr_w")
-    q3, q23 = P(f2, "dl_skin_t"), P(f2, "dl_skin_t + fr_w")
-    fr3, fr23 = P(p_front, "dl_skin_t"), P(p_front, "dl_skin_t + fr_w")
+    o3, o23 = P(f1, "dl_fo"), P(f1, "dl_fo + fr_w")
+    q3, q23 = P(f2, "dl_fo"), P(f2, "dl_fo + fr_w")
+    fr3, fr23 = P(p_front, "dl_fo"), P(p_front, "dl_fo + fr_w")
     E, A, B, C = FL.meet(fr3, q3), FL.meet(fr3, d3), FL.meet(d3, k0), FL.meet(d23, k20)
     D, D2 = FL.meet(q3, d23), FL.meet(q23, d23)
     G, G2, K, K2 = FL.meet(k0, o3), FL.meet(k20, o23), FL.meet(o3, q3), FL.meet(o23, q23)
-    ring_parts = (("D", "DOOR SIDE", [E, A, B, C, D], (1, 2)), ("K", "BACK", [B, G, G2, C], (0, 1)),
+    Q = FL.meet(d3, q3)
+    ring_parts = (("D", "DOOR SIDE", [Q, B, C, D], (0, 1)), ("K", "BACK", [B, G, G2, C], (0, 1)),
                   ("O", "OUTER FACET", [G, K, K2, G2], (0, 1)), ("F", "FRONT FACET", [K, D, D2, K2], (0, 1)))
     levels = [("1", "BOTTOM", ZB), ("2", "BETWEEN HINGES 1 AND 2", "fr_z2"),
               ("3", "BETWEEN HINGES 2 AND 3", "fr_z3"), ("4", "TOP", "fr_z4")]
@@ -214,8 +257,13 @@ def frame_members():
     xh1 = "(hinge_x0 - hinge_clear)"
     hp = [("%s - fr_w" % xh1, "%s - fr_wh / 2" % GY), (xh1, "%s - fr_wh / 2" % GY), (xh1, "%s + fr_wh / 2" % GY),
           ("%s - fr_w" % xh1, "%s + fr_wh / 2" % GY)]
-    fp = [E, A, FL.meet(fr23, d3), FL.meet(fr23, d23), D]
-    spans = [("%s + dl_skin_t + fr_w" % ZB, "fr_z2"), ("fr_z2 + fr_w", "fr_z3"), ("fr_z3 + fr_w", "fr_z4")]
+    # the door-side front post: a plain 20 x 20 tube on the door-side skin's bond line, set back so its inner front
+    # corner D is on the front facet's bond face; the bead fills the corner between its front face and the facet
+    # (PM ruling 2026-11-01: standard tube, the look kept; it was a five-sided section filling the corner)
+    fs, fs20 = FL.line(0, 1, D[1]), FL.line(0, 1, "%s + fr_w" % D[1])
+    fp = [FL.meet(fs, d3), D, FL.meet(fs20, d23), FL.meet(fs20, d3)]
+    # the posts stand on the bottom ring and between the rings (they started a skin thickness above the bottom ring)
+    spans = [("%s + fr_w" % ZB, "fr_z2"), ("fr_z2 + fr_w", "fr_z3"), ("fr_z3 + fr_w", "fr_z4")]
     for i, (z0, z1) in enumerate(spans):
         add("H%d" % (i + 1), "HINGE POST %d (HINGE H%d)" % (i + 1, i + 1), ("x", "y"), hp, "z", z0, z1, S60,
             ends="square both ends, between the rings")
@@ -358,6 +406,10 @@ def build(app):
     members = frame_members()
     mparts = FL.member_parts(ARGS["repo_root"], FRAME_PN, MP.DL_MEMBERS)
     print("COPIES|%s" % FL.check_copies(members, mparts, lambda e: L.ev(design, e)))
+    bd = post_bead(lambda e: L.ev(design, e))
+    print("BEAD|the door-side posts' corner: facet %.1f deg to the front face; joint %.2f thick square to the skin at the "
+          "post's corner, %.2f at 12 mm; on %.1f of the tube and %.1f of the skin; %.1f mm2 (ml per metre)" % (
+              bd["angle"], bd["t0"], bd["t12"], bd["tube"], bd["skin"], bd["section"]))
     native, mcomps, moccs = FL.build_member_components(design, c, L, members, "fr_t", mparts, REV)
     frame_occ = root.allOccurrencesByComponent(c).item(0)
     tubes = FL.root_bodies(frame_occ, native, moccs)
@@ -440,15 +492,17 @@ ANCHORS = [
     ("BACK", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("PS1", 0, "door_xl - pod_w / 2"), ("PS4", 5, "dt_zb - ps_s"),
     ("ST1", 3, "dl_w + stop_reach - pod_w / 2"),
     # the frame's sides, each on a single tube that reaches it (every tube its own component, D-120)
-    ("B04", 0, "-pod_w / 2 + dl_skin_t"), ("B02", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("B01", 2, "wall_z0"),
-    ("B03", 4, "-pod_d / 2 + decor_d - dl_back_t"), ("P1", 1, "-dl_y3 + dl_skin_t"),
+    ("B04", 0, "-pod_w / 2 + dl_fo"), ("B02", 3, "dl_w - pod_w / 2 - dl_fo"), ("B01", 2, "wall_z0"),
+    ("B03", 4, "-pod_d / 2 + decor_d - dl_back_t"), ("P1", 3, "dl_w - pod_w / 2 - dl_fo"),
+    # the door-side front post's front face, on the front facet's bond face (its corner D)
+    ("P1", 1, [m for m in frame_members() if m["key"] == "P1"][0]["pts"][1][1]),
 ]
 
 # what each tube's row says about its holes and fixings (the cuts in build(); none on the copies)
 MEMBER_NOTES = {
     "B04": "60 x 20; 6 holes 14 in its back wall round the J-FRONT-01 rivnut tails and bolt tips (X -1224)",
-    "R1O": "J-FRONT-02: spigot hole 8.5 in its bottom wall (X -1176.7, Y -718.0), over the band",
-    "R1F": "J-FRONT-02: spigot slot 8.5 x 14 along the front facet in its bottom wall (X -1073.9, Y -780.6)",
+    "R1O": "J-FRONT-02: spigot hole 8.5 in its bottom wall (X -1172.7, Y -717.5), over the band",
+    "R1F": "J-FRONT-02: spigot slot 8.5 x 14 along the front facet in its bottom wall (X -1076.9, Y -775.7)",
     "H1": "60 x 20 behind hinge H1's pocket; hinge fixing holes when the hinge is named (HOLD H01)",
     "H2": "60 x 20 behind hinge H2's pocket; hinge fixing holes when the hinge is named (HOLD H01)",
     "H3": "60 x 20 behind hinge H3's pocket; hinge fixing holes when the hinge is named (HOLD H01)",
@@ -516,7 +570,9 @@ def export_all(app):
          "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 3.5 kg/m2: selection VT01)", "DRAFT",
          "D-12, D-49; skeleton DL shape", "three hinge pockets (HOLD sizes); open at the bottom, where the frame's bottom "
          "ring stands on the band and takes its spigots (J-FRONT-02); one flat panel per outside face: " +
-         DXF_SKIN_REL.split("/")[-1] + "; bond to the frame per the joints register's ACP bond spec"),
+         DXF_SKIN_REL.split("/")[-1] + "; bond to the frame per the joints register's ACP bond spec (D-137): one 12 x 3 "
+         "joint on every tube, the tubes 3 mm off the skin; in the corner between the door-side front posts and the "
+         "front facet the bead fills a wedge 3 to 8.5 thick, about 78 ml per metre, twice the standard bead"),
         (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "weldment assembly: welded frame, %d tubes as %d parts (parts list %s; cut list %s), "
          "TIG-welded" % (len(members), len(member_rows), WELD_BOM_REL.split("/")[-1], CUT_REL.split("/")[-1]),
          "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5, finish: mill finish (hidden, D-79)", None, "",
