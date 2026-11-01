@@ -2004,7 +2004,8 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
         src += "; feature rationale %s" % ", ".join(regs)
     if spec.get("key_notes") and inputs.key_rows(part.pn):
         src += "; key positions %s" % inputs.rel(inputs.KEYS_CSV)
-    src += ". Made by tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF."
+    # the Lead's ruling (2026-11-01): a note names the source, never an agent, a role or a script as the maker
+    src += ". From that STEP: regenerate it, never edit the PDF."
     notes.append(src)
     return notes
 
