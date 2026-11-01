@@ -66,7 +66,7 @@ def main(argv=None):
     doc = fitz.open(o.src)
     removed = filled = labelled = 0
     for page in doc:
-        if not page.search_for(o.label):
+        if not ptb.label_hits(page, o.label):
             continue
         labelled += 1
         _lab, words = field_words(page, o.label)
@@ -83,7 +83,7 @@ def main(argv=None):
     left = wrong = 0
     missing = []
     for i, page in enumerate(chk):
-        if page.search_for(o.label):
+        if ptb.label_hits(page, o.label):
             got = [w[4] for w in field_words(page, o.label)[1]]
             left += len([w for w in got if w not in stamp])
             wrong += got != stamp

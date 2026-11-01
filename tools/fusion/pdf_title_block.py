@@ -148,10 +148,17 @@ def redact_word(page, w):
     page.add_redact_annot(fitz.Rect(w[0], mid - 1.0, w[2], mid + 1.0), fill=False)
 
 
+def label_hits(page, label):
+    """The places of `label` written exactly so, case included: PyMuPDF's search ignores case, and drawgen's
+    own block says "CREATED BY", which must never be taken for Fusion's "Created by"."""
+    return [r for r in page.search_for(label)
+            if page.get_textbox(r).split("\n")[0].strip() == label]   # its own line; the value under it can touch
+
+
 def created_by(page, label=CREATED_BY):
     """(label box, value words, date word or None) on the Created by value line, or None when the page has no
     such label. Value words are the line's words left of the date (or within 200 pt of the label)."""
-    hits = page.search_for(label)
+    hits = label_hits(page, label)
     if not hits:
         return None
     lab = hits[0]

@@ -119,6 +119,22 @@ class ClearField(unittest.TestCase):
         self.assertIn("drawgen", fitz.open(dst)[0].get_text())     # its own sheet is left as it is
         self.assertEqual(run(src, dst)[0], 1)                      # the finish step needs the label
 
+    def test_another_blocks_upper_case_label_is_left_alone(self):
+        # drawgen's own block says "CREATED BY" (and PyMuPDF's search ignores case): never taken for Fusion's
+        src, dst, _ = self.files()
+        doc = fitz.open()
+        page = doc.new_page(width=1190, height=842)
+        page.insert_text((100, 100), "CREATED BY", fontsize=7)
+        page.insert_text((100, 112), "Autonomous", fontsize=9)
+        page.insert_text((220, 112), "not released", fontsize=9)
+        doc.save(src)
+        rc, out = run(src, dst, "--restamp")
+        self.assertEqual(rc, 0, out)
+        self.assertIn("on 0 page(s)", out)                           # no Fusion label found
+        text = fitz.open(dst)[0].get_text()
+        self.assertEqual(text.count("Autonomous"), 1)
+        self.assertIn("not released", text)
+
     def test_date_pattern(self):
         for ok in ("1/11/26", "31/10/26", "5/3/2027", "01/01/26"):
             self.assertTrue(pcf.DATE.fullmatch(ok), ok)
