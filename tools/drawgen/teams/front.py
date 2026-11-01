@@ -15,31 +15,30 @@ DECOR_TUBE = {
         "sheet shows them on the tube for reference. Rivnuts 838003 are set after that.",
     ],
     "tolerance": "cut length +0/-0.5 and end angles ±0.25° (assumption, as the BASE and WALL cut lists); hole "
-                 "positions to the frame's weldment drawing (R-J6: Ø0.4 to its datums); rivnut holes Ø9.53 +0.10/0 "
-                 "(maker); other hole sizes +0.2/0 (assumption). Not ISO 2768 on the tube.",
+                 "positions to the frame's weldment drawing (R-J6: Ø0.4 to its datums); rivnut holes Ø10.00 +0.10/0 "
+                 "(D-163); other hole sizes +0.2/0 (assumption). Not ISO 2768 on the tube.",
 }
 
-# DT's 11 tube parts (#232); 352204's sheet waits for the generator: its 75.39 deg angle arc runs into the border
-_DT = ["352201", "352202", "352203", "352204", "352205", "352206", "352207", "352208", "352209", "352210", "352211"]
+# D-162 (the Lead's ruling, 2026-11-01): a welded frame's member is drawn by its row in the frame's cut list, on the
+# frame's weldment sheet (section, length, both end angles and how they lean); a member keeps a sheet of its own only
+# for an end the row can't state. Four FRONT members have two cuts at one end (the Mechanical Checker's C05 end rule,
+# #357, on #313's STEPs): DT's catch and stop rail 352207 and DR's facet and chamfer tubes 352317, 352318, 352319.
+TWO_CUT = ["352207", "352317", "352318", "352319"]
+PARTS = {pn: DECOR_TUBE for pn in TWO_CUT}
+# 352207's default view looked at its mitred end face-on (Reviewer 7 on #320): a principal view along the cut's plane
+# its second cut is too small at 1:5 for a dimension (#313's DT model: the end edges 27.37 at 50.9 deg and 2.74 square)
+PARTS["352207"] = dict(DECOR_TUBE, principal={"look": "-Z", "x": "+X"}, notes=DECOR_TUBE["notes"] + [
+    "Two cuts at its right end (D-162: why it keeps this sheet): along DR's joint line at 50.9° from square, and its "
+    "back corner (the top edge in the principal view) cut square for the last 2.74 across the tube, at DT's right "
+    "edge; the 1422.77 runs to that square cut (DT's model, #313)."])
 
-# DR's 21 tube parts (#232, #287: F09 is 352322); 352321 (C10) cancelled: a 5.5 x 15 mm wedge of tube, so C09 runs
-# on to the back ring (PM ruling 2026-11-01, #313)
+# DT's 11, DR's 21 (352321 cancelled) and DL's 16 tube parts (#232, #287)
+_DT = ["3522%02d" % n for n in range(1, 12)]
 _DR = ["3523%02d" % n for n in range(1, 23) if n != 21]
-
-# DL's 16 tube parts (#232); the door-side posts 352112, 352114 and 352116 are plain 20 x 20 tubes since the PM's
-# ruling of 2026-11-01 (set back to the front facet's bond face, the bead filling the corner; #313)
 _DL = ["3521%02d" % n for n in range(1, 17)]
-
-PARTS = {pn: DECOR_TUBE for pn in _DT + _DR + _DL}
-
-# Tubes whose default view looked at a mitred end face-on, so no end-cut angle printed (Reviewer 7 on #320): a
-# principal view along the plane of the cut instead (the front view looking +Y, or the view from above looking down),
-# with the tube's length across the sheet; each found by trying the views square to its axis and keeping the one that
-# prints its end angles
-_VIEWS = {"352202": ("+Y", "+Z"), "352207": ("-Z", "+X"), "352209": ("-Z", "+Y"), "352210": ("-Z", "+Y"),
-          "352105": ("-Z", "+Y"), "352106": ("-Z", "+X"), "352302": ("+Y", "+Z"), "352310": ("+Y", "+Z")}
-for _pn, (_look, _x) in _VIEWS.items():
-    PARTS[_pn] = dict(DECOR_TUBE, principal={"look": _look, "x": _x})
+NO_DRAWING = {pn: "D-162: a welded frame member with one plane cut at each end; its row in its frame's cut list, on "
+                  "the frame's weldment sheet, is its drawing (section, length, both end angles and the lean)"
+              for pn in _DT + _DR + _DL if pn not in TWO_CUT}
 
 # the door stops: aluminium angle cut to length (DL's hinge-side stop in 3 numbers, D-120 and D-123; DT's top stop).
 # Refused today as open sections ("folded sheet"); they draw once the generator reads bought profiles (the Lead,
@@ -54,4 +53,3 @@ DOOR_STOP = {
 for _pn in ("351105", "351106", "351107", "351203"):
     PARTS[_pn] = DOOR_STOP
 
-NO_DRAWING = {}
