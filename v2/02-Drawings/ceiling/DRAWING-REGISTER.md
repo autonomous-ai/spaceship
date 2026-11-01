@@ -11,7 +11,8 @@ Fusion cloud files live in Default Project / FocusPod v2.
 | `513102_P01_LINING-RIB-CEILING_DWG` | 513102 rib | the generator's bent sheet mode | Fusion's sheet is out of this PR (D-147: Reviewer 5's Hold stood). The generator draws it in #348, which carries the rib's DXF fix (the blank was 1 mm short) and its real folds; it reads back PASS on a scratch run. It waits for the generator's count check to take a part placed in two cassettes. |
 | `513101_P01_LINING-TRAY-CEILING_DWG` | 513101 tray | the generator's bent sheet mode | Waits for the generator to take a second fold on a flange: each return turns in again as the 12 mm lip (8 folds), in the Drawing Generator Engineer's queue. |
 | `510301_P01_LINING-CASSETTE-CEILING-COMMON_DWG` | 510301 cassette | the generator's assembly mode | A sub-assembly sheet needs its parts table with balloons, fixings and order (guideline 5.2), which Fusion's API can't draw (the Lead's ruling on Reviewer 5's D-114 pass); the cassette's entry facts went to the Air Engineer. |
-| `410101`, `412102` to `412104`, `412203`, `412204` | the C1 panel assembly and the frames' members | the generator (assembly and part modes) | In #348, on its build v10 STEP: read-back PASS. The other members and the two frames' weldment sheets wait for generator hooks (shared parts, frames without a body of their own: D-162, the Air Engineer's). |
+| `410101` | the C1 panel assembly | the generator's assembly mode | In #348, on its build v10 STEP: read-back PASS. |
+| `411101`, `411102` | the two frames, welded (D-131), with their cut lists | the generator's weldment sheet | Each member's drawing is its row in its frame's cut list, and the holes made after welding go on the frame's sheet (D-162); no member has a sheet of its own, since none has a before-weld feature. These wait for the generator's weldment hooks. |
 
 ## Superseded cloud files
 
