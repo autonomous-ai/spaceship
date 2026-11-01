@@ -521,11 +521,13 @@ def cassette_rows(rep):
                         "; ELECTRICAL P01 (PR #64)" if tray_el else ""),
                     note="34 mm returns turned in as 12 mm lips that hold the felt; flat blank in the DXF" + tray_el))
     rows.append(row(level=1, part_number=felt["part_number"], name=en_name(felt), name_vi=vi_name(felt["description"], felt["part_number"]),
-                    kind="MP", material="PET felt 9 mm Dark Gray, the factory's felt (D-31; plan VT03-PET)",
-                    process=("knife or CNC knife cut with ELECTRICAL's openings, as its DXF (a flat part with its DXF "
-                             "needs no drawing, D-89 part 4)" if felt_el else
+                    kind="MP", material="PET felt 9 mm Dark Gray, grade about 200 kg/m3 (1.8 kg/m2 at 9 mm, Polyx "
+                                        "Board 9 data); the factory's felt (D-31; plan VT03-PET)",
+                    process=("knife or CNC knife cut from its DXF, the full outline with every opening (ELECTRICAL's); "
+                             "no drawing (D-128)" if felt_el else
                              "knife or die cut, a plain rectangle; no drawing (D-89)"), qty=1, unit="pc",
-                    size_mm=size_of(fb["box"]), tolerance="±1 on length and width (assumption: die or knife cut)",
+                    size_mm=size_of(fb["box"]) + (" (outline and openings in the DXF)" if felt_el else ""),
+                    tolerance="±1 on length, width and the openings' positions (assumption: knife cut)",
                     mass_each_kg=fb["mass_kg"], mass_total_kg=fb["mass_kg"],
                     mass_status="calculation: CAD at 1.8 kg/m2 (Polyx Board 9 data, HW-SEL A3); the factory felt unverified",
                     status="DRAFT", source="CAD" + ("; openings ELECTRICAL P01 (PR #64)" if felt_el else ""),

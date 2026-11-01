@@ -45,7 +45,8 @@ def rows():
                                      (range(1, 5), "5114", "back felt", "511402 (B2) and 511404 (B4)")):
         out.append(("(no drawing, D-89)", ["%s%02d" % (fam, i) for i in code_list],
                     "%s: knife-cut pieces; size, material, tolerance and part number in the parts list; %s carry "
-                    "ELECTRICAL's openings and are cut from their DXFs (a flat part with its DXF, D-89 part 4)" % (what, el)))
+                    "ELECTRICAL's openings and are cut from their DXFs, outline and every opening, with material, grade, thickness, "
+                    "tolerance and part number in their rows: no drawing (D-128)" % (what, el)))
     return out
 
 
