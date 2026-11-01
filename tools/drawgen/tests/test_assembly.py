@@ -23,10 +23,12 @@
 9. A sub-assembly's number owns every solid under it in the STEP (the read-back's rule, as drawing's).
 10. A balloon's point must be in sight: an arrow ends on an outline drawn in its view, a dot's point is the first
     surface on its sight line (the read-back fails one on the felt under the tray).
+11. A curve drawn as a chain of cubic pieces (an ellipse) is read piece by piece, as drawn.
 """
 
 import csv
 import json
+import math
 import os
 import shutil
 import sys
@@ -514,6 +516,24 @@ def test_an_assembly_class_brings_its_own_kind_sources_and_extra():
     assert "EXTRA" in fitz.open(out)[0].get_text()
     fails, _st = assembly.check(out)
     assert fails and "not an assembly sheet" in fails[0], fails
+
+
+def test_a_curve_of_several_pieces_is_read_as_drawn():
+    """A curve the sheet draws as a chain of cubic pieces (project._bezier_pieces: an ellipse, a spline) is read the
+    same way: a balloon's point on it lies on the drawn pieces, and a point on them is 0 from it (BASE's 110104: the
+    stud head's ellipse in section D, read as one curve of degree 6, put balloon 6's arrow 0.1 mm off the line)."""
+    import project
+    k, a_, b_ = 0.5522847498, 6.0, 4.0           # a half ellipse, 6 by 4, as two cubic quarter pieces
+    chain = [(a_, 0.0), (a_, k * b_), (k * a_, b_), (0.0, b_), (-k * a_, b_), (-a_, k * b_), (-a_, 0.0)]
+    p = project.Prim("bezier", True, pts=chain)
+    drawn = [assembly.bez(chain[3 * j:3 * j + 4], i / 400.0) for j in range(2) for i in range(401)]
+    for t in (0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0):
+        pt, _d = assembly.prim_point(p, t)
+        off = min(math.dist(pt, q) for q in drawn)
+        assert off < 0.01, "t %.1f: %.3f mm off the drawn line" % (t, off)
+    assert assembly.prim_dist((0.0, b_), p) < 1e-6, assembly.prim_dist((0.0, b_), p)
+    one = project.Prim("bezier", True, pts=chain[:4])           # one piece reads as before
+    assert math.dist(assembly.prim_point(one, 0.5)[0], assembly.bez(chain[:4], 0.5)) < 1e-12
 
 
 def test_never_goes_over_a_fusion_drawing():
