@@ -329,7 +329,8 @@ def mitre_ends(key, prm, upper, back=False):
     if key not in meets:
         return "square ends (fits between the rails, welded T joints, D-131)"
     angles = ["%.2f" % math.degrees(math.atan(width[o] / width[key])) for o in meets[key]]
-    return "both ends mitred: %s and %s degrees off square (D-117), welded (D-131)" % tuple(angles)
+    return ("both ends mitred: %s and %s degrees off square (D-117), cut back for the 2 mm mitre plate and welded "
+            "(D-131)" % tuple(angles))
 
 
 def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, back, lower):
@@ -348,14 +349,16 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
         b = m["bodies"][0]
         key = re.sub(r"^WALL - FRAME | 40 X 40| - (SIDE|BACK) .*$", "", m["name"].split(" ", 1)[1]).strip()
         dims = sorted(round(b["box"][i + 3] - b["box"][i], 1) for i in range(3))
-        sec = "%s x %g" % ("40 x 40" if dims[0] >= 39.9 else "20 x 40", ts if key == "STILE MID" else t)
+        sec = "%s x %g" % ("40 x 40" if dims[0] >= 39.9 else "20 x 40",
+                           ts if key == "STILE MID" else (prm.get("corner_t", t) if dims[0] >= 39.9 else t))
         q = m.get("copies", 1)
         fm += b["mass_kg"] * q
         member_rows.append(row(level=2, part_number=m["part_number"], name=en_name(m),
                                name_vi=vi_name(m["description"], m["part_number"]), kind="MP",
-                               material="steel box tube %s (D-131; steel grade and the gauge per the Joints "
-                                        "Engineer's check, HOLD)" % sec,
-                               finish="galvanized with the welded frame (D-131; zinc coat per the Joints spec, HOLD)",
+                               material="steel box tube %s, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified "
+                                        "yield 280 MPa or more (D-131; the Joints Engineer's gauges and grade)" % sec,
+                               finish="pre-galvanized tube; the weld spots zinc-painted after welding, no hot-dip "
+                                      "(it warps thin frames; Joints, D-131)",
                                process="saw cut, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6); %s; welded "
                                        "into its frame (D-131)" % mitre_ends(key, prm, upper, back),
                                qty=q, unit="pc", cut_length_mm=member_length(b), size_mm=sec,
@@ -366,11 +369,12 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                                note="%s; cut length outer to outer" % mitre_ends(key, prm, upper, back)))
     rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame),
                     name_vi=vi_name(frame["description"], frame["part_number"]), kind="BS",
-                    material="the steel box tube members below, welded (D-131)",
-                    finish="galvanized (D-131; zinc coat, and whether before or after welding, per the Joints spec, "
-                           "HOLD); the skin's bond prep on zinc per the adhesive maker (HOLD)",
-                    process="weld in a jig: the 4 mitred corners and every stud's T joints (D-131; weld sizes per the "
-                            "Joints spec, HOLD); then drill if not drilled before, and set the rivnuts and stop washers",
+                    material="the steel box tube members below and the 4 mitre plates, welded (D-131)",
+                    finish="pre-galvanized tube; the weld spots zinc-painted after welding, no hot-dip (Joints, D-131); "
+                           "the skin's bond prep on zinc per the adhesive maker (HOLD)",
+                    process="weld in a jig: each mitred corner with its 2 mm mitre plate (the Joints Engineer's register "
+                            "part), and every stud's T joints (D-131; weld sizes and the coupons per the joints register); "
+                            "then set the rivnuts and stop washers",
                     qty=1, unit="pc",
                     size_mm=size_of(box_of([m["bodies"][0] for m in members])), tolerance="per its drawing",
                     mass_each_kg=round(fm, 3), mass_total_kg=round(fm, 3),
