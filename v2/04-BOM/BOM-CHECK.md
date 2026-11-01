@@ -228,7 +228,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 180 numbers, 90 not in a team's list yet, 67 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 184 numbers, 94 not in a team's list yet, 67 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -412,6 +412,10 @@ From `v2/04-BOM/number-allocation.csv`: 180 numbers, 90 not in a team's list yet
 | 618107 | AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD | 610201 | 2 | ALLOCATED |
 | 611216 | AIR - SOFFIT FILL - RIGHT | 610201 | 1 | ALLOCATED |
 | 611217 | AIR - SOFFIT FILL - OVER THE COLUMN | 610201 | 1 | ALLOCATED |
+| 212606 | WALL - FRAME STUD BELOW THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212607 | WALL - FRAME STUB ABOVE THE POWER UNIT - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212608 | WALL - FRAME CROSS MEMBER LOWER - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212609 | WALL - FRAME CROSS MEMBER UPPER - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
 
 ## Rules
 
