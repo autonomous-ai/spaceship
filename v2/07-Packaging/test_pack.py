@@ -161,9 +161,10 @@ def test_step_picture_script_and_data():
     assert all('"%s":' % v in script for v in views)
 
 
-def _run_step_pictures(args, fail_save=False):
-    """Run step_pictures.run() against a stand-in for Fusion's API, offline. Returns what the script did: each picture
-    saved with the bodies showing and whether the camera had just been fitted, the fits, how the design was closed."""
+def _run_step_pictures(args, fail_save=False, locked=False):
+    """Run step_pictures.run() against a stand-in for Fusion's API, offline, with the screen locked or not (never the real
+    screen's state). Returns what the script did: each picture saved with the bodies showing and whether the camera had
+    just been fitted, the fits, how the design was closed."""
     import json
     import os
     import types
@@ -239,6 +240,7 @@ def _run_step_pictures(args, fail_save=False):
         path = guide / "step_pictures.py"
         g = {"__name__": "step_pictures_offline", "__file__": str(path), "SCRIPT_ARGS": args}
         exec(compile(path.read_text(encoding="utf-8"), str(path), "exec"), g)
+        g["screen_locked"] = lambda: locked
         try:
             g["run"](None)
         except RuntimeError as e:
@@ -279,6 +281,9 @@ def test_step_pictures_sample_then_full_offline():
                      {"repo_root": str(repo)}):
             log, _ = _run_step_pictures(args)
             assert "error" in log and log["closed"] is None and not log["saved"], (args, log)
+        # a locked screen when the run starts: refused before the skeleton opens
+        log, _ = _run_step_pictures({"repo_root": str(repo), "steps": "2", "out_dir": str(out)}, locked=True)
+        assert "locked" in log.get("error", "") and log["closed"] is None and not log["saved"], log
         # a failed save still closes the design without saving
         log, _ = _run_step_pictures({"repo_root": str(repo), "steps": "2", "out_dir": str(out)}, fail_save=True)
         assert "error" in log and log["closed"] is False, log

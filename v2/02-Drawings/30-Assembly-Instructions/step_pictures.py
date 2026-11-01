@@ -26,6 +26,8 @@ skeleton's envelopes; pictures of the parts themselves replace these as each par
 
 import json
 import os
+import plistlib
+import subprocess
 
 import adsk.core
 import adsk.fusion
@@ -47,6 +49,16 @@ FADED = 0.35
 INSIDE_HIDE = ("C1 ENVELOPE", "C2 ENVELOPE", "DL FACETED", "DR FACETED", "DT FACETED", "DOOR GLASS", "FIXED GLASS",
                "KICK ENVELOPE")
 GRID_SUFFIX = "_GRID.png"
+
+
+def screen_locked():
+    """True while the Mac's screen is locked, from macOS's console session record (ioreg); None if it can't be read."""
+    try:
+        out = subprocess.run(["ioreg", "-n", "Root", "-d1", "-a"], capture_output=True, timeout=10).stdout
+        users = plistlib.loads(out).get("IOConsoleUsers", [])
+    except Exception:
+        return None
+    return any(u.get("CGSSessionScreenIsLocked") for u in users)
 
 
 def bodies_by_name(root):
@@ -134,6 +146,8 @@ def run(_context):
         raise RuntimeError("no picture for step(s) %s; the steps with pictures are %s" % (unknown, [s["step"] for s in data["steps"]]))
     if not out_dir:
         raise RuntimeError("out_dir=... is needed: the raw pictures go to a scratch folder, never straight into the guide")
+    if screen_locked():   # checked when the run starts, not when it was queued
+        raise RuntimeError("the screen is locked: Fusion draws no pictures on a locked screen (D-84); run again when it is unlocked")
     doc = open_skeleton(app)
     try:
         design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
