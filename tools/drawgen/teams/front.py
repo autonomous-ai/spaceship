@@ -22,6 +22,26 @@ DECOR_TUBE = {
 # DT's 11 tube parts (#232); 352204's sheet waits for the generator: its 75.39 deg angle arc runs into the border
 _DT = ["352201", "352202", "352203", "352204", "352205", "352206", "352207", "352208", "352209", "352210", "352211"]
 
-PARTS = {pn: DECOR_TUBE for pn in _DT}
+# DR's 22 tube parts (#232, #287: F09 is 352322). 352321 (C10) is refused as an open section: the DT joint turns
+# 5.5 mm before the back ring, so it is a 5.5 x 15 mm wedge of tube; FRONT's fix is with the Lead
+_DR = ["3523%02d" % n for n in range(1, 23)]
+
+# DL's 16 tube parts (#232)
+_DL = ["3521%02d" % n for n in range(1, 17)]
+
+PARTS = {pn: DECOR_TUBE for pn in _DT + _DR + _DL}
+
+# the door stops: aluminium angle cut to length (DL's hinge-side stop in 3 numbers, D-120 and D-123; DT's top stop).
+# Refused today as open sections ("folded sheet"); they draw once the generator reads bought profiles (the Lead,
+# 2026-11-01, as for 368004)
+DOOR_STOP = {
+    "corner": "-X-Y-Z",
+    "notes": ["Aluminium angle 6063-T6 cut to length, black anodised matte 20 um (AA20); bonded with structural tape "
+              "(DL's pieces, HOLD: product) or screwed (DT's top stop), as its parts-list row says."],
+    "tolerance": "cut length ±0.5, square ends (assumption); hole sizes +0.2/0 (assumption). Not ISO 2768 on the "
+                 "anodised faces.",
+}
+for _pn in ("351105", "351106", "351107", "351203"):
+    PARTS[_pn] = DOOR_STOP
 
 NO_DRAWING = {}
