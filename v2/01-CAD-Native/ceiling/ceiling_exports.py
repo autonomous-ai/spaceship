@@ -168,6 +168,35 @@ def write_tray_dxf():
     return dst, seen
 
 
+MEMBER_ENDS = {   # D-117, the Joints Engineer's corner design
+    "SIDE": "front end mitred 45 deg, back end mitred 63.43 deg off square", "SEAM": "front end mitred 45 deg, back end mitred 63.43 deg off square",
+    "FRONT": "both ends mitred 45 deg", "BACK": "both ends mitred 26.57 deg off square",
+    "X1": "square cut", "X2": "square cut", "X3": "square cut",
+}
+
+
+def member_rows(v, half):
+    """[(code, part key, name, section, outer length, ends, features)] of one frame's members."""
+    holes = {}
+    for name, member, _f, _xyz, _d, n, _p, _a in M.joint_holes(half):
+        holes.setdefault(member, []).append("%s x %d" % (name.lower(), int(round(M.ev(v, n)))))
+    for name, member, *_r in M.cleat_slots(half):
+        holes.setdefault(member, []).append("cleat slot %.0f x %.0f at %s" % (v["cleat_slot_w"], v["cleat_slot_h"], name.split()[-1]))
+    boxes = {c: [M.ev(v, e) for e in b] for c, _n, _a, b in M.frame_members(half)}
+    out = []
+    for code, key, name, axis, _pts, _z0, _z1 in M.member_shapes(half):
+        bb = boxes[code]
+        L = (bb[1] - bb[0]) if axis == "x" else (bb[3] - bb[2])
+        sec = "40 x 40 x 1.2" if code == "BACK" else "20 x 40 x 1.2"
+        extra = list(holes.get(code, []))
+        if code == "BACK":
+            extra.append("back spigot slot 8.5 x 14 x 1")
+        if code == "SEAM":
+            extra.append("1 x 45 lead-in on the closing face's lower edge, full length")
+        out.append((code, key, name, sec, L, MEMBER_ENDS[code], extra))
+    return out
+
+
 def _sizes():
     """(size, tolerance) per made part and assembly: a parts-list row is the cut list for soft
     goods and plain parts (PM ruling 2026-11-01 on the Checker's pre-check)."""
@@ -184,9 +213,18 @@ def _sizes():
         "assy_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["outer_t"]), ""),
         "assy_c2": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["outer_t"]), ""),
         "frame_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_fw"], v["wall_depth"], v["frame_t"]),
-                               "cut length +/-0.5; holes +/-0.2 from the round spigot hole (R-J6); spigot to closing face +/-0.1 (ST-04)"),
+                               "assembled in a jig: outer size +/-0.5, diagonals within 1 (assumption); spigot to closing face +/-0.1 (ST-04)"),
         "frame_c2": lambda v: ("%.2f x %.2f x %.0f" % (v["half_fw"], v["wall_depth"], v["frame_t"]),
-                               "cut length +/-0.5; holes +/-0.2 from the round spigot hole (R-J6); spigot to closing face +/-0.1 (ST-04)"),
+                               "assembled in a jig: outer size +/-0.5, diagonals within 1 (assumption); spigot to closing face +/-0.1 (ST-04)"),
+        **{key: (lambda code, h: (lambda v: next(("%s tube, %.2f long at the outer face, %s" % (sec, L, ends),
+                                                  "cut length +/-0.5, mitre angles +/-0.25 deg (assumption); holes and slots +/-0.2 "
+                                                  "from the round spigot hole (R-J6)")
+                                                 for c, _k, _n, sec, L, ends, _x in member_rows(v, h) if c == code)))(code, h)
+           for h in ("C1", "C2") for code, key in (("SIDE", "m_side_" + h.lower()), ("SEAM", "m_seam_" + h.lower()),
+                                                    ("FRONT", "m_front_" + h.lower()), ("BACK", "m_back_" + h.lower()),
+                                                    ("X1", "m_x1_" + h.lower()))},
+        "m_cross": lambda v: ("20 x 40 x 1.2 tube, %.2f long, square cut, no holes" % (v["half_fw"] - 2 * v["tube_w"]),
+                              "cut length +/-0.5 (assumption)"),
         "skin_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"]),
                               "ISO 2768-m; no drawing (D-89 part 4): its DXF is the outline"),
         "skin_c2": lambda v: ("%.2f x %.2f x %.0f, roof slot %.0f x %.0f" % (v["half_pw"], v["wall_depth"], v["skin_t"], v["slot_w"], v["slot_d"]),
@@ -210,13 +248,16 @@ def parts_list(v, mass):
     q = {  # quantity per parent, parent
         "ceiling": (1, None), "assy_c1": (1, "ceiling"), "assy_c2": (1, "ceiling"),
         "frame_c1": (1, "assy_c1"), "frame_c2": (1, "assy_c2"), "skin_c1": (1, "assy_c1"), "skin_c2": (1, "assy_c2"),
+        **{"m_%s_%s" % (m, h): (1, "frame_" + h) for h in ("c1", "c2") for m in ("side", "seam", "front", "back", "x1")},
+        "m_cross": (2, "frame_c1|frame_c2"),
         "cassette": (2, "ceiling"), "tray": (1, "cassette"), "rib": (2, "cassette"), "felt": (1, "cassette"),
         "clip": (6, "cassette"), "catch": (2, "cassette"),
     }
     for key, _bay, _b, _n in M.fill_strips():
         q[key] = (q.get(key, (0, "cassette"))[0] + 1, "cassette")
     per_pod = {"ceiling": 1, "assy_c1": 1, "assy_c2": 1, "frame_c1": 1, "frame_c2": 1, "skin_c1": 1, "skin_c2": 1,
-               "cassette": 2}
+               "cassette": 2, "m_cross": 4,
+               **{"m_%s_%s" % (m, h): 1 for h in ("c1", "c2") for m in ("side", "seam", "front", "back", "x1")}}
     for k in [k for k in q if k not in per_pod]:
         per_pod[k] = q[k][0] * 2
     rows = []
@@ -235,8 +276,10 @@ def parts_list(v, mass):
         matname = M.MATERIALS[mat][0] if mat else ""
         size, tol = SIZE_TOL.get(key, (lambda vv: ("", "")))(v)
         src = {
-            "frame_c1": "D-16, D-34, D-54, D-55; PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
-            "frame_c2": "D-16, D-34, D-54, D-55; PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            "frame_c1": "D-16, D-34, D-54, D-55; D-115, D-117 (cleated, mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            "frame_c2": "D-16, D-34, D-54, D-55; D-115, D-117 (cleated, mitred corners), D-120 (member parts); PM rulings 2026-10-31 (3 cross members; frame 1198.99; bolt lines per the joints register); R-J3 40 x 40 back member; J-CEIL-01, J-CEIL-02",
+            **{k: "D-120 (number from the master BOM's allocation); D-117 (the Joints Engineer's corner design); D-34, D-54 (6063-T6 20 x 40 x 1.2, 40 x 40 back R-J3); joints register J-CEIL-01, J-CEIL-02"
+               for k in M.PARTS if k.startswith("m_")},
             "skin_c1": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61",
             "skin_c2": "build plan VT01; D-12; D-42; skeleton half_pw 1200.61; D-61 roof slot 285 x 294 (PM ruling 2026-10-31: two skins)",
             "tray": "D-17, D-37; PM ruling 2026-10-31 (12 mm lip)",
@@ -315,25 +358,16 @@ def parts_list(v, mass):
 
 
 def cut_list(v):
+    """The tube cut list: one row per member of each frame (D-120's member parts), with the outer
+    length, the end cuts (D-117) and the holes and slots."""
     rows = []
-    for half, key in (("C1", "frame_c1"), ("C2", "frame_c2")):
-        pn = M.PARTS[key][0]
-        holes = {}
-        for name, member, _f, _xyz, _d, n, _p, _a in M.joint_holes(half):
-            holes.setdefault(member, []).append("%s x %d" % (name.lower(), int(round(M.ev(v, n)))))
-        for code, name, axis, b in M.frame_members(half):
-            bb = [M.ev(v, e) for e in b]
-            L = (bb[1] - bb[0]) if axis == "x" else (bb[3] - bb[2])
-            sec = "40 x 40 x 1.2" if code == "BACK" else "20 x 40 x 1.2"
-            extra = list(holes.get(code, []))
-            if code == "BACK":
-                extra.append("back spigot slot 8.5 x 14 x 1")
-            if code in ("SEAM", "BACK"):
-                extra.append("1 x 45 lead-in on the closing face's lower edge")
-            rows.append({"frame": pn, "half": half, "member": code, "name": name,
+    for half, fkey in (("C1", "frame_c1"), ("C2", "frame_c2")):
+        for code, key, name, sec, L, ends, extra in member_rows(v, half):
+            rows.append({"frame": M.PARTS[fkey][0], "half": half, "member": code, "part_number": M.PARTS[key][0],
+                         "name": M.PARTS[key][1],
                          "section": "aluminium %s (6063-T6; alloy ISS-034)" % sec,
                          "length_mm": "%.2f" % L, "qty": 1,
-                         "ends": "square cut; member joints: internal cleats per D-115 (corner and T cleats, crimped, with structural adhesive; no welds)",
+                         "ends": "%s; member joints: internal cleats per D-115 and D-117 (crimped, with structural adhesive; no welds)" % ends,
                          "holes": "; ".join(extra) or "none",
                          "status": "calculation (from the parameters)"})
     return rows
