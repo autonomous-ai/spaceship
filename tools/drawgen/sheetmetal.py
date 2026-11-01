@@ -653,7 +653,7 @@ def _zone_fails(chains, matches, zones, k, tol):
     return []
 
 
-def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05, vgroove=None):
+def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05, vgroove=None, outside_radius=None):
     """Read a bent part against its DXF. Raises ValueError with the reason drawgen can't draw it. radius: the
     inside radius for folds the model draws sharp (the team's entry), with where it comes from.
 
@@ -707,6 +707,18 @@ def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05, v
             raise ValueError("some folds have a radius in the model and some don't")
         if vgroove and rs:
             raise ValueError("a V-grooved panel folds sharp inside (the groove closes); its model has an inside radius")
+        if vgroove:
+            # the outer skin bends round a radius (the maker's 2 mm minimum, D-161): a fold the model leaves sharp
+            # would develop as the plain sum of the outside lengths, 0.86 too long at R2 (Reviewer 6 on #341)
+            sharp = [f for f in ch.folds if not f.r_out]
+            if sharp:
+                raise ValueError("its V-groove fold%s sharp in the model: the outer skin's outside radius (2 mm minimum, "
+                                 "D-161) must be modelled" % (" is" if len(sharp) == 1 else "s are"))
+            if outside_radius is not None:
+                off = [f for f in ch.folds if abs(f.r_out - float(outside_radius)) > 0.01]
+                if off:
+                    raise ValueError("its model folds at outside radius R%s, its entry says R%s" % (
+                        _f(off[0].r_out), _f(float(outside_radius))))
         opts = match_chain(ch, fl.dxf, r, tol, vgroove=bool(vgroove))
         if not opts:
             raise ValueError(("its DXF's fold lines don't sit where the model's outside lengths and each fold's outside "

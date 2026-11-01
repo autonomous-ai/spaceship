@@ -84,9 +84,9 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   811201: a hole the DXF cuts in a bend zone; WALL's 511202: its 304 x 268 and 80 x 11 cut-outs). A V-grooved and
   folded panel (ACP; its entry says `vgroove` with the groove) has no K-factor: its outer skin runs round each fold
   unstretched, so the flat develops along the outer face, each leg to its fold's outside arc plus the arc, the fold
-  line at the arc's middle (the model's outside radius, WALL's 2 mm by the maker's guide; a sharp fold adds nothing:
-  the sum of the outside lengths, the line at the corner); its folds table gives each fold's outside radius and the
-  groove.
+  line at the arc's middle (the model's outside radius, WALL's 2 mm by the maker's guide). A V-groove fold the model
+  leaves sharp is refused (the outer skin always bends round a radius, D-161), and an entry that states the outside
+  radius has every fold checked against it; its folds table gives each fold's outside radius and the groove.
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
   Where the removed sections or the flat pattern would then run off the sheet, the next smaller scale.

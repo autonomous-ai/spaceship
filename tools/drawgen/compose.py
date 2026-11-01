@@ -595,7 +595,7 @@ def bent_flat(part, team, bent):
         raise NotDrawable("%s: a bent part's slots aren't matched to its DXF yet (%d in the model)" % (part.pn, len(slots)))
     try:
         fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes,
-                                vgroove=cfg.get("vgroove"))
+                                vgroove=cfg.get("vgroove"), outside_radius=cfg.get("outside_radius"))
     except ValueError as e:
         raise NotDrawable("%s: %s" % (part.pn, e))
     odd = sheetmetal.unexplained_faces(b, fl.chains, holes, slots)

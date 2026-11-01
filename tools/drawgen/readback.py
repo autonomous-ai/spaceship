@@ -530,6 +530,27 @@ def flat_fails(data, texts, page_text, tol=TOL):
     return fails
 
 
+def vgroove_radius_fails(data, faces):
+    """A V-grooved panel's folds against the STEP's own faces (the repo's reader): each fold's outside radius, as the
+    sheet records it, must be a convex cylinder of the STEP along that run's bend lines (Reviewer 6 on #341: the
+    read-back took it from the sheet's own record)."""
+    fl = data.get("flat")
+    if not fl or not fl.get("vgroove") or not fl.get("map"):
+        return []
+    fails = []
+    for ci, (ch, mc) in enumerate(zip(fl["chains"], fl["map"]["chains"])):
+        ax = mc["axis"]
+        for j, r in enumerate(ch.get("radii_out") or []):
+            if not r:
+                fails.append("chain %d's fold %d is recorded sharp" % (ci + 1, j + 1))
+                continue
+            if not any(f["kind"] == "cylinder" and "d" in f and not f.get("concave") and abs(f["r"] - r) < 0.01
+                       and abs(abs(dot(f["d"], ax)) - 1) < 1e-6 for f in faces):
+                fails.append("chain %d's fold %d: the STEP has no outside arc R%s along its bend line" % (
+                    ci + 1, j + 1, _fmtv(r)))
+    return fails
+
+
 def _flat_where(mp, P):
     """A point of the sheet's place in the DXF by the sheet's record of how its flanges unfold (its own reading, not
     the generator's code): across a chain's bends from the flange it lies on, along them from the other chain's base
@@ -916,6 +937,7 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("a bent part's sheet has no record of its flat pattern")
     fails += flat_fails(data, tb, page.get_text())
     fails += flat_hole_fails(data, holes, faces)
+    fails += vgroove_radius_fails(data, faces)
     two_wall = bool(two_wall_pairs(data["features"]))
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
         fails.append("holes through two walls but no SECTION label")
