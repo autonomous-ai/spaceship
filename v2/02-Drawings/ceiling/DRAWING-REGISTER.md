@@ -9,7 +9,7 @@ counts. Fusion cloud files live in Default Project / FocusPod v2.
 |---|---|---|---|---|
 | `513102_P01_LINING-RIB-CEILING_DWG` | 513102 rib | Fusion | bent hat section (the generator refuses bends) | PDF read-back check PASS; waits for the D-114 visual pass |
 | `513101_P01_LINING-TRAY-CEILING_DWG` | 513101 tray | Fusion | bent tray | the 07:40 UTC drawing printed Fusion's hole table empty (check FAIL); to be renamed `_SUPERSEDED-2026-11-01` and drawn again without the table, its two holes dimensioned, once the drawing start's timeout fix merges |
-| `510301_P01_LINING-CASSETTE-CEILING-COMMON_DWG` | 510301 cassette | Fusion | assembly (tray, ribs, felt) | the 07:41 UTC start failed (the click on Create Drawing timed out and the dialog stayed open); waits for the same fix |
+| `510301_P01_LINING-CASSETTE-CEILING-COMMON_DWG` | 510301 cassette | the drawing generator's assembly mode | a sub-assembly sheet needs its parts table with balloons, fixings and order (guideline 5.2), which Fusion's API can't draw | the 10:27 UTC Fusion sheet failed Reviewer 5's D-114 pass on those; the Lead's ruling: the generator draws it, with WALL's six cassette assemblies (the Air Engineer); its entry facts posted. The Fusion sheet stays in the cloud, unused |
 
 ## Superseded cloud files
 

@@ -350,4 +350,6 @@ _ga = spec("ceiling", 0.1, [
 ], views={"front": (300, 470), "top": (300, 250), "left": (620, 470), "iso": (620, 240)}, scales={"iso": 0.05})
 _ga["design"] = "410000_P01_CEILING_CAD"
 SPECS["ga"] = _ga
-ORDER = ["ga", "assy", "frame_c1", "frame_c2", "cassette", "tray", "rib", "fills"]
+# the cassette 510301 is drawn by the drawing generator's assembly mode (the Lead's ruling on Reviewer 5's D-114 pass:
+# a sub-assembly sheet needs a parts table with balloons, which Fusion's API can't draw); its spec stays for reference
+ORDER = ["ga", "assy", "frame_c1", "frame_c2", "tray", "rib", "fills"]
