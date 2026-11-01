@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 254 part lines (89 made, 165 bought, 129 on HOLD) and 37 sub-assembly lines from 16 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 300.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 254 part lines (89 made, 165 bought, 129 on HOLD) and 37 sub-assembly lines from 16 parts list(s); 36 hardware items in the joints register (36 with a part number). Listed parts weigh 300.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -195,7 +195,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 126 numbers, 116 not in a team's list yet, 4 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 128 numbers, 118 not in a team's list yet, 4 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -238,17 +238,17 @@ From `v2/04-BOM/number-allocation.csv`: 126 numbers, 116 not in a team's list ye
 | 212405 | WALL - FRAME STILE MID - SIDE UPPER - RH | 211104 | 3 | ALLOCATED |
 | 211541 | WALL - CAVITY FILL PIECE 1082.7 X 344.9 - SIDE UPPER - RH | 210104 | 3 | CANCELLED |
 | 211542 | WALL - CAVITY FILL PIECE 1082.7 X 334.9 - SIDE UPPER - RH | 210104 | 1 | CANCELLED |
-| 212501 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
+| 212501 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
 | 212502 | WALL - FRAME RAIL TOP - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
-| 212503 | WALL - FRAME STILE OUTER - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
-| 212504 | WALL - FRAME STILE CENTRE - BACK LOWER - B1 | 211201 | 1 | ALLOCATED |
-| 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 | 2 | ALLOCATED |
+| 212503 | WALL - FRAME STILE OUTER - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
+| 212504 | WALL - FRAME STILE CENTRE - BACK LOWER - B1 | 211201 211203 | 2 | ALLOCATED |
+| 212505 | WALL - FRAME STILE MID - BACK LOWER - B1 | 211201 211203 | 4 | ALLOCATED |
 | 211611 | WALL - CAVITY FILL PIECE F09 373 X 1078.6 - BACK LOWER - COMMON | 210201 210202 | 2 | ALLOCATED |
-| 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
+| 212601 | WALL - FRAME RAIL BOTTOM - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
 | 212602 | WALL - FRAME RAIL TOP - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
-| 212603 | WALL - FRAME STILE OUTER - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
-| 212604 | WALL - FRAME STILE CENTRE - BACK LOWER - B2 | 211202 | 1 | ALLOCATED |
-| 212605 | WALL - FRAME STILE MID - BACK LOWER - B2 | 211202 | 2 | ALLOCATED |
+| 212603 | WALL - FRAME STILE OUTER - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
+| 212604 | WALL - FRAME STILE CENTRE - BACK LOWER - B2 | 211202 211204 | 2 | ALLOCATED |
+| 212605 | WALL - FRAME STILE MID - BACK LOWER - B2 | 211202 211204 | 4 | ALLOCATED |
 | 211621 | WALL - CAVITY FILL PIECE F12 373 X 1078.6 - BACK LOWER - B2 | 210202 | 1 | ALLOCATED |
 | 211513 | WALL - CAVITY FILL PIECE F02 344.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
 | 211514 | WALL - CAVITY FILL PIECE F03 344.9 X 1102.7 - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
@@ -325,6 +325,8 @@ From `v2/04-BOM/number-allocation.csv`: 126 numbers, 116 not in a team's list ye
 | 611211 | AIR - SOFFIT FILL - FRONT | 610201 | 1 | ALLOCATED |
 | 611502 | AIR - INTAKE BOOT | 610401 | 1 | ALLOCATED |
 | 611303 | AIR - CARTRIDGE INLET GASKET | 610301 | 2 | ALLOCATED |
+| 212701 | WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4 | 211203 211204 | 2 | ALLOCATED |
+| 351307 | FRONT - DECOR SEAM BAR - DR - REMOVABLE | 350003 | 1 | ALLOCATED |
 
 ## Rules
 
