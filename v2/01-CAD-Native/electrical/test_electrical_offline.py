@@ -18,7 +18,11 @@ Checks:
 - connector counts in the parts list match the harness list's plug ends;
 - the flat plates (711002, 711005) meet D-89 part 4 as the mechanical check reads it: their DXF
   writer draws only on the CUT layer, in mm, with every circle; their parts-list rows lack nothing;
-- the generated documents are up to date (electrical_docs.py --check).
+- the generated documents are up to date (electrical_docs.py --check);
+- the 10 generated sheets (wiring diagram A1, 7 assembly sheets A2), read back from the saved PDFs: every letter at
+  least 2.5 mm capital height (title-block labels 1.8), no two texts overlapping, nothing outside the frame, the
+  harness list's values in full (never cut short), the light figures from the parts data, and the saved files the
+  same as the generators make now.
 """
 
 import csv
@@ -231,6 +235,97 @@ class Docs(unittest.TestCase):
         r = subprocess.run([sys.executable, os.path.join(REPO, "v2/05-Engineering/electrical/electrical_docs.py"), "--check"],
                            capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
+
+DWG = os.path.join(REPO, "v2", "02-Drawings", "electrical")
+WD_PDF = os.path.join(DWG, "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf")
+AS_PDFS = ["710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf", "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
+           "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf", "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
+           "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf", "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
+           "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf"]
+TB_LABELS = {"PROJECT", "TITLE", "DWG / PART NO.", "REV / STATUS", "UNITS / SCALE", "SHEET", "DATE / BY", "SOURCE"}
+
+
+class Sheets(unittest.TestCase):
+    """The PM's drawing check, item 1 (2026-11-01), and the guideline's "never shrink the font to fit a page",
+    read back from the saved PDFs, independent of the generators' own checks."""
+
+    @classmethod
+    def setUpClass(cls):
+        import fitz
+        import sheet_kit as K
+        cls.fitz, cls.K = fitz, K
+        cls.pdfs = [(WD_PDF, "A1")] + [(os.path.join(DWG, f), "A2") for f in AS_PDFS]
+
+    def norm(self, t):
+        return " ".join(t.split())
+
+    def test_letter_sizes_overlaps_and_frame(self):
+        K = self.K
+        for path, size in self.pdfs:
+            doc = self.fitz.open(path)
+            for n, page in enumerate(doc, start=1):
+                where = "%s sheet %d" % (os.path.basename(path), n)
+                w, h = K.SIZES[size]
+                self.assertAlmostEqual(page.rect.width / K.MMPT, w, delta=0.5, msg=where)
+                self.assertAlmostEqual(page.rect.height / K.MMPT, h, delta=0.5, msg=where)
+                boxes = K.ink_boxes(page)
+                self.assertTrue(boxes, where)
+                small = [b[5] for b in boxes if b[4] < K.BODY - 1e-6 and not (b[5] in TB_LABELS and b[4] >= K.LABEL - 1e-6)]
+                self.assertEqual(small, [], "%s: text under 2.5 mm capital height" % where)
+                self.assertEqual(K.overlaps(boxes), [], "%s: overlapping text" % where)
+                outside = [b[5] for b in boxes if b[0] < 10 or b[1] < 10 or b[2] > w - 10 or b[3] > h - 10]
+                self.assertEqual(outside, [], "%s: text outside the frame" % where)
+
+    def test_harness_list_values_in_full(self):
+        import electrical_docs as D
+        _files, _v, _rows, harness = D.outputs()
+        text = self.norm(self.fitz.open(WD_PDF)[1].get_text())
+        for hr in harness:
+            for key in ("id", "segment", "function", "cable", "end_a", "end_b"):
+                self.assertIn(self.norm(hr[key]), text, "%s %s cut short or missing on the harness list" % (hr["id"], key))
+            self.assertNotIn("..", text)
+
+    def test_light_figures_from_the_parts_data(self):
+        text = self.norm(self.fitz.open(WD_PDF)[0].get_text())
+        self.assertIn("uplight %.2f m and down-light 2 x %.3f m" % (EP.UP_M, EP.DOWN_ROW), text)
+
+    def test_saved_sheets_are_what_the_generators_make(self):
+        import tempfile
+        import assembly_sheets as AS
+        import electrical_docs as D
+        import wiring_diagram as WD
+        _files, v, rows, harness = D.outputs()
+        with tempfile.TemporaryDirectory() as tmp:
+            WD.write(os.path.join(tmp, "wd.pdf"), os.path.join(tmp, "wd%d.png"), v, rows, harness)
+            made = [(os.path.join(tmp, "wd.pdf"), WD_PDF)]
+            for p in AS.write(tmp, v, harness):
+                made.append((p, os.path.join(DWG, os.path.basename(p))))
+            self.assertEqual(sorted(os.path.basename(b) for _a, b in made[1:]), sorted(AS_PDFS))
+            for new, saved in made:
+                a, b = self.fitz.open(new), self.fitz.open(saved)
+                self.assertEqual(len(a), len(b), saved)
+                for pa, pb in zip(a, b):
+                    self.assertEqual(pa.get_text(), pb.get_text(), "%s is stale: rerun electrical_docs.py" % saved)
+                    self.assertEqual(tuple(pa.rect), tuple(pb.rect), saved)
+
+    def test_sheets_name_autonomous_only(self):
+        """D-140, the owner's rule: the BY field and the PDF author and creator read "Autonomous", and no sheet says
+        who or what made it; the notes give only the source (the model and parts data)."""
+        for path, _size in self.pdfs:
+            doc = self.fitz.open(path)
+            name = os.path.basename(path)
+            self.assertEqual(doc.metadata["author"], "Autonomous", name)
+            self.assertEqual(doc.metadata["creator"], "Autonomous", name)
+            for n, page in enumerate(doc, start=1):
+                where = "%s sheet %d" % (name, n)
+                lines = [ln.strip() for ln in page.get_text().splitlines()]
+                self.assertIn("DATE / BY", lines, where)
+                value = lines[lines.index("DATE / BY") + 1]
+                self.assertTrue(value.endswith(" / Autonomous"), "%s: BY reads %r" % (where, value))
+                text = self.norm(page.get_text())
+                for words in ("Generated by", "Made by", "ELECTRICAL Engineer"):
+                    self.assertNotIn(words, text, where)
 
 
 if __name__ == "__main__":

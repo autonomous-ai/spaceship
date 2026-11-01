@@ -31,6 +31,17 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_build.
 | STEP export | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step`: AP214, length unit cm declared in the file (D-13), 8 products (710000 and the 7 components), 40 solids (`tools/fusion/step_check.py`; its box reads vertices only, so it misses the cylinders' round extents by up to 5.6 mm: the Fusion re-read below is the exact check); no personal names |
 | STEP re-read in Fusion | 40 bodies, box equal to the design's, max difference 0.000 mm |
 
+## Front plate 711002 rebuilt for D-133 (US devices)
+
+Run 2026-11-01 at about 06:11 UTC on Mac 1, Fusion 2706.1.17: only the front plate, for the US devices' openings (the GFCI receptacle's decorator opening 33.6 × 67 with its two Ø3.8 plate-screw holes 96.8 apart, two keystone openings 14.9 × 19.4, the breaker window 19 × 45, the devices' row at 180 above the unit's bottom and the top vents at 120). The body 711001 and the hub plate 711005 didn't change and weren't rebuilt.
+
+```
+python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_parts_cad.py --label "ELECTRICAL Engineer" \
+    --arg parts=front --arg export=1
+```
+
+Opened Default Project / FocusPod v2 / `711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD` at version 4 and saved it as the next version. Box 320 × 284 × 1.5 mm; volume 128,264 mm³, 0.344 kg at 2.68 g/cm³ (the parts list's mass); timeline 3 features, 0 unhealthy, 0 loose sketches; 31 parameters. Exports from the same version: the `.f3d`, the STEP (Fusion's cm, declared, D-13) and the DXF in mm, 60 lines and 6 circles, all on layer CUT (D-89 part 4).
+
 ## Earlier runs (kept for the record)
 
 - 2026-10-31 20:55: the rebuild with every skeleton-linked value, the 296 mm unit and the moved exits passed the same checks with 41 bodies (the slot S-PU-X and the bushing G-PU-TOP still in) and the crossing at Z 2337.5; its edit test passed.

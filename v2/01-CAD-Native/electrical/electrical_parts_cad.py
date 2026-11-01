@@ -18,7 +18,8 @@ fails doesn't stop the others; the run fails at the end and names it.
 Sizes come from the route model's parameters (electrical_model.py: pu_w, pu_h,
 pu_d, hub_w) and are written here as this part's own user parameters with
 their status. Cut-outs that wait on module data are HOLD (PM ruling
-2026-11-01): the 86-plate openings (UTEN codes, H-ELE-04), the hub window and
+2026-11-01): the GFCI receptacle's decorator opening and the keystone openings (D-133: the picked
+parts' drawings set them), the hub window and
 the button and knob holes (the hub's size, ISS-060), the earth stud hole
 (PEM data) and the mounting to B2's frame (WALL, IF-12, not cut yet). Every
 sketch is fully constrained by the parameters; every feature is named.
@@ -94,20 +95,26 @@ PARTS = {
                    "the unit's height 260 + 2 x (4 + 8) (route model pu_h, pu_clr, plate_ov)"),
                   ("edge_off", "%.1f mm" % (V["pu_clr"] + V["plate_ov"]), "mm", "calculation",
                    "the unit's edge from the plate's edge: 4 mm clear + 8 mm over the felt; every opening is placed from the unit's edge"),
-                  ("box_a", "73 mm", "mm", HOLD, "opening for an 86-type back box mouth; the UTEN code and its box set it (H-ELE-04)"),
-                  ("box_zc", "edge_off + 195 mm", "mm", "assumption", "86-plate openings' centre height: 195 above the unit's bottom (Z 1065, the unit's centre + 65)"),
-                  ("box_x1", "edge_off + 70 mm", "mm", "assumption", "socket opening centre: 70 from the unit's left side (the box mouth 11.5 mm clear of the body's 22 mm left lip)"),
-                  ("box_x2", "edge_off + 175 mm", "mm", "assumption", "LAN opening centre: 175 from the unit's left side (32 mm between the two box mouths)"),
-                  ("din_w", "37 mm", "mm", "source", "RCBO window: 2 modules of 18 mm + 1 (Schneider A9D32610 is 36 mm wide)"),
+                  ("dev_zc", "edge_off + 180 mm", "mm", "assumption", "the devices' centre height: 180 above the unit's bottom; the GFCI receptacle's 106.7 mm strap runs 126.7 to 233.3, 4.7 mm clear of the top vent row and of the body's 22 mm top lip (D-133)"),
+                  ("gfci_w", "33.6 mm", "mm", HOLD, "GFCI receptacle's decorator opening width: the face 33.3 (1.31 in) + 0.3; the picked receptacle's drawing sets it (D-133)"),
+                  ("gfci_h", "67 mm", "mm", HOLD, "decorator opening height: the face 66.7 (2.625 in) + 0.3 (D-133)"),
+                  ("gfci_x", "edge_off + 70 mm", "mm", "assumption", "GFCI opening centre: 70 from the unit's left side; its 43.7 mm strap is 26 mm clear of the body's 22 mm left lip"),
+                  ("gfci_sp", "96.8 mm", "mm", "source", "the two 6-32 plate screws' spacing on a decorator device's strap: 3-13/16 in"),
+                  ("gfci_sd", "3.8 mm", "mm", "assumption", "6-32 clearance hole (normal fit)"),
+                  ("ks_w", "14.9 mm", "mm", HOLD, "keystone jack opening width (the common 0.585 x 0.760 in snap-in opening; the picked jack sets it, D-133)"),
+                  ("ks_h", "19.4 mm", "mm", HOLD, "keystone jack opening height"),
+                  ("ks_x", "edge_off + 175 mm", "mm", "assumption", "LAN: the two keystone openings' centre, 175 from the unit's left side"),
+                  ("ks_p", "24 mm", "mm", "assumption", "the two keystone openings' pitch: side by side, the jacks' 16.5 mm bodies 7.5 mm apart"),
+                  ("din_w", "19 mm", "mm", "source", "breaker window: 1 module + 1 (Eaton FAZ-NA is 17.7 mm per pole, D-133)"),
                   ("din_h", "45 mm", "mm", "source", "DIN 43880 front height 45 mm"),
-                  ("din_x", "edge_off + 245 mm", "mm", "assumption", "RCBO window centre: 245 from the unit's left side, 15 mm from the LAN box mouth, 11 mm clear of the body's 22 mm right lip"),
-                  ("din_zc", "edge_off + 195 mm", "mm", "assumption", "RCBO window centre height, level with the plates"),
+                  ("din_x", "edge_off + 245 mm", "mm", "assumption", "breaker window centre: 245 from the unit's left side, 41 mm from the keystone openings, 19.5 mm clear of the body's 22 mm right lip"),
+                  ("din_zc", "dev_zc", "mm", "assumption", "breaker window centre height, level with the devices"),
                   ("vent_l", "40 mm", "mm", "assumption", "vent slot length"),
                   ("vent_w", "4 mm", "mm", "assumption", "vent slot width"),
                   ("vent_n", "5", "", "assumption", "vent slots per row (two rows: bottom and top)"),
                   ("vent_p", "50 mm", "mm", "assumption", "vent slot pitch"),
                   ("vent_z1", "edge_off + 25 mm", "mm", "assumption", "bottom vent row centre: 25 above the unit's bottom, just above the body's 22 mm lip"),
-                  ("vent_z2", "edge_off + 130 mm", "mm", "assumption", "top vent row centre: 130 above the unit's bottom (between the supplies and the plates)"),
+                  ("vent_z2", "edge_off + 120 mm", "mm", "assumption", "top vent row centre: 120 above the unit's bottom, 4.7 mm under the GFCI receptacle's strap (D-133)"),
                   ("screw_d", "4.5 mm", "mm", "assumption", "M4 screw clearance hole"),
                   ("screw_x", "edge_off + 30 mm", "mm", "calculation", "screw centre: on the body's clinch nuts, 30 from the unit's sides (clinch_x)"),
                   ("screw_y", "edge_off + 11 mm", "mm", "calculation", "screw centre: the middle of the body's 22 mm lips, 11 from the unit's top and bottom (23 from the plate's edge, C09)"),
@@ -201,10 +208,14 @@ def flat_plate(design: "adsk.fusion.Design", comp: "adsk.fusion.Component", key)
     sk.name = "OUTLINE AND CUT-OUTS - %s" % key.upper()
     rect(sk, design, "0 mm", "0 mm", "w", "h", "OUTLINE")
     if key == "front":
-        for xc in ("box_x1", "box_x2"):
-            rect(sk, design, "(%s) - box_a / 2" % xc, "box_zc - box_a / 2", "(%s) + box_a / 2" % xc, "box_zc + box_a / 2",
-                 "86 PLATE OPENING (HOLD)")
-        rect(sk, design, "din_x - din_w / 2", "din_zc - din_h / 2", "din_x + din_w / 2", "din_zc + din_h / 2", "RCBO WINDOW")
+        rect(sk, design, "gfci_x - gfci_w / 2", "dev_zc - gfci_h / 2", "gfci_x + gfci_w / 2", "dev_zc + gfci_h / 2",
+             "GFCI DECORATOR OPENING (HOLD)")
+        for sign in ("-", "+"):
+            circle(sk, design, "gfci_x", "dev_zc %s gfci_sp / 2" % sign, "gfci_sd")
+            xc = "ks_x %s ks_p / 2" % sign
+            rect(sk, design, "(%s) - ks_w / 2" % xc, "dev_zc - ks_h / 2", "(%s) + ks_w / 2" % xc, "dev_zc + ks_h / 2",
+                 "KEYSTONE OPENING (HOLD)")
+        rect(sk, design, "din_x - din_w / 2", "din_zc - din_h / 2", "din_x + din_w / 2", "din_zc + din_h / 2", "BREAKER WINDOW")
         for zc in ("vent_z1", "vent_z2"):
             for i in range(5):
                 xc = "w / 2 + (%d - (vent_n - 1) / 2) * vent_p" % i
