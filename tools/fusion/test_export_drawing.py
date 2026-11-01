@@ -26,7 +26,10 @@ def make_pdf(path, pages=1, name_under_label="Jane Roe", stray=None):
     for i in range(pages):
         page = doc.new_page(width=842, height=595)
         page.insert_text((600, 520), "Created by", fontsize=8)
-        page.insert_text((600, 532), "%s   31/10/26" % name_under_label, fontsize=8)
+        page.insert_text((600, 532), name_under_label, fontsize=8)
+        # the date in the same cell, 120 pt right of the label as Fusion lays it out (with it 3 spaces
+        # after the name, "Autonomous" had no room to replace the name: #290's stamp)
+        page.insert_text((720, 532), "31/10/26", fontsize=8)
         page.insert_text((100, 100), "GA-%d ELEVATIONS  2500  1700  2400" % (i + 1), fontsize=12)
         if stray:
             page.insert_text((100, 200), stray, fontsize=10)
