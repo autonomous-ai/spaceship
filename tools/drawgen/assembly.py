@@ -1389,7 +1389,7 @@ def _view_words(views, nm):
     return STD_WORDS.get(_std_name(v.view)) or VIEW_WORDS.get(nm) or "VIEW"     # as view_title names it
 
 
-def notes_for(assy, views, ifaces=None):
+def notes_for(assy, views, ifaces=None, datums=None):
     e = assy.entry
     out = ["Parts, quantities, materials and finishes as the parts list %s (its rows under %s), word for word; each "
            "part's own drawing holds its sizes and tolerances." % (os.path.basename(assy.list_file), assy.pn)]
@@ -1415,10 +1415,12 @@ def notes_for(assy, views, ifaces=None):
                "Visible outlines only, as an assembly drawing shows them.")
     for d in e.get("datums", ()):
         if d.get("median"):
-            out.append("Datum %s: %s's centre plane, the median plane of its size along the %s view's %s "
-                       "(ISO 5459: the triangle on that size's extension line)%s." % (
-                           d["letter"], d["pn"], _view_words(views, d.get("view", "principal")), d["median"].upper(),
-                           (", " + d["words"]) if d.get("words") else ""))
+            rec = next((r for r in (datums or ()) if r["letter"] == d["letter"]), None)
+            out.append("Datum %s: %s's centre plane%s: the median plane of its %s size in the %s (ISO 5459: the "
+                       "triangle on that size's extension line)." % (
+                           d["letter"], d["pn"], (", " + d["words"]) if d.get("words") else "",
+                           fmt(rec["size"], 2) if rec else d["median"].upper(),
+                           _view_words(views, d.get("view", "principal"))))
         else:
             out.append("Datum %s: %s's %s face%s (ISO 5459)." % (d["letter"], d["pn"], d["face"],
                                                                  (", " + d["words"]) if d.get("words") else ""))
@@ -1520,7 +1522,7 @@ def make(pn, team, entry, out_path, today=None, step=None):
     tx, ty = W - 10 - TABLE_W - 2.0, H - 10 - 2.0
     title = "PARTS LIST: %s %s" % (assy.pn, assy.name)
     y_bot, row_spans = draw_table(sh, tx, ty, COLS, cells, 2.5, title=title, title_size=3.5)
-    notes = notes_for(assy, views, ifaces)
+    notes = notes_for(assy, views, ifaces, datums)
     nw = TABLE_W - 9.0
     need = 9.0 + sum(len(wrap2(sh, t, 2.5, nw)) * 2.5 * 1.6 + 2.0 for t in notes)
     tb_top = _title_height(size, assy, spec, today)
@@ -1655,6 +1657,16 @@ def interface_dims(sh, assy, views, sides):
         if not pts3:
             raise NotDrawable("%s: no part of interface group %s in the STEP" % (assy.pn, g["of"]))
         o2 = av.S(av.view.to2d(org3))
+        if g.get("origin_line"):            # the origin is a centre plane: a chain line along it across the view
+            from sheet import DASH_CTR      # (ISO 128-24), and its 0 drawn from the outline, not from inside
+            ex0, ey0, ex1, ey1 = av.extent
+            k_ = 0 if axis == "x" else 1
+            oc = av.view.to2d(org3)[k_]
+            ext = 3.0 / av.scale
+            if axis == "x":
+                sh.line(av.S((oc, ey0 - ext)), av.S((oc, ey1 + ext)), W_THIN, DASH_CTR)
+            else:
+                sh.line(av.S((ex0 - ext, oc)), av.S((ex1 + ext, oc)), W_THIN, DASH_CTR)
         sp = [av.S(av.view.to2d(c)) for _pn, c in pts3]
         raw = [vdot(vsub(c, org3), ax3) for _pn, c in pts3]
         if g.get("sign") == "view":         # signed along the view's own axis (an origin in the middle)
@@ -1672,6 +1684,12 @@ def interface_dims(sh, assy, views, sides):
             level = (y1 + d["up"] + 12.0) if side == "up" else (y0 - d["down"] - 12.0)
         else:
             level = (x1 + d["right"] + 12.0) if side == "right" else (x0 - d["left"] - 12.0)
+        if g.get("origin_line"):
+            ex0, ey0, ex1, ey1 = av.extent
+            if axis == "x":
+                o2 = (o2[0], av.S((0.0, ey1 if side == "up" else ey0))[1])
+            else:
+                o2 = (av.S((ex1 if side == "right" else ex0, 0.0))[0], o2[1])
         draw_ordinates(sh, o2, sp, axis, level, vals)
         d[side] += 12.0 + 4.0 + max(sh.text_width(v_, 2.5) for v_ in vals + ["0"])
         out.append({"view": av.name, "axis": axis, "origin3d": org3, "words": g.get("words", ""),
@@ -1743,19 +1761,32 @@ def stack_dims(sh, assy, views, sides):
         cuts = sorted({round(c, 3) for lo, hi in ext.values() for c in (lo, hi)})
         if len(cuts) < 2:
             continue
+        i0 = 0                      # the origin: the lowest face, or a datum face the entry names ('stack_from')
+        o_spec = sv.spec.get("stack_from")
+        if o_spec:
+            cand = [x for o in assy.occs if o.item.pn == o_spec["pn"] for x in o.solids]
+            if not cand:
+                raise NotDrawable("%s: section %s's stack origin %s is not in the STEP" % (assy.pn, sv.letter,
+                                                                                         o_spec["pn"]))
+            c0 = vdot(_face_point(box_of(cand), AXES[o_spec["face"]]), sv.view.y if axis == "y" else sv.view.x)
+            i0 = min(range(len(cuts)), key=lambda i: abs(cuts[i] - c0))
+            if abs(cuts[i0] - c0) > 0.01:
+                raise NotDrawable("%s: section %s: %s's %s face is not a layer face of the build-up" % (
+                    assy.pn, sv.letter, o_spec["pn"], o_spec["face"]))
         x0, y0, x1, y1 = sv.box()
         if axis == "y":
             pts = [(x1, sv.S((0.0, c))[1]) for c in cuts]
-            org = pts[0]
             level = x1 + sides[sv.name].dims["right"] + 12.0
         else:
             pts = [(sv.S((c, 0.0))[0], y1) for c in cuts]
-            org = pts[0]
             level = y1 + sides[sv.name].dims["up"] + 12.0
-        vals = [fmt(c - cuts[0], 2) for c in cuts]
-        draw_ordinates(sh, org, pts[1:], axis, level, vals[1:])
+        vals = [fmt(c - cuts[i0], 2) for c in cuts]
+        draw_ordinates(sh, pts[i0], [p for i, p in enumerate(pts) if i != i0], axis, level,
+                       [v_ for i, v_ in enumerate(vals) if i != i0])
         sides[sv.name].dims["right" if axis == "y" else "up"] += 12.0 + 4.0 + max(sh.text_width(v_, 2.5) for v_ in vals)
         out.append({"view": sv.name, "axis": axis, "faces": cuts, "values": vals})
+        if o_spec:
+            out[-1].update({"origin": i0, "from": dict(o_spec)})
     return out
 
 
@@ -1838,6 +1869,24 @@ def _solids_by_pn(step_path, envelopes=None, groups=None):
     for i in range(1, tops.Length() + 1):
         lab = tops.Value(i)
         walk(lab, TopLoc_Location(), [_label_name(lab)])
+    return out
+
+
+def _planes_along(solids, ax):
+    """The offsets along unit axis ax of the solids' plane faces square to it."""
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_Plane
+    out = []
+    for so in solids:
+        ex = TopExp_Explorer(so, TopAbs_FACE)
+        while ex.More():
+            srf = BRepAdaptor_Surface(TopoDS.Face_s(ex.Current()))
+            if srf.GetType() == GeomAbs_Plane:
+                pl = srf.Plane()
+                d, o = pl.Axis().Direction(), pl.Location()
+                if abs(abs(d.X() * ax[0] + d.Y() * ax[1] + d.Z() * ax[2]) - 1.0) < 1e-6:
+                    out.append(o.X() * ax[0] + o.Y() * ax[1] + o.Z() * ax[2])
+            ex.Next()
     return out
 
 
@@ -2031,6 +2080,46 @@ def check(pdf_path):
             fails.append("datum %s is %.3f mm off %s's %s" % (dm["letter"], min(miss), dm["pn"],
                                                            ("size along " + dm["median"]) if dm.get("median")
                                                            else dm["face"] + " face"))
+    # the build-up's layer faces: each a plane face of one of the assembly's parts, square to the stack's axis, and
+    # each printed value its distance from the origin face
+    items_pns = {tab[n][1][1] for n in tab}
+    for st in data.get("stacks", []):
+        v = views[st["view"]]
+        ax = v["y"] if st["axis"] == "y" else v["x"]
+        planes = _planes_along([x for p_ in items_pns for x in solids.get(p_, [])], ax)
+        i0 = st.get("origin", 0)
+        for c, val in zip(st["faces"], st["values"]):
+            stats["stack faces"] = stats.get("stack faces", 0) + 1
+            if fmt(c - st["faces"][i0], 2) != val:
+                fails.append("section %s: stack value %s is not its face's distance %s" % (
+                    st["view"], val, fmt(c - st["faces"][i0], 2)))
+            if not any(abs(c - q) <= TOL_ON for q in planes):
+                fails.append("section %s: stack face at %.3f is no plane face of the parts" % (st["view"], c))
+        if st.get("from"):
+            inst = groups.get(st["from"]["pn"], [])
+            n3 = AXES[st["from"]["face"]]
+            offs = []
+            for sol in inst:
+                b_ = box_of(sol)
+                offs.append(vdot(_face_point(b_, n3), ax))
+            if not any(abs(st["faces"][i0] - q) <= TOL_ON for q in offs):
+                fails.append("section %s: the stack's 0 is not on %s's %s face" % (st["view"], st["from"]["pn"],
+                                                                                st["from"]["face"]))
+    # centre lines: through the centre of a placement of their part
+    for cl in data.get("centre_lines", []):
+        v = views[cl["view"]]
+        ok = False
+        for sol in groups.get(cl["pn"], []):
+            b_ = box_of(sol)
+            c3 = ((b_[0] + b_[3]) / 2, (b_[1] + b_[4]) / 2, (b_[2] + b_[5]) / 2)
+            S = (v["off"][0] + v["scale"] * vdot(c3, v["x"]), v["off"][1] + v["scale"] * vdot(c3, v["y"]))
+            if seg_dist(S, tuple(cl["p"]), tuple(cl["q"])) <= TOL_TIP:
+                ok = True
+                break
+        stats["centre lines"] = stats.get("centre lines", 0) + 1
+        if not ok:
+            fails.append("the centre line of %s in %s doesn't pass through the part's centre" % (cl["pn"],
+                                                                                              cl["view"]))
     text = "\n".join(pg.get_text() for pg in doc)
     up = text.upper()
     for need, pat in (("UNITS: mm", r"UNITS:\s*MM\b"), ("MATERIAL", r"MATERIAL:"), ("FINISH", r"FINISH:"),
@@ -2290,6 +2379,37 @@ AXES = {"+X": (1.0, 0.0, 0.0), "-X": (-1.0, 0.0, 0.0), "+Y": (0.0, 1.0, 0.0), "-
         "+Z": (0.0, 0.0, 1.0), "-Z": (0.0, 0.0, -1.0)}
 
 
+def _datum_clear(sh, S, n2, lead):
+    """The datum symbol at S fits (sheet.datum_free: its frame clear, nothing on text), and its triangle and leader
+    cross no line either (a leader through another part's section reads as that part's face)."""
+    if not sh.datum_free(S, n2, leader=lead):
+        return False
+    L = math.hypot(*n2)
+    d = (n2[0] / L, n2[1] / L)
+    nx, ny = -d[1], d[0]
+    # the triangle's body from 0.6 off the face (the face's own line is 0.4 clear of it: sheet._seg_box's gap)
+    tri = [(S[0] + d[0] * 0.6 + nx * 1.6, S[1] + d[1] * 0.6 + ny * 1.6),
+           (S[0] + d[0] * 0.6 - nx * 1.6, S[1] + d[1] * 0.6 - ny * 1.6), (S[0] + d[0] * 2.56, S[1] + d[1] * 2.56)]
+    e = (S[0] + d[0] * lead, S[1] + d[1] * lead)
+    tb = (min(p[0] for p in tri), min(p[1] for p in tri), max(p[0] for p in tri), max(p[1] for p in tri))
+    lb = (min(tri[2][0], e[0]) - 0.1, min(tri[2][1], e[1]) - 0.1, max(tri[2][0], e[0]) + 0.1, max(tri[2][1], e[1]) + 0.1)
+    return sh.is_free(tb) and sh.is_free(lb)
+
+
+def _datum_draw(sh, S, n2, letter, lead):
+    """Draw the datum symbol and keep its whole extent (triangle, leader, frame) clear of what is placed after it:
+    balloons, their leaders, view titles."""
+    sh.datum(S, n2, letter, leader=lead)
+    L = math.hypot(*n2)
+    d = (n2[0] / L, n2[1] / L)
+    nx, ny = -d[1], d[0]
+    b = 2.5 * 2.4                                   # the frame's side (sheet.datum at 2.5 mm letters)
+    fc = (S[0] + d[0] * (lead + b / 2), S[1] + d[1] * (lead + b / 2))
+    pts = [(S[0] + nx * 1.6, S[1] + ny * 1.6), (S[0] - nx * 1.6, S[1] - ny * 1.6),
+           (fc[0] - b / 2, fc[1] - b / 2), (fc[0] + b / 2, fc[1] + b / 2)]
+    sh.boxes.append((min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts)))
+
+
 def _median_datum(sh, assy, views, sides, d):
     """A datum that is a part's median plane (ISO 5459: the triangle on an extension line of that feature of
     size, in line with its dimension line): here a view's overall size, which the part must span exactly. The
@@ -2320,8 +2440,8 @@ def _median_datum(sh, assy, views, sides, d):
         ends = [((xl, max(p1[1], p2[1])), (0.0, 1.0)), ((xl, min(p1[1], p2[1])), (0.0, -1.0))]
     for lead in (7.0, 12.0, 18.0, 26.0):
         for S, n2 in ends:
-            if sh.datum_free(S, n2, leader=lead):
-                sh.datum(S, n2, d["letter"], leader=lead)
+            if _datum_clear(sh, S, n2, lead):
+                _datum_draw(sh, S, n2, d["letter"], lead)
                 return {"letter": d["letter"], "pn": d["pn"], "median": axis, "view": nm, "at": S,
                         "size": round(hi - lo, 3), "words": d.get("words", "")}
     raise NotDrawable("%s: no free place for datum %s on the %s view's overall %s size" % (assy.pn, d["letter"],
@@ -2361,10 +2481,11 @@ def datum_symbols(sh, assy, views, sides=None):
                             continue
                         if any(abs(n2[0] * q[0] + n2[1] * q[1] - off) > 0.01 for q in (p.p, p.q)):
                             continue
-                        for t in (0.5, 0.35, 0.65, 0.2, 0.8, 0.1, 0.9):
+                        # from the middle of the edge outward, in steps of a 40th
+                        for t in [0.5 + sg * k / 40.0 for k in range(20) for sg in ((1,) if k == 0 else (-1, 1))]:
                             pt, _dv = prim_point(p, t)
                             S = av.S(pt)
-                            if sh.datum_free(S, n2, leader=lead):
+                            if _datum_clear(sh, S, n2, lead):
                                 placed = (av, n2, S, lead)
                                 break
                         if placed:
@@ -2379,7 +2500,7 @@ def datum_symbols(sh, assy, views, sides=None):
             raise NotDrawable("%s: no free place for datum %s on %s's %s face" % (assy.pn, d["letter"], d["pn"],
                                                                                  d["face"]))
         av, n2, S, lead = placed
-        sh.datum(S, n2, d["letter"], leader=lead)
+        _datum_draw(sh, S, n2, d["letter"], lead)
         out.append({"letter": d["letter"], "pn": d["pn"], "face": d["face"], "view": av.name, "at": S,
                     "offset": off, "words": d.get("words", "")})
     sh.flush()
