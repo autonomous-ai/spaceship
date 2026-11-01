@@ -20,7 +20,7 @@ SUPPLIES = [
     ("PS1", "ps_cv", "12 V DC", 60.0, 5.0, "voice kit feed A, fused 5 A (REQ-VCK-04)",
      "the kit's 60 W peak on two Class 2 sources, so each runs at 80 % or less (PM ruling 2026-11-01): one 12 V Class 2 "
      "source gives at most 60 VA (NEC Chapter 9 Table 11(B): 5.0 x Vmax VA, 5.0 A)"),
-    ("PS2", "ps_cv", "12 V DC", 60.0, 5.0, "all lights: uplight, down-light and call light, through the 3-channel light controller",
+    ("PS2", "ps_cv", "12 V DC", 60.0, 5.0, "all lights: uplight, down-light and call light, through the light controller (3 of its 4 channels)",
      "lights on their own source, so a light fault can't stall the fresh air; the hub holds the lights at about 22 W"),
     ("PS3", "ps_cv", "12 V DC", 60.0, 5.0, "four fans and the sensor hub (column fuse block)",
      "air and hub on their own source, so a lighting or kit fault can't stop the fresh air"),
@@ -275,7 +275,7 @@ def harnesses(v):
         conductors="RS-485 A, B, 0 V, light current, PS1 and PS2 rail senses", cable="6 x 24 AWG screened",
         area_mm2=AWG24, length_mm=LOOP + hub_rise + 150, end_a="shares W20d's 10-way plug",
         end_b="hub I/O (HOLD H-ELE-05)", grommets="", amps_max=0.01,
-        note="the hub sets the three light channels over RS-485, reads PS2's current and every 12 V rail for the self-test (D-87)")
+        note="the hub sets the three light channels with DMX512 over RS-485, reads PS2's current and every 12 V rail for the self-test (D-87)")
     add(id="W40", harness_pn="710023", segment="COLUMN", function="supply fan pair", frm="F3a 2 A + hub PWM 1, tach 1",
         to="supply fan box, high in DR", route="CHASE, TO-DR", circuit="PS3 fan S",
         conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG", area_mm2=AWG20,
@@ -373,11 +373,12 @@ part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - ng
      size="162.5 x 42.5 x 32", status=HOLD_BUY, source=MW_LPV,
      note="PS1 and PS4 (the kit's feeds A and B), PS2 (lights, through the light controller) and PS3 (air, hub). 12 V 0-5 A; 90-264 VAC; 83 %; 'Class 2 power unit', UL1310, Class II; "
           "inrush 60 A 525 us at 230 VAC. The maker says not for LED luminaires in the EU or China: check PS2 before an EU version")
-part("lightctl", "718002", "ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485", "Điện - bộ điều khiển đèn 3 kênh",
+part("lightctl", "718002", "ELECTRICAL - LED CONTROLLER - 4 CHANNEL 12 V PWM - DMX512", "Điện - bộ điều khiển đèn 4 kênh",
      "PI", "710001", 1, "", "", 0.10, "assumption", sku="maker HOLD (H-ELE-14)", status=HOLD_BUY,
      source="PM ruling 2026-11-01 (the hub balances uplight, down-light and call light at about 22 W)",
-     note="constant-voltage PWM dimmer for 12 V strips, 3 channels (uplight, down-light, call), at least 3 A per channel, "
-          "common +12 V, set by the hub over RS-485 (DMX or Modbus); on a lost link it holds its level or goes dark, never brighter")
+     note="constant-voltage PWM dimmer for 12 V strips, 4 channels, 3 used (uplight, down-light, call; the 4th spare), at "
+          "least 3 A per channel, common +12 V, set by the hub with DMX512 over its RS-485 line (no Modbus); on a lost link it "
+          "holds its last level, never brighter; rated to 50 °C, so it sits low in the unit by the bottom vents")
 part("rcbo", "718003", "ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489", "Điện - CB 1 cực 15 A (UL 489)", "PI", "710001", 1,
      "", "", 0.12, "assumption", maker="Eaton", sku="FAZ-C15/1-NA-L (UL 489, 1 pole, 15 A, C curve; or equal)",
      size="17.7 W x 70.5 D, DIN rail", status=HOLD_BUY, source=EATON_FAZ,
@@ -729,11 +730,13 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             'leads 600 mm: AC UL1015 18 AWG, DC UL1007 16 AWG (sheet)'),
  '718002': ('ENTTEC CVC4 73926',
             'ENTTEC',
-            '73926 (CVC4): 4-channel constant-voltage PWM LED dimmer, 12-24 V DC, 5 A per channel, common VCC, '
-            'DMX512 (RS-485) and RDM; 88 x 117.5 x 31.5 mm',
-            'https://cdn.enttec.com/pdf/assets/73926/73926_CVC4_DATASHEET.pdf',
-            "holds the last DMX frame when the data stops; channel 4 spare; its fit in the unit's controller space "
-            'to check in the layout'),
+            '73926 (CVC4): 4-channel constant-voltage PWM LED dimmer, 12-24 V DC, 5 A per channel (20 A in all), 1 kHz '
+            'PWM; inputs DMX512a (with RDM) and PLINK, no Modbus; -20 to +50 °C; IP20; marked CE, FCC, RCM, UKCA (no UL '
+            'mark: it sits on PS2\'s Class 2 output); 88 x 117.5 x 31.5 mm',
+            'https://cdn.enttec.com/pdf/assets/73926/73926_CVC4_DATASHEET.pdf ; '
+            'https://cdn.enttec.com/pdf/assets/73926/73926_CVC4_INSTALLATION_GUIDE.pdf',
+            'holds the last level when the data stops (installation guide); 3 of its 4 channels used; 50 °C at most, so '
+            'it sits low in the unit by the bottom vents'),
  '718004': ('NEUTRIK NAC3MPX-TOP',
             'Neutrik',
             'NAC3MPX-TOP: UL 498 20 A 250 V AC (Recognized, file E343813); 1/4 in flat tabs',
