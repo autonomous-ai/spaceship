@@ -1187,8 +1187,9 @@ MEMBER_WORDS = {"RAIL - BOTTOM": "RAIL BOTTOM", "RAIL - TOP": "RAIL TOP", "STILE
                 "STILE - BACK": "STILE BACK", "STILE - MID": "STILE MID", "STILE - OUTER": "STILE OUTER",
                 "STILE - CENTRE": "STILE CENTRE",
                 # R1's and R2's studs carrying INTERIOR's rivnuts: their own number (D-120; the Lead's ruling of
-                # 2026-11-01), the word Control's name uses
-                "STILE - MID INTERIOR": "STILE MID INTERIOR",
+                # 2026-11-01): Control's 212206 "STUD WITH LEDGE BRACKET RIVNUTS" (R1, D-172) and 212406 "STUD WITH
+                # SCREEN RAIL RIVNUTS" (R2)
+                "STILE - MID INTERIOR": "STUD WITH",
                 # B2's members round the power unit (the Lead's approval of WALL's B2 frame, 2026-11-01): Control's
                 # 212606 to 212609 (WALL group, 2026-11-01)
                 "CROSS - LOWER": "CROSS MEMBER LOWER", "CROSS - UPPER": "CROSS MEMBER UPPER",
