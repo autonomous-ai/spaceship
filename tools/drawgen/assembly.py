@@ -1957,6 +1957,65 @@ def _arrow_or_dot_at(page, sheet_h, tip, end):
     return False
 
 
+def _outline_at(page, sheet_h, tip, tol=0.05):
+    """True when a part outline drawn on the page passes within tol (sheet mm) of tip: a stroke at the visible
+    outline's width or wider, or the edge of a filled area larger than an arrowhead or a dot (a thin part drawn
+    solid). Thin lines (dimensions, leaders, centre lines, hatching) don't count."""
+    from sheet import MM as _MM
+
+    def mm(p):
+        return (p.x / _MM, sheet_h - p.y / _MM)
+    for d in page.get_drawings():
+        stroked = d.get("color") is not None and (d.get("width") or 0.0) / _MM >= W_VIS * 0.9
+        filled = d.get("fill") is not None
+        if not stroked and not filled:
+            continue
+        r = d["rect"]
+        if not stroked and r.width / _MM < 4.0 and r.height / _MM < 4.0:
+            continue                                # an arrowhead or a dot
+        if not (r.x0 / _MM - 1 <= tip[0] <= r.x1 / _MM + 1 and sheet_h - r.y1 / _MM - 1 <= tip[1] <= sheet_h - r.y0 / _MM + 1):
+            continue
+        for it in d["items"]:
+            if it[0] == "l":
+                pts = [mm(it[1]), mm(it[2])]
+            elif it[0] == "c":
+                q = [mm(x) for x in it[1:5]]
+                pts = [bez(q, k / 16.0) for k in range(17)]
+            elif it[0] == "re":
+                R = it[1]
+                pts = [mm(R.tl), mm(R.tr), mm(R.br), mm(R.bl), mm(R.tl)]
+            elif it[0] == "qu":
+                Q = it[1]
+                pts = [mm(Q.ul), mm(Q.ur), mm(Q.lr), mm(Q.ll), mm(Q.ul)]
+            else:
+                continue
+            if any(seg_dist(tip, pts[k], pts[k + 1]) <= tol for k in range(len(pts) - 1)):
+                return True
+    return False
+
+
+def _hidden_by(solids, p3, view, tol=TOL_ON):
+    """The depth (mm) by which something lies in front of 3D point p3 along the view's sight line, or 0 when p3 is
+    the first surface there; in a section only what lies behind the cutting plane counts."""
+    from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+    n = tuple(view["n"])
+    start = 1e5
+    if view.get("cut"):
+        start = max(0.0, vdot(vsub(tuple(view["cut"]["point"]), p3), n))
+    o = vadd(p3, vmul(n, start))
+    lin = gp_Lin(gp_Pnt(*o), gp_Dir(*vmul(n, -1.0)))
+    best = start
+    for so in solids:
+        it = IntCurvesFace_ShapeIntersector()
+        it.Load(so, 1e-6)
+        it.Perform(lin, 0.0, start + 1.0)
+        if not it.IsDone():
+            continue
+        for k in range(1, it.NbPnt() + 1):
+            best = min(best, it.WParameter(k))
+    return max(0.0, start - best - tol)
+
+
 def check(pdf_path):
     """Read an assembly sheet back against its STEP and parts list, independently of how it was drawn: every
     table row against the list's rows under the assembly (item order, number, name, quantity, material, finish,
@@ -2026,6 +2085,12 @@ def check(pdf_path):
     views = {v["name"]: v for v in data["views"]}
     groups = {}
     solids = _solids_by_pn(step, env, groups)
+    sight, _seen = [], set()
+    for p_ in sorted(x for x in under if x):
+        for so in solids.get(p_, []):
+            if id(so) not in _seen:
+                _seen.add(id(so))
+                sight.append(so)
     ballooned = set()
     for b in data.get("balloons", []):
         stats["balloons"] += 1
@@ -2049,6 +2114,13 @@ def check(pdf_path):
             pt, nr = v["cut"]["point"], v["cut"]["normal"]
             if vdot(vsub(t3, pt), nr) > TOL_ON:
                 fails.append("balloon %d: its point lies in front of section %s's plane" % (n, v.get("letter")))
+        if b["end"] == "arrow" and not _outline_at(page, data["sheet_h"], tuple(b["tip"])):
+            fails.append("balloon %d: its arrow doesn't end on an outline drawn in its view (%s)" % (n, b["view"]))
+        if b["end"] == "dot" and v is not None:
+            hid = _hidden_by(sight, t3, v)
+            if hid > 0:
+                fails.append("balloon %d: its point is hidden in its view (%s), %.2f mm behind another surface" % (
+                    n, b["view"], hid))
         ballooned.add(bpn)
         txt = [t for t in readback.text_boxes(page, data["sheet_h"]) if t[4] == str(n) and
                math.dist(((t[0] + t[2]) / 2, (t[1] + t[3]) / 2), tuple(b["centre"])) < 1.5]
