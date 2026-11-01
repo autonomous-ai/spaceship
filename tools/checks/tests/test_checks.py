@@ -466,6 +466,40 @@ def test_generated_drawings_count_the_same_and_their_findings_go_to_the_generato
     assert f.owner == "Drawing Generator"
 
 
+def test_generated_drawings_follow_d113_sections_and_no_bent_parts(tmp_path):
+    fitz = pytest.importorskip("fitz")
+    d = tmp_path / "v2/02-Drawings/base"
+    d.mkdir(parents=True)
+    full = "UNITS: mm\nMATERIAL: EN AW-6063 T6\nFINISH: mill finish\nGENERAL TOLERANCES: note 1\nH01  X (mm)  Y (mm)"
+    def pdf(name, text, creator):
+        doc = fitz.open()
+        page = doc.new_page()
+        for i, line in enumerate(text.split("\n")):
+            page.insert_text((40, 50 + 20 * i), line)
+        doc.set_metadata({"creator": creator})
+        doc.save(str(d / name))
+    pdf("111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf", full, "drawgen 0.1")                 # holes through both walls
+    pdf("111102_P01_BASE-BAND-TUBE-SIDE-RH_DWG.pdf", full + "\nSECTION A-A", "drawgen 0.1")
+    pdf("111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf", full, "Autodesk Fusion")              # D-113 is the generator's rule
+    pdf("111601_P01_BASE-BRACKET_DWG.pdf", full, "drawgen 0.1")                         # a bent bracket
+    pns = {"111101", "111102", "111103", "111601"}
+    holes = {pn: [sf.Hole(1, (0, 0, 0), (0, 0, 1), 6.6, 2.0, [])] for pn in pns}
+    fs = c_drawings.check_drawings(str(tmp_path), pns, holes, two_wall_by_pn={"111101": 2, "111102": 2, "111103": 2},
+                                   bends_by_pn={"111601": 2})
+    got = {(f.rule, f.subject): f for f in fs}
+    assert set(got) == {("no-section", "111101"), ("generated-bent-part", "111601")}
+    assert got[("no-section", "111101")].owner == got[("generated-bent-part", "111601")].owner == "Drawing Generator"
+    # the STEP facts behind them: a hole axis through both walls of one body; copies of a part counted once
+    assert c_drawings.two_wall_axes([sf.Hole(1, (0, 0, 0), (0, 0, 1), 6.6, 2, []),
+                                     sf.Hole(1, (0, 0, 40), (0, 0, 1), 6.6, 2, []),
+                                     sf.Hole(1, (50, 0, 40), (0, 0, 1), 6.6, 2, [])]) == 1
+    a = math.radians(30.0)
+    turned = sf.Frame.from_axes((100.0, 0.0, 0.0), (0, 0, 1), (math.cos(a), math.sin(a), 0))
+    same = [c_drawings.body_shape(_profile(f, holes=((300.0, 9.53),))) for f in (sf.Frame(), turned)]
+    assert same[0] == same[1]                                                            # one part, turned
+    assert c_drawings.body_shape(_profile(sf.Frame(), length=500.0, holes=((300.0, 9.53),))) != same[0]
+
+
 def test_run_with_ref_leaves_no_export_behind():
     import glob
     import subprocess
