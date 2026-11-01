@@ -422,10 +422,78 @@ def test_what_decisions_cancelled_is_gone_and_what_they_added_is_there(tmp_path)
     assert got[("cancelled-by-decision", "111401")].owner == "BASE" and "D-132" in got[("cancelled-by-decision", "111401")].message
     assert got[("cancelled-by-decision", "118003")].owner == "FRONT"                 # the skeleton's cleat isn't a part
     req = [f for f in got.values() if f.rule == "required-by-decision"]
-    assert len(req) == 1 and req[0].owner == "BASE" and "seal lip" in req[0].message
-    _write_csv(d / "110000_P01_BASE_BOM.csv", rows[2:] + [dict(row, part_number="118101", name="BASE - SEAL LIP - SOFT")])
+    assert {f.owner for f in req} == {"BASE", "WALL"} and any("seal lip" in f.message for f in req)
+    made = [dict(row, part_number="118101", name="BASE - SEAL LIP - SOFT"),
+            dict(row, part_number="111602", name="BASE - LEVELLING GLIDE - M10 - D40"),
+            dict(row, part_number="111111", name="BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK"),
+            dict(row, part_number="838013", name="HARDWARE - BLIND RIVET - CLOSED END - 4.8 X 9.5")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", rows[2:] + made)
+    w = tmp_path / "v2/03-Manufacturing/wall"
+    w.mkdir(parents=True)
+    _write_csv(w / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+               [dict(row, part_number="211701", name="WALL - CASSETTE LEDGE - SIDE LOWER - COMMON"),
+                dict(row, part_number="211801", name="WALL - CASSETTE LEDGE - BACK LOWER"),
+                dict(row, part_number="838012", name="HARDWARE - BLIND RIVET - CLOSED END - CSK 3.2 X 8")])
     got = c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})
-    assert got == []                                                       # floor parts gone, the lip there
+    assert got == []          # floor parts gone; the lip, the made glide and cap, the ledges and their rivets there
+
+
+def test_d170_d166_require_the_ledges_and_their_closed_end_rivets(tmp_path):
+    # the Lead (2026-11-01): D-170's ledges 211701 and 211801 in WALL's lists, and D-166's closed-end rivets where they
+    # fix them (838012, WALL) and the sill (838013, BASE); a rivet's number counts before its name is set
+    import shutil
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    for n in ("cancelled-items.csv", "required-items.csv"):
+        shutil.copy(os.path.join(ROOT, "v2/04-Checks/config", n), cfg / n)
+    row = {"part_number": "118101", "name": "BASE - SEAL LIP - SOFT", "name_vi": "x", "material": "EPDM",
+           "finish": "black", "qty": "1", "mass_kg": "1", "status": "DRAFT", "source": "CAD"}
+    base = [row, dict(row, part_number="111602", name="BASE - LEVELLING GLIDE - M10 - D40"),
+            dict(row, part_number="111111", name="BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK")]
+    b, w = tmp_path / "v2/03-Manufacturing/base", tmp_path / "v2/03-Manufacturing/wall"
+    b.mkdir(parents=True)
+    w.mkdir(parents=True)
+    _write_csv(b / "110000_P01_BASE_BOM.csv", base)
+    # the rivet for BASE's sill listed in WALL's folder doesn't count for BASE
+    _write_csv(w / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv", [dict(row, part_number="838013", name="RIVET")])
+    def req():
+        fs = c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})
+        return sorted((f.owner, f.message.split(" requires ")[1].split(",")[0]) for f in fs if f.rule == "required-by-decision")
+    assert req() == [("BASE", "838013"), ("WALL", "838012"), ("WALL", "the back cassette ledge 211801"),
+                     ("WALL", "the side cassette ledge 211701")]
+    _write_csv(b / "110000_P01_BASE_BOM.csv", base + [dict(row, part_number="838013", name="")])     # number only
+    _write_csv(w / "210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+               [dict(row, part_number="211701", name="WALL - CASSETTE LEDGE - SIDE LOWER - COMMON"),
+                dict(row, part_number="211899", name="WALL - CASSETTE LEDGE - BACK LOWER"),         # by its name
+                dict(row, part_number="838012", name="")])
+    assert req() == []
+
+
+def test_d164_d165_cancel_the_bought_glide_and_cap_not_the_made_ones(tmp_path):
+    import shutil
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    for n in ("cancelled-items.csv", "required-items.csv"):
+        shutil.copy(os.path.join(ROOT, "v2/04-Checks/config", n), cfg / n)
+    d = tmp_path / "v2/03-Manufacturing/base"
+    d.mkdir(parents=True)
+    row = {"part_number": "118101", "name": "BASE - SEAL LIP - SOFT", "name_vi": "x", "material": "EPDM",
+           "finish": "black", "qty": "1", "mass_kg": "1", "status": "DRAFT", "source": "CAD"}
+    bought = [row, dict(row, part_number="118002", name="BASE - LEVELLING GLIDE - M10 - HOLD"),
+              dict(row, part_number="118003", name="BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", bought)
+    got = {(f.rule, f.subject): f for f in c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})}
+    assert {k for k in got if k[0] == "cancelled-by-decision"} == {("cancelled-by-decision", "118002"),
+                                                                   ("cancelled-by-decision", "118003")}
+    assert "D-164" in got[("cancelled-by-decision", "118002")].message and \
+        "D-165" in got[("cancelled-by-decision", "118003")].message
+    assert sorted(f.message.split(" requires")[0] for f in got.values() if f.rule == "required-by-decision"
+                  and f.message.startswith(("D-164", "D-165"))) == ["D-164", "D-165"]
+    made = [row, dict(row, part_number="111602", name="BASE - LEVELLING GLIDE - M10 - D40"),
+            dict(row, part_number="111111", name="BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", made)
+    assert [f for f in c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})
+            if "D-164" in f.message or "D-165" in f.message] == []
 
 
 def test_repo_pod_mass_from_the_newest_list_without_double_counting():

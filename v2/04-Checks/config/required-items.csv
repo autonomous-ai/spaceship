@@ -1,2 +1,8 @@
 pattern,folder,decision,what
 "\bSEAL\b.*\bLIP\b|\bLIP\b.*\bSEAL\b",v2/03-Manufacturing/base,D-132,"the base seal lip on the band's inner face, pressing on the room floor across the glides' range"
+"\bLEVELLING GLIDE\W+M10\W+D40\b",v2/03-Manufacturing/base,D-164,"the made levelling glide 111602, BASE - LEVELLING GLIDE - M10 - D40: a zinc-plated steel stem with a 5 mm socket and a 40 x 7.6 base"
+"\bTUBE END CAP\W+97 X 37\b",v2/03-Manufacturing/base,D-165,"the made tube end cap 111111, BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK, bonded flush into the band tube's open end"
+"\b211701\b|\bCASSETTE LEDGE\W+SIDE\W+LOWER\b",v2/03-Manufacturing/wall,D-170,"the side cassette ledge 211701, WALL - CASSETTE LEDGE - SIDE LOWER - COMMON: a 1.5 galvanized steel angle along L1's and R1's bottom rails that carries the lower cassettes"
+"\b211801\b|\bCASSETTE LEDGE\W+BACK\W+LOWER\b",v2/03-Manufacturing/wall,D-170,"the back cassette ledge 211801, WALL - CASSETTE LEDGE - BACK LOWER, along B1's and B2's bottom rails"
+"\b838012\b",v2/03-Manufacturing/wall,D-166,"838012, the closed-end countersunk rivet (ISO 15974, 3.2 x 8, aluminium body, steel mandrel) that fixes the cassette ledges, flush in the uprights' countersinks (D-170)"
+"\b838013\b",v2/03-Manufacturing/base,D-166,"838013, the closed-end dome rivet (ISO 15973, 4.8 x 9.5, aluminium body, steel mandrel) that fixes the sill 111301 into FR1's closed tube, 6 a pod"
