@@ -912,7 +912,9 @@ def seal_runs(design):
     xi, yb = "%s + band_t" % XL, "%s - band_t" % YB
     runs = [("seal_l", "band_l", "X = %.2f (side band LH, inner face)" % v(xi), Y_MITRE_IN, yb,
              [(xi, Y_MITRE_IN), ("%s + seal_t" % xi, Y_MITRE_IN), ("%s + seal_t" % xi, yb), (xi, yb)]),
-            ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), xi, "%s - band_t" % XR,
+            # the back band's lip runs between the side bands' lips, which already fill the corners' seal_t squares:
+            # its run is its envelope (it counted 2 x seal_t too much before, 2026-11-01)
+            ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), "%s + seal_t" % xi, "%s - band_t - seal_t" % XR,
              [("%s + seal_t" % xi, "%s - seal_t" % yb), ("%s - band_t - seal_t" % XR, "%s - seal_t" % yb),
               ("%s - band_t - seal_t" % XR, yb), ("%s + seal_t" % xi, yb)])]
     if P02_ON:

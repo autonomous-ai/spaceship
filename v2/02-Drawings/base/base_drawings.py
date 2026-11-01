@@ -201,6 +201,15 @@ def add_view(sheet, orientation, scale, center, hidden=False):
     return v
 
 
+def edge_end(view, x, y):
+    """The curve end lying on the view's vertical line at x (its extent's side), nearest to height y."""
+    lines, _ = curves(view)
+    ends = [p for ln in lines for p in (ln.startPoint, ln.endPoint) if abs(xy(p)[0] - x) < 1e-3]
+    if not ends:
+        return nearest_end(view, (x, y))
+    return min(ends, key=lambda p: abs(xy(p)[1] - y))
+
+
 def overall(sheet, view, below=True, left=True, gap=8.0, which="both"):
     """The view's overall sizes from its bottom-left corner: "h" its width, "v" its height, or
     "both". A second view of the same part takes only the size the first one doesn't show, so no
@@ -209,7 +218,10 @@ def overall(sheet, view, below=True, left=True, gap=8.0, which="both"):
     o = nearest_end(view, (e[0], e[1]))
     n = 0
     if which in ("both", "h") and e[2] - e[0] > 2.0:
-        dim(sheet, o, nearest_end(view, (e[2], e[1])), ((e[0] + e[2]) / 2, e[1] - gap if below else e[3] + gap))
+        # the true width: points ON the extent's left and right lines (on 110103 the lowest line was the lip
+        # seal's envelope, 10 shorter at each end, so the width read 2400 instead of the band's 2420)
+        lo, hi = edge_end(view, e[0], e[1]), edge_end(view, e[2], e[1])
+        dim(sheet, lo, hi, ((e[0] + e[2]) / 2, e[1] - gap if below else e[3] + gap))
         n += 1
     if which in ("both", "v") and e[3] - e[1] > 2.0:
         dim(sheet, o, nearest_end(view, (e[0], e[3])), (e[0] - gap if left else e[2] + gap, (e[1] + e[3]) / 2))
