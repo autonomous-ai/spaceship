@@ -190,18 +190,49 @@ def must_constrain(sk):
         raise RuntimeError("sketch %r is not fully constrained" % sk.name)
 
 
+SKIPPED = []
+
+
+def constrain(what, fn):
+    """Add a constraint or a dimension. Fusion makes a straight line drawn level or plumb horizontal or vertical
+    by itself, so a dimension that the line already implies is refused as over-constraining (the first sample
+    run, 2026-11-01): that one is skipped and named. Each sketch is then checked to be fully constrained with
+    every point where it was drawn (at_points), so nothing skipped can leave a point loose or moved."""
+    try:
+        return fn()
+    except RuntimeError as ex:
+        if "OVER_CONSTRAINT" in str(ex):
+            SKIPPED.append(what)
+            return None
+        raise
+
+
 def dim_point(sk, pt, ex, ey, yaxis=None):
     """Fix a sketch point by its distances from the origin, as parameter expressions (positive distances; the
     point stays on the side it was drawn). A point on X = 0 goes onto the projected Y axis instead."""
     d, g = sk.sketchDimensions, sk.geometricConstraints
     x, y = pt.geometry.x, pt.geometry.y
+    hor = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    ver = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
     if ex is None:
-        g.addCoincident(pt, yaxis)
+        constrain("%s: on the Y axis" % sk.name, lambda: g.addCoincident(pt, yaxis))
     else:
-        d.addDistanceDimension(sk.originPoint, pt, adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
-                               adsk.core.Point3D.create(x / 2, y + 0.3, 0)).parameter.expression = ex
-    d.addDistanceDimension(sk.originPoint, pt, adsk.fusion.DimensionOrientations.VerticalDimensionOrientation,
-                           adsk.core.Point3D.create(x + 0.3, y / 2, 0)).parameter.expression = ey
+        dim = constrain("%s: x %s" % (sk.name, ex), lambda: d.addDistanceDimension(
+            sk.originPoint, pt, hor, adsk.core.Point3D.create(x / 2, y + 0.3, 0)))
+        if dim is not None:
+            dim.parameter.expression = ex
+    dim = constrain("%s: y %s" % (sk.name, ey), lambda: d.addDistanceDimension(
+        sk.originPoint, pt, ver, adsk.core.Point3D.create(x + 0.3, y / 2, 0)))
+    if dim is not None:
+        dim.parameter.expression = ey
+
+
+def at_points(sk, want_mm):
+    """Raise unless every point (mm) of want_mm is a point of the sketch, to 0.001 mm."""
+    have = [(p.geometry.x * 10.0, p.geometry.y * 10.0) for p in sk.sketchPoints]
+    for w in want_mm:
+        if not any(abs(h[0] - w[0]) < 0.001 and abs(h[1] - w[1]) < 0.001 for h in have):
+            raise RuntimeError("sketch %r: no point at %s after its constraints" % (sk.name, w))
 
 
 def polygon(sk, pts, exprs, yaxis=None):
@@ -214,6 +245,7 @@ def polygon(sk, pts, exprs, yaxis=None):
     corners = [lines[0].startSketchPoint] + [ln.endSketchPoint for ln in lines[:-1]]
     for pt, (ex, ey) in zip(corners, exprs):
         dim_point(sk, pt, ex, ey, yaxis)
+    at_points(sk, pts)
     return lines
 
 
@@ -230,6 +262,7 @@ def rect(sk, x0, y0, x1, y1, ex0, ey0, ex1, ey1):
     hi = pts[max(pts, key=lambda k: k[0] + k[1])]
     dim_point(sk, lo, ex0, ey0)
     dim_point(sk, hi, ex1, ey1)
+    at_points(sk, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)])
 
 
 def extrude(comp, sk, op, depth, body=None, name=""):
@@ -414,6 +447,8 @@ def _corner(app, doc, design, f, pn):
 
     mat = material(comp)
     health(design)
+    print("  dimensions Fusion already implied (skipped): %d" % len(SKIPPED))
+    del SKIPPED[:]
     want = (g - r, g - r, -d / 2, g + wb + La, g + wa + Lb, d / 2)
     body = check_body(comp, want, c.mass(), "CLEAT %s" % pn)
     print("CLEAT %s: material %s, Fusion mass %.2f g" % (pn, mat, body.physicalProperties.mass * 1000))
@@ -501,6 +536,8 @@ def _plug(app, doc, design, f):
 
     mat = material(comp)
     health(design)
+    print("  dimensions Fusion already implied (skipped): %d" % len(SKIPPED))
+    del SKIPPED[:]
     want = (-tl, -w / 2 - r, -d / 2, Ls, w / 2 + r, d / 2)
     body = check_body(comp, want, k.PLUG.mass(), "T PLUG %s" % pn)
     print("T PLUG %s: material %s, Fusion mass %.2f g" % (pn, mat, body.physicalProperties.mass * 1000))
