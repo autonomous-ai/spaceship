@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (3d6c2af), PR #91 (0cb3135), PR #202 (803aec9), PR #203 (f1fd14e), PR #215 (116b89a), PR #105 (ef738c3). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (7309f94), PR #203 (f1fd14e), PR #215 (116b89a), PR #105 (fb72a96), PR #202 (404d5ce), PR #91 (99a24a0). The Mac's screen at run time: **unlocked**. 455 files in the CAD, drawing and manufacturing folders; the FAI plan's 88 characteristics, 11 functional checks and 20 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -18,15 +18,15 @@ Read from: main (3d6c2af), PR #91 (0cb3135), PR #202 (803aec9), PR #203 (f1fd14e
 | CEILING | 3 | 11 | 0 | 0 | 5 | 0 | 5 |
 | CEILING (builds AIR, D-80) | 8 | 17 | 0 | 6 | 1 | 0 | 7 |
 | CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
-| ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 65 |
+| ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 69 |
 | FRONT | 4 | 18 | 0 | 0 | 4 | 1 | 5 |
 | JOINTS | 2 | 4 | 0 | 0 | 0 | 0 | 0 |
 | WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 36 | 98 | 0 | 11 | 10 | 2 | 89 |
+| **All, each number once** | 36 | 98 | 0 | 11 | 10 | 2 | 93 |
 
-97 of the 145 made numbers have no drawing yet; for 80 of them the drawing is the only gap, so their drawings can start now (D-84).
+94 of the 145 made numbers have no drawing yet; for 80 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 97, DXF or cut list 15, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 94, DXF or cut list 15, BOM row 3, CAD 3.
 
 ## Made parts with no FAI line
 
@@ -168,9 +168,9 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | main | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
 | 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
 | 111211 | BASE - CORNER KEY - BACK - COMMON | main | yes | yes | yes | no | yes | yes | yes | K-B08 | open: DXF or cut list |
-| 111212 | BASE CORNER KEY FRONT LH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
-| 111213 | BASE CORNER KEY FRONT RH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
-| 111214 | BASE CORNER KEY KNEE LH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
+| 111212 | BASE CORNER KEY FRONT LH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
+| 111213 | BASE CORNER KEY FRONT RH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
+| 111214 | BASE CORNER KEY KNEE LH | main | no | no | yes | — | on 111211, tabulated (D-89) | no | — | K-B08 | open: BOM row, CAD |
 
 ### WALL
 
@@ -340,6 +340,10 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 718042 | ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
 | 718043 | ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
 | 718050 | ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718102 | ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718103 | ELECTRICAL - LED PROFILE END CAP | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
 
 ### FRONT
 

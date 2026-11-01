@@ -157,6 +157,29 @@ class MadeParts(unittest.TestCase):
         self.assertIn("| on 211101, tabulated (D-89) |", rc.render(extra, [], [], [], "main", "unlocked", {}, ([], [], []),
                                                                    "2026-11-01"))
 
+    def test_the_real_run_passes_the_tabulated_cover_to_those_lines(self):
+        # main() hands the same cover to the lines with no BOM row; a run that stops passing it fails here
+        import inspect
+        import tempfile as _tempfile
+        seen, cover = {}, {"211102": "211101"}
+
+        class Stop(Exception):
+            pass
+
+        def spy(*args, **kw):
+            seen["tab_cover"] = inspect.signature(real).bind(*args, **kw).arguments.get("tab_cover")
+            raise Stop
+
+        real, old = rc.files_only, (rc.tabulated_cover, rc.d125_strips)
+        rc.files_only, rc.tabulated_cover, rc.d125_strips = spy, (lambda by_pn, text_of: cover), (lambda root=None: {})
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "unlocked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.files_only = real
+            rc.tabulated_cover, rc.d125_strips = old
+        self.assertIs(seen.get("tab_cover"), cover)
+
 
 class BoughtParts(unittest.TestCase):
     def test_register_named_part_with_a_test_is_done(self):
