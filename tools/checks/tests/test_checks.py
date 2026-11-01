@@ -1388,13 +1388,13 @@ def test_a_duplicate_name_goes_to_the_list_that_is_off(tmp_path):
 def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
     # the owner's rule 9 is for sheet parts: a 60 mm access hole near a felt's edge can't tear out
     def plate(name):
-        x0, x1, y0, y1 = -73.5, 500.0, -73.5, 500.0
+        x0, x1, y0, y1 = -31.0, 500.0, -31.0, 500.0         # a 1 mm web round a Ø60 opening (the Lead's web rule)
         rim = (sf.Frame(), 30.0, (30.0, 0, 0), (30.0, 0, 0), True)
         face = sf.Face(1, "plane", (0, 0, 0), (0, 0, 1), None, True, [], [rim],
                        [((x0, y0, 0), (x1, y0, 0)), ((x1, y0, 0), (x1, y1, 0)), ((x1, y1, 0), (x0, y1, 0)),
                         ((x0, y1, 0), (x0, y0, 0))])
         so = sf.Solid(1, name)
-        so.faces, so.holes, so.bends = [face], [sf.Hole(1, (0, 0, 0), (0, 0, 1), 60.0, 9.0, [])], []
+        so.faces, so.holes, so.bends = [face], [sf.Hole(1, (0, 0, 0), (0, 0, 1), 60.0, 1.0, [])], []
         return so
 
     class FakeStep:
@@ -1410,8 +1410,8 @@ def test_edge_distance_is_for_rigid_parts_not_felt(monkeypatch, tmp_path):
                               ("511102", "LINING - TRAY - SIDE LOWER - RH", True)):
         monkeypatch.setattr(c_geometry, "load_step", lambda _p, s=FakeStep(pn, name): s)
         fs = [f for f in c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, {}, hole_rules=[],
-                                                         edge_exceptions={}) if f.rule == "edge-distance"]
-        assert bool(fs) == flagged, name
+                                                         edge_exceptions={}) if f.rule in ("edge-distance", "opening-web")]
+        assert bool(fs) == flagged, name                    # the tray's Ø60 is an opening: its 1 mm web fails
 
 
 def test_the_assembled_shell_is_checked_face_by_face_once_its_parts_are_on_main():
@@ -1710,3 +1710,55 @@ def test_walls_l1_names_a_wrapped_step_string_and_the_teams_own_finish():
             ("/r/v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [master])]
     fs = c_parts.check_mixed_metals("/r", bare, [("831007", "211301", "x.step")])
     assert [f.rule for f in fs] == ["bare-steel-on-aluminium"]         # with no material at all, the name still speaks
+
+
+def test_an_opening_takes_the_web_rule_and_a_fastener_hole_the_two_diameter_rule(monkeypatch, tmp_path):
+    # the Lead's ruling on CEILING's fan bulkheads (2026-11-01): a Ø135 fan bore is an opening; its rim needs
+    # max(2 x t, 3 mm) of material to an edge or the next hole; the fan's own screw holes keep 2 diameters
+    def plate_with(holes, width=300.0, height=150.0, t=1.5):
+        s = sf.Solid(1, "bulkhead")
+        corners = [(0, 0), (width, 0), (width, height), (0, height)]
+        lt = [((*corners[i], t), (*corners[(i + 1) % 4], t)) for i in range(4)]
+        lb = [((*corners[i], 0.0), (*corners[(i + 1) % 4], 0.0)) for i in range(4)]
+        rt = [_arc((x, y, t), (0, 0, 1), (1, 0, 0), d / 2, 0, 0) for x, y, d in holes]
+        rb = [_arc((x, y, 0.0), (0, 0, 1), (1, 0, 0), d / 2, 0, 0) for x, y, d in holes]
+        s.faces.append(sf.Face(1, "plane", (0, 0, t), (0, 0, 1), None, True, [p for l in lt for p in l], rt, lt))
+        s.faces.append(sf.Face(2, "plane", (0, 0, 0), (0, 0, -1), None, True, [p for l in lb for p in l], rb, lb))
+        for k, (x, y, d) in enumerate(holes):
+            s.faces.append(sf.Face(3 + k, "cylinder", (x, y, 0), (0, 0, 1), d / 2, False, [rt[k][2], rb[k][2]],
+                                   [rt[k], rb[k]], []))
+        for i in range(4):
+            a, b = corners[i], corners[(i + 1) % 4]
+            n = sf.norm(((b[1] - a[1]), -(b[0] - a[0]), 0.0))
+            s.faces.append(sf.Face(20 + i, "plane", (*a, 0.0), n, None, True, [(*a, 0.0), (*b, 0.0), (*a, t), (*b, t)],
+                                   [], [((*a, 0.0), (*b, 0.0)), ((*a, t), (*b, t))]))
+        s.box = (0, 0, 0, width, height, t)
+        s.thickness = sf._sheet_thickness(s)
+        s.holes = sf._holes(s)
+        return s
+    # two Ø135 bores: 7.5 mm rims to the long edges, 9 mm between them; a fan screw hole Ø4.3 4 mm from an edge
+    plate = plate_with([(75.0, 75.0, 135.0), (219.0, 75.0, 135.0), (150.0, 146.0, 4.3)])
+    assert len(plate.holes) == 3
+
+    class FakeStep:
+        def instances(self):
+            return [{"solid": 1, "part_number": "611403", "name": "AIR - FAN BULKHEAD - EXHAUST", "path": ["611403"],
+                     "frame": sf.Frame()}]
+
+        def solid(self, sid):
+            return plate
+    monkeypatch.setitem(c_geometry.load_step.__defaults__[0], str(tmp_path / "x.step"), FakeStep())
+    fs = c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, [])
+    got = sorted((f.rule, round(f.evidence.get("web_mm", f.evidence.get("edge_mm", 0)), 1)) for f in fs)
+    assert ("edge-distance", 4.0) in got                         # the screw hole: 4 < 2 x 4.3 to the top edge
+    assert not any(r == "edge-distance" and v > 5 for r, v in got)   # no 2-diameter rule on the bores
+    assert not any(r == "hole-spacing" for r, _v in got)
+    # 7.5 and 6 mm rims and the 9 mm web pass max(2 x 1.5, 3) = 3; a 2 mm rim doesn't
+    assert not any(r == "opening-web" for r, _v in got)
+    plate = plate_with([(69.5, 75.0, 135.0), (219.0, 75.0, 135.0), (150.0, 146.0, 4.3)])          # a 2 mm rim
+    fs = c_geometry.check_part_features(str(tmp_path), str(tmp_path / "x.step"), {}, [])
+    webs = [f for f in fs if f.rule == "opening-web"]
+    assert len(webs) == 1 and webs[0].evidence["web_mm"] == 2.0 and "3.0 mm" in webs[0].message
+    # a smaller cut its row names as an opening is an opening too
+    small = sf.Hole(1, (10.0, 10.0, 0.75), (0.0, 0.0, 1.0), 16.0, 1.5, [])
+    assert c_geometry.is_opening(small, "AIR - BULKHEAD; Ø16 cable opening") and not c_geometry.is_opening(small, "")

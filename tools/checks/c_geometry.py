@@ -641,7 +641,33 @@ def _edge_accepted(rows, hole, edges, need):
     return None
 
 
-def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None, edge_exceptions=None):
+# the Lead's ruling (2026-11-01, CEILING's fan bulkheads): the 2-diameter rule is for fastener holes, not openings.
+# A round cut over the biggest fastener clearance, or one its part row names as an opening, is an opening, checked by
+# a web rule: material of at least 2 x the sheet's thickness, and at least 3 mm, to any edge and to the next hole, as
+# laser cutting needs
+OPENING_DIA = 20.0          # mm: over the 5 mm key's Ø19 access hole, the biggest fastener clearance
+OPENING_WEB = 3.0           # mm, laser cutting
+OPENING_WORDS = re.compile(r"\b(?:openings?|bores?|cut-?outs?|vents?)\b", re.I)
+DIA_IN_TEXT = re.compile(r"[\u00d8\u2300\u03a6]\s*(\d+(?:\.\d+)?)")
+
+
+def is_opening(hole, row_text=""):
+    """An opening (fan bore, air or cable opening), not a fastener hole: over OPENING_DIA, or a size its part's row
+    names together with 'opening', 'bore', 'cut-out' or 'vent'."""
+    if hole.diameter > OPENING_DIA + 1e-6:
+        return True
+    if row_text and OPENING_WORDS.search(row_text):
+        return any(abs(float(d) - hole.diameter) <= 0.5 for d in DIA_IN_TEXT.findall(row_text))
+    return False
+
+
+def _opening_web_need(hole, so):
+    t = hole.length if hole.length and hole.length > 0.05 else (getattr(so, "thickness", None) or 0.0)
+    return max(2.0 * t, OPENING_WEB), t
+
+
+def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None, edge_exceptions=None,
+                        row_texts=None):
     """Per-part checks on a STEP file. materials: part number -> material text."""
     fs = []
     hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
@@ -660,11 +686,27 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
         # the edge-distance and spacing rules are for rigid sheet and machined parts (the owner's rule 9, "for the
         # sheet parts"): a hole near the edge of a felt, fill, foam or gasket can't tear out under load
         holes = [] if is_soft(inst.get("name") or "") or is_soft(so.name or "") else so.holes
+        text = (row_texts or {}).get(pn, "")
+        opening = {id(h): is_opening(h, text) for h in holes}
         for h in holes:
             edges = sf.free_edge_distances(so, h)
             if not edges:
                 continue
             e = min(x[0] for x in edges)
+            if opening[id(h)]:
+                need, t = _opening_web_need(h, so)
+                web = e - h.diameter / 2.0
+                if web + 1e-6 < need:
+                    fs.append(Finding(
+                        "C09", "opening-web", "%s opening Ø%.1f at %s" % (part, h.diameter, _pt(h.center)), "major",
+                        "Opening Ø%.2f in %s leaves %.1f mm of material to the free edge; an opening needs at least "
+                        "%.1f mm (2 x the %.1f mm sheet, and 3 mm for laser cutting: the Lead's ruling, 2026-11-01). "
+                        "Opening centre %s in the part's own coordinates." % (
+                            h.diameter, part, web, need, t, _pt(h.center)),
+                        "Leave at least %.1f mm of material round the opening, or join that edge to its neighbour "
+                        "(a 3 mm rim on a free edge of a plate that carries a fan is too weak)." % need,
+                        r, owner_for(r, pn), {"web_mm": round(web, 2), "dia_mm": round(h.diameter, 2)}))
+                continue
             need = edge_factor * h.diameter
             if e + 1e-6 < need:
                 rows = edge_exceptions.get(pn, [])
@@ -693,6 +735,19 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
                               a.axis)) > 0.5:
                     continue        # different walls
                 c2c = sf.line_distance(b.center, a.center, a.axis)
+                if opening[id(a)] or opening[id(b)]:
+                    need, t = _opening_web_need(a if opening[id(a)] else b, so)
+                    web = c2c - (a.diameter + b.diameter) / 2.0
+                    if 1e-3 < c2c and web + 1e-6 < need:
+                        fs.append(Finding(
+                            "C09", "opening-web", "%s opening web at %s and %s" % (part, _pt(a.center), _pt(b.center)),
+                            "major",
+                            "Ø%.2f and Ø%.2f in %s leave %.1f mm of material between them; next to an opening that "
+                            "needs at least %.1f mm (2 x the %.1f mm sheet, and 3 mm for laser cutting: the Lead's "
+                            "ruling, 2026-11-01)." % (a.diameter, b.diameter, part, web, need, t),
+                            "Space them to leave at least %.1f mm of material." % need,
+                            r, owner_for(r, pn), {"web_mm": round(web, 2)}))
+                    continue
                 need = 2.0 * max(a.diameter, b.diameter)
                 if 1e-3 < c2c < need:
                     fs.append(Finding(
