@@ -54,9 +54,17 @@ def run(_context):
     design = adsk.fusion.Design.cast(app.activeProduct)
     rep = {"document": doc.name, "version": doc.dataFile.versionNumber if doc.dataFile else None,
            "saved": doc.isSaved, "modified": doc.isModified, "components": [], "parameters": []}
+    root = design.rootComponent
     for c in design.allComponents:
+        # D-120: a part placed several times is one component with several copies (occurrences); the copies'
+        # parents tell the assembly tree (a frame's members, a fill's pieces, the panel's hardware)
+        occs = [] if c == root else [root.allOccurrencesByComponent(c).item(i)
+                                     for i in range(root.allOccurrencesByComponent(c).count)]
+        parents = sorted({(o.assemblyContext.component.partNumber if o.assemblyContext else root.partNumber)
+                          for o in occs})
         comp: dict = {"part_number": c.partNumber, "name": c.name, "description": c.description,
-                      "is_root": c == design.rootComponent, "bodies": []}
+                      "is_root": c == root, "copies": 1 if c == root else len(occs), "parents": parents,
+                      "bodies": []}
         for b in c.bRepBodies:
             pp = b.physicalProperties
             comp["bodies"].append({"name": b.name, "box": box(b), "volume_mm3": r(b.volume * 1000.0, 1),

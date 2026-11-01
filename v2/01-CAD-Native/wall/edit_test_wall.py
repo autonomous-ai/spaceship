@@ -46,7 +46,14 @@ def box(b):
 
 
 def snapshot(design):
-    return {"%s / %s" % (c.partNumber, b.name): box(b) for c in design.allComponents for b in c.bRepBodies}
+    """Every body as placed, one entry per copy (D-120: a part's copies are occurrences of one component):
+    {path / body name: box}."""
+    root = design.rootComponent
+    out = {"%s / %s" % (root.partNumber, b.name): box(b) for b in root.bRepBodies}
+    for occ in root.allOccurrences:
+        for b in occ.bRepBodies:
+            out["%s / %s" % (occ.fullPathName, b.name)] = box(b)
+    return out
 
 
 def health(design):
@@ -329,9 +336,21 @@ def record(design, rel):
         trays = [v for k, v in after.items() if nm(k).startswith("TRAY")]
         felts = [v for k, v in after.items() if nm(k).startswith("FELT")]
         zones = [v for k, v in after.items() if "CLIP ZONE" in nm(k)]
-        rivs = sorted(v for k, v in after.items() if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k))
-        washers = sorted(v for k, v in after.items() if nm(k).startswith("STOP WASHER - TOP RAIL "))
-        spig_front = [v for k, v in after.items() if nm(k) == "SPIGOT - TOP RAIL SPIGOT FRONT"]
+        # hardware: the old bodies were named per site; the D-120 copies are one RIVNUT, STOP WASHER, SPIGOT body
+        # each, placed: the top rail's are the ones above its top face (a lower panel's J-WALL-01 nut side)
+        def on_top_rail(v):
+            return v[5] > z1 + 0.1 and v[2] < z1 + 0.1
+        if any(nm(k) == "RIVNUT" for k in after):
+            spig_y = sorted((v[1] + v[4]) / 2.0 for k, v in after.items() if nm(k) == "SPIGOT")
+            rivs = sorted((v for k, v in after.items() if nm(k) == "RIVNUT" and on_top_rail(v) and
+                           all(abs((v[1] + v[4]) / 2.0 - y) > 0.5 for y in spig_y)), key=lambda v: v[1])
+            washers = sorted((v for k, v in after.items() if nm(k) == "STOP WASHER" and on_top_rail(v)),
+                             key=lambda v: v[1])
+            spig_front = sorted((v for k, v in after.items() if nm(k) == "SPIGOT"), key=lambda v: v[1])[:1]
+        else:
+            rivs = sorted(v for k, v in after.items() if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k))
+            washers = sorted(v for k, v in after.items() if nm(k).startswith("STOP WASHER - TOP RAIL "))
+            spig_front = [v for k, v in after.items() if nm(k) == "SPIGOT - TOP RAIL SPIGOT FRONT"]
         rule = after_p["stile_pitch_max"]
         n_mid = math.ceil((after_p["wall_depth"] - seam - 3 - 10 - 20) / rule) - 1
         if rails:
@@ -339,8 +358,12 @@ def record(design, rel):
                 ("rails run wall_depth - 2.26 - 3", all(abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3)) < 0.01
                                                         for r in rails)),
                 ("frame starts 2.26 behind the decor back plate", all(abs(r[1] - y0p) < 0.01 for r in rails)),
-                ("stiles span the panel height - 20 - top_h", all(abs((st[5] - st[2]) - (z1 - z0 - 20 - after_p["top_h"]))
-                                                                  < 0.01 for st in stiles)),
+                # D-117: the perimeter stiles run to the outer corners (mitred); the studs fit between the rails
+                ("perimeter stiles span the panel height (mitred corners)",
+                 all(abs((st[5] - st[2]) - (z1 - z0)) < 0.01 for k, st in after.items()
+                     if nm(k) in ("STILE - FRONT", "STILE - BACK"))),
+                ("studs span the panel height - 20 - top_h", all(abs((st[5] - st[2]) - (z1 - z0 - 20 - after_p["top_h"]))
+                                                                 < 0.01 for st in mids)),
                 ("mid stile count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
                 ("no stile pitch over %g" % rule, all(b[1] - a[1] <= rule + 0.01 for a, b in zip(mids, mids[1:]))),
             ]

@@ -183,6 +183,10 @@ WALL_PARAMS = [
     ("side_jnt_pitch", "(pnl_h - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
      "equal pitch of the 3 bolts up the corner and decor joints"),
     ("pocket_w", "60 mm", "mm", "assumption", "register FR-10: fill left out 60 x 60 next to each bolt for the key"),
+    ("cleat_slot_w", "8 mm", "mm", "source", "the Joints Engineer's corner details for D-117 (2026-11-01): an 8 x 22 "
+                                             "slot in each rail's bay-side wall at every stud end, for the T-joint "
+                                             "plug cleat"),
+    ("cleat_slot_l", "22 mm", "mm", "source", "the same: 22 across the 40 face, centred on the stud's centre line"),
     ("corner_z0", "panel_z0" if ROW == 1 else "panel_z0 + back_ph + seam_gap", "mm", "calculation",
      "bottom of the back panel row this side panel meets at the corner (B1/B2 or B3/B4, skeleton P04)"),
     ("corner_bolt_pitch", "(back_ph - 2 * bolt_edge) / (n_side_jnt - 1)", "mm", "calculation",
@@ -728,11 +732,12 @@ HW_SITES = []          # rivnut sites recorded by the joint features, built as b
 ALLOWED_CLASH = []     # body name pairs that overlap by design (a spigot's thread in its rivnut's bore)
 
 
-def hw_site(label, axis, face, into, pos, pat=None, washer=True, spigot=False):
-    """Record a rivnut hole for the hardware bodies: the same plane, centre and pattern as the hole.
+def hw_site(label, axis, face, into, pos, pat=None, washer=True, spigot=False, member=None):
+    """Record a rivnut hole for the hardware: the same plane, centre and pattern as the hole, and the frame
+    member it is in (D-120: the hardware's copies are jointed to that member's hole).
     into: the hole's direction into the tube; the head and any washer stand the other way, in the joint gap."""
     HW_SITES.append({"label": label, "axis": axis, "face": face, "out": -into, "pos": pos, "pat": pat,
-                     "washer": washer, "spigot": spigot})
+                     "washer": washer, "spigot": spigot, "member": member})
 
 
 def cyl(design, comp, label, axis, plane_expr, out, pos, od, length, bore=None):
@@ -1010,6 +1015,149 @@ Z_SKIN1 = "(%s) - skin_setback" % Z1 if ROW == 1 else Z1   # the upper skins run
 Z_CASS1 = Z1 if ROW == 1 else "pod_h - outer_t - lin_gap"
 
 
+# ---------------------------------------------------------------- D-120: every part its own component (D-117)
+
+_ALLOC = []
+MEMBER_WORDS = {"RAIL - BOTTOM": "RAIL BOTTOM", "RAIL - TOP": "RAIL TOP", "STILE - FRONT": "STILE FRONT",
+                "STILE - BACK": "STILE BACK", "STILE - MID": "STILE MID", "STILE - OUTER": "STILE OUTER",
+                "STILE - CENTRE": "STILE CENTRE"}
+
+
+def allocation(repo_root):
+    """The master BOM's number allocation (v2/04-BOM/number-allocation.csv): frame members and fill pieces."""
+    if not _ALLOC:
+        import csv
+        with open(os.path.join(repo_root, "v2/04-BOM/number-allocation.csv"), encoding="utf-8") as fh:
+            _ALLOC.extend(csv.DictReader(fh))
+    return _ALLOC
+
+
+def member_numbers(repo_root, frame_pn):
+    """{member key: (part number, name, Vietnamese name)} of one frame (D-120; the frame keeps its number and
+    parents its members, D-123)."""
+    out = {}
+    for r in allocation(repo_root):
+        if frame_pn in r["parent"].split() and r["part_number"].startswith("212"):
+            for key, word in MEMBER_WORDS.items():
+                if " FRAME %s" % word in r["name"]:
+                    out[key] = (r["part_number"], r["name"], r["name_vi"])
+    return out
+
+
+def fill_numbers(repo_root, code):
+    """{bay: (part number, name, Vietnamese name)} of one position: the form of each bay from WALL's
+    FILL-PIECES.csv, the form's number from the allocation (D-123)."""
+    import csv
+    forms = {}
+    with open(os.path.join(repo_root, "v2/03-Manufacturing/wall/FILL-PIECES.csv"), encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            if r["position"] == code:
+                forms[int(r["bay"])] = r["form"]
+    byform = {}
+    for r in allocation(repo_root):
+        m = re.search(r"FILL PIECE (F\d\d) ", r["name"])
+        if m:
+            byform[m.group(1)] = (r["part_number"], r["name"], r["name_vi"])
+    return {bay: byform[f] for bay, f in forms.items() if f in byform}
+
+
+def child(parent, pn, name, vn):
+    """A new component in `parent` for one part, named PARTNO NAME; returns (component, its occurrence in the
+    parent's context)."""
+    occ = parent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+    c = occ.component
+    c.name = "%s %s" % (pn, name)
+    c.partNumber = pn
+    c.description = "%s | %s | %s" % (name, vn, REV)
+    return c, occ
+
+
+def root_occ(design, comp):
+    """The first occurrence of a component, in the root's context (for joints and proxies)."""
+    occs = design.rootComponent.allOccurrencesByComponent(comp)
+    return occs.item(0) if occs.count else None
+
+
+def poly_on_x(design, comp, x_expr, pts, label):
+    """A fully constrained closed polygon on a plane normal to X at x_expr: pts = [(y_expr, z_expr), ...], every
+    corner dimensioned from the sketch origin by its expressions."""
+    pl = plane_at(design, comp, "x", x_expr, label)
+    sk = comp.sketches.add(pl)
+    sk.name = "SKETCH - %s" % label
+    x = ev(design, x_expr)
+    sp = [sk.sketchPoints.add(sk.modelToSketchSpace(adsk.core.Point3D.create(
+        x * MM, ev(design, y) * MM, ev(design, z) * MM))) for y, z in pts]
+    for i in range(len(sp)):
+        sk.sketchCurves.sketchLines.addByTwoPoints(sp[i], sp[(i + 1) % len(sp)])
+    H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+    V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+    for q, (y, z) in zip(sp, pts):
+        for axis, e in (("y", y), ("z", z)):
+            sa = sketch_axis_of(sk, axis)
+            if abs(ev(design, e)) < 1e-6:
+                (sk.geometricConstraints.addVerticalPoints if sa == "x" else
+                 sk.geometricConstraints.addHorizontalPoints)(q, sk.originPoint)
+            else:
+                g = q.geometry
+                sk.sketchDimensions.addDistanceDimension(sk.originPoint, q, H if sa == "x" else V,
+                                                         adsk.core.Point3D.create(g.x + 0.3, g.y + 0.3, 0)
+                                                         ).parameter.expression = "abs(%s)" % e
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: " + sk.name)
+    return sk, pl
+
+
+def mitre(design, comp, body, tri, label, x_lo):
+    """One mitre (D-117): a triangle in the frame's plane, cut through the member's depth from x_lo."""
+    sk, pl = poly_on_x(design, comp, x_lo, tri, "MITRE " + label)
+    depth = "tube_d + 2 mm" if pl.geometry.normal.x > 0 else "-(tube_d + 2 mm)"
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0),
+                                                   adsk.fusion.FeatureOperations.CutFeatureOperation)
+    ei.setDistanceExtent(False, vi(depth))
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "CUT - MITRE %s" % label
+    return f
+
+
+def mitre_triangles(o, i):
+    """A corner's two cut triangles: the mitre line from the outer corner o to the inner corner i, extended a
+    tenth past both, closed toward the rail's end (rail) and toward the stile's end (stile)."""
+    def at(a, b, k):
+        return "(%s) + %s * ((%s) - (%s))" % (a, k, b, a)
+    o2 = (at(o[0], i[0], "-0.1"), at(o[1], i[1], "-0.1"))
+    i2 = (at(o[0], i[0], "1.1"), at(o[1], i[1], "1.1"))
+    return [o2, (o2[0], i2[1]), i2], [o2, (i2[0], o2[1]), i2]
+
+
+def side_corners():
+    """The side frame's 4 corners (D-117): (label, rail, stile, outer corner, inner corner). The mitre runs from
+    the outer corner to the inner corner, so both members run to the outer corner: 45 degrees where the two are
+    the same size; where a 40 x 40 meets a 20 x 40, 26.57 off square on the 40 x 40 and 63.43 on the 20 x 40."""
+    yf, yb = Y_FRONT, Y_FRAME_BACK
+    return [("BOTTOM FRONT", "RAIL - BOTTOM", "STILE - FRONT", (yf, Z0), ("(%s) + tube_w" % yf, "(%s) + tube_w" % Z0)),
+            ("BOTTOM BACK", "RAIL - BOTTOM", "STILE - BACK", (yb, Z0), ("(%s) - corner_w" % yb, "(%s) + tube_w" % Z0)),
+            ("TOP FRONT", "RAIL - TOP", "STILE - FRONT", (yf, Z1), ("(%s) + tube_w" % yf, "(%s) - top_h" % Z1)),
+            ("TOP BACK", "RAIL - TOP", "STILE - BACK", (yb, Z1), ("(%s) - corner_w" % yb, "(%s) - top_h" % Z1))]
+
+
+def cleat_slots(design, comp, body, z_face, into, xc, label):
+    """The T-joint cleat slots in a rail's bay-side wall (the Joints Engineer's corner details, D-117): one
+    cleat_slot_w x cleat_slot_l slot with round ends at every stud end, on the stud's centre line, its length
+    across the 40 face (centred on the frame depth), through the tube wall; patterned with the studs."""
+    yc = "(%s) + stile_pitch + tube_w / 2" % Y_FRONT
+    half = "(cleat_slot_l - cleat_slot_w) / 2"
+    z_in = "(%s) %s tube_t" % (z_face, "+" if into > 0 else "-")
+    lo, hi = (z_face, z_in) if into > 0 else (z_in, z_face)
+    feats = [box(design, comp, "%s CLEAT SLOT" % label, ("(%s) - %s" % (xc, half), "(%s) + %s" % (xc, half)),
+                 ("(%s) - cleat_slot_w / 2" % yc, "(%s) + cleat_slot_w / 2" % yc), (lo, hi), "cut", body)]
+    for k, sg in enumerate(("-", "+")):
+        feats.append(hole(design, comp, comp.bRepBodies.item(0), "z", z_face, into,
+                          {"x": "(%s) %s %s" % (xc, sg, half), "y": yc}, "cleat_slot_w", "tube_t",
+                          "%s CLEAT SLOT END %d" % (label, k + 1)))
+    pattern_feat(comp, feats, "y", "stile_n_mid", "stile_pitch", "%s CLEAT SLOTS" % label)
+
+
 def build_panel(design, root):
     out = {}
     want = WANT[PART]
@@ -1020,16 +1168,17 @@ def build_panel(design, root):
     xf = (X_FRAME_OUT, X_FRAME_IN)
     yf = (Y_FRONT, Y_FRAME_BACK)
     zs = ("(%s) + tube_w" % Z0, "(%s) - top_h" % Z1)
+    members = {}
     if frame:
-        build_frame(design, frame, out, xf, yf, zs)
+        members = build_frame(design, frame, out, xf, yf, zs)
     if skin:
         build_skin(design, skin, out)
     if fill:
         build_fill(design, fill, out, xf, zs)
     if frame:
-        joint_features(design, frame, fill, out)
+        joint_features(design, members, out)
     if PART == "panel":
-        build_hardware(design, root, out)
+        place_hardware(design, root, members, out)
     set_material(design, [b for k, b in out.items() if k.startswith(("RAIL", "STILE"))], "frame",
                  "ALUMINIUM TUBE 6063-T6 MILL")
     set_material(design, [b for k, b in out.items() if k.startswith("SKIN")], "skin", "ACP 3 MM EV3038")
@@ -1038,23 +1187,352 @@ def build_panel(design, root):
 
 
 def build_frame(design, frame, out, xf, yf, zs):
-    # rails run the full frame length; stiles fit between them, butt cut: internal cleats join them (D-115)
-    out["RAIL - BOTTOM"] = tube(design, frame, "RAIL - BOTTOM", xf, yf, (Z0, "(%s) + tube_w" % Z0), "y")
-    out["RAIL - TOP"] = tube(design, frame, "RAIL - TOP", xf, yf, ("(%s) - top_h" % Z1, Z1), "y")
-    print("step 2: rails", [(k, size(bbox(v))) for k, v in out.items()])
+    """D-117 and D-120: each member its own component with its master BOM number; the frame an assembly of
+    them (it keeps its number, D-123). The 4 perimeter members run to the frame's outer corners, mitred there;
+    the studs fit square between the rails, one component placed by a pattern of copies; each rail has the
+    T-joint cleat slots at every stud end. The cleats (831003 to 831006) are placed when their models land.
+    Returns {member key: (component, body)}."""
+    nums = member_numbers(ARGS["repo_root"], frame.partNumber)
+    need = ["RAIL - BOTTOM", "RAIL - TOP", "STILE - FRONT", "STILE - BACK", "STILE - MID"]
+    if [k for k in need if k not in nums]:
+        raise RuntimeError("no master BOM numbers for %s of frame %s (number-allocation.csv)" % (
+            [k for k in need if k not in nums], frame.partNumber))
+    members, occs = {}, {}
+
+    def make(key, yr, zr, along, t="tube_t"):
+        c, occ = child(frame, *nums[key])
+        b = tube(design, c, key, xf, yr, zr, along, t)
+        members[key], occs[key] = (c, b), occ
+        return b
+    make("RAIL - BOTTOM", (Y_FRONT, Y_FRAME_BACK), (Z0, "(%s) + tube_w" % Z0), "y")
+    make("RAIL - TOP", (Y_FRONT, Y_FRAME_BACK), ("(%s) - top_h" % Z1, Z1), "y")
     if STOP_AFTER <= 2:
-        return out
-    out["STILE - FRONT"] = tube(design, frame, "STILE - FRONT", xf, (Y_FRONT, "(%s) + tube_w" % Y_FRONT), zs, "z")
-    out["STILE - BACK"] = tube(design, frame, "STILE - BACK", xf, ("(%s) - corner_w" % Y_FRAME_BACK, Y_FRAME_BACK),
-                               zs, "z")
-    mid = tube(design, frame, "STILE - MID 1", xf,
-               ("(%s) + stile_pitch" % Y_FRONT, "(%s) + stile_pitch + tube_w" % Y_FRONT), zs, "z", "stud_t")
-    out["STILE - MID 1"] = mid
-    pattern_y(frame, [mid], "stile_n_mid", "stile_pitch", "STILES - MID")
-    out.update(name_by_y(frame, list(out.values()), mid, "STILE - MID"))
-    print("step 3: stiles, %d mid at pitch %.2f" % (
-        round(design.userParameters.itemByName("stile_n_mid").value),
+        return members
+    make("STILE - FRONT", (Y_FRONT, "(%s) + tube_w" % Y_FRONT), (Z0, Z1), "z")
+    make("STILE - BACK", ("(%s) - corner_w" % Y_FRAME_BACK, Y_FRAME_BACK), (Z0, Z1), "z")
+    x_lo = "(%s) - 1 mm" % min(xf, key=lambda e: ev(design, e))
+    for label, rail, stile, o, i in side_corners():
+        rt, st = mitre_triangles(o, i)
+        mitre(design, members[rail][0], members[rail][0].bRepBodies.item(0), rt, "%s (%s)" % (label, rail), x_lo)
+        mitre(design, members[stile][0], members[stile][0].bRepBodies.item(0), st, "%s (%s)" % (label, stile), x_lo)
+    make("STILE - MID", ("(%s) + stile_pitch" % Y_FRONT, "(%s) + stile_pitch + tube_w" % Y_FRONT), zs, "z", "stud_t")
+    coll = adsk.core.ObjectCollection.create()
+    coll.add(occs["STILE - MID"])
+    pin = frame.features.rectangularPatternFeatures.createInput(
+        coll, frame.yConstructionAxis, vi("stile_n_mid"), vi("stile_pitch"),
+        adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
+    pin.setDirectionTwo(frame.zConstructionAxis, vi("1"), vi("1 mm"))
+    pat = frame.features.rectangularPatternFeatures.add(pin)
+    pat.name = "PATTERN - STUD COPIES"
+    xc = sx("pod_w / 2 - skin_t - bond_t - tube_d / 2")
+    cleat_slots(design, *members["RAIL - BOTTOM"], "(%s) + tube_w" % Z0, -1, xc, "BOTTOM RAIL")
+    cleat_slots(design, *members["RAIL - TOP"], "(%s) - top_h" % Z1, +1, xc, "TOP RAIL")
+    for key, (c, _b) in members.items():
+        members[key] = (c, c.bRepBodies.item(0))
+        out[key] = c.bRepBodies.item(0)
+        out[key].name = key
+    print("step 2-3: frame of %d member parts, %d stud copies at pitch %.2f, 4 mitred corners" % (
+        len(members), round(design.userParameters.itemByName("stile_n_mid").value),
         design.userParameters.itemByName("stile_pitch").value * 10.0))
+    return members
+
+
+def build_fill(design, fill, out, xf, zs):
+    """D-120: each bay's piece its own component with its number (D-123, WALL's FILL-PIECES list): the box of its
+    bay with the pockets beside every bolt this panel drives that fall in it (FR-10), each pocket cut in the
+    piece it falls in."""
+    nums = fill_numbers(ARGS["repo_root"], CODE)
+    n = int(round(design.userParameters.itemByName("stile_n_mid").value))
+    bays = [("(%s) + tube_w + %d * stile_pitch" % (Y_FRONT, k), "(%s) + %d * stile_pitch" % (Y_FRONT, k + 1))
+            for k in range(n)] + [("(%s) + stile_n_mid * stile_pitch + tube_w" % Y_FRONT, "(%s) - corner_w" % Y_FRAME_BACK)]
+    if sorted(nums) != list(range(1, len(bays) + 1)):
+        raise RuntimeError("fill numbers for %s cover bays %s; the frame has %d bays" % (CODE, sorted(nums), len(bays)))
+    pieces = []
+    for k, yr in enumerate(bays):
+        c = child(fill, *nums[k + 1])[0]
+        b = box(design, c, "FILL PIECE BAY %d" % (k + 1), xf, yr, zs).bodies.item(0)
+        b.name = "FILL - BAY %d" % (k + 1)
+        pieces.append((c, yr))
+    pw, z_top = "pocket_w", "(%s) + tube_w" % Z0
+    pockets = []
+    for i in range(int(round(design.userParameters.itemByName("n_len_bolt").value))):
+        yc = "(%s) + bolt_edge + %d * len_bolt_pitch" % (Y_FRONT, i)
+        pockets.append(("BOTTOM BOLT %d" % (i + 1), ("(%s) - %s / 2" % (yc, pw), "(%s) + %s / 2" % (yc, pw)),
+                        (z_top, "(%s) + %s" % (z_top, pw))))
+    for j in range(3):
+        zc = "(%s) + bolt_edge + %d * side_jnt_pitch" % (Z0, j)
+        pockets.append(("DECOR BOLT %d" % (j + 1), ("(%s) + tube_w" % Y_FRONT, "(%s) + tube_w + %s" % (Y_FRONT, pw)),
+                        ("(%s) - %s / 2" % (zc, pw), "(%s) + %s / 2" % (zc, pw))))
+    for label, yr, zr in pockets:
+        ym = (ev(design, yr[0]) + ev(design, yr[1])) / 2.0
+        hit = [c for c, (y0, y1) in pieces if ev(design, y0) < ym < ev(design, y1)]
+        if len(hit) != 1:
+            raise RuntimeError("fill pocket %s falls in %d pieces" % (label, len(hit)))
+        box(design, hit[0], "FILL POCKET " + label, xf, yr, zr, "cut", hit[0].bRepBodies.item(0))
+    for c, _yr in pieces:
+        b = c.bRepBodies.item(0)
+        out[b.name] = b
+    print("step 5: fill, %d piece parts, pockets at every bolt this panel drives" % len(pieces))
+
+
+def joint_features(design, members, out):
+    """Site joint holes per the joints register (V2-ENG-JNT-01 P01), each in its member's own component."""
+    xc = sx("pod_w / 2 - skin_t - bond_t - tube_d / 2")     # centre line of the frame depth
+    y_b1 = "(%s) + bolt_edge" % Y_FRONT                     # 220 rule on every edge (R-J14)
+    n_b, p_b = "n_len_bolt", "len_bolt_pitch"
+    t = "tube_t"
+    (bc, bot), (tc, top) = members["RAIL - BOTTOM"], members["RAIL - TOP"]
+    (fc, front), (kc, back) = members["STILE - FRONT"], members["STILE - BACK"]
+    zb0, zb1 = Z0, "(%s) + tube_w" % Z0                      # bottom rail bottom and top faces
+    zt1 = Z1                                                 # top rail top face
+    # bottom rail: J-BASE-01 (lower) or J-WALL-01 bolt side (upper), both at the 220 rule (FR-02 + FR-03)
+    a = hole(design, bc, bot, "z", zb0, +1, {"x": xc, "y": y_b1}, "bolt_d", t, "BOTTOM RAIL BOLT CLEARANCE 1")
+    b = hole(design, bc, bc.bRepBodies.item(0), "z", zb1, -1, {"x": xc, "y": y_b1}, "access_d", t,
+             "BOTTOM RAIL KEY ACCESS 1")
+    pattern_feat(bc, [a, b], "y", n_b, p_b, "BOTTOM RAIL BOLT HOLES")
+    # bottom rail locating: round spigot hole at the front end, slot along X at the back-corner end (FR-05)
+    hole(design, bc, bc.bRepBodies.item(0), "z", zb0, +1, {"x": xc, "y": "(%s) + spigot_edge" % Y_FRONT}, "spigot_d",
+         t, "BOTTOM RAIL SPIGOT ROUND")
+    ys = "(%s) - spigot_edge" % Y_BACK
+    half = "(spigot_slot - spigot_d) / 2"
+    box(design, bc, "BOTTOM RAIL SPIGOT SLOT", ("(%s) - %s" % (xc, half), "(%s) + %s" % (xc, half)),
+        ("(%s) - spigot_d / 2" % ys, "(%s) + spigot_d / 2" % ys), (zb0, "(%s) + %s" % (zb0, t)), "cut",
+        bc.bRepBodies.item(0))
+    for i, sgn in enumerate(("-", "+")):
+        hole(design, bc, bc.bRepBodies.item(0), "z", zb0, +1, {"x": "(%s) %s %s" % (xc, sgn, half), "y": ys},
+             "spigot_d", t, "BOTTOM RAIL SPIGOT SLOT END %d" % (i + 1))
+    if ROW == 1:
+        # top rail, nut side of J-WALL-01: rivnut at each bay (FR-01) and 2 spigot rivnuts (FR-04)
+        r = hole(design, tc, top, "z", zt1, -1, {"x": xc, "y": y_b1}, "rivnut_d", t, "TOP RAIL RIVNUT 1")
+        pattern_feat(tc, [r], "y", n_b, p_b, "TOP RAIL RIVNUTS")
+        hw_site("TOP RAIL", "z", zt1, -1, {"x": xc, "y": y_b1}, ("y", n_b, p_b), member="RAIL - TOP")
+        for k, ys_ in (("FRONT", "(%s) + spigot_edge" % Y_FRONT), ("BACK", "(%s) - spigot_edge" % Y_BACK)):
+            hole(design, tc, tc.bRepBodies.item(0), "z", zt1, -1, {"x": xc, "y": ys_}, "rivnut_d", t,
+                 "TOP RAIL SPIGOT RIVNUT %s" % k)
+            hw_site("TOP RAIL SPIGOT %s" % k, "z", zt1, -1, {"x": xc, "y": ys_}, washer=False, spigot=True,
+                    member="RAIL - TOP")
+    if ROW == 2:
+        # 40 x 40 top member, nut side of J-CEIL-01 side edges: a rivnut in its room-side face at each bay middle;
+        # positions follow the ceiling's edge, not this panel's: from Y -645 at pitch 351.67 (PM ruling 16:55)
+        y_c1 = "(%s) + bolt_edge" % Y_CASS_FRONT
+        r = hole(design, tc, top, "x", X_FRAME_IN, S, {"y": y_c1, "z": "pod_h - ceil_bolt_dz"}, "rivnut_d", t,
+                 "TOP MEMBER CEILING RIVNUT 1")
+        pattern_feat(tc, [r], "y", n_b, "ceil_bolt_pitch", "TOP MEMBER CEILING RIVNUTS")
+        hw_site("TOP MEMBER CEILING", "x", X_FRAME_IN, S, {"y": y_c1, "z": "pod_h - ceil_bolt_dz"},
+                ("y", n_b, "ceil_bolt_pitch"), member="RAIL - TOP")
+    z_j1 = "(%s) + bolt_edge" % Z0
+    # front stile, bolt side of J-FRONT-01 (decor block): FR-02 in the front wall, FR-03 in the back wall
+    a = hole(design, fc, front, "y", Y_FRONT, +1, {"x": xc, "z": z_j1}, "bolt_d", t, "FRONT STILE BOLT CLEARANCE 1")
+    b = hole(design, fc, fc.bRepBodies.item(0), "y", "(%s) + tube_w" % Y_FRONT, -1, {"x": xc, "z": z_j1}, "access_d",
+             t, "FRONT STILE KEY ACCESS 1")
+    pattern_feat(fc, [a, b], "z", "n_side_jnt", "side_jnt_pitch", "FRONT STILE BOLT HOLES")
+    # 40 x 40 back stile, nut side of J-WALL-02 (back corner): rivnut in the room-side face (FR-01, FR-06)
+    r = hole(design, kc, back, "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": "corner_z0 + bolt_edge"},
+             "rivnut_d", t, "BACK STILE CORNER RIVNUT 1")
+    pattern_feat(kc, [r], "z", "n_side_jnt", "corner_bolt_pitch", "BACK STILE CORNER RIVNUTS")
+    hw_site("BACK STILE CORNER", "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": "corner_z0 + bolt_edge"},
+            ("z", "n_side_jnt", "corner_bolt_pitch"), member="STILE - BACK")
+    for key, (c, _b) in list(members.items()):
+        members[key] = (c, c.bRepBodies.item(0))
+        out[key] = c.bRepBodies.item(0)
+    print("step 6: joint features: %d hole features (before patterns)" % sum(
+        c.features.holeFeatures.count for c, _b in members.values()))
+
+
+# ---------------------------------------------------------------- hardware as copies of one component per part
+
+HW_PARTS_BUILT = {}
+
+
+def hw_part(design, root, key):
+    """One component per hardware part (D-120), its body built once about the component's origin, axis +Z: the
+    washer from Z 0 up; the rivnut's head from Z 0 up and its body down (Z 0 = the underside of the head); the
+    spigot's pin up and its thread down from Z 0 (= the top of the rivnut head). Every copy is placed by a rigid
+    joint (or a pattern of jointed copies), so it follows its hole on an edit. Returns (component, body, the
+    joint circle's diameter expression)."""
+    if key in HW_PARTS_BUILT:
+        return HW_PARTS_BUILT[key]
+    c = new_comp(root, key)
+    o = {"x": "0 mm", "y": "0 mm"}
+    if key == "stopw":
+        b = cyl(design, c, "STOP WASHER", "z", "0 mm", +1, o, "stopw_od", "stopw_t", "stopw_id")
+        b.name, ring = "STOP WASHER", "stopw_od"
+    elif key == "rivnut":
+        head = cyl(design, c, "RIVNUT HEAD", "z", "0 mm", +1, o, "rivnut_head_d", "rivnut_head_t", "m6_d")
+        shank = cyl(design, c, "RIVNUT BODY", "z", "0 mm", -1, o, "rivnut_body_d", "rivnut_len", "m6_d")
+        b = join_bodies(c, head, [shank], "RIVNUT")
+        b.name, ring = "RIVNUT", "rivnut_head_d"
+    else:
+        pin = cyl(design, c, "SPIGOT PIN", "z", "0 mm", +1, o, "spigot_pin_d", "spigot_proud - rivnut_head_t")
+        thread = cyl(design, c, "SPIGOT THREAD", "z", "0 mm", -1, o, "m6_d", "spigot_thread_l")
+        b = join_bodies(c, pin, [thread], "SPIGOT")
+        b.name, ring = "SPIGOT", "spigot_pin_d"
+    set_material(design, [b], key, {"rivnut": "ALUMINIUM 5056 RIVNUT", "stopw": "ALUMINIUM STOP WASHER",
+                                    "spigot": "STAINLESS SPIGOT"}[key])
+    HW_PARTS_BUILT[key] = (c, b, ring)
+    return HW_PARTS_BUILT[key]
+
+
+def circle_edge(body, dia_mm, centre=None, axis=None):
+    """A circular edge of `body` (any context) of diameter dia_mm; with `centre` ({axis: mm, ...}), the one whose
+    centre matches it within 0.05 mm."""
+    found = []
+    for e in body.edges:
+        g = e.geometry
+        if g.objectType != adsk.core.Circle3D.classType():
+            continue
+        cg = adsk.core.Circle3D.cast(g)
+        if abs(cg.radius * 20.0 - dia_mm) > 0.02:
+            continue
+        p = {"x": cg.center.x * 10.0, "y": cg.center.y * 10.0, "z": cg.center.z * 10.0}
+        if centre is None or all(abs(p[a] - v) < 0.05 for a, v in centre.items()):
+            found.append(e)
+    return found
+
+
+OUTWARD = {"stopw": "stopw_t", "rivnut": "rivnut_head_t", "spigot": "spigot_proud - rivnut_head_t"}
+
+
+def place_one(design, root, key, site, offset_expr, member_body_proxy, hole_d):
+    """A copy of hardware part `key` held in its hole by a rigid joint: the part's joint circle (its Z 0) centred
+    on the hole's edge on the joint face, `offset_expr` out along the hole's axis, the part's +Z pointing out of
+    the tube. Tries the joint's flip and the offset's sign, and keeps the one that lands so (checked by where the
+    copy's outward end sits)."""
+    c, b, ring = hw_part(design, root, key)
+    ax, face, out_dir = site["axis"], ev(design, site["face"]), site["out"]
+    centre = {a: ev(design, e) for a, e in site["pos"].items()}
+    centre[ax] = face
+    holes = circle_edge(member_body_proxy, hole_d, centre)
+    if len(holes) != 1:
+        raise RuntimeError("%s: %d hole edges of %.2f at %s" % (site["label"], len(holes), hole_d, centre))
+    if key not in PLACED_KEYS:                 # the copy hw_part made first, at the origin, is the first placed
+        occ = root_occ(design, c)
+        PLACED_KEYS.add(key)
+    else:
+        occ = root.occurrences.addExistingComponent(c, adsk.core.Matrix3D.create())
+    ring_edges = circle_edge(b, ev(design, ring), {"x": 0.0, "y": 0.0, "z": 0.0})
+    if not ring_edges:
+        raise RuntimeError("%s: no joint circle on the part" % key)
+    k = "xyz".index(ax)
+    off = ev(design, offset_expr)
+    z0 = face + off * out_dir                  # where the part's Z 0 must land along the hole's axis
+    reach = ev(design, OUTWARD[key])           # how far the part stands out past its Z 0
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    for flip in (False, True):
+        for sign in ((1, -1) if off > 1e-9 else (1,)):
+            g1 = adsk.fusion.JointGeometry.createByCurve(ring_edges[0].createForAssemblyContext(occ),
+                                                         adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+            g2 = adsk.fusion.JointGeometry.createByCurve(holes[0], adsk.fusion.JointKeyPointTypes.CenterKeyPoint)
+            jin = root.joints.createInput(g1, g2)
+            jin.setAsRigidJointMotion()
+            jin.isFlipped = flip
+            if off > 1e-9:
+                jin.offset = vi(offset_expr if sign > 0 else "-(%s)" % offset_expr)
+            j = root.joints.add(jin)
+            bb = bbox(occ.bRepBodies.item(0))
+            outer = bb[k + 3] if out_dir > 0 else bb[k]
+            if j.healthState == healthy and abs((outer - z0) * out_dir - reach) < 0.05:
+                j.name = "JOINT - %s - %s" % (key.upper(), site["label"])
+                return occ
+            j.deleteMe()
+    raise RuntimeError("%s %s: no joint flip or offset sign puts the part in its hole the right way" % (
+        key, site["label"]))
+
+
+PLACED_KEYS = set()
+
+
+def place_hardware(design, root, members, out):
+    """The joint hardware the panel carries from the factory (joints register 2.1; sizes H-03, H-05, H-08), as
+    copies of one component per part (D-120): at every rivnut hole an H-03 rivnut, with an H-08 stop washer under
+    its head at a stopped joint, and an H-05 spigot in each spigot rivnut. The first copy of each site is held in
+    its hole by a rigid joint; a patterned site's other copies are a pattern of those, like its holes, so an edit
+    moves them with the holes. The bolts stay in the parts list (bought, ISO)."""
+    if not HW_SITES:
+        return
+    n_occ = 0
+    for s in HW_SITES:
+        mc, _mb = members[s["member"]]
+        mo = root_occ(design, mc)
+        proxy = mc.bRepBodies.item(0).createForAssemblyContext(mo)
+        hd = ev(design, "rivnut_d")
+        seeds = []
+        if s["washer"]:
+            seeds.append(place_one(design, root, "stopw", s, "0 mm", proxy, hd))
+        seeds.append(place_one(design, root, "rivnut", s, "stopw_t" if s["washer"] else "0 mm", proxy, hd))
+        if s["spigot"]:
+            seeds.append(place_one(design, root, "spigot", s,
+                                   "stopw_t + rivnut_head_t" if s["washer"] else "rivnut_head_t", proxy, hd))
+        n_occ += len(seeds)
+        if s["pat"]:
+            pax, cnt, pitch = s["pat"]
+            coll = adsk.core.ObjectCollection.create()
+            for o in seeds:
+                coll.add(o)
+            axis = {"x": root.xConstructionAxis, "y": root.yConstructionAxis, "z": root.zConstructionAxis}[pax]
+            pin = root.features.rectangularPatternFeatures.createInput(
+                coll, axis, vi(cnt), vi(pitch), adsk.fusion.PatternDistanceType.SpacingPatternDistanceType)
+            other = root.zConstructionAxis if pax != "z" else root.yConstructionAxis
+            pin.setDirectionTwo(other, vi("1"), vi("1 mm"))
+            p = root.features.rectangularPatternFeatures.add(pin)
+            p.name = "PATTERN - HARDWARE COPIES - %s" % s["label"]
+            n = int(cnt) if cnt.isdigit() else int(round(design.userParameters.itemByName(cnt).value))
+            n_occ += len(seeds) * (n - 1)
+    for key, (c, b, _r) in HW_PARTS_BUILT.items():
+        out["%s - %s" % (c.partNumber, b.name)] = b
+    print("step 7: joint hardware, %d copies of %d parts (%s), each held in its hole by a joint or a pattern" % (
+        n_occ, len(HW_PARTS_BUILT), ", ".join(c.partNumber for c, _b, _r in HW_PARTS_BUILT.values())))
+
+
+def assembly_bodies(design):
+    """Every solid body in the assembly as placed, one entry per copy: {path / body name: (body, occurrence)}
+    (the occurrence is None for a body of the root itself)."""
+    out = {}
+    root = design.rootComponent
+    for b in root.bRepBodies:
+        out["%s / %s" % (root.partNumber, b.name)] = (b, None)
+    for occ in root.allOccurrences:
+        for b in occ.bRepBodies:
+            out["%s / %s" % (occ.fullPathName, b.name)] = (b, occ)
+    return out
+
+
+def placed_clashes(placed):
+    """Pairwise solid overlaps over 1 mm3 between every placed copy (each copy moved by its occurrence's
+    transform); the overlaps allowed_overlap() names are by design. Returns (hits, unexpected)."""
+    tbm = adsk.fusion.TemporaryBRepManager.get()
+    items = list(placed.items())
+    boxes = [bbox(b) for _n, (b, _o) in items]
+    hits, bad = [], []
+    for i in range(len(items)):
+        for j in range(i + 1, len(items)):
+            ba, bb_ = boxes[i], boxes[j]
+            if not all(ba[k] < bb_[k + 3] - 1e-6 and bb_[k] < ba[k + 3] - 1e-6 for k in range(3)):
+                continue
+            tmp = []
+            for _n, (b, o) in (items[i], items[j]):
+                t = tbm.copy(b.nativeObject if b.nativeObject else b)
+                if o is not None:
+                    tbm.transform(t, o.transform2)
+                tmp.append(t)
+            tbm.booleanOperation(tmp[0], tmp[1], adsk.fusion.BooleanTypes.IntersectionBooleanType)
+            vol = tmp[0].volume * 1000.0 if tmp[0] else 0.0
+            if vol > 1.0:
+                hits.append((items[i][0], items[j][0], round(vol)))
+                if not allowed_overlap(items[i][0], items[j][0]):
+                    bad.append(hits[-1])
+    return hits, bad
+
+
+def allowed_overlap(na, nb):
+    """Overlaps by design: a spigot's thread in its rivnut's bore (838003 with 831001), and any pair listed in
+    ALLOWED_CLASH (the back builder's hardware bodies)."""
+    def part(n):             # the part number of the copy: the first word of the last occurrence on its path
+        return n.split(" / ")[0].split("+")[-1].split(" ")[0]
+    if {part(na), part(nb)} == {"838003", "831001"}:
+        return True
+    names = {frozenset(p) for p in ALLOWED_CLASH}
+    return frozenset((na.split(" / ")[-1], nb.split(" / ")[-1])) in names
 
 
 def build_skin(design, skin, out):
@@ -1066,97 +1544,6 @@ def build_skin(design, skin, out):
     plate.name = "SKIN - ACP 3 WITH BACK RETURN"
     out[plate.name] = plate
     print("step 4: skin", size(bbox(plate)))
-
-
-def build_fill(design, fill, out, xf, zs):
-    # fill bays: one per bay between the stiles; the last bay (against the 40 mm back stile) is its own box
-    bay = box(design, fill, "FILL BAY 1", xf, ("(%s) + tube_w" % Y_FRONT, "(%s) + stile_pitch" % Y_FRONT),
-              zs).bodies.item(0)
-    bay.name = "FILL - BAY 1"
-    out[bay.name] = bay
-    pattern_y(fill, [bay], "stile_n_mid", "stile_pitch", "FILL BAYS")
-    out.update(name_by_y(fill, list(out.values()), bay, "FILL - BAY"))
-    last = box(design, fill, "FILL BAY LAST", xf, ("(%s) + stile_n_mid * stile_pitch + tube_w" % Y_FRONT,
-                                                    "(%s) - corner_w" % Y_FRAME_BACK), zs).bodies.item(0)
-    last.name = "FILL - BAY %d" % (sum(1 for k in out if k.startswith("FILL")) + 1)
-    out[last.name] = last
-    # pockets beside every bolt this panel drives (FR-10): one cut per bolt, at the bolt's own rule, with no
-    # fixed target, so it cuts whichever fill piece it meets in the fill component, also after an edit changes
-    # the stile count (a pattern of a cut can't reach other bodies: PATTERN_FEATURES_NO_PASTE_INT_EDGES; a fixed
-    # target list misses the pieces an edit adds)
-    z_rail_top = "(%s) + tube_w" % Z0
-    # the bottom rail's bolts (J-BASE-01 on a lower panel, J-WALL-01 on an upper one) follow the 220 rule (R-J14)
-    n_now = int(round(design.userParameters.itemByName("n_len_bolt").value))
-    ys = ["(%s) + bolt_edge + %d * len_bolt_pitch" % (Y_FRONT, i) for i in range(n_now)]
-    for i, yc in enumerate(ys):
-        box(design, fill, "FILL POCKET BOTTOM BOLT %d" % (i + 1), xf,
-            ("(%s) - pocket_w / 2" % yc, "(%s) + pocket_w / 2" % yc), (z_rail_top, "(%s) + pocket_w" % z_rail_top),
-            "cut")
-    z_j1 = "(%s) + bolt_edge" % Z0
-    for j in range(3):
-        zc = "(%s) + %d * side_jnt_pitch" % (z_j1, j)
-        box(design, fill, "FILL POCKET DECOR BOLT %d" % (j + 1), xf,
-            ("(%s) + tube_w" % Y_FRONT, "(%s) + tube_w + pocket_w" % Y_FRONT),
-            ("(%s) - pocket_w / 2" % zc, "(%s) + pocket_w / 2" % zc), "cut")
-    print("step 5: fill, %d bays, pockets at every bolt this panel drives" % sum(1 for k in out if k.startswith("FILL")))
-
-
-def joint_features(design, frame, fill, out):
-    """Site joint holes per the joints register (V2-ENG-JNT-01 P01, ce1f415). The fill pockets are in step 5."""
-    xc = sx("pod_w / 2 - skin_t - bond_t - tube_d / 2")     # centre line of the frame depth
-    y_b1 = "(%s) + bolt_edge" % Y_FRONT                     # 220 rule on every edge (R-J14)
-    n_b, p_b = "n_len_bolt", "len_bolt_pitch"
-    t = "tube_t"
-    bot, top = out["RAIL - BOTTOM"], out["RAIL - TOP"]
-    front, back = out["STILE - FRONT"], out["STILE - BACK"]
-    zb0, zb1 = Z0, "(%s) + tube_w" % Z0                      # bottom rail bottom and top faces
-    zt1 = Z1                                                 # top rail top face
-    # bottom rail, bolt side of J-BASE-01 (lower) or J-WALL-01 (upper): FR-02 + FR-03 at each bay
-    # bottom rail: J-BASE-01 (lower) or J-WALL-01 bolt side (upper), both at the 220 rule
-    a = hole(design, frame, bot, "z", zb0, +1, {"x": xc, "y": y_b1}, "bolt_d", t, "BOTTOM RAIL BOLT CLEARANCE 1")
-    b = hole(design, frame, bot, "z", zb1, -1, {"x": xc, "y": y_b1}, "access_d", t, "BOTTOM RAIL KEY ACCESS 1")
-    pattern_feat(frame, [a, b], "y", n_b, p_b, "BOTTOM RAIL BOLT HOLES")
-    # bottom rail locating: round spigot hole at the front end, slot along X at the back-corner end (FR-05)
-    hole(design, frame, bot, "z", zb0, +1, {"x": xc, "y": "(%s) + spigot_edge" % Y_FRONT}, "spigot_d", t,
-         "BOTTOM RAIL SPIGOT ROUND")
-    ys = "(%s) - spigot_edge" % Y_BACK
-    half = "(spigot_slot - spigot_d) / 2"
-    box(design, frame, "BOTTOM RAIL SPIGOT SLOT", ("(%s) - %s" % (xc, half), "(%s) + %s" % (xc, half)),
-        ("(%s) - spigot_d / 2" % ys, "(%s) + spigot_d / 2" % ys), (zb0, "(%s) + %s" % (zb0, t)), "cut", bot)
-    for i, sgn in enumerate(("-", "+")):
-        hole(design, frame, bot, "z", zb0, +1, {"x": "(%s) %s %s" % (xc, sgn, half), "y": ys}, "spigot_d", t,
-             "BOTTOM RAIL SPIGOT SLOT END %d" % (i + 1))
-    if ROW == 1:
-        # top rail, nut side of J-WALL-01: rivnut at each bay (FR-01) and 2 spigot rivnuts (FR-04)
-        r = hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": y_b1}, "rivnut_d", t, "TOP RAIL RIVNUT 1")
-        pattern_feat(frame, [r], "y", n_b, p_b, "TOP RAIL RIVNUTS")
-        hw_site("TOP RAIL", "z", zt1, -1, {"x": xc, "y": y_b1}, ("y", n_b, p_b))
-        for k, ys_ in (("FRONT", "(%s) + spigot_edge" % Y_FRONT), ("BACK", "(%s) - spigot_edge" % Y_BACK)):
-            hole(design, frame, top, "z", zt1, -1, {"x": xc, "y": ys_}, "rivnut_d", t, "TOP RAIL SPIGOT RIVNUT %s" % k)
-            hw_site("TOP RAIL SPIGOT %s" % k, "z", zt1, -1, {"x": xc, "y": ys_}, washer=False, spigot=True)
-    if ROW == 2:
-        # 40 x 40 top member, nut side of J-CEIL-01 side edges: a rivnut in its room-side face at each bay middle
-        # positions follow the ceiling's edge, not this panel's: from Y -645 at pitch 351.67 (PM ruling 16:55)
-        y_c1 = "(%s) + bolt_edge" % Y_CASS_FRONT
-        r = hole(design, frame, top, "x", X_FRAME_IN, S, {"y": y_c1, "z": "pod_h - ceil_bolt_dz"}, "rivnut_d", t,
-                 "TOP MEMBER CEILING RIVNUT 1")
-        pattern_feat(frame, [r], "y", n_b, "ceil_bolt_pitch", "TOP MEMBER CEILING RIVNUTS")
-        hw_site("TOP MEMBER CEILING", "x", X_FRAME_IN, S, {"y": y_c1, "z": "pod_h - ceil_bolt_dz"},
-                ("y", n_b, "ceil_bolt_pitch"))
-    z_j1 = "(%s) + bolt_edge" % Z0
-    # front stile, bolt side of J-FRONT-01 (decor block): FR-02 in the front wall, FR-03 in the back wall
-    a = hole(design, frame, front, "y", Y_FRONT, +1, {"x": xc, "z": z_j1}, "bolt_d", t, "FRONT STILE BOLT CLEARANCE 1")
-    b = hole(design, frame, front, "y", "(%s) + tube_w" % Y_FRONT, -1, {"x": xc, "z": z_j1}, "access_d", t,
-             "FRONT STILE KEY ACCESS 1")
-    pattern_feat(frame, [a, b], "z", "n_side_jnt", "side_jnt_pitch", "FRONT STILE BOLT HOLES")
-    # 40 x 40 back stile, nut side of J-WALL-02 (back corner): rivnut in the room-side face (FR-01, FR-06)
-    r = hole(design, frame, back, "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": "corner_z0 + bolt_edge"},
-             "rivnut_d", t, "BACK STILE CORNER RIVNUT 1")
-    pattern_feat(frame, [r], "z", "n_side_jnt", "corner_bolt_pitch", "BACK STILE CORNER RIVNUTS")
-    hw_site("BACK STILE CORNER", "x", X_FRAME_IN, S, {"y": "bolt_line_y", "z": "corner_z0 + bolt_edge"},
-            ("z", "n_side_jnt", "corner_bolt_pitch"))
-    holes = sum(c.features.holeFeatures.count for c in [frame])
-    print("step 6: joint features: %d hole features (before patterns)" % holes)
 
 
 def build_tray(design, root, tray, yc, zc):
@@ -1385,15 +1772,18 @@ def run(_context):
         tl.count, len(bad_items), sum(c.sketches.count for c in design.allComponents), len(loose)))
     for name, b in sorted(bodies.items()):
         print("BODY|%s|%s|%s|%s" % (b.parentComponent.partNumber, name, size(bbox(b)), bbox(b)))
-    hits, bad = clash_check(list(bodies.values()), ALLOWED_CLASH)
-    print("clash pairs %d, unexpected %d %s" % (len(hits), len(bad), bad))
+    placed = assembly_bodies(design)          # every copy as placed (D-120: copies of one component)
+    hits, bad = placed_clashes(placed)
+    print("clash pairs %d over %d placed bodies, unexpected %d %s" % (len(hits), len(placed), len(bad), bad))
     for c in design.allComponents:
         if c.bRepBodies.count:
             pp = c.getPhysicalProperties(adsk.fusion.CalculationAccuracy.HighCalculationAccuracy)
-            print("MASS|%s|%s|%.3f kg|%d bodies" % (c.partNumber, c.name, pp.mass, c.bRepBodies.count))
+            n_occ = 1 if c == root else root.allOccurrencesByComponent(c).count
+            print("MASS|%s|%s|%.3f kg each|%d bodies|%d copies" % (c.partNumber, c.name, pp.mass,
+                                                                    c.bRepBodies.count, n_occ))
     root.partNumber = pn            # again at the end, in case an upload overwrote them (see settle_props)
     root.description = desc
-    allb = list(bodies.values())
+    allb = [b for b, _o in placed.values()]
     print("root part number %s, bodies box %s" % (root.partNumber, [
         round(min(bbox(b)[i] for b in allb), 2) for i in range(3)] + [round(max(bbox(b)[i + 3] for b in allb), 2)
                                                                     for i in range(3)]))

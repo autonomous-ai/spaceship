@@ -207,12 +207,17 @@ def panel_rows(rep):
     root = [c for c in rep["components"] if c["is_root"]][0]
     comps = {c["part_number"]: c for c in rep["components"] if not c["is_root"]}
     prm = {p["name"]: p["value"] for p in rep["parameters"]}
+    pn = rep["document"].split("_")[0]
     frame = [c for p, c in comps.items() if p.startswith(("2111", "2112"))][0]
     skin = [c for p, c in comps.items() if p.startswith(("2113", "2114"))][0]
-    fill = [c for p, c in comps.items() if p.startswith(("2115", "2116"))][0]
+    # the fill set is the 2115/2116 part under the panel itself; D-120's pieces sit under the fill set
+    fill = [c for p, c in comps.items() if p.startswith(("2115", "2116")) and pn in c.get("parents", [pn])][0]
     back = frame["part_number"].startswith("2112")
     lower = "LOWER" in frame["name"]
-    pn = rep["document"].split("_")[0]
+    members = [c for c in rep["components"] if frame["part_number"] in c.get("parents", [])
+               and c["part_number"].startswith("212")]
+    if members:
+        return panel_rows_d120(rep, root, comps, prm, pn, frame, skin, fill, members, back, lower)
     name_en, name_vi = root_names(root, frame, lambda n: n.replace("PANEL FRAME", "PANEL ASSY"),
                                   lambda n: n.replace("khung", "cụm tấm"))
     rows.append(None)                                      # the assembly row, once its parts are summed
@@ -282,6 +287,126 @@ def panel_rows(rep):
                   status="DRAFT", source="CAD %s v%s" % (rep["document"], rep["version"]),
                   note="outer panel, bonded and hardware-fitted at the factory; the lining cassette is a separate part "
                        "(D-17)")
+    return rows
+
+
+def mitre_ends(key, prm, upper):
+    """The cut at each end of a frame member (D-117): the mitre runs from the frame's outer corner to its inner
+    corner, so a member's end is cut atan(other member's width / its own width) off square (45 where the two are
+    the same size, 26.57 on a 40 x 40 meeting a 20 x 40, 63.43 on the 20 x 40); studs are square."""
+    import math
+    tw, cw = prm.get("tube_w", 20.0), prm.get("corner_w", 40.0)
+    top = prm.get("top_h", cw if upper else tw)
+    width = {"RAIL BOTTOM": tw, "RAIL TOP": top, "STILE FRONT": tw, "STILE BACK": cw, "STILE OUTER": tw,
+             "STILE CENTRE": tw}
+    meets = {"RAIL BOTTOM": ("STILE FRONT", "STILE BACK"), "RAIL TOP": ("STILE FRONT", "STILE BACK"),
+             "STILE FRONT": ("RAIL BOTTOM", "RAIL TOP"), "STILE BACK": ("RAIL BOTTOM", "RAIL TOP"),
+             "STILE OUTER": ("RAIL BOTTOM", "RAIL TOP"), "STILE CENTRE": ("RAIL BOTTOM", "RAIL TOP")}
+    if key not in meets:
+        return "square ends (fits between the rails; T-joint plug cleats, D-117)"
+    angles = ["%.2f" % math.degrees(math.atan(width[o] / width[key])) for o in meets[key]]
+    return "both ends mitred: %s and %s degrees off square (D-117)" % tuple(angles)
+
+
+def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, fill, members, back, lower):
+    """The parts list of a panel built as D-120 asks (every part its own component): the frame an assembly of
+    its member parts (D-117 mitred corners, D-115 cleats), the fill a set of numbered pieces, the hardware copies
+    counted from the CAD."""
+    rows = [None]
+    upper = not lower
+    name_en, name_vi = root_names(root, frame, lambda n: n.replace("PANEL FRAME", "PANEL ASSY"),
+                                  lambda n: n.replace("khung", "cụm tấm"))
+    t, ts = prm.get("tube_t", 1.2), prm.get("stud_t", prm.get("tube_t", 1.2))
+    member_rows, fm = [], 0.0
+    for m in sorted(members, key=lambda c: c["part_number"]):
+        b = m["bodies"][0]
+        key = re.sub(r"^WALL - FRAME | 40 X 40| - (SIDE|BACK) .*$", "", m["name"].split(" ", 1)[1]).strip()
+        dims = sorted(round(b["box"][i + 3] - b["box"][i], 1) for i in range(3))
+        sec = "%s x %g" % ("40 x 40" if dims[0] >= 39.9 else "20 x 40", ts if key == "STILE MID" else t)
+        q = m.get("copies", 1)
+        fm += b["mass_kg"] * q
+        member_rows.append(row(level=2, part_number=m["part_number"], name=en_name(m),
+                               name_vi=vi_name(m["description"], m["part_number"]), kind="MP",
+                               material="aluminium tube 6063-T6 %s" % sec, finish="mill finish with the bond prep (D-79)",
+                               process="saw cut, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6); %s" %
+                                       mitre_ends(key, prm, upper),
+                               qty=q, unit="pc", cut_length_mm=member_length(b), size_mm=sec,
+                               tolerance="length ±0.5 (assumption, guideline 6.3); holes per the frame drawing",
+                               mass_each_kg=round(b["mass_kg"], 3), mass_total_kg=round(b["mass_kg"] * q, 3),
+                               mass_status="calculation: CAD at 2700 kg/m3", status="DRAFT",
+                               source="CAD; number from the master BOM's allocation (D-120)",
+                               note="%s; cut length outer to outer" % mitre_ends(key, prm, upper)))
+    rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame),
+                    name_vi=vi_name(frame["description"], frame["part_number"]), kind="BS",
+                    material="the aluminium tube members below, cleated and bonded",
+                    finish="mill finish with the bond prep (D-79)",
+                    process="assemble the members with internal corner and T cleats, crimped, with structural adhesive "
+                            "(D-115, D-117; cleats 831003 to 831006, the Joints Engineer's); rivnuts and stop washers set "
+                            "at the factory", qty=1, unit="pc",
+                    size_mm=size_of(box_of([m["bodies"][0] for m in members])), tolerance="per its drawing",
+                    mass_each_kg=round(fm, 3), mass_total_kg=round(fm, 3),
+                    mass_status="calculation: the members below (CAD); cleats in the roll-up allowance until modelled",
+                    status="DRAFT", source="CAD; D-115, D-117, D-120",
+                    note="an assembly of %d member parts (%d pieces)" % (len(members), sum(m.get("copies", 1)
+                                                                                           for m in members))))
+    rows += member_rows
+    sm = round(sum(b["mass_kg"] for b in skin["bodies"]), 3)
+    rows.append(row(level=1, part_number=skin["part_number"], name=en_name(skin),
+                    name_vi=vi_name(skin["description"], skin["part_number"]),
+                    kind="MP", material="ACP 3 mm Alcorest outdoor, PE-type core (HW-SEL A1)",
+                    finish="PVDF coated EV3038 Dark Yellow (maker's coil coating; D-12)",
+                    process=("CNC router: cut flat from the DXF, outline and holes; no drawing (D-89 part 4)" if back else
+                             "CNC router: cut, V-groove and fold the back return (H16)"),
+                    qty=1, unit="pc", size_mm=size_of(box_of(skin["bodies"])),
+                    tolerance=("ISO 2768-m general tolerance (router cut; assumption until the ACP maker's own)" if back
+                               else "per the tabulated skin drawing (D-89)"), mass_each_kg=sm, mass_total_kg=sm,
+                    mass_status="calculation: CAD at 3.5 kg/m2 (HW-SEL A1); real kg/m2 HOLD (H16)", status="DRAFT",
+                    source="CAD", note=("overhangs its frame 1.62 at the closing seam, so the skin seam is 2.26 (R-J16)"
+                                        if back else "blank and fold line in the skin DXF")))
+    pieces = [c for c in rep["components"] if fill["part_number"] in c.get("parents", [])]
+    fl = round(sum(c["bodies"][0]["mass_kg"] * c.get("copies", 1) for c in pieces), 3)
+    rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill),
+                    name_vi=vi_name(fill["description"], fill["part_number"]), kind="set",
+                    material="the PET fill pieces below, 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
+                    process="the pieces below, friction fit in the bays", qty=1, unit="set",
+                    size_mm="%d pieces" % sum(c.get("copies", 1) for c in pieces), tolerance="per its pieces",
+                    mass_each_kg=fl, mass_total_kg=fl, mass_status="calculation: the pieces below (CAD)",
+                    status="DRAFT", source="CAD; D-120", note="one numbered piece per bay (D-123, FILL-PIECES.md)"))
+    for c in sorted(pieces, key=lambda c: c["part_number"]):
+        b = c["bodies"][0]
+        dims = sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)
+        q = c.get("copies", 1)
+        rows.append(row(level=2, part_number=c["part_number"], name=en_name(c),
+                        name_vi=vi_name(c["description"], c["part_number"]), kind="MP",
+                        material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
+                        process="knife cut to size, 60 x 60 x 40 pockets left out beside each bolt this panel drives "
+                                "(sizes and pockets on the tabulated fill drawing, D-89)",
+                        qty=q, unit="pc", size_mm="%g x %g x %g" % tuple(dims),
+                        tolerance="±2 on length and width, thickness as supplied (assumption: knife-cut PET batt)",
+                        mass_each_kg=round(b["mass_kg"], 3), mass_total_kg=round(b["mass_kg"] * q, 3),
+                        mass_status="calculation: CAD at the design's fill density", status="DRAFT",
+                        source="CAD; number from the master BOM's allocation (D-123)", note="friction fit in its bay"))
+    # the hardware rules count bodies and holes: give them every copy (a member's holes once per copy; the rivnut
+    # copies at spigot sites named so, as the old per-site bodies were)
+    frame_flat = dict(frame, bodies=[b for m in members for b in m["bodies"] for _ in range(m.get("copies", 1))])
+    comps_flat = dict(comps)
+    n_spig = comps.get("831001", {}).get("copies", 0) if comps.get("831001") else 0
+    for hp in ("838003", "831002", "831001"):
+        c = comps.get(hp)
+        if c:
+            copies = [dict(c["bodies"][0], name="%s %d" % ("RIVNUT - SPIGOT" if hp == "838003" and k < n_spig else
+                                                         c["bodies"][0]["name"], k + 1))
+                      for k in range(c.get("copies", 1))]
+            comps_flat[hp] = dict(c, bodies=copies)
+    rows += hardware_rows(frame_flat, comps_flat, back, lower, prm)
+    made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
+    rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
+                  material="see the parts below", qty=1, unit="pc",
+                  size_mm=size_of(box_of([b for c in comps.values() for b in c["bodies"]])),
+                  mass_total_kg=made, mass_status="calculation: the sum of the rows below (CAD bodies and hardware)",
+                  status="DRAFT", source="CAD %s v%s" % (rep["document"], rep["version"]),
+                  note="outer panel, bonded and hardware-fitted at the factory; every part its own component (D-120); "
+                       "the lining cassette is a separate part (D-17)")
     return rows
 
 
