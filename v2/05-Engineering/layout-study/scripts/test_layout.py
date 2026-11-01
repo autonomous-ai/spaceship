@@ -215,7 +215,7 @@ def test_cad_masses_from_main():
     sh = next(r for k, r in rows.items() if k.startswith("Light shelf"))
     ld = next(r for k, r in rows.items() if k.startswith("Work-wall ledge"))
     assert abs(sh[3] - rollup.INTERIOR["shelf"]) < 1e-9 and rollup.basis(sh) == "CAD, main", sh
-    it, el = rollup.INTERIOR, rollup.ELEC                     # S52: the shelf holds ELECTRICAL's profile parts, not D-126's old ones
+    it, el = rollup.INTERIOR, rollup.ELEC                     # S53: the shelf holds ELECTRICAL's profile parts, not D-126's old ones
     assert [pn for pn, _q, _m in el["hosted"].get("810201", [])] == it["shelf_elec"] and it["shelf_elec_kg"] > 0, it
     assert set(it["shelf_gone"]) <= set(rollup.SHELF_REPLACED), it
     assert abs(it["shelf"] - (it["shelf_listed"] - it["shelf_gone_kg"] + it["shelf_elec_kg"])) < 1e-12, it
