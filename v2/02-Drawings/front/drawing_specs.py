@@ -102,7 +102,6 @@ SPECS = {
         "dims": [
             ("front", (X0, ZLB), (X1, ZLB), "below", 12), ("front", (X0, ZLB), (X0, ZT), "left", 12),
             ("front", (X0, ZT), (XT, ZT), "above", 10), ("front", (X1, ZLB), (X1, ZB), "right", 8),
-            ("front", (X0, ZLB), (XT, ZT), "right", 30),
         ],
         "notes": [
             "Glass: 4+4 laminated safety glass, two toughened, heat-soaked panes (EN 12150, EN 14179) with 0.76 mm "
@@ -128,7 +127,7 @@ SPECS = {
                                                                          "left": (345, 230), "iso": (170, 120)},
         "box": {"front": (X0, KZB, X1, ZB), "top": (X0, KY0, X1, KY1), "left": (-KY1, KZB, -KY0, ZB)},
         "dims": [
-            ("front", (X0, KZB), (X1, KZB), "below", 10), ("front", (X0, KZB), (X0, ZB), "left", 10),
+            ("front", (X0, KZB), (X1, KZB), "below", 10),
             ("left", (-KY1, KZB), (-KY0, KZB), "below", 10), ("left", (-KY1, KZB), (-KY1, ZB), "left", 12),
             ("left", (-UY1, ZB), (-UY0, ZB), "above", 8),
             ("left", (-UY0, ZB - v["kick_pocket_d"]), (-UY0, ZB), "right", 10),
@@ -155,8 +154,8 @@ SPECS = {
                                                                          "left": (290, 250), "iso": (340, 95)},
         "box": {"front": (v["hinge_x0"], KZB, X1, ZT + v["st_top"])},
         "dims": [
-            ("front", (X0, KZB), (X1, KZB), "below", 12), ("front", (X0, KZB), (X0, ZT), "left", 30),
-            ("front", (X0, ZB), (X0, ZT), "left", 18), ("front", (X1, KZB), (X1, ZB), "right", 10),
+            ("front", (X0, KZB), (X1, KZB), "below", 12), ("front", (X0, KZB), (X0, ZT), "left", 18),
+            ("front", (X1, KZB), (X1, ZB), "right", 10),
         ],
         "notes": [
             "Door unit (D-56): leaf 361001, kick strip 361002 with the drop seal 368001 in its cavity and the U-seal "
