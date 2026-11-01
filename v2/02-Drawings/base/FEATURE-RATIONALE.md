@@ -19,7 +19,9 @@ Statuses: **confirmed** (PM decision), **source** (named document), **calculatio
 | 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD | flat 2 mm cap inside each side band's back end, flush with the back face (D-129), and in FR1's door end (D-132); bought, product HOLD |
 | 111102 | BASE - BAND TUBE - SIDE - RH | mirror of 111101 under the right wall, X 1210…1250, front end mitred to the intake's facet piece |
 | 111106 | BASE - BAND TUBE - FRONT - FIXED GLASS | FR1: 100 × 40 × 1.5 tube under the fixed glass, X 218.5…915, closed at the joint by a welded 1.5 mm end plate with 2 keyholes |
-| 111301 | BASE - SILL - FIXED GLASS | bent 2 mm black profile on FR1 that carries FRONT's bottom U-channel, X 218.5…965 |
+| 111301 | BASE - SILL - FIXED GLASS | the welded sill on FR1 that carries FRONT's bottom U-channel, X 218.5…965: a weldment (D-120) of 111302 and 111303 |
+| 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | the sill's bent 2 mm black profile, 4 bends, with the 4 seat holes (member of 111301) |
+| 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | the 2 mm plate welded into the profile's door end (member of 111301, D-150) |
 | 118001 | BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD | soft lip on the bands' inner faces and along the bottom edge of the sill's door-end plate, pressing on the room floor (D-132); bought by the metre, product HOLD |
 | 110101, 110102, 110103, 110106 | the band assemblies | each has its assembly drawing (D-89: every assembly keeps one), made from its own design that the build saves |
 
@@ -86,7 +88,7 @@ The key is the Joints Engineer's part (PM ruling 2026-11-01: model, STEP and the
 |---|---|---|---|---|---|
 | FB-21 | 111102 as the mirror of 111101 | The right side band under R1, with the same J-BASE-01 holes (from the skeleton's `base_side_y0`), glides, and the back key's stud bolt and fixing holes at BR (D-129) | Front end mitred to the intake's facet piece (DR's facet, `dr_xc`, `dr_yc`): outer corner (1250, −672), inner (1210, −654.17) | The look (Lead ruling 3): the band follows DR's facet; front key 111213's fixing holes at Y −643.59 (joints register #127) | calculation; source |
 
-## FR1 (111106) and its sill (111301): P02 batch 1
+## FR1 (111106) and its sill (111301, welded from 111302 and 111303): P02 batch 1
 
 | ID | Feature | Function | Size, position | Constraint behind it | Status |
 |---|---|---|---|---|---|
@@ -95,6 +97,7 @@ The key is the Joints Engineer's part (PM ruling 2026-11-01: model, STEP and the
 | FB-24 | FR1's glides, no key holes on its top | 2 glides with doublers, 75 in from each end | Nut holes Ø13 at X 293.5 and 840 | FR1's top is in view in front of the glass, so its glides turn by their base (spanner flats on the glide, HOLD) | assumption |
 | FS-01 | The sill's section: flange, ledge, drop, seat, kerb | Carries FRONT's bottom U-channel at the glass line: the ledge lies flush with the band top (Z 110), the seat sits under the channel (Z 93…95), the kerb comes down to the band's bottom line; with no floor under it (D-132) the glass's load, about 280 N, goes into FR1 (the seat detail is being settled with FRONT: the same profile in 4 mm, or a closed section riveted back to FR1) | 2 mm, 4 bends 90°; ledge Y −810…−706.5, seat Y −708.5…−689.5, kerb to Z 10 | FRONT's answer (channel 15 × 15 × 1.5, Y −706.5…−691.5, Z 95…110); PM ruling: the channel ships fitted on the sill | source; bend radius assumption |
 | FS-03 | The sill's door-end plate, welded in | Closes the sill's door end, so room air and sound can't get from the door recess into the space under the ledge and seat and on under the kerb into the pod (Reviewer 8's P1 on #303: about 75 cm² open before) | 2 mm, X 218.5…220.5: from FR1's inner face (Y −810) to the kerb (Y −691.5), from the band's bottom line (Z 10) up to the ledge and the seat; its outline is the profile's inner faces, so with the kerb's end the door end is one flat face at X 218.5, Y −810…−689.5; welded all round, its outer face ground flush; on the blank, the 3 corners at inside bends are relieved C3 (DXF) | D-150 (the PM's ruling of 2026-11-01): BASE closes the sill's door end down to the floor, continuing the lip line; FRONT closes the 4.5 slot at the kick strip's end with its brush seal 368008, which closes on this face (agreed with FRONT: flat, square to X, nothing proud of it) | source (D-150); bend radius assumption |
+| FS-05 | The welded sill as a weldment of two members (D-120) | The bent profile is drawn on its own (the generator's bent-sheet mode, from its STEP and DXF) and the welded sill on a weldment sheet (the assembly mode), so each member is its own part with its own number, STEP and DXF | 111302 the bent profile (flat pattern DXF), 111303 the door-end plate (blank DXF); the plate only touches the profile in the CAD, the weld joins them; weld all round, grind the plate's outer face flush, anodise, then set the 4 M3 rivnuts 838008 (after anodising, not before) | D-120; the Lead's rulings of 2026-11-01 (two sheets; the numbers from Control) | source |
 | FS-04 | The sill's other end, X 965 | Open in this batch: past FR1's keyed end, inside the intake's line | — | Closed by the intake's closing plate (D-150; P02 batch 3) | open (batch 3) |
 | FS-02 | 4 holes Ø5 for flush M3 rivnuts in the seat | The channel's 4 countersunk screws (838007 into 838008) fitted in the factory | X 269.4, 484.3, 699.2 and 905 on the glass line | FRONT's channel holes; the last at 905, 2 hole diameters from FR1's end (joints register J-FRONT-04, Lead 2026-11-01) | source |
 
