@@ -1,5 +1,5 @@
 {
- "next": 312,
+ "next": 324,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3094,7 +3094,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3119,7 +3119,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -3149,7 +3149,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -3407,7 +3407,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3432,7 +3432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3457,7 +3457,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3482,7 +3482,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3507,7 +3507,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3532,7 +3532,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3557,7 +3557,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3582,7 +3582,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3607,7 +3607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3632,7 +3632,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3657,7 +3657,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3682,7 +3682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3707,7 +3707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3732,7 +3732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3757,7 +3757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3782,7 +3782,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3807,7 +3807,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -3832,7 +3832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4335,7 +4335,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C01",
@@ -4394,7 +4394,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4419,7 +4419,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4444,7 +4444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4469,7 +4469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4494,7 +4494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4519,7 +4519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4544,7 +4544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4569,7 +4569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4687,7 +4687,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -4742,7 +4742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4767,7 +4767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4792,7 +4792,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4817,7 +4817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4842,7 +4842,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4867,7 +4867,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4892,7 +4892,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -4927,7 +4927,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1",
+   "last_seen": "2026-11-01 c22880b",
    "closed": "2026-11-01 a8d75f6"
   },
   {
@@ -4953,7 +4953,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -4982,7 +4982,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5011,7 +5011,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5040,7 +5040,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5069,7 +5069,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5098,7 +5098,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5127,7 +5127,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5156,7 +5156,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5185,7 +5185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5214,7 +5214,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5243,7 +5243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5272,7 +5272,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5301,7 +5301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5330,7 +5330,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5359,7 +5359,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5388,7 +5388,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5417,7 +5417,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5446,7 +5446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5471,7 +5471,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5496,7 +5496,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5521,7 +5521,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5546,7 +5546,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5571,7 +5571,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5596,7 +5596,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5621,7 +5621,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5646,7 +5646,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5671,7 +5671,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5696,7 +5696,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5758,7 +5758,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C06",
@@ -5785,7 +5785,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5814,7 +5814,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5843,7 +5843,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5872,7 +5872,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5901,7 +5901,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -5930,7 +5930,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5955,7 +5955,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -5980,7 +5980,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6005,7 +6005,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6030,7 +6030,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6055,7 +6055,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6080,7 +6080,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6105,7 +6105,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6130,7 +6130,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6155,7 +6155,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6180,7 +6180,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6205,7 +6205,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6230,7 +6230,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6255,7 +6255,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6280,7 +6280,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6305,7 +6305,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6330,7 +6330,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6385,7 +6385,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6410,7 +6410,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6435,7 +6435,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6460,7 +6460,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6515,7 +6515,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6540,7 +6540,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6565,7 +6565,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6590,7 +6590,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6615,7 +6615,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6640,7 +6640,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6665,7 +6665,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6690,7 +6690,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6715,7 +6715,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -6740,7 +6740,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C08",
@@ -6769,7 +6769,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6794,7 +6794,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6819,7 +6819,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6844,7 +6844,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6869,7 +6869,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6894,7 +6894,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6919,7 +6919,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6944,7 +6944,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6969,7 +6969,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -6994,7 +6994,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -7019,7 +7019,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -7044,7 +7044,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -7069,7 +7069,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -7094,7 +7094,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -7119,7 +7119,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C11",
@@ -7144,7 +7144,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7169,7 +7169,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C09",
@@ -7197,7 +7197,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C09",
@@ -7225,7 +7225,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7254,7 +7254,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7283,7 +7283,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7312,7 +7312,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7341,7 +7341,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7370,7 +7370,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7399,7 +7399,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7424,7 +7424,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7449,7 +7449,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7474,7 +7474,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7499,7 +7499,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7524,7 +7524,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7549,7 +7549,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7574,7 +7574,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7599,7 +7599,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7624,7 +7624,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7649,7 +7649,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7674,7 +7674,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7699,7 +7699,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7724,7 +7724,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7749,7 +7749,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7774,7 +7774,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7799,7 +7799,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C05",
@@ -7824,7 +7824,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7849,7 +7849,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7874,7 +7874,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7899,7 +7899,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
@@ -7924,7 +7924,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C09",
@@ -7952,7 +7952,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C09",
@@ -7980,7 +7980,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C09",
@@ -8008,7 +8008,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C09",
@@ -8036,7 +8036,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C09",
@@ -8064,7 +8064,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C09",
@@ -8092,23 +8092,21 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 9e0dcd1"
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C06",
    "rule": "name-mismatch",
    "subject": "838003",
    "severity": "major",
-   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv, v2/04-BOM/100000_P01_POD-MASTER_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
-   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 11 parts lists).",
-   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
-   "owner": "BASE; CEILING; Control; ELECTRICAL; WALL",
+   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 8 parts lists).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE; ELECTRICAL; WALL",
    "evidence": {
     "files": [
-     "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
      "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
-     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
@@ -8121,8 +8119,7 @@
      "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
      "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
      "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
-     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
-     "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step"
     ],
     "register": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2"
    },
@@ -8137,8 +8134,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 c22880b"
   },
   {
    "check": "C01",
@@ -8174,7 +8177,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8210,7 +8214,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8246,7 +8251,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8282,7 +8288,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8318,7 +8325,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8354,7 +8362,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8390,7 +8399,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8426,7 +8436,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8462,7 +8473,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8498,7 +8510,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8534,7 +8547,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8570,7 +8584,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8606,7 +8621,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8642,7 +8658,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8678,7 +8695,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8714,7 +8732,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8750,7 +8769,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8786,7 +8806,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8822,7 +8843,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8858,7 +8880,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8894,7 +8917,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8930,7 +8954,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -8966,7 +8991,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -9002,7 +9028,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -9038,7 +9065,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -9074,7 +9102,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -9110,7 +9139,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -9146,7 +9176,8 @@
      "event": "owner ELECTRICAL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -9182,7 +9213,8 @@
      "event": "owner WALL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (WALL group): DR's one panel stays as built (room face at Y -641.14); WALL starts the R-side cassettes at Y -640, 1 mm off the panel; the service steps unclip R1's and R2's front cassettes before DR's panel comes off; no extra trim part."
+   "note": "Lead ruling 2026-11-01 (WALL group): DR's one panel stays as built (room face at Y -641.14); WALL starts the R-side cassettes at Y -640, 1 mm off the panel; the service steps unclip R1's and R2's front cassettes before DR's panel comes off; no extra trim part.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C01",
@@ -9218,7 +9250,8 @@
      "event": "owner WALL (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (WALL group): DR's one panel stays as built (room face at Y -641.14); WALL starts the R-side cassettes at Y -640, 1 mm off the panel; the service steps unclip R1's and R2's front cassettes before DR's panel comes off; no extra trim part."
+   "note": "Lead ruling 2026-11-01 (WALL group): DR's one panel stays as built (room face at Y -641.14); WALL starts the R-side cassettes at Y -640, 1 mm off the panel; the service steps unclip R1's and R2's front cassettes before DR's panel comes off; no extra trim part.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C07",
@@ -9341,7 +9374,8 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): full M6 x 25, one component per bolt."
+   "note": "Lead ruling 2026-11-01 (CEILING group): full M6 x 25, one component per bolt.",
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C07",
@@ -9437,7 +9471,331 @@
      "event": "owner CEILING (the Lead's ruling)"
     }
    ],
-   "note": "Lead ruling 2026-11-01 (CEILING group): full M6 x 25, one component per bolt."
+   "note": "Lead ruling 2026-11-01 (CEILING group): full M6 x 25, one component per bolt.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211101",
+   "severity": "major",
+   "message": "211101 WALL - PANEL FRAME - SIDE LOWER - LH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - BACK (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L1"
+   },
+   "key": "C11|frame-steel|211101",
+   "id": "F-312",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211102",
+   "severity": "major",
+   "message": "211102 WALL - PANEL FRAME - SIDE LOWER - RH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - BACK (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L1"
+   },
+   "key": "C11|frame-steel|211102",
+   "id": "F-313",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211103",
+   "severity": "major",
+   "message": "211103 WALL - PANEL FRAME - SIDE UPPER - LH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - BACK (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L2"
+   },
+   "key": "C11|frame-steel|211103",
+   "id": "F-314",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211104",
+   "severity": "major",
+   "message": "211104 WALL - PANEL FRAME - SIDE UPPER - RH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - BACK (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L2"
+   },
+   "key": "C11|frame-steel|211104",
+   "id": "F-315",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211201",
+   "severity": "major",
+   "message": "211201 WALL - PANEL FRAME - BACK LOWER - B1: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 x 1.2, studs 20 x 40 x 1 (D-85) mill f'); its finish (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - CENTRE (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1'), STILE - OUTER (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "B1"
+   },
+   "key": "C11|frame-steel|211201",
+   "id": "F-316",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211202",
+   "severity": "major",
+   "message": "211202 WALL - PANEL FRAME - BACK LOWER - B2: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 x 1.2, studs 20 x 40 x 1 (D-85) mill f'); its finish (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - CENTRE (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1'), STILE - OUTER (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "B1"
+   },
+   "key": "C11|frame-steel|211202",
+   "id": "F-317",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "411101",
+   "severity": "major",
+   "message": "411101 CEILING - PANEL FRAME - C1: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (410000_P01_CEILING-PARTS-LIST_BOM.csv line 5) lacks galvanized steel (it reads 'Aluminium 6063-T6, mill finish (D-79) mill finish with the bond prep (D-79)'); its finish (410000_P01_CEILING-PARTS-LIST_BOM.csv line 5) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 7 member rows not in J-FRAME-01's steel: SIDE MEMBER SIDE (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 2): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), SEAM MEMBER SEAM (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 3): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), FRONT MEMBER FRONT (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 4): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), BACK MEMBER 40X40 BACK (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 5): galvanized steel (it reads 'aluminium 40 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 1 X1 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 6): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 2 X2 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 7): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "frames",
+    "key": "C1"
+   },
+   "key": "C11|frame-steel|411101",
+   "id": "F-318",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "411102",
+   "severity": "major",
+   "message": "411102 CEILING - PANEL FRAME - C2: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (410000_P01_CEILING-PARTS-LIST_BOM.csv line 6) lacks galvanized steel (it reads 'Aluminium 6063-T6, mill finish (D-79) mill finish with the bond prep (D-79)'); its finish (410000_P01_CEILING-PARTS-LIST_BOM.csv line 6) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 7 member rows not in J-FRAME-01's steel: SIDE MEMBER SIDE (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 9): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), SEAM MEMBER SEAM (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 10): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), FRONT MEMBER FRONT (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 11): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), BACK MEMBER 40X40 BACK (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 12): galvanized steel (it reads 'aluminium 40 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 1 X1 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 13): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 2 X2 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 14): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "frames",
+    "key": "C1"
+   },
+   "key": "C11|frame-steel|411102",
+   "id": "F-319",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351104",
+   "severity": "major",
+   "message": "351104 FRONT - DECOR FRAME - DL: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DL; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5 mill finish (hidden'); 26 member rows not galvanized steel: BACK RING BOTTOM B01 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 2), BACK RING DOOR SIDE B02 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 3), BACK RING SLOPE UNDER DT B03 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 4), BACK RING BOLT LINE B04 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 5), RING BOTTOM - DOOR SIDE R1D (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 6), RING BOTTOM - BACK R1K (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351104",
+   "id": "F-320",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351204",
+   "severity": "major",
+   "message": "351204 FRONT - DECOR FRAME - DT: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DT; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 40 x 20 x 1.5 (the back ring's to'); 13 member rows not galvanized steel: BACK RING BOTTOM B01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 2), BACK RING DR JOINT B02 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 3), BACK RING TOP B03 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 4), BACK RING SLOPE OVER DL B04 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 5), BACK RING POST B05 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 6), FRONT FACET TUBE F01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351204",
+   "id": "F-321",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351306",
+   "severity": "major",
+   "message": "351306 FRONT - DECOR FRAME - DR: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DR; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.'); 24 member rows not galvanized steel: FRONT RING BOTTOM F01 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 2), FRONT RING FACET SIDE F02 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 3), FRONT RING TOP F03 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 4), FRONT RING DT JOINT F04 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 5), FRONT RING DIAGONAL F05 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 6), FRONT RING GLASS EDGE F06 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351306",
+   "id": "F-322",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "118001",
+   "severity": "minor",
+   "message": "118001 is named 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP' in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; the joints register names it 'BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv"
+    ],
+    "register": "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD"
+   },
+   "key": "C06|name-mismatch|118001",
+   "id": "F-323",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }
