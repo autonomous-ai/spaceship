@@ -178,6 +178,7 @@ def finish(pn):
         rc = page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="helv", align=0)
     if rc < 0:                # PyMuPDF writes nothing when the text doesn't fit
         raise SystemExit("%s: the notes need %.1f mm more height than the box" % (pn, -rc / mm))
+    doc.subset_fonts()        # embed only the letters used: the whole Arial Unicode made each sheet 15 MB
     doc.save(out, garbage=3, deflate=True)
     doc.close()
     os.remove(tmp)
