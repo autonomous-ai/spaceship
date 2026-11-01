@@ -211,7 +211,9 @@ def test_cad_masses_from_main():
     rc, uk = rollup.register_counts(), rollup.fixings_unit_kg()
     assert set(rc) == set(uk) == set(rollup.FIXING_PNS), (rc, uk)
     (ns, ks), (nw, kw) = rollup.JOINTS["831001"], rollup.JOINTS["831002"]
-    want = sum(rc[pn] * uk[pn] for pn in rollup.FIXING_PNS) + ns * ks + nw * kw + rollup.CLEATS_KG
+    nt, kt = rollup.JOINTS["831010"]                  # DT's two 11 mm spigots on DR's ledge (D-157), on the same line
+    assert nt == 2 and kt > 0, (nt, kt)
+    want = sum(rc[pn] * uk[pn] for pn in rollup.FIXING_PNS) + ns * ks + nt * kt + nw * kw + rollup.CLEATS_KG
     assert abs(hw[3] - want) < 1e-9, (hw[3], want)
     fx = next(r for k, r in rows.items() if k.startswith("Fixed glass unit 360002"))
     f = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_FIXED_LIST) if r["pn"]}

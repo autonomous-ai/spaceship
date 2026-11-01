@@ -1,0 +1,2 @@
+pattern,travel_mm,status,source,why
+"\bDROP SEAL\b",20,source,"hardware selection C4: athmer Schall-Ex GSA 1-1112, travel 20 mm (athmer's data sheet, cited there)","FRONT's door model keeps the drop seal up, flush with the kick strip's bottom (door_unit.py, kick_zb); in use it drops to the room floor (D-132), so the seal-line check takes its bottom outline down to the floor when the floor is within its travel"
