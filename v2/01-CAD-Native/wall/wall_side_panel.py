@@ -1877,10 +1877,11 @@ def joint_features(design, members, out):
     b = hole(design, fc, fc.bRepBodies.item(0), "y", "(%s) + tube_w" % Y_FRONT, -1, {"x": xc, "z": z_j1}, "access_d",
              t, "FRONT STILE KEY ACCESS 1")
     pattern_feat(fc, [a, b], "z", "n_side_jnt", "side_jnt_pitch", "FRONT STILE BOLT HOLES")
-    if ROW == 1:
-        # D-169: the decor block's two locating pins in Z slots in the front wall, on the bolt line, 100 from each end
-        # of the seam edge (Joints: Z 212.26 and 1155.00 on L1, 120 clear of the nearest bolts); made after welding
-        # (J-FRAME-01), as the bottom rail's spigot slot: a box through the wall and a hole at each end
+    if CODE == "L1":
+        # D-169: the decor block DL locates on two pins in Z slots in L1's front wall, on the bolt line, 100 from each
+        # end of the seam edge (Joints: Z 212.26 and 1155.00, 120 clear of the nearest bolts); made after welding
+        # (J-FRAME-01), as the bottom rail's spigot slot: a box through the wall and a hole at each end. L1 only: as
+        # amended the same day, DR and DT keep their base locators (D-169), so R1's front member has no slots
         sh = "(pin_slot_l - pin_slot_w) / 2"
         for k, zc in (("LOWER", "(%s) + spigot_edge" % Z0), ("UPPER", "(%s) - spigot_edge" % Z1)):
             box(design, fc, "FRONT STILE PIN SLOT %s" % k, ("(%s) - pin_slot_w / 2" % xc, "(%s) + pin_slot_w / 2" % xc),
