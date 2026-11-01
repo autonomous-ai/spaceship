@@ -30,7 +30,17 @@
   {
    "component": "351201 FRONT - DECOR SKIN - DT",
    "index": 4,
-   "expression": "-pod_d / 2 + decor_d"
+   "expression": "-pod_d / 2 + decor_d - dt_stop_gap"
+  },
+  {
+   "component": "351202 FRONT - DECOR BACK PLATE - DT",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d - dt_stop_gap"
+  },
+  {
+   "component": "351202 FRONT - DECOR BACK PLATE - DT",
+   "index": 1,
+   "expression": "-pod_d / 2 + decor_d - dt_stop_gap - dt_back_t"
   },
   {
    "component": "351202 FRONT - DECOR BACK PLATE - DT",
@@ -75,7 +85,7 @@
   {
    "component": "351204 FRONT - DECOR FRAME - DT",
    "index": 4,
-   "expression": "-pod_d / 2 + decor_d - dt_back_t"
+   "expression": "-pod_d / 2 + decor_d - dt_stop_gap - dt_back_t"
   }
  ]
 }

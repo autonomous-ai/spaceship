@@ -45,12 +45,12 @@
   {
    "component": "368005 FRONT - FRAME-STOP SEAL",
    "index": 5,
-   "expression": "leaf_zt"
+   "expression": "dt_zb - ps_s"
   },
   {
    "component": "351103 FRONT - DOOR HINGE-SIDE STOP - DL",
    "index": 3,
-   "expression": "door_xl + ps_s - pod_w / 2"
+   "expression": "dl_w + stop_reach - pod_w / 2"
   },
   {
    "component": "351104 FRONT - DECOR FRAME - DL",
@@ -65,7 +65,7 @@
   {
    "component": "351104 FRONT - DECOR FRAME - DL",
    "index": 2,
-   "expression": "wall_z0 + dl_skin_t"
+   "expression": "wall_z0"
   },
   {
    "component": "351104 FRONT - DECOR FRAME - DL",

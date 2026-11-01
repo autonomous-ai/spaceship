@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 237 part lines (75 made, 162 bought, 128 on HOLD) and 34 sub-assembly lines from 13 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 261.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 254 part lines (89 made, 165 bought, 129 on HOLD) and 37 sub-assembly lines from 16 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 300.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -14,6 +14,9 @@ Read from: this working tree.
 - `v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv` @ working tree
 - `v2/03-Manufacturing/ceiling/410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv` @ working tree (skipped: a cut list (its rows are cut pieces of the parts in the parts lists))
 - `v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv` @ working tree
+- `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv` @ working tree
 - `v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv` @ working tree
@@ -75,6 +78,7 @@ Read from: this working tree.
 - 848012 SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN: HOLD (HOLD)
 
 **FRONT**
+- 351304 FRONT - DECOR INNER PANEL FELT - DR: HOLD (DRAFT; emission certificate HOLD)
 - 361001 FRONT - DOOR LEAF - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
 - 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112: HOLD (source (product); bond to aluminium HOLD)
 - 368101 FRONT - DOOR HINGE - HOLD: HOLD (HOLD (D-46, ISS-002))
@@ -83,7 +87,6 @@ Read from: this working tree.
 - 368103 FRONT - DOOR PULL PAIR - HOLD: HOLD (HOLD)
 - 361003 FRONT - FIXED GLASS - 4+4 LAMINATED: HOLD (DRAFT; product HOLD (ISS-074))
 - 368003 FRONT - 180 MAGNETIC SEAL - HALF 1 OF 2 - HOLD: HOLD (HOLD: product for the 8.76 laminate and a 4 mm gap)
-- no 350000 FRONT - DECOR parts listed yet
 
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
@@ -179,6 +182,16 @@ Read from: this working tree.
 
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
+
+## Reserved air spaces, not counted (D-105)
+
+Rows typed reserved air space in another team's block: the part is AIR's and is counted once, in AIR's list.
+
+- 350004 FRONT - AIR SUPPLY ASSY - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
+- 351402 FRONT - AIR INTAKE RISER - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
+- 351403 FRONT - AIR TRANSITION - LOWER - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
+- 351404 FRONT - SUPPLY FAN BOX - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
+- 351405 FRONT - AIR TRANSITION - UPPER - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
 
 ## Numbers given out by the master BOM (D-120)
 

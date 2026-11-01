@@ -714,7 +714,7 @@ def export_all(app):
          "DXF " + DXF_FLAT["ACCESS"] + "; 10 bolts M6 x 16 838001 with washers 838004 through holes 7.0 into rivnuts "
          "838003 in the frame, a 1 mm perimeter gasket over the rivnut heads (HOLD: gasket tape); 2 holes 9.53 "
          "+0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 "
-         "with the column's 2 hook studs (this joint to be added to the joints register); comes off after the column "
+         "with the column's 2 hook studs (J-AIR-02 in the joints register); comes off after the column "
          "and the inner panel, so the air unit 350004 slides in"),
         ("351303", PARTS["INNER"][1], PARTS["INNER"][2], 1, "made (CNC-routed ACP, no drawing: D-89 part 4), "
          "removable", "ACP 3 mm, finish as supplied (the felt covers its face); " + gt, "cad", "calculation (CAD)",

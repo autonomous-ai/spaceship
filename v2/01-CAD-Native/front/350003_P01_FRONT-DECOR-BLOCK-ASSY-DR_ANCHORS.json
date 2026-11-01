@@ -70,7 +70,7 @@
   {
    "component": "351303 FRONT - DECOR INNER PANEL - DR",
    "index": 5,
-   "expression": "fg_vis_zt + dr_band_dz"
+   "expression": "fg_vis_zt"
   },
   {
    "component": "351304 FRONT - DECOR INNER PANEL FELT - DR",
@@ -78,37 +78,37 @@
    "expression": "-pod_d / 2 + decor_d - dr_back_t + dr_skin_t + felt_t"
   },
   {
-   "component": "351402 FRONT - AIR INTAKE RISER - DR",
+   "component": "351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE",
    "index": 2,
    "expression": "fg_vis_zb + dr_skin_t + ri_gap"
   },
   {
-   "component": "351402 FRONT - AIR INTAKE RISER - DR",
+   "component": "351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE",
    "index": 5,
    "expression": "ri_zt"
   },
   {
-   "component": "351402 FRONT - AIR INTAKE RISER - DR",
+   "component": "351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE",
    "index": 0,
    "expression": "ri_x0"
   },
   {
-   "component": "351404 FRONT - SUPPLY FAN BOX - DR",
+   "component": "351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE",
    "index": 0,
    "expression": "fb_x0"
   },
   {
-   "component": "351404 FRONT - SUPPLY FAN BOX - DR",
+   "component": "351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE",
    "index": 2,
    "expression": "fb_z0"
   },
   {
-   "component": "351404 FRONT - SUPPLY FAN BOX - DR",
+   "component": "351404 FRONT - SUPPLY FAN BOX - DR - RESERVED AIR SPACE",
    "index": 5,
    "expression": "fb_z0 + fb_h"
   },
   {
-   "component": "351405 FRONT - AIR TRANSITION - UPPER - DR",
+   "component": "351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE",
    "index": 5,
    "expression": "op_z0 + op_h"
   },
