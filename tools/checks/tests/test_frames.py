@@ -200,3 +200,23 @@ def test_the_real_joints_check_keeps_the_names_this_reads():
         for m in members:
             assert c_frames.table_member(spec, key, m[4].split(",")[0]) is not None
     assert c_frames.frame_numbers(REPO)
+
+
+def test_the_decor_cores_need_galvanized_steel_from_their_cut_lists_too(tmp_path):
+    root = _tree(tmp_path)
+    f = tmp_path / "v2/03-Manufacturing/front"
+    f.mkdir(parents=True)
+    (f / "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv").write_text(
+        "part_number,name,material,finish,qty\n"
+        "351104,FRONT - DECOR FRAME - DL,aluminium EN AW-6063-T6 tube 20 x 20 x 1.5,\"mill finish (hidden, D-79)\",1\n")
+    (f / "351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv").write_text(
+        "frame,member,name,section,length_mm,qty\n"
+        "351104,B01,BACK RING BOTTOM,6063-T6 aluminium tube 20 x 20 x 1.5,272.0,1\n"
+        "351104,B02,BACK RING DOOR SIDE,galvanized steel tube 20 x 20 x 1.0,2008.8,1\n")
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    (cfg / "steel-frames.csv").write_text("part_number,decision,what\n351104,D-131,welded galvanized steel box tube\n")
+    fs, ran = c_frames.check_frames(root, [])
+    assert ran and [(f.rule, f.subject, f.owner) for f in fs] == [("frame-steel", "351104", "FRONT")]
+    assert "1 member row not galvanized steel: BACK RING BOTTOM B01" in fs[0].message
+    assert "D-131 makes it welded galvanized steel box tube" in fs[0].message
