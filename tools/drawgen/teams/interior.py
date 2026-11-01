@@ -2,10 +2,10 @@
 owner reviews the code and a team's first entries). See tools/drawgen/teams/README.md for what an entry holds."""
 
 # INTERIOR's folded aluminium parts (D-139; #335's bent sheet mode): each drawn from the INTERIOR STEP and its own DXF,
-# the folds read from the model, which folds each bend to an inside radius equal to the sheet (the Lead's ruling
-# 2026-11-01 on #335; K 0.44 in the DXFs, an assumption until the factory's bend table sets it)
-FOLDS = ("two folds to 90°, inside radius equal to the sheet (the Lead's ruling 2026-11-01 on #335); flat blank from its "
-         "DXF at K 0.44 (assumption until the factory's bend table)")
+# the folds read from the model, which folds each bend to an inside radius equal to the sheet (D-159; K 0.44 in the
+# DXFs, an assumption until the factory's bend table sets it)
+FOLDS = ("two folds to 90°, inside radius equal to the sheet, real folds in the model, flat blank from its DXF at K 0.44 "
+         "(D-159; K is an assumption until the factory's bend table)")
 FINISH = "Powder coat charcoal (RAL HOLD) after folding, edges deburred first."
 TOL = ("cut ±0.5 and bent ±0.5 (the INTERIOR parts list, assumption); fold angles 90° ±1° (assumption); folded "
        "sizes are outside sizes.")
