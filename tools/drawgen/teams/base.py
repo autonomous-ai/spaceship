@@ -83,7 +83,9 @@ NO_DRAWING = {
 ASSEMBLIES = {
     "110101": {
         "views": ["above"],
-        "unhatched": ["831001", "118002"],         # the spigots and the glides' stems (ISO 128-50)
+        # the spigots, the glides' stems, the key's hook stud bolts and its fixing screws: cut along their axes, drawn
+        # whole (ISO 128-50)
+        "unhatched": ["831001", "118002", "838001", "838010"],
         "sections": [
             {"letter": "A", "point": [-1230, -595, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
              "window": [-1256, -1204, -2, 62]},
