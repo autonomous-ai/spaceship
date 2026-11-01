@@ -98,7 +98,7 @@ class N:
 
 MINE = {
     # glass crate (packaging part 911001, made)
-    "crate_l": N(2200, "mm", "calculation", "this plan", "door unit 2089 + 2 x 5 edge foam + 2 x 45 end rails = 2189, rounded up"),
+    "crate_l": N(2210, "mm", "calculation", "this plan", "door unit 2106 (D-132: the kick strip 10 lower) + 2 x 5 edge foam + 2 x 45 end rails = 2206, rounded up"),
     "crate_w": N(1219, "mm", "calculation", "this plan", "the full 48 in deck: door 1177 + 2 x 5 edge foam + 2 x 15 side rails = 1217"),
     "crate_side_rail": N(15, "mm", "assumption", "this plan", "plywood side rail, so the 1177 door (FRONT's CAD: its magnetic seal half 2 mm past the glass) fits a 1219 crate"),
     "crate_end_rail": N(45, "mm", "assumption", "this plan", "timber end rail"),
@@ -377,8 +377,8 @@ PIECES = [
     Piece("2-01", "360002", "FRONT - FIXED GLASS UNIT", "Cụm vách kính cố định", "-", [("FIX", PANE_SHARE)], S(2034, 1031, 12),
           "FRONT 360002 P01 STEP: the pane with its 180 seal half, 2034 x 1027 x 12 (its U-channels and U-seals ship elsewhere)", 2, 10, "FRONT", glass=True,
           note="the pane with its 180 seal; its U-channels and seals ship fitted on the sill (PM ruling), in DR and in DT (D-68)"),
-    Piece("2-02", "360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "-", [("DOOR", 1)], S(2096, 1177, 149),
-          "FRONT 360001 P01 STEP without its hinges: 2095.5 x 1177 x 148.8 (the magnetic seal half 2 mm past the glass, the pulls 70 a side); the hinge halves that sit in DL ship in DL (PM ruling)",
+    Piece("2-02", "360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "-", [("DOOR", 1)], S(2106, 1177, 149),
+          "FRONT 360001 P01 STEP without its hinges: 2105.5 x 1177 x 148.8 (D-132: the kick strip down to the band's bottom line, 10 mm taller; the magnetic seal half 2 mm past the glass, the pulls 70 a side); the hinge halves that sit in DL ship in DL (PM ruling)",
           2, 11, "FRONT", glass=True),
     Piece("2-03", "350003", "FRONT - DECOR BLOCK ASSY - DR", "Khối trang trí phải (cụm)", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1020, 216),
           "FRONT 350003 P01 STEP: 2290 x 1020 x 215.5, the inner felt panel 10.5 mm proud of the back plate; AIR's reserved spaces in it are empty when it ships", 2, 10, "FRONT",
