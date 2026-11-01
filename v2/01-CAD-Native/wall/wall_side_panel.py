@@ -1396,7 +1396,10 @@ def mitre_plates(design, frame, corners, axis, face, toward_room):
         key = {(20, 20): "plate28", (20, 40): "plate45", (40, 20): "plate45", (40, 40): "plate57"}[widths]
         length = "sqrt((%s) * (%s) + (%s) * (%s))" % (w_r, w_r, w_s, w_s)
         c, _b, ref = plate_part(design, frame, key, length)
-        mine = [oc for oc in frame.occurrences if oc.component == c]
+        # the part's first copy anywhere under the frame (a STEP import can wrap it one level down), else a new one
+        mine = list(frame.allOccurrencesByComponent(c))
+        if not mine:
+            raise RuntimeError("mitre plate %s has no copy under the frame" % key)
         occ = mine[0] if not any(p[1] == key for p in placed) else frame.occurrences.addExistingComponent(
             c, adsk.core.Matrix3D.create())
         ou, ov, iu, iv = (ev(design, e) for e in (o[0], o[1], i[0], i[1]))
