@@ -57,8 +57,9 @@ def rows():
     out += [("211701_P01_WALL-CASSETTE-LEDGE-SIDE-LOWER-COMMON_DWG", ["211701"],
              "the side cassette ledge (L1 and R1), a bent 1.5 angle with its rivets' countersinks (the Lead's rulings "
              "of 2026-11-01); %s" % gen),
-            ("211801_P01_WALL-CASSETTE-LEDGE-BACK-LOWER_DWG", ["211801"],
-             "the back cassette ledge (B1 and B2), with B1's rebuild; %s" % gen),
+            ("211801_P01_WALL-CASSETTE-LEDGE-BACK-LOWER-COMMON_DWG", ["211801"],
+             "the back cassette ledge (B1 and B2: COMMON, as its list names it), a bent 1.5 angle with its rivets' "
+             "countersinks, the side ledge's entry (D-170); %s" % gen),
             ("(on the frame drawings' cut lists, D-162)", ["212101", "212102", "212103", "212104", "212105"],
              "L1's frame members: each member's row in its frame drawing's cut list is its drawing (D-162; "
              "210000_P01_WALL-TUBE-CUT-LIST_BOM.csv); the other frames' members join as their frames are rebuilt")]

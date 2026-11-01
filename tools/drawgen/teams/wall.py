@@ -116,6 +116,7 @@ LEDGE = {"bent": True, "notes": LEDGE_NOTES, "tolerance": LEDGE_TOLERANCE,
 PARTS = {
     "511101": _tray("LH"),
     "211701": LEDGE,
+    "211801": LEDGE,    # the back ledge (B1 and B2): the same 1.5 angle, rivets and pad as the side one (D-170)
     "211101": WALL_FRAME,
     "211102": WALL_FRAME,
     "211301": _skin("LH"),
