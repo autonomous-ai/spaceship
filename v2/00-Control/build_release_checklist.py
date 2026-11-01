@@ -695,6 +695,10 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
             "- The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: "
             "the Joints Engineer makes them and the teams place them by reference (D-95).",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
+            "- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP "
+            "reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch "
+            "shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or "
+            "status says HOLD shows HOLD.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
             "that names the number or its register ID.",

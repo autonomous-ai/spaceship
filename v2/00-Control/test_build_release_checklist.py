@@ -564,6 +564,56 @@ class D125PlainStrip(unittest.TestCase):
         self.assertEqual(self.strip_line(None)["dwg"], "no")
 
 
+class D125SharedRows(unittest.TestCase):
+    """C05's D-125 row cases (tools/checks/tests), run through the function the checklist calls, plus three sizes
+    needed and a HOLD grade that counts as stated (PM, 2026-11-01)."""
+    ROW = {"part_number": "811205", "name": "INTERIOR - LIGHT SHELF - DIFFUSER RH", "kind": "MP",
+           "material": "Opal polycarbonate (grade HOLD: picked with ELECTRICAL's down-light strips)",
+           "finish": "opal, as supplied", "process": "cut to length",
+           "size_mm": "991.0 long, section 28.0 x 1.5, 1.5 sheet", "tolerance": "±0.5 on cut sizes (assumption)"}
+    SIDES = (1.5, 28.0, 991.0)
+
+    def lacks(self, **change):
+        import csv as _csv
+        import tempfile as _tempfile
+        _geometry, c_drawings = rc.load_checks()
+        row = {**self.ROW, **change}
+        with _tempfile.TemporaryDirectory() as d:
+            folder = Path(d, "v2/03-Manufacturing/interior")
+            folder.mkdir(parents=True)
+            with open(folder / "810000_P01_INTERIOR-PARTS-LIST_BOM.csv", "w", encoding="utf-8", newline="") as f:
+                w = _csv.DictWriter(f, fieldnames=list(row))
+                w.writeheader()
+                w.writerow(row)
+            got = c_drawings.strip_row_lacks(d, "811205", self.SIDES)
+        return " | ".join(got[0]) if got else None
+
+    def test_c05s_cases(self):
+        self.assertEqual(self.lacks(), "")                                       # the full row stands in for a drawing
+        self.assertIn("finish", self.lacks(finish=""))
+        self.assertIn("the material's grade", self.lacks(material="polycarbonate"))
+        self.assertIn("1.5 x 28 x 991", self.lacks(size_mm="980.0 long, section 28.0 x 1.5"))   # not the STEP's length
+        self.assertIn("tolerance on the length and the width", self.lacks(tolerance=""))
+        self.assertIn("hole", self.lacks(process="cut to length, one cable hole"))
+        self.assertIn("tolerance on the width", self.lacks(tolerance="cut length +/-1 (assumption)"))  # 811205's line
+        self.assertEqual(self.lacks(tolerance="cut length +/-1, width as supplied (assumption)"), "")  # a bought strip
+        self.assertEqual(self.lacks(tolerance="ISO 2768-m"), "")
+        self.assertEqual(self.lacks(tolerance="length ±1; width ±0.5"), "")
+
+    def test_three_sizes_needed(self):
+        self.assertIn("1.5 x 28 x 991", self.lacks(size_mm="991.0 long, 28.0 wide"))
+
+    def test_a_hold_grade_counts_as_stated_and_shows_hold(self):
+        self.assertEqual(self.lacks(), "")          # its grade is on HOLD, and the row still passes D-125
+        fai = rc.fai_plan(PLAN, BOM)
+        part = row("211199", "make", "WALL - TEST STRIP", "opal polycarbonate (grade HOLD)", team="WALL")
+        part["finish"] = "opal, as supplied"
+        file_map = files("211199_P01_WALL-TEST-STRIP_CAD.f3d", "211199_P01_WALL-TEST-STRIP_STEP.step")
+        made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
+                                 {}, {}, None, {"211199": ([], WALL)})
+        self.assertEqual((made[0]["dwg"], made[0]["state"]), ("row: a plain strip or sheet (D-125)", "HOLD"))
+
+
 class MadeHold(unittest.TestCase):
     """A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD, not done
     (PM, 2026-11-01); open gaps show first; the totals count it under Made: HOLD."""

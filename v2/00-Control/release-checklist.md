@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (0d355cd), PR #91 (0cb3135), PR #105 (bc3f023), PR #203 (1b3fa40), PR #202 (213059d). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (4a92f9c), PR #91 (0cb3135), PR #105 (bc3f023), PR #203 (1b3fa40), PR #202 (803aec9). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -17,16 +17,16 @@ Read from: main (0d355cd), PR #91 (0cb3135), PR #105 (bc3f023), PR #203 (1b3fa40
 | BASE | 3 | 3 | 0 | 3 | 3 | 0 | 4 |
 | CEILING | 3 | 11 | 0 | 0 | 5 | 0 | 5 |
 | CEILING (builds AIR, D-80) | 8 | 17 | 0 | 6 | 1 | 0 | 7 |
-| CEILING (builds INTERIOR, D-80) | 0 | 8 | 0 | 1 | 0 | 0 | 2 |
+| CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 65 |
 | FRONT | 4 | 18 | 0 | 0 | 4 | 1 | 5 |
 | JOINTS | 2 | 4 | 0 | 0 | 0 | 0 | 0 |
 | WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 36 | 97 | 0 | 12 | 10 | 2 | 89 |
+| **All, each number once** | 36 | 98 | 0 | 11 | 10 | 2 | 89 |
 
-97 of the 145 made numbers have no drawing yet; for 79 of them the drawing is the only gap, so their drawings can start now (D-84).
+98 of the 145 made numbers have no drawing yet; for 80 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 97, DXF or cut list 15, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 98, DXF or cut list 15, BOM row 3, CAD 3.
 
 ## Made parts with no FAI line
 
@@ -115,7 +115,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 811202 | INTERIOR - LIGHT SHELF - SIDE LH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
 | 811203 | INTERIOR - LIGHT SHELF - SIDE RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
 | 811204 | INTERIOR - LIGHT SHELF - DOWN CHANNEL RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I04 | open: drawing |
-| 811205 | INTERIOR - LIGHT SHELF - DIFFUSER RH | main | yes | yes | yes | row (D-125) | row: a plain strip or sheet (D-125) | yes | n/a | K-A02, K-I01, K-I05 | HOLD |
+| 811205 | INTERIOR - LIGHT SHELF - DIFFUSER RH | main | yes | yes | yes | n/a | no: as a plain strip or sheet (D-125) its row in v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv doesn't give a tolerance on the width (one general tolerance on the cut sizes, such as ISO 2768-m or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip) | yes | n/a | K-A02, K-I01, K-I05 | open: drawing |
 
 ### ELECTRICAL
 
@@ -394,6 +394,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 - ELECTRICAL's 710000 is drawn by its wiring diagram, whose sheet 3 holds the route and joint views (D-93).
 - The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: the Joints Engineer makes them and the teams place them by reference (D-95).
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
+- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.
 - A register number's product status comes from the joints register: on HOLD, or named (DECIDED or from a source), or left to the parts list; a team number's from its parts list.
