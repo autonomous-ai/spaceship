@@ -40,6 +40,7 @@ Nothing here releases anything: it lists what is missing (guideline milestone 4;
 import argparse
 import csv
 import datetime
+import hashlib
 import importlib.util
 import io
 import json
@@ -440,12 +441,61 @@ def d125_strips(root=None):
             for pn, sides in c_drawings.strip_sides(per_part, c_geometry.load_step).items()}
 
 
+GA_PN = "100000"
+GA_DIR = "v2/02-Drawings/00-General-Assembly"
+
+
+def ga_current(root=None):
+    """D-176: the GA (100000) only warns in the Checker's audit (#413), since Fusion Engineer 2 redraws it at
+    checkpoints, so the release checklist shows whether it is current at release. (path, why): the newest GA sheet the
+    generator made, and why it is out of date, read as drawgen's own stale() reads it: a source it records (each team's
+    STEP, the master BOM) whose hash has changed, or that is gone. ([] when current; path None when there is no
+    generated GA.) The audit also redraws it byte for byte, which needs the generator's OCC environment; this reads
+    only the sheet's own record. Read from the working tree, as the audit does."""
+    root = Path(root or ROOT)
+    folder = root / GA_DIR
+    if not folder.is_dir():
+        return None, []
+    path = str(ROOT / "tools" / "drawgen")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    import fitz
+    import readback     # drawgen's own reader of a sheet's record (PyMuPDF only, no OCC)
+    sheets = []
+    for f in sorted(folder.glob(GA_PN + "_*_DWG.pdf")):
+        with fitz.open(str(f)) as d:
+            if (d.metadata or {}).get("creator") == "drawgen":
+                sheets.append((f, readback.read_data(d)))
+    if not sheets:
+        return None, []
+    sheet, data = sheets[-1]
+    why = []
+    for s in data.get("sources", []):
+        src = root / s["path"]
+        if not src.exists():
+            why.append("%s is gone" % s["path"])
+        elif sha12(src) != s["sha256_12"]:
+            why.append("%s changed" % s["path"])
+    return sheet.relative_to(root).as_posix(), why
+
+
+def sha12(path):
+    """A file's hash as drawgen records it (tools/drawgen/inputs.py, sha12, which needs OCC to import): the first 12
+    hex digits of its SHA-256."""
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()[:12]
+
+
 def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None,
-                dxf_texts=None, d125=None, drawgen=None, d128=None):
+                dxf_texts=None, d125=None, drawgen=None, d128=None, ga=None):
     """dxf_texts: number -> the texts of its DXF files, for D-89 (4)'s BEND-layer rule (None skips that rule).
     d125: number -> C05's D-125 reading of a plain strip or sheet (d125_strips), None skips that rule.
     drawgen: the numbers tools/drawgen draws (drawgen_parts), never blocked by a locked screen (D-113).
-    d128: number -> what a felt or fill piece's DXF and row still lack for D-128 (d128_pieces), [] when nothing."""
+    d128: number -> what a felt or fill piece's DXF and row still lack for D-128 (d128_pieces), [] when nothing.
+    ga: ga_current()'s (path, why); a GA out of date leaves 100000's line open until it is redrawn (D-176)."""
     chars, _, accept = fai
     tab_cover = tab_cover or {}
     by_cut_row = cut_rows(cut_texts)
@@ -535,6 +585,8 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             ids = [i for i, pats in chars if any(p.fullmatch(pn) for p in pats)]
             gaps = [n for n, ok in (("CAD", cad), ("STEP", step), ("DXF or cut list", flat != "no"), ("drawing", not dwg.startswith("no")),
                                     ("mass", mass), ("finish", finish != "no"), ("FAI", bool(ids))) if not ok]
+            if pn == GA_PN and ga and ga[0] and ga[1]:
+                gaps.append("GA current (D-176)")
             line = {**r, "bom_row": True, "cad": cad, "step": step, "flat": flat, "dwg": dwg, "mass_ok": mass,
                     "finish_ok": finish, "fai": ids, "gaps": gaps, "from": {where_of(r, labels)}}
             line["state"] = state_of(gaps, screen, hold=made_hold(r, by_cut_row.get(pn, [])), drawgen=pn in (drawgen or ()))
@@ -692,6 +744,22 @@ def made_hold(r, rows):
     return False
 
 
+def ga_line(ga):
+    """D-176's line on whether the GA (100000) is current, from ga_current()'s (path, why)."""
+    path, why = ga or (None, [])
+    if not path:
+        return ("**The GA (100000, D-176)**: no generated GA sheet in the working tree" +
+                (" (%s)." % "; ".join(why) if why else "."))
+    if not why:
+        return (f"**The GA (100000, D-176)**: current: `{path}`'s recorded sources are as it was drawn from. The Checker's "
+                "audit (#413) also redraws it byte for byte; the GA only warns there, and Fusion Engineer 2 redraws it at "
+                "checkpoints.")
+    shown = "; ".join(why[:6]) + ("; and %d more" % (len(why) - 6) if len(why) > 6 else "")
+    return (f"**The GA (100000, D-176)**: out of date: `{path}` was drawn from sources that have moved since ({shown}). "
+            "Fusion Engineer 2 redraws it at checkpoints; it must be current at release, so 100000's line stays open "
+            "until then.")
+
+
 def state_of(gaps, screen, hold=False, drawgen=False):
     """Open gaps show first; a made part with none that is on HOLD shows HOLD, not done. A drawing-only gap on a locked
     screen blocks a part (D-84), unless tools/drawgen draws it (D-113)."""
@@ -754,7 +822,7 @@ def cut_list_texts(files, refs):
             if p.endswith(".csv") and p.startswith(("v2/02-Drawings/", "v2/03-Manufacturing/")) or "CUT-LIST" in p}
 
 
-def render(made, bought, register, no_list, ref_note, screen, files, fai, today, fell_back=(), drawgen=()):
+def render(made, bought, register, no_list, ref_note, screen, files, fai, today, fell_back=(), drawgen=(), ga=None):
     chars, checks, accept = fai
     out = ["# Release checklist: Spaceship (FocusPod v2)", "",
            "| Doc code | Revision | Status | Date | Owner |", "|---|---|---|---|---|",
@@ -767,6 +835,7 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
     if fell_back:
         out += ["Read from main although an open PR changed them, because main changed them later (the PR's edit counts "
                 "once it rebases): " + "; ".join(fell_back) + ".", ""]
+    out += [ga_line(ga), ""]
     out += ["**Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. "
             "**Open**: something missing that can be done now. **Blocked**: only the drawing is "
             "missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it "
@@ -945,15 +1014,20 @@ def main(argv=None):
     except Exception as e:  # the checklist still runs; the drawing column then waits on D-128's drawings
         print(f"D-128 not read ({type(e).__name__}: {e}); felt and fill pieces with openings count only with a drawing")
         d128 = {}
+    try:
+        ga = ga_current()
+    except Exception as e:  # the checklist still runs; the GA's line then says it wasn't read
+        print(f"the GA not read ({type(e).__name__}: {e})")
+        ga = (None, ["not read: %s" % type(e).__name__])
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
-                               screen, bom, labels, cut_texts, tab_cover, dxf_texts, d125, drawgen, d128)
+                               screen, bom, labels, cut_texts, tab_cover, dxf_texts, d125, drawgen, d128, ga)
     made += files_only(by_pn, parts, files, labels, screen, fai[0], tab_cover)
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
     fell = fell_back_notes(bom, labels)
     for x in fell:
         print("read from main:", x)
-    Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date, fell, drawgen),
+    Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date, fell, drawgen, ga),
                            encoding="utf-8")
     done = sum(r["state"] == "done" for r in made + bought)
     print(f"release checklist: {len(made)} made lines, {len(bought)} bought lines, {done} done; screen {screen}; written to {a.out}")

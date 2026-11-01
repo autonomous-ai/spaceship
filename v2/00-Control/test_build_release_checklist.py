@@ -337,6 +337,60 @@ END_WORDINGS = ("front end mitred 45 deg, back end mitred 63.43 deg off square",
                 "mitred to its neighbours (angles on the frame drawing)", "ends both cut to suit")
 
 
+class D176GA(unittest.TestCase):
+    """D-176: the GA (100000) only warns in the Checker's audit and is redrawn at checkpoints, so the release checklist
+    shows whether it is current: its recorded sources still have the hashes it was drawn from."""
+
+    def ga(self, tmp, creator="drawgen", sources=None):
+        import json
+        fitz = __import__("fitz")
+        folder = Path(tmp) / rc.GA_DIR
+        folder.mkdir(parents=True, exist_ok=True)
+        doc = fitz.open()
+        doc.new_page()
+        doc.set_metadata({"creator": creator})
+        txt = json.dumps({"sources": sources or []}, sort_keys=True, separators=(",", ":"))
+        doc.xref_set_key(doc.pdf_catalog(), "DrawgenData", "(%s)" % txt.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)"))
+        path = folder / "100000_P04_POD-SPACESHIP_DWG.pdf"
+        doc.save(str(path))
+        return path
+
+    def test_current_changed_and_gone(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            step = Path(tmp) / "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step"
+            step.parent.mkdir(parents=True)
+            step.write_text("ISO-10303-21; base", encoding="utf-8")
+            src = [{"path": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step", "role": "STEP",
+                    "sha256_12": rc.sha12(step)}]
+            self.ga(tmp, sources=src)
+            path, why = rc.ga_current(tmp)
+            self.assertEqual((path, why), (rc.GA_DIR + "/100000_P04_POD-SPACESHIP_DWG.pdf", []))
+            step.write_text("ISO-10303-21; base, moved", encoding="utf-8")
+            self.assertEqual(rc.ga_current(tmp)[1], ["v2/03-Manufacturing/base/110000_P01_BASE_STEP.step changed"])
+            step.unlink()
+            self.assertEqual(rc.ga_current(tmp)[1], ["v2/03-Manufacturing/base/110000_P01_BASE_STEP.step is gone"])
+
+    def test_a_sheet_the_generator_did_not_make_is_not_the_ga(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            self.ga(tmp, creator="Autodesk Fusion")
+            self.assertEqual(rc.ga_current(tmp), (None, []))
+
+    def test_an_out_of_date_ga_keeps_100000_open(self):
+        fai = rc.fai_plan(PLAN, BOM)
+        pod = row("100000", "assembly", "POD", team="CONTROL")
+        def line(ga):
+            made, _ = rc.check_parts([pod], BOM.parse_register(REGISTER, "test"), rc.files_by_pn({}), [], fai, fai[1],
+                                     rc.register_products(REGISTER, BOM), "unlocked", BOM, {}, {}, {}, ga=ga)
+            return made[0]
+        stale = line(("v2/02-Drawings/00-General-Assembly/100000_P04_POD_DWG.pdf", ["v2/04-BOM/x.csv changed"]))
+        self.assertIn("GA current (D-176)", stale["gaps"])
+        self.assertNotIn("GA current (D-176)", line(("v2/02-Drawings/00-General-Assembly/100000_P04_POD_DWG.pdf", []))["gaps"])
+        self.assertIn("out of date", rc.ga_line(("a.pdf", ["v2/04-BOM/x.csv changed"])))
+        self.assertIn("current:", rc.ga_line(("a.pdf", [])))
+
+
 class D162CutListRow(unittest.TestCase):
     """D-162: a weldment member's drawing is its frame's cut list row, when the row states section, cut length,
     both end angles and quantity; a member keeps its own sheet only where the row can't say it."""
