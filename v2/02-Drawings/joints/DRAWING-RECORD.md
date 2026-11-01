@@ -20,3 +20,10 @@ Two drawings, as the PM approved (2026-10-31): the corner key family on one TABU
 ## What went wrong and was fixed
 
 - The first key sheet had a dimension between the two hidden fixing-hole circles that showed the sheet distance (28 for 14). Its two points had no link to the model, and the API can't delete or edit a dimension. That drawing (minutes old, our own) was deleted and drawn again in one held session, with the dimension taken from the view's corner instead (24.5), as the other hole dimensions are.
+
+## The key sheet, drawn again (2026-11-01)
+
+- **One held Fusion session**, 01:56 to 01:59 UTC: the first drawing deleted, a new one started on the design's version 2, then annotated: 3 views and 11 dimensions, all native and linked to the model.
+- **Read back from the PDF:** front 30 and 75; from the right 35, 17.5, 26, 60 and Ø5.04 (the stud holes); from above 30, 10.5, 10.5 and 24.5 (the fixing holes, 14 apart) and Ø5.04. No dimension shows a sheet distance.
+- **"Created by" cleared** with the fix in #214 to `tools/fusion/pdf_clear_field.py`: Fusion wrote today's date with a one-digit day (1/11/26), which the tool took as part of the name; with the fix the name goes and the date stays.
+- **Checked:** `test_joints_drawing.py` 0 failures; the PDF carries UNITS MM, the material, finish, ISO 2768-m, H01 to H04, TABULATED and all four part numbers (the mechanical check's drawing rules, C05). A Reviewer's visual pass follows (D-114).
