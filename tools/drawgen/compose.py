@@ -750,9 +750,11 @@ def plain_section(b, lax):
 
 
 def angle_section(b, lax):
-    """A 90° angle's section (an L of one wall), at a station clear of its holes: {"a", "b": the legs' outside
-    lengths along u and v, "t": the wall, "r": the root's inside radius (0 sharp), "point": the station, "u", "v": the
-    legs' directions (3D, from the heel)}; None for any other shape (a rounded heel or toes, legs of two walls)."""
+    """A 90° angle's section (an L of one wall, sharp at its heel, root and toes), at a station clear of its holes:
+    {"a", "b": the legs' outside lengths along u and v, "t": the wall, "r": 0 (the root is sharp), "point": the
+    station, "u", "v": the legs' directions (3D, from the heel)}; None for any other shape (a rounded heel, root or
+    toe, legs of two walls). A root fillet is refused before this, with the part's other curved faces (Reviewer 6 on
+    #391: the radius was claimed but never reached)."""
     from OCP.TopAbs import TopAbs_WIRE
     from OCP.BRepAdaptor import BRepAdaptor_Curve
     from OCP.BRepTools import BRepTools_WireExplorer
@@ -783,7 +785,7 @@ def angle_section(b, lax):
             else:
                 return None
             ex.Next()
-        if len(lines) != 6 or len(arcs) > 1:
+        if len(lines) != 6 or arcs:
             return None
         # the outside faces: the longest line in each of the two directions (with legs of two lengths, the long leg's
         # inside face is longer than the short leg's outside: FRONT's 30 x 20 stops)
@@ -811,10 +813,7 @@ def angle_section(b, lax):
                   if abs(abs(vdot(vnorm(vsub(l[1], l[0])), v)) - 1) < 1e-6 and vdot(vsub(p, heel), u) > 1e-6), default=None)
         if ta is None or tb is None or abs(ta - tb) > 1e-3:
             return None                 # legs of two walls: not sized yet
-        r = arcs[0][1] if arcs else 0.0
-        if arcs and math.dist(arcs[0][0], vadd(heel, vadd(vmul(u, ta + r), vmul(v, ta + r)))) > 1e-3:
-            return None                 # an arc that isn't the root's
-        return {"a": a, "b": bb, "t": ta, "r": r, "point": pt, "u": u, "v": v, "heel": heel}
+        return {"a": a, "b": bb, "t": ta, "r": 0.0, "point": pt, "u": u, "v": v, "heel": heel}
     return None
 
 
@@ -2185,9 +2184,11 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             pt_ = vd.S(vd.view.to2d(vadd(ang["heel"], vmul(ang["v"], ang["t"]))))
             # the section's x is along leg a, its y along leg b (up from the heel): each size outside the part
             right = hl[0] >= (vd.box()[0] + vd.box()[2]) / 2       # the heel on the right: leg a runs left
-            sh.dim_linear(hl, pa, "down", 8.0, fmt(ang["a"]), 2.5)
-            sh.dim_linear(hl, pb, "right" if right else "left", 8.0, fmt(ang["b"]), 2.5)
-            sh.dim_linear((pa[0], hl[1]), (pa[0], pt_[1]), "left" if right else "right", 6.0, fmt(ang["t"]), 2.5)
+            vd.angle_dims = [(hl, pa, "down", 8.0, fmt(ang["a"])),
+                             (hl, pb, "right" if right else "left", 8.0, fmt(ang["b"])),
+                             ((pa[0], hl[1]), (pa[0], pt_[1]), "left" if right else "right", 6.0, fmt(ang["t"]))]
+            for p1_, p2_, side_, gap_, txt_ in vd.angle_dims:
+                sh.dim_linear(p1_, p2_, side_, gap_, txt_, 2.5)
             continue
         c = vd.S(vd.view.to2d(r.point))
         x0, y0, x1, y1 = vd.box()
@@ -2563,9 +2564,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                   extra=mapping_words(vd.view, part.pod_system))
             continue
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
-              ("across the member: angle %s x %s x %s%s" % (fmt(vd.r.angle["a"]), fmt(vd.r.angle["b"]),
-                                                             fmt(vd.r.angle["t"]), (", R%s root" % fmt(vd.r.angle["r"]))
-                                                             if vd.r.angle["r"] > 1e-6 else ", sharp root"))
+              ("across the member: angle %s x %s x %s, sharp root" % (fmt(vd.r.angle["a"]), fmt(vd.r.angle["b"]),
+                                                                     fmt(vd.r.angle["t"])))
               if getattr(vd.r, "angle", None) else
               ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
               if vd.r.feats else ("across %s, showing its bevel along it" % (vd.r.body.name or "the member"))
@@ -3263,7 +3263,9 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
     if getattr(part, "flat", None):      # only a bent part's record has it: every other sheet keeps its bytes
         out["flat"] = flat_data(part, pl)
     angs = [{"letter": vd.letter, "a": vd.r.angle["a"], "b": vd.r.angle["b"], "t": vd.r.angle["t"], "r": vd.r.angle["r"],
-             "u": vd.r.angle["u"], "v": vd.r.angle["v"], "heel": vd.r.angle["heel"]}
+             "u": vd.r.angle["u"], "v": vd.r.angle["v"], "heel": vd.r.angle["heel"],
+             "dims": [{"p1": list(p1_), "p2": list(p2_), "side": side_, "text": txt_}
+                      for p1_, p2_, side_, _g, txt_ in getattr(vd, "angle_dims", [])]}
             for vd in removed if getattr(vd.r, "angle", None)]
     if angs:                            # an angle member's section, for the read-back (others keep their bytes)
         out["angle_sections"] = angs

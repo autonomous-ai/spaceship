@@ -68,6 +68,10 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   (CEILING's seam member): "1 x 45°" on a leader, in the view that shows its true angle (looking along its edge, or
   a removed section across its member), else where it shows as a band it faces (CEILING's back member's end bevel,
   seen from below). A view is planned for a bevel no other view shows. A welded end plate (a square face just inside an end) needs no size: the material line gives it.
+- Angles (a member whose parts list calls it an angle or an extrusion: FRONT's door stops, AIR's 611103): a section
+  across the member at a station clear of its holes, titled `angle a x b x t, sharp root`, its two legs' outside
+  lengths and its wall dimensioned from the heel. Only a 90° angle of one wall, sharp at its heel, root and toes, is
+  drawn; a root fillet, a rounded heel or toe, legs of two walls or any other angle is refused.
 - Frames: member balloons, the cut list from the parts list, stile positions, the D-115 joint note.
 - Bent and folded sheet (an entry marked `bent`; the Lead's ruling, 2026-11-01): the folded part's views from its
   STEP; a section across each run of bends with each flange's outside length (windowed to one end of a long run, the
@@ -106,8 +110,8 @@ that isn't a blind hole's drill point (a countersink), any other curved face, ho
 itself hides, a part that fits no ISO scale on its sheet. On a straight member, any flat face that is not its
 profile, an end, a mitre or compound end cut, a slot's own sides, a notch, an even chamfer or a welded end plate's
 inner face (a step, a pocket, a window in a wall, an uneven chamfer): drawgen would draw it without a size, so it
-names the faces and refuses the part. A straight member whose section isn't a solid convex outline or a
-rectangular tube (an angle, a channel, a custom extrusion, a tube with a corner cut that isn't an even 45° bevel of
+names the faces and refuses the part. A straight member whose section isn't a solid convex outline, a
+rectangular tube or a sharp 90° angle of one wall (an angle with a root fillet, a channel, a custom extrusion, a tube with a corner cut that isn't an even 45° bevel of
 5 or less): drawgen would size only its outside, so it refuses it as a profile (D-139 keeps a profile's dimensioned section with Fusion until the
 profile reading lands). An extrusion's open section is judged as a profile, not as a fold. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
 their team's file with the reason, and `generate` says so instead of drawing them. It also never overwrites a PDF it didn't
@@ -127,5 +131,5 @@ the PDF's own text and paths); for a bent part, every bend row is on one of the 
 OCC), each run's bend lines sit where its outside flange lengths, angles, inside radius and the printed K-factor put
 them within 0.05 mm, its flat is as long as the DXF's, every STEP hole unfolds (by the sheet's record of how each
 flange unfolds, each flange checked against a face of the STEP) onto a DXF circle of its size within 0.05 mm and
-every DXF circle onto a STEP hole, and the flat's size, the K-factor and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
+every DXF circle onto a STEP hole, and the flat's size, the K-factor and every bend tag are printed. For an angle, its legs, both its walls and its root are measured in the STEP against the section's title, and each dimension the section prints is read back against the STEP: its two ends (mapped back through the section's view) on the STEP's faces, the span between them the value it prints, its extension lines drawn and its value printed by it, with one for each leg and one for the wall (Reviewer 6 on #391). `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
 the release checklist count the drawings by their file names, like any other drawing.

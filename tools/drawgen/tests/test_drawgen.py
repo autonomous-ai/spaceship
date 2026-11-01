@@ -315,8 +315,8 @@ def test_profiles_and_short_tubes():
     w_ = STEPControl_Writer()
     w_.Transfer(fu.Shape(), STEPControl_AsIs)
     w_.Write(other)
-    f3 = readback.angle_fails(dat, readback.step_faces(other, "219993"), fitz.open(pa)[0].get_text())
-    assert any("prints the angle's wall 2; the STEP's is 3" in x for x in f3), f3
+    f3 = readback.angle_fails(dat, readback.step_faces(other, "219993"), fitz.open(pa)[0])
+    assert any("prints the angle's wall (the leg along its x) 2; the STEP's is 3" in x for x in f3), f3
     step = _profile(os.path.join(d, "219992_P01_TEST-BEVELLED_STEP.step"), "bevelled")
     p = os.path.join(d, "bevelled.pdf")
     compose.make("219992", "none", SPEC, p, step=step, row=dict(ROW, part_number="219992", process="cut"))
@@ -324,6 +324,123 @@ def test_profiles_and_short_tubes():
     assert not fails, fails
     data = readback.read_data(fitz.open(p))
     assert [c["long"] for c in data["chamfers"]] == [True] and data["chamfers"][0]["text"] == "1 x 45°", data["chamfers"]
+
+
+def _angle_member(path, a=30.0, b=20.0, t=2.0, t2=None, root=0.0):
+    """A 600 long angle along Y: a leg a long along X, t thick (in Z), and a leg b long along Z, t2 thick (in X; t when
+    None), sharp at heel and toes; root: a fillet of that radius in the inside corner."""
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
+    from OCP.BRepFilletAPI import BRepFilletAPI_MakeFillet
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.GeomAbs import GeomAbs_Line
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    from OCP.TopAbs import TopAbs_EDGE
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+    from OCP.gp import gp_Pnt
+    t2 = t if t2 is None else t2
+    f = BRepAlgoAPI_Fuse(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), a, 600, t).Shape(),
+                         BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), t2, 600, b).Shape())
+    f.SetFuzzyValue(1e-6)
+    f.Build()
+    u = ShapeUpgrade_UnifySameDomain(f.Shape(), True, True, True)
+    u.Build()
+    shape = u.Shape()
+    if root:
+        mk = BRepFilletAPI_MakeFillet(shape)
+        e = TopExp_Explorer(shape, TopAbs_EDGE)
+        found = []
+        while e.More():
+            ed = TopoDS.Edge_s(e.Current())
+            c = BRepAdaptor_Curve(ed)
+            p0, p1 = c.Value(c.FirstParameter()), c.Value(c.LastParameter())
+            if c.GetType() == GeomAbs_Line and all(abs(q.X() - t2) < 1e-6 and abs(q.Z() - t) < 1e-6 for q in (p0, p1)) \
+                    and not any(ed.IsSame(x) for x in found):
+                found.append(ed)
+            e.Next()
+        assert len(found) == 1, len(found)
+        mk.Add(root, found[0])
+        mk.Build()
+        shape = mk.Shape()
+    w = STEPControl_Writer()
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(shape, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", 1)
+    return path
+
+
+class _SaysOtherwise:
+    """A page whose plain text says `new` where it says `old` (a planted title); everything else as drawn."""
+
+    def __init__(self, page, old, new):
+        self.page, self.old, self.new = page, old, new
+
+    def get_text(self, *a, **k):
+        t = self.page.get_text(*a, **k)
+        return " ".join(t.split()).replace(self.old, self.new) if not a and not k else t
+
+    def __getattr__(self, name):
+        return getattr(self.page, name)
+
+
+def test_angle_section_reads_each_dimension_back():
+    """Reviewer 6 on #391: the read-back took only the three numbers of the angle's title. It now reads each
+    dimension the section prints back against the STEP (its ends on the STEP's faces, its span the value it prints,
+    its ink), measures both walls, and checks the root. A 30 x 20 x 2 angle draws and reads back PASS; each plant
+    fails: the two legs' values swapped, the wall printed 3, a leg's dimension missing, the other leg 2.5 thick in the
+    STEP, an R2 root in the STEP under a "sharp root" title, and an "R2 root" title over the sharp STEP. An angle
+    modelled with a root fillet is refused (its curved face), so the section claims only a sharp root (the P3)."""
+    import copy
+    d = os.path.join(TMP, "angle_dims")
+    os.makedirs(d, exist_ok=True)
+    step = _angle_member(os.path.join(d, "219976_P01_TEST-ANGLE-30_STEP.step"))
+    row = dict(ROW, part_number="219976", name="TEST - ANGLE 30 X 20", process="extruded angle, cut")
+    p = os.path.join(d, "219976.pdf")
+    compose.make("219976", "none", SPEC, p, step=step, row=row)
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    page = fitz.open(p)[0]
+    data = readback.read_data(fitz.open(p))
+    assert "angle 30 x 20 x 2, sharp root" in " ".join(page.get_text().split())
+    (ag,) = data["angle_sections"]
+    assert [dm["text"] for dm in ag["dims"]] == ["30", "20", "2"], ag["dims"]
+    faces = readback.step_faces(step, "219976")
+    assert readback.angle_fails(data, faces, page) == []
+
+    def planted(change):
+        dd = copy.deepcopy(data)
+        change(dd["angle_sections"][0]["dims"])
+        return readback.angle_fails(dd, faces, page)
+
+    def swap(dims):
+        dims[0]["text"], dims[1]["text"] = dims[1]["text"], dims[0]["text"]
+    f = planted(swap)
+    assert any("dimension 20 spans 30" in x for x in f) and any("dimension 30 spans 20" in x for x in f), f
+    f = planted(lambda dims: dims[2].update(text="3"))
+    assert any("dimension 3 spans 2" in x for x in f), f
+    f = planted(lambda dims: dims.pop(0))
+    assert f == ["section %s-%s: no dimension gives the leg along its x, 30" % (ag["letter"], ag["letter"])], f
+    thick = _angle_member(os.path.join(d, "219975_P01_TEST-ANGLE-25_STEP.step"), t2=2.5)
+    f = readback.angle_fails(data, readback.step_faces(thick, "219975"), page)
+    assert any("wall (the leg along its y) 2; the STEP's is 2.5" in x for x in f), f
+    rooted = _angle_member(os.path.join(d, "219974_P01_TEST-ANGLE-R2_STEP.step"), root=2.0)
+    f = readback.angle_fails(data, readback.step_faces(rooted, "219974"), page)
+    assert any("says sharp root; the STEP's root is R2" in x for x in f), f
+    f = readback.angle_fails(data, faces, _SaysOtherwise(page, "x 2, sharp root", "x 2, R2 root"))
+    assert any("says R2 root; the STEP's root is sharp" in x for x in f), f
+    try:
+        compose.make("219974", "none", SPEC, os.path.join(d, "r.pdf"), step=rooted,
+                     row=dict(row, part_number="219974"))
+        raise AssertionError("drew an angle with a root fillet")
+    except compose.NotDrawable as e:
+        assert "cylinder r2" in str(e), e
 
 
 def test_ceiling_frame_bevels():
