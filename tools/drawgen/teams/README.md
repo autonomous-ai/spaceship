@@ -30,6 +30,7 @@ names, material, finish and revision come from the part's STEP, its parts-list r
 | `tolerance` | The tolerance note: the project's own values with their source, never a blanket ISO 2768 (guideline 3.2) | see `base.py` |
 | `key_notes` | `True`: a note at each end that carries a key from Joints' `corner-keys.csv`, saying which way round it fits | `True` |
 | `rivet_holes` | Hole sizes that take rivets, each with its rivet: the tapped-hole guard passes them (3.3, 4.2 and about 5.0 are tap drills' sizes too) and their table rows name the rivet. A parts-list row that says tapped or threaded is still refused | `{4.2: "blind rivet, Ø4 (D-130)"}` |
+| `bent` | The part is bent or folded sheet: drawn from its STEP and its DXF (`<pn>_*_DXF.dxf` in the team's folder), with a bend table. `True` when the model has its bend radii; a model that folds sharp gives its inside radius and where it comes from | `True`, `{"radius": 1.0, "radius_why": "INTERIOR's brake tooling"}`, `{"vgroove": "90° V on the back, leaving the outer skin (ACP maker's guide)", "outside_radius": 2}` for a V-grooved and folded ACP panel: its model must have each fold's outside radius, and `outside_radius` (optional) is the one every fold must have |
 | `material_has`, `material_why` | The entry is written for this material: drawgen refuses to draw while the parts list says another (so welded-steel notes never go over an aluminium list) | `"steel"`, `"D-131's welded, galvanized steel frame"` |
 | `principal`, `scale`, `sheet` | Only when the default choice is wrong: the principal view, the ISO scale, the sheet size | `"right"`, `0.2`, `"A1"` |
 
@@ -40,6 +41,6 @@ names, material, finish and revision come from the part's STEP, its parts-list r
    within 0.05 mm of the STEP, true circles, no text touching text or an outline, no line through a text.
 3. Look at the PDF at print size. Then open a PR with the entry and the PDF, and ask for the visual pass.
 
-When drawgen refuses a part (bent or folded, a fillet, a countersink, holes on an angled face the part hides, a
+When drawgen refuses a part (bent or folded without a `bent` entry, a fillet, a countersink, holes on an angled face the part hides, a
 flat-faced feature it can't size such as a step or a pocket), the refusal says why and names the faces. The part goes to Fusion for now, with that reason, and the gap goes to drawgen's
 owner.
