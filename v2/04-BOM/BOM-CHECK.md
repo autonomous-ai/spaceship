@@ -218,7 +218,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 147 numbers, 120 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 157 numbers, 130 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -369,6 +369,16 @@ From `v2/04-BOM/number-allocation.csv`: 147 numbers, 120 not in a team's list ye
 | 211635 | WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 4 | ALLOCATED |
 | 211636 | WALL - CAVITY FILL PIECE F14 274.7 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
 | 111215 | BASE - CORNER KEY - SQUARE - INLINE | 110000 | 1 | ALLOCATED |
+| 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | 111301 | 1 | ALLOCATED |
+| 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | 111301 | 1 | ALLOCATED |
+| 111111 | BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK | 110101 110102 110106 | 3 | ALLOCATED |
+| 111602 | BASE - LEVELLING GLIDE - M10 - D40 | 110101 110102 110103 110106 | 9 | ALLOCATED |
+| 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | ALLOCATED |
+| 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | ALLOCATED |
+| 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
+| 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
+| 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
+| 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
 
 ## Rules
 
