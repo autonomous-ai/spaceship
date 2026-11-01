@@ -254,6 +254,8 @@ def team_of(path):
 
 
 RESERVED_AIR = re.compile(r"\breserved air space\b", re.I)
+# HOLD as a whole word, in capitals as before: "SEAL HOLDER", "HOLDS" and "THRESHOLD" are not HOLD (Reviewer 6, #211)
+HOLD_WORD = re.compile(r"\bHOLD\b")
 RESERVED_SEEN = []  # the rows build() skipped as reserved air spaces, for the report (D-105)
 
 
@@ -317,7 +319,7 @@ def parse_parts_list(path, text, where):
             "mass_each_kg": mass,
             "mass_status": first(r, "mass_status", "kg_status") or ("calculation (mass total / qty)" if derived else (first(r, "status") if mass is not None else "")),
             "make_buy": mb, "process": process, "process_status": pstatus,
-            "product_status": status, "hold": "HOLD" in text_all, "team": team_of(path),
+            "product_status": status, "hold": bool(HOLD_WORD.search(text_all)), "team": team_of(path),
             "source_file": f"{path} @ {where}", "note": first(r, "note", "source"), "kind": kind,
         })
     return rows, ""
