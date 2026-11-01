@@ -49,6 +49,7 @@ import glob
 import io
 import math
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -241,7 +242,7 @@ def build():
             notch = ""
             through = ""
             engage = BOLT_LEN - HEAD_GAP
-        w.writerow([pn, joint, carrier, partner, "%.2f" % cut, "%.2f" % cx, "%.2f" % cy,
+        w.writerow([pn, joint, carrier, partner, "%.4f" % cut, "%.2f" % cx, "%.2f" % cy,
                     "%.4f" % u[0], "%.4f" % u[1], "%.4f" % n[0], "%.4f" % n[1],
                     "%.2f" % bx, "%.2f" % by, "%.1f" % z0, "%.1f" % (z0 + 75.0),
                     "%.1f" % s1, "%.1f" % s2, entries[0], entries[1],
@@ -251,6 +252,28 @@ def build():
     return out.getvalue(), turns
 
 
+def model_cuts():
+    """{part number: cut angle} as the key family's build script sets them (KEY_VARIANTS), read from its text."""
+    path = os.path.join(HERE, "joints_hardware_build.py")
+    with open(path, encoding="utf-8") as fh:
+        text = fh.read()
+    return {pn: float(a) for pn, a in re.findall(r'\("(\d{6})", "[^"]+_STEP\.step", "([-+\d.]+) deg"', text)}
+
+
+def check_model_cuts():
+    """The model cuts each key at its mitre as computed here, to 0.0001 deg (BASE, 2026-11-01: 111212 had been cut at
+    the CSV's 2-decimal -24.14 against the mitre's -24.1446)."""
+    rows, _checks, _turns = joints()
+    want = {}
+    for pn, _joint, _c, _p, _xy, _u, cut, _src in rows:
+        want.setdefault(pn, round(cut, 4))
+    got = model_cuts()
+    bad = {pn: (got.get(pn), w) for pn, w in want.items() if got.get(pn) is None or abs(got[pn] - w) > 0.00005}
+    if bad:
+        raise SystemExit("the key model's cut angles differ from the mitres: %s (model, mitre)" % bad)
+    return want
+
+
 def main():
     text, turns = build()
     if "--check" in sys.argv:
@@ -258,6 +281,7 @@ def main():
             if f.read() != text:
                 raise SystemExit("corner-keys.csv is stale: run corner_keys.py")
         tip, wall = stud_wall()
+        check_model_cuts()
         print("corner-keys.csv is current; the fixing holes' drill points end %.1f above the key's bottom, %.1f below "
               "the lower stud hole" % (tip, wall))
         return
