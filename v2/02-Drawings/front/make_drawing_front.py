@@ -20,6 +20,7 @@ Pattern: the CEILING Engineer's v2/02-Drawings/ceiling/make_drawing_ceiling.py.
 """
 
 import importlib
+import importlib.util
 import os
 import sys
 
@@ -33,10 +34,12 @@ VISIBLE = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
 SNAP = 2.0   # mm on the sheet
 
 HERE = os.path.dirname(os.path.abspath(globals().get("__file__") or ARGS.get("script_path", "")))
-if HERE not in sys.path:
-    sys.path.insert(0, HERE)
-import drawing_specs as S  # noqa: E402
-importlib.reload(S)
+# drawing_specs by its full path under a FRONT-only name, fresh each run: Fusion keeps modules loaded between runs,
+# so an import by name could return another team's drawing_specs (Lead, 2026-11-01)
+_spec = importlib.util.spec_from_file_location("front_drawing_specs_run", os.path.join(HERE, "drawing_specs.py"))
+S = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(S)
+print("helper module %s: %s" % (S.__name__, S.__file__))
 
 ORIENT = {"front": VO.FrontViewOrientationType, "top": VO.TopViewOrientationType,
           "left": VO.LeftViewOrientationType, "iso": VO.IsoTopRightViewOrientationType}
