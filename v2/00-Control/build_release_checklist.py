@@ -73,7 +73,6 @@ FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEI
 BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"
 ACP = re.compile(r"\bACP\b|aluminium composite", re.I)  # a flat ACP part counts under D-89 part (4) (D-100)
 JOINTS_KEYS = re.compile(r"^11121[1-4]$")  # the base corner and inline keys: made by the Joints Engineer (D-95)
-SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
 FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
 TABULATED = re.compile(r"\bTABULATED\b", re.I)
 SHEET_CUT = re.compile(r"laser|water\s*-?\s*jet|router|routed", re.I)
@@ -225,19 +224,29 @@ def files_by_pn(paths):
     return by
 
 
+def checks_common():
+    """The mechanical check's shared name readers (tools/checks/common.py), loaded as C05's modules load them."""
+    path = str(ROOT / "tools" / "checks")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    import common
+    return common
+
+
 def head_noun(name):
-    """The last word of a part name's function field, as the mechanical check reads it (tools/checks/common.py):
-    'BASE - SEAL HOLDER - LH' gives HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL."""
-    fields = [f.strip() for f in (name or "").upper().split(" - ")]
-    func = fields[1] if len(fields) > 1 else fields[0]
-    words = re.findall(r"[A-Z][A-Z-]*", func)
-    return words[-1] if words else ""
+    """The last word of a part name's function field, read by the mechanical check's own head_noun
+    (tools/checks/common.py), so the checklist and C05 can't read a name apart: 'BASE - SEAL HOLDER - LH' gives
+    HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL, and a piece of a soft good is that good, its sizes and codes
+    left out: 'WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON' gives FILL, not X (the Lead's ruling
+    on WALL's L1 sample, 2026-11-01)."""
+    return checks_common().head_noun(name)
 
 
 def soft_kind(name):
-    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89)."""
+    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89), with the mechanical
+    check's own list of soft heads."""
     h = head_noun(name)
-    if not SOFT_HEADS.fullmatch(h):
+    if not checks_common().SOFT_HEADS.fullmatch(h):
         return ""
     return "felt or fill" if h.rstrip("S").endswith(("FELT", "FILL")) else "soft"
 

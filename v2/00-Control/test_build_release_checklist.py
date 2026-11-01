@@ -443,6 +443,29 @@ class D89SoftGoods(unittest.TestCase):
         self.assertEqual(rc.soft_kind("BASE - SEAL HOLDER - LH"), "")
         self.assertEqual(rc.soft_kind("WALL - CAVITY FILL - SIDE LOWER - LH"), "felt or fill")
 
+    FILL_PIECES = ("WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON",
+                   "WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1")
+
+    def test_a_fill_piece_is_fill_with_its_size_and_code_left_out(self):
+        # the WALL Drawings Engineer's catch: the head noun read 'X' from the size, so WALL's fill pieces missed the
+        # fill ruling the mechanical check follows (the Lead's ruling on WALL's L1 sample, 2026-11-01)
+        for n in self.FILL_PIECES:
+            self.assertEqual((rc.head_noun(n), rc.soft_kind(n)), ("FILL", "felt or fill"), n)
+        row_text = ("part_number,name,size_mm,material,tolerance_mm\n111501," + self.FILL_PIECES[0] +
+                    ",240 x 1102.7 x 40,PET fill 24 kg/m3,±2\n")
+        line = self.foam(self.CADS, row_text, name=self.FILL_PIECES[0])
+        self.assertEqual((line["flat"], line["dwg"]), ("cut list", "cut list (D-89)"))
+
+    def test_the_checklist_reads_names_with_the_mechanical_checks_own_function(self):
+        # one reader for both tools: a change in C05's head_noun reaches the checklist
+        common = rc.checks_common()
+        old = common.head_noun
+        common.head_noun = lambda name: "FELT"
+        try:
+            self.assertEqual(rc.soft_kind("WALL - PANEL FRAME - SIDE LOWER - LH"), "felt or fill")
+        finally:
+            common.head_noun = old
+
     def test_a_felt_row_in_a_parts_list_serves_as_its_cut_list(self):
         fai = rc.fai_plan(PLAN, BOM)
         felt = row("511301", "make", "LINING - FELT - SIDE LOWER - LH", "PET felt 9 mm")
@@ -460,7 +483,8 @@ class D89SoftGoods(unittest.TestCase):
         spec.loader.exec_module(common)
         names = ["LINING - FELT - SIDE LOWER - LH", "LINING - FILL - CEILING - BAY A", "WALL - CAVITY FILL - SIDE LOWER - LH",
                  "BASE - SEAL MAT - F1", "BASE - FLOOR FOAM - F1", "FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112",
-                 "BASE - SEAL HOLDER - LH", "SEALS - JOINT GASKET - 8 X 3.97", "POD - FIXING TAPE", "WALL - PANEL FRAME - SIDE LOWER - LH"]
+                 "BASE - SEAL HOLDER - LH", "SEALS - JOINT GASKET - 8 X 3.97", "POD - FIXING TAPE", "WALL - PANEL FRAME - SIDE LOWER - LH",
+                 *self.FILL_PIECES, "WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH"]
         for n in names:
             self.assertEqual(rc.head_noun(n), common.head_noun(n), n)
             self.assertEqual(bool(rc.soft_kind(n)), common.is_soft(n), n)
