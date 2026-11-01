@@ -327,6 +327,8 @@ def step_faces(step_path, pn, pm=None):
                 d["n"] = rot(f.normal)
             if f.kind == "cylinder" and f.origin is not None:
                 d.update({"o": mv(f.origin), "d": rot(f.normal), "r": f.radius, "concave": sfm._concave(f)})
+            if f.kind == "conical_surface":     # its edge circles (a countersink's: the hole's and the outer one)
+                d["circles"] = [(mv(a[0].o), a[1]) for a in f.arcs]
             out.append(d)
     return out
 
@@ -616,6 +618,57 @@ def unfold_fails(data, holes, faces, tol=TOL):
         if i not in used:
             fails.append("the flat's DXF has a Ø%s hole at (%s, %s) that is on no STEP hole" % (
                 _fmtv(2 * rr), _fmtv(cc[0]), _fmtv(cc[1])))
+    return fails
+
+
+def csk_fails(data, faces, holes, page, tol=TOL):
+    """Countersinks (D-143) against the STEP (the repo's reader): each cone of the STEP with two circles on a hole's
+    axis, the smaller the hole's, is a countersink: its outer diameter and included angle (from the circles' radii and
+    the distance between them) must be printed in that hole's row ('CSK Ød x a°'), and every printed countersink must
+    be one of the STEP's."""
+    fails = []
+    found = []
+    for f in faces:
+        cs = f.get("circles") or []
+        if f["kind"] != "conical_surface" or len(cs) < 2:
+            continue
+        rs = sorted({round(r, 4) for _c, r in cs})
+        if len(rs) != 2:
+            continue
+        small = next(c for c, r in cs if abs(r - rs[0]) < 1e-3)
+        big = next(c for c, r in cs if abs(r - rs[1]) < 1e-3)
+        h = next((h for h in holes if abs(h["dia"] / 2 - rs[0]) < 0.005 and
+                  math.dist(sub(small, h["c"]), tuple(dot(sub(small, h["c"]), h["axis"]) * a for a in h["axis"])) < 0.02),
+                 None)
+        if h is None:
+            continue
+        depth = math.dist(small, big)
+        ang = 2 * math.degrees(math.atan2(rs[1] - rs[0], depth)) if depth > 1e-9 else 180.0
+        found.append({"hole": h, "dia": 2 * rs[1], "angle": ang, "centre": big})
+    rows = {f_["tag"]: f_ for f_ in data["features"] if f_["kind"] == "hole"}
+    printed = {}
+    for tag in rows:
+        txt = row_size_text(page, tag) or ""
+        m = re.search(r"CSK\s+Ø([\d.]+)\s*x\s*([\d.]+)°", txt)
+        if m:
+            printed[tag] = (float(m.group(1)), float(m.group(2)))
+    used = set()
+    for c in found:
+        # the row of this hole: the one whose table position is the STEP hole's (the hole table check ties them)
+        tag = next((t for t, f_ in rows.items() if abs(f_["dia"] - c["hole"]["dia"]) < 0.011 and
+                    math.dist(f_["entry"], c["centre"]) < tol), None)
+        if tag is None or tag not in printed:
+            fails.append("a countersink Ø%s x %s° of the STEP (its hole Ø%s) is called out nowhere" % (
+                _fmtv(c["dia"]), _fmtv(c["angle"]), _fmtv(c["hole"]["dia"])))
+            continue
+        used.add(tag)
+        d_, a_ = printed[tag]
+        if abs(d_ - c["dia"]) > 0.011 or abs(a_ - c["angle"]) > 0.051:
+            fails.append("%s: its row says CSK Ø%s x %s°; the STEP's is Ø%s x %s°" % (
+                tag, _fmtv(d_), _fmtv(a_), _fmtv(c["dia"]), _fmtv(c["angle"])))
+    for tag in printed:
+        if tag not in used:
+            fails.append("%s: its row calls out a countersink the STEP hasn't" % tag)
     return fails
 
 
@@ -1259,6 +1312,7 @@ def check(pdf_path, step_path=None, verbose=False):
     fails += flat_fails(data, tb, page.get_text())
     fails += flat_hole_fails(data, holes, faces)
     fails += unfold_fails(data, holes, faces)
+    fails += csk_fails(data, faces, holes, page)
     fails += vgroove_radius_fails(data, faces)
     if data.get("flat"):
         cf = flat_cutout_fails(data, faces)
