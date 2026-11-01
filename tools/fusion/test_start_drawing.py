@@ -459,7 +459,7 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(f.cancels, 0)                          # never touched while busy
 
     @unittest.skipUnless(shutil.which("osacompile"), "osacompile is macOS only")
-    def run_main(self, make_fake, timed_out_after_queue, open_stuck=False, flag_pid="none"):
+    def run_main(self, make_fake, timed_out_after_queue, open_stuck=False, flag_pid="none", batch=None):
         """start_drawing's main() with a fake Fusion and a lock in a temporary folder;
         returns (exit code, the wait call seen or None, lock dir). open_stuck: the call
         that times out has started an open that never ends (logged as the wrapper does);
@@ -468,6 +468,12 @@ class SequenceTests(unittest.TestCase):
         import tempfile
         lockdir = os.path.join(tempfile.mkdtemp(prefix="sdlock-"), "fusion.lock")
         seen = {"steps": 0}
+        what = ["100000_P04_POD-SKELETON_CAD", "X_P01_TEST_DWG"]
+        if batch:                                       # --batch FILE instead of DESIGN DRAWING
+            self.batch_file = os.path.join(os.path.dirname(lockdir), "starts.txt")
+            with open(self.batch_file, "w") as fh:
+                fh.write("".join("%s %s %s\n" % b for b in batch))
+            what = ["--batch", self.batch_file]
         if flag_pid != "none":
             with open(rs.unhealthy_path(lockdir), "w") as fh:
                 json.dump({"flagged_utc": "2026-11-01 03:55:00 UTC", "fusion_pid": flag_pid,
@@ -498,13 +504,13 @@ class SequenceTests(unittest.TestCase):
                 signal.getsignal(signal.SIGTERM), signal.getsignal(signal.SIGHUP))
         orig_run, orig_cancel = sd.run_with_cleanup, sd.cancel_dialogs
         sd.Steps, rs.wait_for_fusion = fake_steps, fake_wait
-        sd.run_with_cleanup = lambda *a, **k: orig_run(*a, waits=FAST)
+        sd.run_with_cleanup = lambda *a, **_k: orig_run(*a[:7], waits=FAST)   # run_batch passes waits 8th
         sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: orig_cancel(steps, log, 2, 0.001)
         env_token = os.environ.pop(rs.TOKEN_ENV, None)
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                code = sd.main(["100000_P04_POD-SKELETON_CAD", "X_P01_TEST_DWG", "--lock", lockdir,
-                                "--busy-wait", "60", "--busy-poll", "2", "--open-grace", "0.3"])
+                code = sd.main(what + ["--lock", lockdir,
+                                       "--busy-wait", "60", "--busy-poll", "2", "--open-grace", "0.3"])
         finally:
             (sd.Steps, rs.wait_for_fusion, sd.run_with_cleanup, sd.cancel_dialogs) = keep[:4]
             signal.signal(signal.SIGTERM, keep[4])
@@ -536,6 +542,29 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(code, rs.EXIT_UNHEALTHY)
         self.assertEqual(self.steps_made, 0)                   # never talked to Fusion
         self.assertIsNone(wait)
+        self.assertFalse(os.path.exists(lockdir))
+
+    BATCH = [("D%d_CAD" % i, "D%d_DWG" % i, "A2") for i in range(1, 4)]
+
+    def test_a_flagged_fusion_refuses_a_batch_before_any_start(self):
+        # the hand merge of #140 and #269: the refusal comes before the batch's first start
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(opened=True), timed_out_after_queue=False,
+                                            flag_pid=rs.fusion_pid(), batch=self.BATCH)
+        self.assertEqual(code, rs.EXIT_UNHEALTHY)
+        self.assertEqual(self.steps_made, 0)
+        self.assertIsNone(wait)
+        self.assertFalse(os.path.exists(self.batch_file + ".rest"))      # the list stays as it was
+        self.assertFalse(os.path.exists(lockdir))
+
+    def test_a_batch_start_stuck_in_an_open_flags_fusion_and_keeps_the_rest(self):
+        # the batch stops at the timed-out start, #183's wait keeps the lock, then #269's check
+        # finds the open that never ended and flags Fusion; the rest file keeps every start
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(opened=True), timed_out_after_queue=True,
+                                            open_stuck=True, batch=self.BATCH)
+        self.assertEqual(code, rs.EXIT_UNHEALTHY)
+        self.assertEqual(wait, (True, 60.0, 2.0))
+        self.assertTrue(os.path.exists(rs.unhealthy_path(lockdir)))
+        self.assertEqual(sd.read_batch(self.batch_file + ".rest", "A2"), self.BATCH)   # failed first, then the rest
         self.assertFalse(os.path.exists(lockdir))
 
     def test_a_start_without_a_timeout_gives_the_lock_back_at_once(self):
@@ -662,6 +691,95 @@ class SaveScriptTests(unittest.TestCase):
             self.run_save(sd.SAVE_SCRIPT, settle_after=10 ** 6)
         self.assertIn("after 10 looks", str(cm.exception))
         self.assertIn("420 x 420", str(cm.exception))
+
+
+class BatchTests(unittest.TestCase):
+    """--batch (PM rule 2026-10-31: up to 6 starts or about 15 minutes per lock hold)."""
+
+    PAIRS = [("D%d_CAD" % i, "D%d_DWG" % i, "A2") for i in range(1, 4)]
+
+    def batch(self, fake, pairs=None, **kw):
+        logs = []
+        out = sd.run_batch(fake, pairs or self.PAIRS, "Default Project/FocusPod v2", logs.append,
+                           waits=FAST, **kw)
+        return out, logs
+
+    def test_every_start_is_saved_and_closed(self):
+        f = FakeFusion(opened=True)
+        (code, done, failed, left), _ = self.batch(f)
+        self.assertEqual((code, len(done), failed, left), (0, 3, None, []))
+        self.assertEqual(f.ran, ["open", "queue", "save", "close"] * 3)
+        self.assertEqual(len(f.saved), 3)
+
+    def test_it_stops_at_the_first_failure(self):
+        f = FakeFusion(opened=True)
+        real_click, oks = f.click, []
+
+        def click(button, title):
+            if button == "OK":
+                oks.append(1)
+                if len(oks) == 2:
+                    return "none"                               # the 2nd start can't press OK
+            return real_click(button, title)
+
+        f.click = click
+        (code, done, failed, left), logs = self.batch(f)
+        self.assertEqual(code, 1)
+        self.assertEqual([d[1] for d in done], ["D1_DWG"])
+        self.assertEqual(failed, (("D2_CAD", "D2_DWG", "A2"), 1))
+        self.assertEqual(left, [("D3_CAD", "D3_DWG", "A2")])
+        self.assertEqual(f.cmd, sd.IDLE_CMD)                    # the failed start cleaned up
+        self.assertTrue(any("stopped at D2_DWG" in m for m in logs))
+
+    def test_at_most_six_starts_per_hold(self):
+        pairs = [("D%d_CAD" % i, "D%d_DWG" % i, "A2") for i in range(1, 9)]
+        (code, done, failed, left), logs = self.batch(FakeFusion(opened=True), pairs)
+        self.assertEqual((code, len(done), failed, len(left)), (0, 6, None, 2))
+        self.assertEqual(left[0][1], "D7_DWG")
+
+    def test_no_start_begins_after_the_time_budget(self):
+        clock = iter([0.0, 16 * 60.0, 16 * 60.0])        # t0; the 1st start never waits; the 2nd check is late
+        (code, done, failed, left), logs = self.batch(FakeFusion(opened=True), now=lambda: next(clock))
+        self.assertEqual((code, len(done), len(left)), (0, 1, 2))
+        self.assertTrue(any("about 15 minutes per hold" in m for m in logs))
+
+    def test_the_batch_file(self):
+        d = tempfile.mkdtemp(prefix="batch-test-")
+        p = os.path.join(d, "starts.txt")
+        with open(p, "w") as fh:
+            fh.write("# WALL skins\n210101_P01_A_CAD 210101_P01_A_DWG\n\n210102_P01_B_CAD\t210102_P01_B_DWG A1\n")
+        self.assertEqual(sd.read_batch(p, "A2"), [("210101_P01_A_CAD", "210101_P01_A_DWG", "A2"),
+                                                  ("210102_P01_B_CAD", "210102_P01_B_DWG", "A1")])
+        for bad, why in (("X_CAD\n", "expected DESIGN DRAWING"), ("X_CAD X_DWG B9\n", "sheet 'B9'"),
+                         ("A_CAD X_DWG\nB_CAD X_DWG\n", "twice"), ("# only a comment\n", "no starts")):
+            with open(p, "w") as fh:
+                fh.write(bad)
+            with self.assertRaises(ValueError) as cm:
+                sd.read_batch(p, "A2")
+            self.assertIn(why, str(cm.exception))
+
+    def test_what_is_left_goes_to_the_rest_file_failed_first(self):
+        d = tempfile.mkdtemp(prefix="batch-test-")
+        rest = os.path.join(d, "starts.txt.rest")
+        sd.write_rest(rest, (("D2_CAD", "D2_DWG", "A2"), 1), [("D3_CAD", "D3_DWG", "A1")])
+        with open(rest) as fh:
+            lines = fh.read().splitlines()
+        self.assertEqual(lines[1:], ["D2_CAD D2_DWG A2", "D3_CAD D3_DWG A1"])
+        self.assertTrue(lines[0].startswith("# failed (exit 1)"))
+        self.assertEqual(sd.read_batch(rest, "A2")[0], ("D2_CAD", "D2_DWG", "A2"))   # runs again as is
+
+    def test_a_bad_batch_file_is_refused_before_the_lock(self):
+        d = tempfile.mkdtemp(prefix="batch-test-")
+        p = os.path.join(d, "starts.txt")
+        with open(p, "w") as fh:
+            fh.write("only_one_name\n")
+        lockdir = os.path.join(d, "fusion.lock")
+        r = subprocess.run([sys.executable, os.path.join(HERE, "start_drawing.py"), "--batch", p,
+                            "--lock", lockdir, "--url", "http://127.0.0.1:9/mcp", "--timeout", "2"],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("line 1", r.stderr)
+        self.assertFalse(os.path.exists(lockdir))
 
 
 class CommandLineTests(unittest.TestCase):
