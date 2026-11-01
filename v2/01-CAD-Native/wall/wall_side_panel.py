@@ -1338,7 +1338,11 @@ def plate_part(design, frame, key, length):
                 ("-plate_t / 2", "plate_t / 2")).bodies.item(0)
         b.name = "MITRE PLATE"
         set_material(design, [b], "plate", "STEEL PLATE 2.0 GALVANIZED")
-    ref = sketch_points(design, c, "y", "0 mm", [("0 mm", "0 mm")], "PLATE ORIGIN")[0]
+    jin = c.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(c.originConstructionPoint))
+    jin.zAxisEntity = c.yConstructionAxis          # into the frame, toward the room (joints README)
+    jin.xAxisEntity = c.xConstructionAxis          # along the mitre, toward the inner corner
+    ref = c.jointOrigins.add(jin)
+    ref.name = "JOINT ORIGIN - PLATE (README AXES)"
     PLATES_BUILT[key] = (c, b, ref)
     return PLATES_BUILT[key]
 
@@ -1374,14 +1378,21 @@ def mitre_plates(design, frame, corners, axis, face, toward_room):
                     u, v, w = ou + a * du - k * dv, ov + a * dv + k * du, f + toward_room * b
                     pts.append((w, u, v) if axis == "x" else (u, w, v))
         want = [min(q[j] for q in pts) for j in range(3)] + [max(q[j] for q in pts) for j in range(3)]
-        tgt = sketch_points(design, frame, axis, face, [(o[0], o[1])], "PLATE PLACE %s" % label)[0]
-        theta = math.degrees(math.atan2(abs(dv), abs(du)))
-        angles = sorted({round((sg * theta + q * 90.0) % 360.0, 4) for sg in (1, -1) for q in range(4)})
+        # the corner's joint origin: on its outer point on the skin-side face, Z along the frame's depth axis, X
+        # along a sketch line from the outer corner to the inner one (the mitre)
+        p_o, p_i = sketch_points(design, frame, axis, face, [(o[0], o[1]), (i[0], i[1])], "PLATE PLACE %s" % label)
+        mitre_line = p_o.parentSketch.sketchCurves.sketchLines.addByTwoPoints(p_o, p_i)
+        if not p_o.parentSketch.isFullyConstrained:
+            raise RuntimeError("the mitre line's sketch at %s isn't fully constrained" % label)
+        cin = frame.jointOrigins.createInput(adsk.fusion.JointGeometry.createByPoint(p_o))
+        cin.zAxisEntity = frame.xConstructionAxis if axis == "x" else frame.yConstructionAxis
+        cin.xAxisEntity = mitre_line
+        tgt = frame.jointOrigins.add(cin)
+        tgt.name = "JOINT ORIGIN - MITRE %s" % label
         done = False
         for flip in (False, True):
-            for ang in angles:
-                jin = frame.joints.createInput(adsk.fusion.JointGeometry.createByPoint(ref.createForAssemblyContext(occ)),
-                                               adsk.fusion.JointGeometry.createByPoint(tgt))
+            for ang in (0.0, 180.0):
+                jin = frame.joints.createInput(ref.createForAssemblyContext(occ), tgt)
                 jin.setAsRigidJointMotion()
                 jin.angle = vi("%g deg" % ang)
                 jin.isFlipped = flip
