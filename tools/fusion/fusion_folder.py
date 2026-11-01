@@ -59,8 +59,11 @@ def _listing(folder):
         # unreadable: read again, and refused by safe_to_create if they never appear.
         try:
             n = files.count
-        except Exception:
-            n = len(out)
+        except Exception as e:
+            # Reviewer 5, P3 on #220: a count that can't be read can't vouch for the
+            # listing, so it counts as one unreadable entry (read again; refused if it
+            # never answers)
+            return out + [(len(out), "the folder's count can't be read: %s" % _short(e))]
         out += [(i, "missing from the listing: the folder counts %d" % n) for i in range(len(out), n)]
         return out
     out = []
