@@ -1117,6 +1117,32 @@ try:
         _ac.Documents.open = _logged_open
 except Exception:
     pass
+# Each new cloud file a run saves (saveAs) is noted on adsk.core with its time, so the shared folder reader
+# (fusion_folder.read_folder) can wait about 10 s before it reads the folder again (PM ruling 2026-11-01: Fusion
+# crashed twice right after it fetched the team folder's second page, with a live-update subscription starting 1 to
+# 3 s before; at 14:00:58 that was two seconds after BASE's run saved a new file). Document, FusionDocument and
+# DrawingDocument each have their own saveAs, so each is wrapped, once per Fusion session.
+def _note_new_files(_cls):
+    if _cls is None or not hasattr(_cls, "saveAs") or getattr(_cls.saveAs, "_spaceship_new_file", False):
+        return
+    _orig_save_as = _cls.saveAs
+
+    def _save_as(self, name, *a, **k):
+        _ok = _orig_save_as(self, name, *a, **k)
+        if _ok:
+            import time as _t
+            _ac._spaceship_new_file_at = _t.time()
+            _ac._spaceship_new_file = name
+        return _ok
+
+    _save_as._spaceship_new_file = True
+    _cls.saveAs = _save_as
+for _mod, _name in (("adsk.core", "Document"), ("adsk.fusion", "FusionDocument"), ("adsk.drawing", "DrawingDocument")):
+    try:
+        import importlib as _il
+        _note_new_files(getattr(_il.import_module(_mod), _name, None))
+    except Exception:
+        pass
 '''
 
 WRAPPER = '''import base64 as _b64, os as _os, sys as _sys, types as _types

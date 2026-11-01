@@ -34,6 +34,7 @@ class Fold:
         self.i = i
         self.angle = angle
         self.r = r                  # the model's inside radius; None where the model folds sharp
+        self.r_out = None           # the model's outside radius where only the outside is rounded (a V-groove fold)
         self.inside = inside        # "A" or "B": the skin on the fold's concave side
         self.outer_pt = outer_pt    # 2D, the virtual sharp of the outside
         self.inner_pt = inner_pt
@@ -174,7 +175,18 @@ def chain_of(b, axis, frac=0.5):
                     if best is None or dd < best[0]:
                         best = (dd, r)
             r_in = best[1] if best else None
-        folds.append(Fold(i, ang, r_in, inside, outer, inner))
+        fd = Fold(i, ang, r_in, inside, outer, inner)
+        if r_in is None:
+            # a fold sharp inside and rounded outside (WALL's V-grooved ACP: the groove closes, the outer skin runs
+            # round its outside radius, the Lead's ruling 2026-11-01): the outside skin's arc nearest its sharp
+            best = None
+            for k, a, c, r in (skin_b if inside == "A" else skin_a):
+                if k == "C":
+                    dd = min(_d2(a, outer), _d2(c, outer))
+                    if best is None or dd < best[0]:
+                        best = (dd, r)
+            fd.r_out = best[1] if best and best[0] <= 2 * best[1] + 1e-6 else None
+        folds.append(fd)
     # outside lengths: from the start's end cap to the first fold's outside sharp, between outside sharps, to the end
     end = ((skin_a[-1][2][0] + skin_b[-1][2][0]) / 2, (skin_a[-1][2][1] + skin_b[-1][2][1]) / 2)
     flanges = []
@@ -205,23 +217,40 @@ def _side(start, runs, d1, i):
     return d1[0] * off[1] - d1[1] * off[0] > 0
 
 
-def flat_positions(chain, r, k):
+def flat_positions(chain, r, k, vgroove=False):
     """The chain's flat: each fold's centre line from the start and the total length, with inside radius r (the
-    model's where it has one) and K-factor k."""
+    model's where it has one) and K-factor k. A V-grooved and folded panel (ACP: its outer skin runs round the fold
+    unstretched, the groove taking the inside away) develops along its outer face: each leg to its fold's outside
+    arc, plus the arc (a sharp fold adds nothing: the sum of the outside lengths); each fold's line at the arc's
+    middle (WALL's rule, the Lead's ruling 2026-11-01)."""
     pos, x = [], 0.0
     folds = chain.folds
     for i, (L, _d) in enumerate(chain.flanges):
         straight = L
         if i > 0:
-            straight -= ossb(folds[i - 1], r, chain.t)
+            straight -= fold_ossb(folds[i - 1], r, chain.t, vgroove)
         if i < len(folds):
-            straight -= ossb(folds[i], r, chain.t)
+            straight -= fold_ossb(folds[i], r, chain.t, vgroove)
         x += straight
         if i < len(folds):
-            ba = bend_allowance(folds[i], r, chain.t, k)
+            ba = fold_ba(folds[i], r, chain.t, k, vgroove)
             pos.append(x + ba / 2)
             x += ba
     return pos, x
+
+
+def fold_ossb(fold, r, t, vgroove=False):
+    """The outside setback: (r + t) tan(a/2); for a V-groove fold its outside radius R tan(a/2) (0 when sharp)."""
+    if vgroove:
+        return (fold.r_out or 0.0) * math.tan(math.radians(fold.angle) / 2)
+    return ossb(fold, r, t)
+
+
+def fold_ba(fold, r, t, k, vgroove=False):
+    """The length a fold takes in the flat: the bend allowance a (r + K t); for a V-groove fold its outer arc a R."""
+    if vgroove:
+        return math.radians(fold.angle) * (fold.r_out or 0.0)
+    return bend_allowance(fold, r, t, k)
 
 
 def radius(fold, r):
@@ -243,7 +272,7 @@ def solve_k(chain, r, flat_total):
     return (flat_total - l0) / (l1 - l0) if abs(l1 - l0) > 1e-12 else None
 
 
-def match_chain(chain, dxf, r, tol=0.05):
+def match_chain(chain, dxf, r, tol=0.05, vgroove=False):
     """The chain's folds against the DXF's bend lines: the group of bend lines square to one DXF axis, as many as
     the chain's folds, whose places along that axis the model's flat gives at one K-factor (between 0 and 1), the
     chain run forward or reversed. Every reading that fits, best first (a symmetric chain fits both ways; which one
@@ -259,10 +288,16 @@ def match_chain(chain, dxf, r, tol=0.05):
             continue
         group.sort(key=lambda l: l[0][ax])
         lo, hi = box[ax], box[2 + ax]
-        k = solve_k(chain, r, hi - lo)
-        if k is None or not 0.0 <= k <= 1.0:
-            continue
-        pos, total = flat_positions(chain, r, k)
+        if vgroove:         # no K-factor: the flat must be the developed outer face
+            k = None
+            pos, total = flat_positions(chain, r, 0.0, vgroove=True)
+            if abs(total - (hi - lo)) > tol:
+                continue
+        else:
+            k = solve_k(chain, r, hi - lo)
+            if k is None or not 0.0 <= k <= 1.0:
+                continue
+            pos, total = flat_positions(chain, r, k)
         for rev in (False, True):
             got = [(hi - l[0][ax]) if rev else (l[0][ax] - lo) for l in group]
             if rev:
@@ -292,6 +327,7 @@ class Flat:
         self.dxf = None
         self.viewed = None
         self.cutouts = []
+        self.vgroove = None
 
 
 def bend_axes(body):
@@ -319,6 +355,8 @@ def unexplained_faces(body, chains, holes, slots, cutouts=()):
         for f in ch.folds:
             if f.r is not None:
                 radii.append((ch.axis, f.r, ch.t))
+            if f.r_out is not None:         # a V-groove fold's outside arc (its inside sharp)
+                radii.append((ch.axis, f.r_out, 0.0))
     span = max([r + t for _a, r, t in radii] or [0.0])
     for f in geom._faces(body.shape):
         s = BRepAdaptor_Surface(f, True)
@@ -364,24 +402,27 @@ class FlatMap:
     the other chain's base flange (two chains, square to each other: the flange both share), or from the part's own
     extent along the bend lines (one chain: folding doesn't change it)."""
 
-    def __init__(self, body, chains, matches, sense, box, k):
+    def __init__(self, body, chains, matches, sense, box, k, vgroove=False):
         self.chains, self.matches, self.sense, self.box, self.k = chains, matches, sense, box, k
+        self.vgroove = vgroove
+        k = k or 0.0
         self.fl = []
         for ch, m in zip(chains, matches):
             r = m["r"]
-            pos, _total = flat_positions(ch, r, k)
+            pos, _total = flat_positions(ch, r, k, vgroove)
             marks = [ch.start] + [f.outer_pt for f in ch.folds]
             nf = len(ch.folds)
             recs = []
             for j, (L, d) in enumerate(ch.flanges):
                 n2 = (-d[1], d[0])
-                start = 0.0 if j == 0 else pos[j - 1] + bend_allowance(ch.folds[j - 1], r, ch.t, k) / 2
-                lo = ossb(ch.folds[j - 1], r, ch.t) if j else 0.0
+                start = 0.0 if j == 0 else pos[j - 1] + fold_ba(ch.folds[j - 1], r, ch.t, k, vgroove) / 2
+                lo = fold_ossb(ch.folds[j - 1], r, ch.t, vgroove) if j else 0.0
                 # the flange's line in the chain's section (through its start mark, along d), as 3D directions: D
                 # along the flange, N across it; base: the flat place of the mark; lo..hi: the straight part
                 recs.append({"D": vadd(vmul(ch.u, d[0]), vmul(ch.v, d[1])), "N": vadd(vmul(ch.u, n2[0]), vmul(ch.v, n2[1])),
                              "m0": marks[j][0] * d[0] + marks[j][1] * d[1], "o0": marks[j][0] * n2[0] + marks[j][1] * n2[1],
-                             "base": start - lo, "lo": lo, "hi": L - (ossb(ch.folds[j], r, ch.t) if j < nf else 0.0)})
+                             "base": start - lo, "lo": lo,
+                             "hi": L - (fold_ossb(ch.folds[j], r, ch.t, vgroove) if j < nf else 0.0)})
             self.fl.append(recs)
         self.base, self.along = None, None
         if len(chains) == 2:
@@ -776,7 +817,7 @@ def _zone_fails(chains, matches, zones, k, tol):
     return []
 
 
-def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05):
+def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05, vgroove=None, outside_radius=None):
     """Read a bent part against its DXF. Raises ValueError with the reason drawgen can't draw it. radius: the
     inside radius for folds the model draws sharp (the team's entry), with where it comes from.
 
@@ -826,14 +867,33 @@ def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05):
         if len(rs) > 1:
             raise ValueError("its folds have different inside radii (%s): one bend table radius isn't enough" % rs)
         r = rs.pop() if rs else radius
+        if r is None and vgroove:
+            r = 0.0             # a V-groove: the fold is the outer skin's, sharp inside
         if r is None:
-            raise ValueError("its model folds sharp: its entry must give the inside radius (bent: {'radius': ...})")
+            raise ValueError("its model folds sharp: its entry must give the inside radius (bent: {'radius': ...}), "
+                             "or say it is V-grooved (bent: {'vgroove': ...})")
         if any(f.r is None for f in ch.folds) and rs:
             raise ValueError("some folds have a radius in the model and some don't")
-        opts = match_chain(ch, fl.dxf, r, tol)
+        if vgroove and rs:
+            raise ValueError("a V-grooved panel folds sharp inside (the groove closes); its model has an inside radius")
+        if vgroove:
+            # the outer skin bends round a radius (the maker's 2 mm minimum, D-161): a fold the model leaves sharp
+            # would develop as the plain sum of the outside lengths, 0.86 too long at R2 (Reviewer 6 on #341)
+            sharp = [f for f in ch.folds if not f.r_out]
+            if sharp:
+                raise ValueError("its V-groove fold%s sharp in the model: the outer skin's outside radius (2 mm minimum, "
+                                 "D-161) must be modelled" % (" is" if len(sharp) == 1 else "s are"))
+            if outside_radius is not None:
+                off = [f for f in ch.folds if abs(f.r_out - float(outside_radius)) > 0.01]
+                if off:
+                    raise ValueError("its model folds at outside radius R%s, its entry says R%s" % (
+                        _f(off[0].r_out), _f(float(outside_radius))))
+        opts = match_chain(ch, fl.dxf, r, tol, vgroove=bool(vgroove))
         if not opts:
-            raise ValueError("its DXF's bend lines don't sit where the model's folds put them at any one K-factor "
-                             "(inside radius R%s)" % _f(r))
+            raise ValueError(("its DXF's fold lines don't sit where the model's outside lengths and each fold's outside "
+                              "radius put them, nor is its flat their developed length (a V-groove)") if vgroove else
+                             ("its DXF's bend lines don't sit where the model's folds put them at any one K-factor "
+                              "(inside radius R%s)" % _f(r)))
         for m in opts:
             m["r"] = r
         options.append(opts)
@@ -845,16 +905,16 @@ def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05):
         if len({m["dxf_axis"] for m in pick}) != len(pick):
             continue
         ks = [m["k"] for m in pick]
-        if max(ks) - min(ks) > 0.005:
+        if not vgroove and max(ks) - min(ks) > 0.005:
             kfail = ks
             continue
-        k = sum(ks) / len(ks)
-        zf = _zone_fails(fl.chains, pick, zones, k, tol) if zones else []
+        k = None if vgroove else sum(ks) / len(ks)
+        zf = _zone_fails(fl.chains, pick, zones, k, tol) if zones and not vgroove else []
         if zf:
             why.append((len(zf), float("inf"), zf))
             continue
         for sense in ((1.0, -1.0) if len(pick) == 1 else (None,)):
-            fm = FlatMap(body, fl.chains, list(pick), sense, box, k)
+            fm = FlatMap(body, fl.chains, list(pick), sense, box, k, bool(vgroove))
             if fm.along is not None:
                 w = box[2 + fm.along["ax"]] - box[fm.along["ax"]]
                 if abs(w - fm.along["width"]) > tol:
@@ -889,6 +949,7 @@ def analyse(body, dxf_path, radius=None, radius_from=None, holes=(), tol=0.05):
     _ups, fm, fl.rows = best
     fl.map = fm
     fl.matches = fm.matches
+    fl.vgroove = vgroove
     fl.k = fm.k
     fl.radius = fl.matches[0]["r"]
     fl.radius_from = "the model" if any(f.r is not None for f in fl.chains[0].folds) else (radius_from or "its entry")
@@ -908,7 +969,7 @@ def _rows(chains, fm):
         ax = m["dxf_axis"]
         for f, line in zip(ch.folds, m["lines"]):
             rows.append({"axis": "xy"[ax], "at": line[0][ax] - fm.box[ax], "dir": "UP" if f.inside == viewed else "DOWN",
-                         "angle": f.angle, "r": m["r"], "line": line})
+                         "angle": f.angle, "r": m["r"], "r_out": f.r_out, "line": line})
     # the table in reading order: lines across x first (their places up the flat), then lines across y
     rows.sort(key=lambda x: (x["axis"] != "y", x["at"]))
     for j, x in enumerate(rows):
