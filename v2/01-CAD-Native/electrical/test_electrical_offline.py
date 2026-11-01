@@ -481,6 +481,19 @@ class Inside(unittest.TestCase):
             self.assertLess(peak, U.derated(knee, air) * rated, sid)
 
 
+    def test_heat_margin_at_a_30c_room(self):
+        """The Lead (2026-11-01): Reviewer 7 checks a 30 °C room too. With the same worst loads, every part in the box
+        keeps at least 5 K under its own limit (the 60 °C leads left only 2 K, so the unit's leads are 75 °C cables)."""
+        import unit_heat as U
+        room0 = U.ROOM_C
+        try:
+            U.ROOM_C = 30.0
+            air = U.results(EP, 12.0, U.SHELL_PATH_WORST)[0] + U.STRAT_K
+        finally:
+            U.ROOM_C = room0
+        for name, lim, _src in U.DEVICES:
+            self.assertGreaterEqual(lim - air, 5.0, name)
+
 class Sheets(unittest.TestCase):
     """The PM's drawing check, item 1 (2026-11-01), and the guideline's "never shrink the font to fit a page",
     read back from the saved PDFs, independent of the generators' own checks."""

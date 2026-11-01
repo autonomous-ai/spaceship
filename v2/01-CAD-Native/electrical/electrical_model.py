@@ -126,7 +126,7 @@ PARAMS = [
     ("ent_d", "11.1 mm", "mm", "source",
      "Heyco SB 437-5 snap bushing: mounting hole 0.437 in (11.1), bore 7.9, panels to 3.2 mm (Heyco Snap Bushings sheet, read 2026-11-01)"),
     ("ent_z1", "hub_zc - hub_w / 2 + 40 mm", "mm", "confirmed", "agreed with CEILING: the first entry 40 above the hub zone's bottom, Z 1150"),
-    ("ent_dz", "25 mm", "mm", "assumption", "the second entry 25 above the first (Z 1175): one cable in each bushing (5.31 and 4.22 mm)"),
+    ("ent_dz", "25 mm", "mm", "assumption", "the second entry 25 above the first (Z 1175): one cable in each bushing (5.31 and 4.67 mm)"),
     ("fx_d", "32 mm", "mm", "assumption",
      "felt hole FX-COL: it passes the mated 10-way Mini-Fit pair (about 24.4 x 12.6) when the column is fitted, and is hidden behind it"),
     ("y_fx", "y_ent - 5 mm", "mm", "calculation", "FX-COL's centre 5 behind the entries: its front edge 11 behind the column's room face (Y -312)"),
