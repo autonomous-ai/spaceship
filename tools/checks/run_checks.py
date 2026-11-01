@@ -75,6 +75,8 @@ def run(root, rev):
         if not bodies:
             continue
         findings += c_geometry.check_shell(root, mdl, bodies)
+        if mdl == "assembly":
+            findings += c_geometry.check_acp_bays(root, mdl, bodies)          # D-135: the ACP skin's bays
         faces = c_geometry.shell_faces_ready(mdl, bodies)
         if faces:
             ran |= {"C01", "C01:" + mdl} | {"C01:%s-%s" % (mdl, z) for z in faces}

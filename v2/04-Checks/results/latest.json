@@ -1,5 +1,5 @@
 {
- "rev": "5fa198d",
+ "rev": "5c8f25a",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -131,6 +131,96 @@
     ]
    },
    "key": "C01|shell-open|assembly shell left-base Y 847..850 Z 10..110"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211101 SIDE LOWER - LH",
+   "severity": "major",
+   "message": "211101 SIDE LOWER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211101 SIDE LOWER - LH"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211102 SIDE LOWER - RH",
+   "severity": "major",
+   "message": "211102 SIDE LOWER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211102 SIDE LOWER - RH"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211103 SIDE UPPER - LH",
+   "severity": "major",
+   "message": "211103 SIDE UPPER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211103 SIDE UPPER - LH"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211104 SIDE UPPER - RH",
+   "severity": "major",
+   "message": "211104 SIDE UPPER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211104 SIDE UPPER - RH"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211201 BACK LOWER - B1",
+   "severity": "major",
+   "message": "211201 BACK LOWER - B1 has 3 bay(s) wider than 275 mm clear under the ACP skin, the widest 373.0 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 373.0,
+    "bays_over": 3
+   },
+   "key": "C09|acp-bay|assembly 211201 BACK LOWER - B1"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211202 BACK LOWER - B2",
+   "severity": "major",
+   "message": "211202 BACK LOWER - B2 has 3 bay(s) wider than 275 mm clear under the ACP skin, the widest 373.0 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 373.0,
+    "bays_over": 3
+   },
+   "key": "C09|acp-bay|assembly 211202 BACK LOWER - B2"
   },
   {
    "check": "C08",
@@ -2634,7 +2724,7 @@
   {
    "id": "2-10",
    "name": "AIR - SOFFIT",
-   "kg": 14.772,
+   "kg": 14.756,
    "dims": [
     2322.0,
     359.0,
@@ -2803,6 +2893,57 @@
    "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "snug only, into the sleeve's rivnuts (HOLD-01 for the rivnut)",
+   "qty_parts_list": "4",
+   "qty_cad": 4,
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
+   "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2",
+   "finish": "none (plain stainless)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "HOLD: any maker to ISO 7093-1, picked at the RFQ",
+   "sku": "ISO 7093-1 - 6.4 x 18 x 1.6 - A2",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium 5056",
+   "finish": "none (plain aluminium, as supplied)",
+   "torque_nm": "HOLD-01 (D-48)",
+   "qty_parts_list": "4",
+   "qty_cad": 65,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
+   "maker": "Sherex (PEM)",
+   "sku": "CAH3-610-4.2",
    "status": "DRAFT",
    "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
@@ -4122,6 +4263,23 @@
    "size": "",
    "length_mm": "",
    "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": 4,
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
    "finish": "zinc plated (ISO 4042)",
    "torque_nm": "",
    "qty_parts_list": "4",
@@ -4342,6 +4500,23 @@
    "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
    "size": "",
    "length_mm": "",
+   "grade": "aluminium 5056",
+   "finish": "none (plain aluminium, as supplied)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": 65,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "",
+   "length_mm": "",
    "grade": "aluminium 5056 (maker)",
    "finish": "plain aluminium, as supplied (maker)",
    "torque_nm": "",
@@ -4521,6 +4696,23 @@
    "maker": "",
    "sku": "",
    "status": "calculation: body Ø9.5 x 14.86 with an M6 bore and a Ø12.96 x 0.76 head (SHX sizes), 2640 kg/m3; the CAD body is the installed envelope",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2",
+   "finish": "none (plain stainless)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
    "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
   },
