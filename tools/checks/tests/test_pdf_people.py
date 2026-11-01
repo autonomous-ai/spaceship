@@ -55,6 +55,9 @@ def test_each_title_block_gives_its_created_by_value(tmp_path):
     assert _vals(_pdf(str(tmp_path / "e.pdf"), ELEC)) == [("DATE / BY", "Autonomous")]
     blank = [r for r in FUSION if r[2] != "Autonomous"]
     assert _vals(_pdf(str(tmp_path / "b.pdf"), blank)) == [("CREATED BY", "")]       # the date isn't a name
+    # a sentence in the notes that says who made the drawing isn't the field (drawgen's sheet 2 after #291)
+    note = [(100, 300, "Source: FEATURE-RATIONALE.md. Made by tools/drawgen (D-112) from that STEP.")]
+    assert _vals(_pdf(str(tmp_path / "n.pdf"), DRAWGEN + note)) == [("MADE BY", "Autonomous")]
 
 
 def test_a_drawing_that_reads_autonomous_everywhere_passes(tmp_path):
