@@ -355,7 +355,9 @@ def parts_list(v, mass):
             hm, hs = HOLD_MASS.get(key, (0.0, "assumption: space only"))
             mass_txt, mstat = "%.3f" % hm, hs
         elif pkey == "fan":
-            mass_txt, mstat = "0.300", "assumption (PM ruling 2026-11-01, HOLD until weighed)"
+            mass_txt, mstat = "0.195", ("source: Noctua's specification page for the NF-A14 industrialPPC-3000 PWM, 195 g "
+                                        "(305 g packaged), %s (the Lead, 2026-11-01); the fan stays HOLD until the sample "
+                                        "is tested" % "https://www.noctua.at/cn/products/nf-a14-industrialppc-3000-pwm/specifications")
         elif key == "casing":   # a body inside the cartridge component: from its walls
             perim = 2 * (v["cart_w"] + v["cart_d"]) - 4 * v["cart_t"]
             mass_txt = "%.3f" % (perim * v["cart_t"] * v["cart_l"] * 1e-9 * A.MATERIALS["al"][1])

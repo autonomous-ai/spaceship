@@ -162,9 +162,9 @@ AIR_PARAMS = [
     ("ma_h", "30 mm", "mm", "assumption", "the mount angle's upright leg, riveted to its plate"),
     ("mt_in", "14 mm", "mm", "assumption", "each mount 14 in from the box's door or room wall"),
     ("mt_x1", "52 mm", "mm", "calculation", "the mounts 52 in from the box's left end (X 919), so the box's full mass as "
-     "installed, 3.075 kg with its fans and linings (CAD masses, the fans at 0.3 kg each an assumption until weighed), centred "
-     "at X 1014.7, puts the same load on each: 0.77 kg, inside the hemisphere's 0.45 to 0.82 kg (the Lead's check 2026-11-01; "
-     "at 33 the right pair took 0.84)"),
+     "installed, 2.865 kg with its linings (CAD masses) and fans (195 g each, Noctua's specification), centred at X 1014.8, "
+     "puts the same load on each: 0.72 kg, inside the hemisphere's 0.45 to 0.82 kg (the Lead's check 2026-11-01; at 33 the "
+     "right pair took 0.78, or 0.84 with the fans' old 0.3 kg assumption)"),
     ("mt_x2", "51 mm", "mm", "calculation", "and 51 in from its right end (X 1110: 8.5 clear of the harness channel)"),
     ("lt_bw", "20.5 mm", "mm", "source", "Southco E4-10-201-10 (the latch 618106, the Lead's pick 2026-11-01): body 20.5 x 13, "
      "29 long"),
@@ -418,7 +418,7 @@ MATERIALS = {
     "face": ("ACP 3 + felt 9 face (5.3 kg/m2)", 5.3 / 0.012),
     "pfill": ("Polyester fill 24 kg/m3", 24.0),     # D-81: the lighter cavity fill (provisional on T02); the layers stay at 32
     "pyro": ("Pyrotek Sorberpoly 2D 32 kg/m3", 32.0),      # D-116: the density Pyrotek's published absorption is for (selection.md)
-    "fan": ("Fan envelope 0.3 kg (assumption)", 0.3 / (0.14 * 0.14 * 0.025)),
+    "fan": ("Fan envelope 0.195 kg (Noctua's specification)", 0.195 / (0.14 * 0.14 * 0.025)),   # 618401's own sheet: 195 g
     "hold": ("HOLD envelope - no mass", 1.0),
 }
 
