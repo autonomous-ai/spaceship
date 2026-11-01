@@ -215,11 +215,44 @@ def is_strip(sides):
     return bool(sides) and sides[0] <= 25.0 and sides[0] <= 0.5 * sides[1]
 
 
+PLUS_MINUS = re.compile(r"±|\+\s*/\s*-|\+\s*\d+(?:\.\d+)?\s*/\s*-?\s*\d")    # ±0.5, +/-1, +0/-0.5, +0.10/0
+
+
+def tolerance_cover(tolerance_texts, row_texts):
+    """D-125 (PM, 2026-11-01): which cut sizes, of 'length' and 'width', a parts-list line's tolerance covers. One
+    general tolerance covers both (ISO 2768, or a ± on the cut sizes, all sizes, or no size named); otherwise each
+    takes its own (a ± naming the length or the width). A bought strip whose width comes from the supplier says
+    "width as supplied" anywhere in its line. A ± on the thickness, bends, angles, holes or flatness covers neither;
+    the thickness takes the sheet's own tolerance, as its grade names it."""
+    cover = set()
+    if any(re.search(r"\bwidth\s+as\s+supplied\b", t or "", re.I) for t in row_texts):
+        cover.add("width")
+    for text in tolerance_texts:
+        for clause in re.split(r"[;,]", text or ""):
+            if re.search(r"ISO\s*2768", clause, re.I):
+                cover |= {"length", "width"}
+                continue
+            if not PLUS_MINUS.search(clause):
+                continue
+            named = False
+            if re.search(r"\blength|\blong\b", clause, re.I):
+                cover.add("length")
+                named = True
+            if re.search(r"\bwidth|\bwide\b", clause, re.I):
+                cover.add("width")
+                named = True
+            if not named and not re.search(r"thick|\bbent\b|\bbend|angle|°|hole|position|flat|square", clause, re.I):
+                cover |= {"length", "width"}          # on the cut sizes, all sizes, or no size named
+    return cover
+
+
 def strip_row_lacks(root, pn, sides):
     """D-125: None when no list has a row for pn; else (what the most complete row lacks, its file). A full row
-    gives the material with its grade (a grade on HOLD counts as stated, as C11 holds such rows), the thickness,
-    width and length as in the STEP, the finish and the tolerance, and names no feature (hole, slot, notch, pocket,
-    cut-out). Any .csv under v2/03-Manufacturing or v2/02-Drawings counts, as for D-89."""
+    gives the material with its grade (a grade on HOLD counts as stated, as C11 holds such rows; the part stays HOLD
+    until the grade is named), the thickness, width and length as in the STEP, the finish, a tolerance covering both
+    cut sizes (tolerance_cover), and names no feature (hole, slot, notch, pocket, cut-out). Any .csv under
+    v2/03-Manufacturing or v2/02-Drawings counts, as for D-89. The release checklist calls this function (and
+    cuboid_sides, is_strip) rather than copying it: keep their names and arguments."""
     from common import read_csv
     from c_parts import GRADE_HINT, VAGUE_FINISH
     best = None
@@ -241,9 +274,13 @@ def strip_row_lacks(root, pn, sides):
                 fin = " ".join(v for _k, v in _cell(row, r"finish"))
                 if not fin or VAGUE_FINISH.search(fin):
                     lacks.append("finish")
-                if not _cell(row, r"tol") and not any(re.search(r"±|\+/-", v or "") for v in row.values()
-                                                      if isinstance(v, str)):
-                    lacks.append("tolerance")
+                texts = [v for v in row.values() if isinstance(v, str)]
+                tols = [v for _k, v in _cell(row, r"tol")] + [v for v in texts if PLUS_MINUS.search(v)]
+                missing = [x for x in ("length", "width") if x not in tolerance_cover(tols, texts)]
+                if missing:
+                    lacks.append("a tolerance on the %s (one general tolerance on the cut sizes, such as ISO 2768-m "
+                                 "or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip)"
+                                 % " and the ".join(missing))
                 feats = sorted({m.group(0).lower() for v in row.values() if isinstance(v, str)
                                 for m in FEATURE_WORDS.finditer(v)})
                 if feats:

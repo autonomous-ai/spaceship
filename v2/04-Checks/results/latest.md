@@ -1,8 +1,8 @@
-# Mechanical check run: a8d75f6 on 2026-11-01
+# Mechanical check run: 0d355cd on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `a8d75f6`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `0d355cd`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 89** (35 severe, 54 major, 0 minor). Register numbers in brackets.
+**Findings in this run: 90** (36 severe, 54 major, 0 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `a8d75f6`. The Fusion 
 | C02 tolerance stack-ups | yes | 0 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 69 |
+| C05 drawing completeness | yes | 70 |
 | C06 BOM completeness | yes | 19 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 0 |
@@ -61,6 +61,7 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | F-155 | severe | C05 | 811202 | 811202 INTERIOR - LIGHT SHELF - SIDE LH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake. | CEILING |
 | F-156 | severe | C05 | 811203 | 811203 INTERIOR - LIGHT SHELF - SIDE RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (40.0 thick across 60.0); its row's process names bend, brake. | CEILING |
 | F-157 | severe | C05 | 811204 | 811204 INTERIOR - LIGHT SHELF - DOWN CHANNEL RH has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; its faces lie at 3 levels through the thickness (a pocket, a step or a rebate); its row's process names bend, brake. | CEILING |
+| F-158 | severe | C05 | 811205 | 811205 INTERIOR - LIGHT SHELF - DIFFUSER RH has no drawing PDF (811205_REV_NAME_DWG.pdf under v2/02-Drawings). D-125 (a plain straight-cut strip or sheet on a full parts-list row) doesn't apply: its row in v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv doesn't give a tolerance on the width (one general tolerance on the cut sizes, such as ISO 2768-m or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip). | CEILING |
 | F-039 | major | C05 | 110000 | 110000 BASE has no drawing PDF (110000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/110000_P01_BASE_STEP.step. | BASE |
 | F-040 | major | C05 | 110101 | 110101 BASE - BAND ASSY - SIDE - LH has no drawing PDF (110101_REV_NAME_DWG.pdf under v2/02-Drawings). | BASE |
 | F-041 | major | C05 | 110103 | 110103 BASE - BAND ASSY - BACK has no drawing PDF (110103_REV_NAME_DWG.pdf under v2/02-Drawings). | BASE |
@@ -133,12 +134,12 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 |---|---|---|---|---|
 | 1-01 BASE - FLOOR PANEL ASSY - F1 | 8.183 | 1455 x 1219 x 12 | upright | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) |
 | 1-02 BASE - FLOOR PANEL ASSY - F2 | 8.183 | 1455 x 1219 x 12 | upright | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) |
-| 1-03 WALL - PANEL ASSY - BACK LOWER - LH | 8.641 | 1200.61 x 1118.61 x 46 | upright | calculation (part CAD); fill provisional |
-| 1-04 WALL - PANEL ASSY - BACK LOWER - RH | 11.529 | 1200.61 x 1118.61 x 84 | upright | calculation (CAD); calculation (part CAD); fill provisional |
+| 1-03 WALL - PANEL ASSY - BACK LOWER - B1 | 8.641 | 1200.61 x 1118.61 x 46 | upright | calculation (part CAD); fill provisional |
+| 1-04 WALL - PANEL ASSY - BACK LOWER - B2 | 11.529 | 1200.61 x 1118.61 x 84 | upright | calculation (CAD); calculation (part CAD); fill provisional |
 | 1-05 WALL - PANEL ASSY - SIDE LOWER - LH | 11.163 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-06 WALL - PANEL ASSY - SIDE LOWER - RH | 11.163 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
-| 1-07 WALL - PANEL ASSY - BACK UPPER - LH | 8.641 | 1200.61 x 1118.61 x 46 | upright | calculation (part CAD); fill provisional |
-| 1-08 WALL - PANEL ASSY - BACK UPPER - RH | 8.641 | 1200.61 x 1118.61 x 46 | upright | calculation (part CAD); fill provisional |
+| 1-07 WALL - PANEL ASSY - BACK UPPER - B3 | 8.641 | 1200.61 x 1118.61 x 46 | upright | calculation (part CAD); fill provisional |
+| 1-08 WALL - PANEL ASSY - BACK UPPER - B4 | 8.641 | 1200.61 x 1118.61 x 46 | upright | calculation (part CAD); fill provisional |
 | 1-09 WALL - PANEL ASSY - SIDE UPPER - LH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-10 WALL - PANEL ASSY - SIDE UPPER - RH | 11.294 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-11 CEILING - PANEL ASSY - C1 | 10.047 | 1495 x 1200.61 x 46 | upright | calculation (CAD) |
@@ -147,10 +148,10 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 1-14 LINING - CASSETTE - SIDE UPPER - RH | 9.912 | 1445 x 1092.74 x 34 | upright | calculation (CAD) |
 | 1-15 LINING - CASSETTE - SIDE LOWER - LH | 10.341 | 1445 x 1142.74 x 34 | upright | calculation (CAD) |
 | 1-16 LINING - CASSETTE - SIDE UPPER - LH | 9.912 | 1445 x 1092.74 x 34 | upright | calculation (CAD) |
-| 1-17 LINING - CASSETTE - BACK LOWER - LH | 8.013 | 1166 x 1118.61 x 34 | upright | calculation (CAD) |
-| 1-18 LINING - CASSETTE - BACK LOWER - RH | 8.013 | 1166 x 1118.61 x 34 | upright | calculation (CAD) |
-| 1-19 LINING - CASSETTE - BACK UPPER - LH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
-| 1-20 LINING - CASSETTE - BACK UPPER - RH | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
+| 1-17 LINING - CASSETTE - BACK LOWER - B1 | 8.013 | 1166 x 1118.61 x 34 | upright | calculation (CAD) |
+| 1-18 LINING - CASSETTE - BACK LOWER - B2 | 8.013 | 1166 x 1118.61 x 34 | upright | calculation (CAD) |
+| 1-19 LINING - CASSETTE - BACK UPPER - B3 | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
+| 1-20 LINING - CASSETTE - BACK UPPER - B4 | 8.399 | 1166 x 1116.87 x 34 | upright | calculation; lips confirmed |
 | 2-01 FRONT - FIXED GLASS UNIT | 28.743 | 2033 x 1031 x 12 | glass | calculation (CAD); magnetic seal HOLD |
 | 2-02 FRONT - DOOR UNIT | 48.59 | 2089 x 1175 x 149 | glass | calculation (CAD); hinges and pull HOLD |
 | 2-03 FRONT - DECOR BLOCK - DR | 18.6 | 2290 x 1016 x 205 | long | calculation; calculation (CAD); magnetic seal HOLD |

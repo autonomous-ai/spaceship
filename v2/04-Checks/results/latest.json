@@ -1,5 +1,5 @@
 {
- "rev": "a8d75f6",
+ "rev": "0d355cd",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -1243,6 +1243,18 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|811204"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "811205",
+   "severity": "severe",
+   "message": "811205 INTERIOR - LIGHT SHELF - DIFFUSER RH has no drawing PDF (811205_REV_NAME_DWG.pdf under v2/02-Drawings). D-125 (a plain straight-cut strip or sheet on a full parts-list row) doesn't apply: its row in v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv doesn't give a tolerance on the width (one general tolerance on the cut sizes, such as ISO 2768-m or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|811205"
   }
  ],
  "stacks": [
@@ -1377,7 +1389,7 @@
   },
   {
    "id": "1-03",
-   "name": "WALL - PANEL ASSY - BACK LOWER - LH",
+   "name": "WALL - PANEL ASSY - BACK LOWER - B1",
    "kg": 8.641,
    "dims": [
     1200.61,
@@ -1389,7 +1401,7 @@
   },
   {
    "id": "1-04",
-   "name": "WALL - PANEL ASSY - BACK LOWER - RH",
+   "name": "WALL - PANEL ASSY - BACK LOWER - B2",
    "kg": 11.529,
    "dims": [
     1200.61,
@@ -1425,7 +1437,7 @@
   },
   {
    "id": "1-07",
-   "name": "WALL - PANEL ASSY - BACK UPPER - LH",
+   "name": "WALL - PANEL ASSY - BACK UPPER - B3",
    "kg": 8.641,
    "dims": [
     1200.61,
@@ -1437,7 +1449,7 @@
   },
   {
    "id": "1-08",
-   "name": "WALL - PANEL ASSY - BACK UPPER - RH",
+   "name": "WALL - PANEL ASSY - BACK UPPER - B4",
    "kg": 8.641,
    "dims": [
     1200.61,
@@ -1545,7 +1557,7 @@
   },
   {
    "id": "1-17",
-   "name": "LINING - CASSETTE - BACK LOWER - LH",
+   "name": "LINING - CASSETTE - BACK LOWER - B1",
    "kg": 8.013,
    "dims": [
     1166.0,
@@ -1557,7 +1569,7 @@
   },
   {
    "id": "1-18",
-   "name": "LINING - CASSETTE - BACK LOWER - RH",
+   "name": "LINING - CASSETTE - BACK LOWER - B2",
    "kg": 8.013,
    "dims": [
     1166.0,
@@ -1569,7 +1581,7 @@
   },
   {
    "id": "1-19",
-   "name": "LINING - CASSETTE - BACK UPPER - LH",
+   "name": "LINING - CASSETTE - BACK UPPER - B3",
    "kg": 8.399,
    "dims": [
     1166.0,
@@ -1581,7 +1593,7 @@
   },
   {
    "id": "1-20",
-   "name": "LINING - CASSETTE - BACK UPPER - RH",
+   "name": "LINING - CASSETTE - BACK UPPER - B4",
    "kg": 8.399,
    "dims": [
     1166.0,
