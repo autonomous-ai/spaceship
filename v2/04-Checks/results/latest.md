@@ -1,8 +1,8 @@
-# Mechanical check run: ebb3e2d1 on 2026-11-01
+# Mechanical check run: 95204bdb on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `ebb3e2d1`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `95204bdb`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
-**Findings in this run: 177** (65 severe, 109 major, 3 minor). Register numbers in brackets.
+**Findings in this run: 175** (65 severe, 107 major, 3 minor). Register numbers in brackets.
 
 ## What ran
 
@@ -12,7 +12,7 @@ Offline checks (`tools/checks/run_checks.py`) on revision `ebb3e2d1`. The Fusion
 | C02 tolerance stack-ups | yes | 4 |
 | C03 fastener and tool access | no inputs yet | 0 |
 | C04 weight, doorway and pallet fit | yes | 0 |
-| C05 drawing completeness | yes | 86 |
+| C05 drawing completeness | yes | 84 |
 | C06 BOM completeness | yes | 36 |
 | C07 fastener schedule and thread engagement | yes | 0 |
 | C08 hole-to-hole alignment | yes | 1 |
@@ -123,8 +123,6 @@ Inputs: {"bodies_skeleton": 31, "shell_faces_skeleton": ["back", "back-base", "l
 | F-254 | major | C05 | 610000 | 610000 AIR has no drawing PDF (610000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/air/610000_P01_AIR_STEP.step. | CEILING |
 | F-256 | major | C05 | 610201 | 610201 AIR - SOFFIT has no drawing PDF (610201_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-257 | major | C05 | 610301 | 610301 AIR - SPLITTER CARTRIDGE - COMMON has no drawing PDF (610301_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
-| F-258 | major | C05 | 610401 | 610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
-| F-259 | major | C05 | 610402 | 610402 AIR - EXHAUST FAN BOX has no drawing PDF (610402_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |
 | F-261 | major | C05 | 611104 | 611104 AIR - COLUMN FILL has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches). | CEILING |
 | F-338 | major | C05 | 810000 | 810000 INTERIOR has no drawing PDF (810000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step. | CEILING |
 | F-151 | major | C05 | 810101 | 810101 INTERIOR - WORK WALL LEDGE ASSY has no drawing PDF (810101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING |

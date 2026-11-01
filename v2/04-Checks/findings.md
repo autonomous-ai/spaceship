@@ -8,7 +8,7 @@ Every finding has an owner group and a status. **Severe findings block the owner
 
 Severity: **severe** = can't be made, assembled or used as drawn; **major** = will cause rework or a wrong part; **minor** = record keeping. Check codes: C01 clash and minimum gaps (Fusion); C02 tolerance stack-ups; C03 fastener and tool access; C04 weight, doorway and pallet fit; C05 drawing completeness; C06 BOM completeness; C07 fastener schedule and thread engagement; C08 hole-to-hole alignment; C09 edge distance, bend radius, hole-to-bend; C10 mixed metals; C11 material grade and finish.
 
-## Open: 209 (96 severe, 110 major, 3 minor)
+## Open: 207 (96 severe, 108 major, 3 minor)
 
 By owner group:
 
@@ -18,7 +18,7 @@ By owner group:
 - BASE; ELECTRICAL; WALL: F-279
 - BASE; FRONT: F-355, F-356
 - BASE; Joints Engineer: F-367
-- CEILING: F-141, F-142, F-144, F-145, F-153, F-154, F-155, F-156, F-244, F-245, F-260, F-262, F-263, F-264, F-265, F-266, F-267, F-268, F-293, F-294, F-295, F-297, F-298, F-299, F-300, F-301, F-302, F-303, F-304, F-305, F-360, F-363, F-365, F-138, F-140, F-151, F-152, F-168, F-169, F-227, F-228, F-229, F-230, F-231, F-232, F-233, F-234, F-235, F-236, F-237, F-238, F-239, F-240, F-241, F-242, F-246, F-247, F-248, F-249, F-250, F-251, F-252, F-253, F-254, F-256, F-257, F-258, F-259, F-261, F-310, F-311, F-318, F-319, F-338, F-243
+- CEILING: F-141, F-142, F-144, F-145, F-153, F-154, F-155, F-156, F-244, F-245, F-260, F-262, F-263, F-264, F-265, F-266, F-267, F-268, F-293, F-294, F-295, F-297, F-298, F-299, F-300, F-301, F-302, F-303, F-304, F-305, F-360, F-363, F-365, F-138, F-140, F-151, F-152, F-168, F-169, F-227, F-228, F-229, F-230, F-231, F-232, F-233, F-234, F-235, F-236, F-237, F-238, F-239, F-240, F-241, F-242, F-246, F-247, F-248, F-249, F-250, F-251, F-252, F-253, F-254, F-256, F-257, F-261, F-310, F-311, F-318, F-319, F-338, F-243
 - CEILING; ELECTRICAL: F-188
 - CEILING; WALL: F-346
 - ELECTRICAL: F-280, F-281, F-282, F-283, F-284, F-285, F-286, F-287, F-288, F-289, F-290, F-291, F-292, F-296, F-306, F-307
@@ -203,8 +203,6 @@ By owner group:
 | F-254 | major | C05 | 610000 | 610000 AIR has no drawing PDF (610000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/air/610000_P01_AIR_STEP.step. | `v2/03-Manufacturing/air/610000_P01_AIR_STEP.step` | Make the ISO first-angle drawing, export it through the name strip, and commit it. | CEILING | 2026-11-01 5966c3e | CEILING group, 2026-11-01 |
 | F-256 | major | C05 | 610201 | 610201 AIR - SOFFIT has no drawing PDF (610201_REV_NAME_DWG.pdf under v2/02-Drawings). |  | Make the ISO first-angle drawing, export it through the name strip, and commit it. | CEILING | 2026-11-01 5966c3e | CEILING group, 2026-11-01 |
 | F-257 | major | C05 | 610301 | 610301 AIR - SPLITTER CARTRIDGE - COMMON has no drawing PDF (610301_REV_NAME_DWG.pdf under v2/02-Drawings). |  | Make the ISO first-angle drawing, export it through the name strip, and commit it. | CEILING | 2026-11-01 5966c3e | CEILING group, 2026-11-01 |
-| F-258 | major | C05 | 610401 | 610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings). |  | Make the ISO first-angle drawing, export it through the name strip, and commit it. | CEILING | 2026-11-01 5966c3e | CEILING group, 2026-11-01 |
-| F-259 | major | C05 | 610402 | 610402 AIR - EXHAUST FAN BOX has no drawing PDF (610402_REV_NAME_DWG.pdf under v2/02-Drawings). |  | Make the ISO first-angle drawing, export it through the name strip, and commit it. | CEILING | 2026-11-01 5966c3e | CEILING group, 2026-11-01 |
 | F-261 | major | C05 | 611104 | 611104 AIR - COLUMN FILL has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches). |  | For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing. | CEILING | 2026-11-01 5966c3e | CEILING group, 2026-11-01 |
 | F-273 | major | C09 | assembly 211101 SIDE LOWER - LH | 211101 SIDE LOWER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | `v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step` | Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135). | WALL | 2026-11-01 5c8f25a | WALL group, 2026-11-01 |
 | F-274 | major | C09 | assembly 211102 SIDE LOWER - RH | 211102 SIDE LOWER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm). | `v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step` | Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135). | WALL | 2026-11-01 5c8f25a | WALL group, 2026-11-01 |
@@ -239,7 +237,7 @@ By owner group:
 | F-226 | minor | C05 | 831001 | 831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS drawing 831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf: Dimension value(s) printed more than once: 8. | `v2/02-Drawings/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf` | Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet). | Joints Engineer | 2026-11-01 e8ae80b | Joints group, 2026-11-01 |
 | F-243 | minor | C06 | 618101 | 618101 AIR - SENSOR HUB ZONE - HOLD in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv is missing: mass. | `v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv` | Fill them in, each number with its status and source. | CEILING | 2026-11-01 5966c3e | CEILING group, 2026-11-01 |
 
-## Closed and accepted: 158
+## Closed and accepted: 160
 
 | ID | Status | Severity | Check | Part | Finding | Owner group | Found | Closed or accepted |
 |---|---|---|---|---|---|---|---|---|
@@ -380,6 +378,8 @@ By owner group:
 | F-224 | CLOSED | major | C05 | 710031 | 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE drawing 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: 59 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm. | ELECTRICAL | 2026-11-01 e8ae80b | 2026-11-01 23aeade |
 | F-225 | CLOSED | major | C05 | 710041 | 710041 ELECTRICAL - HUB AND CONTROLS ZONE drawing 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: 112 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HUB AND CONTROLS ZONE PLATE 71' 1.58 mm; 'HUB WINDOW (HOLD)' 1.44 mm; 'BOOST' 1.36 mm. | ELECTRICAL | 2026-11-01 e8ae80b | 2026-11-01 23aeade |
 | F-255 | CLOSED | major | C05 | 610101 | 610101 AIR - AIR COLUMN has no drawing PDF (610101_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING | 2026-11-01 5966c3e | 2026-11-01 5a996ab |
+| F-258 | CLOSED | major | C05 | 610401 | 610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING | 2026-11-01 5966c3e | 2026-11-01 95204bdb |
+| F-259 | CLOSED | major | C05 | 610402 | 610402 AIR - EXHAUST FAN BOX has no drawing PDF (610402_REV_NAME_DWG.pdf under v2/02-Drawings). | CEILING | 2026-11-01 5966c3e | 2026-11-01 95204bdb |
 | F-269 | CLOSED | major | C06 | 110401 | 110401 BASE - FLOOR PANEL ASSY - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor). | BASE | 2026-11-01 5fa198d | 2026-11-01 d50a0a0 |
 | F-270 | CLOSED | major | C06 | 111401 | 111401 BASE - FLOOR PANEL - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor). | BASE | 2026-11-01 5fa198d | 2026-11-01 d50a0a0 |
 | F-271 | CLOSED | major | C06 | 111501 | 111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor). | BASE | 2026-11-01 5fa198d | 2026-11-01 d50a0a0 |

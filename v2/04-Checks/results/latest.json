@@ -1,5 +1,5 @@
 {
- "rev": "ebb3e2d1",
+ "rev": "95204bdb",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 31,
@@ -2643,30 +2643,6 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|610301"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "610401",
-   "severity": "major",
-   "message": "610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|610401"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "610402",
-   "severity": "major",
-   "message": "610402 AIR - EXHAUST FAN BOX has no drawing PDF (610402_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|610402"
   },
   {
    "check": "C05",
