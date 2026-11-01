@@ -49,13 +49,13 @@ PN = "711001"
 SHEET_W, SHEET_H = 594.0, 420.0     # A2 landscape, mm
 FRAME = (20.0, 10.0, 584.0, 410.0)  # Fusion's ISO frame: 20 mm in on the left, 10 on the other sides
 TITLE = (404.0, 10.0, 584.0, 57.0)  # its title block, 180 x 47 in the frame's bottom right corner
-BLOCK = (410.0, 62.0, 584.0, 240.0)   # x0, y0, x1, y1 in sheet mm (origin bottom left): above the title block
+BLOCK = (410.0, 62.0, 584.0, 315.0)   # x0, y0, x1, y1 in sheet mm (origin bottom left): above the title block, 12 under view D
 PT = 72.0 / 25.4
 CAP = 0.716                     # Arial (Unicode) capital H height / font size: rendered at 1000 pt, 716 px (confirmed)
 LEAD = 1.9                      # baseline to baseline, in capital heights
 BODY_H, HEAD_H = 2.5, 3.5       # capital heights, mm: notes and headings (ISO 3098, the reviewers' minimum)
 CREATOR = "Autonomous"          # D-140: the drawing's creator, author and Created by
-PITCH = ("236", "238")          # the H05-H08 pitch dimensions, printed as reference: (236), (238)
+# the H05-H08 pitch dimensions (Fusion prints them, the finish step puts them in brackets as reference): pitch()
 ROW_H = 5.5                     # table row, mm: 2.5 mm letters with 1.5 mm above and below
 # hole table columns: heading, width mm (the note takes the rest)
 COLUMNS = (("TAG", 10.0), ("FACE", 21.0), ("FROM B", 16.0), ("FROM A", 16.0), ("FROM C", 16.0), ("Ø THRU", 16.0),
@@ -108,14 +108,15 @@ def hole_rows(p, zs=1):
     w, h, d = v["w"], v["h"], v["d"]
     xb = (lambda x: x) if zs > 0 else (lambda x: w - x)     # from datum B, the FRONT view's left face
     side = "right side" if zs > 0 else "left side"           # the build's X = w wall, as the FRONT view shows it
-    rows = [("H01", side, None, v["lead_z1"], d - v["lead_y"], v["hole_b"], "lead exit 1, Heyco 2836 bushing"),
-            ("H02", side, None, v["lead_z2"], d - v["lead_y"], v["hole_b"], "lead exit 2, Heyco 2836 bushing"),
-            ("H03", "top", xb(v["top_x"]), None, d - v["lead_y"], v["hole_b"], "light feed exit, Heyco 2836 bushing"),
+    rows = [("H01", side, None, v["lead_z1"], d - v["lead_y"], v["hole_b"], "lead exit 1, Heyco 2836N bushing"),
+            ("H02", side, None, v["lead_z2"], d - v["lead_y"], v["hole_b"], "lead exit 2, Heyco 2836N bushing"),
+            ("H03", "top", xb(v["top_x"]), None, d - v["lead_y"], v["hole_b"], "light feed exit, Heyco 2836N bushing"),
             ("H04", "bottom", xb(v["sleeve_x"]), None, d - v["sleeve_y"], v["sleeve_d"],
-             "mains and LAN sleeve (20 mm conduit)")]
+             "mains and LAN conduit, NMLT-11 connector")]
     for i, (x, y) in enumerate(((v["clinch_x"], v["clinch_y"]), (w - v["clinch_x"], v["clinch_y"]),
                                 (v["clinch_x"], h - v["clinch_y"]), (w - v["clinch_x"], h - v["clinch_y"]))):
-        rows.append(("H%02d" % (5 + i), "front lip", xb(x), y, None, v["clinch_d"], "M4 clinch nut (HOLD)"))
+        rows.append(("H%02d" % (5 + i), "front lip", xb(x), y, None, v["clinch_d"], "M4 clinch nut, PEM CLA-M4-1"))
+    rows.append(("H09", "bottom", xb(v["estud_x"]), None, d - v["estud_y"], v["estud_d"], "M5 earth stud, PEM FHA-M5-12"))
     return rows
 
 
@@ -162,8 +163,20 @@ def check_rows(rows, box, holes, zs, tol=0.05):
     return probs
 
 
+def pitch(p=None):
+    """The H05-H08 pitch as Fusion prints it: (across, up) between the clinch nuts' centres, from the parameters."""
+    v = (p or params())["v"]
+    return ("%g" % round(v["w"] - 2 * v["clinch_x"], 3), "%g" % round(v["h"] - 2 * v["clinch_y"], 3))
+
+
 def fmt(x):
     return "—" if x is None else "%.1f" % x
+
+
+def dia(x):
+    """A hole's diameter as the table prints it: 19.1, 5.0, 5.94 (two decimals only when the second counts)."""
+    t = "%.2f" % x
+    return t[:-1] if t.endswith("0") else t
 
 
 def lines(date="2026-11-01"):
@@ -180,16 +193,20 @@ def lines(date="2026-11-01"):
             ("SOURCE: the 711001 %s STEP and CAD (same revision), %s." % (p["rev"], date), BODY_H, False),
             ("", 1.5, False),
             ("GENERAL NOTES", HEAD_H, True),
-            ("1. GENERAL TOLERANCE: ISO 2768-m. Hole positions ±0.2; hole diameters +0.1/0.", BODY_H, False),
+            ("1. GENERAL TOLERANCE: ISO 2768-m. Hole positions ±0.2; hole diameters +0.1/0, the PEM holes H05-H09 "
+             "+0.08/0.", BODY_H, False),
             ("2. Outside size %.0f x %.0f x %.0f (datums A bottom, B left in the FRONT view, C back face); lips %.0f inward."
              % (v["w"], v["h"], v["d"], v["lip"]), BODY_H, False),
             ("3. Inside bend radius %.1f (= thickness), K-factor 0.44, square bend reliefs. Cut from the flat pattern"
              % v["t"], BODY_H, False),
             ("   711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DXF.dxf (same revision).", BODY_H, False),
-            ("4. Fit the Heyco 2836 bushings in H01-H03 and the M4 clinch nuts in H05-H08 after folding.", BODY_H, False),
-            ("5. HOLD (not cut yet): the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data); the M4 "
-             "clinch nut and its hole H05-H08 to confirm.", BODY_H, False),
-            ("6. (236) and (238): the H05-H08 pitch, for reference; the hole table gives the positions.", BODY_H, False),
+            ("4. Fit the Heyco 2836N bushings in H01-H03 after folding. Press the PEM CLA-M4-1 clinch nuts into H05-H08 "
+             "and the FHA-M5-12 earth stud into H09, head outside (PEM's installation data; the order with the folding "
+             "is the factory's, with its tooling).", BODY_H, False),
+            ("5. HOLD (not cut yet): the fixing to B2's frame (WALL, IF-12). H09's place is an assumption until the "
+             "unit's inside layout (the factory's).", BODY_H, False),
+            ("6. (%s) and (%s): the H05-H08 pitch, for reference; the hole table gives the positions." % pitch(p),
+             BODY_H, False),
             ("7. View D: the bottom, seen in the direction of arrow D (from below), drawn turned 180°: datum B is on its "
              "right, C at its top.", BODY_H, False),
             ("", 1.5, False),
@@ -199,8 +216,8 @@ def lines(date="2026-11-01"):
 def table_cells(rows):
     """The table's text: a heading row, then one row per hole."""
     out = [[c for c, _w in COLUMNS]]
-    for tag, face, b, a, c, dia, note in rows:
-        out.append([tag, face, fmt(b), fmt(a), fmt(c), "Ø%.1f" % dia, note])
+    for tag, face, b, a, c, d, note in rows:
+        out.append([tag, face, fmt(b), fmt(a), fmt(c), "Ø" + dia(d), note])
     return out
 
 
@@ -447,11 +464,11 @@ def tags_for(rows, views_json, box, holes, zs):
     return out
 
 
-def reference_dims(page, values=PITCH):
+def reference_dims(page, values=None):
     """Put the pitch dimensions' values in brackets: each value is found once, its text taken out (lines kept) and
     written again as (value), centred where it was, in its direction. Returns the number done."""
     import fitz
-    hits = {v: [] for v in values}
+    hits = {v: [] for v in (values or pitch())}
     for blk in page.get_text("dict")["blocks"]:
         for ln in blk.get("lines", []):
             for sp in ln["spans"]:
@@ -461,7 +478,16 @@ def reference_dims(page, values=PITCH):
         if len(found) != 1:
             raise RuntimeError("the pitch dimension %s is printed %d times, not once" % (v, len(found)))
     for v, ((sp, d),) in hits.items():
-        page.add_redact_annot(fitz.Rect(sp["bbox"]))
+        # only the glyphs' own band: Fusion sets the pitch's text so close under the width's (2026-11-01, 12:10 UTC)
+        # that their text boxes overlap, and a redaction of the whole box took the width's 296 with it
+        bb = fitz.Rect(sp["bbox"])
+        if abs(d[0]) >= abs(d[1]):
+            m = bb.height * 0.3
+            band = fitz.Rect(bb.x0, bb.y0 + m, bb.x1, bb.y1 - m)
+        else:
+            m = bb.width * 0.3
+            band = fitz.Rect(bb.x0 + m, bb.y0, bb.x1 - m, bb.y1)
+        page.add_redact_annot(band)
     page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=fitz.PDF_REDACT_LINE_ART_NONE)
     font = fitz.Font(fontfile=FONT)
     page.insert_font(fontname="AU", fontfile=FONT)
@@ -618,9 +644,26 @@ def read_back(path, views_json, box, holes, zs, rows):
             gap = ((bx - x) ** 2 + (by - y) ** 2) ** 0.5 - r
             if gap > TAG_NEAR:
                 probs.append("%s: its tag is %.1f mm from its circle in the %s view" % (tag, gap, view))
-    for v in PITCH:
+    for v in pitch():
         if words.count("(%s)" % v) != 1 or v in words:
             probs.append("the pitch %s isn't printed once as (%s)" % (v, v))
+    pv = params()["v"]
+    sizes = ("%g" % pv["w"], "%g" % pv["h"], "%g" % pv["d"])
+    for v in sizes:                                                 # the overall sizes, each once, still there
+        if words.count(v) != 1:
+            probs.append("the overall size %s is printed %d times, not once" % (v, words.count(v)))
+    # no line through a dimension's value: its glyphs' band (the inner 60 % across the text) touches no segment
+    for x0, y0, x1, y1, t in texts:
+        if t in sizes or t in ["(%s)" % v for v in pitch()]:
+            if (x1 - x0) >= (y1 - y0):
+                m = (y1 - y0) * 0.2
+                band = (x0, y0 + m, x1, y1 - m)
+            else:
+                m = (x1 - x0) * 0.2
+                band = (x0 + m, y0, x1 - m, y1)
+            hit = [sg for sg in segs if _seg_hits_box(sg, band)]
+            if hit:
+                probs.append("a line runs through the dimension %s (%s)" % (t, tuple(round(c, 1) for c in hit[0][:4])))
     meta = doc.metadata or {}
     if meta.get("author") != CREATOR or meta.get("creator") != CREATOR:
         probs.append("author %r, creator %r" % (meta.get("author"), meta.get("creator")))

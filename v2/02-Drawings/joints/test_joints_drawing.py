@@ -64,12 +64,15 @@ def view_geometry(part, view, scale, centre):
     elif part == "keys" and view == "top":             # X right, Y up: 30 x 35
         segs += [(0, -17.5, 30, -17.5), (30, -17.5, 30, 17.5), (30, 17.5, 0, 17.5), (0, 17.5, 0, -17.5)]
         segs += [(0, -2.5, 30, -2.5), (0, 2.5, 30, 2.5)]  # hidden: stud holes seen from above
-        circs += [(10.5, -7.0, 2.5), (10.5, 7.0, 2.5)]    # hidden: fixing holes
+        circs += FIXING_HOLES                              # hidden: fixing holes (111211's, D-144)
         off = (15.0, 0.0)
     to = lambda x, y: (cx + (x - off[0]) * scale, cy + (y - off[1]) * scale)
     lines = [to(a, b) + to(c, d) for a, b, c, d in segs]
     circles = [to(x, y) + (r * scale,) for x, y, r in circs]
     return lines, circles
+
+
+FIXING_HOLES = [(17.8, -6.0, 2.5), (10.5, 6.0, 2.5)]
 
 
 def measured(kind, a, b, place, scale):
@@ -84,8 +87,8 @@ WANT = {
     ("spigot", "front"): [15.24, 7.24, 8.0, 8.0, 6.0],
     ("spigot", "top"): [4.0],
     ("keys", "front"): [75.0, 30.0],
-    ("keys", "right"): [35.0, 26.0, 60.0, 17.5, 5.0],
-    ("keys", "top"): [10.5, 10.5, 24.5, 5.0],
+    ("keys", "right"): [35.0, 26.0, 60.0, 17.5],      # no diameters: the callouts give the size (#324)
+    ("keys", "top"): [17.8, 11.5, 23.5, 10.5],        # D-144: the stepped hole's x and y, the other's y and x
 }
 
 for part, cfg in JD.PARTS.items():
@@ -107,6 +110,37 @@ for part, cfg in JD.PARTS.items():
         clear = max(xs) < bx0 - 5 or min(ys) > 297 - by1 + 5
         check(clear and min(xs) > 10 and min(ys) > 10 and max(ys) < 287,
               "%s %s view stays on the sheet and clear of the notes box" % (part, name))
+        # every dimension's text well inside the frame (x 20 to 410, y 10 to 287): Fusion puts a vertical
+        # dimension's text up to about 8 left of its placement (the key sheet's 60 read back at x 18.7 for a
+        # placement at 29, on the frame line; the visual pass, 2026-11-01), so placements keep 12 clear of the
+        # frame's sides; a horizontal one's text sits up to about 5 above it, so 8 clear of its top and bottom
+        far = [p for _k, _a, _b, p in dims if not (32 <= p[0] <= 398 and 18 <= p[1] <= 279)]
+        check(not far, "%s %s view: every dimension placed inside the frame with room for its text %s"
+              % (part, name, far))
+
+_saved = FIXING_HOLES[:]
+FIXING_HOLES[:] = [(10.5, -7.0, 2.5), (10.5, 7.0, 2.5)]
+_cfg = JD.PARTS["keys"]
+_name, _o, _centre, _st = [v for v in _cfg["views"] if v[0] == "top"][0]
+_lines, _circles = view_geometry("keys", "top", _cfg["scale"], _centre)
+_got = [measured(k, a, b, pl, _cfg["scale"]) for k, a, b, pl in JD.plan_dims("keys", "top", _lines, _circles, _cfg["scale"])]
+check(_got == [10.5, 10.5, 24.5], "keys top view, holes in line: no x dimension twice %s" % _got)
+FIXING_HOLES[:] = _saved
+
+# the top view's hole tags name the holes the table names (Reviewer 6 on #324: H03 and H04 were swapped against it)
+_cfg = JD.PARTS["keys"]
+_t = [v for v in _cfg["views"] if v[0] == "top"][0][2]
+_row = [r for r in [n for n in _cfg["notes"] if isinstance(n, dict)][0]["table"] if r[0] == "111211"][0]
+_want = {}
+for _name, _xy in zip(("H03", "H04"), _row[5].split(";")):
+    _x, _y = [float(v.replace("+", "")) for v in _xy.split(",")]
+    _want[_name] = (_x, _y)
+_sheet = lambda X, Y: (_t[0] + (X - 15.0) * _cfg["scale"], 297.0 - (_t[1] + Y * _cfg["scale"]))   # PDF x, y down
+_circles = [_sheet(*xy) + (False,) for xy in ((10.5, 6.0), (17.8, -6.0))]         # hidden, as Fusion draws them
+_back = lambda c: (round((c[0] - _t[0]) / _cfg["scale"] + 15.0, 2), round((297.0 - c[1] - _t[1]) / _cfg["scale"], 2))
+_got = {lines[0].split()[0]: _back(pick(_circles)) for pick, lines, _o in _cfg["tags"]
+        if lines[0].split()[0] in ("H03", "H04")}
+check(_got == _want, "keys top view: H03 and H04 tag the holes the table gives them %s (want %s)" % (_got, _want))
 
 # notes as PDF text, read back the way the mechanical check reads a drawing
 try:
@@ -146,6 +180,39 @@ else:
             check(bool(re.search(r"\bTABULATED\b", up)), "keys notes: says TABULATED")
             nums = set(re.findall(r"(?<!\d)(\d{6})(?!\d)", text))
             check({"111211", "111212", "111213", "111214"} <= nums, "keys notes: list every part number")
+        if part == "spigot":         # Reviewer 10 on #346: the tabulated spigot sheet, tested as the key sheet is
+            check(bool(re.search(r"\bTABULATED\b", up)), "spigot notes: says TABULATED")
+            nums = set(re.findall(r"(?<!\d)(\d{6})(?!\d)", text))
+            check({"831001", "831010"} <= nums, "spigot notes: list both part numbers")
+            check(any("L + 8" in ln for ln in text.splitlines()), "spigot notes: 'L + 8' on one line")
+
+# the spigot sheet's table and letters (Reviewer 10 on #346): the view letters exactly the two sizes the table varies,
+# and the table, the drawn part and the parts list agree
+_sp = JD.PARTS["spigot"]
+_tab = [n for n in _sp["notes"] if isinstance(n, dict)][0]["table"]
+_hd = _tab[0]
+_rows = {r[0]: dict(zip(_hd, r)) for r in _tab[1:]}
+check(set(_rows) == {"831001", "831010"}, "spigot table: 831001 and 831010 (%s)" % sorted(_rows))
+for _pn, _r in _rows.items():
+    _L, _pr, _ov = float(_r["L"]), float(_r["PROUD"]), float(_r["OVERALL"])
+    check(abs(_ov - (_L + 8.0)) < 1e-9 and abs(_pr - (_L + 0.76)) < 1e-9,
+          "spigot table %s: OVERALL = L + 8 (the stud) and PROUD = L + 0.76 (the rivnut's head) (%s)" % (_pn, _r))
+_vary = [c for c in _hd if c not in ("PART", "POD", "WHERE") and len({r[c] for r in _rows.values()}) > 1]
+check(sorted(v for v, _l in _sp["letters"]) == sorted([_rows["831001"]["L"], _rows["831001"]["OVERALL"]]) and
+      dict(_sp["letters"]) == {_rows["831001"]["L"]: "L", _rows["831001"]["OVERALL"]: "L + 8"},
+      "spigot letters: the view's 831001 values (the saved design's) become L and L + 8 (%s; the table varies %s; "
+      "PROUD isn't on the view)" % (_sp["letters"], _vary))
+check(not any("F2" in r["WHERE"] or "FLOOR" in r["WHERE"] for r in _rows.values()),
+      "spigot table: no floor panel F2 (D-132)")
+import csv as _csv
+_spec = os.path.join(HERE, "..", "..", "03-Manufacturing", "joints", "V2-MFG-JNT-01_P01_JOINTS-MADE-HARDWARE_SPEC.csv")
+with open(_spec, newline="", encoding="utf-8") as _f:
+    _qty = {r.get("part_number") or r.get("pn") or "": r for r in _csv.DictReader(_f)}
+_qcol = next((c for c in ("qty_per_pod", "qty", "quantity") if c in next(iter(_qty.values()))), None)
+for _pn, _r in _rows.items():
+    _got = _qty.get(_pn, {}).get(_qcol, "") if _qcol else ""
+    check(_got != "" and float(_got) == float(_r["POD"]),
+          "spigot table %s: POD %s matches the parts list (%s)" % (_pn, _r["POD"], _got))
 
 # hole tags: the circles Fusion writes, solid (curves) and hidden (short straight dashes)
 if fitz is not None:
@@ -167,18 +234,54 @@ if fitz is not None:
     check([(round(c[0]), round(c[1]), c[2]) for c in found] == [(80, 70, True), (166, 220, False)],
           "hole circles: the solid and the hidden one found, the cone's dashes not (%s)" % found)
 
-    # view B, 111212 from above: its sizes read back from the sheet
+    # view B, 111212 from above, where the sheet puts it: its sizes read back from the sheet
     doc = fitz.open()
     page = doc.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
-    x0, y0, x1, y1 = JD.view_b(JD.Sheet(page), (290.0, 170.0))
+    vb_x, vb_y = JD.PARTS["keys"]["view_b"]["origin"]
+    x0, y0, x1, y1 = JD.view_b(JD.Sheet(page), (vb_x, vb_y))
     text = page.get_text()
     for want in ("37.84", "22.16", "A = 24.14°", "H01, H02 SQUARE", "TO THE STUD FACE"):
         check(want in text, "view B shows %s" % want)
-    check(abs((x0 - 290.0)) < 1e-6 and x1 > 290.0 + 37.84 * 2 and y1 < 240.0,
-          "view B: starts at the back face, reaches past the long side, stays above the title block (%.1f)" % y1)
+    check(abs((x0 - vb_x)) < 1e-6 and x1 > vb_x + 37.84 * 2 and y1 < 240.0 - 3.0,
+          "view B: starts at the back face, reaches past the long side, ends 3 or more above the title block "
+          "(%.1f)" % y1)
+    # and clear of the notes by finish()'s rule (2026-11-01: longer notes stopped the finish 2 mm into view B)
+    blank = os.path.join(tmp, "vb-blank.pdf")
+    d2 = fitz.open()
+    d2.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
+    d2.save(blank)
+    end = JD.add_notes(blank, os.path.join(tmp, "vb-notes.pdf"), JD.PARTS["keys"]["notes"])
+    check(y0 - 4.0 - 2 * JD.NOTE_MM >= end,
+          "view B (from %.1f mm) clear of the key sheet's notes (to %.1f mm), as finish() checks" % (y0, end))
     tan = math.tan(math.radians(24.14))
     check(abs(30 + 17.5 * tan - 37.84) < 0.005 and abs(30 - 17.5 * tan - 22.16) < 0.005,
           "view B: the long and short sides follow A = 24.14° about the centre line (as the table)")
+
+# the lettering: on a page with Fusion-like dimension values (vertical, bottom to top, and one horizontal) and a line,
+# the two values become letters in their direction, the other value and the line stay, and a value that isn't
+# there exactly once stops it
+if fitz is not None:
+    doc = fitz.open()
+    page = doc.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
+    k = page.rect.width / 420.0
+    page.insert_text(fitz.Point(82.5 * k, 118.28 * k), "15.24", fontsize=13.86, fontname="helv", rotate=90)
+    page.insert_text(fitz.Point(88.06 * k, 96.77 * k), "7.24", fontsize=13.86, fontname="helv", rotate=90)
+    page.insert_text(fitz.Point(115.0 * k, 159.0 * k), "5.88", fontsize=13.86, fontname="helv")
+    page.draw_line(fitz.Point(84.0 * k, 80.0 * k), fitz.Point(84.0 * k, 130.0 * k), width=0.72)   # a dimension line
+    src, dst = os.path.join(tmp, "letters-in.pdf"), os.path.join(tmp, "letters-out.pdf")
+    doc.save(src)
+    JD.letter_dims(src, dst, [("7.24", "L"), ("15.24", "L + 8")])
+    pg = fitz.open(dst)[0]
+    got = {t: d for t, d, _s in JD.view_spans(pg)}
+    check(got.get("L") == (0.0, -1.0) and got.get("L + 8") == (0.0, -1.0) and "5.88" in got
+          and "7.24" not in got and "15.24" not in got,
+          "letters: 7.24 and 15.24 become L and L + 8, bottom to top; 5.88 stays (%s)" % got)
+    check(any(it[0] == "l" for d in pg.get_drawings() for it in d["items"]), "letters: the dimension line stays")
+    try:
+        JD.letter_dims(src, dst, [("9.99", "L")])
+        check(False, "letters: a value not on the views stops the finish")
+    except SystemExit:
+        check(True, "letters: a value not on the views stops the finish")
 
 print("\n%d failure(s)" % len(FAILS))
 sys.exit(1 if FAILS else 0)

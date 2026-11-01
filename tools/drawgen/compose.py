@@ -167,6 +167,8 @@ class Feature:
 
 def wall_word(f, body):
     """'1 wall' for a hole through one wall of a hollow member, 'thru' through a solid, or the depth."""
+    if getattr(f, "shape", None):       # a bent part's cut-out: through its sheet
+        return "THRU (%s)" % fmt(f.depth)
     if not f.through:
         # ISO 15786: the depth of the full diameter; a drill point in the model is named with its angle
         return "%s deep%s" % (fmt(f.depth), (", drill point %s°" % fmt(f.point_angle))
@@ -185,9 +187,15 @@ def wall_word(f, body):
 def size_text(feat):
     f = feat.f
     if feat.kind == "hole":
+        if getattr(f, "csk", None):     # D-143: the hole, then its countersink's diameter and included angle
+            return "Ø%s, CSK Ø%s x %s°" % (fmt(f.dia), fmt(f.csk["dia"]), fmt(f.csk["angle"]))
         return "Ø%s" % fmt(f.dia)
     if feat.kind == "keyhole":
         return "KEYHOLE Ø%s + SLOT %s, %s TO END" % (fmt(f.entry_dia), fmt(f.width), fmt(f.neck))
+    if feat.kind == "cutout":
+        if f.shape == "slot":
+            return "SLOT %s x %s OVERALL, R%s ENDS" % (fmt(f.width), fmt(f.length), fmt(f.r))
+        return "CUT-OUT %s x %s%s" % (fmt(f.length), fmt(f.width), (", R%s CORNERS" % fmt(f.r)) if f.r > 1e-6 else "")
     if feat.kind == "open_slot":
         return "OPEN SLOT %s, R%s END %s FROM THE EDGE%s" % (
             fmt(f.width), fmt(f.r), fmt(f.edge),
@@ -253,6 +261,8 @@ class Part:
         self.features = []
         for b in self.bodies:
             hs, ss = geom.features(b)
+            if any(h.csk_both for h in hs):
+                raise NotDrawable("%s body %s has a hole countersunk from both sides: not called out yet" % (pn, b.name))
             bad = [] if bent else geom.unexplained_curved_faces(b, hs, ss)
             if bad:
                 raise NotDrawable("%s body %s has faces this tool can't dimension: %s" % (
@@ -324,6 +334,18 @@ class Part:
                                                along=along)
                 if r:
                     ft.reg = {"id": r["id"], "function": r["title"], "mating": r["function"], "file": r["file"]}
+        # a bent part's cut-outs that aren't round holes, matched to its DXF (sheetmetal): in the hole tables too; a
+        # slot is one of them (its size, place and DXF shape are the cut-out's)
+        if self.flat:
+            self.features = [ft for ft in self.features if ft.kind != "slot"]
+        cut_rows = inputs.cutout_rows(pn, team) if self.flat and self.flat.cutouts else []
+        for c in (self.flat.cutouts if self.flat else []):
+            ft = Feature(c, "cutout")
+            ft.body = self.bodies[0]
+            box = tuple(min(q[k] for q in c.boundary) for k in range(3)) + tuple(max(q[k] for q in c.boundary)
+                                                                               for k in range(3))
+            ft.reg = inputs.match_cutout(cut_rows, c.length, c.width, box)     # its register row (F44, F45...)
+            self.features.append(ft)
 
     def _to_pod(self):
         """A part file in its own system (as BASE exports its tubes) is drawn where it sits in the pod: the
@@ -390,21 +412,33 @@ def profile_section(part, r, v, kept, letters):
     s_full = next((s_ for s_ in scales if size * s_ <= 120.0 and shortest * s_ >= 8.0), None)
     window = None
     shown = list(range(len(ch.flanges)))
+    ends = None
     if s_full is None:
-        # its start end: the flanges before the longest, and 20 into the longest
-        d = ch.flanges[longest][1]
-        stop = marks[longest]
-        stop = (stop[0] + d[0] * 20.0, stop[1] + d[1] * 20.0)
-        pts = [v.to2d(P3(q)) for q in ch.skins["A"][:1] + ch.skins["B"][:1] + marks[1:longest + 1] + [stop]]
-        pts += [v.to2d(P3(f.inner_pt)) for f in ch.folds[:longest]]
+        nfl = len(ch.flanges)
+        if longest == nfl - 1 or 0 < longest < nfl - 1:
+            # its start end: the flanges before the longest, and 20 into the longest
+            d = ch.flanges[longest][1]
+            stop = marks[longest]
+            stop = (stop[0] + d[0] * 20.0, stop[1] + d[1] * 20.0)
+            pts = [v.to2d(P3(q)) for q in ch.skins["A"][:1] + ch.skins["B"][:1] + marks[1:longest + 1] + [stop]]
+            pts += [v.to2d(P3(f.inner_pt)) for f in ch.folds[:longest]]
+            shown = list(range(longest))
+            ends = "start" if longest == nfl - 1 else "both"
+        else:
+            # folds at its far end only: 20 back along the first flange from its fold, to the end
+            d = ch.flanges[0][1]
+            back = (marks[1][0] - d[0] * 20.0, marks[1][1] - d[1] * 20.0)
+            pts = [v.to2d(P3(q)) for q in ch.skins["A"][-1:] + ch.skins["B"][-1:] + marks[1:] + [back]]
+            pts += [v.to2d(P3(f.inner_pt)) for f in ch.folds]
+            shown = list(range(1, nfl))
+            ends = "end"
         window = (min(q[0] for q in pts) - 3.0, max(q[0] for q in pts) + 3.0,
                   min(q[1] for q in pts) - 3.0, max(q[1] for q in pts) + 3.0)
-        shown = list(range(longest))
         sym = [round(L, 3) for L, _d in ch.flanges] == [round(L, 3) for L, _d in ch.flanges][::-1] and \
             [round(f.angle, 3) for f in ch.folds] == [round(f.angle, 3) for f in ch.folds][::-1]
-        if not sym:
+        if ends == "both" and not sym:
             raise NotDrawable("%s: a long run of bends whose two ends differ isn't drawn yet" % part.pn)
-        key = tuple(round(ch.flanges[i][0], 3) for i in shown) + tuple(round(f.angle, 3) for f in ch.folds[:longest])
+        key = tuple(round(ch.flanges[i][0], 3) for i in shown) + tuple(round(f.angle, 3) for f in ch.folds)
         prev = getattr(part, "_profile_keys", {})
         if key in prev:
             prev[key].typical = True
@@ -430,13 +464,14 @@ def profile_section(part, r, v, kept, letters):
     vd.letter = next(letters)
     vd.name = "removed"
     vd.r = r
-    vd.profile = {"chain": ch, "shown": shown, "window": window, "P3": P3, "marks": marks + [None], "typical": False}
+    vd.profile = {"chain": ch, "shown": shown, "window": window, "P3": P3, "marks": marks + [None], "typical": False,
+                  "ends": ends}
     vd.typical = False
     r.vd = vd
     r.letter = vd.letter
     if window:
         part.__dict__.setdefault("_profile_keys", {})[tuple(round(ch.flanges[i][0], 3) for i in shown) +
-                                                     tuple(round(f.angle, 3) for f in ch.folds[:longest])] = vd
+                                                     tuple(round(f.angle, 3) for f in ch.folds)] = vd
     return vd
 
 
@@ -552,8 +587,10 @@ def flat_data(part, pl):
         return None
     fv = (getattr(pl, "flats", None) or [None])[0]
     return {"dxf": inputs.rel(fl.path), "sha256_12": inputs.sha12(fl.path), "k": fl.k, "r": fl.radius,
+            "vgroove": bool(fl.vgroove),
             "chains": [{"t": ch.t, "flanges": [L for L, _d in ch.flanges], "angles": [f.angle for f in ch.folds],
-                        "radii": [f.r for f in ch.folds], "dxf_axis": m["dxf_axis"], "reversed": m["reversed"]}
+                        "radii": [f.r for f in ch.folds], "radii_out": [f.r_out for f in ch.folds],
+                        "dxf_axis": m["dxf_axis"], "reversed": m["reversed"]}
                        for ch, m in zip(fl.chains, fl.matches)],
             "rows": [{"tag": r_["tag"], "axis": r_["axis"], "at": r_["at"], "dir": r_["dir"], "angle": r_["angle"],
                       "r": r_["r"], "printed_at": r_.get("printed_at")} for r_ in fl.rows],
@@ -574,15 +611,17 @@ def bent_flat(part, team, bent):
     if not dxfs:
         raise NotDrawable("%s: a bent part needs its flat pattern's DXF in v2/03-Manufacturing/%s" % (part.pn, team))
     holes = [ft.f for ft in part.features if ft.body is b and ft.kind == "hole"]
-    slots = [ft.f for ft in part.features if ft.body is b and ft.kind != "hole"]
-    if slots:
-        # the flat's check matches round holes only: a slot's DXF outline would go unchecked
-        raise NotDrawable("%s: a bent part's slots aren't matched to its DXF yet (%d in the model)" % (part.pn, len(slots)))
+    slots = [ft.f for ft in part.features if ft.body is b and ft.kind == "slot"]
+    others = [ft for ft in part.features if ft.body is b and ft.kind not in ("hole", "slot")]
+    if others:
+        # a keyhole or an open slot: the flat's check doesn't read them yet
+        raise NotDrawable("%s: a bent part's %s isn't matched to its DXF yet" % (part.pn, others[0].kind.replace("_", " ")))
     try:
-        fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes)
+        fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes,
+                                vgroove=cfg.get("vgroove"), outside_radius=cfg.get("outside_radius"))
     except ValueError as e:
         raise NotDrawable("%s: %s" % (part.pn, e))
-    odd = sheetmetal.unexplained_faces(b, fl.chains, holes, slots)
+    odd = sheetmetal.unexplained_faces(b, fl.chains, holes, slots, fl.cutouts)
     if odd:
         raise NotDrawable("%s body %s has faces this tool can't dimension: %s" % (part.pn, b.name, ", ".join(odd[:3])))
     fl.path = dxfs[0]
@@ -1122,7 +1161,8 @@ def plan_views(part, spec):
         r = Plan()
         r.feats, r.all, r.body, r.chain = [], [], b, ch
         r.n, r.y = vn.n, vn.y
-        r.point = vadd(b.centroid, vmul(ch.axis, (min(sv) + max(sv)) / 2 - vdot(b.centroid, ch.axis)))
+        r.point = getattr(ch, "point", None) or vadd(b.centroid, vmul(ch.axis, (min(sv) + max(sv)) / 2 -
+                                                                       vdot(b.centroid, ch.axis)))
         pl.removed.append(r)
     # a thin plate or strip: a section across its middle shows the thickness the plan view can't (guideline 6.1)
     k = min(range(3), key=lambda i: part.size[i])
@@ -1580,6 +1620,13 @@ def draw(part, spec, out_path, today=None):
             if marks:
                 if ft.kind == "hole":
                     sh.centre_mark(c2, r, ext=1.5)
+                elif ft.kind == "cutout":
+                    # its centre lines, 2 mm past its edges: the centre the table gives
+                    a2 = vd.view.to2d(ft.f.along)
+                    b2 = (-a2[1], a2[0])
+                    hl, hw = ft.f.length / 2 * vd.scale + 2.0, ft.f.width / 2 * vd.scale + 2.0
+                    sh.centre_line((c2[0] - a2[0] * hl, c2[1] - a2[1] * hl), (c2[0] + a2[0] * hl, c2[1] + a2[1] * hl))
+                    sh.centre_line((c2[0] - b2[0] * hw, c2[1] - b2[1] * hw), (c2[0] + b2[0] * hw, c2[1] + b2[1] * hw))
                 elif ft.kind == "open_slot":
                     a2 = vd.view.to2d(ft.f.along)
                     sh.centre_mark(c2, ft.f.width / 2 * vd.scale, ext=1.2)
@@ -2444,8 +2491,12 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         vd.title_drop = 14.0
         if getattr(vd, "profile", None):
             pr = vd.profile
-            words = "across the bends, at the middle" + (
-                "; one end, the other end the same" if pr["window"] else "") + (
+            ch_ = vd.r.chain
+            at = "at the middle" if abs(getattr(ch_, "frac", 0.5) - 0.5) < 1e-9 else \
+                "at %s %s, clear of holes and cut-outs" % ((axis_name(ch_.axis) or "  ")[1:], fmt(vdot(ch_.point, ch_.axis)))
+            words = "across the bends, " + at + (
+                "; one end, the other end the same" if pr.get("ends") == "both" else
+                "; at its folded end" if pr["window"] else "") + (
                 "; typical at every side" if getattr(vd, "typical", False) else "")
             title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)), words,
                   extra=mapping_words(vd.view, part.pod_system))
@@ -2648,8 +2699,9 @@ TB_ROOM = 120.0     # the title block's height and the gap over it, which the ri
 def table_name(g):
     """A hole table's title start: HOLES H01-H07, or HOLE H19 / SLOT H19 for a table of one."""
     if len(g.feats) == 1:
-        return "%s %s" % ("HOLE" if g.feats[0].kind == "hole" else "SLOT", g.feats[0].tag)
-    return "HOLES %s-%s" % (g.feats[0].tag, g.feats[-1].tag)
+        return "%s %s" % ({"hole": "HOLE", "cutout": "CUT-OUT"}.get(g.feats[0].kind, "SLOT"), g.feats[0].tag)
+    return "%s %s-%s" % ("CUT-OUTS" if all(f.kind == "cutout" for f in g.feats) else "HOLES", g.feats[0].tag,
+                         g.feats[-1].tag)
 
 
 def hole_cols(tw):
@@ -2663,7 +2715,8 @@ def tables_height(sh, part, groups, tw):
     total = 0.0
     for g in groups:
         rows = [[ft.tag, "-0000.00", "-0000.00",
-                 size_text(ft) + (" along X" if ft.kind == "slot" else " toward +X" if ft.kind == "keyhole" else ""),
+                 size_text(ft) + (" along X" if ft.kind in ("slot", "cutout") else " toward +X" if ft.kind == "keyhole"
+                                  else ""),
                  wall_word(ft.f, ft.body), feature_text(ft)] for ft in g.feats]
         head = ["%s: %s" % (table_name(g), face_title(part, g)),
                 "far wall, coaxial with H00-H00: hidden in the view from below, shown in section D-D, E-E; origin O0; "
@@ -2741,6 +2794,11 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
             if ft.kind == "slot":
                 a2 = v.to2d(ft.f.along)
                 size_t += " along %s" % ("X" if abs(a2[0]) > 0.5 else "Y")
+            if ft.kind == "cutout":
+                a2 = v.to2d(ft.f.along)
+                if min(abs(abs(a2[0]) - 1), abs(abs(a2[1]) - 1)) > 1e-6:
+                    raise NotDrawable("%s: a cut-out at an angle to its view's axes isn't sized yet" % part.pn)
+                size_t += " along %s" % ("X" if abs(a2[0]) > 0.5 else "Y")
             if ft.kind == "keyhole":
                 a2 = v.to2d(ft.f.along)
                 size_t += " toward %s%s" % ("+" if (a2[0] + a2[1]) > 0 else "-", "X" if abs(a2[0]) > 0.5 else "Y")
@@ -2761,7 +2819,21 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                 "%s; origin %s; +X right, +Y up; drilled from this face" % (where, oname)]
         y = sh.table(right_x0, y, cols, rows, size=2.5, title=head, title_size=2.5) - 5.0
     fl = getattr(part, "flat", None)
-    if fl:
+    if fl and fl.vgroove:
+        gcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
+                 ("OUTSIDE RADIUS", 30, "r"), ("GROOVE", tw - 148, "l")]
+        grows = [[row["tag"], "%s %s from the %s edge" % ("x" if row["axis"] == "x" else "y", fmt(row["at"]),
+                                                           "left" if row["axis"] == "x" else "lower"),
+                  row["dir"], "%s°" % fmt(row["angle"]), ("R%s" % fmt(row["r_out"])) if row.get("r_out") else "sharp",
+                  str(fl.vgroove)] for row in fl.rows]
+        rounded = any(row.get("r_out") for row in fl.rows)
+        head = ["FOLDS B1-B%d: %s" % (len(fl.rows), os.path.basename(fl.path)),
+                "V-groove and fold: UP, the fold closes toward the viewer of the flat pattern as drawn; %s" % (
+                    "each line at the middle of its fold's outside arc (the flat develops along the outer face: each leg "
+                    "to its arc, plus the arc)" if rounded else
+                    "each line at the outside corner (the flat is the sum of the outside lengths)")]
+        y = sh.table(right_x0, y, gcols, grows, size=2.5, title=head, title_size=2.5) - 5.0
+    elif fl:
         bcols = [("TAG", 14, "c"), ("LINE IN THE FLAT (mm)", 60, "l"), ("DIRECTION", 24, "c"), ("ANGLE", 20, "r"),
                  ("INSIDE RADIUS", 30, "r"), ("BEND ALLOWANCE (mm)", tw - 148, "l")]
         brows = []
@@ -2838,7 +2910,17 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
             "Coaxial holes in two walls of one member are shown in section%s %s." % (
                 "s" if len(two) > 1 else "", " and ".join("%s-%s" % (l, l) for l in two)) if two else ""))
     fl = getattr(part, "flat", None)
-    if fl:
+    if fl and fl.vgroove:
+        rounded = sorted({fmt(f.r_out) for ch in fl.chains for f in ch.folds if f.r_out})
+        notes.append("V-grooved and folded from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the "
+                     "folds' lines. The outer skin runs round each fold unstretched, so the flat develops along the outer "
+                     "face: %s (the DXF checked against the model's flanges, every line within 0.05). Groove: %s. Flange "
+                     "lengths are outside sizes, to each fold's outside sharp." % (
+                         inputs.rel(fl.path), inputs.sha12(fl.path),
+                         ("each leg to its fold's outside arc (R%s, the model's), plus the arc, each line at the arc's "
+                          "middle" % "/".join(rounded)) if rounded else
+                         "the sum of the outside lengths, each line at the outside corner", fl.vgroove))
+    elif fl:
         import sheetmetal
         rad = "R%s from %s" % (fmt(fl.radius), fl.radius_from)
         notes.append("Bent from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the bend centre lines%s. "
@@ -3106,6 +3188,11 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                           "depth": ft.f.depth, "body": ft.body.name, "table_origin": vd.origin_name,
                           "drawn_in": vd.origin_name if _end_on(ft, vd.view) else None,
                           "register": ft.reg["id"] if ft.reg else None})
+            if ft.kind == "cutout":
+                feats[-1].update({"shape": ft.f.shape, "width": ft.f.width, "length": ft.f.length, "r": ft.f.r,
+                                  "along": ft.f.along})
+            if ft.kind == "hole" and getattr(ft.f, "csk", None):
+                feats[-1]["csk"] = {"dia": ft.f.csk["dia"], "angle": ft.f.csk["angle"]}
             if ft.kind == "open_slot":
                 feats[-1].update({"r": ft.f.r, "edge": ft.f.edge, "mouth": ft.f.mouth, "taper": ft.f.taper,
                                   "along": ft.f.along, "size": size_text(ft),

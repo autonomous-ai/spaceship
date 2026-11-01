@@ -5,8 +5,10 @@
 
 Opens 810000_P01_INTERIOR_CAD.f3d as a new document and changes skeleton parameters (pod_w
 +100, wall_depth +25), the soffit depth (cs_front 360 -> 330: where the side runs start) and
-INTERIOR's own (the shelf height sh_z0 2230 -> 2220, the ledge height lg_z 1067 -> 1000).
-After each change it checks every body against the box the layout gives for the new values,
+INTERIOR's own (the shelf height sh_z0 2230 -> 2220, the ledge height lg_z 1067 -> 1000, and
+the sheets sh_t 1.0 -> 1.2 and lg_t 1.5 -> 2.0, which the folds' radii follow). After each
+change it checks every body against the box the layout gives for the new values and every
+fold of the bent parts at its inside radius (the sheet) and outside radius (twice the sheet),
 then reverts, checks again, and closes the copy without saving. Prints a Markdown record.
 """
 
@@ -27,7 +29,7 @@ importlib.reload(I)
 
 F3D_REL = "v2/01-CAD-Native/interior/810000_%s_INTERIOR_CAD.f3d" % I.REV
 EDITS = [[("pod_w", "2600 mm")], [("wall_depth", "1520 mm")], [("cs_front", "330 mm")],
-         [("sh_z0", "2220 mm")], [("lg_z", "1000 mm")]]
+         [("sh_z0", "2220 mm")], [("lg_z", "1000 mm")], [("sh_t", "1.2 mm")], [("lg_t", "2 mm")]]
 TOL = 0.05
 
 
@@ -56,10 +58,30 @@ def check(design):
         worst = max(worst, d)
         if d > TOL:
             bad.append((name, round(d, 3)))
+    # the folds (the Lead's ruling on #335): each bent body's faces round its extrusion axis are its two folds' inside
+    # and outside faces, at the model's radii for the current values
+    vals = values(design)
+    kinds = {name: (key, kind) for key, name, kind, _d in I.layout()}
+    bodies = {b.name: b for occ in design.rootComponent.allOccurrences for b in occ.bRepBodies}
+    folds = 0
+    for name, (key, kind) in kinds.items():
+        if key not in I.BENT:
+            continue
+        b = bodies.get(name)
+        if b is None:
+            continue
+        ax = (0, 1, 0) if kind == "xz" else (1, 0, 0)
+        cyls = [adsk.core.Cylinder.cast(f.geometry) for f in b.faces]
+        got_r = sorted(round(c.radius * 10, 3) for c in cyls
+                       if c is not None and abs(abs(c.axis.x * ax[0] + c.axis.y * ax[1] + c.axis.z * ax[2]) - 1) < 1e-6)
+        want_r = sorted(round(I.ev(vals, e), 3) for _i, _s, e in I.bends(key))
+        folds += len(got_r)
+        if got_r != want_r:
+            bad.append((name, "folds %s, want %s" % (got_r, want_r)))
     tl = design.timeline
     unhealthy = [tl.item(i).name for i in range(tl.count)
                  if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
-    return {"checked": len(want), "worst": round(worst, 3), "bad": bad, "unhealthy": unhealthy}
+    return {"checked": len(want), "worst": round(worst, 3), "bad": bad, "unhealthy": unhealthy, "folds": folds}
 
 
 def run(_context):
@@ -67,12 +89,13 @@ def run(_context):
     path = os.path.join(ARGS["repo_root"], F3D_REL)
     doc = app.importManager.importToNewDocument(app.importManager.createFusionArchiveImportOptions(path))
     design = adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType"))
-    lines = ["| Step | Change | Bodies checked | Worst deviation (mm) | Off | Unhealthy timeline items |",
-             "|---|---|---|---|---|---|"]
+    lines = ["| Step | Change | Bodies checked | Fold faces checked | Worst deviation (mm) | Off | Unhealthy timeline items |",
+             "|---|---|---|---|---|---|---|"]
     failed = False
     try:
         r = check(design)
-        lines.append("| before | none | %d | %s | %s | %d |" % (r["checked"], r["worst"], r["bad"] or "none", len(r["unhealthy"])))
+        lines.append("| before | none | %d | %d | %s | %s | %d |" % (r["checked"], r["folds"], r["worst"], r["bad"] or "none",
+                                                                len(r["unhealthy"])))
         failed |= bool(r["bad"] or r["unhealthy"])
         params = design.userParameters
         for edit in EDITS:
@@ -82,15 +105,16 @@ def run(_context):
             adsk.doEvents()
             r = check(design)
             desc = ", ".join("%s %s -> %s" % (n, o, v) for (n, o), (_n, v) in zip(old, edit))
-            lines.append("| edit | %s | %d | %s | %s | %d |" % (desc, r["checked"], r["worst"], r["bad"] or "none",
-                                                              len(r["unhealthy"])))
+            lines.append("| edit | %s | %d | %d | %s | %s | %d |" % (desc, r["checked"], r["folds"], r["worst"],
+                                                                   r["bad"] or "none", len(r["unhealthy"])))
             failed |= bool(r["bad"] or r["unhealthy"])
             for n, o in old:
                 params.itemByName(n).expression = o
             adsk.doEvents()
             r = check(design)
-            lines.append("| revert | %s back | %d | %s | %s | %d |" % (", ".join(n for n, _o in old), r["checked"],
-                                                                       r["worst"], r["bad"] or "none", len(r["unhealthy"])))
+            lines.append("| revert | %s back | %d | %d | %s | %s | %d |" % (", ".join(n for n, _o in old), r["checked"],
+                                                                            r["folds"], r["worst"], r["bad"] or "none",
+                                                                            len(r["unhealthy"])))
             failed |= bool(r["bad"] or r["unhealthy"])
     finally:
         doc.close(False)

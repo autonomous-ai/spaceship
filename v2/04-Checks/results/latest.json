@@ -1,5 +1,5 @@
 {
- "rev": "d50a0a0",
+ "rev": "2767495",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 31,
@@ -21,6 +21,8 @@
    "right-base",
    "top"
   ],
+  "seal_line_cuts": 91,
+  "seal_line_open_mm2": 47029.4,
   "parts_lists": [
    "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
    "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
@@ -104,6 +106,7 @@
   "C01:assembly-right",
   "C01:assembly-right-base",
   "C01:assembly-top",
+  "C01:seal-line",
   "C01:skeleton",
   "C01:skeleton-back",
   "C01:skeleton-back-base",
@@ -287,6 +290,520 @@
     "members": 11
    },
    "key": "C02|bond-line|assembly 351301 FRONT - DECOR SKIN - DR:1"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 118001",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) and 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3): a gap 320.1 mm wide at X 1057.5, Y -727.1, from the floor to Z 10.0, open area 3201 mm² (calculation: width times height, summed over 4 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1057.5,
+     -727.1
+    ],
+    "z": [
+     0.0,
+     10.0
+    ],
+    "width_mm": [
+     320.14,
+     320.14
+    ],
+    "area_mm2": 3201.4,
+    "parts": [
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE"
+    ],
+    "widest_cut": {
+     "z": 3.35,
+     "a": [
+      915.0,
+      -800.0
+     ],
+     "b": [
+      1200.0,
+      -654.17
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 118001"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111101 | 361002",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111101 BASE - BAND TUBE - SIDE - LH and 361002 FRONT - DOOR KICK STRIP: a gap 238.7 to 251.7 mm wide at X -1085.5, Y -670.5, from the floor to Z 110.0, open area 27393 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD, 351103 FRONT - DOOR HINGE-SIDE STOP - DL, 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112). A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; FRONT",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     -1085.5,
+     -670.5
+    ],
+    "z": [
+     0.0,
+     110.0
+    ],
+    "width_mm": [
+     238.72,
+     251.72
+    ],
+    "area_mm2": 27392.9,
+    "parts": [
+     "110000_P01_BASE_CAD / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / BASE - BAND TUBE - SIDE - LH - TUBE",
+     "110000_P01_BASE_CAD / 110101 BASE - BAND ASSY - SIDE - LH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / HINGE-SIDE STOP 1 (ANGLE, BONDED)",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112:1 / DROP SEAL ENVELOPE (CATALOGUE SECTION)"
+    ],
+    "widest_cut": {
+     "z": 25.45,
+     "a": [
+      -961.0,
+      -689.0
+     ],
+     "b": [
+      -1210.0,
+      -652.07
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111101 | 361002"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 361002",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 to 4.5 mm wide at X 216.2, Y -704.4, from the floor to Z 110.0, open area 478 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (4), 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112, 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735, 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571, 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD). All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; FRONT",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     216.2,
+     -704.4
+    ],
+    "z": [
+     0.0,
+     110.0
+    ],
+    "width_mm": [
+     2.02,
+     4.46
+    ],
+    "area_mm2": 477.7,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (4):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112:1 / DROP SEAL ENVELOPE (CATALOGUE SECTION)",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD:1 / 180 MAGNETIC SEAL - DOOR HALF (HOLD PRODUCT)",
+     "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / GLAZING U-SEAL (4 PIECES)",
+     "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / GLAZING U-PROFILE (4 PIECES, MITRED)"
+    ],
+    "widest_cut": {
+     "z": 3.35,
+     "a": [
+      214.0,
+      -704.38
+     ],
+     "b": [
+      218.46,
+      -704.38
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 361002"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 118001",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) and 111301 BASE - SILL - FIXED GLASS: a gap 237.6 mm wide at X 1082.5, Y -671.8, from Z 10.0 to Z 12.0, open area 475 mm² (calculation: width times height, summed over 3 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1082.5,
+     -671.8
+    ],
+    "z": [
+     10.0,
+     12.0
+    ],
+    "width_mm": [
+     237.64,
+     237.64
+    ],
+    "area_mm2": 475.3,
+    "parts": [
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS"
+    ],
+    "widest_cut": {
+     "z": 10.5,
+     "a": [
+      965.0,
+      -689.5
+     ],
+     "b": [
+      1200.0,
+      -654.17
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 118001"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111102 | 611107",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111102 BASE - BAND TUBE - SIDE - RH and 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW: a gap 39.0 to 49.0 mm wide at X 1185.5, Y -643.4, from Z 12.0 to Z 110.0, open area 4672 mm² (calculation: width times height, summed over 84 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2), 611106 AIR - COLUMN FOOT PLATE). All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1185.5,
+     -643.4
+    ],
+    "z": [
+     12.0,
+     110.0
+    ],
+    "width_mm": [
+     39.0,
+     49.0
+    ],
+    "area_mm2": 4672.0,
+    "parts": [
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 111102 BASE - BAND TUBE - SIDE - RH:1 / BASE - BAND TUBE - SIDE - RH - TUBE",
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / COLUMN FOOT PLATE",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / COLUMN PLENUM PLATE LOW"
+    ],
+    "widest_cut": {
+     "z": 25.45,
+     "a": [
+      1161.0,
+      -643.38
+     ],
+     "b": [
+      1210.0,
+      -643.38
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111102 | 611107"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 611103",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 611103 AIR - COLUMN CORNER ANGLE: a gap 46.0 mm wide at X 964.8, Y -666.5, from Z 12.0 to Z 24.0, open area 552 mm² (calculation: width times height, summed over 9 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 611106 AIR - COLUMN FOOT PLATE). All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     964.8,
+     -666.5
+    ],
+    "z": [
+     12.0,
+     24.0
+    ],
+    "width_mm": [
+     46.0,
+     46.0
+    ],
+    "area_mm2": 552.0,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE BL",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / COLUMN FOOT PLATE"
+    ],
+    "widest_cut": {
+     "z": 13.0,
+     "a": [
+      964.75,
+      -689.5
+     ],
+     "b": [
+      964.75,
+      -643.5
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 611103"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 611103 | 611107",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 611103 AIR - COLUMN CORNER ANGLE and 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW: a gap 179.0 mm wide at X 1070.5, Y -643.4, from Z 14.0 to Z 24.0, open area 1790 mm² (calculation: width times height, summed over 8 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1070.5,
+     -643.4
+    ],
+    "z": [
+     14.0,
+     24.0
+    ],
+    "width_mm": [
+     179.0,
+     179.0
+    ],
+    "area_mm2": 1790.0,
+    "parts": [
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE BL",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / COLUMN PLENUM PLATE LOW"
+    ],
+    "widest_cut": {
+     "z": 15.0,
+     "a": [
+      981.0,
+      -643.38
+     ],
+     "b": [
+      1160.0,
+      -643.38
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 611103 | 611107"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 361002 at X 214 Y -707 Z 21",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 361002 FRONT - DOOR KICK STRIP and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 mm wide at X 213.7, Y -707.0, from Z 21.0 to Z 25.0, open area 8 mm² (calculation: width times height, summed over 5 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     213.7,
+     -707.0
+    ],
+    "z": [
+     21.0,
+     25.0
+    ],
+    "width_mm": [
+     2.0,
+     2.0
+    ],
+    "area_mm2": 8.0,
+    "parts": [
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP"
+    ],
+    "widest_cut": {
+     "z": 21.25,
+     "a": [
+      213.75,
+      -708.0
+     ],
+     "b": [
+      213.75,
+      -706.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 361002 at X 214 Y -707 Z 21"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 361002 at X 214 Y -707 Z 102",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 361002 FRONT - DOOR KICK STRIP and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 mm wide at X 213.7, Y -707.0, from Z 102.1 to Z 104.0, open area 4 mm² (calculation: width times height, summed over 2 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     213.7,
+     -707.0
+    ],
+    "z": [
+     102.1,
+     104.0
+    ],
+    "width_mm": [
+     2.0,
+     2.0
+    ],
+    "area_mm2": 3.8,
+    "parts": [
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP"
+    ],
+    "widest_cut": {
+     "z": 102.43,
+     "a": [
+      213.75,
+      -708.0
+     ],
+     "b": [
+      213.75,
+      -706.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 361002 at X 214 Y -707 Z 102"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 611103 | 611105",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 611103 AIR - COLUMN CORNER ANGLE and 611105 AIR - KICK GRILLE: a gap 10.0 mm wide at X 1160.8, Y -292.0, from Z 24.0 to Z 110.0, open area 860 mm² (calculation: width times height, summed over 75 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1160.8,
+     -292.0
+    ],
+    "z": [
+     24.0,
+     110.0
+    ],
+    "width_mm": [
+     10.0,
+     10.0
+    ],
+    "area_mm2": 860.0,
+    "parts": [
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE FR",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE FRONT"
+    ],
+    "widest_cut": {
+     "z": 24.5,
+     "a": [
+      1160.75,
+      -297.0
+     ],
+     "b": [
+      1160.75,
+      -287.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 611103 | 611105"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 611105",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 611105 AIR - KICK GRILLE: a gap 90.5 to 92.5 mm wide at X 950.8, Y -645.2, from Z 24.0 to Z 105.0, open area 7350 mm² (calculation: width times height, summed over 72 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571). A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     950.8,
+     -645.2
+    ],
+    "z": [
+     24.0,
+     105.0
+    ],
+    "width_mm": [
+     90.5,
+     92.5
+    ],
+    "area_mm2": 7350.5,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
+     "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / GLAZING U-PROFILE (4 PIECES, MITRED)",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE LEFT"
+    ],
+    "widest_cut": {
+     "z": 95.75,
+     "a": [
+      950.75,
+      -691.5
+     ],
+     "b": [
+      950.75,
+      -599.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 611105"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 611105 | 611501",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 611105 AIR - KICK GRILLE and 611501 AIR - INTAKE RISER: a gap 49.2 mm wide at X 953.0, Y -623.5, from Z 105.0 to Z 110.0, open area 246 mm² (calculation: width times height, summed over 3 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     953.0,
+     -623.5
+    ],
+    "z": [
+     105.0,
+     110.0
+    ],
+    "width_mm": [
+     49.16,
+     49.16
+    ],
+    "area_mm2": 245.8,
+    "parts": [
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE LEFT",
+     "610000_P01_AIR_CAD / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / INTAKE RISER"
+    ],
+    "widest_cut": {
+     "z": 106.5,
+     "a": [
+      955.0,
+      -648.0
+     ],
+     "b": [
+      951.0,
+      -599.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 611105 | 611501"
   },
   {
    "check": "C08",
@@ -5556,5 +6073,240 @@
    "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
   }
- ]
+ ],
+ "seal_line": {
+  "z_top": 110.0,
+  "z_top_source": "the skeleton's glide_h + band_h",
+  "cuts": 91,
+  "sealed_cuts": 0,
+  "no_ring_cuts": [],
+  "unclosed_outline_rows": 0,
+  "unpaired_faces": 0,
+  "travel": [
+   {
+    "pattern": "\\bDROP SEAL\\b",
+    "mm": 20.0,
+    "source": "hardware selection C4: athmer Schall-Ex GSA 1-1112, travel 20 mm (athmer's data sheet, cited there)"
+   }
+  ],
+  "openings": [
+   {
+    "subject": "floor seal line 111101 | 361002",
+    "between": "111101 BASE - BAND TUBE - SIDE - LH | 361002 FRONT - DOOR KICK STRIP",
+    "at": [
+     -1085.5,
+     -670.5
+    ],
+    "z": [
+     0.0,
+     110.0
+    ],
+    "width": [
+     238.72,
+     251.72
+    ],
+    "area": 27392.9,
+    "owner": "BASE; FRONT"
+   },
+   {
+    "subject": "floor seal line 111301 | 611105",
+    "between": "111301 BASE - SILL - FIXED GLASS | 611105 AIR - KICK GRILLE",
+    "at": [
+     950.8,
+     -645.2
+    ],
+    "z": [
+     24.0,
+     105.0
+    ],
+    "width": [
+     90.5,
+     92.5
+    ],
+    "area": 7350.5,
+    "owner": "BASE; CEILING"
+   },
+   {
+    "subject": "floor seal line 111102 | 611107",
+    "between": "111102 BASE - BAND TUBE - SIDE - RH | 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW",
+    "at": [
+     1185.5,
+     -643.4
+    ],
+    "z": [
+     12.0,
+     110.0
+    ],
+    "width": [
+     39.0,
+     49.0
+    ],
+    "area": 4672.0,
+    "owner": "BASE; CEILING"
+   },
+   {
+    "subject": "floor seal line 118001",
+    "between": "118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) | 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3)",
+    "at": [
+     1057.5,
+     -727.1
+    ],
+    "z": [
+     0.0,
+     10.0
+    ],
+    "width": [
+     320.14,
+     320.14
+    ],
+    "area": 3201.4,
+    "owner": "BASE"
+   },
+   {
+    "subject": "floor seal line 611103 | 611107",
+    "between": "611103 AIR - COLUMN CORNER ANGLE | 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW",
+    "at": [
+     1070.5,
+     -643.4
+    ],
+    "z": [
+     14.0,
+     24.0
+    ],
+    "width": [
+     179.0,
+     179.0
+    ],
+    "area": 1790.0,
+    "owner": "CEILING"
+   },
+   {
+    "subject": "floor seal line 611103 | 611105",
+    "between": "611103 AIR - COLUMN CORNER ANGLE | 611105 AIR - KICK GRILLE",
+    "at": [
+     1160.8,
+     -292.0
+    ],
+    "z": [
+     24.0,
+     110.0
+    ],
+    "width": [
+     10.0,
+     10.0
+    ],
+    "area": 860.0,
+    "owner": "CEILING"
+   },
+   {
+    "subject": "floor seal line 111301 | 611103",
+    "between": "111301 BASE - SILL - FIXED GLASS | 611103 AIR - COLUMN CORNER ANGLE",
+    "at": [
+     964.8,
+     -666.5
+    ],
+    "z": [
+     12.0,
+     24.0
+    ],
+    "width": [
+     46.0,
+     46.0
+    ],
+    "area": 552.0,
+    "owner": "BASE; CEILING"
+   },
+   {
+    "subject": "floor seal line 111301 | 361002",
+    "between": "111301 BASE - SILL - FIXED GLASS | 361002 FRONT - DOOR KICK STRIP",
+    "at": [
+     216.2,
+     -704.4
+    ],
+    "z": [
+     0.0,
+     110.0
+    ],
+    "width": [
+     2.02,
+     4.46
+    ],
+    "area": 477.7,
+    "owner": "BASE; FRONT"
+   },
+   {
+    "subject": "floor seal line 111301 | 118001",
+    "between": "118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) | 111301 BASE - SILL - FIXED GLASS",
+    "at": [
+     1082.5,
+     -671.8
+    ],
+    "z": [
+     10.0,
+     12.0
+    ],
+    "width": [
+     237.64,
+     237.64
+    ],
+    "area": 475.3,
+    "owner": "BASE"
+   },
+   {
+    "subject": "floor seal line 611105 | 611501",
+    "between": "611105 AIR - KICK GRILLE | 611501 AIR - INTAKE RISER",
+    "at": [
+     953.0,
+     -623.5
+    ],
+    "z": [
+     105.0,
+     110.0
+    ],
+    "width": [
+     49.16,
+     49.16
+    ],
+    "area": 245.8,
+    "owner": "CEILING"
+   },
+   {
+    "subject": "floor seal line 361002 at X 214 Y -707 Z 21",
+    "between": "361002 FRONT - DOOR KICK STRIP | 361002 FRONT - DOOR KICK STRIP",
+    "at": [
+     213.7,
+     -707.0
+    ],
+    "z": [
+     21.0,
+     25.0
+    ],
+    "width": [
+     2.0,
+     2.0
+    ],
+    "area": 8.0,
+    "owner": "FRONT"
+   },
+   {
+    "subject": "floor seal line 361002 at X 214 Y -707 Z 102",
+    "between": "361002 FRONT - DOOR KICK STRIP | 361002 FRONT - DOOR KICK STRIP",
+    "at": [
+     213.7,
+     -707.0
+    ],
+    "z": [
+     102.1,
+     104.0
+    ],
+    "width": [
+     2.0,
+     2.0
+    ],
+    "area": 3.8,
+    "owner": "FRONT"
+   }
+  ],
+  "total_mm2": 47029.4
+ }
 }
