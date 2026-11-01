@@ -7,7 +7,8 @@
 import os
 import sys
 import types
-import struct
+import contextlib
+import io
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -56,9 +57,16 @@ class Sketches:
 
 
 class View:
-    def __init__(self, inp, stuck, single=False, keeps_scale=None):
-        self._style, self.stuck, self.single, self.keeps_scale = "HIDDEN", stuck, single, keeps_scale
-        self.scaleValue = inp.viewParameters.scaleValue
+    def __init__(self, inp, stuck, reads_back=None, keeps_scale=None, ignores_input=False):
+        # reads_back: {scale asked: scale Fusion reads back}, as seen live; keeps_scale: the view won't change
+        # from it; ignores_input: the made view comes at 1:1 whatever the input asked (the README's 1:10 trap)
+        self._style, self.stuck = "HIDDEN", stuck
+        self.reads_back, self.keeps_scale, self.sets = dict(reads_back or {}), keeps_scale, []
+        self._scale = 1.0 if ignores_input else self._read(inp.viewParameters.scaleValue)
+
+    def _read(self, v):
+        v = self.keeps_scale if self.keeps_scale is not None else v
+        return self.reads_back.get(v, v)
 
     @property
     def scaleValue(self):
@@ -66,9 +74,8 @@ class View:
 
     @scaleValue.setter
     def scaleValue(self, v):
-        # single: Fusion keeps the scale in single precision (live 2026-11-01); keeps_scale: it won't change
-        v = self.keeps_scale if self.keeps_scale is not None else v
-        self._scale = struct.unpack("f", struct.pack("f", v))[0] if self.single else v
+        self.sets.append(v)
+        self._scale = self._read(v)
 
     @property
     def style(self):
@@ -81,7 +88,8 @@ class View:
 
 
 class Sheet:
-    def __init__(self, w=594.0, h=420.0, insert_ok=True, view_stuck=False, dims=0, single=False, keeps_scale=None):
+    def __init__(self, w=594.0, h=420.0, insert_ok=True, view_stuck=False, dims=0, reads_back=None, keeps_scale=None,
+                 ignores_input=False):
         self.width, self.height = w, h
         self.inserted, self.made, self.dims = [], [], []
         self.images = types.SimpleNamespace(createInput=lambda: types.SimpleNamespace(),
@@ -89,7 +97,8 @@ class Sheet:
         self.sketches = Sketches()
         self.views = types.SimpleNamespace(
             createBaseViewInput=lambda: types.SimpleNamespace(viewParameters=types.SimpleNamespace()),
-            add=lambda inp: self.made.append(View(inp, view_stuck, single, keeps_scale)) or self.made[-1])
+            add=lambda inp: self.made.append(View(inp, view_stuck, reads_back, keeps_scale, ignores_input))
+            or self.made[-1])
         self.drawingDimensions = types.SimpleNamespace(
             count=dims, addLinearDimension=lambda a, b, p, al: self.dims.append((a, b, p, al)) or "dim")
 
@@ -199,22 +208,38 @@ class HelperTests(unittest.TestCase):
         self.assertEqual(v.style, "VISIBLE")                            # not the HIDDEN it came with
         self.assertEqual(s.made[0].scaleValue, 0.05)
 
-    def test_a_scale_kept_in_single_precision_counts_as_set(self):
-        # live 2026-11-01, GA sheet 1: the isometric view at 0.0375 was refused, "the view's scale stays
-        # 0.0375 after setting 0.0375"; 1:10 and 1:5 would have been refused the same way
-        for scale in (0.0375, 0.1, 0.2, 1 / 15.0, 0.05, 0.5):
-            s = self.sheet(single=True)
-            v = fd.base_view(s, "FRONT", scale, (265.0, 410.0))
-            if scale != 0.5:                       # 0.5 is exact in single precision; the others read back off
-                self.assertNotEqual(v.scaleValue, scale)
-            self.assertTrue(fd.scale_is(v.scaleValue, scale), scale)
+    def test_the_isometric_scale_seen_live_counts_as_set_and_is_printed_in_full(self):
+        # live 2026-11-01, GA sheet 1: the isometric view at 0.0375 was refused by the old 1e-9 check ("stays
+        # 0.0375 after setting 0.0375", 6 digits: 1e-9 to 5e-8 off); 1:5 (ELECTRICAL's 711001) and 1:20 passed it
+        for off in (2e-9, 2e-8, 5e-8):                       # within what the 6-digit print allows
+            s = self.sheet(reads_back={0.0375: 0.0375 + off, 0.2: 0.2, 0.05: 0.05})
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                v = fd.base_view(s, "ISO", 0.0375, (720.0, 430.0))
+                fd.base_view(s, "FRONT", 0.2, (265.0, 410.0))
+                fd.base_view(s, "TOP", 0.05, (265.0, 235.0))
+            self.assertGreater(abs(v.scaleValue - 0.0375), 1e-9)                  # the old check refused it
+            self.assertIn("read back %r" % (0.0375 + off), out.getvalue())       # every digit in the run's log
+            self.assertEqual(out.getvalue().count("view scale: asked"), 3)
 
     def test_a_view_that_keeps_another_scale_is_still_an_error(self):
         with self.assertRaises(RuntimeError) as cm:
-            fd.base_view(self.sheet(keeps_scale=0.05), "FRONT", 0.0375, (265.0, 410.0))
+            with contextlib.redirect_stdout(io.StringIO()):
+                fd.base_view(self.sheet(keeps_scale=0.05), "FRONT", 0.0375, (265.0, 410.0))
         self.assertIn("0.05", str(cm.exception))
         self.assertFalse(fd.scale_is(0.05, 0.0375))
-        self.assertFalse(fd.scale_is(0.0375 * (1 + 1e-5), 0.0375))     # a real difference, however small
+        self.assertFalse(fd.scale_is(0.0375 * (1 + 1e-4), 0.0375))     # a real difference, however small
+        self.assertFalse(fd.scale_is(0.0375 * (1 + 3e-5), 0.0375))     # and nothing looser than 1e-5 passes
+        self.assertFalse(fd.scale_is(1 / 26.67, 1 / 26.7))             # neighbouring scales stay apart
+        self.assertTrue(fd.scale_is(1 / 26.6667, 0.0375))              # 1.25e-6 off: taken (1e-6 refused it)
+
+    def test_a_view_made_at_another_scale_is_set_again(self):
+        # the README's 1:10 trap: Fusion can ignore the input's scale; the helper sets it again on the made view
+        s = self.sheet(ignores_input=True)
+        with contextlib.redirect_stdout(io.StringIO()):
+            v = fd.base_view(s, "FRONT", 0.1, (265.0, 410.0))
+        self.assertEqual(v.sets, [0.1])
+        self.assertEqual(v.scaleValue, 0.1)
 
     def test_a_view_that_keeps_hidden_lines_is_an_error(self):
         with self.assertRaises(RuntimeError):
