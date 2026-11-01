@@ -250,6 +250,23 @@ def test_install_sheet_numbers():
     assert "120 V" in sheet and "{{" not in sheet
 
 
+def test_elevator_rule():
+    # K15: every piece leans into the install sheet's car through its door; DR's wide face needs the wide door
+    m = pack.Model()
+    assert "K15" not in failing(m) and m.no_lift == [] and "2-03" in m.no_typical, (m.no_lift, m.no_typical)
+    car = (pack.MINE["lift_car_w"].value, pack.MINE["lift_car_d"].value, pack.MINE["lift_car_h"].value)
+    assert not pack.goes_in(pack.moving_size(pack.PIECE["2-03"]), car, (914, 2134))     # a 36 in door can't take DR
+    assert pack.tilt_in(2430, 50, 1295, 2286, 2134)                                         # the back band leans in
+    assert not pack.tilt_in(2430, 50, 1295, 2000, 2134)                                     # but not under a 2 m ceiling
+
+
+def test_export_wood_is_ispm15():
+    # every solid-wood packaging part is heat-treated and ISPM 15 stamped, or US ports refuse it
+    wood = [it for it in pack.PACKAGING if it.get("wood")]
+    assert {it["pn"] for it in wood} == {"918001", "918002", "911001", "911003"}, wood
+    assert all("ISPM 15" in it["name"] for it in wood), [it["name"] for it in wood]
+
+
 def test_lanes_follow_the_parts():
     # a lane is as wide as its widest part plus the wrap a side; nothing in a tier passes the deck
     m = pack.Model()
