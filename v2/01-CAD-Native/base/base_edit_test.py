@@ -46,7 +46,7 @@ def expected_boxes(b, design):
     XL, XR, YB, YW = b["XL"], b["XR"], b["YB"], b["YW"]
     ym = min(v("-dl_y1"), v(b["Y_MITRE_IN"]))
     return {
-        "band_l_tube": (v(XL), ym, v("glide_h"), v("%s + band_t" % XL), v("%s - cap_t" % YB), v("wall_z0")),
+        "band_l_tube": (v(XL), ym, v("glide_h"), v("%s + band_t" % XL), v(YB), v("wall_z0")),
         "band_b_tube": (v("%s + band_t" % XL), v("%s - band_t" % YB), v("glide_h"), v("%s - band_t" % XR), v(YB),
                         v("wall_z0")),
         "floor_f1": (v("%s + band_t + fl_gap" % XL), v(YW), v("mat_t"), v("-fl_seam / 2 + lap_w"),

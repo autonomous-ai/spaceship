@@ -2,14 +2,24 @@
  "band_finish": "Black anodised, matte, 20 um (class AA20, EN ISO 7599)",
  "copies": {
   "110000>110101": 1,
+  "110000>110102": 1,
   "110000>110103": 1,
+  "110000>110106": 1,
   "110000>110401": 1,
+  "110000>110402": 1,
+  "110000>111701": 1,
   "110101>111101": 1,
   "110101>111601": 2,
   "110101>118002": 2,
   "110101>831001": 2,
   "110101>831002": 4,
   "110101>838003": 6,
+  "110102>111102": 1,
+  "110102>111601": 2,
+  "110102>118002": 2,
+  "110102>831001": 2,
+  "110102>831002": 4,
+  "110102>838003": 6,
   "110103>111103": 1,
   "110103>111211": 2,
   "110103>111601": 3,
@@ -19,8 +29,15 @@
   "110103>838001": 4,
   "110103>838003": 12,
   "110103>838010": 4,
+  "110106>111106": 1,
+  "110106>111301": 1,
+  "110106>111601": 2,
+  "110106>118002": 2,
   "110401>111401": 1,
-  "110401>111501": 1
+  "110401>111501": 1,
+  "110402>111402": 1,
+  "110402>111502": 1,
+  "110402>111801": 2
  },
  "doc": "110000_P01_BASE_CAD",
  "floor_f1": {
@@ -31,6 +48,60 @@
   "x_seam": -0.5,
   "y0": -645.0,
   "y1": 806.0
+ },
+ "floor_f2": {
+  "foam_cut": 17.0,
+  "foam_x0": 13.5,
+  "outline": [
+   [
+    0.5,
+    -645.0
+   ],
+   [
+    218.45982296533094,
+    -645.0
+   ],
+   [
+    218.45982296533094,
+    -691.5
+   ],
+   [
+    947.0,
+    -691.5
+   ],
+   [
+    947.0,
+    -645.0
+   ],
+   [
+    1206.0,
+    -645.0
+   ],
+   [
+    1206.0,
+    806.0
+   ],
+   [
+    0.5,
+    806.0
+   ]
+  ],
+  "rebate": [
+   0.5,
+   13.5
+  ],
+  "rebate_depth": 4.5,
+  "spigot_hole": 8.0,
+  "spigots": [
+   [
+    989.0,
+    -605.0
+   ],
+   [
+    1126.0,
+    -337.0
+   ]
+  ]
  },
  "holes": {
   "111101": [
@@ -1519,6 +1590,223 @@
    "name": "lap_w",
    "unit": "mm",
    "value": 13.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: clearance past F1's lap end in F2's rebate",
+   "expression": "1 mm",
+   "name": "lap_clear",
+   "unit": "mm",
+   "value": 1.0
+  },
+  {
+   "comment": "BASE SOURCE: air column locator spigot S1, round hole (CEILING, PM 2026-10-31)",
+   "expression": "989 mm",
+   "name": "loc_s1_x",
+   "unit": "mm",
+   "value": 989.0
+  },
+  {
+   "comment": "BASE SOURCE: S1 Y (CEILING)",
+   "expression": "-605 mm",
+   "name": "loc_s1_y",
+   "unit": "mm",
+   "value": -605.0
+  },
+  {
+   "comment": "BASE SOURCE: air column locator spigot S2, slot (CEILING)",
+   "expression": "1126 mm",
+   "name": "loc_s2_x",
+   "unit": "mm",
+   "value": 1126.0
+  },
+  {
+   "comment": "BASE SOURCE: S2 Y (CEILING)",
+   "expression": "-337 mm",
+   "name": "loc_s2_y",
+   "unit": "mm",
+   "value": -337.0
+  },
+  {
+   "comment": "BASE SOURCE: locator spigot Ø8, 8 proud (CEILING; PM approved the factory-fitted head-from-below)",
+   "expression": "8 mm",
+   "name": "loc_d",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE SOURCE: spigot height above the floor top (CEILING)",
+   "expression": "8 mm",
+   "name": "loc_proud",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: spigot head under the ply, in a cut-out in the bonded mat",
+   "expression": "16 mm",
+   "name": "loc_head_d",
+   "unit": "mm",
+   "value": 16.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: spigot head thickness, inside the 3 mm mat",
+   "expression": "2 mm",
+   "name": "loc_head_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: cut-out in F2's mat around each spigot head",
+   "expression": "17 mm",
+   "name": "loc_mat_cut",
+   "unit": "mm",
+   "value": 17.0
+  },
+  {
+   "comment": "BASE CONFIRMED: threshold's upright at the toe (D-72: up to 6 mm upright, then 1:2)",
+   "expression": "6 mm",
+   "name": "th_up",
+   "unit": "mm",
+   "value": 6.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: flat land under the door's drop seal, centred on the glass line",
+   "expression": "30 mm",
+   "name": "th_land",
+   "unit": "mm",
+   "value": 30.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: threshold extrusion's wall",
+   "expression": "2 mm",
+   "name": "th_wall",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE CONFIRMED: DR intake mesh: 105 on the front and 266 on the facet (D-62)",
+   "expression": "105 mm",
+   "name": "mesh_front",
+   "unit": "mm",
+   "value": 105.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: intake mesh thickness (expanded aluminium, 80 % free, black; product HOLD)",
+   "expression": "2 mm",
+   "name": "mesh_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: DR support rail flange under DR's bottom edge",
+   "expression": "20 mm",
+   "name": "rail_w",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: DR support rail leg",
+   "expression": "30 mm",
+   "name": "rail_h",
+   "unit": "mm",
+   "value": 30.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: DR support rail thickness (aluminium angle)",
+   "expression": "2 mm",
+   "name": "rail_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: rail set back behind the mesh, so it blocks none of the mesh face",
+   "expression": "20 mm",
+   "name": "rail_set",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: closing plate between the intake space and the pod (D-62)",
+   "expression": "2 mm",
+   "name": "cp_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE CONFIRMED: the intake's band stub left of the mesh, carrying the inline key 111211 (30 long since the Joints Engineer's change of 2026-11-01) behind no mesh, with 2 to spare (PM ruling 2026-11-01: the joint moves left of the mesh)",
+   "expression": "32 mm",
+   "name": "fr_stub",
+   "unit": "mm",
+   "value": 32.0
+  },
+  {
+   "comment": "BASE CONFIRMED: the FR1 / intake joint, X 915 (PM rulings 2026-11-01: X 920 for the 25 mm key, then X 915 for the 30 mm key): FR1 runs X 218.5 to here; the intake from here, its mesh from X 947",
+   "expression": "pod_w / 2 - dr_xc - mesh_front - fr_stub",
+   "name": "x_fr_joint",
+   "unit": "mm",
+   "value": 915.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT: the glass's bottom U-channel, Bohle 15 x 15 x 1.5, Y -706.5 to -691.5 (centred on glass_y)",
+   "expression": "15 mm",
+   "name": "ch_w",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT: channel underside Z 95, top Z 110 (the band top, the glass's visible bottom line)",
+   "expression": "15 mm",
+   "name": "ch_h",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: sill sheet: aluminium 2 mm, bent, black anodised AA20 (D-67 look)",
+   "expression": "2 mm",
+   "name": "sl_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: sill's fixing flange down FR1's inner face (blind rivets, HOLD)",
+   "expression": "40 mm",
+   "name": "sl_flange",
+   "unit": "mm",
+   "value": 40.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT: the channel's underside runs to X 964.1, so the sill reaches X 965",
+   "expression": "965 mm",
+   "name": "sl_x1",
+   "unit": "mm",
+   "value": 965.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT's channel holes (F-368004-02): the first at X 269.4",
+   "expression": "269.4 mm",
+   "name": "ch_screw_x1",
+   "unit": "mm",
+   "value": 269.4
+  },
+  {
+   "comment": "BASE SOURCE: FRONT's pitch for the first 3 channel holes: X 269.4, 484.3, 699.2",
+   "expression": "214.9 mm",
+   "name": "ch_screw_p",
+   "unit": "mm",
+   "value": 214.9
+  },
+  {
+   "comment": "BASE CONFIRMED: the last channel screw at X 905: on FR1's sill seat, 2 hole diameters from FR1's end at x_fr_joint (joints register J-FRONT-04, the Lead 2026-11-01: X 905 or less; FRONT's 914.1 moves)",
+   "expression": "905 mm",
+   "name": "ch_screw_x4",
+   "unit": "mm",
+   "value": 905.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: hole for the flush-head M3 rivnut in the sill seat (product with the Joints Engineer, HOLD)",
+   "expression": "5 mm",
+   "name": "ch_rn_hole",
+   "unit": "mm",
+   "value": 5.0
   }
  ],
  "parts": {
@@ -1530,6 +1818,14 @@
    "parent": "110000",
    "pn": "110101"
   },
+  "110102": {
+   "class": "HS",
+   "key": "band_r",
+   "name": "BASE - BAND ASSY - SIDE - RH",
+   "name_vi": "Viền chân nhôm - cạnh phải (cụm)",
+   "parent": "110000",
+   "pn": "110102"
+  },
   "110103": {
    "class": "HS",
    "key": "band_b",
@@ -1538,6 +1834,14 @@
    "parent": "110000",
    "pn": "110103"
   },
+  "110106": {
+   "class": "HS",
+   "key": "front_r",
+   "name": "BASE - BAND ASSY - FRONT - FIXED GLASS",
+   "name_vi": "Viền chân trước - dưới kính cố định (cụm)",
+   "parent": "110000",
+   "pn": "110106"
+  },
   "110401": {
    "class": "BS",
    "key": "floor_assy",
@@ -1545,6 +1849,14 @@
    "name_vi": "Tấm sàn F1 (cụm dán)",
    "parent": "110000",
    "pn": "110401"
+  },
+  "110402": {
+   "class": "BS",
+   "key": "floor_assy2",
+   "name": "BASE - FLOOR PANEL ASSY - F2",
+   "name_vi": "Tấm sàn F2 (cụm dán)",
+   "parent": "110000",
+   "pn": "110402"
   },
   "111101": {
    "box_mm": [
@@ -1565,6 +1877,25 @@
    "pn": "111101",
    "volume_mm3": 618022.8
   },
+  "111102": {
+   "box_mm": [
+    1210.0,
+    -672.0,
+    10.0,
+    1250.0,
+    847.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "band_r_tube",
+   "mass_kg": 1.6709,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - SIDE - RH",
+   "name_vi": "Viền chân nhôm 100x40 - cạnh phải",
+   "parent": "110102",
+   "pn": "111102",
+   "volume_mm3": 618865.9
+  },
   "111103": {
    "box_mm": [
     -1210.0,
@@ -1584,6 +1915,25 @@
    "pn": "111103",
    "volume_mm3": 992281.7
   },
+  "111106": {
+   "box_mm": [
+    218.46,
+    -850.0,
+    10.0,
+    915.0,
+    -810.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "fr1",
+   "mass_kg": 0.7851,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - FRONT - FIXED GLASS",
+   "name_vi": "Viền chân trước - dưới kính cố định",
+   "parent": "110106",
+   "pn": "111106",
+   "volume_mm3": 290790.2
+  },
   "111211": {
    "box_mm": [
     0.0,
@@ -1597,11 +1947,30 @@
    "key": "key",
    "mass_kg": 0.2075,
    "material": "Aluminum",
-   "name": "BASE - CORNER KEY - BACK - COMMON",
-   "name_vi": "Ke góc đế - góc sau",
+   "name": "BASE - CORNER KEY - SQUARE - COMMON",
+   "name_vi": "Ke góc đế - cắt vuông",
    "parent": "110000",
    "pn": "111211",
    "volume_mm3": 76845.4
+  },
+  "111301": {
+   "box_mm": [
+    218.46,
+    -810.0,
+    12.0,
+    965.0,
+    -689.5,
+    110.0
+   ],
+   "class": "MP",
+   "key": "sill",
+   "mass_kg": 1.0255,
+   "material": "Aluminum",
+   "name": "BASE - SILL - FIXED GLASS",
+   "name_vi": "Bậu đỡ kính cố định",
+   "parent": "110106",
+   "pn": "111301",
+   "volume_mm3": 379831.9
   },
   "111401": {
    "box_mm": [
@@ -1622,6 +1991,25 @@
    "pn": "111401",
    "volume_mm3": 15827508.0
   },
+  "111402": {
+   "box_mm": [
+    0.5,
+    -691.5,
+    3.0,
+    1206.0,
+    806.0,
+    12.0
+   ],
+   "class": "MP",
+   "key": "floor_f2",
+   "mass_kg": 7.1828,
+   "material": "Poplar-core plywood 450 kg/m3 (ASSUMPTION)",
+   "name": "BASE - FLOOR PANEL - F2",
+   "name_vi": "Tấm sàn mỏng - F2",
+   "parent": "110402",
+   "pn": "111402",
+   "volume_mm3": 15961730.3
+  },
   "111501": {
    "box_mm": [
     -1206.0,
@@ -1641,6 +2029,25 @@
    "pn": "111501",
    "volume_mm3": 5304130.5
   },
+  "111502": {
+   "box_mm": [
+    13.5,
+    -691.5,
+    0.0,
+    1206.0,
+    806.0,
+    3.0
+   ],
+   "class": "MP",
+   "key": "mat_f2",
+   "mass_kg": 1.0582,
+   "material": "Closed-cell foam 200 kg/m3 (ASSUMPTION)",
+   "name": "BASE - FLOOR FOAM - F2 - CLOSED-CELL 3 MM",
+   "name_vi": "Tấm lót sàn F2 - xốp kín 3 mm",
+   "parent": "110402",
+   "pn": "111502",
+   "volume_mm3": 5291222.0
+  },
   "111601": {
    "box_mm": [
     -18.0,
@@ -1659,6 +2066,44 @@
    "parent": "110000",
    "pn": "111601",
    "volume_mm3": 5433.8
+  },
+  "111701": {
+   "box_mm": [
+    -972.0,
+    -728.0,
+    0.0,
+    218.46,
+    -645.0,
+    13.0
+   ],
+   "class": "MP",
+   "key": "threshold",
+   "mass_kg": 0.9852,
+   "material": "Aluminum",
+   "name": "BASE - DOOR THRESHOLD - 13 MM",
+   "name_vi": "Ngưỡng cửa 13 mm",
+   "parent": "110000",
+   "pn": "111701",
+   "volume_mm3": 364875.9
+  },
+  "111801": {
+   "box_mm": [
+    -8.0,
+    -8.0,
+    0.0,
+    8.0,
+    8.0,
+    19.0
+   ],
+   "class": "MP",
+   "key": "loc_spigot",
+   "mass_kg": 0.0098,
+   "material": "Steel",
+   "name": "BASE - LOCATOR SPIGOT - AIR COLUMN - D8",
+   "name_vi": "Chốt định vị cột gió",
+   "parent": "110000",
+   "pn": "111801",
+   "volume_mm3": 1245.1
   },
   "118002": {
    "box_mm": [
@@ -1776,6 +2221,29 @@
   }
  },
  "rev": "P01",
+ "sill": {
+  "legs_outside": {
+   "drop": 17.0,
+   "flange": 40.0,
+   "kerb": 83.0,
+   "ledge": 103.5,
+   "seat": 19.0
+  },
+  "length": 746.54,
+  "rivnut_hole": 5.0,
+  "screws_x": [
+   269.4,
+   484.3,
+   699.2,
+   905.0
+  ],
+  "t": 2.0,
+  "x0": 218.45982296533094
+ },
+ "threshold": {
+  "length": 1190.46,
+  "x0": -972.0
+ },
  "tubes": {
   "111101": {
    "axis": "Y",
@@ -1785,12 +2253,28 @@
    "outer_face_length": 1517.0,
    "section": "100 x 40 x 1.5"
   },
+  "111102": {
+   "axis": "Y",
+   "back_end": "square, for the end cap",
+   "front_end": "mitre to the intake's facet piece: 24.02 deg from square, long point on the outer face",
+   "inner_face_length": 1501.17,
+   "outer_face_length": 1519.0,
+   "section": "100 x 40 x 1.5"
+  },
   "111103": {
    "axis": "X",
    "back_end": "square",
    "front_end": "square",
    "inner_face_length": 2420.0,
    "outer_face_length": 2420.0,
+   "section": "100 x 40 x 1.5"
+  },
+  "111106": {
+   "axis": "X",
+   "back_end": "square at X 915.0, closed by a welded 1.5 end plate with 2 keyholes",
+   "front_end": "square at the door opening, for the end cap",
+   "inner_face_length": 696.54,
+   "outer_face_length": 696.54,
    "section": "100 x 40 x 1.5"
   }
  }

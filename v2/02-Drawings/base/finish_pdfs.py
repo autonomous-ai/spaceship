@@ -1,12 +1,16 @@
 """Finish BASE drawing PDFs: name strip, title data and notes as text, PNG.
 
-    python3 v2/02-Drawings/base/finish_pdfs.py 111101 [111103 ...]
+    python3 v2/02-Drawings/base/finish_pdfs.py 111401 [110401 ...]
 
 For each part number: takes the raw export from .raw/ (base_drawings.py),
 removes the account holder's name under "Created by" with
 tools/fusion/pdf_clear_field.py, writes the title data, notes and (for
 assemblies) the parts list onto the sheet as PDF text, saves the repo copy
 next to this file and renders a PNG to check by eye. Needs PyMuPDF.
+
+The notes print with 2.5 mm capitals (ISO 3098). The band tubes 111101 to
+111103 are drawn by the drawing generator (D-112, tools/drawgen), so they
+are refused here: finishing them would overwrite the generator's sheet.
 
 The drawing API can't place text on a sheet in this build, so this text is
 added to the PDF, not to the native drawing; it comes from the same sources
@@ -33,14 +37,18 @@ spec = importlib.util.spec_from_file_location("make_outputs", MAKE)
 mo = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mo)
 
+# drawn by the drawing generator (D-112): not finished here
+GENERATOR = {"111101", "111102", "111103"}
+
 DWG = {
-    "111101": ("111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG", "1:5 (view from the left 1:2)", "A2"),
-    "111103": ("111103_P01_BASE-BAND-TUBE-BACK_DWG", "1:5 (view from the left 1:2)", "A1"),
     "111401": ("111401_P01_BASE-FLOOR-PANEL-F1_DWG", "1:10", "A3"),
     "110000": ("110000_P01_BASE_DWG", "1:10", "A2"),
     "110101": ("110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG", "1:5 (iso 1:10)", "A2"),
     "110103": ("110103_P01_BASE-BAND-ASSY-BACK_DWG", "1:5 (iso 1:10)", "A1"),
     "110401": ("110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG", "1:10 (iso 1:20)", "A3"),
+    "111106": ("111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG", "1:5 (end view 1:2)", "A3"),
+    "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "1:5 (section 1:1)", "A3"),
+    "111402": ("111402_P01_BASE-FLOOR-PANEL-F2_DWG", "1:10", "A3"),
 }
 # No drawing (D-89): 111601 (part 4: DXF and parts-list row), 111501 (part 3: DXF and cut list).
 
@@ -51,19 +59,15 @@ TOL = {
             "(maker). Not ISO 2768 on the anodised faces.",
     "plate": "General tolerances, PROPOSED: outline ±0.5 (CNC); thickness as supplied (plywood ±0.3, "
              "foam ±0.3); not ISO 2768 on wood or foam (guideline §3.2).",
+    "sheet": "General tolerances ISO 2768-m (linear) on the flat pattern; bends 90 deg +-0.5 deg, inside radius = t "
+             "(assumption until the bender confirms); leg lengths +-0.3 to the outside of the bends; rivnut holes "
+             "Ø5.0 +0.1/0 (HOLD with the rivnut).",
     "assembly": "Assembly: parts to their own drawings (the doubler 111601 to its DXF and parts-list row, the foam "
                 "mat 111501 to its DXF, D-89); positions from skeleton P04 (110000_P01_BASE_CAD), hardware as the "
                 "joints register (J-BASE-01, J-BASE-02).",
 }
 
 DATUMS = {
-    "111101": "Part system CS-111101: X along the band from its back end, Y from the outer face inward, Z from the "
-              "bottom face up. In the pod: X(part) = 847 - Y(pod), Y(part) = X(pod) + 1250, Z(part) = Z(pod) - 10. "
-              "Datums: A = top face (the walls stand on it), B = outer face, C = back end face. Origin O = C x B "
-              "at the bottom. 2D: front view X-2D = X, Y-2D = Z; view from above X-2D = X, Y-2D = Y.",
-    "111103": "Part in pod coordinates (conventions §4): X along the band, Y toward the back face, Z up. Datums: "
-              "A = top face, B = outer (back) face Y = 850, C = left end face X = -1210. Origin O = C x inner face "
-              "for the hole table; dimensions from C.",
     "111601": "Part system: X across the band, Y along it, origin at the plate centre. Hole Ø13 3 mm off centre "
               "toward the pod side (gl_dx).",
     "111211": "Part system: X into the band from the end face (X 0), Y across the band (centred), Z up from the "
@@ -72,26 +76,35 @@ DATUMS = {
     "111401": "Pod coordinates: X to the right wall, Y to the back. Outline from the band's inner faces less "
               "the 4 mm seal gap; seam half-lap 13 wide, 4.5 deep, on the +X edge. Top face up.",
     "110000": "Pod coordinates (conventions §4): origin on the room floor at the pod centre, +X right, +Y back, +Z up.",
-    "110101": "Pod coordinates (conventions §4), as built: the side band LH, X -1250 to -1210, Y -670 to 847, "
+    "111106": "Pod coordinates: X along the band from the door opening (X 218.5) to the joint x_fr_joint (X 915), Y from "
+              "the front face (-850) inward, Z up. Datums: A = top face, B = front (outer) face, C = the left end face "
+              "(door opening). The right end is closed by a welded 1.5 mm end plate with 2 keyholes.",
+    "111301": "Pod coordinates: X along the sill from the door opening (X 218.5) to X 965. Section (view from the left, "
+              "1:1): flange down FR1's inner face, ledge flush with the band top (Z 110), drop, seat under the U-channel "
+              "(Z 93 to 95), kerb down to F2 (Z 12). Datums: A = the ledge's top face, B = the flange's outer face "
+              "(Y -810), C = the left end. Bends 90 deg, inside radius 2 (assumption, the bender confirms).",
+    "111402": "Pod coordinates: X to the right wall, Y to the back. Outline from the band's inner faces less the 4 mm "
+              "seal gap, with the tab under the sill's kerb (X 218.5 to 947, to Y -691.5); the seam rebate (lower half, "
+              "4.5 deep, from below) along X 0.5 to 13.5. Top face up.",
+    "110101": "Pod coordinates (conventions §4), as built: the side band LH, X -1250 to -1210, Y -670 to 850, "
               "on its glides. Factory-fitted: rivnuts with stop washers and spigots (J-BASE-01), glide doublers, "
-              "glides preset (D-87), end cap. The keyholes take the back key's studs (J-BASE-02); the front end "
-              "carries the front corner key 111212 (P02). GLIDES: level up from the highest floor spot; never below "
-              "8.5 mm under the band (the keys' screw heads hang 3.3; the glide's base is the stop).",
-    "110103": "Pod coordinates (conventions §4), as built: the back band, X -1210 to 1210, Y 810 to 850, on its "
-              "glides. Factory-fitted: rivnuts, stop washers and spigots for B1 and B2 (J-BASE-01), glide doublers, "
-              "glides preset (D-87), and a back corner key 111211 in each end with its 2 button head fixing screws "
-              "and 2 hook studs (J-BASE-02). GLIDES: level up from the highest floor spot; never below 8.5 mm under "
-              "the band (the keys' screw heads hang 3.3; the glide's base is the stop).",
+              "glides preset (D-87); in its back end the corner key 111211 against the inner wall, with its 2 fixing "
+              "screws and its 2 stud bolts set 1.8 off the inner wall, and the flat end cap 118003 (J-BASE-02, D-129); "
+              "the front end carries the front corner key 111212 (P02). GLIDES: level up from the highest floor spot; "
+              "never below 8.5 mm under the band (the keys' screw heads hang 3.3; the glide's base is the stop).",
+    "110103": "Pod coordinates (conventions §4), as built: the back band, X -1210 to 1210 over its welded end "
+              "plates, Y 810 to 850, on its glides. Factory-fitted: rivnuts, stop washers and spigots for B1 and B2 "
+              "(J-BASE-01), glide doublers, glides preset (D-87). It is lowered straight down between the side bands: "
+              "each end plate's open slot takes a side band's 2 key studs, their heads coming up through the bottom "
+              "wall's notches (J-BASE-02, D-129); nobody lifts it or stands on it until B1 and B2 are bolted on. "
+              "GLIDES: level up from the highest floor spot; never below 8.5 mm under the band (the glide's base is "
+              "the stop).",
     "110401": "Pod coordinates (conventions §4), as built: floor panel F1 with its 3 mm foam mat bonded underneath "
               "at the factory (D-87), the mat under the lap too; ply Z 3 to 12, floor top Z 12 (skeleton floor_top). "
               "Adhesive HOLD.",
 }
 
 HOLES = {
-    "111101": "Top wall: rivnut holes Ø9.53 for J-BASE-01 (4 bolts with stop washers, 2 spigots) at Y 26 "
-              "(wall tube centre line); glide key holes Ø10. Bottom wall: glide nut holes Ø13. "
-              "Positions: the hole table and the dimensions from datum C.",
-    "111103": "As 111101, for B1 and B2 (frame-end rule, 220 / 100 mm), glides at 150 from each end and the middle.",
     "111601": "One hole Ø13 for the glide's M10 rivnut.",
     "111211": "Bottom: 2 x M6, 15 of full thread (tap drill Ø5.0 x 18), for the M6 x 12 button head fixing screws, "
               "10 from the back face and 7.5 either side of the centre line. End face: 2 x M6 tapped through, for "
@@ -99,20 +112,27 @@ HOLES = {
               "J-BASE-02; PM ruling on F-017).",
     "111401": "No holes.",
     "110000": "Holes on the part drawings.",
-    "110101": "Holes on the part drawings (111101).",
-    "110103": "Holes on the part drawings (111103, 111211).",
+    "111106": "Bottom wall: 2 glide nut holes Ø13 (X 293.5 and 840), no holes on its top (in view in front of the glass). "
+              "End plate at X 915: 2 keyholes, Ø12 entry 10 below each seat and a 6.5 slot up to it, seats at Z 37.5 "
+              "and 71.5 on the band's centre line (joints register J-BASE-02, the intake's inline key 111211).",
+    "111301": "Seat: 4 holes Ø5 for the flush M3 rivnuts (838008, HOLD) at X 269.4, 484.3, 699.2 and 905 on the glass line "
+              "(Y -699). Flange: blind rivet holes to FR1, HOLD.",
+    "111402": "2 holes Ø8 for the air column's locator spigots 111801 at (989, -605) and (1126, -337) (CEILING's "
+              "positions, PM 2026-10-31).",
+    "110101": "Holes on the part drawings (111101; the key 111211 on the Joints Engineer's sheet).",
+    "110103": "Holes, slots and notches on the part drawing (111103).",
     "110401": "No holes.",
 }
 
 
 # sheets whose views reach the bottom left: their notes go on the right, above the title block
-NOTES_RIGHT = {"111401", "110401"}
+NOTES_RIGHT = {"111401", "110401", "111402", "110000"}
 
 
 def kind_of(pn):
     if pn[2:4] == "00" or pn[2] == "0":             # xx0000 to xx0999: assemblies (conventions section 5)
         return "assembly"
-    return {"111101": "tube", "111103": "tube"}.get(pn, "plate")
+    return {"111101": "tube", "111102": "tube", "111103": "tube", "111106": "tube", "111301": "sheet"}.get(pn, "plate")
 
 
 def text_block(pn):
@@ -153,6 +173,8 @@ def text_block(pn):
 
 
 def finish(pn):
+    if pn in GENERATOR:
+        raise SystemExit("%s is drawn by the drawing generator (D-112); not finished here" % pn)
     dwg = DWG[pn][0]
     raw = os.path.join(HERE, ".raw", dwg + ".pdf")
     out = os.path.join(HERE, dwg + ".pdf")
@@ -162,20 +184,27 @@ def finish(pn):
     page = doc[0]
     w, h = page.rect.width, page.rect.height
     lines = text_block(pn)
-    fs = 6.0 if w > 1000 else 5.0
-    bh = (len(lines) + 2) * fs * 1.6
-    # bottom left, inside the frame and clear of the title block; a font with the Vietnamese letters
     mm = 72.0 / 25.4
+    # letters at least 2.5 mm tall: ISO 3098 measures the capital height, about 0.72 of the font size in Arial,
+    # so the font size is 3.5 mm (the old 5 to 6 pt printed 1.3 to 1.5 mm letters)
+    fs = 3.5 * mm
     if pn in NOTES_RIGHT:     # the views fill the bottom left: right side, above the projection symbol and title block
-        box = fitz.Rect(w * 0.56, h - 75 * mm - bh, w - 12 * mm, h - 75 * mm)
-    else:
-        box = fitz.Rect(22 * mm, h - 14 * mm - bh, w * 0.545, h - 14 * mm)     # the frame is 20 mm in on the left
+        x0, x1, bottom = w * 0.56, w - 24 * mm, h - 75 * mm
+    else:                     # bottom left, inside the frame (20 mm in on the left) and clear of the title block
+        x0, x1, bottom = 22 * mm, w * 0.545, h - 14 * mm
+    chars = max(40, int((x1 - x0) / (fs * 0.5)))       # Arial's average letter is about half the font size wide
+    rows = sum(1 + len(line) // chars for line in lines)
+    box = fitz.Rect(x0, bottom - (rows + 2) * fs * 1.45, x1, bottom)
+    # a font with the Vietnamese letters
     font = next((f for f in ("/System/Library/Fonts/Supplemental/Arial Unicode.ttf", "/Library/Fonts/Arial Unicode.ttf")
                  if os.path.exists(f)), None)
     if font:
-        page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="arialuni", fontfile=font, align=0)
+        rc = page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="arialuni", fontfile=font, align=0)
     else:
-        page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="helv", align=0)
+        rc = page.insert_textbox(box, "\n".join(lines), fontsize=fs, fontname="helv", align=0)
+    if rc < 0:                # PyMuPDF writes nothing when the text doesn't fit
+        raise SystemExit("%s: the notes need %.1f mm more height than the box" % (pn, -rc / mm))
+    doc.subset_fonts()        # embed only the letters used: the whole Arial Unicode made each sheet 15 MB
     doc.save(out, garbage=3, deflate=True)
     doc.close()
     os.remove(tmp)

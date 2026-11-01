@@ -34,6 +34,7 @@ Optional after step 9: --arg export=1 (f3d, STEP), --arg save=1 (cloud).
 """
 
 import ast
+import csv
 import math
 import os
 
@@ -60,8 +61,9 @@ BASE_PARAMS = [
      "PM ruling 2026-10-31 (BASE group): 100 x 40 x 1.5 base band (was 2.0), with a doubler at each glide; rivnut coupon in 1.5 mm added to the rivnut test"),
     ("band_finish", "'Black anodised, matte, 20 um (class AA20, EN ISO 7599)'", "Text", "confirmed",
      "PM ruling 2026-10-31 (BASE group): every base band piece and the door's kick strip"),
-    ("cap_t", "3 mm", "mm", "assumption",
-     "head of the plastic end cap closing the side band's back end, so the cap face is flush with the back face Y = pod_d/2; cap product HOLD"),
+    ("cap_t", "2 mm", "mm", "source",
+     "the side band's back-end cap 118003: flat, inside the tube's end and flush with the back face Y = pod_d/2, no deeper "
+     "than 2, as the back corner key sits 2.5 from the end (D-129, joints register J-BASE-02); product HOLD"),
     # the wall above (WALL owns it; these say where its bottom member sits)
     ("jb_x", "outer_t - frame_t / 2", "mm", "calculation",
      "J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)"),
@@ -119,7 +121,8 @@ BASE_PARAMS = [
      "back corner key height, standing on the band's bottom wall: 75 (the Joints Engineer, via the Lead 2026-11-01)"),
     ("ck_e", "10.5 mm", "mm", "source",
      "key fixing holes 10.5 from its back face (inside the band) and 7.0 either side of its centre line, so 10.5 from its side faces (joints register #127, J-BASE-02)"),
-    ("ck_fix_hole", "7 mm", "mm", "source", "fixing bolt holes in the back band's bottom wall, Ø7.0 (J-BASE-02)"),
+    ("ck_fix_hole", "7 mm", "mm", "source",
+     "the keys' fixing screw holes in the carrier's bottom wall, Ø7.0 (J-BASE-02); the side bands carry the back keys since D-129"),
     ("ck_tap", "5 mm", "mm", "source", "M6 tap drill in the key (J-BASE-02)"),
     ("ck_thr_b", "15 mm", "mm", "confirmed",
      "M6 thread in the key's bottom at least 15 deep: the M6 x 16 fixing bolt reaches 12.9 (PM ruling 2026-11-01 on F-017, joints group)"),
@@ -128,12 +131,29 @@ BASE_PARAMS = [
      "lower hook stud above the key's bottom: pod Z 37.5 with glide_h 10 and band_wall 1.5, so the keyhole's entry below it clears the tube's bottom corner "
      "(the Joints Engineer, via the Lead 2026-11-01)"),
     ("st_z2", "60 mm", "mm", "source", "upper hook stud above the key's bottom: pod Z 71.5 (the Joints Engineer, via the Lead 2026-11-01)"),
-    ("st_gap", "1.8 mm", "mm", "source", "hook stud head's underside off the key's end face: 1.5 wall + 0.3 clearance (J-BASE-02)"),
-    ("kh_entry", "12 mm", "mm", "source", "keyhole entry in the side band's inner wall, Ø12 (J-BASE-02)"),
-    ("kh_slot", "6.5 mm", "mm", "source", "keyhole slot width, 6.5, locates the corner in Y to ±0.25 (J-BASE-02)"),
+    ("st_gap", "1.8 mm", "mm", "source",
+     "hook stud head's underside off the face the next piece hooks onto: its 1.5 wall or plate + 0.3 clearance (J-BASE-02)"),
+    ("kh_entry", "12 mm", "mm", "source", "keyhole entry in the front joints' 1.5 end caps, Ø12 (J-BASE-02)"),
+    ("kh_slot", "6.5 mm", "mm", "source",
+     "keyhole and slot width, 6.5, locates each joint across the band to ±0.25 (Ø5.97 shank, J-BASE-02)"),
     ("kh_drop", "10 mm", "mm", "source",
-     "entry centre 10 BELOW the stud's final spot, the slot running 10 up to it: the side band goes on 10 high, then drops onto the studs "
+     "entry centre 10 BELOW the stud's final spot, the slot running 10 up to it: a front piece goes on 10 high, then drops onto the studs "
      "(the Joints Engineer's fix, via the Lead 2026-11-01)"),
+    # D-129 (pallet 2): the back corners' keys sit in the side bands' back ends, against their inner walls, and
+    # the back band drops in between the side bands (joints register J-BASE-02 and FR-15, corner-keys.csv)
+    ("st_hole", "7 mm", "mm", "source",
+     "the hook stud bolts' holes through the side band's inner wall at the back corners, Ø7.0 (D-129, J-BASE-02, FR-15)"),
+    ("bs_mouth_w", "12 mm", "mm", "source",
+     "each back band end cap's slot: 12 wide at the cap's bottom edge, its mouth (D-129, J-BASE-02, FR-15)"),
+    ("bs_mouth_h", "6 mm", "mm", "source", "the mouth narrows to the 6.5 slot over the cap's bottom 6 (D-129, FR-15)"),
+    ("bs_end", "2 mm", "mm", "source",
+     "the slot's closed end centred 2 above the upper stud (Z 73.5): the band rests on its glides, never on the studs (D-129, FR-15)"),
+    ("hn_w", "12 mm", "mm", "source",
+     "head notch in the back band's bottom wall at each end, 12 wide: the Ø10 head and 1 each side (D-129, FR-15)"),
+    ("hn_d", "9 mm", "mm", "source",
+     "head notch 9 deep from the band's end: the head's far face is 1.8 + 6 = 7.8 from the side band's face (D-129, FR-15)"),
+    ("cap_bevel", "1 mm", "mm", "source",
+     "1 x 45 deg bevel on each back band end cap's bottom edge, side-band side, so it slips under the heads (D-129, FR-15)"),
     # thin floor
     ("fl_t", "floor_t", "mm", "confirmed",
      "skeleton floor_t 9 (D-72): 9 mm floor panels, as v1 (FLR-01 9 mm), floor top 12, threshold 13 (US accessibility)"),
@@ -158,11 +178,12 @@ PARTS = {
                "floor_assy"),
     "glide": ("118002", "BASE - LEVELLING GLIDE - M10 - HOLD", "Chân chỉnh cao", "PI", None),
     "doubler": ("111601", "BASE - GLIDE DOUBLER - COMMON", "Tấm tăng cứng chân chỉnh", "MP", None),
-    "key": ("111211", "BASE - CORNER KEY - BACK - COMMON", "Ke góc đế - góc sau", "MP", None),
+    "key": ("111211", "BASE - CORNER KEY - SQUARE - COMMON", "Ke góc đế - cắt vuông", "MP", None),
     "bolt": ("838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI", None),
     "bscrew": ("838010", "HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2", "Vít đầu tròn có vành M6 × 12 inox",
                "PI", None),
     "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", "PI", None),
+    "cap": ("118003", "BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD", "Nút bịt đầu ống 100x40", "PI", None),
 }
 CLASS_NAME = {"HS": "hardware-fitted subassembly", "BS": "bonded subassembly", "MP": "part we make", "PI": "bought item"}
 
@@ -502,6 +523,8 @@ def build_tree(doc, design):
     root.description = "%s | %s | assembly | rev %s | DRAFT" % (ASSEMBLY[1], ASSEMBLY[2], REV)
     made = {}
     for key, (pn, name, vn, cls, parent) in PARTS.items():
+        if key in OWNER_STEP:
+            continue                    # imported from its owner's STEP in step 7 (D-95)
         host = root if parent is None else made[parent]
         occ = host.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         describe(occ.component, pn, name, vn, cls)
@@ -556,8 +579,8 @@ def P(design, ex, ey, ez="0 mm"):
 
 def step2_band_side_lh(design):
     outline = [
-        P(design, XL, "%s - cap_t" % YB),
-        P(design, "%s + band_t" % XL, "%s - cap_t" % YB),
+        P(design, XL, YB),
+        P(design, "%s + band_t" % XL, YB),
         P(design, "%s + band_t" % XL, Y_MITRE_IN),
         P(design, XL, "-dl_y1"),
     ]
@@ -567,7 +590,8 @@ def step2_band_side_lh(design):
         P(design, "%s + band_t - band_wall" % XL, "-dl_y1 - 20 mm"),
         P(design, "%s + band_wall" % XL, "-dl_y1 - 20 mm"),
     ]
-    print("step 2: left side band (front end mitred to DL's outer facet, back end cut for the cap)")
+    print("step 2: left side band (front end mitred to DL's outer facet, back end square to the back face, "
+          "for its key and flat cap, D-129)")
     band_tube(design, "band_l_tube", "SIDE LH", outline, bore, "length along Y")
 
 
@@ -578,13 +602,15 @@ def step3_band_back(design):
         P(design, "%s - band_t" % XR, YB),
         P(design, "%s + band_t" % XL, YB),
     ]
+    # the bore stops band_wall short of each end: the welded 1.5 end plates that take the side bands' key
+    # studs in their slots (D-129); made as one body, as FR1's keyed end (P02)
     bore = [
-        P(design, "%s + band_t - 20 mm" % XL, "%s - band_t + band_wall" % YB),
-        P(design, "%s - band_t + 20 mm" % XR, "%s - band_t + band_wall" % YB),
-        P(design, "%s - band_t + 20 mm" % XR, "%s - band_wall" % YB),
-        P(design, "%s + band_t - 20 mm" % XL, "%s - band_wall" % YB),
+        P(design, "%s + band_t + band_wall" % XL, "%s - band_t + band_wall" % YB),
+        P(design, "%s - band_t - band_wall" % XR, "%s - band_t + band_wall" % YB),
+        P(design, "%s - band_t - band_wall" % XR, "%s - band_wall" % YB),
+        P(design, "%s + band_t + band_wall" % XL, "%s - band_wall" % YB),
     ]
-    print("step 3: back band (butts the side bands' inner faces, as v1's frame)")
+    print("step 3: back band (between the side bands' inner faces, both ends closed by welded end plates, D-129)")
     band_tube(design, "band_b_tube", "BACK", outline, bore, "length along X")
 
 
@@ -664,7 +690,7 @@ def step4_band_holes(design):
 
 
 def holes_side_lh(design):
-    keyholes_side(design, "band_l_tube", "%s + band_t" % XL, "BL")
+    back_key_holes(design, "band_l_tube", -1, "BL")
     v = lambda e: ev(design, e)  # noqa: E731
     c = find_comp(design, "band_l_tube")
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
@@ -694,56 +720,97 @@ def holes_side_lh(design):
          [(X, xg), (Y, yg0)], "gl_nut_hole", "band_wall", up, ("yConstructionAxis", "gl_n_side", gext))
 
 
-def keyholes_side(design, key, x_face_expr, label):
-    """J-BASE-02 keyholes in a side band's inner wall at its back corner: a Ø12
-    entry kh_drop below each hook stud's final spot (its seat) and a 6.5 slot
-    running up to the seat, for the back key's two studs. The side band goes on
-    kh_drop high, its entries over the stud heads, then drops onto them (the
-    Joints Engineer's fix of 2026-11-01 to register 3.11 and FR-15). Made as two
-    hole features (the entry and the slot's round end at the seat) and one cut for
-    the slot between them, each from its own one-point or one-rectangle sketch (two
-    circles in one sketch over-constrained in Fusion on 2026-11-01), all patterned
-    for the second stud."""
+def back_key_holes(design, key, sign, label):
+    """D-129 (joints register J-BASE-02, FR-15, corner-keys.csv): the back corner key 111211 sits in this
+    side band's back end, its stud face against the inner wall from inside. 2 x Ø7.0 through the inner
+    wall for its hook stud bolts, on the back band's centre line at the studs' heights, and 2 x Ø7.0 in
+    the bottom wall for its fixing screws, ck_e from the key's back face and ck_y / 2 - ck_e either side
+    of the centre line. One-point hole sketches, patterned (two circles in one YZ sketch
+    over-constrained, 2026-11-01). sign: -1 for the left side band, +1 for the right."""
     v = lambda e: ev(design, e)  # noqa: E731
     c = find_comp(design, key)
-    body = c.bRepBodies.item(0)
-    pl = offset_plane(c, "yz", x_face_expr, v(x_face_expr), "PLANE - BAND INNER FACE (KEYHOLES) - %s" % label)
-    yk = "%s - band_t / 2" % YB
-    z_seat = "glide_h + band_wall + st_z1"
-    z_entry = "glide_h + band_wall + st_z1 - kh_drop"
-    xf = v(x_face_expr)
+    s = "-" if sign < 0 else ""
+    x_in = "%s(pod_w / 2 - band_t)" % s                     # the inner wall's outside face
+    yk = "%s - band_t / 2" % YB                             # the back band's centre line
+    pl = offset_plane(c, "yz", x_in, v(x_in), "PLANE - BAND INNER FACE (BACK KEY STUDS) - %s" % label)
     into = X.copy()
-    if xf < 0:
-        into.scaleBy(-1)                  # into the band: -X on the left, +X on the right
-    pat = ("zConstructionAxis", "2", "st_z2 - st_z1")
-    hole(design, key, pl, "KEYHOLE ENTRY D12 - %s" % label, (xf, v(yk), v(z_entry)), [(Y, yk), (Z, z_entry)],
-         "kh_entry", "band_wall", into, pat)
-    hole(design, key, pl, "KEYHOLE SEAT (SLOT END) - %s" % label, (xf, v(yk), v(z_seat)), [(Y, yk), (Z, z_seat)],
-         "kh_slot", "band_wall", into, pat)
-    sk = c.sketches.add(pl)
-    sk.name = "KEYHOLE SLOT - %s - FROM THE ENTRY UP TO THE SEAT" % label
-    half = "kh_slot / 2"
-    polygon(design, sk, [P3(design, x_face_expr, "%s - %s" % (yk, half), z_entry),
-                         P3(design, x_face_expr, "%s + %s" % (yk, half), z_entry),
-                         P3(design, x_face_expr, "%s + %s" % (yk, half), z_seat),
-                         P3(design, x_face_expr, "%s - %s" % (yk, half), z_seat)], Y, Z)
-    check_sketch(sk)
-    ei = c.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.CutFeatureOperation)
-    n = pl.geometry.normal
-    direc = adsk.fusion.ExtentDirections.PositiveExtentDirection if n.x * into.x > 0 else \
+    if sign < 0:
+        into.scaleBy(-1)                                    # into the side band: -X on the left, +X on the right
+    z1 = "glide_h + band_wall + st_z1"
+    hole(design, key, pl, "BACK KEY HOOK STUD BOLTS - %s (111211, D-129)" % label, (v(x_in), v(yk), v(z1)),
+         [(Y, yk), (Z, z1)], "st_hole", "band_wall", into, ("zConstructionAxis", "2", "st_z2 - st_z1"))
+    bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
+    xf = "%s(pod_w / 2 - band_t + band_wall + ck_x - ck_e)" % s
+    yf = "%s - band_t / 2 - (ck_y / 2 - ck_e)" % YB
+    hole(design, key, bot, "BACK KEY FIXING - %s (111211, D-129)" % label, (v(xf), v(yf), v("glide_h")),
+         [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z, ("yConstructionAxis", "2", "ck_y - 2 * ck_e"))
+
+
+def cut_prism(comp, body, plane, sk, depth_expr, want_dir, name):
+    """Cut the sketch's one profile from body, depth_expr along want_dir (a model vector square to the
+    plane), whichever way the plane's normal points."""
+    ei = comp.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.CutFeatureOperation)
+    n = plane.geometry.normal
+    along = n.x * want_dir.x + n.y * want_dir.y + n.z * want_dir.z
+    direc = adsk.fusion.ExtentDirections.PositiveExtentDirection if along > 0 else \
         adsk.fusion.ExtentDirections.NegativeExtentDirection
-    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("band_wall")), direc)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi(depth_expr)), direc)
     ei.participantBodies = [body]
-    f = c.features.extrudeFeatures.add(ei)
-    f.name = "CUT - KEYHOLE SLOT - %s" % label
-    coll = adsk.core.ObjectCollection.create()
-    coll.add(f)
-    pats = c.features.rectangularPatternFeatures
-    pin = pats.createInput(coll, c.zConstructionAxis, vi("2"), vi("st_z2 - st_z1"),
-                           adsk.fusion.PatternDistanceType.ExtentPatternDistanceType)
-    pin.setDirectionTwo(c.xConstructionAxis, vi("1"), vi("1 mm"))
-    pf = pats.add(pin)
-    pf.name = "PATTERN - KEYHOLE SLOTS - %s" % label
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = name
+    return f
+
+
+def PXZ(design, ex, ey, ez):
+    """(expr_x, expr_z, (x, y, z) mm) for polygon() on a plane parallel to XZ."""
+    return (ex, ez, (ev(design, ex), ev(design, ey), ev(design, ez)))
+
+
+def back_band_slots(design):
+    """D-129 (joints register J-BASE-02, FR-15): the back band is lowered straight down between the side
+    bands, so each of its 1.5 end plates has one slot open at its bottom edge, on the band's centre line:
+    bs_mouth_w wide at the edge, narrowing to kh_slot over bs_mouth_h, then kh_slot wide up to its round
+    closed end bs_end above the upper stud. At each end the bottom wall has a head notch, hn_w wide and
+    hn_d deep from the end, for the stud heads to come up into the tube, and each plate's bottom edge a
+    cap_bevel x 45 deg bevel on its side-band side. One-polygon sketches and one-point hole sketches."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    c = find_comp(design, "band_b_tube")
+    body = c.bRepBodies.item(0)
+    bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
+    yc, yf = "%s - band_t / 2" % YB, "%s - band_t" % YB
+    z0, zm = "glide_h", "glide_h + bs_mouth_h"
+    z_end = "glide_h + band_wall + st_z2 + bs_end"
+    front = offset_plane(c, "xz", yf, v(yf), "PLANE - BACK BAND FRONT FACE (END PLATE BEVELS)")
+    for sign, label in ((-1, "LEFT"), (1, "RIGHT")):
+        s = "-" if sign < 0 else ""
+        xe = "%s(pod_w / 2 - band_t)" % s                   # the band's end: the plate's outer face
+        into = X.copy()
+        if sign > 0:
+            into.scaleBy(-1)                                # into the band: +X at its left end, -X at its right
+        pl = offset_plane(c, "yz", xe, v(xe), "PLANE - BACK BAND END - %s" % label)
+        sk = c.sketches.add(pl)
+        sk.name = "END PLATE SLOT - %s - MOUTH AND SLOT (D-129)" % label
+        polygon(design, sk, [P3(design, xe, "%s - bs_mouth_w / 2" % yc, z0), P3(design, xe, "%s + bs_mouth_w / 2" % yc, z0),
+                             P3(design, xe, "%s + kh_slot / 2" % yc, zm), P3(design, xe, "%s + kh_slot / 2" % yc, z_end),
+                             P3(design, xe, "%s - kh_slot / 2" % yc, z_end), P3(design, xe, "%s - kh_slot / 2" % yc, zm)], Y, Z)
+        check_sketch(sk)
+        cut_prism(c, body, pl, sk, "band_wall", into, "CUT - END PLATE SLOT - %s (D-129)" % label)
+        hole(design, "band_b_tube", pl, "END PLATE SLOT END - %s (D-129)" % label, (v(xe), v(yc), v(z_end)),
+             [(Y, yc), (Z, z_end)], "kh_slot", "band_wall", into)
+        xn = "%s(pod_w / 2 - band_t - hn_d)" % s
+        sk2 = c.sketches.add(bot)
+        sk2.name = "HEAD NOTCH - %s (D-129)" % label
+        polygon(design, sk2, [P(design, xe, "%s - hn_w / 2" % yc), P(design, xn, "%s - hn_w / 2" % yc),
+                              P(design, xn, "%s + hn_w / 2" % yc), P(design, xe, "%s + hn_w / 2" % yc)], X, Y)
+        check_sketch(sk2)
+        cut_prism(c, body, bot, sk2, "band_wall", Z, "CUT - HEAD NOTCH IN THE BOTTOM WALL - %s (D-129)" % label)
+        xb = "%s(pod_w / 2 - band_t - cap_bevel)" % s
+        sk3 = c.sketches.add(front)
+        sk3.name = "END PLATE BEVEL - %s - BOTTOM EDGE, SIDE-BAND SIDE (D-129)" % label
+        polygon(design, sk3, [PXZ(design, xe, yf, z0), PXZ(design, xb, yf, z0), PXZ(design, xe, yf, "glide_h + cap_bevel")],
+                X, Z)
+        check_sketch(sk3)
+        cut_prism(c, body, front, sk3, "band_t", Y, "CUT - END PLATE BEVEL - %s (D-129)" % label)
 
 
 def holes_back(design):
@@ -765,15 +832,11 @@ def holes_back(design):
     hole(design, "band_b_tube", top, "GLIDE KEY ACCESS - BACK", (v(xg0), v(yg), v("wall_z0")),
          [(X, xg0), (Y, yg)], "gl_key_hole", "band_wall", down,
          ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
-    # J-BASE-02: Ø7.0 holes in the bottom wall for the back keys' fixing bolts, at both ends
-    yk0 = "%s - band_t / 2 - (ck_y / 2 - ck_e)" % YB
-    for corner, xk in (("BL", "%s + band_t + ck_x - ck_e" % XL), ("BR", "%s - band_t - (ck_x - ck_e)" % XR)):
-        hole(design, "band_b_tube", bot, "CORNER KEY FIXING - %s" % corner, (v(xk), v(yk0), v("glide_h")),
-             [(X, xk), (Y, yk0)], "ck_fix_hole", "band_wall", up,
-             ("yConstructionAxis", "2", "ck_y - 2 * ck_e"))
     hole(design, "band_b_tube", bot, "GLIDE NUT - BACK", (v(xg0), v(yg), v("glide_h")),
          [(X, xg0), (Y, yg)], "gl_nut_hole", "band_wall", up,
          ("xConstructionAxis", "gl_n_back", "pod_w - 2 * band_t - 2 * gl_e_bb"))
+    # D-129: no key in this band; its end plates take the side bands' key studs in open slots
+    back_band_slots(design)
 
 
 def report_holes(design):
@@ -793,10 +856,11 @@ def report_holes(design):
 
 def step5_corner_key(design):
     """The back corners join on hook-in corner keys that the Joints Engineer
-    designs (D-87, 12 fewer bolts than a bolted bracket): the key 111211 is
-    built and placed with the hardware in step 7, its keyholes and fixing holes
-    in step 4; the band ends stay square."""
-    print("step 5: back corner joint: hook-in key 111211 (J-BASE-02, sizes of 2026-11-01), placed in step 7")
+    designs (D-87, 12 fewer bolts than a bolted bracket). Since D-129 the key
+    111211 sits in each side band's back end: imported from its owner's STEP
+    and placed with the hardware in step 7; the side bands' stud and fixing
+    holes and the back band's slotted end plates are made in step 4."""
+    print("step 5: back corner joint: hook-in key 111211 in the side bands' back ends (J-BASE-02, D-129), placed in step 7")
 
 
 # ---------------------------------------------------------------- floor
@@ -937,12 +1001,12 @@ def build_back_key(design):
     comp = find_comp(design, "key")
     v = lambda e: ev(design, e)  # noqa: E731
     sk = comp.sketches.add(comp.xYConstructionPlane)
-    sk.name = "PLAN - CORNER KEY - BACK"
+    sk.name = "PLAN - CORNER KEY - SQUARE"
     polygon(design, sk, [P(design, "0 mm", "-ck_y / 2"), P(design, "ck_x", "-ck_y / 2"),
                          P(design, "ck_x", "ck_y / 2"), P(design, "0 mm", "ck_y / 2")], X, Y)
     check_sketch(sk)
     extrude(comp, one_profile(sk), "ck_z", "EXTRUDE - CORNER KEY - BLOCK ck_z")
-    single_body(comp, "CORNER KEY - BACK")
+    single_body(comp, "CORNER KEY - SQUARE")
     up, intox = Z.copy(), X.copy()
     hole(design, "key", comp.xYConstructionPlane, "KEY FIXING - M6 TAP DRILL FROM BELOW",
          (v("ck_x - ck_e"), -v("ck_y / 2 - ck_e"), 0.0), [(X, "ck_x - ck_e"), (Y, "-(ck_y / 2 - ck_e)")], "ck_tap", "ck_tap_d", up,
@@ -980,6 +1044,24 @@ def build_glide(design):
         PZ(design, "gl_stem / 2", "glide_h + band_h / 2"),
         PZ(design, "0 mm", "glide_h + band_h / 2"),
     ])
+
+
+def build_cap(design):
+    """The side band's back-end cap 118003 (D-129): flat, cap_t thick, the size of the band's bore,
+    centred on its own origin in Y, so it is placed with its outer face flush with Y = pod_d / 2.
+    Product HOLD: this is its envelope."""
+    comp = find_comp(design, "cap")
+    sk = comp.sketches.add(comp.xZConstructionPlane)
+    sk.name = "OUTLINE - TUBE END CAP - THE BAND'S BORE"
+    hw = "(band_t / 2 - band_wall)"
+    polygon(design, sk, [PZ(design, "-%s" % hw, "band_wall"), PZ(design, hw, "band_wall"),
+                         PZ(design, hw, "band_h - band_wall"), PZ(design, "-%s" % hw, "band_h - band_wall")], X, Z)
+    check_sketch(sk)
+    ei = comp.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    ei.setSymmetricExtent(vi("cap_t"), True)
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "EXTRUDE - TUBE END CAP - cap_t THICK, SYMMETRIC"
+    single_body(comp, PARTS["cap"][1])
 
 
 def place(design, host_key, key, xyz, rot=None):
@@ -1031,18 +1113,22 @@ def hardware_points(design):
     edge("band_l", "y", v("base_side_y0"), v("side_l"), v("%s + jb_x" % XL))                  # L1
     for x0 in (B1_X0, B2_X0):                                                                 # B1, B2
         edge("band_b", "x", v(x0), v("half_fw"), v("%s - jb_x" % YB))
-    # J-BASE-02 back corner keys, fitted to the back band at the factory: the block, its 2
-    # flanged button head fixing screws from below (no washer), and its 2 hook studs set st_gap proud
+    # J-BASE-02 back corner keys (D-129), fitted to the side bands' back ends at the factory: the block
+    # against the inner wall from inside, its 2 flanged button head fixing screws from below (no washer),
+    # its 2 hook stud bolts through the inner wall with their heads st_gap off its outside face, and the
+    # band's flat end cap. The right side band is P02's; without it the right corner's copies stay at the root.
     zk, yk = v("glide_h + band_wall"), v("%s - band_t / 2" % YB)
-    for sign, krot, srot in ((-1, None, "x-"), (1, "z180", "x+")):
-        xe = sign * v("pod_w / 2 - band_t")          # the back band's end face
-        out.append(("band_b", "key", (xe, yk, zk), krot))
+    for sign, host, krot, srot in ((-1, "band_l", None, "x+"), (1, "band_r" if P02_ON else None, "z180", "x-")):
+        xw = sign * v("pod_w / 2 - band_t")                       # the side band's inner wall, outside face
+        # the Joints Engineer's key: origin at its back face's centre on its bottom, +X toward the joint
+        # (joints README; corner-keys.csv key_back_centre and carrier_dir)
+        xk = sign * v("pod_w / 2 - band_t + band_wall + ck_x")    # its back face
+        out.append((host, "key", (xk, yk, zk), krot))
         for zz in ("st_z1", "st_z2"):
-            out.append(("band_b", "bolt", (xe + sign * v("st_gap"), yk, zk + v(zz)), srot))
+            out.append((host, "bolt", (xw - sign * v("st_gap"), yk, zk + v(zz)), srot))
         for dy in (-1, 1):
-            xf = xe - sign * v("ck_x - ck_e")
-            yf = yk + dy * v("ck_y / 2 - ck_e")
-            out.append(("band_b", "bscrew", (xf, yf, v("glide_h")), "z-"))
+            out.append((host, "bscrew", (xk - sign * v("ck_e"), yk + dy * v("ck_y / 2 - ck_e"), v("glide_h")), "z-"))
+        out.append((host, "cap", (sign * v("pod_w / 2 - band_t / 2"), v("%s - cap_t / 2" % YB), v("glide_h")), None))
     # glides, screwed into the bands at the factory
     xg = v("%s + band_t / 2 + gl_dx" % XL)
     ng = int(round(v("gl_n_side")))
@@ -1062,26 +1148,56 @@ def hardware_points(design):
     return out
 
 
+# hardware whose first copy (made in step 1 at the root, only to hold the component) step 7 deletes
+HOLDING_KEYS = ("pin", "glide", "rivnut", "washer", "doubler", "key", "bolt", "bscrew", "cap")
+
+
+# parts BASE places from their owner's STEP (D-95: one source): imported once in step 7, placed like hardware
+OWNER_STEP = {
+    "key": "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step",
+}
+
+
+def import_owner_part(design, key):
+    """Import the owner's STEP of a part into the root (its holding copy, deleted after the placing, as for
+    the hardware), keeping its part number and name (register R7). Its geometry is the owner's, not a copy."""
+    app = adsk.core.Application.get()
+    path = os.path.join(REPO, OWNER_STEP[key])
+    if not os.path.exists(path):
+        raise RuntimeError("no owner STEP for %s: %s" % (key, path))
+    root = design.rootComponent
+    before = root.occurrences.count
+    if not app.importManager.importToTarget(app.importManager.createSTEPImportOptions(path), root):
+        raise RuntimeError("STEP import failed: %s" % path)
+    if root.occurrences.count != before + 1:
+        raise RuntimeError("the STEP of %s gave %d occurrences, not 1" % (key, root.occurrences.count - before))
+    comp = root.occurrences.item(root.occurrences.count - 1).component
+    pn, name, vn, cls, _parent = PARTS[key]
+    describe(comp, pn, name, vn, cls)
+    print("  %s imported from %s: %d body(ies), %s" % (pn, OWNER_STEP[key], comp.bRepBodies.count,
+                                                      fmt_box(bbox_mm(comp.bRepBodies.item(0)))))
+
+
 def step7_hardware(design):
     build_rivnut(design)
     build_pin(design)
     build_washer(design)
     build_doubler(design)
-    build_back_key(design)
+    import_owner_part(design, "key")         # the Joints Engineer's 111211 (D-95), not a copy
     build_bolt(design)
     build_bscrew(design)
     build_glide(design)
+    build_cap(design)
     counts = {}
     for host, key, xyz, rot in hardware_points(design):
         place(design, host, key, xyz, rot)
         counts[(host, key)] = counts.get((host, key), 0) + 1
     # remove the holding copies from step 1, so the CAD count equals the BOM count
     root = design.rootComponent
+    holding = {PARTS[k][0] for k in HOLDING_KEYS}
     for i in range(root.occurrences.count - 1, -1, -1):
         occ = root.occurrences.item(i)
-        if occ.component.partNumber in (PARTS["pin"][0], PARTS["glide"][0], PARTS["rivnut"][0],
-                                        PARTS["washer"][0], PARTS["doubler"][0], PARTS["key"][0],
-                                        PARTS["bolt"][0], PARTS["bscrew"][0]):
+        if occ.component.partNumber in holding:
             occ.deleteMe()
     print("step 7: hardware placed")
     for (host, key), n in sorted(counts.items()):
@@ -1104,6 +1220,7 @@ MATERIALS = {
     "bscrew": ("Steel", None, None),
     "mat_f1": ("Aluminum", "Closed-cell foam 200 kg/m3 (ASSUMPTION)", 200.0),
     "glide": ("Aluminum", "Glide envelope 0.15 kg (ASSUMPTION)", None),
+    "cap": ("Aluminum", "Flat PE end cap 950 kg/m3 (ASSUMPTION)", 950.0),
 }
 
 
@@ -1243,7 +1360,7 @@ def step9_checks(design):
     v = lambda e: ev(design, e)  # noqa: E731
     expect = {
         "band_l_tube": (v(XL), v(Y_MITRE_IN) if v(Y_MITRE_IN) < v("-dl_y1") else v("-dl_y1"), v("glide_h"),
-                        v("%s + band_t" % XL), v("%s - cap_t" % YB), v("wall_z0")),
+                        v("%s + band_t" % XL), v(YB), v("wall_z0")),
         "band_b_tube": (v("%s + band_t" % XL), v("%s - band_t" % YB), v("glide_h"),
                         v("%s - band_t" % XR), v(YB), v("wall_z0")),
         "floor_f1": (v("%s + band_t + fl_gap" % XL), v(YW), v("mat_t"),
@@ -1296,10 +1413,48 @@ def step9_checks(design):
         top, v("wall_z0"), stop, v("panel_z0"), "OK" if abs(stop - v("panel_z0")) < 0.01 else "OFF"))
     if abs(stop - v("panel_z0")) >= 0.01:
         box_bad.append("stop height")
+    box_bad += back_corner_check(design)
     ok = not bad and not open_sk and not box_bad and not unexpected and not sk_bad
     print("  RESULT: %s" % ("all checks pass" if ok else "CHECKS FAILED"))
     if not ok:
         raise RuntimeError("step 9 checks failed")
+
+
+def back_corner_check(design):
+    """D-129: the back corners as built against the Joints Engineer's corner-keys.csv (one source, D-95):
+    each key's back face centre and bottom, the side band's fixing and stud bolt holes, and the back band's
+    slot ends. Returns the names of what is off by 0.05 mm or more."""
+    path = os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv")
+    with open(path, encoding="utf-8") as fh:
+        rows = [r for r in csv.DictReader(fh) if r["joint"] in ("back left corner", "back right corner")]
+    off = []
+    near = lambda got, want: any(abs(g[0] - want[0]) < 0.05 and abs(g[1] - want[1]) < 0.05 for g in got)  # noqa: E731
+    keys = [o for o in design.rootComponent.allOccurrences if o.component.partNumber == PARTS["key"][0]]
+    back = find_comp(design, "band_b_tube").bRepBodies.item(0)
+    slot_ends = centres(back, ev(design, "kh_slot"), "x")
+    for r in rows:
+        tube = "band_l_tube" if "left" in r["joint"] else "band_r_tube"
+        if tube not in PARTS:
+            print("  %s: not in this build (P01 scope)" % r["joint"])
+            continue
+        body = find_comp(design, tube).bRepBodies.item(0)
+        fix = centres(body, ev(design, "ck_fix_hole"), "z")
+        studs = centres(body, ev(design, "st_hole"), "x")
+        want_fix = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
+        want_studs = [(float(r["face_centre_y"]), float(r["stud_z_low"])), (float(r["face_centre_y"]), float(r["stud_z_high"]))]
+        want_key = (float(r["key_back_centre_x"]), float(r["key_back_centre_y"]), float(r["key_bottom_z"]))
+        got_keys = [tuple(mm(c) for c in (o.transform2.translation.x, o.transform2.translation.y,
+                                          o.transform2.translation.z)) for o in keys]
+        checks = [
+            ("fixing holes", all(near(fix, w) for w in want_fix)),
+            ("stud bolt holes", all(near(studs, w) for w in want_studs)),
+            ("key position", any(max(abs(a - b) for a, b in zip(g, want_key)) < 0.05 for g in got_keys)),
+            ("back band slot end", near(slot_ends, (float(r["face_centre_y"]), float(r["slot_end_z"])))),
+        ]
+        print("  %s against corner-keys.csv: %s" % (r["joint"], ", ".join(
+            "%s %s" % (name, "MATCH" if good else "OFF") for name, good in checks)))
+        off += ["%s %s" % (r["joint"], name) for name, good in checks if not good]
+    return off
 
 
 # ---------------------------------------------------------------- save, export
@@ -1319,26 +1474,22 @@ def cloud_folder(app):
     raise RuntimeError("no project " + CLOUD[0])
 
 
-def named_files(folder, name):
-    """The folder's files called name, read one entry at a time: an entry Fusion
-    can't read (being uploaded or deleted) is counted and skipped instead of
-    stopping the save (as tools/fusion/run_script.py does since PR #86)."""
-    found, unreadable = [], 0
-    for i in range(folder.dataFiles.count):
-        try:
-            df = folder.dataFiles.item(i)
-            if df.name == name:
-                found.append(df)
-        except Exception:
-            unreadable += 1
-    return found, unreadable
+def _folder_reader():
+    """The shared folder reader (tools/fusion/fusion_folder.py, #213): one listing fetch per scan, loaded
+    fresh by the runner on every run."""
+    import fusion_folder
+    print("  folder reader: %s" % fusion_folder.__file__)
+    return fusion_folder
 
 
 def replace_own(app, folder, name):
-    """Before saving `name`: delete our own previous cloud copy (BASE's files only,
-    each made by this script; no drawing links them yet), closing it first if it
-    is open. Warns when unreadable entries mean an old copy may have been missed."""
-    found, unreadable = named_files(folder, name)
+    """Before saving `name`: delete our own previous cloud copy (BASE's files only, each made by this
+    script; no drawing links them yet), closing it first if it is open; then check, with the shared reader,
+    that a new file of that name can be made without a second copy (it raises if an unreadable entry could
+    be it)."""
+    ff = _folder_reader()
+    files, _unknown, _others = ff.read_folder(folder, stop_when=lambda fs, u, o: name in fs)
+    found = files.get(name, [])
     if found and ARGS.get("replace") != "1":
         raise RuntimeError("'%s' is already in %s/%s; pass --arg replace=1 to replace it" % (name, *CLOUD))
     for i in range(app.documents.count - 1, -1, -1):
@@ -1348,15 +1499,14 @@ def replace_own(app, folder, name):
     for df in found:
         df.deleteMe()
         print("save: deleted the previous cloud file %s (our own)" % name)
-    if unreadable and not found:
-        print("save: WARNING %d folder entr%s could not be read; if one is an old %s, the folder will hold two"
-              % (unreadable, "y" if unreadable == 1 else "ies", name))
+    for w in ff.safe_to_create(folder, name):
+        print("save: warning: %s" % w)
 
 
 def count_after_save(folder, name):
-    found, unreadable = named_files(folder, name)
+    files, unknown, _others = _folder_reader().read_folder(folder, wait_s=0)
     print("save: the folder now holds %d file(s) named %s%s" % (
-        len(found), name, (" (%d unreadable entries)" % unreadable) if unreadable else ""))
+        len(files.get(name, [])), name, (" (%d unreadable entries)" % len(unknown)) if unknown else ""))
 
 
 def step_save(app, doc):
@@ -1486,15 +1636,17 @@ def export_data(design):
     tubes = {
         PARTS["band_l_tube"][0]: {
             "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "Y",
-            "outer_face_length": round(v("%s - cap_t" % YB) - yo, 2),
-            "inner_face_length": round(v("%s - cap_t" % YB) - yi, 2),
+            "outer_face_length": round(v(YB) - yo, 2),
+            "inner_face_length": round(v(YB) - yi, 2),
             "front_end": "mitre to DL's outer facet band piece: %.2f deg from square, long point on the outer face"
                          % math.degrees(math.atan2(yi - yo, v("band_t"))),
-            "back_end": "square, for the end cap"},
+            "back_end": "square, flush with the back face: its key 111211 inside and the flat end cap 118003 (D-129)"},
         PARTS["band_b_tube"][0]: {
             "section": "100 x 40 x %.1f" % v("band_wall"), "axis": "X",
-            "outer_face_length": round(v("pod_w - 2 * band_t"), 2), "inner_face_length": round(v("pod_w - 2 * band_t"), 2),
-            "front_end": "square", "back_end": "square"},
+            "outer_face_length": round(v("pod_w - 2 * band_t - 2 * band_wall"), 2),
+            "inner_face_length": round(v("pod_w - 2 * band_t - 2 * band_wall"), 2),
+            "front_end": "square at its left end, closed by a welded 1.5 end plate (100 x 40) with its open slot (D-129)",
+            "back_end": "the same at its right end; %.1f over both plates" % v("pod_w - 2 * band_t")},
     }
     floor = {"x0": v("%s + band_t + fl_gap" % XL), "x_seam": v("-fl_seam / 2"), "x_lap": v("-fl_seam / 2 + lap_w"),
              "y0": v(YW), "y1": v("%s - band_t - fl_gap" % YB), "t": v("fl_t"), "lap_depth": v("fl_t / 2")}
@@ -1555,10 +1707,10 @@ PART_BUILDS = {
 # system for their part design, so the drawing's standard views (Front, Top, Left)
 # give a first-angle layout with the length horizontal: two Move features driven by
 # parameter expressions. CS-111101: X along the band from its back end (pod Y =
-# pod_d/2 - cap_t), Y from the outer face (pod X = -pod_w/2) inward, Z from the
+# pod_d/2, D-129), Y from the outer face (pod X = -pod_w/2) inward, Z from the
 # band's bottom face (pod Z = glide_h) up. The assembly keeps pod coordinates.
 PART_SYSTEM = {
-    "band_l_tube": ("90 deg", "pod_d / 2 - cap_t", "pod_w / 2", "-glide_h"),
+    "band_l_tube": ("90 deg", "pod_d / 2", "pod_w / 2", "-glide_h"),
 }
 
 
@@ -1722,6 +1874,30 @@ def build_subassembly(app, key):
     doc.close(False)
 
 
+def save_sub_designs_hidden(app, doc, design, keys):
+    """Each subassembly as its own design from ONE build: every other top-level occurrence hidden, the root
+    numbered as the subassembly, then Save As under its name; the next follows from the same open document
+    (a full rebuild per subassembly ran Fusion past the runner's limit on 2026-11-01). A drawing shows what
+    is visible."""
+    root = design.rootComponent
+    proj, folder = cloud_folder(app)
+    app.data.activeProject = proj
+    for key in keys:
+        pn, name, vn, cls, _parent = PARTS[key]
+        doc_name = file_name(pn, name, "CAD")
+        for i in range(root.occurrences.count):
+            occ = root.occurrences.item(i)
+            occ.isLightBulbOn = occ.component.partNumber == pn
+        root.partNumber = pn
+        root.description = "%s | %s | %s | rev %s | DRAFT" % (name, vn, CLASS_NAME.get(cls, cls), REV)
+        replace_own(app, folder, doc_name)
+        if not doc.saveAs(doc_name, folder, "Spaceship %s rev %s, DRAFT, built by base_build.py (rest of BASE hidden)"
+                          % (pn, REV), ""):
+            raise RuntimeError("saveAs failed for %s" % doc_name)
+        print("subassembly %s: saved %s, the rest of BASE hidden" % (pn, doc_name))
+        count_after_save(folder, doc_name)
+
+
 # ---------------------------------------------------------------- the next batch (P02)
 
 P02_ON = False
@@ -1736,7 +1912,8 @@ def load_p02():
         exec(compile(fh.read(), path, "exec"), globals())
     globals()["p02_setup"]()
     P02_ON = True
-    print("scope p02: %d more parts, %d more steps" % (len(globals()["P02_BATCH_KEYS"]), len(globals()["P02_STEPS"])))
+    print("scope p02: %d more parts, %d more steps, from %s" % (
+        len(globals()["P02_BATCH_KEYS"]), len(globals()["P02_STEPS"]), path))
 
 
 def step6_floor_and_more(design):
@@ -1763,6 +1940,12 @@ def run(_context):
     for n in range(2, last + 1):
         steps[n](design)
     print("done through step %d" % last)
+    if last == len(steps) - 1 and ARGS.get("sub_only") == "1":
+        # the subassembly designs from this one build (others hidden); 110000 itself is not saved again
+        keys = [k.strip() for k in ARGS.get("sub_list", ",".join(SUB_DESIGNS)).split(",") if k.strip()]
+        save_sub_designs_hidden(app, doc, design, keys)
+        doc.close(False)
+        return
     if last == len(steps) - 1:
         if ARGS.get("in_place") == "1":
             # save first, so the exports come from a saved version (PR #6 review)
@@ -1774,6 +1957,9 @@ def run(_context):
         if ARGS.get("export") == "1":
             step_export(app, design)
             export_data(design)
+        if ARGS.get("save") == "1" and ARGS.get("sub_list"):
+            save_sub_designs_hidden(app, doc, design,
+                                    [k.strip() for k in ARGS["sub_list"].split(",") if k.strip()])
         if ARGS.get("save") == "1" and ARGS.get("sub_assys"):
             save_subassemblies(app, design, [k.strip() for k in ARGS["sub_assys"].split(",") if k.strip()])
     if ARGS.get("in_place") != "1" and ARGS.get("keep") != "1" and ARGS.get("save") != "1":
@@ -1781,7 +1967,7 @@ def run(_context):
         print("closed the unsaved build document (pass --arg keep=1 to keep it open)")
     elif ARGS.get("save") == "1" and ARGS.get("in_place") != "1":
         doc.close(False)          # saved and exported: free Fusion for the next run
-    if ARGS.get("save") == "1" and ARGS.get("in_place") != "1" and ARGS.get("sub_designs", "1") == "1" \
+    if ARGS.get("save") == "1" and ARGS.get("in_place") != "1" and ARGS.get("sub_designs", "0") == "1" \
             and last == len(steps) - 1:
         for key in SUB_DESIGNS:
             try:

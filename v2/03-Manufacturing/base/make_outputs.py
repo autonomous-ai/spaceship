@@ -40,16 +40,19 @@ SCOPE = "P01 sample scope: the back-left corner and F1; the rest of BASE follows
 # part number: (material, finish, process, mass_status, status, source, note)
 PART_INFO = {
     "110000": ("assembly", "", "", "calculation", "DRAFT", "this list (sum of the rows)", SCOPE),
-    "110101": ("assembly: band tube with its rivnuts, stop washers, spigots and glides fitted at the factory", "", "",
-               "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD", "hardware-fitted subassembly (guideline 4.1)"),
-    "110103": ("assembly: band tube with its rivnuts, stop washers, spigots and glides fitted at the factory", "", "",
-               "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD", "hardware-fitted subassembly; carries the BR bracket rivnuts too"),
+    "110101": ("assembly: band tube with its corner keys, rivnuts, stop washers, spigots, glides and back end cap fitted at the "
+               "factory", "", "", "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD",
+               "hardware-fitted subassembly (guideline 4.1); carries the back corner key 111211 with its stud bolts set (D-129)"),
+    "110103": ("assembly: band tube with its welded end plates, and its rivnuts, stop washers, spigots and glides fitted at the "
+               "factory", "", "", "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD",
+               "hardware-fitted subassembly; drops in between the side bands' key studs (D-129); 2420 over its end plates"),
     "111101": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 (PM ruling; alloy: assumption)", AA20,
                "saw cut (front mitre, back square), CNC drill, deburr, anodise", "calculation", "DRAFT",
                "CAD; finish D-67; section layout study B-BAND", "front end mitred to DL's facet band piece (P02)"),
-    "111103": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 (PM ruling; alloy: assumption)", AA20,
-               "saw cut (square), CNC drill, deburr, anodise", "calculation", "DRAFT",
-               "CAD; finish D-67; section layout study B-BAND", "2420 long: fits the 96 x 48 in pallet (layout study B1)"),
+    "111103": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with 2 welded 1.5 mm end plates (alloy: assumption)", AA20,
+               "saw cut square, weld the end plates, CNC drill, cut the slots, notches and bevels, deburr, anodise",
+               "calculation", "DRAFT", "CAD; finish D-67; section layout study B-BAND; D-129 and joints register J-BASE-02 "
+               "(FR-15) for the end plates", "2420 over its end plates (D-129: ships at 2420 on pallet 2's 2438 deck)"),
     "110401": ("bonded subassembly: F1 plywood with its foam mat bonded underneath at the factory (D-87); adhesive spec HOLD",
                "", "bond (spec HOLD)", "calculation", "DRAFT", "CAD; D-87", "ships as one piece"),
     "111401": ("poplar-core plywood 9 mm with a hard face veneer, low-emission (E1 / CARB P2 class, HOLD), about 450 kg/m3 (assumption, D-85)",
@@ -72,7 +75,7 @@ PART_INFO = {
                "saw, mill; drill and tap 2 x M6 through the end face and 2 x M6 with 15 of full thread in the bottom (PM ruling on F-017)",
                "calculation", "DRAFT", "joints register J-BASE-02 (PR #99); the Joints Engineer's part (model, STEP and "
                "tabulated drawing 111211 to 111214, PM ruling 2026-11-01), placed here by reference",
-               "fixed in the back band's end at the factory; the side band drops onto its 2 hook studs"),
+               "fixed in each side band's back end at the factory (D-129); the back band drops onto its 2 hook studs"),
     "838001": ("steel, property class 8.8 (ISO 898-1)", "zinc plated (ISO 4042)", "", "calculation", "DRAFT",
                "CAD envelope; joints register H-01",
                "corner keys' hook studs: 2 per key, set 1.8 proud at the factory, threadlocked (J-BASE-02)"),
@@ -119,6 +122,10 @@ PART_INFO = {
                "Ø8, 8 proud of the floor top; head inside the foam's cut-out"),
     "111701": ("aluminium extrusion EN AW-6063 T6 (assumption)", AA20, "saw cut to length, deburr, anodise",
                "calculation", "DRAFT", "CAD; D-72 (13 mm, 6 upright then 1:2)", "fixing HOLD"),
+    "118003": ("flat end cap for the 100 x 40 x 1.5 tube's bore, black, no deeper than 2 (D-129; PE assumed, product HOLD)",
+               "black", "bonded into the side band's back end at the factory, flush with the back face (adhesive HOLD)",
+               "calculation", "HOLD", "CAD envelope; joints register H-27 and J-BASE-02 (D-129: the key sits 2.5 from the end)",
+               "closes the side band's back end, face flush with Y = pod_d / 2"),
     "118002": ("levelling glide, M10 stem with a 5 mm hex socket on top, about 36 mm pad; base 6.5 mm or taller, so that "
                "screwed fully home against the M10 rivnut's head it holds the band at 8.5 mm: a hard stop (product HOLD)", "", "",
                "assumption", "HOLD", "layout study B-GLIDE 0.15 kg; lowest setting: PM ruling on F-018 (joints register PR #99)",
@@ -161,21 +168,18 @@ EXTRA = [
      "glides", "pcs", "aluminium or steel (HOLD)", "zinc plated steel or plain aluminium, with the product (HOLD)", 0.006,
      "assumption", "HOLD",
      "number PROPOSED for the joints register (glide nut)", "set through the band's 1.5 bottom face and the 3 mm doubler (grip 4.5) at the factory"),
-    ("118003", "BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD", "Nút bịt đầu ống 100x40", "PI", "110101",
-     "endcap", "pcs", "PE or PP insert cap for a 100 x 40 x 2.0 tube, black (product HOLD)", "", 0.01, "assumption", "HOLD",
-     "number PROPOSED for the joints register", "closes the side band's back end, face flush with Y = pod_d / 2"),
     ("838007", "HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2", "Vít đầu bằng M3 × 8 inox", "PI", "110106",
      "channel", "pcs", "stainless steel A2-70", "plain stainless, as supplied", 0.0006, "assumption", "DRAFT",
      "joints register J-FRONT-04 (838007)", "fixes FRONT's bottom U-channel to the sill at the factory (2 mm key)"),
     ("838008", "HARDWARE - RIVET NUT - M3 - COUNTERSUNK - HOLD", "Tán rút M3 đầu chìm", "PI", "110106",
      "channel", "pcs", "aluminium or steel (HOLD)", "zinc plated steel or plain aluminium, with the product (HOLD)", 0.0005,
-     "assumption", "HOLD", "joints register J-FRONT-04 (838008, HOLD-16)", "flush in the sill's seat, at X 269, 484, 699, 914"),
+     "assumption", "HOLD", "joints register J-FRONT-04 (838008, HOLD-16)", "flush in the sill's seat, at X 269.4, 484.3, 699.2, 905"),
     ("118001", "BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP", "Gioăng mép sàn", "PI", "110000",
      "edgeseal", "m", "silicone bulb, self-adhesive; candidate Pemko S88BL 12.7 x 6.4 (hardware selection D pick 1; "
      "gap range unverified; product HOLD-06)", "",
      0.05, "assumption", "HOLD",
      "joints register H-06 (118001); BASE proposes the seal at the floor's edge against the band's inner face, not under the band",
-     "along F1's edges at the band; keeps v1's open shadow line under the band"),
+     "along the floor panels' edges at the band; keeps v1's open shadow line under the band"),
 ]
 
 
@@ -194,14 +198,18 @@ def param(d, name):
 def extra_qty(d, rule, parent_counts):
     if rule == "glides":
         return parent_counts.get("118002", 0)
-    if rule == "endcap":
-        return 1
     if rule == "channel":
         return 4 if "111301" in d["parts"] else 0
     if rule == "edgeseal":
         f = d["floor_f1"]
         # F1's left edge (along Y) and back edge (along X) meet the band
-        return round(((f["y1"] - f["y0"]) + (f["x_seam"] - f["x0"])) / 1000.0, 3)
+        mm_ = (f["y1"] - f["y0"]) + (f["x_seam"] - f["x0"])
+        f2 = d.get("floor_f2")
+        if f2:      # F2's right edge and back edge meet the band too (its tab stands under the sill, not at the band)
+            xs = [p[0] for p in f2["outline"]]
+            ys = [p[1] for p in f2["outline"]]
+            mm_ += (max(ys) - min(ys)) + (max(xs) - min(xs))
+        return round(mm_ / 1000.0, 3)
     raise ValueError(rule)
 
 
@@ -222,7 +230,6 @@ def make_bom(d):
         if parent != "110000":
             mult = copies.get("110000>%s" % parent, 1)
         per_pod[child] = per_pod.get(child, 0) + n * mult
-    rows = []
     mass_of = {}
     for pn, rec in parts.items():
         if rec.get("mass_kg") is not None:

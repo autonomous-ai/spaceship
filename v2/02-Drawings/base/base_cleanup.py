@@ -39,13 +39,12 @@ def run(_context):
             folder = p.rootFolder.dataFolders.itemByName(CLOUD[1])
     if folder is None:
         raise RuntimeError("no folder %s / %s" % CLOUD)
+    import fusion_folder              # the shared reader (#213): one listing fetch per scan
+    print("folder reader: %s" % fusion_folder.__file__)
+    files, _unknown, _others = fusion_folder.read_folder(folder, wait_s=0)
     gone = []
-    for i in range(folder.dataFiles.count - 1, -1, -1):
-        try:
-            df = folder.dataFiles.item(i)
-            if df.name in deletes:
-                df.deleteMe()
-                gone.append(df.name)
-        except Exception:
-            continue                  # an entry Fusion can't read is skipped (as the runner does)
+    for n in deletes:
+        for df in files.get(n, []):
+            df.deleteMe()
+            gone.append(n)
     print("deleted our own cloud files: %s" % (", ".join(gone) or "none"))
