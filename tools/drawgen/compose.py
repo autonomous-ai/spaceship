@@ -51,11 +51,13 @@ def fmt(v, nd=2):
 
 
 class _Smaller(Exception):
-    """The sheet's row of removed sections and flat pattern ran off the sheet at this scale: draw again smaller."""
+    """The sheet's row of removed sections and flat pattern (or a view square to an angled face, `what`) ran off the
+    sheet at this scale: draw again smaller."""
 
-    def __init__(self, scale):
+    def __init__(self, scale, what=None):
         Exception.__init__(self, scale)
         self.scale = scale
+        self.what = what
 
 
 class NotDrawable(Exception):
@@ -1246,6 +1248,30 @@ def _trace(view, point, normal, ext):
     return None
 
 
+def _row(items, rx0, ry, right_limit, scale):
+    """Where each view of the row under the main views goes (removed sections, views square to angled faces, details,
+    flat patterns; items as (kind, letter, w, h)), left to right, 80 apart: each one's top left corner, or None for a
+    detail with no room (its parent view keeps its tags). A view square to an angled face that runs past the row's end
+    starts a row of its own under it, when it fits there (AIR's 611703: view F after the two sections across its
+    folds); else the sheet is drawn again at the next smaller scale (_Smaller), naming the view, or the sections when
+    they already ran off the row (AIR's 611702: nine of them before its view N)."""
+    out, rx, row_h = [], rx0, 0.0
+    for kind, letter, w, h in items:
+        if kind in ("detail", "aux") and (rx + w + 40 > right_limit or ry - h - 40 < 20):
+            below = ry - row_h - 58
+            if kind == "aux" and rx > rx0 and rx0 + w + 40 <= right_limit and below - h - 40 >= 20:
+                rx, ry, row_h = rx0, below, 0.0
+            elif kind == "aux":
+                raise _Smaller(scale, what=None if rx > right_limit else "view %s (square to an angled face)" % letter)
+            else:
+                out.append(None)
+                continue
+        out.append((rx, ry))
+        rx += w + 80
+        row_h = max(row_h, h)
+    return out
+
+
 def draw(part, spec, out_path, today=None):
     """Write the drawing PDF of part to out_path. spec: per-part options (see specs.py). Returns a report dict."""
     pl = plan_views(part, spec)
@@ -1559,18 +1585,15 @@ def draw(part, spec, out_path, today=None):
         # room over the row for the sections' hole callouts
         under_titles = min([vd_.box()[1] - (28.0 if vd_ is pvd else 10.0) - 4.2 - 3.4 * 2
                             for vd_ in list(vds.values()) + secs])
-        rx, ry = 20 + GAP_PL + 14, min(main_bottom - 34, under_titles - 12.0)
         right_limit = W - 10 - pl.table_w - 4 - 10
-        for vd in place:
-            w, h = vd.size()
-            if vd.kind in ("detail", "aux") and (rx + w + 40 > right_limit or ry - h - 40 < 20):
-                if vd.kind == "aux":
-                    raise NotDrawable("%s: no room on the sheet for view %s (square to an angled face)" % (
-                        part.pn, vd.letter))
+        tops = _row([(vd.kind, getattr(vd, "letter", None)) + tuple(vd.size()) for vd in place], 20 + GAP_PL + 14,
+                    min(main_bottom - 34, under_titles - 12.0), right_limit, scale)
+        for vd, top in zip(place, tops):
+            if top is None:
                 vd.dropped = True       # no room: the parent view keeps its tags
                 continue
-            vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
-            rx += w + 80
+            h = vd.size()[1]
+            vd.off = (top[0] - vd.scale * vd.extent[0], top[1] - h - vd.scale * vd.extent[1])
     # the removed sections and the flat pattern stay on the sheet: the scale was chosen for the main views alone, so
     # where this row runs off the sheet the views are drawn again at the next smaller scale (make retries)
     right_edge = W - 10 - pl.table_w - 4 - 10
@@ -3090,7 +3113,8 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
         except _Smaller as e:
             smaller = [s_ for s_ in ISO_SCALES if s_ < e.scale - 1e-9]
             if not smaller:
-                raise NotDrawable("%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
+                raise NotDrawable("%s: no room on the sheet for %s at any scale" % (
+                    pn, e.what or "its sections and flat pattern"))
             spec = dict(spec, _max_scale=smaller[0])
     spec = dict(spec)
     spec["_scale"] = scale

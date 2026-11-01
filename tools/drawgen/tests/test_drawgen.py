@@ -1013,6 +1013,31 @@ def test_angled_face_gets_its_own_view():
     assert "Holes go THRU the part" in doc[1].get_text()
 
 
+def test_a_view_square_to_an_angled_face_starts_a_row_under_the_others():
+    """AIR's 611703 (#369 with AIR's parts): its view F, square to its 4° facet, ran past the row's end after the two
+    sections across its folds and was refused, though the sheet had room under the row. Laid out as 611703's row is at
+    1:2: F starts a row of its own under them, and the flat pattern follows it. A view that fits nowhere has the sheet
+    drawn again smaller, naming the view, or the sections when they already ran off the row (611702's nine); a detail
+    with no room is still left out (its parent keeps its tags)."""
+    near = lambda a, b: a is not None and all(abs(x - y) < 1e-9 for x, y in zip(a, b))
+    row = [("removed", "D", 100.0, 5.5), ("removed", "E", 90.0, 4.8), ("aux", "F", 252.9, 126.0),
+           ("flat", None, 50.5, 101.2)]
+    tops = compose._row(row, 74.0, 360.8, 555.0, 0.5)
+    under = 360.8 - 5.5 - 58
+    want = [(74.0, 360.8), (254.0, 360.8), (74.0, under), (74.0 + 252.9 + 80, under)]
+    assert all(near(t, w) for t, w in zip(tops, want)) and len(tops) == 4, tops
+    for items, ry, what in ((row[:2] + [("aux", "F", 252.9, 300.0)], 360.8, "view F (square to an angled face)"),
+                            ([("removed", c, 54.0, 34.0) for c in "DEFGHJKLM"] + [("aux", "N", 319.0, 152.6)], 69.0,
+                             None)):
+        try:
+            compose._row(items, 74.0, ry, 555.0, 0.5)
+            raise AssertionError("placed a view that fits nowhere: %s" % items[-1][1])
+        except compose._Smaller as e:
+            assert e.what == what and e.scale == 0.5, (e.what, e.scale)
+    tops = compose._row([("removed", "D", 400.0, 5.0), ("detail", "E", 200.0, 50.0)], 74.0, 360.8, 555.0, 0.5)
+    assert tops[1] is None, tops
+
+
 def test_tapped_holes_wait_for_their_callouts():
     """A part with tapped holes isn't drawn until thread callouts land (item 5; the PM's ruling on #296): the
     front corner key 111212 (M6 tapped, Ø5.03 at a tap drill's size) is refused and says why."""
