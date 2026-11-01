@@ -408,6 +408,85 @@ def test_end_cuts_print_their_angles():
     assert words.count("300") == 1 and "30°" in words, words[:80]
 
 
+def _mitred_angle(d, deg):
+    """A test angle folded once, sharp (R2 comes from its entry): its flange 40 along +Y and its upright 30 up +Z, 2
+    thick, 300 long along X, the upright's +X end mitred deg from square in the XZ plane, a Ø6 hole in the flange at X
+    100 (it pins which way up the blank is drawn); and its blank at R2 and K 0.4 (each straight 4 short of its outside
+    length, the allowance pi/2 x 2.8 between, the mitre on the upright's part). Returns the STEP's and DXF's paths."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt, gp_Vec
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        assert c.IsDone()
+        return c.Shape()
+    f = BRepAlgoAPI_Fuse(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 300, 40, 2).Shape(),
+                         BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 300, 2, 30).Shape())
+    f.SetFuzzyValue(1e-6)
+    f.Build()
+    u = ShapeUpgrade_UnifySameDomain(f.Shape(), True, True, True)
+    u.Build()
+    k = 30.0 * math.tan(math.radians(deg))
+    poly = BRepBuilderAPI_MakePolygon()
+    for q in ((300, -1, 0), (300 - k, -1, 30), (301, -1, 30), (301, -1, 0)):
+        poly.Add(gp_Pnt(*q))
+    poly.Close()
+    sh = cut(u.Shape(), BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(0, 42, 0)).Shape())
+    sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(100, 20, -1), gp_Dir(0, 0, 1)), 3.0, 4).Shape())
+    step = os.path.join(d, "219969_P01_TEST-ANGLE-MITRE_STEP.step")
+    w = STEPControl_Writer()
+    was = Interface_Static.IVal_s("write.surfacecurve.mode")
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(sh, STEPControl_AsIs)
+        assert w.Write(step) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", was)
+    ba = math.pi / 2 * (2.0 + 0.4 * 2.0)
+    wd, yb = 36.0 + 26.0 + ba, 36.0 + ba / 2
+    pts = [(0.0, 0.0), (300.0, 0.0), (300.0, 36.0), (296.0, 36.0 + ba), (300.0 - k, wd), (0.0, wd)]
+    out = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    for i, p in enumerate(pts):
+        q = pts[(i + 1) % len(pts)]
+        out += ["0", "LINE", "8", "CUT", "10", repr(p[0]), "20", repr(p[1]), "11", repr(q[0]), "21", repr(q[1])]
+    out += ["0", "CIRCLE", "8", "CUT", "10", "100.0", "20", "20.0", "40", "3.0"]
+    out += ["0", "LINE", "8", "BEND", "10", "0.0", "20", repr(yb), "11", "298.0", "21", repr(yb)]
+    out += ["0", "ENDSEC", "0", "EOF"]
+    dxf = os.path.join(d, "219969_P01_TEST-ANGLE-MITRE_DXF.dxf")
+    with open(dxf, "w") as fh:
+        fh.write("\n".join(out) + "\n")
+    return step, dxf
+
+
+def test_a_bent_members_end_cut_keeps_its_view_and_check():
+    """Reviewer 15 on #369 (P2 5): folds along any line dropped the end-cut views and their read-back for every bent
+    part, and a part folded one way has no other check of its ends (its DXF's outline isn't read against the model). A
+    test angle folded once, its upright mitred 45° at one end: a view shows the mitre in profile with its angle, and
+    the sheet reads back; against the same angle mitred 36.87° the read-back fails. #369's code drew no such view and
+    no angle, and passed the 36.87° model."""
+    d = os.path.join(TMP, "mitred_angle")
+    os.makedirs(os.path.join(d, "other"), exist_ok=True)
+    step, dxf = _mitred_angle(d, 45.0)
+    row = dict(ROW, part_number="219969", name="TEST - ANGLE - MITRE", material="aluminium sheet 2")
+    p = os.path.join(d, "219969.pdf")
+    compose.make("219969", "none", dict(SPEC, bent={"radius": 2.0, "radius_why": "test", "dxf": dxf}), p, step=step,
+                 row=row)
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    words = fitz.open(p)[0].get_text().split()
+    assert "45°" in words, words[:80]
+    other, _dxf = _mitred_angle(os.path.join(d, "other"), 36.87)
+    f2, _st = readback.check(p, other)
+    assert any("36.87° from square" in x for x in f2), f2
+
+
 def test_bent_sheet_from_step_and_dxf():
     """The Lead's ruling (2026-11-01): bent parts come from the generator. WALL's tray 511101 (radiused bends, two runs
     of them) and INTERIOR's ledge 811101 (sharp folds, its inside radius from its entry) draw from main's STEP and DXF:
