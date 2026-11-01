@@ -86,6 +86,9 @@ def run(root, rev):
             findings += c_geometry.check_gap_rules(root, mdl, bodies, rules)
             ran |= {"C02:" + mdl}
     asm = mdls["assembly"]
+    if asm:
+        findings += c_geometry.check_bond_lines(root, "assembly", asm)    # D-137: every bonded skin bond_t off its frame
+        ran.add("C02:assembly")
     if any(b.solid.holes for b in asm):
         findings += c_geometry.check_alignment(root, "assembly", asm)
         findings += c_geometry.check_unmatched(root, "assembly", asm)
@@ -108,8 +111,15 @@ def run(root, rev):
         ran |= {"C06", "C07", "C10", "C11"}
     # per-part STEP checks
     srules = c_geometry.load_bend_rules(root)
+    row_texts = {}                       # a part's row in words, for the openings it names (C09)
+    for _p, rows in plists:
+        for row in rows:
+            if row["part_number"]:
+                raw = row.get("_raw", {})
+                row_texts[row["part_number"]] = (row_texts.get(row["part_number"], "") + " " + " ".join(
+                    str(raw.get(k, "")) for k in ("name", "process", "note", "notes", "type", "kind", "description"))).strip()
     for p in per_part:
-        findings += c_geometry.check_part_features(root, p, materials, srules)
+        findings += c_geometry.check_part_features(root, p, materials, srules, row_texts=row_texts)
     if per_part:
         ran.add("C09")
     inputs["part_steps"] = [rel(root, p) for p in per_part]
