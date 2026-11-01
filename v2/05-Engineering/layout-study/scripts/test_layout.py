@@ -188,6 +188,11 @@ def test_cad_masses_from_main():
     sh = next(r for k, r in rows.items() if k.startswith("Light shelf"))
     ld = next(r for k, r in rows.items() if k.startswith("Work-wall ledge"))
     assert abs(sh[3] - rollup.INTERIOR["shelf"]) < 1e-9 and rollup.basis(sh) == "CAD, main", sh
+    it, el = rollup.INTERIOR, rollup.ELEC                     # S51: the shelf holds ELECTRICAL's profile parts, not D-126's old ones
+    assert [pn for pn, _q, _m in el["hosted"].get("810201", [])] == it["shelf_elec"] and it["shelf_elec_kg"] > 0, it
+    assert set(it["shelf_gone"]) <= set(rollup.SHELF_REPLACED), it
+    assert abs(it["shelf"] - (it["shelf_listed"] - it["shelf_gone_kg"] + it["shelf_elec_kg"])) < 1e-12, it
+    assert all(pn not in el["hosted"] for pn in ("710000",)) and set(el["hosted"]) <= {"810201"}, el["hosted"]
     assert abs(ld[3] - rollup.INTERIOR["ledge"] - rollup.INTERIOR["rail"]) < 1e-9 and rollup.basis(ld) == "CAD, main", ld
     bb = rows["B1 to B4, back outer panels"]                                      # B1 and B2 from CAD (PR #152)
     k10, k12 = rollup.al_rhs(20, rollup.P04["frame_d"], rollup.T_STUD_LIGHT), rollup.al_rhs(20, rollup.P04["frame_d"], 1.2)
