@@ -98,7 +98,7 @@ class N:
 
 MINE = {
     # glass crate (packaging part 911001, made)
-    "crate_l": N(2200, "mm", "calculation", "this plan", "door unit 2089 + 2 x 5 edge foam + 2 x 45 end rails = 2189, rounded up"),
+    "crate_l": N(2210, "mm", "calculation", "this plan", "door unit 2106 (FRONT, D-132's kick strip) + 2 x 5 edge foam + 2 x 45 end rails = 2206, rounded up"),
     "crate_w": N(1219, "mm", "calculation", "this plan", "the full 48 in deck: door 1177 + 2 x 5 edge foam + 2 x 15 side rails = 1217"),
     "crate_side_rail": N(15, "mm", "assumption", "this plan", "plywood side rail, so the 1177 door (FRONT's CAD: its magnetic seal half 2 mm past the glass) fits a 1219 crate"),
     "crate_end_rail": N(45, "mm", "assumption", "this plan", "timber end rail"),

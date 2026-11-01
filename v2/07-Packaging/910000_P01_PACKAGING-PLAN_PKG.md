@@ -74,7 +74,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 
 | Tier | Lane mm | Label | Piece | kg | Along × across × up with its wrap and bed, mm | Fitted in step |
 | --- | ---: | --- | --- | ---: | --- | --- |
-| Tier 1: glass crate | crate | - | GLASS CRATE 911001 with 2-01, 2-02 | 113.3 | 2200 × 1219 × 238 | 10, 11 |
+| Tier 1: glass crate | crate | - | GLASS CRATE 911001 with 2-01, 2-02 | 113.3 | 2210 × 1219 × 238 | 10, 11 |
 | Tier 2: DR face down, felt up, and the base band | 1030 | **2-03** | FRONT - DECOR BLOCK ASSY - DR | 18.9 | 2300 × 1030 × 236 | 10 |
 | Tier 2: DR face down, felt up, and the base band | 50 | **2-04** | BASE - BAND ASSY - BACK | 3.2 | 2430 × 50 × 128 | 2 |
 | Tier 2: DR face down, felt up, and the base band | 58 | **2-05** | BASE - BAND ASSY - SIDE - LH | 2.4 | 1527 × 58 × 128 | 2 |
@@ -96,7 +96,7 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-21** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1173 × 1058 × 94 | 19 |
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 150 | **2-22** | POD - INSTALLATION KIT (OPEN FIRST) | 3.5 | 900 × 150 × 80 | 1 |
 
-**Glass crate (911001), tier 1.** Outside 2200 x 1219 x 238 mm; inside 2,110 x 1,189 x 208 mm: the door layer 164 mm (door on 75 mm foam blocks so its lower pull hangs free), a 12 mm separator, then the fixed glass layer 32 mm on top, because it is fitted first (step 10). Door 2096 x 1177 mm and fixed glass 2034 x 1031 mm each keep 5 mm of edge foam all round. Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate.
+**Glass crate (911001), tier 1.** Outside 2210 x 1219 x 238 mm; inside 2,120 x 1,189 x 208 mm: the door layer 164 mm (door on 75 mm foam blocks so its lower pull hangs free), a 12 mm separator, then the fixed glass layer 32 mm on top, because it is fitted first (step 10). Door 2096 x 1177 mm and fixed glass 2034 x 1031 mm each keep 5 mm of edge foam all round. Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate.
 
 **Tier separators (911003).** Timber battens carried on posts at the corners and sides, so no tier rests on a decor skin, a felt face or the crate lid's span: the crate lid takes tier 2's load only over its frame.
 
@@ -310,7 +310,7 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: the 
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 42 pieces, 0 fail | yes |
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 960 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
 | K5 | Pallet 2: lanes within 1219 across and 2438 along, parts within their tier, loaded height 1829 or less | loaded height 1563 mm; widest tier 1219 mm; longest lane 2430 mm; failing tiers none | yes |
-| K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2110 × 1189 × 208 mm; outside height 238 mm; all fit | yes |
+| K6 | Glass crate: door and fixed glass fit inside with edge foam; crate on the deck | inside 2120 × 1189 × 208 mm; outside height 238 mm; all fit | yes |
 | K7 | The guide's bolts match the joints register, joint by joint | guide 92 (80 × M6 × 16, 12 × M6 × 25); register 92; differences none | yes |
 | K8 | Assembly time within REQ-ASM-01's 4 hour limit (clock: steps 1 to 22) | 135 min for 2 people (4.5 person-hours); target about 60 min; limit 240 min | yes |
 | K9 | First out is first fitted: pallet 1 from its open face; inside the crate, the top pane is fitted first | pallet 1 steps 3 to 14, never going back: True; crate top 2-01 (step 10) over 2-02 (step 11) | yes |
@@ -430,7 +430,7 @@ The controlling numbers are metric (guideline §3.1; conventions §2). For US LT
 | `pack_cap_h` | 25 mm | assumption | layout study | top cap board and corner protection |
 | `pack_kg_std` | 6 kg | assumption | layout study | corner boards, foam, straps, film per 48x40 pallet |
 | `pack_kg_long` | 9 kg | assumption | layout study | same for a 96x48 pallet |
-| `crate_l` | 2200 mm | calculation | this plan | door unit 2089 + 2 × 5 edge foam + 2 × 45 end rails = 2189, rounded up |
+| `crate_l` | 2210 mm | calculation | this plan | door unit 2106 (FRONT, D-132's kick strip) + 2 × 5 edge foam + 2 × 45 end rails = 2206, rounded up |
 | `crate_w` | 1219 mm | calculation | this plan | the full 48 in deck: door 1177 + 2 × 5 edge foam + 2 × 15 side rails = 1217 |
 | `crate_side_rail` | 15 mm | assumption | this plan | plywood side rail, so the 1177 door (FRONT's CAD: its magnetic seal half 2 mm past the glass) fits a 1219 crate |
 | `crate_end_rail` | 45 mm | assumption | this plan | timber end rail |
