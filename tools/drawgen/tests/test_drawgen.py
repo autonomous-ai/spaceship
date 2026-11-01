@@ -498,7 +498,7 @@ def test_a_sharp_v_groove_is_refused():
         assert "V-groove fold is sharp in the model" in str(e), e
 
 
-def _rounded_skin(path, r=2.0):
+def _rounded_skin(path, r=2.0, shift=0.0):
     """A V-grooved ACP skin as WALL now models it (the Lead's ruling, 2026-11-01): a 3 mm panel, its main face 300 long
     and its return 46 (outside lengths, to the fold's outside sharp), 100 high, sharp inside (the groove closes) and
     rounded outside at R r (the maker's guide: 2 minimum)."""
@@ -542,7 +542,14 @@ def _rounded_skin(path, r=2.0):
     w = STEPControl_Writer()
     Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
     try:
-        w.Transfer(mk.Shape() if r else shape, STEPControl_AsIs)
+        out_shape = mk.Shape() if r else shape
+        if shift:               # the whole skin moved along X (its fold with it)
+            from OCP.BRepBuilderAPI import BRepBuilderAPI_Transform
+            from OCP.gp import gp_Trsf, gp_Vec
+            tr = gp_Trsf()
+            tr.SetTranslation(gp_Vec(shift, 0, 0))
+            out_shape = BRepBuilderAPI_Transform(out_shape, tr, True).Shape()
+        w.Transfer(out_shape, STEPControl_AsIs)
         assert w.Write(path) == IFSelect_RetDone
     finally:
         Interface_Static.SetIVal_s("write.surfacecurve.mode", 1)
@@ -620,6 +627,12 @@ def test_v_groove_with_its_outside_radius():
     data["flat"]["chains"][0]["radii_out"] = [2.5]
     f4 = readback.vgroove_radius_fails(data, readback.step_faces(step, "219995"))
     assert any("no outside arc R2.5" in x_ for x_ in f4), f4
+    # Reviewer 6's P3 on #341: the arc must be at its fold, not anywhere: the same skin 6 mm along X fails
+    data = readback.read_data(doc)
+    assert not readback.vgroove_radius_fails(data, readback.step_faces(step, "219995"))
+    moved_skin = _rounded_skin(os.path.join(d, "219995_P01_TEST-SKIN-MOVED_STEP.step"), shift=6.0)
+    f5 = readback.vgroove_radius_fails(data, readback.step_faces(moved_skin, "219995"))
+    assert any("isn't at the fold (its axis 6 from where" in x_ for x_ in f5), f5
 
 
 def test_refuses_a_folded_sheet():

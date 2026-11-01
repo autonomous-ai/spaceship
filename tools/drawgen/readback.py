@@ -540,14 +540,33 @@ def vgroove_radius_fails(data, faces):
     fails = []
     for ci, (ch, mc) in enumerate(zip(fl["chains"], fl["map"]["chains"])):
         ax = mc["axis"]
+        fls = mc["flanges"]
         for j, r in enumerate(ch.get("radii_out") or []):
             if not r:
                 fails.append("chain %d's fold %d is recorded sharp" % (ci + 1, j + 1))
                 continue
-            if not any(f["kind"] == "cylinder" and "d" in f and not f.get("concave") and abs(f["r"] - r) < 0.01
-                       and abs(abs(dot(f["d"], ax)) - 1) < 1e-6 for f in faces):
+            # where its arc must be (Reviewer 6's P3 on #341: tied to its fold, not any arc of that size): the fold's
+            # outside sharp is where flange j+1's recorded line starts; the arc's axis lies R / sin(half the angle
+            # between the flanges) from it, between them
+            Dj, Dk = fls[j]["D"], fls[j + 1]["D"]
+            sharp = tuple(fls[j + 1]["m0"] * Dk[i] + fls[j + 1]["o0"] * fls[j + 1]["N"][i] for i in range(3))
+            bis = tuple(Dk[i] - Dj[i] for i in range(3))
+            nb = math.sqrt(dot(bis, bis)) or 1.0
+            half = math.radians(180.0 - ch["angles"][j]) / 2
+            C = tuple(sharp[i] + bis[i] / nb * r / math.sin(half) for i in range(3))
+
+            def off_axis(f):
+                o = sub(C, f["o"])
+                along = dot(o, f["d"])
+                return math.sqrt(max(0.0, dot(o, o) - along * along))
+            near = [f for f in faces if f["kind"] == "cylinder" and "d" in f and not f.get("concave") and
+                    abs(f["r"] - r) < 0.01 and abs(abs(dot(f["d"], ax)) - 1) < 1e-6]
+            if not near:
                 fails.append("chain %d's fold %d: the STEP has no outside arc R%s along its bend line" % (
                     ci + 1, j + 1, _fmtv(r)))
+            elif min(off_axis(f) for f in near) > 0.01:
+                fails.append("chain %d's fold %d: the STEP's outside arc R%s isn't at the fold (its axis %s from where "
+                             "the flanges put it)" % (ci + 1, j + 1, _fmtv(r), _fmtv(min(off_axis(f) for f in near))))
     return fails
 
 
