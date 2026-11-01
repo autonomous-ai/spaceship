@@ -811,7 +811,7 @@ NUDGE_AFTER_S = 60.0    # an open of this run this old gets the read-only check 
 NUDGE_EVERY_S = 60.0    # ... and again each this long while it lasts
 NUDGE_WATCH_S = 10.0    # after a check, look this long for the open's end line, to log whether it ended right after
 NUDGE_POLL_S = 2.0      # re-reading the open log this often meanwhile (shorter for a short --nudge-after)
-NUDGE_CALL_S = 30.0     # one check waits at most this long for Fusion's answer
+NUDGE_CALL_S = 30.0     # one check waits at most this long for Fusion's answer (each of its two calls)
 
 
 class OpenNudger:
@@ -839,9 +839,15 @@ class OpenNudger:
         return self
 
     def stop(self):
+        """Stop, and wait for a check in flight: its two calls (initialize, the script) of up to NUDGE_CALL_S each,
+        then its look at the open log, which ends at once now. So no check outlives the run's lock (Reviewer 5,
+        P3 on #402)."""
         self._stop.set()
         if self.thread is not None:
-            self.thread.join(NUDGE_CALL_S + 5.0)
+            self.thread.join(2 * NUDGE_CALL_S + self.watch_s)
+            if self.thread.is_alive():
+                self.log("run_script: WARNING: a read-only check of this run still hadn't ended %d s after the run "
+                         "stopped it" % round(2 * NUDGE_CALL_S + self.watch_s))
 
     def _pending(self):
         return {(o.get("what"), o.get("started")): o for o in unfinished_opens(self.open_log, self.offset)}
