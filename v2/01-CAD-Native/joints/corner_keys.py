@@ -21,8 +21,18 @@ Inputs (status in brackets):
   in its bottom wall (BASE's fit check, 2026-11-01) [decided; the slot and notch PROPOSED].
 - Front pieces: BASE's outer-face points, relayed by the PM on 2026-10-31 [source].
 - Key: 35 wide, 75 tall, 30 long on its centre line, its stud face cut at the
-  carrier's mitre; studs 26 and 60 above its bottom; fixing holes 10.5 from its back
-  face and 7.0 either side of its centre line (this register, PROPOSED).
+  carrier's mitre; studs 26 and 60 above its bottom. Fixing holes, two M6 in its bottom,
+  each with an 838010 flanged button head (flange up to 13.6) through a 7.0 hole in the
+  carrier's bottom wall (this register, PROPOSED; the PM's ruling of 2026-11-01: no edge
+  exception, every 7.0 hole at least 14 from the carrier's cut end, the screws at least
+  14 apart):
+  - 111212, 111213, 111214 and 111215 (FR1): 10.5 from the back face, 7.0 either side of
+    the centre line;
+  - 111211 (the back corners): 6.0 either side of the centre line, the +y one 10.5 from
+    the back face and the -y one 17.8 (stepped 7.3), so each stays 14.0 from the side
+    band's back end at Y 850 with the key turned either way. At FR1 that stepped hole
+    would be 12.2 from the rail's end, so FR1 keeps the first layout under its own
+    number, 111215.
 
 Sign of the cut: in the key's own frame (x along the carrier toward the joint,
 z up, y = z cross x, so y points to the left of x), a positive cut makes the
@@ -64,8 +74,14 @@ NOTCH = (12.0, 9.0)    # the head notch in the back band's bottom wall: wide (th
                        # from the end (the head's far face is 1.8 + 6 = 7.8 from the side band's face) (PROPOSED)
 HEAD_GAP = 1.8         # each stud bolt's head off the face it stands from: the 1.5 plate and 0.3 (PROPOSED)
 BOLT_LEN = 16.0        # 838001, M6 x 16 (joints register H-01)
-FIX_X = 10.5           # fixing holes from the key's back face, PROPOSED (over 2 x the hole, C09)
-FIX_Y = 7.0            # either side of the centre line, PROPOSED (10.5 from the side faces)
+FIX = {                # fixing holes in the key's frame: (x from its back face, y from its centre line), PROPOSED
+    "111211": ((10.5, 6.0), (17.8, -6.0)),     # back corners: 14.0 from Y 850 either way round, 14.05 apart
+    "other": ((10.5, 7.0), (10.5, -7.0)),      # 10.5 from the back and the side faces (C09), 14 apart
+}
+TAP = 5.03             # the key's M6 tap drill: C09 wants 2 x it from every face of the key
+FIX_HOLE = 7.0         # the carrier's clearance hole: 2 x it from the carrier's cut end (PM ruling)
+FLANGE = 13.6          # 838010's flange, at most: the screws stay at least 14 apart (PM ruling)
+KEY_W = 35.0
 
 
 def unit(v):
@@ -129,11 +145,38 @@ def joints():
     # inline: the intake support rail's end at X 915 meets FR1, square (FR1: Y -850 to -810).
     # BASE rulings 2026-11-01 (relayed by the PM): moved from X 947 to X 920 to keep the intake
     # mesh fully open, then to X 915 (a 32 mm stub) for the 30 mm key; FR1 runs X 218 to 915
-    rows.append(("111211", "front right inline (X 915)", "intake support rail, end at X 915",
+    rows.append(("111215", "front right inline (X 915)", "intake support rail, end at X 915",
                  "FR1, end cap at X 915", (915.0, -830.0), (-1.0, 0.0), 0.0,
                  "BASE ruling 2026-11-01: FR1 X 218 to 915, Y -850 to -810, square cut (stub 32)"))
     checks = {"FL inner corner": (inner, (-1210.0, -652.07)), "FR inner corner": (inner3, (1210.0, -654.17))}
     return rows, checks, (turn, turn2, turn3)
+
+
+def check_holes(pn, joint, face, u, cut, src, holes):
+    """The PM's rules for the fixing holes, checked, not assumed: each 7.0 hole at least 14 from the carrier's cut
+    end (the side band's back end at the back corners, the stud face's line elsewhere), the screws at least 14
+    apart, and every tapped hole 2 x its drill from every face of the key (C09)."""
+    (x1, y1), (x2, y2) = holes
+    if math.hypot(x2 - x1, y2 - y1) < 14.0 - 1e-6:
+        raise SystemExit("%s %s: fixing screws %.2f apart, under 14" % (pn, joint, math.hypot(x2 - x1, y2 - y1)))
+    a = math.radians(cut)
+    yv = left(u)
+    nf = (math.cos(a) * u[0] - math.sin(a) * yv[0], math.cos(a) * u[1] - math.sin(a) * yv[1])
+    for hx, hy in holes:
+        if "D-129" in src:                       # the side band's back end, square across it
+            end = SK["pod_d"] / 2 - hy
+        else:                                    # the carrier ends at the stud face
+            end = (face[0] - hx) * nf[0] + (face[1] - hy) * nf[1]
+        if end < 2 * FIX_HOLE - 1e-6:
+            raise SystemExit("%s %s: a 7.0 hole %.2f from the carrier's end, under 14" % (pn, joint, end))
+    bx, by = face[0] - KEY_LEN * u[0], face[1] - KEY_LEN * u[1]
+    for hx, hy in holes:
+        kx = (hx - bx) * u[0] + (hy - by) * u[1]          # in the key's frame
+        ky = (hx - bx) * yv[0] + (hy - by) * yv[1]
+        face_d = (KEY_LEN - kx) * math.cos(a) - ky * math.sin(a)   # to the cut stud face, square to it
+        for what, d in (("back", kx), ("side", KEY_W / 2 - abs(ky)), ("stud face", face_d)):
+            if d < 2 * TAP - 1e-6:
+                raise SystemExit("%s %s: tapped hole %.2f from the key's %s, under 2 x %.2f" % (pn, joint, d, what, TAP))
 
 
 def build():
@@ -158,9 +201,8 @@ def build():
         # stud face's outward normal in the key frame is (cos a, -sin a)
         n = (math.cos(a) * u[0] - math.sin(a) * y[0], math.cos(a) * u[1] - math.sin(a) * y[1])
         bx, by = cx - KEY_LEN * u[0], cy - KEY_LEN * u[1]
-        fx, fy = bx + FIX_X * u[0], by + FIX_X * u[1]
-        f1 = (fx + FIX_Y * y[0], fy + FIX_Y * y[1])
-        f2 = (fx - FIX_Y * y[0], fy - FIX_Y * y[1])
+        f1, f2 = [(bx + hx * u[0] + hy * y[0], by + hx * u[1] + hy * y[1]) for hx, hy in FIX.get(pn, FIX["other"])]
+        check_holes(pn, joint, (cx, cy), u, cut, src, (f1, f2))
         s1, s2 = z0 + STUD_Z[0], z0 + STUD_Z[1]
         open_slot = "D-129" in src           # the back band goes straight down onto both side bands' studs
         if open_slot:
