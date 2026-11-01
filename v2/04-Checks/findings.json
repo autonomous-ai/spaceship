@@ -1,5 +1,5 @@
 {
- "next": 190,
+ "next": 211,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3094,7 +3094,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3119,7 +3119,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -3149,7 +3149,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -3407,7 +3407,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3432,7 +3432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3457,7 +3457,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3482,7 +3482,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3507,7 +3507,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3532,7 +3532,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3557,7 +3557,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3582,7 +3582,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3607,7 +3607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3632,7 +3632,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3657,7 +3657,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3682,7 +3682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3707,7 +3707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3732,7 +3732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3757,7 +3757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3782,7 +3782,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3807,7 +3807,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -3832,7 +3832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4335,7 +4335,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C01",
@@ -4394,7 +4394,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4419,7 +4419,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4444,7 +4444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4469,7 +4469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4494,7 +4494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4519,7 +4519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4544,7 +4544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4569,7 +4569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4687,7 +4687,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -4742,7 +4742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4767,7 +4767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4792,7 +4792,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4817,7 +4817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4842,7 +4842,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4867,7 +4867,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4892,7 +4892,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -4927,7 +4927,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c",
+   "last_seen": "2026-11-01 316e2e7",
    "closed": "2026-11-01 a8d75f6"
   },
   {
@@ -4953,7 +4953,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -4982,7 +4982,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5011,7 +5011,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5040,7 +5040,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5069,7 +5069,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5098,7 +5098,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5127,7 +5127,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5156,7 +5156,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5185,7 +5185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5214,7 +5214,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5243,7 +5243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5272,7 +5272,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5301,7 +5301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5330,7 +5330,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5359,7 +5359,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5388,7 +5388,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5417,7 +5417,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C06",
@@ -5446,7 +5446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5471,7 +5471,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5496,7 +5496,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5521,7 +5521,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5546,7 +5546,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5571,7 +5571,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5596,7 +5596,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5621,7 +5621,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5646,7 +5646,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5671,7 +5671,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5696,7 +5696,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 d79cd8c"
+   "last_seen": "2026-11-01 316e2e7"
   },
   {
    "check": "C05",
@@ -5780,6 +5780,531 @@
     {
      "date": "2026-11-01",
      "rev": "d79cd8c",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 316e2e7"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "351103",
+   "severity": "major",
+   "message": "351103 FRONT - DOOR HINGE-SIDE STOP - DL is one component holding 4 bodies of 3 different shapes (HINGE-SIDE STOP 1 (ANGLE, BONDED), HINGE-SIDE STOP 2 (ANGLE, BONDED), HINGE-SIDE STOP 3 (ANGLE, BONDED), HINGE-SIDE STOP 4 (ANGLE, BONDED)) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 3,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|351103",
+   "id": "F-190",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "351104",
+   "severity": "major",
+   "message": "351104 FRONT - DECOR FRAME - DL is one component holding 26 bodies of 16 different shapes (B01 BACK RING BOTTOM 20 x 20 x 1.5, B02 BACK RING DOOR SIDE 20 x 20 x 1.5, B03 BACK RING SLOPE UNDER DT 20 x 20 x 1.5, B04 BACK RING BOLT LINE 60 x 20 x 1.5, H1 HINGE POST 1 (HINGE H1) 60 x 20 x 1.5, H2 HINGE POST 2 (HINGE H2) 60 x 20 x 1.5, H3 HINGE POST 3 (HINGE H3) 60 x 20 x 1.5, P1 DOOR-SIDE FRO) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (26 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 26,
+    "shapes": 16,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|351104",
+   "id": "F-191",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "351204",
+   "severity": "major",
+   "message": "351204 FRONT - DECOR FRAME - DT is one component holding 13 bodies of 11 different shapes (B01 BACK RING BOTTOM 20 x 20 x 1.5, B02 BACK RING DR JOINT 20 x 20 x 1.5, B03 BACK RING TOP 20 x 20 x 1.5, B04 BACK RING SLOPE OVER DL 20 x 20 x 1.5, B05 BACK RING POST 20 x 20 x 1.5, C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5, C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5, C03 CHAMFER CROSS TUBE RIGHT) in 350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step (13 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 13,
+    "shapes": 11,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|351204",
+   "id": "F-192",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "351306",
+   "severity": "major",
+   "message": "351306 FRONT - DECOR FRAME - DR is one component holding 24 bodies of 21 different shapes (B01 BACK RING BOTTOM 40 x 20 x 1.2, B02 BACK RING BOLT LINE 80 x 20 x 1.2, B03 BACK RING TOP 20 x 20 x 1.0, B04 BACK RING DT JOINT 20 x 20 x 1.0, B05 BACK RING DT LEDGE 20 x 20 x 1.2, B06 BACK RING DIAGONAL 20 x 20 x 1.0, B07 BACK RING GLASS EDGE 20 x 20 x 1.0, B08 BACK RING BAND 60 x 20 x 1.2, C01 ) in 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step (24 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 24,
+    "shapes": 21,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|351306",
+   "id": "F-193",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "368005",
+   "severity": "major",
+   "message": "368005 FRONT - FRAME-STOP SEAL is one component holding 4 bodies of 3 different shapes (FRAME-STOP SEAL PS 1515 - HINGE SIDE 1, FRAME-STOP SEAL PS 1515 - HINGE SIDE 2, FRAME-STOP SEAL PS 1515 - HINGE SIDE 3, FRAME-STOP SEAL PS 1515 - HINGE SIDE 4) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 3,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|368005",
+   "id": "F-194",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "350001",
+   "severity": "major",
+   "message": "350001 FRONT - DECOR BLOCK ASSY - DL has no drawing PDF (350001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|350001",
+   "id": "F-195",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "350002",
+   "severity": "major",
+   "message": "350002 FRONT - DECOR BLOCK ASSY - DT has no drawing PDF (350002_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|350002",
+   "id": "F-196",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "350003",
+   "severity": "major",
+   "message": "350003 FRONT - DECOR BLOCK ASSY - DR has no drawing PDF (350003_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|350003",
+   "id": "F-197",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "350004",
+   "severity": "major",
+   "message": "350004 FRONT - AIR SUPPLY ASSY - DR is a reserved space until AIR designs it (D-105): typed reserved air space in v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|350004",
+   "id": "F-198",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351101",
+   "severity": "severe",
+   "message": "351101 FRONT - DECOR SKIN - DL has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: it isn't a sheet part (180.2 thick across 2287.0); its row's process names bond.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351101",
+   "id": "F-199",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351103",
+   "severity": "severe",
+   "message": "351103 FRONT - DOOR HINGE-SIDE STOP - DL has no drawing PDF (351103_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351103",
+   "id": "F-200",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351104",
+   "severity": "severe",
+   "message": "351104 FRONT - DECOR FRAME - DL has no drawing PDF (351104_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351104",
+   "id": "F-201",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351201",
+   "severity": "severe",
+   "message": "351201 FRONT - DECOR SKIN - DT has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: it isn't a sheet part (202.7 thick across 280.0); its row's process names bond.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351201",
+   "id": "F-202",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351203",
+   "severity": "severe",
+   "message": "351203 FRONT - DOOR TOP STOP - DT has no drawing PDF (351203_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351203",
+   "id": "F-203",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351204",
+   "severity": "severe",
+   "message": "351204 FRONT - DECOR FRAME - DT has no drawing PDF (351204_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351204",
+   "id": "F-204",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351301",
+   "severity": "severe",
+   "message": "351301 FRONT - DECOR SKIN - DR has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: it isn't a sheet part (205.0 thick across 1020.0); its row's process names bond.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351301",
+   "id": "F-205",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351306",
+   "severity": "severe",
+   "message": "351306 FRONT - DECOR FRAME - DR has no drawing PDF (351306_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351306",
+   "id": "F-206",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "351402",
+   "severity": "major",
+   "message": "351402 FRONT - AIR INTAKE RISER - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for AIR's intake riser (611501 in AIR's supply-box assembly): a reserved air space with no mass, no drawing and no BOM count.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|351402",
+   "id": "F-207",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "351403",
+   "severity": "major",
+   "message": "351403 FRONT - AIR TRANSITION - LOWER - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for the lower air transition, which AIR designs: a reserved air space with no mass, no drawing and no BOM count.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|351403",
+   "id": "F-208",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "351404",
+   "severity": "major",
+   "message": "351404 FRONT - SUPPLY FAN BOX - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for AIR's supply fan box (610401 in AIR's supply-box assembly): a reserved air space with no mass, no drawing and no BOM count.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|351404",
+   "id": "F-209",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "351405",
+   "severity": "major",
+   "message": "351405 FRONT - AIR TRANSITION - UPPER - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for the upper air transition, which AIR designs: a reserved air space with no mass, no drawing and no BOM count.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|351405",
+   "id": "F-210",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 316e2e7",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "316e2e7",
      "event": "opened"
     }
    ]

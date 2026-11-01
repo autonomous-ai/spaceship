@@ -563,7 +563,7 @@ def dxf_shapes(path):
 
 
 DENSITY = re.compile(r"\d+(?:[.,]\d+)?\s*(?:kg|g)\s*/\s*m\s*[23²³]|\bgsm\b|\bdensity\b", re.I)
-DEPTH_WORDS = re.compile(r"\bpockets?\b|\bdepth\b|\bblind\b|\brebate|\bstepped\b|\bcounterbor", re.I)
+DEPTH_WORDS = re.compile(r"\bpockets?\b|\bdepth\b|\bblind\b|\brebate|\bcounterbor", re.I)   # not "stepped": a stepped outline is a through cut
 
 
 def felt_row_lacks(root, pn, thickness=None):
@@ -586,6 +586,7 @@ def felt_row_lacks(root, pn, thickness=None):
                     lacks.append("density or grade")
                 sizes = _cell(row, r"size|dimension|thick|^t_?mm$")
                 nums = [float(x) for _k, v in sizes for x in re.findall(r"\d+(?:\.\d+)?", v)]
+                nums += [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)\s*mm\b", mat)]    # "PET felt 9 mm"
                 if thickness is not None and not any(abs(n - thickness) <= 0.2 for n in nums):
                     lacks.append("thickness (%g mm, as in its STEP)" % thickness)
                 elif thickness is None and not nums:

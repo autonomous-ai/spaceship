@@ -1383,8 +1383,9 @@ def test_a_felt_with_openings_passes_on_its_dxf_and_row(tmp_path):
         f.message for f in c_drawings.check_drawings(str(tmp_path), {"511302"}, {"511302": felt.holes}, names,
                                                      {"511302": [len(felt.faces)]}, prism_by_pn={}))
     assert "density or grade" in found({"material": "polyester"})
-    assert "thickness (9 mm" in found({"size_mm": "12 x 1000 x 500"})
+    assert "thickness (9 mm" in found({"size_mm": "12 x 1000 x 500", "material": "PET felt, 1800 g/m2"})
     assert "through features only" in found({"size_mm": "9 x 1000 x 500, two pockets"})
+    assert found({"size_mm": "", "material": "PET felt 9 mm", "note": "its outline is stepped and slanted"}) == ""
     assert "a piece cut straight through (a face sits between" in found(shape_why=(None, "a face sits between the "
                                                                                        "sheet's two faces (a pocket)"))
     _felt_dxf(dxf, _dxf_rect(1000, 500))                                               # the opening left out of the DXF
