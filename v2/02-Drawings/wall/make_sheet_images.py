@@ -167,7 +167,7 @@ def frame_blocks(pn, src=None):
         key = (("%s %s" % (b["part"], b["name"])) if members else b["name"].rstrip("0123456789 ").strip(), sec, d[2])
         cut[key] = cut.get(key, 0) + 1
     data = data_block(pn, frame, rep, "1:5", "A2", "steel box tube S280GD+Z (EN 10346) or SGC400 (JIS G3302), "
-                      "yield 280 MPa or more, pre-galvanized; welded (D-131)", mass)
+                      "yield 280 MPa or more, zinc Z100, pre-galvanized; welded (D-131, J-FRAME-01)", mass)
     if pos["back"]:
         seam_x = bx[3] if not pos["right"] else bx[0]
         datums = ("2. Datums. A = bottom face of the bottom rail (pod Z %.2f, on the %s). B = the closing-seam face "
@@ -215,7 +215,8 @@ def frame_blocks(pn, src=None):
          "line: 1.41 off each member where the two are the same size, 2.24 off a 20 × 40 and 1.12 off a 40 × 40 where "
          "they meet. The plate is welded in, its edges ground flush on the skin and seam faces. The studs fit square "
          "between the rails and are welded there. Weld coupons prove the corner before the first frame is welded. "
-         "Pre-galvanized tube; the weld spots zinc-painted after welding; no hot-dip (it warps thin frames). Each "
+         "Pre-galvanized tube, zinc Z100; after welding and grinding, every weld and burnt zone wire-brushed and "
+         "coated with a 2-component zinc-rich epoxy; no hot-dip and no vent holes (J-FRAME-01). Each "
          "member is its own part (D-120). %sCut lengths outer to outer after the cut-back, ±0.5 (assumption) until "
          "the frame maker's capability is known (guideline 6.3)." % extra) if members else
         ("6. Member joints: internal cleats per D-115 (internal corner and T cleats, crimped, with structural "

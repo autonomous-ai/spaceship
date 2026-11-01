@@ -71,19 +71,19 @@ HW = {
                    calc=0.000915, calc_basis="the Joints CAD's 0.000915 kg (BUILD-RECORD)"),
     # the mitre plates (D-131, joints register H-40 to H-42): made hardware, welded into the frame's mitres
     "831007": dict(name="HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL", vi="Tấm đệm góc vát 20 × 40 - 45° - thép 2.0",
-                   kind="MP", material="steel plate 2.0, galvanized, yield 280 MPa or more (as the frame tube)",
-                   finish="galvanized; zinc-painted with the welds", maker="made (register H-40)", sku="", torque="",
+                   kind="MP", material="steel plate 2.0, galvanized Z100, yield 280 MPa or more (as the frame tube, J-FRAME-01)",
+                   finish="galvanized Z100; its welds wire-brushed and coated with a 2-component zinc-rich epoxy", maker="made (register H-40)", sku="", torque="",
                    mass="cad", mstat="calculation", basis="CAD body: 28.3 x 40 x 2.0 (H-40), 7850 kg/m3",
                    calc=0.0178, calc_basis="28.3 x 40 x 2.0 at 7850 kg/m3 (register: 17.8 g)"),
     "831008": dict(name="HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL",
                    vi="Tấm đệm góc vát 20 × 40 với 40 × 40 - thép 2.0", kind="MP",
-                   material="steel plate 2.0, galvanized, yield 280 MPa or more (as the frame tube)",
-                   finish="galvanized; zinc-painted with the welds", maker="made (register H-41)", sku="", torque="",
+                   material="steel plate 2.0, galvanized Z100, yield 280 MPa or more (as the frame tube, J-FRAME-01)",
+                   finish="galvanized Z100; its welds wire-brushed and coated with a 2-component zinc-rich epoxy", maker="made (register H-41)", sku="", torque="",
                    mass="cad", mstat="calculation", basis="CAD body: 44.7 x 40 x 2.0 (H-41), 7850 kg/m3",
                    calc=0.0281, calc_basis="44.7 x 40 x 2.0 at 7850 kg/m3 (register: 28.1 g)"),
     "831009": dict(name="HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL", vi="Tấm đệm góc vát 40 × 40 - 45° - thép 2.0",
-                   kind="MP", material="steel plate 2.0, galvanized, yield 280 MPa or more (as the frame tube)",
-                   finish="galvanized; zinc-painted with the welds", maker="made (register H-42)", sku="", torque="",
+                   kind="MP", material="steel plate 2.0, galvanized Z100, yield 280 MPa or more (as the frame tube, J-FRAME-01)",
+                   finish="galvanized Z100; its welds wire-brushed and coated with a 2-component zinc-rich epoxy", maker="made (register H-42)", sku="", torque="",
                    mass="cad", mstat="calculation", basis="CAD body: 56.6 x 40 x 2.0 (H-42), 7850 kg/m3",
                    calc=0.0355, calc_basis="56.6 x 40 x 2.0 at 7850 kg/m3 (register: 35.5 g)"),
     "848001": dict(name="SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA", vi="Gioăng mối nối 3.97",
@@ -375,9 +375,10 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
         member_rows.append(row(level=2, part_number=m["part_number"], name=en_name(m),
                                name_vi=vi_name(m["description"], m["part_number"]), kind="MP",
                                material="steel box tube %s, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified "
-                                        "yield 280 MPa or more (D-131; the Joints Engineer's gauges and grade)" % sec,
-                               finish="pre-galvanized tube; the weld spots zinc-painted after welding, no hot-dip "
-                                      "(it warps thin frames; Joints, D-131)",
+                                        "yield 280 MPa or more, zinc Z100 (J-FRAME-01, D-131)" % sec,
+                               finish="pre-galvanized tube, zinc Z100; after welding and grinding every burnt zone "
+                                      "wire-brushed and coated with a 2-component zinc-rich epoxy; no hot-dip "
+                                      "(J-FRAME-01)",
                                process="saw cut, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6); %s; welded "
                                        "into its frame (D-131)" % mitre_ends(key, prm, upper, back),
                                qty=q, unit="pc", cut_length_mm=member_length(b), size_mm=sec,
@@ -397,8 +398,8 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
     rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame),
                     name_vi=vi_name(frame["description"], frame["part_number"]), kind="BS",
                     material="the steel box tube members below and the 4 mitre plates, welded (D-131)",
-                    finish="pre-galvanized tube; the weld spots zinc-painted after welding, no hot-dip (Joints, D-131); "
-                           "the skin's bond prep on zinc per the adhesive maker (HOLD)",
+                    finish="pre-galvanized tube, zinc Z100; every weld and burnt zone wire-brushed and coated with a "
+                           "2-component zinc-rich epoxy; no hot-dip (J-FRAME-01); the skin's bond prep per the bond spec",
                     process="weld in a jig: each mitred corner with its 2 mm mitre plate (the Joints Engineer's register "
                             "part), and every stud's T joints (D-131; weld sizes and the coupons per the joints register); "
                             "then set the rivnuts and stop washers",
