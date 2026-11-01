@@ -19,6 +19,33 @@ def decided_parts():
         return parts_for("plan", FINAL)
 
 
+def repeated_keys(path, name):
+    """Keys written more than once in the dict literal assigned to `name` in a file: Python keeps only the last,
+    so the earlier entry vanishes without a word (S51 was both D-126's profile and FRONT's decor blocks)."""
+    import ast
+    from collections import Counter
+    with open(path, encoding="utf-8") as fh:
+        tree = ast.parse(fh.read())
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == name for t in node.targets):
+            if isinstance(node.value, ast.Dict):
+                keys = [k.value for k in node.value.keys if isinstance(k, ast.Constant)]
+                return sorted(k for k, c in Counter(keys).items() if c > 1)
+    raise AssertionError("no dict literal %s in %s" % (name, path))
+
+
+def test_every_source_label_and_input_name_written_once():
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), "inputs.py")
+    assert repeated_keys(here, "SOURCES") == []
+    assert repeated_keys(here, "P") == []
+
+
+def test_a_repeated_label_is_found(tmp_path):
+    f = tmp_path / "x.py"
+    f.write_text('SOURCES = {\n    "S51": ("a", "b"),\n    "S50": ("c", "d"),\n    "S51": ("e", "f"),\n}\n')
+    assert repeated_keys(str(f), "SOURCES") == ["S51"]
+
+
 def test_nested_override_keeps_outer_values():
     """Reviewer 2: an inner override used to drop the outer one's keys on exit (wall thickness fell back to 38 mm)."""
     base = p("wall_t_plan")
@@ -188,7 +215,7 @@ def test_cad_masses_from_main():
     sh = next(r for k, r in rows.items() if k.startswith("Light shelf"))
     ld = next(r for k, r in rows.items() if k.startswith("Work-wall ledge"))
     assert abs(sh[3] - rollup.INTERIOR["shelf"]) < 1e-9 and rollup.basis(sh) == "CAD, main", sh
-    it, el = rollup.INTERIOR, rollup.ELEC                     # S51: the shelf holds ELECTRICAL's profile parts, not D-126's old ones
+    it, el = rollup.INTERIOR, rollup.ELEC                     # S52: the shelf holds ELECTRICAL's profile parts, not D-126's old ones
     assert [pn for pn, _q, _m in el["hosted"].get("810201", [])] == it["shelf_elec"] and it["shelf_elec_kg"] > 0, it
     assert set(it["shelf_gone"]) <= set(rollup.SHELF_REPLACED), it
     assert abs(it["shelf"] - (it["shelf_listed"] - it["shelf_gone_kg"] + it["shelf_elec_kg"])) < 1e-12, it
