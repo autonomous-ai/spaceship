@@ -52,22 +52,33 @@ AIR_PARAMS = [
     # ---- ELECTRICAL's hub and harness through the column and soffit (agreed by ELECTRICAL and CEILING 2026-11-01, the
     #      Lead's ask; the grommets are ELECTRICAL's parts): the hub takes the zone above, the harness enters through the FR
     #      angle, rises in a channel in the front fill and on the FR angle, and reaches the exhaust fans through the soffit
-    ("hn_entry_d", "12 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the harness's grommeted entry through "
-     "the FR angle's side leg (4 mm rims on the 20 mm leg of 2 mm: the opening rule's 2 x the sheet)"),
+    ("hn_entry_d", "11.1 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 15:47 (sized to the real parts): the harness's two entries through the FR angle's side leg, one per "
+     "cable (5.3 and 4.2), each a Heyco SB 437-5 snap bushing's Ø11.1 hole (7.9 bore, panels to 3.2): 4.45 rims on "
+     "the 20 mm leg of 2 mm, over the opening rule's 2 x the sheet"),
     ("hn_entry_dz", "40 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the entry 40 above the hub zone's "
      "bottom (Z 1150 at hub_z 1200), straight into the zone"),
+    ("hn_entry_p", "25 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 15:47 (sized to the real parts): the second entry 25 above the first (Z 1175)"),
+    ("hn_tie_p", "15 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 15:47 (sized to the real parts): each tie point is a pair of holes 15 apart in Z, so a plain tie loops "
+     "out and back and only its 1.3 mm strap sits in the 5 mm gap to the lining (a push-mount tie's arrow would cross it)"),
     ("hn_tie_d", "6.4 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: tie holes for the air-path leads "
      "(flame-rated, tied about every 150 mm: the Lead's rule)"),
     ("hn_tie_z1", "1960 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the FR angle's first tie hole, between the fill's top and the soffit"),
-    ("hn_tie_z2", "2090 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the FR angle's second tie hole"),
+    ("hn_tie_z2", "dt_zb - 30 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the FR angle's second tie point, 30 under the "
+     "soffit's underside (Z 2090), so its pair follows the column's top"),
     ("hn_ch_w", "24 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the 24 x 24 cable channels cut in the fills"),
-    ("hn_sof_d", "19.1 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the exhaust fan leads' membrane-grommeted "
-     "hole through the soffit's fixed underside over the column (it crosses from the supply plenum into the soffit)"),
+    ("hn_sof_d", "12 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 15:47 (sized to the real parts): the exhaust fan leads' hole through the soffit's fixed underside over the "
+     "column (it crosses from the supply plenum into the soffit), sealed by a Heyco RLTCG M12 cordgrip (Ø12.0 hole, "
+     "1.7 to 5.3 cable, IP68; no maker sheet shows a membrane grommet for Ø19.1 in 3 mm)"),
+    ("hn_sof_felt", "30 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 15:47 (sized to the real parts): the felt cut back to Ø30 round that hole, so the cordgrip grips only the "
+     "3 mm ACP (hidden: the hole opens into the column)"),
     ("hn_sof_dy", "19 mm", "mm", "calculation", "that hole's centre 19 behind the fixed underside's room edge (Y -316): "
-     "a 9.45 rim, over the opening rule's 6 on 3 mm ACP (2 x the sheet); over the front fill's channel"),
-    ("hn_box_d", "12 mm", "mm", "confirmed", "ELECTRICAL and CEILING 2026-11-01: the grommeted hole in the exhaust fan box's bottom"),
-    ("hn_box_dy", "12.5 mm", "mm", "calculation", "that hole 12.5 clear of the box's room-side lining, in the open "
-     "passage (Y -390): through the bottom, not the 50 mm lining"),
+     "a 13 rim, over the opening rule's 6 on 3 mm ACP (2 x the sheet); over the front fill's channel"),
+    ("hn_box_d", "12 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 15:47 (sized to the real parts): the hole in the exhaust fan box's bottom, a second M12 cordgrip"),
+    ("hn_box_dy", "17.5 mm", "mm", "calculation", "that hole 17.5 inside the far-end lining's room-side edge (Y -392.6), "
+     "so the lining's path round it keeps 5 mm of lining to that edge"),
+    ("hn_lin_d", "25 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01 15:47 (sized to the real parts), CEILING's pick of the two ways: a Ø25 path for the leads up through the "
+     "exhaust box's far-end lining over that hole, which sits under the lining (X 1108 to 1158); moving the hole to X 1095 "
+     "would take the cable under the fan box's room-side mount angle"),
     ("hn_ty0", "43.5 mm", "mm", "confirmed", "ELECTRICAL 2026-11-01: the column's high plenum plate's first tie hole "
      "43.5 from the door side (Y -600), the others 100 apart (-500, -400)"),
     ("hn_tz", "15 mm", "mm", "calculation", "the plenum plate's tie holes 15 above its bottom edge (Z 1905): ELECTRICAL "
@@ -764,15 +775,21 @@ def features():
     # its holes are cut in FL's side leg where the turn takes them to FR's points (Z mirrored about the angle's middle):
     # FL shows them hidden behind the column's left face and the left kick grille
     hp, fl = harness_points(), layout_box("COLUMN ANGLE FL")
-    for z, d in [(hp["entry_z"], "hn_entry_d")] + [(t, "hn_tie_d") for t in hp["tie_z"]]:
+    ent = [hp["entry_z"], "%s + hn_entry_p" % hp["entry_z"]]
+    for z, d in [(e, "hn_entry_d") for e in ent] + [(p, "hn_tie_d") for t in hp["tie_z"] for p in (t, "%s + hn_tie_p" % t)]:
         out.append(("COLUMN ANGLE FL", "xcircle", (hp["leg_y"], "(%s) + (%s) - (%s)" % (fl[4], fl[5], z), fl[0],
                                                    "%s + ang_t" % fl[0], d)))
+    pz = "%s + hn_tz" % layout_box("COLUMN PLENUM PLATE HIGH")[4]
     for y in hp["plate_y"]:
-        out.append(("COLUMN PLENUM PLATE HIGH", "xcircle", (y, "%s + hn_tz" % layout_box("COLUMN PLENUM PLATE HIGH")[4],
-                                                            "%s - plate_t" % XR, XR, "hn_tie_d")))
+        for z in (pz, "%s + hn_tie_p" % pz):
+            out.append(("COLUMN PLENUM PLATE HIGH", "xcircle", (y, z, "%s - plate_t" % XR, XR, "hn_tie_d")))
+    # the fixed underside: the cordgrip's Ø12 through the ACP, and the felt under it cut back to Ø30
     out.append(("SOFFIT UNDERSIDE FIXED", "zcircle", (hp["ch_x"], hp["sof_y"], ZS0, "%s + face_t" % ZS0, "hn_sof_d")))
+    out.append(("SOFFIT UNDERSIDE FIXED", "zcircle", (hp["ch_x"], hp["sof_y"], ZS0, "%s + face_felt" % ZS0, "hn_sof_felt")))
     ez = "%s + face_t + sof_fill_t" % ZS0
     out.append(("EXHAUST FAN BOX", "zcircle", (hp["ch_x"], hp["box_y"], ez, "%s + fbox_t" % ez, "hn_box_d")))
+    lee = layout_box("FAN BOX LINING EXHAUST FAR END")
+    out.append(("FAN BOX LINING EXHAUST FAR END", "zcircle", (hp["ch_x"], hp["box_y"], lee[4], lee[5], "hn_lin_d")))
     # the grille's rivnuts in the sleeve's flange, and the grille's bolt holes over them (J-AIR-03, R-J6's 7.0)
     for _n, x, y in sleeve_rivnuts():
         out.append(("ROOF SLEEVE", "zcircle", (x, y, "pod_h", "pod_h + slv_t", "hole_rvn")))
@@ -792,7 +809,10 @@ def cutouts():
     eg = lay["EXHAUST GRILLE"]
     hub_cut = (hub[0], hub[1], "%s - face_t - 40 mm" % YFACE, hub[3], hub[4], hub[5])
     eg_cut = (eg[0], eg[1], eg[2], eg[3], ZS0, "%s + face_t" % ZS0)    # the grille's opening through the face
-    out = [("COLUMN FACE FRONT", hub_cut), ("COLUMN FILL FRONT", hub_cut), ("SOFFIT UNDERSIDE LEFT", eg_cut)]
+    # in the fill the hub's cut runs on to the FR angle, so no 1 mm of fill stays between the entries and the hub
+    # (ELECTRICAL 2026-11-01 15:47)
+    hub_fill = (hub[0], "%s - ang_f" % XR) + hub_cut[2:]
+    out = [("COLUMN FACE FRONT", hub_cut), ("COLUMN FILL FRONT", hub_fill), ("SOFFIT UNDERSIDE LEFT", eg_cut)]
     for name, x, y in [p for p in stud_points() if p[0].endswith("ROOM")] + lock_points():
         # a head pocket: the head plus 1.5 all round (the room-side studs' and the lock screws')
         out.append(("SOFFIT FACE FRONT", ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x,

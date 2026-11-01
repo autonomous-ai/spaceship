@@ -254,6 +254,8 @@ def size_tol(v, key):
         parts.append("%.1f x %.1f x %.1f" % tuple(d))
     size = "; ".join(sorted(set(parts)))
     if key in SOFT:
+        if any(t in names for t, _c in A.cutouts()) or any(n in names for n, _k, _a in A.features()):
+            return size, "knife cut +/-2 (assumption); notched or holed as the AIR model shows, cut file HOLD"
         return size, "knife cut +/-2 (assumption); a plain piece, no drawing (D-89)"
     if key in FLAT:
         return size, "ISO 2768-m; flat cut part, no drawing: its DXF is the outline (D-89 part 4)"

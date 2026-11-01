@@ -461,13 +461,21 @@ class FrontScrews(unittest.TestCase):
         self.assertFalse([n for n, _k, _a in A.features() if n in under[:2]])
         # the fixed part's one hole (ELECTRICAL's exhaust fan leads, 2026-11-01) opens into the column under it, so it
         # can't be seen: wholly inside the column's plan between its front angles' legs and its front face
-        col = b6("COLUMN FACE FRONT")
+        col, fr, und = b6("COLUMN FACE FRONT"), b6("COLUMN ANGLE FR"), b6("SOFFIT UNDERSIDE FIXED")
         for n, k, a in A.features():
             if n == "SOFFIT UNDERSIDE FIXED":
-                x, y, _z0, _z1, d = (A.ev(V, e) for e in a)
+                x, y, z0, z1, d = (A.ev(V, e) for e in a)
                 self.assertEqual(k, "zcircle")
                 self.assertGreaterEqual(x - d / 2, b6("COLUMN ANGLE FL")[1], "over the column, right of its left angle")
-                self.assertLessEqual(x + d / 2, b6("COLUMN ANGLE FR")[0], "left of its right angle")
+                if z1 - z0 < V["face_t"] - 1e-9:
+                    # the felt cut back round the cordgrip (ELECTRICAL 2026-11-01 15:47): a recess in the felt only, over
+                    # the column's top, clear of the FR angle's legs and short of the underside's room edge
+                    self.assertAlmostEqual(z1 - z0, V["face_felt"])
+                    self.assertLessEqual(x + d / 2, fr[1] - V["ang_t"], "clear of the FR angle's side leg")
+                    self.assertLessEqual(y + d / 2, fr[3] - V["ang_t"], "clear of the FR angle's front leg")
+                    self.assertGreaterEqual(und[3] - (y + d / 2), 3.0, "short of the underside's room edge")
+                    continue
+                self.assertLessEqual(x + d / 2, fr[0], "left of its right angle")
                 self.assertLessEqual(y + d / 2, col[2] + 1e-9, "behind the column's front face")
         for sname, wb, _hb in A.front_screw_boxes():
             if sname.startswith("B08"):
@@ -592,14 +600,18 @@ class HarnessRoute(unittest.TestCase):
 
     def test_fr_angle_points(self):
         """FR is FL turned 180 deg about Y (TURNED): FL's holes, mirrored about the angle's mid-height and moved to the
-        right side leg, must land on the agreed points: entry Ø12 at Y -307, Z 1150; ties Ø6.4 at Z 1960 and 2090."""
+        right side leg, must land on the agreed points (ELECTRICAL 15:47): entries Ø11.1 at Y -307, Z 1150 and 1175;
+        tie pairs Ø6.4 at Z 1960/1975 and 2090/2105."""
         fl, fr = b6("COLUMN ANGLE FL"), b6("COLUMN ANGLE FR")
         got = []
         for y, z, x0, x1, d in self.feats("COLUMN ANGLE FL", "xcircle"):
             self.assertAlmostEqual(x0, fl[0])
             self.assertAlmostEqual(x1 - x0, V["ang_t"])
             got.append((round(y, 2), round(fr[4] + fr[5] - z, 2), d))         # where FR shows it
-        self.assertEqual(got, [(-307.0, 1150.0, 12.0), (-307.0, 1960.0, 6.4), (-307.0, 2090.0, 6.4)])
+        self.assertEqual(got, [(-307.0, 1150.0, 11.1), (-307.0, 1175.0, 11.1), (-307.0, 1960.0, 6.4), (-307.0, 1975.0, 6.4),
+                               (-307.0, 2090.0, 6.4), (-307.0, 2105.0, 6.4)])
+        for _y, z, d in got:          # the opening rule's rim (2 x the sheet, 3 or more) to the angle's ends
+            self.assertGreaterEqual(min(z - d / 2 - fr[4], fr[5] - (z + d / 2)), max(2 * V["ang_t"], 3.0))
         for y, _z, d in got:                                                  # the opening rule's 4 mm rims (2 x 2 mm)
             self.assertGreaterEqual(min(y - d / 2 - fr[2], fr[3] - (y + d / 2)), 2 * V["ang_t"] - 1e-9)
 
@@ -609,11 +621,21 @@ class HarnessRoute(unittest.TestCase):
             if t in cuts:
                 cuts[t].append(tuple(round(A.ev(V, e), 2) for e in b))
         self.assertIn((1128.0, 1152.0, -321.0, -297.0, 1290.0, 1890.0), cuts["COLUMN FILL FRONT"])
-        (x, y, z0, z1, d), = self.feats("SOFFIT UNDERSIDE FIXED", "zcircle")
-        self.assertEqual((round(x, 2), round(y, 2), d), (1140.0, -316.0, 19.1))
+        # the hub's cut in the fill runs to the FR angle (X 1152): no sliver between the entries and the hub
+        self.assertIn((971.0, 1152.0, -337.0, -285.0, 1110.0, 1290.0), cuts["COLUMN FILL FRONT"])
+        self.assertAlmostEqual(b6("COLUMN ANGLE FR")[0], 1152.0)
+        (x, y, z0, z1, d), (fx, fy, fz0, fz1, fd) = self.feats("SOFFIT UNDERSIDE FIXED", "zcircle")
+        self.assertEqual((round(x, 2), round(y, 2), d), (1140.0, -316.0, 12.0))
         self.assertGreaterEqual(b6("SOFFIT UNDERSIDE FIXED")[3] - (y + d / 2), 2 * 3.0)   # 6 rim on 3 mm ACP
+        self.assertEqual((fx, fy, fd, fz0, fz1 - fz0), (x, y, 30.0, z0, V["face_felt"]))   # the felt cut back, ACP left
         (bx, by, bz0, bz1, bd), = self.feats("EXHAUST FAN BOX", "zcircle")
-        self.assertEqual((round(bx, 2), bd), (1140.0, 12.0))
+        self.assertEqual((round(bx, 2), round(by, 2), bd), (1140.0, -392.64, 12.0))
+        # the leads' Ø25 path up through the far-end lining: wholly inside it, 5 or more of lining all round
+        (px, py, pz0, pz1, pd), = self.feats("FAN BOX LINING EXHAUST FAR END", "zcircle")
+        lee = b6("FAN BOX LINING EXHAUST FAR END")
+        self.assertEqual((px, py, pz0, pz1, pd), (bx, by, lee[4], lee[5], 25.0))
+        self.assertGreaterEqual(min(px - pd / 2 - lee[0], lee[1] - (px + pd / 2), py - pd / 2 - lee[2],
+                                    lee[3] - (py + pd / 2)), 5.0 - 1e-9)
         lin = b6("FAN BOX LINING EXHAUST SIDE 2")
         self.assertGreaterEqual(lin[2] - (by + bd / 2), 6.0, "the box's hole clear of its room-side lining")
         ch = [c for c in cuts["SOFFIT FILL UNDER"] if c[0] == 1128.0]
@@ -621,7 +643,9 @@ class HarnessRoute(unittest.TestCase):
         self.assertLessEqual(ch[0][2], by - bd / 2)                            # the channel reaches both holes
         self.assertGreaterEqual(ch[0][3], y + d / 2)
         ties = self.feats("COLUMN PLENUM PLATE HIGH", "xcircle")
-        self.assertEqual(len(ties), 3)
+        self.assertEqual(sorted((round(t[0], 2), t[1]) for t in ties),
+                         [(-597.64, 1905.0), (-597.64, 1920.0), (-497.64, 1905.0), (-497.64, 1920.0), (-397.64, 1905.0),
+                          (-397.64, 1920.0)])
         plate = b6("COLUMN PLENUM PLATE HIGH")
         for ty, tz, _x0, _x1, td in ties:
             self.assertGreaterEqual(tz - td / 2 - plate[4], 6.0, "tie above the plate's bottom edge")
