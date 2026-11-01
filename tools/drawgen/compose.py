@@ -1161,7 +1161,9 @@ def plan_views(part, spec):
     # every end cut (a mitre, a compound cut's faces) shown in profile by a drawn view: edge on, the member's axis
     # across the view, where its angle from square prints at its end. A view is added where none does (FRONT's #320:
     # 8 tubes whose only view saw their mitres face on, as bands); a cut no plain view shows in profile is refused
-    for b in ([] if getattr(part, "flat", None) else part.bodies):     # a bent part's faces are flanges, not cuts
+    # folds along any line: its faces at any angle are flanges, not cuts; a part folded one way keeps its end cuts (a
+    # mitred ledge, Reviewer 15 on #369: the DXF's outline isn't read against the model there)
+    for b in ([] if getattr(getattr(part, "flat", None), "mode", None) == "unfold" else part.bodies):
         lax_ = geom.member_axis(b)
         if lax_ is None:
             continue
@@ -2293,10 +2295,14 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     # an end cut at an angle (a mitre): in the plain view where its face shows edge on, the angle from square and
     # the true lengths along the member's two faces (guideline 6.1: true lengths and angle, not a box)
     angle_texts = []
-    # a bent part's cut edges (its corner reliefs' 45° ends) come from its flat pattern, which the DXF defines
-    for b in ([] if getattr(part, "flat", None) else part.bodies):
+    # folds along any line: no end cuts; a part folded one way only where it is a member (a mitred ledge): a tray's
+    # cut edges (its corner reliefs' 45° ends) come from its flat pattern, which the DXF defines
+    fl_ = getattr(part, "flat", None)
+    for b in ([] if getattr(fl_, "mode", None) == "unfold" else part.bodies):
         lk = max(range(3), key=lambda i: b.size[i])
-        lax = geom.member_axis(b) or tuple(1.0 if i == lk else 0.0 for i in range(3))
+        lax = geom.member_axis(b) or (None if fl_ else tuple(1.0 if i == lk else 0.0 for i in range(3)))
+        if lax is None:
+            continue
         top_corners = {}        # view -> (view, extent, the mitre corners on its top edge)
         for n, off, area, face in geom.planes(b):
             c = abs(vdot(n, lax))

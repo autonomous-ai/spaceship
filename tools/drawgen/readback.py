@@ -1532,7 +1532,9 @@ def check(pdf_path, step_path=None, verbose=False):
     if data.get("notches") or data.get("chamfers") or any(f["kind"] == "open_slot" for f in data["features"]):
         fails += open_slot_fails(data, faces, rows, tb)
         fails += flat_feature_fails(data, [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]], tb)
-    if not data.get("flat"):        # a bent part's slanted edges are its outline, checked against its DXF
+    # folds along any line: its slanted edges are its outline, checked against its DXF; a part folded one way keeps the
+    # end-cut check (its DXF's outline isn't read against the model: Reviewer 15 on #369)
+    if (data.get("flat") or {}).get("mode") != "unfold":
         fails += end_cut_fails(data, faces, tb)
     fails += cut_list_fails(doc, data)
     if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
