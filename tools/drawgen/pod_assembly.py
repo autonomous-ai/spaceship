@@ -672,14 +672,15 @@ def _extra_notes(e, got, out, assy):
     if door and dw and "door clear height" in got:
         notes.append(
             "Door clear opening with the door open %s° outward (calculation on FRONT's STEPs): width %s, from DL's "
-            "hinge-side stop %s to the fixed glass's door edge (the opening narrows upward with the door's slanted "
+            "hinge-side stop (%s) to the fixed glass's door edge (the opening narrows upward with the door's slanted "
             "edge); height %s under the door catch %s in DT (A-A). The hinge isn't named yet (HOLD H01): the leaf is "
             "turned about a pivot taken at X %s, Y %s (D-154's limit), the hinges' HOLD spaces left out "
             "(assumption); the open leaf stays clear of these sizes." % (
                 A.fmt(door["angle"], 1),
                 ", ".join("%s at Z %s%s" % (A.fmt(r["value"], 1), A.fmt(r["start"][2], 1),
                                             " (C-C)" if r.get("view") else "") for r in dw),
-                dw[0]["lo_pn"], A.fmt(got["door clear height"]["value"], 1), got["door clear height"]["hi_pn"],
+                ", ".join(sorted({r["lo_pn"] for r in dw})), A.fmt(got["door clear height"]["value"], 1),
+                got["door clear height"]["hi_pn"],
                 A.fmt(door["pivot"][0], 1), A.fmt(door["pivot"][1], 1)))
     if out["codes"]:
         by = {}
