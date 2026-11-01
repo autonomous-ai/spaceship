@@ -1019,10 +1019,16 @@ def fill_numbers(repo_root, code):
         for r in csv.DictReader(fh):
             if r["position"] == code:
                 forms[int(r["bay"])] = r["form"]
+    sizes = {}
+    with open(os.path.join(repo_root, "v2/03-Manufacturing/wall/FILL-PIECES.csv"), encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            sizes[r["form"]] = "%s X %s" % (r["w_mm"], r["h_mm"])
     byform = {}
     for r in allocation(repo_root):
         m = re.search(r"FILL PIECE (F\d\d) ", r["name"])
-        if m:
+        if m and m.group(1) in sizes and "%s %s" % (m.group(1), sizes[m.group(1)]) in r["name"]:
+            if m.group(1) in byform:
+                raise RuntimeError("two live numbers for fill form %s %s" % (m.group(1), sizes[m.group(1)]))
             byform[m.group(1)] = (r["part_number"], r["name"], r["name_vi"])
     out = {bay: byform[f] for bay, f in forms.items() if f in byform}
     if ARGS.get("dry") == "1":            # a dry run (never saved) labels a form whose number isn't allocated yet
@@ -1173,7 +1179,7 @@ def offset_origin(comp, dx, dy, dz, angle=None, name=None):
     return jo
 
 
-def joint_copy(design, parent, comp, ref, tgt, want, label):
+def joint_copy(design, parent, comp, ref, tgt, want, label, angle=None):
     """A copy of comp in `parent` (D-120: copies of one part), held by a rigid joint IN THE ROOT from comp's joint
     origin `ref` to parent's joint origin `tgt` (the dry run of 06:45 showed a joint made inside a sub-component
     stays where it is, while the root's joints place the part), checked against its box `want` (mm, pod
@@ -1189,6 +1195,8 @@ def joint_copy(design, parent, comp, ref, tgt, want, label):
         jin = root.joints.createInput(g1, g2)
         jin.setAsRigidJointMotion()
         jin.isFlipped = flip
+        if angle:                          # turned about the joint's Z at the joint origin (a joint origin's own
+            jin.angle = vi(angle)          # angle would turn its offsets too: the dry run of 07:20)
         j = root.joints.add(jin)
         got = bbox(occ_r.bRepBodies.item(0))
         if j.healthState == healthy and all(abs(x - y) < 0.05 for x, y in zip(got, want)):
@@ -1504,9 +1512,9 @@ def place_piece_copies(design, parent, built, copies, label):
         if pn not in refs:
             refs[pn] = offset_origin(comp, *xyz(low, along), name="JOINT ORIGIN - PIECE %s" % pn)
         tgt_corner = corners["low"] if fit == "as cut" else corners["high_turned"]
-        tgt = offset_origin(parent, *xyz(tgt_corner, along), angle="180 deg" if fit != "as cut" else None,
-                            name="JOINT ORIGIN - PIECE %s %s" % (pn, fit.upper()))
-        occ = joint_copy(design, parent, comp, refs[pn], tgt, want, "%s %s %s" % (label, pn, fit.upper()))
+        tgt = offset_origin(parent, *xyz(tgt_corner, along), name="JOINT ORIGIN - PIECE %s %s" % (pn, fit.upper()))
+        occ = joint_copy(design, parent, comp, refs[pn], tgt, want, "%s %s %s" % (label, pn, fit.upper()),
+                         angle="180 deg" if fit != "as cut" else None)
         body = occ.bRepBodies.item(0)
         shut = [pt for pt in open_pts
                 if body.pointContainment(adsk.core.Point3D.create(pt[0] / 10.0, pt[1] / 10.0, pt[2] / 10.0)) == inside]

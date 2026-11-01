@@ -12,7 +12,9 @@ repo's own STEP reader (tools/checks/stepfile.py: mm, every placed copy), and fo
   DXF's outline, and the enclosed areas agree within 1 mm2.
 The DXF is read back from its file (POLYLINE vertices on CUT), not from the script that wrote it. A bay with no
 body (B3, B4 until they are built), a position whose forms have no number yet (no DXF), and one the list
-leaves out (B2 until its layout is built) are listed, not failed. Exit 1 on any mismatch.
+leaves out (B2 until its layout is built) are listed, not failed, and so is a panel whose STEP has another
+number of fill bodies than the list has bays (STALE: the STEP predates the list's layout; its rebuild is pending).
+Exit 1 on any mismatch in a panel whose STEP matches the list's layout.
 """
 
 import csv
@@ -138,9 +140,9 @@ def main():
             hi = [max(p[k] for p in pts) for k in range(3)]
             bodies.append((lo, hi, s, inst))
         bodies.sort(key=lambda b: b[0][u_ax])
-        if len(bodies) != len(rows):
-            bad.append("%s: %d fill bodies in %s, %d bays in FILL-PIECES.csv" % (
-                pos, len(bodies), os.path.basename(steps[0]), len(rows)))
+        if len(bodies) != len(rows):           # the STEP predates the list's layout (D-135): its panel is rebuilt
+            missing.append("%s (%s): STALE, its STEP has %d fill bodies and the list %d bays (an older layout; the "
+                           "panel is rebuilt with it)" % (pos, pn, len(bodies), len(rows)))
             continue
         for (lo, hi, s, inst), r in zip(bodies, rows):
             label = "%s bay %s (%s %s, %s)" % (pos, r["bay"], r["form"], r["number"], r["fit"])

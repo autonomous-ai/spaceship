@@ -201,15 +201,15 @@ def fit(pc, form_piece):
 
 
 def numbers():
-    """{form: (part number, name)} from the master BOM's allocation (D-123; names "... FILL PIECE Fnn ...")."""
+    """{form: [(part number, name), ...]} of the live rows in the master BOM's allocation (D-123; names "... FILL
+    PIECE Fnn W X H ..."): an older layout's rows for the same form name may still be live, so the caller picks the
+    row at the form's own size."""
     out = {}
     with open(os.path.join(ROOT, "v2", "04-BOM", "number-allocation.csv"), encoding="utf-8") as fh:
         for r in csv.DictReader(fh):
             m = re.search(r"FILL PIECE (F\d\d) ", r["name"])
             if m and r.get("status", "").upper() != "CANCELLED":
-                if m.group(1) in out:
-                    raise ValueError("two live numbers for form %s" % m.group(1))
-                out[m.group(1)] = (r["part_number"], r["name"])
+                out.setdefault(m.group(1), []).append((r["part_number"], r["name"]))
     return out
 
 
@@ -262,9 +262,12 @@ def main():
             raise SystemExit("form %s: the DXF loops enclose %.2f mm2, the piece is %.2f" % (
                 form, sum(area(lp) for lp in loops), want))
         # its number: a live allocation row for this form at this size, else "to allocate" (no DXF until then)
-        pn, name = nums.get(form, ("", ""))
-        if not pn or "%s %g X %g" % (form, first["w"], first["h"]) not in name:
-            pn, dxf = "", ""
+        at_size = [r for r in nums.get(form, []) if "%s %g X %g" % (form, first["w"], first["h"]) in r[1]]
+        if len(at_size) > 1:
+            raise SystemExit("two live numbers for form %s %g x %g: %s" % (form, first["w"], first["h"], at_size))
+        pn, name = at_size[0] if at_size else ("", "")
+        if not pn:
+            dxf = ""
             unnumbered.append("%s %g x %g" % (form, first["w"], first["h"]))
         else:
             dxf = dxf_name(pn, name)
