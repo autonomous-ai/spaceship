@@ -201,13 +201,27 @@ def _on_outline(loops, x, y, tol=0.02):
     return False
 
 
-def chains(segments, loops, max_link=None):
+def _on_one_edge(loops, a, b, tol=0.02):
+    """True when the link a-b lies along a single outline edge (both ends on the same edge): a link
+    that cuts a corner made Fusion collapse its piece in the PDF (live probe 2026-11-01 08:23)."""
+    if loops and isinstance(loops[0][0], (int, float)):
+        loops = [loops]
+    for lp in loops:
+        for i in range(len(lp)):
+            e = [lp[i], lp[(i + 1) % len(lp)]]
+            if _on_outline([e], *a, tol=tol) and _on_outline([e], *b, tol=tol):
+                return True
+    return False
+
+
+def chains(segments, loops, max_link=None, edge_links=False):
     """The hatch segments of one face joined into as few point chains as possible, back
     and forth (each next line reversed), so one Lines.add call draws many lines: Fusion's
     PDF export keeps one chain per sketch exactly, but garbles a sketch of many lines
     (live probe 2026-11-01). A link between two lines must stay inside the face (or on
     its outline) and be no longer than max_link (default: 3 x the line spacing seen);
-    otherwise a new chain starts. Returns [[point, ...], ...]."""
+    otherwise a new chain starts. With edge_links, a link must also lie along one outline edge
+    (never across a corner). Returns [[point, ...], ...]."""
     if not segments:
         return []
     if max_link is None:
@@ -218,7 +232,10 @@ def chains(segments, loops, max_link=None):
         end = cur[-1]
         first, second = (a, b) if math.dist(end, a) <= math.dist(end, b) else (b, a)
         mid = ((end[0] + first[0]) / 2.0, (end[1] + first[1]) / 2.0)
-        if math.dist(end, first) <= max_link and (_inside(loops, *mid) or _on_outline(loops, *mid)):
+        ok = math.dist(end, first) <= max_link and (_inside(loops, *mid) or _on_outline(loops, *mid))
+        if ok and edge_links:
+            ok = _on_one_edge(loops, end, first)
+        if ok:
             cur += [first, second]
         else:
             out.append(cur)

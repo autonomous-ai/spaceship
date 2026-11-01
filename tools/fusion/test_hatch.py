@@ -184,6 +184,19 @@ class PiecesTests(unittest.TestCase):
             chain = [(float(i), 0.0) for i in range(n)]
             self.assertEqual(hatch.pieces(chain), [chain])
 
+    def test_edge_links_never_cut_a_corner(self):
+        # 08:23: the piece whose link cut the square's corner collapsed in the PDF
+        sq = [(230.0, 200.0), (250.0, 200.0), (250.0, 220.0), (230.0, 220.0)]   # the probe's square
+        segs = hatch.hatch_segments(sq, spacing=2.0)
+        free = hatch.chains(segs, sq)
+        edged = hatch.chains(segs, sq, edge_links=True)
+        self.assertGreater(len(edged), len(free))                     # chains end at the corners
+        for ch in edged:
+            for i in range(1, len(ch) - 1, 2):                        # every link: ch[i] -> ch[i + 1]
+                self.assertTrue(hatch._on_one_edge(sq, ch[i], ch[i + 1]), (ch[i], ch[i + 1]))
+        drawn = sorted(tuple(sorted((ch[i], ch[i + 1]))) for ch in edged for i in range(0, len(ch) - 1, 2))
+        self.assertEqual(drawn, sorted(tuple(sorted(s)) for s in segs))   # every hatch line still once
+
     def test_the_thin_face_answer_from_the_probe(self):
         import json
         import tempfile

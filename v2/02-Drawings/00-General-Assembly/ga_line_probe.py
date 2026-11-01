@@ -57,7 +57,9 @@ def cases():
     sq2 = [(200.0, 200.0), (220.0, 200.0), (220.0, 220.0), (200.0, 220.0)]
     ch2 = hatch_chains(hatch_segments(sq2, spacing=2.0, angle_deg=45.0), sq2)
     sq3 = [(230.0, 200.0), (250.0, 200.0), (250.0, 220.0), (230.0, 220.0)]
-    ch3 = [p for ch in hatch_chains(hatch_segments(sq3, spacing=2.0, angle_deg=45.0), sq3) for p in pieces(ch)]
+    # pieces never turn a corner (08:23: the one piece whose link cut a corner collapsed)
+    ch3 = [p for ch in hatch_chains(hatch_segments(sq3, spacing=2.0, angle_deg=45.0), sq3, edge_links=True)
+           for p in pieces(ch)]
     strip2 = [(260.0, 205.0), (290.0, 205.0), (290.0, 206.5), (260.0, 206.5)]
     out += [("chain zigzag 2mm", ch2, True), ("pairs 2mm", ch3, True),
             ("thin own", [[a, b] for a, b in fill_lines(strip2)], True)]

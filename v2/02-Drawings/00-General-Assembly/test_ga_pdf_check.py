@@ -136,7 +136,8 @@ class ProbeTests(unittest.TestCase):
         strip = [(260.0, 205.0), (290.0, 205.0), (290.0, 206.5), (260.0, 206.5)]
         return self.spec() + [
             ["chain zigzag 2mm", chains, True],
-            ["pairs 2mm", [p for ch in chains for p in hatch.pieces(ch)], True],
+            ["pairs 2mm", [p for ch in hatch.chains(hatch.hatch_segments(sq, spacing=2.0), sq, edge_links=True)
+                           for p in hatch.pieces(ch)], True],
             ["thin own", [[a, b] for a, b in hatch.fill_lines(strip)], True],
             ["own sketch x5", [[(200.0 + 12 * k, 20.0), (210.0 + 12 * k, 40.0)] for k in range(5)], True],
             ["4pt open", [[(240.0, 85.0), (260.0, 80.0), (260.0, 100.0), (240.0, 95.0)]], False],
@@ -166,8 +167,9 @@ class ProbeTests(unittest.TestCase):
     def test_a_chain_that_comes_out_right_is_taken_first(self):
         self.assertEqual(self.decide(set()), ("chain", "own-sketch", 0))
 
-    def test_without_a_form_for_thin_faces_there_is_no_hatch(self):
-        self.assertEqual(self.decide({"thin own"}), ("chain", "none", 1))
+    def test_thin_faces_dont_hold_the_hatch_back(self):
+        # PM ruling 2026-11-01: thin faces are left in outline, so the hatch goes on without a form for them
+        self.assertEqual(self.decide({"thin own"}), ("chain", "none", 0))
 
     def test_one_line_per_sketch_is_the_last_form(self):
         self.assertEqual(self.decide({"chain zigzag 2mm", "pairs 2mm"}), ("own-sketch", "own-sketch", 0))

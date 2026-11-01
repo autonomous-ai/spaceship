@@ -340,7 +340,7 @@ def main(argv):
         with open(argv[1], encoding="utf-8") as fh:
             got = json.load(fh)
         mode, thin = got["mode"], got.get("thin", "none")
-        can = mode in USABLE and thin == "own-sketch"
+        can = mode in USABLE           # thin faces are left in outline (PM ruling 2026-11-01), whatever thin says
         print("line mode %r, thin faces %r: %s" % (mode, thin, "hatch can be drawn" if can else "no hatch this time"))
         return 0 if can else 1
     if len(argv) >= 3 and argv[0] == "hatch":
