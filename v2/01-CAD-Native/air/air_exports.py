@@ -101,8 +101,10 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "kick": "perforated sheet, laser cut", "egrille": "perforated sheet, laser cut",
            "rgrille": "perforated sheet, laser cut: the outline and the 4 bolt holes (its DXF)",
            "casing": "sheet metal: cut, folded into a tube (blank HOLD: the factory's bend table)",
-           "box": "sheet metal: cut, folded, riveted (blank HOLD)", "box_s": "sheet metal: cut, folded, riveted (blank HOLD)",
-           "riser": "sheet metal: cut, folded into a tube (blank HOLD); one rivnut hole for the buffer",
+           "box": "sheet metal: cut, folded, riveted (blank HOLD)", "box_s": "sheet metal: cut, folded, riveted (blank HOLD); 14 Ø4.1 rivet holes "
+           "for the transitions made in the flat, none drilled on site",
+           "riser": "sheet metal: cut, folded into a tube (blank HOLD); one rivnut hole for the buffer; 10 Ø4.1 "
+           "rivet holes for the lower transition's collar made in the flat, none drilled on site",
            "sleeve": "sheet metal: cut, folded into a tube with its top flange (40 left, 72 back, 15 front and right) "
                      "and 4 rivnut holes (blank HOLD)",
            "col_fill": "knife cut", "sof_fill": "knife cut", "layer": "knife cut",

@@ -73,7 +73,6 @@ FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEI
 BLOCKED = "blocked: only the drawing, which waits for the unlocked screen (D-84)"
 ACP = re.compile(r"\bACP\b|aluminium composite", re.I)  # a flat ACP part counts under D-89 part (4) (D-100)
 JOINTS_KEYS = re.compile(r"^11121[1-4]$")  # the base corner and inline keys: made by the Joints Engineer (D-95)
-SOFT_HEADS = re.compile(r"(?:[A-Z]+-)*(?:FILLS?|FELTS?|FOAMS?|GASKETS?|SEALS?|TAPES?)")
 FEATURES = re.compile(r"pocket|notch|hole|slot|cut-?out|chamfer|radius|radii|bevel", re.I)
 TABULATED = re.compile(r"\bTABULATED\b", re.I)
 SHEET_CUT = re.compile(r"laser|water\s*-?\s*jet|router|routed", re.I)
@@ -225,19 +224,29 @@ def files_by_pn(paths):
     return by
 
 
+def checks_common():
+    """The mechanical check's shared name readers (tools/checks/common.py), loaded as C05's modules load them."""
+    path = str(ROOT / "tools" / "checks")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    import common
+    return common
+
+
 def head_noun(name):
-    """The last word of a part name's function field, as the mechanical check reads it (tools/checks/common.py):
-    'BASE - SEAL HOLDER - LH' gives HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL."""
-    fields = [f.strip() for f in (name or "").upper().split(" - ")]
-    func = fields[1] if len(fields) > 1 else fields[0]
-    words = re.findall(r"[A-Z][A-Z-]*", func)
-    return words[-1] if words else ""
+    """The last word of a part name's function field, read by the mechanical check's own head_noun
+    (tools/checks/common.py), so the checklist and C05 can't read a name apart: 'BASE - SEAL HOLDER - LH' gives
+    HOLDER, 'LINING - FILL - CEILING - BAY A' gives FILL, and a piece of a soft good is that good, its sizes and codes
+    left out: 'WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON' gives FILL, not X (the Lead's ruling
+    on WALL's L1 sample, 2026-11-01)."""
+    return checks_common().head_noun(name)
 
 
 def soft_kind(name):
-    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89)."""
+    """'felt or fill', 'soft' (foam, gasket, seal, tape) or '' by the name's head noun (D-89), with the mechanical
+    check's own list of soft heads."""
     h = head_noun(name)
-    if not SOFT_HEADS.fullmatch(h):
+    if not checks_common().SOFT_HEADS.fullmatch(h):
         return ""
     return "felt or fill" if h.rstrip("S").endswith(("FELT", "FILL")) else "soft"
 
@@ -477,12 +486,12 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 flat = "yes"
             elif strip_ok:
                 flat = "row (D-125)"
-            elif SHEET.search(text):
-                flat = "no"
-            elif TUBE.search(text):
+            elif TUBE.search(text):     # tube words first: D-131's tubes are galvanized steel, which alone reads as sheet
                 team_dir = src.rsplit("/", 1)[0] + "/"
                 listed = any(c.startswith(team_dir) and pn in cut_texts.get(c, "") for c in cut_lists)
                 flat = "yes" if listed or r.get("cut_rows") else "no"
+            elif SHEET.search(text):
+                flat = "no"
             else:
                 flat = "n/a"
             if any("WIRING-DIAGRAM" in d.rsplit("/", 1)[-1] for d in by_pn.get(pn, {}).get("DWG", [])):
@@ -556,14 +565,37 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
 
 
 ALTERNATIVES = re.compile(r"\bor\b|\bone to pick\b|\beither\b|\balternatives?\b", re.I)
-END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*°")
-SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends", re.I)
+# D-162's cut list row, read word for word as C05 reads it (tools/checks/c_drawings.py, member_row_lacks, the
+# Checker's #357): keep the two in step. An angle counts written '45°', '45 deg' or '45 degrees' (Reviewer 6); one
+# angle given for both ends states both ('both ends mitred 45 deg', 'bottom and top ends both mitred 45.00°'), and
+# square ends need no angle (the Lead's rulings, 2026-11-01; CEILING's rows in #348, WALL's in #343)
+END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)", re.I)   # '45°', '45 deg', '45 degrees' (Reviewer 6)
+SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends|\bsquare ends\b", re.I)
+# one angle given for both ends states both (the Lead's ruling, 2026-11-01; CEILING's 'both ends mitred 45 deg')
+_ANGLE = r"\d+(?:\.\d+)?\s*(?:°|deg(?:ree)?s?\b)"
+BOTH_ENDS_ANGLE = re.compile(r"\b(?:both ends|ends both)\b[^;]*?%s|%s[^;]*?\b(?:at )?both ends\b" % (_ANGLE, _ANGLE),
+                             re.I)
+
+
+def member_row_lacks(row):
+    """What a member's cut-list row doesn't give of D-162's: its section, cut length, both end angles ('angles on
+    the frame drawing' doesn't state them) and quantity. C05's own function (#357), copied word for word until it is
+    on main; a test holds the two to the same answer on every row it reads."""
+    cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str)
+             and isinstance(v, str)}
+    ends = " ".join(v for k, v in cells.items() if re.search(r"end|angle|cut", k))
+    return [what for what, ok in (
+        ("its section", bool(cells.get("section"))),
+        ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
+        ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))
+         or bool(BOTH_ENDS_ANGLE.search(ends))),
+        ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
 
 
 def d162_rows(cut_texts):
     """{member number: (its frame, what its cut list row lacks)} for every cut list row that names a member_part:
     D-162 makes that row the member's drawing, so it must give the section, the cut length, both end angles and the
-    quantity. 'Angles on the frame drawing' doesn't state them."""
+    quantity (member_row_lacks). 'Angles on the frame drawing' doesn't state them."""
     out = {}
     for text in (cut_texts or {}).values():
         try:
@@ -572,12 +604,7 @@ def d162_rows(cut_texts):
                 member = cells.get("member_part", "")
                 if not re.fullmatch(r"\d{6}", member):
                     continue
-                ends = " ".join(v for k, v in cells.items() if re.search(r"end|angle|cut", k))
-                lacks = [what for what, ok in (
-                    ("its section", bool(cells.get("section"))),
-                    ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
-                    ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))),
-                    ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
+                lacks = member_row_lacks(row)
                 old = out.get(member)
                 if old is None or len(lacks) < len(old[1]):
                     out[member] = (cells.get("frame", ""), lacks)
