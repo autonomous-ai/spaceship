@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
-"""Remove the value of a title block field (default "Created by") from a PDF.
+"""Replace the value of a title block field (default "Created by") in a PDF with "Autonomous".
 
     python3 tools/fusion/pdf_clear_field.py IN.pdf OUT.pdf [--label "Created by"] [--title T] [--status S]
+    python3 tools/fusion/pdf_clear_field.py IN.pdf OUT.pdf --restamp --no-title-block   (a committed PDF)
 
 Fusion fills "Created by" with the Fusion account holder's name, and its API
-can't change title block text. The repo is public, so this removes that value
-before a drawing is committed. It finds the label, takes the words on the
-line below it up to the next field value in the same cell (the date), and
-redacts them with PyMuPDF: the text is removed from the page content, not
-covered. Table lines and all other text are kept. It then re-reads the
-output and fails if any word is still there. It never prints the removed
-words. Needs PyMuPDF (import fitz).
+can't change title block text. The repo is public, and the owner wants every
+drawing to name Autonomous as its creator, never a person (2026-11-01). So
+this finds the label, takes the words on the value line under it up to the
+date that shares the cell, redacts them with PyMuPDF (the text is removed
+from the page content, not covered), and writes "Autonomous" there; the date,
+table lines and all other text are kept. It sets the PDF's author metadata to
+"Autonomous". It then re-reads the output and fails unless the field reads
+exactly "Autonomous". It never prints the removed words. Only the value line
+is read: words whose box ends 5 to 23 pt under the label's (on an emptied
+field, "the first line under the label" was the next row's labels).
+
+--restamp is for drawings already committed: their field may be empty or
+stamped already, so nothing need be removed, and a PDF without Fusion's
+title block (drawgen's, ELECTRICAL's) passes with only its author set.
+Needs PyMuPDF (import fitz).
 
 It then fills the title block's DWG No., Rev., Document status and Title
 from the drawing's file name and the master BOM (pdf_title_block.py, which
@@ -20,7 +29,6 @@ those two instead, and --no-title-block leaves the block as it is.
 
 import argparse
 import os
-import re
 import sys
 
 import fitz  # PyMuPDF
@@ -28,28 +36,16 @@ import fitz  # PyMuPDF
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pdf_title_block as ptb  # noqa: E402  this checkout's copy, next to this file
 
-DATE = re.compile(r"\d{1,2}/\d{1,2}/\d{2,4}")
+DATE = ptb.DATE    # Fusion writes the day and the month with one or two digits (1/11/26 and 31/10/26 alike)
 
 
 def field_words(page, label):
-    hits = page.search_for(label)
-    if not hits:
+    """(label box, the value line's words left of the date). The date bounds the field and stays; with two
+    digits required, a one-digit day's date was once taken as part of the name and removed."""
+    found = ptb.created_by(page, label)
+    if found is None:
         raise SystemExit("label %r not found" % label)
-    lab = hits[0]
-    words = page.get_text("words")      # x0, y0, x1, y1, word, block, line, n
-    below = [w for w in words if w[1] >= lab.y1 - 1 and w[1] <= lab.y1 + 25 and w[0] >= lab.x0 - 1]
-    if not below:
-        return lab, []
-    # only the first text line under the label (the field value), not the
-    # next row's labels
-    top = min(w[1] for w in below)
-    row = [w for w in below if abs(w[1] - top) < 2.0]
-    # stop at the date that shares the cell, or 200 pt to the right. Fusion writes it with one or two digits
-    # for the day and the month (1/11/26 and 31/10/26 alike): with two required, a one-digit day's date was
-    # taken as part of the name and removed, and the re-read then took the next row's labels as left over
-    dates = [w for w in row if DATE.fullmatch(w[4])]
-    right = min([d[0] for d in dates] + [lab.x0 + 200])
-    return lab, [w for w in row if w[2] <= right - 0.5]
+    return found[0], found[1]
 
 
 def main(argv=None):
@@ -60,42 +56,53 @@ def main(argv=None):
     ap.add_argument("--title", help="title block: the title, instead of the part's name in the master BOM")
     ap.add_argument("--status", help="title block: the document status, instead of the master BOM's")
     ap.add_argument("--no-title-block", action="store_true", help="leave the title block's other fields as they are")
+    ap.add_argument("--creator", default=ptb.CREATOR, help="what the field and the PDF's author say (default %(default)r)")
+    ap.add_argument("--restamp", action="store_true",
+                    help="a committed drawing: the field may be empty or stamped already, and a PDF without the "
+                         "label passes with only its author set")
     o = ap.parse_args(argv)
     values = None if o.no_title_block else ptb.values_for(o.src, o.dst, o.title, o.status)
+    stamp = o.creator.split()
     doc = fitz.open(o.src)
-    removed = filled = 0
+    removed = filled = labelled = 0
     for page in doc:
         if not page.search_for(o.label):
             continue
+        labelled += 1
         _lab, words = field_words(page, o.label)
-        for w in words:
-            page.add_redact_annot(fitz.Rect(w[:4]), fill=False)
-        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE,
-                              graphics=fitz.PDF_REDACT_LINE_ART_NONE)
-        removed += len(words)
+        removed += len([w for w in words if w[4] not in stamp])          # an earlier stamp isn't counted
+        ptb.stamp_creator(page, o.creator, o.label)
+    ptb.set_author(doc, o.creator)
     for page in doc:
         if values and ptb.fill_page(page, values):
             filled += 1
     doc.save(o.dst, garbage=3, deflate=True)
     doc.close()
-    # check the output
+    # check the output: each field reads exactly the creator, and the author is set
     chk = fitz.open(o.dst)
-    left = 0
+    left = wrong = 0
     missing = []
     for i, page in enumerate(chk):
         if page.search_for(o.label):
-            left += len(field_words(page, o.label)[1])
+            got = [w[4] for w in field_words(page, o.label)[1]]
+            left += len([w for w in got if w not in stamp])
+            wrong += got != stamp
         if values:
             missing += ["page %d %s" % (i + 1, f) for f in ptb.check_page(page, values)]
+    author = (chk.metadata or {}).get("author")
     chk.close()
-    print("removed %d word(s) from the %r field; left after re-read: %d" % (removed, o.label, left))
+    print("removed %d word(s) from the %r field on %d page(s); left after re-read: %d; the field reads %r%s; "
+          "author %r" % (removed, o.label, labelled, left, o.creator,
+                         "" if not wrong else " on %d page(s) only" % (labelled - wrong), author))
     if values and filled:
         print("title block filled on %d page(s): DWG No. %s, Rev. %s, %s, %s%s" % (
             filled, values["DWG No."], values["Rev."], values["Document status"], values["Title"],
             "; MISSING after the re-read: %s" % ", ".join(missing) if missing else ""))
     elif not o.no_title_block:
         print("title block left as it is (%s)" % ("no NNNNNN_REV_NAME_DWG file name" if not values else "no stock title block found"))
-    return 0 if removed and not left and not missing else 1
+    found_it = labelled and (removed or o.restamp)     # a fresh export always has the name to remove
+    return 0 if (found_it or (o.restamp and not labelled)) and not left and not wrong and not missing \
+        and author == o.creator else 1
 
 
 if __name__ == "__main__":
