@@ -82,6 +82,22 @@ SPEC = {
         ("top", VO.TopViewOrientationType, 0.2, (420.0, 370.0)),
         ("iso", VO.IsoTopRightViewOrientationType, 0.1, (420.0, 200.0)),
     ], [("front", True, "both"), ("top", False, "v")]),
+    # P02's subassemblies (their own designs, saved by base_build.py with --arg sub_list)
+    "110102": ("110102_P01_BASE-BAND-ASSY-SIDE-RH_DWG", "assembly", [      # A2; runs along Y; 110101's mirror
+        ("right", VO.RightViewOrientationType, 0.2, (300.0, 300.0)),
+        ("top", VO.TopViewOrientationType, 0.2, (520.0, 215.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.1, (300.0, 180.0)),
+    ], [("right", True, "both"), ("top", False, "h")]),
+    "110106": ("110106_P01_BASE-BAND-ASSY-FRONT-FIXED-GLASS_DWG", "assembly", [   # A2; FR1 and its sill, along X
+        ("front", VO.FrontViewOrientationType, 0.5, (300.0, 300.0)),
+        ("top", VO.TopViewOrientationType, 0.5, (300.0, 210.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.25, (300.0, 110.0)),
+    ], [("front", True, "both"), ("top", False, "v")]),
+    "110104": ("110104_P01_BASE-BAND-ASSY-FRONT-LH_DWG", "assembly", [     # A3; DL's two facets: the plan shows them
+        ("top", VO.TopViewOrientationType, 1.0, (190.0, 150.0)),
+        ("front", VO.FrontViewOrientationType, 1.0, (190.0, 250.0)),
+        ("iso", VO.IsoTopRightViewOrientationType, 0.5, (330.0, 220.0)),
+    ], [("top", True, "both"), ("front", False, "v")]),
 }
 
 
@@ -201,6 +217,15 @@ def add_view(sheet, orientation, scale, center, hidden=False):
     return v
 
 
+def edge_end(view, x, y):
+    """The curve end lying on the view's vertical line at x (its extent's side), nearest to height y."""
+    lines, _ = curves(view)
+    ends = [p for ln in lines for p in (ln.startPoint, ln.endPoint) if abs(xy(p)[0] - x) < 1e-3]
+    if not ends:
+        return nearest_end(view, (x, y))
+    return min(ends, key=lambda p: abs(xy(p)[1] - y))
+
+
 def overall(sheet, view, below=True, left=True, gap=8.0, which="both"):
     """The view's overall sizes from its bottom-left corner: "h" its width, "v" its height, or
     "both". A second view of the same part takes only the size the first one doesn't show, so no
@@ -209,7 +234,10 @@ def overall(sheet, view, below=True, left=True, gap=8.0, which="both"):
     o = nearest_end(view, (e[0], e[1]))
     n = 0
     if which in ("both", "h") and e[2] - e[0] > 2.0:
-        dim(sheet, o, nearest_end(view, (e[2], e[1])), ((e[0] + e[2]) / 2, e[1] - gap if below else e[3] + gap))
+        # the true width: points ON the extent's left and right lines (on 110103 the lowest line was the lip
+        # seal's envelope, 10 shorter at each end, so the width read 2400 instead of the band's 2420)
+        lo, hi = edge_end(view, e[0], e[1]), edge_end(view, e[2], e[1])
+        dim(sheet, lo, hi, ((e[0] + e[2]) / 2, e[1] - gap if below else e[3] + gap))
         n += 1
     if which in ("both", "v") and e[3] - e[1] > 2.0:
         dim(sheet, o, nearest_end(view, (e[0], e[3])), (e[0] - gap if left else e[2] + gap, (e[1] + e[3]) / 2))
@@ -276,8 +304,17 @@ def profile_dims(sheet, view, step=6.0, gap=8.0):
             p, k = (a if x1 > x2 else b), round(y1, 2)
             if k not in ys or xy(p)[0] > xy(ys[k])[0]:
                 ys[k] = p
-    far_x = [x for x in sorted(xs, reverse=True) if abs(x - cx) > 0.05 and abs(x - e[0]) > 0.05]
-    far_y = [y for y in sorted(ys, reverse=True) if abs(y - cy) > 0.05 and abs(y - e[1]) > 0.05]
+    def distinct(keys):
+        # one face position once: Fusion can split a face's edge into collinear pieces whose ends differ in the
+        # last digits, so keys that round apart are merged within 0.01 sheet units (0.1 mm at 1:1; the sill's
+        # 103.5 and 118.5 were dimensioned twice on 2026-11-01)
+        out = []
+        for k in sorted(keys, reverse=True):
+            if not out or abs(k - out[-1]) > 0.01:
+                out.append(k)
+        return out
+    far_x = [x for x in distinct(xs) if abs(x - cx) > 0.05 and abs(x - e[0]) > 0.05]
+    far_y = [y for y in distinct(ys) if abs(y - cy) > 0.05 and abs(y - e[1]) > 0.05]
     for i, x in enumerate(far_x):
         try:
             dim(sheet, corner, xs[x], (x, e[1] - gap - step * i))

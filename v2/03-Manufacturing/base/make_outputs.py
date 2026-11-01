@@ -10,6 +10,8 @@ CAD's physical properties, sizes = the bodies), and writes:
   110000_P01_BASE_BOM.csv                    parts list for the master BOM (v2/04-BOM)
   110000_P01_BASE-TUBE-CUT-LIST_SPEC.csv     cut lengths and end cuts of the tubes and angle
   111601_P01_..._DXF.dxf                     the glide doubler's outline and hole (D-89 part 4; with --dxf)
+  <sill members>_P01_..._DXF.dxf             the welded sill's members: the bent profile's flat pattern, the door-end
+                                             plate's blank (D-120; with --dxf)
 
 The fixed facts per part (material, finish, process, status, source) are in
 PART_INFO below. Items the CAD doesn't model (the M10 glide nuts, the sill's M3
@@ -89,6 +91,33 @@ PART_INFO = {
     "111102": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 (PM ruling; alloy: assumption)", AA20,
                "saw cut (front mitre, back square), CNC drill, deburr, anodise", "calculation", "DRAFT",
                "CAD; finish D-67", "mirror of 111101; front end mitred to the intake's facet piece; tabulated with 111101"),
+    "110104": ("assembly: FL1 and FL2 (with its welded door-end block), the knee key 111214 in FL1's knee end with its 2 "
+               "fixing screws and 2 hook studs, DL's 2 spigots in rivnuts and FL2's glide, fitted at the factory", "", "",
+               "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD; joints register J-BASE-02, J-FRONT-02",
+               "goes on along the left side band's front key studs, then down 10 (J-BASE-02); DL stands on its 2 spigots"),
+    "111104": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with a welded 1.5 mm end plate (alloy: assumption)", AA20,
+               "saw cut (both ends mitred), weld the corner end plate, CNC drill and cut the keyholes, deburr, anodise",
+               "calculation", "DRAFT", "CAD; joints register J-BASE-02 (keyhole piece of the front left corner, carrier of "
+               "the knee key 111214), J-FRONT-02 (DL's round spigot)",
+               "DL's first facet; no glide (112 long between two keyed ends)"),
+    "111105": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with a welded 1.5 mm knee end plate, a welded 7 mm "
+               "door-end block and a welded 2 mm door-end plate (alloy: assumption)", AA20,
+               "saw cut (knee mitre, door end square to X), weld the knee end plate, the door-end block and the door-end "
+               "plate, grind flush, CNC drill and cut the keyholes, deburr, anodise", "calculation", "DRAFT",
+               "CAD; joints register J-BASE-02 (keyhole piece of the knee), J-FRONT-02 (DL's slot spigot); the door-end "
+               "plate: the PM's ruling of 2026-11-01 on the door's hinge side (as D-150)",
+               "DL's second facet, its block out to DL's door face (in view at the door opening, D-132); the door-end plate "
+               "carries that face on inward to the kick strip's back line, from the band's bottom line up, with the lip "
+               "118001 under it: the face FRONT's hinge-side brush closes on; on it, a welded strike pad (HOLD, 8 at most) for "
+               "the drop seal's release button (FB-33); one glide"),
+    "111212": ("aluminium EN AW-6061 T6 block (joints register J-BASE-02)", "mill finish (hidden)",
+               "the Joints Engineer's part", "calculation", "DRAFT",
+               "joints register J-BASE-02; the Joints Engineer's part (model, STEP and tabulated drawing 111211 to 111214), "
+               "placed here by reference", "fixed in the left side band's front end at the factory; FL1 drops onto its 2 hook studs"),
+    "111214": ("aluminium EN AW-6061 T6 block (joints register J-BASE-02)", "mill finish (hidden)",
+               "the Joints Engineer's part", "calculation", "DRAFT",
+               "joints register J-BASE-02; the Joints Engineer's part (model, STEP and tabulated drawing 111211 to 111214), "
+               "placed here by reference", "fixed in FL1's knee end at the factory; FL2 goes on onto its 2 hook studs"),
     "110106": ("assembly: FR1 with its sill, FRONT's bottom U-channel screwed on, and the glides, fitted at the factory",
                "", "", "calculation", "DRAFT", "CAD; PM ruling 2026-11-01 (the channel ships fitted on the sill)",
                "ships as one piece; on site the fixed glass drops into the fitted channel"),
@@ -96,14 +125,16 @@ PART_INFO = {
                "saw cut square, weld the end plate, CNC drill and cut the keyholes, deburr, anodise", "calculation", "DRAFT",
                "CAD; joints register J-BASE-02 (keyhole piece of the inline joint at x_fr_joint)",
                "X 218.5 to x_fr_joint; its glides are levelled by turning their base (no key holes on its visible top)"),
-    "111301": ("aluminium sheet EN AW-5005 H14, 2 mm, its door-end plate from the same sheet (assumption)", AA20,
-               "laser cut, press brake (4 bends); weld the door-end plate in all round (filler 5356: assumption), grind "
-               "its outer face flush; insert 4 M3 flush rivnuts, anodise", "calculation", "DRAFT",
-               "CAD; FRONT's answer and the PM ruling of 2026-11-01; the door-end plate: D-150 (Reviewer 8's P1 on #303)",
-               "ledge flush with the band top, seat under the U-channel, kerb down to the band's bottom line; the glass's "
-               "load goes into FR1 (D-132; seat detail with FRONT); flange riveted to FR1 (rivets HOLD). Its door end is "
-               "closed by the welded plate down to the band's bottom line, the lip 118001 along its bottom edge: the face "
-               "FRONT's brush seal 368008 closes on (D-150). Its other end (X 965) is closed by the intake's closing plate (batch 3)"),
+    "111301": ("welded: the bent profile and the door-end plate (D-120 members, below)", AA20,
+               "weld the door-end plate into the bent profile all round (filler 5356: assumption), grind its outer face "
+               "flush, anodise; then set the 4 M3 flush rivnuts 838008 in the seat", "calculation", "DRAFT",
+               "CAD; FRONT's answer and the PM ruling of 2026-11-01; the door-end plate: D-150 (Reviewer 8's P1 on #303); "
+               "members: D-120 (the Lead's ruling of 2026-11-01)",
+               "the welded sill: ledge flush with the band top, seat under the U-channel, kerb down to the band's bottom "
+               "line; the glass's load goes into FR1 (D-132); flange riveted to FR1 (rivets HOLD). Its door end is closed "
+               "by the welded plate down to the band's bottom line, the lip 118001 along its bottom edge: the face FRONT's "
+               "brush seal 368008 closes on (D-150). Its other end (X 965 = FR1's joint + 50) is closed by the intake's "
+               "closing plate (batch 3)"),
     "118003": ("flat end cap for the 100 x 40 x 1.5 tube's bore, black, no deeper than 2 (D-129; PE assumed, product HOLD)",
                "black", "bonded into the band tube's open end at the factory, flush with its end face (adhesive HOLD)",
                "calculation", "HOLD", "CAD envelope; joints register H-27 and J-BASE-02 (D-129: the key sits 2.5 from the "
@@ -144,12 +175,15 @@ BOUGHT = {
 TOLERANCE = {
     "111101": "see its drawing", "111103": "see its drawing",
     "111211": "the Joints Engineer's tabulated drawing 111211 to 111214",
+    "111212": "the Joints Engineer's tabulated drawing 111211 to 111214",
+    "111214": "the Joints Engineer's tabulated drawing 111211 to 111214",
+    "111104": "see its drawing", "111105": "see its drawing",
     "111601": "ISO 2768-m; critical hole: Ø13 +0.10/0 for the glide's M10 rivnut (HOLD with the nut), centred +-0.2; DXF 111601",
     "831002": "joints register H-08: thickness +-0.05",
 }
 
 # band assemblies that carry glides (one M10 glide nut each) or bought end caps
-BAND_ASSEMBLIES = ("110101", "110102", "110103", "110106")
+BAND_ASSEMBLIES = ("110101", "110102", "110103", "110104", "110106")
 
 # items not modelled in the CAD: (part number, name, name_vi, type, parent, qty rule, unit,
 # material, finish, mass each kg, mass_status, status, source, note)
@@ -212,6 +246,23 @@ BY_LENGTH = ("118001",)
 MASS_EACH = {"838003": 0.0067}
 
 
+# the welded sill's members (D-120): their numbers come from Control, so their rows are keyed by the CAD's key
+PART_INFO_BY_KEY = {
+    "sill_bent": ("aluminium sheet EN AW-5005 H14, 2 mm (assumption)", AA20,
+                  "laser cut, press brake (4 bends: inside radius = t, K 0.4, assumption; flat pattern in its DXF)",
+                  "calculation", "DRAFT", "CAD; FRONT's answer and the PM ruling of 2026-11-01",
+                  "member of the welded sill 111301: the bent profile with the 4 seat holes for the M3 rivnuts"),
+    "sill_plate": ("aluminium sheet EN AW-5005 H14, 2 mm (assumption)", AA20,
+                   "laser cut from the blank in its DXF (its 3 corners at the profile's inside bends relieved C3)",
+                   "calculation", "DRAFT", "CAD; D-150 (Reviewer 8's P1 on #303)",
+                   "member of the welded sill 111301: the door-end plate, welded in all round, its outer face flush"),
+}
+
+
+def part_info(pn, rec):
+    return PART_INFO[pn] if pn in PART_INFO else PART_INFO_BY_KEY[rec["key"]]
+
+
 def make_bom(d):
     parts = d["parts"]
     copies = {k: n for k, n in d["copies"].items() if k.split(">")[1] not in BY_LENGTH}
@@ -227,14 +278,18 @@ def make_bom(d):
         if rec.get("mass_kg") is not None:
             mass_of[pn] = rec["mass_kg"]
     mass_of.update({pn: m for pn, m in MASS_EACH.items() if pn in parts})
-    # assembly masses: children's copies x mass (calculation)
-    for asm in sorted({k.split(">")[0] for k in copies} - {"110000"}):
-        tot = 0.0
-        for k, n in copies.items():
-            parent, child = k.split(">")
-            if parent == asm:
-                tot += n * mass_of.get(child, 0.0)
-        mass_of[asm] = round(tot, 4)
+    # assembly masses: children's copies x mass, from the bottom up (the welded sill sits inside FR1's assembly)
+    kids = {}
+    for k, n in copies.items():
+        parent, child = k.split(">")
+        kids.setdefault(parent, []).append((child, n))
+
+    def asm_mass(pn):
+        if pn not in kids:
+            return mass_of.get(pn, 0.0)
+        return sum(n * asm_mass(c) for c, n in kids[pn])
+    for asm in sorted(set(kids) - {"110000"}):
+        mass_of[asm] = round(asm_mass(asm), 4)
     counts_total = dict(per_pod)
     extra_rows = []
     for (pn, name, vn, typ, parent, rule, unit, mat, fin, m, ms, st, src, note) in EXTRA:
@@ -275,7 +330,7 @@ def make_bom(d):
 
     def row(level, pn, parent, qpp, qpod, unit="pcs"):
         rec = parts[pn]
-        mat, fin, proc, ms, st, src, note = PART_INFO[pn]
+        mat, fin, proc, ms, st, src, note = part_info(pn, rec)
         m = mass_of.get(pn, 0.0)
         return [level, pn, rec["name"], rec["name_vi"], rec["class"], parent, qpp, qpod, unit, mat, fin, proc,
                 size_text(rec), "%.4f" % m, "%.3f" % (m * qpod), ms, st, src, note] + tail(pn)
@@ -287,19 +342,19 @@ def make_bom(d):
             sub.append(child)
     total = 0.0
     body = []
+    def emit(level, pn, parent, qpp, qpod):
+        body.append(row(level, pn, parent, qpp, qpod))
+        for c, n2 in sorted(kids.get(pn, [])):
+            emit(level + 1, c, pn, n2, n2 * qpod)
+        for r in extra_rows:
+            if r[4] == pn:
+                (xpn, name, vn, typ, xparent, q, unit, mat, fin, m, ms, st, src, note) = r
+                body.append([level + 1, xpn, name, vn, typ, xparent, q, q * qpod, unit, mat, fin, "", "", "%.4f" % m,
+                             "%.3f" % (m * q * qpod), ms, st, src, note] + tail(xpn))
     for child in sub:
         n = copies["110000>%s" % child]
-        body.append(row(1, child, "110000", n, n))
+        emit(1, child, "110000", n, n)
         total += n * mass_of.get(child, 0.0)
-        for k in sorted(copies):
-            p2, c2 = k.split(">")
-            if p2 == child:
-                body.append(row(2, c2, child, copies[k], copies[k] * n))
-        for r in extra_rows:
-            if r[4] == child:
-                (pn, name, vn, typ, parent, q, unit, mat, fin, m, ms, st, src, note) = r
-                body.append([2, pn, name, vn, typ, parent, q, q * n, unit, mat, fin, "", "", "%.4f" % m,
-                             "%.3f" % (m * q * n), ms, st, src, note] + tail(pn))
     for r in extra_rows:
         if r[4] == "110000":
             (pn, name, vn, typ, parent, q, unit, mat, fin, m, ms, st, src, note) = r
@@ -391,53 +446,67 @@ def end_plate_blank(outline, relieve, c):
     return out
 
 
+def dxf_name(pn, name):
+    """PARTNO_REV_DESCRIPTIVE-NAME_DXF.dxf (conventions section 7), as base_build.py's file_name."""
+    words = []
+    for w in name.replace("Ø", "D").replace("(HOLD)", "").upper().replace(" - ", " ").replace("-", " ").split():
+        w = "".join(ch for ch in w if ch.isalnum() or ch == ".")
+        if w:
+            words.append(w)
+    return "%s_%s_%s_DXF.dxf" % (pn, REV, "-".join(words))
+
+
 def make_dxf_p02(d, ezdxf):
-    """P02 batch 1 cut files: the sill's flat pattern (bend lines on BEND, inside radius = t, K 0.4: an
-    assumption until the bender confirms)."""
+    """P02 batch 1 cut files, one per member of the welded sill (D-120): the bent profile's flat pattern (bend lines on
+    BEND, inside radius = t, K 0.4: an assumption until the bender confirms) and the door-end plate's blank."""
     sl = d.get("sill")
-    if sl:
-        t = sl["t"]
-        r, k = t, 0.4
-        ba = math.pi / 2 * (r + k * t)            # bend allowance per 90 degree bend
-        bd = 2 * (r + t) - ba                     # bend deduction
-        legs = sl["legs_outside"]
-        order = ("flange", "ledge", "drop", "seat", "kerb")
-        flat = [legs[n] - (r + t) * (1 if i in (0, len(order) - 1) else 2) for i, n in enumerate(order)]
-        width = sum(flat) + ba * (len(order) - 1)
-        doc = _dxf(ezdxf, (("CUT", 7), ("BEND", 5), ("MARK", 1)))
+    if not sl:
+        return
+    names = {pn: rec["name"] for pn, rec in d["parts"].items()}
+    t = sl["t"]
+    r, k = t, 0.4
+    ba = math.pi / 2 * (r + k * t)            # bend allowance per 90 degree bend
+    bd = 2 * (r + t) - ba                     # bend deduction
+    legs = sl["legs_outside"]
+    order = ("flange", "ledge", "drop", "seat", "kerb")
+    flat = [legs[n] - (r + t) * (1 if i in (0, len(order) - 1) else 2) for i, n in enumerate(order)]
+    width = sum(flat) + ba * (len(order) - 1)
+    doc = _dxf(ezdxf, (("CUT", 7), ("BEND", 5), ("MARK", 1)))
+    msp = doc.modelspace()
+    ln = sl["length"]
+    msp.add_lwpolyline([(0, 0), (ln, 0), (ln, width), (0, width)], close=True, dxfattribs={"layer": "CUT"})
+    y = 0.0
+    seat_mid = None
+    for i, n in enumerate(order[:-1]):
+        y += flat[i]
+        if order[i + 1] == "seat":
+            seat_mid = y + ba + flat[i + 1] / 2
+        msp.add_line((0, y + ba / 2), (ln, y + ba / 2), dxfattribs={"layer": "BEND"})
+        y += ba
+    for x in sl["screws_x"]:
+        msp.add_circle((x - sl["x0"], seat_mid), sl["rivnut_hole"] / 2, dxfattribs={"layer": "CUT"})
+    msp.add_text("%s %s SILL BENT PROFILE - 2 mm, 4 bends 90 deg on BEND (inside radius %g, K %.1f: assumption) - flat "
+                 "%.2f x %.2f" % (sl["pn_bent"], REV, r, k, ln, width),
+                 dxfattribs={"layer": "MARK", "height": 5}).set_placement((5, width + 5))
+    doc.saveas(os.path.join(HERE, dxf_name(sl["pn_bent"], names[sl["pn_bent"]])))
+    print("wrote the sill's bent profile's flat pattern: %.2f x %.2f, bend deduction %.3f" % (ln, width, bd))
+    ep = sl.get("end_plate")
+    if ep:
+        # the door-end plate's blank, welded in: its outline is the profile's inner faces (from the CAD), with a 45 deg
+        # relief at each corner that meets an inside bend, so it clears the bend radius r; the weld closes the small
+        # gap at the bend it wraps round
+        pts = end_plate_blank(ep["outline"], ep["inside_bend_corners"], END_PLATE_RELIEF)
+        doc = _dxf(ezdxf, (("CUT", 7), ("MARK", 1)))
         msp = doc.modelspace()
-        ln = sl["length"]
-        msp.add_lwpolyline([(0, 0), (ln, 0), (ln, width), (0, width)], close=True, dxfattribs={"layer": "CUT"})
-        y = 0.0
-        seat_mid = None
-        for i, n in enumerate(order[:-1]):
-            y += flat[i]
-            if order[i + 1] == "seat":
-                seat_mid = y + ba + flat[i + 1] / 2
-            msp.add_line((0, y + ba / 2), (ln, y + ba / 2), dxfattribs={"layer": "BEND"})
-            y += ba
-        for x in sl["screws_x"]:
-            msp.add_circle((x - sl["x0"], seat_mid), sl["rivnut_hole"] / 2, dxfattribs={"layer": "CUT"})
-        msp.add_text("111301 P01 SILL - 2 mm, 4 bends 90 deg on BEND (inside radius %g, K %.1f: assumption) - flat %.2f x %.2f"
-                     % (r, k, ln, width), dxfattribs={"layer": "MARK", "height": 5}).set_placement((5, width + 5))
-        ep = sl.get("end_plate")
-        if ep:
-            # the door-end plate's blank, 1 off, welded in: its outline is the profile's inner faces (from the CAD), with
-            # a 45 deg relief at each corner that meets an inside bend, so it clears the bend radius r; the weld closes
-            # the small gap at the bend it wraps round
-            pts = end_plate_blank(ep["outline"], ep["inside_bend_corners"], END_PLATE_RELIEF)
-            x0, y0 = ln + 40.0, 0.0
-            msp.add_lwpolyline([(x0 + u, y0 + w) for u, w in pts], close=True, dxfattribs={"layer": "CUT"})
-            u_max = max(u for u, _w in ep["outline"])
-            w_max = max(w for _u, w in ep["outline"])
-            msp.add_text("111301 DOOR-END PLATE - 2 mm, 1 off, welded in all round - %.1f x %.1f, reliefs C%g"
-                         % (u_max, w_max, END_PLATE_RELIEF), dxfattribs={"layer": "MARK", "height": 5}).set_placement(
-                (x0, w_max + 5))
-        doc.saveas(os.path.join(HERE, "111301_%s_BASE-SILL-FIXED-GLASS_DXF.dxf" % REV))
-        print("wrote the sill's flat pattern: %.2f x %.2f, bend deduction %.3f" % (ln, width, bd))
-        if ep:
-            print("  and its door-end plate's blank: %.1f x %.1f, %d corners relieved C%g"
-                  % (u_max, w_max, len(ep["inside_bend_corners"]), END_PLATE_RELIEF))
+        msp.add_lwpolyline(pts, close=True, dxfattribs={"layer": "CUT"})
+        u_max = max(u for u, _w in ep["outline"])
+        w_max = max(w for _u, w in ep["outline"])
+        msp.add_text("%s %s SILL DOOR-END PLATE - 2 mm, 1 off, welded in all round - %.1f x %.1f, reliefs C%g"
+                     % (sl["pn_plate"], REV, u_max, w_max, END_PLATE_RELIEF),
+                     dxfattribs={"layer": "MARK", "height": 5}).set_placement((0, w_max + 5))
+        doc.saveas(os.path.join(HERE, dxf_name(sl["pn_plate"], names[sl["pn_plate"]])))
+        print("wrote the sill's door-end plate's blank: %.1f x %.1f, %d corners relieved C%g"
+              % (u_max, w_max, len(ep["inside_bend_corners"]), END_PLATE_RELIEF))
 
 
 def main(argv):

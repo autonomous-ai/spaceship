@@ -34,7 +34,8 @@ EDITS = [
 
 
 def load_build():
-    ns = {"__name__": "base_build", "__file__": BUILD, "SCRIPT_ARGS": {}}
+    # the run's own settings (scope, batch2), so P02's batches load as the build loaded them
+    ns = {"__name__": "base_build", "__file__": BUILD, "SCRIPT_ARGS": dict(globals().get("SCRIPT_ARGS", {}))}
     with open(BUILD, "r", encoding="utf-8") as fh:
         exec(compile(fh.read(), BUILD, "exec"), ns)
     return ns
@@ -42,7 +43,7 @@ def load_build():
 
 # P02 batch 1's parts we make (base_p02.py): measured too, so a skeleton edit is shown to move them (not only to
 # leave the timeline healthy)
-P02_KEYS = ("band_r_tube", "fr1", "sill")
+P02_KEYS = ("band_r_tube", "fr1", "sill_bent", "sill_plate")
 
 
 def expected_boxes(b, design):
@@ -59,8 +60,16 @@ def expected_boxes(b, design):
         out["band_r_tube"] = (v("%s - band_t" % XR_), min(v("-dr_yc"), v(b["Y_MITRE_IN_R"])), v("glide_h"), v(XR_),
                               v(YB), v("wall_z0"))
         out["fr1"] = (v(X_FR0), v("-pod_d / 2"), v("glide_h"), v("x_fr_joint"), v("-pod_d / 2 + band_t"), v("wall_z0"))
-        out["sill"] = (v(X_FR0), v("-pod_d / 2 + band_t"), v("glide_h"), v("sl_x1"), v("-glass_y + ch_w / 2 + sl_t"),
+        out["sill_plate"] = (v(X_FR0), v("-pod_d / 2 + band_t"), v("glide_h"), v("%s + sl_t" % X_FR0),
+                             v("-glass_y + ch_w / 2"), v("wall_z0 - sl_t"))
+        out["sill_bent"] = (v(X_FR0), v("-pod_d / 2 + band_t"), v("glide_h"), v("sl_x1"), v("-glass_y + ch_w / 2 + sl_t"),
                        v("wall_z0"))
+    if "fl1" in b["PARTS"]:     # batch 2: DL's two facets (FL2 with its welded door-end block)
+        XL_, IL2X, IL2Y = b["XL_"], b["IL2_X"], b["IL2_Y"]
+        out["fl1"] = (v(XL_), v("-dl_y2"), v("glide_h"), v(IL2X), v(b["Y_MITRE_IN"]), v("wall_z0"))
+        # FL2's door-end plate (the hinge-side ruling) runs inward to the kick strip's back line
+        out["fl2"] = (v("%s + dl_x2" % XL_), v("-dl_y3"), v("glide_h"), v("%s + dl_w + fep_pad_t" % XL_),
+                      max(v(IL2Y), v(b["Y_KICK_BACK"])), v("wall_z0"))
     return out
 
 
@@ -80,7 +89,8 @@ def expected_back_corner(b, design):
     v = lambda e: b["ev"](design, e)  # noqa: E731
     yc = v("pod_d / 2 - band_t / 2")
     xf = -v("pod_w / 2 - band_t + band_wall + ck_x - ck_e")
-    fix = [(xf, yc - v("ck_y / 2 - ck_e")), (xf, yc + v("ck_y / 2 - ck_e"))]
+    xf2 = -v("pod_w / 2 - band_t + band_wall + ck_x - ck_e2")      # D-144: the stepped hole
+    fix = [(xf, yc + v("ck_fy")), (xf2, yc - v("ck_fy"))]
     studs = [(yc, v("glide_h + band_wall + %s" % z)) for z in ("st_z1", "st_z2")]
     slot = [(yc, v("glide_h + band_wall + st_z2 + bs_end"))]
     return fix, studs, slot
@@ -94,13 +104,50 @@ def measure_back_corner(b, design):
             b["centres"](back, ev(design, "kh_slot"), "x"))
 
 
+def expected_p02_holes(b, design):
+    """P02's holes the test measures too (Reviewer 8's P3 on #303), from the same expressions as base_p02.py's steps:
+    {what: (part key, hole diameter, axis, centres)}. The sill's channel rivnuts follow FRONT's linked glass lines and
+    FR1's joint (as FRONT's channel holes do); FR1's keyholes and glides; the RH band's J-BASE-01 and spigot rivnuts."""
+    v = lambda e: b["ev"](design, e)  # noqa: E731
+    if "X_FR0" not in b:
+        return {}
+    X_FR0, XR_ = b["X_FR0"], b["XR_"]
+    r2 = lambda pts: sorted((round(p, 2), round(q, 2)) for p, q in pts)  # noqa: E731
+    gy, yc = v("-glass_y"), v("-pod_d / 2 + band_t / 2")
+    sill = [(v("ch_screw_x1 + %d * ch_screw_p" % i), gy) for i in range(3)] + [(v("ch_screw_x4"), gy)]
+    z1, z2, kh = v("glide_h + band_wall + st_z1"), v("glide_h + band_wall + st_z2"), v("kh_drop")
+    glides = [(v("%s + gl_e_f" % X_FR0), yc), (v("x_fr_joint - gl_e_f"), yc)]
+    n = int(round(v("jb_n")))
+    y0, ln, xb = v("base_side_y0"), v("side_l"), v("%s - jb_x" % XR_)
+    rh = [(xb, y0 + v("jb_e") + i * (ln - 2 * v("jb_e")) / (n - 1)) for i in range(n)]
+    rh += [(xb, y0 + v("sp_e")), (xb, y0 + ln - v("sp_e"))]
+    return {
+        "sill channel rivnut holes (X, Y)": ("sill_bent", v("ch_rn_hole"), "z", r2(sill)),
+        "FR1 keyhole entries (Y, Z)": ("fr1", v("kh_entry"), "x", r2([(yc, z1 - kh), (yc, z2 - kh)])),
+        "FR1 keyhole seats (Y, Z)": ("fr1", v("kh_slot"), "x", r2([(yc, z1), (yc, z2)])),
+        "FR1 glide nut holes (X, Y)": ("fr1", v("gl_nut_hole"), "z", r2(glides)),
+        "side band RH rivnut holes (X, Y)": ("band_r_tube", v("rn_hole"), "z", r2(rh)),
+    }
+
+
+def measure_p02_holes(b, design):
+    return {what: b["centres"](b["find_comp"](design, key).bRepBodies.item(0), dia, ax)
+            for what, (key, dia, ax, _w) in expected_p02_holes(b, design).items()}
+
+
+def same_points(got, want):
+    return len(got) == len(want) and all(abs(a[0] - c[0]) < 0.05 and abs(a[1] - c[1]) < 0.05
+                                         for a, c in zip(sorted(got), sorted(want)))
+
+
 def found(got, want):
     return all(any(abs(g[0] - w[0]) < 0.05 and abs(g[1] - w[1]) < 0.05 for g in got) for w in want)
 
 
 def measure(b, design):
     boxes = {}
-    for key in ("band_l_tube", "band_b_tube") + (P02_KEYS if "X_FR0" in b else ()):
+    for key in ("band_l_tube", "band_b_tube") + (P02_KEYS if "X_FR0" in b else ()) + \
+            (("fl1", "fl2") if "fl1" in b["PARTS"] else ()):
         comp = b["find_comp"](design, key)
         boxes[key] = b["bbox_mm"](comp.bRepBodies.item(0))
     body = b["find_comp"](design, "band_l_tube").bRepBodies.item(0)
@@ -135,6 +182,7 @@ def run(_context):
             os.path.relpath(F3D, b["REPO"]), design.rootComponent.partNumber, up.count, design.timeline.count))
         before_boxes, before_holes = measure(b, design)
         before_bc = measure_back_corner(b, design)
+        before_p02 = measure_p02_holes(b, design)
         original = {}
         for label, edits in EDITS:
             for name, expr in edits.items():
@@ -171,6 +219,13 @@ def run(_context):
                 "follow" if ok_bc else "OFF: got %s want %s" % (got_bc, want_bc)))
             if not ok_bc:
                 failures.append(label + ": back corner holes")
+            got_p02 = measure_p02_holes(b, design)
+            for what, (_k, _d, _a, want_pts) in expected_p02_holes(b, design).items():
+                ok = same_points(got_p02[what], want_pts)
+                print("  %s: %d, %s" % (what, len(got_p02[what]), "follow" if ok else
+                                        "OFF: got %s want %s" % (got_p02[what], want_pts)))
+                if not ok:
+                    failures.append("%s: %s" % (label, what))
         for name, expr in original.items():
             up.itemByName(name).expression = expr
         adsk.doEvents()
@@ -178,7 +233,7 @@ def run(_context):
         after_boxes, after_holes = measure(b, design)
         worst = max(compare(after_boxes[k], before_boxes[k]) for k in before_boxes)
         back = worst < 0.01 and after_holes == before_holes and measure_back_corner(b, design) == before_bc \
-            and not unhealthy(design)
+            and measure_p02_holes(b, design) == before_p02 and not unhealthy(design)
         print("revert to the design values: largest difference %.4f mm, holes %s, timeline %s -> %s" % (
             worst, "same" if after_holes == before_holes else "DIFFERENT",
             "healthy" if not unhealthy(design) else "UNHEALTHY", "RESTORED" if back else "NOT RESTORED"))

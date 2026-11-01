@@ -44,6 +44,9 @@ DWG = {
     "110000": ("110000_P01_BASE_DWG", "1:10", "A2"),
     "110101": ("110101_P01_BASE-BAND-ASSY-SIDE-LH_DWG", "1:5 (iso 1:10)", "A2"),
     "110103": ("110103_P01_BASE-BAND-ASSY-BACK_DWG", "1:5 (iso 1:10)", "A1"),
+    "110102": ("110102_P01_BASE-BAND-ASSY-SIDE-RH_DWG", "1:5 (iso 1:10)", "A2"),
+    "110104": ("110104_P01_BASE-BAND-ASSY-FRONT-LH_DWG", "1:1 (iso 1:2)", "A3"),
+    "110106": ("110106_P01_BASE-BAND-ASSY-FRONT-FIXED-GLASS_DWG", "1:2 (iso 1:4)", "A2"),
     "111106": ("111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG", "1:5 (end view 1:2)", "A3"),
     "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "1:5 (section 1:1)", "A3"),
 }
@@ -54,8 +57,7 @@ TOL = {
             "±0.2 from datum C along the band and ±0.2 from datum B across it (joints register R-J6: "
             "Ø7.0 bolt holes on the wall side positioned ±0.2 from the spigot hole); rivnut holes Ø9.53 +0.10/0 "
             "(maker). Not ISO 2768 on the anodised faces.",
-    "plate": "General tolerances, PROPOSED: outline ±0.5 (CNC); thickness as supplied (plywood ±0.3, "
-             "foam ±0.3); not ISO 2768 on wood or foam (guideline §3.2).",
+    "plate": "General tolerances, PROPOSED: outline ±0.5 (CNC); thickness as supplied (guideline §3.2).",
     "sheet": "General tolerances ISO 2768-m (linear) on the flat pattern; bends 90 deg +-0.5 deg, inside radius = t "
              "(assumption until the bender confirms); leg lengths +-0.3 to the outside of the bends; rivnut holes "
              "Ø5.0 +0.1/0 (HOLD with the rivnut).",
@@ -76,7 +78,7 @@ DATUMS = {
               "(door opening). The right end is closed by a welded 1.5 mm end plate with 2 keyholes.",
     "111301": "Pod coordinates: X along the sill from the door opening (X 218.5) to X 965. Section (view from the left, "
               "1:1): flange down FR1's inner face, ledge flush with the band top (Z 110), drop, seat under the U-channel "
-              "(Z 93 to 95), kerb down to F2 (Z 12). Datums: A = the ledge's top face, B = the flange's outer face "
+              "(Z 93 to 95), kerb down to the band's bottom line (Z 10; no floor, D-132). Datums: A = the ledge's top face, B = the flange's outer face "
               "(Y -810), C = the left end. Bends 90 deg, inside radius 2 (assumption, the bender confirms).",
     "110101": "Pod coordinates (conventions §4), as built: the side band LH, X -1250 to -1210, Y -670 to 850, "
               "on its glides. Factory-fitted: rivnuts with stop washers and spigots (J-BASE-01), glide doublers, "
@@ -84,6 +86,24 @@ DATUMS = {
               "screws and its 2 stud bolts set 1.8 off the inner wall, and the flat end cap 118003 (J-BASE-02, D-129); "
               "the front end carries the front corner key 111212 (P02). GLIDES: level up from the highest floor spot; "
               "never below 8.5 mm under the band (the keys' screw heads hang 3.3; the glide's base is the stop).",
+    "110102": "Pod coordinates (conventions §4), as built: the side band RH, X 1210 to 1250, Y -672 to 850, on "
+              "its glides; 110101's mirror. Factory-fitted: rivnuts with stop washers and spigots (J-BASE-01), glide "
+              "load blocks, glides preset (D-87); in its back end the corner key 111211 (turned 180 deg) against the "
+              "inner wall, with its 2 fixing screws and 2 stud bolts set 1.8 off the inner wall, and the flat end cap "
+              "118003 (J-BASE-02, D-129, D-144); the front end carries the front corner key 111213 (with the intake, "
+              "P02 batch 3). GLIDES: level up from the highest floor spot; never below 8.5 mm under the band.",
+    "110104": "Pod coordinates (conventions §4), as built: DL's two facet pieces, FL1 (X -1250 to -1135) and FL2 "
+              "with its welded door-end block (to DL's door face, X -972). Factory-fitted: the knee key 111214 in FL1's "
+              "knee end with its 2 fixing screws and 2 hook studs (heads 1.8 off its stud face), DL's 2 spigots in "
+              "rivnuts (no stop washer, 8 proud; J-FRONT-02), FL2's glide with its load block, the lip seal along the "
+              "inner faces. On site it goes on along the left side band's front key studs, then down 10 (J-BASE-02); "
+              "FL2 goes on FL1's knee studs the same way at the factory. GLIDE: level up from the highest floor spot "
+              "before DL goes on.",
+    "110106": "Pod coordinates (conventions §4), as built: FR1 (X 218.5 to 915, Y -850 to -810) with its sill and "
+              "FRONT's bottom U-channel screwed on at the factory, its 2 glides with load blocks, the flat end cap at "
+              "the door opening (D-132) and the lip seal along its inner face. FR1 goes on last: along the intake's "
+              "inline key studs (111215, D-144), then down 10 (J-BASE-02). Its glides are levelled by turning their "
+              "base (no key holes on its visible top).",
     "110103": "Pod coordinates (conventions §4), as built: the back band, X -1210 to 1210 over its welded end "
               "plates, Y 810 to 850, on its glides. Factory-fitted: rivnuts, stop washers and spigots for B1 and B2 "
               "(J-BASE-01), glide doublers, glides preset (D-87). It is lowered straight down between the side bands: "
@@ -107,6 +127,9 @@ HOLES = {
               "(Y -699). Flange: blind rivet holes to FR1, HOLD.",
     "110101": "Holes on the part drawings (111101; the key 111211 on the Joints Engineer's sheet).",
     "110103": "Holes, slots and notches on the part drawing (111103).",
+    "110102": "Holes on the part drawing (111102; the keys on the Joints Engineer's sheet).",
+    "110104": "Holes on the part drawings (111104, 111105; the knee key 111214 on the Joints Engineer's sheet).",
+    "110106": "Holes on the part drawings (111106, 111301).",
 }
 
 
@@ -117,7 +140,8 @@ NOTES_RIGHT = {"110000"}
 def kind_of(pn):
     if pn[2:4] == "00" or pn[2] == "0":             # xx0000 to xx0999: assemblies (conventions section 5)
         return "assembly"
-    return {"111101": "tube", "111102": "tube", "111103": "tube", "111106": "tube", "111301": "sheet"}.get(pn, "plate")
+    return {"111101": "tube", "111102": "tube", "111103": "tube", "111104": "tube", "111105": "tube", "111106": "tube",
+            "111301": "sheet"}.get(pn, "plate")
 
 
 def text_block(pn):

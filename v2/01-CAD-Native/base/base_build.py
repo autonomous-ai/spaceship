@@ -127,6 +127,12 @@ BASE_PARAMS = [
      "back corner key height, standing on the band's bottom wall: 75 (the Joints Engineer, via the Lead 2026-11-01)"),
     ("ck_e", "10.5 mm", "mm", "source",
      "key fixing holes 10.5 from its back face (inside the band) and 7.0 either side of its centre line, so 10.5 from its side faces (joints register #127, J-BASE-02)"),
+    ("ck_fy", "6 mm", "mm", "source",
+     "back key 111211's fixing holes 6.0 either side of its centre line, so each 7.0 hole stays 14.0 from the side band's cut "
+     "end at Y 850 with the key turned either way (D-144: no edge exception; the Joints Engineer's layout, corner-keys.csv)"),
+    ("ck_e2", "17.8 mm", "mm", "source",
+     "back key 111211's second fixing hole 17.8 from its back face (stepped 7.3 from the first), so the two 838010 flanges "
+     "(up to Ø13.6) stand 14.05 apart (D-144, corner-keys.csv)"),
     ("ck_fix_hole", "7 mm", "mm", "source",
      "the keys' fixing screw holes in the carrier's bottom wall, Ø7.0 (J-BASE-02); the side bands carry the back keys since D-129"),
     ("ck_tap", "5 mm", "mm", "source", "M6 tap drill in the key (J-BASE-02)"),
@@ -761,7 +767,7 @@ def back_key_holes(design, key, sign, label):
     """D-129 (joints register J-BASE-02, FR-15, corner-keys.csv): the back corner key 111211 sits in this
     side band's back end, its stud face against the inner wall from inside. 2 x Ø7.0 through the inner
     wall for its hook stud bolts, on the back band's centre line at the studs' heights, and 2 x Ø7.0 in
-    the bottom wall for its fixing screws, ck_e from the key's back face and ck_y / 2 - ck_e either side
+    the bottom wall for its fixing screws, 6.0 either side of its centre line, ck_e and ck_e2 from its back face (D-144)
     of the centre line. One-point hole sketches, patterned (two circles in one YZ sketch
     over-constrained, 2026-11-01). sign: -1 for the left side band, +1 for the right."""
     v = lambda e: ev(design, e)  # noqa: E731
@@ -777,10 +783,14 @@ def back_key_holes(design, key, sign, label):
     hole(design, key, pl, "BACK KEY HOOK STUD BOLTS - %s (111211, D-129)" % label, (v(x_in), v(yk), v(z1)),
          [(Y, yk), (Z, z1)], "st_hole", "band_wall", into, ("zConstructionAxis", "2", "st_z2 - st_z1"))
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
-    xf = "%s(pod_w / 2 - band_t + band_wall + ck_x - ck_e)" % s
-    yf = "%s - band_t / 2 - (ck_y / 2 - ck_e)" % YB
-    hole(design, key, bot, "BACK KEY FIXING - %s (111211, D-129)" % label, (v(xf), v(yf), v("glide_h")),
-         [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z, ("yConstructionAxis", "2", "ck_y - 2 * ck_e"))
+    # D-144: two holes, 6.0 either side of the key's centre line, one ck_e and one ck_e2 from its back face; the key
+    # is turned 180 deg at the right corner, so the stepped hole goes to the other side there
+    up_y = "+" if sign < 0 else "-"                         # the key's +y side, as seen in the pod
+    for lab, e, side in (("1", "ck_e", up_y), ("2", "ck_e2", "-" if up_y == "+" else "+")):
+        xf = "%s(pod_w / 2 - band_t + band_wall + ck_x - %s)" % (s, e)
+        yf = "%s - band_t / 2 %s ck_fy" % (YB, side)
+        hole(design, key, bot, "BACK KEY FIXING %s - %s (111211, D-129, D-144)" % (lab, label), (v(xf), v(yf), v("glide_h")),
+             [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z)
 
 
 def cut_prism(comp, body, plane, sk, depth_expr, want_dir, name):
@@ -912,6 +922,8 @@ def seal_runs(design):
     xi, yb = "%s + band_t" % XL, "%s - band_t" % YB
     runs = [("seal_l", "band_l", "X = %.2f (side band LH, inner face)" % v(xi), Y_MITRE_IN, yb,
              [(xi, Y_MITRE_IN), ("%s + seal_t" % xi, Y_MITRE_IN), ("%s + seal_t" % xi, yb), (xi, yb)]),
+            # the back band's lip runs between the side bands' lips, which already fill the corners' seal_t squares:
+            # its run is its envelope (it counted 2 x seal_t too much before, 2026-11-01)
             ("seal_b", "band_b", "Y = %.2f (back band, inner face)" % v(yb), "%s + seal_t" % xi, "%s - band_t - seal_t" % XR,
              [("%s + seal_t" % xi, "%s - seal_t" % yb), ("%s - band_t - seal_t" % XR, "%s - seal_t" % yb),
               ("%s - band_t - seal_t" % XR, yb), ("%s + seal_t" % xi, yb)])]
@@ -926,6 +938,7 @@ def build_seal_envelopes(design):
     real lip is bought by the metre; the parts list counts it from the runs, not from these bodies."""
     n = 0
     sections = globals()["p02_seal_sections"](design) if P02_ON else {}
+    cuts = globals()["p02_seal_cuts"](design) if P02_ON else {}
     for key, _host, _line, _a, _b, _ln, pts in seal_runs(design):
         comp = find_comp(design, key)
         if key in sections:
@@ -949,6 +962,21 @@ def build_seal_envelopes(design):
             polygon(design, sk, [P(design, ex, ey) for ex, ey in pts], X, Y)
             check_sketch(sk)
             extrude(comp, one_profile(sk), "glide_h + seal_leg", "EXTRUDE - BASE SEAL LIP - ENVELOPE, UP TO seal_leg ABOVE THE BAND'S BOTTOM")
+            if key in cuts:
+                # where a plate stands on the lip's fin (p02_seal_cuts): the envelope is cut from z_from up through its
+                # top; the fin under the plate stays joined to the leg below it, so the body stays one
+                pts_c, z_from = cuts[key]
+                skc = comp.sketches.add(comp.xYConstructionPlane)
+                skc.name = "PLAN - BASE SEAL LIP - WHERE THE PLATE STANDS ON THE FIN"
+                polygon(design, skc, [P(design, ex, ey) for ex, ey in pts_c], X, Y)
+                check_sketch(skc)
+                ci = comp.features.extrudeFeatures.createInput(one_profile(skc),
+                                                               adsk.fusion.FeatureOperations.CutFeatureOperation)
+                ci.startExtent = adsk.fusion.OffsetStartDefinition.create(vi(z_from))
+                ci.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(
+                    vi("glide_h + seal_leg - (%s) + 1 mm" % z_from)), adsk.fusion.ExtentDirections.PositiveExtentDirection)
+                ci.participantBodies = [single_body(comp)]
+                comp.features.extrudeFeatures.add(ci).name = "CUT - BASE SEAL LIP - ABOVE THE FIN, WHERE THE PLATE STANDS"
         body = single_body(comp, "%s - ENVELOPE" % PARTS[key][1])
         if key in sections:
             got = bbox_mm(body)
@@ -1120,7 +1148,16 @@ def place(design, host_key, key, xyz, rot=None):
     Positions come from the same expressions as the holes and are set when
     the script runs (see the manifest)."""
     m = adsk.core.Matrix3D.create()
-    if rot == "x+":
+    if isinstance(rot, tuple) and rot[0] == "z":
+        # ("z", deg): turned deg about Z (a front key, its +X along its carrier at any angle)
+        m.setToRotation(math.radians(rot[1]), Z, adsk.core.Point3D.create(0, 0, 0))
+    elif isinstance(rot, tuple) and rot[0] == "hz":
+        # ("hz", deg): its +Z laid level, pointing deg in plan (a hook stud out of a mitred stud face)
+        m.setToRotation(math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
+        r2 = adsk.core.Matrix3D.create()
+        r2.setToRotation(math.radians(rot[1]), Z, adsk.core.Point3D.create(0, 0, 0))
+        m.transformBy(r2)
+    elif rot == "x+":
         m.setToRotation(math.pi / 2, Y, adsk.core.Point3D.create(0, 0, 0))
     elif rot == "y-":
         m.setToRotation(math.pi / 2, X, adsk.core.Point3D.create(0, 0, 0))
@@ -1176,8 +1213,8 @@ def hardware_points(design):
         out.append((host, "key", (xk, yk, zk), krot))
         for zz in ("st_z1", "st_z2"):
             out.append((host, "bolt", (xw - sign * v("st_gap"), yk, zk + v(zz)), srot))
-        for dy in (-1, 1):
-            out.append((host, "bscrew", (xk - sign * v("ck_e"), yk + dy * v("ck_y / 2 - ck_e"), v("glide_h")), "z-"))
+        for e, dy in (("ck_e", -sign), ("ck_e2", sign)):           # D-144: the key's (10.5, +6) and (17.8, -6)
+            out.append((host, "bscrew", (xk - sign * v(e), yk + dy * v("ck_fy"), v("glide_h")), "z-"))
         out.append((host, "cap", (sign * v("pod_w / 2 - band_t / 2"), v("%s - cap_t / 2" % YB), v("glide_h")), None))
     # glides, screwed into the bands at the factory
     xg = v("%s + band_t / 2 + gl_dx" % XL)
@@ -1233,7 +1270,9 @@ def step7_hardware(design):
     build_pin(design)
     build_washer(design)
     build_doubler(design)
-    import_owner_part(design, "key")         # the Joints Engineer's 111211 (D-95), not a copy
+    for k in OWNER_STEP:                     # the Joints Engineer's keys (D-95), not copies: 111211, and P02's
+        if k in PARTS:
+            import_owner_part(design, k)
     build_bolt(design)
     build_bscrew(design)
     build_glide(design)
@@ -1498,18 +1537,10 @@ def step9_checks(design):
         raise RuntimeError("step 9 checks failed")
 
 
-# D-144 (#300) moved the back corners' fixing holes in corner-keys.csv (6.0 either side, at 10.5 and 17.8 from the
-# key's back face). This branch keeps the layout before it, as Joints' 111211 STEP still has it; the follow-up rebuild
-# takes D-144 with the new key STEP. Until then the check names the difference and fails only if the side band's
-# fixing holes match neither layout. Source: corner-keys.csv before #300 (main, parent of e796357).
-PRE_D144_FIX = {"back left corner": ((-1231.0, 837.0), (-1231.0, 823.0)),
-                "back right corner": ((1231.0, 823.0), (1231.0, 837.0))}
-
-
 def back_corner_check(design):
     """D-129: the back corners as built against the Joints Engineer's corner-keys.csv (one source, D-95):
     each key's back face centre and bottom, the side band's fixing and stud bolt holes, and the back band's
-    slot ends. Returns the names of what is off by 0.05 mm or more (the D-144 fixing holes: PRE_D144_FIX)."""
+    slot ends. Returns the names of what is off by 0.05 mm or more."""
     path = os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv")
     with open(path, encoding="utf-8") as fh:
         rows = [r for r in csv.DictReader(fh) if r["joint"] in ("back left corner", "back right corner")]
@@ -1531,11 +1562,8 @@ def back_corner_check(design):
         want_key = (float(r["key_back_centre_x"]), float(r["key_back_centre_y"]), float(r["key_bottom_z"]))
         got_keys = [tuple(mm(c) for c in (o.transform2.translation.x, o.transform2.translation.y,
                                           o.transform2.translation.z)) for o in keys]
-        fix_ok, fix_name = all(near(fix, w) for w in want_fix), "fixing holes"
-        if not fix_ok and all(near(fix, w) for w in PRE_D144_FIX.get(r["joint"], ())):
-            fix_ok, fix_name = True, "fixing holes OFF against D-144, as before it (the next branch takes D-144):"
         checks = [
-            (fix_name, fix_ok),
+            ("fixing holes", all(near(fix, w) for w in want_fix)),
             ("stud bolt holes", all(near(studs, w) for w in want_studs)),
             ("key position", any(max(abs(a - b) for a, b in zip(g, want_key)) < 0.05 for g in got_keys)),
             ("back band slot end", near(slot_ends, (float(r["face_centre_y"]), float(r["slot_end_z"])))),
@@ -1848,7 +1876,7 @@ def file_name(pn, name, doctype):
     capitals, words joined by hyphens."""
     t = name.replace("Ø", "D").replace("(HOLD)", "").upper()
     words = []
-    for w in t.replace(" - ", " ").split():
+    for w in t.replace(" - ", " ").replace("-", " ").split():     # DOOR-END: two words, joined again by a hyphen
         w = "".join(ch for ch in w if ch.isalnum() or ch == ".")
         if w:
             words.append(w)
