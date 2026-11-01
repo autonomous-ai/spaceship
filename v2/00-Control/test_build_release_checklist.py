@@ -159,6 +159,12 @@ class BoughtParts(unittest.TestCase):
         _, bought = run([row("518001", "buy", "LINING - CASSETTE CLIP - ACME CL-20")], {})
         self.assertEqual((bought[0]["state"], bought[0]["tests"]), ("HOLD", ["T07"]))
 
+    def test_the_register_reads_hold_as_a_whole_word(self):
+        text = REGISTER + ("| H-30 | **838009** | HARDWARE - GROMMET | bought | 4 | part DECIDED; the strip holds the seal |\n"
+                           "| H-31 | **838010** | HARDWARE - CLIP | bought | 4 | number adopted; product on hold until T07 |\n")
+        got = rc.register_products(text, BOM)
+        self.assertEqual((got["838009"], got["838010"]), ("named", "hold"))   # "holds" is not HOLD; "on hold" is
+
     def test_register_leaves_it_to_the_list(self):
         _, bought = run([row("368102", "buy", "FRONT - DOOR STRIKE - HOLD", hold=True, team="FRONT")], {})
         self.assertEqual(bought[0]["state"], "HOLD")
@@ -579,6 +585,28 @@ class D125PlainStrip(unittest.TestCase):
         self.assertEqual(self.strip_line({})["dwg"], "no")
         self.assertEqual(self.strip_line(None)["dwg"], "no")
 
+    def test_the_real_run_passes_the_strip_list_on(self):
+        # main() reads D-125 and hands that list to check_parts; a run that stops passing it fails here (Reviewer 6, #211)
+        import inspect
+        import tempfile as _tempfile
+        seen, strips = {}, {"811299": ([], self.LIST)}
+
+        class Stop(Exception):
+            pass
+
+        def spy(*args, **kw):
+            seen["d125"] = inspect.signature(real).bind(*args, **kw).arguments.get("d125")
+            raise Stop
+
+        real, old = rc.check_parts, rc.d125_strips
+        rc.check_parts, rc.d125_strips = spy, (lambda root=None: strips)
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "unlocked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.check_parts, rc.d125_strips = real, old
+        self.assertIs(seen.get("d125"), strips)
+
 
 class D125SharedRows(unittest.TestCase):
     """C05's D-125 row cases (tools/checks/tests), run through the function the checklist calls, plus three sizes
@@ -636,13 +664,13 @@ class MadeHold(unittest.TestCase):
     LIST = WALL
     HEAD = "part_number,name,material,grade,finish,status,mass_status"
 
-    def line(self, material="aluminium 5052-H32 sheet", rows="", drawn=True):
+    def line(self, material="aluminium 5052-H32 sheet", rows="", drawn=True, head=None):
         fai = rc.fai_plan(PLAN, BOM)
         part = row("211199", "make", "WALL - TEST STRIP", material, team="WALL", src=self.LIST)
         part["finish"] = "mill finish"
         file_map = files("211199_P01_WALL-TEST-STRIP_CAD.f3d", "211199_P01_WALL-TEST-STRIP_STEP.step")
         made, _ = rc.check_parts([part], [], rc.files_by_pn(file_map), list(file_map), fai, fai[1], {}, "unlocked", BOM, {},
-                                 {self.LIST: self.HEAD + "\n" + rows} if rows else {}, {}, None,
+                                 {self.LIST: (head or self.HEAD) + "\n" + rows} if rows else {}, {}, None,
                                  {"211199": ([], self.LIST)} if drawn else {})
         return made[0]
 
@@ -657,11 +685,28 @@ class MadeHold(unittest.TestCase):
     def test_gaps_show_first(self):
         self.assertEqual(self.line(material="aluminium (alloy HOLD)", drawn=False)["state"], "open: drawing")
 
-    def test_only_its_own_row_and_columns_count(self):
-        other = "218101,WALL - BRACKET 211199 - HOLD,,,,HOLD,calculation\n"      # another part's row naming it
+    def test_only_its_own_columns_count(self):
         massnote = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,DRAFT,real kg/m2 HOLD\n"
-        self.assertEqual(self.line(rows=other)["state"], "done")
         self.assertEqual(self.line(rows=massnote)["state"], "done")
+
+    def test_another_parts_row_naming_it_is_not_read(self):
+        # a bracket's row with 211199 in its parent cell reaches 211199's rows (cut_rows); only its own row counts
+        head = "part_number,parent,name,material,grade,finish,status,mass_status"
+        other = "218101,211199,WALL - BRACKET,aluminium (alloy HOLD),HOLD,mill finish,HOLD,calculation\n"
+        reached = rc.cut_rows({self.LIST: head + "\n" + other}).get("211199", [])
+        self.assertEqual([cells["part_number"] for cells, _path in reached], ["218101"])
+        self.assertEqual(self.line(rows=other, head=head)["state"], "done")
+        own = "211199,210101,WALL - TEST STRIP,polycarbonate,HOLD,mill finish,DRAFT,calculation\n"
+        self.assertEqual(self.line(rows=other + own, head=head)["state"], "HOLD")
+
+    def test_hold_is_a_whole_word(self):
+        for material in ("aluminium 5052-H32, the lip holds the felt", "aluminium 5052-H32 threshold trim",
+                         "aluminium 5052-H32 (HOLDER bracket)"):
+            self.assertEqual(self.line(material=material)["state"], "done", material)
+        own = "211199,WALL - TEST STRIP,polycarbonate PC 2407,,mill finish,DRAFT (holds its shape),calculation\n"
+        self.assertEqual(self.line(rows=own)["state"], "done")
+        for material in ("aluminium (alloy on hold)", "aluminium 5052 (HOLD-02)"):
+            self.assertEqual(self.line(material=material)["state"], "HOLD", material)
 
     def test_the_totals_count_made_hold(self):
         held = self.line(material="aluminium (alloy HOLD)")

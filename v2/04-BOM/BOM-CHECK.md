@@ -178,7 +178,7 @@ Read from: this working tree.
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 60 numbers, 54 not in a team's list yet, 0 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 64 numbers, 58 not in a team's list yet, 0 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -242,6 +242,10 @@ From `v2/04-BOM/number-allocation.csv`: 60 numbers, 54 not in a team's list yet,
 | 211631 | WALL - CAVITY FILL PIECE F13 373 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 3 | ALLOCATED |
 | 211632 | WALL - CAVITY FILL PIECE F14 373 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 2 | ALLOCATED |
 | 211633 | WALL - CAVITY FILL PIECE F15 373 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
+| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | 810201 | 1 | ALLOCATED |
+| 718102 | ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN | 810201 | 1 | ALLOCATED |
+| 718103 | ELECTRICAL - LED PROFILE END CAP | 810201 | 2 | ALLOCATED |
+| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | 810201 |  | ALLOCATED |
 
 ## Rules
 
