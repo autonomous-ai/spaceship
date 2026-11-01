@@ -161,6 +161,135 @@ def test_step_picture_script_and_data():
     assert all('"%s":' % v in script for v in views)
 
 
+def _run_step_pictures(args, fail_save=False):
+    """Run step_pictures.run() against a stand-in for Fusion's API, offline. Returns what the script did: pictures
+    saved, the layout grid's check-box history, commands executed, how the design was closed."""
+    import json
+    import os
+    import types
+    guide = pack.GUIDE_DIR
+    log = {"saved": [], "grid": [True], "executed": [], "closed": None}
+
+    class Obj:
+        def __init__(self, **kw):
+            self.__dict__.update(kw)
+
+    class Coll:
+        def __init__(self, items):
+            self._items = list(items)
+
+        @property
+        def count(self):
+            return len(self._items)
+
+        def item(self, i):
+            return self._items[i]
+
+        def itemByName(self, name):
+            return next((x for x in self._items if x.name == name), None)
+
+    class CheckBox:
+        def __init__(self, key):
+            self.key = key
+
+        @property
+        def isChecked(self):
+            return log[self.key][-1]
+
+        @isChecked.setter
+        def isChecked(self, v):
+            log[self.key].append(bool(v))
+
+    class Command:
+        def __init__(self, cid, name, key):
+            self.id, self.name, self.controlDefinition, self.key = cid, name, CheckBox(key), key
+
+        def execute(self):
+            log["executed"].append(self.name)
+            log[self.key].append(not log[self.key][-1])
+
+    log["lock"] = [False]
+    log["snap"] = [True]
+    commands = Coll([Command("LayoutGridCmd", "Layout Grid", "grid"), Command("GridLockCmd", "Layout Grid Lock", "lock"),
+                     Command("SnapCmd", "Snap to Grid", "snap")])
+    data = json.load(open(guide / "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json", encoding="utf-8"))
+    names = sorted({b for s in data["steps"] for b in s["new"]}) + ["ROOF ENVELOPE"]
+    root = Obj(bRepBodies=[Obj(name=n, isLightBulbOn=True, opacity=1.0) for n in names], allOccurrences=[])
+    doc = Obj(name="100000_P04_POD-SKELETON_CAD", products=Obj(itemByProductType=lambda t: Obj(rootComponent=root)),
+              activate=lambda: None, close=lambda save: log.__setitem__("closed", save))
+
+    class Docs(Coll):
+        def open(self, f, visible):
+            return doc
+
+    def save(out, w, h):
+        if fail_save:
+            return False
+        Path(out).write_bytes(b"png")
+        log["saved"].append(out)
+        return True
+
+    folder = Obj(name="FocusPod v2", dataFiles=Coll([Obj(name="100000_P04_POD-SKELETON_CAD", versionNumber=7)]))
+    project = Obj(name="Default Project", rootFolder=Obj(dataFolders=Coll([folder])))
+    viewport = Obj(camera=Obj(), fit=lambda: None, saveAsImageFile=save)
+    app = Obj(documents=Docs([]), data=Obj(dataProjects=Coll([project]), activeProject=None),
+              userInterface=Obj(commandDefinitions=commands), activeViewport=viewport,
+              preferences=Obj(gridPreferences=Obj(isLayoutGridShown=True), graphicsPreferences=Obj(), generalPreferences=Obj()))
+    adsk = types.ModuleType("adsk")
+    adsk.core = types.ModuleType("adsk.core")
+    adsk.fusion = types.ModuleType("adsk.fusion")
+    adsk.doEvents = lambda: None
+    adsk.core.Application = Obj(get=lambda: app)
+    adsk.core.Point3D = Obj(create=lambda x, y, z: (x, y, z))
+    adsk.core.Vector3D = Obj(create=lambda x, y, z: (x, y, z))
+    adsk.fusion.Design = Obj(cast=lambda d: d)
+    keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.fusion")}
+    sys.modules.update({"adsk": adsk, "adsk.core": adsk.core, "adsk.fusion": adsk.fusion})
+    try:
+        path = guide / "step_pictures.py"
+        g = {"__name__": "step_pictures_offline", "__file__": str(path), "SCRIPT_ARGS": args}
+        exec(compile(path.read_text(encoding="utf-8"), str(path), "exec"), g)
+        try:
+            g["run"](None)
+        except RuntimeError as e:
+            log["error"] = str(e)
+    finally:
+        for k, v in keep.items():
+            if v is None:
+                sys.modules.pop(k, None)
+            else:
+                sys.modules[k] = v
+    log["files"] = sorted(os.path.relpath(p, args.get("out_dir") or args["repo_root"]) for p in log["saved"])
+    return log, data
+
+
+def test_step_pictures_sample_then_full_offline():
+    # the picture script's own logic, proven offline before a Fusion run (AGENTS.md: prove a method on a sample)
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        repo, out = Path(tmp) / "repo", Path(tmp) / "sample"
+        # a sample: only the named steps, into the scratch folder; the grid goes off once and comes back on
+        log, data = _run_step_pictures({"repo_root": str(repo), "steps": "2,12,14", "out_dir": str(out)})
+        assert "error" not in log, log.get("error")
+        assert log["files"] == ["100000_P04_POD-ASSEMBLY-GUIDE-STEP-%02d_IMG.png" % n for n in (2, 12, 14)], log["files"]
+        assert not repo.exists(), "a sample wrote into the repository"
+        assert log["executed"] == ["Layout Grid", "Layout Grid"] and log["grid"] == [True, False, True], log
+        assert log["lock"] == [False] and log["snap"] == [True], "touched a grid setting it must leave alone"
+        assert log["closed"] is False, "the design must close without saving"
+        # the full set: every step's picture where the guide reads it
+        log, data = _run_step_pictures({"repo_root": str(repo)})
+        assert "error" not in log, log.get("error")
+        assert log["files"] == sorted(s["image"] for s in data["steps"]), log["files"]
+        assert log["grid"][-1] is True and log["closed"] is False
+        # refused before Fusion opens anything: a step with no picture, or a sample without a scratch folder
+        for args in ({"repo_root": str(repo), "steps": "13", "out_dir": str(out)}, {"repo_root": str(repo), "steps": "2"}):
+            log, _ = _run_step_pictures(args)
+            assert "error" in log and log["closed"] is None and not log["executed"], (args, log)
+        # a failed save still puts the grid back and closes without saving
+        log, _ = _run_step_pictures({"repo_root": str(repo), "steps": "2", "out_dir": str(out)}, fail_save=True)
+        assert "error" in log and log["grid"][-1] is True and log["closed"] is False, log
+
+
 def test_sizes_follow_the_skeleton():
     # panel sizes are the skeleton's named values, not typed numbers
     b1 = pack.PIECE["1-03"]

@@ -4,6 +4,12 @@
         --label "Packing and Assembly Engineer"
     python3 v2/07-Packaging/pack.py          # puts each picture under its step in the guide
 
+A sample first (AGENTS.md: prove a method on a sample before using it at scale): only the steps named, saved to a
+scratch folder instead of over the guide's pictures, with the grid settings Fusion reports printed:
+
+    python3 tools/fusion/run_script.py v2/02-Drawings/30-Assembly-Instructions/step_pictures.py \
+        --arg steps=2,12,14 --arg out_dir=/some/scratch/folder --label "Packing and Assembly Engineer (sample)"
+
 Reads 100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json, which v2/07-Packaging/pack.py writes from its label map.
 Opens the skeleton's cloud design 100000_P04_POD-SKELETON_CAD from "Default Project/FocusPod v2" itself, because a STEP
 import drops the body names (first run, 2026-10-31). It refuses to start when that design is already open in Fusion, so
@@ -142,13 +148,38 @@ def hide_grid(app):
     def restore():
         for cd in undo:
             try:
+                ctl = cd.controlDefinition
                 cd.execute()
                 for _ in range(3):
                     adsk.doEvents()
-                print("GRID: %s back on" % cd.name)
+                if getattr(ctl, "isChecked", None) is not True:   # the command didn't toggle it back: the check box itself
+                    try:
+                        ctl.isChecked = True
+                        adsk.doEvents()
+                    except Exception:
+                        pass
+                print("GRID: %s back on: %r" % (cd.name, getattr(ctl, "isChecked", None) is True))
             except Exception as e:
                 print("GRID: could not turn %s back on: %s" % (cd.name, e))
     return restore
+
+
+def report_grid_preferences(app):
+    """Read only: the grid settings Fusion's preferences expose, so a sample run shows every place to look."""
+    prefs = app.preferences
+    for attr in ("gridPreferences", "graphicsPreferences", "generalPreferences"):
+        try:
+            p = getattr(prefs, attr)
+            found = []
+            for n in dir(p):
+                if any(w in n.lower() for w in ("grid", "ruler", "axis", "axes", "origin")):
+                    try:
+                        found.append("%s=%r" % (n, getattr(p, n)))
+                    except Exception as e:
+                        found.append("%s=<%s>" % (n, type(e).__name__))
+            print("PREFERENCES %s: %s" % (attr, "; ".join(found) or "nothing on grids"))
+        except Exception as e:
+            print("PREFERENCES %s: <%s>" % (attr, type(e).__name__))
 
 
 def point_cm(p_mm):
@@ -158,8 +189,17 @@ def point_cm(p_mm):
 def run(_context):
     app = adsk.core.Application.get()
     repo = ARGS.get("repo_root") or os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+    only = {int(x) for x in str(ARGS.get("steps") or "").split(",") if x.strip()}   # a sample: these steps only
+    out_dir = ARGS.get("out_dir")   # a sample's pictures go here, never over the guide's
     with open(DATA, encoding="utf-8") as f:
         data = json.load(f)
+    unknown = sorted(only - {s["step"] for s in data["steps"]})
+    if unknown:
+        raise RuntimeError("no picture for step(s) %s; the steps with pictures are %s" % (unknown, [s["step"] for s in data["steps"]]))
+    if only and not out_dir:
+        raise RuntimeError("a sample (steps=...) needs out_dir=..., so it never writes over the guide's pictures")
+    if only:
+        report_grid_preferences(app)
     doc = open_skeleton(app)
     restore_grid = lambda: None
     try:
@@ -188,6 +228,8 @@ def run(_context):
             for name in shown:
                 for body in named[name]:
                     body.isLightBulbOn = name not in hide
+            if only and s["step"] not in only:
+                continue   # the bodies above still build up, so a sample step looks as it will in the full set
             cam = vp.camera
             cam.eye = point_cm(VIEWS[s["view"]])
             cam.target = point_cm(TARGET)
@@ -195,13 +237,13 @@ def run(_context):
             cam.isSmoothTransition = False
             vp.camera = cam
             vp.fit()
-            out = os.path.join(repo, s["image"])
+            out = os.path.join(out_dir, os.path.basename(s["image"])) if out_dir else os.path.join(repo, s["image"])
             os.makedirs(os.path.dirname(out), exist_ok=True)
             if not vp.saveAsImageFile(out, WIDTH, HEIGHT):
                 raise RuntimeError("Fusion saved no picture for step %d; is the screen unlocked?" % s["step"])
             made += 1
-            print("STEP %d: %s (%d new bodies, %s view)" % (s["step"], s["image"], len(s["new"]), s["view"]))
-        print("PICTURES: %d of %d" % (made, len(data["steps"])))
+            print("STEP %d: %s (%d new bodies, %s view)" % (s["step"], out, len(s["new"]), s["view"]))
+        print("PICTURES: %d of %d" % (made, len(only) if only else len(data["steps"])))
     finally:
         restore_grid()
         doc.close(False)
