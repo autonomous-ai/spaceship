@@ -956,6 +956,11 @@ def _by_values(page):
             k = next((m for m in range(j, len(toks)) if toks[m] in CELL_WORDS or
                       any(tuple(toks[m:m + len(l)]) == l for l in BY_LABELS)), len(toks))
             same = ws[j:k]
+            raw = [w[4] for w in ws[i:j]]
+            if same and not all(t.isupper() or not t.isalpha() for t in raw) and not raw[-1].endswith(":"):
+                continue        # 'Made by the BASE Engineer (AI agent), ...' runs on as a sentence of the notes:
+                                # a field label is upper case ('MADE BY', 'DATE / BY'), ends in a colon, or stands
+                                # alone on its row with its value under it (Fusion's 'Created by')
             x0 = ws[i][0]
             x_end = ws[k][0] if k < len(ws) else x0 + 200.0
             if same:

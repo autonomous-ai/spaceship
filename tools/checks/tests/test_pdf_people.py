@@ -58,6 +58,11 @@ def test_each_title_block_gives_its_created_by_value(tmp_path):
     # a sentence in the notes that says who made the drawing isn't the field (drawgen's sheet 2 after #291)
     note = [(100, 300, "Source: FEATURE-RATIONALE.md. Made by tools/drawgen (D-112) from that STEP.")]
     assert _vals(_pdf(str(tmp_path / "n.pdf"), DRAWGEN + note)) == [("MADE BY", "Autonomous")]
+    # ... also when the sentence starts its line (BASE's notes after #290); a colon still makes it a field
+    note = [(100, 300, "Made by the BASE Engineer (AI agent), base_drawings.py, 2026-11-01.")]
+    assert _vals(_pdf(str(tmp_path / "m.pdf"), FUSION + note)) == [("CREATED BY", "Autonomous")]
+    field = [(100, 300, "Created by: Jane Roe")]
+    assert ("CREATED BY", "Jane Roe") in _vals(_pdf(str(tmp_path / "k.pdf"), FUSION + field))
 
 
 def test_a_drawing_that_reads_autonomous_everywhere_passes(tmp_path):
