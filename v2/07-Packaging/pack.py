@@ -233,7 +233,9 @@ R = {
     "CC": "Ceiling cassettes",
     "CLIPS": "Named clips and catches",
     "BAND_B": "Base band piece 100x40 - back",
-    "BAND_S": "Base band piece 100x40 - side",
+    "BAND_SL": "Base band piece 100x40 - side LH",
+    "BAND_SR": "Base band piece 100x40 - side RH",
+    "BAND_FR1": "Base band piece FR1",
     "BAND_FL": "Base band piece 100x40 - front-l",
     "BAND_FR": "Base band piece 100x40 - front-r",
     "KEY": "Corner key",
@@ -253,7 +255,8 @@ R = {
     "RISER": "Intake riser",
     "ROOF": "Roof slot grille",
     "FANS": "Four 12 V fans",
-    "SEALS": "Base seal and cable grommets",   # the door edge seals are in FRONT's parts lists (PM ruling, #105)
+    "LIP": "Base seal: BASE's soft lip",       # by the metre; the door edge seals are in FRONT's parts lists (PM ruling, #105)
+    "GROMMETS": "Cable grommets",
     "ELEC": "Switches and harness",   # ELECTRICAL's line: the power unit (in B2, its share from ELECTRICAL's parts list) + the kit 2-12
     "SHELF": "Light shelf",
     "LEDGE": "Work-wall ledge",
@@ -316,6 +319,22 @@ def power_unit_share(parts=ELEC_PARTS):
 
 
 POWER_UNIT_SHARE = power_unit_share()
+BASE_LIST = MANUF / "base" / "110000_P01_BASE_BOM.csv"
+
+
+def base_per_piece(pn, path=BASE_LIST):
+    """BASE's list (S54): how many of part pn each band assembly carries (glides, load blocks; metres of the lip), read
+    on every run so a new count in BASE's list flows through (no typed counts)."""
+    out = {}
+    with open(path, encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            if r["part_number"] == pn and r["level"] == "2":
+                out[r["parent"]] = out.get(r["parent"], 0.0) + float(r["qty_per_pod"])
+    return out
+
+
+GLIDES, LIP_M = base_per_piece("118002"), base_per_piece("118001")   # by band assembly: the load blocks follow the glides
+BLOCK_SHARE = {k: n / sum(GLIDES.values()) for k, n in GLIDES.items()}   # the load block line is one line (roll-up)
 # The fixed glass unit's roll-up line is FRONT's 29.58 kg (PR #28 parts list): pane 28.584, 180 seal 0.2, U-profile 0.557 and
 # U-seal 0.241 in four pieces, 745 bottom, 1446 right, 804 diagonal and 303 top (mm). The channels ship fitted in the parts
 # that hold them: the bottom one on BASE's sill (PM ruling), the right and diagonal in DR, the top in DT (D-68).
@@ -377,19 +396,22 @@ PIECES = [
     Piece("2-03", "350003", "FRONT - DECOR BLOCK ASSY - DR", "Khối trang trí phải (cụm)", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1020, 216),
           "FRONT 350003 P01 STEP: 2290 x 1020 x 215.5, the inner felt panel 10.5 mm proud of the back plate; AIR's reserved spaces in it are empty when it ships", 2, 9, "FRONT",
           note="lies on its flat front face on a foam sheet, felt panel up, nothing on it (PM, 2026-11-01)"),
-    Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-", [("BAND_B", 1), ("GLIDE", 3), ("BLOCKS", 3 / 8)],
-          S(2420, 118, 40), "BASE 110000 P01 STEP, the back band 110103 without corner keys (D-129: the side bands carry them): tube 2420, glides 10 below, spigots 8 above", 2, 2, "BASE",
-          note="3 glides fitted, each on its aluminium load block inside the band (BASE CAD; D-86); blocks split by glide count, 3 of 8; keyholes for the side bands' back-corner keys (D-129)"),
-    Piece("2-05", "110101", "BASE - BAND ASSY - SIDE - LH", "Viền chân nhôm - cạnh trái (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2), ("BLOCKS", 2 / 8), ("KEY", 2)],
-          S(1517, 118, 48), "BASE 110000 P01 STEP, the side band 110101 (1517 x 118 x 40), plus its back-corner key's hook studs out of its inner wall: key face 1.5 inside the wall, M6 x 16 studs with a 1.8 head gap (corner-keys.csv, #241), 8 mm allowed until BASE's CAD carries the keys", 2, 2, "BASE",
-          note="2 glides fitted, each on its load block inside the band (BASE CAD; D-86); the back-corner key 111211 against its inner wall (D-129) and the front-corner key 111212 in its front end, both fitted at the factory (J-BASE-02)"),
-    Piece("2-06", "TBD (BASE)", "BASE - BAND ASSY - SIDE - RH", "Viền chân nhôm - cạnh phải (cụm)", "-", [("BAND_S", 1), ("GLIDE", 2), ("BLOCKS", 2 / 8), ("KEY", 2)],
-          S(1517, 118, 48), "LH's mirror (BASE P01 CAD), with its two keys", 2, 2, "BASE",
-          note="2 glides fitted, each on its load block inside the band (D-86); the back-corner key 111211 against its inner wall (D-129) and the front-corner key 111213 in its front end, both fitted at the factory (J-BASE-02)"),
-    Piece("2-07", "TBD (BASE)", "BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS", "Viền chân nhôm - trước phải, dưới kính", "-",
-          [("BAND_FR", 0.663), ("GLIDE", 1), ("BLOCKS", 1 / 8), ("FIX", SILL_CHANNEL_SHARE)], S(729, 118, 40),
-          "X 218 to about 947 (skeleton P04 front band; air report 7e); 118 high with its glide and spigots, as the side band's CAD (assumption); carries the glass's bottom U-channel (D-68)", 2, 2, "BASE",
-          note="the sill: the fixed glass's bottom U-channel and its seal fitted at the factory with 4 M3 countersunk screws (PM ruling); share of the front-r line by length, 729 of 1100 mm (calculation); 1 glide on its load block (D-86)"),
+    Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-",
+          [("BAND_B", 1), ("GLIDE", GLIDES["110103"]), ("BLOCKS", BLOCK_SHARE["110103"]), ("LIP", LIP_M["110103"])],
+          S(2420, 118, 50), "BASE 110000 P01 STEP (P02 batch 1, S54): the back band 110103, 2420 x 118 x 50: tube 40 with the soft lip 10 on its inner face, glides 10 below, spigots 8 above; no keys (D-129: the side bands carry them)", 2, 2, "BASE",
+          note="3 glides fitted, each on its 5 mm load block inside the band (BASE CAD; D-86); the soft lip bonded along its inner face (D-132); welded end plates with open-bottom slots for the side bands' back-corner keys (D-129)"),
+    Piece("2-05", "110101", "BASE - BAND ASSY - SIDE - LH", "Viền chân nhôm - cạnh trái (cụm)", "-",
+          [("BAND_SL", 1), ("GLIDE", GLIDES["110101"]), ("BLOCKS", BLOCK_SHARE["110101"]), ("KEY", 2), ("LIP", LIP_M["110101"])],
+          S(1530, 118, 50), "BASE 110000 P01 STEP (P02 batch 1, S54): the side band 110101, 1520 x 118 x 50 with the lip, its back-corner key and that key's hook studs; planned 1530: about 2 mm more for the front-corner key's studs past the mitred front end (calculation from corner-keys.csv) and the rest spare (assumption) until BASE's CAD carries that key", 2, 2, "BASE",
+          note="2 glides fitted, each on its load block inside the band (BASE CAD; D-86); the soft lip along its inner face (D-132); the back-corner key 111211 against its inner wall (D-129) and the front-corner key 111212 in its front end, both fitted at the factory (J-BASE-02; BASE's batch 1 lists the back key, corner-keys.csv puts the front key here too)"),
+    Piece("2-06", "110102", "BASE - BAND ASSY - SIDE - RH", "Viền chân nhôm - cạnh phải (cụm)", "-",
+          [("BAND_SR", 1), ("GLIDE", GLIDES["110102"]), ("BLOCKS", BLOCK_SHARE["110102"]), ("KEY", 2), ("LIP", LIP_M["110102"])],
+          S(1530, 118, 50), "BASE 110000 P01 STEP (P02 batch 1, S54): the side band 110102, 1522 x 118 x 50, as LH; planned 1530 for the same reason", 2, 2, "BASE",
+          note="2 glides fitted, each on its load block inside the band (D-86); the soft lip along its inner face (D-132); the back-corner key 111211 against its inner wall (D-129) and the front-corner key 111213 in its front end, both fitted at the factory (J-BASE-02; BASE's batch 1 lists the back key, corner-keys.csv puts the front key here too)"),
+    Piece("2-07", "110106", "BASE - BAND ASSY - FRONT - FIXED GLASS", "Viền chân trước - dưới kính cố định (cụm)", "-",
+          [("BAND_FR1", 1), ("GLIDE", GLIDES["110106"]), ("BLOCKS", BLOCK_SHARE["110106"]), ("LIP", LIP_M["110106"]), ("FIX", SILL_CHANNEL_SHARE)],
+          S(747, 161, 110), "BASE 110000 P01 STEP (P02 batch 1, S54): FR1 110106 with its sill 111301, 746.54 x 160.5 x 110; the fixed glass's bottom U-channel (15 x 15, FRONT 368004) sits inside the sill's box", 2, 2, "BASE",
+          note="FR1 under the fixed glass, its sill with the glass's bottom U-channel and seal fitted at the factory with 4 M3 countersunk screws into the sill's rivnuts (PM ruling; J-FRONT-04); 2 glides on their load blocks (D-86); the soft lip along its inner face (D-132)"),
     Piece("2-08", "350001", "FRONT - DECOR BLOCK ASSY - DL", "Khối trang trí trái (cụm)", "DL", [("DL", 1)], S(2292, 308, 199),
           "FRONT 350001 P01 STEP: its hinge-side stops stand 30 mm past the skin", 2, 8, "FRONT",
           note="the hinge halves that sit in DL ship fitted in it (PM ruling); stands on its outer side, stops and seals up"),
@@ -407,9 +429,9 @@ PIECES = [
           "bundle (assumption): INTERIOR's parts list 810201, the 2332 back shelf and the two 991 side shelves (60 x 40 sections) "
           "two high, the down channel and the diffuser inside them", 2, 19, "INTERIOR"),
     Piece("2-14", "TBD (BASE)", "BASE - SMALL PARTS CARTON", "Thùng phụ kiện đế", "-",
-          [("BAND_FL", 1), ("BAND_FR", 0.337), ("KEY", 2)], S(600, 400, 150),
+          [("BAND_FL", 1), ("BAND_FR", 1), ("KEY", 2)], S(600, 400, 150),
           "carton (assumption): the front-left band pieces FL1 (with its knee key 111214) and FL2, faceted, under DL; the mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111211",
-          2, 2, "BASE", carton=True, note="mesh piece share of the front-r line by length, 371 of 1100 mm (calculation); the keys are fitted at the factory in the ends that carry them (J-BASE-02)"),
+          2, 2, "BASE", carton=True, note="the intake part: the rest of the study's front-r line after FR1, which is BASE's CAD now (S54), until BASE's batch 3; the keys are fitted at the factory in the ends that carry them (J-BASE-02)"),
     Piece("2-15", "810101", "INTERIOR - WORK WALL LEDGE ASSY", "Bàn tựa vách làm việc (cụm)", "-", [("LEDGE", 1)], S(1000, 250, 120),
           "carton (assumption): INTERIOR's parts list, the 1000 x 250 ledge top 811101 with its 2 brackets 818101 (HOLD) "
           "and the screen rail 818102 (HOLD)", 2, 22, "INTERIOR", carton=True,
@@ -434,8 +456,8 @@ PIECES = [
     Piece("A-2", "-", "Bond beyond L1 and R1 (D-71)", "", "-", [("BOND", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
     Piece("A-3", "-", "Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels", "", "-",
           [("HW", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
-    Piece("A-4", "-", "Base seal and cable grommets, fitted on the band and the panels (the door edge seals are in FRONT's parts)", "", "-",
-          [("SEALS", 1)], (0, 0, 0), "-", 2, 0, "BASE", kind="allowance"),
+    Piece("A-4", "-", "Cable grommets, fitted in the cable holes (the lip ships on the band pieces; the door edge seals are in FRONT's parts)", "", "-",
+          [("GROMMETS", 1)], (0, 0, 0), "-", 2, 0, "BASE", kind="allowance"),
     Piece("L-1", "-", "Voice cockpit kit reserve: ships later, outside the cap (D-11, D-81)", "", "-", [("VOICE", 1)], (0, 0, 0), "-",
           0, 0, "ELECTRICAL", kind="later"),
     Piece("A-5", "-", "Wall cassette clips: 32 of the 44 named clips, on the wall panels and cassettes", "", "-",
@@ -525,18 +547,18 @@ TIERS2 = [
     dict(name="Tier 2: DR face down, felt up, and the base band", lanes=[
         dict(tags=["2-03"], lie="flat", bed="dr_bed"),
         dict(tags=["2-04"], lie="edge"),
-        dict(tags=["2-05", "2-07"], lie="edge"),
+        dict(tags=["2-05"], lie="edge"),
         dict(tags=["2-06"], lie="edge")]),
     dict(name="Tier 3: DL on its side, DT, soffit, air column", lanes=[
         dict(tags=["2-08"], lie="edge"),
         dict(tags=["2-11", "2-12"], lie="flat"),
         dict(tags=["2-09"], lie="flat"),
         dict(tags=["2-10"], lie="edge")]),
-    dict(name="Tier 4: air parts, light shelf and cartons", lanes=[
+    dict(name="Tier 4: air parts, light shelf, FR1 and cartons", lanes=[
         dict(tags=["2-16"], lie="flat"),
         dict(tags=["2-17"], lie="edge"),
         dict(tags=["2-18"], lie="edge"),
-        dict(tags=["2-14", "2-15"], lie="edge"),
+        dict(tags=["2-14", "2-15", "2-07"], lie="edge"),   # FR1 with its sill is 161 deep: tier 2 has no room left
         dict(tags=["2-13"], lie="flat")]),
     dict(name="Tier 5: ceiling cassettes (felt up, nothing on them) and the kit", lanes=[
         dict(tags=["2-19", "2-20"], lie="flat", bed="cass_foam"),
@@ -844,7 +866,8 @@ CAD = {
                  drop={"111211": "D-129: the side bands carry the back-corner keys", "838001": "the keys' hook studs (D-129)",
                        "838010": "the keys' fixing screws (D-129)"}),
     "2-05": dict(step=BASE_STEP, sub="110101"),
-    "2-06": dict(same_as="2-05", why="RH is LH's mirror (BASE parts list)"),
+    "2-06": dict(step=BASE_STEP, sub="110102"),
+    "2-07": dict(step=BASE_STEP, sub="110106"),
     "2-08": dict(step="front/350001_P01_*_STEP.step"),
     "2-11": dict(step="front/350002_P01_*_STEP.step"),
     "2-13": dict(parts=[dict(step=INT_STEP, sub="810201")]),
