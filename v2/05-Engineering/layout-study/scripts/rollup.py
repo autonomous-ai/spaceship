@@ -619,7 +619,7 @@ def lines(**adopt):
     cg = CEILING
     L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2, (cg["c1"] + cg["c2"]) / 2,
               "calculation (CAD)", f"S35, CAD on main: CEILING parts list 410000 P01: frames {cg['frames'][0]:.3f} and "
-              f"{cg['frames'][1]:.3f} (the 40 x 40 back member, inner members at 1.2 mm, D-85), skins {cg['skins'][0]:.3f} and "
+              f"{cg['frames'][1]:.3f} (welded galvanized steel, 1.0 and 0.8 walls, the 40 x 40 back member and the mitre plates, D-131), skins {cg['skins'][0]:.3f} and "
               f"{cg['skins'][1]:.3f}, bond sets {cg['bond']:.3f}; the hardware and seals stay in the fixings kit's line"))
     rails_kg = p("leaf_clip_kgm2") * CEIL_TRAY[0] * CEIL_TRAY[1] * 1e-6 if rails else 0.0
     L.append(("LINING", "Ceiling cassettes, one part for both halves", 2,

@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (40 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 300 part lines (123 made, 177 bought, 136 on HOLD) and 45 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (40 with a part number). Listed parts weigh 365.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -209,20 +209,20 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 147 numbers, 121 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 147 numbers, 112 not in a team's list yet, 13 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
-| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | 411101 411102 | 2 | ALLOCATED |
-| 412102 | CEILING - FRAME SEAM MEMBER - C1 | 411101 | 1 | ALLOCATED |
-| 412103 | CEILING - FRAME FRONT MEMBER - C1 | 411101 | 1 | ALLOCATED |
-| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | 411101 | 1 | ALLOCATED |
-| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | 411101 411102 | 2 | ALLOCATED |
-| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | 411101 411102 | 4 | ALLOCATED |
+| 412101 | CEILING - FRAME SIDE MEMBER - COMMON | 411101 411102 | 2 | in use |
+| 412102 | CEILING - FRAME SEAM MEMBER - C1 | 411101 | 1 | in use |
+| 412103 | CEILING - FRAME FRONT MEMBER - C1 | 411101 | 1 | in use |
+| 412104 | CEILING - FRAME BACK MEMBER 40 X 40 - C1 | 411101 | 1 | in use |
+| 412105 | CEILING - FRAME CROSS MEMBER 1 - COMMON | 411101 411102 | 2 | in use |
+| 412001 | CEILING - FRAME CROSS MEMBER - PLAIN - COMMON | 411101 411102 | 4 | in use |
 | 412201 | CEILING - FRAME SIDE MEMBER - C2 | 411102 | 1 | CANCELLED |
-| 412202 | CEILING - FRAME SEAM MEMBER - C2 | 411102 | 1 | ALLOCATED |
-| 412203 | CEILING - FRAME FRONT MEMBER - C2 | 411102 | 1 | ALLOCATED |
-| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | 411102 | 1 | ALLOCATED |
+| 412202 | CEILING - FRAME SEAM MEMBER - C2 | 411102 | 1 | in use |
+| 412203 | CEILING - FRAME FRONT MEMBER - C2 | 411102 | 1 | in use |
+| 412204 | CEILING - FRAME BACK MEMBER 40 X 40 - C2 | 411102 | 1 | in use |
 | 412205 | CEILING - FRAME CROSS MEMBER 1 - C2 | 411102 | 1 | CANCELLED |
 | 212101 | WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH | 211101 | 1 | ALLOCATED |
 | 212102 | WALL - FRAME RAIL TOP - SIDE LOWER - LH | 211101 | 1 | ALLOCATED |
