@@ -91,6 +91,10 @@ ASSEMBLIES = {
              "window": [-1256, -1204, 86, 121]},
             {"letter": "C", "point": [-1230, -422.7, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
              "window": [-1256, -1204, 86, 121]},
+            # through the back corner key 111211 inside the back end (D-129): the key, its 2 hook stud bolts through the
+            # inner wall and its 2 fixing screws through the bottom wall; hidden in every view, so it needs a section
+            {"letter": "D", "point": [-1230, 830, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 25,
+             "window": [-1256, -1194, -2, 121]},
         ],
         "interfaces": [
             {"view": "above", "of": ["831001", "838003", "118002"], "along": "x",
@@ -102,8 +106,11 @@ ASSEMBLIES = {
             "Fitted at the factory (D-87), in this order: the six M6 rivnuts 838003 set in the band's top face "
             "(torque HOLD-01), a stop washer 831002 under the head of each of the four J-BASE-01 bolt rivnuts "
             "(joints register H-08); the two spigots 831001 screwed into their rivnuts with threadlocker; the M10 "
-            "rivnuts 838006 set through the band's bottom face and the doublers 111601 (grip 4.5); the glides "
-            "118002 preset; the end cap 118003 in the back end (BASE parts list notes).",
+            "rivnuts 838006 set through the band's bottom face and the 5 mm load blocks 111601 (grip 6.5, PM ruling "
+            "2026-11-01); the glides 118002 preset; the back corner key 111211 slid into the back end against the "
+            "inner wall, its 2 hook stud bolts 838001 through the inner wall and its 2 fixing screws 838010 through "
+            "the bottom wall (joints register J-BASE-02, D-129); the end cap 118003 in the back end; the lip 118001 "
+            "bonded along the inner face (D-132) (BASE parts list notes).",
         ],
     },
 }
