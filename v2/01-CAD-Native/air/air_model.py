@@ -140,7 +140,7 @@ AIR_PARAMS = [
     ("sb_yf", "31 mm", "mm", "source", "PM ruling 2026-11-01 and FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the supply fan box's front face at Y -819, 5 mm "
      "behind the cross tube F09 over it (Z 1904 to 1924), now 3 off the skin (was 28: Y -822)"),
     ("sb_z0", "1650 mm", "mm", "source", R7E + ": supply fan box Z 1650 to 1950"),
-    ("rs_x0", "959 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the riser's space X 959 to 1098, 5.9 off the glass-edge tube B07 (was 956; "
+    ("rs_x0", "959 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the riser's space X 959 to 1098, 5.7 off the glass-edge tube B07 at its foot (OCC on #313's DR STEP; was 956; "
      "report 7e had 955)"),
     ("rs_w", "139 mm", "mm", "source", R7E + ": intake riser 139 wide, 155 deep"),
     ("rs_d", "150 mm", "mm", "source", "the air report's D-130 table (riser_y, riser_lo): the riser Y -803 to -653, 6.5 off "

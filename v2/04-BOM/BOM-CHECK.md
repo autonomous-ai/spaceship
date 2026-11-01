@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 369 part lines (174 made, 195 bought, 148 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 356.9 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 368 part lines (174 made, 194 bought, 146 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -116,8 +116,6 @@ Read from: this working tree.
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
 
 **CEILING (builds AIR, D-80)**
-- 618101 AIR - SENSOR HUB ZONE - HOLD: HOLD (HOLD)
-- 618104 AIR - SOFFIT HANGER STUD - HOLD: HOLD (HOLD)
 - 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD: HOLD (HOLD)
 - 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD: HOLD (HOLD)
 - 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
@@ -126,7 +124,6 @@ Read from: this working tree.
 - 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
 - 618402 AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD: HOLD (HOLD)
 - 618501 AIR - RISER BUFFER - RUBBER - M6 - HOLD: HOLD (HOLD)
-- 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
@@ -217,6 +214,7 @@ Read from: this working tree.
 
 Rows typed reserved air space in another team's block: the part is AIR's and is counted once, in AIR's list.
 
+- 618101 AIR - SENSOR HUB ZONE - HOLD in `v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv` @ working tree
 - 350004 FRONT - AIR SUPPLY ASSY - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
 - 351402 FRONT - AIR INTAKE RISER - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
 - 351403 FRONT - AIR TRANSITION - LOWER - DR in `v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv` @ working tree
