@@ -338,26 +338,21 @@ def cyl_join(comp, body, name, cx, cy, d, z0, z1, ctx):
     return f
 
 
-def world_rotation(root, occ):
-    """The occurrence's turn (3 x 3) in the design: a root-level occurrence's own, a nested one's through its proxy
-    in root (an occurrence's own transform inside a sub-component misled turned-copy probes 6 and 7)."""
-    m = occ.transform2
-    if occ.assemblyContext is None:
-        tok = occ.entityToken
-        for o in root.allOccurrences:
-            nat = o.nativeObject
-            if nat is not None and nat.entityToken == tok:
-                m = o.transform2
-                break
+def _rot(m):
     return tuple(tuple(m.getCell(r, c) for c in range(3)) for r in range(3))
 
 
-def relative_rotation(root, parent_occ, occ):
-    """occ's turn relative to its parent component's occurrence (identity when the parent is the root)."""
-    ro = world_rotation(root, occ)
-    if parent_occ is None:
-        return ro
-    rp = world_rotation(root, parent_occ)
+def turn_in_parent(root, parent, occ):
+    """occ's turn (3 x 3) relative to its parent component, read in the design: through the parent's one occurrence
+    there (its proxy), as turned-copy probes 9 to 11 read it (an occurrence's own transform inside a sub-component misled
+    probes 6 and 7, and a native occurrence inside one has no entity token: AIR dry run 3)."""
+    ps = root.allOccurrencesByComponent(parent)
+    if ps.count == 0:                   # the parent is the root itself
+        return _rot(occ.transform2)
+    if ps.count != 1:
+        raise RuntimeError("%s has %d occurrences; a child's turn can't be read against one" % (parent.name, ps.count))
+    pp = ps.item(0)
+    rp, ro = _rot(pp.transform2), _rot(occ.createForAssemblyContext(pp).transform2)
     return tuple(tuple(sum(rp[k][r] * ro[k][c] for k in range(3)) for c in range(3)) for r in range(3))
 
 
@@ -366,7 +361,7 @@ def relative_rotation(root, parent_occ, occ):
 TURN_SETTINGS = {"z": [(False, "180 deg")], "y": [(True, "180 deg")]}
 
 
-def place_turned(parent, occ, axis, xyz, name, ctx, parent_occ=None):
+def place_turned(parent, occ, axis, xyz, name, ctx):
     """A copy turned 180 deg about the pod's Y or Z axis (D-120: one part, turned): a rigid joint takes the copy's
     origin to xyz, with the flip and angle turned-copy probe 9 measured for that turn on the joint's input (Fusion
     refuses to edit a made joint without rolling the timeline back). The copy's ground-to-parent flag goes off first:
@@ -394,7 +389,7 @@ def place_turned(parent, occ, axis, xyz, name, ctx, parent_occ=None):
         j = parent.joints.add(ji)
         j.name = "PLACE - " + name
         ctx.design.computeAll()
-        got = relative_rotation(root, parent_occ, occ)
+        got = turn_in_parent(root, parent, occ)
         healthy = j.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
         tried.append((flip, angle, healthy, tuple(tuple(round(v, 4) for v in row) for row in got)))
         if healthy and all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
@@ -723,7 +718,7 @@ def run(_context):
         def units_of(key):
             return [n for k, n, _b in A.units() if k == key]
         # ---- column: foot plate, faces, kick grille, plenum plates, fill, hub zone, angles, cartridge
-        col_occ, col = new_comp(root, "column")
+        _o, col = new_comp(root, "column")
         for key in ("col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "col_fill_l", "kick",
                     "kick_l", "hub"):
             comp_with(col, key, names_of(key))
@@ -746,7 +741,7 @@ def run(_context):
             set_material(design, angr, "col_ang")
         else:
             occ_fr = col.occurrences.addExistingComponent(ang, adsk.core.Matrix3D.create())
-            place_turned(col, occ_fr, A.TURNED["col_ang"], (fx1, fy0, fz1), "COLUMN ANGLE FR", ctx, parent_occ=col_occ)
+            place_turned(col, occ_fr, A.TURNED["col_ang"], (fx1, fy0, fz1), "COLUMN ANGLE FR", ctx)
         # the back-left angle (611109), in place, with its keyholes (features below)
         x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE BL"][1]
         _ob, angb = new_comp(col, "col_ang_b")
