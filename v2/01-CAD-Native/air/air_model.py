@@ -124,6 +124,50 @@ AIR_PARAMS = [
     ("hinge_l", "60 mm", "mm", "assumption", "hinge envelope along the door-side edge, HOLD"),
     ("latch_l", "30 mm", "mm", "assumption", "push latch envelope at the room-side edge, HOLD"),
     ("hl_h", "8 mm", "mm", "assumption", "hinge and latch envelope height above the underside"),
+    # ---- the soffit's supports and service parts (the Lead's rulings 2026-11-01, Control's numbers): the cartridge on
+    #      two straps, the fan box on four isolating mounts, the fill bonded to the sections from the hinge line, the
+    #      push latches in brackets, the hinges' space (611212, designed by the AIR Transitions Engineer)
+    ("us_jg", "2 mm", "mm", "confirmed", "the Lead 2026-11-01 (the soffit hinge): a 2 mm joint along the underside's door "
+     "edge, as between the sections; fitting needs one too"),
+    ("hg_res_y", "28 mm", "mm", "calculation", "the hinge 611212's reserved space from the section's door edge: its pin "
+     "about 20 in, at the ACP (CEILING's swing check, the Lead's ruling), its knuckle and leaves behind it"),
+    ("hg_res_h", "24 mm", "mm", "calculation", "the hinge's reserved space above the ACP, 3 under the straps' pads"),
+    ("st_w", "30 mm", "mm", "assumption", "the cartridge strap 611213: a 6063-T6 aluminium angle 30 x 20 x 2, its 30 leg "
+     "flat under the cartridge (5:1 at 52 N a strap: about 40 MPa over its 340 span, calculation)"),
+    ("st_h", "20 mm", "mm", "assumption", "the strap's 20 leg, down"),
+    ("st_t", "2 mm", "mm", "assumption", "the strap's wall"),
+    ("st_pad_t", "3 mm", "mm", "assumption", "the strap pad 618107 (HOLD: Sourcing Engineer 2 picks it): 3 thick"),
+    ("st_pad_l", "300 mm", "mm", "assumption", "the strap pad's length under the cartridge's 314 depth"),
+    ("sa_l", "40 mm", "mm", "assumption", "the strap's support angles 611214 (4: one at each end of each strap, on the "
+     "door-side plate and on the front face): 6063-T6 30 x 30 x 2, 40 long"),
+    ("sa_w", "30 mm", "mm", "assumption", "the support angle's legs"),
+    ("mt_d", "19.05 mm", "mm", "source", "Sorbothane 0510111-50-10 isolation hemisphere: Ø19.05 (the Sourcing Engineer's "
+     "pick, the Lead's ruling 2026-11-01)"),
+    ("mt_h", "9.5 mm", "mm", "source", "Sorbothane 0510111-50-10: 9.5 tall"),
+    ("ma_t", "2 mm", "mm", "assumption", "the fan box mount angles 611409: 2 mm aluminium"),
+    ("ma_w", "53 mm", "mm", "calculation", "the mount angle's flat leg: from its plate to 28 under the box's wall, the "
+     "same part on both sides (turned 180 deg)"),
+    ("ma_h", "30 mm", "mm", "assumption", "the mount angle's upright leg, riveted to its plate"),
+    ("mt_in", "14 mm", "mm", "assumption", "each mount 14 in from the box's door or room wall"),
+    ("mt_x1", "33 mm", "mm", "assumption", "the mounts 33 in from the box's left end"),
+    ("mt_x2", "51 mm", "mm", "calculation", "and 51 in from its right end (X 1110: 8.5 clear of the harness channel)"),
+    ("lt_bw", "20.5 mm", "mm", "source", "Southco E4-10-201-10 (the latch 618106, the Lead's pick 2026-11-01): body 20.5 x 13, "
+     "29 long"),
+    ("lt_bd", "13 mm", "mm", "source", "Southco E4-10-201-10: body 13"),
+    ("lt_bl", "29 mm", "mm", "source", "Southco E4-10-201-10: latch 29 long"),
+    ("lt_in", "17 mm", "mm", "confirmed", "the latch's axis 17 in from the section's room edge: its keeper 10 to 20 in "
+     "(CEILING's need, the Sourcing pick)"),
+    ("lt_z0", "3 mm", "mm", "assumption", "the latch's mouth 3 over the ACP: the keeper's 2 base and its hook's lead-in"),
+    ("lb_t", "1.5 mm", "mm", "source", "the latch bracket 611215: 1.5 mm aluminium, inside E4's 1-3 mm mounting plate"),
+    ("lb_w", "25 mm", "mm", "assumption", "the latch bracket's width along X"),
+    ("lb_h", "30 mm", "mm", "assumption", "the latch bracket's upright leg, riveted to the front face before the felt"),
+    ("lb_z", "14 mm", "mm", "assumption", "the latch bracket's tab 14 over the latch's mouth, holding the body by its middle"),
+    ("sf_y1_gap", "30 mm", "mm", "calculation", "the bonded fill stops 30 short of the front face, where the latches and "
+     "the straps' room ends sit"),
+    ("sf_ff_dz", "24 mm", "mm", "calculation", "the front fill's foot 24 over the cartridge's bottom: clear of the room-side "
+     "angles' upright legs (to 23) and the latches' brackets (to 20)"),
+    ("lt_cx", "19 mm", "mm", "source", "Southco E4-10-201-10: snaps into a 19 x 11.5 cut-out (the latch bracket's tab)"),
+    ("lt_cy", "11.5 mm", "mm", "source", "Southco E4-10-201-10: the cut-out's 11.5"),
     # ---- fans (selection F1, D-51)
     ("fan_s", "140 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM: 140 x 140 x 25 (selection F1)"),
     ("fan_t", "25 mm", "mm", "source", "Noctua NF-A14 industrialPPC-3000 PWM: 140 x 140 x 25 (selection F1)"),
@@ -267,7 +311,9 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "sof_end": ("611206", "AIR - SOFFIT END PLATE - LEFT", "Hộp gió - tấm đầu trái", "MP", "al"),
     "sof_door": ("611210", "AIR - SOFFIT DOOR-SIDE PLATE", "Hộp gió - tấm phía cửa", "MP", "al"),
     "sof_front": ("611202", "AIR - SOFFIT FACE - FRONT", "Hộp gió - mặt trước", "MP", "face"),
-    "sof_fill": ("611203", "AIR - SOFFIT FILL", "Hộp gió - bông", "MP", "pfill"),
+    "sof_fill": ("611203", "AIR - SOFFIT FILL - LEFT", "Hộp gió - bông - tấm trái", "MP", "pfill"),
+    "sof_fill_r": ("611216", "AIR - SOFFIT FILL - RIGHT", "Hộp gió - bông - tấm phải", "MP", "pfill"),
+    "sof_fill_c": ("611217", "AIR - SOFFIT FILL - OVER THE COLUMN", "Hộp gió - bông - tấm trên cột", "MP", "pfill"),
     "sof_fill_f": ("611211", "AIR - SOFFIT FILL - FRONT", "Hộp gió - bông - tấm trước", "MP", "pfill"),
     "egrille": ("611204", "AIR - EXHAUST GRILLE", "Lưới gió thải", "MP", "perf40"),
     "casing": ("611301", "AIR - CARTRIDGE CASING", "Vỏ ống tiêu âm nhôm 2 mm", "MP", "al"),
@@ -283,8 +329,17 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "sleeve": ("611601", "AIR - ROOF SLEEVE", "Ống thải qua mái", "MP", "steel"),
     "rgrille": ("611602", "AIR - ROOF GRILLE", "Lưới thải mái", "MP", "perf50"),
     "fan": ("618401", "AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM", "Quạt 12 V 140 mm", "PI", "fan"),
-    "hinge": ("618105", "AIR - SOFFIT UNDERSIDE HINGE - HOLD", "Bản lề mặt dưới hộp gió (chờ)", "HOLD", "hold"),
-    "latch": ("618106", "AIR - SOFFIT UNDERSIDE LATCH - HOLD", "Chốt bấm mặt dưới hộp gió (chờ)", "HOLD", "hold"),
+    # the hinge 611212 replaces 618105 (made; the AIR Transitions Engineer designs it in the reserved space)
+    "hinge": ("611212", "AIR - SOFFIT UNDERSIDE HINGE - RIVETED PIN - HOLD", "Hộp gió - bản lề mặt dưới - chốt tán (chờ)", "MP",
+              "hold"),
+    "latch": ("618106", "AIR - SOFFIT UNDERSIDE LATCH - PUSH TO CLOSE", "Chốt bấm mặt dưới hộp gió", "PI", "hold"),
+    "lt_br": ("611215", "AIR - SOFFIT LATCH BRACKET", "Hộp gió - giá chốt bấm", "MP", "al"),
+    "strap": ("611213", "AIR - SOFFIT CARTRIDGE STRAP", "Hộp gió - đai đỡ ống tiêu âm", "MP", "alx"),
+    "st_ang": ("611214", "AIR - SOFFIT CARTRIDGE STRAP ANGLE", "Hộp gió - thanh góc đỡ đai", "MP", "alx"),
+    "st_pad": ("618107", "AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD", "Hộp gió - đệm xốp đai đỡ ống tiêu âm (chờ)", "HOLD",
+               "hold"),
+    "m_ang": ("611409", "AIR - FAN BOX MOUNT ANGLE", "Hộp quạt thải - thanh góc đỡ chân cách rung", "MP", "al"),
+    "mount": ("618403", "AIR - FAN BOX MOUNT - EXHAUST - HOLD", "Hộp quạt thải - chân cách rung (chờ)", "PI", "hold"),
     # the in-house sensor hub's space (the Sourcing Engineer's find, the Lead's ruling 2026-11-01): not bought, a reserved
     # space the checks keep (D-105's type); ELECTRICAL lists the hub itself
     "trans": ("618102", "AIR - SUPPLY TRANSITION - HOLD", "Ống chuyển cấp (chờ)", "HOLD", "hold"),
@@ -472,6 +527,96 @@ def harness_points():
             "plate_y": tuple("%s + hn_ty0 + %d mm" % (YD, 100 * k) for k in range(3))}
 
 
+def strap_x():
+    """The two cartridge straps' middles in X: the exhaust cartridge's quarter points."""
+    x0 = "(%s - fb_w - cart_l)" % XR
+    return ("%s + cart_l / 4" % x0, "%s + 3 * cart_l / 4" % x0)
+
+
+def soffit_supports():
+    """The exhaust cartridge's two straps 611213 with their pads 618107 and support angles 611214, and the exhaust fan
+    box's four isolating mounts 618403 on two angles 611409 (the Lead's rulings 2026-11-01): [(key, name, box)]."""
+    out = []
+    ez0 = "%s + face_t + sof_fill_t" % ZS0                    # the cartridge's and the fan box's bottom
+    yd1, yff = "%s + dp_t" % YD, "%s - face_t" % YFACE        # the door-side plate's and the front face's insides
+    cy0, cy1 = "%s + clr" % YD, "%s + clr + cart_d" % YD
+    zs1 = "%s - st_pad_t" % ez0                                # the strap's top
+    for k, xm in enumerate(strap_x(), 1):
+        # the strap stops 1 short of each support angle's upright leg
+        out.append(("strap", "CARTRIDGE STRAP %d" % k, box("%s - st_w / 2" % xm, "%s + st_w / 2" % xm,
+                                                           "%s + st_t + 1 mm" % yd1, "%s - st_t - 1 mm" % yff,
+                                                           "%s - st_h" % zs1, zs1)))
+        out.append(("st_pad", "CARTRIDGE STRAP PAD %d" % k, box("%s - st_w / 2" % xm, "%s + st_w / 2" % xm,
+                                                                "%s + (cart_d - st_pad_l) / 2" % cy0,
+                                                                "%s + (cart_d + st_pad_l) / 2" % cy0, zs1, ez0)))
+        zt = "%s - st_t" % zs1                                 # the support angles' flat legs carry the strap's ends
+        out.append(("st_ang", "STRAP ANGLE %d DOOR" % k, box("%s - sa_l / 2" % xm, "%s + sa_l / 2" % xm, yd1,
+                                                             "%s + sa_w" % yd1, "%s - st_t" % zt, "%s - st_t + sa_w" % zt)))
+        out.append(("st_ang", "STRAP ANGLE %d ROOM" % k, box("%s - sa_l / 2" % xm, "%s + sa_l / 2" % xm,
+                                                             "%s - sa_w" % yff, yff, "%s - st_t" % zt,
+                                                             "%s - st_t + sa_w" % zt)))
+    bx0, bx1 = "%s - fb_w" % XR, XR
+    ma_x1 = "%s - ang_f - hn_ch_w - 4 mm" % XR                 # 4 short of ELECTRICAL's channel under the box
+    zm = "%s - mt_h" % ez0                                     # the mounts' feet on the angles' flat legs
+    for tag, y0, y1 in (("DOOR", yd1, "%s + ma_w" % yd1), ("ROOM", "%s - ma_w" % yff, yff)):
+        out.append(("m_ang", "FAN BOX MOUNT ANGLE %s" % tag, box(bx0, ma_x1, y0, y1, "%s - ma_t" % zm,
+                                                                 "%s - ma_t + ma_h" % zm)))
+    for tag, ym in (("DOOR", "%s + mt_in" % cy0), ("ROOM", "%s - mt_in" % cy1)):
+        for k, xm in ((1, "%s + mt_x1" % bx0), (2, "%s - mt_x2" % bx1)):
+            out.append(("mount", "FAN BOX MOUNT %s %d" % (tag, k), box("%s - mt_d / 2" % xm, "%s + mt_d / 2" % xm,
+                                                                       "%s - mt_d / 2" % ym, "%s + mt_d / 2" % ym,
+                                                                       zm, ez0)))
+    return out
+
+
+def strap_section():
+    """The strap 611213's L section [(x, z)] in its own frame (run along Y): the flat leg on top under the cartridge,
+    the upright leg down at its +X edge."""
+    return [("0 mm", "st_h"), ("st_w", "st_h"), ("st_w", "0 mm"), ("st_w - st_t", "0 mm"), ("st_w - st_t", "st_h - st_t"),
+            ("0 mm", "st_h - st_t")]
+
+
+def angle_section(w, h, t):
+    """An angle's L section [(y, z)] in its own frame (run along X): its upright leg against the plate at y 0, its flat
+    leg out to y w at the bottom. The room-side copy is the same part turned 180 deg about Z."""
+    return [("0 mm", "0 mm"), (w, "0 mm"), (w, t), (t, t), (t, h), ("0 mm", h)]
+
+
+def latch_bracket_section():
+    """The latch bracket 611215's L section [(y, z)] in its own frame (run along X): the tab at the bottom from its free
+    end (y 0) to the front face, the upright leg up the front face."""
+    d = "lt_in + lt_bd / 2 + 4 mm"
+    return [("0 mm", "0 mm"), (d, "0 mm"), (d, "lb_h"), ("%s - lb_t" % d, "lb_h"), ("%s - lb_t" % d, "lb_t"),
+            ("0 mm", "lb_t")]
+
+
+def leg_boxes(name, bx, ev):
+    """The boxes a shaped soffit part is made of (each an L or the latch's snap groove), from its layout box bx (numbers)
+    and its name; None for a plain box part. ev evaluates a parameter expression."""
+    x0, x1, y0, y1, z0, z1 = bx
+    if name.startswith("CARTRIDGE STRAP ") and "PAD" not in name:
+        # the flat leg runs the full length onto both support angles; the upright leg stops 1 short of their flat legs
+        t, ua, ub = ev("st_t"), ev("%s + dp_t + sa_w + 1 mm" % YD), ev("%s - face_t - sa_w - 1 mm" % YFACE)
+        return [(x0, x1, y0, y1, z1 - t, z1), (x1 - t, x1, ua, ub, z0, z1 - t)]
+    if name.startswith("STRAP ANGLE ") or name.startswith("FAN BOX MOUNT ANGLE "):
+        t = ev("st_t") if name.startswith("STRAP") else ev("ma_t")
+        if name.endswith("DOOR"):
+            return [(x0, x1, y0, y0 + t, z0, z1), (x0, x1, y0 + t, y1, z0, z0 + t)]
+        return [(x0, x1, y1 - t, y1, z0, z1), (x0, x1, y0, y1 - t, z0, z0 + t)]
+    if " LATCH BRACKET " in name:
+        t, cx, cy = ev("lb_t"), ev("lt_cx"), ev("lt_cy")
+        xm, ym = (x0 + x1) / 2, ev("%s - face_t - lt_in" % YFACE)
+        tab = [(x0, xm - cx / 2, y0, y1 - t, z0, z0 + t), (xm + cx / 2, x1, y0, y1 - t, z0, z0 + t),
+               (xm - cx / 2, xm + cx / 2, y0, ym - cy / 2, z0, z0 + t), (xm - cx / 2, xm + cx / 2, ym + cy / 2, y1 - t, z0, z0 + t)]
+        return [(x0, x1, y1 - t, y1, z0, z1)] + tab
+    if " LATCH " in name:
+        zt, t, cx, cy = z0 + ev("lb_z"), ev("lb_t"), ev("lt_cx"), ev("lt_cy")
+        xm, ym = (x0 + x1) / 2, (y0 + y1) / 2
+        return [(x0, x1, y0, y1, z0, zt), (xm - cx / 2, xm + cx / 2, ym - cy / 2, ym + cy / 2, zt, zt + t),
+                (x0, x1, y0, y1, zt + t, z1)]
+    return None
+
+
 def soffit_sections():
     """The soffit underside: two hinged sections and a fixed strip over the column (D-87)."""
     return [("sof_under", "SOFFIT UNDERSIDE LEFT", XL, "-us_gap / 2"),
@@ -566,7 +711,7 @@ def layout():
     # soffit: underside sections (dark tone), front face, top rails, left end plate
     zf1 = ZRB                                      # front face up to the rail (riveted); pockets round the studs
     for key, name, x0, x1 in soffit_sections():
-        b.append((key, name, box(x0, x1, YD, "%s - face_t" % YFACE, ZS0, "%s + face_t" % ZS0)))
+        b.append((key, name, box(x0, x1, "%s + us_jg" % YD, "%s - face_t" % YFACE, ZS0, "%s + face_t" % ZS0)))
     b.append(("sof_front", "SOFFIT FACE FRONT", box(XL, XR, "%s - face_t" % YFACE, YFACE, ZS0, zf1)))
     zr0, zr1 = ZRB, "%s + rail_t" % ZRB
     b.append(("sof_rail_d", "SOFFIT RAIL DOOR", box(XL, XR, YD, "%s + rail_w" % YW, zr0, zr1)))
@@ -578,11 +723,18 @@ def layout():
     ez0 = "%s + face_t + sof_fill_t" % ZS0
     b.append(("cart", "CARTRIDGE EXHAUST", box("%s - cart_l" % ex1, ex1, cy0, cy1, ez0, "%s + cart_w" % ez0)))
     b.append(("box", "EXHAUST FAN BOX", box(ex1, XR, cy0, cy1, ez0, "%s + cart_w" % ez0)))
-    # the fill under the cartridge stops short of the latch line, so no latch cuts it, wherever the
-    # sections' quarter points fall (a latch cut that missed the fill failed at pod_w 2600)
-    b.append(("sof_fill", "SOFFIT FILL UNDER", box("%s - cart_l" % ex1, XR, cy0, "%s - face_t - hl_h" % YFACE,
-                                                    "%s + face_t" % ZS0, ez0)))
-    b.append(("sof_fill_f", "SOFFIT FILL FRONT", box("%s - cart_l" % ex1, XR, cy1, "%s - face_t" % YFACE, ez0, ZBT)))
+    b += soffit_supports()
+    # the fill under the cartridge: three pieces bonded to the sections (the Lead's ruling 2026-11-01: the cartridge
+    # and the fan box carry themselves), from behind the hinges to short of the latches and the straps' room ends
+    fy0, fy1 = "%s + dp_t + sa_w" % YD, "%s - face_t - sf_y1_gap" % YFACE   # behind the hinges and the strap angles
+    for key, name, x0, x1 in (("sof_fill", "SOFFIT FILL UNDER LEFT", "%s - cart_l" % ex1, "-us_gap / 2"),
+                              ("sof_fill_r", "SOFFIT FILL UNDER RIGHT", "us_gap / 2", "col_x0 - us_gap / 2"),
+                              ("sof_fill_c", "SOFFIT FILL UNDER OVER THE COLUMN", "col_x0", XR)):
+        b.append((key, name, box(x0, x1, fy0, fy1, "%s + face_t" % ZS0, ez0)))
+    # the front fill starts above the latches, their brackets and the room-side angles (sf_ff_dz over the cartridge's
+    # bottom), so nothing there cuts it, whatever the pod's size
+    b.append(("sof_fill_f", "SOFFIT FILL FRONT", box("%s - cart_l" % ex1, XR, cy1, "%s - face_t" % YFACE,
+                                                      "%s + sf_ff_dz" % ez0, ZBT)))
     b.append(("egrille", "EXHAUST GRILLE", box("%s + eg_x0" % XIL, "%s + eg_x0 + eg_l" % XIL, "%s + face_t" % YW,
                                                 "%s + face_t + eg_w" % YW, ZS0, "%s + grille_t" % ZS0)))
     # hanging: 4 studs (head under the rail, shank up through the fork to the ceiling frame),
@@ -596,14 +748,25 @@ def layout():
         b.append(("lock", name + " HEAD", box("%s - stud_d / 2" % x, "%s + stud_d / 2" % x,
                                               "%s - stud_d / 2" % y, "%s + stud_d / 2" % y, "%s - hd_h" % zr0, zr0)))
         b.append(("lock", name + " SHANK", box("%s - 3 mm" % x, "%s + 3 mm" % x, "%s - 3 mm" % y, "%s + 3 mm" % y, zr0, zf)))
-    zh0, zh1 = "%s + face_t" % ZS0, "%s + face_t + hl_h" % ZS0
+    za = "%s + face_t" % ZS0                                  # the sections' ACP top
+    yff = "%s - face_t" % YFACE                               # the front face's inside
     for key, name, x0, x1 in soffit_sections()[:2]:
         for q in (1, 3):
             xc = "(%s) + ((%s) - (%s)) * %d / 4" % (x0, x1, x0, q)
+            # the hinge 611212's reserved space (the AIR Transitions Engineer designs the riveted pin hinge inside it)
             b.append(("hinge", "%s HINGE %d" % (name, q), box("%s - hinge_l / 2" % xc, "%s + hinge_l / 2" % xc,
-                                                             YD, "%s + clr" % YD, zh0, zh1)))
-            b.append(("latch", "%s LATCH %d" % (name, q), box("%s - latch_l / 2" % xc, "%s + latch_l / 2" % xc,
-                                                             "%s - face_t - hl_h" % YFACE, "%s - face_t" % YFACE, zh0, zh1)))
+                                                             "%s + us_jg" % YD, "%s + us_jg + hg_res_y" % YD, za,
+                                                             "%s + hg_res_h" % za)))
+            # the Southco E4 push latch, its axis lt_in from the room edge, held by its bracket's tab
+            yl = "%s - lt_in" % yff
+            zl = "%s + lt_z0" % za
+            b.append(("latch", "%s LATCH %d" % (name, q), box("%s - lt_bw / 2" % xc, "%s + lt_bw / 2" % xc,
+                                                             "%s - lt_bd / 2" % yl, "%s + lt_bd / 2" % yl, zl,
+                                                             "%s + lt_bl" % zl)))
+            zt = "%s + lb_z" % zl
+            b.append(("lt_br", "%s LATCH BRACKET %d" % (name, q), box("%s - lb_w / 2" % xc, "%s + lb_w / 2" % xc,
+                                                                     "%s - lt_in - lt_bd / 2 - 4 mm" % yff, yff, zt,
+                                                                     "%s + lb_h" % zt)))
     # supply fan box joined with the intake riser (D-87), the transitions, the roof sleeve and grille
     sy0 = "%s + sb_yf" % YF
     b.append(("box_s", "SUPPLY FAN BOX", box("sb_x0", "sb_x0 + sb_w", sy0, "%s + sb_d" % sy0, "sb_z0", "sb_z0 + sb_h")))
@@ -776,23 +939,33 @@ def cutouts():
         out.append(("SOFFIT FACE FRONT", ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x,
                                           "%s - face_t" % YFACE, YFACE, ZBT, ZRB)))
     out += [("SOFFIT DOOR PLATE", bx) for _n, bx in door_stud_pockets()]
-    out += [("SOFFIT FILL UNDER", bx) for _n, bx in b08_fill_pockets()]
+    # the bonded fill: notched round each strap and over each mount angle's flat leg (it swings down past them)
+    for _k, name, bx in soffit_supports():
+        if name.startswith("CARTRIDGE STRAP ") and "PAD" not in name:
+            piece = "SOFFIT FILL UNDER LEFT" if name.endswith("1") else "SOFFIT FILL UNDER RIGHT"
+            out.append((piece, ("%s - 1 mm" % bx[0], "%s + 1 mm" % bx[1], bx[2], bx[3], "%s - 1 mm" % bx[4],
+                                "%s + face_t + sof_fill_t" % ZS0)))           # up to the fill's top: the pad sits there too
+        if name.startswith("FAN BOX MOUNT ANGLE "):
+            for piece in ("SOFFIT FILL UNDER RIGHT", "SOFFIT FILL UNDER OVER THE COLUMN"):
+                out.append((piece, (bx[0], bx[1], bx[2], bx[3], bx[4], "%s + face_t + sof_fill_t" % ZS0)))
+
     # ELECTRICAL's harness (agreed 2026-11-01): a 24 x 24 channel in the column's front fill from the hub up to the
     # fill's top, beside the FR angle; and one in the soffit's fill from the fixed underside's hole to the fan box's
     hp, col = harness_points(), lay["COLUMN FILL FRONT"]
     x0, x1 = "%s - ang_f - hn_ch_w" % XR, "%s - ang_f" % XR
     out.append(("COLUMN FILL FRONT", (x0, x1, "%s - face_t - hn_ch_w" % YFACE, "%s - face_t" % YFACE,
                                       "hub_z + hub_w / 2", col[5])))
-    sf = lay["SOFFIT FILL UNDER"]
-    out.append(("SOFFIT FILL UNDER", (x0, x1, "%s - hn_ch_w / 2" % hp["box_y"], "%s + hn_ch_w / 2" % hp["sof_y"],
-                                      sf[4], sf[5])))
+    sf = lay["SOFFIT FILL UNDER OVER THE COLUMN"]
+    out.append(("SOFFIT FILL UNDER OVER THE COLUMN", (x0, x1, "%s - hn_ch_w / 2" % hp["box_y"],
+                                                      "%s + hn_ch_w / 2" % hp["sof_y"], sf[4], sf[5])))
     return out
 
 
 # D-120: parts placed as copies of one component, and the parts whose layout boxes are one body together (a stud's or a
 # screw's head and shank, joined): {key: how the layout's names group into one copy}
 JOINED = {"stud": (" HEAD", " SHANK"), "lock": (" HEAD", " SHANK")}
-COPIES = {"stud", "lock", "hinge", "latch", "lin_es", "lin_s", "layer", "pad"}
+COPIES = {"stud", "lock", "hinge", "latch", "lin_es", "lin_s", "layer", "pad", "lt_br", "strap", "st_pad", "st_ang",
+          "mount", "m_ang"}
 TURNED = {"col_ang": "y"}       # the right front angle is the left one turned about Y (the angle runs the full height)
 BODY_KEY = {"cart": "casing"}   # a layout box whose body belongs to another part: the cartridge's is its casing's
 

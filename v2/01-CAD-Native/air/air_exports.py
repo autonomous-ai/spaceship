@@ -52,10 +52,23 @@ TREE = [
     ("sof_front", "soffit", 1, "D-61"), ("sof_rail_d", "soffit", 1, "D-87 hooks, PM ruling 2026-11-01"),
     ("sof_rail_r", "soffit", 1, "D-87 hooks, PM ruling 2026-11-01"), ("sof_end", "soffit", 1, "D-87"),
     ("sof_door", "soffit", 1, "PM ruling 2026-11-01 (HOLD-18): carries the door-side rail on the studs' heads"),
-    ("sof_fill", "soffit", 1, "air report 7e: the piece under the cartridge"),
+    ("sof_fill", "soffit", 1, "air report 7e; the Lead's numbers 2026-11-01: the left piece, bonded to the left section"),
+    ("sof_fill_r", "soffit", 1, "the Lead's numbers 2026-11-01: the right piece, bonded to the right section"),
+    ("sof_fill_c", "soffit", 1, "the Lead's numbers 2026-11-01: the piece over the column, bonded to the fixed underside"),
     ("sof_fill_f", "soffit", 1, "air report 7e: the front piece"),
     ("egrille", "soffit", 1, "air report 7e: exhaust grille 265 x 336"),
-    ("hinge", "soffit", 4, "D-87: hinged underside, 2 per section"), ("latch", "soffit", 4, "D-87: 2 push latches per section"),
+    ("hinge", "soffit", 4, "D-87: 2 per hinged section at its door edge; the AIR Transitions Engineer designs it in this "
+     "space (the Lead 2026-11-01)"),
+    ("latch", "soffit", 4, "D-87: 2 push latches per section at its room edge's quarter points (the Lead's ruling 2026-11-01)"),
+    ("lt_br", "soffit", 4, "the Lead's ruling 2026-11-01: a small bracket riveted inside the fixed front face for each latch"),
+    ("strap", "soffit", 2, "the Lead 2026-11-01: two straps carry the exhaust cartridge, so the fill over the hinged "
+     "underside carries nothing"),
+    ("st_pad", "soffit", 2, "the Lead 2026-11-01: a foam pad on each strap under the cartridge"),
+    ("st_ang", "soffit", 4, "the Lead 2026-11-01: each strap rests on two angles, on the door-side plate and inside the "
+     "front face"),
+    ("m_ang", "soffit", 2, "the Lead's ruling 2026-11-01 (not hard fixed): the fan box sits on isolating mounts on two "
+     "angles, on the door-side plate and inside the front face"),
+    ("mount", "soffit", 4, "the Lead's ruling 2026-11-01: 2 isolating mounts per angle, each with a captive bolt"),
     ("ebox", "soffit", 1, "D-87: fitted in the soffit at the factory"),
     ("box", "ebox", 1, "air report 7e: 294 x 314 x 173; 3 mm (D-124)"), ("fan", "ebox", 2, "PM ruling 2026-11-01: 618401 for all four fans"),
     ("blk_e", "ebox", 1, "D-121: the exhaust fans hang under it at the box's top, sealed to the casing"),
@@ -91,7 +104,9 @@ FINISH = {"col_front": "ACP EV3038 face with Dark Gray felt (D-79)", "col_left":
           "col_ang_b": "mill finish (hidden, D-79)", "kick_l": "powder coat to match the felt (HOLD)",
           "blk_e": "mill finish (hidden, D-79)", "blk_s": "mill finish (hidden, D-79)",
           "lin_es": "as supplied (the maker's facing)", "lin_ee": "as supplied (the maker's facing)",
-          "lin_s": "as supplied (the maker's facing)", "lip": "mill finish (hidden, D-79)"}
+          "lin_s": "as supplied (the maker's facing)", "lip": "mill finish (hidden, D-79)",
+          "lt_br": "mill finish (hidden, D-79)", "strap": "mill finish (hidden, D-79)", "st_ang": "mill finish (hidden, D-79)",
+          "m_ang": "mill finish (hidden, D-79)", "sof_fill_r": "as supplied", "sof_fill_c": "as supplied"}
 PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "laser cut", "col_ang": "extruded angle, cut, keyholes milled",
            "sof_rail_d": "laser cut flat bar, forks and holes", "sof_rail_r": "laser cut flat bar, forks", "sof_end": "laser cut",
            "sof_door": "laser cut: the outline, the two head pockets and B08's three reliefs (its DXF)",
@@ -107,7 +122,16 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
                      "and 4 rivnut holes (blank HOLD)",
            "col_fill": "knife cut", "sof_fill": "knife cut", "layer": "knife cut",
            "col_ang_b": "extruded angle, cut, keyholes milled", "kick_l": "perforated sheet, laser cut",
-           "col_fill_l": "knife cut", "sof_fill_f": "knife cut",
+           "col_fill_l": "knife cut", "sof_fill_f": "knife cut", "sof_fill_r": "knife cut", "sof_fill_c": "knife cut",
+           "hinge": "HOLD: the AIR Transitions Engineer's riveted pin hinge, designed inside this reserved space",
+           "lt_br": "laser cut, folded to an L (blank HOLD), with the E4's 19 x 11.5 cut-out in its tab; riveted inside "
+                    "the front face before the felt (rivet HOLD)",
+           "strap": "extruded angle 30 x 20 x 2, cut to length, its upright leg cut back at both ends; rests on its two "
+                    "angles, a captive screw at the room end (fixing HOLD)",
+           "st_ang": "extruded angle 30 x 30 x 2, cut to 40; riveted to the door-side plate or inside the front face "
+                     "before the felt (rivet HOLD)",
+           "m_ang": "laser cut, folded to an angle 53 x 30 x 2 (blank HOLD); riveted to the door-side plate or inside the "
+                    "front face before the felt (rivet HOLD); the mounts' bolt holes HOLD with the mount",
            "blk_e": "laser cut: the outline, two fan bores and the fans' 8 screw holes (its DXF); sealed to the casing "
                     "(sealant HOLD), its fixing to the casing HOLD",
            "blk_s": "laser cut: the outline, two fan bores and the fans' 8 screw holes (its DXF); sealed to the casing "
@@ -122,8 +146,12 @@ HOLD_MASS = {
                        "transition's own design (walls, vanes, outlet lip seal) is HOLD"),
              "rtrans": (1.47, "calculation: a 1 mm galvanised steel duct of 0.187 m2, from the riser's top (139 x 155) to the "
                         "fan box's bottom (300 x 155) over 205, FRONT's reserved space, until the AIR follow-up designs it"),
-             "hinge": (0.04, "assumption: a small concealed hinge, about 40 g"),
-             "latch": (0.02, "assumption: a push latch, about 20 g"),
+             "hinge": (0.04, "assumption: a riveted pin hinge in its 60 x 28 x 24 space, about 40 g (two 1.5 mm leaves, "
+                       "a steel pin, rivets)"),
+             "latch": (0.02, "assumption: the push latch about 20 g (the maker's mass to confirm)"),
+             "st_pad": (0.008, "calculation: 300 x 30 x 3 at about 300 kg/m3, a microcellular urethane foam (product HOLD)"),
+             "mount": (0.008, "assumption: the hemisphere about 2.4 g (1.81 cm3 at 1.3 g/cm3, calculation) and its captive "
+                       "bolt and washer about 5 g"),
              "pad": (0.004, "calculation: 40 x 15 x 5 rubber at about 1300 kg/m3 (product HOLD)"),
              "buffer": (0.012, "assumption: a rubber buffer about 20 across and 23 long with an M6 steel stud (product HOLD)")}
 
@@ -208,7 +236,8 @@ def flat_cut_list(v):
     L = boxes(v)
     rows = []
     for key, names in (("col_fill", ["COLUMN FILL FRONT"]), ("col_fill_l", ["COLUMN FILL LEFT"]),
-                       ("sof_fill", ["SOFFIT FILL UNDER"]), ("sof_fill_f", ["SOFFIT FILL FRONT"]),
+                       ("sof_fill", ["SOFFIT FILL UNDER LEFT"]), ("sof_fill_r", ["SOFFIT FILL UNDER RIGHT"]),
+                       ("sof_fill_c", ["SOFFIT FILL UNDER OVER THE COLUMN"]), ("sof_fill_f", ["SOFFIT FILL FRONT"]),
                        ("lin_es", ["FAN BOX LINING EXHAUST SIDE 1"]), ("lin_ee", ["FAN BOX LINING EXHAUST FAR END"]),
                        ("lin_s", ["FAN BOX LINING SUPPLY END 1"])):
         pn, name, vn, _k, mat = A.PARTS[key]
@@ -218,9 +247,12 @@ def flat_cut_list(v):
             lining = key.startswith("lin_")
             rows.append({"part_number": pn, "piece": n, "name": name, "name_vi": vn, "material": A.MATERIALS[mat][0],
                          "size_mm": "%.1f x %.1f x %.1f" % tuple(d), "qty_per_pod": 2 if key in ("lin_es", "lin_s") else 1,
-                         "tolerance": "knife cut +/-2 (assumption)", "drawing": "none (D-89: plain rectangle)",
+                         "tolerance": "knife cut +/-2 (assumption)",
+                         "drawing": ("HOLD: a cut file with its notches (the AIR model's cut-outs)"
+                                     if any(t == n for t, _c in A.cutouts()) else "none (D-89: plain rectangle)"),
                          "note": ("D-121: bonded to the fan box casing's wall (adhesive HOLD)" if lining else
-                                  "openings cut on site to the hub zone / latches: see the AIR drawing")})
+                                  "its notches and openings knife cut with it, at the factory: see the AIR model's "
+                                  "cut-outs")})
     pn, name, vn, _k, mat = A.PARTS["layer"]
     rows.append({"part_number": pn, "piece": "LAYER 50", "name": name, "name_vi": vn, "material": A.MATERIALS[mat][0],
                  "size_mm": "%.1f x %.1f x %.1f" % (v["cart_l"], v["cart_w"] - 2 * v["cart_t"], v["lay_t"]),
@@ -231,8 +263,11 @@ def flat_cut_list(v):
 
 FLAT = {"col_foot", "col_side_lo", "col_side_hi", "sof_rail_d", "sof_rail_r", "sof_end", "sof_door", "kick", "kick_l",
         "egrille", "rgrille", "blk_e", "blk_s"}
-SOFT = {"col_fill", "col_fill_l", "sof_fill", "sof_fill_f", "layer", "lin_es", "lin_ee", "lin_s"}
-MAKER = {"fan": ("Noctua", "NF-A14 industrialPPC-3000 PWM")}
+SOFT = {"col_fill", "col_fill_l", "sof_fill", "sof_fill_r", "sof_fill_c", "sof_fill_f", "layer", "lin_es", "lin_ee", "lin_s"}
+# the Lead's sourcing rulings 2026-11-01: the latch taken (each holds 25 N on the sample); the mount picked, its part
+# still HOLD until the fan sample measures the box's real resonance
+MAKER = {"fan": ("Noctua", "NF-A14 industrialPPC-3000 PWM"), "latch": ("Southco", "E4-10-201-10"),
+         "mount": ("Sorbothane", "0510111-50-10")}
 
 
 def size_tol(v, key):
@@ -252,6 +287,8 @@ def size_tol(v, key):
         parts.append("%.1f x %.1f x %.1f" % tuple(d))
     size = "; ".join(sorted(set(parts)))
     if key in SOFT:
+        if any(t in names for t, _c in A.cutouts()):    # notched round the parts it fits: not a plain rectangle
+            return size, "knife cut +/-2 (assumption); notched as the AIR model's cut-outs show, cut file HOLD"
         return size, "knife cut +/-2 (assumption); a plain piece, no drawing (D-89)"
     if key in FLAT:
         return size, "ISO 2768-m; flat cut part, no drawing: its DXF is the outline (D-89 part 4)"
@@ -311,7 +348,7 @@ def parts_list(v, mass):
             # D-105's type: no mass, no drawing, no BOM line; the checks keep the space (the Lead's ruling 2026-11-01)
             # 0.000, not a dash: the roll-up and the master BOM read every row's mass as a number
             mass_txt, mstat = "0.000", "none: a reserved space; the in-house sensor hub that fills it is ELECTRICAL's"
-        elif kind == "HOLD" or (kind == "PI" and key in HOLD_MASS):   # a bought part whose product is on HOLD
+        elif kind == "HOLD" or (kind in ("PI", "MP") and key in HOLD_MASS):   # a part whose product or design is on HOLD
             hm, hs = HOLD_MASS.get(key, (0.0, "assumption: space only"))
             mass_txt, mstat = "%.3f" % hm, hs
         elif pkey == "fan":
@@ -327,9 +364,11 @@ def parts_list(v, mass):
             # one entry per body: a part's mass is the sum over its bodies in one occurrence
             each = (sum(m) / max(1, qty_pod(key))) if m else None
             mass_txt, mstat = ("%.3f" % each if each is not None else ""), "calculation (Fusion, CAD geometry x density)"
-        size, tol = size_tol(v, pkey) if kind == "MP" else ("", "")
         reserved = kind == "reserved air space"
         held = not reserved and (kind == "HOLD" or name.endswith("- HOLD"))
+        size, tol = size_tol(v, pkey) if kind == "MP" else ("", "")
+        if kind == "MP" and held:      # a made part still to be designed inside its reserved space (the hinge 611212)
+            tol = "HOLD: the reserved space; the part is designed inside it"
         maker, sku = MAKER.get(pkey, ("HOLD", "HOLD: chosen at the RFQ") if held else ("", ""))
         r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": A.PARTS[parent][0] if parent else "",
              "qty_per_parent": q, "qty_per_pod": qty_pod(key), "material": A.MATERIALS[mat][0] if mat else "",

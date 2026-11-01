@@ -42,6 +42,9 @@ def pieces(name, v=V):
         walls = (ev("slot_x0"), ev("slot_x0 + slot_w"), ev("slot_y0"), ev("slot_y0 + slot_d"), b[4], ev("pod_h"))
         fx0, fx1, fy0, fy1 = (ev(e) for e in A.sleeve_flange())
         return [walls, (fx0, fx1, fy0, fy1, ev("pod_h"), ev("pod_h + slv_t"))]
+    lb = A.leg_boxes(name, b6(name) if v is V else tuple(ev(e) for e in A.layout_box(name)), ev)
+    if lb:
+        return lb
     if name == "SUPPLY TRANSITION":
         out = []
         for pts, z0, z1 in A.transition_outlines():
@@ -98,6 +101,12 @@ class Fits(unittest.TestCase):
         cut |= {("SOFFIT DOOR PLATE", n + " HEAD") for n, _b in A.door_stud_pockets()}           # (PocketsHold checks them)
         # the casings are hollow: their bulkheads and linings sit inside (D-121; FanBoxInside checks them)
         cut |= {("%s FAN BOX" % t, n) for t in ("EXHAUST", "SUPPLY") for _k, n, _b in A.fan_box_inner() if t in n}
+        # the bonded fill is notched round each strap (a cut-out the build makes)
+        cut |= {("SOFFIT FILL UNDER LEFT", "CARTRIDGE STRAP 1"), ("SOFFIT FILL UNDER RIGHT", "CARTRIDGE STRAP 2"),
+                ("SOFFIT FILL UNDER LEFT", "CARTRIDGE STRAP PAD 1"), ("SOFFIT FILL UNDER RIGHT", "CARTRIDGE STRAP PAD 2")}
+        # and cut out over the fan box's mount angles and the mounts on them (it swings down past them)
+        cut |= {(f, n) for f in ("SOFFIT FILL UNDER RIGHT", "SOFFIT FILL UNDER OVER THE COLUMN") for n in LAY
+                if n.startswith("FAN BOX MOUNT")}
         names = list(LAY)
         for i in range(len(names)):
             for j in range(i + 1, len(names)):
@@ -232,11 +241,13 @@ class D120Copies(unittest.TestCase):
             if k in A.COPIES:
                 b = [A.ev(V, e) for e in bx]
                 size.setdefault(k, []).append((round(b[1] - b[0], 6), round(b[3] - b[2], 6), round(b[5] - b[4], 6)))
-        self.assertEqual(sorted(size), ["hinge", "latch", "lin_es", "lin_s", "lock", "pad", "stud"])
+        self.assertEqual(sorted(size), ["hinge", "latch", "lin_es", "lin_s", "lock", "lt_br", "m_ang", "mount", "pad",
+                                        "st_ang", "st_pad", "strap", "stud"])
         for k, sizes in size.items():
             self.assertEqual(len(set(sizes)), 1, "%s: %s" % (k, sizes))
         self.assertEqual({k: len(v) for k, v in size.items()},
-                         {"hinge": 4, "latch": 4, "lin_es": 2, "lin_s": 2, "lock": 2, "pad": 2, "stud": 4})
+                         {"hinge": 4, "latch": 4, "lin_es": 2, "lin_s": 2, "lock": 2, "pad": 2, "stud": 4, "lt_br": 4,
+                          "m_ang": 2, "mount": 4, "st_ang": 4, "st_pad": 2, "strap": 2})
 
     def test_joined_units(self):
         for k, n, bx in A.units():
@@ -523,7 +534,9 @@ class FrontInterface(unittest.TestCase):
         self.assertAlmostEqual(yd, CM.evaluate(CM.all_params() + [p for p in A.front_entries(have={q[0] for q in CM.all_params()})])["dr_acc_face_y"])
         self.assertEqual(theirs[1], dict((p[0], p[1]) for p in A.all_params())["dr_acc_face_y"])
         for name in self.DOOR_SIDE:
-            self.assertAlmostEqual(b6(name)[2], yd, msg=name)
+            # the underside sections keep the 2 mm joint at the door edge (the Lead's ruling on the soffit hinge)
+            want = yd + V["us_jg"] if name.startswith("SOFFIT UNDERSIDE") else yd
+            self.assertAlmostEqual(b6(name)[2], want, msg=name)
         for name, (_k, bx) in LAY.items():
             if _k not in ("box_s", "blk_s", "lin_s", "trans", "riser", "rtrans", "sleeve", "rgrille", "stud", "lock",
                           "lip", "pad", "buffer"):
@@ -606,7 +619,7 @@ class HarnessRoute(unittest.TestCase):
             self.assertGreaterEqual(min(y - d / 2 - fr[2], fr[3] - (y + d / 2)), 2 * V["ang_t"] - 1e-9)
 
     def test_channels_and_holes(self):
-        cuts = {t: [] for t in ("COLUMN FILL FRONT", "SOFFIT FILL UNDER")}
+        cuts = {t: [] for t in ("COLUMN FILL FRONT", "SOFFIT FILL UNDER OVER THE COLUMN")}
         for t, b in A.cutouts():
             if t in cuts:
                 cuts[t].append(tuple(round(A.ev(V, e), 2) for e in b))
@@ -618,7 +631,7 @@ class HarnessRoute(unittest.TestCase):
         self.assertEqual((round(bx, 2), bd), (1140.0, 12.0))
         lin = b6("FAN BOX LINING EXHAUST SIDE 2")
         self.assertGreaterEqual(lin[2] - (by + bd / 2), 6.0, "the box's hole clear of its room-side lining")
-        ch = [c for c in cuts["SOFFIT FILL UNDER"] if c[0] == 1128.0]
+        ch = [c for c in cuts["SOFFIT FILL UNDER OVER THE COLUMN"] if c[0] == 1128.0]
         self.assertEqual(len(ch), 1)
         self.assertLessEqual(ch[0][2], by - bd / 2)                            # the channel reaches both holes
         self.assertGreaterEqual(ch[0][3], y + d / 2)

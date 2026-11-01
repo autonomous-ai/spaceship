@@ -720,6 +720,67 @@ def run(_context):
 
         def units_of(key):
             return [n for k, n, _b in A.units() if k == key]
+
+        # the shaped soffit parts: each one profile and one extrude, then cuts (no joins: BASE found two touching bodies
+        # can stay two after a join), the same shapes as the model's leg_boxes, which the offline clash tests read
+        def strap_maker(comp, _n, u):
+            # the strap's L section (strap_section) its full length, then its upright leg cut back at both ends 1 short of
+            # the support angles' flat legs, so only the flat leg rests on them
+            L = rel(u[3], u[2])
+            body = poly_prism(comp, "CARTRIDGE STRAP", ("x", "z"), A.strap_section(), "y", "0 mm", L, ctx)
+            ua = rel("%s + dp_t + sa_w + 1 mm" % A.YD, u[2])
+            ub = rel("%s - face_t - sa_w - 1 mm" % A.YFACE, u[2])
+            for k, (c0, c1) in enumerate((("-1 mm", ua), (ub, "%s + 1 mm" % L)), 1):
+                CB.box_body(comp, "CARTRIDGE STRAP END %d" % k, ("st_w - st_t - 1 mm", "st_w + 1 mm", c0, c1, "-1 mm",
+                                                                  "st_h - st_t"), ctx, op=CUT, bodies=[body])
+            return body
+
+        def angle_maker(body_name, w, h, t):
+            def make(comp, _n, u):
+                # the angle's L section (angle_section) run along X: its upright leg on the plate at local y 0, its flat
+                # leg out along +y at the bottom; the room-side copy is this part turned 180 deg about Z
+                return poly_prism(comp, body_name, ("y", "z"), A.angle_section(w, h, t), "x", "0 mm", rel(u[1], u[0]), ctx)
+            return make
+
+        def bracket_maker(comp, _n, u):
+            # the latch bracket's L section (latch_bracket_section: the tab at the bottom, the upright up the front face)
+            # run along X, and the tab's cut-out for the E4 under the latch's axis
+            body = poly_prism(comp, "LATCH BRACKET", ("y", "z"), A.latch_bracket_section(), "x", "0 mm", "lb_w", ctx)
+            ym = "%s - lt_in" % rel(u[3], u[2])
+            CB.box_body(comp, "LATCH BRACKET CUT-OUT", ("lb_w / 2 - lt_cx / 2", "lb_w / 2 + lt_cx / 2", "%s - lt_cy / 2" % ym,
+                                                        "%s + lt_cy / 2" % ym, "-1 mm", "lb_t + 1 mm"),
+                        ctx, op=CUT, bodies=[body])
+            return body
+
+        def latch_maker(comp, _n, _u):
+            # the E4's envelope: one box, its snap groove cut round the neck where the bracket's tab holds it
+            body = CB.box_body(comp, "LATCH ENVELOPE", ("0 mm", "lt_bw", "0 mm", "lt_bd", "0 mm", "lt_bl"), ctx)
+            xa, xb = "(lt_bw - lt_cx) / 2", "(lt_bw + lt_cx) / 2"
+            ya, yb = "(lt_bd - lt_cy) / 2", "(lt_bd + lt_cy) / 2"
+            for k, bx in enumerate((("-1 mm", xa, "-1 mm", "lt_bd + 1 mm"), (xb, "lt_bw + 1 mm", "-1 mm", "lt_bd + 1 mm"),
+                                    (xa, xb, "-1 mm", ya), (xa, xb, yb, "lt_bd + 1 mm")), 1):
+                CB.box_body(comp, "LATCH GROOVE %d" % k, bx + ("lb_z", "lb_z + lb_t"), ctx, op=CUT, bodies=[body])
+            return body
+
+        def turned_pair(parent, key, unit_names, maker):
+            """One part placed as copies on the door side and turned 180 deg about Z on the room side (D-120): made in
+            its own frame from the first (door-side) unit; each room-side copy turned by place_turned."""
+            if not unit_names or unit_names[0].endswith("ROOM"):
+                raise RuntimeError("%s: the first unit must be a door-side one" % key)
+            comp = None
+            for n in unit_names:
+                u = unit_of[n]
+                if comp is None:
+                    occ, comp = new_comp(parent, key)
+                    made[n] = (comp, maker(comp, n, u))
+                    set_material(design, comp, key)
+                else:
+                    occ = parent.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
+                if n.endswith("ROOM"):
+                    place_turned(parent, occ, "z", (u[1], u[3], u[4]), n, ctx)
+                else:
+                    CB.place(parent, occ, (u[0], u[2], u[4]), n, ctx)
+            return comp
         # ---- column: foot plate, faces, kick grille, plenum plates, fill, angles, cartridge (the hub zone is ELECTRICAL's)
         _o, col = new_comp(root, "column")
         for key in ("col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "col_fill_l", "kick",
@@ -766,7 +827,7 @@ def run(_context):
         #      rails, end plate, fill, grille, hanging and service hardware envelopes
         _o, sof = new_comp(root, "soffit")
         for key in ("sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_door",
-                    "sof_end", "sof_fill", "sof_fill_f", "egrille"):
+                    "sof_end", "sof_fill", "sof_fill_r", "sof_fill_c", "sof_fill_f", "egrille"):
             comp_with(sof, key, names_of(key))
         hs = A.HARDWARE["stud"]
 
@@ -775,8 +836,15 @@ def run(_context):
             sd.name, sd.partNumber = "%s %s" % (hs[0], hs[1]), hs[0]
             sd.description = "%s | %s | PI | %s | the soffit's hanger stud (D-90)" % (hs[1], hs[2], A.REV)
         copies(sof, "stud", units_of("stud"), stud_maker("HANGER STUD"), setup=stud_setup)   # steel, as the riser
-        copies(sof, "hinge", units_of("hinge"), box_maker("HINGE ENVELOPE"))
-        copies(sof, "latch", units_of("latch"), box_maker("LATCH ENVELOPE"))
+        # the hinge 611212's reserved space (the AIR Transitions Engineer designs it; the Lead 2026-11-01)
+        copies(sof, "hinge", units_of("hinge"), box_maker("HINGE SPACE"))
+        # the Southco E4 push latches, each snapped into its bracket's tab (the snap groove at the tab), and the brackets
+        copies(sof, "latch", units_of("latch"), latch_maker)
+        copies(sof, "lt_br", units_of("lt_br"), bracket_maker)
+        # the exhaust cartridge on two straps with their pads, each strap on two support angles (the Lead's ruling)
+        copies(sof, "strap", units_of("strap"), strap_maker)
+        copies(sof, "st_pad", units_of("st_pad"), box_maker("STRAP PAD"))
+        turned_pair(sof, "st_ang", units_of("st_ang"), angle_maker("CARTRIDGE STRAP ANGLE", "sa_w", "sa_w", "st_t"))
         hp = A.HARDWARE["lock"]
 
         def lock_setup(lk):
@@ -802,6 +870,11 @@ def run(_context):
                 comp_with(fb, "blk_e", names_of("blk_e"))
                 copies(fb, "lin_es", units_of("lin_es"), box_maker("FAN BOX LINING EXHAUST SIDE"))
                 comp_with(fb, "lin_ee", names_of("lin_ee"))
+                # the box sits on four isolating mounts on two angles riveted to the soffit's door-side plate and front
+                # face (the Lead's ruling 2026-11-01: not hard fixed), captive bolts with a washer that only touches if the
+                # rubber fails: the angles and mounts are the soffit's, fitted before the box
+                turned_pair(sof, "m_ang", units_of("m_ang"), angle_maker("FAN BOX MOUNT ANGLE", "ma_w", "ma_h", "ma_t"))
+                copies(sof, "mount", units_of("mount"), box_maker("MOUNT ENVELOPE"))
             else:
                 comp_with(fb, "blk_s", names_of("blk_s"))
                 copies(fb, "lin_s", units_of("lin_s"), box_maker("FAN BOX LINING SUPPLY END"))
