@@ -22,14 +22,23 @@ DECOR_TUBE = {
 # DT's 11 tube parts (#232); 352204's sheet waits for the generator: its 75.39 deg angle arc runs into the border
 _DT = ["352201", "352202", "352203", "352204", "352205", "352206", "352207", "352208", "352209", "352210", "352211"]
 
-# DR's 22 tube parts (#232, #287: F09 is 352322). 352321 (C10) is refused as an open section: the DT joint turns
-# 5.5 mm before the back ring, so it is a 5.5 x 15 mm wedge of tube; FRONT's fix is with the Lead
-_DR = ["3523%02d" % n for n in range(1, 23)]
+# DR's 21 tube parts (#232, #287: F09 is 352322); 352321 (C10) cancelled: a 5.5 x 15 mm wedge of tube, so C09 runs
+# on to the back ring (PM ruling 2026-11-01, #313)
+_DR = ["3523%02d" % n for n in range(1, 23) if n != 21]
 
 # DL's 16 tube parts (#232)
 _DL = ["3521%02d" % n for n in range(1, 17)]
 
 PARTS = {pn: DECOR_TUBE for pn in _DT + _DR + _DL}
+
+# Tubes whose default view looked at a mitred end face-on, so no end-cut angle printed (Reviewer 7 on #320): a
+# principal view along the plane of the cut instead (the front view looking +Y, or the view from above looking down),
+# with the tube's length across the sheet; each found by trying the views square to its axis and keeping the one that
+# prints its end angles
+_VIEWS = {"352202": ("+Y", "+Z"), "352207": ("-Z", "+X"), "352209": ("-Z", "+Y"), "352210": ("-Z", "+Y"),
+          "352105": ("-Z", "+Y"), "352106": ("-Z", "+X"), "352302": ("+Y", "+Z"), "352310": ("+Y", "+Z")}
+for _pn, (_look, _x) in _VIEWS.items():
+    PARTS[_pn] = dict(DECOR_TUBE, principal={"look": _look, "x": _x})
 
 # the door stops: aluminium angle cut to length (DL's hinge-side stop in 3 numbers, D-120 and D-123; DT's top stop).
 # Refused today as open sections ("folded sheet"); they draw once the generator reads bought profiles (the Lead,
