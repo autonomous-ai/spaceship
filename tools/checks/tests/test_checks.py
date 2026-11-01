@@ -1525,3 +1525,25 @@ def test_the_drawing_traps_are_read_back_into_c05(tmp_path):
     got = {(f.subject, f.rule, f.severity) for f in c_drawings.check_drawings(str(tmp_path), {"831998", "831999"}, {})}
     assert ("831998", "letter-height", "major") in got and ("831998", "hidden-lines", "minor") in got
     assert not [g for g in got if g[0] == "831999"]                     # 2.5 mm text; its 2 hidden views allowed
+
+
+def test_the_acp_skins_bays_are_275_clear_or_less():
+    # D-135: 2 mm or less under 100 N at a bay's centre; WALL's span table: 274.8 mm clear gives 1.99 mm
+    lab = "210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_CAD:1 / 211201 WALL - PANEL FRAME - BACK LOWER - B1:1 / %s"
+    def frame(centres):
+        bs = [_B(lab % "RAIL - BOTTOM", (0.0, 810.0, 0.0, 1200.0, 850.0, 20.0)),
+              _B(lab % "RAIL - TOP", (0.0, 810.0, 1080.0, 1200.0, 850.0, 1100.0))]
+        x = 0.0
+        while x <= 1180.0 + 1e-6:
+            bs.append(_B(lab % "STILE", (x, 810.0, 20.0, x + 20.0, 850.0, 1080.0)))
+            x += centres
+        for b in bs:
+            b.file = "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step"
+        return bs
+    wide = frame(393.33)                                           # D-85's centres: 373 clear
+    assert [x[0] for x in c_geometry.acp_bays(wide)["211201 BACK LOWER - B1"]] == [373.3, 373.3, 373.3]
+    fs = c_geometry.check_acp_bays(ROOT, "assembly", wide)
+    assert len(fs) == 1 and fs[0].owner == "WALL" and fs[0].severity == "major" and "373.3 mm" in fs[0].message
+    assert c_geometry.check_acp_bays(ROOT, "assembly", frame(295.0)) == []            # 275 clear: passes
+    other = [_B("410000_P01_CEILING_CAD:1 / 411101 CEILING - PANEL FRAME - C1:1 / X", (0, 0, 0, 1200, 40, 1100))]
+    assert c_geometry.acp_bays(other) == {}                          # the rule is for the wall panels' ACP
