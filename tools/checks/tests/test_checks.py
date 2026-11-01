@@ -1605,3 +1605,22 @@ def test_the_acp_skins_bays_are_275_clear_or_less():
     assert c_geometry.check_acp_bays(ROOT, "assembly", frame(295.0)) == []            # 275 clear: passes
     other = [_B("410000_P01_CEILING_CAD:1 / 411101 CEILING - PANEL FRAME - C1:1 / X", (0, 0, 0, 1200, 40, 1100))]
     assert c_geometry.acp_bays(other) == {}                          # the rule is for the wall panels' ACP
+
+
+def test_a_bought_profile_we_mitre_and_drill_is_a_made_part_with_a_drawing(tmp_path):
+    # D-143 (3): FRONT's 368004, Bohle's U-profile cut into 4 mitred pieces with holes, needs one table drawing
+    row = {"part_number": "368004", "name": "FRONT - GLAZING U-PROFILE - BOHLE BO5201571",
+           "_raw": {"kind": "bought by length, 4 pieces mitred", "note": "outer lengths 745 / 1446 mm"}}
+    seal = {"part_number": "368002", "name": "FRONT - GLAZING U-SEAL", "_raw": {"kind": "bought by length, 4 pieces"}}
+    bolt = {"part_number": "838001", "name": "HARDWARE - BOLT", "_raw": {"kind": "bought, drilled through"}}
+    holes = {"368004": ["a hole"], "368002": [], "838001": ["a hole"]}
+    why = c_drawings.processed_bought([("x.csv", [row, seal, bolt])], holes)
+    assert list(why) == ["368004"] and "D-143" in why["368004"]
+    assert c_drawings.processed_bought([("x.csv", [row])], {"368004": []}) == {}       # no holes: a cut length only
+    as_front = dict(row, _raw={"type": "bought by length, 4 pieces mitred"})            # FRONT's column name
+    assert list(c_drawings.processed_bought([("x.csv", [as_front])], holes)) == ["368004"]
+    m = tmp_path / "v2/03-Manufacturing/front"
+    m.mkdir(parents=True)
+    fs = c_drawings.check_drawings(str(tmp_path), {"368004"}, holes, {"368004": row["name"]}, made_why=why)
+    assert [(f.rule, f.severity) for f in fs] == [("no-drawing", "major")] and "D-143" in fs[0].message
+    assert c_drawings.check_drawings(str(tmp_path), {"368004"}, holes, {"368004": row["name"]}) == []
