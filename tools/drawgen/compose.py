@@ -50,6 +50,14 @@ def fmt(v, nd=2):
     return "0" if s in ("-0", "") else s
 
 
+class _Smaller(Exception):
+    """The sheet's row of removed sections and flat pattern ran off the sheet at this scale: draw again smaller."""
+
+    def __init__(self, scale):
+        Exception.__init__(self, scale)
+        self.scale = scale
+
+
 class NotDrawable(Exception):
     """The part has something this tool can't dimension properly: it goes back to Fusion (D-112, D-113)."""
 
@@ -517,14 +525,28 @@ def flat_dims(sh, part, fv):
                 q = (end[0] + u[0] * sg * k, end[1] + u[1] * sg * k)
                 an = "left" if u[0] * sg > 0.5 else ("right" if u[0] * sg < -0.5 else "center")
                 cands.append((q[0], q[1] - 1.25, an))
-        pick = next((c for c in cands if sh.is_free(sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True))), cands[0])
+        # where those are taken (a small flat's bend lines end at the corner reliefs, by the next wall): beside the
+        # line, just inside each end, on either side of it
+        for end, sg in ((pb, -1.0), (pa, 1.0)):
+            for k in (3.0, 8.0, 15.0):
+                q = (end[0] + u[0] * sg * k, end[1] + u[1] * sg * k)
+                for side in (1.0, -1.0):
+                    nx_, ny_ = -u[1] * side, u[0] * side
+                    an = "left" if nx_ > 0.5 else ("right" if nx_ < -0.5 else "center")
+                    cands.append((q[0] + nx_ * 1.5, q[1] + ny_ * 1.5 - (1.25 if abs(ny_) < 0.5 else (0.0 if ny_ > 0 else 2.5)),
+                                  an))
+        pick = next((c for c in cands if sh.is_free(sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True))), None)
+        if pick is None:
+            raise NotDrawable("%s: no clear place for bend %s's tag in the flat pattern" % (part.pn, row["tag"]))
         sh.text(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
         row["printed_at"] = sh.text_box(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
 
 
 def flat_data(part, pl):
     """A bent part's flat pattern as the sheet gives it, for the read-back: its DXF, the K-factor and radius, the
-    chains' outside flange lengths, fold angles and thickness, each bend's row, and where the flat view sits."""
+    chains' outside flange lengths, fold angles and thickness, each bend's row, how each flange unfolds into the flat
+    (the reading the holes pinned, or one of several the DXF's symmetry makes the same part) and where the flat view
+    sits."""
     fl = getattr(part, "flat", None)
     if not fl:
         return None
@@ -535,6 +557,7 @@ def flat_data(part, pl):
                        for ch, m in zip(fl.chains, fl.matches)],
             "rows": [{"tag": r_["tag"], "axis": r_["axis"], "at": r_["at"], "dir": r_["dir"], "angle": r_["angle"],
                       "r": r_["r"], "printed_at": r_.get("printed_at")} for r_ in fl.rows],
+            "map": fl.map.record(), "readings": fl.readings,
             "view": {"off": fv.off, "scale": fv.scale, "box": fv.box()} if fv else None}
 
 
@@ -545,12 +568,16 @@ def bent_flat(part, team, bent):
     if len(part.bodies) != 1:
         raise NotDrawable("%s: a bent part of %d bodies isn't drawn yet" % (part.pn, len(part.bodies)))
     b = part.bodies[0]
-    dxfs = sorted(_glob.glob(os.path.join(inputs.MANUF, team, "%s_*_DXF.dxf" % part.pn)))
+    cfg = bent if isinstance(bent, dict) else {}
+    # a test's own part gives its DXF; a team's part has it beside its STEP
+    dxfs = [cfg["dxf"]] if cfg.get("dxf") else sorted(_glob.glob(os.path.join(inputs.MANUF, team, "%s_*_DXF.dxf" % part.pn)))
     if not dxfs:
         raise NotDrawable("%s: a bent part needs its flat pattern's DXF in v2/03-Manufacturing/%s" % (part.pn, team))
-    cfg = bent if isinstance(bent, dict) else {}
     holes = [ft.f for ft in part.features if ft.body is b and ft.kind == "hole"]
     slots = [ft.f for ft in part.features if ft.body is b and ft.kind != "hole"]
+    if slots:
+        # the flat's check matches round holes only: a slot's DXF outline would go unchecked
+        raise NotDrawable("%s: a bent part's slots aren't matched to its DXF yet (%d in the model)" % (part.pn, len(slots)))
     try:
         fl = sheetmetal.analyse(b, dxfs[0], radius=cfg.get("radius"), radius_from=cfg.get("radius_why"), holes=holes)
     except ValueError as e:
@@ -1183,6 +1210,8 @@ def draw(part, spec, out_path, today=None):
     for s in ISO_SCALES:
         if spec.get("scale") and abs(s - spec["scale"]) > 1e-9:
             continue
+        if spec.get("_max_scale") and s > spec["_max_scale"] + 1e-9:
+            continue
         for tw in (tw0, 230.0, 200.0):
             if tw > tw0 or not tables_fit(tw):
                 continue
@@ -1427,6 +1456,15 @@ def draw(part, spec, out_path, today=None):
                 continue
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             rx += w + 80
+    # the removed sections and the flat pattern stay on the sheet: the scale was chosen for the main views alone, so
+    # where this row runs off the sheet the views are drawn again at the next smaller scale (make retries)
+    right_edge = W - 10 - pl.table_w - 4 - 10
+    for vd in place:
+        if vd.kind in ("detail", "aux") or getattr(vd, "dropped", False):
+            continue
+        b_ = vd.box()
+        if b_[1] < 20 or b_[0] < 20 or b_[2] > right_edge:
+            raise _Smaller(scale)
     for dv in [d_ for d_ in details if getattr(d_, "dropped", False)]:
         if pl.notch_views.get(dv.parent_name, (None, None, False))[2]:
             raise NotDrawable("%s: no room on the sheet for the detail that sizes the notch" % part.pn)
@@ -2679,8 +2717,8 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                  ("INSIDE RADIUS", 30, "r"), ("BEND ALLOWANCE (mm)", tw - 148, "l")]
         brows = []
         for row in fl.rows:
-            ch = next(c for c in fl.chains if any(row["line"] is ln for m in fl.matches for ln in m["lines"]))
-            f = next(f for c, m in zip(fl.chains, fl.matches) for f, ln in zip(c.folds, m["lines"]) if ln is row["line"])
+            ch, f = next((c, f) for c, m in zip(fl.chains, fl.matches) for f, ln in zip(c.folds, m["lines"])
+                         if ln is row["line"])
             import sheetmetal
             brows.append([row["tag"], "%s %s from the %s edge" % ("x" if row["axis"] == "x" else "y", fmt(row["at"]),
                                                                     "left" if row["axis"] == "x" else "lower"),
@@ -2882,7 +2920,15 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
     import re as _re
     m = _re.search(r"(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}", head)
     today = today or (m.group(1) if m else datetime.date.today().isoformat())
-    sh, pl, vds, secs, removed, dat, scale, report, groups = draw(part, spec, None, today)
+    while True:
+        try:
+            sh, pl, vds, secs, removed, dat, scale, report, groups = draw(part, spec, None, today)
+            break
+        except _Smaller as e:
+            smaller = [s_ for s_ in ISO_SCALES if s_ < e.scale - 1e-9]
+            if not smaller:
+                raise NotDrawable("%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
+            spec = dict(spec, _max_scale=smaller[0])
     spec = dict(spec)
     spec["_scale"] = scale
     other = [vd for nm, vd in sorted(vds.items()) if nm in pl.aux and abs(vd.scale - scale) > 1e-9]

@@ -523,6 +523,106 @@ def flat_fails(data, texts, page_text, tol=TOL):
     return fails
 
 
+def _flat_where(mp, P):
+    """A point of the sheet's place in the DXF by the sheet's record of how its flanges unfold (its own reading, not
+    the generator's code): across a chain's bends from the flange it lies on, along them from the other chain's base
+    flange or the part's extent along the bend lines; None off the flanges' straight parts or at a corner."""
+    box, ch = mp["box"], mp["chains"]
+
+    def on(c, f):
+        q = dot(P, f["D"]) - f["m0"]
+        return abs(dot(P, f["N"]) - f["o0"]) <= c["t"] + 0.01 and f["lo"] - 0.01 <= q <= f["hi"] + 0.01
+
+    def val(c, f):
+        across = f["base"] + dot(P, f["D"]) - f["m0"]
+        return (box[2 + c["ax"]] - across) if c["rev"] else (box[c["ax"]] + across)
+    hits = {(ci, j) for ci, c in enumerate(ch) for j, f in enumerate(c["flanges"]) if on(c, f)}
+    xy = [None, None]
+    al = mp.get("along")
+    if al:
+        if len(hits) != 1:
+            return None
+        (_ci, j), = hits
+        xy[ch[0]["ax"]] = val(ch[0], ch[0]["flanges"][j])
+        w = dot(P, al["a"]) - al["w0"]
+        xy[al["ax"]] = (box[al["ax"]] + w) if al["sense"] > 0 else (box[2 + al["ax"]] - w)
+        return tuple(xy)
+    jA, jB = mp["base"]
+    if hits == {(0, jA), (1, jB)}:
+        ja, jb = jA, jB
+    elif len(hits) == 1 and not hits & {(0, jA), (1, jB)}:
+        (ci, j), = hits
+        ja, jb = (j, jB) if ci == 0 else (jA, j)
+    else:
+        return None
+    xy[ch[0]["ax"]] = val(ch[0], ch[0]["flanges"][ja])
+    xy[ch[1]["ax"]] = val(ch[1], ch[1]["flanges"][jb])
+    return tuple(xy)
+
+
+def flat_hole_fails(data, holes, faces, tol=TOL):
+    """A bent part's round holes in its flat pattern, counted both ways (Reviewer 6 on #335): every hole of the STEP
+    (the repo's reader) placed in the flat by the sheet's record of how its flanges unfold, on a DXF circle of its
+    size within tol, and every DXF circle on one of them. Each recorded flange must be a face of the STEP (a plane
+    of its normal, within the sheet's thickness of the flange's line, along at least half its straight part), so the
+    record can't place the holes on a sheet the model doesn't have."""
+    fl = data.get("flat")
+    if not fl:
+        return []
+    mp = fl.get("map")
+    if not mp:
+        return ["the sheet doesn't record how its flanges unfold, so the flat's holes can't be checked"]
+    import dxf as dxfmod
+    d = dxfmod.Dxf(os.path.join(REPO, fl["dxf"]))
+    fails = []
+    planes = [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]]
+    for ci, c in enumerate(mp["chains"]):
+        for j, f in enumerate(c["flanges"]):
+            def fits(pf):
+                if abs(abs(dot(pf["n"], f["N"])) - 1) > 1e-6:
+                    return False
+                if any(abs(dot(p, f["N"]) - f["o0"]) > c["t"] + 0.01 for p in pf["pts"]):
+                    return False
+                qs = [dot(p, f["D"]) - f["m0"] for p in pf["pts"]]
+                return min(max(qs), f["hi"]) - max(min(qs), f["lo"]) >= 0.5 * (f["hi"] - f["lo"])
+            if not any(fits(pf) for pf in planes):
+                fails.append("chain %d's flange %d, as the sheet records it, is no face of the STEP" % (ci + 1, j + 1))
+    if fails:
+        return fails
+    groups = {}
+    for h in holes:
+        groups.setdefault(h.get("occ"), []).append(h)
+    hs = holes
+    if len(groups) > 1:
+        # a part used more than once in its assembly STEP: the occurrence whose holes all sit on the recorded flanges
+        fit = [g for g in groups.values() if all(_flat_where(mp, h["c"]) is not None for h in g)]
+        hs = fit[0] if fit else list(groups.values())[0]
+    circles = [(c, r) for lay, c, r in d.circles if d.role(lay) == "cut"]
+    if len(circles) != len(hs):
+        fails.append("the flat's DXF has %d round holes, the STEP %d" % (len(circles), len(hs)))
+    used = set()
+    for h in hs:
+        xy = _flat_where(mp, h["c"])
+        if xy is None:
+            fails.append("STEP hole Ø%s at (%s, %s, %s) is on no flange's straight part" % (
+                (_fmtv(h["dia"]),) + tuple(_fmtv(x) for x in h["c"])))
+            continue
+        cand = sorted((math.hypot(cc[0] - xy[0], cc[1] - xy[1]), i) for i, (cc, rr) in enumerate(circles)
+                      if i not in used and abs(2 * rr - h["dia"]) < 0.011)
+        if cand and cand[0][0] <= tol:
+            used.add(cand[0][1])
+        else:
+            fails.append("STEP hole Ø%s unfolds to (%s, %s) in the flat; the DXF has no hole of its size there" % (
+                _fmtv(h["dia"]), _fmtv(xy[0]), _fmtv(xy[1])))
+    for i, (cc, rr) in enumerate(circles):
+        if i not in used:
+            fails.append("the flat's DXF has a Ø%s hole at (%s, %s) that is on no STEP hole" % (
+                _fmtv(2 * rr), _fmtv(cc[0]), _fmtv(cc[1])))
+    if d.cut_loops() != 1:
+        fails.append("the flat's DXF cuts %d shapes besides its round holes; one outline expected" % d.cut_loops())
+    return fails
+
+
 def _fmtv(v):
     t = ("%.2f" % v).rstrip("0").rstrip(".")
     return "0" if t in ("-0", "") else t
@@ -786,6 +886,7 @@ def check(pdf_path, step_path=None, verbose=False):
         fails += flat_feature_fails(data, [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]], tb)
     fails += end_cut_fails(data, faces, tb)
     fails += flat_fails(data, tb, page.get_text())
+    fails += flat_hole_fails(data, holes, faces)
     two_wall = bool(two_wall_pairs(data["features"]))
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
         fails.append("holes through two walls but no SECTION label")
