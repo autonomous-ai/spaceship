@@ -21,9 +21,21 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(ARGS.get("script_path", globals().get("__file__", "."))))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
-import electrical_model as M  # noqa: E402
+def _helper(name, filename):
+    """One of this folder's helper files, loaded by full path under a private name, never a module of the same
+    name that another team's run left in Fusion (PM heads-up 2026-10-31); its path is printed and checked."""
+    import importlib.util
+    path = os.path.join(HERE, filename)
+    spec = importlib.util.spec_from_file_location("ele_" + name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if os.path.abspath(mod.__file__) != os.path.abspath(path):
+        raise RuntimeError("helper %s loaded from %s, not %s" % (name, mod.__file__, path))
+    print("helper %s: %s" % (name, mod.__file__))
+    return mod
 
-importlib.reload(M)
+M = _helper("electrical_model", "electrical_model.py")
+
 
 F3D_REL = "v2/01-CAD-Native/electrical/%s.f3d" % M.DOC_NAME
 TOL = 0.01
