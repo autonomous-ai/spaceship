@@ -1,5 +1,5 @@
 {
- "rev": "316e2e7",
+ "rev": "e8ae80b",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -14,7 +14,9 @@
   ],
   "bodies_assembly": 444,
   "shell_faces_assembly": [
-   "left-base"
+   "left",
+   "left-base",
+   "top"
   ],
   "parts_lists": [
    "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
@@ -86,7 +88,9 @@
  "ran": [
   "C01",
   "C01:assembly",
+  "C01:assembly-left",
   "C01:assembly-left-base",
+  "C01:assembly-top",
   "C01:skeleton",
   "C01:skeleton-back",
   "C01:skeleton-back-base",
@@ -551,6 +555,90 @@
    "owner": "BASE",
    "evidence": {},
    "key": "C05|no-drawing|110103"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "110401",
+   "severity": "major",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 drawing 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: 2 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.52 mm: '110401_P01_BASE-FLOOR-PANEL-AS' 1.78 mm; '110401  BASE - FLOOR PANEL ASS' 1.52 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|letter-height|110401"
+  },
+  {
+   "check": "C05",
+   "rule": "hidden-lines",
+   "subject": "110401",
+   "severity": "minor",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 drawing 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: Hidden lines show in 1 view region(s) (93 dash pieces on Fusion's Hidden layer).",
+   "fix": "Set the view style again on the made view (Fusion ignores the input's style; tools/fusion/fusion_drawing.py base_view); or, if the drawing keeps them on purpose, list it with the number of views and the reason.",
+   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|hidden-lines|110401"
+  },
+  {
+   "check": "C05",
+   "rule": "dimension-twice",
+   "subject": "110401",
+   "severity": "minor",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 drawing 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: Dimension value(s) printed more than once: 1218.5.",
+   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
+   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|dimension-twice|110401"
+  },
+  {
+   "check": "C05",
+   "rule": "hidden-lines",
+   "subject": "111211",
+   "severity": "minor",
+   "message": "111211 BASE - CORNER KEY - BACK - COMMON drawing 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: Hidden lines show in 9 view region(s) (189 dash pieces on Fusion's Hidden layer).",
+   "fix": "Set the view style again on the made view (Fusion ignores the input's style; tools/fusion/fusion_drawing.py base_view); or, if the drawing keeps them on purpose, list it with the number of views and the reason.",
+   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|hidden-lines|111211"
+  },
+  {
+   "check": "C05",
+   "rule": "dimension-twice",
+   "subject": "111211",
+   "severity": "minor",
+   "message": "111211 BASE - CORNER KEY - BACK - COMMON drawing 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: Dimension value(s) printed more than once: 10.5, Ø5.04.",
+   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
+   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|dimension-twice|111211"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "111401",
+   "severity": "major",
+   "message": "111401 BASE - FLOOR PANEL - F1 drawing 111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: 1 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.52 mm: '111401  BASE - FLOOR PANEL - F' 1.52 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|letter-height|111401"
+  },
+  {
+   "check": "C05",
+   "rule": "dimension-twice",
+   "subject": "111401",
+   "severity": "minor",
+   "message": "111401 BASE - FLOOR PANEL - F1 drawing 111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: Dimension value(s) printed more than once: 1218.5.",
+   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
+   "file": "v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|dimension-twice|111401"
   },
   {
    "check": "C05",
@@ -1310,6 +1398,102 @@
   },
   {
    "check": "C05",
+   "rule": "letter-height",
+   "subject": "710000",
+   "severity": "major",
+   "message": "710000 ELECTRICAL drawing 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: 129 texts (sheet 1) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.15 mm: '710001 POWER UNIT - in panel B' 1.51 mm; 'INLET  (outside B2)' 1.51 mm; 'powerCON TRUE1 TOP' 1.36 mm. 255 texts (sheet 2) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HARNESS LIST  (every field, wi' 1.72 mm; 'ID' 1.44 mm; 'SEGMENT' 1.44 mm. 64 texts (sheet 3) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'VIEW A - BACK WALL FROM INSIDE' 1.65 mm; 'X view = +X, Y view = +Z; orig' 1.36 mm; 'B1-CASS' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710000"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710001",
+   "severity": "major",
+   "message": "710001 ELECTRICAL - POWER UNIT - B2 drawing 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: 235 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'FACE OF THE POWER UNIT, seen f' 1.58 mm; 'SOCKET (86, HOLD)' 1.29 mm; 'LAN 2-PORT (86, HOLD)' 1.29 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710001"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710011",
+   "severity": "major",
+   "message": "710011 ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 drawing 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: 104 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710011"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710021",
+   "severity": "major",
+   "message": "710021 ELECTRICAL - HARNESS - TRUNK - B2/R1 drawing 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: 143 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710021"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710023",
+   "severity": "major",
+   "message": "710023 ELECTRICAL - HARNESS - AIR COLUMN drawing 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: 121 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710023"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710024",
+   "severity": "major",
+   "message": "710024 ELECTRICAL - HARNESS - CALL LIGHT - R2 drawing 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: 51 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710024"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710031",
+   "severity": "major",
+   "message": "710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE drawing 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: 59 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710031"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710041",
+   "severity": "major",
+   "message": "710041 ELECTRICAL - HUB AND CONTROLS ZONE drawing 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: 112 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HUB AND CONTROLS ZONE PLATE 71' 1.58 mm; 'HUB WINDOW (HOLD)' 1.44 mm; 'BOOST' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710041"
+  },
+  {
+   "check": "C05",
    "rule": "no-drawing",
    "subject": "711001",
    "severity": "severe",
@@ -1415,6 +1599,18 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|811205"
+  },
+  {
+   "check": "C05",
+   "rule": "dimension-twice",
+   "subject": "831001",
+   "severity": "minor",
+   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS drawing 831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf: Dimension value(s) printed more than once: 8.",
+   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
+   "file": "v2/02-Drawings/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|dimension-twice|831001"
   }
  ],
  "stacks": [
