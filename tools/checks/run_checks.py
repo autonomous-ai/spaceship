@@ -32,6 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class, parse_file_name, Finding, owner_for  # noqa: E402
 import c_geometry  # noqa: E402
 import c_parts  # noqa: E402
+import c_frames  # noqa: E402
 import c_drawings  # noqa: E402
 import c_stacks  # noqa: E402
 import register  # noqa: E402
@@ -90,6 +91,10 @@ def run(root, rev):
         findings += c_geometry.check_unmatched(root, "assembly", asm)
         findings += c_geometry.check_hole_sizes(root, "assembly", asm)
         ran |= {"C08", "C08:assembly"}
+    frame_fs, frames_ran = c_frames.check_frames(root, asm)       # D-131: steel and gauges on every frame member
+    findings += frame_fs
+    if frames_ran:
+        ran.add("C11:frames")
     stack_fs, stack_report = c_stacks.check_stacks(root)
     findings += stack_fs
     if stack_report:
@@ -172,6 +177,8 @@ def run(root, rev):
             and not (c_parts.is_master(rel(root, p)) and c_parts.is_placeholder(row))}
     made |= {pn for pn, d in step_products.items() if pn_class(pn) in ("part", "assembly")
              and not all("/skeleton/" in f for f in d["files"])}
+    made_why = c_drawings.processed_bought(plists, holes_by_pn)      # D-143 (3): cut, mitred and drilled profiles
+    made |= set(made_why)
     names = {row["part_number"]: row["name"] for _p, rows in plists for row in rows}
     names.update({pn: d["name"] for pn, d in step_products.items() if pn not in names})
     if made:
@@ -186,8 +193,12 @@ def run(root, rev):
         prism_by_pn = c_drawings.prism_shapes(per_part, c_geometry.load_step)    # D-128's through-cut pieces
         findings += c_drawings.check_drawings(root, made, holes_by_pn, names, faces_by_pn, src_by_pn, flat_by_pn,
                                               bends_by_pn=bends_by_pn, two_wall_by_pn=two_wall_by_pn,
-                                              cuboid_by_pn=cuboid_by_pn, prism_by_pn=prism_by_pn)
+                                              cuboid_by_pn=cuboid_by_pn, prism_by_pn=prism_by_pn, made_why=made_why)
         ran.add("C05")
+    people_fs, people_ran = c_drawings.check_drawing_people(root)    # the owner's rule: Autonomous, no person's name
+    findings += people_fs
+    if people_ran:
+        ran.add("C05:pdf-people")
     schedule = c_parts.fastener_schedule(root, plists, usage)
     return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,
             "ran": sorted(ran), "findings": [f.to_dict() for f in findings], "stacks": stack_report,
@@ -240,6 +251,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--root", default=REPO_ROOT)
     ap.add_argument("--ref", default="", help="check this git ref (e.g. origin/main) in a fresh export instead of --root")
+    ap.add_argument("--ref-rows", action="store_true",
+                    help="with --ref: keep the rows the ref adds to the rule files (pre-checking a team's PR that adds "
+                         "an edge exception or a clash allowance)")
     ap.add_argument("--register-root", default=REPO_ROOT)
     ap.add_argument("--rev", default=None)
     ap.add_argument("--update", action="store_true")
@@ -249,7 +263,7 @@ def main(argv=None):
     export_dir = None
     if a.ref:
         from common import export_ref
-        root, sha = export_ref(a.ref)
+        root, sha = export_ref(a.ref, ref_rows=a.ref_rows)
         export_dir = root
         a.rev = a.rev or sha
     try:

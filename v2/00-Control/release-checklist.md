@@ -6,9 +6,9 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (1e26f6c), PR #243 (a926f06), PR #235 (821c539). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (6553bc7), PR #243 (a926f06), PR #235 (71edc0e), PR #285 (08cebe9), PR #286 (b33ffba). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
 
-Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #235 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #235 changed it, but main changed it later.
+Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #235 changed it, but main changed it later.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -19,16 +19,16 @@ Read from main although an open PR changed them, because main changed them later
 | BASE | 3 | 3 | 0 | 3 | 3 | 0 | 4 |
 | CEILING | 6 | 8 | 0 | 0 | 5 | 0 | 5 |
 | CEILING (builds AIR, D-80) | 10 | 14 | 0 | 7 | 4 | 0 | 7 |
-| CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
+| CEILING (builds INTERIOR, D-80) | 0 | 8 | 0 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 69 |
 | FRONT | 5 | 16 | 0 | 1 | 4 | 1 | 5 |
 | JOINTS | 2 | 4 | 0 | 0 | 0 | 0 | 0 |
 | WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 42 | 90 | 0 | 13 | 10 | 2 | 93 |
+| **All, each number once** | 42 | 89 | 0 | 13 | 10 | 2 | 93 |
 
-86 of the 145 made numbers have no drawing yet; for 72 of them the drawing is the only gap, so their drawings can start now (D-84).
+85 of the 144 made numbers have no drawing yet; for 70 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 86, DXF or cut list 15, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 85, DXF or cut list 15, BOM row 4, CAD 4, STEP 1.
 
 ## Made parts with no FAI line
 
@@ -109,15 +109,14 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 810000 | INTERIOR | main | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
-| 810101 | INTERIOR - WORK WALL LEDGE ASSY | main | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
-| 811101 | INTERIOR - LEDGE - TOP | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I02 | open: drawing |
-| 810201 | INTERIOR - LIGHT SHELF ASSY | main | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
-| 811201 | INTERIOR - LIGHT SHELF - BACK | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
-| 811202 | INTERIOR - LIGHT SHELF - SIDE LH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
-| 811203 | INTERIOR - LIGHT SHELF - SIDE RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
-| 811204 | INTERIOR - LIGHT SHELF - DOWN CHANNEL RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I04 | open: drawing |
-| 811205 | INTERIOR - LIGHT SHELF - DIFFUSER RH | main | yes | yes | yes | n/a | no: as a plain strip or sheet (D-125) its row in v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv doesn't give a tolerance on the width (one general tolerance on the cut sizes, such as ISO 2768-m or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip) | yes | n/a | K-A02, K-I01, K-I05 | open: drawing |
+| 810000 | INTERIOR | PR #285 | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
+| 810101 | INTERIOR - WORK WALL LEDGE ASSY | PR #285 | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
+| 811101 | INTERIOR - LEDGE - TOP | PR #285 | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I02 | open: drawing |
+| 810201 | INTERIOR - LIGHT SHELF ASSY | PR #285 | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
+| 811201 | INTERIOR - LIGHT SHELF - BACK | PR #285 | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
+| 811202 | INTERIOR - LIGHT SHELF - SIDE LH | PR #285 | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
+| 811203 | INTERIOR - LIGHT SHELF - SIDE RH | PR #285 | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
+| 811204 | INTERIOR LIGHT SHELF DOWN CHANNEL RH | main | no | no | no | yes | no | no | — | K-A02, K-I01, K-I04 | open: BOM row, CAD, STEP, drawing |
 
 ### ELECTRICAL
 
@@ -270,8 +269,8 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 818101 | INTERIOR - LEDGE BRACKET - HOLD | main | H-32 | HOLD | no | HOLD |
-| 818102 | INTERIOR - SCREEN RAIL - HOLD | main | H-33 | HOLD | no | HOLD |
+| 818101 | INTERIOR - LEDGE BRACKET - HOLD | PR #285 | H-32 | HOLD | no | HOLD |
+| 818102 | INTERIOR - SCREEN RAIL - HOLD | PR #285 | H-33 | HOLD | no | HOLD |
 
 ### ELECTRICAL
 

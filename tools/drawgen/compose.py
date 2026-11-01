@@ -33,7 +33,7 @@ import inputs
 import project
 from geom import axis_name, vadd, vcross, vdot, vmul, vnorm, vsub
 from project import View
-from sheet import Sheet, W_HID, W_THIN, W_VIS, DASH_HID
+from sheet import AUTHOR, Sheet, W_HID, W_THIN, W_VIS, DASH_HID
 
 GENERATOR = "drawgen"
 TOOL_REV = "drawgen 1.0"
@@ -160,14 +160,17 @@ class Feature:
 def wall_word(f, body):
     """'1 wall' for a hole through one wall of a hollow member, 'thru' through a solid, or the depth."""
     if not f.through:
-        return "blind %s deep" % fmt(f.depth)
-    # hollow: the far side of the run opens into the member's cavity, not outside the part's box
-    far = vadd(f.entry, vmul(f.axis, f.depth + 0.5))
-    b = body.box
-    inside = all(b[k] + 0.4 < far[k] < b[3 + k] - 0.4 for k in range(3) if abs(f.axis[k]) < 0.5)
-    inside = inside and (b[[k for k in range(3) if abs(f.axis[k]) > 0.5][0]] + 0.4 <
-                         far[[k for k in range(3) if abs(f.axis[k]) > 0.5][0]] <
-                         b[3 + [k for k in range(3) if abs(f.axis[k]) > 0.5][0]] - 0.4)
+        # ISO 15786: the depth of the full diameter; a drill point in the model is named with its angle
+        return "%s deep%s" % (fmt(f.depth), (", drill point %s°" % fmt(f.point_angle))
+                              if getattr(f, "point_angle", None) else "")
+    # hollow: past the run's far end the line along the hole meets the member's material again (its far wall), or
+    # the run has a partner on its axis in the far wall (a two-wall pair); through a solid the line leaves the part
+    # (an angled exit face included)
+    far = vadd(f.entry, vmul(f.axis, f.depth + 0.05))
+    inter = IntCurvesFace_ShapeIntersector()
+    inter.Load(body.shape, 1e-6)
+    inter.Perform(gp_Lin(gp_Pnt(*far), gp_Dir(*f.axis)), 0.0, 1e7)
+    inside = bool(getattr(f, "partners", None)) or (inter.IsDone() and inter.NbPnt() > 0)
     return "THRU 1 WALL (%s)" % fmt(f.depth) if inside else "THRU (%s)" % fmt(f.depth)
 
 
@@ -177,6 +180,10 @@ def size_text(feat):
         return "Ø%s" % fmt(f.dia)
     if feat.kind == "keyhole":
         return "KEYHOLE Ø%s + SLOT %s, %s TO END" % (fmt(f.entry_dia), fmt(f.width), fmt(f.neck))
+    if feat.kind == "open_slot":
+        return "OPEN SLOT %s, R%s END %s FROM THE EDGE%s" % (
+            fmt(f.width), fmt(f.r), fmt(f.edge),
+            (", MOUTH %s TAPERING OVER %s" % (fmt(f.mouth), fmt(f.taper))) if f.taper > 1e-3 else "")
     return "SLOT %s x %s OVERALL, R%s ENDS" % (fmt(f.width), fmt(f.length), fmt(f.width / 2))
 
 
@@ -203,8 +210,7 @@ class Part:
         if not self.step:
             # a part that lives only in its team's assembly STEP: that file's geometry, and the revision of its
             # parts list (the mechanical check reads it so)
-            import tabulated
-            self.step = tabulated.find_step(pn, team)
+            self.step = find_step(pn, team)
             if not self.step:
                 raise NotDrawable("%s has no STEP under v2/03-Manufacturing/%s" % (pn, team))
             self.rev = inputs.parse_name(self.list_file)["rev"]
@@ -216,6 +222,21 @@ class Part:
         self.name = self.row.get("name", "").strip()
         self.name_vi = (self.row.get("name_vi") or "").strip()
         self.bodies, self.unit = geom.load_part(self.step, pn)
+        self.occurrences = self.unit.get("occurrences", 1)
+        self.qty_words = None
+        if self.occurrences > 1:
+            q = (self.row.get("qty") or self.row.get("qty_per_parent") or "").strip()
+            try:
+                qn = int(float(q))
+            except ValueError:
+                qn = None
+            if qn is not None and qn != self.occurrences:
+                raise NotDrawable("%s: %s holds it %d times, its parts list says %s" % (
+                    pn, os.path.basename(self.step), self.occurrences, q))
+            par = inputs.parse_name(self.list_file) if self.list_file else None
+            self.qty_words = "%s per %s (its parts list); the assembly STEP %s holds %d alike, one is drawn" % (
+                q or self.occurrences, ("%s %s" % (par["pn"], par["name"])) if par else "assembly",
+                os.path.basename(self.step), self.occurrences)
         self.placement = None
         if pod_system:
             self._to_pod()
@@ -239,6 +260,21 @@ class Part:
         why = folded_or_bent(self)
         if why:
             raise NotDrawable("%s is %s: bent and folded parts stay with Fusion (D-113)" % (pn, why))
+        # flat faces: a straight member's notches, chamfers and welded end plates; any other flat feature (a step, a
+        # pocket, an uneven chamfer) would be drawn without a size, so the part is refused
+        self.notches, self.chamfers, self.plates = [], [], []
+        for b in self.bodies:
+            lax = geom.member_axis(b)
+            if lax is not None and not plain_section(b, lax):
+                raise NotDrawable("%s body %s is a profile whose section isn't a plain rectangle or rectangular tube: its "
+                                  "section's sizes aren't drawn yet (D-139: Fusion, or the profile reading)" % (pn, b.name))
+            nt, ch, plt, odd = geom.flat_features(b, [ft.f for ft in self.features if ft.body is b and ft.kind != "hole"])
+            if odd:
+                raise NotDrawable("%s body %s has flat faces this tool can't size yet: %s%s" % (
+                    pn, b.name, "; ".join(odd[:3]), " (and %d more)" % (len(odd) - 3) if len(odd) > 3 else ""))
+            self.notches += nt
+            self.chamfers += ch
+            self.plates += plt
         self.reg = inputs.feature_rows(pn, team)
         for ft in self.features:
             ax = axis_name(ft.f.axis)
@@ -265,7 +301,12 @@ class Part:
                     wall = "inner" if ft.f.entry[k] * nrm[k] < 0 else "outer"
                 dia = ft.f.entry_dia if ft.kind == "keyhole" else ft.f.dia
                 along = max(range(3), key=lambda i: ft.body.size[i])
-                r = inputs.match_feature_b(rows_b, dia, wall, ft.f.entry, keyhole=(ft.kind == "keyhole"), along=along)
+                if ft.kind == "open_slot":
+                    r = inputs.match_open_slot_b(inputs.feature_rows_b(team, pn, sizeless=True), ft.f.width,
+                                                 ft.f.mouth)
+                else:
+                    r = inputs.match_feature_b(rows_b, dia, wall, ft.f.entry, keyhole=(ft.kind == "keyhole"),
+                                               along=along)
                 if r:
                     ft.reg = {"id": r["id"], "function": r["title"], "mating": r["function"], "file": r["file"]}
 
@@ -312,6 +353,7 @@ class Part:
         return "%s_%s_%s_DWG" % (self.pn, self.rev, self.file_name)
 
 
+EXTRUDED_WORDS = re.compile(r"\bextru(?:ded|sion|sions)\b", re.I)
 BENT_WORDS = re.compile(r"\b(?:bend|bends|bent|fold|folds|folded|brake|v-groove|groove and fold|press brake)\b", re.I)
 
 
@@ -324,6 +366,8 @@ def folded_or_bent(part):
     m = BENT_WORDS.search(proc)
     if m:
         return "bent or folded (its parts list says '%s')" % m.group(0)
+    if EXTRUDED_WORDS.search(proc + " " + (part.row.get("type") or "")):
+        return None         # an extrusion's open section is its profile, not a fold (plain_section judges it)
     for b in part.bodies:
         pls = geom.planes(b)
         if not pls:
@@ -343,13 +387,20 @@ def folded_or_bent(part):
                         dirs.append(d)
         if len(dirs) < 2:
             continue
-        # open or closed cross-section, across the long direction, at three places (one may cut through a hole)
-        lk = max(range(3), key=lambda k: b.size[k])
-        n = tuple(1.0 if k == lk else 0.0 for k in range(3))
+        # open or closed cross-section, at three places (one may cut through a hole), across the line both wall
+        # directions run along (a tube's axis, a fold's line); with more directions, across the longest side. A tube
+        # shorter than its section (FRONT's 15 mm C10 stub) is cut across its own axis, so it closes
+        if len(dirs) == 2:
+            n = geom.canon_dir(geom.vnorm(geom.vcross(dirs[0], dirs[1])))
+        else:
+            lk = max(range(3), key=lambda k: b.size[k])
+            n = tuple(1.0 if k == lk else 0.0 for k in range(3))
+        sv = [vdot(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))), n) for v in geom._vertices_of(b.shape)]
+        s0, s1 = min(sv), max(sv)
         from OCP.TopAbs import TopAbs_WIRE
         opens = 0
         for t in (0.31, 0.47, 0.63):
-            pt = tuple(b.box[k] + t * b.size[k] if k == lk else b.centroid[k] for k in range(3))
+            pt = vadd(b.centroid, vmul(n, s0 + t * (s1 - s0) - vdot(b.centroid, n)))
             faces = cut_faces(geom.half_space_keep(b.shape, pt, n), pt, n)
             wires = 0
             for f in faces:
@@ -361,6 +412,77 @@ def folded_or_bent(part):
         if opens == 3:
             return "a folded sheet (body %s: sheet faces in %d directions, open cross-section)" % (b.name, len(dirs))
     return None
+
+
+def _rectangle(wire):
+    """True when a wire is four straight edges, each parallel or square to the first."""
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.GeomAbs import GeomAbs_Line
+    dirs = []
+    e = TopExp_Explorer(wire, TopAbs_EDGE)
+    while e.More():
+        ed = TopoDS.Edge_s(e.Current())
+        if BRepAdaptor_Curve(ed).GetType() != GeomAbs_Line:
+            return False
+        vs = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(ed)]
+        if len(vs) != 2:
+            return False
+        dirs.append(geom.vnorm(geom.vsub(vs[1], vs[0])))
+        e.Next()
+    return len(dirs) == 4 and all(abs(vdot(d, dirs[0])) < 1e-6 or abs(abs(vdot(d, dirs[0])) - 1) < 1e-6 for d in dirs)
+
+
+def _convex(wire, lax):
+    """True when a wire is straight edges round a convex outline (seen along lax)."""
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.BRepTools import BRepTools_WireExplorer
+    from OCP.GeomAbs import GeomAbs_Line
+    u = vnorm(vcross(lax, (1.0, 0.0, 0.0) if abs(lax[0]) < 0.9 else (0.0, 1.0, 0.0)))
+    v = vcross(lax, u)
+    pts = []
+    ex = BRepTools_WireExplorer(wire)
+    while ex.More():
+        if BRepAdaptor_Curve(ex.Current()).GetType() != GeomAbs_Line:
+            return False
+        p = geom.pnt(BRep_Tool.Pnt_s(ex.CurrentVertex()))
+        pts.append((vdot(p, u), vdot(p, v)))
+        ex.Next()
+    if len(pts) < 3:
+        return False
+    sgn = 0
+    for i in range(len(pts)):
+        a, b_, c = pts[i - 1], pts[i], pts[(i + 1) % len(pts)]
+        cr = (b_[0] - a[0]) * (c[1] - b_[1]) - (b_[1] - a[1]) * (c[0] - b_[0])
+        if abs(cr) < 1e-9:
+            continue
+        if sgn and (cr > 0) != (sgn > 0):
+            return False
+        sgn = cr
+    return True
+
+
+def plain_section(b, lax):
+    """True when a straight member's cross-section, at some station clear of its holes, is a solid convex outline (a
+    bar, or a block with an angled side face, as the corner keys) or a rectangle with one rectangular bore (a
+    rectangular tube): shapes its views, its section and its material line define. An angle, a channel or a custom
+    extrusion (FRONT's kick strip 361002) has a profile to size, which drawgen doesn't do yet (D-139 keeps a
+    profile's dimensioned section with Fusion)."""
+    from OCP.TopAbs import TopAbs_WIRE
+    sv = [vdot(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))), lax) for v in geom._vertices_of(b.shape)]
+    s0, s1 = min(sv), max(sv)
+    for t in (0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8):
+        pt = vadd(b.centroid, vmul(lax, s0 + t * (s1 - s0) - vdot(b.centroid, lax)))
+        faces = cut_faces(geom.half_space_keep(b.shape, pt, lax), pt, lax)
+        if len(faces) != 1:
+            continue
+        wires = []
+        e = TopExp_Explorer(faces[0], TopAbs_WIRE)
+        while e.More():
+            wires.append(TopoDS.Wire_s(e.Current()))
+            e.Next()
+        if (len(wires) == 1 and _convex(wires[0], lax)) or (len(wires) == 2 and all(_rectangle(w) for w in wires)):
+            return True
+    return False
 
 
 def principal_view(part):
@@ -408,6 +530,25 @@ def two_wall_sets(part):
 
 
 # ------------------------------------------------------------------ datum scheme
+
+def find_step(pn, team):
+    """The part's own STEP, else the team assembly STEP that holds it."""
+    own = inputs.own_step(pn)
+    if own:
+        return own
+    folder = os.path.join(inputs.MANUF, team)
+    for f in sorted(os.listdir(folder)):
+        nm = inputs.parse_name(os.path.join(folder, f))
+        if not nm or nm["doc"] != "STEP":
+            continue
+        try:
+            for name, solids in geom.read_step(os.path.join(folder, f)):
+                if geom.part_number_of(name) == pn and solids:
+                    return os.path.join(folder, f)
+        except RuntimeError:
+            continue
+    return None
+
 
 def spigot_origin(part, spec=None):
     """Parts that locate on spigots (joints register R-J13; R-J6 positions every bolt hole from the round spigot
@@ -477,6 +618,65 @@ class Plan:
     pass
 
 
+def face_origin(part, pl, nm, v):
+    """An angled-face view's own origin (the PM's ruling on #296, Reviewer 5): on the face that holds its holes,
+    the face's centre line across the view at its bottom edge, so X reads from the face's middle and Y from its
+    bottom (as Joints' key sheet: 'on its centre line, 26 and 60 above the bottom')."""
+    feats = [ft for g in pl.groups if g.view == nm for ft in g.feats]
+    best = None
+    for b in {id(ft.body): ft.body for ft in feats}.values():
+        for n, off, area, face in geom.planes(b):
+            if vdot(n, v.n) < 0.9999:
+                continue
+            if all(abs(vdot(ft.f.entry, n) - off) < 0.05 for ft in feats if ft.body is b):
+                if best is None or area > best[0]:
+                    best = (area, face, off)
+    if best is None:
+        return None, ""
+    pts = [v.to2d(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(q)))) for q in _vertices(best[1])]
+    xm = (min(p_[0] for p_ in pts) + max(p_[0] for p_ in pts)) / 2
+    yb = min(p_[1] for p_ in pts)
+    o3 = vadd(vadd(vmul(v.x, xm), vmul(v.y, yb)), vmul(v.n, best[2]))
+    return o3, "on the face's centre line, at its bottom edge"
+
+
+def end_origin(part, pl, nm, v):
+    """A long part's end view's own origin: the bottom left corner of the member's outline in that view (a tube's
+    end: its bottom face and a side face), on the end's plane, so the table's X and Y read from the member's own
+    faces as the view's sizes do (BASE's 111103: the slot's end 63.5 above the bottom face, where the end face's own
+    bottom edge sits 1 up, above the bevel)."""
+    feats = [ft for g in pl.groups if g.view == nm for ft in g.feats]
+    bodies = [b for b in part.bodies if any(ft.body is b for ft in feats)]
+    pts = [v.to2d(geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(q)))) for b in bodies for q in geom._vertices_of(b.shape)]
+    x0, y0 = min(p_[0] for p_ in pts), min(p_[1] for p_ in pts)
+    d = max(vdot(ft.f.entry, v.n) for ft in feats)
+    return vadd(vadd(vmul(v.x, x0), vmul(v.y, y0)), vmul(v.n, d)), "at the member's bottom left corner"
+
+
+def aux_view(pl, rel, normal):
+    """The view square to an angled face (ISO 128-30: a view in the direction of an arrow, lettered), shared by the
+    faces of one normal. It keeps the principal view's up (its Y laid into the face) where it can, else its X, so
+    the part reads the same way up as in the principal view."""
+    for nm, v in pl.aux.items():
+        if vdot(v.n, normal) > 0.9999:
+            return nm
+    P = pl.principal
+    up = vsub(P.y, vmul(normal, vdot(P.y, normal)))
+    if math.sqrt(vdot(up, up)) > 0.3:
+        x = vcross(vnorm(up), normal)           # with Y = up: n x X = Y
+    else:
+        x = None
+        for cand in (P.x, P.n):
+            x = vsub(cand, vmul(normal, vdot(cand, normal)))
+            if math.sqrt(vdot(x, x)) > 0.3:
+                break
+    nm = "aux%d" % (len(pl.aux) + 1)
+    v = View(nm, normal, vnorm(x))
+    pl.aux[nm] = v
+    rel[nm] = v
+    return nm
+
+
 def plan_views(part, spec):
     """Decide the views: principal, the plain related views that show a drilled face, sections in front of
     the faces nothing shows, and removed sections through two-wall holes. Returns a Plan."""
@@ -492,6 +692,18 @@ def plan_views(part, spec):
         pl.principal.pod_name = spec["principal"]
     else:
         pl.principal = principal_view(part)
+    # a straight member lying off the pod's axes (FRONT's 352211, a cross tube on the diagonal): drawn along its own
+    # axis, looking square to a side, so its length runs across the sheet and its end cuts read from its axis
+    ma = geom.member_axis(part.bodies[0]) if len(part.bodies) == 1 and not spec.get("principal") else None
+    if ma is not None and axis_name(ma) is None:
+        P0 = pl.principal
+        n = P0.n
+        if abs(vdot(n, ma)) > 1e-6:
+            sides = [t[0] for t in geom.planes(part.bodies[0]) if abs(vdot(t[0], ma)) < 1e-6]
+            n = max(sides, key=lambda v: vdot(v, P0.n)) if sides else n
+        sgn = vdot(ma, P0.x) if abs(vdot(ma, P0.x)) > 1e-6 else vdot(ma, P0.y)
+        pl.principal = View("principal", n, ma if sgn >= 0 else vmul(ma, -1.0))
+        pl.principal.pod_name = "along the member"
     # a long part seen end up: turn the view so its length runs across the sheet (every view states its mapping)
     P0 = pl.principal
     ext_x = sum(abs(P0.x[i]) * part.size[i] for i in range(3))
@@ -508,12 +720,21 @@ def plan_views(part, spec):
     pl.sections = []
     pl.removed = []
     pl.plain = {"principal"}
+    pl.aux = {}             # angled faces: a lettered view square to each (its name -> View)
+    pl.aux_ends = set()     # the lettered views of a long part's ends
+    P1 = pl.principal
+    long_x = sum(abs(P1.x[i]) * part.size[i] for i in range(3))
+    long_y = sum(abs(P1.y[i]) * part.size[i] for i in range(3))
     for key, feats in sorted(face_groups(part).items(), key=lambda kv: kv[0]):
         normal = feats[0].f.normal
         vname = next((nm for nm, v in rel.items() if vdot(v.n, normal) > 0.9999), None)
+        if vname in ("from_left", "from_right") and long_x > 8.0 * long_y:
+            # an end of a long part (BASE's back band's end plates): a lettered view by itself, at its own scale,
+            # rather than beside the principal view where it would cost the whole sheet a scale step
+            vname = aux_view(pl, rel, normal)
+            pl.aux_ends.add(vname)
         if vname is None:
-            raise NotDrawable("%s has holes on a face at an angle to every principal view (normal %s)" % (
-                part.pn, key[0]))
+            vname = aux_view(pl, rel, normal)
         blocked, free = False, 1e9
         for ft in feats:
             inter = IntCurvesFace_ShapeIntersector()
@@ -529,6 +750,13 @@ def plan_views(part, spec):
         g.blocked = blocked
         g.free = free
         pl.groups.append(g)
+    # a notch is sized in the plain view that looks at its wall from outside (enlarged in a detail when small)
+    for nt in getattr(part, "notches", []):
+        vname = next((nm for nm, v in rel.items() if vdot(v.n, nt.wall_n) > 0.9999), None)
+        if vname is None:
+            raise NotDrawable("%s: no plain view looks at the wall the notch at its %s end goes through" % (
+                part.pn, axis_name(vmul(nt.lax, nt.sgn)) or "far"))
+        pl.plain.add(vname)
     # a face nothing shows: when every hole on it is the far-wall twin of a hole on a face that a plain view
     # shows (same member, same axis), the removed section through the pair shows it (D-113) and its table
     # uses that view's X and Y; any other hidden face gets its own section just in front of it
@@ -536,10 +764,13 @@ def plan_views(part, spec):
     for g in pl.groups:
         if not g.blocked:
             g.view = g.vname
-            pl.plain.add(g.vname)
+            if g.vname not in pl.aux:
+                pl.plain.add(g.vname)
     for g in pl.groups:
         if not g.blocked:
             continue
+        if g.vname in pl.aux:
+            raise NotDrawable("%s: holes on an angled face (normal %s) that the part itself hides" % (part.pn, g.key[0]))
         twins = []
         for ft in g.feats:
             outer = [o for o in part.features if o is not ft and o.body is ft.body and o.kind == "hole" and
@@ -646,8 +877,8 @@ def draw(part, spec, out_path, today=None):
 
     # ---- tags, in the order the tables list them
     order = ["principal", "below", "above", "from_left", "from_right", "rear"]
-    groups = sorted(pl.groups, key=lambda g: (g.view is None, order.index(g.view or g.vname),
-                                              g.coax_of is not None, g.key))
+    vorder = lambda nm: order.index(nm) if nm in order else len(order) + sorted(pl.aux).index(nm)
+    groups = sorted(pl.groups, key=lambda g: (g.view is None, vorder(g.view or g.vname), g.coax_of is not None, g.key))
     n = 0
     for g in groups:
         view = pl.rel[g.view or g.vname]
@@ -727,6 +958,8 @@ def draw(part, spec, out_path, today=None):
     bw, bh = block(scale, rear_down)
     pl.rear_down = rear_down
     pl.table_w = table_w
+    # the right column holds the hole tables and the title block, drawn last: no label goes there
+    sh.reserved.append((W - 10 - table_w - 4 - 2.0, 10.0, W - 10.0, H - 10.0))
 
     # ---- the view objects
     vds = {}
@@ -782,6 +1015,22 @@ def draw(part, spec, out_path, today=None):
         r.vd = vd
         r.letter = vd.letter
         removed.append(vd)
+    auxs = []
+    for nm, v in sorted(pl.aux.items()):
+        own = {id(ft.body) for g in pl.groups if g.view == nm for ft in g.feats}
+        hid = {i for i, b in enumerate(part.bodies) if id(b) in own} or None
+        prims0 = view_prims(part.shape, v, 1.0, bodies=shapes, hidden_from=hid)
+        e0 = project.extent(prims0)
+        vs = next((c for c in (2.0, 1.0, 0.5, 0.2, 0.1) if c >= scale - 1e-9 and
+                   max(e0[2] - e0[0], e0[3] - e0[1]) * c <= 120.0), scale)
+        vd = VD(v, view_prims(part.shape, v, vs, bodies=shapes, hidden_from=hid), vs, "aux")
+        vd.name = nm
+        vd.letter = next(letters)
+        if nm in pl.aux_ends:
+            vd.origin3d, vd.origin_words = end_origin(part, pl, nm, v)
+        else:
+            vd.origin3d, vd.origin_words = face_origin(part, pl, nm, v)
+        auxs.append(vd)
 
     # ---- placement: principal, then the first-angle neighbours and the sections stacked beyond them
     x_left = 20 + GAP_PL
@@ -851,8 +1100,18 @@ def draw(part, spec, out_path, today=None):
     # detail views (guideline 6.1: details for what is small): where tags crowd at this scale, an enlarged copy of that
     # stretch of the view, cut from the solids (exact edges, the cut drawn thin as the detail's boundary)
     details = []
+    pl.notch_views = {}     # view name -> (the notches it sizes, the one drawn, whether a detail enlarges it)
     for nm, vd in list(vds.items()):
         win = crowded_window(vd, [ft for g in pl.groups if g.view == nm for ft in g.feats], part)
+        if not win:
+            win = open_slot_window(vd, [ft for g in pl.groups if g.view == nm for ft in g.feats])
+        nwin, nts, shown = notch_window(vd, part.notches)
+        if nts:
+            if win and nwin:
+                raise NotDrawable("%s: %s needs two details (its holes and a notch): not drawn yet" % (
+                    part.pn, VIEW_WORDS.get(nm, nm).lower()))
+            pl.notch_views[nm] = (nts, shown, bool(nwin))
+            win = win or nwin
         if not win:
             continue
         x0, x1, y0, y1 = win
@@ -882,8 +1141,14 @@ def draw(part, spec, out_path, today=None):
         dv.letter = next(letters)
         vd.detail = dv
         details.append(dv)
+    for nm, (nts, shown, enlarged) in pl.notch_views.items():
+        if enlarged and not getattr(vds[nm], "detail", None):
+            raise NotDrawable("%s: no room for the detail that sizes the notch at %s" % (part.pn, nm))
+    sized = {id(nt) for nts, _s, _e in pl.notch_views.values() for nt in nts}
+    if any(id(nt) not in sized for nt in part.notches):
+        raise NotDrawable("%s: a notch no drawn view sizes" % part.pn)
     pl.details = details
-    place = removed + details
+    place = removed + auxs + details
     # removed sections and details: a column between the views and the tables when it is wide enough, else a row
     # under the views
     mid_x0 = main_right + GAP + 18
@@ -904,15 +1169,22 @@ def draw(part, spec, out_path, today=None):
         right_limit = W - 10 - pl.table_w - 4 - 10
         for vd in place:
             w, h = vd.size()
-            if vd.kind == "detail" and (rx + w + 40 > right_limit or ry - h - 40 < 20):
+            if vd.kind in ("detail", "aux") and (rx + w + 40 > right_limit or ry - h - 40 < 20):
+                if vd.kind == "aux":
+                    raise NotDrawable("%s: no room on the sheet for view %s (square to an angled face)" % (
+                        part.pn, vd.letter))
                 vd.dropped = True       # no room: the parent view keeps its tags
                 continue
             vd.off = (rx - vd.scale * vd.extent[0], ry - h - vd.scale * vd.extent[1])
             rx += w + 80
     for dv in [d_ for d_ in details if getattr(d_, "dropped", False)]:
+        if pl.notch_views.get(dv.parent_name, (None, None, False))[2]:
+            raise NotDrawable("%s: no room on the sheet for the detail that sizes the notch" % part.pn)
         details.remove(dv)
         del dv.parent.detail
     pl.mid = (main_right + GAP, 0)
+    for vd in auxs:             # placed: from here on a view like the others (drawn, tagged, titled, in the data)
+        vds[vd.name] = vd
     report = {"pn": part.pn, "rev": part.rev, "scale": scale, "sheet": size, "views": [], "holes": []}
 
     # ---- draw geometry
@@ -975,6 +1247,11 @@ def draw(part, spec, out_path, today=None):
             if marks:
                 if ft.kind == "hole":
                     sh.centre_mark(c2, r, ext=1.5)
+                elif ft.kind == "open_slot":
+                    a2 = vd.view.to2d(ft.f.along)
+                    sh.centre_mark(c2, ft.f.width / 2 * vd.scale, ext=1.2)
+                    e2 = vd.S(vd.view.to2d(vadd(ft.f.entry, vmul(ft.f.along, ft.f.edge + 3.0))))
+                    sh.centre_line(c2, e2)
                 else:
                     a2 = vd.view.to2d(ft.f.along)
                     L = (ft.f.length - ft.f.width) / 2 if ft.kind == "slot" else ft.f.neck
@@ -1009,7 +1286,7 @@ def draw(part, spec, out_path, today=None):
     # one 3D origin O, its projection named per view (a detail shows its parent's origin, same name); the titles
     # name them, so the names come now and the marks later
     k = 0
-    for vd in [vds[n_] for n_ in order if n_ in vds] + secs:
+    for vd in [vds[n_] for n_ in order if n_ in vds] + secs + auxs:
         k += 1
         vd.origin_name = "O%d" % k
     for dv in details:
@@ -1043,8 +1320,8 @@ def draw(part, spec, out_path, today=None):
             jobs.append((vd, vd.group.feats))
         sh.flush()
         # 2. the origins: arrows, then their names where they are clear
-        for vd in [vds[n_] for n_ in order if n_ in vds] + secs:
-            o2 = vd.S(vd.view.to2d(O))
+        for vd in [vds[n_] for n_ in order if n_ in vds] + secs + auxs:
+            o2 = vd.S(vd.view.to2d(getattr(vd, "origin3d", None) or O))
             if part.features:
                 bx = vd.box()
                 away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
@@ -1101,6 +1378,190 @@ def outline_segments(vd):
             pts = [vd.S(q) for q in p.pts]
             segs.extend(zip(pts, pts[1:]))
     return segs
+
+
+def _side_word(d2):
+    if abs(d2[0]) > 0.5:
+        return "right" if d2[0] > 0 else "left"
+    return "up" if d2[1] > 0 else "down"
+
+
+def notch_dims(sh, vd, nt):
+    """A notch's sizes in the view (or its detail) that looks at its wall (ISO 129-1): its width and its place across
+    from the nearer side face (the + side when it is centred), chained beyond the end, and its length from the end
+    beside the part, past that side face. Returns the texts as written."""
+    v, S = vd.view, vd.S
+    plo, phi = nt.prof
+    ref = phi if (phi - nt.hi) <= (nt.lo - plo) + 1e-9 else plo
+    near = nt.hi if ref == phi else nt.lo
+    e = nt.end_s
+
+    def P(s_, a_):
+        return S(v.to2d(nt.point(s_, a_)))
+    out_end = _side_word(v.to2d(vmul(nt.lax, nt.sgn)))
+    out_side = _side_word(v.to2d(vmul(nt.across, 1.0 if ref == phi else -1.0)))
+    w_t, p_t, l_t = fmt(nt.width), fmt(abs(ref - near)), fmt(nt.length)
+    if "down" in (out_end, out_side):       # the view's title goes under the dimensions
+        vd.title_drop = max(getattr(vd, "title_drop", 0.0), 14.0)
+    sh.dim_linear(P(e, nt.lo), P(e, nt.hi), out_end, 8.0, w_t, 2.5)
+    sh.dim_linear(P(e, near), P(e, ref), out_end, 8.0, p_t, 2.5)
+    sh.dim_linear(P(e, ref), P(nt.s_back, near), out_side, 8.0, l_t, 2.5)
+    return {"width": w_t, "pos": p_t, "length": l_t, "ref": ref}
+
+
+def chamfer_text(ch):
+    return "%s x 45°" % fmt(ch.leg)
+
+
+def chamfer_callouts(sh, part, pl, vds):
+    """Each chamfer (an edge break with equal legs): its size on a leader, in the view that looks along its edge
+    and so shows its true angle, at the largest scale (ISO 129-1: '1 x 45°'); the leader goes out from the
+    chamfer's middle, turned or longer until the text touches nothing and the leader crosses no text."""
+    for ch in part.chamfers:
+        edge = vnorm(vcross(ch.lax, ch.side_n))
+        hosts = []
+        for vd in list(vds.values()) + list(getattr(pl, "details", [])):
+            if abs(vdot(vd.view.n, ch.n)) > 1e-6 or abs(abs(vdot(vd.view.n, edge)) - 1) > 1e-6:
+                continue
+            q2 = [vd.view.to2d(p_) for p_ in ch.pts]
+            m2 = (sum(q[0] for q in q2) / len(q2), sum(q[1] for q in q2) / len(q2))
+            w = getattr(vd, "window", None)
+            if vd.kind == "detail" and not (w[0] <= m2[0] <= w[1] and w[2] <= m2[1] <= w[3]):
+                continue
+            hosts.append((vd, m2))
+        if not hosts:
+            raise NotDrawable("%s: no view looks along the edge of the %s chamfer at its %s end" % (
+                part.pn, chamfer_text(ch), axis_name(vmul(ch.lax, ch.sgn)) or "far"))
+        vd, m2 = max(hosts, key=lambda t: t[0].scale)
+        m = vd.S(m2)
+        n2 = vd.view.to2d(ch.n)
+        ln = math.hypot(*n2)
+        n2 = (n2[0] / ln, n2[1] / ln)
+        txt = chamfer_text(ch)
+        pick = None
+        for lead in (6.0, 9.0, 13.0, 18.0):
+            for rot in (0, 20, -20, 40, -40):
+                a = math.radians(rot)
+                u = (n2[0] * math.cos(a) - n2[1] * math.sin(a), n2[0] * math.sin(a) + n2[1] * math.cos(a))
+                tail = (m[0] + u[0] * lead, m[1] + u[1] * lead)
+                an = "left" if u[0] >= 0 else "right"
+                tx = tail[0] + (0.8 if an == "left" else -0.8)
+                box = sh.text_box(tx, tail[1], txt, 2.5, an, valign="mid")
+                if sh.is_free(box) and not any(sh._seg_box(m, tail, b_, 0.3) for b_ in sh.boxes):
+                    pick = (u, tail, tx, an)
+                    break
+            if pick:
+                break
+        if pick is None:
+            raise NotDrawable("%s: no clear place for the %s chamfer's size" % (part.pn, txt))
+        u, tail, tx, an = pick
+        sh.line(tail, m, 0.25)
+        sh.arrow(m, (-u[0], -u[1]), 2.2, 0.9)
+        sh.text(tx, tail[1], txt, 2.5, an, valign="mid")
+        ch.drawn = {"view": vd, "tip": m, "text": txt}
+
+
+def open_slot_dims(sh, vd, ft):
+    """An open slot's sizes from the edge it opens on (the view's axes along and across it): the mouth under the
+    edge, the width over the round end, the taper's length and the end's centre from the edge beside the part,
+    and the end's radius on a leader."""
+    f, v, S = ft.f, vd.view, vd.S
+    c, a = v.to2d(f.entry), v.to2d(f.along)
+    bx = vd.box()
+    if abs(abs(a[1]) - 1) < 1e-6:               # opens down (or up) the view
+        sg = 1.0 if a[1] > 0 else -1.0
+        ye, yt = c[1] + sg * f.edge, c[1] + sg * (f.edge - f.taper)
+        out, inn = ("down", "up") if sg < 0 else ("up", "down")
+        sh.dim_linear(S((c[0] - f.mouth / 2, ye)), S((c[0] + f.mouth / 2, ye)), out, 6.0, fmt(f.mouth), 2.5)
+        if out == "down":       # the view's title goes under the mouth's dimension
+            vd.title_drop = max(getattr(vd, "title_drop", 0.0), 12.0)
+        sh.dim_linear(S((c[0] - f.r, c[1])), S((c[0] + f.r, c[1])), inn, f.r * vd.scale + 5.0, fmt(f.width), 2.5)
+        right = bx[2]
+        if f.taper > 1e-3:
+            p1, p2 = S((c[0] + f.mouth / 2, ye)), S((c[0] + f.r, yt))
+            sh.dim_linear(p1, p2, "right", right - max(p1[0], p2[0]) + 6.0, fmt(f.taper), 2.5)
+        p1, p2 = S((c[0] + f.mouth / 2, ye)), S((c[0] + f.r, c[1]))
+        sh.dim_linear(p1, p2, "right", right - max(p1[0], p2[0]) + 14.0, fmt(f.edge), 2.5)
+        rt = "R%s" % fmt(f.r)
+        pick = None
+        for lead in (7.0, 10.0, 14.0, 19.0):
+            for deg in (135, 45, 160, 20, 110, 70):
+                ux, uy = math.cos(math.radians(deg)), -sg * math.sin(math.radians(deg))   # round the closed end
+                arc = S((c[0] + f.r * ux, c[1] + f.r * uy))
+                tail = (arc[0] + ux * lead, arc[1] + uy * lead)
+                an = "right" if ux < 0 else "left"
+                ty = tail[1] - (0.0 if uy > 0 else 2.5)
+                box = sh.text_box(tail[0] + (-0.8 if ux < 0 else 0.8), ty, rt, 2.5, an)
+                if sh.is_free(box) and not any(sh._seg_box(tail, arc, b_, 0.3) for b_ in sh.boxes):
+                    pick = (arc, tail, an, ty)
+                    break
+            if pick:
+                break
+        if pick is None:
+            raise NotDrawable("%s: no clear place for %s's radius" % (ft.body.name, ft.tag))
+        arc, tail, an, ty = pick
+        sh.line(tail, arc, 0.25)
+        sh.arrow(arc, (arc[0] - tail[0], arc[1] - tail[1]), 2.2, 0.9)
+        sh.text(tail[0] + (-0.8 if an == "right" else 0.8), ty, rt, 2.5, an)
+        # what the view prints, for the read-back
+        ft.dims = {"box": bx, "texts": dict({"width": fmt(f.width), "mouth": fmt(f.mouth), "edge": fmt(f.edge),
+                                             "r": rt}, **({"taper": fmt(f.taper)} if f.taper > 1e-3 else {}))}
+    else:
+        raise NotDrawable("%s: an open slot that opens across the view (%s) isn't dimensioned yet" % (
+            ft.body.name, ft.tag))
+
+
+def notch_window(vd, notches, small=8.0):
+    """(window, notches, the one drawn) for the notches this view looks at from outside their wall. Notches at a
+    member's two ends that are alike (same width, length, wall and place across) are sized once, on the one at
+    the end drawn right (or up), and the drawing says the other end is the same; any other mix isn't drawn yet.
+    The window, round the drawn one when it is under `small` mm on paper: from past the end to past its back face,
+    across the member's whole profile, so its width, its place across and its length can be sized enlarged."""
+    mine = [nt for nt in notches if vdot(vd.view.n, nt.wall_n) > 1 - 1e-6]
+    if not mine:
+        return None, [], None
+    by_body = {}
+    for nt in mine:
+        by_body.setdefault(id(nt.body), []).append(nt)
+    if len(by_body) > 1 or len(mine) > 2:
+        raise NotDrawable("%s: more than one notch per end in one view isn't drawn yet" % mine[0].body.name)
+    if len(mine) == 2:
+        a, b = mine
+        if a.sgn == b.sgn or abs(a.width - b.width) > 1e-3 or abs(a.length - b.length) > 1e-3 or \
+                abs(a.lo - b.lo) > 1e-3 or abs(a.t - b.t) > 1e-3 or vdot(a.wall_n, b.wall_n) < 1 - 1e-9:
+            raise NotDrawable("%s: the notches at its two ends differ: one detail for each isn't drawn yet" % (
+                a.body.name))
+    v = vd.view
+
+    def where(nt):
+        q = v.to2d(vmul(nt.lax, nt.end_s))
+        return q[0] + q[1]
+    shown = max(mine, key=where)
+    if min(shown.width, shown.length) * vd.scale >= small:
+        return None, mine, shown
+    plo, phi = shown.prof
+    g = shown.sgn
+    pts = [v.to2d(shown.point(shown.end_s + g * 4.0, plo - 4.0)), v.to2d(shown.point(shown.end_s + g * 4.0, phi + 4.0)),
+           v.to2d(shown.point(shown.s_back - g * 10.0, plo - 4.0)), v.to2d(shown.point(shown.s_back - g * 10.0, phi + 4.0))]
+    return (min(q[0] for q in pts), max(q[0] for q in pts), min(q[1] for q in pts), max(q[1] for q in pts)), mine, shown
+
+
+def open_slot_window(vd, feats, small=5.0):
+    """A window round an open slot narrower than `small` mm on paper: the part's width across it, from the edge
+    it opens on to past its round end, so its sizes can be dimensioned enlarged."""
+    for ft in feats:
+        if ft.kind != "open_slot" or not _end_on(ft, vd.view) or ft.f.width * vd.scale >= small:
+            continue
+        c = vd.view.to2d(ft.f.entry)
+        a = vd.view.to2d(ft.f.along)
+        e = vd.extent
+        if abs(abs(a[1]) - 1) < 1e-6:           # opens up or down the view
+            ys = (c[1] - a[1] * (ft.f.r + 8.0), c[1] + a[1] * (ft.f.edge + 2.0))
+            return (e[0] - 2.0, e[2] + 2.0, min(ys), max(ys))
+        if abs(abs(a[0]) - 1) < 1e-6:           # opens left or right
+            xs = (c[0] - a[0] * (ft.f.r + 8.0), c[0] + a[0] * (ft.f.edge + 2.0))
+            return (min(xs), max(xs), e[1] - 2.0, e[3] + 2.0)
+    return None
 
 
 def crowded_window(vd, feats, part, near=7.0, reach=25.0):
@@ -1164,10 +1625,18 @@ def _narrowest(loop):
 
 # ------------------------------------------------------------------ annotation, tables, notes, title block
 
+def dir_words(d):
+    """'+X' for an axis, else the unit vector to 3 decimals."""
+    return axis_name(d) or "(%s)" % ", ".join("%.3f" % (0.0 if abs(c) < 5e-4 else c) for c in d)
+
+
 def mapping_words(view, pod_system):
     sysname = "pod" if pod_system else "part"
-    look = project.LOOK_WORDS.get(view.looking, view.looking or "obliquely")
-    return "X = %s, Y = %s (%s axes); looking %s" % (axis_name(view.x), axis_name(view.y), sysname, look)
+    if view.looking:
+        look = project.LOOK_WORDS.get(view.looking, view.looking)
+    else:
+        look = "square to the angled face, along %s" % dir_words(vmul(view.n, -1.0))
+    return "X = %s, Y = %s (%s axes); looking %s" % (dir_words(view.x), dir_words(view.y), sysname, look)
 
 
 def feature_text(ft):
@@ -1186,9 +1655,9 @@ def feature_text(ft):
 def face_title(part, g):
     ft = g.feats[0]
     bodies = sorted({f.body.name for f in g.feats if f.body.name})
-    fw = FACE_WORDS.get(axis_name(g.normal), "face")
+    fw = FACE_WORDS.get(axis_name(g.normal), "face" if axis_name(g.normal) else "angled face")
     side = ""
-    if part.pod_system:
+    if part.pod_system and axis_name(g.normal):
         # the side of the pod the face looks to: the room side when it faces the pod's centre line
         c = ft.f.entry
         k = [i for i in range(3) if abs(g.normal[i]) > 0.5][0]
@@ -1235,7 +1704,7 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         sh.section_arrows(a, b, vd.letter, look, size=3.5)
     sh.flush()
     for nm, vd in vds.items():
-        if not getattr(vd, "letter", None):
+        if not getattr(vd, "letter", None) or nm in pl.aux:
             continue
         look3 = vmul(vd.view.n, -1.0)
         host = next((h for h in ("above", "below", "principal") if h in vds and abs(vdot(look3, vds[h].view.n)) < 1e-6
@@ -1276,13 +1745,17 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     sh.dim_linear((a[0], a[1]), (a[0], b[1]), "left", 15.0, fmt(e[3] - e[1]), 3.0)
     # an end cut at an angle (a mitre): in the plain view where its face shows edge on, the angle from square and
     # the true lengths along the member's two faces (guideline 6.1: true lengths and angle, not a box)
+    angle_texts = []
     for b in part.bodies:
         lk = max(range(3), key=lambda i: b.size[i])
-        lax = tuple(1.0 if i == lk else 0.0 for i in range(3))
+        lax = geom.member_axis(b) or tuple(1.0 if i == lk else 0.0 for i in range(3))
+        top_corners = {}        # view -> (view, extent, the mitre corners on its top edge)
         for n, off, area, face in geom.planes(b):
             c = abs(vdot(n, lax))
             if not (0.02 < c < 0.9998):
                 continue
+            if any(face.IsSame(cf) for ch in part.chamfers for cf in ch.faces):
+                continue            # an edge break, called out on its own (below)
             ang = math.degrees(math.acos(c))
             views_m = [(("detail-" + dv.letter), dv) for dv in getattr(pl, "details", [])] + list(vds.items())
             for nm, vd in views_m:
@@ -1332,9 +1805,9 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 for d_ in (1.5, 3.0, 5.0, 8.0, 12.0):
                     px, py = S(far)[0] + (R + d_) * math.cos(am), S(far)[1] + (R + d_) * math.sin(am)
                     cands += [(px, py, "left" if math.cos(am) >= 0 else "right"), (px, py, "center")]
-                pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
-                            cands[0])
-                sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
+                # placed after every length dimension of the mitre (below), so their extension lines are known
+                # (BASE's D-129 111101: the value sat on the 1502.07 dimension's extension line)
+                angle_texts.append((ang_t, cands))
                 # true lengths along the two long faces, from the other (square) end
                 ve = vd.extent
                 other = ve[0] if abs(far[ax_k] - ve[0]) > abs(far[ax_k] - ve[2]) else ve[2]
@@ -1357,13 +1830,77 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                             e2 = vd2.extent
                             if abs(q2[1] - e2[3]) > 1e-3:
                                 continue
-                            oth = e2[0] if abs(q2[0] - e2[0]) > abs(q2[0] - e2[2]) else e2[2]
-                            sh.dim_linear(vd2.S((oth, e2[3])), vd2.S((q2[0], e2[3])), "up", 11.0,
-                                          fmt(abs(q2[0] - oth)), 2.5)
-                            vd2.top_used = 16.0
+                            top_corners.setdefault(id(vd2), (vd2, e2, []))[2].append(q2[0])
                             break
                 vd.has_mitre = True
                 break
+        # the top face's true length: from the square end to its mitre corner, or, mitred at both ends, between
+        # its two corners, once (FRONT's 352201: two lengths from each end printed over each other)
+        for vd2, e2, xs in top_corners.values():
+            xs = sorted(set(round(x_, 4) for x_ in xs))
+            if len(xs) == 1:
+                oth = e2[0] if abs(xs[0] - e2[0]) > abs(xs[0] - e2[2]) else e2[2]
+                a_, b_ = oth, xs[0]
+            else:
+                a_, b_ = xs[0], xs[-1]
+            sh.dim_linear(vd2.S((a_, e2[3])), vd2.S((b_, e2[3])), "up", 11.0, fmt(abs(b_ - a_)), 2.5)
+            vd2.top_used = 16.0
+    for ang_t, cands in angle_texts:
+        pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
+                    cands[0])
+        sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
+    # angled-face and end views (ISO 128-30): an arrow square to the face, in a drawn view that shows the face edge
+    # on, its tip just off the face by the features (else moved along the face, or shorter) where the arrow crosses
+    # no line and its letter touches nothing; drawn after every dimension so those are known (BASE's D-129 111103: the
+    # end view's letter sat on the 100 height dimension)
+    def aux_arrows():
+        for nm in sorted(pl.aux):
+            avd = vds.get(nm)
+            if avd is None:
+                continue
+            n3 = avd.view.n
+            hosts = [vds[h] for h in ("principal", "above", "below", "from_left", "from_right", "rear")
+                     if h in vds and abs(vdot(n3, vds[h].view.n)) < 1e-6]
+            if not hosts:
+                raise NotDrawable("%s: no view shows the angled face edge on, for view %s's arrow" % (
+                    part.pn, avd.letter))
+            hv = hosts[0]
+            feats = [ft for g in pl.groups if g.view == nm for ft in g.feats]
+            c3 = tuple(sum(ft.f.entry[i] for ft in feats) / len(feats) for i in range(3))
+            c2 = hv.S(hv.view.to2d(c3))
+            u = hv.view.to2d(n3)
+            L = math.hypot(*u)
+            u = (u[0] / L, u[1] / L)
+            side = (-u[1], u[0])
+            hb = hv.box()
+            reach = 0.4 * abs(side[0] * (hb[2] - hb[0]) + side[1] * (hb[3] - hb[1]))
+            pick = None
+            for sh_ in [0.0] + [k * d_ for d_ in (5.0, 10.0, 15.0) for k in (1, -1)]:
+                if abs(sh_) > reach + 1e-9 and sh_:
+                    continue
+                c_ = (c2[0] + side[0] * sh_, c2[1] + side[1] * sh_)
+                for t0, ln in ((3.0, 12.0), (2.0, 8.0)):
+                    tip = (c_[0] + u[0] * t0, c_[1] + u[1] * t0)
+                    tail = (c_[0] + u[0] * (t0 + ln), c_[1] + u[1] * (t0 + ln))
+                    if not sh.seg_free(tail, tip):
+                        continue
+                    cands = [(tail[0] + u[0] * 2.0 + sd * side[0] * 2.5, tail[1] + u[1] * 2.0 + sd * side[1] * 2.5 - 1.75)
+                             for sd in (0, 1, -1, 2, -2)]
+                    q = next((q for q in cands
+                              if sh.is_free(sh.text_box(q[0], q[1], avd.letter, 3.5, "center", bold=True))), None)
+                    if q is not None:
+                        pick = (tip, tail, q)
+                        break
+                if pick:
+                    break
+            if pick is None:
+                tip = (c2[0] + u[0] * 3.0, c2[1] + u[1] * 3.0)
+                tail = (c2[0] + u[0] * 15.0, c2[1] + u[1] * 15.0)
+                pick = (tip, tail, (tail[0] + u[0] * 2.0, tail[1] + u[1] * 2.0 - 1.75))
+            tip, tail, q = pick
+            sh.line(tail, tip, 0.35)
+            sh.arrow(tip, (-u[0], -u[1]), 3.0, 1.1)
+            sh.text(q[0], q[1], avd.letter, 3.5, "center", bold=True)
     # frame members: the stiles' centre lines from the frame's front end (ordinate, ISO 129-1), over the view
     stiles = [b for b in part.bodies if "STILE" in (b.name or "").upper()]
     if stiles:
@@ -1411,6 +1948,29 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             p1 = vd.S((end_x, ve[3]))
             p2 = vd.S((c[0], ve[3]))
             sh.dim_linear(p1, p2, "up", 7.0, fmt(abs(c[0] - end_x)), 2.5)
+    # open-ended slots (D-129's hook-in end caps; the PM's ruling): dimensioned from the edge they open on, in the
+    # detail that enlarges them (else their view): the mouth, the taper's length, the end's centre from the edge,
+    # the width and the end's radius
+    for ft in part.features:
+        if ft.kind != "open_slot" or ft.group is None or not ft.group.view:
+            continue
+        vd = vds.get(ft.group.view)
+        if vd is None:
+            continue
+        dv = getattr(vd, "detail", None)
+        if dv is not None:
+            c0 = vd.view.to2d(ft.f.entry)
+            wx0, wx1, wy0, wy1 = dv.window
+            if wx0 <= c0[0] <= wx1 and wy0 <= c0[1] <= wy1:
+                vd = dv
+        open_slot_dims(sh, vd, ft)
+    # notches (BASE's FB-15): sized in the detail that enlarges them (else their view)
+    for nm, (nts, shown, enlarged) in getattr(pl, "notch_views", {}).items():
+        vd = vds[nm].detail if enlarged else vds[nm]
+        shown.drawn = {"view": vd, "texts": notch_dims(sh, vd, shown), "alike": [nt for nt in nts if nt is not shown]}
+    sh.flush()
+    aux_arrows()
+    chamfer_callouts(sh, part, pl, vds)
     sh.flush()
     # ---- removed sections: each wall's hole sized across its gap, on the outside of that wall (ISO 129-1), with
     # its tag; the words slide out along the line past anything they would touch
@@ -1484,19 +2044,28 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         for xa, yy, t, sz, an, b in pick:
             sh.text(xa, yy, t, sz, an, bold=b)
     sname = scale_text(scale)
-    osfx = (lambda vd: "; origin %s" % vd.origin_name) if part.features else (lambda vd: "")
+    osfx = (lambda vd: "; origin %s%s" % (vd.origin_name, (" " + vd.origin_words) if getattr(vd, "origin_words", "")
+                                           else "")) if part.features else (lambda vd: "")
     for nm, vd in vds.items():
-        head = "%s  %s" % (VIEW_WORDS[nm], sname)
+        head = "%s  %s" % (VIEW_WORDS.get(nm, "VIEW"), sname)
         if getattr(vd, "letter", None):
-            head = "VIEW %s  %s" % (vd.letter, sname)
+            head = "VIEW %s  %s" % (vd.letter, scale_text(vd.scale) if nm in pl.aux else sname)
         title(vd, head, mapping_words(vd.view, part.pod_system) + osfx(vd))
     for vd in secs:
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, sname),
               mapping_words(vd.view, part.pod_system) + osfx(vd))
     for dv in getattr(pl, "details", []):
+        nv = getattr(pl, "notch_views", {}).get(dv.parent_name)
+        where = ""
+        if nv and nv[2]:
+            shown = nv[1]
+            where = ", at the %s end" % (axis_name(vmul(shown.lax, shown.sgn)) or "drawn")
+            if shown.drawn["alike"]:
+                where += " (the notch at the %s end is the same)" % (
+                    axis_name(vmul(shown.lax, -shown.sgn)) or "other")
         title(dv, "DETAIL %s  %s" % (dv.letter, scale_text(dv.scale)),
-              "of the %s; %s; origin %s" % (VIEW_WORDS.get(dv.parent_name, "view").lower(),
-                                            mapping_words(dv.view, part.pod_system), dv.origin_name))
+              "of the %s%s; %s; origin %s" % (VIEW_WORDS.get(dv.parent_name, "view").lower(), where,
+                                              mapping_words(dv.view, part.pod_system), dv.origin_name))
     for vd in removed:
         tags = sorted({f.tag for s_ in vd.r.all for f in s_})
         vd.title_drop = 14.0
@@ -1569,8 +2138,103 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                     ys = [e[1] + t * (e[3] - e[1]) for t in (0.25, 0.4, 0.6, 0.75)]
                     put_datum([(vd.S((xx, y_)), (n2[0], 0), lead) for lead in (7.0, 10.0, 14.0) for y_ in ys], letter)
                 break
+    # ---- keys fitted in the part's ends (Joints' corner-keys.csv): a note at each end saying which way round the
+    # key goes, since its bottom holes sit off its middle and meet the part's only one way (the Lead's ask on #228)
+    if spec.get("key_notes"):
+        key_notes(sh, part, pl, vds)
     sh.flush()
     return
+
+
+def key_notes(sh, part, pl, vds):
+    """For each key in the part's ends: a leader to the key's stud face on the end, in the view (or its detail)
+    that shows the part's holes for the key's screws, and a note: which key, which face goes on this end, and
+    that only this way round do its bottom holes meet the part's (and how far off they are turned round). When the
+    part's STEP has no holes where Joints' file puts the key's screws (the two teams' files between changes, D-129),
+    the end gets a HOLD note naming those positions instead, and the read-back checks that the holes really are
+    missing; regenerating once the STEP has them gives the full note."""
+    for r in inputs.key_rows(part.pn):
+        fc = (float(r["face_centre_x"]), float(r["face_centre_y"]))
+        bk = (float(r["key_back_centre_x"]), float(r["key_back_centre_y"]))
+        hs = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
+        L = math.dist(fc, bk)
+        u = ((fc[0] - bk[0]) / L, (fc[1] - bk[1]) / L)
+        mid = ((hs[0][0] + hs[1][0]) / 2, (hs[0][1] + hs[1][1]) / 2)
+        d_hole = abs((mid[0] - bk[0]) * u[0] + (mid[1] - bk[1]) * u[1])
+        fts = sorted([ft for ft in part.features if ft.tag and any(math.dist((ft.f.entry[0], ft.f.entry[1]), h) < 0.5
+                                                                    for h in hs)], key=lambda f: f.tag)
+        hold = len(fts) != 2
+        if hold:
+            # the view that looks at the key's bottom (its screws go up through the part's bottom wall)
+            vd = next((v_ for v_ in vds.values() if abs(v_.view.n[2]) > 0.99), None)
+        else:
+            vd = vds.get(fts[0].group.view) if fts[0].group.view else None
+        if vd is None:
+            continue
+        z = (float(r["key_bottom_z"]) + float(r["key_top_z"])) / 2
+        c2 = vd.view.to2d((fc[0], fc[1], z))
+        dv = getattr(vd, "detail", None)
+        if dv is not None:
+            x0, x1, y0, y1 = dv.window
+            if x0 - 1e-6 <= c2[0] <= x1 + 1e-6 and y0 - 1e-6 <= c2[1] <= y1 + 1e-6:
+                vd = dv
+        a = vd.S(c2)
+        cut = abs(float(r["cut_deg_signed"] or 0))
+        if hold:
+            text = ("HOLD: Joints' key file puts key %s, %s, in this end, its screws at X %s Y %s and X %s Y %s (pod), "
+                    "but this STEP has no holes there yet; the key note follows when the model has them." % (
+                        r["part_number"], r["joint"], fmt(hs[0][0]), fmt(hs[0][1]), fmt(hs[1][0]), fmt(hs[1][1])))
+        else:
+            text = None
+        # where the stud face sits: on the part's end (its normal along the part) or against its inner wall (across)
+        k = max(range(2), key=lambda i: part.size[i])
+        sn = (float(r["stud_normal_x"]), float(r["stud_normal_y"]))
+        on_end = abs(sn[k]) / (math.hypot(*sn) or 1.0) > 0.7
+        text = text or ("Key %s, %s, fitted at the factory (J-BASE-02): stud face%s %s, back face %s mm "
+                "inside. Only this way round do its bottom holes meet %s; turned round they are %s mm off (Joints' "
+                "key sheet 111211)." % (r["part_number"], r["joint"], (" (cut %s°)" % fmt(cut)) if cut > 0.01 else "",
+                                        "flush with this end" if on_end else "against the inner wall",
+                                        fmt(L), " and ".join(f.tag for f in fts), fmt(abs(L - 2 * d_hole))))
+        lines = sh.wrap(text, 2.5, 78.0)
+        w = max(sh.text_width(t, 2.5) for t in lines)
+        h = 2.5 + 3.6 * (len(lines) - 1)
+        # the leader leaves the end face square to it, along the part (out of the key's stud face), for 6 mm, then
+        # bends to the note: it never runs along the outline
+        cd = vd.view.to2d((float(r["carrier_dir_x"]), float(r["carrier_dir_y"]), 0.0))
+        n_ = math.hypot(*cd) or 1.0
+        cd = (cd[0] / n_, cd[1] / n_)
+        elbow = (a[0] + cd[0] * 6.0, a[1] + cd[1] * 6.0)
+        base = math.degrees(math.atan2(cd[1], cd[0]))
+        angles = [(base + d_) % 360 for d_ in (0, 30, -30, 60, -60, 90, -90, 120, -120, 150, -150, 180)]
+
+        def block_at(px, py, ca, sa):
+            left = px - w if ca < -1e-6 else (px - w / 2 if abs(ca) <= 1e-6 else px)
+            top = py + h if sa > 1e-6 else (py + h / 2 if abs(sa) <= 1e-6 else py)
+            return [(left, top - 2.5 - 3.6 * i, t) for i, t in enumerate(lines)]
+
+        def crosses_text(p0, p1):
+            return any(sh._seg_box(p0, p1, b_, 0.3) for b_ in sh.boxes)
+        pick = None
+        if not crosses_text(a, elbow):
+            for rad in (4.0, 8.0, 14.0, 22.0, 32.0, 44.0, 58.0):
+                for ang in angles:
+                    ca, sa = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+                    ca, sa = (0.0 if abs(ca) < 1e-6 else ca), (0.0 if abs(sa) < 1e-6 else sa)
+                    att = (elbow[0] + rad * ca, elbow[1] + rad * sa)
+                    blk = block_at(att[0], att[1], ca, sa)
+                    if all(sh.is_free(sh.text_box(x_, y_, t, 2.5)) for x_, y_, t in blk) and not crosses_text(elbow, att):
+                        pick = (att, blk)
+                        break
+                if pick:
+                    break
+        if pick is None:
+            raise NotDrawable("%s: no clear place for the note on key %s (%s)" % (part.pn, r["part_number"], r["joint"]))
+        att, blk = pick
+        sh.line(att, elbow, W_THIN)
+        sh.line(elbow, a, W_THIN)
+        sh.arrow(a, (-cd[0], -cd[1]), 2.2, 0.9)
+        for x_, y_, t in blk:
+            sh.text(x_, y_, t, 2.5)
 
 
 def member_key(name):
@@ -1599,6 +2263,13 @@ TABLE_W = 262.0
 TB_ROOM = 120.0     # the title block's height and the gap over it, which the right column's tables stay above
 
 
+def table_name(g):
+    """A hole table's title start: HOLES H01-H07, or HOLE H19 / SLOT H19 for a table of one."""
+    if len(g.feats) == 1:
+        return "%s %s" % ("HOLE" if g.feats[0].kind == "hole" else "SLOT", g.feats[0].tag)
+    return "HOLES %s-%s" % (g.feats[0].tag, g.feats[-1].tag)
+
+
 def hole_cols(tw):
     return [("TAG", 14, "c"), ("X (mm)", 24, "r"), ("Y (mm)", 24, "r"), ("SIZE", 40, "l"), ("DEPTH", 42, "l"),
             ("FEATURE (register) AND FITS", tw - 144, "l")]
@@ -1612,7 +2283,7 @@ def tables_height(sh, part, groups, tw):
         rows = [[ft.tag, "-0000.00", "-0000.00",
                  size_text(ft) + (" along X" if ft.kind == "slot" else " toward +X" if ft.kind == "keyhole" else ""),
                  wall_word(ft.f, ft.body), feature_text(ft)] for ft in g.feats]
-        head = ["HOLES %s-%s: %s" % (g.feats[0].tag, g.feats[-1].tag, face_title(part, g)),
+        head = ["%s: %s" % (table_name(g), face_title(part, g)),
                 "far wall, coaxial with H00-H00: hidden in the view from below, shown in section D-D, E-E; origin O0; "
                 "+X right, +Y up; drilled from this face"]
         total += sh.table_height(hole_cols(tw), rows, size=2.5, title=head, title_size=2.5) + 5.0
@@ -1672,7 +2343,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
         vd = vds.get(g.view) if g.view else g.vd
         oname = vd.origin_name
         v = vd.view
-        o2 = v.to2d(O)
+        o2 = v.to2d(getattr(vd, "origin3d", None) or O)
         rows = []
         for ft in g.feats:
             c = v.to2d(ft.f.entry)
@@ -1697,7 +2368,7 @@ def tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, 
                                         else VIEW_WORDS[g.view].lower())
         else:
             where = "seen in section %s-%s" % (vd.letter, vd.letter)
-        head = ["HOLES %s-%s: %s" % (g.feats[0].tag, g.feats[-1].tag, face_title(part, g)),
+        head = ["%s: %s" % (table_name(g), face_title(part, g)),
                 "%s; origin %s; +X right, +Y up; drilled from this face" % (where, oname)]
         y = sh.table(right_x0, y, cols, rows, size=2.5, title=head, title_size=2.5) - 5.0
     return y, members
@@ -1713,8 +2384,7 @@ def cut_list_table(sh, part, members, x, y, width):
                                   m["tol"].split(",")[0])).strip("; ")])
     mat = part.row.get("material", "")
     return sh.table(x, y, ccols, crow, size=2.5,
-                    title=["CUT LIST (parts list %s)" % os.path.basename(part.list_file or ""),
-                           "aluminium 6063-T6 tube: %s" % mat.split(":", 1)[-1].strip()], title_size=2.5)
+                    title=["CUT LIST (parts list %s)" % os.path.basename(part.list_file or ""), mat], title_size=2.5)
 
 
 def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
@@ -1723,6 +2393,8 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
     notes.append("UNITS: mm. Do not scale the drawing. ISO first-angle projection (ISO 5456-2), symbol in the "
                  "title block. Dimensions to ISO 129-1. Sheet 1: views, sections and hole tables; sheet 2: these "
                  "general notes%s." % (", the cut list" if cut_list(part) else "") + "")
+    if getattr(part, "qty_words", None):
+        notes.append("QUANTITY: %s." % part.qty_words)
     vw = "the room side" if part.pod_system and pl.principal.pod_name in ("right", "front", "top") else "its side"
     notes.append("Views: the principal view looks %s (%s); every view's title gives its own X and Y and how they "
                  "map to the %s axes (conventions section 4). On every view X runs right and Y up." % (
@@ -1754,7 +2426,9 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
         notes.append(t)
     two = [vd.letter for vd in removed if vd.r.feats]
     if part.features:
-        notes.append("Holes go THRU 1 WALL of the member unless the table says otherwise; deburr both sides. %s" % (
+        hollow = any("1 WALL" in wall_word(ft.f, ft.body) for ft in part.features if ft.kind == "hole")
+        notes.append("Holes go %s unless the table says otherwise; deburr both sides. %s" % (
+            "THRU 1 WALL of the member" if hollow else "THRU the part",
             "Coaxial holes in two walls of one member are shown in section%s %s." % (
                 "s" if len(two) > 1 else "", " and ".join("%s-%s" % (l, l) for l in two)) if two else ""))
     if spec.get("tolerance"):
@@ -1766,7 +2440,10 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
     regs = sorted({ft.reg["file"] for ft in part.features if ft.reg})
     if regs:
         src += "; feature rationale %s" % ", ".join(regs)
-    src += ". Made by tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF."
+    if spec.get("key_notes") and inputs.key_rows(part.pn):
+        src += "; key positions %s" % inputs.rel(inputs.KEYS_CSV)
+    # the Lead's ruling (2026-11-01): a note names the source, never an agent, a role or a script as the maker
+    src += ". From that STEP: regenerate it, never edit the PDF."
     notes.append(src)
     return notes
 
@@ -1785,6 +2462,7 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
     mass = (row.get("mass_each_kg") or row.get("unit_mass_kg") or "").strip()
     sc = scale_text(spec["_scale"]) + ("" if not removed else " (sections %s %s)" % (
         " ".join("%s-%s" % (vd.letter, vd.letter) for vd in removed), scale_text(removed[0].scale)))
+    sc += spec.get("_scale_more", "")
     # rows of cells: (width share, label, value, value size, bold)
     rows = [
         [(70, "PROJECT", "Spaceship (FocusPod v2)", VAL, True), (36, "STATUS", "DRAFT", 3.0, True),
@@ -1796,7 +2474,7 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
         [(180, "FINISH", "FINISH: " + ((row.get("finish") or "").strip() or "none (as supplied)"), VAL, False)],
         [(62, "SCALE", sc, VAL, False), (18, "SIZE", sh.size, VAL, False), (32, "UNITS", "UNITS: mm", VAL, True),
          (68, "MASS", ("%s kg (calculation)" % mass) if mass else "see parts list", VAL, False)],
-        [(62, "MADE BY", "tools/drawgen (D-112)", VAL, False), (40, "APPROVED", "not released", VAL, False),
+        [(62, "CREATED BY", AUTHOR, VAL, False), (40, "APPROVED", "not released", VAL, False),
          (78, "TOLERANCES", "TOLERANCE: see the notes; not ISO 2768", VAL, False)],
     ]
     proj_h = 12.0
@@ -1845,6 +2523,25 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
 def make(pn, team, spec, out_path, today=None, step=None, row=None):
     """Generate one drawing; returns a report. step and row: a part outside the repo's lists (tests)."""
     part = Part(pn, team, step=step, pod_system=spec.get("pod_system", True), row=row)
+    # tapped holes need thread callouts (item 5): until then such a part isn't drawn (the PM's ruling on #296). A hole
+    # is taken as tapped when the part's row says so, or when its size is a metric tap drill's (M3 to M8), which no
+    # clearance hole in the project uses
+    if not spec.get("_test_allow_tapped"):
+        words = " ".join((part.row.get(k) or "") for k in ("process", "note", "name", "tolerance")).lower()
+        said = re.search(r"\btap(ped|ping)?\b|\bthread|\bm\d+\s*x\s*[\d.]+", words)
+        drills = (2.5, 3.3, 4.2, 6.8)
+        sized = [ft for ft in part.features if ft.kind == "hole" and (
+            4.9 <= ft.f.dia <= 5.16 or any(abs(ft.f.dia - d) < 0.06 for d in drills))]
+        if said or sized:
+            raise NotDrawable("%s has tapped holes (%s): their thread callouts come with item 5; until then the part "
+                              "isn't drawn here" % (pn, "its parts list says so" if said else "Ø%s, a tap drill's size" % (
+                                  fmt(sized[0].f.dia))))
+    # an entry written for a material (D-131's welded steel frames) never draws over a list that still says another
+    need = spec.get("material_has")
+    if need and need.lower() not in (part.row.get("material") or "").lower():
+        raise NotDrawable("%s: its parts list gives the material as '%s', but its drawing entry is for %s (%s): the "
+                          "list and the model change first" % (pn, part.row.get("material", ""), need,
+                                                               spec.get("material_why", "its notes")))
     with open(part.step, encoding="latin-1") as fh:
         head = fh.read(4000)
     import re as _re
@@ -1853,6 +2550,10 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
     sh, pl, vds, secs, removed, dat, scale, report, groups = draw(part, spec, None, today)
     spec = dict(spec)
     spec["_scale"] = scale
+    other = [vd for nm, vd in sorted(vds.items()) if nm in pl.aux and abs(vd.scale - scale) > 1e-9]
+    if other:
+        spec["_scale_more"] = " (view%s %s %s)" % ("s" if len(other) > 1 else "", ", ".join(vd.letter for vd in other),
+                                                 scale_text(other[0].scale))
     annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
     ty, _members = tables_and_text(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today)
     tb_top = title_block(sh, part, spec, scale, removed, today, 1, 2)
@@ -1936,13 +2637,31 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
         srcs.append({"role": "parts list", "path": inputs.rel(part.list_file), "sha256_12": inputs.sha12(part.list_file)})
     for f in sorted({ft.reg["file"] for ft in part.features if ft.reg}):
         srcs.append({"role": "feature rationale", "path": f, "sha256_12": inputs.sha12(os.path.join(geom.REPO, f))})
+    if spec.get("key_notes") and inputs.key_rows(part.pn):
+        srcs.append({"role": "key positions", "path": inputs.rel(inputs.KEYS_CSV), "sha256_12": inputs.sha12(inputs.KEYS_CSV)})
     views = []
-    for vd in [vds[n_] for n_ in ("principal", "below", "above", "from_left", "from_right", "rear") if n_ in vds] + secs:
+    for vd in [vds[n_] for n_ in ("principal", "below", "above", "from_left", "from_right", "rear") if n_ in vds] + \
+            [vds[n_] for n_ in sorted(pl.aux) if n_ in vds] + secs:
         views.append({"origin": vd.origin_name, "name": vd.name, "n": vd.view.n, "x": vd.view.x, "y": vd.view.y,
-                      "scale": vd.scale, "off": vd.off})
+                      "scale": vd.scale, "off": vd.off, "origin3d": getattr(vd, "origin3d", None)})
     for vd in removed:
         views.append({"origin": None, "name": "section %s-%s" % (vd.letter, vd.letter), "n": vd.view.n,
                       "x": vd.view.x, "y": vd.view.y, "scale": vd.scale, "off": vd.off})
+    for dv in getattr(pl, "details", []):
+        views.append({"origin": None, "name": "detail %s" % dv.letter, "n": dv.view.n, "x": dv.view.x,
+                      "y": dv.view.y, "scale": dv.scale, "off": dv.off, "box": dv.box()})
+    # notches and chamfers: where they are in the model and what the sheet prints for them, for the read-back
+    notches = []
+    for nt in part.notches:
+        shown = next((x for x in part.notches if getattr(x, "drawn", None) and (x is nt or nt in x.drawn["alike"])),
+                     None)
+        dr = shown.drawn if shown else None
+        notches.append({"sgn": nt.sgn, "end_s": nt.end_s, "lax": nt.lax, "across": nt.across, "wall_n": nt.wall_n,
+                        "lo": nt.lo, "hi": nt.hi, "s_back": nt.s_back, "t": nt.t, "prof": list(nt.prof),
+                        "texts": dict(dr["texts"]) if dr else None, "drawn": nt is shown,
+                        "box": dr["view"].box() if dr else None})
+    chamfers = [{"sgn": ch.sgn, "end_s": ch.end_s, "lax": ch.lax, "side_n": ch.side_n, "n": ch.n, "leg": ch.leg,
+                 "pts": ch.pts, "text": ch.drawn["text"], "tip": ch.drawn["tip"]} for ch in part.chamfers]
     feats = []
     for g in groups:
         vd = vds.get(g.view) if g.view else g.vd
@@ -1951,11 +2670,16 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                           "depth": ft.f.depth, "body": ft.body.name, "table_origin": vd.origin_name,
                           "drawn_in": vd.origin_name if _end_on(ft, vd.view) else None,
                           "register": ft.reg["id"] if ft.reg else None})
+            if ft.kind == "open_slot":
+                feats[-1].update({"r": ft.f.r, "edge": ft.f.edge, "mouth": ft.f.mouth, "taper": ft.f.taper,
+                                  "along": ft.f.along, "size": size_text(ft),
+                                  "dims": getattr(ft, "dims", {}).get("texts"), "dims_box": getattr(ft, "dims", {}).get("box")})
     return {"generator": TOOL_REV, "pn": part.pn, "rev": part.rev, "dwg": part.dwg_name, "sheet": sh.size,
             "placement": ({"assembly": part.placement["assembly"], "m": part.placement["m"],
                            "t": part.placement["shift"]} if part.placement else None),
-            "sheet_h": sh.H, "sources": srcs, "origin": dat["O"],
+            "sheet_h": sh.H, "sources": srcs, "origin": dat["O"], "occurrences": part.occurrences,
             "datums": {"B": dat["B"].tag if dat.get("B") else None,
                        "C": ("plane %s at %s" % (axis_name(dat["C_plane"][0]), fmt(dat["C_plane"][1])))
                        if dat.get("C_plane") else None},
-            "views": views, "features": feats}
+            "views": views, "features": feats, "notches": notches, "chamfers": chamfers,
+            "plates": [{"sgn": p_["sgn"], "t": p_["t"]} for p_ in getattr(part, "plates", [])]}
