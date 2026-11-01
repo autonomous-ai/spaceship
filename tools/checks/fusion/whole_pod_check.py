@@ -35,8 +35,9 @@ import adsk.fusion
 ARGS = globals().get("SCRIPT_ARGS", {})
 CM = 10.0          # Fusion internal cm -> mm
 
-# fasteners are HARDWARE parts (conventions section 5 and 6): family 83, or a name that starts HARDWARE - BOLT
-FASTENER_RE = re.compile(r"(?:^|/ |\s)83\d{4}\s+HARDWARE - (?:BOLT|SCREW)\b|HARDWARE - (?:BOLT|SCREW)\b", re.I)
+# fasteners are HARDWARE parts (conventions section 5 and 6): a bolt or screw by its name, as the joints register
+# gives it (D-99): HARDWARE - BOLT ..., or with its type first, HARDWARE - SOCKET HEAD BOLT - M6 X 16 ...
+FASTENER_RE = re.compile(r"HARDWARE - (?:[A-Z][A-Z ]* )?(?:BOLT|SCREW)\b", re.I)
 NUT_RE = re.compile(r"HARDWARE - (?:NUT|RIVNUT|RIVET NUT|INSERT|CLINCH)\b|\b(?:RIVNUT|RIVET NUT)\b", re.I)
 
 

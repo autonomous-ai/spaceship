@@ -1,0 +1,4 @@
+pattern,decision,what
+"\bCLEATS?\b",D-131,"cleats: the wall, ceiling and decor-core frames are welded galvanized steel, and D-117's cleats are cancelled"
+"\bFLOOR\W+(?:PANEL|FOAM|UNDERLAY|PAD)\b",D-132,"floor parts: the pod has no floor, people stand on the room floor"
+"\bTHRESHOLD\b",D-132,"the 13 mm threshold: there is no step at the door"

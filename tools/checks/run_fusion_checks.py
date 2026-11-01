@@ -105,6 +105,23 @@ def _allowed(c, allow_rows):
 SOFT_SWING_MM3 = 100.0
 
 
+# D-92: ELECTRICAL's route bodies (routes, pockets, grommets: its 7100xx components) are reserved spaces, not panels:
+# the gap and seam rules skip them (a clash with one still counts: a cable can't pass through a wall without a hole)
+ROUTE_BODY = re.compile(r"(?<!\d)7100\d\d(?!\d)")
+
+
+def _team_of(label, steps):
+    """The team whose STEP file a body comes from: the file whose name starts with the number of the label's top
+    component ('410000_P01_CEILING_CAD:1 / ...' is CEILING's 410000_P01_CEILING_STEP.step)."""
+    m = re.match(r"(\d{6})_", (label or "").split(" / ")[0])
+    for s in (steps or []) if m else []:
+        s = s.replace("\\", "/")
+        i = s.find("v2/03-Manufacturing/")
+        if i >= 0 and os.path.basename(s).startswith(m.group(1) + "_"):
+            return owner_for(s[i:], m.group(1))
+    return owner_for("", _pn(label))
+
+
 def findings_from(res, model, file_hint="", allow_rows=None, reserved=None):
     """Findings carry the scope '<model>/fusion', so only a Fusion run can
     close them (an offline run can't see an exact clash). With allow_rows,
@@ -118,12 +135,16 @@ def findings_from(res, model, file_hint="", allow_rows=None, reserved=None):
             "C01", "clash", "%s %s x %s" % (model, _short(c["a"]), _short(c["b"])), "severe",
             "%s and %s overlap by %.1f mm3 in the %s (Fusion, exact intersection)." % (c["a"], c["b"], c["mm3"], model),
             "Fix the geometry so they meet or clear; if the overlap is intended, add it to "
-            "v2/04-Checks/config/clash-allow.csv with its reason.", file_hint, owner_for(file_hint, _pn(c["a"])),
+            "v2/04-Checks/config/clash-allow.csv with its reason.", file_hint,
+            owner_for(file_hint, _pn(c["a"])) if file_hint else
+            "; ".join(sorted({_team_of(c["a"], res.get("steps")), _team_of(c["b"], res.get("steps"))})),
             {"model": scope, "mm3": c["mm3"], "a": c["a"], "b": c["b"]}))
     groups = {}
     for g in res.get("gaps", []):
         if reserved and (reserved_label(g.get("a", ""), reserved) or reserved_label(g.get("b", ""), reserved)):
             continue                    # a reserved space has no seams until it's designed
+        if ROUTE_BODY.search(g.get("a", "")) or ROUTE_BODY.search(g.get("b", "")):
+            continue                    # D-92: ELECTRICAL's route bodies have no seams
         lo, hi = g.get("min_mm"), g.get("max_mm")
         if (lo is not None and g["gap_mm"] < lo - 1e-6) or (hi is not None and g["gap_mm"] > hi + 1e-6):
             groups.setdefault(g.get("group") or g["id"], []).append(g)

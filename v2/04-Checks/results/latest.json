@@ -1,5 +1,5 @@
 {
- "rev": "0d355cd",
+ "rev": "5c8f25a",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -12,14 +12,20 @@
    "right-base",
    "top"
   ],
-  "bodies_assembly": 356,
+  "bodies_assembly": 507,
   "shell_faces_assembly": [
-   "left-base"
+   "left",
+   "left-base",
+   "top"
   ],
   "parts_lists": [
+   "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
    "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
    "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
    "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
+   "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv",
+   "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv",
+   "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
    "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_BOM.csv",
    "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_BOM.csv",
    "v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv",
@@ -33,6 +39,7 @@
    "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv"
   ],
   "part_steps": [
+   "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
    "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
    "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
    "v2/03-Manufacturing/base/111103_P01_BASE-BAND-TUBE-BACK_STEP.step",
@@ -43,6 +50,9 @@
    "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step",
    "v2/03-Manufacturing/electrical/711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_STEP.step",
    "v2/03-Manufacturing/electrical/711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE_STEP.step",
+   "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
    "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
    "v2/03-Manufacturing/front/360002_P01_FRONT-FIXED-GLASS-UNIT_STEP.step",
    "v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step",
@@ -80,7 +90,9 @@
  "ran": [
   "C01",
   "C01:assembly",
+  "C01:assembly-left",
   "C01:assembly-left-base",
+  "C01:assembly-top",
   "C01:skeleton",
   "C01:skeleton-back",
   "C01:skeleton-back-base",
@@ -121,6 +133,304 @@
    "key": "C01|shell-open|assembly shell left-base Y 847..850 Z 10..110"
   },
   {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211101 SIDE LOWER - LH",
+   "severity": "major",
+   "message": "211101 SIDE LOWER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211101 SIDE LOWER - LH"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211102 SIDE LOWER - RH",
+   "severity": "major",
+   "message": "211102 SIDE LOWER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211102 SIDE LOWER - RH"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211103 SIDE UPPER - LH",
+   "severity": "major",
+   "message": "211103 SIDE UPPER - LH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211103 SIDE UPPER - LH"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211104 SIDE UPPER - RH",
+   "severity": "major",
+   "message": "211104 SIDE UPPER - RH has 4 bay(s) wider than 275 mm clear under the ACP skin, the widest 344.9 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 344.9,
+    "bays_over": 4
+   },
+   "key": "C09|acp-bay|assembly 211104 SIDE UPPER - RH"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211201 BACK LOWER - B1",
+   "severity": "major",
+   "message": "211201 BACK LOWER - B1 has 3 bay(s) wider than 275 mm clear under the ACP skin, the widest 373.0 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 373.0,
+    "bays_over": 3
+   },
+   "key": "C09|acp-bay|assembly 211201 BACK LOWER - B1"
+  },
+  {
+   "check": "C09",
+   "rule": "acp-bay",
+   "subject": "assembly 211202 BACK LOWER - B2",
+   "severity": "major",
+   "message": "211202 BACK LOWER - B2 has 3 bay(s) wider than 275 mm clear under the ACP skin, the widest 373.0 mm: the skin would flex over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm).",
+   "fix": "Add a member so every bay is 275 mm clear or less (members about 300 apart, D-135).",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step",
+   "owner": "WALL",
+   "evidence": {
+    "widest_mm": 373.0,
+    "bays_over": 3
+   },
+   "key": "C09|acp-bay|assembly 211202 BACK LOWER - B2"
+  },
+  {
+   "check": "C08",
+   "rule": "hole-size-M6-CLEARANCE-7",
+   "subject": "assembly SOFFIT RAIL DOOR holes Ø6.60",
+   "severity": "major",
+   "message": "610000_P01_AIR_CAD / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / SOFFIT RAIL DOOR has 2 hole(s) of Ø6.60 facing a rivnut (C1 FRONT MEMBER). An M6 clearance hole smaller than the ruled 7.0 mm: with a rivnut on the other side the bolt float drops to 0.31 mm and the joint may not go together (stack ST-03). Rule: confirmed: D-64 and D-75 (holes Ø7.0) with the F-009 ruling: position Ø0.4 (±0.2) from the spigot hole, by CNC or jig.",
+   "fix": "Make it Ø7.0 (+0.1/0) and give its position Ø0.4 from the spigot hole on the drawing; if this is a factory joint, not a site joint, say so in the feature rationale",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly",
+    "dia_mm": 6.6,
+    "count": 2
+   },
+   "key": "C08|hole-size-M6-CLEARANCE-7|assembly SOFFIT RAIL DOOR holes Ø6.60"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611106",
+   "severity": "major",
+   "message": "611106 AIR - COLUMN FOOT PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611106"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611103",
+   "severity": "major",
+   "message": "611103 AIR - COLUMN CORNER ANGLE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611103"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611107",
+   "severity": "major",
+   "message": "611107 AIR - COLUMN PLENUM SIDE PLATE - LOW in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611107"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611108",
+   "severity": "major",
+   "message": "611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611108"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611301",
+   "severity": "major",
+   "message": "611301 AIR - CARTRIDGE CASING in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611301"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611302",
+   "severity": "major",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'Pyrotek Sorberpoly 2D 40 kg/m3'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611302"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611201",
+   "severity": "major",
+   "message": "611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611201"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611207",
+   "severity": "major",
+   "message": "611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611207"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611208",
+   "severity": "major",
+   "message": "611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611208"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611205",
+   "severity": "major",
+   "message": "611205 AIR - SOFFIT TOP RAIL - DOOR SIDE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611205"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611209",
+   "severity": "major",
+   "message": "611209 AIR - SOFFIT TOP RAIL - ROOM SIDE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611209"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611206",
+   "severity": "major",
+   "message": "611206 AIR - SOFFIT END PLATE - LEFT in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611206"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611210",
+   "severity": "major",
+   "message": "611210 AIR - SOFFIT DOOR-SIDE PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611210"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611401",
+   "severity": "major",
+   "message": "611401 AIR - FAN BOX CASING - EXHAUST in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611401"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611402",
+   "severity": "major",
+   "message": "611402 AIR - FAN BOX CASING - SUPPLY in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611402"
+  },
+  {
+   "check": "C06",
+   "rule": "row-incomplete",
+   "subject": "618101",
+   "severity": "minor",
+   "message": "618101 AIR - SENSOR HUB ZONE - HOLD in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv is missing: mass.",
+   "fix": "Fill them in, each number with its status and source.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|row-incomplete|618101"
+  },
+  {
    "check": "C06",
    "rule": "duplicate-number",
    "subject": "111211",
@@ -131,6 +441,36 @@
    "owner": "BASE",
    "evidence": {},
    "key": "C06|duplicate-number|111211"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348",
+   "severity": "severe",
+   "message": "Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -950 Y -635 Z 2348 in the part's own coordinates.",
+   "fix": "Move the hole to at least 13.2 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "edge_mm": 8.5,
+    "dia_mm": 6.6
+   },
+   "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348",
+   "severity": "severe",
+   "message": "Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -1100 Y -635 Z 2348 in the part's own coordinates.",
+   "fix": "Move the hole to at least 13.2 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "edge_mm": 8.5,
+    "dia_mm": 6.6
+   },
+   "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348"
   },
   {
    "check": "C06",
@@ -339,6 +679,86 @@
   {
    "check": "C06",
    "rule": "bodies-not-components",
+   "subject": "351103",
+   "severity": "major",
+   "message": "351103 FRONT - DOOR HINGE-SIDE STOP - DL is one component holding 4 bodies of 3 different shapes (HINGE-SIDE STOP 1 (ANGLE, BONDED), HINGE-SIDE STOP 2 (ANGLE, BONDED), HINGE-SIDE STOP 3 (ANGLE, BONDED), HINGE-SIDE STOP 4 (ANGLE, BONDED)) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 3,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|351103"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "351104",
+   "severity": "major",
+   "message": "351104 FRONT - DECOR FRAME - DL is one component holding 26 bodies of 16 different shapes (B01 BACK RING BOTTOM 20 x 20 x 1.5, B02 BACK RING DOOR SIDE 20 x 20 x 1.5, B03 BACK RING SLOPE UNDER DT 20 x 20 x 1.5, B04 BACK RING BOLT LINE 60 x 20 x 1.5, H1 HINGE POST 1 (HINGE H1) 60 x 20 x 1.5, H2 HINGE POST 2 (HINGE H2) 60 x 20 x 1.5, H3 HINGE POST 3 (HINGE H3) 60 x 20 x 1.5, P1 DOOR-SIDE FRO) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (26 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 26,
+    "shapes": 16,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|351104"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "351204",
+   "severity": "major",
+   "message": "351204 FRONT - DECOR FRAME - DT is one component holding 13 bodies of 11 different shapes (B01 BACK RING BOTTOM 20 x 20 x 1.5, B02 BACK RING DR JOINT 20 x 20 x 1.5, B03 BACK RING TOP 20 x 20 x 1.5, B04 BACK RING SLOPE OVER DL 20 x 20 x 1.5, B05 BACK RING POST 20 x 20 x 1.5, C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5, C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5, C03 CHAMFER CROSS TUBE RIGHT) in 350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step (13 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 13,
+    "shapes": 11,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|351204"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "351306",
+   "severity": "major",
+   "message": "351306 FRONT - DECOR FRAME - DR is one component holding 24 bodies of 21 different shapes (B01 BACK RING BOTTOM 40 x 20 x 1.2, B02 BACK RING BOLT LINE 80 x 20 x 1.2, B03 BACK RING TOP 20 x 20 x 1.0, B04 BACK RING DT JOINT 20 x 20 x 1.0, B05 BACK RING DT LEDGE 20 x 20 x 1.2, B06 BACK RING DIAGONAL 20 x 20 x 1.0, B07 BACK RING GLASS EDGE 20 x 20 x 1.0, B08 BACK RING BAND 60 x 20 x 1.2, C01 ) in 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step (24 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 24,
+    "shapes": 21,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|351306"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "368005",
+   "severity": "major",
+   "message": "368005 FRONT - FRAME-STOP SEAL is one component holding 4 bodies of 3 different shapes (FRAME-STOP SEAL PS 1515 - HINGE SIDE 1, FRAME-STOP SEAL PS 1515 - HINGE SIDE 2, FRAME-STOP SEAL PS 1515 - HINGE SIDE 3, FRAME-STOP SEAL PS 1515 - HINGE SIDE 4) in 350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 3,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|368005"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
    "subject": "411101",
    "severity": "major",
    "message": "411101 CEILING - PANEL FRAME - C1 is one component holding 7 bodies of 6 different shapes (C1 BACK MEMBER 40X40, C1 CROSS MEMBER 1, C1 CROSS MEMBER 2, C1 CROSS MEMBER 3, C1 FRONT MEMBER, C1 SEAM MEMBER, C1 SIDE MEMBER) in 410000_P01_CEILING_STEP.step (7 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
@@ -367,6 +787,86 @@
     "files": 1
    },
    "key": "C06|bodies-not-components|411102"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "610301",
+   "severity": "major",
+   "message": "610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY) is one component holding 4 bodies of 2 different shapes (CARTRIDGE EXHAUST, CARTRIDGE SUPPLY, LAYER 1 EXHAUST, LAYER 1 SUPPLY, LAYER 2 EXHAUST, LAYER 2 SUPPLY, LAYER 3 EXHAUST, LAYER 3 SUPPLY) in 610000_P01_AIR_STEP.step (4 bodies); 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 2,
+    "files": 2
+   },
+   "key": "C06|bodies-not-components|610301"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611103",
+   "severity": "major",
+   "message": "611103 AIR - COLUMN CORNER ANGLE is one component holding 3 bodies of 2 different shapes (COLUMN ANGLE BL, COLUMN ANGLE FL, COLUMN ANGLE FR) in 610000_P01_AIR_STEP.step (3 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 3,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611103"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611104",
+   "severity": "major",
+   "message": "611104 AIR - COLUMN FILL is one component holding 2 bodies of 2 different shapes (COLUMN FILL FRONT, COLUMN FILL LEFT) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611104"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611105",
+   "severity": "major",
+   "message": "611105 AIR - KICK GRILLE is one component holding 2 bodies of 2 different shapes (KICK GRILLE FRONT, KICK GRILLE LEFT) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611105"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611203",
+   "severity": "major",
+   "message": "611203 AIR - SOFFIT FILL is one component holding 2 bodies of 2 different shapes (SOFFIT FILL FRONT, SOFFIT FILL UNDER) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611203"
   },
   {
    "check": "C06",
@@ -403,6 +903,22 @@
   {
    "check": "C06",
    "rule": "bodies-not-components",
+   "subject": "838002",
+   "severity": "major",
+   "message": "838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC is one component holding 4 bodies of 2 different shapes (LOCK SCREW 1 HEAD, LOCK SCREW 1 SHANK, LOCK SCREW 2 HEAD, LOCK SCREW 2 SHANK) in 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|838002"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
    "subject": "838003",
    "severity": "major",
    "message": "838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 is one component holding 9 bodies, all copies of one part, in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step (9 bodies); 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step (9 bodies); 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step (7 bodies); 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step (7 bodies); 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step (6 bodies); 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step (9 bodies). D-120 (build plan rule 2, BP-04): every part is its own component, never a loose body; copies are one component placed several times.",
@@ -415,6 +931,92 @@
     "files": 6
    },
    "key": "C06|bodies-not-components|838003"
+  },
+  {
+   "check": "C06",
+   "rule": "copy-differs",
+   "subject": "831001",
+   "severity": "major",
+   "message": "831001's body in 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step isn't the part its own STEP 831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step holds: its sizes differ (own STEP: 0 holes, sizes ((2.94, 8.0), (4.0, 6.24)); the copy: 0 holes, sizes ((3.0, 10.0), (4.0, 7.24))), whichever way the copy is turned. The assembly's fits were set round the copy.",
+   "fix": "Put the part's current model in the assembly (one component placed as copies, D-120) and check the holes and fits round it; if the copy is right, the part's owner updates its own STEP.",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+   "owner": "WALL; Joints Engineer",
+   "evidence": {
+    "files": 4
+   },
+   "key": "C06|copy-differs|831001"
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "110401",
+   "severity": "major",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|110401"
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "111401",
+   "severity": "major",
+   "message": "111401 BASE - FLOOR PANEL - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|111401"
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "111501",
+   "severity": "major",
+   "message": "111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|111501"
+  },
+  {
+   "check": "C06",
+   "rule": "required-by-decision",
+   "subject": "the base seal lip on the band's inner face, pressing on the ",
+   "severity": "major",
+   "message": "D-132 requires the base seal lip on the band's inner face, pressing on the room floor across the glides' range, but no parts list or CAD part in v2/03-Manufacturing/base/ names it yet.",
+   "fix": "Model it and give it its row and number (D-132).",
+   "file": "v2/03-Manufacturing/base",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|required-by-decision|the base seal lip on the band's inner face, pressing on the "
+  },
+  {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "611301",
+   "severity": "major",
+   "message": "611301 AIR - CARTRIDGE CASING is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|611301"
+  },
+  {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "611302",
+   "severity": "major",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|611302"
   },
   {
    "check": "C05",
@@ -454,63 +1056,63 @@
   },
   {
    "check": "C05",
-   "rule": "no-drawing",
-   "subject": "111101",
-   "severity": "severe",
-   "message": "111101 BASE - BAND TUBE - SIDE - LH has no drawing PDF (111101_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step.",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
+   "rule": "hidden-lines",
+   "subject": "110401",
+   "severity": "minor",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 drawing 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: Hidden lines show in 1 view region(s) (93 dash pieces on Fusion's Hidden layer).",
+   "fix": "Set the view style again on the made view (Fusion ignores the input's style; tools/fusion/fusion_drawing.py base_view); or, if the drawing keeps them on purpose, list it with the number of views and the reason.",
+   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
    "owner": "BASE",
    "evidence": {},
-   "key": "C05|no-drawing|111101"
+   "key": "C05|hidden-lines|110401"
   },
   {
    "check": "C05",
-   "rule": "no-drawing",
+   "rule": "dimension-twice",
+   "subject": "110401",
+   "severity": "minor",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 drawing 110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: Dimension value(s) printed more than once: 1218.5.",
+   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
+   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|dimension-twice|110401"
+  },
+  {
+   "check": "C05",
+   "rule": "hidden-lines",
    "subject": "111211",
-   "severity": "severe",
-   "message": "111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step.",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step",
+   "severity": "minor",
+   "message": "111211 BASE - CORNER KEY - BACK - COMMON drawing 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: Hidden lines show in 9 view region(s) (189 dash pieces on Fusion's Hidden layer).",
+   "fix": "Set the view style again on the made view (Fusion ignores the input's style; tools/fusion/fusion_drawing.py base_view); or, if the drawing keeps them on purpose, list it with the number of views and the reason.",
+   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
    "owner": "Joints Engineer",
    "evidence": {},
-   "key": "C05|no-drawing|111211"
+   "key": "C05|hidden-lines|111211"
   },
   {
    "check": "C05",
-   "rule": "no-drawing",
-   "subject": "111212",
-   "severity": "severe",
-   "message": "111212 BASE - CORNER KEY - FRONT - LH has no drawing PDF (111212_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step.",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "v2/03-Manufacturing/joints/111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step",
+   "rule": "dimension-twice",
+   "subject": "111211",
+   "severity": "minor",
+   "message": "111211 BASE - CORNER KEY - BACK - COMMON drawing 111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: Dimension value(s) printed more than once: 10.5, Ø5.04.",
+   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
+   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
    "owner": "Joints Engineer",
    "evidence": {},
-   "key": "C05|no-drawing|111212"
+   "key": "C05|dimension-twice|111211"
   },
   {
    "check": "C05",
-   "rule": "no-drawing",
-   "subject": "111213",
-   "severity": "severe",
-   "message": "111213 BASE - CORNER KEY - FRONT - RH has no drawing PDF (111213_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step.",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "v2/03-Manufacturing/joints/111213_P01_BASE-CORNER-KEY-FRONT-RH_STEP.step",
-   "owner": "Joints Engineer",
+   "rule": "dimension-twice",
+   "subject": "111401",
+   "severity": "minor",
+   "message": "111401 BASE - FLOOR PANEL - F1 drawing 111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: Dimension value(s) printed more than once: 1218.5.",
+   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
+   "file": "v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf",
+   "owner": "BASE",
    "evidence": {},
-   "key": "C05|no-drawing|111213"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "111214",
-   "severity": "severe",
-   "message": "111214 BASE - CORNER KEY - KNEE - LH has no drawing PDF (111214_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step.",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "v2/03-Manufacturing/joints/111214_P01_BASE-CORNER-KEY-KNEE-LH_STEP.step",
-   "owner": "Joints Engineer",
-   "evidence": {},
-   "key": "C05|no-drawing|111214"
+   "key": "C05|dimension-twice|111401"
   },
   {
    "check": "C05",
@@ -710,7 +1312,7 @@
    "subject": "211501",
    "severity": "major",
    "message": "211501 WALL - CAVITY FILL - SIDE LOWER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "v2/03-Manufacturing/wall/211501_P01_WALL-CAVITY-FILL-SIDE-LOWER-LH_STEP.step",
    "owner": "WALL",
    "evidence": {},
@@ -722,7 +1324,7 @@
    "subject": "211502",
    "severity": "major",
    "message": "211502 WALL - CAVITY FILL - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "WALL",
    "evidence": {},
@@ -734,7 +1336,7 @@
    "subject": "211503",
    "severity": "major",
    "message": "211503 WALL - CAVITY FILL - SIDE UPPER - LH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "WALL",
    "evidence": {},
@@ -746,7 +1348,7 @@
    "subject": "211504",
    "severity": "major",
    "message": "211504 WALL - CAVITY FILL - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "WALL",
    "evidence": {},
@@ -758,7 +1360,7 @@
    "subject": "211601",
    "severity": "major",
    "message": "211601 WALL - CAVITY FILL - BACK LOWER - B1 has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "v2/03-Manufacturing/wall/211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_STEP.step",
    "owner": "WALL",
    "evidence": {},
@@ -770,11 +1372,203 @@
    "subject": "211602",
    "severity": "major",
    "message": "211602 WALL - CAVITY FILL - BACK LOWER - B2 has no drawing, and D-89's cut-list route doesn't apply: its row names pockets, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
    "file": "",
    "owner": "WALL",
    "evidence": {},
    "key": "C05|no-drawing|211602"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "350001",
+   "severity": "major",
+   "message": "350001 FRONT - DECOR BLOCK ASSY - DL has no drawing PDF (350001_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|350001"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "350002",
+   "severity": "major",
+   "message": "350002 FRONT - DECOR BLOCK ASSY - DT has no drawing PDF (350002_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|350002"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "350003",
+   "severity": "major",
+   "message": "350003 FRONT - DECOR BLOCK ASSY - DR has no drawing PDF (350003_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|350003"
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "350004",
+   "severity": "major",
+   "message": "350004 FRONT - AIR SUPPLY ASSY - DR is a reserved space until AIR designs it (D-105): typed reserved air space in v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|350004"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351101",
+   "severity": "severe",
+   "message": "351101 FRONT - DECOR SKIN - DL has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: it isn't a sheet part (180.2 thick across 2287.0); its row's process names bond.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351101"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351103",
+   "severity": "severe",
+   "message": "351103 FRONT - DOOR HINGE-SIDE STOP - DL has no drawing PDF (351103_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351103"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351104",
+   "severity": "severe",
+   "message": "351104 FRONT - DECOR FRAME - DL has no drawing PDF (351104_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351104"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351201",
+   "severity": "severe",
+   "message": "351201 FRONT - DECOR SKIN - DT has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: it isn't a sheet part (202.7 thick across 280.0); its row's process names bond.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351201"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351203",
+   "severity": "severe",
+   "message": "351203 FRONT - DOOR TOP STOP - DT has no drawing PDF (351203_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351203"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351204",
+   "severity": "severe",
+   "message": "351204 FRONT - DECOR FRAME - DT has no drawing PDF (351204_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351204"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351301",
+   "severity": "severe",
+   "message": "351301 FRONT - DECOR SKIN - DR has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: it isn't a sheet part (205.0 thick across 1020.0); its row's process names bond.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351301"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "351306",
+   "severity": "severe",
+   "message": "351306 FRONT - DECOR FRAME - DR has no drawing PDF (351306_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "FRONT",
+   "evidence": {},
+   "key": "C05|no-drawing|351306"
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "351402",
+   "severity": "major",
+   "message": "351402 FRONT - AIR INTAKE RISER - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for AIR's intake riser (611501 in AIR's supply-box assembly): a reserved air space with no mass, no drawing and no BOM count.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|351402"
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "351403",
+   "severity": "major",
+   "message": "351403 FRONT - AIR TRANSITION - LOWER - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for the lower air transition, which AIR designs: a reserved air space with no mass, no drawing and no BOM count.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|351403"
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "351404",
+   "severity": "major",
+   "message": "351404 FRONT - SUPPLY FAN BOX - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for AIR's supply fan box (610401 in AIR's supply-box assembly): a reserved air space with no mass, no drawing and no BOM count.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|351404"
+  },
+  {
+   "check": "C05",
+   "rule": "reserved-space",
+   "subject": "351405",
+   "severity": "major",
+   "message": "351405 FRONT - AIR TRANSITION - UPPER - DR is a reserved space until AIR designs it (Lead 2026-11-01 (every air part is an AIR number in AIR's tree)): the space in FRONT's DR block for the upper air transition, which AIR designs: a reserved air space with no mass, no drawing and no BOM count.",
+   "fix": "Design the part, then take it off v2/04-Checks/config/reserved-spaces.csv; its drawing and seams are checked from then on.",
+   "file": "",
+   "owner": "AIR",
+   "evidence": {},
+   "key": "C05|reserved-space|351405"
   },
   {
    "check": "C05",
@@ -1055,42 +1849,6 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "511302",
-   "severity": "major",
-   "message": "511302 LINING - FELT - SIDE LOWER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes).",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
-   "file": "",
-   "owner": "WALL",
-   "evidence": {},
-   "key": "C05|no-drawing|511302"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "511304",
-   "severity": "major",
-   "message": "511304 LINING - FELT - SIDE UPPER - RH has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (its STEP has 2 hole axes).",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
-   "file": "",
-   "owner": "WALL",
-   "evidence": {},
-   "key": "C05|no-drawing|511304"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "511402",
-   "severity": "major",
-   "message": "511402 LINING - FELT - BACK LOWER - B2 has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches).",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
-   "file": "",
-   "owner": "WALL",
-   "evidence": {},
-   "key": "C05|no-drawing|511402"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
    "subject": "513101",
    "severity": "severe",
    "message": "513101 LINING - TRAY - CEILING has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it is folded (4 bends in its STEP); its row's process names bent.",
@@ -1115,38 +1873,278 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "513301",
+   "subject": "610000",
    "severity": "major",
-   "message": "513301 LINING - FILL - CEILING - BAY A has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
-   "file": "",
+   "message": "610000 AIR has no drawing PDF (610000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/air/610000_P01_AIR_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
    "owner": "CEILING",
    "evidence": {},
-   "key": "C05|no-drawing|513301"
+   "key": "C05|no-drawing|610000"
   },
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "513302",
+   "subject": "610101",
    "severity": "major",
-   "message": "513302 LINING - FILL - CEILING - BAY B has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "message": "610101 AIR - AIR COLUMN has no drawing PDF (610101_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
    "file": "",
    "owner": "CEILING",
    "evidence": {},
-   "key": "C05|no-drawing|513302"
+   "key": "C05|no-drawing|610101"
   },
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "513303",
+   "subject": "610201",
    "severity": "major",
-   "message": "513303 LINING - FILL - CEILING - BAY C has no drawing, and D-89's cut-list route doesn't apply: its row names notches, so it isn't a plain rectangle.",
-   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); otherwise make a drawing.",
+   "message": "610201 AIR - SOFFIT has no drawing PDF (610201_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
    "file": "",
    "owner": "CEILING",
    "evidence": {},
-   "key": "C05|no-drawing|513303"
+   "key": "C05|no-drawing|610201"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610301",
+   "severity": "major",
+   "message": "610301 AIR - SPLITTER CARTRIDGE - COMMON has no drawing PDF (610301_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610301"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610401",
+   "severity": "major",
+   "message": "610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610401"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610402",
+   "severity": "major",
+   "message": "610402 AIR - EXHAUST FAN BOX has no drawing PDF (610402_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610402"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611103",
+   "severity": "severe",
+   "message": "611103 AIR - COLUMN CORNER ANGLE has no drawing PDF (611103_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611103"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611104",
+   "severity": "major",
+   "message": "611104 AIR - COLUMN FILL has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611104"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611105",
+   "severity": "severe",
+   "message": "611105 AIR - KICK GRILLE has no drawing PDF (611105_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611105"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611301",
+   "severity": "severe",
+   "message": "611301 AIR - CARTRIDGE CASING has no drawing PDF (611301_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611301"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611302",
+   "severity": "severe",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 has no drawing PDF (611302_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611302"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611401",
+   "severity": "severe",
+   "message": "611401 AIR - FAN BOX CASING - EXHAUST has no drawing PDF (611401_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611401"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611402",
+   "severity": "severe",
+   "message": "611402 AIR - FAN BOX CASING - SUPPLY has no drawing PDF (611402_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611402"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611501",
+   "severity": "severe",
+   "message": "611501 AIR - INTAKE RISER has no drawing PDF (611501_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611501"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611601",
+   "severity": "severe",
+   "message": "611601 AIR - ROOF SLEEVE has no drawing PDF (611601_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611601"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710000",
+   "severity": "major",
+   "message": "710000 ELECTRICAL drawing 710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: 129 texts (sheet 1) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.15 mm: '710001 POWER UNIT - in panel B' 1.51 mm; 'INLET  (outside B2)' 1.51 mm; 'powerCON TRUE1 TOP' 1.36 mm. 255 texts (sheet 2) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HARNESS LIST  (every field, wi' 1.72 mm; 'ID' 1.44 mm; 'SEGMENT' 1.44 mm. 64 texts (sheet 3) print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'VIEW A - BACK WALL FROM INSIDE' 1.65 mm; 'X view = +X, Y view = +Z; orig' 1.36 mm; 'B1-CASS' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710000"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710001",
+   "severity": "major",
+   "message": "710001 ELECTRICAL - POWER UNIT - B2 drawing 710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: 235 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'FACE OF THE POWER UNIT, seen f' 1.58 mm; 'SOCKET (86, HOLD)' 1.29 mm; 'LAN 2-PORT (86, HOLD)' 1.29 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710001"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710011",
+   "severity": "major",
+   "message": "710011 ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 drawing 710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: 104 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710011"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710021",
+   "severity": "major",
+   "message": "710021 ELECTRICAL - HARNESS - TRUNK - B2/R1 drawing 710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: 143 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710021"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710023",
+   "severity": "major",
+   "message": "710023 ELECTRICAL - HARNESS - AIR COLUMN drawing 710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: 121 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710023"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710024",
+   "severity": "major",
+   "message": "710024 ELECTRICAL - HARNESS - CALL LIGHT - R2 drawing 710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: 51 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710024"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710031",
+   "severity": "major",
+   "message": "710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE drawing 710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: 59 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'SEGMENTS' 1.58 mm; 'ID' 1.36 mm; 'CARRIER' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710031"
+  },
+  {
+   "check": "C05",
+   "rule": "letter-height",
+   "subject": "710041",
+   "severity": "major",
+   "message": "710041 ELECTRICAL - HUB AND CONTROLS ZONE drawing 710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: 112 texts print under 2.5 mm capital height (title-block labels under 1.8), the smallest 1.29 mm: 'HUB AND CONTROLS ZONE PLATE 71' 1.58 mm; 'HUB WINDOW (HOLD)' 1.44 mm; 'BOOST' 1.36 mm.",
+   "fix": "Size text by its capital height: font size = 2.5 / 0.718 = 3.5 mm or more; a picture inserted in Fusion comes in 58 mm wide, so scale it to its real width (tools/fusion/fusion_drawing.py insert_image).",
+   "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {},
+   "key": "C05|letter-height|710041"
   },
   {
    "check": "C05",
@@ -1255,6 +2253,18 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|811205"
+  },
+  {
+   "check": "C05",
+   "rule": "dimension-twice",
+   "subject": "831001",
+   "severity": "minor",
+   "message": "831001 HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS drawing 831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf: Dimension value(s) printed more than once: 8.",
+   "fix": "Give each size once (ISO 129-1); two different features may share a value, so check which this is (tools/fusion/fusion_drawing.py DimensionSet).",
+   "file": "v2/02-Drawings/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf",
+   "owner": "Joints Engineer",
+   "evidence": {},
+   "key": "C05|dimension-twice|831001"
   }
  ],
  "stacks": [
@@ -1393,7 +2403,7 @@
    "kg": 8.641,
    "dims": [
     1200.61,
-    1118.61,
+    1127.0,
     46.0
    ],
    "ships_as": "upright",
@@ -1405,8 +2415,8 @@
    "kg": 11.529,
    "dims": [
     1200.61,
-    1118.61,
-    84.0
+    1127.0,
+    88.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); calculation (part CAD); fill provisional"
@@ -1417,8 +2427,8 @@
    "kg": 11.163,
    "dims": [
     1492.74,
-    1142.74,
-    46.0
+    1151.0,
+    48.5
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); fill provisional"
@@ -1429,8 +2439,8 @@
    "kg": 11.163,
    "dims": [
     1492.74,
-    1142.74,
-    46.0
+    1151.0,
+    48.5
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); fill provisional"
@@ -1466,7 +2476,7 @@
    "dims": [
     1492.74,
     1142.74,
-    46.0
+    48.5
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); fill provisional"
@@ -1478,7 +2488,7 @@
    "dims": [
     1492.74,
     1142.74,
-    46.0
+    48.5
    ],
    "ships_as": "upright",
    "status": "calculation (CAD); fill provisional"
@@ -1498,14 +2508,14 @@
   {
    "id": "1-12",
    "name": "CEILING - PANEL ASSY - C2",
-   "kg": 10.547,
+   "kg": 10.922,
    "dims": [
     1495.0,
     1200.61,
-    60.0
+    70.0
    ],
    "ships_as": "upright",
-   "status": "calculation; calculation (CAD)"
+   "status": "calculation (CAD)"
   },
   {
    "id": "1-13",
@@ -1514,7 +2524,7 @@
    "dims": [
     1445.0,
     1142.74,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1526,7 +2536,7 @@
    "dims": [
     1445.0,
     1092.74,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1538,7 +2548,7 @@
    "dims": [
     1445.0,
     1142.74,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1550,7 +2560,7 @@
    "dims": [
     1445.0,
     1092.74,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1562,7 +2572,7 @@
    "dims": [
     1166.0,
     1118.61,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1574,7 +2584,7 @@
    "dims": [
     1166.0,
     1118.61,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation (CAD)"
@@ -1586,7 +2596,7 @@
    "dims": [
     1166.0,
     1116.87,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation; lips confirmed"
@@ -1598,7 +2608,7 @@
    "dims": [
     1166.0,
     1116.87,
-    34.0
+    38.0
    ],
    "ships_as": "upright",
    "status": "calculation; lips confirmed"
@@ -1608,7 +2618,7 @@
    "name": "FRONT - FIXED GLASS UNIT",
    "kg": 28.743,
    "dims": [
-    2033.0,
+    2034.0,
     1031.0,
     12.0
    ],
@@ -1620,8 +2630,8 @@
    "name": "FRONT - DOOR UNIT",
    "kg": 48.59,
    "dims": [
-    2089.0,
-    1175.0,
+    2096.0,
+    1177.0,
     149.0
    ],
    "ships_as": "glass",
@@ -1629,15 +2639,15 @@
   },
   {
    "id": "2-03",
-   "name": "FRONT - DECOR BLOCK - DR",
-   "kg": 18.6,
+   "name": "FRONT - DECOR BLOCK ASSY - DR",
+   "kg": 18.864,
    "dims": [
     2290.0,
-    1016.0,
-    205.0
+    1020.0,
+    216.0
    ],
    "ships_as": "long",
-   "status": "calculation; calculation (CAD); magnetic seal HOLD"
+   "status": "calculation (CAD); calculation (CAD); magnetic seal HOLD"
   },
   {
    "id": "2-04",
@@ -1645,7 +2655,7 @@
    "kg": 3.173,
    "dims": [
     2420.0,
-    110.0,
+    118.0,
     40.0
    ],
    "ships_as": "long",
@@ -1654,11 +2664,11 @@
   {
    "id": "2-05",
    "name": "BASE - BAND ASSY - SIDE - LH",
-   "kg": 1.999,
+   "kg": 2.413,
    "dims": [
     1517.0,
-    110.0,
-    40.0
+    118.0,
+    48.0
    ],
    "ships_as": "long",
    "status": "assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm)"
@@ -1666,11 +2676,11 @@
   {
    "id": "2-06",
    "name": "BASE - BAND ASSY - SIDE - RH",
-   "kg": 1.999,
+   "kg": 2.413,
    "dims": [
     1517.0,
-    110.0,
-    40.0
+    118.0,
+    48.0
    ],
    "ships_as": "long",
    "status": "assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm)"
@@ -1681,7 +2691,7 @@
    "kg": 1.117,
    "dims": [
     729.0,
-    110.0,
+    118.0,
     40.0
    ],
    "ships_as": "long",
@@ -1701,56 +2711,56 @@
   },
   {
    "id": "2-09",
-   "name": "FRONT - DECOR BLOCK - DL",
-   "kg": 9.976,
+   "name": "FRONT - DECOR BLOCK ASSY - DL",
+   "kg": 12.3,
    "dims": [
-    2290.0,
-    278.0,
-    205.0
+    2292.0,
+    308.0,
+    199.0
    ],
    "ships_as": "long",
-   "status": "calculation"
+   "status": "calculation (CAD)"
   },
   {
    "id": "2-10",
-   "name": "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS",
-   "kg": 13.405,
+   "name": "AIR - SOFFIT",
+   "kg": 14.756,
    "dims": [
-    2332.0,
-    360.0,
-    220.0
+    2322.0,
+    359.0,
+    233.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation; calculation; fill provisional"
+   "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional"
   },
   {
    "id": "2-11",
    "name": "AIR - AIR COLUMN",
-   "kg": 9.735,
+   "kg": 8.147,
    "dims": [
-    2105.0,
-    360.0,
-    217.0
+    2108.0,
+    359.0,
+    212.0
    ],
    "ships_as": "long",
-   "status": "calculation; fill provisional"
+   "status": "calculation (CAD); fill provisional"
   },
   {
    "id": "2-12",
-   "name": "FRONT - DECOR BLOCK - DT",
-   "kg": 7.088,
+   "name": "FRONT - DECOR BLOCK ASSY - DT",
+   "kg": 7.913,
    "dims": [
-    1697.0,
-    280.0,
-    205.0
+    1699.0,
+    306.0,
+    203.0
    ],
    "ships_as": "long",
-   "status": "calculation; calculation (CAD); magnetic seal HOLD"
+   "status": "calculation (CAD); calculation (CAD); magnetic seal HOLD"
   },
   {
    "id": "2-13",
    "name": "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS",
-   "kg": 2.282,
+   "kg": 2.28,
    "dims": [
     600.0,
     250.0,
@@ -1762,7 +2772,7 @@
   {
    "id": "2-14",
    "name": "INTERIOR - LIGHT SHELF ASSY",
-   "kg": 1.564,
+   "kg": 1.585,
    "dims": [
     2332.0,
     80.0,
@@ -1774,7 +2784,7 @@
   {
    "id": "2-15",
    "name": "BASE - SMALL PARTS CARTON",
-   "kg": 1.968,
+   "kg": 1.14,
    "dims": [
     600.0,
     400.0,
@@ -1797,39 +2807,39 @@
   },
   {
    "id": "2-17",
-   "name": "AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS",
-   "kg": 14.086,
+   "name": "AIR - SUPPLY FAN BOX",
+   "kg": 13.45,
    "dims": [
-    1845.0,
-    460.0,
-    155.0
+    2005.0,
+    516.0,
+    203.0
    ],
    "ships_as": "long",
-   "status": "assumption; calculation"
+   "status": "assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption"
   },
   {
    "id": "2-18",
-   "name": "AIR - CARTRIDGE - SUPPLY",
-   "kg": 10.8,
+   "name": "AIR - SPLITTER CARTRIDGE - COMMON",
+   "kg": 10.55,
    "dims": [
     1750.0,
     314.0,
     173.0
    ],
    "ships_as": "long",
-   "status": "calculation"
+   "status": "calculation (CAD)"
   },
   {
    "id": "2-19",
-   "name": "AIR - CARTRIDGE - EXHAUST",
-   "kg": 10.8,
+   "name": "AIR - SPLITTER CARTRIDGE - COMMON",
+   "kg": 10.55,
    "dims": [
     1750.0,
     314.0,
     173.0
    ],
    "ships_as": "long",
-   "status": "calculation"
+   "status": "calculation (CAD)"
   },
   {
    "id": "2-20",
@@ -1870,6 +2880,74 @@
  ],
  "shipping_source": "v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv",
  "fastener_schedule": [
+  {
+   "part_number": "838002",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "snug only, into C1's rivnuts (HOLD-01 for the rivnut)",
+   "qty_parts_list": "2",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
+   "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "snug only, into the sleeve's rivnuts (HOLD-01 for the rivnut)",
+   "qty_parts_list": "4",
+   "qty_cad": 4,
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
+   "sku": "ISO 4762 M6 x 16 - 8.8 - zinc plated",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2",
+   "finish": "none (plain stainless)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "HOLD: any maker to ISO 7093-1, picked at the RFQ",
+   "sku": "ISO 7093-1 - 6.4 x 18 x 1.6 - A2",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium 5056",
+   "finish": "none (plain aluminium, as supplied)",
+   "torque_nm": "HOLD-01 (D-48)",
+   "qty_parts_list": "4",
+   "qty_cad": 65,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
+   "maker": "Sherex (PEM)",
+   "sku": "CAH3-610-4.2",
+   "status": "DRAFT",
+   "parts_list": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
   {
    "part_number": "831001",
    "name": "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS",
@@ -2083,8 +3161,8 @@
    "finish": "zinc plated",
    "torque_nm": "snug only: a pin, not a clamp (joints register 2.10)",
    "qty_parts_list": "4",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
    "status": "DRAFT",
@@ -2865,8 +3943,8 @@
    "finish": "zinc plated",
    "torque_nm": "snugged, not torqued: a pin (register 2.10)",
    "qty_parts_list": "3",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "HOLD: any maker to ISO 4762, picked at the RFQ",
    "sku": "ISO 4762 M6 x 25 - 8.8 - zinc plated",
    "status": "HOLD",
@@ -3185,6 +4263,23 @@
    "size": "",
    "length_mm": "",
    "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": 4,
+   "where_cad": "110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:2; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:3; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:4; 110103 BASE - BAND ASSY - BACK:1 / 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC:5",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838001",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
    "finish": "zinc plated (ISO 4042)",
    "torque_nm": "",
    "qty_parts_list": "4",
@@ -3357,9 +4452,26 @@
    "grade": "steel, property class 8.8 (ISO 898-1)",
    "finish": "zinc plated",
    "torque_nm": "",
+   "qty_parts_list": "2",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838002",
+   "name": "HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC",
+   "size": "",
+   "length_mm": "",
+   "grade": "steel, property class 8.8 (ISO 898-1)",
+   "finish": "zinc plated",
+   "torque_nm": "",
    "qty_parts_list": "4",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "",
    "sku": "",
    "status": "calculation",
@@ -3375,11 +4487,28 @@
    "finish": "zinc plated",
    "torque_nm": "",
    "qty_parts_list": "3",
-   "qty_cad": "",
-   "where_cad": "",
+   "qty_cad": 4,
+   "where_cad": "610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1",
    "maker": "",
    "sku": "",
    "status": "calculation: head Ø10 x 6 less the socket, shank Ø6 x 25 at 85% for the thread, 7850 kg/m3",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838003",
+   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
+   "size": "",
+   "length_mm": "",
+   "grade": "aluminium 5056",
+   "finish": "none (plain aluminium, as supplied)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": 65,
+   "where_cad": "110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:2; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:3; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:4; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:5; 110101 BASE - BAND ASSY - SIDE - LH:1 / 838003 HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2:6; 110101 BAS",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
    "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
   },
@@ -3567,6 +4696,23 @@
    "maker": "",
    "sku": "",
    "status": "calculation: body Ø9.5 x 14.86 with an M6 bore and a Ø12.96 x 0.76 head (SHX sizes), 2640 kg/m3; the CAD body is the installed envelope",
+   "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+   "engagement": "not measured yet (Fusion check)"
+  },
+  {
+   "part_number": "838004",
+   "name": "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
+   "size": "",
+   "length_mm": "",
+   "grade": "stainless steel A2",
+   "finish": "none (plain stainless)",
+   "torque_nm": "",
+   "qty_parts_list": "4",
+   "qty_cad": "",
+   "where_cad": "",
+   "maker": "",
+   "sku": "",
+   "status": "calculation (joints register sizes)",
    "parts_list": "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
    "engagement": "not measured yet (Fusion check)"
   },

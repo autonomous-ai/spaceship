@@ -1,89 +1,89 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1080" viewBox="0 0 1500 1080">
 <rect width="1500" height="1080" fill="#ffffff"/>
 <text x="20.0" y="30.0" font-family="Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#222">910002 P01  PALLET LOAD 2 - 96 x 48 in (2438 x 1219 mm) - five tiers</text>
-<text x="20.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Gross 320 kg, loaded height 1439 mm. Left: side elevation along the 96 in side. Right: each tier from above. Units mm. DRAFT.</text>
+<text x="20.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Gross 325 kg, loaded height 1563 mm. Left: side elevation along the 96 in side. Right: each tier from above. Units mm. DRAFT.</text>
 <rect x="40" y="620" width="731.5" height="36.3" fill="#d2b48c" stroke="#7a5c2e"/>
 <text x="405.8" y="644.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#222">96 x 48 pallet, 121</text>
 <rect x="40" y="548.7" width="731.5" height="71.3" fill="none" stroke="#999" stroke-dasharray="3 3"/>
 <rect x="40.0" y="548.7" width="660.0" height="71.3" fill="#e8e8e8" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
 <text x="779.5" y="588.3" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 1: glass crate (238)</text>
-<rect x="40" y="481.2" width="731.5" height="61.5" fill="none" stroke="#999" stroke-dasharray="3 3"/>
-<rect x="40.0" y="481.2" width="687.0" height="61.5" fill="#2f6f8f" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="509.7" width="726.0" height="33.0" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="509.7" width="455.1" height="33.0" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="495.1" y="509.7" width="218.7" height="33.0" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="509.7" width="455.1" height="33.0" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="524.7" width="352.5" height="18.0" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<text x="779.5" y="515.9" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 2: DR and the base band (205)</text>
-<rect x="40" y="367.2" width="731.5" height="108.0" fill="none" stroke="#999" stroke-dasharray="3 3"/>
-<rect x="40.0" y="413.7" width="687.0" height="61.5" fill="#2f6f8f" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="409.2" width="699.6" height="66.0" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="367.2" width="631.5" height="108.0" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="413.7" width="509.1" height="61.5" fill="#2f6f8f" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="549.1" y="415.2" width="180.0" height="60.0" fill="#9b59b6" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="457.2" width="699.6" height="18.0" fill="#b5651d" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<text x="779.5" y="425.2" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 3: DL, soffit, air column, DT (360)</text>
-<rect x="40" y="265.2" width="731.5" height="96.0" fill="none" stroke="#999" stroke-dasharray="3 3"/>
-<rect x="40.0" y="314.7" width="553.5" height="46.5" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="316.2" width="180.0" height="45.0" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="220.0" y="325.2" width="300.0" height="36.0" fill="#b5651d" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="267.0" width="525.0" height="94.2" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="267.0" width="525.0" height="94.2" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<text x="779.5" y="317.2" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 4: air parts and cartons (320)</text>
-<rect x="40" y="232.2" width="731.5" height="27.0" fill="none" stroke="#999" stroke-dasharray="3 3"/>
-<rect x="40.0" y="237.0" width="348.9" height="22.2" fill="#7f8c8d" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="388.9" y="237.0" width="348.9" height="22.2" fill="#7f8c8d" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<rect x="40.0" y="235.2" width="90.0" height="24.0" fill="#555555" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
-<text x="779.5" y="249.7" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 5: ceiling cassettes (felt up, nothing on them) and the kit (90)</text>
-<line x1="30" y1="224.7" x2="781.5" y2="224.7" stroke="#c0392b" stroke-dasharray="4 3"/>
-<text x="40.0" y="218.7" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#c0392b">top of load 1439 (limit 1829)</text>
+<rect x="40" y="471.9" width="731.5" height="70.8" fill="none" stroke="#999" stroke-dasharray="3 3"/>
+<rect x="40.0" y="471.9" width="690.0" height="70.8" fill="#2f6f8f" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="504.3" width="729.0" height="38.4" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="504.3" width="458.1" height="38.4" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="498.1" y="504.3" width="221.7" height="38.4" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="504.3" width="458.1" height="38.4" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<text x="779.5" y="511.3" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 2: DR face down, felt up, and the base band (236)</text>
+<rect x="40" y="355.2" width="731.5" height="110.7" fill="none" stroke="#999" stroke-dasharray="3 3"/>
+<rect x="40.0" y="370.5" width="690.6" height="95.4" fill="#2f6f8f" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="402.0" width="512.7" height="63.9" fill="#2f6f8f" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="552.7" y="405.9" width="180.0" height="60.0" fill="#9b59b6" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="393.0" width="699.6" height="72.9" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="355.2" width="635.4" height="110.7" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<text x="779.5" y="414.5" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 3: DL on its side, DT, soffit, air column (369)</text>
+<rect x="40" y="229.2" width="731.5" height="120.0" fill="none" stroke="#999" stroke-dasharray="3 3"/>
+<rect x="40.0" y="285.3" width="604.5" height="63.9" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="252.0" width="528.0" height="97.2" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="252.0" width="528.0" height="97.2" fill="#4e9a6e" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="229.2" width="180.0" height="120.0" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="220.0" y="274.2" width="300.0" height="75.0" fill="#b5651d" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="328.2" width="702.6" height="21.0" fill="#b5651d" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="328.2" width="355.5" height="21.0" fill="#8d6e63" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<text x="779.5" y="293.2" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 4: air parts, light shelf, threshold and cartons (400)</text>
+<rect x="40" y="195.0" width="731.5" height="28.2" fill="none" stroke="#999" stroke-dasharray="3 3"/>
+<rect x="40.0" y="195.0" width="351.9" height="28.2" fill="#7f8c8d" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="391.9" y="195.0" width="351.9" height="28.2" fill="#7f8c8d" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="199.2" width="270.0" height="24.0" fill="#555555" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>
+<text x="779.5" y="213.1" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#222">Tier 5: ceiling cassettes (felt up, nothing on them) and the kit (94)</text>
+<line x1="30" y1="187.5" x2="781.5" y2="187.5" stroke="#c0392b" stroke-dasharray="4 3"/>
+<text x="40.0" y="181.5" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#c0392b">top of load 1563 (limit 1829)</text>
 <text x="40.0" y="694.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 1: glass crate</text>
 <rect x="40.0" y="700.0" width="292.6" height="146.3" fill="none" stroke="#7a5c2e"/>
 <rect x="40.0" y="700.0" width="264.0" height="146.3" fill="#e8e8e8" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
 <text x="43.0" y="710.0" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">CRATE: 2-01 over 2-02</text>
-<text x="482.6" y="694.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 2: DR and the base band</text>
+<text x="482.6" y="694.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 2: DR face down, felt up, and the base band</text>
 <rect x="482.56" y="700.0" width="292.6" height="146.3" fill="none" stroke="#7a5c2e"/>
-<rect x="482.6" y="700.0" width="274.8" height="121.9" fill="#2f6f8f" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<rect x="482.6" y="700.0" width="276.0" height="123.6" fill="#2f6f8f" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
 <text x="485.6" y="710.0" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-03</text>
-<rect x="482.6" y="821.9" width="290.4" height="4.8" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<rect x="482.6" y="827.9" width="182.0" height="4.8" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<rect x="664.6" y="827.9" width="87.5" height="4.8" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<rect x="482.6" y="833.9" width="182.0" height="4.8" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<rect x="482.6" y="839.9" width="141.0" height="1.6" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="925.1" y="694.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 3: DL, soffit, air column, DT</text>
+<rect x="482.6" y="823.6" width="291.6" height="6.0" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<rect x="482.6" y="829.6" width="183.2" height="7.0" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<rect x="665.8" y="829.6" width="88.7" height="6.0" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<rect x="482.6" y="836.6" width="183.2" height="7.0" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="925.1" y="694.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 3: DL on its side, DT, soffit, air column</text>
 <rect x="925.12" y="700.0" width="292.6" height="146.3" fill="none" stroke="#7a5c2e"/>
-<rect x="925.1" y="700.0" width="274.8" height="33.4" fill="#2f6f8f" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<rect x="925.1" y="700.0" width="276.2" height="25.1" fill="#2f6f8f" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
 <text x="928.1" y="710.0" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-09</text>
-<rect x="925.1" y="733.4" width="279.8" height="43.2" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="928.1" y="743.4" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-10</text>
-<rect x="925.1" y="776.6" width="252.6" height="26.0" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="928.1" y="786.6" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-11</text>
-<rect x="925.1" y="802.6" width="203.6" height="33.6" fill="#2f6f8f" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="928.1" y="812.6" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-12</text>
-<rect x="1128.8" y="802.6" width="72.0" height="30.0" fill="#9b59b6" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="1131.8" y="812.6" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-13</text>
-<rect x="925.1" y="836.2" width="279.8" height="9.6" fill="#b5651d" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="928.1" y="843.8" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-14</text>
-<text x="40.0" y="900.3" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 4: air parts and cartons</text>
+<rect x="925.1" y="725.1" width="205.1" height="37.9" fill="#2f6f8f" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="928.1" y="735.1" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-12</text>
+<rect x="1130.2" y="725.1" width="72.0" height="30.0" fill="#9b59b6" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="1133.2" y="735.1" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-13</text>
+<rect x="925.1" y="763.0" width="279.8" height="44.3" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="928.1" y="773.0" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-10</text>
+<rect x="925.1" y="807.3" width="254.2" height="26.6" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="928.1" y="817.3" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-11</text>
+<text x="40.0" y="900.3" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 4: air parts, light shelf, threshold and cartons</text>
 <rect x="40.0" y="906.28" width="292.6" height="146.3" fill="none" stroke="#7a5c2e"/>
-<rect x="40.0" y="906.3" width="221.4" height="55.2" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<rect x="40.0" y="906.3" width="241.8" height="63.1" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
 <text x="43.0" y="916.3" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-17</text>
-<rect x="40.0" y="961.5" width="72.0" height="48.0" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="43.0" y="971.5" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-15</text>
-<rect x="112.0" y="961.5" width="120.0" height="30.0" fill="#b5651d" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="115.0" y="971.5" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-16</text>
-<rect x="40.0" y="1009.5" width="210.0" height="20.8" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="43.0" y="1019.5" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-18</text>
-<rect x="40.0" y="1030.2" width="210.0" height="20.8" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="43.0" y="1040.2" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-19</text>
+<rect x="40.0" y="969.4" width="211.2" height="22.0" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="43.0" y="979.4" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-18</text>
+<rect x="40.0" y="991.4" width="211.2" height="22.0" fill="#4e9a6e" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="43.0" y="1001.4" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-19</text>
+<rect x="40.0" y="1013.3" width="72.0" height="18.0" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="43.0" y="1023.3" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-15</text>
+<rect x="112.0" y="1013.3" width="120.0" height="14.4" fill="#b5651d" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="115.0" y="1023.3" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-16</text>
+<rect x="40.0" y="1031.3" width="281.0" height="10.8" fill="#b5651d" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="43.0" y="1040.1" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-14</text>
+<rect x="40.0" y="1042.1" width="142.2" height="2.8" fill="#8d6e63" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
 <text x="482.6" y="900.3" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222">Tier 5: ceiling cassettes (felt up, nothing on them) and the kit</text>
 <rect x="482.56" y="906.28" width="292.6" height="146.3" fill="none" stroke="#7a5c2e"/>
-<rect x="482.6" y="906.3" width="139.6" height="125.8" fill="#7f8c8d" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<rect x="482.6" y="906.3" width="140.8" height="127.0" fill="#7f8c8d" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
 <text x="485.6" y="916.3" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-20</text>
-<rect x="622.1" y="906.3" width="139.6" height="125.8" fill="#7f8c8d" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="625.1" y="916.3" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-21</text>
-<rect x="482.6" y="1032.0" width="36.0" height="18.0" fill="#555555" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
-<text x="485.6" y="1042.0" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-22</text>
+<rect x="623.3" y="906.3" width="140.8" height="127.0" fill="#7f8c8d" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="626.3" y="916.3" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-21</text>
+<rect x="482.6" y="1033.2" width="108.0" height="18.0" fill="#555555" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>
+<text x="485.6" y="1043.2" font-family="Helvetica, Arial, sans-serif" font-size="7" text-anchor="start" font-weight="normal" fill="#222">2-22</text>
 <rect x="1300" y="80" width="14" height="14" fill="#8d6e63"/>
 <text x="1320.0" y="92.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">BASE</text>
 <rect x="1300" y="102" width="14" height="14" fill="#2f6f8f"/>
