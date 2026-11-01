@@ -232,7 +232,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 18](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-18_IMG.png)
 
 - **Time:** about 7 min for 2 people.
-- **Parts:** **2-19** LINING - CASSETTE - CEILING - COMMON (9.5 kg), **2-20** LINING - CASSETTE - CEILING - COMMON (9.5 kg).
+- **Parts:** **2-19** LINING - CASSETTE - CEILING - COMMON (9.4 kg), **2-20** LINING - CASSETTE - CEILING - COMMON (9.4 kg).
 - **Fasteners:** none.
 - **Person A:** With B, lifts each ceiling cassette from below, fill side up, onto its clips behind the soffit.
 - **Person B:** Hooks the 2 safety catches of each cassette before A lets go.

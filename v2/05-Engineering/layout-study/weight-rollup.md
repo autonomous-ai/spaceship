@@ -41,8 +41,8 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Decor block DR, right | 1 | 18.06 | 18.32 | +0.26 | FRONT 350003 P01, PR #105 (the estimate: this study's model from v1's shapes) |
 | Decor block DT, top | 1 | 7.02 | 7.84 | +0.82 | FRONT 350002 P01, PR #105 (the estimate: this study's model from v1's shapes) |
 | Door edge seals on 3 sides, in the seal kit | 1 | 1.00 | 0.00 | -1.00 | now in FRONT 350001, 350002, 360001 and 360002 P01 (PR #105; PM ruling 2026-11-01) |
-| Ceiling outer panels C1 and C2 | 2 | 10.03 | 14.62 | +4.59 | CEILING 410101 and 410102 P01, PR #32 (the estimate: its first list) |
-| Ceiling cassettes | 2 | 9.48 | 9.45 | -0.02 | CEILING 510301 P01, PR #32 (the estimate: its first list) |
+| Ceiling outer panels C1 and C2 | 2 | 10.03 | 14.62 | +4.58 | CEILING 410101 and 410102 P01, PR #32 (the estimate: its first list) |
+| Ceiling cassettes | 2 | 9.48 | 9.44 | -0.03 | CEILING 510301 P01, PR #32 (the estimate: its first list) |
 | ELECTRICAL, as shipped | 1 | 4.94 | 5.28 | +0.34 | ELECTRICAL 710000 P01, PR #64 (the estimate: as relayed) |
 | Site fixings: bolts, rivnuts, washers, retainers, gaskets, seals | 1 | 4.67 | 1.79 | -2.89 | the joints register's counts at the parts lists' masses (D-116); the estimate: this study's 78 bolts, 38 cam connectors that no longer exist and gasket at 60 g/m |
 | Light shelf (its LED strip in ELECTRICAL's line) | 1 | 1.95 | 1.58 | -0.37 | INTERIOR 810201 P01, PR #92, with ELECTRICAL's down-light profile, cover, end caps and clips 718101 to 718104 (0.210), listed under 810201 (S53) (the estimate: D-85's budget less the strip share) |
@@ -56,7 +56,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Corner keys, the 30 mm family | 6 | 0.15 | 0.21 | +0.06 | joints 111211 to 111214 P01, PR #139 |
 | Glide load blocks (D-86's 0.4 kg), now BASE's 9 blocks | 1 | 0.40 | 0.22 | -0.18 | BASE 111601 P02 batch 1 (S54), 5 mm EN AW-6082 T6 |
 | Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.18 | +0.18 | joints 831001, 831010 and 831002 P01, PR #139 and the 11 mm spigot (D-157) |
-| **In all** | | | | **+8.81** | |
+| **In all** | | | | **+8.78** | |
 
 Lines by basis: 31 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 9 estimated.
 
@@ -73,8 +73,8 @@ Lines by basis: 31 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 9
 | LINING | Wall cassette, side, upper, with 12 mm lips, no clip rails | 2 | 9.91 | 19.82 | calculation (CAD) | S34, CAD on main: WALL parts lists 510103 and 510104 P01: trays 7.078 with their lips, felts 2.829 and 2.828, hook-and-loop and seals; their clips are in the named clips' line | CAD, main |
 | LINING | Wall cassette, back, lower, with 12 mm lips, no clip rails | 2 | 8.01 | 16.03 | calculation (CAD) | S50, CAD on main: WALL parts lists 510201 and 510202 P01: trays 5.906 and 5.582 with their lips, felts 2.333 and 2.187, hook-and-loop and seals; their clips are in the named clips' line | CAD, main |
 | LINING | Wall cassette, back, upper, with 12 mm lips, no clip rails | 2 | 8.40 | 16.80 | calculation; lips confirmed | this study's model at the P04 size (S33) without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81), + 0.43 kg of lips (D-69) | estimate |
-| CEILING | Ceiling outer panels C1 and C2, with their bond line | 2 | 14.62 | 29.25 | calculation (CAD) | S35, CAD on main: CEILING parts list 410000 P01: frames 7.992 and 7.982 (welded galvanized steel, 1.0 and 0.8 walls, the 40 x 40 back member and the mitre plates, D-131), skins 6.282 and 5.988, bond sets 0.503; the hardware and seals stay in the fixings kit's line | CAD, main |
-| LINING | Ceiling cassettes, one part for both halves | 2 | 9.45 | 18.91 | calculation (CAD); fill provisional | S35, CAD on main: CEILING parts list 510301 P01: tray 5.520, 2 ribs, felt 2.170, fill bays 1.027 at 24 kg/m3; its clips and catches are in the named clips' line | CAD, main |
+| CEILING | Ceiling outer panels C1 and C2, with their bond line | 2 | 14.62 | 29.24 | calculation (CAD) | S35, CAD on main: CEILING parts list 410000 P01: frames 7.984 and 7.978 (welded galvanized steel, 1.0 and 0.8 walls, the 40 x 40 back member and the mitre plates, D-131), skins 6.282 and 5.988, bond sets 0.503; the hardware and seals stay in the fixings kit's line | CAD, main |
+| LINING | Ceiling cassettes, one part for both halves | 2 | 9.44 | 18.89 | calculation (CAD); fill provisional | S35, CAD on main: CEILING parts list 510301 P01: tray 5.520, 2 ribs, felt 2.170, fill bays 1.027 at 24 kg/m3; its clips and catches are in the named clips' line | CAD, main |
 | LINING | Named clips and catches: 44 clips and 4 catch lanyards | 1 | 2.16 | 2.16 | assumption | allowance: about 40 g a clip and 100 g a lanyard until H03 and H04 name them (clip-only, D-81) | estimate |
 | BASE | Base band piece 100x40 - back, 1.5 mm wall | 1 | 2.72 | 2.72 | calculation (CAD); confirmed (1.5 mm) | S54, CAD on main: BASE parts list 110103 P02 batch 1: the tube 111103 2.7044, and 3 x rivet nut 838006 0.0180; its glides, load blocks and lip are in their own lines, its rivnuts, spigots, stop washers and hook studs in the fixings kit's line (the joints register counts them) | CAD, main |
 | BASE | Base band piece 100x40 - side LH, 1.5 mm wall | 1 | 1.70 | 1.70 | calculation (CAD); confirmed (1.5 mm) | S54, CAD on main: BASE parts list 110101 P02 batch 1: the tube 111101 1.6726, and 1 x tube end cap 118003, 2 x flanged button head screw 838010, 2 x rivet nut 838006 0.0296; its glides, load blocks and lip are in their own lines, its corner key in the corner key line, its rivnuts, spigots, stop washers and hook studs in the fixings kit's line (the joints register counts them) | CAD, main |

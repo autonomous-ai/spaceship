@@ -89,8 +89,8 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 4: air parts, light shelf, FR1 and cartons | 150 | **2-15** | INTERIOR - WORK WALL LEDGE ASSY | 1.9 | 1000 × 120 × 250 | 22 |
 | Tier 4: air parts, light shelf, FR1 and cartons | 150 | **2-07** | BASE - BAND ASSY - FRONT - FIXED GLASS | 2.5 | 757 × 120 × 171 | 2 |
 | Tier 4: air parts, light shelf, FR1 and cartons | 90 | **2-13** | INTERIOR - LIGHT SHELF ASSY | 1.6 | 2342 × 90 × 70 | 19 |
-| Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-19** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1173 × 1058 × 94 | 18 |
-| Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-20** | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1173 × 1058 × 94 | 18 |
+| Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-19** | LINING - CASSETTE - CEILING - COMMON | 9.4 | 1173 × 1058 × 94 | 18 |
+| Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 1058 | **2-20** | LINING - CASSETTE - CEILING - COMMON | 9.4 | 1173 × 1058 × 94 | 18 |
 | Tier 5: ceiling cassettes (felt up, nothing on them) and the kit | 150 | **2-21** | POD - INSTALLATION KIT (OPEN FIRST) | 3.5 | 900 × 150 × 80 | 1 |
 
 **Glass crate (911001), tier 1.** Outside 2200 x 1219 x 238 mm; inside 2,110 x 1,189 x 208 mm: the door layer 164 mm (door on 75 mm foam blocks so its lower pull hangs free), a 12 mm separator, then the fixed glass layer 32 mm on top, because it is fitted first (step 9). Door 2096 x 1177 mm and fixed glass 2034 x 1031 mm each keep 5 mm of edge foam all round. Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate.
@@ -169,8 +169,8 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-16** | 610401 | - | AIR - SUPPLY FAN BOX | 13.4 | 2 | 13 |
 | **2-17** | 610301 | - | AIR - SPLITTER CARTRIDGE - COMMON | 10.6 | 2 | 15 |
 | **2-18** | 610301 | - | AIR - SPLITTER CARTRIDGE - COMMON | 10.6 | 2 | 16 |
-| **2-19** | 510301 | C1 | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1 | 18 |
-| **2-20** | 510301 | C2 | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1 | 18 |
+| **2-19** | 510301 | C1 | LINING - CASSETTE - CEILING - COMMON | 9.4 | 1 | 18 |
+| **2-20** | 510301 | C2 | LINING - CASSETTE - CEILING - COMMON | 9.4 | 1 | 18 |
 | **2-21** | 109000 | - | POD - INSTALLATION KIT (OPEN FIRST) | 3.5 | 1 | 1 |
 
 ## 6. Packing lists
@@ -188,7 +188,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **1-07** | 210103 | WALL - PANEL ASSY - SIDE UPPER - LH | Vách trái - cụm tấm trên | L2 | 11.29 | calculation (CAD); fill provisional | 1492.74 × 1142.74 × 48.5 | 6 |
 | **1-08** | 210104 | WALL - PANEL ASSY - SIDE UPPER - RH | Vách phải - cụm tấm trên | R2 | 11.29 | calculation (CAD); fill provisional | 1492.74 × 1142.74 × 48.5 | 6 |
 | **1-09** | 410101 | CEILING - PANEL ASSY - C1 | Trần - tấm trái (cụm) | C1 | 14.62 | calculation (CAD) | 1495 × 1200.61 × 46 | 7 |
-| **1-10** | 410102 | CEILING - PANEL ASSY - C2 | Trần - tấm phải (cụm) | C2 | 15.50 | calculation (CAD) | 1495 × 1200.61 × 70 | 7 |
+| **1-10** | 410102 | CEILING - PANEL ASSY - C2 | Trần - tấm phải (cụm) | C2 | 15.49 | calculation (CAD) | 1495 × 1200.61 × 70 | 7 |
 | **1-11** | 510102 | LINING - CASSETTE - SIDE LOWER - RH | Cassette lót vách phải dưới (khay thép + tấm tiêu âm) | R1 | 10.34 | calculation (CAD) | 1445 × 1142.74 × 38 | 14 |
 | **1-12** | 510104 | LINING - CASSETTE - SIDE UPPER - RH | Cassette lót vách phải trên (khay thép + tấm tiêu âm) | R2 | 9.91 | calculation (CAD) | 1445 × 1092.74 × 38 | 14 |
 | **1-13** | 510101 | LINING - CASSETTE - SIDE LOWER - LH | Cassette lót vách trái dưới (khay thép + tấm tiêu âm) | L1 | 10.34 | calculation (CAD) | 1445 × 1142.74 × 38 | 14 |
@@ -227,8 +227,8 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-16** | 610401 | AIR - SUPPLY FAN BOX | Hộp quạt cấp (cụm) | - | 13.45 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses; calculation (CAD); foot, mesh and boot assumption | 2005 × 516 × 203 | 13 |
 | **2-17** | 610301 | AIR - SPLITTER CARTRIDGE - COMMON | Ống tiêu âm (dùng chung cấp/thải) | - | 10.55 | calculation (CAD) | 1750 × 314 × 173 | 15 |
 | **2-18** | 610301 | AIR - SPLITTER CARTRIDGE - COMMON | Ống tiêu âm (dùng chung cấp/thải) | - | 10.55 | calculation (CAD) | 1750 × 314 × 173 | 16 |
-| **2-19** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung trái/phải) | C1 | 9.46 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
-| **2-20** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung trái/phải) | C2 | 9.46 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
+| **2-19** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung trái/phải) | C1 | 9.45 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
+| **2-20** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung trái/phải) | C2 | 9.45 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
 | **2-21** | 109000 | POD - INSTALLATION KIT (OPEN FIRST) | Bộ phụ kiện lắp (mở trước) | - | 3.55 | assumption | 900 × 150 × 80 | 1 |
 | - | - | Cable grommets, fitted in the cable holes (the lip ships on the band pieces; the door edge seals are in FRONT's parts) |  | - | 0.10 | source | inside the pieces | - |
 | - | - | Ceiling clips and catches: 12 clips and 4 lanyards, with the ceiling cassettes |  | - | 0.88 | assumption | inside the pieces | - |
@@ -254,8 +254,8 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | LINING | Wall cassette, side, upper, with 12 mm lips, no clip rails | 2 | 19.82 | calculation (CAD) | 1-12, 1-14 |
 | LINING | Wall cassette, back, lower, with 12 mm lips, no clip rails | 2 | 16.03 | calculation (CAD) | 1-15, 1-16 |
 | LINING | Wall cassette, back, upper, with 12 mm lips, no clip rails | 2 | 16.80 | calculation; lips confirmed | 1-17, 1-18 |
-| CEILING | Ceiling outer panels C1 and C2, with their bond line | 2 | 29.25 | calculation (CAD) | 1-09, 1-10 |
-| LINING | Ceiling cassettes, one part for both halves | 2 | 18.91 | calculation (CAD); fill provisional | 2-19, 2-20 |
+| CEILING | Ceiling outer panels C1 and C2, with their bond line | 2 | 29.24 | calculation (CAD) | 1-09, 1-10 |
+| LINING | Ceiling cassettes, one part for both halves | 2 | 18.89 | calculation (CAD); fill provisional | 2-19, 2-20 |
 | LINING | Named clips and catches: 44 clips and 4 catch lanyards | 1 | 2.16 | assumption | A-5 × 0.592593, A-6 × 0.407407 |
 | BASE | Base band piece 100x40 - back, 1.5 mm wall | 1 | 2.72 | calculation (CAD); confirmed (1.5 mm) | 2-04 |
 | BASE | Base band piece 100x40 - side LH, 1.5 mm wall | 1 | 1.70 | calculation (CAD); confirmed (1.5 mm) | 2-05 |
