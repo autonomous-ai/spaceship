@@ -565,6 +565,25 @@ class MemberEndsTest(unittest.TestCase):
             rc = cme.main(["x"] + steps)
         self.assertEqual(rc, 0, out.getvalue()[-2000:])
 
+    def test_the_tube_cut_list_is_current(self):
+        """210000_P01_WALL-TUBE-CUT-LIST_BOM.csv (the weldment drawings' cut list, D-162) is the panel lists' member
+        rows as they stand: regenerated from copies of the lists, it equals the committed file."""
+        import glob
+        import shutil
+        import tempfile
+        mf = os.path.join(HERE, "..", "..", "03-Manufacturing", "wall")
+        sys.path.insert(0, mf)
+        import make_parts_list
+        with tempfile.TemporaryDirectory() as tmp:
+            for p in glob.glob(os.path.join(mf, "210[12]0[1-4]_P01_*_BOM.csv")):
+                shutil.copy(p, tmp)
+            make_parts_list.write_cut_list(tmp)
+            with open(os.path.join(tmp, make_parts_list.CUT_LIST), encoding="utf-8") as fh:
+                fresh = fh.read()
+        with open(os.path.join(mf, make_parts_list.CUT_LIST), encoding="utf-8") as fh:
+            self.assertEqual(fh.read(), fresh)
+        self.assertIn("212101", fresh)
+
     def test_a_flipped_rail_is_caught(self):
         cme = self.cme()
         import csv

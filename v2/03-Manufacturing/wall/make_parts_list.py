@@ -725,6 +725,48 @@ def main(argv):
     print("wrote %s: %d rows; panel %s kg with its hardware%s" % (
         os.path.basename(out), len(rows), top[0]["mass_total_kg"],
         ", cassette %s kg" % top[1]["mass_total_kg"] if len(top) > 1 else ", no cassette yet"))
+    print(write_cut_list())
+
+
+# WALL's tube cut list (D-162, the Lead's ruling of 2026-11-01: a welded frame's drawing carries its members' cut
+# list, and that list is each member's drawing). The drawing generator's weldment hook reads it as it reads CEILING's
+# (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv): the same columns, the panel's position in place of CEILING's half. Its
+# rows are the D-120 frames' member rows of every panel list here, so it can't drift from them. member_part, not
+# part_number, so the checks don't read it as a parts list.
+CUT_LIST = "210000_P01_WALL-TUBE-CUT-LIST_BOM.csv"
+CUT_FIELDS = ["frame", "position", "member", "member_part", "name", "section", "length_mm", "qty", "ends", "holes",
+              "status"]
+
+
+def write_cut_list(here=HERE):
+    import glob
+    out = []
+    for path in sorted(glob.glob(os.path.join(here, "210[12]0[1-4]_P01_*_BOM.csv"))):
+        pos = POSITIONS_BY_PANEL.get(os.path.basename(path)[:6], "")
+        frame = None
+        with open(path, encoding="utf-8") as fh:
+            for r in csv.DictReader(fh):
+                pn = r["part_number"]
+                if r["level"] == "1" and pn.startswith(("2111", "2112")):
+                    frame = pn
+                elif r["level"] == "2" and pn.startswith("212") and frame:
+                    member = re.sub(r"^WALL - FRAME | 40 X 40| - (SIDE|BACK) .*$", "", r["name"]).strip()
+                    out.append({"frame": frame, "position": pos, "member": member, "member_part": pn,
+                                "name": r["name"], "section": r["material"], "length_mm": r["cut_length_mm"],
+                                "qty": r["qty"], "ends": re.sub(r"; cut length outer to outer$", "", r["note"]),
+                                "holes": "none of its own: every joint hole is made after welding, in the frame "
+                                         "(J-FRAME-01; the frame's drawing)",
+                                "status": r["mass_status"].split(":")[0] + " (%s)" % r["source"]})
+    path = os.path.join(here, CUT_LIST)
+    with open(path, "w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=CUT_FIELDS)
+        w.writeheader()
+        w.writerows(out)
+    return "wrote %s: %d member rows from %d frames" % (CUT_LIST, len(out), len({r["frame"] for r in out}))
+
+
+POSITIONS_BY_PANEL = {"210101": "L1", "210102": "R1", "210103": "L2", "210104": "R2",
+                      "210201": "B1", "210202": "B2", "210203": "B3", "210204": "B4"}
 
 
 if __name__ == "__main__":
