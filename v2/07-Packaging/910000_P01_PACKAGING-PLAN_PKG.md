@@ -24,7 +24,7 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 20 | 197.5 | 224 (493) | 1,641 (64.6) | 71.8 | 6.9 |
 | 2: 96 × 48 in, five tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 212.0 | 321 (709) | 1,563 (61.5) | 164.1 | 4.3 |
-| **Both** |  | 42 | **409.5** | **545** (1,202) |  |  |  |
+| **Both** |  | 42 | **409.5** | **545** (1,201) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -225,7 +225,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-07** | TBD (BASE) | BASE - BAND ASSY - FRONT - RH - UNDER THE FIXED GLASS | Viền chân nhôm - trước phải, dưới kính | - | 1.12 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); magnetic seal HOLD; calculation; confirmed (1.5 mm) | 729 × 118 × 40 | 2 |
 | **2-08** | TBD (BASE) | BASE - DOOR THRESHOLD - 13 MM | Ngưỡng cửa thấp 13 mm | - | 1.20 | assumption | 1175 × 60 × 13 | 3 |
 | **2-09** | 350001 | FRONT - DECOR BLOCK ASSY - DL | Khối trang trí trái (cụm) | DL | 12.30 | calculation (CAD) | 2292 × 308 × 199 | 9 |
-| **2-10** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.77 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 17 |
+| **2-10** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.76 | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 17 |
 | **2-11** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2108 × 359 × 212 | 16 |
 | **2-12** | 350002 | FRONT - DECOR BLOCK ASSY - DT | Khối trang trí trên (cụm) | DT | 7.91 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 1699 × 306 × 203 | 12 |
 | **2-13** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.28 | calculation (CAD) | 600 × 250 × 200 | 13 |
@@ -283,7 +283,7 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | AIR | Supply cartridge, in the air column | 1 | 10.55 | calculation (CAD) | 2-18 |
 | AIR | Exhaust cartridge, in the soffit | 1 | 10.55 | calculation (CAD) | 2-19 |
 | AIR | Air column 610101: felt-covered faces, corner angles, foot and plenum plates, fill, kick grille | 1 | 8.15 | calculation (CAD); fill provisional | 2-11 |
-| AIR | Soffit 610201: underside sections, front face, rails, end and door-side plates, fill, exhaust grille, hangers, hinges, latches, lock screws | 1 | 11.69 | calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2-10 |
+| AIR | Soffit 610201: underside sections, front face, rails, end and door-side plates, fill, exhaust grille, hangers, hinges, latches | 1 | 11.67 | calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2-10 |
 | AIR | Supply fan box 610401 with its two transitions, in the right block; ships loose, fitted on site | 1 | 5.71 | calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses | 2-17 |
 | AIR | Exhaust fan box 610402, in the soffit | 1 | 2.49 | calculation (CAD at 2 mm, scaled to D-124's 3 mm) | 2-10 |
 | AIR | Intake riser 611501, in the right block; ships loose, fitted on site | 1 | 7.14 | calculation (CAD); foot, mesh and boot assumption | 2-17 |
