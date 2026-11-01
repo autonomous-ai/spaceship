@@ -98,7 +98,7 @@ FAMILY_OWNERS = {
 
 
 # D-95: the base corner and inline keys have one source, the Joints Engineer; the teams place them by reference
-JOINTS_KEYS = re.compile(r"^11121[1-4]$")
+JOINTS_KEYS = re.compile(r"^11121[1-5]$")     # the base keys, Joints' parts: 111211 to 111214, and FR1's 111215 (D-144)
 
 
 def owner_for(path="", part_number=""):
