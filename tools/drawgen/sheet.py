@@ -45,6 +45,12 @@ def _font_file(kind):
     return None
 
 
+# The owner's rule (2026-11-01): every drawing names "Autonomous" as its creator, never a person: in the title
+# block's "created by" field and as the PDF's author. The PDF's Creator stays "drawgen", the program that made it
+# (the mechanical check and the overwrite guard read it).
+AUTHOR = "Autonomous"
+
+
 class _SegGrid:
     """Segments bucketed in square cells, so 'does any line cross this box' asks only the lines nearby."""
 
@@ -76,7 +82,7 @@ class Sheet:
         self.W, self.H = SIZES[size]
         self.doc = fitz.open()
         self.meta = {"creator": creator, "producer": "drawgen (tools/drawgen, PyMuPDF %s)" % fitz.VersionBind,
-                     "title": title, "subject": subject, "keywords": keywords, "author": ""}
+                     "title": title, "subject": subject, "keywords": keywords, "author": AUTHOR}
         self.pages = []
         self.fonts = {}
         for k in ("reg", "bold"):
@@ -93,6 +99,7 @@ class Sheet:
         self.boxes = []         # ink boxes of the text written on this page (x0, y0, x1, y1)
         self.obstacles = []     # part outlines on this page, as segments, for placing labels clear of them
         self.grid = _SegGrid()  # every line drawn on this page (outlines included), for the same
+        self.reserved = []      # areas kept for what is drawn later (the table column): no label goes there
         return self.page
 
     # ------------------------------------------------------------ keeping labels clear (the read-back checks it)
@@ -143,7 +150,7 @@ class Sheet:
     def is_free(self, box):
         if box[0] < 22 or box[2] > self.W - 12 or box[1] < 12 or box[3] > self.H - 12:
             return False
-        if any(self._boxes_touch(box, b) for b in self.boxes):
+        if any(self._boxes_touch(box, b) for b in self.boxes + self.reserved):
             return False
         return not any(self._seg_box(p, q, box) for p, q in self.grid.near(box, 0.4))
 
@@ -273,8 +280,33 @@ class Sheet:
         self.boxes.append(self.text_box(x, y, s, size, anchor, rotate, bold, valign))
         return w
 
+    def _pieces(self, word, size, width, bold):
+        """A word wider than the line, broken after its '_', '-' or '/' (else between letters): never cut short,
+        never past the line (a long drawing number in its title-block cell, FRONT's 352211)."""
+        if self.text_width(word, size, bold) <= width:
+            return [word]
+        import re as _re
+        parts = [p_ for p_ in _re.split(r"(?<=[_\-/])", word) if p_]
+        out, cur = [], ""
+        for p_ in parts:
+            if cur and self.text_width(cur + p_, size, bold) > width:
+                out.append(cur)
+                cur = ""
+            cur += p_
+            while self.text_width(cur, size, bold) > width and len(cur) > 1:   # no break in it: between letters
+                k = len(cur)
+                while k > 1 and self.text_width(cur[:k], size, bold) > width:
+                    k -= 1
+                out.append(cur[:k])
+                cur = cur[k:]
+        if cur:
+            out.append(cur)
+        return out
+
     def wrap(self, s, size, width, bold=False):
-        words, lines, cur = s.split(" "), [], ""
+        words, lines, cur = [], [], ""
+        for wd in s.split(" "):
+            words.extend(self._pieces(wd, size, width, bold))
         for wd in words:
             t = (cur + " " + wd).strip()
             if cur and self.text_width(t, size, bold) > width:

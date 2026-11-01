@@ -6,9 +6,9 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (e7f2d9e), PR #235 (e9f720d), PR #243 (a926f06). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (6553bc7), PR #243 (a926f06), PR #235 (71edc0e), PR #285 (08cebe9), PR #286 (b33ffba). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
 
-Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/05-Engineering/joints/joints-register.md`: origin/super-tab/116a11a6d19f4479fa615216-cleats changed it, but main changed it later.
+Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #235 changed it, but main changed it later.
 
 **Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it (D-113). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
@@ -18,17 +18,17 @@ Read from main although an open PR changed them, because main changed them later
 |---|---:|---:|---:|---:|---:|---:|---:|
 | BASE | 3 | 3 | 0 | 3 | 3 | 0 | 4 |
 | CEILING | 6 | 8 | 0 | 0 | 5 | 0 | 5 |
-| CEILING (builds AIR, D-80) | 10 | 14 | 0 | 7 | 1 | 0 | 7 |
-| CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
+| CEILING (builds AIR, D-80) | 10 | 14 | 0 | 7 | 4 | 0 | 7 |
+| CEILING (builds INTERIOR, D-80) | 0 | 8 | 0 | 0 | 0 | 0 | 2 |
 | ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 69 |
 | FRONT | 5 | 16 | 0 | 1 | 4 | 1 | 5 |
 | JOINTS | 2 | 4 | 0 | 0 | 0 | 0 | 0 |
 | WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 42 | 90 | 0 | 13 | 10 | 2 | 93 |
+| **All, each number once** | 42 | 89 | 0 | 13 | 10 | 2 | 93 |
 
-86 of the 145 made numbers have no drawing yet; for 72 of them the drawing is the only gap, so their drawings can start now (D-84).
+85 of the 144 made numbers have no drawing yet; for 70 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 86, DXF or cut list 15, BOM row 3, CAD 3.
+What the open made numbers miss: drawing 85, DXF or cut list 15, BOM row 4, CAD 4, STEP 1.
 
 ## Made parts with no FAI line
 
@@ -109,32 +109,31 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 810000 | INTERIOR | main | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
-| 810101 | INTERIOR - WORK WALL LEDGE ASSY | main | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
-| 811101 | INTERIOR - LEDGE - TOP | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I02 | open: drawing |
-| 810201 | INTERIOR - LIGHT SHELF ASSY | main | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
-| 811201 | INTERIOR - LIGHT SHELF - BACK | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
-| 811202 | INTERIOR - LIGHT SHELF - SIDE LH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
-| 811203 | INTERIOR - LIGHT SHELF - SIDE RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
-| 811204 | INTERIOR - LIGHT SHELF - DOWN CHANNEL RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I04 | open: drawing |
-| 811205 | INTERIOR - LIGHT SHELF - DIFFUSER RH | main | yes | yes | yes | n/a | no: as a plain strip or sheet (D-125) its row in v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv doesn't give a tolerance on the width (one general tolerance on the cut sizes, such as ISO 2768-m or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip) | yes | n/a | K-A02, K-I01, K-I05 | open: drawing |
+| 810000 | INTERIOR | PR #285 | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
+| 810101 | INTERIOR - WORK WALL LEDGE ASSY | PR #285 | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
+| 811101 | INTERIOR - LEDGE - TOP | PR #285 | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I02 | open: drawing |
+| 810201 | INTERIOR - LIGHT SHELF ASSY | PR #285 | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01 | open: drawing |
+| 811201 | INTERIOR - LIGHT SHELF - BACK | PR #285 | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
+| 811202 | INTERIOR - LIGHT SHELF - SIDE LH | PR #285 | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
+| 811203 | INTERIOR - LIGHT SHELF - SIDE RH | PR #285 | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
+| 811204 | INTERIOR LIGHT SHELF DOWN CHANNEL RH | main | no | no | no | yes | no | no | — | K-A02, K-I01, K-I04 | open: BOM row, CAD, STEP, drawing |
 
 ### ELECTRICAL
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 710000 | ELECTRICAL | main | yes | yes | yes | n/a | yes: its wiring diagram, routes and joints on sheet 3 (D-93) | yes | n/a | K-E01 | done |
-| 710001 | ELECTRICAL - POWER UNIT - B2 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | main | yes | yes | yes | yes | no | yes | yes | K-E01, K-E02 | open: drawing |
-| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E03 | HOLD |
-| 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710023 | ELECTRICAL - HARNESS - AIR COLUMN | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E04 | HOLD |
-| 719001 | ELECTRICAL - CORD SET - 220 V VN - 3 M (KIT) | main | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
+| 710000 | ELECTRICAL | PR #235 | yes | yes | yes | n/a | yes: its wiring diagram, routes and joints on sheet 3 (D-93) | yes | n/a | K-E01 | done |
+| 710001 | ELECTRICAL - POWER UNIT - B2 | PR #235 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | PR #235 | yes | yes | yes | yes | no | yes | yes | K-E01, K-E02 | open: drawing |
+| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | PR #235 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E03 | HOLD |
+| 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | PR #235 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | PR #235 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710023 | ELECTRICAL - HARNESS - AIR COLUMN | PR #235 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | PR #235 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | PR #235 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | PR #235 | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
+| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | PR #235 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E04 | HOLD |
+| 719001 | ELECTRICAL - CORD SET - 120 V US - 3 M (KIT) | PR #235 | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
 
 ### FRONT
 
@@ -228,12 +227,12 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
 | 118002 | BASE - LEVELLING GLIDE - M10 - HOLD | main | H-25 | HOLD | no | HOLD |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
 | 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD | main | H-26 | HOLD | no | HOLD |
 | 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD | main | H-27 | HOLD | no | HOLD |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
 | 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | main | H-31 | yes | J-T6 | done |
-| 118001 | BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP | main | H-06 | HOLD | J-T4 | HOLD |
+| 118001 | BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD | main | H-06 | HOLD | J-T4 | HOLD |
 
 ### CEILING
 
@@ -244,7 +243,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | main | H-12 | yes | T09 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
 | 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | main | H-01P | yes | J-T1 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
 | 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | main | H-02 | HOLD | J-T2 | HOLD |
 | 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | main | H-04 | HOLD | J-T3 | HOLD |
@@ -262,90 +261,93 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 618102 | AIR - SUPPLY TRANSITION - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
 | 618103 | AIR - RISER TRANSITION - HOLD | main | n/a (team-numbered) | HOLD | T04 | HOLD |
 | 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | main | H-01P | yes | J-T1 | done |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
 
 ### CEILING (builds INTERIOR, D-80)
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 818101 | INTERIOR - LEDGE BRACKET - HOLD | main | H-32 | HOLD | no | HOLD |
-| 818102 | INTERIOR - SCREEN RAIL - HOLD | main | H-33 | HOLD | no | HOLD |
+| 818101 | INTERIOR - LEDGE BRACKET - HOLD | PR #285 | H-32 | HOLD | no | HOLD |
+| 818102 | INTERIOR - SCREEN RAIL - HOLD | PR #285 | H-33 | HOLD | no | HOLD |
 
 ### ELECTRICAL
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 718001 | ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718002 | ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718003 | ELECTRICAL - RCBO - 1P+N C10 30 MA TYPE A | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718004 | ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718005 | ELECTRICAL - INLET SEALING CAP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718006 | ELECTRICAL - LAN FEED-THROUGH - ETHERCON | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718007 | ELECTRICAL - USER SOCKET - UTEN S300 UNIVERSAL | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718008 | ELECTRICAL - LAN SOCKET - UTEN S300 TWO PORT | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718009 | ELECTRICAL - BACK BOX - 86 PLATE | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718010 | ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718011 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718012 | ELECTRICAL - FUSE - ATO 5 A 32 V | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718013 | ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718019 | ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718049 | ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718047 | ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718014 | ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718015 | ELECTRICAL - BONDING WASHER - SERRATED M6 A2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718016 | ELECTRICAL - RING TERMINAL - INSULATED 1.5-2.5 MM2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718017 | ELECTRICAL - CONDUIT - PVC FLEXIBLE - 20 MM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
-| 718020 | ELECTRICAL - WIRE - H07V-K 1.5 MM2 (BROWN, BLUE, GREEN-YELLOW) | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718021 | ELECTRICAL - WIRE - H05V-K 1.0 MM2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718022 | ELECTRICAL - WIRE - H07V-K 2.5 MM2 GREEN-YELLOW | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718073 | ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718026 | ELECTRICAL - CABLE - 4 X 20 AWG | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718027 | ELECTRICAL - CABLE - 4 X 24 AWG SCREENED | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718051 | ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718052 | ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718044 | ELECTRICAL - DRAW CORD - NYLON 3 MM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718048 | ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718060 | ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE) | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718061 | ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718062 | ELECTRICAL - PUSH BUTTON - MOMENTARY - CALL | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718063 | ELECTRICAL - LIGHT KNOB - POTENTIOMETER WITH KNOB | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718069 | ELECTRICAL - PUSH BUTTON - MOMENTARY - SELF-TEST | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718064 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - COLUMN | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718065 | ELECTRICAL - INLET TEMPERATURE SENSOR | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718066 | ELECTRICAL - FUSE - ATO 2 A 32 V | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718067 | ELECTRICAL - FUSE - ATO 1 A 32 V | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718068 | ELECTRICAL - FAN Y-CABLE - 4-PIN PWM | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718070 | ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718071 | ELECTRICAL - CORD - H05VV-F 3G1.5 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718072 | ELECTRICAL - MAINS PLUG - VN OFFICE SOCKET | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718023 | ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718024 | ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718029 | ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718025 | ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718028 | ELECTRICAL - CABLE - CAT6 U/UTP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718030 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718031 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718045 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 6 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718046 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 6 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718032 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 4 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718033 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 4 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718034 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 10 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718035 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718036 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718037 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718038 | ELECTRICAL - RJ45 PLUG - CAT6 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718039 | ELECTRICAL - RJ45 INLINE COUPLER - CAT6 | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718040 | ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718041 | ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718042 | ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718043 | ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718050 | ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K | main | n/a (team-numbered) | HOLD | F-06 | HOLD |
-| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718103 | ELECTRICAL - LED PROFILE END CAP | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
-| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | main | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718001 | ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718002 | ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718003 | ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718004 | ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718005 | ELECTRICAL - INLET SEALING CAP | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718006 | ELECTRICAL - LAN FEED-THROUGH - ETHERCON | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718007 | ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718010 | ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718011 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718012 | ELECTRICAL - FUSE - ATO 5 A 32 V | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718013 | ELECTRICAL - FUSE - ATO 5 A 32 V - LIGHTS | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718019 | ELECTRICAL - SCREW - M4 X 8 - ISO 7045 A2 PAN HEAD | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718049 | ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718054 | ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718047 | ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718014 | ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718015 | ELECTRICAL - BONDING WASHER - SERRATED M6 A2 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718016 | ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718017 | ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #235 | H-01 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #235 | H-09 | yes | T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | PR #235 | H-03 | yes | J-T1, T06 | done |
+| 718020 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN) | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718021 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE) | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718022 | ELECTRICAL - WIRE - UL 1015 14 AWG GREEN | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718073 | ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718026 | ELECTRICAL - CABLE - 4 X 20 AWG | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718027 | ELECTRICAL - CABLE - 4 X 24 AWG SCREENED | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718051 | ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718052 | ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718044 | ELECTRICAL - DRAW CORD - NYLON 3 MM | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718048 | ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718060 | ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE) | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718061 | ELECTRICAL - PUSH BUTTON - MOMENTARY - BOOST | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718062 | ELECTRICAL - PUSH BUTTON - MOMENTARY - CALL | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718063 | ELECTRICAL - LIGHT KNOB - POTENTIOMETER WITH KNOB | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718069 | ELECTRICAL - PUSH BUTTON - MOMENTARY - SELF-TEST | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718064 | ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE - COLUMN | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718065 | ELECTRICAL - INLET TEMPERATURE SENSOR | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718066 | ELECTRICAL - FUSE - ATO 2 A 32 V | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718067 | ELECTRICAL - FUSE - ATO 1 A 32 V | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718068 | ELECTRICAL - FAN Y-CABLE - 4-PIN PWM | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718070 | ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718071 | ELECTRICAL - CORD - SJT 14/3 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718072 | ELECTRICAL - MAINS PLUG - NEMA 5-15P | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718023 | ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718024 | ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718029 | ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718025 | ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718028 | ELECTRICAL - CABLE - CAT6 U/UTP | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718030 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 2 WAY V-0 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718031 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 2 WAY V-0 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718045 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 6 WAY V-0 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718046 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 6 WAY V-0 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718032 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 4 WAY V-0 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718033 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 4 WAY V-0 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718034 | ELECTRICAL - CONNECTOR - MINI-FIT JR RECEPTACLE 10 WAY V-0 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718035 | ELECTRICAL - CONNECTOR - MINI-FIT JR PLUG 10 WAY V-0 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718036 | ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 18-24 AWG TIN | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718037 | ELECTRICAL - TERMINAL - MINI-FIT JR MALE 18-24 AWG TIN | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718038 | ELECTRICAL - RJ45 PLUG - CAT6 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718039 | ELECTRICAL - RJ45 INLINE COUPLER - CAT6 | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718040 | ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718041 | ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718042 | ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718043 | ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718050 | ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718053 | ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
+| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | PR #235 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718102 | ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN | PR #235 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718103 | ELECTRICAL - LED PROFILE END CAP | PR #235 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
+| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | PR #235 | n/a (team-numbered) | HOLD | F-06, F-07 | HOLD |
 
 ### FRONT
 
@@ -367,7 +369,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
 | 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | main | H-12 | yes | T09 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
 | 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | main | H-02 | HOLD | J-T2 | HOLD |
@@ -387,6 +389,9 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838008 | H-29 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
 | 848013 | H-34 | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA |
+| 831007 | H-40 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL |
+| 831008 | H-41 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL |
+| 831009 | H-42 | HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL |
 
 ## How it's built
 

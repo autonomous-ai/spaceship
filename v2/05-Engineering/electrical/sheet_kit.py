@@ -213,7 +213,7 @@ class Sheet:
         self.page_rect(x0, y0, W - 10, H - 10, INK, 0.5)
         rows = [("PROJECT", "FocusPod v2 - Spaceship"), ("TITLE", title), ("DWG / PART NO.", dwg),
                 ("REV / STATUS", "P01 / DRAFT - not for production"), ("UNITS / SCALE", "mm / %s" % scale),
-                ("SHEET", "%d of %d   (%s)" % (sheet, of, self.size)), ("DATE / BY", "%s / ELECTRICAL Engineer" % date),
+                ("SHEET", "%d of %d   (%s)" % (sheet, of, self.size)), ("DATE / BY", "%s / Autonomous" % date),
                 ("SOURCE", source)]
         for i, (k, v) in enumerate(rows):
             top = y0 + i * TB_ROW

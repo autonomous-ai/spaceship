@@ -28,6 +28,18 @@ def sha12(path):
     return h.hexdigest()[:12]
 
 
+KEYS_CSV = os.path.join(REPO, "v2", "01-CAD-Native", "joints", "corner-keys.csv")
+
+
+def key_rows(pn):
+    """Joints' corner and inline keys fitted in this part's ends (corner-keys.csv, the key sheet 111211's
+    positions): one row per key, in pod coordinates."""
+    if not os.path.exists(KEYS_CSV):
+        return []
+    with open(KEYS_CSV, newline="", encoding="utf-8") as f:
+        return [r for r in csv.DictReader(f) if pn in (r.get("carrier_key_in_its_end") or "")]
+
+
 def own_step(pn):
     """The part's own STEP file (PN_REV_NAME_STEP.step) under v2/03-Manufacturing, newest revision."""
     hits = []

@@ -5,7 +5,8 @@
     <venv>/bin/python tools/drawgen/tests/test_drawgen.py          # prints "N of N passed"
     <venv>/bin/python -m pytest -q tools/drawgen/tests              # the same with pytest, if installed
 
-1. The five sample drawings regenerate from their STEPs on this tree and read back: every STEP hole (the repo's own
+1. The sample drawings (the band tubes; WALL's frames with their D-131 material guard lifted) regenerate from
+   their STEPs on this tree and read back: every STEP hole (the repo's own
    reader, no OCC) is in a hole table within 0.05 mm, drawn as a true circle at its place, the text carries what
    the mechanical check reads, and the PDF's Creator is drawgen.
 2. Making a drawing twice from the same sources gives the same bytes (so an unchanged model never shows a diff).
@@ -18,6 +19,12 @@
 6. The read-back fails a sheet where two texts touch, a text touches a part outline, or a line runs through a text.
 7. A long tube keeps a legible scale: 111103 (2420 mm) fits A1 at 1:5 with a narrower table column instead of
    dropping to 1:10, with datum B on B1's round-spigot rivnut (joints register 2.11).
+8. Keys fitted in a part's ends: each key in Joints' corner-keys.csv gets its orientation note, and the read-back
+   fails a missing note or one that names holes away from the key's screw positions.
+9. Only holes on one line through two walls count as a two-wall pair (which needs a section).
+10. Holes square to an angled face get a lettered view square to that face (ISO 128-30); blind holes with a drill
+    point read as blind.
+11. An entry written for one material (welded steel, D-131) refuses a parts list that gives another.
 """
 
 import os
@@ -122,6 +129,21 @@ def test_sample_regenerates_and_reads_back():
             assert st["worst_table"] <= 0.05 and st["worst_drawn"] <= 0.05
 
 
+def test_frames_draw_and_read_back():
+    """WALL's frames (#202's sample) draw and read back from their STEPs, with J-FRAME-01's weld notes; their entry
+    refuses the parts list until WALL's D-131 steel list lands, so the material guard is lifted here: the geometry
+    D-131 keeps (every hole, rivnut and joint position) is what this tests."""
+    out = os.path.join(TMP, "frames")
+    os.makedirs(out, exist_ok=True)
+    for pn in specs.FRAMES:
+        p = os.path.join(out, pn + ".pdf")
+        compose.make(pn, specs.SPECS[pn][0], dict(specs.SPECS[pn][2], material_has=None), p)
+        fails, st = readback.check(p)
+        assert not fails, "%s: %s" % (pn, fails)
+        assert st["worst_table"] <= 0.05 and st["worst_drawn"] <= 0.05
+        assert "J-FRAME-01" in " ".join(page.get_text() for page in fitz.open(p))
+
+
 def test_same_sources_same_bytes():
     a, b = os.path.join(TMP, "a"), os.path.join(TMP, "b")
     for d in (a, b):
@@ -140,7 +162,7 @@ def test_model_change_regenerates():
     step = os.path.join(d, os.path.basename(src))
     shutil.copy(src, step)
     p1 = os.path.join(d, "v1.pdf")
-    compose.make("211101", "wall", specs.WALL_FRAME, p1, step=step)
+    compose.make("211101", "wall", dict(specs.SPECS["211101"][2], material_has=None), p1, step=step)
     f1, _ = readback.check(p1, step)
     assert not f1, f1
     rows1 = readback.table_rows(fitz.open(p1)[0])
@@ -151,7 +173,7 @@ def test_model_change_regenerates():
     why = drawgen.stale(p1)
     assert any("changed" in w and w.endswith("STEP.step changed") for w in why), why     # the drawing knows
     p2 = os.path.join(d, "v2.pdf")
-    compose.make("211101", "wall", specs.WALL_FRAME, p2, step=step)
+    compose.make("211101", "wall", dict(specs.SPECS["211101"][2], material_has=None), p2, step=step)
     f2, _ = readback.check(p2, step)
     assert not f2, f2
     rows2 = readback.table_rows(fitz.open(p2)[0])
@@ -277,6 +299,92 @@ def test_long_tube_keeps_its_scale():
         data = readback.read_data(d)
     b = [f for f in data["features"] if f["tag"] == data["datums"]["B"]]
     assert len(b) == 1 and abs(b[0]["entry"][0] - (-102.75)) < 0.01, b
+
+
+def test_key_notes_name_the_screw_holes():
+    """The band tubes carry a note for each key Joints' file puts in their ends (both read back clean: the sample
+    test and the long tube test), and the read-back's key check fails a missing note or a wrong hole."""
+    import inputs
+    rows = inputs.key_rows("111103") + inputs.key_rows("111101")
+    assert rows, "no keys in the band tubes' ends in corner-keys.csv"
+    row = dict(rows[0])
+    row.update({"fix_hole_1_x": "0", "fix_hole_1_y": "0", "fix_hole_2_x": "0", "fix_hole_2_y": "14"})
+    good = {"H03": (0.0, 0.0, 10.0), "H04": (0.0, 14.0, 10.0), "H09": (50.0, 0.0, 10.0)}
+    note = "Key %s, %s, fitted at the factory: stud face flush with this end. Only this way round do its bottom " \
+           "holes meet %s and %s; turned round they are 9 mm off."
+    assert readback.key_note_fails(note % (row["part_number"], row["joint"], "H03", "H04"), good, [row]) == []
+    bad = readback.key_note_fails(note % (row["part_number"], row["joint"], "H03", "H09"), good, [row])
+    assert bad and "H09" in bad[0], bad
+    assert readback.key_note_fails("no notes here", good, [row])[0].startswith("no orientation note")
+    # a HOLD note stands in only while the STEP has no hole at the key's screw positions
+    held = "HOLD: Joints' key file puts key %s, %s, in this end, its screws at ... yet." % (row["part_number"], row["joint"])
+    assert readback.key_note_fails(held, good, [row], holes=[{"c": (50.0, 0.0, 10.0)}]) == []
+    late = readback.key_note_fails(held, good, [row], holes=[{"c": (0.0, 14.0, 10.0)}])
+    assert late and "draw the key note" in late[0], late
+
+
+def test_two_wall_pairs_are_on_one_line():
+    """Two parallel holes side by side in one wall are not a two-wall pair (BASE's FR1: two Ø13 glide nut holes
+    546.5 apart in its bottom wall); two holes on one line through both walls are."""
+    side = [{"tag": "H01", "kind": "hole", "body": "FR1", "axis": (0, 0, 1), "entry": (0.0, 0.0, 0.0)},
+            {"tag": "H02", "kind": "hole", "body": "FR1", "axis": (0, 0, 1), "entry": (546.5, 0.0, 0.0)}]
+    assert readback.two_wall_pairs(side) == []
+    through = side[:1] + [{"tag": "H03", "kind": "hole", "body": "FR1", "axis": (0, 0, -1), "entry": (0.0, 0.0, 100.0)}]
+    assert readback.two_wall_pairs(through) == [("H01", "H03")]
+    other = side[:1] + [{"tag": "H04", "kind": "hole", "body": "STILE", "axis": (0, 0, 1), "entry": (0.0, 0.0, 100.0)}]
+    assert readback.two_wall_pairs(other) == []
+
+
+def test_an_entry_for_another_material_is_refused():
+    """An entry written for one material (D-131's welded steel frames) never draws over a parts list that gives
+    another: the list and the model change first."""
+    spec = dict(specs.SPECS["211101"][2], material_has="unobtainium", material_why="a test")
+    try:
+        compose.make("211101", "wall", spec, os.path.join(TMP, "material.pdf"))
+    except compose.NotDrawable as e:
+        assert "unobtainium" in str(e) and "a test" in str(e), e
+    else:
+        raise AssertionError("drew a frame whose entry is for another material")
+
+
+def test_angled_face_gets_its_own_view():
+    """Holes square to a face no principal view looks at straight (Joints' front corner key 111212: two tapped
+    holes square to its 24.14° stud face) get a lettered view square to that face, with its own origin and hole
+    table, and an arrow in the view that shows the face edge on; the key's blind tapped holes read as blind, with
+    their drill point, and the angled through holes as THRU (a solid, not a tube wall). It reads back."""
+    out = os.path.join(TMP, "aux")
+    os.makedirs(out, exist_ok=True)
+    p = os.path.join(out, "111212.pdf")
+    rep = compose.make("111212", "joints", {"pod_system": False, "corner": "-X-Y-Z", "tolerance": "test"}, p)
+    fails, st = readback.check(p)
+    assert not fails, fails
+    assert st["worst_table"] <= 0.05 and st["worst_drawn"] <= 0.05
+    text = fitz.open(p)[0].get_text()
+    assert "looking square to the angled face" in text and "VIEW D" in text, text[:400]
+    assert text.count("THRU (34)") == 2 and text.count("18 deep, drill point 118°") == 2, text
+
+
+def test_long_words_break_at_separators():
+    """A word wider than its cell (a long drawing number in the title block, FRONT's 352211) breaks after its '_'
+    or '-', each line inside the cell, and nothing is lost."""
+    from sheet import Sheet
+    sh = Sheet("A3")
+    word = "352211_P01_FRONT-DECOR-FRAME-DT-CHAMFER-CROSS-TUBE-3-OFF_DWG"
+    lines = sh.wrap(word, 2.5, 115.6, True)
+    assert len(lines) > 1 and "".join(lines) == word, lines
+    assert all(sh.text_width(l_, 2.5, True) <= 115.6 for l_ in lines), lines
+    sentence = "a normal sentence wraps at spaces"
+    ls = sh.wrap(sentence, 2.5, 40)
+    assert " ".join(ls) == sentence and all(sh.text_width(l_, 2.5) <= 40 for l_ in ls), ls
+
+
+def test_a_repeated_part_is_drawn_once():
+    """A part an assembly STEP holds several times (BASE's glide doubler 111601, 5 in the band assembly) loads
+    as one occurrence, with the count kept for the drawing's quantity note and its check against the list."""
+    import geom
+    bodies, unit = geom.load_part(os.path.join(drawgen.inputs.REPO, "v2", "03-Manufacturing", "base",
+                                               "110000_P01_BASE_STEP.step"), "111601")
+    assert len(bodies) == 1 and unit["occurrences"] == 5, (len(bodies), unit)
 
 
 def main():

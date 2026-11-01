@@ -358,8 +358,8 @@ def write(pdf_path, png_pattern, v, rows, harness):
     doc = fitz.open()
     for sheet in (sheet1(doc, rows, harness, v), sheet2(doc, rows, harness, v), sheet3(doc, rows, harness, v)):
         sheet.check()                                     # no overlapping text, nothing outside the frame
-    doc.set_metadata({"title": "710000 P01 ELECTRICAL - WIRING DIAGRAM", "author": "ELECTRICAL Engineer",
-                      "subject": "FocusPod v2 (Spaceship)", "creator": "electrical_docs.py", "producer": "PyMuPDF",
+    doc.set_metadata({"title": "710000 P01 ELECTRICAL - WIRING DIAGRAM", "author": "Autonomous",
+                      "subject": "FocusPod v2 (Spaceship)", "creator": "Autonomous", "producer": "PyMuPDF",
                       "creationDate": "D:20261101000000", "modDate": "D:20261101000000"})
     doc.save(pdf_path, deflate=True, garbage=4, no_new_id=True)
     for i, page in enumerate(doc, start=1):
