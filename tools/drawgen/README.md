@@ -80,7 +80,8 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   STEP; a section across each run of bends with each flange's outside length (windowed to one end of a long run, the
   other end the same); the flat pattern drawn from the team's DXF (CUT outline thick, BEND centre lines thin chain
   tagged B1..., MARK bend-zone edges thin) with its overall size; and a bend table: each bend line's place in the
-  flat, its direction (UP: toward the viewer of the flat as drawn), angle, inside radius and bend allowance. The folds
+  flat, its direction (UP: toward the viewer of the flat as drawn), angle, inside radius and bend allowance, under a
+  title that gives the sheet's thickness (every bent sheet prints it, V-grooved ones too). The folds
   come from the model's own section; the DXF's bend lines must sit where the model's flanges put them at one K-factor
   (solved from the DXF's flat size, and stated); every model hole must sit on a DXF circle of its size where it
   unfolds to, and every DXF circle on a model hole, on one run of bends or two (a tray: across each run from its own
@@ -140,5 +141,8 @@ them within 0.05 mm, its flat is as long as the DXF's, every STEP hole unfolds (
 flange unfolds, each flange checked against a face of the STEP) onto a DXF circle of its size within 0.05 mm and
 every DXF circle onto a STEP hole; every cut-out of the STEP (found from its own faces through the sheet that close
 into a void) unfolds onto one of the DXF's cut shapes point for point both ways, with its table row's centre and
-size as the STEP has them; and the flat's size, the K-factor and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
+size as the STEP has them; every run of bends has its section on the sheet, titled, with each flange it
+shows sized, or is the same as a drawn one (the same flanges shown, the same folds), whose title then says typical
+(Reviewer 10 on #380: a sheet drawn again at a smaller scale once lost them all); and the flat's size, the K-factor,
+the sheet's thickness and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
 the release checklist count the drawings by their file names, like any other drawing.
