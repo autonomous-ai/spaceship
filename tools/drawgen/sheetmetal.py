@@ -376,6 +376,14 @@ def unexplained_faces(body, chains, holes, slots, cutouts=()):
                 continue
             out.append("a cylinder r%.2f" % info["r"])
             continue
+        from OCP.GeomAbs import GeomAbs_Cone
+        if typ == GeomAbs_Cone:
+            # a countersink, called out with its hole (D-143); any other cone is refused, never taken for a corner
+            # relief's cut end, so no sheet shows a plain hole where the part has a countersink (the Lead)
+            if any(getattr(h, "csk", None) and h.csk["face"].IsSame(f) for h in holes):
+                continue
+            out.append("a cone (a countersink or a dimple this tool doesn't read)")
+            continue
         pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in geom._vertices_of(f)]
         if pts and span and all(max(p[k] for p in pts) - min(p[k] for p in pts) <= 2 * span + 0.1 for k in range(3)):
             continue
