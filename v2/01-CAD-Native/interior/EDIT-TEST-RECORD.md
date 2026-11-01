@@ -1,10 +1,11 @@
 # Edit test record: 810000 INTERIOR P01
 
-Run 2026-11-01 05:52 UTC on Mac 1 (Fusion 2706.1.17), through the Fusion lock, in the same held session as the
+Run 2026-11-01 07:35 UTC on Mac 1 (Fusion 2706.1.17), through the Fusion lock, in the same held session as the
 rebuild (`BUILD-RECORD.md`), on the saved design, closed without saving:
 `python3 tools/fusion/run_script.py v2/01-CAD-Native/interior/edit_test_interior.py`. Each change is made alone, every
 body is checked against the box the layout gives for the new values, then the change is reverted and checked again.
-(The first build's edit test, 2026-10-31 20:52 UTC, passed the same way with 9 bodies; this build has 8 after D-126.)
+(The first build's edit test, 2026-10-31 20:52 UTC, passed the same way with 9 bodies; the D-126 rebuild's, 2026-11-01
+05:52 UTC, with 8; this one checks the ledge and the rail at their new place, 5 mm off the lining.)
 
 | Step | Change | Bodies checked | Worst deviation (mm) | Off | Unhealthy timeline items |
 |---|---|---|---|---|---|
