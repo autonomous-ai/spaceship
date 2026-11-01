@@ -27,6 +27,6 @@ Where each BASE drawing comes from. D-139 and D-158: every part drawing comes fr
 |---|---|---|
 | 111105 (FL2) | The full round on its hinge-side plate's back edge (the PM's hinge-side ruling): the generator can't size a round edge | one Fusion sheet, in one short run after rebuild F, from FL2's part design in its own axes (CS-111105) |
 | 111602 (the levelling glide, D-164) | A turned part with a hex socket: the generator has no mode for turned parts | one Fusion sheet, in the same run |
-| 111104 (FL1) | Its datum C can't be placed: all its side faces lie off the pod's axes, and drawn in its own axes it loses the register match that finds datum B | one Fusion sheet, in the same run, from FL1's part design in its own axes (CS-111104) |
+| 111104 (FL1) | Its datums can't be placed: all its side faces lie off the pod's axes | one Fusion sheet, in the same run, from FL1's part design in its own axes (CS-111104) |
 
 The Joints Engineer's parts (the corner keys 111211 to 111215, the spigot 831001) are on Joints' own sheets.

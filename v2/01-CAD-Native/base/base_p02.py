@@ -144,14 +144,19 @@ BATCH2 = ("front_l", "fl1", "fl2", "seal_fl1", "seal_fl2", "seal_fe", "key_f", "
 
 P02_BATCH_KEYS = BATCH1 + (BATCH2 if ARGS.get("batch2") == "1" else ())
 
+# D-169, amended (the Lead's ruling of 2026-11-01): DL locates on pins along the pull at its seam face with L1, in
+# slots in L1's front member; so DL's two base spigots go, and with them FL1's and FL2's spigot rivnut holes, rivnuts
+# and spigots (FRONT's DL takes the pins). DR and DT keep their base locators.
+DL_BASE_SPIGOTS = False
+
 
 def p02_setup(keys=P02_BATCH_KEYS):
     """Adds the P02 parameters and the parts of this batch (keys) to base_build's tables."""
     global SUB_DESIGNS, WITH_ASSEMBLY, HOLDING_KEYS
     BASE_PARAMS.extend(front_glass_params())    # FRONT's glass lines: the sill's channel and its holes (linked)
     BASE_PARAMS.extend(P02_PARAMS)
-    if "fl1" in keys or "fl2" in keys:
-        BASE_PARAMS.extend(front_dl_params())     # DL's spigot points, FRONT's named values (J-FRONT-02)
+    if ("fl1" in keys or "fl2" in keys) and DL_BASE_SPIGOTS:
+        BASE_PARAMS.extend(front_dl_params())     # DL's spigot points, FRONT's named values (J-FRONT-02; gone, D-169)
     PARTS.update({k: P02_PARTS[k] for k in keys})
     if None in SILL_MEMBER_PNS.values():
         raise RuntimeError("the sill's member numbers (D-120) aren't allocated yet: ask Control, then fill SILL_MEMBER_PNS")
@@ -268,9 +273,8 @@ def step_p02_fl2(design):
     """FL2 (111105): DL's second facet, from the knee mitre with FL1 to its square end at X -pod_w/2 + dl_x3, with
     the door-end block welded on out to DL's door face (X -pod_w/2 + dl_w): one part, ground flush and anodised
     after welding. Its knee end is closed by its band_wall end plate with the keyholes for FL1's knee key 111214
-    (FL2 is the keyhole piece: on along the studs, then down kh_drop); its top wall has the rivnut hole for DL's
-    slot spigot at FRONT's named point (J-FRONT-02); one glide with its load block, gl_fl2 from the knee face's
-    centre along FL2. Checked against corner-keys.csv."""
+    (FL2 is the keyhole piece: on along the studs, then down kh_drop); one glide with its load block, gl_fl2 from
+    the knee face's centre along FL2 (DL's slot spigot went with D-169). Checked against corner-keys.csv."""
     v = lambda e: ev(design, e)  # noqa: E731
     fl2 = [P(design, "%s + dl_x2" % XL_, "-dl_y2"), P(design, "%s + dl_x3" % XL_, "-dl_y3"),
            P(design, "%s + dl_x3" % XL_, Y_FL2_IN_END), P(design, IL2_X, IL2_Y)]
@@ -351,8 +355,9 @@ def step_p02_fl2(design):
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
     down = Z.copy()
     down.scaleBy(-1)
-    hole_that_cuts(design, "fl2", top, "DL SPIGOT RIVNUT - SLOT (J-FRONT-02)", (v("dlf_sp_bx"), v("dlf_sp_by"), v("wall_z0")),
-                   [(X, "dlf_sp_bx"), (Y, "dlf_sp_by")], "rn_hole", "band_wall", down)
+    if DL_BASE_SPIGOTS:
+        hole_that_cuts(design, "fl2", top, "DL SPIGOT RIVNUT - SLOT (J-FRONT-02)", (v("dlf_sp_bx"), v("dlf_sp_by"), v("wall_z0")),
+                       [(X, "dlf_sp_bx"), (Y, "dlf_sp_by")], "rn_hole", "band_wall", down)
     xg, yg = "%s + gl_fl2 * %s" % (FC_KX, D2X), "%s + gl_fl2 * %s" % (FC_KY, D2Y)
     hole_that_cuts(design, "fl2", bot, "GLIDE NUT - FL2", (v(xg), v(yg), v("glide_h")), [(X, xg), (Y, yg)],
                    "gl_nut_hole", "band_wall", Z)
@@ -634,8 +639,8 @@ def p02_hardware(design):
 def p02_hardware_front_l(design):
     """Batch 2 (J-BASE-02, J-FRONT-02): the front corner key 111212 in the left side band's front end (its carrier)
     and the knee key 111214 in FL1's knee end, each with 2 flanged button head fixing screws from below and 2 hook
-    stud bolts in its stud face, heads st_gap off it; DL's 2 spigots in rivnuts on FL1 and FL2 (no stop washer);
-    FL2's glide with its load block. Positions from the same expressions as the holes; the keys' come from their
+    stud bolts in its stud face, heads st_gap off it; FL2's glide with its load block (DL's 2 base spigots went with
+    D-169). Positions from the same expressions as the holes; the keys' come from their
     stud faces (the mitres' centres) and their carriers' directions, as corner-keys.csv has them."""
     v = lambda e: ev(design, e)  # noqa: E731
     out = []
@@ -655,10 +660,11 @@ def p02_hardware_front_l(design):
         for zz in ("st_z1", "st_z2"):
             out.append((host, "bolt", (face[0] + v("st_gap") * n[0], face[1] + v("st_gap") * n[1], zk + v(zz)),
                         ("hz", deg(n))))
-    z_top, head = v("wall_z0"), v("rn_head_t")
-    for x, y in ((v("dlf_sp_ax"), v("dlf_sp_ay")), (v("dlf_sp_bx"), v("dlf_sp_by"))):
-        out.append(("front_l", "rivnut", (x, y, z_top), None))
-        out.append(("front_l", "pin", (x, y, z_top + head), None))
+    if DL_BASE_SPIGOTS:
+        z_top, head = v("wall_z0"), v("rn_head_t")
+        for x, y in ((v("dlf_sp_ax"), v("dlf_sp_ay")), (v("dlf_sp_bx"), v("dlf_sp_by"))):
+            out.append(("front_l", "rivnut", (x, y, z_top), None))
+            out.append(("front_l", "pin", (x, y, z_top + head), None))
     xg, yg = v("%s + gl_fl2 * %s" % (FC_KX, D2X)), v("%s + gl_fl2 * %s" % (FC_KY, D2Y))
     out.append(("front_l", "glide", (xg, yg, 0.0), None))
     out.append(("front_l", "doubler", (xg, yg, zk), ("z", deg(d2) - 90.0)))     # its 54 along FL2
@@ -1074,8 +1080,8 @@ def hole_that_cuts(design, key, plane, label, xyz, dims, dia_expr, depth_expr, w
 def step_p02_fl1(design):
     """FL1 (111104): DL's outer facet piece, from the corner mitre with the left side band to the knee mitre with
     FL2. Its corner end is closed by a 1.5 end plate with the keyholes for the side band's front key 111212; its
-    knee end carries the knee key 111214 (2 fixing holes in its bottom wall); its top wall has the rivnut hole for
-    DL's round-hole spigot at FRONT's named point (J-FRONT-02). Glides: with the batch (not in this sample)."""
+    knee end carries the knee key 111214 (2 fixing holes in its bottom wall). No holes in its top wall: DL's
+    round-hole spigot went with D-169. No glide: 112 long between two keyed ends."""
     v = lambda e: ev(design, e)  # noqa: E731
     fl1 = [P(design, XL_, "-dl_y1"), P(design, "%s + dl_x2" % XL_, "-dl_y2"), P(design, IL2_X, IL2_Y),
            P(design, "%s + band_t" % XL_, Y_MITRE_IN)]
@@ -1086,9 +1092,6 @@ def step_p02_fl1(design):
     c = find_comp(design, "fl1")
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"]
     bot = bot[0] if bot else offset_plane(c, "xy", "glide_h", v("glide_h"), "PLANE - BAND BOTTOM Z = glide_h")
-    top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
-    down = Z.copy()
-    down.scaleBy(-1)
     # the knee key 111214's 2 fixing screws (J-BASE-02): ck_x - ck_e back from the knee face's centre along FL1,
     # ck_y / 2 - ck_e either side
     for sgn, lab in ((1, "1"), (-1, "2")):
@@ -1096,8 +1099,12 @@ def step_p02_fl1(design):
         yf = "%s - %s * (ck_x - ck_e) + %d * %s * (ck_y / 2 - ck_e)" % (FC_KY, D1Y, sgn, P1Y)
         hole_that_cuts(design, "fl1", bot, "KNEE KEY FIXING %s (111214)" % lab, (v(xf), v(yf), v("glide_h")),
              [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z)
-    hole_that_cuts(design, "fl1", top, "DL SPIGOT RIVNUT - ROUND HOLE (J-FRONT-02)", (v("dlf_sp_ax"), v("dlf_sp_ay"), v("wall_z0")),
-         [(X, "dlf_sp_ax"), (Y, "dlf_sp_ay")], "rn_hole", "band_wall", down)
+    if DL_BASE_SPIGOTS:
+        top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
+        down = Z.copy()
+        down.scaleBy(-1)
+        hole_that_cuts(design, "fl1", top, "DL SPIGOT RIVNUT - ROUND HOLE (J-FRONT-02)", (v("dlf_sp_ax"), v("dlf_sp_ay"), v("wall_z0")),
+             [(X, "dlf_sp_ax"), (Y, "dlf_sp_ay")], "rn_hole", "band_wall", down)
     off = keyhole_check(design, "fl1", "111212", "front left corner (LH)", corner, n_corner)
     with open(os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv"), encoding="utf-8") as fh:
         r = [x for x in csv.DictReader(fh) if x["part_number"] == "111214"][0]

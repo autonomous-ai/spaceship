@@ -92,19 +92,20 @@ PART_INFO = {
                "saw cut (front mitre, back square), CNC drill, deburr, anodise", "calculation", "DRAFT",
                "CAD; finish D-67", "mirror of 111101; front end mitred to the intake's facet piece; tabulated with 111101"),
     "110104": ("assembly: FL1 and FL2 (with its welded door-end block), the knee key 111214 in FL1's knee end with its 2 "
-               "fixing screws and 2 hook studs, DL's 2 spigots in rivnuts and FL2's glide, fitted at the factory", "", "",
-               "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD; joints register J-BASE-02, J-FRONT-02",
-               "goes on along the left side band's front key studs, then down 10 (J-BASE-02); DL stands on its 2 spigots"),
+               "fixing screws and 2 hook studs, and FL2's glide, fitted at the factory", "", "",
+               "calculation", "DRAFT", "CAD 110000_P01_BASE_CAD; joints register J-BASE-02; D-169",
+               "goes on along the left side band's front key studs, then down 10 (J-BASE-02); DL stands on it with no base "
+               "spigots: it locates on pins along the pull at its seam face with L1 (D-169)"),
     "111104": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with a welded 1.5 mm end plate (alloy: assumption)", AA20,
                "saw cut (both ends mitred), weld the corner end plate, CNC drill and cut the keyholes, deburr, anodise",
                "calculation", "DRAFT", "CAD; joints register J-BASE-02 (keyhole piece of the front left corner, carrier of "
-               "the knee key 111214), J-FRONT-02 (DL's round spigot)",
+               "the knee key 111214)",
                "DL's first facet; no glide (112 long between two keyed ends)"),
     "111105": ("aluminium 6063-T6 rectangular tube 100 x 40 x 1.5 with a welded 1.5 mm knee end plate, a welded 7 mm "
                "door-end block and a welded 2 mm door-end plate (alloy: assumption)", AA20,
                "saw cut (knee mitre, door end square to X), weld the knee end plate, the door-end block and the door-end "
                "plate, grind flush, CNC drill and cut the keyholes, deburr, anodise", "calculation", "DRAFT",
-               "CAD; joints register J-BASE-02 (keyhole piece of the knee), J-FRONT-02 (DL's slot spigot); the door-end "
+               "CAD; joints register J-BASE-02 (keyhole piece of the knee); the door-end "
                "plate: the PM's ruling of 2026-11-01 on the door's hinge side (as D-150)",
                "DL's second facet, its block out to DL's door face (in view at the door opening, D-132); the door-end plate "
                "carries that face on inward to the kick strip's back line, from the band's bottom line up, with the lip "

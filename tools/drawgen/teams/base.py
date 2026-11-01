@@ -238,9 +238,9 @@ ASSEMBLIES["110106"] = {
 ASSEMBLIES["110104"] = {
     "principal": "front",          # so the sections read upright (Z up)
     "views": ["above"],
-    "unhatched": ["831001", "111602", "838010", "838001"],
+    "unhatched": ["111602", "838010", "838001"],
     "sections": [
-        # through DL's round spigot on FL1, over the knee key 111214 in FL1's knee end (hidden in every view)
+        # through FL1 over the knee key 111214 in its knee end (hidden in every view)
         {"letter": "A", "point": [-1176.66, -718, 50], "normal": [1, 0, 0], "scale": 1.0, "slice": 25,
          "window": [-760, -680, -2, 121]},
         # through FL2's glide, its load block and M10 rivnut
@@ -255,14 +255,13 @@ ASSEMBLIES["110104"] = {
          "window": [-1000, -955, -2, 121]},
     ],
     "notes": [
-        "Fitted at the factory (D-87), in this order: the M6 rivnuts 838003 set in FL1's and FL2's top faces for DL's "
-        "two spigots 831001, screwed in with threadlocker (joints register J-FRONT-02); the M10 rivnut 838006 set "
-        "through FL2's bottom face and its 5 mm load block 111601 (grip 6.5); the glide 111602 preset; the knee key "
+        "Fitted at the factory (D-87), in this order: the M10 rivnut 838006 set through FL2's bottom face and its 5 mm load block 111601 (grip 6.5); the glide 111602 preset; the knee key "
         "111214 slid into FL1's knee end and fixed by its 2 screws 838010 through the bottom wall (joints register "
         "J-BASE-02); the lip 118001 bonded along both pieces' inner faces and under FL2's door-end plate (D-132; BASE "
         "feature rationale FE-07) (BASE parts list notes).",
         "On site FL1 goes on along the side band's front key studs through its end plate's keyholes, then down 10; "
-        "FL2 goes on along the knee key's studs the same way (joints register J-BASE-02).",
+        "FL2 goes on along the knee key's studs the same way (joints register J-BASE-02). DL stands on FL1 and FL2 "
+        "with no base spigots: it locates on pins along the pull at its seam face with L1 (D-169).",
     ],
 }
 

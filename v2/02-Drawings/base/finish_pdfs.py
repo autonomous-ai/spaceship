@@ -117,9 +117,9 @@ DATUMS = {
               "P02 batch 3). GLIDES: level up from the highest floor spot; never below 8.5 mm under the band.",
     "110104": "Pod coordinates (conventions §4), as built: DL's two facet pieces, FL1 (X -1250 to -1135) and FL2 "
               "with its welded door-end block (to DL's door face, X -972). Factory-fitted: the knee key 111214 in FL1's "
-              "knee end with its 2 fixing screws and 2 hook studs (heads 1.8 off its stud face), DL's 2 spigots in "
-              "rivnuts (no stop washer, 8 proud; J-FRONT-02), FL2's glide with its load block, the lip seal along the "
-              "inner faces. On site it goes on along the left side band's front key studs, then down 10 (J-BASE-02); "
+              "knee end with its 2 fixing screws and 2 hook studs (heads 1.8 off its stud face), FL2's glide with its "
+              "load block, the lip seal along the inner faces; no base spigots for DL (D-169: it locates on pins at "
+              "its seam face). On site it goes on along the left side band's front key studs, then down 10 (J-BASE-02); "
               "FL2 goes on FL1's knee studs the same way at the factory. GLIDE: level up from the highest floor spot "
               "before DL goes on.",
     "110106": "Pod coordinates (conventions §4), as built: FR1 (X 218.5 to 915, Y -850 to -810) with its sill and "
@@ -138,12 +138,11 @@ DATUMS = {
 
 HOLES = {
     "111601": "One hole Ø13.50 +0.15/0 for the glide's M10 rivnut 838006 (D-163).",
-    "111104": "Top wall: DL's round spigot rivnut hole Ø10.00 +0.10/0 (J-FRONT-02, D-163), 13 from the outer face. "
-              "Bottom wall: the knee key's 2 fixing holes Ø7.0, 10.5 from its back face and 7.0 either side of its "
+    "111104": "Top wall: none (DL's base spigot went with D-169). Bottom wall: the knee key's 2 fixing holes Ø7.0, 10.5 from its back face and 7.0 either side of its "
               "centre line (J-BASE-02, 111214). Corner end plate: 2 keyholes, a Ø12 entry 10 below each seat and a "
               "6.5 slot up to it, the seats 27.5 and 61.5 above the bottom face on the plate's centre line (J-BASE-02, "
               "the front corner key 111212's studs).",
-    "111105": "Top wall: DL's slot spigot rivnut hole Ø10.00 +0.10/0 (J-FRONT-02, D-163) and the glide's key hole Ø8. "
+    "111105": "Top wall: the glide's key hole Ø8 (DL's base spigot went with D-169). "
               "Bottom wall: the glide's rivnut hole Ø13.50 +0.15/0 (D-163). Knee end plate: 2 keyholes, a Ø12 entry 10 "
               "below each seat and a 6.5 slot up to it, the seats 27.5 and 61.5 above the bottom face on the plate's "
               "centre line (J-BASE-02, the knee key 111214's studs).",
