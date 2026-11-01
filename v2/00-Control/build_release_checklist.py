@@ -508,6 +508,17 @@ def counts(lines):
             sum(r["state"].startswith("blocked") for r in lines), sum(r["state"] == "HOLD" for r in lines))
 
 
+def read_by_checklist(path, bom):
+    """True for a file this checklist reads: the three trees, and the BOM's parts lists and the joints register. The
+    fallback list names only these, not the packing outputs seen while picking the open PRs."""
+    return path.startswith(tuple(t + "/" for t in TREES)) or bom.wanted(path)
+
+
+def fell_back_notes(bom, labels):
+    """The checklist's fallback list: each file it reads that an open PR changed but main changed later."""
+    return [x.split(", so main's copy")[0] for x in bom.fell_back_lines(labels, keep=lambda p: read_by_checklist(p, bom))]
+
+
 def cut_list_texts(files, refs):
     """Every list a D-89 row may sit in, and the cut lists, each read from the ref that listed it (list_files), never
     from a later branch's old copy."""
@@ -674,7 +685,7 @@ def main(argv=None):
     made += files_only(by_pn, parts, files, labels, screen, fai[0])
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
-    fell = [x.split(", so main's copy")[0] for x in bom.fell_back_lines(labels)]
+    fell = fell_back_notes(bom, labels)
     for x in fell:
         print("read from main:", x)
     Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date, fell), encoding="utf-8")

@@ -378,6 +378,53 @@ class RefsAndPacking(unittest.TestCase):
         self.assertTrue(missing["Packing and Assembly"][0].startswith("no packaging items"), missing)
 
 
+class FallBackReport(unittest.TestCase):
+    """The files read from main over a branch's own edit: the report's section, its filter and the printed lines."""
+    CEIL = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv"
+    FELL = [("origin/air", CEIL), ("origin/air", "v2/03-Manufacturing/air/NOTES.md"),
+            ("origin/air", "v2/07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md")]
+
+    def setUp(self):
+        bom.FELL_BACK[:] = self.FELL
+
+    def tearDown(self):
+        bom.FELL_BACK.clear()
+
+    def test_the_report_lists_only_the_lists_it_reads(self):
+        text = bom.report([], [], [], {}, [], {}, {}, ["origin/main", "origin/air"])
+        self.assertIn("Read from main although a branch changed them, because main changed them later:", text)
+        self.assertIn(f"- `{self.CEIL}`: origin/air changed it, but main changed it later", text)
+        self.assertNotIn("NOTES.md", text)                 # not a parts list: the BOM never reads it
+        self.assertNotIn("PACKAGING-PLAN", text)           # a packing output, not the packing list
+
+    def test_no_fallback_no_section(self):
+        bom.FELL_BACK.clear()
+        self.assertNotIn("Read from main although", bom.report([], [], [], {}, [], {}, {}, []))
+
+    def test_main_prints_them(self):
+        import contextlib
+        import io
+        out, old = io.StringIO(), bom.load_sources
+        bom.load_sources = lambda refs: {}
+        try:
+            with contextlib.redirect_stdout(out):
+                bom.main(["--no-write", "--ref", "origin/main", "--ref", "origin/air"])
+        finally:
+            bom.load_sources = old
+        self.assertIn(f"  read from main: `{self.CEIL}`: origin/air changed it", out.getvalue())
+        self.assertNotIn("NOTES.md", out.getvalue())
+
+    def test_the_lines_are_printed(self):
+        import contextlib
+        import io
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            bom.print_fell_back({"origin/air": "PR #91"})
+        self.assertEqual(out.getvalue().splitlines(),
+                         [f"  read from main: `{self.CEIL}`: PR #91 changed it, but main changed it later, so main's copy is "
+                          "read until that branch rebases"])
+
+
 class FamilyRows(unittest.TestCase):
     def test_family_rows_have_vietnamese_names_and_sources(self):
         nodes = bom.node_names()

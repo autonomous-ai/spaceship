@@ -118,6 +118,12 @@ def branch_changes(base, ref, *paths, diff_filter=None):
     return keep
 
 
+def print_fell_back(labels=None):
+    """Print each parts list or register a branch changed but main changed later (main's copy was read)."""
+    for x in fell_back_lines(labels, keep=wanted):
+        print("  read from main:", x)
+
+
 def fell_back_lines(labels=None, keep=None):
     """One line per file read from base although a branch changed it, for the reports; keep(path) filters them."""
     return [f"`{path}`: {(labels or {}).get(ref, ref)} changed it, but main changed it later, so main's copy is read "
@@ -709,8 +715,7 @@ def main(argv=None):
         (out / "BOM-CHECK.md").write_text(report(parts, skipped, register, reg_where, fails, missing, sources, a.ref), encoding="utf-8")
     print(f"master BOM: {len(parts)} lines from {len([p for p in sources if p != REGISTER]) - len(skipped)} parts list(s), "
           f"{len(register)} register hardware items; {sum(len(v) for v in missing.values())} missing items in {len(missing)} teams")
-    for x in fell_back_lines(keep=wanted):
-        print("  read from main:", x)
+    print_fell_back()
     if fails:
         print("\nFAIL")
         for f in fails:
