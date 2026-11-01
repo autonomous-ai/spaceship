@@ -37,6 +37,10 @@ NO_DRAWING = {
 # ELECTRICAL's LED profile under it (A-A), and in plan through the corner where the right run butts the back run (B-B).
 ASSEMBLIES = {
     "810201": {
+        # the overall sizes on the sides away from the balloons, so no leader crosses them (Reviewer 16's P3 on #411);
+        # ELECTRICAL's profile is ballooned on section A-A, where it shows cut under the right run
+        "overall_sides": {"x": "down", "y": "right"},
+        "balloon_views": {"718101": "section_A"},
         "sections": [
             {"letter": "A", "point": [1136, 0, 2250], "normal": [0, -1, 0], "scale": 0.5, "slice": 10,
              "window": [1090, 1180, 2205, 2280]},
