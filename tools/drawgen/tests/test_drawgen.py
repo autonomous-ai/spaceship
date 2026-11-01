@@ -25,6 +25,8 @@
 10. Holes square to an angled face get a lettered view square to that face (ISO 128-30); blind holes with a drill
     point read as blind.
 11. An entry written for one material (welded steel, D-131) refuses a parts list that gives another.
+12. Holes at a tap drill's size are refused as tapped unless the entry lists them as rivet holes (BASE's D-130
+    boot); then the table names the rivet. A list row that says tapped is still refused.
 """
 
 import os
@@ -396,6 +398,50 @@ def test_tapped_holes_wait_for_their_callouts():
         assert "tapped holes" in str(e) and "item 5" in str(e), e
     else:
         raise AssertionError("drew a part with tapped holes")
+
+
+def _drilled_bar(path, dia):
+    """A 300 x 40 x 20 bar with two holes of one size through its thickness."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+    sh = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 300, 40, 20).Shape()
+    for x in (50.0, 250.0):
+        c = BRepAlgoAPI_Cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, 20, -1), gp_Dir(0, 0, 1)), dia / 2, 22).Shape())
+        c.Build()
+        sh = c.Shape()
+    w = STEPControl_Writer()
+    w.Transfer(sh, STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+def test_rivet_holes_pass_the_tapped_guard():
+    """BASE's D-130 boot takes blind rivets in holes of tap drills' sizes (3.3, 4.2, about 5.0; Reviewer 5): a part
+    with Ø4.2 holes is refused as tapped, unless its entry lists 4.2 as a rivet hole; then it is drawn and its table
+    names the rivet. A parts-list row that says tapped is still refused."""
+    d = os.path.join(TMP, "rivet")
+    os.makedirs(d, exist_ok=True)
+    step = _drilled_bar(os.path.join(d, "219995_P01_TEST-BAR-RIVETED_STEP.step"), 4.2)
+    row = dict(ROW, part_number="219995", name="TEST - BAR - RIVETED")
+    try:
+        compose.make("219995", "none", SPEC, os.path.join(d, "a.pdf"), step=step, row=row)
+        raise AssertionError("drew Ø4.2 holes as plain holes")
+    except compose.NotDrawable as e:
+        assert "tapped holes" in str(e) and "Ø4.2" in str(e), e
+    spec = dict(SPEC, rivet_holes={4.2: "blind rivet, Ø4 (test)"})
+    p = os.path.join(d, "b.pdf")
+    compose.make("219995", "none", spec, p, step=step, row=row)
+    text = " ".join(fitz.open(p)[0].get_text().split())
+    assert text.count("rivet hole: blind rivet, Ø4 (test)") == 2, text[:800]
+    try:
+        compose.make("219995", "none", spec, os.path.join(d, "c.pdf"), step=step,
+                     row=dict(row, process="drilled and tapped M5"))
+        raise AssertionError("drew a part whose list says tapped")
+    except compose.NotDrawable as e:
+        assert "its parts list says so" in str(e), e
 
 
 def test_long_words_break_at_separators():
