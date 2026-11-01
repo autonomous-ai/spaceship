@@ -116,3 +116,67 @@ ASSEMBLIES = {
         ],
     },
 }
+
+# The right side band assembly: 110101's mirror under R1 (its own sections at its own glide, spigot and J-BASE-01 bolt
+# rivnut, and through its back corner key).
+ASSEMBLIES["110102"] = {
+    "views": ["above"],
+    "unhatched": ["831001", "118002", "838001", "838010"],
+    "sections": [
+        {"letter": "A", "point": [1230, -597, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+         "window": [1204, 1256, -2, 62]},
+        {"letter": "B", "point": [1230, -542.7, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+         "window": [1204, 1256, 86, 121]},
+        {"letter": "C", "point": [1230, -422.7, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 30,
+         "window": [1204, 1256, 86, 121]},
+        {"letter": "D", "point": [1230, 830, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 25,
+         "window": [1194, 1256, -2, 121]},
+    ],
+    "interfaces": [
+        {"view": "above", "of": ["831001", "838003", "118002"], "along": "x",
+         "origin": {"pn": "831001", "pick": "-Y"}, "side": "down",
+         "words": "VIEW FROM ABOVE: the spigot, rivnut and glide centres along the band, from the front spigot "
+                  "(datum B of 111102, joints register R-J6)"},
+    ],
+    "notes": [
+        "Fitted at the factory (D-87), in this order: the six M6 rivnuts 838003 set in the band's top face "
+        "(torque HOLD-01), a stop washer 831002 under the head of each of the four J-BASE-01 bolt rivnuts "
+        "(joints register H-08); the two spigots 831001 screwed into their rivnuts with threadlocker; the M10 "
+        "rivnuts 838006 set through the band's bottom face and the 5 mm load blocks 111601 (grip 6.5, PM ruling "
+        "2026-11-01); the glides 118002 preset; the back corner key 111211 slid into the back end against the "
+        "inner wall, its 2 hook stud bolts 838001 through the inner wall and its 2 fixing screws 838010 through "
+        "the bottom wall (joints register J-BASE-02, D-129, D-144); the end cap 118003 in the back end; the lip "
+        "118001 bonded along the inner face (D-132) (BASE parts list notes).",
+    ],
+}
+
+# The back band assembly: sections across the band (looking along -X) through the middle glide, the spigot under B1's
+# round spigot (datum B of 111103) and the J-BASE-01 bolt rivnut next to it; the interface sizes along the band from
+# the spigot at its left end.
+ASSEMBLIES["110103"] = {
+    "views": ["above"],
+    "unhatched": ["831001", "118002"],
+    "sections": [
+        {"letter": "A", "point": [0, 830, 50], "normal": [1, 0, 0], "scale": 2.0, "slice": 30,
+         "window": [804, 856, -2, 62]},
+        {"letter": "B", "point": [-102.75, 824, 50], "normal": [1, 0, 0], "scale": 2.0, "slice": 30,
+         "window": [804, 856, 86, 121]},
+        {"letter": "C", "point": [-222.75, 824, 50], "normal": [1, 0, 0], "scale": 2.0, "slice": 30,
+         "window": [804, 856, 86, 121]},
+    ],
+    "interfaces": [
+        {"view": "above", "of": ["831001", "838003", "118002"], "along": "x",
+         "origin": {"pn": "831001", "pick": "-X"}, "side": "down",
+         "words": "VIEW FROM ABOVE: the spigot, rivnut and glide centres along the band, from the spigot at its left "
+                  "end (B1's; the part drawing's datum B is the spigot at X -102.75, joints register R-J6)"},
+    ],
+    "notes": [
+        "Fitted at the factory (D-87), in this order: the twelve M6 rivnuts 838003 set in the band's top face "
+        "(torque HOLD-01), a stop washer 831002 under the head of each of the eight J-BASE-01 bolt rivnuts "
+        "(joints register H-08); the four spigots 831001 screwed into their rivnuts with threadlocker; the M10 "
+        "rivnuts 838006 set through the band's bottom face and the 5 mm load blocks 111601 (grip 6.5, PM ruling "
+        "2026-11-01); the glides 118002 preset; the lip 118001 bonded along the inner face (D-132). On site the band "
+        "is lowered between the side bands onto their back corner keys' studs through its end plates' open slots "
+        "(joints register J-BASE-02, D-129) (BASE parts list notes).",
+    ],
+}
