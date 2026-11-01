@@ -553,7 +553,9 @@ def profile_dims(sh, vd):
     the next), on its outer side, horizontal or vertical as it runs in the view (ISO 129-1). The sizes are laid out
     before any is drawn, and one whose extension lines would cross another size's value or lines goes on its other
     side when it crosses none there and its value is clear (BASE's sill 111302: the step's 19, on the right, ran its
-    extension lines through the 17 and across the 103.5's arrow; under the top flange it crosses nothing)."""
+    extension lines through the 17 and across the 103.5's arrow; under the top flange it crosses nothing). An end
+    whose arrow would sit in the sheet itself (its face is the far one: the 19's at the top flange's top face, the
+    17's at the step's far face) gets its arrow from outside, the tip on the face's visible edge (ISO 129-1)."""
     pr = vd.profile
     ch, P3 = pr["chain"], pr["P3"]
     marks = [ch.start] + [f.outer_pt for f in ch.folds]
@@ -561,6 +563,27 @@ def profile_dims(sh, vd):
     marks.append(end)
     bx = vd.box()
     cx, cy = (bx[0] + bx[2]) / 2, (bx[1] + bx[3]) / 2
+    # the sheet's material on paper: its two skins as one outline (a fold's arc as its chord)
+    mat = [vd.S(vd.view.to2d(P3(q))) for q in ch.skins["A"] + ch.skins["B"][::-1]]
+    eps = min(0.3, ch.t * vd.scale / 2)
+
+    def inside(q):
+        c = False
+        for (x1, y1), (x2, y2) in zip(mat, mat[1:] + mat[:1]):
+            if (y1 > q[1]) != (y2 > q[1]) and q[0] < x1 + (q[1] - y1) * (x2 - x1) / (y2 - y1):
+                c = not c
+        return c
+
+    def far(a, b, side, gap):
+        # each end whose arrow tip, on the dimension line, has the sheet just inside it
+        k = 0 if side in ("up", "down") else 1          # the size runs along x (0) or y (1)
+        lv = (max(a[1 - k], b[1 - k]) + gap) if side in ("up", "right") else (min(a[1 - k], b[1 - k]) - gap)
+        out = []
+        for p, o in ((a, b), (b, a)):
+            q = [lv, lv]
+            q[k] = p[k] + (eps if o[k] > p[k] else -eps)
+            out.append(inside(q))
+        return tuple(out)
     sizes = []
     for i in pr["shown"]:
         a, b = vd.S(vd.view.to2d(P3(marks[i]))), vd.S(vd.view.to2d(P3(marks[i + 1])))
@@ -573,19 +596,22 @@ def profile_dims(sh, vd):
         sizes.append((a, b, side, fmt(ch.flanges[i][0])))
 
     def laid(sides):
-        # each size's gap (6 beyond its farther point, 8 more for each earlier size on its side), lines and value box
+        # each size's gap (6 beyond its farther point, 8 more for each earlier size on its side), lines, value box and
+        # far ends
         used, out = {}, []
         for (a, b, _s, t), side in zip(sizes, sides):
             gap = 6.0 + 8.0 * used.get(side, 0)
             used[side] = used.get(side, 0) + 1
-            out.append((gap,) + tuple(sh.dim_linear_lines(a, b, side, gap, t, 2.5)))
+            fl = far(a, b, side, gap)
+            out.append((gap,) + tuple(sh.dim_linear_lines(a, b, side, gap, t, 2.5, far=fl)) + (fl,))
         return out
 
     def crossings(lay):
-        # each size: the other sizes whose value or lines its extension lines come within 0.3 of
-        return {k: {j for j, (_g, segs, box) in enumerate(lay) if j != k and any(
+        # each size: the other sizes whose value or lines its extension lines come within 0.3 of (and its dimension
+        # line and arrows, where an arrow comes from outside)
+        return {k: {j for j, (_g, segs, box, _f) in enumerate(lay) if j != k and any(
             sh._seg_box(p, q, box) or any(sh._seg_seg_dist(p, q, u, v) < 0.3 for u, v in segs)
-            for p, q in lay[k][1][:2])} for k in range(len(lay))}
+            for p, q in lay[k][1][:2] + (lay[k][1][2:] if any(lay[k][3]) else []))} for k in range(len(lay))}
 
     other = {"up": "down", "down": "up", "left": "right", "right": "left"}
     sides = [s[2] for s in sizes]
@@ -609,8 +635,8 @@ def profile_dims(sh, vd):
                 break
         else:
             break
-    for (a, b, _s, t), side, (gap, _segs, _box) in zip(sizes, sides, lay):
-        sh.dim_linear(a, b, side, gap, t, 2.5)
+    for (a, b, _s, t), side, (gap, _segs, _box, fl) in zip(sizes, sides, lay):
+        sh.dim_linear(a, b, side, gap, t, 2.5, far=fl)
 
 
 def flat_dims(sh, part, fv):
