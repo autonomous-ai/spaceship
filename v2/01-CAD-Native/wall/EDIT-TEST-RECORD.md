@@ -1549,6 +1549,10 @@ Copy opened as a new, unsaved document and closed without saving. Components: 51
 | cass_len | 1164.87 | 1064.87 |
 | cass_h | 1116.87 | 1155.48 |
 | pnl_h | 1118.61 | 1157.22 |
+| pod_h | 2400 | 2400 |
+| outer_t | 46 | 46 |
+| lin_gap | 4 | 4 |
+| lip_w | 12 | 12 |
 | panel_z0 | 112.26 | 112.26 |
 | seam_gap | 2.26 | 2.26 |
 | tray_t | 0.5 | 0.5 |
@@ -1579,7 +1583,7 @@ Copy opened as a new, unsaved document and closed without saving. Components: 51
 | tray stops seam_gap / 2 short of X 0 | PASS |
 | felt follows the tray, 1 mm clear inside the 0.5 returns | PASS |
 | G-B2-B4 19.1 hole in the bottom return follows the row seam (Z 1194.52) | PASS |
-| no cable hole through the top lip | FAIL |
+| no cable hole through the top lip | PASS |
 | FX-CEIL 12 felt hole follows the pod width (X (pod_w - 2 stack_t) / 4 = 533.00), 2 under the lip | PASS |
 | FX-SHELF 16 felt hole at X 346, Z 2250 | PASS |
 | revert: every body back to its before box, healthy | PASS |
