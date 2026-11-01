@@ -909,7 +909,7 @@ MEMBER_NOTES = {    # {n}: the inner face panel's rivnuts in that tube (D-130), 
            "at X 1050 and slot 8.5 x 14 at X 1147 in its bottom wall, over BASE's support behind the mesh",
     "B02": "80 x 20 x 1.5; 6 holes 14 in its back wall round the J-FRONT-01 rivnut tails (X 1224); {n} rivnuts 838003 "
            "for the inner face panel's screws (X 1185)",
-    "B05": "20 x 20 x 1.5; 2 rivnuts 838003 in its top for DT's spigots 831001 (J-FRONT-03, X 270 and 410) and {n} in "
+    "B05": "20 x 20 x 1.5; 2 rivnuts 838003 in its top for DT's spigots 831010 (J-FRONT-03, X 270 and 410) and {n} in "
            "its back wall for the inner face panel's screws (Z 2110)",
     "B06": "20 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws, on its middle",
     "B07": "20 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws, on its middle",
@@ -969,7 +969,7 @@ def export_all(app):
          "v1 decor frame drawing (front and back frames); D-79; joints register HOLD-10; D-120 (each tube its own "
          "part, #232)", "%.1f m of tube; welds per its weldment drawing; rivnuts 838003 fitted in the factory: %d for "
          "the inner face panel's screws, each with an 838004 stop washer on its head (D-130), and 2 for DT's spigots "
-         "831001 (in the bottom, bolt-line, band, ledge, diagonal and glass-edge tubes)" % (tube_m, n_screws)),
+         "831010 (in the bottom, bolt-line, band, ledge, diagonal and glass-edge tubes)" % (tube_m, n_screws)),
     ] + member_rows + [
         ("351302", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
          "aluminium EN AW-5754-H22 sheet 1.5 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
