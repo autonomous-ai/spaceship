@@ -66,5 +66,7 @@ folded down channel 811204 and the cut diffuser 811205 are gone (cancelled by Co
 
 - (done) Edit test: `EDIT-TEST-RECORD.md`, PASS on this build (12:42 UTC): pod_w, wall_depth, cs_front, sh_z0, lg_z,
   sh_t and lg_t, every body to 0.0 mm and every fold face at its radius.
-- Drawings (D-89 parts 1 to 4): GA, ledge and shelf assemblies, ledge top, back run, side runs (tabulated): specs ready in `../../02-Drawings/interior/`, made with the ceiling's drawing method once its re-proven samples pass.
+- Drawings: the four folded parts (811101, 811201, 811202, 811203) come from the drawing generator's bent sheet mode
+  (D-139, D-158; #335), in `../../02-Drawings/interior/`. The GA and the two assembly sheets (810000, 810101, 810201)
+  wait for the generator's assembly mode; Fusion draws none of these.
 - HOLD: the ledge brackets and their stand-offs, the screen rail, the shelf's fixing to the wall cassettes (WALL interfaces).
