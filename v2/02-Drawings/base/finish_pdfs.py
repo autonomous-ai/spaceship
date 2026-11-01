@@ -142,7 +142,7 @@ def text_block(pn):
         "Holes: %s" % HOLES[pn],
         "Sources: CAD 110000_P01_BASE_CAD and the part's own design; feature reasons in "
         "v2/02-Drawings/base/FEATURE-RATIONALE.md; status of every number in base_build.py.",
-        "Made by the BASE Engineer (AI agent), v2/02-Drawings/base/base_drawings.py, 2026-11-01.",
+        "Sheet made from the design with v2/02-Drawings/base/base_drawings.py, 2026-11-01.",
     ]
     if is_asm:
         import csv
