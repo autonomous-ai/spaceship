@@ -1325,8 +1325,16 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 R = L - 2
                 sh.arc(S(far), R, lo, hi, W_THIN)
                 am = (lo + hi) / 2
-                sh.text(S(far)[0] + (R + 1.5) * math.cos(am), S(far)[1] + (R + 1.5) * math.sin(am),
-                        "%s°" % fmt(ang), 2.5, "left" if math.cos(am) >= 0 else "right", valign="mid")
+                # the value by the arc's middle, out along it until it touches no line (a narrow angle puts its own
+                # lines across a value written right at the arc)
+                ang_t = "%s°" % fmt(ang)
+                cands = []
+                for d_ in (1.5, 3.0, 5.0, 8.0, 12.0):
+                    px, py = S(far)[0] + (R + d_) * math.cos(am), S(far)[1] + (R + d_) * math.sin(am)
+                    cands += [(px, py, "left" if math.cos(am) >= 0 else "right"), (px, py, "center")]
+                pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
+                            cands[0])
+                sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
                 # true lengths along the two long faces, from the other (square) end
                 ve = vd.extent
                 other = ve[0] if abs(far[ax_k] - ve[0]) > abs(far[ax_k] - ve[2]) else ve[2]
