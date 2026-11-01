@@ -10,24 +10,33 @@ folded enclosure body (a folded part keeps its drawing, D-89), in one Fusion run
         v2/02-Drawings/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_DWG.pdf
 
 The body's build set its design's Front (ViewCube) to the room side, +Y up (electrical_parts_cad.py, WALL's
-set_front method), so Fusion's standard views line up in ISO first-angle: TOP below the FRONT, BOTTOM above
-it, the view from the LEFT on its right, the view from the RIGHT on its left; an iso at 1:5. The drawing API
-makes base views only and can't move them, so each centre is worked out from the part's size before the
-view is placed, and every view is measured against the size it should have: a view that doesn't match stops
-the run before any dimension is added (nothing wrong gets drawn). Dimensions attach to view geometry
-(WALL's helpers, copied); the hole list goes into the PDF. Text can't go on a sheet through the API, so the data block, notes and hole list are written into
-the exported PDF by body_drawing_text.py, which also removes the account name (the repo is public).
+set_front method), so Fusion's standard views line up in ISO first-angle: TOP below the FRONT, the view from
+the LEFT on its right, the view from the RIGHT on its left; an iso at 1:5. Fusion's standard Bottom is the
+view from below turned 180 degrees (Reviewer 7's P1, #173: H04 printed 55 from the right and 18 from the
+front), so the view above the FRONT is made from the design's named view "711001 VIEW FROM BELOW"
+(body_named_view.py: looking up, the open side at the top, datum B on the left), passed as --arg below=N, the
+orientation value that picks it (found by the probe of 2026-11-01). The drawing API makes base views only and
+can't move them, so each centre is worked out from the part's size before the view is placed, and every view
+is measured against the size it should have and its holes against the STEP (body_views.py: each circle where
+the STEP's hole falls in that view, and no other): a view that doesn't match stops the run before any
+dimension is added (nothing wrong gets drawn). Dimensions attach to view geometry (WALL's helpers, copied);
+the H05-H08 pitch joins the holes' centres. Text can't go on a sheet through the API, so the data block,
+notes, hole table and hole tags are written into the exported PDF by body_drawing_text.py, which reads the
+views' outlines this run writes next to the raw PDF (.views.json).
 
 The shared drawing helpers (tools/fusion/fusion_drawing.py, PM 2026-11-01, after CEILING's first sample) make
 the views, the symbol and the dimensions: Fusion ignores the view style given at creation, so each view's style
 (visible edges only, no hidden lines, the iso too) is set again on the made view and checked; the symbol's
 outline is alone in its own sketch, its circles in another (one sketch printed a triangle); each dimension is
 placed once. Centre marks and centre lines go on the views' holes after the dimensions, so they can't change
-the edge lines the dimensions attach to; every view's style is checked again before the export.
+the edge lines the dimensions attach to; the holes are cut extrudes, so the marks are set for round cuts as
+well as hole features (with holes only, the PDF had none: Reviewer 7). Every view's style is checked again
+before the export.
 """
 
+import importlib.util
+import json
 import os
-import sys
 
 import adsk.core
 import adsk.drawing
@@ -45,28 +54,43 @@ ISO_AT, ISO_SCALE = (205.0, 70.0), 0.2
 SYMBOL_AT = (350.0, 25.0)      # left of the title block, under the iso
 TOL = 1.0                      # sheet mm: a placed view must be this close to its expected size
 DATUM_LEAD = 4.0               # sheet mm from an edge to its datum box (the box is about 7 mm, beyond this point)
-# name, orientation, where (first-angle position against the FRONT)
+PITCH_AT, WIDTH_AT = 7.0, 14.0  # sheet mm above the FRONT view: the H07-H08 pitch, then the width outside it
+STEP = "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step"
+NAMED_BELOW = "711001 VIEW FROM BELOW"
+# name, orientation, where (first-angle position against the FRONT); the view from below: the named view's value
 VIEWS = [("front", "FrontViewOrientationType", "centre"),
          ("top", "TopViewOrientationType", "below"),
-         ("bottom", "BottomViewOrientationType", "above"),
+         ("bottom", "below", "above"),
          ("left", "LeftViewOrientationType", "right"),
          ("right", "RightViewOrientationType", "left")]
 
 
+def load(rel, name):
+    """A repo module by its full path, under a name no other team uses: Fusion keeps modules between runs, so a
+    plain import could return another team's module of the same name (PM heads-up 2026-10-31)."""
+    path = os.path.join(ARGS.get("repo_root", "."), rel)
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if os.path.abspath(mod.__file__) != os.path.abspath(path):
+        raise RuntimeError("helper loaded from %s, not %s" % (mod.__file__, path))
+    print("helper %s: %s" % (os.path.basename(rel), mod.__file__))
+    return mod
+
+
 def part_size():
     """w, h, d of the body (mm) from the route model, the numbers its build used."""
-    # by full path, under a name no other team uses: Fusion keeps modules between runs, so a plain import
-    # could return another team's module of the same name (PM heads-up 2026-10-31); print the file and check it
-    import importlib.util
-    path = os.path.join(ARGS.get("repo_root", "."), "v2", "01-CAD-Native", "electrical", "electrical_model.py")
-    spec = importlib.util.spec_from_file_location("ele_electrical_model", path)
-    M = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(M)
-    if os.path.abspath(M.__file__) != os.path.abspath(path):
-        raise RuntimeError("helper loaded from %s, not %s" % (M.__file__, path))
-    print("helper electrical_model: %s" % M.__file__)
-    v = M.values()
+    v = load("v2/01-CAD-Native/electrical/electrical_model.py", "ele_electrical_model").values()
     return v["pu_w"], v["pu_h"], v["pu_d"]
+
+
+def orientation(code):
+    """A standard orientation by its name, or the view from below: the value given as --arg below=N."""
+    if code != "below":
+        return getattr(VO, code)
+    if "below" not in ARGS:
+        raise RuntimeError("--arg below=N is needed: the orientation value of the named view %s" % NAMED_BELOW)
+    return int(ARGS["below"])
 
 
 def expected(w, h, d):
@@ -93,6 +117,17 @@ def dpt(x, y):
 def xy(dp: "adsk.drawing.DrawingPoint"):
     c = dp.coordinate
     return c.x, c.y
+
+
+def circles_of(view: "adsk.drawing.View"):
+    """[(x, y, r, curve)] sheet mm of the view's circles; r from a point on the circle (the API gives no radius)."""
+    out = []
+    _lines, circles = curves(view)
+    for c in circles:
+        cx, cy = xy(c.centerPoint)
+        sx, sy = xy(c.startPoint)
+        out.append((cx, cy, ((sx - cx) ** 2 + (sy - cy) ** 2) ** 0.5, c))
+    return out
 
 
 def curves(view: "adsk.drawing.View"):
@@ -170,14 +205,18 @@ def add_view(sheet: "adsk.drawing.Sheet", orientation, centre, scale):
 
 
 def centre_marks(view: "adsk.drawing.View", name):
-    """Centre marks and centre lines on the view's holes, set on the made view and read back."""
+    """Centre marks and centre lines on the view's holes: hole features and round cuts (this body's holes are cut
+    extrudes), set on the made view and read back."""
     marks = view.getCenterMarkOptions()
     marks.isAppliedToHoles = True
+    marks.isAppliedToRoundCuts = True
     lines = view.getCenterLineOptions()
     lines.isAppliedToHoles = True
+    lines.isAppliedToRoundCuts = True
     if not view.setCenterMarkOptions(marks) or not view.setCenterLineOptions(lines):
         raise RuntimeError("centre marks or lines not applied to the %s view" % name)
-    if not (view.getCenterMarkOptions().isAppliedToHoles and view.getCenterLineOptions().isAppliedToHoles):
+    m, ln = view.getCenterMarkOptions(), view.getCenterLineOptions()
+    if not (m.isAppliedToHoles and m.isAppliedToRoundCuts and ln.isAppliedToHoles and ln.isAppliedToRoundCuts):
         raise RuntimeError("the %s view's holes have no centre marks or lines after setting them" % name)
 
 
@@ -206,7 +245,7 @@ def place_views(sheet: "adsk.drawing.Sheet", w, h, d):
     exp = expected(w, h, d)
     views, bad = {}, []
     for name, orient, _where in VIEWS:
-        views[name] = add_view(sheet, getattr(VO, orient), exp[name][0], SCALE)
+        views[name] = add_view(sheet, orientation(orient), exp[name][0], SCALE)
     for name, v in views.items():
         e = extent(v)
         (cx, cy), (sw, sh) = exp[name]
@@ -222,6 +261,43 @@ def place_views(sheet: "adsk.drawing.Sheet", w, h, d):
     if bad:
         raise RuntimeError("views not as expected (the design's Front may not be the room side): %s" % ", ".join(bad))
     return views
+
+
+def check_holes(views):
+    """Each orthographic view's circles against the STEP's holes as that view shows them (body_views.py): a turned
+    or wrong view stops the run here, before any dimension. Returns the STEP's (box, holes, zs)."""
+    BV = load("v2/02-Drawings/electrical/body_views.py", "ele_body_views")
+    box, holes = BV.step_body(os.path.join(ARGS["repo_root"], STEP), ARGS["repo_root"])
+    zs = BV.opens_to(box)
+    probs = []
+    for name, _o, _w in VIEWS:
+        got = [(x, y, r) for x, y, r, _c in circles_of(views[name])]
+        want = BV.expected(name, box, holes, extent(views[name]), SCALE, zs)
+        print("HOLES|%s|want %s|got %s" % (name, [tuple(round(v, 2) for v in c) for c in want],
+                                           [tuple(round(v, 2) for v in c) for c in got]))
+        probs += BV.compare(name, want, got)
+    if probs:
+        raise RuntimeError("holes not where the STEP puts them: %s" % "; ".join(probs))
+    print("holes: every view's circles where the STEP puts them (%d holes)" % len(holes))
+    return box, holes, zs
+
+
+def front_circle(view: "adsk.drawing.View", at, tol=0.3):
+    """The FRONT view's circle centred within tol of `at` (sheet mm): its centre point, for a dimension."""
+    hits = [c for x, y, _r, c in circles_of(view) if abs(x - at[0]) <= tol and abs(y - at[1]) <= tol]
+    if len(hits) != 1:
+        raise RuntimeError("%d circles at %s in the FRONT view" % (len(hits), at))
+    return hits[0].centerPoint
+
+
+def write_views(views, path):
+    """The views' outlines and circles (sheet mm) for the PDF's finish step."""
+    rec = {"scale": SCALE, "views": {}}
+    for name, v in views.items():
+        rec["views"][name] = {"extent": [round(a, 4) for a in extent(v)],
+                              "circles": [[round(x, 4), round(y, 4), round(r, 4)] for x, y, r, _c in circles_of(v)]}
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(rec, fh, indent=1)
 
 
 BODY_CAD = "711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD"
@@ -259,24 +335,33 @@ def annotate(app: "adsk.core.Application"):
     references_up_to_date(app.activeDocument)
     w, h, d = part_size()
     views = place_views(sheet, w, h, d)
+    box, holes, zs = check_holes(views)
     f, t, r = views["front"], views["top"], views["right"]
     fe, te, re_ = extent(f), extent(t), extent(r)
     # overall sizes, each in a gap beside its view (nothing crosses another view): the width above the front view
     # (the gap below it holds datums A and C: run of 2026-11-01, A's box sat on the top view's edge and C's touched the
     # width's line), the height beside the view from the right (outer side), the depth beside the top view; each from
-    # the edge lines on the two opposite sides, so a corner relief can't move it
+    # the edge lines on the two opposite sides, so a corner relief can't move it. The H05-H08 pitch (Reviewer 7) joins
+    # the holes' centres on the FRONT: 236 between H07 and H08 above the view, inside the width so their lines
+    # don't cross, and 238 between H06 and H08 in the free gap on its right (the PDF prints both as reference)
+    BV = load("v2/02-Drawings/electrical/body_views.py", "ele_body_views")
+    lip = sorted(BV.expected("front", box, holes, fe, SCALE, zs), key=lambda c: (round(c[1], 1), c[0]))
+    h05, h06, h07, h08 = [(x, y) for x, y, _r in lip]       # bottom left, bottom right, top left, top right
     dims = DimensionSet(sheet)
-    dim(dims, end_on(f, "left", (fe[0], fe[3])), end_on(f, "right", (fe[2], fe[3])), ((fe[0] + fe[2]) / 2, fe[3] + 9.0), "width")
+    dim(dims, front_circle(f, h07), front_circle(f, h08), ((h07[0] + h08[0]) / 2, fe[3] + PITCH_AT), "pitch 236")
+    dim(dims, front_circle(f, h06), front_circle(f, h08), (fe[2] + 8.0, (h06[1] + h08[1]) / 2), "pitch 238")
+    dim(dims, end_on(f, "left", (fe[0], fe[3])), end_on(f, "right", (fe[2], fe[3])), ((fe[0] + fe[2]) / 2, fe[3] + WIDTH_AT), "width")
     dim(dims, end_on(r, "bottom", (re_[0], re_[1])), end_on(r, "top", (re_[0], re_[3])), (re_[0] - 9.0, (re_[1] + re_[3]) / 2), "height")
     dim(dims, end_on(t, "bottom", (te[2], te[1])), end_on(t, "top", (te[2], te[3])), (te[2] + 9.0, (te[1] + te[3]) / 2), "depth")
-    print("dimensions: width (front view), height (view from the right), depth (top view)")
+    print("dimensions: pitch 236 and 238 and width (front view), height (view from the right), depth (top view)")
     # Fusion draws a datum's 7 mm box beyond its placement point, away from the edge (measured on the 2026-11-01
     # sheet): A hangs 4 mm under the front view, C stands 4 mm over the top view, at opposite ends of the gap
     datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 30.0, fe[1] - DATUM_LEAD))
-    datum(sheet, "B", edge_line(f, "left"), (fe[0] - 14.0, fe[1] + 30.0))
+    datum(sheet, "B", edge_line(f, "left"), (fe[0] - DATUM_LEAD, fe[1] + 30.0))   # its box 13 mm clear of the side view
     datum(sheet, "C", edge_line(t, "top"), (te[2] - 20.0, te[3] + DATUM_LEAD))
     # no Fusion hole tables: on this folded body the view corners are relieved, so a table's origin can't sit on
-    # the datum corner; the hole list H01-H08 from the datums goes into the PDF (body_drawing_text.py)
+    # the datum corner, and a table takes one view's holes only; the hole table H01-H08 from the datums and the tags
+    # go into the PDF (body_drawing_text.py)
     for name, _o, _w in VIEWS:              # after the dimensions: centre lines can't move an edge line now
         centre_marks(views[name], name)
     first_angle_symbol(sheet, *SYMBOL_AT)
@@ -292,6 +377,8 @@ def annotate(app: "adsk.core.Application"):
     if not dwg.exportManager.execute(opts):
         raise RuntimeError("PDF export failed")
     print("raw PDF (not for the repo): %s" % os.path.relpath(raw, ARGS["repo_root"]))
+    write_views(views, raw[:-4] + ".views.json")
+    print("views' outlines for the finish step: %s" % os.path.relpath(raw[:-4] + ".views.json", ARGS["repo_root"]))
     print("sheet now: %d views, %d dimensions, %d hole tables" % (
         sheet.views.count, sheet.drawingDimensions.count, sheet.holeTables.count))
 

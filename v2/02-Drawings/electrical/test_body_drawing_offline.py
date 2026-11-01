@@ -1,27 +1,31 @@
 #!/usr/bin/env python3
-"""Offline test of drawing 711001's scripts (make_body_drawing.py and body_drawing_text.py): no Fusion.
+"""Offline test of drawing 711001's scripts (make_body_drawing.py, body_views.py, body_drawing_text.py): no Fusion.
 
     python3 v2/02-Drawings/electrical/test_body_drawing_offline.py
 
-It fakes the adsk.drawing objects the script uses. Each faked view has the size Fusion should give it
-(at the route model's size: FRONT w x h at 1:2, TOP and BOTTOM w x d, the side views d x h) at the centre the script asks
-for. The test runs the whole annotate step, then checks:
-- every view, dimension, datum and the symbol sits inside the A2 frame, clear of the title block, the text
-  block and the other views; dimensions start and end on real vertices of the views' edge lines, though the
-  folded body's corner reliefs leave no vertex at a view's corner; no Fusion hole table;
-- a view of the wrong size (a FRONT that isn't the room side) stops the run before any dimension;
-- the finished PDF (the faked export, then body_drawing_text.py) has no account name and states units,
-  material, finish, a tolerance and every hole H01-H08, read with the drawing check's rules;
-- the PM's four drawing traps (2026-11-01, CEILING's first sample), with the shared helpers
-  (tools/fusion/fusion_drawing.py): (1) every line of the PDF text block is at least 2.5 mm capital height
-  (headings 3.5) and stays inside its block; (2) the first-angle symbol's outline is one closed chain alone in
-  its sketch, its circles in another; (3) every view, the iso too, ends with visible edges only, though the
-  faked Fusion hands each view back with hidden lines, as the real one does; (4) no dimension twice.
-  Centre marks and lines go on the 5 orthographic views' holes after every dimension.
-It tests the script's logic; Fusion's own view conventions are checked on the real sheet.
+It fakes the adsk.drawing objects the script uses. Each faked view has the size Fusion should give it (at the route
+model's size: FRONT w x h at 1:2, the views from above and below w x d, the side views d x h) at the centre the
+script asks for, and its holes where Fusion draws them, entered here by hand from the build's numbers (not from
+body_views.py): Fusion's standard Bottom turned 180 degrees from the first-angle view from below, as on the sheet of
+2026-11-01 (Reviewer 7's P1), and the named view "711001 VIEW FROM BELOW" the right way. Its PDF export draws the
+views' lines and circles on Fusion's "Visible" layer, a centre mark on each hole only when the view's options cover
+round cuts (this body's holes are cut extrudes), the dimensions' values and the "Created by" field. Then it checks:
+- every view, dimension, datum and the symbol sits inside the A2 frame, clear of the title block, the text block
+  and the other views; datum boxes 1.5 mm clear of views, dimension lines and each other; no Fusion hole table;
+- each view's holes where the STEP puts them: the turned Bottom stops the run before any dimension, the named view
+  passes; a wrong-size FRONT stops it too;
+- the H05-H08 pitch, 236 and 238, joins the holes' centres; the overall sizes join view line vertices;
+- the finished PDF: no account name; Autonomous in Created by, author and creator; units, material, finish,
+  tolerance; the hole table; a tag beside each hole crossing no line; the pitch printed as (236) and (238); centre
+  marks; the fonts subset (well under 1 MB); and the drawing check's own reading (no maker line, the traps);
+- the PM's four drawing traps (shared helpers, tools/fusion/fusion_drawing.py): letters 2.5 mm or more (headings
+  3.5), the symbol's outline alone in its sketch, visible edges only on every view (the fake hands each view back
+  with hidden lines, as Fusion does), no dimension twice. Centre marks go on after every dimension.
+It tests the scripts' logic; Fusion's own view conventions are checked on the real sheet.
 """
 
 import importlib.util
+import json
 import os
 import re
 import sys
@@ -35,6 +39,8 @@ FRAME = (20.0, 10.0, 584.0, 410.0)
 TITLE = (404.0, 10.0, 584.0, 57.0)
 TEXT = (410.0, 62.0, 584.0, 240.0)
 FAKE_NAME = "Jordan Quill"          # stands in for the account holder's name Fusion prints
+NAMED = 11                          # the orientation value the faked Fusion gives the named view from below
+PT = 72.0 / 25.4
 
 
 # ------------------------------------------------------------------ fake adsk
@@ -69,15 +75,21 @@ VOT = Enum("FrontViewOrientationType", "BackViewOrientationType", "TopViewOrient
            "BottomViewOrientationType", "RightViewOrientationType", "LeftViewOrientationType",
            "IsoTopRightViewOrientationType")
 STYLE = Enum("VisibleEdgesDrawingViewStyleType", "VisibleAndHiddenEdgesDrawingViewStyleType")
-LOG = []                            # the order things are made in: "dim", "centre"
+LOG = []                            # the order things are made in: "view", "dim", "centre"
 
 
 class Curve:
-    def __init__(self, kind, a=None, b=None, c=None):
+    def __init__(self, kind, a=None, b=None, c=None, r=None):
         self.type = kind
-        self.startPoint = DrawingPoint(*a, owner="line") if a else None
-        self.endPoint = DrawingPoint(*b, owner="line") if b else None
-        self.centerPoint = DrawingPoint(*c, owner="circle") if c else None
+        if kind == VCT.CircleViewCurveType:           # Fusion: a closed curve's start point lies on it
+            self.centerPoint = DrawingPoint(*c, owner="circle")
+            self.startPoint = DrawingPoint(c[0] + r, c[1], owner="circle")
+            self.endPoint = self.startPoint
+            self.r = r
+        else:
+            self.startPoint = DrawingPoint(*a, owner="line")
+            self.endPoint = DrawingPoint(*b, owner="line")
+            self.centerPoint = None
 
 
 class Curves:
@@ -88,28 +100,37 @@ class Curves:
         return self.items[i]
 
 
+def _opts():
+    return types.SimpleNamespace(isAppliedToHoles=False, isAppliedToRoundCuts=False)
+
+
 class View:
     """Fusion hands a new view back with hidden lines whatever style the input asked for (CEILING's sample)."""
     def __init__(self, orientation, scale, curves):
         self.orientation, self.scaleValue, self.viewCurves = orientation, scale, Curves(curves)
         self.style = STYLE.VisibleAndHiddenEdgesDrawingViewStyleType
-        self._marks = types.SimpleNamespace(isAppliedToHoles=False)
-        self._lines = types.SimpleNamespace(isAppliedToHoles=False)
+        self._marks, self._lines = _opts(), _opts()
 
     def getCenterMarkOptions(self):
-        return types.SimpleNamespace(isAppliedToHoles=self._marks.isAppliedToHoles)
+        return types.SimpleNamespace(**vars(self._marks))
 
     def getCenterLineOptions(self):
-        return types.SimpleNamespace(isAppliedToHoles=self._lines.isAppliedToHoles)
+        return types.SimpleNamespace(**vars(self._lines))
 
     def setCenterMarkOptions(self, o):
         LOG.append("centre")
-        self._marks = types.SimpleNamespace(isAppliedToHoles=o.isAppliedToHoles)
+        self._marks = types.SimpleNamespace(isAppliedToHoles=o.isAppliedToHoles,
+                                            isAppliedToRoundCuts=getattr(o, "isAppliedToRoundCuts", False))
         return True
 
     def setCenterLineOptions(self, o):
-        self._lines = types.SimpleNamespace(isAppliedToHoles=o.isAppliedToHoles)
+        self._lines = types.SimpleNamespace(isAppliedToHoles=o.isAppliedToHoles,
+                                            isAppliedToRoundCuts=getattr(o, "isAppliedToRoundCuts", False))
         return True
+
+    def marked(self):
+        """Fusion marks this body's holes only for round cuts: they are cut extrudes, not hole features."""
+        return self._marks.isAppliedToRoundCuts
 
 
 RELIEF = 0.85      # sheet mm: the folded body's corner reliefs leave no vertex at the view's corner (live run)
@@ -130,16 +151,34 @@ def model_size():
 
 
 class Fake:
-    """The part as Fusion should show it, at the model's size: sizes per orientation (sheet mm at the view's scale)."""
+    """The part as Fusion shows it, at the model's size: sizes per orientation (sheet mm at the view's scale), and
+    each view's holes from its lower left corner in part mm (hand-entered from the build: H01/H02 Ø19.1 in the
+    right side at Y 175 and 215, 50.5 from the back; H03 Ø19.1 in the top at X 251, 50.5 from the back; H04 Ø25 in
+    the bottom at X 55, 18 from the back; H05-H08 Ø5.4 in the lips, 30 from the sides and 11 from top and bottom)."""
     W, H, D = model_size()
     LIP = 22.0
     wrong_front = False
 
     @classmethod
+    def holes(cls, o):
+        W, H, D = cls.W, cls.H, cls.D
+        if o == VOT.FrontViewOrientationType:
+            return [(30, 11, 5.4), (W - 30, 11, 5.4), (30, H - 11, 5.4), (W - 30, H - 11, 5.4)]
+        if o == VOT.BottomViewOrientationType:          # Fusion's standard Bottom: turned 180 degrees
+            return [(W - 55, D - 18, 25.0)]
+        if o == NAMED:                                  # the named view from below: first angle
+            return [(55, 18, 25.0)]
+        if o == VOT.TopViewOrientationType:             # the open side at the bottom, the back (C) at the top
+            return [(251, D - 50.5, 19.1)]
+        if o == VOT.RightViewOrientationType:           # the open side on the left, the back on the right
+            return [(D - 50.5, 175, 19.1), (D - 50.5, 215, 19.1)]
+        return []                                       # from the left: the right side's holes are behind its wall
+
+    @classmethod
     def size(cls, o, s):
         if o == VOT.FrontViewOrientationType:
             return (cls.W * s, (cls.D if cls.wrong_front else cls.H) * s)
-        if o in (VOT.TopViewOrientationType, VOT.BottomViewOrientationType):
+        if o in (VOT.TopViewOrientationType, VOT.BottomViewOrientationType, NAMED):
             return (cls.W * s, cls.D * s)
         if o in (VOT.LeftViewOrientationType, VOT.RightViewOrientationType):
             return (cls.D * s, cls.H * s)
@@ -151,16 +190,16 @@ class Fake:
         cv = rect(c[0], c[1], w, h)
         if o == VOT.FrontViewOrientationType and not cls.wrong_front:
             cv += rect(c[0], c[1], w - 2 * cls.LIP * s, h - 2 * cls.LIP * s, relief=0.0)      # the lips' inner edges
-            for dx, dy in ((30, 11), (cls.W - 30, 11), (30, cls.H - 11), (cls.W - 30, cls.H - 11)):
-                cv.append(Curve(VCT.CircleViewCurveType, c=(c[0] - w / 2 + dx * s, c[1] - h / 2 + dy * s)))
+        if not (o == VOT.FrontViewOrientationType and cls.wrong_front):
+            for dx, dy, dia in cls.holes(o):
+                cv.append(Curve(VCT.CircleViewCurveType, c=(c[0] - w / 2 + dx * s, c[1] - h / 2 + dy * s), r=dia / 2 * s))
         return View(o, s, cv)
 
 
 class BaseViewInput:
     def __init__(self):
-        opts = types.SimpleNamespace(isAppliedToHoles=False)
         self.viewParameters = types.SimpleNamespace(orientation=None, scaleValue=1.0, style=None,
-                                                    centerMarkOptions=opts, centerLineOptions=opts)
+                                                    centerMarkOptions=_opts(), centerLineOptions=_opts())
         self.placementPoint = None
 
 
@@ -268,25 +307,65 @@ class Sheet:
         self.holeTables, self.drawingSymbols, self.sketches = HoleTables(), Symbols(), Sketches()
 
 
-def fake_pdf(path):
-    """An A2 page with the stock title block's "Created by" field, as Fusion exports it."""
+def fake_pdf(path, sheet, scale):
+    """The sheet as Fusion's PDF prints it: view lines and circles on the "Visible" layer, a centre mark on each
+    circle of a view marked for round cuts, each dimension's value at its place (a vertical one turned a quarter),
+    the symbol's sketches on their own layers, and the stock title block's "Created by" field with a name."""
     import fitz
     doc = fitz.open()
-    pt = 72.0 / 25.4
-    page = doc.new_page(width=594 * pt, height=420 * pt)
-    page.draw_rect(fitz.Rect(20 * pt, 10 * pt, 584 * pt, 410 * pt))
-    page.insert_text(fitz.Point(495 * pt, (420 - 52) * pt), "Created by", fontsize=6)
-    page.insert_text(fitz.Point(495 * pt, (420 - 47) * pt), FAKE_NAME, fontsize=8)
-    page.insert_text(fitz.Point(545 * pt, (420 - 47) * pt), "01/11/26", fontsize=8)
+    page = doc.new_page(width=594 * PT, height=420 * PT)
+    P = lambda x, y: fitz.Point(x * PT, (420 - y) * PT)            # noqa: E731
+    vis, cm, dl = doc.add_ocg("Visible"), doc.add_ocg("Center Marks"), doc.add_ocg("FD_Dimensions")
+    page.draw_rect(fitz.Rect(20 * PT, 10 * PT, 584 * PT, 410 * PT))
+    for v in sheet.views.items:
+        for c in v.viewCurves.items:
+            if c.type == VCT.CircleViewCurveType:
+                x, y = c.centerPoint.coordinate.x, c.centerPoint.coordinate.y
+                page.draw_circle(P(x, y), c.r * PT, oc=vis, width=0.35 * PT)
+                if v.marked():
+                    e = c.r + 2.0
+                    page.draw_line(P(x - e, y), P(x + e, y), oc=cm, width=0.18 * PT)
+                    page.draw_line(P(x, y - e), P(x, y + e), oc=cm, width=0.18 * PT)
+            else:
+                a, b = c.startPoint.coordinate, c.endPoint.coordinate
+                page.draw_line(P(a.x, a.y), P(b.x, b.y), oc=vis, width=0.35 * PT)
+    for a, b, p in sheet.drawingDimensions.made:
+        ax, ay, bx, by = a.coordinate.x, a.coordinate.y, b.coordinate.x, b.coordinate.y
+        px, py = p.coordinate.x, p.coordinate.y
+        horizontal = abs(py - (ay + by) / 2) >= abs(px - (ax + bx) / 2)
+        value = "%g" % round((abs(bx - ax) if horizontal else abs(by - ay)) / scale, 3)
+        if horizontal:
+            page.draw_line(P(min(ax, bx), py), P(max(ax, bx), py), oc=dl, width=0.18 * PT)
+            for x, y in ((ax, ay), (bx, by)):
+                page.draw_line(P(x, y + (1 if py > y else -1)), P(x, py + (1.5 if py > y else -1.5)), oc=dl, width=0.18 * PT)
+            page.insert_text(P(px - 3.0, py + 1.0), value, fontsize=3.5 * PT, oc=dl)
+        else:
+            page.draw_line(P(px, min(ay, by)), P(px, max(ay, by)), oc=dl, width=0.18 * PT)
+            for x, y in ((ax, ay), (bx, by)):
+                page.draw_line(P(x + (1 if px > x else -1), y), P(px + (1.5 if px > x else -1.5), y), oc=dl, width=0.18 * PT)
+            page.insert_text(P(px - 1.0, py - 3.0), value, fontsize=3.5 * PT, rotate=90, oc=dl)
+    for sk in sheet.sketches.made:
+        layer = doc.add_ocg(sk.name)
+        for ch in sk.chains:
+            page.draw_polyline([P(x, y) for x, y in ch], oc=layer, width=0.25 * PT)
+        for x, y, r in sk.circles_made:
+            page.draw_circle(P(x, y), r * PT, oc=layer, width=0.25 * PT)
+    page.insert_text(P(495, 52), "Created by", fontsize=2.6 * PT)
+    page.insert_text(P(495, 47), FAKE_NAME, fontsize=3.6 * PT)
+    page.insert_text(P(545, 47), "01/11/26", fontsize=3.6 * PT)
+    doc.set_metadata({"creator": "Fusion Drawings", "producer": "pdfplot18.bundle"})
     doc.save(path)
 
 
 class ExportManager:
+    def __init__(self, sheet, scale):
+        self.sheet, self.scale = sheet, scale
+
     def createPDFExportOptions(self, path):
         return types.SimpleNamespace(path=path, openPDF=True, useLineWeights=False)
 
     def execute(self, opts):
-        fake_pdf(opts.path)
+        fake_pdf(opts.path, self.sheet, self.scale)
         return True
 
 
@@ -337,19 +416,18 @@ class Doc:
         return True
 
 
-def app_with(sheet, dwg_name, doc=None):
-    dwg = types.SimpleNamespace(activeSheet=sheet, exportManager=ExportManager())
+def app_with(sheet, dwg_name, doc=None, scale=0.5):
+    dwg = types.SimpleNamespace(activeSheet=sheet, exportManager=ExportManager(sheet, scale))
     return types.SimpleNamespace(activeProduct=dwg, activeDocument=doc or Doc(dwg_name + " v1"))
 
 
 # ------------------------------------------------------------------ the test
 
 def box_of(view):
-    xs = [c.startPoint.coordinate.x for c in view.viewCurves.items if c.startPoint] + \
-         [c.endPoint.coordinate.x for c in view.viewCurves.items if c.endPoint]
-    ys = [c.startPoint.coordinate.y for c in view.viewCurves.items if c.startPoint] + \
-         [c.endPoint.coordinate.y for c in view.viewCurves.items if c.endPoint]
-    return min(xs), min(ys), max(xs), max(ys)
+    pts = [(c.startPoint.coordinate.x, c.startPoint.coordinate.y) for c in view.viewCurves.items
+           if c.type == VCT.LineViewCurveType] + \
+          [(c.endPoint.coordinate.x, c.endPoint.coordinate.y) for c in view.viewCurves.items if c.type == VCT.LineViewCurveType]
+    return min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts)
 
 
 def inside(p, b, pad=0.0):
@@ -370,8 +448,25 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmp:
         md = load("make_body_drawing")
-        md.ARGS.update({"repo_root": REPO})
+        md.ARGS.clear()
+        md.ARGS.update({"repo_root": REPO, "below": str(NAMED)})
         raw_dir = os.path.join(REPO, md.HERE, ".raw")
+        raw = os.path.join(raw_dir, md.DWG + ".pdf")
+        raw_views = raw[:-4] + ".views.json"
+        kept = {p: open(p, "rb").read() for p in (raw, raw_views) if os.path.exists(p)}   # a real run's files stay
+        # Fusion's standard Bottom (turned 180 degrees) stops the run before any dimension: the hole check
+        md.ARGS["below"] = str(VOT.BottomViewOrientationType)
+        sheet0 = Sheet()
+        try:
+            md.annotate(app_with(sheet0, md.DWG))
+            turned = ""
+        except RuntimeError as e:
+            turned = str(e)
+        check("holes not where the STEP puts them" in turned and "bottom view" in turned and
+              sheet0.drawingDimensions.count == 0 and not sheet0.drawingSymbols.made,
+              "Fusion's turned Bottom stops the run before any dimension or datum (H04 against the STEP)")
+        md.ARGS["below"] = str(NAMED)
+        # the real sequence, with the named view from below
         sheet = Sheet()
         del LOG[:]
         doc = Doc(md.DWG + " v1", stale=True)
@@ -380,7 +475,8 @@ def main():
               "an out-of-date reference to the body's design is updated before any view (run of 2026-11-01)")
         views = sheet.views.items
         boxes = [box_of(v) for v in views]
-        check(len(views) == 6, "6 views (front, top, bottom, left, right, iso), got %d" % len(views))
+        check(len(views) == 6, "6 views (front, top, from below, left, right, iso), got %d" % len(views))
+        check(views[2].orientation == NAMED, "the view above the FRONT is the named view from below")
         check(all(inside((b[0], b[1]), FRAME) and inside((b[2], b[3]), FRAME) for b in boxes),
               "every view inside the A2 frame")
         check(not any(overlap(b, TITLE) for b in boxes), "no view on the title block")
@@ -389,30 +485,38 @@ def main():
         check(not pairs, "views at least 5 mm apart (%s)" % pairs)
         f, t, bt, lf, rt = boxes[:5]
         check(abs(t[3] - (f[1] - md.GAP)) < 1e-6 and abs(bt[1] - (f[3] + md.GAP)) < 1e-6,
-              "first angle: TOP one gap below the FRONT, BOTTOM one gap above it")
+              "first angle: TOP one gap below the FRONT, the view from below one gap above it")
         check(abs(lf[0] - (f[2] + md.GAP)) < 1e-6 and abs(rt[2] - (f[0] - md.GAP)) < 1e-6,
               "first angle: view from the LEFT on the right, from the RIGHT on the left")
         check(all(v.style == STYLE.VisibleEdgesDrawingViewStyleType for v in views),
               "(3) every view, the iso too, visible edges only (handed back with hidden lines, as Fusion does)")
-        check(all(v.getCenterMarkOptions().isAppliedToHoles and v.getCenterLineOptions().isAppliedToHoles
-                  for v in views[:5]) and not views[5].getCenterMarkOptions().isAppliedToHoles,
-              "centre marks and lines on the 5 orthographic views' holes, none on the iso")
+        check(all(v.getCenterMarkOptions().isAppliedToRoundCuts and v.getCenterLineOptions().isAppliedToRoundCuts
+                  and v.getCenterMarkOptions().isAppliedToHoles for v in views[:5]) and
+              not views[5].getCenterMarkOptions().isAppliedToRoundCuts,
+              "centre marks and lines for holes and round cuts on the 5 orthographic views, none on the iso")
         check("centre" in LOG and "dim" in LOG and max(i for i, e in enumerate(LOG) if e == "dim") <
               min(i for i, e in enumerate(LOG) if e == "centre"), "centre marks set after every dimension")
         dims = sheet.drawingDimensions.made
-        check(len(dims) == 3, "3 dimensions (width, height, depth), got %d" % len(dims))
+        check(len(dims) == 5, "5 dimensions (pitch 236 and 238, width, height, depth), got %d" % len(dims))
         keys = {(tuple(sorted([(round(a.coordinate.x, 3), round(a.coordinate.y, 3)), (round(b.coordinate.x, 3), round(b.coordinate.y, 3))])),
                  "x" if abs(p.coordinate.y - (a.coordinate.y + b.coordinate.y) / 2) >= abs(p.coordinate.x - (a.coordinate.x + b.coordinate.x) / 2) else "y")
                 for a, b, p in dims}
         check(len(keys) == len(dims), "(4) no dimension placed twice (same two points, same direction)")
-        check(all(a.owner == "line" and b.owner == "line" for a, b, _p in dims), "dimensions start and end on view line vertices")
+        check(all(a.owner == "circle" and b.owner == "circle" for a, b, _p in dims[:2]) and
+              all(a.owner == "line" and b.owner == "line" for a, b, _p in dims[2:]),
+              "the pitch joins circle centres; the overall sizes join view line vertices")
         check(not any(inside((p.coordinate.x, p.coordinate.y), b, 1.0) for _a, _b, p in dims for b in boxes),
               "no dimension placed on a view")
-        w = abs(dims[0][1].coordinate.x - dims[0][0].coordinate.x) / md.SCALE
-        hgt = abs(dims[1][1].coordinate.y - dims[1][0].coordinate.y) / md.SCALE
-        dep = abs(dims[2][1].coordinate.y - dims[2][0].coordinate.y) / md.SCALE
+        p236 = abs(dims[0][1].coordinate.x - dims[0][0].coordinate.x) / md.SCALE
+        p238 = abs(dims[1][1].coordinate.y - dims[1][0].coordinate.y) / md.SCALE
+        w = abs(dims[2][1].coordinate.x - dims[2][0].coordinate.x) / md.SCALE
+        hgt = abs(dims[3][1].coordinate.y - dims[3][0].coordinate.y) / md.SCALE
+        dep = abs(dims[4][1].coordinate.y - dims[4][0].coordinate.y) / md.SCALE
+        check((round(p236, 3), round(p238, 3)) == (236.0, 238.0), "the H05-H08 pitch measures 236 x 238 (%g x %g)" % (p236, p238))
         check((round(w, 3), round(hgt, 3), round(dep, 3)) == (Fake.W, Fake.H, Fake.D),
               "dimensions measure the part's %g x %g x %g (%g, %g, %g)" % (Fake.W, Fake.H, Fake.D, w, hgt, dep))
+        check(dims[0][2].coordinate.y < dims[2][2].coordinate.y and f[3] < dims[0][2].coordinate.y,
+              "above the FRONT the pitch 236 sits inside the width, so their lines don't cross")
         syms = sheet.drawingSymbols.made
         check([s.identifier for s in syms] == ["A", "B", "C"], "datums A, B, C")
         # Fusion's datum box: about 7.2 mm, beyond the placement point, away from its edge (measured on the
@@ -440,9 +544,11 @@ def main():
                                        [("datum %s" % o.identifier, ob) for o, ob in zip(syms, boxes7) if o is not sy])
                    if overlap(bx_, other, 1.5)]
         check(not crowded, "datum boxes 1.5 mm clear of views, dimension lines and each other %s" % crowded)
+        b_box = boxes7[1]
+        check(b_box[0] - rt[2] >= 10.0, "datum B's box %.1f mm clear of the side view (P3: was 3)" % (b_box[0] - rt[2]))
         check(not any(inside((s.placementPoint.coordinate.x, s.placementPoint.coordinate.y), b, 1.0)
                       for s in syms for b in boxes), "no datum placed on a view")
-        check(sheet.holeTables.count == 0, "no Fusion hole table (relieved corners; the hole list is in the PDF)")
+        check(sheet.holeTables.count == 0, "no Fusion hole table (relieved corners; the hole table is in the PDF)")
         pts = sheet.sketches.points
         check(pts and all(inside(p, FRAME) and not inside(p, TITLE) for p in pts) and
               not any(inside(p, b) for p in pts for b in boxes), "projection symbol inside the frame, clear of views")
@@ -454,34 +560,72 @@ def main():
               outline[0].chains[0][0] == outline[0].chains[0][-1] and not outline[0].circles_made and
               len(circles[0].circles_made) == 2 and not circles[0].chains,
               "(2) symbol: the outline one closed chain alone in its sketch, the 2 circles in another")
-        raw = os.path.join(raw_dir, md.DWG + ".pdf")
-        check(os.path.exists(raw), "raw PDF exported to .raw/")
+        check(os.path.exists(raw) and os.path.exists(raw_views), "raw PDF and the views' outlines written to .raw/")
+        vj = json.load(open(raw_views))
+        check(sorted(vj["views"]) == ["bottom", "front", "iso", "left", "right", "top"] and vj["scale"] == md.SCALE,
+              "the views file names every view and the scale")
         # the finished PDF
         bt_mod = load("body_drawing_text")
         out = os.path.join(tmp, md.DWG + ".pdf")
         bt_mod.finish_pdf(raw, out)
         import fitz
-        text = "\n".join(p.get_text() for p in fitz.open(out))
-        check(not any(part in text for part in FAKE_NAME.split()), "no account name left in the finished PDF")
-        check(bt_mod.required_missing(text) == [], "finished PDF states units, material, finish, tolerance, hole tags")
-        check(all("H%02d" % i in text for i in range(1, 9)) and len(re.findall(r"[Ø⌀]\s*\d", text)) >= 8,
-              "all 8 holes H01-H08 with their diameters")
-        pt = 72.0 / 25.4
         page = fitz.open(out)[0]
-        spans = [(sp["text"], sp["size"] / pt, sp["bbox"]) for blk in page.get_text("dict")["blocks"]
-                 for ln in blk.get("lines", []) for sp in ln["spans"] if sp["text"].strip()]
-        block = [(t, sz, bb) for t, sz, bb in spans if inside((bb[0] / pt, 420.0 - bb[3] / pt), TEXT, 1.0)]
+        text = page.get_text()
+        check(not any(part in text for part in FAKE_NAME.split()), "no account name left in the finished PDF")
+        meta = fitz.open(out).metadata
+        check(meta["author"] == "Autonomous" and meta["creator"] == "Autonomous", "PDF author and creator Autonomous")
+        sys.path.insert(0, os.path.join(REPO, "tools", "checks"))
+        import c_drawings
+        check(c_drawings.drawing_people(out, [FAKE_NAME]) == ([], []),
+              "the drawing check reads Autonomous in Created by, the author, no maker line and no name")
+        check(bt_mod.required_missing(text) == [], "finished PDF states units, material, finish, tolerance, hole tags")
+        check("Made by" not in text and "make_body_drawing" not in text and "SOURCE: the 711001 P01 STEP" in text,
+              "no maker line; the notes name their source")
+        segs, _circles, texts = bt_mod.geometry(page)
+        outside = [t[4] for t in texts if not overlap(t[:4], TEXT)]
+        check(outside.count("(236)") == 1 and outside.count("(238)") == 1 and "236" not in outside and
+              "238" not in outside, "the pitch is printed once each as (236) and (238), for reference")
+        tags = [t for t in texts if re.fullmatch(r"H0[1-8]", t[4]) and not overlap(t[:4], TEXT)]
+        check(sorted(t[4] for t in tags) == ["H%02d" % i for i in range(1, 9)], "a tag H01-H08 beside each hole on the views")
+        crossing = [t[4] for t in tags if any(bt_mod._seg_hits_box(s, t[:4]) for s in segs)]
+        check(not crossing, "no tag crosses a line %s" % crossing)
+        heads = [t[4] for t in texts if overlap(t[:4], TEXT)]
+        check(all(h in heads for h in ("TAG", "FACE", "FROM B", "FROM A", "FROM C", "Ø THRU", "NOTE")) and
+              all(("H%02d" % i) in heads for i in range(1, 9)), "the hole table: its heading row and a row per hole")
+        check(os.path.getsize(out) < 300_000, "fonts subset: the PDF is %.0f kB (was 15.3 MB)" % (os.path.getsize(out) / 1e3))
+        sp = [(s["text"], s["size"] / PT, s["bbox"]) for blk in page.get_text("dict")["blocks"]
+              for ln in blk.get("lines", []) for s in ln["spans"] if s["text"].strip()]
+        block = [(t, sz, bb) for t, sz, bb in sp if inside((bb[0] / PT, 420.0 - bb[3] / PT), TEXT, 1.0)]
         caps = [sz * bt_mod.CAP for _t, sz, _bb in block]
-        want = [r for r in bt_mod.wrap(bt_mod.lines(), bt_mod.BLOCK[2] - bt_mod.BLOCK[0] - 4.0,
-                                       fitz.Font(fontfile=bt_mod.FONT)) if r[0].strip()]
-        check(len(block) == len(want) and min(caps or [0]) >= 2.5 - 1e-6,
-              "(1) every text-block line at least 2.5 mm capital height (%d of %d lines, smallest %.2f mm)" % (
-                  len(block), len(want), min(caps or [0])))
+        check(min(caps or [0]) >= 2.5 - 1e-6, "(1) every text-block line at least 2.5 mm capital height (smallest %.2f)"
+              % min(caps or [0]))
         check(sum(1 for c in caps if c >= 3.5 - 1e-6) == 3, "(1) the 3 headings 3.5 mm capital height")
-        check(all(TEXT[0] - 0.5 <= bb[0] / pt and bb[2] / pt <= TEXT[2] + 0.5 and
-                  TEXT[1] - 0.5 <= 420.0 - bb[3] / pt and 420.0 - bb[1] / pt <= TEXT[3] + 0.5 for _t, _s, bb in block),
-              "the text block stays inside its space")
-        os.remove(raw)
+        check(all(TEXT[0] - 0.5 <= bb[0] / PT and bb[2] / PT <= TEXT[2] + 0.5 and
+                  TEXT[1] - 0.5 <= 420.0 - bb[3] / PT and 420.0 - bb[1] / PT <= TEXT[3] + 0.5 for _t, _s, bb in block),
+              "the text block and the hole table stay inside their space")
+        # a raw PDF whose view from below is turned stops the finish step before any text goes in
+        vj_turned = json.loads(json.dumps(vj))
+        ex = vj_turned["views"]["bottom"]["extent"]
+        open(raw_views, "w").write(json.dumps(vj_turned))
+        fz = fitz.open(raw)
+        pg = fz[0]
+        pg.add_redact_annot(fitz.Rect((ex[0] - 2) * PT, (420 - ex[3] - 2) * PT, (ex[2] + 2) * PT, (420 - ex[1] + 2) * PT))
+        pg.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=fitz.PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED)
+        x0, y0 = ex[0], ex[1]
+        pg.draw_circle(fitz.Point((ex[2] - 55 * md.SCALE) * PT, (420 - (ex[3] - 18 * md.SCALE)) * PT), 12.5 * md.SCALE * PT,
+                       oc=[x for x, o in fz.get_ocgs().items() if o["name"] == "Visible"][0])
+        turned_raw = os.path.join(tmp, "turned.pdf")
+        fz.save(turned_raw)
+        try:
+            bt_mod.finish_pdf(turned_raw, os.path.join(tmp, "turned-out.pdf"), raw_views)
+            stopped = ""
+        except SystemExit as e:
+            stopped = str(e)
+        check("bottom view" in stopped and not os.path.exists(os.path.join(tmp, "turned-out.pdf")),
+              "a turned view from below in the raw PDF stops the finish step")
+        check(bt_mod.centre_mark_problems([(100.0, 100.0, 2.0)], []) != [], "a hole without a centre mark is reported")
+        for p in (raw, raw_views):
+            os.remove(p)
         # a drawing that doesn't reference the body stops before any view
         try:
             md.annotate(app_with(Sheet(), md.DWG, Doc(md.DWG + " v1", body="SOMETHING_ELSE_CAD")))
@@ -500,6 +644,8 @@ def main():
         Fake.wrong_front = False
         check(stopped and sheet2.drawingDimensions.count == 0 and sheet2.holeTables.count == 0,
               "a wrong-size FRONT view stops the run before dimensions and tables")
+        for p, data in kept.items():
+            open(p, "wb").write(data)
         if os.path.isdir(raw_dir) and not os.listdir(raw_dir):
             os.rmdir(raw_dir)
     print("\n%d checks failed" % len(failures) if failures else "\nall checks pass")
