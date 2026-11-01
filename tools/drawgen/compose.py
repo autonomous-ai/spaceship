@@ -820,6 +820,12 @@ def spigot_origin(part, spec=None):
         k = "XYZ".index(ax)
         rounds.sort(key=lambda ft: abs(ft.f.entry[k] - v))
     b = rounds[0]
+    # the spigot slot (R-J13) is square to B's wall, as B is: a slot whose axis is B's, one its register row names the
+    # spigot first (WALL's L1, D-169: two pin slots in its front stile's end face, along the frame, came first); else
+    # the first slot, as before
+    par = [ft for ft in slots if abs(abs(vdot(ft.f.axis, b.f.axis)) - 1) < 1e-6]
+    par.sort(key=lambda ft: not (ft.reg and "spigot" in (ft.reg["function"] + " " + ft.reg["mating"]).lower()))
+    slot = par[0] if par else (slots[0] if slots else None)
     if spec.get("c_face"):
         cf = spec["c_face"]
         k = "XYZ".index(cf[1])
@@ -835,11 +841,27 @@ def spigot_origin(part, spec=None):
         c_plane = part.box[3 + k] if toward_centre > 0 else part.box[k]
         c_words = "the room-side face (%s %s)" % ("XYZ"[k], fmt(c_plane))
     return {"O": b.f.entry, "A_normal": b.f.normal, "B": b, "C": None, "C_plane": (c_normal, c_plane),
-            "slot": slots[0] if slots else None,
+            "slot": slot,
             "words": {"A": spec.get("a_words", "%s of %s (the seat on the band)" % (
                 FACE_WORDS.get(axis_name(b.f.normal), "face"), b.body.name)),
                       "B": "axis of the spigot hole %s" % "{B}",
                       "C": c_words + ", which stops the turn about B"}}
+
+
+def spigot_positions(dat, vd):
+    """The spigot hole's and slot's places from the frame's nearer end face, along view vd (joints register R-J13: 100
+    from each end): [(feature, the end's x, its x)] in the view's own coordinates. A place along the hole's own axis,
+    or one of length 0, sizes nothing and is left out (WALL's L1: a pin slot in its front stile's end face came out
+    '0' from the end, on the 100 to B)."""
+    ve = vd.extent
+    out = []
+    for f in [x for x in (dat.get("B"), dat.get("slot")) if x is not None]:
+        c = vd.view.to2d(f.f.entry)
+        end_x = ve[0] if abs(c[0] - ve[0]) < abs(c[0] - ve[2]) else ve[2]
+        if abs(abs(vdot(f.f.axis, vd.view.x)) - 1) < 1e-6 or abs(c[0] - end_x) < 0.005:
+            continue
+        out.append((f, end_x, c[0]))
+    return out
 
 
 def corner_origin(part, corner):
@@ -2342,12 +2364,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     if dat.get("B") and bview in vds:
         vd = vds[bview]
         ve = vd.extent
-        for f in [x for x in (dat["B"], dat.get("slot")) if x is not None]:
-            c = vd.view.to2d(f.f.entry)
-            end_x = ve[0] if abs(c[0] - ve[0]) < abs(c[0] - ve[2]) else ve[2]
+        for _f, end_x, cx in spigot_positions(dat, vd):
             p1 = vd.S((end_x, ve[3]))
-            p2 = vd.S((c[0], ve[3]))
-            sh.dim_linear(p1, p2, "up", 7.0, fmt(abs(c[0] - end_x)), 2.5)
+            p2 = vd.S((cx, ve[3]))
+            sh.dim_linear(p1, p2, "up", 7.0, fmt(abs(cx - end_x)), 2.5)
     # open-ended slots (D-129's hook-in end caps; the PM's ruling): dimensioned from the edge they open on, in the
     # detail that enlarges them (else their view): the mouth, the taper's length, the end's centre from the edge,
     # the width and the end's radius
