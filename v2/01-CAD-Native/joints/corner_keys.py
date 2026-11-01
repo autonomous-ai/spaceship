@@ -16,7 +16,9 @@ Inputs (status in brackets):
   carry the keys, each against its inner wall from inside, with the stud bolts through that
   1.5 wall; the back band, lowered between both side bands' studs at once, takes them in one
   open slot at each end cap (its keyholes can't work: the band can't slide sideways onto
-  studs at both ends) [decided; the slot shape PROPOSED].
+  studs at both ends). Going down, a cap meets the studs with its bottom edge, so the slot
+  opens there and runs up past both studs; the heads come up into the tube through a notch
+  in its bottom wall (BASE's fit check, 2026-11-01) [decided; the slot and notch PROPOSED].
 - Front pieces: BASE's outer-face points, relayed by the PM on 2026-10-31 [source].
 - Key: 35 wide, 75 tall, 30 long on its centre line, its stud face cut at the
   carrier's mitre; studs 26 and 60 above its bottom; fixing holes 10.5 from its back
@@ -57,7 +59,9 @@ BACK_X = SK["pod_w"] / 2 - SK["band_t"]          # back band ends against the si
 KEY_LEN = 30.0         # PROPOSED: keeps the carrier's Ø7.0 holes 2 x 7 from its cut end
 STUD_Z = (26.0, 60.0)  # above the key's bottom, PROPOSED
 KEYHOLE_DROP = 10.0    # the moving piece is lowered 10 onto the studs (D-87)
-SLOT_BELOW = 2.0       # an open slot runs this far below the lower stud, so the band sits on its glides (PROPOSED)
+SLOT_ABOVE = 2.0       # an open slot ends this far above the upper stud, so the band sits on its glides (PROPOSED)
+NOTCH = (12.0, 9.0)    # the head notch in the back band's bottom wall: wide (the Ø10 head and 1 each side), deep
+                       # from the end (the head's far face is 1.8 + 6 = 7.8 from the side band's face) (PROPOSED)
 HEAD_GAP = 1.8         # each stud bolt's head off the face it stands from: the 1.5 plate and 0.3 (PROPOSED)
 BOLT_LEN = 16.0        # 838001, M6 x 16 (joints register H-01)
 FIX_X = 10.5           # fixing holes from the key's back face, PROPOSED (over 2 x the hole, C09)
@@ -145,7 +149,8 @@ def build():
                 "key_bottom_z", "key_top_z", "stud_z_low", "stud_z_high",
                 "keyhole_entry_z_low", "keyhole_entry_z_high",
                 "fix_hole_1_x", "fix_hole_1_y", "fix_hole_2_x", "fix_hole_2_y",
-                "hook", "slot_bottom_z", "stud_bolts_through", "head_gap", "bolt_engagement", "status", "source"])
+                "hook", "slot_end_z", "head_notch", "stud_bolts_through", "head_gap", "bolt_engagement", "status",
+                "source"])
     z0 = BAND_BOTTOM_Z + BAND_WALL
     for pn, joint, carrier, partner, (cx, cy), u, cut, src in rows:
         y = left(u)
@@ -159,14 +164,16 @@ def build():
         s1, s2 = z0 + STUD_Z[0], z0 + STUD_Z[1]
         open_slot = "D-129" in src           # the back band goes straight down onto both side bands' studs
         if open_slot:
-            hook = ("open slot: one 6.5 slot from the end cap's top edge, widening to 12 at its mouth, down past "
-                    "both studs; the band is lowered straight down between the side bands")
+            hook = ("open slot: one 6.5 slot from the end cap's bottom edge, 12 wide at its mouth, up past both "
+                    "studs; the band is lowered straight down between the side bands")
             entries = ("", "")
+            notch = "%g wide, %g deep from the end, in the bottom wall on the band's centre line" % NOTCH
             through = "the side band's inner wall, 1.5: a 7.0 hole at each stud"
             engage = BOLT_LEN - BAND_WALL - HEAD_GAP
         else:
             hook = "keyhole: a 12 entry 10 below each stud, a 6.5 slot up to it; on along the studs, then down 10"
             entries = ("%.1f" % (s1 - KEYHOLE_DROP), "%.1f" % (s2 - KEYHOLE_DROP))
+            notch = ""
             through = ""
             engage = BOLT_LEN - HEAD_GAP
         w.writerow([pn, joint, carrier, partner, "%.2f" % cut, "%.2f" % cx, "%.2f" % cy,
@@ -174,7 +181,7 @@ def build():
                     "%.2f" % bx, "%.2f" % by, "%.1f" % z0, "%.1f" % (z0 + 75.0),
                     "%.1f" % s1, "%.1f" % s2, entries[0], entries[1],
                     "%.2f" % f1[0], "%.2f" % f1[1], "%.2f" % f2[0], "%.2f" % f2[1],
-                    hook, ("%.1f" % (s1 - SLOT_BELOW)) if open_slot else "", through, "%.1f" % HEAD_GAP,
+                    hook, ("%.1f" % (s2 + SLOT_ABOVE)) if open_slot else "", notch, through, "%.1f" % HEAD_GAP,
                     "%.1f" % engage, "PROPOSED; positions calculation", src])
     return out.getvalue(), turns
 
