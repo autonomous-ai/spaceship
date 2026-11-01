@@ -64,6 +64,12 @@ class NotDrawable(Exception):
     """The part has something this tool can't dimension properly: it goes back to Fusion (D-112, D-113)."""
 
 
+class FlatCrowded(NotDrawable):
+    """Sheet 1 can't hold a bent part's flat pattern legibly: no clear place for a bend's tag, or no room for its
+    sections and flat at any scale. make() then puts the flat on a sheet of its own (the Lead: CEILING's tray 513101);
+    no other refusal does (Reviewer 10 on #389: the fallback was matched on two messages' wording)."""
+
+
 # ------------------------------------------------------------------ geometry helpers
 
 def ray_blocked(shape, p, d, skip=0.02):
@@ -575,7 +581,7 @@ def flat_dims(sh, part, fv):
                                   an))
         pick = next((c for c in cands if sh.is_free(sh.text_box(c[0], c[1], row["tag"], 2.5, c[2], bold=True))), None)
         if pick is None:
-            raise NotDrawable("%s: no clear place for bend %s's tag in the flat pattern" % (part.pn, row["tag"]))
+            raise FlatCrowded("%s: no clear place for bend %s's tag in the flat pattern" % (part.pn, row["tag"]))
         sh.text(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
         row["printed_at"] = sh.text_box(pick[0], pick[1], row["tag"], 2.5, pick[2], bold=True)
 
@@ -3043,12 +3049,10 @@ def make(pn, team, spec, out_path, today=None, step=None, row=None):
     tray 513101, the Lead) gets the flat pattern on a sheet of its own."""
     try:
         return _make(pn, team, spec, out_path, today, step, row)
-    except NotDrawable as e:
-        msg = str(e)
-        if spec.get("bent") and not spec.get("_flat_sheet") and (
-                "no clear place for bend" in msg or "no room on the sheet for its sections and flat pattern" in msg):
-            return _make(pn, team, dict(spec, _flat_sheet=True), out_path, today, step, row)
-        raise
+    except FlatCrowded:
+        if spec.get("_flat_sheet"):
+            raise                       # on a sheet of its own already: the refusal stands
+        return _make(pn, team, dict(spec, _flat_sheet=True), out_path, today, step, row)
 
 
 def _make(pn, team, spec, out_path, today=None, step=None, row=None):
@@ -3093,7 +3097,10 @@ def _make(pn, team, spec, out_path, today=None, step=None, row=None):
                 continue
             smaller = [s_ for s_ in ISO_SCALES if s_ < e.scale - 1e-9]
             if not smaller:
-                raise NotDrawable("%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
+                # a bent part with its flat on sheet 1 may still fit with the flat on a sheet of its own (make())
+                crowded = getattr(part, "flat", None) is not None and not spec.get("_flat_sheet")
+                raise (FlatCrowded if crowded else NotDrawable)(
+                    "%s: no room on the sheet for its sections and flat pattern at any scale" % pn)
             spec = dict(spec, _max_scale=smaller[0])
     spec = dict(spec)
     spec["_scale"] = scale
