@@ -70,9 +70,9 @@ AIR_PARAMS = [
     ("cart_w", "173 mm", "mm", "confirmed", "D-61: one cartridge 173 x 314 x 1750"),
     ("cart_d", "314 mm", "mm", "confirmed", "D-61: one cartridge 173 x 314 x 1750"),
     ("cart_l", "1750 mm", "mm", "confirmed", "D-61: one cartridge 173 x 314 x 1750"),
-    ("cart_t", "1.8 mm", "mm", "confirmed", "D-116: 1.8 mm aluminium casing (was 2.0 by D-61; -1.9 kg, fan noise calculated 25.3 / 29.8 dB(A), boost 65.7 l/s)"),
+    ("cart_t", "2 mm", "mm", "confirmed", "D-61: 2 mm aluminium casing; D-121 withdrew D-116's 1.8 mm, since the noise margin is gone"),
     ("lay_t", "50 mm", "mm", "confirmed", "D-61: three 50 mm absorbent layers (Pyrotek Sorberpoly 2D at 32 kg/m3, report 7e; D-116)"),
-    ("pass_w", "(cart_d - 2 * cart_t - 3 * lay_t) / 2", "mm", "calculation", "D-61: two passages, 80.2 each with the 1.8 mm casing (D-116)"),
+    ("pass_w", "(cart_d - 2 * cart_t - 3 * lay_t) / 2", "mm", "calculation", "D-61: two 80 mm passages"),
     # ---- soffit (above the door head)
     ("sof_h", "220 mm", "mm", "confirmed", "D-61: soffit 220 tall, Z 2120 to 2340"),
     ("eg_x0", "16 mm", "mm", "source", R7E + ": exhaust grille from X -1150, 16 in from the soffit's left end"),

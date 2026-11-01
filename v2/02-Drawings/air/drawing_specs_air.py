@@ -108,7 +108,7 @@ SPECS = {
                                                                 "egrille", "stud", "hinge", "latch", "lock")]
             + ["EXHAUST FAN BOX", "CARTRIDGE EXHAUST"])),
     "cart": spec("cart", [
-        "Splitter cartridge, one part for both paths (D-61): 173 x 314 x 1750, 1.8 mm aluminium casing open at both ends (D-116), three 50 mm Sorberpoly 2D layers at 32 kg/m3 (D-116) with two 80.2 mm passages.",
+        "Splitter cartridge, one part for both paths (D-61): 173 x 314 x 1750, 2 mm aluminium casing open at both ends (D-61; D-121), three 50 mm Sorberpoly 2D layers at 32 kg/m3 (D-116) with two 80 mm passages.",
         "Layers: Pyrotek Sorberpoly 2D, knife cut (parts-list row, no drawing, D-89).",
     ], bbox(names=["CARTRIDGE SUPPLY"])),
     "sbox": spec("sbox", [

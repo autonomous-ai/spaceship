@@ -27,7 +27,7 @@ Why every feature of the air column, the soffit, the cartridges, the fan boxes, 
 | F-6101-06 | Keyholes in the back-left angle | Ø12 big hole 10 below each stud, 6.5 slot up to it, at X 971: studs at Z 1700 and 1850 | The column is pushed back onto DR's two studs and drops 10 mm; it lands on BASE's spigots at the same time | PM ruling 2026-11-01 (tool-free hooks, D-87); studs in DR's access panel (FRONT) | confirmed |
 | F-6101-07 | Plenum side plates, 1 mm aluminium | X 1160…1161 at the base plenum (Z 14…134) and the top plenum (Z 1884…2120) | Close the column's right side now that it stands 5 mm off the lining; the cartridge closes the rest | PM ruling 2026-11-01 | assumption (thickness) |
 | F-6101-08 | Sensor hub zone | 180 × 180 × 29 at X 971…1151, Z 1110…1290 | The in-house hub (D-70) | D-61; between the front angles' legs | confirmed; module HOLD (ELECTRICAL) |
-| F-6101-09 | Supply cartridge | 173 × 314 × 1750 at X 982…1155, Z 134…1884; 1.8 mm aluminium casing, three 50 mm Sorberpoly 2D layers at 32 kg/m³, two 80.2 passages | Silences the supply path | D-61; D-116 (1.8 mm casing, −1.9 kg; layers at the 32 kg/m³ the absorption data is for); 5 clear all round so it slides out | confirmed |
+| F-6101-09 | Supply cartridge | 173 × 314 × 1750 at X 982…1155, Z 134…1884; 2 mm aluminium casing, three 50 mm Sorberpoly 2D layers at 32 kg/m³, two 80 passages | Silences the supply path | D-61; D-121 (2 mm casings kept: the noise margin is gone); D-116 (layers at the 32 kg/m³ the absorption data is for); 5 clear all round so it slides out | confirmed |
 
 ## Soffit 610201 (above the door head)
 
