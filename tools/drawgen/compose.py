@@ -3131,12 +3131,15 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
                 "s" if len(two) > 1 else "", " and ".join("%s-%s" % (l, l) for l in two)) if two else ""))
     fl = getattr(part, "flat", None)
     if fl and getattr(fl, "mode", None) == "unfold":
+        # bends of different inside radii (AIR's 611702: R1 with one R10): each its own, named in its row
+        rad = ("the inside radius R%s" % fmt(fl.radius) if fl.radius is not None else
+               "its inside radius, %s, as its row gives" % " or ".join("R%s" % fmt(r) for r in fl.radii))
         notes.append("Bent from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the bend centre lines, "
-                     "at any angle. Each fold read from the model's own bend (its two cylinders, the inside radius "
-                     "R%s, its angle), the part unfolded face by face at K-factor %s (its entry): every bend line, hole "
-                     "and outline edge of the DXF within 0.05 of the unfolded model, both ways. A section across each "
-                     "fold shows it at its middle; the bend table gives each bend's line, direction, angle and "
-                     "allowance." % (inputs.rel(fl.path), inputs.sha12(fl.path), fmt(fl.radius), fmt(fl.k, 3)))
+                     "at any angle. Each fold read from the model's own bend (its two cylinders, %s, its angle), the "
+                     "part unfolded face by face at K-factor %s (its entry): every bend line, hole and outline edge of "
+                     "the DXF within 0.05 of the unfolded model, both ways. A section across each fold shows it at its "
+                     "middle; the bend table gives each bend's line, direction, angle and allowance." % (
+                         inputs.rel(fl.path), inputs.sha12(fl.path), rad, fmt(fl.k, 3)))
     elif fl and fl.vgroove:
         rounded = sorted({fmt(f.r_out) for ch in fl.chains for f in ch.folds if f.r_out})
         notes.append("V-grooved and folded from the flat pattern %s (sha256 %s): its CUT outline, its BEND lines the "

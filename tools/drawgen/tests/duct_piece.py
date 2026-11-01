@@ -1,5 +1,6 @@
 """A test duct piece: a trapezoid base with three folds on three non-parallel edges (90 deg with a hole, 60 deg
-tapering, 30 deg kink), inside radius 1 = t, and its flat worked by hand at K 0.44."""
+tapering, 30 deg kink), inside radius 1 = t, and its flat worked by hand at K 0.44. radii: an edge's own inside
+radius instead ({1: 4.0}: its 60 deg fold at R4, as AIR's 611702 has one R10 among R1s)."""
 import math
 
 T, R, K = 1.0, 1.0, 0.44
@@ -26,7 +27,7 @@ def edge_frame(i):
     return P, X, W, L
 
 
-def build_step(path):
+def build_step(path, radii=None):
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
     from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
     from OCP.BRepPrimAPI import BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakePrism
@@ -57,27 +58,28 @@ def build_step(path):
     holes = []
     for i, ang, s0, s1, outer, hs in tabs():
         P, X, W, L = edge_frame(i)
+        Ri = (radii or {}).get(i, R)
         th = math.radians(ang)
         X3, W3, Z3 = (X[0], X[1], 0.0), (W[0], W[1], 0.0), (0.0, 0.0, 1.0)
         g = lambda x, y, z: (P[0] + x * X[0] + y * W[0], P[1] + x * X[1] + y * W[1], z)
-        ax0 = g(s0, 0.0, T + R)                     # the bend's axis at s0 (above the edge, inner radius R up)
+        ax0 = g(s0, 0.0, T + Ri)                    # the bend's axis at s0 (above the edge, inner radius Ri up)
         rho = tuple(-math.cos(th) * Z3[k] + math.sin(th) * W3[k] for k in range(3))
         d = tuple(math.cos(th) * W3[k] + math.sin(th) * Z3[k] for k in range(3))
         # the sweep from straight down toward the outside: the cylinder's frame runs back along the edge from s1,
         # so its second axis (main x first) is the outward one
-        ax1 = g(s1, 0.0, T + R)
+        ax1 = g(s1, 0.0, T + Ri)
         a2 = gp_Ax2(gp_Pnt(*ax1), gp_Dir(-X3[0], -X3[1], 0.0), gp_Dir(0, 0, -1))
-        outer_pie = BRepPrimAPI_MakeCylinder(a2, R + T, s1 - s0, th).Shape()
-        inner_pie = BRepPrimAPI_MakeCylinder(a2, R, s1 - s0, th).Shape()
+        outer_pie = BRepPrimAPI_MakeCylinder(a2, Ri + T, s1 - s0, th).Shape()
+        inner_pie = BRepPrimAPI_MakeCylinder(a2, Ri, s1 - s0, th).Shape()
         shape = fuse(shape, cut(outer_pie, inner_pie))
         Wt = s1 - s0
         tab_uv = [(0.0, 0.0)] + outer + [(Wt, 0.0)]
         pts = []
         for u, v in tab_uv:
-            pts.append(tuple(ax0[k] + u * X3[k] + R * rho[k] + v * d[k] for k in range(3)))
+            pts.append(tuple(ax0[k] + u * X3[k] + Ri * rho[k] + v * d[k] for k in range(3)))
         shape = fuse(shape, prism(pts, tuple(T * c for c in rho)))
         for (u, v), dia in hs:
-            c = tuple(ax0[k] + u * X3[k] + (R - T) * rho[k] + v * d[k] for k in range(3))
+            c = tuple(ax0[k] + u * X3[k] + (Ri - T) * rho[k] + v * d[k] for k in range(3))
             holes.append(BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(*c), gp_Dir(*rho)), dia / 2, 3 * T).Shape())
     for h in holes:
         shape = cut(shape, h)
@@ -91,7 +93,7 @@ def build_step(path):
     return path
 
 
-def flat():
+def flat(radii=None):
     """The flat by hand: outline, bend lines, holes (the base's top face's x, y)."""
     outline, bends, holes = [], [], []
     tb = {i: (i, ang, s0, s1, outer, hs) for i, ang, s0, s1, outer, hs in tabs()}
@@ -101,7 +103,7 @@ def flat():
         outline.append(q(0.0, 0.0))
         if i in tb:
             _i, ang, s0, s1, outer, hs = tb[i]
-            BA = math.radians(ang) * (R + K * T)
+            BA = math.radians(ang) * ((radii or {}).get(i, R) + K * T)
             outline.append(q(s0, 0.0))
             outline.append(q(s0, BA))
             for u, v in outer:
@@ -114,8 +116,8 @@ def flat():
     return outline, bends, holes
 
 
-def write_dxf(path, move=None):
-    outline, bends, holes = flat()
+def write_dxf(path, move=None, radii=None):
+    outline, bends, holes = flat(radii)
     out = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
     for i, p in enumerate(outline):
         q = outline[(i + 1) % len(outline)]

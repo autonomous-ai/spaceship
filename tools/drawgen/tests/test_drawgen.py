@@ -523,6 +523,43 @@ def test_folds_along_any_line():
     assert any("unfolds to" in x for x in f2) and any("on no STEP hole" in x for x in f2), f2
 
 
+def test_folds_of_different_inside_radii():
+    """AIR's 611702 (R1 folds with one R10) and its vanes 611803 and 611804 (R1 with R32): a part's bends may have
+    different inside radii. The test duct piece with its 60° fold at R4 among R1s draws against its flat worked by hand
+    (each strip its own allowance) and reads back: each bend row gives its own radius and allowance, and the note names
+    both (#369's code refused it for its different radii). The read-back finds each bend's radius in the STEP's own
+    cylinders: a sheet whose record gives the R4 bend as R1 fails."""
+    sys.path.insert(0, HERE)
+    import duct_piece
+    d = os.path.join(TMP, "duct-radii")
+    os.makedirs(d, exist_ok=True)
+    radii = {1: 4.0}
+    step = duct_piece.build_step(os.path.join(d, "219988_P01_TEST-DUCT-RADII_STEP.step"), radii)
+    good = duct_piece.write_dxf(os.path.join(d, "219988_DXF.dxf"), radii=radii)
+    row = dict(ROW, part_number="219988", name="TEST - DUCT HALF - TWO RADII", material="galvanised steel 1.0",
+               process="laser cut, brake bend")
+    p = os.path.join(d, "219988.pdf")
+    spec = dict(SPEC, bent={"unfold": True, "k": 0.44, "radius_why": "the model", "dxf": good})
+    compose.make("219988", "none", spec, p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    rows = data["flat"]["rows"]
+    got = sorted((round(r_["angle"]), round(r_["r"], 3)) for r_ in rows)
+    assert got == [(30, 1.0), (60, 4.0), (90, 1.0)], got
+    for r_ in rows:
+        assert abs(r_["ba"] - math.radians(r_["angle"]) * (r_["r"] + 0.44)) < 1e-6, r_
+    text = " ".join(" ".join(pg.get_text() for pg in doc).split())
+    assert "R4" in text and "its inside radius, R1 or R4, as its row gives" in text, text[:800]
+    import copy
+    bad = copy.deepcopy(data)
+    b4 = next(b for b in bad["flat"]["unfold"]["bends"] if abs(b["r"] - 4.0) < 1e-6)
+    b4["r"] = 1.0
+    f2 = readback.unfold_fails(bad, readback.step_holes(step, "219988"), readback.step_faces(step, "219988"))
+    assert any("%s: the STEP has no R1 cylinder on its axis" % b4["tag"] in x for x in f2), f2
+
+
 class _RowSays:
     """A page whose bend table row `tag` prints `new` for the word `old` (a planted row); everything else as drawn."""
 

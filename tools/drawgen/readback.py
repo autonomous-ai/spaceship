@@ -644,7 +644,19 @@ def unfold_fails(data, holes, faces, tol=TOL):
             fails.append("flange %d: the STEP has no face t behind it, so its material isn't on the side the sheet "
                          "records" % (i + 1))
     lines = d.bend_lines()
+    cyls = [f for f in faces if f["kind"] == "cylinder" and "r" in f and "d" in f]
+
+    def on_axis(cf, b):
+        v = sub(cf["o"], b["axis_p"])
+        along = dot(v, b["axis"])
+        return abs(abs(dot(cf["d"], b["axis"])) - 1) < 1e-6 and math.sqrt(max(0.0, dot(v, v) - along * along)) < 0.01
     for b in uf["bends"]:
+        # each bend's inside radius is the STEP's own: two cylinders on its axis, r and r + t (a part's bends may
+        # differ: AIR's 611702, R1 with one R10)
+        for want in (b["r"], b["r"] + t):
+            if not any(abs(cf["r"] - want) < 0.005 and on_axis(cf, b) for cf in cyls):
+                fails.append("bend %s: the STEP has no R%s cylinder on its axis (the sheet gives its inside radius "
+                             "R%s)" % (b["tag"], _fmtv(want), _fmtv(b["r"])))
         ba = math.radians(b["angle"]) * (b["r"] + k * t)
         (a0, a1), (b0, b1) = b["zone"]
         L = math.dist(a0, a1) or 1.0
