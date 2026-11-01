@@ -232,6 +232,15 @@ def test_metal_classes():
     assert c_parts.metal_class("A2-70") == "stainless"
 
 
+def test_fasteners_are_family_83_but_not_the_frames_welded_mitre_plates():
+    from common import is_fastener
+    assert is_fastener("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS")
+    assert is_fastener("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2")
+    assert is_fastener("", "HARDWARE - BOLT - M6 X 16")
+    assert not is_fastener("831007", "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL")
+    assert not is_fastener("831008", "HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL")
+
+
 def test_shipping_rules(tmp_path):
     d = tmp_path / "v2/05-Engineering/layout-study/out"
     d.mkdir(parents=True)
@@ -1206,6 +1215,45 @@ def test_d93_to_d99(tmp_path, monkeypatch):
     assert len(fs) == 1 and "'FRONT - DOOR STRIKE'" in fs[0].message and "the CAD" in fs[0].fix
 
 
+def test_a_renamed_register_part_lists_every_file_and_team_and_a_new_maker_code_is_major(tmp_path):
+    # D-131: the register re-specified 838003 from the aluminium CAH3 to the steel CAH2; every team still names the old
+    j = tmp_path / "v2/05-Engineering/joints"
+    j.mkdir(parents=True)
+    (j / "joints-register.md").write_text(
+        "| H-03 | **838003** | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 · Tán rút | bought |\n"
+        "| H-22 | **368102** | FRONT - DOOR STRIKE · Đế hít cửa | bought | 1 |\n")
+    old = "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2"
+    for team, pn in (("wall", "210101"), ("base", "110000")):
+        (tmp_path / "v2/03-Manufacturing" / team).mkdir(parents=True)
+        _write_csv(tmp_path / "v2/03-Manufacturing" / team / ("%s_P01_X_BOM.csv" % pn),
+                   [{"part_number": "838003", "name": old, "qty": "4"}])
+    _write_csv(tmp_path / "v2/03-Manufacturing/wall/210102_P01_Y_BOM.csv",
+               [{"part_number": "838003", "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
+                 "qty": "4"}])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"838003": {"files": {"v2/03-Manufacturing/wall/210101_P01_X_STEP.step",
+                                  "v2/03-Manufacturing/base/110000_P01_X_STEP.step"}, "count": 4,
+                        "name": "838003 " + old,
+                        "names": {"v2/03-Manufacturing/wall/210101_P01_X_STEP.step": "838003 " + old + " (1)",
+                                  "v2/03-Manufacturing/base/110000_P01_X_STEP.step": "838003 " + old}}}
+    fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, prods) if f.rule == "name-mismatch"]
+    assert len(fs) == 1
+    f = fs[0]
+    assert f.severity == "major" and f.owner == "BASE; WALL"
+    assert "CAH3-610-4.2 (gone)" in f.message and "CAH2-610-4.2 (new)" in f.message and "STEEL (new)" in f.message
+    assert "110000_P01_X_STEP.step" in f.message and "v2/03-Manufacturing/base/110000_P01_X_BOM.csv" in f.message
+    assert "210102_P01_Y_BOM.csv" not in f.message and "material and finish" in f.fix and "(2 CAD, 2 parts lists)" in f.fix
+    assert f.evidence["files"] == sorted(f.evidence["files"]) and len(f.evidence["files"]) == 4
+    # wording only stays minor
+    assert c_parts.part_words("FRONT - DOOR STRIKE") == c_parts.part_words("FRONT - DOOR CATCH STRIKE") == set()
+    prods = {"368102": {"files": {"v2/03-Manufacturing/wall/210101_P01_X_STEP.step"}, "count": 1,
+                        "name": "368102 FRONT - DOOR CATCH STRIKE"}}
+    fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, prods) if f.rule == "name-mismatch"]
+    assert [f.subject for f in fs] == ["368102", "838003"]          # 838003's lists are checked without its CAD too
+    assert fs[0].severity == "minor" and fs[0].owner == "WALL"
+    assert fs[1].severity == "major" and fs[1].owner == "BASE; WALL" and "the CAD" not in fs[1].message
+
+
 def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_path):
     from common import name_words
     assert name_words("BASE - LEVELLING GLIDE - M10 (HOLD)") == name_words("BASE - LEVELLING GLIDE - M10 - HOLD")
@@ -1219,9 +1267,19 @@ def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_pa
     _write_csv(tmp_path / "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv", [row])
     (tmp_path / "v2/04-BOM").mkdir(parents=True)
     _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [dict(row, name="BASE - BASE SEAL - GAP 10 ±5")])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    # a register part's names are the register's to decide (D-99): one name-mismatch, not a duplicate-number too
+    assert [f for f in c_parts.check_parts_lists(str(tmp_path), plists) if f.rule == "duplicate-number"] == []
+    fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, {}) if f.rule == "name-mismatch"]
+    assert len(fs) == 1 and fs[0].owner == "Control" and "100000_P01_POD-MASTER_BOM.csv" in fs[0].fix
+    # an unregistered number with two names stays a duplicate-number
+    _write_csv(tmp_path / "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+               [row, dict(row, part_number="111999", name="BASE - A")])
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+               [dict(row, part_number="111999", name="BASE - B")])
     fs = [f for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
           if f.rule == "duplicate-number"]
-    assert len(fs) == 1 and fs[0].owner == "Control" and "master BOM" in fs[0].fix
+    assert [f.subject for f in fs] == ["111999"]
 
 
 def test_a_master_bom_row_copied_from_a_team_list_is_checked_there_whatever_its_source_suffix():

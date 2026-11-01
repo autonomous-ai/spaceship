@@ -41,7 +41,7 @@ HW_SPEC = {
                "ISO 4762 M6 x 16 - 8.8 - zinc plated", TQ_RIVNUT),
     "838002": ("steel, property class 8.8 (ISO 898-1)", "zinc plated", "HOLD: any maker to ISO 4762, picked at the RFQ",
                "ISO 4762 M6 x 25 - 8.8 - zinc plated", "snug only: a pin, not a clamp (joints register 2.10)"),
-    "838003": ("aluminium 5056", "none (plain aluminium, as supplied)", "Sherex (PEM)", "CAH3-610-4.2", TQ_RIVNUT),
+    "838003": ("steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAH2-610-4.2", TQ_RIVNUT),
     "838004": ("stainless steel A2", "none (plain stainless)", "HOLD: any maker to ISO 7093-1, picked at the RFQ",
                "ISO 7093-1 - 6.4 x 18 x 1.6 - A2", ""),
     "838005": ("elastomer (HOLD-02)", "as supplied (elastomer)", "HOLD-02", "HOLD-02", ""),
