@@ -1,2 +1,4 @@
 pattern,folder,decision,what
 "\bSEAL\b.*\bLIP\b|\bLIP\b.*\bSEAL\b",v2/03-Manufacturing/base,D-132,"the base seal lip on the band's inner face, pressing on the room floor across the glides' range"
+"\bLEVELLING GLIDE\W+M10\W+D40\b",v2/03-Manufacturing/base,D-164,"the made levelling glide 111602, BASE - LEVELLING GLIDE - M10 - D40: a zinc-plated steel stem with a 5 mm socket and a 40 x 7.6 base"
+"\bTUBE END CAP\W+97 X 37\b",v2/03-Manufacturing/base,D-165,"the made tube end cap 111111, BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK, bonded flush into the band tube's open end"
