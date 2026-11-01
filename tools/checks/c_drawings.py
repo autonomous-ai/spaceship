@@ -1288,7 +1288,7 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     faces_by_pn = faces_by_pn or {}
     src_by_pn = src_by_pn or {}
     flat_by_pn = flat_by_pn or {}      # pn -> (ok, thickness, why) from the STEP (D-89 part 4)
-    bends_by_pn = bends_by_pn or {}    # pn -> most bends in one of its bodies (D-113)
+    bends_by_pn = bends_by_pn or {}    # pn -> most bends in one of its bodies (no rule since D-158: kept for callers)
     two_wall_by_pn = two_wall_by_pn or {}   # pn -> hole axes through two walls of one body (D-113)
     cuboid_by_pn = cuboid_by_pn or {}  # pn -> sides of its one shape when that is a plain rectangular block (D-125)
     prism_by_pn = prism_by_pn or {}    # pn -> (its one shape cut straight through from sheet, or None, why) (D-128)
@@ -1444,12 +1444,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
             owner, gen_fix = GENERATOR_OWNER, GENERATOR_FIX
         else:
             gen_fix = ""
-        if gen and bends_by_pn.get(pn):
-            fs.append(Finding("C05", "generated-bent-part", pn, "major",
-                              "%s has %d bends in its STEP, but its drawing %s was made by tools/drawgen; D-113 keeps "
-                              "bent parts, brackets included, in Fusion." % (label, bends_by_pn[pn], os.path.basename(rp)),
-                              "Leave this part to Fusion: take it off the generator's list and delete the generated "
-                              "drawing once Fusion's is in (D-113).", rp, owner))
+        # D-158 replaced D-113 (3): bent parts are the generator's too (its bent sheet mode, #335); Fusion is for
+        # models and exports only, so a generated drawing of a bent part is no finding
         if cad_revs and not (revs & cad_revs):
             fs.append(Finding("C05", "rev-mismatch", pn, "major",
                               "%s: drawing revision %s but CAD/STEP revision %s." % (
