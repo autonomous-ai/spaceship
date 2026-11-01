@@ -29,16 +29,29 @@ P02_PARAMS = [
      "the FR1 / intake joint, X 915 (PM rulings 2026-11-01: X 920 for the 25 mm key, then X 915 for the 30 mm key): "
      "FR1 runs X 218.5 to here; the intake from here, its mesh from X 947"),
     # fixed glass sill on FR1 (FRONT's answer 2026-11-01; PM: the U-channel ships fitted on it)
-    ("ch_w", "15 mm", "mm", "source", "FRONT: the glass's bottom U-channel, Bohle 15 x 15 x 1.5, Y -706.5 to -691.5 (centred on glass_y)"),
-    ("ch_h", "15 mm", "mm", "source", "FRONT: channel underside Z 95, top Z 110 (the band top, the glass's visible bottom line)"),
+    ("ch_w", "fgl_gu_prof_w", "mm", "source",
+     "FRONT's U-channel width (gu_prof_w, Bohle 15 x 15 x 1.5), linked: Y -706.5 to -691.5, centred on glass_y"),
+    ("ch_h", "fgl_gu_prof_d", "mm", "source",
+     "FRONT's U-channel depth (gu_prof_d), linked: its underside Z 95, its top Z 110 (the band top, the glass's visible bottom line)"),
     ("sl_t", "2 mm", "mm", "assumption", "sill sheet: aluminium 2 mm, bent, black anodised AA20 (D-67 look)"),
     ("sl_flange", "40 mm", "mm", "assumption", "sill's fixing flange down FR1's inner face (blind rivets, HOLD)"),
-    ("sl_x1", "965 mm", "mm", "source", "FRONT: the channel's underside runs to X 964.1, so the sill reaches X 965"),
-    ("ch_screw_x1", "269.4 mm", "mm", "source", "FRONT's channel holes (F-368004-02): the first at X 269.4"),
-    ("ch_screw_p", "214.9 mm", "mm", "source", "FRONT's pitch for the first 3 channel holes: X 269.4, 484.3, 699.2"),
-    ("ch_screw_x4", "905 mm", "mm", "confirmed",
-     "the last channel screw at X 905: on FR1's sill seat, 2 hole diameters from FR1's end at x_fr_joint (joints register J-FRONT-04, "
-     "the Lead 2026-11-01: X 905 or less; FRONT's 914.1 moves)"),
+    # the channel's holes as FRONT sets them (fixed_glass.py gs_*), from FRONT's linked glass lines (Reviewer 8's P3 on #303:
+    # the sill's end and rivnuts follow an edit as FRONT's channel does)
+    ("ch_z95", "fgl_fg_vis_zb - fgl_gu_prof_d", "mm", "calculation", "the channel's underside, Z 95 (FRONT's _Z95)"),
+    ("ch_free_x", "(fgl_fg_lc + fgl_fg_gap - fgl_fg_lnz * ch_z95) / fgl_fg_lnx", "mm", "calculation",
+     "the channel's left end: the pane's free edge at its underside (FRONT's front_lib.free_x(Z 95), X 219.4)"),
+    ("ch_right_x", "(fgl_fg_rc + fgl_gu_prof_d - fgl_fg_rnz * ch_z95) / fgl_fg_rnx", "mm", "calculation",
+     "the channel's right end at its underside (FRONT's front_lib.right_x(Z 95, gu_prof_d), X 964.1)"),
+    ("ch_end", "50 mm", "mm", "source", "channel screws 50 from each end (PM ruling 2026-11-01; FRONT's gs_end)"),
+    ("sl_x1", "x_fr_joint + 50 mm", "mm", "calculation",
+     "the sill's right end, X 965, tied to FR1's joint: past the channel's right end (ch_right_x, 964.1); the intake's "
+     "closing plate closes it (D-150, batch 3)"),
+    ("ch_screw_x1", "ch_free_x + ch_end", "mm", "calculation", "the first channel hole, X 269.4 (FRONT's gs_xl + gs_end)"),
+    ("ch_screw_p", "(ch_right_x - ch_free_x - 2 * ch_end) / 3", "mm", "calculation",
+     "the pitch of the first 3 channel holes, 214.9: X 269.4, 484.3, 699.2 (FRONT's gs_p)"),
+    ("ch_screw_x4", "x_fr_joint - 10 mm", "mm", "confirmed",
+     "the last channel screw at X 905, tied to FR1's joint: 2 hole diameters from FR1's end (joints register J-FRONT-04, "
+     "the Lead 2026-11-01; FRONT's gs_x4 = FR1's joint - 10)"),
     ("gl_fl2", "145 mm", "mm", "calculation",
      "FL2's glide along its centre line from the knee face's centre: the support under DL and the door's hinges "
      "(about 650 N, DL 12.3 kg and the 48.6 kg door, FRONT's lists), 60 from DL's slot spigot rivnut (40 needed) "
@@ -105,6 +118,7 @@ P02_BATCH_KEYS = BATCH1 + (BATCH2 if ARGS.get("batch2") == "1" else ())
 def p02_setup(keys=P02_BATCH_KEYS):
     """Adds the P02 parameters and the parts of this batch (keys) to base_build's tables."""
     global SUB_DESIGNS, WITH_ASSEMBLY, HOLDING_KEYS
+    BASE_PARAMS.extend(front_glass_params())    # FRONT's glass lines: the sill's channel and its holes (linked)
     BASE_PARAMS.extend(P02_PARAMS)
     if "fl1" in keys or "fl2" in keys:
         BASE_PARAMS.extend(front_dl_params())     # DL's spigot points, FRONT's named values (J-FRONT-02)
@@ -656,13 +670,29 @@ FRONT_DL = "v2/01-CAD-Native/front/dl_block.py"
 FRONT_DL_WANT = ("sp_ax", "sp_ay", "sp_bx", "sp_by")
 
 
+FRONT_LIB = "v2/01-CAD-Native/front/front_lib.py"
+FRONT_GLASS_WANT = ("fg_vis_zb", "gu_prof_w", "gu_prof_d", "fg_gap", "fg_lc", "fg_lnx", "fg_lnz", "fg_rc", "fg_rnx", "fg_rnz")
+
+
 def front_dl_params(prefix="dlf_"):
     """FRONT's named values for DL's two spigots on the band (J-FRONT-02: sp_ax, sp_ay on FL1, sp_bx, sp_by on
     FL2), read from FRONT's DL model with every value they need, so one source drives both models (linked, not
     copied). FRONT's own names get the prefix, as some clash with BASE's (sp_e); skeleton names stay. A name that
     is neither FRONT's nor the skeleton's stops the build."""
+    return front_params(FRONT_DL, "OWN", FRONT_DL_WANT, prefix, "DL spigot values")
+
+
+def front_glass_params(prefix="fgl_"):
+    """FRONT's glass lines shared by the fixed pane, DR and DT (front_lib.py GLASS_PARAMS), linked as for DL's
+    spigots: the sill's channel holes follow FRONT's channel (Reviewer 8's P3 on #303)."""
+    return front_params(FRONT_LIB, "GLASS_PARAMS", FRONT_GLASS_WANT, prefix, "glass lines")
+
+
+def front_params(rel, list_name, want, prefix, what):
+    """FRONT's rows named in want, from the list list_name in FRONT's file rel, with every FRONT row they need
+    (prefixed); skeleton names stay. A name that is neither FRONT's nor the skeleton's stops the build."""
     import re
-    path = os.path.join(REPO, FRONT_DL)
+    path = os.path.join(REPO, rel)
     with open(path, encoding="utf-8") as fh:
         tree = ast.parse(fh.read(), path)
     # FRONT's list mixes literals with its module's string constants (XL + " + dl_w - ..."): each entry is read
@@ -680,7 +710,7 @@ def front_dl_params(prefix="dlf_"):
             if isinstance(t, ast.Name) and isinstance(el, ast.Constant) and isinstance(el.value, str):
                 consts[t.id] = el.value
         if isinstance(tgt, ast.Name):
-            if tgt.id == "OWN" and isinstance(node.value, ast.List):
+            if tgt.id == list_name and isinstance(node.value, ast.List):
                 own = []
                 for el in node.value.elts:
                     try:
@@ -688,7 +718,7 @@ def front_dl_params(prefix="dlf_"):
                     except ValueError:
                         own.append(eval(compile(ast.Expression(el), path, "eval"), {"__builtins__": {}}, dict(consts)))
     if own is None:
-        raise RuntimeError("no OWN list in %s" % FRONT_DL)
+        raise RuntimeError("no %s list in %s" % (list_name, rel))
     rows = {r[0]: r for r in own}
     skel = {r[0] for r in skeleton_params()}
     ident = re.compile(r"[A-Za-z_][A-Za-z_0-9]*")
@@ -705,14 +735,14 @@ def front_dl_params(prefix="dlf_"):
             elif tok not in skel and tok not in funcs:
                 raise RuntimeError("FRONT's %s uses %s, which is neither FRONT's nor the skeleton's" % (n, tok))
         order.append(n)
-    for n in FRONT_DL_WANT:
+    for n in want:
         visit(n)
     out = []
     for n in order:
         name, expr, unit, status, desc = rows[n][:5]
         expr2 = ident.sub(lambda m: prefix + m.group(0) if m.group(0) in rows else m.group(0), expr)
-        out.append((prefix + name, expr2, unit, status, "FRONT's %s in %s: %s" % (n, FRONT_DL, desc)))
-    print("  FRONT's DL spigot values linked: %s" % ", ".join(r[0] for r in out))
+        out.append((prefix + name, expr2, unit, status, "FRONT's %s in %s: %s" % (n, rel, desc)))
+    print("  FRONT's %s linked: %s" % (what, ", ".join(r[0] for r in out)))
     return out
 
 

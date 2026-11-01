@@ -100,6 +100,42 @@ def measure_back_corner(b, design):
             b["centres"](back, ev(design, "kh_slot"), "x"))
 
 
+def expected_p02_holes(b, design):
+    """P02's holes the test measures too (Reviewer 8's P3 on #303), from the same expressions as base_p02.py's steps:
+    {what: (part key, hole diameter, axis, centres)}. The sill's channel rivnuts follow FRONT's linked glass lines and
+    FR1's joint (as FRONT's channel holes do); FR1's keyholes and glides; the RH band's J-BASE-01 and spigot rivnuts."""
+    v = lambda e: b["ev"](design, e)  # noqa: E731
+    if "X_FR0" not in b:
+        return {}
+    X_FR0, XR_ = b["X_FR0"], b["XR_"]
+    r2 = lambda pts: sorted((round(p, 2), round(q, 2)) for p, q in pts)  # noqa: E731
+    gy, yc = v("-glass_y"), v("-pod_d / 2 + band_t / 2")
+    sill = [(v("ch_screw_x1 + %d * ch_screw_p" % i), gy) for i in range(3)] + [(v("ch_screw_x4"), gy)]
+    z1, z2, kh = v("glide_h + band_wall + st_z1"), v("glide_h + band_wall + st_z2"), v("kh_drop")
+    glides = [(v("%s + gl_e_f" % X_FR0), yc), (v("x_fr_joint - gl_e_f"), yc)]
+    n = int(round(v("jb_n")))
+    y0, ln, xb = v("base_side_y0"), v("side_l"), v("%s - jb_x" % XR_)
+    rh = [(xb, y0 + v("jb_e") + i * (ln - 2 * v("jb_e")) / (n - 1)) for i in range(n)]
+    rh += [(xb, y0 + v("sp_e")), (xb, y0 + ln - v("sp_e"))]
+    return {
+        "sill channel rivnut holes (X, Y)": ("sill", v("ch_rn_hole"), "z", r2(sill)),
+        "FR1 keyhole entries (Y, Z)": ("fr1", v("kh_entry"), "x", r2([(yc, z1 - kh), (yc, z2 - kh)])),
+        "FR1 keyhole seats (Y, Z)": ("fr1", v("kh_slot"), "x", r2([(yc, z1), (yc, z2)])),
+        "FR1 glide nut holes (X, Y)": ("fr1", v("gl_nut_hole"), "z", r2(glides)),
+        "side band RH rivnut holes (X, Y)": ("band_r_tube", v("rn_hole"), "z", r2(rh)),
+    }
+
+
+def measure_p02_holes(b, design):
+    return {what: b["centres"](b["find_comp"](design, key).bRepBodies.item(0), dia, ax)
+            for what, (key, dia, ax, _w) in expected_p02_holes(b, design).items()}
+
+
+def same_points(got, want):
+    return len(got) == len(want) and all(abs(a[0] - c[0]) < 0.05 and abs(a[1] - c[1]) < 0.05
+                                         for a, c in zip(sorted(got), sorted(want)))
+
+
 def found(got, want):
     return all(any(abs(g[0] - w[0]) < 0.05 and abs(g[1] - w[1]) < 0.05 for g in got) for w in want)
 
@@ -142,6 +178,7 @@ def run(_context):
             os.path.relpath(F3D, b["REPO"]), design.rootComponent.partNumber, up.count, design.timeline.count))
         before_boxes, before_holes = measure(b, design)
         before_bc = measure_back_corner(b, design)
+        before_p02 = measure_p02_holes(b, design)
         original = {}
         for label, edits in EDITS:
             for name, expr in edits.items():
@@ -178,6 +215,13 @@ def run(_context):
                 "follow" if ok_bc else "OFF: got %s want %s" % (got_bc, want_bc)))
             if not ok_bc:
                 failures.append(label + ": back corner holes")
+            got_p02 = measure_p02_holes(b, design)
+            for what, (_k, _d, _a, want_pts) in expected_p02_holes(b, design).items():
+                ok = same_points(got_p02[what], want_pts)
+                print("  %s: %d, %s" % (what, len(got_p02[what]), "follow" if ok else
+                                        "OFF: got %s want %s" % (got_p02[what], want_pts)))
+                if not ok:
+                    failures.append("%s: %s" % (label, what))
         for name, expr in original.items():
             up.itemByName(name).expression = expr
         adsk.doEvents()
@@ -185,7 +229,7 @@ def run(_context):
         after_boxes, after_holes = measure(b, design)
         worst = max(compare(after_boxes[k], before_boxes[k]) for k in before_boxes)
         back = worst < 0.01 and after_holes == before_holes and measure_back_corner(b, design) == before_bc \
-            and not unhealthy(design)
+            and measure_p02_holes(b, design) == before_p02 and not unhealthy(design)
         print("revert to the design values: largest difference %.4f mm, holes %s, timeline %s -> %s" % (
             worst, "same" if after_holes == before_holes else "DIFFERENT",
             "healthy" if not unhealthy(design) else "UNHEALTHY", "RESTORED" if back else "NOT RESTORED"))
