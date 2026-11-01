@@ -1,6 +1,6 @@
 """Finish CEILING, AIR and INTERIOR drawing PDFs (offline): name strip, then a PNG to check by eye.
 
-    python3 v2/02-Drawings/ceiling/finish_drawings.py ceiling [frame_c1 tray ...]
+    python3 v2/02-Drawings/ceiling/finish_drawings.py ceiling [frame_c1 tray ...] [--log ANNOTATE_LOG]
     python3 v2/02-Drawings/ceiling/finish_drawings.py air
     python3 v2/02-Drawings/ceiling/finish_drawings.py interior
 
@@ -8,7 +8,10 @@ For each drawing of the team's specs (all of them, or the keys given): takes the
 the annotate run wrote to <team folder>/.raw/<drawing>.pdf, removes the account holder's name
 under "Created by" with tools/fusion/pdf_clear_field.py (the repo is public), saves the repo
 copy as <team folder>/<drawing>.pdf and renders <drawing without _DWG>_IMG.png next to it (110 dpi,
-as BASE's drawings). Skips a drawing whose raw PDF isn't there. Needs PyMuPDF.
+as BASE's drawings). Then, for the ceiling's drawings, reads the PDF back with
+check_drawing_pdf.py (symbol, image sizes and places, hidden lines, text heights, names; the
+annotate run's log gives the view extents) and fails if a check fails. Skips a drawing whose
+raw PDF isn't there. Needs PyMuPDF.
 """
 
 import importlib.util
@@ -48,10 +51,30 @@ def finish(folder, drawing):
 
 
 def main(argv):
+    log_text = None
+    if "--log" in argv:
+        i = argv.index("--log")
+        with open(argv[i + 1], encoding="utf-8", errors="replace") as fh:
+            log_text = fh.read()
+        argv = argv[:i] + argv[i + 2:]
     team, keys = argv[0], argv[1:]
     folder, sp, order = specs(team)
+    failed = []
     for k in keys or order:
-        print("%s: %s" % (k, finish(folder, sp[k]["drawing"])))
+        done = finish(folder, sp[k]["drawing"])
+        print("%s: %s" % (k, done))
+        if team != "ceiling" or done == "no raw PDF":
+            continue
+        sys.path.insert(0, HERE)
+        import check_drawing_pdf as C
+        bad, warn, info = C.check(k, log_text=log_text)
+        for line in info + ["WARNING: " + w for w in warn] + bad:
+            print("  " + line)
+        print("CHECK PDF %s: %s" % (sp[k]["drawing"], "FAIL (%d)" % len(bad) if bad else "PASS"))
+        if bad:
+            failed.append(k)
+    if failed:
+        sys.exit("drawings that fail the PDF check: %s" % failed)
 
 
 if __name__ == "__main__":

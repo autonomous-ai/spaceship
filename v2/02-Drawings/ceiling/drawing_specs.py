@@ -23,11 +23,49 @@ SHEETS = {"A1": (841.0, 594.0), "A2": (594.0, 420.0)}
 # Fusion's ISO title block sits in the bottom right corner, about 200 x 52 mm inside the
 # 10 mm border (measured on the Phase 0 proof PDF); the title data image goes above it
 IMG_W = 170.0                   # both images are this wide on the sheet, mm
+PX_MM = 10.0                    # the images are drawn at 10 px per mm (render_notes.py)
+# Sheet.images.insert puts any PNG in at this width at scale 1, whatever its pixels or DPI tag
+# (a 1000 px image and the 1700 px notes of the first rib sample both came out 58.0 mm wide,
+# 2026-10-31 and 2026-11-01), so each image is inserted at scale = its width / this
+FUSION_IMG_W = 58.02
+LABEL_GAP = 3.0                 # a view's scale label sits this far below the view, mm
+# views drawn with hidden lines (the rest show visible edges only); make_drawing_ceiling.py sets
+# the style again after making the view, as Fusion ignores the one given on the input
+STYLES = {"tray": {"front": "hidden", "top": "hidden", "left": "hidden"}, "cassette": {"top": "hidden"}}
+# the part axis each view's 2D X and Y run along (guideline 3.3; the left view's X is -Y)
+AXES = {"front": ("X", "Z"), "top": ("X", "Y"), "left": ("Y", "Z")}
 
 
 def image_places(sheet):
     w, h = SHEETS[sheet]
     return {"notes": (w - 20.0 - IMG_W, h - 15.0), "title": (w - 20.0 - IMG_W, 150.0)}
+
+
+def symbol_place(sheet):
+    """Where the first-angle symbol's outline starts (its narrow end's middle, sheet mm): left of
+    the title block (its left edge is about 190 in from the sheet's right edge), clear of the border."""
+    w, _h = SHEETS[sheet]
+    return (w - 250.0, 25.0)
+
+
+def scale_text(scale):
+    """1:5, 2:1, 1:10 ..."""
+    return ("%g:1" % round(scale, 3)) if scale >= 1 else ("1:%g" % round(1 / scale, 3))
+
+
+def labels(sp):
+    """{view: text} for each view drawn at another scale than the sheet's (ISO 5455: that
+    scale goes next to the view; the sheet's own is in the title data)."""
+    return {k: "SCALE " + scale_text(x) for k, x in sorted(sp["scales"].items()) if abs(x - sp["scale"]) > 1e-9}
+
+
+def new_size(done, axis, value, tol=0.05):
+    """True, and recorded in done, when no dimension along this part axis has this size yet:
+    each size is dimensioned once on a drawing (ISO 129-1). done is a list of (axis, mm)."""
+    if any(a == axis and abs(v - value) <= tol for a, v in done):
+        return False
+    done.append((axis, value))
+    return True
 
 COMMON_NOTES = [
     "UNITS: mm. Angles in degrees. Mass in kg.",
@@ -35,7 +73,7 @@ COMMON_NOTES = [
     "the view from above is below it; the view from the left is to its right.",
     "2D axes: front view X(2D)=X, Y(2D)=Z; view from above X(2D)=X, Y(2D)=Y; "
     "view from the left X(2D)=-Y, Y(2D)=Z (guideline 3.3).",
-    "Dimensions run from the datum faces named in these notes, and to hole centres. "
+    "Dimensions run from the datum faces named in these notes (overall sizes where none is named), and to hole centres. "
     "No ISO 2768 class is applied (conventions 3); the tolerances in note 1 are assumptions "
     "until the factory confirms what it holds.",
     "Status DRAFT P01: for the prototype and the factory's sample only, not released.",
@@ -60,11 +98,12 @@ def spec(key, scale, notes, views=None, holes=None, title_extra=(), sheet="A1", 
     return {
         "key": key, "design": doc_name(key, "CAD"), "drawing": doc_name(key, "DWG"),
         "scale": scale, "scales": scales or {}, "views": v, "holes": holes, "sheet": sheet,
+        "styles": STYLES.get(key, {}),
         "images": image_places(sheet),
         "title": [("PART NO.", pn), ("NAME", name), ("TÊN", vn), ("REV / STATUS", "%s / DRAFT" % M.REV),
                   ("MATERIAL", mname), ("FINISH", M.FINISH.get(key, "-")),
-                  ("SCALE", "1:%d" % round(1 / scale) + ("".join(", %s view %s" % (k, ("%d:1" % round(x)) if x >= 1 else ("1:%d" % round(1 / x)))
-                                                                    for k, x in sorted((scales or {}).items())))),
+                  ("SCALE", scale_text(scale) + "".join(", %s view %s" % (k, scale_text(x))
+                                                         for k, x in sorted((scales or {}).items()))),
                    ("UNITS", "mm"), ("PROJECTION", "first angle"), ("SHEET", sheet)]
         + list(title_extra),
         "notes": list(notes) + COMMON_NOTES,

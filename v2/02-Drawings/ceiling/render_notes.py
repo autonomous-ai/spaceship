@@ -4,9 +4,11 @@
 
 Fusion's drawing API can't put text on a sheet (custom table cells come out
 blank, title block fields can't be set), but it can insert a raster image
-(Sheet.images). So the notes and the title data are drawn here, at 10 px per mm
-(254 dpi, the PNG says so), IMG_W mm wide, and make_drawing_ceiling.py inserts
-them. Lettering 2.5 mm (ISO 3098 height), Arial Unicode for the Vietnamese names.
+(Sheet.images). So the notes, the title data and each view's scale label (a view drawn
+at another scale than the sheet's) are drawn here, at 10 px per mm, and
+make_drawing_ceiling.py inserts them at that size (Fusion's own size for an image is
+fixed, so it scales each one: drawing_specs.FUSION_IMG_W). Lettering 2.5 mm, labels
+3.5 mm (ISO 3098 heights), Arial Unicode for the Vietnamese names.
 Output: v2/02-Drawings/ceiling/.notes/ (git-ignored; regenerate any time).
 """
 
@@ -20,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import drawing_specs as S  # noqa: E402
 
-PX_MM = 10.0
+PX_MM = S.PX_MM
 FONT_PATHS = ["/Library/Fonts/Arial Unicode.ttf", "/System/Library/Fonts/Supplemental/Arial Unicode.ttf"]
 OUT = os.path.join(HERE, ".notes")
 
@@ -99,6 +101,19 @@ def render_title(sp, path):
     return img.size
 
 
+def render_label(text, path):
+    """A view's label (its scale), 3.5 mm lettering, no frame."""
+    f = font(3.5)
+    scratch = ImageDraw.Draw(Image.new("L", (10, 10)))
+    pad = int(1 * PX_MM)
+    W = int(text_w(scratch, text, f)) + 2 * pad
+    H = int(6 * PX_MM)
+    img = Image.new("L", (W, H), 255)
+    ImageDraw.Draw(img).text((pad, int(1 * PX_MM)), text, font=f, fill=0)
+    img.save(path, dpi=(PX_MM * 25.4, PX_MM * 25.4))
+    return img.size
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     for key in S.ORDER:
@@ -107,6 +122,9 @@ def main():
         t = render_title(sp, os.path.join(OUT, sp["drawing"] + "_TITLE.png"))
         print("%-45s notes %s px (%.0f x %.0f mm), title %s px (%.0f x %.0f mm)" % (
             sp["drawing"], n, n[0] / PX_MM, n[1] / PX_MM, t, t[0] / PX_MM, t[1] / PX_MM))
+        for view, text in S.labels(sp).items():
+            lb = render_label(text, os.path.join(OUT, "%s_LABEL_%s.png" % (sp["drawing"], view.upper())))
+            print("%-45s label %s view %r: %s px (%.0f x %.0f mm)" % ("", view, text, lb, lb[0] / PX_MM, lb[1] / PX_MM))
 
 
 if __name__ == "__main__":

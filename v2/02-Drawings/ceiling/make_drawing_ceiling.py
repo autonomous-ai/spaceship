@@ -60,7 +60,8 @@ for _d in (_CAD, HERE):
     sys.path.insert(0, _d)
 import drawing_specs as S  # noqa: E402
 importlib.reload(S)
-STYLES = {"tray": {"front": HIDDEN, "top": HIDDEN, "left": HIDDEN}, "cassette": {"top": HIDDEN}}
+STYLE = {"visible": VISIBLE, "hidden": HIDDEN}
+SYMBOL = "PROJECTION SYMBOL - FIRST ANGLE"
 
 
 def p2(x, y):
@@ -133,6 +134,10 @@ def add_view(sheet, orientation, center, scale, style):
         raise RuntimeError("Views.add returned None for orientation %s" % orientation)
     if abs(v.scaleValue - scale) > 1e-6:
         v.scaleValue = scale     # the scale set on the input is ignored in this build
+    if v.style != style:
+        v.style = style          # and so is the style (the first rib sample, 2026-11-01: hidden lines in every view)
+    if v.style != style:
+        raise RuntimeError("the view's style stays %s, %s asked" % (v.style, style))
     return v
 
 
@@ -143,21 +148,31 @@ def dim(sheet, a, b, place):
     return d
 
 
-def overall_dims(sheet, view, below=True, left=True, gap=10.0):
+def overall_dims(sheet, view, key, done, below=True, left=True, gap=10.0):
     """Width below (or above) and height left (or right) of a view, between the
-    vertices at its extent corners."""
+    vertices at its extent corners; a size already dimensioned along the same part axis on
+    another view is left off (ISO 129-1: each size once; done collects them, S.new_size)."""
     e = extent(view)
     x0, y0, x1, y1 = e
     a = nearest_end(view, (x0, y0))
     b = nearest_end(view, (x1, y0))
     c = nearest_end(view, (x0, y1))
+    hx, vy = S.AXES[key]
+    w = round(abs(xy(b)[0] - xy(a)[0]) / view.scaleValue, 2)
+    h = round(abs(xy(c)[1] - xy(a)[1]) / view.scaleValue, 2)
     out = []
     if x1 - x0 > 1.0:
-        y = y0 - gap if below else y1 + gap
-        out.append(dim(sheet, a, b, ((x0 + x1) / 2, y)))
+        if S.new_size(done, hx, w):
+            y = y0 - gap if below else y1 + gap
+            out.append(dim(sheet, a, b, ((x0 + x1) / 2, y)))
+        else:
+            print("  %s view: %s %.2f is on another view already, left off" % (key, hx, w))
     if y1 - y0 > 1.0:
-        x = x0 - gap if left else x1 + gap
-        out.append(dim(sheet, a, c, (x, (y0 + y1) / 2)))
+        if S.new_size(done, vy, h):
+            x = x0 - gap if left else x1 + gap
+            out.append(dim(sheet, a, c, (x, (y0 + y1) / 2)))
+        else:
+            print("  %s view: %s %.2f is on another view already, left off" % (key, vy, h))
     return out
 
 
@@ -192,33 +207,50 @@ def hole_table(sheet, view, title):
 
 
 def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
-    """ISO first-angle symbol: the truncated cone's side view, narrow end left,
-    and its end view (two concentric circles) to the right."""
-    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE")
+    """ISO first-angle symbol: the truncated cone's side view, narrow end left (away from the
+    circles), and its end view (two concentric circles) to the right. The outline is ONE closed
+    chain in a sketch of its own and the circles are in another: when they shared a sketch,
+    Fusion's PDF export (Lines.add is a preview API) moved a corner to the sheet corner and
+    the outline came out a triangle (the first rib sample 2026-11-01; GA's line probe found
+    the same). check_drawing_pdf.py reads the outline back from the PDF."""
+    sk = sheet.sketches.add(SYMBOL)
     pts = [p2(x0, y0 - d / 2), p2(x0 + length, y0 - big / 2), p2(x0 + length, y0 + big / 2),
            p2(x0, y0 + d / 2), p2(x0, y0 - d / 2)]
-    sk.lines.add(pts)
+    if sk.lines.add(pts) is None:
+        raise RuntimeError("the symbol outline was not added")
+    skc = sheet.sketches.add(SYMBOL + " CIRCLES")
     cx = x0 + length + gap + big / 2
-    sk.circles.addByCenterRadius(p2(cx, y0), big / 2)
-    sk.circles.addByCenterRadius(p2(cx, y0), d / 2)
+    skc.circles.addByCenterRadius(p2(cx, y0), big / 2)
+    skc.circles.addByCenterRadius(p2(cx, y0), d / 2)
     return sk
 
 
 def insert_image(sheet, path, top_left):
-    """Insert a PNG made by render_notes.py with its top left corner at top_left (sheet mm).
-    The images are drawn at 10 px per mm; Fusion places an image by its bottom left
-    corner, at its own size per pixel, so the first unlocked run checks the size by eye."""
+    """Insert a PNG made by render_notes.py with its top left corner at top_left (sheet mm), at
+    its drawn size (10 px per mm, so its lettering is the 2.5 mm it was drawn at). Fusion places
+    an image by its bottom left corner and puts any PNG in at S.FUSION_IMG_W wide at scale 1,
+    so the scale is the drawn width over that; check_drawing_pdf.py reads the size back."""
     if not os.path.exists(path):
         raise RuntimeError("missing %s: run render_notes.py first" % path)
-    from_png = _png_size(path)
-    h_mm = from_png[1] / 10.0
+    w_px, h_px = _png_size(path)
+    w_mm, h_mm = w_px / S.PX_MM, h_px / S.PX_MM
     inp = sheet.images.createInput()
     inp.imageFilePath = path
     inp.position = p2(top_left[0], top_left[1] - h_mm)
-    inp.scale = float(ARGS.get("img_scale", "1.0"))
+    inp.scale = float(ARGS["img_scale"]) if "img_scale" in ARGS else w_mm / S.FUSION_IMG_W
     ok = sheet.images.insert(inp)
-    print("image %s at %s: %s" % (os.path.basename(path), (top_left[0], round(top_left[1] - h_mm, 1)), ok))
+    print("image %s at %s: %s (%.1f x %.1f mm, scale %.4f)" % (
+        os.path.basename(path), (top_left[0], round(top_left[1] - h_mm, 1)), ok, w_mm, h_mm, inp.scale))
     return ok
+
+
+def label_place(sheet_view_extent, png, key):
+    """Top left corner for a view's scale label: centred under the view, LABEL_GAP below it
+    (below the width dimension when the view has one there: the view from above)."""
+    x0, y0, x1, _y1 = sheet_view_extent
+    w_mm = _png_size(png)[0] / S.PX_MM
+    below = S.LABEL_GAP + (14.0 if key == "top" else 0.0)
+    return ((x0 + x1) / 2 - w_mm / 2, y0 - below)
 
 
 def _png_size(path):
@@ -248,30 +280,40 @@ def annotate(part):
     if abs(sheet.width - want[0]) > 1 or abs(sheet.height - want[1]) > 1:
         raise RuntimeError("sheet is %s x %s, the spec wants %s" % (sheet.width, sheet.height, sp["sheet"]))
     sc = sp["scale"]
-    st = STYLES.get(part, {})
+    st = sp.get("styles", {})
     views = {}
     for key, orient in (("front", VO.FrontViewOrientationType), ("top", VO.TopViewOrientationType),
                         ("left", VO.LeftViewOrientationType), ("iso", VO.IsoTopRightViewOrientationType)):
-        views[key] = add_view(sheet, orient, sp["views"][key], sp["scales"].get(key, sc), st.get(key, VISIBLE))
+        style = st.get(key, "visible")
+        views[key] = add_view(sheet, orient, sp["views"][key], sp["scales"].get(key, sc), STYLE[style])
         e = extent(views[key])
-        print("view %-5s extent %s" % (key, tuple(round(v, 2) for v in e) if e else None))
+        print("view %-5s extent %s scale %g style %s" % (key, tuple(round(v, 2) for v in e) if e else None,
+                                                       views[key].scaleValue, style))
     ef, et, el = extent(views["front"]), extent(views["top"]), extent(views["left"])
     print("alignment: front/top x %.2f %.2f, front/left y %.2f %.2f" % (
         ef[0] - et[0], ef[2] - et[2], ef[1] - el[1], ef[3] - el[3]))
-    overall_dims(sheet, views["top"], below=True, left=True)
-    overall_dims(sheet, views["front"], below=False, left=True)
-    overall_dims(sheet, views["left"], below=False, left=False)
+    done = []
+    overall_dims(sheet, views["top"], "top", done, below=True, left=True)
+    overall_dims(sheet, views["front"], "front", done, below=False, left=True)
+    overall_dims(sheet, views["left"], "left", done, below=False, left=False)
+    print("overall sizes dimensioned: %s" % ", ".join("%s %g" % d for d in done))
     holes = []
     if sp["holes"]:
         holes = hole_dims(sheet, views[sp["holes"]])
     notes_dir = os.path.join(HERE, ".notes")
     # extras: a failure here must not lose the views and dimensions above (the drawing is
     # saved only when the run ends without an error), so each is tried on its own
-    extras = [("projection symbol", lambda: projection_symbol(sheet, 20.0, 20.0)),
+    # the symbol just left of the title block, clear of the frame (at 20, 20 its narrow end sat on the border)
+    sym = S.symbol_place(sp["sheet"])
+    extras = [("projection symbol", lambda: projection_symbol(sheet, sym[0], sym[1])),
               ("notes image", lambda: insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_NOTES.png"),
                                                    sp["images"]["notes"])),
               ("title image", lambda: insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_TITLE.png"),
                                                    sp["images"]["title"]))]
+    for key, _text in S.labels(sp).items():
+        png = os.path.join(notes_dir, "%s_LABEL_%s.png" % (sp["drawing"], key.upper()))
+        extras.append(("%s view scale label" % key,
+                       lambda png=png, key=key: insert_image(sheet, png, label_place(extent(views[key]), png, key))))
     if sp["holes"]:
         extras.insert(0, ("hole table", lambda: hole_table(sheet, views[sp["holes"]], "HOLES - %s VIEW" % sp["holes"].upper())))
     for what, fn in extras:
