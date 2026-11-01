@@ -41,13 +41,13 @@ with open(_LIB, "r", encoding="utf-8") as _fh:
 (HW_PARTS, MM, PART, RESERVED, REV, STOP_AFTER, WANT, bbox, box, ev, hole, hw_site, new_comp,
  pattern_feat, plane_at, re, set_material, size, sketch_axis_of, span, vi, el_params, el_inside, EL_KIND,
  child, member_numbers, fill_numbers, plated_mitre_triangles, place_hardware, poly_on, fill_fits,
- place_piece_copies, sketch_points, place_copies) = [
+ place_piece_copies, sketch_points, place_copies, mitre_plates) = [
     globals()[_n] for _n in (
         "HW_PARTS", "MM", "PART", "RESERVED", "REV", "STOP_AFTER", "WANT", "bbox", "box", "ev",
         "hole", "hw_site", "new_comp", "pattern_feat", "plane_at", "re", "set_material", "size", "sketch_axis_of",
         "span", "vi", "el_params", "el_inside", "EL_KIND", "child", "member_numbers", "fill_numbers",
         "plated_mitre_triangles", "place_hardware", "poly_on", "fill_fits", "place_piece_copies", "sketch_points",
-        "place_copies")]
+        "place_copies", "mitre_plates")]
 
 import adsk.core      # noqa: E402  (already imported by the library; named here for readers)
 import adsk.fusion    # noqa: E402
@@ -241,6 +241,7 @@ def build_frame_back(design, frame, out, yf, zs):
         tri_cut_y(design, members[rail][0], members[rail][0].bRepBodies.item(0), rt, "%s (%s)" % (label, rail), "MITRE")
         tri_cut_y(design, members[stile][0], members[stile][0].bRepBodies.item(0), st, "%s (%s)" % (label, stile),
                   "MITRE")
+    mitre_plates(design, frame, [(c[0], "top_h" if "TOP" in c[0] else "tube_w", "tube_w") for c in back_corners()])
     n = int(round(design.userParameters.itemByName("stile_n_mid").value))
     xr = lambda k: ("(%s) + %d * stile_pitch" % (X_LOW, k), "(%s) + %d * stile_pitch + tube_w" % (X_LOW, k))  # noqa: E731
     make("STILE - MID", xr(1), zs, "z", "stud_t")

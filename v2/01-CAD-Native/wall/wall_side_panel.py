@@ -1004,7 +1004,11 @@ def fill_numbers(repo_root, code):
         m = re.search(r"FILL PIECE (F\d\d) ", r["name"])
         if m:
             byform[m.group(1)] = (r["part_number"], r["name"], r["name_vi"])
-    return {bay: byform[f] for bay, f in forms.items() if f in byform}
+    out = {bay: byform[f] for bay, f in forms.items() if f in byform}
+    if ARGS.get("dry") == "1":            # a dry run (never saved) labels a form whose number isn't allocated yet
+        for bay, f in forms.items():
+            out.setdefault(bay, ("DRY-%s" % f, "WALL - CAVITY FILL PIECE %s (DRY RUN, NO NUMBER YET)" % f, ""))
+    return out
 
 
 def child(parent, pn, name, vn):
@@ -1276,6 +1280,7 @@ def build_frame(design, frame, out, xf, yf, zs):
         rt, st = plated_mitre_triangles(design, o, i, w_rail, w_stile)
         mitre(design, members[rail][0], members[rail][0].bRepBodies.item(0), rt, "%s (%s)" % (label, rail), x_lo)
         mitre(design, members[stile][0], members[stile][0].bRepBodies.item(0), st, "%s (%s)" % (label, stile), x_lo)
+    mitre_plates(design, frame, [(c[0], c[5], c[6]) for c in side_corners()])
     studs = ["stud_c%d" % k for k in range(1, int(round(design.userParameters.itemByName("stile_n_mid").value)) + 1)]
     yr = lambda c: ("(%s) + %s - tube_w / 2" % (Y_FRONT, c), "(%s) + %s + tube_w / 2" % (Y_FRONT, c))  # noqa: E731
     make("STILE - MID", yr(studs[0]), zs, "z", "stud_t")
@@ -1295,6 +1300,23 @@ def build_frame(design, frame, out, xf, yf, zs):
     print("step 2-3: frame of %d member parts, %d studs (one part, copies held by joints) at Y %s from the front, "
           "4 mitred corners" % (len(members), len(studs), ", ".join("%.1f" % ev(design, c) for c in studs)))
     return members
+
+
+def mitre_plates(design, frame, corners):
+    """The 2 mm plate welded into each mitre (the Joints Engineer's corner detail): shared register parts numbered
+    by the Joints Engineer (Lead, 2026-11-01), placed from his STEPs like the spigot. Until their numbers and STEPs
+    are in the repo a real build stops here rather than guess their shape; a dry run (never saved) notes it and goes
+    on. corners: [(label, w_rail, w_stile)] with the widths' parameter names."""
+    need = sorted({"%.1f x 40" % (ev(design, w1) ** 2 + ev(design, w2) ** 2) ** 0.5 for _l, w1, w2 in corners})
+    have = [r for r in allocation(ARGS["repo_root"]) if "MITRE PLATE" in r["name"].upper()]
+    if not have:
+        msg = "the mitre plates %s (Joints' register parts) have no numbers or STEPs in the repo yet" % ", ".join(need)
+        if ARGS.get("dry") == "1":
+            print("PLATES|skipped in this dry run: %s" % msg)
+            return []
+        raise RuntimeError(msg + "; the frame waits for them (Lead, 2026-11-01)")
+    raise RuntimeError("the mitre plates are allocated (%s) but placing them waits for their origin and axes in the "
+                       "Joints README" % ", ".join(r["part_number"] for r in have))
 
 
 def side_bays(design):
