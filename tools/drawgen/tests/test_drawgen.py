@@ -545,6 +545,31 @@ def test_bent_sheet_p3s():
     assert lens.count(1.26) + lens.count(1.27) >= 2 and lens.count(2.53) >= 1, sorted(set(lens))[:40]
 
 
+def test_flat_pattern_on_its_own_sheet():
+    """The Lead (CEILING's tray 513101: at 1:10 its eight bend lines sit 1 to 5 mm apart, no room for their tags): a
+    big bent part's flat pattern goes on a sheet of its own when sheet 1 can't hold it legibly. The test tray drawn
+    that way: three sheets (1/3 views and tables, 2/3 the flat pattern at the largest scale the sheet holds, 3/3 the
+    notes), and the read-back checks the flat on its own sheet: its size, its tags, the bend lines on the DXF's."""
+    d = os.path.join(TMP, "flat_sheet")
+    os.makedirs(d, exist_ok=True)
+    step = _tray(os.path.join(d, "219984_P01_TEST-TRAY-SHEET2_STEP.step"))
+    good, _b = _tray_dxf(os.path.join(d, "219984_DXF.dxf"))
+    row = dict(ROW, part_number="219984", name="TEST - TRAY SHEET 2", process="laser cut, brake bend")
+    p = os.path.join(d, "219984.pdf")
+    compose.make("219984", "none", dict(SPEC, bent={"radius": 1.0, "radius_why": "test", "dxf": good}, _flat_sheet=True),
+                 p, step=step, row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    assert doc.page_count == 3 and data["flat"]["view"]["page"] == 1, (doc.page_count, data["flat"]["view"])
+    assert data["flat"]["view"]["scale"] == 1.0, data["flat"]["view"]          # the whole sheet: 1:1 for this tray
+    t2 = " ".join(doc[1].get_text().split())
+    assert "FLAT PATTERN 1:1" in t2 and "2/3" in t2 and "B1" in t2, t2[:300]
+    assert "sheet 2: the flat pattern; sheet 3: these general notes" in " ".join(doc[2].get_text().split())
+    assert not any("FLAT PATTERN" in pg.get_text() for pg in (doc[0],))
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
