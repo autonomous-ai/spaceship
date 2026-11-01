@@ -76,6 +76,8 @@ def holes_along(p0, p1, inward, inset, end, pitch, dia):
     L = float(np.linalg.norm(p1 - p0))
     d = (p1 - p0) / L
     span = L - 2 * end
+    if span < 3 * dia:                   # too short for two holes 3 diameters apart: one in the middle
+        return [(p0 + d * (L / 2) + inward * inset, dia)]
     n = max(1, int(np.ceil(span / pitch)))
     return [(p0 + d * (end + span * i / n) + inward * inset, dia) for i in range(n + 1)]
 
@@ -109,3 +111,23 @@ def relief_need(K, A, B, h1, h2, amin, a1_fixed=None, a2_fixed=None):
     if best is None:
         raise ValueError("no relief fits at corner %s" % np.round(K, 2))
     return best
+
+
+def inside_margin(pt, poly, n, margin):
+    """True when pt (on the polygon's plane) lies inside the planar polygon and at least `margin` from its edges."""
+    pt = np.asarray(pt, float)
+    u = unit(poly[1] - poly[0])
+    v = np.cross(n, u)
+    q = [(float(np.dot(p - poly[0], u)), float(np.dot(p - poly[0], v))) for p in poly]
+    x, y = float(np.dot(pt - poly[0], u)), float(np.dot(pt - poly[0], v))
+    inside = False
+    for i in range(len(q)):
+        (x1, y1), (x2, y2) = q[i], q[(i + 1) % len(q)]
+        if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
+            inside = not inside
+        ex, ey = x2 - x1, y2 - y1
+        L2 = ex * ex + ey * ey
+        s = 0.0 if L2 == 0 else max(0.0, min(1.0, ((x - x1) * ex + (y - y1) * ey) / L2))
+        if np.hypot(x - (x1 + s * ex), y - (y1 + s * ey)) < margin - 1e-9:
+            return False
+    return inside

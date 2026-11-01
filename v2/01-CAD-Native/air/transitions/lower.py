@@ -1,15 +1,21 @@
-"""The lower transition (in place of 618103): from the intake riser's top to the supply fan box's bottom, made as
-two folded halves of 1 mm galvanised steel (the Lead's ruling 2026-11-01: the shop build).
+"""The lower transition (in place of 618103): from the intake riser's top to the supply fan box's bottom, in 1 mm
+galvanised steel, built as two wrappers and two cheeks (the Lead's rulings 2026-11-01: the shop build, and the
+riser kink rounded, step-bent to about R 100).
 
-The duct is an offset of four plane walls, from the riser's outline at Z 1445 to the box's at Z 1650: the left and
-right walls lean left (about 53.5 and 30.3 degrees off vertical), the front and back walls lean forward about 4
-degrees, since the box sits 13.5 mm further forward than the riser. Each wall kinks to vertical at both ends into a
-collar that slips inside the riser's top (25 deep) and inside the box's bottom (20 deep), riveted through and
-sealed. Half A is the left wall and the front wall, folded at their common corner; half B the right wall and the
-back wall. Each half carries a seam flange that laps inside the other half's wall: the front wall's flange on the
-right wall, the back wall's flange on the left wall. Corners where two folds meet get a relief.
+The duct is an offset: the air rises out of the riser (inside 137 x 148), turns about 62 degrees left through a
+rounded throat, runs up a straight slant that widens toward the box, and turns back up into the box (inside 294 x
+149).
+- The left wrapper is the duct's left wall: a collar that slips 25 mm into the riser's top, four step bends that
+  make the throat's radius, the slant, a kink, and a collar that slips 20 mm into the box's bottom. Both its edges
+  carry flanges that lie on the cheeks' inside faces, notched at every bend: square where the bend opens them,
+  mitred where it closes them.
+- The right wrapper is the duct's right wall: collar, kink, slant, kink, collar, flanged the same way.
+- The two cheeks are the front and back walls, one part: a plate with two small kinks (about 4 degrees), because
+  the box sits 13.5 mm further forward than the riser. The back cheek is the front one moved back (placements()).
+Rivets join the flanges to the cheeks, and the collars to the riser's and the box's walls (those walls drilled at
+assembly through the collars' holes); every joint is sealed.
 
-Pod coordinates, mm. Every wall is given by its outer skin (the duct's outside)."""
+Pod coordinates, mm. Each wall is given by its outer skin, the duct's outside."""
 
 import math
 
@@ -20,32 +26,78 @@ import sheetmetal as S
 from tr_params import P
 
 STEEL = "Galvanised steel DX51D+Z, 1.0 mm"
+X, Y, Z = np.array([1.0, 0, 0]), np.array([0, 1.0, 0]), np.array([0, 0, 1.0])
 
 
-def outlines():
-    """The collars' outer outlines: (x0, x1, y0, y1) at the riser and at the box, and the four levels."""
-    bot = (P.rs_x0 + P.rs_t + P.lt_cr, P.rs_x1 - P.rs_t - P.lt_cr, P.rs_y0 + P.rs_t + P.lt_cr, P.rs_y1 - P.rs_t - P.lt_cr)
-    top = (P.sb_x0 + P.sb_t + P.lt_cb, P.sb_x1 - P.sb_t - P.lt_cb, P.sb_y0 + P.sb_t + P.lt_cb, P.sb_y1 - P.sb_t - P.lt_cb)
-    z = (P.rs_z1 - P.lt_hb, P.rs_z1, P.sb_z0, P.sb_z0 + P.lt_ht)
-    return bot, top, z
+def levels():
+    """The collars' outer outlines and the levels."""
+    d = dict(bx0=P.rs_x0 + P.rs_t + P.lt_cr, bx1=P.rs_x1 - P.rs_t - P.lt_cr,
+             by0=P.rs_y0 + P.rs_t + P.lt_cr, by1=P.rs_y1 - P.rs_t - P.lt_cr,
+             tx0=P.sb_x0 + P.sb_t + P.lt_cb, tx1=P.sb_x1 - P.sb_t - P.lt_cb,
+             zb0=P.rs_z1 - P.lt_hb, zr=P.rs_z1, zk2=P.sb_z0, zt1=P.sb_z0 + P.lt_ht)
+    d["cheek_shift"] = d["by1"] - d["by0"] - P.lt_t     # the back cheek: the front one moved this far back
+    d["ty0"] = d["by0"] - P.lt_lean                       # the front cheek's outer face over the box
+    return d
 
 
-def corners():
-    (bx0, bx1, by0, by1), (tx0, tx1, ty0, ty1), (_zb0, zk1, zk2, _zt1) = outlines()
-    a = np.array
-    return dict(bFL=a([bx0, by0, zk1]), bFR=a([bx1, by0, zk1]), bBL=a([bx0, by1, zk1]), bBR=a([bx1, by1, zk1]),
-                tFL=a([tx0, ty0, zk2]), tFR=a([tx1, ty0, zk2]), tBL=a([tx0, ty1, zk2]), tBR=a([tx1, ty1, zk2]))
+def left_profile():
+    """The left wrapper's outer skin in (X, Z): the collar, the rounded throat (the circumscribed polygon of an arc
+    whose air side has radius lt_throat_r), the slant to the box's left collar, the collar. (points, turn rad)."""
+    L = levels()
+    ro = P.lt_throat_r - P.lt_t              # the outer skin is nearer the centre, which is outside the duct
+    cx, cz = L["bx0"] - ro, L["zr"]
+    tx, tz = L["tx0"], L["zk2"]
+
+    def f(th):                                 # zero when the tangent at th passes through the box's left collar
+        return (cx - tx) * math.cos(th) + ro - (tz - cz) * math.sin(th)
+    lo, hi = math.radians(10), math.radians(85)
+    for _ in range(100):
+        mid = (lo + hi) / 2
+        if f(lo) * f(mid) <= 0:
+            hi = mid
+        else:
+            lo = mid
+    th = (lo + hi) / 2
+    n = int(P.lt_throat_n)
+    step = th / n
+    rv = ro / math.cos(step / 2)
+    pts = [np.array([L["bx0"], L["zb0"]])]
+    for j in range(1, n + 1):
+        ph = (j - 0.5) * step
+        pts.append(np.array([cx + rv * math.cos(ph), cz + rv * math.sin(ph)]))
+    pts += [np.array([tx, tz]), np.array([tx, L["zt1"]])]
+    return pts, th
 
 
-def planes():
-    K = corners()
-    return dict(L=G.plane(K["bFL"], K["bBL"], K["tFL"], (-1, 0, 0)), R=G.plane(K["bFR"], K["bBR"], K["tFR"], (1, 0, 0)),
-                F=G.plane(K["bFL"], K["bFR"], K["tFL"], (0, -1, 0)), B=G.plane(K["bBL"], K["bBR"], K["tBL"], (0, 1, 0)))
+def right_profile():
+    """The right wrapper's outer skin: it kinks where the left one's first step is, the cheek's kink."""
+    L = levels()
+    zk1 = left_profile()[0][1][1]
+    return [np.array([L["bx1"], L["zb0"]]), np.array([L["bx1"], zk1]), np.array([L["tx1"], L["zk2"]]),
+            np.array([L["tx1"], L["zt1"]])]
+
+
+def cheek_planes():
+    """The front cheek's three facets' outer skin planes (point, normal facing the duct's outside): below its first
+    kink, the lean, and over the box's edge; and the two kink levels."""
+    L = levels()
+    zk1 = left_profile()[0][1][1]
+    a = np.array([L["bx0"], L["by0"], zk1])
+    b = np.array([L["bx0"], L["ty0"], L["zk2"]])
+    return (a, -Y), G.plane(a, a + X, b, -Y), (b, -Y), zk1, L["zk2"]
+
+
+def _plane_y(pl, x, z):
+    p, n = pl
+    return p[1] - (n[0] * (x - p[0]) + n[2] * (z - p[2])) / n[1]
+
+
+def _facet(z, zk1, zk2, eps=1e-6):
+    return 0 if z <= zk1 + eps else (1 if z <= zk2 + eps else 2)
 
 
 def _h(theta_rad):
-    """The length a wall's outline must run square to a fold at the fold's end: the fold's tangent distance on
-    its outer skin, at most (r + t) tan(angle / 2), and a margin."""
+    """How far a wall's outline must run square to a fold at the fold's end: its tangent distance and a margin."""
     return (P.lt_r + P.lt_t) * math.tan(theta_rad / 2) + 0.4
 
 
@@ -54,13 +106,12 @@ def _angle(n1, n2):
 
 
 def relieved(pts, edge_h, fixed=None, amin=None):
-    """A wall polygon with a relief at every corner. Edge i runs from pts[i] to pts[i + 1]; edge_h[i] is how long
-    the outline must run square to that edge at its ends (0.3 for a free edge). fixed {(corner, 'prev' or 'next'):
-    a} pins a relief's length along an edge (a fold two walls share). Returns (polygon, {(corner, side): a})."""
+    """A wall polygon with a relief at every corner (edge i runs pts[i] to pts[i + 1]; edge_h[i] how long the outline
+    must run square to it). Returns (polygon, {(corner, 'prev' or 'next'): relief length along that edge})."""
     amin = P.lt_relief if amin is None else amin
     fixed = fixed or {}
-    n = len(pts)
     out, used = [], {}
+    n = len(pts)
     for i in range(n):
         A, K, B = pts[i - 1], pts[i], pts[(i + 1) % n]
         a1, a2 = G.relief_need(K, A, B, edge_h[i - 1], edge_h[i], amin, fixed.get((i, "prev")), fixed.get((i, "next")))
@@ -71,147 +122,175 @@ def relieved(pts, edge_h, fixed=None, amin=None):
 
 
 def edge_seg(pts, used, i):
-    """Edge i's fold segment, between the two reliefs at its ends."""
+    """Edge i's fold segment, between the reliefs at its two ends."""
     n = len(pts)
     K0, K1 = pts[i], pts[(i + 1) % n]
     d = G.unit(K1 - K0)
     return K0 + used[(i, "next")] * d, K1 - used[((i + 1) % n, "prev")] * d
 
 
-def shared(pts_a, h_a, ia, pts_b, h_b, ib):
-    """Reliefs for a fold two walls share: edge ia of wall a is edge ib of wall b, run the other way. Each end's
-    relief along the fold is the larger of the two walls' needs, so the fold segment is the same in both."""
-    _pa, ua = relieved(pts_a, h_a)
-    _pb, ub = relieved(pts_b, h_b)
-    na, nb = len(pts_a), len(pts_b)
-    # wall a's edge ia: corner ia ('next') to corner ia+1 ('prev'); in wall b the same line runs from corner ib+1
-    # ('prev' side at its end) ... b's edge ib goes from pts_b[ib] (= a's corner ia+1) to pts_b[ib+1] (= a's ia)
-    s0 = max(ua[(ia, "next")], ub[((ib + 1) % nb, "prev")])
-    s1 = max(ua[((ia + 1) % na, "prev")], ub[(ib, "next")])
-    fa = {(ia, "next"): s0, ((ia + 1) % na, "prev"): s1}
-    fb = {((ib + 1) % nb, "prev"): s0, (ib, "next"): s1}
-    return fa, fb
+def wrapper(side):
+    """The left or right wrapper: web segments along its profile, a flange on each cheek per segment."""
+    t = P.lt_t
+    L = levels()
+    prof = left_profile()[0] if side == "LEFT" else right_profile()
+    low, mid, up, zk1, zk2 = cheek_planes()
+    planes_f = [G.offset(p, -t) for p in (low, mid, up)]                   # the front cheek's inside faces
+    planes_b = [(p + Y * L["cheek_shift"], n) for p, n in (low, mid, up)]  # the back cheek's inside faces
+    out_sign = -1.0 if side == "LEFT" else 1.0
+    m = len(prof) - 1
+    corners = []
+    for k in range(m + 1):
+        x, z = prof[k]
+        fi = _facet(z, zk1, zk2)            # a point on a cheek kink is on both facets: the same Y
+        corners.append((np.array([x, _plane_y(planes_f[fi], x, z), z]), np.array([x, _plane_y(planes_b[fi], x, z), z])))
+    dirs = [G.unit(np.array([prof[k + 1][0] - prof[k][0], 0.0, prof[k + 1][1] - prof[k][1]])) for k in range(m)]
+    normals = [G.unit(np.array([d[2], 0.0, -d[0]]) * out_sign) for d in dirs]
+    seg_pts, seg_h, seg_facet = [], [], []
+    for k in range(m):
+        (fk, bk), (fk1, bk1) = corners[k], corners[k + 1]
+        fi = _facet((prof[k][1] + prof[k + 1][1]) / 2, zk1, zk2)
+        h_fold = _h(_angle(normals[k], -planes_f[fi][1]))
+        h_lo = _h(_angle(normals[k - 1], normals[k])) if k > 0 else 0.3
+        h_hi = _h(_angle(normals[k], normals[k + 1])) if k < m - 1 else 0.3
+        seg_pts.append([fk, fk1, bk1, bk])          # edges: front flange fold, step above, back flange fold, step below
+        seg_h.append([h_fold, h_hi, h_fold, h_lo])
+        seg_facet.append(fi)
+    # each step fold is shared by two web segments: its reliefs are the larger of the two segments' needs
+    first = [relieved(seg_pts[k], seg_h[k])[1] for k in range(m)]
+    fixed = [dict() for _ in range(m)]
+    for k in range(m - 1):
+        ua, ub = first[k], first[k + 1]
+        s_front = max(ua[(1, "next")], ub[(0, "prev")])
+        s_back = max(ua[(2, "prev")], ub[(3, "next")])
+        fixed[k][(1, "next")], fixed[k][(2, "prev")] = s_front, s_back
+        fixed[k + 1][(0, "prev")], fixed[k + 1][(3, "next")] = s_front, s_back
+    polys, useds = zip(*[relieved(seg_pts[k], seg_h[k], fixed[k]) for k in range(m)])
+    names = ["%s WEB %d" % (side, k + 1) for k in range(m)]
+    holes_web = {k: [] for k in range(m)}
+    for k in (0, m - 1):                    # the collars' rivets, through the riser's or the box's wall at assembly
+        (fk, bk), (fk1, bk1) = corners[k], corners[k + 1]
+        zc = (L["zb0"] + P.rs_z1) / 2 if k == 0 else (L["zk2"] + L["zt1"]) / 2
+        a = fk + (fk1 - fk) * (zc - fk[2]) / (fk1[2] - fk[2])
+        b = bk + (bk1 - bk) * (zc - bk[2]) / (bk1[2] - bk[2])
+        holes_web[k] = G.holes_along(a, b, np.zeros(3), 0.0, 22.0, 70.0, P.rivet_hole)
+    walls = [S.Wall(names[k], polys[k], normals[k], holes=holes_web[k]) for k in range(m)]
+    folds = []
+    for k in range(m - 1):
+        s = edge_seg(seg_pts[k], useds[k], 1)
+        folds.append(S.Fold(names[k], names[k + 1], s[0], s[1], "%s STEP %d" % (side, k + 1)))
+    flange_holes = []
+    for k in range(m):
+        for which, ei in (("FRONT", 0), ("BACK", 2)):
+            s0, s1 = edge_seg(seg_pts[k], useds[k], ei)
+            if np.dot(s1 - s0, dirs[k]) < 0:            # s0 at the segment's lower end, next to segment k - 1
+                s0, s1 = s1, s0
+            fpl = (planes_f if which == "FRONT" else planes_b)[seg_facet[k]]
+            n_c = fpl[1] if which == "FRONT" else -fpl[1]        # the flange's outer skin faces its cheek
+            # the flange's own plane through its fold line, within microns of the cheek's facet (a shared corner
+            # sits on the facet below; the inside faces of two facets meet a few hundredths off the kink line)
+            e0 = G.unit(np.cross(n_c, s1 - s0))
+            n_f = G.unit(np.cross(s1 - s0, e0))
+            if np.dot(n_f, n_c) < 0:
+                n_f = -n_f
+            e = G.unit(np.cross(n_f, s1 - s0))
+            if np.dot(e, -normals[k]) < 0:                        # toward the duct's inside
+                e = -e
+            w = P.lt_flange_w
+            ends = []
+            for end_pt, other, nb in ((s0, s1, k - 1), (s1, s0, k + 1)):
+                dd = G.unit(end_pt - other)                      # along the fold, outward at this end
+                sq = end_pt + e * 2.5                            # square to the fold past its zone
+                closes = False
+                if 0 <= nb < m:
+                    lo_, hi_ = (k, nb) if nb > k else (nb, k)
+                    closes = float(np.dot(dirs[hi_] - dirs[lo_], e)) > 0     # the bend turns toward the flange
+                if closes:
+                    half = _angle(normals[k], normals[nb]) / 2
+                    ends.append((sq, sq + e * (w - 2.5) - dd * ((w - 2.5) * math.tan(half) + 0.5)))
+                else:
+                    ends.append((sq, end_pt + e * w))
+            poly = [s0, s1, ends[1][0], ends[1][1], ends[0][1], ends[0][0]]
+            fname = "%s FLANGE %s %d" % (side, which, k + 1)
+            seglen = float(np.linalg.norm(s1 - s0))
+            hs = G.holes_along(s0, s1, e, P.flange_hole_in, 9.0, P.rivet_pitch, P.rivet_hole) if seglen >= 18.0 else []
+            # a rivet keeps 2 diameters to the flange's every edge, and its hole stays on the cheek's facet under it
+            fpoly = [s0, s1] + [q for q in (ends[1][0], ends[1][1], ends[0][1], ends[0][0])]
+            hs = [(c, d) for c, d in hs if G.inside_margin(c, fpoly, n_f, 2 * P.rivet_hole - 1e-6)
+                  and _facet(c[2], zk1, zk2) == seg_facet[k]
+                  and min(abs(c[2] - zk1), abs(c[2] - zk2)) > P.rivet_hole]
+            walls.append(S.Wall(fname, poly, n_f, holes=hs))
+            folds.append(S.Fold(names[k], fname, s0, s1, fname))
+            flange_holes += [(c, d, which, n_f) for c, d in hs]
+    part = S.Part("LT-%s" % side[0], "AIR - RISER TRANSITION - %s WRAPPER" % side, walls, folds, t, P.lt_r,
+                  P.k_factor, names[0], P.dens_steel, STEEL)
+    part.flange_holes = flange_holes
+    return part
 
 
-def _tab(seg, direction, depth):
-    """A collar tab hanging from a kink segment: [s0, s1, s1 + v, s0 + v]."""
-    s0, s1 = seg
-    v = np.asarray(direction, float) * depth
-    return [s0, s1, s1 + v, s0 + v]
+def cheek(flange_holes):
+    """The cheek, at the front: three facets and two small kinks, holes for the wrappers' front flanges' rivets and
+    for its collar's two rivets into the riser's wall (none into the box: the lip angle covers the box's front)."""
+    t = P.lt_t
+    L = levels()
+    low, mid, up, zk1, zk2 = cheek_planes()
+    lp, rp = left_profile()[0], right_profile()
+
+    def on(pl, x, z):
+        return np.array([x, _plane_y(pl, x, z), z])
+    lowp = [on(low, L["bx0"], L["zb0"]), on(low, L["bx1"], L["zb0"]), on(low, L["bx1"], zk1), on(low, L["bx0"], zk1)]
+    midp = [on(mid, *lp[1]), on(mid, *rp[1]), on(mid, *rp[2])] + [on(mid, *q) for q in reversed(lp[2:-1])]
+    upp = [on(up, L["tx0"], zk2), on(up, L["tx1"], zk2), on(up, L["tx1"], L["zt1"]), on(up, L["tx0"], L["zt1"])]
+    k1, k2, free = _h(_angle(low[1], mid[1])), _h(_angle(mid[1], up[1])), 0.3
+    h_low, h_mid, h_up = [free, free, k1, free], [k1, free, k2] + [free] * (len(midp) - 3), [k2, free, free, free]
+    _r, ul = relieved(lowp, h_low, amin=1.0)
+    _r, um = relieved(midp, h_mid, amin=1.0)
+    _r, uu = relieved(upp, h_up, amin=1.0)
+    a_k1r, a_k1l = max(ul[(2, "next")], um[(1, "prev")]), max(ul[(3, "prev")], um[(0, "next")])
+    a_k2r, a_k2l = max(um[(2, "next")], uu[(1, "prev")]), max(um[(3, "prev")], uu[(0, "next")])
+    lowr, ul = relieved(lowp, h_low, {(2, "next"): a_k1r, (3, "prev"): a_k1l}, amin=1.0)
+    midr, um = relieved(midp, h_mid, {(1, "prev"): a_k1r, (0, "next"): a_k1l, (2, "next"): a_k2r, (3, "prev"): a_k2l},
+                        amin=1.0)
+    upr, uu = relieved(upp, h_up, {(1, "prev"): a_k2r, (0, "next"): a_k2l}, amin=1.0)
+    s1, s2 = edge_seg(lowp, ul, 2), edge_seg(midp, um, 2)
+    holes = [[], [], []]
+    facets = (low, mid, up)
+    for c, d, which, n_f in flange_holes:
+        if which == "FRONT":
+            cc = c + n_f * t                  # through the cheek: its outer skin is t outside the flange's
+            fi = _facet(cc[2], zk1, zk2)
+            p, n = facets[fi]
+            holes[fi].append((cc - float(np.dot(cc - p, n)) * n, d))     # on the facet's outer skin exactly
+    zc = (L["zb0"] + P.rs_z1) / 2
+    for x in (L["bx0"] + 32.0, L["bx1"] - 45.0):         # clear of the wrappers' flanges, and of the riser's facet corner
+        holes[0].append((on(low, x, zc), P.rivet_hole))
+    walls = [S.Wall("CHEEK LOW", lowr, -Y, holes=holes[0]), S.Wall("CHEEK MID", midr, mid[1], holes=holes[1]),
+             S.Wall("CHEEK UP", upr, -Y, holes=holes[2])]
+    folds = [S.Fold("CHEEK LOW", "CHEEK MID", s1[0], s1[1], "CHEEK KINK 1"),
+             S.Fold("CHEEK MID", "CHEEK UP", s2[0], s2[1], "CHEEK KINK 2")]
+    return S.Part("LT-C", "AIR - RISER TRANSITION - CHEEK", walls, folds, t, P.lt_r, P.k_factor, "CHEEK MID",
+                  P.dens_steel, STEEL)
 
 
-def _flange(seg, plane, toward, width):
-    """A seam flange in `plane` from the fold segment, width toward `toward`: its outline."""
-    s0, s1 = seg
-    _p, n = plane
-    e = G.unit(np.cross(n, s1 - s0))
-    if np.dot(e, toward) < 0:
-        e = -e
-    return [s0, s1, s1 + e * width, s0 + e * width], e
+def parts():
+    """(left wrapper, right wrapper, cheek at the front)."""
+    lw, rw = wrapper("LEFT"), wrapper("RIGHT")
+    return lw, rw, cheek(lw.flange_holes + rw.flange_holes)
 
 
-def _collar_holes(seg, direction, depth, n_out, end=20.0, pitch=70.0, only=None):
-    """Rivet holes along a collar tab's middle, on its outer skin."""
-    s0, s1 = seg
-    mid = np.asarray(direction, float) * depth / 2
-    hs = G.holes_along(s0 + mid, s1 + mid, np.zeros(3), 0.0, end, pitch, P.rivet_hole)
-    if only is not None:
-        hs = [h for h in hs if only(h[0])]
-    return hs
-
-
-def halves():
-    """(half A, half B) as sheetmetal.Part, in pod coordinates."""
-    t, r, k = P.lt_t, P.lt_r, P.k_factor
-    (bx0, bx1, by0, by1), (tx0, tx1, ty0, ty1), (zb0, zk1, zk2, zt1) = outlines()
-    K = corners()
-    PL = planes()
-    Li, Ri = G.offset(PL["L"], -t), G.offset(PL["R"], -t)
-
-    def at_z(line, z):
-        return G.line_plane(line, (np.array([0, 0, z]), np.array([0, 0, 1.0])))
-    FRs = G.plane_line(PL["F"], Ri)          # half A's seam fold: the front wall meets the right wall's inside
-    BLs = G.plane_line(PL["B"], Li)          # half B's seam fold: the back wall meets the left wall's inside
-    bFRs, tFRs = at_z(FRs, zk1), at_z(FRs, zk2)
-    bBLs, tBLs = at_z(BLs, zk1), at_z(BLs, zk2)
-    up, down = np.array([0, 0, 1.0]), np.array([0, 0, -1.0])
-
-    nL, nR, nF, nB = PL["L"][1], PL["R"][1], PL["F"][1], PL["B"][1]
-    X, Y = np.array([1.0, 0, 0]), np.array([0, 1.0, 0])
-    free = 0.3
-
-    # ---------------- half A: the left wall (base) and the front wall, folded at their corner
-    Lp = [K["bFL"], K["bBL"], K["tBL"], K["tFL"]]       # edges: kink L1, back edge (free), kink L2, corner fold
-    hL = [_h(_angle(nL, -X)), free, _h(_angle(nL, -X)), _h(_angle(nL, nF))]
-    Fp = [K["bFL"], K["tFL"], tFRs, bFRs]               # edges: corner fold, kink F2, seam fold, kink F1
-    hF = [_h(_angle(nL, nF)), _h(_angle(nF, -Y)), _h(_angle(nF, nR)), _h(_angle(nF, -Y))]
-    fa, fb = shared(Lp, hL, 3, Fp, hF, 0)
-    LM, uL = relieved(Lp, hL, fa)
-    FM, uF = relieved(Fp, hF, fb)
-    fl = edge_seg(Lp, uL, 3)
-    lb, lt = edge_seg(Lp, uL, 0), edge_seg(Lp, uL, 2)
-    fb_, ft_, fs = edge_seg(Fp, uF, 3), edge_seg(Fp, uF, 1), edge_seg(Fp, uF, 2)
-    FS, eFS = _flange(fs, Ri, (0, 1, 0), P.seam_w)
-    seam_a = G.holes_along(fs[0], fs[1], eFS, P.seam_hole_in, P.rivet_end, P.rivet_pitch, P.rivet_hole)
-
-    # ---------------- half B: the right wall (base) and the back wall, folded at their corner
-    Rp = [K["bFR"], K["tFR"], K["tBR"], K["bBR"]]       # edges: front edge (free), kink R2, corner fold, kink R1
-    hR = [free, _h(_angle(nR, X)), _h(_angle(nR, nB)), _h(_angle(nR, X))]
-    Bp = [K["bBR"], K["tBR"], tBLs, bBLs]               # edges: corner fold, kink B2, seam fold, kink B1
-    hB = [_h(_angle(nR, nB)), _h(_angle(nB, Y)), _h(_angle(nB, nL)), _h(_angle(nB, Y))]
-    ra, rb_fix = shared(Rp, hR, 2, Bp, hB, 0)
-    RM, uR = relieved(Rp, hR, ra)
-    BM, uB = relieved(Bp, hB, rb_fix)
-    br = edge_seg(Rp, uR, 2)
-    rb, rt = edge_seg(Rp, uR, 3), edge_seg(Rp, uR, 1)
-    bb, bt, bs = edge_seg(Bp, uB, 3), edge_seg(Bp, uB, 1), edge_seg(Bp, uB, 2)
-    BS, eBS = _flange(bs, Li, (0, -1, 0), P.seam_w)
-    seam_b = G.holes_along(bs[0], bs[1], eBS, P.seam_hole_in, P.rivet_end, P.rivet_pitch, P.rivet_hole)
-
-    walls_a = [
-        S.Wall("LEFT WALL", LM, nL, holes=[(c + nL * t, d) for c, d in seam_b]),
-        S.Wall("FRONT WALL", FM, nF),
-        S.Wall("LEFT COLLAR - RISER", _tab(lb, down, P.lt_hb), -X, holes=_collar_holes(lb, down, P.lt_hb, -X)),
-        S.Wall("LEFT COLLAR - BOX", _tab(lt, up, P.lt_ht), -X, holes=_collar_holes(lt, up, P.lt_ht, -X)),
-        S.Wall("FRONT COLLAR - RISER", _tab(fb_, down, P.lt_hb), -Y,
-               holes=_collar_holes(fb_, down, P.lt_hb, -Y, only=lambda c: c[0] < P.rs_x1 - 40)),
-        S.Wall("FRONT COLLAR - BOX", _tab(ft_, up, P.lt_ht), -Y),          # no rivets under the lip angle
-        S.Wall("FRONT SEAM FLANGE", FS, nR, holes=seam_a),
-    ]
-    folds_a = [S.Fold("LEFT WALL", "FRONT WALL", fl[0], fl[1], "CORNER"),
-               S.Fold("LEFT WALL", "LEFT COLLAR - RISER", lb[0], lb[1], "KINK L1"),
-               S.Fold("LEFT WALL", "LEFT COLLAR - BOX", lt[0], lt[1], "KINK L2"),
-               S.Fold("FRONT WALL", "FRONT COLLAR - RISER", fb_[0], fb_[1], "KINK F1"),
-               S.Fold("FRONT WALL", "FRONT COLLAR - BOX", ft_[0], ft_[1], "KINK F2"),
-               S.Fold("FRONT WALL", "FRONT SEAM FLANGE", fs[0], fs[1], "SEAM")]
-    walls_b = [
-        S.Wall("RIGHT WALL", RM, nR, holes=[(c + nR * t, d) for c, d in seam_a]),
-        S.Wall("BACK WALL", BM, nB),
-        S.Wall("RIGHT COLLAR - RISER", _tab(rb, down, P.lt_hb), X, holes=_collar_holes(rb, down, P.lt_hb, X)),
-        S.Wall("RIGHT COLLAR - BOX", _tab(rt, up, P.lt_ht), X, holes=_collar_holes(rt, up, P.lt_ht, X)),
-        S.Wall("BACK COLLAR - RISER", _tab(bb, down, P.lt_hb), Y, holes=_collar_holes(bb, down, P.lt_hb, Y)),
-        S.Wall("BACK COLLAR - BOX", _tab(bt, up, P.lt_ht), Y, holes=_collar_holes(bt, up, P.lt_ht, Y)),
-        S.Wall("BACK SEAM FLANGE", BS, nL, holes=seam_b),
-    ]
-    folds_b = [S.Fold("RIGHT WALL", "BACK WALL", br[0], br[1], "CORNER"),
-               S.Fold("RIGHT WALL", "RIGHT COLLAR - RISER", rb[0], rb[1], "KINK R1"),
-               S.Fold("RIGHT WALL", "RIGHT COLLAR - BOX", rt[0], rt[1], "KINK R2"),
-               S.Fold("BACK WALL", "BACK COLLAR - RISER", bb[0], bb[1], "KINK B1"),
-               S.Fold("BACK WALL", "BACK COLLAR - BOX", bt[0], bt[1], "KINK B2"),
-               S.Fold("BACK WALL", "BACK SEAM FLANGE", bs[0], bs[1], "SEAM")]
-    A = S.Part("LT-A", "AIR - RISER TRANSITION - HALF A (LEFT AND FRONT)", walls_a, folds_a, t, r, k, "LEFT WALL",
-               P.dens_steel, STEEL)
-    B = S.Part("LT-B", "AIR - RISER TRANSITION - HALF B (RIGHT AND BACK)", walls_b, folds_b, t, r, k, "RIGHT WALL",
-               P.dens_steel, STEEL)
-    return A, B
+def placements():
+    """[(part, translation)]: the four pieces of the lower transition in the pod."""
+    L = levels()
+    return [("LT-L", (0, 0, 0)), ("LT-R", (0, 0, 0)), ("LT-C", (0, 0, 0)), ("LT-C", (0, L["cheek_shift"], 0))]
 
 
 if __name__ == "__main__":
-    A, B = halves()
-    for X in (A, B):
-        sh = X.solid()
+    prof, th = left_profile()
+    print("throat turn %.2f deg, first step at Z %.2f" % (math.degrees(th), prof[1][1]))
+    print("left profile", [tuple(np.round(p, 2)) for p in prof])
+    print("right profile", [tuple(np.round(p, 2)) for p in right_profile()])
+    for Xp in parts():
+        sh = Xp.solid()
         n, ok, vol, bb = S.solid_checks(sh)
-        print(X.name, "solids", n, "valid", ok, "volume %.1f (expected %.1f)" % (vol, X.expected_volume()),
-              "mass %.3f kg" % (vol * 1e-9 * X.density), "box", [round(v, 2) for v in bb])
-        for b in X.bend_lines():
-            print("   %-8s %7.3f deg %-4s BA %.4f" % (b[0], b[3], b[4], b[5]))
+        print(Xp.name, "solids", n, "valid", ok, "volume %.1f (expected %.1f)" % (vol, Xp.expected_volume()),
+              "mass %.3f kg" % (vol * 1e-9 * Xp.density), "box", [round(v, 2) for v in bb])
