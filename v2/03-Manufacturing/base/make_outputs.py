@@ -99,12 +99,11 @@ PART_INFO = {
     "111301": ("aluminium sheet EN AW-5005 H14, 2 mm, its door-end plate from the same sheet (assumption)", AA20,
                "laser cut, press brake (4 bends); weld the door-end plate in all round (filler 5356: assumption), grind "
                "its outer face flush; insert 4 M3 flush rivnuts, anodise", "calculation", "DRAFT",
-               "CAD; FRONT's answer and the PM ruling of 2026-11-01; the door-end plate: the PM's ruling of 2026-11-01 on "
-               "Reviewer 8's P1 (#303)",
+               "CAD; FRONT's answer and the PM ruling of 2026-11-01; the door-end plate: D-150 (Reviewer 8's P1 on #303)",
                "ledge flush with the band top, seat under the U-channel, kerb down to the band's bottom line; the glass's "
                "load goes into FR1 (D-132; seat detail with FRONT); flange riveted to FR1 (rivets HOLD). Its door end is "
                "closed by the welded plate down to the band's bottom line, the lip 118001 along its bottom edge: the face "
-               "FRONT's brush seal closes on. Its other end (X 965) is closed by the intake's closing plate (batch 3)"),
+               "FRONT's brush seal 368008 closes on (D-150). Its other end (X 965) is closed by the intake's closing plate (batch 3)"),
     "118003": ("flat end cap for the 100 x 40 x 1.5 tube's bore, black, no deeper than 2 (D-129; PE assumed, product HOLD)",
                "black", "bonded into the band tube's open end at the factory, flush with its end face (adhesive HOLD)",
                "calculation", "HOLD", "CAD envelope; joints register H-27 and J-BASE-02 (D-129: the key sits 2.5 from the "
@@ -434,9 +433,11 @@ def make_dxf_p02(d, ezdxf):
             msp.add_text("111301 DOOR-END PLATE - 2 mm, 1 off, welded in all round - %.1f x %.1f, reliefs C%g"
                          % (u_max, w_max, END_PLATE_RELIEF), dxfattribs={"layer": "MARK", "height": 5}).set_placement(
                 (x0, w_max + 5))
-            print("  and its door-end plate's blank: %.1f x %.1f, %d corners relieved" % (u_max, w_max, len(ep["inside_bend_corners"])))
         doc.saveas(os.path.join(HERE, "111301_%s_BASE-SILL-FIXED-GLASS_DXF.dxf" % REV))
         print("wrote the sill's flat pattern: %.2f x %.2f, bend deduction %.3f" % (ln, width, bd))
+        if ep:
+            print("  and its door-end plate's blank: %.1f x %.1f, %d corners relieved C%g"
+                  % (u_max, w_max, len(ep["inside_bend_corners"]), END_PLATE_RELIEF))
 
 
 def main(argv):
