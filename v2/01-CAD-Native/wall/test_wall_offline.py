@@ -118,7 +118,7 @@ class WallSidePanelTest(unittest.TestCase):
         self.assertAlmostEqual(v["side_h"], 1142.74)     # (2290 - 2 x 2.26) / 2, PM ruling on F-008
         self.assertEqual(v["tube_d"], 40)                # D-34: 20 x 40 x 1.2, behind the 3 mm bond line
         self.assertAlmostEqual(v["pnl_len"], 1492.74)    # 1495 less the decor seam gap
-        self.assertAlmostEqual(v["frm_len"], 1489.74)    # less the 3 mm back return
+        self.assertAlmostEqual(v["frm_len"], 1486.74)    # less the 3 mm back return and its 3 mm bond line
         self.assertEqual(v["stile_n_mid"], 5)               # D-131 sample: 5 studs set from the bolts
         self.assertEqual([round(v["stud_c%d" % k], 2) for k in range(1, 6)], [270.0, 520.91, 746.37, 971.83, 1222.74])
         self.assertEqual(v["stile_pitch_max"], 300)         # PM 2026-11-01: the skin's 2 mm limit
@@ -498,7 +498,8 @@ class FillPiecesInThePanelTest(unittest.TestCase):
         rows = list(csv.DictReader(open(os.path.join(REPO, "v2/03-Manufacturing/wall/FILL-PIECES.csv"),
                                         encoding="utf-8")))
         for code in sorted({r["position"] for r in rows}):
-            want = {int(r["bay"]): r["number"] for r in rows if r["position"] == code}
+            # a form whose number isn't allocated yet has none in the list: its bays get none (a real build stops)
+            want = {int(r["bay"]): r["number"] for r in rows if r["position"] == code and r["number"]}
             got = ns["fill_numbers"](REPO, code)
             self.assertEqual({b: v[0] for b, v in got.items()}, want, code)
             for bay, (pn, name, vn) in got.items():

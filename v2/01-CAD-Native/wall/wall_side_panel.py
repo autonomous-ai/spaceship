@@ -160,7 +160,9 @@ WALL_PARAMS = [
     ("skin_setback", "0 mm", "mm", "assumption",
      "skin edge set back from the frame's top and bottom edges: 0, so the outside reveal equals the 2.26 seam gap "
      "(D-23: crisp, aligned reveals; joints register 2.8 leaves the setback to the WALL drawing)"),
-    ("frm_len", "pnl_len - skin_t", "mm", "calculation", "the frame stops at the inside of the skin's back return"),
+    ("frm_len", "pnl_len - skin_t - bond_t", "mm", "calculation",
+     "the frame stops one bond line (bond_t) inside the skin's back return, which is bonded to it as the main face is "
+     "(the Lead's ruling, 2026-11-01: every skin face that meets a frame is bonded at bond_t, no zero fits)"),
     ("frm_h", "pnl_h", "mm", "assumption",
      "the frame fills the skeleton envelope height; seam and base gasket gaps are set by the joint register (HOLD)"),
     ("corner_w", "40 mm", "mm", "confirmed",
@@ -966,7 +968,11 @@ X_FELT_BACK = sx("pod_w / 2 - stack_t + tray_t + felt_t")
 # panel envelope: the skeleton's side panel (seam gaps at the decor, on the band and at the row seam)
 Y_FRONT = "pod_d / 2 - wall_depth + seam_gap"    # panel front end: 2.26 behind the decor back plate (F-008)
 Y_BACK = "pod_d / 2"                             # outer face of the back wall
-Y_FRAME_BACK = "pod_d / 2 - skin_t"              # inside of the skin's back return
+Y_RETURN_IN = "pod_d / 2 - skin_t"               # inside of the skin's back return
+# the frame's back face, behind the return's own 3 mm bond line (the Lead's ruling, 2026-11-01: every skin face that
+# meets a frame is bonded at bond_t, no zero fits; the return gets the D-137 joint like the main face). The 40 x 40
+# back stile then spans Y 804 to 844, in line with the back frames and centred on the corner bolt line (bolt_line_y)
+Y_FRAME_BACK = "pod_d / 2 - skin_t - bond_t"
 Y_CASS_FRONT = "pod_d / 2 - wall_depth"          # the decor back plate (skeleton P04): the ceiling's front edge too
 Y_LIN_FRONT = "pod_d / 2 - wall_depth + lin_front_dy"   # the cassette's front end (R side 5 behind, clear of DR)
 Y_CASS_BACK = "pod_d / 2 - stack_t + cass_t"     # side lining end, past the back lining (D-57)
@@ -1910,7 +1916,7 @@ def build_skin(design, skin, out):
     zskin = (Z_SKIN0, Z_SKIN1)
     plate = box(design, skin, "SKIN PLATE", (X_OUT, X_SKIN_IN), yskin, zskin).bodies.item(0)
     box(design, skin, "SKIN BACK RETURN", (X_SKIN_IN, sx("pod_w / 2 - skin_t - skin_ret")),
-        (Y_FRAME_BACK, Y_BACK), zskin, "join", plate)
+        (Y_RETURN_IN, Y_BACK), zskin, "join", plate)
     plate.name = "SKIN - ACP 3 WITH BACK RETURN"
     out[plate.name] = plate
     print("step 4: skin", size(bbox(plate)))

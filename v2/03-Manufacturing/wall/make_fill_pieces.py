@@ -67,7 +67,7 @@ def side_pieces():
         zs = (z0 + tw, z1 - v["top_h"])
         # the studs stand clear of the bolts (stud_c1 to stud_cN from the frame's front end, D-131 sample)
         edges = [y_front + tw] + [y_front + v["stud_c%d" % k] + d * tw / 2 for k in range(1, n + 1) for d in (-1, 1)] + \
-            [v["pod_d"] / 2 - v["skin_t"] - v["corner_w"]]
+            [v["pod_d"] / 2 - v["skin_t"] - v["bond_t"] - v["corner_w"]]     # the back stile, one bond line in
         bays = [(edges[i], edges[i + 1]) for i in range(0, len(edges), 2)]
         pockets = [(y_front + v["bolt_edge"] + i * v["len_bolt_pitch"] - pw / 2,
                     y_front + v["bolt_edge"] + i * v["len_bolt_pitch"] + pw / 2, zs[0], zs[0] + pw)

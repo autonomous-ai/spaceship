@@ -396,7 +396,8 @@ def record(design, rel):
         pitch = (after_p["wall_depth"] - seam - 440.0) / 3.0                # len_bolt_pitch (220 rule)
         bolts = [y0p + 220.0 + i * pitch for i in range(4)]
         y_front_in = y0p + 20.0
-        y_back_in = y0p + (after_p["wall_depth"] - seam - 3) - 40.0
+        # the frame stops skin_t + bond_t (3 + 3) inside the panel's back end: the return's bond line (the Lead, 2026-11-01)
+        y_back_in = y0p + (after_p["wall_depth"] - seam - 6) - 40.0
         mid_y = sorted(m[1] for m in mids)
         faces = [y_front_in] + [y for m in sorted(mids, key=lambda m: m[1]) for y in (m[1], m[4])] + [y_back_in]
         clear = [faces[i + 1] - faces[i] for i in range(0, len(faces), 2)]
@@ -404,8 +405,8 @@ def record(design, rel):
             checks += [
                 # D-117's mitres with D-131's 2 mm plates: each perimeter member stands back from its outer corners
                 # by its cut-back (1.41 for 20 to 20 and 40 to 40; 2.24 / 1.12 where a 20 meets a 40)
-                ("rails run wall_depth - 2.26 - 3 less their plate cut-backs", all(
-                    abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 3 - cut_back(r[5] - r[2], 20.0)
+                ("rails run wall_depth - 2.26 - 6 (the back return and its bond line) less their plate cut-backs", all(
+                    abs((r[4] - r[1]) - (after_p["wall_depth"] - seam - 6 - cut_back(r[5] - r[2], 20.0)
                                          - cut_back(r[5] - r[2], 40.0))) < 0.01 for r in rails)),
                 ("rails start one cut-back behind the frame's front end (2.26 behind the decor back plate)",
                  all(abs(r[1] - (y0p + cut_back(r[5] - r[2], 20.0))) < 0.01 for r in rails)),
