@@ -6,10 +6,11 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 233 part lines (75 made, 158 bought, 124 on HOLD) and 34 sub-assembly lines from 13 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 261.3 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 271 part lines (100 made, 171 bought, 136 on HOLD) and 40 sub-assembly lines from 14 parts list(s); 35 hardware items in the joints register (35 with a part number). Listed parts weigh 315.3 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
+- `v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv` @ working tree
 - `v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv` @ working tree
 - `v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv` @ working tree
 - `v2/03-Manufacturing/ceiling/410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv` @ working tree (skipped: a cut list (its rows are cut pieces of the parts in the parts lists))
@@ -93,7 +94,14 @@ Read from: this working tree.
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
 
 **CEILING (builds AIR, D-80)**
-- no parts list yet (expected *_BOM.csv files in v2/03-Manufacturing/air/)
+- 618101 AIR - SENSOR HUB ZONE - HOLD: HOLD (HOLD)
+- 618104 AIR - SOFFIT HANGER STUD - HOLD: HOLD (HOLD)
+- 618105 AIR - SOFFIT UNDERSIDE HINGE - HOLD: HOLD (HOLD)
+- 618106 AIR - SOFFIT UNDERSIDE LATCH - HOLD: HOLD (HOLD)
+- 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
+- 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
+- 618102 AIR - SUPPLY TRANSITION - HOLD: HOLD (HOLD)
+- 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
@@ -172,13 +180,17 @@ Read from: this working tree.
 - 718042 ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718043 ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718050 ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718101 ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718102 ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718103 ELECTRICAL - LED PROFILE END CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718104 ELECTRICAL - LED PROFILE MOUNTING CLIP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 64 numbers, 58 not in a team's list yet, 0 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 64 numbers, 54 not in a team's list yet, 4 in use, 6 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -242,10 +254,10 @@ From `v2/04-BOM/number-allocation.csv`: 64 numbers, 58 not in a team's list yet,
 | 211631 | WALL - CAVITY FILL PIECE F13 373 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 3 | ALLOCATED |
 | 211632 | WALL - CAVITY FILL PIECE F14 373 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 2 | ALLOCATED |
 | 211633 | WALL - CAVITY FILL PIECE F15 373 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
-| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | 810201 | 1 | ALLOCATED |
-| 718102 | ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN | 810201 | 1 | ALLOCATED |
-| 718103 | ELECTRICAL - LED PROFILE END CAP | 810201 | 2 | ALLOCATED |
-| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | 810201 |  | ALLOCATED |
+| 718101 | ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5 | 810201 | 1 | in use |
+| 718102 | ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN | 810201 | 1 | in use |
+| 718103 | ELECTRICAL - LED PROFILE END CAP | 810201 | 2 | in use |
+| 718104 | ELECTRICAL - LED PROFILE MOUNTING CLIP | 810201 |  | in use |
 
 ## Rules
 
