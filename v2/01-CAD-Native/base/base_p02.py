@@ -62,6 +62,9 @@ P02_PARAMS = [
     ("ch_rn_hole", "5 mm", "mm", "assumption", "hole for the flush-head M3 rivnut in the sill seat (product with the Joints Engineer, HOLD)"),
 ]
 
+# the sill's members' numbers, from Control (D-120, the Lead's message of 2026-11-01): 1 of each per sill
+SILL_MEMBER_PNS = {"sill_bent": "111302", "sill_plate": "111303"}
+
 P02_PARTS = {
     "band_r": ("110102", "BASE - BAND ASSY - SIDE - RH", "Viền chân nhôm - cạnh phải (cụm)", "HS", None),
     "band_r_tube": ("111102", "BASE - BAND TUBE - SIDE - RH", "Viền chân nhôm 100x40 - cạnh phải", "MP", "band_r"),
@@ -83,7 +86,13 @@ P02_PARTS = {
     "mesh": ("111107", "BASE - INTAKE MESH - DR", "Lưới cửa gió", "MP", "intake"),
     "rail": ("111108", "BASE - INTAKE SUPPORT RAIL - DR", "Thanh đỡ khối phải", "MP", "intake"),
     "cplate": ("111109", "BASE - INTAKE CLOSING PLATE - DR", "Tấm ngăn cửa gió", "MP", "intake"),
-    "sill": ("111301", "BASE - SILL - FIXED GLASS", "Bậu đỡ kính cố định", "MP", "front_r"),
+    "sill": ("111301", "BASE - SILL - FIXED GLASS", "Bậu đỡ kính cố định", "HS", "front_r"),
+    # its members (D-120, the Lead's ruling of 2026-11-01): their own components, STEPs and DXFs, so the bent sill
+    # goes to the generator's bent-sheet mode on its own and the welded sill to its weldment sheet
+    "sill_bent": (SILL_MEMBER_PNS["sill_bent"], "BASE - SILL - FIXED GLASS - BENT PROFILE", "Bậu đỡ kính cố định - thanh gấp",
+                  "MP", "sill"),
+    "sill_plate": (SILL_MEMBER_PNS["sill_plate"], "BASE - SILL - FIXED GLASS - DOOR-END PLATE",
+                   "Bậu đỡ kính cố định - tấm bịt đầu phía cửa", "MP", "sill"),
 }
 
 # plan points used by several parts (expressions), from the skeleton's facet parameters
@@ -115,7 +124,7 @@ X_FR0 = "(%s + fix_xbl)" % XL_                       # FR1's left end at the doo
 X_FR_JOINT = "x_fr_joint"
 
 
-BATCH1 = ("band_r", "band_r_tube", "front_r", "fr1", "sill", "seal_r", "seal_fr1", "seal_se")   # F2, its foam and spigots, the threshold went (D-132)
+BATCH1 = ("band_r", "band_r_tube", "front_r", "fr1", "sill", "sill_bent", "sill_plate", "seal_r", "seal_fr1", "seal_se")   # F2, its foam and spigots, the threshold went (D-132)
 
 
 # batch 2: the front-left pieces under DL (with --arg batch2=1; its method sample first: --arg part=fl1)
@@ -132,7 +141,9 @@ def p02_setup(keys=P02_BATCH_KEYS):
     if "fl1" in keys or "fl2" in keys:
         BASE_PARAMS.extend(front_dl_params())     # DL's spigot points, FRONT's named values (J-FRONT-02)
     PARTS.update({k: P02_PARTS[k] for k in keys})
-    mats = {k: ("Aluminum", None, None) for k in ("band_r_tube", "fl1", "fl2", "fr1", "rail", "cplate", "sill",
+    if None in SILL_MEMBER_PNS.values():
+        raise RuntimeError("the sill's member numbers (D-120) aren't allocated yet: ask Control, then fill SILL_MEMBER_PNS")
+    mats = {k: ("Aluminum", None, None) for k in ("band_r_tube", "fl1", "fl2", "fr1", "rail", "cplate", "sill_bent", "sill_plate",
                                                     "key_f", "key_k")}
     mats.update({"mesh": ("Aluminum", "Expanded mesh 80% free, 540 kg/m3 (ASSUMPTION)", 540.0),
                  "seal_r": MATERIALS["seal_l"], "seal_fr1": MATERIALS["seal_l"], "seal_se": MATERIALS["seal_l"],
@@ -152,7 +163,7 @@ def p02_setup(keys=P02_BATCH_KEYS):
     if "band_r_tube" in keys:     # its back end carries a corner key (D-129): its part design follows each assembly save, as 111101's
         WITH_ASSEMBLY = tuple(WITH_ASSEMBLY) + ("band_r_tube",)
     PART_BUILDS.update({k: fns for k, fns in (
-        ("band_r_tube", ("step_p02_band_r",)), ("fr1", ("step_p02_fr1",)), ("sill", ("step_p02_sill",)),
+        ("band_r_tube", ("step_p02_band_r",)), ("fr1", ("step_p02_fr1",)), ("sill_bent", ("step_p02_sill_bent",)), ("sill_plate", ("step_p02_sill_plate",)),
         ("fl1", ("step_p02_fl1",)), ("fl2", ("step_p02_fl2",)))
         if k in keys})
 
@@ -255,6 +266,22 @@ def step_p02_fl2(design):
     f.name = "EXTRUDE - FL2 DOOR-END BLOCK AND PLATE band_h, JOINED (WELDED)"
     if c.bRepBodies.count != 1:
         raise RuntimeError("FL2: the door-end block didn't join the tube (%d bodies)" % c.bRepBodies.count)
+    # the door-end plate's back edge, on the kick strip's back line: a full round across its fep_t (the Lead's ruling of
+    # 2026-11-01), so the hinge-side brush's back tips stay on the plate's face through the door's swing; its apex stays
+    # on the kick strip's back line
+    yb, xm = v(Y_KICK_BACK), v("%s + fep_t / 2" % X_FEP)
+    ends = [fc for fc in c.bRepBodies.item(0).faces
+            if fc.geometry.surfaceType == adsk.core.SurfaceTypes.PlaneSurfaceType
+            and abs(abs(adsk.core.Plane.cast(fc.geometry).normal.y) - 1.0) < 1e-6
+            and abs(mm(fc.pointOnFace.y) - yb) < 0.01 and abs(mm(fc.pointOnFace.x) - xm) < v("fep_t") / 2 + 0.01]
+    if len(ends) != 1:
+        raise RuntimeError("FL2: the door-end plate's back end face: found %d, want 1" % len(ends))
+    fr = c.features.filletFeatures.createFullRoundFilletInput()
+    fr.faceSets.add(ends[0], [], [], True)
+    ff = c.features.filletFeatures.addFullRoundFillet(fr)
+    ff.name = "FULL ROUND - FL2 DOOR-END PLATE'S BACK EDGE (ON THE KICK STRIP'S BACK LINE)"
+    if c.bRepBodies.count != 1:
+        raise RuntimeError("FL2: %d bodies after the plate's full round" % c.bRepBodies.count)
     top = offset_plane(c, "xy", "wall_z0", v("wall_z0"), "PLANE - BAND TOP Z = wall_z0")
     down = Z.copy()
     down.scaleBy(-1)
@@ -407,76 +434,84 @@ def sill_end_plate_pts():
     return [(y_fr, z_kb), (y_c1, z_kb), (y_c1, z_sb), (y_dw, z_sb), (y_dw, z_lb), (y_fl, z_lb), (y_fl, z_fl), (y_fr, z_fl)]
 
 
-def step_p02_sill(design):
-    """The fixed glass's sill (FRONT's answer and the PM ruling of 2026-11-01): a bent 2 mm
-    profile, black AA20, from the door opening's right edge to sl_x1. A flange down FR1's inner
-    face (riveted, HOLD), a ledge flush with the band top over to the channel, a drop wall, the
-    seat under FRONT's U-channel (Z 93 to 95, 4 flush M3 rivnuts take the channel's screws), and
-    a kerb down to the band's bottom line (D-132: no floor under it now, so the glass's load, about
-    280 N, goes into FR1; the seat detail is being settled with FRONT). The channel is screwed on at
-    the factory and ships on the sill with FR1 (PM ruling)."""
+def sill_section_lines(design):
+    """The sill's section lines on the plane X = X_FR0, as expressions (the bent profile's and the plate's)."""
+    return {"y_fr": "-pod_d / 2 + band_t", "y_fl": "-pod_d / 2 + band_t + sl_t",
+            "y_dw": "-glass_y - ch_w / 2 - sl_t", "y_c0": "-glass_y - ch_w / 2",
+            "y_c1": "-glass_y + ch_w / 2", "y_kb": "-glass_y + ch_w / 2 + sl_t",
+            "z_top": "wall_z0", "z_lb": "wall_z0 - sl_t", "z_st": "wall_z0 - ch_h", "z_sb": "wall_z0 - ch_h - sl_t",
+            "z_fl": "wall_z0 - sl_flange", "z_kb": "glide_h"}
+
+
+def sill_plane(design, comp, label):
+    """The plane X = X_FR0 (the sill's door end) in comp, and the extrude direction into the sill (+X)."""
     v = lambda e: ev(design, e)  # noqa: E731
-    comp = find_comp(design, "sill")
-    x0 = X_FR0
-    pl = offset_plane(comp, "yz", x0, v(x0), "PLANE - SILL LEFT END (DOOR OPENING)")
-    y_fr, y_fl = "-pod_d / 2 + band_t", "-pod_d / 2 + band_t + sl_t"
-    y_dw, y_c0 = "-glass_y - ch_w / 2 - sl_t", "-glass_y - ch_w / 2"
-    y_c1, y_kb = "-glass_y + ch_w / 2", "-glass_y + ch_w / 2 + sl_t"
-    z_top, z_lb = "wall_z0", "wall_z0 - sl_t"
-    z_st, z_sb = "wall_z0 - ch_h", "wall_z0 - ch_h - sl_t"
-    z_fl, z_kb = "wall_z0 - sl_flange", "glide_h"
-    xv = v(x0)
+    pl = offset_plane(comp, "yz", X_FR0, v(X_FR0), "PLANE - %s - DOOR END X = X_FR0" % label)
+    direc = adsk.fusion.ExtentDirections.PositiveExtentDirection if pl.geometry.normal.x > 0 else \
+        adsk.fusion.ExtentDirections.NegativeExtentDirection
+    return pl, direc
+
+
+def step_p02_sill_bent(design):
+    """The fixed glass's sill, its bent profile (member of the welded sill 111301, D-120): a bent 2 mm profile,
+    black AA20, from the door opening's right edge to sl_x1. A flange down FR1's inner face (riveted, HOLD), a ledge
+    flush with the band top over to the channel, a drop wall, the seat under FRONT's U-channel (Z 93 to 95, 4 flush M3
+    rivnuts take the channel's screws, set after anodising), and a kerb down to the band's bottom line (D-132: no floor
+    under it, so the glass's load, about 280 N, goes into FR1). The channel is screwed on at the factory and ships on
+    the sill with FR1 (PM ruling)."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    comp = find_comp(design, "sill_bent")
+    L = sill_section_lines(design)
+    pl, direc = sill_plane(design, comp, "SILL BENT PROFILE")
+    xv = v(X_FR0)
 
     def pt(ey, ez):
-        return (ey, ez, (xv, v(ey), v(ez)))
+        return (L[ey], L[ez], (xv, v(L[ey]), v(L[ez])))
     sk = comp.sketches.add(pl)
     sk.name = "SECTION - SILL (FLANGE, LEDGE, DROP, SEAT, KERB)"
-    polygon(design, sk, [pt(y_fr, z_top), pt(y_c0, z_top), pt(y_c0, z_st), pt(y_kb, z_st), pt(y_kb, z_kb),
-                         pt(y_c1, z_kb), pt(y_c1, z_sb), pt(y_dw, z_sb), pt(y_dw, z_lb), pt(y_fl, z_lb),
-                         pt(y_fl, z_fl), pt(y_fr, z_fl)], Y, Z)
+    polygon(design, sk, [pt("y_fr", "z_top"), pt("y_c0", "z_top"), pt("y_c0", "z_st"), pt("y_kb", "z_st"),
+                         pt("y_kb", "z_kb"), pt("y_c1", "z_kb"), pt("y_c1", "z_sb"), pt("y_dw", "z_sb"),
+                         pt("y_dw", "z_lb"), pt("y_fl", "z_lb"), pt("y_fl", "z_fl"), pt("y_fr", "z_fl")], Y, Z)
     check_sketch(sk)
     ei = comp.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
-    n = pl.geometry.normal
-    direc = adsk.fusion.ExtentDirections.PositiveExtentDirection if n.x > 0 else \
-        adsk.fusion.ExtentDirections.NegativeExtentDirection
-    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("sl_x1 - %s" % x0)), direc)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("sl_x1 - %s" % X_FR0)), direc)
     f = comp.features.extrudeFeatures.add(ei)
     f.name = "EXTRUDE - SILL - LENGTH sl_x1 - X_FR0"
-    single_body(comp, PARTS["sill"][1])
+    single_body(comp, PARTS["sill_bent"][1])
+    z_st = L["z_st"]
     seat = offset_plane(comp, "xy", z_st, v(z_st), "PLANE - SILL SEAT TOP Z = wall_z0 - ch_h")
     down = Z.copy()
     down.scaleBy(-1)
-    hole(design, "sill", seat, "CHANNEL SCREW RIVNUT - M3 FLUSH (HOLD) - 1 TO 3", (v("ch_screw_x1"), v("-glass_y"), v(z_st)),
-         [(X, "ch_screw_x1"), (Y, "-glass_y")], "ch_rn_hole", "sl_t", down,
+    hole(design, "sill_bent", seat, "CHANNEL SCREW RIVNUT - M3 FLUSH (HOLD) - 1 TO 3",
+         (v("ch_screw_x1"), v("-glass_y"), v(z_st)), [(X, "ch_screw_x1"), (Y, "-glass_y")], "ch_rn_hole", "sl_t", down,
          ("xConstructionAxis", "3", "2 * ch_screw_p"))
     seat4 = offset_plane(comp, "xy", z_st, v(z_st), "PLANE - SILL SEAT TOP (LAST SCREW)")
-    hole(design, "sill", seat4, "CHANNEL SCREW RIVNUT - M3 FLUSH (HOLD) - 4", (v("ch_screw_x4"), v("-glass_y"), v(z_st)),
+    hole(design, "sill_bent", seat4, "CHANNEL SCREW RIVNUT - M3 FLUSH (HOLD) - 4", (v("ch_screw_x4"), v("-glass_y"), v(z_st)),
          [(X, "ch_screw_x4"), (Y, "-glass_y")], "ch_rn_hole", "sl_t", down)
-    # the door-end plate (Reviewer 8's P1 on #303; the PM's ruling of 2026-11-01): welded into the sill's door end, it
-    # closes the space under the ledge and seat, from FR1's inner face to the kerb and down to the band's bottom line,
-    # so the seal line turns this corner: FR1's lip, this plate's lip along its bottom edge to the floor, then FRONT's
-    # seal at the kick strip's end. Its outline is the sill's inner faces; one part with the sill (welded, ground flush).
-    sk2 = comp.sketches.add(pl)
-    sk2.name = "SECTION - SILL DOOR-END PLATE (WELDED IN): FR1'S INNER FACE TO THE KERB, DOWN TO glide_h"
-    polygon(design, sk2, [pt(ey, ez) for ey, ez in sill_end_plate_pts()], Y, Z)
-    check_sketch(sk2)
-    body = single_body(comp)
-    # a new body, then combined: an extrude join that only touches the body along faces makes a second body (extrude())
-    ej = comp.features.extrudeFeatures.createInput(one_profile(sk2), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
-    ej.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("sl_t")), direc)
-    fj = comp.features.extrudeFeatures.add(ej)
-    fj.name = "EXTRUDE - SILL DOOR-END PLATE sl_t (WELDED IN)"
-    tools = adsk.core.ObjectCollection.create()
-    tools.add(fj.bodies.item(0))
-    ci = comp.features.combineFeatures.createInput(body, tools)
-    ci.operation = adsk.fusion.FeatureOperations.JoinFeatureOperation
-    ci.isKeepToolBodies = False
-    comp.features.combineFeatures.add(ci).name = "COMBINE - SILL DOOR-END PLATE INTO THE SILL (WELDED)"
-    single_body(comp, PARTS["sill"][1])
-    print("P02: sill %s (its door end closed by the welded plate)" % fmt_box(bbox_mm(single_body(comp))))
+    print("P02: sill's bent profile %s" % fmt_box(bbox_mm(single_body(comp))))
 
 
-P02_STEPS = [step_p02_band_r, step_p02_fr1, step_p02_sill]   # batch 1 (F2 and the threshold went, D-132)
+def step_p02_sill_plate(design):
+    """The sill's door-end plate (member of the welded sill 111301, D-120; D-150): welded into the bent profile's door
+    end, it closes the space under the ledge and seat, from FR1's inner face to the kerb and down to the band's bottom
+    line, so the seal line turns this corner: FR1's lip, this plate's lip along its bottom edge to the floor, then
+    FRONT's brush at the kick strip's end. Its outline is the profile's inner faces (sill_end_plate_pts): it only
+    touches the bent profile, which the weld joins; its own component, not a joined body."""
+    v = lambda e: ev(design, e)  # noqa: E731
+    comp = find_comp(design, "sill_plate")
+    pl, direc = sill_plane(design, comp, "SILL DOOR-END PLATE")
+    xv = v(X_FR0)
+    sk = comp.sketches.add(pl)
+    sk.name = "SECTION - SILL DOOR-END PLATE (WELDED IN): FR1'S INNER FACE TO THE KERB, DOWN TO glide_h"
+    polygon(design, sk, [(ey, ez, (xv, v(ey), v(ez))) for ey, ez in sill_end_plate_pts()], Y, Z)
+    check_sketch(sk)
+    ei = comp.features.extrudeFeatures.createInput(one_profile(sk), adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    ei.setOneSideExtent(adsk.fusion.DistanceExtentDefinition.create(vi("sl_t")), direc)
+    comp.features.extrudeFeatures.add(ei).name = "EXTRUDE - SILL DOOR-END PLATE sl_t"
+    print("P02: sill's door-end plate %s" % fmt_box(bbox_mm(single_body(comp, PARTS["sill_plate"][1]))))
+
+
+P02_STEPS = [step_p02_band_r, step_p02_fr1, step_p02_sill_bent, step_p02_sill_plate]   # batch 1 (F2 and the threshold went, D-132)
 
 # the right side panel's skeleton envelopes join the clash check, as the left ones do (P01)
 _skeleton_boxes_p01 = skeleton_boxes
@@ -688,6 +723,7 @@ def p02_export(design, out):
                         "back line" % (ang(d2, (1.0, 0.0)), v("dl_w - dl_x3"), v("%s - %s" % (Y_KICK_BACK, Y_FEP_IN)))}
     if "sill" in keys:
         out["sill"] = {"t": v("sl_t"), "length": round(v("sl_x1 - %s" % X_FR0), 2), "x0": v(X_FR0),
+                       "pn": PARTS["sill"][0], "pn_bent": PARTS["sill_bent"][0], "pn_plate": PARTS["sill_plate"][0],
                        "legs_outside": {"flange": v("sl_flange"), "ledge": round(v("(-glass_y - ch_w / 2) - (-pod_d / 2 + band_t)"), 2),
                                         "drop": v("ch_h + sl_t"), "seat": v("ch_w + 2 * sl_t"),
                                         "kerb": round(v("wall_z0 - ch_h - glide_h"), 2)},

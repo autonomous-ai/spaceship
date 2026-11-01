@@ -43,7 +43,7 @@ def load_build():
 
 # P02 batch 1's parts we make (base_p02.py): measured too, so a skeleton edit is shown to move them (not only to
 # leave the timeline healthy)
-P02_KEYS = ("band_r_tube", "fr1", "sill")
+P02_KEYS = ("band_r_tube", "fr1", "sill_bent", "sill_plate")
 
 
 def expected_boxes(b, design):
@@ -60,7 +60,9 @@ def expected_boxes(b, design):
         out["band_r_tube"] = (v("%s - band_t" % XR_), min(v("-dr_yc"), v(b["Y_MITRE_IN_R"])), v("glide_h"), v(XR_),
                               v(YB), v("wall_z0"))
         out["fr1"] = (v(X_FR0), v("-pod_d / 2"), v("glide_h"), v("x_fr_joint"), v("-pod_d / 2 + band_t"), v("wall_z0"))
-        out["sill"] = (v(X_FR0), v("-pod_d / 2 + band_t"), v("glide_h"), v("sl_x1"), v("-glass_y + ch_w / 2 + sl_t"),
+        out["sill_plate"] = (v(X_FR0), v("-pod_d / 2 + band_t"), v("glide_h"), v("%s + sl_t" % X_FR0),
+                             v("-glass_y + ch_w / 2"), v("wall_z0 - sl_t"))
+        out["sill_bent"] = (v(X_FR0), v("-pod_d / 2 + band_t"), v("glide_h"), v("sl_x1"), v("-glass_y + ch_w / 2 + sl_t"),
                        v("wall_z0"))
     if "fl1" in b["PARTS"]:     # batch 2: DL's two facets (FL2 with its welded door-end block)
         XL_, IL2X, IL2Y = b["XL_"], b["IL2_X"], b["IL2_Y"]
@@ -120,7 +122,7 @@ def expected_p02_holes(b, design):
     rh = [(xb, y0 + v("jb_e") + i * (ln - 2 * v("jb_e")) / (n - 1)) for i in range(n)]
     rh += [(xb, y0 + v("sp_e")), (xb, y0 + ln - v("sp_e"))]
     return {
-        "sill channel rivnut holes (X, Y)": ("sill", v("ch_rn_hole"), "z", r2(sill)),
+        "sill channel rivnut holes (X, Y)": ("sill_bent", v("ch_rn_hole"), "z", r2(sill)),
         "FR1 keyhole entries (Y, Z)": ("fr1", v("kh_entry"), "x", r2([(yc, z1 - kh), (yc, z2 - kh)])),
         "FR1 keyhole seats (Y, Z)": ("fr1", v("kh_slot"), "x", r2([(yc, z1), (yc, z2)])),
         "FR1 glide nut holes (X, Y)": ("fr1", v("gl_nut_hole"), "z", r2(glides)),

@@ -1876,7 +1876,7 @@ def file_name(pn, name, doctype):
     capitals, words joined by hyphens."""
     t = name.replace("Ø", "D").replace("(HOLD)", "").upper()
     words = []
-    for w in t.replace(" - ", " ").split():
+    for w in t.replace(" - ", " ").replace("-", " ").split():     # DOOR-END: two words, joined again by a hyphen
         w = "".join(ch for ch in w if ch.isalnum() or ch == ".")
         if w:
             words.append(w)
