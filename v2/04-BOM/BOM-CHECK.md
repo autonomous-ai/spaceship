@@ -209,7 +209,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 142 numbers, 116 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 144 numbers, 118 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -333,6 +333,8 @@ From `v2/04-BOM/number-allocation.csv`: 142 numbers, 116 not in a team's list ye
 | 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | 610402 | 2 | ALLOCATED |
 | 611406 | AIR - FAN BOX LINING - EXHAUST FAR END | 610402 | 1 | ALLOCATED |
 | 611407 | AIR - FAN BOX LINING - SUPPLY END | 610401 | 2 | ALLOCATED |
+| 611408 | AIR - FAN BOX LIP ANGLE - SUPPLY | 610401 | 1 | ALLOCATED |
+| 618402 | AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD | 610401 | 2 | ALLOCATED |
 | 611109 | AIR - COLUMN CORNER ANGLE - BACK | 610101 | 1 | ALLOCATED |
 | 611110 | AIR - COLUMN FILL - LEFT | 610101 | 1 | ALLOCATED |
 | 611111 | AIR - KICK GRILLE - LEFT | 610101 | 1 | ALLOCATED |
