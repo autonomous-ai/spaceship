@@ -417,5 +417,42 @@ class ElectricalInterfaceBackTest(unittest.TestCase):
         self.assertGreater(v["el_cut_z0"] - 8, v["panel_z0"] + v["lip_w"])
 
 
+class FillDxfTest(unittest.TestCase):
+    """D-128: each fill-piece form is cut from its own DXF (make_fill_pieces.py); the DXFs match the CAD."""
+
+    def mf(self):
+        sys.path.insert(0, os.path.join(HERE, "..", "..", "03-Manufacturing", "wall"))
+        import make_fill_pieces
+        return make_fill_pieces
+
+    def test_outline_shapes(self):
+        mf = self.mf()
+        notch = mf.outline(100, 50, [(0, 10, 10, 20)])               # a notch in the left edge
+        self.assertEqual((len(notch), len(notch[0])), (1, 8))
+        self.assertAlmostEqual(sum(mf.area(lp) for lp in notch), 5000 - 100)
+        hole = mf.outline(100, 50, [(40, 60, 20, 30)])              # an opening inside: a second, clockwise loop
+        self.assertEqual([len(lp) for lp in hole], [4, 4])
+        self.assertLess(mf.area(hole[1]), 0)
+        merged = mf.outline(100, 50, [(80, 100, 10, 40), (70, 90, 20, 30)])   # overlapping openings merge
+        self.assertEqual((len(merged), len(merged[0])), (1, 12))
+        self.assertAlmostEqual(sum(mf.area(lp) for lp in merged), 5000 - mf.open_area(100, 50, [(80, 100, 10, 40),
+                                                                                              (70, 90, 20, 30)]))
+        with self.assertRaises(ValueError):                         # openings touching at a corner only
+            mf.outline(100, 50, [(20, 30, 20, 30), (30, 40, 30, 40)])
+        with self.assertRaises(ValueError):                         # a cut right across: two pieces
+            mf.outline(100, 50, [(40, 60, 0, 50)])
+
+    def test_fill_dxfs_match_the_cad(self):
+        sys.path.insert(0, os.path.join(HERE, "..", "..", "03-Manufacturing", "wall"))
+        import contextlib
+        import io
+        import check_fill_dxfs
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            rc = check_fill_dxfs.main()
+        self.assertEqual(rc, 0, out.getvalue()[-2000:])
+        self.assertIn(" 0 mismatches", out.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()

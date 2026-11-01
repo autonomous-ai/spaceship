@@ -7,15 +7,27 @@ drives (FR-10), plus B2's ELECTRICAL cut-outs (F47).
 Writes FILL-PIECES.md and FILL-PIECES.csv here: every bay of the 8 positions with its size and pockets (u along
 the wall from the bay's low corner, v up from the bay's bottom, mm), grouped into distinct forms. Two bays share a
 form when one piece fits both, as made or turned over (pockets go through the 40 mm fill, so a turned piece is
-the same piece): one number per form (D-123), for the master BOM to allocate.
+the same piece): one number per form (D-123), allocated by the master BOM (number-allocation.csv, #198).
+
+D-128 (PM, 2026-11-01): the pockets go right through the 40 mm batt, so they are edge notches, and a fill piece
+with through-openings or edge notches needs no drawing when its DXF gives the full outline with every opening and
+its parts-list row gives material, density, thickness, tolerance and part number. So each form also gets its own
+DXF here, `<number>_P01_<NAME>_DXF.dxf` (1:1, mm, CUT layer only): the w x h rectangle less every notch and
+opening, as seen in the form's first bay (u to the right, v up, origin at the bay's low corner), at the build
+scripts' exact sizes (the lists round to 0.1). The CSV says for each bay how its piece goes in: as cut, or turned
+over (left to right or top to bottom), or end for end.
 """
 
 import csv
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.normpath(os.path.join(HERE, "..", "..", ".."))
+sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "..", "..", "01-CAD-Native", "wall"))
+import dxf_tools  # noqa: E402
 import test_wall_offline as t  # noqa: E402  (loads the build scripts with stand-in adsk modules)
 
 
@@ -24,12 +36,22 @@ def R(x):
 
 
 def clip(rect, bay):
+    """The part of an opening inside a bay, in the bay's u, v, exact (not rounded), or None."""
     u0, u1, v0, v1 = rect
     b0, b1, c0, c1 = bay
     a0, a1, w0, w1 = max(u0, b0), min(u1, b1), max(v0, c0), min(v1, c1)
     if a1 - a0 > 0.05 and w1 - w0 > 0.05:
-        return (R(a0 - b0), R(a1 - b0), R(w0 - c0), R(w1 - c0))
+        return (a0 - b0, a1 - b0, w0 - c0, w1 - c0)
     return None
+
+
+def piece(position, bay, b0, b1, zs, openings, fill, note):
+    """One bay's piece: sizes and openings rounded to 0.1 for the lists and for matching forms, and exact
+    (the build scripts' own values) for the DXF."""
+    raw = sorted(filter(None, (clip(r, (b0, b1, zs[0], zs[1])) for r in openings)))
+    return {"position": position, "bay": bay, "w": R(b1 - b0), "h": R(zs[1] - zs[0]),
+            "pockets": sorted(tuple(R(x) for x in r) for r in raw), "fill": fill, "note": note,
+            "w_raw": b1 - b0, "h_raw": zs[1] - zs[0], "pockets_raw": raw}
 
 
 def side_pieces():
@@ -49,9 +71,8 @@ def side_pieces():
         pockets += [(y_front + tw, y_front + tw + pw, z0 + v["bolt_edge"] + j * v["side_jnt_pitch"] - pw / 2,
                      z0 + v["bolt_edge"] + j * v["side_jnt_pitch"] + pw / 2) for j in range(3)]
         for k, (b0, b1) in enumerate(bays):
-            pk = sorted(filter(None, (clip(r, (b0, b1, zs[0], zs[1])) for r in pockets)))
-            out.append({"position": code, "bay": k + 1, "w": R(b1 - b0), "h": R(zs[1] - zs[0]), "pockets": pk,
-                        "fill": "2115%02d" % {"L1": 1, "R1": 2, "L2": 3, "R2": 4}[code], "note": ""})
+            out.append(piece(code, k + 1, b0, b1, zs, pockets,
+                             "2115%02d" % {"L1": 1, "R1": 2, "L2": 3, "R2": 4}[code], ""))
     return out
 
 
@@ -88,11 +109,110 @@ def back_pieces():
                         (pv["el_inlet_x"] - pv["el_inlet_d"] / 2, pv["el_sl_x"] + pv["el_sl_w"] / 2,
                          pv["el_inlet_z"] - pv["el_inlet_d"] / 2, pv["el_lan_z"] + pv["el_inlet_d"] / 2)]
         for k, (b0, b1) in enumerate(bays):
-            pk = sorted(filter(None, (clip(r, (b0, b1, zs[0], zs[1])) for r in pockets)))
-            out.append({"position": code, "bay": k + 1, "w": R(b1 - b0), "h": R(zs[1] - zs[0]), "pockets": pk,
-                        "fill": "2116%02d" % int(code[1]),
-                        "note": "ELECTRICAL cut-outs (power unit, sleeve, inlet and LAN)" if code == "B2" and k == 0 else ""})
+            out.append(piece(code, k + 1, b0, b1, zs, pockets, "2116%02d" % int(code[1]),
+                             "ELECTRICAL cut-outs (power unit, sleeve, inlet and LAN)" if code == "B2" and k == 0 else ""))
     return out
+
+
+def outline(w, h, holes):
+    """The cut loops of a w x h piece less the openings (u0, u1, v0, v1): an opening that reaches an edge makes a
+    notch, overlapping openings merge. Closed loops of (u, v) corners, each corner once: the outline first
+    (anticlockwise), then any opening inside it (clockwise). Exact, on the grid of every edge coordinate: a cell is
+    material when its centre is in no opening; the loops follow the cell edges between material and the rest, with
+    the material on the left. Raises when two openings only touch at a corner (an ambiguous loop) or the piece falls
+    apart into more than one."""
+    us = sorted({0.0, float(w)} | {float(x) for r in holes for x in r[:2] if 0 < x < w})
+    vs = sorted({0.0, float(h)} | {float(y) for r in holes for y in r[2:] if 0 < y < h})
+
+    def solid(i, j):
+        if not (0 <= i < len(us) - 1 and 0 <= j < len(vs) - 1):
+            return False
+        uc, vc = (us[i] + us[i + 1]) / 2.0, (vs[j] + vs[j + 1]) / 2.0
+        return not any(u0 < uc < u1 and v0 < vc < v1 for u0, u1, v0, v1 in holes)
+
+    nxt = {}
+    for i in range(len(us) - 1):
+        for j in range(len(vs) - 1):
+            if not solid(i, j):
+                continue
+            for a, b, nb in (((i, j), (i + 1, j), (i, j - 1)), ((i + 1, j), (i + 1, j + 1), (i + 1, j)),
+                             ((i + 1, j + 1), (i, j + 1), (i, j + 1)), ((i, j + 1), (i, j), (i - 1, j))):
+                if not solid(*nb):
+                    nxt.setdefault(a, []).append(b)
+    if any(len(v) > 1 for v in nxt.values()):
+        raise ValueError("two openings touch at a corner only: the outline is ambiguous")
+    loops = []
+    while nxt:
+        start = min(nxt)
+        loop, cur = [start], nxt.pop(start)[0]
+        while cur != start:
+            loop.append(cur)
+            cur = nxt.pop(cur)[0]
+        pts = [(us[i], vs[j]) for i, j in loop]
+        keep = [p for k, p in enumerate(pts)        # drop the points where the loop runs straight on
+                if not (pts[k - 1][0] == p[0] == pts[(k + 1) % len(pts)][0] or
+                        pts[k - 1][1] == p[1] == pts[(k + 1) % len(pts)][1])]
+        loops.append(keep)
+    outer = [lp for lp in loops if area(lp) > 0]
+    if len(outer) != 1:
+        raise ValueError("the piece falls apart into %d pieces" % len(outer))
+    return outer + [lp for lp in loops if area(lp) < 0]
+
+
+def area(loop):
+    """Signed area of a closed loop (anticlockwise positive)."""
+    return sum(x0 * y1 - x1 * y0 for (x0, y0), (x1, y1) in zip(loop, loop[1:] + loop[:1])) / 2.0
+
+
+def open_area(w, h, holes):
+    """The area the openings take out of the piece (their union inside it), by the same grid."""
+    us = sorted({0.0, float(w)} | {float(x) for r in holes for x in r[:2] if 0 < x < w})
+    vs = sorted({0.0, float(h)} | {float(y) for r in holes for y in r[2:] if 0 < y < h})
+    tot = 0.0
+    for i in range(len(us) - 1):
+        for j in range(len(vs) - 1):
+            uc, vc = (us[i] + us[i + 1]) / 2.0, (vs[j] + vs[j + 1]) / 2.0
+            if any(u0 < uc < u1 and v0 < vc < v1 for u0, u1, v0, v1 in holes):
+                tot += (us[i + 1] - us[i]) * (vs[j + 1] - vs[j])
+    return tot
+
+
+FITS = {(False, False): "as cut", (True, False): "turned over left to right",
+        (False, True): "turned over top to bottom", (True, True): "end for end (turned round in its plane)"}
+
+
+def flipped(pc, fu, fv):
+    w, h = pc["w"], pc["h"]
+    return tuple(sorted((R(w - u1) if fu else u0, R(w - u0) if fu else u1, R(h - v1) if fv else v0,
+                         R(h - v0) if fv else v1) for u0, u1, v0, v1 in pc["pockets"]))
+
+
+def fit(pc, form_piece):
+    """How the form's piece (cut as in its DXF) goes into this bay."""
+    want = tuple(sorted(form_piece["pockets"]))
+    for (fu, fv), words in FITS.items():
+        if flipped(pc, fu, fv) == want:
+            return words
+    raise ValueError("%s bay %d does not take its form's piece" % (pc["position"], pc["bay"]))
+
+
+def numbers():
+    """{form: (part number, name)} from the master BOM's allocation (D-123; names "... FILL PIECE Fnn ...")."""
+    out = {}
+    with open(os.path.join(ROOT, "v2", "04-BOM", "number-allocation.csv"), encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            m = re.search(r"FILL PIECE (F\d\d) ", r["name"])
+            if m and r.get("status", "").upper() != "CANCELLED":
+                if m.group(1) in out:
+                    raise ValueError("two live numbers for form %s" % m.group(1))
+                out[m.group(1)] = (r["part_number"], r["name"])
+    return out
+
+
+def dxf_name(pn, name):
+    """conventions section 7: PARTNO_REV_DESCRIPTIVE-NAME_DOCTYPE.ext, the name in capitals joined by hyphens."""
+    words = re.sub(r"[^A-Z0-9.]+", "-", name.upper()).strip("-")
+    return "%s_P01_%s_DXF.dxf" % (pn, words)
 
 
 def form_key(pc):
@@ -112,31 +232,58 @@ def main():
     for pc in pieces:
         groups.setdefault(form_key(pc), []).append(pc)
     forms = sorted(groups.items(), key=lambda kv: (kv[1][0]["fill"], kv[1][0]["bay"]))
-    md = ["# WALL cavity-fill pieces (D-120, D-123)", "",
+    nums = numbers()
+    md = ["# WALL cavity-fill pieces (D-120, D-123, D-128)", "",
           "Generated by `make_fill_pieces.py` from the build scripts' formulas (bays between the frame members, "
           "60 x 60 pockets beside every bolt the panel drives, B2's ELECTRICAL cut-outs). Sizes in mm, 40 thick, "
           "u along the wall from the bay's low corner (side walls: from the front; back walls: from the lower X), "
           "v up from the bay's bottom. Bays that one piece fits, as made or turned over, share a form: one number "
-          "per form, for the master BOM to allocate.", "",
+          "per form, allocated by the master BOM (D-123).", "",
+          "The pockets go right through the 40 mm batt, so they are edge notches: each form is knife cut from its "
+          "own DXF (the full outline with every notch and opening, CUT layer, 1:1 mm, seen in its first bay: u to "
+          "the right, v up) and needs no drawing (D-128); its parts-list rows give material, density, thickness, "
+          "tolerance and part number. The fit column of FILL-PIECES.csv says how each bay takes its piece.", "",
           "%d bays in the 8 positions, %d distinct forms." % (len(pieces), len(forms)), "",
-          "| Form | Size w x h | Pockets (u, v ranges) | Bays it fills | Number |", "|---|---|---|---|---|"]
-    rows = []
+          "| Form | Number | Size w x h | Notches and openings (u, v ranges) | Bays it fills | DXF |",
+          "|---|---|---|---|---|---|"]
+    rows, made = [], []
     for i, (key, members) in enumerate(forms, 1):
         first = members[0]
+        form = "F%02d" % i
+        if form not in nums:
+            raise SystemExit("form %s has no live number in v2/04-BOM/number-allocation.csv" % form)
+        pn, name = nums[form]
+        if "%s %g X %g" % (form, first["w"], first["h"]) not in name:
+            raise SystemExit("form %s is %g x %g but its number %s is %r" % (form, first["w"], first["h"], pn, name))
+        dxf = dxf_name(pn, name)
+        loops = outline(first["w_raw"], first["h_raw"], first["pockets_raw"])
+        want = first["w_raw"] * first["h_raw"] - open_area(first["w_raw"], first["h_raw"], first["pockets_raw"])
+        if abs(sum(area(lp) for lp in loops) - want) > 0.01:
+            raise SystemExit("form %s: the DXF loops enclose %.2f mm2, the piece is %.2f" % (
+                form, sum(area(lp) for lp in loops), want))
+        dxf_tools.write_dxf(os.path.join(HERE, dxf), [("POLY", "CUT", lp) for lp in loops], layers=("CUT",))
+        made.append((dxf, loops, want))
         pk = "; ".join("u %g-%g, v %g-%g" % r for r in first["pockets"])
         where = ", ".join("%s bay %d" % (m["position"], m["bay"]) for m in members)
         note = " (%s)" % first["note"] if first["note"] else ""
-        md.append("| F%02d | %g x %g | %s%s | %s | to allocate |" % (i, first["w"], first["h"], pk, note, where))
+        md.append("| %s | %s | %g x %g | %s%s | %s | `%s` |" % (form, pn, first["w"], first["h"], pk, note, where, dxf))
         for m in members:
-            rows.append({"form": "F%02d" % i, "position": m["position"], "bay": m["bay"], "fill": m["fill"],
-                         "w_mm": first["w"], "h_mm": first["h"], "t_mm": 40, "pockets": pk, "note": first["note"]})
+            rows.append({"form": form, "position": m["position"], "bay": m["bay"], "fill": m["fill"],
+                         "w_mm": first["w"], "h_mm": first["h"], "t_mm": 40, "pockets": pk, "note": first["note"],
+                         "number": pn, "dxf": dxf, "fit": fit(m, first)})
     with open(os.path.join(HERE, "FILL-PIECES.md"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(md) + "\n")
     with open(os.path.join(HERE, "FILL-PIECES.csv"), "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
-    print("wrote FILL-PIECES.md and .csv: %d bays, %d distinct forms" % (len(pieces), len(forms)))
+    for dxf, loops, want in made:
+        sm = dxf_tools.summary(os.path.join(HERE, dxf))
+        e = sm["extents"]
+        print("%s: $INSUNITS %s, layers %s, extents %.1f x %.1f, %d loop(s) (%d corners), %.0f mm2" % (
+            dxf, sm["insunits"], sorted(sm["layers"]), e[2] - e[0], e[3] - e[1], len(loops),
+            sum(len(lp) for lp in loops), want))
+    print("wrote FILL-PIECES.md and .csv: %d bays, %d distinct forms, %d DXFs" % (len(pieces), len(forms), len(made)))
 
 
 if __name__ == "__main__":

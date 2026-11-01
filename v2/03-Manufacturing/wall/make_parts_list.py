@@ -202,6 +202,23 @@ def hw_bodies(comps, pn):
     return c["bodies"] if c else []
 
 
+FILL_TOL = "±2 on length, width and the notches' positions, thickness as supplied (assumption: knife-cut PET batt)"
+
+
+def fill_bays(fill_pn):
+    """WALL's FILL-PIECES.csv rows of one fill set, in bay order: each bay's form, number, DXF and fit (D-123,
+    D-128; make_fill_pieces.py writes them, check_fill_dxfs.py checks the DXFs against the CAD)."""
+    with open(os.path.join(HERE, "FILL-PIECES.csv"), encoding="utf-8") as fh:
+        rows = [r for r in csv.DictReader(fh) if r["fill"] == fill_pn]
+    return sorted(rows, key=lambda r: int(r["bay"]))
+
+
+def fill_cut(dxf, electrical=False):
+    """D-128's process text for a fill piece cut from its DXF."""
+    return ("knife cut from its DXF %s: the full outline with every notch (the 60 x 60 notches beside each bolt go "
+            "right through the 40 mm batt)%s; no drawing (D-128)" % (dxf, " and ELECTRICAL's cut-outs" if electrical else ""))
+
+
 def panel_rows(rep):
     rows = []
     root = [c for c in rep["components"] if c["is_root"]][0]
@@ -267,17 +284,22 @@ def panel_rows(rep):
     fl = round(sum(b["mass_kg"] for b in fill["bodies"]), 3)
     pieces = Counter(tuple(sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)[:2])
                      for b in fill["bodies"])
+    bays = fill_bays(fill["part_number"])
     rows.append(row(level=1, part_number=fill["part_number"], name=en_name(fill), name_vi=vi_name(fill["description"], fill["part_number"]),
                     kind="MP", material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
-                    process="knife cut to the bays, 60 x 60 x 40 pockets left out beside each bolt this panel drives; "
-                            "sizes and pockets on the tabulated fill drawing (D-89)",
+                    process="knife cut, one piece per bay, each from its form's DXF: the full outline with every notch "
+                            "(the 60 x 60 notches beside each bolt this panel drives go right through the 40 mm batt)%s; "
+                            "no drawing (D-128)" % (" and ELECTRICAL's cut-outs" if "el_cut_x0" in prm else ""),
                     qty=1, unit="set",
                     size_mm="; ".join("%d pieces %g x %g x 40" % (q, a, b) for (a, b), q in sorted(pieces.items())),
-                    tolerance="±2 on length and width, thickness as supplied (assumption: knife-cut PET batt)",
+                    tolerance=FILL_TOL,
                     mass_each_kg=fl, mass_total_kg=fl, mass_status="calculation: CAD at the design's fill density",
-                    status="DRAFT", source="CAD; 24 kg/m3 PM ruling 2026-10-31 (T02 confirms, else 32)",
-                    note="friction fit in the bays" + ("; the first bay left out for ELECTRICAL's power unit (to the first "
-                                                       "stud), sleeve and connectors" if "el_cut_x0" in prm else "")))
+                    status="DRAFT", source="CAD; 24 kg/m3 PM ruling 2026-10-31 (T02 confirms, else 32); DXFs checked "
+                                           "against the CAD (check_fill_dxfs.py)",
+                    note="friction fit in the bays; " + "; ".join(
+                        "bay %s: %s %s %s, %s" % (b["bay"], b["form"], b["number"], b["dxf"], b["fit"]) for b in bays) + (
+                        "; bay 1's piece cut away for ELECTRICAL's power unit (to the first stud), sleeve and connectors"
+                        if "el_cut_x0" in prm else "")))
     rows += hardware_rows(frame, comps, back, lower, prm)
     made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
     rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
@@ -372,20 +394,25 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, fill, members, back,
                     size_mm="%d pieces" % sum(c.get("copies", 1) for c in pieces), tolerance="per its pieces",
                     mass_each_kg=fl, mass_total_kg=fl, mass_status="calculation: the pieces below (CAD)",
                     status="DRAFT", source="CAD; D-120", note="one numbered piece per bay (D-123, FILL-PIECES.md)"))
+    bays = fill_bays(fill["part_number"])
     for c in sorted(pieces, key=lambda c: c["part_number"]):
         b = c["bodies"][0]
         dims = sorted((round(b["box"][i + 3] - b["box"][i], 1) for i in range(3)), reverse=True)
         q = c.get("copies", 1)
+        mine = [r for r in bays if r["number"] == c["part_number"]]
+        if len(mine) != q or len({r["dxf"] for r in mine}) != 1:
+            raise SystemExit("%s: %d copies in the CAD, %d bays in FILL-PIECES.csv" % (c["part_number"], q, len(mine)))
         rows.append(row(level=2, part_number=c["part_number"], name=en_name(c),
                         name_vi=vi_name(c["description"], c["part_number"]), kind="MP",
                         material="PET fill 40 mm, 24 kg/m3, Pyrotek Sorberpoly 2D (HW-SEL B)",
-                        process="knife cut to size, 60 x 60 x 40 pockets left out beside each bolt this panel drives "
-                                "(sizes and pockets on the tabulated fill drawing, D-89)",
-                        qty=q, unit="pc", size_mm="%g x %g x %g" % tuple(dims),
-                        tolerance="±2 on length and width, thickness as supplied (assumption: knife-cut PET batt)",
+                        process=fill_cut(mine[0]["dxf"], bool(mine[0]["note"])),
+                        qty=q, unit="pc", size_mm="%g x %g x %g (outline and notches in the DXF)" % tuple(dims),
+                        tolerance=FILL_TOL,
                         mass_each_kg=round(b["mass_kg"], 3), mass_total_kg=round(b["mass_kg"] * q, 3),
                         mass_status="calculation: CAD at the design's fill density", status="DRAFT",
-                        source="CAD; number from the master BOM's allocation (D-123)", note="friction fit in its bay"))
+                        source="CAD; DXF checked against the CAD (check_fill_dxfs.py); number from the master BOM's "
+                               "allocation (D-123)",
+                        note="friction fit in its bay: " + "; ".join("bay %s %s" % (r["bay"], r["fit"]) for r in mine)))
     # the hardware rules count bodies and holes: give them every copy (a member's holes once per copy; the rivnut
     # copies at spigot sites named so, as the old per-site bodies were)
     frame_flat = dict(frame, bodies=[b for m in members for b in m["bodies"] for _ in range(m.get("copies", 1))])
