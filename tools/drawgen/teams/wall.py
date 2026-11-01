@@ -68,7 +68,32 @@ def _skin(hand):
                             "C": "back face (bonded to the frame through the 3 mm line)"}}
 
 
+# WALL's lining trays (D-17, D-37): 0.5 galvanized steel folded into a pan, four returns toward the room and 12 mm lips
+# turned in to hold the felt; the model has its bends (1 x t), so drawgen draws from the STEP and the tray's DXF.
+TRAY_NOTES = [
+    "TRAY: galvanized steel sheet 0.5, DX51D+Z (EN 10346). Blank laser cut or punched from its DXF, then folded on a "
+    "press brake: the four returns 90° toward the room, then the four 12 lips 90° inward; inside radius 1 x t (the "
+    "model's; the factory's tooling confirms it); corner reliefs as the DXF.",
+    "The floating inner leaf (D-17): no screw ever joins it to the frame. It hangs on the wall clips, which only hold, "
+    "and its bottom return sits on the panel's cassette ledge and its pad (the Lead's ruling of 2026-11-01).",
+    "The felt, a part of its own, is held by the lips over the 24 air gap (D-17).",
+]
+TRAY_TOLERANCE = ("blank sizes ±0.5; fold positions ±0.5; folds 90° ±1°; the back flat within 2 over its length "
+                  "(assumption, guideline 6.3)")
+
+
+def _tray(hand):
+    """A side tray's entry: LH trays (L1, L2) have their back at -X, RH trays (R1, R2) at +X."""
+    back = "-X" if hand == "LH" else "+X"
+    # datums on the faces the principal view shows edge on (it looks at the back): B the bottom, C the front
+    return {"bent": True, "notes": TRAY_NOTES, "tolerance": TRAY_TOLERANCE,
+            "corner": back + "-Y-Z", "datum_faces": {"B": "-Z", "C": "-Y"},
+            "datum_words": {"B": "bottom face (on the ledge's pad)",
+                            "C": "front face (at the cassette's front end)"}}
+
+
 PARTS = {
+    "511101": _tray("LH"),
     "211101": WALL_FRAME,
     "211102": WALL_FRAME,
     "211301": _skin("LH"),

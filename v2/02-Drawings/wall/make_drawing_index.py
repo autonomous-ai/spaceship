@@ -43,15 +43,24 @@ def rows():
                  "frame %s, welded steel with its members (D-131); %s" % (code, gen)),
                 ("5102%02d_P01_LINING-CASSETTE-BACK-%s_DWG" % (i, tag), ["5102%02d" % i],
                  "cassette %s; %s" % (code, fusion_assy))]
-    out += [("211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG", ["211301", "211302", "211303", "211304"],
-             "tabulated: the side skins (RH the mirror of LH; L1 = L2, R1 = R2); the drawing generator (D-139: the "
-             "back fold is a sharp V-groove corner in the CAD; if the generator refuses it, Fusion, said first)"),
-            ("511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG", ["511101", "511102", "511103", "511104"],
-             "tabulated: the side trays (LH = RH; upper ones shorter); Fusion (D-139: bent sheet metal, which the "
-             "generator refuses)"),
-            ("511201_P01_LINING-TRAY-BACK-LOWER-B1_DWG", ["511201", "511202", "511203", "511204"],
-             "tabulated: the back trays (LH = RH; upper ones shorter); Fusion (D-139: bent sheet metal, which the "
-             "generator refuses)")]
+    # one generator sheet per part (D-139): the side skins V-grooved and folded (#341), the trays and the ledges bent
+    # sheet (#335; the ledges' countersinks, #371)
+    for i, (code, tag) in enumerate(SIDE, 1):
+        out += [("2113%02d_P01_WALL-SKIN-SIDE-%s_DWG" % (i, tag), ["2113%02d" % i],
+                 "side skin %s, V-grooved and folded at its 2 mm outside radius (D-161); %s" % (code, gen)),
+                ("5111%02d_P01_LINING-TRAY-SIDE-%s_DWG" % (i, tag), ["5111%02d" % i],
+                 "side tray %s, bent sheet; %s" % (code, gen))]
+    for i, (code, tag) in enumerate(BACK, 1):
+        out += [("5112%02d_P01_LINING-TRAY-BACK-%s_DWG" % (i, tag), ["5112%02d" % i],
+                 "back tray %s, bent sheet; %s" % (code, gen))]
+    out += [("211701_P01_WALL-CASSETTE-LEDGE-SIDE-LOWER-COMMON_DWG", ["211701"],
+             "the side cassette ledge (L1 and R1), a bent 1.5 angle with its rivets' countersinks (the Lead's rulings "
+             "of 2026-11-01); %s" % gen),
+            ("211801_P01_WALL-CASSETTE-LEDGE-BACK-LOWER_DWG", ["211801"],
+             "the back cassette ledge (B1 and B2), with B1's rebuild; %s" % gen),
+            ("(on the frame drawings' cut lists, D-162)", ["212101", "212102", "212103", "212104", "212105"],
+             "L1's frame members: each member's row in its frame drawing's cut list is its drawing (D-162; "
+             "210000_P01_WALL-TUBE-CUT-LIST_BOM.csv); the other frames' members join as their frames are rebuilt")]
     forms = fill_forms()
     out.append(("(no drawing, D-128)", [pn for pn, _dxf in forms],
                 "fill pieces: 40 mm PET batt, each of the %d forms knife cut from its own DXF, the full outline with every "

@@ -571,7 +571,10 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
 LEDGE_RULING = "the Lead's ruling of 2026-11-01 (WALL group): a wall cassette's weight sits on a ledge, not on clip shear"
 # the load strip on a lower cassette's top edge (Joints' pick): its register number and name once Control and Joints
 # post them; until then the edge keeps the 848012 row it had
-STRIP = None
+STRIP = dict(pn="848016", name="SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA",
+             vi="Dải đỡ mối nối cassette",
+             material="Rogers PORON 4701-40, 320 kg/m3, 2.36 thick, PSA one side, slit 10 (joints register H-52)",
+             maker="Rogers (joints register H-52, RGR)", kg_per_m=round(10 * 2.36 * 1000 * 320e-9, 5))
 
 
 def ledge_rows(rep, prm):
