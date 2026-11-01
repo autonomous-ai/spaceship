@@ -196,10 +196,19 @@ def test_gap_rules_reproduce_f001_f002_on_skeleton_and_pass_when_fixed():
     bodies = c_geometry.bodies_of(ROOT, SKEL)
     keys = {f.key for f in c_geometry.check_gap_rules(ROOT, "skeleton", bodies, rules)}
     assert "C02|gap-SEAM-GAPS|skeleton SEAM-GAPS" in keys
-    assert "C02|gap-KICK-OVER-THRESHOLD|skeleton KICK-OVER-THRESHOLD" in keys
+    assert not any("KICK" in k for k in keys)    # D-151: the skeleton's thresh_h is no longer the kick strip's datum
     assert not any("LINING-FLOATS" in k for k in keys)          # the linings float in P03
-    fixed = [_B("KICK", (-961, -709, 27, 214, -689, 105)), _B("THRESHOLD", (-961, -729, 0, 214, -669, 20))]
-    assert c_geometry.check_gap_rules(ROOT, "skeleton", fixed, rules) == []
+
+
+def test_the_kick_strip_runs_on_the_bands_bottom_line_over_the_room_floor():
+    # D-151 (D-132: no threshold): the kick strip's bottom at glide_h, Z 10, over the room floor, the plane Z 0
+    rules = c_geometry.load_gap_rules(ROOT)
+    old = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 7, 214, -689, 105))]          # threshold + 7 with no threshold
+    fs = c_geometry.check_gap_rules(ROOT, "assembly", old, rules)
+    assert [(f.rule, f.severity) for f in fs] == [("gap-KICK-OVER-FLOOR", "severe")] and "7.0 mm" in fs[0].message
+    ok = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 10, 214, -689, 105)),
+          _B("AIR - KICK GRILLE", (900, -700, 2, 1100, -690, 100))]                 # not the door's strip
+    assert c_geometry.check_gap_rules(ROOT, "assembly", ok, rules) == []
 
 
 def test_alignment_flags_offset_mating_holes_only():
