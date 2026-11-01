@@ -8,7 +8,7 @@ The pod's electrical design: mains, the 12 V bus, the sensor hub, lights, fans, 
 
 ## Result
 
-1. **Mains in one place, made in the factory (DECIDED, PM ruling 2026-10-31).** One earthed aluminium power unit sits in the lower back panel B2, its face flush with the felt at the ledge height (centre Z 1000). It holds the user socket and the LAN socket on its face, a 30 mA RCBO behind a window, and the three 12 V supplies. The inlet and the LAN feed-through use v1's back-wall spot. v1 had them at X 0, which is now the B1–B2 closing seam (D-65), so they move into B2 at X 120, at v1's heights (Z 313 and 375). On site, nothing mains is connected. Only B2's frame is bonded to earth.
+1. **Mains in one place, made in the factory (DECIDED, PM ruling 2026-10-31).** One earthed aluminium power unit sits in the lower back panel B2, its face flush with the felt at the ledge height (centre Z 1000). It holds the user outlets (a tamper-resistant GFCI duplex NEMA 5-15R) and two LAN keystone jacks on its face, a 15 A breaker behind a window, and the three 12 V supplies. Its mains side is US 120 V 60 Hz with UL-listed parts, on the prototype too (D-133); the prototype is tested in Vietnam through a 220-to-110 V step-down transformer. The inlet and the LAN feed-through use v1's back-wall spot. v1 had them at X 0, which is now the B1–B2 closing seam (D-65), so they move into B2 at X 120, at v1's heights (Z 313 and 375). On site, nothing mains is connected. Only B2's frame is bonded to earth.
 2. **Three 60 W Class 2 supplies, 180 W in all (DECIDED).** The load is 133.1 W at its hardware maximum and about 34 W typical (calc-results §1). All three are Mean Well LPV-60-12: PS1 for the voice kit hook (12 V 5 A), PS2 for all the lights through a 3-channel light controller, PS3 for the four fans and the hub. A light fault can't stall the fresh air. 60 W is the Class 2 limit at 12 V, so every cable in the walls, ceiling and air column is power-limited. A later 120 V US version changes only the mains side ([compliance note](compliance-note.md)).
 3. **Cables in the lining cassettes' 24 mm gap, clipped to the cassettes only (D-26, D-41), with a plug pair at every joint (DECIDED).** The trunk runs from the unit along B2's lining to the back-right corner, then along R1's lining at Z 1100, past the voice-kit drop, into a cable chase in the air column. The light feed runs up B2 and B4 to the light shelf. A draw-wire route runs through the ceiling cassette (D-41). Every hole in sheet steel has a grommet. 7 joints carry 13 plug pairs.
 4. **The hub runs the air and the lights, and tests them (D-09, D-44, D-50, D-61, D-87).** The fans and the hub sit at the air column, with short cables. Two PWM signals drive the two balanced fan pairs, with tach back. The hub also sets the three light channels (uplight, down-light, call light) over RS-485 and keeps them at about 22 W in all (PM ruling). Its **self-test button (D-87)** checks the three 12 V rails, runs both fan pairs and reads their tach, steps each light channel and reads PS2's current change, reads the sensors, and shows PASS or the failing item. If a PWM line opens, the fans run at full speed, so a hub fault never stops the fresh air. Every harness segment is tested in the factory before it ships (D-87).
@@ -55,11 +55,11 @@ The pod's electrical design: mains, the 12 V bus, the sensor hub, lights, fans, 
 ```
 ROOM SOCKET ─ cord set ─ INLET (B2 skin, v1 spot) ─┐
                                                   │  POWER UNIT 710001 in B2 (earthed, factory wired)
-                                     RCBO C10 30 mA ─┬─ USER SOCKET (unit face, Z 1000)
+                                     BREAKER 15 A ───┬─ GFCI RECEPTACLE, TR 5-15R (unit face, Z 1050)
                                                      ├─ PS1 60 W ─ F1 5 A ─ trunk ─ VOICE KIT DROP (12 V 5 A, capped)
                                                      ├─ PS2 60 W ─ F2 5 A ─ 3-ch LIGHT CONTROLLER ─ up B2, B4 ─ SHELF: uplight, down-light, call drop
                                                      └─ PS3 60 W ─ trunk ─ AIR COLUMN fuse block ─ fans S, fans E, hub
-LAN ─ etherCON (B2 skin) ─ LAN socket port 1 (unit face); port 2 ─ trunk ─ voice kit drop (Cat6, capped)
+LAN ─ etherCON (B2 skin) ─ keystone jack 1 (unit face); keystone jack 2 ─ trunk ─ voice kit drop (Cat6, capped)
 ```
 
 - **Mains goes only to the outlets and the supplies, inside the unit** (REQ-ELE-01, D-10). No mains conductor enters a cassette, the ceiling or the air column.
@@ -72,8 +72,8 @@ LAN ─ etherCON (B2 skin) ─ LAN socket port 1 (unit face); port 2 ─ trunk �
 |---|---|---|
 | Box | 296 W × 260 H × 72 D mm (narrowed from 300 so its right side clears B2's first stud at X 395.75 by 4.75 mm, WALL through the PM); front flush with the felt (Y 766), back 6 mm short of the skin side | assumption (sizes); calculation (depth). The body (711001) and front plate (711002) are modelled in their own designs, with HOLD features: the fixing to B2's frame (WALL, IF-12), the earth stud hole, and the 86-plate openings (H-ELE-04). |
 | Position | X 95–391, Z 870–1130, in one bay of B2 | DECIDED height (PM: about 1000 mm); assumption (X, clear of the B1–B2 closing seam member and its pin pocket); WALL confirms the bay |
-| Face: front plate 320 × 284, 1.5 mm aluminium, black anodised AA20 as the visible aluminium (D-67), covering the cut-out's felt edge 8 mm all round and standing 2 mm off the felt on 4 spacers | user socket (UTEN S300, plan VT07) and LAN socket (plan VT09), 86 × 86 each; the RCBO toggle behind a clear flap; vent slots top and bottom | PROPOSED |
-| Inside | RCBO on a DIN rail; PS1, PS2, PS3; F1 and F2 in a fuse holder; PE terminal; the 12 V output leads leave through two Ø19.1 bushed exits in the unit's right side and a Ø19.1 bushed hole in its top, straight into B2-CASS's cable gap (the cut-out is plain: no steel on their path) | PROPOSED |
+| Face: front plate 320 × 284, 1.5 mm aluminium, black anodised AA20 as the visible aluminium (D-67), covering the cut-out's felt edge 8 mm all round and standing 2 mm off the felt on 4 spacers | the GFCI receptacle in a decorator opening 33.6 × 67 held by two 6-32 plate screws, two LAN keystone jacks in 14.9 × 19.4 openings, the breaker through a 19 × 45 window (D-133); vent slots top and bottom | PROPOSED |
+| Inside | the breaker on a DIN rail; PS1, PS2, PS3; F1 and F2 in a fuse holder; PE terminal; the 12 V output leads leave through two Ø19.1 bushed exits in the unit's right side and a Ø19.1 bushed hole in its top, straight into B2-CASS's cable gap (the cut-out is plain: no steel on their path) | PROPOSED |
 | Body | 1.0 mm aluminium 5052-H32, folded, mill finish (hidden, D-79), side flanges fixed to B2's vertical members with 4 × 838001 (M6 × 16) and 838004 washers into 838003 rivnuts: the pod's one bolt and one key (D-63) | PROPOSED |
 | Cassette | B2-CASS has a plain cut-out through its tray base and felt, 4 mm clear all round the unit (304 × 268), so the lining never touches the frame-mounted unit (D-17, D-26). No returns: WALL found they can't be folded from a flat blank (corner tabs overlap). The front plate covers the cut felt edge. | PROPOSED; WALL draws the cut-out |
 | Mass | see calc-results §5 | calculation |
@@ -113,7 +113,7 @@ Routes are reserved spaces in the cassettes' 24 mm gap: 16 mm deep, which leaves
 2. Hold B2-CASS near the wall. Plug its leads into the unit's leads (X1) and into R1's corner tails (X2), push the pairs into P1 and P2, then hang B2-CASS.
 3. Hold B4-CASS. Plug X4, push the pair into P4, then hang B4-CASS. Plug the shelf at X5 when the shelf goes up.
 4. Before the air column goes in, plug X3 and X6 behind it. Then plug the fans at their boxes: the supply pair through DR's removable inner face, the exhaust pair through the soffit's underside (D-59).
-5. Plug the room cord into the inlet, switch the RCBO on and check: fans start on presence, the knob dims the shelf, CALL lights the bar, the kit outlet reads 12 V.
+5. Plug the room cord into the inlet, switch the breaker on, press the GFCI's TEST and RESET, and check: fans start on presence, the knob dims the shelf, CALL lights the bar, the kit outlet reads 12 V.
 
 **Plugs:** Molex Mini-Fit Jr, latching, UL94 V-0 housings. The way count tells circuits apart at the joints where several cross: 2-way for the lights, 4-way for the kit, and 10-way for the air feed together with the hub link. Data uses RJ45. The supply side is always the receptacle with female contacts.
 
@@ -155,7 +155,7 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 | H-ELE-01 | Bushings and edge strip: Heyco 2836 in Ø19.1 holes through 0.5 mm steel (6), DR's back plate (G-DR, 1.0–2.7 mm, FRONT HOLD-10) and the soffit's casing (G-SOFFIT); an edge strip on the two slots | The 2836 is listed for panels up to 1.6 mm with no minimum given; G-DR and G-SOFFIT need a thicker-panel bushing if the plate is over 1.6 mm | Sample fit in a cassette return; FRONT and CEILING name their plate thickness |
 | H-ELE-02 | 12 V supplies and the dimmable driver | Data confirmed; Class 2 marking checked for the US phase | Datasheets on file (parts list) |
 | H-ELE-03 | Inlet and etherCON fit in the 46 mm outer panel (skin 3 + bond 3 + frame bay) | Panel-thickness range and depth behind the panel | Datasheet check; sample in a B2 skin |
-| H-ELE-04 | UTEN S300 socket-only code and the plate in the unit's face | Exact code (the plan's VT07 set includes a switch P01 doesn't use) | Code from the UTEN catalogue pp. 58–61 |
+| H-ELE-04 | The US outlets' exact parts (D-133): the GFCI receptacle and the keystone jacks | Their drawings set the plate's openings (decorator 33.6 × 67, keystone 14.9 × 19.4) | The picked parts' drawings (no supplier contact) |
 | H-ELE-05 | The hub's fan outputs | PWM or 0–10 V; current; connector | ISS-060 data |
 | H-ELE-06 | Inlet temperature sensor | Type set by the hub's sensor port; accuracy for the 4 K limit | ISS-060 data |
 | H-ELE-07 | Fan connectors at the fan boxes; the fans' 0 % PWM behaviour | Y-cable and harness end housing | Fan sample (ISS-077) |
@@ -169,7 +169,7 @@ calc-results §3. Every circuit stays under 3 % from its supply to its load at t
 
 ## 11. Tests (planned, not run: PLANNED / NOT TESTED)
 
-1. **Power unit, in the factory, before B2 ships:** earth continuity inlet PE to the enclosure stud and B2's frame (at most 0.1 Ω); insulation resistance L+N to PE at 500 V DC (at least 1 MΩ); RCBO trip test; each supply's output 12 V ± 3 % at no load. The factory's electrician signs it.
+1. **Power unit, in the factory, before B2 ships:** ground continuity, inlet ground to the enclosure stud and B2's frame (at most 0.1 Ω); dielectric withstand, L+N to ground, 1240 V AC for 1 min (1000 V + 2 × 120 V, D-133); the GFCI's TEST trips it; each supply's output 12 V ± 3 % at no load. The factory's electrician signs it.
 2. **Harness segments, every one in the factory before it ships (D-87):** continuity, polarity and no shorts on a test board with mating plugs, latch pull test, and a label with its ID and "tested".
 3. **On the prototype:** every circuit at full load (voltage at the far end, within 3 %); fans on presence, boost by CO2, heat and hand; PWM-open fail-safe; the 4 K and 800 ppm control with the hub; the light level at the ledge; and a timed plug-up of all joints by two people.
 

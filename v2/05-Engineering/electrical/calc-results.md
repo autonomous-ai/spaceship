@@ -17,11 +17,12 @@ Every number here is a **calculation** from the load table (`710000_P01_ELECTRIC
 
 Typical = one or two people, lights full, fans near the 53 l/s normal flow, no voice kit fitted. Max = every load at its maximum at once, which the control never asks for (the fans reach full speed only above the 65 l/s boost).
 
-## 2. Mains side
+## 2. Mains side (US 120 V 60 Hz, D-133)
 
-- Supplies' input at maximum load: 161 W at 83 % efficiency (assumption from the maker's typical figure, parts list) plus 0.5 W no-load each: about **0.73 A at 220 V**.
-- The RCBO is C10, 30 mA: 10 A x 220 V = 2.2 kW for the user socket and the supplies together. A laptop charger takes about 0.3 A; a 2 kW heater would still hold (9.1 A), which is the worst case a user might plug in (assumption).
-- Mains conductors 1.5 mm² (H07V-K in the sleeve, 0.82 m): rated well above 10 A in free air (IEC 60364-5-52, to confirm by the factory's electrician); the RCBO protects them.
+- Supplies' input at maximum load: 161 W at 83 % efficiency (assumption from the maker's typical figure, parts list) plus 0.5 W no-load each: about **1.34 A at 120 V**.
+- The breaker is 15 A, 1 pole, UL 489: 15 A x 120 V = 1.80 kW for the user outlets and the supplies together, 1.44 kW continuous at 80 % (NEC 210.19, 210.20). A laptop charger takes about 0.6 A; a 1.5 kW heater, the largest plug-in appliance on a 15 A US circuit, takes 12.5 A and still holds with the supplies (assumption).
+- Mains conductors 14 AWG (UL 1015, 105 °C, in the sleeve and inside the unit): rated for 15 A and protected by the 15 A breaker (NEC 240.4(D)); the equipment ground is 14 AWG green too (NEC 250.122).
+- The prototype is tested in Vietnam through a 220-to-110 V step-down transformer, part of the test set, not the pod (D-133); it must carry the outlets' load too (2 kVA or more, assumption).
 
 ## 3. Voltage drop on the 12 V circuits (copper at 60 °C, 0.0206 Ω mm²/m)
 
@@ -48,7 +49,7 @@ Loop resistance = 2 x length x ρ / area, divided by the number of parallel pair
 | W24d COLUMN | hub I/O | 420 | 0.205 x 1 | 0.01 | 0.001 |
 | W40 COLUMN | PS3 fan S | 1550 | 0.519 x 1 | 1.1 | 0.135 |
 | W41 COLUMN | PS3 fan E | 1260 | 0.519 x 1 | 1.1 | 0.11 |
-| W43 COLUMN | PS3 hub | 300 | 0.326 x 1 | 0.42 | 0.016 |
+| W43 COLUMN | PS3 hub | 300 | 0.823 x 1 | 0.42 | 0.006 |
 | W12 R2-CASS | PS2 lights | 1250 | 0.823 x 1 | 0.23 | 0.014 |
 
 | Path, supply to the farthest load | Drop V | Drop % | 3 % limit |
@@ -58,9 +59,9 @@ Loop resistance = 2 x length x ρ / area, divided by the number of parallel pair
 | PS2 to the call light (W10a + W10b + W10c + W11a + W11c + W12) | 0.33 | 2.7 | within |
 | PS3 to the supply fans (W20a + W20b + W20c + W20d + W40) | 0.33 | 2.7 | within |
 | PS3 to the exhaust fans (W20a + W20b + W20c + W20d + W41) | 0.30 | 2.5 | within |
-| PS3 to the sensor hub (W20a + W20b + W20c + W20d + W43) | 0.21 | 1.7 | within |
+| PS3 to the sensor hub (W20a + W20b + W20c + W20d + W43) | 0.20 | 1.6 | within |
 
-Mains conductors are left out: 0.92 m of 1.5 mm² at the RCBO's full 10 A drops about 0.25 V of 220 V (0.1 %).
+Mains conductors are left out: 0.92 m of 14 AWG (2.08 mm², 8.28 Ω/km at 20 °C) at the breaker's full 15 A drops about 0.23 V of 120 V (0.2 %).
 
 ## 4. Heat the electrical parts add inside the pod
 
@@ -80,12 +81,12 @@ At the 53 l/s normal flow that adds **0.26 K** to C4's 3.8 K (ΔT = P / (1.2 × 
 
 | Group | kg | Status |
 |---|---:|---|
-| 710001 power unit (with its mains wiring and fixings) | 2.89 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| 710001 power unit (with its mains wiring and fixings) | 2.84 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 710041 hub and controls zone | 0.36 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| 719001 cord set kit (ships loose; counts in the pod as shipped) | 0.50 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| 719001 cord set kit (ships loose; counts in the pod as shipped) | 0.53 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | lights: shelf strip, call strip and profile | 0.30 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.13 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| **710000 ELECTRICAL** | **5.17** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
+| harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.23 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| **710000 ELECTRICAL** | **5.25** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
 
-**B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 2.89 kg = **12.0 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
+**B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 2.84 kg = **11.9 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
 

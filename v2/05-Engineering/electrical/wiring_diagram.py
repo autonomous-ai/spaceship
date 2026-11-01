@@ -44,6 +44,19 @@ class Sheet(K.Sheet):
         for i, t in enumerate(lines):
             self.textf(x0 + 1.2, y0 + 6.2 + i * 2.75, t, max(size, 1.8), INK)
 
+    def riser_hops(self, x, y0, y1, hops, color=INK, w=0.3, r=1.2):
+        """A vertical wire from y0 to y1 that hops (a half circle to the right) over the wires crossing it at `hops`."""
+        import math
+        ys = sorted(hops, reverse=(y0 > y1))
+        step = -1 if y0 > y1 else 1
+        y = y0
+        for h in ys:
+            self.line(x, y, x, h - step * r, color, w)
+            pts = [(x + r * math.sin(math.pi * i / 8), h - step * r * math.cos(math.pi * i / 8)) for i in range(9)]
+            self.poly(pts, color, w)
+            y = h + step * r
+        self.line(x, y, x, y1, color, w)
+
     def plug(self, x, y, label, color=INK):
         """A plug pair: a socket bracket and a pin bracket, the joint label above."""
         self.line(x - 1.6, y - 1.4, x - 0.4, y - 1.4, color, 0.3)
@@ -68,15 +81,16 @@ def sheet1(doc, rows, harness, v):
     s.rect(14, 16, 150, 240, INK, 0.45, dashes="[2 1] 0")
     s.textf(16, 20, "710001 POWER UNIT - in panel B2 (factory wired and tested; earthed aluminium enclosure)", 2.1,
            INK, bold=True)
-    s.boxf(18, 26, 52, 46, "INLET  (outside B2)", ["powerCON TRUE1 TOP", "16 A 250 V, locking", "v1 position, X 120 Z 313"],
+    s.boxf(18, 26, 52, 46, "INLET  (outside B2)", ["powerCON TRUE1 TOP", "UL 498, 20 A, locking", "v1 position, X 120 Z 313"],
           MAINS)
-    s.boxf(62, 26, 96, 46, "RCBO 1P+N", ["C10, 30 mA", "the only mains", "protection"], MAINS)
-    s.boxf(106, 26, 146, 46, "USER SOCKET", ["UTEN S300 (plan VT07)", "on the unit face,", "Z 1000 (PM ruling)"], MAINS)
+    s.boxf(62, 26, 96, 46, "BREAKER 1P 15 A", ["UL 489, C curve;", "protects the 14 AWG", "mains wiring"], MAINS)
+    s.boxf(106, 26, 146, 46, "GFCI RECEPTACLE", ["TR duplex NEMA 5-15R,", "UL 943 Class A; unit", "face, Z 1050 (D-70)"], MAINS)
     s.line(52, 32, 62, 32, MAINS, 0.5)
     s.textf(53, 31, "L N PE", 1.8, MAINS)
     s.line(96, 32, 106, 32, MAINS, 0.5)
     s.textf(53, 35.6, "W01", 1.8, MAINS)
-    s.textf(53, 38.4, "3x1.5", 1.8, MAINS)
+    s.textf(53, 38.4, "3 x 14", 1.8, MAINS)
+    s.textf(53, 41.2, "AWG", 1.8, MAINS)
     for i, (ps, ttl, sub) in enumerate((("PS1", "PS1  60 W", "12 V 5 A, Class 2"),
                                         ("PS2", "PS2  60 W + LIGHT CTRL", "3 ch PWM, RS-485, Class 2"),
                                         ("PS3", "PS3  60 W", "12 V 5 A, Class 2"))):
@@ -84,11 +98,13 @@ def sheet1(doc, rows, harness, v):
         s.boxf(62, y, 104, y + 26, ttl, [sub, "input 100-240 V", "Class II (no PE)"], SELV)
         s.line(79, 46, 79, y, MAINS, 0.4) if i == 0 else s.line(79, y - 16, 79, y, MAINS, 0.4)
         s.textf(80.5, y - 2, "W02 L N", 1.8, MAINS)
-    s.boxf(18, 60, 52, 82, "PE TERMINAL", ["inlet PE, socket PE,", "enclosure stud,", "B2 frame bond W03"], MAINS)
-    s.line(18, 88, 52, 88, MAINS, 0.3)
-    s.textf(18, 92, "W03 2.5 mm2 G/Y to B2's frame", 1.7, MAINS)
-    s.textf(18, 95, "(only B2 carries a mains part)", 1.7, MAINS)
-    s.boxf(18, 104, 52, 126, "LAN", ["etherCON NE8FDP in B2,", "W04 Cat6 to port 1", "port 2: W31 to the kit"], SIG)
+    s.boxf(18, 60, 52, 82, "PE TERMINAL", ["inlet PE, receptacle", "ground, enclosure stud,", "B2 frame bond W03"], MAINS)
+    s.line(24, 82, 24, 87, MAINS, 0.3)                    # W03 from the PE terminal to B2's frame (Reviewer 7: it was loose)
+    for i, half in enumerate((3.0, 2.0, 1.0)):            # frame (chassis) ground symbol
+        s.line(24 - half, 87 + i, 24 + half, 87 + i, MAINS, 0.3)
+    s.textf(29, 88.2, "W03 14 AWG green to B2's frame", 1.7, MAINS)
+    s.textf(29, 91.2, "(only B2 carries a mains part)", 1.7, MAINS)
+    s.boxf(18, 104, 52, 126, "LAN", ["etherCON NE8FDP in B2,", "W04 Cat6 to keystone 1,", "keystone 2: W31 to the kit"], SIG)
     # 12 V outputs leave the unit on the right side (H01, H02) and the top (H03), straight into the cable gap (plain cut-out)
     s.fuse(116, 73, "F1 5 A")
     s.line(104, 73, 113.8, 73, SELV, 0.5)
@@ -158,7 +174,7 @@ def sheet1(doc, rows, harness, v):
         s.plug(x, 210, "", SIG)
     s.line(150.4, 210, 199.6, 210, SIG, 0.3)
     s.line(200.4, 210, 240, 210, SIG, 0.3)
-    s.line(240, 210, 240, 84, SIG, 0.3)
+    s.riser_hops(240, 210, 84, (190, 157, 115), SIG, 0.3)    # W31c's riser hops over W24c, W20c and the light feed
     s.textf(152, 208.5, "W31b Cat6 (RJ45 couplers)", 1.8, SIG)
     s.textf(202, 208.5, "W31c to the kit drop X7", 1.8, SIG)
     # ---------------- air column
@@ -181,7 +197,7 @@ def sheet1(doc, rows, harness, v):
     s.line(300, 152, 306, 152, SELV, 0.4)
     s.line(352, 153, 358, 153, SELV, 0.4)
     s.line(352, 170, 358, 170, SELV, 0.4)
-    s.line(352, 187, 358, 187, SIG, 0.3)
+    s.poly([(352, 174), (355.5, 174), (355.5, 187), (358, 187)], SIG, 0.3)   # the sensor's link starts on the hub
     s.line(262, 190, 264, 190, SIG, 0.3)
     s.boxf(264, 205, 403, 232, "SAFETY AND RESERVES",
           ["SELF-TEST (D-87): TEST checks the 3 rails, runs both fan pairs (tach), steps each light channel (current), reads",
@@ -195,7 +211,7 @@ def sheet1(doc, rows, harness, v):
         "4. Every cable through sheet steel runs in a grommet; cables clip to the cassette tray only (D-26).",
         "5. Wire sizes and lengths: harness list (sheet 2 and the _SPEC.csv). Voltage drop under 3 %: calc-results.md.",
         "6. Bought parts are on HOLD: no order, no supplier contact. The in-house hub is cited by name only.",
-        "7. US version: change the cord set, the inlet side and the socket only; supplies take 100-240 V.",
+        "7. Mains: US 120 V 60 Hz, 15 A, UL-listed parts (D-133); the prototype is tested in Vietnam through a 220-to-110 V step-down transformer.",
         "8. Joints: X1 unit/B2-CASS  X2 corner (R1-CASS)  X3 column entry  X4 B2/B4  X5 shelf  X6 call  X7 kit.",
     ]
     s.frame("ELECTRICAL - WIRING DIAGRAM", 1, "not to scale (schematic)", notes)
@@ -237,7 +253,7 @@ def sheet3(doc, rows, harness, v):
         s.textf(x, y, t, size, col, bold)
 
     def vlab(x, y, t, col=INK, size=1.9):
-        later.append((x, y, t, col, size))
+        later.append((x, y, t, col, size, None))
     scale = "1:%g" % round(1.0 / (k * s.zoom))           # on paper: the A3 layout's 1:20 drawn twice the size
     # ---- view A: back wall from inside, looking toward +Y
     X = lambda x: ox_a + (x + 1250) * k  # noqa: E731
@@ -288,7 +304,10 @@ def sheet3(doc, rows, harness, v):
             s.rect(Yv(bx[4]), Z(bx[5]), Yv(bx[1]), Z(bx[2]), SIG, 0.35)
     vlab(Yv(v["y_kit"]) - 6, Z(v["trunk_z"] + 260), "X7 kit drop", SELV)
     vlab(Yv(780), Z(v["trunk_z"]) + 5.0, "P2 corner", SELV)
-    vlab(Yv(v["call_y"]) - 3, Z(v["call_z"] + 90), "call light feed", SELV)
+    call = next(M.body_box(b, v) for b in M.BODIES if b["code"] == "CALL-R2")
+    call_left = min(Yv(call[1]), Yv(call[4]))                # Reviewer 7: beside its blue bar, outside the column's outline
+    later.append((call_left - 1.5 - s.text_w("call light feed", 1.9 * K.CAP * s.zoom), Z(v["call_z"] + 90),
+                  "call light feed", SELV, 1.9, [(0, dy) for dy in (0, -3, 3, -6, 6, -9, 9, -12, 12)]))
     vlab(Yv(-300) + 2, Z(v["hub_zc"]), "hub zone", SIG)
     # ---- text column
     tx = 262
@@ -308,7 +327,7 @@ def sheet3(doc, rows, harness, v):
         ("4  Plug the light shelf at X5 when the shelf goes up.", False),
         ("5  Before the air column goes in, plug X3 and X6 behind it.", False),
         ("6  Plug the fans at their boxes (DR inner face; soffit underside).", False),
-        ("7  Room cord into the inlet, RCBO on, press TEST: PASS (D-87).", False),
+        ("7  Room cord into the inlet, breaker on, press TEST: PASS (D-87).", False),
         ("", False),
         ("KEEP-OUTS FOR OTHER TEAMS", True),
         ("WALL: B2 bay X %.0f-%.0f, Z %.0f-%.0f for the unit; sleeve X %.0f-%.0f," % (v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], v["sl_x"] - 10, v["sl_x"] + 10), False),
@@ -328,9 +347,10 @@ def sheet3(doc, rows, harness, v):
         "3. Felt-only holes (FX-*, FS-CNR, FA-KIT) go through the felt only, clear of the 12 mm lips: no steel edge, no bushing (no hole through a lip, D-69).",
         "4. These views are the route drawing of 710000; there is no separate Fusion drawing of the route model (PM ruling 2026-11-01).",
     ]
-    s.frame("ELECTRICAL - ROUTES AND JOINTS", 3, "%s (views)" % scale, notes)
-    for x, y, t, col, size in later:                     # every line is drawn now: each label goes where it's clear
-        s.label(x, y, t, size * K.CAP * s.zoom, col)
+    top = s.frame("ELECTRICAL - ROUTES AND JOINTS", 3, "%s (views)" % scale, notes)
+    for x, y, t, col, size, around in later:             # every line is drawn now: each label goes where it's clear
+        s.label(x, y, t, size * K.CAP * s.zoom, col, around=around)
+    s.first_angle_symbol(s.W - 10 - K.TB_W + 2, top - 18)  # two orthographic views (Reviewer 7)
     return s
 
 

@@ -1,8 +1,8 @@
 """Shared sheet helpers for ELECTRICAL's generated drawings (wiring diagram, assembly sheets), drawn with PyMuPDF.
 
-Letter sizes are capital heights (ISO 3098), the way the reviewers measure them (font size x 0.718 for
-Helvetica): 2.5 mm for every text on a sheet, 3.5 mm for sheet and view titles, 1.8 mm only for the labels
-of the title block (the reviewers' minimum, D-114's visual pass). The guideline says not to shrink a font to
+Letter sizes are capital heights (ISO 3098), the way the reviewers measure them (font size x 0.716, the
+PM's ruling on #235's review): 2.5 mm for every text on a sheet, 3.5 mm for sheet and view titles, 1.8 mm
+only for the labels of the title block (ISO 7200, the PM's ruling). The guideline says not to shrink a font to
 fit a page (section 6), so text that is too long wraps to its width, a table wraps its cells (it never cuts a
 value short), and a sheet that can't hold its content raises an error instead of drawing over itself.
 
@@ -14,7 +14,7 @@ The offline test reads the saved PDFs back and checks the same rules independent
 import fitz  # PyMuPDF
 
 MMPT = 72.0 / 25.4
-CAP = 0.718                      # Helvetica's capital height / font size (718/1000 em, the reviewers' figure)
+CAP = 0.716                      # capital height / font size: the reviewers' figure (PM ruling on #235's review, 2026-11-01)
 DESC = 0.21                      # Helvetica's descender / font size (p, g, y), for the ink box
 BODY, TITLE, LABEL = 2.5, 3.5, 1.8   # capital heights, mm
 PITCH = 1.7                      # baseline to baseline, in capital heights
@@ -169,6 +169,25 @@ class Sheet:
                     self.text(x + dx, y + dy + i * pitch, ln, h, color, bold)
                 return x + dx, y + dy
         raise ValueError("no clear place near (%.1f, %.1f) for the label %r" % (x, y, lines[0]))
+
+    def first_angle_symbol(self, x, y, label=True):
+        """ISO 5456-2 first-angle symbol in page mm, its left end at x, its axis at y: the truncated cone's side view
+        (small end 5, large end 10, 10 long) and its end view (circles of 10 and 5), 4 apart; 'ISO first angle'
+        under it. It must land clear of every text and line drawn so far (it raises otherwise)."""
+        x0, y0, x1, y1 = x - 0.5, y - 5.5, x + 30.5, y + 5.5 + (BODY * PITCH + 1.0 if label else 0)
+        box = (x0, y0, x1, y1, "first-angle symbol")
+        if any(x0 < a[2] and a[0] < x1 and y0 < a[3] and a[1] < y1 for a in self.inks) or \
+                any(crosses(sg, box, 0.0) for sg in self.segs) or y1 > self.content_bottom or x1 > self.W - 10:
+            raise ValueError("no room for the first-angle symbol at (%.0f, %.0f)" % (x, y))
+        pts = [(x, y - 2.5), (x + 10, y - 5), (x + 10, y + 5), (x, y + 2.5), (x, y - 2.5)]
+        for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+            self.page_line(ax, ay, bx, by, INK, 0.35)
+        cx = x + 10 + 4 + 5
+        for r in (5.0, 2.5):
+            self.p.draw_circle(fitz.Point(cx * MMPT, y * MMPT), r * MMPT, color=INK, width=0.35 * MMPT)
+        self.inks.append((x0, y - 5.5, x1, y + 5.5, "first-angle symbol"))    # the drawing; its label is a text of its own
+        if label:
+            self.page_text(x, y + 5.5 + BODY * 1.4, "ISO first angle", BODY, INK)
 
     # ---- page coordinates (not zoomed)
     def page_text(self, x, y, s, h, color=INK, bold=False):

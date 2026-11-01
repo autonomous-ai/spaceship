@@ -17,6 +17,8 @@ their cells instead of cutting a value short, view labels go where no line runs
 through them, and each sheet is checked for overlapping text before it's saved.
 """
 
+import re
+
 import electrical_model as M
 import electrical_parts as EP
 import fitz
@@ -59,7 +61,7 @@ def parts_table(s, pn, x, y, w, bottom):
     fixed = sum(c for _n, c in named if c > 1)
     cols = [(n, c if c > 1 else (w - fixed) * c) for n, c in named]
     rows = [[str(i), p["part_number"], p["name"], str(p["qty_per_parent"]), EP.unit_of(k),
-             ", ".join(t for t in (p["material"], p["finish"]) if t), p["status"]]
+             ", ".join(t for t in (p["material"], p["finish"]) if t) or "as supplied", p["status"]]
             for i, (k, p) in enumerate(children(pn), start=1)]
     y, left = s.table(x, y + 2.0, cols, rows, bottom)
     if left:
@@ -84,22 +86,59 @@ def colour(h):
     return MAINS if "mains" in h["circuit"] else (SIG if h["circuit"] in ("hub I/O", "LAN", "hub sensor", "hub input") else SELV)
 
 
-def formboard(s, rows, x, y, width):
-    """Each segment as a line scaled to its length, with its plug at each end."""
-    s.text(x, y, "FORMBOARD (lengths to scale along the line; plugs at the ends)", K.TITLE, INK, True)
+RATIOS = (1, 2, 2.5, 5, 10, 20)           # formboard scales (Reviewer 7: print the ratio)
+
+
+def formboard_ratio(rows, width):
+    """The largest standard scale (1:r) at which the longest segment fits the formboard's width."""
     longest = max(h["length_mm"] for h in rows) or 1
+    return next(r for r in RATIOS if longest / r <= width - 30.0)
+
+
+def end_kind(text):
+    t = text.lower()
+    if "tied" in t:
+        return "tie"
+    if any(k in text for k in ("Mini-Fit", "RJ45", "keystone")) or any(k in t for k in ("plug", "receptacle", "coupler",
+                                                                                          "connector", "lug", "punched")):
+        return "strip" if "strip feed" in t and "Mini-Fit" not in text else "plug"
+    if "strip feed" in t:
+        return "strip"
+    return "end"
+
+
+def end_mark(s, x, y, kind, col):
+    """plug: the plug pair; strip: an open ring, the clip-on feed lead onto the strip; tie: a cross, the cord tied off;
+    end: a short stroke (a terminal or a part HOLD)."""
+    if kind == "plug":
+        plug(s, x, y, col)
+    elif kind == "strip":
+        s.circle(x, y, 1.6, col, 0.4)
+    elif kind == "tie":
+        s.line(x - 1.8, y - 1.8, x + 1.8, y + 1.8, col, 0.4)
+        s.line(x - 1.8, y + 1.8, x + 1.8, y - 1.8, col, 0.4)
+    else:
+        s.line(x, y - 2.0, x, y + 2.0, col, 0.5)
+
+
+def formboard(s, rows, x, y, width):
+    """Each segment as a line at the formboard's scale, each end drawn as what it is."""
+    r = formboard_ratio(rows, width)
+    tied = all(end_kind(h["end_a"]) == "tie" for h in rows)
+    s.text(x, y, "FORMBOARD 1:%g (lengths to scale along the line; %s)" % (
+        r, "cords tied off at both ends" if tied else "a plug pair, a strip feed ring or a stroke at each end"),
+        K.TITLE, INK, True)
     x0 = x + 22.0
-    k = (width - 30.0) / float(longest)
     pitch = 11.0
     for i, h in enumerate(rows):
         yy = y + 12.0 + i * pitch
-        L = h["length_mm"] * k
+        L = h["length_mm"] / r
         col = colour(h)
         s.text(x, yy + 0.9, h["id"], K.BODY, col, True)
         s.line(x0, yy, x0 + L, yy, col, 0.6)
-        plug(s, x0, yy, col)
-        plug(s, x0 + L, yy, col)
-        s.text(x0 + 6.0, yy - 3.4, "%d mm  %s" % (h["length_mm"], h["cable"]), K.BODY, col)
+        end_mark(s, x0, yy, end_kind(h["end_a"]), col)
+        end_mark(s, x0 + L, yy, end_kind(h["end_b"]), col)
+        s.text(x0 + 6.0, yy - 3.9, "%d mm  %s" % (h["length_mm"], h["cable"]), K.BODY, col)   # clear of the end marks
     return y + 12.0 + len(rows) * pitch
 
 
@@ -121,37 +160,57 @@ def plate_params():
     return vals
 
 
+def tag(s, cx, cy, t, col):
+    """A short tag centred in an opening (Reviewer 7: labels inside their boxes)."""
+    s.text(cx - s.text_w(t, K.BODY, True) / 2, cy + K.BODY * K.CAP / 2, t, K.BODY, col, True)
+
+
 def sheet_power_unit(doc, v):
     s = K.Sheet(doc, "A2")
     p = plate_params()
     pn = "710001"
     bottom = frame(s, pn, "ELECTRICAL - POWER UNIT - B2: ASSEMBLY", [
         "Wiring inside the unit: wiring diagram sheet 1 (710000). Leads out: W10a top (6-way), W20a/W24a/W30a/W31a right side.",
-        "Factory test of the unit before B2 ships: earth continuity <= 0.1 ohm, insulation >= 1 Mohm at 500 V DC, RCBO trip, "
-        "rails 12 V +/-3 %.",
+        "Factory test of the unit before B2 ships (US 120 V, D-133): ground continuity <= 0.1 ohm; dielectric withstand 1240 V AC "
+        "for 1 min, mains to ground (1000 V + 2 x 120 V); the GFCI's TEST button trips it; rails 12 V +/-3 %.",
     ], scale="1:3 face, 2:1 section (schematic)")
     k = 1.0 / 3.0
     ox, oy = 24.0, 128.0
     W, Hh = p["w"], p["h"]                  # the front plate, which covers the cut-out's felt edge
+    X = lambda x: ox + x * k                # noqa: E731  plate mm -> sheet mm
+    Z = lambda z: oy - z * k                # noqa: E731
     s.text(ox, 22, "FACE OF THE POWER UNIT, seen from inside the pod (looking toward +Y), 1:3", K.TITLE, INK, True)
-    s.rect(ox, oy - Hh * k, ox + W * k, oy, INK, 0.5)
-    ha, bz = p["box_a"] / 2, p["box_zc"]
-    for xc in (p["box_x1"], p["box_x2"]):
-        s.rect(ox + (xc - ha) * k, oy - (bz + ha) * k, ox + (xc + ha) * k, oy - (bz - ha) * k, INK, 0.3)
+    s.rect(X(0), Z(Hh), X(W), Z(0), INK, 0.5)
+    gx, zc = p["gfci_x"], p["dev_zc"]
+    s.rect(X(gx - p["gfci_w"] / 2), Z(zc + p["gfci_h"] / 2), X(gx + p["gfci_w"] / 2), Z(zc - p["gfci_h"] / 2), MAINS, 0.3)
+    for sign in (-1, 1):
+        s.circle(X(gx), Z(zc + sign * p["gfci_sp"] / 2), p["gfci_sd"] / 2 * k, INK, 0.2)
+    ks = [p["ks_x"] - p["ks_p"] / 2, p["ks_x"] + p["ks_p"] / 2]
+    for kx in ks:
+        s.rect(X(kx - p["ks_w"] / 2), Z(zc + p["ks_h"] / 2), X(kx + p["ks_w"] / 2), Z(zc - p["ks_h"] / 2), SIG, 0.3)
     dw, dh = p["din_w"] / 2, p["din_h"] / 2
-    s.rect(ox + (p["din_x"] - dw) * k, oy - (p["din_zc"] + dh) * k, ox + (p["din_x"] + dw) * k, oy - (p["din_zc"] - dh) * k, MAINS, 0.3)
-    for zc in (p["vent_z1"], p["vent_z2"]):
+    s.rect(X(p["din_x"] - dw), Z(p["din_zc"] + dh), X(p["din_x"] + dw), Z(p["din_zc"] - dh), MAINS, 0.3)
+    for vz in (p["vent_z1"], p["vent_z2"]):
         for i in range(int(p["vent_n"])):
             xc = W / 2 + (i - (p["vent_n"] - 1) / 2) * p["vent_p"]
-            s.rect(ox + (xc - p["vent_l"] / 2) * k, oy - (zc + p["vent_w"] / 2) * k, ox + (xc + p["vent_l"] / 2) * k,
-                   oy - (zc - p["vent_w"] / 2) * k, GREY, 0.2)
+            s.rect(X(xc - p["vent_l"] / 2), Z(vz + p["vent_w"] / 2), X(xc + p["vent_l"] / 2), Z(vz - p["vent_w"] / 2), GREY, 0.2)
     sx_, sy_ = p["screw_x"], p["screw_y"]
     for cx, cy in ((sx_, sy_), (W - sx_, sy_), (sx_, Hh - sy_), (W - sx_, Hh - sy_)):
-        s.circle(ox + cx * k, oy - cy * k, p["screw_d"] / 2 * k, INK, 0.2)
-    # labels once the lines are drawn: each above its own box
-    s.label(ox + (p["box_x1"] - ha) * k, oy - (bz + ha) * k - 1.5, "SOCKET (86, HOLD)", K.BODY, MAINS)
-    s.label(ox + (p["box_x2"] - ha) * k, oy - (bz + ha) * k - 1.5, "LAN 2-PORT (86, HOLD)", K.BODY, SIG)
-    s.label(ox + (p["din_x"] - dw) * k, oy - (p["din_zc"] + dh) * k - 1.5, "RCBO", K.BODY, MAINS)
+        s.circle(X(cx), Z(cy), p["screw_d"] / 2 * k, INK, 0.2)
+    tag(s, X(gx), Z(zc), "1", MAINS)
+    for kx in ks:
+        tag(s, X(kx), Z(zc), "2", SIG)
+    tag(s, X(p["din_x"]), Z(p["din_zc"]), "3", MAINS)
+    lx = X(W) + 10.0
+    y = 42.0
+    for t, col in (("1  GFCI receptacle, tamper-resistant duplex NEMA 5-15R, UL 943 Class A (718007, HOLD)", MAINS),
+                   ("    in a decorator opening %.1f x %.0f, two 6-32 plate screws %.1f apart (718054)" % (
+                       p["gfci_w"], p["gfci_h"], p["gfci_sp"]), INK),
+                   ("2  LAN keystone jacks, Cat6, snapped into %.1f x %.1f openings (718040, HOLD)" % (p["ks_w"], p["ks_h"]), SIG),
+                   ("3  breaker 1P 15 A, UL 489, through its %.0f x %.0f window (718003, HOLD)" % (p["din_w"], p["din_h"]), MAINS),
+                   ("US 120 V 60 Hz, UL-listed parts (D-133)", INK)):
+        s.text(lx, y, t, K.BODY, col)
+        y += s.line_pitch(K.BODY)
     s.para(ox, oy + 6.0, "Plate %.0f x %.0f over the unit (X %.0f-%.0f, Z %.0f-%.0f in the pod), 2 mm off the felt; 4 x M4 at "
            "%.0f / %.0f from the plate's edges." % (W, Hh, v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], sx_, sy_), 250.0)
     # depth section
@@ -168,6 +227,7 @@ def sheet_power_unit(doc, v):
     s.para(sx, sy + 108, "Unit fixed to B2's frame (fixing HOLD, WALL IF-12); cassette cut-out 4 mm clear all round "
            "(floating lining).", 230.0)
     parts_table(s, pn, 24, 160, 546, bottom)
+    s.first_angle_symbol(s.W - 10 - K.TB_W + 2, bottom - 14)   # a face view and a section (Reviewer 7)
     return s
 
 
@@ -188,11 +248,11 @@ def sheet_hub(doc, v):
     for cx, cy in ((10, 10), (w - 10, 10), (10, w - 10), (w - 10, w - 10)):
         s.circle(ox + cx, oy - cy, 2.25, GREY, 0.2)
     s.label(ox + w / 2 - 25, oy - 124, "HUB WINDOW (HOLD)", K.BODY, SIG)
-    for i, lab in enumerate(("BOOST", "TEST", "CALL")):
-        s.label(ox + 30 + i * 40 - 6, oy - 33, lab, K.BODY, INK)
-    s.label(ox + 141, oy - 33, "LIGHT", K.BODY, INK)
+    for cx, lab in ((30, "BOOST"), (70, "TEST"), (110, "CALL"), (150, "LIGHT")):    # centred under each (Reviewer 7)
+        s.label(ox + cx - s.text_w(lab, K.BODY) / 2, oy - 33, lab, K.BODY, INK, around=[(0, 0)])
     s.para(ox, oy + 7.0, "180 x 180 on the column's back face, X 957-1137, Z 1110-1290; fuses F3a-F3c behind the plate.", 200.0)
     parts_table(s, pn, 236, 30, 334, bottom)
+    s.first_angle_symbol(s.W - 10 - K.TB_W + 2, bottom - 14)   # the plate view (Reviewer 7)
     return s
 
 
@@ -220,6 +280,12 @@ def harness_material(s, rows, x, y, w, bottom):
             for txt, pn in CONNECTOR_PN:
                 if txt in end:
                     conns[pn] = conns.get(pn, 0) + 1
+            cap = re.search(r"Mini-Fit Jr (\d+)-way receptacle, capped with an empty plug housing", end)
+            if cap:                                       # the cap is a plug housing too (Reviewer 7, 718033 on 710021)
+                plug_pn = dict(CONNECTOR_PN)["Mini-Fit Jr %s-way plug" % cap.group(1)]
+                conns[plug_pn] = conns.get(plug_pn, 0) + 1
+        if EP.STRIP_FEEDS.get(h["id"]):                   # the clip-on strip feed leads (Reviewer 7)
+            conns["718053"] = conns.get("718053", 0) + EP.STRIP_FEEDS[h["id"]]
         for g in (h.get("grommets") or "").replace("(", ",").replace(")", ",").split(","):
             g = g.strip()
             if g.startswith(("G-", "S-")):
@@ -235,14 +301,17 @@ def harness_material(s, rows, x, y, w, bottom):
     if holes:
         y = s.para(x, y, "Bushings and edge-protected slots it passes: %s (Heyco 2836 / edge strip, parts list 718041, "
                    "718042)." % ", ".join(sorted(holes)), w)
-    return s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037), one per way.", w)
+    if any("Mini-Fit" in h["end_a"] + h["end_b"] for h in rows):
+        y = s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037), one per way.", w)
+    return y
 
 
 def sheet_harness(doc, pn, name, rows):
     s = K.Sheet(doc, "A2")
+    r = formboard_ratio(rows, 558)
     bottom = frame(s, pn, name + ": ASSEMBLY", [
-        "Segments, plugs and lengths from the harness list (710000_P01_ELECTRICAL-HARNESS-LIST_SPEC.csv), same revision.",
-    ], scale="formboard lengths to scale, table not to scale")
+        "Segments, ends and lengths from the harness list (710000_P01_ELECTRICAL-HARNESS-LIST_SPEC.csv), same revision.",
+    ], scale="formboard 1:%g; tables not to scale" % r)
     y = harness_table(s, rows, 16, 24, 558, bottom)
     y = formboard(s, rows, 16, y + 12, 558)
     y = harness_material(s, rows, 16, y + 10, 558, bottom)

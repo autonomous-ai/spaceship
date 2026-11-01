@@ -43,6 +43,8 @@ OUT_PNG = "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM-SHEET%
 RHO_CU = 0.0178        # ohm mm2 / m, copper at 20 C (source: standard value)
 RHO_CU_60 = RHO_CU * (1 + 0.00393 * 40)   # at 60 C conductor temperature (calculation)
 V_BUS = 12.0
+MAINS_V = 120                  # V, US 60 Hz (D-133, PM 2026-11-01; was 220 V for a Vietnam prototype)
+AWG14_MM2, AWG14_OHM_KM = 2.08, 8.28   # 14 AWG copper: area and resistance at 20 °C (source: AWG table)
 
 
 def csv_text(header, rows):
@@ -151,7 +153,7 @@ def harness_rows(v):
         L = h["length_mm"]
         a = h.get("amps_max")
         area = h.get("area_mm2")
-        if a and area and h["circuit"] not in ("mains 220 V", "PE", "LAN"):
+        if a and area and h["circuit"] not in ("mains %d V" % MAINS_V, "PE", "LAN"):
             loop = 2 * L / 1000.0 * RHO_CU_60 / area / h.get("parallel", 1)
             r["drop_v"] = fmt(a * loop, 3)
             r["drop_pct"] = fmt(100 * a * loop / V_BUS, 2)
@@ -222,16 +224,19 @@ def calc_md(v, mass_of, harness):
       "Max = every load at its maximum at once, which the control never asks for (the fans reach full speed only "
       "above the 65 l/s boost).")
     A("")
-    A("## 2. Mains side")
+    A("## 2. Mains side (US 120 V 60 Hz, D-133)")
     A("")
     A("- Supplies' input at maximum load: %.0f W at %.0f %% efficiency (assumption from the maker's typical "
-      "figure, parts list) plus %.1f W no-load each: about **%.2f A at 220 V**." % (
-          ac_in_max, eff * 100, noload, ac_in_max / 220.0))
-    A("- The RCBO is C10, 30 mA: 10 A x 220 V = 2.2 kW for the user socket and the supplies together. "
-      "A laptop charger takes about 0.3 A; a 2 kW heater would still hold (9.1 A), which is the worst case a user "
-      "might plug in (assumption).")
-    A("- Mains conductors 1.5 mm² (H07V-K in the sleeve, 0.82 m): rated well above 10 A in free air "
-      "(IEC 60364-5-52, to confirm by the factory's electrician); the RCBO protects them.")
+      "figure, parts list) plus %.1f W no-load each: about **%.2f A at %d V**." % (
+          ac_in_max, eff * 100, noload, ac_in_max / MAINS_V, MAINS_V))
+    A("- The breaker is 15 A, 1 pole, UL 489: 15 A x %d V = %.2f kW for the user outlets and the supplies together, "
+      "%.2f kW continuous at 80 %% (NEC 210.19, 210.20). A laptop charger takes about 0.6 A; a 1.5 kW heater, the largest "
+      "plug-in appliance on a 15 A US circuit, takes 12.5 A and still holds with the supplies (assumption)." % (
+          MAINS_V, 15 * MAINS_V / 1000.0, 0.8 * 15 * MAINS_V / 1000.0))
+    A("- Mains conductors 14 AWG (UL 1015, 105 °C, in the sleeve and inside the unit): rated for 15 A and protected by "
+      "the 15 A breaker (NEC 240.4(D)); the equipment ground is 14 AWG green too (NEC 250.122).")
+    A("- The prototype is tested in Vietnam through a 220-to-110 V step-down transformer, part of the test set, not the "
+      "pod (D-133); it must carry the outlets' load too (2 kVA or more, assumption).")
     A("")
     A("## 3. Voltage drop on the 12 V circuits (copper at 60 °C, %.4f Ω mm²/m)" % RHO_CU_60)
     A("")
@@ -255,7 +260,10 @@ def calc_md(v, mass_of, harness):
         A("| %s (%s) | %.2f | %.1f | %s |" % (name, " + ".join(ids), d, 100 * d / V_BUS,
                                             "within" if d / V_BUS <= 0.03 else "**over**"))
     A("")
-    A("Mains conductors are left out: 0.92 m of 1.5 mm² at the RCBO's full 10 A drops about 0.25 V of 220 V (0.1 %).")
+    W01_M = next(h["length_mm"] for h in harness if h["id"] == "W01") / 1000.0
+    A("Mains conductors are left out: %.2f m of 14 AWG (%.2f mm², %.2f Ω/km at 20 °C) at the breaker's full 15 A drops "
+      "about %.2f V of %d V (%.1f %%)." % (W01_M, AWG14_MM2, AWG14_OHM_KM, 15 * 2 * W01_M * AWG14_OHM_KM / 1000.0, MAINS_V,
+                                         100 * 15 * 2 * W01_M * AWG14_OHM_KM / 1000.0 / MAINS_V))
     A("")
     A("## 4. Heat the electrical parts add inside the pod")
     A("")
