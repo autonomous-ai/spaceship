@@ -142,7 +142,7 @@ def test_d87_in_the_steps():
     names = " ".join(p.name for p in pack.PIECES)
     assert "SEAL MAT" not in names and "EXHAUST FAN BOX, WITH" not in names
     assert pack.PIECE["2-09"].kg <= 20 and pack.PIECE["2-16"].kg <= 20
-    assert len(tags) == 39
+    assert len(tags) == 40          # R1's fill bag 2-23 (the PM's ruling 2026-11-01)
     power = next(s for s in pack.STEPS if s["title"].startswith("Power on"))
     assert all(o["secs"] < 600 for o in power["ops"])
 
@@ -168,6 +168,28 @@ def test_guide_rulings_d167_d169_d170_and_the_brush_tape():
         assert words in door["B"], words
     dt = next(s for s in pack.STEPS if s["title"].startswith("Top decor block DT"))
     assert "tapes it on DL's top" in dt["A"] and "takes the tape off" in dt["B"], dt
+
+
+def test_r1_fill_ships_in_its_own_bag():
+    # the PM's ruling 2026-11-01: R1's cavity fill (WALL's 211502) ships in its own labelled bag, so R1 stays under 20 kg
+    # with its two added studs; the bag goes in at step 14 before R1's cassette, with a check that every bay is filled
+    m = pack.Model()
+    r1, bag, fill = pack.PIECE["1-04"], pack.PIECE["2-23"], pack.R1_FILL
+    assert fill["pn"] == bag.pn == "211502" and fill["kg"] > 1.0 and len(fill["pieces"]) >= 4, fill
+    l1 = pack.PIECE["1-03"]
+    assert abs((l1.kg - r1.kg) - fill["kg"]) < 1e-9, (l1.kg, r1.kg)             # R1 is L1 less its fill
+    assert abs(bag.kg - (fill["kg"] + pack.FILL_BAG["kg"])) < 1e-9 and bag.pallet == 2 and bag.step == 14
+    assert r1.kg <= 20 and bag.kg <= 20
+    assert all(d >= max(p[k] for p in fill["pieces"]) for k, d in enumerate(bag.dims[:2])), bag.dims
+    assert bag.dims[2] >= sum(p[2] for p in fill["pieces"]), bag.dims
+    assert "211502" in pack.CAD["1-04"]["drop"]
+    lin = next(s for s in pack.STEPS if s["title"].startswith("Wall linings"))
+    assert lin["tags"][0] == "2-23" and lin["A"].startswith("First fills R1's bays") and "Every one of R1's bays is filled" in lin["check"], lin
+    fills = [o for o in lin["ops"] if o["src"] == "t_fill_s"]
+    assert len(fills) == 1 and fills[0]["n"] == len(fill["pieces"]), fills
+    tiers, _h = m.tiers2()
+    assert any("2-23" in [it["tag"] for ln in t["lanes"] for it in ln["items"]] for t in tiers if t["name"].startswith("Tier 6"))
+    assert next(it for it in pack.PACKAGING if it["pn"] == "911003")["qty"] == len(pack.TIERS2) - 1
 
 
 def test_sizes_follow_the_skeleton():

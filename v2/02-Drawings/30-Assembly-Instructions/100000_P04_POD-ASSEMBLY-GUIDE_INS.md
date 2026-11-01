@@ -9,7 +9,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## Result
 
-1. **Two people, a cordless driver with a 5 mm hex bit and the kit's 5 mm key, 22 steps: about 113 minutes (3.8 person-hours)** on the layout study's unit times and the PM's rulings of 2026-11-01. That is inside REQ-ASM-01's 4-hour limit; the PM's target for v2 is about 104 minutes (REQ-ASM-01 asks about 1 hour). The timed trial on the prototype decides, and section 6 shows where the time goes.
+1. **Two people, a cordless driver with a 5 mm hex bit and the kit's 5 mm key, 22 steps: about 114 minutes (3.8 person-hours)** on the layout study's unit times and the PM's rulings of 2026-11-01. That is inside REQ-ASM-01's 4-hour limit; the PM's target for v2 is about 104 minutes (REQ-ASM-01 asks about 1 hour). The timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **92 bolts of the joints register, each captive in its part but the roof grille's 4, which come in a bag with the grille (J-AIR-03): 80 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
@@ -55,7 +55,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 12 min for 2 people.
 - **Parts:** **2-21** POD - INSTALLATION KIT (OPEN FIRST) (3.5 kg).
 - **Fasteners:** none.
-- **Person A:** Cuts the straps and film on pallet 2 and hands the tiers down, top first: the OPEN FIRST kit and the ceiling cassettes, then tiers 4 to 2. Leaves the glass crate closed on the pallet.
+- **Person A:** Cuts the straps and film on pallet 2 and hands the tiers down, top first: R1's fill bag, the OPEN FIRST kit and the ceiling cassettes, then tiers 4 to 2. Leaves the glass crate closed on the pallet.
 - **Person B:** Sets every part from pallet 2 down at its own place round the pod, as the label map shows, felt and ACP faces up on floor protection, and keeps the seam prop (the 45 × 45 timber labelled SEAM PROP - STEP 7, with its plywood foot and cap, from tier 3) for step 7; opens the kit (hex key, this guide, label map) and ticks the packing list.
 - **Check before the next step:** Every label on the packing list is found and lies at its place. Nothing leans on the glass crate. Pallet 1 stays strapped until step 3.
 
@@ -87,7 +87,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 4](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-04_IMG.png)
 
 - **Time:** about 3 min for 2 people.
-- **Parts:** **1-03** WALL - PANEL ASSY - SIDE LOWER - LH (11.2 kg), **1-04** WALL - PANEL ASSY - SIDE LOWER - RH (11.2 kg).
+- **Parts:** **1-03** WALL - PANEL ASSY - SIDE LOWER - LH (11.2 kg), **1-04** WALL - PANEL ASSY - SIDE LOWER - RH (9.7 kg).
 - **Fasteners:** 8 × 838001 M6 × 16 (J-BASE-01); 6 × 838001 M6 × 16 (J-WALL-02). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
 - **Person A:** Stands L1 on its band spigots about 3.4 mm out from B1's edge, where the seam gasket stands proud (D-167), and holds it; then R1 the same at B2.
 - **Person B:** Drives the 4 base bolts of each, then the 3 lower back-corner bolts each side (L1-B1, R1-B2), from the back panels' bays: they pull each side panel in onto its stops, squeezing the gasket (D-167).
@@ -197,12 +197,12 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ![Step 14](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-14_IMG.png)
 
-- **Time:** about 8 min for 2 people.
-- **Parts:** **1-11** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-12** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-13** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-15** LINING - CASSETTE - BACK LOWER - B1 (8.0 kg), **1-16** LINING - CASSETTE - BACK LOWER - B2 (8.0 kg), **1-17** LINING - CASSETTE - BACK UPPER - B3 (8.4 kg), **1-18** LINING - CASSETTE - BACK UPPER - B4 (8.4 kg).
+- **Time:** about 9 min for 2 people.
+- **Parts:** **2-23** WALL - CAVITY FILL - SIDE LOWER - RH (1.5 kg), **1-11** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-12** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-13** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-15** LINING - CASSETTE - BACK LOWER - B1 (8.0 kg), **1-16** LINING - CASSETTE - BACK LOWER - B2 (8.0 kg), **1-17** LINING - CASSETTE - BACK UPPER - B3 (8.4 kg), **1-18** LINING - CASSETTE - BACK UPPER - B4 (8.4 kg).
 - **Fasteners:** none.
-- **Person A:** Fits R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4. Each lower cassette (R1, L1, B1, B2) sits on its ledge, the steel angle along the panel's bottom rail, its bottom return on the ledge's pad, and is pressed onto its clips, which only hold (D-170); each upper cassette stands on the one below through the foam strip in their joint and is pressed onto its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).
+- **Person A:** First fills R1's bays from its fill bag (2-23): one PET piece per bay, pressed in to a friction fit with its notches over the bolt pockets (R1 ships without its fill to stay under 20 kg, the PM's ruling). Then fits R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4. Each lower cassette (R1, L1, B1, B2) sits on its ledge, the steel angle along the panel's bottom rail, its bottom return on the ledge's pad, and is pressed onto its clips, which only hold (D-170); each upper cassette stands on the one below through the foam strip in their joint and is pressed onto its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).
 - **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
-- **Check before the next step:** Every bolt in its bay was driven before the bay is closed. Each cassette touches nothing but its clips and, below it, its ledge's pad or the foam strip on the cassette below (D-170).
+- **Check before the next step:** Every one of R1's bays is filled before its cassette goes on. Every bolt in its bay was driven before the bay is closed. Each cassette touches nothing but its clips and, below it, its ledge's pad or the foam strip on the cassette below (D-170).
 
 ### Step 15. Air column and supply cartridge
 
@@ -342,7 +342,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 11 | Top decor block DT, from above | 1 | 4 | 0 | 1.3 | 1.2 | **2.2** |
 | 12 | Electrics, first fix (power off) | 1 | 0 | 0 | 0.0 | 2.3 | **1.3** |
 | 13 | Air parts in DR: the intake riser with its supply fan box | 1 | 0 | 0 | 2.3 | 2.3 | **4.0** |
-| 14 | Wall linings: 8 cassettes | 8 | 0 | 0 | 0.0 | 14.0 | **8.0** |
+| 14 | Wall linings: 8 cassettes | 9 | 0 | 0 | 0.0 | 16.3 | **9.4** |
 | 15 | Air column and supply cartridge | 2 | 0 | 0 | 4.7 | 2.3 | **6.7** |
 | 16 | Soffit and exhaust cartridge | 2 | 2 | 0 | 3.7 | 1.6 | **5.1** |
 | 17 | Roof sleeve and grille | 0 | 4 | 0 | 0.0 | 5.7 | **3.3** |
@@ -351,7 +351,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 20 | Power on and self-test: fans run | 0 | 0 | 0 | 3.0 | 0.0 | **3.4** |
 | 21 | Final check and film | 0 | 0 | 0 | 0.0 | 12.0 | **6.9** |
 | 22 | Work-wall ledge and screen rail | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
-|  | **Clock, steps 1 to 21** |  | 92 | 0 |  |  | **113** |
+|  | **Clock, steps 1 to 21** |  | 92 | 0 |  |  | **114** |
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
 
@@ -359,9 +359,9 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 2. Step 1 (Unpack and set the parts down at their places): 12 min.
 3. Step 10 (Door (before DT)): 10 min.
 4. Step 2 (Base band): 10 min.
-5. Step 14 (Wall linings: 8 cassettes): 8 min.
+5. Step 14 (Wall linings: 8 cassettes): 9 min.
 
-**The PM's rulings of 2026-11-01 on the next five time sinks cut the clock from 135 minutes to the 113 above:** the installers' cordless driver for the bolts (9.0 min), a rest for each overhead lift so no one holds a part overhead to fix it (6.9 min), and the final check split between the two people (5.8 min); the unit times are assumptions until the timed trial. Lift-off hinges set in the factory (FRONT, in the hinge HOLD's asks, D-138) and a plug-in light shelf (ELECTRICAL's connector choice) would save about 7 minutes more (assumption), to about 106 minutes against the PM's target of about 104. Carrying and unpacking have no cheap fix, and hook-in wall joints, which getting near 1 hour would need, are a redesign the PM ruled out for now.
+**The PM's rulings of 2026-11-01 on the next five time sinks cut the clock from 136 minutes to the 114 above:** the installers' cordless driver for the bolts (9.0 min), a rest for each overhead lift so no one holds a part overhead to fix it (6.9 min), and the final check split between the two people (5.8 min); the unit times are assumptions until the timed trial. Lift-off hinges set in the factory (FRONT, in the hinge HOLD's asks, D-138) and a plug-in light shelf (ELECTRICAL's connector choice) would save about 7 minutes more (assumption), to about 107 minutes against the PM's target of about 104. Carrying and unpacking have no cheap fix, and hook-in wall joints, which getting near 1 hour would need, are a redesign the PM ruled out for now.
 
 **D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to 127 (PR #59).** The PM took four of the five fixes priced on that model, and they are in the steps now:
 
@@ -413,6 +413,7 @@ Unit times used:
 | `t_check_door_light_s` | 300 s | assumption | the PM's ruling 2026-11-01 (time sinks, item 4) | one person: the door, then the light test walking round the lit pod with the room dark |
 | `t_clean_s` | 300 s | assumption | the PM's ruling 2026-11-01 (time sinks, item 4) | the other person at the same time: cleaning inside and out |
 | `t_prop_s` | 30 s | assumption | the Lead's ruling 2026-11-01 (seam prop) | fetch the seam prop and stand it on its foot, on a 5 mm packer, under the seam's front end |
+| `t_fill_s` | 30 s | assumption | the PM's ruling 2026-11-01 (R1's fill in its own bag) | press one of R1's cavity fill pieces into its bay to a friction fit, its notches over the bolt pockets |
 | `t_slip_s` | 20 s | assumption | D-152 (DT's slip sheet) | lay a PE sheet from the packing over DL's slope as DT's slip sheet, or pull it out after DT's 4 bolts |
 | `t_brush_s` | 30 s | assumption | the PM's ruling 2026-11-01 (the kick strip's end brushes: about a minute for both) | fit one of the kick strip's end brushes: wipe its end face, stand the brush on the room floor against it and press it firmly along its whole length |
 | `t_prop_off_s` | 15 s | assumption | the Lead's ruling 2026-11-01 (seam prop) | take the seam prop away once the 4 seam pins are in |

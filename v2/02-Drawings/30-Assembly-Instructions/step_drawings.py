@@ -114,11 +114,15 @@ MOVES = {
 # A part that goes into another is drawn lifted clear of it by this much (mm, pod system), with an arrow into place.
 EXPLODE = {
     13: {"2-16": (0.0, 0.0, 700.0)},                 # down into DR, its inner face off
+    14: {"2-23": (-450.0, 0.0, 0.0)},                # R1's fill, into R1's bays from the room before its cassette
     15: {"2-17": (0.0, -700.0, 0.0)},                # into the air column from the front, its front face off
     16: {"2-18": (0.0, 0.0, -600.0)},                # up through the soffit's open underside onto its rest
     17: {"611601": (0.0, 0.0, 450.0), "611602": (0.0, 0.0, 800.0)},   # down through C2's roof slot; the grille over it
     19: {"2-13": (0.0, 0.0, 450.0)},                 # down onto the tops of the side and back walls
 }
+# A piece that ships without CAD of its own but is drawn from another piece's CAD where it goes in: R1's fill bag, from
+# the fill in R1's STEP (R1 itself drops it: pack.py's CAD map).
+PICTURE_CAD = {"2-23": dict(step="wall/210102_P01_*_STEP.step", keep={"211502"})}
 # Parts fitted in a later step than the piece they ship with: drawn from that step on, ballooned by their part number.
 LATE = {"1-10": [(17, "611601", dict(step=pack.AIR_STEP, sub="611601")), (17, "611602", dict(step=pack.AIR_STEP, sub="611602"))]}
 
@@ -212,7 +216,7 @@ def late_specs(tag):
 
 def piece_solids(tag):
     """(solids, has_cad): the piece's solids from its CAD on main; with no CAD entry, its skeleton P04 blocks."""
-    spec = pack.CAD.get(tag)
+    spec = pack.CAD.get(tag) or PICTURE_CAD.get(tag)
     if spec:
         if "parts" in spec:
             solids = [s for sp in spec["parts"] for s in pick(sp)]

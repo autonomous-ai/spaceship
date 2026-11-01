@@ -185,6 +185,7 @@ TIME = {
     "t_check_door_light_s": N(300, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 4)", "one person: the door, then the light test walking round the lit pod with the room dark"),
     "t_clean_s": N(300, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 4)", "the other person at the same time: cleaning inside and out"),
     "t_prop_s": N(30, "s", "assumption", "the Lead's ruling 2026-11-01 (seam prop)", "fetch the seam prop and stand it on its foot, on a 5 mm packer, under the seam's front end"),
+    "t_fill_s": N(30, "s", "assumption", "the PM's ruling 2026-11-01 (R1's fill in its own bag)", "press one of R1's cavity fill pieces into its bay to a friction fit, its notches over the bolt pockets"),
     "t_slip_s": N(20, "s", "assumption", "D-152 (DT's slip sheet)", "lay a PE sheet from the packing over DL's slope as DT's slip sheet, or pull it out after DT's 4 bolts"),
     "t_brush_s": N(30, "s", "assumption", "the PM's ruling 2026-11-01 (the kick strip's end brushes: about a minute for both)", "fit one of the kick strip's end brushes: wipe its end face, stand the brush on the room floor against it and press it firmly along its whole length"),
     "t_prop_off_s": N(15, "s", "assumption", "the Lead's ruling 2026-11-01 (seam prop)", "take the seam prop away once the 4 seam pins are in"),
@@ -357,6 +358,28 @@ def base_per_piece(pn, path=BASE_LIST):
 
 GLIDES, LIP_M = base_per_piece("118002"), base_per_piece("118001")   # by band assembly: the load blocks follow the glides
 BLOCK_SHARE = {k: n / sum(GLIDES.values()) for k, n in GLIDES.items()}   # the load block line is one line (roll-up)
+
+
+def wall_fill(list_glob, pn):
+    """A WALL panel's cavity fill row in its own list: its mass, names and pieces (from the row's sizes), read on every
+    run so WALL's next cut flows through."""
+    hits = sorted(MANUF.glob(list_glob))
+    if len(hits) != 1:
+        raise FileNotFoundError(f"{len(hits)} lists match v2/03-Manufacturing/{list_glob}")
+    with open(hits[0], encoding="utf-8") as f:
+        r = next(r for r in csv.DictReader(f) if r["part_number"] == pn)
+    pieces = []
+    for part in r["size_mm"].split(";"):
+        n, dims = part.strip().split(" pieces ")
+        pieces += [tuple(float(v) for v in dims.split(" x "))] * int(n)
+    return dict(pn=pn, name=r["name"], vi=r["name_vi"], kg=float(r["mass_total_kg"]), status=r["mass_status"], pieces=pieces,
+                list=hits[0].name)
+
+
+# The PM's ruling 2026-11-01 (WALL's group): R1 would be 20.8 kg with its two added studs, so its cavity fill ships in its
+# own labelled bag (2-23) and goes in on site before R1's cassette; R1 ships without it.
+R1_FILL = wall_fill("wall/210102_P01_*_BOM.csv", "211502")
+FILL_BAG = dict(kg=0.05, allow=5.0)     # assumption: the bag and its label; 5 mm round the stacked pieces
 # The fixed glass unit's roll-up line is FRONT's 29.58 kg (PR #28 parts list): pane 28.584, 180 seal 0.2, U-profile 0.557 and
 # U-seal 0.241 in four pieces, 745 bottom, 1446 right, 804 diagonal and 303 top (mm). The channels ship fitted in the parts
 # that hold them: the bottom one on BASE's sill (PM ruling), the right and diagonal in DR, the top in DT (D-68).
@@ -378,7 +401,10 @@ PIECES = [
     Piece("1-03", "210101", "WALL - PANEL ASSY - SIDE LOWER - LH", "Vách trái - cụm tấm dưới", "L1", [("L1R1", 1)],
           S(sk("side_l"), 1151, 48.5), "WALL 210101 P01 STEP: 1492.7 x 1150.7 x 48.3, spigots 8 mm out of the top edge, rivnuts and stop washers 2.3 mm proud", 1, 4, "WALL"),
     Piece("1-04", "210102", "WALL - PANEL ASSY - SIDE LOWER - RH", "Vách phải - cụm tấm dưới", "R1", [("L1R1", 1)],
-          S(sk("side_l"), 1151, 48.5), "WALL 210102 P01 STEP, as L1", 1, 4, "WALL"),
+          S(sk("side_l"), 1151, 48.5), "WALL 210102 P01 STEP, as L1", 1, 4, "WALL", extra_kg=-R1_FILL["kg"],
+          extra_note=f"less its cavity fill {R1_FILL['pn']} ({R1_FILL['kg']:.3f} kg, WALL's list), which ships in its own bag, 2-23 "
+                     "(the PM's ruling 2026-11-01: R1 at about 20.8 kg with its two added studs)",
+          extra_status="calculation (CAD)"),
     Piece("1-05", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - B3", "Vách hậu - cụm tấm trên trái", "B3", [("B", 1)],
           S(sk("half_pw"), sk("back_ph"), sk("outer_t")), P04, 1, 5, "WALL"),
     Piece("1-06", "TBD (WALL)", "WALL - PANEL ASSY - BACK UPPER - B4", "Vách hậu - cụm tấm trên phải", "B4", [("B", 1)],
@@ -471,6 +497,14 @@ PIECES = [
           "CEILING 410000 P01 STEP: 1160 x 1045 x 74, the tray with its ribs, felt, fill bays, clips and catches; returns 1163 x 1048 (PR #32)", 2, 18, "LINING"),
     Piece("2-20", "510301", "LINING - CASSETTE - CEILING - COMMON", "Cassette trần (dùng chung)", "C2", [("CC", 1)], S(1163, 1048, 74),
           "as 2-19", 2, 18, "LINING"),
+    Piece("2-23", R1_FILL["pn"], R1_FILL["name"], R1_FILL["vi"], "-", [],
+          S(max(p[0] for p in R1_FILL["pieces"]) + FILL_BAG["allow"], max(p[1] for p in R1_FILL["pieces"]) + FILL_BAG["allow"],
+            sum(p[2] for p in R1_FILL["pieces"]) + FILL_BAG["allow"]),
+          f"WALL's list {R1_FILL['list']}: {len(R1_FILL['pieces'])} knife-cut PET pieces, stacked in their bag, 5 mm round them (assumption)",
+          2, 14, "WALL", extra_kg=R1_FILL["kg"] + FILL_BAG["kg"],
+          extra_note=f"R1's cavity fill {R1_FILL['pn']} ({R1_FILL['kg']:.3f} kg, WALL's list) and its bag ({FILL_BAG['kg']} kg, assumption)",
+          extra_status="calculation (CAD)",
+          note="labelled R1 FILL - STEP 14; one piece per bay of R1, pressed in before R1's cassette (the PM's ruling 2026-11-01)"),
     Piece("2-21", "109000", "POD - INSTALLATION KIT (OPEN FIRST)", "Bộ phụ kiện lắp (mở trước)", "-", [], S(900, 150, 80),
           "carton (assumption), long enough for the 2 collapsed glass stays", 2, 1, "KIT", carton=True, extra_kg=0.5 + 2 * 1.5 + 0.05,
           extra_note=f"not in the roll-up: the 5 mm hex key 108001, spare bolts and washers, 2 clamp-on glass stays (step 9), setting packers 1 to 5 mm for 2 stacks up to {MINE['glide_max'].value:g} mm (step 10), this guide, the label map (assumption)"),
@@ -529,7 +563,7 @@ PACKAGING = [
          status="assumption", src="this plan (crate_kg)", pallet=2),
     dict(pn="911002", name="PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR)", kind="made", qty=1, kg=MINE["glass_rest_kg"].value,
          status="assumption", src="this plan (glass_rest_kg); flat-packed in the crate", pallet=2),
-    dict(pn="911003", name="PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS", kind="made", qty=4, kg=MINE["sep_kg"].value, wood=True,
+    dict(pn="911003", name="PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS", kind="made", qty=5, kg=MINE["sep_kg"].value, wood=True,
          status="assumption", src="this plan (sep_kg)", pallet=2),
     dict(pn="911004", name="PACKAGING - SEAM PROP: ISPM 15 STAMPED TIMBER 45 X 45 ON ITS FOOT 911005 UNDER ITS CAP 911006, CUT 5 MM SHORT OF THE CEILING SEAM'S HEIGHT, LABELLED AND MARKED, IN TIER 3",
          kind="made", qty=1, kg=MINE["prop_kg"].value, wood=True, status="assumption", src="this plan (prop_h, prop_w, prop_kg); D-152", pallet=2),
@@ -578,6 +612,8 @@ TIERS2 = [
     dict(name="Tier 5: ceiling cassettes (felt up, nothing on them) and the kit", lanes=[
         dict(tags=["2-19", "2-20"], lie="flat", bed="cass_foam"),
         dict(tags=["2-21"], lie="flat")]),
+    dict(name="Tier 6: R1's fill bag, on its own separator", lanes=[   # pallets 1 and 2 have no lane left for 1.1 m
+        dict(tags=["2-23"], lie="flat")]),
 ]
 CRATE_TAGS = ["2-02", "2-01"]   # inside the crate, bottom to top: door, then the fixed glass (fitted first)
 PACKING_COLOUR = {"CRATE": "#e8e8e8", "PROP": "#d2b48c"}   # lanes of packing, not pieces: the glass crate, the seam prop
@@ -608,7 +644,7 @@ KEY_BOLT = lay("t_bolt_captive_s")        # the kit's 5 mm key, where the driver
 # joints: {joint ID: [count, size]} for the bolts of the joints register; other: [(text, count)] for the rest
 STEPS = [
     dict(n=1, title="Unpack and set the parts down at their places", tags=["2-21"],
-         A="Cuts the straps and film on pallet 2 and hands the tiers down, top first: the OPEN FIRST kit and the ceiling cassettes, then tiers 4 to 2. Leaves the glass crate closed on the pallet.",
+         A="Cuts the straps and film on pallet 2 and hands the tiers down, top first: R1's fill bag, the OPEN FIRST kit and the ceiling cassettes, then tiers 4 to 2. Leaves the glass crate closed on the pallet.",
          B="Sets every part from pallet 2 down at its own place round the pod, as the label map shows, felt and ACP faces up on floor protection, and keeps the seam prop (the 45 × 45 timber labelled SEAM PROP - STEP 7, with its plywood foot and cap, from tier 3) for step 7; opens the kit (hex key, this guide, label map) and ticks the packing list.",
          check="Every label on the packing list is found and lies at its place. Nothing leans on the glass crate. Pallet 1 stays strapped until step 3.",
          ops=[op("open pallet 1, packed in fitting order", 2, lay("t_unpack_std_ordered_min") * 60, 1, "t_unpack_std_ordered_min"),
@@ -713,11 +749,12 @@ STEPS = [
               carry("2-16"), op("slide the riser and fan box in", 2, TIME["t_slide_long_s"].value, 1, "t_slide_long_s"),
               op("plug the fan box", 1, lay("t_connector_s"), 1, "t_connector_s")],
          joints={}),
-    dict(n=14, title="Wall linings: 8 cassettes", tags=["1-11", "1-12", "1-13", "1-14", "1-15", "1-16", "1-17", "1-18"],
-         A="Fits R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4. Each lower cassette (R1, L1, B1, B2) sits on its ledge, the steel angle along the panel's bottom rail, its bottom return on the ledge's pad, and is pressed onto its clips, which only hold (D-170); each upper cassette stands on the one below through the foam strip in their joint and is pressed onto its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).",
+    dict(n=14, title="Wall linings: 8 cassettes", tags=["2-23", "1-11", "1-12", "1-13", "1-14", "1-15", "1-16", "1-17", "1-18"],
+         A="First fills R1's bays from its fill bag (2-23): one PET piece per bay, pressed in to a friction fit with its notches over the bolt pockets (R1 ships without its fill to stay under 20 kg, the PM's ruling). Then fits R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4. Each lower cassette (R1, L1, B1, B2) sits on its ledge, the steel angle along the panel's bottom rail, its bottom return on the ledge's pad, and is pressed onto its clips, which only hold (D-170); each upper cassette stands on the one below through the foam strip in their joint and is pressed onto its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).",
          B="Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.",
-         check="Every bolt in its bay was driven before the bay is closed. Each cassette touches nothing but its clips and, below it, its ledge's pad or the foam strip on the cassette below (D-170).",
-         ops=[*[carry(t) for t in ["1-11", "1-12", "1-13", "1-14", "1-15", "1-16", "1-17", "1-18"]],
+         check="Every one of R1's bays is filled before its cassette goes on. Every bolt in its bay was driven before the bay is closed. Each cassette touches nothing but its clips and, below it, its ledge's pad or the foam strip on the cassette below (D-170).",
+         ops=[carry("2-23"), op("press one of R1's fill pieces into its bay", 1, TIME["t_fill_s"].value, len(R1_FILL["pieces"]), "t_fill_s"),
+              *[carry(t) for t in ["1-11", "1-12", "1-13", "1-14", "1-15", "1-16", "1-17", "1-18"]],
               op("hang one cassette on its clips", 1, lay("t_leaf_s"), 8, "t_leaf_s")],
          joints={}),
     dict(n=15, title="Air column and supply cartridge", tags=["2-10", "2-17"],
@@ -875,7 +912,8 @@ AIR_STEP = "air/610000_P01_AIR_STEP.step"
 CAD = {
     "1-01": dict(step="wall/210201_P01_*_STEP.step"),
     "1-02": dict(step="wall/210202_P01_*_STEP.step", plus=[dict(step="electrical/710000_P01_ELECTRICAL_STEP.step", sub="710001")]),
-    "1-03": dict(step="wall/210101_P01_*_STEP.step"), "1-04": dict(step="wall/210102_P01_*_STEP.step"),
+    "1-03": dict(step="wall/210101_P01_*_STEP.step"), "1-04": dict(step="wall/210102_P01_*_STEP.step",
+                 drop={"211502": "R1's cavity fill ships in its own bag, 2-23, and goes in at step 14 (the PM's ruling)"}),
     "1-07": dict(step="wall/210103_P01_*_STEP.step"), "1-08": dict(step="wall/210104_P01_*_STEP.step"),
     "1-09": dict(step=CEIL_STEP, sub="410101"),
     "1-10": dict(step=CEIL_STEP, sub="410102", plus=[dict(step=AIR_STEP, sub="611601"), dict(step=AIR_STEP, sub="611602")]),
