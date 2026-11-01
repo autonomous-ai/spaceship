@@ -128,6 +128,12 @@ BOUGHT = {
     "118002": ("HOLD (glide not named yet)", "HOLD", ""),
     "118003": ("HOLD (end cap not named yet)", "HOLD", ""),
     "118001": ("HOLD (lip seal not named yet)", "HOLD", ""),
+    # the sill's channel fixings (joints register J-FRONT-04, H-28 and H-29): the screw is a standard part; the
+    # rivnut's product is HOLD-16, and the screw's torque follows from it by D-48's rule
+    "838007": ("HOLD: any maker to ISO 10642, picked at the RFQ", "ISO 10642 M3 x 8 - A2-70",
+               "HOLD-16: set when the M3 rivnut 838008 is named, half its lowest spin-out torque (D-48's rule)"),
+    "838008": ("HOLD-16: product to suit the sill's 2 mm seat wall (joints register H-29)", "HOLD-16",
+               "HOLD-16: named with its grip and hole data (joints register); the screw's torque follows (D-48's rule)"),
 }
 # tolerance per part: the drawing's, or for a part with no drawing the row's (D-89 parts 3 and 4)
 TOLERANCE = {
@@ -148,10 +154,10 @@ EXTRA = [
      "assumption", "HOLD",
      "number PROPOSED for the joints register (glide nut)",
      "set through the band's 1.5 bottom face and the 5 mm load block, a 6.5 mm grip (PM ruling 2026-11-01), at the factory"),
-    ("838007", "HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2", "Vít đầu bằng M3 × 8 inox", "PI", "110106",
+    ("838007", "HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2", "Vít đầu côn lục giác chìm M3 × 8 inox", "PI", "110106",
      "channel", "pcs", "stainless steel A2-70", "plain stainless, as supplied", 0.0006, "assumption", "DRAFT",
      "joints register J-FRONT-04 (838007)", "fixes FRONT's bottom U-channel to the sill at the factory (2 mm key)"),
-    ("838008", "HARDWARE - RIVET NUT - M3 - COUNTERSUNK - HOLD", "Tán rút M3 đầu chìm", "PI", "110106",
+    ("838008", "HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD", "Tán rút M3 đầu côn", "PI", "110106",
      "channel", "pcs", "aluminium or steel (HOLD)", "zinc plated steel or plain aluminium, with the product (HOLD)", 0.0005,
      "assumption", "HOLD", "joints register J-FRONT-04 (838008, HOLD-16)", "flush in the sill's seat, at X 269.4, 484.3, 699.2, 905"),
     ("118001", "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD", "Gioăng môi sát sàn", "PI", "seal",
