@@ -20,7 +20,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 | Pallet | Deck | Loaded height | Gross |
 |---|---|---|---|
 | 1 | 48 × 40 in (1219 × 1016 mm) | 1,641 mm | 224 kg |
-| 2 | 96 × 48 in (2438 × 1219 mm) | 1,563 mm | 325 kg |
+| 2 | 96 × 48 in (2438 × 1219 mm) | 1,563 mm | 324 kg |
 
 - A pallet jack and a route for a 2438 mm long pallet to the room, or unpacking at the door: every piece passes an 810 mm wide, 2032 mm high doorway (REQ-ASM-06). The longest piece is BASE - BAND ASSY - BACK (2-04), 2420 mm, so corridors need room to turn it.
 - An elevator: a door at least 1070 × 2134 mm and a car at least 2032 × 1295 mm inside and 2286 mm tall, or a freight elevator (check K15: each piece as carried, in its wrap, leaned into the car with its lower end sliding on the floor; the panes out of the crate on their lifters). A typical passenger car with a 914 mm door can't take DR (2-03, 2300 × 1030 × 226 mm as carried).
@@ -40,7 +40,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 | Floor finish | hard and finished: it is the pod's floor (D-132) | decided |
 | Wall outlet | 120 V, 60 Hz, NEMA 5-15, 15 A, within reach of the pod's cord | decided (D-133); the cord's length and the inlet's place come from ELECTRICAL |
 | Power the pod draws | 132 W at most at 12 V | calculation (ELECTRICAL's load table) |
-| Roof slot, the exhaust out | X 872 to 1157, Y -620 to -326 (AIR 610000 P01 STEP, the roof sleeve) | calculation (CAD) |
+| Roof slot, the exhaust out | X 832 to 1172, Y -635 to -254 (AIR 610000 P01 STEP, the roof sleeve) | calculation (CAD) |
 | Clear space above the roof slot | AIR to set; 150 mm meanwhile | open (ISS-049) |
 | Intake, the mesh in the base band under DR | keep clear in front; AIR to set the gap | open (ISS-049) |
 

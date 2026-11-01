@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (40 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 302 part lines (122 made, 180 bought, 138 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (40 with a part number). Listed parts weigh 357.4 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -108,6 +108,8 @@ Read from: this working tree.
 - 618401 AIR - FAN - NOCTUA NF-A14 INDUSTRIALPPC-3000 PWM: HOLD (HOLD)
 - 618102 AIR - SUPPLY TRANSITION - HOLD: HOLD (HOLD)
 - 618103 AIR - RISER TRANSITION - HOLD: HOLD (HOLD)
+- 618402 AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD: HOLD (HOLD)
+- 618501 AIR - RISER BUFFER - RUBBER - M6 - HOLD: HOLD (HOLD)
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
@@ -209,7 +211,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 147 numbers, 121 not in a team's list yet, 4 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 147 numbers, 109 not in a team's list yet, 16 in use, 22 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -329,18 +331,18 @@ From `v2/04-BOM/number-allocation.csv`: 147 numbers, 121 not in a team's list ye
 | 351105 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 1 | 350001 | 1 | ALLOCATED |
 | 351106 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 2 AND 3 | 350001 | 2 | ALLOCATED |
 | 351107 | FRONT - DOOR HINGE-SIDE STOP - DL - PIECE 4 | 350001 | 1 | ALLOCATED |
-| 611403 | AIR - FAN BOX BULKHEAD - EXHAUST | 610402 | 1 | ALLOCATED |
-| 611404 | AIR - FAN BOX BULKHEAD - SUPPLY | 610401 | 1 | ALLOCATED |
-| 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | 610402 | 2 | ALLOCATED |
-| 611406 | AIR - FAN BOX LINING - EXHAUST FAR END | 610402 | 1 | ALLOCATED |
-| 611407 | AIR - FAN BOX LINING - SUPPLY END | 610401 | 2 | ALLOCATED |
-| 611408 | AIR - FAN BOX LIP ANGLE - SUPPLY | 610401 | 1 | ALLOCATED |
-| 618402 | AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD | 610401 | 2 | ALLOCATED |
-| 618501 | AIR - RISER BUFFER - RUBBER - M6 - HOLD | 610401 | 1 | ALLOCATED |
-| 611109 | AIR - COLUMN CORNER ANGLE - BACK | 610101 | 1 | ALLOCATED |
-| 611110 | AIR - COLUMN FILL - LEFT | 610101 | 1 | ALLOCATED |
-| 611111 | AIR - KICK GRILLE - LEFT | 610101 | 1 | ALLOCATED |
-| 611211 | AIR - SOFFIT FILL - FRONT | 610201 | 1 | ALLOCATED |
+| 611403 | AIR - FAN BOX BULKHEAD - EXHAUST | 610402 | 1 | in use |
+| 611404 | AIR - FAN BOX BULKHEAD - SUPPLY | 610401 | 1 | in use |
+| 611405 | AIR - FAN BOX LINING - EXHAUST SIDE | 610402 | 2 | in use |
+| 611406 | AIR - FAN BOX LINING - EXHAUST FAR END | 610402 | 1 | in use |
+| 611407 | AIR - FAN BOX LINING - SUPPLY END | 610401 | 2 | in use |
+| 611408 | AIR - FAN BOX LIP ANGLE - SUPPLY | 610401 | 1 | in use |
+| 618402 | AIR - FAN BOX PAD - SUPPLY - RUBBER 40 X 15 X 5 - HOLD | 610401 | 2 | in use |
+| 618501 | AIR - RISER BUFFER - RUBBER - M6 - HOLD | 610401 | 1 | in use |
+| 611109 | AIR - COLUMN CORNER ANGLE - BACK | 610101 | 1 | in use |
+| 611110 | AIR - COLUMN FILL - LEFT | 610101 | 1 | in use |
+| 611111 | AIR - KICK GRILLE - LEFT | 610101 | 1 | in use |
+| 611211 | AIR - SOFFIT FILL - FRONT | 610201 | 1 | in use |
 | 611502 | AIR - INTAKE BOOT | 610401 | 1 | ALLOCATED |
 | 611303 | AIR - CARTRIDGE INLET GASKET | 610301 | 2 | ALLOCATED |
 | 212701 | WALL - FRAME RAIL TOP - BACK UPPER - B3 AND B4 | 211203 211204 | 2 | ALLOCATED |

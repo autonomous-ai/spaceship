@@ -131,7 +131,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 8](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-08_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **1-11** CEILING - PANEL ASSY - C1 (10.0 kg), **1-12** CEILING - PANEL ASSY - C2 (10.9 kg).
+- **Parts:** **1-11** CEILING - PANEL ASSY - C1 (10.0 kg), **1-12** CEILING - PANEL ASSY - C2 (11.4 kg).
 - **Fasteners:** 4 × 838002 M6 × 25 (J-CEIL-02); 16 × 838001 M6 × 16 (J-CEIL-01). Tool: the 5 mm hex key.
 - **Person A:** With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2; then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.
 - **Person B:** Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 7.
@@ -194,7 +194,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 14. Air parts in DR: the intake riser with its supply fan box
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **2-17** AIR - SUPPLY FAN BOX (13.4 kg).
+- **Parts:** **2-17** AIR - SUPPLY FAN BOX (13.0 kg).
 - **Fasteners:** their fixings in DR (AIR and FRONT design, on hold).
 - **Person A:** Before the wall linings (DR's inner face can't come off past R1's and R2's cassettes), lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).
 - **Person B:** Mates the fan box's plug-in connector; refits the inner face.
@@ -214,7 +214,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 16. Air column and supply cartridge
 
 - **Time:** about 7 min for 2 people.
-- **Parts:** **2-11** AIR - AIR COLUMN (8.1 kg), **2-18** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
+- **Parts:** **2-11** AIR - AIR COLUMN (8.1 kg), **2-18** AIR - SPLITTER CARTRIDGE - COMMON (10.5 kg).
 - **Fasteners:** the column hangs on its 2 factory-set hook studs and stands on 2 spigots, no site bolts (J-AIR-02).
 - **Person A:** With B, hangs the air column (2.1 m) on its tool-free hooks in the front-right corner (D-87), its back on DR's inner face and its right side on R1's and R2's linings; lifts its front face off.
 - **Person B:** With A, slides the supply cartridge into the column; plugs the hub into the cable chase; A refits the front face.
@@ -223,7 +223,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 17. Soffit and exhaust cartridge
 
 - **Time:** about 6 min for 2 people.
-- **Parts:** **2-10** AIR - SOFFIT (14.8 kg), **2-19** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
+- **Parts:** **2-10** AIR - SOFFIT (14.7 kg), **2-19** AIR - SPLITTER CARTRIDGE - COMMON (10.5 kg).
 - **Fasteners:** 2 × 838002 M6 × 25 (J-AIR-01). Tool: the 5 mm hex key.
 - **Person A:** With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof slot.
 - **Person B:** Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.
