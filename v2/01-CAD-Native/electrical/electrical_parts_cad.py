@@ -41,11 +41,22 @@ ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(ARGS.get("script_path", globals().get("__file__", "."))))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
-import electrical_model as M  # noqa: E402
-import flat_dxf  # noqa: E402
+def _helper(name, filename):
+    """One of this folder's helper files, loaded by full path under a private name, never a module of the same
+    name that another team's run left in Fusion (PM heads-up 2026-10-31); its path is printed and checked."""
+    import importlib.util
+    path = os.path.join(HERE, filename)
+    spec = importlib.util.spec_from_file_location("ele_" + name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if os.path.abspath(mod.__file__) != os.path.abspath(path):
+        raise RuntimeError("helper %s loaded from %s, not %s" % (name, mod.__file__, path))
+    print("helper %s: %s" % (name, mod.__file__))
+    return mod
 
-importlib.reload(M)
-importlib.reload(flat_dxf)
+M = _helper("electrical_model", "electrical_model.py")
+flat_dxf = _helper("flat_dxf", "flat_dxf.py")
+
 FOLDER = "FocusPod v2"
 MM = 0.1
 V = M.values()
@@ -651,9 +662,8 @@ def run(_context):
     # ELECTRICAL's own route design, left open when the edit test after its rebuild failed (2026-10-31
     # 19:2x, runner: not saved or closed); its saved version is in the cloud. Close it, so it can't keep
     # a skeleton copy loaded for other runs. Only that name; nothing of anyone else's.
-    for i in range(app.documents.count - 1, -1, -1):
-        d = app.documents.item(i)
-        if d.name.split(" v")[0] == "710000_P01_ELECTRICAL_CAD":
+    for d in [app.documents.item(i) for i in range(app.documents.count)]:     # a snapshot
+        if d.isValid and d.name.split(" v")[0] == "710000_P01_ELECTRICAL_CAD":
             print("closing ELECTRICAL's left-open route design %s (unsaved changes: %s; saved version kept)"
                   % (d.name, d.isModified))
             d.close(False)

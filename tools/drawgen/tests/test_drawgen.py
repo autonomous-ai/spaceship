@@ -31,6 +31,7 @@
     boot); then the table names the rivet. A list row that says tapped is still refused.
 """
 
+import math
 import os
 import shutil
 import sys
@@ -294,6 +295,80 @@ def test_profiles_and_short_tubes():
             assert "is a profile" in str(e), (kind, str(e))
 
 
+def _cut_tube(path, kind, deg=45.0):
+    """A 20 x 20 x 1.5 tube along X, 300 long. 'band': its +X end mitred deg from square in the XZ plane, which the view
+    drawgen picks first (from below) sees face on; 'top': both ends cut deg in the XZ plane, the top face (+Z) running the full length;
+    'turned': square ends, the section turned 45° about the tube's axis (FRONT's 352208)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon, BRepBuilderAPI_Transform
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax1, gp_Dir, gp_Pnt, gp_Trsf, gp_Vec
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        return c.Shape()
+
+    def prism(pts, v):
+        poly = BRepBuilderAPI_MakePolygon()
+        for q in pts:
+            poly.Add(gp_Pnt(*q))
+        poly.Close()
+        return BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(*v)).Shape()
+    sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 300, 20, 20).Shape(),
+             BRepPrimAPI_MakeBox(gp_Pnt(-1, 1.5, 1.5), 302, 17, 17).Shape())
+    k = 20.0 * math.tan(math.radians(deg))
+    if kind == "band":
+        sh = cut(sh, prism([(300, -1, 0), (300 - k, -1, 20), (301, -1, 20), (301, -1, 0)], (0, 22, 0)))
+    elif kind == "top":
+        sh = cut(sh, prism([(300, -1, 20), (300 - k, -1, 0), (301, -1, 0), (301, -1, 20)], (0, 22, 0)))
+        sh = cut(sh, prism([(0, -1, 20), (k, -1, 0), (-1, -1, 0), (-1, -1, 20)], (0, 22, 0)))
+    elif kind == "turned":
+        t = gp_Trsf()
+        t.SetRotation(gp_Ax1(gp_Pnt(0, 10, 10), gp_Dir(1, 0, 0)), math.radians(45.0))
+        sh = BRepBuilderAPI_Transform(sh, t, True).Shape()
+    w = STEPControl_Writer()
+    w.Transfer(sh, STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+def test_end_cuts_print_their_angles():
+    """FRONT's #320 (Reviewer 7): a mitre that the only planned view sees face on gets a view that shows it in
+    profile, its angle printed at its end; the read-back finds every end cut in the STEP on its own and fails a sheet
+    whose angle isn't there (here: the 45° sheet against a model cut at 36.87°). A tube turned about its axis is drawn
+    square to its faces (20 high, not 28.28: FRONT's 352208), and a top face as long as the part isn't sized twice
+    (FRONT's 352203)."""
+    d = os.path.join(TMP, "endcuts")
+    os.makedirs(d, exist_ok=True)
+    row = dict(ROW, part_number="219991")
+    step = _cut_tube(os.path.join(d, "219991_P01_TEST-BAND_STEP.step"), "band")
+    p = os.path.join(d, "band.pdf")
+    face_on = dict(SPEC, principal={"look": "+Z", "x": "+X"})      # its principal sees the mitre face on
+    compose.make("219991", "none", face_on, p, step=step, row=row)
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    text = " ".join(fitz.open(p)[0].get_text().split())
+    assert "45°" in text, text[:500]
+    other = _cut_tube(os.path.join(d, "219991_P01_TEST-OTHER_STEP.step"), "band", deg=36.87)
+    f2, _ = readback.check(p, other)
+    assert any("36.87° from square" in x for x in f2), f2
+    step = _cut_tube(os.path.join(d, "219990_P01_TEST-TURNED_STEP.step"), "turned")
+    p = os.path.join(d, "turned.pdf")
+    compose.make("219990", "none", SPEC, p, step=step, row=dict(ROW, part_number="219990"))
+    words = fitz.open(p)[0].get_text().split()
+    assert "20" in words and "28.28" not in words, words[:80]
+    step = _cut_tube(os.path.join(d, "219989_P01_TEST-TOP_STEP.step"), "top", deg=30.0)
+    p = os.path.join(d, "top.pdf")
+    compose.make("219989", "none", SPEC, p, step=step, row=dict(ROW, part_number="219989"))
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    words = fitz.open(p)[0].get_text().split()
+    assert words.count("300") == 1 and "30°" in words, words[:80]
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
@@ -503,6 +578,30 @@ def test_rivet_holes_pass_the_tapped_guard():
         raise AssertionError("drew a part whose list says tapped")
     except compose.NotDrawable as e:
         assert "its parts list says so" in str(e), e
+
+
+def test_text_width_matches_the_printed_text():
+    """The free-space boxes are as wide as the printed text, Ø and µ included (fitz.get_text_length under-measured
+    them: 'Ø9.53' 7.55 against 9.48 printed; the Air Engineer's read-back found it): each width within 0.05 mm of the
+    PDF's own span box, regular and bold."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "widths")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    samples = ["Ø9.53", "µm", "45°", "1 x 45°", "H01  Ø13 THRU 1 WALL"]
+    for i, t in enumerate(samples):
+        sh.text(30, 250 - 10 * i, t, 2.5)
+        sh.text(200, 250 - 10 * i, t, 2.5, bold=True)
+    sh.save(os.path.join(d, "w.pdf"))
+    spans = {}
+    for b in fitz.open(os.path.join(d, "w.pdf"))[0].get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            for sp in ln["spans"]:
+                spans[(sp["text"], "Bold" in sp["font"])] = (sp["bbox"][2] - sp["bbox"][0]) / (72 / 25.4)
+    for t in samples:
+        for bold in (False, True):
+            assert abs(spans[(t, bold)] - sh.text_width(t, 2.5, bold)) < 0.05, (t, bold, spans[(t, bold)],
+                                                                             sh.text_width(t, 2.5, bold))
 
 
 def test_long_words_break_at_separators():
