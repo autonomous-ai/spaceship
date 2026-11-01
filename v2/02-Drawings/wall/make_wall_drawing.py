@@ -418,6 +418,29 @@ def open_drawing(app, name):
     return doc
 
 
+def update_refs(doc, name):
+    """A drawing keeps the design version it was started from: bring its references to the latest saved
+    versions before any view is added (the WALL rework saves new design versions, D-120). Prints each
+    reference's version before and after; raises when one is still out of date."""
+    def state():
+        out = []
+        refs = doc.documentReferences
+        for i in range(refs.count):
+            r = refs.item(i)
+            out.append((r.dataFile.name if r.dataFile else "?", r.version, r.isOutOfDate))
+        return out
+    before = state()
+    if any(st for _n, _v, st in before):
+        if not doc.updateAllReferences():
+            raise RuntimeError("%s: updating its references failed (%s)" % (name, before))
+        after = state()
+        if any(st for _n, _v, st in after):
+            raise RuntimeError("%s: references still out of date after the update: %s" % (name, after))
+        print("BATCH|references of %s updated: %s -> %s" % (name, before, after))
+    else:
+        print("BATCH|references of %s up to date: %s" % (name, before))
+
+
 def run(_context):
     """One drawing (the active one: --doc DWG with --save and --close on the runner), or, with
     --arg batch="KIND:PN:DWG:DATUM_B;...", every listed drawing start_drawing.py saved: each is opened (or
@@ -441,6 +464,7 @@ def run(_context):
                 raise RuntimeError("%r is open with unsaved changes; not reused (PM rule 4)" % name)
             doc = docs[0] if docs else open_drawing(app, name)
             doc.activate()
+            update_refs(doc, name)
             if ARGS.get("only_images") == "1":            # notes added later to an annotated drawing
                 dwg = adsk.drawing.Drawing.cast(app.activeProduct)
                 if dwg is None or not dwg.activeSheet.views.count:
