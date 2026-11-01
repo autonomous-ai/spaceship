@@ -19,7 +19,11 @@ buttons through macOS accessibility, all inside the Fusion lock:
 3. open or activate DESIGN_NAME (refused if it has unsaved changes) and queue
    Create Drawing (its dialog defaults: Manual, From scratch, ISO, mm);
 4. press OK in that dialog and wait for the new drawing;
-5. press Cancel in the Base View dialog that Fusion then opens by itself;
+5. press Cancel in the Base View dialog that Fusion then opens by itself.
+   Each press is tried again for up to 10 s while Fusion still shows that
+   dialog's command: the dialog shows up to accessibility a moment after its
+   command goes active (2026-11-01: one try found "none" and the start
+   failed, 6 times that day);
 6. set the sheet size (read back and checked), save the drawing as
    DRAWING_NAME in --folder, close it (unless --keep-open), and close the
    design again if this command opened it;
@@ -329,6 +333,29 @@ class Steps:
         return session_locked()
 
 
+def press(steps, button, cmd, wait_s, poll_s=1.0):
+    """Press `button` in the dialog of Fusion's command `cmd` (Create Drawing or Base View). Fusion reports
+    the command a moment before its Qt dialog shows up to accessibility, and the dialog's buttons can be
+    rebuilt while it settles (2026-11-01, 06:36 and 07:06: "none" from a dialog that the cleanup found a
+    second later, and "Invalid index" for a button found a moment before). So "none" or an accessibility
+    error is tried again every poll for up to wait_s seconds, but only while Fusion still shows that same
+    command; a retry never presses in another dialog. Returns "clicked ..." when pressed, "left ..." when
+    Fusion moved off the command after a failed try (an errored click may still have worked: the checks after
+    the press decide), or the last failure ("none", "ambiguous", "error ...")."""
+    t0 = time.time()
+    while True:
+        try:
+            how = steps.click(button, TITLES[cmd])
+        except StartError as e:
+            how = "error (%s)" % str(e)[:200]
+        if how.startswith("clicked") or how == "ambiguous" or time.time() - t0 >= wait_s:
+            return how
+        time.sleep(poll_s)
+        now, _u = steps.state()
+        if now != cmd:
+            return "left the dialog after %s (Fusion now in %s)" % (how, now or "no command")
+
+
 def wait_for(steps, pred, timeout_s, poll_s=1.0):
     """Poll Fusion's state until pred(cmd, unsaved) is true; return the last state."""
     t0 = time.time()
@@ -437,7 +464,7 @@ def precheck(steps, design="", name="", folder=rs.DEFAULT_FOLDER, log=None):
 def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None, status=None):
     """The sequence; raises StartError with what went wrong. status["queued"] is
     set once a dialog may be open, so the caller knows to clean up."""
-    w = {"dialog": 30, "drawing": 90, "base_view": 30, "idle": 20, "poll": 1.0}
+    w = {"dialog": 30, "drawing": 90, "base_view": 30, "idle": 20, "poll": 1.0, "press": 10}
     w.update(waits or {})
     status = status if status is not None else {}
     project, *subfolders = [p for p in folder.split("/") if p]
@@ -464,8 +491,8 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     cmd, _u, seen = wait_for(steps, lambda c, u: c == CREATE_CMD, w["dialog"], w["poll"])
     if not seen:
         raise StartError("the Create Drawing dialog didn't open (active command %s)" % cmd)
-    how = steps.click("OK", TITLES[CREATE_CMD])
-    if not how.startswith("clicked"):
+    how = press(steps, "OK", CREATE_CMD, w["press"], w["poll"])
+    if not how.startswith(("clicked", "left")):
         raise StartError("couldn't press OK in Create Drawing (%s)" % how)
     log("pressed OK in Create Drawing (%s)" % how)
 
@@ -477,8 +504,8 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     # Fusion opens the Base View dialog by itself, a few seconds later
     cmd, _u, seen = wait_for(steps, lambda c, u: c == BASE_VIEW_CMD, w["base_view"], w["poll"])
     if seen:
-        how = steps.click("Cancel", TITLES[BASE_VIEW_CMD])
-        if not how.startswith("clicked"):
+        how = press(steps, "Cancel", BASE_VIEW_CMD, w["press"], w["poll"])
+        if not how.startswith(("clicked", "left")):
             raise StartError("couldn't press Cancel in Base View (%s)" % how)
         log("pressed Cancel in Base View (%s)" % how)
     else:

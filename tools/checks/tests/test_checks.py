@@ -1249,7 +1249,9 @@ def test_a_renamed_register_part_lists_every_file_and_team_and_a_new_maker_code_
     prods = {"368102": {"files": {"v2/03-Manufacturing/wall/210101_P01_X_STEP.step"}, "count": 1,
                         "name": "368102 FRONT - DOOR CATCH STRIKE"}}
     fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, prods) if f.rule == "name-mismatch"]
-    assert len(fs) == 1 and fs[0].severity == "minor" and fs[0].owner == "WALL"
+    assert [f.subject for f in fs] == ["368102", "838003"]          # 838003's lists are checked without its CAD too
+    assert fs[0].severity == "minor" and fs[0].owner == "WALL"
+    assert fs[1].severity == "major" and fs[1].owner == "BASE; WALL" and "the CAD" not in fs[1].message
 
 
 def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_path):
@@ -1265,9 +1267,19 @@ def test_names_compare_by_their_words_and_a_stale_master_bom_owns_its_fix(tmp_pa
     _write_csv(tmp_path / "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv", [row])
     (tmp_path / "v2/04-BOM").mkdir(parents=True)
     _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv", [dict(row, name="BASE - BASE SEAL - GAP 10 ±5")])
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    # a register part's names are the register's to decide (D-99): one name-mismatch, not a duplicate-number too
+    assert [f for f in c_parts.check_parts_lists(str(tmp_path), plists) if f.rule == "duplicate-number"] == []
+    fs = [f for f in c_parts.check_cad_match(str(tmp_path), plists, {}) if f.rule == "name-mismatch"]
+    assert len(fs) == 1 and fs[0].owner == "Control" and "100000_P01_POD-MASTER_BOM.csv" in fs[0].fix
+    # an unregistered number with two names stays a duplicate-number
+    _write_csv(tmp_path / "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+               [row, dict(row, part_number="111999", name="BASE - A")])
+    _write_csv(tmp_path / "v2/04-BOM/100000_P01_POD-MASTER_BOM.csv",
+               [dict(row, part_number="111999", name="BASE - B")])
     fs = [f for f in c_parts.check_parts_lists(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)))
           if f.rule == "duplicate-number"]
-    assert len(fs) == 1 and fs[0].owner == "Control" and "master BOM" in fs[0].fix
+    assert [f.subject for f in fs] == ["111999"]
 
 
 def test_a_master_bom_row_copied_from_a_team_list_is_checked_there_whatever_its_source_suffix():
