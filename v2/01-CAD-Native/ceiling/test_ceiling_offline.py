@@ -334,6 +334,23 @@ class Cassette(unittest.TestCase):
         self.assertLessEqual(x1[2] - (ev(M.YW) + v["tube_w"]), 400.0)
 
 
+class CableHoles(unittest.TestCase):
+    def test_shared_height(self):
+        """F-188 (PM ruling 2026-11-01): ELECTRICAL's grommets and draw wire take this one height;
+        both cassettes' holes sit on it, at today's values Z 2337.5 on X -583 and 583."""
+        self.assertAlmostEqual(M.ev(VALS, M.CABLE_HOLE_Z), 2337.5, places=3)
+        self.assertAlmostEqual(M.ev(VALS, M.CABLE_HOLE_X["C1"]), -583.0, places=3)
+        self.assertAlmostEqual(M.ev(VALS, M.CABLE_HOLE_X["C2"]), 583.0, places=3)
+        self.assertEqual(M.CASSETTE_CS["C1"][2], M.CASSETTE_CS["C2"][2])
+
+    def test_hole_in_the_return_gap(self):
+        """The hole's centre is mid gap between the tray base and the felt, so the Ø19.1 hole
+        stays inside the return (the gap is tray_h - felt_t - 2 tray_t)."""
+        zc = M.ev(VALS, M.CABLE_HOLE_ZC)
+        self.assertAlmostEqual(zc, -(VALS["tray_t"] + VALS["gap_h"] / 2), places=6)
+        self.assertGreater(VALS["gap_h"], VALS["cable_hole"])
+
+
 class Sprinkler(unittest.TestCase):
     def test_zones_clear(self):
         r = VALS["sprk_d"] / 2

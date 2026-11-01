@@ -498,6 +498,15 @@ def roof_slot_box():
 # cassette, in CS-510301
 CS_X0, CS_X1 = "(-cs_w / 2)", "(cs_w / 2)"
 CS_Y0, CS_Y1 = "cs_gap", "(cs_gap + cs_d)"
+
+# The tray's two Ø19.1 cable holes, in its front and back returns on the cassette's centre line,
+# mid gap: the one height ELECTRICAL's grommets and draw wire take (F-188, PM ruling 2026-11-01:
+# one height for the whole run, read from one shared value). CABLE_HOLE_ZC is local to
+# CS-510301 (the tray build cuts the holes there); CABLE_HOLE_Z and CABLE_HOLE_X are the pod's
+# (Z 2337.5, X -583 / 583 at P04's values; test_ceiling_offline.py checks both).
+CABLE_HOLE_ZC = "-(tray_t + gap_h / 2)"
+CABLE_HOLE_Z = "(%s + %s)" % (CASSETTE_CS["C1"][2], CABLE_HOLE_ZC)
+CABLE_HOLE_X = {h: CASSETTE_CS[h][0] for h in CASSETTE_CS}
 FELT_Z0, FELT_Z1 = "(-tray_h + tray_t)", "(-tray_h + tray_t + felt_t)"
 
 

@@ -810,7 +810,7 @@ def build_tray(cass_occ_root, cass_comp, ctx):
             pl.isLightBulbOn = False
             sk = comp.sketches.add(pl)
             sk.name = "HOLE - CABLE %s RETURN" % tag
-            zc = "-(tray_t + gap_h / 2)"
+            zc = M.CABLE_HOLE_ZC            # the shared height (F-188)
             p3 = sk.modelToSketchSpace(adsk.core.Point3D.create(0, ctx.ev(yexpr) * MM, ctx.ev(zc) * MM))
             c = sk.sketchCurves.sketchCircles.addByCenterRadius(p3, ctx.ev("cable_hole") / 2 * MM)
             g = c.centerSketchPoint.geometry
