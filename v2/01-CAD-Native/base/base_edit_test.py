@@ -96,18 +96,20 @@ def measure(b, design):
 
 
 def unhealthy(design):
-    tl = design.timeline
-    ok = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
-    return ["%s: %s" % (tl.item(i).name, tl.item(i).errorOrWarningMessage)
-            for i in range(tl.count) if tl.item(i).healthState != ok]
+    """As the build's check: a timeline group (the key's STEP import makes one) is judged by its members."""
+    return BUILD_NS["timeline_problems"](design)
 
 
 def compare(got, want, tol=0.05):
     return max(abs(a - c) for a, c in zip(got, want))
 
 
+BUILD_NS = {}
+
+
 def run(_context):
     b = load_build()
+    BUILD_NS.update(b)
     app = adsk.core.Application.get()
     src = app.activeDocument
     doc = app.importManager.importToNewDocument(app.importManager.createFusionArchiveImportOptions(F3D))

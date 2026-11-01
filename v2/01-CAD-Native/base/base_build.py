@@ -1341,11 +1341,32 @@ EXPECTED_OWN = [
 ]
 
 
+def timeline_problems(design):
+    """The timeline items that are not healthy, with their messages. A group (such as the one a STEP import makes,
+    "Group1" on 2026-11-01) has no health of its own: each of its members is checked instead."""
+    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+    out, seen = [], set()
+
+    def walk(item):
+        if item.isGroup:
+            g = adsk.fusion.TimelineGroup.cast(item)
+            for j in range(g.count):
+                walk(g.item(j))
+            return
+        if item.index in seen:
+            return
+        seen.add(item.index)
+        if item.healthState != healthy:
+            out.append("%s: %s" % (item.name, item.errorOrWarningMessage))
+    tl = design.timeline
+    for i in range(tl.count):
+        walk(tl.item(i))
+    return out
+
+
 def step9_checks(design):
     tl = design.timeline
-    healthy = adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
-    bad = ["%s: %s" % (tl.item(i).name, tl.item(i).errorOrWarningMessage)
-           for i in range(tl.count) if tl.item(i).healthState != healthy]
+    bad = timeline_problems(design)
     n_sk, open_sk = 0, []
     for comp in design.allComponents:
         for sk in comp.sketches:
@@ -1769,8 +1790,7 @@ def build_part(app, key):
     for b in root.bRepBodies:
         b.material = mat
     tl = design.timeline
-    bad = [tl.item(i).name for i in range(tl.count)
-           if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    bad = timeline_problems(design)
     loose = [sk.name for sk in root.sketches if not sk.isFullyConstrained]
     body = root.bRepBodies.item(0)
     print("  %s  mass %.4f kg; timeline %d items, unhealthy %s; sketches %d, loose %s" % (
@@ -1851,8 +1871,7 @@ def build_subassembly(app, key):
     root.partNumber = pn
     root.description = "%s | %s | %s | rev %s | DRAFT" % (name, vn, CLASS_NAME.get(cls, cls), REV)
     tl = design.timeline
-    bad = [tl.item(i).name for i in range(tl.count)
-           if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
+    bad = timeline_problems(design)
     print("subassembly %s: %s, %d occurrences, %d timeline items, unhealthy %s" % (
         pn, doc_name, root.allOccurrences.count, tl.count, bad or 0))
     if bad:
