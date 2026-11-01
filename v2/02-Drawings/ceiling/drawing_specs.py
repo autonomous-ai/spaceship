@@ -131,10 +131,12 @@ SPECS = {
         "Flat pattern: 513101_P01_LINING-TRAY-CEILING_DXF.dxf (layers CUT, BEND, MARK).",
         "Datums: A = top face of the base; B = outer face of the front return; C = centre plane (X' = 0).",
         "Returns run the full 34 depth and turn in as 12 lips under the felt (PM ruling; guideline 8.2).",
-        "Two holes Ø19.1 for ELECTRICAL's cable bushings in the front and back returns, centre 12.5 below datum A (PM ruling 2026-11-01).",
+        "Two holes for ELECTRICAL's cable bushings, one in each of the front and back returns, on datum C (PM ruling "
+        "2026-11-01): size and height dimensioned in the front view, where the back one lies hidden behind the front one. "
+        "No hole table: Fusion's table printed empty on this view twice (2026-11-01).",
         "Clip and catch fixing zones on the base: no holes until a clip and a catch are named (HOLD-08).",
         "Symmetric about datum C: one part for both ceiling halves.",
-    ], holes="front", sizes=["1160", "1045", "34", "580", "12.5", "Ø19.1"]),
+    ], holes=None, sizes=["1160", "1045", "34", "580", "12.5", "Ø19.1"]),
     "rib": spec("rib", 0.2, [
         "Tolerances (assumption): cut length +/-1; bent sizes +/-0.5.",
         "Galvanised steel DX51D+Z, 0.5 thick, hat section: crown 20, height 24, flanges 2 x 12 (assumptions).",

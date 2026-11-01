@@ -212,6 +212,40 @@ class SizesOnce(unittest.TestCase):
         self.assertEqual(S.SPECS["rib"]["sizes"], ["44", "1034", "20", "24"])
         self.assertEqual(S.SPECS["rib"]["faces"], {"front": ["bottom"]})
         self.assertIsNone(S.SPECS["cassette"]["holes"])
+        self.assertIsNone(S.SPECS["tray"]["holes"])      # its two holes are dimensioned (Fusion's table printed empty)
+
+
+class Supersede(unittest.TestCase):
+    """The cleanup renames an old drawing, never deletes it (the PM's rule, 2026-11-01)."""
+
+    @classmethod
+    def setUpClass(cls):
+        import types
+        stub = types.ModuleType("adsk")
+        stub.core = types.ModuleType("adsk.core")
+        saved = {k: sys.modules.get(k) for k in ("adsk", "adsk.core")}
+        sys.modules["adsk"], sys.modules["adsk.core"] = stub, stub.core
+        try:
+            import importlib
+            cls.cleanup = importlib.import_module("ceiling_cleanup")
+        finally:
+            for k, v in saved.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+
+    def test_names(self):
+        f = self.cleanup.superseded_name
+        self.assertEqual(f("X_DWG", {"X_DWG"}, "2026-11-01"), "X_DWG_SUPERSEDED-2026-11-01")
+        self.assertEqual(f("X_DWG", {"X_DWG", "X_DWG_SUPERSEDED-2026-11-01"}, "2026-11-01"), "X_DWG_SUPERSEDED-2026-11-01-2")
+        self.assertEqual(f("X_DWG", {"X_DWG_SUPERSEDED-2026-11-01", "X_DWG_SUPERSEDED-2026-11-01-2"}, "2026-11-01"),
+                         "X_DWG_SUPERSEDED-2026-11-01-3")
+
+    def test_no_delete_in_the_code(self):
+        with open(self.cleanup.__file__, encoding="utf-8") as f:
+            src = f.read()
+        self.assertNotIn("deleteMe", src)
 
 
 if __name__ == "__main__":
