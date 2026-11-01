@@ -19,11 +19,11 @@ NEC Chapter 9, Table 11(B), for a DC Class 2 source: 0 to 20 V, maximum nameplat
 
 | Circuit | Supply | Rated | Load, max (load table) | Class 2? |
 |---|---|---:|---:|---|
-| Voice cockpit hook, one 24 V feed (D-11, D-88, D-168) | PS1, CLG-100-24, 96 W | 4.0 A | 60 W peak (63 %) | yes: a Class 2 power unit, within 100 VA at 24 V |
+| Voice cockpit hook, one 24 V feed (D-11, D-88, D-168) | PS1, CLG-100-24, 96 W | 4.0 A | 60 W peak (62.5 %) | yes: a Class 2 power unit, within 100 VA at 24 V |
 | Lights: uplight, down-light, call light, through the light controller | PS2, LPV-60-24, 60 W | 2.5 A | 40.5 W at full; the hub holds them at about 22 W | yes |
 | Fans and hub | PS3, LPV-60-12, 60 W | 5.0 A | 31.4 W | yes |
 
-One feed for the kit, from one 24 V Class 2 source (D-168), replaces the two 12 V feeds of D-136: two Class 2 sources must never be joined, and a kit built later could have tied two feeds' 0 V together inside it. At 24 V the kit's 60 W peak runs its 96 W source at 63 %. Why separate supplies and not one large unit (DECIDED, PM ruling 2026-10-31 in the ELECTRICAL group): a single 150 W supply can't be Class 2 at 12 or 24 V. Its wiring would need Chapter 3 wiring methods in the US: power cable, protected routing and listed fittings, not plug-in cables in a felt-lined cassette. Three Class 2 units, 216 W in all for about 132 W of load at the hardware maximum (REQ-ELE-03), keep every low-voltage cable Class 2.
+One feed for the kit, from one 24 V Class 2 source (D-168), replaces the two 12 V feeds of D-136: two Class 2 sources must never be joined, and a kit built later could have tied two feeds' 0 V together inside it. At 24 V the kit's 60 W peak runs its 96 W source at 62.5 %. Why separate supplies and not one large unit (DECIDED, PM ruling 2026-10-31 in the ELECTRICAL group): a single 150 W supply can't be Class 2 at 12 or 24 V. Its wiring would need Chapter 3 wiring methods in the US: power cable, protected routing and listed fittings, not plug-in cables in a felt-lined cassette. Three Class 2 units, 216 W in all for about 132 W of load at the hardware maximum (REQ-ELE-03), keep every low-voltage cable Class 2.
 
 What Class 2 lets the design do (NEC Article 725 in the 2020 edition, Article 722/724 in 2023; to check in the US rules phase):
 - Class 2 cable (CL2, or a listed equivalent) in the cassettes and the column, with plug-in connectors and no conduit;

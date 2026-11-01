@@ -18,7 +18,7 @@ DATE = "2026-10-31"
 # id, part key, output, rated W, rated A, feeds, why
 SUPPLIES = [
     ("PS1", "ps_kit", "24 V DC", 96.0, 4.0, "voice kit feed: one 24 V Class 2 feed, fused 5 A (REQ-VCK-04, D-168)",
-     "the kit's 60 W peak from one Class 2 source, 63 % of its 96 W (the 80 % cap is 77 W): one source, so no two Class 2 "
+     "the kit's 60 W peak from one Class 2 source, 62.5 % of its 96 W (the 80 % cap is 76.8 W): one source, so no two Class 2 "
      "sources can share a 0 V (D-168; a 24 V Class 2 source gives at most 100 VA, NEC Chapter 9 Table 11(B))"),
     ("PS2", "ps_cv24", "24 V DC", 60.0, 2.5, "all lights: uplight, down-light and call light, through the light controller",
      "lights on their own source, so a light fault can't stall the fresh air; the hub holds the lights at about 22 W; 24 V "

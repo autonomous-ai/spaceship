@@ -239,7 +239,7 @@ def calc_md(v, mass_of, harness):
     A("| **All** | | **%.0f** | **%.1f** | **%.1f** | %.0f %% | REQ-ELE-03: about 125 W load |" % (
         rated, tot_max, tot_typ, 100 * tot_max / rated))
     A("")
-    A("The voice kit takes one 24 V Class 2 feed (D-168): its %.0f W peak is %.0f %% of PS1's %.0f W, under the %.1f W "
+    A("The voice kit takes one 24 V Class 2 feed (D-168): its %.0f W peak is %.1f %% of PS1's %.0f W, under the %.1f W "
       "cap (80 %%), and one source means no two Class 2 sources can share a 0 V." % (
           EP.KIT_PEAK_W, 100 * EP.KIT_PEAK_W / sup[0][1], sup[0][1], EP.KIT_CAP_W))
     A("")

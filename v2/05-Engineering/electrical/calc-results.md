@@ -15,7 +15,7 @@ Every number here is a **calculation** from the load table (`710000_P01_ELECTRIC
 | PS3 | 12 V DC | 60 | 31.4 | 11.9 | 52 % | four fans and the sensor hub (column fuse block) |
 | **All** | | **216** | **131.9** | **33.9** | 61 % | REQ-ELE-03: about 125 W load |
 
-The voice kit takes one 24 V Class 2 feed (D-168): its 60 W peak is 62 % of PS1's 96 W, under the 76.8 W cap (80 %), and one source means no two Class 2 sources can share a 0 V.
+The voice kit takes one 24 V Class 2 feed (D-168): its 60 W peak is 62.5 % of PS1's 96 W, under the 76.8 W cap (80 %), and one source means no two Class 2 sources can share a 0 V.
 
 Typical = one or two people, lights full, fans near the 53 l/s normal flow, no voice kit fitted. Max = every load at its maximum at once, which the control never asks for (the fans reach full speed only above the 65 l/s boost).
 
