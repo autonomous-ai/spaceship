@@ -885,19 +885,67 @@ class OpenGuardTests(unittest.TestCase):
 
     START = 1793504385.0           # 2026-11-01 03:39:45 UTC, the stuck open's start line
 
-    def guard(self, end_at=None, limit=600.0, first=150.0, pids=(4242,)):
+    def guard(self, end_at=None, limit=600.0, first=150.0, pids=(4242,), lock=None, events=None):
         """guard_opens on a fake wall clock starting `first` s after the open's start (as after
         start_drawing's 120 s call timeout); the open ends `end_at` s after its start, if given."""
         clock = {"t": self.START + first}
+        events = events if events is not None else []
 
         def sleep(s):
+            events.append(("sleep", s))
             clock["t"] += s
             if end_at is not None and clock["t"] >= self.START + end_at:
                 self.write(["2026-11-01 03:44:45 UTC end open ZZ_P00_PROMOTE-SAMPLE_DWG v1 after 300.0 s: ok"], "a")
         msgs = []
         left = rs.guard_opens(self.lock, 0, "TEST: box.py", limit_s=limit, poll_s=10.0, log=msgs.append,
-                              wall=lambda: clock["t"], sleep=sleep, pids=lambda: list(pids))
+                              wall=lambda: clock["t"], sleep=sleep, pids=lambda: list(pids), lock=lock)
         return left, msgs, clock["t"] - self.START
+
+    class FakeLock:
+        def __init__(self, events, ok=True):
+            self.events, self.ok = events, ok
+
+        def extend(self, seconds, note=None):
+            self.events.append(("extend", seconds, note))
+            return self.ok
+
+    def test_the_lock_is_renewed_before_every_poll(self):
+        # Reviewer 5, P2 on #272: the wait can last up to 10 minutes; an expired lock would
+        # let the next run start on a Fusion that may be stuck, before the flag is written
+        self.write(self.LOG)
+        events = []
+        left, _msgs, age = self.guard(lock=self.FakeLock(events), events=events)
+        self.assertEqual((len(left), age), (1, 600.0))
+        self.assertEqual([e[0] for e in events], ["extend", "sleep"] * 45)      # 150 s to 600 s, 10 s polls
+        for ext, nap in zip(events[0::2], events[1::2]):
+            self.assertGreaterEqual(ext[1], nap[1] + 120.0)                     # covers the nap and more
+            self.assertIn("hasn't ended", ext[2])
+
+    def test_a_real_lock_and_a_held_lock_outlive_the_wait(self):
+        self.write(self.LOG)
+        lk = rs.FusionLock(self.lock, label="TEST", hold_s=2)
+        lk.acquire(1)
+        self.guard(lock=lk)
+        owner = lk.read_owner()
+        self.assertGreater(owner["expires"], time.time() + 100)                # renewed, not 2 s
+        self.assertIn("checking whether Fusion is stuck", rs.describe_owner(owner))
+        self.assertTrue(lk.release())
+        os.remove(rs.unhealthy_path(self.lock))
+        holder = rs.FusionLock(self.lock, label="SESSION", pid=None, hold_s=2)  # a session's held lock
+        holder.acquire(1)
+        joiner = rs.FusionLock(self.lock, label="STEP", hold_s=2)
+        joiner.acquire(0.2, token=holder.token)
+        self.guard(lock=joiner)
+        self.assertGreater(rs.FusionLock(self.lock).read_owner()["expires"], time.time() + 100)
+        joiner.release()
+        self.assertTrue(rs.FusionLock(self.lock).release_held(holder.token))
+
+    def test_a_failed_renewal_is_said_and_the_check_goes_on(self):
+        self.write(self.LOG)
+        events = []
+        left, msgs, _age = self.guard(lock=self.FakeLock(events, ok=False), events=events)
+        self.assertEqual(len(left), 1)                                          # still flagged at the limit
+        self.assertTrue(any("couldn't renew the Fusion lock" in m for m in msgs))
 
     def test_the_start_time_reads_as_utc(self):
         self.assertEqual(rs._started_epoch({"started": "2026-11-01 03:39:45 UTC"}), self.START)

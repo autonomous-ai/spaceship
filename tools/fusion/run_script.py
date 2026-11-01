@@ -755,12 +755,15 @@ def _describe_opens(opens):
 
 
 def guard_opens(lock_path, offset, who, limit_s=OPEN_LIMIT_S, poll_s=OPEN_POLL_S, log=None,
-                wall=time.time, sleep=time.sleep, pids=fusion_pids):
+                wall=time.time, sleep=time.sleep, pids=fusion_pids, lock=None):
     """After a call of this run timed out (and the busy wait ended): the opens this run
     started (open log lines after `offset`) that have no end line by the time the oldest
     of them is limit_s old, counted from its start line. If there are any, Fusion is
     stuck inside one: write the unhealthy flag so every later run refuses until Fusion is
-    restarted, warn loudly, and return them; [] when every open ended."""
+    restarted, warn loudly, and return them; [] when every open ended. While it waits,
+    `lock` (this run's FusionLock) is renewed before every poll, as wait_for_fusion does:
+    the wait can last up to limit_s, and an expired lock would let the next run start on
+    a Fusion that may be stuck, before the flag is written (Reviewer 5, P2 on #272)."""
     log = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
     path = open_log_path(lock_path)
     left, seen = unfinished_opens(path, offset), wall()
@@ -771,7 +774,12 @@ def guard_opens(lock_path, offset, who, limit_s=OPEN_LIMIT_S, poll_s=OPEN_POLL_S
         log("run_script: an open this run started hasn't ended: %s; waiting until it is %g min old"
             % (_describe_opens(left), limit_s / 60.0))
     while left and oldest() < limit_s:
-        sleep(min(poll_s, max(0.0, limit_s - oldest())))
+        nap = min(poll_s, max(0.0, limit_s - oldest()))
+        if lock is not None and not lock.extend(
+                nap + 120.0, note="an open of this run hasn't ended; checking whether Fusion is stuck"):
+            log("run_script: WARNING: couldn't renew the Fusion lock while checking the open; "
+                "trying again at the next look")
+        sleep(nap)
         left = unfinished_opens(path, offset)
     if not left:
         return []
@@ -1466,7 +1474,7 @@ def main(argv=None):
             try:
                 wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll)
                 # ... nor while it is stuck inside an open of this run, even if it answers
-                if guard_opens(lock_path, offset, run_label, limit_s=opts.open_limit):
+                if guard_opens(lock_path, offset, run_label, limit_s=opts.open_limit, lock=lock):
                     rc = EXIT_UNHEALTHY
             except KeyboardInterrupt:
                 print("run_script: stopped while waiting for Fusion to answer; Fusion lock "

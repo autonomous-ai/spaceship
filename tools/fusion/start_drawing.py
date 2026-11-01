@@ -741,7 +741,7 @@ def main(argv=None):
             try:
                 rs.wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll, log=say)
                 if rs.guard_opens(lock_path, offset, "%s: %s" % (lock.label, script),
-                                  limit_s=opts.open_limit, log=say):
+                                  limit_s=opts.open_limit, log=say, lock=lock):
                     rc = rs.EXIT_UNHEALTHY
             except KeyboardInterrupt:
                 print("start_drawing: stopped while waiting for Fusion to answer; Fusion lock "
