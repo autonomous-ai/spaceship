@@ -790,8 +790,10 @@ def cassette_rows(rep):
                     note="held by the tray's lips over the 24 mm air gap (settles H09)"))
     rows += [
         hw_row("518003", len(clips["bodies"]), "set", "4 a cassette, in the zones on the panel frame's first and last "
-               "studs; they only hold: the cassette's weight sits on the panel's ledge (the Lead's ruling of "
-               "2026-11-01)"),
+               "studs; they only hold: " + ("the cassette's weight sits on the panel's ledge (the Lead's ruling of "
+                                            "2026-11-01; D-170)" if lower else
+                                            "the cassette stands on the lower cassette's joint strip 848016, and the "
+                                            "lower cassette's ledge carries both (D-170)")),
         hw_row("848011", 0.2, "m", "4 pads of 50 mm to line the cassette up (assumption); carries no load (D-47)"),
     ]
     seal, where = 0.0, []
