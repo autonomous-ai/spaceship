@@ -272,9 +272,7 @@ class D87(unittest.TestCase):
             self.assertGreaterEqual(bx[0], -xir + 5.0 - 1e-9, name)
 
     def test_foot_on_the_floor_top(self):
-        """The foot plate stands on the skeleton's floor top: the mat at Z 12 today; BASE's D-132 (#303) takes the
-        floor out (Z 0), and the column's support and locator then move to BASE's bracket on the band (D-132, HOLD
-        until its faces are posted), so this follows the floor top rather than a number."""
+        # the column's foot stands on the skeleton's floor top: Z 0 since D-132 took the floor out (was Z 12 on the mat)
         self.assertAlmostEqual(b6("COLUMN FOOT PLATE")[4], V["floor_top"])
 
     def test_studs_and_locks_on_the_ceiling_rivnuts(self):
