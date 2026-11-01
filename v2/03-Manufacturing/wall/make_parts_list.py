@@ -546,7 +546,8 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                         mass_status="calculation: CAD at the design's fill density", status="DRAFT",
                         source="CAD; DXF checked against the CAD (check_fill_dxfs.py); number from the master BOM's "
                                "allocation (D-123)",
-                        note="friction fit in its bay: " + "; ".join("bay %s %s" % (r["bay"], r["fit"]) for r in mine)))
+                        note="friction fit in its bay: " + "; ".join("bay %s %s" % (r["bay"], r["fit"]) for r in mine)
+                        + ("; ships in the panel's own labelled fill bag, " + FILL_BAG[pn] if pn in FILL_BAG else "")))
     # the hardware rules count bodies and holes: give them every copy (a member's holes once per copy; the rivnut
     # copies at spigot sites named so, as the old per-site bodies were)
     frame_flat = dict(frame, bodies=[b for m in members for b in m["bodies"] for _ in range(m.get("copies", 1))])
@@ -568,17 +569,24 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
     if unlisted:
         raise SystemExit("%s: components in the CAD with no parts-list row: %s" % (pn, ", ".join(unlisted)))
     made = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1), 3)
+    fill_kg = round(sum(r["mass_total_kg"] for r in rows[1:] if r["level"] == 1 and " FILL PIECE " in r["name"]), 3)
     rows[0] = row(level=0, part_number=pn, name=name_en, name_vi=name_vi, kind="HS",
                   material="see the parts below", qty=1, unit="pc",
                   size_mm=size_of(placed_box_of(list(comps.values()))),
                   mass_total_kg=made, mass_status="calculation: the sum of the rows below (CAD bodies and hardware)",
                   status="DRAFT", source="CAD %s v%s" % (rep["document"], rep["version"]),
                   note="outer panel, bonded and hardware-fitted at the factory; every part its own component (D-120); "
-                       "the lining cassette is a separate part (D-17)")
+                       "the lining cassette is a separate part (D-17)" + (
+                           "; ships at %.2f kg without its fill pieces (%.2f kg), which travel in their own labelled "
+                           "bag, %s" % (made - fill_kg, fill_kg, FILL_BAG[pn]) if pn in FILL_BAG else ""))
     return rows
 
 
 LEDGE_RULING = "the Lead's ruling of 2026-11-01 (WALL group): a wall cassette's weight sits on a ledge, not on clip shear"
+# panels whose fill pieces ship in their own labelled bag, fitted on site before the cassette, so the panel stays at
+# D-131's 20 kg a piece: R1, with INTERIOR's two added studs (the Lead's ruling of 2026-11-01; Control logs it)
+FILL_BAG = {"210102": "fitted on site before R1's cassette, with a check that every bay is filled (the Lead's ruling "
+                      "of 2026-11-01: D-131's 20 kg a piece)"}
 # the load strip on a lower cassette's top edge (Joints' pick): its register number and name once Control and Joints
 # post them; until then the edge keeps the 848012 row it had
 STRIP = dict(pn="848016", name="SEALS - CASSETTE JOINT STRIP - 10 X 2.36 - PORON 4701-40 320 PSA",
