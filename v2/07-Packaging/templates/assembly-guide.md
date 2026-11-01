@@ -34,7 +34,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 - **Glass.** The door unit is {{DOOR_KG}} kg and the fixed glass {{FIX_KG}} kg: always both people and both suction lifters. Check each lifter's vacuum before every lift. Get each pane upright by tilting it up in the crate on its padded long edge, both lifters at its top edge, onto the padded glass rest; never lift a pane flat and never turn it on a corner. Carry glass upright, never flat and never over anyone. Set it down only on the padded glass rests or in its channel, never on a corner or a hard floor. Leave the protective film on. The glass stays in its crate until its step.
 - **Weight.** Every other part is 20 kg or less (D-03); parts longer than 1.6 m or heavier than 15 kg are carried by both people.
-- **Height.** One person on a step stool at a time, the other hands up. The ceiling halves, the soffit, its cartridge, DT and the ceiling linings are lifted by both people, onto a rest, and let go before anyone fixes them: no one holds a part overhead to fix it (the PM's ruling, 2026-11-01).
+- **Height.** Never two people on one step stool. The ceiling halves, the soffit, its cartridge, DT and the ceiling linings are lifted by both people, each on a stool of their own, onto a rest, and let go before anyone fixes them: no one holds a part overhead to fix it (the PM's ruling, 2026-11-01). For the other high work, one works from a stool and the other hands up.
 - **Hands.** Keep fingers off the joint faces while a panel is lowered onto its spigots and while a bolt pulls a seam shut.
 - **Bolts.** The cordless driver, its clutch set to the joints register's value (the Joints Engineer's, with margin against the rivnut spinning out; the torque is on HOLD until the rivnut test T06, HOLD-01, D-48): drive until the seam closes onto its stop and the clutch slips. No impact drivers, no extension bars.
 - **Electrics.** Power stays off until step {{STEP_POWER}}, when the pod's cord goes into the room's 120 V wall outlet (D-133). The mains side comes wired from the factory on its tested plug-in harness (D-87): nothing is wired on site, and everything inside runs on 12 V (D-10).
@@ -42,7 +42,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## 3. How the joints work (read once)
 
-- **Captive bolts.** Each bolt sits in the edge tube of the part placed second, with its washer, pulled back and held by a grommet (joints register 2.2). You only turn it: the key goes through the Ø19 hole from the 60 × 60 fill pocket in that panel's bay. The one exception is the roof grille: its 4 bolts go in from the roof with their washers (step {{STEP_ROOF}}, J-AIR-03).
+- **Captive bolts.** Each bolt sits in the edge tube of the part placed second, with its washer, pulled back and held by a grommet (joints register 2.2). You only turn it: the driver's 5 mm bit (or the kit's key) goes through the Ø19 hole from the 60 × 60 fill pocket in that panel's bay. The one exception is the roof grille: its 4 bolts go in from the roof with their washers (step {{STEP_ROOF}}, J-AIR-03).
 - **Spigots.** Every wall and ceiling part stands on two Ø8 spigots, a round hole at one end and a slot at the other, before its first bolt (REQ-ASM-04). If a part doesn't drop on, lift it and seat it again; never force it.
 - **Two bolts, one key.** {{PN16}} (M6 × 16) for the {{N16}} other bolts: each pulls its joint onto its 2.26 mm metal stop or its seat. {{PN25}} (M6 × 25) pins at the 10 closing-seam positions (B1–B2, B3–B4, C1–C2): snug only, they hold the faces level and pull nothing (joints register 2.10). Two more lock the soffit on its hanger studs (J-AIR-01).
 - **Order of tightening** (joints register 2.7, R-J9): closing-seam pins first, then the stopped seams; the side walls' top corner bolts and the ceiling's side bolts last, once both ceiling halves are in.
@@ -70,7 +70,7 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 
 {{TOP_STEPS}}
 
-**The PM's rulings of 2026-11-01 on the next five time sinks cut the clock from {{CLOCK_BEFORE}} minutes to the {{CLOCK_MIN}} above:** the installers' cordless driver for the bolts ({{SAVE_DRIVER}} min), a rest for each overhead lift so no one holds a part overhead to fix it ({{SAVE_REST}} min), and the final check split between the two people ({{SAVE_SPLIT}} min); the unit times are assumptions until the timed trial. Lift-off hinges set in the factory (FRONT, in the hinge HOLD's asks, D-138) and a plug-in light shelf (ELECTRICAL's connector choice) would take about 7 minutes more (assumption), to the PM's target of about {{TARGET_MIN}} minutes. Carrying and unpacking have no cheap fix, and hook-in wall joints, which getting near 1 hour would need, are a redesign the PM ruled out for now.
+**The PM's rulings of 2026-11-01 on the next five time sinks cut the clock from {{CLOCK_BEFORE}} minutes to the {{CLOCK_MIN}} above:** the installers' cordless driver for the bolts ({{SAVE_DRIVER}} min), a rest for each overhead lift so no one holds a part overhead to fix it ({{SAVE_REST}} min), and the final check split between the two people ({{SAVE_SPLIT}} min); the unit times are assumptions until the timed trial. Lift-off hinges set in the factory (FRONT, in the hinge HOLD's asks, D-138) and a plug-in light shelf (ELECTRICAL's connector choice) would save about 7 minutes more (assumption), to about {{CLOCK_NEXT}} minutes against the PM's target of about {{TARGET_MIN}}. Carrying and unpacking have no cheap fix, and hook-in wall joints, which getting near 1 hour would need, are a redesign the PM ruled out for now.
 
 **D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to 127 (PR #59).** The PM took four of the five fixes priced on that model, and they are in the steps now:
 
@@ -91,17 +91,17 @@ Unit times used:
 
 ## 7. Final check list (step {{STEP_FINAL}})
 
-- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; kick strip level with the band's bottom edge, about {{DOOR_GAP}} mm over the room floor (D-132); closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the room floor when closed.
+- [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; kick strip level with the band's bottom edge, about {{DOOR_GAP}} mm over the room floor (D-132); closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the room floor when closed; both end brushes stand on the floor along their whole length and close against the end plates beside them.
 - [ ] Seals: with the pod lit and the room dark, no light at any seam, at the door's edges or at the fixed glass's edges.
 - [ ] Bolts: all {{REG_BOLTS}} register bolts driven, the 10 pins snug, the 6 upper corner bolts tightened after the ceiling; the other fixings of section 5 done.
 - [ ] Linings: all 10 cassettes on their clips, both ceiling cassettes on their safety catches, none touching anything but its clips.
 - [ ] Air: both fan pairs run; air leaves the kick grille at the column's foot and enters the soffit grille; boost works; the hub shows CO2.
 - [ ] Lights: the light shelf works in every scene, including 'call' (D-70).
-- [ ] Film peeled from the ACP and the glass; packaging off site; floor clean.
+- [ ] Film peeled from the ACP and the glass; packaging off site, but the seam prop stays with the pod (taking the ceiling down needs it); floor clean.
 
 ## 8. Taking it down
 
-Unplug the pod's cord first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); R1's and R2's cassettes off their clips first (DR's inner face can't come off past them, the PM's ruling), then DR's inner face, supply fan box, intake riser; the other wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling (loosen the side walls' top corner bolts first); the upper walls, the lower walls; base band: FR1 off the rail first, then the rail, FL2 and FL1, each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
+Unplug the pod's cord first. Then the reverse order: ledge; ceiling linings (unhook the catches first); soffit underside, exhaust fan box, exhaust cartridge, soffit; air column front face, supply cartridge, air column (it must come out before DR's bolts can be reached, J-FRONT-01); R1's and R2's cassettes off their clips first (DR's inner face can't come off past them, the PM's ruling), then DR's inner face, supply fan box, intake riser; the other wall linings; DT; the door; DR, then the fixed glass with both lifters; DL; the ceiling: first stand the seam prop on its foot under the seam's front end (it holds both corners), then loosen the side walls' top corner bolts, take out the edge bolts and last the 4 seam pins, and lift C2, then C1, off the wall tops and the prop; the upper walls, the lower walls; base band: FR1 off the rail first, then the rail, FL2 and FL1, each lifted 10 mm and drawn back off its studs; the back band lifts straight up out of the side bands' studs once B1 and B2 are off (J-BASE-02). Pack by the labels, into the same places.
 
 ## 9. Open items that touch this guide
 
@@ -118,7 +118,7 @@ Unplug the pod's cord first. Then the reverse order: ledge; ceiling linings (unh
 | Electrical connectors and the wiring diagram | ELECTRICAL | not designed yet |
 | Step pictures from the Fusion model | Packing and Assembly | after each part's CAD lands and the screen is unlocked |
 | The driver's clutch value and the bit length for the captive bolts, with margin against the rivnut spinning out | Joints Engineer | the PM's ruling 2026-11-01 |
-| The seam prop's height and its spot under the front end of the C1-C2 seam ({{PROP_H}} mm from the skeleton for now), and that C2's seam corner can share it with C1's | CEILING | asked |
+| The seam prop's height and its spot under the front end of the C1-C2 seam ({{PROP_H}} mm from the skeleton for now), and that C2's seam corner shares its cap with C1's | CEILING | asked |
 | The kick strip's two end brushes: their products, the hinge-end brush's number and pile length, and the lowest room temperature their adhesive takes | FRONT, Hardware Engineer, Control | HOLD-23 and HOLD-25 (joints register H-43, H-46) |
 | Which of the six overhead lifts already rest hands-free (the ceiling halves on the wall tops, DT on DL and DR, the exhaust cartridge in the soffit, the ceiling cassettes on their catches); a ledge or hook on an existing part where one is missing | CEILING, FRONT, AIR | the PM's ruling 2026-11-01 |
 | Lift-off hinges set in the factory (about 4 minutes) | FRONT, in the hinge HOLD's asks for the factory (D-138) | asked |
