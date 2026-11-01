@@ -264,6 +264,11 @@ def read_assembly(path, pn):
     return found[0]
 
 
+def find_step(pn, team):
+    """The assembly's own STEP (PN_REV_NAME_STEP.step, as WALL and FRONT export each assembly), else its team's."""
+    return inputs.own_step(pn) or team_step(team)
+
+
 def team_step(team):
     """The team's assembly STEP (PN_REV_TEAM_STEP.step, the team's top number xx0000), newest revision."""
     hits = []
@@ -293,26 +298,58 @@ def qty_text(s):
     return ("%d" % v) if abs(v - round(v)) < 1e-9 else ("%g" % v)
 
 
+def children_of(rows, pn, keys, path):
+    """The rows of one list that sit directly under assembly pn, and pn's own row, in the list's three layouts:
+    a parent column (by number or by the team's key, several parents split by '|'); a level column (the rows one
+    level under pn's row, up to the next row at its level or above: WALL's per-assembly lists); or a list of one
+    assembly, named after it, whose first row is the assembly and the others its parts (FRONT's)."""
+    if not rows or "part_number" not in rows[0]:
+        return None, []
+    own = next((r for r in rows if (r.get("part_number") or "").strip() == pn), None)
+    if "parent" in rows[0]:
+        kids = [r for r in rows if keys & {x.strip() for x in (r.get("parent") or "").split("|")}]
+        return own, kids
+    if "level" in rows[0]:
+        if own is None:
+            return None, []
+        i = rows.index(own)
+        lvl = int((own.get("level") or "0").strip() or 0)
+        kids = []
+        for r in rows[i + 1:]:
+            lv = (r.get("level") or "").strip()
+            if not lv:
+                continue
+            if int(lv) <= lvl:
+                break
+            if int(lv) == lvl + 1 and (r.get("part_number") or "").strip():
+                kids.append(r)
+        return own, kids
+    m = inputs.NAME_RE.match(os.path.basename(path))
+    if m and m.group(1) == pn and own is rows[0]:
+        return own, [r for r in rows[1:] if (r.get("part_number") or "").strip()]
+    return own, []
+
+
 def list_rows(pn, team, parent_keys=()):
-    """(the assembly's own row, [rows whose parent is the assembly], the list file). A team list names a parent by
-    its part number, or (CEILING) by a key such as 'assy_c1': the entry gives those keys. A cell may hold several
-    parents ('assy_c1|assy_c2')."""
+    """(the assembly's own row, [the rows directly under it], the list file) from the team's lists; rows under it in
+    two lists are an error (one list owns an assembly's parts)."""
     keys = {pn} | set(parent_keys)
     own, kids, src = None, [], None
     for p in inputs.team_lists(team):
         with open(p, newline="", encoding="utf-8") as fh:
             rows = list(csv.DictReader(fh))
-        if not rows or "part_number" not in rows[0] or "parent" not in rows[0]:
-            continue
-        mine = [r for r in rows if keys & {x.strip() for x in (r.get("parent") or "").split("|")}]
-        me = [r for r in rows if (r.get("part_number") or "").strip() == pn]
-        if me and own is None:
-            own, src = me[0], p
+        me, mine = children_of(rows, pn, keys, p)
+        if me is not None and own is None:
+            own, src = me, p
         if mine:
             if kids and src != p:
                 raise NotDrawable("%s: rows under it in two lists (%s and %s)" % (pn, inputs.rel(src), inputs.rel(p)))
             kids, src = mine, p
     return own, kids, src
+
+
+def qty_of(row):
+    return row.get("qty_per_parent") if row.get("qty_per_parent") not in (None, "") else row.get("qty")
 
 
 def unit_of(row):
@@ -352,9 +389,9 @@ class Assy:
 
     def __init__(self, pn, team, entry, step=None):
         self.pn, self.team, self.entry = pn, team, entry
-        self.step = step or team_step(team)
+        self.step = step or find_step(pn, team)
         if not self.step:
-            raise NotDrawable("%s: %s has no team STEP under v2/03-Manufacturing/%s" % (pn, team, team))
+            raise NotDrawable("%s: no STEP of its own and no team STEP under v2/03-Manufacturing/%s" % (pn, team))
         self.step_name, occs = read_assembly(self.step, pn)
         loose = [o for o in occs if o.pn is None]
         if loose:
@@ -398,10 +435,15 @@ class Assy:
         for it in self.items:
             if it.ref or not it.occs:
                 continue
-            q = _num(it.row.get("qty_per_parent"))
-            if q is not None and abs(q - round(q)) < 1e-9 and int(round(q)) != len(it.occs):
+            q = _num(qty_of(it.row))
+            if q is None or abs(q - round(q)) > 1e-9 or unit_of(it.row) not in ("", "pc", "pcs"):
+                continue
+            n_occ, n_sol = len(it.occs), sum(len(o.solids) for o in it.occs)
+            # a count matches the STEP's placements of the part, or (one placement holding them all as bodies, as
+            # WALL models its rivnuts) its bodies
+            if int(round(q)) not in (n_occ, n_sol if n_occ == 1 else -1):
                 raise NotDrawable("%s: the list has %d of %s under it, the STEP %d" % (pn, int(round(q)), it.pn,
-                                                                                    len(it.occs)))
+                                                                                    n_occ if n_occ > 1 else n_sol))
 
     @property
     def table_items(self):
@@ -1262,7 +1304,7 @@ def table_rows(assy):
         r = it.row
         u = unit_of(r)
         rows.append({"no": it.no, "mark": "" if it.occs else "*", "pn": it.pn, "name": it.name,
-                     "qty": qty_text(r.get("qty_per_parent")) + ((" " + u) if u else ""),
+                     "qty": qty_text(qty_of(r)) + ((" " + u) if u else ""),
                      "material": (r.get("material") or "").strip() or "-",
                      "finish": (r.get("finish") or "").strip() or "-"})
     return rows
@@ -1624,11 +1666,34 @@ def table_text(page, data):
 
 
 def _solids_by_pn(step_path):
+    """{part number: its solids in the file's top coordinates}, a sub-assembly's being every solid under it."""
+    _doc, st = _xcaf(step_path)
+    tops = TDF_LabelSequence()
+    st.GetFreeShapes(tops)
     out = {}
-    for name, solids in geom.read_step(step_path):
-        pn = geom.part_number_of(name)
-        if pn:
-            out.setdefault(pn, []).extend(solids)
+
+    def walk(lab, loc, names):
+        if st.IsAssembly_s(lab):
+            comps = TDF_LabelSequence()
+            st.GetComponents_s(lab, comps)
+            for i in range(1, comps.Length() + 1):
+                c = comps.Value(i)
+                ref = TDF_Label()
+                st.GetReferredShape_s(c, ref)
+                walk(ref, loc.Multiplied(st.GetLocation_s(c)), names + [geom._name(ref) or geom._name(c)])
+            return
+        shape = st.GetShape_s(lab)
+        if not loc.IsIdentity():
+            shape = shape.Moved(loc)
+        sol = geom._solids(shape)
+        for nm in set(names):
+            pn = geom.part_number_of(nm)
+            if pn:
+                out.setdefault(pn, []).extend(sol)
+
+    for i in range(1, tops.Length() + 1):
+        lab = tops.Value(i)
+        walk(lab, TopLoc_Location(), [geom._name(lab)])
     return out
 
 
@@ -1691,7 +1756,7 @@ def check(pdf_path):
     # 1. the table against the list
     keys = {pn} | set(data.get("parent_keys", ()))
     with open(lst, newline="", encoding="utf-8") as fh:
-        rows = [r for r in csv.DictReader(fh) if keys & {x.strip() for x in (r.get("parent") or "").split("|")}]
+        _own, rows = children_of(list(csv.DictReader(fh)), pn, keys, lst)
     tab = table_text(page, data)
     if sorted(tab) != list(range(1, len(rows) + 1)):
         fails.append("the table's items %s are not 1 to %d (the list's rows under %s)" % (sorted(tab), len(rows), pn))
@@ -1701,7 +1766,7 @@ def check(pdf_path):
         stats["rows"] += 1
         u = unit_of(r)
         want = [str(n), (r.get("part_number") or "").strip(), (r.get("name") or "").strip(),
-                qty_text(r.get("qty_per_parent")) + ((" " + u) if u else ""),
+                qty_text(qty_of(r)) + ((" " + u) if u else ""),
                 (r.get("material") or "").strip() or "-", (r.get("finish") or "").strip() or "-"]
         got = tab[n][1]
         for k, (w, g) in enumerate(zip(want, got)):
