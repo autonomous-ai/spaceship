@@ -1,0 +1,5 @@
+# drawgen's own environment (never installed system-wide; run.sh makes it in a per-user cache).
+# OCC 7.8 through cadquery-ocp: exact B-rep, exact hidden-line removal (HLRBRep_Algo), STEP with names (XCAF).
+cadquery-ocp==7.8.1.1.post1
+# PDF writing and reading (the read-back test).
+pymupdf==1.27.2.3
