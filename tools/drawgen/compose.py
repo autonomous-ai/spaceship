@@ -33,7 +33,7 @@ import inputs
 import project
 from geom import axis_name, vadd, vcross, vdot, vmul, vnorm, vsub
 from project import View
-from sheet import Sheet, W_HID, W_THIN, W_VIS, DASH_HID
+from sheet import AUTHOR, Sheet, W_HID, W_THIN, W_VIS, DASH_HID
 
 GENERATOR = "drawgen"
 TOOL_REV = "drawgen 1.0"
@@ -203,8 +203,7 @@ class Part:
         if not self.step:
             # a part that lives only in its team's assembly STEP: that file's geometry, and the revision of its
             # parts list (the mechanical check reads it so)
-            import tabulated
-            self.step = tabulated.find_step(pn, team)
+            self.step = find_step(pn, team)
             if not self.step:
                 raise NotDrawable("%s has no STEP under v2/03-Manufacturing/%s" % (pn, team))
             self.rev = inputs.parse_name(self.list_file)["rev"]
@@ -408,6 +407,25 @@ def two_wall_sets(part):
 
 
 # ------------------------------------------------------------------ datum scheme
+
+def find_step(pn, team):
+    """The part's own STEP, else the team assembly STEP that holds it."""
+    own = inputs.own_step(pn)
+    if own:
+        return own
+    folder = os.path.join(inputs.MANUF, team)
+    for f in sorted(os.listdir(folder)):
+        nm = inputs.parse_name(os.path.join(folder, f))
+        if not nm or nm["doc"] != "STEP":
+            continue
+        try:
+            for name, solids in geom.read_step(os.path.join(folder, f)):
+                if geom.part_number_of(name) == pn and solids:
+                    return os.path.join(folder, f)
+        except RuntimeError:
+            continue
+    return None
+
 
 def spigot_origin(part, spec=None):
     """Parts that locate on spigots (joints register R-J13; R-J6 positions every bolt hole from the round spigot
@@ -727,6 +745,8 @@ def draw(part, spec, out_path, today=None):
     bw, bh = block(scale, rear_down)
     pl.rear_down = rear_down
     pl.table_w = table_w
+    # the right column holds the hole tables and the title block, drawn last: no label goes there
+    sh.reserved.append((W - 10 - table_w - 4 - 2.0, 10.0, W - 10.0, H - 10.0))
 
     # ---- the view objects
     vds = {}
@@ -1569,8 +1589,103 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                     ys = [e[1] + t * (e[3] - e[1]) for t in (0.25, 0.4, 0.6, 0.75)]
                     put_datum([(vd.S((xx, y_)), (n2[0], 0), lead) for lead in (7.0, 10.0, 14.0) for y_ in ys], letter)
                 break
+    # ---- keys fitted in the part's ends (Joints' corner-keys.csv): a note at each end saying which way round the
+    # key goes, since its bottom holes sit off its middle and meet the part's only one way (the Lead's ask on #228)
+    if spec.get("key_notes"):
+        key_notes(sh, part, pl, vds)
     sh.flush()
     return
+
+
+def key_notes(sh, part, pl, vds):
+    """For each key in the part's ends: a leader to the key's stud face on the end, in the view (or its detail)
+    that shows the part's holes for the key's screws, and a note: which key, which face goes on this end, and
+    that only this way round do its bottom holes meet the part's (and how far off they are turned round). When the
+    part's STEP has no holes where Joints' file puts the key's screws (the two teams' files between changes, D-129),
+    the end gets a HOLD note naming those positions instead, and the read-back checks that the holes really are
+    missing; regenerating once the STEP has them gives the full note."""
+    for r in inputs.key_rows(part.pn):
+        fc = (float(r["face_centre_x"]), float(r["face_centre_y"]))
+        bk = (float(r["key_back_centre_x"]), float(r["key_back_centre_y"]))
+        hs = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
+        L = math.dist(fc, bk)
+        u = ((fc[0] - bk[0]) / L, (fc[1] - bk[1]) / L)
+        mid = ((hs[0][0] + hs[1][0]) / 2, (hs[0][1] + hs[1][1]) / 2)
+        d_hole = abs((mid[0] - bk[0]) * u[0] + (mid[1] - bk[1]) * u[1])
+        fts = sorted([ft for ft in part.features if ft.tag and any(math.dist((ft.f.entry[0], ft.f.entry[1]), h) < 0.5
+                                                                    for h in hs)], key=lambda f: f.tag)
+        hold = len(fts) != 2
+        if hold:
+            # the view that looks at the key's bottom (its screws go up through the part's bottom wall)
+            vd = next((v_ for v_ in vds.values() if abs(v_.view.n[2]) > 0.99), None)
+        else:
+            vd = vds.get(fts[0].group.view) if fts[0].group.view else None
+        if vd is None:
+            continue
+        z = (float(r["key_bottom_z"]) + float(r["key_top_z"])) / 2
+        c2 = vd.view.to2d((fc[0], fc[1], z))
+        dv = getattr(vd, "detail", None)
+        if dv is not None:
+            x0, x1, y0, y1 = dv.window
+            if x0 - 1e-6 <= c2[0] <= x1 + 1e-6 and y0 - 1e-6 <= c2[1] <= y1 + 1e-6:
+                vd = dv
+        a = vd.S(c2)
+        cut = abs(float(r["cut_deg_signed"] or 0))
+        if hold:
+            text = ("HOLD: Joints' key file puts key %s, %s, in this end, its screws at X %s Y %s and X %s Y %s (pod), "
+                    "but this STEP has no holes there yet; the key note follows when the model has them." % (
+                        r["part_number"], r["joint"], fmt(hs[0][0]), fmt(hs[0][1]), fmt(hs[1][0]), fmt(hs[1][1])))
+        else:
+            text = None
+        # where the stud face sits: on the part's end (its normal along the part) or against its inner wall (across)
+        k = max(range(2), key=lambda i: part.size[i])
+        sn = (float(r["stud_normal_x"]), float(r["stud_normal_y"]))
+        on_end = abs(sn[k]) / (math.hypot(*sn) or 1.0) > 0.7
+        text = text or ("Key %s, %s, fitted at the factory (J-BASE-02): stud face%s %s, back face %s mm "
+                "inside. Only this way round do its bottom holes meet %s; turned round they are %s mm off (Joints' "
+                "key sheet 111211)." % (r["part_number"], r["joint"], (" (cut %s°)" % fmt(cut)) if cut > 0.01 else "",
+                                        "flush with this end" if on_end else "against the inner wall",
+                                        fmt(L), " and ".join(f.tag for f in fts), fmt(abs(L - 2 * d_hole))))
+        lines = sh.wrap(text, 2.5, 78.0)
+        w = max(sh.text_width(t, 2.5) for t in lines)
+        h = 2.5 + 3.6 * (len(lines) - 1)
+        # the leader leaves the end face square to it, along the part (out of the key's stud face), for 6 mm, then
+        # bends to the note: it never runs along the outline
+        cd = vd.view.to2d((float(r["carrier_dir_x"]), float(r["carrier_dir_y"]), 0.0))
+        n_ = math.hypot(*cd) or 1.0
+        cd = (cd[0] / n_, cd[1] / n_)
+        elbow = (a[0] + cd[0] * 6.0, a[1] + cd[1] * 6.0)
+        base = math.degrees(math.atan2(cd[1], cd[0]))
+        angles = [(base + d_) % 360 for d_ in (0, 30, -30, 60, -60, 90, -90, 120, -120, 150, -150, 180)]
+
+        def block_at(px, py, ca, sa):
+            left = px - w if ca < -1e-6 else (px - w / 2 if abs(ca) <= 1e-6 else px)
+            top = py + h if sa > 1e-6 else (py + h / 2 if abs(sa) <= 1e-6 else py)
+            return [(left, top - 2.5 - 3.6 * i, t) for i, t in enumerate(lines)]
+
+        def crosses_text(p0, p1):
+            return any(sh._seg_box(p0, p1, b_, 0.3) for b_ in sh.boxes)
+        pick = None
+        if not crosses_text(a, elbow):
+            for rad in (4.0, 8.0, 14.0, 22.0, 32.0, 44.0, 58.0):
+                for ang in angles:
+                    ca, sa = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+                    ca, sa = (0.0 if abs(ca) < 1e-6 else ca), (0.0 if abs(sa) < 1e-6 else sa)
+                    att = (elbow[0] + rad * ca, elbow[1] + rad * sa)
+                    blk = block_at(att[0], att[1], ca, sa)
+                    if all(sh.is_free(sh.text_box(x_, y_, t, 2.5)) for x_, y_, t in blk) and not crosses_text(elbow, att):
+                        pick = (att, blk)
+                        break
+                if pick:
+                    break
+        if pick is None:
+            raise NotDrawable("%s: no clear place for the note on key %s (%s)" % (part.pn, r["part_number"], r["joint"]))
+        att, blk = pick
+        sh.line(att, elbow, W_THIN)
+        sh.line(elbow, a, W_THIN)
+        sh.arrow(a, (-cd[0], -cd[1]), 2.2, 0.9)
+        for x_, y_, t in blk:
+            sh.text(x_, y_, t, 2.5)
 
 
 def member_key(name):
@@ -1766,6 +1881,8 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
     regs = sorted({ft.reg["file"] for ft in part.features if ft.reg})
     if regs:
         src += "; feature rationale %s" % ", ".join(regs)
+    if spec.get("key_notes") and inputs.key_rows(part.pn):
+        src += "; key positions %s" % inputs.rel(inputs.KEYS_CSV)
     src += ". Made by tools/drawgen (D-112) from that STEP: regenerate it, never edit the PDF."
     notes.append(src)
     return notes
@@ -1796,7 +1913,7 @@ def title_block(sh, part, spec, scale, removed, today, sheet_no=1, sheets=1):
         [(180, "FINISH", "FINISH: " + ((row.get("finish") or "").strip() or "none (as supplied)"), VAL, False)],
         [(62, "SCALE", sc, VAL, False), (18, "SIZE", sh.size, VAL, False), (32, "UNITS", "UNITS: mm", VAL, True),
          (68, "MASS", ("%s kg (calculation)" % mass) if mass else "see parts list", VAL, False)],
-        [(62, "MADE BY", "tools/drawgen (D-112)", VAL, False), (40, "APPROVED", "not released", VAL, False),
+        [(62, "CREATED BY", AUTHOR, VAL, False), (40, "APPROVED", "not released", VAL, False),
          (78, "TOLERANCES", "TOLERANCE: see the notes; not ISO 2768", VAL, False)],
     ]
     proj_h = 12.0
@@ -1936,6 +2053,8 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
         srcs.append({"role": "parts list", "path": inputs.rel(part.list_file), "sha256_12": inputs.sha12(part.list_file)})
     for f in sorted({ft.reg["file"] for ft in part.features if ft.reg}):
         srcs.append({"role": "feature rationale", "path": f, "sha256_12": inputs.sha12(os.path.join(geom.REPO, f))})
+    if spec.get("key_notes") and inputs.key_rows(part.pn):
+        srcs.append({"role": "key positions", "path": inputs.rel(inputs.KEYS_CSV), "sha256_12": inputs.sha12(inputs.KEYS_CSV)})
     views = []
     for vd in [vds[n_] for n_ in ("principal", "below", "above", "from_left", "from_right", "rear") if n_ in vds] + secs:
         views.append({"origin": vd.origin_name, "name": vd.name, "n": vd.view.n, "x": vd.view.x, "y": vd.view.y,

@@ -872,6 +872,188 @@ def missing_drawing_severity(root, pn=None, drawgen=None):
     return v
 
 
+# ----------------------------------------------------------------- who made it (the owner's rule, 2026-11-01)
+# A drawing's Created by field and its PDF author read "Autonomous"; any other name is flagged, and so is any
+# person's name anywhere in a drawing PDF or its metadata. The names looked for come at run time from the repo's
+# own git history (authors, committers, their e-mail names), git's user.name, this machine's user and the optional
+# SPACESHIP_PERSON_NAMES list, so no name is written into the repo; a hit is shown masked.
+
+AUTHOR = "Autonomous"
+# the title blocks' created-by labels: Fusion's 'Created by', drawgen's 'MADE BY', ELECTRICAL's 'DATE / BY'
+BY_LABELS = (("created", "by"), ("made", "by"), ("drawn", "by"), ("designed", "by"), ("date", "/", "by"),
+             ("author",))
+# words that start the next cell on a title block's line
+CELL_WORDS = {"approved", "checked", "tolerances", "tolerance", "document", "title", "rev", "rev.", "date", "sheet",
+              "scale", "size", "units", "mass", "projection", "material", "finish", "status", "project", "part",
+              "drawing", "dwg", "source", "technical", "reference"}
+DATE = re.compile(r"\b\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4}\b")
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+HOME = re.compile(r"(?:/Users/|/home/|[A-Za-z]:\\Users\\)([^/\\\s]+)")
+NOT_PEOPLE = re.compile(r"github|claude|\[bot\]|noreply|autonomous|harness|anthropic|openai|codex", re.I)
+
+
+def person_names(repo=None):
+    """The person names to look for (see above), from sources outside the repo's files."""
+    from common import REPO_ROOT
+    names = set()
+    try:
+        out = subprocess.run(["git", "-C", repo or REPO_ROOT, "log", "--format=%an%n%cn%n%ae%n%ce"],
+                             capture_output=True, text=True, timeout=60).stdout
+        out += "\n" + subprocess.run(["git", "-C", repo or REPO_ROOT, "config", "user.name"],
+                                     capture_output=True, text=True, timeout=10).stdout
+    except (OSError, subprocess.SubprocessError):
+        out = ""
+    out += "\n" + "\n".join(x.strip() for x in os.environ.get("SPACESHIP_PERSON_NAMES", "").split(","))
+    try:
+        import pwd
+        gecos = (pwd.getpwuid(os.getuid()).pw_gecos or "").split(",")[0].strip()
+        if " " in gecos:                    # a full name in the account record, not a bare login
+            out += "\n" + gecos
+    except (ImportError, KeyError):
+        pass
+    for line in out.splitlines():
+        line = line.strip()
+        if not line or NOT_PEOPLE.search(line):
+            continue
+        if "@" in line:                     # an e-mail: the words of its name part ('jane.roe' gives Jane, Roe)
+            names |= {w for w in re.split(r"[._+\-\d]+", line.split("@")[0]) if len(w) >= 3 and w.isalpha()}
+        elif len(re.sub(r"\W", "", line)) >= 3:
+            names.add(line)
+            names |= {w for w in line.split() if len(w) >= 3 and w.isalpha()}
+    return sorted(n for n in names if not NOT_PEOPLE.search(n))
+
+
+def mask(name):
+    return " ".join(w[0] + "*" * (len(w) - 1) for w in name.split())
+
+
+def _rows(words):
+    """Words in rows by their height on the sheet (PyMuPDF's own lines split a title block's cells)."""
+    rows = []
+    for w in sorted(words, key=lambda w: ((w[1] + w[3]) / 2, w[0])):
+        yc, h = (w[1] + w[3]) / 2, w[3] - w[1]
+        if rows and abs(yc - rows[-1][0]) < 0.5 * max(1.0, min(h, rows[-1][1])):
+            rows[-1][2].append(w)
+        else:
+            rows.append([yc, h, [w]])
+    return [(yc, h, sorted(ws, key=lambda w: w[0])) for yc, h, ws in rows]
+
+
+def _by_values(page):
+    """[(label, value)] for each created-by field on a page: the words right of the label on its row up to the next
+    cell, else the first row of words under it in its cell; dates are left out."""
+    words = page.get_text("words")
+    out = []
+    for yc, h, ws in _rows(words):
+        toks = [w[4].strip(":").lower() for w in ws]
+        for i in range(len(toks)):
+            lab = next((l for l in BY_LABELS if tuple(toks[i:i + len(l)]) == l), None)
+            if lab is None:
+                continue
+            j = i + len(lab)
+            k = next((m for m in range(j, len(toks)) if toks[m] in CELL_WORDS or
+                      any(tuple(toks[m:m + len(l)]) == l for l in BY_LABELS)), len(toks))
+            same = ws[j:k]
+            x0 = ws[i][0]
+            x_end = ws[k][0] if k < len(ws) else x0 + 200.0
+            if same:
+                val = " ".join(w[4] for w in same)
+            else:
+                below = [(ryc, rws) for ryc, _rh, rws in _rows([w for w in words if x0 - 1 <= w[0] < x_end])
+                         if yc + 0.6 * h < ryc <= yc + 3.0 * h]
+                val = " ".join(w[4] for w in below[0][1]) if below else ""
+            val = DATE.sub(" ", val)
+            if lab == ("date", "/", "by") and "/" in val:
+                val = val.rsplit("/", 1)[1]
+            val = re.sub(r"^[\s/|:\-]+|[\s/|:\-]+$", "", re.sub(r"\s+", " ", val))
+            out.append((" ".join(lab).upper(), val))
+    return out
+
+
+def drawing_people(pdf, names):
+    """(author problems, person hits) for one drawing PDF: what its created-by fields and metadata author read when
+    not 'Autonomous', and every person's name, e-mail address or home folder in its text, notes or metadata."""
+    import fitz  # PyMuPDF
+    probs, hits = [], set()
+    with fitz.open(pdf) as doc:
+        meta = doc.metadata or {}
+        xmp = doc.get_xml_metadata() or ""
+        texts = [str(v) for v in meta.values() if v] + [re.sub(r"<[^>]+>", " ", xmp)]
+        seen_by = []
+        for n, page in enumerate(doc, start=1):
+            texts.append(page.get_text())
+            for a in page.annots() or []:
+                texts += [str(v) for v in (a.info or {}).values() if v]
+            for lab, val in _by_values(page):
+                seen_by.append((n, lab, val))
+        if not seen_by:
+            probs.append("no Created by field in its title block")
+        for v in sorted({val for _n, _l, val in seen_by if val.strip().lower() != AUTHOR.lower()}):
+            pages = sorted({n for n, _l, val in seen_by if val == v})
+            labs = sorted({l for _n, l, val in seen_by if val == v})
+            probs.append("its %s field reads %s (sheet %s)" % ("/".join(labs), "'%s'" % v if v else "nothing",
+                                                              ", ".join(map(str, pages))))
+        author = (meta.get("author") or "").strip()
+        if author.lower() != AUTHOR.lower():
+            probs.append("its PDF author reads %s" % ("'%s'" % author if author else "nothing"))
+        m = re.search(r"<dc:creator>(.*?)</dc:creator>", xmp, re.S)
+        if m:
+            xc = re.sub(r"<[^>]+>|\s+", " ", m.group(1)).strip()
+            if xc.lower() != AUTHOR.lower():
+                probs.append("its XMP creator reads '%s'" % xc)
+    blob = "\n".join(texts)
+    covered = set()
+    for name in sorted(names, key=len, reverse=True):       # a full name once, not again word by word
+        if name.lower() in covered:
+            continue
+        if re.search(r"(?<![\w])%s(?![\w])" % re.escape(name), blob, re.I):
+            hits.add("a person's name (%s)" % mask(name))
+            covered |= {w.lower() for w in name.split()}
+    for e in EMAIL.findall(blob):
+        hits.add("an e-mail address (%s@...)" % mask(e.split("@")[0]))
+    for u in HOME.findall(blob):
+        hits.add("a home folder path (/Users/%s/...)" % mask(u))
+    return probs, sorted(hits)
+
+
+def check_drawing_people(root, names=None):
+    """C05 drawing-author (major) for every drawing PDF under v2/02-Drawings, and person-name (severe) for every PDF
+    there, proof sheets included."""
+    try:
+        import fitz  # noqa: F401
+    except ImportError:
+        return [], False
+    names = person_names() if names is None else names
+    fs = []
+    # every PDF for a person's name, the pipeline's proof drawings too (the repo is public); the Created by rule for
+    # the drawings themselves (proof/ holds the pipeline's test sheets, left out of the part checks too)
+    for p in walk_files(root, "v2/02-Drawings", exts=(".pdf",), skip=("/.raw/", "/__pycache__/")):
+        r = rel(root, p)
+        try:
+            probs, hits = drawing_people(p, names)
+        except Exception:                       # a PDF that won't open is the drawing checks' business
+            continue
+        if "/proof/" in "/" + r:
+            probs = []
+        gen = made_by_generator(p)
+        owner = GENERATOR_OWNER if gen else owner_for(r, (parse_file_name(r) or {}).get("pn", ""))
+        subj = os.path.splitext(os.path.basename(r))[0]
+        if hits:
+            fs.append(Finding("C05", "person-name", subj, "severe",
+                              "%s carries %s in its text or metadata; the repo is public and drawings carry no "
+                              "person's name (the owner's rule, 2026-11-01)." % (os.path.basename(r), ", ".join(hits)),
+                              "Take it out of the drawing and its PDF metadata, and export again." +
+                              (GENERATOR_FIX if gen else ""), r, owner, {"model": "pdf-people"}))
+        if probs:
+            fs.append(Finding("C05", "drawing-author", subj, "major",
+                              "%s: %s; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF "
+                              "author read '%s'." % (os.path.basename(r), "; ".join(probs), AUTHOR),
+                              "Set the title block's Created by (or Made by) field and the PDF's author to '%s', and "
+                              "export again." % AUTHOR + (GENERATOR_FIX if gen else ""), r, owner,
+                              {"model": "pdf-people"}))
+    return fs, True
+
+
 def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None,
                    bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None, prism_by_pn=None):
     """part_numbers: the made parts and assemblies to check (from the parts
