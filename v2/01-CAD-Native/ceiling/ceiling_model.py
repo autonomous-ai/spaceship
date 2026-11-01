@@ -144,6 +144,17 @@ CEILING_PARAMS = [
     ("cable_hole", "19.1 mm", "mm", "confirmed",
      "PM ruling 2026-11-01: the panel hole ELECTRICAL's cable bushing needs, in the front and back returns: the voice cockpit route from the back wall to the front (REQ-VCK-03, D-41) and the spare path (ISS-069)"),
     ("sprk_d", "150 mm", "mm", "assumption", "reserved round zone for a later sprinkler drop (REQ-US-01)"),
+    # the roof sleeve's flange lies on C2's skin round the slot with the roof grille's 4 rivnuts 838003 (J-AIR-03): the
+    # skin takes a Ø9.53 hole under each (CEILING's layout 2026-11-01, HOLD-04's rule: each rivnut 2 hole diameters from
+    # every free edge, the skin's slot edge too): 2 on the slot's left side, 2 on its back side BEHIND cross member 1,
+    # whose front face is too near the slot for a set rivnut's bulge. AIR's model carries the same names (AIR's sleeve)
+    ("slv_rn_e", "19.2 mm", "mm", "calculation", "rivnut centre to any free edge: 2 x the 9.53 hole (19.06), rounded up (HOLD-04)"),
+    ("slv_rn_in", "20 mm", "mm", "assumption", "the rivnuts this far in from the slot's corners along their sides"),
+    ("slv_bulge", "14 mm", "mm", "assumption", "a set rivnut's blind-side bulge, about 14 across (the hole FRONT clears for body and "
+     "bulge, DR model fr_hole_jf; Sherex gives no size)"),
+    ("slv_rn_clr", "1 mm", "mm", "assumption", "the bulge's clearance to cross member 1's back face"),
+    ("slv_rn_yb", "(pod_d / 2 - wall_depth) + cs_front - x1_ov + tube_w + slv_bulge / 2 + slv_rn_clr", "mm", "calculation",
+     "the back side's rivnuts behind cross member 1: its back face plus half the bulge plus the clearance (Y -273)"),
 ]
 
 # Part numbers: CEILING 41xxxx, ceiling cassette 5103xx (assemblies) and
@@ -513,6 +524,21 @@ def roof_slot_box():
     ox = "(seam_gap / 2 + half_pw)"
     return ("slot_x0 - %s" % ox, "slot_x0 + slot_w - %s" % ox, "slot_y0 - %s" % YW, "slot_y0 + slot_d - %s" % YW,
             "0 mm", "skin_t")
+
+
+def sleeve_rivnuts():
+    """[(name, x, y)] in the pod system: the roof grille's 4 rivnuts in the sleeve's flange over C2's skin, 2 on the
+    slot's left side and 2 on its back side behind cross member 1 (J-AIR-03; AIR's air_model.sleeve_rivnuts)."""
+    return [("SLEEVE RIVNUT LEFT FRONT", "slot_x0 - slv_rn_e", "slot_y0 + slv_rn_in"),
+            ("SLEEVE RIVNUT LEFT BACK", "slot_x0 - slv_rn_e", "slot_y0 + slot_d - slv_rn_in"),
+            ("SLEEVE RIVNUT BACK LEFT", "slot_x0 + slv_rn_in", "slv_rn_yb"),
+            ("SLEEVE RIVNUT BACK RIGHT", "slot_x0 + slot_w - slv_rn_in", "slv_rn_yb")]
+
+
+def skin_c2_holes():
+    """[(name, x, y)] of the Ø hole_rvn holes under the sleeve's rivnuts, in the C2 skin's own system (roof_slot_box's)."""
+    ox = "(seam_gap / 2 + half_pw)"
+    return [(n, "(%s) - %s" % (x, ox), "(%s) - %s" % (y, YW)) for n, x, y in sleeve_rivnuts()]
 
 
 # cassette, in CS-510301

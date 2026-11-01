@@ -111,8 +111,10 @@ def write_flat_parts(v):
     yw = M.ev(v, M.YW)
     sx0, sy0 = v["slot_x0"] - seam, v["slot_y0"] - yw
     p = os.path.join(OUT, fname("skin_c2", "DXF", "dxf"))
+    holes = [("CIRCLE", "CUT", (M.ev(v, x) - M.ev(v, "slot_x0") + sx0, M.ev(v, y) - yw), v["hole_rvn"] / 2)
+             for _n, x, y in M.sleeve_rivnuts()]          # under the roof sleeve flange's 4 rivnuts (J-AIR-03)
     D.write_dxf(p, [("POLY", "CUT", rect(0, 0, v["half_pw"], v["wall_depth"])),
-                    ("POLY", "CUT", rect(sx0, sy0, sx0 + v["slot_w"], sy0 + v["slot_d"]))])
+                    ("POLY", "CUT", rect(sx0, sy0, sx0 + v["slot_w"], sy0 + v["slot_d"]))] + holes)
     out["skin_c2"] = p
     # rib blank: developed width across the hat, length along the rib; bend lines on BEND
     rb = rib_blank(v)

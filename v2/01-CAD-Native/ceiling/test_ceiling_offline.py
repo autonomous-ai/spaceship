@@ -504,6 +504,33 @@ class TurnedCopies(unittest.TestCase):
         self.assertFalse({"412201", "412205"} & {v[0] for v in M.PARTS.values()})
 
 
+class SleeveFlangeHoles(unittest.TestCase):
+    """C2's skin takes a hole under each of the roof sleeve flange's 4 rivnuts (J-AIR-03, CEILING's layout 2026-11-01):
+    each 2 hole diameters from the slot's edge (HOLD-04's rule binds at the skin's free edge too), inside the skin, and
+    each set bulge (about 14 across) clear of C2's members: the back pair sits behind cross member 1, not in front."""
+
+    def test_holes(self):
+        slot = (ev("slot_x0"), ev("slot_x0 + slot_w"), ev("slot_y0"), ev("slot_y0 + slot_d"))
+        members = [tuple(ev(e) for e in b) for _c, _n, _a, b in M.frame_members("C2")]
+        x1 = [tuple(ev(e) for e in b) for c, _n, _a, b in M.frame_members("C2") if c == "X1"][0]
+        r = ev("slv_bulge") / 2
+        holes = [(n, ev(x), ev(y)) for n, x, y in M.sleeve_rivnuts()]
+        self.assertEqual(len(holes), 4)
+        for n, x, y in holes:
+            self.assertFalse(slot[0] < x < slot[1] and slot[2] < y < slot[3], n)
+            d = min(abs(x - slot[0]) if slot[2] <= y <= slot[3] else 1e9, abs(y - slot[3]) if slot[0] <= x <= slot[1] else 1e9)
+            self.assertGreaterEqual(d, 2 * ev("hole_rvn") - 1e-9, "%s: %.2f from the slot" % (n, d))
+            for m in members:
+                g = max(m[0] - (x + r), (x - r) - m[1], m[2] - (y + r), (y - r) - m[3])
+                self.assertGreaterEqual(g, ev("slv_rn_clr") - 1e-9, "%s's bulge meets a C2 member" % n)
+        backs = [y for n, _x, y in holes if "BACK LEFT" in n or "BACK RIGHT" in n]
+        self.assertTrue(all(y > x1[3] for y in backs), "the back pair behind X1")
+        # in the skin's own system (the Fusion cut and the DXF), each hole lands inside the skin
+        for n, x, y in M.skin_c2_holes():
+            sx, sy = ev(x), ev(y)
+            self.assertTrue(-ev("half_pw") < sx < 0 and 0 < sy < ev("wall_depth"), n)
+
+
 class Numbers(unittest.TestCase):
     def test_bands(self):
         seen = set()

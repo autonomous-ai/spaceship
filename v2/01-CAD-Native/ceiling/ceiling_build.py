@@ -758,6 +758,9 @@ def build_skin_bodies(comp, key, ctx):
     if key == "skin_c2":
         box_body(comp, "ROOF SLOT", M.roof_slot_box(), ctx, op=adsk.fusion.FeatureOperations.CutFeatureOperation,
                  bodies=[body])
+        # a hole under each of the roof sleeve flange's 4 rivnuts (J-AIR-03)
+        for name, x, y in M.skin_c2_holes():
+            circle_cut(comp, body, "SKIN " + name, x, y, "hole_rvn", "0 mm", "skin_t", ctx)
     return body
 
 
