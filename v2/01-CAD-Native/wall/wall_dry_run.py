@@ -11,6 +11,10 @@ Nothing is saved, exported or edit-tested.
 Each spec is BUILDER:PART:POSITION, as wall_batch.py's without the mode. A failing spec is printed (DRY|FAIL) and
 the next one runs; the script never raises, and the document that was active is active again at the end.
 
+With --arg post=1 --arg out_dir=ABS (a folder outside the repo), each built design also gets its CAD report
+(report_wall_doc.py) and a STEP written there, so the parts list and the offline STEP checks can run on them; a
+build whose only failure is its end checks (a clash, say) still gets them, marked so. Nothing goes to the repo.
+
 probe:import:PN (PN one of the Joints Engineer's STEPs in v2/03-Manufacturing/joints, say 831008) instead imports
 that STEP into a blank unsaved design the way the builders do (into a sub-component, then renamed, given a
 material, a joint origin, a rigid joint and a second copy) and prints the timeline's health after each step, with
@@ -112,6 +116,29 @@ def probe_import(app, design, repo_root, pn):
     print("PROBE|done %s: second copy %s" % (pn, copy.name))
 
 
+def dry_post(app, design, spec, note=""):
+    """The dry run's stand-in for post_wall_doc.py: the CAD report and a STEP of the unsaved design, both into
+    out_dir (never the repo)."""
+    out_dir = ARGS.get("out_dir", "")
+    if not out_dir or not os.path.isabs(out_dir) or os.path.realpath(out_dir).startswith(
+            os.path.realpath(ARGS["repo_root"])):
+        raise RuntimeError("post=1 needs an absolute out_dir outside the repo, got %r" % out_dir)
+    os.makedirs(out_dir, exist_ok=True)
+    root = design.rootComponent
+    pn = root.partNumber
+    path = os.path.join(ARGS["repo_root"], "v2/01-CAD-Native/wall/report_wall_doc.py")
+    ns = {"__name__": "__fusion_report__", "__file__": path,
+          "SCRIPT_ARGS": {"repo_root": ARGS["repo_root"], "out": os.path.join(out_dir, "%s.json" % pn)}}
+    with open(path, "r", encoding="utf-8") as fh:
+        exec(compile(fh.read(), path, "exec"), ns)
+    ns["run"](None)
+    step = os.path.join(out_dir, "%s_P01_DRY_STEP.step" % pn)
+    em = design.exportManager
+    ok = em.execute(em.createSTEPExportOptions(step, root))
+    print("DRY|post %s%s: report %s.json, STEP %s (%s, %d bytes)" % (
+        spec, note, pn, os.path.basename(step), ok, os.path.getsize(step) if os.path.isfile(step) else 0))
+
+
 def run(_context):
     app = adsk.core.Application.get()
     before = app.activeDocument
@@ -141,7 +168,15 @@ def run(_context):
             print("DRY|start %s (unsaved document)" % spec)
             with open(path, "r", encoding="utf-8") as fh:
                 exec(compile(fh.read(), path, "exec"), ns)
-            ns["run"](None)
+            try:
+                ns["run"](None)
+            except RuntimeError as exc:
+                # the end checks failed (printed above): the design is whole, so the dry post steps still run
+                if ARGS.get("post") == "1" and str(exc).startswith("checks failed"):
+                    dry_post(app, design, spec, " (ITS END CHECKS FAILED, see above)")
+                raise
+            if ARGS.get("post") == "1":
+                dry_post(app, design, spec)
             done.append(spec)
             print("DRY|done %s" % spec)
         except Exception as exc:                          # noqa: BLE001  (report, close, go on)
