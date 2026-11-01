@@ -317,15 +317,20 @@ def air_parts(fill):
          f"{cad}610201 P01 {k['610201']:.3f} less its exhaust fan box {k['610402']:.3f} (the next line but one), its fill "
          f"611203 at {fill:g} kg/m3 (D-81; the CAD has {AIR['sof_fill_rho']:.0f})"),
         ("Supply fan box 610401 with its two transitions, in the right block", sbox,
-         "calculation (CAD); transitions HOLD at their sized masses",
-         f"{cad}casing 611402 at {t3:g} mm (D-124; the CAD's {k['611402']:.3f} at {AIR_FBOX_T_CAD:g} mm), transitions "
-         f"618102 {k['618102']:.2f} and 618103 {k['618103']:.2f} (HOLD, sized); not in the CAD yet: a "
-         f"{AA.FANBOX_BULKHEAD_MM:g} mm bulkhead and 50 mm linings at {AA.FANBOX_LINING_KG_M3:g} kg/m3 where they fit, "
-         f"{rooms['supply']['lined']:.3f} m2 (D-121, the air report's sizes)"),
-        ("Exhaust fan box 610402 and roof sleeve 611601, in the soffit", ebox, "calculation (CAD)",
-         f"{cad}casing 611401 at {t3:g} mm (D-124; the CAD's {k['611401']:.3f} at {AIR_FBOX_T_CAD:g} mm), the roof sleeve "
-         f"{k['611601']:.3f}; not in the CAD yet: the fans' sealed {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead and 50 mm "
-         f"linings where they fit, {rooms['exhaust']['lined']:.3f} m2 (D-121, the air report's sizes)"),
+         "calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses",
+         f"{cad}610401 P01: {sbox:.2f} kg = casing 611402 {k['611402'] * sc:.2f} (the CAD's {k['611402']:.3f} at "
+         f"{AIR_FBOX_T_CAD:g} mm x {t3:g}/{AIR_FBOX_T_CAD:g}: D-124's {t3:g} mm casing, which the model gets in the AIR "
+         f"follow-up) + transitions 618102 {k['618102']:.2f} and 618103 {k['618103']:.2f} (HOLD, sized) + not in the CAD "
+         f"yet (D-121, the air report's sizes): a {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead {un['supply bulkhead']:.2f} and "
+         f"50 mm linings at {AA.FANBOX_LINING_KG_M3:g} kg/m3 where they fit, {rooms['supply']['lined']:.3f} m2, "
+         f"{un['supply linings']:.2f}; the fans are in their own line"),
+        ("Exhaust fan box 610402 and roof sleeve 611601, in the soffit", ebox,
+         "calculation (CAD at 2 mm, scaled to D-124's 3 mm)",
+         f"{cad}610402 P01: {ebox:.2f} kg = casing 611401 {k['611401'] * sc:.2f} (the CAD's {k['611401']:.3f} at "
+         f"{AIR_FBOX_T_CAD:g} mm x {t3:g}/{AIR_FBOX_T_CAD:g}: D-124's {t3:g} mm casing, which the model gets in the AIR "
+         f"follow-up) + the roof sleeve {k['611601']:.3f} + not in the CAD yet (D-121, the air report's sizes): the fans' "
+         f"sealed {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead {un['exhaust bulkhead']:.2f} and 50 mm linings where they fit, "
+         f"{rooms['exhaust']['lined']:.3f} m2, {un['exhaust linings']:.2f}; the fans are in their own line"),
         ("Intake riser 611501, in the right block", k["611501"] + AIR_RISER_FOOT_KG,
          "calculation (CAD); foot and mesh assumption",
          f"{cad}611501 P01 {k['611501']:.3f} (1 mm galvanised steel, 139 x 155 x 1340) and {AIR_RISER_FOOT_KG:g} kg for "
