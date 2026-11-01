@@ -56,7 +56,7 @@ Each line read from a team's merged parts list (CAD on main), against the estima
 | Corner keys, the 30 mm family | 6 | 0.15 | 0.21 | +0.06 | joints 111211 to 111214 P01, PR #139 |
 | Glide load blocks (D-86's 0.4 kg), now BASE's 9 blocks | 1 | 0.40 | 0.22 | -0.18 | BASE 111601 P02 batch 1 (S54), 5 mm EN AW-6082 T6 |
 | Spigots and stop washers (not in this study's fixings kit) | 1 | 0.00 | 0.19 | +0.19 | joints 831001 and 831002 P01, PR #139 |
-| **In all** | | | | **-0.15** | |
+| **In all** | | | | **-0.16** | |
 
 Lines by basis: 31 from CAD on main, 2 partly, 0 from CAD in a team's open PR, 9 estimated.
 
