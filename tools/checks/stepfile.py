@@ -609,28 +609,28 @@ def _group_coaxial(faces, tol=0.02):
 
 
 def _holes(solid):
+    """Concave cylinders that go all the way round. Coaxial faces are split first into runs along their axis (two
+    tube walls are two holes), and each run must cover 359 degrees or more on its own: a slot's half-round end or a
+    notch is no hole, even when another one sits on the same line further along (BASE's back band, D-129: its two
+    end plates' slot ends, 2.4 m apart on one axis, had added up to one 'hole' each)."""
     cyl = [f for f in solid.faces if _concave(f)]
     holes = []
     for g in _group_coaxial(cyl):
-        span = 0.0
-        for f in g:
-            fs = [_arc_span_deg(a) for a in f.arcs if abs(a[1] - f.radius) < 1e-3]
-            span += max(fs) if fs else 0.0
-        if span < 359.0:
-            continue
         axis_o, axis_d = g[0].origin, g[0].normal
-        # split the group into runs along the axis (two tube walls = two holes)
-        ext = sorted((_axis_extent(f, axis_o, axis_d), f) for f in g)
+        ext = sorted(((_axis_extent(f, axis_o, axis_d), f) for f in g), key=lambda x: x[0])
         runs = []
         for (t0, t1), f in ext:
             if runs and t0 <= runs[-1][1] + 1e-3:
                 runs[-1][1] = max(runs[-1][1], t1)
-                runs[-1][2].append(f.id)
+                runs[-1][2].append(f)
             else:
-                runs.append([t0, t1, [f.id]])
-        for t0, t1, fids in runs:
+                runs.append([t0, t1, [f]])
+        for t0, t1, fs in runs:
+            span = sum(max([_arc_span_deg(a) for a in f.arcs if abs(a[1] - f.radius) < 1e-3] or [0.0]) for f in fs)
+            if span < 359.0:
+                continue
             c = _add(axis_o, _mul(axis_d, (t0 + t1) / 2.0))
-            holes.append(Hole(solid.id, c, axis_d, 2.0 * g[0].radius, t1 - t0, fids, t0, t1))
+            holes.append(Hole(solid.id, c, axis_d, 2.0 * g[0].radius, t1 - t0, [f.id for f in fs], t0, t1))
     return holes
 
 
