@@ -6,27 +6,27 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (5cf7aef), PR #105 (f13da19), PR #91 (d96ba84), PR #152 (553fc3c). The Mac's screen at run time: **unlocked**. 448 files in the CAD, drawing and manufacturing folders; the FAI plan's 85 characteristics, 11 functional checks and 19 bought-part test lines.
+Read from: main (f9d8c11), PR #91 (0cb3135), PR #105 (bc3f023), PR #203 (1b3fa40), PR #202 (803aec9). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 86 characteristics, 11 functional checks and 19 bought-part test lines.
 
-**Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.
+**Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. **Open**: something missing that can be done now. **Blocked**: only the drawing is missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: a bought part whose product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD (PM, 2026-11-01).
 
 ## Totals per team
 
-| Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |
-|---|---:|---:|---:|---:|---:|---:|
-| BASE | 5 | 4 | 0 | 3 | 0 | 4 |
-| CEILING | 3 | 11 | 0 | 5 | 0 | 5 |
-| CEILING (builds AIR, D-80) | 14 | 17 | 0 | 1 | 0 | 7 |
-| CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 2 |
-| ELECTRICAL | 10 | 2 | 0 | 3 | 0 | 65 |
-| FRONT | 4 | 18 | 0 | 4 | 1 | 5 |
-| JOINTS | 2 | 4 | 0 | 0 | 0 | 0 |
-| WALL | 6 | 37 | 0 | 5 | 1 | 5 |
-| **All, each number once** | 44 | 102 | 0 | 10 | 2 | 89 |
+| Team | Made: done | Made: open | Made: blocked by the locked screen | Made: HOLD | Bought: done | Bought: open | Bought: HOLD |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| BASE | 3 | 3 | 0 | 3 | 3 | 0 | 4 |
+| CEILING | 3 | 11 | 0 | 0 | 5 | 0 | 5 |
+| CEILING (builds AIR, D-80) | 8 | 17 | 0 | 6 | 1 | 0 | 7 |
+| CEILING (builds INTERIOR, D-80) | 0 | 9 | 0 | 0 | 0 | 0 | 2 |
+| ELECTRICAL | 8 | 2 | 0 | 2 | 3 | 0 | 65 |
+| FRONT | 4 | 18 | 0 | 0 | 4 | 1 | 5 |
+| JOINTS | 2 | 4 | 0 | 0 | 0 | 0 | 0 |
+| WALL | 8 | 34 | 0 | 0 | 5 | 1 | 5 |
+| **All, each number once** | 36 | 98 | 0 | 11 | 10 | 2 | 89 |
 
-102 of the 146 made numbers have no drawing yet; for 83 of them the drawing is the only gap, so their drawings can start now (D-84).
+98 of the 145 made numbers have no drawing yet; for 80 of them the drawing is the only gap, so their drawings can start now (D-84).
 
-What the open made numbers miss: drawing 102, DXF or cut list 15, BOM row 4, CAD 3.
+What the open made numbers miss: drawing 98, DXF or cut list 15, BOM row 3, CAD 3.
 
 ## Made parts with no FAI line
 
@@ -40,13 +40,13 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 110000 | BASE | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01, K-B05, K-B06, K-B07 | open: drawing |
 | 110101 | BASE - BAND ASSY - SIDE - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
-| 111101 | BASE - BAND TUBE - SIDE - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | open: drawing |
+| 111101 | BASE - BAND TUBE - SIDE - LH | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
 | 111601 | BASE - GLIDE DOUBLER - COMMON | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-B09 | done |
 | 110103 | BASE - BAND ASSY - BACK | main | yes | yes | yes | n/a | no | yes | n/a | K-J13, K-J14, K-F06, K-B01 | open: drawing |
 | 111103 | BASE - BAND TUBE - BACK | main | yes | yes | yes | yes | yes | yes | yes | K-J01, K-J02, K-J04, K-J05, K-F06, K-B01, K-B10 | done |
-| 110401 | BASE - FLOOR PANEL ASSY - F1 | main | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | done |
-| 111401 | BASE - FLOOR PANEL - F1 | main | yes | yes | yes | yes | yes | yes | n/a | K-B02, K-B03 | done |
-| 111501 | BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-B04 | done |
+| 110401 | BASE - FLOOR PANEL ASSY - F1 | main | yes | yes | yes | n/a | yes | yes | n/a | K-J13, K-J14, K-F06, K-B01 | HOLD |
+| 111401 | BASE - FLOOR PANEL - F1 | main | yes | yes | yes | yes | yes | yes | n/a | K-B02, K-B03 | HOLD |
+| 111501 | BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-B04 | HOLD |
 
 ### CEILING
 
@@ -55,9 +55,9 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 410000 | CEILING | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
 | 410101 | CEILING - PANEL ASSY - C1 | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
 | 410102 | CEILING - PANEL ASSY - C2 | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P02 | open: drawing |
-| 411101 | CEILING - PANEL FRAME - C1 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-P07 | open: drawing |
-| 411102 | CEILING - PANEL FRAME - C2 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-P07 | open: drawing |
-| 411301 | CEILING - SKIN - C1 | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04 | done |
+| 411101 | CEILING - PANEL FRAME - C1 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
+| 411102 | CEILING - PANEL FRAME - C2 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17, K-P07 | open: drawing |
+| 411301 | CEILING - SKIN - C1 | main | yes | yes | yes | yes | row: a plain strip or sheet (D-125) | yes | n/a | K-P03, K-P04 | done |
 | 411302 | CEILING - SKIN - C2 | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04, K-P06 | done |
 | 510301 | LINING - CASSETTE - CEILING - COMMON | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05, K-L10 | open: drawing |
 | 513101 | LINING - TRAY - CEILING | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02, K-L06 | open: drawing |
@@ -73,12 +73,12 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 610000 | AIR | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
 | 610101 | AIR - AIR COLUMN | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
-| 611106 | AIR - COLUMN FOOT PLATE | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | done |
+| 611106 | AIR - COLUMN FOOT PLATE | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
 | 611101 | AIR - COLUMN FACE - FRONT | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
 | 611102 | AIR - COLUMN FACE - LEFT | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
 | 611103 | AIR - COLUMN CORNER ANGLE | PR #91 | yes | yes | yes | n/a | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
-| 611107 | AIR - COLUMN PLENUM SIDE PLATE - LOW | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | done |
-| 611108 | AIR - COLUMN PLENUM SIDE PLATE - HIGH | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | done |
+| 611107 | AIR - COLUMN PLENUM SIDE PLATE - LOW | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611108 | AIR - COLUMN PLENUM SIDE PLATE - HIGH | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
 | 611104 | AIR - COLUMN FILL | PR #91 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
 | 611105 | AIR - KICK GRILLE | PR #91 | yes | yes | yes | no | no | yes | yes | K-A01, K-A02, K-A03 | open: DXF or cut list, drawing |
 | 610301 | AIR - SPLITTER CARTRIDGE - COMMON | PR #91 | yes | yes | yes | n/a | no | yes | n/a | K-A01, K-A02, K-A03 | open: drawing |
@@ -89,9 +89,9 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 611207 | AIR - SOFFIT UNDERSIDE - RIGHT HINGED | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
 | 611208 | AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
 | 611202 | AIR - SOFFIT FACE - FRONT | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
-| 611205 | AIR - SOFFIT TOP RAIL - DOOR SIDE | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | done |
-| 611209 | AIR - SOFFIT TOP RAIL - ROOM SIDE | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | done |
-| 611206 | AIR - SOFFIT END PLATE - LEFT | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | done |
+| 611205 | AIR - SOFFIT TOP RAIL - DOOR SIDE | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611209 | AIR - SOFFIT TOP RAIL - ROOM SIDE | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
+| 611206 | AIR - SOFFIT END PLATE - LEFT | PR #91 | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-A01, K-A02, K-A03 | HOLD |
 | 611210 | AIR - SOFFIT DOOR-SIDE PLATE | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
 | 611203 | AIR - SOFFIT FILL | PR #91 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-A01, K-A02, K-A03 | done |
 | 611204 | AIR - EXHAUST GRILLE | PR #91 | yes | yes | yes | yes | no | yes | yes | K-A01, K-A02, K-A03 | open: drawing |
@@ -115,7 +115,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 811202 | INTERIOR - LIGHT SHELF - SIDE LH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
 | 811203 | INTERIOR - LIGHT SHELF - SIDE RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I03 | open: drawing |
 | 811204 | INTERIOR - LIGHT SHELF - DOWN CHANNEL RH | main | yes | yes | yes | yes | no | yes | yes | K-A02, K-I01, K-I04 | open: drawing |
-| 811205 | INTERIOR - LIGHT SHELF - DIFFUSER RH | main | yes | yes | yes | n/a | no | yes | n/a | K-A02, K-I01, K-I05 | open: drawing |
+| 811205 | INTERIOR - LIGHT SHELF - DIFFUSER RH | main | yes | yes | yes | n/a | no: as a plain strip or sheet (D-125) its row in v2/03-Manufacturing/interior/810000_P01_INTERIOR-PARTS-LIST_BOM.csv doesn't give a tolerance on the width (one general tolerance on the cut sizes, such as ISO 2768-m or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip) | yes | n/a | K-A02, K-I01, K-I05 | open: drawing |
 
 ### ELECTRICAL
 
@@ -124,14 +124,14 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 710000 | ELECTRICAL | main | yes | yes | yes | n/a | yes: its wiring diagram, routes and joints on sheet 3 (D-93) | yes | n/a | K-E01 | done |
 | 710001 | ELECTRICAL - POWER UNIT - B2 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 711001 | ELECTRICAL - POWER UNIT - ENCLOSURE BODY | main | yes | yes | yes | yes | no | yes | yes | K-E01, K-E02 | open: drawing |
-| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E03 | done |
+| 711002 | ELECTRICAL - POWER UNIT - FRONT PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E03 | HOLD |
 | 710011 | ELECTRICAL - HARNESS - LIGHT FEED - B2/B4 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710021 | ELECTRICAL - HARNESS - TRUNK - B2/R1 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710023 | ELECTRICAL - HARNESS - AIR COLUMN | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710024 | ELECTRICAL - HARNESS - CALL LIGHT - R2 | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710031 | ELECTRICAL - DRAW WIRE - CEILING ROUTE | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
 | 710041 | ELECTRICAL - HUB AND CONTROLS ZONE | main | yes | yes | yes | n/a | yes | yes | n/a | K-E01 | done |
-| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E04 | done |
+| 711005 | ELECTRICAL - HUB ZONE COVER PLATE | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-F06, K-E01, K-E04 | HOLD |
 | 719001 | ELECTRICAL - CORD SET - 220 V VN - 3 M (KIT) | main | yes | yes | yes | n/a | no | yes | n/a | K-E01 | open: drawing |
 
 ### FRONT
@@ -165,8 +165,8 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | PR #152, main | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
-| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | PR #152, main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
+| 831001 | HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS | main | yes | yes | yes | n/a | yes | yes | yes | K-J07 | done |
+| 831002 | HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL | main | yes | yes | yes | yes | DXF and row (D-89) | yes | yes | K-J08 | done |
 | 111211 | BASE - CORNER KEY - BACK - COMMON | main | yes | yes | yes | no | no | yes | yes | K-B08 | open: DXF or cut list, drawing |
 | 111212 | BASE CORNER KEY FRONT LH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
 | 111213 | BASE CORNER KEY FRONT RH | main | no | no | yes | — | no | no | — | K-B08 | open: BOM row, CAD, drawing |
@@ -177,48 +177,47 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | Part | Name | From | BOM row | CAD | STEP | DXF or cut list | Drawing | Mass | Finish | FAI | State |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 210101 | WALL - PANEL ASSY - SIDE LOWER - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211101 | WALL - PANEL FRAME - SIDE LOWER - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
+| 211101 | WALL - PANEL FRAME - SIDE LOWER - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
 | 211301 | WALL - SKIN - SIDE LOWER - LH | main | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
 | 211501 | WALL - CAVITY FILL - SIDE LOWER - LH | main | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
 | 510101 | LINING - CASSETTE - SIDE LOWER - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
 | 511101 | LINING - TRAY - SIDE LOWER - LH | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511301 | LINING - FELT - SIDE LOWER - LH | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | PR #152 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211102 | WALL - PANEL FRAME - SIDE LOWER - RH | PR #152 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
-| 211302 | WALL - SKIN - SIDE LOWER - RH | PR #152 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
-| 211502 | WALL - CAVITY FILL - SIDE LOWER - RH | PR #152 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510102 | LINING - CASSETTE - SIDE LOWER - RH | PR #152 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
-| 511102 | LINING - TRAY - SIDE LOWER - RH | PR #152 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511302 | LINING - FELT - SIDE LOWER - RH | PR #152 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210102 | WALL - PANEL ASSY - SIDE LOWER - RH | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211102 | WALL - PANEL FRAME - SIDE LOWER - RH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 211302 | WALL - SKIN - SIDE LOWER - RH | main | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
+| 211502 | WALL - CAVITY FILL - SIDE LOWER - RH | main | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510102 | LINING - CASSETTE - SIDE LOWER - RH | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 511102 | LINING - TRAY - SIDE LOWER - RH | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 511302 | LINING - FELT - SIDE LOWER - RH | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210103 | WALL - PANEL ASSY - SIDE UPPER - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211103 | WALL - PANEL FRAME - SIDE UPPER - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
+| 211103 | WALL - PANEL FRAME - SIDE UPPER - LH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
 | 211303 | WALL - SKIN - SIDE UPPER - LH | main | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
 | 211503 | WALL - CAVITY FILL - SIDE UPPER - LH | main | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
 | 510103 | LINING - CASSETTE - SIDE UPPER - LH | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
 | 511103 | LINING - TRAY - SIDE UPPER - LH | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511303 | LINING - FELT - SIDE UPPER - LH | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 | 210104 | WALL - PANEL ASSY - SIDE UPPER - RH | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211104 | WALL - PANEL FRAME - SIDE UPPER - RH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
+| 211104 | WALL - PANEL FRAME - SIDE UPPER - RH | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
 | 211304 | WALL - SKIN - SIDE UPPER - RH | main | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
 | 211504 | WALL - CAVITY FILL - SIDE UPPER - RH | main | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
 | 510104 | LINING - CASSETTE - SIDE UPPER - RH | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
 | 511104 | LINING - TRAY - SIDE UPPER - RH | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
 | 511304 | LINING - FELT - SIDE UPPER - RH | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | PR #152 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211201 | WALL - PANEL FRAME - BACK LOWER - B1 | PR #152 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
-| 211401 | WALL - SKIN - BACK LOWER - B1 | PR #152 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
-| 211601 | WALL - CAVITY FILL - BACK LOWER - B1 | PR #152 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510201 | LINING - CASSETTE - BACK LOWER - B1 | PR #152 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
-| 511201 | LINING - TRAY - BACK LOWER - B1 | PR #152 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511401 | LINING - FELT - BACK LOWER - B1 | PR #152 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | PR #152 | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
-| 211202 | WALL - PANEL FRAME - BACK LOWER - B2 | PR #152 | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16 | open: drawing |
-| 211402 | WALL - SKIN - BACK LOWER - B2 | PR #152 | yes | yes | yes | yes | no | yes | n/a | K-P03, K-P04 | open: drawing |
-| 211602 | WALL - CAVITY FILL - BACK LOWER - B2 | PR #152 | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
-| 510202 | LINING - CASSETTE - BACK LOWER - B2 | PR #152 | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
-| 511202 | LINING - TRAY - BACK LOWER - B2 | PR #152 | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
-| 511402 | LINING - FELT - BACK LOWER - B2 | PR #152 | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
-| 510204 | LINING CASSETTE BACK UPPER B4 | PR #152 | no | yes | yes | — | no | no | — | K-L03, K-L05 | open: BOM row, drawing |
+| 210201 | WALL - PANEL ASSY - BACK LOWER - B1 | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211201 | WALL - PANEL FRAME - BACK LOWER - B1 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 211401 | WALL - SKIN - BACK LOWER - B1 | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04 | done |
+| 211601 | WALL - CAVITY FILL - BACK LOWER - B1 | main | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510201 | LINING - CASSETTE - BACK LOWER - B1 | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 511201 | LINING - TRAY - BACK LOWER - B1 | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 511401 | LINING - FELT - BACK LOWER - B1 | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
+| 210202 | WALL - PANEL ASSY - BACK LOWER - B2 | main | yes | yes | yes | n/a | no | yes | n/a | K-J09, K-J10, K-J11, K-J12, K-J13, K-J14, K-J15, K-P01 | open: drawing |
+| 211202 | WALL - PANEL FRAME - BACK LOWER - B2 | main | yes | yes | yes | yes | no | yes | yes | K-J01, K-J02, K-J03, K-J04, K-J05, K-J06, K-J16, K-J17 | open: drawing |
+| 211402 | WALL - SKIN - BACK LOWER - B2 | main | yes | yes | yes | yes | DXF and row (D-89) | yes | n/a | K-P03, K-P04 | done |
+| 211602 | WALL - CAVITY FILL - BACK LOWER - B2 | main | yes | yes | yes | no | no | yes | n/a | K-P05 | open: DXF or cut list, drawing |
+| 510202 | LINING - CASSETTE - BACK LOWER - B2 | main | yes | yes | yes | n/a | no | yes | n/a | K-L03, K-L05 | open: drawing |
+| 511202 | LINING - TRAY - BACK LOWER - B2 | main | yes | yes | yes | yes | no | yes | yes | K-L01, K-L02 | open: drawing |
+| 511402 | LINING - FELT - BACK LOWER - B2 | main | yes | yes | yes | cut list | cut list (D-89) | yes | n/a | K-L04 | done |
 
 ## Bought parts
 
@@ -361,17 +360,17 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
-| 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | PR #152, main | H-12 | yes | T09 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | PR #152, main | H-03 | yes | J-T1, T06 | done |
-| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #152, main | H-01 | yes | J-T1, T06 | done |
-| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #152, main | H-09 | yes | T06 | done |
-| 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | PR #152, main | H-02 | HOLD | J-T2 | HOLD |
-| 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | PR #152, main | H-04 | HOLD | J-T3 | HOLD |
-| 518001 | LINING - CASSETTE CLIP | PR #152, main | H-10 | HOLD | T07 | HOLD |
-| 848011 | SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY | PR #152, main | H-13 | no | no | open: maker and SKU, test |
-| 848012 | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN | PR #152, main | H-14 | HOLD | F-03 | HOLD |
-| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | PR #152 | H-01P | yes | J-T1 | done |
-| 848004 | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE | PR #152 | H-04B | HOLD | J-T3, J-T5 | HOLD |
+| 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | main | H-12 | yes | T09 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
+| 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
+| 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | main | H-02 | HOLD | J-T2 | HOLD |
+| 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | main | H-04 | HOLD | J-T3 | HOLD |
+| 518001 | LINING - CASSETTE CLIP | main | H-10 | HOLD | T07 | HOLD |
+| 848011 | SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY | main | H-13 | no | no | open: maker and SKU, test |
+| 848012 | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 - VERY SOFT FOAM OR FIN | main | H-14 | HOLD | F-03 | HOLD |
+| 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | main | H-01P | yes | J-T1 | done |
+| 848004 | SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE | main | H-04B | HOLD | J-T3, J-T5 | HOLD |
 
 ## Joints-register items no parts list uses yet
 
@@ -381,6 +380,11 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838007 | H-28 | HARDWARE - COUNTERSUNK SCREW - M3 X 8 - ISO 10642 A2 |
 | 838008 | H-29 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
+| 831003 | H-34 | HARDWARE - FRAME CORNER CLEAT - 20 X 40 - 45 DEG |
+| 831004 | H-35 | HARDWARE - FRAME CORNER CLEAT - 40 X 40 - 45 DEG |
+| 831005 | H-36 | HARDWARE - FRAME CORNER CLEAT - 40 X 40 TO 20 X 40 |
+| 831006 | H-37 | HARDWARE - FRAME T PLUG - 20 X 40 STUD |
+| 108003 | H-38 | POD - FRAME CLEAT ADHESIVE - SIKAFAST-5215 NT WITH SIKAFAST-5200 |
 
 ## How it's built
 
@@ -390,6 +394,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 - ELECTRICAL's 710000 is drawn by its wiring diagram, whose sheet 3 holds the route and joint views (D-93).
 - The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: the Joints Engineer makes them and the teams place them by reference (D-95).
 - A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.
+- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or status says HOLD shows HOLD.
 - Finish is asked of metal parts: a `finish` column, or a coating named in the material.
 - FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test that names the number or its register ID.
 - A register number's product status comes from the joints register: on HOLD, or named (DECIDED or from a source), or left to the parts list; a team number's from its parts list.

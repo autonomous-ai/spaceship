@@ -36,6 +36,32 @@ def pdf_text(path):
     return None
 
 
+# D-112: part drawings made by the STEP-driven generator (tools/drawgen) say so in the PDF's Creator or Producer
+# field. They are checked by the same rules; a finding on one goes to the generator's group, which regenerates it.
+GENERATOR = re.compile(r"\bdrawgen\b", re.I)
+GENERATOR_OWNER = "Drawing Generator"
+GENERATOR_FIX = " This drawing was made by tools/drawgen (D-112): fix the generator and regenerate it."
+
+
+def made_by_generator(path):
+    """True when the PDF's Creator or Producer field names drawgen (D-112)."""
+    try:
+        import fitz  # PyMuPDF
+        try:
+            with fitz.open(path) as doc:
+                meta = doc.metadata or {}
+        except Exception:
+            return False
+        return any(GENERATOR.search(str(meta.get(k) or "")) for k in ("creator", "producer"))
+    except ImportError:
+        pass
+    exe = shutil.which("pdfinfo")
+    if exe:
+        out = subprocess.run([exe, path], capture_output=True, text=True, timeout=60).stdout
+        return any(GENERATOR.search(line) for line in out.splitlines() if line.startswith(("Creator:", "Producer:")))
+    return False
+
+
 def index_files(root):
     """pn -> {doctype: [(rev, path)]} for every conventions-named file."""
     idx = {}
@@ -62,6 +88,34 @@ def hole_axes(step_holes):
         else:
             axes.append(h)
     return axes
+
+
+def two_wall_axes(holes):
+    """Hole axes of one body with holes in two walls (a tube drilled through both walls): D-113 wants a section or
+    the opposite view for them."""
+    return sum(1 for a in hole_axes(holes)
+               if sum(1 for h in holes if abs(abs(sum(x * y for x, y in zip(a.axis, h.axis))) - 1.0) < 1e-4 and
+                      _off_axis(h.center, a) < 0.05) >= 2)
+
+
+def _off_axis(p, a):
+    d = [p[k] - a.center[k] for k in range(3)]
+    t = sum(d[k] * a.axis[k] for k in range(3))
+    return max(sum(x * x for x in d) - t * t, 0.0) ** 0.5
+
+
+def body_shape(solid):
+    """A body's shape, however it is placed or turned: face and hole counts, hole sizes and the total length of
+    its straight edges. Copies of one part share it (seven washers at different angles); a frame's members of
+    different lengths don't."""
+    edges = sum(sum((a[k] - b[k]) ** 2 for k in range(3)) ** 0.5 for f in solid.faces for a, b in f.lines)
+    return (len(solid.faces), len(solid.holes), tuple(sorted(round(h.diameter, 2) for h in solid.holes)),
+            round(edges, 1))
+
+
+# D-113 (PM, 2026-11-01), for the generator's drawings: a section (or the opposite view) wherever holes go through
+# both walls of a tube, labelled; and bent parts stay in Fusion
+SECTION_LABEL = re.compile(r"\bSECTION\s+([A-Z])\s*[-\u2013]\s*\1\b|\b([A-Z])\s*[-\u2013]\s*\2\b|\bVIEW(?:ED)?\s+(?:[A-Z]\b|FROM\b)")
 
 
 # D-89 (PM rule, 2026-11-01): a part covered by a tabulated drawing that lists its part number counts
@@ -129,6 +183,136 @@ def cut_list_lacks(root, pn, thickness=False):
                                 for m in FEATURE_WORDS.finditer(v)})
                 if best is None or len(lacks) + len(feats) < len(best[0]) + len(best[2]):
                     best = (lacks, rel(root, p), feats)
+    return best
+
+
+# D-125 (PM, 2026-11-01), extending D-89: a plain straight-cut strip or sheet with no features passes on a full
+# parts-list line instead of a drawing: material and grade, thickness, length, width, finish and tolerance.
+def cuboid_sides(solid):
+    """The three sides of a body that is a plain rectangular block (six flat faces in three square pairs, no holes,
+    no bends), smallest first; None for any other shape."""
+    fs = solid.faces
+    if len(fs) != 6 or any(f.kind != "plane" for f in fs) or solid.holes or solid.bends:
+        return None
+    dirs = []
+    for f in fs:
+        if not any(abs(abs(sum(a * b for a, b in zip(f.normal, d))) - 1.0) < 1e-6 for d in dirs):
+            dirs.append(f.normal)
+    if len(dirs) != 3 or any(abs(sum(a * b for a, b in zip(dirs[i], dirs[j]))) > 1e-6
+                             for i in range(3) for j in range(i + 1, 3)):
+        return None
+    pts = list(solid.points())
+    if not pts:
+        return None
+    sides = [max(sum(a * b for a, b in zip(p, d)) for p in pts) - min(sum(a * b for a, b in zip(p, d)) for p in pts)
+             for d in dirs]
+    return tuple(round(x, 3) for x in sorted(sides))
+
+
+def is_strip(sides):
+    """A strip or sheet rather than a block or a bar: thin, at most 25 mm and half its width (as flat_plate reads a
+    sheet)."""
+    return bool(sides) and sides[0] <= 25.0 and sides[0] <= 0.5 * sides[1]
+
+
+def strip_sides(step_paths, load=None):
+    """D-125's per-part strip list: part number -> the three sides (smallest first) of its one shape, for each part
+    whose bodies, across all the given STEP files, have a single shape (body_shape: copies and the same part in a
+    second file count once) and that shape is a plain rectangular block thin enough to be a strip or sheet
+    (cuboid_sides, is_strip). A part with two or more shapes, a thick block or a bar, or any other shape is left
+    out. load: path -> a parsed STEP (stepfile.StepFile when not given). The release checklist calls this rather
+    than copying it: keep its name and arguments."""
+    if load is None:
+        import stepfile
+        load = stepfile.StepFile
+    shapes = {}
+    for p in step_paths:
+        s = load(p)
+        for inst in s.instances():
+            so = s.solid(inst["solid"])
+            shapes.setdefault(inst["part_number"], {}).setdefault(body_shape(so), so)
+    out = {}
+    for pn, by_shape in shapes.items():
+        if len(by_shape) != 1:
+            continue
+        sides = cuboid_sides(next(iter(by_shape.values())))
+        if is_strip(sides):
+            out[pn] = sides
+    return out
+
+
+PLUS_MINUS = re.compile(r"±|\+\s*/\s*-|\+\s*\d+(?:\.\d+)?\s*/\s*-?\s*\d")    # ±0.5, +/-1, +0/-0.5, +0.10/0
+
+
+def tolerance_cover(tolerance_texts, row_texts):
+    """D-125 (PM, 2026-11-01): which cut sizes, of 'length' and 'width', a parts-list line's tolerance covers. One
+    general tolerance covers both (ISO 2768, or a ± on the cut sizes, all sizes, or no size named); otherwise each
+    takes its own (a ± naming the length or the width). A bought strip whose width comes from the supplier says
+    "width as supplied" anywhere in its line. A ± on the thickness, bends, angles, holes or flatness covers neither;
+    the thickness takes the sheet's own tolerance, as its grade names it."""
+    cover = set()
+    if any(re.search(r"\bwidth\s+as\s+supplied\b", t or "", re.I) for t in row_texts):
+        cover.add("width")
+    for text in tolerance_texts:
+        for clause in re.split(r"[;,]", text or ""):
+            if re.search(r"ISO\s*2768", clause, re.I):
+                cover |= {"length", "width"}
+                continue
+            if not PLUS_MINUS.search(clause):
+                continue
+            named = False
+            if re.search(r"\blength|\blong\b", clause, re.I):
+                cover.add("length")
+                named = True
+            if re.search(r"\bwidth|\bwide\b", clause, re.I):
+                cover.add("width")
+                named = True
+            if not named and not re.search(r"thick|\bbent\b|\bbend|angle|°|hole|position|flat|square", clause, re.I):
+                cover |= {"length", "width"}          # on the cut sizes, all sizes, or no size named
+    return cover
+
+
+def strip_row_lacks(root, pn, sides):
+    """D-125: None when no list has a row for pn; else (what the most complete row lacks, its file). A full row
+    gives the material with its grade (a grade on HOLD counts as stated, as C11 holds such rows; the part stays HOLD
+    until the grade is named), the thickness, width and length as in the STEP, the finish, a tolerance covering both
+    cut sizes (tolerance_cover), and names no feature (hole, slot, notch, pocket, cut-out). Any .csv under
+    v2/03-Manufacturing or v2/02-Drawings counts, as for D-89. The release checklist calls this function (and
+    cuboid_sides, is_strip) rather than copying it: keep their names and arguments."""
+    from common import read_csv
+    from c_parts import GRADE_HINT, VAGUE_FINISH
+    best = None
+    for top in ("v2/03-Manufacturing", "v2/02-Drawings"):
+        for p in walk_files(root, top, exts=(".csv",)):
+            for row in read_csv(p):
+                if not any((v or "").strip() == pn for v in row.values() if isinstance(v, str)):
+                    continue
+                lacks = []
+                mat = " ".join(v for _k, v in _cell(row, r"material|grade"))
+                if not mat:
+                    lacks.append("material")
+                elif not (GRADE_HINT.search(mat) or re.search(r"\b(?:grade|alloy)\b\s*:?\s*\w", mat, re.I)):
+                    lacks.append("the material's grade")
+                nums = [float(x) for _k, v in _cell(row, r"size|dimension|length|width|thick|^[lwt]_?mm$")
+                        for x in re.findall(r"\d+(?:\.\d+)?", v)]
+                if any(not any(abs(n - x) <= max(0.1, 0.002 * x) for n in nums) for x in sides):
+                    lacks.append("thickness, width and length as in its STEP (%s mm)" % " x ".join("%g" % x for x in sides))
+                fin = " ".join(v for _k, v in _cell(row, r"finish"))
+                if not fin or VAGUE_FINISH.search(fin):
+                    lacks.append("finish")
+                texts = [v for v in row.values() if isinstance(v, str)]
+                tols = [v for _k, v in _cell(row, r"tol")] + [v for v in texts if PLUS_MINUS.search(v)]
+                missing = [x for x in ("length", "width") if x not in tolerance_cover(tols, texts)]
+                if missing:
+                    lacks.append("a tolerance on the %s (one general tolerance on the cut sizes, such as ISO 2768-m "
+                                 "or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip)"
+                                 % " and the ".join(missing))
+                feats = sorted({m.group(0).lower() for v in row.values() if isinstance(v, str)
+                                for m in FEATURE_WORDS.finditer(v)})
+                if feats:
+                    lacks.append("a plain piece (its row names %s)" % " and ".join(feats))
+                if best is None or len(lacks) < len(best[0]):
+                    best = (lacks, rel(root, p))
     return best
 
 
@@ -312,7 +496,8 @@ def missing_drawing_severity(root):
     return v
 
 
-def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None):
+def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None,
+                   bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes.
     faces_by_pn: pn -> face count of each of its bodies (a plain rectangle has 6).
@@ -321,6 +506,9 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     faces_by_pn = faces_by_pn or {}
     src_by_pn = src_by_pn or {}
     flat_by_pn = flat_by_pn or {}      # pn -> (ok, thickness, why) from the STEP (D-89 part 4)
+    bends_by_pn = bends_by_pn or {}    # pn -> most bends in one of its bodies (D-113)
+    two_wall_by_pn = two_wall_by_pn or {}   # pn -> hole axes through two walls of one body (D-113)
+    cuboid_by_pn = cuboid_by_pn or {}  # pn -> sides of its one shape when that is a plain rectangular block (D-125)
     fs = []
     idx = index_files(root)
     missing_sev = missing_drawing_severity(root)          # PM rulings D-73, D-84: see config/policy.csv
@@ -353,12 +541,14 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
             tab_revs = {rv for rv, _p, _own in tab[pn]}
             if cad_revs and not (tab_revs & cad_revs):
                 rv, tp, own = sorted(tab[pn])[-1]
+                gen = made_by_generator(tp)
                 fs.append(Finding("C05", "rev-mismatch", pn, "major",
                                   "%s: its tabulated drawing %s is revision %s but its CAD/STEP is revision %s." % (
                                       label, os.path.basename(tp), "/".join(sorted(tab_revs)),
                                       "/".join(sorted(cad_revs))),
-                                  "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
-                                  rel(root, tp), owner))
+                                  "Export the drawing, CAD and STEP from the same revision (guideline section 4.2)." +
+                                  (GENERATOR_FIX if gen else ""),
+                                  rel(root, tp), GENERATOR_OWNER if gen else owner))
             continue
         kind = soft_kind(names.get(pn, ""))
         if not pdfs and kind == "soft" and files.get("DXF"):
@@ -393,14 +583,23 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   ", thickness" if kind == "soft" else "", need),
                               r_where, owner))
             continue
+        d125 = ""
+        sides = cuboid_by_pn.get(pn)
+        if not pdfs and cls == "part" and not kind and is_strip(sides):
+            row = strip_row_lacks(root, pn, sides)
+            if row is not None and not row[0]:
+                continue        # D-125: a plain straight-cut strip or sheet, given in full by its parts-list row
+            d125 = " D-125 (a plain straight-cut strip or sheet on a full parts-list row) doesn't apply: %s." % (
+                "no parts list has a row for it" if row is None else
+                "its row in %s doesn't give %s" % (row[1], ", ".join(row[0])))
         if not pdfs and cls == "part" and files.get("DXF"):
             # D-89 part 4: a flat sheet part goes on its DXF and its parts-list row
             lacks = flat_cut_lacks(root, pn, files, holes_by_pn.get(pn), flat_by_pn.get(pn))
             if not lacks:
                 continue
             fs.append(Finding("C05", "no-drawing", pn, missing_sev,
-                              "%s has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: %s." % (
-                                  label, "; ".join(lacks)),
+                              "%s has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: %s.%s" % (
+                                  label, "; ".join(lacks), d125),
                               "Make its drawing; or, for a flat part cut from sheet with no bends and no machined "
                               "features, give the full outline and every hole in its DXF and material, thickness, "
                               "finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
@@ -408,8 +607,8 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
             continue
         if not pdfs:
             fs.append(Finding("C05", "no-drawing", pn, missing_sev if cls == "part" else "major",
-                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s." % (
-                                  label, pn, " though its CAD is in %s" % r_where if r_where else ""),
+                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s" % (
+                                  label, pn, " though its CAD is in %s" % r_where if r_where else "", d125),
                               "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
                               r_where, owner))
             continue
@@ -417,11 +616,22 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
         cad_revs = {rv for rv, _p in files.get("CAD", []) + files.get("STEP", [])}
         rv, pdf = sorted(pdfs)[-1]
         rp = rel(root, pdf)
+        gen = made_by_generator(pdf)
+        if gen:                                     # D-112: the generator's group fixes its own drawings
+            owner, gen_fix = GENERATOR_OWNER, GENERATOR_FIX
+        else:
+            gen_fix = ""
+        if gen and bends_by_pn.get(pn):
+            fs.append(Finding("C05", "generated-bent-part", pn, "major",
+                              "%s has %d bends in its STEP, but its drawing %s was made by tools/drawgen; D-113 keeps "
+                              "bent parts, brackets included, in Fusion." % (label, bends_by_pn[pn], os.path.basename(rp)),
+                              "Leave this part to Fusion: take it off the generator's list and delete the generated "
+                              "drawing once Fusion's is in (D-113).", rp, owner))
         if cad_revs and not (revs & cad_revs):
             fs.append(Finding("C05", "rev-mismatch", pn, "major",
                               "%s: drawing revision %s but CAD/STEP revision %s." % (
                                   label, "/".join(sorted(revs)), "/".join(sorted(cad_revs))),
-                              "Export the drawing, CAD and STEP from the same revision (guideline section 4.2).",
+                              "Export the drawing, CAD and STEP from the same revision (guideline section 4.2)." + gen_fix,
                               rp, owner))
         if "WIRING-DIAGRAM" in os.path.basename(pdf).upper():
             continue        # D-93: ELECTRICAL's wiring diagram draws 710000 (routes and joints on sheet 3); a schematic
@@ -440,10 +650,18 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                 lacks.append("finish")
         if not re.search(r"ISO\s*2768|ISO\s*22081|GENERAL TOLERANCE|TOLERANCE|±|\+/-", up):
             lacks.append("tolerances (a general rule or values on the dimensions)")
+        if gen and two_wall_by_pn.get(pn) and not SECTION_LABEL.search(up):
+            fs.append(Finding("C05", "no-section", pn, "major",
+                              "%s has %d hole axes through two walls in its STEP, but its generated drawing %s has no "
+                              "section label (SECTION A-A, or A-A) and no opposite view label (VIEW B, VIEW FROM)." % (
+                                  label, two_wall_by_pn[pn], os.path.basename(rp)),
+                              "Draw a section through those holes, hatched per ISO 128-50, or the opposite view, and "
+                              "label it (D-113)." + gen_fix, rp, owner))
         if lacks:
             fs.append(Finding("C05", "drawing-content", pn, "major",
                               "%s drawing %s doesn't state: %s." % (label, os.path.basename(rp), ", ".join(lacks)),
-                              "Add them to the title block or the notes (guideline sections 3.1, 6.3, 9).", rp, owner))
+                              "Add them to the title block or the notes (guideline sections 3.1, 6.3, 9)." + gen_fix,
+                              rp, owner))
         n_axes = len(hole_axes(holes_by_pn.get(pn, [])))
         if cls == "part" and n_axes:
             tags = set(re.findall(r"\bH\d{2}\b", up))
@@ -454,10 +672,11 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   "%s has %d hole axes in its STEP, but drawing %s has no hole tags, no hole table "
                                   "and no diameter callouts." % (label, n_axes, os.path.basename(rp)),
                                   "Tag every hole (H01...), dimension it to its centre from the datums or put it in "
-                                  "a hole table with X (mm) and Y (mm) (guideline section 6.2).", rp, owner))
+                                  "a hole table with X (mm) and Y (mm) (guideline section 6.2)." + gen_fix, rp, owner))
             elif tags and len(tags) < n_axes and not table:
                 fs.append(Finding("C05", "holes-untagged", pn, "major",
                                   "%s has %d hole axes in its STEP but %d hole tags on drawing %s and no hole "
                                   "table." % (label, n_axes, len(tags), os.path.basename(rp)),
-                                  "Tag the rest, or show they share a tag through a pattern note.", rp, owner))
+                                  "Tag the rest, or show they share a tag through a pattern note." + gen_fix, rp,
+                                  owner))
     return fs
