@@ -312,8 +312,26 @@ def test_ceiling_frame_bevels():
     compose.make("411101", "ceiling", {"tolerance": "test"}, p)
     fails, _st = readback.check(p)
     assert not fails, fails
-    data = readback.read_data(fitz.open(p))
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
     assert sorted(c["long"] for c in data["chamfers"]) == [False, True], data["chamfers"]
+    assert "showing its bevel along it" in " ".join(doc[0].get_text().split())      # its 2:1 section (Reviewer 6)
+    # Reviewer 6's plant on #331: the seam bevel's callout moved 50 mm, its record moved with it: the read-back
+    # still finds the bevel in the STEP and fails the callout that isn't by it
+    step = os.path.join(readback.REPO, [s_ for s_ in data["sources"] if s_["role"] == "STEP"][0]["path"])
+    planes = [f for f in readback.step_faces(step, data["pn"], data.get("placement"))
+              if f["kind"] == "plane" and "n" in f and f["pts"]]
+    texts = readback.text_boxes(doc[0], data["sheet_h"])
+    assert not readback.flat_feature_fails(data, planes, texts)
+    i = next(j for j, c in enumerate(data["chamfers"]) if c["long"])
+    bx, tip = data["chamfers"][i]["box"], data["chamfers"][i]["tip"]
+    moved = [(t[0] + 50, t[1], t[2] + 50, t[3], t[4], t[5]) if t[4] == "1 x 45°" and abs(t[0] - bx[0]) < 3 and
+             abs(t[1] - bx[1]) < 3 else t for t in texts]
+    assert moved != texts
+    data["chamfers"][i]["box"] = [bx[0] + 50, bx[1], bx[2] + 50, bx[3]]
+    data["chamfers"][i]["tip"] = [tip[0] + 50, tip[1]]
+    f2 = readback.flat_feature_fails(data, planes, moved)
+    assert any("along the member: its size 1 x 45° is not printed by it" in x for x in f2), f2
 
 
 def _cut_tube(path, kind, deg=45.0):

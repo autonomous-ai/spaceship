@@ -481,6 +481,7 @@ def flat_feature_fails(data, planes, texts, tol=TOL):
     part's own end and side faces, are what the sheet prints beside it (a notch said to be the same as the drawn one
     measures the same); each chamfer's faces have the legs its callout gives, equal, at 45°."""
     fails = []
+    views_all = data.get("views", [])
     allp = [q for f in planes for q in f["pts"]]
     if not allp:
         return ["the STEP has no flat faces for this part"]
@@ -533,10 +534,27 @@ def flat_feature_fails(data, planes, texts, tol=TOL):
         v = _num(ch["text"])
         if v is None or abs(v - la) > tol or abs(v - ls) > tol or not ch["text"].endswith("x 45°"):
             fails.append("%s: the sheet says %s, the STEP's legs %.3f and %.3f" % (where, ch["text"], la, ls))
+        # the callout by the chamfer itself, as the STEP places it (Reviewer 6 on #331: a callout moved 40 to 67 mm
+        # away, its record moved with it, still passed): within 25 mm (plus 1.5 times the chamfer's narrower side on
+        # paper) of the middle of its faces, as some drawn view projects them
+        cen = tuple(sum(q[i] for q in qs) / len(qs) for i in range(3))
+        near_it = False
+        for v in [v for v in views_all if v.get("off") and v.get("scale")]:
+            P = lambda q: (v["off"][0] + v["scale"] * dot(q, v["x"]), v["off"][1] + v["scale"] * dot(q, v["y"]))
+            pc = P(cen)
+            pp = [P(q) for q in qs]
+            narrow = min(max(a[0] for a in pp) - min(a[0] for a in pp), max(a[1] for a in pp) - min(a[1] for a in pp))
+            reach = 25.0 + 1.5 * narrow
+            if any(t[4] == ch["text"] and math.hypot((t[0] + t[2]) / 2 - pc[0], (t[1] + t[3]) / 2 - pc[1]) <= reach
+                   for t in texts):
+                near_it = True
+                break
+        if not near_it:
+            fails.append("%s: its size %s is not printed by it" % (where, ch["text"]))
         tip = ch["tip"]
         at = ch.get("box") or (tip[0], tip[1], tip[0], tip[1])
         if not _text_near(texts, ch["text"], at, pad=2.5 if ch.get("box") else 25.0):
-            fails.append("%s: its size %s is not printed by it" % (where, ch["text"]))
+            fails.append("%s: its size %s is not where the sheet's record puts it" % (where, ch["text"]))
     return fails
 
 

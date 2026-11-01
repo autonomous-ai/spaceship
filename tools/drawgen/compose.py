@@ -863,6 +863,22 @@ def plan_views(part, spec):
         r.n = n
         r.y = y
         pl.removed.append(r)
+    # a bevel along a member is drawn at its true 45° in a section across that member (Reviewer 6 on #331: C1's seam
+    # bevel showed only as a band at 1:5): one is added where no removed section crosses that member
+    for ch in getattr(part, "chamfers", []):
+        if not ch.long or any(r_.body is ch.body for r_ in pl.removed):
+            continue
+        P0 = pl.principal
+        yv = next((c for c in (P0.y, P0.x, P0.n) if abs(vdot(c, ch.lax)) < 0.99), None)
+        yv = vnorm(vsub(yv, vmul(ch.lax, vdot(yv, ch.lax))))
+        pts = [geom.pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(q))) for q in geom._vertices_of(ch.body.shape)]
+        sv = [vdot(q, ch.lax) for q in pts]
+        r = Plan()
+        r.feats, r.all, r.body = [], [], ch.body
+        r.n, r.y = ch.lax, yv
+        r.point = vadd(ch.body.centroid, vmul(ch.lax, (min(sv) + max(sv)) / 2 - vdot(ch.body.centroid, ch.lax)))
+        r.bevel = ch
+        pl.removed.append(r)
     # a thin plate or strip: a section across its middle shows the thickness the plan view can't (guideline 6.1)
     k = min(range(3), key=lambda i: part.size[i])
     if not pl.removed and part.size[k] < 6.0 and len(part.bodies) == 1:
@@ -2148,7 +2164,8 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         vd.title_drop = 14.0
         title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
               ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
-              if vd.r.feats else "across the middle, showing the thickness",
+              if vd.r.feats else ("across %s, showing its bevel along it" % (vd.r.body.name or "the member"))
+              if getattr(vd.r, "bevel", None) else "across the middle, showing the thickness",
               extra=mapping_words(vd.view, part.pod_system))
     sh.flush()
     # ---- centre marks, origins and tags (draw's place_marks), clear of everything above
