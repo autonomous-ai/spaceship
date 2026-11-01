@@ -469,14 +469,13 @@ def open_or_create(app, name):
     folder = proj.rootFolder
     for n in parts[1:]:
         folder = folder.dataFolders.itemByName(n)
-    found, unreadable = [], 0
-    for i in range(folder.dataFiles.count):
-        try:
-            f = folder.dataFiles.item(i)
-            if f.name == name:
-                found.append(f)
-        except RuntimeError:
-            unreadable += 1
+    # the shared folder reader (tools/fusion/fusion_folder.py, given to every script by the runner): one fetch of the
+    # folder per pass; reading it entry by entry took about 7 min on 2026-11-01 (the follow-up build ran past 900 s)
+    from fusion_folder import read_folder
+    files, unknown, _others = read_folder(folder, stop_when=lambda fs, _u, _o: name in fs)
+    found, unreadable = list(files.get(name, [])), len(unknown)
+    if len(found) > 1:
+        raise RuntimeError("%d files called %r in %s; rename the extra ones first (D-141)" % (len(found), name, FOLDER))
     app.data.activeProject = proj
     if found:
         d = app.documents.open(found[0], True)
