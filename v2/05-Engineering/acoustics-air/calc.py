@@ -337,9 +337,26 @@ TUBE_KG_M = {
 }
 
 
+# D-131 (PM ruling 2026-11-01): the wall, ceiling and decor-core frames are welded, galvanised steel tube with the same
+# outside sections. The Joints Engineer's gauges (1.0 mm for perimeters, 40 x 40s and members with a bolt, spigot, rivnut
+# or stud; 0.8 mm for studs; Z100 zinc), with 5 studs per side panel (D-135) and 1.2 mm rails and front stiles on the
+# side panels for margin, put 52.3 kg more on the 10 wall and ceiling frames (source, the Joints Engineer's latest).
+# Spread over this model's wall and ceiling area, that takes the decided 20 x 40 frames from aluminium's 1.87 kg/m2 to
+# about 5.14 (the steel-to-aluminium ratio below); every v2 frame in the search takes the same ratio (calculation). The
+# decor cores' steel comes with FRONT's rework; until then they stay in REST_KG as they were.
+FRAMES_STEEL = True
+STEEL_FRAME_DELTA_KG = 52.3
+
+
+def steel_frame_ratio():
+    alu = TUBE_KG_M["alu 20x40x1.2"] * TUBE_M_PER_M2_400
+    return 1 + STEEL_FRAME_DELTA_KG / ((OUT_WALL_M2 + OUT_CEIL_M2) * alu)
+
+
 def frame(t):
     if t.startswith("alu"):
-        return TUBE_KG_M[t] * TUBE_M_PER_M2_400      # all aluminium frames at the DECIDED 400 mm pitch
+        kg = TUBE_KG_M[t] * TUBE_M_PER_M2_400        # the v2 frames at the DECIDED 400 mm pitch
+        return kg * steel_frame_ratio() if FRAMES_STEEL else kg     # in steel since D-131
     return TUBE_KG_M[t] * TUBE_M_PER_M2
 
 
@@ -413,9 +430,9 @@ def walls():
               [a3, al1], 100, 100, ("none",), True, al100, 113),
         Build("DL-ST-40-FLG", "ACP 3 / 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
               [a3, s05], 40, 40, ("none",), True, al, 81, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
-        Build("DL-ST-40-FLG-12", "ACP 3 / 20x40x1.2 frame, 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
+        Build("DL-ST-40-FLG-12", "ACP 3 / 20x40 steel frame (D-131), 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
               [a3, s05], 40, 40, ("none",), True, frame("alu 20x40x1.2"), 81, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
-        Build("DL-ST4-40-FLG-12", "ACP 3 / 20x40x1.2 frame, 40 fill / floating cassette: steel 0.4 tray, 25 air, felt 9",
+        Build("DL-ST4-40-FLG-12", "ACP 3 / 20x40 steel frame (D-131), 40 fill / floating cassette: steel 0.4 tray, 25 air, felt 9",
               [a3, plate("steel 0.4", [layer("steel", 0.4)])], 40, 40, ("none",), True, frame("alu 20x40x1.2"), 81,
               extra_kg_m2=TRAY_KG_M2 * 0.8, felt_gap=True),
         Build("DL-ST-100-FLG", "ACP 3 / 100 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
@@ -531,7 +548,8 @@ ALPHA = {
 # ---------------------------------------------------------------------------
 GEOM = {
     "v1": dict(w=2.372, d=1.480, h=2.223),   # V1_BOM inside size, source
-    "v2": dict(w=2.42, d=1.50, h=2.30),      # calculation from PLAN outside size; build-ups ASSUME
+    "v2": dict(w=2.42, d=1.50, h=2.312),     # calculation from PLAN outside size; build-ups ASSUME; 12 mm taller
+                                             # with no floor (D-132)
 }
 DOOR_W, DOOR_H = 1.1756, 2.011               # V1_BOM GL-01 (kept in v2: same look)
 DOOR_M2 = DOOR_W * DOOR_H
@@ -540,6 +558,7 @@ FIXED_M2 = 3.425 - DOOR_M2                   # finished fixed-glass shape from t
 GLASS_M2 = DOOR_M2 + FIXED_M2
 OUT_WALL_M2 = 2 * 1.5 * 2.29 + 2.424 * 2.252  # layout-study panel areas: 2 sides 1500 x 2290 + back 2424 x 2252
 OUT_CEIL_M2 = 2.424 * 1.5                       # layout-study ceiling 2424 x 1500
+FLOOR_REMOVED_KG = 21.0   # D-132 (PM ruling 2026-11-01): the floor panels, their foam and the threshold go, about 21 kg
 REST_KG = 102.4   # layout study (branch super-tab/7667a51, commit cb7009f, work in progress): 'Spaceship light
                   # indoor build' total 303.0 kg minus walls+ceiling 103.0, felt 29.0 and glass 68.5. Includes the
                   # thin floor and base band, decor blocks, door hardware with drop seal and glazing profiles,
@@ -1122,8 +1141,8 @@ FIXES = [
     ("Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block)",
      dict(vents="silenced"), round(d60_air_kg("al20") - d60_ceiling_saving_kg() - 3.0, 1),
      "calculation: the D-60 air parts less the ceiling lining the soffit replaces and the 3 kg in the layout study's rest"),
-    ("Thin floor with base seal (DECIDED, D-05)", dict(floor="thin", base_seal=True), 0.5,
-     "HW base-seal row; the floor itself is in the weight study"),
+    ("No floor of its own, a base seal lip on the room floor (D-132; was D-05's thin floor)", dict(floor="thin", base_seal=True),
+     0.5, "HW base-seal row; the pod stands on the room's slab, as the model already took it"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
 ]
 FIX_ALL = {}
@@ -1139,7 +1158,7 @@ EXTRA_FIX_KG = 2.6
 
 def pod_total_kg(cfg, wb, gb):
     """Whole pod, all light fixes on: rest of pod + wall and ceiling build-ups (with felt, fill, frame) + front."""
-    kg = REST_KG + EXTRA_FIX_KG
+    kg = REST_KG + EXTRA_FIX_KG - (FLOOR_REMOVED_KG if cfg.get("floor") == "thin" else 0.0)   # D-132: no floor
     kg += wb[cfg["wall"]].kg_m2 * OUT_WALL_M2 + wb[cfg.get("ceiling", cfg["wall"])].kg_m2 * OUT_CEIL_M2
     kg += gb[cfg["glass"]].kg_m2 * GLASS_M2 + FRONT_EXTRA_KG.get(cfg["glass"], 0.0)
     kg += d60_air_kg(cfg.get("casing", "al20")) - d60_ceiling_saving_kg() - 3.0   # D-60 air parts, less the ceiling
