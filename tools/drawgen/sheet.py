@@ -694,6 +694,26 @@ class Sheet:
                 self.line((W - margin, yy), (W - margin + 5, yy), W_THIN)
         self.rect(margin_left - 5, margin - 5, W - margin_left - margin + 10, H - 2 * margin + 10, W_THIN)
 
+    def table_height(self, cols, rows, size=H_TEXT, row_h=None, head_size=None, title=None, title_size=None):
+        """The height table() would draw, without drawing (same wrapping)."""
+        head_size = head_size or size
+        title_size = title_size or size
+        row_h = max(row_h or 0.0, size * 2.6)
+        lead = size * 1.65
+        total_w = sum(c[1] for c in cols)
+        hgt = 0.0
+        if title:
+            lines = title if isinstance(title, (list, tuple)) else [title]
+            n = sum(len(self.wrap(ln, title_size, total_w - 3.0, bold=(i == 0))) for i, ln in enumerate(lines))
+            hgt += n * title_size * 1.65 + 2.2
+        hl = [self.wrap(h, head_size, w - 1.6, bold=True) for h, w, al in cols]
+        hgt += max(row_h, max(len(x_) for x_ in hl) * head_size * 1.6 + (row_h - head_size * 1.6))
+        for r in rows:
+            nlines = max([1] + [len(self.wrap(str(v), size, w - 2.0)) for (h, w, al), v in zip(cols, r)
+                                if v not in (None, "")])
+            hgt += row_h + (nlines - 1) * lead
+        return hgt
+
     def table(self, x, y_top, cols, rows, size=H_TEXT, row_h=None, head_size=None, title=None, title_size=None):
         """A ruled table from its top-left corner down. cols: [(header, width mm, align)]; rows: lists of cell
         strings, wrapped to their column (never cut). Sizes are letter heights. Returns the y of its bottom."""

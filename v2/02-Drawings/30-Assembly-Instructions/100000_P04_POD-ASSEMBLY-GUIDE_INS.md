@@ -141,7 +141,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 9](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-09_IMG.png)
 
 - **Time:** about 2 min for 2 people.
-- **Parts:** **2-09** FRONT - DECOR BLOCK - DL (10.0 kg).
+- **Parts:** **2-09** FRONT - DECOR BLOCK ASSY - DL (12.3 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DL stands on its spigots on the band, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
 - **Person A:** With B, carries DL (2.3 m) from its place to the front-left and stands it on its spigots on the band, against L1 and L2's front edges, hinge halves toward the door opening.
 - **Person B:** Drives 3 bolts into DL from each of L1's and L2's front bays (6). DL stands on its spigots on the band and needs no bolt there (J-FRONT-02).
@@ -152,7 +152,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 10](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png)
 
 - **Time:** about 10 min for 2 people.
-- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK - DR (18.6 kg).
+- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK ASSY - DR (18.9 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DR stands on its spigots on its support, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
 - **Person A:** Opens the crate. With B, lifts the fixed glass out on 2 suction lifters, carries it upright and drops its bottom edge into the U-channel already fitted on the sill, onto its setting blocks; then holds it upright with both lifters.
 - **Person B:** Brings DR (2.3 m, 18 kg) to the right of the opening and slides it in from the side so its channels take the glass's right and diagonal edges, back onto its stops; drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). A lets go only now.
@@ -174,7 +174,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 12](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-12_IMG.png)
 
 - **Time:** about 3 min for 2 people.
-- **Parts:** **2-12** FRONT - DECOR BLOCK - DT (7.1 kg).
+- **Parts:** **2-12** FRONT - DECOR BLOCK ASSY - DT (7.9 kg).
 - **Fasteners:** 4 × 838001 M6 × 16 (J-FRONT-03). Tool: the 5 mm hex key.
 - **Person A:** From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge.
 - **Person B:** Drives DT's 4 bolts to the ceiling (J-FRONT-03).

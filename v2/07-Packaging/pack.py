@@ -217,8 +217,8 @@ R = {
     "RISER": "Intake riser",
     "ROOF": "Roof slot grille",
     "FANS": "Four 12 V fans",
-    "SEALS": "Door edge seals, base seal",
-    "ELEC": "Switches and harness",   # ELECTRICAL's line: power unit 2.80 kg (in B2) + harness, cord set, hub zone, lights
+    "SEALS": "Base seal and cable grommets",   # the door edge seals are in FRONT's parts lists (PM ruling, #105)
+    "ELEC": "Switches and harness",   # ELECTRICAL's line: the power unit (in B2, its share from ELECTRICAL's parts list) + the kit 2-13
     "SHELF": "Light shelf",
     "LEDGE": "Work-wall ledge",
     "HW": "M6 bolts, rivnuts",
@@ -343,7 +343,7 @@ PIECES = [
     Piece("2-02", "360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "-", [("DOOR", 1)], S(2089, 1175, 149),
           "FRONT PR #27 CAD: Z 27 to 2116, glass 1175 wide, pull spaces 149 deep; hinge halves that sit in DL ship in DL (PM ruling)",
           2, 11, "FRONT", glass=True),
-    Piece("2-03", "TBD (FRONT)", "FRONT - DECOR BLOCK - DR", "Khung trang trí - khối phải", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1016, 205),
+    Piece("2-03", "350003", "FRONT - DECOR BLOCK ASSY - DR", "Khối trang trí phải (cụm)", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1016, 205),
           "layout study bounding box (S02); the real block is faceted", 2, 10, "FRONT"),
     Piece("2-04", "110103", "BASE - BAND ASSY - BACK", "Viền chân nhôm - cạnh sau (cụm)", "-", [("BAND_B", 1), ("GLIDE", 3), ("BLOCKS", 3 / 8)],
           S(2420, 110, 40), "BASE P01 CAD 111103 (2420 x 40 x 100) + glides 10 below", 2, 2, "BASE", note="3 glides fitted, each on its aluminium load block inside the band (BASE CAD; D-86); blocks split by glide count, 3 of 8"),
@@ -359,14 +359,14 @@ PIECES = [
           note="the sill: the fixed glass's bottom U-channel and its seal fitted at the factory with 4 M3 countersunk screws (PM ruling); share of the front-r line by length, 729 of 1100 mm (calculation); 1 glide on its load block (D-86)"),
     Piece("2-08", "TBD (BASE)", "BASE - DOOR THRESHOLD - 13 MM", "Ngưỡng cửa thấp 13 mm", "-", [("THRESH", 1)], S(1175, 60, 13),
           "skeleton P04 1175 x 60; 13 mm high (D-72)", 2, 3, "BASE"),
-    Piece("2-09", "TBD (FRONT)", "FRONT - DECOR BLOCK - DL", "Khung trang trí - khối trái", "DL", [("DL", 1)], S(2290, 278, 205),
+    Piece("2-09", "350001", "FRONT - DECOR BLOCK ASSY - DL", "Khối trang trí trái (cụm)", "DL", [("DL", 1)], S(2290, 278, 205),
           "layout study bounding box (S02)", 2, 9, "FRONT", note="the hinge halves that sit in DL ship fitted in it (PM ruling)"),
     Piece("2-10", "TBD (AIR)", "AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS", "Hộp gió trên cửa + hộp quạt thải", "-",
           [("SOFFIT", 1), ("FANBOX_E", 1), ("FANS", 0.5)], S(2332, 360, 220),
           "air report 7e: the fan box (X 867 to 1161, Z 2162 to 2335) sits inside the soffit's envelope", 2, 17, "AIR",
           note="exhaust fan box with its 2 fans fitted inside the soffit's right end at the factory (D-87)"),
     Piece("2-11", "TBD (AIR)", "AIR - AIR COLUMN", "Cột dẫn gió", "-", [("COLUMN", 1)], S(2105, 360, 217), "air report 7e", 2, 16, "AIR"),
-    Piece("2-12", "TBD (FRONT)", "FRONT - DECOR BLOCK - DT", "Khung trang trí - khối trên", "DT", [("DT", 1), ("FIX", DT_CHANNEL_SHARE)], S(1697, 280, 205),
+    Piece("2-12", "350002", "FRONT - DECOR BLOCK ASSY - DT", "Khối trang trí trên (cụm)", "DT", [("DT", 1), ("FIX", DT_CHANNEL_SHARE)], S(1697, 280, 205),
           "layout study bounding box (S02)", 2, 12, "FRONT"),
     Piece("2-13", "TBD (ELECTRICAL)", "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS", "Bộ điện: dây, dây nguồn, hub, đèn", "-", [("ELEC", 1 - POWER_UNIT_SHARE)],
           S(600, 250, 200), "carton (assumption)", 2, 13, "ELECTRICAL"),
@@ -401,7 +401,7 @@ PIECES = [
     Piece("A-2", "-", "Bond beyond L1 and R1 (D-71)", "", "-", [("BOND", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
     Piece("A-3", "-", "Captive bolts, washers, rivnuts, stop washers, spigots, gaskets, fitted in the panels", "", "-",
           [("HW", 1)], (0, 0, 0), "-", 1, 0, "WALL", kind="allowance"),
-    Piece("A-4", "-", "Door edge seals, base seal, grommets, fitted on the band, DL, DT and the panels", "", "-",
+    Piece("A-4", "-", "Base seal and cable grommets, fitted on the band and the panels (the door edge seals are in FRONT's parts)", "", "-",
           [("SEALS", 1)], (0, 0, 0), "-", 2, 0, "BASE", kind="allowance"),
     Piece("L-1", "-", "Voice cockpit kit reserve: ships later, outside the cap (D-11, D-81)", "", "-", [("VOICE", 1)], (0, 0, 0), "-",
           0, 0, "ELECTRICAL", kind="later"),
@@ -1130,6 +1130,7 @@ def gen_tables(m):
     T["KIT_TAG"] = next(p.tag for p in m.shipped() if p.pn == "109000")
     T["TBD_LEFT"] = (f"{sum(m.tbd_left.values())} of {len(m.shipped())} pieces: "
                      + ", ".join(f"{o} {n}" for o, n in sorted(m.tbd_left.items()))) if m.tbd_left else "none"
+    T["TBD_OWNERS"] = ", ".join(sorted(m.tbd_left)) or "-"
     T["DOOR_KG"] = f1(PIECE["2-02"].kg)
     T["FIX_KG"] = f1(PIECE["2-01"].kg)
 
