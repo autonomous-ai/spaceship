@@ -4,6 +4,7 @@ Revision P01 (PROPOSED). Run through the Fusion lock (tools/fusion/README.md):
 
     python3 tools/fusion/run_script.py v2/01-CAD-Native/joints/joints_hardware_build.py
     python3 tools/fusion/run_script.py v2/01-CAD-Native/joints/joints_hardware_build.py --arg only=keys
+    python3 tools/fusion/run_script.py v2/01-CAD-Native/joints/joints_hardware_build.py --arg only=plates
 
 It makes three parametric mm designs in "Default Project/FocusPod v2/joints" (a
 folder of its own, so a new design can never take the name of another team's
@@ -19,6 +20,9 @@ function:
     831001_P01_HARDWARE-LOCATING-SPIGOT_CAD    spigot, register H-05
     831002_P01_HARDWARE-STOP-WASHER_CAD        stop washer, register H-08, plus its DXF
                                                (D-89 part 4: flat, cut from sheet, no drawing)
+    831007_P01_HARDWARE-MITRE-PLATE-TABULATED_CAD   mitre plate family, register H-40 to H-42 (J-FRAME-01, D-131):
+        831007 (two 20 x 40 at 45 deg), 831008 (a 20 x 40 meeting a 40 x 40), 831009 (two 40 x 40 at 45 deg);
+        saved at 831007; one STEP and one DXF per part number (flat, cut from sheet, no drawing)
 
 Each design is saved, exported (.f3d to v2/01-CAD-Native/joints/, STEP and DXF to
 v2/03-Manufacturing/joints/), edit-tested (guideline 4.4: change a driving
@@ -51,6 +55,15 @@ MFG_DIR = "v2/03-Manufacturing/joints"
 KEYS = "111211_P01_BASE-CORNER-KEY-TABULATED_CAD"
 SPIGOT = "831001_P01_HARDWARE-LOCATING-SPIGOT_CAD"
 WASHER = "831002_P01_HARDWARE-STOP-WASHER_CAD"
+PLATES = "831007_P01_HARDWARE-MITRE-PLATE-TABULATED_CAD"
+PLATE_VARIANTS = [  # part number, name, the two members' widths in the frame's plane, file stem (register H-40 to H-42)
+    ("831007", "HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL", "20 mm", "20 mm",
+     "831007_P01_HARDWARE-MITRE-PLATE-20X40-45DEG"),
+    ("831008", "HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL", "20 mm", "40 mm",
+     "831008_P01_HARDWARE-MITRE-PLATE-20X40-TO-40X40"),
+    ("831009", "HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL", "40 mm", "40 mm",
+     "831009_P01_HARDWARE-MITRE-PLATE-40X40-45DEG"),
+]
 KEY_VARIANTS = [  # part number, STEP file, cut angle (signed, see the docstring)
     ("111211", "111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step", "0 deg"),
     ("111212", "111212_P01_BASE-CORNER-KEY-FRONT-LH_STEP.step", "-24.14 deg"),
@@ -652,11 +665,155 @@ def build_washer(app):
     doc.close(False)
 
 
+# ------------------------------------------------------------------ mitre plates 831007 to 831009
+def write_dxf_rect(path, w, h):
+    """ASCII DXF (R12), mm: a w x h rectangle from the origin, four lines on layer CUT (D-89 part 4)."""
+    out = ["0", "SECTION", "2", "HEADER", "9", "$ACADVER", "1", "AC1009", "9", "$INSUNITS", "70", "4",
+           "0", "ENDSEC", "0", "SECTION", "2", "TABLES", "0", "TABLE", "2", "LAYER", "70", "1",
+           "0", "LAYER", "2", "CUT", "70", "0", "62", "7", "6", "CONTINUOUS", "0", "ENDTAB", "0", "ENDSEC",
+           "0", "SECTION", "2", "ENTITIES"]
+    pts = [(0.0, 0.0), (w, 0.0), (w, h), (0.0, h)]
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:] + pts[:1]):
+        out += ["0", "LINE", "8", "CUT", "10", "%.4f" % x0, "20", "%.4f" % y0, "30", "0.0",
+                "11", "%.4f" % x1, "21", "%.4f" % y1, "31", "0.0"]
+    out += ["0", "ENDSEC", "0", "EOF"]
+    with open(path, "w", newline="\r\n") as fh:
+        fh.write("\n".join(out) + "\n")
+
+
+def close_leftover_plates(app):
+    """A plate run that failed before saving left its new design open and unsaved: close it, and only it (never saved,
+    root part number 831007, a plate_len parameter), so this run doesn't leave two."""
+    for i in reversed(range(app.documents.count)):
+        d = app.documents.item(i)
+        try:
+            if d.dataFile is not None:
+                continue
+            des = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
+            if des and des.rootComponent.partNumber == "831007" and des.userParameters.itemByName("plate_len"):
+                d.close(False)
+                print("  closed a leftover unsaved plate design from an earlier failed run")
+        except Exception as e:  # a document this check can't read is left as it is
+            print("  (document %d left: %s)" % (i, e))
+
+
+def build_plates(app):
+    """The plate family in one design; on an error, its unsaved design is closed before the error goes on."""
+    close_leftover_plates(app)
+    doc, design, f = new_design(app, PLATES)
+    try:
+        _build_plates(app, doc, design, f)
+    except Exception:
+        try:
+            doc.close(False)
+            print("  closed the plate design after the error")
+        except Exception as e:
+            print("  could not close the plate design: %s" % e)
+        raise
+
+
+def _build_plates(app, doc, design, f):
+    """The frames' mitre plates (joints register H-40 to H-42, J-FRAME-01): a flat 2.0 plate, the mitre's own outline.
+    Origin at the plate's corner at the frame's outer corner, on the skin-side face, on the plate's mid-plane;
+    +X along the mitre toward the frame's inner corner; +Y across the frame toward the room side; Z through the
+    plate, -1.0 to +1.0 (the joints CAD README)."""
+    add_params(design, [
+        ("tube_a", "20 mm", "mm", "CONFIRMED: one member's width in the frame's plane, 20 or 40 (D-16, R-J3)"),
+        ("tube_b", "20 mm", "mm", "CONFIRMED: the other member's width in the frame's plane, 20 or 40 (D-16, R-J3)"),
+        ("plate_len", "sqrt(tube_a * tube_a + tube_b * tube_b)", "mm",
+         "CALCULATION: the mitre line from the frame's outer corner to its inner corner"),
+        ("plate_d", "40 mm", "mm", "CONFIRMED: the frame's depth across the wall, 40 (D-16, D-42)"),
+        ("plate_t", "2.0 mm", "mm", "PROPOSED: at least 1.5 x the 1.2 mm rails, a stiffened knee (J-FRAME-01)"),
+    ])
+    num, name, a, b, stem = PLATE_VARIANTS[0]
+    root = set_root(design, num, name, "Tấm đệm góc vát - thép 2.0",
+                    "UNITS MM; MATERIAL S280GD+Z (EN 10346) OR SGC400, Z100, 2.0 SHEET; ISO 2768-m; THICKNESS 2.0 "
+                    "+-0.1; laser cut, no drawing (D-89 part 4); joints register H-40 to H-42; PROPOSED")
+    comp = root
+    sk = comp.sketches.add(comp.xYConstructionPlane)
+    sk.name = "SKETCH - PLATE OUTLINE"
+    lines = sk.sketchCurves.sketchLines.addTwoPointRectangle(p3(0, 0), p3(28.284, 40.0))
+    corner = next(lines.item(i).startSketchPoint for i in range(lines.count)
+                  if abs(lines.item(i).startSketchPoint.geometry.x) < 1e-6
+                  and abs(lines.item(i).startSketchPoint.geometry.y) < 1e-6)
+    sk.geometricConstraints.addCoincident(corner, sk.originPoint)
+    horiz = next(lines.item(i) for i in range(lines.count)
+                 if abs(lines.item(i).startSketchPoint.geometry.y - lines.item(i).endSketchPoint.geometry.y) < 1e-6)
+    vert = next(lines.item(i) for i in range(lines.count)
+                if abs(lines.item(i).startSketchPoint.geometry.x - lines.item(i).endSketchPoint.geometry.x) < 1e-6)
+    sk.sketchDimensions.addDistanceDimension(horiz.startSketchPoint, horiz.endSketchPoint,
+                                             adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
+                                             p3(14.0, -6.0)).parameter.expression = "plate_len"
+    sk.sketchDimensions.addDistanceDimension(vert.startSketchPoint, vert.endSketchPoint,
+                                             adsk.fusion.DimensionOrientations.VerticalDimensionOrientation,
+                                             p3(-6.0, 20.0)).parameter.expression = "plate_d"
+    added = []
+    gc = sk.geometricConstraints
+    # the API's rectangle joins its corners and nothing more (run of 2026-11-01): each edge gets its own horizontal or
+    # vertical constraint, and one already held is skipped as redundant
+    for i in range(lines.count):
+        if sk.isFullyConstrained:
+            break
+        ln = lines.item(i)
+        a, b = ln.startSketchPoint.geometry, ln.endSketchPoint.geometry
+        kind = "horizontal" if abs(a.y - b.y) < 1e-6 else "vertical" if abs(a.x - b.x) < 1e-6 else None
+        if kind is None:
+            continue
+        try:
+            (gc.addHorizontal if kind == "horizontal" else gc.addVertical)(ln)
+            added.append(kind)
+        except Exception as e:                                       # already held: redundant, skip it
+            print("  (%s constraint skipped: %s)" % (kind, e))
+    kinds = sorted(set(gc.item(i).objectType.split("::")[-1] for i in range(gc.count)))
+    print("  plate sketch: added %s; fully constrained %s; constraints %s" % (added or "none", sk.isFullyConstrained, kinds))
+    must_constrain(sk)
+    prof = sk.profiles.item(0)
+    ei = comp.features.extrudeFeatures.createInput(prof, adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
+    ei.setSymmetricExtent(vi("plate_t"), True)
+    ext = comp.features.extrudeFeatures.add(ei)
+    ext.name = "EXTRUDE - PLATE, SYMMETRIC ON THE MITRE PLANE"
+    body = ext.bodies.item(0)
+    body.name = "MITRE PLATE"
+    mat = material(comp, ["Steel, Galvanized", "Steel"], ["steel"])
+    health(design)
+    family = (root.partNumber, root.description)
+
+    def state(num, name, a, b):
+        def go():
+            design.userParameters.itemByName("tube_a").expression = a
+            design.userParameters.itemByName("tube_b").expression = b
+            root.partNumber = num            # each STEP carries its own part number (C06)
+            root.description = "%s | rev %s | members %s and %s | joints register J-FRAME-01 | PROPOSED" % (name, REV, a, b)
+            adsk.doEvents()
+            health(design)
+            bb = box(comp.bRepBodies.item(0))
+            print("    %s (%s, %s): %s, %.5f kg" % (num, a, b, fmt(bb), comp.bRepBodies.item(0).physicalProperties.mass))
+        return go
+
+    print("PLATES: material %s" % mat)
+    save_export(app, doc, design, f, PLATES,
+                "Mitre plates 831007-831009, rev P01, PROPOSED (joints register H-40 to H-42, J-FRAME-01); saved at "
+                "831007. Built by joints_hardware_build.py",
+                [(stem + "_STEP.step", state(num, name, a, b)) for num, name, a, b, stem in PLATE_VARIANTS])
+    for num, name, a, b, stem in PLATE_VARIANTS:
+        state(num, name, a, b)()
+        bb = box(comp.bRepBodies.item(0))
+        dxf = os.path.join(REPO, MFG_DIR, stem + "_DXF.dxf")
+        write_dxf_rect(dxf, bb[3] - bb[0], bb[4] - bb[1])
+        print("  DXF %s: %.3f x %.3f on layer CUT" % (os.path.basename(dxf), bb[3] - bb[0], bb[4] - bb[1]))
+    num0, name0, a0, b0, _stem0 = PLATE_VARIANTS[0]
+    state(num0, name0, a0, b0)()        # back to the saved state, 831007
+    root.partNumber, root.description = family
+    edit_test(design, lambda: box(comp.bRepBodies.item(0)), [("tube_b", "40 mm")],
+              lambda b0, a1: abs((a1[3] - a1[0]) - math.sqrt(20 * 20 + 40 * 40)) < 0.01)
+    doc.close(False)
+
+
 def run(_context):
     app = adsk.core.Application.get()
     for d in (CAD_DIR, MFG_DIR):
         os.makedirs(os.path.join(REPO, d), exist_ok=True)
-    which = [w.strip() for w in ARGS.get("only", "keys,spigot,washer").split(",") if w.strip()]
+    which = [w.strip() for w in ARGS.get("only", "keys,spigot,washer,plates").split(",") if w.strip()]
     for w in which:
-        {"keys": build_keys, "spigot": build_spigot, "washer": build_washer}[w](app)
+        {"keys": build_keys, "spigot": build_spigot, "washer": build_washer, "plates": build_plates}[w](app)
     print("done: %s" % ", ".join(which))
