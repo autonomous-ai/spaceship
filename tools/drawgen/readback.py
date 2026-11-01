@@ -182,8 +182,38 @@ def _seg_hits_box(p, q, box):
     return True
 
 
+def all_strokes(page, sheet_h):
+    """Every line the page draws (strokes, and the edges of fills, any width) as segments in sheet mm; curves as
+    short chords."""
+    segs = []
+    for d in page.get_drawings():
+        for it in d["items"]:
+            if it[0] == "l":
+                pts = [it[1], it[2]]
+            elif it[0] == "c":
+                p0, c1, c2, p1 = it[1], it[2], it[3], it[4]
+                pts = []
+                for k in range(9):
+                    t = k / 8.0
+                    a, b_, c, e = (1 - t) ** 3, 3 * t * (1 - t) ** 2, 3 * t * t * (1 - t), t ** 3
+                    pts.append(fitz.Point(a * p0.x + b_ * c1.x + c * c2.x + e * p1.x,
+                                          a * p0.y + b_ * c1.y + c * c2.y + e * p1.y))
+            elif it[0] == "re":
+                r = it[1]
+                pts = [r.tl, r.tr, r.br, r.bl, r.tl]
+            elif it[0] == "qu":
+                q = it[1]
+                pts = [q.ul, q.ur, q.lr, q.ll, q.ul]
+            else:
+                continue
+            pp = [(p.x / MM, sheet_h - p.y / MM) for p in pts]
+            segs.extend(zip(pp[:-1], pp[1:]))
+    return segs
+
+
 def clashes(doc):
-    """Texts that touch each other, and texts that touch a part outline, on every page: [(page, what)]."""
+    """On every page: texts that touch each other, texts that touch a part outline, and lines that run through a
+    text's letters (a leader or a dimension line that stops at the text doesn't): [(page, what)]."""
     found = []
     for pi, page in enumerate(doc):
         H = page.rect.height / MM
@@ -198,6 +228,20 @@ def clashes(doc):
                 if any(_seg_hits_box(pts[k], pts[k + 1], a) for k in range(len(pts) - 1)):
                     found.append((pi + 1, "text '%s' touches an outline" % a[4][:30]))
                     break
+        cells = {}
+        for sg in all_strokes(page, H):
+            (x0, y0), (x1, y1) = sg
+            for i in range(int(min(x0, x1) // 10), int(max(x0, x1) // 10) + 1):
+                for j in range(int(min(y0, y1) // 10), int(max(y0, y1) // 10) + 1):
+                    cells.setdefault((i, j), []).append(sg)
+        for a in boxes:
+            inner = (a[0] + 0.1, a[1] + 0.1, a[2] - 0.1, a[3] - 0.1)
+            if inner[0] >= inner[2] or inner[1] >= inner[3]:
+                continue
+            near = {id(sg): sg for i in range(int(inner[0] // 10), int(inner[2] // 10) + 1)
+                    for j in range(int(inner[1] // 10), int(inner[3] // 10) + 1) for sg in cells.get((i, j), ())}
+            if any(_seg_hits_box(p, q, inner) for p, q in near.values()):
+                found.append((pi + 1, "a line runs through text '%s'" % a[4][:30]))
     return found
 
 

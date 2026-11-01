@@ -244,6 +244,23 @@ def test_clash_check_catches_touching_text():
     assert not any("H09" in w for w in found), found
 
 
+def test_clash_check_catches_a_line_through_text():
+    """The read-back fails a line that runs through a text's letters (a dimension line through a datum letter, an
+    arrow through an origin name), and passes a leader that stops at its text."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "clash")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    sh.text(100, 100, "O2", 2.5, bold=True)
+    sh.line((101.5, 95), (101.5, 106), 0.25)             # an arrow up through O2
+    sh.line((180, 101), (197, 101), 0.25)                # a leader that stops short of its tag
+    sh.text(197.5, 100.4, "H09", 2.5, bold=True)
+    sh.save(os.path.join(d, "l.pdf"))
+    found = [w for _p, w in readback.clashes(fitz.open(os.path.join(d, "l.pdf")))]
+    assert any("through text 'O2'" in w for w in found), found
+    assert not any("H09" in w for w in found), found
+
+
 def main():
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     ok = 0

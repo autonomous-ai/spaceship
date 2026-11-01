@@ -45,6 +45,31 @@ def _font_file(kind):
     return None
 
 
+class _SegGrid:
+    """Segments bucketed in square cells, so 'does any line cross this box' asks only the lines nearby."""
+
+    def __init__(self, cell=10.0):
+        self.cell = cell
+        self.cells = {}
+
+    def add(self, p, q):
+        c = self.cell
+        seg = (tuple(p), tuple(q))
+        for i in range(int(math.floor(min(p[0], q[0]) / c)), int(math.floor(max(p[0], q[0]) / c)) + 1):
+            for j in range(int(math.floor(min(p[1], q[1]) / c)), int(math.floor(max(p[1], q[1]) / c)) + 1):
+                self.cells.setdefault((i, j), []).append(seg)
+
+    def near(self, box, gap):
+        c = self.cell
+        seen = set()
+        for i in range(int(math.floor((box[0] - gap) / c)), int(math.floor((box[2] + gap) / c)) + 1):
+            for j in range(int(math.floor((box[1] - gap) / c)), int(math.floor((box[3] + gap) / c)) + 1):
+                for sg in self.cells.get((i, j), ()):
+                    if id(sg) not in seen:
+                        seen.add(id(sg))
+                        yield sg
+
+
 class Sheet:
     def __init__(self, size="A1", creator="drawgen", title="", subject="", keywords=""):
         self.size = size
@@ -67,11 +92,30 @@ class Sheet:
         self._registered = set()
         self.boxes = []         # ink boxes of the text written on this page (x0, y0, x1, y1)
         self.obstacles = []     # part outlines on this page, as segments, for placing labels clear of them
+        self.grid = _SegGrid()  # every line drawn on this page (outlines included), for the same
         return self.page
 
     # ------------------------------------------------------------ keeping labels clear (the read-back checks it)
     def add_obstacles(self, segs):
         self.obstacles.extend(segs)
+        for p, q in segs:
+            self.grid.add(p, q)
+
+    def _rec(self, pts, close=False):
+        """Remember a drawn stroke's segments (labels placed later keep clear of them)."""
+        for k in range(len(pts) - 1):
+            self.grid.add(pts[k], pts[k + 1])
+        if close and len(pts) > 2:
+            self.grid.add(pts[-1], pts[0])
+
+    @staticmethod
+    def _bez_pts(p0, c1, c2, p1, n=8):
+        out = []
+        for k in range(n + 1):
+            t = k / float(n)
+            a, b, c, d = (1 - t) ** 3, 3 * t * (1 - t) ** 2, 3 * t * t * (1 - t), t ** 3
+            out.append((a * p0[0] + b * c1[0] + c * c2[0] + d * p1[0], a * p0[1] + b * c1[1] + c * c2[1] + d * p1[1]))
+        return out
 
     @staticmethod
     def _boxes_touch(a, b, gap=0.4):
@@ -101,7 +145,7 @@ class Sheet:
             return False
         if any(self._boxes_touch(box, b) for b in self.boxes):
             return False
-        return not any(self._seg_box(p, q, box) for p, q in self.obstacles)
+        return not any(self._seg_box(p, q, box) for p, q in self.grid.near(box, 0.4))
 
     def text_box(self, x, y, s, size=2.5, anchor="left", rotate=0, bold=False, valign="base"):
         """The ink box text() would cover, without writing."""
@@ -131,10 +175,12 @@ class Sheet:
     def line(self, p, q, w=W_VIS, dashes=None, color=BLACK):
         self.shape.draw_line(self.P(*p), self.P(*q))
         self._finish(w, dashes, color=color)
+        self._rec([p, q])
 
     def polyline(self, pts, w=W_THIN, close=False, fill=None, dashes=None):
         self.shape.draw_polyline([self.P(*p) for p in pts])
         self._finish(w, dashes, fill=fill, close=close)
+        self._rec(list(pts), close or fill is not None)
 
     def _arc_pieces(self, c, r, a0, a1):
         """Bezier pieces (p0, c1, c2, p1) in sheet mm for the arc a0..a1 (radians, counter-clockwise)."""
@@ -155,6 +201,7 @@ class Sheet:
     def arc(self, c, r, a0, a1, w=W_VIS, dashes=None, fill=None):
         for p0, c1, c2, p1 in self._arc_pieces(c, r, a0, a1):
             self.shape.draw_bezier(self.P(*p0), self.P(*c1), self.P(*c2), self.P(*p1))
+            self._rec(self._bez_pts(p0, c1, c2, p1))
         self._finish(w, dashes, fill=fill, close=False)
 
     def circle(self, c, r, w=W_VIS, dashes=None, fill=None):
@@ -163,11 +210,13 @@ class Sheet:
     def bezier(self, pts, w=W_VIS, dashes=None):
         for i in range(0, len(pts) - 1, 3):
             self.shape.draw_bezier(self.P(*pts[i]), self.P(*pts[i + 1]), self.P(*pts[i + 2]), self.P(*pts[i + 3]))
+            self._rec(self._bez_pts(pts[i], pts[i + 1], pts[i + 2], pts[i + 3]))
         self._finish(w, dashes)
 
     def rect(self, x, y, w, h, lw=W_THIN, fill=None):
         self.shape.draw_rect(fitz.Rect(self.P(x, y + h), self.P(x + w, y)))
         self._finish(lw, fill=fill, close=True)
+        self._rec([(x, y), (x + w, y), (x + w, y + h), (x, y + h)], close=True)
 
     def arrow(self, tip, direction, length=3.0, width=1.0):
         """Filled ISO arrowhead (closed, 15 degrees half angle)."""
@@ -304,6 +353,7 @@ class Sheet:
             k += 1
         for p, q in out:
             self.shape.draw_line(self.P(*p), self.P(*q))
+            self._rec([p, q])
         if out:
             self._finish(w)
 
@@ -351,6 +401,7 @@ class Sheet:
                 start = cur if cur is not None else self.P(*a)
                 end = self.P(*b)
                 self.shape.draw_line(start, end)
+                self._rec([a, b])
                 cur = end
             else:
                 pieces = self._arc_pieces(sg[1], sg[2], sg[3], sg[4])
@@ -360,6 +411,7 @@ class Sheet:
                     start = cur if cur is not None else self.P(*p0)
                     end = self.P(*p1)
                     self.shape.draw_bezier(start, self.P(*c1), self.P(*c2), end)
+                    self._rec(self._bez_pts(p0, c1, c2, p1))
                     cur = end
 
     def fill_loops(self, loops):
@@ -370,11 +422,12 @@ class Sheet:
         self.shape.finish(width=0.1 * MM, color=BLACK, fill=BLACK, even_odd=True, closePath=True)
 
     # ------------------------------------------------------------ dimensions (ISO 129-1)
-    def dim_linear(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5):
+    def dim_linear(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5, slide=False):
         """A linear dimension between sheet points p1 and p2, measured horizontally (side 'up'/'down') or
         vertically ('left'/'right'); the dimension line sits gap mm beyond the farther point on that side. The
         value sits on the far side of the line from the part, centred, or beside the line when it doesn't fit
-        between the arrows (ISO 129-1)."""
+        between the arrows (ISO 129-1). slide: a value beside the line moves out along it, the line extended, until
+        it touches no other text and no line."""
         tw = self.text_width(text, size)
         if side in ("up", "down"):
             sgn = 1 if side == "up" else -1
@@ -395,8 +448,12 @@ class Sheet:
             if tw + 2 <= span:
                 self.text((a[0] + b[0]) / 2, ty, text, size, "center")
             else:
-                self.line(b, (b[0] + 5, yl), W_THIN)
-                self.text(b[0] + 6, yl - 0.35 * size, text, size, "left")
+                off = 6.0
+                if slide:
+                    off = next((o for o in [6.0 + 1.0 * k for k in range(40)]
+                                if self.is_free(self.text_box(b[0] + o, yl - 0.35 * size, text, size, "left"))), 6.0)
+                self.line(b, (b[0] + off - 1.0, yl), W_THIN)
+                self.text(b[0] + off, yl - 0.35 * size, text, size, "left")
         else:
             sgn = 1 if side == "right" else -1
             xl = (max(p1[0], p2[0]) + gap) if sgn > 0 else (min(p1[0], p2[0]) - gap)
@@ -509,22 +566,36 @@ class Sheet:
                     cands[0])
         self.text(pick[0], pick[1], name, size, pick[2], bold=True)
 
-    def datum(self, at, direction, letter, size=2.5):
-        """ISO 5459 datum feature symbol: a filled triangle on the feature, a leader and the framed letter."""
+    @staticmethod
+    def _datum_parts(at, direction, size=2.5, leader=7.0):
         dx, dy = direction
         L = math.hypot(dx, dy)
         dx, dy = dx / L, dy / L
         nx, ny = -dy, dx
         t = 1.6
-        base = [(at[0] + nx * t, at[1] + ny * t), (at[0] - nx * t, at[1] - ny * t),
-                (at[0] + dx * t * 1.6, at[1] + dy * t * 1.6)]
-        self.polyline(base, w=0.1, close=True, fill=BLACK)
-        end = (at[0] + dx * 7.0, at[1] + dy * 7.0)
-        self.line((at[0] + dx * t * 1.6, at[1] + dy * t * 1.6), end, W_THIN)
+        tri = [(at[0] + nx * t, at[1] + ny * t), (at[0] - nx * t, at[1] - ny * t),
+               (at[0] + dx * t * 1.6, at[1] + dy * t * 1.6)]
+        end = (at[0] + dx * leader, at[1] + dy * leader)
         b = size * 2.4
         bx, by = end[0] + dx * b / 2 - b / 2, end[1] + dy * b / 2 - b / 2
-        self.rect(bx, by, b, b, W_THIN)
-        self.text(bx + b / 2, by + b / 2, letter, size, "center", valign="mid", bold=True)
+        return tri, (tri[2], end), (bx, by, bx + b, by + b)
+
+    def datum_free(self, at, direction, size=2.5, leader=7.0):
+        """True when the datum symbol there would touch no text and its frame no line."""
+        tri, (s, e), box = self._datum_parts(at, direction, size, leader)
+        if not self.is_free(box):
+            return False
+        tb = (min(p[0] for p in tri), min(p[1] for p in tri), max(p[0] for p in tri), max(p[1] for p in tri))
+        return not any(self._boxes_touch(tb, b, 0.3) or self._seg_box(s, e, b, 0.3) for b in self.boxes)
+
+    def datum(self, at, direction, letter, size=2.5, leader=7.0):
+        """ISO 5459 datum feature symbol: a filled triangle on the feature, a leader and the framed letter."""
+        tri, (s, e), box = self._datum_parts(at, direction, size, leader)
+        self.polyline(tri, w=0.1, close=True, fill=BLACK)
+        self.line(s, e, W_THIN)
+        b = box[2] - box[0]
+        self.rect(box[0], box[1], b, b, W_THIN)
+        self.text(box[0] + b / 2, box[1] + b / 2, letter, size, "center", valign="mid", bold=True)
 
     def tag(self, c, r, label, direction=(1, 1), size=H_TEXT, leader=5.0):
         """A hole tag: a thin leader from the hole's edge to the label, which goes where it touches no other text
@@ -599,9 +670,9 @@ class Sheet:
         for x, y, x2, y2 in ((W / 2, margin, W / 2, 0), (W / 2, H - margin, W / 2, H), (margin_left, H / 2, 0, H / 2),
                              (W - margin, H / 2, W, H / 2)):
             self.line((x, y), (x2, y2), 0.7)
-        # grid reference letters and numbers (ISO 5457), 50 mm fields
-        nx = int(round((W - margin_left - margin) / 50.0))
-        ny = int(round((H - 2 * margin) / 50.0))
+        # grid reference letters and numbers (ISO 5457): an even number of fields each way, about 50 mm long
+        nx = max(2, 2 * int(round((W - margin_left - margin) / 100.0)))
+        ny = max(2, 2 * int(round((H - 2 * margin) / 100.0)))
         fx = (W - margin_left - margin) / nx
         fy = (H - 2 * margin) / ny
         for i in range(nx):
@@ -615,8 +686,8 @@ class Sheet:
         letters = "ABCDEFGHJKLMNPQRSTUVWXYZ"
         for j in range(ny):
             cy = H - margin - (j + 0.5) * fy
-            self.text(margin_left - 7, cy, letters[j], 3.0, "center", valign="mid")
-            self.text(W - margin + 5, cy, letters[j], 3.0, "center", valign="mid")
+            self.text(margin_left - 2.5, cy, letters[j], 3.0, "center", valign="mid")
+            self.text(W - margin + 2.5, cy, letters[j], 3.0, "center", valign="mid")
             if j:
                 yy = H - margin - j * fy
                 self.line((margin_left, yy), (margin_left - 5, yy), W_THIN)

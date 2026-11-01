@@ -934,10 +934,10 @@ def draw(part, spec, out_path, today=None):
         sh.add_obstacles(outline_segments(vd))
     sh.flush()
 
-    # ---- marks, tags, origins
-    tag_side = {}
+    # ---- marks, tags, origins: placed after the dimensions and titles (annotate calls pl.place_marks), lines
+    # before labels, so every label is put where it touches no line and no text
 
-    def mark_features(vd, feats, tags=True):
+    def mark_features(vd, feats, tags=True, marks=True):
         placed = []
         at = {}
         for ft in feats:
@@ -950,24 +950,24 @@ def draw(part, spec, out_path, today=None):
             ft = fts[0]
             c2 = vd.S(vd.view.to2d(ft.f.entry))
             r = max((f.f.entry_dia if f.kind == "keyhole" else f.f.dia) / 2 for f in fts) * vd.scale
-            r0 = (ft.f.entry_dia if ft.kind == "keyhole" else ft.f.dia) / 2 * vd.scale
-            if ft.kind == "hole":
-                sh.centre_mark(c2, r, ext=1.5)
-            else:
-                a2 = vd.view.to2d(ft.f.along)
-                L = (ft.f.length - ft.f.width) / 2 if ft.kind == "slot" else ft.f.neck
-                if ft.kind == "slot":
-                    e1 = vd.S(vd.view.to2d(vadd(ft.f.entry, vmul(ft.f.along, -L))))
-                    e2 = vd.S(vd.view.to2d(vadd(ft.f.entry, vmul(ft.f.along, L))))
+            if marks:
+                if ft.kind == "hole":
+                    sh.centre_mark(c2, r, ext=1.5)
                 else:
-                    e1 = c2
-                    e2 = vd.S(vd.view.to2d(vadd(ft.f.entry, vmul(ft.f.along, L))))
-                if ft.f.length * vd.scale >= 6.0:
-                    for e in (e1, e2):
-                        sh.centre_mark(e, ft.f.width / 2 * vd.scale, ext=1.2)
-                    sh.centre_line((e1[0] - a2[0] * 3, e1[1] - a2[1] * 3), (e2[0] + a2[0] * 3, e2[1] + a2[1] * 3))
-                else:
-                    sh.centre_mark(vd.S(vd.view.to2d(ft.f.entry)), ft.f.length / 2 * vd.scale, ext=1.5)
+                    a2 = vd.view.to2d(ft.f.along)
+                    L = (ft.f.length - ft.f.width) / 2 if ft.kind == "slot" else ft.f.neck
+                    if ft.kind == "slot":
+                        e1 = vd.S(vd.view.to2d(vadd(ft.f.entry, vmul(ft.f.along, -L))))
+                        e2 = vd.S(vd.view.to2d(vadd(ft.f.entry, vmul(ft.f.along, L))))
+                    else:
+                        e1 = c2
+                        e2 = vd.S(vd.view.to2d(vadd(ft.f.entry, vmul(ft.f.along, L))))
+                    if ft.f.length * vd.scale >= 6.0:
+                        for e in (e1, e2):
+                            sh.centre_mark(e, ft.f.width / 2 * vd.scale, ext=1.2)
+                        sh.centre_line((e1[0] - a2[0] * 3, e1[1] - a2[1] * 3), (e2[0] + a2[0] * 3, e2[1] + a2[1] * 3))
+                    else:
+                        sh.centre_mark(vd.S(vd.view.to2d(ft.f.entry)), ft.f.length / 2 * vd.scale, ext=1.5)
             labels = [f.tag for f in fts if f.tag]
             if tags and labels:
                 close = [p for p in placed if math.dist(p, c2) < 9.0]
@@ -984,62 +984,82 @@ def draw(part, spec, out_path, today=None):
         x0, x1, y0, y1 = w.window
         return x0 <= c[0] <= x1 and y0 <= c[1] <= y1
 
-    for nm, vd in vds.items():
-        feats = [ft for g in pl.groups if g.view == nm for ft in g.feats]
-        mark_features(vd, [ft for ft in feats if not in_window(vd, ft)])
-        mark_features(vd, [ft for ft in feats if in_window(vd, ft)], tags=False)
-        if getattr(vd, "detail", None):
-            dv = vd.detail
-            mark_features(dv, [ft for ft in feats if in_window(vd, ft)])
-            # the detail's place on its parent: a thin circle round the window and its letter
-            x0, x1, y0, y1 = dv.window
-            c = vd.S(((x0 + x1) / 2, (y0 + y1) / 2))
-            r = max((x1 - x0), (y1 - y0)) / 2 * vd.scale * 1.08 + 2.0
-            sh.circle(c, r, W_THIN)
-            # the letter on the circle's outer side (away from the view's middle), clear of the origin's arrows
-            vb = vd.box()
-            sx = 1.0 if c[0] >= (vb[0] + vb[2]) / 2 else -1.0
-            sh.text(c[0] + sx * (r * 0.75 + 1.5), c[1] + r * 0.75 + 1.0, dv.letter, 3.5,
-                    "left" if sx > 0 else "right", bold=True)
-        # the far-wall holes behind (hidden circles) get their centre marks too, untagged
-        keys = {(id(ft.body), ft.f.line_key) for ft in feats if ft.kind == "hole"}
-        others = [ft for ft in part.features if ft not in feats and _end_on(ft, vd.view) and ft.kind == "hole"
-                  and (id(ft.body), ft.f.line_key) in keys]
-        mark_features(vd, others, tags=False)
-    for vd in secs:
-        mark_features(vd, vd.group.feats)
-    sh.flush()
-
-    # origins: one 3D origin O, its projection named per view (a detail shows its parent's origin, same name)
-    onames = {}
+    # one 3D origin O, its projection named per view (a detail shows its parent's origin, same name); the titles
+    # name them, so the names come now and the marks later
     k = 0
     for vd in [vds[n_] for n_ in order if n_ in vds] + secs:
         k += 1
         vd.origin_name = "O%d" % k
-        o2 = vd.S(vd.view.to2d(O))
-        if part.features:
-            bx = vd.box()
-            away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
-            # the label goes outside the outline: when the origin lies inside it (a hole's centre), drop the label
-            # below (or above) the outline, clear of the edge
-            inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
-            lab_y = None
-            if inside:
-                lab_y = (bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)
-            sh.origin_mark(o2, vd.origin_name, away=away, label_y=lab_y)
-        onames[id(vd)] = vd.origin_name
     for dv in details:
         dv.origin_name = dv.parent.origin_name
-        oc = dv.view.to2d(O)
-        x0, x1, y0, y1 = dv.window
-        if part.features and x0 <= oc[0] <= x1 and y0 <= oc[1] <= y1:
-            o2 = dv.S(oc)
-            bx = dv.box()
-            away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
-            inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
-            lab_y = ((bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)) if inside else None
-            sh.origin_mark(o2, dv.origin_name, away=away, label_y=lab_y)
-    sh.flush()
+
+    def place_marks():
+        # 1. centre marks and the detail circles (lines)
+        jobs, letters = [], []
+        for nm, vd in vds.items():
+            feats = [ft for g in pl.groups if g.view == nm for ft in g.feats]
+            mark_features(vd, [ft for ft in feats if not in_window(vd, ft)], tags=False)
+            mark_features(vd, [ft for ft in feats if in_window(vd, ft)], tags=False)
+            jobs.append((vd, [ft for ft in feats if not in_window(vd, ft)]))
+            if getattr(vd, "detail", None):
+                dv = vd.detail
+                mark_features(dv, [ft for ft in feats if in_window(vd, ft)], tags=False)
+                jobs.append((dv, [ft for ft in feats if in_window(vd, ft)]))
+                # the detail's place on its parent: a thin circle round the window, and its letter (step 3)
+                x0, x1, y0, y1 = dv.window
+                c = vd.S(((x0 + x1) / 2, (y0 + y1) / 2))
+                r = max((x1 - x0), (y1 - y0)) / 2 * vd.scale * 1.08 + 2.0
+                sh.circle(c, r, W_THIN)
+                letters.append((vd, dv, c, r))
+            # the far-wall holes behind (hidden circles) get their centre marks too, untagged
+            keys = {(id(ft.body), ft.f.line_key) for ft in feats if ft.kind == "hole"}
+            others = [ft for ft in part.features if ft not in feats and _end_on(ft, vd.view) and ft.kind == "hole"
+                      and (id(ft.body), ft.f.line_key) in keys]
+            mark_features(vd, others, tags=False)
+        for vd in secs:
+            mark_features(vd, vd.group.feats, tags=False)
+            jobs.append((vd, vd.group.feats))
+        sh.flush()
+        # 2. the origins: arrows, then their names where they are clear
+        for vd in [vds[n_] for n_ in order if n_ in vds] + secs:
+            o2 = vd.S(vd.view.to2d(O))
+            if part.features:
+                bx = vd.box()
+                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
+                # the label goes outside the outline: when the origin lies inside it (a hole's centre), drop the
+                # label below (or above) the outline, clear of the edge
+                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
+                lab_y = None
+                if inside:
+                    lab_y = (bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)
+                sh.origin_mark(o2, vd.origin_name, away=away, label_y=lab_y)
+        for dv in details:
+            oc = dv.view.to2d(O)
+            x0, x1, y0, y1 = dv.window
+            if part.features and x0 <= oc[0] <= x1 and y0 <= oc[1] <= y1:
+                o2 = dv.S(oc)
+                bx = dv.box()
+                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
+                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
+                lab_y = ((bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)) if inside else None
+                sh.origin_mark(o2, dv.origin_name, away=away, label_y=lab_y)
+        # 3. each detail's letter beside its circle, on the outer side first (away from the view's middle)
+        for vd, dv, c, r in letters:
+            vb = vd.box()
+            sx = 1.0 if c[0] >= (vb[0] + vb[2]) / 2 else -1.0
+            cands = []
+            for sx_, sy_ in ((sx, 1), (sx, -1), (-sx, 1), (-sx, -1)):
+                cands.append((c[0] + sx_ * (r * 0.75 + 1.5), c[1] + sy_ * (r * 0.75 + 1.0) - (3.5 if sy_ < 0 else 0.0),
+                              "left" if sx_ > 0 else "right"))
+            pick = next((t for t in cands if sh.is_free(sh.text_box(t[0], t[1], dv.letter, 3.5, t[2], bold=True))),
+                        cands[0])
+            sh.text(pick[0], pick[1], dv.letter, 3.5, pick[2], bold=True)
+        # 4. the tags
+        for vd, feats in jobs:
+            mark_features(vd, feats, marks=False)
+        sh.flush()
+
+    pl.place_marks = place_marks
     return sh, pl, vds, secs, removed, dat, scale, report, groups
 
 
@@ -1158,50 +1178,11 @@ def face_title(part, g):
 
 
 def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
+    """Lines first (cutting planes, reference arrows, dimensions), then what can move (hole callouts, view titles,
+    centre marks with their tags, origin names, datums), each put where it touches no line and no other text."""
     P = pl.principal
     O = dat["O"]
     pvd = vds["principal"]
-    W, H = sh.W, sh.H
-    # ---- view titles
-    def title(vd, head, sub):
-        """The view's name and scale, and under it its X/Y mapping, centred under the view; a view narrower than
-        its title gets the title in short lines starting at its left edge (so it never runs into a neighbour)."""
-        x0, y0, x1, y1 = vd.box()
-        cx = (x0 + x1) / 2
-        y = y0 - (28.0 if vd is pvd else 10.0) - getattr(vd, "title_drop", 0.0)
-        if x1 - x0 >= max(sh.text_width(head, 3.5, True), sh.text_width(sub, 2.5)) + 4:
-            sh.text(cx, y, head, 3.5, "center", bold=True)
-            sh.text(cx, y - 4.2, sub, 2.5, "center")
-            return
-        xl = x0 - 2.0
-        sh.text(xl, y, head, 3.5, "left", bold=True)
-        yy = y - 4.2
-        for part_ in sub.split("; "):
-            sh.text(xl, yy, part_, 2.5, "left")
-            yy -= 3.4
-    sname = scale_text(scale)
-    osfx = (lambda vd: "; origin %s" % vd.origin_name) if part.features else (lambda vd: "")
-    for nm, vd in vds.items():
-        head = "%s  %s" % (VIEW_WORDS[nm], sname)
-        if getattr(vd, "letter", None):
-            head = "VIEW %s  %s" % (vd.letter, sname)
-        title(vd, head, mapping_words(vd.view, part.pod_system) + osfx(vd))
-    for vd in secs:
-        g = vd.group
-        title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, sname),
-              mapping_words(vd.view, part.pod_system) + osfx(vd))
-    for dv in getattr(pl, "details", []):
-        title(dv, "DETAIL %s  %s" % (dv.letter, scale_text(dv.scale)),
-              "of the %s; %s; origin %s" % (VIEW_WORDS.get(dv.parent_name, "view").lower(),
-                                            mapping_words(dv.view, part.pod_system), dv.origin_name))
-    for vd in removed:
-        tags = sorted({f.tag for s in vd.r.all for f in s})
-        vd.title_drop = 14.0
-        title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
-              ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
-              if vd.r.feats else "across the middle, showing the thickness")
-        sh.text((vd.box()[0] + vd.box()[2]) / 2, vd.box()[1] - 9.5 - 8.4 - vd.title_drop,
-                mapping_words(vd.view, part.pod_system), 2.5, "center")
     # ---- cutting planes on the principal view
     ext = pvd.extent
     for vd in secs:
@@ -1256,78 +1237,16 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 sh.line((x0, cy), tip, 0.35)
                 sh.arrow(tip, (l2[0], 0), 3.0, 1.1)
                 sh.text(x0, cy + 3.0, vd.letter, 3.5, "center", bold=True)
-    # ---- removed sections: the hole axis and the hole sizes
+    # ---- removed sections: the hole axis and the profile size (each wall's hole is sized after, clear of these)
     for vd in removed:
         r = vd.r
         c = vd.S(vd.view.to2d(r.point))
         x0, y0, x1, y1 = vd.box()
         sh.centre_line((c[0], y0 - 4), (c[0], y1 + 4))
-        # each wall's hole sized across its gap, on the outside of that wall (ISO 129-1), with its tag
-        bottom_used = False
-        for ft in r.feats:
-            ent = vd.view.to2d(ft.f.entry)
-            ax2 = vd.view.to2d(r.point)
-            wall_out = vd.S(ent)[1]
-            top_wall = wall_out > c[1]
-            if not top_wall:
-                bottom_used = True
-            pa = (c[0] - ft.f.dia / 2 * vd.scale, wall_out)
-            pb = (c[0] + ft.f.dia / 2 * vd.scale, wall_out)
-            sh.dim_linear(pa, pb, "up" if top_wall else "down", 5.0,
-                          "%s  Ø%s THRU 1 WALL" % (ft.tag, fmt(ft.f.dia)), 2.5)
-        # profile size
+        bottom_used = any(vd.S(vd.view.to2d(ft.f.entry))[1] <= c[1] for ft in r.feats)
         w, h = (x1 - x0) / vd.scale, (y1 - y0) / vd.scale
         sh.dim_linear((x0, y0), (x1, y0), "down", 14.0 if bottom_used else 6.0, fmt(w), 2.5)
         sh.dim_linear((x0, y0), (x0, y1), "left", 6.0, fmt(h), 2.5)
-    # ---- datums
-    if dat.get("B"):
-        Bf = dat["B"]
-        cn, cp = dat["C_plane"]
-        for nm, vd in vds.items():
-            if nm == Bf.group.view and _end_on(Bf, vd.view):
-                cb = vd.S(vd.view.to2d(Bf.f.entry))
-                rb = Bf.f.dia / 2 * vd.scale
-                sh.datum((cb[0] - rb * 0.7, cb[1] - rb * 0.7), (-0.6, -1), "B")
-                # C on the room-side face, where this view shows it edge on
-                n2 = vd.view.to2d(cn)
-                if abs(n2[1]) > 0.5:
-                    yy = vd.view.to2d(tuple(cp if abs(cn[i]) > 0.5 else 0.0 for i in range(3)))[1]
-                    e = vd.extent
-                    # where it is farthest from every tagged hole along the edge (clear of the tags)
-                    xs = [vd.view.to2d(ft.f.entry)[0] for g in pl.groups if g.view == nm for ft in g.feats]
-                    if n2[1] < 0:       # pointing down into the view's title: keep to the ends, past the title
-                        cands = [e[0] + t * (e[2] - e[0]) for t in (0.06, 0.12, 0.88, 0.94)]
-                    else:               # clear of the middle, where a length dimension's text sits
-                        cands = [e[0] + t * (e[2] - e[0]) for t in (0.2, 0.28, 0.36, 0.64, 0.72, 0.8)]
-                    xc = max(cands, key=lambda x: min([abs(x - h) for h in xs] or [1e9]))
-                    sh.datum(vd.S((xc, yy)), (0, n2[1]), "C")
-        # A: the seat face, on the principal view's edge
-        a_off = vdot(O, dat["A_normal"])
-        x0, y0, x1, y1 = pvd.box()
-        n2 = P.to2d(dat["A_normal"])
-        if abs(n2[1]) > 0.5:
-            yA = pvd.S((0, P.to2d(O)[1]))[1]
-            sh.datum((x0 + 0.18 * (x1 - x0), yA), (0, n2[1]), "A")
-    if not dat.get("B") and spec.get("datum_faces"):
-        for letter, face in sorted(spec["datum_faces"].items()):
-            k = "XYZ".index(face[1])
-            nrm = tuple((1.0 if face[0] == "+" else -1.0) if i == k else 0.0 for i in range(3))
-            plane = part.box[3 + k] if face[0] == "+" else part.box[k]
-            for nm in ("principal", "above", "below", "from_left", "from_right"):
-                if nm not in vds or abs(vdot(nrm, vds[nm].view.n)) > 1e-6:
-                    continue
-                vd = vds[nm]
-                n2 = vd.view.to2d(nrm)
-                e = vd.extent
-                if abs(n2[1]) > 0.5:
-                    yy = plane * n2[1] if False else vd.view.to2d(tuple(plane if i == k else 0.0 for i in range(3)))[1]
-                    at = vd.S((e[0] + 0.30 * (e[2] - e[0]) + 8 * (ord(letter) - 65), yy))
-                    sh.datum(at, (0, n2[1]), letter)
-                else:
-                    xx = vd.view.to2d(tuple(plane if i == k else 0.0 for i in range(3)))[0]
-                    at = vd.S((xx, e[1] + 0.25 * (e[3] - e[1])))
-                    sh.datum(at, (n2[0], 0), letter)
-                break
     # ---- overall dimensions on the principal (true sizes of the part's box in that view)
     e = pvd.extent
     a, b = pvd.S((e[0], e[1])), pvd.S((e[2], e[3]))
@@ -1462,6 +1381,164 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             p1 = vd.S((end_x, ve[3]))
             p2 = vd.S((c[0], ve[3]))
             sh.dim_linear(p1, p2, "up", 7.0, fmt(abs(c[0] - end_x)), 2.5)
+    sh.flush()
+    # ---- removed sections: each wall's hole sized across its gap, on the outside of that wall (ISO 129-1), with
+    # its tag; the words slide out along the line past anything they would touch
+    for vd in removed:
+        r = vd.r
+        c = vd.S(vd.view.to2d(r.point))
+        for ft in r.feats:
+            wall_out = vd.S(vd.view.to2d(ft.f.entry))[1]
+            top_wall = wall_out > c[1]
+            pa = (c[0] - ft.f.dia / 2 * vd.scale, wall_out)
+            pb = (c[0] + ft.f.dia / 2 * vd.scale, wall_out)
+            sh.dim_linear(pa, pb, "up" if top_wall else "down", 5.0,
+                          "%s  Ø%s THRU 1 WALL" % (ft.tag, fmt(ft.f.dia)), 2.5, slide=True)
+    # ---- view titles
+    def title(vd, head, sub, extra=None):
+        """The view's name and scale, and under it its X/Y mapping (and any extra line), centred under the view;
+        where that would touch a line or a text (or the view is narrower than its title), the first clear of: from
+        the view's left edge with the mapping in short lines, the same with the name in two or three lines, the same
+        from its right edge, centred in short lines."""
+        x0, y0, x1, y1 = vd.box()
+        cx = (x0 + x1) / 2
+        y = y0 - (28.0 if vd is pvd else 10.0) - getattr(vd, "title_drop", 0.0)
+        name, _sp, sc = head.rpartition("  ")
+        if not name:
+            name, sc = head, ""
+
+        def wrapped(limit):
+            lines, cur = [], ""
+            for wd in name.split(" "):
+                t = (cur + " " + wd).strip()
+                if cur and sh.text_width(t, 3.5, True) > limit:
+                    lines.append(cur)
+                    cur = wd
+                else:
+                    cur = t
+            lines.append(cur)
+            if sc:
+                if sh.text_width(lines[-1] + "  " + sc, 3.5, True) <= limit:
+                    lines[-1] += "  " + sc
+                else:
+                    lines.append(sc)
+            return lines
+
+        def lay(xa, an, heads, parts, gap=3.4):
+            out, yy = [], y
+            for i, h_ in enumerate(heads):
+                if i:
+                    yy -= 4.6
+                out.append((xa, yy, h_, 3.5, an, True))
+            yy -= 4.2
+            for p_ in parts:
+                out.append((xa, yy, p_, 2.5, an, False))
+                yy -= gap
+            return out
+        whole = [sub] + ([extra] if extra else [])
+        short = sub.split("; ") + (extra.split("; ") if extra else [])
+        # the name in as few lines as are clear: wider limits first
+        heads = []
+        for lim in (50.0, 40.0, 30.0):
+            w_ = wrapped(lim)
+            if len(w_) > 1 and w_ not in heads:
+                heads.append(w_)
+        lays = []
+        if x1 - x0 >= max([sh.text_width(head, 3.5, True)] + [sh.text_width(t, 2.5) for t in whole]) + 4:
+            lays.append(lay(cx, "center", [head], whole, 3.7))
+        for xa, an in ((x0 - 2.0, "left"), (x1 + 2.0, "right")):
+            lays += [lay(xa, an, [head], short)] + [lay(xa, an, h_, short) for h_ in heads]
+        lays += [lay(cx, "center", h_, short) for h_ in heads]
+        pick = next((L_ for L_ in lays if all(sh.is_free(sh.text_box(xa, yy, t, sz, an, bold=b))
+                                              for xa, yy, t, sz, an, b in L_)), lays[0])
+        for xa, yy, t, sz, an, b in pick:
+            sh.text(xa, yy, t, sz, an, bold=b)
+    sname = scale_text(scale)
+    osfx = (lambda vd: "; origin %s" % vd.origin_name) if part.features else (lambda vd: "")
+    for nm, vd in vds.items():
+        head = "%s  %s" % (VIEW_WORDS[nm], sname)
+        if getattr(vd, "letter", None):
+            head = "VIEW %s  %s" % (vd.letter, sname)
+        title(vd, head, mapping_words(vd.view, part.pod_system) + osfx(vd))
+    for vd in secs:
+        title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, sname),
+              mapping_words(vd.view, part.pod_system) + osfx(vd))
+    for dv in getattr(pl, "details", []):
+        title(dv, "DETAIL %s  %s" % (dv.letter, scale_text(dv.scale)),
+              "of the %s; %s; origin %s" % (VIEW_WORDS.get(dv.parent_name, "view").lower(),
+                                            mapping_words(dv.view, part.pod_system), dv.origin_name))
+    for vd in removed:
+        tags = sorted({f.tag for s_ in vd.r.all for f in s_})
+        vd.title_drop = 14.0
+        title(vd, "SECTION %s-%s  %s" % (vd.letter, vd.letter, scale_text(vd.scale)),
+              ("through %s (typical: %s)" % ("/".join(sorted(f.tag for f in vd.r.feats)), ", ".join(tags)))
+              if vd.r.feats else "across the middle, showing the thickness",
+              extra=mapping_words(vd.view, part.pod_system))
+    sh.flush()
+    # ---- centre marks, origins and tags (draw's place_marks), clear of everything above
+    pl.place_marks()
+    # ---- datums, each where its symbol touches no text and its frame no line: short leaders first
+    def put_datum(cands, letter):
+        pick = next((c_ for c_ in cands if sh.datum_free(c_[0], c_[1], leader=c_[2])), cands[0])
+        sh.datum(pick[0], pick[1], letter, leader=pick[2])
+    if dat.get("B"):
+        Bf = dat["B"]
+        cn, cp = dat["C_plane"]
+        bview = None
+        for nm, vd in vds.items():
+            if nm == Bf.group.view and _end_on(Bf, vd.view):
+                bview = nm
+                cb = vd.S(vd.view.to2d(Bf.f.entry))
+                rb = Bf.f.dia / 2 * vd.scale
+                put_datum([((cb[0] + sx * rb * 0.7, cb[1] + sy * rb * 0.7), (0.6 * sx, 1.0 * sy), lead)
+                           for lead in (7.0, 10.0, 13.0) for sx, sy in ((-1, -1), (1, -1), (-1, 1), (1, 1))], "B")
+
+        # C on the face that stops the turn about B, on an edge-on view of it: B's view first, then the others,
+        # short leaders before long ones; along the edge where it is farthest from the tagged holes
+        def c_cands(nm, vd, leads):
+            n2 = vd.view.to2d(cn)
+            if abs(vdot(cn, vd.view.n)) > 1e-6 or abs(n2[1]) <= 0.5:
+                return []
+            yy = vd.view.to2d(tuple(cp if abs(cn[i]) > 0.5 else 0.0 for i in range(3)))[1]
+            e = vd.extent
+            xs = [vd.view.to2d(ft.f.entry)[0] for g in pl.groups if g.view == nm for ft in g.feats]
+            if n2[1] < 0:       # pointing down into the view's title: keep to the ends, past the title
+                ts = (0.06, 0.12, 0.88, 0.94)
+            else:               # clear of the middle, where a length dimension's text sits
+                ts = (0.2, 0.28, 0.36, 0.64, 0.72, 0.8)
+            xc = sorted([e[0] + t * (e[2] - e[0]) for t in ts], key=lambda x: -min([abs(x - h) for h in xs] or [1e9]))
+            return [(vd.S((x, yy)), (0, n2[1]), lead) for lead in leads for x in xc]
+        names = ([bview] if bview else []) + [n_ for n_ in vds if n_ != bview]
+        cands = [c_ for leads in ((7.0, 10.0), (14.0, 18.0, 22.0)) for n_ in names for c_ in c_cands(n_, vds[n_], leads)]
+        if cands:
+            put_datum(cands, "C")
+        # A: the seat face, on the principal view's edge
+        x0, y0, x1, y1 = pvd.box()
+        n2 = P.to2d(dat["A_normal"])
+        if abs(n2[1]) > 0.5:
+            yA = pvd.S((0, P.to2d(O)[1]))[1]
+            put_datum([((x0 + t * (x1 - x0), yA), (0, n2[1]), lead) for lead in (7.0, 10.0, 14.0)
+                       for t in (0.18, 0.1, 0.26, 0.34, 0.66, 0.74, 0.82, 0.9)], "A")
+    if not dat.get("B") and spec.get("datum_faces"):
+        for letter, face in sorted(spec["datum_faces"].items()):
+            k = "XYZ".index(face[1])
+            nrm = tuple((1.0 if face[0] == "+" else -1.0) if i == k else 0.0 for i in range(3))
+            plane = part.box[3 + k] if face[0] == "+" else part.box[k]
+            for nm in ("principal", "above", "below", "from_left", "from_right"):
+                if nm not in vds or abs(vdot(nrm, vds[nm].view.n)) > 1e-6:
+                    continue
+                vd = vds[nm]
+                n2 = vd.view.to2d(nrm)
+                e = vd.extent
+                if abs(n2[1]) > 0.5:
+                    yy = vd.view.to2d(tuple(plane if i == k else 0.0 for i in range(3)))[1]
+                    xs = [e[0] + t * (e[2] - e[0]) + 8 * (ord(letter) - 65) for t in (0.30, 0.2, 0.4, 0.6, 0.7, 0.8)]
+                    put_datum([(vd.S((x, yy)), (0, n2[1]), lead) for lead in (7.0, 10.0, 14.0) for x in xs], letter)
+                else:
+                    xx = vd.view.to2d(tuple(plane if i == k else 0.0 for i in range(3)))[0]
+                    ys = [e[1] + t * (e[3] - e[1]) for t in (0.25, 0.4, 0.6, 0.75)]
+                    put_datum([(vd.S((xx, y_)), (n2[0], 0), lead) for lead in (7.0, 10.0, 14.0) for y_ in ys], letter)
+                break
     sh.flush()
     return
 

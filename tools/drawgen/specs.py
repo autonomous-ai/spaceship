@@ -43,10 +43,10 @@ SPECS = {
 
 # Parts that need no drawing at all, and why (drawgen won't make one).
 NO_DRAWING = {
-    "811205": "D-125: a plain straight-cut strip; its parts-list line gives material and grade, thickness, length and "
-              "width, finish and tolerance",
+    "811205": "cancelled (D-126: a bought LED profile's clip-in diffuser takes its place); before that, D-125 gave "
+              "the plain strip a full parts-list line and no drawing",
 }
 
 # The sample the Lead reviews before anything else is generated (brief): frame, its RH pair, the table drawing,
-# the tube. The plate of the first sample (811205) needs no drawing under D-125.
+# the tube. The plate of the first sample (811205) needed no drawing under D-125 and is cancelled by D-126.
 SAMPLE = ["211101", "211102", "211501", "111101"]
