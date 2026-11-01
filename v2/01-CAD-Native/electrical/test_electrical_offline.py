@@ -209,6 +209,31 @@ class Parts(unittest.TestCase):
         self.assertEqual(EP.P["term_m16"]["qty_per_parent"], 4 * (EP.P["plug4"]["qty_per_parent"] - 1))
 
 
+class Ties(unittest.TestCase):
+    def test_tie_points_follow_their_rule(self):
+        """The cable ties' holes in WALL's trays (posted 2026-11-01): one clip each (718043); every hole inside its
+        cassette, on the tray's back sheet; neighbours on one cable 300 mm apart at most; none within 150 mm of the
+        power unit's cut-out (the floating gap)."""
+        v = M.values()
+        ties = EP.tie_points(v)
+        self.assertEqual(EP.P["clip"]["qty_per_parent"], len(ties))
+        cas = M.skeleton_boxes(v)
+        cut = (v["pu_x0"] - v["pu_clr"], v["pu_x1"] + v["pu_clr"], v["pu_z0"] - v["pu_clr"], v["pu_z1"] + v["pu_clr"])
+        runs = {}
+        for c, cable, (x, y, z) in ties:
+            b = cas[c]
+            self.assertTrue(b[0] <= x <= b[3] and b[1] <= y <= b[4] and b[2] <= z <= b[5], (c, x, y, z))
+            self.assertTrue(y == b[4] if c.startswith("B") else x == b[3], "on the tray's back sheet: %s" % c)
+            dx = max(cut[0] - x, 0, x - cut[1])
+            dz = max(cut[2] - z, 0, z - cut[3])
+            if c.startswith("B"):
+                self.assertGreaterEqual((dx * dx + dz * dz) ** 0.5, EP.TIE_KEEP - 1e-6, (c, x, z))
+            runs.setdefault((c, cable), []).append(z if c in ("B4-CASS", "R2-CASS") else (x if c == "B2-CASS" else y))
+        for key, pos in runs.items():
+            pos.sort()
+            self.assertTrue(all(b - a <= EP.TIE_SPAN + 1e-6 for a, b in zip(pos, pos[1:])), key)
+
+
 class FlatParts(unittest.TestCase):
     """D-89 part 4, read with the mechanical check's own code (tools/checks)."""
 

@@ -209,6 +209,16 @@ def test_the_kick_strip_runs_on_the_bands_bottom_line_over_the_room_floor():
     ok = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 10, 214, -689, 105)),
           _B("AIR - KICK GRILLE", (900, -700, 2, 1100, -690, 100))]                 # not the door's strip
     assert c_geometry.check_gap_rules(ROOT, "assembly", ok, rules) == []
+    # BASE's lip seals are named for the room floor but aren't it: the strip's end 4.5 mm off a lip (D-150's slot,
+    # which FRONT's brush 368008 closes) is no kick-over-floor finding (the Lead, 2026-11-01, BASE's #303)
+    lips = ok + [_B("110000_P01_BASE_CAD:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:1 / LIP ENVELOPE",
+                    (218.5, -810, 0, 220.5, -691.5, 10)),
+                 _B("110000_P01_BASE_CAD:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:2 / LIP ENVELOPE",
+                    (-961, -650, 0, 214, -648, 10))]
+    assert c_geometry.check_gap_rules(ROOT, "assembly", lips, rules) == []
+    low = [_B("FRONT - DOOR KICK STRIP", (-961, -709, 7, 214, -689, 105))] + lips[2:]
+    fs = c_geometry.check_gap_rules(ROOT, "assembly", low, rules)
+    assert len(fs) == 1 and "ROOM FLOOR (Z 0)" in fs[0].message and "7.0 mm" in fs[0].message
 
 
 def test_alignment_flags_offset_mating_holes_only():
@@ -690,7 +700,8 @@ def test_run_with_ref_leaves_no_export_behind():
     assert set(glob.glob(pattern)) == before
 
 
-def test_hole_size_rule_only_for_holes_facing_a_rivnut():
+@pytest.mark.parametrize("rivnut_hole", [9.53, 10.00, 10.10])      # CAH2's hole, and D-163's Ø10.00 +0.10
+def test_hole_size_rule_only_for_holes_facing_a_rivnut(rivnut_hole):
     rules = [{"id": "M6-CLEARANCE-7", "min_dia_mm": "6.3", "max_dia_mm": "6.95", "severity": "major",
               "status_source": "F-009", "message": "m", "fix": "f"}]
     def body(label, pn, holes):
@@ -698,7 +709,7 @@ def test_hole_size_rule_only_for_holes_facing_a_rivnut():
         b.file = label + ".step"
         return b
     frame = body("frame", "211101", [sf.Hole(1, (0.0, 0.0, 0.0), (0, 0, 1), 6.6, 1.2, [])])
-    band = body("band", "111101", [sf.Hole(2, (0.0, 0.0, -3.4), (0, 0, 1), 9.53, 2.0, [])])
+    band = body("band", "111101", [sf.Hole(2, (0.0, 0.0, -3.4), (0, 0, 1), rivnut_hole, 2.0, [])])
     rivet = body("trim", "211301", [sf.Hole(3, (100.0, 0.0, 0.0), (0, 0, 1), 6.5, 1.0, [])])     # a 6.4 blind rivet's hole
     fs = c_geometry.check_hole_sizes(ROOT, "assembly", [frame, band, rivet], hole_rules=rules)
     assert [f.evidence["dia_mm"] for f in fs] == [6.6]                 # only the hole facing the rivnut
@@ -742,13 +753,15 @@ def test_parts_list_rows_are_matched_only_against_their_own_teams_cad(tmp_path):
     assert not {s for r, s in got if r == "bom-not-in-cad"} & {"111401", "100000", "210000"}
 
 
-def test_bolt_patterns_across_assemblies_must_match():
+@pytest.mark.parametrize("rivnut_hole", [9.53, 10.00, 10.10])      # CAH2's hole, and D-163's Ø10.00 +0.10
+def test_bolt_patterns_across_assemblies_must_match(rivnut_hole):
     def body(label, file, holes):
         b = _B(label, None, "x", holes)
         b.file = file
         return b
     wall = body("wall rail", "wall.step", [sf.Hole(1, (-1227.0, y, 111.0), (0, 0, 1), 6.6, 1.2, []) for y in (-452.2, 278.8)])
-    band = body("band tube", "base.step", [sf.Hole(2, (-1227.0, y, 109.0), (0, 0, 1), 9.53, 2.0, []) for y in (-425.0, 278.3)])
+    band = body("band tube", "base.step", [sf.Hole(2, (-1227.0, y, 109.0), (0, 0, 1), rivnut_hole, 2.0, [])
+                                           for y in (-425.0, 278.3)])
     fs = c_geometry.check_unmatched(ROOT, "assembly", [wall, band])
     offs = sorted(round(f.evidence["offset_mm"], 1) for f in fs)
     assert offs == [27.2, 27.2]                 # the -452.2 / -425 pair, reported on both sides; 278.8 / 278.3 matches

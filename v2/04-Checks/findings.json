@@ -1,5 +1,5 @@
 {
- "next": 346,
+ "next": 366,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -1351,7 +1351,7 @@
    "evidence": {},
    "key": "C05|no-drawing|110101",
    "id": "F-040",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1360,9 +1360,15 @@
      "date": "2026-11-01",
      "rev": "dc61ad9",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "5a996ab",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 cf96ecc",
+   "closed": "2026-11-01 5a996ab"
   },
   {
    "check": "C05",
@@ -1387,7 +1393,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -1432,10 +1438,10 @@
    "evidence": {},
    "key": "C05|no-drawing|111101",
    "id": "F-043",
-   "status": "CLOSED",
+   "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
-   "posted": "BASE group 2026-11-01",
+   "posted": "BASE group 2026-11-01; BASE group, 2026-11-01",
    "history": [
     {
      "date": "2026-11-01",
@@ -1446,9 +1452,14 @@
      "date": "2026-11-01",
      "rev": "f3013d7",
      "event": "closed: the check ran on this revision and no longer finds it"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 7309f94",
+   "last_seen": "2026-11-01 2767495",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -1487,7 +1498,7 @@
    "rule": "no-drawing",
    "subject": "111211",
    "severity": "severe",
-   "message": "111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step.",
+   "message": "111211 BASE - CORNER KEY - SQUARE - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step.",
    "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
    "file": "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step",
    "owner": "Joints Engineer",
@@ -1515,7 +1526,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc",
+   "last_seen": "2026-11-01 2767495",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3099,7 +3110,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3124,7 +3135,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -3138,7 +3149,7 @@
    "evidence": {},
    "key": "C06|duplicate-number|111211",
    "id": "F-098",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "BASE group 2026-11-01",
@@ -3152,9 +3163,15 @@
      "date": "2026-11-01",
      "rev": "8c3aca4",
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -3230,7 +3247,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc",
+   "last_seen": "2026-11-01 2767495",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3266,7 +3283,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc",
+   "last_seen": "2026-11-01 2767495",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3302,7 +3319,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc",
+   "last_seen": "2026-11-01 2767495",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3427,7 +3444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3452,7 +3469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3477,7 +3494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3502,7 +3519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3527,7 +3544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3552,7 +3569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3577,7 +3594,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3602,7 +3619,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3627,7 +3644,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3652,7 +3669,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3677,7 +3694,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3702,7 +3719,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3727,7 +3744,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3752,7 +3769,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3777,7 +3794,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3802,7 +3819,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3827,7 +3844,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -3852,7 +3869,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4327,7 +4344,7 @@
    },
    "key": "C01|shell-open|assembly shell left-base Y 847..850 Z 10..110",
    "id": "F-136",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "BASE group 2026-11-01",
@@ -4351,11 +4368,16 @@
      "date": "2026-11-01",
      "rev": "e06fa22",
      "event": "owner set by hand to BASE: the opening borders BASE's side band; the end cap 118003 that closes it isn't in the CAD"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 cf96ecc"
+   "closed": "2026-11-01 d50a0a0",
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C01",
@@ -4414,7 +4436,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4428,7 +4450,7 @@
    "evidence": {},
    "key": "C05|no-drawing|410101",
    "id": "F-139",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "CEILING group 2026-11-01",
@@ -4437,9 +4459,15 @@
      "date": "2026-11-01",
      "rev": "c72ea57",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "5a996ab",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 cf96ecc",
+   "closed": "2026-11-01 5a996ab"
   },
   {
    "check": "C05",
@@ -4464,7 +4492,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4489,7 +4517,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4514,7 +4542,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4539,7 +4567,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4564,7 +4592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4589,7 +4617,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4696,7 +4724,7 @@
    "evidence": {},
    "key": "C05|no-drawing|711001",
    "id": "F-149",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e06fa22",
    "posted": "ELECTRICAL group 2026-11-01",
@@ -4705,9 +4733,15 @@
      "date": "2026-11-01",
      "rev": "e06fa22",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "2b0d809",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 5a996ab",
+   "closed": "2026-11-01 2b0d809"
   },
   {
    "check": "C06",
@@ -4762,7 +4796,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4787,7 +4821,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4812,7 +4846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4837,7 +4871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4862,7 +4896,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -4887,7 +4921,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5019,7 +5053,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5048,7 +5082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5077,7 +5111,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5106,7 +5140,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5135,7 +5169,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5164,7 +5198,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5193,7 +5227,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5222,7 +5256,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5251,7 +5285,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5280,7 +5314,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5309,7 +5343,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5338,7 +5372,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5367,7 +5401,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5396,7 +5430,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5425,7 +5459,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5454,7 +5488,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5483,7 +5517,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5508,7 +5542,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5533,7 +5567,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5558,7 +5592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5583,7 +5617,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5608,7 +5642,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5633,7 +5667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5658,7 +5692,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5683,7 +5717,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5708,7 +5742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5733,7 +5767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5822,7 +5856,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5851,7 +5885,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5880,7 +5914,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5909,7 +5943,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5938,7 +5972,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -5967,7 +6001,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -5992,7 +6026,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6017,7 +6051,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6042,7 +6076,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6067,7 +6101,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6092,7 +6126,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6117,7 +6151,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6142,7 +6176,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6167,7 +6201,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6192,7 +6226,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6217,7 +6251,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6242,7 +6276,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6267,7 +6301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6292,7 +6326,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6317,7 +6351,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6342,7 +6376,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6367,7 +6401,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -6411,7 +6445,7 @@
    "evidence": {},
    "key": "C05|hidden-lines|110401",
    "id": "F-212",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "BASE group, 2026-11-01",
@@ -6420,9 +6454,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6436,7 +6476,7 @@
    "evidence": {},
    "key": "C05|dimension-twice|110401",
    "id": "F-213",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "BASE group, 2026-11-01",
@@ -6445,9 +6485,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6553,7 +6599,7 @@
    "evidence": {},
    "key": "C05|dimension-twice|111401",
    "id": "F-217",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "BASE group, 2026-11-01",
@@ -6562,9 +6608,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6837,7 +6889,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C08",
@@ -6866,7 +6918,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -6891,7 +6943,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -6916,7 +6968,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -6941,7 +6993,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -6966,7 +7018,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -6991,7 +7043,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7016,7 +7068,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7041,7 +7093,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7066,7 +7118,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7091,7 +7143,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7116,7 +7168,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7141,7 +7193,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7166,7 +7218,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7191,7 +7243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7216,7 +7268,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -7241,7 +7293,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7266,7 +7318,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C09",
@@ -7294,7 +7346,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C09",
@@ -7322,7 +7374,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7351,7 +7403,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7380,7 +7432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7409,7 +7461,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7438,7 +7490,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7467,7 +7519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7496,7 +7548,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7521,7 +7573,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7546,7 +7598,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7571,7 +7623,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7585,7 +7637,7 @@
    "evidence": {},
    "key": "C05|no-drawing|610101",
    "id": "F-255",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5966c3e",
    "posted": "CEILING group, 2026-11-01",
@@ -7594,9 +7646,15 @@
      "date": "2026-11-01",
      "rev": "5966c3e",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "5a996ab",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 cf96ecc",
+   "closed": "2026-11-01 5a996ab"
   },
   {
    "check": "C05",
@@ -7621,7 +7679,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7646,7 +7704,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7671,7 +7729,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7696,7 +7754,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7721,7 +7779,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7746,7 +7804,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7771,7 +7829,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7796,7 +7854,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7821,7 +7879,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7846,7 +7904,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7871,7 +7929,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7896,7 +7954,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -7921,7 +7979,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -7935,7 +7993,7 @@
    "evidence": {},
    "key": "C06|cancelled-by-decision|110401",
    "id": "F-269",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5fa198d",
    "posted": "BASE group, 2026-11-01",
@@ -7944,9 +8002,15 @@
      "date": "2026-11-01",
      "rev": "5fa198d",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7960,7 +8024,7 @@
    "evidence": {},
    "key": "C06|cancelled-by-decision|111401",
    "id": "F-270",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5fa198d",
    "posted": "BASE group, 2026-11-01",
@@ -7969,9 +8033,15 @@
      "date": "2026-11-01",
      "rev": "5fa198d",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7985,7 +8055,7 @@
    "evidence": {},
    "key": "C06|cancelled-by-decision|111501",
    "id": "F-271",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5fa198d",
    "posted": "BASE group, 2026-11-01",
@@ -7994,9 +8064,15 @@
      "date": "2026-11-01",
      "rev": "5fa198d",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -8010,7 +8086,7 @@
    "evidence": {},
    "key": "C06|required-by-decision|the base seal lip on the band's inner face, pressing on the ",
    "id": "F-272",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5fa198d",
    "posted": "BASE group, 2026-11-01",
@@ -8019,9 +8095,15 @@
      "date": "2026-11-01",
      "rev": "5fa198d",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -8049,7 +8131,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C09",
@@ -8077,7 +8159,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C09",
@@ -8105,7 +8187,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C09",
@@ -8133,7 +8215,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C09",
@@ -8161,7 +8243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C09",
@@ -8189,21 +8271,19 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
    "rule": "name-mismatch",
    "subject": "838003",
    "severity": "major",
-   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
-   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 8 parts lists).",
-   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (6 CAD, 7 parts lists).",
+   "file": "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
    "owner": "BASE; ELECTRICAL; WALL",
    "evidence": {
     "files": [
-     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
-     "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
      "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
@@ -8238,7 +8318,7 @@
      "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C01",
@@ -9597,7 +9677,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9625,7 +9705,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9653,7 +9733,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9681,7 +9761,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9709,7 +9789,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9737,7 +9817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9765,7 +9845,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9793,7 +9873,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9820,7 +9900,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9847,7 +9927,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C11",
@@ -9874,7 +9954,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -9893,7 +9973,7 @@
    },
    "key": "C06|name-mismatch|118001",
    "id": "F-323",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c22880b",
    "posted": "BASE group, 2026-11-01",
@@ -9902,9 +9982,15 @@
      "date": "2026-11-01",
      "rev": "c22880b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -9920,7 +10006,7 @@
    },
    "key": "C05|drawing-author|110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG",
    "id": "F-324",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "BASE group, 2026-11-01",
@@ -9929,9 +10015,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -9947,7 +10039,7 @@
    },
    "key": "C05|drawing-author|111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG",
    "id": "F-325",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "Drawing Generator group, 2026-11-01",
@@ -9966,10 +10058,15 @@
      "date": "2026-11-01",
      "rev": "d86ddcb",
      "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "closed": "2026-11-01 a8cd10a",
-   "last_seen": "2026-11-01 cf96ecc"
+   "closed": "2026-11-01 d50a0a0",
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -9985,7 +10082,7 @@
    },
    "key": "C05|drawing-author|111103_P01_BASE-BAND-TUBE-BACK_DWG",
    "id": "F-326",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "Drawing Generator group, 2026-11-01",
@@ -10004,10 +10101,15 @@
      "date": "2026-11-01",
      "rev": "d86ddcb",
      "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "closed": "2026-11-01 a8cd10a",
-   "last_seen": "2026-11-01 cf96ecc"
+   "closed": "2026-11-01 d50a0a0",
+   "last_seen": "2026-11-01 2b0d809"
   },
   {
    "check": "C05",
@@ -10023,7 +10125,7 @@
    },
    "key": "C05|drawing-author|111401_P01_BASE-FLOOR-PANEL-F1_DWG",
    "id": "F-327",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "BASE group, 2026-11-01",
@@ -10032,9 +10134,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -10389,7 +10497,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -10414,7 +10522,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C06",
@@ -10439,7 +10547,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C05",
@@ -10464,7 +10572,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C02",
@@ -10499,7 +10607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 cf96ecc"
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C02",
@@ -10527,7 +10635,8 @@
      "rev": "cf96ecc",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C02",
@@ -10555,7 +10664,8 @@
      "rev": "cf96ecc",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 2767495"
   },
   {
    "check": "C02",
@@ -10581,6 +10691,885 @@
     {
      "date": "2026-11-01",
      "rev": "cf96ecc",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "108002",
+   "severity": "major",
+   "message": "108002 is named 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE' in the parts lists v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', and hardware names come from the register (D-99). The names differ in PANEL-50 (gone), PRIMER-210 (new), SIKAFLEX-252 (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (0 CAD, 7 parts lists).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING; WALL",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv"
+    ],
+    "register": "POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE"
+   },
+   "key": "C06|name-mismatch|108002",
+   "id": "F-346",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2b0d809",
+   "posted": "CEILING group, WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2b0d809",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1231 Y 837 Z 11",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111101 BASE - BAND TUBE - SIDE - LH - TUBE is 13.0 mm from the free edge (centre to edge), 1.86 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X -1231 Y 837 Z 11 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 13.0,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1231 Y 837 Z 11",
+   "id": "F-347",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111102 BASE - BAND TUBE - SIDE - RH - TUBE hole Ø7.0 at X 1231 Y 837 Z 11",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111102 BASE - BAND TUBE - SIDE - RH - TUBE is 13.0 mm from the free edge (centre to edge), 1.86 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X 1231 Y 837 Z 11 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 13.0,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111102 BASE - BAND TUBE - SIDE - RH - TUBE hole Ø7.0 at X 1231 Y 837 Z 11",
+   "id": "F-348",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 13 Y 19 Z 1",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111101 BASE - BAND TUBE - SIDE - LH - TUBE is 13.0 mm from the free edge (centre to edge), 1.86 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X 13 Y 19 Z 1 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 13.0,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 13 Y 19 Z 1",
+   "id": "F-349",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110102",
+   "severity": "major",
+   "message": "110102 BASE - BAND ASSY - SIDE - RH has no drawing PDF (110102_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110102",
+   "id": "F-350",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110106",
+   "severity": "major",
+   "message": "110106 BASE - BAND ASSY - FRONT - FIXED GLASS has no drawing PDF (110106_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110106",
+   "id": "F-351",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111102",
+   "severity": "severe",
+   "message": "111102 BASE - BAND TUBE - SIDE - RH has no drawing PDF (111102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111102",
+   "id": "F-352",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111301",
+   "severity": "severe",
+   "message": "111301 BASE - SILL - FIXED GLASS has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (100.0 thick across 120.5); its row's process names bend, brake, weld.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/base/111301_P01_BASE-SILL-FIXED-GLASS_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111301",
+   "id": "F-353",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 2767495"
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 118001",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) and 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3): a gap 320.1 mm wide at X 1057.5, Y -727.1, from the floor to Z 10.0, open area 3201 mm² (calculation: width times height, summed over 4 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1057.5,
+     -727.1
+    ],
+    "z": [
+     0.0,
+     10.0
+    ],
+    "width_mm": [
+     320.14,
+     320.14
+    ],
+    "area_mm2": 3201.4,
+    "parts": [
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (3):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE"
+    ],
+    "widest_cut": {
+     "z": 3.35,
+     "a": [
+      915.0,
+      -800.0
+     ],
+     "b": [
+      1200.0,
+      -654.17
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 118001",
+   "id": "F-354",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111101 | 361002",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111101 BASE - BAND TUBE - SIDE - LH and 361002 FRONT - DOOR KICK STRIP: a gap 238.7 to 251.7 mm wide at X -1085.5, Y -670.5, from the floor to Z 110.0, open area 27393 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD, 351103 FRONT - DOOR HINGE-SIDE STOP - DL, 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112). A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; FRONT",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     -1085.5,
+     -670.5
+    ],
+    "z": [
+     0.0,
+     110.0
+    ],
+    "width_mm": [
+     238.72,
+     251.72
+    ],
+    "area_mm2": 27392.9,
+    "parts": [
+     "110000_P01_BASE_CAD / 110101 BASE - BAND ASSY - SIDE - LH:1 / 111101 BASE - BAND TUBE - SIDE - LH:1 / BASE - BAND TUBE - SIDE - LH - TUBE",
+     "110000_P01_BASE_CAD / 110101 BASE - BAND ASSY - SIDE - LH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD:1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD / 351103 FRONT - DOOR HINGE-SIDE STOP - DL:1 / HINGE-SIDE STOP 1 (ANGLE, BONDED)",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112:1 / DROP SEAL ENVELOPE (CATALOGUE SECTION)"
+    ],
+    "widest_cut": {
+     "z": 25.45,
+     "a": [
+      -961.0,
+      -689.0
+     ],
+     "b": [
+      -1210.0,
+      -652.07
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111101 | 361002",
+   "id": "F-355",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 361002",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 to 4.5 mm wide at X 216.2, Y -704.4, from the floor to Z 110.0, open area 478 mm² (calculation: width times height, summed over 91 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (4), 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112, 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735, 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571, 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD). All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; FRONT",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     216.2,
+     -704.4
+    ],
+    "z": [
+     0.0,
+     110.0
+    ],
+    "width_mm": [
+     2.02,
+     4.46
+    ],
+    "area_mm2": 477.7,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (4):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 368001 FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112:1 / DROP SEAL ENVELOPE (CATALOGUE SECTION)",
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 368006 FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD:1 / 180 MAGNETIC SEAL - DOOR HALF (HOLD PRODUCT)",
+     "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368002 FRONT - GLAZING U-SEAL - BOHLE BO5201735:1 / GLAZING U-SEAL (4 PIECES)",
+     "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / GLAZING U-PROFILE (4 PIECES, MITRED)"
+    ],
+    "widest_cut": {
+     "z": 3.35,
+     "a": [
+      214.0,
+      -704.38
+     ],
+     "b": [
+      218.46,
+      -704.38
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 361002",
+   "id": "F-356",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 118001",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2) and 111301 BASE - SILL - FIXED GLASS: a gap 237.6 mm wide at X 1082.5, Y -671.8, from Z 10.0 to Z 12.0, open area 475 mm² (calculation: width times height, summed over 3 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1082.5,
+     -671.8
+    ],
+    "z": [
+     10.0,
+     12.0
+    ],
+    "width_mm": [
+     237.64,
+     237.64
+    ],
+    "area_mm2": 475.3,
+    "parts": [
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS"
+    ],
+    "widest_cut": {
+     "z": 10.5,
+     "a": [
+      965.0,
+      -689.5
+     ],
+     "b": [
+      1200.0,
+      -654.17
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 118001",
+   "id": "F-357",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111102 | 611107",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111102 BASE - BAND TUBE - SIDE - RH and 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW: a gap 39.0 to 49.0 mm wide at X 1185.5, Y -643.4, from Z 12.0 to Z 110.0, open area 4672 mm² (calculation: width times height, summed over 84 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2), 611106 AIR - COLUMN FOOT PLATE). All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1185.5,
+     -643.4
+    ],
+    "z": [
+     12.0,
+     110.0
+    ],
+    "width_mm": [
+     39.0,
+     49.0
+    ],
+    "area_mm2": 4672.0,
+    "parts": [
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 111102 BASE - BAND TUBE - SIDE - RH:1 / BASE - BAND TUBE - SIDE - RH - TUBE",
+     "110000_P01_BASE_CAD / 110102 BASE - BAND ASSY - SIDE - RH:1 / 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD (2):1 / BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD - ENVELOPE",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / COLUMN FOOT PLATE",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / COLUMN PLENUM PLATE LOW"
+    ],
+    "widest_cut": {
+     "z": 25.45,
+     "a": [
+      1161.0,
+      -643.38
+     ],
+     "b": [
+      1210.0,
+      -643.38
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111102 | 611107",
+   "id": "F-358",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 611103",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 611103 AIR - COLUMN CORNER ANGLE: a gap 46.0 mm wide at X 964.8, Y -666.5, from Z 12.0 to Z 24.0, open area 552 mm² (calculation: width times height, summed over 9 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 611106 AIR - COLUMN FOOT PLATE). All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     964.8,
+     -666.5
+    ],
+    "z": [
+     12.0,
+     24.0
+    ],
+    "width_mm": [
+     46.0,
+     46.0
+    ],
+    "area_mm2": 552.0,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE BL",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611106 AIR - COLUMN FOOT PLATE:1 / COLUMN FOOT PLATE"
+    ],
+    "widest_cut": {
+     "z": 13.0,
+     "a": [
+      964.75,
+      -689.5
+     ],
+     "b": [
+      964.75,
+      -643.5
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 611103",
+   "id": "F-359",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 611103 | 611107",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 611103 AIR - COLUMN CORNER ANGLE and 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW: a gap 179.0 mm wide at X 1070.5, Y -643.4, from Z 14.0 to Z 24.0, open area 1790 mm² (calculation: width times height, summed over 8 cuts of the STEPs). Air passes between the room and the pod there. A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1070.5,
+     -643.4
+    ],
+    "z": [
+     14.0,
+     24.0
+    ],
+    "width_mm": [
+     179.0,
+     179.0
+    ],
+    "area_mm2": 1790.0,
+    "parts": [
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE BL",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611107 AIR - COLUMN PLENUM SIDE PLATE - LOW:1 / COLUMN PLENUM PLATE LOW"
+    ],
+    "widest_cut": {
+     "z": 15.0,
+     "a": [
+      981.0,
+      -643.38
+     ],
+     "b": [
+      1160.0,
+      -643.38
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 611103 | 611107",
+   "id": "F-360",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 361002 at X 214 Y -707 Z 21",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 361002 FRONT - DOOR KICK STRIP and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 mm wide at X 213.7, Y -707.0, from Z 21.0 to Z 25.0, open area 8 mm² (calculation: width times height, summed over 5 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     213.7,
+     -707.0
+    ],
+    "z": [
+     21.0,
+     25.0
+    ],
+    "width_mm": [
+     2.0,
+     2.0
+    ],
+    "area_mm2": 8.0,
+    "parts": [
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP"
+    ],
+    "widest_cut": {
+     "z": 21.25,
+     "a": [
+      213.75,
+      -708.0
+     ],
+     "b": [
+      213.75,
+      -706.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 361002 at X 214 Y -707 Z 21",
+   "id": "F-361",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 361002 at X 214 Y -707 Z 102",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 361002 FRONT - DOOR KICK STRIP and 361002 FRONT - DOOR KICK STRIP: a gap 2.0 mm wide at X 213.7, Y -707.0, from Z 102.1 to Z 104.0, open area 4 mm² (calculation: width times height, summed over 2 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     213.7,
+     -707.0
+    ],
+    "z": [
+     102.1,
+     104.0
+    ],
+    "width_mm": [
+     2.0,
+     2.0
+    ],
+    "area_mm2": 3.8,
+    "parts": [
+     "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP"
+    ],
+    "widest_cut": {
+     "z": 102.43,
+     "a": [
+      213.75,
+      -708.0
+     ],
+     "b": [
+      213.75,
+      -706.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 361002 at X 214 Y -707 Z 102",
+   "id": "F-362",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 611103 | 611105",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 611103 AIR - COLUMN CORNER ANGLE and 611105 AIR - KICK GRILLE: a gap 10.0 mm wide at X 1160.8, Y -292.0, from Z 24.0 to Z 110.0, open area 860 mm² (calculation: width times height, summed over 75 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     1160.8,
+     -292.0
+    ],
+    "z": [
+     24.0,
+     110.0
+    ],
+    "width_mm": [
+     10.0,
+     10.0
+    ],
+    "area_mm2": 860.0,
+    "parts": [
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / COLUMN ANGLE FR",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE FRONT"
+    ],
+    "widest_cut": {
+     "z": 24.5,
+     "a": [
+      1160.75,
+      -297.0
+     ],
+     "b": [
+      1160.75,
+      -287.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 611103 | 611105",
+   "id": "F-363",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 111301 | 611105",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 111301 BASE - SILL - FIXED GLASS and 611105 AIR - KICK GRILLE: a gap 90.5 to 92.5 mm wide at X 950.8, Y -645.2, from Z 24.0 to Z 105.0, open area 7350 mm² (calculation: width times height, summed over 72 cuts of the STEPs). Air passes between the room and the pod there (other parts on its sides at some heights: 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571). A gap this wide is a part not modelled yet, or missing. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE; CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     950.8,
+     -645.2
+    ],
+    "z": [
+     24.0,
+     105.0
+    ],
+    "width_mm": [
+     90.5,
+     92.5
+    ],
+    "area_mm2": 7350.5,
+    "parts": [
+     "110000_P01_BASE_CAD / 110106 BASE - BAND ASSY - FRONT - FIXED GLASS:1 / 111301 BASE - SILL - FIXED GLASS:1 / BASE - SILL - FIXED GLASS",
+     "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / GLAZING U-PROFILE (4 PIECES, MITRED)",
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE LEFT"
+    ],
+    "widest_cut": {
+     "z": 95.75,
+     "a": [
+      950.75,
+      -691.5
+     ],
+     "b": [
+      950.75,
+      -599.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 111301 | 611105",
+   "id": "F-364",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C01",
+   "rule": "seal-gap",
+   "subject": "floor seal line 611105 | 611501",
+   "severity": "severe",
+   "message": "The pod's floor seal line is open between 611105 AIR - KICK GRILLE and 611501 AIR - INTAKE RISER: a gap 49.2 mm wide at X 953.0, Y -623.5, from Z 105.0 to Z 110.0, open area 246 mm² (calculation: width times height, summed over 3 cuts of the STEPs). Air passes between the room and the pod there. All openings on this run: 12, 47029 mm² in all.",
+   "fix": "Close it: make the parts meet, or come within 1 mm, all the way up; or add the part that bridges it (a seal, a brush, a plate, a lip), in the CAD as it sits when fitted (pressed, compressed). The check takes the door's drop seal down to the floor within its travel (config/seal-travel.csv).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "seal-line",
+    "at": [
+     953.0,
+     -623.5
+    ],
+    "z": [
+     105.0,
+     110.0
+    ],
+    "width_mm": [
+     49.16,
+     49.16
+    ],
+    "area_mm2": 245.8,
+    "parts": [
+     "610000_P01_AIR_CAD / 610101 AIR - AIR COLUMN:1 / 611105 AIR - KICK GRILLE:1 / KICK GRILLE LEFT",
+     "610000_P01_AIR_CAD / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / INTAKE RISER"
+    ],
+    "widest_cut": {
+     "z": 106.5,
+     "a": [
+      955.0,
+      -648.0
+     ],
+     "b": [
+      951.0,
+      -599.0
+     ]
+    }
+   },
+   "key": "C01|seal-gap|floor seal line 611105 | 611501",
+   "id": "F-365",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 2767495",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "2767495",
      "event": "opened"
     }
    ]
