@@ -63,3 +63,13 @@ D-144 stepped 111211's fixing holes ((10.5, +6) and (17.8, −6)) and added 1112
 
 **Checks:** `test_joints_drawing.py` 0 failures; the mechanical check against main closes the key sheet's no-drawing findings for 111211 to 111215 and 111215's missing STEP (the pull request's checks). A Reviewer's D-114 visual pass follows.
 
+## Reviewer 6's D-114 pass on the D-144 key sheet (#324), and the fixes (2026-11-01)
+
+Reviewer 6 checked each key against its STEP (111212 to 111215 pass; 111211 matched except for the P2) and held #324 on one P2, with P3s for the redo:
+
+- **P2, the hole names:** the top view tagged (10.5, +6) H04 and (17.8, −6) H03, against the table's H03 (10.5, +6) and H04 (17.8, −6). Anyone settling that by the table's sign would mirror 111211's stepped pattern, and a mirrored key doesn't fit. Fixed in the finish step: H03 on the upper hole, H04 on the lower; note 5 now says **+Y up in the top view**. `test_joints_drawing.py` places the top view's holes and checks that each tag picks the hole the table gives it (it fails with the old names).
+- **Ø5.04 twice, and as a size tighter than 6H allows:** both diameter dimensions dropped (native, the redo below); the M6x1-6H callouts carry the size, and note 4 says the views draw the tapped holes at the thread's minor diameter. This also clears the mechanical check's "printed twice" finding.
+- **Y from the side face, the note's ±0.1 from the centre line:** the drawing API can't place a centre line that a dimension attaches to (it has centre line and mark settings only), and a dimension between two hidden circles' centres once showed the sheet distance (above). So the top view keeps its dimensions from the −Y side face, and note 5 now says so: it gives Y from that face (17.5 + Y) and puts the ±0.1 on the back face and that face. With the block's width at ISO 2768-m, the holes stay within about ±0.25 of the centre line, inside the band's Ø7.0 holes' ±0.5.
+- **Note 3:** 111213 is now "the opposite hand of view B's shape, at its own A" (24.02°, not 24.14°). **Note 1** gives the scale, 2:1, view B too.
+- **Hidden circles for H03 and H04:** kept. In first-angle projection a view from below sits above the front view, where the A3 sheet has no room at 2:1, and each hidden circle carries its tag and the table's position.
+

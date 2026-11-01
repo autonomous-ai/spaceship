@@ -87,8 +87,8 @@ WANT = {
     ("spigot", "front"): [15.24, 7.24, 8.0, 8.0, 6.0],
     ("spigot", "top"): [4.0],
     ("keys", "front"): [75.0, 30.0],
-    ("keys", "right"): [35.0, 26.0, 60.0, 17.5, 5.0],
-    ("keys", "top"): [17.8, 11.5, 23.5, 10.5, 5.0],   # D-144: the stepped hole's x and y, the other's y and x
+    ("keys", "right"): [35.0, 26.0, 60.0, 17.5],      # no diameters: the callouts give the size (#324)
+    ("keys", "top"): [17.8, 11.5, 23.5, 10.5],        # D-144: the stepped hole's x and y, the other's y and x
 }
 
 for part, cfg in JD.PARTS.items():
@@ -124,8 +124,23 @@ _cfg = JD.PARTS["keys"]
 _name, _o, _centre, _st = [v for v in _cfg["views"] if v[0] == "top"][0]
 _lines, _circles = view_geometry("keys", "top", _cfg["scale"], _centre)
 _got = [measured(k, a, b, pl, _cfg["scale"]) for k, a, b, pl in JD.plan_dims("keys", "top", _lines, _circles, _cfg["scale"])]
-check(_got == [10.5, 10.5, 24.5, 5.0], "keys top view, holes in line: no x dimension twice %s" % _got)
+check(_got == [10.5, 10.5, 24.5], "keys top view, holes in line: no x dimension twice %s" % _got)
 FIXING_HOLES[:] = _saved
+
+# the top view's hole tags name the holes the table names (Reviewer 6 on #324: H03 and H04 were swapped against it)
+_cfg = JD.PARTS["keys"]
+_t = [v for v in _cfg["views"] if v[0] == "top"][0][2]
+_row = [r for r in [n for n in _cfg["notes"] if isinstance(n, dict)][0]["table"] if r[0] == "111211"][0]
+_want = {}
+for _name, _xy in zip(("H03", "H04"), _row[5].split(";")):
+    _x, _y = [float(v.replace("+", "")) for v in _xy.split(",")]
+    _want[_name] = (_x, _y)
+_sheet = lambda X, Y: (_t[0] + (X - 15.0) * _cfg["scale"], 297.0 - (_t[1] + Y * _cfg["scale"]))   # PDF x, y down
+_circles = [_sheet(*xy) + (False,) for xy in ((10.5, 6.0), (17.8, -6.0))]         # hidden, as Fusion draws them
+_back = lambda c: (round((c[0] - _t[0]) / _cfg["scale"] + 15.0, 2), round((297.0 - c[1] - _t[1]) / _cfg["scale"], 2))
+_got = {lines[0].split()[0]: _back(pick(_circles)) for pick, lines, _o in _cfg["tags"]
+        if lines[0].split()[0] in ("H03", "H04")}
+check(_got == _want, "keys top view: H03 and H04 tag the holes the table gives them %s (want %s)" % (_got, _want))
 
 # notes as PDF text, read back the way the mechanical check reads a drawing
 try:

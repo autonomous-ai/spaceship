@@ -63,11 +63,12 @@ PARTS = {
                   ("top", "TopViewOrientationType", (175.0, 65.0), "hidden")],
         "notes": [
             "NOTES (111211 TO 111215 P01, PROPOSED) - TABULATED",
-            "1. UNITS MM. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS STATED.",
+            "1. UNITS MM. SCALE 2:1, VIEW B TOO. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS "
+            "STATED.",
             "2. MATERIAL EN AW-6061-T6. FINISH MILL FINISH, DEBURRED, NO SHARP EDGES.",
             "3. ONE BLOCK 35 x 75, 30 LONG ON ITS CENTRE LINE. THE STUD FACE IS CUT AT ANGLE A ABOUT ITS CENTRE "
             "LINE, LONG SIDE ON THE OUTSIDE OF THE TURN. THE THREE VIEWS SHOW 111211 (A=0); VIEW B SHOWS "
-            "111212 FROM ABOVE; 111213 IS 111212'S OPPOSITE HAND (MIRRORED ABOUT THE CENTRE LINE).",
+            "111212 FROM ABOVE; 111213 IS THE OPPOSITE HAND OF VIEW B'S SHAPE, AT ITS OWN A.",
             {"indent": 5.0,
              "table": [["PART", "A", "HAND", "LONG", "SHORT", "H03, H04 (X, Y)", "POD", "WHERE"],
                        ["111211", "0°", "-", "30.00", "30.00", "10.5, +6; 17.8, -6", "2", "BACK CORNERS"],
@@ -76,10 +77,11 @@ PARTS = {
                        ["111214", "7.25°", "LH", "32.23", "27.77", "10.5, ±7", "1", "LEFT KNEE"],
                        ["111215", "0°", "-", "30.00", "30.00", "10.5, ±7", "1", "FR1 INLINE"]]},
             "4. H01, H02: M6x1-6H THROUGH, SQUARE TO THE STUD FACE ON ITS CENTRE LINE, 26 AND 60 ABOVE THE "
-            "BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°. THE VIEWS SHOW THE TAPPED HOLES "
-            "AT THE 6H MEAN MINOR Ø5.04 (TAP DRILL Ø5.0).",
+            "BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°. THE VIEWS DRAW THE TAPPED HOLES "
+            "AT THE THREAD'S MINOR DIAMETER; THE M6x1-6H CALLOUTS GIVE THEIR SIZE.",
             "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, AT THE TABLE'S X (FROM THE "
-            "BACK FACE) AND Y (FROM THE CENTRE LINE, +Y AS SHOWN), ±0.1 (D-144).",
+            "BACK FACE) AND Y (FROM THE CENTRE LINE, +Y UP IN THE TOP VIEW). THE TOP VIEW GIVES Y FROM THE -Y SIDE "
+            "FACE (17.5 + Y). ±0.1 TO THE BACK FACE AND THAT SIDE FACE (D-144).",
             "6. JOINTS REGISTER J-BASE-02; POSITIONS v2/01-CAD-Native/joints/corner-keys.csv; ONE STEP PER PART "
             "NUMBER IN v2/03-Manufacturing/joints/.",
         ],
@@ -91,8 +93,10 @@ PARTS = {
             # D-144: the stepped holes' tags both to the right of the top view (its right edge is x 205): dx takes
             # each text past that edge; dy lifts them, so the lower one ends 3.5 above the title block (sheet y 240)
             # and they stay 14 apart (the visual pass, 2026-11-01: at the holes' height H03 ended 1 from the block)
-            (lambda cs: min(TOP_HOLES(cs), key=lambda c: c[1]), ["H04 M6x1-6H", "15 DEEP"], (41.0, -11.0)),
-            (lambda cs: max(TOP_HOLES(cs), key=lambda c: c[1]), ["H03 M6x1-6H", "15 DEEP"], (27.0, -13.0)),
+            # Names as the table's: H03 is (10.5, +6), the upper hole in the top view (+Y up), H04 (17.8, -6) the
+            # lower one (Reviewer 6 on #324: they were swapped; test_joints_drawing.py now checks them)
+            (lambda cs: min(TOP_HOLES(cs), key=lambda c: c[1]), ["H03 M6x1-6H", "15 DEEP"], (41.0, -11.0)),
+            (lambda cs: max(TOP_HOLES(cs), key=lambda c: c[1]), ["H04 M6x1-6H", "15 DEEP"], (27.0, -13.0)),
         ],
         "view_b": {"origin": (290.0, 170.0),
                    "label": "VIEW B, 2:1: 111212 (LH, FRONT LEFT CORNER) FROM ABOVE"},
@@ -160,7 +164,8 @@ def plan_dims(part, view, lines, circles, scale):
         if circles:
             c = min(circles, key=lambda c: c[1])
             out.append(("linear", bl, (c[0], c[1]), ((x0 + c[0]) / 2, y1 + 8.0)))   # 17.5 to the centre line
-            out.append(("diameter", (c[0], c[1], c[2]), None, (c[0] + 12.0, c[1] + 10.0)))
+            # no diameter: the M6x1-6H callouts give the size (Reviewer 6 on #324: a Ø5.04 under ISO 2768-m was
+            # tighter than 6H's minor diameter, and it printed twice)
     elif part == "keys" and view == "top":
         if circles:
             cs = sorted(circles, key=lambda c: c[1])
@@ -174,7 +179,6 @@ def plan_dims(part, view, lines, circles, scale):
                 out.append(("linear", bl, (cs[-1][0], cs[-1][1]), (side, (y0 + cs[-1][1]) / 2)))      # 23.5 / 24.5
                 if stepped:                              # the other hole's own x, above, in the gap
                     out.append(("linear", bl, (cs[-1][0], cs[-1][1]), ((x0 + cs[-1][0]) / 2, y1 + 6.0)))
-            out.append(("diameter", cs[-1], None, (cs[-1][0] + 12.0, cs[-1][1] + 10.0)))
     return out
 
 
