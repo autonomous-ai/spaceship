@@ -30,8 +30,6 @@ def rows():
                 ("5102%02d_P01_LINING-CASSETTE-BACK-%s_DWG" % (i, tag), ["5102%02d" % i], "cassette %s" % code)]
     out += [("211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG", ["211301", "211302", "211303", "211304"],
              "tabulated: the side skins (RH the mirror of LH; L1 = L2, R1 = R2)"),
-            ("211401_P01_WALL-SKIN-BACK-LOWER-B1_DWG", ["211401", "211402", "211403", "211404"],
-             "tabulated: the back skins (one flat rectangle)"),
             ("511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG", ["511101", "511102", "511103", "511104"],
              "tabulated: the side trays (LH = RH; upper ones shorter)"),
             ("511201_P01_LINING-TRAY-BACK-LOWER-B1_DWG", ["511201", "511202", "511203", "511204"],
@@ -40,6 +38,9 @@ def rows():
              "tabulated: the side fills (the bays have pockets, so they get a drawing)"),
             ("211601_P01_WALL-CAVITY-FILL-BACK-LOWER-B1_DWG", ["211601", "211602", "211603", "211604"],
              "tabulated: the back fills (pin and ceiling pockets listed per part)")]
+    out.append(("(no drawing, D-89 part 4)", ["211401", "211402", "211403", "211404"],
+                "back skins: flat ACP cut by CNC router from their DXFs (outline and holes, B2's inlet and LAN "
+                "holes included); material, thickness, finish and ISO 2768-m in the parts-list rows"))
     for code_list, fam, what, el in ((range(1, 5), "5113", "side felt", "511302 (R1) and 511304 (R2)"),
                                      (range(1, 5), "5114", "back felt", "511402 (B2) and 511404 (B4)")):
         out.append(("(no drawing, D-89)", ["%s%02d" % (fam, i) for i in code_list],

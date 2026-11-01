@@ -339,11 +339,44 @@ def test_part_numbers_and_file_names():
 
 
 def test_pod_mass_against_the_cap(tmp_path):
-    rows = [{"kg_total": "400.0"}, {"kg_total": "26.7"}]
+    # D-131: the cap is 460 kg (provisional until the wall sample's recount), from config/policy.csv
+    rows = [{"kg_total": "440.0"}, {"kg_total": "26.7"}]
     fs, info = c_parts.check_pod_mass(str(tmp_path), rows, "list.csv")
-    assert info["total_kg"] == pytest.approx(426.7) and [f.rule for f in fs] == ["pod-mass-over-cap"]
-    fs, info = c_parts.check_pod_mass(str(tmp_path), [{"kg_total": "419"}], "list.csv")
-    assert fs == []
+    assert info["total_kg"] == pytest.approx(466.7) and info["cap_kg"] == 460.0
+    assert [f.rule for f in fs] == ["pod-mass-over-cap"] and "460 kg cap (D-131" in fs[0].message
+    fs, info = c_parts.check_pod_mass(str(tmp_path), [{"kg_total": "426.7"}], "list.csv")
+    assert fs == []                                                       # over the old 420, under D-131's 460
+    assert c_parts.check_pod_mass(ROOT, [{"kg_total": "1"}], "list.csv")[1]["cap_kg"] == 460.0   # the repo's policy
+
+
+def test_what_decisions_cancelled_is_gone_and_what_they_added_is_there(tmp_path):
+    # D-131 cancels the cleats, D-132 the floor parts and the threshold and adds the base seal lip
+    import shutil
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    for n in ("cancelled-items.csv", "required-items.csv"):
+        shutil.copy(os.path.join(ROOT, "v2/04-Checks/config", n), cfg / n)
+    d = tmp_path / "v2/03-Manufacturing/base"
+    d.mkdir(parents=True)
+    row = {"part_number": "111401", "name": "BASE - FLOOR PANEL - F1", "name_vi": "x", "material": "plywood 9",
+           "finish": "HPL", "qty": "1", "mass_kg": "9", "status": "DRAFT", "source": "CAD"}
+    rows = [row, dict(row, part_number="111501", name="BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM"),
+            dict(row, part_number="111101", name="BASE - BAND TUBE - SIDE - LH")]
+    _write_csv(d / "110000_P01_BASE_BOM.csv", rows)
+    plists = c_parts.find_parts_lists(str(tmp_path))
+    prods = {"118003": {"files": {"v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step"}, "count": 1,
+                        "name": "118003 FRONT - THRESHOLD - 13 MM"},
+             "212999": {"files": {"v2/03-Manufacturing/skeleton/x.step"}, "count": 1, "name": "212999 CORNER CLEAT"}}
+    got = {(f.rule, f.subject): f for f in c_parts.check_decided_items(str(tmp_path), plists, prods)}
+    assert {k for k in got if k[0] == "cancelled-by-decision"} == {
+        ("cancelled-by-decision", "111401"), ("cancelled-by-decision", "111501"), ("cancelled-by-decision", "118003")}
+    assert got[("cancelled-by-decision", "111401")].owner == "BASE" and "D-132" in got[("cancelled-by-decision", "111401")].message
+    assert got[("cancelled-by-decision", "118003")].owner == "FRONT"                 # the skeleton's cleat isn't a part
+    req = [f for f in got.values() if f.rule == "required-by-decision"]
+    assert len(req) == 1 and req[0].owner == "BASE" and "seal lip" in req[0].message
+    _write_csv(d / "110000_P01_BASE_BOM.csv", rows[2:] + [dict(row, part_number="118101", name="BASE - SEAL LIP - SOFT")])
+    got = c_parts.check_decided_items(str(tmp_path), c_parts.find_parts_lists(str(tmp_path)), {})
+    assert got == []                                                       # floor parts gone, the lip there
 
 
 def test_repo_pod_mass_from_the_newest_list_without_double_counting():
@@ -498,6 +531,112 @@ def test_generated_drawings_follow_d113_sections_and_no_bent_parts(tmp_path):
     same = [c_drawings.body_shape(_profile(f, holes=((300.0, 9.53),))) for f in (sf.Frame(), turned)]
     assert same[0] == same[1]                                                            # one part, turned
     assert c_drawings.body_shape(_profile(sf.Frame(), length=500.0, holes=((300.0, 9.53),))) != same[0]
+
+
+def test_every_part_is_its_own_component_not_a_body(tmp_path):
+    # D-120 (build plan rule 2, BP-04): a component that holds several bodies is reported, as ruled
+    class FakeStep:
+        def __init__(self, rows, solids):
+            self.rows, self.solids = rows, solids
+        def instances(self):
+            return [{"pd": pd, "solid": sid, "part_number": pn, "name": name} for pd, sid, pn, name in self.rows]
+        def solid(self, sid):
+            return self.solids[sid]
+    def body(sid, name, d):
+        so = sf.Solid(sid, name)
+        so.holes = [sf.Hole(sid, (0, 0, 0), (0, 0, 1), d, 2.0, [])]
+        return so
+    names = ["RAIL - TOP", "STILE - FRONT", "STILE - MID 1", "STOP WASHER", "STOP WASHER - 2", "SPIGOT",
+             "HOLD PULL SPACE - OUTSIDE", "HOLD PULL SPACE - POD SIDE", "L1 ROUTE", "G GROMMET PAIR", "RIVNUT",
+             "RIVET NUT M6 - ENVELOPE"]
+    dias = [6.6, 9.53, 9.53, 10.5, 10.5, 8.0, 1.0, 1.0, 1.0, 2.0, 9.5, 9.5]
+    solids = {i + 1: body(i + 1, n, d) for i, (n, d) in enumerate(zip(names, dias))}
+    frame, washer = "211101 WALL - PANEL FRAME - SIDE LOWER - LH", "831002 HARDWARE - STOP WASHER"
+    rows = [(10, 1, "211101", frame), (10, 2, "211101", frame), (10, 3, "211101", frame),   # a frame: 3 bodies
+            (20, 4, "831002", washer), (20, 5, "831002", washer),                           # 2 copies as bodies
+            (30, 6, "831001", "831001 SPIGOT"), (30, 6, "831001", "831001 SPIGOT"),       # one component placed twice
+            (40, 7, "368103", "368103 FRONT - DOOR PULL PAIR - HOLD"), (40, 8, "368103", "x - HOLD"),   # HOLD space
+            (50, 9, "710011", "710011 ELECTRICAL - HARNESS"), (50, 10, "710011", "y"),     # route bodies (D-92)
+            (60, 11, "838003", "838003 RIVET NUT"), (60, 12, "838003", "838003 RIVET NUT"),   # a rivnut, its ENVELOPE
+            (70, 7, "NO-PN-HOLD-H03", "HOLD - CLIP ZONES"), (70, 8, "NO-PN-HOLD-H03", "HOLD - CLIP ZONES")]
+    path = str(tmp_path / "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step")
+    fake = FakeStep(rows, solids)
+    got = {f.subject: f for f in c_parts.check_components(str(tmp_path), [path], lambda p: fake)}
+    assert set(got) == {"211101", "831002"}
+    assert "3 bodies of 2 different shapes" in got["211101"].message and got["211101"].owner == "WALL"
+    assert got["211101"].severity == "major" and "assembly" in got["211101"].fix
+    assert "copies of one part" in got["831002"].message and "place it 2 times" in got["831002"].fix
+    assert got["831002"].owner == "WALL"           # WALL placed the Joints Engineer's washer: WALL fixes its model
+
+
+def test_a_plain_strip_passes_on_its_full_parts_list_row(tmp_path):
+    # D-125, extending D-89: a plain straight-cut strip or sheet with no features needs no drawing when its row gives
+    # material and grade, thickness, length, width, finish and tolerance. INTERIOR's diffuser strip 811205 is the first
+    strip = _profile(sf.Frame(), length=991.0, w=28.0, h=1.5, t=None)
+    sides = c_drawings.cuboid_sides(strip)
+    assert sides == pytest.approx((1.5, 28.0, 991.0)) and c_drawings.is_strip(sides)
+    assert c_drawings.cuboid_sides(_profile(sf.Frame(), length=991.0, w=28.0, h=1.5, t=None,
+                                            holes=((300.0, 5.0),))) is None              # a hole: not plain
+    assert c_drawings.cuboid_sides(_profile(sf.Frame(), w=40.0, h=40.0, t=2.0)) is None  # a tube
+    assert c_drawings.cuboid_sides(_profile(sf.Frame(), w=30.0, h=3.0, t=None, chamfer=1.0)) is None
+    assert not c_drawings.is_strip((20.0, 20.0, 500.0))                                  # a square bar
+    d = tmp_path / "v2/03-Manufacturing/interior"
+    d.mkdir(parents=True)
+    row = {"part_number": "811205", "name": "INTERIOR - LIGHT SHELF - DIFFUSER RH", "kind": "MP",
+           "material": "Opal polycarbonate (grade HOLD: picked with ELECTRICAL's down-light strips)",
+           "finish": "opal, as supplied", "process": "cut to length",
+           "size_mm": "991.0 long, section 28.0 x 1.5, 1.5 sheet", "tolerance": "±0.5 on cut sizes (assumption)"}
+    def found(**change):
+        _write_csv(d / "810000_P01_INTERIOR-PARTS-LIST_BOM.csv", [dict(row, **change)])
+        fs = c_drawings.check_drawings(str(tmp_path), {"811205"}, {}, {"811205": row["name"]},
+                                       cuboid_by_pn={"811205": sides})
+        return " ".join(f.message for f in fs)
+    assert found() == ""                                                   # the full row stands in for a drawing
+    assert "D-125" in found(finish="") and "finish" in found(finish="")
+    assert "the material's grade" in found(material="polycarbonate")
+    assert "1.5 x 28 x 991" in found(size_mm="980.0 long, section 28.0 x 1.5")   # not the STEP's length
+    assert "tolerance on the length and the width" in found(tolerance="")
+    assert "hole" in found(process="cut to length, one cable hole")
+    # the tolerance covers both cut sizes (PM, 2026-11-01); the thickness takes the sheet's own, as its grade names it
+    assert "tolerance on the width" in found(tolerance="cut length +/-1 (assumption)")       # 811205's line today
+    assert found(tolerance="cut length +/-1, width as supplied (assumption)") == ""          # a bought strip
+    assert found(tolerance="cut length +/-1 (assumption)", size_mm="991.0 long, 28.0 wide (width as supplied), 1.5 "
+                 "sheet") == ""
+    assert found(tolerance="ISO 2768-m") == "" and found(tolerance="length ±1; width ±0.5") == ""
+    assert found(tolerance="cut +/-0.5") == ""                                               # no size named: both
+    assert "tolerance on the length and the width" in found(tolerance="thickness ±0.1, hole positions ±0.2")
+    assert c_drawings.tolerance_cover(["cut length +0/-0.5", "end angle ±0.25°"], []) == {"length"}
+    assert c_drawings.tolerance_cover(["bent ±0.5"], ["width as supplied"]) == {"width"}
+    assert c_drawings.tolerance_cover(["+0.2/0"], []) == {"length", "width"}            # one-sided, no size named
+    # a bar or block isn't a strip: it keeps its drawing whatever its row says
+    assert "D-125" not in " ".join(f.message for f in c_drawings.check_drawings(
+        str(tmp_path), {"811205"}, {}, {"811205": row["name"]}, cuboid_by_pn={"811205": (20.0, 20.0, 500.0)}))
+
+
+def test_the_strip_list_keeps_one_plain_thin_shape_per_part():
+    # D-125's per-part strip list, shared with the release checklist: one shape per part across every STEP, a plain
+    # rectangular block, thin enough to be a strip or sheet
+    class FakeStep:
+        def __init__(self, rows):
+            self.rows = rows
+        def instances(self):
+            return [{"solid": i, "part_number": pn} for i, (pn, _so) in enumerate(self.rows)]
+        def solid(self, sid):
+            return self.rows[sid][1]
+    a = math.radians(30.0)
+    turned = sf.Frame.from_axes((100.0, 50.0, 0.0), (0, 0, 1), (math.cos(a), math.sin(a), 0))
+    strip = lambda frame=sf.Frame(), length=991.0: _profile(frame, length=length, w=28.0, h=1.5, t=None)
+    files = {
+        "a.step": FakeStep([("811205", strip()),                                    # a strip ...
+                            ("111999", _profile(sf.Frame(), length=100.0, w=50.0, h=40.0, t=None)),   # a thick block
+                            ("211999", strip(length=500.0)),                        # two shapes under one number
+                            ("831999", strip(length=60.0)), ("831999", strip(turned, length=60.0)),   # copies, turned
+                            ("211998", _profile(sf.Frame(), w=40.0, h=40.0, t=2.0))]),                # a tube
+        "b.step": FakeStep([("811205", strip(turned)),                              # ... the same strip in a 2nd file
+                            ("211999", strip(length=300.0))]),
+    }
+    got = c_drawings.strip_sides(list(files), files.get)
+    assert got == {"811205": pytest.approx((1.5, 28.0, 991.0)), "831999": pytest.approx((1.5, 28.0, 60.0))}
 
 
 def test_run_with_ref_leaves_no_export_behind():
@@ -1194,12 +1333,22 @@ def test_the_assembled_shell_is_checked_face_by_face_once_its_parts_are_on_main(
             (1204.0, -642.7, 1257.3, 1250.0, 850.0, 2400.0), "211304")
     dr = _B("350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350003 FRONT - DECOR BLOCK ASSY - DR:1 / BODY",
             (950.0, -850.0, 110.0, 1250.0, -645.0, 2400.0), "351301")
+    band = _B("110000_P01_BASE_CAD:1 / 110102 BASE - BAND ASSY - SIDE - RH:1 / TUBE",
+              (1210.0, -645.0, 10.0, 1250.0, 850.0, 110.0), "111102")
     assert "right" not in c_geometry.shell_faces_ready("assembly", [lo, up])        # DR not on main yet
-    assert "right" in c_geometry.shell_faces_ready("assembly", [lo, up, dr])
-    assert "back" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr])      # no back walls yet
-    # an L of thin strips (no band below, no decor at the front edge) reports as its two strips
-    gaps = [g for g in c_geometry.shell_gaps([lo, up]) if g["zone"] == "right"]
-    assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 5 for g in gaps)
+    assert "right" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr])    # nor the band its seam closes on
+    assert "right" in c_geometry.shell_faces_ready("assembly", [lo, up, dr, band])
+    assert "back" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr, band])      # no back walls yet
+    # the file names' hyphens count as the words' spaces (the real assembly's top components)
+    hy = [_B(b.label.split(" / ")[0] + " / X", b.box, b.part_number) for b in (lo, up, dr)] + [band]
+    assert "right" in c_geometry.shell_faces_ready("assembly", hy)
+    # a seam-wide strip along the face's own edge is the seam to the next face's part: not an opening
+    assert [g for g in c_geometry.shell_gaps([lo, up]) if g["zone"] == "right"] == []
+    # an L of wider strips (10 mm short of the band and of the decor) reports as its two strips
+    lo10 = _B(lo.label, (1204.0, -635.0, 120.0, 1250.0, 850.0, 1255.0), "211302")
+    up10 = _B(up.label, (1204.0, -635.0, 1257.3, 1250.0, 850.0, 2400.0), "211304")
+    gaps = [g for g in c_geometry.shell_gaps([lo10, up10]) if g["zone"] == "right"]
+    assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 15 for g in gaps)
 
 def test_a_step_whose_top_carries_another_number_is_reported(tmp_path):
     import shutil, run_checks
@@ -1231,3 +1380,148 @@ def test_a_solid_with_a_sealed_void_reads_by_its_outer_shell():
         assert sb.voids == 1 and sa.voids == 0
         assert sb.box == sa.box and len(sb.holes) == len(sa.holes) == 1
         assert any(i["solid"] == 256 for i in b.instances())        # still found as a solid of its product
+
+
+def _felt_dxf(path, body, blocks=""):
+    """A small ASCII DXF in mm: body is the ENTITIES section's records, blocks its BLOCKS section's."""
+    path.write_text("0\nSECTION\n2\nHEADER\n9\n$INSUNITS\n70\n4\n0\nENDSEC\n0\nSECTION\n2\nBLOCKS\n" + blocks +
+                    "0\nENDSEC\n0\nSECTION\n2\nENTITIES\n" + body + "0\nENDSEC\n0\nEOF\n")
+
+
+def _dxf_rect(w, h, layer="CUT"):
+    return ("0\nLWPOLYLINE\n8\n%s\n90\n4\n70\n1\n10\n0\n20\n0\n10\n%g\n20\n0\n10\n%g\n20\n%g\n10\n0\n20\n%g\n"
+            % (layer, w, w, h, h))
+
+
+def _dxf_circle(x, y, r, layer="CUT"):
+    return "0\nCIRCLE\n8\n%s\n10\n%g\n20\n%g\n40\n%g\n" % (layer, x, y, r)
+
+
+def test_a_felt_with_openings_passes_on_its_dxf_and_row(tmp_path):
+    # D-128, extending D-89 part (3): a felt or fill piece with through-openings or edge notches only needs no drawing
+    # when its DXF gives the full outline with every opening and its row gives material, density or grade, thickness,
+    # tolerance and part number. A pocket keeps the drawing.
+    felt = _profile(sf.Frame(), length=1000.0, w=500.0, h=9.0, t=None, holes=((300.0, 50.0),))
+    shape, why = c_drawings.prism_shape(felt)
+    assert why == "" and shape == {"thickness": pytest.approx(9.0), "sides": (500.0, 1000.0), "loops": 2}
+    assert c_drawings.prism_shape(_profile(sf.Frame(), w=40.0, h=40.0, t=2.0))[0] is None      # a tube's inner face
+    assert c_drawings.prism_shape(_profile(sf.Frame(), w=30.0, h=3.0, t=None, chamfer=1.0))[0] is None
+    d = tmp_path / "v2/03-Manufacturing/wall"
+    d.mkdir(parents=True)
+    dxf = d / "511302_P01_LINING-FELT-SIDE-LOWER-RH_DXF.dxf"
+    unplaced = "0\nBLOCK\n8\n0\n2\nSPARE\n10\n0\n20\n0\n" + _dxf_circle(100, 100, 10) + "0\nENDBLK\n"
+    _felt_dxf(dxf, _dxf_rect(1000, 500) + _dxf_circle(300, 250, 25), unplaced)
+    assert c_drawings.dxf_shapes(str(dxf)) == {"loops": 2, "open": 0, "size": (500.0, 1000.0), "units": "4"}
+    row = {"part_number": "511302", "name": "LINING - FELT - SIDE LOWER - RH", "kind": "MP",
+           "material": "PET felt 9 mm, 1800 g/m2", "size_mm": "9 x 1000 x 500", "tolerance": "±1 on length and width"}
+    names = {"511302": row["name"]}
+    def found(change=None, shape_why=(shape, "")):
+        _write_csv(d / "210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv", [dict(row, **(change or {}))])
+        fs = c_drawings.check_drawings(str(tmp_path), {"511302"}, {"511302": felt.holes}, names,
+                                       {"511302": [len(felt.faces)]}, prism_by_pn={"511302": shape_why})
+        return " ".join(f.message for f in fs)
+    assert found() == ""                                                      # the DXF and the row stand in
+    _write_csv(d / "210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv", [row])
+    assert "D-89's cut-list route doesn't apply" in " ".join(       # without D-128 the opening keeps the drawing
+        f.message for f in c_drawings.check_drawings(str(tmp_path), {"511302"}, {"511302": felt.holes}, names,
+                                                     {"511302": [len(felt.faces)]}, prism_by_pn={}))
+    assert "density or grade" in found({"material": "polyester"})
+    assert "thickness (9 mm" in found({"size_mm": "12 x 1000 x 500", "material": "PET felt, 1800 g/m2"})
+    assert "through features only" in found({"size_mm": "9 x 1000 x 500, two pockets"})
+    assert found({"size_mm": "", "material": "PET felt 9 mm", "note": "its outline is stepped and slanted"}) == ""
+    assert "a piece cut straight through (a face sits between" in found(shape_why=(None, "a face sits between the "
+                                                                                       "sheet's two faces (a pocket)"))
+    _felt_dxf(dxf, _dxf_rect(1000, 500))                                               # the opening left out of the DXF
+    assert "every opening in its DXF (the STEP has 2 closed shapes, the DXF 1)" in found()
+    _felt_dxf(dxf, _dxf_rect(1000, 500) + "0\nINSERT\n8\nCUT\n2\nHOLE\n10\n300\n20\n250\n",       # placed by an INSERT: counts
+         "0\nBLOCK\n8\n0\n2\nHOLE\n10\n0\n20\n0\n" + _dxf_circle(0, 0, 25) + "0\nENDBLK\n")
+    assert found() == ""
+    _felt_dxf(dxf, _dxf_rect(1000, 500) + _dxf_circle(300, 250, 25) + _dxf_circle(10, 10, 2, layer="POCKET"))
+    assert "CUT and MARK layers only" in found()
+
+
+def test_a_drawgen_part_stays_severe_on_a_locked_screen(tmp_path, monkeypatch):
+    # D-113: drawgen doesn't wait for the screen, so under D-84's auto mode its parts keep a missing drawing severe
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    _write_csv(cfg / "policy.csv", [{"key": "missing_drawing_severity", "value": "auto-screen-lock",
+                                     "status_source": "test"}])
+    (tmp_path / "tools/drawgen").mkdir(parents=True)
+    (tmp_path / "tools/drawgen/specs.py").write_text(
+        'SPECS = {"111101": ("base", "part", {}), "211501": ("wall", "tabulated", {"covers": ["211501", "211502"]})}\n')
+    assert c_drawings.drawgen_parts(str(tmp_path)) == {"111101", "211501", "211502"}
+    monkeypatch.setattr(c_drawings, "screen_locked", lambda: True)
+    sev = {f.subject: f.severity for f in c_drawings.check_drawings(str(tmp_path), {"111101", "211502", "111999"}, {})
+           if f.rule == "no-drawing"}
+    assert sev == {"111101": "severe", "211502": "severe", "111999": "major"}
+
+
+def test_a_parts_holes_come_from_its_own_step_first():
+    # BASE's assembly holds corner key 111211 turned 180 degrees in its own frame (the same key; it is symmetric), so its
+    # bottom holes sit at other key coordinates than in the key's own STEP: adding both gave six hole axes for four holes
+    import run_checks
+    files = {"v2/03-Manufacturing/base/110000_P01_BASE_STEP.step": 1,
+             "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step": 2}
+    assert run_checks.own_file_first("111211", files).endswith("111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step")
+    assert run_checks.own_file_first("111999", files).endswith("110000_P01_BASE_STEP.step")
+
+
+def test_a_parts_copies_must_be_the_part_its_own_step_holds():
+    # a copy of a part in another team's STEP must have its own STEP's hole layout and sizes, however it is turned
+    class FakeStep:
+        def __init__(self, rows):
+            self.rows = rows
+        def instances(self):
+            return [{"solid": i, "part_number": pn} for i, (pn, _so) in enumerate(self.rows)]
+        def solid(self, sid):
+            return self.rows[sid][1]
+    a = math.radians(90.0)
+    turned = sf.Frame.from_axes((500.0, 300.0, 20.0), (0, 0, 1), (math.cos(a), math.sin(a), 0))
+    key = lambda frame=sf.Frame(), holes=((20.0, 6.6), (80.0, 6.6)), length=100.0: \
+        _profile(frame, length=length, w=30.0, h=10.0, t=None, holes=holes)
+    own = os.path.join(ROOT, "v2/03-Manufacturing/joints/831999_P01_HARDWARE-TEST-KEY_STEP.step")
+    base = os.path.join(ROOT, "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step")
+    wall = os.path.join(ROOT, "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step")
+    front = os.path.join(ROOT, "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR_STEP.step")
+    files = {own: FakeStep([("831999", key())]),
+             base: FakeStep([("831999", key(turned))]),                        # turned and moved: the same part
+             wall: FakeStep([("831999", key(holes=((20.0, 6.6), (70.0, 6.6))))]),   # a hole 10 mm off
+             front: FakeStep([("831999", key(length=102.0))])}                 # 2 mm longer
+    got = {(f.owner, f.severity): f for f in c_parts.check_copies(ROOT, list(files), files.get)}
+    assert set(got) == {("WALL; Joints Engineer", "severe"), ("FRONT; Joints Engineer", "major")}
+    assert "hole layout" in got[("WALL; Joints Engineer", "severe")].message
+    assert "sizes" in got[("FRONT; Joints Engineer", "major")].message
+    # round parts compare the length at each radius both have; a detailed and a plain model aren't compared as boxes
+    spigot = ("round", ((2.94, 8.0), (4.0, 6.24)))
+    assert not c_parts._sizes_differ(spigot, ("round", ((3.0, 8.0), (4.0, 6.24))))          # BASE's plain copy
+    assert c_parts._sizes_differ(spigot, ("round", ((3.0, 10.0), (4.0, 7.24))))              # WALL's longer one
+    assert not c_parts._sizes_differ(("box", (4.0, 6.31, 15.24)), spigot)                    # can't compare: skip
+
+
+def test_the_drawing_traps_are_read_back_into_c05(tmp_path):
+    # ELECTRICAL's read-back (pdf_traps.py) folded into C05 (PM, 2026-11-01): small text and a symbol without 4 corners
+    # are major, hidden lines and a value printed twice minor; a drawing that keeps hidden lines on purpose is listed
+    fitz = pytest.importorskip("fitz")
+    MMP = 72.0 / 25.4
+    d = tmp_path / "v2/02-Drawings/joints"
+    d.mkdir(parents=True)
+    def pdf(name, note_cap, hidden):
+        doc = fitz.open()
+        page = doc.new_page(width=420 * MMP, height=297 * MMP)
+        hid = doc.add_ocg("Hidden", on=True)
+        for i in range(hidden):                                          # one view's dashes per 100 mm
+            page.draw_line(fitz.Point((50 + 100 * i) * MMP, 50 * MMP), fitz.Point((60 + 100 * i) * MMP, 50 * MMP), oc=hid)
+        for i, line in enumerate(["UNITS: mm", "MATERIAL: EN AW-6063 T6", "FINISH: mill finish",
+                                  "GENERAL TOLERANCES: ISO 2768-m"]):
+            page.insert_text(fitz.Point(30 * MMP, (200 + 8 * i) * MMP), line, fontsize=2.5 / 0.718 * MMP)
+        page.insert_text(fitz.Point(30 * MMP, 240 * MMP), "NOTE", fontsize=note_cap / 0.718 * MMP)
+        doc.save(str(d / name))
+    pdf("831998_P01_HARDWARE-TEST-A_DWG.pdf", 1.6, 2)
+    pdf("831999_P01_HARDWARE-TEST-B_DWG.pdf", 2.5, 2)
+    cfg = tmp_path / "v2/04-Checks/config"
+    cfg.mkdir(parents=True)
+    _write_csv(cfg / "hidden-lines-allow.csv", [{"drawing": "831999_P01_HARDWARE-TEST-B_DWG.pdf", "views": "2",
+                                                 "reason": "test", "ruling": "test"}])
+    got = {(f.subject, f.rule, f.severity) for f in c_drawings.check_drawings(str(tmp_path), {"831998", "831999"}, {})}
+    assert ("831998", "letter-height", "major") in got and ("831998", "hidden-lines", "minor") in got
+    assert not [g for g in got if g[0] == "831999"]                     # 2.5 mm text; its 2 hidden views allowed

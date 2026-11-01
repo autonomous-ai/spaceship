@@ -32,11 +32,14 @@ except ImportError:          # the local finish and the offline test run without
 ARGS = globals().get("SCRIPT_ARGS", {})
 HERE = os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals() else ""
 
+RIGHT_HOLES = lambda cs: [c for c in cs if c[2] and c[0] < 130]           # the stud face's view, solid
+TOP_HOLES = lambda cs: [c for c in cs if not c[2] and 130 < c[0] < 230 and c[1] > 195]   # from above, hidden
+
 PARTS = {
     "spigot": {
         "drawing": "831001_P01_HARDWARE-LOCATING-SPIGOT_DWG",
         "scale": 5.0,
-        # views: name, Fusion orientation name, sheet centre (mm, A3 420 x 297), style
+        # views: name, Fusion orientation name, sheet centre (mm, A3 420 x 297, from the bottom left), style
         "views": [("front", "FrontViewOrientationType", (120.0, 185.0), "hidden"),
                   ("top", "TopViewOrientationType", (120.0, 85.0), "visible")],
         "notes": [
@@ -45,13 +48,14 @@ PARTS = {
             "2. MATERIAL STAINLESS STEEL A2 (1.4301 OR 1.4305). FINISH PASSIVATED, DEBURRED.",
             "3. PIN Ø8 h9 (0 / -0.036), 7.24 ABOVE ITS SHOULDER, LEAD-IN 1 x 45°.",
             "4. STUD M6x1-6g, 8 LONG (SHOWN AT THE 6g MEAN MAJOR Ø5.88). HEX SOCKET 4 AF x 3.5 DEEP.",
-            "5. FITTED AT THE FACTORY INTO RIVNUT 838003 WITH THREADLOCKER; THE SHOULDER SITS ON",
-            "   THE RIVNUT'S 0.76 HEAD, SO THE PIN'S TOP IS 8.00 ABOVE THE TUBE FACE.",
-            "6. JOINTS REGISTER H-05. STEP: v2/03-Manufacturing/joints/831001_P01_..._STEP.step",
+            "5. FITTED AT THE FACTORY INTO RIVNUT 838003 WITH THREADLOCKER; THE SHOULDER SITS ON THE RIVNUT'S "
+            "0.76 HEAD, SO THE PIN'S TOP IS 8.00 ABOVE THE TUBE FACE.",
+            "6. JOINTS REGISTER H-05. STEP: v2/03-Manufacturing/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_STEP.step",
         ],
     },
     "keys": {
         "drawing": "111211_P01_BASE-CORNER-KEY-TABULATED_DWG",
+        "title": "BASE - CORNER KEY - TABULATED: 111211, 111212, 111213, 111214",
         "scale": 2.0,
         "views": [("front", "FrontViewOrientationType", (175.0, 185.0), "hidden"),
                   ("right", "RightViewOrientationType", (80.0, 185.0), "visible"),
@@ -60,24 +64,36 @@ PARTS = {
             "NOTES (111211 TO 111214 P01, PROPOSED) - TABULATED",
             "1. UNITS MM. ISO FIRST-ANGLE PROJECTION. GENERAL TOLERANCE ISO 2768-m UNLESS STATED.",
             "2. MATERIAL EN AW-6061-T6. FINISH MILL FINISH, DEBURRED, NO SHARP EDGES.",
-            "3. ONE BLOCK 35 x 75, 30 LONG ON ITS CENTRE LINE. THE STUD FACE IS CUT AT ANGLE A",
-            "   ABOUT ITS CENTRE LINE, LONG SIDE ON THE OUTSIDE OF THE TURN. SHOWN: 111211 (A = 0).",
-            "   PART    A       HAND  LONG SIDE  SHORT SIDE  PER POD  WHERE",
-            "   111211  0°      -     30.00      30.00       3        BACK CORNERS, FR1 INLINE",
-            "   111212  24.14°  LH    37.84      22.16       1        FRONT LEFT CORNER",
-            "   111213  24.02°  RH    37.80      22.20       1        FRONT RIGHT CORNER",
-            "   111214  7.25°   LH    32.23      27.77       1        LEFT KNEE",
-            "4. H01, H02: M6x1-6H THROUGH, SQUARE TO THE STUD FACE ON ITS CENTRE LINE, 26 AND 60",
-            "   ABOVE THE BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°.",
-            "   THE VIEWS SHOW THE TAPPED HOLES AT THE 6H MEAN MINOR Ø5.04 (TAP DRILL Ø5.0).",
-            "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, 10.5 FROM THE",
-            "   BACK FACE, 7.0 EITHER SIDE OF THE CENTRE LINE.",
-            "6. JOINTS REGISTER J-BASE-02; POSITIONS v2/01-CAD-Native/joints/corner-keys.csv;",
-            "   ONE STEP PER PART NUMBER IN v2/03-Manufacturing/joints/.",
+            "3. ONE BLOCK 35 x 75, 30 LONG ON ITS CENTRE LINE. THE STUD FACE IS CUT AT ANGLE A ABOUT ITS CENTRE "
+            "LINE, LONG SIDE ON THE OUTSIDE OF THE TURN. THE THREE VIEWS SHOW 111211 (A = 0); VIEW B SHOWS "
+            "111212 FROM ABOVE; 111213 IS 111212'S OPPOSITE HAND (MIRRORED ABOUT THE CENTRE LINE).",
+            {"indent": 5.0,
+             "table": [["PART", "A", "HAND", "LONG SIDE", "SHORT SIDE", "PER POD", "WHERE"],
+                       ["111211", "0°", "-", "30.00", "30.00", "3", "BACK CORNERS, FR1 INLINE"],
+                       ["111212", "24.14°", "LH", "37.84", "22.16", "1", "FRONT LEFT CORNER"],
+                       ["111213", "24.02°", "RH", "37.80", "22.20", "1", "FRONT RIGHT CORNER"],
+                       ["111214", "7.25°", "LH", "32.23", "27.77", "1", "LEFT KNEE"]]},
+            "4. H01, H02: M6x1-6H THROUGH, SQUARE TO THE STUD FACE ON ITS CENTRE LINE, 26 AND 60 ABOVE THE "
+            "BOTTOM; ±0.1 TO THE CENTRE LINE AND THE BOTTOM. CUT ANGLE ±0.25°. THE VIEWS SHOW THE TAPPED HOLES "
+            "AT THE 6H MEAN MINOR Ø5.04 (TAP DRILL Ø5.0).",
+            "5. H03, H04: M6x1-6H, THREAD 15 DEEP, DRILL Ø5.0 x 18, FROM THE BOTTOM, 10.5 FROM THE BACK FACE, "
+            "7.0 EITHER SIDE OF THE CENTRE LINE.",
+            "6. JOINTS REGISTER J-BASE-02; POSITIONS v2/01-CAD-Native/joints/corner-keys.csv; ONE STEP PER PART "
+            "NUMBER IN v2/03-Manufacturing/joints/.",
         ],
+        # hole tags and thread callouts at the holes (guideline 6.2): (which circle, lines, text offset in mm)
+        "tag_hole_dia": 5.04,
+        "tags": [
+            (lambda cs: min(RIGHT_HOLES(cs), key=lambda c: c[1]), ["H02", "M6x1-6H THRU"], (9.0, 1.0)),
+            (lambda cs: max(RIGHT_HOLES(cs), key=lambda c: c[1]), ["H01", "M6x1-6H THRU"], (9.0, 1.0)),
+            (lambda cs: min(TOP_HOLES(cs), key=lambda c: c[1]), ["H04 M6x1-6H", "15 DEEP"], (-23.0, -1.0)),
+            (lambda cs: max(TOP_HOLES(cs), key=lambda c: c[1]), ["H03 M6x1-6H", "15 DEEP"], (9.0, 1.5)),
+        ],
+        "view_b": {"origin": (290.0, 170.0),
+                   "label": "VIEW B, 2:1: 111212 (LH, FRONT LEFT CORNER) FROM ABOVE"},
     },
 }
-NOTES_BOX = (232.0, 12.0, 412.0, 150.0)   # sheet mm from the top-left corner: x0, y0, x1, y1
+NOTES_BOX = (232.0, 12.0, 404.0, 150.0)   # sheet mm from the top-left corner: x0, y0, x1, y1
 RAW_DIR = ".raw"                           # git-ignored, next to this file
 
 
@@ -331,18 +347,243 @@ def annotate_and_export(app, doc, part, cfg):
 
 
 # ------------------------------------------------------------------ local finish (no Fusion)
-def add_notes(pdf_in, pdf_out, lines, box=NOTES_BOX):
-    """Write the notes as real PDF text in the sheet's free area (box in sheet mm from the top-left)."""
+# Sizes and line styles match what Fusion writes into the PDF (read from the key sheet's export): visible
+# outlines 1.44 pt, thin lines 0.72 pt, dimension text 13.9 pt (3.5 mm capitals), arrowheads 3.5 x 1.2 mm.
+NOTE_MM = 2.5 / 0.718                  # Helvetica size for 2.5 mm capitals (ISO 3098; the D-114 visual pass)
+DIM_MM = 3.5 / 0.718                   # 3.5 mm capitals, as Fusion's dimensions
+W_THICK, W_THIN = 1.44, 0.72           # pt
+HIDDEN = "[7.4 2.8] 0"                 # pt: 2.6 mm dashes, 1 mm gaps, as Fusion's hidden lines
+CHAIN = "[17 2.8 2.8 2.8] 0"           # pt: centre lines
+FONT = "helv"
+
+
+class Sheet:
+    """Drawing on a PDF page in sheet mm from the top-left corner (an A3 page is 420 x 297)."""
+
+    def __init__(self, page):
+        import fitz
+        self.fitz, self.page, self.k = fitz, page, page.rect.width / 420.0
+        self.font = fitz.Font(FONT)     # its widths count ±, ° and Ø as drawn; fitz.get_text_length doesn't
+
+    def pt(self, p):
+        return self.fitz.Point(p[0] * self.k, p[1] * self.k)
+
+    def line(self, a, b, width=W_THIN, dashes=None):
+        self.page.draw_line(self.pt(a), self.pt(b), color=(0, 0, 0), width=width, dashes=dashes)
+
+    def poly(self, pts, width=W_THICK, closed=True):
+        self.page.draw_polyline([self.pt(p) for p in pts] + ([self.pt(pts[0])] if closed else []),
+                                color=(0, 0, 0), width=width)
+
+    def circle(self, c, r, width=W_THIN, dashes=None):
+        self.page.draw_circle(self.pt(c), r * self.k, color=(0, 0, 0), width=width, dashes=dashes)
+
+    def arrow(self, tip, toward, length=3.5, width=1.2):
+        """A filled arrowhead with its tip at tip, its tail toward the point toward."""
+        import math
+        dx, dy = toward[0] - tip[0], toward[1] - tip[1]
+        n = math.hypot(dx, dy) or 1.0
+        ux, uy = dx / n, dy / n
+        base = (tip[0] + ux * length, tip[1] + uy * length)
+        a = (base[0] - uy * width / 2, base[1] + ux * width / 2)
+        b = (base[0] + uy * width / 2, base[1] - ux * width / 2)
+        self.page.draw_polyline([self.pt(tip), self.pt(a), self.pt(b), self.pt(tip)], color=(0, 0, 0),
+                                fill=(0, 0, 0), width=0)
+
+    def text(self, p, s, size_mm=NOTE_MM, align="left", rotate=0):
+        """Text with its baseline at p (sheet mm); align left, centre or right."""
+        size = size_mm * self.k
+        w = self.font.text_length(s, fontsize=size) / self.k
+        x = p[0] - (w if align == "right" else w / 2 if align == "centre" else 0.0)
+        self.page.insert_text(self.pt((x, p[1])), s, fontsize=size, fontname=FONT, rotate=rotate)
+        return w
+
+    def width(self, s, size_mm=NOTE_MM):
+        return self.font.text_length(s, fontsize=size_mm * self.k) / self.k
+
+
+def wrap(sheet, text, width, size_mm=NOTE_MM):
+    """Words to lines no wider than width (mm)."""
+    lines, cur = [], ""
+    for w in text.split(" "):
+        trial = (cur + " " + w) if cur else w
+        if not cur or sheet.width(trial, size_mm) <= width:
+            cur = trial
+        else:
+            lines.append(cur)
+            cur = w
+    return lines + [cur]
+
+
+def add_notes(pdf_in, pdf_out, notes, box=NOTES_BOX):
+    """Write the notes as real PDF text in the sheet's free area (box in sheet mm from the top-left), at 2.5 mm
+    capitals. A note is a paragraph (a numbered one hangs its lines after its number) or a table:
+    {"table": [[cells], ...], "cols": [column offsets in mm]}. Returns the y (mm) where the notes end."""
     import fitz
     doc = fitz.open(pdf_in)
-    page = doc[0]
-    k = page.rect.width / 420.0                     # PDF points per sheet mm (A3 landscape)
-    rect = fitz.Rect(box[0] * k, box[1] * k, box[2] * k, box[3] * k)
-    left = page.insert_textbox(rect, "\n".join(lines), fontsize=(2.0 / 0.7) * k, fontname="cour")   # 2.0 capital height
-    if left < 0:
-        raise SystemExit("the notes don't fit their box (%.1f pt short)" % -left)
+    sh = Sheet(doc[0])
+    x0, y, x1, y1 = box[0], box[1], box[2], box[3]
+    pitch = NOTE_MM * 1.35
+    for note in notes:
+        if isinstance(note, dict):           # columns as wide as their widest cell, 3.5 mm apart
+            ncol = len(note["table"][0])
+            widths = [max(sh.width(r[i]) for r in note["table"]) for i in range(ncol)]
+            xs = [x0 + note.get("indent", 5.0)]
+            for w in widths[:-1]:
+                xs.append(xs[-1] + w + 3.5)
+            if xs[-1] + widths[-1] > x1:
+                raise SystemExit("the table is wider than the notes box")
+            for row in note["table"]:
+                y += pitch
+                for cell, x in zip(row, xs):
+                    sh.text((x, y), cell)
+            continue
+        head = note.split(" ", 1)[0] if note[:1].isdigit() and note.split(" ", 1)[0].endswith(".") else ""
+        indent = sh.width(head + " ") if head else 0.0
+        for i, line in enumerate(wrap(sh, note[len(head) + 1:] if head else note, x1 - x0 - indent)):
+            y += pitch
+            if i == 0 and head:
+                sh.text((x0, y), head)
+            sh.text((x0 + indent, y), line)
+    if y + NOTE_MM * 0.35 > y1:
+        raise SystemExit("the notes don't fit their box (they reach %.1f mm, the box ends at %.1f)" % (y, y1))
     doc.save(pdf_out)
-    return pdf_out
+    return y
+
+
+# ------------------------------------------------------------------ hole tags at the holes (guideline 6.2)
+def hole_circles(page, dia_on_sheet, tol=0.3):
+    """Centres (sheet mm) of the circles of one diameter on the sheet: the solid ones Fusion writes as curves
+    and the hidden ones it writes as short straight dashes (clustered, then fitted). [(x, y, solid)]."""
+    import math
+    k = page.rect.width / 420.0
+    out, pts = [], []
+    for d in page.get_drawings():
+        r = d["rect"]
+        kinds = {it[0] for it in d["items"]}
+        if kinds == {"c"} and abs(r.width / k - dia_on_sheet) < tol and abs(r.height / k - dia_on_sheet) < tol:
+            out.append(((r.x0 + r.x1) / 2 / k, (r.y0 + r.y1) / 2 / k, True))
+        elif kinds == {"l"} and max(r.width, r.height) / k < 3.5 and abs((d.get("width") or 0) - W_THIN) < 0.05:
+            for it in d["items"]:
+                pts += [(it[1].x / k, it[1].y / k), (it[2].x / k, it[2].y / k)]
+    groups = []                                  # dash ends within 3.5 mm of a group join it
+    for p in pts:
+        near = [g for g in groups if any(math.hypot(p[0] - q[0], p[1] - q[1]) < 3.5 for q in g)]
+        merged = [p] + [q for g in near for q in g]
+        groups = [g for g in groups if g not in near] + [merged]
+    for g in groups:
+        for _round in range(3):           # fit, then drop ends that aren't on the circle (a leader's stub)
+            if len(g) < 12:
+                break
+            cx, cy = sum(p[0] for p in g) / len(g), sum(p[1] for p in g) / len(g)
+            ds = sorted(math.hypot(p[0] - cx, p[1] - cy) for p in g)
+            med = ds[len(ds) // 2]
+            kept = [p for p in g if abs(math.hypot(p[0] - cx, p[1] - cy) - med) < 0.4]
+            if len(kept) == len(g):
+                break
+            g = kept
+        if len(g) < 12:
+            continue
+        cx, cy = sum(p[0] for p in g) / len(g), sum(p[1] for p in g) / len(g)
+        ds = [math.hypot(p[0] - cx, p[1] - cy) for p in g]
+        mean = sum(ds) / len(ds)
+        octants = {int((math.atan2(p[1] - cy, p[0] - cx) + math.pi) / (math.pi / 4)) % 8 for p in g}
+        if abs(2 * mean - dia_on_sheet) < tol and max(abs(v - mean) for v in ds) < 0.25 and len(octants) == 8:
+            out.append((cx, cy, False))           # dashes all round: a circle, not a slot's ends or a cone
+    return sorted(out)
+
+
+def add_tags(sheet, tags, circles):
+    """Each tag: (pick, lines, (dx, dy)): pick chooses its circle from hole_circles' list; the text's first
+    baseline is (dx, dy) mm from the circle's centre; a leader runs from the text to the circle's edge."""
+    import math
+    for pick, lines, (dx, dy) in tags:
+        cx, cy, _solid = pick(circles)
+        r = TAG_HOLE_R
+        w = max(sheet.width(s) for s in lines)
+        tx, ty = (cx + dx, cy + dy) if dx > 0 else (cx + dx - w, cy + dy)    # left of the hole: ends dx away
+        for i, s in enumerate(lines):
+            sheet.text((tx, ty + i * NOTE_MM * 1.35), s)
+        # leader from the text block's side nearest the hole, at its first line's middle, to the circle's edge
+        sx = tx - 1.0 if dx > 0 else tx + w + 1.0
+        sy = ty - NOTE_MM * 0.36
+        ang = math.atan2(sy - cy, sx - cx)
+        edge = (cx + r * math.cos(ang), cy + r * math.sin(ang))
+        sheet.line((sx, sy), edge)
+        sheet.arrow(edge, (sx, sy))
+
+
+# ------------------------------------------------------------------ the angled key from above (111212)
+def view_b(sheet, origin, scale=2.0, a_deg=-24.14):
+    """111212 from above, drawn from the model's sizes (the drawing's design is saved as 111211, so Fusion
+    can't show this cut): the block 30 long on its centre line and 35 across, its stud face cut at angle A
+    about the centre line; the hook stud holes square to that face; the fixing holes from below. Sheet x is
+    the key's X (along the carrier toward the joint), sheet up is its Y. Returns the extent (x0, y0, x1, y1)."""
+    import math
+    L, W, d_hole = 30.0, 35.0, 5.04
+    t = math.tan(math.radians(a_deg))
+    x_top, x_bot = L + (W / 2) * t, L - (W / 2) * t          # the +Y and -Y ends of the stud face
+    S = lambda p: (origin[0] + p[0] * scale, origin[1] - p[1] * scale)
+    corners = [(0, -W / 2), (x_bot, -W / 2), (x_top, W / 2), (0, W / 2)]
+    sheet.poly([S(p) for p in corners], width=W_THICK)
+    # the hook stud holes: square to the stud face through its centre-line point C, hidden
+    fx, fy = (x_top - x_bot), W                              # along the face, from its -Y end to its +Y end
+    n = math.hypot(fx, fy)
+    ux, uy = fx / n, fy / n                                  # along the face
+    nx, ny = uy, -ux                                         # into the block (toward the back face)
+    if nx > 0:
+        nx, ny = -nx, -ny
+    C = (L, 0.0)
+    for side in (-1, 1):
+        p0 = (C[0] + side * ux * d_hole / 2, C[1] + side * uy * d_hole / 2)
+        tback = -p0[0] / nx                                  # to the back face, x = 0
+        sheet.line(S(p0), S((p0[0] + nx * tback, p0[1] + ny * tback)), dashes=HIDDEN)
+    out_end = (C[0] - nx * 8.0, C[1] - ny * 8.0)              # the axis, out past the face
+    back = (C[0] + nx * (-C[0] / nx), C[1] + ny * (-C[0] / nx))
+    sheet.line(S(back), S(out_end), dashes=CHAIN)
+    # the fixing holes from below, hidden, with centre marks
+    for y in (-7.0, 7.0):
+        sheet.circle(S((10.5, y)), d_hole / 2 * scale, dashes=HIDDEN)
+        sheet.line(S((10.5 - 4.5, y)), S((10.5 + 4.5, y)), dashes=CHAIN)
+        sheet.line(S((10.5, y - 4.5)), S((10.5, y + 4.5)), dashes=CHAIN)
+    # the long side (-Y), measured below; its end's extension line is also angle A's reference line
+    y_dim = -W / 2 - 6.0
+    sheet.line(S((0, -W / 2 - 1.0)), S((0, y_dim - 2.0)))
+    sheet.line(S((x_bot, -W / 2 - 1.0)), S((x_bot, -W / 2 - 13.0)))
+    sheet.line(S((0, y_dim)), S((x_bot, y_dim)))
+    sheet.arrow(S((0, y_dim)), S((x_bot, y_dim)))
+    sheet.arrow(S((x_bot, y_dim)), S((0, y_dim)))
+    sheet.text(((S((0, 0))[0] + S((x_bot, 0))[0]) / 2, S((0, y_dim))[1] - 1.2), "%.2f" % x_bot, DIM_MM, "centre")
+    # the short side (+Y), measured above
+    y_dim2 = W / 2 + 6.0
+    sheet.line(S((0, W / 2 + 1.0)), S((0, y_dim2 + 2.0)))
+    sheet.line(S((x_top, W / 2 + 1.0)), S((x_top, y_dim2 + 2.0)))
+    sheet.line(S((0, y_dim2)), S((x_top, y_dim2)))
+    sheet.arrow(S((0, y_dim2)), S((x_top, y_dim2)))
+    sheet.arrow(S((x_top, y_dim2)), S((0, y_dim2)))
+    sheet.text(((S((0, 0))[0] + S((x_top, 0))[0]) / 2, S((0, y_dim2))[1] - 1.2), "%.2f" % x_top, DIM_MM, "centre")
+    # angle A at the long end: between the extension line (straight down) and the face carried on past it
+    R = 7.5                                                  # model mm, so 15 on the sheet
+    face_dir = (-ux, -uy) if uy > 0 else (ux, uy)            # along the face, away from the block, -Y
+    sheet.line(S((x_bot, -W / 2)), S((x_bot + face_dir[0] * (R + 3.0), -W / 2 + face_dir[1] * (R + 3.0))))
+    a0 = math.atan2(-1.0, 0.0)                               # straight down (-Y)
+    a1 = math.atan2(face_dir[1], face_dir[0])
+    steps = 24
+    arc = [S((x_bot + R * math.cos(a0 + (a1 - a0) * i / steps), -W / 2 + R * math.sin(a0 + (a1 - a0) * i / steps)))
+           for i in range(steps + 1)]
+    sheet.poly(arc, width=W_THIN, closed=False)
+    sheet.arrow(arc[0], arc[2])
+    sheet.arrow(arc[-1], arc[-3])
+    mid = S((x_bot + (R + 1.5) * math.cos((a0 + a1) / 2), -W / 2 + (R + 1.5) * math.sin((a0 + a1) / 2)))
+    sheet.text((mid[0] + 1.0, mid[1] + 1.5), "A = %.2f°" % abs(a_deg), DIM_MM)
+    # the hole direction, named at the axis past the face
+    tip = S(out_end)
+    sheet.text((tip[0] + 1.5, tip[1] - 1.0), "H01, H02 SQUARE")
+    sheet.text((tip[0] + 1.5, tip[1] - 1.0 + NOTE_MM * 1.35), "TO THE STUD FACE")
+    xs = [S(p)[0] for p in corners] + [S(out_end)[0]]
+    ys = [S(p)[1] for p in corners]
+    top = S((0, y_dim2))[1] - 1.2 - DIM_MM * 0.72                            # the short side's text, its top
+    return (min(xs), top, max(xs), max(ys) + 13.0 * scale)
 
 
 def finish(part):
@@ -353,12 +594,35 @@ def finish(part):
     clean = os.path.join(HERE, RAW_DIR, cfg["drawing"] + "-clean.pdf")
     out = os.path.join(HERE, cfg["drawing"] + ".pdf")
     repo = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-    subprocess.run([sys.executable, os.path.join(repo, "tools/fusion/pdf_clear_field.py"), raw, clean], check=True)
-    add_notes(clean, out, cfg["notes"])
+    # the shared step: clears "Created by" and fills the title block (number, revision, status, title)
+    cmd = [sys.executable, os.path.join(repo, "tools/fusion/pdf_clear_field.py"), raw, clean]
+    if cfg.get("title"):
+        cmd += ["--title", cfg["title"]]
+    subprocess.run(cmd, check=True)
+    end = add_notes(clean, out, cfg["notes"])
+    doc = fitz.open(out)
+    sheet = Sheet(doc[0])
+    if cfg.get("tags"):
+        circles = hole_circles(doc[0], cfg["tag_hole_dia"] * cfg["scale"])
+        picked = [pick(circles) for pick, _l, _o in cfg["tags"]]
+        if len({(round(c[0], 1), round(c[1], 1)) for c in picked}) != len(picked):
+            raise SystemExit("hole tags: two tags picked the same hole: %s" % picked)
+        add_tags(sheet, cfg["tags"], circles)
+    if cfg.get("view_b"):
+        vb = cfg["view_b"]
+        x0, y0, x1, y1 = view_b(sheet, vb["origin"], cfg["scale"])
+        if y0 - 4.0 - 2 * NOTE_MM < end:
+            raise SystemExit("view B (from %.1f mm) runs into the notes (to %.1f mm)" % (y0, end))
+        sheet.text((x0, y0 - 3.0), vb["label"], NOTE_MM)
+    doc.save(out + ".tmp")
+    doc.close()
+    os.replace(out + ".tmp", out)
     page = fitz.open(out)[0]
     page.get_pixmap(dpi=110).save(os.path.join(HERE, cfg["drawing"] + "-render.png"))
     print("wrote %s and its render" % os.path.relpath(out, repo))
 
+
+TAG_HOLE_R = 5.04                       # the tapped holes as drawn at 2:1 (Ø5.04 x 2 / 2), mm on the sheet
 
 if __name__ == "__main__" and len(sys.argv) == 3 and sys.argv[1] == "finish":
     finish(sys.argv[2])

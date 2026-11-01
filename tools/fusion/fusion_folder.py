@@ -38,6 +38,43 @@ def _short(e):
     return text.splitlines()[0][:100] if text else type(e).__name__
 
 
+def _listing(folder):
+    """The folder's entries from ONE listing, as [(position, DataFile or error text)].
+
+    DataFiles.asArray() fetches the folder's contents once. count + item(i)
+    fetched them again for every entry (live 2026-11-01: about 2 s each in
+    Fusion's log, so a folder of 89 files took 3 minutes a pass, and a run that
+    read the folder a few times looked hung). Falls back to item(i), on one kept
+    collection, when asArray isn't there or fails."""
+    files = folder.dataFiles
+    try:
+        arr = files.asArray()
+    except Exception:
+        arr = None
+    if arr is not None:
+        out = [(i, f if f is not None else "unreadable entry") for i, f in enumerate(arr)]
+        # Reviewer 5, P2 on #213: count + item(i) could never lose a file without saying
+        # so, but a listing that came back short would let one vanish from the pass. So
+        # the slots past the array's end, by the count of the same collection, count as
+        # unreadable: read again, and refused by safe_to_create if they never appear.
+        try:
+            n = files.count
+        except Exception as e:
+            # Reviewer 5, P3 on #220: a count that can't be read can't vouch for the
+            # listing, so it counts as one unreadable entry (read again; refused if it
+            # never answers)
+            return out + [(len(out), "the folder's count can't be read: %s" % _short(e))]
+        out += [(i, "missing from the listing: the folder counts %d" % n) for i in range(len(out), n)]
+        return out
+    out = []
+    for i in range(files.count):
+        try:
+            out.append((i, files.item(i)))
+        except Exception as e:
+            out.append((i, _short(e)))
+    return out
+
+
 def read_folder(folder, wait_s=WAIT_S, pause_s=PAUSE_S, sleep=time.sleep, now=time.monotonic,
                 stop_when=None):
     """(files, unknown, others) for the entries of a Fusion DataFolder.
@@ -56,11 +93,9 @@ def read_folder(folder, wait_s=WAIT_S, pause_s=PAUSE_S, sleep=time.sleep, now=ti
     t_end = now() + wait_s
     while True:
         files, unknown, others = {}, [], {}
-        for i in range(folder.dataFiles.count):
-            try:
-                f = folder.dataFiles.item(i)
-            except Exception as e:
-                unknown.append("entry %d (%s)" % (i, _short(e)))
+        for i, f in _listing(folder):            # one fetch of the folder per pass
+            if isinstance(f, str):
+                unknown.append("entry %d (%s)" % (i, f))
                 continue
             try:
                 files.setdefault(f.name, []).append(f)

@@ -27,7 +27,8 @@ finish and an ISO 2768 general tolerance, and its DXF draws only on the CUT and 
 BEND and MARK layers, section 9): a line on any other layer (BEND, a pocket, an engraving, a half-lap) keeps the
 drawing whatever its process says. A part found only in the folders has no BOM row. When the
 drawing is a made part's only gap and the Mac's screen is locked, the part is blocked by the locked screen:
-the drawing start needs it unlocked (D-84). Otherwise a part with a gap is open.
+the drawing start needs it unlocked (D-84). A part tools/drawgen draws (its specs.py) is never blocked: drawgen
+doesn't run in Fusion (D-113). Otherwise a part with a gap is open.
 A bought part is done when it has a joints-register row (hardware only, D-63), a maker and SKU, and a
 test. Its product is on HOLD when the joints register says so (register numbers), or its parts list does.
 
@@ -61,7 +62,10 @@ TUBE = re.compile(r"\btube\b|\d+\s*x\s*\d+\s*x\s*\d|profile|6063|\bframe\b", re.
 METAL = re.compile(r"alumin|steel|zinc", re.I)
 COATED = re.compile(r"galvani|\+Z\b|stainless|\bA2\b|\bzinc\b|plated|anodi[sz]ed|mill finish|powder|painted", re.I)
 SKU = re.compile(r"\b(?=[A-Z0-9.\-]*\d)(?=[A-Z0-9.\-]*[A-Z])[A-Z0-9][A-Z0-9.\-]{3,}\b|\b(?:ISO|EN|DIN) \d{3,}")
-PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD", re.I)
+# HOLD is a whole word, in any case (Reviewer 6, #211): "on hold" counts; "holds", "holder" and "threshold" don't.
+# PRODUCT_HOLD reads the joints register's status cell, HOLD_WORD a made part's material, grade or status.
+PRODUCT_HOLD = re.compile(r"\b(?:part|strip|product|system)\b[^;]*\bHOLD\b", re.I)
+HOLD_WORD = re.compile(r"\bHOLD\b", re.I)
 PRODUCT_NAMED = re.compile(r"\b(?:part|product|system)\b[^;]*\b(?:DECIDED|source)\b", re.I)
 TEST_ID = re.compile(r"\b(?:T\d\d|J-T\d+|F-\d\d)\b")
 FOLDER_TEAM = {"base": "BASE", "wall": "WALL", "front": "FRONT", "ceiling": "CEILING", "electrical": "ELECTRICAL", "joints": "JOINTS",
@@ -374,9 +378,65 @@ def flat_lacks(rows):
     return best
 
 
+def load_checks():
+    """The mechanical check's modules (tools/checks): its STEP loader and C05's D-125 functions. The release
+    checklist calls the same copy C05 does, so the two can't read D-125 apart (as tools/checks/dxf_layers.py does
+    for D-89's DXF layers)."""
+    path = str(ROOT / "tools" / "checks")
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    import c_drawings
+    import c_geometry
+    return c_geometry, c_drawings
+
+
+def drawgen_parts(root=None):
+    """D-113 (1): the numbers tools/drawgen draws, which a locked screen never holds: every number its specs.py
+    registers, and the numbers a registered tabulated sheet covers. Read by the mechanical check's own reader
+    (c_drawings.drawgen_parts, PR #233), so the checklist and C05 can't list them apart; a part drawgen takes on
+    counts as soon as drawgen lists it."""
+    _geometry, c_drawings = load_checks()
+    return c_drawings.drawgen_parts(str(root or ROOT))
+
+
+def d128_pieces(candidates, root=None):
+    """D-128 as C05 reads it: {number: what its DXF and parts-list row still lack, [] when they stand in for a drawing}
+    for each felt or fill piece in candidates (numbers) that has a DXF. The DXF is C05's own pick: its file index
+    (c_drawings.index_files) and its highest revision, as check_drawings takes it. The shapes are the mechanical
+    check's own c_drawings.prism_shapes over the per-part STEP files c_geometry.models finds, and each piece is read by
+    its felt_dxf_lacks (PR #233). Read from the working tree, as C05 does."""
+    candidates = sorted(set(candidates or ()))
+    if not candidates:
+        return {}
+    root = str(root or ROOT)
+    c_geometry, c_drawings = load_checks()
+    idx = c_drawings.index_files(root)
+    dxf = {pn: sorted(idx[pn]["DXF"])[-1][1] for pn in candidates if idx.get(pn, {}).get("DXF")}
+    if not dxf:
+        return {}
+    _models, per_part = c_geometry.models(root)
+    prism = c_drawings.prism_shapes(per_part, c_geometry.load_step)
+    return {pn: c_drawings.felt_dxf_lacks(root, pn, prism.get(pn), path) for pn, path in dxf.items()}
+
+
+def d125_strips(root=None):
+    """D-125 as C05 reads it: {number: (what its best parts-list row lacks, that row's file), or None when no list
+    has a row} for every part whose one shape in the per-part STEP files is a plain strip or sheet. The strip list is
+    the mechanical check's own shared function (c_drawings.strip_sides, PR #210) over the per-part STEP files that
+    c_geometry.models finds; each row is read by strip_row_lacks. Read from the working tree, as C05 does."""
+    root = str(root or ROOT)
+    c_geometry, c_drawings = load_checks()
+    _models, per_part = c_geometry.models(root)
+    return {pn: c_drawings.strip_row_lacks(root, pn, sides)
+            for pn, sides in c_drawings.strip_sides(per_part, c_geometry.load_step).items()}
+
+
 def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, bom, labels, cut_texts, tab_cover=None,
-                dxf_texts=None):
-    """dxf_texts: number -> the texts of its DXF files, for D-89 (4)'s BEND-layer rule (None skips that rule)."""
+                dxf_texts=None, d125=None, drawgen=None, d128=None):
+    """dxf_texts: number -> the texts of its DXF files, for D-89 (4)'s BEND-layer rule (None skips that rule).
+    d125: number -> C05's D-125 reading of a plain strip or sheet (d125_strips), None skips that rule.
+    drawgen: the numbers tools/drawgen draws (drawgen_parts), never blocked by a locked screen (D-113).
+    d128: number -> what a felt or fill piece's DXF and row still lack for D-128 (d128_pieces), [] when nothing."""
     chars, _, accept = fai
     tab_cover = tab_cover or {}
     by_cut_row = cut_rows(cut_texts)
@@ -401,12 +461,16 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             step = any(by_pn.get(h, {}).get("STEP") for h in holders)
             soft = soft_kind(r["name"]) if r["make_buy"] != "assembly" else ""
             by_cut = bool(soft) and cut_list_lacks(by_cut_row.get(pn, []), thickness=soft == "soft") == []
+            strip = ((d125 or {}).get(pn) if not soft and r["make_buy"] == "make" and kind_of(pn) == "part" else None)
+            strip_ok = strip is not None and not strip[0]
             if r["make_buy"] == "assembly":
                 flat = "n/a"
             elif by_cut:
                 flat = "cut list"
             elif by_pn.get(pn, {}).get("DXF"):
                 flat = "yes"
+            elif strip_ok:
+                flat = "row (D-125)"
             elif SHEET.search(text):
                 flat = "no"
             elif TUBE.search(text):
@@ -425,6 +489,10 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                 dwg = "cut list (D-89)"
             elif soft == "soft" and by_pn.get(pn, {}).get("DXF"):
                 dwg = "DXF (D-89)"
+            elif soft == "felt or fill" and (d128 or {}).get(pn) == []:
+                dwg = "DXF and row (D-128)"
+            elif strip_ok:
+                dwg = "row: a plain strip or sheet (D-125)"
             elif (not soft and r["make_buy"] == "make" and kind_of(pn) == "part" and by_pn.get(pn, {}).get("DXF")
                   and flat_lacks(by_cut_row.get(pn, [])) == []):
                 found = [dxf_other_layers(t) for t in dxf_texts(pn)] if dxf_texts else [set()]
@@ -435,6 +503,10 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                     dwg = "no: its DXF draws on %s; only CUT and MARK pass (D-89)" % ", ".join(other)
                 else:
                     dwg = "no: its DXF can't be read (D-89)"
+            elif strip:
+                dwg = "no: as a plain strip or sheet (D-125) its row in %s doesn't give %s" % (strip[1], ", ".join(strip[0]))
+            elif soft == "felt or fill" and (d128 or {}).get(pn):
+                dwg = "no: as a felt or fill piece on its DXF (D-128) it needs %s" % "; ".join(d128[pn])
             else:
                 dwg = "no"
             mass = r["mass_each_kg"] is not None or r["make_buy"] == "assembly"
@@ -446,7 +518,8 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
                                     ("mass", mass), ("finish", finish != "no"), ("FAI", bool(ids))) if not ok]
             line = {**r, "bom_row": True, "cad": cad, "step": step, "flat": flat, "dwg": dwg, "mass_ok": mass,
                     "finish_ok": finish, "fai": ids, "gaps": gaps, "from": {where_of(r, labels)}}
-            line["state"] = state_of(gaps, screen)
+            line["state"] = state_of(gaps, screen, hold=made_hold(r, by_cut_row.get(pn, [])), drawgen=pn in (drawgen or ()))
+            line["drawgen"] = pn in (drawgen or ())
             made.append(line)
             seen[key] = line
         elif r["make_buy"] == "buy":
@@ -469,16 +542,37 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
     return made, bought
 
 
-def state_of(gaps, screen):
+def made_hold(r, rows):
+    """A made part on HOLD (PM, 2026-11-01): its own material, grade or status says HOLD. Read from the part's own
+    parts-list rows (its number in the part-number column, not a row of another part that names it) and their columns
+    named exactly material, grade or status (not mass_status or process_status), and from the BOM's material.
+    HOLD counts as a whole word only ("holds", "holder" and "threshold" don't; Reviewer 6, #211)."""
+    if HOLD_WORD.search(r.get("material") or ""):
+        return True
+    pn = r.get("part_number")
+    for cells, _p in rows:
+        if not any(re.fullmatch(r"part_?(?:number|no)|pn", (k or "").strip(), re.I) and v == pn for k, v in cells.items()):
+            continue
+        if any(re.fullmatch(r"material|grade|status", (k or "").strip(), re.I) and HOLD_WORD.search(v or "")
+               for k, v in cells.items()):
+            return True
+    return False
+
+
+def state_of(gaps, screen, hold=False, drawgen=False):
+    """Open gaps show first; a made part with none that is on HOLD shows HOLD, not done. A drawing-only gap on a locked
+    screen blocks a part (D-84), unless tools/drawgen draws it (D-113)."""
     if not gaps:
-        return "done"
-    if gaps == ["drawing"] and screen == "locked":
+        return "HOLD" if hold else "done"
+    if gaps == ["drawing"] and screen == "locked" and not drawgen:
         return BLOCKED
     return "open: " + ", ".join(gaps)
 
 
-def files_only(by_pn, parts, files, labels, screen, chars=()):
-    """Made parts found in the folders whose number no parts list carries: no BOM row."""
+def files_only(by_pn, parts, files, labels, screen, chars=(), tab_cover=None):
+    """Made parts found in the folders whose number no parts list carries: no BOM row. A number that a tabulated
+    drawing lists counts as drawn, as it does for a listed part (D-89)."""
+    tab_cover = tab_cover or {}
     listed = {r["part_number"] for r in parts}
     out = []
     for pn, kinds in sorted(by_pn.items()):
@@ -488,11 +582,12 @@ def files_only(by_pn, parts, files, labels, screen, chars=()):
         team = next((FOLDER_TEAM[s] for s in some.split("/") if s in FOLDER_TEAM), "other")
         names = {re.sub(FILE_RE, r"\3", p.rsplit("/", 1)[-1]) for ps in kinds.values() for p in ps}
         ids = [i for i, pats in chars if any(p.fullmatch(pn) for p in pats)]
-        gaps = ["BOM row"] + [k for k, n in (("CAD", "CAD"), ("STEP", "STEP"), ("drawing", "DWG")) if not kinds.get(n)]
+        dwg = True if kinds.get("DWG") else (f"on {tab_cover[pn]}, tabulated (D-89)" if pn in tab_cover else False)
+        gaps = ["BOM row"] + [k for k, ok in (("CAD", kinds.get("CAD")), ("STEP", kinds.get("STEP")), ("drawing", dwg)) if not ok]
         gaps += [] if ids else ["FAI"]
         out.append({"part_number": pn, "name": sorted(names)[0].replace("-", " "), "team": team, "bom_row": False,
                     "cad": bool(kinds.get("CAD")), "step": bool(kinds.get("STEP")), "flat": "yes" if kinds.get("DXF") else "—",
-                    "dwg": bool(kinds.get("DWG")), "mass_ok": False, "finish_ok": "—", "fai": ids, "gaps": gaps,
+                    "dwg": dwg, "mass_ok": False, "finish_ok": "—", "fai": ids, "gaps": gaps,
                     "state": state_of(gaps, screen),
                     "from": {labels.get(files[p], "this tree" if files[p] == "working tree" else files[p])
                              for ps in kinds.values() for p in ps}})
@@ -526,7 +621,7 @@ def cut_list_texts(files, refs):
             if p.endswith(".csv") and p.startswith(("v2/02-Drawings/", "v2/03-Manufacturing/")) or "CUT-LIST" in p}
 
 
-def render(made, bought, register, no_list, ref_note, screen, files, fai, today, fell_back=()):
+def render(made, bought, register, no_list, ref_note, screen, files, fai, today, fell_back=(), drawgen=()):
     chars, checks, accept = fai
     out = ["# Release checklist: Spaceship (FocusPod v2)", "",
            "| Doc code | Revision | Status | Date | Owner |", "|---|---|---|---|---|",
@@ -541,31 +636,41 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
                 "once it rebases): " + "; ".join(fell_back) + ".", ""]
     out += ["**Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. "
             "**Open**: something missing that can be done now. **Blocked**: only the drawing is "
-            "missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.", "",
+            "missing and the screen is locked; the drawing start needs it unlocked (D-84), unless tools/drawgen draws it "
+            "(D-113). **HOLD**: a bought part whose "
+            "product isn't named yet, or a made part with nothing else missing whose material, grade or status says HOLD "
+            "(PM, 2026-11-01).", "",
             "## Totals per team", "",
-            "| Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |",
-            "|---|---:|---:|---:|---:|---:|---:|"]
+            "| Team | Made: done | Made: open | Made: blocked by the locked screen | Made: HOLD | Bought: done | Bought: open | Bought: HOLD |",
+            "|---|---:|---:|---:|---:|---:|---:|---:|"]
     teams = sorted({r["team"] for r in made + bought} | set(no_list))
     for t in teams:
         m = [r for r in made if r["team"] == t]
         b = [r for r in bought if r["team"] == t]
         if not m and not b:
-            out.append(f"| {t} | — | — | — | — | — | — |")
+            out.append(f"| {t} | — | — | — | — | — | — | — |")
             continue
-        md, mo, mb, _ = counts(m)
+        md, mo, mb, mh = counts(m)
         bd, bo, _, bh = counts(b)
-        out.append(f"| {t} | {md} | {mo} | {mb} | {bd} | {bo} | {bh} |")
+        out.append(f"| {t} | {md} | {mo} | {mb} | {mh} | {bd} | {bo} | {bh} |")
     um = list({r["part_number"] or r["name"]: r for r in made}.values())
     ub = list({r["part_number"] or r["name"]: r for r in bought}.values())
-    md, mo, mb, _ = counts(um)
+    md, mo, mb, mh = counts(um)
     bd, bo, _, bh = counts(ub)
-    out.append(f"| **All, each number once** | {md} | {mo} | {mb} | {bd} | {bo} | {bh} |")
+    out.append(f"| **All, each number once** | {md} | {mo} | {mb} | {mh} | {bd} | {bo} | {bh} |")
     if no_list:
         out += ["", "No parts list yet: " + ", ".join(sorted(no_list)) + "."]
     only_dwg = sum(r["gaps"] == ["drawing"] for r in um)
     no_dwg = sum("drawing" in r["gaps"] for r in um)
-    out += ["", f"{no_dwg} of the {len(um)} made numbers have no drawing yet; for {only_dwg} of them the drawing is the only "
-                f"gap, so {'they wait for the unlocked screen' if screen == 'locked' else 'their drawings can start now'} (D-84)."]
+    by_gen = sum(r["gaps"] == ["drawing"] and bool(r.get("drawgen")) for r in um)
+    if screen == "locked":
+        wait = f"{only_dwg - by_gen} wait for the unlocked screen (D-84)" + (
+            f" and {by_gen} are drawn by tools/drawgen, which a locked screen doesn't hold (D-113)" if by_gen else "")
+        out += ["", f"{no_dwg} of the {len(um)} made numbers have no drawing yet; for {only_dwg} of them the drawing is the "
+                    f"only gap: {wait}."]
+    else:
+        out += ["", f"{no_dwg} of the {len(um)} made numbers have no drawing yet; for {only_dwg} of them the drawing is the "
+                    f"only gap, so their drawings can start now (D-84)."]
     gap_count = {}
     for r in um:
         for g in r["gaps"]:
@@ -633,6 +738,16 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today,
             "- The base corner and inline keys 111211 to 111214, and any part whose model sits in a joints folder, count under JOINTS: "
             "the Joints Engineer makes them and the teams place them by reference (D-95).",
             "- A DXF is asked of sheet, felt, fill, foam, ply and glass parts; a cut list (or the list's cut rows) of tube parts.",
+            "- D-125 (a plain strip or sheet on a full parts-list row) is read by the mechanical check's own functions and STEP "
+            "reader (tools/checks), from the working tree only, as C05 reads it: a strip that exists only on an open branch "
+            "shows as needing a drawing until it merges. A made part with nothing else missing whose own material, grade or "
+            "status says HOLD shows HOLD. HOLD counts only as a whole word, here and in the joints register: \"on hold\" "
+            "does; \"holds\", \"holder\" and \"threshold\" don't.",
+            "- D-113: the parts tools/drawgen draws (its specs.py: " + (", ".join(sorted(drawgen)) or "none yet") + ") are never "
+            "blocked by a locked screen, because drawgen doesn't run in Fusion.",
+            "- D-128 (a felt or fill piece with through-openings or edge notches on its DXF and a full parts-list row) is read "
+            "by the mechanical check's own functions (prism_shapes, felt_dxf_lacks), from the working tree only, as C05 "
+            "reads it; a plain rectangle on a full cut-list row passes on D-89 first.",
             "- Finish is asked of metal parts: a `finish` column, or a coating named in the material.",
             "- FAI: the plan's characteristics whose patterns match the number. Bought parts: the plan's section H, or a test "
             "that names the number or its register ID.",
@@ -680,15 +795,32 @@ def main(argv=None):
                 dxf_cache[path] = text_at(path, files[path], refs)
         return [dxf_cache[p] for p in by_pn.get(pn, {}).get("DXF", [])]
 
+    try:
+        d125 = d125_strips()
+    except Exception as e:  # the checklist still runs; the drawing column then waits on D-125's drawings
+        print(f"D-125 not read ({type(e).__name__}: {e}); plain strips count only with a drawing")
+        d125 = {}
+    try:
+        drawgen = drawgen_parts()
+    except Exception as e:  # the checklist still runs; drawgen's parts then count as Fusion's (D-84)
+        print(f"tools/drawgen's parts not read ({type(e).__name__}: {e}); a locked screen blocks them as Fusion's")
+        drawgen = set()
+    felts = {r["part_number"] for r in parts if r["make_buy"] == "make" and soft_kind(r["name"]) == "felt or fill"}
+    try:
+        d128 = d128_pieces(felts)
+    except Exception as e:  # the checklist still runs; the drawing column then waits on D-128's drawings
+        print(f"D-128 not read ({type(e).__name__}: {e}); felt and fill pieces with openings count only with a drawing")
+        d128 = {}
     made, bought = check_parts(parts, register, by_pn, list(files), fai, tests, register_products(register_text, bom),
-                               screen, bom, labels, cut_texts, tab_cover, dxf_texts)
-    made += files_only(by_pn, parts, files, labels, screen, fai[0])
+                               screen, bom, labels, cut_texts, tab_cover, dxf_texts, d125, drawgen, d128)
+    made += files_only(by_pn, parts, files, labels, screen, fai[0], tab_cover)
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
     fell = fell_back_notes(bom, labels)
     for x in fell:
         print("read from main:", x)
-    Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date, fell), encoding="utf-8")
+    Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date, fell, drawgen),
+                           encoding="utf-8")
     done = sum(r["state"] == "done" for r in made + bought)
     print(f"release checklist: {len(made)} made lines, {len(bought)} bought lines, {done} done; screen {screen}; written to {a.out}")
     return 0

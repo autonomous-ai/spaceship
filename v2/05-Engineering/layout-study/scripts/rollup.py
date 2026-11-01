@@ -1,7 +1,7 @@
 """Weight roll-up on skeleton P04 (ISS-081, F-010): the decided build recounted with tonight's rulings and CAD masses.
 
 The base is this study's decided build (option B1 with the final stack, skeleton P03). Each line is replaced where a
-newer number exists: the teams' CAD masses (CEILING PR #32, FRONT PRs #27 and #28, the WALL group's L1), the air parts as
+newer number exists: the teams' CAD masses (CEILING PR #32, FRONT PRs #27, #28 and #105, the WALL group's L1), the air parts as
 sized for D-60 (the air report, section 7f), and this study's own model re-run at skeleton P04's sizes for the parts with
 no CAD yet. On top: the PM's adopted savings (ruling after PR #38) and allowances for parts not designed yet. Every line
 carries its status and its source (SOURCES in inputs.py). run_all.py writes weight-rollup.md and out/parts-decided-P04.csv
@@ -82,6 +82,28 @@ def wall_side_cad(n):
 
 WALL_SIDE = {n: wall_side_cad(n) for n in (1, 2, 3, 4)}      # L1, R1, L2, R2 (S34)
 WALL_L1 = WALL_SIDE[1]
+
+
+def wall_back_cad(n):
+    """WALL's back panel 21020n and its lining cassette 51020n from the merged parts list (PR #152): the made parts and
+    the bond set per panel; the hardware stays in the fixings kit's line, the clips in the named clips' line."""
+    import glob
+    import re
+    path = glob.glob(os.path.join(MANUF, "wall", f"21020{n}_P01_*_BOM.csv"))[0]
+    rows = read_parts_list(path)
+    by = {r["pn"]: r for r in rows if r["pn"]}
+    fr, sk, fi, cas = f"21120{n}", f"21140{n}", f"21160{n}", f"51020{n}"
+    mids = [r for r in rows[rows.index(by[fr]) + 1:rows.index(by[sk])]
+            if r["level"] == 2 and "STILE - MID" in r["name"].upper()]
+    rho = float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", by[fi]["material"]).group(1))
+    t_mid = float(re.search(r"x\s*(\d+(?:\.\d+)?)\s*$", mids[0]["material"].strip()).group(1))
+    seals = sum(by[k]["kg"] for k in ("848011", "848012") if k in by and rows.index(by[k]) > rows.index(by[cas]))
+    return dict(path=os.path.basename(path), frame=by[fr]["kg"], skin=by[sk]["kg"], fill=by[fi]["kg"], fill_rho=rho,
+                bond=by["108002"]["kg"], mid_kg=sum(r["kg"] for r in mids), mid_n=int(sum(r["qty"] for r in mids)),
+                mid_t=t_mid, tray=by[f"51120{n}"]["kg"], felt=by[f"51140{n}"]["kg"], cass_seals=seals)
+
+
+WALL_BACK = {n: wall_back_cad(n) for n in (1, 2)}            # B1 and B2, the lower back panels (S50)
 FRONT_DOOR_LIST = os.path.join(MANUF, "front", "360001_P01_FRONT-DOOR-UNIT_BOM.csv")        # PR #27 (S36)
 
 
@@ -102,6 +124,50 @@ def front_fixed_cad(path=FRONT_FIXED_LIST):
 
 
 FRONT_FIXED = front_fixed_cad()
+FRONT_DECOR_PN = {"DL": "350001", "DT": "350002", "DR": "350003"}                           # PR #105 (S51)
+
+
+def front_decor_cad(block):
+    """FRONT's decor block from its merged parts list (PR #105): the block's total, its skin, its welded frame and how
+    many tubes it has, and the reserved air spaces it lists with no mass (AIR's parts, counted in AIR's lines). The
+    block's row must be the sum of the rows under it."""
+    import csv
+    import glob
+    import re
+    pn = FRONT_DECOR_PN[block]
+    path = glob.glob(os.path.join(MANUF, "front", f"{pn}_P01_*_BOM.csv"))[0]
+    with open(path, encoding="utf-8") as f:
+        types = {r["part_number"]: r["type"] for r in csv.DictReader(f)}
+    rows = read_parts_list(path)
+    by = {r["pn"]: r for r in rows if r["pn"]}
+    rest = sum(r["kg"] for r in rows if r["pn"] != pn)
+    if abs(rest - by[pn]["kg"]) > 0.01:
+        raise ValueError(f"{os.path.basename(path)}: the block's row {by[pn]['kg']} isn't the sum of its rows {rest:.3f}")
+    skin = [r for r in rows if "DECOR SKIN" in r["name"]]
+    frame = [r for r in rows if "DECOR FRAME" in r["name"]]
+    tubes = re.search(r"welded frame, (\d+) tubes", types[frame[0]["pn"]])
+    return dict(path=os.path.basename(path), pn=pn, unit=by[pn]["kg"], skin=skin[0]["kg"], frame=frame[0]["kg"],
+                tubes=int(tubes.group(1)), reserved=[k for k, t in types.items() if t == "reserved air space"])
+
+
+FRONT_DECOR = {b: front_decor_cad(b) for b in ("DL", "DT", "DR")}
+
+
+def dr_channels_kg(path=FRONT_FIXED_LIST):
+    """The fixed glass's right and diagonal U-channels with their U-seal, which ship fitted in DR (D-68), kg: the
+    U-profile's and the U-seal's masses in its parts list (S37) shared by the four pieces' lengths in the profile's note,
+    as the packing plan shares them."""
+    import csv
+    import re
+    with open(path, encoding="utf-8") as f:
+        rows = {r["part_number"]: r for r in csv.DictReader(f)}
+    m = re.search(r"outer lengths ([\d.]+) / ([\d.]+) / ([\d.]+) / ([\d.]+) mm \(bottom, right, diagonal, top\)",
+                  rows["368004"]["note"])
+    if not m:
+        raise ValueError(f"{os.path.basename(path)}: no piece lengths in the U-profile's note")
+    bottom, right, diag, top = (float(x) for x in m.groups())
+    kg = sum(float(rows[k]["unit_mass_kg"]) * float(rows[k]["qty"] or 1) for k in ("368004", "368002"))
+    return kg * (right + diag) / (bottom + right + diag + top)
 BASE_LIST = os.path.join(MANUF, "base", "110000_P01_BASE_BOM.csv")                           # PR #55 (S44)
 
 
@@ -202,30 +268,154 @@ ELEC_LIST = os.path.join(MANUF, "electrical", "710000_P01_ELECTRICAL-PARTS-LIST_
 
 
 def electrical_cad(path=ELEC_LIST):
-    """ELECTRICAL from its merged parts list (PR #64): the total as shipped, the power unit, and the LED strip per metre."""
+    """ELECTRICAL from its merged parts list (PR #64): the total as shipped, the power unit, and the LED strip per metre;
+    and the parts it lists under another team's assembly, by host (S53: D-126's down-light profile, cover, end caps and
+    clips under INTERIOR's light shelf 810201). 710000's total leaves those out; the host's line carries them."""
     import csv
     with open(path, encoding="utf-8") as f:
         rows = {r["part_number"]: r for r in csv.DictReader(f)}
+    hosted = {}
+    for r in rows.values():
+        if r["parent"] and r["parent"] not in rows:          # its parent is another team's part
+            hosted.setdefault(r["parent"], []).append((r["part_number"], float(r["qty_per_parent"]), float(r["mass_each_kg"])))
     return dict(total=float(rows["710000"]["mass_each_kg"]), power_unit=float(rows["710001"]["mass_each_kg"]),
                 hub=float(rows["710041"]["mass_each_kg"]), cord=float(rows["719001"]["mass_each_kg"]),
-                strip_kgm=float(rows["718050"]["mass_each_kg"]), strip_m=float(rows["718050"]["qty_per_pod"]))
+                strip_kgm=float(rows["718050"]["mass_each_kg"]), strip_m=float(rows["718050"]["qty_per_pod"]),
+                hosted=hosted)
 
 
 ELEC = electrical_cad()
 INTERIOR_LIST = os.path.join(MANUF, "interior", "810000_P01_INTERIOR-PARTS-LIST_BOM.csv")     # PR #92 (S46)
 
 
-def interior_cad(path=INTERIOR_LIST):
+SHELF_REPLACED = ("811204", "811205")     # D-126 (S53): the down-light channel and diffuser, replaced by ELECTRICAL's bought profile
+
+
+def interior_cad(path=INTERIOR_LIST, hosted=None):
     """INTERIOR from its merged parts list (PR #92): the work-wall ledge, the light shelf (its LED strip is ELECTRICAL's)
-    and the screen rail (HOLD)."""
+    and the screen rail (HOLD). The shelf assembly 810201 also holds ELECTRICAL's down-light profile parts, listed in
+    ELECTRICAL's parts list under it (S53), and they ship with it; the channel and diffuser they replaced (D-126) are left
+    out while INTERIOR's list still carries them."""
     import csv
     with open(path, encoding="utf-8") as f:
         rows = {r["part_number"]: r for r in csv.DictReader(f)}
     kg = lambda pn: float(rows[pn]["mass_each_kg"])
-    return dict(ledge=kg("810101"), shelf=kg("810201"), rail=kg("818102"), total=kg("810000"))
+    gone = [pn for pn in SHELF_REPLACED if pn in rows and rows[pn]["parent"] == "810201"]
+    gone_kg = sum(float(rows[pn]["qty_per_parent"]) * kg(pn) for pn in gone)
+    elec = (hosted or {}).get("810201", [])
+    elec_kg = sum(q * m for _pn, q, m in elec)
+    return dict(ledge=kg("810101"), shelf=kg("810201") - gone_kg + elec_kg, rail=kg("818102"),
+                total=kg("810000") - gone_kg + elec_kg, shelf_listed=kg("810201"), shelf_gone=gone, shelf_gone_kg=gone_kg,
+                shelf_elec=[pn for pn, _q, _m in elec], shelf_elec_kg=elec_kg)
 
 
-INTERIOR = interior_cad()
+def shelf_note():
+    """What the light shelf's CAD mass holds beyond INTERIOR's 810201 (S53), for the line texts."""
+    it, out = INTERIOR, []
+    if it["shelf_elec"]:
+        out.append(f"with ELECTRICAL's down-light profile, cover, end caps and clips {it['shelf_elec'][0]} to "
+                   f"{it['shelf_elec'][-1]} ({it['shelf_elec_kg']:.3f}), listed under 810201 (S53)")
+    if it["shelf_gone"]:
+        out.append(f"less the channel and diffuser {' and '.join(it['shelf_gone'])} ({it['shelf_gone_kg']:.3f}) that D-126 "
+                   "replaced, which INTERIOR's list still carries")
+    return "; ".join(out)
+
+
+INTERIOR = interior_cad(hosted=ELEC["hosted"])
+AIR_LIST = os.path.join(MANUF, "air", "610000_P01_AIR-PARTS-LIST_BOM.csv")                    # PR #91 (S52)
+AIR_FBOX_T_CAD = 2.0      # mm: the fan box casings as PR #91's CAD builds them; D-124's 3 mm comes with the AIR follow-up
+AIR_RISER_FOOT_KG = 0.5   # kg: the air report's allowance for the riser's foot and the mesh band piece (assumption)
+
+
+def air_cad(path=AIR_LIST):
+    """AIR from its parts list (PR #91): each number's mass (its first row: the fans sit under both fan boxes), the
+    densities the CAD gives the column's and soffit's fill and the cartridge layers, and the layers per cartridge."""
+    import csv
+    import re
+    rows = {}
+    with open(path, encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            rows.setdefault(r["part_number"], r)
+    rho = lambda pn: float(re.search(r"(\d+(?:\.\d+)?)\s*kg/m3", rows[pn]["material"]).group(1))
+    return dict(kg={pn: float(r["mass_each_kg"]) for pn, r in rows.items()}, fill_rho=rho("611104"),
+                sof_fill_rho=rho("611203"), layer_rho=rho("611302"), n_layers=float(rows["611302"]["qty_per_parent"]))
+
+
+AIR = air_cad()
+
+
+def air_unmodelled():
+    """What AIR's CAD doesn't model yet, sized as the air report sizes it (calc.py d60_parts): each fan box's 2 mm
+    bulkhead (less the two fan bores) and its 50 mm linings at 32 kg/m3 where they fit (D-121), kg."""
+    import math
+    t_fb, holes = AA.CASINGS[AA.FANBOX_CASING][2] / 1000, 2 * math.pi / 4 * AA.FAN_BORE ** 2
+    bulk_kg_m2 = AA.MAT["alu"][0] * AA.FANBOX_BULKHEAD_MM / 1000
+    (bx0, bx1), (by0, by1), _bz = AA.D60["sup_box"]
+    (ex0, ex1), (ey0, ey1), _ez = AA.D60["exh_box"]
+    rooms = AA.fanbox_rooms()
+    lin = lambda side: rooms[side]["lined"] * AA.D60["lin"] / 1000 * AA.FANBOX_LINING_KG_M3
+    return {"supply bulkhead": (((bx1 - bx0) / 1000 - 2 * t_fb) * ((by1 - by0) / 1000 - 2 * t_fb) - holes) * bulk_kg_m2,
+            "exhaust bulkhead": (((ex1 - ex0) / 1000 - t_fb) * ((ey1 - ey0) / 1000 - 2 * t_fb) - holes) * bulk_kg_m2,
+            "supply linings": lin("supply"), "exhaust linings": lin("exhaust")}
+
+
+def air_parts(fill):
+    """AIR's lines from its CAD (S52), by the pieces the packing plan reads: [(item, kg, status, source)]. On top of the
+    CAD: the changes already ruled that the AIR follow-up builds (the CAD has the earlier values until it merges): the
+    column's and the soffit's fill at `fill` (D-81; the CAD has 32 kg/m3), the cartridge layers at 32 kg/m3 (D-116; the
+    CAD has 40) and the fan box casings in 3 mm (D-124; the CAD has 2 mm); and what the CAD doesn't model yet, sized as
+    the air report sizes it: each fan box's 2 mm bulkhead and its 50 mm linings where they fit (D-121), and the riser's
+    foot and mesh band piece. The fans are a line of their own."""
+    k, t3, un = AIR["kg"], AA.CASINGS[AA.FANBOX_CASING][2], air_unmodelled()
+    rooms = AA.fanbox_rooms()
+    layer = k["611302"] * AA.CART_LAYER_KG_M3 / AIR["layer_rho"]
+    cart = k["611301"] + AIR["n_layers"] * layer
+    col_fill, sof_fill = k["611104"] * fill / AIR["fill_rho"], k["611203"] * fill / AIR["sof_fill_rho"]
+    sc = t3 / AIR_FBOX_T_CAD
+    col = k["610101"] - k["611104"] + col_fill
+    sof = k["610201"] - k["610402"] - k["611203"] + sof_fill
+    sbox = k["611402"] * sc + k["618102"] + k["618103"] + un["supply bulkhead"] + un["supply linings"]
+    ebox = k["611401"] * sc + un["exhaust bulkhead"] + un["exhaust linings"]
+    cad = "S52, CAD on main: AIR parts list "
+    lay = (f"{AIR['n_layers']:.0f} layers 611302 at {AA.CART_LAYER_KG_M3:.0f} kg/m3 (D-116; the CAD has "
+           f"{AIR['layer_rho']:.0f} until the AIR follow-up)")
+    return [
+        ("Supply cartridge, in the air column", cart, "calculation (CAD)",
+         f"{cad}610301 P01: casing 611301 {k['611301']:.3f} (2.0 mm, D-121), " + lay),
+        ("Exhaust cartridge, in the soffit", cart, "calculation (CAD)", f"{cad}610301 P01, the same part"),
+        ("Air column 610101: felt-covered faces, corner angles, foot and plenum plates, fill, kick grille", col,
+         "calculation (CAD)", f"{cad}610101 P01 {k['610101']:.3f}, its fill 611104 at {fill:g} kg/m3 (D-81; the CAD has "
+         f"{AIR['fill_rho']:.0f} until the AIR follow-up); the hub zone 618101 is the in-house module's (no mass here)"),
+        ("Soffit 610201: underside sections, front face, rails, end and door-side plates, fill, exhaust grille, hangers, "
+         "hinges, latches, lock screws", sof, "calculation (CAD); hinges, latches and studs HOLD",
+         f"{cad}610201 P01 {k['610201']:.3f} less its exhaust fan box {k['610402']:.3f} (the next line but one), its fill "
+         f"611203 at {fill:g} kg/m3 (D-81; the CAD has {AIR['sof_fill_rho']:.0f})"),
+        ("Supply fan box 610401 with its two transitions, in the right block", sbox,
+         "calculation (CAD at 2 mm, scaled to D-124's 3 mm); transitions HOLD at their sized masses",
+         f"{cad}610401 P01: {sbox:.2f} kg = casing 611402 {k['611402'] * sc:.2f} (the CAD's {k['611402']:.3f} at "
+         f"{AIR_FBOX_T_CAD:g} mm x {t3:g}/{AIR_FBOX_T_CAD:g}: D-124's {t3:g} mm casing, which the model gets in the AIR "
+         f"follow-up) + transitions 618102 {k['618102']:.2f} and 618103 {k['618103']:.2f} (HOLD, sized) + not in the CAD "
+         f"yet (D-121, the air report's sizes): a {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead {un['supply bulkhead']:.2f} and "
+         f"50 mm linings at {AA.FANBOX_LINING_KG_M3:g} kg/m3 where they fit, {rooms['supply']['lined']:.3f} m2, "
+         f"{un['supply linings']:.2f}; the fans are in their own line"),
+        ("Exhaust fan box 610402, in the soffit", ebox,
+         "calculation (CAD at 2 mm, scaled to D-124's 3 mm)",
+         f"{cad}610402 P01: {ebox:.2f} kg = casing 611401 {k['611401'] * sc:.2f} (the CAD's {k['611401']:.3f} at "
+         f"{AIR_FBOX_T_CAD:g} mm x {t3:g}/{AIR_FBOX_T_CAD:g}: D-124's {t3:g} mm casing, which the model gets in the AIR "
+         f"follow-up) + not in the CAD yet (D-121, the air report's sizes): the fans' "
+         f"sealed {AA.FANBOX_BULKHEAD_MM:g} mm bulkhead {un['exhaust bulkhead']:.2f} and 50 mm linings where they fit, "
+         f"{rooms['exhaust']['lined']:.3f} m2, {un['exhaust linings']:.2f}; the fans are in their own line"),
+        ("Intake riser 611501, in the right block", k["611501"] + AIR_RISER_FOOT_KG + AA.BOOT_KG,
+         "calculation (CAD); foot, mesh and boot assumption",
+         f"{cad}611501 P01 {k['611501']:.3f} (1 mm galvanised steel, 139 x 155 x 1340; D-130's 150 deep comes with the "
+         f"AIR follow-up), {AIR_RISER_FOOT_KG:g} kg for its foot and the mesh band piece's extra over the band it replaces, "
+         f"and {AA.BOOT_KG:g} kg for D-130's sealed intake boot and the cartridges' gaskets (the air report's assumptions)"),
+        ("Roof slot grille 611602 and roof sleeve 611601, with C2", k["611602"] + k["611601"], "calculation (CAD)",
+         f"{cad}611602 P01 {k['611602']:.3f} and 611601 P01 {k['611601']:.3f}: the sleeve fills C2's roof slot, so it "
+         "can't ride on the exhaust fan box while the soffit is lifted and slid onto its studs; it ships with the grille "
+         "and C2 and drops in through the slot after the soffit hangs, onto a gasket on the fan box's top (the Air "
+         "Engineer, 2026-11-01)"),
+    ]
 KEY_PNS = ("111211", "111212", "111213", "111214")            # the corner key family: square, front LH and RH, knee LH
 
 CAP_KG = 420.0          # confirmed, D-37 and D-54
@@ -272,8 +462,8 @@ T_STUD_LIGHT = 1.0            # mm: inner studs of the wall panels' 20 x 40 fram
 BACK_STUDS = 2                # inner studs in each back outer panel: 393 mm centres, inside D-16's 400 (this study counted 3)
 KICK_KG, KICK_KG_HOLLOW = 2.094, 1.0  # kg: the solid kick strip of PR #27's first list (S36) and D-85's hollow budget
 FLOOR_RHO_LIGHT = 450.0       # kg/m3: poplar-core 9 mm plywood against this study's 600 (S13); D-85, settled by D-86
-CLEATS_N, CLEAT_KG = 120, 0.020  # internal aluminium cleats in the WALL and CEILING frames, about 120 joints at up to 20 g
-                                 # each (D-115, assumption) until the Joints Engineer's cleat models land
+CLEATS_KG = 1.2               # kg per pod: the WALL and CEILING frames' internal cleats with their glue, 14.9 g corner cleats
+                              # and 6.7 g T plugs (D-117, S49; assumption until the Joints Engineer's cleat models land)
 ELEC_KG_RELAYED = 4.94        # kg: ELECTRICAL as relayed before its CAD merged (S43), the estimate in the swap table
 ELEC_LIGHTS_KG, CALL_LIGHT_M = 0.26, 0.9  # kg and m: the relayed lights and call light the estimate's strip share used
 LOAD_BLOCKS_KG = 0.4          # kg per pod: an aluminium load block inside the band at each glide (D-86, BASE's calculation)
@@ -281,7 +471,6 @@ LOAD_BLOCKS_KG = 0.4          # kg per pod: an aluminium load block inside the b
 LAM33_T, LAM44_T = 6.76, 8.76  # mm: 3+3 and 4+4 laminate (glass 3 + 0.76 PVB + 3, as the 4+4 is 4 + 0.76 + 4)
 FELT_KGM2_LIGHT = 1.4         # kg/m2: a lighter 9 mm PET felt, against Polyx Board 9's 1.8 (S11)
 FILL_LIGHTER = 18.0           # kg/m3: Pyrotek's lightest listed grade (hardware selection, fill row: 18, 24, 32, 48, 60)
-DECOR_TUBE_CUT = 0.25         # share of the decor blocks' frame tube a FRONT design could leave out (assumption)
 
 def base_parts():
     """This study's decided build on skeleton P03 (option B1 with the final stack)."""
@@ -320,13 +509,6 @@ def named_clips_kg():
     return (8 * 4 + 2 * 6) * CLIP_KG + 2 * 2 * CATCH_KG
 
 
-def air_fill_delta_kg(fill=FILL_LIGHT):
-    """The air column's and soffit's cavity fill (air report D60: 27 mm on each cartridge's two faces toward the pod)
-    from 32 kg/m3 to `fill`. The cartridges' 50 mm layers stay at 32, the density their published absorption is for."""
-    w, d, l = (x / 1000 for x in AA.D60["cart"])
-    return (AA.FILL_KG_M3 - fill) * AA.D60["fill"] / 1000 * (w + d) * l
-
-
 def shelf_m():
     """The light shelf along the tops of the side and back walls (D-70): the inside width, and each side wall's inside run
     from the back lining to the soffit (air report D60), m."""
@@ -339,6 +521,23 @@ ADOPTED = dict(fill=FILL_LIGHT, clip_only=True, band_t=BAND_T_LIGHT, kit_outside
                budgets=True, back2=True, studs10=True, kick=True, floor=True)               # D-85
 OFF = dict(fill=p("fill_pet_kgm3"), clip_only=False, band_t=p("t_al_base"), kit_outside=False,
            budgets=False, back2=False, studs10=False, kick=False, floor=False)
+
+
+def back_cad_kg(n, fill, kgm_s, n_back):
+    """WALL's back panel B<n> from its CAD (S50): its made parts and bond set, with the fill at `fill` and the inner studs
+    at `kgm_s` kg/m, `n_back` of them (so an adopted saving switched off is priced as for the model)."""
+    w = WALL_BACK[n]
+    return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"]
+            + w["mid_kg"] * (kgm_s / al_rhs(20, P04["frame_d"], w["mid_t"]) - 1)
+            + (n_back - w["mid_n"]) * P04["back_h"] * 1e-3 * kgm_s)
+
+
+def back_est_kg(fill, kgm12, kgm_s, n_back):
+    """This study's model of one back outer panel at the P04 size (S33): frame under the skin, `n_back` inner studs."""
+    with override(fill_pet_kgm3=fill):
+        back = final_outer_kg(P04["back_w"], P04["back_h"], P04["frame_d"], FINAL)
+    return (back - 3 * P04["back_h"] * 1e-3 * kgm12 + n_back * P04["back_h"] * 1e-3 * kgm_s
+            - 2 * (P04["back_w"] - P04["back_fw"]) * 1e-3 * kgm12)
 
 
 def lines(**adopt):
@@ -360,7 +559,6 @@ def lines(**adopt):
     fill_d = (p("fill_pet_kgm3") - fill) * P04["frame_d"] * 1e-3      # kg/m2 less with the lighter fill
     with override(fill_pet_kgm3=fill):
         up = final_outer_kg(P04["side_w"], P04["side_up_h"], P04["frame_d"], FINAL)
-        back = final_outer_kg(P04["back_w"], P04["back_h"], P04["frame_d"], FINAL)
     def side(n):
         w = WALL_SIDE[n]
         return (w["frame"] + w["skin"] + w["fill"] * fill / w["fill_rho"] + w["bond"]
@@ -371,19 +569,27 @@ def lines(**adopt):
                   f"S34, CAD on main: WALL parts lists 21010{a_} and 21010{b_} P01: frames {wa['frame']:.3f} and "
                   f"{wb['frame']:.3f} (mid stiles at {wa['mid_t']:g} mm), skins {wa['skin']:.3f}, fill {wa['fill']:.3f} at "
                   f"{wa['fill_rho']:g} kg/m3, bond sets {wa['bond']:.2f}; their hardware stays in the fixings kit's line"))
-    L.append(("WALL", "B1 to B4, back outer panels", 4,
-              back - 3 * P04["back_h"] * 1e-3 * kgm12 + n_back * P04["back_h"] * 1e-3 * kgm_s
-              - 2 * (P04["back_w"] - P04["back_fw"]) * 1e-3 * kgm12, "calculation" + prov,
-              f"this study's model at the P04 size (S33), frame {P04['back_fw']} under the {P04['back_w']} skin, fill {fill:g} kg/m3"
+    est_back = back_est_kg(fill, kgm12, kgm_s, n_back)
+    b1, b2 = WALL_BACK[1], WALL_BACK[2]
+    cad1, cad2 = (back_cad_kg(n, fill, kgm_s, n_back) for n in (1, 2))
+    L.append(("WALL", "B1 to B4, back outer panels", 4, (cad1 + cad2 + 2 * est_back) / 4, "calculation (part CAD)" + prov,
+              f"part CAD on main: B1 and B2 from WALL parts lists 210201 and 210202 P01 (S50): frames {b1['frame']:.3f} and "
+              f"{b2['frame']:.3f} (mid stiles at {b1['mid_t']:g} mm), skins {b1['skin']:.3f} and {b2['skin']:.3f}, fill "
+              f"{b1['fill']:.3f} and {b2['fill']:.3f} at {b1['fill_rho']:g} kg/m3, bond sets {b1['bond']:.2f}: {cad1:.2f} and "
+              f"{cad2:.2f} kg; their hardware stays in the fixings kit's line. B3 and B4 stay this study's model at the P04 "
+              f"size (S33), {est_back:.2f} kg each: frame {P04['back_fw']} under the {P04['back_w']} skin, fill {fill:g} kg/m3"
               + ("; 2 inner studs at 393 mm centres, inside D-16 (D-85)" if a["back2"] else "") + studs_txt))
     L.append(("WALL", "40 x 40 corner edge tubes beyond the panels' own", 1,
               CORNER_TUBES_KG - 4 * stile_delta_kg() - 2 * top_delta_kg() - 2 * ceil_back_delta_kg(), "calculation",
               "D-63's 1.3 kg less the 40 x 40 members the panels' CAD carries: the four side panels' back stiles, L2 and R2's "
               "tops and the ceiling halves' back members (S34, S35, S39)"))
-    L.append(("WALL", "Bond over this study's 0.25 kg/m2, beyond the side and ceiling panels", 1,
+    back_a = P04["back_w"] * P04["back_h"] * 1e-6
+    L.append(("WALL", "Bond over this study's 0.25 kg/m2, beyond the panels in CAD", 1,
               BOND_OVER_KG - sum(WALL_SIDE[n]["bond"] - p("bond_kgm2") * side_a for n in (1, 2, 3, 4))
+              - sum(WALL_BACK[n]["bond"] - p("bond_kgm2") * back_a for n in (1, 2))
               - 2 * (CEILING["bond"] - p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6), "calculation",
-              "D-71's 0.5 kg (PR #23) less the side and ceiling panels' share, which their CAD carries (S34, S35, S39)"))
+              "D-71's 0.5 kg (PR #23) less the share of the panels whose CAD carries their bond: the four side panels, B1 and "
+              "B2, and the ceiling halves (S34, S35, S39, S50)"))
     for item, a_, b_, hh in (("side, lower", 1, 2, P04["side_cass_lo_h"]), ("side, upper", 3, 4, P04["side_cass_up_h"])):
         wa, wb = WALL_SIDE[a_], WALL_SIDE[b_]
         cas = sum(w_["tray"] + w_["felt"] + w_["cass_seals"] for w_ in (wa, wb)) / 2
@@ -393,13 +599,19 @@ def lines(**adopt):
                   f"S34, CAD on main: WALL parts lists 51010{a_} and 51010{b_} P01: trays {wa['tray']:.3f} with their lips, "
                   f"felts {wa['felt']:.3f} and {wb['felt']:.3f}, hook-and-loop and seals; their clips are in the named clips' "
                   "line" + (", + this study's 0.6 kg/m2 clip-and-rail allowance" if rails else "")))
-    for item, w, h in (("back, lower", P04["back_cass_w"], P04["back_cass_lo_h"]),
-                       ("back, upper", P04["back_cass_w"], P04["back_cass_up_h"])):
-        L.append(("LINING", f"Wall cassette, {item}, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
-                  final_leaf_kg(w, h) - (0.0 if rails else p("leaf_clip_kgm2") * w * h * 1e-6) + LIP_KG,
-                  "calculation; lips confirmed", "this study's model at the P04 size (S33)"
-                  + ("" if rails else " without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81)")
-                  + ", + 0.43 kg of lips (D-69)"))
+    cb = sum(WALL_BACK[n]["tray"] + WALL_BACK[n]["felt"] + WALL_BACK[n]["cass_seals"] for n in (1, 2)) / 2
+    face = P04["back_cass_w"] * P04["back_cass_lo_h"] * 1e-6
+    L.append(("LINING", "Wall cassette, back, lower, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
+              cb + (p("leaf_clip_kgm2") * face if rails else 0.0), "calculation (CAD)",
+              f"S50, CAD on main: WALL parts lists 510201 and 510202 P01: trays {b1['tray']:.3f} and {b2['tray']:.3f} with "
+              f"their lips, felts {b1['felt']:.3f} and {b2['felt']:.3f}, hook-and-loop and seals; their clips are in the named "
+              "clips' line" + (", + this study's 0.6 kg/m2 clip-and-rail allowance" if rails else "")))
+    w, h = P04["back_cass_w"], P04["back_cass_up_h"]
+    L.append(("LINING", "Wall cassette, back, upper, with 12 mm lips" + ("" if rails else ", no clip rails"), 2,
+              final_leaf_kg(w, h) - (0.0 if rails else p("leaf_clip_kgm2") * w * h * 1e-6) + LIP_KG,
+              "calculation; lips confirmed", "this study's model at the P04 size (S33)"
+              + ("" if rails else " without its 0.6 kg/m2 clip-and-rail allowance (clip-only, D-81)")
+              + ", + 0.43 kg of lips (D-69)"))
     cg = CEILING
     L.append(("CEILING", "Ceiling outer panels C1 and C2, with their bond line", 2, (cg["c1"] + cg["c2"]) / 2,
               "calculation (CAD)", f"S35, CAD on main: CEILING parts list 410000 P01: frames {cg['frames'][0]:.3f} and "
@@ -457,10 +669,17 @@ def lines(**adopt):
               "sample are planned" + ("" if a["floor"] else "; + 600 kg/m3 plywood's extra")))
     L.append(("BASE", "Floor mat, 3 mm firm closed-cell foam", 1, 2 * bc["mat"], "calculation (CAD)",
               "S44, CAD on main: BASE parts list 111501 P01 under F1, and F2's the same (D-76)"))
-    for pid in ("F-DL", "F-DR", "F-DT"):
-        pt = base[pid]
-        L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status,
-                  "this study's model from v1's STEP shapes (S02)"))
+    for pid, b, extra in (("F-DL", "DL", "; the door's 3 hinges are in the door unit's line, the 2 mm back plate takes "
+                                        "J-FRONT-01's rivnuts"),
+                          ("F-DR", "DR", "; AIR's riser, transitions and supply fan box are reserved air spaces in it with no "
+                                         "mass, counted in AIR's lines (PM ruling 2026-11-01); the fixed glass's right and "
+                                         "diagonal channels, fitted in it, are in the fixed glass unit's line"),
+                          ("F-DT", "DT", "; with the door's magnetic catch 368007 and the top stop")):
+        pt, dc = base[pid], FRONT_DECOR[b]
+        L.append(("FRONT", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, dc["unit"], "calculation (CAD)",
+                  f"S51, CAD on main: FRONT parts list {dc['pn']} P01: skin {dc['skin']:.3f}, welded frame "
+                  f"{dc['frame']:.3f} ({dc['tubes']} tubes), plates, stops and seals {dc['unit'] - dc['skin'] - dc['frame']:.3f}"
+                  + extra))
     fd = FRONT_DOOR
     L.append(("FRONT", "Door unit 360001: 4+4 leaf, hollow kick strip, drop seal, hinges, strike, magnetic seal, pull", 1,
               fd["unit"] + (0.0 if a["kick"] else KICK_KG - fd["kick"]), "calculation (CAD); hinges and pull HOLD",
@@ -470,29 +689,34 @@ def lines(**adopt):
     L.append(("FRONT", "Fixed glass unit 360002: 4+4 pane, U-profile, U-seal and magnetic seal half", 1, FRONT_FIXED["unit"],
               "calculation (CAD); magnetic seal HOLD", f"S37, CAD on main: FRONT parts list 360002 P01: pane "
               f"{FRONT_FIXED['pane']:.3f}, U-profile, U-seal and one half of the magnetic seal (D-83)"))
-    for name, size, kg, basis in AA.d60_parts():
+    for name, kg, status, source in air_parts(fill):
         filled = lighter and (name.startswith("Air column") or name.startswith("Soffit"))
         loose = name.startswith("Intake riser") or name.startswith("Supply fan box")
-        L.append(("AIR", name + ("; ships loose, fitted on site" if loose else ""), 1,
-                  kg - (air_fill_delta_kg(fill) if filled else 0.0), "calculation" + ("; fill provisional" if filled else ""),
-                  "S38: " + basis + (f"; fill {fill:g} kg/m3" if filled else "")
-                  + ("; goes into the right block through its removable inner face (D-59), so the block ships at 20 kg "
-                     "or less (D-03)" if loose else "")))
-    L.append(("AIR", "Four 12 V fans", 1, AA.fans_kg(), "assumption", "S38: 0.3 kg each until the sample is weighed"))
+        L.append(("AIR", name + ("; ships loose, fitted on site" if loose else ""), 1, kg,
+                  status + ("; fill provisional" if filled else ""),
+                  source + ("; goes into the right block through its removable inner face (D-59), so the block ships at "
+                            "20 kg or less (D-03)" if loose else "")))
+    L.append(("AIR", "Four 12 V fans", 1, 4 * AIR["kg"]["618401"], "assumption",
+              "S52: AIR parts list 618401 x 4, 0.3 kg each until the sample is weighed"))
     pt = base["K-SEALS"]
-    L.append(("BASE", pt.name.split(" - ", 1)[1].capitalize(), pt.qty, pt.kg, pt.status, "this study's model"))
+    L.append(("BASE", "Base seal and cable grommets", pt.qty, pt.kg - p("door_edge_seal_kg"), pt.status,
+              f"this study's model (S20): the seal under the floor and band and the sealed cable holes; its "
+              f"{p('door_edge_seal_kg'):.1f} kg of door edge seals is in FRONT's parts lists now (the frame-stop seals in DL "
+              "and DT, the magnetic seal pair on the door and the fixed glass), so it isn't counted again (PM ruling "
+              "2026-11-01)"))
     el = ELEC
     L.append(("ELECTRICAL", "Switches and harness, power unit, cord set, hub zone and lights (ELECTRICAL)", 1, el["total"],
               "calculation (CAD)", f"S43, CAD on main: ELECTRICAL parts list 710000 P01: the power unit in B2 "
               f"{el['power_unit']:.2f}, the hub and controls zone {el['hub']:.2f}, the cord set {el['cord']:.2f}, the harnesses, "
               f"cables and connectors, and the lights ({el['strip_m']:.2f} m of shelf and down-light strip, the call light). "
-              "The light shelf's strip is counted here only"))
+              "The light shelf's strip is counted here only; the down-light profile parts listed under INTERIOR's shelf "
+              "are in the shelf's line (S53)"))
     it = INTERIOR
     strip = el["strip_kgm"] * shelf_m()                     # the shelf uplight's LED strip, in ELECTRICAL's line (S43)
     if a["budgets"]:
         L.append(("INTERIOR", "Light shelf along the side and back wall tops (its LED strip is in ELECTRICAL's line)", 1,
                   it["shelf"], "calculation (CAD)", "S46, CAD on main: INTERIOR parts list 810201 P01: the back and side "
-                  "shelves, the right-wall down-light channel and its diffuser; the LED strips are in ELECTRICAL's line"))
+                  "shelves" + (", " + shelf_note() if shelf_note() else "") + "; the LED strips are in ELECTRICAL's line"))
         L.append(("INTERIOR", "Work-wall ledge, 1000 mm, with the screen rail", 1, it["ledge"] + it["rail"],
                   "calculation (CAD); brackets and screen rail HOLD",
                   f"S46, CAD on main: INTERIOR parts list 810101 P01, the ledge and its 2 brackets ({it['ledge']:.3f}), and "
@@ -507,13 +731,13 @@ def lines(**adopt):
     (ns, ks), (nw, kw) = JOINTS["831001"], JOINTS["831002"]
     rc = register_counts()
     L.append(("WALL", "M6 bolts, rivnuts, washers, retainers, joint gaskets and seals, spigots and stop washers, frame cleats", 1,
-              fixings_kg() + ns * ks + nw * kw + CLEATS_N * CLEAT_KG, "calculation (part CAD); cleats assumption",
+              fixings_kg() + ns * ks + nw * kw + CLEATS_KG, "calculation (part CAD); cleats assumption",
               f"part CAD on main: the joints register's counts (S48: {rc['838001']:.0f} M6 x 16 and {rc['838002']:.0f} M6 x 25 "
               f"bolts, {rc['838003']:.0f} rivnuts, {rc['838004']:.0f} washers, {rc['838005']:.0f} retainers, {rc['848001']:g} m of "
               f"joint gasket, {rc['848004']:g} m of closing-seam seal) at the parts lists' masses ({fixings_kg():.2f} kg, D-116); "
               f"{ns} spigots and {nw} stop washers from the joints' made hardware list ({ns * ks + nw * kw:.2f} kg, S45); and a "
-              f"{CLEATS_N * CLEAT_KG:.1f} kg allowance for about {CLEATS_N} internal frame cleats at up to "
-              f"{CLEAT_KG * 1000:.0f} g (D-115, S47) until their models land"))
+              f"{CLEATS_KG:.1f} kg allowance for the internal frame cleats with their glue, 14.9 g corner cleats and "
+              f"6.7 g T plugs (D-117, S49), until their models land"))
     pt = base["E-VOICE-RESERVE"]
     if a["kit_outside"]:
         L.append(("LATER", "Voice cockpit kit reserve, outside the 420 kg cap", 1, pt.kg, pt.status,
@@ -549,6 +773,8 @@ def cad_swaps():
                   - 3 * P04["side_up_h"] * 1e-3 * (kgm12 - kgm10))
     hu = P04["side_cass_up_h"]
     up_est = final_leaf_kg(w, hu) - p("leaf_clip_kgm2") * w * hu * 1e-6 + LIP_KG
+    bw, bh = P04["back_cass_w"], P04["back_cass_lo_h"]
+    cb_est = final_leaf_kg(bw, bh) - p("leaf_clip_kgm2") * bw * bh * 1e-6 + LIP_KG
     return [("L1 and R1, lower side outer panels", 2, l1_est, rows["L1 and R1, lower side outer panels"][3],
              "WALL 210101 and 210102 P01, PRs #41 and #104"),
             ("L2 and R2, upper side outer panels", 2, l2_est, rows["L2 and R2, upper side outer panels"][3],
@@ -556,10 +782,22 @@ def cad_swaps():
             ("Wall cassette, side, lower", 2, cass_est, rows["Wall cassette, side, lower"][3],
              "WALL 510101 and 510102 P01, PRs #41 and #104"),
             ("Wall cassette, side, upper", 2, up_est, rows["Wall cassette, side, upper"][3], "WALL 510103 and 510104 P01, PR #104"),
+            ("B1 and B2, lower back outer panels", 2, back_est_kg(FILL_LIGHT, kgm12, kgm10, BACK_STUDS),
+             sum(back_cad_kg(n, FILL_LIGHT, kgm10, BACK_STUDS) for n in (1, 2)) / 2, "WALL 210201 and 210202 P01, PR #152"),
+            ("Wall cassette, back, lower", 2, cb_est, rows["Wall cassette, back, lower"][3],
+             "WALL 510201 and 510202 P01, PR #152"),
             ("Door unit 360001", 1, DOOR_UNIT_DRAFT - (KICK_KG - KICK_KG_HOLLOW), door[3],
              "FRONT 360001 P01, PR #27 (the estimate: its first list with D-85's 1.0 kg kick strip)"),
             ("Fixed glass unit 360002", 1, FIXED_UNIT_DRAFT, FRONT_FIXED["unit"],
              "FRONT 360002 P01, PR #28 (the estimate: its first list)"),
+            ("Decor block DL, left", 1, base_parts_kg("F-DL"), FRONT_DECOR["DL"]["unit"],
+             "FRONT 350001 P01, PR #105 (the estimate: this study's model from v1's shapes)"),
+            ("Decor block DR, right", 1, base_parts_kg("F-DR"), FRONT_DECOR["DR"]["unit"],
+             "FRONT 350003 P01, PR #105 (the estimate: this study's model from v1's shapes)"),
+            ("Decor block DT, top", 1, base_parts_kg("F-DT"), FRONT_DECOR["DT"]["unit"],
+             "FRONT 350002 P01, PR #105 (the estimate: this study's model from v1's shapes)"),
+            ("Door edge seals on 3 sides, in the seal kit", 1, p("door_edge_seal_kg"), 0.0,
+             "now in FRONT 350001, 350002, 360001 and 360002 P01 (PR #105; PM ruling 2026-11-01)"),
             ("Ceiling outer panels C1 and C2", 2, CEIL_PANEL + p("bond_kgm2") * P04["ceil_w"] * P04["wall_depth"] * 1e-6,
              (CEILING["c1"] + CEILING["c2"]) / 2, "CEILING 410101 and 410102 P01, PR #32 (the estimate: its first list)"),
             ("Ceiling cassettes", 2, CEIL_CASS - CEIL_FILL_M2 * (p("fill_pet_kgm3") - FILL_LIGHT) * P04["frame_d"] * 1e-3,
@@ -571,7 +809,8 @@ def cad_swaps():
              "connectors that no longer exist and gasket at 60 g/m"),
             ("Light shelf (its LED strip in ELECTRICAL's line)", 1,
              SHELF_KGM * shelf_m() + SHELF_BRACKETS_KG - ELEC_LIGHTS_KG * shelf_m() / (shelf_m() + CALL_LIGHT_M),
-             INTERIOR["shelf"], "INTERIOR 810201 P01, PR #92 (the estimate: D-85's budget less the strip share)"),
+             INTERIOR["shelf"], "INTERIOR 810201 P01, PR #92" + (", " + shelf_note() if shelf_note() else "")
+             + " (the estimate: D-85's budget less the strip share)"),
             ("Work-wall ledge", 1, LEDGE_KG, INTERIOR["ledge"], "INTERIOR 810101 P01, PR #92 (the estimate: D-85's budget)"),
             ("Screen rail (not in the estimate)", 1, 0.0, INTERIOR["rail"], "INTERIOR 818102 P01, HOLD, PR #92")] + base_swaps()
 
@@ -650,12 +889,6 @@ def col_soffit_faces_m2():
     return ((cx1 - cx0 + cy1 - cy0) * (cz1 - cz0) + (sy1 - sy0 + sz1 - sz0) * (sx1 - sx0)) * 1e-6
 
 
-def decor_tube_kg():
-    """The three decor blocks' frame tube in this study's model (v1's steel layout in the final aluminium section)."""
-    from v2_model import decor_kg, decor_skin_area
-    return sum(decor_kg(b, FINAL) - decor_skin_area(b) * p("acp3_kgm2") - 4 * 0.05 for b in ("DL", "DR", "DT"))
-
-
 def perimeter_saving_kg():
     """The 20 x 40 perimeter members of the wall and ceiling outer panels at T_STUD_LIGHT instead of 1.2 mm (rejected)."""
     P = P04
@@ -667,9 +900,6 @@ def parked():
     """The candidates D-85 parks: (kg, what, what settles it, owner)."""
     felt_m2 = sum(cassette_faces_m2()) + col_soffit_faces_m2()
     return [
-        (DECOR_TUBE_CUT * decor_tube_kg(), f"Decor block frames lighter than v1's steel layout ({decor_tube_kg():.1f} kg of "
-         "tube in this study's model; a quarter of it, assumption)", "FRONT's CAD; the right block carries the riser and the "
-         "fan box", "FRONT"),
         (pod_kg(lines()) - pod_kg(lines(fill=FILL_LIGHTER)), f"Cavity fill at {FILL_LIGHTER:g} kg/m3 instead of "
          f"{FILL_LIGHT:g}", "the wall sample: no published absorption, and it may slump in the upright panels",
          "WALL, CEILING"),
@@ -715,7 +945,8 @@ def rollup_md(rows):
     ap, op = applied(), parked()
     model_l1 = final_outer_kg(P04["side_w"], P04["side_h"], P04["frame_d"], FINAL)
     shipped = [r for r in rows if r[0] != "LATER" and "glass" not in r[1].lower() and "door unit" not in r[1].lower()]
-    heavy = max(shipped, key=lambda r: r[3])
+    ship_kg = lambda r: r[3] + (dr_channels_kg() if r[1].startswith("Decor block - right") else 0.0)  # DR with its channels
+    heavy = max(shipped, key=ship_kg)
     loose = sum(r[3] for r in rows if r[0] == "AIR" and (r[1].startswith("Intake riser") or r[1].startswith("Supply fan box")))
     gap = lambda x: f"{abs(x):.1f} kg {'over' if x > 0 else 'under'}"
     md = []
@@ -728,8 +959,8 @@ def rollup_md(rows):
               "moves (see the end).")
     md.append("")
     md.append("- **Basis.** This study's decided build on skeleton P03, recounted on P04 with tonight's numbers: the teams' CAD "
-              "masses where they exist (CEILING PR #32, FRONT PRs #27 and #28, WALL's L1), D-60's air parts as sized (the air "
-              "report), the PM's adopted savings (D-81, D-85), budgets and allowances for parts not designed yet, and this "
+              "masses where they exist (the next section lists them; AIR's with the changes its follow-up builds), "
+              "the PM's adopted savings (D-81, D-85), budgets and allowances for parts not designed yet, and this "
               "study's model at P04's sizes "
               "for the rest. Every line has its status and source below and in `out/parts-decided-P04.csv`.")
     md.append(f"- **Cross-check.** This study's model gives L1 {model_l1:.2f} kg at the P04 size with 32 kg/m3 fill and 1.2 mm "
@@ -737,22 +968,24 @@ def rollup_md(rows):
               f"24 kg/m3 fill and 1.0 mm mid stiles.")
     nm = heavy[1].split(",")[0]
     nm = nm.split(" - ")[1] + " decor block" if nm.startswith("Decor block - ") else nm.lower()
-    dr = base_parts_kg("F-DR")
-    fan2 = AA.fans_kg() / 2
+    dr = FRONT_DECOR["DR"]["unit"]
+    dr_ship = dr + dr_channels_kg()
+    fan2 = 2 * AIR["kg"]["618401"]
     sof = sum(r[3] for r in rows if r[0] == "AIR" and (r[1].startswith("Soffit") or r[1].startswith("Exhaust fan box")))
     md.append(f"- **20 kg rule (D-03).** The intake riser joined to the supply fan box with its two fans "
               f"({loose + fan2:.1f} kg, D-87) ships loose and goes into the right decor block on site through its removable "
-              f"inner face (D-59), so the block ships at {dr:.1f} kg; fitted in the factory it would be about "
-              f"{dr + loose + fan2:.0f} kg, over the rule. The soffit ships with its exhaust fan box and fans fitted "
+              f"inner face (D-59), so the block ships at {dr_ship:.1f} kg ({dr:.2f} kg from its CAD, S51, and "
+              f"{dr_ship - dr:.2f} kg of the fixed glass's right and diagonal channels fitted in it); fitted in the factory it "
+              f"would be about {dr_ship + loose + fan2:.0f} kg, over the rule. The soffit ships with its exhaust fan box and fans fitted "
               f"({sof + fan2:.1f} kg, D-87), and B2 with the power unit inside at about 11.9 kg (ELECTRICAL, S43). The "
-              f"heaviest piece apart from the glass is the {nm} at {heavy[3]:.1f} kg; the door unit and the fixed glass unit "
-              "are glass and exempt.")
+              f"heaviest piece apart from the glass is the {nm} at {ship_kg(heavy):.1f} kg as shipped, against D-108's 19.0 kg "
+              "for the right block; the door unit and the fixed glass unit are glass and exempt.")
     allow = {r[1].split(",")[0].split(" along")[0]: r[2] * r[3] for r in rows
              if "Light shelf" in r[1] or "ledge" in r[1] or "Named clips" in r[1]}
     md.append(f"- **Interior and allowances.** The light shelf ({allow['Light shelf']:.1f} kg) and the work-wall ledge with "
               f"the screen rail ({allow['Work-wall ledge']:.1f} kg) are INTERIOR's CAD (D-70, D-85); the named clips "
               f"({allow['Named clips and catches: 44 clips and 4 catch lanyards']:.1f} kg) stay an allowance (assumption) until "
-              f"they're named, and so do the WALL and CEILING frames' internal cleats ({CLEATS_N * CLEAT_KG:.1f} kg, D-115), "
+              f"they're named, and so do the WALL and CEILING frames' internal cleats ({CLEATS_KG:.1f} kg with their glue, D-117), "
               f"carried on the fixings kit's line; the two ceiling lights go (D-70), {2 * p('light_kg'):.1f} kg less.")
     md.append("")
     md.append("| Assembly | kg |")
@@ -802,7 +1035,8 @@ def rollup_md(rows):
     md.append("## Parked (D-85)")
     md.append("")
     md.append(f"{gap(tot - TARGET_KG).capitalize()} the {TARGET_KG:.0f} kg target, which stays (D-85). The wall sample "
-              "settles the fill and the felt; FRONT's CAD settles the decor frames. Each keeps the look and the sound targets.")
+              "settles the fill and the felt (FRONT's CAD settled the decor frames, PR #105). Each keeps the look and the "
+              "sound targets.")
     md.append("")
     md.append("| Saves kg | What changes | What settles it | Owner |")
     md.append("|---:|---|---|---|")
@@ -821,12 +1055,14 @@ def rollup_md(rows):
               "change reaches it on the next run. The linings and the floor panels aren't named in the skeleton and come from "
               "its build record. The 13 mm threshold profile and the bolt counts (86 in the joints register) follow BASE's CAD "
               "and the register.")
-    md.append("- **Each part PR that merges:** its CAD masses replace this study's model masses line by line (today the walls "
-              "other than L1, the base, the decor blocks and the kits are still model masses). The fixings kit is this study's 78 "
-              "bolts and 38 cam connectors; the joints register (PR #23) has 82 bolts, 102 rivnuts and no cams, so the kit "
-              "is recounted once the register gives masses.")
+    md.append("- **Each part PR that merges:** its CAD masses replace this study's model masses line by line (the table of "
+              "CAD masses above lists those already in; B3 and B4 and the upper back cassettes and a few allowances are "
+              "still estimates; AIR's lines carry the changes its follow-up builds). The fixings kit counts the joints register's hardware at the parts lists' "
+              "masses (D-116), so it follows the register.")
+    d60 = AA.d60_paths()
     md.append(f"- **BASE's support behind the intake mesh:** if it leaves less than {AA.D60_FREE['intake']:.3f} m2 free, the air "
-              "report re-runs the fan noise (25.3 / 29.7 dB(A) now).")
+              f"report re-runs the fan noise ({AA.layout_noise12(d60, 53.0)[2]:.1f} / {AA.layout_noise12(d60, 65.0)[2]:.1f} "
+              "dB(A) at 53 / 65 l/s now).")
     md.append("- **D-83:** a 35 N magnetic catch in DT and a magnetic seal pair on the glass edges replace the door lock "
               "(0.84 kg in FRONT's door unit); the door line follows FRONT's CAD.")
     md.append("- **The tests:** T02 (fill), T07 (clips), T10 (weights) and the castor and edge tests on the floor sample "

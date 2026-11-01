@@ -23,7 +23,7 @@ def step(rel, **extra):
     ns = {"__name__": "__fusion_step__", "__file__": path, "SCRIPT_ARGS": dict(ARGS, **extra)}
     with open(path, "r", encoding="utf-8") as fh:
         exec(compile(fh.read(), path, "exec"), ns)
-    print("== %s" % rel)
+    print("== %s (file %s)" % (rel, os.path.realpath(path)))     # helpers by full path, never by module name
     ns["run"](None)
 
 

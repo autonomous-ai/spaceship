@@ -13,6 +13,7 @@ text test can't see symbols drawn as lines (the first-angle symbol); those
 are noted, not failed.
 """
 
+import math
 import os
 import re
 import shutil
@@ -20,6 +21,7 @@ import subprocess
 
 from common import Finding, owner_for, rel, walk_files, parse_file_name, pn_class, is_soft
 import dxf_layers
+import stepfile as sf
 
 
 def pdf_text(path):
@@ -184,6 +186,456 @@ def cut_list_lacks(root, pn, thickness=False):
                 if best is None or len(lacks) + len(feats) < len(best[0]) + len(best[2]):
                     best = (lacks, rel(root, p), feats)
     return best
+
+
+# D-125 (PM, 2026-11-01), extending D-89: a plain straight-cut strip or sheet with no features passes on a full
+# parts-list line instead of a drawing: material and grade, thickness, length, width, finish and tolerance.
+def cuboid_sides(solid):
+    """The three sides of a body that is a plain rectangular block (six flat faces in three square pairs, no holes,
+    no bends), smallest first; None for any other shape."""
+    fs = solid.faces
+    if len(fs) != 6 or any(f.kind != "plane" for f in fs) or solid.holes or solid.bends:
+        return None
+    dirs = []
+    for f in fs:
+        if not any(abs(abs(sum(a * b for a, b in zip(f.normal, d))) - 1.0) < 1e-6 for d in dirs):
+            dirs.append(f.normal)
+    if len(dirs) != 3 or any(abs(sum(a * b for a, b in zip(dirs[i], dirs[j]))) > 1e-6
+                             for i in range(3) for j in range(i + 1, 3)):
+        return None
+    pts = list(solid.points())
+    if not pts:
+        return None
+    sides = [max(sum(a * b for a, b in zip(p, d)) for p in pts) - min(sum(a * b for a, b in zip(p, d)) for p in pts)
+             for d in dirs]
+    return tuple(round(x, 3) for x in sorted(sides))
+
+
+def is_strip(sides):
+    """A strip or sheet rather than a block or a bar: thin, at most 25 mm and half its width (as flat_plate reads a
+    sheet)."""
+    return bool(sides) and sides[0] <= 25.0 and sides[0] <= 0.5 * sides[1]
+
+
+def strip_sides(step_paths, load=None):
+    """D-125's per-part strip list: part number -> the three sides (smallest first) of its one shape, for each part
+    whose bodies, across all the given STEP files, have a single shape (body_shape: copies and the same part in a
+    second file count once) and that shape is a plain rectangular block thin enough to be a strip or sheet
+    (cuboid_sides, is_strip). A part with two or more shapes, a thick block or a bar, or any other shape is left
+    out. load: path -> a parsed STEP (stepfile.StepFile when not given). The release checklist calls this rather
+    than copying it: keep its name and arguments."""
+    if load is None:
+        import stepfile
+        load = stepfile.StepFile
+    shapes = {}
+    for p in step_paths:
+        s = load(p)
+        for inst in s.instances():
+            so = s.solid(inst["solid"])
+            shapes.setdefault(inst["part_number"], {}).setdefault(body_shape(so), so)
+    out = {}
+    for pn, by_shape in shapes.items():
+        if len(by_shape) != 1:
+            continue
+        sides = cuboid_sides(next(iter(by_shape.values())))
+        if is_strip(sides):
+            out[pn] = sides
+    return out
+
+
+PLUS_MINUS = re.compile(r"±|\+\s*/\s*-|\+\s*\d+(?:\.\d+)?\s*/\s*-?\s*\d")    # ±0.5, +/-1, +0/-0.5, +0.10/0
+
+
+def tolerance_cover(tolerance_texts, row_texts):
+    """D-125 (PM, 2026-11-01): which cut sizes, of 'length' and 'width', a parts-list line's tolerance covers. One
+    general tolerance covers both (ISO 2768, or a ± on the cut sizes, all sizes, or no size named); otherwise each
+    takes its own (a ± naming the length or the width). A bought strip whose width comes from the supplier says
+    "width as supplied" anywhere in its line. A ± on the thickness, bends, angles, holes or flatness covers neither;
+    the thickness takes the sheet's own tolerance, as its grade names it."""
+    cover = set()
+    if any(re.search(r"\bwidth\s+as\s+supplied\b", t or "", re.I) for t in row_texts):
+        cover.add("width")
+    for text in tolerance_texts:
+        for clause in re.split(r"[;,]", text or ""):
+            if re.search(r"ISO\s*2768", clause, re.I):
+                cover |= {"length", "width"}
+                continue
+            if not PLUS_MINUS.search(clause):
+                continue
+            named = False
+            if re.search(r"\blength|\blong\b", clause, re.I):
+                cover.add("length")
+                named = True
+            if re.search(r"\bwidth|\bwide\b", clause, re.I):
+                cover.add("width")
+                named = True
+            if not named and not re.search(r"thick|\bbent\b|\bbend|angle|°|hole|position|flat|square", clause, re.I):
+                cover |= {"length", "width"}          # on the cut sizes, all sizes, or no size named
+    return cover
+
+
+def strip_row_lacks(root, pn, sides):
+    """D-125: None when no list has a row for pn; else (what the most complete row lacks, its file). A full row
+    gives the material with its grade (a grade on HOLD counts as stated, as C11 holds such rows; the part stays HOLD
+    until the grade is named), the thickness, width and length as in the STEP, the finish, a tolerance covering both
+    cut sizes (tolerance_cover), and names no feature (hole, slot, notch, pocket, cut-out). Any .csv under
+    v2/03-Manufacturing or v2/02-Drawings counts, as for D-89. The release checklist calls this function (and
+    cuboid_sides, is_strip) rather than copying it: keep their names and arguments."""
+    from common import read_csv
+    from c_parts import GRADE_HINT, VAGUE_FINISH
+    best = None
+    for top in ("v2/03-Manufacturing", "v2/02-Drawings"):
+        for p in walk_files(root, top, exts=(".csv",)):
+            for row in read_csv(p):
+                if not any((v or "").strip() == pn for v in row.values() if isinstance(v, str)):
+                    continue
+                lacks = []
+                mat = " ".join(v for _k, v in _cell(row, r"material|grade"))
+                if not mat:
+                    lacks.append("material")
+                elif not (GRADE_HINT.search(mat) or re.search(r"\b(?:grade|alloy)\b\s*:?\s*\w", mat, re.I)):
+                    lacks.append("the material's grade")
+                nums = [float(x) for _k, v in _cell(row, r"size|dimension|length|width|thick|^[lwt]_?mm$")
+                        for x in re.findall(r"\d+(?:\.\d+)?", v)]
+                if any(not any(abs(n - x) <= max(0.1, 0.002 * x) for n in nums) for x in sides):
+                    lacks.append("thickness, width and length as in its STEP (%s mm)" % " x ".join("%g" % x for x in sides))
+                fin = " ".join(v for _k, v in _cell(row, r"finish"))
+                if not fin or VAGUE_FINISH.search(fin):
+                    lacks.append("finish")
+                texts = [v for v in row.values() if isinstance(v, str)]
+                tols = [v for _k, v in _cell(row, r"tol")] + [v for v in texts if PLUS_MINUS.search(v)]
+                missing = [x for x in ("length", "width") if x not in tolerance_cover(tols, texts)]
+                if missing:
+                    lacks.append("a tolerance on the %s (one general tolerance on the cut sizes, such as ISO 2768-m "
+                                 "or '±0.5 on cut sizes', or one for each; 'width as supplied' for a bought strip)"
+                                 % " and the ".join(missing))
+                feats = sorted({m.group(0).lower() for v in row.values() if isinstance(v, str)
+                                for m in FEATURE_WORDS.finditer(v)})
+                if feats:
+                    lacks.append("a plain piece (its row names %s)" % " and ".join(feats))
+                if best is None or len(lacks) < len(best[0]):
+                    best = (lacks, rel(root, p))
+    return best
+
+
+# D-128 (PM, 2026-11-01), extending D-89 part (3): a felt or fill piece cut from sheet or roll, with through-openings
+# or edge notches only, needs no drawing when its DXF gives the full outline with every opening and its parts-list row
+# gives material, density or grade, thickness, tolerance and part number. A pocket or any other depth feature keeps the
+# drawing. The release checklist calls prism_shapes and felt_dxf_lacks rather than copying them: keep their names and
+# arguments.
+def _d(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+
+def prism_shape(solid):
+    """D-128: a body cut from sheet or roll with through features only. Two flat faces at the sheet's two levels;
+    every other face square to them (flat walls, or round ones whose axis runs along the sheet's normal). Returns
+    ({'thickness', 'sides', 'loops'}, '') or (None, why)."""
+    planes = [f for f in solid.faces if f.kind == "plane"]
+    pts = list(solid.points())
+    if not planes or not pts:
+        return None, "its STEP has no flat faces"
+    dirs = []
+    for f in planes:
+        if not any(abs(abs(_d(f.normal, d)) - 1.0) < 1e-6 for d in dirs):
+            dirs.append(f.normal)
+    def extent(d):
+        v = [_d(p, d) for p in pts]
+        return max(v) - min(v), min(v), max(v)
+    n = min(dirs, key=lambda d: extent(d)[0])
+    t, lo, hi = extent(n)
+    top = []
+    for f in solid.faces:
+        if f.kind == "plane":
+            c = abs(_d(f.normal, n))
+            if c > 1 - 1e-6:
+                lvl = _d(f.origin, n)
+                if abs(lvl - lo) < 0.01 or abs(lvl - hi) < 0.01:
+                    if abs(lvl - hi) < 0.01:
+                        top.append(f)
+                    continue
+                return None, "a face sits between the sheet's two faces (a pocket or a step)"
+            if c > 1e-4:
+                return None, "a face sits at an angle to the sheet (a chamfer or bevel)"
+        elif f.kind == "cylinder":
+            if abs(abs(_d(f.normal, n)) - 1.0) > 1e-4:
+                return None, "a round face runs across the sheet"
+        else:
+            return None, "a %s face (not a straight through-cut)" % f.kind
+    if not top:
+        return None, "no face at the sheet's top level"
+    # the top face's closed boundaries: the outline and each opening
+    edges = []
+    for f in top:
+        for a, b in f.lines:
+            edges.append((a, b))
+        for arc in f.arcs:
+            edges.append((arc[2], arc[3]))
+    key = lambda p: tuple(round(x, 2) for x in p)
+    count = {}
+    for a, b in edges:
+        k = frozenset((key(a), key(b)))
+        count[k] = count.get(k, 0) + 1
+    edges = [(a, b) for a, b in edges if count[frozenset((key(a), key(b)))] == 1 or key(a) == key(b)]
+    parent = {}
+    def find(x):
+        while parent.setdefault(x, x) != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+    for a, b in edges:
+        parent[find(key(a))] = find(key(b))
+    loops = len({find(key(a)) for a, _b in edges})
+    # the outline's two sides: along the longest straight edge in the top face, and across it
+    longest = max((e for f in top for e in f.lines), key=lambda e: math.dist(*e), default=None)
+    if longest is None:
+        return None, "the sheet face has no straight edge"
+    d1 = sf.norm(sf._sub(longest[1], longest[0]))
+    d2 = sf.norm(sf.cross(n, d1))
+    s1 = extent(d1)[0]
+    s2 = extent(d2)[0]
+    return {"thickness": round(t, 3), "sides": tuple(round(x, 2) for x in sorted((s1, s2))), "loops": loops}, ""
+
+
+def prism_shapes(step_paths, load=None):
+    """D-128's per-part shapes: part number -> (prism_shape's dict, '') when its bodies, across all the given STEP
+    files, have one shape (body_shape) cut straight through from sheet or roll, or (None, why) for one shape that
+    isn't, or (None, 'two or more shapes') for more. load: path -> a parsed STEP (stepfile.StepFile when not given)."""
+    if load is None:
+        import stepfile
+        load = stepfile.StepFile
+    shapes = {}
+    for p in step_paths:
+        s = load(p)
+        for inst in s.instances():
+            so = s.solid(inst["solid"])
+            shapes.setdefault(inst["part_number"], {}).setdefault(body_shape(so), so)
+    out = {}
+    for pn, by_shape in shapes.items():
+        out[pn] = prism_shape(next(iter(by_shape.values()))) if len(by_shape) == 1 else \
+            (None, "its STEP holds two or more shapes under this number")
+    return out
+
+
+UNITS = {"0": 1.0, "1": 25.4, "4": 1.0, "5": 10.0, "6": 1000.0}
+
+
+def _records(pairs):
+    """[(section, block name or None, record type, [(code, value), ...])] for every record of a DXF."""
+    out, sec, blk, cur, want_sec, want_blk = [], None, None, None, False, False
+    for c, v in pairs:
+        if c == "0":
+            if cur is not None:
+                out.append(cur)
+                cur = None
+            if v == "SECTION":
+                want_sec = True
+            elif v == "ENDSEC":
+                sec = None
+            elif v == "EOF":
+                break
+            elif sec == "BLOCKS" and v == "BLOCK":
+                want_blk = True
+            elif sec == "BLOCKS" and v == "ENDBLK":
+                blk = None
+            elif sec in ("ENTITIES", "BLOCKS"):
+                cur = (sec, blk, v, [])
+            continue
+        if want_sec and c == "2":
+            sec, want_sec = v.upper(), False
+        elif want_blk and c == "2":
+            blk, want_blk = v, False
+        elif cur is not None:
+            cur[3].append((c, v))
+    if cur is not None:
+        out.append(cur)
+    return out
+
+
+def _entities(records):
+    """The drawn entities of the ENTITIES section and of each block, a POLYLINE with its VERTEX records."""
+    ents, blocks, i = [], {}, 0
+    while i < len(records):
+        sec, blk, typ, g = records[i]
+        i += 1
+        if typ in ("VERTEX", "SEQEND"):
+            continue
+        e = {"type": typ, "g": dict(g), "seq": g, "verts": []}
+        if typ == "POLYLINE":
+            while i < len(records) and records[i][2] == "VERTEX":
+                e["verts"].append(dict(records[i][3]))
+                i += 1
+            if i < len(records) and records[i][2] == "SEQEND":
+                i += 1
+        (blocks.setdefault(blk, []) if sec == "BLOCKS" and blk else ents).append(e)
+    return ents, blocks
+
+
+def dxf_shapes(path):
+    """The closed shapes a DXF draws, without a library: only what the drawing places (its ENTITIES and the blocks an
+    INSERT places, nested), as D-89 reads a DXF. {'loops', 'open', 'size': (w, L) of everything drawn, in mm}."""
+    text = open(path, encoding="utf-8", errors="replace").read()
+    lines = text.splitlines()
+    pairs = [(lines[i].strip(), lines[i + 1].strip()) for i in range(0, len(lines) - 1, 2)]
+    units = next((pairs[k + 1][1] for k, (c, v) in enumerate(pairs[:-1]) if c == "9" and v == "$INSUNITS"), None)
+    ents, blocks = _entities(_records(pairs))
+    scale = UNITS.get(units or "0", 1.0)
+    segs, pts = [], []
+    loops = 0
+    def num(g, c, dflt=0.0):
+        try:
+            return float(g.get(c, dflt))
+        except ValueError:
+            return dflt
+    def emit(items, tf, depth=0):
+        nonlocal loops
+        for e in items:
+            g, typ = e["g"], e["type"]
+            if typ == "CIRCLE":
+                cx, cy = tf(num(g, "10"), num(g, "20"))
+                r = num(g, "40") * tf.s
+                pts.extend([(cx - r, cy - r), (cx + r, cy + r)])
+                loops += 1
+            elif typ == "LINE":
+                a, b = tf(num(g, "10"), num(g, "20")), tf(num(g, "11"), num(g, "21"))
+                segs.append((a, b))
+                pts.extend([a, b])
+            elif typ == "ARC":
+                cx, cy, r = num(g, "10"), num(g, "20"), num(g, "40")
+                a0, a1 = math.radians(num(g, "50")), math.radians(num(g, "51"))
+                if a1 <= a0:
+                    a1 += 2 * math.pi
+                ps = [tf(cx + r * math.cos(a0 + (a1 - a0) * i / 16), cy + r * math.sin(a0 + (a1 - a0) * i / 16))
+                      for i in range(17)]
+                segs.append((ps[0], ps[-1]))
+                pts.extend(ps)
+            elif typ in ("POLYLINE", "LWPOLYLINE"):
+                if typ == "POLYLINE":
+                    vs = [tf(num(x, "10"), num(x, "20")) for x in e["verts"]]
+                else:
+                    xs = [float(v) for c, v in e["seq"] if c == "10"]
+                    ys = [float(v) for c, v in e["seq"] if c == "20"]
+                    vs = [tf(x, y) for x, y in zip(xs, ys)]
+                pts.extend(vs)
+                if vs and (int(num(g, "70")) & 1 or (len(vs) > 2 and math.dist(vs[0], vs[-1]) < 1e-6)):
+                    loops += 1
+                else:
+                    segs.extend(zip(vs, vs[1:]))
+            elif typ == "INSERT" and depth < 8:
+                bx, by = num(g, "10"), num(g, "20")
+                sx, sy = num(g, "41", 1.0), num(g, "42", 1.0)
+                rot = math.radians(num(g, "50"))
+                def sub(x, y, tf=tf, bx=bx, by=by, sx=sx, sy=sy, rot=rot):
+                    x, y = x * sx, y * sy
+                    return tf(bx + x * math.cos(rot) - y * math.sin(rot), by + x * math.sin(rot) + y * math.cos(rot))
+                sub.s = tf.s * abs(sx)
+                emit(blocks.get(g.get("2", ""), []), sub, depth + 1)
+    def base(x, y):
+        return (x * scale, y * scale)
+    base.s = scale
+    emit(ents, base)
+    key = lambda p: (round(p[0], 2), round(p[1], 2))
+    deg, parent = {}, {}
+    def find(x):
+        while parent.setdefault(x, x) != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+    for a, b in segs:
+        ka, kb = key(a), key(b)
+        deg[ka] = deg.get(ka, 0) + 1
+        deg[kb] = deg.get(kb, 0) + 1
+        parent[find(ka)] = find(kb)
+    comps = {}
+    for node in deg:
+        comps.setdefault(find(node), []).append(node)
+    opens = 0
+    for nodes in comps.values():
+        if all(deg[x] == 2 for x in nodes):
+            loops += 1
+        else:
+            opens += 1
+    if not pts:
+        return {"loops": loops, "open": opens, "size": (0.0, 0.0), "units": units}
+    w = max(p[0] for p in pts) - min(p[0] for p in pts)
+    h = max(p[1] for p in pts) - min(p[1] for p in pts)
+    return {"loops": loops, "open": opens, "size": tuple(round(x, 2) for x in sorted((w, h))), "units": units}
+
+
+DENSITY = re.compile(r"\d+(?:[.,]\d+)?\s*(?:kg|g)\s*/\s*m\s*[23²³]|\bgsm\b|\bdensity\b", re.I)
+DEPTH_WORDS = re.compile(r"\bpockets?\b|\bdepth\b|\bblind\b|\brebate|\bcounterbor", re.I)   # not "stepped": a stepped outline is a through cut
+
+
+def felt_row_lacks(root, pn, thickness=None):
+    """D-128: None when no list has a row for pn; else (what the most complete row lacks, its file): material,
+    density or grade (a density such as 25 kg/m3, or a grade as C11 reads one), the thickness (the STEP's, when
+    known), tolerance, and no pocket or other depth feature named."""
+    from common import read_csv
+    from c_parts import GRADE_HINT
+    best = None
+    for top in ("v2/03-Manufacturing", "v2/02-Drawings"):
+        for p in walk_files(root, top, exts=(".csv",)):
+            for row in read_csv(p):
+                if not any((v or "").strip() == pn for v in row.values() if isinstance(v, str)):
+                    continue
+                lacks = []
+                mat = " ".join(v for _k, v in _cell(row, r"material|grade|density"))
+                if not mat:
+                    lacks.append("material")
+                elif not (DENSITY.search(mat) or GRADE_HINT.search(mat)):
+                    lacks.append("density or grade")
+                sizes = _cell(row, r"size|dimension|thick|^t_?mm$")
+                nums = [float(x) for _k, v in sizes for x in re.findall(r"\d+(?:\.\d+)?", v)]
+                nums += [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)\s*mm\b", mat)]    # "PET felt 9 mm"
+                if thickness is not None and not any(abs(n - thickness) <= 0.2 for n in nums):
+                    lacks.append("thickness (%g mm, as in its STEP)" % thickness)
+                elif thickness is None and not nums:
+                    lacks.append("thickness")
+                if not _cell(row, r"tol") and not any(PLUS_MINUS.search(v or "") for v in row.values()
+                                                      if isinstance(v, str)):
+                    lacks.append("tolerance")
+                depth = sorted({m.group(0).lower() for v in row.values() if isinstance(v, str)
+                                for m in DEPTH_WORDS.finditer(v)})
+                if depth:
+                    lacks.append("through features only (its row names %s)" % " and ".join(depth))
+                if best is None or len(lacks) < len(best[0]):
+                    best = (lacks, rel(root, p))
+    return best
+
+
+def felt_dxf_lacks(root, pn, shape, dxf_path):
+    """D-128: what a felt or fill piece still lacks for its DXF and parts-list row to stand in for a drawing; [] when
+    nothing. shape: prism_shapes' entry for pn ((dict, '') or (None, why)), None when no STEP shows the piece."""
+    lacks = []
+    sh, why = shape if shape else (None, "no STEP shows it")
+    if sh is None:
+        lacks.append("a piece cut straight through (%s)" % why)
+    try:
+        with open(dxf_path, encoding="utf-8", errors="replace") as fh:
+            text = fh.read()
+    except OSError:
+        text = ""
+    others = dxf_layers.other_layers(text) if text else set()
+    if others:
+        lacks.append("a DXF on the CUT and MARK layers only (it also draws on %s)" % ", ".join(sorted(others)))
+    d = dxf_shapes(dxf_path) if text and not text.startswith("AutoCAD Binary DXF") else None
+    if d is None:
+        lacks.append("a DXF it can read (ASCII)")
+    elif sh is not None:
+        if d["open"]:
+            lacks.append("a DXF whose lines all close (%d open)" % d["open"])
+        if d["loops"] != sh["loops"]:
+            lacks.append("the full outline with every opening in its DXF (the STEP has %d closed shapes, the DXF %d)"
+                         % (sh["loops"], d["loops"]))
+        if any(abs(a - b) > max(0.5, 0.002 * b) for a, b in zip(d["size"], sh["sides"])):
+            lacks.append("a DXF outline the size of the STEP's (%g x %g mm; the DXF draws %g x %g)"
+                         % (sh["sides"] + d["size"]))
+    row = felt_row_lacks(root, pn, sh["thickness"] if sh else None)
+    if row is None:
+        lacks.append("a parts-list row")
+    elif row[0]:
+        lacks.append("in its row in %s: %s" % (row[1], ", ".join(row[0])))
+    return lacks
 
 
 def soft_kind(name):
@@ -357,17 +809,71 @@ def screen_locked():
     return any(u.get("CGSSessionScreenIsLocked") for u in data.get("IOConsoleUsers", []))
 
 
-def missing_drawing_severity(root):
+def hidden_lines_allowed(root):
+    """drawing file name -> the number of views that keep hidden lines on purpose, from
+    v2/04-Checks/config/hidden-lines-allow.csv (drawing, views, reason, ruling)."""
+    from common import read_csv
+    p = os.path.join(root, "v2/04-Checks/config/hidden-lines-allow.csv")
+    out = {}
+    for row in (read_csv(p) if os.path.exists(p) else []):
+        try:
+            out[(row.get("drawing") or "").strip()] = int(row.get("views") or 0)
+        except ValueError:
+            pass
+    return out
+
+
+def drawing_traps(pdf, allowed_views=0):
+    """The PM's four drawing traps read back from the PDF (pdf_traps.py, ELECTRICAL's read-back, 2026-11-01):
+    text under 2.5 mm capital height (title-block labels under 1.8) and a first-angle symbol without 4 corners are
+    major; hidden lines in more views than allowed and a dimension value printed twice are minor. One entry per
+    rule, the sheets of a multi-sheet PDF joined: [(rule, severity, message, fix)]. [] when PyMuPDF isn't there."""
+    try:
+        import pdf_traps
+        found = pdf_traps.findings(pdf, allowed_views)
+    except ImportError:
+        return []
+    merged = {}
+    for rule, sev, msg, fix in found:
+        if rule in merged:
+            merged[rule] = (rule, sev, merged[rule][2] + " " + msg, fix)
+        else:
+            merged[rule] = (rule, sev, msg, fix)
+    return list(merged.values())
+
+
+def drawgen_parts(root):
+    """D-113: the numbers tools/drawgen draws, from its own registry (tools/drawgen/specs.py, plain data): every
+    number it registers and the numbers a registered tabulated sheet covers. Empty when there is no registry."""
+    import importlib.util
+    path = os.path.join(root, "tools", "drawgen", "specs.py")
+    if not os.path.exists(path):
+        return set()
+    spec = importlib.util.spec_from_file_location("drawgen_specs_c05", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    out = set()
+    for pn, (_team, kind, conf) in getattr(mod, "SPECS", {}).items():
+        out.add(pn)
+        if kind == "tabulated":
+            out.update((conf or {}).get("covers", []))
+    return out
+
+
+def missing_drawing_severity(root, pn=None, drawgen=None):
     """The severity of a missing drawing for a part we make, from config/policy.csv: severe or major, or
-    auto-screen-lock (D-84): major while the screen is locked, severe otherwise or when it can't tell."""
+    auto-screen-lock (D-84): major while the screen is locked, severe otherwise or when it can't tell. A part
+    tools/drawgen draws (drawgen: drawgen_parts) stays severe on a locked screen: drawgen doesn't wait for it (D-113)."""
     v = policy(root, "missing_drawing_severity", "severe")
     if v == "auto-screen-lock":
+        if pn is not None and pn in (drawgen if drawgen is not None else drawgen_parts(root)):
+            return "severe"
         return "major" if screen_locked() else "severe"
     return v
 
 
 def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None, src_by_pn=None, flat_by_pn=None,
-                   bends_by_pn=None, two_wall_by_pn=None):
+                   bends_by_pn=None, two_wall_by_pn=None, cuboid_by_pn=None, prism_by_pn=None):
     """part_numbers: the made parts and assemblies to check (from the parts
     lists and the STEP products). holes_by_pn: pn -> list of holes.
     faces_by_pn: pn -> face count of each of its bodies (a plain rectangle has 6).
@@ -378,9 +884,14 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     flat_by_pn = flat_by_pn or {}      # pn -> (ok, thickness, why) from the STEP (D-89 part 4)
     bends_by_pn = bends_by_pn or {}    # pn -> most bends in one of its bodies (D-113)
     two_wall_by_pn = two_wall_by_pn or {}   # pn -> hole axes through two walls of one body (D-113)
+    cuboid_by_pn = cuboid_by_pn or {}  # pn -> sides of its one shape when that is a plain rectangular block (D-125)
+    prism_by_pn = prism_by_pn or {}    # pn -> (its one shape cut straight through from sheet, or None, why) (D-128)
     fs = []
     idx = index_files(root)
-    missing_sev = missing_drawing_severity(root)          # PM rulings D-73, D-84: see config/policy.csv
+    drawgen = drawgen_parts(root) if policy(root, "missing_drawing_severity", "severe") == "auto-screen-lock" else set()
+    hidden_allow = hidden_lines_allowed(root)            # drawings that keep hidden lines on purpose
+    def missing_for(pn):                                 # PM rulings D-73, D-84, D-97 (config/policy.csv), D-113
+        return missing_drawing_severity(root, pn, drawgen)
     tab = tabulated_cover(idx)                            # D-89
     from common import reserved_spaces
     reserved = reserved_spaces(root)
@@ -431,6 +942,14 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
             n_faces = max(faces_by_pn.get(pn) or [0])
             if row is not None and not row[0] and not row[2] and not n_holes and n_faces <= 6:
                 continue
+            d128 = ""
+            if kind == "felt or fill" and files.get("DXF"):
+                # D-128: with through-openings or edge notches only, its DXF and a full row stand in for a drawing
+                lacks128 = felt_dxf_lacks(root, pn, prism_by_pn.get(pn), sorted(files["DXF"])[-1][1])
+                if not lacks128:
+                    continue
+                d128 = " D-128 (a felt or fill piece on its DXF and parts-list row) doesn't apply: it needs %s." % (
+                    "; ".join(lacks128))
             why = []
             if row is not None and row[2]:
                 why.append("its row names %s, so it isn't a plain rectangle" % " and ".join(row[2]))
@@ -445,30 +964,42 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                 why.append("its row in %s doesn't give %s" % (row[1], ", ".join(row[0])))
             need = ("a drawing" if kind == "felt or fill" else "a DXF of its outline or a drawing")
             fs.append(Finding("C05", "no-drawing", pn, "major",
-                              "%s has no drawing, and D-89's cut-list route doesn't apply: %s." % (
-                                  label, "; ".join(why)),
+                              "%s has no drawing, and D-89's cut-list route doesn't apply: %s.%s" % (
+                                  label, "; ".join(why), d128),
                               "For a plain knife-cut rectangle or strip, give part number, size%s, material and "
-                              "tolerance in its parts-list or cut-list row (D-89); otherwise make %s." % (
-                                  ", thickness" if kind == "soft" else "", need),
+                              "tolerance in its parts-list or cut-list row (D-89)%s; otherwise make %s." % (
+                                  ", thickness" if kind == "soft" else "",
+                                  "; for a felt or fill piece with through-openings or edge notches, its DXF with the "
+                                  "full outline and every opening and a row with material, density or grade, "
+                                  "thickness and tolerance (D-128)" if kind == "felt or fill" else "", need),
                               r_where, owner))
             continue
+        d125 = ""
+        sides = cuboid_by_pn.get(pn)
+        if not pdfs and cls == "part" and not kind and is_strip(sides):
+            row = strip_row_lacks(root, pn, sides)
+            if row is not None and not row[0]:
+                continue        # D-125: a plain straight-cut strip or sheet, given in full by its parts-list row
+            d125 = " D-125 (a plain straight-cut strip or sheet on a full parts-list row) doesn't apply: %s." % (
+                "no parts list has a row for it" if row is None else
+                "its row in %s doesn't give %s" % (row[1], ", ".join(row[0])))
         if not pdfs and cls == "part" and files.get("DXF"):
             # D-89 part 4: a flat sheet part goes on its DXF and its parts-list row
             lacks = flat_cut_lacks(root, pn, files, holes_by_pn.get(pn), flat_by_pn.get(pn))
             if not lacks:
                 continue
-            fs.append(Finding("C05", "no-drawing", pn, missing_sev,
-                              "%s has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: %s." % (
-                                  label, "; ".join(lacks)),
+            fs.append(Finding("C05", "no-drawing", pn, missing_for(pn),
+                              "%s has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: %s.%s" % (
+                                  label, "; ".join(lacks), d125),
                               "Make its drawing; or, for a flat part cut from sheet with no bends and no machined "
                               "features, give the full outline and every hole in its DXF and material, thickness, "
                               "finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
                               r_where, owner))
             continue
         if not pdfs:
-            fs.append(Finding("C05", "no-drawing", pn, missing_sev if cls == "part" else "major",
-                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s." % (
-                                  label, pn, " though its CAD is in %s" % r_where if r_where else ""),
+            fs.append(Finding("C05", "no-drawing", pn, missing_for(pn) if cls == "part" else "major",
+                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s" % (
+                                  label, pn, " though its CAD is in %s" % r_where if r_where else "", d125),
                               "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
                               r_where, owner))
             continue
@@ -493,6 +1024,10 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   label, "/".join(sorted(revs)), "/".join(sorted(cad_revs))),
                               "Export the drawing, CAD and STEP from the same revision (guideline section 4.2)." + gen_fix,
                               rp, owner))
+        # the PM's drawing traps, read back from what reached the paper: every drawing, the wiring diagram too
+        for rule, sev, msg, fix in drawing_traps(pdf, hidden_allow.get(os.path.basename(pdf), 0)):
+            fs.append(Finding("C05", rule, pn, sev, "%s drawing %s: %s" % (label, os.path.basename(rp), msg),
+                              fix + gen_fix, rp, owner))
         if "WIRING-DIAGRAM" in os.path.basename(pdf).upper():
             continue        # D-93: ELECTRICAL's wiring diagram draws 710000 (routes and joints on sheet 3); a schematic
         text = pdf_text(pdf)

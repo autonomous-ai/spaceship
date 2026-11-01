@@ -505,12 +505,16 @@ def load_adjustments(root, list_path=None):
     return rows
 
 
-def check_pod_mass(root, rows, src, cap_kg=420.0):
+def check_pod_mass(root, rows, src, cap_kg=None):
     """The pod total from the layout study's part list (every row, as it sums
     them) plus the owners' weight changes not yet in that list, against the
-    cap (D-37, D-54)."""
+    cap: config/policy.csv's pod_mass_cap_kg (460 kg, D-131, provisional until
+    the wall sample's recount; it was 420 under D-37 and D-54)."""
     if not rows:
         return [], None
+    if cap_kg is None:
+        from c_drawings import policy
+        cap_kg = num(policy(root, "pod_mass_cap_kg", "460")) or 460.0
     # the PM's weight ruling of 2026-10-31: the voice cockpit kit (4.0 kg, shipped later) sits outside the cap
     outside = [r for r in rows if re.search(r"outside the cap|voice cockpit kit reserve",
                                             " ".join(str(r.get(k) or "") for k in ("item", "name", "status", "note")), re.I)]
@@ -526,7 +530,7 @@ def check_pod_mass(root, rows, src, cap_kg=420.0):
         return [], info
     parts = "; ".join("%+.1f kg %s (%s, %s)" % (num(a["kg"]), a["id"], a["status"], a["source"]) for a in adj)
     return [Finding("C04", "pod-mass-over-cap", "POD total mass", "major",
-                    "The pod is about %.1f kg against the %.0f kg cap (D-37, D-54): %.1f kg over. The layout study's "
+                    "The pod is about %.1f kg against the %.0f kg cap (D-131, provisional): %.1f kg over. The layout study's "
                     "list gives %.1f kg (%s)%s%s. Open against the cap until the wall sample settles it (ISS-080)." % (
                         total, cap_kg, total - cap_kg, base, src, "; adjustments since: " + parts if parts else "",
                         "; %.1f kg of voice cockpit kit is outside the cap (PM weight ruling)" % outside_kg
@@ -649,7 +653,8 @@ def check_mixed_metals(root, plists, contacts):
                                   owner_for(r, pn)))
             elif is_fastener(pn, row["name"]) and metal_class(mat.get(pn, "")) == "steel-bare":
                 fs.append(Finding("C10", "fastener-bare-steel", pn, "severe",
-                                  "Fastener %s %s in %s is bare steel ('%s'); the frames are aluminium." % (
+                                  "Fastener %s %s in %s is bare steel ('%s'), against the aluminium it may touch "
+                                  "(the band, the skins, the ACP)." % (
                                       pn, row["name"], r, mat.get(pn, "")),
                                   "Use stainless or coated steel, with an isolating washer where the joint stays "
                                   "wet.", r, owner_for(r, pn)))
@@ -668,3 +673,261 @@ def check_mixed_metals(root, plists, contacts):
                               "Coat the steel part (zinc, powder) or separate them with an isolating layer.", f,
                               owner_for(f, a)))
     return fs
+
+
+# ----------------------------------------------------------------- C06: every part its own component (D-120)
+
+ROUTE_COMPONENT = re.compile(r"^7100\d\d")       # ELECTRICAL's route model: routes, pockets, grommets, spaces (D-92)
+HOLD_WORD = re.compile(r"\bHOLD\b", re.I)
+
+
+def check_components(root, step_paths, load):
+    """D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.
+    A component (one product definition in a STEP) that holds several bodies is reported, one finding per part
+    number and team: copies of one part should be one component placed several times; different pieces (a frame's
+    members, D-115; a fill's bay pieces) each their own component, the part becoming an assembly of them.
+    Left out, as ruled: ELECTRICAL's route components (D-92), HOLD spaces and placeholders without a number,
+    reserved spaces, and ENVELOPE bodies standing in for hardware (D-104)."""
+    from c_drawings import body_shape
+    reserved = reserved_spaces(root)
+    hits = {}                                     # (pn, owner) -> {"name", "files": [(file, n, names, shapes)]}
+    for p in step_paths:
+        s = load(p)
+        bodies, info = defaultdict(dict), {}
+        for inst in s.instances():
+            bodies[inst["pd"]].setdefault(inst["solid"], None)
+            info[inst["pd"]] = (inst["part_number"] or "", inst["name"] or "")
+        r = rel(root, p)
+        for pd, sids in bodies.items():
+            if len(sids) < 2:
+                continue
+            raw, name = info[pd]
+            m = re.match(r"^(\d{6})(?!\d)", raw)
+            if not m or ROUTE_COMPONENT.match(m.group(1)) or HOLD_WORD.search(name) or m.group(1) in reserved:
+                continue
+            pn = m.group(1)
+            solids = [s.solid(sid) for sid in sids]
+            real = [so for so in solids if not re.search(r"\bENVELOPE\b", so.name or "", re.I)]
+            if len(real) < 2:
+                continue
+            owner = owner_for(r, "")
+            if owner == "PM":
+                owner = owner_for(r, pn)
+            d = hits.setdefault((pn, owner), {"name": name, "files": []})
+            d["files"].append((r, len(real), sorted({(so.name or "").strip() for so in real}),
+                               len({body_shape(so) for so in real})))
+    fs = []
+    for (pn, owner), d in sorted(hits.items()):
+        n = max(f[1] for f in d["files"])
+        shapes = max(f[3] for f in d["files"])
+        where = "; ".join("%s (%d bodies)" % (os.path.basename(f[0]), f[1]) for f in d["files"])
+        names = sorted({x for f in d["files"] for x in f[2]})
+        label = d["name"] if d["name"].startswith(pn) else ("%s %s" % (pn, d["name"])).strip()
+        if shapes == 1:
+            msg = ("%s is one component holding %d bodies, all copies of one part, in %s. D-120 (build plan rule 2, "
+                   "BP-04): every part is its own component, never a loose body; copies are one component placed "
+                   "several times." % (label, n, where))
+            fix = ("Make it one component and place it %d times (copies of one component), then export the STEP "
+                   "again (D-120)." % n)
+        else:
+            msg = ("%s is one component holding %d bodies of %d different shapes (%s) in %s. D-120 (build plan rule "
+                   "2, BP-04): every part is its own component with its own number, never a loose body." % (
+                       label, n, shapes, ", ".join(names)[:300], where))
+            fix = ("Make each piece its own component with its own part number (the master BOM assigns them), so this "
+                   "number becomes an assembly of them; copies of one piece are one component placed several times "
+                   "(D-120; for the frames, D-115's cleated members).")
+        fs.append(Finding("C06", "bodies-not-components", pn, "major", msg, fix, d["files"][0][0], owner,
+                          {"bodies": n, "shapes": shapes, "files": len(d["files"])}))
+    return fs
+
+
+# ----------------------------------------------------------------- C06: a part's copies match its own model
+
+def _quarter_turns():
+    """The 24 quarter-turn rotations of space (no mirror images)."""
+    import itertools
+    out = []
+    for perm in itertools.permutations(range(3)):
+        for signs in itertools.product((1, -1), repeat=3):
+            m = [[0] * 3 for _ in range(3)]
+            for i in range(3):
+                m[i][perm[i]] = signs[i]
+            det = (m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+                   + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]))
+            if det == 1:
+                out.append(m)
+    return out
+
+
+QUARTER_TURNS = _quarter_turns()
+
+
+def same_holes(own, copy, tol=0.1, dia_tol=0.15):
+    """Do two bodies of one part have the same hole layout, however the copy is turned in its own frame? Hole
+    centres about their own centroid (so a copy placed or modelled elsewhere still matches), every quarter turn tried,
+    hole sizes within dia_tol (a tapped hole drawn at Ø5.0 or at its 6H minor Ø5.03 is the same hole)."""
+    def layout(so):
+        hs = so.holes
+        if not hs:
+            return []
+        c = [sum(h.center[k] for h in hs) / len(hs) for k in range(3)]
+        return [(tuple(h.center[k] - c[k] for k in range(3)), h.diameter) for h in hs]
+    import math
+    a, b = layout(own), layout(copy)
+    if len(a) != len(b):
+        return False
+    for m in QUARTER_TURNS:
+        used = set()
+        for pc, d in b:
+            q = tuple(sum(m[i][j] * pc[j] for j in range(3)) for i in range(3))
+            hit = next((i for i, (oc, od) in enumerate(a) if i not in used and math.dist(q, oc) <= tol
+                        and abs(od - d) <= dia_tol), None)
+            if hit is None:
+                break
+            used.add(hit)
+        else:
+            return True
+    return False
+
+
+def body_sizes(so):
+    """A body's sizes, however it is turned: ('round', ((radius, length along the axis), ...)) from its outer round
+    faces (radius at least 1 mm, along the biggest one's axis), and ('box', three sides) when it has no outer round
+    face, so a detailed and a plain model of one part compare like with like."""
+    import stepfile as sf
+    outer = [f for f in so.faces if f.kind == "cylinder" and not sf._concave(f) and f.radius >= 1.0]
+    if outer:
+        big = max(outer, key=lambda f: f.radius)
+        ax, o = sf.norm(big.normal), big.origin
+        out = []
+        for f in outer:
+            if abs(abs(sf.dot(sf.norm(f.normal), ax)) - 1.0) > 1e-4:
+                continue
+            ts = [sf.dot(sf._sub(p, o), ax) for a in f.arcs for p in (a[0].o, a[2], a[3])] + \
+                 [sf.dot(sf._sub(p, o), ax) for p in f.points]
+            if not ts:
+                continue
+            for i, (r, lo, hi) in enumerate(out):
+                if abs(r - f.radius) <= 0.15:
+                    out[i] = (r, min(lo, min(ts)), max(hi, max(ts)))
+                    break
+            else:
+                out.append((f.radius, min(ts), max(ts)))
+        return ("round", tuple(sorted((round(r, 2), round(hi - lo, 2)) for r, lo, hi in out if hi - lo >= 0.5)))
+    if not so.box:
+        return ("box", ())
+    return ("box", tuple(sorted(round(so.box[k + 3] - so.box[k], 2) for k in range(3))))
+
+
+def _sizes_differ(a, b, tol=0.2):
+    """Only like with like: two boxes by their sides; two round parts by the length at each radius both have (a
+    detailed model may add small radii). A round body against a box can't be compared, so it isn't reported."""
+    if a[0] != b[0] or not a[1] or not b[1]:
+        return False
+    if a[0] == "box":
+        return any(abs(x - y) > tol for x, y in zip(a[1], b[1]))
+    common = [(la, lb) for ra, la in a[1] for rb, lb in b[1] if abs(ra - rb) <= 0.15]
+    return bool(common) and any(abs(la - lb) > tol for la, lb in common)
+
+
+def check_copies(root, step_paths, load):
+    """A part copied into another team's STEP (a washer, a spigot or a key in a panel or band) has to be the part its
+    own STEP holds (the file named after its number): the same hole layout (same_holes; any quarter turn of the copy
+    counts as the same) and the same sizes (body_sizes). An assembly built round an older or different copy has its
+    mating holes and fits set by the wrong part. A different hole layout is severe, different sizes major; one finding
+    per part and file team. Parts whose own STEP holds more than one shape are left to D-120."""
+    import os
+    bodies = {}
+    for p in step_paths:
+        s = load(p)
+        for inst in s.instances():
+            so = s.solid(inst["solid"])
+            bodies.setdefault(inst["part_number"], {}).setdefault(p, {})[so.id] = so
+    hits = {}
+    for pn, files in bodies.items():
+        own = sorted(f for f in files if os.path.basename(f).startswith(pn + "_"))
+        if not own or len(files[own[0]]) != 1:
+            continue
+        ref = next(iter(files[own[0]].values()))
+        ref_sizes = body_sizes(ref)
+        for f, sols in files.items():
+            if f in own:
+                continue
+            for so in sols.values():
+                holes_ok = same_holes(ref, so)
+                sizes = body_sizes(so)
+                if holes_ok and not _sizes_differ(ref_sizes, sizes):
+                    continue
+                r = rel(root, f)
+                team = owner_for(r, "")
+                if team == "PM":
+                    team = owner_for(r, pn)
+                h = hits.setdefault((pn, team), {"files": set(), "holes": False, "own": rel(root, own[0]),
+                                                 "ref": (len(ref.holes), ref_sizes), "copy": (len(so.holes), sizes)})
+                h["files"].add(r)
+                h["holes"] = h["holes"] or not holes_ok
+    fs = []
+    for (pn, team), h in sorted(hits.items()):
+        part_team = owner_for(h["own"], pn)
+        owner = team if part_team == team else "%s; %s" % (team, part_team)
+        what = "hole layout" if h["holes"] else "sizes"
+        fs.append(Finding(
+            "C06", "copy-differs", pn, "severe" if h["holes"] else "major",
+            "%s's body in %s isn't the part its own STEP %s holds: its %s differ (own STEP: %d holes, sizes %s; "
+            "the copy: %d holes, sizes %s), whichever way the copy is turned. The assembly's fits were set round the "
+            "copy." % (pn, ", ".join(sorted(os.path.basename(x) for x in h["files"])), os.path.basename(h["own"]),
+                       what, h["ref"][0], h["ref"][1][1], h["copy"][0], h["copy"][1][1]),
+            "Put the part's current model in the assembly (one component placed as copies, D-120) and check the "
+            "holes and fits round it; if the copy is right, the part's owner updates its own STEP.",
+            sorted(h["files"])[0], owner, {"files": len(h["files"])}))
+    return fs
+
+
+# ----------------------------------------------------------------- C06: what decisions cancelled or added
+
+def check_decided_items(root, plists, step_products):
+    """What a decision cancelled has to be gone, and what one added has to be there, read from the teams' parts lists
+    and the CAD's product names (the skeleton, the proof part and the master BOM's own placeholder rows left out).
+    config/cancelled-items.csv: pattern, decision, what (D-131: no cleats; D-132: no floor parts, no threshold);
+    config/required-items.csv: pattern, folder, decision, what (D-132: the base seal lip in BASE's folder)."""
+    from common import CHECKS_DIR
+    cfg = os.path.join(root, CHECKS_DIR, "config")
+    cancelled = read_csv(os.path.join(cfg, "cancelled-items.csv")) if os.path.exists(os.path.join(cfg, "cancelled-items.csv")) else []
+    required = read_csv(os.path.join(cfg, "required-items.csv")) if os.path.exists(os.path.join(cfg, "required-items.csv")) else []
+    items = []                                   # (part number, name, file)
+    for p, rows in plists:
+        r = rel(root, p)
+        for row in rows:
+            if is_master(r) and is_placeholder(row):
+                continue
+            items.append((row["part_number"], row["name"] or "", r))
+    for pn, d in step_products.items():
+        for f in d["files"]:
+            if "/skeleton/" not in f and "/proof/" not in f:
+                items.append((pn, d["name"] or "", f))
+    fs = []
+    for c in cancelled:
+        pat = re.compile(c["pattern"], re.I)
+        hits = {}
+        for pn, name, f in items:
+            if pat.search(name):
+                hits.setdefault(pn or name, set()).add((name, f))
+        for key, where in sorted(hits.items()):
+            files = sorted({f for _n, f in where})
+            name = sorted({n for n, _f in where})[0]
+            fs.append(Finding("C06", "cancelled-by-decision", key, "major",
+                              "%s is still in %s, though %s cancelled it (%s)." % (
+                                  name if name.startswith(str(key)) else ("%s %s" % (key, name)).strip(),
+                                  ", ".join(files), c["decision"], c["what"]),
+                              "Take it out of the CAD, the parts list and the drawings (%s)." % c["decision"],
+                              files[0], owner_for(files[0], key if re.match(r"^\d{6}$", str(key)) else "")))
+    for q in required:
+        pat, folder = re.compile(q["pattern"], re.I), q["folder"].rstrip("/") + "/"
+        if not any(f.startswith(folder) and pat.search(name) for _pn, name, f in items):
+            fs.append(Finding("C06", "required-by-decision", q["what"][:60], "major",
+                              "%s requires %s, but no parts list or CAD part in %s names it yet." % (
+                                  q["decision"], q["what"], folder),
+                              "Model it and give it its row and number (%s)." % q["decision"], folder.rstrip("/"),
+                              owner_for(folder, "")))
+    return fs
+

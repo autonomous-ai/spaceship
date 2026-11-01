@@ -208,6 +208,7 @@ def run(_context):
             ns = {"__name__": "__fusion_script__", "__file__": path, "SCRIPT_ARGS": sargs}
             with open(path, "r", encoding="utf-8") as fh:
                 exec(compile(fh.read(), path, "exec"), ns)
+            print("BATCH|builder file %s" % os.path.realpath(path))    # by full path, never by module name
             ns["run"](None)
             done.append(name)
             print("BATCH|done %s" % name)

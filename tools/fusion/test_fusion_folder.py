@@ -25,8 +25,14 @@ class Unreadable(Exception):
 class File:
     versionNumber = 1
 
-    def __init__(self, name=None, ext=None):
-        self._n, self._e = name, ext
+    def __init__(self, name=None, ext=None, fid=None):
+        self._n, self._e, self._id = name, ext, fid
+
+    @property
+    def id(self):
+        if self._id is None:
+            raise Unreadable("id")
+        return self._id
 
     @property
     def name(self):
@@ -123,6 +129,111 @@ class ReadFolderTests(unittest.TestCase):
         self.assertEqual(c.sleeps, [])                          # no waiting for the broken entry
 
 
+class ArrayFiles(Files):
+    """A folder whose listing comes in one asArray() call; item() must not be used."""
+
+    def __init__(self, items, fail_array=False):
+        super().__init__(items)
+        self.arrays, self.fail_array = 0, fail_array
+
+    def asArray(self):
+        self.arrays += 1
+        if self.fail_array:
+            raise Unreadable("asArray failed")
+        return [File("HEALED_CAD", "f3d") if it == "boom" and self.arrays > 2 else
+                (None if it == "boom" else it) for it in self.items]
+
+
+class OneListingTests(unittest.TestCase):
+    """Live 2026-11-01: each DataFiles.item(i) fetched the whole folder listing again (about
+    2 s each; 89 entries took 3 minutes a pass). One asArray() call per pass instead."""
+
+    def folder(self, items, **kw):
+        f = Folder([])
+        f.dataFiles = ArrayFiles(items, **kw)
+        f.dataFiles.item = lambda i: (_ for _ in ()).throw(AssertionError("item(i) used"))
+        return f
+
+    def test_a_pass_is_one_listing(self):
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), File("B_DWG", "f2d")])
+        files, unknown, others = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual(sorted(files), ["A_CAD", "B_DWG"])
+        self.assertEqual((unknown, others, folder.dataFiles.arrays), ([], {}, 1))
+
+    def test_an_empty_slot_is_unknown_and_read_again_until_it_heals(self):
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), "boom"])
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual(sorted(files), ["A_CAD", "HEALED_CAD"])
+        self.assertEqual(unknown, [])
+        self.assertEqual(folder.dataFiles.arrays, 3)               # one listing per pass
+
+    def test_a_name_that_cant_be_read_is_sorted_as_before(self):
+        c = Clock()
+        folder = self.folder([File(None, "f2d"), File(None, None)])
+        _files, unknown, others = ff.read_folder(folder, wait_s=0, sleep=c.sleep, now=c.now)
+        self.assertEqual([u.split(" (")[0] for u in unknown], ["entry 1"])
+        self.assertEqual({k: [t.split(" (")[0] for t in v] for k, v in others.items()}, {"f2d": ["entry 0"]})
+
+    def test_a_short_listing_counts_the_missing_slots_as_unreadable(self):
+        # Reviewer 5, P2 on #213: a file must never just vanish from a pass
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), File("NEW_CAD", "f3d")])
+        files_obj = folder.dataFiles
+        files_obj.asArray = lambda: (files_obj.__dict__.__setitem__("arrays", files_obj.arrays + 1),
+                                     [File("A_CAD", "f3d")])[1]          # one short, every time
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual(sorted(files), ["A_CAD"])
+        self.assertEqual([u.split(" (")[0] for u in unknown], ["entry 1"])
+        self.assertIn("missing from the listing", unknown[0])
+        self.assertEqual(sum(c.sleeps), 60.0)                    # read again for the minute
+        with self.assertRaises(RuntimeError):                     # and never taken as free
+            ff.safe_to_create(folder, "NEW_CAD", "f3d", sleep=c.sleep, now=c.now)
+
+    def test_a_listing_that_catches_up_is_read_again_until_it_does(self):
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d"), File("B_CAD", "f3d")])
+        files_obj = folder.dataFiles
+        full = files_obj.asArray
+
+        def late():                                               # short on the first pass only
+            arr = full()
+            return arr[:1] if files_obj.arrays == 1 else arr
+        files_obj.asArray = late
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual((sorted(files), unknown), (["A_CAD", "B_CAD"], []))
+        self.assertEqual(files_obj.arrays, 2)
+
+    def test_a_count_that_cant_be_read_is_one_unreadable_entry(self):
+        # Reviewer 5, P3 on #220
+        c = Clock()
+        folder = self.folder([File("A_CAD", "f3d")])
+        type(folder.dataFiles).count = property(lambda _s: (_ for _ in ()).throw(Unreadable("count failed")))
+        try:
+            files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+            self.assertEqual(sorted(files), ["A_CAD"])
+            self.assertEqual(len(unknown), 1)
+            self.assertIn("count can't be read", unknown[0])
+            self.assertEqual(sum(c.sleeps), 60.0)                  # read again for the minute
+            with self.assertRaises(RuntimeError):                   # and never taken as free
+                ff.safe_to_create(folder, "NEW_CAD", "f3d", sleep=c.sleep, now=c.now)
+        finally:
+            del type(folder.dataFiles).count
+
+    def test_a_full_listing_adds_nothing(self):
+        c = Clock()
+        files, unknown, others = ff.read_folder(self.folder([File("A_CAD", "f3d")]), sleep=c.sleep, now=c.now)
+        self.assertEqual((sorted(files), unknown, others, c.sleeps), (["A_CAD"], [], {}, []))
+
+    def test_a_failing_listing_falls_back_to_reading_each_entry(self):
+        c = Clock()
+        folder = Folder([File("A_CAD", "f3d")])
+        folder.dataFiles = ArrayFiles([File("A_CAD", "f3d")], fail_array=True)
+        files, unknown, _ = ff.read_folder(folder, sleep=c.sleep, now=c.now)
+        self.assertEqual((sorted(files), unknown), (["A_CAD"], []))
+
+
 class SafeToCreateTests(unittest.TestCase):
     def test_a_free_name_in_a_clean_folder(self):
         warnings, c = check(Folder([File("A_CAD", "f3d")]), "NEW_CAD")
@@ -203,8 +314,8 @@ class SharedCopyTests(unittest.TestCase):
 class DocStepTests(unittest.TestCase):
     """The runner's --doc step itself, against a fake Fusion API."""
 
-    def run_doc(self, items, create, heal_after=None, wait=False, open_fails=0):
-        folder = Folder(items, heal_after)
+    def run_doc(self, items, create, heal_after=None, wait=False, open_fails=0, folder=None, dup_wait=None):
+        folder = folder or Folder(items, heal_after)
         folder.dataFolders = types.SimpleNamespace(itemByName=lambda n: None)
         opened, made = [], []
 
@@ -247,6 +358,9 @@ class DocStepTests(unittest.TestCase):
         src = rs.doc_script("open", "NEW_CAD", "Default Project", create=create)
         if not wait:
             src = src.replace("WAIT_S = 60.0", "WAIT_S = 0.0")    # no real waiting in a test
+            src = src.replace("DUP_PAUSE_S = 3.0", "DUP_PAUSE_S = 0.0")
+        if dup_wait is not None:
+            src = src.replace("DUP_WAIT_S = 30.0", "DUP_WAIT_S = %r" % dup_wait)
         try:
             ns = {}
             exec(compile(src, "doc_step", "exec"), ns)
@@ -258,6 +372,71 @@ class DocStepTests(unittest.TestCase):
                 else:
                     sys.modules[k] = v
         return opened, made
+
+    def test_a_design_listed_twice_just_after_it_was_made_is_opened_once_the_listing_settles(self):
+        # CEILING's C1 sample, 2026-11-01: for about 10 s after a design is made, the cloud
+        # lists it twice; the open read the folder again instead of refusing at once
+        class Settling(Files):
+            def __init__(self):
+                super().__init__([File("NEW_CAD", "f3d"), File("NEW_CAD", "f3d"), File("A_CAD", "f3d")])
+
+            @property
+            def count(self):
+                self.reads += 1
+                if self.reads > 2:                                   # settled after two reads
+                    self.items = [File("NEW_CAD", "f3d"), File("A_CAD", "f3d")]
+                return len(self.items)
+
+        folder = Folder([])
+        folder.dataFiles = Settling()
+        opened, made = self.run_doc(None, create=False, folder=folder)
+        self.assertEqual((opened, made), (["NEW_CAD"], []))
+        self.assertGreaterEqual(folder.dataFiles.reads, 3)
+
+    def changing_folder(self, first, later, switch_after=2):
+        """A folder that lists `first` for its first reads, then `later`."""
+        class Changing(Files):
+            def __init__(self):
+                super().__init__(list(first))
+
+            @property
+            def count(self):
+                self.reads += 1
+                if self.reads > switch_after:
+                    self.items = list(later)
+                return len(self.items)
+        folder = Folder([])
+        folder.dataFiles = Changing()
+        return folder
+
+    def test_two_different_files_are_refused_even_if_one_goes_unreadable_during_the_wait(self):
+        # Reviewer 5 on #238: the re-read showed one readable NEW_CAD while the other copy
+        # couldn't be read by name, and the runner opened it; main refused at once
+        folder = self.changing_folder([File("NEW_CAD", "f3d", "a"), File("NEW_CAD", "f3d", "b")],
+                                      [File("NEW_CAD", "f3d", "a"), File(None, "f3d")])
+        with self.assertRaises(RuntimeError) as cm:
+            self.run_doc(None, create=False, folder=folder, dup_wait=0.05)
+        self.assertIn("2 files are called 'NEW_CAD'", str(cm.exception))
+        self.assertGreater(folder.dataFiles.reads, 2)                  # it read again, and still refused
+
+    def test_one_file_listed_twice_with_the_same_id_is_opened_at_once(self):
+        folder = Folder([File("NEW_CAD", "f3d", "same"), File("NEW_CAD", "f3d", "same")])
+        opened, _made = self.run_doc(None, create=False, folder=folder, dup_wait=0.05)
+        self.assertEqual(opened, ["NEW_CAD"])
+        self.assertEqual(folder.dataFiles.reads, 1)                    # no waiting
+
+    def test_a_listing_that_settles_with_only_a_drawing_unreadable_is_opened(self):
+        folder = self.changing_folder([File("NEW_CAD", "f3d", "a"), File("NEW_CAD", "f3d", "b")],
+                                      [File("NEW_CAD", "f3d", "a"), File(None, "f2d")])
+        opened, _made = self.run_doc(None, create=False, folder=folder, dup_wait=5.0)
+        self.assertEqual(opened, ["NEW_CAD"])                          # a .f2d can't be the design
+
+    def test_a_design_that_stays_listed_twice_is_refused_as_before(self):
+        folder = Folder([File("NEW_CAD", "f3d"), File("NEW_CAD", "f3d")])
+        with self.assertRaises(RuntimeError) as cm:
+            self.run_doc(None, create=False, folder=folder, dup_wait=0.05)
+        self.assertIn("2 files are called 'NEW_CAD'", str(cm.exception))
+        self.assertGreater(folder.dataFiles.reads, 1)                 # it did read again first
 
     def test_a_new_design_is_refused_while_an_entry_that_could_be_it_stays_unreadable(self):
         with self.assertRaises(RuntimeError) as cm:

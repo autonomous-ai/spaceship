@@ -700,6 +700,11 @@ def run(_context):
 FOLDER_HELPER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fusion_folder.py")
 with open(FOLDER_HELPER_PATH, encoding="utf-8") as _fh:
     FOLDER_HELPER_SRC = _fh.read()
+# The shared drawing helpers (fusion_drawing.py, PM 2026-11-01): given to every script
+# as a module, the same way, so teams import them instead of copying code.
+DRAWING_HELPER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fusion_drawing.py")
+with open(DRAWING_HELPER_PATH, encoding="utf-8") as _fh:
+    DRAWING_HELPER_SRC = _fh.read()
 
 
 # Document steps for --doc, --save and --close. Runs inside Fusion; ARGS is
@@ -707,6 +712,8 @@ with open(FOLDER_HELPER_PATH, encoding="utf-8") as _fh:
 # another name, and never calls close(True) (that opens a dialog).
 DOC_SCRIPT = '''import adsk.core, adsk.fusion, time
 ARGS = %(args)r
+DUP_WAIT_S = 30.0   # a design made a moment ago can be listed twice for ~10 s (CEILING 2026-11-01)
+DUP_PAUSE_S = 3.0
 
 def _folder(app, path):
     parts = [p for p in path.split("/") if p]
@@ -761,6 +768,41 @@ def run(_context):
                                    "nothing was opened or made (try again later): %%s" %% (
                                        name, ARGS["folder"], "an entry" if len(risky) == 1 else
                                        "%%d entries" %% len(risky), "; ".join(risky)))
+        if len(files) > 1:
+            # CEILING's C1 sample, 2026-11-01: for about 10 s after a design is made, the
+            # cloud lists it twice. Read the folder again for up to 30 s while it does;
+            # still twice after that: refused, as before. Reviewer 5 on #238: a re-read
+            # counts only when it shows one copy and no unreadable entry could be another
+            # (could_be, the rule safe_to_create uses), or when every copy is one file
+            # (the same id), so two different files never get through
+            def _ext(fs):
+                try:
+                    return (fs[0].fileExtension or "f3d").lower()
+                except Exception:
+                    return "f3d"
+
+            def _same_file(fs):
+                try:
+                    return len(set(f.id for f in fs)) == 1
+                except Exception:
+                    return False
+
+            ext = _ext(files)
+            if _same_file(files):
+                print("run_script: %%r is listed %%d times, all the same file; opening it" %% (name, len(files)))
+                files = files[:1]
+            t_end = time.time() + DUP_WAIT_S
+            while len(files) > 1 and time.time() < t_end:
+                print("run_script: %%r is listed %%d times; reading the folder again in %%g s"
+                      %% (name, len(files), DUP_PAUSE_S))
+                adsk.doEvents()
+                time.sleep(DUP_PAUSE_S)
+                again, u2, o2 = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: False)
+                seen = again.get(name, [])
+                if len(seen) == 1 and not could_be(u2, o2, ext):
+                    files = seen
+                elif len(seen) > 1 and _same_file(seen):
+                    files = seen[:1]
         if len(files) > 1:
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:
@@ -889,6 +931,52 @@ _FF = _types.ModuleType("fusion_folder")
 _FF.__file__ = %(ffpath)r
 exec(compile(_b64.b64decode(%(ffsrc)r).decode("utf-8"), %(ffpath)r, "exec"), _FF.__dict__)
 _sys.modules["fusion_folder"] = _FF
+# the shared drawing helpers, the same way: "from fusion_drawing import insert_image"
+_FD = _types.ModuleType("fusion_drawing")
+_FD.__file__ = %(fdpath)r
+exec(compile(_b64.b64decode(%(fdsrc)r).decode("utf-8"), %(fdpath)r, "exec"), _FD.__dict__)
+_sys.modules["fusion_drawing"] = _FD
+# Every document open is logged to a file next to the Fusion lock, start and end,
+# with the file's name, version and whether it was hidden, written at once, so a
+# run stuck in an open shows what it was opening (PM 2026-11-01, after a drawing
+# open started at 00:23 and never ended). Installed once per Fusion session (the
+# class keeps it between runs); each run sets its own name for the lines.
+_OPENLOG = %(openlog)r
+def _log_open(_line):
+    try:
+        with open(_OPENLOG, "a", encoding="utf-8") as _fh:
+            _fh.write(_line + "\\n")
+    except Exception:
+        pass
+try:
+    import adsk.core as _ac
+    _ac._spaceship_run = %(runlabel)r
+    if not getattr(_ac.Documents.open, "_spaceship_logged", False):
+        _orig_open = _ac.Documents.open
+
+        def _logged_open(self, dataFile, visible=True, *a, **k):
+            import time as _t
+            try:
+                _what = "%%s v%%s" %% (dataFile.name, dataFile.versionNumber)
+            except Exception:
+                _what = "(name unreadable)"
+            _t0 = _t.time()
+            _when = lambda: _t.strftime("%%Y-%%m-%%d %%H:%%M:%%S UTC", _t.gmtime())
+            _log_open("%%s start open %%s %%s; run: %%s" %% (
+                _when(), _what, "visible" if visible else "HIDDEN", getattr(_ac, "_spaceship_run", "?")))
+            try:
+                _doc = _orig_open(self, dataFile, visible, *a, **k)
+            except Exception as _e:
+                _log_open("%%s end open %%s after %%.1f s: error %%s" %% (_when(), _what, _t.time() - _t0,
+                                                                       str(_e).strip().splitlines()[-1][:120] if str(_e).strip() else type(_e).__name__))
+                raise
+            _log_open("%%s end open %%s after %%.1f s: ok" %% (_when(), _what, _t.time() - _t0))
+            return _doc
+
+        _logged_open._spaceship_logged = True
+        _ac.Documents.open = _logged_open
+except Exception:
+    pass
 _SRC = _b64.b64decode(%(src)r).decode("utf-8")
 _NS = {"__name__": "__fusion_script__", "__file__": %(path)r,
        "SCRIPT_ARGS": %(args)r}
@@ -938,13 +1026,21 @@ def keep_roots():
     return [os.path.join(os.path.expanduser("~"), "Library", "Application Support", "Autodesk")]
 
 
-def wrap_script(source, path, args):
+def open_log_path(lock_path=None):
+    """The open log, next to the Fusion lock: /tmp/fusion-mcp-27182.lock.opens.log."""
+    return (lock_path or default_lock_path(DEFAULT_URL)) + ".opens.log"
+
+
+def wrap_script(source, path, args, open_log=None, run_label=""):
     """Wrap the file so it compiles under its real path (true line numbers)."""
     compile(source, path, "exec")  # fail fast on syntax errors, locally
     return WRAPPER % {"src": base64.b64encode(source.encode("utf-8")).decode("ascii"),
                       "path": path, "args": args, "ffpath": FOLDER_HELPER_PATH,
                       "ffsrc": base64.b64encode(FOLDER_HELPER_SRC.encode("utf-8")).decode("ascii"),
-                      "team": team_roots(), "keep": keep_roots()}
+                      "fdpath": DRAWING_HELPER_PATH,
+                      "fdsrc": base64.b64encode(DRAWING_HELPER_SRC.encode("utf-8")).decode("ascii"),
+                      "team": team_roots(), "keep": keep_roots(),
+                      "openlog": open_log or open_log_path(), "runlabel": run_label or os.path.basename(path)}
 
 
 def run_in_fusion(mcp, source, read_only=False):
@@ -1114,7 +1210,8 @@ def main(argv=None):
             ap.error("--arg needs KEY=VALUE, got %r" % kv)
         k, v = kv.split("=", 1)
         script_args[k.strip()] = v
-    source = wrap_script(source, script_path, script_args)
+    source = wrap_script(source, script_path, script_args, open_log=open_log_path(lock_path),
+                         run_label="%s: %s" % (label, os.path.basename(script_path)))
 
     # Expiry is only a backstop for a recycled pid: a live run keeps its lock
     # however long it takes, and a dead one is cleared at once.

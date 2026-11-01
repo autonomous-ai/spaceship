@@ -452,7 +452,10 @@ class StepFile:
     def instances(self):
         """Every solid in the tree: dicts with solid id, product (part
         number, name), path (names from the top), frame (solid coordinates
-        -> top coordinates)."""
+        -> top coordinates), and pd, the component (product definition) the
+        solid is a body of: several solids of one pd are several bodies of
+        one component, while one component placed several times gives the
+        same solid again."""
         prods = {p["pd"]: p for p in self.products()}
         occ = self.occurrences()
         children = defaultdict(list)
@@ -470,7 +473,7 @@ class StepFile:
             p = prods[pd]
             for sid in solids.get(pd, []):
                 out.append({"solid": sid, "part_number": p["part_number"], "name": p["name"],
-                            "path": path, "frame": frame})
+                            "path": path, "frame": frame, "pd": pd})
             for o in children.get(pd, []):
                 walk(o["child"], frame.compose(o["frame"]), path + [o["name"] or prods.get(o["child"], {}).get("name", "")],
                      depth + 1)

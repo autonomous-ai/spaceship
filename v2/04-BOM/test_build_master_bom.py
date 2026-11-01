@@ -85,6 +85,17 @@ class Rules(unittest.TestCase):
         _, _, _, fails, _ = run({FRONT: door("368101,FRONT - DOOR HINGE - HOLD,,\"bought, HOLD\",not named,3,0.6,assumption,HOLD,x,\n"), bom.REGISTER: REGISTER})
         self.assertTrue(any(f.startswith("hardware with no joints-register row: 368101") for f in fails), fails)
 
+    def test_hold_is_a_whole_word_in_any_case(self):
+        rows = ("368103,FRONT - DOOR SEAL HOLDER,Giá đỡ gioăng,bought,EPDM,1,0.05,assumption,DRAFT,x,\n"
+                "368104,FRONT - DOOR STOP - HOLD,Chặn cửa,bought,not named,1,0.1,assumption,DRAFT,x,\n"
+                "368105,FRONT - DOOR SWEEP,Gioăng quét,bought,EPDM,1,0.05,assumption,HOLD (T07),x,\n"
+                "368106,FRONT - DOOR BUFFER,Đệm cửa,bought,EPDM,1,0.01,assumption,on hold until T07,x,\n"
+                "368107,FRONT - DOOR SEAL CLIP,Kẹp gioăng,bought,steel,1,0.01,assumption,DRAFT (holds the seal),x,\n")
+        parts, _, _, _, _ = run({FRONT: door(rows), bom.REGISTER: REGISTER})
+        hold = {r["part_number"]: r["hold"] for r in parts}
+        self.assertEqual([hold[n] for n in ("368103", "368104", "368105", "368106", "368107")],
+                         [False, True, True, True, False])   # HOLDER and holds are not HOLD; "on hold" is, as in the checklist
+
     def test_electrical_parts_are_not_hardware(self):
         elec = "part_number,name,type,material,qty,unit_mass_kg,mass_status,status\n710001,ELECTRICAL - 12 V SUPPLY,bought,PSU,1,0.9,source,DRAFT\n"
         _, _, _, fails, _ = run({ELEC: elec, bom.REGISTER: REGISTER})
@@ -191,6 +202,30 @@ class WallAndRegisterV3(unittest.TestCase):
         self.assertEqual({i["id"] for i in register}, {"H-01", "H-04"})
         self.assertTrue(all(i["name"].startswith("HARDWARE") for i in register), register)
         self.assertNotIn("Joints register", missing)                     # every ID has a number
+
+    def test_a_number_another_id_owns_is_not_taken_from_a_mention(self):
+        # H-14's set row names 848013, but 848013's own part-number row is H-34's (the PM, 2026-11-01)
+        text = """# Joints register
+
+### 2.1 Hardware set
+
+| ID | Item | Data | Status |
+|---|---|---|---|
+| H-14 | **Cassette edge seal.** Very soft, near-zero squeeze; not for DR's panels, which take 848013 (H-34) | data | PROPOSED |
+| H-35 | **Spare seal.** Only mentioned here, 848099 | data | PROPOSED |
+
+### Part numbers
+
+| ID | Part number | Item | Qty per pod | Mass kg |
+|---|---|---|---|---|
+| H-14 | **848012** | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 | 5 | 0.01 |
+| H-34 | **848013** | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA | 10 | 0.01 |
+"""
+        items = {i["part_number"]: i for i in bom.parse_register(text, "test")}
+        self.assertEqual((items["848013"]["id"], items["848013"]["name"]),
+                         ("H-34", "SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA"))
+        self.assertEqual(items["848012"]["id"], "H-14")
+        self.assertEqual(items["848099"]["id"], "H-35")        # a number no other row owns is still the row's
 
     def test_register_number_named_differently_is_not_a_duplicate(self):
         a = door("838001,BOLT M6 X 16,,bought,steel,4,0.007,source,DRAFT,x,\n")
@@ -376,6 +411,96 @@ class RefsAndPacking(unittest.TestCase):
         parts, skipped, register, reg_where = bom.build(src)
         _, missing = bom.check(parts, register, reg_where, [path])
         self.assertTrue(missing["Packing and Assembly"][0].startswith("no packaging items"), missing)
+
+
+class NumberAllocation(unittest.TestCase):
+    """D-120: the master BOM gives out frame-member and fill-piece numbers before a team's list uses them."""
+    HDR = "part_number,name,name_vi,kind,team,parent,qty_per_parent,qty_per_pod,basis,status,note\n"
+    ROW = ("412101,CEILING - FRAME SIDE MEMBER - C1,Trần trái - thanh cạnh của khung,MP,CEILING,411101,1,1,"
+           "\"aluminium 20 x 40 x 1.2, 1455.00 long\",ALLOCATED,\n")
+
+    def go(self, alloc, team_rows=""):
+        sources = {bom.ALLOCATION: self.HDR + alloc}
+        if team_rows:
+            sources[CEIL] = CEIL_HDR + team_rows
+        return run(sources)
+
+    def test_a_free_number_is_a_master_row_with_no_mass(self):
+        parts, _, register, fails, _ = self.go(self.ROW)
+        self.assertEqual(fails, [])
+        rows = [r for r in bom.master_rows(parts, register, {}) if r.get("row_type") == "allocated number"]
+        self.assertEqual(len(rows), 1)
+        r = rows[0]
+        self.assertEqual((r["part_number"], r["group"], r["make_buy"], r["qty_per_pod"]), ("412101", "CEILING", "make", 1.0))
+        self.assertIsNone(r.get("mass_each_kg"))
+        self.assertIn("not in any parts list yet", r["note"])     # the mechanical check reads it as a placeholder
+        self.assertEqual(r["name_vi"], "Trần trái - thanh cạnh của khung")
+        pod = bom.master_rows(parts, register, {})[0]
+        self.assertEqual(pod["mass_total_kg"], 0)                 # it adds no mass
+
+    def test_a_team_using_it_for_the_same_item_takes_it(self):
+        team = "412101,CEILING - FRAME SIDE MEMBER - C1,,MP,411101,1,1,aluminium 6063-T6,0.31,calculation,P01,DRAFT,list\n"
+        parts, _, register, fails, _ = self.go(self.ROW, team)
+        self.assertEqual(fails, [])
+        self.assertFalse([r for r in bom.master_rows(parts, register, {}) if r.get("row_type") == "allocated number"])
+        self.assertIn("| 412101 | CEILING - FRAME SIDE MEMBER - C1 | 411101 | 1 | in use |",
+                      bom.report(parts, [], register, {}, fails, {}, {}, []))
+
+    def test_a_team_using_it_for_another_item_fails(self):
+        team = "412101,CEILING - SKIN - C1,,MP,410101,1,1,ACP 3 mm,6.2,calculation,P01,DRAFT,list\n"
+        _, _, _, fails, _ = self.go(self.ROW, team)
+        self.assertTrue(any(f.startswith("allocated number 412101") and "CEILING - SKIN - C1" in f for f in fails), fails)
+
+    def test_a_cancelled_number_is_never_reused(self):
+        team = "412101,CEILING - FRAME SIDE MEMBER - C1,,MP,411101,1,1,aluminium 6063-T6,0.31,calculation,P01,DRAFT,list\n"
+        _, _, _, fails, _ = self.go(self.ROW.replace("ALLOCATED", "CANCELLED"), team)
+        self.assertTrue(any(f.startswith("cancelled number 412101 used") for f in fails), fails)
+        parts, _, register, fails2, _ = self.go(self.ROW.replace("ALLOCATED", "CANCELLED"))
+        self.assertEqual(fails2, [])
+        self.assertFalse([r for r in bom.master_rows(parts, register, {}) if r.get("row_type") == "allocated number"])
+
+    def test_bad_rows_fail(self):
+        bad = (self.ROW.replace("412101", "410501")                          # an assembly-band number for a made part
+               + self.ROW.replace("412101", "211000")                       # a reserved old number (D-28)
+               + self.ROW.replace("412101", "992101")                       # no such family
+               + self.ROW + self.ROW                                        # allocated twice
+               + self.ROW.replace("412101", "412102").replace("ALLOCATED", "TAKEN"))
+        _, _, _, fails, _ = self.go(bad)
+        for want in ("allocated 410501", "outside the MP band", "allocated 211000", "reserved old number",
+                     "family 99 is not in conventions", "allocated twice", "status 'TAKEN'"):
+            self.assertTrue(any(want in f for f in fails), (want, fails))
+
+    def test_a_joints_register_number_is_never_given_out(self):
+        # the register's H-01 renumbered 838001 here, so as a bought item it sits in its band and only the clash fires
+        row = self.ROW.replace("412101", "838001").replace(",MP,", ",PI,")
+        _, _, _, fails, _ = run({bom.ALLOCATION: self.HDR + row, bom.REGISTER: REGISTER.replace("830101", "838001")})
+        self.assertEqual(fails, ["allocated 838001 'CEILING - FRAME SIDE MEMBER - C1': the joints register already has 838001 (H-01)"])
+
+    def test_a_number_must_have_six_digits(self):
+        for bad in ("41210", "4121011", "41210A"):
+            _, _, _, fails, _ = self.go(self.ROW.replace("412101", bad))
+            self.assertEqual(fails, [f"allocated {bad} 'CEILING - FRAME SIDE MEMBER - C1': not a 6-digit number"], bad)
+
+    def test_the_kind_must_be_one_of_the_four(self):
+        _, _, _, fails, _ = self.go(self.ROW.replace(",MP,", ",XX,"))
+        self.assertEqual(fails, ["allocated 412101 'CEILING - FRAME SIDE MEMBER - C1': kind 'XX' is not MP, HS, BS or PI"])
+
+    def test_the_real_list_is_clean(self):
+        path = bom.ROOT / bom.ALLOCATION
+        text = path.read_text(encoding="utf-8")
+        alloc = bom.parse_allocation(text, "working tree")
+        self.assertGreater(len(alloc), 0)
+        self.assertEqual(len({a["part_number"] for a in alloc}), len(alloc))
+        bom.ALLOCATED[:] = alloc
+        try:
+            fails = bom.check_allocation([], {})
+        finally:
+            bom.ALLOCATED.clear()
+        self.assertEqual(fails, [])
+        for a in alloc:
+            self.assertTrue(a["name"] and a["name_vi"] and a["basis"] and a["parent"], a["part_number"])
+            owner = bom.FAMILY[bom.family_of(a["part_number"])][3]    # the team that lists the number's family
+            self.assertIn(a["team"], owner if owner == "WALL and CEILING" else (owner,), a["part_number"])
 
 
 class FallBackReport(unittest.TestCase):
