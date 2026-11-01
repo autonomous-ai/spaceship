@@ -39,18 +39,27 @@ TREE = [   # key, parent, qty per parent, source
     ("shelf_back", "shelf_assy", 1, "D-70; feed hole at X 355 (ELECTRICAL)"),
     ("shelf_lh", "shelf_assy", 1, "D-70"),
     ("shelf_rh", "shelf_assy", 1, "D-70; call-light drop hole at Y -209.5 (ELECTRICAL)"),
-    ("dchan", "shelf_assy", 1, "ELECTRICAL's down-light over the ledge, two 8 mm strips"),
-    ("diffuser", "shelf_assy", 1, "ELECTRICAL's down-light diffuser"),
+    # D-126: the down-light's bought profile set (718101 to 718104) is listed by ELECTRICAL, in its family;
+    # INTERIOR models the profile under 718101 in this assembly but doesn't list it twice
     ("rail", "interior", 1, "D-70: a screen up to about 900 wide; on stand-offs to R2's stiles (WALL interface)"),
 ]
 FINISH = {"ledge": "powder coat, charcoal to match the felt (RAL HOLD)", "shelf_back": "powder coat, charcoal (RAL HOLD)",
           "shelf_lh": "powder coat, charcoal (RAL HOLD)", "shelf_rh": "powder coat, charcoal (RAL HOLD)",
-          "dchan": "powder coat, charcoal (RAL HOLD)", "diffuser": "opal, as supplied"}
+          "lprofile": "black anodised, to match the charcoal shelf (HOLD)", "lcover": "opal, as supplied",
+          "lcap": "black, as supplied", "lclip": "as supplied"}
 # a part whose material grade isn't chosen yet: HOLD in the status column until it is (C11)
-GRADE_HOLD = {"diffuser": "picked with ELECTRICAL's down-light strips, for their light and heat"}
+GRADE_HOLD = {}
 PROCESS = {"ledge": "laser cut, brake bend (2 bends)", "shelf_back": "laser cut, brake bend (3 bends), cable hole",
            "shelf_lh": "laser cut, brake bend (3 bends)", "shelf_rh": "laser cut, brake bend (3 bends), cable hole",
-           "dchan": "laser cut, brake bend (4 bends)", "diffuser": "cut to length"}
+           "lprofile": "bought; cut to 1036", "lcover": "bought; cut to 1036", "lcap": "bought", "lclip": "bought"}
+SKU = {   # D-126: the type picked from public catalogues only; the product stays HOLD until named
+    "bracket": "HOLD: rated for a 225 N lean at the ledge's front edge x 3",
+    "rail": "HOLD: VESA rail for a screen up to 900 wide, about 10 kg",
+    "lprofile": "HOLD: surface LED aluminium profile of the Tech-Light P13-2 type, 23 x 12.5 outside, 20 inside at the strip base (two 8 mm strips), rated for 12 W/m (ELECTRICAL confirms)",
+    "lcover": "HOLD: clip-on opal cover for that profile (Tech-Light C15 type), 70 % light (brochure figure)",
+    "lcap": "HOLD: end caps for that profile, one with a cable entry",
+    "lclip": "HOLD: mounting clips for that profile",
+}
 
 
 def fname(key, doctype, ext):
@@ -81,14 +90,12 @@ def write_dxfs(v):
     lay = {name: (key, kind, data) for key, name, kind, data in I.layout()}
     feats = {b: a for b, _k, a in I.features()}
     for key, name, t in (("shelf_back", "LIGHT SHELF BACK", v["sh_t"]), ("shelf_lh", "LIGHT SHELF LH", v["sh_t"]),
-                         ("shelf_rh", "LIGHT SHELF RH", v["sh_t"]), ("dchan", "DOWN CHANNEL RH", v["sh_t"]),
+                         ("shelf_rh", "LIGHT SHELF RH", v["sh_t"]),
                          ("ledge", "LEDGE TOP", v["lg_t"])):
         _k, kind, (sec, a0, a1) = lay[name]
         L = abs(I.ev(v, a1) - I.ev(v, a0))
         # outside leg lengths, from the first free edge: the blank's width by the K-factor rule
-        if key == "dchan":
-            outer = [v["dc_h"], v["dc_w"], v["dc_h"]]
-        elif key == "ledge":
+        if key == "ledge":
             outer = [v["lg_lip"], v["lg_d"], v["lg_up"]]
         else:
             outer = [v["sh_hb"], v["sh_d"], v["sh_hl"]]
@@ -119,12 +126,13 @@ def sizes(v):
                               ("shelf_back", "LIGHT SHELF BACK", v["sh_t"], "cut +/-0.5, bent +/-0.5 (assumption)"),
                               ("shelf_lh", "LIGHT SHELF LH", v["sh_t"], "cut +/-0.5, bent +/-0.5 (assumption)"),
                               ("shelf_rh", "LIGHT SHELF RH", v["sh_t"], "cut +/-0.5, bent +/-0.5 (assumption)"),
-                              ("dchan", "DOWN CHANNEL RH", v["sh_t"], "cut +/-0.5, bent +/-0.5 (assumption)"),
-                              ("diffuser", "DIFFUSER RH", v["df_t"],
-                               "length +/-1, width +/-0.3 (cut from sheet), thickness 1.5 +/-0.15 (the sheet as supplied); "
-                               "assumptions until the diffuser is picked; no drawing (D-125: this line is its spec)")):
+                              ):
         d = dims(name)
         out[key] = ("%.1f long, section %.1f x %.1f, %.1f sheet" % (d[0], d[1], d[2], t), tol)
+    pl = dims("LED PROFILE RH")[0]
+    out["lprofile"] = ("%.0f long; %.0f x %.1f outside, %.0f inside at the strip base" % (pl, v["lp_w"], v["lp_h"], v["lp_in"]),
+                       "cut length +/-1 (assumption); section as supplied")
+    out["lcover"] = ("%.0f long, for the %.0f-wide profile" % (pl, v["lp_w"]), "cut length +/-1 (assumption); section as supplied")
     return out
 
 
@@ -153,9 +161,7 @@ def parts_list(v, mass):
         r = {"part_number": pn, "name": name, "name_vi": vn, "kind": kind, "parent": I.PARTS[parent][0] if parent else "",
              "qty_per_parent": q, "qty_per_pod": qty_pod(key), "material": I.MATERIALS[mat][0] if mat else "",
              "finish": FINISH.get(key, ""), "process": PROCESS.get(key, ""),
-             "maker": "HOLD" if kind == "HOLD" else "", "sku": ("HOLD: rated for a 225 N lean at the ledge's front edge x 3"
-                                                               if key == "bracket" else "HOLD: VESA rail for a screen up to 900 wide, about 10 kg"
-                                                               if key == "rail" else ""),
+             "maker": "HOLD" if kind == "HOLD" else "", "sku": SKU.get(key, ""),
              "torque": "", "size_mm": size, "tolerance": tol,
              "mass_each_kg": mass_txt, "mass_status": mstat, "revision": REV,
              "status": "HOLD" if kind == "HOLD" or key in GRADE_HOLD else "DRAFT", "source": src}
