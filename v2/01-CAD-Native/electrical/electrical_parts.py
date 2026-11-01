@@ -29,7 +29,8 @@ SUPPLIES = [
 # id, load, supply, branch fuse, qty, W each max, W each typical, status of W, source, note
 FAN_W_MAX = 6.6        # Noctua's maximum input power, 0.55 A at 12 V (maker page via retailer copies, 2026-10-31: unverified)
 LIGHT_BUDGET_W = 22.0  # DECIDED (PM 2026-11-01): uplight, down-light and call light together, the hub balancing them
-UP_W = round(4.434 * 6.0, 1)      # 26.6 W, the uplight strip at full (calculation)
+UP_M = 4.434                        # m: the uplight strip along the shelf (calculation, from the shelf's length)
+UP_W = round(UP_M * 6.0, 1)       # 26.6 W, the uplight strip at full (calculation)
 DOWN_ROW = 0.975                    # m: one down-light row, 39 sections of 25 mm, the longest that fits the 991 mm LED profile 718101 with room for the feed (D-126)
 DOWN_W = round(2 * DOWN_ROW * 6.0, 1)  # 11.7 W, two rows of the down strip at full (calculation)
 CALL_W = 2.7

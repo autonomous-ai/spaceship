@@ -11,8 +11,10 @@ Reads `v2/01-CAD-Native/electrical/electrical_model.py` (routes) and
 - v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-HARNESS-LIST_SPEC.csv
 - v2/05-Engineering/electrical/710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv
 - v2/05-Engineering/electrical/calc-results.md (voltage drop, supply loading, heat, mass)
-- v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf (2 sheets, A3)
-  and a PNG of each sheet (_IMG) for review and for the Fusion drawing's sheet image.
+- v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf (3 sheets, A1; wiring_diagram.py)
+  and a PNG of each sheet (_IMG) for review;
+- v2/02-Drawings/electrical/7100x1_P01_*_DWG.pdf, the 7 assembly sheets (A2; assembly_sheets.py).
+Every sheet keeps its letters at 2.5 mm or more and is checked for overlapping text (sheet_kit.py).
 
 Standard library plus PyMuPDF (already used by tools/fusion/pdf_clear_field.py).
 """

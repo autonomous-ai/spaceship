@@ -24,8 +24,9 @@ The pod's electrical design: mains, the 12 V bus, the sensor hub, lights, fans, 
 | [`calc-results.md`](calc-results.md) | Supply loading, mains current, voltage drop, heat added to the pod, mass (generated) |
 | [`710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv`](710000_P01_ELECTRICAL-LOAD-TABLE_CALC.csv) | The load table (generated) |
 | [`compliance-note.md`](compliance-note.md) | UL 962 / NEC Class 2 note |
-| [`electrical_docs.py`](electrical_docs.py), [`wiring_diagram.py`](wiring_diagram.py) | Write the CSV files, the calculations and the wiring diagram from the model; `--check` fails if a file is stale |
-| `../../02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf` | Wiring diagram, 3 A3 sheets: the schematic; the harness list; two route views at 1:20 |
+| [`electrical_docs.py`](electrical_docs.py), [`wiring_diagram.py`](wiring_diagram.py), [`assembly_sheets.py`](assembly_sheets.py), [`sheet_kit.py`](sheet_kit.py) | Write the CSV files, the calculations, the wiring diagram and the assembly sheets from the model; `--check` fails if a file is stale. `sheet_kit.py` keeps every letter at 2.5 mm or more (titles 3.5; ISO 3098 capital heights), wraps text and table cells instead of cutting them, and fails a sheet with overlapping text or a line through a text |
+| `../../02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf` | Wiring diagram, 3 A1 sheets: the schematic; the harness list; two route views at 1:10 with the site order and keep-outs |
+| `../../02-Drawings/electrical/7100x1_P01_*_DWG.pdf` | The 7 assembly sheets (A2): power unit, hub zone, 4 harnesses and the draw wire set |
 | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv` | Electrical parts list (generated), for the master BOM |
 | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL-HARNESS-LIST_SPEC.csv` | Harness list: every segment with its conductors, length, plugs, grommets and voltage drop (generated) |
 | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step` | The route model (Fusion writes cm, declared in the file, D-13) |

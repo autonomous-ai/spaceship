@@ -1,7 +1,7 @@
 """Assembly drawings for ELECTRICAL's harness and zone assemblies, generated from
-the same tables as the parts list and harness list (A3, one sheet each):
+the same tables as the parts list and harness list (A2, one sheet each):
 
-    710001 power unit (face layout 1:2 and depth section, parts, leads)
+    710001 power unit (face layout 1:3 and depth section, parts, leads)
     710011, 710021, 710023, 710024 harnesses (segments, formboard, plugs, test)
     710031 draw wire set
     710041 hub and controls zone (plate layout 1:1, parts)
@@ -11,15 +11,20 @@ projection, so these sheets are drawn from checked data (guideline 6.1), not
 from a mesh. The folded enclosure body 711001 has its own Fusion drawing; the
 flat plates 711002 and 711005 are defined by their DXF and parts-list row
 (D-89 part 4). Called by electrical_docs.py.
-"""
 
-import fitz
+Every letter is at least 2.5 mm high (titles 3.5; sheet_kit.py), tables wrap
+their cells instead of cutting a value short, view labels go where no line runs
+through them, and each sheet is checked for overlapping text before it's saved.
+"""
 
 import electrical_model as M
 import electrical_parts as EP
-from wiring_diagram import GREY, INK, LIGHT, MAINS, MMPT, SELV, SIG, Sheet
+import fitz
+import sheet_kit as K
+from sheet_kit import GREY, INK, MAINS, SELV, SIG
 
-H_ = 297.0
+DATE = "2026-11-01"
+SOURCE = "electrical_model.py, electrical_parts.py"
 COMMON_NOTES = [
     "UNITS: mm. GENERAL TOLERANCE: harness segment lengths +20/-0 mm; positions taken from the route model +/-5 mm;",
     "sheet-metal parts ISO 2768-m (their DXF or drawing rules). Status of every number: parts list and harness list.",
@@ -33,85 +38,69 @@ def children(pn):
     return [(k, p) for k, p in EP.P.items() if p["parent"] == pn]
 
 
-def frame(sheet, pn, name, notes, scale="see views"):
-    s = sheet
-    s.rect(10, 10, 410, 287, INK, 0.5)
-    x0, y0 = 410 - 185, 287 - 38
-    s.rect(x0, y0, 410, 287, INK, 0.5)
-    rows = [("PROJECT", "FocusPod v2 - Spaceship"), ("TITLE", name), ("DWG / PART NO.", "%s  (assembly)" % pn),
-            ("REV / STATUS", "%s / DRAFT - not for production" % M.REV), ("UNITS: mm / SCALE", "UNITS: mm / %s" % scale),
-            ("SHEET", "1 of 1"), ("DATE / BY", "2026-11-01 / ELECTRICAL Engineer"),
-            ("SOURCE", "electrical_model.py, electrical_parts.py")]
-    for i, (k, v) in enumerate(rows):
-        yy = y0 + 4.2 + i * 4.3
-        s.text(x0 + 2, yy, k, 1.8, GREY, bold=True)
-        s.text(x0 + 40, yy, v, 2.0, INK, bold=(k == "TITLE"))
-        if i:
-            s.line(x0, yy - 3.1, 410, yy - 3.1, GREY, 0.15)
-    s.rect(10, y0, x0 - 2, 287, INK, 0.3)
-    s.text(12, y0 + 3.5, "NOTES", 2.0, INK, bold=True)
-    for i, t in enumerate(notes + COMMON_NOTES):
-        s.text(12, y0 + 7.0 + i * 2.75, t, 1.8, INK)
+def frame(s, pn, name, notes, scale="see views"):
+    """Frame, title block and notes; returns the lowest y the content may use."""
+    return s.frame_and_title(name, "%s  (assembly)" % pn, 1, 1, scale, DATE, SOURCE, list(notes) + COMMON_NOTES) - 2.0
 
 
-def parts_table(s, pn, x, y, w=390):
-    cols = [("ITEM", 10), ("PART NO.", 18), ("NAME", 120), ("QTY", 14), ("UNIT", 10), ("MATERIAL / FINISH", 90),
-            ("STATUS", 128)]
-    s.text(x, y, "PARTS OF %s" % pn, 2.2, INK, bold=True)
-    y += 4.5
-    cx = x
-    for n, wd in cols:
-        s.text(cx, y, n, 1.9, GREY, bold=True)
-        cx += wd
-    for i, (k, p) in enumerate(children(pn), start=1):
-        y += 3.9
-        vals = [str(i), p["part_number"], p["name"], str(p["qty_per_parent"]), EP.unit_of(k),
-                ", ".join(v for v in (p["material"], p["finish"]) if v), p["status"]]
-        cx = x
-        for (n, wd), v in zip(cols, vals):
-            maxc = int(wd / 0.98)
-            v = v if len(v) <= maxc else v[:maxc - 2] + ".."
-            s.text(cx, y, v, 1.85, INK)
-            cx += wd
+def plug(s, x, y, color=INK, k=2.0):
+    """A plug pair, as on the wiring diagram, k times its size there."""
+    s.line(x - 1.6 * k, y - 1.4 * k, x - 0.4 * k, y - 1.4 * k, color, 0.3)
+    s.line(x - 0.4 * k, y - 1.4 * k, x - 0.4 * k, y + 1.4 * k, color, 0.3)
+    s.line(x - 1.6 * k, y + 1.4 * k, x - 0.4 * k, y + 1.4 * k, color, 0.3)
+    s.line(x + 0.4 * k, y - 1.0 * k, x + 0.4 * k, y + 1.0 * k, color, 0.5)
+
+
+def parts_table(s, pn, x, y, w, bottom):
+    """The assembly's parts list lines, every value in full (cells wrap)."""
+    s.text(x, y, "PARTS OF %s" % pn, K.TITLE, INK, True)
+    named = [("ITEM", 12), ("PART NO.", 20), ("NAME", 0.27), ("QTY", 14), ("UNIT", 12), ("MATERIAL / FINISH", 0.27),
+             ("STATUS", 0.46)]
+    fixed = sum(c for _n, c in named if c > 1)
+    cols = [(n, c if c > 1 else (w - fixed) * c) for n, c in named]
+    rows = [[str(i), p["part_number"], p["name"], str(p["qty_per_parent"]), EP.unit_of(k),
+             ", ".join(t for t in (p["material"], p["finish"]) if t), p["status"]]
+            for i, (k, p) in enumerate(children(pn), start=1)]
+    y, left = s.table(x, y + 2.0, cols, rows, bottom)
+    if left:
+        raise ValueError("the parts of %s need another sheet: %d rows left" % (pn, len(left)))
     return y
 
 
-def harness_table(s, rows, x, y):
-    cols = [("ID", 12), ("CARRIER", 22), ("FROM", 54), ("TO", 54), ("CABLE", 50), ("L mm", 11), ("END A", 92), ("END B", 95)]
-    s.text(x, y, "SEGMENTS", 2.2, INK, bold=True)
-    y += 4.5
-    cx = x
-    for n, wd in cols:
-        s.text(cx, y, n, 1.9, GREY, bold=True)
-        cx += wd
-    for h in rows:
-        y += 3.9
-        vals = [h["id"], h["segment"], h["from"], h["to"], h["cable"], str(h["length_mm"]), h["end_a"], h["end_b"]]
-        cx = x
-        for (n, wd), v in zip(cols, vals):
-            maxc = int(wd / 0.98)
-            v = v if len(v) <= maxc else v[:maxc - 2] + ".."
-            s.text(cx, y, v, 1.85, INK)
-            cx += wd
+def harness_table(s, rows, x, y, w, bottom):
+    s.text(x, y, "SEGMENTS", K.TITLE, INK, True)
+    named = [("ID", 16), ("CARRIER", 30), ("FROM", 0.15), ("TO", 0.15), ("CABLE", 0.14), ("L mm", 16), ("END A", 0.28),
+             ("END B", 0.28)]
+    fixed = sum(c for _n, c in named if c > 1)
+    cols = [(n, c if c > 1 else (w - fixed) * c) for n, c in named]
+    vals = [[h["id"], h["segment"], h["from"], h["to"], h["cable"], str(h["length_mm"]), h["end_a"], h["end_b"]] for h in rows]
+    y, left = s.table(x, y + 2.0, cols, vals, bottom)
+    if left:
+        raise ValueError("the segments need another sheet: %d rows left" % len(left))
     return y
 
 
-def formboard(s, rows, x, y, width=390):
+def colour(h):
+    return MAINS if "mains" in h["circuit"] else (SIG if h["circuit"] in ("hub I/O", "LAN", "hub sensor", "hub input") else SELV)
+
+
+def formboard(s, rows, x, y, width):
     """Each segment as a line scaled to its length, with its plug at each end."""
-    s.text(x, y, "FORMBOARD (lengths to scale along the line; plugs at the ends)", 2.2, INK, bold=True)
+    s.text(x, y, "FORMBOARD (lengths to scale along the line; plugs at the ends)", K.TITLE, INK, True)
     longest = max(h["length_mm"] for h in rows) or 1
-    k = (width - 40) / float(longest)
+    x0 = x + 22.0
+    k = (width - 30.0) / float(longest)
+    pitch = 11.0
     for i, h in enumerate(rows):
-        yy = y + 7 + i * 6.5
+        yy = y + 12.0 + i * pitch
         L = h["length_mm"] * k
-        col = MAINS if "mains" in h["circuit"] else (SIG if h["circuit"] in ("hub I/O", "LAN", "hub sensor", "hub input")
-                                                     else SELV)
-        s.text(x, yy + 0.7, h["id"], 1.9, col, bold=True)
-        s.line(x + 14, yy, x + 14 + L, yy, col, 0.6)
-        s.plug(x + 14, yy, "", col)
-        s.plug(x + 14 + L, yy, "", col)
-        s.text(x + 16, yy - 1.2, "%d mm  %s" % (h["length_mm"], h["cable"]), 1.8, col)
-    return y + 7 + len(rows) * 6.5
+        col = colour(h)
+        s.text(x, yy + 0.9, h["id"], K.BODY, col, True)
+        s.line(x0, yy, x0 + L, yy, col, 0.6)
+        plug(s, x0, yy, col)
+        plug(s, x0 + L, yy, col)
+        s.text(x0 + 6.0, yy - 3.4, "%d mm  %s" % (h["length_mm"], h["cable"]), K.BODY, col)
+    return y + 12.0 + len(rows) * pitch
 
 
 def plate_params():
@@ -133,22 +122,24 @@ def plate_params():
 
 
 def sheet_power_unit(doc, v):
-    s = Sheet(doc)
+    s = K.Sheet(doc, "A2")
     p = plate_params()
     pn = "710001"
+    bottom = frame(s, pn, "ELECTRICAL - POWER UNIT - B2: ASSEMBLY", [
+        "Wiring inside the unit: wiring diagram sheet 1 (710000). Leads out: W10a top (6-way), W20a/W24a/W30a/W31a right side.",
+        "Factory test of the unit before B2 ships: earth continuity <= 0.1 ohm, insulation >= 1 Mohm at 500 V DC, RCBO trip, "
+        "rails 12 V +/-3 %.",
+    ], scale="1:3 face, 2:1 section (schematic)")
     k = 1.0 / 3.0
-    ox, oy = 20.0, 108.0
+    ox, oy = 24.0, 128.0
     W, Hh = p["w"], p["h"]                  # the front plate, which covers the cut-out's felt edge
-    s.text(ox, 16, "FACE OF THE POWER UNIT, seen from inside the pod (looking toward +Y), 1:3", 2.2, INK, bold=True)
+    s.text(ox, 22, "FACE OF THE POWER UNIT, seen from inside the pod (looking toward +Y), 1:3", K.TITLE, INK, True)
     s.rect(ox, oy - Hh * k, ox + W * k, oy, INK, 0.5)
     ha, bz = p["box_a"] / 2, p["box_zc"]
     for xc in (p["box_x1"], p["box_x2"]):
         s.rect(ox + (xc - ha) * k, oy - (bz + ha) * k, ox + (xc + ha) * k, oy - (bz - ha) * k, INK, 0.3)
-    s.text(ox + (p["box_x1"] - 30) * k, oy - (bz + ha + 9) * k, "SOCKET (86, HOLD)", 1.8, MAINS)
-    s.text(ox + (p["box_x2"] - 28) * k, oy - (bz + ha + 9) * k, "LAN 2-PORT (86, HOLD)", 1.8, SIG)
     dw, dh = p["din_w"] / 2, p["din_h"] / 2
     s.rect(ox + (p["din_x"] - dw) * k, oy - (p["din_zc"] + dh) * k, ox + (p["din_x"] + dw) * k, oy - (p["din_zc"] - dh) * k, MAINS, 0.3)
-    s.text(ox + (p["din_x"] - 27) * k, oy - (p["din_zc"] + dh + 5) * k, "RCBO", 1.8, MAINS)
     for zc in (p["vent_z1"], p["vent_z2"]):
         for i in range(int(p["vent_n"])):
             xc = W / 2 + (i - (p["vent_n"] - 1) / 2) * p["vent_p"]
@@ -156,49 +147,52 @@ def sheet_power_unit(doc, v):
                    oy - (zc - p["vent_w"] / 2) * k, GREY, 0.2)
     sx_, sy_ = p["screw_x"], p["screw_y"]
     for cx, cy in ((sx_, sy_), (W - sx_, sy_), (sx_, Hh - sy_), (W - sx_, Hh - sy_)):
-        s.p.draw_circle(s.pt(ox + cx * k, oy - cy * k), p["screw_d"] / 2 * k * MMPT, color=INK, width=0.2 * MMPT)
-    s.text(ox, oy + 4.5, "plate %.0f x %.0f over the unit (X %.0f-%.0f, Z %.0f-%.0f in the pod), 2 mm off the felt; 4 x M4 at %.0f / %.0f "
-           "from the plate's edges" % (W, Hh, v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], sx_, sy_), 1.9, INK)
+        s.circle(ox + cx * k, oy - cy * k, p["screw_d"] / 2 * k, INK, 0.2)
+    # labels once the lines are drawn: each above its own box
+    s.label(ox + (p["box_x1"] - ha) * k, oy - (bz + ha) * k - 1.5, "SOCKET (86, HOLD)", K.BODY, MAINS)
+    s.label(ox + (p["box_x2"] - ha) * k, oy - (bz + ha) * k - 1.5, "LAN 2-PORT (86, HOLD)", K.BODY, SIG)
+    s.label(ox + (p["din_x"] - dw) * k, oy - (p["din_zc"] + dh) * k - 1.5, "RCBO", K.BODY, MAINS)
+    s.para(ox, oy + 6.0, "Plate %.0f x %.0f over the unit (X %.0f-%.0f, Z %.0f-%.0f in the pod), 2 mm off the felt; 4 x M4 at "
+           "%.0f / %.0f from the plate's edges." % (W, Hh, v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], sx_, sy_), 250.0)
     # depth section
-    sx, sy = 200.0, 22.0
-    s.text(sx, 16, "DEPTH SECTION THROUGH B2, 2:1 (toward the skin to the right)", 2.2, INK, bold=True)
+    sx, sy = 330.0, 30.0
+    s.text(sx, 22, "DEPTH SECTION THROUGH B2, 2:1 (toward the skin to the right)", K.TITLE, INK, True)
     layers = [("felt face Y 766", 0), ("cassette 34", 34), ("gap 4", 38), ("frame bay 40", 78), ("bond 3", 81), ("ACP 3", 84)]
-    for i, (lab, d) in enumerate(layers):
+    for _lab, d in layers:
         s.line(sx + d * 2, sy + 2, sx + d * 2, sy + 60, GREY, 0.2)
-        s.text(sx + d * 2 + 0.5, sy + 64 + (i % 2) * 3, lab, 1.8, GREY)
     s.rect(sx, sy + 15, sx + v["pu_d"] * 2, sy + 45, MAINS, 0.5)
-    s.text(sx + 2, sy + 31, "power unit, 72 deep", 1.9, MAINS)
-    s.text(sx, sy + 74, "Unit fixed to B2's frame (fixing HOLD, WALL IF-12); cassette cut-out 4 mm clear all round (floating lining).", 1.8, INK)
-    y = parts_table(s, pn, 20, 118)
-    frame(s, pn, "ELECTRICAL - POWER UNIT - B2: ASSEMBLY", [
-        "Wiring inside the unit: wiring diagram sheet 1 (710000). Leads out: W10a top (6-way), W20a/W24a/W30a/W31a right side.",
-        "Factory test of the unit before B2 ships: earth continuity <= 0.1 ohm, insulation >= 1 Mohm at 500 V DC, RCBO trip, rails 12 V +/-3 %.",
-    ], scale="1:3 face, 2:1 section (schematic)")
+    s.label(sx + 3, sy + 31, "power unit, %.0f deep" % v["pu_d"], K.BODY, MAINS)
+    down = [(0.0, 4.6 * i) for i in range(8)]
+    for lab, d in layers:                                 # each under its line, stepped down where they'd meet
+        s.label(sx + d * 2 + 0.6, sy + 65, lab, K.BODY, GREY, around=down)
+    s.para(sx, sy + 108, "Unit fixed to B2's frame (fixing HOLD, WALL IF-12); cassette cut-out 4 mm clear all round "
+           "(floating lining).", 230.0)
+    parts_table(s, pn, 24, 160, 546, bottom)
     return s
 
 
 def sheet_hub(doc, v):
-    s = Sheet(doc)
+    s = K.Sheet(doc, "A2")
     pn = "710041"
-    ox, oy = 30.0, 215.0
-    w = v["hub_w"]
-    s.text(ox, 20, "HUB AND CONTROLS ZONE PLATE 711005, seen from the pod, 1:1", 2.2, INK, bold=True)
-    s.rect(ox, oy - w, ox + w, oy, INK, 0.5)
-    s.rect(ox + w / 2 - 60, oy - 125 - 35, ox + w / 2 + 60, oy - 125 + 35, SIG, 0.4)
-    s.text(ox + w / 2 - 25, oy - 125, "HUB WINDOW (HOLD)", 2.0, SIG)
-    for i, lab in enumerate(("BOOST", "TEST", "CALL")):
-        cx = ox + 30 + i * 40
-        s.p.draw_circle(s.pt(cx, oy - 50), 8.1 * MMPT, color=INK, width=0.3 * MMPT)
-        s.text(cx - 5, oy - 36, lab, 1.9, INK)
-    s.p.draw_circle(s.pt(ox + 150, oy - 50), 3.75 * MMPT, color=INK, width=0.3 * MMPT)
-    s.text(ox + 141, oy - 36, "LIGHT", 1.9, INK)
-    for cx, cy in ((10, 10), (w - 10, 10), (10, w - 10), (w - 10, w - 10)):
-        s.p.draw_circle(s.pt(ox + cx, oy - cy), 2.25 * MMPT, color=GREY, width=0.2 * MMPT)
-    s.text(ox, oy + 5, "180 x 180 on the column's back face, X 957-1137, Z 1110-1290; fuses F3a-F3c behind the plate", 1.9, INK)
-    parts_table(s, pn, 220, 30, w=180)
-    frame(s, pn, "ELECTRICAL - HUB AND CONTROLS ZONE: ASSEMBLY", [
+    bottom = frame(s, pn, "ELECTRICAL - HUB AND CONTROLS ZONE: ASSEMBLY", [
         "Hub window, button and knob holes, fixing holes: HOLD until the hub's size (ISS-060) and CEILING's column fixing.",
     ], scale="1:1")
+    ox, oy = 30.0, 222.0
+    w = v["hub_w"]
+    s.text(ox, 24, "HUB AND CONTROLS ZONE PLATE 711005, seen from the pod, 1:1", K.TITLE, INK, True)
+    s.rect(ox, oy - w, ox + w, oy, INK, 0.5)
+    s.rect(ox + w / 2 - 60, oy - 125 - 35, ox + w / 2 + 60, oy - 125 + 35, SIG, 0.4)
+    for i in range(3):
+        s.circle(ox + 30 + i * 40, oy - 50, 8.1, INK, 0.3)
+    s.circle(ox + 150, oy - 50, 3.75, INK, 0.3)
+    for cx, cy in ((10, 10), (w - 10, 10), (10, w - 10), (w - 10, w - 10)):
+        s.circle(ox + cx, oy - cy, 2.25, GREY, 0.2)
+    s.label(ox + w / 2 - 25, oy - 124, "HUB WINDOW (HOLD)", K.BODY, SIG)
+    for i, lab in enumerate(("BOOST", "TEST", "CALL")):
+        s.label(ox + 30 + i * 40 - 6, oy - 33, lab, K.BODY, INK)
+    s.label(ox + 141, oy - 33, "LIGHT", K.BODY, INK)
+    s.para(ox, oy + 7.0, "180 x 180 on the column's back face, X 957-1137, Z 1110-1290; fuses F3a-F3c behind the plate.", 200.0)
+    parts_table(s, pn, 236, 30, 334, bottom)
     return s
 
 
@@ -213,7 +207,7 @@ CABLE_PN = [("6 x 18 AWG", "718029"), ("4 x 18 AWG", "718024"), ("2 x 18 AWG", "
             ("4 x 20 AWG", "718026"), ("4 x 24 AWG", "718027"), ("Cat6", "718028"), ("draw cord", "718044")]
 
 
-def harness_material(s, rows, x, y):
+def harness_material(s, rows, x, y, w, bottom):
     """This harness's share of the parts list's lines, counted from its segments."""
     names = {p["part_number"]: p["name"] for p in EP.P.values()}
     cables, conns, holes = {}, {}, set()
@@ -230,30 +224,30 @@ def harness_material(s, rows, x, y):
             g = g.strip()
             if g.startswith(("G-", "S-")):
                 holes.add(g.split(" ")[0])
-    s.text(x, y, "MATERIAL FOR THIS HARNESS (its share of the parts list lines, counted from the segments above)", 2.2, INK, bold=True)
-    y += 4.5
-    for pn, qty, unit in ([(p, round(q, 2), "m") for p, q in sorted(cables.items())] +
-                          [(p, q, "pc") for p, q in sorted(conns.items())]):
-        s.text(x, y, pn, 1.9, INK)
-        s.text(x + 18, y, names.get(pn, ""), 1.9, INK)
-        s.text(x + 150, y, "%s %s" % (qty, unit), 1.9, INK)
-        y += 3.9
+    s.text(x, y, "MATERIAL FOR THIS HARNESS (its share of the parts list lines, counted from the segments above)",
+           K.TITLE, INK, True)
+    vals = [[pn, names.get(pn, ""), "%s %s" % (qty, unit)] for pn, qty, unit in
+            ([(p, round(q, 2), "m") for p, q in sorted(cables.items())] + [(p, q, "pc") for p, q in sorted(conns.items())])]
+    y, left = s.table(x, y + 2.0, [("PART NO.", 24), ("NAME", 150), ("QTY", 30)], vals, bottom)
+    if left:
+        raise ValueError("the material list needs another sheet")
+    y += 2.0 + K.BODY * K.CAP
     if holes:
-        s.text(x, y, "Bushings and edge-protected slots it passes: %s (Heyco 2836 / edge strip, parts list 718041, 718042)" %
-               ", ".join(sorted(holes)), 1.9, INK)
-        y += 3.9
-    s.text(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037), one per way.", 1.9, INK)
-    return y
+        y = s.para(x, y, "Bushings and edge-protected slots it passes: %s (Heyco 2836 / edge strip, parts list 718041, "
+                   "718042)." % ", ".join(sorted(holes)), w)
+    return s.para(x, y, "Terminals: Mini-Fit Jr female 39-00-0039 (718036) and male 39-00-0041 (718037), one per way.", w)
 
 
 def sheet_harness(doc, pn, name, rows):
-    s = Sheet(doc)
-    y = harness_table(s, rows, 14, 18)
-    y = formboard(s, rows, 14, y + 10)
-    harness_material(s, rows, 14, min(y + 8, 200))
-    frame(s, pn, name + ": ASSEMBLY", [
+    s = K.Sheet(doc, "A2")
+    bottom = frame(s, pn, name + ": ASSEMBLY", [
         "Segments, plugs and lengths from the harness list (710000_P01_ELECTRICAL-HARNESS-LIST_SPEC.csv), same revision.",
     ], scale="formboard lengths to scale, table not to scale")
+    y = harness_table(s, rows, 16, 24, 558, bottom)
+    y = formboard(s, rows, 16, y + 12, 558)
+    y = harness_material(s, rows, 16, y + 10, 558, bottom)
+    if y > bottom:
+        raise ValueError("%s: the sheet's content runs into its notes" % pn)
     return s
 
 
@@ -272,7 +266,7 @@ def write(out_dir, v, harness):
         jobs.append((pn, stem, (lambda p, n: (lambda d: sheet_harness(d, p, n, by_pn.get(p, []))))(pn, nm)))
     for pn, stem, fn in jobs:
         doc = fitz.open()
-        fn(doc)
+        fn(doc).check()                                   # no overlapping text, no line through a text, in the frame
         path = "%s/%s_%s_%s_DWG.pdf" % (out_dir, pn, M.REV, stem)
         doc.set_metadata({"title": "%s %s %s" % (pn, M.REV, stem), "author": "ELECTRICAL Engineer",
                           "creator": "assembly_sheets.py", "producer": "PyMuPDF",
