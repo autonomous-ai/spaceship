@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1180" height="820" viewBox="0 0 1180 820">
 <rect width="1180" height="820" fill="#ffffff"/>
 <text x="20.0" y="30.0" font-family="Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#222">910001 P01  PALLET LOAD 1 - 48 x 40 in (1219 x 1016 mm) - upright stack, side view across the 40 in side</text>
-<text x="20.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Gross 223 kg, loaded height 1641 mm, stack 904 of 1016 mm. Open face on the LEFT: take pieces in label order. Units mm. DRAFT.</text>
+<text x="20.0" y="50.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Gross 223 kg, loaded height 1641 mm, stack 950 of 1016 mm. Open face on the LEFT: take pieces in label order. Units mm. DRAFT.</text>
 <rect x="70" y="720" width="365.8" height="43.6" fill="#d2b48c" stroke="#7a5c2e"/>
 <text x="252.9" y="750.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#222">48 x 40 pallet, 121</text>
 <rect x="70" y="180.0" width="3.6" height="540.0" fill="#999"/>
@@ -9,43 +9,43 @@
 <g transform="translate(78.8,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-01 F1 8.2 kg (step 3)</text></g>
 <rect x="79.4" y="196.2" width="4.3" height="523.8" fill="#8d6e63" stroke="#333" stroke-width="0.4"/>
 <g transform="translate(84.5,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-02 F2 8.2 kg (step 3)</text></g>
-<rect x="85.1" y="317.3" width="16.6" height="402.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
+<rect x="85.1" y="314.3" width="16.6" height="405.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
 <g transform="translate(96.4,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-03 B1 8.6 kg (step 4)</text></g>
-<rect x="103.1" y="317.3" width="30.2" height="402.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(121.2,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-04 B2 11.5 kg (step 4)</text></g>
-<rect x="134.8" y="182.6" width="16.6" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(146.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-05 L1 11.2 kg (step 5)</text></g>
-<rect x="152.8" y="182.6" width="16.6" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(164.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-06 R1 11.2 kg (step 5)</text></g>
-<rect x="170.8" y="317.3" width="16.6" height="402.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(182.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-07 B3 8.6 kg (step 6)</text></g>
-<rect x="188.8" y="317.3" width="16.6" height="402.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(200.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-08 B4 8.6 kg (step 6)</text></g>
-<rect x="206.8" y="182.6" width="16.6" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(218.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-09 L2 11.3 kg (step 7)</text></g>
-<rect x="224.8" y="182.6" width="16.6" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(236.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-10 R2 11.3 kg (step 7)</text></g>
-<rect x="242.8" y="181.8" width="16.6" height="538.2" fill="#d9b44a" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(254.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-11 C1 10.0 kg (step 8)</text></g>
-<rect x="260.8" y="181.8" width="21.6" height="538.2" fill="#d9b44a" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(274.6,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-12 C2 10.3 kg (step 8)</text></g>
-<rect x="283.8" y="199.8" width="12.2" height="520.2" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(293.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-13 R1 10.3 kg (step 14)</text></g>
-<rect x="297.5" y="199.8" width="12.2" height="520.2" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(306.6,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-14 R2 9.9 kg (step 14)</text></g>
-<rect x="311.2" y="199.8" width="12.2" height="520.2" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(320.3,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-15 L1 10.3 kg (step 14)</text></g>
-<rect x="324.9" y="199.8" width="12.2" height="520.2" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(334.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-16 L2 9.9 kg (step 14)</text></g>
-<rect x="338.6" y="317.3" width="12.2" height="402.7" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(347.7,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-17 B1 8.0 kg (step 14)</text></g>
-<rect x="352.2" y="317.3" width="12.2" height="402.7" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(361.4,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-18 B2 8.0 kg (step 14)</text></g>
-<rect x="365.9" y="317.9" width="12.2" height="402.1" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(375.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-19 B3 8.4 kg (step 14)</text></g>
-<rect x="379.6" y="317.9" width="12.2" height="402.1" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
-<g transform="translate(388.7,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-20 B4 8.4 kg (step 14)</text></g>
-<rect x="391.8" y="180.0" width="3.6" height="540.0" fill="#999"/>
+<rect x="103.1" y="314.3" width="31.7" height="405.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(122.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-04 B2 11.5 kg (step 4)</text></g>
+<rect x="136.2" y="182.6" width="17.5" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(148.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-05 L1 11.2 kg (step 5)</text></g>
+<rect x="155.1" y="182.6" width="17.5" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(166.9,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-06 R1 11.2 kg (step 5)</text></g>
+<rect x="174.0" y="317.3" width="16.6" height="402.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(185.3,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-07 B3 8.6 kg (step 6)</text></g>
+<rect x="192.0" y="317.3" width="16.6" height="402.7" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(203.3,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-08 B4 8.6 kg (step 6)</text></g>
+<rect x="210.0" y="182.6" width="17.5" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(221.8,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-09 L2 11.3 kg (step 7)</text></g>
+<rect x="228.9" y="182.6" width="17.5" height="537.4" fill="#c9a227" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(240.7,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-10 R2 11.3 kg (step 7)</text></g>
+<rect x="247.8" y="181.8" width="16.6" height="538.2" fill="#d9b44a" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(259.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-11 C1 10.0 kg (step 8)</text></g>
+<rect x="265.8" y="181.8" width="21.6" height="538.2" fill="#d9b44a" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(279.6,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-12 C2 10.3 kg (step 8)</text></g>
+<rect x="288.9" y="199.8" width="13.7" height="520.2" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(298.7,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-13 R1 10.3 kg (step 14)</text></g>
+<rect x="304.0" y="199.8" width="13.7" height="520.2" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(313.8,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-14 R2 9.9 kg (step 14)</text></g>
+<rect x="319.1" y="199.8" width="13.7" height="520.2" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(329.0,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-15 L1 10.3 kg (step 14)</text></g>
+<rect x="334.2" y="199.8" width="13.7" height="520.2" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(344.1,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-16 L2 9.9 kg (step 14)</text></g>
+<rect x="349.4" y="317.3" width="13.7" height="402.7" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(359.2,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-17 B1 8.0 kg (step 14)</text></g>
+<rect x="364.5" y="317.3" width="13.7" height="402.7" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(374.3,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-18 B2 8.0 kg (step 14)</text></g>
+<rect x="379.6" y="317.9" width="13.7" height="402.1" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(389.4,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-19 B3 8.4 kg (step 14)</text></g>
+<rect x="394.7" y="317.9" width="13.7" height="402.1" fill="#7f8c8d" stroke="#333" stroke-width="0.4"/>
+<g transform="translate(404.6,714.0) rotate(-90)"><text x="0.0" y="0.0" font-family="Helvetica, Arial, sans-serif" font-size="8" text-anchor="start" font-weight="normal" fill="#222">1-20 B4 8.4 kg (step 14)</text></g>
+<rect x="408.4" y="180.0" width="3.6" height="540.0" fill="#999"/>
 <line x1="60" y1="172.8" x2="445.8" y2="172.8" stroke="#c0392b" stroke-dasharray="4 3"/>
 <text x="449.8" y="176.8" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#c0392b">top of load 1641 (limit 1829)</text>
 <line x1="60" y1="105.1" x2="445.8" y2="105.1" stroke="#555" stroke-dasharray="2 4"/>
