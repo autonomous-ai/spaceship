@@ -1187,6 +1187,66 @@ def test_angled_face_gets_its_own_view():
     assert "Holes go THRU the part" in doc[1].get_text()
 
 
+def _block_with_a_facet(path, twist=0.0):
+    """A test block 120 x 60 x 30, two Ø8 holes down through its top, and a facet along its +Y top edge, 30° from the
+    top (turned twist degrees about Z), with a Ø6 hole square to it, through to the bottom; no holes on its sides."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakeHalfSpace
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pln, gp_Pnt
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        assert c.IsDone()
+        return c.Shape()
+    a, t = math.radians(30.0), math.radians(twist)
+    z0, d = 300.0, 20.0
+    n = (math.sin(t) * math.sin(a), math.cos(t) * math.sin(a), math.cos(a))      # the facet's outward normal
+    p0 = (60.0, 60.0 - d, z0 + 30.0)                                              # on the top's edge of the facet
+    sh = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, z0), 120, 60, 30).Shape()
+    face = BRepBuilderAPI_MakeFace(gp_Pln(gp_Pnt(*p0), gp_Dir(*n)), -500, 500, -500, 500).Face()
+    sh = cut(sh, BRepPrimAPI_MakeHalfSpace(face, gp_Pnt(*(p0[i] + 10 * n[i] for i in range(3)))).Solid())
+    for x in (30.0, 90.0):
+        sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, 20, z0 - 1), gp_Dir(0, 0, 1)), 4.0, 32).Shape())
+    mid = (60.0, 60.0 - d / 2, z0 + 30.0 - n[1] * (d / 2) / n[2])                  # on the facet, half way down it
+    sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(*(mid[i] - 40 * n[i] for i in range(3))), gp_Dir(*n)),
+                                          3.0, 42).Shape())
+    # edges written as their own curves, as _tray does; the setting is put back after
+    w = STEPControl_Writer()
+    was = Interface_Static.IVal_s("write.surfacecurve.mode")
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(sh, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", was)
+    return path
+
+
+def test_an_angled_views_arrow_gets_a_view_to_stand_in():
+    """A view square to an angled face needs a drawn view that shows that face edge on, for its arrow (ISO 128-30).
+    AIR's 611703: its only view is square to its main facet, so its view F was refused for its arrow. A test block
+    whose only drawn view looks down on its top: the view from its side, which shows the facet edge on, is added and
+    carries the arrow, and the sheet reads back. With the facet turned 2° about Z, no related view shows it exactly
+    edge on (1° off): the nearest one, within 5°, is added (as for 611703's member drawn along its own axis).
+    #369's code refused both ("no view shows the angled face edge on")."""
+    d = os.path.join(TMP, "facet")
+    os.makedirs(d, exist_ok=True)
+    for twist in (0.0, 2.0):
+        step = _block_with_a_facet(os.path.join(d, "219984_P01_TEST-BLOCK-FACET-%d_STEP.step" % twist), twist)
+        p = os.path.join(d, "219984-%d.pdf" % twist)
+        compose.make("219984", "none", SPEC, p, step=step, row=dict(ROW, part_number="219984",
+                                                                     name="TEST - BLOCK - FACET"))
+        fails, _st = readback.check(p, step)
+        assert not fails, (twist, fails)
+        names = [v["name"] for v in readback.read_data(fitz.open(p))["views"]]
+        assert any(nm in ("from_left", "from_right", "above", "below") for nm in names), (twist, names)
+
+
 def test_a_view_square_to_an_angled_face_starts_a_row_under_the_others():
     """AIR's 611703 (#369 with AIR's parts): its view F, square to its 4° facet, ran past the row's end after the two
     sections across its folds and was refused, though the sheet had room under the row. Laid out as 611703's row is at

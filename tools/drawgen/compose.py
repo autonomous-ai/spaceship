@@ -208,6 +208,9 @@ FACE_WORDS = {"-Z": "bottom face", "+Z": "top face", "-Y": "front face", "+Y": "
 VIEW_WORDS = {"principal": "PRINCIPAL VIEW", "above": "VIEW FROM ABOVE", "below": "VIEW FROM BELOW",
               "from_left": "VIEW FROM THE LEFT", "from_right": "VIEW FROM THE RIGHT", "rear": "REAR VIEW"}
 POSITION = {"above": (0, -1), "below": (0, 1), "from_left": (1, 0), "from_right": (-1, 0), "rear": (2, 0)}
+# a view within 5° of showing a face edge on can carry the arrow of the view square to that face, when none shows it
+# exactly (AIR's 611703: its facet 4° off every view of a member drawn along its own axis)
+EDGE_ON_NEAR = math.sin(math.radians(5.0))
 
 
 class Part:
@@ -1110,6 +1113,16 @@ def plan_views(part, spec):
             g.view = g.vname
             if g.vname not in pl.aux:
                 pl.plain.add(g.vname)
+    # a view square to an angled face needs a drawn view that shows that face edge on (or within EDGE_ON_NEAR), for its
+    # arrow (ISO 128-30): where no planned view does, the related view nearest to it is added (AIR's 611703: its only
+    # view is square to its main facet, and its related views are 3° to 4° off its view F's face)
+    for _nm, va in sorted(pl.aux.items()):
+        if any(abs(vdot(rel[nm].n, va.n)) < EDGE_ON_NEAR for nm in pl.plain if nm in rel):
+            continue
+        cands = [nm for nm in ("above", "below", "from_left", "from_right", "rear")
+                 if abs(vdot(rel[nm].n, va.n)) < EDGE_ON_NEAR]
+        if cands:
+            pl.plain.add(min(cands, key=lambda nm: abs(vdot(rel[nm].n, va.n))))
     for g in pl.groups:
         if not g.blocked:
             continue
@@ -2351,8 +2364,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             if avd is None:
                 continue
             n3 = avd.view.n
-            hosts = [vds[h] for h in ("principal", "above", "below", "from_left", "from_right", "rear")
-                     if h in vds and abs(vdot(n3, vds[h].view.n)) < 1e-6]
+            drawn = [vds[h] for h in ("principal", "above", "below", "from_left", "from_right", "rear") if h in vds]
+            hosts = [v for v in drawn if abs(vdot(n3, v.view.n)) < 1e-6] or \
+                sorted((v for v in drawn if abs(vdot(n3, v.view.n)) < EDGE_ON_NEAR),
+                       key=lambda v: abs(vdot(n3, v.view.n)))
             if not hosts:
                 raise NotDrawable("%s: no view shows the angled face edge on, for view %s's arrow" % (
                     part.pn, avd.letter))
