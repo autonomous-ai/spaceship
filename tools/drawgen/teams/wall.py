@@ -112,8 +112,9 @@ PARTS = {
     "211304": _skin("RH"),
     "511201": _back_tray("-X"),
     # B2's tray carries ELECTRICAL's features (feature rationale F39, F44, F45, with their tolerances)
-    "511202": _back_tray("+X", TRAY_TOLERANCE + "; the Ø19.1 bushing hole ±0.2 (F39), the power unit cut-out "
-                         "304 x 268 and the corner slot 11 x 80 ±0.5 (F44, F45; assumptions)"),
+    "511202": _back_tray("+X", TRAY_TOLERANCE + "; F39's bushing hole Ø19.1 ±0.2, F44's power unit cut-out "
+                         "304 x 268 and F45's corner slot 11 x 80 ±0.5 (the feature rationale's tolerances, "
+                         "assumptions)"),
 }
 
 _FILL = ("D-128: a fill piece with through-notches only goes on its own DXF with a full parts-list row (WALL's D-123 "
