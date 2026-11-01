@@ -30,8 +30,8 @@ AIR,"Supply cartridge, in the air column",1,10.800,10.80,calculation,"S38: alumi
 AIR,"Exhaust cartridge, in the soffit",1,10.800,10.80,calculation,S38: same part,estimate
 AIR,"Air column: felt-covered faces, fill, frame, kick grille, hub plate",1,9.735,9.74,calculation; fill provisional,S38: faces 3 mm ACP + 9 mm felt; 30 mm fill; 4 corner angles; 0.6 kg grille and plate (assumption); fill 24 kg/m3,estimate
 AIR,"Soffit: felt-covered faces, fill, frame, exhaust grille",1,9.798,9.80,calculation; fill provisional,S38: underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption); fill 24 kg/m3,estimate
-AIR,"Supply fan box and transition, in the right block; ships loose, fitted on site",1,5.066,5.07,calculation,"S38: 2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation); goes into the right block through its removable inner face (D-59), so the block ships at 20 kg or less (D-03)",estimate
-AIR,"Exhaust fan box and roof sleeve, in the soffit",1,3.475,3.48,calculation,"S38: 2 mm aluminium, 50 mm lining",estimate
+AIR,"Supply fan box and transition, in the right block; ships loose, fitted on site",1,4.826,4.83,calculation,"S38: 2 mm aluminium, 50 mm lining at 32 kg/m3; transition 0.35 m2 (calculation); goes into the right block through its removable inner face (D-59), so the block ships at 20 kg or less (D-03)",estimate
+AIR,"Exhaust fan box and roof sleeve, in the soffit",1,3.307,3.31,calculation,"S38: 2 mm aluminium, 50 mm lining at 32 kg/m3",estimate
 AIR,"Intake riser with a mesh allowance, in the right block; ships loose, fitted on site",1,9.229,9.23,calculation,"S38: 1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption); goes into the right block through its removable inner face (D-59), so the block ships at 20 kg or less (D-03)",estimate
 AIR,Roof slot grille and sleeve,1,0.500,0.50,calculation,S38: assumption,estimate
 AIR,Four 12 V fans,1,1.200,1.20,assumption,S38: 0.3 kg each until the sample is weighed,estimate

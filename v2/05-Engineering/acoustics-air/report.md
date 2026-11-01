@@ -235,7 +235,7 @@ Applied one after another to the plan with 8 mm glass. kg is the added mass for 
 | 2 | Door drop seal | 11.8 | 15.3 | 18.2 | +0.3 | 1.0 |
 | 3 | Fixed glass in sealed U-profiles | 11.8 | 15.4 | 18.2 | +0.0 | 0.0 |
 | 4 | Gaskets on every panel joint | 12.0 | 15.5 | 18.4 | +0.2 | 1.0 |
-| 5 | Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 51.8 |
+| 5 | Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block) | 12.7 | 16.3 | 19.0 | +0.8 | 51.4 |
 | 6 | Thin floor with base seal (DECIDED, D-05) | 12.9 | 16.2 | 18.7 | -0.1 | 0.5 |
 | 7 | Sealed cable holes | 13.0 | 16.3 | 18.7 | +0.0 | 0.1 |
 
@@ -260,15 +260,15 @@ Glass front (8 mm tempered or 4+4 laminated):
 | 300 | nothing fits |  |  |
 | 320 | nothing fits |  |  |
 | 340 | SW-FOAM20 / SW-FOAM20 / Tempered 8 mm | 331 | 8.7 / 11.4 / 13.6 |
-| 360 | SW-FOAM20 / DL-ST-40-FLG-12 / Tempered 8 mm | 353 | 9.4 / 12.2 / 14.4 |
+| 360 | SW-FOAM20 / DL-ST-40-FLG-12 / Tempered 8 mm | 352 | 9.4 / 12.2 / 14.4 |
 | 380 | PLAN-NOPLY / DL-ST-40-FLG-12 / Laminated acoustic 4+4 (8.76 mm) | 365 | 9.5 / 12.3 / 14.5 |
 | 400 | DL-ST4-40-FLG-12 / PLAN-NOPLY / Tempered 8 mm | 396 | 11.9 / 15.4 / 17.7 |
-| 420 | DL-ST4-40-FLG-12 / DL-ST-40-FLG-12 / Tempered 8 mm | 415 | 14.0 / 18.5 / 20.9 |
+| 420 | DL-ST-40-FLG-12 / DL-PLY4 / Tempered 8 mm | 420 | 14.0 / 18.7 / 21.1 |
 | 440 | DL-ST-40-FLG-12 / DL-2HDF-60-FL / Tempered 8 mm | 436 | 14.8 / 19.7 / 22.1 |
-| 460 | DL-ST-60-FL / DL-P6-HDF-60-FL / Tempered 8 mm | 460 | 14.8 / 20.4 / 22.8 |
+| 460 | DL-2HDF-60-FL / DL-ST4-40-FLG-12 / Tempered 8 mm | 460 | 15.1 / 20.5 / 22.9 |
 | 480 | DL-2HDF-60-FL / DL-P6-HDF-60-FL / Tempered 8 mm | 478 | 15.7 / 21.5 / 23.9 |
 | 500 | DL-P6-HDF-60-FL / DL-P6-P9-60-FL / Tempered 8 mm | 499 | 16.3 / 22.1 / 24.6 |
-| 520 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 518 | 17.4 / 23.1 / 25.6 |
+| 520 | DL-P6-P9-DEC / DL-P6-P9-60-FL / Laminated acoustic 4+4 (8.76 mm) | 517 | 17.4 / 23.1 / 25.6 |
 
 Smoked acrylic 10 mm front:
 
@@ -277,23 +277,23 @@ Smoked acrylic 10 mm front:
 | 280 | nothing fits |  |  |
 | 300 | nothing fits |  |  |
 | 320 | SW-FOAM20 / PLAN-NOPLY / Smoked acrylic 10 mm | 310 | 8.7 / 11.4 / 13.5 |
-| 340 | SW-FOAM20 / DL-ST-60-FL / Smoked acrylic 10 mm | 335 | 9.4 / 12.2 / 14.4 |
-| 360 | PLAN-NOPLY / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 353 | 9.5 / 12.3 / 14.5 |
-| 380 | DL-PLY4 / SW-FOAM20-DL / Smoked acrylic 10 mm | 380 | 12.3 / 17.0 / 19.3 |
+| 340 | SW-FOAM20 / DL-ST-60-FL / Smoked acrylic 10 mm | 334 | 9.4 / 12.2 / 14.4 |
+| 360 | PLAN-NOPLY / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 352 | 9.5 / 12.3 / 14.5 |
+| 380 | DL-PLY4 / SW-FOAM20-DL / Smoked acrylic 10 mm | 379 | 12.3 / 17.0 / 19.3 |
 | 400 | DL-ST-40-FLG-12 / DL-ST4-40-FLG-12 / Smoked acrylic 10 mm | 398 | 14.3 / 18.8 / 21.1 |
-| 420 | DL-ST-40-FLG-12 / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 416 | 14.7 / 19.4 / 21.8 |
-| 440 | DL-2HDF-60-FL / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 440 | 15.2 / 20.4 / 22.8 |
-| 460 | DL-2HDF-60-FL / DL-P6-P9-DEC / Smoked acrylic 10 mm | 459 | 15.7 / 21.1 / 23.6 |
+| 420 | DL-ST-40-FLG-12 / DL-P6-P9-DEC / Smoked acrylic 10 mm | 420 | 14.8 / 19.5 / 21.9 |
+| 440 | DL-2HDF-60-FL / DL-ST-40-FLG-12 / Smoked acrylic 10 mm | 439 | 15.2 / 20.4 / 22.8 |
+| 460 | DL-2HDF-60-FL / DL-P6-P9-DEC / Smoked acrylic 10 mm | 458 | 15.7 / 21.1 / 23.6 |
 | 480 | DL-P6-P9-DEC / DL-2HDF-60-FL / Smoked acrylic 10 mm | 477 | 16.4 / 21.8 / 24.3 |
-| 500 | DL-P6-P9-60-FL / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 499 | 17.2 / 22.4 / 24.9 |
+| 500 | DL-P6-P9-60-FL / DL-P6-HDF-60-FL / Smoked acrylic 10 mm | 498 | 17.2 / 22.4 / 24.9 |
 | 520 | DL-P6-P9-60-FL / DL-P6-P9-60-FL / Smoked acrylic 10 mm | 508 | 17.9 / 22.9 / 25.4 |
 
 Best builds inside the DECIDED rules:
 
 | Case | Walls | Ceiling | Front | Silencer casing | Total kg | D_S,A low / central / high |
 |---|---|---|---|---|---:|---|
-| DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 429 | 14.7 / 19.3 / 21.7 |
-| Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 436 | 14.7 / 19.3 / 21.7 |
+| DECIDED stack | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 428 | 14.7 / 19.3 / 21.7 |
+| Same with 20x40x1.5 frames | DL-ST-40-FLG | DL-ST-40-FLG | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 435 | 14.7 / 19.3 / 21.7 |
 | Same with a 0.4 mm tray (rejected: costs 1 dB) | DL-ST4-40-FLG-12 | DL-ST4-40-FLG-12 | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 415 | 13.9 / 18.3 / 20.7 |
 | Same, felt flat on the ceiling lining (no gap) | DL-ST-40-FLG-12 | DL-ST-40-FL | Laminated acoustic 4+4 (8.76 mm) | aluminium 2.0 mm | 429 | 14.7 / 19.3 / 21.7 |
 | Acrylic experiment: 10 mm with hinge stile | DL-ST-40-FLG-12 | DL-ST-40-FLG-12 | Smoked acrylic 10 mm | aluminium 2.0 mm | 401 | 14.5 / 19.0 / 21.4 |
@@ -380,8 +380,8 @@ The cartridge, the same part on both paths:
 
 | Cartridge casing | Air parts kg | Passage IL 125 | 250 | 500 | 1k | 2k | 4k dB | Casing + 30 mm fill + felt-covered face R 125 | 250 | 500 | 1k | 2k | 4k dB | At 53 l/s dB(A) | Flow at 30 dB(A) l/s |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| aluminium 2.0 mm (pick) | 59.8 | 3 | 13 | 28 | 32 | 29 | 28 | 14 | 20 | 31 | 48 | 55 | 46 | 25.2 | 66 |
-| aluminium 0.8 mm | 48.5 | 3 | 13 | 28 | 32 | 29 | 28 | 10 | 16 | 23 | 41 | 51 | 42 | 29.9 | 53 |
+| aluminium 2.0 mm (pick) | 59.4 | 3 | 13 | 28 | 32 | 29 | 28 | 14 | 20 | 31 | 48 | 55 | 46 | 25.2 | 66 |
+| aluminium 0.8 mm | 48.1 | 3 | 13 | 28 | 32 | 29 | 28 | 10 | 16 | 23 | 41 | 51 | 42 | 29.9 | 53 |
 
 Pressure per path, supply / exhaust: 26 l/s 4 / 3 Pa; 53 l/s 17 / 12 Pa; 65 l/s 26 / 18 Pa. At full speed the supply pair reaches 73 l/s and the exhaust pair 82 l/s.
 
@@ -445,15 +445,15 @@ The band piece under the block is 371 mm long (skeleton P04). Open heights and f
 | Exhaust cartridge, in the soffit | same | 10.8 | same part |
 | Air column: felt-covered faces, fill, frame, kick grille, hub plate | 212 x 360 x 2108 | 9.9 | faces 3 mm ACP + 9 mm felt; 30 mm fill; 4 corner angles; 0.6 kg grille and plate (assumption) |
 | Soffit: felt-covered faces, fill, frame, exhaust grille | 2322 x 360 x 220 | 10.0 | underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption) |
-| Supply fan box and transition, in the right block | 300 x 155 x 300 + transition | 5.1 | 2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation) |
-| Exhaust fan box and roof sleeve, in the soffit | 294 x 314 x 173 | 3.5 | 2 mm aluminium, 50 mm lining |
+| Supply fan box and transition, in the right block | 300 x 155 x 300 + transition | 4.8 | 2 mm aluminium, 50 mm lining at 32 kg/m3; transition 0.35 m2 (calculation) |
+| Exhaust fan box and roof sleeve, in the soffit | 294 x 314 x 173 | 3.3 | 2 mm aluminium, 50 mm lining at 32 kg/m3 |
 | Intake riser with a mesh allowance, in the right block | 139-250 x 155 x 1740 | 9.2 | 1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption) |
 | Roof slot grille and sleeve | 285 x 294 | 0.5 | assumption |
 | Four 12 V fans | 140 x 140 x 25 | 1.2 | 0.3 kg each (assumption) |
-| **Air parts in all** |  | **61.0** | heaviest part under the 20 kg rule: 10.8 kg |
+| **Air parts in all** |  | **60.6** | heaviest part under the 20 kg rule: 10.8 kg |
 | Less the ceiling lining the soffit replaces | 2322 x 360 | -5.0 | 0.5 mm tray, returns and felt |
 | Less PR #11's cartridges, fill, riser and fans |  | -45.0 | the model's earlier air parts |
-| **Change to the pod** |  | **+11.0** | the DECIDED stack in this model goes to 429 kg |
+| **Change to the pod** |  | **+10.6** | the DECIDED stack in this model goes to 428 kg |
 
 The layout study carries PR #11's air parts at 45.0 kg (its `hw_air_kg`). With D-60 its 426.7 kg becomes about 438.5 kg, still open against the 420 kg cap (D-54, ISS-080). Every D-60 part stays under the 20 kg rule.
 
