@@ -186,7 +186,8 @@ def run(_context):
             failures.append("revert")
     finally:
         doc.close(False)
-        src.activate()
+        if src is not None:         # the build may have closed its own saved document already (2026-11-01, run D)
+            src.activate()
     print("RESULT: %s" % ("PASS, every part we make follows its parameters and comes back" if not failures
                           else "FAIL %s" % failures))
     if failures:
