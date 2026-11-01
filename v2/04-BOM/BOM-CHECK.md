@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 291 part lines (114 made, 177 bought, 137 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.4 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 289 part lines (112 made, 177 bought, 136 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 39 hardware items in the joints register (39 with a part number). Listed parts weigh 356.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -113,7 +113,6 @@ Read from: this working tree.
 
 **CEILING (builds INTERIOR, D-80)**
 - 818101 INTERIOR - LEDGE BRACKET - HOLD: HOLD (HOLD)
-- 811205 INTERIOR - LIGHT SHELF - DIFFUSER RH: HOLD (HOLD)
 - 818102 INTERIOR - SCREEN RAIL - HOLD: HOLD (HOLD)
 
 **ELECTRICAL**
