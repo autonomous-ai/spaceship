@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (3777fa7), PR #243 (a926f06), PR #235 (821c539). The Mac's screen at run time: **unlocked**. 453 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (1e26f6c), PR #243 (a926f06), PR #235 (821c539). The Mac's screen at run time: **unlocked**. 454 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
 
 Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/02-Drawings/30-Assembly-Instructions/100000_P04_POD-ASSEMBLY-GUIDE_INS.md`: PR #235 changed it, but main changed it later; `v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv`: PR #235 changed it, but main changed it later.
 
@@ -228,12 +228,12 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
 | 118002 | BASE - LEVELLING GLIDE - M10 - HOLD | main | H-25 | HOLD | no | HOLD |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
 | 838006 | HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD | main | H-26 | HOLD | no | HOLD |
 | 118003 | BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD | main | H-27 | HOLD | no | HOLD |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
 | 838010 | HARDWARE - FLANGED BUTTON HEAD SCREW - M6 X 12 - ISO 7380-2 A2 | main | H-31 | yes | J-T6 | done |
-| 118001 | BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP | main | H-06 | HOLD | J-T4 | HOLD |
+| 118001 | BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD | main | H-06 | HOLD | J-T4 | HOLD |
 
 ### CEILING
 
@@ -244,7 +244,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | main | H-12 | yes | T09 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
 | 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | main | H-01P | yes | J-T1 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
 | 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | main | H-02 | HOLD | J-T2 | HOLD |
 | 848001 | SEALS - JOINT GASKET - 8 X 3.97 - PORON 4701-40 PSA | main | H-04 | HOLD | J-T3 | HOLD |
@@ -264,7 +264,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838002 | HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC | main | H-01P | yes | J-T1 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
 
 ### CEILING (builds INTERIOR, D-80)
 
@@ -298,7 +298,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 718017 | ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | PR #235 | H-01 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | PR #235 | H-09 | yes | T06 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | PR #235 | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | PR #235 | H-03 | yes | J-T1, T06 | done |
 | 718020 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN) | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
 | 718021 | ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE) | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
 | 718022 | ELECTRICAL - WIRE - UL 1015 14 AWG GREEN | PR #235 | n/a (team-numbered) | HOLD | F-06 | HOLD |
@@ -370,7 +370,7 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | Part | Name | From | Register | Maker and SKU | Test | State |
 |---|---|---|---|---|---|---|
 | 108002 | POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE | main | H-12 | yes | T09 | done |
-| 838003 | HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
+| 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | main | H-03 | yes | J-T1, T06 | done |
 | 838001 | HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC | main | H-01 | yes | J-T1, T06 | done |
 | 838004 | HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2 | main | H-09 | yes | T06 | done |
 | 838005 | HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE | main | H-02 | HOLD | J-T2 | HOLD |
@@ -390,6 +390,9 @@ Every made number has at least one line in the FAI plan (`v2/06-Verification/fai
 | 838008 | H-29 | HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD |
 | 838009 | H-30 | HARDWARE - THREADED INSERT - M6 - FOR 9 MM PLY - HOLD |
 | 848013 | H-34 | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA |
+| 831007 | H-40 | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL |
+| 831008 | H-41 | HARDWARE - MITRE PLATE - 20 X 40 TO 40 X 40 - 2.0 STEEL |
+| 831009 | H-42 | HARDWARE - MITRE PLATE - 40 X 40 - 45 DEG - 2.0 STEEL |
 
 ## How it's built
 
