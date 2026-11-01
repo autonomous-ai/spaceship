@@ -45,7 +45,8 @@ class Sizes(unittest.TestCase):
             b = b6(name)
             dims = sorted((b[1] - b[0], b[3] - b[2], b[5] - b[4]))
             self.assertEqual([round(d, 6) for d in dims], [173.0, 314.0, 1750.0], name)
-        self.assertAlmostEqual(V["pass_w"], 80.0)
+        self.assertAlmostEqual(V["pass_w"], (314.0 - 2 * 1.8 - 3 * 50.0) / 2)     # 80.2 with D-116's 1.8 casing
+        self.assertGreaterEqual(V["pass_w"], 80.0, "the passages keep at least D-61's 80")
         slot = b6("ROOF SLEEVE")
         self.assertAlmostEqual(slot[1] - slot[0], 285.0)
         self.assertAlmostEqual(slot[3] - slot[2], 294.0)

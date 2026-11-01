@@ -239,7 +239,7 @@ def parts_list(v, mass):
             mstat = "calculation (casing walls x density)"
         elif key == "layer":
             mass_txt = "%.3f" % ((v["cart_w"] - 2 * v["cart_t"]) * v["lay_t"] * v["cart_l"] * 1e-9 * A.MATERIALS["pyro"][1])
-            mstat = "calculation (size x 40 kg/m3)"
+            mstat = "calculation (size x %.0f kg/m3, D-116)" % A.MATERIALS["pyro"][1]
         else:
             # one entry per body: a part's mass is the sum over its bodies in one occurrence
             each = (sum(m) / max(1, qty_pod(key))) if m else None
