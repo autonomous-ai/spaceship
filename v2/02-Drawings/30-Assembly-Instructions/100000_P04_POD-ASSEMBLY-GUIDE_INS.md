@@ -9,7 +9,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## Result
 
-1. **Two people, one 5 mm hex key, 21 steps: about 127 minutes (4.2 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
+1. **Two people, one 5 mm hex key, 21 steps: about 130 minutes (4.3 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **88 bolts of the joints register, each captive in its part: 76 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
@@ -28,7 +28,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Handling aids** (not tools: ISS-047, ISS-064): 2 suction lifters (two-cup, each rated 40 kg or more; assumption), 2 step stools with 2 treads, a 600 mm spirit level, a utility knife for straps and film, cut-resistant gloves and safety shoes.
 - **The room:** a flat floor within ±5 mm (the glides take it up; ISS-054), a door at least 810 mm wide (REQ-ASM-06), room around the 2500 × 1700 footprint to lay the parts out, and a 220 V socket for the mains inlet (prototype, REQ-SCP-02), connected by a qualified electrician.
 - **Directions:** left and right as seen from outside, facing the door (conventions §4). Position codes: walls L1 and L2 (left, lower and upper), R1 and R2 (right), B1 to B4 (back: lower left, lower right, upper left, upper right); ceiling C1 (left) and C2 (right); floor F1 and F2; decor blocks DL, DR, DT.
-- **The clock** (REQ-ASM-01; its start and stop are PROPOSED): it starts with the pallets unwrapped on site and stops with the pod closed, powered and the fans running, after the final check (step 21). Step 22 fits the ledge after the clock.
+- **The clock** (REQ-ASM-01; its start and stop are PROPOSED): it starts with the pallets unwrapped on site and stops with the pod closed, powered and the fans running, after the final check (step 22). Step 23 fits the ledge after the clock.
 
 ## 2. Safety
 
@@ -37,7 +37,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Height.** One person on a step stool at a time, the other hands up. The ceiling halves, the soffit, its cartridge, DT and the ceiling linings are lifted by both people.
 - **Hands.** Keep fingers off the joint faces while a panel is lowered onto its spigots and while a bolt pulls a seam shut.
 - **Bolts.** Hand tools only. The tightening torque is on HOLD until the rivnut test T06 (HOLD-01, D-48): turn until the seam closes onto its stop and the bolt stops; no extension bars, no power drivers.
-- **Electrics.** Power stays off until step 20. Only a qualified electrician connects the mains inlet; everything else runs on 12 V (D-10).
+- **Electrics.** Power stays off until step 21. Only a qualified electrician connects the mains inlet; everything else runs on 12 V (D-10).
 - **Packaging.** Hold a strap while cutting it. Keep film and foam off the walking area.
 
 ## 3. How the joints work (read once)
@@ -224,13 +224,22 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 6 min for 2 people.
 - **Parts:** **2-10** AIR - SOFFIT (14.8 kg), **2-19** AIR - SPLITTER CARTRIDGE - COMMON (10.6 kg).
 - **Fasteners:** 2 × 838002 M6 × 25 (J-AIR-01). Tool: the 5 mm hex key.
-- **Person A:** With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof sleeve.
+- **Person A:** With B, both on step stools, lifts the soffit (2.3 m), its exhaust fan box already fitted at the right end (D-87), and hangs it on its 4 hanger studs, set in the ceiling frame at the factory, the fan box under C2's roof slot.
 - **Person B:** Drives the soffit's 2 captive lock screws with the 5 mm key (J-AIR-01); with A, lifts the exhaust cartridge in through the open underside; plugs the fan box; closes the hinged underside.
-- **Check before the next step:** Soffit underside at Z 2120, level; the fan box meets the roof sleeve; the door still clears.
+- **Check before the next step:** Soffit underside at Z 2120, level; the fan box's top gasket square under the roof slot; the door still clears.
 
-### Step 18. Ceiling linings: 2 cassettes
+### Step 18. Roof sleeve and grille
 
-![Step 18](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-18_IMG.png)
+- **Time:** about 3 min for 2 people.
+- **Parts:** the roof sleeve 611601 and the roof grille 611602, which came off C2 (1-12) at unpacking.
+- **Fasteners:** the roof grille's screws (AIR's parts list names none yet; #263).
+- **Person A:** From a step stool outside the front right corner, drops the roof sleeve down through C2's roof slot onto the soft gasket on the exhaust fan box's top, its flange on the roof (#263); then screws the roof grille on over it.
+- **Person B:** Inside, opens the soffit's hinged underside and checks from below that the sleeve sits square on its gasket all round; closes the underside.
+- **Check before the next step:** Sleeve square on its gasket all round; grille flat and screwed down; no light through the slot with the pod lit.
+
+### Step 19. Ceiling linings: 2 cassettes
+
+![Step 19](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-19_IMG.png)
 
 - **Time:** about 7 min for 2 people.
 - **Parts:** **2-20** LINING - CASSETTE - CEILING - COMMON (9.5 kg), **2-21** LINING - CASSETTE - CEILING - COMMON (9.5 kg).
@@ -239,7 +248,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Person B:** Hooks the 2 safety catches of each cassette before A lets go.
 - **Check before the next step:** Both catches on each cassette; front edges 3 mm behind the soffit.
 
-### Step 19. Light shelf
+### Step 20. Light shelf
 
 - **Time:** about 6 min for 2 people.
 - **Parts:** **2-14** INTERIOR - LIGHT SHELF ASSY (1.6 kg).
@@ -248,16 +257,16 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Person B:** Plugs the light shelf feed.
 - **Check before the next step:** Shelves straight; no cable shows.
 
-### Step 20. Power on and self-test: fans run
+### Step 21. Power on and self-test: fans run
 
 - **Time:** about 3 min for 2 people.
 - **Parts:** none.
 - **Fasteners:** none.
 - **Person A:** A qualified electrician connects the mains inlet (220 V for the prototype, REQ-SCP-02) and switches on.
 - **Person B:** Presses the hub's self-test button: both fan pairs, the lights and the sensors run, and it shows pass or fail (D-87). Then checks air out at the kick grille and into the soffit grille, and the CO2 reading.
-- **Check before the next step:** Self-test passes and the fans run on both paths. The clock stops after step 21's final check (REQ-ASM-01: closed, powered, fans running).
+- **Check before the next step:** Self-test passes and the fans run on both paths. The clock stops after the final check, the next step (REQ-ASM-01: closed, powered, fans running).
 
-### Step 21. Final check and film
+### Step 22. Final check and film
 
 - **Time:** about 12 min for 2 people.
 - **Parts:** none.
@@ -266,7 +275,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Person B:** Checks the seals with the pod lit and the room dark: no light at any seam. Pulls each of the 15 film panels off by its quick-release tab (the 8 wall skins, the 3 decor blocks, both faces of both glass panes; D-87); cleans.
 - **Check before the next step:** Every check in the final check list is ticked.
 
-### Step 22. Work-wall ledge and screen rail, after the clock
+### Step 23. Work-wall ledge and screen rail, after the clock
 
 - **Time:** about 8 min for 2 people.
 - **Parts:** **2-16** INTERIOR - WORK WALL LEDGE ASSY (1.9 kg).
@@ -307,8 +316,9 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 11 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD in the register (D-46, ISS-002) | time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM) |
 | 15 | Intake riser and supply fan box in DR | AIR and FRONT | 0 | not designed yet (HOLD) | HOLD in the register | time is in the step |
 | 16 | Air column on DR and the floor | AIR | 0 | none on site: 2 hook studs set in the factory, 2 spigots | registered: J-AIR-02 (0 on site) | D-87: the column hangs on its hook studs |
-| 19 | Light shelf | INTERIOR | 0 | not in INTERIOR's parts list yet (HOLD) | HOLD (D-70) | time is in the step |
-| 22 | Ledge and screen rail | INTERIOR | 0 | brackets and rail on HOLD; screws not listed yet | HOLD (D-70, IF-16) | time is in the step |
+| 18 | Roof grille over the sleeve | AIR | 0 | screws not listed yet (AIR) | HOLD | time is in the step |
+| 20 | Light shelf | INTERIOR | 0 | not in INTERIOR's parts list yet (HOLD) | HOLD (D-70) | time is in the step |
+| 23 | Ledge and screen rail | INTERIOR | 0 | brackets and rail on HOLD; screws not listed yet | HOLD (D-70, IF-16) | time is in the step |
 
 ## 6. Time
 
@@ -331,22 +341,23 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 15 | Air parts in DR: the intake riser with its supply fan box | 1 | 0 | 0 | 2.3 | 2.3 | **4.0** |
 | 16 | Air column and supply cartridge | 2 | 0 | 0 | 4.7 | 2.3 | **6.7** |
 | 17 | Soffit and exhaust cartridge | 2 | 2 | 0 | 4.7 | 1.9 | **6.5** |
-| 18 | Ceiling linings: 2 cassettes | 2 | 0 | 0 | 4.0 | 4.7 | **7.3** |
-| 19 | Light shelf | 1 | 0 | 0 | 0.3 | 10.0 | **6.1** |
-| 20 | Power on and self-test: fans run | 0 | 0 | 0 | 3.0 | 0.0 | **3.4** |
-| 21 | Final check and film | 0 | 0 | 0 | 10.0 | 1.5 | **12.4** |
-| 22 | Work-wall ledge and screen rail | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
-|  | **Clock, steps 1 to 21** |  | 88 | 0 |  |  | **127** |
+| 18 | Roof sleeve and grille | 0 | 0 | 0 | 0.0 | 5.5 | **3.2** |
+| 19 | Ceiling linings: 2 cassettes | 2 | 0 | 0 | 4.0 | 4.7 | **7.3** |
+| 20 | Light shelf | 1 | 0 | 0 | 0.3 | 10.0 | **6.1** |
+| 21 | Power on and self-test: fans run | 0 | 0 | 0 | 3.0 | 0.0 | **3.4** |
+| 22 | Final check and film | 0 | 0 | 0 | 10.0 | 1.5 | **12.4** |
+| 23 | Work-wall ledge and screen rail | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
+|  | **Clock, steps 1 to 22** |  | 88 | 0 |  |  | **130** |
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
 
-1. Step 21 (Final check and film): 12 min.
+1. Step 22 (Final check and film): 12 min.
 2. Step 1 (Unpack and set the parts down at their places): 12 min.
 3. Step 8 (Ceiling: C1, C2): 10 min.
 4. Step 10 (Fixed glass, then the right decor block DR): 10 min.
 5. Step 2 (Base band): 8 min.
 
-**D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the 127 above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
+**D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the 130 above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
 
 | Fix | Steps | Priced on the 168-minute model | Owner |
 |---|---|---:|---|
@@ -388,11 +399,13 @@ Unit times used:
 | `t_carry_staged_s` | 20 s | assumption | this plan (D-87) | carry a pallet 2 part that step 1 set down at its place: a few steps |
 | `t_level_preset_s` | 240 s | assumption | this plan (D-87) | check the band with the spirit level and turn only the glides that are out; glides preset at the factory |
 | `t_hook_s` | 120 s | assumption | this plan (D-87) | hang a part on its tool-free hooks and check it |
+| `t_sleeve_s` | 90 s | assumption | this plan (#263) | from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box |
+| `t_grille_s` | 120 s | assumption | this plan (#263) | screw the roof grille on over the sleeve (AIR's screws not listed yet) |
 | `t_selftest_s` | 180 s | assumption | this plan (D-87) | power on and the hub's self-test: both fan pairs, the lights and the sensors run and it shows pass or fail |
 | `t_peel_tab_s` | 6 s | assumption | this plan (D-87) | pull one film panel off by its quick-release tab |
 | `t_peel_s` | 20 s | assumption | this plan | find the edge of a film panel with no tab and peel it, for comparison |
 
-## 7. Final check list (step 21)
+## 7. Final check list (step 22)
 
 - [ ] Door: swings out to 90 degrees and back with no rub; 4 mm under DT along the head; 7 mm running gap over the threshold; closes onto DT's magnetic catch 368007 and stays shut (no lock, D-83); the drop seal comes down onto the threshold's land when closed.
 - [ ] Seals: with the pod lit and the room dark, no light at any seam, at the door's edges or at the fixed glass's edges.
