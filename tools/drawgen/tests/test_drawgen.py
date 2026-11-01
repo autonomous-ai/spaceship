@@ -622,6 +622,219 @@ def test_v_groove_with_its_outside_radius():
     assert any("no outside arc R2.5" in x_ for x_ in f4), f4
 
 
+def _spigot_rail(path, slot="along", width=20.0, hole_y=10.0, slot_y=10.0, side_slot=False):
+    """A 600 long rail along X, a 40 high x width x 1.2 tube seated on its bottom face, with a Ø8.5 spigot hole at
+    X 100 and an 8.5 x 14 spigot slot at X 500 through its bottom wall; the slot runs along the rail (toward the
+    hole when slot_y is hole_y) or across it. side_slot: also an 8.5 x 14 slot along X through the +Y side wall at
+    X 300, Z 20 (like WALL's D-169 pin slots: square to another wall). Returns the path and the bottom slot's two end
+    centres (X, Y)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        return c.Shape()
+    sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 600, width, 40).Shape(),
+             BRepPrimAPI_MakeBox(gp_Pnt(-1, 1.2, 1.2), 602, width - 2.4, 40 - 2.4).Shape())
+    sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(100, hole_y, -1), gp_Dir(0, 0, 1)), 4.25, 4).Shape())
+    half = (14.0 - 8.5) / 2
+    if slot == "along":
+        ends = [(500 - half, slot_y), (500 + half, slot_y)]
+        tool = BRepPrimAPI_MakeBox(gp_Pnt(500 - half, slot_y - 4.25, -1), 2 * half, 8.5, 4).Shape()
+    else:
+        ends = [(500, slot_y - half), (500, slot_y + half)]
+        tool = BRepPrimAPI_MakeBox(gp_Pnt(500 - 4.25, slot_y - half, -1), 8.5, 2 * half, 4).Shape()
+    for x, y in ends:
+        f = BRepAlgoAPI_Fuse(tool, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, -1), gp_Dir(0, 0, 1)), 4.25, 4).Shape())
+        f.Build()
+        tool = f.Shape()
+    if side_slot:
+        side = BRepPrimAPI_MakeBox(gp_Pnt(300 - half, width - 3, 20 - 4.25), 2 * half, 4, 8.5).Shape()
+        for x in (300 - half, 300 + half):
+            f = BRepAlgoAPI_Fuse(side, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, width - 3, 20), gp_Dir(0, 1, 0)), 4.25,
+                                                                4).Shape())
+            f.Build()
+            side = f.Shape()
+        f = BRepAlgoAPI_Fuse(tool, side)
+        f.Build()
+        tool = f.Shape()
+    u = ShapeUpgrade_UnifySameDomain(cut(sh, tool), True, True, True)
+    u.Build()
+    w = STEPControl_Writer()
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(u.Shape(), STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", 1)
+    return path, ends
+
+
+def _spigot_sheet(d, pn, slot, spec=None, **kw):
+    """_spigot_rail drawn with spigot datums, its hole and slot named as spigots by a test register."""
+    step, ends = _spigot_rail(os.path.join(d, "%s_P01_TEST-RAIL-SPIGOT_STEP.step" % pn), slot, **kw)
+    half = (14.0 - 8.5) / 2
+    reg = os.path.join(d, "FEATURE-RATIONALE-%s.md" % pn)
+    with open(reg, "w") as fh:
+        fh.write("test register for %s\n" % pn)
+    base = {"body": "", "dia": 8.5, "axis": "Z", "rule": "", "tolerance": "", "status": "", "file": reg,
+            "mating": "the frame's spigot (test)"}
+    rows = [dict(base, id="F-T-01", centres=[(100.0, kw.get("hole_y", 10.0))], function="spigot hole (test)"),
+            dict(base, id="F-T-02", centres=ends, function="spigot slot (test)")]
+    if kw.get("side_slot"):
+        # as on WALL's L1: the spigot slot's own row doesn't say "spigot", and a pin slot's does (D-169's F52 names
+        # the decor block's 831001 spigots), so a choice by that word takes the pin slot
+        rows[1] = dict(rows[1], function="locating slot (test)", mating="the frame's locating pin (test)")
+        rows.append(dict(base, id="F-T-03", axis="Y", centres=[(300 - half, 20.0), (300 + half, 20.0)],
+                         function="pin slot for the decor block's spigots (test)"))
+    real = compose.inputs.feature_rows
+    compose.inputs.feature_rows = lambda pn_, team: rows if pn_ == pn else real(pn_, team)
+    try:
+        p = os.path.join(d, "%s.pdf" % pn)
+        row = dict(ROW, part_number=pn, name="TEST - RAIL - SPIGOT")
+        compose.make(pn, "none", spec or {"datums": "spigot", "tolerance": "test", "iso": False}, p, step=step, row=row)
+        return p
+    finally:
+        compose.inputs.feature_rows = real
+
+
+def _datum_near(doc, data, tag, letter="C", within=25.0):
+    """True when the sheet prints the datum letter within `within` mm of the feature's centre, in the view that shows
+    it face on."""
+    ft = next(f for f in data["features"] if f["tag"] == tag)
+    tb = readback.text_boxes(doc[0], data["sheet_h"])
+    for v in data["views"]:
+        if abs(abs(sum(a * b for a, b in zip(v["n"], ft["axis"]))) - 1) > 1e-6:
+            continue
+        q = (sum(a * b for a, b in zip(ft["entry"], v["x"])), sum(a * b for a, b in zip(ft["entry"], v["y"])))
+        c = (v["off"][0] + v["scale"] * q[0], v["off"][1] + v["scale"] * q[1])
+        if any(t[4] == letter and math.dist(((t[0] + t[2]) / 2, (t[1] + t[3]) / 2), c) < within for t in tb):
+            return True
+    return False
+
+
+def test_datum_c_is_the_spigot_slot_where_it_runs_along_the_rail():
+    """The Lead's ruling on datum C (2026-11-01): a spigot slot that runs along its rail toward B (R-J13: CEILING's
+    frames, WALL's back panels) stops the turn about B, so C is the slot, and the note says so. A test rail with its
+    slot along it, in line with B: datum C is the slot, its symbol on the slot, and the note gives R-J13's sentence,
+    never R-J17's. A slot along its rail but off B's line is refused, and so is an entry that names a face for C."""
+    d = os.path.join(TMP, "datum_c_along")
+    os.makedirs(d, exist_ok=True)
+    p = _spigot_sheet(d, "219980", "along")
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    slot = next(f for f in data["features"] if f["kind"] == "slot")
+    hole = next(f for f in data["features"] if f["tag"] == data["datums"]["B"])
+    assert hole["kind"] == "hole" and data["datums"]["C"] == "slot %s" % slot["tag"], data["datums"]
+    notes = " ".join(" ".join(pg.get_text().split()) for pg in doc)
+    want = ("C = the spigot slot %s, the median plane of its width (it runs along the rail toward B, R-J13, so it "
+            "stops the turn about B)" % slot["tag"])
+    assert want in notes and "R-J17" not in notes, notes[notes.find("Datums"):][:400]
+    assert _datum_near(doc, data, slot["tag"]), "no datum C symbol at the slot"
+    # Reviewer 6 on #385: a second slot whose register row names spigots too, square to another wall (WALL's L1, a
+    # pin slot in its front stile's end) is never taken for the spigot slot: the slot square to B's wall is (#409)
+    p2 = _spigot_sheet(d, "219973", "along", side_slot=True)
+    fails, _st = readback.check(p2)
+    assert not fails, fails
+    doc2 = fitz.open(p2)
+    data2 = readback.read_data(doc2)
+    slots2 = [f for f in data2["features"] if f["kind"] == "slot"]
+    bottom = next(f for f in slots2 if abs(abs(f["axis"][2]) - 1) < 1e-6)
+    assert len(slots2) == 2 and data2["datums"]["C"] == "slot %s" % bottom["tag"], (data2["datums"], slots2)
+    assert ("C = the spigot slot %s, the median plane" % bottom["tag"]) in " ".join(
+        " ".join(pg.get_text().split()) for pg in doc2)
+    try:
+        _spigot_sheet(d, "219979", "along", width=40.0, hole_y=10.0, slot_y=30.0)
+        raise AssertionError("read datum C from a slot that misses B's line")
+    except compose.NotDrawable as e:
+        assert "its line passes 20 from B's axis" in str(e), e
+    try:
+        _spigot_sheet(d, "219978", "along", spec={"datums": "spigot", "c_face": "-Y", "tolerance": "test", "iso": False})
+        raise AssertionError("took a face for C with the slot along the rail")
+    except compose.NotDrawable as e:
+        assert "so C is the slot" in str(e), e
+
+
+def test_datum_c_is_a_face_where_the_spigot_slot_runs_across_the_rail():
+    """The Lead's ruling on datum C (2026-11-01): a spigot slot that runs across its rail (R-J17: WALL's side
+    panels' back ends) doesn't stop the turn about B, so C stays the room-side face. A test rail with its slot across
+    it: datum C is that face, and the note gives R-J17's sentence, never R-J13's."""
+    d = os.path.join(TMP, "datum_c_across")
+    os.makedirs(d, exist_ok=True)
+    p = _spigot_sheet(d, "219977", "across")
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    slot = next(f for f in data["features"] if f["kind"] == "slot")
+    assert data["datums"]["C"] == "plane -Y at 0", data["datums"]
+    notes = " ".join(" ".join(pg.get_text().split()) for pg in doc)
+    want = ("C = the room-side face (Y 0), which stops the turn about B (the spigot slot %s runs across the rail, "
+            "R-J17, so it locates along the rail only)" % slot["tag"])
+    assert want in notes and "R-J13, so it stops" not in notes, notes[notes.find("Datums"):][:400]
+    assert not _datum_near(doc, data, slot["tag"], within=8.0), "a datum C symbol on the slot"
+
+
+def test_a_datum_goes_only_where_its_face_is_drawn():
+    """Reviewer 6's P3 on #385: nothing tested that a section really shows a datum's face before the datum goes on
+    it. A section across a tray's bends, windowed to its first 20 mm (x along the base, 0 to 20, y up, 0 to 34),
+    shows a face across its window (the lip's top, y 34) and one along it (the wall's outside, x 0), but not the far
+    wall's outside (x 1142, cut away), a face above the part (y 50), or one it looks at face on."""
+    class View:
+        n, x, y = (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)
+
+        def to2d(self, p):
+            return (p[1], p[2])
+
+    class Section:
+        view, extent = View(), (0.0, 0.0, 20.0, 34.0)
+    sec = Section()
+    assert compose.face_line(sec, (0.0, 0.0, 1.0), (0.0, 5.0, 34.0))[:2] == ("x", 34.0)
+    assert compose.face_line(sec, (0.0, -1.0, 0.0), (0.0, 0.0, 10.0))[:2] == ("y", 0.0)
+    assert compose.face_line(sec, (0.0, 1.0, 0.0), (0.0, 1142.0, 10.0)) is None      # the far wall, cut away
+    assert compose.face_line(sec, (0.0, 0.0, 1.0), (0.0, 5.0, 50.0)) is None         # above what it draws
+    assert compose.face_line(sec, (1.0, 0.0, 0.0), (300.0, 5.0, 5.0)) is None        # face on
+
+
+def test_datums_are_never_dropped():
+    """WALL (the Lead's order): a corner datum whose face no plain view shows edge on was dropped without a word. It
+    now goes on a section that shows its face edge on, or the sheet is refused. WALL's tray 511101 with its
+    cassette's scheme (A the back face, B the end return, C the bottom return) prints all three, A on its profile
+    section; a block whose datum face only its principal view sees face on is refused."""
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Pnt
+    d = os.path.join(TMP, "datums")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "511101.pdf")
+    compose.make("511101", "wall", {"tolerance": "test", "bent": True, "datums": "faces",
+                                    "datum_faces": {"A": "-X", "B": "-Y", "C": "-Z"}}, p)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    words = [w[4] for w in fitz.open(p)[0].get_text("words")]
+    assert all(words.count(L) == 3 for L in "ABC"), [words.count(L) for L in "ABC"]     # the border has two each
+    step = os.path.join(d, "219985_P01_TEST-BLOCK_STEP.step")
+    w = STEPControl_Writer()
+    w.Transfer(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 100, 60, 40).Shape(), STEPControl_AsIs)
+    assert w.Write(step) == IFSelect_RetDone
+    row = dict(ROW, part_number="219985", name="TEST - BLOCK")
+    try:
+        compose.make("219985", "none", dict(SPEC, datum_faces={"A": "-Z"}), os.path.join(d, "b.pdf"), step=step,
+                     row=row)
+        raise AssertionError("drew the block without its datum A")
+    except compose.NotDrawable as e:
+        assert "datum A on its -Z face shows edge on in no view or section drawn" in str(e), e
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
@@ -1227,6 +1440,209 @@ def test_tapped_holes_wait_for_their_callouts():
         assert "tapped holes" in str(e) and "item 5" in str(e), e
     else:
         raise AssertionError("drew a part with tapped holes")
+
+
+def _mitred_member(path, length=1400.0):
+    """A test member like CEILING's seam member 412202 (#348): a 20 x 40 x 1.5 tube along pod Y, its +Y end mitred 45°
+    across its width (its +X face 20 shorter than its -X face), Ø10 holes in its -X wall (the principal view's) and in
+    its +X wall (seen only from +X: the rear view, too long to sit beside, goes under the others as a lettered view,
+    its reference arrow over the view from above)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt, gp_Vec
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        assert c.IsDone()
+        return c.Shape()
+    y0, z0, L = -700.0, 2354.0, length
+    sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(0, y0, z0), 20, L, 40).Shape(),
+             BRepPrimAPI_MakeBox(gp_Pnt(1.5, y0 - 1, z0 + 1.5), 17, L + 2, 37).Shape())
+    poly = BRepBuilderAPI_MakePolygon()
+    for q in ((-1, y0 + L + 1, z0 - 1), (21, y0 + L - 21, z0 - 1), (21, y0 + L + 1, z0 - 1)):
+        poly.Add(gp_Pnt(*q))
+    poly.Close()
+    sh = cut(sh, BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(0, 0, 42)).Shape())
+    for x, ys in ((-1.0, (300.0, 900.0)), (17.5, (500.0, 1100.0))):
+        for y in ys:
+            sh = cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y0 + y, z0 + 20), gp_Dir(1, 0, 0)), 5.0,
+                                                  3.5).Shape())
+    # edges written as their own curves, as Fusion writes them (the repo's STEP reader reads a hole's circles so), as
+    # _tray does; the setting is put back after
+    from OCP.Interface import Interface_Static
+    w = STEPControl_Writer()
+    was = Interface_Static.IVal_s("write.surfacecurve.mode")
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(sh, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", was)
+    return path
+
+
+def test_a_lettered_views_arrow_keeps_clear_of_dimensions():
+    """A lettered view's reference arrow (the rear view under the others, ISO 128-30) is drawn after every dimension,
+    where its line crosses no line and its letter touches nothing. CEILING's 412202 (#348) had its letter on the view
+    from above's true-length dimension (1431.35), which main's code drew after the arrow. A test member like it: the
+    read-back passes, with the letter clear of that dimension (main's code: a line runs through the letter)."""
+    d = os.path.join(TMP, "rear")
+    os.makedirs(d, exist_ok=True)
+    step = _mitred_member(os.path.join(d, "219986_P01_TEST-MEMBER-MITRED_STEP.step"))
+    p = os.path.join(d, "219986.pdf")
+    compose.make("219986", "none", dict(SPEC, principal={"look": "+X", "x": "-Y"}), p, step=step,
+                 row=dict(ROW, part_number="219986", name="TEST - MEMBER - MITRED"))
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    doc = fitz.open(p)
+    views = {v["name"]: v for v in readback.read_data(doc)["views"]}
+    assert "rear" in views and "above" in views, sorted(views)
+    words = doc[0].get_text("words")
+    assert any(w[4] == "1380" for w in words), "the +X face's true length over the view from above is missing"
+
+
+def _frame_with_a_stile(path):
+    """A test frame like WALL's L1 (#343): a 600 x 20 x 20 x 1.5 top rail along X, its +X end mitred so that its top
+    face is about 20 shorter, and a 20 x 20 x 1.5 stile under the rail's middle; one part, two named bodies (TOP RAIL,
+    STILE MID), as Fusion writes a frame's members, so the stile's centre line gets its ordinate over the view."""
+    import re
+    from OCP.BRep import BRep_Builder
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.TopoDS import TopoDS_Compound
+    from OCP.gp import gp_Pnt, gp_Vec
+
+    def box(x, y, z, dx, dy, dz):
+        return BRepPrimAPI_MakeBox(gp_Pnt(x, y, z), dx, dy, dz).Shape()
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        assert c.IsDone()
+        return c.Shape()
+    L, y0, z0 = 600.0, -10.0, 2000.0
+    rail = cut(box(0, y0, z0 + 300, L, 20, 20), box(-1, y0 + 1.5, z0 + 301.5, L + 2, 17, 17))
+    poly = BRepBuilderAPI_MakePolygon()
+    for q in ((L - 20, y0 - 1, z0 + 321), (L + 1, y0 - 1, z0 + 299), (L + 1, y0 - 1, z0 + 321)):
+        poly.Add(gp_Pnt(*q))
+    poly.Close()
+    rail = cut(rail, BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(0, 22, 0)).Shape())
+    mid = (L - 20) / 2
+    stile = cut(box(mid - 10, y0, z0, 20, 20, 300), box(mid - 8.5, y0 + 1.5, z0 - 1, 17, 17, 302))
+    frame = TopoDS_Compound()
+    bb = BRep_Builder()
+    bb.MakeCompound(frame)
+    bb.Add(frame, rail)
+    bb.Add(frame, stile)
+    # one product holding both bodies, its edges as their own curves (as _tray writes them); settings put back after
+    w = STEPControl_Writer()
+    was = (Interface_Static.IVal_s("write.surfacecurve.mode"), Interface_Static.IVal_s("write.step.assembly"))
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    Interface_Static.SetIVal_s("write.step.assembly", 0)
+    try:
+        w.Transfer(frame, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", was[0])
+        Interface_Static.SetIVal_s("write.step.assembly", was[1])
+    with open(path, encoding="latin-1") as fh:
+        text = fh.read()
+    names = iter(["TOP RAIL", "STILE MID"])
+    text = re.sub(r"MANIFOLD_SOLID_BREP\('[^']*'", lambda m: "MANIFOLD_SOLID_BREP('%s'" % next(names), text)
+    text = text.replace("Open CASCADE STEP translator 7.8 1", "219985 TEST FRAME")     # the product's number
+    with open(path, "w", encoding="latin-1") as fh:
+        fh.write(text)
+    return path
+
+
+def test_a_dimension_value_keeps_off_the_stile_ordinates():
+    """WALL's L1 frame (#343 with #365): the stiles' ordinates over the principal view share its band with the top
+    face's true length (1483.09), whose value at mid-length sat on the middle stile's 746.37 line. A test frame like
+    it: the value moves along its line to the nearest place no ordinate line crosses (ISO 129-1 allows it off the
+    middle), and the read-back passes (main's code: a line runs through the value)."""
+    d = os.path.join(TMP, "stile")
+    os.makedirs(d, exist_ok=True)
+    step = _frame_with_a_stile(os.path.join(d, "219985_P01_TEST-FRAME-STILE_STEP.step"))
+    p = os.path.join(d, "219985.pdf")
+    compose.make("219985", "none", dict(SPEC, principal={"look": "+Y", "x": "+X"}), p, step=step,
+                 row=dict(ROW, part_number="219985", name="TEST - FRAME - STILE"))
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    words = {w[4]: w for w in fitz.open(p)[0].get_text("words")}
+    assert "290" in words and "580.95" in words, sorted(words)[:40]       # the stile's ordinate and the true length
+    line_x = (words["290"][0] + words["290"][2]) / 2       # the ordinate's value is written on its line
+    assert words["580.95"][2] < line_x, (words["580.95"], words["290"])        # the true length's value left of it
+
+
+def test_origin_lines_are_kept_clear_by_earlier_labels():
+    """CEILING's frames on their spigot datums (#348 with #365): O1's +Y arrow ran through the 63.43° mitre value,
+    which was placed before the origin mark is drawn. The lines an origin mark draws are known from its origin, so
+    they are reserved before any label is placed: they are the lines origin_mark draws, and a label whose first place
+    the +Y arrow runs through takes its next place; the read-back finds no clash."""
+    from sheet import Sheet
+    o = (150.0, 100.0)
+    sh = Sheet("A3")
+    sh.origin_mark(o, "O1")
+    drawn = {tuple(sorted((tuple(round(v, 6) for v in p_), tuple(round(v, 6) for v in q_))))
+             for cell in sh.grid.cells.values() for p_, q_ in cell if p_ != q_}
+    reserved = {tuple(sorted((tuple(round(v, 6) for v in p_), tuple(round(v, 6) for v in q_))))
+                for p_, q_ in sh.origin_lines(o) if p_ != q_}
+    assert reserved == drawn, (len(reserved), len(drawn), sorted(reserved ^ drawn)[:4])
+    d = os.path.join(TMP, "origin")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    sh.reserve_lines(sh.origin_lines(o))
+    first = (o[0] - 4.0, o[1] + 4.5)           # the value's first place, which the +Y arrow runs up through
+    cands = [first, (o[0] - 4.0, o[1] + 12.0), (o[0] - 14.0, o[1] + 4.5)]
+    pick = next(c for c in cands if sh.is_free(sh.text_box(c[0], c[1], "63.43°", 2.5, "left", valign="mid")))
+    assert pick != first, pick
+    sh.text(pick[0], pick[1], "63.43°", 2.5, "left", valign="mid")
+    sh.origin_mark(o, "O1")
+    sh.save(os.path.join(d, "o.pdf"))
+    found = [w for _p, w in readback.clashes(fitz.open(os.path.join(d, "o.pdf")))]
+    assert not found, found
+
+
+def test_the_spigot_slot_is_the_one_square_to_bs_wall():
+    """WALL's L1 frame (#343, D-169): two pin slots in its front stile's end face, along the frame, came before the
+    spigot slot in the bottom rail, and the spigot datums took the first slot as the spigot slot (R-J13). So the sheet
+    sized a pin slot '0' from the end (a zero-length dimension on the 100 to B, the read-back's clash) and lost the
+    spigot slot's own 94. The spigot slot is the one square to B's wall, as B is, and a place along a hole's own axis,
+    or of length 0, gets no dimension. 211101's own holes and slots, in its view from below."""
+    from types import SimpleNamespace as NS
+
+    def feat(kind, entry, axis, words, along=(1.0, 0.0, 0.0)):
+        return NS(kind=kind, f=NS(entry=entry, axis=axis, dia=8.5, normal=tuple(-a for a in axis), along=along),
+                  reg={"function": words, "mating": "", "id": "F"}, body=NS(name="RAIL - BOTTOM"))
+    b = feat("hole", (-1224.0, -542.74, 112.26), (0.0, 0.0, 1.0), "Locating: the fixed spigot hole (round)")
+    pins = [feat("slot", (-1224.0, -642.74, z), (0.0, 1.0, 0.0), "D-169 pin slot") for z in (1155.0, 212.26)]
+    spigot = feat("slot", (-1224.0, 750.0, 112.26), (0.0, 0.0, 1.0), "Locating: the spigot slot")
+    part = NS(features=[b] + pins + [spigot], box=(-1244.0, -642.74, 100.0, -1204.0, 844.0, 1200.0),
+              size=(40.0, 1486.74, 1100.0))
+    # the bottom rail runs along Y and its spigot slot across it (R-J17, as on L1), so datum C is the room-side face
+    member_axis = compose.geom.member_axis
+    compose.geom.member_axis = lambda body: (0.0, 1.0, 0.0)
+    try:
+        dat = compose.spigot_origin(part, {})
+    finally:
+        compose.geom.member_axis = member_axis
+    assert dat["slot"] is spigot and dat["runs"] == "across", dat["slot"].f.entry
+    dot = lambda p, q: sum(x * y for x, y in zip(p, q))
+    view = NS(x=(0.0, 1.0, 0.0), y=(1.0, 0.0, 0.0), to2d=lambda p: (dot(p, (0.0, 1.0, 0.0)), dot(p, (1.0, 0.0, 0.0))))
+    below = NS(view=view, extent=(-642.74, -1244.0, 844.0, -1204.0))      # the view from below: X along +Y
+    sizes = lambda d: [round(abs(cx - ex), 2) for _f, ex, cx in compose.spigot_positions(d, below)]
+    assert sizes(dat) == [100.0, 94.0], sizes(dat)
+    assert sizes(dict(dat, slot=pins[0])) == [100.0]        # a pin slot, along the frame: no place along its axis
+    end = feat("slot", (-1224.0, 844.0, 112.26), (0.0, 0.0, 1.0), "a slot at the back end")
+    assert sizes(dict(dat, slot=end)) == [100.0]            # 0 from the end: no dimension
 
 
 def _drilled_bar(path, dia):

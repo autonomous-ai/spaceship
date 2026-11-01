@@ -835,8 +835,12 @@ def find_step(pn, team):
 
 def spigot_origin(part, spec=None):
     """Parts that locate on spigots (joints register R-J13; R-J6 positions every bolt hole from the round spigot
-    hole). Datums: A the face the spigot hole enters (the seat), B the round spigot hole's axis, C a face square to
-    A and parallel to B, which stops the turn about B. Origin O: datum B's axis on datum A.
+    hole). Datums: A the face the spigot hole enters (the seat), B the round spigot hole's axis, and C what stops
+    the turn about B, which follows the spigot slot (the Lead's ruling, 2026-11-01): a slot that runs along its rail
+    toward B (R-J13: CEILING's frames, WALL's back panels) stops the turn itself, so C is the slot (the median plane
+    of its width); one that runs across its rail (R-J17: WALL's side panels' back ends) doesn't, so C is a face
+    square to A and parallel to B. A slot along its rail that misses B's axis, or at an angle to its rail, is
+    refused. Origin O: datum B's axis on datum A.
 
     spec: spigot_dia (8.5, the frames' round hole; 9.53 for a band's spigot rivnut), spigot_pick ('-Y': the one
     nearest the front) or spigot_near ({'X': -102.75}: the one nearest that pod coordinate), spigot_slot (True: a
@@ -859,6 +863,54 @@ def spigot_origin(part, spec=None):
         k = "XYZ".index(ax)
         rounds.sort(key=lambda ft: abs(ft.f.entry[k] - v))
     b = rounds[0]
+    # the spigot slot (R-J13) is square to B's wall, as B is: a slot whose axis is B's, one its register row names the
+    # spigot first (WALL's L1, D-169: two pin slots in its front stile's end face, along the frame, came first); else
+    # the first slot, as before
+    par = [ft for ft in slots if abs(abs(vdot(ft.f.axis, b.f.axis)) - 1) < 1e-6]
+    par.sort(key=lambda ft: not (ft.reg and "spigot" in (ft.reg["function"] + " " + ft.reg["mating"]).lower()))
+    slot = par[0] if par else (slots[0] if slots else None)
+    # datum C follows the spigot slot (the Lead's ruling, 2026-11-01), and only a slot square to B's wall can be it:
+    # a frame whose slots all point another way has no spigot slot (Reviewer 6 on #385: WALL's L1 took a pin slot)
+    if slot is not None and abs(abs(vdot(slot.f.axis, b.f.axis)) - 1) > 1e-6:
+        if spec.get("spigot_slot", True):
+            return None
+        slot = None
+    sl = slot
+    runs = None
+    if sl is not None:
+        rail = geom.member_axis(sl.body)
+        if rail is None:
+            k_ = max(range(3), key=lambda i: sl.body.size[i])
+            rail = tuple(1.0 if i == k_ else 0.0 for i in range(3))
+        c_ = abs(vdot(sl.f.along, rail))
+        if c_ > 1 - 1e-6:
+            d_ = vsub(b.f.entry, sl.f.entry)
+            n_ = b.f.normal
+            off = vsub(vsub(d_, vmul(sl.f.along, vdot(d_, sl.f.along))), vmul(n_, vdot(d_, n_)))
+            miss = math.sqrt(vdot(off, off))
+            if miss > 0.1:
+                raise NotDrawable("%s: its spigot slot runs along its rail but its line passes %s from B's axis, so it "
+                                  "doesn't stop the turn about B the way R-J13's slot does: datum C isn't read for "
+                                  "it" % (part.pn, fmt(miss)))
+            runs = "along"
+        elif c_ < 1e-6:
+            runs = "across"
+        else:
+            raise NotDrawable("%s: its spigot slot runs at %s° to its rail, neither along it (R-J13) nor across it "
+                              "(R-J17): datum C isn't read for it" % (part.pn, fmt(math.degrees(math.acos(min(1.0, c_))))))
+    if runs == "along":
+        if spec.get("c_face"):
+            raise NotDrawable("%s: its entry names datum C as its %s face, but its spigot slot runs along the rail "
+                              "toward B (R-J13), so C is the slot (the Lead's ruling, 2026-11-01)" % (part.pn,
+                                                                                                  spec["c_face"]))
+        c_normal = vnorm(vcross(sl.f.along, b.f.normal))      # across the slot, in the seat's plane
+        k = max(range(3), key=lambda i: abs(c_normal[i]))
+        return {"O": b.f.entry, "A_normal": b.f.normal, "B": b, "C": None, "C_plane": (c_normal, sl.f.entry[k]),
+                "slot": sl, "C_slot": sl, "runs": "along",
+                "words": {"A": spec.get("a_words", "%s of %s (the seat on the band)" % (
+                    FACE_WORDS.get(axis_name(b.f.normal), "face"), b.body.name)),
+                          "B": "axis of the spigot hole %s" % "{B}",
+                          "C": "the spigot slot {C}, the median plane of its width"}}
     if spec.get("c_face"):
         cf = spec["c_face"]
         k = "XYZ".index(cf[1])
@@ -867,18 +919,50 @@ def spigot_origin(part, spec=None):
         c_words = spec.get("c_words", "the %s face (%s %s)" % (FACE_WORDS.get(cf, "face"), cf[1], fmt(c_plane)))
     else:
         # the frame's room-side face, square to the wall and parallel to B (the slot runs across the rail, R-J17,
-        # so it can't stop the turn)
+        # so it can't stop the turn; or there's no slot)
         k = min(range(3), key=lambda i: part.size[i])
         toward_centre = -1.0 if part.box[k] + part.box[3 + k] > 0 else 1.0
         c_normal = tuple(toward_centre if i == k else 0.0 for i in range(3))
         c_plane = part.box[3 + k] if toward_centre > 0 else part.box[k]
         c_words = "the room-side face (%s %s)" % ("XYZ"[k], fmt(c_plane))
     return {"O": b.f.entry, "A_normal": b.f.normal, "B": b, "C": None, "C_plane": (c_normal, c_plane),
-            "slot": slots[0] if slots else None,
+            "slot": slot, "runs": runs,
             "words": {"A": spec.get("a_words", "%s of %s (the seat on the band)" % (
                 FACE_WORDS.get(axis_name(b.f.normal), "face"), b.body.name)),
                       "B": "axis of the spigot hole %s" % "{B}",
                       "C": c_words + ", which stops the turn about B"}}
+
+
+def spigot_positions(dat, vd):
+    """The spigot hole's and slot's places from the frame's nearer end face, along view vd (joints register R-J13: 100
+    from each end): [(feature, the end's x, its x)] in the view's own coordinates. A place along the hole's own axis,
+    or one of length 0, sizes nothing and is left out (WALL's L1: a pin slot in its front stile's end face came out
+    '0' from the end, on the 100 to B)."""
+    ve = vd.extent
+    out = []
+    for f in [x for x in (dat.get("B"), dat.get("slot")) if x is not None]:
+        c = vd.view.to2d(f.f.entry)
+        end_x = ve[0] if abs(c[0] - ve[0]) < abs(c[0] - ve[2]) else ve[2]
+        if abs(abs(vdot(f.f.axis, vd.view.x)) - 1) < 1e-6 or abs(c[0] - end_x) < 0.005:
+            continue
+        out.append((f, end_x, c[0]))
+    return out
+
+
+def face_line(vd, nrm, on):
+    """Where a datum's face (its outward normal nrm, `on` a point of its plane) shows edge on in view vd, inside what
+    the view draws: ("x", its y, its normal on paper) as a line along the view's x, ("y", its x, ...) as one along its
+    y; None where vd looks at it face on or at an angle, or where it lies outside what vd draws (a section or window
+    that cuts the part away from that face: a datum is never put where its face isn't drawn)."""
+    if abs(vdot(nrm, vd.view.n)) > 1e-6:
+        return None
+    n2 = vd.view.to2d(nrm)
+    e = vd.extent
+    if abs(n2[1]) > 0.5:
+        yy = vd.view.to2d(on)[1]
+        return ("x", yy, n2) if e[1] - 0.05 <= yy <= e[3] + 0.05 else None
+    xx = vd.view.to2d(on)[0]
+    return ("y", xx, n2) if e[0] - 0.05 <= xx <= e[2] + 0.05 else None
 
 
 def corner_origin(part, corner):
@@ -1672,6 +1756,33 @@ def draw(part, spec, out_path, today=None):
     for dv in details:
         dv.origin_name = dv.parent.origin_name
 
+    def origins():
+        """Each origin place_marks draws: its sheet point, name, the side its name goes and where (label_y)."""
+        out = []
+        for vd in [vds[n_] for n_ in order if n_ in vds] + secs + auxs:
+            o2 = vd.S(vd.view.to2d(getattr(vd, "origin3d", None) or O))
+            if part.features:
+                bx = vd.box()
+                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
+                # the label goes outside the outline: when the origin lies inside it (a hole's centre), drop the
+                # label below (or above) the outline, clear of the edge
+                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
+                lab_y = None
+                if inside:
+                    lab_y = (bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)
+                out.append((o2, vd.origin_name, away, lab_y))
+        for dv in details:
+            oc = dv.view.to2d(O)
+            x0, x1, y0, y1 = dv.window
+            if part.features and x0 <= oc[0] <= x1 and y0 <= oc[1] <= y1:
+                o2 = dv.S(oc)
+                bx = dv.box()
+                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
+                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
+                lab_y = ((bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)) if inside else None
+                out.append((o2, dv.origin_name, away, lab_y))
+        return out
+
     def place_marks():
         # 1. centre marks and the detail circles (lines)
         jobs, letters = [], []
@@ -1700,28 +1811,8 @@ def draw(part, spec, out_path, today=None):
             jobs.append((vd, vd.group.feats))
         sh.flush()
         # 2. the origins: arrows, then their names where they are clear
-        for vd in [vds[n_] for n_ in order if n_ in vds] + secs + auxs:
-            o2 = vd.S(vd.view.to2d(getattr(vd, "origin3d", None) or O))
-            if part.features:
-                bx = vd.box()
-                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
-                # the label goes outside the outline: when the origin lies inside it (a hole's centre), drop the
-                # label below (or above) the outline, clear of the edge
-                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
-                lab_y = None
-                if inside:
-                    lab_y = (bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)
-                sh.origin_mark(o2, vd.origin_name, away=away, label_y=lab_y)
-        for dv in details:
-            oc = dv.view.to2d(O)
-            x0, x1, y0, y1 = dv.window
-            if part.features and x0 <= oc[0] <= x1 and y0 <= oc[1] <= y1:
-                o2 = dv.S(oc)
-                bx = dv.box()
-                away = (-1.0 if o2[0] <= (bx[0] + bx[2]) / 2 else 1.0, -1.0 if o2[1] <= (bx[1] + bx[3]) / 2 else 1.0)
-                inside = bx[0] + 0.5 < o2[0] < bx[2] - 0.5 and bx[1] + 0.5 < o2[1] < bx[3] - 0.5
-                lab_y = ((bx[1] - 4.2) if away[1] < 0 else (bx[3] + 1.8)) if inside else None
-                sh.origin_mark(o2, dv.origin_name, away=away, label_y=lab_y)
+        for o2, name, away, lab_y in origins():
+            sh.origin_mark(o2, name, away=away, label_y=lab_y)
         # 3. each detail's letter beside its circle, on the outer side first (away from the view's middle)
         for vd, dv, c, r in letters:
             vb = vd.box()
@@ -1739,6 +1830,7 @@ def draw(part, spec, out_path, today=None):
         sh.flush()
 
     pl.place_marks = place_marks
+    pl.origins = origins
     return sh, pl, vds, secs, removed, dat, scale, report, groups
 
 
@@ -2060,11 +2152,15 @@ def face_title(part, g):
 
 
 def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
-    """Lines first (cutting planes, reference arrows, dimensions), then what can move (hole callouts, view titles,
+    """Lines first (cutting planes, dimensions), then what can move (reference arrows, hole callouts, view titles,
     centre marks with their tags, origin names, datums), each put where it touches no line and no other text."""
     P = pl.principal
     O = dat["O"]
     pvd = vds["principal"]
+    # the origins' circles and arrows are drawn last (place_marks), where their origins put them: every label placed
+    # before then keeps clear of them already (CEILING's 411101: O1's +Y arrow ran through the 63.43° mitre value)
+    for o2, _nm, _away, _lab_y in pl.origins():
+        sh.reserve_lines(sh.origin_lines(o2))
     # ---- cutting planes on the principal view
     ext = pvd.extent
     for vd in secs:
@@ -2094,31 +2190,6 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
         look = P.to2d(vmul(r.n, -1.0))
         sh.section_arrows(a, b, vd.letter, look, size=3.5)
     sh.flush()
-    for nm, vd in vds.items():
-        if not getattr(vd, "letter", None) or nm in pl.aux:
-            continue
-        look3 = vmul(vd.view.n, -1.0)
-        host = next((h for h in ("above", "below", "principal") if h in vds and abs(vdot(look3, vds[h].view.n)) < 1e-6
-                     and h != nm), None)
-        if host:
-            hv = vds[host]
-            l2 = hv.view.to2d(look3)
-            hb = hv.box()
-            cx = hb[0] + 0.40 * (hb[2] - hb[0])
-            cx = hb[0] + 0.22 * (hb[2] - hb[0])
-            if abs(l2[1]) > 0.5:        # arrow across the strip, on the viewer's side, clear of its dimensions
-                y0 = hb[3] + 9 + getattr(hv, "top_used", 0.0) if l2[1] < 0 else hb[1] - 9
-                tip = (cx, y0 + l2[1] * 6)
-                sh.line((cx, y0), tip, 0.35)
-                sh.arrow(tip, (0, l2[1]), 3.0, 1.1)
-                sh.text(cx + 3.0, y0 - (1.0 if l2[1] > 0 else -0.5), vd.letter, 3.5, "left", bold=True)
-            else:
-                x0 = hb[2] + 9 if l2[0] < 0 else hb[0] - 9
-                cy = (hb[1] + hb[3]) / 2
-                tip = (x0 + l2[0] * 6, cy)
-                sh.line((x0, cy), tip, 0.35)
-                sh.arrow(tip, (l2[0], 0), 3.0, 1.1)
-                sh.text(x0, cy + 3.0, vd.letter, 3.5, "center", bold=True)
     # ---- removed sections: the hole axis and the profile size (each wall's hole is sized after, clear of these)
     for vd in removed:
         r = vd.r
@@ -2137,6 +2208,33 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     a, b = pvd.S((e[0], e[1])), pvd.S((e[2], e[3]))
     sh.dim_linear((a[0], a[1]), (b[0], a[1]), "down", 15.0, fmt(e[2] - e[0]), 3.0)
     sh.dim_linear((a[0], a[1]), (a[0], b[1]), "left", 15.0, fmt(e[3] - e[1]), 3.0)
+    # frame members: the stiles' centre lines from the frame's front end are ordinates over the principal view (drawn
+    # below), worked out here so that a dimension over that view keeps its value off their lines (WALL's 211101: the
+    # 746.37 ordinate line ran through the 1483.09 length)
+    stiles = [(b, project.extent(project.project(b.shape, P))) for b in part.bodies
+              if "STILE" in (b.name or "").upper()]
+    st_lines = []
+    if stiles:
+        st_ext = pvd.extent
+        ox = P.to2d(O)[0]
+        st_end = st_ext[0] if abs(ox - st_ext[0]) <= abs(ox - st_ext[2]) else st_ext[2]
+        st_top = pvd.box()[3]
+        st_level = st_top + 13.0
+        st_front = pvd.S((st_end, 0))[0]
+        st_marks = [(pvd.S(((be[0] + be[2]) / 2, 0))[0], abs((be[0] + be[2]) / 2 - st_end)) for _b, be in stiles]
+        # values written up their extension lines; one closer than a letter's height to the last is jogged sideways
+        # (ISO 129-1 ordinate dimensions)
+        st_items = sorted([(st_front, "0")] + [(x, fmt(v)) for x, v in st_marks], key=lambda t: t[0])
+        if st_end != st_ext[0]:
+            st_items = st_items[::-1]
+        last = None
+        for i, (x, txt) in enumerate(st_items):
+            lx = x
+            if last is not None and abs(lx - last) < 5.0:
+                lx = last + (5.0 if st_end == st_ext[0] else -5.0)
+            st_items[i] = (x, lx, txt)
+            last = lx
+        st_lines = [(min(x, lx), max(x, lx)) for x, lx, _t in st_items]
     # an end cut at an angle (a mitre): in the plain view where its face shows edge on, the angle from square and
     # the true lengths along the member's two faces (guideline 6.1: true lengths and angle, not a box)
     angle_texts = []
@@ -2253,7 +2351,9 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 a_, b_ = xs[0], xs[-1]
             if abs(abs(b_ - a_) - (e2[2] - e2[0])) < 0.005:
                 continue            # the overall length already (FRONT's 352203: 1694.75 printed twice)
-            sh.dim_linear(vd2.S((a_, e2[3])), vd2.S((b_, e2[3])), "up", 11.0, fmt(abs(b_ - a_)), 2.5)
+            # over the principal, the stiles' ordinate lines cross this one: its value goes where none of them does
+            sh.dim_linear(vd2.S((a_, e2[3])), vd2.S((b_, e2[3])), "up", 11.0, fmt(abs(b_ - a_)), 2.5,
+                          avoid=st_lines if stiles and vd2 is pvd else ())
             vd2.top_used = 16.0
     pl.angle_marks = []
     for ang_t, cands in angle_texts:
@@ -2261,6 +2361,44 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                     cands[0])
         sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
         pl.angle_marks.append({"text": ang_t, "box": sh.text_box(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")})
+    # a lettered view's reference arrow (the rear view, too long to sit beside, under the others; ISO 128-30), on the
+    # viewer's side of a view that shows its direction: drawn after every dimension so those are known, where its line
+    # crosses no line and its letter touches nothing: its usual place first (past the true length over that view), then
+    # farther out, then along the view (CEILING's 412202: its E sat on the 1431.35 line over the view from above)
+    def ref_arrows():
+        for nm, vd in vds.items():
+            if not getattr(vd, "letter", None) or nm in pl.aux:
+                continue
+            look3 = vmul(vd.view.n, -1.0)
+            host = next((h for h in ("above", "below", "principal") if h in vds and
+                         abs(vdot(look3, vds[h].view.n)) < 1e-6 and h != nm), None)
+            if not host:
+                continue
+            hv = vds[host]
+            l2 = hv.view.to2d(look3)
+            hb = hv.box()
+            cands = []
+            if abs(l2[1]) > 0.5:        # arrow across the strip, on the viewer's side, clear of its dimensions
+                y1 = hb[3] + 9 + getattr(hv, "top_used", 0.0) if l2[1] < 0 else hb[1] - 9
+                for fr in (0.22, 0.32, 0.12, 0.42, 0.52, 0.62, 0.72):
+                    cx = hb[0] + fr * (hb[2] - hb[0])
+                    for k in range(7):
+                        y0 = y1 - math.copysign(2.5 * k, l2[1])
+                        cands.append(((cx, y0), (cx, y0 + l2[1] * 6), (cx + 3.0, y0 - (1.0 if l2[1] > 0 else -0.5)),
+                                      "left", (0, l2[1])))
+            else:
+                x1 = hb[2] + 9 if l2[0] < 0 else hb[0] - 9
+                for fr in (0.5, 0.35, 0.65, 0.2, 0.8):
+                    cy = hb[1] + fr * (hb[3] - hb[1])
+                    for k in range(7):
+                        x0 = x1 - math.copysign(2.5 * k, l2[0])
+                        cands.append(((x0, cy), (x0 + l2[0] * 6, cy), (x0, cy + 3.0), "center", (l2[0], 0)))
+            tail, tip, q, anchor, d2 = next(
+                (c for c in cands if sh.seg_free(c[0], c[1], 0.8) and
+                 sh.is_free(sh.text_box(c[2][0], c[2][1], vd.letter, 3.5, c[3], bold=True))), cands[0])
+            sh.line(tail, tip, 0.35)
+            sh.arrow(tip, d2, 3.0, 1.1)
+            sh.text(q[0], q[1], vd.letter, 3.5, anchor, bold=True)
     # angled-face and end views (ISO 128-30): an arrow square to the face, in a drawn view that shows the face edge
     # on, its tip just off the face by the features (else moved along the face, or shorter) where the arrow crosses
     # no line and its letter touches nothing; drawn after every dimension so those are known (BASE's D-129 111103: the
@@ -2314,52 +2452,31 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             sh.arrow(tip, (-u[0], -u[1]), 3.0, 1.1)
             sh.text(q[0], q[1], avd.letter, 3.5, "center", bold=True)
     # frame members: the stiles' centre lines from the frame's front end (ordinate, ISO 129-1), over the view
-    stiles = [b for b in part.bodies if "STILE" in (b.name or "").upper()]
     if stiles:
-        e0 = pvd.extent
-        top = pvd.box()[3]
-        level = top + 13.0
-        ox = P.to2d(O)[0]
-        end = e0[0] if abs(ox - e0[0]) <= abs(ox - e0[2]) else e0[2]
-        x_front = pvd.S((end, 0))[0]
-        marks = []
-        for b in stiles:
-            be = project.extent(project.project(b.shape, P))
-            cx = (be[0] + be[2]) / 2
-            marks.append((pvd.S((cx, 0))[0], abs(cx - end)))
+        top, level = st_top, st_level
+        for _b, be in stiles:
             # the stile's centre line through the view
+            cx = (be[0] + be[2]) / 2
             sh.centre_line(pvd.S((cx, be[1] + 4)), pvd.S((cx, be[3] - 4)))
-        # values written up their extension lines; one closer than a letter's height to the last is jogged sideways
-        # (ISO 129-1 ordinate dimensions)
-        items = sorted([(x_front, "0")] + [(x, fmt(v)) for x, v in marks], key=lambda t: t[0])
-        if end != e0[0]:
-            items = items[::-1]
-        last = None
-        for x, txt in items:
-            lx = x
-            if last is not None and abs(lx - last) < 5.0:
-                lx = last + (5.0 if end == e0[0] else -5.0)
+        for x, lx, txt in st_items:
             sh.line((x, top + 1.0), (x, level - 1.0), W_THIN)
             sh.line((x, level - 1.0), (lx, level + 1.5), W_THIN)
             sh.text(lx + 1.25, level + 2.0, txt, 2.5, "left", rotate=90)
-            last = lx
         lab = "STILE CENTRE LINES FROM THE FRONT END"
-        ymax = level + 2.0 + max(sh.text_width(fmt(v), 2.5) for _x, v in marks) + 3.0
-        if end == e0[0]:
-            sh.text(x_front, ymax, lab, 2.5, "left")
+        ymax = level + 2.0 + max(sh.text_width(fmt(v), 2.5) for _x, v in st_marks) + 3.0
+        if st_end == st_ext[0]:
+            sh.text(st_front, ymax, lab, 2.5, "left")
         else:
-            sh.text(x_front, ymax, lab, 2.5, "right")
+            sh.text(st_front, ymax, lab, 2.5, "right")
     # the spigot hole and slot from the frame's end faces (joints register R-J13: 100 from each end)
     bview = dat["B"].group.view if dat.get("B") else None
     if dat.get("B") and bview in vds:
         vd = vds[bview]
         ve = vd.extent
-        for f in [x for x in (dat["B"], dat.get("slot")) if x is not None]:
-            c = vd.view.to2d(f.f.entry)
-            end_x = ve[0] if abs(c[0] - ve[0]) < abs(c[0] - ve[2]) else ve[2]
+        for _f, end_x, cx in spigot_positions(dat, vd):
             p1 = vd.S((end_x, ve[3]))
-            p2 = vd.S((c[0], ve[3]))
-            sh.dim_linear(p1, p2, "up", 7.0, fmt(abs(c[0] - end_x)), 2.5)
+            p2 = vd.S((cx, ve[3]))
+            sh.dim_linear(p1, p2, "up", 7.0, fmt(abs(cx - end_x)), 2.5)
     # open-ended slots (D-129's hook-in end caps; the PM's ruling): dimensioned from the edge they open on, in the
     # detail that enlarges them (else their view): the mouth, the taper's length, the end's centre from the edge,
     # the width and the end's radius
@@ -2383,6 +2500,7 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     for fv in getattr(pl, "flats", []):
         flat_dims(sh, part, fv)
     sh.flush()
+    ref_arrows()
     aux_arrows()
     chamfer_callouts(sh, part, pl, vds, removed)
     sh.flush()
@@ -2541,8 +2659,41 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             xc = sorted([e[0] + t * (e[2] - e[0]) for t in ts], key=lambda x: -min([abs(x - h) for h in xs] or [1e9]))
             return [(vd.S((x, yy)), (0, n2[1]), lead) for lead in leads for x in xc]
         names = ([bview] if bview else []) + [n_ for n_ in vds if n_ != bview]
-        cands = [c_ for leads in ((7.0, 10.0), (14.0, 18.0, 22.0)) for n_ in names for c_ in c_cands(n_, vds[n_], leads)]
-        if cands:
+        if dat.get("C_slot"):
+            # C is the spigot slot (R-J13: it runs along the rail toward B): the symbol on its side, in the view (or
+            # section) that shows it face on, its own view first; never dropped: refused when none does
+            S_ = dat["C_slot"]
+            g_ = S_.group
+            hosts = [vds[n_] for n_ in names if n_ == g_.view] + ([g_.vd] if g_.view is None and
+                                                                   getattr(g_, "vd", None) else []) + \
+                [vds[n_] for n_ in names if n_ != g_.view]
+            cands = []
+            for vd in hosts:
+                if not _end_on(S_, vd.view):
+                    continue
+                c2 = vd.S(vd.view.to2d(S_.f.entry))
+                a2 = vd.view.to2d(S_.f.along)
+                la = math.hypot(*a2)
+                a2 = (a2[0] / la, a2[1] / la)
+                n2 = (-a2[1], a2[0])
+                hw = S_.f.width / 2 * vd.scale
+                st = max(0.0, (S_.f.length - S_.f.width) / 2) * vd.scale
+                for lead in (7.0, 10.0, 13.0):
+                    for side in (1.0, -1.0):
+                        for t in (0.0, 0.5, -0.5):
+                            at = (c2[0] + n2[0] * side * hw + a2[0] * t * st, c2[1] + n2[1] * side * hw + a2[1] * t * st)
+                            for tilt in (0.0, 0.6, -0.6):
+                                cands.append((at, (n2[0] * side + a2[0] * tilt, n2[1] * side + a2[1] * tilt), lead))
+            if not cands:
+                raise NotDrawable("%s: datum C (the spigot slot %s, which runs along the rail toward B) shows face on "
+                                  "in no view drawn" % (part.pn, S_.tag))
+            put_datum(cands, "C")
+        else:
+            cands = [c_ for leads in ((7.0, 10.0), (14.0, 18.0, 22.0)) for n_ in names
+                     for c_ in c_cands(n_, vds[n_], leads)]
+            if not cands:
+                raise NotDrawable("%s: datum C (the face that stops the turn about B) shows edge on in no view drawn"
+                                  % part.pn)
             put_datum(cands, "C")
         # A: the seat face, on the principal view's edge
         x0, y0, x1, y1 = pvd.box()
@@ -2556,21 +2707,29 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             k = "XYZ".index(face[1])
             nrm = tuple((1.0 if face[0] == "+" else -1.0) if i == k else 0.0 for i in range(3))
             plane = part.box[3 + k] if face[0] == "+" else part.box[k]
-            for nm in ("principal", "above", "below", "from_left", "from_right"):
-                if nm not in vds or abs(vdot(nrm, vds[nm].view.n)) > 1e-6:
+            on = tuple(plane if i == k else 0.0 for i in range(3))
+            # a plain view that shows the face edge on, else a section that does within what it draws (WALL: a bent
+            # part's back face shows only in its profile section); never dropped: refused when none does (the Lead)
+            hosts = [vds[nm] for nm in ("principal", "above", "below", "from_left", "from_right") if nm in vds] + \
+                list(removed) + list(secs)
+            placed = False
+            for vd in hosts:
+                line = face_line(vd, nrm, on)
+                if line is None:
                     continue
-                vd = vds[nm]
-                n2 = vd.view.to2d(nrm)
+                along, at, n2 = line
                 e = vd.extent
-                if abs(n2[1]) > 0.5:
-                    yy = vd.view.to2d(tuple(plane if i == k else 0.0 for i in range(3)))[1]
+                if along == "x":
                     xs = [e[0] + t * (e[2] - e[0]) + 8 * (ord(letter) - 65) for t in (0.30, 0.2, 0.4, 0.6, 0.7, 0.8)]
-                    put_datum([(vd.S((x, yy)), (0, n2[1]), lead) for lead in (7.0, 10.0, 14.0) for x in xs], letter)
+                    put_datum([(vd.S((x, at)), (0, n2[1]), lead) for lead in (7.0, 10.0, 14.0) for x in xs], letter)
                 else:
-                    xx = vd.view.to2d(tuple(plane if i == k else 0.0 for i in range(3)))[0]
                     ys = [e[1] + t * (e[3] - e[1]) for t in (0.25, 0.4, 0.6, 0.75)]
-                    put_datum([(vd.S((xx, y_)), (n2[0], 0), lead) for lead in (7.0, 10.0, 14.0) for y_ in ys], letter)
+                    put_datum([(vd.S((at, y_)), (n2[0], 0), lead) for lead in (7.0, 10.0, 14.0) for y_ in ys], letter)
+                placed = True
                 break
+            if not placed:
+                raise NotDrawable("%s: datum %s on its %s face shows edge on in no view or section drawn: a view for it "
+                                  "isn't added yet" % (part.pn, letter, face))
     # ---- keys fitted in the part's ends (Joints' corner-keys.csv): a note at each end saying which way round the
     # key goes, since its bottom holes sit off its middle and meet the part's only one way (the Lead's ask on #228)
     if spec.get("key_notes"):
@@ -2879,12 +3038,17 @@ def notes_list(part, spec, pl, vds, secs, removed, dat, groups):
                      project.LOOK_WORDS.get(P.looking, P.looking), mapping_words(P, part.pod_system),
                      "pod" if part.pod_system else "part"))
     if dat.get("B"):
-        slot = (" (the spigot slot %s runs across the rail, R-J17, so it locates along the rail only)" %
-                dat["slot"].tag) if dat.get("slot") else ""
+        if dat.get("runs") == "along":
+            c_words = dat["words"]["C"].replace("{C}", dat["C_slot"].tag)
+            slot = " (it runs along the rail toward B, R-J13, so it stops the turn about B)"
+        else:
+            c_words = dat["words"]["C"]
+            slot = (" (the spigot slot %s runs across the rail, R-J17, so it locates along the rail only)" %
+                    dat["slot"].tag) if dat.get("slot") else ""
         notes.append("Datums (ISO 5459): A = %s; B = axis of the spigot hole %s (joints register R-J6, R-J13); "
                      "C = %s%s. Origin O = datum B's axis on datum A; O1, O2... are O seen in each view. Hole "
                      "positions in the tables are theoretically exact from O." % (
-                         dat["words"]["A"], dat["B"].tag, dat["words"]["C"], slot))
+                         dat["words"]["A"], dat["B"].tag, c_words, slot))
     elif not part.features:
         pass        # nothing is located from a datum: the overall sizes define the part
     else:
@@ -3202,7 +3366,8 @@ def drawing_data(part, spec, pl, vds, secs, removed, dat, groups, sh):
                            "t": part.placement["shift"]} if part.placement else None),
             "sheet_h": sh.H, "sources": srcs, "origin": dat["O"], "occurrences": part.occurrences,
             "datums": {"B": dat["B"].tag if dat.get("B") else None,
-                       "C": ("plane %s at %s" % (axis_name(dat["C_plane"][0]), fmt(dat["C_plane"][1])))
+                       "C": ("slot %s" % dat["C_slot"].tag) if dat.get("C_slot") else
+                       ("plane %s at %s" % (axis_name(dat["C_plane"][0]), fmt(dat["C_plane"][1])))
                        if dat.get("C_plane") else None},
             "views": views, "features": feats, "notches": notches, "chamfers": chamfers,
             "angles": getattr(pl, "angle_marks", []),

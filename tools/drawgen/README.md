@@ -59,8 +59,13 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
 - One hole table per face: tags H01... on the views, `X (mm)` and `Y (mm)` from that view's origin (O1, O2...,
   the one 3D origin seen in each view), +X right and +Y up, size, depth, the register's feature and fits. The view
   titles give each view's mapping to the pod axes.
-- Datums: WALL frames sit on a spigot hole and slot (R-J13), so A is the seat face, B the round hole, C the slot,
-  and every hole position is from B (R-J6). Other parts name their datum faces in their team's entry.
+- Datums: a frame that sits on a spigot hole and slot has A the seat face and B the round hole, and every hole
+  position is from B (R-J6). C follows what the slot does (the Lead's ruling, 2026-11-01): a slot that runs along
+  its rail toward B (R-J13: CEILING's frames, WALL's back panels) stops the turn about B, so C is the slot (the
+  median plane of its width, its symbol on the slot); one that runs across its rail (R-J17: WALL's side panels'
+  back ends) doesn't, so C is the room-side face. The datum note says which, with the register's rule. A slot
+  along its rail but off B's line, or at an angle to its rail, is refused, and so is an entry naming a face for C
+  when the slot runs along. Other parts name their datum faces in their team's entry.
 - Mitred ends: the angle from square and the true length along each face, in a view that shows the cut in profile
   (edge on, the member's axis across the view); when no planned view does, the plan adds the one that does
   (FRONT's #320: 8 tubes whose only view saw their mitres face on). A cut no plain view shows in profile (a
