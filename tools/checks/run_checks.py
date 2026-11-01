@@ -32,6 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class, parse_file_name, Finding, owner_for  # noqa: E402
 import c_geometry  # noqa: E402
 import c_parts  # noqa: E402
+import c_frames  # noqa: E402
 import c_drawings  # noqa: E402
 import c_stacks  # noqa: E402
 import register  # noqa: E402
@@ -90,6 +91,10 @@ def run(root, rev):
         findings += c_geometry.check_unmatched(root, "assembly", asm)
         findings += c_geometry.check_hole_sizes(root, "assembly", asm)
         ran |= {"C08", "C08:assembly"}
+    frame_fs, frames_ran = c_frames.check_frames(root, asm)       # D-131: steel and gauges on every frame member
+    findings += frame_fs
+    if frames_ran:
+        ran.add("C11:frames")
     stack_fs, stack_report = c_stacks.check_stacks(root)
     findings += stack_fs
     if stack_report:
@@ -126,8 +131,9 @@ def run(root, rev):
                 r, owner_for(r, fn["pn"])))
         for prod in s.products():
             pn = prod["part_number"]
-            d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"]})
+            d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"], "names": {}})
             d["files"].add(rel(root, p))
+            d["names"].setdefault(rel(root, p), prod["name"])
             d["count"] = max(d["count"], counts.get(pn, 0))
         for inst in s.instances():
             so = s.solid(inst["solid"])
@@ -187,6 +193,10 @@ def run(root, rev):
                                               bends_by_pn=bends_by_pn, two_wall_by_pn=two_wall_by_pn,
                                               cuboid_by_pn=cuboid_by_pn, prism_by_pn=prism_by_pn)
         ran.add("C05")
+    people_fs, people_ran = c_drawings.check_drawing_people(root)    # the owner's rule: Autonomous, no person's name
+    findings += people_fs
+    if people_ran:
+        ran.add("C05:pdf-people")
     schedule = c_parts.fastener_schedule(root, plists, usage)
     return {"rev": rev, "date": datetime.date.today().isoformat(), "inputs": inputs,
             "ran": sorted(ran), "findings": [f.to_dict() for f in findings], "stacks": stack_report,

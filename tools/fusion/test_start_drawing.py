@@ -27,7 +27,7 @@ sys.path.insert(0, HERE)
 import run_script as rs  # noqa: E402
 import start_drawing as sd  # noqa: E402
 
-FAST = {"dialog": 0.5, "drawing": 0.5, "base_view": 0.3, "idle": 0.3, "poll": 0.005}
+FAST = {"dialog": 0.5, "drawing": 0.5, "base_view": 0.3, "idle": 0.3, "poll": 0.005, "press": 0.05}
 
 
 class FakeFusion:
@@ -35,7 +35,8 @@ class FakeFusion:
                  base_view_after=4, start_cmd=sd.IDLE_CMD, unsaved=0, opened=False,
                  locked=False, ax_windows=3, modified=False, fusion_cancel_works=True,
                  mcp_dies_after_queue=False, ax_works=True, ax_sees_dialogs=True,
-                 folder_bad=(), folder_others=(), drawing_exists=False, open_warning=""):
+                 folder_bad=(), folder_others=(), drawing_exists=False, open_warning="",
+                 ax_late=0, ax_errors=0, ax_error_after_click=False, late_swaps_to_base_view=False):
         self.opened = opened
         self.cmd = start_cmd
         self.unsaved = unsaved
@@ -59,6 +60,15 @@ class FakeFusion:
         self.queued = False
         self.pending = []          # (polls left, action)
         self.ran, self.clicks, self.saved, self.cancels, self.closes = [], [], [], 0, []
+        self.ax_late = ax_late                    # clicks that find no dialog yet (it isn't in accessibility)
+        self.ax_errors = ax_errors                # clicks that fail as the dialog settles ("Invalid index")
+        self.ax_error_after_click = ax_error_after_click   # a press that works but reports an error
+        self.late_swaps_to_base_view = late_swaps_to_base_view
+        self.click_log = []                       # (button, Fusion's command at the click)
+        self.click_titles = []                    # (button, the dialog title it was asked to press in)
+        self.ok_raises = None                     # an exception every OK press raises (a timed-out call)
+        self.mcp_dies_after_ok = False            # MCP lost once OK is pressed
+        self.ok_done = False
 
     def _tick(self):
         nxt = []
@@ -70,7 +80,7 @@ class FakeFusion:
         self.pending = nxt
 
     def _mcp(self):
-        if self.mcp_dies_after_queue and self.queued:
+        if (self.mcp_dies_after_queue and self.queued) or (self.mcp_dies_after_ok and self.ok_done):
             raise rs.McpError("cannot reach Fusion MCP (fake)")
 
     # -- MCP side
@@ -142,8 +152,29 @@ class FakeFusion:
         if not self.ax_works:
             raise sd.StartError("accessibility call failed (fake)")
         self.clicks.append(button)
+        self.click_log.append((button, self.cmd))
+        self.click_titles.append((button, title))
+        if button == "OK" and self.ok_raises is not None:
+            raise self.ok_raises
+        dialog = self.cmd in (sd.CREATE_CMD, sd.BASE_VIEW_CMD)
+        if dialog and self.ax_late:
+            self.ax_late -= 1
+            if self.late_swaps_to_base_view:      # meanwhile Fusion moves on to another dialog
+                self.cmd = sd.BASE_VIEW_CMD
+            return "none"
+        if dialog and self.ax_errors:
+            self.ax_errors -= 1
+            raise sd.StartError("accessibility call failed: Can't get button 1 ... Invalid index. (-1719)")
+        how = self._press(button)
+        if self.ax_error_after_click and how.startswith("clicked"):
+            self.ax_error_after_click = False
+            raise sd.StartError("accessibility call failed: Can't get button 1 ... Invalid index. (-1719)")
+        return how
+
+    def _press(self, button):
         if self.cmd == sd.CREATE_CMD:
             if button == "OK" and self.ok_found:
+                self.ok_done = True
                 self.cmd = "busy"
 
                 def made():
@@ -253,13 +284,138 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(go(f)[0], 1)
         self.assertEqual((f.ran, f.clicks), ([], []))
 
+    # 2026-11-01 06:36 and 07:06: Fusion reported the dialog's command before the dialog showed up to
+    # accessibility, and a press found "none" or hit "Invalid index"; the cleanup found it a second later
+    def test_a_dialog_not_yet_visible_to_accessibility_is_pressed_on_a_retry(self):
+        f = FakeFusion(ax_late=3)                               # OK finds no dialog three times
+        code, logs = go(f)
+        self.assertEqual(code, 0, logs)
+        self.assertEqual(f.clicks[:4], ["OK"] * 4)
+        self.assertEqual(len(f.saved), 1)
+
+    def test_base_views_cancel_not_yet_visible_is_pressed_on_a_retry(self):
+        f = FakeFusion()
+        real = f.click
+
+        def click(button, title):                              # the Base View dialog shows up late
+            if button == "Cancel" and f.cmd == sd.BASE_VIEW_CMD and f.clicks.count("Cancel") < 2:
+                f.clicks.append(button)
+                return "none"
+            return real(button, title)
+        f.click = click
+        code, logs = go(f)
+        self.assertEqual(code, 0, logs)
+        self.assertEqual(f.clicks.count("Cancel"), 3)
+        self.assertEqual(len(f.saved), 1)
+
+    def test_an_accessibility_error_while_the_dialog_settles_is_tried_again(self):
+        code, logs = go(FakeFusion(ax_errors=2))
+        self.assertEqual(code, 0, logs)
+
+    def test_a_press_that_worked_but_reported_an_error_goes_on(self):
+        # the click went through, then accessibility lost the button: Fusion has left the dialog, so the
+        # checks after the press decide (a new drawing is there)
+        f = FakeFusion(ax_error_after_click=True)
+        code, logs = go(f)
+        self.assertEqual(code, 0, logs)
+        self.assertEqual(f.clicks.count("OK"), 1)               # not pressed again
+        self.assertEqual(len(f.saved), 1)
+
+    def test_a_retry_never_presses_in_another_dialog(self):
+        # while OK is retried, Fusion moves on to Base View: the retry stops; OK is never sent to Base View
+        f = FakeFusion(ax_late=1, late_swaps_to_base_view=True)
+        code, _logs = go(f)
+        self.assertEqual(code, 1)                               # no new drawing after that: the start fails
+        self.assertNotIn(("OK", sd.BASE_VIEW_CMD), f.click_log)
+        self.assertEqual(f.cmd, sd.IDLE_CMD)                    # and the cleanup got Fusion idle
+
+    def test_a_dialog_never_seen_fails_after_the_press_time(self):
+        # accessibility never finds the dialog: the press gives up after its time, and as the cleanup's Cancel
+        # can't find it either, the start reports a dialog left open for a person (exit 4), as before
+        f = FakeFusion(ax_late=10 ** 6)
+        code, logs = go(f)
+        self.assertEqual(code, 4, logs)
+        self.assertGreater(f.clicks.count("OK"), 1)
+        self.assertEqual(len(f.saved), 0)
+
+    # 2026-11-01 07:41: CEILING's OK press hit the 30 s accessibility timeout; the start tool didn't catch
+    # it, so its cleanup never ran and the Create Drawing dialog stayed open for every later run
+    def test_an_accessibility_timeout_is_a_start_error(self):
+        def timed_out(*_a, **_k):
+            raise subprocess.TimeoutExpired("osascript", 30)
+        with self.assertRaises(sd.StartError) as cm:
+            sd.Steps.osa(sd.AX_CLICK, "OK", "Create Drawing", run=timed_out)
+        self.assertIn("timed out", str(cm.exception))
+
+    def test_a_timed_out_ok_press_still_cleans_up(self):
+        f = FakeFusion()
+        f.ok_raises = sd.StartError("accessibility call timed out after 30 s")
+        code, logs = go(f)
+        self.assertEqual(code, 1, logs)
+        self.assertEqual(f.cmd, sd.IDLE_CMD)                      # the dialog was cancelled
+        self.assertEqual(f.click_titles[-1], ("Cancel", "Create Drawing"))   # in that exact dialog
+        self.assertEqual(f.cancels, 0)                            # through accessibility, not Fusion's own
+        self.assertEqual(len(f.saved), 0)
+
+    def test_an_unexpected_error_still_cleans_up(self):
+        # any error that escapes the steps (here the raw timeout, as before the fix) gets the cleanup too
+        f = FakeFusion()
+        f.ok_raises = subprocess.TimeoutExpired("osascript", 30)
+        code, logs = go(f)
+        self.assertEqual(code, 1, logs)
+        self.assertEqual(f.cmd, sd.IDLE_CMD)
+        self.assertEqual(f.click_titles[-1], ("Cancel", "Create Drawing"))
+
+    def test_with_fusion_unreadable_before_ok_the_cleanup_asks_for_create_drawing(self):
+        # MCP lost once Create Drawing is queued: Fusion can't name its command, so the cleanup asks for the
+        # dialog the start was at, Create Drawing (Reviewer 5, P3 on #301: assert the exact title)
+        f = FakeFusion(mcp_dies_after_queue=True)
+        go(f)
+        cancels = [t for b, t in f.click_titles if b == "Cancel"]
+        self.assertTrue(cancels)
+        self.assertEqual(set(cancels), {"Create Drawing"})
+
+    def test_with_fusion_unreadable_after_ok_the_cleanup_asks_for_base_view(self):
+        f = FakeFusion(drawing_after=1, base_view_after=1)      # Base View opens while the cleanup looks
+        f.mcp_dies_after_ok = True
+        code, logs = go(f)
+        cancels = [t for b, t in f.click_titles if b == "Cancel"]
+        self.assertTrue(cancels, logs)
+        self.assertEqual(set(cancels), {"Base View"})
+        self.assertEqual(f.cmd, sd.IDLE_CMD)                    # the Base View dialog was cancelled
+
+    def test_a_dialog_while_fusion_is_idle_or_elsewhere_is_never_pressed(self):
+        # Reviewer 5, P2 on #301: with Fusion idle and someone's Preferences dialog open, the cleanup pressed
+        # Cancel in it. Now it presses nothing, and the start ends with exit 4 for a person to look
+        for cmd in (sd.IDLE_CMD, "SketchCreate"):
+            st = CleanupStub([cmd] * 9, [["600x400"]] * 9)
+            self.assertFalse(sd.cancel_dialogs(st, st.log.append, tries=4, poll_s=0, expect=sd.BASE_VIEW_CMD))
+            self.assertEqual((st.clicks, st.cancels), ([], 0), cmd)
+            self.assertTrue(any("nothing pressed" in m for m in st.log), cmd)
+        f = FakeFusion(ok_found=False)
+        real_dialogs = f.dialogs
+
+        def dialogs():                                          # a foreign dialog stays after ours is gone
+            return real_dialogs() or ["600x400"]
+        f.dialogs = dialogs
+        f.fusion_cancel_works = True
+        code, _logs = go(f)
+        self.assertEqual(code, 4)
+
+    def test_a_dialog_closing_just_after_the_cancel_is_not_a_problem(self):
+        # right after the press Fusion is idle while the dialog is still listed for a moment
+        st = CleanupStub([sd.CREATE_CMD, sd.IDLE_CMD, sd.IDLE_CMD], [["395x445"], ["395x445"], []])
+        self.assertTrue(sd.cancel_dialogs(st, st.log.append, tries=4, poll_s=0))
+        self.assertEqual(st.clicks, ["Cancel"])
+
     def test_cleanup_presses_cancel_through_accessibility_first(self):
         # PM ruling 2026-10-31: ending an open Create Drawing by script killed Fusion
         f = FakeFusion(ok_found=False)                          # OK can't be pressed
         code, _logs = go(f)
         self.assertEqual(code, 1)
         self.assertEqual(f.cmd, sd.IDLE_CMD)
-        self.assertEqual(f.clicks, ["OK", "Cancel"])
+        self.assertEqual(set(f.clicks[:-1]), {"OK"})             # OK tried for the press time, then
+        self.assertEqual(f.clicks[-1], "Cancel")                # the cleanup's Cancel through accessibility
         self.assertEqual(f.cancels, 0)                          # Fusion's own cancel never used
 
     def test_fusions_own_cancel_only_when_accessibility_sees_no_dialog(self):
@@ -378,7 +534,7 @@ class SequenceTests(unittest.TestCase):
         f.click = lambda button, title: "none"                  # nothing can close it
         sd_cancel = sd.cancel_dialogs
         try:
-            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: sd_cancel(steps, log, 2, 0.001)
+            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0, **kw: sd_cancel(steps, log, 2, 0.001, **kw)
             self.assertEqual(go(f)[0], 4)
         finally:
             sd.cancel_dialogs = sd_cancel
@@ -395,7 +551,7 @@ class SequenceTests(unittest.TestCase):
         f = FakeFusion(mcp_dies_after_queue=True)
         sd_cancel = sd.cancel_dialogs
         try:
-            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: sd_cancel(steps, log, 2, 0.001)
+            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0, **kw: sd_cancel(steps, log, 2, 0.001, **kw)
             code, logs = go(f)
         finally:
             sd.cancel_dialogs = sd_cancel
@@ -451,7 +607,7 @@ class SequenceTests(unittest.TestCase):
         f = FakeFusion(drawing_after=10 ** 6)                   # Fusion stays busy, no dialog to cancel
         sd_cancel = sd.cancel_dialogs
         try:
-            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: sd_cancel(steps, log, 2, 0.001)
+            sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0, **kw: sd_cancel(steps, log, 2, 0.001, **kw)
             code, _ = go(f)
         finally:
             sd.cancel_dialogs = sd_cancel
@@ -505,7 +661,7 @@ class SequenceTests(unittest.TestCase):
         orig_run, orig_cancel = sd.run_with_cleanup, sd.cancel_dialogs
         sd.Steps, rs.wait_for_fusion = fake_steps, fake_wait
         sd.run_with_cleanup = lambda *a, **_k: orig_run(*a[:7], waits=FAST)   # run_batch passes waits 8th
-        sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: orig_cancel(steps, log, 2, 0.001)
+        sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0, **kw: orig_cancel(steps, log, 2, 0.001, **kw)
         env_token = os.environ.pop(rs.TOKEN_ENV, None)
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
@@ -740,8 +896,8 @@ class BatchTests(unittest.TestCase):
         def click(button, title):
             if button == "OK":
                 oks.append(1)
-                if len(oks) == 2:
-                    return "none"                               # the 2nd start can't press OK
+                if len(oks) >= 2:
+                    return "none"                               # the 2nd start can't press OK, retries too
             return real_click(button, title)
 
         f.click = click

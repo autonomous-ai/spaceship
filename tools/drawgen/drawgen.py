@@ -2,7 +2,7 @@
 """drawgen: part drawings straight from each part's STEP, outside Fusion (D-112, D-113).
 
   tools/drawgen/run.sh generate 211101 111101        # those parts, into v2/02-Drawings/<team>/
-  tools/drawgen/run.sh generate --sample             # the five sample drawings
+  tools/drawgen/run.sh generate --sample             # the sample drawings the PM reviewed first (#202)
   tools/drawgen/run.sh generate --all --out /tmp/x   # every registered part, somewhere else
   tools/drawgen/run.sh check v2/02-Drawings/wall/211101_P01_*_DWG.pdf   # read each PDF back against its STEP
   tools/drawgen/run.sh stale                         # registered drawings whose STEP or lists changed since
@@ -26,7 +26,6 @@ import compose  # noqa: E402
 import inputs  # noqa: E402
 import readback  # noqa: E402
 import specs  # noqa: E402
-import tabulated  # noqa: E402
 
 DRAWINGS = os.path.join(inputs.REPO, "v2", "02-Drawings")
 
@@ -44,10 +43,7 @@ def generate(pn, out_dir=None):
     tmp = os.path.join(out_dir or os.path.join(DRAWINGS, team), ".drawgen-%s.pdf" % pn)
     os.makedirs(os.path.dirname(tmp), exist_ok=True)
     try:
-        if kind == "tabulated":
-            rep = tabulated.make(spec["covers"], team, spec, tmp)
-        else:
-            rep = compose.make(pn, team, spec, tmp)
+        rep = compose.make(pn, team, spec, tmp)
         final = os.path.join(os.path.dirname(tmp), rep["dwg"] + ".pdf")
         if os.path.exists(final) and not made_by_drawgen(final):
             raise compose.NotDrawable("%s exists and was not made by drawgen (a Fusion drawing): left as it is"

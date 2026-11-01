@@ -32,7 +32,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 
 | Need | Value | Status and source |
 |---|---|---|
-| Clear height, floor to the lowest thing above the pod | {{ROOM_H}} mm or more | calculation: the pod's {{POD_H}} (D-21) + {{ROOF_WORK}} for the roof sleeve and the grille's screws (step 18; assumption) |
+| Clear height, floor to the lowest thing above the pod | {{ROOM_H}} mm or more | calculation: the pod's {{POD_H}} (D-21) + {{ROOF_WORK}} for the roof sleeve and the grille's 4 bolts (step 18, J-AIR-03; assumption) |
 | Height DT and the ceiling halves need as they go on | {{H_SPIGOTS}} mm | calculation: lifted {{SPIGOT_LIFT}} mm over their 8 mm spigots (assumption; J-FRONT-03, J-CEIL-01) |
 | Footprint | {{POD_W}} × {{POD_D}} mm | decided (D-01) |
 | Clear round the footprint while it goes together | {{LAY_OUT}} m a side, so about {{LAY_W}} × {{LAY_D}} mm | assumption: the parts set down at their places in step 1, and the step stools |
