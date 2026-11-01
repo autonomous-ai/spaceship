@@ -104,9 +104,13 @@ HW = {
                    kind="HOLD", material="EPDM or TPE hollow bulb (HOLD-12)", finish="", maker="HOLD-12",
                    sku="HOLD-12: a low-force bulb whose published working gap covers 4.0-7.0", torque="",
                    mass=0.02, mstat="assumption", basis="per metre: about 20 g for a small hollow bulb"),
-    "518001": dict(name="LINING - CASSETTE CLIP", vi="Kẹp treo cassette", kind="HOLD", material="HOLD (H03, HOLD-08)",
-                   finish="", maker="HOLD-08", sku="HOLD-08: rated 8.3 kg shear, 8.0 kg pull-out, captive lock",
-                   torque="", mass=0.04, mstat="assumption", basis="about 40 g each (D-81's working figure, H-10)"),
+    # the walls' own clip (the Lead's ruling of 2026-11-01; joints register H-49, FMT and FMT2): it only holds, the
+    # cassette's weight sits on the ledge; 518001 stays the ceiling's
+    "518003": dict(name="LINING - CASSETTE CLIP - WALL - FASTMOUNT MC-F10 + MC-SM5", vi="Kẹp treo cassette tường",
+                   kind="PI", material="Fastmount clip set: female MC-F10 and male MC-SM5 (joints register H-49)",
+                   finish="as supplied", maker="Fastmount (joints register H-49: FMT, FMT2)",
+                   sku="MC-F10 + MC-SM5, a set (one female, one male); 10 kg pull-out (FMT)",
+                   torque="", mass=0.04, mstat="assumption", basis="about 40 g a set (D-81's working figure, H-10)"),
     # the register's name (H-12) since #340: D-137 moves the bond to Sikaflex-252 for the galvanized steel frames
     "108002": dict(name="POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE",
                    vi="Bộ keo dán ACP", kind="PI",
@@ -777,8 +781,9 @@ def cassette_rows(rep):
                     status="DRAFT", source="CAD" + ("; openings ELECTRICAL P01 (PR #64)" if felt_el else ""),
                     note="held by the tray's lips over the 24 mm air gap (settles H09)"))
     rows += [
-        hw_row("518001", len(clips["bodies"]), "pc", "zones reserved on the panel frame's first and last studs; "
-               "8.3 kg rated in shear each (register J-LIN-01)"),
+        hw_row("518003", len(clips["bodies"]), "set", "4 a cassette, in the zones on the panel frame's first and last "
+               "studs; they only hold: the cassette's weight sits on the panel's ledge (the Lead's ruling of "
+               "2026-11-01)"),
         hw_row("848011", 0.2, "m", "4 pads of 50 mm to line the cassette up (assumption); carries no load (D-47)"),
     ]
     seal, where = 0.0, []
