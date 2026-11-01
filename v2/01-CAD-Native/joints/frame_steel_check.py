@@ -6,9 +6,10 @@
 
 D-131 (PM ruling 2026-11-01): the wall and ceiling frames become welded, galvanized steel box tube with the same
 outside sections, 20 x 40 and 40 x 40, so every hole, rivnut and joint position stays. Start gauges: 1.0 mm for the
-perimeters and every member that takes a rivnut, 0.8 mm for inner members if the check allows. PM ruling the same
-day (WALL's ACP span check): members about 300 apart on every wall panel, so each wall panel gets one more stud;
-the ceiling keeps its spacing.
+perimeters and every member that takes a rivnut, 0.8 mm for inner members if the check allows. D-135 (the same day):
+every wall bay under the ACP 275 mm clear or less, so the side panels get 5 studs and the back panels 3; the ceiling
+keeps its spacing. PM ruling the same day, for margin against under-gauge tube and weak welds: 1.2 mm for the side
+panels' rails and front stiles (L1, L2 and their mirrors), and every frame at 90% or less at the thinnest wall.
 
 Units: mm, N, MPa, kg. Every input carries its status (conventions section 9): confirmed, source, calculation,
 assumption or unverified. The joints register (v2/05-Engineering/joints/joints-register.md, J-FRAME-01) quotes the
@@ -55,6 +56,8 @@ BETA_W = 0.85                    # fillet weld correlation factor, EN 1993-1-8 T
                                  # every grade, the safe side here; source)
 HANDLING, MARGIN = 2.0, 1.5      # D-117's corner check (assumption, PM-accepted)
 PERIMETER_T, INNER_T = 1.0, 0.8  # mm, the gauges this check sets (D-131's start values)
+SIDE_T = 1.2                     # mm, the side panels' rails and front stiles (PM ruling 2026-11-01)
+MAX_USE = 0.90                   # every frame's corner lift at the thinnest accepted wall (PM ruling 2026-11-01)
 PLATE_T = 2.0                    # mm, the plate in each mitre (PROPOSED; at least 1.5 x the 1.0 wall)
 # corner plates: the mitre's outline (its length along the mitre line x the 40 frame depth), per corner type
 PLATES = {"20x40 to 20x40, 45 deg": 20 * 2 ** 0.5, "rail to 40x40, 63.43 / 26.57 deg": (20 ** 2 + 40 ** 2) ** 0.5,
@@ -177,14 +180,14 @@ def across(b, d, t):
 FRAMES = {   # key: (title, per pod, long side, members)
     "L1": ("211101 L1 (R1 its mirror)", 2, 1495.0, [
         (2, 1495.0, 20, 40, "rail"), (1, 1143.0, 20, 40, "front stile"), (1, 1143.0, 40, 40, "back stile"),
-        (3, 1103.0, 20, 40, "stud"), (1, 1103.0, 20, 40, "stud, added for 300 mm members")]),
+        (3, 1103.0, 20, 40, "stud"), (2, 1103.0, 20, 40, "stud, added for D-135")]),
     "L2": ("211103 L2 (R2 its mirror)", 2, 1495.0, [
         (1, 1495.0, 20, 40, "bottom rail"), (1, 1495.0, 40, 40, "top member"), (1, 1118.6, 20, 40, "front stile"),
         (1, 1118.6, 40, 40, "back stile"), (3, 1058.6, 20, 40, "stud"),
-        (1, 1058.6, 20, 40, "stud, added for 300 mm members")]),
+        (2, 1058.6, 20, 40, "stud, added for D-135")]),
     "B1": ("211201 B1 (B2, B3, B4 alike)", 4, 1199.0, [
         (2, 1199.0, 20, 40, "rail"), (2, 1118.6, 20, 40, "stile"), (2, 1078.6, 20, 40, "stud"),
-        (1, 1078.6, 20, 40, "stud, added for 300 mm members")]),
+        (1, 1078.6, 20, 40, "stud, added for D-135")]),
     "C1": ("411101 C1 (C2 alike)", 2, 1495.0, [
         (2, 1495.0, 20, 40, "side and seam members"), (1, 1199.0, 20, 40, "front member"),
         (1, 1199.0, 40, 40, "back member"), (1, 1159.0, 20, 40, "cross member 1 (soffit rivnuts)"),
@@ -212,13 +215,21 @@ def kappa_plain(b0, h0, t0):
     return min(1.0, 3 / math.sqrt(b0 / t0) + 1 / (1 + 2 * b0 / h0))
 
 
-def gauge(role, perimeter=PERIMETER_T):
-    return INNER_T if role.startswith(INNER_ROLES) else perimeter
+SIDE_ROLES = ("rail", "bottom rail", "front stile")   # in the side panels L1 and L2 (and their mirrors)
+
+
+def gauge(role, perimeter=PERIMETER_T, key=None):
+    """A member's wall: 0.8 inner, 1.2 for the side panels' rails and front stiles, else the perimeter's."""
+    if role.startswith(INNER_ROLES):
+        return INNER_T
+    if key in ("L1", "L2") and role in SIDE_ROLES and perimeter == PERIMETER_T:
+        return SIDE_T
+    return perimeter
 
 
 def frame_kg(members, perimeter=PERIMETER_T, share=1.0, key=None):
     """Tube mass at the measured wall (share of the nominal), zinc included; with key, the corner plates too."""
-    m = sum(n * L / 1000.0 * in_plane(b, d, gauge(role, perimeter) * share).kg_per_m()
+    m = sum(n * L / 1000.0 * in_plane(b, d, gauge(role, perimeter, key) * share).kg_per_m()
             for n, L, b, d, role in members)
     return m + (plates_kg(key) if key else 0.0)
 
@@ -226,7 +237,7 @@ def frame_kg(members, perimeter=PERIMETER_T, share=1.0, key=None):
 def corner_lift(key, grade, perimeter=PERIMETER_T, share=1.0, inner_everywhere=False):
     """(need, have, class) in N*mm: the in-plane moment at the frame's weakest corner."""
     _title, _n, L, members = FRAMES[key]
-    gauge_of = (lambda role: INNER_T) if inner_everywhere else (lambda role: gauge(role, perimeter))
+    gauge_of = (lambda role: INNER_T) if inner_everywhere else (lambda role: gauge(role, perimeter, key))
     m = sum(n * Ln / 1000.0 * in_plane(b, d, gauge_of(role) * share).kg_per_m() for n, Ln, b, d, role in members)
     m += plates_kg(key)
     need = m * G * L / 2 * HANDLING * MARGIN
@@ -252,7 +263,7 @@ def out_of_plane(key, grade):
     _title, _n, L, members = FRAMES[key]
     m = frame_kg(members, key=key)
     _c, Lh, b, d, role = max((mb for mb in members if mb[1] < L), key=lambda mb: mb[3] * mb[2])
-    held = Lh / 1000.0 * in_plane(b, d, gauge(role)).kg_per_m()
+    held = Lh / 1000.0 * in_plane(b, d, gauge(role, key=key)).kg_per_m()
     need = (m - held) * G * L / 2 / 2 * HANDLING * MARGIN
     t = core(PERIMETER_T, WALL_MIN)
     fy = grade[1]
@@ -291,17 +302,18 @@ def t_joint_weld(t_stud):
 
 
 def report():
-    print("Gauges: %.1f mm for every perimeter member, every 40 x 40 member and any member with a site bolt, spigot,"
-          " stopped-joint rivnut or hanger stud; %.1f mm for the studs and the ceiling's cross members 2 and 3."
-          % (PERIMETER_T, INNER_T))
+    print("Gauges: %.1f mm for the side panels' rails and front stiles; %.1f mm for every other perimeter member, every"
+          " 40 x 40 member and any member with a site bolt, spigot, stopped-joint rivnut or hanger stud; %.1f mm for the"
+          " studs and the ceiling's cross members 2 and 3. Every frame at %.0f%% or less at the thinnest wall."
+          % (SIDE_T, PERIMETER_T, INNER_T, 100 * MAX_USE))
     print("Steel: yield 280 MPa or more (" + "; ".join("%s, fy %g, fu %g" % g for g in ACCEPTED) + "); zinc Z100;"
           " the wall measured at %.0f%% of its nominal or more. Strength uses the core wall (less %.3f mm"
           " of zinc)." % (100 * WALL_MIN, ZINC))
     print()
     print("| Tube, core wall at the thinnest accepted | kg/m (nominal) | In plane M_Rd (N·m), class | Across M_Rd (N·m) | Torsion T_Rd (N·m) |")
     print("|---|---:|---:|---:|---:|")
-    for b, d in ((20, 40), (40, 40)):
-        for t in (INNER_T, PERIMETER_T):
+    for b, d, t in ((20, 40, INNER_T), (20, 40, PERIMETER_T), (20, 40, SIDE_T), (40, 40, INNER_T), (40, 40, PERIMETER_T)):
+        if True:
             tc = core(t, WALL_MIN)
             ip, ac = in_plane(b, d, tc), across(b, d, tc)
             m_ip, c_ip = min(ip.m_rd(g[1]) for g in ACCEPTED)
@@ -341,7 +353,8 @@ def report():
         b = worst_lift(grades, share=WALL_MIN)
         print("| %s | %.0f%% (%s, class %d) | %.0f%% (class %d) |" % (label, 100 * a[0], a[1], a[3], 100 * b[0], b[3]))
     p12 = worst_lift(NOT_ACCEPTED, perimeter=1.2, share=WALL_MIN)
-    d12 = sum(FRAMES[k][1] * (frame_kg(FRAMES[k][3], perimeter=1.2) - frame_kg(FRAMES[k][3])) for k in FRAMES)
+    d12 = sum(FRAMES[k][1] * (frame_kg(FRAMES[k][3], perimeter=1.2) - frame_kg(FRAMES[k][3], key=k) + plates_kg(k))
+              for k in FRAMES)
     tc = core(PERIMETER_T, WALL_MIN)
     k20, k40 = kappa_plain(40, 20, tc), kappa_plain(40, 40, tc)
     use_plain = worst_lift(ACCEPTED, share=WALL_MIN)[0] / k20
@@ -353,7 +366,7 @@ def report():
     print("Corner plates per pod: " + ", ".join("%d of %s (%.1f x 40 x %.1f, %.1f g)" % (
         n, k, PLATES[k], PLATE_T, 1000 * plate_kg(k)) for k, n in n_plates.items()) +
           "; %.2f kg in all (in the frame masses above)." % sum(n * plate_kg(k) for k, n in n_plates.items()))
-    print("1.2 mm perimeters instead: %.0f%% at worst with any grade above, the wall at %.0f%%, for %.1f kg more a pod."
+    print("Every perimeter at 1.2 mm: %.0f%% at worst with any grade above, the wall at %.0f%%, for %.1f kg more a pod."
           % (100 * p12[0], 100 * WALL_MIN, d12))
     for key in ("L2", "C1"):
         n8, h8, c8 = min((corner_lift(key, g, inner_everywhere=True) for g in ACCEPTED), key=lambda r: r[1] / r[0])
@@ -382,8 +395,8 @@ def check():
     rows = report()
     for key, (m, panel, need, have, oop_need, oop_have) in rows.items():
         title = FRAMES[key][0]
-        if need > have:
-            bad.append("%s: corner lift %.0f N*m over %.0f" % (title, need / 1000, have / 1000))
+        if need > MAX_USE * have:
+            bad.append("%s: corner lift %.0f N*m over %.0f%% of %.0f" % (title, need / 1000, 100 * MAX_USE, have / 1000))
         if oop_need > oop_have:
             bad.append("%s: out of plane %.0f N*m over %.0f" % (title, oop_need / 1000, oop_have / 1000))
         if panel > 20.0:
@@ -397,7 +410,7 @@ def check():
             bad.append("bearing in %.1f under 3 x the highest bolt load" % t)
     if t_joint_weld(INNER_T) < V_T:
         bad.append("T joint weld under the shear")
-    if PLATE_T < 1.5 * PERIMETER_T:
+    if PLATE_T < 1.5 * max(PERIMETER_T, SIDE_T):
         bad.append("mitre plate thinner than 1.5 x the wall: not a stiffened knee")
     if sum(sum(c.values()) * FRAMES[f][1] for f, c in CORNERS.items()) != 40:
         bad.append("corner count: want 40 a pod")
@@ -405,8 +418,8 @@ def check():
     n8, h8, _c = corner_lift("L2", ACCEPTED[0], inner_everywhere=True)
     if n8 <= h8:
         bad.append("0.8 mm perimeters pass the corner lift: the 1.0 rule isn't needed, re-check")
-    if worst_lift(NOT_ACCEPTED, share=WALL_MIN)[0] <= 1.0:
-        bad.append("every grade passes at the thinnest wall: the 280 MPa rule isn't needed, re-check")
+    if worst_lift(NOT_ACCEPTED, share=WALL_MIN)[0] <= MAX_USE:
+        bad.append("every grade under 280 MPa keeps 90%% at the thinnest wall: the 280 MPa rule isn't needed, re-check")
     return bad
 
 
