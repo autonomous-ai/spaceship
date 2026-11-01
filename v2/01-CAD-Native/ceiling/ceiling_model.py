@@ -91,8 +91,11 @@ CEILING_PARAMS = [
      "PM ruling 2026-11-01 (D-87 hooks): cross member X1 sits this far over the soffit's back edge, so the soffit's back hangers have a member above them; its back face stays over the cassette for the clips"),
     ("hang_x", "inner_w / 4", "mm", "calculation", "PM ruling 2026-11-01: soffit keyhole studs at the middle of each ceiling half's front member and X1 (clear of the clips, the catches and the roof slot)"),
     ("lock_x", "inner_w / 2 - 66 mm", "mm", "assumption",
-     "PM ruling 2026-11-01: two captive screws (5 mm key) lock the soffit, so taking a cassette out can never free it; both in C1's front member over the soffit's left inlet plenum, where no cartridge is, reached through the left hinged underside (X -1100 and -950)"),
-    ("lock_dx", "150 mm", "mm", "assumption", "spacing of the two soffit lock screws along the front member"),
+     "PM rulings 2026-11-01: two captive screws (5 mm key) lock the soffit, so taking a cassette out can never free it; "
+     "in cross member 1 since DR's new panel face (the room-side rail's loaded edge 18 mm away), over the soffit's left "
+     "inlet plenum where no cartridge is, reached through its left hinged underside; C2's cross member carries the "
+     "mirrored rivnuts unused, so the member stays one part"),
+    ("lock_dx", "150 mm", "mm", "assumption", "spacing of the two soffit lock screws along cross member 1"),
     # ---- roof exhaust slot in C2 only (D-60, D-61; PM ruling 2026-10-31: the two skins are two parts)
     ("slot_x0", "872 mm", "mm", "source", "air report 7e (sized on skeleton P04): roof slot X 872 to 1157, over the soffit's exhaust fan box"),
     ("slot_w", "285 mm", "mm", "source", "air report 7e: roof slot 285 x 294"),
@@ -379,8 +382,10 @@ def joint_holes(half):
     hx = "%shang_x" % ("-" if s < 0 else "")
     rows.append(("SOFFIT HANGER FRONT", "FRONT", "bottom", (hx, "%s + tube_w / 2" % YW, ZF0), "hole_rvn", "1", "0 mm", "x"))
     rows.append(("SOFFIT HANGER X1", "X1", "bottom", (hx, "%s + tube_w / 2" % cross_y0(1), ZF0), "hole_rvn", "1", "0 mm", "x"))
-    if s < 0:
-        rows.append(("SOFFIT LOCK", "FRONT", "bottom", ("-lock_x", "%s + tube_w / 2" % YW, ZF0), "hole_rvn", "2", "lock_dx", "x"))
+    # the soffit's lock rivnuts: in cross member 1 (PM ruling 2026-11-01, DR's new panel face: off C1's front member),
+    # mirrored in C2 so cross member 1 stays one part; only C1's take the lock screws (C2's sit over the column)
+    rows.append(("SOFFIT LOCK", "X1", "bottom", ("-lock_x" if s < 0 else "lock_x - lock_dx", "%s + tube_w / 2" % cross_y0(1), ZF0),
+                 "hole_rvn", "2", "lock_dx", "x"))
     return rows
 
 
