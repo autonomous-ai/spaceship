@@ -690,6 +690,27 @@ def keyhole_check(design, key, row_pn, joint, centre_xy, normal_xy):
     return off
 
 
+def hole_that_cuts(design, key, plane, label, xyz, dims, dia_expr, depth_expr, want_dir):
+    """hole() that checks the hole took material from the part: if it cut nothing (the FL1 sample's knee key
+    holes, 2026-11-01), it is taken out and drilled the other way; if that cuts nothing either, the run stops."""
+    body = find_comp(design, key).bRepBodies.item(0)
+    for d in (want_dir, None):
+        if d is None:
+            d = want_dir.copy()
+            d.scaleBy(-1)
+        before = body.volume
+        hf = hole(design, key, plane, label, xyz, dims, dia_expr, depth_expr, d)
+        body = find_comp(design, key).bRepBodies.item(0)
+        if body.volume < before - 1e-6:
+            return hf
+        hf.deleteMe()
+        sk = find_comp(design, key).sketches.itemByName("HOLE POSITION - %s" % label)
+        if sk is not None:
+            sk.deleteMe()
+        print("  %s: cut nothing drilled one way, drilling the other way" % label)
+    raise RuntimeError("%s: the hole cuts nothing either way (xyz %s)" % (label, [round(c, 2) for c in xyz]))
+
+
 def step_p02_fl1(design):
     """FL1 (111104): DL's outer facet piece, from the corner mitre with the left side band to the knee mitre with
     FL2. Its corner end is closed by a 1.5 end plate with the keyholes for the side band's front key 111212; its
@@ -713,14 +734,15 @@ def step_p02_fl1(design):
     for sgn, lab in ((1, "1"), (-1, "2")):
         xf = "%s - %s * (ck_x - ck_e) + %d * %s * (ck_y / 2 - ck_e)" % (FC_KX, D1X, sgn, P1X)
         yf = "%s - %s * (ck_x - ck_e) + %d * %s * (ck_y / 2 - ck_e)" % (FC_KY, D1Y, sgn, P1Y)
-        hole(design, "fl1", bot, "KNEE KEY FIXING %s (111214)" % lab, (v(xf), v(yf), v("glide_h")),
+        hole_that_cuts(design, "fl1", bot, "KNEE KEY FIXING %s (111214)" % lab, (v(xf), v(yf), v("glide_h")),
              [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z)
-    hole(design, "fl1", top, "DL SPIGOT RIVNUT - ROUND HOLE (J-FRONT-02)", (v("dlf_sp_ax"), v("dlf_sp_ay"), v("wall_z0")),
+    hole_that_cuts(design, "fl1", top, "DL SPIGOT RIVNUT - ROUND HOLE (J-FRONT-02)", (v("dlf_sp_ax"), v("dlf_sp_ay"), v("wall_z0")),
          [(X, "dlf_sp_ax"), (Y, "dlf_sp_ay")], "rn_hole", "band_wall", down)
     off = keyhole_check(design, "fl1", "111212", "front left corner (LH)", corner, n_corner)
     with open(os.path.join(REPO, "v2/01-CAD-Native/joints/corner-keys.csv"), encoding="utf-8") as fh:
         r = [x for x in csv.DictReader(fh) if x["part_number"] == "111214"][0]
     fix = centres(c.bRepBodies.item(0), v("ck_fix_hole"), "z")
+    print("  111104 holes (centre across the axis, diameter; axis): %s" % holes_of_all(c.bRepBodies.item(0)))
     want = [(float(r["fix_hole_1_x"]), float(r["fix_hole_1_y"])), (float(r["fix_hole_2_x"]), float(r["fix_hole_2_y"]))]
     ok = all(any(abs(g[0] - w[0]) < 0.05 and abs(g[1] - w[1]) < 0.05 for g in fix) for w in want)
     print("  111104 knee key 111214's fixing holes against corner-keys.csv: %s (got %s, want %s)" % (
