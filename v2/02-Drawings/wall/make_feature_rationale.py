@@ -277,7 +277,8 @@ FAMILIES = {
 }
 FAMILIES[("STILE - FRONT", 8.5, "y")] = (
     "F52", "D-169 pin slots: the decor block locates on two pins along its pull, in two Z slots in the front wall "
-    "(lower panels: L1 for DL, R1 for DR)", "the block's two 831001 spigots in its back plate's rivnuts, 5.7 into the "
+    "(L1 only, for DL: as amended the same day, DR and DT keep their base locators)", "the block's two 831001 "
+    "spigots in its back plate's rivnuts, 5.7 into the "
     "member", "8.5 wide in X by 12 long in Z, on the bolt line, 100 from each end of the seam edge (the register's "
     "spigot rule)", "D-169 (ruled in the Joints group, 2026-11-01; Joints' places)",
     "120 clear of the nearest J-FRONT-01 bolt holes (F07)", "±0.2 to the bolt holes (Joints)",
@@ -288,7 +289,7 @@ FAMILIES[(LEDGE_BODY, 3.3, "x")] = (
     "838012, closed-end countersunk blind rivets ISO 15974 Ø3.2 x 8, heads flush in Ø6.7 x 120 countersinks (D-166)",
     "as F50: 6, symmetric about the ledge's middle", "the Lead's rulings of 2026-11-01 (WALL group): the ledge, its "
     "1.5 upright and flush heads (0.40 clear of the tray at J-FRAME-01's worst case)",
-    "centre 9.0 from the upright's top edge (2.2 x d); the countersink's edge 5.4 from the top edge and 6.2 from the "
+    "centre 9.0 from the upright's top edge (2.8 x d); the countersink's edge 5.4 from the top edge and 6.2 from the "
     "bend (calculation)", "±0.2 (assumption); countersink Ø per its rivet", "laser cut in the flat blank (DXF), "
     "countersunk by machining", "assumption")
 
