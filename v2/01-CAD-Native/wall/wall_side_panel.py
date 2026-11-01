@@ -107,7 +107,7 @@ PARTS = {
 # joint hardware the panel carries from the factory, numbered by the joints register (V2-ENG-JNT-01, table 2.1;
 # PROPOSED numbers, D-63): one component each in the panel assembly
 HW_PARTS = {
-    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm"),
+    "rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2", "Tán rút M6 thép mạ kẽm"),
     "stopw": ("831002", "HARDWARE - STOP WASHER - Ø10.5 X Ø20 X 1.5 - AL", "Long đen chặn nhôm"),
     "spigot": ("831001", "HARDWARE - LOCATING SPIGOT - M6 X Ø8 - STAINLESS", "Chốt định vị Ø8"),
     # the mitre plates (D-131; joints register H-40 to H-42, made hardware numbered by the Joints Engineer)
@@ -183,7 +183,8 @@ WALL_PARAMS = [
      "register R-J15, FR-07)"),
     ("fill_t", "tube_d", "mm", "calculation", "40 mm PET fill fills the frame depth (D-34; layout study 40 mm)"),
     # site joints, joints register V2-ENG-JNT-01 P01 (ce1f415): M6 x 20 ISO 4762 captive bolts into Sherex
-    # CAH2-610-4.2 rivnuts (steel since D-131; the CAH3 before), bolts and corner members DECIDED by the PM
+    # CAL2-610-4.2 rivnuts (D-163: the knurled round body in a round Ø10.00 hole; steel since D-131; the CAH2 and
+    # CAH3 before), bolts and corner members DECIDED by the PM
     # (2026-10-31); positions PROPOSED there
     ("bolt_d", "7 mm", "mm", "confirmed", "PM ruling on F-009: bolt holes 7.0 (0.51 float), position tolerance "
      "0.4 (+-0.2) from the spigot hole, CNC or drill jig (joints register FR-02)"),
@@ -192,8 +193,8 @@ WALL_PARAMS = [
      "grommet retainer (H-02)"),
     ("bolt_line_y", "pod_d / 2 - skin_t - bond_t - tube_d / 2", "mm", "confirmed",
      "J-WALL-02 bolt line on the back panel's tube centre, Y 824 (joints register R-J15, FR-07)"),
-    ("rivnut_d", "9.53 mm", "mm", "source",
-     "Sherex CAH2-610-4.2 hole 9.53 +0.10 (HW-SEL A5; register H-03, SHX2: as the CAH3 it replaced, D-131)"),
+    ("rivnut_d", "10 mm", "mm", "confirmed",
+     "D-163 (the Lead's ruling, 2026-11-01): Sherex CAL2-610-4.2 in a round drilled hole Ø10.00 +0.10/0, inside the maker's 10.00 +0.15/-0.0 (Sherex drawing CAL2-610-4.2 rev B, note 2) so the bolt-hole stack ST-03 stays positive; T06's spin-out test confirms it"),
     ("spigot_d", "8.5 mm", "mm", "assumption", "register FR-05: hole for the 8 mm locating spigot H-05"),
     ("spigot_slot", "14 mm", "mm", "assumption", "register FR-05: slot length for the second spigot"),
     ("spigot_edge", "spigot_inset", "mm", "calculation",
@@ -255,12 +256,14 @@ WALL_PARAMS = [
     ("stopw_od", "20 mm", "mm", "source", "joints register H-08: stop washer Ø10.5 x Ø20 x 1.5 (PROPOSED part)"),
     ("stopw_id", "10.5 mm", "mm", "source", "joints register H-08"),
     ("stopw_t", "1.5 mm", "mm", "source", "joints register H-08: rivnut head 0.76 + washer 1.5 = the 2.26 stop (R-J5)"),
-    ("rivnut_head_d", "12.96 mm", "mm", "source", "Sherex CAH2-610-4.2 head Ø12.96 (joints register H-03, SHX2)"),
-    ("rivnut_head_t", "0.76 mm", "mm", "source", "Sherex CAH2-610-4.2 head 0.76 ±0.08 (H-03, SHX2)"),
-    ("rivnut_body_d", "9.5 mm", "mm", "source", "Sherex CAH2-610-4.2 body Ø9.50 max (H-03, SHX2)"),
-    ("rivnut_len", "10.16 mm", "mm", "source",
-     "Sherex CAH2-610-4.2 installed length 10.16 max under the head (H-03, SHX); the bulge inside the tube is not "
-     "modelled"),
+    ("rivnut_head_d", "12.95 mm", "mm", "source", "Sherex CAL2-610-4.2 rev B: flange Ø12.45 to 12.95, the largest "
+                                                 "modelled (D-163)"),
+    ("rivnut_head_t", "0.76 mm", "mm", "source", "Sherex CAL2-610-4.2 rev B: flange 0.68 to 0.84, its middle; with "
+                                                "the 1.5 stop washer the 2.26 stop (R-J5), as before (D-163)"),
+    ("rivnut_body_d", "9.91 mm", "mm", "source", "Sherex CAL2-610-4.2 rev B: knurled body Ø9.91 max (D-163)"),
+    ("rivnut_len", "9.65 mm", "mm", "source",
+     "Sherex CAL2-610-4.2 rev B, note 3: installed length 9.65 max under the flange (14.35 to 15.11 before "
+     "setting); the bulge inside the tube is not modelled (D-163)"),
     ("m6_d", "6 mm", "mm", "calculation", "M6 threads shown at their 6 mm major diameter (no modelled thread)"),
     ("spigot_pin_d", "8 mm", "mm", "source", "joints register H-05: Ø8 stainless pin; the part itself is Joints' "
                                              "831001 STEP, placed as it is (F-189)"),
@@ -377,8 +380,8 @@ DENSITY = {
     "tray": (7850.0, "source", "steel 7850 kg/m3 (EN 10346 DX51D+Z)"),
     "felt": (1.8 / 0.009, "source", "Polyx Board 9: 1.8 kg/m2 at 9 mm (HW-SEL A3 opt 2); the factory felt is unverified"),
     "zone": (1.0, "assumption", "reserved zone, not a part: near-zero density so it adds no mass"),
-    "rivnut": (7850.0, "source", "steel 1008/1010, zinc plated (Sherex CAH2-610-4.2, register H-03, SHX2; D-131 "
-                                 "replaced the aluminium CAH3 with the same head and grip): 7.85 g/cm3"),
+    "rivnut": (7850.0, "source", "steel C1010/C1008, zinc plated with a yellow trivalent chromate (Sherex "
+                                 "CAL2-610-4.2 rev B; D-163, steel since D-131): 7.85 g/cm3"),
     "stopw": (2700.0, "calculation", "5000- or 6000-series aluminium sheet (H-08): 2.70 g/cm3 (5052 2.68, 6061 2.70)"),
     "spigot": (7900.0, "source", "stainless steel (H-05): 7.9 g/cm3"),
     "plate": (7850.0, "source", "joints register H-40 to H-42: 2.0 steel plate, galvanized (17.8 / 28.1 / 35.5 g)"),

@@ -22,8 +22,9 @@ WALL_FRAME = {
         "joint faces and spigot hole; rivnuts 838003 (zinc-plated steel) are set after the touch-up.",
     ],
     "tolerance": "hole and slot positions Ø0.4 to A|B|C (R-J6); spigot hole and slot ±0.1 from the frame ends "
-                 "(joints register section 4); rivnut holes Ø9.53 +0.10/0 (maker); other hole sizes +0.2/0 "
-                 "(assumption); cut lengths ±0.5 (parts list); welded frame: seam faces flat within 0.5, skin-side "
+                 "(joints register section 4); rivnut holes Ø10.00 +0.10/0 (D-163, Sherex CAL2-610-4.2); other "
+                 "hole sizes +0.2/0 (assumption); cut lengths ±0.5 (parts list); welded frame: seam faces flat within "
+                 "0.5, skin-side "
                  "faces within ±0.5 of one plane lying free, diagonals equal within 1.5, measured on a flat table "
                  "after welding, before the holes; straighten cold or reject, never clamp flat (J-FRAME-01).",
 }

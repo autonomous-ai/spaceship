@@ -11,6 +11,7 @@ run, so no feature can reach a drawing without a reason.
 
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -261,7 +262,7 @@ FAMILIES = {
         "Sherex CAH2-610-4.2 (steel zinc) with the stop washer H-08 in the room-side wall of the 40 x 40 back stile",
         "3 per panel height at F07's heights, on the back panel's bolt line Y 824 (its tube centre, R-J15)",
         "%s 3.2, FR-01, FR-06, FR-07; PM rulings R-J3 (40 x 40), R-J15" % REG,
-        "hole edge 11 from the inner wall; the Ø20 stop washer (Y 814 to 834) lies on the 40 mm face",
+        "hole edge 15.2 from each side face of the 40 mm wall; the Ø20 stop washer (Y 814 to 834) lies on it",
         "Ø0.4 from F03, matched by the back panel's FR-07 holes", "CNC or jig; T-01, T-02", "source (hole); PROPOSED (positions)"),
 }
 
@@ -308,6 +309,15 @@ OTHER = [
 def load(pn):
     with open(os.path.join(OUT, "%s.json" % pn), encoding="utf-8") as fh:
         return json.load(fh)
+
+
+RIVNUT_KEY = 9.53             # the tables' key for a rivnut hole, whatever its size in the CAD (D-163: 10.00)
+
+
+def _subs(text, pairs):
+    for a, b in pairs:
+        text = text.replace(a, b)
+    return text
 
 
 def holes(rep):
@@ -365,10 +375,23 @@ def main(argv):
     found = holes(panel)
     found.update(holes(cass))
     unexplained = []
+    # D-163: the rivnut's hole and part follow the panel's own CAD (Ø10.00 and CAL2-610-4.2 from its D-163 rebuild,
+    # Ø9.53 before it); the tables key a rivnut hole as RIVNUT_KEY and their text names the size and part read here
+    prm = {p["name"]: p["value"] for p in panel.get("parameters", [])}
+    rv_d = prm.get("rivnut_d", RIVNUT_KEY)
+    rv_sku = next((m.group(1) for c in panel["components"] if c["part_number"] == "838003"
+                   for m in [re.search(r"SHEREX (\S+)", c["name"])] if m), "CAH2-610-4.2")
+    rv_text = [("Sherex CAH2-610-4.2", "Sherex %s" % rv_sku)]
+    rv_hole = [("Ø9.53 +0.10 (Sherex)", "Ø%g +0.10 (%s)" % (rv_d, "D-163; Sherex %s" % rv_sku if rv_d > RIVNUT_KEY
+                                                             else "Sherex")),
+               ("15.2 ", "%.1f " % ((40.0 - rv_d) / 2))]           # its edge to each side face of a 40 mm wall
     for key, hs in sorted(found.items()):
         body, d, ax = key
         full = [h for h in hs if h["full_circle"]]
-        fam = families.get(key)
+        rivnut = abs(d - rv_d) < 0.005
+        fam = families.get((body, RIVNUT_KEY, ax) if rivnut else key)
+        if fam is not None:
+            fam = [_subs(f, rv_text + (rv_hole if rivnut else [])) for f in fam]
         if fam is None:
             if d == 8.5 and body == "RAIL - BOTTOM":
                 fam = families[("RAIL - BOTTOM", 8.5, "z")]

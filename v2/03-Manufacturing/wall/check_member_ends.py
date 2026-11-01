@@ -103,8 +103,8 @@ def expected(note, panel):
 def check(step_path, bom_path):
     """Mismatches between a panel STEP's members and its parts list's member rows (empty: they agree)."""
     panel = os.path.basename(step_path)[:6]
-    rows = {r["part_number"]: r for r in csv.DictReader(open(bom_path, encoding="utf-8"))
-            if (r.get("part_number") or "").startswith("212")}
+    with open(bom_path, encoding="utf-8") as fh:
+        rows = {r["part_number"]: r for r in csv.DictReader(fh) if (r.get("part_number") or "").startswith("212")}
     cuts = end_cuts(step_path)
     bad = []
     for pn in sorted(set(rows) | set(cuts)):

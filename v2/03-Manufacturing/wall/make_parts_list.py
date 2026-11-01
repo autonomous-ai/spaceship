@@ -45,12 +45,13 @@ HW = {
                    maker="HOLD: any maker to ISO 4762, picked at the RFQ", sku="ISO 4762 M6 x 25 - 8.8 - zinc plated",
                    torque="snugged, not torqued: a pin (register 2.10)", mass=0.0083, mstat="calculation",
                    basis="head Ø10 x 6 less the socket, shank Ø6 x 25 at 85% for the thread, 7850 kg/m3"),
-    "838003": dict(name="HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", vi="Tán rút M6 thép mạ kẽm",
-                   kind="PI", material="steel 1008/1010 (register H-03, SHX2; D-131 replaced the aluminium CAH3 with "
-                                       "the same head and grip)", finish="zinc plated, trivalent passivation",
-                   maker="Sherex (PEM)", sku="CAH2-610-4.2", torque=TORQUE, mass=0.0068, mstat="calculation",
-                   basis="body Ø9.5 x 14.86 with an M6 bore and a Ø12.96 x 0.76 head (SHX2 sizes), 7850 kg/m3; "
-                         "the CAD body is the installed envelope"),
+    "838003": dict(name="HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2", vi="Tán rút M6 thép mạ kẽm",
+                   kind="PI", material="steel C1010/C1008 (Sherex drawing CAL2-610-4.2 rev B; D-163: the knurled "
+                                       "round body in a round Ø10.00 +0.10/0 hole; steel since D-131)",
+                   finish="zinc plated with a yellow trivalent chromate (SFS-01-001 SC2)",
+                   maker="Sherex (PEM)", sku="CAL2-610-4.2", torque=TORQUE, mass=0.0065, mstat="source",
+                   basis="the maker's weight, 0.0065 kg (Sherex drawing CAL2-610-4.2 rev B); the CAD body is the "
+                         "installed envelope"),
     "838004": dict(name="HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2", vi="Long đen to M6 inox",
                    kind="PI", material="stainless steel A2", finish="none (plain stainless)",
                    maker="HOLD: any maker to ISO 7093-1, picked at the RFQ", sku="ISO 7093-1 - 6.4 x 18 x 1.6 - A2",
@@ -572,7 +573,8 @@ def hardware_rows(frame, comps, back, lower, prm):
     rivnuts = len(rv_bodies) or rivnut_holes
     if not rv_bodies:                    # a report from before the hardware was modelled
         spig_rv = [None] * (2 if (lower or back) else 0)
-        pins = [None] * (3 if back and len(holes_in([b for b in fb if b["name"] == "STILE - CENTRE"], 9.53)) else 0)
+        pins = [None] * (3 if back and len(holes_in([b for b in fb if b["name"] == "STILE - CENTRE"],
+                                                      prm.get("rivnut_d", 9.53))) else 0)
     stopped = rivnuts - len(spig_rv) - len(pins)
     if sw_bodies and len(sw_bodies) != stopped:
         raise SystemExit("CAD has %d stop washers for %d stopped-joint rivnuts" % (len(sw_bodies), stopped))

@@ -13,6 +13,7 @@ with each image's size in mm, which the drawing script reads to place them.
 
 import json
 import os
+import re
 import sys
 
 import fitz  # PyMuPDF
@@ -145,6 +146,20 @@ def data_block(pn, comp, rep, scale, sheet, material, mass, kind="Part"):
     ]
 
 
+def rivnut_sku(rep):
+    """The Sherex rivnut a design carries (838003): from its component's name, else from the rivnut_d parameter's
+    source (a frame's design holds no rivnut); CAH2-610-4.2, the part before D-163, for a report with neither."""
+    for c in rep.get("components", []):
+        m = re.search(r"SHEREX (\S+)", c["name"]) if c["part_number"] == "838003" else None
+        if m:
+            return m.group(1)
+    for p in rep.get("parameters", []):
+        m = re.search(r"Sherex (C[A-Z]+\d-\d+-[\d.]+\d)", p.get("comment") or "") if p["name"] == "rivnut_d" else None
+        if m:
+            return m.group(1)
+    return "CAH2-610-4.2"
+
+
 def frame_blocks(pn, src=None):
     rep = load(src or pn)
     pos = position(rep)
@@ -166,6 +181,10 @@ def frame_blocks(pn, src=None):
         sec = "%s × %.1f" % ("40 × 40" if d[0] >= 39.9 else "20 × 40", wall)
         key = (("%s %s" % (b["part"], b["name"])) if members else b["name"].rstrip("0123456789 ").strip(), sec, d[2])
         cut[key] = cut.get(key, 0) + 1
+    # D-163: the rivnut hole and part as the frame's own CAD has them (Ø10.00 +0.10/0 and CAL2-610-4.2 from its
+    # rebuild): a frame's design holds no rivnut, so its part comes from the rivnut_d parameter's source
+    rv_sku = rivnut_sku(rep)
+    rv = "Ø%.2f +0.10/0 = Sherex %s rivnut" % (prm.get("rivnut_d", 9.53), rv_sku)
     data = data_block(pn, frame, rep, "1:5", "A2", "steel box tube S280GD+Z (EN 10346) or SGC400 (JIS G3302), "
                       "yield 280 MPa or more, zinc Z100, pre-galvanized; welded (D-131, J-FRAME-01)", mass)
     if pos["back"]:
@@ -176,14 +195,14 @@ def frame_blocks(pn, src=None):
                                                                 seam_x, "left" if pos["right"] else "right", bx[4]))
         holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
                  "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer): bottom rail, outer "
-                 "stile (corner)%s. Ø19 = key access and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH2-610-4.2 rivnut (steel, zinc plated): "
+                 "stile (corner)%s. Ø19 = key access and grommet retainer. " + rv + " (steel, zinc plated): "
                  "top rail%s. %s Ø8.5 round by the closing seam and the 8.5 × 14 slot along the edge at the corner end "
                  "= locating spigots (ST-02). Bolts at 220, 473.00, 725.99, 978.99 from the frame's ends; corner bolts "
                  "at 220, 559.31, 898.61 on Y 824. Reasons: FEATURE-RATIONALE-%s.md." % (
                      ", top rail (ceiling)" if pos["row"] == 2 else "",
                      " (4 for the panel above with stop washers, 2 spigot)" if pos["row"] == 1 else " (2 spigot, for the ceiling)",
                      "Centre stile: 3 plain Ø7.0 that the next panel's pins pass through." if not pos["right"] else
-                     "Centre stile: 3 Ø9.53 pin rivnuts (no stop washer) with Ø19 access behind them.",
+                     "Centre stile: 3 Ø%.2f pin rivnuts (no stop washer) with Ø19 access behind them." % prm.get("rivnut_d", 9.53),
                      rep["document"].split("_")[0].replace("2112", "2102")))
         extra = ("1 × 45° lead-in on the top edge of the closing-seam face, ground into the corner weld (R-J9, "
                  "FR-13). " if members else "1 × 45° lead-in on the top edge of the closing-seam face (R-J9). ")
@@ -194,7 +213,7 @@ def frame_blocks(pn, src=None):
                                             "right" if pos["right"] else "left", bx[0] if not pos["right"] else bx[3]))
         holes = ("3. Hole tables: one per drilled face, origin at datum B's lower corner of that view, X/Y in mm. "
                  "Ø7.0 = M6 bolt clearance (captive M6 × 16 ISO 4762 with an ISO 7093-1 washer). Ø19 = key access "
-                 "and grommet retainer. Ø9.53 +0.10/0 = Sherex CAH2-610-4.2 rivnut (steel, zinc plated) over a 1.5 mm stop washer. Ø8.5 "
+                 "and grommet retainer. " + rv + " (steel, zinc plated) over a 1.5 mm stop washer. Ø8.5 "
                  "and the 8.5 × 14 slot (along X) = locating spigots. Bolts at the 220 rule on every edge; corner "
                  "rivnuts on the bolt line Y 824 (pod)%s. Reasons: FEATURE-RATIONALE-%s.md." % (
                      "; ceiling rivnuts on Z 2374 from Y -645 at 351.67 (the ceiling's rule)" if pos["row"] == 2 else "",
