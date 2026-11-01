@@ -410,3 +410,27 @@ def member_parts(repo_root, frame_pn, member_pn):
                 pn, r["qty_per_parent"], count[pn], ", ".join(k for k, v in member_pn.items() if v == pn)))
         out[key] = (pn, r["name"].strip(), r["name_vi"].strip())
     return out
+
+
+def write_weldment_lists(L, design, root_dir, rows, frame_pn, member_rows, weld_rel, block_rel, block):
+    """D-120 parts lists: the weldment's own list (the frame's row on top, then its tube parts, the frame row the sum
+    of them) and the block's list, where the frame is one row carrying that sum, so no tube is counted twice (the
+    master BOM reads the frame row as an assembly, the roll-up reads the block's rows). rows: the block's rows with
+    the frame row and member_rows among them (front_lib.write_parts_list's tuples); block: (pn, name, name_vi).
+    Returns (block total, weldment total)."""
+    import os
+    frow = [r for r in rows if r[0] == frame_pn][0]
+    weld = L.write_parts_list(design, os.path.join(root_dir, weld_rel), [frow] + list(member_rows), frame_pn,
+                              frow[1], frow[2])
+    members = {id(r) for r in member_rows}
+    block_rows = []
+    for r in rows:
+        if id(r) in members:
+            continue
+        if r[0] == frame_pn:
+            r = tuple(r[:6]) + (round(weld, 3), "calculation (sum of its parts list %s)" % weld_rel.split("/")[-1]) + \
+                tuple(r[8:])
+        block_rows.append(r)
+    total = L.write_parts_list(design, os.path.join(root_dir, block_rel), block_rows, *block)
+    return total, weld
+

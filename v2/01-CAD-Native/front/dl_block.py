@@ -68,6 +68,7 @@ STEP_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step"
 BOM_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv" % (PN, REV)
 DXF_SKIN_REL = "v2/03-Manufacturing/front/351101_%s_FRONT-DECOR-SKIN-DL_DXF.dxf" % REV
 CUT_REL = "v2/03-Manufacturing/front/351104_%s_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv" % REV
+WELD_BOM_REL = "v2/03-Manufacturing/front/351104_%s_FRONT-DECOR-FRAME-DL_BOM.csv" % REV   # the weldment's own parts list (D-120)
 DXF_BACK_REL = "v2/03-Manufacturing/front/351102_%s_FRONT-DECOR-BACK-PLATE-DL_DXF.dxf" % REV
 ANCHORS_REL = "v2/01-CAD-Native/front/%s_%s_FRONT-DECOR-BLOCK-ASSY-DL_ANCHORS.json" % (PN, REV)
 
@@ -516,8 +517,8 @@ def export_all(app):
          "D-12, D-49; skeleton DL shape", "three hinge pockets (HOLD sizes); open at the bottom, where the frame's bottom "
          "ring stands on the band and takes its spigots (J-FRONT-02); one flat panel per outside face: " +
          DXF_SKIN_REL.split("/")[-1] + "; bond to the frame per the joints register's ACP bond spec"),
-        (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "weldment assembly: %d tubes as %d parts below, "
-         "TIG-welded (cut list %s)" % (len(members), len(member_rows), CUT_REL.split("/")[-1]),
+        (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "weldment assembly: welded frame, %d tubes as %d parts (parts list %s; cut list %s), "
+         "TIG-welded" % (len(members), len(member_rows), WELD_BOM_REL.split("/")[-1], CUT_REL.split("/")[-1]),
          "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5, finish: mill finish (hidden, D-79)", None, "",
          "DRAFT", "v1 decor frame drawing (DL frame, 60 x 20 hinge members); D-79; joints register HOLD-10, ISS-045; "
          "D-120 (each tube its own part, #232)",
@@ -536,7 +537,9 @@ def export_all(app):
          "hardware selection C3; joints register", "hinge-side run %.0f mm in 4 pieces between the hinges, each its "
          "own component (the two middle pieces one length); DT's run in DT's list" % seal_len),
     ]
-    total = L.write_parts_list(design, os.path.join(root_dir, BOM_REL), rows, PN, NAME, VN)
+    total, weld_total = FL.write_weldment_lists(L, design, root_dir, rows, FRAME_PN, member_rows, WELD_BOM_REL, BOM_REL,
+                                                (PN, NAME, VN))
+    print("parts list %s: %d parts, %.2f kg" % (WELD_BOM_REL, len(member_rows), weld_total))
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), total))
     # the skin's panels laid flat (one ACP panel per outside face, 45 degree mitred edges as v1), 1:1 in mm
     skin_comp = [c for c in design.allComponents if c.partNumber == PARTS["SKIN"][0]][0]
@@ -548,7 +551,7 @@ def export_all(app):
     import csv
     with open(os.path.join(root_dir, CUT_REL), "w", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["frame", "member", "part_number", "name", "section", "length_mm", "qty", "ends", "status"])
+        w.writerow(["frame", "member", "member_part", "name", "section", "length_mm", "qty", "ends", "status"])
         w.writerows(tuple(r[:2]) + (mparts[r[1]][0],) + tuple(r[2:]) for r in FL.cut_list_rows(members, ev, FRAME_PN))
     print("cut list %s: %d tubes, %.2f m" % (CUT_REL, len(members), tube_m))
     back_comp = [c for c in design.allComponents if c.partNumber == PARTS["BACK"][0]][0]

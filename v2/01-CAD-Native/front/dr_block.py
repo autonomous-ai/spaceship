@@ -82,6 +82,7 @@ BOM_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv" % 
 ANCHORS_REL = "v2/01-CAD-Native/front/%s_%s_FRONT-DECOR-BLOCK-ASSY-DR_ANCHORS.json" % (PN, REV)
 DXF_SKIN_REL = "v2/03-Manufacturing/front/351301_%s_FRONT-DECOR-SKIN-DR_DXF.dxf" % REV
 CUT_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv" % ("351306", REV)
+WELD_BOM_REL = "v2/03-Manufacturing/front/351306_%s_FRONT-DECOR-FRAME-DR_BOM.csv" % REV   # the weldment's own parts list (D-120)
 # flat parts cut from sheet: their DXF gives the outline and every hole, so they need no drawing (D-89 part 4)
 DXF_FLAT = {"BACK": "351302_%s_FRONT-DECOR-BACK-PLATE-DR_DXF.dxf" % REV,
             "ACCESS": "351305_%s_FRONT-DECOR-ACCESS-PANEL-DR_DXF.dxf" % REV,
@@ -155,7 +156,6 @@ OWN = [
     ("ri_t", "1 mm", "mm", "source", "D-60 air table: 1 mm galvanised steel"),
     # supply fan box (D-60 air table)
     ("fb_w", "300 mm", "mm", "source", "D-60 air table: fan box 300 x 155 x 300"),
-    ("fb_y0", "-847 mm", "mm", "source", "D-60 air table: fan box Y -847 to -692"),
     ("fb_d", "155 mm", "mm", "source", "D-60 air table"),
     ("fb_z0", "1650 mm", "mm", "source", "D-60 air table: fan box Z 1650 to 1950"),
     ("fb_clear", "12 mm", "mm", "assumption",
@@ -196,6 +196,13 @@ OWN = [
     ("fr_wband", "60 mm", "mm", "assumption",
      "band tube 60 x 20 x 1.5 at DT's underside: the access panel's top bolts and the top band's rivets land on it"),
     ("fr_h1", "724 mm", "mm", "source", "v1 decor frame drawing (front frame): first cross tube 724 above the bottom"),
+    # D-131 skin spans (PM ruling 2026-11-01): the front face's top bay, above the fan box shelf, flexed 5.0 mm under
+    # 100 N; one cross tube at its mid-height brings it to 1.7 (skin_spans.py), so AIR's fan box stands back from the
+    # skin, behind that tube (which also keeps the fans' vibration off the skin)
+    ("fb_gap", "5 mm", "mm", "assumption", "the fan box's front, clear behind the front ring's cross tube F09"),
+    ("fb_y0", "-pod_d / 2 + dr_skin_t + fr_w + fb_gap", "mm", "calculation",
+     "fan box front, Y -822: the D-60 table's -847 moved 25 back behind the cross tube F09 (PM ruling 2026-11-01, D-131); "
+     "AIR's model follows (sb_yf)"),
     ("fr_hole_jf", "14 mm", "mm", "calculation",
      "hole in the bolt-line tube's back wall round each J-FRONT-01 rivnut: body 9.50 max and its bulge (SHX), and the "
      "bolt tip, go into the tube"),
@@ -367,8 +374,12 @@ def frame_members():
         add(key, nm, ("x", "z"), back[k], "y", yb0, yb1, sec, t="fr_t_pnl" if sec == S20_PNL else None)
     # cross tubes in the front ring: v1's 724, and the shelf the fan box stands on
     rl23, dg23 = FL.push(rl, sk23), FL.push(diag, sk23)
+    # F09 (D-131 skin spans, PM ruling 2026-11-01): across the front face's top bay at its mid-height, between the
+    # shelf tube F08 and the top tube F03 (whose underside is the inner chamfer face less fr_w at the ring's face)
+    z_f09 = "((fb_z0 + %s - fr_w) / 2 - fr_w / 2)" % zch
     for key, nm, edge, z0, sec in (("F07", "FRONT RING CROSS 724", rl23, "%s + fr_h1" % ZB, S20),
-                                   ("F08", "FRONT RING FAN BOX SHELF", dg23, "fb_z0 - fr_w", S20_SHELF)):
+                                   ("F08", "FRONT RING FAN BOX SHELF", dg23, "fb_z0 - fr_w", S20_SHELF),
+                                   ("F09", "FRONT RING CROSS OVER THE FAN BOX", dg23, z_f09, S20)):
         z1 = "%s + fr_w" % z0
         add(key, nm, ("x", "z"), [FL.meet(edge, FL.line(0, 1, z0)), ("(%s - fr_w)" % xf, z0), ("(%s - fr_w)" % xf, z1),
                                   FL.meet(edge, FL.line(0, 1, z1))], "y", yf0, yf1, sec,
@@ -887,8 +898,8 @@ def export_all(app):
          "the frame", "ACP 3 mm EV3038 Dark Yellow, PE core", "cad", "calculation (CAD, 3.5 kg/m2: selection VT01)", "DRAFT",
          "D-12, D-49; skeleton DR shape", "one flat panel per outside face: " + DXF_SKIN_REL.split("/")[-1] +
          "; bond to the frame per the joints register's ACP bond spec"),
-        (FRAME_PN, FRAME[1], FRAME[2], 1, "weldment assembly: %d tubes as %d parts below, TIG-welded (cut list %s)" % (
-            len(members), len(member_rows), CUT_REL.split("/")[-1]),
+        (FRAME_PN, FRAME[1], FRAME[2], 1, "weldment assembly: welded frame, %d tubes as %d parts (parts list %s; cut list %s), TIG-welded" % (
+            len(members), len(member_rows), WELD_BOM_REL.split("/")[-1], CUT_REL.split("/")[-1]),
          "aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.2 (rivnuts), 20 x 20 x 1.5 "
          "(fan box shelf), finish: mill finish (hidden, D-79)", None, "", "DRAFT",
          "v1 decor frame drawing (front and back frames); D-79; joints register HOLD-10; D-120 (each tube its own "
@@ -928,7 +939,9 @@ def export_all(app):
         ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply fan box assembly 610401 (AIR #91)", RESERVED_STATUS, "D-87; PM ruling 2026-11-01",
          "the space AIR's supply fan box assembly takes (riser, transitions, fan box and its two fans), its own pallet "
-         "piece; it slides into DR through its inner face and stands on the frame's shelf tubes F08 and C03"),
+         "piece; it slides into DR through its inner face and stands on the frame's shelf tube F08; its fan box "
+         "stands 25 back from the front skin, behind the cross tube F09 (PM ruling 2026-11-01, D-131), so its base "
+         "reaches forward onto F08 (AIR's detail)"),
         ("351402", PARTS["RISER"][1], PARTS["RISER"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's intake riser 611501 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
          "the space AIR's intake riser takes; its open foot stands 140 mm over the base opening"),
@@ -937,12 +950,15 @@ def export_all(app):
          "the space AIR's riser transition takes, riser top to fan box inlet"),
         ("351404", PARTS["FBOX"][1], PARTS["FBOX"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply fan box 610401 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
-         "the space AIR's supply fan box takes; 12 from the fixed glass channel, so the frame's inner-edge tube fits"),
+         "the space AIR's supply fan box takes; 12 from the fixed glass channel, so the frame's inner-edge tube fits; "
+         "its front 5 behind the cross tube F09 (Y -822; PM ruling 2026-11-01, D-131)"),
         ("351405", PARTS["TUP"][1], PARTS["TUP"][2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply transition 618102 (AIR #91)", RESERVED_STATUS, "D-60 air table; PM ruling 2026-11-01",
          "the space AIR's supply transition takes, fan box outlet to the access panel's opening"),
     ]
-    total = L.write_parts_list(design, os.path.join(root_dir, BOM_REL), rows, PN, NAME, VN)
+    total, weld_total = FL.write_weldment_lists(L, design, root_dir, rows, FRAME_PN, member_rows, WELD_BOM_REL, BOM_REL,
+                                                (PN, NAME, VN))
+    print("parts list %s: %d parts, %.2f kg" % (WELD_BOM_REL, len(member_rows), weld_total))
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), total))
     # the skin's panels laid flat (one ACP panel per outside face, 45 degree mitred edges as v1), 1:1 in mm
     skin_comp = [c for c in design.allComponents if c.partNumber == PARTS["SKIN"][0]][0]
@@ -955,7 +971,7 @@ def export_all(app):
     import csv
     with open(os.path.join(root_dir, CUT_REL), "w", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["frame", "member", "part_number", "name", "section", "length_mm", "qty", "ends", "status"])
+        w.writerow(["frame", "member", "member_part", "name", "section", "length_mm", "qty", "ends", "status"])
         w.writerows(tuple(r[:2]) + (mparts[r[1]][0],) + tuple(r[2:]) for r in FL.cut_list_rows(members, ev, FRAME_PN))
     print("cut list %s: %d tubes, %.2f m" % (CUT_REL, len(members), tube_m))
     for key, fn in DXF_FLAT.items():
