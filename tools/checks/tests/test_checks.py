@@ -1300,12 +1300,22 @@ def test_the_assembled_shell_is_checked_face_by_face_once_its_parts_are_on_main(
             (1204.0, -642.7, 1257.3, 1250.0, 850.0, 2400.0), "211304")
     dr = _B("350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350003 FRONT - DECOR BLOCK ASSY - DR:1 / BODY",
             (950.0, -850.0, 110.0, 1250.0, -645.0, 2400.0), "351301")
+    band = _B("110000_P01_BASE_CAD:1 / 110102 BASE - BAND ASSY - SIDE - RH:1 / TUBE",
+              (1210.0, -645.0, 10.0, 1250.0, 850.0, 110.0), "111102")
     assert "right" not in c_geometry.shell_faces_ready("assembly", [lo, up])        # DR not on main yet
-    assert "right" in c_geometry.shell_faces_ready("assembly", [lo, up, dr])
-    assert "back" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr])      # no back walls yet
-    # an L of thin strips (no band below, no decor at the front edge) reports as its two strips
-    gaps = [g for g in c_geometry.shell_gaps([lo, up]) if g["zone"] == "right"]
-    assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 5 for g in gaps)
+    assert "right" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr])    # nor the band its seam closes on
+    assert "right" in c_geometry.shell_faces_ready("assembly", [lo, up, dr, band])
+    assert "back" not in c_geometry.shell_faces_ready("assembly", [lo, up, dr, band])      # no back walls yet
+    # the file names' hyphens count as the words' spaces (the real assembly's top components)
+    hy = [_B(b.label.split(" / ")[0] + " / X", b.box, b.part_number) for b in (lo, up, dr)] + [band]
+    assert "right" in c_geometry.shell_faces_ready("assembly", hy)
+    # a seam-wide strip along the face's own edge is the seam to the next face's part: not an opening
+    assert [g for g in c_geometry.shell_gaps([lo, up]) if g["zone"] == "right"] == []
+    # an L of wider strips (10 mm short of the band and of the decor) reports as its two strips
+    lo10 = _B(lo.label, (1204.0, -635.0, 120.0, 1250.0, 850.0, 1255.0), "211302")
+    up10 = _B(up.label, (1204.0, -635.0, 1257.3, 1250.0, 850.0, 2400.0), "211304")
+    gaps = [g for g in c_geometry.shell_gaps([lo10, up10]) if g["zone"] == "right"]
+    assert len(gaps) == 2 and all(min(g["a"][1] - g["a"][0], g["b"][1] - g["b"][0]) < 15 for g in gaps)
 
 def test_a_step_whose_top_carries_another_number_is_reported(tmp_path):
     import shutil, run_checks
