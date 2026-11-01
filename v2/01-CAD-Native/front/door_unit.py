@@ -59,6 +59,12 @@ BOM_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DOOR-UNIT_BOM.csv" % (PN, REV)
 ANCHORS_REL = "v2/01-CAD-Native/front/%s_%s_FRONT-DOOR-UNIT_ANCHORS.json" % (PN, REV)
 DXF_LEAF_REL = "v2/03-Manufacturing/front/361001_%s_FRONT-DOOR-LEAF-4-4-LAMINATED_DXF.dxf" % REV
 DXF_KICK_REL = "v2/03-Manufacturing/front/361002_%s_FRONT-DOOR-KICK-STRIP_DXF.dxf" % REV
+# the strike's shim (PM ruling 2026-11-01, sourcing of 368102): our own made part, a flat laser-cut blank whose DXF
+# is its drawing (D-89 part 4); its number is Control's
+SHIM_PN = "@SHIM@"
+SHIM_NAME = "FRONT - DOOR STRIKE SHIM - 1.2 STAINLESS"
+SHIM_VN = "Miếng chêm bát hít cửa - inox 1.2"
+DXF_SHIM_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DOOR-STRIKE-SHIM-1-2-STAINLESS_DXF.dxf" % (SHIM_PN, REV)
 
 XL = "-pod_w / 2"
 GY0, GY1 = "-glass_y - glass_t / 2", "-glass_y + glass_t / 2"     # glass faces: outside, pod side
@@ -132,9 +138,16 @@ OWN = [
     # underside; its strike clips on the leaf's top edge at the latch corner
     ("st_l", "62 mm", "mm", "source", "Sugatsune HT-MSG62 strike plate, 62 long (datasheet D2, Dec 2020)"),
     ("st_h", "22 mm", "mm", "source", "strike plate, 22 down the glass faces (datasheet)"),
-    ("st_a", "14.1 mm", "mm", "source", "strike HT-MSG62-U10 (10 mm glass), A = 14.1; on the 8.76 laminate with a 1.2 mm shim, HOLD (PM ruling)"),
+    ("st_a", "14.1 mm", "mm", "source",
+     "strike HT-MSG62-U10 (10 mm glass), A = 14.1; on the 8.76 laminate with the 1.2 shim behind its liner (PM ruling 2026-11-01)"),
     ("st_top", "1.5 mm", "mm", "assumption", "strike plate over the glass top edge, steel plus packing"),
     ("st_end", "25 mm", "mm", "assumption", "the strike's latch-side end, in from the leaf's top latch corner"),
+    # the strike's shim (PM ruling 2026-11-01): it packs the 8.76 laminate to 9.96 in the U10's 10 mm glass slot, behind
+    # the strike's CR liner on the pod side, so the glass still sits on rubber
+    ("shim_t", "1.2 mm", "mm", "source", "stainless sheet 1.2 (EN 10088-2 1.4301, 2B): 8.76 + 1.2 = 9.96 in the U10's 10 mm slot"),
+    ("shim_l", "st_l - 2 mm", "mm", "calculation", "60 long: the strike's 62 less 1 at each end"),
+    ("shim_h", "19 mm", "mm", "assumption", "19 tall, inside the strike's 22 leg and clear of its bend"),
+    ("shim_liner", "1 mm", "mm", "assumption", "the strike's CR liner between the glass's pod face and the shim"),
     ("ms_w", "fg_gap / 2", "mm", "assumption", "the door's half of the 180 deg magnetic seal pair fills half the 4 mm gap"),
     ("ms_t", "1.5 mm", "mm", "assumption", "the seal profile over each glass face"),
     ("pull_cc", "300 mm", "mm", "source", "HOLD candidate Häfele 903.10.390 pull pair, 300 mm centres, Ø19 (selection C2)"),
@@ -159,11 +172,11 @@ PARTS = {
     "H3": ("368101", "FRONT - DOOR HINGE - HOLD - H3 TOP", "Bản lề cửa trên (chờ chọn)"),
     # D-104: the strike body is a stand-in (its own clip over the leaf's top edge is the overlap), so ENVELOPE
     "STRIKE": ("368102", "FRONT - DOOR STRIKE - ENVELOPE", "Đế hít cửa"),
+    "SHIM": (SHIM_PN, SHIM_NAME, SHIM_VN),
     "MSEAL": ("368006", "FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)"),
     "PULL": ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)"),
-    "KBRUSH": ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD", "Gioăng chổi mép cuối tấm chắn chân cửa (chờ)"),
-    "KBRUSHH": ("368009", "FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD",
-                "Chổi chặn khe đầu bản lề thanh chắn chân cửa (chờ)"),
+    "KBRUSH": ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH", "Chổi chặn khe đầu thanh chắn chân cửa"),
+    "KBRUSHH": ("368009", "FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH", "Chổi chặn khe đầu bản lề thanh chắn chân cửa"),
 }
 
 # Overlaps made on purpose, with the reason; any other clash over 1 mm3 fails the build.
@@ -172,6 +185,7 @@ EXPECTED = [
     (("H2", "LEAF"), "as H1"),
     (("H3", "LEAF"), "as H1"),
     (("STRIKE", "LEAF"), "the catch's strike plate clips over the leaf's top edge"),
+    (("SHIM", "STRIKE"), "the shim sits inside the strike's envelope, behind its liner"),
 ]
 
 # Edit-test anchors: (key, bounding-box index 0..5 = xmin ymin zmin xmax ymax zmax, expression).
@@ -185,6 +199,7 @@ ANCHORS = [
     ("H1", 2, "hinge_z1 - hinge_clamp_h / 2"), ("H3", 5, "hinge_z3 + hinge_clamp_h / 2"),
     ("H2", 0, "hinge_x0"), ("H2", 3, "kick_x0 + hinge_clamp_w"),
     ("STRIKE", 5, "leaf_zt + st_top"), ("STRIKE", 2, "leaf_zt - st_h"),
+    ("SHIM", 1, GY1 + " + shim_liner"), ("SHIM", 4, GY1 + " + shim_liner + shim_t"), ("SHIM", 5, "leaf_zt - 1 mm"),
     ("MSEAL", 2, "door_zb"), ("MSEAL", 5, "leaf_zt"),
     ("PULL", 1, GY0 + " - pull_stand"), ("PULL", 4, GY1 + " + pull_stand"), ("PULL", 5, "pull_zc + pull_len / 2"),
     ("KBRUSH", 0, "kick_x1"), ("KBRUSH", 3, "kick_x1 + kbrush_gap"), ("KBRUSH", 2, "0 mm"), ("KBRUSH", 5, "door_zb"),
@@ -326,6 +341,12 @@ def build(app):
         bodies["STRIKE"] = L.box_body(design, c, "STRIKE", ("%s - st_l" % sx1, sx1),
                                       ("-glass_y - st_a / 2", "-glass_y + st_a / 2"), ("leaf_zt - st_h", "leaf_zt + st_top"),
                                       "FRONT - DOOR STRIKE - ENVELOPE")
+    if want("SHIM"):
+        c = comp("SHIM")
+        sx1 = "(%s - st_end)" % latch_x("leaf_zt")
+        bodies["SHIM"] = L.box_body(design, c, "SHIM", ("%s - 1 mm - shim_l" % sx1, "%s - 1 mm" % sx1),
+                                    (GY1 + " + shim_liner", GY1 + " + shim_liner + shim_t"),
+                                    ("leaf_zt - 1 mm - shim_h", "leaf_zt - 1 mm"), "FRONT - DOOR STRIKE SHIM 1.2")
     if want("MSEAL"):
         c = comp("MSEAL")
         dx = lambda z: "((fg_lc + ms_w - fg_lnz * (%s)) / fg_lnx)" % z
@@ -347,13 +368,15 @@ def build(app):
     mats = {"LEAF": ("Glass 4+4 laminated (2376 kg/m3, calculation)", "Glass", 2376.0),
             "KICK": ("Aluminium EN AW-6063-T6 (2700 kg/m3)", "Aluminum", 2700.0),
             "USEAL": ("Silicone rubber (1200 kg/m3, assumption)", "Rubber, Silicone", 1200.0),
-            "STRIKE": ("Stainless steel SUS430 (7700 kg/m3)", "Steel", 7700.0)}
+            "STRIKE": ("Stainless steel SUS430 (7700 kg/m3)", "Steel", 7700.0),
+            "SHIM": ("Stainless steel EN 1.4301 (7900 kg/m3)", "Steel", 7900.0)}
     looks = {"LEAF": ["Glass - Smoked", "Glass (Smoked)", "Glass - Window", "Glass"],
              "KICK": ["Paint - Enamel Glossy (Black)", "Aluminum - Anodized Glossy (Black)", "Plastic - Matte (Black)"],
              "USEAL": ["Rubber - Soft (Black)", "Plastic - Matte (Black)"],
              "GSA": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"],
              "HOLD": ["Paint - Enamel Glossy (Red)", "Plastic - Glossy (Red)"],
              "STRIKE": ["Steel - Satin", "Stainless Steel - Satin"],
+             "SHIM": ["Steel - Satin", "Stainless Steel - Satin"],
              "MSEAL": ["Plastic - Matte (Grey)", "Paint - Enamel Glossy (Grey)"],
              "KBRUSH": ["Plastic - Matte (Black)", "Paint - Enamel Glossy (Black)"],
              "KBRUSHH": ["Plastic - Matte (Black)", "Paint - Enamel Glossy (Black)"]}
@@ -407,6 +430,12 @@ def outline_mm(design, sketch_name, comp_name, axes):
     return pts
 
 
+# the two brush seals (PM ruling 2026-11-01): the pile from Ultrafab, the tape named by grade so that its own data sheet
+# gives the lowest fitting temperature (3M VHB LSE series, Oct 2019: ideal 10 to 38 °C)
+BRUSH_SPEC = ("Ultrafab ULTRA PLUG pile weatherseal: black, very high density, finned, on a 20 wide polypropylene backing, "
+              "%s high over its backing, with 3M VHB LSE-110WF tape (1.1; it bonds polypropylene with no primer) applied "
+              "to the backing by the maker: %s overall")
+
 BOM_ROWS = [
     # pn, name, Vietnamese name, qty, type, material, mass kg ("cad" = from the model), mass status, status, source, note
     ("360001", NAME, VN, 1, "assembly, fitted at the factory (D-56)", "-", None, "", "DRAFT",
@@ -433,32 +462,52 @@ BOM_ROWS = [
      "Candidates: dormakaba OFFICE 11.233 (D-30); Häfele 926.88.090/091 lift-off glass hinge, 60 kg, 8-12 mm glass, two "
      "15 mm holes each, second candidate for the factory's questions (PM ruling 2026-11-01); Häfele's 90 deg "
      "glass-to-wall shower hinges don't pass (36 to 45 kg a pair, 800 to 915 wide)",
-     0.6, "assumption (D-56)", "HOLD (D-46, ISS-002)", "hardware selection C1", "reserved space only"),
+     0.6, "assumption (D-56)",
+     "HOLD (D-46, ISS-002): a question in the owner's quote request, dormakaba first (D-46): no published hinge meets "
+     "the 8.76 laminate, 1176 wide, 60 kg, lift-off and holding the door closed (sourcing, PM ruling 2026-11-01)",
+     "hardware selection C1", "reserved space only"),
     ("368102", "FRONT - DOOR STRIKE", "Bát hít cửa", 1, "bought",
-     "stainless steel SUS430 strike with CR packing, finish as supplied", 0.023, "source (Sugatsune datasheet, 22.9 g)",
-     "source (product); on the 8.76 laminate with a 1.2 mm shim: HOLD", "hardware selection C7; PM rulings 2026-10-31",
-     "its catch 368007 sits in DT's underside; no latch on the glass"),
+     "Sugatsune HT-MSG62-U10 (item 270-043-851), the strike plate for 10 mm glass (A 14.1, 62 long): stainless steel "
+     "SUS430 with its CR packing, finish as supplied", 0.023, "source (Sugatsune data sheet, Dec 2020: 22.9 g)",
+     "source (product, PM ruling 2026-11-01); laminated glass: a question in the owner's quote request",
+     "hardware selection C7; PM rulings 2026-10-31 and 2026-11-01",
+     "its catch 368007 sits in DT's underside; no latch on the glass; on the 8.76 laminate with the shim %s behind "
+     "its liner on the pod side (8.76 + 1.2 = 9.96 in its 10 mm slot)" % SHIM_PN),
+    (SHIM_PN, SHIM_NAME, SHIM_VN, 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
+     "stainless steel EN 10088-2 1.4301 sheet 1.2 mm, finish: 2B, deburred, sharp edges broken", "cad",
+     "calculation (CAD, 7900 kg/m3)", "DRAFT", "PM ruling 2026-11-01 (sourcing of 368102: our own part, not a HOLD)",
+     "DXF " + DXF_SHIM_REL.split("/")[-1] + "; 60 x 19 x 1.2; it slides in behind the strike's CR liner on the pod "
+     "side, so the glass sits on rubber, never on steel; tolerance 60 and 19 +/-0.2, 1.2 +/-0.05 (PROPOSED)"),
     ("368006", "FRONT - 180 MAGNETIC SEAL - HALF 2 OF 2 - HOLD", "Gioăng nam châm 180° phía cửa (chờ chọn)", 1,
      "bought, HOLD", "magnetic 180 deg glass-to-glass seal, door half; product not named", 0.15, "assumption",
-     "HOLD: product for the 8.76 laminate and a 4 mm gap", "PM ruling 2026-10-31", "pairs with 368003 on the fixed pane"),
-    ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought, HOLD", "not named", 0.8, "assumption (D-56)", "HOLD", "hardware selection C2",
-     "reserved space only"),
-    ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH - HOLD", "Gioăng chổi mép cuối tấm chắn chân cửa (chờ)", 1,
-     "bought, HOLD", "self-adhesive brush (pile) strip, about 6 mm pile, fitted on site on the kick strip's end face "
-     "once the glides are set and the door hangs, pressed down onto the real floor; ships in the door's kit bag with "
-     "an alcohol wipe; product HOLD-23 (its own data sheet names its adhesive and lowest fitting temperature)", 0.01,
-     "assumption (about 10 g)", "HOLD: product (D-150)",
+     "HOLD: a question in the owner's quote request: no published pair fits the 8.76 laminate with a 4 mm edge gap "
+     "(Häfele, FHC or REHAU; sourcing, PM ruling 2026-11-01)", "PM ruling 2026-10-31",
+     "pairs with 368003 on the fixed pane; from Z 105, as 368003 (Mechanical Checker's seal line)"),
+    ("368103", "FRONT - DOOR PULL PAIR - HOLD", "Tay nắm cửa (chờ chọn)", 1, "bought, HOLD",
+     "Häfele 903.10.390 back-to-back pull pair, grade 316 satin stainless, Ø19, 300 centres, M8, with the glass "
+     "fixing set 909.00.900 (nylon washers, M8 bolts, glass 8 to 18 thick, Ø13 holes) (PM ruling 2026-11-01)", 0.8,
+     "assumption (D-56)",
+     "HOLD: questions in the owner's quote request: US supply, the overall length (355 at most) and projection (70 at "
+     "most), and the laminated glass", "hardware selection C2; sourcing, PM ruling 2026-11-01",
+     "reserved space as designed; no holes in the glass until the answers are in"),
+    ("368008", "FRONT - DOOR KICK STRIP END SEAL - BRUSH", "Chổi chặn khe đầu thanh chắn chân cửa", 1,
+     "bought (the pile with its tape), fitted on site",
+     "%s; fitted on site on the kick strip's end face at 10 to 38 °C (3M VHB LSE data sheet, Oct 2019), after an "
+     "IPA wipe, once the glides are set and the door hangs, pressed down onto the real floor; ships in the door's kit "
+     "bag with an alcohol wipe" % (BRUSH_SPEC % ("4.9", "6.0")), 0.01,
+     "assumption (about 10 g)", "source (products named, PM ruling 2026-11-01: closes HOLD-23)",
      "D-150; PM rulings 2026-11-01 (the seal line at the fixed glass's door end, with BASE's sill end plate; fitted "
      "on site, not at the factory, so it meets the real floor)",
      "across the strip's depth (Y -709 to -689), from the room floor to Z 105; its pile presses about 1.5 onto BASE's "
      "sill end plate at X 218.5 and its tips on the floor close the corner under the strip; modelled compressed to that "
      "face and, near the top, to the fixed pane's free edge"),
-    ("368009", "FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD", "Chổi chặn khe đầu bản lề thanh chắn chân cửa (chờ)",
-     1, "bought, HOLD", "self-adhesive brush (pile), 13 mm overall on the 11 mm slot (2 mm overlap), fitted on site on "
-     "the kick strip's hinge end face once the glides are set and the door hangs, pressed down onto the real floor; "
-     "clear of the drop seal's cavity end (12 x 65 from the strip's bottom), the release button's way to BASE's plate; "
-     "ships in the door's kit bag with an alcohol wipe; product HOLD (H-46): its own data sheet names its adhesive and "
-     "lowest fitting temperature", 0.02, "assumption (about 20 g)", "HOLD: product (D-154)",
+    ("368009", "FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH", "Chổi chặn khe đầu bản lề thanh chắn chân cửa",
+     1, "bought (the pile with its tape), fitted on site",
+     "%s, on the 11 mm slot (2 mm overlap); fitted on site on the kick strip's hinge end face at 10 to 38 °C (3M VHB "
+     "LSE data sheet, Oct 2019), after an IPA wipe, once the glides are set and the door hangs, pressed down onto the "
+     "real floor; clear of the drop seal's cavity end (12 x 65 from the strip's bottom), the release button's way to "
+     "BASE's plate; ships in the door's kit bag with an alcohol wipe" % (BRUSH_SPEC % ("11.9", "13.0")),
+     0.02, "assumption (about 20 g)", "source (products named, PM ruling 2026-11-01: closes HOLD-25)",
      "D-154; PM rulings 2026-11-01 (the hinge side closed as D-150, against BASE's FL2 end plate flush with DL's door "
      "face; fitted on site; 13 mm with a 2 mm overlap; Control's number)",
      "across the strip's depth (Y -709 to -689), from the room floor to Z 105, less the drop seal's cavity end; its "
@@ -491,6 +540,10 @@ def export_all(app):
     L.write_dxf_polyline(os.path.join(root_dir, DXF_KICK_REL), [kick] + chambers)
     print("DXF leaf corners:", [(round(a, 2), round(b, 2)) for a, b in leaf])
     print("DXF kick strip section corners:", [(round(a, 2), round(b, 2)) for a, b in kick])
+    # the strike's shim (D-89 part 4: its DXF is its drawing), laid flat in its own corner: X along its length, Y up
+    sl, sh = L.ev(design, "shim_l"), L.ev(design, "shim_h")
+    L.write_dxf_polyline(os.path.join(root_dir, DXF_SHIM_REL), [[(0.0, 0.0), (sl, 0.0), (sl, sh), (0.0, sh)]])
+    print("DXF shim %s: %.2f x %.2f" % (DXF_SHIM_REL.split("/")[-1], sl, sh))
     # parts list: names and masses from the model
     by_pn = {}
     for c in design.allComponents:

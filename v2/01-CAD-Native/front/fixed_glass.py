@@ -85,7 +85,7 @@ ANCHORS = [
     ("UPROF", 3, "(fg_rc + gu_prof_d - fg_rnz * (fg_vis_zb - gu_prof_d)) / fg_rnx"),
     ("USEAL", 2, "fg_vis_zb - gu_in_d"), ("USEAL", 5, "fg_vis_zt + gu_in_d"),
     ("USEAL", 1, GY + " - gu_w / 2"), ("USEAL", 4, GY + " + gu_w / 2"),
-    ("S180", 2, "fg_vis_zb"), ("S180", 5, "fg_vis_zt"),
+    ("S180", 2, "door_zb"), ("S180", 5, "fg_vis_zt"),
 ]
 
 
@@ -188,10 +188,13 @@ def build(app):
         bodies["USEAL"] = b
 
     # 368003 the fixed pane's half of the 180 deg magnetic seal pair (PM ruling 2026-10-31): half the 4 mm gap,
-    # from the pane's free edge toward the door; the door's half (368006) is in the door unit
+    # from the pane's free edge toward the door; the door's half (368006) is in the door unit. It starts at the door's
+    # kick strip top (door_zb, Z 105) with the door's half, not at the pane's visible bottom (Z 110), so the two halves
+    # meet all the way down: the Mechanical Checker's seal line found a 2 x 5 mm gap there (2026-11-01). Below the
+    # visible line it runs beside the bottom channel's end, which is cut on the free edge's line.
     if want("S180"):
         c = comp("S180")
-        lb, lt = BL("0 mm"), TL("0 mm")
+        lb, lt = BL("fg_vis_zb - door_zb"), TL("0 mm")
         half = lambda z: "((fg_lc + fg_gap / 2 - fg_lnz * (%s)) / fg_lnx)" % z
         pts = [lb, lt, (half(lt[1]), lt[1]), (half(lb[1]), lb[1])]
         f = slab(c, pts, GY + " - glass_t / 2 - 1.5 mm", GY + " + glass_t / 2 + 1.5 mm",
@@ -269,8 +272,8 @@ def export_all(app):
     print("U-profile cut lengths, long point (outer) / short point (mouth): %s / %s mm" % (
         [round(v, 1) for v in outer], [round(v, 1) for v in mouth]))
     seal_len = sum(edge_lengths(design, "gu_in_d"))
-    free_len = L.ev(design, "sqrt((%s - %s) * (%s - %s) + (fg_vis_zt - fg_vis_zb) * (fg_vis_zt - fg_vis_zb))" % (
-        TL("0 mm")[0], BL("0 mm")[0], TL("0 mm")[0], BL("0 mm")[0]))
+    free_len = L.ev(design, "sqrt((%s - %s) * (%s - %s) + (fg_vis_zt - door_zb) * (fg_vis_zt - door_zb))" % (
+        TL("0 mm")[0], BL("fg_vis_zb - door_zb")[0], TL("0 mm")[0], BL("fg_vis_zb - door_zb")[0]))
     rows = [
         (PN, NAME, VN, 1, "assembly", "-", None, "", "DRAFT", "D-27, D-46; this build",
          "bottom channel factory-fitted on BASE's sill; on site: pane, DR, DT (PM ruling 2026-11-01)"),
@@ -294,8 +297,10 @@ def export_all(app):
          "about %.0f mm in all" % seal_len),
         ("368003", PARTS["S180"][1], PARTS["S180"][2], 1, "bought, HOLD",
          "magnetic 180 deg glass-to-glass seal, fixed pane half; product not named", 0.15, "assumption",
-         "HOLD: product for the 8.76 laminate and a 4 mm gap", "PM ruling 2026-10-31",
-         "length about %.0f mm on the pane's free edge; pairs with 368006 on the door" % free_len),
+         "HOLD: a question in the owner's quote request: no published pair fits the 8.76 laminate with a 4 mm edge "
+         "gap (Häfele, FHC or REHAU; sourcing, PM ruling 2026-11-01)", "PM ruling 2026-10-31",
+         "length about %.0f mm on the pane's free edge, from Z 105 (the door's kick strip top) with the door's half "
+         "368006, so the pair meets all the way down (Mechanical Checker's seal line, 2026-11-01)" % free_len),
     ]
     total = L.write_parts_list(design, os.path.join(root_dir, BOM_REL), rows, PN, NAME, VN)
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), total))

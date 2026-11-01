@@ -72,7 +72,8 @@ SPECS["fixed_unit"] = {
     ],
     "notes": [
         "Fixed glass unit: pane 361003 in the Bohle U-profile 368004 (4 pieces, mitred) with the silicone U-seal "
-        "368002 on its four held edges; the pane's half 368003 of the 180 deg magnetic seal on its free edge (HOLD).",
+        "368002 on its four held edges; the pane's half 368003 of the 180 deg magnetic seal on its free edge, from "
+        "Z 105 with the door's half (HOLD: a quote question).",
         "The channels sit hidden: in the base band (bottom, BASE), inside DR behind a slot in its skin (right edge and "
         "diagonal) and inside DT behind a slot in its underside (top). Their fixings come with those designs.",
         "The pane carries no closing load on its free edge: the door is held by its hinges and the catch in DT, and "
