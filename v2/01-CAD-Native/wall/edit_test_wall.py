@@ -197,9 +197,18 @@ def back_checks(after, p):
     seam, gap = 2.26, 5.5
     pick = (lambda pre: sorted((v for k, v in after.items() if nm(k).startswith(pre)), key=lambda b: b[0]))
     rails, stiles, mids = pick("RAIL"), pick("STILE"), pick("STILE - MID")
+    perim = pick("STILE - OUTER") + pick("STILE - CENTRE")
     bays, skins, trays, felts = pick("FILL"), pick("SKIN"), pick("TRAY"), pick("FELT")
     zones = sorted((v for k, v in after.items() if "CLIP ZONE" in nm(k)), key=lambda b: b[0])
-    rivs = [r for k, r in sorted(after.items()) if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k)]
+    z1 = (p["panel_z0"] + p["back_ph"]) if p.get("pnl_h") and abs(p["pnl_h"] - p["back_ph"]) < 0.01 and \
+        not any(k for k in after if "CEILING" in k) else None
+    if any(nm(k) == "RIVNUT" for k in after):       # D-120: copies of one RIVNUT body; the top rail's, less the spigots'
+        top = max(r[5] for r in rails) if rails else 0.0
+        spig_x = sorted((v[0] + v[3]) / 2.0 for k, v in after.items() if nm(k) == "SPIGOT")
+        rivs = [v for k, v in sorted(after.items()) if nm(k) == "RIVNUT" and v[5] > top + 0.1 and v[2] < top + 0.1
+                and all(abs((v[0] + v[3]) / 2.0 - x) > 0.5 for x in spig_x)]
+    else:
+        rivs = [r for k, r in sorted(after.items()) if nm(k).startswith("RIVNUT - TOP RAIL ") and "SPIGOT" not in nm(k)]
     rule = p["stile_pitch_max"]
     n_mid = math.ceil((p["frm_len"] - 20) / rule) - 1
     out = []
@@ -210,8 +219,15 @@ def back_checks(after, p):
                  all(abs(min(abs(r[0]), abs(r[3])) - gap / 2) < 0.01 for r in rails)),
                 ("frame's outer end stays one seam gap off the side frame (pod_w / 2 - 46 - 2.26)",
                  all(abs(max(abs(r[0]), abs(r[3])) - (p["pod_w"] / 2 - 46 - seam)) < 0.01 for r in rails)),
-                ("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
-                                                         for st in stiles)),
+] + ([("perimeter stiles span the row height (mitred corners, D-117)",
+                  all(abs((st[5] - st[2]) - p["pnl_h"]) < 0.01 for st in perim) and len(perim) == 2),
+                 ("studs span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01 for st in mids))]
+                if perim and all(abs((st[5] - st[2]) - p["pnl_h"]) < 0.01 for st in perim) else
+                [("stiles span the row height - 40", all(abs((st[5] - st[2]) - (p["pnl_h"] - 40)) < 0.01
+                                                         for st in stiles))]) + [
+                ("rails' ends mitred where they meet the stiles (D-117)" if perim and all(
+                    abs((st[5] - st[2]) - p["pnl_h"]) < 0.01 for st in perim) else "rails run the full width",
+                 all(abs((r[3] - r[0]) - p["frm_len"]) < 0.01 for r in rails)),
                 ("stud count follows the %g mm rule (%d)" % (rule, n_mid), len(mids) == n_mid),
                 ("no stud pitch over %g" % rule, all(b[0] - a[0] <= rule + 0.01 for a, b in zip(mids, mids[1:])))]
     if bays:

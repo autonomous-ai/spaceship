@@ -313,7 +313,7 @@ def panel_rows(rep):
     return rows
 
 
-def mitre_ends(key, prm, upper):
+def mitre_ends(key, prm, upper, back=False):
     """The cut at each end of a frame member (D-117): the mitre runs from the frame's outer corner to its inner
     corner, so a member's end is cut atan(other member's width / its own width) off square (45 where the two are
     the same size, 26.57 on a 40 x 40 meeting a 20 x 40, 63.43 on the 20 x 40); studs are square."""
@@ -322,7 +322,8 @@ def mitre_ends(key, prm, upper):
     top = prm.get("top_h", cw if upper else tw)
     width = {"RAIL BOTTOM": tw, "RAIL TOP": top, "STILE FRONT": tw, "STILE BACK": cw, "STILE OUTER": tw,
              "STILE CENTRE": tw}
-    meets = {"RAIL BOTTOM": ("STILE FRONT", "STILE BACK"), "RAIL TOP": ("STILE FRONT", "STILE BACK"),
+    ends = ("STILE OUTER", "STILE CENTRE") if back else ("STILE FRONT", "STILE BACK")   # what a rail meets
+    meets = {"RAIL BOTTOM": ends, "RAIL TOP": ends,
              "STILE FRONT": ("RAIL BOTTOM", "RAIL TOP"), "STILE BACK": ("RAIL BOTTOM", "RAIL TOP"),
              "STILE OUTER": ("RAIL BOTTOM", "RAIL TOP"), "STILE CENTRE": ("RAIL BOTTOM", "RAIL TOP")}
     if key not in meets:
@@ -353,13 +354,13 @@ def panel_rows_d120(rep, root, comps, prm, pn, frame, skin, pieces, members, bac
                                name_vi=vi_name(m["description"], m["part_number"]), kind="MP",
                                material="aluminium tube 6063-T6 %s" % sec, finish="mill finish with the bond prep (D-79)",
                                process="saw cut, CNC or jig drill (holes Ø0.4 from the spigot hole, R-J6); %s" %
-                                       mitre_ends(key, prm, upper),
+                                       mitre_ends(key, prm, upper, back),
                                qty=q, unit="pc", cut_length_mm=member_length(b), size_mm=sec,
                                tolerance="length ±0.5 (assumption, guideline 6.3); holes per the frame drawing",
                                mass_each_kg=round(b["mass_kg"], 3), mass_total_kg=round(b["mass_kg"] * q, 3),
                                mass_status="calculation: CAD at 2700 kg/m3", status="DRAFT",
                                source="CAD; number from the master BOM's allocation (D-120)",
-                               note="%s; cut length outer to outer" % mitre_ends(key, prm, upper)))
+                               note="%s; cut length outer to outer" % mitre_ends(key, prm, upper, back)))
     rows.append(row(level=1, part_number=frame["part_number"], name=en_name(frame),
                     name_vi=vi_name(frame["description"], frame["part_number"]), kind="BS",
                     material="the aluminium tube members below, cleated and bonded",
