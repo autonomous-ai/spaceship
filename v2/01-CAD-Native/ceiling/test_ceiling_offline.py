@@ -237,7 +237,8 @@ class Joints(unittest.TestCase):
 
 
 class DtBolts(unittest.TestCase):
-    """J-FRONT-03 (joints register 3.13): DT's 4 bolts through the ceiling's front tubes, and D-169's pin slot."""
+    """J-FRONT-03 (joints register 3.13): DT's 4 bolts through the ceiling's front tubes (the amended D-169 gives C1
+    no pin slot: DT keeps its spigots)."""
 
     def rows(self, half, name):
         return [xyz for n, _d, xyz in M.hole_positions(VALS, half) if n == name]
@@ -250,6 +251,8 @@ class DtBolts(unittest.TestCase):
         # prints +228.99, the same point rounded down)
         self.assertEqual(c2, [229.0])
         for half in ("C1", "C2"):
+            self.assertEqual([n for n, _d, _p in M.hole_positions(VALS, half) if "SLOT" in n and "DT" in n], [])
+        for half in ("C1", "C2"):
             for p in self.rows(half, "DT BOLT CLEARANCE"):
                 self.assertAlmostEqual(p[1], -645.0)              # the front wall, Ø7.0
                 self.assertAlmostEqual(p[2], 2374.0)              # DT's bolt line
@@ -258,24 +261,6 @@ class DtBolts(unittest.TestCase):
         d = {n: dd for n, dd, _p in M.hole_positions(VALS, "C1")}
         self.assertAlmostEqual(d["DT BOLT CLEARANCE"], 7.0)
         self.assertAlmostEqual(d["DT BOLT ACCESS"], 19.0)
-
-    def test_pin_slot(self):
-        """D-169: one slot in C1's front wall at X -376.37, Z 2374, 8.5 wide by 12 long in Z, midway between DT's 2nd
-        and 3rd bolts, 14 from the wall's top and bottom; none in C2."""
-        self.assertEqual(self.rows("C2", "DT PIN SLOT"), [])
-        (x, y, z), = self.rows("C1", "DT PIN SLOT")
-        self.assertAlmostEqual(x, -376.37, places=2)
-        self.assertAlmostEqual(y, -645.0)
-        self.assertAlmostEqual(z, 2374.0)
-        bolts = sorted(p[0] for p in self.rows("C1", "DT BOLT CLEARANCE"))
-        self.assertAlmostEqual(x, (bolts[1] + bolts[2]) / 2)
-        _px, _py, _pz, w, l = (ev(e) for e in M.dt_pin_slot("C1"))
-        self.assertAlmostEqual(w, 8.5)
-        self.assertAlmostEqual(l, 12.0)
-        mem = dict(M.boxes_mm(VALS, [(c, b) for c, _n, _a, b in M.frame_members("C1")]))
-        b = mem["FRONT"]
-        self.assertAlmostEqual(z - l / 2 - b[4], 14.0)
-        self.assertAlmostEqual(b[5] - (z + l / 2), 14.0)
 
     def test_bolt_clear_of_the_soffit_hanger(self):
         """DT's middle C1 bolt (X -578.16) and the soffit's front hanger rivnut (X -583, on the tube's underside) share

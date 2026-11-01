@@ -117,16 +117,13 @@ CEILING_PARAMS = [
      "inlet plenum where no cartridge is, reached through its left hinged underside; C2's cross member carries the "
      "mirrored rivnuts unused, so the member stays one part"),
     ("lock_dx", "150 mm", "mm", "assumption", "spacing of the two soffit lock screws along cross member 1"),
-    # DT's bolts and pin (J-FRONT-03; D-169): DT's back plate bolts to the front tubes, from inside them through the bays
+    # DT's bolts (J-FRONT-03): DT's back plate bolts to the front tubes, from inside them through the bays
     ("dt_x1", "449 mm", "mm", "source", "joints register J-FRONT-03 (3.13) and 2.9: DT's right end over C2, so its edge "
      "with the ceiling runs 1650.74 from C1's frame end (X -1201.74 to +449)"),
     ("dt_bolt_n", "4", "", "source", "J-FRONT-03: 4 bolts M6 x 16 along DT's edge with the ceiling at the 220 rule "
      "(2.9): X -981.74, -578.16, -174.58 in C1's front tube and +228.99 in C2's"),
     ("dt_pitch", "(dt_x1 + close_gap / 2 + half_fw - 2 * bolt_edge_inset) / (dt_bolt_n - 1)", "mm", "calculation",
      "J-FRONT-03: the 220 rule's pitch along DT's 1650.74 edge, 403.58"),
-    ("dt_slot_l", "12 mm", "mm", "confirmed", "D-169 (the Joints Engineer, 2026-11-01): DT's pin slot in C1's front "
-     "wall, 8.5 wide in X by 12 long in Z, midway between DT's 2nd and 3rd bolts; it takes the 38 N DL's slope pushes "
-     "toward DR (DT's pin 831001 enters 5.7); none in C2"),
     # ---- roof exhaust slot in C2 only (D-60, D-61; PM ruling 2026-10-31: the two skins are two parts)
     ("slot_x0", "872 mm", "mm", "source", "air report 7e (sized on skeleton P04): roof slot X 872 to 1157, over the soffit's exhaust fan box"),
     ("slot_w", "285 mm", "mm", "source", "air report 7e: roof slot 285 x 294"),
@@ -637,17 +634,8 @@ def spigot_slot(half):
     return ("%scj_spig_x1" % ("-" if side_sign(half) < 0 else ""), "cj_back_y", ZF0, "spig_hole", "spig_slot")
 
 
-def dt_pin_slot(half):
-    """D-169: DT's pin slot in C1's front wall, 8.5 wide in X by dt_slot_l long in Z, midway between DT's 2nd and 3rd
-    bolts on their line (X -376.37, Z 2374): (centre x, the wall's outer face y, centre z, width, length) as
-    expressions; None for C2, which has none."""
-    if side_sign(half) > 0:
-        return None
-    return ("(-(close_gap / 2 + half_fw) + bolt_edge_inset + 1.5 * dt_pitch)", YW, "ceil_bolt_z", "spig_hole", "dt_slot_l")
-
-
 def hole_positions(vals, half):
-    """Every joint hole centre of one half in mm: [(row name, diameter, (x, y, z))], each slot as
+    """Every joint hole centre of one half in mm: [(row name, diameter, (x, y, z))], the slot as
     one item at its centre."""
     out = []
     for name, _m, _f, (x, y, z), dia, n, pitch, axis in joint_holes(half):
@@ -656,9 +644,6 @@ def hole_positions(vals, half):
             out.append((name, d, (x0 + (k * p if axis == "x" else 0), y0 + (k * p if axis == "y" else 0), z0)))
     sx, sy, sz, sw, _sl = (ev(vals, e) for e in spigot_slot(half))
     out.append(("BACK SPIGOT SLOT", sw, (sx, sy, sz)))
-    if dt_pin_slot(half):
-        px, py, pz, pw, _pl = (ev(vals, e) for e in dt_pin_slot(half))
-        out.append(("DT PIN SLOT", pw, (px, py, pz)))
     return out
 
 

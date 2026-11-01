@@ -768,19 +768,6 @@ def build_frame_members(fcomp, half, ctx):
     for end, sign in (("END 1", "-"), ("END 2", "+")):
         circle_cut(comp, body, "%s %s" % (label, end), "%s %s %s" % (sx, sign, half_run), sy, sw, sz,
                    "%s + 2 * tube_t" % sz, ctx)
-    # DT's pin slot (D-169) in C1's front wall: 8.5 wide in X, dt_slot_l long in Z, cut like the spigot slot (the
-    # straight part as a box, each end as a round cut), through the front wall only
-    if M.dt_pin_slot(half):
-        comp, body = members["FRONT"]
-        px, py, pz, pw, pl = M.dt_pin_slot(half)
-        label = "%s DT PIN SLOT" % half
-        run = "(%s - %s) / 2" % (pl, pw)
-        box_body(comp, label, ("%s - %s / 2" % (px, pw), "%s + %s / 2" % (px, pw), py, "%s + 2 * tube_t" % py,
-                               "%s - %s" % (pz, run), "%s + %s" % (pz, run)), ctx,
-                 op=adsk.fusion.FeatureOperations.CutFeatureOperation, bodies=[body])
-        for end, sign in (("END 1", "-"), ("END 2", "+")):
-            circle_cut_y(comp, body, "%s %s" % (label, end), py, px, "%s %s %s" % (pz, sign, run), pw, "2 * tube_t",
-                         into[("FRONT", "out")], ctx)
     # the closing face's lead-in runs the seam member's full length now that its corners are mitred
     # (the back member no longer reaches the closing face)
     comp, body = members["SEAM"]
