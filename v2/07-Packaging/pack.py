@@ -488,8 +488,6 @@ SKEL = {
 # "inside" from above with the ceiling and the front hidden, to show the linings.
 STEP_VIEW = {2: "back", 3: "back", 4: "back", 5: "back", 6: "back", 7: "back", 8: "front", 9: "front", 10: "front",
              11: "front", 14: "inside", 18: "inside"}
-# Skeleton bodies of parts D-132 removed (no floor, no threshold): the skeleton keeps them until it follows; K12 lists them.
-SKEL_RETIRED = {"F1 ENVELOPE", "F1-MAT ENVELOPE", "F2 ENVELOPE", "F2-MAT ENVELOPE", "THRESHOLD ENVELOPE"}
 OUT_STEP_BODIES = GUIDE_DIR / "100000_P04_POD-ASSEMBLY-GUIDE-STEP-BODIES_DATA.json"
 
 
@@ -1318,7 +1316,7 @@ class Model:
         have = skeleton_bodies()
         mapped = [b for bs in SKEL.values() for b in bs]
         missing = sorted(set(mapped) - set(have))
-        unmapped = sorted(set(have) - set(mapped) - SKEL_RETIRED)
+        unmapped = sorted(set(have) - set(mapped))
         twice = sorted({b for b in mapped if mapped.count(b) > 1})
         bad_tags = [t for t in SKEL if t not in PIECE]
         self.check("K12", "Every skeleton body maps to exactly one label, for the step pictures",
