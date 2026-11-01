@@ -497,11 +497,17 @@ def flat_fails(data, texts, page_text, tol=TOL):
         if not any(abs(a[ax] - b[ax]) < 1e-6 and abs(a[ax] - at) < 0.01 for a, b in bends):
             fails.append("bend %s (%s %s) is on no BEND line of the DXF" % (row["tag"], row["axis"], _fmtv(row["at"])))
     k = fl["k"]
+    vg = fl.get("vgroove")
     for ci, ch in enumerate(fl["chains"]):
         t, fls, angs = ch["t"], ch["flanges"], ch["angles"]
         radii = [r if r is not None else fl["r"] for r in ch["radii"]]
-        ossb = [(radii[i] + t) * math.tan(math.radians(angs[i]) / 2) for i in range(len(angs))]
-        ba = [math.radians(angs[i]) * (radii[i] + k * t) for i in range(len(angs))]
+        if vg:          # a V-groove: the flat develops along the outer face, each fold's outside arc R (0: sharp)
+            ro = [r_ or 0.0 for r_ in ch.get("radii_out") or [None] * len(angs)]
+            ossb = [ro[i] * math.tan(math.radians(angs[i]) / 2) for i in range(len(angs))]
+            ba = [math.radians(angs[i]) * ro[i] for i in range(len(angs))]
+        else:
+            ossb = [(radii[i] + t) * math.tan(math.radians(angs[i]) / 2) for i in range(len(angs))]
+            ba = [math.radians(angs[i]) * (radii[i] + k * t) for i in range(len(angs))]
         x, pos = 0.0, []
         for i, L in enumerate(fls):
             x += L - (ossb[i - 1] if i > 0 else 0.0) - (ossb[i] if i < len(angs) else 0.0)
@@ -513,8 +519,9 @@ def flat_fails(data, texts, page_text, tol=TOL):
         for p_ in pos:
             want = (box[2 + ax] - p_) if ch["reversed"] else (box[ax] + p_)
             if not any(abs(l_ - want) <= tol for l_ in lines):
-                fails.append("chain %d: the model's flanges at K %s and R%s put a bend line at %s %s; the DXF has none "
-                             "there" % (ci + 1, _fmtv(k), _fmtv(fl["r"]), "xy"[ax], _fmtv(want - box[ax])))
+                fails.append("chain %d: the model's flanges%s put a bend line at %s %s; the DXF has none there" % (
+                    ci + 1, " (a V-groove)" if vg else " at K %s and R%s" % (_fmtv(k), _fmtv(fl["r"])), "xy"[ax],
+                    _fmtv(want - box[ax])))
         if abs(x - (box[2 + ax] - box[ax])) > tol:
             fails.append("chain %d: the model's flat is %s long, the DXF's %s" % (ci + 1, _fmtv(x), _fmtv(box[2 + ax] - box[ax])))
     v = fl.get("view")
@@ -525,7 +532,7 @@ def flat_fails(data, texts, page_text, tol=TOL):
     for row in fl["rows"]:
         if row.get("printed_at") and not _text_near(texts, row["tag"], row["printed_at"], pad=2.5):
             fails.append("bend %s's tag is not printed on its line" % row["tag"])
-    if ("K-factor %s" % _fmt3(k)) not in " ".join(page_text.split()):
+    if not vg and ("K-factor %s" % _fmt3(k)) not in " ".join(page_text.split()):
         fails.append("the K-factor %s is not printed" % _fmt3(k))
     return fails
 
@@ -621,6 +628,27 @@ def unfold_fails(data, holes, faces, tol=TOL):
         if i not in used:
             fails.append("the flat's DXF has a Ø%s hole at (%s, %s) that is on no STEP hole" % (
                 _fmtv(2 * rr), _fmtv(cc[0]), _fmtv(cc[1])))
+    return fails
+
+
+def vgroove_radius_fails(data, faces):
+    """A V-grooved panel's folds against the STEP's own faces (the repo's reader): each fold's outside radius, as the
+    sheet records it, must be a convex cylinder of the STEP along that run's bend lines (Reviewer 6 on #341: the
+    read-back took it from the sheet's own record)."""
+    fl = data.get("flat")
+    if not fl or not fl.get("vgroove") or not fl.get("map"):
+        return []
+    fails = []
+    for ci, (ch, mc) in enumerate(zip(fl["chains"], fl["map"]["chains"])):
+        ax = mc["axis"]
+        for j, r in enumerate(ch.get("radii_out") or []):
+            if not r:
+                fails.append("chain %d's fold %d is recorded sharp" % (ci + 1, j + 1))
+                continue
+            if not any(f["kind"] == "cylinder" and "d" in f and not f.get("concave") and abs(f["r"] - r) < 0.01
+                       and abs(abs(dot(f["d"], ax)) - 1) < 1e-6 for f in faces):
+                fails.append("chain %d's fold %d: the STEP has no outside arc R%s along its bend line" % (
+                    ci + 1, j + 1, _fmtv(r)))
     return fails
 
 
@@ -1243,6 +1271,7 @@ def check(pdf_path, step_path=None, verbose=False):
     fails += flat_fails(data, tb, page.get_text())
     fails += flat_hole_fails(data, holes, faces)
     fails += unfold_fails(data, holes, faces)
+    fails += vgroove_radius_fails(data, faces)
     if data.get("flat"):
         cf = flat_cutout_fails(data, faces)
         if cf:

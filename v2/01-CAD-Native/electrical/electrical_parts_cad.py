@@ -80,11 +80,14 @@ PARTS = {
                   "lead exits in the cassette's cable gap: 21.5 mm behind the unit's front"),
                  ("top_x", "%.1f mm" % (V["lt_x"] - V["pu_x0"]), "mm", "calculation", "light feed exit in the top: route model lt_x (X 346) less the unit's left side X 95"),
                  ("sleeve_x", "%.1f mm" % (V["sl_x"] - V["pu_x0"]), "mm", "calculation", "mains and LAN sleeve entry in the bottom: route model sl_x (X 150) less the unit's left side X 95"),
-                 ("sleeve_d", "25 mm", "mm", "assumption", "entry for the 20 mm flexible conduit"),
+                 ("sleeve_d", "22.2 mm", "mm", "assumption", "entry for the conduit connector Electri-Flex NMLT-11 (718075): its sheet gives a 1/2 in trade-size knockout, 7/8 in (22.2) by common practice"),
                  ("sleeve_y", "%.1f mm" % (V["sl_y"] - V["y_bf"]), "mm", "calculation", "sleeve centre 58 mm behind the unit's front"),
-                 ("clinch_d", "5.4 mm", "mm", HOLD, "M4 clinch nut hole in each lip; nut and hole to confirm (H-ELE-11 family)"),
+                 ("clinch_d", "5.94 mm", "mm", "source", "M4 clinch nut hole in each lip: PEM CLA-M4-1 (718047), mounting hole 5.94 +0.08 (PEM bulletin CL)"),
                  ("clinch_x", "30 mm", "mm", "assumption", "clinch nut centre from each side edge, along the top and bottom lips: 2 diameters clear of the lips' mitred corners (C09)"),
-                 ("clinch_y", "lip / 2", "mm", "calculation", "clinch nut centre in the middle of the lip"),
+                 ("clinch_y", "lip / 2 - 1 mm", "mm", "calculation", "clinch nut centre 10 from the unit's top and bottom: 12 from the lip's free edge (2.02 x the hole, C09) and 8 past the bend's start (PEM CLA-M4-1: 7.1 min)"),
+                 ("estud_d", "5.0 mm", "mm", "source", "earth stud hole: PEM FHA-M5-12 (718014), mounting hole 5.0 +0.08 (PEM bulletin FH)"),
+                 ("estud_x", "110 mm", "mm", "assumption", "earth stud in the bottom near the mains entry H04 (55 apart, 2.5 x H04): the PE leads stay short; the unit's inside layout (the factory's) keeps it clear"),
+                 ("estud_y", "36 mm", "mm", "assumption", "earth stud at the bottom's mid-depth"),
              ]),
     "front": ("711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước",
               "711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE", [
@@ -117,7 +120,7 @@ PARTS = {
                   ("vent_z2", "edge_off + 120 mm", "mm", "assumption", "top vent row centre: 120 above the unit's bottom, 4.7 mm under the GFCI receptacle's strap (D-133)"),
                   ("screw_d", "4.5 mm", "mm", "assumption", "M4 screw clearance hole"),
                   ("screw_x", "edge_off + 30 mm", "mm", "calculation", "screw centre: on the body's clinch nuts, 30 from the unit's sides (clinch_x)"),
-                  ("screw_y", "edge_off + 11 mm", "mm", "calculation", "screw centre: the middle of the body's 22 mm lips, 11 from the unit's top and bottom (23 from the plate's edge, C09)"),
+                  ("screw_y", "edge_off + 10 mm", "mm", "calculation", "screw centre: on the body's clinch nuts, 10 from the unit's top and bottom (clinch_y; 22 from the plate's edge, C09)"),
               ]),
     "hub": ("711005", "ELECTRICAL - HUB ZONE COVER PLATE", "Điện - mặt che vùng cảm biến",
             "711005_P01_ELECTRICAL-HUB-ZONE-COVER-PLATE", [
@@ -604,6 +607,7 @@ def build_part(app: "adsk.core.Application", key):
             cut_hole(design, comp, body, "yZConstructionPlane", "w", "lead_z2", z("d - lead_y"), "hole_b", "LEAD EXIT 2 RIGHT SIDE", ("y", "z"))
             cut_hole(design, comp, body, "xZConstructionPlane", "h", "top_x", z("d - lead_y"), "hole_b", "LIGHT FEED EXIT TOP", ("x", "z"))
             cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "sleeve_x", z("d - sleeve_y"), "sleeve_d", "SLEEVE ENTRY BOTTOM", ("x", "z"))
+            cut_hole(design, comp, body, "xZConstructionPlane", "0 mm", "estud_x", z("d - estud_y"), "estud_d", "EARTH STUD HOLE BOTTOM", ("x", "z"))
             for i, (cx, cy) in enumerate((("clinch_x", "clinch_y"), ("w - clinch_x", "clinch_y"),
                                           ("clinch_x", "h - clinch_y"), ("w - clinch_x", "h - clinch_y")), start=1):
                 cut_hole(design, comp, body, "xYConstructionPlane", z("d - t / 2"), cx, cy, "clinch_d",
