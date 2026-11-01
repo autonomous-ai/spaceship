@@ -246,7 +246,7 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     "sof_fill_f": ("611211", "AIR - SOFFIT FILL - FRONT", "Hộp gió - bông - tấm trước", "MP", "pfill"),
     "egrille": ("611204", "AIR - EXHAUST GRILLE", "Lưới gió thải", "MP", "perf40"),
     "casing": ("611301", "AIR - CARTRIDGE CASING", "Vỏ ống tiêu âm nhôm 2 mm", "MP", "al"),
-    "layer": ("611302", "AIR - CARTRIDGE LAYER 50", "Lớp tiêu âm 50 mm", "MP", "pyro"),
+    "layer": ("611302", "AIR - CARTRIDGE FILL - LAYER 50", "Bông tiêu âm - lớp 50 mm", "MP", "pyro"),   # a fill (D-89 part 3)
     "box": ("611401", "AIR - FAN BOX CASING - EXHAUST", "Vỏ hộp quạt thải nhôm 3 mm", "MP", "al"),
     "box_s": ("611402", "AIR - FAN BOX CASING - SUPPLY", "Vỏ hộp quạt cấp nhôm 3 mm", "MP", "al"),
     "blk_e": ("611403", "AIR - FAN BOX BULKHEAD - EXHAUST", "Hộp quạt thải - vách ngăn nhôm 2 mm", "MP", "al"),

@@ -107,7 +107,7 @@ PROCESS = {"col_foot": "laser cut", "col_side_lo": "laser cut", "col_side_hi": "
            "sleeve": "sheet metal: cut, folded into a tube with its top flange (40 left, 72 back, 15 front and right) "
                      "and 4 rivnut holes (blank HOLD)",
            "col_fill": "knife cut", "sof_fill": "knife cut", "layer": "knife cut",
-           "col_ang_b": "extruded angle, cut, keyholes milled", "kick_l": "perforated sheet, cut",
+           "col_ang_b": "extruded angle, cut, keyholes milled", "kick_l": "perforated sheet, laser cut",
            "col_fill_l": "knife cut", "sof_fill_f": "knife cut",
            "blk_e": "laser cut: the outline, two fan bores and the fans' 8 screw holes (its DXF); sealed to the casing "
                     "(sealant HOLD), its fixing to the casing HOLD",
@@ -173,6 +173,7 @@ def write_dxfs(v):
                         ("sof_under", ["SOFFIT UNDERSIDE LEFT"]), ("sof_under_r", ["SOFFIT UNDERSIDE RIGHT"]),
                         ("sof_under_f", ["SOFFIT UNDERSIDE FIXED"]), ("sof_front", ["SOFFIT FACE FRONT"]),
                         ("egrille", ["EXHAUST GRILLE"]), ("rgrille", ["ROOF GRILLE"]),
+                        ("kick", ["KICK GRILLE FRONT"]), ("kick_l", ["KICK GRILLE LEFT"]),
                         ("blk_e", ["FAN BOX BULKHEAD EXHAUST"]), ("blk_s", ["FAN BOX BULKHEAD SUPPLY"])):
         b = L[bodies[0]]
         pl = plane_of(b)
@@ -194,7 +195,7 @@ def write_dxfs(v):
             x0, y0 = to2d(b, pl, c[0], c[2], c[4])
             x1, y1 = to2d(b, pl, c[1], c[3], c[5])
             ents.append(("POLY", "CUT", rect(max(0, min(x0, x1)), max(0, min(y0, y1)), min(w, max(x0, x1)), min(h, max(y0, y1)))))
-        if key in ("kick", "egrille", "rgrille"):
+        if key in ("kick", "kick_l", "egrille", "rgrille"):
             ents.append(("LINE", "MARK", (0, 0), (w, h)))      # perforation pattern HOLD: marked, not drawn
         p = os.path.join(OUT, fname(key, "DXF", "dxf"))
         D.write_dxf(p, ents)
