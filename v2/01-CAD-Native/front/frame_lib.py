@@ -156,8 +156,8 @@ def build_members(design, comp, L, members, t_expr):
     return {m["key"]: build_one(design, comp, L, m, t_expr) for m in members}
 
 
-def build_one(design, comp, L, m, t_expr):
-    """One member in comp: its polygon extruded, then shelled to a tube with both ends open. Returns the body."""
+def build_one(design, comp, L, m, t_expr, shell=True):
+    """One member in comp: its polygon extruded, then (a tube) shelled with both ends open. Returns the body."""
     import adsk.core
     import adsk.fusion
     NEW = adsk.fusion.FeatureOperations.NewBodyFeatureOperation
@@ -168,6 +168,8 @@ def build_one(design, comp, L, m, t_expr):
         raise RuntimeError("tube %s: extrude made %d bodies" % (m["key"], f.bodies.count))
     b = f.bodies.item(0)
     b.name = "%s %s %s" % (m["key"], m["name"], m["section"])
+    if not shell:
+        return b
     ev = lambda e: L.ev(design, e)
     num = member_numbers(m, ev)
     if num["axis"] is None:
@@ -226,7 +228,7 @@ def check_copies(members, parts, ev, tol=0.01):
     that isn't."""
     first, out = {}, []
     for m in members:
-        pn = parts[m["key"]][0]
+        pn = parts[m["key"]][:2]
         if pn not in first:
             first[pn] = m
             continue
@@ -273,11 +275,11 @@ def place_by_shift(parent, occ, shift, name):
     return j
 
 
-def build_member_components(design, frame_comp, L, members, t_expr, parts, rev):
+def build_member_components(design, frame_comp, L, members, t_expr, parts, rev, shell=True):
     """D-120: each frame member its own component under frame_comp, named 'PN NAME', with its part number.
-    parts: {member key: (pn, name, vn)}. The first member of a part number is built in place (an identity
-    occurrence, so its sketches keep the block's expressions and stay fully constrained) and shelled; each later
-    member with that number is a copy of its component, placed by place_by_shift() at its shift from the first.
+    parts: {member key: (pn, name, vn)}. The first member of a part (number and name) is built in place (an
+    identity occurrence, so its sketches keep the block's expressions and stay fully constrained) and, for a tube,
+    shelled; each later member of that part is a copy of its component, placed by place_by_shift() at its shift.
     Returns (native, comps, occs): the body in its own component, the component, and the occurrence in frame_comp's
     context, each by member key (a copy shares the first's body and component)."""
     import adsk.core
@@ -285,8 +287,8 @@ def build_member_components(design, frame_comp, L, members, t_expr, parts, rev):
     for m in members:
         key = m["key"]
         pn, name, vn = parts[key]
-        if pn in first:
-            f = first[pn]
+        if (pn, name) in first:
+            f = first[(pn, name)]
             occ = frame_comp.occurrences.addExistingComponent(comps[f["key"]], adsk.core.Matrix3D.create())
             place_by_shift(frame_comp, occ, shift_of(f, m), "%s %s AS A COPY OF %s" % (pn, key, f["key"]))
             native[key], comps[key], occs[key] = native[f["key"]], comps[f["key"]], occ
@@ -296,16 +298,17 @@ def build_member_components(design, frame_comp, L, members, t_expr, parts, rev):
         mc.name = ("%s %s" % (pn, name)).strip()
         mc.partNumber = pn
         mc.description = "%s | %s | %s" % (name, vn, rev)
-        native[key] = build_one(design, mc, L, m, t_expr)
-        first[pn] = m
+        native[key] = build_one(design, mc, L, m, t_expr, shell)
+        first[(pn, name)] = m
         comps[key], occs[key] = mc, occ
     return native, comps, occs
 
 
 def root_bodies(frame_occ, native, occs):
-    """Each member's body in the root's context (through the frame's occurrence and its own), for the clash check
-    and the box report: a copy's body sits where its joint put it."""
-    return {k: native[k].createForAssemblyContext(occs[k].createForAssemblyContext(frame_occ)) for k in native}
+    """Each member's body in the root's context (through the frame's occurrence and its own; frame_occ None when the
+    members sit in the root itself), for the clash check and the box report: a copy's body sits where its joint put it."""
+    return {k: native[k].createForAssemblyContext(occs[k] if frame_occ is None else occs[k].createForAssemblyContext(frame_occ))
+            for k in native}
 
 
 def frame_mass(frame_occ, occs):

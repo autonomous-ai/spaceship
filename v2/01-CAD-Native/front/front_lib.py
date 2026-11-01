@@ -442,7 +442,8 @@ def write_parts_list(design, path, rows, root_pn, root_name, root_vn):
             continue
         comps = by_pn.get(pn, [])
         placed = sum(root.allOccurrencesByComponent(c).count for c in comps)
-        if not comps or placed != (qty if isinstance(qty, int) else 1):
+        by_length = str(typ).lower().startswith("bought by length")    # its quantity is a length; pieces vary
+        if not comps or (placed != (qty if isinstance(qty, int) else 1) and not by_length):
             raise RuntimeError("%s: %d component(s) placed %d time(s) in CAD, parts list says %s" % (
                 pn, len(comps), placed, qty))
         if not comps[0].name.startswith("%s %s" % (pn, name)):

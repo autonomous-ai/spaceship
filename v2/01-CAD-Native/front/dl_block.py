@@ -47,6 +47,17 @@ def load_frame_lib():
 
 FL = load_frame_lib()
 
+
+def load_member_pns():
+    spec = importlib.util.spec_from_file_location("frame_members_pn_run", os.path.join(HERE, "frame_members_pn.py"))
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    print("helper module %s: %s" % (m.__name__, m.__file__))
+    return m
+
+
+MP = load_member_pns()
+
 REV = "P01"
 PN = "350001"
 NAME = "FRONT - DECOR BLOCK ASSY - DL"
@@ -144,7 +155,6 @@ OWN = [
 PARTS = {
     "SKIN": ("351101", "FRONT - DECOR SKIN - DL", "Tấm ốp alu khối trái"),
     "BACK": ("351102", "FRONT - DECOR BACK PLATE - DL", "Tấm hậu khối trái"),
-    "STOP": ("351103", "FRONT - DOOR HINGE-SIDE STOP - DL", "Nẹp chặn cửa phía bản lề"),
     "PS": ("368005", "FRONT - FRAME-STOP SEAL", "Gioăng chặn cửa phía bản lề"),
     "FRAME": ("351104", "FRONT - DECOR FRAME - DL", "Khung trang trí trái (hàn)"),
 }
@@ -217,7 +227,7 @@ def frame_members():
 
 # part-only designs for the part drawings (a base view shows its whole design): the full block is built and checked,
 # then every other component is removed
-SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN", "stop": "STOP"}
+SCOPES = {"assy": None, "frame": "FRAME", "skin": "SKIN"}
 
 
 def scope_doc(scope):
@@ -311,64 +321,86 @@ def build(app):
              ("hinge_z1 + hinge_clamp_h / 2 + hinge_skip", "hinge_z2 - hinge_clamp_h / 2 - hinge_skip"),
              ("hinge_z2 + hinge_clamp_h / 2 + hinge_skip", "hinge_z3 - hinge_clamp_h / 2 - hinge_skip"),
              ("hinge_z3 + hinge_clamp_h / 2 + hinge_skip", "leaf_zt")]
-    c_ps, c_st = comp("PS"), comp("STOP")
+    # each piece its own component (D-120): the stop's pieces 351105 to 351107 (351103 cancelled, #232) and the seal's
+    # pieces of the bought 368005, one component per length; ST3 and PS3 are copies of ST2 and PS2, placed at their
+    # shift (the hinge spacing is even, so the two middle lengths are one shape: check_copies proves it each build)
+    y0 = "(%s + stop_gap)" % gi
+    ang = [(xs0, y0), (xs1, y0), (xs1, "%s + stop_t" % y0), ("%s + stop_t" % xs0, "%s + stop_t" % y0),
+           ("%s + stop_t" % xs0, "%s + stop_fl" % y0), (xs0, "%s + stop_fl" % y0)]
+    xr, yr = (XL + " + door_xl", XL + " + door_xl + ps_s"), (gi, gi + " + stop_gap")
+    seal_box = [(xr[0], yr[0]), (xr[1], yr[0]), (xr[1], yr[1]), (xr[0], yr[1])]
+    stop_pieces, seal_pieces = [], []
     for i, (z0, z1) in enumerate(spans):
         # at the top corner the seal runs up to DT's top seal and the stop to DT's top stop leg, so they butt there
         # instead of crossing (FRONT combined check)
         zp1, zs1 = (z1, z1) if i < 3 else ("dt_zb - ps_s", "dt_zb - dt_stop_h")
-        b = L.box_body(design, c_ps, "PS%d" % (i + 1), (XL + " + door_xl", XL + " + door_xl + ps_s"), (gi, gi + " + stop_gap"),
-                       (z0, zp1), "FRAME-STOP SEAL PS 1515 - HINGE SIDE %d" % (i + 1))
-        bodies["PS%d" % (i + 1)] = b
+        seal_pieces.append({"key": "PS%d" % (i + 1), "name": "FRAME-STOP SEAL PS 1515 - HINGE SIDE %d" % (i + 1),
+                            "axes": ("x", "y"), "pts": seal_box, "along": "z", "a": z0, "b": zp1, "section": "PS 1515"})
         # an angle: the leg the seal sits on, and a flange bonded to DL's door-side face
-        y0 = "(%s + stop_gap)" % gi
-        ang = [(xs0, y0), (xs1, y0), (xs1, "%s + stop_t" % y0), ("%s + stop_t" % xs0, "%s + stop_t" % y0),
-               ("%s + stop_t" % xs0, "%s + stop_fl" % y0), (xs0, "%s + stop_fl" % y0)]
-        f = prism(c_st, ("x", "y"), ang, "z", z0, zs1, "SECTION - HINGE-SIDE STOP %d (ANGLE)" % (i + 1),
-                  "EXTRUDE - HINGE-SIDE STOP %d" % (i + 1))
-        b = f.bodies.item(0)
-        b.name = "HINGE-SIDE STOP %d (ANGLE, BONDED)" % (i + 1)
-        bodies["ST%d" % (i + 1)] = b
+        stop_pieces.append({"key": "ST%d" % (i + 1), "name": "HINGE-SIDE STOP %d (ANGLE, BONDED)" % (i + 1),
+                            "axes": ("x", "y"), "pts": ang, "along": "z", "a": z0, "b": zs1, "section": "30 x 20 x 2"})
+    piece_parts = piece_parts_for(ARGS["repo_root"])
+    ev_ = lambda e: L.ev(design, e)
+    print("COPIES|stop %s|seal %s" % (FL.check_copies(stop_pieces, piece_parts, ev_),
+                                      FL.check_copies(seal_pieces, piece_parts, ev_)))
+    p_native, p_comps, p_occs = FL.build_member_components(design, root, L, stop_pieces + seal_pieces, None,
+                                                           piece_parts, REV, shell=False)
+    for k in p_native:     # the body names the FRONT combined check's gaps look for; the shared ones say so
+        n = "2 AND 3" if k[2] in "23" else k[2]
+        p_native[k].name = ("HINGE-SIDE STOP %s (ANGLE, BONDED)" if k.startswith("ST") else
+                            "FRAME-STOP SEAL PS 1515 - HINGE SIDE %s") % n
+    bodies.update(FL.root_bodies(None, p_native, p_occs))
 
-    # ---- 351104 the welded tube frame (stage 2)
+    # ---- 351104 the welded tube frame (stage 2): a weldment assembly, each tube its own component with Control's
+    # member number (D-120, #232); the ring tubes between the hinges are copies
     c = comp("FRAME")
-    tubes = FL.build_members(design, c, L, frame_members(), "fr_t")
-    sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - J-FRONT-01 RIVNUT TAILS AND BOLT TIPS (6)",
+    members = frame_members()
+    mparts = FL.member_parts(ARGS["repo_root"], FRAME_PN, MP.DL_MEMBERS)
+    print("COPIES|%s" % FL.check_copies(members, mparts, lambda e: L.ev(design, e)))
+    native, mcomps, moccs = FL.build_member_components(design, c, L, members, "fr_t", mparts, REV)
+    frame_occ = root.allOccurrencesByComponent(c).item(0)
+    tubes = FL.root_bodies(frame_occ, native, moccs)
+    mc = mcomps["B04"]                       # each hole in its own tube's component
+    sk = L.circles(design, mc, mc.xZConstructionPlane, ("x", "z"), 0, "HOLES - J-FRONT-01 RIVNUT TAILS AND BOLT TIPS (6)",
                    [("-jf_x", "jf_z%d" % i) for i in range(1, 7)], "fr_hole_jf")
     yb1 = YB + " - dl_back_t"
-    L.extrude_span(c, sk, "y", yb1 + " - fr_t - 1 mm", yb1 + " + 0.5 mm", CUT, [tubes["B04"]],
+    L.extrude_span(mc, sk, "y", yb1 + " - fr_t - 1 mm", yb1 + " + 0.5 mm", CUT, [native["B04"]],
                    "CUT - J-FRONT-01 RIVNUT TAILS AND BOLT TIPS",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     # J-FRONT-02: the spigot hole in the outer facet's bottom ring tube and the slot (along the facet) in the front's
     zr0 = ZB
-    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLE - J-FRONT-02 SPIGOT (ROUND)",
+    mc = mcomps["R1O"]
+    sk = L.circles(design, mc, mc.xYConstructionPlane, ("x", "y"), 0, "HOLE - J-FRONT-02 SPIGOT (ROUND)",
                    [("sp_ax", "sp_ay")], "sp_hole")
-    L.extrude_span(c, sk, "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", CUT, [tubes["R1O"]], "CUT - J-FRONT-02 SPIGOT HOLE",
+    L.extrude_span(mc, sk, "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", CUT, [native["R1O"]], "CUT - J-FRONT-02 SPIGOT HOLE",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     hs = "((sp_slot - sp_hole) / 2)"
-    sk = L.circles(design, c, c.xYConstructionPlane, ("x", "y"), 0, "HOLES - J-FRONT-02 SPIGOT SLOT ENDS",
+    mc = mcomps["R1F"]
+    sk = L.circles(design, mc, mc.xYConstructionPlane, ("x", "y"), 0, "HOLES - J-FRONT-02 SPIGOT SLOT ENDS",
                    [("sp_bx - %s * sp_d2x" % hs, "sp_by - %s * sp_d2y" % hs),
                     ("sp_bx + %s * sp_d2x" % hs, "sp_by + %s * sp_d2y" % hs)], "sp_hole")
-    L.extrude_span(c, sk, "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", CUT, [tubes["R1F"]], "CUT - J-FRONT-02 SLOT ENDS",
+    L.extrude_span(mc, sk, "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", CUT, [native["R1F"]], "CUT - J-FRONT-02 SLOT ENDS",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     hw = "(sp_hole / 2)"
-    prism(c, ("x", "y"), [("sp_bx - %s * sp_d2x - %s * sp_n2x" % (hs, hw), "sp_by - %s * sp_d2y - %s * sp_n2y" % (hs, hw)),
+    prism(mc, ("x", "y"), [("sp_bx - %s * sp_d2x - %s * sp_n2x" % (hs, hw), "sp_by - %s * sp_d2y - %s * sp_n2y" % (hs, hw)),
                           ("sp_bx + %s * sp_d2x - %s * sp_n2x" % (hs, hw), "sp_by + %s * sp_d2y - %s * sp_n2y" % (hs, hw)),
                           ("sp_bx + %s * sp_d2x + %s * sp_n2x" % (hs, hw), "sp_by + %s * sp_d2y + %s * sp_n2y" % (hs, hw)),
                           ("sp_bx - %s * sp_d2x + %s * sp_n2x" % (hs, hw), "sp_by - %s * sp_d2y + %s * sp_n2y" % (hs, hw))],
           "z", zr0 + " - 1 mm", zr0 + " + fr_t + 0.5 mm", "SLOT - J-FRONT-02 SPIGOT (MIDDLE)", "CUT - J-FRONT-02 SLOT MIDDLE",
-          CUT, tubes["R1F"])
+          CUT, native["R1F"])
 
     # the selected ACP's 0.21 mm skins give 3.5 kg/m2 (selection VT01), as WALL, CEILING and AIR count it
     acp = L.material(design, "ACP 3 mm PE core EV3038, 0.21 mm skins (3.5 kg/m2, calculation)", "Aluminum", 3500.0 / 3.0)
     alu = L.material(design, "Aluminium (2700 kg/m3)", "Aluminum", 2700.0)
     env = L.material(design, "ENVELOPE - mass carried in the parts list (1 kg/m3)", "Aluminum", 1.0)
     al6063 = L.material(design, "Aluminium 6063-T6 tube (2700 kg/m3)", "Aluminum", 2700.0)
-    for k, b in tubes.items():
+    for k, b in native.items():              # on each tube's own component body (copies share it)
         b.material = al6063
         a = L.appearance(design, ["Aluminum - Satin"])
         if a:
             b.appearance = a
     for k, b in bodies.items():
+        b = p_native.get(k, b)               # a piece's look on its own component's body
         b.material = acp if k == "SKIN" else (alu if k.startswith("ST") or k == "BACK" else env)
         a = L.appearance(design, ["Paint - Enamel Glossy (Yellow)"] if k in ("SKIN", "BACK") else
                          (["Paint - Enamel Glossy (Black)"] if k.startswith("ST") else ["Plastic - Matte (Black)"]))
@@ -386,8 +418,10 @@ def build(app):
         print("BODY|%s|%s|%g x %g x %g|%s|%.3f kg" % (k, b.name, round(bb[3] - bb[0], 2), round(bb[4] - bb[1], 2),
                                                      round(bb[5] - bb[2], 2), bb, b.physicalProperties.mass))
     print("clash pairs %d, unexpected %d" % (len(hits), len(bad_clash)))
-    print("FRAME|%d tubes, %.2f kg, %d shells failed" % (len(tubes), L.comp_mass(comps["FRAME"]),
-          sum(1 for k in tubes if not any(f.name.startswith("SHELL - TUBE %s " % k) for f in comps["FRAME"].features.shellFeatures))))
+    uniq = {mc_.partNumber: mc_ for mc_ in mcomps.values()}
+    print("FRAME|%d tubes as %d parts, %.2f kg, %d shells failed" % (
+        len(tubes), len(uniq), FL.frame_mass(frame_occ, moccs),
+        sum(1 for mc_ in uniq.values() if mc_.features.shellFeatures.count != 1)))
     print("DL box", L.box(root))
     if bad or loose or bad_clash:
         raise RuntimeError("DL checks failed (unhealthy %s, loose %s, clashes %s)" % (bad, loose, bad_clash))
@@ -402,11 +436,30 @@ def build(app):
 ANCHORS = [
     ("SKIN", 0, "-pod_w / 2"), ("SKIN", 3, "dl_w - pod_w / 2"), ("SKIN", 2, "wall_z0"), ("SKIN", 5, "dl_zo"),
     ("SKIN", 1, "-dl_y3"), ("SKIN", 4, "-pod_d / 2 + decor_d"),
-    ("BACK", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("PS", 0, "door_xl - pod_w / 2"), ("PS", 5, "dt_zb - ps_s"),
-    ("STOP", 3, "dl_w + stop_reach - pod_w / 2"),
-    ("FRAME", 0, "-pod_w / 2 + dl_skin_t"), ("FRAME", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("FRAME", 2, "wall_z0"),
-    ("FRAME", 4, "-pod_d / 2 + decor_d - dl_back_t"), ("FRAME", 1, "-dl_y3 + dl_skin_t"),
+    ("BACK", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("PS1", 0, "door_xl - pod_w / 2"), ("PS4", 5, "dt_zb - ps_s"),
+    ("ST1", 3, "dl_w + stop_reach - pod_w / 2"),
+    # the frame's sides, each on a single tube that reaches it (every tube its own component, D-120)
+    ("B04", 0, "-pod_w / 2 + dl_skin_t"), ("B02", 3, "dl_w - pod_w / 2 - dl_skin_t"), ("B01", 2, "wall_z0"),
+    ("B03", 4, "-pod_d / 2 + decor_d - dl_back_t"), ("P1", 1, "-dl_y3 + dl_skin_t"),
 ]
+
+# what each tube's row says about its holes and fixings (the cuts in build(); none on the copies)
+MEMBER_NOTES = {
+    "B04": "60 x 20; 6 holes 14 in its back wall round the J-FRONT-01 rivnut tails and bolt tips (X -1224)",
+    "R1O": "J-FRONT-02: spigot hole 8.5 in its bottom wall (X -1176.7, Y -718.0), over the band",
+    "R1F": "J-FRONT-02: spigot slot 8.5 x 14 along the front facet in its bottom wall (X -1073.9, Y -780.6)",
+    "H1": "60 x 20 behind hinge H1's pocket; hinge fixing holes when the hinge is named (HOLD H01)",
+    "H2": "60 x 20 behind hinge H2's pocket; hinge fixing holes when the hinge is named (HOLD H01)",
+    "H3": "60 x 20 behind hinge H3's pocket; hinge fixing holes when the hinge is named (HOLD H01)",
+}
+
+
+def piece_parts_for(root_dir):
+    """The stop's and the seal's pieces: {key: (pn, name, name_vi)} (D-120, #232)."""
+    stop = FL.member_parts(root_dir, PN, MP.DL_STOP)
+    seal = {k: (PARTS["PS"][0], "%s - HINGE SIDE %s" % (PARTS["PS"][1], n), PARTS["PS"][2])
+            for k, n in (("PS1", "1"), ("PS2", "2 AND 3"), ("PS3", "2 AND 3"), ("PS4", "4"))}
+    return dict(stop, **seal)
 
 
 def export_all(app):
@@ -423,6 +476,38 @@ def export_all(app):
     members = frame_members()
     tube_m = sum(FL.member_numbers(m, ev)["length"] for m in members) / 1000.0
     gt = "general tolerance ISO 2768-m"
+    # one row per tube part (D-120, Control's numbers in #232): its copies counted in the quantity
+    mparts = FL.member_parts(root_dir, FRAME_PN, MP.DL_MEMBERS)
+    pparts = piece_parts_for(root_dir)
+    member_rows, seen = [], set()
+    for m in members:
+        pn, mname, mvn = mparts[m["key"]]
+        if pn in seen:
+            continue
+        seen.add(pn)
+        keys = [k for k in MP.DL_MEMBERS if MP.DL_MEMBERS[k] == pn]
+        num = FL.member_numbers(m, ev)
+        note = "member%s %s of the frame %s; %.1f long, ends: %s" % (
+            "s" if len(keys) > 1 else "", ", ".join(keys), FRAME_PN, num["length"], m["ends"])
+        if m["key"] in MEMBER_NOTES:
+            note += "; " + MEMBER_NOTES[m["key"]]
+        member_rows.append((pn, mname, mvn, len(keys), "made: tube cut to length, ends as its cut list row",
+                            "aluminium EN AW-6063-T6 tube %s, finish: mill finish (hidden, D-79)" % m["section"], "cad",
+                            "calculation (CAD, 2700 kg/m3, shelled)", "DRAFT", "number allocation (D-120, #232)", note))
+    # the stop's pieces (351103 split and cancelled, #232): one row per number, ST2 and ST3 one shape
+    stop_rows, seen = [], set()
+    for k in ("ST1", "ST2", "ST3", "ST4"):
+        pn, sname, svn = pparts[k]
+        if pn in seen:
+            continue
+        seen.add(pn)
+        keys = [q for q in MP.DL_STOP if MP.DL_STOP[q] == pn]
+        stop_rows.append((pn, sname, svn, len(keys), "made (aluminium angle 30 x 20 x 2, cut to length; its flange "
+                          "bonded to DL's door-side face)", "aluminium EN AW-6063-T6, finish black anodised matte 20 um "
+                          "(AA20); " + gt, "cad", "calculation (CAD)", "DRAFT",
+                          "selection C3 (frame gap 2 to 6); number allocation (D-120, #232)",
+                          "piece%s %s of the hinge-side stop, between the hinges; bonded with structural tape "
+                          "(HOLD: product)" % ("s" if len(keys) > 1 else "", " and ".join(q[2] for q in keys))))
     rows = [
         (PN, NAME, VN, 1, "assembly", "-", None, "", "DRAFT", "D-19, D-49, D-79; PM rulings 2026-10-31; this build",
          "skin bonded to the welded tube frame 351104; ships with the hinges' frame halves fitted (packing plan)"),
@@ -431,27 +516,25 @@ def export_all(app):
          "D-12, D-49; skeleton DL shape", "three hinge pockets (HOLD sizes); open at the bottom, where the frame's bottom "
          "ring stands on the band and takes its spigots (J-FRONT-02); one flat panel per outside face: " +
          DXF_SKIN_REL.split("/")[-1] + "; bond to the frame per the joints register's ACP bond spec"),
-        (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "made: welded frame, %d tubes (cut list %s)" % (
-            len(members), CUT_REL.split("/")[-1]), "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5, "
-         "finish: mill finish (hidden, D-79)", "cad", "calculation (CAD, 2700 kg/m3, tubes shelled)", "DRAFT",
-         "v1 decor frame drawing (DL frame, 60 x 20 hinge members); D-79; joints register HOLD-10, ISS-045",
-         "%.1f m of tube; the door's load: hinges, hinge post H1 to H3, rings, bolt-line post B04 (6 holes 14 for "
-         "the J-FRONT-01 rivnut tails), back plate, bolts; hinge fixing holes when the hinge is named (HOLD H01); "
-         "J-FRONT-02: spigot hole 8.5 in the outer facet's bottom tube and slot 8.5 x 14 in the front facet's" % tube_m),
+        (FRAME_PN, PARTS["FRAME"][1], PARTS["FRAME"][2], 1, "weldment assembly: %d tubes as %d parts below, "
+         "TIG-welded (cut list %s)" % (len(members), len(member_rows), CUT_REL.split("/")[-1]),
+         "aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5, finish: mill finish (hidden, D-79)", None, "",
+         "DRAFT", "v1 decor frame drawing (DL frame, 60 x 20 hinge members); D-79; joints register HOLD-10, ISS-045; "
+         "D-120 (each tube its own part, #232)",
+         "%.1f m of tube; welds per its weldment drawing; the door's load: hinges, hinge posts 352111, 352113 and "
+         "352115, rings, the bolt-line post 352104, back plate, bolts" % tube_m),
+    ] + member_rows + [
         ("351102", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
          "aluminium EN AW-5754-H22 sheet 2.0 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
          "calculation (CAD, 2700 kg/m3)", "DRAFT", "joints register J-FRONT-01 (HOLD-10 answered: 2 mm aluminium)",
          "DXF " + DXF_BACK_REL.split("/")[-1] + "; 6 holes 9.53 +0.10/0 for the rivnuts 838003 (counted in the joints "
          "register) on X -1224, 3 per side panel (critical: on the wall's bolt line); blind-riveted to the frame "
          "(HOLD: rivet)"),
-        ("351103", PARTS["STOP"][1], PARTS["STOP"][2], 1, "made (aluminium angle, 4 lengths between the hinges, "
-         "bonded to DL's door-side face: keeps a drawing with the bond area and surface prep)",
-         "aluminium EN AW-6063-T6, finish black anodised matte 20 um (AA20); general tolerance ISO 2768-m", "cad",
-         "calculation (CAD)", "DRAFT", "selection C3 (frame gap 2 to 6)",
-         "its flange bonded to DL's door-side skin with structural tape (HOLD: product); the 4 lengths on its drawing"),
+    ] + stop_rows + [
         ("368005", "FRONT - FRAME-STOP SEAL", "Gioăng chặn cửa", 1, "bought by length",
          "athmer PS 1515 P Flex, PVC co-extrusion, self-adhesive", 0.07, "assumption", "source (product)",
-         "hardware selection C3; joints register", "hinge-side run %.0f mm in 4 pieces (DT's run in DT's list)" % seal_len),
+         "hardware selection C3; joints register", "hinge-side run %.0f mm in 4 pieces between the hinges, each its "
+         "own component (the two middle pieces one length); DT's run in DT's list" % seal_len),
     ]
     total = L.write_parts_list(design, os.path.join(root_dir, BOM_REL), rows, PN, NAME, VN)
     print("parts list %s: %d rows, unit mass %.2f kg" % (BOM_REL, len(rows), total))
@@ -465,8 +548,8 @@ def export_all(app):
     import csv
     with open(os.path.join(root_dir, CUT_REL), "w", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["frame", "member", "name", "section", "length_mm", "qty", "ends", "status"])
-        w.writerows(FL.cut_list_rows(members, ev, FRAME_PN))
+        w.writerow(["frame", "member", "part_number", "name", "section", "length_mm", "qty", "ends", "status"])
+        w.writerows(tuple(r[:2]) + (mparts[r[1]][0],) + tuple(r[2:]) for r in FL.cut_list_rows(members, ev, FRAME_PN))
     print("cut list %s: %d tubes, %.2f m" % (CUT_REL, len(members), tube_m))
     back_comp = [c for c in design.allComponents if c.partNumber == PARTS["BACK"][0]][0]
     try:
@@ -476,7 +559,8 @@ def export_all(app):
         print("DXF %s FAILED: %r" % (DXF_BACK_REL, exc))
     with open(os.path.join(root_dir, ANCHORS_REL), "w", encoding="utf-8") as fh:
         json.dump({"document": DOC_NAME, "f3d": F3D_REL, "anchors": [
-            {"component": "%s %s" % (PARTS[k][0], PARTS[k][1]), "index": i, "expression": e} for k, i, e in ANCHORS]},
+            {"component": "%s %s" % ((PARTS[k][0], PARTS[k][1]) if k in PARTS else dict(mparts, **pparts)[k][:2]),
+             "index": i, "expression": e} for k, i, e in ANCHORS]},
             fh, indent=1, ensure_ascii=False)
     before, after, diff = L.step_reread(app, doc, design, step)
     print("STEP re-read in Fusion: model box %s, STEP box %s, max diff %.3f mm" % (before, after, diff))
