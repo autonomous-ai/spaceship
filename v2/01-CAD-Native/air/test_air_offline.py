@@ -590,6 +590,9 @@ class EditTest(unittest.TestCase):
                 elif kind == "zcircle":
                     x, y, z0, z1, d = (A.ev(v, e) for e in a)
                     c = (x - d / 2, x + d / 2, y - d / 2, y + d / 2, z0, z1)
+                elif kind == "xcircle":
+                    y, z, x0, x1, d = (A.ev(v, e) for e in a)
+                    c = (x0, x1, y - d / 2, y + d / 2, z - d / 2, z + d / 2)
                 else:
                     x, z, y0, y1, d = (A.ev(v, e) for e in a)
                     c = (x - d / 2, x + d / 2, y0, y1, z - d / 2, z + d / 2)
@@ -736,6 +739,78 @@ class SupplyTransition(unittest.TestCase):
             q = (A.ev(V, x), A.ev(V, y))
             if q != corner:
                 self.assertGreaterEqual(gap(q), 6.0, "chamfer end %s only %.2f from the facet skin" % (q, gap(q)))
+
+
+class TransitionRivets(unittest.TestCase):
+    """The AIR Transitions Engineer's 24 rivet holes (their list, 2026-11-01 15:18: each hole's wall and its centre on
+    that wall's outer face, pod mm), made in the riser's and the box casing's flats (the Lead's ruling: no hole drilled
+    on site). Each goes through its wall face to face, 2 diameters from every edge (the fastener rule), clear of the
+    riser's chamfer, the box's linings and its bulkhead."""
+    LIST = {  # (body, wall): [(x, y, z)] on the wall's outer face
+        ("SUPPLY FAN BOX", "back"): [(750.9, -664.0, 1891.5), (805.3, -664.0, 1891.5), (859.7, -664.0, 1891.5),
+                                     (914.1, -664.0, 1891.5)],
+        ("SUPPLY FAN BOX", "front"): [(748.0, -819.0, 1941.0), (802.7, -819.0, 1941.0), (857.3, -819.0, 1941.0),
+                                      (912.0, -819.0, 1941.0)],
+        ("SUPPLY FAN BOX", "left"): [(680.0, -691.0, 1660.0), (680.0, -741.5, 1660.0), (680.0, -792.0, 1660.0)],
+        ("SUPPLY FAN BOX", "right"): [(980.0, -691.0, 1660.0), (980.0, -741.5, 1660.0), (980.0, -792.0, 1660.0)],
+        ("INTAKE RISER", "back"): [(1051.5, -653.0, 1373.5), (992.5, -653.0, 1373.5)],
+        ("INTAKE RISER", "front"): [(1051.5, -803.0, 1373.5), (992.5, -803.0, 1373.5)],
+        ("INTAKE RISER", "left"): [(959.0, -677.5, 1373.5), (959.0, -728.0, 1373.5), (959.0, -778.5, 1373.5)],
+        ("INTAKE RISER", "right"): [(1098.0, -677.5, 1373.5), (1098.0, -728.0, 1373.5), (1098.0, -778.5, 1373.5)],
+    }
+
+    def holes(self):
+        """{(body, wall): sorted [(x, y, z) on the outer face]} from the model, with each hole's (depth, d)."""
+        out = {}
+        for n, k, a in A.transition_rivets():
+            b = b6(n)
+            if k == "xcircle":
+                y, z, x0, x1, d = (A.ev(V, e) for e in a)
+                wall, x = ("left", x0) if abs(x0 - b[0]) < 1e-9 else ("right", x1)
+                self.assertTrue(abs(x0 - b[0]) < 1e-9 or abs(x1 - b[1]) < 1e-9, (n, a))
+                out.setdefault((n, wall), []).append(((round(x, 2), round(y, 2), round(z, 2)), x1 - x0, d))
+            else:
+                x, z, y0, y1, d = (A.ev(V, e) for e in a)
+                self.assertEqual(k, "ycircle")
+                wall, y = ("front", y0) if abs(y0 - b[2]) < 1e-9 else ("back", y1)
+                self.assertTrue(abs(y0 - b[2]) < 1e-9 or abs(y1 - b[3]) < 1e-9, (n, a))
+                out.setdefault((n, wall), []).append(((round(x, 2), round(y, 2), round(z, 2)), y1 - y0, d))
+        return out
+
+    def test_the_list(self):
+        got = self.holes()
+        self.assertEqual(sum(len(h) for h in got.values()), 24)
+        self.assertEqual(set(got), set(self.LIST))
+        for key, want in self.LIST.items():
+            pts = sorted(p for p, _t, _d in got[key])
+            for p, q in zip(pts, sorted(want)):
+                self.assertTrue(all(abs(a - b) < 0.05 for a, b in zip(p, q)), (key, p, q))   # the list has one decimal
+            for _p, t, d in got[key]:
+                self.assertAlmostEqual(t, V["rs_t"] if key[0] == "INTAKE RISER" else V["fbox_t"])   # face to face
+                self.assertAlmostEqual(d, 4.1)
+
+    def test_edges_and_neighbours(self):
+        got, d = self.holes(), V["tr_rv_d"]
+        for (n, wall), hs in got.items():
+            b = b6(n)
+            for (x, y, z), _t, _d in hs:
+                along = (y, b[2], b[3]) if wall in ("left", "right") else (x, b[0], b[1])
+                self.assertGreaterEqual(min(along[0] - along[1], along[2] - along[0]), 2 * d, (n, wall, x, y, z))
+                self.assertGreaterEqual(min(z - b[4], b[5] - z), 2 * d, (n, wall, x, y, z))
+        # the riser's chamfer: its front holes left of it, its right-wall holes behind it
+        r = b6("INTAKE RISER")
+        for (x, _y, _z), _t, _d in got[("INTAKE RISER", "front")]:
+            self.assertLessEqual(x + d / 2, r[1] - V["rs_ch"] - 2 * d)
+        for (_x, y, _z), _t, _d in got[("INTAKE RISER", "right")]:
+            self.assertGreaterEqual(y - d / 2, r[2] + V["rs_ch"] + 2 * d)
+        # the box: front and back holes between the end walls' linings; end-wall holes under the bulkhead
+        l1, l2, blk = b6("FAN BOX LINING SUPPLY END 1"), b6("FAN BOX LINING SUPPLY END 2"), b6("FAN BOX BULKHEAD SUPPLY")
+        for wall in ("front", "back"):
+            for (x, _y, _z), _t, _d in got[("SUPPLY FAN BOX", wall)]:
+                self.assertTrue(l1[1] + d < x - d / 2 and x + d / 2 < l2[0] - d, (wall, x))
+        for wall in ("left", "right"):
+            for (_x, _y, z), _t, _d in got[("SUPPLY FAN BOX", wall)]:
+                self.assertLess(z + d / 2, blk[4] - d, (wall, z))
 
 
 class SleeveFlange(unittest.TestCase):

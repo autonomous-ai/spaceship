@@ -153,8 +153,29 @@ AIR_PARAMS = [
      "shorter (was 1445, the air report's), so the lower duct's turn eases to 52 deg; the AIR Transitions Engineer's shape"),
     ("rs_t", "1 mm", "mm", "confirmed", "D-61: 1 mm steel intake riser"),
     ("rs_ch", "8 mm", "mm", "confirmed", "the Lead's ruling 2026-11-01: an 8 x 8 chamfer on the riser's front-right vertical "
-     "edge, so it stands 6.8 from DR's corner facet skin instead of 1.2, for 0.15% of its area; the lower duct's bottom "
-     "flange follows it (the AIR Transitions Engineer)"),
+     "edge, so it stands 6.5 from DR's corner facet skin instead of 1.2 (calculation on #313's DR STEP; the ruling said "
+     "6.8), for 0.15% of its area; the lower duct's bottom flange follows it (the AIR Transitions Engineer)"),
+    # ---- the transitions' 24 rivet holes in the riser and the supply box casing (the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes)): Ø4.1, made in both parts'
+    #      flats so they match without drilling (the Lead's ruling 2026-11-01: no hole is drilled on site); the box, the
+    #      riser and both transitions ship as one piece, so the rivets are set at the factory
+    ("tr_rv_d", "4.1 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): Ø4.1 for a Ø4.0 blind rivet until Joints picks the rivet (HOLD)"),
+    ("tr_col_in", "25 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): the lower transition's collar slips 25 into the riser's top; its 10 "
+     "rivets at the overlap's middle (Z 1373.5)"),
+    ("tr_rs_py", "50.5 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): 3 rivets in each of the riser's side walls, 50.5 apart about its middle"),
+    ("tr_rs_x1", "33.5 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): the riser's front and back walls, the first rivet 33.5 from its left face "
+     "(X 992.5)"),
+    ("tr_rs_x2", "92.5 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): the riser's front and back walls, the second rivet 92.5 from its left face "
+     "(X 1051.5, clear of the chamfer)"),
+    ("tr_be_dz", "10 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): 3 rivets in each of the box's end walls 10 above its bottom (Z 1660), "
+     "through the lower transition's webs"),
+    ("tr_be_py", "50.5 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): the box's end-wall rivets 50.5 apart about its middle"),
+    ("tr_bf_dz", "9 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): 4 rivets in the box's front wall 9 below its top (Z 1941), into the upper "
+     "transition's front"),
+    ("tr_bf_px", "164 mm / 3", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): the box's front-wall rivets X 748 to 912, even about its middle"),
+    ("tr_bb_dz", "58.5 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): 4 rivets in the box's back wall 58.5 below its top (Z 1891.5), into the "
+     "upper transition's back flange"),
+    ("tr_bb_x0", "70.9 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): the box's first back-wall rivet 70.9 from its left face (X 750.9)"),
+    ("tr_bb_px", "54.4 mm", "mm", "source", "the AIR Transitions Engineer's hole list 2026-11-01 (the transitions' flats carry the same holes): the box's back-wall rivets 54.4 apart"),
     # ---- how the supply fan box assembly rests in DR (PM rulings 2026-11-01, after the box moved back): a lip angle on
     #      the box's front wall on two rubber pads on DR's shelf tube F08, and a rubber buffer on the riser's front face
     #      against DR's cross tube F07; the outlet's soft lip seal carries no load. DR's frame values are FRONT's (its DR
@@ -659,8 +680,8 @@ def sleeve_rivnuts():
 def features():
     """Cut features inside bodies (no change to their boxes): the column's keyholes in the
     back-left angle, BASE's spigot hole and slot in the foot plate, the rails' forks and the
-    lock screws' holes. [(body name, kind, args)]: kind 'zcircle' (x, y, z0, z1, d), 'ycircle'
-    (x, z, y0, y1, d) or 'box' (x0, x1, y0, y1, z0, z1)."""
+    lock screws' holes, the transitions' rivet holes. [(body name, kind, args)]: kind 'zcircle' (x, y, z0, z1, d),
+    'ycircle' (x, z, y0, y1, d), 'xcircle' (y, z, x0, x1, d) or 'box' (x0, x1, y0, y1, z0, z1)."""
     out = []
     # keyholes: the column drops key_drop onto each stud, so the big hole is key_drop below it
     for k, zs in (("1", "hook_z1"), ("2", "hook_z2")):
@@ -704,6 +725,8 @@ def features():
     for _n, x, y in sleeve_rivnuts():
         out.append(("ROOF SLEEVE", "zcircle", (x, y, "pod_h", "pod_h + slv_t", "hole_rvn")))
         out.append(("ROOF GRILLE", "zcircle", (x, y, "pod_h + slv_t", "pod_h + slv_t + rg_t", "lock_hole")))
+    # the transitions' 24 rivet holes in the riser and the supply box casing (the Lead's ruling: made, not drilled)
+    out += transition_rivets()
     return out
 
 
@@ -792,6 +815,34 @@ def fan_box_inner():
         ("lin_s", "FAN BOX LINING SUPPLY END 1", box(sx0, "%s + lin_t" % sx0, sy0, sy1, "%s + fan_t + s_lin_gap" % sfan, stop)),
         ("lin_s", "FAN BOX LINING SUPPLY END 2", box("%s - lin_t" % sx1, sx1, sy0, sy1, "%s + fan_t + s_lin_gap" % sfan, stop)),
     ]
+
+
+def transition_rivets():
+    """The transitions' 24 rivet holes (the AIR Transitions Engineer's list, 2026-11-01), each through its wall from
+    face to face: 10 in the riser's top for the lower transition's collar, 6 in the supply box casing's end walls for its
+    webs, 4 in the front wall and 4 in the back wall for the upper transition. [(body name, kind, args)]: xcircle (y, z,
+    x0, x1, d), ycircle (x, z, y0, y1, d)."""
+    out = []
+    zr = "rs_z1 - tr_col_in / 2"
+    for k in (-1, 0, 1):
+        y = "rs_y0 + rs_d / 2 + (%d) * tr_rs_py" % k
+        out.append(("INTAKE RISER", "xcircle", (y, zr, "rs_x0", "rs_x0 + rs_t", "tr_rv_d")))
+        out.append(("INTAKE RISER", "xcircle", (y, zr, "rs_x0 + rs_w - rs_t", "rs_x0 + rs_w", "tr_rv_d")))
+    for xo in ("tr_rs_x1", "tr_rs_x2"):
+        out.append(("INTAKE RISER", "ycircle", ("rs_x0 + %s" % xo, zr, "rs_y0", "rs_y0 + rs_t", "tr_rv_d")))
+        out.append(("INTAKE RISER", "ycircle", ("rs_x0 + %s" % xo, zr, "rs_y0 + rs_d - rs_t", "rs_y0 + rs_d", "tr_rv_d")))
+    sy0, sy1, top = "%s + sb_yf" % YF, "%s + sb_yf + sb_d" % YF, "sb_z0 + sb_h"
+    for k in (-1, 0, 1):
+        y = "%s + sb_d / 2 + (%d) * tr_be_py" % (sy0, k)
+        out.append(("SUPPLY FAN BOX", "xcircle", (y, "sb_z0 + tr_be_dz", "sb_x0", "sb_x0 + fbox_t", "tr_rv_d")))
+        out.append(("SUPPLY FAN BOX", "xcircle", (y, "sb_z0 + tr_be_dz", "sb_x0 + sb_w - fbox_t", "sb_x0 + sb_w", "tr_rv_d")))
+    for m in ("-1.5", "-0.5", "0.5", "1.5"):
+        out.append(("SUPPLY FAN BOX", "ycircle", ("sb_x0 + sb_w / 2 + (%s) * tr_bf_px" % m, "%s - tr_bf_dz" % top, sy0,
+                                                  "%s + fbox_t" % sy0, "tr_rv_d")))
+    for k in range(4):
+        out.append(("SUPPLY FAN BOX", "ycircle", ("sb_x0 + tr_bb_x0 + %d * tr_bb_px" % k, "%s - tr_bb_dz" % top,
+                                                  "%s - fbox_t" % sy1, sy1, "tr_rv_d")))
+    return out
 
 
 def fan_points():

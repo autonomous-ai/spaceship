@@ -564,6 +564,8 @@ def build_scope(root, design, ctx, scope):
             CB.circle_cut(root, made[bname], label, a[0], a[1], a[4], a[2], a[3], ctx)
         elif kind == "ycircle":
             circle_cut_y(root, made[bname], label, a[0], a[1], a[2], a[3], a[4], ctx)
+        elif kind == "xcircle":       # through a face normal to X, from x0 toward +X (the ceiling's circle_cut_x)
+            CB.circle_cut_x(root, made[bname], label, a[2], a[0], a[1], a[4], "(%s) - (%s)" % (a[3], a[2]), 1, ctx)
         else:
             CB.box_body(root, label, a, ctx, op=CUT, bodies=[made[bname]])
     return made
@@ -854,6 +856,8 @@ def run(_context):
                 CB.circle_cut(comp, body, label, a[0], a[1], a[4], a[2], a[3], ctx)
             elif kind == "ycircle":
                 circle_cut_y(comp, body, label, a[0], a[1], a[2], a[3], a[4], ctx)
+            elif kind == "xcircle":   # through a face normal to X, from x0 toward +X (the ceiling's circle_cut_x)
+                CB.circle_cut_x(comp, body, label, a[2], a[0], a[1], a[4], "(%s) - (%s)" % (a[3], a[2]), 1, ctx)
             else:
                 CB.box_body(comp, label, a, ctx, op=CUT, bodies=[body])
         adsk.doEvents()
