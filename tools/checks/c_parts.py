@@ -227,6 +227,8 @@ def check_parts_lists(root, plists):
     for pn, uses in seen.items():
         # the same words in the same order are one name: 'HOOK-AND-LOOP' and 'HOOK AND LOOP' don't differ
         names = {name_words(n) for _f, n in uses}
+        if len(names) > 1 and pn in reg:
+            continue        # D-99: the register's name decides; check_cad_match lists every file and team off it
         if len(names) > 1:
             # which name is right: the joints register's for hardware (D-99); the Joints Engineer's own list for the
             # base keys (D-95); else the name the team lists agree on. The master BOM copies the team lists, so a
@@ -464,6 +466,8 @@ def check_cad_match(root, plists, step_products):
                               "%s is named '%s' in the CAD (%s) but '%s' in the parts list (%s); the guideline wants one "
                               "name everywhere (section 4.2)." % (pn, cad, f, names[pn][0], names[pn][1]),
                               "Use the same name in the CAD component and the parts list.", f, owner_for(f, pn)))
+    for pn in sorted((set(reg) & set(list_names)) - set(step_products)):
+        fs += _register_name_findings(pn, reg[pn], {"files": set(), "name": ""}, list_names[pn])
     # A team's parts list is matched against the CAD once that team has exported STEP files (its folder,
     # e.g. v2/03-Manufacturing/wall). The master BOM lists every team's parts, so it isn't matched itself:
     # each row is checked in its team's own list.
