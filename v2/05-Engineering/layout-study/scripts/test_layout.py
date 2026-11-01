@@ -170,7 +170,8 @@ def test_p04_rollup_lines():
     for name in ("Named clips",):                                  # the light shelf and ledge are INTERIOR's CAD now
         hit = [r for r in rows if r[1].startswith(name)]
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
-    assert len([r for r in rows if "ships loose" in r[1]]) == 2
+    loose = [r[1] for r in rows if "ships loose" in r[1]]   # AIR's riser and supply fan box; DR's inner face panel (D-130)
+    assert len(loose) == 3 and sum(x.startswith("DR inner face panel") for x in loose) == 1, loose
     ap = rollup.applied()
     assert len(ap) == 9 and all(a[0] > 0 for a in ap), ap                    # D-81's four and D-85's five
     off = rollup.lines(**rollup.OFF)
@@ -249,7 +250,11 @@ def test_cad_masses_from_main():
         dl = rows[item]
         d = {r["pn"]: r["kg"] for r in rollup.read_parts_list(os.path.join(rollup.MANUF, "front",
                                                                            rollup.FRONT_DECOR[b]["path"])) if r["pn"]}
-        assert abs(dl[3] - d[rollup.FRONT_DECOR_PN[b]]) < 1e-9 and rollup.basis(dl) == "CAD, main", dl
+        lz = sum(d[k] for k in rollup.FRONT_DECOR_LOOSE.get(b, ()))   # DR's loose inner face panel and felt (D-130)
+        assert abs(dl[3] + lz - d[rollup.FRONT_DECOR_PN[b]]) < 1e-9 and rollup.basis(dl) == "CAD, main", dl
+        if lz:
+            lp = next(r for k, r in rows.items() if k.startswith("DR inner face panel"))
+            assert abs(lp[3] - lz) < 1e-9 and rollup.basis(lp) == "CAD, main", lp
     assert rollup.FRONT_DECOR["DR"]["reserved"] == ["350004", "351402", "351403", "351404", "351405"]
     assert 0.5 < rollup.dr_channels_kg() < 0.6                                   # the right and diagonal channels
     ks = rows["Base seal and cable grommets"]                       # the door edge seals are FRONT's (PR #105)

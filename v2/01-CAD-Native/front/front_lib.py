@@ -634,7 +634,8 @@ JF_PARAMS = [
     ("jf_x", "pod_w / 2 - skin_t - bond_t - frame_t / 2", "mm", "calculation",
      "joints register J-FRONT-01: the side panel's front member centre line, X -/+1224 (skin, bond line and half the "
      "40 frame in from the outside, skeleton named values)"),
-    ("jf_hole", "9.53 mm", "mm", "source", "rivnut 838003 (Sherex CAH3-610-4.2) hole 9.53 +0.10/0 (hardware selection A5; joints register H-03)"),
+    ("jf_hole", "9.53 mm", "mm", "source", "rivnut 838003 (Sherex CAH2-610-4.2, zinc-plated steel, D-131) hole 9.53 +0.10/0, "
+     "as the aluminium part's (joints register H-03; unverified for the steel part, HOLD-04)"),
     ("jf_z1", "panel_z0 + bolt_edge_inset", "mm", "calculation", "lower panel, bottom bolt (220 rule)"),
     ("jf_z2", "panel_z0 + side_h / 2", "mm", "calculation", "lower panel, middle bolt"),
     ("jf_z3", "panel_z0 + side_h - bolt_edge_inset", "mm", "calculation", "lower panel, top bolt"),

@@ -8,7 +8,7 @@ A bay is a part of a skin face that no tube touches. Its edges: a tube's bonded 
 
 - **DL**: bays held all round 0.88 mm at most; bays with a free edge 1.78 at most.
 - **DT**: bays held all round 0.42 mm at most; bays with a free edge 0.46 at most; 4 bay(s) with a free edge that the simple-support figure can't settle (held on one edge, or by strips at an angle to the grid) pass with the bond held flat, 0.61 at most (the PM's reading for strips held on fewer sides (2026-11-01), confirmed by the sample's push test).
-- **DR**: bays held all round 5.01 mm at most as built; bays with a free edge 0.01 at most; 4 bay(s) with a free edge that the simple-support figure can't settle (held on one edge, or by strips at an angle to the grid) pass with the bond held flat, 0.79 at most (the PM's reading for strips held on fewer sides (2026-11-01), confirmed by the sample's push test); **1 bay(s) over 2 mm as built**: front face, X 282 to 1030, Z 1651 to 2177, 5.01 mm.
+- **DR**: bays held all round 1.76 mm at most; bays with a free edge 0.01 at most; 4 bay(s) with a free edge that the simple-support figure can't settle (held on one edge, or by strips at an angle to the grid) pass with the bond held flat, 0.79 at most (the PM's reading for strips held on fewer sides (2026-11-01), confirmed by the sample's push test).
 - DR's front face top bay with the cross tube F09 the PM chose (the fan box 25 back from the skin): 1.72 mm (below). The bays table reads DR's STEP as built, before F09; rerun this script on the rebuilt STEP to list F09's bays.
 
 ## Every bay
@@ -44,7 +44,8 @@ A bay is a part of a skin face that no tube touches. Its edges: a tube's bonded 
 | DR | corner facet | X 1071 to 1243, Z 2199 to 2381 | 242 × 184 | folds 42°, 48°, 56° | ss_fd | 0.32 | - | pass |
 | DR | front face | X 874 to 1030, Z 131 to 833 | 162 × 704 | folds 42°, 90° | ss_fd | 0.50 | - | pass |
 | DR | front face | X 702 to 1030, Z 855 to 1629 | 338 × 776 | folds 42°, 90° | ss_fd | 1.41 | - | pass |
-| DR | front face | X 282 to 1030, Z 1651 to 2177 | 752 × 528 | folds 42°, 90° | ss_fd | 5.01 | - | **FAIL** |
+| DR | front face | X 458 to 1030, Z 1651 to 1903 | 576 × 254 | folds 42°, 90° | ss_fd | 1.62 | - | pass |
+| DR | front face | X 282 to 1030, Z 1925 to 2177 | 752 × 254 | folds 42°, 90° | ss_fd | 1.72 | - | pass |
 | DR | front face | X 234 to 258, Z 2109 to 2191 | 26 × 88 | a free edge; folds 42°, 90° | bfs | - | 0.02 | pass with the bond held flat (strips at an angle to the grid) |
 | DR | glass-edge strip (diagonal) | X 235 to 749, Z 1526 to 2119 | 136 × 786 | a free edge; folds 33°, 90° | bfs | 6.58 | 0.57 | pass with the bond held flat (6.58 if simply supported) |
 | DR | glass-edge strip (diagonal) | X 238 to 749, Z 1526 to 2116 | 20 × 786 | a free edge; folds 33°, 90° | bfs | 0.01 | 0.01 | pass |
@@ -68,11 +69,11 @@ The front face's top bay, above the fan box shelf and under the chamfer, is the 
 
 | Option | Largest flex on the front face (mm) | Where |
 |---|---|---|
-| as built | 5.01 | X 282 to 1030, Z 1651 to 2177 |
+| as built | 1.72 | X 282 to 1030, Z 1925 to 2177 |
 | **one tube across at Z 1904-1924, the fan box 25 back from the skin (PM ruling 2026-11-01: F09)** | 1.72 | X 282 to 1030, Z 1925 to 2177 |
-| the fan box's front as a backing (no tube) | 1.81 | X 280 to 1030, Z 1651 to 2177 |
+| the fan box's front as a backing (no tube) | 1.57 | X 282 to 1030, Z 1925 to 2177 |
 | one tube at Z 2000-2020 and the fan box's front as a backing | 1.41 | X 702 to 1030, Z 855 to 1629 |
-| three tubes round the fan box (Z 1950-1970, X 625-645, X 950-970) | 1.68 | X 646 to 950, Z 1651 to 1949 |
+| three tubes round the fan box (Z 1950-1970, X 625-645, X 950-970) | 1.41 | X 702 to 1030, Z 855 to 1629 |
 
 ## The solvers against known answers
 

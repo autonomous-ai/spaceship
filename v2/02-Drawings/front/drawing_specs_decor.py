@@ -38,7 +38,7 @@ SPECS["dr"] = {
         "frame's bottom tubes (PM ruling: at least 0.028 free). Air goes band, block, riser; the riser's open foot "
         "stands 140 above the base.",
         "Slot along the inner edge for the fixed pane's hidden channel: 17 wide at the glass plane (PM ruling).",
-        "Inner face panel 351305 (D-130): 3 mm, on %d M6 x 16 ISO 4762 socket heads with head washers into rivnuts "
+        "Inner face panel 351305 (D-130): 3 mm, on %d M6 x 16 ISO 4762 socket heads on plain 12 washers (ISO 7089) into rivnuts "
         "838003 in the frame's tubes under its edges, about 400 apart; a washer 838004 on each rivnut head holds it "
         "%.2f off the frame, its room face at Y %.2f (AIR's named value); the seal 848013 runs round its edge, squeezed "
         "to %.2f, cut round each washer. Opening %.0f wide into the air column's top (X %.0f to %.0f); the column hangs "
@@ -241,133 +241,7 @@ def _ev(V):
 # 351304 DR felt: the inner panel's outline (stepped and slanted, so it keeps a drawing: D-89)
 _evr = _ev(V_DR)
 _LR = G_DR["L"]
-_fk = tuple(_evr(c) for c in _LR.g_K("dr_skin_t"))                       # the knee on the glass's right edge
-_ftl = (_evr(_LR.diag_x("fg_vis_zt", "dr_skin_t")), V_DR["fg_vis_zt"])   # top left, on the diagonal
-_ftr = (V_DR["dr_col_x0"], V_DR["fg_vis_zt"])
-_fbr = (V_DR["dr_col_x0"], _evr("((fg_rc + dr_skin_t - fg_rnx * dr_col_x0) / fg_rnz)"))
-SPECS["dr_felt"] = {
-    "design": doc("351304", "FRONT - DECOR INNER PANEL FELT - DR", "CAD"),
-    "drawing": doc("351304", "FRONT - DECOR INNER PANEL FELT - DR", "DWG"),
-    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (150, 230), "iso": (330, 95)},
-    "box": {"front": (_ftl[0], _fbr[1], _ftr[0], _ftr[1])},
-    "dims": [("front", _ftl, _ftr, "above", 10), ("front", _fbr, _ftr, "right", 12),
-             ("front", _fk, _ftr, "right", 25), ("front", _ftl, _fk, "below", 10)],
-    "notes": [
-        "PET acoustic felt 9 mm, Dark Gray (D-79), the factory's felt (D-31; hardware selection A3); emission "
-        "certificate HOLD. Laser-cut from 351304_P01_FRONT-DECOR-INNER-PANEL-FELT-DR_DXF.dxf (1:1, mm). Outline +/-2.",
-        "Its outline: the glass's slanted edges on the left, the air column's edge on the right (X %.0f), the soffit's "
-        "underside at the top, so it is not a plain rectangle and keeps a drawing (D-89). Holes %.0f over the inner "
-        "face panel's screw heads under it (their places in the DXF), each closed with a plug cut from the same felt "
-        "(D-130: no bare socket heads on the room side)." % (V_DR["dr_col_x0"], V_DR["dr_felt_hole"]),
-        "Glued at the factory to the room face of DR's removable inner face panel 351305 (D-130), over its whole face: "
-        "the bond area is the full outline less the holes. Surface prep: the panel's face clean, dry and dust-free, "
-        "wiped with isopropyl alcohol; adhesive per the felt maker (product HOLD).",
-        "Seen from inside the pod between the fixed glass and the air column; its top meets the soffit's underside at "
-        "Z 2120 (PM ruling 2026-11-01).",
-    ],
-    "title": title("351304", "FRONT - DECOR INNER PANEL FELT - DR", "Nỉ tấm trong khối phải", "PET felt 9 mm",
-                   "Dark Gray, as supplied (D-79)", "1:10", "A2", [("MASS", "0.74 kg (calculation)")]),
-}
 
-# 351305 DR's removable inner face panel (D-130): laser-cut 3 mm sheet; it keeps a drawing for its flatness, its
-# holes' purpose and its service notes (PM ruling 2026-11-01: note the flatness on the panel's drawing)
-_pzs = V_DR["fg_vis_zb"] + V_DR["dr_skin_t"]
-_pzb = V_DR["fg_vis_zt"] + V_DR["dr_band_dz"]
-_pxr = V_DR["dr_strip_x0"]
-_pxl = _evr(_LR.diag_x("fg_vis_zt", "dr_skin_t"))
-_pxb = _evr(_LR.right_x("(%s)" % _pzs, "dr_skin_t")) if False else _evr(_LR.right_x("fg_vis_zb + dr_skin_t", "dr_skin_t"))
-_PNL_SCREWS = [(_evr(x), _evr(z)) for _t, (x, z) in G_DR["panel_screws"]()]
-SPECS["dr_panel"] = {
-    "design": doc("351305", G_DR["PARTS"]["ACCESS"][1], "CAD"),
-    "drawing": doc("351305", G_DR["PARTS"]["ACCESS"][1], "DWG"),
-    "sheet": "A2", "scale": 0.1, "scales": {"iso": 0.05}, "views": {"front": (150, 230), "iso": (330, 95)},
-    "box": {"front": (_pxl, _pzs, _pxr, _pzb)},
-    "dims": [("front", (_pxb, _pzs), (_pxr, _pzs), "below", 10), ("front", (_pxr, _pzs), (_pxr, _pzb), "right", 12),
-             ("front", (_pxl, V_DR["fg_vis_zt"]), (_pxr, V_DR["fg_vis_zt"]), "above", 25)],
-    "notes": [
-        "Aluminium EN AW-5754-H22 sheet 3.0 mm, laser-cut from 351305_P01_FRONT-DECOR-INNER-FACE-PANEL-DR-REMOVABLE_DXF.dxf "
-        "(1:1, mm: the outline and every hole). Outline +/-0.5; hole positions +/-0.3 (PROPOSED).",
-        "Flat within about 0.5 mm between any two neighbouring screws (PM ruling 2026-11-01): it seals on the very "
-        "soft seal 848013 squeezed to %.2f, so a bow over that would open the seal; check on a flat table before the "
-        "felt goes on." % V_DR["dr_pnl_gap"],
-        "%d clearance holes 7.0 for M6 x 16 ISO 4762 socket heads with head washers, about 400 apart along its edges "
-        "(D-130; screws and rivnuts in the frame per the joints register); 2 holes 9.53 +0.10/0 at X 971, Z 1700 and "
-        "1850 for the rivnuts of the air column's hook studs (J-AIR-02); the opening %.0f wide into the column's top "
-        "(X %.0f to %.0f)." % (len(_PNL_SCREWS), V_DR["op_w"], V_DR["op_x0"], V_DR["op_x0"] + V_DR["op_w"]),
-        "Room face at Y %.2f (AIR's named value dr_acc_face_y): its column and the soffit follow it. The felt 351304 "
-        "is glued on its room face at the factory; its holes over the screw heads take felt plugs." % V_DR["dr_acc_face_y"],
-        "Ships loose and goes on after the air unit (D-130). To take it off: the air column first, then the panel drops "
-        "%.0f and tilts out under the soffit (checked in the model); two people, about %.1f kg with its felt." % (
-            V_DR["dr_drop"], 7.7 + 0.74),
-        "Finish: mill finish, deburred; hidden behind the felt and the air column (D-79).",
-    ],
-    "title": title("351305", G_DR["PARTS"]["ACCESS"][1], G_DR["PARTS"]["ACCESS"][2], "aluminium EN AW-5754-H22 3.0",
-                   "mill finish, deburred (hidden, D-79)", "1:10", "A2", [("MASS", "7.7 kg (calculation)")]),
-}
-
-# 351203 DT top stop: a 20 x 20 x 2 angle, screwed up into DT's rail F02
-_evt = _ev(V_DT)
-_lat = lambda z: _XL + V_DT["door_xbr"] - (V_DT["door_xbr"] - V_DT["door_xtr"]) * (z - V_DT["door_zb"]) / (
-    V_DT["door_zt"] - V_DT["door_zb"])
-_sx0 = _XL + V_DT["door_xl"]
-_sx1 = _lat(V_DT["leaf_zt"]) - V_DT["st_end"] - V_DT["st_l"] / 2 - V_DT["ca_l"] / 2 - V_DT["stop_end"]
-_sy0 = -V_DT["glass_y"] + V_DT["glass_t"] / 2 + V_DT["stop_gap"]
-_sy1 = _sy0 + V_DT["stop_fl"]
-_sz0, _sz1 = V_DT["fg_vis_zt"] - V_DT["stop_h"], V_DT["fg_vis_zt"]
-_shx = [_sx0 + 50 + k * (_sx1 - _sx0 - 100) / 4 for k in range(5)]
-_shy = _sy0 + V_DT["stop_t"] + (V_DT["stop_fl"] - V_DT["stop_t"]) / 2
-SPECS["dt_stop"] = {
-    "design": doc("351203", "FRONT - DOOR TOP STOP - DT", "CAD"),
-    "drawing": doc("351203", "FRONT - DOOR TOP STOP - DT", "DWG"),
-    "sheet": "A2", "scale": 0.2, "scales": {"left": 2.0, "iso": 0.2},
-    "views": {"front": (200, 300), "top": (200, 230), "left": (440, 260), "iso": (200, 110)},
-    "box": {"front": (_sx0, _sz0, _sx1, _sz1), "top": (_sx0, _sy0, _sx1, _sy1), "left": (-_sy1, _sz0, -_sy0, _sz1)},
-    "dims": [("front", (_sx0, _sz0), (_sx1, _sz0), "below", 10),
-             ("left", (-_sy1, _sz1), (-_sy0, _sz1), "above", 8), ("left", (-_sy0, _sz0), (-_sy0, _sz1), "right", 8)],
-    "notes": [
-        "Aluminium angle 20 x 20 x 2, EN AW-6063-T6 (EN 755-9), black anodised matte 20 um (AA20, D-67). Cut length "
-        "%.1f (-1/0), square ends, burr-free." % (_sx1 - _sx0),
-        "HOLE TABLE: 5 x dia %.1f through the flange, countersunk 90 deg to dia 8.6 on its underside, for M4 "
-        "countersunk screws up into rivnuts in DT's rail F02 (screw and rivnut: joints register numbers HOLD). From "
-        "the left (hinge) end: %s; %.0f from the leg's outer face (2.1 diameters from the flange's edge)." % (
-            V_DT["stop_hole"], ", ".join("%.1f" % (x - _sx0) for x in _shx), _shy - _sy0),
-        "The frame-stop seal 368005 (athmer PS 1515 P Flex, self-adhesive) goes on the leg's glass-side face; the leg "
-        "hangs 20 below DT's underside. At the hinge end the stop and seal butt DL's (PM ruling 2026-11-01).",
-        "General tolerance ISO 2768-m.",
-    ],
-    "title": title("351203", "FRONT - DOOR TOP STOP - DT", "Nẹp chặn cửa trên", "aluminium angle 20 x 20 x 2, 6063-T6",
-                   "black anodised matte 20 um (AA20)", "1:5, section 2:1", "A2", [("MASS", "see the parts list")]),
-}
-
-# 351103 DL hinge-side stop: a 30 x 20 x 2 angle in 4 lengths, bonded to DL's door-side face
-_lx0 = _XL + V_DL["dl_w"]
-_lx1 = _lx0 + V_DL["stop_reach"]
-_ly0 = -V_DL["glass_y"] + V_DL["glass_t"] / 2 + V_DL["stop_gap"]
-_ly1 = _ly0 + V_DL["stop_fl"]
-_hz = lambda k: V_DL["hinge_z%d" % k]
-_hh, _hs = V_DL["hinge_clamp_h"] / 2, V_DL["hinge_skip"]
-_lsp = [(V_DL["door_zb"], _hz(1) - _hh - _hs), (_hz(1) + _hh + _hs, _hz(2) - _hh - _hs),
-        (_hz(2) + _hh + _hs, _hz(3) - _hh - _hs), (_hz(3) + _hh + _hs, V_DL["dt_zb"] - V_DL["dt_stop_h"])]
-SPECS["dl_stop"] = {
-    "design": doc("351103", "FRONT - DOOR HINGE-SIDE STOP - DL", "CAD"),
-    "drawing": doc("351103", "FRONT - DOOR HINGE-SIDE STOP - DL", "DWG"),
-    "sheet": "A2", "scale": 0.1, "scales": {"top": 2.0, "iso": 0.05},
-    "views": {"front": (120, 230), "top": (300, 300), "iso": (330, 110)},
-    "box": {"front": (_lx0, _lsp[0][0], _lx1, _lsp[-1][1]), "top": (_lx0, _ly0, _lx1, _ly1)},
-    "dims": [("top", (_lx0, _ly0), (_lx1, _ly0), "below", 8), ("top", (_lx0, _ly0), (_lx0, _ly1), "left", 8)] +
-            [("front", (_lx1, a), (_lx1, b), "right", 10) for a, b in _lsp],
-    "notes": [
-        "Aluminium angle 30 x 20 x 2, EN AW-6063-T6 (EN 755-9), black anodised matte 20 um (AA20, D-67). Cut list, 4 "
-        "pieces between the hinges, bottom to top: %s mm (-1/0), square ends, burr-free." % ", ".join(
-            "%.1f" % (b - a) for a, b in _lsp),
-        "Bonded to DL's door-side face by its 20 mm flange: the bond area is the flange's full face on each piece. "
-        "Surface prep: abrade the anodised face lightly, wipe both faces with isopropyl alcohol, primer and structural "
-        "tape per the tape maker (product HOLD). The 30 mm leg reaches 19 over the door glass, past the 15 mm seal.",
-        "The frame-stop seal 368005 (athmer PS 1515 P Flex, self-adhesive) goes on the leg's glass-side face. The top "
-        "piece stops 20 under DT's underside, where DT's top stop takes over (PM ruling 2026-11-01).",
-        "General tolerance ISO 2768-m.",
-    ],
-    "title": title("351103", "FRONT - DOOR HINGE-SIDE STOP - DL", "Nẹp chặn cửa phía bản lề",
-                   "aluminium angle 30 x 20 x 2, 6063-T6", "black anodised matte 20 um (AA20)", "1:10, section 2:1", "A2",
-                   [("MASS", "see the parts list")]),
-}
+# Part drawings come from drawgen (D-139, the Lead's split 2026-11-01): DR's inner face panel 351305, DT's top stop 351203 and DL's
+# stop pieces 351105 to 351107 (the angles wait for drawgen to read bought profiles); DR's felt 351304 has no drawing
+# (D-128: its DXF matches its STEP). Fusion keeps the assemblies, the welded frames and the folded skins.

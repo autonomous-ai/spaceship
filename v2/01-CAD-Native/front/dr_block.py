@@ -105,7 +105,8 @@ OWN = [
      "access panel 3 mm aluminium: it carries the air column's 10 kg on two hook studs 222 mm from its screwed edge "
      "(PM ruling 2026-11-01); 2 mm would see about 110 MPa if the column pulls 50 N, 3 mm about 50 MPa"),
     # D-130 (PM rulings 2026-11-01, Joints' seal and stop pair): one removable inner face panel, on stops off the frame
-    ("dr_rn_head", "0.76 mm", "mm", "source", "rivnut 838003 head 0.76 +/-0.08 (joints register H-03, Sherex CAH3)"),
+    ("dr_rn_head", "0.76 mm", "mm", "source",
+     "rivnut 838003 head 0.76 +/-0.08 (joints register H-03: Sherex CAH2-610-4.2, zinc-plated steel, D-131)"),
     ("dr_stop_w", "1.6 mm", "mm", "source",
      "an 838004 washer (ISO 7093 6.4 x 18, 1.6 thick) on each rivnut head: the panel's stop (Joints, D-130)"),
     ("dr_pnl_gap", "dr_rn_head + dr_stop_w", "mm", "calculation",
@@ -206,7 +207,8 @@ OWN = [
     ("fr_hole_jf", "14 mm", "mm", "calculation",
      "hole in the bolt-line tube's back wall round each J-FRONT-01 rivnut: body 9.50 max and its bulge (SHX), and the "
      "bolt tip, go into the tube"),
-    ("fr_hole_rn", "9.53 mm", "mm", "source", "joints register H-03: hole for the rivnut 838003 (Sherex CAH3-610-4.2)"),
+    ("fr_hole_rn", "9.53 mm", "mm", "source",
+     "joints register H-03: hole for the rivnut 838003 (Sherex CAH2-610-4.2, zinc-plated steel, D-131; HOLD-04)"),
     # J-FRONT-02 (PM ruling 2026-11-01): DR stands on 2 spigots on BASE's support behind the mesh piece, a round hole
     # and a slot along X in the bottom back tube's bottom wall
     ("dr_sp_x1", "1050 mm", "mm", "confirmed", "J-FRONT-02: DR's round spigot hole (PM ruling 2026-11-01)"),
@@ -228,9 +230,15 @@ OWN = [
      "the panel's screw line on the band tube: its rivnuts 2 diameters plus 1 above the tube's lower edge (C09)"),
     ("dr_sc_clear", "40 mm", "mm", "calculation",
      "the panel's end screws 40 from the corners of its screw line, clear of the frame's welded corners (D-130)"),
-    ("dr_felt_hole", "22 mm", "mm", "calculation",
-     "felt holes over the panel's screw heads (washer 18 and the key), plugged with felt cut from the same sheet: no "
-     "bare socket heads on the room side (PM ruling 2026-11-01)"),
+    ("dr_hd_d", "12 mm", "mm", "source",
+     "a plain M6 washer under each panel screw's head, ISO 7089 6.4 x 12 x 1.6 (PM ruling 2026-11-01: the socket "
+     "heads stay, one 5 mm key on site; the 18 mm washer made every felt hole break out; Joints numbers it)"),
+    ("dr_felt_web", "3 mm", "mm", "calculation",
+     "felt left between each felt hole and the felt's edge (PM ruling 2026-11-01)"),
+    ("dr_felt_hole", "dr_hd_d + 2 mm", "mm", "calculation",
+     "closed felt holes over the panel's screw heads: the washer and 1 mm round it, each plugged with felt cut from "
+     "the same sheet (no bare socket heads on the room side); the screws stand 10 from the felt's edges, so "
+     "dr_felt_web stays (PM rulings 2026-11-01)"),
     # the top chamfer and the DT joint as lines, for the frame
     ("dr_cl", "sqrt((pod_d / 2 - ch_yb) * (pod_d / 2 - ch_yb) + (pod_h - ch_zlo) * (pod_h - ch_zlo))", "mm",
      "calculation", "length of the top chamfer in the side view"),
@@ -308,6 +316,13 @@ PANEL_LINES = [
 ]
 # screws per edge, about dr_pitch apart (Joints' 400) and dr_sc_clear from the corners: 21 in all
 SCREWS_PER_EDGE = [2, 6, 3, 0, 2, 3, 5]
+# where an edge's last screw stands further from its end corner than dr_sc_clear: the glass-edge tube's lowest
+# screw is moved up so its felt hole keeps the web at the air column's edge and its washer clears the column's left
+# face (PM ruling 2026-11-01; AIR clears the other heads it sits on)
+END_CLEAR = {6: "dr_sc_col"}
+# and where an edge's first screw stands further from its start corner: the band tube B08's screw by the bolt-line
+# tube keeps two rivnut-hole diameters and 0.5 to the band tube's square end (C09; it was 18.9 at dr_sc_clear)
+START_CLEAR = {2: "dr_sc_b08"}
 for _k in range(len(PANEL_LINES)):
     _u, _v = FL.meet(PANEL_LINES[_k - 1][1], PANEL_LINES[_k][1])
     OWN.append(("dr_pl%dx" % _k, _u, "mm", "calculation", "the inner face panel's screw line, corner %d, X" % _k))
@@ -317,6 +332,14 @@ for _k in range(len(PANEL_LINES)):
     OWN.append(("dr_pe%d" % _k, "sqrt((dr_pl%dx - dr_pl%dx) * (dr_pl%dx - dr_pl%dx) + (dr_pl%dz - dr_pl%dz) * "
                 "(dr_pl%dz - dr_pl%dz))" % (_j, _k, _j, _k, _j, _k, _j, _k), "mm", "calculation",
                 "the inner face panel's screw line along tube %s, its length" % PANEL_LINES[_k][0]))
+OWN.append(("dr_sc_b08", "ab_x - (pod_w / 2 - dr_skin_t - fr_wb) + 2 * fr_hole_rn + 0.5 mm", "mm", "calculation",
+            "the band tube B08's screw by the bolt-line tube from the screw line's corner: two rivnut-hole diameters and "
+            "0.5 from B08's square end at the bolt-line tube (C09's rule)"))
+OWN.append(("dr_sc_col", "(dr_pl0x - (dr_col_x0 - dr_felt_hole / 2 - dr_felt_web)) * dr_pe6 / (dr_pl0x - dr_pl6x)",
+            "mm", "calculation",
+            "the glass-edge tube B07's lowest screw from the screw line's bottom corner: its felt hole keeps "
+            "dr_felt_web of felt at the air column's edge (X dr_col_x0) and its washer stands clear of the column's "
+            "left face (PM ruling 2026-11-01)"))
 
 
 def panel_screws():
@@ -325,10 +348,51 @@ def panel_screws():
     out = []
     for k, (key, _l) in enumerate(PANEL_LINES):
         n, j = SCREWS_PER_EDGE[k], (k + 1) % len(PANEL_LINES)
+        c0, c1 = START_CLEAR.get(k, "dr_sc_clear"), END_CLEAR.get(k, "dr_sc_clear")
         for i in range(n):
-            t = "((dr_sc_clear + %d * (dr_pe%d - 2 * dr_sc_clear) / %d) / dr_pe%d)" % (i, k, n - 1, k)
+            t = "((%s + %d * (dr_pe%d - %s - %s) / %d) / dr_pe%d)" % (c0, i, k, c0, c1, n - 1, k)
             out.append((key, ("dr_pl%dx + (dr_pl%dx - dr_pl%dx) * %s" % (k, j, k, t),
                               "dr_pl%dz + (dr_pl%dz - dr_pl%dz) * %s" % (k, j, k, t))))
+    return out
+
+
+def felt_outline():
+    """The felt's outline as (x, z) expressions: the glass's slanted edges on the left, the air column's edge on the
+    right (X dr_col_x0), DT's underside (the soffit's underside) at the top; its foot where the glass-edge line meets
+    the column's edge."""
+    tip_z = "((fg_rc + dr_skin_t - fg_rnx * dr_col_x0) / fg_rnz)"
+    return [("dr_col_x0", tip_z), ("dr_col_x0", ZT), (L.diag_x(ZT, "dr_skin_t"), ZT), L.g_K("dr_skin_t")]
+
+
+def felt_holes(evf):
+    """[(x, z) expressions] of the panel's screws under the felt, each a closed felt hole dr_felt_hole across with at
+    least dr_felt_web of felt to the felt's edge; raises when a hole would break out of the felt, or when a washer
+    would reach the air column's left face (X dr_col_x0), so neither can come back unseen (PM rulings 2026-11-01).
+    evf: an expression's value in mm (Fusion's in the build, the offline evaluator in the drawing specs)."""
+    poly = [(evf(u), evf(v)) for u, v in felt_outline()]
+    r_h, web = evf("dr_felt_hole") / 2.0, evf("dr_felt_web")
+    x_col, r_w = evf("dr_col_x0"), evf("dr_hd_d") / 2.0
+    out, bad = [], []
+    for key, pt in panel_screws():
+        x, z = evf(pt[0]), evf(pt[1])
+        inside, d = False, 1e9
+        for i in range(len(poly)):
+            (x1, z1), (x2, z2) = poly[i], poly[(i + 1) % len(poly)]
+            if (z1 > z) != (z2 > z) and x < x1 + (z - z1) * (x2 - x1) / (z2 - z1):
+                inside = not inside
+            dx, dz = x2 - x1, z2 - z1
+            t = max(0.0, min(1.0, ((x - x1) * dx + (z - z1) * dz) / (dx * dx + dz * dz)))
+            d = min(d, ((x1 + t * dx - x) ** 2 + (z1 + t * dz - z) ** 2) ** 0.5)
+        if abs(x - x_col) < r_w + 2.0:
+            bad.append("%s's screw at X %.1f, Z %.1f: its washer comes within %.1f of the air column's left face "
+                       "(X %.0f)" % (key, x, z, abs(x - x_col) - r_w, x_col))
+        if inside or d < r_h:
+            if not inside or d < r_h + web - 0.01:
+                bad.append("%s's screw at X %.1f, Z %.1f: its felt hole leaves %.2f of felt to the felt's edge "
+                           "(%.1f needed)" % (key, x, z, (d - r_h) if inside else -(d + r_h), web))
+            out.append(pt)
+    if bad:
+        raise RuntimeError("the inner face panel's screws and the felt: " + "; ".join(bad))
     return out
 
 
@@ -534,7 +598,6 @@ def build(app):
 
     # ---- 351302 fixed back plate (aluminium, J-FRONT-01): a strip on the right wall's bolt line and the band behind
     # the soffit; 351305 the access panel between it and the air column comes off, so the air unit slides in (D-87)
-    tip_z = "((fg_rc + dr_skin_t - fg_rnx * dr_col_x0) / fg_rnz)"
     zs = ZB + " + dr_skin_t"
     c = comp("BACK")
     zband = ZT + " + dr_band_dz"
@@ -562,7 +625,9 @@ def build(app):
     c = comp("ACCESS")
     acc = [(L.right_x(zs, "dr_skin_t"), zs), ("dr_strip_x0", zs), ("dr_strip_x0", zband), (XL + " + dt_xr", zband),
            (XL + " + dt_xr", ZT), (L.diag_x(ZT, "dr_skin_t"), ZT), L.g_K("dr_skin_t")]
-    ya, yb_acc = YB + " - dr_back_t + dr_pnl_gap", YB + " - dr_back_t + dr_pnl_gap + dr_acc_t"
+    # placed from AIR's named value itself, so the face AIR builds on and the panel can never drift apart (an
+    # unused user parameter is not recomputed when the skeleton changes: the edit test caught it stale)
+    ya, yb_acc = "dr_acc_face_y - dr_acc_t", "dr_acc_face_y"
     f = prism(c, ("x", "z"), acc, "y", ya, yb_acc, "OUTLINE - DR INNER FACE PANEL (REMOVABLE, D-87, D-130)",
               "EXTRUDE - DR INNER FACE PANEL")
     ap = f.bodies.item(0)
@@ -583,36 +648,22 @@ def build(app):
 
     # ---- 351304 the felt, glued on the panel's left part: the face seen from inside, beside the air column, up to
     # the soffit's underside at DT's underside (Z 2120, D-61) (351303, the ACP inner panel, is cancelled: D-130)
-    inner = [("dr_col_x0", tip_z), ("dr_col_x0", ZT), (L.diag_x(ZT, "dr_skin_t"), ZT), L.g_K("dr_skin_t")]
+    inner = felt_outline()
     c = comp("FELT")
     f = prism(c, ("x", "z"), inner, "y", yb_acc, yb_acc + " + felt_t", "OUTLINE - DR INNER FACE PANEL FELT",
               "EXTRUDE - FELT 9")
     bodies["FELT"] = f.bodies.item(0)
     bodies["FELT"].name = "DR INNER FACE PANEL FELT 9"
-    # holes in the felt over the panel's screws, so no bare socket head shows on the room side; each plugged with felt
-    # cut from the same sheet (PM ruling 2026-11-01). Only where a hole meets the felt (near the bottom the felt is a
-    # sliver between the glass line and the column's edge)
-    fpoly = [(L.ev(design, u), L.ev(design, v)) for u, v in inner]
-    r_h = L.ev(design, "dr_felt_hole") / 2
-
-    def meets_felt(x, z):
-        n, ins = len(fpoly), False
-        for i in range(n):
-            (x1, z1), (x2, z2) = fpoly[i], fpoly[(i + 1) % n]
-            if (z1 > z) != (z2 > z) and x < x1 + (z - z1) * (x2 - x1) / (z2 - z1):
-                ins = not ins
-            dx, dz = x2 - x1, z2 - z1
-            t = max(0.0, min(1.0, ((x - x1) * dx + (z - z1) * dz) / (dx * dx + dz * dz)))
-            if ((x1 + t * dx - x) ** 2 + (z1 + t * dz - z) ** 2) ** 0.5 < r_h:
-                return True
-        return ins
-    felt_pts = [pt for _k, pt in panel_screws() if meets_felt(L.ev(design, pt[0]), L.ev(design, pt[1]))]
+    # closed holes in the felt over the panel's screws, so no bare socket head shows on the room side; each plugged
+    # with felt cut from the same sheet (PM rulings 2026-11-01); felt_holes() refuses a hole that breaks out
+    felt_pts = felt_holes(lambda e: L.ev(design, e))
     if felt_pts:
         sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0,
                        "HOLES - OVER THE PANEL'S SCREW HEADS, PLUGGED (%d)" % len(felt_pts), felt_pts, "dr_felt_hole")
         L.extrude_span(c, sk, "y", yb_acc + " - 1 mm", yb_acc + " + felt_t + 1 mm", CUT, [bodies["FELT"]],
                        "CUT - FELT HOLES OVER THE SCREW HEADS", profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
-    print("FELT HOLES|%d over the panel's %d screws" % (len(felt_pts), len(panel_screws())))
+    print("FELT HOLES|%d closed holes %.0f over the panel's %d screws, at least %.0f of felt to its edge" % (
+        len(felt_pts), L.ev(design, "dr_felt_hole"), len(panel_screws()), L.ev(design, "dr_felt_web")))
 
     # ---- 848013 the panel's seal (D-130, joints register H-34): one loop on the frame's tubes along the screw line,
     # 4.0 very soft foam squeezed to the 2.36 stop gap; cut round each stop washer when fitted (Joints, option (a))
@@ -877,6 +928,7 @@ def export_all(app):
     gt = "general tolerance ISO 2768-m"
     seal_m = sum(ev("dr_pe%d" % k) for k in range(len(PANEL_LINES))) / 1000.0
     n_screws = len(panel_screws())
+    n_felt = len(felt_holes(ev))
     # one row per tube part (D-120, Control's numbers in #232): its copies counted in the quantity
     mparts = FL.member_parts(root_dir, FRAME_PN, MP.DR_MEMBERS)
     member_rows, seen = [], set()
@@ -923,17 +975,21 @@ def export_all(app):
          "PM rulings 2026-11-01 (the column's hook studs, the panel carries the 10 kg column)",
          "one removable inner face panel (D-130) over the opening the air unit goes in by: DXF " + DXF_FLAT["ACCESS"] +
          "; on stops 2.36 off the frame (an 838004 washer on each rivnut head), sealed all round by 848013, held by "
-         "M6 x 16 socket heads 838001 with washers 838004 about 400 apart into rivnuts 838003 in the frame's 1.5 mm "
-         "tube walls (Joints' counts); 2 holes 9.53 +0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 with the "
-         "column's 2 hook studs (J-AIR-02); its room-side face is AIR's named value dr_acc_face_y; ships loose with "
-         "its screws and felt and goes on after the air unit; for service the column comes off, then the panel drops "
-         "40 and comes out under the soffit (PM rulings 2026-11-01)"),
+         "%d M6 x 16 socket heads 838001 (ISO 4762, the one 5 mm key on site), each on a plain washer 12 (ISO 7089; "
+         "Joints numbers it), about 400 apart into rivnuts 838003 in the frame's tube walls (Joints' counts); the "
+         "heads stand 7.6 proud of its room face and AIR clears the ones it covers (its supply cartridge lifted 6, "
+         "reliefs at the soffit); the glass-edge tube's lowest screw stands 10 left of the air column's edge; 2 holes "
+         "9.53 +0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 with the column's 2 hook studs (J-AIR-02); its "
+         "room-side face is AIR's named value dr_acc_face_y; ships loose with its screws and felt and goes on after "
+         "the air unit; for service the column comes off, then the panel drops 40 and comes out under the soffit (PM "
+         "rulings 2026-11-01)" % n_screws),
         ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (laser-cut PET felt sheet, no drawing: D-128, its DXF "
          "matches its STEP), glued to 351305 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
          "calculation (CAD, 1.8 kg/m2)",
          "DRAFT; emission certificate HOLD", "D-31; hardware selection A3",
-         "DXF " + DXF_FLAT["FELT"] + "; holes 22 over the panel's screw heads under it, each plugged with felt cut from "
-         "the same sheet (PM ruling 2026-11-01: no bare socket heads on the room side)"),
+         "DXF " + DXF_FLAT["FELT"] + "; %d closed holes %.0f over the panel's screw heads under it, at least %.0f of "
+         "felt to its edge, each plugged with felt cut from the same sheet (PM rulings 2026-11-01: no bare socket "
+         "heads on the room side)" % (n_felt, ev("dr_felt_hole"), ev("dr_felt_web"))),
         ("848013", PARTS["SEAL"][1], PARTS["SEAL"][2], 1, "bought by length",
          "very soft foam strip with PSA, 4.0 thick, about 8 wide (product HOLD-19)", 0.02,
          "assumption (soft foam, about 4 g/m)", "HOLD: product (HOLD-19)", "joints register H-34; D-130",
