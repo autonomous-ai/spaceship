@@ -50,6 +50,8 @@ import ceiling_build as CB  # noqa: E402  (tested helpers: sketches, boxes, join
 importlib.reload(CB)
 import air_model as A  # noqa: E402
 importlib.reload(A)
+import air_checks as K  # noqa: E402
+importlib.reload(K)
 
 DOC_NAME = "610000_%s_AIR_CAD" % A.REV
 F3D_REL = "v2/01-CAD-Native/air/%s.f3d" % DOC_NAME
@@ -227,31 +229,73 @@ def cyl_body(comp, name, bx, ctx):
     return f.bodies.item(0)
 
 
+def cyl_join(comp, body, name, cx, cy, d, z0, z1, ctx):
+    """A round piece (a stud's or screw's shank) joined onto body: a circle of diameter d at (cx, cy) on a plane at
+    z0, extruded to z1 (expressions in the component's own frame)."""
+    plane = CB.offset_plane(comp, comp.xYConstructionPlane, z0, "PLANE - %s Z0" % name)
+    sk = comp.sketches.add(plane)
+    sk.name = "OUTLINE - " + name
+    c = sk.sketchCurves.sketchCircles.addByCenterRadius(
+        adsk.core.Point3D.create(ctx.ev(cx) * CB.MM, ctx.ev(cy) * CB.MM, 0), ctx.ev(d) / 2 * CB.MM)
+    g = c.centerSketchPoint.geometry
+    sk.sketchDimensions.addDiameterDimension(c, adsk.core.Point3D.create(g.x + 1, g.y + 1, 0)).parameter.expression = d
+    CB.dim_point(sk, c.centerSketchPoint, cx, cy, ctx)
+    if not sk.isFullyConstrained:
+        raise RuntimeError("sketch not fully constrained: OUTLINE - " + name)
+    ei = comp.features.extrudeFeatures.createInput(sk.profiles.item(0), JOIN)
+    ei.setDistanceExtent(False, CB.vi("(%s) - (%s)" % (z1, z0)))
+    ei.participantBodies = [body]
+    f = comp.features.extrudeFeatures.add(ei)
+    f.name = "EXTRUDE - " + name
+    return f
+
+
+def place_turned(parent, occ, axis, xyz, name, ctx):
+    """A copy turned 180 deg about the pod's Y or Z axis (D-120: one part, turned): a rigid joint takes the copy's
+    origin to xyz; which of the joint's flip and angle gives the turn is read back from the copy's transform, not
+    assumed (the ceiling's turned-copy probe does the same), and a turn none gives stops the build."""
+    j = CB.place(parent, occ, xyz, name, ctx)
+    want = {"y": ((-1, 0, 0), (0, 1, 0), (0, 0, -1)), "z": ((-1, 0, 0), (0, -1, 0), (0, 0, 1))}[axis]
+    tried = []
+    for flip, angle in ((False, "180 deg"), (True, "0 deg"), (True, "180 deg")):
+        j.isFlipped = flip
+        j.angle.expression = angle
+        m = occ.transform2
+        got = tuple(tuple(round(m.getCell(r, c), 6) for c in range(3)) for r in range(3))
+        tried.append((flip, angle, got))
+        if all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
+            print("%s: turned about %s by the joint's flip %s, angle %s" % (name, axis.upper(), flip, angle))
+            return j
+    raise RuntimeError("no joint flip and angle turns %s about %s: %s" % (name, axis, tried))
+
+
 def build_cartridge(parent, design, ctx, bx, along, tag):
     """Casing (2 mm tube open at both ends) and three 50 mm layers parallel to the
     front face, with two passages between them. bx: outer box; along: 'z' or 'x'."""
     occ, comp = new_comp(parent, "cart")
     comp.name = comp.name + " (%s)" % tag
     x0, x1, y0, y1, z0, z1 = bx
-    casing = CB.box_body(comp, "CARTRIDGE %s" % tag, bx, ctx)     # the casing carries the layout name
-    hollow_axis(comp, casing, along, "cart_t", "CARTRIDGE %s CASING" % tag)
+    _co, cas = new_comp(comp, "casing")
+    casing = CB.box_body(cas, "CARTRIDGE %s" % tag, bx, ctx)     # the casing carries the layout name
+    hollow_axis(cas, casing, along, "cart_t", "CARTRIDGE %s CASING" % tag)
+    set_material(design, cas, "casing")
+    # D-120: the three layers are one part (611302), built once in its own frame and placed three times
+    lay_comp = None
     for k in range(3):
         ly0 = "%s + cart_t + %d * (lay_t + pass_w)" % (y0, k)
         if along == "z":
             lb = ("%s + cart_t" % x0, "%s - cart_t" % x1, ly0, "%s + lay_t" % ly0, z0, z1)
         else:
             lb = (x0, x1, ly0, "%s + lay_t" % ly0, "%s + cart_t" % z0, "%s - cart_t" % z1)
-        CB.box_body(comp, "LAYER %d %s" % (k + 1, tag), lb, ctx)
-    # materials: casing aluminium, layers absorbent
-    al = A.MATERIALS["al"]
-    py = A.MATERIALS["pyro"]
-    for mk, (name, density) in (("al", al), ("pyro", py)):
-        if design.materials.itemByName(name) is None:
-            lib = adsk.core.Application.get().materialLibraries.itemByName("Fusion Material Library")
-            m = design.materials.addByCopy(lib.materials.itemByName("Aluminum"), name)
-            adsk.core.FloatProperty.cast(m.materialProperties.itemById("structural_Density")).value = density
-    for b in comp.bRepBodies:
-        b.material = design.materials.itemByName(al[0] if b.name.startswith("CARTRIDGE") else py[0])
+        if lay_comp is None:
+            lo, lay_comp = new_comp(comp, "layer")
+            CB.box_body(lay_comp, "LAYER 50 %s" % tag, ("0 mm", "(%s) - (%s)" % (lb[1], lb[0]), "0 mm",
+                                                         "(%s) - (%s)" % (lb[3], lb[2]), "0 mm",
+                                                         "(%s) - (%s)" % (lb[5], lb[4])), ctx)
+            set_material(design, lay_comp, "layer")
+        else:
+            lo = comp.occurrences.addExistingComponent(lay_comp, adsk.core.Matrix3D.create())
+        CB.place(comp, lo, (lb[0], lb[2], lb[4]), "LAYER %d %s" % (k + 1, tag), ctx)
     return occ, comp
 
 
@@ -259,12 +303,13 @@ FOLDER = "Default Project/FocusPod v2"
 # part-only designs for the drawings (D-89 parts 1 to 4: assemblies, folded, machined and bonded
 # parts keep drawings); each scope lists layout keys, or a special item in capitals
 SCOPE_KEYS = {
-    "column": ["col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "kick", "hub", "col_ang",
-               "CART:SUPPLY"],
+    "column": ["col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "col_fill_l", "kick",
+               "kick_l", "hub", "col_ang", "col_ang_b", "CART:SUPPLY"],
     "soffit": ["sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_door", "sof_end", "sof_fill",
-               "egrille", "stud", "hinge", "latch", "lock", "CART:EXHAUST", "BOX:EXHAUST"],
+               "sof_fill_f", "egrille", "stud", "hinge", "latch", "lock", "CART:EXHAUST", "BOX:EXHAUST"],
     "cart": ["CART:SUPPLY"], "sbox": ["BOX:SUPPLY", "trans", "riser", "rtrans"], "ebox": ["BOX:EXHAUST"],
-    "col_ang": ["col_ang"], "casing": ["CASING"], "box": ["BOXCASE:EXHAUST"], "box_s": ["BOXCASE:SUPPLY"],
+    "col_ang": ["ANGLE:FL"], "col_ang_b": ["col_ang_b"], "casing": ["CASING"], "box": ["BOXCASE:EXHAUST"],
+    "box_s": ["BOXCASE:SUPPLY"], "blk_e": ["blk_e"], "blk_s": ["blk_s"],
     "riser": ["riser"], "sleeve": ["sleeve"], "col_front": ["col_front"], "col_left": ["col_left"],
     "sof_under": ["sof_under"], "sof_under_r": ["sof_under_r"], "sof_under_f": ["sof_under_f"], "sof_front": ["sof_front"],
 }
@@ -352,6 +397,9 @@ def build_scope(root, design, ctx, scope):
             tag = item.split(":")[1]
             casing("%s FAN BOX" % tag, "box" if tag == "EXHAUST" else "box_s")
             if item.startswith("BOX:"):
+                for k, name, _bx in A.fan_box_inner():      # D-121: the bulkhead and the linings
+                    if tag in name:
+                        body(name)
                 fan_comp = None
                 for fname, fx, fy, fz in [f for f in A.fan_points() if f[0].startswith(tag)]:
                     if fan_comp is None:
@@ -361,19 +409,13 @@ def build_scope(root, design, ctx, scope):
                     else:
                         fo = root.occurrences.addExistingComponent(fan_comp, adsk.core.Matrix3D.create())
                     CB.place(root, fo, (fx, fy, fz), fname, ctx)
-        elif item == "col_ang":
-            for tag in ("FL", "FR", "BL"):
+        elif item in ("col_ang", "col_ang_b") or item.startswith("ANGLE:"):
+            # the column's angles: the front pair (col_ang), the back one (col_ang_b), or one angle for its part design
+            tags = {"col_ang": ("FL", "FR"), "col_ang_b": ("BL",)}.get(item) or (item.split(":")[1],)
+            for tag in tags:
                 x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE %s" % tag][1]
-                if tag == "FL":
-                    pts = [(x0, y1), (x1, y1), (x1, "%s - ang_t" % y1), ("%s + ang_t" % x0, "%s - ang_t" % y1),
-                           ("%s + ang_t" % x0, y0), (x0, y0)]
-                elif tag == "FR":
-                    pts = [(x0, y1), (x1, y1), (x1, y0), ("%s - ang_t" % x1, y0), ("%s - ang_t" % x1, "%s - ang_t" % y1),
-                           (x0, "%s - ang_t" % y1)]
-                else:
-                    pts = [(x0, y0), (x1, y0), (x1, "%s + ang_t" % y0), ("%s + ang_t" % x0, "%s + ang_t" % y0),
-                           ("%s + ang_t" % x0, y1), (x0, y1)]
-                made["COLUMN ANGLE %s" % tag] = poly_xy_extrude(root, "COLUMN ANGLE %s" % tag, pts, z0, z1, ctx)
+                made["COLUMN ANGLE %s" % tag] = poly_xy_extrude(root, "COLUMN ANGLE %s" % tag,
+                                                                A.angle_pts(tag, x0, x1, y0, y1), z0, z1, ctx)
         else:
             for k, name, _bx in A.layout():
                 if k != item:
@@ -502,40 +544,87 @@ def run(_context):
 
         def names_of(key):
             return [n for k, n, _b in A.layout() if k == key]
+        unit_of = {name: bx for _k, name, bx in A.units()}
+
+        def rel(e, o):
+            return "(%s) - (%s)" % (e, o)
+
+        def box_maker(body_name):
+            def make(comp, _n, u):
+                return CB.box_body(comp, body_name, ("0 mm", rel(u[1], u[0]), "0 mm", rel(u[3], u[2]), "0 mm",
+                                                     rel(u[5], u[4])), ctx)
+            return make
+
+        def stud_maker(body_name):
+            def make(comp, _n, u):        # D-120: the head with its shank joined, one body
+                head = CB.box_body(comp, body_name, ("0 mm", "stud_d", "0 mm", "stud_d", "0 mm", "hd_h"), ctx)
+                cyl_join(comp, head, body_name + " SHANK", "stud_d / 2", "stud_d / 2", "6 mm", "hd_h", rel(u[5], u[4]), ctx)
+                return head
+            return make
+
+        def copies(parent, key, unit_names, maker, setup=None):
+            """One part placed as copies (D-120): made once in its own frame (the first unit's low corner at the
+            origin) and each copy joined to its unit's low corner; the units must all be the part's size."""
+            us = [unit_of[n] for n in unit_names]
+            dims = [[ctx.ev(rel(u[2 * i + 1], u[2 * i])) for i in range(3)] for u in us]
+            if any(max(abs(a - b) for a, b in zip(d, dims[0])) > 1e-6 for d in dims):
+                raise RuntimeError("%s: its copies differ in size: %s" % (key, dims))
+            comp = None
+            for n, u in zip(unit_names, us):
+                if comp is None:
+                    if setup is None:
+                        occ, comp = new_comp(parent, key)
+                    else:
+                        occ = parent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
+                        comp = occ.component
+                        setup(comp)
+                    made[n] = (comp, maker(comp, n, u))
+                    set_material(design, comp, "riser" if key == "lock" else key)
+                else:
+                    occ = parent.occurrences.addExistingComponent(comp, adsk.core.Matrix3D.create())
+                CB.place(parent, occ, (u[0], u[2], u[4]), n, ctx)
+            return comp
+
+        def units_of(key):
+            return [n for k, n, _b in A.units() if k == key]
         # ---- column: foot plate, faces, kick grille, plenum plates, fill, hub zone, angles, cartridge
         _o, col = new_comp(root, "column")
-        for key in ("col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "kick", "hub"):
+        for key in ("col_foot", "col_front", "col_left", "col_side_lo", "col_side_hi", "col_fill", "col_fill_l", "kick",
+                    "kick_l", "hub"):
             comp_with(col, key, names_of(key))
-        _o2, ang = new_comp(col, "col_ang")
-        for tag in ("FL", "FR", "BL"):
-            x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE %s" % tag][1]
-            if tag == "FL":
-                pts = [(x0, y1), (x1, y1), (x1, "%s - ang_t" % y1), ("%s + ang_t" % x0, "%s - ang_t" % y1),
-                       ("%s + ang_t" % x0, y0), (x0, y0)]
-            elif tag == "FR":
-                pts = [(x0, y1), (x1, y1), (x1, y0), ("%s - ang_t" % x1, y0), ("%s - ang_t" % x1, "%s - ang_t" % y1),
-                       (x0, "%s - ang_t" % y1)]
-            else:
-                pts = [(x0, y0), (x1, y0), (x1, "%s + ang_t" % y0), ("%s + ang_t" % x0, "%s + ang_t" % y0),
-                       ("%s + ang_t" % x0, y1), (x0, y1)]
-            made["COLUMN ANGLE %s" % tag] = (ang, poly_xy_extrude(ang, "COLUMN ANGLE %s" % tag, pts, z0, z1, ctx))
+        # the two front angles: one part (611103), the left built in its own frame, the right its copy turned about Y
+        x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE FL"][1]
+        occ_fl, ang = new_comp(col, "col_ang")
+        pts = [(rel(px, x0), rel(py, y0)) for px, py in A.angle_pts("FL", x0, x1, y0, y1)]
+        made["COLUMN ANGLE FL"] = (ang, poly_xy_extrude(ang, "COLUMN ANGLE FRONT", pts, "0 mm", rel(z1, z0), ctx))
         set_material(design, ang, "col_ang")
+        CB.place(col, occ_fl, (x0, y0, z0), "COLUMN ANGLE FL", ctx)
+        fx0, fx1, fy0, fy1, fz0, fz1 = lay["COLUMN ANGLE FR"][1]
+        occ_fr = col.occurrences.addExistingComponent(ang, adsk.core.Matrix3D.create())
+        place_turned(col, occ_fr, A.TURNED["col_ang"], (fx1, fy0, fz1), "COLUMN ANGLE FR", ctx)
+        # the back-left angle (611109), in place, with its keyholes (features below)
+        x0, x1, y0, y1, z0, z1 = lay["COLUMN ANGLE BL"][1]
+        _ob, angb = new_comp(col, "col_ang_b")
+        made["COLUMN ANGLE BL"] = (angb, poly_xy_extrude(angb, "COLUMN ANGLE BL", A.angle_pts("BL", x0, x1, y0, y1),
+                                                         z0, z1, ctx))
+        set_material(design, angb, "col_ang_b")
         build_cartridge(col, design, ctx, lay["CARTRIDGE SUPPLY"][1], "z", "SUPPLY")
         print("step column done")
         # ---- soffit (ships with its exhaust fan box fitted, D-87): underside sections, face,
         #      rails, end plate, fill, grille, hanging and service hardware envelopes
         _o, sof = new_comp(root, "soffit")
         for key in ("sof_under", "sof_under_r", "sof_under_f", "sof_front", "sof_rail_d", "sof_rail_r", "sof_door",
-                    "sof_end", "sof_fill", "egrille", "stud", "hinge", "latch"):
+                    "sof_end", "sof_fill", "sof_fill_f", "egrille"):
             comp_with(sof, key, names_of(key))
-        lo = sof.occurrences.addNewComponent(adsk.core.Matrix3D.create())
-        lk = lo.component
+        copies(sof, "stud", units_of("stud"), stud_maker("HANGER STUD"))
+        copies(sof, "hinge", units_of("hinge"), box_maker("HINGE ENVELOPE"))
+        copies(sof, "latch", units_of("latch"), box_maker("LATCH ENVELOPE"))
         hp = A.HARDWARE["lock"]
-        lk.name, lk.partNumber = "%s %s" % (hp[0], hp[1]), hp[0]
-        lk.description = "%s | %s | PI | %s | captive retainer HOLD (joints register)" % (hp[1], hp[2], A.REV)
-        for n in names_of("lock"):
-            put(lk, n)
-        set_material(design, lk, "riser")      # steel, as the riser
+
+        def lock_setup(lk):
+            lk.name, lk.partNumber = "%s %s" % (hp[0], hp[1]), hp[0]
+            lk.description = "%s | %s | PI | %s | captive retainer HOLD (joints register)" % (hp[1], hp[2], A.REV)
+        copies(sof, "lock", units_of("lock"), stud_maker("LOCK SCREW"), setup=lock_setup)   # steel, as the riser
         build_cartridge(sof, design, ctx, lay["CARTRIDGE EXHAUST"][1], "x", "EXHAUST")
         print("step soffit done")
         # ---- fan boxes with their fans; the supply box joined with the riser and transitions (D-87)
@@ -551,6 +640,13 @@ def run(_context):
             hollow_open(casing, b, A.FAN_BOX_OPEN[bname], "fbox_t", bname)
             set_material(design, casing, ck)
             tag = "EXHAUST" if key == "ebox" else "SUPPLY"
+            if tag == "EXHAUST":
+                comp_with(fb, "blk_e", names_of("blk_e"))
+                copies(fb, "lin_es", units_of("lin_es"), box_maker("FAN BOX LINING EXHAUST SIDE"))
+                comp_with(fb, "lin_ee", names_of("lin_ee"))
+            else:
+                comp_with(fb, "blk_s", names_of("blk_s"))
+                copies(fb, "lin_s", units_of("lin_s"), box_maker("FAN BOX LINING SUPPLY END"))
             for fname, fx, fy, fz in [f for f in fans if f[0].startswith(tag)]:
                 if fan_comp is None:
                     fo, fan_comp = new_comp(fb, "fan")
@@ -593,22 +689,9 @@ def run(_context):
         for h in hits:
             print("CLASH|%s|%s|%s mm3" % h)
         # every layout body where the layout says (fans checked by their centres)
-        off, worst = [], 0.0
-        got = {}
-        for n, b in bodies:
-            got.setdefault(n.split("/")[-1], []).append(CB.body_box(b))
-        for key, name, bx in A.layout():
-            want = [A.ev(ctx.vals, e) for e in bx]
-            want = [want[0], want[2], want[4], want[1], want[3], want[5]]
-            have = got.get(name)
-            if not have:
-                off.append((name, "missing"))
-                continue
-            d = min(max(abs(p - q) for p, q in zip(h, want)) for h in have)
-            worst = max(worst, d)
-            if d > 0.05:
-                off.append((name, round(d, 3)))
-        print("position check: %d layout bodies, worst %.3f mm, off %s" % (len(A.layout()), worst, off or "none"))
+        worst, off = K.place_check(K.bodies_by_number(root), ctx.vals)
+        print("position check: %d units (each copy, each joined stud), worst %.3f mm, off %s" % (
+            len(A.units()), worst, off or "none"))
         for n, b in bodies:
             print("BODY|%s|%s" % (n, CB.body_box(b)))
         for occ in root.allOccurrences:

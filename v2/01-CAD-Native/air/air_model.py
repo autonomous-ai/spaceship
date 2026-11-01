@@ -439,6 +439,45 @@ def cutouts():
     return out
 
 
+# D-120: parts placed as copies of one component, and the parts whose layout boxes are one body together (a stud's or a
+# screw's head and shank, joined): {key: how the layout's names group into one copy}
+JOINED = {"stud": (" HEAD", " SHANK"), "lock": (" HEAD", " SHANK")}
+COPIES = {"stud", "lock", "hinge", "latch", "lin_es", "lin_s", "layer"}
+TURNED = {"col_ang": "y"}       # the right front angle is the left one turned about Y (the angle runs the full height)
+BODY_KEY = {"cart": "casing"}   # a layout box whose body belongs to another part: the cartridge's is its casing's
+
+
+def angle_pts(tag, x0, x1, y0, y1):
+    """A column corner angle's L outline in plan: the front ones (FL, FR) with their short leg along X at the face's
+    back (Y y1) and the long leg along Y at the column's outer side; BL with its legs on the door side and the left."""
+    if tag == "FL":
+        return [(x0, y1), (x1, y1), (x1, "%s - ang_t" % y1), ("%s + ang_t" % x0, "%s - ang_t" % y1),
+                ("%s + ang_t" % x0, y0), (x0, y0)]
+    if tag == "FR":
+        return [(x0, y1), (x1, y1), (x1, y0), ("%s - ang_t" % x1, y0), ("%s - ang_t" % x1, "%s - ang_t" % y1),
+                (x0, "%s - ang_t" % y1)]
+    return [(x0, y0), (x1, y0), (x1, "%s + ang_t" % y0), ("%s + ang_t" % x0, "%s + ang_t" % y0),
+            ("%s + ang_t" % x0, y1), (x0, y1)]
+
+
+def units():
+    """[(key, unit name, box expressions)]: each copy of each part as one box, for the position checks; a joined
+    part's head and shank make one unit (the head is wider than the shank, so the unit is the head's plan and runs
+    from the head's underside to the shank's top)."""
+    out, held = [], {}
+    for key, name, bx in layout():
+        if key in JOINED:
+            head, shank = JOINED[key]
+            unit = name[:-len(head)] if name.endswith(head) else name[:-len(shank)]
+            held.setdefault((key, unit), {})["head" if name.endswith(head) else "shank"] = bx
+            continue
+        out.append((key, name, bx))
+    for (key, unit), parts in held.items():
+        h, sh = parts["head"], parts["shank"]
+        out.append((key, unit, (h[0], h[1], h[2], h[3], h[4], sh[5])))
+    return out
+
+
 def fan_box_inner():
     """D-121 (the Air Engineer's layout, PM ruling): each fan box's 2 mm bulkhead and its 50 mm linings, inside the
     3 mm casing. Exhaust: the bulkhead closes the box's open top and the fans hang under it, blowing straight into

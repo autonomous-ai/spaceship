@@ -194,6 +194,45 @@ class FanBoxInside(unittest.TestCase):
             self.assertAlmostEqual(A.ev(V, a[3]), b[5])
 
 
+class D120Copies(unittest.TestCase):
+    """D-120 (every part one component, identical parts placed as copies): the copies of each part are the same
+    size; a stud or screw is one unit (head and shank joined); the right front corner angle is the left one turned
+    180 deg about Y, sent to (its x1, y0, z1): every corner of the left angle's outline lands on the right one's."""
+
+    def test_copies_same_size(self):
+        size = {}
+        for k, n, bx in A.units():
+            if k in A.COPIES:
+                b = [A.ev(V, e) for e in bx]
+                size.setdefault(k, []).append((round(b[1] - b[0], 6), round(b[3] - b[2], 6), round(b[5] - b[4], 6)))
+        self.assertEqual(sorted(size), ["hinge", "latch", "lin_es", "lin_s", "lock", "stud"])
+        for k, sizes in size.items():
+            self.assertEqual(len(set(sizes)), 1, "%s: %s" % (k, sizes))
+        self.assertEqual({k: len(v) for k, v in size.items()},
+                         {"hinge": 4, "latch": 4, "lin_es": 2, "lin_s": 2, "lock": 2, "stud": 4})
+
+    def test_joined_units(self):
+        for k, n, bx in A.units():
+            if k not in A.JOINED:
+                continue
+            u = [A.ev(V, e) for e in bx]
+            head, shank = b6(n + " HEAD"), b6(n + " SHANK")
+            self.assertEqual(u, [head[0], head[1], head[2], head[3], head[4], shank[5]], n)
+            self.assertTrue(head[0] <= shank[0] and shank[1] <= head[1] and head[2] <= shank[2] and shank[3] <= head[3], n)
+
+    def test_right_angle_is_the_left_turned(self):
+        fl, fr = b6("COLUMN ANGLE FL"), b6("COLUMN ANGLE FR")
+        pts_l = [(A.ev(V, x), A.ev(V, y)) for x, y in A.angle_pts("FL", *[("%r mm" % v) for v in (fl[0], fl[1], fl[2], fl[3])])]
+        pts_r = [(A.ev(V, x), A.ev(V, y)) for x, y in A.angle_pts("FR", *[("%r mm" % v) for v in (fr[0], fr[1], fr[2], fr[3])])]
+        # the left angle in its own frame (low corner at the origin), turned about Y, sent to (x1, y0, z1) of the right
+        moved = {(round(-(x - fl[0]) + fr[1], 6), round((y - fl[2]) + fr[2], 6)) for x, y in pts_l}
+        self.assertEqual(moved, {(round(x, 6), round(y, 6)) for x, y in pts_r})
+        self.assertAlmostEqual(fl[5] - fl[4], fr[5] - fr[4])          # the same height, so the turn's -z fits
+
+    def test_cartridge_body_is_its_casing(self):
+        self.assertEqual(A.PARTS[A.BODY_KEY["cart"]][0], "611301")
+
+
 class D87(unittest.TestCase):
     """PM rulings 2026-11-01: hooks, locks, the column foot and 5 mm off the linings."""
 
