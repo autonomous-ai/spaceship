@@ -644,23 +644,11 @@ def cross_member(parent, ctx):
 
 
 def place_turned(parent, occ, key, name, ctx):
-    """C2's copy of a common member (M.TURNED): a rigid joint takes the copy's origin to M.turned_origin and turns
-    it 180 deg about the pod's Y axis (the side member, upside down) or Z axis (cross member 1, end for end). Which
-    of the joint's flip and angle gives that turn is read back from the copy's transform, not assumed; a turn none
-    of them gives stops the build."""
-    pt = place_point(parent, M.turned_origin(key), name, ctx)
+    """C2's copy of a common member (M.TURNED): its origin to M.turned_origin, turned 180 deg about the pod's Y axis
+    (the side member, upside down) or Z axis (cross member 1, end for end), by place_rotated (TURN_METHOD), read back."""
     want = {"y": ((-1, 0, 0), (0, 1, 0), (0, 0, -1)), "z": ((-1, 0, 0), (0, -1, 0), (0, 0, 1))}[M.TURNED[key]]
-    tried = []
-    for flip, angle in ((False, "180 deg"), (True, "0 deg"), (True, "180 deg")):
-        j = joint_to_point(parent, occ, pt, name, flip, angle)
-        m = occ.transform2
-        got = tuple(tuple(round(m.getCell(r, c), 6) for c in range(3)) for r in range(3))
-        tried.append((flip, angle, got))
-        if all(abs(got[r][c] - want[r][c]) < 1e-6 for r in range(3) for c in range(3)):
-            print("%s: turned about %s by the joint's flip %s, angle %s" % (name, M.TURNED[key].upper(), flip, angle))
-            return j
-        j.deleteMe()           # a fresh joint for the next setting (a made joint can't be edited)
-    raise RuntimeError("no joint flip and angle turns %s about %s: %s" % (name, M.TURNED[key], tried))
+    return place_rotated(parent, occ, M.turned_origin(key), want, name, ctx,
+                         [(False, "180 deg"), (True, "0 deg"), (True, "180 deg")])
 
 
 def build_frame_members(fcomp, half, ctx):
