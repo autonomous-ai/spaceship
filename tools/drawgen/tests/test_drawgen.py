@@ -288,8 +288,10 @@ def test_clash_check_catches_a_line_through_text():
 
 
 def test_notes_name_no_maker():
-    """The Lead's ruling (2026-11-01): a note names the source, never an agent, a role or a script as its maker; the
-    title block's CREATED BY Autonomous is the one place a maker is named. The read-back fails any other."""
+    """The Lead's rulings (2026-11-01, #302): a note names the source, never an agent, a role, a script or tool, a
+    team or a person as its maker; a process may be named ("holes made by drilling after welding", "made by
+    bending the flange", as the steel-frame and bond notes say). The title block's CREATED BY Autonomous is the one
+    maker field. The read-back fails only the first kind, by the mechanical check's own rule."""
     from sheet import Sheet
     d = os.path.join(TMP, "maker")
     os.makedirs(d, exist_ok=True)
@@ -298,9 +300,13 @@ def test_notes_name_no_maker():
     sh.text(300, 276, "Autonomous", 2.5)
     sh.text(30, 100, "Source: the STEP. Made by tools/drawgen (D-112) from that STEP.", 2.5)
     sh.text(30, 90, "From that STEP: regenerate it, never edit the PDF.", 2.5)
+    sh.text(30, 80, "Holes made by drilling after welding; deburr both sides.", 2.5)
+    sh.text(30, 70, "The flange is made by bending, inside radius 1.", 2.5)
+    sh.text(30, 60, "Faces prepared by abrasive pad before bonding.", 2.5)
+    sh.text(30, 50, "Drawn by the WALL Engineer.", 2.5)
     sh.save(os.path.join(d, "m.pdf"))
     found = readback.note_makers(fitz.open(os.path.join(d, "m.pdf")))
-    assert found == [(1, "Made by tools/drawgen")], found
+    assert len(found) == 2 and "tools/drawgen" in found[0][1] and "Engineer" in found[1][1], found
 
 
 def test_long_tube_keeps_its_scale():
@@ -459,12 +465,16 @@ def test_long_words_break_at_separators():
 
 
 def test_a_repeated_part_is_drawn_once():
-    """A part an assembly STEP holds several times (BASE's glide doubler 111601, 5 in the band assembly) loads
-    as one occurrence, with the count kept for the drawing's quantity note and its check against the list."""
+    """A part an assembly STEP holds several times (BASE's glide doubler 111601 in the band assembly) loads as one
+    occurrence, with the count kept for the drawing's quantity note and its check against the list. The count is
+    BASE's parts list's per-pod total (5 before BASE's D-129 P02, 9 after), so the test follows BASE's model."""
+    import csv
     import geom
-    bodies, unit = geom.load_part(os.path.join(drawgen.inputs.REPO, "v2", "03-Manufacturing", "base",
-                                               "110000_P01_BASE_STEP.step"), "111601")
-    assert len(bodies) == 1 and unit["occurrences"] == 5, (len(bodies), unit)
+    base = os.path.join(drawgen.inputs.REPO, "v2", "03-Manufacturing", "base")
+    with open(os.path.join(base, "110000_P01_BASE_BOM.csv"), newline="", encoding="utf-8") as fh:
+        want = sum(int(float(r["qty_per_pod"])) for r in csv.DictReader(fh) if r["part_number"] == "111601")
+    bodies, unit = geom.load_part(os.path.join(base, "110000_P01_BASE_STEP.step"), "111601")
+    assert want > 1 and len(bodies) == 1 and unit["occurrences"] == want, (want, len(bodies), unit)
 
 
 def main():
