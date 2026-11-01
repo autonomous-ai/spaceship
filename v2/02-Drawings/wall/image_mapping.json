@@ -1,6 +1,6 @@
 {
-  "sheet": "A2",
-  "width_at_scale_1_mm": null,
-  "anchor": null,
-  "source": "Fusion Engineer 2's Images.insert measurement (#67): an image inserted at scale 1 comes out a fixed width, set by the sheet (58.02 mm on A3), anchored at its lower-left corner. The A2 width isn't measured yet; until it is, the drawings get no note images (an inserted image can't be moved or deleted), and an images-only run adds them afterwards."
+ "sheet": "A2",
+ "width_at_scale_1_mm": 58.02,
+ "anchor": "lower-left",
+ "source": "Fusion Engineer 2's Images.insert measurement (tools/fusion/sheet_notes.py on #67's branch): at scale 1 every image is 58.02 mm wide whatever its pixels, height by aspect, its lower-left corner at the given point; measured on A3, then on A1 and A2 in the GA sheet 1 session (2026-10-31): the width doesn't depend on the sheet. Used on A2 for the frame bake-off the PM asked for (2026-11-01)."
 }
