@@ -150,12 +150,17 @@ def notched_outline(x0, x1, y0, y1, cuts):
 
 
 def rib_blank(v, k=0.44):
-    """Hat rib 0.5 mm: flange, web, crown, web, flange with four 90 degree bends (r = t)."""
+    """Hat rib 0.5 mm: flange, web, crown, web, flange with four 90 degree bends (r = t). The hat's bends alternate:
+    a flange's bend has its outside on the flange's top face, which runs on over the web's thickness to the web's
+    inside face, so the flange's outside length is f + t; the webs' and the crown's outsides are the webs' outer
+    faces and the crown's underside (h and c). Each straight is its outside length less r + t at each bent end. (The
+    flange was once taken as f, so the blank came out 1 mm short, 88.52 for 89.52, folding to 43 wide for 44: the
+    D-114 pass on #306 found it.)"""
     t, r = v["tray_t"], v["tray_t"]
     ba = math.pi / 2 * (r + k * t)
     c, f, h = v["rib_crown"], v["rib_fl"], v["gap_h"]
-    # outside dimensions -> flats between bends
-    fl = f - (r + t)
+    # outside lengths -> straights between bends
+    fl = (f + t) - (r + t)
     web = h - 2 * (r + t)
     crown = c - 2 * (r + t)
     segs = [fl, ba, web, ba, crown, ba, web, ba, fl]

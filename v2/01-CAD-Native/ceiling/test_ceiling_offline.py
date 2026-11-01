@@ -637,6 +637,28 @@ class FlatPattern(unittest.TestCase):
         self.assertAlmostEqual(f["bend_allowance"], math.pi / 2 * (0.5 + 0.44 * 0.5))
 
 
+class RibBlank(unittest.TestCase):
+    def test_blank_is_the_sections_neutral_length(self):
+        """The rib's blank against its section worked independently: the straights between the bends' tangent points
+        on the model's hat (inside radius r = t at each bend's inside corner) plus four allowances at K 0.44."""
+        import math
+        import ceiling_exports as E
+        t = r = VALS["tray_t"]
+        c, f, h = VALS["rib_crown"] / 2, VALS["rib_fl"], VALS["gap_h"]
+        # the hat as the build draws it: flanges z -t..0 out to x -(c + f), webs x -c..-(c - t), crown z -h..-(h - t);
+        # each bend's inside corner and the tangent points r from it along both legs
+        flange = (c + f) - (c + r)            # free edge to the first bend's tangent on the flange's underside
+        web = (h - t - r) - (t + r)           # between the two bends' tangents along the web
+        crown = 2 * (c - t - r)               # between the crown's two tangents on its top face
+        want = 2 * flange + 2 * web + crown + 4 * math.pi / 2 * (r + 0.44 * t)
+        got = E.rib_blank(VALS)
+        self.assertAlmostEqual(got["width"], want, places=6)
+        self.assertAlmostEqual(got["width"], 89.524, places=3)
+        self.assertEqual(len(got["bends"]), 4)
+        self.assertAlmostEqual(got["bends"][0], flange + got["bend_allowance"] / 2, places=6)
+        self.assertAlmostEqual(got["bends"][0] + got["bends"][3], got["width"], places=6)   # symmetric
+
+
 class EditFollows(unittest.TestCase):
     def test_pod_width_change(self):
         """Change a skeleton parameter: the layout follows (cassette, frame, fill)."""
