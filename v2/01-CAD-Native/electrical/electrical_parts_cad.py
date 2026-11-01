@@ -632,6 +632,11 @@ def build_part(app: "adsk.core.Application", key):
                 set_front_room_side(app, comp, zs)
             except Exception as e:      # the drawing can set it later; never fail the part for this
                 print("body: Front not set (%s)" % e)
+            try:                        # drawing 711001's view from below (#173): looking up, the open side on top
+                print("body: named view %s" % _helper("body_named_view", "body_named_view.py").add_view_from_below(
+                    app, design, replace=True))
+            except Exception as e:      # the drawing's hole check stops on a view without it
+                print("body: named view not set (%s)" % e)
         if not doc.save("%s %s, by electrical_parts_cad.py" % (name, M.REV)):
             raise RuntimeError("save failed")
         print("saved %s_CAD in %s" % (stem, FOLDER))

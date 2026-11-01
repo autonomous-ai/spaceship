@@ -10,9 +10,9 @@ camera to the design: no geometry changes.
     python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/body_named_view.py --label "ELECTRICAL" \\
         --doc 711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_CAD --save "named view 711001 VIEW FROM BELOW" --close
 
-The build (electrical_parts_cad.py) can call add_view_from_below() after it sets the design's Front, so a rebuild
-keeps the view. Running this again changes nothing when the view is there with the same camera; a view of that
-name with another camera stops the run.
+The build (electrical_parts_cad.py) calls add_view_from_below(replace=True) after it sets the design's Front, so a
+rebuild keeps the view and moves its camera with the body's size. Run on its own, this changes nothing when the
+view is there with the same camera, and stops when a view of that name has another camera.
 """
 
 import adsk.core
@@ -52,8 +52,9 @@ def _xyz(p):
     return (p.x, p.y, p.z)
 
 
-def add_view_from_below(app: "adsk.core.Application", design: "adsk.fusion.Design"):
-    """Add the named view, or check the one there. Returns "added" or "kept"."""
+def add_view_from_below(app: "adsk.core.Application", design: "adsk.fusion.Design", replace=False):
+    """Add the named view, or check the one there (with replace, set its camera). Returns "added", "kept" or
+    "moved"."""
     target, eye, up, zs = wanted(body_box(design))
     views = design.namedViews
     have = None
@@ -65,6 +66,13 @@ def add_view_from_below(app: "adsk.core.Application", design: "adsk.fusion.Desig
         if _same(_xyz(cam.target), target) and _same(_xyz(cam.eye), eye) and _same(_xyz(cam.upVector), up):
             print("named view %s: there already, same camera" % NAME)
             return "kept"
+        if replace:
+            cam.target = adsk.core.Point3D.create(*target)
+            cam.eye = adsk.core.Point3D.create(*eye)
+            cam.upVector = adsk.core.Vector3D.create(*up)
+            have.camera = cam
+            print("named view %s: camera moved to the body's centre %s cm" % (NAME, [round(v, 3) for v in target]))
+            return "moved"
         raise RuntimeError("named view %s is there with another camera (eye %s, up %s): look before changing it" % (
             NAME, [round(v, 3) for v in _xyz(cam.eye)], [round(v, 3) for v in _xyz(cam.upVector)]))
     cam = app.activeViewport.camera                          # a copy to fill in
