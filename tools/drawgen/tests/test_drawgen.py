@@ -684,6 +684,35 @@ def test_bend_tags_stay_clear_and_by_their_own_lines():
     assert any("bend B1's tag is as near bend B3's line as its own" in x for x in f), f
 
 
+def test_a_bend_tag_with_no_clear_place_moves_the_flat():
+    """Reviewer 14 on #389 (the Lead: in the sill PR): the path where a bend's tag finds no clear place on sheet 1 had
+    no test. With the line-pitch rule set aside, WALL's tray 511101 (main's STEP and DXF) has no place on sheet 1 for
+    B1's tag that is clear of the other tags and nearer its own line than the other run's lines, so its flat goes on
+    a sheet of its own, where every tag finds one, and the sheet reads back PASS."""
+    d = os.path.join(TMP, "tag_path")
+    os.makedirs(d, exist_ok=True)
+    real, pitch, errs = compose._make, compose.TAG_PITCH, []
+
+    def rec(*a, **k):
+        try:
+            return real(*a, **k)
+        except compose.NotDrawable as e:
+            errs.append(e)
+            raise
+    compose._make, compose.TAG_PITCH = rec, 0.0
+    try:
+        p = os.path.join(d, "511101.pdf")
+        compose.make("511101", "wall", {"tolerance": "test", "bent": True}, p)
+    finally:
+        compose._make, compose.TAG_PITCH = real, pitch
+    assert len(errs) == 1 and isinstance(errs[0], compose.FlatCrowded) and \
+        "no clear place for bend B1's tag in the flat pattern" in str(errs[0]), errs
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    data = readback.read_data(fitz.open(p))
+    assert fitz.open(p).page_count == 3 and data["flat"]["view"]["page"] == 1, data["flat"]["view"]
+
+
 def test_a_sheet_drawn_again_keeps_its_sections():
     """Reviewer 10 on #380: make() draws a sheet again when its flat runs off (the flat a step smaller) or its
     sections do (a scale smaller), and the second draw took the first attempt's sections across the bends as drawn
