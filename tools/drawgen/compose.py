@@ -1375,6 +1375,7 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
     sh.dim_linear((a[0], a[1]), (a[0], b[1]), "left", 15.0, fmt(e[3] - e[1]), 3.0)
     # an end cut at an angle (a mitre): in the plain view where its face shows edge on, the angle from square and
     # the true lengths along the member's two faces (guideline 6.1: true lengths and angle, not a box)
+    angle_texts = []
     for b in part.bodies:
         lk = max(range(3), key=lambda i: b.size[i])
         lax = tuple(1.0 if i == lk else 0.0 for i in range(3))
@@ -1431,9 +1432,9 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                 for d_ in (1.5, 3.0, 5.0, 8.0, 12.0):
                     px, py = S(far)[0] + (R + d_) * math.cos(am), S(far)[1] + (R + d_) * math.sin(am)
                     cands += [(px, py, "left" if math.cos(am) >= 0 else "right"), (px, py, "center")]
-                pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
-                            cands[0])
-                sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
+                # placed after every length dimension of the mitre (below), so their extension lines are known
+                # (BASE's D-129 111101: the value sat on the 1502.07 dimension's extension line)
+                angle_texts.append((ang_t, cands))
                 # true lengths along the two long faces, from the other (square) end
                 ve = vd.extent
                 other = ve[0] if abs(far[ax_k] - ve[0]) > abs(far[ax_k] - ve[2]) else ve[2]
@@ -1463,6 +1464,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
                             break
                 vd.has_mitre = True
                 break
+    for ang_t, cands in angle_texts:
+        pick = next((c_ for c_ in cands if sh.is_free(sh.text_box(c_[0], c_[1], ang_t, 2.5, c_[2], valign="mid"))),
+                    cands[0])
+        sh.text(pick[0], pick[1], ang_t, 2.5, pick[2], valign="mid")
     # frame members: the stiles' centre lines from the frame's front end (ordinate, ISO 129-1), over the view
     stiles = [b for b in part.bodies if "STILE" in (b.name or "").upper()]
     if stiles:
