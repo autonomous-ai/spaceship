@@ -352,8 +352,9 @@ def clean(s):
 
 def parse_register(text, where):
     """Hardware items of the joints register: one per part number, plus one per ID that has no number yet.
-    [{'id', 'name', 'part_number', 'qty_per_pod', 'mass_each_kg', 'source_file'}]. Reads the hardware set
-    table (ID | Item | ...) and any table with a part-number column; an ID's first cell may sit under any
+    [{'id', 'name', 'part_number', 'qty_per_pod', 'mass_each_kg', 'make_buy', 'source_file'}]; make_buy comes
+    from the table's Class column ("made" is make; "bought" and "bought by length" are buy; "" when there is none).
+    Reads the hardware set table (ID | Item | ...) and any table with a part-number column; an ID's first cell may sit under any
     header (ID or Item). One ID may have several numbers (a gasket in two thicknesses). A number that a hardware
     set row only mentions, while its own part-number row carries another ID, isn't that row's: H-14's text naming
     848013 doesn't make 848013 the cassette edge seal (the PM, 2026-11-01)."""
@@ -393,13 +394,16 @@ def parse_register(text, where):
             name = re.split(r"(?<=\.)\s", name, maxsplit=1)[0].rstrip(".")
         qcol = next((x for x in h if "qty" in x or "per pod" in x), None)
         mcol = next((x for x in h if "mass" in x), None)
+        ccol = next((x for x in h if x == "class" or re.search(r"\bmake\b|\bbuy\b|\bmade\b|\bbought\b", x)), None)
+        cls = clean(row.get(ccol, "")).lower() if ccol else ""
         entry = {"id": rid, "name": name, "part_number": pn,
                  "qty_per_pod": num(row.get(qcol)) if qcol else None,
                  "mass_each_kg": num(row.get(mcol)) if mcol else None,
+                 "make_buy": "make" if cls.startswith("made") else "buy" if cls.startswith(("bought", "buy")) else "",
                  "source_file": f"{REGISTER} @ {where}"}
         if pn:
             old = numbered.setdefault(pn, entry)
-            for k in ("id", "name", "qty_per_pod", "mass_each_kg"):
+            for k in ("id", "name", "qty_per_pod", "mass_each_kg", "make_buy"):
                 old[k] = old[k] if old[k] not in ("", None) else entry[k]
         elif rid or name:
             old = unnumbered.setdefault(rid or name, entry)
@@ -432,11 +436,60 @@ def _tokens(s, digits):
     return {t for t in toks if t and (bool(re.search(r"\d", t)) == digits) and t not in GENERIC and t != "X"}
 
 
+# The item noun of a name, so a rivet nut is never "the same item" as a bolt on a shared M6 and zinc (Reviewer 6,
+# PR #279). Read from the name's item part ("HARDWARE - RIVET NUT - M6 ..." gives "RIVET NUT"), or the whole name
+# when it has no group prefix. Longer phrases first: RIVET NUT is a rivnut, not a nut; CAP SCREW a screw, not a cap.
+NOUN_GROUPS = r"HARDWARE|SEALS|POD|BASE|WALL|CEILING|FRONT|LINING|AIR|ELECTRICAL|INTERIOR|PACKAGING"
+NOUN_CLASSES = [
+    (r"\bRIVET[\s-]*NUTS?\b|\bRIVNUTS?\b|\bBLIND NUTS?\b", "rivnut"),
+    (r"\bTHREADED INSERTS?\b|\bINSERTS?\b", "insert"),
+    (r"\bCAP SCREWS?\b|\bSCREWS?\b|\bBOLTS?\b", "screw"),
+    (r"\bNUTS?\b", "nut"),
+    (r"\bWASHERS?\b", "washer"),
+    (r"\bSPIGOTS?\b|\bDOWELS?\b", "spigot"),
+    (r"\bPINS?\b", "pin"),
+    (r"\bHOOK AND LOOP\b|\bVELCRO\b|\bDUAL LOCK\b", "hook and loop"),
+    (r"\bGASKETS?\b|\bSEALS?\b", "seal"),
+    (r"\bTAPES?\b", "tape"),
+    (r"\bBOND\b|\bADHESIVES?\b|\bGLUES?\b", "adhesive"),
+    (r"\bPLATES?\b", "plate"),
+    (r"\bBRACKETS?\b", "bracket"),
+    (r"\bCLIPS?\b", "clip"),
+    (r"\bCATCH(?:ES)?\b", "catch"),
+    (r"\bHINGES?\b", "hinge"),
+    (r"\bSTRIKES?\b", "strike"),
+    (r"\bPULLS?\b|\bHANDLES?\b", "pull"),
+    (r"\bRAILS?\b", "rail"),
+    (r"\bPROFILES?\b|\bCHANNELS?\b", "profile"),
+    (r"\bGLIDES?\b|\bFEET\b|\bFOOT\b", "glide"),
+    (r"\bCAPS?\b", "cap"),
+    (r"\bKEYS?\b", "key"),
+    (r"\bRETAINERS?\b|\bGROMMETS?\b", "retainer"),
+    (r"\bLANYARDS?\b", "lanyard"),
+]
+
+
+def _nouns(name):
+    up = _up(name)
+    parts = [x.strip() for x in re.split(r"\s+-\s+", up)]
+    s = parts[1] if len(parts) > 1 and re.fullmatch(NOUN_GROUPS, parts[0]) else up
+    found = set()
+    for rx, cls in NOUN_CLASSES:
+        if re.search(rx, s):
+            found.add(cls)
+            s = re.sub(rx, " ", s)
+    return found
+
+
 def same_item(a, b):
-    """True when a parts-list name and the joints register's name describe the same item: their size groups
-    agree (one inside the other, any order), their threads or diameters (M6, D8) agree, they share a word, and
-    either most of the shorter name's numbered tokens match or they share two words (a product code on one side
-    and a requirement such as 'gap 10 ±5' on the other). Wording and order may differ."""
+    """True when a parts-list name and the joints register's name describe the same item: their item nouns agree
+    (a rivet nut is not a bolt) where both names have one, their size groups agree (one inside the other, any
+    order), their threads or diameters (M6, D8) agree, they share a word, and either most of the shorter name's
+    numbered tokens match or they share two words (a product code on one side and a requirement such as
+    'gap 10 ±5' on the other). Wording and order may differ."""
+    na, nb = _nouns(a), _nouns(b)
+    if na and nb and not na & nb:
+        return False  # different items: a bolt listed under the rivnut's number stays a duplicate
     sa, sb = _sizes(a), _sizes(b)
     if sa and sb:
         def covered(xs, ys):
@@ -721,7 +774,7 @@ def master_rows(parts, register, nodes=None):
             if not any(r["part_number"] == i["part_number"] for r in members):
                 out.append({"level": 2, "row_type": "hardware (register only)", "group": gname, "part_number": i["part_number"],
                             "name": i["name"], "register_id": i["id"], "qty_per_pod": i["qty_per_pod"], "mass_each_kg": i["mass_each_kg"],
-                            "make_buy": "buy", "team": "Joints register", "source_file": i["source_file"],
+                            "make_buy": i.get("make_buy") or "buy", "team": "Joints register", "source_file": i["source_file"],
                             "note": "in the joints register, not in any parts list yet"})
     unnumbered = [i for i in register if not i["part_number"]]
     if unnumbered:

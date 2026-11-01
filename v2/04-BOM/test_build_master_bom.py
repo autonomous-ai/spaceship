@@ -88,6 +88,32 @@ class Rules(unittest.TestCase):
         self.assertEqual({b["name"] for b in bom.bought_rows(parts, []) if b["part_number"] == "830101"},
                          {"Bolt M6 x 16 - ISO 4762 8.8 zinc"})
 
+    def test_a_bolt_under_the_rivnut_number_fails(self):
+        # Reviewer 6 (#279): a shared M6 and zinc don't make an M6 bolt the register's rivet nut 838003
+        reg = REGISTER.replace("| H-09 | 830201 | Head washer 6.4 x 18 | 82 | 0.003 |",
+                               "| H-09 | 830201 | Head washer 6.4 x 18 | 82 | 0.003 |\n"
+                               "| H-03 | 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | 126 | 0.004 |")
+        bolt_name = "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC"
+        listed = door(f"838003,{bolt_name},Bulong,bought,steel 8.8 zinc plated,4,0.007,source,DRAFT,x,\n")
+        parts, _, _, fails, _ = run({FRONT: listed, bom.REGISTER: reg})
+        row = next(r for r in parts if r["part_number"] == "838003")
+        self.assertEqual(row["name"], bolt_name)            # not renamed to the rivet nut
+        self.assertNotIn("listed_name", row)
+        self.assertTrue(any(f.startswith("duplicate number 838003") for f in fails), fails)
+        rivnut = "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2"
+        self.assertFalse(bom.same_item(bolt_name, rivnut))
+        self.assertTrue(bom.same_item("HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", rivnut))   # the re-spec stays one item
+        self.assertTrue(bom.same_item("HARDWARE - SOCKET HEAD CAP SCREW - M6 X 16 - ISO 4762", bolt_name))  # bolt and screw agree
+        self.assertFalse(bom.same_item("HARDWARE - HEX NUT - M6 - ZINC", rivnut))                      # a rivet nut is not a nut
+
+    def test_register_only_rows_take_the_register_class(self):
+        # Reviewer 6 (#279): made register hardware, such as the mitre plates, shows as made, not bought
+        reg = REGISTER_V3 + "| H-40 | **831007** | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL · Tấm | made | PROPOSED |\n"
+        parts, _, register, _, _ = run({bom.REGISTER: reg})
+        rows = {r["part_number"]: r for r in bom.master_rows(parts, register, {}) if r.get("row_type") == "hardware (register only)"}
+        self.assertEqual({pn: rows[pn]["make_buy"] for pn in ("831007", "838001", "848001")},
+                         {"831007": "make", "838001": "buy", "848001": "buy"})   # "bought by length" is buy
+
     def test_a_different_item_on_a_register_number_keeps_its_name_and_fails(self):
         other = door("830101,FRONT - DOOR HANDLE,Tay nắm,bought,steel,1,0.3,source,DRAFT,x,\n")
         parts, _, _, fails, _ = run({FRONT: other, bom.REGISTER: REGISTER})
