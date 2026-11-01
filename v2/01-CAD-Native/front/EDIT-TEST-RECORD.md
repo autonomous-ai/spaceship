@@ -4,6 +4,16 @@ Engineering guideline section 4.4. Each test opens the exported .f3d as a new un
 
 ## 360001 FRONT - DOOR UNIT, P01
 
+Rerun 2026-11-01 10:27 UTC after the D-150 rebuild (the brush seal 368008 on the kick strip's end, from the floor to Z 105), same method:
+
+| State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |
+|---|---|---|---|---|---|
+| Before | 1350.5 x 148.8 x 2115.5 | 0 | 0 | none | 0.020 |
+| pod_w 2600 mm; fr_dz 12 mm; door_xbr 1474 mm | 1360.5 x 148.8 x 2120.5 | 0 | 0 | none | 0.020 |
+| Reverted | 1350.5 x 148.8 x 2115.5 | 0 | 0 | none | 0.020 |
+
+RESULT: PASS, 37 anchors (the brush's six among them).
+
 Rerun 2026-11-01 05:59 UTC after the D-132 rebuild (the kick strip on the band's bottom line, its 60° push-side taper, the pull in the US band), same method:
 
 | State | Box X x Y x Z (mm) | Unhealthy items | Loose sketches | Anchors off their expressions | Worst (mm) |

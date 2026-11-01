@@ -2,6 +2,14 @@
 
 ## 360001 FRONT - DOOR UNIT, P01 (DRAFT)
 
+Rebuilt 2026-11-01 10:27 UTC in one lock hold with the door unit sheet and the FRONT combined check after it, through the late-bound loader, for D-150: the brush seal 368008 on the kick strip's end, X 214 to 218.5 (the 4.5 mm slot to BASE's sill end plate), Y −709 to −689, from the room floor to Z 105, its outer edge following the fixed pane's free edge near the top. It is modelled as fitted; it ships in the door's kit bag and is fitted on site, pressed onto the real floor (PM ruling 2026-11-01, D-150 changed), so the packing piece leaves it out.
+
+- bodies 12, timeline 39 items, unhealthy 0, loose sketches 0, parameters 156; clash pairs 4, all listed (H1 to H3 and the strike on the leaf, as below)
+- unit box X −1132.02 to 218.52, Y −773.40 to −624.59, Z −0.02 to 2115.52 (the brush reaches the floor); STEP re-read in Fusion, box equal (0.000 mm)
+- parts list: 10 rows, the unit 48.73 kg (the brush 0.01, assumption)
+- edit test PASS, 37 anchors (`EDIT-TEST-RECORD.md`); no names in the exports
+- FRONT combined check (door, fixed glass, DR, DT, DL): 0 overlaps between sub-assemblies; the kick strip with its brush to the fixed glass channel 0.00 (the brush's top corner runs up to the channel along the pane's free edge, touching by design, no overlap; the strip itself stays 4.00 clear); the other gaps unchanged
+
 Rebuilt 2026-11-01 05:59 UTC in one lock hold with the FRONT combined check after it, through the late-bound loader (the newest `door_unit.py` read when the lock was granted), for D-132 and the US door rules (PM rulings 2026-11-01): no floor and no threshold, so the kick strip's bottom sits on the base band's bottom line, the skeleton's `glide_h` (Z 10), and the drop seal closes the 10 mm gap to the room floor; the strip is 95 tall (it was 85 over the 13 mm threshold), its seal cavity 65; its push-side (pod-side) top edge is tapered 60° from the horizontal, 6.93 high across the 4 mm wall, the pod-side chamber stopping a skin under it, the outside face square; the pull is centred 1042.5 above the room floor, its 350 bar from 867.5 to 1217.5 inside the 865 to 1220 band, and the build now fails if it leaves the band. The version's description in Fusion still names the first D-132 values (strip from Z 7, pull 1050): the description file was written before the follow-up rulings; the model and every export carry the values above.
 
 - bodies 11, timeline 36 items, unhealthy 0, loose sketches 0, parameters 155; clash pairs 4, all listed (as below)
