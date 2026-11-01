@@ -688,16 +688,21 @@ def test_the_strip_list_keeps_one_plain_thin_shape_per_part():
     assert got == {"811205": pytest.approx((1.5, 28.0, 991.0)), "831999": pytest.approx((1.5, 28.0, 60.0))}
 
 
-def test_run_with_ref_leaves_no_export_behind():
-    import glob
-    import subprocess
+def test_run_with_ref_leaves_no_export_behind(monkeypatch):
+    # only this run's own export counts: another checks run on the same revision on this machine (the Lead's, another
+    # agent's) makes and removes its own checks-<rev>-* folder in the shared temp folder meanwhile, which made the old
+    # before-and-after listing fail now and then
     import tempfile
     import run_checks
-    sha = subprocess.run(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
-    pattern = os.path.join(tempfile.gettempdir(), "checks-%s-*" % sha)
-    before = set(glob.glob(pattern))
+    made, real = [], tempfile.mkdtemp
+
+    def track(*a, **k):
+        p = real(*a, **k)
+        made.append(p)
+        return p
+    monkeypatch.setattr(tempfile, "mkdtemp", track)
     run_checks.main(["--ref", "HEAD", "--json"])
-    assert set(glob.glob(pattern)) == before
+    assert made and [p for p in made if os.path.exists(p)] == []
 
 
 @pytest.mark.parametrize("rivnut_hole", [9.53, 10.00, 10.10])      # CAH2's hole, and D-163's Ø10.00 +0.10
