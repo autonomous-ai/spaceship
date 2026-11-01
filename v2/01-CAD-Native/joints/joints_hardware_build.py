@@ -135,17 +135,17 @@ def folder(app):
 
 
 def _safe_to_create():
-    """The shared check (tools/fusion/fusion_folder.py, #121): run_script.py gives it to every run;
-    a runner queued before #121 doesn't, so it is then loaded from this checkout."""
-    try:
-        from fusion_folder import safe_to_create
-        return safe_to_create
-    except ImportError:
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("fusion_folder", os.path.join(REPO, "tools/fusion/fusion_folder.py"))
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-        return mod.safe_to_create
+    """The shared check, always loaded from this checkout by full path and printed: Fusion keeps
+    modules loaded between runs, so an import by name could pick up another team's copy."""
+    import importlib.util
+    path = os.path.join(REPO, "tools/fusion/fusion_folder.py")
+    spec = importlib.util.spec_from_file_location("joints_fusion_folder", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    print("  safe-to-create check from %s" % mod.__file__)
+    if os.path.abspath(mod.__file__) != os.path.abspath(path):
+        raise RuntimeError("loaded %s, not this checkout's %s" % (mod.__file__, path))
+    return mod.safe_to_create
 
 
 def new_design(app, name):

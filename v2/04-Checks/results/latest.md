@@ -1,6 +1,6 @@
-# Mechanical check run: d4454f3 on 2026-11-01
+# Mechanical check run: 5cf7aef on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `d4454f3`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `5cf7aef`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 63** (32 severe, 30 major, 1 minor). Register numbers in brackets.
 
@@ -105,10 +105,10 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 
 | Piece | kg | Size mm | Ships as | Status |
 |---|---|---|---|---|
-| 1-01 BASE - FLOOR PANEL - F1 | 8.183 | 1455 x 1219 x 12 | upright | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) |
-| 1-02 BASE - FLOOR PANEL - F2 | 8.183 | 1455 x 1219 x 12 | upright | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) |
+| 1-01 BASE - FLOOR PANEL ASSY - F1 | 8.183 | 1455 x 1219 x 12 | upright | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) |
+| 1-02 BASE - FLOOR PANEL ASSY - F2 | 8.183 | 1455 x 1219 x 12 | upright | calculation (CAD); confirmed (9 mm, poplar core); calculation (CAD) |
 | 1-03 WALL - PANEL ASSY - BACK LOWER - LH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
-| 1-04 WALL - PANEL ASSY - BACK LOWER - RH | 11.686 | 1200.61 x 1118.61 x 84 | upright | calculation (CAD); calculation; fill provisional |
+| 1-04 WALL - PANEL ASSY - BACK LOWER - RH | 11.644 | 1200.61 x 1118.61 x 84 | upright | calculation (CAD); calculation; fill provisional |
 | 1-05 WALL - PANEL ASSY - SIDE LOWER - LH | 11.163 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-06 WALL - PANEL ASSY - SIDE LOWER - RH | 11.163 | 1492.74 x 1142.74 x 46 | upright | calculation (CAD); fill provisional |
 | 1-07 WALL - PANEL ASSY - BACK UPPER - LH | 8.756 | 1200.61 x 1118.61 x 46 | upright | calculation; fill provisional |
@@ -137,10 +137,10 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-10 AIR - SOFFIT WITH THE EXHAUST FAN BOX AND 2 FANS | 13.873 | 2332 x 360 x 220 | long | assumption; calculation; calculation; fill provisional |
 | 2-11 AIR - AIR COLUMN | 9.735 | 2105 x 360 x 217 | long | calculation; fill provisional |
 | 2-12 FRONT - DECOR BLOCK - DT | 7.088 | 1697 x 280 x 205 | long | calculation; calculation (CAD); magnetic seal HOLD |
-| 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.24 | 600 x 250 x 200 | long | calculation (CAD) |
-| 2-14 INTERIOR - LIGHT SHELF | 2.081 | 2332 x 80 x 50 | long | assumption |
+| 2-13 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.282 | 600 x 250 x 200 | long | calculation (CAD) |
+| 2-14 INTERIOR - LIGHT SHELF ASSY | 1.564 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-15 BASE - SMALL PARTS CARTON | 1.968 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
-| 2-16 INTERIOR - LEDGE AND SCREEN MOUNT CARTON | 2.4 | 1000 x 250 x 120 | long | assumption |
+| 2-16 INTERIOR - WORK WALL LEDGE ASSY | 1.903 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
 | 2-17 AIR - INTAKE RISER WITH THE SUPPLY FAN BOX AND 2 FANS | 14.895 | 1845 x 460 x 155 | long | assumption; calculation |
 | 2-18 AIR - CARTRIDGE - SUPPLY | 11.155 | 1750 x 314 x 173 | long | calculation |
 | 2-19 AIR - CARTRIDGE - EXHAUST | 11.155 | 1750 x 314 x 173 | long | calculation |
@@ -150,5 +150,5 @@ Inputs: {"bodies_skeleton": 36, "shell_faces_skeleton": ["back", "back-base", "l
 
 ## Fastener schedule (C07)
 
-84 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
+97 fastener lines; full table in `v2/04-Checks/fastener-schedule.csv`.
 

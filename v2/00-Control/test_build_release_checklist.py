@@ -527,44 +527,104 @@ class FlatPartColumns(unittest.TestCase):
 
 class OpenPrFiles(unittest.TestCase):
     """A branch stacked on a PR that squash-merged since keeps that PR's older copies; main's newer files win."""
+    SKIN = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
+    CUT = "v2/03-Manufacturing/ceiling/410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv"
+    OWN = "v2/03-Manufacturing/air/611101_P01_AIR-COLUMN-FACE-FRONT_DXF.dxf"
 
-    def test_a_stacked_branch_old_copies_do_not_hide_main_newer_files(self):
+    def stacked(self, d, rebased=False):
+        """main, then CEILING's PR (01:00), AIR stacked on it (02:00), then CEILING squash-merged on main (05:00).
+        rebased: AIR's copy of CEILING's commit carries a 06:00 committer time, as a rebase gives it, but keeps its
+        01:00 author time."""
         import os
         import subprocess
-        import tempfile
-        skin = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
-        own = "v2/03-Manufacturing/air/611101_P01_AIR-COLUMN-FACE-FRONT_DXF.dxf"
-        with tempfile.TemporaryDirectory() as d:
-            def g(*a, when):
-                env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when}
-                subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
-                               check=True, capture_output=True, text=True, env=env)
 
-            def put(path, text, when):
+        def g(*a, when="2026-11-01T00:00:00", committed=None):
+            env = {**os.environ, "GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": committed or when}
+            subprocess.run(["git", "-C", d, "-c", "user.email=t@example.com", "-c", "user.name=t", *a],
+                           check=True, capture_output=True, text=True, env=env)
+
+        def put(files, when, committed=None):
+            for path, text in files.items():
                 Path(d, path).parent.mkdir(parents=True, exist_ok=True)
                 Path(d, path).write_text(text, encoding="utf-8")
-                g("add", "-A", when=when)
-                g("commit", "-q", "-m", path, when=when)
+            g("add", "-A", when=when)
+            g("commit", "-q", "-m", ", ".join(files), when=when, committed=committed)
 
-            g("init", "-q", when="2026-11-01T00:00:00")
-            g("checkout", "-q", "-b", "main", when="2026-11-01T00:00:00")
-            put("v2/01-CAD-Native/README.md", "start", "2026-11-01T00:00:00")
-            g("checkout", "-q", "-b", "ceiling", when="2026-11-01T01:00:00")
-            put(skin, "old outline", "2026-11-01T01:00:00")
-            g("checkout", "-q", "-b", "air", when="2026-11-01T02:00:00")
-            put(own, "AIR's face", "2026-11-01T02:00:00")
-            g("checkout", "-q", "main", when="2026-11-01T05:00:00")
-            put(skin, "merged outline", "2026-11-01T05:00:00")
+        g("init", "-q")
+        g("checkout", "-q", "-b", "main")
+        put({"v2/01-CAD-Native/README.md": "start"}, "2026-11-01T00:00:00")
+        g("checkout", "-q", "-b", "ceiling")
+        put({self.SKIN: "old outline", self.CUT: "part_number,cut\n411101,old\n"}, "2026-11-01T01:00:00",
+            "2026-11-01T06:00:00" if rebased else None)
+        g("checkout", "-q", "-b", "air")
+        put({self.OWN: "AIR's face"}, "2026-11-01T02:00:00", "2026-11-01T06:00:00" if rebased else None)
+        g("checkout", "-q", "main")
+        put({self.SKIN: "merged outline", self.CUT: "part_number,cut\n411101,merged\n"}, "2026-11-01T05:00:00")
+
+    def files_and_texts(self, rebased=False):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            self.stacked(d, rebased)
             old = rc.ROOT, BOM.ROOT
             rc.ROOT = BOM.ROOT = Path(d)
+            BOM.FELL_BACK.clear()
             try:
                 files = rc.list_files(["main", "air"], BOM)
-                text = rc.text_at(skin, files[skin], ["main", "air"])
+                return files, rc.cut_list_texts(files, ["main", "air"]), list(BOM.FELL_BACK)
             finally:
                 rc.ROOT, BOM.ROOT = old
-        self.assertEqual(files[skin], "main")
-        self.assertEqual(text, "merged outline")
-        self.assertEqual(files[own], "air")
+                BOM.FELL_BACK.clear()
+
+    def test_a_stacked_branch_old_copies_do_not_hide_main_newer_files(self):
+        files, _, _ = self.files_and_texts()
+        self.assertEqual(files[self.SKIN], "main")
+        self.assertEqual(files[self.OWN], "air")
+
+    def test_a_rebase_does_not_make_an_old_copy_new(self):
+        # the rule reads author times: a rebase gives AIR's copy of CEILING's commit a new committer time only
+        files, _, fell = self.files_and_texts(rebased=True)
+        self.assertEqual(files[self.SKIN], "main")
+        self.assertEqual(files[self.OWN], "air")
+        self.assertIn(("air", self.SKIN), fell)
+
+    def test_cut_lists_are_read_from_the_ref_that_listed_them(self):
+        # not from the newest branch that has a copy: AIR's old copy of CEILING's cut list must not be read
+        files, cuts, _ = self.files_and_texts()
+        self.assertEqual(files[self.CUT], "main")
+        self.assertIn("merged", cuts[self.CUT])
+
+    def test_the_checklist_names_the_files_read_from_main(self):
+        _, _, fell = self.files_and_texts()
+        self.assertEqual(sorted(fell), [("air", self.CUT), ("air", self.SKIN)])
+        BOM.FELL_BACK[:] = fell
+        try:
+            lines = BOM.fell_back_lines({"air": "PR #91"})
+        finally:
+            BOM.FELL_BACK.clear()
+        self.assertTrue(lines[1].startswith(f"`{self.SKIN}`: PR #91 changed it, but main changed it later"), lines)
+        text = rc.render([], [], [], [], "main (abc1234)", "unlocked", {}, ([], [], []), "2026-11-01", fell_back=lines)
+        self.assertIn("Read from main although an open PR changed them", text)
+        self.assertIn(self.SKIN, text)
+        self.assertNotIn("Read from main although", rc.render([], [], [], [], "main", "unlocked", {}, ([], [], []), "2026-11-01"))
+
+
+class FallBackFilter(unittest.TestCase):
+    def test_the_list_names_only_files_the_checklist_reads(self):
+        self.assertTrue(rc.read_by_checklist("v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf", BOM))
+        self.assertTrue(rc.read_by_checklist("v2/01-CAD-Native/ceiling/410000_P01_CEILING_CAD.f3d", BOM))
+        self.assertTrue(rc.read_by_checklist("v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv", BOM))   # the BOM reads it
+        self.assertTrue(rc.read_by_checklist(BOM.REGISTER, BOM))
+        self.assertFalse(rc.read_by_checklist("v2/07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md", BOM))
+        self.assertFalse(rc.read_by_checklist("v2/07-Packaging/910001_P01_PALLET-1-48X40_PKG.svg", BOM))
+
+    def test_the_notes_leave_out_files_it_never_reads(self):
+        skin = "v2/03-Manufacturing/ceiling/411302_P01_CEILING-SKIN-C2_DXF.dxf"
+        BOM.FELL_BACK[:] = [("origin/air", skin), ("origin/air", "v2/07-Packaging/910000_P01_PACKAGING-PLAN_PKG.md")]
+        try:
+            notes = rc.fell_back_notes(BOM, {"origin/air": "PR #91"})
+        finally:
+            BOM.FELL_BACK.clear()
+        self.assertEqual(notes, [f"`{skin}`: PR #91 changed it, but main changed it later"])
 
 
 class Render(unittest.TestCase):

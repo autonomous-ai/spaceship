@@ -612,7 +612,10 @@ CASINGS = {     # DECIDED: al20
     "al20": ("aluminium 2.0 mm", "alu", 2.0),
     "st10": ("steel 1.0 mm", "steel", 1.0),
 }
-LINING_KG_M3 = 40.0    # polyester lining board, about 40 kg/m3 (ASSUME)
+LINING_KG_M3 = 40.0    # polyester lining board, about 40 kg/m3 (ASSUME): the PR #11 layouts kept for the record
+FANBOX_LINING_KG_M3 = 32.0  # the D-60 fan boxes' 50 mm linings: Sorberpoly 2D at 32 kg/m3 (CEILING confirmed, D-116)
+CART_LAYER_KG_M3 = 32.0  # the D-60 cartridges' three 50 mm layers: Pyrotek Sorberpoly 2D at 32 kg/m3, the grade its
+                         # absorption data is for (CEILING confirmed, D-116)
 
 
 def silencer_il(length, derate=1.0):
@@ -766,7 +769,7 @@ def d60_cartridge_kg(casing="al20"):
     kg_m2 = MAT[mat][0] * t / 1000
     w, d, L = (x / 1000 for x in D60["cart"])
     sheet = 2 * (w + d) * L + 2 * 0.3 * w * d
-    lining = (D60["ngap"] + 1) * D60["lin"] / 1000 * (w - 0.004) * L * LINING_KG_M3
+    lining = (D60["ngap"] + 1) * D60["lin"] / 1000 * (w - 0.004) * L * CART_LAYER_KG_M3
     return sheet * kg_m2 + lining
 
 
@@ -787,7 +790,7 @@ def d60_parts(casing="al20"):
     ebox = 2 * (0.294 * d + 0.294 * w + d * w)
     rows = [
         ("Supply cartridge, in the air column", f"{D60['cart'][0]:.0f} x {D60['cart'][1]:.0f} x {D60['cart'][2]:.0f}",
-         d60_cartridge_kg(casing), f"{CASINGS[casing][0]} casing, three 50 mm layers at {LINING_KG_M3:.0f} kg/m3"),
+         d60_cartridge_kg(casing), f"{CASINGS[casing][0]} casing, three 50 mm layers at {CART_LAYER_KG_M3:.0f} kg/m3"),
         ("Exhaust cartridge, in the soffit", "same", d60_cartridge_kg(casing), "same part"),
         ("Air column: felt-covered faces, fill, frame, kick grille, hub plate", f"{col_w*1000:.0f} x {col_d*1000:.0f} x {col_h*1000:.0f}",
          (col_w + col_d) * col_h * face + fill * (w + d) * L * FILL_KG_M3
@@ -796,9 +799,10 @@ def d60_parts(casing="al20"):
          (sof_d + sof_h) * sof_l * face + fill * (w + d) * L * FILL_KG_M3 + 2 * sof_l * FRAME_ANGLE_KG_M + 0.9,
          "underside and front face as the column; 2 angles; 0.5 kg hangers and 0.4 kg grille (assumption)"),
         ("Supply fan box and transition, in the right block", "300 x 155 x 300 + transition",
-         (box + 0.35) * al + 0.6 * 0.050 * LINING_KG_M3, "2 mm aluminium, 50 mm lining; transition 0.35 m2 (calculation)"),
+         (box + 0.35) * al + 0.6 * 0.050 * FANBOX_LINING_KG_M3,
+         "2 mm aluminium, 50 mm lining at 32 kg/m3; transition 0.35 m2 (calculation)"),
         ("Exhaust fan box and roof sleeve, in the soffit", "294 x 314 x 173",
-         (ebox + 0.093) * al + 0.42 * 0.050 * LINING_KG_M3, "2 mm aluminium, 50 mm lining"),
+         (ebox + 0.093) * al + 0.42 * 0.050 * FANBOX_LINING_KG_M3, "2 mm aluminium, 50 mm lining at 32 kg/m3"),
         ("Intake riser with a mesh allowance, in the right block", f"{lo_w*1000:.0f}-{up_w*1000:.0f} x {lo_d*1000:.0f} x {(lo_l+up_l)*1000:.0f}",
          (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5,
          "1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption)"),

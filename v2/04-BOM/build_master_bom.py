@@ -91,11 +91,15 @@ def git(*args):
     return subprocess.run(["git", "-C", str(ROOT), *args], check=True, capture_output=True, text=True).stdout
 
 
+FELL_BACK = []  # (ref, path): files a branch changed that base changed later, so base's copy was read
+
+
 def branch_changes(base, ref, *paths, diff_filter=None):
     """The files ref changed since its merge-base with base, less those base changed later. A branch stacked on a PR
     that has since been squash-merged still carries that PR's older copies (AIR's branch kept CEILING's old lists
-    after #32 merged); base's newer copy wins for those. Later means a newer author time: a rebase keeps it, and a
-    squash merge sets it to the merge."""
+    after #32 merged); base's newer copy wins for those. Later means a newer author time: a rebase keeps it (its
+    committer time is the rebase's), and a squash merge sets it to the merge. A branch's own edit of a file that base
+    changed later is dropped too, until the branch rebases; each dropped file goes in FELL_BACK so the reports name it."""
     mb = git("merge-base", base, ref).strip()
     flt = [f"--diff-filter={diff_filter}"] if diff_filter else []
     changed = git("diff", "--name-only", *flt, mb, ref, "--", *paths).splitlines()
@@ -104,7 +108,27 @@ def branch_changes(base, ref, *paths, diff_filter=None):
     def last(tip, path):
         return int(git("log", "-1", "--format=%at", f"{mb}..{tip}", "--", path).strip() or 0)
 
-    return [f for f in changed if f not in later or last(ref, f) > last(base, f)]
+    keep = []
+    for f in changed:
+        if f in later and last(ref, f) <= last(base, f):
+            if (ref, f) not in FELL_BACK:
+                FELL_BACK.append((ref, f))
+        else:
+            keep.append(f)
+    return keep
+
+
+def print_fell_back(labels=None):
+    """Print each parts list or register a branch changed but main changed later (main's copy was read)."""
+    for x in fell_back_lines(labels, keep=wanted):
+        print("  read from main:", x)
+
+
+def fell_back_lines(labels=None, keep=None):
+    """One line per file read from base although a branch changed it, for the reports; keep(path) filters them."""
+    return [f"`{path}`: {(labels or {}).get(ref, ref)} changed it, but main changed it later, so main's copy is read "
+            f"until that branch rebases" for ref, path in sorted(FELL_BACK, key=lambda x: (x[1], x[0]))
+            if keep is None or keep(path)]
 
 
 def wanted(path):
@@ -644,6 +668,10 @@ def report(parts, skipped, register, reg_where, fails, missing, sources, refs):
         lines.append(f"- `{p}` @ {sources[p][1]}" + (" (skipped: " + next(s[2] for s in skipped if s[0] == p) + ")" if any(s[0] == p for s in skipped) else ""))
     if not sources:
         lines.append("- none")
+    fell = fell_back_lines(keep=wanted)
+    if fell:
+        lines += ["", "Read from main although a branch changed them, because main changed them later:", ""]
+        lines += [f"- {x}" for x in fell]
     lines += ["", "## Failures", ""]
     lines += [f"- {f}" for f in fails] or ["- none"]
     lines += ["", "## Missing or on HOLD, per team", ""]
@@ -687,6 +715,7 @@ def main(argv=None):
         (out / "BOM-CHECK.md").write_text(report(parts, skipped, register, reg_where, fails, missing, sources, a.ref), encoding="utf-8")
     print(f"master BOM: {len(parts)} lines from {len([p for p in sources if p != REGISTER]) - len(skipped)} parts list(s), "
           f"{len(register)} register hardware items; {sum(len(v) for v in missing.values())} missing items in {len(missing)} teams")
+    print_fell_back()
     if fails:
         print("\nFAIL")
         for f in fails:

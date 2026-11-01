@@ -508,7 +508,25 @@ def counts(lines):
             sum(r["state"].startswith("blocked") for r in lines), sum(r["state"] == "HOLD" for r in lines))
 
 
-def render(made, bought, register, no_list, ref_note, screen, files, fai, today):
+def read_by_checklist(path, bom):
+    """True for a file this checklist reads: the three trees, and the BOM's parts lists and the joints register. The
+    fallback list names only these, not the packing outputs seen while picking the open PRs."""
+    return path.startswith(tuple(t + "/" for t in TREES)) or bom.wanted(path)
+
+
+def fell_back_notes(bom, labels):
+    """The checklist's fallback list: each file it reads that an open PR changed but main changed later."""
+    return [x.split(", so main's copy")[0] for x in bom.fell_back_lines(labels, keep=lambda p: read_by_checklist(p, bom))]
+
+
+def cut_list_texts(files, refs):
+    """Every list a D-89 row may sit in, and the cut lists, each read from the ref that listed it (list_files), never
+    from a later branch's old copy."""
+    return {p: text_at(p, files[p], refs) for p in files
+            if p.endswith(".csv") and p.startswith(("v2/02-Drawings/", "v2/03-Manufacturing/")) or "CUT-LIST" in p}
+
+
+def render(made, bought, register, no_list, ref_note, screen, files, fai, today, fell_back=()):
     chars, checks, accept = fai
     out = ["# Release checklist: Spaceship (FocusPod v2)", "",
            "| Doc code | Revision | Status | Date | Owner |", "|---|---|---|---|---|",
@@ -517,13 +535,16 @@ def render(made, bought, register, no_list, ref_note, screen, files, fai, today)
            "(guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.", "",
            f"Read from: {ref_note}. The Mac's screen at run time: **{screen}**. {len(files)} files in the CAD, drawing "
            f"and manufacturing folders; the FAI plan's {len(chars)} characteristics, {len(checks)} functional checks and "
-           f"{len(accept)} bought-part test lines.", "",
-           "**Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. "
-           "**Open**: something missing that can be done now. **Blocked**: only the drawing is "
-           "missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.", "",
-           "## Totals per team", "",
-           "| Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |",
-           "|---|---:|---:|---:|---:|---:|---:|"]
+           f"{len(accept)} bought-part test lines.", ""]
+    if fell_back:
+        out += ["Read from main although an open PR changed them, because main changed them later (the PR's edit counts "
+                "once it rebases): " + "; ".join(fell_back) + ".", ""]
+    out += ["**Done**: nothing missing from the columns below; a test counts once it is named, and its result belongs in the FAI plan. "
+            "**Open**: something missing that can be done now. **Blocked**: only the drawing is "
+            "missing and the screen is locked; the drawing start needs it unlocked (D-84). **HOLD**: the product isn't named yet.", "",
+            "## Totals per team", "",
+            "| Team | Made: done | Made: open | Made: blocked by the locked screen | Bought: done | Bought: open | Bought: HOLD |",
+            "|---|---:|---:|---:|---:|---:|---:|"]
     teams = sorted({r["team"] for r in made + bought} | set(no_list))
     for t in teams:
         m = [r for r in made if r["team"] == t]
@@ -643,9 +664,7 @@ def main(argv=None):
                 if r["source_file"].startswith(path) and TUBE.search(r["material"] or ""):
                     r["cut_rows"] = True
     files = list_files(refs, bom)
-    cut_texts = {p: text_at(p, files[p], refs) for p in files  # every list a D-89 row may sit in, and the cut lists,
-                 # each from the ref that gave it
-                 if p.endswith(".csv") and p.startswith(("v2/02-Drawings/", "v2/03-Manufacturing/")) or "CUT-LIST" in p}
+    cut_texts = cut_list_texts(files, refs)
     fai = fai_plan(read_text(FAI, refs, local_first=True), bom)
     register_text = sources.get(bom.REGISTER, ("", ""))[0]
     tests = test_rows(read_text(TEST_PLAN, refs, local_first=True), register_text, fai[1], bom)
@@ -666,7 +685,10 @@ def main(argv=None):
     made += files_only(by_pn, parts, files, labels, screen, fai[0])
     listed = {r["team"] for r in parts}
     no_list = [t for t in bom.EXPECTED_FOLDERS if t not in listed and t != "Packing and Assembly"]
-    Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date), encoding="utf-8")
+    fell = fell_back_notes(bom, labels)
+    for x in fell:
+        print("read from main:", x)
+    Path(a.out).write_text(render(made, bought, register, no_list, ref_note, screen, files, fai, a.date, fell), encoding="utf-8")
     done = sum(r["state"] == "done" for r in made + bought)
     print(f"release checklist: {len(made)} made lines, {len(bought)} bought lines, {done} done; screen {screen}; written to {a.out}")
     return 0
