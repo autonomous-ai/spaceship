@@ -529,5 +529,53 @@ class FillDxfTest(unittest.TestCase):
         self.assertNotIn("BAD ", out.getvalue())
 
 
+class EditTestBackChecksTest(unittest.TestCase):
+    """The edit test's back-panel checks read a D-131 frame right: each rail stops 1.41 short of the frame's corner
+    for the mitre plate, and the 220 rule is set from the frame's end, not the rail's (dry run 8, B1 after the edit:
+    the frame end X -1101.74, the rails from -1100.33, the rivnuts at 220 + 3 x 219.66 from the frame end)."""
+
+    def setUp(self):
+        fake = types.ModuleType("adsk")
+        fake.core = types.ModuleType("adsk.core")
+        fake.fusion = types.ModuleType("adsk.fusion")
+        sys.modules.update({"adsk": fake, "adsk.core": fake.core, "adsk.fusion": fake.fusion})
+        sys.path.insert(0, HERE)
+        import edit_test_wall
+        self.et = edit_test_wall
+        self.p = {"pod_w": 2300, "half_pw": 1100.61, "half_fw": 1098.99, "back_ph": 1080, "stile_pitch_max": 300,
+                  "frm_len": 1098.99, "stile_n_mid": 3, "stile_pitch": 269.748, "cass_len": 1064.87, "cass_h": 1080,
+                  "pnl_h": 1080}
+        f = "211201 FRAME:1+"
+        self.after = {
+            f + "212501 RAIL BOTTOM:1 / RAIL - BOTTOM": (-1100.33, 804.0, 112.26, -4.16, 844.0, 132.26),
+            f + "212502 RAIL TOP:1 / RAIL - TOP": (-1100.33, 804.0, 1172.26, -4.16, 844.0, 1192.26),
+            f + "212503 STILE OUTER:1 / STILE - OUTER": (-1101.74, 804.0, 113.67, -1081.74, 844.0, 1190.85),
+            f + "212504 STILE CENTRE:1 / STILE - CENTRE": (-22.75, 804.0, 113.67, -2.75, 844.0, 1190.85),
+            f + "212505 STILE MID:1 / STILE - MID": (-831.99, 804.0, 132.26, -811.99, 844.0, 1172.26),
+            f + "212505 STILE MID:2 / STILE - MID": (-562.25, 804.0, 132.26, -542.25, 844.0, 1172.26),
+            f + "212505 STILE MID:3 / STILE - MID": (-292.5, 804.0, 132.26, -272.5, 844.0, 1172.26),
+            "211401 SKIN:1 / SKIN - ACP 3": (-1101.74, 847.0, 112.26, -1.13, 850.0, 1192.26),
+            "831001 SPIGOT:1 / SPIGOT": (-1005.74, 820.0, 1185.02, -997.74, 828.0, 1200.26),
+            "831001 SPIGOT:2 / SPIGOT": (-106.75, 820.0, 1185.02, -98.75, 828.0, 1200.26),
+        }
+        for i, (x0, x1) in enumerate(((-888.22, -875.26), (-668.56, -655.6), (-448.89, -435.93), (-229.23, -216.27),
+                                      (-1008.22, -995.26), (-109.23, -96.27)), 1):
+            z0 = 1183.6 if i <= 4 else 1182.1
+            self.after["838003 RIVNUT:%d / RIVNUT" % i] = (x0, 817.52, z0, x1, 830.48, z0 + 10.92)
+
+    def check(self, after):
+        return {name.split(" [")[0]: ok for name, ok in self.et.back_checks(after, self.p)}
+
+    def test_rivnuts_from_the_frame_end_pass(self):
+        got = self.check(self.after)
+        self.assertTrue(got["top rail rivnuts follow the 220 rule"], got)
+        self.assertTrue(all(got.values()), got)
+
+    def test_rivnuts_set_from_the_rail_end_fail(self):
+        moved = {k: ((v[0] + 1.41, v[1], v[2], v[3] + 1.41, v[4], v[5]) if k.endswith("RIVNUT") and v[2] > 1183
+                     else v) for k, v in self.after.items()}
+        self.assertFalse(self.check(moved)["top rail rivnuts follow the 220 rule"])
+
+
 if __name__ == "__main__":
     unittest.main()

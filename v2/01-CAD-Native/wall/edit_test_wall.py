@@ -264,12 +264,14 @@ def back_checks(after, p):
         fe = felts[0]
         out.append(("felt follows the tray, 1 mm clear inside the 0.5 returns",
                     abs((fe[3] - fe[0]) - (p["cass_len"] - 3)) < 0.01 and abs((fe[5] - fe[2]) - (p["cass_h"] - 3)) < 0.01))
+    # the frame's low-X end: its perimeter members' outer face there (the outer or centre stile). Not the rails' own
+    # ends: D-131 cuts each rail back 1.41 from the corner for the mitre plate (dry run 8: the 220 rule read off the
+    # rail's end was 1.41 out), and the 220 rule, the studs and the clip zones are all set from the frame's end
+    x_low = min(v[0] for v in rails + perim) if rails else None
     if zones and rails:
-        x_low = min(r[0] for r in rails)
         want = sorted({round(x_low + p["stile_pitch"], 2), round(x_low + p["stile_n_mid"] * p["stile_pitch"], 2)})
         out.append(("clip zones sit on the first and last stud", sorted({round(z[0], 2) for z in zones}) == want))
     if rivs and rails:
-        x_low = min(r[0] for r in rails)
         pitch = (p["frm_len"] - 440.0) / 3.0
         want = [round(x_low + 220.0 + i * pitch, 2) for i in range(4)]
         got = sorted(round((r[0] + r[3]) / 2.0, 2) for r in rivs)
