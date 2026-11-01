@@ -484,57 +484,27 @@ def plate_length(pkey):
 
 
 def plate_outline(vals, half, name):
-    """The mitre plate at one corner, in plan (mm): the register's plate, mp_t thick across its mitre and the mitre's
-    length along it from the outer corner to the inner corner (H-40, H-41), with its two tips at the outer corner ground
-    flush with the frame's outer faces, so nothing stands proud of the outside (the seams' gaps stay; the weld fills the
-    two small gaps the members' cut-backs leave at the inner corner). [(x, y)], a pentagon."""
+    """The mitre plate at one corner, in plan (mm): the Joints Engineer's plate (831007, 831008: native model and STEP,
+    #294), the mitre's length along it from the outer corner to the inner corner and mp_t thick, centred on the mitre
+    line. Its outer tips stand a little proud of the frame's outer faces (0.71 at a 45 deg corner, up to 0.89 at a back
+    corner) until the welder grinds them flush with the beads (J-FRAME-01); the weld fills the small gaps at the inner
+    corner. [(x, y)], a rectangle."""
     import math
     _n, _k, o, i = next(c for c in plate_corners(half) if c[0] == name)
     ox, oy, ix, iy = (ev(vals, e) for e in (o[0], o[1], i[0], i[1]))
     L, t = math.hypot(ix - ox, iy - oy), vals["mp_t"] / 2
     ux, uy = (ix - ox) / L, (iy - oy) / L
     nx, ny = -uy, ux
-    rect = [(ox - t * nx, oy - t * ny), (ix - t * nx, iy - t * ny), (ix + t * nx, iy + t * ny), (ox + t * nx, oy + t * ny)]
-    sx, sy = (1 if ix > ox else -1), (1 if iy > oy else -1)      # the frame's inside from this outer corner
-
-    def clip(poly, axis, bound, sign):
-        def inside(p):
-            return (p[axis] - bound) * sign >= -1e-9
-
-        def cut(a, b):
-            f = (bound - a[axis]) / (b[axis] - a[axis])
-            return (a[0] + f * (b[0] - a[0]), a[1] + f * (b[1] - a[1]))
-        out = []
-        for k in range(len(poly)):
-            a, b = poly[k], poly[(k + 1) % len(poly)]
-            if inside(a):
-                out.append(a)
-            if inside(a) != inside(b):
-                out.append(cut(a, b))
-        return out
-    poly = clip(clip(rect, 0, ox, sx), 1, oy, sy)
-    clean = []
-    for p in poly:
-        q = (round(p[0], 6), round(p[1], 6))
-        if not clean or q != clean[-1]:
-            clean.append(q)
-    if clean[0] == clean[-1]:
-        clean.pop()
-    return clean
-
+    return [(round(x, 6), round(y, 6)) for x, y in ((ox - t * nx, oy - t * ny), (ix - t * nx, iy - t * ny),
+                                                    (ix + t * nx, iy + t * ny), (ox + t * nx, oy + t * ny))]
 
 def plate_local(pkey):
-    """The plate's outline in its own frame [(x, y) expressions]: X along its mitre from the outer corner (0) to the inner
-    corner, Y across its mp_t thickness, the two outer tips ground flush (plate_outline); its standard side, the one C1's
-    side corners use (a back seam corner takes it turned over about its X axis)."""
+    """The plate's outline in its own frame [(x, y) expressions], as the Joints Engineer models it: X along its mitre
+    from the outer corner (0) to the inner corner, Y across its mp_t thickness, centred (a rectangle: one shape for every
+    corner, never turned over)."""
     t = "mp_t / 2"
     L = plate_length(pkey)
-    if pkey == "mp45":
-        a_up, a_dn = t, t                                          # tan 45 deg
-    else:
-        a_up, a_dn = "%s * tube_w / back_w" % t, "%s * back_w / tube_w" % t
-    return [("0 mm", "0 mm"), (a_up, t), (L, t), (L, "-(%s)" % t), (a_dn, "-(%s)" % t)]
-
+    return [("0 mm", "-(%s)" % t), (L, "-(%s)" % t), (L, t), ("0 mm", t)]
 
 def plate_places(vals, half):
     """[(name, plate key, origin (x, y, z) mm, angle about Z in degrees, turned over)] for the build: each plate's origin

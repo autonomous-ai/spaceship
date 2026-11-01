@@ -192,7 +192,8 @@ def frame_spec(key, half):
         "back member is cut 26.57 deg off square and the side and seam members 63.43 deg. A 2.0 mitre plate is "
         "welded into every corner (831007 at the front, 831008 at the back), each member cut back square to the "
         "mitre so the outside sizes stay: 1.41 along it at 45 deg, 2.24 off the side and seam members and 1.12 off "
-        "the back member at the back (J-FRAME-01).",
+        "the back member at the back (J-FRAME-01); the plate's two outer tips (up to 0.9 proud) ground flush with the "
+        "outer faces.",
         "Welded in a jig (D-131): the corners with their plates, then the T joints; beads ground flush on the skin "
         "and closing faces; every burnt zone wire-brushed and coated with 2-component zinc-rich epoxy. No vent or "
         "drain holes. Every joint hole made after welding, from the joint faces (J-FRAME-01).",
