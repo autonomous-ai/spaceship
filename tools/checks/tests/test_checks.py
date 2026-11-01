@@ -580,6 +580,32 @@ def test_a_plain_strip_passes_on_its_full_parts_list_row(tmp_path):
         str(tmp_path), {"811205"}, {}, {"811205": row["name"]}, cuboid_by_pn={"811205": (20.0, 20.0, 500.0)}))
 
 
+def test_the_strip_list_keeps_one_plain_thin_shape_per_part():
+    # D-125's per-part strip list, shared with the release checklist: one shape per part across every STEP, a plain
+    # rectangular block, thin enough to be a strip or sheet
+    class FakeStep:
+        def __init__(self, rows):
+            self.rows = rows
+        def instances(self):
+            return [{"solid": i, "part_number": pn} for i, (pn, _so) in enumerate(self.rows)]
+        def solid(self, sid):
+            return self.rows[sid][1]
+    a = math.radians(30.0)
+    turned = sf.Frame.from_axes((100.0, 50.0, 0.0), (0, 0, 1), (math.cos(a), math.sin(a), 0))
+    strip = lambda frame=sf.Frame(), length=991.0: _profile(frame, length=length, w=28.0, h=1.5, t=None)
+    files = {
+        "a.step": FakeStep([("811205", strip()),                                    # a strip ...
+                            ("111999", _profile(sf.Frame(), length=100.0, w=50.0, h=40.0, t=None)),   # a thick block
+                            ("211999", strip(length=500.0)),                        # two shapes under one number
+                            ("831999", strip(length=60.0)), ("831999", strip(turned, length=60.0)),   # copies, turned
+                            ("211998", _profile(sf.Frame(), w=40.0, h=40.0, t=2.0))]),                # a tube
+        "b.step": FakeStep([("811205", strip(turned)),                              # ... the same strip in a 2nd file
+                            ("211999", strip(length=300.0))]),
+    }
+    got = c_drawings.strip_sides(list(files), files.get)
+    assert got == {"811205": pytest.approx((1.5, 28.0, 991.0)), "831999": pytest.approx((1.5, 28.0, 60.0))}
+
+
 def test_run_with_ref_leaves_no_export_behind():
     import glob
     import subprocess
