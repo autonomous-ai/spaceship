@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 368 part lines (174 made, 194 bought, 146 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 356.5 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 373 part lines (174 made, 199 bought, 151 on HOLD) and 50 sub-assembly lines from 20 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 357.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -133,7 +133,10 @@ Read from: this working tree.
 - 711001 ELECTRICAL - POWER UNIT - ENCLOSURE BODY: HOLD (DRAFT; HOLD features: the fixing to B2's frame (WALL, IF-12) and the earth stud hole (PEM data))
 - 711002 ELECTRICAL - POWER UNIT - FRONT PLATE: HOLD (DRAFT; HOLD features: the GFCI receptacle's decorator opening and the two keystone openings, set by the picked parts' drawings (D-133))
 - 718001 ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718002 ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - RS-485: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718081 ELECTRICAL - 24 V SUPPLY - 60 W CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT: metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
+- 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718002 ELECTRICAL - LED CONTROLLER - 24 V PWM - DMX512 - ISOLATED INPUT: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718003 ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718004 ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718005 ELECTRICAL - INLET SEALING CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -158,10 +161,10 @@ Read from: this working tree.
 - 718020 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718021 ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE): HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718022 ELECTRICAL - WIRE - UL 1015 14 AWG GREEN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718073 ELECTRICAL - CURRENT SENSE MODULE - 12 V 0-5 A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718073 ELECTRICAL - CURRENT SENSE MODULE - 24 V 0-5 A: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718026 ELECTRICAL - CABLE - 4 X 20 AWG: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718027 ELECTRICAL - CABLE - 4 X 24 AWG SCREENED: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718051 ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718051 ELECTRICAL - LED STRIP - 24 V 3.0 W/M - 3000 K - 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718052 ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0.9 M: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718044 ELECTRICAL - DRAW CORD - NYLON 3 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718048 ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -181,6 +184,7 @@ Read from: this working tree.
 - 718072 ELECTRICAL - MAINS PLUG - NEMA 5-15P: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718023 ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718024 ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718055 ELECTRICAL - CABLE - 4 X 16 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718029 ELECTRICAL - CABLE - 6 X 18 AWG - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718025 ELECTRICAL - CABLE - 6 X 24 AWG SCREENED - CLASS 2: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718028 ELECTRICAL - CABLE - CAT6 U/UTP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
@@ -197,10 +201,12 @@ Read from: this working tree.
 - 718038 ELECTRICAL - RJ45 PLUG - CAT6: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718039 ELECTRICAL - RJ45 INLINE COUPLER - CAT6: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718040 ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718056 ELECTRICAL - TERMINAL - MINI-FIT JR FEMALE 16 AWG TIN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718057 ELECTRICAL - TERMINAL - MINI-FIT JR MALE 16 AWG TIN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718041 ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718042 ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718043 ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
-- 718050 ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
+- 718050 ELECTRICAL - LED STRIP - 24 V 6.0 W/M - 3000 K - 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718053 ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718101 ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
 - 718102 ELECTRICAL - LED PROFILE COVER - SATIN - CLIP-IN: HOLD (HOLD (bought part: no order, no supplier contact; guideline 4.3))
