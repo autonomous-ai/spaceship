@@ -27,6 +27,7 @@ One feed for the kit, from one 24 V Class 2 source (D-168), replaces the two 12 
 
 What Class 2 lets the design do (NEC Article 725 in the 2020 edition, Article 722/724 in 2023; to check in the US rules phase):
 - Class 2 cable (CL2, or a listed equivalent) in the cassettes and the column, with plug-in connectors and no conduit;
+- in the air path (the column's plenum above its fill, AIR's upper transition and the soffit), plenum-rated leads (CMP, NFPA 262: Belden 6402FE) tied about every 150 mm so nothing flutters (the Lead's rule, 2026-11-01); where the exhaust lead leaves the supply plenum it passes sealed cordgrips (Heyco RLTCG M12, UL listed), and in AIR's plates the ties loop through pairs of holes, so nothing touches the floating lining;
 - Class 2 conductors kept apart from mains conductors. In P01 they never share a box or a cable path: mains stays inside the power unit's mains section, and its 24 V and 12 V outputs leave on the other side.
 
 ## 2. UL 962 and UL 962A

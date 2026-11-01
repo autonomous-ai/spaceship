@@ -147,7 +147,7 @@ def sheet1(doc, rows, harness, v):
     s.textf(152, 69.5, "W30b 4x16 AWG, 2 per pole  B2-CASS", 1.8, SELV)
     s.textf(202, 69.5, "W30c  R1-CASS", 1.8, SELV)
     s.boxf(240, 64, 300, 84, "X7 VOICE KIT DROP (R1, behind the screen)",
-          ["one 24 V Class 2 feed, 5 A fuse: Mini-Fit Jr 4-way, capped", "Cat6 keystone, capped; draw wire W32", "reached through felt plug FA-KIT"],
+          ["one 24 V Class 2 feed, 5 A fuse: Mini-Fit Jr 4-way, capped", "Cat6 keystone, capped", "reached through felt plug FA-KIT"],
           SELV, 1.8)
     # light feed (PS2) up the back wall
     s.plug(150, 115, "", SELV)
@@ -213,8 +213,8 @@ def sheet1(doc, rows, harness, v):
     s.boxf(264, 205, 403, 232, "SAFETY AND RESERVES",
           ["SELF-TEST (D-87): TEST checks the 3 rails, runs both fan pairs (tach), steps each light channel (current), reads",
            "the sensors and shows PASS or the failing item. PWM fail-safe: an open PWM line runs the fans at full speed.",
-           "Draw wires: W32 kit drop -> column -> soffit (mic, status light); W33 back wall top -> ceiling cassette (D-41,",
-           "and the sprinkler or alarm wiring point, ISS-052). Nothing is cut on site later (REQ-VCK-03)."], INK, 1.8)
+           "Draw wire W33: back wall top -> ceiling cassette -> the mic and status light zone (D-41; also the sprinkler",
+           "or alarm wiring point, ISS-052). Nothing is cut on site later (REQ-VCK-03)."], INK, 1.8)
     notes = [
         "1. Mains (red) exists only inside B2 and the power unit (D-10, IF-12). Nothing mains is connected on site.",
         "2. Every 24 V and 12 V circuit (blue) is Class 2: each supply is a Class 2 power unit on its own sheet (UL 1310), and no two meet (D-168).",
@@ -224,7 +224,7 @@ def sheet1(doc, rows, harness, v):
         "6. Bought parts are named from their datasheets in the parts list 710000 (some still HOLD, each with its "
         "reason); no order, no supplier contact. The in-house hub is cited by name only.",
         "7. Mains: US 120 V 60 Hz, 15 A, UL-listed parts (D-133); the prototype is tested in Vietnam through a 220-to-110 V step-down transformer.",
-        "8. Joints: X1 unit/B2-CASS  X2 corner (R1-CASS)  X3 column entry  X4 B2/B4  X5 shelf  X6 call  X7 kit.",
+        "8. Joints: X1 unit/B2-CASS  X2 corner (R1-CASS)  X3 column (P8, behind it)  X4 B2/B4  X5 shelf  X6 call  X7 kit.",
     ]
     s.frame("ELECTRICAL - WIRING DIAGRAM", 1, "not to scale (schematic)", notes)
     return s
@@ -240,7 +240,7 @@ def sheet2(doc, rows, harness, v):
         "2. Plug pairs: supply side receptacle (female), load side plug (male). W20 and W24 share one 10-way at X1, X2, X3.",
         "3. Every segment is tested in the factory before it ships (D-87): continuity, polarity, no shorts, latch pull.",
         "4. Cables: Class 2 circuits on 300 V PVC cable (CL2 or CL3 listed for the US phase); mains only inside B2 and the unit.",
-        "5. W32 and W33 are draw cords, tied off at each hole, for the voice kit's later cables (REQ-VCK-03).",
+        "5. W33 is a draw cord, tied off at each hole, for the voice kit's later cables to the mic zone (REQ-VCK-03).",
     ]
     bottom = s.frame_and_title("ELECTRICAL - HARNESS LIST", "710000  ELECTRICAL", 2, SHEETS, "table, not to scale", DATE,
                                SOURCE, ["UNITS: mm. GENERAL TOLERANCE: harness lengths +20/-0 mm per segment; route "
@@ -310,9 +310,9 @@ def sheet3(doc, rows, harness, v):
     for b in M.BODIES:
         bx = M.body_box(b, v)
         c = b["code"]
-        if c in ("P2", "P3-KIT", "T1-R1A", "T1-R1B", "CALL-R2", "FS-CNR", "FA-KIT", "FX-COL", "FX-CALL1", "FX-CALL2"):
+        if c in ("P2", "P3-KIT", "T1-R1A", "T1-R1B", "P8", "CALL-R2", "FS-CNR", "FA-KIT", "FX-COL", "FX-CALL2"):
             s.rect(Yv(bx[4]), Z(bx[5]), Yv(bx[1]), Z(bx[2]), SELV, 0.3)
-        elif c in ("CHASE", "TO-SOFFIT", "TO-DR", "HUB"):
+        elif b["comp"] in ("COLUMN", "HUB"):
             s.rect(Yv(bx[4]), Z(bx[5]), Yv(bx[1]), Z(bx[2]), SIG, 0.35)
     vlab(Yv(v["y_kit"]) - 6, Z(v["trunk_z"] + 260), "X7 kit drop", SELV)
     vlab(Yv(780), Z(v["trunk_z"]) + 5.0, "P2 corner", SELV)
@@ -337,17 +337,24 @@ def sheet3(doc, rows, harness, v):
         ("   R1's corner tails (X2), push the pairs into P1 and P2, hang it.", False),
         ("3  B4-CASS: plug X4, push the pair into P4, hang it.", False),
         ("4  Plug the light shelf at X5 when the shelf goes up.", False),
-        ("5  Before the air column goes in, plug X3 and X6 behind it.", False),
-        ("6  Plug the fans at their boxes (DR inner face; soffit underside).", False),
+        ("5  Before the air column goes in: pull X3 out of FX-COL, plug it,", False),
+        ("   push it back into P8; plug X6 behind the column.", False),
+        ("6  Plug the fans at their boxes: the supply pair through DR's", False),
+        ("   opening (AIR's transition), the exhaust pair inside its box.", False),
         ("7  Room cord into the inlet, breaker on, press TEST: PASS (D-87).", False),
         ("", False),
         ("KEEP-OUTS FOR OTHER TEAMS", True),
         ("WALL: B2 bay X %.0f-%.0f, Z %.0f-%.0f for the unit; sleeve X %.0f-%.0f," % (v["pu_x0"], v["pu_x1"], v["pu_z0"], v["pu_z1"], v["sl_x"] - 10, v["sl_x"] + 10), False),
         ("Z 301-870; the holes and slots in B2-CASS, B4-CASS, R1-CASS, R2-CASS.", False),
         ("INTERIOR: ledge and screen fixings 15 mm off the trunk band Z 1085-1115.", False),
-        ("CEILING: column chase 24 x 24 (X 1140-1164, Y -310 to -286), hub zone,", False),
-        ("soffit entry; the ceiling cassette's holes at X 583 (D-41 route).", False),
-        ("FRONT: a 19.1 mm bushed hole in DR's back plate, X 1152, Z 2108 (G-DR).", False),
+        ("AIR (CEILING): hub zone X %.0f-%.0f, Z %.0f-%.0f; FR angle entries" % (v["hub_xc"] - v["hub_w"] / 2,
+                                                                              v["hub_xc"] + v["hub_w"] / 2,
+                                                                              v["hub_zc"] - v["hub_w"] / 2,
+                                                                              v["hub_zc"] + v["hub_w"] / 2), False),
+        ("Z %.0f, %.0f; fill channel to Z %.0f; tie pairs; 2 cordgrips; the" % (v["ent_z1"], v["ent_z1"] + v["ent_dz"],
+                                                                             v["fill_z1"]), False),
+        ("ceiling cassette's holes at X 583 (D-41 route).", False),
+        ("FRONT: no hole in DR: the supply leads pass DR's opening.", False),
     ]
     yy = 22
     for t, bold in lines:
@@ -355,7 +362,7 @@ def sheet3(doc, rows, harness, v):
         yy += 4.1
     notes = [
         "1. Every coordinate in these views is computed from electrical_model.py (skeleton P04 parameters), so they follow the CAD.",
-        "2. Bushings (Heyco 2836, 19.1 hole): the unit's H01-H03, G-B2-B4 x2, G-CEIL-B/F, G-DR (DR back plate), G-SOFFIT; the slot S-CNR gets an edge strip.",
+        "2. Bushings: 2836N in the 19.1 holes (the unit's H01-H03, G-B2-B4 x2, G-CEIL-B/F), SB 437-5 in the FR angle (G-COL1, G-COL2); cordgrips at G-SOFFIT, G-FBOX; S-CNR gets an edge strip.",
         "3. Felt-only holes (FX-*, FS-CNR, FA-KIT) go through the felt only, clear of the 12 mm lips: no steel edge, no bushing (no hole through a lip, D-69).",
         "4. These views are the route drawing of 710000; there is no separate Fusion drawing of the route model (PM ruling 2026-11-01).",
     ]

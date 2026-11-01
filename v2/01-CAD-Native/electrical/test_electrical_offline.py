@@ -267,10 +267,85 @@ class Ties(unittest.TestCase):
             dz = max(cut[2] - z, 0, z - cut[3])
             if c.startswith("B"):
                 self.assertGreaterEqual((dx * dx + dz * dz) ** 0.5, EP.TIE_KEEP - 1e-6, (c, x, z))
+            if c == "R1-CASS":            # the cables cross the 5 mm gap to the fixed column at FX-COL with slack
+                fx = next(M.body_box(b, v) for b in M.BODIES if b["code"] == "FX-COL")
+                self.assertGreaterEqual(y - fx[4], EP.TIE_KEEP - 1e-6, (c, y))
             runs.setdefault((c, cable), []).append(z if c in ("B4-CASS", "R2-CASS") else (x if c == "B2-CASS" else y))
         for key, pos in runs.items():
             pos.sort()
             self.assertTrue(all(b - a <= EP.TIE_SPAN + 1e-6 for a, b in zip(pos, pos[1:])), key)
+
+
+class Column(unittest.TestCase):
+    """The harness route through AIR's column and soffit (agreed by ELECTRICAL and CEILING 2026-11-01, the Lead's ask
+    on the 16 clashes): the points both sides build to, the air-path ties, and the air-path cables."""
+
+    def setUp(self):
+        self.v = M.values()
+        self.box = {b["code"]: M.body_box(b, self.v) for b in M.BODIES}
+
+    def test_points_as_agreed(self):
+        v, bx = self.v, self.box
+        self.assertEqual([round(x, 2) for x in bx["HUB"]], [971.0, -314.0, 1110.0, 1151.0, -285.0, 1290.0])
+        self.assertAlmostEqual(v["y_ent"], -307.0)
+        self.assertEqual((v["ent_z1"], v["ent_z1"] + v["ent_dz"]), (1150.0, 1175.0))
+        self.assertAlmostEqual(v["ch_x"], 1140.0)
+        self.assertAlmostEqual(v["sof_y"], -316.0)
+        self.assertAlmostEqual(v["fb_y"], -387.64, places=2)
+        self.assertEqual([round(v["tie_ay"] + 100 * k, 2) for k in range(3)], [-597.64, -497.64, -397.64])
+        self.assertEqual((v["tie_az1"], v["tie_az2"], v["tie_pz"]), (1960.0, 2040.0, 1905.0))
+        # every body of the column's route sits inside the column, the soffit or the fan box's plan, never in DR
+        for code in ("G-COL1", "G-COL2", "IN-HUB", "CH-FILL", "PL-UP", "PL-RUN", "PL-JOG", "UP-ANG", "TO-SOF",
+                     "G-SOF-B", "G-SOFFIT", "G-SOF-N", "SOF-CH", "G-FB-N", "G-FBOX", "G-FB-B"):
+            self.assertGreaterEqual(bx[code][1], v["dr_face_y"] + 0.5 - 1e-6, code)
+            self.assertLessEqual(bx[code][3], v["col_xr"] + 2.0 + 1e-6, code)
+
+    def test_points_match_airs_model(self):
+        """When AIR's model carries the agreed route (CEILING's harness change), the two sides' points are the same."""
+        air_dir = os.path.join(REPO, "v2", "01-CAD-Native", "air")
+        if not os.path.exists(os.path.join(air_dir, "air_model.py")):
+            self.skipTest("no AIR model in this tree")
+        sys.path.insert(0, air_dir)
+        try:
+            import air_model as A
+        finally:
+            sys.path.remove(air_dir)
+        if not hasattr(A, "harness_points"):
+            self.skipTest("AIR's model doesn't carry the agreed route yet")
+        va = A.evaluate()
+        ev = lambda e: A.ev(va, e) if not isinstance(e, (int, float)) else float(e)  # noqa: E731
+        hp = A.harness_points()
+        tup = lambda x: tuple(round(ev(e), 2) for e in (x if isinstance(x, (tuple, list)) else (x,)))  # noqa: E731
+        hz = tuple(round(ev(e), 2) for e in A.hub_zone())
+        b = self.box["HUB"]
+        self.assertEqual(hz, tuple(round(x, 2) for x in (b[0], b[3], b[1], b[4], b[2], b[5])))
+        v = self.v
+        self.assertEqual(tup(hp["leg_y"]), (round(v["y_ent"], 2),))
+        self.assertEqual(tup(hp["entry_z"]), (v["ent_z1"], v["ent_z1"] + v["ent_dz"]))
+        self.assertEqual(tup(hp["tie_z"]), (v["tie_az1"], v["tie_az2"]))
+        self.assertEqual(tup(hp["ch_x"]), (round(v["ch_x"], 2),))
+        self.assertEqual(tup(hp["sof_y"]), (round(v["sof_y"], 2),))
+        self.assertEqual(tup(hp["box_y"]), (round(v["fb_y"], 2),))
+        self.assertEqual(tup(hp["plate_y"]), tuple(round(v["tie_ay"] + 100 * k, 2) for k in range(3)))
+
+    def test_air_path_ties_within_150(self):
+        """The Lead's rule (2026-11-01): leads in the air path are tied about every 150 mm, so nothing flutters."""
+        v = self.v
+        # the exhaust lead up the FR angle: from the fill's top, past the two tie pairs, to the soffit's cordgrip
+        up = [v["fill_z1"], v["tie_az1"] + v["tie_pp"] / 2, v["tie_az2"] + v["tie_pp"] / 2, self.box["G-SOF-B"][2]]
+        # the supply fan and sensor leads along 611108: from the channel's back to DR's opening
+        along = [self.box["PL-RUN"][4]] + [v["tie_ay"] + 100 * k for k in range(3)] + [v["dr_face_y"]]
+        for run in (up, sorted(along)):
+            gaps = [b - a for a, b in zip(sorted(run), sorted(run)[1:])]
+            self.assertTrue(all(g <= 150.0 + 1e-6 for g in gaps), gaps)
+        # the exhaust lead leaves the top tie pair with room to bend into the cordgrip (about 40 mm)
+        self.assertGreaterEqual(self.box["G-SOF-B"][2] - (v["tie_az2"] + v["tie_pp"]), 40.0)
+
+    def test_air_path_cables_flame_rated(self):
+        rows = {h["id"]: h for h in EP.harnesses(self.v)}
+        for i in ("W40", "W41", "W42"):
+            self.assertIn("plenum", rows[i]["cable"], i)
+        self.assertNotIn("W32", rows)        # the column's draw wire is gone: one cable per bushing, no cord in the plenum
 
 
 class FlatParts(unittest.TestCase):

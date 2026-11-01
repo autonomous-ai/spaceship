@@ -103,12 +103,13 @@ part("w_light", "710011", "ELECTRICAL - HARNESS - LIGHT FEED - B2/B4", "Điện 
 part("w_trunk", "710021", "ELECTRICAL - HARNESS - TRUNK - B2/R1", "Điện - bó dây chính", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)", process="harness assembly; segments clipped into B2-CASS and R1-CASS in the factory")
 part("w_col", "710023", "ELECTRICAL - HARNESS - AIR COLUMN", "Điện - bó dây cột gió", "HS", "710000", 1,
-     "", "", None, "calculation (sum of its parts)", process="harness assembly; fitted in the column's chase in the factory")
+     "", "", None, "calculation (sum of its parts)",
+     process="harness assembly; fitted to the air column (its fill channel, FR angle, plenum plate and soffit) before the column goes in")
 part("w_call", "710024", "ELECTRICAL - HARNESS - CALL LIGHT - R2", "Điện - bó dây đèn gọi video", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)", process="harness assembly; clipped into R2-CASS in the factory")
 part("w_draw", "710031", "ELECTRICAL - DRAW WIRE - CEILING ROUTE", "Điện - dây mồi - đường trần", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)",
-     process="draw cords tied off at each hole (REQ-VCK-03): the ceiling route W33 and the column route W32")
+     process="draw cord tied off at each hole (REQ-VCK-03): the ceiling route W33 to the mic and status light zone (D-41)")
 part("hubzone", "710041", "ELECTRICAL - HUB AND CONTROLS ZONE", "Điện - vùng cảm biến và nút bấm", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)", process="fitted in the air column's 180 x 180 zone (D-61, D-70)")
 part("cord", "719001", "ELECTRICAL - CORD SET - 120 V US - 3 M (KIT)", "Điện - bộ dây nguồn 120 V (Mỹ) - 3 m", "HS", "710000", 1,
@@ -124,6 +125,10 @@ PU_IN = 150.0          # mm of lead inside the power unit to its terminal (assum
 TAIL = 150.0           # mm of tail beyond a grommet or slot, to mate the plugs before hanging (assumption)
 LOOP = 150.0           # mm of slack loop in a pocket (= pk_l, assumption)
 KIT_LOOP = 500.0       # mm service loop at the voice kit drop (assumption)
+HUB_IN = 150.0         # mm of lead inside the hub zone to its terminals (assumption)
+IN_AIR_S = 650.0       # mm inside AIR's upper transition and supply fan box, DR's opening to the fan pair (assumption, from
+                       # AIR's layout: about 300 across, 100 back and 100 down, plus the transition's tie points' slack)
+IN_AIR_E = 200.0       # mm inside the exhaust fan box from its cordgrip to the fan pair (assumption)
 # LED strip feed leads (718053) at the harness ends: the back uplight fed both ways, the left jumper's two ends, the right
 # jumper's back end, right uplight and the two down-light rows, the call bar (Reviewer 7: they had no parts line)
 STRIP_FEEDS = {"W11a": 2, "W11b": 2, "W11c": 4, "W12": 1}
@@ -149,8 +154,10 @@ def harnesses(v):
     L = lambda *c: _len(v, *c)  # noqa: E731
     cross_top = v["cut_z1"] + v["tray_t"] - v["pu_z1"]
     cross_side = v["cut_x1"] + v["tray_t"] - v["pu_x1"]
-    hub_rise = v["hub_zc"] - (v["trunk_z"] - v["grm_d"])
-    up_chase = M.evaluate("col_z1", v) - v["hub_zc"]
+    # the column (agreed with CEILING 2026-11-01): the trunk's joint sits in P8 behind the column; its column side
+    # crosses FX-COL and the 5 mm gap, enters through the FR angle's bushings and reaches the hub zone's terminals
+    into_hub = L("FX-COL", "G-COL1", "IN-HUB") + HUB_IN
+    up_fill = L("CH-FILL", "PL-UP")                     # the hub's top to over the fill
     rows = []
 
     def add(**kw):
@@ -250,56 +257,63 @@ def harnesses(v):
             end_b=end("receptacle") + ", tail through the corner slot S-CNR",
             grommets="S-CNR (edge-protected slot)", amps_max=amps,
             note="the four cables pass the corner slot side by side")
-        tail_c = {"W20": L("T1-R1A", "P3-KIT", "T1-R1B", "FX-COL") + TAIL,
-                  "W24": L("T1-R1A", "P3-KIT", "T1-R1B", "FX-COL") + TAIL,
+        tail_c = {"W20": L("T1-R1A", "P3-KIT", "T1-R1B") + LOOP,
+                  "W24": L("T1-R1A", "P3-KIT", "T1-R1B") + LOOP,
                   "W30": L("T1-R1A") + 75 + KIT_LOOP, "W31": L("T1-R1A") + 75 + KIT_LOOP}[wid]
         add(id=wid + "c", harness_pn="710021", segment="R1-CASS", function=fn, frm="P2 (corner, in R1-CASS)",
-            to={"W20": "air column chase", "W24": "air column chase", "W30": "kit drop P3-KIT",
+            to={"W20": "the column joint P8", "W24": "the column joint P8", "W30": "kit drop P3-KIT",
                 "W31": "kit drop P3-KIT"}[wid],
-            route={"W20": "P2, T1-R1A, T1-R1B, FX-COL", "W24": "P2, T1-R1A, T1-R1B, FX-COL",
+            route={"W20": "P2, T1-R1A, T1-R1B, P8", "W24": "P2, T1-R1A, T1-R1B, P8",
                    "W30": "P2, T1-R1A, P3-KIT", "W31": "P2, T1-R1A, P3-KIT"}[wid],
             circuit=circ, conductors=cond, cable=cable, area_mm2=area, parallel=par, length_mm=LOOP + tail_c,
             end_a=end("plug") + (" (mated in P2 through the felt slot FS-CNR)" if wid != "W31" else " (in P2)"),
-            end_b={"W20": "Mini-Fit Jr 10-way receptacle (with W24), tail into the column",
+            end_b={"W20": "Mini-Fit Jr 10-way receptacle (with W24) in P8 behind the column, mated with W20d",
                    "W24": "shares W20's 10-way receptacle",
                    "W30": "Mini-Fit Jr 4-way receptacle, capped with an empty plug housing (the kit outlet: one 24 V Class 2 feed, two pins per pole, 5 A fuse, 60 W peak)",
                    "W31": "RJ45 keystone jack, capped (the kit's data link)"}[wid],
-            grommets={"W20": "FS-CNR, FX-COL", "W24": "FS-CNR, FX-COL", "W30": "FS-CNR", "W31": "FS-CNR"}[wid],
+            grommets={"W20": "FS-CNR", "W24": "FS-CNR", "W30": "FS-CNR", "W31": "FS-CNR"}[wid],
             amps_max=amps, note={"W30": "REQ-VCK-04, D-168: fused 24 V outlet, one Class 2 feed; reached through the felt plug FA-KIT",
                                  "W31": "REQ-VCK-05: data link to the kit zone"}.get(wid, ""))
-    # ---- air column (factory fitted in the column's chase)
-    add(id="W20d", harness_pn="710023", segment="COLUMN", function="air feed", frm="chase entry",
-        to="column fuse block (behind the hub zone cover)", route="CHASE", circuit="PS3 air",
+    # ---- air column (agreed with CEILING 2026-11-01): fitted to the column before it goes in; its tails mate the trunk in P8
+    add(id="W20d", harness_pn="710023", segment="COLUMN", function="air feed", frm="the column joint P8 (R1-CASS)",
+        to="column fuse block (behind the hub zone cover)", route="P8, FX-COL, G-COL1, IN-HUB", circuit="PS3 air",
         conductors="+12 V x 2, 0 V x 2", cable="4 x 18 AWG (2 per pole), Class 2", area_mm2=AWG18, parallel=2,
-        length_mm=LOOP + hub_rise + 150, end_a="Mini-Fit Jr 10-way plug (with W24d), mates W20c behind the column",
-        end_b="fuse block input", grommets="", amps_max=PS3_A, note="F3a 2 A, F3b 2 A, F3c 1 A, F3d 1 A in the column")
-    add(id="W24d", harness_pn="710023", segment="COLUMN", function="hub link to the power unit", frm="chase entry",
-        to="hub I/O (hub zone)", route="CHASE", circuit="hub I/O",
+        length_mm=LOOP + into_hub, end_a="Mini-Fit Jr 10-way plug (with W24d): pulled out through FX-COL to mate W20c, "
+        "pushed back into P8 before the column goes in", end_b="fuse block input (ferrules: they pass the 7.9 mm bushing)",
+        grommets="G-COL1 (Heyco SB 437-5 in the FR angle)", amps_max=PS3_A, note="F3a 2 A, F3b 2 A, F3c 1 A, F3d 1 A in the column")
+    add(id="W24d", harness_pn="710023", segment="COLUMN", function="hub link to the power unit", frm="the column joint P8 (R1-CASS)",
+        to="hub I/O (hub zone)", route="P8, FX-COL, G-COL2, IN-HUB", circuit="hub I/O",
         conductors="RS-485 A, B, 0 V, light current, PS1 and PS2 rail senses", cable="6 x 24 AWG screened",
-        area_mm2=AWG24, length_mm=LOOP + hub_rise + 150, end_a="shares W20d's 10-way plug",
-        end_b="hub I/O (HOLD H-ELE-05)", grommets="", amps_max=0.01,
+        area_mm2=AWG24, length_mm=LOOP + into_hub, end_a="shares W20d's 10-way plug",
+        end_b="hub I/O (HOLD H-ELE-05; ferrules, so it passes the 7.9 mm bushing)", grommets="G-COL2 (Heyco SB 437-5 in the FR angle)",
+        amps_max=0.01,
         note="the hub sets the three light channels with DMX512 over RS-485, reads PS2's current and the 24 V rails PS1 and PS2 for the self-test (D-87); "
              "every core is isolated from PS1 and PS2 (the Lead's ruling, 2026-11-01): the RS-485 pair through an isolated "
              "transceiver, the rail senses through optocouplers, PS2's current through an isolated sensor, so no two Class 2 "
              "supplies share a 0 V")
     add(id="W40", harness_pn="710023", segment="COLUMN", function="supply fan pair", frm="F3a 2 A + hub PWM 1, tach 1",
-        to="supply fan box, high in DR", route="CHASE, TO-DR", circuit="PS3 fan S",
-        conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG screened, plenum (CMP)", area_mm2=AWG20,
-        length_mm=up_chase + L("TO-DR") + 300, end_a="fuse block and hub terminals",
+        to="supply fan box, high in DR", route="hub top, CH-FILL, PL-UP, PL-RUN, PL-JOG, DR's opening, AIR's upper transition",
+        circuit="PS3 fan S", conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG screened, plenum (CMP)", area_mm2=AWG20,
+        length_mm=up_fill + L("PL-RUN", "PL-JOG") + IN_AIR_S + 300, end_a="fuse block and hub terminals",
         end_b="4-way PWM fan connector into a Y-cable at the fan pair (housing HOLD H-ELE-07)",
-        grommets="G-DR", amps_max=2 * FAN_W_MAX / 12.0,
-        note="PWM fail-safe: an open PWM line runs the fans at full speed")
+        grommets="none: open air path through DR's opening (ties: 611108 x 3, AIR's transition x 2)", amps_max=2 * FAN_W_MAX / 12.0,
+        note="PWM fail-safe: an open PWM line runs the fans at full speed; in the air path, so plenum cable tied about every 150 mm "
+             "(the Lead's rule); inside AIR's transition it rides the AIR Transitions Engineer's two tie points (AIR's reserved space, "
+             "D-105: not modelled here)")
     add(id="W41", harness_pn="710023", segment="COLUMN", function="exhaust fan pair", frm="F3b 2 A + hub PWM 2, tach 2",
-        to="exhaust fan box, soffit right end", route="CHASE, TO-SOFFIT", circuit="PS3 fan E",
-        conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG screened, plenum (CMP)", area_mm2=AWG20,
-        length_mm=up_chase + L("TO-SOFFIT") + 300, end_a="fuse block and hub terminals",
-        end_b="4-way PWM fan connector into a Y-cable (housing HOLD H-ELE-07)", grommets="G-SOFFIT",
-        amps_max=2 * FAN_W_MAX / 12.0, note="two signals, balanced flow (D-61)")
+        to="exhaust fan box, soffit right end", route="hub top, CH-FILL, UP-ANG, TO-SOF, G-SOFFIT, SOF-CH, G-FBOX",
+        circuit="PS3 fan E", conductors="+12 V, 0 V, PWM, tach", cable="4 x 20 AWG screened, plenum (CMP)", area_mm2=AWG20,
+        length_mm=L("CH-FILL", "UP-ANG", "TO-SOF", "G-SOF-B", "G-SOFFIT", "SOF-CH", "G-FBOX", "G-FB-B") + IN_AIR_E + 300,
+        end_a="fuse block and hub terminals", end_b="4-way PWM fan connector into a Y-cable (housing HOLD H-ELE-07)",
+        grommets="G-SOFFIT, G-FBOX (Heyco RLTCG M12 cordgrips: they seal the supply plenum from the soffit)",
+        amps_max=2 * FAN_W_MAX / 12.0,
+        note="two signals, balanced flow (D-61); tied to the FR angle at 2 points in the plenum (the Lead's rule)")
     add(id="W42", harness_pn="710023", segment="COLUMN", function="inlet temperature sensor",
-        frm="hub sensor port", to="supply fan box inlet (DR)", route="CHASE, TO-DR", circuit="hub sensor",
+        frm="hub sensor port", to="supply fan box inlet (DR)",
+        route="hub top, CH-FILL, PL-UP, PL-RUN, PL-JOG, DR's opening, AIR's upper transition", circuit="hub sensor",
         conductors="4 cores (sensor supply, ground, two signal)", cable="4 x 20 AWG screened, plenum (CMP)", area_mm2=AWG20,
-        length_mm=up_chase + L("TO-DR") + 500, end_a="hub sensor connector (HOLD, ISS-060)",
-        end_b="sensor probe (HOLD H-ELE-06)", grommets="G-DR", amps_max=None,
+        length_mm=up_fill + L("PL-RUN", "PL-JOG") + IN_AIR_S + 500, end_a="hub sensor connector (HOLD, ISS-060)",
+        end_b="sensor probe (HOLD H-ELE-06)", grommets="none: as W40, tied with it", amps_max=None,
         note="the 4 K limit's room reading (D-50, REQ-ELE-04)")
     add(id="W43", harness_pn="710023", segment="COLUMN", function="hub supply", frm="F3c 1 A", to="sensor hub",
         route="hub zone", circuit="PS3 hub", conductors="+12 V, 0 V", cable="2 x 18 AWG, Class 2", area_mm2=AWG18,
@@ -316,12 +330,9 @@ def harnesses(v):
         cable="2 x 18 AWG, Class 2", area_mm2=AWG18, length_mm=TAIL + LOOP + L("CALL-R2", "FX-CALL2") + 300,
         end_a="Mini-Fit Jr 2-way plug (mates W11c's call branch in P7)", end_b="strip feed of the call bar",
         grommets="FX-CALL0, FX-CALL2 (felt only)", amps_max=CALL_W / BUS_V["PS2"], note="")
-    # ---- draw wires (REQ-VCK-03): a cord in each cassette or column segment, tied off at its holes
-    add(id="W32", harness_pn="710031", segment="R1-CASS + COLUMN", function="draw wire: kit zone to the soffit (mic, status light)",
-        frm="kit drop P3-KIT", to="soffit right end", route="T1-R1B, FX-COL, CHASE, TO-SOFFIT", circuit="reserve",
-        conductors="cord", cable="nylon draw cord 3 mm", area_mm2=None,
-        length_mm=L("T1-R1B", "FX-COL", "CHASE", "TO-SOFFIT") + 2 * TAIL, end_a="tied at P3-KIT",
-        end_b="tied at the soffit entry", grommets="FX-COL, G-SOFFIT", amps_max=None, note="REQ-VCK-02, -03")
+    # ---- draw wire (REQ-VCK-03): the ceiling route to the mic and status light zone, tied off at its holes. The column's
+    #      draw wire W32 is gone (2026-11-01): AIR's route has no room for it (one cable per bushing), the plenum is no
+    #      place for a loose cord, and the zone keeps W33 from the back wall's top corner (D-41)
     add(id="W33", harness_pn="710031", segment="B4-CASS + CEILING", function="draw wire: ceiling route (D-41)",
         frm="shelf feed pocket P6", to="soffit back face, top", route="C1-UP, C1-JOG, C1-RISE, FX-CEIL, G-CEIL-B, C1-CEIL, G-CEIL-F",
         circuit="reserve", conductors="cord", cable="nylon draw cord 3 mm", area_mm2=None,
@@ -609,15 +620,13 @@ part("term_m24", "718078", "ELECTRICAL - TERMINAL - MINI-FIT JR MALE 22-28 AWG T
      note="3 x 6: the hub link's 24 AWG cores in the 10-way plugs at X1, X2, X3")
 
 # ---- protection where cables pass steel, clips, draw cord
-part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Điện - vòng đệm luồn dây", "PI", "710000", 9,
+part("bushing", "718041", "ELECTRICAL - BUSHING - SHORTY 19.1 HOLE - NYLON", "Điện - vòng đệm luồn dây", "PI", "710000", 7,
      "nylon 6/6 UL94 V-2", "black, as supplied", 0.001, "assumption", maker="Heyco", sku="2836 (SB 750-625, black)",
      status=HOLD_BUY, source=HEYCO,
-     note="the panel hole is Ø19.1 (WALL and CEILING cut 19.1 for it; PM 2026-10-31). Every hole through a sheet: the power unit "
+     note="the panel hole is Ø19.1 (WALL and CEILING cut 19.1 for it; PM 2026-10-31). Every 19.1 hole through a sheet: the power unit "
           "body's H01-H03 (two lead exits, the light feed exit; 1.0 mm aluminium), G-B2-B4 x 2, G-CEIL-B, G-CEIL-F "
-          "(0.5 mm steel), G-DR (DR's back plate, 1.0-2.7 mm, FRONT HOLD-10), G-SOFFIT (the soffit's casing): 9 (B2-CASS's cut-out "
-          "is plain, WALL, so its top return and its bushing are gone). Panels to 1.6 mm, "
-          "passes 15.9: the 0.5 mm fit and "
-          "a thicker-panel bushing for G-DR or G-SOFFIT if over 1.6 mm are HOLD H-ELE-01. Felt-only holes take none: no steel edge")
+          "(0.5 mm steel): 7 (B2-CASS's cut-out is plain, WALL; the column's holes take their own parts, 718084 and 718085, "
+          "since the agreed route of 2026-11-01). Felt-only holes take none: no steel edge")
 part("edge", "718042", "ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET", "Điện - nẹp bảo vệ mép tôn", "PI", "710000", 0.2,
      "PVC or nylon", "", 0.02, "assumption (kg per m)", sku="maker HOLD (H-ELE-01)", status=HOLD_BUY, source="",
      note="the slot S-CNR (182 mm edge); qty in m (B2-CASS's cut-out is plain, WALL, so its slot is gone)")
@@ -661,9 +670,10 @@ def tie_points(v):
     zs = [z for z in (box["P4"][2] + TIE_END, box["P4"][5] - TIE_END) if z - cut_z1 >= TIE_KEEP]
     for z in _fill(zs + [box["P6"][2] + TIE_END, box["P6"][5] - TIE_END]):
         out.append(("B4-CASS", "light feed W10b, W10c", (v["lt_x"], back_y, z)))
-    # R1-CASS: P2 at the corner, T1-R1A, P3-KIT, T1-R1B to the column's felt hole FX-COL
+    # R1-CASS: P2 at the corner, T1-R1A, P3-KIT, T1-R1B to the column joint's pocket P8; its tie 20 inside P8's end
+    # stays TIE_KEEP clear of FX-COL, where the cables cross the 5 mm gap to the fixed column with slack
     ys = sorted([box["P2"][1] + TIE_END, box["P2"][4] - TIE_END, box["P3-KIT"][1] + TIE_END,
-                 box["P3-KIT"][4] - TIE_END, box["FX-COL"][4] + TIE_END])
+                 box["P3-KIT"][4] - TIE_END, max(box["P8"][4] - TIE_END, box["FX-COL"][4] + TIE_KEEP)])
     for y in sorted(_fill(ys), reverse=True):
         out.append(("R1-CASS", "trunk W20c, W30c, W31c", (right_x, y, v["trunk_z"])))
     # R2-CASS: the call light drop from its felt hole FX-CALL2 up to P7
@@ -676,9 +686,28 @@ part("clip", "718043", "ELECTRICAL - CABLE CLIP - FOR 0.5 MM STEEL TRAY", "Đi�
      len(tie_points(M.values())), "", "", 0.002, "assumption", sku="maker HOLD (H-ELE-10)", status=HOLD_BUY, source="",
      note="one at each tie point in the lining trays (tie_points: pockets, every 300 mm, none near the cut-out; "
           "710000_P01_ELECTRICAL-TRAY-TIE-HOLES_CALC.csv); clips to the tray only (D-26)")
+# ---- the column route's own parts (agreed with CEILING 2026-11-01; AIR cuts the holes, ELECTRICAL lists what goes in them)
+part("bush_col", "718084", "ELECTRICAL - BUSHING - SNAP 11.1 HOLE - NYLON", "Điện - vòng đệm luồn dây lỗ 11.1", "PI", "710023", 2,
+     "nylon 6/6 UL94 V-2", "black, as supplied", 0.0005, "assumption", maker="Heyco", sku="SB 437-5 (2043, black)",
+     status=HOLD_BUY, source=HEYCO,
+     note="G-COL1 and G-COL2: the trunk's two entries through AIR's FR angle (2 mm aluminium, holes 11.1), one cable in each "
+          "(W20d 4.22 mm, W24d 5.31 mm; bore 7.9). Head outside, in the 5 mm gap; the cables' hub ends are ferrules, so they "
+          "pass the bore")
+part("cordgrip", "718085", "ELECTRICAL - CORDGRIP - M12 - LIQUID TIGHT - NYLON", "Điện - ốc siết cáp M12", "PI", "710023", 2,
+     "nylon 6/6 UL94 V-2, Buna N gland", "black, as supplied", 0.005, "assumption", maker="Heyco",
+     sku="RLTCG M12 (M4330, black, locknut included)", status=HOLD_BUY, source=HEYCO,
+     note="G-SOFFIT (the soffit's fixed underside 611208: the felt cut back so it grips the 3 mm ACP) and G-FBOX (the exhaust "
+          "fan box's 3 mm bottom): W41 (4.17 mm) in its 1.7-5.3 mm range. They seal the supply plenum from the soffit (CEILING's "
+          "ask): no maker sheet was found for a membrane grommet in a 19.1 hole through 3 mm")
+part("tie_col", "718086", "ELECTRICAL - CABLE TIE - 160 MM - NYLON 6/6", "Điện - dây rút 160 mm", "PI", "710023", 7,
+     "nylon 6/6 UL94 V-2", "UV black", 0.001, "assumption", maker="Heyco", sku="Nytye 13142B (NT-50-063)",
+     status=HOLD_BUY, source=HEYCO,
+     note="the air-path ties (the Lead's rule: about every 150 mm, so nothing flutters): 2 on AIR's FR angle (Z 1960, 2040) and 3 "
+          "on the high plenum plate 611108 (Z 1905), each through a pair of 6.4 holes 15 apart, so only the strap sits in the "
+          "5 mm gap to the floating felt (a push-mount's arrow would reach it); 2 on the tie points in AIR's upper transition")
 part("drawcord", "718044", "ELECTRICAL - DRAW CORD - NYLON 3 MM", "Điện - dây mồi", "PI", "710031",
-     round(_m(["W32", "W33"]), 2), "nylon", "", 0.006, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY,
-     source="", note="W32 and W33; qty in m")
+     round(_m(["W33"]), 2), "nylon", "", 0.006, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY,
+     source="", note="W33 (the column's W32 is gone, 2026-11-01); qty in m")
 
 # ---- lights
 part("strip_shelf", "718050", "ELECTRICAL - LED STRIP - 24 V 6.0 W/M - 3000 K - 8 MM", "Điện - LED dây kệ đèn 24 V",
@@ -839,6 +868,25 @@ PRODUCTS = {'718077': ('MOLEX 39-00-0047',
             '(1.4310), 0.15 g',
             'https://www.fabory.com/en/p/51460040001/generatePdf',
             "the front plate's bond to the earthed body (UL: accessible metal near mains parts is earthed)"),
+ '718084': ('HEYCO SB 437-5',
+            'Heyco',
+            'SB 437-5 (2043 black): snap bushing for a 0.437 in (11.1 mm) hole, bore 0.31 in (7.9 mm), head 13.5 mm, multiple '
+            'locking steps for panels to 3.2 mm; nylon 6/6, 94V-2, -18 to 105 C; UL Recognized E15331, CSA 8919',
+            'https://www.heyco.com/wp-content/uploads/2024/09/Snap-Bushings-1.pdf',
+            "the FR angle's 2 mm leg is inside its range; one cable in each"),
+ '718085': ('HEYCO RLTCG M12',
+            'Heyco',
+            'RLTCG M12 (M4330 black, locknut included): Heyco-Tite liquid tight cordgrip, cable 1.7-5.3 mm, clearance hole 12.0 '
+            'mm, 29.5 overall, 8.1 thread, 16.0 across flats; nylon 6/6 with Buna N gland, 94V-2, IP68, -40 to 115 C static; '
+            'UL Listed and Recognized E51579, CSA 93876C',
+            'https://www.heyco.com/wp-content/uploads/2024/09/Liquid-Tight-Cordgrips-Metric.pdf',
+            'it seals the 4.17 mm plenum lead where it leaves the supply plenum'),
+ '718086': ('HEYCO NYTYE 13142B',
+            'Heyco',
+            '13142B (NT-50-063): Nytye nylon cable tie, 160 mm, 4.8 mm wide, 222 N (50 lb), bundle to 40 mm; nylon 6/6 UV '
+            'black, 94V-2, -40 to 85 C; UL certified E54523',
+            'https://www.heyco.com/wp-content/uploads/2024/09/Nylon-Cable-Ties.pdf',
+            'through a pair of 6.4 holes: the 4.8 mm strap passes each'),
  '718080': ('WAGO 221-415',
             'WAGO',
             '221-415: COMPACT splicing connector, 5 conductors, levers, 24-12 AWG (0.14-4 mm2), strip 11 mm; UL 486C '
