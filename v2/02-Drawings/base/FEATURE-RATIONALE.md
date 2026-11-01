@@ -141,7 +141,7 @@ The pod has no floor (PM ruling D-132, the owner's question): people stand on th
 
 ## What is not here yet
 
-- The front corner and inline keys (111212 to 111214, HOLD-14) and the back key's final fixing (F-018): the Joints Engineer's register PR.
-- The front-left pieces under DL (with DL's spigots at FRONT's named points), the DR intake (mesh, stub with the inline key, the closing angle carrying DR's spigots, D-62; D-130's boot joint with CEILING; the lip seal's run along the closing plate with the Air Engineer): P02 batches 2 and 3.
-- The sill's other end at X 965: closed by the intake's closing plate (FS-04, batch 3).
-- The sill's seat detail with FRONT (FS-01) and the air column's new locator, fixed to the pod's frame (CEILING and Joints, D-132).
+- The intake under DR (P02 batch 3): the mesh, the stub with the inline key 111215, the closing plate carrying DR's spigots (D-62), D-130's boot joint with CEILING, the lip's run along the closing plate with the Air Engineer, and the plate that closes the sill's other end at X 965 (FS-04).
+- The sill's flange rivets into FR1: closed-end blind rivets under D-166 (their tails end inside FR1's tube). The Joints Engineer named them (ISO 15973, aluminium body, Ø4.8 × 9.5, grip 3.0 to 5.0, hole Ø4.9; 6 a pod, about 150 apart); they go into the model and the list once Control gives the number.
+- The strike pad's thickness (FB-33, at most 8): from the drop seal's button drawing (FRONT, HOLD).
+- The air column's new locator, fixed to the pod's frame (CEILING and Joints, D-132).

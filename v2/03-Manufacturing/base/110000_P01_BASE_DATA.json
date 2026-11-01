@@ -7,23 +7,23 @@
   "110000>110104": 1,
   "110000>110106": 1,
   "110101>111101": 1,
+  "110101>111111": 1,
   "110101>111211": 1,
   "110101>111212": 1,
   "110101>111601": 2,
+  "110101>111602": 2,
   "110101>118001": 1,
-  "110101>118002": 2,
-  "110101>118003": 1,
   "110101>831001": 2,
   "110101>831002": 4,
   "110101>838001": 4,
   "110101>838003": 6,
   "110101>838010": 4,
   "110102>111102": 1,
+  "110102>111111": 1,
   "110102>111211": 1,
   "110102>111601": 2,
+  "110102>111602": 2,
   "110102>118001": 1,
-  "110102>118002": 2,
-  "110102>118003": 1,
   "110102>831001": 2,
   "110102>831002": 4,
   "110102>838001": 2,
@@ -31,8 +31,8 @@
   "110102>838010": 2,
   "110103>111103": 1,
   "110103>111601": 3,
+  "110103>111602": 3,
   "110103>118001": 1,
-  "110103>118002": 3,
   "110103>831001": 4,
   "110103>831002": 8,
   "110103>838003": 12,
@@ -40,18 +40,18 @@
   "110104>111105": 1,
   "110104>111214": 1,
   "110104>111601": 1,
+  "110104>111602": 1,
   "110104>118001": 3,
-  "110104>118002": 1,
   "110104>831001": 2,
   "110104>838001": 2,
   "110104>838003": 2,
   "110104>838010": 2,
   "110106>111106": 1,
+  "110106>111111": 1,
   "110106>111301": 1,
   "110106>111601": 2,
+  "110106>111602": 2,
   "110106>118001": 2,
-  "110106>118002": 2,
-  "110106>118003": 1,
   "111301>111302": 1,
   "111301>111303": 1
  },
@@ -108,7 +108,7 @@
      0.0,
      1.0
     ],
-    "dia": 13.0
+    "dia": 13.5
    },
    {
     "at": [
@@ -134,7 +134,7 @@
      0.0,
      1.0
     ],
-    "dia": 13.0
+    "dia": 13.5
    },
    {
     "at": [
@@ -147,7 +147,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -160,7 +160,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -173,7 +173,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -186,7 +186,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -199,7 +199,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -212,7 +212,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -279,7 +279,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -305,7 +305,7 @@
      0.0,
      1.0
     ],
-    "dia": 13.0
+    "dia": 13.5
    },
    {
     "at": [
@@ -318,7 +318,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -331,7 +331,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -344,7 +344,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -357,7 +357,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -370,7 +370,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -396,7 +396,7 @@
      0.0,
      1.0
     ],
-    "dia": 13.0
+    "dia": 13.5
    },
    {
     "at": [
@@ -409,7 +409,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -422,7 +422,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -435,7 +435,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -448,7 +448,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -461,7 +461,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -487,7 +487,7 @@
      0.0,
      1.0
     ],
-    "dia": 13.0
+    "dia": 13.5
    },
    {
     "at": [
@@ -500,7 +500,7 @@
      0.0,
      1.0
     ],
-    "dia": 9.53
+    "dia": 10.0
    },
    {
     "at": [
@@ -1149,7 +1149,7 @@
    "value": "Black anodised, matte, 20 um (class AA20, EN ISO 7599)"
   },
   {
-   "comment": "BASE SOURCE: the side band's back-end cap 118003: flat, inside the tube's end and flush with the back face Y = pod_d/2, no deeper than 2, as the back corner key sits 2.5 from the end (D-129, joints register J-BASE-02); product HOLD",
+   "comment": "BASE SOURCE: the tube end cap 111111 (D-165): flat, inside the tube's end and flush with the back face Y = pod_d/2, no deeper than 2, as the back corner key sits 2.5 from the end (D-129, joints register J-BASE-02); product HOLD",
    "expression": "2 mm",
    "name": "cap_t",
    "unit": "mm",
@@ -1163,11 +1163,11 @@
    "value": 26.0
   },
   {
-   "comment": "BASE SOURCE: Sherex CAH2-610-4.2 M6 rivet nut, steel, zinc plated (joints register H-03, D-131): hole 9.53 +0.10/0, as the aluminium part's it replaced (unverified for the steel part, HOLD-04)",
-   "expression": "9.53 mm",
+   "comment": "BASE SOURCE: D-163: the M6 rivet nut 838003 is Sherex CAL2-610-4.2, steel, zinc plated, knurled round body, in a round drilled hole 10.00 +0.10; T06's spin-out test (4 N m or more in the real tubes) confirms it (the head sizes below are CAH2-610-4.2's until the joints register gives CAL2's)",
+   "expression": "10 mm",
    "name": "rn_hole",
    "unit": "mm",
-   "value": 9.53
+   "value": 10.0
   },
   {
    "comment": "BASE SOURCE: CAH2-610-4.2 head diameter 12.96 (joints register H-03)",
@@ -1310,32 +1310,46 @@
    "value": 0.0
   },
   {
-   "comment": "BASE ASSUMPTION: hole in the band bottom for an M10 rivet nut that carries the glide; nut product HOLD",
-   "expression": "13 mm",
+   "comment": "BASE SOURCE: D-163: the glide's M10 rivet nut 838006 is Sherex CAL2-1015-7.9, knurled round body, in a round hole 13.50 +0.15 through the band's bottom wall and the load block 111601 (grip 1.5 + 5 = 6.5, inside its 3.8 to 7.9)",
+   "expression": "13.5 mm",
    "name": "gl_nut_hole",
    "unit": "mm",
-   "value": 13.0
+   "value": 13.5
   },
   {
-   "comment": "BASE ASSUMPTION: glide pad diameter (envelope, HOLD); stays inside the band's 40 mm width",
-   "expression": "36 mm",
+   "comment": "BASE SOURCE: the glide 111602's base diameter, made to BASE's drawing (D-164, the Lead's ruling of 2026-11-01): no wider than the band's 40",
+   "expression": "40 mm",
    "name": "gl_pad",
    "unit": "mm",
-   "value": 36.0
+   "value": 40.0
   },
   {
-   "comment": "BASE ASSUMPTION: glide stem M10 (envelope, HOLD)",
+   "comment": "BASE SOURCE: the glide's M10 stem, zinc-plated steel (D-164)",
    "expression": "10 mm",
    "name": "gl_stem",
    "unit": "mm",
    "value": 10.0
   },
   {
-   "comment": "BASE ASSUMPTION: M10 rivet nut head under the band, between the band and the glide pad (HOLD)",
-   "expression": "2 mm",
+   "comment": "BASE SOURCE: the 5 mm hex socket in the stem's top, turned with a hex key through gl_key_hole (D-164)",
+   "expression": "5 mm",
+   "name": "gl_socket",
+   "unit": "mm",
+   "value": 5.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: the socket's depth (the glide's drawing)",
+   "expression": "6 mm",
+   "name": "gl_socket_d",
+   "unit": "mm",
+   "value": 6.0
+  },
+  {
+   "comment": "BASE SOURCE: the M10 rivet nut's head under the band: Sherex CAL2-1015-7.9, 0.81 to 0.97 (D-163, the maker's drawing), between the band and the glide's base",
+   "expression": "0.89 mm",
    "name": "gl_nut_t",
    "unit": "mm",
-   "value": 2.0
+   "value": 0.89
   },
   {
    "comment": "BASE SOURCE: lowest glide setting: the corner keys' button heads hang 3.3 under the band and nothing may come within 5 of the floor (PM ruling on F-018; joints register PR #99 via the Lead, 2026-11-01)",
@@ -1345,11 +1359,11 @@
    "value": 8.5
   },
   {
-   "comment": "BASE CALCULATION: the glide's base must stand this tall (6.5), so that screwed fully home against the M10 rivnut's head it holds the band at gl_min: a hard stop (glide spec, HOLD)",
+   "comment": "BASE CALCULATION: the glide's base stands this tall (7.61, the drawing's 7.6), so that screwed fully home against the M10 rivnut's head it holds the band at gl_min: a hard stop (D-164)",
    "expression": "gl_min - gl_nut_t",
    "name": "gl_base_min",
    "unit": "mm",
-   "value": 6.5
+   "value": 7.61
   },
   {
    "comment": "BASE CONFIRMED: PM ruling 2026-10-31 (BASE group, the Checker's edge rule): glide doubler at least 52 long, so its ends are 2 hole diameters (26) from the hole; 54 gives 27, clear of that line",
@@ -1835,11 +1849,25 @@
    "value": 145.0
   },
   {
-   "comment": "BASE ASSUMPTION: hole for the flush-head M3 rivnut in the sill seat (product with the Joints Engineer, HOLD)",
-   "expression": "5 mm",
+   "comment": "BASE SOURCE: hole for the flush-head M3 rivnut 838008 in the sill seat: Sherex TU-SM3UFO35ZT, body 4.85 to 4.98, so 5.10 +0.10 (the Lead's ruling of 2026-11-01 on the Sourcing Engineer's table)",
+   "expression": "5.1 mm",
    "name": "ch_rn_hole",
    "unit": "mm",
-   "value": 5.0
+   "value": 5.1
+  },
+  {
+   "comment": "BASE SOURCE: the hole's 90 deg countersink to about 8, for the rivnut's head (7.50 to 8.00 across, 1.45 to 1.80 deep), so it sits flush in the 2 mm seat (the Lead's ruling of 2026-11-01)",
+   "expression": "8 mm",
+   "name": "ch_rn_csk",
+   "unit": "mm",
+   "value": 8.0
+  },
+  {
+   "comment": "BASE SOURCE: the countersink's angle (TU-SM3UFO35ZT's 90 deg head)",
+   "expression": "90 deg",
+   "name": "ch_rn_csk_a",
+   "unit": "deg",
+   "value": 1.5708
   },
   {
    "comment": "BASE CALCULATION: FRONT's dl_l1 in v2/01-CAD-Native/front/dl_block.py: outer facet length in plan",
@@ -2048,13 +2076,13 @@
    ],
    "class": "MP",
    "key": "band_l_tube",
-   "mass_kg": 1.6726,
+   "mass_kg": 1.6724,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - SIDE - LH",
    "name_vi": "Viền chân nhôm 100x40 - cạnh trái",
    "parent": "110101",
    "pn": "111101",
-   "volume_mm3": 619498.0
+   "volume_mm3": 619401.9
   },
   "111102": {
    "box_mm": [
@@ -2067,13 +2095,13 @@
    ],
    "class": "MP",
    "key": "band_r_tube",
-   "mass_kg": 1.6749,
+   "mass_kg": 1.6747,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - SIDE - RH",
    "name_vi": "Viền chân nhôm 100x40 - cạnh phải",
    "parent": "110102",
    "pn": "111102",
-   "volume_mm3": 620341.0
+   "volume_mm3": 620244.9
   },
   "111103": {
    "box_mm": [
@@ -2086,13 +2114,13 @@
    ],
    "class": "MP",
    "key": "band_b_tube",
-   "mass_kg": 2.7044,
+   "mass_kg": 2.704,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - BACK",
    "name_vi": "Viền chân nhôm 100x40 - cạnh sau",
    "parent": "110103",
    "pn": "111103",
-   "volume_mm3": 1001640.9
+   "volume_mm3": 1001464.3
   },
   "111104": {
    "box_mm": [
@@ -2111,7 +2139,7 @@
    "name_vi": "Viền chân trước - mặt vát 1",
    "parent": "110104",
    "pn": "111104",
-   "volume_mm3": 51124.5
+   "volume_mm3": 51113.7
   },
   "111105": {
    "box_mm": [
@@ -2124,13 +2152,13 @@
    ],
    "class": "MP",
    "key": "fl2",
-   "mass_kg": 0.3809,
+   "mass_kg": 0.3808,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - FRONT - FACET 2 - LH",
    "name_vi": "Viền chân trước - mặt vát 2",
    "parent": "110104",
    "pn": "111105",
-   "volume_mm3": 141060.1
+   "volume_mm3": 141033.6
   },
   "111106": {
    "box_mm": [
@@ -2143,13 +2171,32 @@
    ],
    "class": "MP",
    "key": "fr1",
-   "mass_kg": 0.7851,
+   "mass_kg": 0.785,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - FRONT - FIXED GLASS",
    "name_vi": "Viền chân trước - dưới kính cố định",
    "parent": "110106",
    "pn": "111106",
-   "volume_mm3": 290790.2
+   "volume_mm3": 290759.0
+  },
+  "111111": {
+   "box_mm": [
+    -18.5,
+    -1.0,
+    1.5,
+    18.5,
+    1.0,
+    98.5
+   ],
+   "class": "MP",
+   "key": "cap",
+   "mass_kg": 0.0194,
+   "material": "Aluminum",
+   "name": "BASE - TUBE END CAP - 97 X 37 X 2 - AL BLACK",
+   "name_vi": "Nút bịt đầu ống 97 x 37 x 2 - nhôm đen",
+   "parent": "110000",
+   "pn": "111111",
+   "volume_mm3": 7178.0
   },
   "111211": {
    "box_mm": [
@@ -2227,13 +2274,13 @@
    ],
    "class": "MP",
    "key": "sill_bent",
-   "mass_kg": 1.0336,
+   "mass_kg": 1.0334,
    "material": "Aluminum",
    "name": "BASE - SILL - FIXED GLASS - BENT PROFILE",
    "name_vi": "Bậu đỡ kính cố định - thanh gấp",
    "parent": "111301",
    "pn": "111302",
-   "volume_mm3": 382818.0
+   "volume_mm3": 382731.5
   },
   "111303": {
    "box_mm": [
@@ -2265,13 +2312,32 @@
    ],
    "class": "MP",
    "key": "doubler",
-   "mass_kg": 0.0245,
+   "mass_kg": 0.0243,
    "material": "Aluminum",
    "name": "BASE - GLIDE DOUBLER - COMMON",
    "name_vi": "Tấm tăng cứng chân chỉnh",
    "parent": "110000",
    "pn": "111601",
-   "volume_mm3": 9056.3
+   "volume_mm3": 9004.3
+  },
+  "111602": {
+   "box_mm": [
+    -20.0,
+    -20.0,
+    0.0,
+    20.0,
+    20.0,
+    60.0
+   ],
+   "class": "MP",
+   "key": "glide",
+   "mass_kg": 0.1064,
+   "material": "Steel",
+   "name": "BASE - LEVELLING GLIDE - M10 - D40",
+   "name_vi": "Chân chỉnh cao M10 - đế Ø40",
+   "parent": "110000",
+   "pn": "111602",
+   "volume_mm3": 13547.8
   },
   "118001": {
    "box_mm": [
@@ -2291,44 +2357,6 @@
    "parent": "110104",
    "pn": "118001",
    "volume_mm3": 26305.1
-  },
-  "118002": {
-   "box_mm": [
-    -18.0,
-    -18.0,
-    0.0,
-    18.0,
-    18.0,
-    60.0
-   ],
-   "class": "PI",
-   "key": "glide",
-   "mass_kg": 0.15,
-   "material": "Glide envelope 0.15 kg (ASSUMPTION)",
-   "name": "BASE - LEVELLING GLIDE - M10 - HOLD",
-   "name_vi": "Chân chỉnh cao",
-   "parent": "110000",
-   "pn": "118002",
-   "volume_mm3": 12227.1
-  },
-  "118003": {
-   "box_mm": [
-    -18.5,
-    -1.0,
-    1.5,
-    18.5,
-    1.0,
-    98.5
-   ],
-   "class": "PI",
-   "key": "cap",
-   "mass_kg": 0.0068,
-   "material": "Flat PE end cap 950 kg/m3 (ASSUMPTION)",
-   "name": "BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD",
-   "name_vi": "Nút bịt đầu ống 100x40",
-   "parent": "110000",
-   "pn": "118003",
-   "volume_mm3": 7178.0
   },
   "831001": {
    "box_mm": [
@@ -2398,13 +2426,13 @@
    ],
    "class": "PI",
    "key": "rivnut",
-   "mass_kg": 0.0037,
+   "mass_kg": 0.0042,
    "material": "Steel",
    "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
    "name_vi": "Tán rút M6 thép mạ kẽm",
    "parent": "110000",
    "pn": "838003",
-   "volume_mm3": 465.3
+   "volume_mm3": 532.2
   },
   "838010": {
    "box_mm": [
@@ -2538,7 +2566,7 @@
   "pn": "111301",
   "pn_bent": "111302",
   "pn_plate": "111303",
-  "rivnut_hole": 5.0,
+  "rivnut_hole": 5.1,
   "screws_x": [
    269.44142415876706,
    484.3371036527884,
@@ -2551,7 +2579,7 @@
  "tubes": {
   "111101": {
    "axis": "Y",
-   "back_end": "square, flush with the back face: its key 111211 inside and the flat end cap 118003 (D-129)",
+   "back_end": "square, flush with the back face: its key 111211 inside and the end cap 111111 (D-129)",
    "front_end": "mitre to DL's outer facet band piece: 24.14 deg from square, long point on the outer face",
    "inner_face_length": 1502.07,
    "outer_face_length": 1520.0,
@@ -2559,7 +2587,7 @@
   },
   "111102": {
    "axis": "Y",
-   "back_end": "square, flush with the back face: its key 111211 inside and the flat end cap 118003 (D-129)",
+   "back_end": "square, flush with the back face: its key 111211 inside and the end cap 111111 (D-129)",
    "front_end": "mitre to the intake's facet piece: 24.02 deg from square, long point on the outer face",
    "inner_face_length": 1504.17,
    "outer_face_length": 1522.0,
@@ -2592,7 +2620,7 @@
   "111106": {
    "axis": "X",
    "back_end": "square, closed by a welded 1.5 end plate (100 x 40) with 2 keyholes at X 915.0; 696.5 over the plate",
-   "front_end": "square at the door opening, closed by the flat end cap 118003 (in view, D-132)",
+   "front_end": "square at the door opening, closed by the end cap 111111 (in view, D-132)",
    "inner_face_length": 695.04,
    "outer_face_length": 695.04,
    "section": "100 x 40 x 1.5"

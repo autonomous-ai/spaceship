@@ -98,6 +98,26 @@ SPEC = {
         ("front", VO.FrontViewOrientationType, 1.0, (190.0, 250.0)),
         ("iso", VO.IsoTopRightViewOrientationType, 0.5, (330.0, 220.0)),
     ], [("top", True, "both"), ("front", False, "v")]),
+    # Fusion sheets the generator can't draw yet (D-139, D-158; the Lead's ruling of 2026-11-01; DRAWING-RECORD.md):
+    # FL1 and FL2 in their own axes (all their side faces lie off the pod's axes; FL2 has the full round on its
+    # hinge-side plate): CS-111104 / CS-111105, X along the outer face from the corner / knee end, Y inward, Z up from
+    # the band's bottom; the glide, a turned part with a hex socket (its axis on Z)
+    "111104": ("111104_P01_BASE-BAND-TUBE-FRONT-FACET-1-LH_DWG", "tube", [   # A3, 1:1 (CS-111104: from its corner end)
+        ("front", VO.FrontViewOrientationType, 1.0, (140.0, 210.0)),
+        ("top", VO.TopViewOrientationType, 1.0, (140.0, 115.0)),            # hidden lines: the bottom wall's holes
+        ("left", VO.LeftViewOrientationType, 1.0, (290.0, 210.0)),          # the corner end plate's keyholes
+        ("iso", VO.IsoTopRightViewOrientationType, 0.5, (300.0, 85.0)),
+    ]),
+    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "tube", [   # A3, 1:2
+        ("front", VO.FrontViewOrientationType, 0.5, (150.0, 205.0)),
+        ("top", VO.TopViewOrientationType, 0.5, (150.0, 120.0)),            # hidden lines: the bottom wall's hole
+        ("left", VO.LeftViewOrientationType, 1.0, (300.0, 205.0)),          # the knee end plate's keyholes
+        ("iso", VO.IsoTopRightViewOrientationType, 0.5, (300.0, 85.0)),
+    ]),
+    "111602": ("111602_P01_BASE-LEVELLING-GLIDE-M10-D40_DWG", "turned", [     # A3, 2:1
+        ("front", VO.FrontViewOrientationType, 2.0, (120.0, 185.0)),        # hidden lines: the socket's depth
+        ("top", VO.TopViewOrientationType, 2.0, (120.0, 70.0)),
+    ]),
 }
 
 
@@ -331,6 +351,75 @@ def profile_dims(sheet, view, step=6.0, gap=8.0):
     return n
 
 
+def turned_dims(sheet, front, top, gap=8.0, step=6.0):
+    """A turned part on the Z axis (the glide 111602): in the front view (hidden lines on) its overall height, the
+    base's height and the socket's depth, each from the line it starts on; in the view from above the base's and
+    the stem's diameters and the hex socket's size across flats. Each size once (ISO 129-1). A dimension that
+    can't be placed is reported in the log, and the rest go on."""
+    n = 0
+    e = extent(front)
+    lines, _ = curves(front)
+    hz = {}                 # each horizontal line's height -> its leftmost end
+    for ln in lines:
+        a, b = ln.startPoint, ln.endPoint
+        (x1, y1), (x2, y2) = xy(a), xy(b)
+        if abs(y2 - y1) < 1e-3 and abs(x2 - x1) > 0.05:
+            k = round(y1, 3)
+            p = a if x1 < x2 else b
+            if k not in hz or xy(p)[0] < xy(hz[k])[0]:
+                hz[k] = p
+    ys = sorted(hz)
+    if len(ys) < 3:
+        print("  turned part: only %d horizontal lines in the front view; heights not dimensioned" % len(ys))
+    else:
+        bottom, top_y = hz[ys[0]], hz[ys[-1]]
+        def put(a, b, x, what):
+            try:
+                dim(sheet, a, b, (x, (xy(a)[1] + xy(b)[1]) / 2))
+                return 1
+            except RuntimeError as exc:
+                print("  %s not dimensioned (%s)" % (what, exc))
+                return 0
+        n += put(bottom, top_y, e[0] - gap - step, "overall height")
+        n += put(bottom, hz[ys[1]], e[0] - gap, "base height")              # the base's top face
+        n += put(hz[ys[-2]], top_y, e[2] + gap, "socket depth")             # the socket's bottom (hidden) to the top
+    # from above: the circles (the base and the stem), and the hex socket's two flats parallel to the view's x
+    tl, circles = curves(top)
+    def radius(c):          # the API gives no circle radius: the distance from its centre to its start point
+        (cx, cy), (sx, sy) = xy(c.centerPoint), xy(c.startPoint)
+        return ((sx - cx) ** 2 + (sy - cy) ** 2) ** 0.5
+    done = set()
+    for c in sorted(circles, key=lambda c: -radius(c)):
+        r = round(radius(c), 3)
+        if r < 1e-3 or r in done:   # each size once (the base's top and bottom edges show as one circle)
+            continue
+        done.add(r)
+        x, y = xy(c.centerPoint)
+        try:
+            sheet.drawingDimensions.addDiameterDimension(c, dpt(x + r * 0.8 + 8.0, y + r * 0.8 + 8.0 + 6.0 * len(done)))
+            n += 1
+        except RuntimeError as exc:
+            print("  diameter callout skipped (%s)" % exc)
+    flats = []
+    for ln in tl:
+        (x1, y1), (x2, y2) = xy(ln.startPoint), xy(ln.endPoint)
+        if abs(y2 - y1) < 1e-3 and abs(x2 - x1) > 0.05:
+            flats.append(ln)
+    if len(flats) >= 2:
+        lo = min(flats, key=lambda l: xy(l.startPoint)[1])
+        hi = max(flats, key=lambda l: xy(l.startPoint)[1])
+        et = extent(top) or (0.0, 0.0, 0.0, 0.0)
+        try:
+            dim(sheet, lo.startPoint, hi.startPoint, (et[0] - gap, (xy(lo.startPoint)[1] + xy(hi.startPoint)[1]) / 2))
+            n += 1
+        except RuntimeError as exc:
+            print("  socket across flats not dimensioned (%s)" % exc)
+    else:
+        print("  the socket's flats not found in the view from above (%d lines)" % len(flats))
+    print("  turned part: %d dimensions" % n)
+    return n
+
+
 def diameters(sheet, view):
     """One diameter callout per hole size, beside the first hole of that size."""
     done = set()
@@ -412,7 +501,8 @@ def run(_context):
         raise RuntimeError("the sheet already has views; start a fresh drawing")
     made = {}
     for vname, orient, scale, center in views:
-        made[vname] = add_view(sheet, orient, scale, center, hidden=(kind == "tube" and vname == "top"))
+        made[vname] = add_view(sheet, orient, scale, center,
+                               hidden=(kind == "tube" and vname == "top") or (kind == "turned" and vname == "front"))
         e = extent(made[vname])
         print("  view %-6s scale %g at %s, extent %s" % (vname, scale, center,
                                                         tuple(round(a, 1) for a in e) if e else None))
@@ -452,6 +542,8 @@ def run(_context):
             if holes(sec):
                 e3 = extent(sec)
                 n_holes += hole_dims(sheet, sec, nearest_end(sec, (e3[0], e3[1])), side="above")
+    elif kind == "turned":
+        n_dims += turned_dims(sheet, made["front"], made["top"])
     else:
         for vname, below, which in dims:
             _o, n = overall(sheet, made[vname], below=below, which=which)

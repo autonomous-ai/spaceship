@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 309 part lines (118 made, 191 bought, 145 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (41 with a part number). Listed parts weigh 353.1 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 322 part lines (133 made, 189 bought, 140 on HOLD) and 46 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (41 with a part number). Listed parts weigh 354.0 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -38,19 +38,14 @@ Read from: this working tree.
 ## Missing or on HOLD, per team
 
 **BASE**
-- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
-- 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
 - 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
-- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
-- 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
 - 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
-- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
 - 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
-- 118002 BASE - LEVELLING GLIDE - M10 - HOLD: HOLD (HOLD)
-- 118003 BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD: HOLD (HOLD)
+- 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
+- 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 - 838006 HARDWARE - RIVET NUT - M10 - FOR THE LEVELLING GLIDE - HOLD: HOLD (HOLD)
 - 838008 HARDWARE - RIVET NUT - M3 - COUNTERSUNK HEAD - HOLD: HOLD (HOLD)
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
@@ -218,7 +213,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 155 numbers, 128 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 155 numbers, 126 not in a team's list yet, 6 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -369,8 +364,8 @@ From `v2/04-BOM/number-allocation.csv`: 155 numbers, 128 not in a team's list ye
 | 211635 | WALL - CAVITY FILL PIECE F13 274.7 X 1078.6 - BACK UPPER - COMMON | 210203 210204 | 4 | ALLOCATED |
 | 211636 | WALL - CAVITY FILL PIECE F14 274.7 X 1078.6 - BACK UPPER - B3 | 210203 | 1 | ALLOCATED |
 | 111215 | BASE - CORNER KEY - SQUARE - INLINE | 110000 | 1 | ALLOCATED |
-| 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | 111301 | 1 | ALLOCATED |
-| 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | 111301 | 1 | ALLOCATED |
+| 111302 | BASE - SILL - FIXED GLASS - BENT PROFILE | 111301 | 1 | in use |
+| 111303 | BASE - SILL - FIXED GLASS - DOOR-END PLATE | 111301 | 1 | in use |
 | 510203 | LINING - CASSETTE - BACK UPPER - B3 | 510000 | 1 | ALLOCATED |
 | 510204 | LINING - CASSETTE - BACK UPPER - B4 | 510000 | 1 | ALLOCATED |
 | 511203 | LINING - TRAY - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |

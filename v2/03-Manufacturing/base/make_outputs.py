@@ -136,12 +136,12 @@ PART_INFO = {
                "brush seal 368008 closes on (D-150). Its other end (X 965 = FR1's joint + 50) is closed by the intake's "
                "closing plate (batch 3)"),
     "111111": ("aluminium sheet EN AW-5005 H14, 2 mm (assumption)", AA20,
-               "laser cut from its DXF, deburred, anodised black with the band; bonded into the band tube's open end at the "
-               "factory, flush with its end face (adhesive HOLD)", "calculation", "DRAFT",
+               "laser cut from its DXF, deburred, anodised black with the band", "calculation", "DRAFT",
                "CAD; D-165 (Control's number, the Lead's ruling of 2026-11-01: a made part, as no catalogue cap is 2 deep); "
                "D-129 (the key sits 2.5 from the side band's end); FR1's door end: D-132",
                "the tube end cap, 97 x 37 x 2, 3 a pod: a side band's back end (face flush with Y = pod_d / 2) or FR1's door "
-               "end (face flush with X 218.5, at the door opening, in view); no drawing: its DXF and this row (D-89 part 4)"),
+               "end (face flush with X 218.5, at the door opening, in view), fixed into the band's open end at the factory "
+               "with adhesive (product HOLD); no drawing: its DXF and this row (D-89 part 4)"),
     "111602": ("zinc-plated free-cutting steel without lead (11SMn30 / AISI 1215 or similar, assumption), turned in one piece: an M10 x 1.5 stem and a base "
                "40 across, 7.6 tall", "zinc plated, clear passivated (assumption)",
                "turned from bar, M10 x 1.5 rolled or cut, the 5 mm hex socket broached in the stem's top, zinc plated",
@@ -182,7 +182,7 @@ TOLERANCE = {
     "111211": "the Joints Engineer's tabulated drawing 111211 to 111214",
     "111212": "the Joints Engineer's tabulated drawing 111211 to 111214",
     "111214": "the Joints Engineer's tabulated drawing 111211 to 111214",
-    "111104": "see its drawing", "111105": "see its drawing",
+    "111104": "see its drawing", "111105": "see its drawing", "111602": "see its drawing",
     "111601": "ISO 2768-m; critical hole: Ø13.50 +0.15/0 for the glide's M10 rivnut 838006 (D-163), centred +-0.2; DXF 111601",
     "111111": "ISO 2768-m; outline 97 x 37 -0.2/-0.4 so it slides into the bore (assumption); DXF 111111",
     "111303": "ISO 2768-m; flat 2 mm plate, no holes; outline to the profile's inside faces, 0 to 0.5 gap for the weld "

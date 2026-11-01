@@ -49,15 +49,23 @@ DWG = {
     "110106": ("110106_P01_BASE-BAND-ASSY-FRONT-FIXED-GLASS_DWG", "1:2 (iso 1:4)", "A2"),
     "111106": ("111106_P01_BASE-BAND-TUBE-FRONT-FIXED-GLASS_DWG", "1:5 (end view 1:2)", "A3"),
     "111301": ("111301_P01_BASE-SILL-FIXED-GLASS_DWG", "1:5 (section 1:1)", "A3"),
+    # Fusion sheets the generator can't draw yet (D-139; the Lead's ruling of 2026-11-01; DRAWING-RECORD.md)
+    "111104": ("111104_P01_BASE-BAND-TUBE-FRONT-FACET-1-LH_DWG", "1:1 (iso 1:2)", "A3"),
+    "111105": ("111105_P01_BASE-BAND-TUBE-FRONT-FACET-2-LH_DWG", "1:2 (end view 1:1)", "A3"),
+    "111602": ("111602_P01_BASE-LEVELLING-GLIDE-M10-D40_DWG", "2:1", "A3"),
 }
 # No drawing (D-89): 111601 (part 4: DXF and parts-list row). No floor (D-132).
 
 TOL = {
     "tube": "General tolerances, PROPOSED until the shop confirms them: cut length +0/-0.5; hole positions "
             "±0.2 from datum C along the band and ±0.2 from datum B across it (joints register R-J6: "
-            "Ø7.0 bolt holes on the wall side positioned ±0.2 from the spigot hole); rivnut holes Ø9.53 +0.10/0 "
-            "(maker). Not ISO 2768 on the anodised faces.",
+            "Ø7.0 bolt holes on the wall side positioned ±0.2 from the spigot hole); rivnut holes Ø10.00 +0.10/0 "
+            "and the glide's rivnut hole Ø13.50 +0.15/0 (D-163). Not ISO 2768 on the anodised faces.",
     "plate": "General tolerances, PROPOSED: outline ±0.5 (CNC); thickness as supplied (guideline §3.2).",
+    "turned": "General tolerances ISO 2768-m. Thread M10 x 1.5-6g (ISO 965-1) along the stem (assumption). Base height "
+              "7.6 ±0.05: with the M10 rivnut's head (0.81 to 0.97) it sets the band's lowest setting, 8.5 (PM ruling "
+              "on F-018). Hex socket 5 across flats, +0.02/+0.14, to fit a 5 mm hex key (as ISO 4762's s 5; "
+              "assumption). Static rating 3.5 kN or more, proved by BT-04 (D-164).",
     "sheet": "General tolerances ISO 2768-m (linear) on the flat pattern; bends 90 deg +-0.5 deg, inside radius = t "
              "(assumption until the bender confirms); leg lengths +-0.3 to the outside of the bends; rivnut holes "
              "Ø5.0 +0.1/0 (HOLD with the rivnut).",
@@ -69,6 +77,21 @@ TOL = {
 DATUMS = {
     "111601": "Part system: X across the band, Y along it, origin at the plate centre. Hole Ø13 3 mm off centre "
               "toward the pod side (gl_dx).",
+    "111104": "Part system CS-111104: X along FL1's outer face from its corner end (the long point of the 24.14 deg "
+              "mitre, on DL's outer facet), Y inward square to it, Z up from the band's bottom face. Datums: A = the "
+              "top face (DL's seat), B = the corner end plate's outer face, C = the outer face (Y 0). The corner end "
+              "is closed by a welded 1.5 plate (ground flush, anodised with FL1); the knee end is a 7.25 deg mitre, "
+              "open, with the knee key 111214 inside.",
+    "111105": "Part system CS-111105: X along FL2's outer face from its knee end (the long point of the 7.25 deg mitre), "
+              "Y inward square to it, Z up from the band's bottom face. Datums: A = the top face (DL's seat), B = the "
+              "knee end plate's outer face, C = the outer face (Y 0). At the door end: a 7 mm block welded on to reach "
+              "DL's door face, and a 2 mm plate welded into it, flush with DL's door face, from FL2's inner face to the "
+              "kick strip's back line (112.6 wide), from the band's bottom face to its top, its back edge a full round "
+              "R1 (the PM's hinge-side ruling); on the plate's door face the strike pad 8 x 12 x 65 (thickness HOLD), "
+              "from the bottom face up, centred on the glass line. Weld, grind flush and anodise with FL2: one part.",
+    "111602": "Part system: Z the glide's axis, up from the base's bottom face (on the room floor). Datums: A = the "
+              "base's bottom face, B = the axis. Turned in one piece from zinc-plated free-cutting steel without lead "
+              "(11SMn30 / AISI 1215 or similar, assumption), zinc plated, clear passivated (D-164).",
     "111211": "Part system: X into the band from the end face (X 0), Y across the band (centred), Z up from the "
               "key's bottom. Datums: A = bottom face (sits on the band's bottom wall, pod Z 11.5), B = end face "
               "(flush with the band's end), C = the Y faces' centre plane. Block 25 x 35 x 75.",
@@ -114,7 +137,18 @@ DATUMS = {
 }
 
 HOLES = {
-    "111601": "One hole Ø13 for the glide's M10 rivnut.",
+    "111601": "One hole Ø13.50 +0.15/0 for the glide's M10 rivnut 838006 (D-163).",
+    "111104": "Top wall: DL's round spigot rivnut hole Ø10.00 +0.10/0 (J-FRONT-02, D-163), 13 from the outer face. "
+              "Bottom wall: the knee key's 2 fixing holes Ø7.0, 10.5 from its back face and 7.0 either side of its "
+              "centre line (J-BASE-02, 111214). Corner end plate: 2 keyholes, a Ø12 entry 10 below each seat and a "
+              "6.5 slot up to it, the seats 27.5 and 61.5 above the bottom face on the plate's centre line (J-BASE-02, "
+              "the front corner key 111212's studs).",
+    "111105": "Top wall: DL's slot spigot rivnut hole Ø10.00 +0.10/0 (J-FRONT-02, D-163) and the glide's key hole Ø8. "
+              "Bottom wall: the glide's rivnut hole Ø13.50 +0.15/0 (D-163). Knee end plate: 2 keyholes, a Ø12 entry 10 "
+              "below each seat and a 6.5 slot up to it, the seats 27.5 and 61.5 above the bottom face on the plate's "
+              "centre line (J-BASE-02, the knee key 111214's studs).",
+    "111602": "Hex socket 5 across flats, 6 deep, in the stem's top: a 5 mm hex key turns the glide from above through "
+              "the band top's Ø8 key hole (BASE feature rationale FB-06, FG-03).",
     "111211": "Bottom: 2 x M6, 15 of full thread (tap drill Ø5.0 x 18), for the M6 x 12 button head fixing screws, "
               "10 from the back face and 7.5 either side of the centre line. End face: 2 x M6 tapped through, for "
               "the hook studs, 26 and 60 above the bottom (pod Z 37.5 and 71.5) on the centre line (joints register "
@@ -141,7 +175,7 @@ def kind_of(pn):
     if pn[2:4] == "00" or pn[2] == "0":             # xx0000 to xx0999: assemblies (conventions section 5)
         return "assembly"
     return {"111101": "tube", "111102": "tube", "111103": "tube", "111104": "tube", "111105": "tube", "111106": "tube",
-            "111301": "sheet"}.get(pn, "plate")
+            "111301": "sheet", "111602": "turned"}.get(pn, "plate")
 
 
 def text_block(pn):
