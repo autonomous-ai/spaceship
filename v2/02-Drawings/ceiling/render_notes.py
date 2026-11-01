@@ -87,7 +87,7 @@ def render_title(sp, path):
     img = Image.new("L", (W, H), 255)
     d = ImageDraw.Draw(img)
     d.rectangle([0, 0, W - 1, H - 1], outline=0, width=4)
-    d.text((int(2 * PX_MM), int(1 * PX_MM)), "TITLE DATA (the title block fields can't be set by script)", font=f, fill=0)
+    d.text((int(2 * PX_MM), int(1 * PX_MM)), "TITLE DATA", font=f, fill=0)
     y = lh
     for label, value in rows:
         d.line([0, y, W, y], fill=0, width=2)

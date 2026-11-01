@@ -215,6 +215,60 @@ class SizesOnce(unittest.TestCase):
         self.assertIsNone(S.SPECS["tray"]["holes"])      # its two holes are dimensioned (Fusion's table printed empty)
 
 
+class NotesAsText(unittest.TestCase):
+    """The finish step's notes and title data as text (pdf_notes_text.py): on a sheet carrying the two pictures at
+    their spec places, both pictures go, the spec's words come back in their boxes (check_drawing_pdf reads them),
+    the letters are 2.5 mm capitals, and nothing else on the sheet changes."""
+
+    def sheet(self, sp, path):
+        import pdf_notes_text as T
+        font = fitz.Font(fontfile=T.font_file())
+        w, h = S.SHEETS[sp["sheet"]]
+        doc = fitz.open()
+        page = doc.new_page(width=w / C.MM, height=h / C.MM)
+        page.draw_line(fitz.Point(10 / C.MM, 10 / C.MM), fitz.Point(100 / C.MM, 10 / C.MM))      # a view's line
+        page.insert_text(fitz.Point(50 / C.MM, 50 / C.MM), "1034", fontsize=5 / C.MM)            # a dimension
+        for what, hh in (("notes", T.notes_height(sp["notes"], S.IMG_W, font)), ("title", T.title_height(sp["title"]))):
+            x, top = sp["images"][what]
+            pix = fitz.Pixmap(fitz.csGRAY, fitz.IRect(0, 0, 40, 20), False)
+            pix.clear_with(0)
+            page.insert_image(fitz.Rect(x / C.MM, (h - top) / C.MM, (x + S.IMG_W) / C.MM, (h - top + hh) / C.MM),
+                              pixmap=pix, keep_proportion=False)
+        doc.save(path)
+
+    def test_rib(self):
+        import pdf_notes_text as T
+        sp = S.SPECS["rib"]
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "rib.pdf")
+            self.sheet(sp, path)
+            with fitz.open(path) as doc:
+                page = doc[0]
+                self.assertEqual(len(C.text_block_problems(page, page.rect.height * C.MM, sp)), 2)   # pictures only
+            got = T.replace_pictures(path, sp, S.IMG_W)
+            self.assertEqual([g[0] for g in got], ["notes", "title"])
+            with fitz.open(path) as doc:
+                page = doc[0]
+                self.assertEqual(C.text_block_problems(page, page.rect.height * C.MM, sp), [])
+                self.assertEqual(len(T.real_images(page)), 0)
+                self.assertEqual(len([x for x in page.get_drawings() if x["items"][0][0] == "l"
+                                      and abs(x["rect"].y0 - 10 / C.MM) < 0.1]), 1)          # the view's line stays
+                sizes = {round(s["size"] * C.MM, 2) for b in page.get_text("dict")["blocks"] for ln in b.get("lines", [])
+                         for s in ln["spans"]}
+                self.assertGreaterEqual(min(sizes) * 0.718, 2.5 - 0.01)       # ISO 3098 capitals, as pdf_traps reads
+                self.assertIn("1034", page.get_text())
+
+    def test_too_tall_is_refused(self):
+        import pdf_notes_text as T
+        sp = dict(S.SPECS["rib"])
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "rib.pdf")
+            self.sheet(sp, path)
+            sp["notes"] = list(sp["notes"]) + ["one more note than the picture had room for"]
+            with self.assertRaises(RuntimeError):
+                T.replace_pictures(path, sp, S.IMG_W)
+
+
 class Supersede(unittest.TestCase):
     """The cleanup renames an old drawing, never deletes it (the PM's rule, 2026-11-01)."""
 

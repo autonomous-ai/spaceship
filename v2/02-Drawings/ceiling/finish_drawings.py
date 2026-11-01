@@ -5,9 +5,11 @@
     python3 v2/02-Drawings/ceiling/finish_drawings.py interior
 
 For each drawing of the team's specs (all of them, or the keys given): takes the raw export
-the annotate run wrote to <team folder>/.raw/<drawing>.pdf, removes the account holder's name
-under "Created by" with tools/fusion/pdf_clear_field.py (the repo is public), saves the repo
-copy as <team folder>/<drawing>.pdf and renders <drawing without _DWG>_IMG.png next to it (110 dpi,
+the annotate run wrote to <team folder>/.raw/<drawing>.pdf, writes "Autonomous" under "Created by"
+and fills the title block with tools/fusion/pdf_clear_field.py (the repo is public; the owner's
+rule), replaces the notes and title data pictures with the same words as text
+(pdf_notes_text.py, so the mechanical checks can read them), saves the repo copy as
+<team folder>/<drawing>.pdf and renders <drawing without _DWG>_IMG.png next to it (110 dpi,
 as BASE's drawings). Then, for the ceiling's drawings, reads the PDF back with
 check_drawing_pdf.py (symbol, image sizes and places, hidden lines, text heights, names; the
 annotate run's log gives the view extents) and fails if a check fails. Skips a drawing whose
@@ -34,15 +36,21 @@ def specs(team):
     spec = importlib.util.spec_from_file_location("specs_" + team, path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    return os.path.dirname(path), mod.SPECS, mod.ORDER
+    return os.path.dirname(path), mod.SPECS, mod.ORDER, getattr(mod, "IMG_W", 170.0)
 
 
-def finish(folder, drawing):
+def finish(folder, drawing, sp=None, img_w=None):
     raw = os.path.join(folder, ".raw", drawing + ".pdf")
     if not os.path.exists(raw):
         return "no raw PDF"
     out = os.path.join(folder, drawing + ".pdf")
     subprocess.run([sys.executable, CLEAR, raw, out], check=True)
+    if sp is not None and sp.get("images"):
+        # the notes and title data as text in place of their pictures (pdf_notes_text.py: C05 reads the text)
+        sys.path.insert(0, HERE)
+        import pdf_notes_text as T
+        for what, pic_h, txt_h in T.replace_pictures(out, sp, img_w):
+            print("  %s: picture %.1f mm tall replaced by text %.1f mm tall" % (what, pic_h, txt_h))
     png = os.path.join(folder, (drawing[:-4] if drawing.endswith("_DWG") else drawing) + "_IMG.png")
     with fitz.open(out) as doc:
         doc[0].get_pixmap(dpi=110).save(png)
@@ -58,10 +66,10 @@ def main(argv):
             log_text = fh.read()
         argv = argv[:i] + argv[i + 2:]
     team, keys = argv[0], argv[1:]
-    folder, sp, order = specs(team)
+    folder, sp, order, img_w = specs(team)
     failed = []
     for k in keys or order:
-        done = finish(folder, sp[k]["drawing"])
+        done = finish(folder, sp[k]["drawing"], sp[k], img_w)
         print("%s: %s" % (k, done))
         if team != "ceiling" or done == "no raw PDF":
             continue

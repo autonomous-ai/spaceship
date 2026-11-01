@@ -10,9 +10,10 @@ Checks, each against drawing_specs.py:
   four sides of the outline (the narrow end 5 high, away from the circles; the wide end 10 high; 10 long) and two
   circles (radius 5 and 2.5) centred to its right. Sketch outlines came out triangles twice (sharing a sketch with
   the circles, and on A1 in a sketch of its own), so the drawings now use the picture;
-- each image (notes, title data, the scale labels) at the size it was drawn at (10 px per mm,
-  so its lettering is 2.5 mm), with its top left corner where the spec puts it (the labels'
-  places need the annotate log's view extents);
+- each scale label picture at the size it was drawn at (10 px per mm, so its lettering is 3.5 mm), with its top
+  left corner where the spec puts it (the labels' places need the annotate log's view extents);
+- the notes and the title data as text where their pictures were (the finish step writes them, pdf_notes_text.py):
+  every word of the spec's, in order;
 - hidden lines only inside the views the spec draws with hidden lines (needs the log; without
   it, none at all when the spec has no such view);
 - every text at least 2.5 mm high (font size), the title block's own labels at least 1.8;
@@ -120,7 +121,9 @@ def symbol_problems(page, height, at, d=5.0, big=10.0, length=10.0, gap=4.0, tol
 def image_boxes(page, height):
     """Each image's (x0, top, width, height) in sheet mm."""
     out = []
-    for im in page.get_image_info():
+    for im in page.get_image_info(xrefs=True):
+        if not im["xref"]:              # what a removed picture leaves (pdf_notes_text.py): nothing shows
+            continue
         b = fitz.Rect(im["bbox"])
         out.append((b.x0 * MM, height - b.y0 * MM, b.width * MM, b.height * MM))
     return out
@@ -200,9 +203,48 @@ def table_problems(spans, sp, width):
     return []
 
 
-def size_problems(spans, sp, width):
+def text_boxes(sp):
+    """{'notes' | 'title': (x0, y0, x1, y1)}: where the finish step writes the notes and the title data as text
+    (pdf_notes_text.py), sheet mm from the bottom left."""
+    import pdf_notes_text as T
+    font = fitz.Font(fontfile=T.font_file())
+    out = {}
+    for what, h in (("notes", T.notes_height(sp["notes"], S.IMG_W, font)), ("title", T.title_height(sp["title"]))):
+        x, top = sp["images"][what]
+        out[what] = (x, top - h, x + S.IMG_W, top)
+    return out
+
+
+def block_text(page, height, box):
+    """The words inside a box (sheet mm), line by line from the top, each line left to right, one space apart."""
+    x0, y0, x1, y1 = box
+    clip = fitz.Rect(x0 / MM, (height - y1) / MM, x1 / MM, (height - y0) / MM)
+    lines = {}
+    for w in page.get_text("words", clip=clip):
+        lines.setdefault(round(w[3] * 2) / 2, []).append(w)     # by baseline, to half a point
+    return " ".join(w[4] for _y, ws in sorted(lines.items()) for w in sorted(ws, key=lambda w: w[0]))
+
+
+def text_block_problems(page, height, sp):
+    """The notes and the title data as text in their boxes, every word of the spec's, in order (the finish step
+    writes them in place of the pictures Fusion was given)."""
+    bad = []
+    boxes = text_boxes(sp)
+    want = {"notes": "NOTES " + " ".join("%d. %s" % (i + 1, n) for i, n in enumerate(sp["notes"])),
+            "title": "TITLE DATA " + " ".join("%s %s" % (k, v) for k, v in sp["title"])}
+    for what, text in want.items():
+        got = block_text(page, height, boxes[what])
+        exp = " ".join(text.split())
+        if got != exp:
+            i = next((k for k, (a, b) in enumerate(zip(got, exp)) if a != b), min(len(got), len(exp)))
+            bad.append("the %s text differs from the spec at character %d: read %r, want %r" % (
+                what, i, got[max(0, i - 30):i + 30], exp[max(0, i - 30):i + 30]))
+    return bad
+
+
+def size_problems(spans, sp, width, boxes=None):
     """Each listed size printed once as a dimension: a span of that text at dimension size (over 4 mm), outside the
-    title block (180 x 47 in the frame's corner) and the hole table."""
+    title block (180 x 47 in the frame's corner), the hole table and the notes and title data boxes."""
     want = sp.get("sizes") or []
     if not want:
         return []
@@ -216,16 +258,30 @@ def size_problems(spans, sp, width):
             return False
         if box and box[0] <= s[2] <= box[2] and box[1] <= s[3] <= box[3]:
             return False
+        if any(b[0] <= s[2] <= b[2] and b[1] <= s[3] <= b[3] for b in (boxes or {}).values()):
+            return False
         return True
     got = Counter(s[0] for s in spans if counted(s))
     return ["size %s is printed %d times (the spec wants it once)" % (v, got.get(v, 0)) for v in want
             if got.get(v, 0) != 1]
 
 
-def text_problems(page, doc):
+def text_problems(page, doc, boxes=None):
+    """Letter heights and names over the whole sheet; a dimension value printed twice is a warning (outside the
+    notes and title data boxes, whose part number and sizes are words, not dimensions)."""
     bad, warn = [], []
-    spans = [(sp["text"].strip(), sp["size"] * MM) for b in page.get_text("dict")["blocks"]
-             for ln in b.get("lines", []) for sp in ln["spans"] if sp["text"].strip()]
+    height = page.rect.height * MM
+    spans, dims = [], []
+    for b in page.get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            for sp in ln["spans"]:
+                t = sp["text"].strip()
+                if not t:
+                    continue
+                spans.append((t, sp["size"] * MM))
+                x, y = sp["bbox"][0] * MM, height - sp["bbox"][3] * MM
+                if not any(q[0] <= x <= q[2] and q[1] <= y <= q[3] for q in (boxes or {}).values()):
+                    dims.append((t, sp["size"] * MM))
     for t, size in spans:
         least = 1.8 if t in TITLE_LABELS else 2.5
         if size < least - 0.02:
@@ -235,7 +291,7 @@ def text_problems(page, doc):
     for k, v in (doc.metadata or {}).items():
         if v and NAMES.search(str(v)):
             bad.append("an account name in the metadata (%s)" % k)
-    nums = Counter(t for t, size in spans if size > 4.0 and re.fullmatch(r"[Ø]?\d+(\.\d+)?", t))
+    nums = Counter(t for t, size in dims if size > 4.0 and re.fullmatch(r"[Ø]?\d+(\.\d+)?", t))
     warn += ["dimension value %s is printed %d times: two features, or one size given twice?" % (t, n)
              for t, n in sorted(nums.items()) if n > 1]
     return bad, warn
@@ -261,9 +317,6 @@ def check(key, pdf=None, log_text=None, notes_dir=None):
         m = S.SYMBOL_PX_MARGIN
         wanted.append(("first-angle symbol", (x0 - m, cy + 5.0 + m),
                        png_size_mm(os.path.join(notes_dir, "FIRST_ANGLE_SYMBOL.png"))))
-    for what in ("notes", "title"):
-        png = os.path.join(notes_dir, "%s_%s.png" % (sp["drawing"], what.upper()))
-        wanted.append((what, sp["images"][what], png_size_mm(png)))
     for view in S.labels(sp):
         png = os.path.join(notes_dir, "%s_LABEL_%s.png" % (sp["drawing"], view.upper()))
         lw, lh = png_size_mm(png)
@@ -277,11 +330,12 @@ def check(key, pdf=None, log_text=None, notes_dir=None):
     bad += hb
     if hinfo:
         info.append(hinfo)
-    tb, warn = text_problems(page, doc)
+    tb, warn = text_problems(page, doc, text_boxes(sp))
     bad += tb
+    bad += text_block_problems(page, h, sp)
     spans = spans_mm(page, h)
     bad += table_problems(spans, sp, w)
-    bad += size_problems(spans, sp, w)
+    bad += size_problems(spans, sp, w, text_boxes(sp))
     return bad, warn, info
 
 
