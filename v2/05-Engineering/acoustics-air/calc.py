@@ -612,7 +612,9 @@ CASINGS = {     # DECIDED: al20
     "al20": ("aluminium 2.0 mm", "alu", 2.0),
     "st10": ("steel 1.0 mm", "steel", 1.0),
 }
-LINING_KG_M3 = 40.0    # polyester lining board, about 40 kg/m3 (ASSUME)
+LINING_KG_M3 = 40.0    # polyester lining board, about 40 kg/m3 (ASSUME): the fan boxes' 50 mm linings
+CART_LAYER_KG_M3 = 32.0  # the D-60 cartridges' three 50 mm layers: Pyrotek Sorberpoly 2D at 32 kg/m3, the grade its
+                         # absorption data is for (CEILING confirmed, D-116)
 
 
 def silencer_il(length, derate=1.0):
@@ -766,7 +768,7 @@ def d60_cartridge_kg(casing="al20"):
     kg_m2 = MAT[mat][0] * t / 1000
     w, d, L = (x / 1000 for x in D60["cart"])
     sheet = 2 * (w + d) * L + 2 * 0.3 * w * d
-    lining = (D60["ngap"] + 1) * D60["lin"] / 1000 * (w - 0.004) * L * LINING_KG_M3
+    lining = (D60["ngap"] + 1) * D60["lin"] / 1000 * (w - 0.004) * L * CART_LAYER_KG_M3
     return sheet * kg_m2 + lining
 
 
@@ -787,7 +789,7 @@ def d60_parts(casing="al20"):
     ebox = 2 * (0.294 * d + 0.294 * w + d * w)
     rows = [
         ("Supply cartridge, in the air column", f"{D60['cart'][0]:.0f} x {D60['cart'][1]:.0f} x {D60['cart'][2]:.0f}",
-         d60_cartridge_kg(casing), f"{CASINGS[casing][0]} casing, three 50 mm layers at {LINING_KG_M3:.0f} kg/m3"),
+         d60_cartridge_kg(casing), f"{CASINGS[casing][0]} casing, three 50 mm layers at {CART_LAYER_KG_M3:.0f} kg/m3"),
         ("Exhaust cartridge, in the soffit", "same", d60_cartridge_kg(casing), "same part"),
         ("Air column: felt-covered faces, fill, frame, kick grille, hub plate", f"{col_w*1000:.0f} x {col_d*1000:.0f} x {col_h*1000:.0f}",
          (col_w + col_d) * col_h * face + fill * (w + d) * L * FILL_KG_M3
