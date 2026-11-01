@@ -43,7 +43,8 @@ def _missing(fs):
     return {f.subject: f.message for f in fs if f.rule == "no-drawing"}
 
 
-MITRED = "mitred to its neighbours (angles on the frame drawing)"
+MITRED = "45.0° at the bottom end; 30.0° at the top end"           # both end angles, as D-162 asks
+DEFERRED = "mitred to its neighbours (angles on the frame drawing)"   # not stated in the row (D-162)
 SHEET = ("CUT LIST\nMEMBER  PART    NAME                 LENGTH\nB01     352201  BACK RING BOTTOM     1422.8\n"
          "B02     352202  BACK RING DR JOINT   268.0\nB03     352203  BACK RING TOP        1691.7")
 
@@ -54,6 +55,17 @@ def test_a_member_on_its_frames_drawing_needs_no_sheet_of_its_own(tmp_path):
     fs = c_drawings.check_drawings(root, {"352201"}, {}, {"352201": "FRONT - DECOR FRAME DT - BACK RING BOTTOM"},
                                    ends_by_pn={"352201": [(1, 1)]})
     assert "352201" not in _missing(fs)
+    # square ends said in words count as both angles; 'angles on the frame drawing' doesn't state them
+    assert c_drawings.member_row_lacks({"section": "20 x 20", "length_mm": "300", "ends": "square both ends",
+                                        "qty": "1"}) == []
+    assert c_drawings.member_row_lacks({"section": "20 x 20", "length_mm": "300", "ends": DEFERRED, "qty": ""}) == \
+        ["both end angles", "its quantity"]
+
+
+def test_d162_the_row_gives_section_length_both_end_angles_and_quantity(tmp_path):
+    root = _repo(tmp_path, [("351204", "B01", "352201", "BACK RING BOTTOM", "1422.8", DEFERRED)], SHEET)
+    fs = c_drawings.check_drawings(root, {"352201"}, {}, {}, ends_by_pn={"352201": [(1, 1)]})
+    assert "its cut-list row doesn't give both end angles (D-162)" in _missing(fs)["352201"]
 
 
 def test_a_member_keeps_its_own_sheet_for_work_before_welding_or_an_end_a_list_cant_state(tmp_path):
@@ -68,17 +80,19 @@ def test_a_member_keeps_its_own_sheet_for_work_before_welding_or_an_end_a_list_c
     assert "an end cut a cut list can't state ('coped')" in got["352202"]
     assert "an end cut by 2 planes" in got["352203"]
     assert all(f.severity == "severe" for f in fs if f.rule == "no-drawing")
-    assert all("frame's cut list on the frame's drawing" in f.fix for f in fs if f.rule == "no-drawing")
+    assert all("in its row of the frame's cut list, on the frame's drawing" in f.fix for f in fs
+               if f.rule == "no-drawing")
 
 
 def test_the_row_must_be_on_the_frames_drawing(tmp_path):
     rows = [("351204", "B04", "352204", "BACK RING SLOPE OVER DL", "379.7", MITRED),
             ("351204", "B05", "352204", "BACK RING SLOPE OVER DL (2nd)", "379.7", MITRED)]
-    # no frame drawing yet: still missing, and said why
-    fs = c_drawings.check_drawings(_repo(tmp_path, rows), {"352204"}, {}, {}, ends_by_pn={"352204": [(1, 1)]})
-    msg = _missing(fs)["352204"]
-    assert msg.count("its frame 351204 (cut list 351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv) has no drawing "
-                     "yet") == 1                    # two rows of one list, said once
+    # no frame drawing yet: the frame's own finding carries it, naming its members once, not one finding per member
+    fs = c_drawings.check_drawings(_repo(tmp_path, rows), {"352204", "351204"}, {}, {}, ends_by_pn={"352204": [(1, 1)]})
+    got = _missing(fs)
+    assert "352204" not in got
+    assert "carries their cut list (D-162), 1 member (352204)" in got["351204"]
+    assert [f.fix for f in fs if f.subject == "351204"][0].endswith("with its members' cut list on it (D-162).")
     # a frame drawing whose cut list doesn't carry the member's number
     fs = c_drawings.check_drawings(_repo(tmp_path, rows, SHEET), {"352204"}, {}, {}, ends_by_pn={"352204": [(1, 1)]})
     assert "drawing 351204_P01_FRONT-DECOR-FRAME-DT_DWG.pdf doesn't show its cut-list row" in _missing(fs)["352204"]

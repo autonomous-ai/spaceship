@@ -1146,6 +1146,23 @@ def processed_bought(plists, holes_by_pn):
 MEMBER_COL = re.compile(r"^member_?(?:part|pn)(?:_?number)?$", re.I)
 FRAME_COLS = ("frame", "weldment", "frame_part", "frame_number")
 BEFORE_WELD = re.compile(r"\bbefore\s+(?:the\s+)?weld", re.I)
+# D-162: the row gives the member's section, cut length, both end angles and quantity; the release checklist tests
+# the same (build_release_checklist.py, d162_rows), with these patterns: keep them in step
+END_ANGLE = re.compile(r"\d+(?:\.\d+)?\s*°")
+SQUARE_ENDS = re.compile(r"square (?:cut|both ends)|both ends square|square at both ends", re.I)
+
+
+def member_row_lacks(row):
+    """What a member's cut-list row doesn't give of D-162's: its section, cut length, both end angles ('angles on
+    the frame drawing' doesn't state them) and quantity."""
+    cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str)
+             and isinstance(v, str)}
+    ends = " ".join(v for k, v in cells.items() if re.search(r"end|angle|cut", k))
+    return [what for what, ok in (
+        ("its section", bool(cells.get("section"))),
+        ("its cut length", bool(cells.get("length_mm") or cells.get("length") or cells.get("cut_length_mm"))),
+        ("both end angles", len(END_ANGLE.findall(ends)) >= 2 or bool(SQUARE_ENDS.search(ends))),
+        ("its quantity", bool(cells.get("qty") or cells.get("quantity")))) if not ok]
 UNSTATED_END = re.compile(r"\b(?:cope[ds]?|coping|notch(?:ed|es)?|saddle|fish-?mouth|profile[- ]cut)\b", re.I)
 
 
@@ -1220,10 +1237,14 @@ def member_ends(solid):
 
 
 def member_lacks(pn, entries, idx, ends=None, text_of=None):
-    """What keeps a weldment member off its frame's cut-list route ([] when its row, on its frame's drawing, is its
-    drawing)."""
+    """What keeps a weldment member off its frame's cut-list route ([] when its row is its drawing): D-162's row
+    (the best of its rows), work before welding or an end a cut list can't state, and a frame drawing that doesn't
+    carry its row. A frame with no drawing yet carries its members in its own finding, not theirs."""
     text_of = text_of or pdf_text
     lacks = []
+    best = min((member_row_lacks(row) for _w, row, _f in entries), key=len)
+    if best:
+        lacks.append("its cut-list row doesn't give %s (D-162)" % ", ".join(best))
     words = " ".join(str(v) for _w, row, _f in entries for k, v in row.items() if isinstance(k, str) and v)
     m = BEFORE_WELD.search(words)
     if m:
@@ -1232,23 +1253,21 @@ def member_lacks(pn, entries, idx, ends=None, text_of=None):
     m = UNSTATED_END.search(words)
     if m:
         lacks.append("its cut-list row names an end cut a cut list can't state ('%s')" % m.group(0))
-    for i, body in enumerate(ends or ()):
+    for body in ends or ():
         if body and max(body) > 1:
             lacks.append("its STEP shows an end cut by %d planes (a notch, a cope or a double cut), which a cut list "
                          "can't state" % max(body))
             break
-    carried, why = False, []
+    drawn, why = [], []
     for w, f in sorted({(w, f) for w, _row, f in entries}):      # a member on several rows of one list: once
         pdfs = sorted(p for _rv, p in idx.get(w, {}).get("DWG", []) if p.lower().endswith(".pdf"))
         if not pdfs:
-            why.append("its frame %s (cut list %s) has no drawing yet" % (w, os.path.basename(f)))
-            continue
+            continue                    # the frame's own missing drawing is the finding
         text = text_of(pdfs[-1]) or ""
-        if re.search(r"(?<!\d)%s(?!\d)" % pn, text):
-            carried = True
-        else:
+        drawn.append(bool(re.search(r"(?<!\d)%s(?!\d)" % pn, text)))
+        if not drawn[-1]:
             why.append("its frame %s's drawing %s doesn't show its cut-list row" % (w, os.path.basename(pdfs[-1])))
-    if not carried:
+    if drawn and not any(drawn):
         lacks.extend(why)
     return lacks
 
@@ -1269,7 +1288,11 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     cuboid_by_pn = cuboid_by_pn or {}  # pn -> sides of its one shape when that is a plain rectangular block (D-125)
     prism_by_pn = prism_by_pn or {}    # pn -> (its one shape cut straight through from sheet, or None, why) (D-128)
     ends_by_pn = ends_by_pn or {}      # pn -> [(planes at one end, at the other)] per body (weldment members)
-    members = weldment_members(root)   # the Lead's ruling: a D-120 member's row in its frame's cut list
+    members = weldment_members(root)   # the Lead's ruling and D-162: a D-120 member's row in its frame's cut list
+    frames = {}
+    for m, entries in members.items():
+        for w, _row, _f in entries:
+            frames.setdefault(w, set()).add(m)
     fs = []
     idx = index_files(root)
     drawgen = drawgen_parts(root) if policy(root, "missing_drawing_severity", "severe") == "auto-screen-lock" else set()
@@ -1387,16 +1410,24 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                 continue        # its row in its frame's cut list, on the frame's drawing, is its drawing
             d_member = (" As a member of a welded frame its row in the frame's cut list, on the frame's drawing, "
                         "would do, but %s." % "; ".join(lacks))
+        d_frame = ""
+        if not pdfs and pn in frames:
+            ms = sorted(frames[pn])
+            d_frame = (" Its drawing is also its members' drawing: it carries their cut list (D-162), %d member%s "
+                       "(%s)." % (len(ms), "" if len(ms) == 1 else "s", ", ".join(ms[:6]) + (", ..." if len(ms) > 6
+                                                                                         else "")))
         if not pdfs:
             why = " %s." % (made_why or {})[pn] if pn in (made_why or {}) else ""
             fs.append(Finding("C05", "no-drawing", pn, missing_for(pn) if cls == "part" else "major",
-                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s%s%s" % (
+                              "%s has no drawing PDF (%s_REV_NAME_DWG.pdf under v2/02-Drawings)%s.%s%s%s%s" % (
                                   label, pn, " though its CAD is in %s" % r_where if r_where else "", d125, why,
-                                  d_member),
+                                  d_member, d_frame),
                               "Make the ISO first-angle drawing, export it through the name strip, and commit it" +
-                              ("; or, for a member of a welded frame, put its row in the frame's cut list on the "
-                               "frame's drawing (a sheet of its own only for work done before welding or an end cut "
-                               "a cut list can't state)." if d_member else "."),
+                              ("; or, for a member of a welded frame, give its section, cut length, both end angles "
+                               "and quantity in its row of the frame's cut list, on the frame's drawing (a sheet of "
+                               "its own only for work done before welding or an end cut a cut list can't state)."
+                               if d_member else
+                               "; with its members' cut list on it (D-162)." if d_frame else "."),
                               r_where, owner))
             continue
         revs = {rv for rv, _p in pdfs}
