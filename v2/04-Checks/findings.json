@@ -8148,7 +8148,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1 overlap by 217790.1 mm3 (the largest of 2 body pairs, 218037.2 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 217790.1,
@@ -8167,8 +8167,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8178,7 +8184,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 30240.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 30240.0,
@@ -8197,8 +8203,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8208,7 +8220,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 12960.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 12960.0,
@@ -8227,8 +8239,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8238,7 +8256,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body2 overlap by 5216.0 mm3 (the largest of 2 body pairs, 5220.3 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 5216.0,
@@ -8257,8 +8275,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8268,7 +8292,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1 overlap by 99543.6 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 99543.6,
@@ -8287,8 +8311,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8298,7 +8328,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 3240.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 3240.0,
@@ -8317,8 +8347,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8328,7 +8364,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1 overlap by 47520.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 47520.0,
@@ -8347,8 +8383,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8358,7 +8400,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 866520.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 866520.0,
@@ -8377,8 +8419,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8388,7 +8436,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 9000.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 9000.0,
@@ -8407,8 +8455,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8418,7 +8472,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1 overlap by 41484.0 mm3 (the largest of 3 body pairs, 41760.4 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 41484.0,
@@ -8437,8 +8491,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8448,7 +8508,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6 overlap by 2730.0 mm3 (the largest of 2 body pairs, 3051.2 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 2730.0,
@@ -8467,8 +8527,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8478,7 +8544,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6 overlap by 8778.0 mm3 (the largest of 2 body pairs, 9025.1 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 8778.0,
@@ -8497,8 +8563,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8508,7 +8580,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6 overlap by 2835.0 mm3 (the largest of 2 body pairs, 3108.0 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 2835.0,
@@ -8527,8 +8599,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8538,7 +8616,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5 overlap by 431.9 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 431.86,
@@ -8557,8 +8635,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8568,7 +8652,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1 overlap by 130.3 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 130.32,
@@ -8587,8 +8671,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8598,7 +8688,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1 overlap by 198.3 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 198.29,
@@ -8617,8 +8707,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8628,7 +8724,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body4 overlap by 3780.0 mm3 (the largest of 2 body pairs, 4406.6 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; ELECTRICAL",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 3780.0,
@@ -8647,8 +8743,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8658,7 +8760,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1 overlap by 7740.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 7740.0,
@@ -8677,8 +8779,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8688,7 +8796,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1 overlap by 196080.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 196080.0,
@@ -8707,8 +8815,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8718,7 +8832,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7 overlap by 447.6 mm3 (the largest of 3 body pairs, 859.6 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 447.55,
@@ -8737,8 +8851,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8748,7 +8868,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1 overlap by 230.6 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 230.61,
@@ -8767,8 +8887,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8778,7 +8904,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1 overlap by 284.2 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 284.19,
@@ -8797,8 +8923,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8808,7 +8940,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1 overlap by 98693.7 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 98693.68,
@@ -8827,8 +8959,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8838,7 +8976,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12 overlap by 8887.2 mm3 (the largest of 3 body pairs, 14993.0 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 8887.25,
@@ -8857,8 +8995,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8868,7 +9012,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1 overlap by 152005.9 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 152005.87,
@@ -8887,8 +9031,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8898,7 +9048,7 @@
    "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1 overlap by 15403.2 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "CEILING; FRONT",
+   "owner": "CEILING",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 15403.22,
@@ -8917,8 +9067,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after."
   },
   {
    "check": "C01",
@@ -8928,7 +9084,7 @@
    "message": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body4 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1 overlap by 4320.0 mm3 (the largest of 2 body pairs, 4410.6 mm3 in all) in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "ELECTRICAL; FRONT",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 4320.0,
@@ -8947,8 +9103,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8958,7 +9120,7 @@
    "message": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body3 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1 overlap by 316.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "ELECTRICAL; FRONT",
+   "owner": "ELECTRICAL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 316.02,
@@ -8977,8 +9139,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it."
   },
   {
    "check": "C01",
@@ -8988,7 +9156,7 @@
    "message": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1 and 510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_CAD:1 / 511102 LINING - TRAY - SIDE LOWER - RH:1 / Body1 overlap by 20122.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "FRONT; WALL",
+   "owner": "WALL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 20122.05,
@@ -9007,8 +9175,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner WALL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (WALL group): DR's one panel stays as built (room face at Y -641.14); WALL starts the R-side cassettes at Y -640, 1 mm off the panel; the service steps unclip R1's and R2's front cassettes before DR's panel comes off; no extra trim part."
   },
   {
    "check": "C01",
@@ -9018,7 +9192,7 @@
    "message": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1 and 510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_CAD:1 / 511104 LINING - TRAY - SIDE UPPER - RH:1 / Body1 overlap by 15807.0 mm3 in the assembly (Fusion, exact intersection).",
    "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
    "file": "",
-   "owner": "FRONT; WALL",
+   "owner": "WALL",
    "evidence": {
     "model": "assembly/fusion",
     "mm3": 15807.04,
@@ -9037,8 +9211,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner WALL (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (WALL group): DR's one panel stays as built (room face at Y -641.14); WALL starts the R-side cassettes at Y -640, 1 mm off the panel; the service steps unclip R1's and R2's front cassettes before DR's panel comes off; no extra trim part."
   },
   {
    "check": "C07",
@@ -9154,8 +9334,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): full M6 x 25, one component per bolt."
   },
   {
    "check": "C07",
@@ -9244,8 +9430,14 @@
      "date": "2026-11-01",
      "rev": "9e0dcd1",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
     }
-   ]
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): full M6 x 25, one component per bolt."
   }
  ]
 }
