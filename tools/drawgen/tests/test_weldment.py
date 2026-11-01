@@ -376,8 +376,9 @@ def test_front_angle_columns_and_parts_list_names():
     """FRONT's cut lists (#313, for its D-131 frames): the model check reads each row's end angles from its two angle
     columns, because a text with two cuts at one end or a tolerance note gives no pair. At a two-cut end both cuts
     are checked (the generator's owner on #404): the steepest against the body's steepest there, and the angles
-    against that end's cut faces, both ways. A text that does give both angles must agree with the columns, and each
-    member prints its parts-list name, not the tube's place (the Lead's ruling, 2026-11-01)."""
+    against that end's cut faces, both ways. The sheet prints each end from the checked columns, not the text (the
+    Lead's ruling on #424), and each member its parts-list name, not the tube's place (the Lead's ruling,
+    2026-11-01)."""
     rows = _front_rows()
     d, step, spec = _made("front", rows, two_cut=True)
     p = os.path.join(d, "frame.pdf")
@@ -393,7 +394,7 @@ def test_front_angle_columns_and_parts_list_names():
     text = " ".join(" ".join(pg.get_text() for pg in fitz.open(p)).split())
     assert "219981 TEST - FRAME - MEMBER LONG" in text and "219982 TEST - FRAME - MEMBER SHORT" in text, text[:600]
     assert "LONG MEMBER AT THE" not in text and "SHORT MEMBER" not in text
-    assert "two cuts, 45.0° and square (0°)" in text           # the ends as written
+    assert "left end (A) 45.0°; right end (B) two cuts, 45.0° and square" in text    # from the checked columns
     # a member with no parts-list row keeps the cut list's own name
     with _Rows({"219983": PLATE_ROW}):
         got, _p = inputs.cut_list_rows("none", spec["cut_list"], "219980")
@@ -422,10 +423,11 @@ def test_front_angle_columns_and_parts_list_names():
     for r in rows[:2]:
         r["end_b_deg"] = "45.0"
     _refused("front7", "its cut list gives end A (its left end) 45° and end B 45°, " + body, rows, two_cut=True)
-    # a text that gives both angles must say what the columns say
+    # the short members' columns say 45°, their bodies are square: refused, whatever the text says
     rows = _front_rows()
     rows[2]["end_b_deg"] = "45.0"
-    _refused("front3", "member 219982's ends text gives 0°, 0°, its end angle columns 0°, 45°", rows, two_cut=True)
+    _refused("front3", "member 219982: its cut list gives its two ends different cuts, but its ends text doesn't say "
+             "which end is A", rows, two_cut=True)
     # a row whose columns give one end only
     rows = _front_rows()
     rows[2]["end_b_deg"] = "square"
@@ -436,6 +438,28 @@ def test_front_angle_columns_and_parts_list_names():
     rows[1]["end_a_deg"] = "46.0"
     _refused("front5", "member 219981 has two lengths or two ends texts or two pairs of end angles", rows,
              two_cut=True)
+
+
+def test_the_sheet_prints_the_ends_from_the_checked_columns():
+    """Reviewer 6 on #424, the Lead's ruling: under D-162 the printed ends are the member's drawing, so they come from
+    the checked columns, never the list's own text. Here the text contradicts the columns twice (other angles, and
+    the lean the other way), and the sheet still prints the columns' values, which the model check passed; the row's
+    note, free words the check doesn't read, follows in brackets."""
+    rows = _front_rows()
+    for r in rows[:2]:
+        r.update(lean="opposite", note="mitred to its neighbours",
+                 ends="left end (A) 30.0°; right end (B) 60.0°; the cuts lean the same way (parallel)")
+    d, step, spec = _made("printed", rows, two_cut=True)
+    p = os.path.join(d, "frame.pdf")
+    with _Rows({"219983": PLATE_ROW}):
+        compose.make("219980", "none", spec, p, step=step, row=ROW)
+        fails, _st = readback.check(p, step)
+    assert not fails, fails
+    text = " ".join(" ".join(pg.get_text() for pg in fitz.open(p)).split())
+    want = ("left end (A) 45.0°; right end (B) two cuts, 45.0° and square; the cuts lean apart (opposite) "
+            "(note: mitred to its neighbours)")
+    assert want in text, text
+    assert "30.0°" not in text and "60.0°" not in text and "the same way" not in text, text
 
 
 def _lean_rows(lean):
