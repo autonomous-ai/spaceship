@@ -55,15 +55,17 @@ def run(_context):
             plane = root.constructionPlanes.add(pin)
             psk = root.sketches.add(plane)
             pt = psk.sketchPoints.add(adsk.core.Point3D.create(tx * MM, ty * MM, 0))
-            g_occ = adsk.fusion.JointGeometry.createByPoint(comp.originConstructionPoint.createForAssemblyContext(copy))
-            g_par = adsk.fusion.JointGeometry.createByPoint(pt)
-            ji = root.joints.createInput(g_occ, g_par)
-            ji.setAsRigidJointMotion()
-            j = root.joints.add(ji)
             for flip in (False, True):
                 for angle in ("0 deg", "90 deg", "180 deg"):
-                    j.isFlipped = flip
-                    j.angle.expression = angle
+                    # the flip and angle go on the joint's input: a made joint can't be edited without rolling the
+                    # timeline back (the first probe, 2026-11-01), so each setting gets a fresh joint
+                    g_occ = adsk.fusion.JointGeometry.createByPoint(comp.originConstructionPoint.createForAssemblyContext(copy))
+                    g_par = adsk.fusion.JointGeometry.createByPoint(pt)
+                    ji = root.joints.createInput(g_occ, g_par)
+                    ji.setAsRigidJointMotion()
+                    ji.isFlipped = flip
+                    ji.angle = adsk.core.ValueInput.createByString(angle)
+                    j = root.joints.add(ji)
                     m = copy.transform2
                     rot = tuple(tuple(round(m.getCell(r, c), 6) for c in range(3)) for r in range(3))
                     move = tuple(round(m.getCell(r, 3) / MM, 3) for r in range(3))
@@ -73,6 +75,7 @@ def run(_context):
                         axis.upper(), flip, angle, rot, move, box, "  <- the turn" if ok else ""))
                     if ok and axis not in found:
                         found[axis] = (flip, angle, box)
+                    j.deleteMe()
         for axis in ("y", "z"):
             if axis in found:
                 flip, angle, box = found[axis]
