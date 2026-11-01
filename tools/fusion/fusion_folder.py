@@ -52,7 +52,20 @@ def _listing(folder):
     except Exception:
         arr = None
     if arr is not None:
-        return [(i, f if f is not None else "unreadable entry") for i, f in enumerate(arr)]
+        out = [(i, f if f is not None else "unreadable entry") for i, f in enumerate(arr)]
+        # Reviewer 5, P2 on #213: count + item(i) could never lose a file without saying
+        # so, but a listing that came back short would let one vanish from the pass. So
+        # the slots past the array's end, by the count of the same collection, count as
+        # unreadable: read again, and refused by safe_to_create if they never appear.
+        try:
+            n = files.count
+        except Exception as e:
+            # Reviewer 5, P3 on #220: a count that can't be read can't vouch for the
+            # listing, so it counts as one unreadable entry (read again; refused if it
+            # never answers)
+            return out + [(len(out), "the folder's count can't be read: %s" % _short(e))]
+        out += [(i, "missing from the listing: the folder counts %d" % n) for i in range(len(out), n)]
+        return out
     out = []
     for i in range(files.count):
         try:

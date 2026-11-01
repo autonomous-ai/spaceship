@@ -203,6 +203,12 @@ def shell_gaps(bodies, inset=1.0, seam=SEAM_GAP, root=None, faces=None):
         for g in groups:
             r = (max(a0, min(x[0] for x in g) - grow), min(a1, max(x[1] for x in g) + grow),
                  max(b0, min(x[2] for x in g) - grow), min(b1, max(x[3] for x in g) + grow))
+            # a strip no wider than the decided seam along the face's own edge is the seam to a part of the next face
+            # (a decor block in front, the band below), which this face can't see; that face reports what is missing
+            edge_seam = ((r[0] <= a0 + 1e-3 or r[1] >= a1 - 1e-3) and r[1] - r[0] <= seam + 0.1) or \
+                        ((r[2] <= b0 + 1e-3 or r[3] >= b1 - 1e-3) and r[3] - r[2] <= seam + 0.1)
+            if edge_seam:
+                continue
             near = sorted({b.label.split(" / ")[-1] for b in face_bodies
                            if b.box[aa] <= r[1] + 1e-3 and b.box[aa + 3] >= r[0] - 1e-3
                            and b.box[bb] <= r[3] + 1e-3 and b.box[bb + 3] >= r[2] - 1e-3})
@@ -222,12 +228,16 @@ def _glob_exists(root, pattern):
 # "opening" there is mostly a part not merged yet (the back walls, a band, a decor block), not a gap in what is there.
 # Each face lists the parts it needs, by the words in their names; the seams between parts already there are the
 # gap rules' job. The skeleton is complete and is always checked.
+# words may be joined by spaces or by the file names' hyphens (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_CAD)
 SHELL_FACE_NEEDS = {
-    "back": (r"PANEL ASSY\W+BACK LOWER\W+LH", r"PANEL ASSY\W+BACK LOWER\W+RH", r"PANEL ASSY\W+BACK UPPER\W+LH",
-             r"PANEL ASSY\W+BACK UPPER\W+RH", r"CEILING\W+PANEL ASSY"),
-    "left": (r"PANEL ASSY\W+SIDE LOWER\W+LH", r"PANEL ASSY\W+SIDE UPPER\W+LH", r"DECOR BLOCK\W+(ASSY\W+)?DL\b"),
-    "right": (r"PANEL ASSY\W+SIDE LOWER\W+RH", r"PANEL ASSY\W+SIDE UPPER\W+RH", r"DECOR BLOCK\W+(ASSY\W+)?DR\b"),
-    "top": (r"CEILING\W+PANEL ASSY\W+C1\b", r"CEILING\W+PANEL ASSY\W+C2\b", r"DECOR BLOCK\W+(ASSY\W+)?DT\b"),
+    "back": (r"PANEL\W+ASSY\W+BACK\W+LOWER\W+(?:LH|B1)", r"PANEL\W+ASSY\W+BACK\W+LOWER\W+(?:RH|B2)", r"PANEL\W+ASSY\W+BACK\W+UPPER\W+(?:LH|B3)",
+             r"PANEL\W+ASSY\W+BACK\W+UPPER\W+(?:RH|B4)", r"CEILING\W+PANEL\W+ASSY"),
+    # a side face's bottom seam closes on its side band, so the band is one of its parts too
+    "left": (r"PANEL\W+ASSY\W+SIDE\W+LOWER\W+LH", r"PANEL\W+ASSY\W+SIDE\W+UPPER\W+LH", r"DECOR\W+BLOCK\W+(ASSY\W+)?DL(?![A-Z0-9])",
+             r"BAND\W+(ASSY\W+)?SIDE\W+LH"),
+    "right": (r"PANEL\W+ASSY\W+SIDE\W+LOWER\W+RH", r"PANEL\W+ASSY\W+SIDE\W+UPPER\W+RH", r"DECOR\W+BLOCK\W+(ASSY\W+)?DR(?![A-Z0-9])",
+              r"BAND\W+(ASSY\W+)?SIDE\W+RH"),
+    "top": (r"CEILING\W+PANEL\W+ASSY\W+C1(?![A-Z0-9])", r"CEILING\W+PANEL\W+ASSY\W+C2(?![A-Z0-9])", r"DECOR\W+BLOCK\W+(ASSY\W+)?DT(?![A-Z0-9])"),
     # the back corners of the base are the side bands' ends, so each base face needs the bands that meet it
     "back-base": (r"BAND\W+(ASSY\W+)?BACK", r"BAND\W+(ASSY\W+)?SIDE\W+LH", r"BAND\W+(ASSY\W+)?SIDE\W+RH"),
     "left-base": (r"BAND\W+(ASSY\W+)?SIDE\W+LH", r"BAND\W+(ASSY\W+)?BACK"),
@@ -295,6 +305,7 @@ def check_gap_rules(root, mdl, bodies, rules):
     fails = {}
     reserved = reserved_spaces(root)
     bodies = [b for b in bodies if not reserved_label(b.label, reserved)]   # reserved spaces have no seams yet
+    bodies = [b for b in bodies if not re.search(r"(?<!\d)7100\d\d(?!\d)", b.label or "")]   # D-92: nor route bodies
     for r in rules:
         if r.get("models") and mdl not in r["models"].split():
             continue
@@ -509,6 +520,58 @@ def check_unmatched(root, mdl, bodies, capture=4.0, search=60.0, plane=15.0):
                 h.diameter, b.label, _pt(h.center), ob.file, x.diameter, ob.label.split(" / ")[-1], _pt(x.center), lat),
             "Take both sides' hole patterns from one shared source (one parameter set both link to).",
             b.file, owner_for(b.file, b.part_number), {"model": mdl, "offset_mm": round(lat, 1), "other": ob.file}))
+    return fs
+
+
+# D-135 (PM, 2026-11-01): the ACP skin flexes 2 mm or less under a 100 N push at a bay's centre, edges simply
+# supported. The skin is bonded to every frame member, so its free spans are the bays between members; WALL's span
+# table (v2/01-CAD-Native/wall/ACP-SPANS.md: plate on 4 edges, 3 mm ACP with 0.21 mm skins) gives 1.99 mm for a
+# 274.8 mm clear bay, so 275 mm clear is the widest bay that passes (the Lead's figure).
+ACP_BAY_MAX = 275.0
+WALL_FRAME = re.compile(r"(\d{6})\s+WALL\W+PANEL\W+FRAME\W+([A-Z0-9 -]+?)(?=:\d|\s*/|$)", re.I)
+
+
+def acp_bays(bodies):
+    """The bays of every wall panel frame: {frame label: [(short span, (u0, u1, v0, v1)), ...]}, in the frame's own
+    plane (its two long box axes), each bay the frame's outline less every member, as rectangles."""
+    frames = {}
+    for b in bodies:
+        m = WALL_FRAME.search(b.label or "")
+        if m:
+            frames.setdefault("%s %s" % (m.group(1), m.group(2).strip()), []).append(b)
+    out = {}
+    for name, members in frames.items():
+        lo = [min(b.box[k] for b in members) for k in range(3)]
+        hi = [max(b.box[k + 3] for b in members) for k in range(3)]
+        ext = [hi[k] - lo[k] for k in range(3)]
+        n = min(range(3), key=lambda k: ext[k])            # the frame's depth axis
+        u, v = [k for k in range(3) if k != n]
+        bays = [(lo[u], hi[u], lo[v], hi[v])]
+        for b in members:
+            c = (b.box[u], b.box[u + 3], b.box[v], b.box[v + 3])
+            bays = [piece for r in bays for piece in _subtract(r, c)]
+        bays = [r for r in bays if r[1] - r[0] > 1.0 and r[3] - r[2] > 1.0]
+        out[name] = sorted(((round(min(r[1] - r[0], r[3] - r[2]), 1), tuple(round(x, 1) for x in r)) for r in bays),
+                           reverse=True)
+    return out
+
+
+def check_acp_bays(root, mdl, bodies, limit=ACP_BAY_MAX):
+    """D-135: every wall panel bay under the ACP skin at most `limit` mm clear across its short span."""
+    fs = []
+    for name, bays in sorted(acp_bays(bodies).items()):
+        wide = [x for x in bays if x[0] > limit + 0.5]
+        if not wide:
+            continue
+        pn = name.split()[0]
+        f = next((b.file for b in bodies if WALL_FRAME.search(b.label or "") and pn in b.label), "")
+        fs.append(Finding(
+            "C09", "acp-bay", "%s %s" % (mdl, name), "major",
+            "%s has %d bay(s) wider than %.0f mm clear under the ACP skin, the widest %.1f mm: the skin would flex "
+            "over 2 mm under a 100 N push at its centre (D-135; WALL's span table: 274.8 mm clear gives 1.99 mm)."
+            % (name, len(wide), limit, wide[0][0]),
+            "Add a member so every bay is %.0f mm clear or less (members about 300 apart, D-135)." % limit,
+            f, owner_for(f, pn), {"widest_mm": wide[0][0], "bays_over": len(wide)}))
     return fs
 
 

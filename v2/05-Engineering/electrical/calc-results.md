@@ -11,15 +11,15 @@ Every number here is a **calculation** from the load table (`710000_P01_ELECTRIC
 | Supply | Rated W | Load max W | Load typical W | Max load / rating | Feeds |
 |---|---:|---:|---:|---:|---|
 | PS1 | 60 | 60.0 | 0.0 | 100 % | voice cockpit hook, fused 5 A (REQ-VCK-04) |
-| PS2 | 60 | 41.6 | 22.0 | 69 % | all lights: uplight, down-light and call light, through the 3-channel light controller |
+| PS2 | 60 | 41.0 | 22.0 | 68 % | all lights: uplight, down-light and call light, through the 3-channel light controller |
 | PS3 | 60 | 31.4 | 11.9 | 52 % | four fans and the sensor hub (column fuse block) |
-| **All** | **180** | **133.1** | **33.9** | 74 % | REQ-ELE-03: about 125 W load, supply at least 150 W |
+| **All** | **180** | **132.4** | **33.9** | 74 % | REQ-ELE-03: about 125 W load, supply at least 150 W |
 
 Typical = one or two people, lights full, fans near the 53 l/s normal flow, no voice kit fitted. Max = every load at its maximum at once, which the control never asks for (the fans reach full speed only above the 65 l/s boost).
 
 ## 2. Mains side
 
-- Supplies' input at maximum load: 162 W at 83 % efficiency (assumption from the maker's typical figure, parts list) plus 0.5 W no-load each: about **0.74 A at 220 V**.
+- Supplies' input at maximum load: 161 W at 83 % efficiency (assumption from the maker's typical figure, parts list) plus 0.5 W no-load each: about **0.73 A at 220 V**.
 - The RCBO is C10, 30 mA: 10 A x 220 V = 2.2 kW for the user socket and the supplies together. A laptop charger takes about 0.3 A; a 2 kW heater would still hold (9.1 A), which is the worst case a user might plug in (assumption).
 - Mains conductors 1.5 mm² (H07V-K in the sleeve, 0.82 m): rated well above 10 A in free air (IEC 60364-5-52, to confirm by the factory's electrician); the RCBO protects them.
 
@@ -34,7 +34,7 @@ Loop resistance = 2 x length x ρ / area, divided by the number of parallel pair
 | W10c B4-CASS | PS2 lights | 1360 | 0.823 x 1 | 1.83 | 0.125 |
 | W11a SHELF | PS2 lights | 300 | 0.823 x 1 | 1.83 | 0.028 |
 | W11b SHELF | PS2 lights | 1610 | 0.823 x 1 | 0.53 | 0.042 |
-| W11c SHELF | PS2 lights | 1220 | 0.823 x 1 | 1.78 | 0.108 |
+| W11c SHELF | PS2 lights | 1220 | 0.823 x 1 | 1.73 | 0.105 |
 | W20a PU | PS3 air | 300 | 0.823 x 2 | 2.62 | 0.02 |
 | W20b B2-CASS | PS3 air | 920 | 0.823 x 2 | 2.62 | 0.06 |
 | W20c R1-CASS | PS3 air | 1260 | 0.823 x 2 | 2.62 | 0.083 |

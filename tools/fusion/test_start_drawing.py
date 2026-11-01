@@ -27,7 +27,7 @@ sys.path.insert(0, HERE)
 import run_script as rs  # noqa: E402
 import start_drawing as sd  # noqa: E402
 
-FAST = {"dialog": 0.5, "drawing": 0.5, "base_view": 0.3, "idle": 0.3, "poll": 0.005}
+FAST = {"dialog": 0.5, "drawing": 0.5, "base_view": 0.3, "idle": 0.3, "poll": 0.005, "press": 0.05}
 
 
 class FakeFusion:
@@ -35,7 +35,8 @@ class FakeFusion:
                  base_view_after=4, start_cmd=sd.IDLE_CMD, unsaved=0, opened=False,
                  locked=False, ax_windows=3, modified=False, fusion_cancel_works=True,
                  mcp_dies_after_queue=False, ax_works=True, ax_sees_dialogs=True,
-                 folder_bad=(), folder_others=(), drawing_exists=False, open_warning=""):
+                 folder_bad=(), folder_others=(), drawing_exists=False, open_warning="",
+                 ax_late=0, ax_errors=0, ax_error_after_click=False, late_swaps_to_base_view=False):
         self.opened = opened
         self.cmd = start_cmd
         self.unsaved = unsaved
@@ -59,6 +60,11 @@ class FakeFusion:
         self.queued = False
         self.pending = []          # (polls left, action)
         self.ran, self.clicks, self.saved, self.cancels, self.closes = [], [], [], 0, []
+        self.ax_late = ax_late                    # clicks that find no dialog yet (it isn't in accessibility)
+        self.ax_errors = ax_errors                # clicks that fail as the dialog settles ("Invalid index")
+        self.ax_error_after_click = ax_error_after_click   # a press that works but reports an error
+        self.late_swaps_to_base_view = late_swaps_to_base_view
+        self.click_log = []                       # (button, Fusion's command at the click)
 
     def _tick(self):
         nxt = []
@@ -142,6 +148,23 @@ class FakeFusion:
         if not self.ax_works:
             raise sd.StartError("accessibility call failed (fake)")
         self.clicks.append(button)
+        self.click_log.append((button, self.cmd))
+        dialog = self.cmd in (sd.CREATE_CMD, sd.BASE_VIEW_CMD)
+        if dialog and self.ax_late:
+            self.ax_late -= 1
+            if self.late_swaps_to_base_view:      # meanwhile Fusion moves on to another dialog
+                self.cmd = sd.BASE_VIEW_CMD
+            return "none"
+        if dialog and self.ax_errors:
+            self.ax_errors -= 1
+            raise sd.StartError("accessibility call failed: Can't get button 1 ... Invalid index. (-1719)")
+        how = self._press(button)
+        if self.ax_error_after_click and how.startswith("clicked"):
+            self.ax_error_after_click = False
+            raise sd.StartError("accessibility call failed: Can't get button 1 ... Invalid index. (-1719)")
+        return how
+
+    def _press(self, button):
         if self.cmd == sd.CREATE_CMD:
             if button == "OK" and self.ok_found:
                 self.cmd = "busy"
@@ -253,13 +276,68 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(go(f)[0], 1)
         self.assertEqual((f.ran, f.clicks), ([], []))
 
+    # 2026-11-01 06:36 and 07:06: Fusion reported the dialog's command before the dialog showed up to
+    # accessibility, and a press found "none" or hit "Invalid index"; the cleanup found it a second later
+    def test_a_dialog_not_yet_visible_to_accessibility_is_pressed_on_a_retry(self):
+        f = FakeFusion(ax_late=3)                               # OK finds no dialog three times
+        code, logs = go(f)
+        self.assertEqual(code, 0, logs)
+        self.assertEqual(f.clicks[:4], ["OK"] * 4)
+        self.assertEqual(len(f.saved), 1)
+
+    def test_base_views_cancel_not_yet_visible_is_pressed_on_a_retry(self):
+        f = FakeFusion()
+        real = f.click
+
+        def click(button, title):                              # the Base View dialog shows up late
+            if button == "Cancel" and f.cmd == sd.BASE_VIEW_CMD and f.clicks.count("Cancel") < 2:
+                f.clicks.append(button)
+                return "none"
+            return real(button, title)
+        f.click = click
+        code, logs = go(f)
+        self.assertEqual(code, 0, logs)
+        self.assertEqual(f.clicks.count("Cancel"), 3)
+        self.assertEqual(len(f.saved), 1)
+
+    def test_an_accessibility_error_while_the_dialog_settles_is_tried_again(self):
+        code, logs = go(FakeFusion(ax_errors=2))
+        self.assertEqual(code, 0, logs)
+
+    def test_a_press_that_worked_but_reported_an_error_goes_on(self):
+        # the click went through, then accessibility lost the button: Fusion has left the dialog, so the
+        # checks after the press decide (a new drawing is there)
+        f = FakeFusion(ax_error_after_click=True)
+        code, logs = go(f)
+        self.assertEqual(code, 0, logs)
+        self.assertEqual(f.clicks.count("OK"), 1)               # not pressed again
+        self.assertEqual(len(f.saved), 1)
+
+    def test_a_retry_never_presses_in_another_dialog(self):
+        # while OK is retried, Fusion moves on to Base View: the retry stops; OK is never sent to Base View
+        f = FakeFusion(ax_late=1, late_swaps_to_base_view=True)
+        code, _logs = go(f)
+        self.assertEqual(code, 1)                               # no new drawing after that: the start fails
+        self.assertNotIn(("OK", sd.BASE_VIEW_CMD), f.click_log)
+        self.assertEqual(f.cmd, sd.IDLE_CMD)                    # and the cleanup got Fusion idle
+
+    def test_a_dialog_never_seen_fails_after_the_press_time(self):
+        # accessibility never finds the dialog: the press gives up after its time, and as the cleanup's Cancel
+        # can't find it either, the start reports a dialog left open for a person (exit 4), as before
+        f = FakeFusion(ax_late=10 ** 6)
+        code, logs = go(f)
+        self.assertEqual(code, 4, logs)
+        self.assertGreater(f.clicks.count("OK"), 1)
+        self.assertEqual(len(f.saved), 0)
+
     def test_cleanup_presses_cancel_through_accessibility_first(self):
         # PM ruling 2026-10-31: ending an open Create Drawing by script killed Fusion
         f = FakeFusion(ok_found=False)                          # OK can't be pressed
         code, _logs = go(f)
         self.assertEqual(code, 1)
         self.assertEqual(f.cmd, sd.IDLE_CMD)
-        self.assertEqual(f.clicks, ["OK", "Cancel"])
+        self.assertEqual(set(f.clicks[:-1]), {"OK"})             # OK tried for the press time, then
+        self.assertEqual(f.clicks[-1], "Cancel")                # the cleanup's Cancel through accessibility
         self.assertEqual(f.cancels, 0)                          # Fusion's own cancel never used
 
     def test_fusions_own_cancel_only_when_accessibility_sees_no_dialog(self):
@@ -459,19 +537,38 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(f.cancels, 0)                          # never touched while busy
 
     @unittest.skipUnless(shutil.which("osacompile"), "osacompile is macOS only")
-    def run_main(self, make_fake, timed_out_after_queue):
+    def run_main(self, make_fake, timed_out_after_queue, open_stuck=False, flag_pid="none", batch=None):
         """start_drawing's main() with a fake Fusion and a lock in a temporary folder;
-        returns (exit code, the wait call seen or None, lock dir)."""
+        returns (exit code, the wait call seen or None, lock dir). open_stuck: the call
+        that times out has started an open that never ends (logged as the wrapper does);
+        flag_pid: write an unhealthy flag for that Fusion process first."""
         import signal
         import tempfile
         lockdir = os.path.join(tempfile.mkdtemp(prefix="sdlock-"), "fusion.lock")
-        seen = {}
+        seen = {"steps": 0}
+        what = ["100000_P04_POD-SKELETON_CAD", "X_P01_TEST_DWG"]
+        if batch:                                       # --batch FILE instead of DESIGN DRAWING
+            self.batch_file = os.path.join(os.path.dirname(lockdir), "starts.txt")
+            with open(self.batch_file, "w") as fh:
+                fh.write("".join("%s %s %s\n" % b for b in batch))
+            what = ["--batch", self.batch_file]
+        if flag_pid != "none":
+            with open(rs.unhealthy_path(lockdir), "w") as fh:
+                json.dump({"flagged_utc": "2026-11-01 03:55:00 UTC", "fusion_pid": flag_pid,
+                           "opens": [{"started": "2026-11-01 03:39:45 UTC", "what": "ZZ_P00_X_DWG v1",
+                                      "run": "TEST"}]}, fh)
 
         def fake_steps(url, timeout, mcp=None):
+            seen["steps"] += 1
             f = make_fake()
             if timed_out_after_queue:
                 def _mcp():                             # Fusion stops answering in time
                     if f.queued:
+                        if open_stuck and not seen.get("logged"):
+                            seen["logged"] = True
+                            with open(rs.open_log_path(lockdir), "a") as fh:
+                                fh.write("2026-11-01 03:39:45 UTC start open 100000_P04_POD-SKELETON_CAD v4 "
+                                         "HIDDEN; run: TEST: start_drawing.py\n")
                         mcp.timed_out = True
                         raise rs.McpTimeout("Fusion MCP didn't answer within 1 s (fake)")
                 f._mcp = _mcp
@@ -485,19 +582,20 @@ class SequenceTests(unittest.TestCase):
                 signal.getsignal(signal.SIGTERM), signal.getsignal(signal.SIGHUP))
         orig_run, orig_cancel = sd.run_with_cleanup, sd.cancel_dialogs
         sd.Steps, rs.wait_for_fusion = fake_steps, fake_wait
-        sd.run_with_cleanup = lambda *a, **k: orig_run(*a, waits=FAST)
+        sd.run_with_cleanup = lambda *a, **_k: orig_run(*a[:7], waits=FAST)   # run_batch passes waits 8th
         sd.cancel_dialogs = lambda steps, log, tries=4, poll_s=1.0: orig_cancel(steps, log, 2, 0.001)
         env_token = os.environ.pop(rs.TOKEN_ENV, None)
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                code = sd.main(["100000_P04_POD-SKELETON_CAD", "X_P01_TEST_DWG", "--lock", lockdir,
-                                "--busy-wait", "60", "--busy-poll", "2"])
+                code = sd.main(what + ["--lock", lockdir,
+                                       "--busy-wait", "60", "--busy-poll", "2", "--open-limit", "0.3"])
         finally:
             (sd.Steps, rs.wait_for_fusion, sd.run_with_cleanup, sd.cancel_dialogs) = keep[:4]
             signal.signal(signal.SIGTERM, keep[4])
             signal.signal(signal.SIGHUP, keep[5])
             if env_token is not None:
                 os.environ[rs.TOKEN_ENV] = env_token
+        self.steps_made = seen["steps"]
         return code, seen.get("wait"), lockdir
 
     def test_a_timed_out_call_keeps_the_lock_until_fusion_answers(self):
@@ -506,6 +604,68 @@ class SequenceTests(unittest.TestCase):
         self.assertIn(code, (2, 4))
         self.assertEqual(wait, (True, 60.0, 2.0))             # waited while still holding the lock
         self.assertFalse(os.path.exists(lockdir))              # then gave it back
+
+    def test_an_open_that_never_ends_after_a_timeout_flags_fusion_unhealthy(self):
+        # as run_script.py (PM ruling 2026-11-01): Fusion answers, but the open never ended
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(), timed_out_after_queue=True, open_stuck=True)
+        self.assertEqual(code, rs.EXIT_UNHEALTHY)
+        self.assertIsNotNone(wait)
+        with open(rs.unhealthy_path(lockdir)) as fh:
+            self.assertEqual([o["what"] for o in json.load(fh)["opens"]], ["100000_P04_POD-SKELETON_CAD v4"])
+        self.assertFalse(os.path.exists(lockdir))
+
+    def test_a_flagged_fusion_is_refused_before_anything_is_sent(self):
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(), timed_out_after_queue=False,
+                                            flag_pid=rs.fusion_pid())
+        self.assertEqual(code, rs.EXIT_UNHEALTHY)
+        self.assertEqual(self.steps_made, 0)                   # never talked to Fusion
+        self.assertIsNone(wait)
+        self.assertFalse(os.path.exists(lockdir))
+
+    BATCH = [("D%d_CAD" % i, "D%d_DWG" % i, "A2") for i in range(1, 4)]
+
+    def test_the_design_open_installs_the_open_logger(self):
+        # Reviewer 5 on #269: start_drawing's own scripts skip the runner's wrapper, so its
+        # design open was logged only after some run_script run had installed the logger
+        made = []
+
+        def make():
+            f = FakeFusion(opened=True)
+            f.sources, orig = [], f.run
+
+            def run(src, read_only=False):
+                f.sources.append(src)
+                return orig(src, read_only)
+            f.run = run
+            made.append(f)
+            return f
+        code, _wait, lockdir = self.run_main(make, timed_out_after_queue=False)
+        self.assertEqual(code, 0)
+        opens = [src for src in made[0].sources if "ARGS = {" in src and "'mode': 'open'" in src]
+        self.assertEqual(len(opens), 1)
+        self.assertIn("_OPENLOG = %r" % rs.open_log_path(lockdir), opens[0])
+        self.assertIn("start_drawing.py 100000_P04_POD-SKELETON_CAD -> X_P01_TEST_DWG", opens[0])
+
+    def test_a_flagged_fusion_refuses_a_batch_before_any_start(self):
+        # the hand merge of #140 and #269: the refusal comes before the batch's first start
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(opened=True), timed_out_after_queue=False,
+                                            flag_pid=rs.fusion_pid(), batch=self.BATCH)
+        self.assertEqual(code, rs.EXIT_UNHEALTHY)
+        self.assertEqual(self.steps_made, 0)
+        self.assertIsNone(wait)
+        self.assertFalse(os.path.exists(self.batch_file + ".rest"))      # the list stays as it was
+        self.assertFalse(os.path.exists(lockdir))
+
+    def test_a_batch_start_stuck_in_an_open_flags_fusion_and_keeps_the_rest(self):
+        # the batch stops at the timed-out start, #183's wait keeps the lock, then #269's check
+        # finds the open that never ended and flags Fusion; the rest file keeps every start
+        code, wait, lockdir = self.run_main(lambda: FakeFusion(opened=True), timed_out_after_queue=True,
+                                            open_stuck=True, batch=self.BATCH)
+        self.assertEqual(code, rs.EXIT_UNHEALTHY)
+        self.assertEqual(wait, (True, 60.0, 2.0))
+        self.assertTrue(os.path.exists(rs.unhealthy_path(lockdir)))
+        self.assertEqual(sd.read_batch(self.batch_file + ".rest", "A2"), self.BATCH)   # failed first, then the rest
+        self.assertFalse(os.path.exists(lockdir))
 
     def test_a_start_without_a_timeout_gives_the_lock_back_at_once(self):
         code, wait, lockdir = self.run_main(lambda: FakeFusion(), timed_out_after_queue=False)
@@ -631,6 +791,118 @@ class SaveScriptTests(unittest.TestCase):
             self.run_save(sd.SAVE_SCRIPT, settle_after=10 ** 6)
         self.assertIn("after 10 looks", str(cm.exception))
         self.assertIn("420 x 420", str(cm.exception))
+
+
+class BatchTests(unittest.TestCase):
+    """--batch (PM rule 2026-10-31: up to 6 starts or about 15 minutes per lock hold)."""
+
+    PAIRS = [("D%d_CAD" % i, "D%d_DWG" % i, "A2") for i in range(1, 4)]
+
+    def batch(self, fake, pairs=None, **kw):
+        logs = []
+        out = sd.run_batch(fake, pairs or self.PAIRS, "Default Project/FocusPod v2", logs.append,
+                           waits=FAST, **kw)
+        return out, logs
+
+    def test_every_start_is_saved_and_closed(self):
+        f = FakeFusion(opened=True)
+        (code, done, failed, left), _ = self.batch(f)
+        self.assertEqual((code, len(done), failed, left), (0, 3, None, []))
+        self.assertEqual(f.ran, ["open", "queue", "save", "close"] * 3)
+        self.assertEqual(len(f.saved), 3)
+
+    def test_it_stops_at_the_first_failure(self):
+        f = FakeFusion(opened=True)
+        real_click, oks = f.click, []
+
+        def click(button, title):
+            if button == "OK":
+                oks.append(1)
+                if len(oks) >= 2:
+                    return "none"                               # the 2nd start can't press OK, retries too
+            return real_click(button, title)
+
+        f.click = click
+        (code, done, failed, left), logs = self.batch(f)
+        self.assertEqual(code, 1)
+        self.assertEqual([d[1] for d in done], ["D1_DWG"])
+        self.assertEqual(failed, (("D2_CAD", "D2_DWG", "A2"), 1))
+        self.assertEqual(left, [("D3_CAD", "D3_DWG", "A2")])
+        self.assertEqual(f.cmd, sd.IDLE_CMD)                    # the failed start cleaned up
+        self.assertTrue(any("stopped at D2_DWG" in m for m in logs))
+
+    def test_a_start_that_saved_then_failed_is_not_written_back(self):
+        # Reviewer 5, P3 on #140: written back, its own check refuses it on the next hold
+        # ("already in the folder") and the list stalls there every hold
+        f = FakeFusion(opened=True)
+        real_dialogs = f.dialogs
+
+        def dialogs():
+            if len(f.saved) == 2 and not getattr(f, "late", False):     # a late dialog after the 2nd save
+                f.late = True
+                return ["a late dialog"]
+            return real_dialogs()
+        f.dialogs = dialogs
+        (code, done, failed, left), logs = self.batch(f)
+        self.assertEqual(code, 1)
+        self.assertEqual([d[1] for d in done], ["D1_DWG", "D2_DWG"])
+        self.assertIsNone(failed)                                       # nothing to start again
+        self.assertEqual(left, [("D3_CAD", "D3_DWG", "A2")])
+        self.assertTrue(any("D2_DWG was saved before it failed" in m for m in logs))
+        d = tempfile.mkdtemp(prefix="batch-test-")
+        rest = os.path.join(d, "starts.txt.rest")
+        sd.write_rest(rest, failed, left)
+        self.assertEqual(sd.read_batch(rest, "A2"), [("D3_CAD", "D3_DWG", "A2")])
+
+    def test_at_most_six_starts_per_hold(self):
+        pairs = [("D%d_CAD" % i, "D%d_DWG" % i, "A2") for i in range(1, 9)]
+        (code, done, failed, left), logs = self.batch(FakeFusion(opened=True), pairs)
+        self.assertEqual((code, len(done), failed, len(left)), (0, 6, None, 2))
+        self.assertEqual(left[0][1], "D7_DWG")
+
+    def test_no_start_begins_after_the_time_budget(self):
+        clock = iter([0.0, 16 * 60.0, 16 * 60.0])        # t0; the 1st start never waits; the 2nd check is late
+        (code, done, failed, left), logs = self.batch(FakeFusion(opened=True), now=lambda: next(clock))
+        self.assertEqual((code, len(done), len(left)), (0, 1, 2))
+        self.assertTrue(any("about 15 minutes per hold" in m for m in logs))
+
+    def test_the_batch_file(self):
+        d = tempfile.mkdtemp(prefix="batch-test-")
+        p = os.path.join(d, "starts.txt")
+        with open(p, "w") as fh:
+            fh.write("# WALL skins\n210101_P01_A_CAD 210101_P01_A_DWG\n\n210102_P01_B_CAD\t210102_P01_B_DWG A1\n")
+        self.assertEqual(sd.read_batch(p, "A2"), [("210101_P01_A_CAD", "210101_P01_A_DWG", "A2"),
+                                                  ("210102_P01_B_CAD", "210102_P01_B_DWG", "A1")])
+        for bad, why in (("X_CAD\n", "expected DESIGN DRAWING"), ("X_CAD X_DWG B9\n", "sheet 'B9'"),
+                         ("A_CAD X_DWG\nB_CAD X_DWG\n", "twice"), ("# only a comment\n", "no starts")):
+            with open(p, "w") as fh:
+                fh.write(bad)
+            with self.assertRaises(ValueError) as cm:
+                sd.read_batch(p, "A2")
+            self.assertIn(why, str(cm.exception))
+
+    def test_what_is_left_goes_to_the_rest_file_failed_first(self):
+        d = tempfile.mkdtemp(prefix="batch-test-")
+        rest = os.path.join(d, "starts.txt.rest")
+        sd.write_rest(rest, (("D2_CAD", "D2_DWG", "A2"), 1), [("D3_CAD", "D3_DWG", "A1")])
+        with open(rest) as fh:
+            lines = fh.read().splitlines()
+        self.assertEqual(lines[1:], ["D2_CAD D2_DWG A2", "D3_CAD D3_DWG A1"])
+        self.assertTrue(lines[0].startswith("# failed (exit 1)"))
+        self.assertEqual(sd.read_batch(rest, "A2")[0], ("D2_CAD", "D2_DWG", "A2"))   # runs again as is
+
+    def test_a_bad_batch_file_is_refused_before_the_lock(self):
+        d = tempfile.mkdtemp(prefix="batch-test-")
+        p = os.path.join(d, "starts.txt")
+        with open(p, "w") as fh:
+            fh.write("only_one_name\n")
+        lockdir = os.path.join(d, "fusion.lock")
+        r = subprocess.run([sys.executable, os.path.join(HERE, "start_drawing.py"), "--batch", p,
+                            "--lock", lockdir, "--url", "http://127.0.0.1:9/mcp", "--timeout", "2"],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("line 1", r.stderr)
+        self.assertFalse(os.path.exists(lockdir))
 
 
 class CommandLineTests(unittest.TestCase):

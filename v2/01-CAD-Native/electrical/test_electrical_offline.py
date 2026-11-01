@@ -5,6 +5,8 @@
 
 Checks:
 - the skeleton values in electrical_model.py match the skeleton's CSV;
+- F-188: the ceiling route's crossing heights, Z 2330 into the ceiling tray's back return and Z 2337.5
+  out of its front return, still come out of the skeleton CSV's numbers (CEILING's tray holes share them);
 - every reserved space has a positive size, sits only in the skeleton
   envelopes it lists as intended, uses every intended envelope it lists, and
   doesn't overlap another reserved space (box test, 0.1 mm3);
@@ -46,6 +48,32 @@ class Model(unittest.TestCase):
         rows = {r["parameter"]: float(r.get("value", r.get("value_mm"))) for r in csv.DictReader(open(path, encoding="utf-8"))}
         for k in M.SKELETON_PARAMS:
             self.assertAlmostEqual(rows[k], M.SKELETON_VALUES[k], places=6, msg=k)
+
+    def test_ceiling_crossing_heights_drift(self):
+        """F-188 (Lead's ruling 2026-11-01): the ceiling route enters CEILING's tray 513101 through its back
+        return level with B4-CASS's felt-only hole, Z 2330 (z_xc), and leaves through its front return at the
+        cable gap's middle, Z 2337.5 (z_cg). CEILING's tray reads the same expressions from the skeleton's
+        values. A failure here means the skeleton's numbers (or the lip, felt, tray or hole sizes) moved a
+        height: CEILING's tray holes must move with it, so tell CEILING and the Mechanical Checker (F-188)."""
+        path = os.path.join(REPO, "v2/01-CAD-Native/skeleton/100000_P04_POD-SKELETON-PARAMETERS.csv")
+        rows = {r["parameter"]: float(r.get("value", r.get("value_mm"))) for r in csv.DictReader(open(path, encoding="utf-8"))}
+        v = M.values({k: rows[k] for k in M.SKELETON_PARAMS})     # the model's expressions on the CSV's numbers
+        # the expression agreed with CEILING: pod_h - stack_t + cass_t - 12 (lip) - 6 (hole radius) - 2
+        agreed = rows["pod_h"] - rows["stack_t"] + rows["cass_t"] - 12.0 - 6.0 - 2.0
+        self.assertAlmostEqual(v["z_xc"], agreed, places=6, msg="z_xc is no longer the expression agreed with CEILING (F-188)")
+        self.assertAlmostEqual(v["z_xc"], 2330.0, places=6, msg="the back crossing moved from Z 2330: move CEILING's tray back hole with it (F-188)")
+        self.assertAlmostEqual(v["z_cg"], 2337.5, places=6, msg="the front crossing moved from Z 2337.5: move CEILING's tray front hole with it (F-188)")
+        # why 2330: B4-CASS's felt-only hole stays 2 mm below the cassette's 12 mm top lip (D-69), which
+        # holds only while the lining top (lin_gap) and the ceiling stack (cav_gap) agree
+        b4_top = M.skeleton_boxes(v)["B4-CASS"][5]
+        self.assertAlmostEqual(b4_top - v["lip_w"] - (v["z_xc"] + v["grm_s"] / 2), 2.0, places=6,
+                               msg="B4-CASS's felt-only hole is no longer 2 mm below its top lip")
+        # and inside the tray the wire at 2330 is still in the cable gap, above the felt
+        self.assertGreaterEqual(v["z_xc"] - v["dw_h"], v["z_cf"] + v["tray_t"] + v["felt_t"])
+        # the bodies that carry the two heights
+        boxes = {b["code"]: M.body_box(b, v) for b in M.BODIES}
+        for code, z in (("FX-CEIL", 2330.0), ("G-CEIL-B", 2330.0), ("G-CEIL-F", 2337.5)):
+            self.assertAlmostEqual((boxes[code][2] + boxes[code][5]) / 2, z, places=6, msg=code)
 
     def test_edit_test_edits_keep_every_body_a_box(self):
         """Each edit the Fusion edit test makes must leave every reserved space with a positive size, or Fusion

@@ -75,6 +75,53 @@ class Rules(unittest.TestCase):
         _, _, _, fails, _ = run({FRONT: GOOD_DOOR, FRONT.replace("360001_P01_FRONT-DOOR-UNIT", "360002_P01_FIXED"): again, bom.REGISTER: REGISTER})
         self.assertFalse(any(f.startswith("duplicate") for f in fails), fails)
 
+    def test_register_name_wins_over_an_older_wording(self):
+        # D-99: the register renames its item (838003's steel re-spec); the team's list still has the old wording
+        reg = REGISTER.replace("| H-01 | 830101 | Bolt M6 x 16 |", "| H-01 | 830101 | Bolt M6 x 16 - ISO 4762 8.8 zinc |")
+        twice = GOOD_DOOR + "830101,BOLT M6 X 16,Bu lông,\"bought, captive\",steel 8.8 zinc plated,2,0.007,source,DRAFT,x,\n"
+        parts, _, _, fails, missing = run({FRONT: twice, bom.REGISTER: reg})
+        bolts = [r for r in parts if r["part_number"] == "830101"]
+        self.assertEqual({(r["name"], r["listed_name"]) for r in bolts}, {("Bolt M6 x 16 - ISO 4762 8.8 zinc", "BOLT M6 X 16")})
+        self.assertEqual(fails, [])
+        todo = [m for m in missing["FRONT"] if m.startswith("830101: the list still names it 'BOLT M6 X 16'")]
+        self.assertEqual(len(todo), 1, missing)   # once per team, number and wording, not once per row
+        self.assertEqual({b["name"] for b in bom.bought_rows(parts, []) if b["part_number"] == "830101"},
+                         {"Bolt M6 x 16 - ISO 4762 8.8 zinc"})
+
+    def test_a_bolt_under_the_rivnut_number_fails(self):
+        # Reviewer 6 (#279): a shared M6 and zinc don't make an M6 bolt the register's rivet nut 838003
+        reg = REGISTER.replace("| H-09 | 830201 | Head washer 6.4 x 18 | 82 | 0.003 |",
+                               "| H-09 | 830201 | Head washer 6.4 x 18 | 82 | 0.003 |\n"
+                               "| H-03 | 838003 | HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2 | 126 | 0.004 |")
+        bolt_name = "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC"
+        listed = door(f"838003,{bolt_name},Bulong,bought,steel 8.8 zinc plated,4,0.007,source,DRAFT,x,\n")
+        parts, _, _, fails, _ = run({FRONT: listed, bom.REGISTER: reg})
+        row = next(r for r in parts if r["part_number"] == "838003")
+        self.assertEqual(row["name"], bolt_name)            # not renamed to the rivet nut
+        self.assertNotIn("listed_name", row)
+        self.assertTrue(any(f.startswith("duplicate number 838003") for f in fails), fails)
+        rivnut = "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2"
+        self.assertFalse(bom.same_item(bolt_name, rivnut))
+        self.assertTrue(bom.same_item("HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", rivnut))   # the re-spec stays one item
+        self.assertTrue(bom.same_item("HARDWARE - SOCKET HEAD CAP SCREW - M6 X 16 - ISO 4762", bolt_name))  # bolt and screw agree
+        self.assertFalse(bom.same_item("HARDWARE - HEX NUT - M6 - ZINC", rivnut))                      # a rivet nut is not a nut
+
+    def test_register_only_rows_take_the_register_class(self):
+        # Reviewer 6 (#279): made register hardware, such as the mitre plates, shows as made, not bought
+        reg = REGISTER_V3 + "| H-40 | **831007** | HARDWARE - MITRE PLATE - 20 X 40 - 45 DEG - 2.0 STEEL · Tấm | made | PROPOSED |\n"
+        parts, _, register, _, _ = run({bom.REGISTER: reg})
+        rows = {r["part_number"]: r for r in bom.master_rows(parts, register, {}) if r.get("row_type") == "hardware (register only)"}
+        self.assertEqual({pn: rows[pn]["make_buy"] for pn in ("831007", "838001", "848001")},
+                         {"831007": "make", "838001": "buy", "848001": "buy"})   # "bought by length" is buy
+
+    def test_a_different_item_on_a_register_number_keeps_its_name_and_fails(self):
+        other = door("830101,FRONT - DOOR HANDLE,Tay nắm,bought,steel,1,0.3,source,DRAFT,x,\n")
+        parts, _, _, fails, _ = run({FRONT: other, bom.REGISTER: REGISTER})
+        row = next(r for r in parts if r["part_number"] == "830101")
+        self.assertEqual(row["name"], "FRONT - DOOR HANDLE")
+        self.assertNotIn("listed_name", row)
+        self.assertTrue(any(f.startswith("duplicate number 830101") for f in fails), fails)
+
     def test_no_mass_fails(self):
         ceil = CEIL_HDR + "518001,LINING - CASSETTE CLIP - HOLD,,HOLD,cassette,6,12,HOLD envelope,HOLD,HOLD,P01,HOLD,D-47\n"
         _, _, _, fails, missing = run({CEIL: ceil, bom.REGISTER: REGISTER})
@@ -84,6 +131,17 @@ class Rules(unittest.TestCase):
     def test_unregistered_hardware_fails(self):
         _, _, _, fails, _ = run({FRONT: door("368101,FRONT - DOOR HINGE - HOLD,,\"bought, HOLD\",not named,3,0.6,assumption,HOLD,x,\n"), bom.REGISTER: REGISTER})
         self.assertTrue(any(f.startswith("hardware with no joints-register row: 368101") for f in fails), fails)
+
+    def test_hold_is_a_whole_word_in_any_case(self):
+        rows = ("368103,FRONT - DOOR SEAL HOLDER,Giá đỡ gioăng,bought,EPDM,1,0.05,assumption,DRAFT,x,\n"
+                "368104,FRONT - DOOR STOP - HOLD,Chặn cửa,bought,not named,1,0.1,assumption,DRAFT,x,\n"
+                "368105,FRONT - DOOR SWEEP,Gioăng quét,bought,EPDM,1,0.05,assumption,HOLD (T07),x,\n"
+                "368106,FRONT - DOOR BUFFER,Đệm cửa,bought,EPDM,1,0.01,assumption,on hold until T07,x,\n"
+                "368107,FRONT - DOOR SEAL CLIP,Kẹp gioăng,bought,steel,1,0.01,assumption,DRAFT (holds the seal),x,\n")
+        parts, _, _, _, _ = run({FRONT: door(rows), bom.REGISTER: REGISTER})
+        hold = {r["part_number"]: r["hold"] for r in parts}
+        self.assertEqual([hold[n] for n in ("368103", "368104", "368105", "368106", "368107")],
+                         [False, True, True, True, False])   # HOLDER and holds are not HOLD; "on hold" is, as in the checklist
 
     def test_electrical_parts_are_not_hardware(self):
         elec = "part_number,name,type,material,qty,unit_mass_kg,mass_status,status\n710001,ELECTRICAL - 12 V SUPPLY,bought,PSU,1,0.9,source,DRAFT\n"
@@ -191,6 +249,30 @@ class WallAndRegisterV3(unittest.TestCase):
         self.assertEqual({i["id"] for i in register}, {"H-01", "H-04"})
         self.assertTrue(all(i["name"].startswith("HARDWARE") for i in register), register)
         self.assertNotIn("Joints register", missing)                     # every ID has a number
+
+    def test_a_number_another_id_owns_is_not_taken_from_a_mention(self):
+        # H-14's set row names 848013, but 848013's own part-number row is H-34's (the PM, 2026-11-01)
+        text = """# Joints register
+
+### 2.1 Hardware set
+
+| ID | Item | Data | Status |
+|---|---|---|---|
+| H-14 | **Cassette edge seal.** Very soft, near-zero squeeze; not for DR's panels, which take 848013 (H-34) | data | PROPOSED |
+| H-35 | **Spare seal.** Only mentioned here, 848099 | data | PROPOSED |
+
+### Part numbers
+
+| ID | Part number | Item | Qty per pod | Mass kg |
+|---|---|---|---|---|
+| H-14 | **848012** | SEALS - CASSETTE EDGE SEAL - 10 X 2.0 TO 2.2 | 5 | 0.01 |
+| H-34 | **848013** | SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA | 10 | 0.01 |
+"""
+        items = {i["part_number"]: i for i in bom.parse_register(text, "test")}
+        self.assertEqual((items["848013"]["id"], items["848013"]["name"]),
+                         ("H-34", "SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA"))
+        self.assertEqual(items["848012"]["id"], "H-14")
+        self.assertEqual(items["848099"]["id"], "H-35")        # a number no other row owns is still the row's
 
     def test_register_number_named_differently_is_not_a_duplicate(self):
         a = door("838001,BOLT M6 X 16,,bought,steel,4,0.007,source,DRAFT,x,\n")
@@ -464,7 +546,8 @@ class NumberAllocation(unittest.TestCase):
         self.assertEqual(fails, [])
         for a in alloc:
             self.assertTrue(a["name"] and a["name_vi"] and a["basis"] and a["parent"], a["part_number"])
-            self.assertIn(a["team"], ("WALL", "CEILING"))
+            owner = bom.FAMILY[bom.family_of(a["part_number"])][3]    # the team that lists the number's family
+            self.assertIn(a["team"], owner if owner == "WALL and CEILING" else (owner,), a["part_number"])
 
 
 class FallBackReport(unittest.TestCase):

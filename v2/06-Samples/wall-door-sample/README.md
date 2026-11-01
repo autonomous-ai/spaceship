@@ -12,7 +12,7 @@ Nothing here is released for production. Every physical test stays PLANNED until
 
 1. [build-list.md](build-list.md): what the factory builds. The sample items S1 to S7 and the test rigs R1 to R4, with sizes, layers, and the tests each one serves.
 2. [parts-list.md](parts-list.md): every material and part, with its quantity, maker and product where one is picked, the status of each number, and its source.
-3. [test-plan.md](test-plan.md): the 13 tests T01 to T13. For each: the method, who measures, the pass or fail limit and the requirement it ties to.
+3. [test-plan.md](test-plan.md): the 16 tests T01 to T16. For each: the method, who measures, the pass or fail limit and the requirement it ties to.
 4. [hold-list.md](hold-list.md): what can't be built or tested until a part is named, a joint is designed or a drawing exists. Each item has an owner and a release condition.
 5. [drawings-needed.md](drawings-needed.md): the Fusion drawings the factory needs from Milestone 2 before it cuts anything.
 
@@ -21,7 +21,7 @@ Nothing here is released for production. Every physical test stays PLANNED until
 ## The sample on one page
 
 - **What gets built** (build list): one full lower side wall panel, L1, with its lining cassette (S1, S2); one ceiling cassette, the one part both ceiling halves use (PR #32), with its safety catches (S3); the door unit (S4), on HOLD until its hinges and lock are named. The tests also need the air sample: both D-60 cartridges with their fan boxes and fans and the intake riser, in mock-ups of the air column and the soffit (S5, rig R3), a felt specimen for the absorption test (S6), and coupons (S7).
-- **What gets measured** (test plan): wall sound transmission from 100 Hz (T01); the lighter fill next to the 32 kg/m³ one (T02); felt absorption on its 25 mm gap (T03); the 12 V fans' flow and octave noise in their cartridges (T04); recirculation at boost (T05); rivnut spin-out in the real 1.2 mm tube (T06); clip pull-out (T07); the ceiling catch's drop test (T08); the ACP-to-aluminium bond (T09); weight per m² (T10); timed assembly of the panel (T11); taking a cartridge out into the pod and back (T12). The door's tests (T13) wait for its hardware.
+- **What gets measured** (test plan): wall sound transmission from 100 Hz (T01); the lighter fill next to the 32 kg/m³ one (T02); felt absorption on its 25 mm gap (T03); the 12 V fans' flow and octave noise in their cartridges (T04); recirculation at boost (T05); rivnut spin-out in the real 1.0 mm galvanized tube (T06); clip pull-out (T07); the ceiling catch's drop test (T08); the ACP-to-steel bond (T09); weight per m² (T10); timed assembly of the panel (T11); taking a cartridge out into the pod and back (T12); the welded corners and T joints, before S1's frame is welded (T16). The door's tests (T13) wait for its hardware.
 - **What it decides:**
   - whether the pod lands at or under the 420 kg cap (D-54). The layout study's estimate is 426.7 kg, and about 438.5 kg with D-60's air parts (+11.8 kg, HW-AA section 7f), open against the cap.
   - whether the 24 kg/m³ fill can replace the 32, saving about 4.9 kg (24 kg/m³ grade; D-54's 4.3 kg was for 25 kg/m³).
