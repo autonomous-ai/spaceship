@@ -14,6 +14,17 @@ def values(design):
     return out
 
 
+def number_of(key):
+    """The part number a layout key's bodies carry: a part's (PARTS), or a hardware item's (HARDWARE: the soffit's
+    lock screws are 838002, built with that number); BODY_KEY first, for a box whose body is another part's."""
+    k = A.BODY_KEY.get(key, key)
+    if k in A.PARTS:
+        return A.PARTS[k][0]
+    if k in A.HARDWARE:
+        return A.HARDWARE[k][0]
+    raise KeyError("layout key %r has no part or hardware number" % key)
+
+
 def place_check(got, v):
     """Each unit of the layout (A.units: a copy of a part, a joined head and shank as one) against the bodies of its
     part number, paired by nearest fit (copies carry one body name, D-120). got: {part number: [x0, x1, y0, y1, z0,
@@ -23,7 +34,7 @@ def place_check(got, v):
     for k, name, bx in A.units():
         by_key.setdefault(k, []).append((name, [A.ev(v, e) for e in bx]))
     for k, items in by_key.items():
-        pool = list(got.get(A.PARTS[A.BODY_KEY.get(k, k)][0], []))
+        pool = list(got.get(number_of(k), []))
         for name, want in items:
             if not pool:
                 bad.append((name, "missing"))

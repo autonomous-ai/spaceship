@@ -328,6 +328,27 @@ class Hold18(unittest.TestCase):
                 self.assertGreaterEqual(gap(room, ob), -1e-9, "%s: %s under its head" % (name, other))
 
 
+class PlaceCheck(unittest.TestCase):
+    """The Fusion run's position check (air_checks.place_check) fed the layout's own boxes by part number, as
+    bodies_by_number reads the model: every unit found, worst 0. The soffit's lock screws are hardware (838002),
+    and looking their key up among the parts stopped the dry run of 2026-11-01 08:15 after the whole build passed."""
+
+    def test_the_layout_passes(self):
+        import air_checks as K
+        got = {}
+        for k, _name, bx in A.units():
+            got.setdefault(K.number_of(k), []).append([A.ev(V, e) for e in bx])
+        worst, bad = K.place_check(got, V)
+        self.assertEqual(bad, [])
+        self.assertAlmostEqual(worst, 0.0)
+        self.assertEqual(K.number_of("lock"), A.HARDWARE["lock"][0])
+
+    def test_every_key_has_a_number(self):
+        import air_checks as K
+        for k in {k for k, _n, _b in A.units()}:
+            self.assertTrue(K.number_of(k))
+
+
 class FrontInterface(unittest.TestCase):
     """PM rulings 2026-11-01: the column and the whole soffit start at the room-side face of DR's
     access panel, FRONT's named value dr_acc_face_y, so neither overlaps the panel; DR's riveted
