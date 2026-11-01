@@ -6,7 +6,7 @@
 
 What stands between the design and a manufacturing release, part by part. Nothing here is released (guideline milestone 4, REQ-DOC-02). Re-run it whenever parts merge.
 
-Read from: main (e7f2d9e), PR #235 (e9f720d), PR #243 (a926f06). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
+Read from: main (5fa198d), PR #235 (e9f720d), PR #243 (a926f06). The Mac's screen at run time: **unlocked**. 452 files in the CAD, drawing and manufacturing folders; the FAI plan's 89 characteristics, 11 functional checks and 20 bought-part test lines.
 
 Read from main although an open PR changed them, because main changed them later (the PR's edit counts once it rebases): `v2/05-Engineering/joints/joints-register.md`: origin/super-tab/116a11a6d19f4479fa615216-cleats changed it, but main changed it later.
 
