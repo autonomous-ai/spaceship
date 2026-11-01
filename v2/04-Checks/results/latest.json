@@ -1,5 +1,5 @@
 {
- "rev": "2767495",
+ "rev": "2c38ccb",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 31,
@@ -3437,7 +3437,7 @@
   {
    "id": "2-12",
    "name": "ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS",
-   "kg": 2.41,
+   "kg": 2.402,
    "dims": [
     600.0,
     250.0,

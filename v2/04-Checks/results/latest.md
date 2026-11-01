@@ -1,6 +1,6 @@
-# Mechanical check run: 2767495 on 2026-11-01
+# Mechanical check run: 2c38ccb on 2026-11-01
 
-Offline checks (`tools/checks/run_checks.py`) on revision `2767495`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
+Offline checks (`tools/checks/run_checks.py`) on revision `2c38ccb`. The Fusion checks (exact clash, tool access, thread engagement) are recorded separately when they run.
 
 **Findings in this run: 187** (69 severe, 116 major, 2 minor). Register numbers in brackets.
 
@@ -258,7 +258,7 @@ Inputs: {"bodies_skeleton": 31, "shell_faces_skeleton": ["back", "back-base", "l
 | 2-09 AIR - SOFFIT | 14.756 | 2322 x 359 x 233 | long | assumption; calculation (CAD at 2 mm, scaled to D-124's 3 mm); calculation (CAD); hinges, latches and studs HOLD; fill provisional |
 | 2-10 AIR - AIR COLUMN | 8.147 | 2108 x 359 x 212 | long | calculation (CAD); fill provisional |
 | 2-11 FRONT - DECOR BLOCK ASSY - DT | 7.913 | 1699 x 306 x 203 | long | calculation (CAD); calculation (CAD); magnetic seal HOLD |
-| 2-12 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.41 | 600 x 250 x 200 | long | calculation (CAD) |
+| 2-12 ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.402 | 600 x 250 x 200 | long | calculation (CAD) |
 | 2-13 INTERIOR - LIGHT SHELF ASSY | 1.585 | 2332 x 80 x 60 | long | calculation (CAD) |
 | 2-14 BASE - SMALL PARTS CARTON | 1.139 | 600 x 400 x 150 | long | calculation (CAD); calculation; confirmed (1.5 mm) |
 | 2-15 INTERIOR - WORK WALL LEDGE ASSY | 1.903 | 1000 x 250 x 120 | long | calculation (CAD); brackets and screen rail HOLD |
