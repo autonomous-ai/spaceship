@@ -1,0 +1,2 @@
+pattern,why
+"BAND ASSY[^/]*/ 8380(01|10)\b","confirmed: the base corner keys' fixing screws (838010) and hook studs (838001) go in at the factory, in the band piece that carries the key, before the band pieces meet (joints register H-01, H-31, J-BASE-02); only that band piece can be in the tool's way"

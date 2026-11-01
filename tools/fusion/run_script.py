@@ -22,6 +22,18 @@ One run at a time: the Fusion lock
   (30) for up to --busy-wait more seconds (1200), and gives the lock back as
   soon as Fusion answers; if it never does, it gives it back with a loud
   warning (PM ruling 2026-11-01: the next run must not start on a busy Fusion).
+  Stuck in an open: when a call timed out and the open log (next to the lock)
+  shows a document open that this run started and that has not ended by the
+  time it is --open-limit seconds old (600, counted from its start line),
+  Fusion is stuck inside that open,
+  though it may still answer a read-only check (live 2026-11-01: an open
+  started at 03:39 and never ended; the next open crashed Fusion at 03:55).
+  The run then flags Fusion unhealthy (a file next to the lock) and exits 5,
+  and every later run, also inside a held lock, refuses with exit 5 before
+  sending Fusion anything, so a session stops there (PM ruling 2026-11-01).
+  A Fusion restart clears the flag (the next run sees one Fusion process with
+  a new number, or none); while two Fusion processes run, it stays.
+  --clear-unhealthy clears it by hand, only on a Product Manager ruling.
   For steps that must stay together across several runs (for example a
   script, then a click in Fusion, then another script), hold the lock:
       export FUSION_MCP_LOCK_TOKEN=$(python3 tools/fusion/run_script.py --lock-hold 900)
@@ -62,15 +74,18 @@ Script arguments
 Exit code 0 when the script ran without an exception, 1 when it (or a
 document step) raised one (the traceback is printed), 2 when Fusion's MCP
 could not be reached or didn't answer in time, 3 when the Fusion lock could
-not be taken in time.
+not be taken in time, 5 when Fusion is flagged unhealthy (stuck in an open,
+see above).
 Standard library only.
 """
 
 import argparse
 import base64
+import calendar
 import datetime
 import json
 import os
+import re
 import shutil
 import signal
 import socket
@@ -654,6 +669,169 @@ def wait_for_fusion(url, lock, wait_s=BUSY_WAIT_S, poll_s=BUSY_POLL_S, log=None,
         sleep(min(left, max(0.0, t0 + tries * poll_s - now())))
 
 
+# Stuck in an open (PM ruling 2026-11-01). Live 03:39: a run's open of a drawing never
+# ended; after the call timed out, the read-only check above was answered at once (Fusion
+# answers from inside the open's wait), the session went on, and its next open crashed
+# Fusion at 03:55. So after a timeout the open log decides: an open this run started with
+# no end line means Fusion is unhealthy, whatever the check says.
+EXIT_UNHEALTHY = 5
+OPEN_LIMIT_S = 600.0    # an open may take this long in all, from its start line, before it counts
+                        # as stuck (Reviewer 5 on #269: start_drawing's calls time out at 120 s, and
+                        # a slow but fine cloud open must not stop every team)
+OPEN_POLL_S = 5.0       # re-reading the open log this often meanwhile
+FUSION_BIN = "/Autodesk Fusion.app/Contents/MacOS/Autodesk Fusion"
+_OPEN_START_RE = re.compile(r"^(?P<when>\S+ \S+ UTC) start open (?P<what>.+) (?:visible|HIDDEN); "
+                            r"run: (?P<run>.*)$")
+_OPEN_END_RE = re.compile(r"^\S+ \S+ UTC end open (?P<what>.+?) after [0-9.]+ s: ")
+
+
+def unhealthy_path(lock_path=None):
+    """The flag that stops every run while Fusion is stuck, next to the lock:
+    /tmp/fusion-mcp-27182.lock.unhealthy."""
+    return (lock_path or default_lock_path(DEFAULT_URL)) + ".unhealthy"
+
+
+def open_log_size(path):
+    """Where this run's lines in the open log start (its size now; 0 when there is none)."""
+    try:
+        return os.path.getsize(path)
+    except OSError:
+        return 0
+
+
+def unfinished_opens(path, offset=0):
+    """The opens the log shows starting after byte `offset` with no end line after them:
+    [{"started": "2026-11-01 03:39:45 UTC", "what": "NAME v1", "run": "..."}]. An end
+    line matches the latest start of the same name and version."""
+    try:
+        with open(path, "rb") as fh:
+            fh.seek(offset)
+            text = fh.read().decode("utf-8", "replace")
+    except OSError:
+        return []
+    pending = []
+    for line in text.splitlines():
+        m = _OPEN_START_RE.match(line)
+        if m:
+            pending.append({"started": m.group("when"), "what": m.group("what"), "run": m.group("run")})
+            continue
+        m = _OPEN_END_RE.match(line)
+        if m:
+            for i in range(len(pending) - 1, -1, -1):
+                if pending[i]["what"] == m.group("what"):
+                    del pending[i]
+                    break
+    return pending
+
+
+def fusion_pids(run=subprocess.run):
+    """Fusion's process numbers now, sorted ([] when it isn't running), or None when ps
+    can't be read. Read only: never used to stop anything."""
+    try:
+        out = run(["ps", "-axo", "pid=,comm="], capture_output=True, text=True, timeout=20).stdout
+    except Exception:  # noqa: BLE001 - no ps, or not on a Mac: unknown
+        return None
+    return sorted(int(l.split(None, 1)[0]) for l in out.splitlines() if l.strip().endswith(FUSION_BIN))
+
+
+def fusion_pid():
+    """Fusion's process number when exactly one Fusion runs, else None."""
+    pids = fusion_pids()
+    return pids[0] if pids and len(pids) == 1 else None
+
+
+def _started_epoch(open_):
+    """The open's start time (its log line, UTC) in seconds, or None when unreadable."""
+    try:
+        return calendar.timegm(time.strptime(open_["started"], "%Y-%m-%d %H:%M:%S UTC"))
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def _describe_opens(opens):
+    return "; ".join("%s (started %s, run: %s)"
+                     % (o.get("what", "?"), o.get("started", "?"), o.get("run", "?"))
+                     for o in opens) or "unknown"
+
+
+def guard_opens(lock_path, offset, who, limit_s=OPEN_LIMIT_S, poll_s=OPEN_POLL_S, log=None,
+                wall=time.time, sleep=time.sleep, pids=fusion_pids, lock=None):
+    """After a call of this run timed out (and the busy wait ended): the opens this run
+    started (open log lines after `offset`) that have no end line by the time the oldest
+    of them is limit_s old, counted from its start line. If there are any, Fusion is
+    stuck inside one: write the unhealthy flag so every later run refuses until Fusion is
+    restarted, warn loudly, and return them; [] when every open ended. While it waits,
+    `lock` (this run's FusionLock) is renewed before every poll, as wait_for_fusion does:
+    the wait can last up to limit_s, and an expired lock would let the next run start on
+    a Fusion that may be stuck, before the flag is written (Reviewer 5, P2 on #272)."""
+    log = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
+    path = open_log_path(lock_path)
+    left, seen = unfinished_opens(path, offset), wall()
+
+    def oldest():          # an unreadable start time counts from when this check first saw it
+        return max(wall() - (_started_epoch(o) or seen) for o in left)
+    if left:
+        log("run_script: an open this run started hasn't ended: %s; waiting until it is %g min old"
+            % (_describe_opens(left), limit_s / 60.0))
+    while left and oldest() < limit_s:
+        nap = min(poll_s, max(0.0, limit_s - oldest()))
+        if lock is not None and not lock.extend(
+                nap + 120.0, note="an open of this run hasn't ended; checking whether Fusion is stuck"):
+            log("run_script: WARNING: couldn't renew the Fusion lock while checking the open; "
+                "trying again at the next look")
+        sleep(nap)
+        left = unfinished_opens(path, offset)
+    if not left:
+        return []
+    now_pids = pids()
+    flag = {"flagged_utc": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
+            "fusion_pids": now_pids, "fusion_pid": now_pids[0] if now_pids and len(now_pids) == 1 else None,
+            "by": who, "opens": left}
+    tmp = "%s.%d.tmp" % (unhealthy_path(lock_path), os.getpid())
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(flag, fh, indent=1)
+    os.replace(tmp, unhealthy_path(lock_path))
+    log("run_script: " + "!" * 60)
+    log("run_script: FUSION IS UNHEALTHY: this run's open never finished: %s. Fusion may still "
+        "answer, but it is stuck inside that open (2026-11-01: the next open crashed it). Flagged: "
+        "every run now refuses (exit %d) until Fusion is restarted. Tell the Product Manager "
+        "(safe restart)." % (_describe_opens(left), EXIT_UNHEALTHY))
+    log("run_script: " + "!" * 60)
+    return left
+
+
+def unhealthy_refusal(lock_path, log=None, pids=fusion_pids):
+    """None when runs may use Fusion; else why not (Fusion is flagged unhealthy). The flag
+    is removed, with a note, and runs go on, only when Fusion has restarted or quit since:
+    no Fusion runs now, or exactly one with a number not in the flag. Two Fusion processes
+    (a relaunch overlap: the stuck one may still run), an unreadable process list or a flag
+    without process numbers keep it (Reviewer 5 on #269)."""
+    log = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
+    path = unhealthy_path(lock_path)
+    try:
+        with open(path, encoding="utf-8") as fh:
+            flag = json.load(fh)
+    except FileNotFoundError:
+        return None
+    except (OSError, ValueError):
+        flag = {}                 # unreadable: still a flag
+    was = flag.get("fusion_pids") or ([flag["fusion_pid"]] if flag.get("fusion_pid") is not None else [])
+    now = pids()
+    if was and now is not None and (now == [] or (len(now) == 1 and now[0] not in was)):
+        try:
+            os.remove(path)
+        except FileNotFoundError:
+            pass
+        log("run_script: Fusion was flagged unhealthy at %s (process %s); %s since, so the flag "
+            "is cleared" % (flag.get("flagged_utc", "?"), ", ".join(str(p) for p in was),
+                            "it isn't running" if not now else "it has restarted (now process %d)" % now[0]))
+        return None
+    return ("Fusion is flagged unhealthy since %s: an open never finished: %s. No run may use "
+            "Fusion until it is restarted (the safe restart; the Product Manager decides); a restart "
+            "clears this flag, and --clear-unhealthy clears it by hand on a PM ruling only"
+            % (flag.get("flagged_utc", "?"), _describe_opens(flag.get("opens", []))))
+
+
 def tool_payload(result):
     """Return (text_json_or_None, image_bytes_or_None) from a tools/call result."""
     text, image = None, None
@@ -712,6 +890,8 @@ with open(DRAWING_HELPER_PATH, encoding="utf-8") as _fh:
 # another name, and never calls close(True) (that opens a dialog).
 DOC_SCRIPT = '''import adsk.core, adsk.fusion, time
 ARGS = %(args)r
+DUP_WAIT_S = 30.0   # a design made a moment ago can be listed twice for ~10 s (CEILING 2026-11-01)
+DUP_PAUSE_S = 3.0
 
 def _folder(app, path):
     parts = [p for p in path.split("/") if p]
@@ -766,6 +946,41 @@ def run(_context):
                                    "nothing was opened or made (try again later): %%s" %% (
                                        name, ARGS["folder"], "an entry" if len(risky) == 1 else
                                        "%%d entries" %% len(risky), "; ".join(risky)))
+        if len(files) > 1:
+            # CEILING's C1 sample, 2026-11-01: for about 10 s after a design is made, the
+            # cloud lists it twice. Read the folder again for up to 30 s while it does;
+            # still twice after that: refused, as before. Reviewer 5 on #238: a re-read
+            # counts only when it shows one copy and no unreadable entry could be another
+            # (could_be, the rule safe_to_create uses), or when every copy is one file
+            # (the same id), so two different files never get through
+            def _ext(fs):
+                try:
+                    return (fs[0].fileExtension or "f3d").lower()
+                except Exception:
+                    return "f3d"
+
+            def _same_file(fs):
+                try:
+                    return len(set(f.id for f in fs)) == 1
+                except Exception:
+                    return False
+
+            ext = _ext(files)
+            if _same_file(files):
+                print("run_script: %%r is listed %%d times, all the same file; opening it" %% (name, len(files)))
+                files = files[:1]
+            t_end = time.time() + DUP_WAIT_S
+            while len(files) > 1 and time.time() < t_end:
+                print("run_script: %%r is listed %%d times; reading the folder again in %%g s"
+                      %% (name, len(files), DUP_PAUSE_S))
+                adsk.doEvents()
+                time.sleep(DUP_PAUSE_S)
+                again, u2, o2 = read_folder(folder, wait_s=0, stop_when=lambda fs, u, o: False)
+                seen = again.get(name, [])
+                if len(seen) == 1 and not could_be(u2, o2, ext):
+                    files = seen
+                elif len(seen) > 1 and _same_file(seen):
+                    files = seen[:1]
         if len(files) > 1:
             raise RuntimeError("%%d files are called %%r in %%s" %% (len(files), name, ARGS["folder"]))
         if files:
@@ -843,12 +1058,66 @@ def run(_context):
 '''
 
 
+def open_hook(open_log, run_label):
+    """OPEN_HOOK filled in, for scripts that don't go through the wrapper."""
+    return OPEN_HOOK % {"openlog": open_log, "runlabel": run_label}
+
+
 def doc_script(mode, name, folder=DEFAULT_FOLDER, create=False, description="",
-               discard=False):
-    return FOLDER_HELPER_SRC + "\n" + DOC_SCRIPT % {"args": {
+               discard=False, open_log=None, run_label=""):
+    """A document step's script. With open_log, it installs the open logger first and
+    labels this run's opens with run_label."""
+    hook = (open_hook(open_log, run_label) + "\n") if open_log else ""
+    return FOLDER_HELPER_SRC + "\n" + hook + DOC_SCRIPT % {"args": {
         "mode": mode, "name": name, "folder": folder, "create": bool(create),
         "description": description, "discard": bool(discard)}}
 
+
+# The open logger, run at the top of every wrapped script and of the --doc steps and
+# start_drawing.py's design open (doc_script(open_log=...)), so opens are logged also
+# right after a Fusion start (Reviewer 5 on #269). Filled with %(openlog)r, %(runlabel)r.
+OPEN_HOOK = '''# Every document open is logged to a file next to the Fusion lock, start and end,
+# with the file's name, version and whether it was hidden, written at once, so a
+# run stuck in an open shows what it was opening (PM 2026-11-01, after a drawing
+# open started at 00:23 and never ended). Installed once per Fusion session (the
+# class keeps it between runs); each run sets its own name for the lines.
+_OPENLOG = %(openlog)r
+def _log_open(_line):
+    try:
+        with open(_OPENLOG, "a", encoding="utf-8") as _fh:
+            _fh.write(_line + "\\n")
+    except Exception:
+        pass
+try:
+    import adsk.core as _ac
+    _ac._spaceship_run = %(runlabel)r
+    if not getattr(_ac.Documents.open, "_spaceship_logged", False):
+        _orig_open = _ac.Documents.open
+
+        def _logged_open(self, dataFile, visible=True, *a, **k):
+            import time as _t
+            try:
+                _what = "%%s v%%s" %% (dataFile.name, dataFile.versionNumber)
+            except Exception:
+                _what = "(name unreadable)"
+            _t0 = _t.time()
+            _when = lambda: _t.strftime("%%Y-%%m-%%d %%H:%%M:%%S UTC", _t.gmtime())
+            _log_open("%%s start open %%s %%s; run: %%s" %% (
+                _when(), _what, "visible" if visible else "HIDDEN", getattr(_ac, "_spaceship_run", "?")))
+            try:
+                _doc = _orig_open(self, dataFile, visible, *a, **k)
+            except Exception as _e:
+                _log_open("%%s end open %%s after %%.1f s: error %%s" %% (_when(), _what, _t.time() - _t0,
+                                                                       str(_e).strip().splitlines()[-1][:120] if str(_e).strip() else type(_e).__name__))
+                raise
+            _log_open("%%s end open %%s after %%.1f s: ok" %% (_when(), _what, _t.time() - _t0))
+            return _doc
+
+        _logged_open._spaceship_logged = True
+        _ac.Documents.open = _logged_open
+except Exception:
+    pass
+'''
 
 WRAPPER = '''import base64 as _b64, os as _os, sys as _sys, types as _types
 # Fusion keeps Python modules loaded between runs, so a module another team's run
@@ -899,48 +1168,7 @@ _FD = _types.ModuleType("fusion_drawing")
 _FD.__file__ = %(fdpath)r
 exec(compile(_b64.b64decode(%(fdsrc)r).decode("utf-8"), %(fdpath)r, "exec"), _FD.__dict__)
 _sys.modules["fusion_drawing"] = _FD
-# Every document open is logged to a file next to the Fusion lock, start and end,
-# with the file's name, version and whether it was hidden, written at once, so a
-# run stuck in an open shows what it was opening (PM 2026-11-01, after a drawing
-# open started at 00:23 and never ended). Installed once per Fusion session (the
-# class keeps it between runs); each run sets its own name for the lines.
-_OPENLOG = %(openlog)r
-def _log_open(_line):
-    try:
-        with open(_OPENLOG, "a", encoding="utf-8") as _fh:
-            _fh.write(_line + "\\n")
-    except Exception:
-        pass
-try:
-    import adsk.core as _ac
-    _ac._spaceship_run = %(runlabel)r
-    if not getattr(_ac.Documents.open, "_spaceship_logged", False):
-        _orig_open = _ac.Documents.open
-
-        def _logged_open(self, dataFile, visible=True, *a, **k):
-            import time as _t
-            try:
-                _what = "%%s v%%s" %% (dataFile.name, dataFile.versionNumber)
-            except Exception:
-                _what = "(name unreadable)"
-            _t0 = _t.time()
-            _when = lambda: _t.strftime("%%Y-%%m-%%d %%H:%%M:%%S UTC", _t.gmtime())
-            _log_open("%%s start open %%s %%s; run: %%s" %% (
-                _when(), _what, "visible" if visible else "HIDDEN", getattr(_ac, "_spaceship_run", "?")))
-            try:
-                _doc = _orig_open(self, dataFile, visible, *a, **k)
-            except Exception as _e:
-                _log_open("%%s end open %%s after %%.1f s: error %%s" %% (_when(), _what, _t.time() - _t0,
-                                                                       str(_e).strip().splitlines()[-1][:120] if str(_e).strip() else type(_e).__name__))
-                raise
-            _log_open("%%s end open %%s after %%.1f s: ok" %% (_when(), _what, _t.time() - _t0))
-            return _doc
-
-        _logged_open._spaceship_logged = True
-        _ac.Documents.open = _logged_open
-except Exception:
-    pass
-_SRC = _b64.b64decode(%(src)r).decode("utf-8")
+''' + OPEN_HOOK + '''_SRC = _b64.b64decode(%(src)r).decode("utf-8")
 _NS = {"__name__": "__fusion_script__", "__file__": %(path)r,
        "SCRIPT_ARGS": %(args)r}
 exec(compile(_SRC, %(path)r, "exec"), _NS)
@@ -1065,6 +1293,10 @@ def build_parser():
     ap.add_argument("--busy-poll", type=float, default=BUSY_POLL_S, metavar="S",
                     help="...trying a read-only check every S seconds (default %(default)g); "
                          "the lock is given back as soon as Fusion answers")
+    ap.add_argument("--open-limit", type=float, default=OPEN_LIMIT_S, metavar="S",
+                    help="after a call times out, an open this run started that hasn't ended by "
+                         "the time it is S seconds old (from its start line) flags Fusion "
+                         "unhealthy (default %(default)g)")
     ap.add_argument("--raw", action="store_true", help="print the raw tool reply")
     doc = ap.add_argument_group("your document")
     doc.add_argument("--doc", metavar="NAME",
@@ -1102,11 +1334,31 @@ def build_parser():
                          "runs, print its token for $%s, and exit" % (HOLD_MAX_S, TOKEN_ENV))
     lk.add_argument("--lock-release", action="store_true",
                     help="give back the lock held with the token in $%s" % TOKEN_ENV)
+    lk.add_argument("--clear-unhealthy", action="store_true",
+                    help="remove the flag that stops every run while Fusion is stuck in an open; "
+                         "only on a Product Manager ruling (a Fusion restart clears it anyway)")
     return ap
 
 
+def _unhealthy_note(lock):
+    """One line for --lock-status / --lock-hold when Fusion is flagged unhealthy, else ''."""
+    reason = unhealthy_refusal(lock.path)
+    return ("UNHEALTHY: %s" % reason) if reason else ""
+
+
 def lock_commands(opts, lock):
-    """--lock-status, --lock-hold, --lock-release; returns an exit code."""
+    """--lock-status, --lock-hold, --lock-release, --clear-unhealthy; returns an exit code."""
+    if opts.clear_unhealthy:
+        path = unhealthy_path(lock.path)
+        try:
+            with open(path, encoding="utf-8") as fh:
+                was = fh.read().strip()
+            os.remove(path)
+        except FileNotFoundError:
+            print("run_script: Fusion isn't flagged unhealthy (%s)" % path)
+            return 0
+        print("run_script: cleared the unhealthy flag (on a Product Manager ruling): %s" % was)
+        return 0
     if opts.lock_status:
         waiting = len(lock.queue())
         fronts = lock.front_waiting()
@@ -1114,16 +1366,22 @@ def lock_commands(opts, lock):
         if fronts:
             queued += " (%d going first: %s)" % (len(fronts), "; ".join(
                 "%s, %s" % f for f in fronts))
+        note = _unhealthy_note(lock)
         if not lock.exists():
             print("free: %s%s" % (lock.path, queued))
-            return 0
-        owner = lock.read_owner()
-        why = lock.stale_reason(owner)
-        print("held: %s by %s%s%s" % (lock.path, lock.describe(owner),
-                                     ("; STALE (%s), the next run clears it" % why) if why else "",
-                                     queued))
+        else:
+            owner = lock.read_owner()
+            why = lock.stale_reason(owner)
+            print("held: %s by %s%s%s" % (lock.path, lock.describe(owner),
+                                         ("; STALE (%s), the next run clears it" % why) if why else "",
+                                         queued))
+        if note:
+            print(note)
         return 0
     if opts.lock_hold is not None:
+        note = _unhealthy_note(lock)
+        if note:      # a hold is still allowed (the safe restart needs one); its runs refuse
+            print("run_script: %s" % note, file=sys.stderr)
         if not 0 < opts.lock_hold <= HOLD_MAX_S:
             print("run_script: --lock-hold takes 1 to %d seconds" % HOLD_MAX_S, file=sys.stderr)
             return 3
@@ -1157,10 +1415,11 @@ def main(argv=None):
         ap.error("--lock-front needs the reason: which approval in the project chat")
     lock = FusionLock(lock_path, label=label, front=opts.lock_front)
 
-    if opts.lock_status or opts.lock_hold is not None or opts.lock_release:
+    if opts.lock_status or opts.lock_hold is not None or opts.lock_release or opts.clear_unhealthy:
         return lock_commands(opts, lock)
     if not opts.script:
-        ap.error("give a script to run (or --lock-status, --lock-hold, --lock-release)")
+        ap.error("give a script to run (or --lock-status, --lock-hold, --lock-release, "
+                 "--clear-unhealthy)")
     if (opts.doc_new or opts.save is not None or opts.close or opts.discard) and not opts.doc:
         ap.error("--doc-new, --save, --close and --discard work on the document named by --doc")
 
@@ -1173,8 +1432,10 @@ def main(argv=None):
             ap.error("--arg needs KEY=VALUE, got %r" % kv)
         k, v = kv.split("=", 1)
         script_args[k.strip()] = v
+    run_label = "%s: %s" % (label, os.path.basename(script_path))
     source = wrap_script(source, script_path, script_args, open_log=open_log_path(lock_path),
-                         run_label="%s: %s" % (label, os.path.basename(script_path)))
+                         run_label=run_label)
+    opts.open_log, opts.run_label = open_log_path(lock_path), run_label   # for the --doc steps too
 
     # Expiry is only a backstop for a recycled pid: a live run keeps its lock
     # however long it takes, and a dead one is cleared at once.
@@ -1194,21 +1455,32 @@ def main(argv=None):
         print("run_script: stopped while waiting for the Fusion lock", file=sys.stderr)
         return 3
     mcp = FusionMcp(opts.url, opts.timeout)
+    offset = open_log_size(open_log_path(lock_path))     # this run's open log lines start here
+    rc = 1
     try:
-        return _run_locked(opts, source, mcp)
+        refusal = unhealthy_refusal(lock_path)
+        if refusal:
+            print("run_script: %s. This run did not start." % refusal, file=sys.stderr)
+            rc = EXIT_UNHEALTHY
+        else:
+            rc = _run_locked(opts, source, mcp)
     except KeyboardInterrupt:
         print("run_script: stopped; Fusion lock given back. Fusion may still be "
               "running the script.", file=sys.stderr)
-        return 1
+        rc = 1
     finally:
         if mcp.timed_out:
             # never hand Fusion to the next run while it is still busy with this one
             try:
                 wait_for_fusion(opts.url, lock, opts.busy_wait, opts.busy_poll)
+                # ... nor while it is stuck inside an open of this run, even if it answers
+                if guard_opens(lock_path, offset, run_label, limit_s=opts.open_limit, lock=lock):
+                    rc = EXIT_UNHEALTHY
             except KeyboardInterrupt:
                 print("run_script: stopped while waiting for Fusion to answer; Fusion lock "
                       "given back", file=sys.stderr)
         lock.release()
+    return rc
 
 
 def _run_locked(opts, source, mcp=None):
@@ -1217,7 +1489,8 @@ def _run_locked(opts, source, mcp=None):
         mcp.initialize()
         if opts.doc:
             ok, out = run_in_fusion(mcp, doc_script(
-                "open", opts.doc, opts.folder, create=opts.doc_new))
+                "open", opts.doc, opts.folder, create=opts.doc_new,
+                open_log=getattr(opts, "open_log", None), run_label=getattr(opts, "run_label", "")))
             _emit(out)
             if not ok:
                 print("run_script: --doc %r failed (see above); the script did not run"
@@ -1248,9 +1521,13 @@ def _run_locked(opts, source, mcp=None):
     if opts.doc and ok:
         steps = []
         if opts.save is not None:
-            steps.append(doc_script("save", opts.doc, opts.folder, description=opts.save))
+            steps.append(doc_script("save", opts.doc, opts.folder, description=opts.save,
+                                    open_log=getattr(opts, "open_log", None),
+                                    run_label=getattr(opts, "run_label", "")))
         if opts.close:
-            steps.append(doc_script("close", opts.doc, opts.folder, discard=opts.discard))
+            steps.append(doc_script("close", opts.doc, opts.folder, discard=opts.discard,
+                                    open_log=getattr(opts, "open_log", None),
+                                    run_label=getattr(opts, "run_label", "")))
         for step in steps:
             try:
                 sok, out = run_in_fusion(mcp, step)

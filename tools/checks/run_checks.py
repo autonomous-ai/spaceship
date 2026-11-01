@@ -32,6 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import REPO_ROOT, CHECKS_DIR, CHECK_NAMES, SEVERITIES, rel, pn_class, parse_file_name, Finding, owner_for  # noqa: E402
 import c_geometry  # noqa: E402
 import c_parts  # noqa: E402
+import c_frames  # noqa: E402
 import c_drawings  # noqa: E402
 import c_stacks  # noqa: E402
 import register  # noqa: E402
@@ -59,7 +60,8 @@ def contacts_from(bodies, tol=0.2):
 
 def own_file_first(pn, files):
     """Which STEP file speaks for a part's holes: its own (the file named after its number) when there is one, else
-    the first file holding it. An older copy of the part in an assembly can then never add holes it doesn't have."""
+    the first file holding it. A copy in an assembly, older or modelled in another frame, then never adds holes the
+    part doesn't have (BASE's copy of corner key 111211 is the key turned 180 degrees: other key coordinates)."""
     own = sorted(f for f in files if os.path.basename(f).startswith(pn + "_"))
     return own[0] if own else sorted(files)[0]
 
@@ -74,6 +76,8 @@ def run(root, rev):
         if not bodies:
             continue
         findings += c_geometry.check_shell(root, mdl, bodies)
+        if mdl == "assembly":
+            findings += c_geometry.check_acp_bays(root, mdl, bodies)          # D-135: the ACP skin's bays
         faces = c_geometry.shell_faces_ready(mdl, bodies)
         if faces:
             ran |= {"C01", "C01:" + mdl} | {"C01:%s-%s" % (mdl, z) for z in faces}
@@ -87,6 +91,10 @@ def run(root, rev):
         findings += c_geometry.check_unmatched(root, "assembly", asm)
         findings += c_geometry.check_hole_sizes(root, "assembly", asm)
         ran |= {"C08", "C08:assembly"}
+    frame_fs, frames_ran = c_frames.check_frames(root, asm)       # D-131: steel and gauges on every frame member
+    findings += frame_fs
+    if frames_ran:
+        ran.add("C11:frames")
     stack_fs, stack_report = c_stacks.check_stacks(root)
     findings += stack_fs
     if stack_report:
@@ -123,8 +131,9 @@ def run(root, rev):
                 r, owner_for(r, fn["pn"])))
         for prod in s.products():
             pn = prod["part_number"]
-            d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"]})
+            d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"], "names": {}})
             d["files"].add(rel(root, p))
+            d["names"].setdefault(rel(root, p), prod["name"])
             d["count"] = max(d["count"], counts.get(pn, 0))
         for inst in s.instances():
             so = s.solid(inst["solid"])
@@ -152,7 +161,9 @@ def run(root, rev):
         pick = files[own_file_first(pn, files)]
         holes_by_pn[pn], two_wall_by_pn[pn], bends_by_pn[pn] = pick["holes"], pick["two_wall"], pick["bends"]
     findings += c_parts.check_components(root, per_part, c_geometry.load_step)     # D-120: parts are components
+    findings += c_parts.check_copies(root, per_part, c_geometry.load_step)         # copies match their part
     if plists:
+        findings += c_parts.check_decided_items(root, plists, step_products)   # D-131, D-132: cancelled and added
         findings += c_parts.check_cad_match(root, plists, step_products)
         findings += c_parts.check_mixed_metals(root, plists, contacts_from(asm))
     # shipping

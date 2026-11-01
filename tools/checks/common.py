@@ -169,8 +169,15 @@ def is_soft(name, kinds=None):
     return kinds is None or any(h.rstrip("S").endswith(k) for k in kinds)
 
 
+# family 83 also holds made hardware that joins nothing by itself: D-131's mitre plates are welded into the frames
+WELDED_PLATE = re.compile(r"\b(MITRE|MITER|GUSSET|CORNER)\s+PLATE\b", re.I)
+
+
 def is_fastener(pn="", name=""):
-    """A standard fastener: family 83 (conventions section 6) or a HARDWARE - BOLT/NUT/... name."""
+    """A standard fastener: family 83 (conventions section 6) or a HARDWARE - BOLT/NUT/... name; not a plate welded
+    into a frame (831007 to 831009, D-131)."""
+    if WELDED_PLATE.search(name or ""):
+        return False
     return (pn or "")[:2] == "83" or bool(FASTENER_WORDS.search((name or "").strip()))
 
 
