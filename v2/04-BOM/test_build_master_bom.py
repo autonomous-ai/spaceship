@@ -75,6 +75,27 @@ class Rules(unittest.TestCase):
         _, _, _, fails, _ = run({FRONT: GOOD_DOOR, FRONT.replace("360001_P01_FRONT-DOOR-UNIT", "360002_P01_FIXED"): again, bom.REGISTER: REGISTER})
         self.assertFalse(any(f.startswith("duplicate") for f in fails), fails)
 
+    def test_register_name_wins_over_an_older_wording(self):
+        # D-99: the register renames its item (838003's steel re-spec); the team's list still has the old wording
+        reg = REGISTER.replace("| H-01 | 830101 | Bolt M6 x 16 |", "| H-01 | 830101 | Bolt M6 x 16 - ISO 4762 8.8 zinc |")
+        twice = GOOD_DOOR + "830101,BOLT M6 X 16,Bu lông,\"bought, captive\",steel 8.8 zinc plated,2,0.007,source,DRAFT,x,\n"
+        parts, _, _, fails, missing = run({FRONT: twice, bom.REGISTER: reg})
+        bolts = [r for r in parts if r["part_number"] == "830101"]
+        self.assertEqual({(r["name"], r["listed_name"]) for r in bolts}, {("Bolt M6 x 16 - ISO 4762 8.8 zinc", "BOLT M6 X 16")})
+        self.assertEqual(fails, [])
+        todo = [m for m in missing["FRONT"] if m.startswith("830101: the list still names it 'BOLT M6 X 16'")]
+        self.assertEqual(len(todo), 1, missing)   # once per team, number and wording, not once per row
+        self.assertEqual({b["name"] for b in bom.bought_rows(parts, []) if b["part_number"] == "830101"},
+                         {"Bolt M6 x 16 - ISO 4762 8.8 zinc"})
+
+    def test_a_different_item_on_a_register_number_keeps_its_name_and_fails(self):
+        other = door("830101,FRONT - DOOR HANDLE,Tay nắm,bought,steel,1,0.3,source,DRAFT,x,\n")
+        parts, _, _, fails, _ = run({FRONT: other, bom.REGISTER: REGISTER})
+        row = next(r for r in parts if r["part_number"] == "830101")
+        self.assertEqual(row["name"], "FRONT - DOOR HANDLE")
+        self.assertNotIn("listed_name", row)
+        self.assertTrue(any(f.startswith("duplicate number 830101") for f in fails), fails)
+
     def test_no_mass_fails(self):
         ceil = CEIL_HDR + "518001,LINING - CASSETTE CLIP - HOLD,,HOLD,cassette,6,12,HOLD envelope,HOLD,HOLD,P01,HOLD,D-47\n"
         _, _, _, fails, missing = run({CEIL: ceil, bom.REGISTER: REGISTER})

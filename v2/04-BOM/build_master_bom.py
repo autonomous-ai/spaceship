@@ -37,6 +37,11 @@ Exit code 0 when the check passes, 1 when it fails. The check fails on:
 Everything else that is missing (no parts list yet, no finish, no process, HOLD items, register
 rows with no number) is listed per team as "missing", without failing the check.
 
+A number the joints register owns takes the register's name in every output (D-99: hardware names come
+from the joints register). A parts-list row that still words the same item the old way (for example 838003
+after its re-spec to the steel rivnut) is listed as its team's to-do; a row whose item isn't the register's
+keeps its name and fails as a duplicate number (2 above).
+
 "Hardware" means every bought item except AIR (61), ELECTRICAL (71) and PACKAGING (91) items,
 whose numbers their own teams give (reading of D-63 and the PM's brief, 2026-10-31).
 Masses in kg, sizes in mm. No prices: the parts lists carry none, and this script reads none.
@@ -495,7 +500,19 @@ def build(sources):
         if why:
             skipped.append((path, where, why))
         parts.extend(rows)
+    register_names(parts, register)
     return parts, skipped, register, reg_where
+
+
+def register_names(parts, register):
+    """D-99: a number the joints register owns takes the register's name. A row that words the same item
+    differently keeps its own wording in 'listed_name', so the check can list it as its team's to-do; a row
+    whose item isn't the register's (same_item fails) is left alone and fails as a duplicate number."""
+    reg = {i["part_number"]: i for i in register if i["part_number"] and i["name"]}
+    for r in parts:
+        i = reg.get(r["part_number"])
+        if i and norm(r["name"]) != norm(i["name"]) and same_item(r["name"], i["name"]):
+            r["listed_name"], r["name"] = r["name"], i["name"]
 
 
 def check(parts, register, reg_where, read_paths=()):
@@ -524,6 +541,13 @@ def check(parts, register, reg_where, read_paths=()):
         if pn in reg_by_pn and not same_item(r["name"], reg_by_pn[pn]["name"]):
             ri = reg_by_pn[pn]
             fails.append(f"duplicate number {pn}: '{r['name']}' in {where} is not the joints register's {ri['id']} '{ri['name']}'")
+        elif r.get("listed_name"):
+            ri = reg_by_pn[pn]
+            msg = (f"{pn}: the list still names it '{r['listed_name']}'; the joints register's {ri['id']} now names it "
+                   f"'{ri['name']}', which the master BOM uses (D-99): change the list's name, and its material, finish and "
+                   f"mass to match the register")
+            if msg not in missing.get(r["team"], []):
+                miss(r["team"], msg)
         if is_hardware(r) and re.fullmatch(r"\d{6}", pn) and pn not in reg_numbers:
             fails.append(f"hardware with no joints-register row: {label} in {where}")
         if r["make_buy"] == "":
