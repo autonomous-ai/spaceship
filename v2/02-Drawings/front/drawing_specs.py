@@ -140,7 +140,8 @@ SPECS = {
             "Top pocket %.0f wide x %.0f deep takes the Bohle BO5201735 silicone U-seal and the leaf's bottom %.0f mm; "
             "bottom cavity %.0f wide x %.0f tall takes the athmer Schall-Ex GSA drop seal, bonded to the pod-side wall "
             "(bond to anodised aluminium HOLD)." % (v["gu_w"], v["kick_pocket_d"], v["door_glass_engage"], v["gu_w"], v["kick_cav_h"]),
-            "Floor gap: the strip's bottom stands %.0f over the threshold top (the drop seal's rated gap). How the strip "
+            "Floor gap: the strip's bottom stands %.0f over the room floor (D-132: no floor, no threshold; the drop "
+            "seal's rated gap, its travel 20 covering an uneven floor). How the strip "
             "is held on the glass is HOLD J-FRONT-02 (structural silicone or a clamp)." % v["kick_gap"],
             "Tolerances (PROPOSED): pocket and cavity widths 12 +0.3/0; height %.0f +/-0.2; skins 1.0 +/-0.1." % (ZB - KZB),
         ],
@@ -167,7 +168,7 @@ SPECS = {
             "Hinges (HOLD): rated for the 8.76 laminate, at least 60 kg and the 1176 width; two-part lift-off, frame "
             "halves shipped fitted in DL; hung on site with the 5 mm key. No holes in the glass until named.",
             "Mass of the unit as it hangs: about 48.5 kg (calculation; parts list).",
-            "Gaps: 6 to DT (the catch), 4 to the fixed glass (the seal), %.0f under the strip to the threshold." % v["kick_gap"],
+            "Gaps: 6 to DT (the catch), 4 to the fixed glass (the seal), %.0f under the strip to the room floor (D-132)." % v["kick_gap"],
         ],
         "title": title("360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "see the parts list", "see the parts list",
                        "1:10", "A2", [("DOC TYPE", "ASSEMBLY DRAWING")]),
