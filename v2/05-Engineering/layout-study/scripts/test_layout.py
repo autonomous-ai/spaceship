@@ -208,12 +208,12 @@ def test_cad_masses_from_main():
     assert abs(key[2] * key[3] - sum(q * kg for q, kg in (rollup.JOINTS[pn] for pn in rollup.KEY_PNS))) < 1e-9, key
     hw = next(r for k, r in rows.items() if k.startswith("M6 bolts, rivnuts"))
     assert rollup.basis(hw) == "CAD, main (part)", hw
-    assert "D-117" in hw[5] and "cleats assumption" in hw[4], hw                 # the cleat allowance rides on this line
+    assert "cleats" not in hw[4] and "D-131" in hw[5], hw                         # D-131 welds the frames: no cleat allowance
     assert "cam" not in hw[1].lower(), hw                                          # D-116: no cam connectors
     rc, uk = rollup.register_counts(), rollup.fixings_unit_kg()
     assert set(rc) == set(uk) == set(rollup.FIXING_PNS), (rc, uk)
     (ns, ks), (nw, kw) = rollup.JOINTS["831001"], rollup.JOINTS["831002"]
-    want = sum(rc[pn] * uk[pn] for pn in rollup.FIXING_PNS) + ns * ks + nw * kw + rollup.CLEATS_KG
+    want = sum(rc[pn] * uk[pn] for pn in rollup.FIXING_PNS) + ns * ks + nw * kw          # no cleats: D-131 welds the frames
     assert abs(hw[3] - want) < 1e-9, (hw[3], want)
     fx = next(r for k, r in rows.items() if k.startswith("Fixed glass unit 360002"))
     f = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_FIXED_LIST) if r["pn"]}
