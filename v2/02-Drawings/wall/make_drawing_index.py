@@ -26,21 +26,32 @@ def fill_forms():
 
 
 def rows():
-    out = [("210000_P01_WALL_DWG", ["210000"], "WALL assembly: the 8 panels and 8 cassettes (wall_assembly.py)")]
+    fusion_assy, gen = "Fusion: an assembly sheet (D-139)", "the drawing generator, from the STEP (D-139)"
+    out = [("210000_P01_WALL_DWG", ["210000"], "WALL assembly: the 8 panels and 8 cassettes (wall_assembly.py); %s"
+            % fusion_assy)]
     for i, (code, tag) in enumerate(SIDE, 1):
-        out += [("2101%02d_P01_WALL-PANEL-ASSY-SIDE-%s_DWG" % (i, tag), ["2101%02d" % i], "panel assembly %s" % code),
-                ("2111%02d_P01_WALL-PANEL-FRAME-SIDE-%s_DWG" % (i, tag), ["2111%02d" % i], "frame %s" % code),
-                ("5101%02d_P01_LINING-CASSETTE-SIDE-%s_DWG" % (i, tag), ["5101%02d" % i], "cassette %s" % code)]
+        out += [("2101%02d_P01_WALL-PANEL-ASSY-SIDE-%s_DWG" % (i, tag), ["2101%02d" % i],
+                 "panel assembly %s; %s" % (code, fusion_assy)),
+                ("2111%02d_P01_WALL-PANEL-FRAME-SIDE-%s_DWG" % (i, tag), ["2111%02d" % i],
+                 "frame %s, welded steel with its members (D-131); %s" % (code, gen)),
+                ("5101%02d_P01_LINING-CASSETTE-SIDE-%s_DWG" % (i, tag), ["5101%02d" % i],
+                 "cassette %s; %s" % (code, fusion_assy))]
     for i, (code, tag) in enumerate(BACK, 1):
-        out += [("2102%02d_P01_WALL-PANEL-ASSY-BACK-%s_DWG" % (i, tag), ["2102%02d" % i], "panel assembly %s" % code),
-                ("2112%02d_P01_WALL-PANEL-FRAME-BACK-%s_DWG" % (i, tag), ["2112%02d" % i], "frame %s" % code),
-                ("5102%02d_P01_LINING-CASSETTE-BACK-%s_DWG" % (i, tag), ["5102%02d" % i], "cassette %s" % code)]
+        out += [("2102%02d_P01_WALL-PANEL-ASSY-BACK-%s_DWG" % (i, tag), ["2102%02d" % i],
+                 "panel assembly %s; %s" % (code, fusion_assy)),
+                ("2112%02d_P01_WALL-PANEL-FRAME-BACK-%s_DWG" % (i, tag), ["2112%02d" % i],
+                 "frame %s, welded steel with its members (D-131); %s" % (code, gen)),
+                ("5102%02d_P01_LINING-CASSETTE-BACK-%s_DWG" % (i, tag), ["5102%02d" % i],
+                 "cassette %s; %s" % (code, fusion_assy))]
     out += [("211301_P01_WALL-SKIN-SIDE-LOWER-LH_DWG", ["211301", "211302", "211303", "211304"],
-             "tabulated: the side skins (RH the mirror of LH; L1 = L2, R1 = R2)"),
+             "tabulated: the side skins (RH the mirror of LH; L1 = L2, R1 = R2); the drawing generator (D-139: the "
+             "back fold is a sharp V-groove corner in the CAD; if the generator refuses it, Fusion, said first)"),
             ("511101_P01_LINING-TRAY-SIDE-LOWER-LH_DWG", ["511101", "511102", "511103", "511104"],
-             "tabulated: the side trays (LH = RH; upper ones shorter)"),
+             "tabulated: the side trays (LH = RH; upper ones shorter); Fusion (D-139: bent sheet metal, which the "
+             "generator refuses)"),
             ("511201_P01_LINING-TRAY-BACK-LOWER-B1_DWG", ["511201", "511202", "511203", "511204"],
-             "tabulated: the back trays (LH = RH; upper ones shorter)")]
+             "tabulated: the back trays (LH = RH; upper ones shorter); Fusion (D-139: bent sheet metal, which the "
+             "generator refuses)")]
     forms = fill_forms()
     out.append(("(no drawing, D-128)", [pn for pn, _dxf in forms],
                 "fill pieces: 40 mm PET batt, each of the %d forms knife cut from its own DXF, the full outline with every "
