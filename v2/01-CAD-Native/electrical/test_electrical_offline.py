@@ -288,8 +288,11 @@ class Ties(unittest.TestCase):
             if c.startswith("B"):
                 self.assertGreaterEqual((dx * dx + dz * dz) ** 0.5, EP.TIE_KEEP - 1e-6, (c, x, z))
             if c == "R1-CASS":            # the cables cross the 5 mm gap to the fixed column at FX-COL with slack
-                fx = next(M.body_box(b, v) for b in M.BODIES if b["code"] == "FX-COL")
-                self.assertGreaterEqual(y - fx[4], EP.TIE_KEEP - 1e-6, (c, y))
+                self.assertGreaterEqual(y - v["y_fx"], EP.TIE_KEEP - 1e-6, (c, y))
+            for y0, y1 in EP.TIE_STUDS.get(c, []):     # WALL's members: a hole's edge 15 clear of a face
+                pos = y if c.startswith("R") else x
+                self.assertTrue(pos + EP.TIE_HOLE / 2 <= y0 - EP.TIE_STUD_CLR + 1e-6 or
+                                pos - EP.TIE_HOLE / 2 >= y1 + EP.TIE_STUD_CLR - 1e-6, (c, pos))
             runs.setdefault((c, cable), []).append(z if c in ("B4-CASS", "R2-CASS") else (x if c == "B2-CASS" else y))
         for key, pos in runs.items():
             pos.sort()

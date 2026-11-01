@@ -639,6 +639,10 @@ part("edge", "718042", "ELECTRICAL - EDGE PROTECTION STRIP - 0.5 MM SHEET", "Đi
 # cross the 4 mm floating gap there with slack); none on the draw cords (they must pull free); a tie 20 mm short of
 # the felt hole or slot a cable leaves by. The holes are posted to WALL tray by tray (2026-11-01).
 TIE_END, TIE_SPAN, TIE_KEEP, TIE_HOLE = 20.0, 300.0, 150.0, 6.4
+# WALL's members behind the trays where a tie's wings would land (they need 5 mm behind the sheet; WALL keeps a hole's
+# edge 15 clear of a member's face): R1's stud at Y -121.8, 20 wide (WALL, 2026-11-01 17:36)
+TIE_STUDS = {"R1-CASS": [(-131.8, -111.8)]}
+TIE_STUD_CLR = 15.0
 TIE_TRAYS = {"B2-CASS": "511202 (LINING - TRAY - BACK LOWER - B2)",
              "B4-CASS": "the upper back lining's tray behind B4 (no number yet)",
              "R1-CASS": "511102 (LINING - TRAY - SIDE LOWER - RH)",
@@ -674,10 +678,17 @@ def tie_points(v):
     for z in _fill(zs + [box["P6"][2] + TIE_END, box["P6"][5] - TIE_END]):
         out.append(("B4-CASS", "light feed W10b, W10c", (v["lt_x"], back_y, z)))
     # R1-CASS: P2 at the corner, T1-R1A, P3-KIT, T1-R1B to the column joint's pocket P8; its tie 20 inside P8's end
-    # stays TIE_KEEP clear of FX-COL, where the cables cross the 5 mm gap to the fixed column with slack
+    # stays TIE_KEEP from FX-COL's centre, where the cables cross the 5 mm gap to the fixed column with slack; a tie
+    # that lands on one of WALL's studs moves off it, away from the pocket's middle (WALL's check)
     ys = sorted([box["P2"][1] + TIE_END, box["P2"][4] - TIE_END, box["P3-KIT"][1] + TIE_END,
-                 box["P3-KIT"][4] - TIE_END, max(box["P8"][4] - TIE_END, box["FX-COL"][4] + TIE_KEEP)])
+                 box["P3-KIT"][4] - TIE_END, max(box["P8"][4] - TIE_END, v["y_fx"] + TIE_KEEP)])
+    r1 = []
     for y in sorted(_fill(ys), reverse=True):
+        for y0, y1 in TIE_STUDS["R1-CASS"]:
+            if y0 - TIE_STUD_CLR - TIE_HOLE / 2 < y < y1 + TIE_STUD_CLR + TIE_HOLE / 2:
+                y = y0 - TIE_STUD_CLR - TIE_HOLE / 2 if y < (y0 + y1) / 2 else y1 + TIE_STUD_CLR + TIE_HOLE / 2
+        r1.append(y)
+    for y in r1:
         out.append(("R1-CASS", "trunk W20c, W30c, W31c", (right_x, y, v["trunk_z"])))
     # R2-CASS: the call light drop from its felt hole FX-CALL2 up to P7
     for z in _fill([box["FX-CALL2"][5] + TIE_END, box["P7"][2] + TIE_END, box["P7"][5] - TIE_END]):
