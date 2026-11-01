@@ -88,7 +88,7 @@ SPECS = {
         "Fixing: stand-offs through clearance holes in R1-CASS into rivnuts in the stiles (WALL interface); the ledge stands 2 off the felt.",
     ], ("ledge", "bracket")),
     "shelf_assy": spec("shelf_assy", [
-        "Light shelf: back run 811201 (X -1166 to 1166) and side runs 811202 LH, 811203 RH (Y -285 to 706, butting the back run). Under the RH run, 15 off the lining: the down-light's LED profile 718101 (23 x 12.5, 991 long, Y -285 to 706: the side run's length, so it ends at the corner joint) with its clip-on opal cover 718102, end caps 718103 and mounting clips 718104 (D-126; bought, product HOLD, listed by ELECTRICAL).",
+        "Light shelf: back run 811201 (X -1166 to 1166) and side runs 811202 LH, 811203 RH (Y -285 to 706, butting the back run). Under the RH run, 15 off the lining: the down-light's LED profile 718101 (23 x 12.5, 991 long, Y -285 to 706: the side run's length, so it ends at the corner joint) with its clip-in satin cover 718102 (D-127), end caps 718103 and mounting clips 718104 (D-126; bought, product HOLD, listed by ELECTRICAL).",
         "Up-light strip (one 8 mm) all round; two 8 mm down-light strips on the right (ELECTRICAL's parts). Cable holes: feed at X 355 (back), call-light drop at Y -209.5 (right), both Z 2250.",
         "Back flanges screw to the wall cassettes (fixing HOLD, WALL); the profile's clips screw to the RH run's and the back run's undersides.",
     ], ("shelf_back", "shelf_lh", "shelf_rh", "lprofile")),

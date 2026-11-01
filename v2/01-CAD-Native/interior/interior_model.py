@@ -32,10 +32,11 @@ INTERIOR_PARAMS = [
     ("sh_t", "1 mm", "mm", "assumption", "D-85 budget 0.4 kg/m: 1.0 mm aluminium, 118 mm2 section (0.32 kg/m) plus the strip"),
     ("sh_z0", "2230 mm", "mm", "assumption", "shelf underside; ELECTRICAL's feed and call-light drop are at Z 2250, in the back flange, and the felt ceiling (Z 2316) is 46 above the flange"),
     # the down-light (D-126): a bought surface LED aluminium profile under the right run, with a clip-on
-    # opal cover, end caps and mounting clips (Tech-Light P13-2 type, public catalogue; product HOLD)
+    # cover (D-127: satin, at least 86 % of the light, the same clip-in style), end caps and mounting
+    # clips (Tech-Light P13-2 type, public catalogue; product HOLD)
     ("lp_x0", "15 mm", "mm", "assumption", "D-126: the LED profile under the right run, 15 out from the lining (where the folded channel was)"),
     ("lp_w", "23 mm", "mm", "source", "D-126: surface LED profile of the Tech-Light P13-2 type (public catalogue): 23 wide outside"),
-    ("lp_h", "12.5 mm", "mm", "source", "D-126: the same profile, 12.5 deep with its clip-on C15 opal cover"),
+    ("lp_h", "12.5 mm", "mm", "assumption", "D-126: the same profile, 12.5 deep with its clip-in cover; D-127 makes the cover satin in the same clip-in style, so the depth is taken as the same until the product is named"),
     ("lp_in", "20 mm", "mm", "source", "D-126: 20 inside at the strip base, two 8 mm strips side by side (the catalogue says so; ELECTRICAL needs 20 or more)"),
     ("cab_d", "10 mm", "mm", "assumption", "cable hole in the back flange for the feed and the call-light drop"),
     ("feed_x", "355 mm", "mm", "confirmed", ELEC + ": the feed point at X 355 on the back wall, Z 2250"),
@@ -80,13 +81,13 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
 
 MATERIALS = {   # name, density kg/m3, status, source
     "al": ("Aluminium 5052-H32 sheet (alloy HOLD)", 2700.0, "source", "aluminium 2.70 g/cm3"),
-    "pc": ("Opal polycarbonate", 1200.0, "source", "polycarbonate 1.20 g/cm3"),
+    "pc": ("Satin polycarbonate", 1200.0, "source", "polycarbonate 1.20 g/cm3"),
     "hold": ("HOLD envelope - no mass", 1.0, "assumption", "space only"),
 }
 HOLD_MASS = {"bracket": (0.10, "assumption: an aluminium concealed shelf bracket with its stand-offs, about 0.1 kg (D-85 budget: the ledge with 2 brackets 1.4 kg)"),
              "rail": (0.50, "assumption: a 900 aluminium VESA rail, about 0.5 kg"),
              "lprofile": (0.178, "assumption: about 0.18 kg/m x 0.991 m (the catalogue gives no mass; a 23 x 12.5 aluminium profile, 0.15 to 0.21 kg/m)"),
-             "lcover": (0.035, "assumption: about 0.035 kg/m x 0.991 m (opal cover, about 20 x 1.5)"),
+             "lcover": (0.035, "assumption: about 0.035 kg/m x 0.991 m (satin cover, about 20 x 1.5)"),
              "lcap": (0.003, "assumption: a plastic end cap, about 3 g"),
              "lclip": (0.004, "assumption: a steel mounting clip, about 4 g")}
 # D-126's profile set, in ELECTRICAL's family (Control's allocation): listed by ELECTRICAL; the masses here

@@ -45,18 +45,18 @@ TREE = [   # key, parent, qty per parent, source
 ]
 FINISH = {"ledge": "powder coat, charcoal to match the felt (RAL HOLD)", "shelf_back": "powder coat, charcoal (RAL HOLD)",
           "shelf_lh": "powder coat, charcoal (RAL HOLD)", "shelf_rh": "powder coat, charcoal (RAL HOLD)",
-          "lprofile": "black anodised, to match the charcoal shelf (HOLD)", "lcover": "opal, as supplied",
+          "lprofile": "black anodised, to match the charcoal shelf (HOLD)", "lcover": "satin, as supplied",
           "lcap": "black, as supplied", "lclip": "as supplied"}
 # a part whose material grade isn't chosen yet: HOLD in the status column until it is (C11)
 GRADE_HOLD = {}
 PROCESS = {"ledge": "laser cut, brake bend (2 bends)", "shelf_back": "laser cut, brake bend (3 bends), cable hole",
            "shelf_lh": "laser cut, brake bend (3 bends)", "shelf_rh": "laser cut, brake bend (3 bends), cable hole",
-           "lprofile": "bought; cut to 1036", "lcover": "bought; cut to 1036", "lcap": "bought", "lclip": "bought"}
+           "lprofile": "bought; cut to 991", "lcover": "bought; cut to 991", "lcap": "bought", "lclip": "bought"}
 SKU = {   # D-126: the type picked from public catalogues only; the product stays HOLD until named
     "bracket": "HOLD: rated for a 225 N lean at the ledge's front edge x 3",
     "rail": "HOLD: VESA rail for a screen up to 900 wide, about 10 kg",
     "lprofile": "HOLD: surface LED aluminium profile of the Tech-Light P13-2 type, 23 x 12.5 outside, 20 inside at the strip base (two 8 mm strips), rated for 12 W/m (ELECTRICAL confirms)",
-    "lcover": "HOLD: clip-on opal cover for that profile (Tech-Light C15 type), 70 % light (brochure figure)",
+    "lcover": "HOLD: clip-in satin cover for that profile, at least 86 % of the light (D-127: 350 lx or more on the ledge; ELECTRICAL names the product)",
     "lcap": "HOLD: end caps for that profile, one with a cable entry",
     "lclip": "HOLD: mounting clips for that profile",
 }
