@@ -224,9 +224,9 @@ def _sizes():
         "assy_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["outer_t"]), ""),
         "assy_c2": lambda v: ("%.2f x %.2f x %.0f" % (v["half_pw"], v["wall_depth"], v["outer_t"]), ""),
         "frame_c1": lambda v: ("%.2f x %.2f x %.0f" % (v["half_fw"], v["wall_depth"], v["frame_t"]),
-                               "assembled in a jig: outer size +/-0.5, diagonals within 1 (assumption); spigot to closing face +/-0.1 (ST-04)"),
+                               "welded in a jig (J-FRAME-01): diagonals equal within 1.5 and the skin-side faces within +/-0.5 of one plane, measured after welding (J-FRAME-01); outer size +/-0.5 (assumption); spigot to closing face +/-0.1 (ST-04)"),
         "frame_c2": lambda v: ("%.2f x %.2f x %.0f" % (v["half_fw"], v["wall_depth"], v["frame_t"]),
-                               "assembled in a jig: outer size +/-0.5, diagonals within 1 (assumption); spigot to closing face +/-0.1 (ST-04)"),
+                               "welded in a jig (J-FRAME-01): diagonals equal within 1.5 and the skin-side faces within +/-0.5 of one plane, measured after welding (J-FRAME-01); outer size +/-0.5 (assumption); spigot to closing face +/-0.1 (ST-04)"),
         **{key: (lambda code, h: (lambda v: next(("%s tube, %.2f long at the outer face, %s" % (sec, L, ends),
                                                   "cut length +/-0.5, mitre angles +/-0.25 deg (assumption); holes and slots +/-0.2 "
                                                   "from the round spigot hole (R-J6)")
