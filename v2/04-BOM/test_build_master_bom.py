@@ -464,7 +464,8 @@ class NumberAllocation(unittest.TestCase):
         self.assertEqual(fails, [])
         for a in alloc:
             self.assertTrue(a["name"] and a["name_vi"] and a["basis"] and a["parent"], a["part_number"])
-            self.assertIn(a["team"], ("WALL", "CEILING"))
+            owner = bom.FAMILY[bom.family_of(a["part_number"])][3]    # the team that lists the number's family
+            self.assertIn(a["team"], owner if owner == "WALL and CEILING" else (owner,), a["part_number"])
 
 
 class FallBackReport(unittest.TestCase):
