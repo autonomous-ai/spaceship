@@ -163,12 +163,16 @@ def stud_params(code):
             ("bolt_edge + 3 * len_bolt_pitch - 50 mm", "50 before the 4th bolt (R-J14)")]
     extra = []
     if code == "R1":
-        _IN = "the Lead's ruling of 2026-11-01 on INTERIOR's load check (WALL group)"
-        extra = [("int_stud_y1", "-240 mm", "mm", "confirmed",
-                  _IN + ": the stud for the ledge's left-end bracket (the ledge Y -259.5 to 740.5)"),
-                 ("int_stud_y2", "700 mm", "mm", "confirmed", _IN + ": the stud for the ledge's right-end bracket")]
-        rows = [five[0], ("int_stud_y1 - (pod_d / 2 - wall_depth + seam_gap)", "INTERIOR's ledge bracket at Y -240")] \
-            + five[1:] + [("int_stud_y2 - (pod_d / 2 - wall_depth + seam_gap)", "INTERIOR's ledge bracket at Y 700")]
+        # Y -240 and 700 at the P04 size (the ledge Y -259.5 to 740.5): the left one held from the frame's front end, so
+        # it moves with the front (and the air column) and keeps 30 clear of the bolts when the wall's depth changes;
+        # the right one from the frame's back end, where it stays
+        _IN = "the Lead's ruling of 2026-11-01 on INTERIOR's load check (WALL group): its ledge bracket stud at Y "
+        extra = [("int_stud_d1", "402.74 mm", "mm", "calculation",
+                  _IN + "-240 (the ledge's left end) at the P04 size: 402.74 behind the frame's front end (Y -642.74)"),
+                 ("int_stud_d2", "144 mm", "mm", "calculation",
+                  _IN + "700 (the ledge's right end) at the P04 size: 144 before the frame's back end (Y 844)")]
+        rows = [five[0], ("int_stud_d1", "INTERIOR's ledge bracket at Y -240")] \
+            + five[1:] + [("frm_len - int_stud_d2", "INTERIOR's ledge bracket at Y 700")]
     else:
         rows = five
     return extra + [("stud_c%d" % k, e, "mm", "calculation", why) for k, (e, why) in enumerate(rows, 1)]
@@ -1553,7 +1557,9 @@ def build_frame(design, frame, out, xf, yf, zs):
     fix = INT_FIX.get(CODE, ())
     groups = [("STILE - MID", "STUD", [c for k, c in enumerate(studs, 1) if k not in fix])]
     if fix:
-        groups.append(("STILE - MID INTERIOR", "INTERIOR STUD", [c for k, c in enumerate(studs, 1) if k in fix]))
+        # the part itself is the back-most of them (its holes' Y stays one side of 0 in an edit: a hole's dimension
+        # from the sketch origin can't cross it), the others its copies
+        groups.append(("STILE - MID INTERIOR", "INTERIOR STUD", [c for k, c in enumerate(studs, 1) if k in fix][::-1]))
     for key, word, group in groups:
         make(key, yr(group[0]), zs, "z", "stud_t")
         sc = members[key][0]
@@ -1918,7 +1924,8 @@ def interior_fixings(design, members):
     c, body = members["STILE - MID INTERIOR"]
     studs = int_studs()
     for i, z in enumerate(("int_rn_z1", "int_rn_z2"), 1):
-        hole(design, c, c.bRepBodies.item(0), "x", X_FRAME_IN, S, {"y": "(%s) + %s" % (Y_FRONT, studs[0]), "z": z},
+        # in the part, which build_frame placed at the back-most of these studs
+        hole(design, c, c.bRepBodies.item(0), "x", X_FRAME_IN, S, {"y": "(%s) + %s" % (Y_FRONT, studs[-1]), "z": z},
              "rivnut_d", "stud_t", "INTERIOR STUD RIVNUT %d" % i)
         for k, st in enumerate(studs, 1):
             hw_site("INTERIOR STUD %d RIVNUT %d" % (k, i), "x", X_FRAME_IN, S,
