@@ -162,13 +162,74 @@ def test_step_picture_script_and_data():
 
 
 def test_sizes_follow_the_skeleton():
-    # panel sizes are the skeleton's named values, not typed numbers
-    b1 = pack.PIECE["1-03"]
-    assert b1.dims == pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
-    l1 = pack.PIECE["1-05"]
-    assert l1.dims == pack.S(pack.sk("side_l"), pack.sk("side_h"), pack.sk("outer_t"))
+    # a panel with no CAD yet is the skeleton's named values; one with CAD is at least that, plus what its CAD adds
+    b3 = pack.PIECE["1-07"]
+    assert b3.dims == pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
+    b1, l1 = pack.PIECE["1-03"], pack.PIECE["1-05"]
+    sk_b1 = pack.S(pack.sk("half_pw"), pack.sk("back_ph"), pack.sk("outer_t"))
+    sk_l1 = pack.S(pack.sk("side_l"), pack.sk("side_h"), pack.sk("outer_t"))
+    assert all(d >= s for d, s in zip(b1.dims, sk_b1)) and all(d >= s for d, s in zip(l1.dims, sk_l1)), (b1.dims, l1.dims)
+    assert b1.dims[0] == pack.sk("half_pw") and l1.dims[0] == pack.sk("side_l")
     f1 = pack.PIECE["1-01"]
     assert f1.dims[2] == pack.sk("floor_t") + pack.sk("mat_t")
+
+
+def test_cad_size_outgrowing_its_plan_is_caught():
+    # K14: a planned size smaller than the merged CAD fails (the decor blocks were planned as boxes 30 mm too narrow)
+    m = pack.Model()
+    assert "K14" not in failing(m)
+    kind, dims, files = m.cad["2-09"]
+    assert kind == "box" and dims[1] > 300, dims          # DL with its hinge-side stops
+    dl = pack.PIECE["2-09"]
+    saved = dl.dims
+    dl.dims = pack.S(2290, 278, 205)                       # the old box
+    try:
+        assert "K14" in failing(pack.Model())
+    finally:
+        dl.dims = saved
+
+
+def test_bundle_parts_each_fit():
+    # a bundle or carton is checked part by part: a ledge carton too short for the ledge top fails
+    m = pack.Model()
+    kind, parts, _ = m.cad["2-16"]
+    assert kind == "parts" and {pn for pn, _ in parts} >= {"811101", "818101", "818102"}, parts
+    led = pack.PIECE["2-16"]
+    saved = led.dims
+    led.dims = pack.S(900, 250, 120)
+    try:
+        assert "K14" in failing(pack.Model())
+    finally:
+        led.dims = saved
+
+
+def test_d129_keys_on_the_side_bands():
+    # D-129: the side bands carry the back-corner keys; the back band ships with keyholes only, 2420 long
+    keys = {p.tag: sum(u for h, u in p.mass if h == "KEY") for p in pack.PIECES}
+    assert keys["2-04"] == 0 and keys["2-05"] == 2 and keys["2-06"] == 2 and keys["2-15"] == 2, keys
+    m = pack.Model()
+    assert m.cad["2-04"][1][0] <= 2420 + 1e-6, m.cad["2-04"]
+    tiers, _ = m.tiers2()
+    lane = next(ln for t in tiers for ln in t["lanes"] if any(i["tag"] == "2-04" for i in ln["items"]))
+    assert lane["length"] <= pack.MINE["pal_long_l_exact"].value, lane["length"]
+
+
+def test_lanes_follow_the_parts():
+    # a lane is as wide as its widest part plus the wrap a side; nothing in a tier passes the deck
+    m = pack.Model()
+    w = pack.MINE["wrap"].value
+    tiers, height = m.tiers2()
+    dr_lane = next(ln for t in tiers for ln in t["lanes"] if any(i["tag"] == "2-03" for i in ln["items"]))
+    assert abs(dr_lane["width"] - (pack.PIECE["2-03"].dims[1] + 2 * w)) < 1e-9, dr_lane["width"]
+    assert all(t["width"] <= pack.MINE["pal_std_l_exact"].value for t in tiers)
+    assert height <= pack.lay("max_load_h")
+    dt = pack.PIECE["2-12"]
+    saved = dt.dims
+    dt.dims = pack.S(1699, 420, 203)                       # a DT 114 mm wider no longer fits tier 3
+    try:
+        assert "K5" in failing(pack.Model())
+    finally:
+        dt.dims = saved
 
 
 def test_register_parser_reads_counts_with_notes(tmp=Path(__file__).resolve().parent / "_register_test2.md"):
