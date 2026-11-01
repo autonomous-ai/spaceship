@@ -90,7 +90,7 @@ AIR_PARAMS = [
     ("rail_w", "24 mm", "mm", "assumption", "soffit top rail width (room side); the door-side rail runs from the soffit's door side to 24 from the side walls' front end (22.5 wide), so it stays 1 mm clear of the roof sleeve"),
     ("stud_l", "16 mm", "mm", "confirmed", "D-90 (HOLD-18, joints register #99): the hanger studs are M6 x 16 socket head bolts"),
     ("stud_eng", "9 mm", "mm", "assumption", "thread engaged in the ceiling's rivnut (10.16 installed length less the lead-in)"),
-    ("rvn_head", "0.76 mm", "mm", "source", "H-03 rivnut head under the frame face (Sherex CAH3-610-4.2, 0.76)"),
+    ("rvn_head", "0.76 mm", "mm", "source", "H-03 rivnut head under the frame face (Sherex CAH2-610-4.2, 0.76, SHX2)"),
     ("hd_h", "6 mm", "mm", "source", "ISO 4762 M6 head height 6 (the studs and the lock screws)"),
     ("hd_c", "1.5 mm", "mm", "confirmed", "D-90 (HOLD-18): 1.5 clear under each head"),
     ("stud_d", "10 mm", "mm", "source", "ISO 4762 M6 head diameter 10"),
@@ -177,7 +177,7 @@ HARDWARE = {
                     "Bulong lục giác chìm M6 × 16", 4, 0.0062),
     "grille_washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
                       "Long đen to M6 inox", 4, 0.0028),
-    "grille_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2", "Tán rút M6", 4, 0.0023),
+    "grille_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", 4, 0.0067),
 }
 
 MATERIALS = {
