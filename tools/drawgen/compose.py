@@ -2508,8 +2508,10 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             return [(vd.S((x, yy)), (0, n2[1]), lead) for lead in leads for x in xc]
         names = ([bview] if bview else []) + [n_ for n_ in vds if n_ != bview]
         cands = [c_ for leads in ((7.0, 10.0), (14.0, 18.0, 22.0)) for n_ in names for c_ in c_cands(n_, vds[n_], leads)]
-        if cands:
-            put_datum(cands, "C")
+        if not cands:
+            raise NotDrawable("%s: datum C (the face that stops the turn about B) shows edge on in no view drawn"
+                              % part.pn)
+        put_datum(cands, "C")
         # A: the seat face, on the principal view's edge
         x0, y0, x1, y1 = pvd.box()
         n2 = P.to2d(dat["A_normal"])
@@ -2522,21 +2524,34 @@ def annotate(sh, part, spec, pl, vds, secs, removed, dat, scale, groups, today):
             k = "XYZ".index(face[1])
             nrm = tuple((1.0 if face[0] == "+" else -1.0) if i == k else 0.0 for i in range(3))
             plane = part.box[3 + k] if face[0] == "+" else part.box[k]
-            for nm in ("principal", "above", "below", "from_left", "from_right"):
-                if nm not in vds or abs(vdot(nrm, vds[nm].view.n)) > 1e-6:
+            on = tuple(plane if i == k else 0.0 for i in range(3))
+            # a plain view that shows the face edge on, else a section that does within what it draws (WALL: a bent
+            # part's back face shows only in its profile section); never dropped: refused when none does (the Lead)
+            hosts = [vds[nm] for nm in ("principal", "above", "below", "from_left", "from_right") if nm in vds] + \
+                list(removed) + list(secs)
+            placed = False
+            for vd in hosts:
+                if abs(vdot(nrm, vd.view.n)) > 1e-6:
                     continue
-                vd = vds[nm]
                 n2 = vd.view.to2d(nrm)
                 e = vd.extent
                 if abs(n2[1]) > 0.5:
-                    yy = vd.view.to2d(tuple(plane if i == k else 0.0 for i in range(3)))[1]
+                    yy = vd.view.to2d(on)[1]
+                    if not e[1] - 0.05 <= yy <= e[3] + 0.05:
+                        continue        # the section cuts the part away from that face
                     xs = [e[0] + t * (e[2] - e[0]) + 8 * (ord(letter) - 65) for t in (0.30, 0.2, 0.4, 0.6, 0.7, 0.8)]
                     put_datum([(vd.S((x, yy)), (0, n2[1]), lead) for lead in (7.0, 10.0, 14.0) for x in xs], letter)
                 else:
-                    xx = vd.view.to2d(tuple(plane if i == k else 0.0 for i in range(3)))[0]
+                    xx = vd.view.to2d(on)[0]
+                    if not e[0] - 0.05 <= xx <= e[2] + 0.05:
+                        continue
                     ys = [e[1] + t * (e[3] - e[1]) for t in (0.25, 0.4, 0.6, 0.75)]
                     put_datum([(vd.S((xx, y_)), (n2[0], 0), lead) for lead in (7.0, 10.0, 14.0) for y_ in ys], letter)
+                placed = True
                 break
+            if not placed:
+                raise NotDrawable("%s: datum %s on its %s face shows edge on in no view or section drawn: a view for it "
+                                  "isn't added yet" % (part.pn, letter, face))
     # ---- keys fitted in the part's ends (Joints' corner-keys.csv): a note at each end saying which way round the
     # key goes, since its bottom holes sit off its middle and meet the part's only one way (the Lead's ask on #228)
     if spec.get("key_notes"):

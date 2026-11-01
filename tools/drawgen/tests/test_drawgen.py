@@ -622,6 +622,37 @@ def test_v_groove_with_its_outside_radius():
     assert any("no outside arc R2.5" in x_ for x_ in f4), f4
 
 
+def test_datums_are_never_dropped():
+    """WALL (the Lead's order): a corner datum whose face no plain view shows edge on was dropped without a word. It
+    now goes on a section that shows its face edge on, or the sheet is refused. WALL's tray 511101 with its
+    cassette's scheme (A the back face, B the end return, C the bottom return) prints all three, A on its profile
+    section; a block whose datum face only its principal view sees face on is refused."""
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Pnt
+    d = os.path.join(TMP, "datums")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "511101.pdf")
+    compose.make("511101", "wall", {"tolerance": "test", "bent": True, "datums": "faces",
+                                    "datum_faces": {"A": "-X", "B": "-Y", "C": "-Z"}}, p)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    words = [w[4] for w in fitz.open(p)[0].get_text("words")]
+    assert all(words.count(L) == 3 for L in "ABC"), [words.count(L) for L in "ABC"]     # the border has two each
+    step = os.path.join(d, "219985_P01_TEST-BLOCK_STEP.step")
+    w = STEPControl_Writer()
+    w.Transfer(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 100, 60, 40).Shape(), STEPControl_AsIs)
+    assert w.Write(step) == IFSelect_RetDone
+    row = dict(ROW, part_number="219985", name="TEST - BLOCK")
+    try:
+        compose.make("219985", "none", dict(SPEC, datum_faces={"A": "-Z"}), os.path.join(d, "b.pdf"), step=step,
+                     row=row)
+        raise AssertionError("drew the block without its datum A")
+    except compose.NotDrawable as e:
+        assert "datum A on its -Z face shows edge on in no view or section drawn" in str(e), e
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
