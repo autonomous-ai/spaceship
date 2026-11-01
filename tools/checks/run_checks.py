@@ -86,6 +86,9 @@ def run(root, rev):
             findings += c_geometry.check_gap_rules(root, mdl, bodies, rules)
             ran |= {"C02:" + mdl}
     asm = mdls["assembly"]
+    if asm:
+        findings += c_geometry.check_bond_lines(root, "assembly", asm)    # D-137: every bonded skin bond_t off its frame
+        ran.add("C02:assembly")
     if any(b.solid.holes for b in asm):
         findings += c_geometry.check_alignment(root, "assembly", asm)
         findings += c_geometry.check_unmatched(root, "assembly", asm)

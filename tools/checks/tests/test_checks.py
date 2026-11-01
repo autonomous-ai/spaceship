@@ -1762,3 +1762,43 @@ def test_an_opening_takes_the_web_rule_and_a_fastener_hole_the_two_diameter_rule
     # a smaller cut its row names as an opening is an opening too
     small = sf.Hole(1, (10.0, 10.0, 0.75), (0.0, 0.0, 1.0), 16.0, 1.5, [])
     assert c_geometry.is_opening(small, "AIR - BULKHEAD; Ø16 cable opening") and not c_geometry.is_opening(small, "")
+
+
+def _box_body(label, box, file="v2/03-Manufacturing/front/350003_P01_X_STEP.step"):
+    """A body whose solid is its box's six flat faces, outward normals."""
+    x0, y0, z0, x1, y1, z1 = box
+    faces = []
+    for k, (lo, hi) in enumerate(((x0, x1), (y0, y1), (z0, z1))):
+        for val, sgn in ((lo, -1.0), (hi, 1.0)):
+            n = [0.0, 0.0, 0.0]
+            n[k] = sgn
+            o = [x0, y0, z0]
+            o[k] = val
+            others = [i for i in range(3) if i != k]
+            pts = []
+            for a in (box[others[0]], box[others[0] + 3]):
+                for b in (box[others[1]], box[others[1] + 3]):
+                    q = [0.0, 0.0, 0.0]
+                    q[k], q[others[0]], q[others[1]] = val, a, b
+                    pts.append(tuple(q))
+            faces.append(sf.Face(len(faces) + 1, "plane", tuple(o), tuple(n), None, True, pts, [], []))
+    solid = sf.Solid(1, label.split(" / ")[-2])
+    solid.faces = faces
+    return c_geometry.Body(label, solid, sf.Frame(), box, file, "", None)
+
+
+def test_every_bonded_skin_sits_bond_t_off_its_frame():
+    # D-137 (the Lead, 2026-11-01): FRONT's decor frames were modelled right on their skins, with no glue line
+    top = "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1"
+    skin = _box_body(top + " / 351301 FRONT - DECOR SKIN - DR:1 / Body1", (0, -650, 0, 400, -647, 2000))
+    def tube(name, y0):
+        return _box_body(top + " / 351306 FRONT - DECOR FRAME - DR:1 / %s:1 / Body1" % name, (0, y0, 0, 20, y0 + 20, 2000))
+    on = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -647.0), tube("TUBE B", -647.0)], bt=3.0)
+    assert [(f.rule, f.severity) for f in on] == [("bond-line", "severe")] and "2 frame member face(s)" in on[0].message
+    ok = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -644.0), tube("TUBE B", -644.0)], bt=3.0)
+    assert ok == []
+    thick = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -642.0)], bt=3.0)
+    assert [(f.rule, f.severity) for f in thick] == [("bond-line", "major")]
+    far = c_geometry.check_bond_lines(ROOT, "assembly", [skin, tube("TUBE A", -630.0)], bt=3.0)   # 17 mm behind: not bonded
+    assert far == []
+    assert c_geometry.bond_t(ROOT) == 3.0              # the skeleton's own parameter

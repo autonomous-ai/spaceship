@@ -22,6 +22,7 @@ import csv
 import fnmatch
 import math
 import os
+import glob
 import re
 from collections import defaultdict
 
@@ -354,6 +355,116 @@ def check_gap_rules(root, mdl, bodies, rules):
             r0.get("fix", ""), items[0][2].file, r0.get("owner") or owner_for(items[0][2].file),
             {"model": mdl, "rules": [{"id": r["id"], "gap_mm": round(g, 2), "a": a.label, "b": b.label}
                                      for r, g, a, b, lo, hi in items]}))
+    return fs
+
+
+# ----------------------------------------------------------------- C02 bond lines (D-137, the Lead 2026-11-01)
+
+BOND_TOL = 0.1          # mm: the CAD models the bond line exactly
+SKIN_RE = re.compile(r"\bSKIN\b", re.I)
+FRAME_RE = re.compile(r"\bFRAME\b", re.I)
+
+
+def bond_t(root):
+    """The skeleton's bond line (bond_t, mm) from its newest parameter table, or None."""
+    for p in sorted(glob.glob(os.path.join(root, "v2/01-CAD-Native/skeleton/*_POD-SKELETON-PARAMETERS.csv")),
+                    reverse=True):
+        for row in read_csv(p):
+            if (row.get("name") or row.get("parameter") or "").strip() == "bond_t":
+                return num(row.get("value") or row.get("expression"))
+    return None
+
+
+def _world_planes(b):
+    out = []
+    for f in b.solid.faces:
+        if f.kind == "plane" and f.points:
+            out.append((sf.norm(b.frame.vector(f.normal)), b.frame.point(f.origin), [b.frame.point(q) for q in f.points]))
+    return out
+
+
+def _plane_axes(n):
+    ref = (1.0, 0.0, 0.0) if abs(n[0]) < 0.9 else (0.0, 1.0, 0.0)
+    u = sf.norm((n[1] * ref[2] - n[2] * ref[1], n[2] * ref[0] - n[0] * ref[2], n[0] * ref[1] - n[1] * ref[0]))
+    return u, (n[1] * u[2] - n[2] * u[1], n[2] * u[0] - n[0] * u[2], n[0] * u[1] - n[1] * u[0])
+
+
+def skin_gap(skin, member, axis=None, reach=6.0):
+    """The smallest gap between a skin's flat face and a frame member's flat face that face each other and overlap,
+    within reach; axis: only faces square to it (a panel's depth axis), or every face (a faceted block)."""
+    best = None
+    for ns, os_, ps in _world_planes(skin):
+        if axis is not None and abs(abs(ns[axis]) - 1.0) > 1e-4:
+            continue
+        for nf, of, pf in _world_planes(member):
+            if sf.dot(ns, nf) > -0.9999:
+                continue
+            d = sf.dot(sf._sub(os_, of), nf)
+            if d < -0.01 or d > reach:
+                continue
+            u, v = _plane_axes(nf)
+            a = [(sf.dot(q, u), sf.dot(q, v)) for q in ps]
+            c = [(sf.dot(q, u), sf.dot(q, v)) for q in pf]
+            ou = min(max(x for x, _y in a), max(x for x, _y in c)) - max(min(x for x, _y in a), min(x for x, _y in c))
+            ov = min(max(y for _x, y in a), max(y for _x, y in c)) - max(min(y for _x, y in a), min(y for _x, y in c))
+            if ou > 1.0 and ov > 1.0 and (best is None or d < best):
+                best = d
+    return best
+
+
+def check_bond_lines(root, mdl, bodies, bt=None):
+    """D-137 (the Lead's ask, 2026-11-01): every bonded skin sits the skeleton's bond_t off its frame. In each panel or
+    block assembly, every frame member face that faces the skin within 2 x bond_t is a bonded face and must sit
+    bond_t off it: a panel's faces square to its depth axis (its returns are left alone), a faceted block's in every
+    direction. Under bond_t is severe (no room for the bond, so the parts are sized wrong), over it major."""
+    bt = bond_t(root) if bt is None else bt
+    if not bt:
+        return []
+    groups = {}
+    for b in bodies:
+        parts = (b.label or "").split(" / ")
+        if len(parts) < 2:
+            continue
+        idx = [i for i, c in enumerate(parts[:-2]) if re.search(r"ASSY", c, re.I)]
+        key = " / ".join(parts[:(idx[-1] + 1) if idx else 1])
+        comp = " / ".join(parts[:-1])
+        g = groups.setdefault(key, {"skins": [], "frames": []})
+        if SKIN_RE.search(parts[-2]):
+            g["skins"].append(b)
+        elif FRAME_RE.search(comp) and not SKIN_RE.search(comp):
+            g["frames"].append(b)
+    fs = []
+    for key, g in sorted(groups.items()):
+        if not g["skins"] or not g["frames"]:
+            continue
+        lo = [min(b.box[k] for b in g["frames"]) for k in range(3)]
+        hi = [max(b.box[k + 3] for b in g["frames"]) for k in range(3)]
+        ext = [hi[k] - lo[k] for k in range(3)]
+        n = min(range(3), key=lambda k: ext[k])
+        axis = n if ext[n] < 0.25 * min(ext[k] for k in range(3) if k != n) else None
+        for skin in g["skins"]:
+            off = []
+            for m in g["frames"]:
+                d = skin_gap(skin, m, axis, reach=2.0 * bt)
+                if d is not None and abs(d - bt) > BOND_TOL:
+                    parts = (m.label or "").split(" / ")
+                    name = parts[-2] if len(parts) > 1 else m.label
+                    if len(parts) > 1 and sum(1 for o in g["frames"] if (o.label or "").split(" / ")[-2:-1] == [name]) > 1:
+                        name += " (%s)" % parts[-1]          # one frame component of many bodies (before D-120)
+                    off.append((0.0 if abs(d) < 0.005 else round(d, 2), name))
+            if not off:
+                continue
+            thin = any(d < bt for d, _m in off)
+            sname = (skin.label or "").split(" / ")[-2]
+            fs.append(Finding(
+                "C02", "bond-line", "%s %s" % (mdl, sname), "severe" if thin else "major",
+                "%s: %d frame member face(s) facing it sit %s mm off the skin; D-137's bond needs the skeleton's "
+                "bond_t, %.1f mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: %s." % (
+                    sname, len(off), "/".join(sorted({"%g" % d for d, _m in off})), bt,
+                    "; ".join("%s at %g" % (m, d) for d, m in sorted(off)[:6]) + (" ..." if len(off) > 6 else "")),
+                "Model the bond line: the frame's faces %.1f mm off the skin's back face (the frame's tube lengths "
+                "change with it), and export the STEP again." % bt, skin.file, owner_for(skin.file),
+                {"model": mdl, "bond_t": bt, "members": len(off)}))
     return fs
 
 
