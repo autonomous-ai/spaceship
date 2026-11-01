@@ -867,8 +867,21 @@ class Sheet:
         self.doc.set_metadata(self.meta)
         if getattr(self, "data", None) is not None:
             import json
-            txt = json.dumps(self.data, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+            txt = json.dumps(_steady(self.data), sort_keys=True, separators=(",", ":"), ensure_ascii=True)
             esc = txt.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
             self.doc.xref_set_key(self.doc.pdf_catalog(), "DrawgenData", "(%s)" % esc)
         self.doc.save(path, garbage=4, deflate=True, no_new_id=True)
         self.doc.close()
+
+
+def _steady(v):
+    """The data block's numbers rounded to a micrometre, with -0.0 written as 0.0, so a sheet comes out byte for
+    byte the same on any Mac (Reviewer 10: 111103 differed between Macs only in seven such numbers)."""
+    if isinstance(v, float):
+        r = round(v, 6)
+        return 0.0 if r == 0 else r
+    if isinstance(v, dict):
+        return {k: _steady(x) for k, x in v.items()}
+    if isinstance(v, (list, tuple)):
+        return [_steady(x) for x in v]
+    return v

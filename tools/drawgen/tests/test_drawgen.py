@@ -637,6 +637,24 @@ def test_unpinned_bend_directions_are_refused():
         assert "2 cut-outs that aren't round holes (80 x 11, 304 x 268)" in str(e), e
 
 
+def test_data_numbers_are_steady():
+    """Reviewer 10: a sheet's data block is the same bytes on any Mac: its numbers rounded to a micrometre, -0.0
+    written as 0.0 (111103 differed between Macs only in seven such numbers)."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "steady")
+    os.makedirs(d, exist_ok=True)
+    out = []
+    for noise in (0.0, 3e-13):
+        sh = Sheet("A3")
+        sh.text(100, 100, "H01", 2.5)
+        sh.data = {"a": -0.0, "b": [1.0000000001 + noise, -2.5e-9], "c": {"d": (0.1 + 0.2, -0.0)}}
+        p = os.path.join(d, "s%d.pdf" % len(out))
+        sh.save(p)
+        out.append(readback.read_data(fitz.open(p)))
+    assert out[0] == out[1] == {"a": 0.0, "b": [1.0, 0.0], "c": {"d": [0.3, 0.0]}}, out
+    assert "-0.0" not in str(out[0])
+
+
 def test_clash_check_catches_touching_text():
     """The read-back fails a sheet where two texts touch, or a text touches a part outline (PM, 2026-11-01)."""
     from sheet import Sheet
