@@ -176,6 +176,8 @@ SPECS = {
             "the factory (frame halves fitted in DL, leaf halves on the door), so on site the door lifts on with no "
             "adjustment (D-138); the 5 mm key only where the named set has a locking screw. No holes in the glass "
             "until named.",
+            "Brush seal 368008 (HOLD, D-150) on the kick strip's end, from the floor to Z 105: it closes the slot to "
+            "BASE's sill end plate (X 218.5); bonded at the factory.",
             "Pull pair (HOLD) centred %.1f above the floor, its bar %.1f to %.1f, inside the US band 865 to 1220 "
             "(PM ruling 2026-11-01)." % (v["pull_zc"], v["pull_zc"] - v["pull_len"] / 2, v["pull_zc"] + v["pull_len"] / 2),
             "Mass of the unit as it hangs: about 48.7 kg (calculation; parts list).",
