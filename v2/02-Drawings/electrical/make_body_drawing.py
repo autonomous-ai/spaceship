@@ -55,7 +55,9 @@ ISO_AT, ISO_SCALE = (205.0, 70.0), 0.2
 SYMBOL_AT = (350.0, 25.0)      # left of the title block, under the iso
 TOL = 1.0                      # sheet mm: a placed view must be this close to its expected size
 DATUM_LEAD = 4.0               # sheet mm from an edge to its datum box (the box is about 7 mm, beyond this point)
-PITCH_AT, WIDTH_AT = 7.0, 14.0  # sheet mm above the FRONT view: the H07-H08 pitch, then the width outside it
+PITCH_AT, WIDTH_AT = 7.0, 18.0  # sheet mm above the FRONT view: the H07-H08 pitch, then the width outside it (at 14 the
+                                # width's line ran through the pitch's text, 2026-11-01)
+PITCH_UP_AT = 12.0              # sheet mm right of the FRONT view: the H06-H08 pitch (at 8 its text sat 0.5 off the view)
 STEP = "v2/03-Manufacturing/electrical/711001_P01_ELECTRICAL-POWER-UNIT-ENCLOSURE-BODY_STEP.step"
 D_AT = (470.0, 345.0)          # sheet mm: view D, the bottom, apart from the projected views (top right)
 # name, orientation, where (first-angle position against the FRONT; D apart, marked as turned)
@@ -340,18 +342,19 @@ def annotate(app: "adsk.core.Application"):
     # (the gap below it holds datums A and C: run of 2026-11-01, A's box sat on the top view's edge and C's touched the
     # width's line), the height beside the view from the right (outer side), the depth beside the top view; each from
     # the edge lines on the two opposite sides, so a corner relief can't move it. The H05-H08 pitch (Reviewer 7) joins
-    # the holes' centres on the FRONT: 236 between H07 and H08 above the view, inside the width so their lines
-    # don't cross, and 238 between H06 and H08 in the free gap on its right (the PDF prints both as reference)
+    # the holes' centres on the FRONT: across between H07 and H08 above the view, inside the width so their lines
+    # don't cross, and up between H06 and H08 in the free gap on its right (the PDF prints both as reference)
     BV = load("v2/02-Drawings/electrical/body_views.py", "ele_body_views")
     lip = sorted(BV.expected("front", box, holes, fe, SCALE, zs), key=lambda c: (round(c[1], 1), c[0]))
     h05, h06, h07, h08 = [(x, y) for x, y, _r in lip]       # bottom left, bottom right, top left, top right
     dims = DimensionSet(sheet)
-    dim(dims, front_circle(f, h07), front_circle(f, h08), ((h07[0] + h08[0]) / 2, fe[3] + PITCH_AT), "pitch 236")
-    dim(dims, front_circle(f, h06), front_circle(f, h08), (fe[2] + 8.0, (h06[1] + h08[1]) / 2), "pitch 238")
+    dim(dims, front_circle(f, h07), front_circle(f, h08), ((h07[0] + h08[0]) / 2, fe[3] + PITCH_AT), "pitch across")
+    dim(dims, front_circle(f, h06), front_circle(f, h08), (fe[2] + PITCH_UP_AT, (h06[1] + h08[1]) / 2), "pitch up")
     dim(dims, end_on(f, "left", (fe[0], fe[3])), end_on(f, "right", (fe[2], fe[3])), ((fe[0] + fe[2]) / 2, fe[3] + WIDTH_AT), "width")
     dim(dims, end_on(r, "bottom", (re_[0], re_[1])), end_on(r, "top", (re_[0], re_[3])), (re_[0] - 9.0, (re_[1] + re_[3]) / 2), "height")
     dim(dims, end_on(t, "bottom", (te[2], te[1])), end_on(t, "top", (te[2], te[3])), (te[2] + 9.0, (te[1] + te[3]) / 2), "depth")
-    print("dimensions: pitch 236 and 238 and width (front view), height (view from the right), depth (top view)")
+    print("dimensions: the H05-H08 pitch across and up and the width (front view), height (view from the right), "
+          "depth (top view)")
     # Fusion draws a datum's 7 mm box beyond its placement point, away from the edge (measured on the 2026-11-01
     # sheet): A hangs 4 mm under the front view, C stands 4 mm over the top view, at opposite ends of the gap
     datum(sheet, "A", edge_line(f, "bottom"), (fe[0] + 30.0, fe[1] - DATUM_LEAD))

@@ -85,7 +85,12 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   (WALL's 511202: its power unit's 304 x 268 and the 80 x 11 corner slot); any other shape is refused. The folds are
   read from a section through the middle, or the nearest one clear of holes and cut-outs, and the profile section is
   cut there. A model that folds sharp takes its inside radius from the entry. Anything else is refused with the reason
-  (INTERIOR's 811201: a hole the DXF cuts in a bend zone).
+  (INTERIOR's 811201: a hole the DXF cuts in a bend zone). A V-grooved and
+  folded panel (ACP; its entry says `vgroove` with the groove) has no K-factor: its outer skin runs round each fold
+  unstretched, so the flat develops along the outer face, each leg to its fold's outside arc plus the arc, the fold
+  line at the arc's middle (the model's outside radius, WALL's 2 mm by the maker's guide). A V-groove fold the model
+  leaves sharp is refused (the outer skin always bends round a radius, D-161), and an entry that states the outside
+  radius has every fold checked against it; its folds table gives each fold's outside radius and the groove.
 - Folds along any line (an entry marked `bent: {"unfold": True, "k": ...}`; AIR's duct transitions): each fold is
   read from the model's own bend (a cylinder of one skin and its partner on the other, t apart; its angle from the
   cylinder), and the part unfolds face by face from its largest flange, each bend leaving a strip of its allowance

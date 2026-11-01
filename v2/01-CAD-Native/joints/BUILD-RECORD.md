@@ -61,6 +61,40 @@ Run 2026-11-01, 09:25 to 09:26 UTC, on Mac 1 in one held Fusion session: `joints
 - **Edit test:** `plate_x0` 1.75 → 3.15: X 1.75..28.25 → 3.15..29.65 (the length kept), then back to 1.75..28.25: **PASS**. Closed without keeping it or the per-STEP changes.
 - **Checked against the exports:** `frame_steel_check.py --check` now reads each plate's STEP box and DXF extents and fails unless they are its blank (Reviewer 6 on #308); on main's full-size files it fails all six, on these it passes.
 
+## D-144 update run (version 3 of the key design)
+
+Run 2026-11-01, 07:51 to 08:19 UTC queued and run, on Mac 1 through the Fusion lock: `joints_keys_d144_update.py` by the late loader with `--doc 111211_P01_BASE-CORNER-KEY-TABULATED_CAD --close`, after `check_api.py` (0 name errors). It opened version 2 and saved **version 3** in place (never a copy).
+- **D-144** (PM ruling 2026-11-01): a new parameter `fix_step` (the −y fixing hole's step along x), `fix_y` per number, and the −y hole's offset from the back edge changed from `fix_x` to `fix_x + fix_step` (its own model parameter). Saved state 111211: `fix_y` 6, `fix_step` 7.3, so its fixing holes are at **(10.5, +6.0) and (17.8, −6.0)**.
+- **Five STEPs, each with its own part number** (C06), each checked by the run against its layout before export: 111211 (cut 0, holes as above), 111212 (−24.14°), 111213 (+24.02°), 111214 (−7.25°) and **111215** (cut 0, the FR1 key: holes at (10.5, ±7.0)). `step_check --expect`: all five MATCH (0.004 mm or less). The holes read straight from the STEP files: 111211 (10.5, 6.0) and (17.8, −6.0), 111215 (10.5, ±7.0), the stud axes at y 0, Z 26 and 60 on both.
+- Edit test: `fix_step` 7.3 → 8 → 7.3 moved the −y hole from x 17.8 to 18.5 and back: **PASS**. Closed without keeping the per-STEP changes or the test.
+- `joints_hardware_build.py` builds the same from scratch (`fix_step`, the stepped −y hole, five variants).
+
+## Exact mitres for 111212 and 111214 (export run, 2026-11-01, 10:08 UTC)
+
+BASE's ask, relayed by the Lead: cut 111212's face at the mitre's exact 24.1446°. Version 3's exports took corner-keys.csv's 2-decimal angles, so 111212 was cut at −24.14 and the knee 111214 at −7.25; the mitres are −24.1446 and −7.2546 (`corner_keys.py`, which now writes the cut to 4 decimals and, with `--check`, fails if the build script's `KEY_VARIANTS` drift from the mitres). 111213's +24.02 is already exact; 111211 and 111215 are square.
+
+`joints_keys_exact_cut_export.py` by the late loader on the saved design (version 3, opened with `--doc`), after `check_api.py` (0 name errors), in the same held Fusion session as the key sheet's redraw. For each of the two it set `cut_angle`, `fix_y` 7 and `fix_step` 0 and the part number, checked the fixing holes and the long side, exported the STEP, and the design closed **without saving** (its saved state, 111211 square, is unchanged, so the drawing's reference stays current).
+
+| Part | `cut_angle` | Body box (mm) | Long side, the mitre's | Fixing holes | STEP check (`step_check.py --expect`) |
+|---|---|---|---|---|---|
+| 111212 (LH) | −24.1446° | X 0..37.8445, Y ±17.5, Z 0..75 | 37.8445 | (10.5, ±7) | **MATCH** (0.0000 mm); the cut face reads 24.1446° from square (`tools/checks/stepfile.py`) |
+| 111214 (knee) | −7.2546° | X 0..32.2277, Y ±17.5, Z 0..75 | 32.2277 | (10.5, ±7) | **MATCH** (0.0000 mm); the cut face reads 7.2546° |
+
+The drawing gives these angles to 0.01° (24.14°, 7.25°) with ±0.25°, and its long and short sides (37.84 / 22.16, 32.23 / 27.77) don't change at 0.01.
+
+## The 11 mm spigot 831010 (export run, 2026-11-01, 11:49 UTC)
+
+The Lead's ruling on J-FRONT-03: DT's two spigots on DR's ledge stand 11 proud, so they still engage DT's bottom back tube 5 now that its bottom face is at Z 2126, 6 above the ledge's top (FRONT's model). The saved spigot design already drives the pin from `pin_proud` (`pin_len` = `pin_proud` − the rivnut's 0.76 head), so `joints_spigot_variant_export.py` (late loader, the design opened with `--doc`, `check_api.py` 0 name errors) set `pin_proud` 11 and the part number 831010, checked the body against the expected box (X and Y ±4, Z −8 to 10.24), exported the STEP and closed the design **without saving**: its saved state, 831001 at 8 proud, doesn't change, so the spigot sheet's reference stays current. A fresh build makes both STEPs (`joints_hardware_build.py`, `SPIGOT_VARIANTS`).
+
+| Part | `pin_proud` | Body (mm) | Mass (Fusion, Stainless Steel) | STEP |
+|---|---|---|---|---|
+| 831001 (saved state) | 8 | Ø8 pin to Z 7.24, M6 stud to Z −8 | 0.00417 kg | unchanged |
+| 831010 | 11 | Ø8 pin to Z 10.24, M6 stud to Z −8 | 0.00538 kg | `831010_P01_HARDWARE-LOCATING-SPIGOT-11-PROUD_STEP.step`, its own part number |
+
+- **Checked from the STEP** (the mechanical check's own reader): the product is 831010; the cylinders are Ø8 and Ø5.884 (the stud at 6g's mean major, as 831001); the levels run −8, 0, 6.74, 9.24, 10.24, each of the pin's 3 above 831001's (3.74, 6.24, 7.24). `step_check.py`'s vertex box reads short in X and Y on any round part, 831001's included; its Z range is exact.
+- The run started a few seconds after Fusion's 11:48 server warning was cancelled; it opened, exported and closed normally, and the checks above are on its file.
+- The sheet: 831001's drawing becomes TABULATED for both numbers from its finish step only (the drawing record).
+
 ## Exports
 
 - `.f3d`: `v2/01-CAD-Native/joints/111211_P01_BASE-CORNER-KEY-TABULATED_CAD.f3d`, `831001_P01_HARDWARE-LOCATING-SPIGOT_CAD.f3d`, `831002_P01_HARDWARE-STOP-WASHER_CAD.f3d`, each exported right after its save.

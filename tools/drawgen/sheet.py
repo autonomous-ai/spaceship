@@ -722,8 +722,15 @@ class Sheet:
             tip = (e[0] + look[0] * 7, e[1] + look[1] * 7)
             self.line(tail, tip, W_THIN)
             self.arrow(tip, look, 3.0, 1.1)
-            self.text(tip[0] + look[0] * 1.5 - s * ux * 2.5, tip[1] + look[1] * 1.5 + (1.0 if look[1] >= 0 else -4.0),
-                      letter, size, "center", bold=True)
+            # the letter by its arrow: the usual place first; where that touches a line or a text (WALL's L1 frame:
+            # section E's letter on a stud), farther out along the cutting line or along the arrow, or on its inner side
+            dy = 1.0 if look[1] >= 0 else -4.0
+            cands = [(tip[0] + look[0] * 1.5 - s * ux * 2.5, tip[1] + look[1] * 1.5 + dy)]
+            cands += [(tip[0] + look[0] * l_ - s * ux * o, tip[1] + look[1] * l_ - s * uy * o + dy)
+                      for l_ in (1.5, 4.0, 7.0, -4.0, -8.0, 10.0, 13.0) for o in (2.5, 5.0, 8.0, 11.0, -2.5, -5.0)]
+            pick = next((c for c in cands if self.is_free(self.text_box(c[0], c[1], letter, size, "center", bold=True))),
+                        cands[0])
+            self.text(pick[0], pick[1], letter, size, "center", bold=True)
 
     def first_angle_symbol(self, x, y, h=6.0):
         """ISO 5456-2 first-angle symbol: a truncated cone's side view (left) and its end view (right)."""

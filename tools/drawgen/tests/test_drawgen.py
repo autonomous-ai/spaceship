@@ -523,6 +523,147 @@ def test_folds_along_any_line():
     assert any("unfolds to" in x for x in f2) and any("on no STEP hole" in x for x in f2), f2
 
 
+def test_a_sharp_v_groove_is_refused():
+    """D-161 (Reviewer 6 on #341): a V-grooved ACP fold bends its outer skin round a radius (2 mm minimum), so a model
+    that leaves the fold sharp would develop as the plain sum of the outside lengths, 0.86 too long. A test skin
+    modelled sharp is refused, even against the blank that fits it."""
+    d = os.path.join(TMP, "vgroove_sharp")
+    os.makedirs(d, exist_ok=True)
+    step = _rounded_skin(os.path.join(d, "219992_P01_TEST-SKIN-SHARP_STEP.step"), r=0.0)
+    sharp, _w, _x = _skin_dxf(os.path.join(d, "219992_sharp_DXF.dxf"), 0.0)
+    row = dict(ROW, part_number="219992", name="TEST - SKIN SHARP", material="ACP 3", process="CNC router, V-groove, fold")
+    try:
+        compose.make("219992", "none", dict(SPEC, bent={"vgroove": "test", "dxf": sharp}), os.path.join(d, "s.pdf"),
+                     step=step, row=row)
+        raise AssertionError("drew a V-groove fold the model leaves sharp")
+    except compose.NotDrawable as e:
+        assert "V-groove fold is sharp in the model" in str(e), e
+
+
+def _rounded_skin(path, r=2.0):
+    """A V-grooved ACP skin as WALL now models it (the Lead's ruling, 2026-11-01): a 3 mm panel, its main face 300 long
+    and its return 46 (outside lengths, to the fold's outside sharp), 100 high, sharp inside (the groove closes) and
+    rounded outside at R r (the maker's guide: 2 minimum)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
+    from OCP.BRepFilletAPI import BRepFilletAPI_MakeFillet
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.GeomAbs import GeomAbs_Line
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    from OCP.TopAbs import TopAbs_EDGE
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+    from OCP.gp import gp_Pnt
+    f = BRepAlgoAPI_Fuse(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 300, 3, 100).Shape(),
+                         BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 3, 46, 100).Shape())
+    f.SetFuzzyValue(1e-6)
+    f.Build()
+    u = ShapeUpgrade_UnifySameDomain(f.Shape(), True, True, True)
+    u.Build()
+    shape = u.Shape()
+    mk = BRepFilletAPI_MakeFillet(shape)
+    e = TopExp_Explorer(shape, TopAbs_EDGE)
+    found = []
+    if not r:           # left sharp
+        e = TopExp_Explorer()
+    while e.More():
+        ed = TopoDS.Edge_s(e.Current())
+        c = BRepAdaptor_Curve(ed)
+        p0, p1 = c.Value(c.FirstParameter()), c.Value(c.LastParameter())
+        if c.GetType() == GeomAbs_Line and max(abs(p0.X()), abs(p0.Y()), abs(p1.X()), abs(p1.Y())) < 1e-6 and \
+                not any(ed.IsSame(f_) for f_ in found):      # each face meets it: one edge seen twice
+            found.append(ed)
+        e.Next()
+    if r:
+        assert len(found) == 1, len(found)
+        mk.Add(r, found[0])         # the outer fold edge, along Z at X 0, Y 0
+        mk.Build()
+    w = STEPControl_Writer()
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(mk.Shape() if r else shape, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", 1)
+    return path
+
+
+def _skin_dxf(path, r):
+    """_rounded_skin's blank by WALL's rule, worked here by hand: each leg to the fold's outside arc plus the arc,
+    (46 - r) + (300 - r) + pi/2 r, the BEND line at the arc's middle, (46 - r) + pi/4 r from the return's edge."""
+    w = (46.0 - r) + (300.0 - r) + math.pi / 2 * r
+    x = (46.0 - r) + math.pi / 4 * r
+    out = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    pts = [(0.0, 0.0), (w, 0.0), (w, 100.0), (0.0, 100.0)]
+    for i, p in enumerate(pts):
+        q = pts[(i + 1) % 4]
+        out += ["0", "LINE", "8", "CUT", "10", repr(p[0]), "20", repr(p[1]), "11", repr(q[0]), "21", repr(q[1])]
+    out += ["0", "LINE", "8", "BEND", "10", repr(x), "20", "0.0", "11", repr(x), "21", "100.0"]
+    out += ["0", "ENDSEC", "0", "EOF"]
+    with open(path, "w") as fh:
+        fh.write("\n".join(out) + "\n")
+    return path, w, x
+
+
+def test_v_groove_with_its_outside_radius():
+    """WALL's skins now model the fold's 2 mm outside radius (the Lead's ruling): the flat develops along the outer
+    face, each leg to the arc plus the arc (0.86 less than sharp for a 90° fold at R2), the fold line at the arc's
+    middle. A test skin with R2 outside draws against its blank by that rule and reads back, its folds table giving
+    R2; the sharp blank (the sum of the outside lengths) is refused for it, and the sheet's read-back fails against
+    that blank."""
+    d = os.path.join(TMP, "vgroove_r")
+    os.makedirs(d, exist_ok=True)
+    step = _rounded_skin(os.path.join(d, "219995_P01_TEST-SKIN_STEP.step"))
+    good, w, x = _skin_dxf(os.path.join(d, "219995_r2_DXF.dxf"), 2.0)
+    sharp, w0, x0 = _skin_dxf(os.path.join(d, "219995_sharp_DXF.dxf"), 0.0)
+    assert abs((w0 - w) - (4.0 - math.pi)) < 1e-9 and abs(w - 345.14) < 0.01 and abs(x - 45.57) < 0.01
+    row = dict(ROW, part_number="219995", name="TEST - SKIN", material="ACP 3", process="CNC router, V-groove, fold")
+    p = os.path.join(d, "219995.pdf")
+    vg = "110° V, 2 mm flat root (test)"
+    compose.make("219995", "none", dict(SPEC, bent={"vgroove": vg, "dxf": good, "outside_radius": 2}), p, step=step,
+                 row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    text = " ".join(doc[0].get_text().split())
+    assert "FOLDS B1-B1" in text and "R2" in text and "middle of its fold's outside arc" in text, text[:600]
+    data = readback.read_data(doc)
+    assert data["flat"]["chains"][0]["radii_out"] == [2.0] and abs(data["flat"]["rows"][0]["at"] - x) < 1e-6, data["flat"]
+    try:
+        compose.make("219995", "none", dict(SPEC, bent={"vgroove": vg, "dxf": sharp}), os.path.join(d, "s.pdf"),
+                     step=step, row=row)
+        raise AssertionError("drew the R2 skin from a sharp blank")
+    except compose.NotDrawable as e:
+        assert "outside radius" in str(e), e
+    data["flat"]["dxf"] = sharp
+    f2 = readback.flat_fails(data, readback.text_boxes(doc[0], data["sheet_h"]), doc[0].get_text())
+    assert any("flat is %s long, the DXF's 346" % readback._fmtv(w) in x_ for x_ in f2), f2
+    # the fold line moved 0.5 mm in the blank: the read-back fails it
+    with open(good) as fh:
+        gtext = fh.read()
+    assert gtext.count(repr(x)) == 2
+    moved = os.path.join(d, "219995_moved_DXF.dxf")
+    with open(moved, "w") as fh:
+        fh.write(gtext.replace(repr(x), repr(x + 0.5)))
+    data["flat"]["dxf"] = moved
+    f3 = readback.flat_fails(data, readback.text_boxes(doc[0], data["sheet_h"]), doc[0].get_text())
+    assert any("V-groove" in x_ for x_ in f3), f3
+    # an entry that states another outside radius is refused; the read-back finds the arc in the STEP itself
+    try:
+        compose.make("219995", "none", dict(SPEC, bent={"vgroove": vg, "dxf": good, "outside_radius": 3}),
+                     os.path.join(d, "r3.pdf"), step=step, row=row)
+        raise AssertionError("drew an R2 fold against an entry's R3")
+    except compose.NotDrawable as e:
+        assert "outside radius R2, its entry says R3" in str(e), e
+    data = readback.read_data(doc)
+    data["flat"]["chains"][0]["radii_out"] = [2.5]
+    f4 = readback.vgroove_radius_fails(data, readback.step_faces(step, "219995"))
+    assert any("no outside arc R2.5" in x_ for x_ in f4), f4
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
@@ -845,6 +986,13 @@ def test_cutouts_matched_both_ways():
     doc = fitz.open(p)
     text = " ".join(doc[0].get_text().split())
     assert "CUT-OUT 304 x 268 along X" in text and "CUT-OUT 80 x 11 along Y" in text, text[:800]
+    # each cut-out's row names its register feature (Reviewer 6's P2): WALL's F44 and F45, by part, size and place
+    assert "F44 Power unit cut-out 304 x 268" in text and "F45 Corner slot S-CNR 11 x 80" in text, text[:1200]
+    import inputs
+    rows = [{"id": "F44", "size": (304.0, 268.0), "ranges": {"X": (91.0, 395.0), "Z": (866.0, 1134.0)}}]
+    assert inputs.match_cutout(rows, 268.0, 304.0, (91.0, 799.5, 866.0, 395.0, 800.0, 1134.0)) is rows[0]
+    assert inputs.match_cutout(rows, 304.0, 268.0, (92.0, 799.5, 866.0, 396.0, 800.0, 1134.0)) is None   # 1 mm off
+    assert inputs.match_cutout(rows, 304.0, 260.0, (91.0, 799.5, 866.0, 395.0, 800.0, 1134.0)) is None   # other size
     data = readback.read_data(doc)
     assert sorted(f["kind"] for f in data["features"]) == ["cutout", "cutout", "hole"], data["features"]
     src = os.path.join(readback.REPO, data["flat"]["dxf"])
@@ -903,6 +1051,29 @@ def test_clash_check_catches_a_line_through_text():
     found = [w for _p, w in readback.clashes(fitz.open(os.path.join(d, "l.pdf")))]
     assert any("through text 'O2'" in w for w in found), found
     assert not any("H09" in w for w in found), found
+
+
+def test_section_letter_keeps_clear_of_lines():
+    """WALL's L1 frame (#343, its studs): a removed section's letter at its usual place by the arrow sat on a stud's
+    outline. A cutting plane across a rail, with a stud standing where the upper letter would go: the letter takes
+    the first clear place by its arrow, and the read-back finds no clash (the usual place had the stud through it)."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "letter")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    sh.line((100, 100), (240, 100), 0.5)                 # the rail
+    sh.line((100, 104), (240, 104), 0.5)
+    sh.line((190.5, 104), (190.5, 160), 0.5)             # the stud, through the letter's usual place
+    sh.line((194.5, 104), (194.5, 160), 0.5)
+    usual = sh.text_box(193.0 - 1.5, 116.0 + 1.0, "E", 3.5, "center", bold=True)
+    assert not sh.is_free(usual)
+    sh.section_arrows((200.0, 96.0), (200.0, 116.0), "E", (-1.0, 0.0), size=3.5)
+    sh.save(os.path.join(d, "e.pdf"))
+    doc = fitz.open(os.path.join(d, "e.pdf"))
+    found = [w for _p, w in readback.clashes(doc)]
+    assert not found, found
+    es = [w for w in doc[0].get_text("words") if w[4] == "E"]
+    assert len(es) == 2, es
 
 
 def test_notes_name_no_maker():
@@ -1006,7 +1177,10 @@ def test_angled_face_gets_its_own_view():
     doc = fitz.open(p)
     text = doc[0].get_text()
     assert "looking square to the angled face" in text and "VIEW D" in text, text[:400]
-    assert text.count("THRU (34)") == 2 and text.count("18 deep, drill point 118°") == 2, text
+    # the key design's version 3 (#324) cuts 111212 at the mitre's exact -24.1446° (it was -24.14): the STEP's angled
+    # holes (Ø5.035) have their longest wall line 34.005 long (OCC, read from the STEP), so THRU (34.01); the two
+    # holes from below stay 18.000 deep
+    assert text.count("THRU (34.01)") == 2 and text.count("18 deep, drill point 118°") == 2, text
     # its own origin: X from the face's centre line, Y from its bottom (Joints' key sheet: 26 and 60 above it)
     import re as _re
     assert sorted(_re.findall(r"H0[34]\s+(-?[\d.]+)\s+(-?[\d.]+)", text)) == [("0.00", "26.00"), ("0.00", "60.00")], text
