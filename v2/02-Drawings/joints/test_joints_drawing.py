@@ -122,9 +122,19 @@ else:
         doc = fitz.open()
         doc.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
         doc.save(blank)
-        out = JD.add_notes(blank, os.path.join(tmp, part + ".pdf"), cfg["notes"])
-        text = fitz.open(out)[0].get_text()
+        out = os.path.join(tmp, part + ".pdf")
+        JD.add_notes(blank, out, cfg["notes"])
+        page = fitz.open(out)[0]
+        text = page.get_text()
         up = text.upper()
+        k = page.rect.width / 420.0
+        spans = [sp for b in page.get_text("dict")["blocks"] for ln in b.get("lines", []) for sp in ln["spans"]
+                 if sp["text"].strip()]
+        check(min(sp["size"] for sp in spans) >= 2.5 / 0.718 * k - 0.01,
+              "%s notes: letters 2.5 mm high or more (Helvetica capitals; the D-114 pass)" % part)
+        check(max(sp["bbox"][2] for sp in spans) <= JD.NOTES_BOX[2] * k + 0.5 and
+              max(sp["bbox"][3] for sp in spans) <= JD.NOTES_BOX[3] * k,
+              "%s notes: inside their box, clear of the frame" % part)
         check(bool(re.search(r"\bUNITS?\s*[:=]?\s*MM\b", up)), "%s notes: units mm" % part)
         check(bool(re.search(r"MATERIAL", up) and re.search(r"EN AW|\d{4}|A2|STEEL|ALUMIN", up)), "%s notes: material" % part)
         check(bool(re.search(r"FINISH", up)), "%s notes: finish" % part)
@@ -136,6 +146,39 @@ else:
             check(bool(re.search(r"\bTABULATED\b", up)), "keys notes: says TABULATED")
             nums = set(re.findall(r"(?<!\d)(\d{6})(?!\d)", text))
             check({"111211", "111212", "111213", "111214"} <= nums, "keys notes: list every part number")
+
+# hole tags: the circles Fusion writes, solid (curves) and hidden (short straight dashes)
+if fitz is not None:
+    import math
+    doc = fitz.open()
+    page = doc.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
+    k = page.rect.width / 420.0
+    page.draw_circle(fitz.Point(80 * k, 70 * k), 5.04 * k, width=1.44)                  # solid, Ø10.08 on the sheet
+    for i in range(16):                                                                 # hidden: 16 dashes round
+        a0, a1 = 2 * math.pi * i / 16, 2 * math.pi * (i + 0.6) / 16
+        p0 = fitz.Point((166 + 5.04 * math.cos(a0)) * k, (220 + 5.04 * math.sin(a0)) * k)
+        p1 = fitz.Point((166 + 5.04 * math.cos(a1)) * k, (220 + 5.04 * math.sin(a1)) * k)
+        page.draw_line(p0, p1, width=0.72)
+    for i in range(10):                                                                 # a hidden cone's sides:
+        y = 150 + i * 1.2                                                               # dashes, not a circle
+        page.draw_line(fitz.Point(160 * k, y * k), fitz.Point(160 * k, (y + 0.8) * k), width=0.72)
+        page.draw_line(fitz.Point(170 * k, y * k), fitz.Point(170 * k, (y + 0.8) * k), width=0.72)
+    found = JD.hole_circles(page, 10.08)
+    check([(round(c[0]), round(c[1]), c[2]) for c in found] == [(80, 70, True), (166, 220, False)],
+          "hole circles: the solid and the hidden one found, the cone's dashes not (%s)" % found)
+
+    # view B, 111212 from above: its sizes read back from the sheet
+    doc = fitz.open()
+    page = doc.new_page(width=420 / 25.4 * 72, height=297 / 25.4 * 72)
+    x0, y0, x1, y1 = JD.view_b(JD.Sheet(page), (290.0, 170.0))
+    text = page.get_text()
+    for want in ("37.84", "22.16", "A = 24.14°", "H01, H02 SQUARE", "TO THE STUD FACE"):
+        check(want in text, "view B shows %s" % want)
+    check(abs((x0 - 290.0)) < 1e-6 and x1 > 290.0 + 37.84 * 2 and y1 < 240.0,
+          "view B: starts at the back face, reaches past the long side, stays above the title block (%.1f)" % y1)
+    tan = math.tan(math.radians(24.14))
+    check(abs(30 + 17.5 * tan - 37.84) < 0.005 and abs(30 - 17.5 * tan - 22.16) < 0.005,
+          "view B: the long and short sides follow A = 24.14° about the centre line (as the table)")
 
 print("\n%d failure(s)" % len(FAILS))
 sys.exit(1 if FAILS else 0)
