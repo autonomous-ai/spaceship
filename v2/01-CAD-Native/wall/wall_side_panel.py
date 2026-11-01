@@ -359,6 +359,14 @@ EL_PARAMS = [
      _EL + " y_kit: the voice kit drop, halfway between the column's back face and the back lining (Y 240.5, D-70)"),
     ("el_y_cx", "pod_d / 2 - wall_depth + el_col_d - el_col_skin - el_ch_w / 2", "mm", "calculation",
      _EL + " y_cx: where the trunk leaves R1-CASS's felt into the column chase (Y -298)"),
+    # FX-COL (ELECTRICAL in WALL's group, 2026-11-01: the column route agreed with CEILING, AIR's side matching): the
+    # trunk's way from R1-CASS's gap into the air column, felt only, hidden behind the column, passing the trunk's mated
+    # plug pair (its joint and slack in R1-CASS's gap from Y -338 to -118, Z 1085 to 1188.5)
+    ("el_fx_back", "27 mm", "mm", "source", "ELECTRICAL's y_fx: FX-COL's centre 27 in front of the air column's back "
+                                            "face (Y -312 at the P04 size), so it follows the column in an edit"),
+    ("el_y_fx", "pod_d / 2 - wall_depth + el_col_d - el_fx_back", "mm", "calculation", "ELECTRICAL's y_fx: Y -312"),
+    ("el_z_fx", "1162.5 mm", "mm", "source", "ELECTRICAL's z_fx: FX-COL's centre height, Z 1162.5"),
+    ("el_fx_d", "32 mm", "mm", "source", "ELECTRICAL's fx_d: Ø32, to pass the trunk's mated plug pair"),
     ("el_grm_d", "19.1 mm", "mm", "source", _EL + " grm_d: the hole for the Heyco 2836 SB 750-625 bushing (maker "
                                                   "page); PM 2026-10-31: 19.1, not 20"),
     ("el_grm_s", "12 mm", "mm", "assumption", _EL + " grm_s: felt-only hole for a single cable"),
@@ -444,7 +452,7 @@ EL_PARAMS = [
     ("el_tie_r1_y3", "476.2 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 3 along the trunk (Z el_trunk_z)"),
     ("el_tie_r1_y4", "295.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 4 along the trunk (Z el_trunk_z)"),
     ("el_tie_r1_y5", "185.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 5 along the trunk (Z el_trunk_z)"),
-    ("el_tie_r1_y6", "-41.5 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 6 along the trunk (Z el_trunk_z)"),
+    ("el_tie_r1_y6", "23.8 mm", "mm", "source", "ELECTRICAL in WALL's group (2026-11-01, the column route agreed with CEILING): R1-CASS tie 6 along the trunk (Z el_trunk_z), moved from -41.5"),
     ("el_tie_r1_y7", "-268.4 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R1-CASS tie 7 along the trunk (Z el_trunk_z)"),
     ("el_tie_r2_z1", "1476 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 1 along the call light feed (Y el_call_y)"),
     ("el_tie_r2_z2", "1688.7 mm", "mm", "source", "ELECTRICAL via the Lead (2026-11-01 11:37 UTC): R2-CASS tie 2 along the call light feed (Y el_call_y)"),
@@ -465,7 +473,7 @@ B2_FRAME_EL = ("el_rn_xu1", "el_rn_xu2", "el_rn_xl1", "el_rn_xl2", "el_ps_mains_
                "el_ps_lan_x", "el_ps_lan_db", "el_ps_lan_dt")
 EL_USE = {
     ("R1", "cass"): ("el_fs_y0", "el_fs_y1", "el_fs_dz", "el_trunk_z", "el_kit_d", "el_kit_dz", "el_y_kit",
-                     "el_grm_d", "el_y_cx", "el_tie_d") + tuple("el_tie_r1_y%d" % i for i in range(1, 8)),
+                     "el_y_fx", "el_z_fx", "el_fx_d", "el_tie_d") + tuple("el_tie_r1_y%d" % i for i in range(1, 8)),
     ("R2", "cass"): ("el_grm_s", "el_call_y", "el_call_z", "el_shelf_z", "el_tie_d")
                     + tuple("el_tie_r2_z%d" % i for i in range(1, 6)),
     # a plain cut-out (no returns, so no slot or bushing in them): PROPOSED by WALL 2026-10-31 21:08 UTC
@@ -2499,7 +2507,7 @@ def el_felt_cuts(design, felt, fb, yc, zc):
             sy, sz, "cut", fb)
         fb = felt.bRepBodies.item(0)
         holes = [("FA-KIT VOICE KIT ACCESS", "el_y_kit", "el_trunk_z + el_kit_dz", "el_kit_d"),
-                 ("FX-COL EXIT INTO THE AIR COLUMN", "el_y_cx", "el_trunk_z", "el_grm_d")]
+                 ("FX-COL EXIT INTO THE AIR COLUMN", "el_y_fx", "el_z_fx", "el_fx_d")]
     else:
         holes = [("FX-CALL0 CALL LIGHT FEED BEHIND THE SHELF", "el_call_y", "el_shelf_z", "el_grm_s"),
                  ("FX-CALL2 CALL LIGHT EXIT", "el_call_y", "el_call_z", "el_grm_s")]

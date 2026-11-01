@@ -125,10 +125,12 @@ FAMILIES_EL = {
         "halfway between the air column's back face and the back lining (Y el_y_kit), 80 above the trunk (Z 1180)",
         ELS + ": kit_d, y_kit, trunk_z", "felt only: no steel there (the lips are at the tray's edges)",
         "±1 (knife cut, assumption)", "knife or CNC knife", "assumption (ELECTRICAL)"),
-    (FELT, 19.1, "x"): (
-        "F36", "FX-COL: the trunk's way out of R1-CASS into the air column's cable chase",
-        "ELECTRICAL trunk harness 710021", "Y el_y_cx (13 behind the column's back face), at the trunk (Z 1100)",
-        ELS + ": y_cx, trunk_z, grm_d", "felt only", "±1 (assumption)", "knife", "assumption (ELECTRICAL)"),
+    (FELT, 32.0, "x"): (
+        "F36", "FX-COL: the trunk's way out of R1-CASS into the air column, passing its mated plug pair",
+        "ELECTRICAL trunk harness 710021 (its plug pair's joint and slack in R1-CASS's gap behind it)",
+        "Y el_y_fx (27 in front of the column's back face, hidden behind the column), Z 1162.5",
+        "ELECTRICAL in WALL's group (2026-11-01; the column route agreed with CEILING): y_fx, z_fx, fx_d",
+        "felt only", "±1 (assumption)", "knife", "source (ELECTRICAL)"),
     (FELT, 12.0, "x"): (
         "F37", "FX-CALL0 and FX-CALL2: the call light feed into R2-CASS behind the shelf and out above the screen",
         "ELECTRICAL call light harness 710024", "Y el_call_y (the front end of a 900 bar), Z 2250 and 1450",

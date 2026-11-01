@@ -116,7 +116,7 @@ def has_hole(holes, d, axis, within=None, **at):
                for hd, ha, c, sp in holes)
 
 
-EL_SIDE = {"510102": ("el_y_kit", "el_y_cx", "el_trunk_z", "el_kit_dz", "el_kit_d", "el_grm_d"),
+EL_SIDE = {"510102": ("el_y_kit", "el_y_fx", "el_z_fx", "el_fx_d", "el_trunk_z", "el_kit_dz", "el_kit_d"),
            "510104": ("el_call_y", "el_call_z", "el_shelf_z", "el_grm_s", "el_y_kit")}
 
 
@@ -133,9 +133,10 @@ def el_side_checks(design, root_pn, before_p, after_p):
     if root_pn == "510102":
         out += [("FA-KIT %g hole at Y el_y_kit, Z trunk + %g" % (a["el_kit_d"], a["el_kit_dz"]),
                  has_hole(holes, a["el_kit_d"], "x", y=a["el_y_kit"], z=a["el_trunk_z"] + a["el_kit_dz"])),
-                ("FX-COL %g hole follows the column's back face (Y %.2f)" % (a["el_grm_d"], a["el_y_cx"]),
-                 has_hole(holes, a["el_grm_d"], "x", y=a["el_y_cx"], z=a["el_trunk_z"]) and
-                 abs((a["el_y_cx"] - before_p["el_y_cx"]) - dwd) < 0.01)]
+                ("FX-COL %g hole follows the column's back face (Y %.2f, Z %g)" % (a["el_fx_d"], a["el_y_fx"],
+                                                                                 a["el_z_fx"]),
+                 has_hole(holes, a["el_fx_d"], "x", y=a["el_y_fx"], z=a["el_z_fx"]) and
+                 abs((a["el_y_fx"] - before_p["el_y_fx"]) - dwd) < 0.01)]
     else:
         out += [("FX-CALL0 and FX-CALL2 %g holes follow the call light line (Y %.2f)" % (a["el_grm_s"], a["el_call_y"]),
                  has_hole(holes, a["el_grm_s"], "x", y=a["el_call_y"], z=a["el_shelf_z"]) and
