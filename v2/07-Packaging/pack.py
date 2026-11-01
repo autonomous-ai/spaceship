@@ -236,7 +236,7 @@ R = {
     "BAND_SL": "Base band piece 100x40 - side LH",
     "BAND_SR": "Base band piece 100x40 - side RH",
     "BAND_FR1": "Base band piece FR1",
-    "BAND_FL": "Base band piece 100x40 - front-l",
+    "BAND_FL": "Base band piece FL1 and FL2 under DL",
     "BAND_FR": "Base band piece 100x40 - front-r",
     "KEY": "Corner key",
     "GLIDE": "Levelling glide",
@@ -428,9 +428,15 @@ PIECES = [
     Piece("2-13", "810201", "INTERIOR - LIGHT SHELF ASSY", "Kệ đèn hắt (cụm)", "-", [("SHELF", 1)], S(2332, 80, 60),
           "bundle (assumption): INTERIOR's parts list 810201, the 2332 back shelf and the two 991 side shelves (60 x 40 sections) "
           "two high, the down channel and the diffuser inside them", 2, 19, "INTERIOR"),
+    Piece("2-22", "110104", "BASE - BAND ASSY - FRONT - LH", "Viền chân trước - trái (cụm)", "-",
+          [("BAND_FL", 1), ("GLIDE", GLIDES["110104"]), ("BLOCKS", BLOCK_SHARE["110104"]), ("KEY", 1), ("LIP", LIP_M["110104"])],
+          S(287, 197, 111), "BASE 110000 P01 STEP (P02 batch 2, S54): DL's band piece 110104, FL1 and FL2 joined at the knee by the "
+          "knee key 111214, with its glide and lip: 286 x 196.4 x 110", 2, 2, "BASE",
+          note="FL1 and FL2 come joined at the knee by the knee key 111214 and its 2 screws, the glide on its load block and the soft "
+               "lip fitted (BASE CAD); it lies flat beside the intake riser in tier 4"),
     Piece("2-14", "TBD (BASE)", "BASE - SMALL PARTS CARTON", "Thùng phụ kiện đế", "-",
-          [("BAND_FL", 1), ("BAND_FR", 1), ("KEY", 2)], S(600, 400, 150),
-          "carton (assumption): the front-left band pieces FL1 (with its knee key 111214) and FL2, faceted, under DL; the mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111215 (D-144)",
+          [("BAND_FR", 1), ("KEY", 1)], S(600, 400, 150),
+          "carton (assumption): the mesh intake piece under DR with DR's support, the closing plate (D-62) and the intake support rail with its inline key 111215 (D-144)",
           2, 2, "BASE", carton=True, note="the intake part: the rest of the study's front-r line after FR1, which is BASE's CAD now (S54), until BASE's batch 3; the keys are fitted at the factory in the ends that carry them (J-BASE-02)"),
     Piece("2-15", "810101", "INTERIOR - WORK WALL LEDGE ASSY", "Bàn tựa vách làm việc (cụm)", "-", [("LEDGE", 1)], S(1000, 250, 120),
           "carton (assumption): INTERIOR's parts list, the 1000 x 250 ledge top 811101 with its 2 brackets 818101 (HOLD) "
@@ -481,7 +487,7 @@ SKEL = {
     "1-15": ["B1-CASS ENVELOPE"], "1-16": ["B2-CASS ENVELOPE"], "1-17": ["B3-CASS ENVELOPE"], "1-18": ["B4-CASS ENVELOPE"],
     "2-01": ["FIXED GLASS"], "2-02": ["DOOR GLASS", "KICK ENVELOPE"], "2-03": ["DR FACETED"],
     "2-04": ["BAND-BACK ENVELOPE"], "2-05": ["BAND-L ENVELOPE"], "2-06": ["BAND-R ENVELOPE"], "2-07": ["BAND-FR ENVELOPE"],
-    "2-08": ["DL FACETED"], "2-11": ["DT FACETED"], "2-14": ["BAND-FL ENVELOPE"],
+    "2-08": ["DL FACETED"], "2-11": ["DT FACETED"], "2-22": ["BAND-FL ENVELOPE"],
     "2-19": ["C1-CASS ENVELOPE"], "2-20": ["C2-CASS ENVELOPE"],
 }
 # Camera per step for the pictures: "back" looks from behind, left and above; "front" from the front, right and above;
@@ -552,8 +558,8 @@ TIERS2 = [
         dict(tags=["2-11", "2-12"], lie="flat"),
         dict(tags=["2-09"], lie="flat"),
         dict(tags=["2-10"], lie="edge")]),
-    dict(name="Tier 4: air parts, light shelf, FR1 and cartons", lanes=[
-        dict(tags=["2-16"], lie="flat"),
+    dict(name="Tier 4: air parts, light shelf, FR1, DL's band piece and cartons", lanes=[
+        dict(tags=["2-16", "2-22"], lie="flat"),   # DL's band piece in the riser lane's free end
         dict(tags=["2-17"], lie="edge"),
         dict(tags=["2-18"], lie="edge"),
         dict(tags=["2-14", "2-15", "2-07"], lie="edge"),   # FR1 with its sill is 161 deep: tier 2 has no room left
@@ -594,13 +600,13 @@ STEPS = [
          ops=[op("open pallet 1, packed in fitting order", 2, lay("t_unpack_std_ordered_min") * 60, 1, "t_unpack_std_ordered_min"),
               op("unload pallet 2 tiers 5 to 2, each part to its place", 2, lay("t_unpack_long_ordered_min") * 60, 1, "t_unpack_long_ordered_min")],
          joints={}),
-    dict(n=2, title="Base band", tags=["2-04", "2-05", "2-06", "2-07", "2-14"],
-         A="Sets the left and right side bands on their glides. Then, with B at the other end, lowers the back band straight down between them: the slots in its end caps take both side bands' back-corner studs from below, and it comes to rest on its own glides (D-129). Then the front pieces, each offered 10 mm high, pushed along its studs and lowered onto its glides: FL1, then FL2 at the knee (under DL), then the intake support rail with the mesh intake piece under DR, DR's support and the closing plate, and last FR1, the piece under the fixed glass, onto the rail (J-BASE-02).",
+    dict(n=2, title="Base band", tags=["2-04", "2-05", "2-06", "2-22", "2-14", "2-07"],
+         A="Sets the left and right side bands on their glides. Then, with B at the other end, lowers the back band straight down between them: the slots in its end caps take both side bands' back-corner studs from below, and it comes to rest on its own glides (D-129). Then the front pieces, each offered 10 mm high, pushed along its studs and lowered onto its glides: DL's band piece (FL1 and FL2, joined at the knee in the factory), then the intake support rail with the mesh intake piece under DR, DR's support and the closing plate, and last FR1, the piece under the fixed glass, onto the rail (J-BASE-02).",
          caution="Nobody lifts the back band or stands on it until B1 and B2 bolt through its top wall in step 3: until then only its weight holds it on the studs (J-BASE-02).",
          B="Checks the band with the spirit level, corner to corner, and turns only the glides that are out, from above with the hex key. The glides come preset from the factory (D-87); the glide is HOLD and must take the same 5 mm key (REQ-ASM-03). Then, with A, lays a PE sheet from the packing over the room floor inside the band, clear of the soft lip, for the rest of the work: the room floor is the pod's floor now (D-132).",
          check="Band level within the spirit level's bubble; the back band resting on its glides with both end caps down over the studs; every front piece hooked home; the soft lip on the band's inner face touches the room floor all round (D-132); the mesh piece's support stands; the fixed glass's U-channel, fitted on the sill at the factory, is clean and undamaged.",
-         ops=[carry("2-04"), carry("2-05"), carry("2-06"), carry("2-07"), carry("2-14"),
-              op("set each band piece on its keys", 2, lay("t_place_hung_s"), 7, "t_place_hung_s"),
+         ops=[carry("2-04"), carry("2-05"), carry("2-06"), carry("2-22"), carry("2-07"), carry("2-14"),
+              op("set each band piece on its keys", 2, lay("t_place_hung_s"), 6, "t_place_hung_s"),   # back, sides, DL's piece, rail, FR1
               op("check the level, turn the glides that are out", 2, TIME["t_level_preset_s"].value, 1, "t_level_preset_s"),
               op("lay the floor sheet inside the band", 2, TIME["t_floor_film_s"].value, 1, "t_floor_film_s")],
          joints={}),
@@ -866,6 +872,7 @@ CAD = {
     "2-05": dict(step=BASE_STEP, sub="110101"),
     "2-06": dict(step=BASE_STEP, sub="110102"),
     "2-07": dict(step=BASE_STEP, sub="110106"),
+    "2-22": dict(step=BASE_STEP, sub="110104"),
     "2-08": dict(step="front/350001_P01_*_STEP.step"),
     "2-11": dict(step="front/350002_P01_*_STEP.step"),
     "2-13": dict(parts=[dict(step=INT_STEP, sub="810201")]),

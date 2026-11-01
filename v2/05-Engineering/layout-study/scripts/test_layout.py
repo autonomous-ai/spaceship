@@ -256,7 +256,7 @@ def test_cad_masses_from_main():
     lip, gr = rows["Base seal: BASE's soft lip along the band pieces' inner faces"], rows["Cable grommets: the sealed cable holes"]
     assert abs(lip[2] - sum(bc["lip_m"].values())) < 1e-9 and lip[3] == p("lip_seal_kgm") == bc["lip_kgm"], lip
     assert gr[2] * gr[3] == p("grommet_kg"), gr
-    assert len(rollup.cad_swaps()) == 27
+    assert len(rollup.cad_swaps()) == 28           # BASE's batch 2: DL's band piece 110104
 
 
 def test_base_batch1_counts_once():
@@ -268,8 +268,9 @@ def test_base_batch1_counts_once():
     assert abs(bc["total"] - bc["top"]) < 1e-3, (bc["total"], bc["top"])          # 10.748 kg at e1ba6ef (10.68 at 8ff8f08)
     rows = {r[1]: r for r in rollup.lines()}
     band = [r for k, r in rows.items() if k.startswith(("Base band piece 100x40 - back", "Base band piece 100x40 - side",
-                                                       "Base band piece FR1"))]
-    assert len(band) == 4, [r[1] for r in band]
+                                                       "Base band piece FR1", "Base band piece FL1 and FL2"))]
+    assert len(band) == 5, [r[1] for r in band]
+    assert not [k for k in rows if "front-l," in k], "this study's front-left model line is BASE's 110104 now"
     glides = rows["Levelling glide (hex from above)"]
     blocks = next(r for k, r in rows.items() if k.startswith("Glide load blocks"))
     lip = rows["Base seal: BASE's soft lip along the band pieces' inner faces"]
@@ -281,8 +282,8 @@ def test_base_batch1_counts_once():
     count = {**{pn: rc[pn] for pn in rollup.FIXING_PNS}, "831001": ns, "831002": nw,
              **{pn: rollup.JOINTS[pn][0] for pn in rollup.KEY_PNS}}
     assert all(q <= count[pn] for pn, q in bc["held"].items()), (bc["held"], count)   # inside the other lines' counts
-    assert glides[2] == sum(bc["glides"].values()) == sum(bc["blocks"].values()) == 9, (glides, bc["blocks"])
-    assert blocks[2] == 1 and abs(blocks[3] - 9 * bc["doubler"]) < 1e-12, blocks   # one line, shared out by glide
+    assert glides[2] == sum(bc["glides"].values()) == sum(bc["blocks"].values()) == 10, (glides, bc["blocks"])   # 9 + DL's 1
+    assert blocks[2] == 1 and abs(blocks[3] - 10 * bc["doubler"]) < 1e-12, blocks   # one line, shared out by glide
     assert all(not a["own"] or all(pn not in held for pn, *_ in a["own"]) for a in bc["asm"].values())
 
 
