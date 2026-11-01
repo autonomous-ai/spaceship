@@ -91,7 +91,7 @@ def sheet1(doc, rows, harness, v):
     s.textf(53, 35.6, "W01", 1.8, MAINS)
     s.textf(53, 38.4, "3 x 14", 1.8, MAINS)
     s.textf(53, 41.2, "AWG", 1.8, MAINS)
-    for i, (ps, ttl, sub) in enumerate((("PS1", "PS1  60 W", "12 V 5 A, Class 2"),
+    for i, (ps, ttl, sub) in enumerate((("PS1", "PS1 + PS4  2 x 60 W", "kit feeds A, B: 12 V each"),
                                         ("PS2", "PS2  60 W + LIGHT CTRL", "3 ch PWM, RS-485, Class 2"),
                                         ("PS3", "PS3  60 W", "12 V 5 A, Class 2"))):
         y = 60 + i * 42
@@ -106,9 +106,10 @@ def sheet1(doc, rows, harness, v):
     s.textf(29, 91.2, "(only B2 carries a mains part)", 1.7, MAINS)
     s.boxf(18, 104, 52, 126, "LAN", ["etherCON NE8FDP in B2,", "W04 Cat6 to keystone 1,", "keystone 2: W31 to the kit"], SIG)
     # 12 V outputs leave the unit on the right side (H01, H02) and the top (H03), straight into the cable gap (plain cut-out)
-    s.fuse(116, 73, "F1 5 A")
-    s.line(104, 73, 113.8, 73, SELV, 0.5)
-    s.line(118.2, 73, 150, 73, SELV, 0.5)
+    for yk, fl in ((71, "F1 5 A"), (77, "F4 5 A")):          # the kit's feeds A (PS1) and B (PS4), never joined
+        s.fuse(116, yk, fl)
+        s.line(104, yk, 113.8, yk, SELV, 0.5)
+        s.line(118.2, yk, 150, yk, SELV, 0.5)
     s.fuse(116, 115, "F2 5 A")
     s.line(104, 115, 113.8, 115, SELV, 0.5)
     s.line(118.2, 115, 150, 115, SELV, 0.5)
@@ -129,14 +130,16 @@ def sheet1(doc, rows, harness, v):
     for x, lab, y0 in ((150, "X1 unit / B2-CASS", 26), (200, "X2 corner, in R1-CASS", 26), (250, "X3 into the air column", 136)):
         s.textf(x + 1, y0 - 1.5, lab, 1.8, GREY, bold=True)
         s.line(x, y0, x, 236, GREY, 0.15, dashes="[1 1] 0")
-    # kit feed (PS1)
-    for x in (150, 200):
-        s.plug(x, 73, "", SELV)
-    s.textf(152, 71.5, "W30b 4x18 AWG  B2-CASS", 1.8, SELV)
-    s.textf(202, 71.5, "W30c  R1-CASS", 1.8, SELV)
-    s.line(200.4, 73, 240, 73, SELV, 0.5)
+    # the kit's two feeds (PS1, PS4), one cable: plug pairs at X1 and X2
+    for yk in (71, 77):
+        for x in (150, 200):
+            s.plug(x, yk, "", SELV)
+        s.line(150.4, yk, 199.6, yk, SELV, 0.5)
+        s.line(200.4, yk, 240, yk, SELV, 0.5)
+    s.textf(152, 69.5, "W30b 4x16 AWG, feeds A, B  B2-CASS", 1.8, SELV)
+    s.textf(202, 69.5, "W30c  R1-CASS", 1.8, SELV)
     s.boxf(240, 64, 300, 84, "X7 VOICE KIT DROP (R1, behind the screen)",
-          ["12 V 5 A outlet: Mini-Fit Jr 4-way, capped", "Cat6 keystone, capped; draw wire W32", "reached through felt plug FA-KIT"],
+          ["two 12 V feeds, 5 A fuse each: Mini-Fit Jr 4-way, capped", "Cat6 keystone, capped; draw wire W32", "reached through felt plug FA-KIT"],
           SELV, 1.8)
     # light feed (PS2) up the back wall
     s.plug(150, 115, "", SELV)

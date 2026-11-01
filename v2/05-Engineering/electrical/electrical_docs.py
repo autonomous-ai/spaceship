@@ -171,11 +171,21 @@ LOAD_HEADER = ["id", "load", "supply", "fuse", "qty", "w_each_max", "w_total_max
                "w_total_typical", "a_total_max_12v", "w_status", "source", "note"]
 
 
+KIT_ROWS = ("LD06", "LD09")     # the voice kit's two feeds: each up to KIT_FEED_W, together KIT_PEAK_W
+
+
 def load_rows():
+    """The load table. w_total_max is each row's part of the pod's maximum, so the column adds up to it (the
+    install sheet sums it): the kit's two feeds each carry half of its 60 W peak there, though one feed alone may
+    reach 48 W (w_each_max, a_total_max_12v and the supply loading use that)."""
     rows = []
     for (lid, name, sup, fuse, qty, wmax, wtyp, st, src, note) in EP.LOADS:
+        total = EP.KIT_PEAK_W / len(KIT_ROWS) if lid in KIT_ROWS else qty * wmax
+        if lid in KIT_ROWS:
+            note = "%s; w_total_max is this feed's half of the kit's %.0f W peak (both feeds together)" % (
+                note, EP.KIT_PEAK_W)
         rows.append(dict(id=lid, load=name, supply=sup, fuse=fuse, qty=qty, w_each_max=fmt(wmax, 2),
-                         w_total_max=fmt(qty * wmax, 2), w_each_typical=fmt(wtyp, 2),
+                         w_total_max=fmt(total, 2), w_each_typical=fmt(wtyp, 2),
                          w_total_typical=fmt(qty * wtyp, 2), a_total_max_12v=fmt(qty * wmax / V_BUS, 3),
                          w_status=st, source=src, note=note))
     return rows
@@ -192,13 +202,14 @@ def supply_summary():
 
 def calc_md(v, mass_of, harness):
     sup = supply_summary()
-    tot_max = sum(s[2] for s in sup)
+    kit_over = max(0.0, 2 * EP.KIT_FEED_W - EP.KIT_PEAK_W)     # the kit's two feeds together peak at 60 W, not 96
+    tot_max = sum(s[2] for s in sup) - kit_over
     tot_typ = sum(s[3] for s in sup)
     rated = sum(s[1] for s in sup)
     eff = EP.PARTS_DATA["ps_eff"]
     noload = EP.PARTS_DATA["ps_noload_w"]
     loss_typ = sum(s[3] / eff - s[3] for s in sup) + noload * len(sup)
-    loss_max = sum(s[2] / eff - s[2] for s in sup) + noload * len(sup)
+    loss_max = sum(s[2] / eff - s[2] for s in sup) - kit_over * (1 / eff - 1) + noload * len(sup)
     ac_in_max = tot_max / eff + noload * len(sup)
     lines = []
     A = lines.append
@@ -219,6 +230,10 @@ def calc_md(v, mass_of, harness):
         A("| %s | %.0f | %.1f | %.1f | %.0f %% | %s |" % (sid, r, wm, wt, pct, feeds))
     A("| **All** | **%.0f** | **%.1f** | **%.1f** | %.0f %% | REQ-ELE-03: about 125 W load, supply at least 150 W |" % (
         rated, tot_max, tot_typ, 100 * tot_max / rated))
+    A("")
+    A("The voice kit's feeds A (PS1) and B (PS4) may each carry up to %.0f W, %.0f %% of their supply (PM ruling "
+      "2026-11-01), but the kit peaks at %.0f W on both together (REQ-VCK-04), so the total counts %.0f W for it." % (
+          EP.KIT_FEED_W, 100 * EP.KIT_FEED_W / 60.0, EP.KIT_PEAK_W, EP.KIT_PEAK_W))
     A("")
     A("Typical = one or two people, lights full, fans near the 53 l/s normal flow, no voice kit fitted. "
       "Max = every load at its maximum at once, which the control never asks for (the fans reach full speed only "

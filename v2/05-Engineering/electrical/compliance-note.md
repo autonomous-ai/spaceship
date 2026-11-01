@@ -8,7 +8,7 @@ The pod is sold in the US, so its mains side is US 120 V, 60 Hz, on the prototyp
 
 ## Result
 
-1. **Every low-voltage circuit is Class 2.** Each of the three 12 V supplies is a Mean Well LPV-60-12, whose datasheet says "Class 2 power unit" (UL 1310), at 60 W, the most a Class 2 source may deliver at 12 V. So every cable inside the walls, ceiling and air column carries a power-limited circuit, safe for two non-electricians to plug together.
+1. **Every low-voltage circuit is Class 2.** Each of the four 12 V supplies is a Mean Well LPV-60-12, whose datasheet says "Class 2 power unit" (UL 1310), at 60 W, the most a Class 2 source may deliver at 12 V. So every cable inside the walls, ceiling and air column carries a power-limited circuit, safe for two non-electricians to plug together.
 2. **Mains stays in one place.** The only mains parts are in the earthed power unit in panel B2: the inlet, the breaker, the GFCI receptacle and the three supplies' inputs. They're wired and tested in the factory, so no mains connection is made on site.
 3. **US 120 V by design, with UL-listed parts on the mains side (D-133):** the powerCON TRUE1 TOP inlet (UL 498), a 15 A one-pole UL 489 breaker, a tamper-resistant GFCI duplex NEMA 5-15R receptacle (UL 943 Class A, UL 498) as the user outlets, UL 1015 14 AWG wiring sized for 15 A, and a NEMA 5-15P SJT 14/3 cord set. The three supplies take 100 to 240 V and carry a UL Class 2 listing, so the 12 V side doesn't change: harnesses, connectors, routes, lights, fans and hub.
 4. **Open for the US rules phase (HOLD, ISS-083):** read the current UL 962 and UL 962A editions and list their clauses for the pod; settle whether the power unit is evaluated to UL 962A on its own or within the pod's UL 962 evaluation; confirm each mains part's UL file (the breaker's interrupting rating at 120 V, the inlet's US rating) and each 12 V supply's Class 2 marking under UL 1310 or UL 62368-1, or a listed Class 2 LED driver marking under UL 8750.
@@ -19,11 +19,11 @@ NEC Chapter 9, Table 11(B), for a DC Class 2 source of 0 to 20 V: maximum namepl
 
 | Circuit | Supply | Rated | Load, max (load table) | Class 2 at 12 V? |
 |---|---|---:|---:|---|
-| Voice cockpit hook, 12 V 5 A (D-11) | PS1, 60 W | 5.0 A | 60 W | yes: 60 VA, 5.0 A, exactly the limit |
+| Voice cockpit hook, two 12 V feeds (D-11; PM ruling 2026-11-01) | PS1 and PS4, 60 W each | 5.0 A each | up to 48 W each (80 %), 60 W together | yes: each source within 60 VA, never joined |
 | Lights: uplight, down-light, call light, through the 3-channel controller | PS2, 60 W | 5.0 A | 41.6 W at full; the hub holds them at about 22 W | yes |
 | Fans and hub | PS3, 60 W | 5.0 A | 31.4 W | yes |
 
-Why three supplies and not one 150 W unit (DECIDED, PM ruling 2026-10-31 in the ELECTRICAL group): a single 150 W, 12.5 A supply can't be Class 2 at 12 V. Its 12 V wiring would need Chapter 3 wiring methods in the US: power cable, protected routing and listed fittings, not plug-in cables in a felt-lined cassette. Three Class 2 units, 180 W in all for about 125 W of load (REQ-ELE-03), keep every 12 V cable Class 2 in both markets.
+A fourth supply (PS4, PM ruling 2026-11-01) gives the voice kit a second feed, so its 60 W peak runs each source at 80 % or less; one 12 V Class 2 source can't give 75 W. Why separate supplies and not one 150 W unit (DECIDED, PM ruling 2026-10-31 in the ELECTRICAL group): a single 150 W, 12.5 A supply can't be Class 2 at 12 V. Its 12 V wiring would need Chapter 3 wiring methods in the US: power cable, protected routing and listed fittings, not plug-in cables in a felt-lined cassette. Three Class 2 units, 180 W in all for about 125 W of load (REQ-ELE-03), keep every 12 V cable Class 2 in both markets.
 
 What Class 2 lets the design do (NEC Article 725 in the 2020 edition, Article 722/724 in 2023; to check in the US rules phase):
 - Class 2 cable (CL2, or a listed equivalent) in the cassettes and the column, with plug-in connectors and no conduit;
@@ -58,7 +58,7 @@ What Class 2 lets the design do (NEC Article 725 in the 2020 edition, Article 72
 | User outlets | tamper-resistant GFCI duplex NEMA 5-15R (UL 943, UL 498), on the unit face behind a decorator opening | UTEN S300 universal socket, 86 × 86 |
 | LAN outlet | two Cat6 keystone jacks snapped into the front plate | UTEN S300 two-port LAN socket |
 | Mains wiring | UL 1015 14 AWG, 600 V, 105 °C (black, white, green); the bond 14 AWG green | H07V-K 1.5 mm², bond 2.5 mm² |
-| 12 V supplies | 3 × Mean Well LPV-60-12, 90–264 V input, Class 2 power unit (UL 1310) | the same three units |
+| 12 V supplies | 4 × Mean Well LPV-60-12, 90–264 V input, Class 2 power unit (UL 1310); the fourth for the kit's second feed | three units |
 | Harnesses, connectors, routes, lights, fans, hub | unchanged | — |
 
 **Tests in Vietnam:** the cord set plugs into a 220-to-110 V step-down transformer (isolating, 2 kVA or more so it carries the outlets' load too; part of the test set, not the pod). The GFCI and the breaker then work as they will in the US.
