@@ -535,6 +535,59 @@ class Sheet:
             else:
                 self.text(tx, b[1] + 6, text, size, "left", rotate=90)
 
+    def dim_linear_lines(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5):
+        """What dim_linear draws for the same arguments (without slide), without drawing: the segments it records (its
+        two extension lines first, then its dimension line, each arrowhead's sides and a value's leader) and its
+        value's ink box. Dimensions laid out together are planned with it before any is drawn (a bent part's profile
+        sizes: BASE's sill 111302, where one size's extension line ran through another's value)."""
+        tw = self.text_width(text, size)
+        segs = []
+
+        def arrow(tip, d, length=3.0, width=1.0):
+            bx, by = tip[0] - d[0] * length, tip[1] - d[1] * length
+            nx, ny = -d[1] * width / 2, d[0] * width / 2
+            pts = [tip, (bx + nx, by + ny), (bx - nx, by - ny)]
+            segs.extend([(pts[0], pts[1]), (pts[1], pts[2]), (pts[2], pts[0])])
+        if side in ("up", "down"):
+            sgn = 1 if side == "up" else -1
+            yl = (max(p1[1], p2[1]) + gap) if sgn > 0 else (min(p1[1], p2[1]) - gap)
+            segs += [((p[0], p[1] + sgn * ext_gap), (p[0], yl + sgn * ext_over)) for p in (p1, p2)]
+            a, b = (min(p1[0], p2[0]), yl), (max(p1[0], p2[0]), yl)
+            span = b[0] - a[0]
+            if span > 8:
+                segs.append((a, b))
+                arrow(a, (-1, 0))
+                arrow(b, (1, 0))
+            else:
+                segs.append(((a[0] - 4, yl), (b[0] + 4, yl)))
+                arrow(a, (1, 0))
+                arrow(b, (-1, 0))
+            if tw + 2 <= span:
+                box = self.text_box((a[0] + b[0]) / 2, yl + 0.8 if sgn > 0 else yl - 0.8 - size, text, size, "center")
+            else:
+                segs.append((b, (b[0] + 5.0, yl)))
+                box = self.text_box(b[0] + 6.0, yl - 0.35 * size, text, size, "left")
+        else:
+            sgn = 1 if side == "right" else -1
+            xl = (max(p1[0], p2[0]) + gap) if sgn > 0 else (min(p1[0], p2[0]) - gap)
+            segs += [((p[0] + sgn * ext_gap, p[1]), (xl + sgn * ext_over, p[1])) for p in (p1, p2)]
+            a, b = (xl, min(p1[1], p2[1])), (xl, max(p1[1], p2[1]))
+            span = b[1] - a[1]
+            if span > 8:
+                segs.append((a, b))
+                arrow(a, (0, -1))
+                arrow(b, (0, 1))
+            else:
+                segs.append(((xl, a[1] - 4), (xl, b[1] + 4)))
+                arrow(a, (0, 1))
+                arrow(b, (0, -1))
+            tx = xl - 0.8 if sgn < 0 else xl + 0.8 + size
+            if tw + 2 <= span:
+                box = self.text_box(tx, (a[1] + b[1]) / 2, text, size, "center", rotate=90)
+            else:
+                box = self.text_box(tx, b[1] + 6, text, size, "left", rotate=90)
+        return segs, box
+
     def ordinate(self, origin, pts, axis, level, values, size=2.2, ext_gap=1.0, min_step=3.2):
         """Ordinate dimensions (ISO 129-1 9.3): from each sheet point an extension line to `level` (a y for
         axis 'x', an x for axis 'y'), the value written along it; values of points sharing a position once.

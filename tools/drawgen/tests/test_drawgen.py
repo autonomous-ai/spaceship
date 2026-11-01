@@ -829,6 +829,94 @@ def test_rounded_cutouts_and_slots():
         assert "cut-outs drawgen can't size yet (40 x 30)" in str(e), e
 
 
+def _z_profile(path, length=200.0):
+    """A bent profile like BASE's sill 111302, its flanges where the sill's model puts them (85, 19, 17, 103.5 and 40
+    outside, 2 thick, sharp folds: R = t comes from its entry), length long along X. Its section across the bends is
+    drawn at 1:2, as the sill's is."""
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.Interface import Interface_Static
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Pnt, gp_Vec
+    poly = BRepBuilderAPI_MakePolygon()
+    for z, y in ((10, -689.5), (95, -689.5), (95, -706.5), (110, -706.5), (110, -810), (70, -810), (70, -808),
+                 (108, -808), (108, -708.5), (93, -708.5), (93, -691.5), (10, -691.5)):
+        poly.Add(gp_Pnt(218.46, y, z))
+    poly.Close()
+    solid = BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(length, 0, 0)).Shape()
+    w = STEPControl_Writer()
+    was = Interface_Static.IVal_s("write.surfacecurve.mode")
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(solid, STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", was)
+    return path
+
+
+def _z_profile_dxf(path, length=200.0):
+    """_z_profile's blank at R2 and K 0.4, as the sill's DXF: each fold's allowance pi/2 (2 + 0.4 x 2) with its BEND
+    line at the middle, y from the 40's free end (36, 95.5, 9, 11 and 81 straight between and beyond the allowances)."""
+    ba = math.pi / 2 * (2.0 + 0.4 * 2.0)
+    ys, y = [], 0.0
+    for straight in (36.0, 95.5, 9.0, 11.0):
+        ys.append(y + straight + ba / 2)
+        y += straight + ba
+    w = y + 81.0
+    out = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    pts = [(0.0, 0.0), (length, 0.0), (length, w), (0.0, w)]
+    for i, p in enumerate(pts):
+        q = pts[(i + 1) % 4]
+        out += ["0", "LINE", "8", "CUT", "10", repr(p[0]), "20", repr(p[1]), "11", repr(q[0]), "21", repr(q[1])]
+    for yb in ys:
+        out += ["0", "LINE", "8", "BEND", "10", "0.0", "20", repr(yb), "11", repr(length), "21", repr(yb)]
+    out += ["0", "ENDSEC", "0", "EOF"]
+    with open(path, "w") as fh:
+        fh.write("\n".join(out) + "\n")
+    return path
+
+
+def test_profile_sizes_keep_their_extension_lines_clear():
+    """BASE's sill 111302 (the Lead, 2026-11-01): in its 1:2 section the step's 19, sized on its right, ran its upper
+    extension line through the 17 and its lower one across the 103.5's arrow, its line 0.5 from the 103.5's. A test
+    profile with the sill's flanges: the sizes are laid out before any is drawn, the 19 goes on its other side (under
+    the top flange), the others stay, and the sheet reads back (main's code: a line runs through the 17). What
+    dim_linear draws is what dim_linear_lines plans, on each side, with its value centred or beside."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "zprofile")
+    os.makedirs(d, exist_ok=True)
+    step = _z_profile(os.path.join(d, "219972_P01_TEST-Z-PROFILE_STEP.step"))
+    dxf = _z_profile_dxf(os.path.join(d, "219972_P01_TEST-Z-PROFILE_DXF.dxf"))
+    row = dict(ROW, part_number="219972", name="TEST - Z PROFILE", material="aluminium sheet 5005 H14, 2 mm",
+               process="laser cut, press brake")
+    p = os.path.join(d, "219972.pdf")
+    compose.make("219972", "none", dict(SPEC, bent={"radius": 2.0, "radius_why": "test", "dxf": dxf}), p, step=step,
+                 row=row)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    words = {}
+    for w in fitz.open(p)[0].get_text("words"):
+        if w[4] in ("85", "19", "17", "103.5", "40"):
+            words.setdefault(w[4], []).append(w[:4])
+    assert all(len(words.get(k, [])) == 1 for k in ("85", "19", "17", "103.5", "40")), words
+    mid = {k: (v[0][0] + v[0][2]) / 2 for k, v in words.items()}
+    # the 19 and the 103.5 on either side of the 17 (main's code: both beyond it, the 19's line 0.5 from the 103.5's)
+    assert (mid["19"] - mid["17"]) * (mid["103.5"] - mid["17"]) < 0, words
+    for side in ("up", "down", "left", "right"):
+        for span, t in ((60.0, "60"), (5.0, "5")):     # value centred, and beside (arrows from outside)
+            sh = Sheet("A3")
+            p1 = (100.0, 100.0)
+            p2 = (p1[0] + span, p1[1]) if side in ("up", "down") else (p1[0], p1[1] + span)
+            segs, box = sh.dim_linear_lines(p1, p2, side, 6.0, t)
+            sh.dim_linear(p1, p2, side, 6.0, t)
+            key = lambda s_: tuple(sorted(tuple(round(v, 6) for v in pt) for pt in s_))
+            drawn = {key(s_) for cell in sh.grid.cells.values() for s_ in cell if s_[0] != s_[1]}
+            assert {key(s_) for s_ in segs} == drawn, (side, t, sorted({key(s_) for s_ in segs} ^ drawn)[:4])
+            assert sh.boxes == [box], (side, t, sh.boxes, box)
+
+
 def _csk_plate(path, csk_r=5.2):
     """A 100 x 60 x 3 plate with two Ø5.5 holes: one countersunk from the top (90°, Ø2 csk_r at the face), one plain."""
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
