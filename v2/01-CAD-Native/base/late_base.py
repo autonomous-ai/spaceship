@@ -34,6 +34,6 @@ def run(context):
             source = fh.read()
         ns = {"__name__": "__fusion_script__", "__file__": path, "SCRIPT_ARGS": dict(args, script_path=path)}
         exec(compile(source, path, "exec"), ns)
-        print("== late_base: running %s" % rel_path)
+        print("== late_base: running %s (%s)" % (rel_path, path))
         ns["run"](context)
         print("== late_base: %s finished" % rel_path)
