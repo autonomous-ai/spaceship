@@ -73,7 +73,8 @@ class Fits(unittest.TestCase):
         cut = {(t, "SENSOR HUB ZONE") for t in ("COLUMN FACE FRONT", "COLUMN FILL FRONT")} | {("SOFFIT UNDERSIDE LEFT", "EXHAUST GRILLE")}
         # the stud and lock shanks pass through the rails' forks and holes (cut features)
         cut |= {(r, n) for r in ("SOFFIT RAIL DOOR", "SOFFIT RAIL ROOM") for n in LAY if n.endswith("SHANK")}
-        cut |= {("SOFFIT FACE FRONT", n) for n in LAY if n.startswith("STUD") and n.endswith("ROOM HEAD")}   # head pockets
+        cut |= {("SOFFIT FACE FRONT", n) for n in LAY if (n.startswith("STUD") and n.endswith("ROOM HEAD"))
+                or (n.startswith("LOCK") and n.endswith("HEAD"))}                              # head pockets
         # the casings are hollow: their bulkheads and linings sit inside (D-121; FanBoxInside checks them)
         cut |= {("%s FAN BOX" % t, n) for t in ("EXHAUST", "SUPPLY") for _k, n, _b in A.fan_box_inner() if t in n}
         names = list(LAY)
@@ -257,7 +258,7 @@ class D87(unittest.TestCase):
             c = ((bx[0] + bx[1]) / 2, (bx[2] + bx[3]) / 2)
             self.assertTrue(any(abs(p[0] - c[0]) < 1e-6 and abs(p[1] - c[1]) < 1e-6 for _n, p in holes), name)
             self.assertAlmostEqual(bx[5], cv["pod_h"] - cv["outer_t"] - V["rvn_head"])   # up to the rivnut head
-        self.assertEqual(len(holes), 6)
+        self.assertEqual(len(holes), 8)    # 2 + 2 hanger rivnuts, 4 lock rivnuts (C2's 2 unused: cross member 1 is one part)
 
     def test_forks_open_toward_the_door_and_slide_clear(self):
         """Each fork runs from its rail's door-side edge to the stud; a stud slide mm behind
@@ -299,7 +300,7 @@ class Hold18(unittest.TestCase):
             self.assertAlmostEqual(h[5] - h[4], V["hd_h"])
             room = (h[0], h[1], h[2], h[3], h[4] - V["hd_c"], h[4])
             for other, (_k, ob) in LAY.items():
-                if other == name or (other == "SOFFIT FACE FRONT" and "ROOM" in name):
+                if other == name or (other == "SOFFIT FACE FRONT" and ("ROOM" in name or name.startswith("LOCK"))):
                     continue
                 self.assertGreaterEqual(gap(room, ob), -1e-9, "%s: %s under its head" % (name, other))
 

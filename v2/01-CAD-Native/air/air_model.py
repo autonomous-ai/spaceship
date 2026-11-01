@@ -292,6 +292,14 @@ def stud_points():
             for side in ("L", "R") for edge, y in (("DOOR", yd), ("ROOM", yr))]
 
 
+def lock_points():
+    """(name, x, y) of the soffit's two captive lock screws: in the room-side rail, into cross member 1's lock rivnuts
+    (PM ruling 2026-11-01, option b for DR's new panel face: off the door-side rail, whose edge came too close), at the
+    room-side studs' Y, over the left inlet plenum where the key reaches them through the left hinged underside."""
+    yr = "%s + cs_front - x1_ov + tube_w / 2" % YW
+    return [("LOCK SCREW %d" % (k + 1), x, yr) for k, x in enumerate(("-lock_x", "-lock_x + lock_dx"))]
+
+
 def layout():
     """[(part key, body name, box expressions)] for every body, pod system."""
     b = []
@@ -357,13 +365,10 @@ def layout():
         b.append(("stud", name + " HEAD", box("%s - stud_d / 2" % x, "%s + stud_d / 2" % x, "%s - stud_d / 2" % y,
                                               "%s + stud_d / 2" % y, "%s - hd_h" % zr0, zr0)))
         b.append(("stud", name + " SHANK", box("%s - 3 mm" % x, "%s + 3 mm" % x, "%s - 3 mm" % y, "%s + 3 mm" % y, zr0, zf)))
-    for k, x in enumerate(("-lock_x", "-lock_x + lock_dx")):
-        y = "%s + tube_w / 2" % YW
-        b.append(("lock", "LOCK SCREW %d HEAD" % (k + 1), box("%s - stud_d / 2" % x, "%s + stud_d / 2" % x,
-                                                              "%s - stud_d / 2" % y, "%s + stud_d / 2" % y,
-                                                              "%s - hd_h" % zr0, zr0)))
-        b.append(("lock", "LOCK SCREW %d SHANK" % (k + 1), box("%s - 3 mm" % x, "%s + 3 mm" % x, "%s - 3 mm" % y,
-                                                               "%s + 3 mm" % y, zr0, zf)))
+    for name, x, y in lock_points():
+        b.append(("lock", name + " HEAD", box("%s - stud_d / 2" % x, "%s + stud_d / 2" % x,
+                                              "%s - stud_d / 2" % y, "%s + stud_d / 2" % y, "%s - hd_h" % zr0, zr0)))
+        b.append(("lock", name + " SHANK", box("%s - 3 mm" % x, "%s + 3 mm" % x, "%s - 3 mm" % y, "%s + 3 mm" % y, zr0, zf)))
     zh0, zh1 = "%s + face_t" % ZS0, "%s + face_t + hl_h" % ZS0
     for key, name, x0, x1 in soffit_sections()[:2]:
         for q in (1, 3):
@@ -413,8 +418,8 @@ def features():
         edge = YD if rail.endswith("DOOR") else "%s - rail_w" % YFACE
         out.append((rail, "box", ("%s - key_w / 2" % x, "%s + key_w / 2" % x, edge, y, zr0, zr1)))
         out.append((rail, "zcircle", (x, y, zr0, zr1, "key_w")))
-    for x in ("-lock_x", "-lock_x + lock_dx"):
-        out.append(("SOFFIT RAIL DOOR", "zcircle", (x, "%s + tube_w / 2" % YW, zr0, zr1, "lock_hole")))
+    for _n, x, y in lock_points():
+        out.append(("SOFFIT RAIL ROOM", "zcircle", (x, y, zr0, zr1, "lock_hole")))
     # D-121: a fan bore in each bulkhead over each fan (the exhaust fans hang under theirs, the supply fans stand on theirs)
     for name, x, y, z in fan_points():
         tag = "EXHAUST" if name.startswith("EXHAUST") else "SUPPLY"
@@ -433,10 +438,10 @@ def cutouts():
     hub_cut = (hub[0], hub[1], "%s - face_t - 40 mm" % YFACE, hub[3], hub[4], hub[5])
     eg_cut = (eg[0], eg[1], eg[2], eg[3], ZS0, "%s + face_t" % ZS0)    # the grille's opening through the face
     out = [("COLUMN FACE FRONT", hub_cut), ("COLUMN FILL FRONT", hub_cut), ("SOFFIT UNDERSIDE LEFT", eg_cut)]
-    for name, x, y in stud_points():
-        if name.endswith("ROOM"):                       # a head pocket: the head plus 1.5 all round
-            out.append(("SOFFIT FACE FRONT", ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x,
-                                              "%s - face_t" % YFACE, YFACE, ZBT, ZRB)))
+    for name, x, y in [p for p in stud_points() if p[0].endswith("ROOM")] + lock_points():
+        # a head pocket: the head plus 1.5 all round (the room-side studs' and the lock screws')
+        out.append(("SOFFIT FACE FRONT", ("%s - stud_d / 2 - hd_c" % x, "%s + stud_d / 2 + hd_c" % x,
+                                          "%s - face_t" % YFACE, YFACE, ZBT, ZRB)))
     return out
 
 
