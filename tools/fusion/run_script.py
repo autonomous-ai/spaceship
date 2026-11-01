@@ -91,6 +91,7 @@ import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -800,6 +801,100 @@ def guard_opens(lock_path, offset, who, limit_s=OPEN_LIMIT_S, poll_s=OPEN_POLL_S
     return left
 
 
+# A nudge for an open that sits idle (PM ruling 2026-11-01 15:56). Live 15:35:57: FRONT's door drawing open had the
+# drawing within 10 s, then Fusion's own log shows only background heartbeats for 15 minutes, and the open ended 5 s
+# after the runner's read-only check reached Fusion at 15:50:52 (900.2 s in all; it tripped the unhealthy flag). Of
+# the day's 6 opens over 30 s, 3 ended within 5 s of a new request. So while a run waits on Fusion, an open of this
+# run that is over a minute old gets the same read-only check once a minute, and the run logs whether the open ends
+# right after (a likely cause, not proven: Fusion's window is covered, so macOS may hold back its updates).
+NUDGE_AFTER_S = 60.0    # an open of this run this old gets the read-only check ...
+NUDGE_EVERY_S = 60.0    # ... and again each this long while it lasts
+NUDGE_WATCH_S = 10.0    # after a check, look this long for the open's end line, to log whether it ended right after
+NUDGE_POLL_S = 2.0      # re-reading the open log this often meanwhile (shorter for a short --nudge-after)
+NUDGE_CALL_S = 30.0     # one check waits at most this long for Fusion's answer
+
+
+class OpenNudger:
+    """While this run's call waits on Fusion, inside this run's own lock: any open of this run (open log lines after
+    `offset`) with no end line and over after_s old gets the read-only no-op check (IDLE_CHECK, readOnly, as after a
+    timeout) once every every_s. Each one is logged, on stderr and in the open log, with whether the open ended within
+    watch_s after it. It changes nothing in Fusion: it only gives Fusion a request to answer. after_s 0 turns it off.
+    start() before the run's calls, stop() before the lock goes back (it waits for a check in flight)."""
+
+    def __init__(self, url, open_log, offset, run_label="", after_s=NUDGE_AFTER_S, every_s=NUDGE_EVERY_S,
+                 watch_s=NUDGE_WATCH_S, log=None, wall=time.time, mcp_factory=None):
+        self.url, self.open_log, self.offset, self.run_label = url, open_log, offset, run_label
+        self.after_s, self.every_s, self.watch_s = after_s, every_s, watch_s
+        self.log = log or (lambda msg: print(msg, file=sys.stderr, flush=True))
+        self.wall = wall
+        self.factory = mcp_factory or FusionMcp
+        self.nudges = []        # [{"what", "age", "answered" (s or None), "ended_after" (s or None)}]
+        self._stop = threading.Event()
+        self.thread = None
+
+    def start(self):
+        if self.after_s > 0 and self.open_log:
+            self.thread = threading.Thread(target=self._loop, name="open-nudger", daemon=True)
+            self.thread.start()
+        return self
+
+    def stop(self):
+        self._stop.set()
+        if self.thread is not None:
+            self.thread.join(NUDGE_CALL_S + 5.0)
+
+    def _pending(self):
+        return {(o.get("what"), o.get("started")): o for o in unfinished_opens(self.open_log, self.offset)}
+
+    def _loop(self):
+        last, seen = {}, {}
+        poll = min(NUDGE_POLL_S, max(0.05, self.after_s / 4.0))
+        while not self._stop.is_set():
+            for key, o in self._pending().items():
+                started = _started_epoch(o) or seen.setdefault(key, self.wall())
+                age = self.wall() - started
+                if age >= self.after_s and self.wall() - last.get(key, float("-inf")) >= self.every_s:
+                    if self._stop.is_set():
+                        return
+                    last[key] = self.wall()
+                    self._nudge(key, age)
+            self._stop.wait(poll)
+
+    def _nudge(self, key, age):
+        n = len(self.nudges) + 1
+        t0 = self.wall()
+        try:
+            m = self.factory(self.url, NUDGE_CALL_S)
+            m.initialize()
+            m.call_tool("fusion_mcp_execute", {"featureType": "script",
+                                               "object": {"script": IDLE_CHECK, "readOnly": True}})
+            answered = self.wall() - t0
+        except McpError:
+            answered = None
+        ended = None
+        while True:
+            if key not in self._pending():
+                ended = self.wall() - t0
+                break
+            if self.wall() - t0 >= self.watch_s or self._stop.is_set():
+                break
+            time.sleep(0.25)
+        rec = {"what": key[0], "age": round(age, 1), "answered": None if answered is None else round(answered, 2),
+               "ended_after": None if ended is None else round(ended, 1)}
+        self.nudges.append(rec)
+        said = ("nudge %d: open %s is %d s old; a read-only check %s; %s" % (
+            n, key[0], round(age), "got no answer" if answered is None else "was answered in %.1f s" % answered,
+            ("the open ended %.1f s after it" % ended) if ended is not None else
+            ("the open hadn't ended %.0f s after it" % (self.wall() - t0))))
+        self.log("run_script: " + said)
+        try:
+            with open(self.open_log, "a", encoding="utf-8") as fh:
+                fh.write("%s %s; run: %s\n" % (time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()), said,
+                                              self.run_label))
+        except OSError:
+            pass
+
+
 def unhealthy_refusal(lock_path, log=None, pids=fusion_pids):
     """None when runs may use Fusion; else why not (Fusion is flagged unhealthy). The flag
     is removed, with a note, and runs go on, only when Fusion has restarted or quit since:
@@ -1446,6 +1541,12 @@ def build_parser():
                     help="after a call times out, an open this run started that hasn't ended by "
                          "the time it is S seconds old (from its start line) flags Fusion "
                          "unhealthy (default %(default)g)")
+    ap.add_argument("--nudge-after", type=float, default=NUDGE_AFTER_S, metavar="S",
+                    help="while a call waits, an open of this run that is S seconds old gets a read-only "
+                         "check, and the run logs whether the open ends right after (default %(default)g; "
+                         "0 turns it off)")
+    ap.add_argument("--nudge-every", type=float, default=NUDGE_EVERY_S, metavar="S",
+                    help="...and another one every S seconds while it lasts (default %(default)g)")
     ap.add_argument("--raw", action="store_true", help="print the raw tool reply")
     doc = ap.add_argument_group("your document")
     doc.add_argument("--doc", metavar="NAME",
@@ -1605,6 +1706,9 @@ def main(argv=None):
         return 3
     mcp = FusionMcp(opts.url, opts.timeout)
     offset = open_log_size(open_log_path(lock_path))     # this run's open log lines start here
+    # inside this run's lock only: started after the lock is taken, stopped before it goes back
+    nudger = OpenNudger(opts.url, open_log_path(lock_path), offset, run_label, after_s=opts.nudge_after,
+                        every_s=opts.nudge_every)
     rc = 1
     try:
         refusal = unhealthy_refusal(lock_path)
@@ -1612,12 +1716,14 @@ def main(argv=None):
             print("run_script: %s. This run did not start." % refusal, file=sys.stderr)
             rc = EXIT_UNHEALTHY
         else:
+            nudger.start()
             rc = _run_locked(opts, source, mcp)
     except KeyboardInterrupt:
         print("run_script: stopped; Fusion lock given back. Fusion may still be "
               "running the script.", file=sys.stderr)
         rc = 1
     finally:
+        nudger.stop()
         if mcp.timed_out:
             # never hand Fusion to the next run while it is still busy with this one
             try:
