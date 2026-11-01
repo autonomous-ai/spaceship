@@ -1,22 +1,18 @@
 """FRONT's parts that drawgen draws (D-139: each team keeps its own entries here, in its own PRs; tools/drawgen's
 owner reviews the code and a team's first entries). See tools/drawgen/teams/README.md for what an entry holds."""
 
-# A decor frame's tube (D-120: each tube its own part; the frame 3513x4 is its weldment, drawn in Fusion as an
-# assembly of its tubes, D-139). Its length and end cuts are its cut list row's; its holes are drilled after welding,
-# located from the frame's joint faces, as J-FRAME-01 has it for the welded frames (D-131 moves FRONT's cores to it).
+# A decor frame's tube that keeps a sheet of its own under D-162 (two cuts at one end). Its length and end cuts are its
+# row in the frame's cut list, which governs (D-162: the cut list is the members' drawing), so the sheet takes the cut
+# list's tolerances. None of the four has a hole (Reviewer 8 on #320).
 DECOR_TUBE = {
     "corner": "-X-Y-Z",
     "material_has": "aluminium", "material_why": "the decor frames' 6063-T6 tube until D-131's steel switch",
     "notes": [
         "Cut from 6063-T6 aluminium tube to the length and end cuts shown, as the frame's cut list row gives them "
-        "(D-120); mill finish, hidden (D-79). TIG-welded into its frame in the frame's jig (its weldment drawing).",
-        "Holes, where the tables show them: drilled after welding by CNC or a drill jig that locates on the frame's "
-        "joint faces, at the places the frame's weldment drawing gives (as J-FRAME-01 for the welded frames); this "
-        "sheet shows them on the tube for reference. Rivnuts 838003 are set after that.",
+        "(D-120, D-162: the cut list governs); mill finish, hidden (D-79). TIG-welded into its frame in the frame's "
+        "jig (its weldment drawing).",
     ],
-    "tolerance": "cut length +0/-0.5 and end angles ±0.25° (assumption, as the BASE and WALL cut lists); hole "
-                 "positions to the frame's weldment drawing (R-J6: Ø0.4 to its datums); rivnut holes Ø10.00 +0.10/0 "
-                 "(D-163); other hole sizes +0.2/0 (assumption). Not ISO 2768 on the tube.",
+    "tolerance": "as the frame's cut list (D-162): cut length ±0.5 and end angles ±0.5°.",
 }
 
 # D-162 (the Lead's ruling, 2026-11-01): a welded frame's member is drawn by its row in the frame's cut list, on the
