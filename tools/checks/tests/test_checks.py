@@ -548,7 +548,7 @@ def test_generated_drawings_count_the_same_and_their_findings_go_to_the_generato
     assert f.owner == "Drawing Generator"
 
 
-def test_generated_drawings_follow_d113_sections_and_no_bent_parts(tmp_path):
+def test_generated_drawings_follow_d113_sections_and_draw_bent_parts_d158(tmp_path):
     fitz = pytest.importorskip("fitz")
     d = tmp_path / "v2/02-Drawings/base"
     d.mkdir(parents=True)
@@ -563,14 +563,15 @@ def test_generated_drawings_follow_d113_sections_and_no_bent_parts(tmp_path):
     pdf("111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf", full, "drawgen 0.1")                 # holes through both walls
     pdf("111102_P01_BASE-BAND-TUBE-SIDE-RH_DWG.pdf", full + "\nSECTION A-A", "drawgen 0.1")
     pdf("111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf", full, "Autodesk Fusion")              # D-113 is the generator's rule
-    pdf("111601_P01_BASE-BRACKET_DWG.pdf", full, "drawgen 0.1")                         # a bent bracket
+    pdf("111601_P01_BASE-BRACKET_DWG.pdf", full, "drawgen 0.1")      # a bent bracket: the generator's since D-158
     pns = {"111101", "111102", "111103", "111601"}
     holes = {pn: [sf.Hole(1, (0, 0, 0), (0, 0, 1), 6.6, 2.0, [])] for pn in pns}
     fs = c_drawings.check_drawings(str(tmp_path), pns, holes, two_wall_by_pn={"111101": 2, "111102": 2, "111103": 2},
                                    bends_by_pn={"111601": 2})
     got = {(f.rule, f.subject): f for f in fs}
-    assert set(got) == {("no-section", "111101"), ("generated-bent-part", "111601")}
-    assert got[("no-section", "111101")].owner == got[("generated-bent-part", "111601")].owner == "Drawing Generator"
+    # D-158 replaced D-113 (3): the generator's bent sheet mode (#335) draws bent parts, so 111601 is no finding
+    assert set(got) == {("no-section", "111101")}
+    assert got[("no-section", "111101")].owner == "Drawing Generator"
     # the STEP facts behind them: a hole axis through both walls of one body; copies of a part counted once
     assert c_drawings.two_wall_axes([sf.Hole(1, (0, 0, 0), (0, 0, 1), 6.6, 2, []),
                                      sf.Hole(1, (0, 0, 40), (0, 0, 1), 6.6, 2, []),
