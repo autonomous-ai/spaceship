@@ -22,4 +22,6 @@ python3 v2/07-Packaging/test_pack.py       # regression tests
 
 Part numbers come from the master BOM (`../04-BOM/100000_P01_POD-MASTER_BOM.csv`): a piece marked "TBD (owner)" takes its number as soon as the owner's parts list carries its exact name, and check K13 holds every number on a label to the BOM's name.
 
+Sizes come from each part's own CAD as it ships (`v2/03-Manufacturing/*/*_STEP.step`, read with the mechanical checks' STEP reader in `tools/checks/stepfile.py`): check K14 fails when a merged CAD outgrows its planned size, and pallet 2's lanes and tiers follow from the sizes with the wrap a side, so the pallets are checked on the real parts.
+
 Edit `templates/` or `pack.py`, never the generated files. When a team's CAD replaces a roll-up line, regenerate the roll-up, then run `pack.py`; run it again after the master BOM changes.

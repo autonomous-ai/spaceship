@@ -25,8 +25,14 @@ class Unreadable(Exception):
 class File:
     versionNumber = 1
 
-    def __init__(self, name=None, ext=None):
-        self._n, self._e = name, ext
+    def __init__(self, name=None, ext=None, fid=None):
+        self._n, self._e, self._id = name, ext, fid
+
+    @property
+    def id(self):
+        if self._id is None:
+            raise Unreadable("id")
+        return self._id
 
     @property
     def name(self):
@@ -308,8 +314,8 @@ class SharedCopyTests(unittest.TestCase):
 class DocStepTests(unittest.TestCase):
     """The runner's --doc step itself, against a fake Fusion API."""
 
-    def run_doc(self, items, create, heal_after=None, wait=False, open_fails=0):
-        folder = Folder(items, heal_after)
+    def run_doc(self, items, create, heal_after=None, wait=False, open_fails=0, folder=None, dup_wait=None):
+        folder = folder or Folder(items, heal_after)
         folder.dataFolders = types.SimpleNamespace(itemByName=lambda n: None)
         opened, made = [], []
 
@@ -352,6 +358,9 @@ class DocStepTests(unittest.TestCase):
         src = rs.doc_script("open", "NEW_CAD", "Default Project", create=create)
         if not wait:
             src = src.replace("WAIT_S = 60.0", "WAIT_S = 0.0")    # no real waiting in a test
+            src = src.replace("DUP_PAUSE_S = 3.0", "DUP_PAUSE_S = 0.0")
+        if dup_wait is not None:
+            src = src.replace("DUP_WAIT_S = 30.0", "DUP_WAIT_S = %r" % dup_wait)
         try:
             ns = {}
             exec(compile(src, "doc_step", "exec"), ns)
@@ -363,6 +372,71 @@ class DocStepTests(unittest.TestCase):
                 else:
                     sys.modules[k] = v
         return opened, made
+
+    def test_a_design_listed_twice_just_after_it_was_made_is_opened_once_the_listing_settles(self):
+        # CEILING's C1 sample, 2026-11-01: for about 10 s after a design is made, the cloud
+        # lists it twice; the open read the folder again instead of refusing at once
+        class Settling(Files):
+            def __init__(self):
+                super().__init__([File("NEW_CAD", "f3d"), File("NEW_CAD", "f3d"), File("A_CAD", "f3d")])
+
+            @property
+            def count(self):
+                self.reads += 1
+                if self.reads > 2:                                   # settled after two reads
+                    self.items = [File("NEW_CAD", "f3d"), File("A_CAD", "f3d")]
+                return len(self.items)
+
+        folder = Folder([])
+        folder.dataFiles = Settling()
+        opened, made = self.run_doc(None, create=False, folder=folder)
+        self.assertEqual((opened, made), (["NEW_CAD"], []))
+        self.assertGreaterEqual(folder.dataFiles.reads, 3)
+
+    def changing_folder(self, first, later, switch_after=2):
+        """A folder that lists `first` for its first reads, then `later`."""
+        class Changing(Files):
+            def __init__(self):
+                super().__init__(list(first))
+
+            @property
+            def count(self):
+                self.reads += 1
+                if self.reads > switch_after:
+                    self.items = list(later)
+                return len(self.items)
+        folder = Folder([])
+        folder.dataFiles = Changing()
+        return folder
+
+    def test_two_different_files_are_refused_even_if_one_goes_unreadable_during_the_wait(self):
+        # Reviewer 5 on #238: the re-read showed one readable NEW_CAD while the other copy
+        # couldn't be read by name, and the runner opened it; main refused at once
+        folder = self.changing_folder([File("NEW_CAD", "f3d", "a"), File("NEW_CAD", "f3d", "b")],
+                                      [File("NEW_CAD", "f3d", "a"), File(None, "f3d")])
+        with self.assertRaises(RuntimeError) as cm:
+            self.run_doc(None, create=False, folder=folder, dup_wait=0.05)
+        self.assertIn("2 files are called 'NEW_CAD'", str(cm.exception))
+        self.assertGreater(folder.dataFiles.reads, 2)                  # it read again, and still refused
+
+    def test_one_file_listed_twice_with_the_same_id_is_opened_at_once(self):
+        folder = Folder([File("NEW_CAD", "f3d", "same"), File("NEW_CAD", "f3d", "same")])
+        opened, _made = self.run_doc(None, create=False, folder=folder, dup_wait=0.05)
+        self.assertEqual(opened, ["NEW_CAD"])
+        self.assertEqual(folder.dataFiles.reads, 1)                    # no waiting
+
+    def test_a_listing_that_settles_with_only_a_drawing_unreadable_is_opened(self):
+        folder = self.changing_folder([File("NEW_CAD", "f3d", "a"), File("NEW_CAD", "f3d", "b")],
+                                      [File("NEW_CAD", "f3d", "a"), File(None, "f2d")])
+        opened, _made = self.run_doc(None, create=False, folder=folder, dup_wait=5.0)
+        self.assertEqual(opened, ["NEW_CAD"])                          # a .f2d can't be the design
+
+    def test_a_design_that_stays_listed_twice_is_refused_as_before(self):
+        folder = Folder([File("NEW_CAD", "f3d"), File("NEW_CAD", "f3d")])
+        with self.assertRaises(RuntimeError) as cm:
+            self.run_doc(None, create=False, folder=folder, dup_wait=0.05)
+        self.assertIn("2 files are called 'NEW_CAD'", str(cm.exception))
+        self.assertGreater(folder.dataFiles.reads, 1)                 # it did read again first
 
     def test_a_new_design_is_refused_while_an_entry_that_could_be_it_stays_unreadable(self):
         with self.assertRaises(RuntimeError) as cm:

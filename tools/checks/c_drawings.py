@@ -563,7 +563,7 @@ def dxf_shapes(path):
 
 
 DENSITY = re.compile(r"\d+(?:[.,]\d+)?\s*(?:kg|g)\s*/\s*m\s*[23²³]|\bgsm\b|\bdensity\b", re.I)
-DEPTH_WORDS = re.compile(r"\bpockets?\b|\bdepth\b|\bblind\b|\brebate|\bstepped\b|\bcounterbor", re.I)
+DEPTH_WORDS = re.compile(r"\bpockets?\b|\bdepth\b|\bblind\b|\brebate|\bcounterbor", re.I)   # not "stepped": a stepped outline is a through cut
 
 
 def felt_row_lacks(root, pn, thickness=None):
@@ -586,6 +586,7 @@ def felt_row_lacks(root, pn, thickness=None):
                     lacks.append("density or grade")
                 sizes = _cell(row, r"size|dimension|thick|^t_?mm$")
                 nums = [float(x) for _k, v in sizes for x in re.findall(r"\d+(?:\.\d+)?", v)]
+                nums += [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)\s*mm\b", mat)]    # "PET felt 9 mm"
                 if thickness is not None and not any(abs(n - thickness) <= 0.2 for n in nums):
                     lacks.append("thickness (%g mm, as in its STEP)" % thickness)
                 elif thickness is None and not nums:
@@ -808,6 +809,39 @@ def screen_locked():
     return any(u.get("CGSSessionScreenIsLocked") for u in data.get("IOConsoleUsers", []))
 
 
+def hidden_lines_allowed(root):
+    """drawing file name -> the number of views that keep hidden lines on purpose, from
+    v2/04-Checks/config/hidden-lines-allow.csv (drawing, views, reason, ruling)."""
+    from common import read_csv
+    p = os.path.join(root, "v2/04-Checks/config/hidden-lines-allow.csv")
+    out = {}
+    for row in (read_csv(p) if os.path.exists(p) else []):
+        try:
+            out[(row.get("drawing") or "").strip()] = int(row.get("views") or 0)
+        except ValueError:
+            pass
+    return out
+
+
+def drawing_traps(pdf, allowed_views=0):
+    """The PM's four drawing traps read back from the PDF (pdf_traps.py, ELECTRICAL's read-back, 2026-11-01):
+    text under 2.5 mm capital height (title-block labels under 1.8) and a first-angle symbol without 4 corners are
+    major; hidden lines in more views than allowed and a dimension value printed twice are minor. One entry per
+    rule, the sheets of a multi-sheet PDF joined: [(rule, severity, message, fix)]. [] when PyMuPDF isn't there."""
+    try:
+        import pdf_traps
+        found = pdf_traps.findings(pdf, allowed_views)
+    except ImportError:
+        return []
+    merged = {}
+    for rule, sev, msg, fix in found:
+        if rule in merged:
+            merged[rule] = (rule, sev, merged[rule][2] + " " + msg, fix)
+        else:
+            merged[rule] = (rule, sev, msg, fix)
+    return list(merged.values())
+
+
 def drawgen_parts(root):
     """D-113: the numbers tools/drawgen draws, from its own registry (tools/drawgen/specs.py, plain data): every
     number it registers and the numbers a registered tabulated sheet covers. Empty when there is no registry."""
@@ -855,6 +889,7 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
     fs = []
     idx = index_files(root)
     drawgen = drawgen_parts(root) if policy(root, "missing_drawing_severity", "severe") == "auto-screen-lock" else set()
+    hidden_allow = hidden_lines_allowed(root)            # drawings that keep hidden lines on purpose
     def missing_for(pn):                                 # PM rulings D-73, D-84, D-97 (config/policy.csv), D-113
         return missing_drawing_severity(root, pn, drawgen)
     tab = tabulated_cover(idx)                            # D-89
@@ -989,6 +1024,10 @@ def check_drawings(root, part_numbers, holes_by_pn, names=None, faces_by_pn=None
                                   label, "/".join(sorted(revs)), "/".join(sorted(cad_revs))),
                               "Export the drawing, CAD and STEP from the same revision (guideline section 4.2)." + gen_fix,
                               rp, owner))
+        # the PM's drawing traps, read back from what reached the paper: every drawing, the wiring diagram too
+        for rule, sev, msg, fix in drawing_traps(pdf, hidden_allow.get(os.path.basename(pdf), 0)):
+            fs.append(Finding("C05", rule, pn, sev, "%s drawing %s: %s" % (label, os.path.basename(rp), msg),
+                              fix + gen_fix, rp, owner))
         if "WIRING-DIAGRAM" in os.path.basename(pdf).upper():
             continue        # D-93: ELECTRICAL's wiring diagram draws 710000 (routes and joints on sheet 3); a schematic
         text = pdf_text(pdf)
