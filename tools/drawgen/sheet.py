@@ -482,12 +482,14 @@ class Sheet:
         self.shape.finish(width=0.1 * MM, color=BLACK, fill=BLACK, even_odd=True, closePath=True)
 
     # ------------------------------------------------------------ dimensions (ISO 129-1)
-    def dim_linear(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5, slide=False):
+    def dim_linear(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5, slide=False, far=(False, False)):
         """A linear dimension between sheet points p1 and p2, measured horizontally (side 'up'/'down') or
         vertically ('left'/'right'); the dimension line sits gap mm beyond the farther point on that side. The
         value sits on the far side of the line from the part, centred, or beside the line when it doesn't fit
         between the arrows (ISO 129-1). slide: a value beside the line moves out along it, the line extended, until
-        it touches no other text and no line."""
+        it touches no other text and no line. far: for p1 and p2, an end whose face is seen through the part (a
+        sheet's far face): its arrow comes from outside, the line 4 past its tip, so the tip sits on the face's
+        visible edge (ISO 129-1)."""
         tw = self.text_width(text, size)
         if side in ("up", "down"):
             sgn = 1 if side == "up" else -1
@@ -497,7 +499,12 @@ class Sheet:
             a, b = (min(p1[0], p2[0]), yl), (max(p1[0], p2[0]), yl)
             span = b[0] - a[0]
             ty = yl + 0.8 if sgn > 0 else yl - 0.8 - size
-            if span > 8:
+            fa, fb = far if p1[0] <= p2[0] else far[::-1]
+            if span > 8 and (fa or fb):
+                self.line((a[0] - 4 * fa, yl), (b[0] + 4 * fb, yl), W_THIN)
+                self.arrow(a, (1, 0) if fa else (-1, 0))
+                self.arrow(b, (-1, 0) if fb else (1, 0))
+            elif span > 8:
                 self.line(a, b, W_THIN)
                 self.arrow(a, (-1, 0))
                 self.arrow(b, (1, 0))
@@ -521,7 +528,12 @@ class Sheet:
                 self.line((p[0] + sgn * ext_gap, p[1]), (xl + sgn * ext_over, p[1]), W_THIN)
             a, b = (xl, min(p1[1], p2[1])), (xl, max(p1[1], p2[1]))
             span = b[1] - a[1]
-            if span > 8:
+            fa, fb = far if p1[1] <= p2[1] else far[::-1]
+            if span > 8 and (fa or fb):
+                self.line((xl, a[1] - 4 * fa), (xl, b[1] + 4 * fb), W_THIN)
+                self.arrow(a, (0, 1) if fa else (0, -1))
+                self.arrow(b, (0, -1) if fb else (0, 1))
+            elif span > 8:
                 self.line(a, b, W_THIN)
                 self.arrow(a, (0, -1))
                 self.arrow(b, (0, 1))
@@ -535,7 +547,7 @@ class Sheet:
             else:
                 self.text(tx, b[1] + 6, text, size, "left", rotate=90)
 
-    def dim_linear_lines(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5):
+    def dim_linear_lines(self, p1, p2, side, gap, text, size=2.5, ext_gap=1.0, ext_over=1.5, far=(False, False)):
         """What dim_linear draws for the same arguments (without slide), without drawing: the segments it records (its
         two extension lines first, then its dimension line, each arrowhead's sides and a value's leader) and its
         value's ink box. Dimensions laid out together are planned with it before any is drawn (a bent part's profile
@@ -554,7 +566,12 @@ class Sheet:
             segs += [((p[0], p[1] + sgn * ext_gap), (p[0], yl + sgn * ext_over)) for p in (p1, p2)]
             a, b = (min(p1[0], p2[0]), yl), (max(p1[0], p2[0]), yl)
             span = b[0] - a[0]
-            if span > 8:
+            fa, fb = far if p1[0] <= p2[0] else far[::-1]
+            if span > 8 and (fa or fb):
+                segs.append(((a[0] - 4 * fa, yl), (b[0] + 4 * fb, yl)))
+                arrow(a, (1, 0) if fa else (-1, 0))
+                arrow(b, (-1, 0) if fb else (1, 0))
+            elif span > 8:
                 segs.append((a, b))
                 arrow(a, (-1, 0))
                 arrow(b, (1, 0))
@@ -573,7 +590,12 @@ class Sheet:
             segs += [((p[0] + sgn * ext_gap, p[1]), (xl + sgn * ext_over, p[1])) for p in (p1, p2)]
             a, b = (xl, min(p1[1], p2[1])), (xl, max(p1[1], p2[1]))
             span = b[1] - a[1]
-            if span > 8:
+            fa, fb = far if p1[1] <= p2[1] else far[::-1]
+            if span > 8 and (fa or fb):
+                segs.append(((xl, a[1] - 4 * fa), (xl, b[1] + 4 * fb)))
+                arrow(a, (0, 1) if fa else (0, -1))
+                arrow(b, (0, -1) if fb else (0, 1))
+            elif span > 8:
                 segs.append((a, b))
                 arrow(a, (0, -1))
                 arrow(b, (0, 1))

@@ -917,6 +917,52 @@ def test_profile_sizes_keep_their_extension_lines_clear():
             assert sh.boxes == [box], (side, t, sh.boxes, box)
 
 
+def test_a_far_face_end_gets_its_arrow_from_outside():
+    """Reviewer 6's P3 on #421: under the sill's top flange, the 19's top arrow tip sat inside the flange's filled band,
+    as if it measured from the flange's inside face. An end on the sheet's far face (its arrow would sit in the sheet
+    itself) gets its arrow from outside, its tip on the face's visible edge, the line 4 past it (ISO 129-1). The test
+    Z-profile: only the 19's end at the top flange and the 17's at the step are far, and the sheet reads back. What
+    dim_linear draws with a far end is what dim_linear_lines plans, the far end at the mark it is given for."""
+    import sheet as sheetmod
+    d = os.path.join(TMP, "zprofile_far")
+    os.makedirs(d, exist_ok=True)
+    step = _z_profile(os.path.join(d, "219972_P01_TEST-Z-PROFILE_STEP.step"))
+    dxf = _z_profile_dxf(os.path.join(d, "219972_P01_TEST-Z-PROFILE_DXF.dxf"))
+    row = dict(ROW, part_number="219972", name="TEST - Z PROFILE", material="aluminium sheet 5005 H14, 2 mm",
+               process="laser cut, press brake")
+    calls, real = [], sheetmod.Sheet.dim_linear
+
+    def spy(self, p1, p2, side, gap, text, *a, **k):
+        calls.append((text, tuple(k.get("far", (False, False)))))
+        return real(self, p1, p2, side, gap, text, *a, **k)
+    sheetmod.Sheet.dim_linear = spy
+    try:
+        p = os.path.join(d, "219972.pdf")
+        compose.make("219972", "none", dict(SPEC, bent={"radius": 2.0, "radius_why": "test", "dxf": dxf}), p,
+                     step=step, row=row)
+    finally:
+        sheetmod.Sheet.dim_linear = real
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    far = {t: f for t, f in calls if any(f)}
+    assert sorted(far) == ["17", "19"] and all(sum(f) == 1 for f in far.values()), far
+    key = lambda s_: tuple(sorted(tuple(round(v, 6) for v in pt) for pt in s_))
+    for side in ("up", "down", "left", "right"):
+        along = 0 if side in ("up", "down") else 1
+        for fl in ((True, False), (False, True)):
+            sh = sheetmod.Sheet("A3")
+            p1, p2 = (160.0, 160.0), (100.0, 100.0)        # p1 the farther along: its flag is the first
+            p1 = (p1[0], 100.0) if along == 0 else (100.0, p1[1])
+            segs, box = sh.dim_linear_lines(p1, p2, side, 6.0, "60", far=fl)
+            sh.dim_linear(p1, p2, side, 6.0, "60", far=fl)
+            drawn = {key(s_) for cell in sh.grid.cells.values() for s_ in cell if s_[0] != s_[1]}
+            assert {key(s_) for s_ in segs} == drawn, (side, fl, sorted({key(s_) for s_ in segs} ^ drawn)[:4])
+            assert sh.boxes == [box], (side, fl, sh.boxes, box)
+            # the line runs 4 past the far end's mark, and stops at the other
+            ends = [q[along] for s_ in drawn for q in s_]
+            assert (max(ends), min(ends)) == ((164.0, 100.0) if fl[0] else (160.0, 96.0)), (side, fl)
+
+
 def _csk_plate(path, csk_r=5.2):
     """A 100 x 60 x 3 plate with two Ø5.5 holes: one countersunk from the top (90°, Ø2 csk_r at the face), one plain."""
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
