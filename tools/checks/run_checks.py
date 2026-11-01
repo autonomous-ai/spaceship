@@ -102,8 +102,7 @@ def run(root, rev):
     # parts lists
     plists = c_parts.find_parts_lists(root)
     inputs["parts_lists"] = [rel(root, p) for p, _r in plists]
-    materials = {row["part_number"]: " ".join(x for x in (row["material"], row["grade"]) if x)
-                 for _p, rows in plists for row in rows if row["part_number"]}
+    materials = c_parts.materials_by_pn(root, plists, ("material", "grade"))   # the team's row over the master BOM's
     if plists:
         findings += c_parts.check_parts_lists(root, plists)
         ran |= {"C06", "C07", "C10", "C11"}

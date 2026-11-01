@@ -679,15 +679,27 @@ def metal_class(text):
     return "other"
 
 
+def materials_by_pn(root, plists, fields=("material", "grade", "finish")):
+    """pn -> its material text (the fields joined) from the parts lists: the team's own row; the master BOM only
+    fills a gap, and an empty row never hides another's (the master BOM's empty row for 831007 had hidden WALL's
+    'galvanized Z100', so the name's 'STEEL' read as bare steel: the Lead's ruling, 2026-11-01)."""
+    mat = {}
+    for p, rows in plists:
+        master = is_master(rel(root, p))
+        for row in rows:
+            pn = row["part_number"]
+            own = " ".join(x for x in (row.get(k, "") for k in fields) if x)
+            if not pn or not own or (master and pn in mat):
+                continue
+            mat[pn] = own
+    return mat
+
+
 def check_mixed_metals(root, plists, contacts):
     """contacts: list of (pn_a, pn_b, file) for parts whose boxes touch in
     the assembled CAD."""
     fs = []
-    mat = {}
-    for _p, rows in plists:
-        for row in rows:
-            if row["part_number"]:
-                mat[row["part_number"]] = " ".join(x for x in (row["material"], row["grade"], row["finish"]) if x)
+    mat = materials_by_pn(root, plists)
     for p, rows in plists:
         r = rel(root, p)
         for row in rows:
