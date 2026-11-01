@@ -1,5 +1,5 @@
 {
- "next": 347,
+ "next": 354,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -1393,7 +1393,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -1438,7 +1438,7 @@
    "evidence": {},
    "key": "C05|no-drawing|111101",
    "id": "F-043",
-   "status": "CLOSED",
+   "status": "OPEN",
    "source": "auto",
    "found": "2026-11-01 dc61ad9",
    "posted": "BASE group 2026-11-01",
@@ -1452,9 +1452,14 @@
      "date": "2026-11-01",
      "rev": "f3013d7",
      "event": "closed: the check ran on this revision and no longer finds it"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 7309f94",
+   "last_seen": "2026-11-01 d50a0a0",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -1493,7 +1498,7 @@
    "rule": "no-drawing",
    "subject": "111211",
    "severity": "severe",
-   "message": "111211 BASE - CORNER KEY - BACK - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step.",
+   "message": "111211 BASE - CORNER KEY - SQUARE - COMMON has no drawing PDF (111211_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step.",
    "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
    "file": "v2/03-Manufacturing/joints/111211_P01_BASE-CORNER-KEY-SQUARE-COMMON_STEP.step",
    "owner": "Joints Engineer",
@@ -1521,7 +1526,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809",
+   "last_seen": "2026-11-01 d50a0a0",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3105,7 +3110,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3130,7 +3135,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -3144,7 +3149,7 @@
    "evidence": {},
    "key": "C06|duplicate-number|111211",
    "id": "F-098",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 8c3aca4",
    "posted": "BASE group 2026-11-01",
@@ -3158,9 +3163,15 @@
      "date": "2026-11-01",
      "rev": "8c3aca4",
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -3236,7 +3247,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809",
+   "last_seen": "2026-11-01 d50a0a0",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3272,7 +3283,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809",
+   "last_seen": "2026-11-01 d50a0a0",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3308,7 +3319,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809",
+   "last_seen": "2026-11-01 d50a0a0",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3433,7 +3444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3458,7 +3469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3483,7 +3494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3508,7 +3519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3533,7 +3544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3558,7 +3569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3583,7 +3594,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3608,7 +3619,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3633,7 +3644,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3658,7 +3669,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3683,7 +3694,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3708,7 +3719,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3733,7 +3744,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3758,7 +3769,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3783,7 +3794,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3808,7 +3819,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3833,7 +3844,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -3858,7 +3869,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4333,7 +4344,7 @@
    },
    "key": "C01|shell-open|assembly shell left-base Y 847..850 Z 10..110",
    "id": "F-136",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c72ea57",
    "posted": "BASE group 2026-11-01",
@@ -4357,10 +4368,15 @@
      "date": "2026-11-01",
      "rev": "e06fa22",
      "event": "owner set by hand to BASE: the opening borders BASE's side band; the end cap 118003 that closes it isn't in the CAD"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
+   "closed": "2026-11-01 d50a0a0",
    "last_seen": "2026-11-01 2b0d809"
   },
   {
@@ -4420,7 +4436,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4476,7 +4492,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4501,7 +4517,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4526,7 +4542,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4551,7 +4567,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4576,7 +4592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4601,7 +4617,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4780,7 +4796,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4805,7 +4821,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4830,7 +4846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4855,7 +4871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4880,7 +4896,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -4905,7 +4921,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5037,7 +5053,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5066,7 +5082,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5095,7 +5111,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5124,7 +5140,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5153,7 +5169,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5182,7 +5198,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5211,7 +5227,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5240,7 +5256,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5269,7 +5285,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5298,7 +5314,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5327,7 +5343,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5356,7 +5372,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5385,7 +5401,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5414,7 +5430,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5443,7 +5459,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5472,7 +5488,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5501,7 +5517,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5526,7 +5542,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5551,7 +5567,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5576,7 +5592,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5601,7 +5617,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5626,7 +5642,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5651,7 +5667,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5676,7 +5692,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5701,7 +5717,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5726,7 +5742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5751,7 +5767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -5840,7 +5856,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5869,7 +5885,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5898,7 +5914,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5927,7 +5943,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5956,7 +5972,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -5985,7 +6001,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6010,7 +6026,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6035,7 +6051,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6060,7 +6076,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6085,7 +6101,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6110,7 +6126,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6135,7 +6151,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6160,7 +6176,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6185,7 +6201,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6210,7 +6226,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6235,7 +6251,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6260,7 +6276,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6285,7 +6301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6310,7 +6326,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6335,7 +6351,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6360,7 +6376,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6385,7 +6401,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6429,7 +6445,7 @@
    "evidence": {},
    "key": "C05|hidden-lines|110401",
    "id": "F-212",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "BASE group, 2026-11-01",
@@ -6438,9 +6454,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6454,7 +6476,7 @@
    "evidence": {},
    "key": "C05|dimension-twice|110401",
    "id": "F-213",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "BASE group, 2026-11-01",
@@ -6463,9 +6485,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6571,7 +6599,7 @@
    "evidence": {},
    "key": "C05|dimension-twice|111401",
    "id": "F-217",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "BASE group, 2026-11-01",
@@ -6580,9 +6608,15 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -6855,7 +6889,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C08",
@@ -6884,7 +6918,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -6909,7 +6943,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -6934,7 +6968,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -6959,7 +6993,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -6984,7 +7018,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7009,7 +7043,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7034,7 +7068,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7059,7 +7093,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7084,7 +7118,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7109,7 +7143,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7134,7 +7168,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7159,7 +7193,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7184,7 +7218,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7209,7 +7243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7234,7 +7268,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -7259,7 +7293,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7284,7 +7318,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -7312,7 +7346,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -7340,7 +7374,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7369,7 +7403,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7398,7 +7432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7427,7 +7461,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7456,7 +7490,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7485,7 +7519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7514,7 +7548,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7539,7 +7573,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7564,7 +7598,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7589,7 +7623,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7645,7 +7679,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7670,7 +7704,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7695,7 +7729,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7720,7 +7754,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7745,7 +7779,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7770,7 +7804,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7795,7 +7829,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7820,7 +7854,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7845,7 +7879,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7870,7 +7904,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7895,7 +7929,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7920,7 +7954,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -7945,7 +7979,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7959,7 +7993,7 @@
    "evidence": {},
    "key": "C06|cancelled-by-decision|110401",
    "id": "F-269",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5fa198d",
    "posted": "BASE group, 2026-11-01",
@@ -7968,9 +8002,15 @@
      "date": "2026-11-01",
      "rev": "5fa198d",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -7984,7 +8024,7 @@
    "evidence": {},
    "key": "C06|cancelled-by-decision|111401",
    "id": "F-270",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5fa198d",
    "posted": "BASE group, 2026-11-01",
@@ -7993,9 +8033,15 @@
      "date": "2026-11-01",
      "rev": "5fa198d",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -8009,7 +8055,7 @@
    "evidence": {},
    "key": "C06|cancelled-by-decision|111501",
    "id": "F-271",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5fa198d",
    "posted": "BASE group, 2026-11-01",
@@ -8018,9 +8064,15 @@
      "date": "2026-11-01",
      "rev": "5fa198d",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -8034,7 +8086,7 @@
    "evidence": {},
    "key": "C06|required-by-decision|the base seal lip on the band's inner face, pressing on the ",
    "id": "F-272",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 5fa198d",
    "posted": "BASE group, 2026-11-01",
@@ -8043,9 +8095,15 @@
      "date": "2026-11-01",
      "rev": "5fa198d",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -8073,7 +8131,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -8101,7 +8159,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -8129,7 +8187,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -8157,7 +8215,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -8185,7 +8243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C09",
@@ -8213,21 +8271,19 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
    "rule": "name-mismatch",
    "subject": "838003",
    "severity": "major",
-   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
-   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 8 parts lists).",
-   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (6 CAD, 7 parts lists).",
+   "file": "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
    "owner": "BASE; ELECTRICAL; WALL",
    "evidence": {
     "files": [
-     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
-     "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
      "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
      "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
@@ -8262,7 +8318,7 @@
      "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C01",
@@ -9621,7 +9677,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9649,7 +9705,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9677,7 +9733,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9705,7 +9761,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9733,7 +9789,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9761,7 +9817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9789,7 +9845,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9817,7 +9873,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9844,7 +9900,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9871,7 +9927,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C11",
@@ -9898,7 +9954,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -9917,7 +9973,7 @@
    },
    "key": "C06|name-mismatch|118001",
    "id": "F-323",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 c22880b",
    "posted": "BASE group, 2026-11-01",
@@ -9926,9 +9982,15 @@
      "date": "2026-11-01",
      "rev": "c22880b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -9944,7 +10006,7 @@
    },
    "key": "C05|drawing-author|110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG",
    "id": "F-324",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "BASE group, 2026-11-01",
@@ -9953,9 +10015,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -9971,7 +10039,7 @@
    },
    "key": "C05|drawing-author|111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG",
    "id": "F-325",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "Drawing Generator group, 2026-11-01",
@@ -9990,9 +10058,14 @@
      "date": "2026-11-01",
      "rev": "d86ddcb",
      "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "closed": "2026-11-01 a8cd10a",
+   "closed": "2026-11-01 d50a0a0",
    "last_seen": "2026-11-01 2b0d809"
   },
   {
@@ -10009,7 +10082,7 @@
    },
    "key": "C05|drawing-author|111103_P01_BASE-BAND-TUBE-BACK_DWG",
    "id": "F-326",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "Drawing Generator group, 2026-11-01",
@@ -10028,9 +10101,14 @@
      "date": "2026-11-01",
      "rev": "d86ddcb",
      "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "closed": "2026-11-01 a8cd10a",
+   "closed": "2026-11-01 d50a0a0",
    "last_seen": "2026-11-01 2b0d809"
   },
   {
@@ -10047,7 +10125,7 @@
    },
    "key": "C05|drawing-author|111401_P01_BASE-FLOOR-PANEL-F1_DWG",
    "id": "F-327",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 12d5825",
    "posted": "BASE group, 2026-11-01",
@@ -10056,9 +10134,15 @@
      "date": "2026-11-01",
      "rev": "12d5825",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 2b0d809",
+   "closed": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -10413,7 +10497,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -10438,7 +10522,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -10463,7 +10547,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C05",
@@ -10488,7 +10572,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C02",
@@ -10523,7 +10607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C02",
@@ -10552,7 +10636,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C02",
@@ -10581,7 +10665,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C02",
@@ -10610,7 +10694,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 2b0d809"
+   "last_seen": "2026-11-01 d50a0a0"
   },
   {
    "check": "C06",
@@ -10643,6 +10727,185 @@
     {
      "date": "2026-11-01",
      "rev": "2b0d809",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d50a0a0"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1231 Y 837 Z 11",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111101 BASE - BAND TUBE - SIDE - LH - TUBE is 13.0 mm from the free edge (centre to edge), 1.86 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X -1231 Y 837 Z 11 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 13.0,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X -1231 Y 837 Z 11",
+   "id": "F-347",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111102 BASE - BAND TUBE - SIDE - RH - TUBE hole Ø7.0 at X 1231 Y 837 Z 11",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111102 BASE - BAND TUBE - SIDE - RH - TUBE is 13.0 mm from the free edge (centre to edge), 1.86 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X 1231 Y 837 Z 11 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 13.0,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111102 BASE - BAND TUBE - SIDE - RH - TUBE hole Ø7.0 at X 1231 Y 837 Z 11",
+   "id": "F-348",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 d50a0a0"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 13 Y 19 Z 1",
+   "severity": "major",
+   "message": "Hole Ø7.00 in 111101 BASE - BAND TUBE - SIDE - LH - TUBE is 13.0 mm from the free edge (centre to edge), 1.86 diameters; the rule is at least 2 diameters (14.0 mm). Hole centre X 13 Y 19 Z 1 in the part's own coordinates.",
+   "fix": "Move the hole to at least 14.0 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_STEP.step",
+   "owner": "BASE",
+   "evidence": {
+    "edge_mm": 13.0,
+    "dia_mm": 7.0
+   },
+   "key": "C09|edge-distance|111101 BASE - BAND TUBE - SIDE - LH - TUBE hole Ø7.0 at X 13 Y 19 Z 1",
+   "id": "F-349",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110102",
+   "severity": "major",
+   "message": "110102 BASE - BAND ASSY - SIDE - RH has no drawing PDF (110102_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110102",
+   "id": "F-350",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "110106",
+   "severity": "major",
+   "message": "110106 BASE - BAND ASSY - FRONT - FIXED GLASS has no drawing PDF (110106_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|110106",
+   "id": "F-351",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111102",
+   "severity": "severe",
+   "message": "111102 BASE - BAND TUBE - SIDE - RH has no drawing PDF (111102_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/base/111102_P01_BASE-BAND-TUBE-SIDE-RH_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111102",
+   "id": "F-352",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "111301",
+   "severity": "severe",
+   "message": "111301 BASE - SILL - FIXED GLASS has no drawing, and D-89 part 4 (flat sheet part on its DXF) doesn't apply: its DXF draws on BEND; only CUT and MARK pass, so it is folded; it isn't a sheet part (100.0 thick across 120.5); its row's process names bend, brake, weld.",
+   "fix": "Make its drawing; or, for a flat part cut from sheet with no bends and no machined features, give the full outline and every hole in its DXF and material, thickness, finish, ISO 2768-m and any critical hole note in its parts-list row (D-89 part 4).",
+   "file": "v2/03-Manufacturing/base/111301_P01_BASE-SILL-FIXED-GLASS_STEP.step",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C05|no-drawing|111301",
+   "id": "F-353",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 d50a0a0",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "d50a0a0",
      "event": "opened"
     }
    ]
