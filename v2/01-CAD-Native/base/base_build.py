@@ -444,7 +444,15 @@ def one_profile(sk):
 
 # ---------------------------------------------------------------- document
 
+# key -> its own component, filled when the tree is built: several keys can share a part number (the lip seal's
+# envelopes, one per band piece, are all 118001), so a lookup by part number alone would find the first one
+COMPONENTS = {}
+
+
 def find_comp(design, key):
+    c = COMPONENTS.get(key)
+    if c is not None and c.isValid and c.parentDesign == design:
+        return c
     want = PARTS[key][0]
     for c in design.allComponents:
         if c.partNumber == want:
@@ -466,16 +474,35 @@ def describe(comp, pn, name, vn, cls):
     comp.description = "%s | %s | %s | rev %s | DRAFT" % (name, vn, CLASS_NAME.get(cls, cls), REV)
 
 
+def close_own_documents(app):
+    """Close BASE's own documents that earlier runs left open (part designs a drawing start opened, drawings),
+    without saving: each is saved in the cloud already, and its open copy has no change of ours to keep. Only
+    names of BASE's part numbers (11xxxx_P01_...) are touched; with in_place=1 the active document (our assembly,
+    opened by the runner's --doc) stays."""
+    keep = app.activeDocument if ARGS.get("in_place") == "1" else None
+    closed = []
+    for i in range(app.documents.count - 1, -1, -1):
+        d = app.documents.item(i)
+        n = d.name
+        if n[:2] == "11" and n[:6].isdigit() and n[6:11] == "_P01_" and d != keep:
+            closed.append(n + (" (had unsaved changes, dropped)" if d.isModified else ""))
+            d.close(False)
+    print("own documents left open by earlier runs, closed: %s" % (", ".join(closed) or "none"))
+
+
 def close_unsaved_builds(app, keep=None):
-    """Close earlier unsaved build documents of this assembly (found by the
-    root part number); never a saved document or anyone else's."""
+    """Close earlier unsaved build documents of BASE: the assembly's or a part design's (found by the root part
+    number, 110000 or 11xxxx); never a saved document or anyone else's (an unsaved document with no BASE part
+    number stays)."""
     for i in range(app.documents.count - 1, -1, -1):
         d = app.documents.item(i)
         try:   # drawings and other documents have no design product
             dd = adsk.fusion.Design.cast(d.products.itemByProductType("DesignProductType"))
         except RuntimeError:
             dd = None
-        if dd and not d.isSaved and dd.rootComponent.partNumber == ASSEMBLY[0] and d != keep:
+        pn = dd.rootComponent.partNumber if dd else ""
+        if dd and not d.isSaved and len(pn) == 6 and pn[:2] == "11" and pn.isdigit() and d != keep:
+            print("closed an unsaved BASE build document left open (root %s)" % pn)
             d.close(False)
 
 
@@ -535,6 +562,7 @@ def build_tree(doc, design):
         occ = host.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         describe(occ.component, pn, name, vn, cls)
         made[key] = occ.component
+        COMPONENTS[key] = occ.component
         # pin, glide and rivnut: this first copy only holds the component; step 7
         # places the real copies at their holes and then deletes it
     print("step 1: document, %d skeleton parameters (read from %s) + %d BASE parameters" % (
@@ -1944,6 +1972,8 @@ def step6_p02(design):
 
 def run(_context):
     app = adsk.core.Application.get()
+    close_own_documents(app)
+    close_unsaved_builds(app)
     if ARGS.get("scope") == "p02":
         load_p02()
     if ARGS.get("part"):
