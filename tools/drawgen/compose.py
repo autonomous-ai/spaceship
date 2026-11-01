@@ -17,6 +17,7 @@ The rules (guideline sections 3.2, 3.3, 6; D-112, D-113; conventions sections 3,
 import datetime
 import math
 import os
+import re
 
 from OCP.BRep import BRep_Tool
 from OCP.BRepAdaptor import BRepAdaptor_Surface
@@ -235,6 +236,9 @@ class Part:
                 ft = Feature(s, s.kind)
                 ft.body = b
                 self.features.append(ft)
+        why = folded_or_bent(self)
+        if why:
+            raise NotDrawable("%s is %s: bent and folded parts stay with Fusion (D-113)" % (pn, why))
         self.reg = inputs.feature_rows(pn, team)
         for ft in self.features:
             ax = axis_name(ft.f.axis)
@@ -306,6 +310,57 @@ class Part:
     @property
     def dwg_name(self):
         return "%s_%s_%s_DWG" % (self.pn, self.rev, self.file_name)
+
+
+BENT_WORDS = re.compile(r"\b(?:bend|bends|bent|fold|folds|folded|brake|v-groove|groove and fold|press brake)\b", re.I)
+
+
+def folded_or_bent(part):
+    """Why the part is a bent or folded sheet, or None. Its process says so, or its geometry does: a thin-walled
+    body whose sheet faces run in two or more directions while its cross-section is one open outline (a tube's
+    cross-section closes round its bore, so a tube is not folded). Sharp folds count too (an ACP skin's V-groove
+    fold has no bend radius in the model)."""
+    proc = (part.row.get("process") or "") + " " + (part.row.get("name") or "")
+    m = BENT_WORDS.search(proc)
+    if m:
+        return "bent or folded (its parts list says '%s')" % m.group(0)
+    for b in part.bodies:
+        pls = geom.planes(b)
+        if not pls:
+            continue
+        big = max(a for _n, _o, a, _f in pls)
+        dirs = []
+        for i, (n1, o1, a1, f1) in enumerate(pls):
+            if a1 < 0.05 * big:
+                continue
+            for n2, o2, a2, f2 in pls[i + 1:]:
+                if a2 < 0.05 * big or vdot(n1, n2) > -0.9999:
+                    continue
+                gap = -(o1 + o2)          # opposite normals: offsets o1 = n.p1, o2 = -n.p2
+                if 0.2 < abs(gap) < 6.0:
+                    d = geom.canon_dir(n1)
+                    if not any(abs(abs(vdot(d, e)) - 1) < 1e-4 for e in dirs):
+                        dirs.append(d)
+        if len(dirs) < 2:
+            continue
+        # open or closed cross-section, across the long direction, at three places (one may cut through a hole)
+        lk = max(range(3), key=lambda k: b.size[k])
+        n = tuple(1.0 if k == lk else 0.0 for k in range(3))
+        from OCP.TopAbs import TopAbs_WIRE
+        opens = 0
+        for t in (0.31, 0.47, 0.63):
+            pt = tuple(b.box[k] + t * b.size[k] if k == lk else b.centroid[k] for k in range(3))
+            faces = cut_faces(geom.half_space_keep(b.shape, pt, n), pt, n)
+            wires = 0
+            for f in faces:
+                e = TopExp_Explorer(f, TopAbs_WIRE)
+                while e.More():
+                    wires += 1
+                    e.Next()
+            opens += bool(faces) and wires == len(faces)
+        if opens == 3:
+            return "a folded sheet (body %s: sheet faces in %d directions, open cross-section)" % (b.name, len(dirs))
+    return None
 
 
 def principal_view(part):

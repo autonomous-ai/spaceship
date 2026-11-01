@@ -135,49 +135,69 @@ def part_numbers_in(text):
     return re.findall(r"(?<!\d)(\d{6})(?!\d)", text or "")
 
 
-# The second register layout (BASE): | ID | Feature | Function | Size, position | Constraint | Status |
-FR2_ROW = re.compile(r"^\|\s*(F[A-Z]{1,2}-\d+[A-Z]?)\s*\|\s*([^|]*)\|\s*([^|]*)\|\s*([^|]*)\|\s*([^|]*)\|\s*([^|]*)\|\s*$")
+# The other register layouts (BASE's: | ID | Feature | Function | Size, position | ...; CEILING's: | Feature ID |
+# Feature | Size, offset, pitch | Function | ...): the header row names the columns, read per table.
+ROW = re.compile(r"^\|(.*)\|\s*$")
+FID = re.compile(r"^F[A-Z0-9]{0,6}-[A-Z0-9-]*\d[A-Z]?$")
 DIA = re.compile(r"Ø\s*([\d.]+)")
+DIA_WALL = re.compile(r"Ø\s*([\d.]+)[^Ø;]*?\b(top|bottom|inner|outer)\s+wall", re.I)
 NUM = re.compile(r"[-−+]?\d+(?:\.\d+)?")
 
 
 def feature_rows_b(team, pn=None):
-    """Rows of the second register layout that name a hole size: [{id, title, dia, wall, numbers, function,
+    """Rows of the other register layouts that name a hole size: [{id, title, dias, walls, numbers, function,
     status, file, keyhole}]."""
     out = []
     for p in sorted(glob.glob(os.path.join(DRAWINGS, team, "FEATURE-RATIONALE*.md"))):
-        section = ""
+        section, cols = "", None
         with open(p, encoding="utf-8") as fh:
             for line in fh:
                 if line.startswith("#"):
-                    section = line
+                    section, cols = line, None
                     continue
-                m = FR2_ROW.match(line.rstrip("\n"))
+                m = ROW.match(line.rstrip("\n"))
                 if not m:
+                    cols = None if not line.strip() else cols
+                    continue
+                cells = [c.strip() for c in m.group(1).split("|")]
+                low = [c.lower() for c in cells]
+                if low and low[0] in ("id", "feature id"):
+                    cols = low
+                    continue
+                if cols is None or not cells or not FID.match(cells[0]):
                     continue
                 named = re.findall(r"(?<!\d)\d{6}(?!\d)", section)
                 if pn and named and pn not in named:
                     continue        # a section about other parts
-                title, fn, size = m.group(2).strip(), m.group(3).strip(), m.group(4).strip()
-                d = DIA.search(title) or DIA.search(size)
-                if not d:
+                get = lambda key: next((cells[i] for i, c in enumerate(cols) if c.startswith(key) and i < len(cells)), "")
+                title, fn, size = get("feature"), get("function"), get("size")
+                both = title + " " + size
+                dias = [float(d.rstrip(".")) for d in DIA.findall(both)]
+                if not dias:
                     continue
-                low = (title + " " + size).lower()
-                wall = next((w for w in ("top", "bottom", "inner", "outer") if w + " wall" in low), None)
-                nums = [float(n.replace("−", "-")) for n in NUM.findall(size.replace("−", "-"))]
-                out.append({"id": m.group(1), "title": title, "dia": float(d.group(1).rstrip(".")), "wall": wall,
-                            "numbers": nums, "function": fn, "mating": fn, "status": m.group(6).strip(),
-                            "keyhole": "keyhole" in low, "file": rel(p), "section": section.strip("# \n")})
+                walls = {float(d.rstrip(".")): w.lower() for d, w in DIA_WALL.findall(both)}
+                wall_any = next((w for w in ("top", "bottom", "inner", "outer") if w + " wall" in both.lower()), None)
+                nums = [float(n.replace("−", "-")) for n in NUM.findall(size.replace("−", "-").replace("∓", "-"))]
+                out.append({"id": cells[0], "title": title, "dias": dias, "dia": dias[0], "walls": walls,
+                            "wall": wall_any if not walls else None, "numbers": nums, "function": fn, "mating": fn,
+                            "status": get("status"), "keyhole": "keyhole" in both.lower(), "file": rel(p),
+                            "section": section.strip("# \n")})
     return out
 
 
 def match_feature_b(rows, dia, wall, entry, keyhole=False, along=None):
     """The row for a hole of this size on this wall; when several rows fit, the one whose size cell names the
     hole's pod coordinate along the member (axis index `along`)."""
-    cands = [r for r in rows if abs(r["dia"] - dia) < 0.011 and (r["wall"] in (None, wall)) and
-             r["keyhole"] == keyhole]
+    def fits(r):
+        d = next((x for x in r.get("dias", [r["dia"]]) if abs(x - dia) < 0.011), None)
+        if d is None:
+            return False
+        w = r.get("walls", {}).get(d, r.get("wall"))
+        return w in (None, wall)
+    cands = [r for r in rows if fits(r) and r["keyhole"] == keyhole]
     if len(cands) <= 1:
         return cands[0] if cands else None
     ks = [along] if along is not None else range(3)
-    hit = [r for r in cands if any(any(abs(n - entry[k]) < 0.006 for n in r["numbers"]) for k in ks)]
+    # a register writes a mirrored pair's coordinate once, as ∓222.75: compare sizes, not signs
+    hit = [r for r in cands if any(any(abs(abs(n) - abs(entry[k])) < 0.006 for n in r["numbers"]) for k in ks)]
     return hit[0] if len(hit) == 1 else None

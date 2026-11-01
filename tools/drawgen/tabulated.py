@@ -167,7 +167,7 @@ def make(pns, team, spec, out_path):
             sh.text(c[0], c[1], "N%d" % j, 2.5, "center", valign="mid", bold=True)
         sh.origin_mark(vd.S((e[0], e[1])), "O%d" % (i + 1))
         sh.text((a[0] + b[0]) / 2, a[1] - 20, "%s  %s" % (pc.body, scale_text(scale)), 3.0, "center", bold=True)
-        sh.text((a[0] + b[0]) / 2, a[1] - 24, "as %s" % rep["pn"], 2.3, "center")
+        sh.text((a[0] + b[0]) / 2, a[1] - 25, "as %s" % rep["pn"], 2.5, "center")
         vds.append(vd)
         x = b[0] + 46.0
     sh.flush()
@@ -177,8 +177,8 @@ def make(pns, team, spec, out_path):
             "corner; +X right, +Y up." % (rep["pn"], project.LOOK_WORDS.get(v.looking, v.looking), axis_name(v.x),
                                           axis_name(v.y)), 2.5)
     # the table
-    cols = [("PART", 15, "c"), ("NAME", 58, "l"), ("PIECE", 24, "l"), ("W (mm)", 15, "r"), ("H (mm)", 15, "r"),
-            ("T (mm)", 12, "r"), ("NOTCHES THRU: LOWER-LEFT CORNER X, Y AND SIZE (mm) FROM ON", 120, "l")]
+    cols = [("PART", 18, "c"), ("NAME", 64, "l"), ("PIECE", 28, "l"), ("W (mm)", 20, "r"), ("H (mm)", 20, "r"),
+            ("T (mm)", 16, "r"), ("NOTCHES THRU: LOWER-LEFT CORNER X, Y AND SIZE (mm) FROM ON", 150, "l")]
     rows = []
     for d in data:
         for i, pc in enumerate(d["pieces"], 1):
@@ -187,7 +187,7 @@ def make(pns, team, spec, out_path):
             rows.append([d["pn"], d["row"]["name"], pc.body, fmt(pc.w), fmt(pc.h), fmt(pc.t), nts])
     tx = max(vd.box()[2] for vd in vds) + 30.0
     tx = min(tx, W - 10 - sum(c[1] for c in cols) - 6)
-    ty = sh.table(tx, H - 30.0, cols, rows, size=2.3, row_h=4.6,
+    ty = sh.table(tx, H - 30.0, cols, rows, size=2.5,
                   title=["TABULATED DRAWING (D-89): covers %s" % ", ".join(pns),
                          "each piece seen from the room side; the RH parts are the mirror image of the LH parts; "
                          "upper parts are shorter; every value read from that part's STEP"], title_size=2.6)
