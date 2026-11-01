@@ -11,9 +11,9 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 
 ## Result
 
-1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels and the wall linings standing upright: **208 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **327 kg gross, 1,595 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 535 kg gross in all.
-2. **Masses are the layout study's P04 roll-up**, 395.9 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 399.9 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 399.4 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
-3. **40 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is AIR - SOFFIT (2-09) at 14.7 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
+1. **Two pallets, as D-04 rules.** Pallet 1 is a 48 × 40 in pallet with the wall panels and the wall linings standing upright: **208 kg gross, 1,641 mm tall.** Pallet 2 is a 96 × 48 in pallet with the glass, the decor blocks, the air parts, the base band, the ceiling linings and the kits: **327 kg gross, 1,595 mm tall.** Both stay under 1829 mm (REQ-SHP-01, REQ-SHP-02); 534 kg gross in all.
+2. **Masses are the layout study's P04 roll-up**, 395.4 kg as shipped (`v2/05-Engineering/layout-study/out/parts-decided-P04.csv`, the PM's mass source for every part; its 399.4 kg include the voice kit's reserve, which ships later). `pack.py` reads it line by line and copies no mass. The pallets carry 399.0 kg of pod: the roll-up plus 3.5 kg it doesn't carry (the installation kit; assumption). The voice cockpit kit ships later and isn't on these pallets (D-11, D-81).
+3. **40 labelled pieces.** Each is 20 kg or less except the glass (D-03); the heaviest is AIR - SOFFIT (2-09) at 14.6 kg. The door unit (48.6 kg) and the fixed glass (28.7 kg) lie flat in one glass crate at the bottom of pallet 2. Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06).
 4. **First out is first fitted.** Pallet 1 comes off its open face in label order, which is fitting order: back and side walls row by row, ceiling halves, then the wall linings. Pallet 2 is unloaded in step 1 of the guide, except the glass crate, which stays closed until step 9; inside the crate the fixed glass lies on top because it goes in first.
 5. **Checks: all pass** (section 8): roll-up accounted once, 20 kg, doorway, both footprints and heights, the glass crate, the guide's bolts against the joints register, the time limit, first-out order, labels, part numbers against the master BOM, and every piece's size against its own CAD.
 6. **PM rulings this plan follows** (packing group, 2026-10-31): the hinge halves that sit in DL ship fitted in DL, so the door travels 1177 mm wide (its 1175 glass and the magnetic seal half, FRONT's CAD); the door hangs before DT; the intake riser and the supply fan box ship apart and go into DR on site, so DR ships at 20 kg or less. And (2026-11-01): nothing rests on DR's felt panel, so DR lies face down with its felt up; the side bands carry the two back-corner keys, so the back band ships 2420 mm long on the 2438 mm deck (D-129); nothing overhangs either deck.
@@ -23,8 +23,8 @@ Every number carries a status (conventions §9): confirmed, source, calculation,
 | Pallet | Deck mm (in) | Pieces | Net kg | Gross kg (lb) | Loaded height mm (in) | Volume ft3 (reference) | Density lb/ft3 (reference) |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 1: 48 × 40 in, upright stack ([diagram](910001_P01_PALLET-1-48X40_PKG.svg)) | 1219 × 1016 (48 × 40) | 18 | 181.6 | 208 (458) | 1,641 (64.6) | 71.8 | 6.4 |
-| 2: 96 × 48 in, six tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 217.8 | 327 (722) | 1,595 (62.8) | 167.4 | 4.3 |
-| **Both** |  | 40 | **399.4** | **535** (1,179) |  |  |  |
+| 2: 96 × 48 in, six tiers ([diagram](910002_P01_PALLET-2-96X48_PKG.svg)) | 2438 × 1219 (96 × 48) | 22 | 217.4 | 327 (721) | 1,595 (62.8) | 167.4 | 4.3 |
+| **Both** |  | 40 | **399.0** | **534** (1,178) |  |  |  |
 
 Pallet tares and pack allowances are the layout study's (S14, S15, `pack_kg_std`, `pack_kg_long`); the glass crate and the tier separators are this plan's assumptions (section 12). Density is given in lb/ft³ because LTL freight class follows from it (REQ-SHP-04); the carrier sets the class, so this plan doesn't guess it. No piece is longer than 96 in, so no overlength charge applies (layout study S19).
 
@@ -80,9 +80,9 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 | Tier 3: DL on its side, DT, soffit, air column | 209 | **2-08** | FRONT - DECOR BLOCK ASSY - DL | 12.3 | 2302 × 209 × 318 | 8 |
 | Tier 3: DL on its side, DT, soffit, air column | 316 | **2-11** | FRONT - DECOR BLOCK ASSY - DT | 7.9 | 1709 × 316 × 213 | 11 |
 | Tier 3: DL on its side, DT, soffit, air column | 316 | **2-12** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.4 | 600 × 250 × 200 | 12 |
-| Tier 3: DL on its side, DT, soffit, air column | 369 | **2-09** | AIR - SOFFIT | 14.7 | 2332 × 369 × 243 | 16 |
-| Tier 3: DL on its side, DT, soffit, air column | 222 | **2-10** | AIR - AIR COLUMN | 8.1 | 2118 × 222 × 369 | 15 |
-| Tier 4: air parts, light shelf, FR1 and cartons | 526 | **2-16** | AIR - SUPPLY FAN BOX | 13.0 | 2015 × 526 × 213 | 13 |
+| Tier 3: DL on its side, DT, soffit, air column | 369 | **2-09** | AIR - SOFFIT | 14.6 | 2332 × 369 × 243 | 16 |
+| Tier 3: DL on its side, DT, soffit, air column | 222 | **2-10** | AIR - AIR COLUMN | 8.2 | 2130 × 222 × 369 | 15 |
+| Tier 4: air parts, light shelf, FR1 and cartons | 526 | **2-16** | AIR - SUPPLY FAN BOX | 12.7 | 2015 × 526 × 213 | 13 |
 | Tier 4: air parts, light shelf, FR1 and cartons | 183 | **2-17** | AIR - SPLITTER CARTRIDGE - COMMON | 10.5 | 1760 × 183 × 324 | 15 |
 | Tier 4: air parts, light shelf, FR1 and cartons | 183 | **2-18** | AIR - SPLITTER CARTRIDGE - COMMON | 10.5 | 1760 × 183 × 324 | 16 |
 | Tier 4: air parts, light shelf, FR1 and cartons | 150 | **2-14** | BASE - SMALL PARTS CARTON | 1.1 | 600 × 150 × 400 | 2 |
@@ -160,14 +160,14 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-06** | 110102 | - | BASE - BAND ASSY - SIDE - RH | 2.6 | 1 | 2 |
 | **2-07** | 110106 | - | BASE - BAND ASSY - FRONT - FIXED GLASS | 2.5 | 1 | 2 |
 | **2-08** | 350001 | DL | FRONT - DECOR BLOCK ASSY - DL | 12.3 | 2 | 8 |
-| **2-09** | 610201 | - | AIR - SOFFIT | 14.7 | 2 | 16 |
-| **2-10** | 610101 | - | AIR - AIR COLUMN | 8.1 | 2 | 15 |
+| **2-09** | 610201 | - | AIR - SOFFIT | 14.6 | 2 | 16 |
+| **2-10** | 610101 | - | AIR - AIR COLUMN | 8.2 | 2 | 15 |
 | **2-11** | 350002 | DT | FRONT - DECOR BLOCK ASSY - DT | 7.9 | 2 | 11 |
 | **2-12** | TBD (ELECTRICAL) | - | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 2.4 | 1 | 12 |
 | **2-13** | 810201 | - | INTERIOR - LIGHT SHELF ASSY | 1.6 | 2 | 19 |
 | **2-14** | TBD (BASE) | - | BASE - SMALL PARTS CARTON | 1.1 | 1 | 2 |
 | **2-15** | 810101 | - | INTERIOR - WORK WALL LEDGE ASSY | 1.9 | 1 | 22 |
-| **2-16** | 610401 | - | AIR - SUPPLY FAN BOX | 13.0 | 2 | 13 |
+| **2-16** | 610401 | - | AIR - SUPPLY FAN BOX | 12.7 | 2 | 13 |
 | **2-17** | 610301 | - | AIR - SPLITTER CARTRIDGE - COMMON | 10.5 | 2 | 15 |
 | **2-18** | 610301 | - | AIR - SPLITTER CARTRIDGE - COMMON | 10.5 | 2 | 16 |
 | **2-19** | 510301 | C1 | LINING - CASSETTE - CEILING - COMMON | 9.5 | 1 | 18 |
@@ -219,14 +219,14 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | **2-06** | 110102 | BASE - BAND ASSY - SIDE - RH | Viền chân nhôm - cạnh phải (cụm) | - | 2.59 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source | 1530 × 118 × 50 | 2 |
 | **2-07** | 110106 | BASE - BAND ASSY - FRONT - FIXED GLASS | Viền chân trước - dưới kính cố định (cụm) | - | 2.50 | assumption (CAD, HOLD); calculation (CAD); calculation (CAD); confirmed (1.5 mm); calculation (CAD); kg/m source; calculation (CAD); magnetic seal HOLD | 747 × 161 × 110 | 2 |
 | **2-08** | 350001 | FRONT - DECOR BLOCK ASSY - DL | Khối trang trí trái (cụm) | DL | 12.32 | calculation (CAD) | 2292 × 308 × 199 | 8 |
-| **2-09** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.74 | assumption; calculation (CAD); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 16 |
-| **2-10** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2108 × 359 × 212 | 15 |
+| **2-09** | 610201 | AIR - SOFFIT | Hộp gió trần trên cửa (cụm) | - | 14.60 | assumption; calculation (CAD); calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2322 × 359 × 233 | 16 |
+| **2-10** | 610101 | AIR - AIR COLUMN | Cột gió (cụm) | - | 8.15 | calculation (CAD); fill provisional | 2120 × 359 × 212 | 15 |
 | **2-11** | 350002 | FRONT - DECOR BLOCK ASSY - DT | Khối trang trí trên (cụm) | DT | 7.90 | calculation (CAD); calculation (CAD); magnetic seal HOLD | 1699 × 306 × 203 | 11 |
 | **2-12** | TBD (ELECTRICAL) | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | Bộ điện: dây, dây nguồn, hub, đèn | - | 2.40 | calculation (CAD) | 600 × 250 × 200 | 12 |
 | **2-13** | 810201 | INTERIOR - LIGHT SHELF ASSY | Kệ đèn hắt (cụm) | - | 1.58 | calculation (CAD) | 2332 × 80 × 60 | 19 |
 | **2-14** | TBD (BASE) | BASE - SMALL PARTS CARTON | Thùng phụ kiện đế | - | 1.14 | calculation (CAD); calculation; confirmed (1.5 mm) | 600 × 400 × 150 | 2 |
 | **2-15** | 810101 | INTERIOR - WORK WALL LEDGE ASSY | Bàn tựa vách làm việc (cụm) | - | 1.90 | calculation (CAD); brackets and screen rail HOLD | 1000 × 250 × 120 | 22 |
-| **2-16** | 610401 | AIR - SUPPLY FAN BOX | Hộp quạt cấp (cụm) | - | 13.04 | assumption; calculation (CAD); foot, mesh and boot assumption; calculation (CAD); transitions HOLD at their sized masses | 2005 × 516 × 203 | 13 |
+| **2-16** | 610401 | AIR - SUPPLY FAN BOX | Hộp quạt cấp (cụm) | - | 12.74 | assumption; calculation (CAD); foot, mesh and boot assumption; calculation (CAD); transitions HOLD at their sized masses | 2005 × 516 × 203 | 13 |
 | **2-17** | 610301 | AIR - SPLITTER CARTRIDGE - COMMON | Ống tiêu âm (dùng chung cấp/thải) | - | 10.55 | calculation (CAD) | 1750 × 314 × 173 | 15 |
 | **2-18** | 610301 | AIR - SPLITTER CARTRIDGE - COMMON | Ống tiêu âm (dùng chung cấp/thải) | - | 10.55 | calculation (CAD) | 1750 × 314 × 173 | 16 |
 | **2-19** | 510301 | LINING - CASSETTE - CEILING - COMMON | Cassette trần (dùng chung trái/phải) | C1 | 9.46 | calculation (CAD); fill provisional | 1163 × 1048 × 74 | 18 |
@@ -240,7 +240,7 @@ Where it goes: on a face that is hidden once assembled, so it stays as a record:
 | - | 911002 (PROPOSED) | PACKAGING - GLASS REST, A-FRAME, PADDED (PAIR) |  | - | 6.00 | assumption | - | - |
 | - | 911003 (PROPOSED) | PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS |  | - | 16.00 | assumption | - | - |
 | - | 918011 (PROPOSED) | PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film |  | - | 9.00 | assumption | - | - |
-|  |  | **Gross** |  |  | **327.3** |  |  |  |
+|  |  | **Gross** |  |  | **326.9** |  |  |  |
 
 The same list, one row per piece with its mass source and size source, is [`910000_P01_PACKING-LIST_BOM.csv`](910000_P01_PACKING-LIST_BOM.csv).
 
@@ -278,10 +278,10 @@ The same list, one row per piece with its mass source and size source, is [`9100
 | AIR | Supply cartridge, in the air column | 1 | 10.55 | calculation (CAD) | 2-17 |
 | AIR | Exhaust cartridge, in the soffit | 1 | 10.55 | calculation (CAD) | 2-18 |
 | AIR | Air column 610101: felt-covered faces, corner angles, foot and plenum plates, fill, kick grille | 1 | 8.15 | calculation (CAD); fill provisional | 2-10 |
-| AIR | Soffit 610201: underside sections, front face, rails, end and door-side plates, fill, exhaust grille, hangers, hinges, latches | 1 | 11.67 | calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2-09 |
+| AIR | Soffit 610201: underside sections, front face, rails, end and door-side plates, fill, exhaust grille, hangers, hinges, latches | 1 | 11.52 | calculation (CAD); hinges, latches and studs HOLD; fill provisional | 2-09 |
 | AIR | Supply fan box 610401 with its two transitions, in the right block; ships loose, fitted on site | 1 | 6.07 | calculation (CAD); transitions HOLD at their sized masses | 2-16 |
 | AIR | Exhaust fan box 610402, in the soffit | 1 | 2.48 | calculation (CAD) | 2-09 |
-| AIR | Intake riser 611501, in the right block; ships loose, fitted on site | 1 | 6.38 | calculation (CAD); foot, mesh and boot assumption | 2-16 |
+| AIR | Intake riser 611501, in the right block; ships loose, fitted on site | 1 | 6.07 | calculation (CAD); foot, mesh and boot assumption | 2-16 |
 | AIR | Roof slot grille 611602 and roof sleeve 611601, with C2 | 1 | 1.33 | calculation (CAD) | 1-10 |
 | AIR | Four 12 V fans | 1 | 1.20 | assumption | 2-09 × 0.5, 2-16 × 0.5 |
 | BASE | Base seal: BASE's soft lip along the band pieces' inner faces | 6.129 | 0.49 | calculation (CAD); kg/m source | 2-04 × 2.4, 2-05 × 1.462, 2-06 × 1.464, 2-07 × 0.803 |
@@ -300,8 +300,8 @@ A share like "x 0.5" means the piece carries that part of the roll-up line: BASE
 
 | Check | What | Result | Pass |
 | --- | --- | --- | --- |
-| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 43 lines, 399.9 kg; 0 lines miscounted, 0 unknown | yes |
-| K2 | Every piece 20 kg or less except the glass (D-03) | heaviest non-glass piece 2-09 AIR - SOFFIT 14.7 kg; over 20 kg: 0 | yes |
+| K1 | Every roll-up line is shipped exactly once, or marked as shipping later | 43 lines, 399.4 kg; 0 lines miscounted, 0 unknown | yes |
+| K2 | Every piece 20 kg or less except the glass (D-03) | heaviest non-glass piece 2-09 AIR - SOFFIT 14.6 kg; over 20 kg: 0 | yes |
 | K3 | Every piece passes the 810 × 2032 doorway rule (REQ-ASM-06) | 40 pieces, 0 fail | yes |
 | K4 | Pallet 1: each upright piece within 1219.2 along and the height limit; stack within 1016 | stack 929 mm of 1016; loaded height 1641 mm of 1829; misfits none | yes |
 | K5 | Pallet 2: lanes within 1219 across and 2438 along, parts within their tier, loaded height 1829 or less | loaded height 1595 mm; widest tier 1219 mm; longest lane 2430 mm; failing tiers none | yes |
@@ -348,14 +348,14 @@ Each piece's planned size (sorted, mm) against the box of its own CAD as it ship
 | **2-06** | BASE - BAND ASSY - SIDE - RH | 1530 × 118 × 50 | 1522 × 118 × 50 | `110000_P01_BASE_STEP.step` |
 | **2-07** | BASE - BAND ASSY - FRONT - FIXED GLASS | 747 × 161 × 110 | 746.54 × 160.5 × 110 | `110000_P01_BASE_STEP.step` |
 | **2-08** | FRONT - DECOR BLOCK ASSY - DL | 2292 × 308 × 199 | 2292 × 308 × 199 | `350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step` |
-| **2-09** | AIR - SOFFIT | 2322 × 359 × 233 | 2322 × 358.5 × 233.24 | `610000_P01_AIR_STEP.step` |
-| **2-10** | AIR - AIR COLUMN | 2108 × 359 × 212 | 2108 × 358.5 × 212 | `610000_P01_AIR_STEP.step` |
+| **2-09** | AIR - SOFFIT | 2322 × 359 × 233 | 2322 × 356.14 × 233.24 | `610000_P01_AIR_STEP.step` |
+| **2-10** | AIR - AIR COLUMN | 2120 × 359 × 212 | 2120 × 356.14 × 212 | `610000_P01_AIR_STEP.step` |
 | **2-11** | FRONT - DECOR BLOCK ASSY - DT | 1699 × 306 × 203 | 1699 × 306 × 202.74 | `350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step` |
 | **2-12** | ELECTRICAL - KIT - HARNESS, CORD SET, HUB ZONE, LIGHTS | 600 × 250 × 200 | no CAD yet | - |
 | **2-13** | INTERIOR - LIGHT SHELF ASSY | 2332 × 80 × 60 | 811201 2332 × 60 × 40; 811202 991 × 60 × 40; 811203 991 × 60 × 40; 718101 991 × 23 × 12.5 | `810000_P01_INTERIOR_STEP.step` |
 | **2-14** | BASE - SMALL PARTS CARTON | 600 × 400 × 150 | no CAD yet | - |
 | **2-15** | INTERIOR - WORK WALL LEDGE ASSY | 1000 × 250 × 120 | 811101 1000 × 250 × 25; 818101 198.5 × 150 × 30; 818101 198.5 × 150 × 30; 818102 900 × 50 × 25 | `810000_P01_INTERIOR_STEP.step` |
-| **2-16** | AIR - SUPPLY FAN BOX | 2005 × 516 × 203 | 1858 × 488 × 198.5 | `610000_P01_AIR_STEP.step` |
+| **2-16** | AIR - SUPPLY FAN BOX | 2005 × 516 × 203 | 1850 × 466 × 198.5 | `610000_P01_AIR_STEP.step` |
 | **2-17** | AIR - SPLITTER CARTRIDGE - COMMON | 1750 × 314 × 173 | 1750 × 314 × 173 | `610000_P01_AIR_STEP.step` |
 | **2-18** | AIR - SPLITTER CARTRIDGE - COMMON | 1750 × 314 × 173 | 1750 × 314 × 173 | `610000_P01_AIR_STEP.step` |
 | **2-19** | LINING - CASSETTE - CEILING - COMMON | 1163 × 1048 × 74 | 1160 × 1045 × 74 | `410000_P01_CEILING_STEP.step` |

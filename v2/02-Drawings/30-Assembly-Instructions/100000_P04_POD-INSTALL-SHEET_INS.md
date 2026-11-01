@@ -40,7 +40,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 | Floor finish | hard and finished: it is the pod's floor (D-132) | decided |
 | Wall outlet | 120 V, 60 Hz, NEMA 5-15, 15 A, within reach of the pod's cord | decided (D-133); the cord's length and the inlet's place come from ELECTRICAL |
 | Power the pod draws | 132 W at most at 12 V | calculation (ELECTRICAL's load table) |
-| Roof slot, the exhaust out | X 832 to 1172, Y -635 to -254 (AIR 610000 P01 STEP, the roof sleeve) | calculation (CAD) |
+| Roof slot, the exhaust out | X 832 to 1172, Y -635 to -253 (AIR 610000 P01 STEP, the roof sleeve) | calculation (CAD) |
 | Clear space above the roof slot | AIR to set; 150 mm meanwhile | open (ISS-049) |
 | Intake, the mesh in the base band under DR | keep clear in front; AIR to set the gap | open (ISS-049) |
 
