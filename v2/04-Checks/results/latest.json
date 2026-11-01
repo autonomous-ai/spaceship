@@ -1,5 +1,5 @@
 {
- "rev": "cf96ecc",
+ "rev": "5a996ab",
  "date": "2026-11-01",
  "inputs": {
   "bodies_skeleton": 36,
@@ -1318,18 +1318,6 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "110101",
-   "severity": "major",
-   "message": "110101 BASE - BAND ASSY - SIDE - LH has no drawing PDF (110101_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "BASE",
-   "evidence": {},
-   "key": "C05|no-drawing|110101"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
    "subject": "110103",
    "severity": "major",
    "message": "110103 BASE - BAND ASSY - BACK has no drawing PDF (110103_REV_NAME_DWG.pdf under v2/02-Drawings).",
@@ -1978,18 +1966,6 @@
   {
    "check": "C05",
    "rule": "no-drawing",
-   "subject": "410101",
-   "severity": "major",
-   "message": "410101 CEILING - PANEL ASSY - C1 has no drawing PDF (410101_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|410101"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
    "subject": "410102",
    "severity": "major",
    "message": "410102 CEILING - PANEL ASSY - C2 has no drawing PDF (410102_REV_NAME_DWG.pdf under v2/02-Drawings).",
@@ -2214,18 +2190,6 @@
    "owner": "CEILING",
    "evidence": {},
    "key": "C05|no-drawing|610000"
-  },
-  {
-   "check": "C05",
-   "rule": "no-drawing",
-   "subject": "610101",
-   "severity": "major",
-   "message": "610101 AIR - AIR COLUMN has no drawing PDF (610101_REV_NAME_DWG.pdf under v2/02-Drawings).",
-   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
-   "file": "",
-   "owner": "CEILING",
-   "evidence": {},
-   "key": "C05|no-drawing|610101"
   },
   {
    "check": "C05",

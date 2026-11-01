@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 290 part lines (112 made, 178 bought, 137 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 41 hardware items in the joints register (41 with a part number). Listed parts weigh 356.6 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 290 part lines (112 made, 178 bought, 137 on HOLD) and 43 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (41 with a part number). Listed parts weigh 356.6 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -49,6 +49,7 @@ Read from: this working tree.
 - 118001 BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD: HOLD (HOLD)
 
 **WALL**
+- 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838003: the list still names it 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2'; the joints register's H-03 now names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838001 HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC: HOLD (HOLD)
 - 838004 HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2: HOLD (HOLD)
@@ -96,6 +97,7 @@ Read from: this working tree.
 **CEILING**
 - 518001 LINING - CASSETTE CLIP: HOLD (HOLD)
 - 518002 LINING - CEILING SAFETY CATCH: HOLD (HOLD)
+- 108002: the list still names it 'POD - ACP BOND SET - SIKATACK PANEL-50 WITH AKTIVATOR-205, PANEL PRIMER, FIXING TAPE'; the joints register's H-12 now names it 'POD - ACP BOND SET - SIKAFLEX-252 WITH AKTIVATOR-205, PRIMER-210, FIXING TAPE', which the master BOM uses (D-99): change the list's name, and its material, finish and mass to match the register
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 838005 HARDWARE - CAPTIVE RETAINER - M6 HEAD - GROMMET FOR 19 HOLE: HOLD (HOLD)
 - 848004 SEALS - CLOSING SEAM BULB SEAL - GAP 4 TO 7 - EPDM OR TPE: HOLD (HOLD)
@@ -194,6 +196,9 @@ Read from: this working tree.
 
 **Packing and Assembly**
 - no packaging items (family 91) listed yet; v2/07-Packaging/910000_P01_PACKING-LIST_BOM.csv names other teams' parts, which their own lists carry
+
+**Joints register**
+- H-46 FRONT - DOOR KICK STRIP HINGE END SEAL - BRUSH - HOLD: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
