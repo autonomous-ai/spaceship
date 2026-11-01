@@ -204,7 +204,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ### Step 15. Air parts in DR: the intake riser with its supply fan box
 
 - **Time:** about 4 min for 2 people.
-- **Parts:** **2-17** AIR - SUPPLY FAN BOX (12.9 kg).
+- **Parts:** **2-17** AIR - SUPPLY FAN BOX (13.4 kg).
 - **Fasteners:** their fixings in DR (AIR and FRONT design, on hold).
 - **Person A:** Lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).
 - **Person B:** Mates the fan box's plug-in connector; refits the inner face.
