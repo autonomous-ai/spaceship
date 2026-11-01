@@ -24,6 +24,8 @@ Parts link to `100000_P04_POD-SKELETON_CAD` through Derive, so value changes no 
 
 Fusion keeps the first description of each part number: the root and the eight assemb
 | 3 | PM rulings and Reviewer 5's notes on #58: **back-panel bolt pitches on the frame** (`back_base_pitch`, `ceil_back_pitch` from `half_fw`: **253.00**; "panel end" means the frame end); wall to ceiling `n_ceil_side_bolt` 4 and `n_ceil_back_bolt` **4**; each bolted edge's start point and pitch from the joints register: `ceil_side_y0` Y −645 measured along the ceiling with `ceil_side_pitch` **351.67**, `ceil_back_x0` ±1201.74 on the frame, `base_side_y0` −642.74, `base_back_x0` ±1201.74. **Floor mat (D-72, from BASE):** `mat_t` 3 under the 9 mm ply: F1-MAT and F2-MAT Z 0 to 3 (new bodies, built in place), the ply F1, F2 Z 3 to 12, `floor_top` 12. What reads the floor: the threshold top stays Z 13 (1 above the floor top), the kick strip Z 20 to 105 (7 over the threshold), inside height 2316 − 12 = 2304. The CSV now has a unit column and writes counts as counts (was ×10). A dry run ends with a planned error so Fusion rolls it back; the edit test anchors the fixed glass's free edge too | as above |
+| 4 (2026-11-01) | **D-132 (PM ruling, the owner's question): no floor, no threshold.** `mat_t`, `floor_t` and `thresh_h` 0, so `floor_top` is the room floor, Z 0; the envelopes F1, F1-MAT, F2, F2-MAT and THRESHOLD are dropped (`DROPPED` in `pod_skeleton.py`: `skeleton_update.py` now deletes a dropped envelope's component before it sets the values, so the cloud file stays the same file and every Derive link holds; parameters stay, at 0, and `thresh_d` stays in the file though no longer in the table). The kick strip's envelope now starts `kick_gap` 7 over the room floor. Run by the BASE Engineer (the floor values are BASE's since D-132, the Lead): `skeleton_update.py --doc 100000_P04_POD-SKELETON_CAD --close`, first with `dry_run=1` | Dry run: checks passed, all rolled back. Update: timeline 138 items, unhealthy 0, loose sketches 0; every envelope and anchor on its expressions (worst 0 mm); clash pairs 0; pod box [−1250.03, −850.03, 6.98, 1250.03, 850.03, 2400.03]; saved a new version; STEP `step_check.py --expect=-1250,-850,7,1250,850,2400` → MATCH (31 solids, cm declared, D-13); CSV 88 parameters. Edit test on the copy: PASS, 22 envelopes and 26 anchors follow |
+| 5 (2026-11-01) | **The kick strip on the band's bottom line (PM ruling on D-132).** The KICK envelope runs from `glide_h` (10, the band's bottom line at the nominal glide setting) to `door_zb` 105, so the door's drop seal works near its rated gap with travel left for uneven floors. FRONT's model on main still has its strip at Z 20 (its formula, the threshold's top + 7, gives Z 7 on this skeleton): FRONT follows on this skeleton, routed by the Product Manager with the Checker's kick-over-threshold rule (Reviewer 8 on #303); `kick_gap` stays in the table but no longer sets the kick strip. Run by the BASE Engineer: `skeleton_update.py --doc 100000_P04_POD-SKELETON_CAD --close`, first with `dry_run=1` | Dry run: checks passed, all rolled back. Update: the KICK envelope's bottom plane and height changed in place; timeline 138 items, unhealthy 0, loose sketches 0; clash pairs 0; saved a new version over version 5; STEP `step_check.py --expect=-1250,-850,10,1250,850,2400` → MATCH (31 solids, cm declared, D-13); CSV 88 parameters; no account names in the f3d, STEP or CSV. Edit test on the copy: PASS, 22 envelopes and 26 anchors follow |
 
 ## Pass D (PM rulings, DECIDED 2026-10-31)
 
@@ -92,14 +94,9 @@ The inner points are computed by Fusion from parameter expressions (offset lines
 | B4-CASS | LINING | 1166 x 34 x 1116.87 | 1233.13 to 2350 | L-CASS-BACK-UP |
 | C1 | CEILING | 1200.61 x 1495 x 46 | 2354 to 2400 | C-HALF |
 | C1-CASS | LINING | 1166 x 1411 x 34 | 2316 to 2350 | L-CASS-HALF |
-| F1 | BASE | 1210 x 1455 x 9 | 3 to 12 | B-FLOOR |
-| F1-MAT | BASE | 1210 x 1455 x 3 | 0 to 3 | B-FLOOR-MAT |
 | C2 | CEILING | 1200.61 x 1495 x 46 | 2354 to 2400 | C-HALF |
 | C2-CASS | LINING | 1166 x 1411 x 34 | 2316 to 2350 | L-CASS-HALF |
-| F2 | BASE | 1210 x 1455 x 9 | 3 to 12 | B-FLOOR |
-| F2-MAT | BASE | 1210 x 1455 x 3 | 0 to 3 | B-FLOOR-MAT |
-| THRESHOLD | BASE | 1175 x 60 x 13 | 0 to 13 | B-THRESH |
-| KICK | GLAZING | 1175 x 20 x 85 | 20 to 105 | D-40 |
+| KICK | GLAZING | 1175 x 20 x 95 | 10 (`glide_h`) to 105 | D-40; its bottom on the band's bottom line (PM ruling on D-132) |
 
 ## Decided values that hold
 
@@ -109,13 +106,13 @@ The inner points are computed by Fusion from parameter expressions (offset lines
 | Wall depth 1495 | 1492.74 of side panel (Y −642.74 to 850) plus the 2.26 seam at the decor | D-49 (v1 1496); joints register 2.8 |
 | Decor depth 205 | front face Y -850, back face Y -645 | D-49 |
 | Height datum 2400 | roof skin top Z 2400 | D-21 |
-| Inside height about 2304 | ceiling cassette face Z 2316 - floor top Z 12 = 2304 (mat 3 + ply 9, D-72) | D-42; outer 46, floor 9 on a 3 mat (P04 updates) |
-| Thin floor | F1, F2 9 mm ply on a 3 mm mat (F1-MAT, F2-MAT), out to the band (pass D); floor top Z 12; threshold 13 (P04 updates 1 and 3) | D-05, D-18, D-72; PM rulings 2026-10-31 |
+| Inside height about 2316 | ceiling cassette face Z 2316 - the room floor Z 0 (no floor, D-132; was 2304 over the 12 mm floor) | D-42; outer 46 (P04 updates); D-132 |
+| No floor | People stand on the room floor; no floor, mat or threshold (`floor_top` Z 0); the door's drop seal closes on the room floor (P04 update 4) | D-132 (PM ruling 2026-11-01) |
 | Door glass 4+4 laminate 8.76 | DOOR, v1's measured trapezoid | D-46 |
 
 ## Not modelled yet
 
-Glides, corner keys, hardware and kits; the floor's front edge between the threshold and Y −645 (24 mm) and behind the fixed glass (49 mm) is left for the BASE design. AIR, ELECTRICAL and INTERIOR are empty assembly components until their groups place parts. `v2/00-Control/document-register.csv` still names P03 for the skeleton rows (Control Engineer's file).
+Glides, corner keys, hardware and kits; the base seal lip (BASE's design, D-132). AIR, ELECTRICAL and INTERIOR are empty assembly components until their groups place parts. `v2/00-Control/document-register.csv` still names P03 for the skeleton rows (Control Engineer's file).
 
 ## Renders (checked by eye)
 

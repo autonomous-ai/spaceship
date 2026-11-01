@@ -739,6 +739,9 @@ class Chamfer:
         self.faces = faces
         self.pts = pts                  # every vertex of its faces
         self.tag = None
+        self.long = False               # True: a bevel along the member's corner (its edge is the member's axis)
+        self.edge = vnorm(vcross(lax, side_n))
+        self.leg_dirs = (lax, side_n)   # its legs run along these (from the end face, from the side face)
 
 
 def _in_feature(sl, pts, tol=0.02):
@@ -791,6 +794,35 @@ def flat_features(body, slots):
         faces.append({"n": n, "off": off, "area": area, "f": f, "pts": pts, "s0": min(s_), "s1": max(s_),
                       "c": vdot(n, lax)})
     longs = [x for x in faces if abs(x["c"]) < 1e-6 and x["s1"] - x["s0"] >= 0.5 * length]
+    # the profile's two directions: the normals of its largest long faces, square to each other
+    area = {}
+    for y in longs:
+        d = canon_dir(y["n"])
+        k = next((k for k in area if abs(abs(vdot(k, d)) - 1) < 1e-6), d)
+        area[k] = area.get(k, 0.0) + y["area"]
+    order = sorted(area, key=lambda k: -area[k])
+    main = order[:1] + [k for k in order[1:] if abs(vdot(k, order[0])) < 1e-6][:1]
+    # a bevel along the member (CEILING's seam member, 1 x 45°): a narrow long face at 45° to both directions, at an
+    # outer corner of the profile, its legs equal and 5 or less
+    long_chamfers = []
+    if len(main) == 2:
+        for y in list(longs):
+            a, b = vdot(y["n"], main[0]), vdot(y["n"], main[1])
+            if abs(abs(a) - 0.7071068) > 1e-4 or abs(abs(b) - 0.7071068) > 1e-4:
+                continue
+            d1, d2 = vmul(main[0], 1.0 if a > 0 else -1.0), vmul(main[1], 1.0 if b > 0 else -1.0)
+            l1 = max(vdot(p, d1) for p in verts) - min(vdot(p, d1) for p in y["pts"])
+            l2 = max(vdot(p, d2) for p in verts) - min(vdot(p, d2) for p in y["pts"])
+            r1 = max(vdot(p, d1) for p in y["pts"]) - max(vdot(p, d1) for p in verts)
+            r2 = max(vdot(p, d2) for p in y["pts"]) - max(vdot(p, d2) for p in verts)
+            if abs(l1 - l2) > 0.01 or l1 > 5.0 or abs(r1) > 1e-3 or abs(r2) > 1e-3:
+                continue
+            ch = Chamfer(body, 0, None, lax, d2, y["n"], l1, [y["f"]], list(y["pts"]))
+            ch.long = True
+            ch.edge = lax
+            ch.leg_dirs = (d1, d2)
+            long_chamfers.append(ch)
+            longs.remove(y)
     dirs = []
     for y in longs:
         if not any(abs(abs(vdot(y["n"], d)) - 1) < 1e-6 for d in dirs):
@@ -812,6 +844,8 @@ def flat_features(body, slots):
                   for g, e in ends.items()}
     rest = []
     for x in faces:
+        if any(x["f"].IsSame(f) for lc in long_chamfers for f in lc.faces):
+            continue                # a bevel along the member: called out on its own
         if abs(x["c"]) < 1e-6 and on_long(x):
             continue
         if any(abs(abs(x["c"]) - 1) < 1e-6 and at_end(x, e) for e in ends.values()):
@@ -916,7 +950,7 @@ def flat_features(body, slots):
             used.update([i] + sides)
             break
     odd = [_face_desc(x, lax) for i, x in enumerate(rest) if i not in used]
-    return notches, chamfers, plates, odd
+    return notches, chamfers + long_chamfers, plates, odd
 
 
 def half_space_keep(shape, point, normal, big=1e5):

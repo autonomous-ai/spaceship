@@ -2,42 +2,78 @@
  "band_finish": "Black anodised, matte, 20 um (class AA20, EN ISO 7599)",
  "copies": {
   "110000>110101": 1,
+  "110000>110102": 1,
   "110000>110103": 1,
-  "110000>110401": 1,
+  "110000>110106": 1,
   "110101>111101": 1,
+  "110101>111211": 1,
   "110101>111601": 2,
+  "110101>118001": 1,
   "110101>118002": 2,
+  "110101>118003": 1,
   "110101>831001": 2,
   "110101>831002": 4,
+  "110101>838001": 2,
   "110101>838003": 6,
+  "110101>838010": 2,
+  "110102>111102": 1,
+  "110102>111211": 1,
+  "110102>111601": 2,
+  "110102>118001": 1,
+  "110102>118002": 2,
+  "110102>118003": 1,
+  "110102>831001": 2,
+  "110102>831002": 4,
+  "110102>838001": 2,
+  "110102>838003": 6,
+  "110102>838010": 2,
   "110103>111103": 1,
-  "110103>111211": 2,
   "110103>111601": 3,
+  "110103>118001": 1,
   "110103>118002": 3,
   "110103>831001": 4,
   "110103>831002": 8,
-  "110103>838001": 4,
   "110103>838003": 12,
-  "110103>838010": 4,
-  "110401>111401": 1,
-  "110401>111501": 1
+  "110106>111106": 1,
+  "110106>111301": 1,
+  "110106>111601": 2,
+  "110106>118001": 2,
+  "110106>118002": 2,
+  "110106>118003": 1
  },
  "doc": "110000_P01_BASE_CAD",
- "floor_f1": {
-  "lap_depth": 4.5,
-  "t": 9.0,
-  "x0": -1206.0,
-  "x_lap": 12.5,
-  "x_seam": -0.5,
-  "y0": -645.0,
-  "y1": 806.0
- },
  "holes": {
   "111101": [
    {
     "at": [
      -1237.0,
      -641.53,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
+   },
+   {
+    "at": [
+     -1231.0,
+     823.0,
+     null
+    ],
+    "axis": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "dia": 7.0
+   },
+   {
+    "at": [
+     -1231.0,
+     837.0,
      null
     ],
     "axis": [
@@ -194,19 +230,6 @@
     "at": [
      null,
      830.0,
-     27.5
-    ],
-    "axis": [
-     1.0,
-     0.0,
-     0.0
-    ],
-    "dia": 12.0
-   },
-   {
-    "at": [
-     null,
-     830.0,
      37.5
     ],
     "axis": [
@@ -214,20 +237,7 @@
      0.0,
      0.0
     ],
-    "dia": 6.5
-   },
-   {
-    "at": [
-     null,
-     830.0,
-     61.5
-    ],
-    "axis": [
-     1.0,
-     0.0,
-     0.0
-    ],
-    "dia": 12.0
+    "dia": 7.0
    },
    {
     "at": [
@@ -240,36 +250,10 @@
      0.0,
      0.0
     ],
-    "dia": 6.5
+    "dia": 7.0
    }
   ],
   "111103": [
-   {
-    "at": [
-     -1190.5,
-     823.0,
-     null
-    ],
-    "axis": [
-     0.0,
-     0.0,
-     1.0
-    ],
-    "dia": 7.0
-   },
-   {
-    "at": [
-     -1190.5,
-     837.0,
-     null
-    ],
-    "axis": [
-     0.0,
-     0.0,
-     1.0
-    ],
-    "dia": 7.0
-   },
    {
     "at": [
      -1101.74,
@@ -506,29 +490,16 @@
    },
    {
     "at": [
-     1190.5,
-     823.0,
-     null
+     null,
+     830.0,
+     73.5
     ],
     "axis": [
+     1.0,
      0.0,
-     0.0,
-     1.0
+     0.0
     ],
-    "dia": 7.0
-   },
-   {
-    "at": [
-     1190.5,
-     837.0,
-     null
-    ],
-    "axis": [
-     0.0,
-     0.0,
-     1.0
-    ],
-    "dia": 7.0
+    "dia": 6.5
    }
   ]
  },
@@ -646,32 +617,25 @@
    "value": 2.26
   },
   {
-   "comment": "SKELETON DECIDED: D-72, PM ruling 2026-10-31 (from BASE): the 3 mm floor mat under the floor ply",
-   "expression": "3 mm",
+   "comment": "SKELETON DECIDED: D-132 (PM ruling 2026-11-01): no floor, so no floor mat (was 3, D-72)",
+   "expression": "0 mm",
    "name": "mat_t",
    "unit": "mm",
-   "value": 3.0
+   "value": 0.0
   },
   {
-   "comment": "SKELETON DECIDED: PM ruling 2026-10-31: 9 mm floor panels (was 15, layout study B1 list), on the mat",
-   "expression": "9 mm",
+   "comment": "SKELETON DECIDED: D-132 (PM ruling 2026-11-01): no floor; people stand on the room floor (was 9)",
+   "expression": "0 mm",
    "name": "floor_t",
    "unit": "mm",
-   "value": 9.0
+   "value": 0.0
   },
   {
-   "comment": "SKELETON DECIDED: PM ruling 2026-10-31: 13 mm, a US-accessible threshold (D-18 had 20); the kick strip keeps its kick_gap above it",
-   "expression": "13 mm",
+   "comment": "SKELETON DECIDED: D-132 (PM ruling 2026-11-01): no threshold, no step at the door; the door's drop seal closes on the room floor (was 13)",
+   "expression": "0 mm",
    "name": "thresh_h",
    "unit": "mm",
-   "value": 13.0
-  },
-  {
-   "comment": "SKELETON SOURCE: layout study B1 list B-THRESH 1176 x 60 x 20",
-   "expression": "60 mm",
-   "name": "thresh_d",
-   "unit": "mm",
-   "value": 60.0
+   "value": 0.0
   },
   {
    "comment": "SKELETON SOURCE: v1 geometry per the PM ruling on D-39 (as v1; the drawings win): v1 decor-frame drawing frames 191 (left) and 197 (right) deep plus ACP and back plate = the v1 STEP shell, Y -850 to -645 = 205. D-39 and the B1 list say 230-235 (v1 BOM); see BUILD-RECORD-P02",
@@ -744,7 +708,7 @@
    "value": 20.0
   },
   {
-   "comment": "SKELETON SOURCE: FRONT door unit: 7 mm running gap between the threshold and the kick strip for the drop seal (Mechanical Checker F-002 on P03)",
+   "comment": "SKELETON SOURCE: FRONT door unit: 7 mm running gap under the kick strip for the drop seal (Mechanical Checker F-002 on P03); since D-132 the PM puts the kick strip's bottom on the band's bottom line, glide_h, so the skeleton's kick envelope no longer uses it",
    "expression": "7 mm",
    "name": "kick_gap",
    "unit": "mm",
@@ -961,11 +925,11 @@
    "value": 1185.6185
   },
   {
-   "comment": "SKELETON CALCULATION: D-72: the floor top, Z 12 (mat 3 + ply 9); the threshold stands thresh_h above the room floor",
+   "comment": "SKELETON CALCULATION: the floor top: Z 0, the room floor itself (D-132: no floor; was Z 12)",
    "expression": "mat_t + floor_t",
    "name": "floor_top",
    "unit": "mm",
-   "value": 12.0
+   "value": 0.0
   },
   {
    "comment": "SKELETON CALCULATION: base band top: glides + band",
@@ -1171,11 +1135,11 @@
    "value": "Black anodised, matte, 20 um (class AA20, EN ISO 7599)"
   },
   {
-   "comment": "BASE ASSUMPTION: head of the plastic end cap closing the side band's back end, so the cap face is flush with the back face Y = pod_d/2; cap product HOLD",
-   "expression": "3 mm",
+   "comment": "BASE SOURCE: the side band's back-end cap 118003: flat, inside the tube's end and flush with the back face Y = pod_d/2, no deeper than 2, as the back corner key sits 2.5 from the end (D-129, joints register J-BASE-02); product HOLD",
+   "expression": "2 mm",
    "name": "cap_t",
    "unit": "mm",
-   "value": 3.0
+   "value": 2.0
   },
   {
    "comment": "BASE CALCULATION: J-BASE-01 bolt line: centre of the wall's bottom tube, 26 in from the pod's outer face (joints register 3.4: X -1224, Y +824)",
@@ -1185,28 +1149,28 @@
    "value": 26.0
   },
   {
-   "comment": "BASE SOURCE: Sherex CAH3-610-4.2 M6 rivet nut: hole 9.53 +0.10/0 (hardware selection A5)",
+   "comment": "BASE SOURCE: Sherex CAH2-610-4.2 M6 rivet nut, steel, zinc plated (joints register H-03, D-131): hole 9.53 +0.10/0, as the aluminium part's it replaced (unverified for the steel part, HOLD-04)",
    "expression": "9.53 mm",
    "name": "rn_hole",
    "unit": "mm",
    "value": 9.53
   },
   {
-   "comment": "BASE SOURCE: CAH3-610-4.2 head diameter 12.96 (hardware selection A5)",
+   "comment": "BASE SOURCE: CAH2-610-4.2 head diameter 12.96 (joints register H-03)",
    "expression": "12.96 mm",
    "name": "rn_flange",
    "unit": "mm",
    "value": 12.96
   },
   {
-   "comment": "BASE SOURCE: CAH3-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)",
+   "comment": "BASE SOURCE: CAH2-610-4.2 installed length, at most 10.16 (joints register H-03, maker data)",
    "expression": "10.16 mm",
    "name": "rn_inst",
    "unit": "mm",
    "value": 10.16
   },
   {
-   "comment": "BASE SOURCE: CAH3-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)",
+   "comment": "BASE SOURCE: CAH2-610-4.2 head height 0.76 +-0.08 (joints register H-03, maker data)",
    "expression": "0.76 mm",
    "name": "rn_head_t",
    "unit": "mm",
@@ -1388,11 +1352,11 @@
    "value": 36.0
   },
   {
-   "comment": "BASE ASSUMPTION: glide doubler thickness: clamped with the 1.5 mm bottom face by the glide's M10 rivnut (grip 4.5); bending at 500 N falls from about 123 MPa to about 31 MPa (calculation, feature rationale)",
-   "expression": "3 mm",
+   "comment": "BASE CONFIRMED: load block (glide doubler) 5 mm EN AW-6082 T6 (PM ruling 2026-11-01 on the D-132 PR): about 43 MPa at the worst glide's 0.75 kN and 97 at 1.7 kN, against about 250 (plate spanning the bore, edges free to turn; feature rationale); clamped with the 1.5 mm bottom face by the glide's M10 rivnut (grip 6.5)",
+   "expression": "5 mm",
    "name": "gd_t",
    "unit": "mm",
-   "value": 3.0
+   "value": 5.0
   },
   {
    "comment": "BASE SOURCE: corner key length into its carrier: 30, so the carrier's Ø7.0 fixing holes keep 2 diameters from its cut end (joints register #127)",
@@ -1423,7 +1387,7 @@
    "value": 10.5
   },
   {
-   "comment": "BASE SOURCE: fixing bolt holes in the back band's bottom wall, Ø7.0 (J-BASE-02)",
+   "comment": "BASE SOURCE: the keys' fixing screw holes in the carrier's bottom wall, Ø7.0 (J-BASE-02); the side bands carry the back keys since D-129",
    "expression": "7 mm",
    "name": "ck_fix_hole",
    "unit": "mm",
@@ -1465,60 +1429,242 @@
    "value": 60.0
   },
   {
-   "comment": "BASE SOURCE: hook stud head's underside off the key's end face: 1.5 wall + 0.3 clearance (J-BASE-02)",
+   "comment": "BASE SOURCE: hook stud head's underside off the face the next piece hooks onto: its 1.5 wall or plate + 0.3 clearance (J-BASE-02)",
    "expression": "1.8 mm",
    "name": "st_gap",
    "unit": "mm",
    "value": 1.8
   },
   {
-   "comment": "BASE SOURCE: keyhole entry in the side band's inner wall, Ø12 (J-BASE-02)",
+   "comment": "BASE SOURCE: keyhole entry in the front joints' 1.5 end caps, Ø12 (J-BASE-02)",
    "expression": "12 mm",
    "name": "kh_entry",
    "unit": "mm",
    "value": 12.0
   },
   {
-   "comment": "BASE SOURCE: keyhole slot width, 6.5, locates the corner in Y to ±0.25 (J-BASE-02)",
+   "comment": "BASE SOURCE: keyhole and slot width, 6.5, locates each joint across the band to ±0.25 (Ø5.97 shank, J-BASE-02)",
    "expression": "6.5 mm",
    "name": "kh_slot",
    "unit": "mm",
    "value": 6.5
   },
   {
-   "comment": "BASE SOURCE: entry centre 10 BELOW the stud's final spot, the slot running 10 up to it: the side band goes on 10 high, then drops onto the studs (the Joints Engineer's fix, via the Lead 2026-11-01)",
+   "comment": "BASE SOURCE: entry centre 10 BELOW the stud's final spot, the slot running 10 up to it: a front piece goes on 10 high, then drops onto the studs (the Joints Engineer's fix, via the Lead 2026-11-01)",
    "expression": "10 mm",
    "name": "kh_drop",
    "unit": "mm",
    "value": 10.0
   },
   {
-   "comment": "BASE CONFIRMED: skeleton floor_t 9 (D-72): 9 mm floor panels, as v1 (FLR-01 9 mm), floor top 12, threshold 13 (US accessibility)",
-   "expression": "floor_t",
-   "name": "fl_t",
+   "comment": "BASE SOURCE: the hook stud bolts' holes through the side band's inner wall at the back corners, Ø7.0 (D-129, J-BASE-02, FR-15)",
+   "expression": "7 mm",
+   "name": "st_hole",
+   "unit": "mm",
+   "value": 7.0
+  },
+  {
+   "comment": "BASE SOURCE: each back band end cap's slot: 12 wide at the cap's bottom edge, its mouth (D-129, J-BASE-02, FR-15)",
+   "expression": "12 mm",
+   "name": "bs_mouth_w",
+   "unit": "mm",
+   "value": 12.0
+  },
+  {
+   "comment": "BASE SOURCE: the mouth narrows to the 6.5 slot over the cap's bottom 6 (D-129, FR-15)",
+   "expression": "6 mm",
+   "name": "bs_mouth_h",
+   "unit": "mm",
+   "value": 6.0
+  },
+  {
+   "comment": "BASE SOURCE: the slot's closed end centred 2 above the upper stud (Z 73.5): the band rests on its glides, never on the studs (D-129, FR-15)",
+   "expression": "2 mm",
+   "name": "bs_end",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE SOURCE: head notch in the back band's bottom wall at each end, 12 wide: the Ø10 head and 1 each side (D-129, FR-15)",
+   "expression": "12 mm",
+   "name": "hn_w",
+   "unit": "mm",
+   "value": 12.0
+  },
+  {
+   "comment": "BASE SOURCE: head notch 9 deep from the band's end: the head's far face is 1.8 + 6 = 7.8 from the side band's face (D-129, FR-15)",
+   "expression": "9 mm",
+   "name": "hn_d",
    "unit": "mm",
    "value": 9.0
   },
   {
-   "comment": "BASE ASSUMPTION: gap from the floor edge to the band's inner face, closed by the edge seal (hardware selection D, Pemko S88BL pick)",
-   "expression": "4 mm",
-   "name": "fl_gap",
-   "unit": "mm",
-   "value": 4.0
-  },
-  {
-   "comment": "BASE ASSUMPTION: gap at the F1 / F2 seam on X = 0",
+   "comment": "BASE SOURCE: 1 x 45 deg bevel on each back band end cap's bottom edge, side-band side, so it slips under the heads (D-129, FR-15)",
    "expression": "1 mm",
-   "name": "fl_seam",
+   "name": "cap_bevel",
    "unit": "mm",
    "value": 1.0
   },
   {
-   "comment": "BASE CONFIRMED: half-lap at the F1 / F2 seam: F1's lower half runs 13 mm under F2's upper half, so the seam stays flush with no glue (a tongue in 9 mm ply leaves 2 mm groove walls). 13 keeps F1 at 1218.5 including its lap, inside the 1219 of the 48 in pallet (PM ruling 2026-10-31, packing plan)",
-   "expression": "13 mm",
-   "name": "lap_w",
+   "comment": "BASE ASSUMPTION: the band's bottom at the glides' highest setting: 10 mm of travel above the lowest, gl_min (HOLD with the glide product)",
+   "expression": "18.5 mm",
+   "name": "gl_max",
    "unit": "mm",
-   "value": 13.0
+   "value": 18.5
+  },
+  {
+   "comment": "BASE ASSUMPTION: the lip's least press on the room floor, at the glides' highest setting",
+   "expression": "3 mm",
+   "name": "seal_press",
+   "unit": "mm",
+   "value": 3.0
+  },
+  {
+   "comment": "BASE CALCULATION: the lip reaches this far below the band's bottom (21.5), so it touches the room floor across the glides' range (D-132)",
+   "expression": "gl_max + seal_press",
+   "name": "seal_reach",
+   "unit": "mm",
+   "value": 21.5
+  },
+  {
+   "comment": "BASE ASSUMPTION: the lip's leg, bonded to the band's inner face from its bottom edge up (adhesive HOLD)",
+   "expression": "15 mm",
+   "name": "seal_leg",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: the lip's room into the pod from the band's inner face, modelled as an envelope from the room floor to seal_leg above the band's bottom",
+   "expression": "10 mm",
+   "name": "seal_t",
+   "unit": "mm",
+   "value": 10.0
+  },
+  {
+   "comment": "BASE CONFIRMED: DR intake mesh: 105 on the front and 266 on the facet (D-62)",
+   "expression": "105 mm",
+   "name": "mesh_front",
+   "unit": "mm",
+   "value": 105.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: intake mesh thickness (expanded aluminium, 80 % free, black; product HOLD)",
+   "expression": "2 mm",
+   "name": "mesh_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: DR support rail flange under DR's bottom edge",
+   "expression": "20 mm",
+   "name": "rail_w",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: DR support rail leg",
+   "expression": "30 mm",
+   "name": "rail_h",
+   "unit": "mm",
+   "value": 30.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: DR support rail thickness (aluminium angle)",
+   "expression": "2 mm",
+   "name": "rail_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: rail set back behind the mesh, so it blocks none of the mesh face",
+   "expression": "20 mm",
+   "name": "rail_set",
+   "unit": "mm",
+   "value": 20.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: closing plate between the intake space and the pod (D-62)",
+   "expression": "2 mm",
+   "name": "cp_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE CONFIRMED: the intake's band stub left of the mesh, carrying the inline key 111215 (111211's first layout under its own number since D-144; 30 long) behind no mesh, with 2 to spare (PM ruling 2026-11-01: the joint moves left of the mesh)",
+   "expression": "32 mm",
+   "name": "fr_stub",
+   "unit": "mm",
+   "value": 32.0
+  },
+  {
+   "comment": "BASE CONFIRMED: the FR1 / intake joint, X 915 (PM rulings 2026-11-01: X 920 for the 25 mm key, then X 915 for the 30 mm key): FR1 runs X 218.5 to here; the intake from here, its mesh from X 947",
+   "expression": "pod_w / 2 - dr_xc - mesh_front - fr_stub",
+   "name": "x_fr_joint",
+   "unit": "mm",
+   "value": 915.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT: the glass's bottom U-channel, Bohle 15 x 15 x 1.5, Y -706.5 to -691.5 (centred on glass_y)",
+   "expression": "15 mm",
+   "name": "ch_w",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT: channel underside Z 95, top Z 110 (the band top, the glass's visible bottom line)",
+   "expression": "15 mm",
+   "name": "ch_h",
+   "unit": "mm",
+   "value": 15.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: sill sheet: aluminium 2 mm, bent, black anodised AA20 (D-67 look)",
+   "expression": "2 mm",
+   "name": "sl_t",
+   "unit": "mm",
+   "value": 2.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: sill's fixing flange down FR1's inner face (blind rivets, HOLD)",
+   "expression": "40 mm",
+   "name": "sl_flange",
+   "unit": "mm",
+   "value": 40.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT: the channel's underside runs to X 964.1, so the sill reaches X 965",
+   "expression": "965 mm",
+   "name": "sl_x1",
+   "unit": "mm",
+   "value": 965.0
+  },
+  {
+   "comment": "BASE SOURCE: FRONT's channel holes (F-368004-02): the first at X 269.4",
+   "expression": "269.4 mm",
+   "name": "ch_screw_x1",
+   "unit": "mm",
+   "value": 269.4
+  },
+  {
+   "comment": "BASE SOURCE: FRONT's pitch for the first 3 channel holes: X 269.4, 484.3, 699.2",
+   "expression": "214.9 mm",
+   "name": "ch_screw_p",
+   "unit": "mm",
+   "value": 214.9
+  },
+  {
+   "comment": "BASE CONFIRMED: the last channel screw at X 905: on FR1's sill seat, 2 hole diameters from FR1's end at x_fr_joint (joints register J-FRONT-04, the Lead 2026-11-01: X 905 or less; FRONT's 914.1 moves)",
+   "expression": "905 mm",
+   "name": "ch_screw_x4",
+   "unit": "mm",
+   "value": 905.0
+  },
+  {
+   "comment": "BASE ASSUMPTION: hole for the flush-head M3 rivnut in the sill seat (product with the Joints Engineer, HOLD)",
+   "expression": "5 mm",
+   "name": "ch_rn_hole",
+   "unit": "mm",
+   "value": 5.0
   }
  ],
  "parts": {
@@ -1530,6 +1676,14 @@
    "parent": "110000",
    "pn": "110101"
   },
+  "110102": {
+   "class": "HS",
+   "key": "band_r",
+   "name": "BASE - BAND ASSY - SIDE - RH",
+   "name_vi": "Viền chân nhôm - cạnh phải (cụm)",
+   "parent": "110000",
+   "pn": "110102"
+  },
   "110103": {
    "class": "HS",
    "key": "band_b",
@@ -1538,13 +1692,13 @@
    "parent": "110000",
    "pn": "110103"
   },
-  "110401": {
-   "class": "BS",
-   "key": "floor_assy",
-   "name": "BASE - FLOOR PANEL ASSY - F1",
-   "name_vi": "Tấm sàn F1 (cụm dán)",
+  "110106": {
+   "class": "HS",
+   "key": "front_r",
+   "name": "BASE - BAND ASSY - FRONT - FIXED GLASS",
+   "name_vi": "Viền chân trước - dưới kính cố định (cụm)",
    "parent": "110000",
-   "pn": "110401"
+   "pn": "110106"
   },
   "111101": {
    "box_mm": [
@@ -1552,18 +1706,37 @@
     -670.0,
     10.0,
     -1210.0,
-    847.0,
+    850.0,
     110.0
    ],
    "class": "MP",
    "key": "band_l_tube",
-   "mass_kg": 1.6687,
+   "mass_kg": 1.6726,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - SIDE - LH",
    "name_vi": "Viền chân nhôm 100x40 - cạnh trái",
    "parent": "110101",
    "pn": "111101",
-   "volume_mm3": 618022.8
+   "volume_mm3": 619498.0
+  },
+  "111102": {
+   "box_mm": [
+    1210.0,
+    -672.0,
+    10.0,
+    1250.0,
+    850.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "band_r_tube",
+   "mass_kg": 1.6749,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - SIDE - RH",
+   "name_vi": "Viền chân nhôm 100x40 - cạnh phải",
+   "parent": "110102",
+   "pn": "111102",
+   "volume_mm3": 620341.0
   },
   "111103": {
    "box_mm": [
@@ -1576,13 +1749,32 @@
    ],
    "class": "MP",
    "key": "band_b_tube",
-   "mass_kg": 2.6792,
+   "mass_kg": 2.7044,
    "material": "Aluminum",
    "name": "BASE - BAND TUBE - BACK",
    "name_vi": "Viền chân nhôm 100x40 - cạnh sau",
    "parent": "110103",
    "pn": "111103",
-   "volume_mm3": 992281.7
+   "volume_mm3": 1001640.9
+  },
+  "111106": {
+   "box_mm": [
+    218.46,
+    -850.0,
+    10.0,
+    915.0,
+    -810.0,
+    110.0
+   ],
+   "class": "MP",
+   "key": "fr1",
+   "mass_kg": 0.7851,
+   "material": "Aluminum",
+   "name": "BASE - BAND TUBE - FRONT - FIXED GLASS",
+   "name_vi": "Viền chân trước - dưới kính cố định",
+   "parent": "110106",
+   "pn": "111106",
+   "volume_mm3": 290790.2
   },
   "111211": {
    "box_mm": [
@@ -1595,51 +1787,32 @@
    ],
    "class": "MP",
    "key": "key",
-   "mass_kg": 0.2075,
+   "mass_kg": 0.2074,
    "material": "Aluminum",
-   "name": "BASE - CORNER KEY - BACK - COMMON",
-   "name_vi": "Ke góc đế - góc sau",
+   "name": "BASE - CORNER KEY - SQUARE - COMMON",
+   "name_vi": "Ke góc đế - cắt vuông",
    "parent": "110000",
    "pn": "111211",
-   "volume_mm3": 76845.4
+   "volume_mm3": 76818.5
   },
-  "111401": {
+  "111301": {
    "box_mm": [
-    -1206.0,
-    -645.0,
-    3.0,
-    12.5,
-    806.0,
-    12.0
+    218.46,
+    -810.0,
+    10.0,
+    965.0,
+    -689.5,
+    110.0
    ],
    "class": "MP",
-   "key": "floor_f1",
-   "mass_kg": 7.1224,
-   "material": "Poplar-core plywood 450 kg/m3 (ASSUMPTION)",
-   "name": "BASE - FLOOR PANEL - F1",
-   "name_vi": "Tấm sàn mỏng - F1",
-   "parent": "110401",
-   "pn": "111401",
-   "volume_mm3": 15827508.0
-  },
-  "111501": {
-   "box_mm": [
-    -1206.0,
-    -645.0,
-    0.0,
-    12.5,
-    806.0,
-    3.0
-   ],
-   "class": "MP",
-   "key": "mat_f1",
-   "mass_kg": 1.0608,
-   "material": "Closed-cell foam 200 kg/m3 (ASSUMPTION)",
-   "name": "BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM",
-   "name_vi": "Tấm lót sàn F1 - xốp kín 3 mm",
-   "parent": "110401",
-   "pn": "111501",
-   "volume_mm3": 5304130.5
+   "key": "sill",
+   "mass_kg": 1.0945,
+   "material": "Aluminum",
+   "name": "BASE - SILL - FIXED GLASS",
+   "name_vi": "Bậu đỡ kính cố định",
+   "parent": "110106",
+   "pn": "111301",
+   "volume_mm3": 405382.0
   },
   "111601": {
    "box_mm": [
@@ -1648,17 +1821,36 @@
     0.0,
     18.0,
     27.0,
-    3.0
+    5.0
    ],
    "class": "MP",
    "key": "doubler",
-   "mass_kg": 0.0147,
+   "mass_kg": 0.0245,
    "material": "Aluminum",
    "name": "BASE - GLIDE DOUBLER - COMMON",
    "name_vi": "Tấm tăng cứng chân chỉnh",
    "parent": "110000",
    "pn": "111601",
-   "volume_mm3": 5433.8
+   "volume_mm3": 9056.3
+  },
+  "118001": {
+   "box_mm": [
+    218.46,
+    -800.0,
+    0.0,
+    230.46,
+    -691.5,
+    25.0
+   ],
+   "class": "PI",
+   "key": "seal_se",
+   "mass_kg": 0.0094,
+   "material": "Lip seal envelope 320 kg/m3 (ASSUMPTION)",
+   "name": "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD",
+   "name_vi": "Gioăng môi sát sàn",
+   "parent": "110106",
+   "pn": "118001",
+   "volume_mm3": 29295.0
   },
   "118002": {
    "box_mm": [
@@ -1678,6 +1870,25 @@
    "parent": "110000",
    "pn": "118002",
    "volume_mm3": 12227.1
+  },
+  "118003": {
+   "box_mm": [
+    -18.5,
+    -1.0,
+    1.5,
+    18.5,
+    1.0,
+    98.5
+   ],
+   "class": "PI",
+   "key": "cap",
+   "mass_kg": 0.0068,
+   "material": "Flat PE end cap 950 kg/m3 (ASSUMPTION)",
+   "name": "BASE - TUBE END CAP - 100 X 40 - BLACK - HOLD",
+   "name_vi": "Nút bịt đầu ống 100x40",
+   "parent": "110000",
+   "pn": "118003",
+   "volume_mm3": 7178.0
   },
   "831001": {
    "box_mm": [
@@ -1747,10 +1958,10 @@
    ],
    "class": "PI",
    "key": "rivnut",
-   "mass_kg": 0.0013,
-   "material": "Aluminum",
-   "name": "HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2",
-   "name_vi": "Tán rút M6",
+   "mass_kg": 0.0037,
+   "material": "Steel",
+   "name": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2",
+   "name_vi": "Tán rút M6 thép mạ kẽm",
    "parent": "110000",
    "pn": "838003",
    "volume_mm3": 465.3
@@ -1776,21 +1987,134 @@
   }
  },
  "rev": "P01",
+ "seal": [
+  {
+   "from": -652.069737380856,
+   "host": "110101",
+   "length_mm": 1462.07,
+   "line": "X = -1210.00 (side band LH, inner face)",
+   "to": 810.0
+  },
+  {
+   "from": -1200.0,
+   "host": "110103",
+   "length_mm": 2400.0,
+   "line": "Y = 810.00 (back band, inner face)",
+   "to": 1200.0
+  },
+  {
+   "from": -654.17212026518,
+   "host": "110102",
+   "length_mm": 1464.17,
+   "line": "X = 1210.00 (side band RH, inner face)",
+   "to": 810.0
+  },
+  {
+   "from": -800.0,
+   "host": "110106",
+   "length_mm": 108.5,
+   "line": "X = 218.46 (the sill's door-end plate, its bottom edge)",
+   "to": -691.5
+  },
+  {
+   "from": 220.45982296533094,
+   "host": "110106",
+   "length_mm": 694.54,
+   "line": "Y = -810.00 (FR1, inner face)",
+   "to": 915.0
+  }
+ ],
+ "sill": {
+  "end_plate": {
+   "inside_bend_corners": [
+    2,
+    4,
+    5
+   ],
+   "outline": [
+    [
+     0.0,
+     0.0
+    ],
+    [
+     118.5,
+     0.0
+    ],
+    [
+     118.5,
+     83.0
+    ],
+    [
+     101.5,
+     83.0
+    ],
+    [
+     101.5,
+     98.0
+    ],
+    [
+     2.0,
+     98.0
+    ],
+    [
+     2.0,
+     60.0
+    ],
+    [
+     0.0,
+     60.0
+    ]
+   ]
+  },
+  "legs_outside": {
+   "drop": 17.0,
+   "flange": 40.0,
+   "kerb": 85.0,
+   "ledge": 103.5,
+   "seat": 19.0
+  },
+  "length": 746.54,
+  "rivnut_hole": 5.0,
+  "screws_x": [
+   269.4,
+   484.3,
+   699.2,
+   905.0
+  ],
+  "t": 2.0,
+  "x0": 218.45982296533094
+ },
  "tubes": {
   "111101": {
    "axis": "Y",
-   "back_end": "square, for the end cap",
+   "back_end": "square, flush with the back face: its key 111211 inside and the flat end cap 118003 (D-129)",
    "front_end": "mitre to DL's outer facet band piece: 24.14 deg from square, long point on the outer face",
-   "inner_face_length": 1499.07,
-   "outer_face_length": 1517.0,
+   "inner_face_length": 1502.07,
+   "outer_face_length": 1520.0,
+   "section": "100 x 40 x 1.5"
+  },
+  "111102": {
+   "axis": "Y",
+   "back_end": "square, flush with the back face: its key 111211 inside and the flat end cap 118003 (D-129)",
+   "front_end": "mitre to the intake's facet piece: 24.02 deg from square, long point on the outer face",
+   "inner_face_length": 1504.17,
+   "outer_face_length": 1522.0,
    "section": "100 x 40 x 1.5"
   },
   "111103": {
    "axis": "X",
-   "back_end": "square",
-   "front_end": "square",
-   "inner_face_length": 2420.0,
-   "outer_face_length": 2420.0,
+   "back_end": "the same at its right end; 2420.0 over both plates",
+   "front_end": "square at its left end, closed by a welded 1.5 end plate (100 x 40) with its open slot (D-129)",
+   "inner_face_length": 2417.0,
+   "outer_face_length": 2417.0,
+   "section": "100 x 40 x 1.5"
+  },
+  "111106": {
+   "axis": "X",
+   "back_end": "square, closed by a welded 1.5 end plate (100 x 40) with 2 keyholes at X 915.0; 696.5 over the plate",
+   "front_end": "square at the door opening, closed by the flat end cap 118003 (in view, D-132)",
+   "inner_face_length": 695.04,
+   "outer_face_length": 695.04,
    "section": "100 x 40 x 1.5"
   }
  }

@@ -27,8 +27,11 @@
 11. An entry written for one material (welded steel, D-131) refuses a parts list that gives another.
 12. BASE's D-129 back band features on a test band: open slots sized from the edge, the notches in a detail, the
     bevels called out; the read-back checks each against the STEP. A flat feature it can't size is refused.
+13. Holes at a tap drill's size are refused as tapped unless the entry lists them as rivet holes (BASE's D-130
+    boot); then the table names the rivet. A list row that says tapped is still refused.
 """
 
+import math
 import os
 import shutil
 import sys
@@ -239,6 +242,245 @@ def _folded_sheet(path):
     return path
 
 
+def _profile(path, kind):
+    """Test members along Y: 'stub' a 20 x 20 x 1 tube only 15 long (shorter than its section, as FRONT's C10);
+    'angle' a 20 x 20 x 2 extruded angle 600 long; 'bevelled' a 20 x 40 x 1.2 tube 600 long with a 1 x 45° bevel along
+    one outer corner (CEILING's seam member)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Pnt, gp_Vec
+
+    def box(x, y, z, dx, dy, dz):
+        return BRepPrimAPI_MakeBox(gp_Pnt(x, y, z), dx, dy, dz).Shape()
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        return c.Shape()
+    if kind == "stub":
+        sh = cut(box(0, 0, 0, 20, 15, 20), box(1, -1, 1, 18, 17, 18))
+    elif kind == "angle":
+        sh = cut(box(0, 0, 0, 20, 600, 20), box(2, -1, 2, 19, 602, 19))
+    else:
+        sh = cut(box(0, 0, 0, 20, 600, 40), box(1.2, -1, 1.2, 17.6, 602, 37.6))
+        poly = BRepBuilderAPI_MakePolygon()
+        for q in ((20, -1, 0), (19, -1, 0), (20, -1, 1)):
+            poly.Add(gp_Pnt(*q))
+        poly.Close()
+        sh = cut(sh, BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(0, 602, 0)).Shape())
+    w = STEPControl_Writer()
+    w.Transfer(sh, STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+def test_profiles_and_short_tubes():
+    """A tube shorter than its section (FRONT's 15 mm C10 stub) is cut across its own axis, so it reads as a tube,
+    not a folded sheet. A member whose section is an angle (an extrusion: its list says so) is refused as a profile to
+    size, not drawn with only its outer sizes (the sweep found FRONT's kick strip 361002 drawn so). A tube with a
+    1 x 45° bevel along an outer corner (CEILING's seam member) is drawn, the bevel called out where a view shows its
+    true angle, and read back against the STEP."""
+    d = os.path.join(TMP, "profiles")
+    os.makedirs(d, exist_ok=True)
+    stub = _profile(os.path.join(d, "219994_P01_TEST-STUB_STEP.step"), "stub")
+    compose.Part("219994", "none", step=stub, row=dict(ROW, part_number="219994"))      # not refused as folded
+    step = _profile(os.path.join(d, "219993_P01_TEST-ANGLE_STEP.step"), "angle")
+    try:
+        compose.Part("219993", "none", step=step, row=dict(ROW, part_number="219993", process="extruded angle, cut"))
+        raise AssertionError("drew an extruded angle as a plain member")
+    except compose.NotDrawable as e:
+        assert "is a profile" in str(e), str(e)
+    step = _profile(os.path.join(d, "219992_P01_TEST-BEVELLED_STEP.step"), "bevelled")
+    p = os.path.join(d, "bevelled.pdf")
+    compose.make("219992", "none", SPEC, p, step=step, row=dict(ROW, part_number="219992", process="cut"))
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    data = readback.read_data(fitz.open(p))
+    assert [c["long"] for c in data["chamfers"]] == [True] and data["chamfers"][0]["text"] == "1 x 45°", data["chamfers"]
+
+
+def test_ceiling_frame_bevels():
+    """CEILING's frame C1 (411101, main's STEP): the back member's 1 x 45° end bevel, which no view looks along, is
+    called out where it shows as a band; the seam member's bevel along its whole length, in the removed section
+    across that member at its true angle. Both read back against the STEP."""
+    d = os.path.join(TMP, "ceiling")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "411101.pdf")
+    compose.make("411101", "ceiling", {"tolerance": "test"}, p)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    doc = fitz.open(p)
+    data = readback.read_data(doc)
+    assert sorted(c["long"] for c in data["chamfers"]) == [False, True], data["chamfers"]
+    assert "showing its bevel along it" in " ".join(doc[0].get_text().split())      # its 2:1 section (Reviewer 6)
+    # Reviewer 6's plant on #331: the seam bevel's callout moved 50 mm, its record moved with it: the read-back
+    # still finds the bevel in the STEP and fails the callout that isn't by it
+    step = os.path.join(readback.REPO, [s_ for s_ in data["sources"] if s_["role"] == "STEP"][0]["path"])
+    planes = [f for f in readback.step_faces(step, data["pn"], data.get("placement"))
+              if f["kind"] == "plane" and "n" in f and f["pts"]]
+    texts = readback.text_boxes(doc[0], data["sheet_h"])
+    assert not readback.flat_feature_fails(data, planes, texts)
+    i = next(j for j, c in enumerate(data["chamfers"]) if c["long"])
+    bx, tip = data["chamfers"][i]["box"], data["chamfers"][i]["tip"]
+    moved = [(t[0] + 50, t[1], t[2] + 50, t[3], t[4], t[5]) if t[4] == "1 x 45°" and abs(t[0] - bx[0]) < 3 and
+             abs(t[1] - bx[1]) < 3 else t for t in texts]
+    assert moved != texts
+    data["chamfers"][i]["box"] = [bx[0] + 50, bx[1], bx[2] + 50, bx[3]]
+    data["chamfers"][i]["tip"] = [tip[0] + 50, tip[1]]
+    f2 = readback.flat_feature_fails(data, planes, moved)
+    assert any("along the member: its size 1 x 45° is not printed by it" in x for x in f2), f2
+
+
+def _cut_tube(path, kind, deg=45.0):
+    """A 20 x 20 x 1.5 tube along X, 300 long. 'band': its +X end mitred deg from square in the XZ plane, which the view
+    drawgen picks first (from below) sees face on; 'top': both ends cut deg in the XZ plane, the top face (+Z) running the full length;
+    'turned': square ends, the section turned 45° about the tube's axis (FRONT's 352208)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakePolygon, BRepBuilderAPI_Transform
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakePrism
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax1, gp_Dir, gp_Pnt, gp_Trsf, gp_Vec
+
+    def cut(a, b):
+        c = BRepAlgoAPI_Cut(a, b)
+        c.Build()
+        return c.Shape()
+
+    def prism(pts, v):
+        poly = BRepBuilderAPI_MakePolygon()
+        for q in pts:
+            poly.Add(gp_Pnt(*q))
+        poly.Close()
+        return BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(poly.Wire()).Face(), gp_Vec(*v)).Shape()
+    sh = cut(BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 300, 20, 20).Shape(),
+             BRepPrimAPI_MakeBox(gp_Pnt(-1, 1.5, 1.5), 302, 17, 17).Shape())
+    k = 20.0 * math.tan(math.radians(deg))
+    if kind == "band":
+        sh = cut(sh, prism([(300, -1, 0), (300 - k, -1, 20), (301, -1, 20), (301, -1, 0)], (0, 22, 0)))
+    elif kind == "top":
+        sh = cut(sh, prism([(300, -1, 20), (300 - k, -1, 0), (301, -1, 0), (301, -1, 20)], (0, 22, 0)))
+        sh = cut(sh, prism([(0, -1, 20), (k, -1, 0), (-1, -1, 0), (-1, -1, 20)], (0, 22, 0)))
+    elif kind == "turned":
+        t = gp_Trsf()
+        t.SetRotation(gp_Ax1(gp_Pnt(0, 10, 10), gp_Dir(1, 0, 0)), math.radians(45.0))
+        sh = BRepBuilderAPI_Transform(sh, t, True).Shape()
+    w = STEPControl_Writer()
+    w.Transfer(sh, STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+def test_end_cuts_print_their_angles():
+    """FRONT's #320 (Reviewer 7): a mitre that the only planned view sees face on gets a view that shows it in
+    profile, its angle printed at its end; the read-back finds every end cut in the STEP on its own and fails a sheet
+    whose angle isn't there (here: the 45° sheet against a model cut at 36.87°). A tube turned about its axis is drawn
+    square to its faces (20 high, not 28.28: FRONT's 352208), and a top face as long as the part isn't sized twice
+    (FRONT's 352203)."""
+    d = os.path.join(TMP, "endcuts")
+    os.makedirs(d, exist_ok=True)
+    row = dict(ROW, part_number="219991")
+    step = _cut_tube(os.path.join(d, "219991_P01_TEST-BAND_STEP.step"), "band")
+    p = os.path.join(d, "band.pdf")
+    face_on = dict(SPEC, principal={"look": "+Z", "x": "+X"})      # its principal sees the mitre face on
+    compose.make("219991", "none", face_on, p, step=step, row=row)
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    text = " ".join(fitz.open(p)[0].get_text().split())
+    assert "45°" in text, text[:500]
+    other = _cut_tube(os.path.join(d, "219991_P01_TEST-OTHER_STEP.step"), "band", deg=36.87)
+    f2, _ = readback.check(p, other)
+    assert any("36.87° from square" in x for x in f2), f2
+    step = _cut_tube(os.path.join(d, "219990_P01_TEST-TURNED_STEP.step"), "turned")
+    p = os.path.join(d, "turned.pdf")
+    compose.make("219990", "none", SPEC, p, step=step, row=dict(ROW, part_number="219990"))
+    words = fitz.open(p)[0].get_text().split()
+    assert "20" in words and "28.28" not in words, words[:80]
+    step = _cut_tube(os.path.join(d, "219989_P01_TEST-TOP_STEP.step"), "top", deg=30.0)
+    p = os.path.join(d, "top.pdf")
+    compose.make("219989", "none", SPEC, p, step=step, row=dict(ROW, part_number="219989"))
+    fails, _st = readback.check(p, step)
+    assert not fails, fails
+    words = fitz.open(p)[0].get_text().split()
+    assert words.count("300") == 1 and "30°" in words, words[:80]
+
+
+def test_bent_sheet_from_step_and_dxf():
+    """The Lead's ruling (2026-11-01): bent parts come from the generator. WALL's tray 511101 (radiused bends, two runs
+    of them) and INTERIOR's ledge 811101 (sharp folds, its inside radius from its entry) draw from main's STEP and DXF:
+    a profile section per run of bends, the flat pattern from the DXF, a bend table. The DXF's bend lines sit where the
+    model's flanges put them at one K-factor (0.44); the read-back fails the same sheet against a DXF whose bend line
+    moved 0.5 mm, and a DXF with a hole the model hasn't is refused."""
+    import sheetmetal
+    d = os.path.join(TMP, "bent")
+    os.makedirs(d, exist_ok=True)
+    p = os.path.join(d, "511101.pdf")
+    compose.make("511101", "wall", {"tolerance": "test", "bent": True}, p)
+    fails, _st = readback.check(p)
+    assert not fails, fails
+    data = readback.read_data(fitz.open(p))
+    assert len(data["flat"]["rows"]) == 8 and abs(data["flat"]["k"] - 0.44) < 0.001, data["flat"]
+    assert all(r["dir"] == "UP" for r in data["flat"]["rows"]) and data["flat"]["r"] == 0.5, data["flat"]["rows"]
+    p2 = os.path.join(d, "811101.pdf")
+    compose.make("811101", "interior", {"tolerance": "test", "bent": {"radius": 1.5, "radius_why": "test"}}, p2)
+    doc = fitz.open(p2)
+    fails, _st = readback.check(p2)
+    assert not fails, fails
+    text = " ".join(doc[0].get_text().split())
+    assert "FLAT PATTERN" in text and "BENDS B1-B2" in text and "K-factor 0.44" in text, text[:400]
+    data2 = readback.read_data(doc)
+    src = os.path.join(readback.REPO, data2["flat"]["dxf"])
+    moved = os.path.join(d, "811101_moved_DXF.dxf")
+    with open(src) as fh:
+        dtext = fh.read()
+    assert dtext.count("271.0894") == 2
+    with open(moved, "w") as fh:
+        fh.write(dtext.replace("271.0894", "271.5894"))
+    data2["flat"]["dxf"] = moved
+    f2 = readback.flat_fails(data2, readback.text_boxes(doc[0], data2["sheet_h"]), doc[0].get_text())
+    assert any("on no BEND line" in x for x in f2) and any("put a bend line" in x for x in f2), f2
+    holed = os.path.join(d, "811101_holed_DXF.dxf")
+    with open(holed, "w") as fh:
+        assert dtext.count("ENTITIES\n") == 1
+        fh.write(dtext.replace("ENTITIES\n", "ENTITIES\n0\nCIRCLE\n8\nCUT\n10\n500.0\n20\n140.0\n40\n5.0\n", 1))
+    import geom
+    bodies, _u = geom.load_part(compose.find_step("811101", "interior"), "811101")
+    try:
+        sheetmetal.analyse(bodies[0], holed, radius=1.5, holes=[])
+        raise AssertionError("drew a flat with a hole the model hasn't")
+    except ValueError as e:
+        assert "its DXF has 1 round holes, its model 0" in str(e) and "Ø10 hole at (500, 140) is on no hole" in str(e), e
+    # Reviewer 6 on #335: a Ø10 hole the model hasn't, planted in the DXF of 511101 (bent both ways): refused, and the
+    # read-back of 511101's sheet fails against that DXF
+    data = readback.read_data(fitz.open(p))
+    src = os.path.join(readback.REPO, data["flat"]["dxf"])
+    with open(src) as fh:
+        wtext = fh.read()
+    import dxf as dxfmod
+    bx = dxfmod.Dxf(src).cut_box()
+    cx, cy = round((bx[0] + bx[2]) / 2, 3), round((bx[1] + bx[3]) / 2, 3)
+    planted = os.path.join(d, "511101_planted_DXF.dxf")
+    with open(planted, "w") as fh:
+        assert wtext.count("ENTITIES\n") == 1
+        fh.write(wtext.replace("ENTITIES\n", "ENTITIES\n0\nCIRCLE\n8\nCUT\n10\n%r\n20\n%r\n40\n5.0\n" % (cx, cy), 1))
+    b511, _u = geom.load_part(compose.find_step("511101", "wall"), "511101")
+    try:
+        sheetmetal.analyse(b511[0], planted, holes=[])
+        raise AssertionError("drew 511101 with a hole the model hasn't")
+    except ValueError as e:
+        assert "its DXF has 1 round holes, its model 0" in str(e) and "is on no hole of the model" in str(e), e
+    data["flat"]["dxf"] = planted
+    doc1 = fitz.open(p)
+    faces = readback.step_faces(os.path.join(readback.REPO, [s_ for s_ in data["sources"] if s_["role"] == "STEP"][0]["path"]),
+                                data["pn"], data.get("placement"))
+    f3 = readback.flat_hole_fails(data, [], faces)
+    assert any("has 1 round holes, the STEP 0" in x for x in f3) and any("on no STEP hole" in x for x in f3), f3
+    assert doc1 is not None
+
+
 def test_refuses_a_folded_sheet():
     """D-113: a bent or folded part stays with Fusion, even when its fold has no radius in the model."""
     d = os.path.join(TMP, "folded")
@@ -250,6 +492,149 @@ def test_refuses_a_folded_sheet():
         raise AssertionError("drew a folded sheet")
     except compose.NotDrawable as e:
         assert "folded" in str(e), e
+
+
+def _tray(path):
+    """A 200 x 150 x 30 tray of 1 mm sheet folded sharp up all four sides (6 mm open corners), with a Ø8 hole through
+    its front wall at X 60, Z 15: two runs of bends, square to each other, and a hole on a folded flange."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.ShapeUpgrade import ShapeUpgrade_UnifySameDomain
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+    shape = None
+    for (x, y, z), (dx, dy, dz) in (((0, 0, 0), (200, 150, 1)), ((6, 0, 0), (188, 1, 30)), ((6, 149, 0), (188, 1, 30)),
+                                    ((0, 6, 0), (1, 138, 30)), ((199, 6, 0), (1, 138, 30))):
+        b = BRepPrimAPI_MakeBox(gp_Pnt(x, y, z), dx, dy, dz).Shape()
+        if shape is None:
+            shape = b
+            continue
+        f = BRepAlgoAPI_Fuse(shape, b)
+        f.SetFuzzyValue(1e-6)
+        f.Build()
+        shape = f.Shape()
+    c = BRepAlgoAPI_Cut(shape, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(60, -1, 15), gp_Dir(0, 1, 0)), 4.0, 3.0).Shape())
+    c.Build()
+    u = ShapeUpgrade_UnifySameDomain(c.Shape(), True, True, True)
+    u.Build()
+    # edges written as their own curves, no surface-curve wrapper, as Fusion writes them (the repo's STEP reader
+    # reads a hole's circles so); the setting is put back after
+    from OCP.Interface import Interface_Static
+    w = STEPControl_Writer()          # first: making the writer sets the STEP settings to their defaults
+    was = Interface_Static.IVal_s("write.surfacecurve.mode")
+    Interface_Static.SetIVal_s("write.surfacecurve.mode", 0)
+    try:
+        w.Transfer(u.Shape(), STEPControl_AsIs)
+        assert w.Write(path) == IFSelect_RetDone
+    finally:
+        Interface_Static.SetIVal_s("write.surfacecurve.mode", was)
+    return path
+
+
+def _tray_dxf(path, hole_dx=0.0):
+    """_tray's flat pattern, worked out here by hand (inside radius 1, K 0.44, 90° folds): OSSB (r + t) tan 45° = 2,
+    allowance pi/2 (r + K t) = 2.262; x across the left and right folds, y across the front and back ones; the hole
+    15 from the front wall's free edge and base0 + 60 along, moved hole_dx along x."""
+    t, r, k = 1.0, 1.0, 0.44
+    ossb = (r + t) * math.tan(math.radians(45.0))
+    ba = math.radians(90.0) * (r + k * t)
+    wall = 30.0 - ossb                          # each wall's straight part, from its free edge
+    W = 200 + 2 * 30 - 4 * ossb + 2 * ba        # the flat across the left and right folds
+    H = 150 + 2 * 30 - 4 * ossb + 2 * ba
+    base0 = wall + ba - ossb                    # the base's pod 0 (its outer sharp) in the flat
+    a, b, c, e = base0 + 6, base0 + 194, base0 + 6, base0 + 144     # the walls' ends
+    x0, x1, y0, y1 = wall, W - wall, wall, H - wall                 # the bend zones' outer edges
+    pts = [(a, 0), (b, 0), (b, y0), (x1, y0), (x1, c), (W, c), (W, e), (x1, e), (x1, y1), (b, y1), (b, H), (a, H),
+           (a, y1), (x0, y1), (x0, e), (0, e), (0, c), (x0, c), (x0, y0), (a, y0)]
+    ents = []
+    for i, p in enumerate(pts):
+        q = pts[(i + 1) % len(pts)]
+        ents.append(("LINE", "CUT", p, q))
+    for p, q in (((wall + ba / 2, c), (wall + ba / 2, e)), ((W - wall - ba / 2, c), (W - wall - ba / 2, e)),
+                 ((a, wall + ba / 2), (b, wall + ba / 2)), ((a, H - wall - ba / 2), (b, H - wall - ba / 2))):
+        ents.append(("LINE", "BEND", p, q))
+    out = ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES"]
+    for _typ, lay, p, q in ents:
+        out += ["0", "LINE", "8", lay, "10", repr(p[0]), "20", repr(p[1]), "11", repr(q[0]), "21", repr(q[1])]
+    out += ["0", "CIRCLE", "8", "CUT", "10", repr(base0 + 60 + hole_dx), "20", repr(15.0), "40", "4.0"]
+    out += ["0", "ENDSEC", "0", "EOF"]
+    with open(path, "w") as fh:
+        fh.write("\n".join(out) + "\n")
+    return path, base0
+
+
+def test_bent_holes_counted_both_ways():
+    """Reviewer 6 on #335 (P1): a part bent both ways has its holes checked against the DXF too. A test tray with a
+    Ø8 hole in its front wall draws and reads back PASS against its hand-worked DXF, every bend UP (the DXF shows the
+    inside); with the DXF's hole moved 5 mm the generator refuses it, and the read-back of the good sheet fails
+    against the moved DXF, both ways (the STEP's hole on no DXF hole, the DXF's hole on no STEP hole)."""
+    import sheetmetal
+    d = os.path.join(TMP, "tray")
+    os.makedirs(d, exist_ok=True)
+    step = _tray(os.path.join(d, "219996_P01_TEST-TRAY_STEP.step"))
+    good, base0 = _tray_dxf(os.path.join(d, "219996_good_DXF.dxf"))
+    moved, _b = _tray_dxf(os.path.join(d, "219996_moved_DXF.dxf"), hole_dx=5.0)
+    row = dict(ROW, part_number="219996", name="TEST - TRAY", process="laser cut, brake bend")
+    p = os.path.join(d, "219996.pdf")
+    spec = dict(SPEC, bent={"radius": 1.0, "radius_why": "test", "dxf": good})
+    compose.make("219996", "none", spec, p, step=step, row=row)
+    fails, st = readback.check(p)
+    assert not fails, fails
+    data = readback.read_data(fitz.open(p))
+    fl = data["flat"]
+    assert len(fl["rows"]) == 4 and all(r_["dir"] == "UP" for r_ in fl["rows"]) and abs(fl["k"] - 0.44) < 1e-4, fl["rows"]
+    assert fl["readings"] == 1, fl["readings"]          # the hole pins one of the four readings the symmetric runs allow
+    try:
+        compose.make("219996", "none", dict(SPEC, bent={"radius": 1.0, "radius_why": "test", "dxf": moved}),
+                     os.path.join(d, "moved.pdf"), step=step, row=row)
+        raise AssertionError("drew a tray whose DXF hole is 5 mm off")
+    except compose.NotDrawable as e:
+        want = "the model's Ø8 hole belongs at (%s, 15) in the flat" % sheetmetal._f(base0 + 60)
+        assert want in str(e) and "is on no hole of the model" in str(e), e
+    data["flat"]["dxf"] = moved
+    faces = readback.step_faces(step, "219996")
+    f2 = readback.flat_hole_fails(data, readback.step_holes(step, "219996"), faces)
+    assert any("unfolds to (%s, 15)" % readback._fmtv(base0 + 60) in x for x in f2), f2
+    assert any("Ø8 hole at (%s, 15) that is on no STEP hole" % readback._fmtv(base0 + 65) in x for x in f2), f2
+
+
+def test_unpinned_bend_directions_are_refused():
+    """Reviewer 6 on #335 (P2): with no hole to tell which way up the DXF is drawn, the readings left must fold the
+    same part, so the flat must be symmetric the way they differ. INTERIOR's 811101 (no holes, a symmetric flat)
+    draws; its DXF with one corner cut 5 x 5 isn't symmetric, so it is refused. WALL's 511202 is refused for its
+    cut-outs that aren't round holes (the flat's check reads round holes only)."""
+    import geom
+    import sheetmetal
+    d = os.path.join(TMP, "unpinned")
+    os.makedirs(d, exist_ok=True)
+    src = [f for f in os.listdir(os.path.join(readback.REPO, "v2", "03-Manufacturing", "interior"))
+           if f.startswith("811101_") and f.endswith("_DXF.dxf")][0]
+    with open(os.path.join(readback.REPO, "v2", "03-Manufacturing", "interior", src)) as fh:
+        text = fh.read()
+    corner = "VERTEX\n8\nCUT\n10\n0.0000\n20\n0.0000\n30\n0.0\n0\n"
+    assert text.count(corner) == 1, "811101's outline changed: rework this test"
+    cut = (corner.replace("20\n0.0000", "20\n5.0000") +
+           corner.replace("10\n0.0000", "10\n5.0000"))
+    bad = os.path.join(d, "811101_corner_DXF.dxf")
+    with open(bad, "w") as fh:
+        fh.write(text.replace(corner, cut))
+    bodies, _u = geom.load_part(compose.find_step("811101", "interior"), "811101")
+    fl = sheetmetal.analyse(bodies[0], os.path.join(readback.REPO, "v2", "03-Manufacturing", "interior", src), radius=1.5)
+    assert fl.readings == 4, fl.readings
+    try:
+        sheetmetal.analyse(bodies[0], bad, radius=1.5)
+        raise AssertionError("drew 811101 from a DXF whose flat isn't symmetric, with nothing to pin it")
+    except ValueError as e:
+        assert "nothing pins which way up its DXF is drawn" in str(e), e
+    b2, _u = geom.load_part(compose.find_step("511202", "wall"), "511202")
+    try:
+        sheetmetal.analyse(b2[0], [os.path.join(readback.REPO, "v2", "03-Manufacturing", "wall", f)
+                                   for f in os.listdir(os.path.join(readback.REPO, "v2", "03-Manufacturing", "wall"))
+                                   if f.startswith("511202_") and f.endswith("_DXF.dxf")][0])
+        raise AssertionError("drew 511202 with cut-outs the flat's check doesn't read")
+    except ValueError as e:
+        assert "2 cut-outs that aren't round holes (80 x 11, 304 x 268)" in str(e), e
 
 
 def test_clash_check_catches_touching_text():
@@ -288,8 +673,10 @@ def test_clash_check_catches_a_line_through_text():
 
 
 def test_notes_name_no_maker():
-    """The Lead's ruling (2026-11-01): a note names the source, never an agent, a role or a script as its maker; the
-    title block's CREATED BY Autonomous is the one place a maker is named. The read-back fails any other."""
+    """The Lead's rulings (2026-11-01, #302): a note names the source, never an agent, a role, a script or tool, a
+    team or a person as its maker; a process may be named ("holes made by drilling after welding", "made by
+    bending the flange", as the steel-frame and bond notes say). The title block's CREATED BY Autonomous is the one
+    maker field. The read-back fails only the first kind, by the mechanical check's own rule."""
     from sheet import Sheet
     d = os.path.join(TMP, "maker")
     os.makedirs(d, exist_ok=True)
@@ -298,9 +685,13 @@ def test_notes_name_no_maker():
     sh.text(300, 276, "Autonomous", 2.5)
     sh.text(30, 100, "Source: the STEP. Made by tools/drawgen (D-112) from that STEP.", 2.5)
     sh.text(30, 90, "From that STEP: regenerate it, never edit the PDF.", 2.5)
+    sh.text(30, 80, "Holes made by drilling after welding; deburr both sides.", 2.5)
+    sh.text(30, 70, "The flange is made by bending, inside radius 1.", 2.5)
+    sh.text(30, 60, "Faces prepared by abrasive pad before bonding.", 2.5)
+    sh.text(30, 50, "Drawn by the WALL Engineer.", 2.5)
     sh.save(os.path.join(d, "m.pdf"))
     found = readback.note_makers(fitz.open(os.path.join(d, "m.pdf")))
-    assert found == [(1, "Made by tools/drawgen")], found
+    assert len(found) == 2 and "tools/drawgen" in found[0][1] and "Engineer" in found[1][1], found
 
 
 def test_long_tube_keeps_its_scale():
@@ -400,6 +791,74 @@ def test_tapped_holes_wait_for_their_callouts():
         raise AssertionError("drew a part with tapped holes")
 
 
+def _drilled_bar(path, dia):
+    """A 300 x 40 x 20 bar with two holes of one size through its thickness."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
+    from OCP.IFSelect import IFSelect_RetDone
+    from OCP.STEPControl import STEPControl_AsIs, STEPControl_Writer
+    from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+    sh = BRepPrimAPI_MakeBox(gp_Pnt(0, 0, 0), 300, 40, 20).Shape()
+    for x in (50.0, 250.0):
+        c = BRepAlgoAPI_Cut(sh, BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, 20, -1), gp_Dir(0, 0, 1)), dia / 2, 22).Shape())
+        c.Build()
+        sh = c.Shape()
+    w = STEPControl_Writer()
+    w.Transfer(sh, STEPControl_AsIs)
+    assert w.Write(path) == IFSelect_RetDone
+    return path
+
+
+def test_rivet_holes_pass_the_tapped_guard():
+    """BASE's D-130 boot takes blind rivets in holes of tap drills' sizes (3.3, 4.2, about 5.0; Reviewer 5): a part
+    with Ø4.2 holes is refused as tapped, unless its entry lists 4.2 as a rivet hole; then it is drawn and its table
+    names the rivet. A parts-list row that says tapped is still refused."""
+    d = os.path.join(TMP, "rivet")
+    os.makedirs(d, exist_ok=True)
+    step = _drilled_bar(os.path.join(d, "219995_P01_TEST-BAR-RIVETED_STEP.step"), 4.2)
+    row = dict(ROW, part_number="219995", name="TEST - BAR - RIVETED")
+    try:
+        compose.make("219995", "none", SPEC, os.path.join(d, "a.pdf"), step=step, row=row)
+        raise AssertionError("drew Ø4.2 holes as plain holes")
+    except compose.NotDrawable as e:
+        assert "tapped holes" in str(e) and "Ø4.2" in str(e), e
+    spec = dict(SPEC, rivet_holes={4.2: "blind rivet, Ø4 (test)"})
+    p = os.path.join(d, "b.pdf")
+    compose.make("219995", "none", spec, p, step=step, row=row)
+    text = " ".join(fitz.open(p)[0].get_text().split())
+    assert text.count("rivet hole: blind rivet, Ø4 (test)") == 2, text[:800]
+    try:
+        compose.make("219995", "none", spec, os.path.join(d, "c.pdf"), step=step,
+                     row=dict(row, process="drilled and tapped M5"))
+        raise AssertionError("drew a part whose list says tapped")
+    except compose.NotDrawable as e:
+        assert "its parts list says so" in str(e), e
+
+
+def test_text_width_matches_the_printed_text():
+    """The free-space boxes are as wide as the printed text, Ø and µ included (fitz.get_text_length under-measured
+    them: 'Ø9.53' 7.55 against 9.48 printed; the Air Engineer's read-back found it): each width within 0.05 mm of the
+    PDF's own span box, regular and bold."""
+    from sheet import Sheet
+    d = os.path.join(TMP, "widths")
+    os.makedirs(d, exist_ok=True)
+    sh = Sheet("A3")
+    samples = ["Ø9.53", "µm", "45°", "1 x 45°", "H01  Ø13 THRU 1 WALL"]
+    for i, t in enumerate(samples):
+        sh.text(30, 250 - 10 * i, t, 2.5)
+        sh.text(200, 250 - 10 * i, t, 2.5, bold=True)
+    sh.save(os.path.join(d, "w.pdf"))
+    spans = {}
+    for b in fitz.open(os.path.join(d, "w.pdf"))[0].get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            for sp in ln["spans"]:
+                spans[(sp["text"], "Bold" in sp["font"])] = (sp["bbox"][2] - sp["bbox"][0]) / (72 / 25.4)
+    for t in samples:
+        for bold in (False, True):
+            assert abs(spans[(t, bold)] - sh.text_width(t, 2.5, bold)) < 0.05, (t, bold, spans[(t, bold)],
+                                                                             sh.text_width(t, 2.5, bold))
+
+
 def test_long_words_break_at_separators():
     """A word wider than its cell (a long drawing number in the title block, FRONT's 352211) breaks after its '_'
     or '-', each line inside the cell, and nothing is lost."""
@@ -415,12 +874,16 @@ def test_long_words_break_at_separators():
 
 
 def test_a_repeated_part_is_drawn_once():
-    """A part an assembly STEP holds several times (BASE's glide doubler 111601, 5 in the band assembly) loads
-    as one occurrence, with the count kept for the drawing's quantity note and its check against the list."""
+    """A part an assembly STEP holds several times (BASE's glide doubler 111601 in the band assembly) loads as one
+    occurrence, with the count kept for the drawing's quantity note and its check against the list. The count is
+    BASE's parts list's per-pod total (5 before BASE's D-129 P02, 9 after), so the test follows BASE's model."""
+    import csv
     import geom
-    bodies, unit = geom.load_part(os.path.join(drawgen.inputs.REPO, "v2", "03-Manufacturing", "base",
-                                               "110000_P01_BASE_STEP.step"), "111601")
-    assert len(bodies) == 1 and unit["occurrences"] == 5, (len(bodies), unit)
+    base = os.path.join(drawgen.inputs.REPO, "v2", "03-Manufacturing", "base")
+    with open(os.path.join(base, "110000_P01_BASE_BOM.csv"), newline="", encoding="utf-8") as fh:
+        want = sum(int(float(r["qty_per_pod"])) for r in csv.DictReader(fh) if r["part_number"] == "111601")
+    bodies, unit = geom.load_part(os.path.join(base, "110000_P01_BASE_STEP.step"), "111601")
+    assert want > 1 and len(bodies) == 1 and unit["occurrences"] == want, (want, len(bodies), unit)
 
 
 def _notched_band(path, length=1000.0, notch_w=12.0, window=False):

@@ -181,6 +181,89 @@ class MadeParts(unittest.TestCase):
         self.assertIs(seen.get("tab_cover"), cover)
 
 
+FRONT_LISTS = "v2/03-Manufacturing/front/"
+BLOCK_FILES = {"v2/01-CAD-Native/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD.f3d": "working tree",
+               FRONT_LISTS + "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step": "working tree",
+               "v2/01-CAD-Native/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD.f3d": "working tree",
+               FRONT_LISTS + "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step": "working tree"}
+
+
+class D120Members(unittest.TestCase):
+    """FRONT's #320 rows: a frame's members are rows in the frame's own list (or a cut list's member_part); the
+    frame has no files of its own, its block's CAD and STEP hold it, and the members are bodies in that STEP."""
+
+    def lists(self):
+        block = FRONT_LISTS + "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv"
+        frame = FRONT_LISTS + "351104_P01_FRONT-DECOR-FRAME-DL_BOM.csv"
+        return [row("350001", "assembly", "FRONT - DECOR BLOCK ASSY - DL", team="FRONT", src=block),
+                row("351104", "make", "FRONT - DECOR FRAME - DL", "weldment assembly: welded frame, 26 tubes as 16 parts", team="FRONT", src=block),
+                row("351104", "assembly", "FRONT - DECOR FRAME - DL", "weldment assembly", team="FRONT", src=frame),
+                row("352101", "make", "FRONT - DECOR FRAME DL - BACK RING BOTTOM", "aluminium EN AW-6063-T6 tube 20 x 20 x 1.0", team="FRONT", src=frame)]
+
+    def line(self, made, pn):
+        return next(m for m in made if m["part_number"] == pn)
+
+    def test_a_member_in_its_frames_list_takes_the_frames_cad_and_step(self):
+        made, _ = run(self.lists(), dict(BLOCK_FILES))
+        frame, member = self.line(made, "351104"), self.line(made, "352101")
+        self.assertTrue(frame["cad"] and frame["step"])            # the frame is held by its block's files
+        self.assertTrue(member["cad"] and member["step"], member["gaps"])
+        self.assertNotIn("CAD", member["gaps"])
+        self.assertNotIn("STEP", member["gaps"])
+
+    def test_without_its_frames_files_a_member_still_lacks_them(self):
+        made, _ = run(self.lists(), {})
+        member = self.line(made, "352101")
+        self.assertFalse(member["cad"] or member["step"])
+        self.assertIn("CAD", member["gaps"])
+
+    def test_a_cut_lists_member_part_takes_its_frames_files(self):
+        block = FRONT_LISTS + "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv"
+        other = FRONT_LISTS + "359999_P01_FRONT-LOOSE-TUBES_BOM.csv"
+        parts = [row("350003", "assembly", "FRONT - DECOR BLOCK ASSY - DR", team="FRONT", src=block),
+                 row("351306", "make", "FRONT - DECOR FRAME - DR", "weldment assembly", team="FRONT", src=block),
+                 row("352301", "make", "FRONT - DECOR FRAME DR - FRONT RING BOTTOM", "aluminium EN AW-6063-T6 tube 20 x 20 x 1.0", team="FRONT", src=other)]
+        cut = {FRONT_LISTS + "351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv":
+               "frame,member,member_part,name,section,length_mm,qty,ends,status\n"
+               "351306,F01,352301,FRONT RING BOTTOM,6063-T6 aluminium tube 20 x 20 x 1.0,100.9,1,mitred,calculation\n"}
+        fai = rc.fai_plan(PLAN, BOM)
+        register = BOM.parse_register(REGISTER, "test")
+        made, _ = rc.check_parts(parts, register, rc.files_by_pn(BLOCK_FILES), list(BLOCK_FILES), fai, fai[1],
+                                 rc.register_products(REGISTER, BOM), "unlocked", BOM, {}, cut, {})
+        member = self.line(made, "352301")
+        self.assertTrue(member["cad"] and member["step"], member["gaps"])
+
+    def test_every_frame_member_has_an_fai_line_in_the_real_plan(self):
+        chars, _, _ = rc.fai_plan((rc.ROOT / rc.FAI).read_text(encoding="utf-8"), BOM)
+        for pn in ("352101", "352201", "352322", "212101", "212701", "412001", "412103", "412201"):
+            ids = [k for k, pats in chars if any(p.fullmatch(pn) for p in pats)]
+            self.assertIn("K-J18", ids, pn)
+
+
+class MakerDigits(unittest.TestCase):
+    ELEC = "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv"
+
+    def cable(self, **kw):
+        r = row("718027", "buy", "ELECTRICAL - CABLE - 4 X 24 AWG SCREENED - BELDEN 9534", team="ELECTRICAL", src=self.ELEC)
+        r.update(kw)
+        return r
+
+    def test_an_all_digit_maker_number_counts_when_the_row_names_its_maker(self):
+        _, bought = run([self.cable(maker="Belden", sku="9534 060100: 4 x 24 AWG stranded, overall foil and drain")], {})
+        self.assertEqual(bought[0]["sku"], "yes")
+        self.assertNotIn("maker and SKU", bought[0]["state"])
+
+    def test_digits_alone_without_a_maker_still_lack_a_maker(self):
+        _, bought = run([self.cable()], {})
+        self.assertEqual(bought[0]["sku"], "no")
+
+    def test_the_maker_and_sku_cells_come_from_the_parts_list_itself(self):
+        text = ("part_number,name,kind,maker,sku\n"
+                "718027,ELECTRICAL - CABLE - 4 X 24 AWG SCREENED - BELDEN 9534,PI,Belden,9534 060100\n")
+        parts = rc.with_maker_cells([self.cable()], {self.ELEC: (text, "working tree")})
+        self.assertEqual((parts[0]["maker"], parts[0]["sku"]), ("Belden", "9534 060100"))
+
+
 class BoughtParts(unittest.TestCase):
     def test_register_named_part_with_a_test_is_done(self):
         _, bought = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {},

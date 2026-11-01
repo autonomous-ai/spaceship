@@ -212,18 +212,23 @@ def all_strokes(page, sheet_h):
     return segs
 
 
-MAKER = re.compile(r"\b(made|created|drawn|designed|generated|produced|prepared)\s+by\s+([^\s,;]+)", re.I)
+def _c_drawings():
+    _stepfile()                 # puts tools/checks on the path
+    import c_drawings
+    return c_drawings
 
 
 def note_makers(doc):
-    """[(sheet, phrase)] for each 'made by X' and the like on the sheets, other than the title block's CREATED BY
-    Autonomous: the Lead's ruling (2026-11-01) is that a note names the source, never an agent, a role or a script as
-    the maker."""
+    """[(sheet, phrase)] for each note that names a maker other than Autonomous: an agent, a role, a script or tool, a
+    team or a person. A process is no maker ("holes made by drilling after welding", "made by bending the flange").
+    The Lead's ruling on #302; the rule is the mechanical check's own (tools/checks/c_drawings.py: its reading of
+    'made by ...' lines and names_a_maker), so the two can't differ."""
+    cd = _c_drawings()
     out = []
     for n, page in enumerate(doc, start=1):
-        for m in MAKER.finditer(page.get_text()):
-            if m.group(2).strip(":.") != "Autonomous":
-                out.append((n, " ".join(m.group(0).split())))
+        for phrase, maker in cd._note_makers(page):
+            if maker.strip().lower() != "autonomous" and cd.names_a_maker(maker):
+                out.append((n, "%s %s" % (phrase, maker)))
     return out
 
 
@@ -315,8 +320,9 @@ def step_faces(step_path, pn, pm=None):
             if pm:
                 v = tuple(sum(pm["m"][i][j] * v[j] for j in range(3)) for i in range(3))
             return v
+        key = (inst["solid"], tuple(round(v, 3) for v in fr.o) + tuple(round(v, 3) for v in fr.x))
         for f in s.faces:
-            d = {"kind": f.kind, "pts": [mv(q) for q in f.points]}
+            d = {"kind": f.kind, "pts": [mv(q) for q in f.points], "solid": key}
             if f.kind == "plane" and f.normal is not None:
                 d["n"] = rot(f.normal)
             if f.kind == "cylinder" and f.origin is not None:
@@ -388,6 +394,245 @@ def open_slot_fails(data, faces, rows, texts, tol=TOL):
     return fails
 
 
+def _fmt(v):
+    t = ("%.2f" % v).rstrip("0").rstrip(".")
+    return "0" if t in ("-0", "") else t
+
+
+def _norm(v):
+    L = math.sqrt(dot(v, v)) or 1.0
+    return tuple(c / L for c in v)
+
+
+def _cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+
+def end_cut_fails(data, faces, texts, near=30.0):
+    """Every end cut of every member, found by the repo's reader: on each solid that is a member (longest along the
+    line square to its two longest flat faces that aren't parallel), a flat face 1.1° to 88.9° from square to that
+    line and 6 mm or more across the member the way it slopes (a mitre, a compound cut's main face; not a 1 x 45°
+    bevel). Its angle from square
+    must print within `near` mm of where a drawn view puts the face (FRONT's #320: 8 tubes printed none, their
+    mitres seen only face on). A part the assembly STEP holds several times passes when one copy (the drawn one)
+    does."""
+    by = {}
+    for f in faces:
+        if f["kind"] == "plane" and f.get("n") and len(f["pts"]) >= 3:
+            by.setdefault(f["solid"], []).append(f)
+    views = [v for v in data["views"] if v.get("off") and v.get("scale")]
+    per_solid = []
+    for sid, fs in by.items():
+        def span(f):
+            return max(math.dist(a, b) for a in f["pts"] for b in f["pts"])
+        fs_s = sorted(fs, key=lambda f: -span(f))
+        n1 = _norm(fs_s[0]["n"])
+        n2 = next((_norm(f["n"]) for f in fs_s[1:] if abs(dot(_norm(f["n"]), n1)) < 0.5), None)
+        if n2 is None:
+            continue
+        ax = _norm(_cross(n1, n2))
+        allp = [q for f in fs for q in f["pts"]]
+        ext = lambda d: max(dot(q, d) for q in allp) - min(dot(q, d) for q in allp)
+        if ext(ax) < 1.5 * max(ext(n1), ext(n2)):
+            continue                # not a member: a plate, a block
+        fails = []
+        for f in fs:
+            n = _norm(f["n"])
+            c = abs(dot(n, ax))
+            if not (0.019 < c < 0.9998):
+                continue
+            u = _norm(_cross(ax, n))        # along the cut's hinge line, across the member
+            w = _norm(_cross(u, ax))        # across the member the way the cut slopes
+            across = max(dot(q, w) for q in f["pts"]) - min(dot(q, w) for q in f["pts"])
+            if across < 6.0:
+                continue            # a 1 x 45° bevel or a small facet: narrow the way it slopes (bevels are checked
+                                    # as chamfers)
+            want = _fmt(math.degrees(math.acos(c))) + "°"
+            cen = tuple(sum(q[i] for q in f["pts"]) / len(f["pts"]) for i in range(3))
+            ok = False
+            for v in views:
+                P = lambda q: (v["off"][0] + v["scale"] * dot(q, v["x"]), v["off"][1] + v["scale"] * dot(q, v["y"]))
+                pt = P(cen)
+                pp = [P(q) for q in f["pts"]]
+                reach = near + 1.5 * max(math.dist(a, b) for a in pp for b in pp)     # the label sits by the cut's arc
+                if any(t[4] == want and math.hypot((t[0] + t[2]) / 2 - pt[0], (t[1] + t[3]) / 2 - pt[1]) <= reach
+                       for t in texts):
+                    ok = True
+                    break
+            if not ok:
+                fails.append("an end cut %s from square (at %.1f, %.1f, %.1f) is printed nowhere near its end" % (
+                    want, cen[0], cen[1], cen[2]))
+        per_solid.append(fails)
+    if data.get("occurrences", 1) > 1 and per_solid:
+        return [] if any(not f for f in per_solid) else per_solid[0]
+    return [x for f in per_solid for x in f]
+
+
+def flat_fails(data, texts, page_text, tol=TOL):
+    """A bent part's flat pattern, against its DXF read again here (no OCC) and the model's flanges as the sheet
+    records them: every bend row on one of the DXF's BEND lines, as many rows as lines; each chain's bend lines where
+    its outside flange lengths, fold angles, the inside radius and the printed K-factor put them, and its flat as long
+    as the DXF's (so a DXF that doesn't fit the model, or a wrong K-factor, fails: the Lead's ruling); the flat's
+    overall size, the K-factor and every bend's tag printed."""
+    fl = data.get("flat")
+    if not fl:
+        return []
+    import dxf as dxfmod
+    d = dxfmod.Dxf(os.path.join(REPO, fl["dxf"]))
+    box = d.cut_box()
+    bends = d.bend_lines()
+    fails = []
+    if len(bends) != len(fl["rows"]):
+        fails.append("the bend table has %d rows, the DXF %d bend lines" % (len(fl["rows"]), len(bends)))
+    for row in fl["rows"]:
+        ax = 0 if row["axis"] == "x" else 1
+        at = box[ax] + row["at"]
+        if not any(abs(a[ax] - b[ax]) < 1e-6 and abs(a[ax] - at) < 0.01 for a, b in bends):
+            fails.append("bend %s (%s %s) is on no BEND line of the DXF" % (row["tag"], row["axis"], _fmtv(row["at"])))
+    k = fl["k"]
+    for ci, ch in enumerate(fl["chains"]):
+        t, fls, angs = ch["t"], ch["flanges"], ch["angles"]
+        radii = [r if r is not None else fl["r"] for r in ch["radii"]]
+        ossb = [(radii[i] + t) * math.tan(math.radians(angs[i]) / 2) for i in range(len(angs))]
+        ba = [math.radians(angs[i]) * (radii[i] + k * t) for i in range(len(angs))]
+        x, pos = 0.0, []
+        for i, L in enumerate(fls):
+            x += L - (ossb[i - 1] if i > 0 else 0.0) - (ossb[i] if i < len(angs) else 0.0)
+            if i < len(angs):
+                pos.append(x + ba[i] / 2)
+                x += ba[i]
+        ax = ch["dxf_axis"]
+        lines = [a[ax] for a, b in bends if abs(a[ax] - b[ax]) < 1e-6]
+        for p_ in pos:
+            want = (box[2 + ax] - p_) if ch["reversed"] else (box[ax] + p_)
+            if not any(abs(l_ - want) <= tol for l_ in lines):
+                fails.append("chain %d: the model's flanges at K %s and R%s put a bend line at %s %s; the DXF has none "
+                             "there" % (ci + 1, _fmtv(k), _fmtv(fl["r"]), "xy"[ax], _fmtv(want - box[ax])))
+        if abs(x - (box[2 + ax] - box[ax])) > tol:
+            fails.append("chain %d: the model's flat is %s long, the DXF's %s" % (ci + 1, _fmtv(x), _fmtv(box[2 + ax] - box[ax])))
+    v = fl.get("view")
+    if v:
+        for want in (_fmtv(box[2] - box[0]), _fmtv(box[3] - box[1])):
+            if not _text_near(texts, want, v["box"], pad=20.0):
+                fails.append("the flat's size %s is not printed by it" % want)
+    for row in fl["rows"]:
+        if row.get("printed_at") and not _text_near(texts, row["tag"], row["printed_at"], pad=2.5):
+            fails.append("bend %s's tag is not printed on its line" % row["tag"])
+    if ("K-factor %s" % _fmt3(k)) not in " ".join(page_text.split()):
+        fails.append("the K-factor %s is not printed" % _fmt3(k))
+    return fails
+
+
+def _flat_where(mp, P):
+    """A point of the sheet's place in the DXF by the sheet's record of how its flanges unfold (its own reading, not
+    the generator's code): across a chain's bends from the flange it lies on, along them from the other chain's base
+    flange or the part's extent along the bend lines; None off the flanges' straight parts or at a corner."""
+    box, ch = mp["box"], mp["chains"]
+
+    def on(c, f):
+        q = dot(P, f["D"]) - f["m0"]
+        return abs(dot(P, f["N"]) - f["o0"]) <= c["t"] + 0.01 and f["lo"] - 0.01 <= q <= f["hi"] + 0.01
+
+    def val(c, f):
+        across = f["base"] + dot(P, f["D"]) - f["m0"]
+        return (box[2 + c["ax"]] - across) if c["rev"] else (box[c["ax"]] + across)
+    hits = {(ci, j) for ci, c in enumerate(ch) for j, f in enumerate(c["flanges"]) if on(c, f)}
+    xy = [None, None]
+    al = mp.get("along")
+    if al:
+        if len(hits) != 1:
+            return None
+        (_ci, j), = hits
+        xy[ch[0]["ax"]] = val(ch[0], ch[0]["flanges"][j])
+        w = dot(P, al["a"]) - al["w0"]
+        xy[al["ax"]] = (box[al["ax"]] + w) if al["sense"] > 0 else (box[2 + al["ax"]] - w)
+        return tuple(xy)
+    jA, jB = mp["base"]
+    if hits == {(0, jA), (1, jB)}:
+        ja, jb = jA, jB
+    elif len(hits) == 1 and not hits & {(0, jA), (1, jB)}:
+        (ci, j), = hits
+        ja, jb = (j, jB) if ci == 0 else (jA, j)
+    else:
+        return None
+    xy[ch[0]["ax"]] = val(ch[0], ch[0]["flanges"][ja])
+    xy[ch[1]["ax"]] = val(ch[1], ch[1]["flanges"][jb])
+    return tuple(xy)
+
+
+def flat_hole_fails(data, holes, faces, tol=TOL):
+    """A bent part's round holes in its flat pattern, counted both ways (Reviewer 6 on #335): every hole of the STEP
+    (the repo's reader) placed in the flat by the sheet's record of how its flanges unfold, on a DXF circle of its
+    size within tol, and every DXF circle on one of them. Each recorded flange must be a face of the STEP (a plane
+    of its normal, within the sheet's thickness of the flange's line, along at least half its straight part), so the
+    record can't place the holes on a sheet the model doesn't have."""
+    fl = data.get("flat")
+    if not fl:
+        return []
+    mp = fl.get("map")
+    if not mp:
+        return ["the sheet doesn't record how its flanges unfold, so the flat's holes can't be checked"]
+    import dxf as dxfmod
+    d = dxfmod.Dxf(os.path.join(REPO, fl["dxf"]))
+    fails = []
+    planes = [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]]
+    for ci, c in enumerate(mp["chains"]):
+        for j, f in enumerate(c["flanges"]):
+            def fits(pf):
+                if abs(abs(dot(pf["n"], f["N"])) - 1) > 1e-6:
+                    return False
+                if any(abs(dot(p, f["N"]) - f["o0"]) > c["t"] + 0.01 for p in pf["pts"]):
+                    return False
+                qs = [dot(p, f["D"]) - f["m0"] for p in pf["pts"]]
+                return min(max(qs), f["hi"]) - max(min(qs), f["lo"]) >= 0.5 * (f["hi"] - f["lo"])
+            if not any(fits(pf) for pf in planes):
+                fails.append("chain %d's flange %d, as the sheet records it, is no face of the STEP" % (ci + 1, j + 1))
+    if fails:
+        return fails
+    groups = {}
+    for h in holes:
+        groups.setdefault(h.get("occ"), []).append(h)
+    hs = holes
+    if len(groups) > 1:
+        # a part used more than once in its assembly STEP: the occurrence whose holes all sit on the recorded flanges
+        fit = [g for g in groups.values() if all(_flat_where(mp, h["c"]) is not None for h in g)]
+        hs = fit[0] if fit else list(groups.values())[0]
+    circles = [(c, r) for lay, c, r in d.circles if d.role(lay) == "cut"]
+    if len(circles) != len(hs):
+        fails.append("the flat's DXF has %d round holes, the STEP %d" % (len(circles), len(hs)))
+    used = set()
+    for h in hs:
+        xy = _flat_where(mp, h["c"])
+        if xy is None:
+            fails.append("STEP hole Ø%s at (%s, %s, %s) is on no flange's straight part" % (
+                (_fmtv(h["dia"]),) + tuple(_fmtv(x) for x in h["c"])))
+            continue
+        cand = sorted((math.hypot(cc[0] - xy[0], cc[1] - xy[1]), i) for i, (cc, rr) in enumerate(circles)
+                      if i not in used and abs(2 * rr - h["dia"]) < 0.011)
+        if cand and cand[0][0] <= tol:
+            used.add(cand[0][1])
+        else:
+            fails.append("STEP hole Ø%s unfolds to (%s, %s) in the flat; the DXF has no hole of its size there" % (
+                _fmtv(h["dia"]), _fmtv(xy[0]), _fmtv(xy[1])))
+    for i, (cc, rr) in enumerate(circles):
+        if i not in used:
+            fails.append("the flat's DXF has a Ø%s hole at (%s, %s) that is on no STEP hole" % (
+                _fmtv(2 * rr), _fmtv(cc[0]), _fmtv(cc[1])))
+    if d.cut_loops() != 1:
+        fails.append("the flat's DXF cuts %d shapes besides its round holes; one outline expected" % d.cut_loops())
+    return fails
+
+
+def _fmtv(v):
+    t = ("%.2f" % v).rstrip("0").rstrip(".")
+    return "0" if t in ("-0", "") else t
+
+
+def _fmt3(v):
+    t = ("%.3f" % v).rstrip("0").rstrip(".")
+    return t or "0"
+
+
 def _line_dist(p, a, d):
     v = sub(p, a)
     L = math.sqrt(dot(d, d)) or 1.0
@@ -401,6 +646,7 @@ def flat_feature_fails(data, planes, texts, tol=TOL):
     part's own end and side faces, are what the sheet prints beside it (a notch said to be the same as the drawn one
     measures the same); each chamfer's faces have the legs its callout gives, equal, at 45°."""
     fails = []
+    views_all = data.get("views", [])
     allp = [q for f in planes for q in f["pts"]]
     if not allp:
         return ["the STEP has no flat faces for this part"]
@@ -442,19 +688,38 @@ def flat_feature_fails(data, planes, texts, tol=TOL):
         p0 = ch["pts"][0]
         fs = [f for f in planes if abs(abs(dot(f["n"], n)) - 1) < 1e-4 and
               all(abs(dot(sub(q, p0), n)) < 0.01 for q in f["pts"])]
-        where = "chamfer at the %s end" % ("+" if ch["sgn"] > 0 else "-")
+        where = "chamfer along the member" if ch.get("long") else "chamfer at the %s end" % ("+" if ch["sgn"] > 0 else "-")
         if not fs:
             fails.append("%s: the STEP has no face where the drawing says" % where)
             continue
         qs = [q for f in fs for q in f["pts"]]
-        la = max(dot(q, lax) for q in qs) - min(dot(q, lax) for q in qs)
-        ls = max(dot(q, side) for q in qs) - min(dot(q, side) for q in qs)
+        d1, d2 = ch.get("leg_dirs") or (lax, side)      # an end bevel: along the member and the side; a long one: across
+        la = max(dot(q, d1) for q in qs) - min(dot(q, d1) for q in qs)
+        ls = max(dot(q, d2) for q in qs) - min(dot(q, d2) for q in qs)
         v = _num(ch["text"])
         if v is None or abs(v - la) > tol or abs(v - ls) > tol or not ch["text"].endswith("x 45°"):
             fails.append("%s: the sheet says %s, the STEP's legs %.3f and %.3f" % (where, ch["text"], la, ls))
-        tip = ch["tip"]
-        if not _text_near(texts, ch["text"], (tip[0], tip[1], tip[0], tip[1])):
+        # the callout by the chamfer itself, as the STEP places it (Reviewer 6 on #331: a callout moved 40 to 67 mm
+        # away, its record moved with it, still passed): within 25 mm (plus 1.5 times the chamfer's narrower side on
+        # paper) of the middle of its faces, as some drawn view projects them
+        cen = tuple(sum(q[i] for q in qs) / len(qs) for i in range(3))
+        near_it = False
+        for v in [v for v in views_all if v.get("off") and v.get("scale")]:
+            P = lambda q: (v["off"][0] + v["scale"] * dot(q, v["x"]), v["off"][1] + v["scale"] * dot(q, v["y"]))
+            pc = P(cen)
+            pp = [P(q) for q in qs]
+            narrow = min(max(a[0] for a in pp) - min(a[0] for a in pp), max(a[1] for a in pp) - min(a[1] for a in pp))
+            reach = 25.0 + 1.5 * narrow
+            if any(t[4] == ch["text"] and math.hypot((t[0] + t[2]) / 2 - pc[0], (t[1] + t[3]) / 2 - pc[1]) <= reach
+                   for t in texts):
+                near_it = True
+                break
+        if not near_it:
             fails.append("%s: its size %s is not printed by it" % (where, ch["text"]))
+        tip = ch["tip"]
+        at = ch.get("box") or (tip[0], tip[1], tip[0], tip[1])
+        if not _text_near(texts, ch["text"], at, pad=2.5 if ch.get("box") else 25.0):
+            fails.append("%s: its size %s is not where the sheet's record puts it" % (where, ch["text"]))
     return fails
 
 
@@ -634,11 +899,16 @@ def check(pdf_path, step_path=None, verbose=False):
         fails.append("sheet %d: a note names a maker ('%s')" % (pg, phrase))
     for pg, what in clashes(doc):
         fails.append("sheet %d: %s" % (pg, what))
+    faces = step_faces(step_path, data["pn"], data.get("placement"))
+    tb = text_boxes(page, data["sheet_h"])
     if data.get("notches") or data.get("chamfers") or any(f["kind"] == "open_slot" for f in data["features"]):
-        faces = step_faces(step_path, data["pn"], data.get("placement"))
-        tb = text_boxes(page, data["sheet_h"])
         fails += open_slot_fails(data, faces, rows, tb)
         fails += flat_feature_fails(data, [f for f in faces if f["kind"] == "plane" and "n" in f and f["pts"]], tb)
+    fails += end_cut_fails(data, faces, tb)
+    if any(s_["role"] == "flat pattern" for s_ in data["sources"]) and not data.get("flat"):
+        fails.append("a bent part's sheet has no record of its flat pattern")
+    fails += flat_fails(data, tb, page.get_text())
+    fails += flat_hole_fails(data, holes, faces)
     two_wall = bool(two_wall_pairs(data["features"]))
     if two_wall and not re.search(r"SECTION [A-Z]-[A-Z]", up):
         fails.append("holes through two walls but no SECTION label")
