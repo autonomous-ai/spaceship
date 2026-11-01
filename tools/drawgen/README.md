@@ -53,7 +53,10 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   titles give each view's mapping to the pod axes.
 - Datums: WALL frames sit on a spigot hole and slot (R-J13), so A is the seat face, B the round hole, C the slot,
   and every hole position is from B (R-J6). Other parts name their datum faces in their team's entry.
-- Mitred ends: the angle from square and the true length along each face.
+- Mitred ends: the angle from square and the true length along each face, in a view that shows the cut in profile
+  (edge on, the member's axis across the view); when no planned view does, the plan adds the one that does
+  (FRONT's #320: 8 tubes whose only view saw their mitres face on). A cut no plain view shows in profile (a
+  compound cut) is refused. A member turned about its own axis is drawn square to its faces.
 - An open-ended slot (BASE's D-129 end plates): sized from the edge it opens on, in the view of its face: the
   mouth at the edge, the taper's length, the width, the round end's radius and its centre from the edge. The end
   of a long part gets its own lettered view at its own scale, with its origin at the member's bottom left corner.
@@ -81,7 +84,10 @@ that isn't a blind hole's drill point (a countersink), any other curved face, ho
 itself hides, a part that fits no ISO scale on its sheet. On a straight member, any flat face that is not its
 profile, an end, a mitre or compound end cut, a slot's own sides, a notch, an even chamfer or a welded end plate's
 inner face (a step, a pocket, a window in a wall, an uneven chamfer): drawgen would draw it without a size, so it
-names the faces and refuses the part. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
+names the faces and refuses the part. A straight member whose section isn't a solid convex outline or a
+rectangular tube (an angle, a channel, a custom extrusion, a tube with a bevel along a corner): drawgen would size
+only its outside, so it refuses it as a profile (D-139 keeps a profile's dimensioned section with Fusion until the
+profile reading lands). An extrusion's open section is judged as a profile, not as a fold. Parts that need no drawing (D-125 plain strips, D-128 felt and fill pieces on their DXFs) are listed in
 their team's file with the reason, and `generate` says so instead of drawing them. It also never overwrites a PDF it didn't
 make: a Fusion drawing stays.
 
@@ -89,7 +95,9 @@ make: a Fusion drawing stays.
 
 `readback.py` reads a drawing back against its STEP, independently of how it was drawn: every hole the repo's own
 STEP reader finds is in a table, each row's X and Y equal the hole's projected centre within 0.05 mm, each tagged
-hole is drawn as a true circle at its place within 0.05 mm; each open slot's round end, notch and chamfer is found
+hole is drawn as a true circle at its place within 0.05 mm; every end cut of every member (a flat face at an
+angle to the member's axis, 6 mm or more across the way it slopes) is found in the STEP by that reader, and its
+angle from square must be printed by the cut in some drawn view; each open slot's round end, notch and chamfer is found
 in the STEP by that reader and the sizes printed for it match what it measures there within 0.05 mm (a notch said
 to be the same as the drawn one measures the same); the text has what the mechanical check reads, the
 Creator is drawgen, and no text touches another text or a part outline and no line runs through a text (read from

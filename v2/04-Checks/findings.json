@@ -1,5 +1,5 @@
 {
- "next": 342,
+ "next": 346,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -1515,7 +1515,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 23aeade",
+   "last_seen": "2026-11-01 cf96ecc",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3099,7 +3099,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3124,7 +3124,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -3154,7 +3154,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -3230,7 +3230,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 23aeade",
+   "last_seen": "2026-11-01 cf96ecc",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3266,7 +3266,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 23aeade",
+   "last_seen": "2026-11-01 cf96ecc",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3302,7 +3302,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 23aeade",
+   "last_seen": "2026-11-01 cf96ecc",
    "closed": "2026-11-01 f3013d7"
   },
   {
@@ -3427,7 +3427,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3452,7 +3452,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3477,7 +3477,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3502,7 +3502,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3527,7 +3527,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3552,7 +3552,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3577,7 +3577,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3602,7 +3602,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3627,7 +3627,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3652,7 +3652,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3677,7 +3677,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3702,7 +3702,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3727,7 +3727,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3752,7 +3752,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3777,7 +3777,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3802,7 +3802,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3827,7 +3827,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -3852,7 +3852,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4355,7 +4355,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C01",
@@ -4414,7 +4414,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4439,7 +4439,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4464,7 +4464,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4489,7 +4489,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4514,7 +4514,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4539,7 +4539,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4564,7 +4564,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4589,7 +4589,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4707,7 +4707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -4762,7 +4762,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4787,7 +4787,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4812,7 +4812,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4837,7 +4837,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4862,7 +4862,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -4887,7 +4887,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5019,7 +5019,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5048,7 +5048,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5077,7 +5077,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5106,7 +5106,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5135,7 +5135,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5164,7 +5164,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5193,7 +5193,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5222,7 +5222,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5251,7 +5251,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5280,7 +5280,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5309,7 +5309,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5338,7 +5338,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5367,7 +5367,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5396,7 +5396,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5425,7 +5425,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5454,7 +5454,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5483,7 +5483,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5508,7 +5508,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5533,7 +5533,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5558,7 +5558,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5583,7 +5583,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5608,7 +5608,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5633,7 +5633,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5658,7 +5658,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5683,7 +5683,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5708,7 +5708,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5733,7 +5733,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5822,7 +5822,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5851,7 +5851,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5880,7 +5880,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5909,7 +5909,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5938,7 +5938,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -5967,7 +5967,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -5992,7 +5992,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6017,7 +6017,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6042,7 +6042,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6067,7 +6067,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6092,7 +6092,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6117,7 +6117,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6142,7 +6142,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6167,7 +6167,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6192,7 +6192,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6217,7 +6217,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6242,7 +6242,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6267,7 +6267,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6292,7 +6292,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6317,7 +6317,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6342,7 +6342,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6367,7 +6367,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6422,7 +6422,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6447,7 +6447,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6564,7 +6564,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -6837,7 +6837,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C08",
@@ -6866,7 +6866,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -6891,7 +6891,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -6916,7 +6916,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -6941,7 +6941,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -6966,7 +6966,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -6991,7 +6991,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7016,7 +7016,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7041,7 +7041,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7066,7 +7066,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7091,7 +7091,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7116,7 +7116,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7141,7 +7141,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7166,7 +7166,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7191,7 +7191,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7216,7 +7216,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -7241,7 +7241,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7266,7 +7266,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C09",
@@ -7294,7 +7294,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C09",
@@ -7322,7 +7322,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7351,7 +7351,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7380,7 +7380,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7409,7 +7409,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7438,7 +7438,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7467,7 +7467,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7496,7 +7496,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7521,7 +7521,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7546,7 +7546,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7571,7 +7571,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7596,7 +7596,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7621,7 +7621,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7646,7 +7646,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7671,7 +7671,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7696,7 +7696,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7721,7 +7721,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7746,7 +7746,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7771,7 +7771,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7796,7 +7796,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7821,7 +7821,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7846,7 +7846,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7871,7 +7871,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7896,7 +7896,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -7921,7 +7921,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7946,7 +7946,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7971,7 +7971,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -7996,7 +7996,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -8021,7 +8021,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C09",
@@ -8049,7 +8049,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C09",
@@ -8077,7 +8077,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C09",
@@ -8105,7 +8105,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C09",
@@ -8133,7 +8133,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C09",
@@ -8161,7 +8161,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C09",
@@ -8189,7 +8189,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -8238,7 +8238,7 @@
      "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C01",
@@ -9597,7 +9597,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9625,7 +9625,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9653,7 +9653,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9681,7 +9681,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9709,7 +9709,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9737,7 +9737,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9765,7 +9765,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9793,7 +9793,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9820,7 +9820,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9847,7 +9847,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C11",
@@ -9874,7 +9874,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -9904,7 +9904,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -9931,7 +9931,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -9969,7 +9969,7 @@
     }
    ],
    "closed": "2026-11-01 a8cd10a",
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -10007,7 +10007,7 @@
     }
    ],
    "closed": "2026-11-01 a8cd10a",
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -10034,7 +10034,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -10389,7 +10389,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -10414,7 +10414,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C06",
@@ -10439,7 +10439,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
   },
   {
    "check": "C05",
@@ -10464,7 +10464,126 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 23aeade"
+   "last_seen": "2026-11-01 cf96ecc"
+  },
+  {
+   "check": "C02",
+   "rule": "gap-KICK-OVER-FLOOR",
+   "subject": "assembly KICK-OVER-FLOOR",
+   "severity": "severe",
+   "message": "KICK-OVER-FLOOR: KICK STRIP to ROOM FLOOR (Z 0) is 20.0 mm, needs 9.5 to 10.5 mm. Rule source: confirmed: D-151 (2026-11-01): the kick strip's bottom is the band's bottom line, glide_h (Z 10), over the room floor (D-132: no threshold, the drop seal closes on the floor); the 0.5 either way is the rule it replaces (KICK-OVER-THRESHOLD, D-68 and D-72; assumption); the assembly only, since the skeleton's thresh_h is no longer the kick strip's datum (D-151). Why: The door swings over the room floor: the kick strip runs on the band's bottom line so it clears the floor and the drop seal meets it",
+   "fix": "Kick strip bottom at glide_h (Z 10) in door_unit.py, keeping its 60 degree push-side taper (D-151)",
+   "file": "v2/03-Manufacturing/front/360001_P01_FRONT-DOOR-UNIT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "rules": [
+     {
+      "id": "KICK-OVER-FLOOR",
+      "gap_mm": 20.0,
+      "a": "360001_P01_FRONT-DOOR-UNIT_CAD / 361002 FRONT - DOOR KICK STRIP:1 / KICK STRIP",
+      "b": "ROOM FLOOR (Z 0)"
+     }
+    ]
+   },
+   "key": "C02|gap-KICK-OVER-FLOOR|assembly KICK-OVER-FLOOR",
+   "id": "F-342",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6f2bff3",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6f2bff3",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 cf96ecc"
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351101 FRONT - DECOR SKIN - DL:1",
+   "severity": "severe",
+   "message": "351101 FRONT - DECOR SKIN - DL:1: 17 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351104 FRONT - DECOR FRAME - DL:1 (B02 BACK RING DOOR SIDE 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (B04 BACK RING BOLT LINE 60 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P1 DOOR-SIDE FRONT POST 1 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P2 DOOR-SIDE FRONT POST 2 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (P3 DOOR-SIDE FRONT POST 3 20 x 20 x 1.5) at 0; 351104 FRONT - DECOR FRAME - DL:1 (R1D RING BOTTOM - DOOR SIDE 20 x 20 x 1.5) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 17
+   },
+   "key": "C02|bond-line|assembly 351101 FRONT - DECOR SKIN - DL:1",
+   "id": "F-343",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 cf96ecc",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "cf96ecc",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351201 FRONT - DECOR SKIN - DT:1",
+   "severity": "severe",
+   "message": "351201 FRONT - DECOR SKIN - DT:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351204 FRONT - DECOR FRAME - DT:1 (B01 BACK RING BOTTOM 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (B03 BACK RING TOP 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C01 CHAMFER CROSS TUBE LEFT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C02 CHAMFER CROSS TUBE MIDDLE 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (C03 CHAMFER CROSS TUBE RIGHT 20 x 20 x 1.5) at 0; 351204 FRONT - DECOR FRAME - DT:1 (F01 FRONT FACET TUBE 20 x 20 x 1.5) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 11
+   },
+   "key": "C02|bond-line|assembly 351201 FRONT - DECOR SKIN - DT:1",
+   "id": "F-344",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 cf96ecc",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "cf96ecc",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C02",
+   "rule": "bond-line",
+   "subject": "assembly 351301 FRONT - DECOR SKIN - DR:1",
+   "severity": "severe",
+   "message": "351301 FRONT - DECOR SKIN - DR:1: 11 frame member face(s) facing it sit 0 mm off the skin; D-137's bond needs the skeleton's bond_t, 3.0 mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: 351306 FRONT - DECOR FRAME - DR:1 (B01 BACK RING BOTTOM 40 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B02 BACK RING BOLT LINE 80 x 20 x 1.2) at 0; 351306 FRONT - DECOR FRAME - DR:1 (B07 BACK RING GLASS EDGE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F01 FRONT RING BOTTOM 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F02 FRONT RING FACET SIDE 20 x 20 x 1.0) at 0; 351306 FRONT - DECOR FRAME - DR:1 (F03 FRONT RING TOP 20 x 20 x 1.0) at 0 ....",
+   "fix": "Model the bond line: the frame's faces 3.0 mm off the skin's back face (the frame's tube lengths change with it), and export the STEP again.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_STEP.step",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "assembly",
+    "bond_t": 3.0,
+    "members": 11
+   },
+   "key": "C02|bond-line|assembly 351301 FRONT - DECOR SKIN - DR:1",
+   "id": "F-345",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 cf96ecc",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "cf96ecc",
+     "event": "opened"
+    }
+   ]
   }
  ]
 }
