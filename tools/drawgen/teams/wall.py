@@ -132,25 +132,44 @@ NO_DRAWING = {
 
 # Assembly sheets (tools/drawgen/assembly.py): the lining cassettes. WALL's STEP models the four held cassette clips
 # as one shape without a number, 'NO-PN-HOLD-H03 HOLD - CASSETTE CLIP ZONES (H03, NO PART NAMED)': each of its four
-# bodies is one clip 518001 (the list's 4), drawn and ballooned as that part until it is named (HOLD-08).
+# bodies is one wall clip 518003 (the list's 4 sets, D-170), drawn and ballooned as that part until the clips' hole
+# patterns are modelled (HOLD-08).
 # Datums as the ceiling cassette's (CEILING's facts for 510301), which these trays match (feature rationale F20):
 # A the tray's back face (toward the panel frame), B the end return's outer face (the front one on a side cassette,
 # the one at the side wall on a back cassette), C the bottom return's outer face. The clip centres run across from B
 # and up from C in the principal view, and the build-up (D-147 (2)) is a 1:2 section through the lowest clip, its
 # faces from A, lettered D after the datums. The fitting order is the one WALL's feature rationale gives (F20, F22,
 # F23) and the parts list's notes.
-_ORDER = ("Fitting order (WALL's feature rationale F20, F22, F23 and the parts list): (1) the tray, its 34 mm "
-          "returns turned in as 12 mm lips; (2) the felt, dropped in behind the lips, 1 mm clear inside the "
-          "returns: the lips hold it with no glue (settles H09), over the 24 mm air gap (D-17); (3) the clips "
-          "518001 in their four zones, 100 from the cassette's top and bottom on the panel frame's studs (HOLD "
-          "H03, HOLD-08). The cassette is a floating inner leaf that clips onto the panel frame from inside (D-17, "
-          "D-47). Items marked * go as their rows say: the hook-and-loop pads 848011 only line the cassette up and "
-          "carry no load (D-47); the edge seal 848012 only touches across the 2.26 gap (R-J18).")
+CLIP = "518003"
+_FIT = ("Fitting order (WALL's feature rationale F20, F22, F23 and the parts list): (1) the tray, its 34 mm returns "
+        "turned in as 12 mm lips; (2) the felt, dropped in behind the lips, 1 mm clear inside the returns: the lips "
+        "hold it with no glue (settles H09), over the 24 mm air gap (D-17); ")
+_CLIPS = ("the clips 518003 in their four zones, 100 from the cassette's top and bottom on the panel frame's first "
+          "and last studs (zones reserved until the clips' hole patterns, HOLD H03, HOLD-08)")
 
 
-def _cassette(tray, back, end, **more):
+def _order(lower, edge_seal=False):
+    """The fitting order and how the cassette is carried (D-170): a lower cassette sits on its panel's ledge and
+    carries the upper one on its joint strip; the clips only hold. B1's cassette also seals its X 0 edge (R-J18)."""
+    if lower:
+        text = (_FIT + "(3) the joint strip 848016 along the top edge, PSA side down: the upper cassette stands on it "
+                "across the 2.26 joint; (4) " + _CLIPS + ". The cassette is a floating inner leaf (D-17, D-47): it "
+                "sits on the panel's cassette ledge and its pad, which carry its weight and the upper cassette's, and "
+                "the clips only hold it (D-170).")
+    else:
+        text = (_FIT + "(3) " + _CLIPS + ". The cassette is a floating inner leaf (D-17, D-47): it stands on the "
+                "lower cassette's joint strip 848016 across the 2.26 joint, which takes its weight down to the lower "
+                "cassette's ledge, and the clips only hold it (D-170).")
+    if edge_seal:
+        text += (" The edge seal 848012 on its X 0 edge only touches the next back cassette across the 2.26 gap and "
+                 "carries no load (R-J18).")
+    return text + (" Items marked * go as their rows say: the hook-and-loop pads 848011 only line the cassette up "
+                   "and carry no load (D-47).")
+
+
+def _cassette(tray, back, end, order, **more):
     return dict(more, **{
-        "envelopes": {"NO-PN-HOLD-H03": "518001"},
+        "envelopes": {"NO-PN-HOLD-H03": CLIP},
         "datums": [
             {"letter": "A", "pn": tray, "face": back, "view": "section_D",
              "words": "the tray's back face, toward the panel frame"},
@@ -160,26 +179,28 @@ def _cassette(tray, back, end, **more):
              "words": "the tray's bottom return, its outer face"},
         ],
         "interfaces": [
-            {"view": "principal", "of": ["518001"], "along": "x", "origin": {"pn": tray, "face": end}, "list": True,
+            {"view": "principal", "of": [CLIP], "along": "x", "origin": {"pn": tray, "face": end}, "list": True,
              "words": "the clip centres across the cassette, from datum B (principal view)"},
-            {"view": "principal", "of": ["518001"], "along": "y", "origin": {"pn": tray, "face": "-Z"}, "list": True,
+            {"view": "principal", "of": [CLIP], "along": "y", "origin": {"pn": tray, "face": "-Z"}, "list": True,
              "words": "the clip centres up the cassette, from datum C (principal view)"},
         ],
         # 10 below the clip's centre (still through it), so its trace doesn't lie along the clip's ordinate line
-        "sections": [{"letter": "D", "around": "518001", "offset": 10, "normal": [0, 0, -1], "half": 70, "scale": 0.5,
+        "sections": [{"letter": "D", "around": CLIP, "offset": 10, "normal": [0, 0, -1], "half": 70, "scale": 0.5,
                       "slice": 10,
                       "stack": True, "stack_from": {"pn": tray, "face": back}}],
-        "notes": [_ORDER],
+        "notes": [order],
     })
 
 
 ASSEMBLIES = {
-    "510101": _cassette("511101", "-X", "-Y"),      # L1: back face toward -X, front return toward -Y
+    # L1: back face toward -X, front return toward -Y
+    "510101": _cassette("511101", "-X", "-Y", _order(lower=True)),
     # R1 and R2 seen from the wall side too (Reviewer 9 on #350), where their clips are: the view from the right
-    "510102": _cassette("511102", "+X", "-Y", principal="right", overall_sides={"y": "right"}),
-    "510103": _cassette("511103", "-X", "-Y"),      # L2
-    "510104": _cassette("511104", "+X", "-Y", principal="right", overall_sides={"y": "right"}),
-    "510201": _cassette("511201", "+Y", "-X"),      # B1: back face toward +Y, its end at the left side wall
+    "510102": _cassette("511102", "+X", "-Y", _order(lower=True), principal="right", overall_sides={"y": "right"}),
+    "510103": _cassette("511103", "-X", "-Y", _order(lower=False)),      # L2
+    "510104": _cassette("511104", "+X", "-Y", _order(lower=False), principal="right", overall_sides={"y": "right"}),
+    # B1: back face toward +Y, its end at the left side wall; its X 0 edge takes the edge seal 848012
+    "510201": _cassette("511201", "+Y", "-X", _order(lower=True, edge_seal=True)),
     # B2: its end at the right side wall, the left edge of its rear view, so the overall height goes on the right
-    "510202": _cassette("511202", "+Y", "+X", overall_sides={"y": "right"}),
+    "510202": _cassette("511202", "+Y", "+X", _order(lower=True), overall_sides={"y": "right"}),
 }

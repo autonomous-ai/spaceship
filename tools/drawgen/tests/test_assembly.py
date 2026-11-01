@@ -194,8 +194,8 @@ def test_a_count_in_sets_is_counted_as_pieces():
     """WALL's #343 lists its cassette clips as 518003, '4 set' (a female and a male part each): a count in sets is
     counted as pieces are (the Lead, 2026-11-01), so the one placement holding the four clip zones splits into its
     four bodies, the interface sizes go to each zone and the sheet reads back; the table prints '4 set' as the list
-    says; and a set count the STEP doesn't hold is refused. Here on main's 510101, its clip row given in sets in a
-    copy of WALL's list, which both the drawing and the read-back read."""
+    says; and a set count the STEP doesn't hold is refused. Here on WALL's 510101, its clip row 518003 (D-170) given
+    as 4 sets, then 3, in a copy of WALL's list, which both the drawing and the read-back read."""
     team, entry = assembly.assemblies()["510101"]
     _own, _kids, src = assembly.list_rows("510101", team)
     real = inputs.team_lists
@@ -205,7 +205,7 @@ def test_a_count_in_sets_is_counted_as_pieces():
             rd = csv.DictReader(fh)
             cols, rows = rd.fieldnames, list(rd)
         _me, kids = assembly.children_of(rows, "510101", {"510101"}, src)
-        clip = [r for r in kids if (r.get("part_number") or "").strip() == "518001"]
+        clip = [r for r in kids if (r.get("part_number") or "").strip() == "518003"]
         assert len(clip) == 1, clip
         clip[0].update(unit="set", qty=qty)
         dst = os.path.join(TMP, "sets-%s" % qty, os.path.basename(src))
@@ -219,7 +219,7 @@ def test_a_count_in_sets_is_counted_as_pieces():
     try:
         in_sets("4")
         assy = assembly.Assy("510101", team, entry)
-        clip = next(it for it in assy.table_items if it.pn == "518001")
+        clip = next(it for it in assy.table_items if it.pn == "518003")
         assert len(clip.occs) == 1 and getattr(clip.occs[0], "pieces", False), "the four clip zones weren't split"
         final, rep = assembly.generate("510101", team, entry, os.path.join(TMP, "sets"))
         fails, st = assembly.check(final)
@@ -232,7 +232,7 @@ def test_a_count_in_sets_is_counted_as_pieces():
             assembly.Assy("510101", team, entry)
             raise AssertionError("3 sets drawn where the STEP holds 4 clip zones")
         except NotDrawable as e:
-            assert "the list has 3 of 518001 under it, the STEP 4" in str(e), e
+            assert "the list has 3 of 518003 under it, the STEP 4" in str(e), e
     finally:
         inputs.team_lists = real
 
@@ -282,7 +282,7 @@ def test_cassettes_draw_with_their_teams_facts():
     assert {d["letter"] for d in data["datums"]} == {"A", "B", "C"}
     assert [d for d in data["datums"] if d["letter"] == "C"][0]["size"] == 1160.0
     v = _iface_values(_made("510101")[1])
-    assert v[("y", "518001")] == [100.0, 1042.74], v
+    assert v[("y", "518003")] == [100.0, 1042.74], v
     text = " ".join(fitz.open(_made("510301")[0])[0].get_text().split())
     assert "518001 at 16, 409.5, 778.25; 518002 at 359.5" in text and "H10" in text and "(HOLD)" in text
 
