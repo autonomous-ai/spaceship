@@ -84,14 +84,14 @@ At the 53 l/s normal flow that adds **0.25 K** to C4's 3.8 K (ΔT = P / (1.2 × 
 
 | Group | kg | Status |
 |---|---:|---|
-| 710001 power unit (with its mains wiring and fixings) | 3.82 | calculation (parts list: quantity x mass each, each mass with its own status) |
+| 710001 power unit (with its mains wiring and fixings) | 3.81 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 710041 hub and controls zone | 0.36 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | 719001 cord set kit (ships loose; counts in the pod as shipped) | 0.59 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | lights: shelf strip, call strip and profile | 0.30 | calculation (parts list: quantity x mass each, each mass with its own status) |
 | harness parts: cables, plugs, terminals, RJ45 parts, bushings, edge strip, clips, senses | 1.29 | calculation (parts list: quantity x mass each, each mass with its own status) |
-| **710000 ELECTRICAL** | **6.35** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
+| **710000 ELECTRICAL** | **6.34** | calculation; the layout study's roll-up carries 3.05 kg for switches, lights and harness (assumption) |
 
-**B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 3.82 kg = **12.9 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
+**B2 with the power unit inside (D-03, at most 20 kg):** B2's outer panel about 9.1 kg (calculation from CEILING's measured frame and skin masses per m², PR #32, scaled to B2's 1.343 m², plus 40 mm fill at 25 kg/m³, D-81) + the power unit 3.81 kg = **12.9 kg**, under 20 kg. WALL's own B2 mass replaces the first figure when B2 is modelled.
 
 ## 6. Heat inside the power unit (711001)
 

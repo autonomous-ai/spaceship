@@ -7,9 +7,10 @@ Writes into v2/03-Manufacturing/interior/:
 
 - the parts list for the master BOM, each row with its size and tolerance (a parts-list row is
   the cut list, PM ruling 2026-11-01), maker and SKU for bought items or HOLD;
-- flat blanks of the folded parts as 1:1 mm DXF (CUT outline, BEND lines, MARK for the cable
-  holes' centres), by the K-factor rule with r = t and K 0.44 (assumptions until the factory's
-  bend table sets them): the three shelf profiles, the down channel and the ledge.
+- flat blanks of the folded parts as 1:1 mm DXF (CUT outline with the cable holes, BEND lines), by
+  the K-factor rule with the model's inside radius (sh_r, lg_r: the sheet, the Lead's ruling on
+  #335) and K 0.44 (an assumption until the factory's bend table sets it): the three shelf
+  profiles and the ledge. A flat runs from the back flange's free edge (y 0) to the lip's.
 """
 
 import csv
@@ -49,8 +50,8 @@ FINISH = {"ledge": "powder coat, charcoal to match the felt (RAL HOLD)", "shelf_
           "lcap": "black, as supplied", "lclip": "as supplied"}
 # a part whose material grade isn't chosen yet: HOLD in the status column until it is (C11)
 GRADE_HOLD = {}
-PROCESS = {"ledge": "laser cut, brake bend (2 bends)", "shelf_back": "laser cut, brake bend (3 bends), cable hole",
-           "shelf_lh": "laser cut, brake bend (3 bends)", "shelf_rh": "laser cut, brake bend (3 bends), cable hole",
+PROCESS = {"ledge": "laser cut, brake bend (2 bends)", "shelf_back": "laser cut, brake bend (2 bends), cable hole",
+           "shelf_lh": "laser cut, brake bend (2 bends)", "shelf_rh": "laser cut, brake bend (2 bends), cable hole",
            "lprofile": "bought; cut to 991", "lcover": "bought; cut to 991", "lcap": "bought", "lclip": "bought"}
 SKU = {   # D-126: the type picked from public catalogues only; the product stays HOLD until named
     "bracket": "HOLD: rated for a 225 N lean at the ledge's front edge x 3",
@@ -85,6 +86,22 @@ def blank(legs_outer, t, r=None):
     return x, bends
 
 
+def flat_holes(v, key, name, a0, a1):
+    """[(x, y, radius)] of a shelf's cable holes in its flat: x along the part from its low end, y from the back
+    flange's free edge (the flat's y 0, its first leg). A hole zc above the shelf's underside is sh_hb - zc from that
+    edge, on the flange's straight run (it once sat at width - zc, measured from the lip's end, in the second fold's
+    zone: the drawing generator's bent sheet match found it, 2026-11-01)."""
+    out = []
+    for bname, _k, a in I.features():
+        if bname != name:
+            continue
+        lo = min(I.ev(v, a0), I.ev(v, a1))
+        along = (I.ev(v, a[0]) if key == "shelf_back" else I.ev(v, a[1])) - lo
+        zc = I.ev(v, a[1] if key == "shelf_back" else a[2]) - v["sh_z0"]     # up the back flange
+        out.append((along, v["sh_hb"] - zc, I.ev(v, a[4]) / 2))
+    return out
+
+
 def write_dxfs(v):
     out = {}
     lay = {name: (key, kind, data) for key, name, kind, data in I.layout()}
@@ -94,21 +111,18 @@ def write_dxfs(v):
                          ("ledge", "LEDGE TOP", v["lg_t"])):
         _k, kind, (sec, a0, a1) = lay[name]
         L = abs(I.ev(v, a1) - I.ev(v, a0))
-        # outside leg lengths, from the first free edge: the blank's width by the K-factor rule
+        # outside leg lengths, from the first free edge: the blank's width by the K-factor rule, at the model's own
+        # inside radius
         if key == "ledge":
-            outer = [v["lg_lip"], v["lg_d"], v["lg_up"]]
+            outer, r = [v["lg_lip"], v["lg_d"], v["lg_up"]], v["lg_r"]
         else:
-            outer = [v["sh_hb"], v["sh_d"], v["sh_hl"]]
-        width, bends = blank(outer, t)
+            outer, r = [v["sh_hb"], v["sh_d"], v["sh_hl"]], v["sh_r"]
+        width, bends = blank(outer, t, r)
         ents = [("POLY", "CUT", [(0, 0), (L, 0), (L, width), (0, width)])]
         for y in bends:
             ents.append(("LINE", "BEND", (0, y), (L, y)))
-        if name in feats:
-            a = feats[name]
-            along = I.ev(v, a[0]) - min(I.ev(v, a0), I.ev(v, a1)) if key == "shelf_back" else \
-                I.ev(v, a[1]) - min(I.ev(v, a0), I.ev(v, a1))
-            zc = I.ev(v, a[1] if key == "shelf_back" else a[2]) - v["sh_z0"]     # up the back flange
-            ents.append(("CIRCLE", "CUT", (along, width - zc), I.ev(v, a[4]) / 2))
+        for along, y, rad in flat_holes(v, key, name, a0, a1):
+            ents.append(("CIRCLE", "CUT", (along, y), rad))
         p = os.path.join(OUT, fname(key, "DXF", "dxf"))
         D.write_dxf(p, ents)
         out[key] = (p, width, L)

@@ -31,6 +31,17 @@ python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_build.
 | STEP export | `../../03-Manufacturing/electrical/710000_P01_ELECTRICAL_STEP.step`: AP214, length unit cm declared in the file (D-13), 8 products (710000 and the 7 components), 40 solids (`tools/fusion/step_check.py`; its box reads vertices only, so it misses the cylinders' round extents by up to 5.6 mm: the Fusion re-read below is the exact check); no personal names |
 | STEP re-read in Fusion | 40 bodies, box equal to the design's, max difference 0.000 mm |
 
+## Front plate 711002 rebuilt for the vents and the heat check (2026-11-01)
+
+Run 2026-11-01 at about 16:33 UTC on Mac 1, Fusion 2706.1.17, from a checkout with main's runner (#386: it waited 4.8 s after another team's save before reading the folder): only the front plate, with the devices on the left (the GFCI receptacle at 50 and the breaker window at 95 from the unit's left side, all bare mains parts left of 105), the two keystone openings in the middle (150), and the vent grille on the right only, 8 rows of 3 slots 44 x 4 (4 rows low, 4 high), so no slot lies within 15 mm of a bare mains part or above one (UL 62368-1: side openings in a PIS's 5 degree drop zone; foreign objects) and 4 mm keeps every probe out (the Lead's two conditions; the heat check in calc-results section 6).
+
+```
+python3 tools/fusion/run_script.py v2/01-CAD-Native/electrical/electrical_parts_cad.py --label "ELECTRICAL: front plate 711002 rebuild (vents and layout, about 3 min)" \
+    --arg parts=front --arg export=1 --timeout 1500
+```
+
+Opened Default Project / FocusPod v2 / `711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD` at version 6 and saved it as the next version. Box 320 x 284 x 1.5 mm; volume 124,328 mm3, 0.333 kg at 2.68 g/cm3 (the parts list's mass); timeline 3 features, 0 unhealthy, 0 loose sketches; 36 parameters. Exports: the `.f3d`, the STEP (1 solid, box 320 x 284 x 1.5, `tools/fusion/step_check.py`) and the DXF (116 lines and 6 circles on layer CUT, mm). The `.f3d`'s 52 entries, read decompressed (zstd) as bytes and as UTF-16, hold no personal name (a planted name is found; the part's own name is found as the control).
+
 ## Front plate 711002 rebuilt for D-133 (US devices)
 
 Run 2026-11-01 at about 06:11 UTC on Mac 1, Fusion 2706.1.17: only the front plate, for the US devices' openings (the GFCI receptacle's decorator opening 33.6 × 67 with its two Ø3.8 plate-screw holes 96.8 apart, two keystone openings 14.9 × 19.4, the breaker window 19 × 45, the devices' row at 180 above the unit's bottom and the top vents at 120). The body 711001 and the hub plate 711005 didn't change and weren't rebuilt.

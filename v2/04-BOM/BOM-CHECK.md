@@ -6,7 +6,7 @@
 
 Read from: this working tree.
 
-**Result: OK.** 0 failure(s) on the five rules; 320 part lines (118 made, 202 bought, 85 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 354.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
+**Result: OK.** 0 failure(s) on the five rules; 324 part lines (118 made, 206 bought, 85 on HOLD) and 44 sub-assembly lines from 17 parts list(s); 42 hardware items in the joints register (42 with a part number). Listed parts weigh 354.2 kg per pod (calculation: quantity x mass each; assemblies with no list count 0, so this is not the pod's weight).
 
 ## Files read
 
@@ -132,7 +132,7 @@ Read from: this working tree.
 - 718082 ELECTRICAL - 24 V SUPPLY - 96 W CLASS 2 - VOICE KIT - MEAN WELL CLG-100-24: metal part with no finish (D-79: hidden tubes 6063-T6 mill finish plus the bond prep; visible aluminium black AA20, D-67)
 - 718049 ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK: HOLD (HOLD (no maker sheet found for a black nylon 6/6 spacer 4.3 x 8 x 2 mm (the closest, RAF M0591-4-N, states no colour or grade); no order, no supplier contact))
 - 718054 ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK: HOLD (HOLD (no maker sheet found for a black 6-32 x 1/2 in oval head wallplate screw (packs are stainless or brown); black matters on the black front plate; no order, no supplier contact))
-- 718073 ELECTRICAL - CURRENT SENSE MODULE - 24 V 0-5 A: HOLD (HOLD (its output must suit the in-house hub's input (H-ELE-13, ISS-060): analog or I2C not known yet; no order, no supplier contact))
+- 718073 ELECTRICAL - ISOLATED SENSE MODULE - 24 V RAILS AND LIGHT CURRENT: HOLD (HOLD (its output must suit the in-house hub's input (H-ELE-13, ISS-060): analog or I2C not known yet; no order, no supplier contact))
 - 718048 ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK: HOLD (HOLD (its length waits on what it screws into (CEILING's column), and no maker sheet was found for a black A2 M4 pan head (plain A2: Fabory 51340.040.012); no order, no supplier contact))
 - 718060 ELECTRICAL - SENSOR HUB - DESK PRO AI (IN-HOUSE): HOLD (HOLD (in-house module: interface data ISS-060))
 - 711005 ELECTRICAL - HUB ZONE COVER PLATE: HOLD (DRAFT; HOLD features: the hub window, button and knob holes (ISS-060) and the fixing holes (CEILING's column))
@@ -159,7 +159,7 @@ Rows typed reserved air space in another team's block: the part is AIR's and is 
 
 ## Numbers given out by the master BOM (D-120)
 
-From `v2/04-BOM/number-allocation.csv`: 157 numbers, 130 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
+From `v2/04-BOM/number-allocation.csv`: 180 numbers, 153 not in a team's list yet, 4 in use, 23 cancelled. Each is for one part in its team's list; a team that finds two of them identical in form, fit and function uses the lower number for both and asks for the other to be cancelled. A cancelled number is never reused.
 
 | Number | Name | Part of | Qty per pod | Status |
 |---|---|---|---:|---|
@@ -320,6 +320,29 @@ From `v2/04-BOM/number-allocation.csv`: 157 numbers, 130 not in a team's list ye
 | 511204 | LINING - TRAY - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
 | 511403 | LINING - FELT - BACK UPPER - B3 | 510203 | 1 | ALLOCATED |
 | 511404 | LINING - FELT - BACK UPPER - B4 | 510204 | 1 | ALLOCATED |
+| 211701 | WALL - CASSETTE LEDGE - SIDE LOWER - COMMON | 210101 210102 | 2 | ALLOCATED |
+| 211801 | WALL - CASSETTE LEDGE - BACK LOWER | 210201 210202 | 2 | ALLOCATED |
+| 361004 | FRONT - DOOR STRIKE SHIM | 360001 | 1 | ALLOCATED |
+| 412002 | CEILING - FRAME CLIP TAB | 411101 411102 | 12 | ALLOCATED |
+| 513103 | LINING - CATCH EYE BRACKET - CEILING | 510301 | 4 | ALLOCATED |
+| 611212 | AIR - SOFFIT UNDERSIDE HINGE - RIVETED PIN | 610201 | 4 | ALLOCATED |
+| 611213 | AIR - SOFFIT CARTRIDGE STRAP | 610201 | 2 | ALLOCATED |
+| 611214 | AIR - SOFFIT CARTRIDGE STRAP ANGLE | 610201 | 1 | ALLOCATED |
+| 618403 | AIR - FAN BOX MOUNT - EXHAUST - HOLD | 610402 | 4 | ALLOCATED |
+| 610403 | AIR - RISER TRANSITION | 610401 | 1 | ALLOCATED |
+| 610404 | AIR - SUPPLY TRANSITION | 610401 | 1 | ALLOCATED |
+| 611701 | AIR - RISER TRANSITION - LEFT WRAPPER | 610403 | 1 | ALLOCATED |
+| 611702 | AIR - RISER TRANSITION - RIGHT WRAPPER | 610403 | 1 | ALLOCATED |
+| 611703 | AIR - RISER TRANSITION - CHEEK | 610403 | 2 | ALLOCATED |
+| 611801 | AIR - SUPPLY TRANSITION - SHELL | 610404 | 1 | ALLOCATED |
+| 611802 | AIR - SUPPLY TRANSITION - FLOOR | 610404 | 1 | ALLOCATED |
+| 611803 | AIR - SUPPLY TRANSITION - VANE - OVER THE BOX | 610404 | 3 | ALLOCATED |
+| 611804 | AIR - SUPPLY TRANSITION - VANE - BESIDE THE BOX | 610404 | 2 | ALLOCATED |
+| 611215 | AIR - SOFFIT LATCH BRACKET | 610201 | 4 | ALLOCATED |
+| 611409 | AIR - FAN BOX MOUNT ANGLE | 610201 | 2 | ALLOCATED |
+| 618107 | AIR - SOFFIT CARTRIDGE STRAP PAD - HOLD | 610201 | 2 | ALLOCATED |
+| 611216 | AIR - SOFFIT FILL - RIGHT | 610201 | 1 | ALLOCATED |
+| 611217 | AIR - SOFFIT FILL - OVER THE COLUMN | 610201 | 1 | ALLOCATED |
 
 ## Rules
 
