@@ -18,15 +18,16 @@ drawing_specs.py. Dimensions: each spec dimension names two points in the view's
 mapped onto the sheet from the view's extent and the model box, and each end snaps to the nearest view vertex.
 Pattern: the CEILING Engineer's v2/02-Drawings/ceiling/make_drawing_ceiling.py.
 
-Four sheet rules from CEILING's first sample (Lead, 2026-11-01):
-- Fusion inserts every sheet image 58.02 mm wide at scale 1, whatever its pixel width (a 1000 px PNG and CEILING's
-  1700 px PNGs all came out 58.02 mm wide, aspect kept), so each image is scaled to its real width (its pixels over
-  its PNG's px per mm); at scale 1 the 2.5 mm notes printed at about 0.85 mm.
-- The first-angle symbol's outline in its own sketch: drawn in one sketch with the circles it printed as a triangle.
-- Each view's style set again after the view is made: Fusion ignores the style given on the input, and hidden lines
-  came out on every view, the iso too.
-- No dimension placed twice: a dimension that measures the same model extent along the same axis as one already
-  placed, in this view or another, is skipped and reported.
+Four sheet rules from CEILING's first sample (Lead, 2026-11-01), through the shared helpers in
+tools/fusion/fusion_drawing.py (#223), which run_script.py gives every script:
+- insert_image: every sheet image comes in 58.02 mm wide at scale 1 whatever its pixels, so each is scaled to its
+  real width (its pixels over its PNG's px per mm); at scale 1 the 2.5 mm notes printed at about 0.85 mm.
+- first_angle_symbol: the outline in a sketch of its own (in one sketch with the circles it printed as a triangle).
+- base_view: the style and scale set again on the made view and checked (Fusion ignores the input's style, and
+  hidden lines came out on every view, the iso too).
+- DimensionSet: the same two points measured the same way are placed once. On top of it, this script skips a
+  dimension that measures the same model extent along the same axis as one already placed, from other points or in
+  another view (check_drawing_specs.py finds those offline too).
 """
 
 import importlib
@@ -37,12 +38,13 @@ import sys
 import adsk.core
 import adsk.drawing
 import adsk.fusion
+from fusion_drawing import DimensionSet, base_view, first_angle_symbol
+from fusion_drawing import insert_image as fd_insert_image
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 VO = adsk.drawing.ViewOrientationTypes
 VISIBLE = adsk.drawing.DrawingViewStyleTypes.VisibleEdgesDrawingViewStyleType
 SNAP = 2.0   # mm on the sheet
-IMG_W_AT_SCALE_1 = 58.0178   # mm: every image's width at scale 1 (measured in CEILING's 513102 PDF, 1700 px images)
 # the model axis each view's 2D axis shows (the notes' projection line): (horizontal, vertical), sign of the 2D axis
 VIEW_AXES = {"front": (("X", 1), ("Z", 1)), "top": (("X", 1), ("Y", 1)), "left": (("Y", -1), ("Z", 1))}
 
@@ -102,22 +104,8 @@ def snap(view, target):
 
 
 def add_view(sheet, key, center, scale):
-    inp = sheet.views.createBaseViewInput()
-    vp = inp.viewParameters
-    vp.orientation = ORIENT[key]
-    vp.scaleValue = scale
-    vp.style = VISIBLE
-    inp.placementPoint = dpt(*center)
-    v = sheet.views.add(inp)
-    if v is None:
-        raise RuntimeError("Views.add returned None for %s" % key)
-    if abs(v.scaleValue - scale) > 1e-6:
-        v.scaleValue = scale     # the scale set on the input is ignored in this build
-    # the style on the input is ignored too (hidden lines came out on every view): set it again on the view
-    v.style = VISIBLE
-    if v.style != VISIBLE:
-        print("STYLE NOT SET|%s|%s" % (key, v.style))
-    return v
+    """A base view, visible edges only, its style and scale set again on the made view and checked (shared helper)."""
+    return base_view(sheet, ORIENT[key], scale, center, VISIBLE)
 
 
 def to_sheet(e, box, u, v):
@@ -146,18 +134,6 @@ def measure_key(vk, side, ua, ub):
     return axis, round(min(a, b), 1), round(max(a, b), 1)
 
 
-def projection_symbol(sheet, x0, y0, d=5.0, big=10.0, length=10.0, gap=4.0):
-    """ISO 5456-2 first-angle symbol: the cone's side view (narrow end away from the circles), then its end view.
-    The outline has its own sketch: in one sketch with the circles it printed as a triangle (CEILING's sample)."""
-    sk = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE - OUTLINE")
-    sk.lines.add([p2(x0, y0 - d / 2), p2(x0 + length, y0 - big / 2), p2(x0 + length, y0 + big / 2),
-                  p2(x0, y0 + d / 2), p2(x0, y0 - d / 2)])
-    sc = sheet.sketches.add("PROJECTION SYMBOL - FIRST ANGLE - CIRCLES")
-    cx = x0 + length + gap + big / 2
-    sc.circles.addByCenterRadius(p2(cx, y0), big / 2)
-    sc.circles.addByCenterRadius(p2(cx, y0), d / 2)
-
-
 def png_info(path):
     """(width px, height px, px per mm) of a PNG, the px per mm from its pHYs chunk (render_notes.py writes it)."""
     with open(path, "rb") as fh:
@@ -170,19 +146,15 @@ def png_info(path):
 
 
 def insert_image(sheet, path, top_left):
-    """The image at its real size, its top left corner at top_left (sheet mm). Fusion places it by its lower left
-    corner and makes it IMG_W_AT_SCALE_1 wide at scale 1, so the scale is its real width over that."""
+    """The image at its real size (from its PNG's pixels and px per mm), its top left corner at top_left (sheet mm),
+    through the shared helper, which places it by its lower left corner and scales it to that width."""
     if not os.path.exists(path):
         raise RuntimeError("missing %s: run render_notes.py first" % path)
     w_px, h_px, px_mm = png_info(path)
     w_mm, h_mm = w_px / px_mm, h_px / px_mm
-    inp = sheet.images.createInput()
-    inp.imageFilePath = path
-    inp.position = p2(top_left[0], top_left[1] - h_mm)
-    inp.scale = w_mm / IMG_W_AT_SCALE_1
-    ok = sheet.images.insert(inp)
-    print("image %s: %s, %.1f x %.1f mm at scale %.4f, lower left (%.1f, %.1f)" % (
-        os.path.basename(path), ok, w_mm, h_mm, inp.scale, top_left[0], top_left[1] - h_mm))
+    scale = fd_insert_image(sheet, path, top_left[0], top_left[1] - h_mm, w_mm)
+    print("image %s: %.1f x %.1f mm at scale %.4f, lower left (%.1f, %.1f)" % (
+        os.path.basename(path), w_mm, h_mm, scale, top_left[0], top_left[1] - h_mm))
 
 
 def run(_context):
@@ -207,6 +179,7 @@ def run(_context):
         print("view %-5s scale %g extent %s" % (vk, views[vk].scaleValue,
                                                 tuple(round(x, 2) for x in ext[vk]) if ext[vk] else None))
     made, skipped, placed = 0, [], {}
+    dims = DimensionSet(sheet)
     for vk, a, b, side, gap in sp["dims"]:
         if vk not in views or vk not in sp["box"]:
             skipped.append((vk, a, b, "no view or box"))
@@ -226,9 +199,13 @@ def run(_context):
         mx, my = (xa + xb) / 2, (ya + yb) / 2
         place = {"below": (mx, min(ya, yb) - gap), "above": (mx, max(ya, yb) + gap),
                  "left": (min(xa, xb) - gap, my), "right": (max(xa, xb) + gap, my)}[side]
-        d = sheet.drawingDimensions.addLinearDimension(pa, pb, dpt(*place), False)
+        try:
+            d = dims.linear(pa, pb, dpt(*place), False, "%s %s to %s" % (vk, a, b))
+        except RuntimeError as exc:          # addLinearDimension gave None: reported, the sheet goes on
+            skipped.append((vk, a, b, str(exc)))
+            continue
         if d is None:
-            skipped.append((vk, a, b, "addLinearDimension returned None"))
+            skipped.append((vk, a, b, "the same two points measured the same way already"))
         else:
             made += 1
             if key2 is not None:
@@ -236,7 +213,7 @@ def run(_context):
     print("dimensions %d made, %d skipped" % (made, len(skipped)))
     for s_ in skipped:
         print("SKIPPED|%s|%s|%s|%s" % s_)
-    projection_symbol(sheet, 20.0, 20.0)
+    first_angle_symbol(sheet, 20.0, 20.0)
     notes_dir = os.path.join(HERE, ".notes")
     insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_NOTES.png"), sp["images"]["notes"])
     insert_image(sheet, os.path.join(notes_dir, sp["drawing"] + "_TITLE.png"), sp["images"]["title"])
