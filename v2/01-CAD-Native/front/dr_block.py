@@ -14,9 +14,10 @@ Stage 1 of the right decor block (the decor detail sample):
   at the faces DT sits on), with the 15 mm slot the pane's hidden channel
   enters through and the opening in its underside onto the base band;
 - 351302 the fixed back plate, with the opening into the air column's top;
-- 351303 the removable inner panel and 351304 its 9 mm felt: the part of DR's
-  back face that shows inside the pod, between the glass edge, the air column
-  and the soffit (D-59, D-60);
+- 351305 the removable inner face panel (D-130: one panel where there were an
+  access panel and the inner panel 351303, now cancelled) and 351304 its 9 mm
+  felt on the part that shows inside the pod, between the glass edge, the air
+  column and the soffit (D-59, D-60);
 - reserved air spaces where AIR's supply fan box assembly goes (the D-60 table's
   sizes): the intake riser, the fan box with its two fans and the two
   transitions. AIR designs and lists those parts (PM ruling 2026-11-01). The room-side intake
@@ -84,7 +85,6 @@ CUT_REL = "v2/03-Manufacturing/front/%s_%s_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.cs
 # flat parts cut from sheet: their DXF gives the outline and every hole, so they need no drawing (D-89 part 4)
 DXF_FLAT = {"BACK": "351302_%s_FRONT-DECOR-BACK-PLATE-DR_DXF.dxf" % REV,
             "ACCESS": "351305_%s_FRONT-DECOR-ACCESS-PANEL-DR_DXF.dxf" % REV,
-            "INNER": "351303_%s_FRONT-DECOR-INNER-PANEL-DR_DXF.dxf" % REV,
             "FELT": "351304_%s_FRONT-DECOR-INNER-PANEL-FELT-DR_DXF.dxf" % REV}
 
 XL, XR = "-pod_w / 2", "pod_w / 2"
@@ -103,9 +103,22 @@ OWN = [
     ("dr_acc_t", "3 mm", "mm", "calculation",
      "access panel 3 mm aluminium: it carries the air column's 10 kg on two hook studs 222 mm from its screwed edge "
      "(PM ruling 2026-11-01); 2 mm would see about 110 MPa if the column pulls 50 N, 3 mm about 50 MPa"),
-    ("dr_acc_face_y", "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t", "mm", "calculation",
-     "named value for AIR (PM ruling 2026-11-01): the room-side face of DR's access panel, where AIR's air column "
-     "starts; Y -643.5 with the 1.5 mm back plate and the 3 mm panel"),
+    # D-130 (PM rulings 2026-11-01, Joints' seal and stop pair): one removable inner face panel, on stops off the frame
+    ("dr_rn_head", "0.76 mm", "mm", "source", "rivnut 838003 head 0.76 +/-0.08 (joints register H-03, Sherex CAH3)"),
+    ("dr_stop_w", "1.6 mm", "mm", "source",
+     "an 838004 washer (ISO 7093 6.4 x 18, 1.6 thick) on each rivnut head: the panel's stop (Joints, D-130)"),
+    ("dr_pnl_gap", "dr_rn_head + dr_stop_w", "mm", "calculation",
+     "the inner face panel stands 2.36 off the frame on its stops; the 4.0 seal 848013 is squeezed to it (D-130)"),
+    ("dr_seal_w", "8 mm", "mm", "source", "848013 access panel seal, about 8 wide (joints register H-34; D-130)"),
+    ("dr_seal_t", "4 mm", "mm", "source", "848013 access panel seal, 4.0 thick very soft foam (joints register H-34)"),
+    ("dr_pitch", "400 mm", "mm", "source", "the panel's screws about 400 apart (Joints' seal and stop pair, D-130)"),
+    ("dr_drop", "40 mm", "mm", "calculation",
+     "service: with the column off, the panel drops 40 to clear the soffit's underside (its top edge is 35 over it), "
+     "then comes out (PM ruling 2026-11-01)"),
+    ("dr_pull", "100 mm", "mm", "calculation", "service: how far out the model shows the dropped panel coming"),
+    ("dr_acc_face_y", "-pod_d / 2 + decor_d - dr_back_t + dr_pnl_gap + dr_acc_t", "mm", "calculation",
+     "named value for AIR (PM rulings 2026-11-01, D-130): the room-side face of DR's inner face panel, where AIR's "
+     "air column and soffit start; Y -641.14, the 3 mm panel 2.36 off the frame on its stops"),
     ("dr_piece_x0", "1150 mm", "mm", "confirmed",
      "with the band behind the soffit dropped, the back plate keeps a short piece from here to the side above the "
      "access panel: the soffit stops at X 1161 (AIR), 11 short of it (PM ruling 2026-11-01)"),
@@ -167,8 +180,11 @@ OWN = [
     ("fr_t", "1.5 mm", "mm", "calculation",
      "frame tube wall 1.5 where AIR's supply fan box (8.8 kg) stands: the shelf tubes F08 and C03"),
     ("fr_t_rn", "1.2 mm", "mm", "confirmed",
-     "wall of the tubes that carry rivnuts (bottom B01, bolt line B02, band B08): 1.2, as D-85 kept the wall panels' "
-     "perimeter members for their rivnuts (PM ruling 2026-11-01, DR under 20 kg, D-03)"),
+     "wall of the ledge tube B05, which carries DT's two spigot rivnuts: 1.2, as D-85 kept the wall panels' "
+     "perimeter members for their rivnuts (PM ruling 2026-11-01); the tubes under the inner face panel take fr_t_pnl"),
+    ("fr_t_pnl", "1.5 mm", "mm", "source",
+     "wall of the tubes under the inner face panel that take its rivnuts: 1.5 or more, as 1.0 is marginal for an M6 "
+     "rivnut (Joints, D-130)"),
     ("fr_t_sk", "1.0 mm", "mm", "confirmed",
      "wall of the tubes that only hold the skin and the plates: 1.0, as D-85's inner studs (PM ruling 2026-11-01, DR "
      "under 20 kg, D-03); E*I 3.2e8 N.mm2, two thirds of v1's 16 x 16 x 1 steel box, with the ACP bonded on"),
@@ -246,7 +262,6 @@ PARTS = {
     "SKIN": ("351301", "FRONT - DECOR SKIN - DR", "Tấm ốp alu khối phải"),
     "BACK": ("351302", "FRONT - DECOR BACK PLATE - DR", "Tấm hậu khối phải"),
     "ACCESS": ("351305", "FRONT - DECOR ACCESS PANEL - DR", "Tấm thăm khối phải"),
-    "INNER": ("351303", "FRONT - DECOR INNER PANEL - DR", "Tấm trong tháo được khối phải"),
     "FELT": ("351304", "FRONT - DECOR INNER PANEL FELT - DR", "Nỉ tấm trong khối phải"),
     "RISER": ("351402", "FRONT - AIR INTAKE RISER - DR", "Ống gió đứng khối phải"),
     "TLOW": ("351403", "FRONT - AIR TRANSITION - LOWER - DR", "Ống chuyển hướng dưới"),
@@ -267,11 +282,11 @@ EXPECTED = [
 FRAME_PN = "351306"
 FRAME = ("351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)")
 # tube sections and walls (PM ruling 2026-11-01): skin-only tubes 1.0, rivnut tubes 1.2, the fan box shelf 1.5
-S20, S40, S60, S80 = "20 x 20 x 1.0", "40 x 20 x 1.2", "60 x 20 x 1.2", "80 x 20 x 1.2"
+S20, S40, S60, S80 = "20 x 20 x 1.0", "40 x 20 x 1.5", "60 x 20 x 1.5", "80 x 20 x 1.5"   # D-130: rivnut walls 1.5
 S20_SHELF = "20 x 20 x 1.5"
 S20_RN = "20 x 20 x 1.2"            # the ledge tube: DT's two spigot rivnuts (J-FRONT-03)
-WALL = {"20 x 20 x 1.0": "fr_t_sk", "20 x 20 x 1.2": "fr_t_rn", "40 x 20 x 1.2": "fr_t_rn", "60 x 20 x 1.2": "fr_t_rn", "80 x 20 x 1.2": "fr_t_rn",
-        "20 x 20 x 1.5": "fr_t"}
+WALL = {"20 x 20 x 1.0": "fr_t_sk", "20 x 20 x 1.2": "fr_t_rn", "40 x 20 x 1.5": "fr_t_pnl", "60 x 20 x 1.5": "fr_t_pnl",
+        "80 x 20 x 1.5": "fr_t_pnl", "20 x 20 x 1.5": "fr_t"}
 ACCESS_BOLTS = ([("ab_x", "ab_z0 + %d * ab_p" % k) for k in range(6)] + [("ab_x1", "ab_zb"), ("ab_x2", "ab_zb")] +
                 [("ab_x1", "ab_zt"), ("ab_x2", "ab_zt")])
 
@@ -477,8 +492,7 @@ def build(app):
                 ("dr_piece_x0", "pod_h - dr_skin_t"), ("dr_piece_x0", zband), ("dr_strip_x0", zband)]
     else:           # the strip and the band behind the soffit, down to the soffit's underside over the inner panel
         back = [("dr_strip_x0", zs), (XR + " - dr_skin_t", zs), (XR + " - dr_skin_t", "pod_h - dr_skin_t"),
-                (XL + " + dt_xr", "pod_h - dr_skin_t"), (XL + " + dt_xr", ZT), ("dr_col_x0", ZT), ("dr_col_x0", zband),
-                ("dr_strip_x0", zband)]
+                (XL + " + dt_xr", "pod_h - dr_skin_t"), (XL + " + dt_xr", zband), ("dr_strip_x0", zband)]
     f = prism(c, ("x", "z"), back, "y", YB + " - dr_back_t", YB, "OUTLINE - DR BACK PLATE (FIXED STRIP AND TOP BAND)",
               "EXTRUDE - DR BACK PLATE")
     bp = f.bodies.item(0)
@@ -488,13 +502,18 @@ def build(app):
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     bp.name = "DR BACK PLATE AL 2"
     bodies["BACK"] = bp
+    # ---- 351305 the inner face panel (D-130; PM rulings 2026-11-01): ONE removable 3 mm aluminium panel over the
+    # whole opening the air unit goes in by (D-87), where there were two panels and a seam AIR's riser and transitions
+    # left no room to back; on stops 2.36 off the frame (an 838004 washer on each rivnut head), sealed all round by
+    # 848013 on the frame's tubes, held by M6 x 16 socket heads at about 400 mm; it ships loose and goes on after the
+    # air unit. Its outline: the old access panel and inner panel together, its top on the band tube B08 (and on DT's
+    # ledge tube left of X 449, under the soffit's underside)
     c = comp("ACCESS")
-    acc = [(L.right_x(zs, "dr_skin_t"), zs), ("dr_strip_x0", zs), ("dr_strip_x0", zband), ("dr_col_x0", zband),
-           ("dr_col_x0", tip_z)]
-    # the removable panels sit on the frame's back face, Y -647, so they stand 1 mm proud of the 2 mm fixed plate
-    ya, yb_acc = YB + " - dr_back_t", YB + " - dr_back_t + dr_acc_t"
-    f = prism(c, ("x", "z"), acc, "y", ya, yb_acc, "OUTLINE - DR ACCESS PANEL (REMOVABLE, D-87)",
-              "EXTRUDE - DR ACCESS PANEL")
+    acc = [(L.right_x(zs, "dr_skin_t"), zs), ("dr_strip_x0", zs), ("dr_strip_x0", zband), (XL + " + dt_xr", zband),
+           (XL + " + dt_xr", ZT), (L.diag_x(ZT, "dr_skin_t"), ZT), L.g_K("dr_skin_t")]
+    ya, yb_acc = YB + " - dr_back_t + dr_pnl_gap", YB + " - dr_back_t + dr_pnl_gap + dr_acc_t"
+    f = prism(c, ("x", "z"), acc, "y", ya, yb_acc, "OUTLINE - DR INNER FACE PANEL (REMOVABLE, D-87, D-130)",
+              "EXTRUDE - DR INNER FACE PANEL")
     ap = f.bodies.item(0)
     prism(c, ("x", "z"), [("op_x0", "op_z0"), ("op_x0 + op_w", "op_z0"), ("op_x0 + op_w", "op_z0 + op_h"),
                           ("op_x0", "op_z0 + op_h")], "y", ya + " - 1 mm", yb_acc + " + 1 mm",
@@ -507,23 +526,18 @@ def build(app):
                    [("dr_stud_x", "dr_stud_z1"), ("dr_stud_x", "dr_stud_z2")], "jf_hole")
     L.extrude_span(c, sk, "y", ya + " - 1 mm", yb_acc + " + 1 mm", CUT, [ap], "CUT - HOOK STUD RIVNUT HOLES",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
-    ap.name = "DR ACCESS PANEL AL 3"
+    ap.name = "DR INNER FACE PANEL AL 3"
     bodies["ACCESS"] = ap
 
-    # ---- 351303 removable inner panel and 351304 its felt: the part of the back face seen from inside, up to the
-    # soffit's underside at DT's underside (Z 2120, D-61); above it they would only be hidden in the soffit (PM ruling
-    # 2026-11-01)
+    # ---- 351304 the felt, glued on the panel's left part: the face seen from inside, beside the air column, up to
+    # the soffit's underside at DT's underside (Z 2120, D-61) (351303, the ACP inner panel, is cancelled: D-130)
     inner = [("dr_col_x0", tip_z), ("dr_col_x0", ZT), (L.diag_x(ZT, "dr_skin_t"), ZT), L.g_K("dr_skin_t")]
-    yi0, yi1 = YB + " - dr_back_t", YB + " - dr_back_t + dr_skin_t"
-    c = comp("INNER")
-    f = prism(c, ("x", "z"), inner, "y", yi0, yi1, "OUTLINE - DR INNER PANEL (SEEN FROM INSIDE)",
-              "EXTRUDE - DR INNER PANEL")
-    bodies["INNER"] = f.bodies.item(0)
-    bodies["INNER"].name = "DR INNER PANEL ACP 3"
     c = comp("FELT")
-    f = prism(c, ("x", "z"), inner, "y", yi1, yi1 + " + felt_t", "OUTLINE - DR INNER PANEL FELT", "EXTRUDE - FELT 9")
+    f = prism(c, ("x", "z"), inner, "y", yb_acc, yb_acc + " + felt_t", "OUTLINE - DR INNER FACE PANEL FELT",
+              "EXTRUDE - FELT 9")
     bodies["FELT"] = f.bodies.item(0)
-    bodies["FELT"].name = "DR INNER PANEL FELT 9"
+    bodies["FELT"].name = "DR INNER FACE PANEL FELT 9"
+
 
     # ---- air parts from the D-60 table
     c = comp("RISER")
@@ -588,7 +602,7 @@ def build(app):
             ("B08", "HOLES - ACCESS PANEL RIVNUTS ON THE BAND TUBE (2)", ACCESS_BOLTS[8:10], "fr_hole_rn")):
         mc = mcomps[key]                     # each hole in its own tube's component
         sk = L.circles(design, mc, mc.xZConstructionPlane, ("x", "z"), 0, name, centres, dia)
-        L.extrude_span(mc, sk, "y", yb1 + " - fr_t_rn - 1 mm", yb1 + " + 0.5 mm", CUT, [native[key]],
+        L.extrude_span(mc, sk, "y", yb1 + " - fr_t_pnl - 1 mm", yb1 + " + 0.5 mm", CUT, [native[key]],
                        "CUT - " + name.split(" - ", 1)[1],
                        profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     # J-FRONT-02: the spigot hole and slot (along X) in the bottom back tube's bottom wall, on its centre line
@@ -597,11 +611,11 @@ def build(app):
     sk = L.circles(design, mc, mc.xYConstructionPlane, ("x", "y"), 0, "HOLES - J-FRONT-02 SPIGOT ROUND AND SLOT ENDS",
                    [("dr_sp_x1", ysb), ("dr_sp_x2 - (sp_slot - sp_hole) / 2", ysb),
                     ("dr_sp_x2 + (sp_slot - sp_hole) / 2", ysb)], "sp_hole")
-    L.extrude_span(mc, sk, "z", ZB + " - 1 mm", ZB + " + fr_t_rn + 0.5 mm", CUT, [native["B01"]],
+    L.extrude_span(mc, sk, "z", ZB + " - 1 mm", ZB + " + fr_t_pnl + 0.5 mm", CUT, [native["B01"]],
                    "CUT - J-FRONT-02 SPIGOT HOLE AND SLOT ENDS", profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     sl = [("dr_sp_x2 - (sp_slot - sp_hole) / 2", "%s - sp_hole / 2" % ysb), ("dr_sp_x2 + (sp_slot - sp_hole) / 2", "%s - sp_hole / 2" % ysb),
           ("dr_sp_x2 + (sp_slot - sp_hole) / 2", "%s + sp_hole / 2" % ysb), ("dr_sp_x2 - (sp_slot - sp_hole) / 2", "%s + sp_hole / 2" % ysb)]
-    prism(mc, ("x", "y"), sl, "z", ZB + " - 1 mm", ZB + " + fr_t_rn + 0.5 mm", "SLOT - J-FRONT-02 SPIGOT (MIDDLE)",
+    prism(mc, ("x", "y"), sl, "z", ZB + " - 1 mm", ZB + " + fr_t_pnl + 0.5 mm", "SLOT - J-FRONT-02 SPIGOT (MIDDLE)",
           "CUT - J-FRONT-02 SPIGOT SLOT MIDDLE", CUT, native["B01"])
     # J-FRONT-03: rivnuts for DT's two spigots in the top of the ledge tube
     mc = mcomps["B05"]
@@ -621,11 +635,11 @@ def build(app):
     al6063 = L.material(design, "Aluminium 6063-T6 tube (2700 kg/m3)", "Aluminum", 2700.0)
     for k in native:
         native[k].material = al6063
-    for k, m in (("SKIN", acp), ("BACK", alu), ("ACCESS", alu), ("INNER", acp), ("FELT", felt), ("RISER", env),
+    for k, m in (("SKIN", acp), ("BACK", alu), ("ACCESS", alu), ("FELT", felt), ("RISER", env),
                  ("TLOW", env), ("FBOX", env), ("TUP", env), ("TUP2", env)):
         bodies[k].material = m
     looks = {"SKIN": ["Paint - Enamel Glossy (Yellow)"], "BACK": ["Aluminum - Satin"], "ACCESS": ["Aluminum - Satin"],
-             "INNER": ["Paint - Enamel Glossy (Yellow)"], "FELT": ["Fabric (Gray)", "Plastic - Matte (Grey)"],
+             "FELT": ["Fabric (Gray)", "Plastic - Matte (Grey)"],
              "RISER": ["Steel - Satin", "Paint - Enamel Glossy (Grey)"],
              "FBOX": ["Aluminum - Satin"],
              "TLOW": ["Paint - Enamel Glossy (Red)"], "TUP": ["Paint - Enamel Glossy (Red)"],
@@ -667,6 +681,8 @@ def build(app):
     print("DR box", L.box(root))
     if bad or loose or bad_clash:
         raise RuntimeError("DR checks failed (unhealthy %s, loose %s, clashes %s)" % (bad, loose, bad_clash))
+    if SCOPES[scope] is None:
+        service_path(app, design, root, bodies, prism, zs, zband, ya, yb_acc, acc)
     if SCOPES[scope] is not None:
         keep = scope_part(scope)[0]
         nested = SCOPES[scope] in AIR_KEYS          # inside 350004: keep that sub-assembly, then only this part in it
@@ -681,14 +697,53 @@ def build(app):
         print("scope %s: kept %s only, %d components left" % (scope, keep, left))
 
 
+SERVICE_PICTURE = "v2/01-CAD-Native/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR-SERVICE-PATH_IMG.png"
+
+
+def service_path(app, design, root, bodies, prism, zs, zband, ya, yb_acc, acc):
+    """The inner face panel's service path (PM ruling 2026-11-01), shown and checked, then taken out of the model
+    (an envelope, not a part, so it never reaches the STEP or the parts list): with the column off, the panel and its
+    felt drop dr_drop, so the panel's top passes under the soffit's underside (Z 2120), then come out dr_pull toward
+    the room. The envelope may touch only the panel and its felt; its margins to the soffit's underside and to
+    BASE's closing plate (Y -645 under DR, D-62) are printed for the whole-pod check."""
+    c = L.new_comp(root, "", "SERVICE PATH - DR INNER FACE PANEL (NOT A PART)", "", REV)
+    sweep = [(L.diag_x(ZT, "dr_skin_t"), ZT), (XL + " + dt_xr", ZT), (XL + " + dt_xr", zband), ("dr_strip_x0", zband),
+             ("dr_strip_x0", zs + " - dr_drop"), (L.right_x(zs, "dr_skin_t"), zs + " - dr_drop"),
+             (L.g_K("dr_skin_t")[0], L.g_K("dr_skin_t")[1] + " - dr_drop"), (L.diag_x(ZT, "dr_skin_t"), ZT + " - dr_drop")]
+    f = prism(c, ("x", "z"), sweep, "y", ya, yb_acc + " + felt_t", "SERVICE PATH - THE PANEL DROPS",
+              "EXTRUDE - SERVICE PATH DROP")
+    drop = f.bodies.item(0)
+    drop.name = "SERVICE PATH - PANEL DROPPING"
+    dropped = [(x, "%s - dr_drop" % z) for x, z in acc]
+    f = prism(c, ("x", "z"), dropped, "y", ya, yb_acc + " + felt_t + dr_pull", "SERVICE PATH - THE PANEL COMES OUT",
+              "EXTRUDE - SERVICE PATH OUT")
+    out = f.bodies.item(0)
+    out.name = "SERVICE PATH - PANEL COMING OUT"
+    others = {k: b for k, b in bodies.items() if k not in ("ACCESS", "FELT")}
+    others.update({"PATH_DROP": drop, "PATH_OUT": out})
+    hits, bad = L.clash_check(others, EXPECTED + [(("PATH_DROP", "PATH_OUT"), "one path, two moves")])
+    ev = lambda e: L.ev(design, e)
+    top, soffit = ev(zband + " - dr_drop"), ev(ZT)
+    low, plate = ev(zs + " - dr_drop"), ev(YB)
+    print("SERVICE PATH|%s|top after the drop Z %.1f, %.1f under the soffit's underside (Z %.1f)|bottom after the drop "
+          "Z %.1f, its back face Y %.2f, %.2f in front of the closing plate's line (Y %.1f)" % (
+              "clear of every other part in DR" if not bad else "BLOCKED BY %s" % bad, top, soffit - top, soffit,
+              low, ev(ya), ev(ya) - plate, plate))
+    L.take_shots(app, ARGS["repo_root"], app.activeDocument, [(SERVICE_PICTURE, "iso-top-left")])
+    occs = root.allOccurrencesByComponent(c)
+    for occ in [occs.item(i) for i in range(occs.count)]:
+        occ.deleteMe()
+    if bad or soffit - top <= 0 or ev(ya) - plate <= 0:
+        raise RuntimeError("the inner face panel's service path is blocked: %s" % bad)
+
+
 ANCHORS = [
     ("SKIN", 0, "fix_xtr - pod_w / 2"), ("SKIN", 3, "pod_w / 2"), ("SKIN", 2, "fg_vis_zb"), ("SKIN", 5, "pod_h"),
     ("SKIN", 1, "-pod_d / 2"), ("SKIN", 4, "-pod_d / 2 + decor_d"),
     ("BACK", 0, "dr_piece_x0" if DROP_BAND else "dt_xr - pod_w / 2"), ("BACK", 3, "pod_w / 2 - dr_skin_t"), ("BACK", 5, "pod_h - dr_skin_t"),
-    ("ACCESS", 3, "dr_strip_x0"), ("ACCESS", 5, "fg_vis_zt + dr_band_dz"),
-    ("ACCESS", 4, "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t"),
-    ("INNER", 3, "dr_col_x0"), ("INNER", 5, "fg_vis_zt"),
-    ("FELT", 4, "-pod_d / 2 + decor_d - dr_back_t + dr_skin_t + felt_t"),
+    ("ACCESS", 3, "dr_strip_x0"), ("ACCESS", 5, "fg_vis_zt + dr_band_dz"), ("ACCESS", 4, "dr_acc_face_y"),
+    ("ACCESS", 1, "-pod_d / 2 + decor_d - dr_back_t + dr_pnl_gap"),
+    ("FELT", 3, "dr_col_x0"), ("FELT", 5, "fg_vis_zt"), ("FELT", 4, "dr_acc_face_y + felt_t"),
     ("RISER", 2, "fg_vis_zb + dr_skin_t + ri_gap"), ("RISER", 5, "ri_zt"), ("RISER", 0, "ri_x0"),
     ("FBOX", 0, "fb_x0"), ("FBOX", 2, "fb_z0"), ("FBOX", 5, "fb_z0 + fb_h"),
     ("TUP", 5, "op_z0 + op_h"),
@@ -762,22 +817,20 @@ def export_all(app):
          "1.5 mm by PM ruling 2026-11-01 (DR under 20 kg)",
          "DXF " + DXF_FLAT["BACK"] + "; fixed: the strip on X +1224 with 6 holes 9.53 +0.10/0 for the rivnuts 838003 "
          "(critical: on the wall's bolt line), and the band behind the soffit; blind-riveted to the frame (HOLD: rivet)"),
-        ("351305", PARTS["ACCESS"][1], PARTS["ACCESS"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4), "
-         "removable", "aluminium EN AW-5754-H22 sheet 3.0 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
-         "calculation (CAD, 2700 kg/m3)", "DRAFT", "D-60 air table, D-130 (opening 200 x 215 to the column's edge); D-87; PM ruling 2026-11-01 "
-         "(column hook studs, panel carries the 10 kg column)",
-         "DXF " + DXF_FLAT["ACCESS"] + "; 10 bolts M6 x 16 838001 with washers 838004 through holes 7.0 into rivnuts "
-         "838003 in the frame, a 1 mm perimeter gasket over the rivnut heads (HOLD: gasket tape); 2 holes 9.53 "
-         "+0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 "
-         "with the column's 2 hook studs (J-AIR-02 in the joints register); comes off after the column "
-         "and the inner panel, so the air unit 350004 slides in"),
-        ("351303", PARTS["INNER"][1], PARTS["INNER"][2], 1, "made (CNC-routed ACP, no drawing: D-89 part 4), "
-         "removable", "ACP 3 mm, finish as supplied (the felt covers its face); " + gt, "cad", "calculation (CAD)",
-         "DRAFT", "D-59, D-60",
-         "DXF " + DXF_FLAT["INNER"] + "; lifts off for the fan box; held on the frame by 4 clips (HOLD: clip, "
-         "assumed 0.04 kg each)"),
+        ("351305", PARTS["ACCESS"][1], PARTS["ACCESS"][2], 1, "made (laser-cut sheet; its drawing gives the "
+         "flatness, about 0.5 mm, D-130), removable", "aluminium EN AW-5754-H22 sheet 3.0 mm, finish: mill finish "
+         "(hidden, D-79); " + gt, "cad", "calculation (CAD, 2700 kg/m3)", "DRAFT",
+         "D-60 air table; D-87; D-130 (one panel, its stops and seal; the opening 200 x 215 to the column's edge); "
+         "PM rulings 2026-11-01 (the column's hook studs, the panel carries the 10 kg column)",
+         "one removable inner face panel (D-130) over the opening the air unit goes in by: DXF " + DXF_FLAT["ACCESS"] +
+         "; on stops 2.36 off the frame (an 838004 washer on each rivnut head), sealed all round by 848013, held by "
+         "M6 x 16 socket heads 838001 with washers 838004 about 400 apart into rivnuts 838003 in the frame's 1.5 mm "
+         "tube walls (Joints' counts); 2 holes 9.53 +0.10/0 at X 971, Z 1700 and 1850 for rivnuts 838003 with the "
+         "column's 2 hook studs (J-AIR-02); its room-side face is AIR's named value dr_acc_face_y; ships loose with "
+         "its screws and felt and goes on after the air unit; for service the column comes off, then the panel drops "
+         "40 and comes out under the soffit (PM rulings 2026-11-01)"),
         ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (laser-cut PET felt sheet, no drawing: D-128, its DXF "
-         "matches its STEP), glued to 351303 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
+         "matches its STEP), glued to 351305 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
          "calculation (CAD, 1.8 kg/m2)",
          "DRAFT; emission certificate HOLD", "D-31; hardware selection A3", "DXF " + DXF_FLAT["FELT"]),
         ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, RESERVED_TYPE, "-", None,

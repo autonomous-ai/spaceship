@@ -731,7 +731,8 @@ def write_panels_dxf(path, panels, gap=60.0, row_w=3000.0):
 # in the same run, so each team keeps at most 3 runs in the queue
 
 VIEWS = {"front": "FrontViewOrientation", "top": "TopViewOrientation", "left": "LeftViewOrientation",
-         "right": "RightViewOrientation", "iso-top-right": "IsoTopRightViewOrientation"}
+         "right": "RightViewOrientation", "iso-top-right": "IsoTopRightViewOrientation", "back": "BackViewOrientation",
+         "iso-top-left": "IsoTopLeftViewOrientation"}
 
 
 def save_doc(app, desc):
