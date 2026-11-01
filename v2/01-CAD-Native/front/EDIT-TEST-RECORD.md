@@ -85,3 +85,11 @@ Same method, in the same run as each build, the frames now made of member compon
 
 0 unhealthy items and 0 loose sketches in every state; the copies follow the edits through their joints.
 
+
+## 350003 DR: D-120, D-130 and D-131 spans rebuild (2026-11-01)
+
+| Block | Edits | Before (box mm) | After the edits | Reverted | Anchors off | Result |
+|---|---|---|---|---|---|---|
+| DR | decor_d 215; fix_xk 511; fix_zk 1531 | 1020.0 x 217.9 x 2290.1 | 1020.0 x 227.9 x 2290.1 | 1020.0 x 217.9 x 2290.1 | none (worst 0.010) | PASS, 31 anchors |
+
+0 unhealthy items and 0 loose sketches in every state. The day's first DR build failed here: the inner face panel moved with decor_d but AIR's named value `dr_acc_face_y`, which no feature used, kept its old value in the edited copy (anchor −631.13 against −641.14). The panel and its felt are now built from that named value, so the value AIR reads and the model can't drift.

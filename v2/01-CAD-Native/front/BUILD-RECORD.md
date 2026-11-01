@@ -272,3 +272,21 @@ Each frame is a weldment assembly that keeps its number, each tube its own compo
 - The FRONT combined check (door, fixed glass, DR, DT, DL): 0 overlaps between sub-assemblies, the gaps as ruled.
 - No names in any export (f3d entries read through zstd, STEP, CSV, DXF).
 
+
+## 350003 DR: D-120, D-130 and D-131 spans rebuild (2026-11-01, supersedes the #105 row above for DR)
+
+The same method as DT and DL above: the frame 351306 a weldment assembly that keeps its number, each tube its own component with Control's member number (#232; F09 352322 from #287), repeats as copies placed by rigid joints at their shifts. With it D-130 (PM rulings 2026-11-01) and D-131's skin span fix.
+
+| Block | Bodies | Clashes | Frame | Copies | Unit mass (calculation) | STEP box (re-read in Fusion: 0.000 mm) | Edit test |
+|---|---|---|---|---|---|---|---|
+| DR 350003 | 35 | 0 | 25 tubes as 22 parts, 4.95 kg | 352317 three times (C01, C04, C05 at Z +1820, +2068.86); 352319 twice (C06, C08 at X +541.85) | 21.09 kg in its list; 13.01 kg as it ships (its inner face panel and felt, 8.08 kg, ship loose as packing piece 2-23) | X 229.98 to 1250.02, Y −850.02 to −632.12, Z 109.97 to 2400.02 | PASS, 31 anchors |
+
+- **D-130:** one removable inner face panel 351305, 3 mm 5754-H22, 7.341 kg (the CAD and the offline area agree), on 838004 stop washers 2.36 off the frame, built from AIR's named value `dr_acc_face_y` (Y −641.14). The day's first build failed its edit test here: the panel used its own copy of the formula, and the named value, used by no feature, stayed at its old value in the edited copy (−641.14 against the panel's −631.13); built from the named value, both move together. 21 M6 × 16 socket heads on plain 12 mm washers (PM ruling: one 5 mm key on site); the seal 848013 on the screw line. The felt 351304 (0.737 kg) has 10 closed 14 mm holes with at least 3 mm of felt to its edge; the build refuses a hole that breaks out (the first layout's 22 mm holes broke out by 1 mm) or a washer that reaches the air column's left face, so B07's lowest screw sits at X 939, Z 259.8, and B08's screw by the bolt-line tube stands 19.56 from the band tube's end (C09: it was 18.9).
+- **Service path:** clear of every other part in DR; the panel drops 40 (its top at Z 2115, 5 under the soffit's underside) and comes out with its back face 0.86 in front of the closing plate's line.
+- **D-131 skin spans:** the front ring's cross tube F09 (Z 1904.4 to 1924.4) holds the front face's top bays to 1.62 and 1.72 mm under 100 N (5.01 without it; `SKIN-SPANS.md`, rerun on this build's STEP); AIR's fan box space 25 back from the skin (Y −822).
+- **STEP tree** (read with `stepfile`): 31 components and 35 solids; each tube part placed as the frame's list says; the only component with two bodies is the reserved air space 351405 (a HOLD space, which D-120 exempts).
+- **DXFs:** the panel 970.47 × 2042, 23 holes; the felt 715.03 × 2003.53, 10 holes; the back plate 798 × 2284, 6 holes; the skin 28 panels; the cut list 25 tubes, 15.12 m.
+- **Mechanical checks on this tree:** no C06 for DR; C09: the panel's 10 felt-side screw holes sit 10.0 from its edge (1.43 diameters), accepted by the PM's edge exception (2026-11-01, the calculation in `v2/04-Checks/config/edge-exceptions.csv`); C05: drawings to make (D-139); C11: the D-131 steel switch waits for WALL's L1 sample review.
+- **The FRONT combined check** (door, fixed glass, DR, DT, DL): 0 overlaps between sub-assemblies, the gaps as ruled.
+- **No person's name in any export** (f3d entries read through zstd, STEP, CSV, DXF). The f3d files carry Fusion's own machine paths, as every f3d made on this Mac does.
+- **Roll-up and packing** (the Lead's go-ahead, 2026-11-01): DR's line is the block as it ships, and the loose panel and felt have their own line and packing piece 2-23; the guide fits them in step 14, right after the riser.

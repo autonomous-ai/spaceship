@@ -48,34 +48,49 @@
    "expression": "pod_h - dr_skin_t"
   },
   {
-   "component": "351305 FRONT - DECOR ACCESS PANEL - DR",
+   "component": "351305 FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE",
    "index": 3,
    "expression": "dr_strip_x0"
   },
   {
-   "component": "351305 FRONT - DECOR ACCESS PANEL - DR",
+   "component": "351305 FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE",
    "index": 5,
    "expression": "fg_vis_zt + dr_band_dz"
   },
   {
-   "component": "351305 FRONT - DECOR ACCESS PANEL - DR",
+   "component": "351305 FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE",
    "index": 4,
-   "expression": "-pod_d / 2 + decor_d - dr_back_t + dr_acc_t"
+   "expression": "dr_acc_face_y"
   },
   {
-   "component": "351303 FRONT - DECOR INNER PANEL - DR",
+   "component": "351305 FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE",
+   "index": 1,
+   "expression": "-pod_d / 2 + decor_d - dr_back_t + dr_pnl_gap"
+  },
+  {
+   "component": "351304 FRONT - DECOR INNER PANEL FELT - DR",
    "index": 3,
    "expression": "dr_col_x0"
   },
   {
-   "component": "351303 FRONT - DECOR INNER PANEL - DR",
+   "component": "351304 FRONT - DECOR INNER PANEL FELT - DR",
    "index": 5,
    "expression": "fg_vis_zt"
   },
   {
    "component": "351304 FRONT - DECOR INNER PANEL FELT - DR",
    "index": 4,
-   "expression": "-pod_d / 2 + decor_d - dr_back_t + dr_skin_t + felt_t"
+   "expression": "dr_acc_face_y + felt_t"
+  },
+  {
+   "component": "848013 SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA",
+   "index": 4,
+   "expression": "-pod_d / 2 + decor_d - dr_back_t + dr_pnl_gap"
+  },
+  {
+   "component": "848013 SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA",
+   "index": 3,
+   "expression": "ab_x + dr_seal_w / 2"
   },
   {
    "component": "351402 FRONT - AIR INTAKE RISER - DR - RESERVED AIR SPACE",
@@ -113,32 +128,32 @@
    "expression": "op_z0 + op_h"
   },
   {
-   "component": "351306 FRONT - DECOR FRAME - DR",
+   "component": "352312 FRONT - DECOR FRAME DR - BACK RING DIAGONAL",
    "index": 0,
    "expression": "((fg_dc + dr_skin_t - fg_dnz * (fg_vis_zt)) / fg_dnx)"
   },
   {
-   "component": "351306 FRONT - DECOR FRAME - DR",
+   "component": "352308 FRONT - DECOR FRAME DR - BACK RING BOLT LINE",
    "index": 3,
    "expression": "pod_w / 2 - dr_skin_t"
   },
   {
-   "component": "351306 FRONT - DECOR FRAME - DR",
+   "component": "352302 FRONT - DECOR FRAME DR - FRONT RING FACET SIDE",
    "index": 1,
    "expression": "-pod_d / 2 + dr_skin_t"
   },
   {
-   "component": "351306 FRONT - DECOR FRAME - DR",
+   "component": "352310 FRONT - DECOR FRAME DR - BACK RING DT JOINT",
    "index": 4,
    "expression": "-pod_d / 2 + decor_d - dr_back_t"
   },
   {
-   "component": "351306 FRONT - DECOR FRAME - DR",
+   "component": "352301 FRONT - DECOR FRAME DR - FRONT RING BOTTOM",
    "index": 2,
    "expression": "fg_vis_zb"
   },
   {
-   "component": "351306 FRONT - DECOR FRAME - DR",
+   "component": "352309 FRONT - DECOR FRAME DR - BACK RING TOP",
    "index": 5,
    "expression": "pod_h - dr_skin_t"
   }

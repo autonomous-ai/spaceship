@@ -1,6 +1,6 @@
 # FRONT decor blocks: every part a component (D-120)
 
-Status: PLAN (2026-11-01). Built on this drawings branch in one pass, after Control allocates the member numbers (the Lead passed FRONT's member list to Control on 2026-11-01). Method proved on one sample block first (DT, the smallest frame), then DR and DL.
+Status: DONE (2026-11-01): DT first as the sample, then DL, then DR with F09 (352322, #287); each block's results are in `BUILD-RECORD.md` and `EDIT-TEST-RECORD.md`. DR's mass changed with D-130 (its one removable 3 mm aluminium inner face panel and felt, 8.08 kg, ship loose), not with D-120. The plan as written, for the record:
 
 ## What D-120's check finds today (C06, on #105)
 

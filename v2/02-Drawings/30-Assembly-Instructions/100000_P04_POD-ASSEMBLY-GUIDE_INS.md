@@ -9,7 +9,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## Result
 
-1. **Two people, one 5 mm hex key, 23 steps: about 135 minutes (4.5 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
+1. **Two people, one 5 mm hex key, 23 steps: about 140 minutes (4.7 person-hours)** on the layout study's unit times. That is inside REQ-ASM-01's 4-hour limit and well over its "about 1 hour" target; the timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **92 bolts of the joints register, each captive in its part but the roof grille's 4, which come in a bag with the grille (J-AIR-03): 80 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
@@ -153,10 +153,10 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 ![Step 10](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png)
 
 - **Time:** about 13 min for 2 people.
-- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK ASSY - DR (18.9 kg).
+- **Parts:** **2-01** FRONT - FIXED GLASS UNIT (28.7 kg), **2-03** FRONT - DECOR BLOCK ASSY - DR (13.6 kg).
 - **Fasteners:** 6 × 838001 M6 × 16 (J-FRONT-01); DR stands on its spigots on its support, no bolts (J-FRONT-02). Tool: the 5 mm hex key.
 - **Person A:** Opens the crate. With B, tilts the fixed glass up on its padded long edge, both suction lifters at its top edge, onto the padded glass rest; then both carry it upright and drop its bottom edge into the U-channel already fitted on the sill, onto its setting blocks. A clamps the 2 glass stays from the kit on its top edge and sets their props on the base band, so the glass stands on its own.
-- **Person B:** With A, carries DR (2.3 m, 18 kg) to the right of the opening; both slide it in from the side so its channels take the glass's right and diagonal edges, back onto its stops. Drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). Only then do the stays come off.
+- **Person B:** With A, carries DR (2.3 m, about 14 kg; its inner face panel comes later, in step 14) to the right of the opening; both slide it in from the side so its channels take the glass's right and diagonal edges, back onto its stops. Drives 3 bolts into DR from each of R1's and R2's front bays (6); DR stands on its spigots on its support (J-FRONT-02). Only then do the stays come off.
 - **Caution:** Nobody carries DR alone and nobody holds the glass by hand while DR comes in: the stays hold the glass, both people carry DR (2.3 m; the 2-person rule).
 - **Check before the next step:** Glass seated in all three channels so far, its free edge plumb; DR on its stops; both stays back in the kit. Do this before the air column: DR's right-hand bolts can't be reached once it stands (J-FRONT-01).
 
@@ -191,14 +191,14 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Person B:** Hands parts from the electrical kit and checks each connector against the wiring diagram (ELECTRICAL design).
 - **Check before the next step:** Every seam connector latched before any cassette closes its bay.
 
-### Step 14. Air parts in DR: the intake riser with its supply fan box
+### Step 14. Air parts in DR: the intake riser with its supply fan box, then DR's inner face panel
 
-- **Time:** about 4 min for 2 people.
-- **Parts:** **2-17** AIR - SUPPLY FAN BOX (13.4 kg).
-- **Fasteners:** their fixings in DR (AIR and FRONT design, on hold).
-- **Person A:** Before the wall linings (DR's inner face can't come off past R1's and R2's cassettes), lifts DR's removable inner face off; with B, slides in the intake riser, its supply fan box (2 fans) joined at its top in the factory, down to its foot over the mesh space (D-87).
-- **Person B:** Mates the fan box's plug-in connector; refits the inner face.
-- **Check before the next step:** Riser foot sits over the opening; fan box connector latched; inner face back on all round.
+- **Time:** about 9 min for 2 people.
+- **Parts:** **2-17** AIR - SUPPLY FAN BOX (13.4 kg), **2-23** FRONT - DECOR INNER FACE PANEL - DR - REMOVABLE (8.1 kg).
+- **Fasteners:** their fixings in DR (AIR and FRONT design, on hold); 21 M6 × 16 socket heads with their washers into DR's frame (5 mm key), then the felt plugs. Tool: the 5 mm hex key.
+- **Person A:** Before the wall linings (DR's inner face panel can't go on past R1's and R2's cassettes), with B, slides the intake riser, its supply fan box (2 fans) joined at its top in the factory, in through DR's open back, down to its foot over the mesh space (D-87).
+- **Person B:** Mates the fan box's plug-in connector. Then, with A, offers DR's inner face panel (2-23, shipped loose, D-130) up onto its stops and drives its 21 M6 x 16 socket heads with their washers into the frame's rivnuts (5 mm key), and pushes a felt plug into each of the 10 holes in its felt.
+- **Check before the next step:** Riser foot sits over the opening; fan box connector latched; the panel's seal squeezed all round, all 21 screws in, every felt plug flush.
 
 ### Step 15. Wall linings: 8 cassettes
 
@@ -207,7 +207,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 8 min for 2 people.
 - **Parts:** **1-13** LINING - CASSETTE - SIDE LOWER - RH (10.3 kg), **1-14** LINING - CASSETTE - SIDE UPPER - RH (9.9 kg), **1-15** LINING - CASSETTE - SIDE LOWER - LH (10.3 kg), **1-16** LINING - CASSETTE - SIDE UPPER - LH (9.9 kg), **1-17** LINING - CASSETTE - BACK LOWER - B1 (8.0 kg), **1-18** LINING - CASSETTE - BACK LOWER - B2 (8.0 kg), **1-19** LINING - CASSETTE - BACK UPPER - B3 (8.4 kg), **1-20** LINING - CASSETTE - BACK UPPER - B4 (8.4 kg).
 - **Fasteners:** none.
-- **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips. DR's inner face is already back on: it can't come off past R1's and R2's cassettes (the PM's ruling).
+- **Person A:** Hangs R1's and R2's cassettes first (the air column needs them), then L1, L2, B1 to B4, each on its clips. DR's inner face panel is already on: it can't come off past R1's and R2's cassettes (the PM's ruling).
 - **Person B:** Hands each cassette up felt-out and lines it up with the hook-and-loop; checks each clip has locked.
 - **Check before the next step:** Every bolt in its bay was driven before the bay is closed. Each cassette floats: it touches nothing but its clips.
 
@@ -317,6 +317,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 10 | DR on its support behind the mesh band piece | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | D-62: the block's own support carries it; the mesh carries no load |
 | 11 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD in the register (D-46, ISS-002) | time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM) |
 | 14 | Intake riser and supply fan box in DR | AIR and FRONT | 0 | not designed yet (HOLD) | HOLD in the register | time is in the step |
+| 14 | DR's inner face panel on DR's frame | FRONT | 21 | M6 × 16 socket heads (ISO 4762) on plain 12 mm washers (ISO 7089), into the frame's rivnuts | not in the register's count yet: Joints adds it (D-130; the washer by PM ruling 2026-11-01) | the panel ships loose (2-23) and goes on after the air unit; one felt plug over each of the 10 heads under the felt |
 | 16 | Air column on DR and the floor | AIR | 0 | none on site: 2 hook studs set in the factory, 2 spigots | registered: J-AIR-02 (0 on site) | D-87: the column hangs on its hook studs |
 | 20 | Light shelf | INTERIOR | 0 | not in INTERIOR's parts list yet (HOLD) | HOLD (D-70) | time is in the step |
 | 23 | Ledge and screen rail | INTERIOR | 0 | brackets and rail on HOLD; screws not listed yet | HOLD (D-70, IF-16) | time is in the step |
@@ -338,7 +339,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 11 | Door (before DT) | 1 | 0 | 0 | 7.3 | 1.0 | **9.0** |
 | 12 | Top decor block DT, from above | 1 | 4 | 0 | 2.3 | 1.2 | **3.4** |
 | 13 | Electrics, first fix (power off) | 1 | 0 | 0 | 0.0 | 2.3 | **1.3** |
-| 14 | Air parts in DR: the intake riser with its supply fan box | 1 | 0 | 0 | 2.3 | 2.3 | **4.0** |
+| 14 | Air parts in DR: the intake riser with its supply fan box, then DR's inner face panel | 2 | 0 | 21 | 3.7 | 7.5 | **8.5** |
 | 15 | Wall linings: 8 cassettes | 8 | 0 | 0 | 0.0 | 14.0 | **8.0** |
 | 16 | Air column and supply cartridge | 2 | 0 | 0 | 4.7 | 2.3 | **6.7** |
 | 17 | Soffit and exhaust cartridge | 2 | 2 | 0 | 4.7 | 1.9 | **6.5** |
@@ -348,7 +349,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 21 | Power on and self-test: fans run | 0 | 0 | 0 | 3.0 | 0.0 | **3.4** |
 | 22 | Final check and film | 0 | 0 | 0 | 10.0 | 1.5 | **12.4** |
 | 23 | Work-wall ledge and screen rail | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
-|  | **Clock, steps 1 to 22** |  | 92 | 0 |  |  | **135** |
+|  | **Clock, steps 1 to 22** |  | 92 | 21 |  |  | **140** |
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
 
@@ -358,7 +359,7 @@ Each step's time is its 2-person work plus half its 1-person work (shared betwee
 4. Step 8 (Ceiling: C1, C2): 10 min.
 5. Step 11 (Door (before DT)): 9 min.
 
-**D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the 135 above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
+**D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to the 140 above.** The PM took four of the five fixes priced on the earlier model, and they are in the steps now:
 
 | Fix | Steps | Priced on the 168-minute model | Owner |
 |---|---|---:|---|
@@ -393,6 +394,7 @@ Unit times used:
 | `t_dr_slide_s` | 120 s | assumption | this plan | slide DR in from the side onto the fixed glass's right and diagonal edges and onto its stops |
 | `t_slide_long_s` | 120 s | assumption | this plan | slide one long air part (riser or cartridge) into its housing, 2 people |
 | `t_face_s` | 60 s | assumption | this plan | lift one felt-covered face or section off, or back on |
+| `t_plug_s` | 5 s | assumption | this plan | push one felt plug into its hole over a panel screw head (DR's inner face panel, D-130) |
 | `t_catch_s` | 60 s | assumption | this plan | hook one ceiling cassette safety catch (HOLD, D-47) |
 | `t_light_shelf_s` | 600 s | assumption | this plan | fit and plug the light shelf along the wall tops (D-70; INTERIOR 810201, its fixings not listed yet) |
 | `t_ledge_two_s` | 120 s | assumption | this plan | hold the 1000 mm ledge in place while it is fixed (D-70; INTERIOR 810101) |
