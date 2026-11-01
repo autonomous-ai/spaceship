@@ -7,6 +7,7 @@
 import os
 import sys
 import types
+import struct
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -55,8 +56,19 @@ class Sketches:
 
 
 class View:
-    def __init__(self, inp, stuck):
-        self._style, self.scaleValue, self.stuck = "HIDDEN", inp.viewParameters.scaleValue, stuck
+    def __init__(self, inp, stuck, single=False, keeps_scale=None):
+        self._style, self.stuck, self.single, self.keeps_scale = "HIDDEN", stuck, single, keeps_scale
+        self.scaleValue = inp.viewParameters.scaleValue
+
+    @property
+    def scaleValue(self):
+        return self._scale
+
+    @scaleValue.setter
+    def scaleValue(self, v):
+        # single: Fusion keeps the scale in single precision (live 2026-11-01); keeps_scale: it won't change
+        v = self.keeps_scale if self.keeps_scale is not None else v
+        self._scale = struct.unpack("f", struct.pack("f", v))[0] if self.single else v
 
     @property
     def style(self):
@@ -69,7 +81,7 @@ class View:
 
 
 class Sheet:
-    def __init__(self, w=594.0, h=420.0, insert_ok=True, view_stuck=False, dims=0):
+    def __init__(self, w=594.0, h=420.0, insert_ok=True, view_stuck=False, dims=0, single=False, keeps_scale=None):
         self.width, self.height = w, h
         self.inserted, self.made, self.dims = [], [], []
         self.images = types.SimpleNamespace(createInput=lambda: types.SimpleNamespace(),
@@ -77,7 +89,7 @@ class Sheet:
         self.sketches = Sketches()
         self.views = types.SimpleNamespace(
             createBaseViewInput=lambda: types.SimpleNamespace(viewParameters=types.SimpleNamespace()),
-            add=lambda inp: self.made.append(View(inp, view_stuck)) or self.made[-1])
+            add=lambda inp: self.made.append(View(inp, view_stuck, single, keeps_scale)) or self.made[-1])
         self.drawingDimensions = types.SimpleNamespace(
             count=dims, addLinearDimension=lambda a, b, p, al: self.dims.append((a, b, p, al)) or "dim")
 
@@ -186,6 +198,23 @@ class HelperTests(unittest.TestCase):
         v = fd.base_view(s, "FRONT", 0.05, (265.0, 410.0))
         self.assertEqual(v.style, "VISIBLE")                            # not the HIDDEN it came with
         self.assertEqual(s.made[0].scaleValue, 0.05)
+
+    def test_a_scale_kept_in_single_precision_counts_as_set(self):
+        # live 2026-11-01, GA sheet 1: the isometric view at 0.0375 was refused, "the view's scale stays
+        # 0.0375 after setting 0.0375"; 1:10 and 1:5 would have been refused the same way
+        for scale in (0.0375, 0.1, 0.2, 1 / 15.0, 0.05, 0.5):
+            s = self.sheet(single=True)
+            v = fd.base_view(s, "FRONT", scale, (265.0, 410.0))
+            if scale != 0.5:                       # 0.5 is exact in single precision; the others read back off
+                self.assertNotEqual(v.scaleValue, scale)
+            self.assertTrue(fd.scale_is(v.scaleValue, scale), scale)
+
+    def test_a_view_that_keeps_another_scale_is_still_an_error(self):
+        with self.assertRaises(RuntimeError) as cm:
+            fd.base_view(self.sheet(keeps_scale=0.05), "FRONT", 0.0375, (265.0, 410.0))
+        self.assertIn("0.05", str(cm.exception))
+        self.assertFalse(fd.scale_is(0.05, 0.0375))
+        self.assertFalse(fd.scale_is(0.0375 * (1 + 1e-5), 0.0375))     # a real difference, however small
 
     def test_a_view_that_keeps_hidden_lines_is_an_error(self):
         with self.assertRaises(RuntimeError):
