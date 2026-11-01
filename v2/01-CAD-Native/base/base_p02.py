@@ -23,7 +23,7 @@ P02_PARAMS = [
     ("rail_set", "20 mm", "mm", "assumption", "rail set back behind the mesh, so it blocks none of the mesh face"),
     ("cp_t", "2 mm", "mm", "assumption", "closing plate between the intake space and the pod (D-62)"),
     ("fr_stub", "32 mm", "mm", "confirmed",
-     "the intake's band stub left of the mesh, carrying the inline key 111211 (30 long since the Joints Engineer's change of 2026-11-01) "
+     "the intake's band stub left of the mesh, carrying the inline key 111215 (111211's first layout under its own number since D-144; 30 long) "
      "behind no mesh, with 2 to spare (PM ruling 2026-11-01: the joint moves left of the mesh)"),
     ("x_fr_joint", "pod_w / 2 - dr_xc - mesh_front - fr_stub", "mm", "confirmed",
      "the FR1 / intake joint, X 915 (PM rulings 2026-11-01: X 920 for the 25 mm key, then X 915 for the 30 mm key): "
@@ -79,7 +79,7 @@ F_FRONT = "(%s / (%s + %s))" % (DYR, LR, DXR)       # inner-corner shift per uni
 F_SIDE = "(%s / (%s + %s))" % (DXR, LR, DYR)        # same at the side band's mitre (0.446)
 X_MESH0 = "(%s - dr_xc - mesh_front)" % XR_          # the mesh's left end, X 947
 X_FR0 = "(%s + fix_xbl)" % XL_                       # FR1's left end at the door opening, X 218
-# FR1 / intake joint (PM ruling 2026-11-01): 27 mm left of the mesh, so the inline key 111211 sits in
+# FR1 / intake joint (PM ruling 2026-11-01): 27 mm left of the mesh, so the inline key 111215 (D-144) sits in
 # a short band stub of the intake under the glass's right end and no key sits behind the mesh
 X_FR_JOINT = "x_fr_joint"
 
@@ -173,7 +173,7 @@ def step_p02_front(design):
     plan_tube(design, "fr1", "FRONT FIXED GLASS", fr1, bore_note,
               closed_near=(v(X_FR_JOINT), v("-pod_d / 2 + band_t / 2")))
     # FR1 is the keyhole piece of the inline joint (joints register PR #99: the intake carries
-    # 111211 in its stub's end and FR1 goes on last, down onto the studs)
+    # 111215, D-144, in its stub's end and FR1 goes on last, down onto the studs)
     keyholes_x(design, "fr1", X_FR_JOINT, "-pod_d / 2 + band_t / 2", -1, "FR1 END")    # through the end plate
     print("P02: front band pieces built (FL1, FL2 with its cap, FR1 with its keyed end plate)")
 
@@ -181,7 +181,7 @@ def step_p02_front(design):
 def step_p02_fr1(design):
     """FR1 under the fixed glass, X 218.5 to x_fr_joint: a 100 x 40 x 1.5 tube, open at the door
     opening (bought end cap 118003) and closed at the joint by its band_wall end plate, which takes the
-    keyholes for the intake's inline key 111211 (FR1 goes on last, down onto the studs). Its glides
+    keyholes for the intake's inline key 111215 (D-144; FR1 goes on last, down onto the studs). Its glides
     are levelled by turning their base: FR1's top is in view in front of the glass, so it has no key
     holes on top (the glide's spec: spanner flats on the base, HOLD)."""
     v = lambda e: ev(design, e)  # noqa: E731

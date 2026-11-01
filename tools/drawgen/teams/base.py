@@ -55,7 +55,7 @@ BASE_FR1 = {
                     "C": "the outer face (Y -850, the band's front line)"},
     "notes": ["Door end (X 218.5): square and open, closed by the flat end cap 118003, in view at the door opening "
               "(D-132). Keyed end (X 915): square, closed by a 1.5 end plate welded in flush, with the 2 keyholes for "
-              "the intake's inline key 111211 (joints register J-BASE-02).",
+              "the intake's inline key 111215 (joints register J-BASE-02, D-144).",
               "No holes in the top wall: it is in view in front of the glass, so the 2 glides are levelled by turning "
               "their base (BASE feature rationale FB-24)."],
     "tolerance": "hole positions ±0.2 from B along the band and from C across it (joints register R-J6); keyhole seats "

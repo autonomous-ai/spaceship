@@ -80,7 +80,8 @@ def expected_back_corner(b, design):
     v = lambda e: b["ev"](design, e)  # noqa: E731
     yc = v("pod_d / 2 - band_t / 2")
     xf = -v("pod_w / 2 - band_t + band_wall + ck_x - ck_e")
-    fix = [(xf, yc - v("ck_y / 2 - ck_e")), (xf, yc + v("ck_y / 2 - ck_e"))]
+    xf2 = -v("pod_w / 2 - band_t + band_wall + ck_x - ck_e2")      # D-144: the stepped hole
+    fix = [(xf, yc + v("ck_fy")), (xf2, yc - v("ck_fy"))]
     studs = [(yc, v("glide_h + band_wall + %s" % z)) for z in ("st_z1", "st_z2")]
     slot = [(yc, v("glide_h + band_wall + st_z2 + bs_end"))]
     return fix, studs, slot

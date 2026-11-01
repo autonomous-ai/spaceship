@@ -127,6 +127,12 @@ BASE_PARAMS = [
      "back corner key height, standing on the band's bottom wall: 75 (the Joints Engineer, via the Lead 2026-11-01)"),
     ("ck_e", "10.5 mm", "mm", "source",
      "key fixing holes 10.5 from its back face (inside the band) and 7.0 either side of its centre line, so 10.5 from its side faces (joints register #127, J-BASE-02)"),
+    ("ck_fy", "6 mm", "mm", "source",
+     "back key 111211's fixing holes 6.0 either side of its centre line, so each 7.0 hole stays 14.0 from the side band's cut "
+     "end at Y 850 with the key turned either way (D-144: no edge exception; the Joints Engineer's layout, corner-keys.csv)"),
+    ("ck_e2", "17.8 mm", "mm", "source",
+     "back key 111211's second fixing hole 17.8 from its back face (stepped 7.3 from the first), so the two 838010 flanges "
+     "(up to Ø13.6) stand 14.05 apart (D-144, corner-keys.csv)"),
     ("ck_fix_hole", "7 mm", "mm", "source",
      "the keys' fixing screw holes in the carrier's bottom wall, Ø7.0 (J-BASE-02); the side bands carry the back keys since D-129"),
     ("ck_tap", "5 mm", "mm", "source", "M6 tap drill in the key (J-BASE-02)"),
@@ -761,7 +767,7 @@ def back_key_holes(design, key, sign, label):
     """D-129 (joints register J-BASE-02, FR-15, corner-keys.csv): the back corner key 111211 sits in this
     side band's back end, its stud face against the inner wall from inside. 2 x Ø7.0 through the inner
     wall for its hook stud bolts, on the back band's centre line at the studs' heights, and 2 x Ø7.0 in
-    the bottom wall for its fixing screws, ck_e from the key's back face and ck_y / 2 - ck_e either side
+    the bottom wall for its fixing screws, 6.0 either side of its centre line, ck_e and ck_e2 from its back face (D-144)
     of the centre line. One-point hole sketches, patterned (two circles in one YZ sketch
     over-constrained, 2026-11-01). sign: -1 for the left side band, +1 for the right."""
     v = lambda e: ev(design, e)  # noqa: E731
@@ -777,10 +783,14 @@ def back_key_holes(design, key, sign, label):
     hole(design, key, pl, "BACK KEY HOOK STUD BOLTS - %s (111211, D-129)" % label, (v(x_in), v(yk), v(z1)),
          [(Y, yk), (Z, z1)], "st_hole", "band_wall", into, ("zConstructionAxis", "2", "st_z2 - st_z1"))
     bot = [p for p in c.constructionPlanes if p.name == "PLANE - BAND BOTTOM Z = glide_h"][0]
-    xf = "%s(pod_w / 2 - band_t + band_wall + ck_x - ck_e)" % s
-    yf = "%s - band_t / 2 - (ck_y / 2 - ck_e)" % YB
-    hole(design, key, bot, "BACK KEY FIXING - %s (111211, D-129)" % label, (v(xf), v(yf), v("glide_h")),
-         [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z, ("yConstructionAxis", "2", "ck_y - 2 * ck_e"))
+    # D-144: two holes, 6.0 either side of the key's centre line, one ck_e and one ck_e2 from its back face; the key
+    # is turned 180 deg at the right corner, so the stepped hole goes to the other side there
+    up_y = "+" if sign < 0 else "-"                         # the key's +y side, as seen in the pod
+    for lab, e, side in (("1", "ck_e", up_y), ("2", "ck_e2", "-" if up_y == "+" else "+")):
+        xf = "%s(pod_w / 2 - band_t + band_wall + ck_x - %s)" % (s, e)
+        yf = "%s - band_t / 2 %s ck_fy" % (YB, side)
+        hole(design, key, bot, "BACK KEY FIXING %s - %s (111211, D-129, D-144)" % (lab, label), (v(xf), v(yf), v("glide_h")),
+             [(X, xf), (Y, yf)], "ck_fix_hole", "band_wall", Z)
 
 
 def cut_prism(comp, body, plane, sk, depth_expr, want_dir, name):
@@ -1155,8 +1165,8 @@ def hardware_points(design):
         out.append((host, "key", (xk, yk, zk), krot))
         for zz in ("st_z1", "st_z2"):
             out.append((host, "bolt", (xw - sign * v("st_gap"), yk, zk + v(zz)), srot))
-        for dy in (-1, 1):
-            out.append((host, "bscrew", (xk - sign * v("ck_e"), yk + dy * v("ck_y / 2 - ck_e"), v("glide_h")), "z-"))
+        for e, dy in (("ck_e", -sign), ("ck_e2", sign)):           # D-144: the key's (10.5, +6) and (17.8, -6)
+            out.append((host, "bscrew", (xk - sign * v(e), yk + dy * v("ck_fy"), v("glide_h")), "z-"))
         out.append((host, "cap", (sign * v("pod_w / 2 - band_t / 2"), v("%s - cap_t / 2" % YB), v("glide_h")), None))
     # glides, screwed into the bands at the factory
     xg = v("%s + band_t / 2 + gl_dx" % XL)
