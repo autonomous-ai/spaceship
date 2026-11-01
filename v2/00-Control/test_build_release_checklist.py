@@ -148,6 +148,38 @@ class MadeParts(unittest.TestCase):
         extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked", chars)
         self.assertEqual((extra[0]["fai"], extra[0]["gaps"]), (["K-J01"], ["BOM row", "drawing"]))
 
+    def test_a_tabulated_drawing_covers_a_part_with_no_bom_row(self):
+        # 111212 to 111214 have STEP files and no BOM row; 111211's tabulated sheet lists them (D-89, #215)
+        file_map = files("211102_P01_WALL-PANEL-FRAME-RH_CAD.f3d", "211102_P01_WALL-PANEL-FRAME-RH_STEP.step")
+        chars = rc.fai_plan(PLAN, BOM)[0]
+        extra = rc.files_only(rc.files_by_pn(file_map), [], file_map, {}, "unlocked", chars, {"211102": "211101"})
+        self.assertEqual((extra[0]["dwg"], extra[0]["gaps"]), ("on 211101, tabulated (D-89)", ["BOM row"]))
+        self.assertIn("| on 211101, tabulated (D-89) |", rc.render(extra, [], [], [], "main", "unlocked", {}, ([], [], []),
+                                                                   "2026-11-01"))
+
+    def test_the_real_run_passes_the_tabulated_cover_to_those_lines(self):
+        # main() hands the same cover to the lines with no BOM row; a run that stops passing it fails here
+        import inspect
+        import tempfile as _tempfile
+        seen, cover = {}, {"211102": "211101"}
+
+        class Stop(Exception):
+            pass
+
+        def spy(*args, **kw):
+            seen["tab_cover"] = inspect.signature(real).bind(*args, **kw).arguments.get("tab_cover")
+            raise Stop
+
+        real, old = rc.files_only, (rc.tabulated_cover, rc.d125_strips)
+        rc.files_only, rc.tabulated_cover, rc.d125_strips = spy, (lambda by_pn, text_of: cover), (lambda root=None: {})
+        try:
+            with _tempfile.TemporaryDirectory() as d, self.assertRaises(Stop):
+                rc.main(["--screen", "unlocked", "--out", str(Path(d, "release-checklist.md"))])
+        finally:
+            rc.files_only = real
+            rc.tabulated_cover, rc.d125_strips = old
+        self.assertIs(seen.get("tab_cover"), cover)
+
 
 class BoughtParts(unittest.TestCase):
     def test_register_named_part_with_a_test_is_done(self):
