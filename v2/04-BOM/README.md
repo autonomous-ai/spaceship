@@ -68,7 +68,7 @@ Every number in the outputs carries the status its parts list gives it. Quantiti
 
 ## Numbers the master BOM gives out (D-120)
 
-Under D-120 every part is its own component with its own number: a frame becomes an assembly of member components and a panel's fill becomes separate pieces. `number-allocation.csv` gives those numbers out now, so each team uses them when it splits its parts (WALL and CEILING do it with D-117, after the owner's materials answer).
+Under D-120 every part is its own component with its own number: a frame becomes an assembly of member components and a panel's fill becomes separate pieces. `number-allocation.csv` gives those numbers out now, so each team uses them when it splits its parts (WALL and CEILING do it with D-117; the owner's materials answer is in, D-122).
 
 - **What each row says.** The number, its name and Vietnamese name, kind (MP made part), team, the part it belongs to, quantities, and its basis: section, length and holes, or the fill piece's size, from the team's own list with its revision. Status ALLOCATED or CANCELLED.
 - **The bands** (conventions section 6, parts we make 1000 to 7999). Frame members take the unused 2xxx block. WALL: `212FMM`, where F is the frame (1 to 4 the side frames 211101 to 211104, 5 and 6 the back frames 211201 and 211202) and MM the member. CEILING: `412FMM`, with F 1 for C1 (411101), 2 for C2 (411102) and 0 for a member common to both. Fill pieces stay in the fill blocks after the panel numbers: `2115PJ` for side panel P, `2116PJ` for back panel P, J the piece.
