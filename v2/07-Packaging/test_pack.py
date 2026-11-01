@@ -291,18 +291,54 @@ def test_d133_us_mains():
 
 
 def test_seam_prop():
-    # the Lead's ruling 2026-11-01: a marked packing batten props C1's seam corner in step 7 until the seam pins are in;
-    # it is packing (911004 in the tare), not a part of the pod and not a labelled piece
+    # D-152: the seam prop is its own 45 x 45 packing timber, labelled and marked, in a lane of its own in tier 3. In
+    # step 7 it goes under C1's seam corner while a hand keeps that corner up, so it never stands alone on its end, and
+    # it comes away after the seam pins. It is packing (911004 in the tare), not a part of the pod and not a piece
     prop = next(it for it in pack.PACKAGING if it["pn"] == "911004")
     assert prop["pallet"] == 2 and prop["wood"] and prop["kg"] == pack.MINE["prop_kg"].value, prop
+    assert "45 X 45" in prop["name"] and "LABELLED AND MARKED" in prop["name"] and pack.MINE["prop_w"].value == 45, prop
     assert pack.MINE["prop_h"].value == pack.sk("pod_h") - pack.sk("outer_t")
+    m = pack.Model()
+    tiers, _h = m.tiers2()
+    lanes = [(t["name"], ln) for t in tiers for ln in t["lanes"] if any(it["tag"] == "PROP" for it in ln["items"])]
+    assert len(lanes) == 1 and lanes[0][0].startswith("Tier 3"), lanes
+    ln = lanes[0][1]
+    assert ln["width"] == 45 and ln["items"][0]["along"] == pack.MINE["prop_h"].value and ln["ok"], ln
+    t3 = next(t for t in tiers if t["name"].startswith("Tier 3"))
+    assert t3["ok"] and t3["h"] >= 45, t3["width"]
     ceiling = next(s for s in pack.STEPS if s["title"].startswith("Ceiling"))
     srcs = [o["src"] for o in ceiling["ops"]]
-    assert srcs.index("t_prop_s") < srcs.index("t_overhead_rest_s") < srcs.index("t_prop_off_s"), srcs
-    assert "SEAM PROP" in ceiling["A"] and "seam prop away" in ceiling["B"]
+    assert srcs.index("t_overhead_rest_s") < srcs.index("t_prop_s") < srcs.index("t_prop_off_s"), srcs
+    assert next(o for o in ceiling["ops"] if o["src"] == "t_prop_s")["who"] == 2   # a hand on the corner meanwhile
+    assert "SEAM PROP" in ceiling["A"] and "keeps a hand under C1's seam corner" in ceiling["A"], ceiling["A"]
+    assert "seam prop away" in ceiling["B"]
     assert not [p for p in pack.PIECES if "PROP" in p.name]
-    m = pack.Model()
     assert prop in m.packaging(2) and abs(m.tare(2) - sum(it["kg"] * it["qty"] for it in m.packaging(2))) < 1e-9
+    plan = pack.outputs(m)[pack.OUT_PLAN]
+    assert "SEAM PROP 911004" in plan and "Its own 45 × 45 timber" in plan
+
+
+def test_kick_strip_brushes():
+    # the PM's ruling 2026-11-01: the kick strip's two end brushes ship in the door's kit bag with an alcohol wipe and are
+    # pressed on in step 10, once the glides are set and the door hangs; about a minute for both in D-148's clock
+    door = next(s for s in pack.STEPS if s["title"].startswith("Door"))
+    band = next(s for s in pack.STEPS if s["title"] == "Base band")
+    assert band["n"] < door["n"]
+    brush = [o for o in door["ops"] if o["src"] == "t_brush_s"]
+    assert len(brush) == 1 and brush[0]["n"] == 2 and brush[0]["secs"] * brush[0]["n"] == 60, brush
+    srcs = [o["src"] for o in door["ops"]]
+    assert srcs.index("t_door_prehung_min") < srcs.index("t_brush_s"), srcs
+    for words in ("alcohol wipe", "stands each brush on the room floor", "presses it firmly along its whole length", "368008"):
+        assert words in door["B"], words
+    note = pack.PIECE["2-02"].note
+    assert "kit bag" in note and "368008" in note and "hinge-end brush" in note and "alcohol wipe" in note, note
+    assert [f for f in pack.OTHER_FIXINGS if f["step"] == door["n"] and "end brushes" in f["where"] and f["count"] == 0]
+    without = [dict(s, ops=[o for o in s["ops"] if o["src"] != "t_brush_s"]) for s in pack.STEPS]
+    delta = pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS) - pack.clock_min(without, pack.OTHER_FIXINGS)
+    assert abs(delta - 60 / 2 * (1 + pack.lay("inefficiency")) / 60) < 1e-9, delta   # one person's minute, shared
+    guide = pack.outputs(pack.Model())[pack.OUT_GUIDE]
+    assert "the kick strip's two end brushes from the door's kit bag" in guide and "HOLD-25" in guide
+
 
 def test_install_sheet_numbers():
     # the install sheet (IF-17): room height from the pod's height and the roof work, the floor from the glides' range

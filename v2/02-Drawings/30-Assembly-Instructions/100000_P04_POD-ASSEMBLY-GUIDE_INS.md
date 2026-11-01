@@ -9,7 +9,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ## Result
 
-1. **Two people, a cordless driver with a 5 mm hex bit and the kit's 5 mm key, 22 steps: about 112 minutes (3.7 person-hours)** on the layout study's unit times and the PM's rulings of 2026-11-01. That is inside REQ-ASM-01's 4-hour limit; the PM's target for v2 is about 104 minutes (REQ-ASM-01 asks about 1 hour). The timed trial on the prototype decides, and section 6 shows where the time goes.
+1. **Two people, a cordless driver with a 5 mm hex bit and the kit's 5 mm key, 22 steps: about 113 minutes (3.8 person-hours)** on the layout study's unit times and the PM's rulings of 2026-11-01. That is inside REQ-ASM-01's 4-hour limit; the PM's target for v2 is about 104 minutes (REQ-ASM-01 asks about 1 hour). The timed trial on the prototype decides, and section 6 shows where the time goes.
 2. **92 bolts of the joints register, each captive in its part but the roof grille's 4, which come in a bag with the grille (J-AIR-03): 80 × 838001 (M6 × 16) and 12 × 838002 (M6 × 25) pins and lock screws**, each with its 838004 washer already on. They match the register joint by joint (section 5). Every site fixing is in the register now: the corner keys hook in and DL and DR stand on spigots, with no site bolts (J-BASE-02, J-FRONT-02); the door hinges and the air parts' fixings in DR stay on hold there.
 3. **Every part weighs 20 kg or less except the glass** (D-03). The door unit (48.6 kg) and the fixed glass (28.7 kg) are carried by both people with 2 suction lifters.
 4. **Order rules:** all walls before the front; the ceiling closes by order (its side walls' top corner bolts stay finger-tight until both halves are in, R-J9); the door hangs before DT (PM ruling); DR's bolts are driven before the air column stands (J-FRONT-01); every bolt before the linings that cover its bay.
@@ -56,7 +56,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Parts:** **2-21** POD - INSTALLATION KIT (OPEN FIRST) (3.5 kg).
 - **Fasteners:** none.
 - **Person A:** Cuts the straps and film on pallet 2 and hands the tiers down, top first: the OPEN FIRST kit and the ceiling cassettes, then tiers 4 to 2. Leaves the glass crate closed on the pallet.
-- **Person B:** Sets every part from pallet 2 down at its own place round the pod, as the label map shows, felt and ACP faces up on floor protection, and keeps the long batten marked SEAM PROP (tier 3's separator) for step 7; opens the kit (hex key, this guide, label map) and ticks the packing list.
+- **Person B:** Sets every part from pallet 2 down at its own place round the pod, as the label map shows, felt and ACP faces up on floor protection, and keeps the seam prop (the 45 × 45 timber labelled SEAM PROP - STEP 7, from tier 3) for step 7; opens the kit (hex key, this guide, label map) and ticks the packing list.
 - **Check before the next step:** Every label on the packing list is found and lies at its place. Nothing leans on the glass crate. Pallet 1 stays strapped until step 3.
 
 ### Step 2. Base band
@@ -122,7 +122,7 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 - **Time:** about 6 min for 2 people.
 - **Parts:** **1-09** CEILING - PANEL ASSY - C1 (10.0 kg), **1-10** CEILING - PANEL ASSY - C2 (10.9 kg).
 - **Fasteners:** 4 × 838002 M6 × 25 (J-CEIL-02); 16 × 838001 M6 × 16 (J-CEIL-01). Tool: the cordless driver with its 5 mm bit; the kit's key as a backup.
-- **Person A:** First stands the seam prop (the batten marked SEAM PROP, 2354 mm, kept from pallet 2's packing in step 1) upright on the room floor at its mark under the front end of the C1-C2 seam. With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2 and its seam corner on the prop, and both let go: it rests on the wall tops and the prop before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.
+- **Person A:** With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2. B keeps a hand under C1's seam corner, at the front end of the C1-C2 seam, while A stands the seam prop (the timber labelled SEAM PROP, 2354 mm, kept from pallet 2's packing in step 1) upright on the room floor under it; B lowers the corner onto the prop and both let go: C1 rests on the wall tops and the prop before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in, its seam corner onto the prop beside C1's. C2 carries the roof slot.
 - **Person B:** Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 6. Once the 4 seam pins are in, takes the seam prop away; it goes with the packaging.
 - **Check before the next step:** Ceiling seams closed; the C1-C2 gap even (4.3 to 6.7 mm); all 6 upper corner bolts now tight.
 
@@ -153,12 +153,12 @@ Revision P04 is the pod's own revision: this guide is built on skeleton P04, and
 
 ![Step 10](img/100000_P04_POD-ASSEMBLY-GUIDE-STEP-10_IMG.png)
 
-- **Time:** about 9 min for 2 people.
+- **Time:** about 10 min for 2 people.
 - **Parts:** **2-02** FRONT - DOOR UNIT (48.6 kg).
-- **Fasteners:** the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named).
+- **Fasteners:** the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named); the kick strip's two end brushes, pressed on by hand (368008 at the fixed glass's end, the hinge-end brush at DL's end; both HOLD).
 - **Person A:** Stacks setting packers from the kit on the room floor where the door's bottom corners land, each stack as high as the base band's bottom edge beside it (about 10 mm; the door's kick strip hangs on that line and the room floor is not flat, D-132). With B, tilts the door unit up in the crate on its padded long edge, both suction lifters at its top edge (each lifts about 12 kg at the start), onto the padded glass rest; then both carry it upright (about 25 kg each) and stand it on the packers, so its hinge halves meet DL's at their height, and lower them on.
-- **Person B:** Secures the hinges as the named set requires (HOLD), slides the packers out, then swings the door slowly to 90 degrees and back, checking that its kick strip runs level with the band's bottom edge, about 10 mm over the room floor, and that the drop seal comes down onto the floor when it closes (D-132). The hinges hold the door at its closed position; there is no lock (D-83).
-- **Check before the next step:** The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub.
+- **Person B:** Secures the hinges as the named set requires (HOLD) and slides the packers out. With the door open, fits the kick strip's two end brushes from the door's kit bag (taped to the kick strip): wipes both end faces with the bag's alcohol wipe, stands each brush on the room floor against its end face (368008 at the fixed glass's end, the longer-pile hinge-end brush at DL's end) and presses it firmly along its whole length (the PM's ruling 2026-11-01). Then swings the door slowly to 90 degrees and back, checking that its kick strip runs level with the band's bottom edge, about 10 mm over the room floor, and that the drop seal comes down onto the floor and each brush closes against the end plate beside it when it shuts (D-132, D-150). The hinges hold the door at its closed position; there is no lock (D-83).
+- **Check before the next step:** The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub; both end brushes stand on the floor along their whole length.
 
 ### Step 11. Top decor block DT, from above
 
@@ -305,6 +305,7 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 8 | DL on the base band | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | DL stands on its spigots; its bolts are J-FRONT-01's, into the side walls |
 | 9 | DR on its support behind the mesh band piece | FRONT and BASE | 0 | none: spigots | registered: J-FRONT-02 (spigots) | D-62: the block's own support carries it; the mesh carries no load |
 | 10 | Door hinges on DL | FRONT | 0 | per the named hinge set (HOLD) | HOLD in the register (D-46, ISS-002) | time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM) |
+| 10 | The kick strip's two end brushes | FRONT | 0 | self-adhesive brush strips, each about 105 long, from the room floor to Z 105 | HOLD-23 (368008) and HOLD-25 (the hinge-end brush, its number from Control): joints register H-43, H-46 | time is in the door step (t_brush_s); they ship in the door's kit bag (the PM's ruling 2026-11-01) |
 | 13 | Intake riser and supply fan box in DR | AIR and FRONT | 0 | not designed yet (HOLD) | HOLD in the register | time is in the step |
 | 15 | Air column on DR and the floor | AIR | 0 | none on site: 2 hook studs set in the factory, 2 spigots | registered: J-AIR-02 (0 on site) | D-87: the column hangs on its hook studs |
 | 19 | Light shelf | INTERIOR | 0 | not in INTERIOR's parts list yet (HOLD) | HOLD (D-70) | time is in the step |
@@ -320,10 +321,10 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 4 | Lower side walls: L1, R1 | 2 | 14 | 0 | 0.7 | 3.4 | **2.7** |
 | 5 | Upper back wall: B3, B4 | 2 | 11 | 0 | 0.7 | 3.0 | **2.5** |
 | 6 | Upper side walls: L2, R2 | 2 | 14 | 0 | 0.7 | 3.4 | **2.7** |
-| 7 | Ceiling: C1, C2 | 2 | 20 | 0 | 2.0 | 5.7 | **5.6** |
+| 7 | Ceiling: C1, C2 | 2 | 20 | 0 | 2.5 | 5.2 | **5.9** |
 | 8 | Left decor block DL | 1 | 6 | 0 | 1.1 | 0.8 | **1.7** |
 | 9 | Fixed glass, then the right decor block DR | 2 | 6 | 0 | 8.7 | 3.8 | **12.2** |
-| 10 | Door (before DT) | 1 | 0 | 0 | 7.3 | 1.5 | **9.3** |
+| 10 | Door (before DT) | 1 | 0 | 0 | 7.3 | 2.5 | **9.9** |
 | 11 | Top decor block DT, from above | 1 | 4 | 0 | 1.3 | 0.5 | **1.8** |
 | 12 | Electrics, first fix (power off) | 1 | 0 | 0 | 0.0 | 2.3 | **1.3** |
 | 13 | Air parts in DR: the intake riser with its supply fan box | 1 | 0 | 0 | 2.3 | 2.3 | **4.0** |
@@ -336,17 +337,17 @@ Joints with no site bolts, and the fixings still on hold or not designed (the jo
 | 20 | Power on and self-test: fans run | 0 | 0 | 0 | 3.0 | 0.0 | **3.4** |
 | 21 | Final check and film | 0 | 0 | 0 | 0.0 | 12.0 | **6.9** |
 | 22 | Work-wall ledge and screen rail | 1 | 0 | 0 | 2.0 | 10.3 | **8.2** (after) |
-|  | **Clock, steps 1 to 21** |  | 92 | 0 |  |  | **112** |
+|  | **Clock, steps 1 to 21** |  | 92 | 0 |  |  | **113** |
 
 Each step's time is its 2-person work plus half its 1-person work (shared between the two), plus 15% for hand-offs, the layout study's model (`scripts/assembly.py`). Where the time goes:
 
 1. Step 9 (Fixed glass, then the right decor block DR): 12 min.
 2. Step 1 (Unpack and set the parts down at their places): 12 min.
-3. Step 2 (Base band): 10 min.
-4. Step 10 (Door (before DT)): 9 min.
+3. Step 10 (Door (before DT)): 10 min.
+4. Step 2 (Base band): 10 min.
 5. Step 14 (Wall linings: 8 cassettes): 8 min.
 
-**The PM's rulings of 2026-11-01 on the next five time sinks cut the clock from 134 minutes to the 112 above:** the installers' cordless driver for the bolts (9.0 min), a rest for each overhead lift so no one holds a part overhead to fix it (6.9 min), and the final check split between the two people (5.8 min); the unit times are assumptions until the timed trial. Lift-off hinges set in the factory (FRONT, in the hinge HOLD's asks, D-138) and a plug-in light shelf (ELECTRICAL's connector choice) would take about 7 minutes more (assumption), to the PM's target of about 104 minutes. Carrying and unpacking have no cheap fix, and hook-in wall joints, which getting near 1 hour would need, are a redesign the PM ruled out for now.
+**The PM's rulings of 2026-11-01 on the next five time sinks cut the clock from 135 minutes to the 113 above:** the installers' cordless driver for the bolts (9.0 min), a rest for each overhead lift so no one holds a part overhead to fix it (6.9 min), and the final check split between the two people (5.8 min); the unit times are assumptions until the timed trial. Lift-off hinges set in the factory (FRONT, in the hinge HOLD's asks, D-138) and a plug-in light shelf (ELECTRICAL's connector choice) would take about 7 minutes more (assumption), to the PM's target of about 104 minutes. Carrying and unpacking have no cheap fix, and hook-in wall joints, which getting near 1 hour would need, are a redesign the PM ruled out for now.
 
 **D-87 (PM, 2026-10-31) cut the clock from 168 minutes (PR #52) to 127 (PR #59).** The PM took four of the five fixes priced on that model, and they are in the steps now:
 
@@ -397,7 +398,8 @@ Unit times used:
 | `t_overhead_rest_s` | 60 s | assumption | the PM's ruling 2026-11-01 (time sinks, item 2) | lift a part overhead onto its rest and let go: nobody holds a part overhead to fix it |
 | `t_check_door_light_s` | 300 s | assumption | the PM's ruling 2026-11-01 (time sinks, item 4) | one person: the door, then the light test walking round the lit pod with the room dark |
 | `t_clean_s` | 300 s | assumption | the PM's ruling 2026-11-01 (time sinks, item 4) | the other person at the same time: cleaning inside and out |
-| `t_prop_s` | 30 s | assumption | the Lead's ruling 2026-11-01 (seam prop) | fetch the seam prop and stand it on the room floor at its mark under the seam's front corner |
+| `t_prop_s` | 30 s | assumption | the Lead's ruling 2026-11-01 (seam prop) | both: one keeps a hand under C1's seam corner while the other stands the seam prop on the room floor under it (a 2.35 m timber is not left standing on its end while a ceiling half goes up past it) |
+| `t_brush_s` | 30 s | assumption | the PM's ruling 2026-11-01 (the kick strip's end brushes: about a minute for both) | fit one of the kick strip's end brushes: wipe its end face, stand the brush on the room floor against it and press it firmly along its whole length |
 | `t_prop_off_s` | 15 s | assumption | the Lead's ruling 2026-11-01 (seam prop) | take the seam prop away once the 4 seam pins are in |
 | `t_packer_stack_s` | 60 s | assumption | this plan (D-132) | stack the setting packers at both of the door's bottom corners to the band's bottom edge beside each, checked with a rule |
 | `t_sleeve_s` | 90 s | assumption | this plan (#263) | from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box |
@@ -437,7 +439,8 @@ Unplug the pod's cord first. Then the reverse order: ledge; ceiling linings (unh
 | Electrical connectors and the wiring diagram | ELECTRICAL | not designed yet |
 | Step pictures from the Fusion model | Packing and Assembly | after each part's CAD lands and the screen is unlocked |
 | The driver's clutch value and the bit length for the captive bolts, with margin against the rivnut spinning out | Joints Engineer | the PM's ruling 2026-11-01 |
-| The seam prop's height and its spot under the front end of the C1-C2 seam (2354 mm from the skeleton for now) | CEILING | asked |
+| The seam prop's height and its spot under the front end of the C1-C2 seam (2354 mm from the skeleton for now), and that C2's seam corner can share it with C1's | CEILING | asked |
+| The kick strip's two end brushes: their products, the hinge-end brush's number and pile length, and the lowest room temperature their adhesive takes | FRONT, Hardware Engineer, Control | HOLD-23 and HOLD-25 (joints register H-43, H-46) |
 | Which of the six overhead lifts already rest hands-free (the ceiling halves on the wall tops, DT on DL and DR, the exhaust cartridge in the soffit, the ceiling cassettes on their catches); a ledge or hook on an existing part where one is missing | CEILING, FRONT, AIR | the PM's ruling 2026-11-01 |
 | Lift-off hinges set in the factory (about 4 minutes) | FRONT, in the hinge HOLD's asks for the factory (D-138) | asked |
 | A plug-in light shelf (about 3 minutes) | ELECTRICAL, with its connector choice | asked |

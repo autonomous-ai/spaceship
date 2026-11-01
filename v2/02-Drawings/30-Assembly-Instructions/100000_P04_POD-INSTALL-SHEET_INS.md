@@ -20,7 +20,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 | Pallet | Deck | Loaded height | Gross |
 |---|---|---|---|
 | 1 | 48 × 40 in (1219 × 1016 mm) | 1,641 mm | 207 kg |
-| 2 | 96 × 48 in (2438 × 1219 mm) | 1,563 mm | 327 kg |
+| 2 | 96 × 48 in (2438 × 1219 mm) | 1,571 mm | 327 kg |
 
 - A pallet jack and a route for a 2438 mm long pallet to the room, or unpacking at the door: every piece passes an 810 mm wide, 2032 mm high doorway (REQ-ASM-06). The longest piece is BASE - BAND ASSY - BACK (2-04), 2420 mm, so corridors need room to turn it.
 - An elevator: a door at least 1070 × 2134 mm and a car at least 2032 × 1295 mm inside and 2286 mm tall, or a freight elevator (check K15: each piece as carried, in its wrap, leaned into the car with its lower end sliding on the floor; the panes out of the crate on their lifters). A typical passenger car with a 914 mm door can't take DR (2-03, 2300 × 1030 × 226 mm as carried).

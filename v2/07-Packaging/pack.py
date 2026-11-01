@@ -111,10 +111,11 @@ MINE = {
     "crate_kg": N(30.0, "kg", "assumption", "this plan", "runners, slats, rails, separator, lid and foam; the glass packer's own crate replaces this number"),
     "glass_rest_kg": N(6.0, "kg", "assumption", "this plan", "two padded timber A-frame glass rests, flat-packed in the crate"),
     # pallet 2 tiers
-    "sep_h": N(20, "mm", "assumption", "this plan", "tier separator: battens carried on posts, so no load rests on a decor skin, the felt or the glass"),
+    "sep_h": N(22, "mm", "calculation", "this plan: the separator's 22 x 95 battens, laid flat on their posts", "tier separator: battens carried on posts, so no load rests on a decor skin, the felt or the glass"),
     "sep_kg": N(4.0, "kg", "assumption", "this plan", "one separator: 5 battens 22 x 95 x 1219 and 4 posts"),
     "prop_h": N(sk("pod_h") - sk("outer_t"), "mm", "calculation", "skeleton P04: pod_h - outer_t, the ceiling frame's underside; CEILING confirms the height and the spot", "the seam prop's length: from the room floor to C1's corner at the front end of the C1-C2 seam (step 7)"),
-    "prop_kg": N(round(22 * 95 * (sk("pod_h") - sk("outer_t")) * 500e-9, 1), "kg", "assumption", "this plan: 22 x 95 timber at about 500 kg/m3", "the seam prop: one long batten along the tier 3 separator, ISPM 15"),
+    "prop_w": N(45, "mm", "confirmed", "D-152 (the PM's ruling 2026-11-01)", "the seam prop's section: its own 45 x 45 timber, labelled and marked, in tier 3"),
+    "prop_kg": N(round(45 * 45 * (sk("pod_h") - sk("outer_t")) * 500e-9, 1), "kg", "assumption", "this plan: 45 x 45 timber at about 500 kg/m3", "the seam prop: one 45 x 45 timber in its own lane in tier 3, ISPM 15"),
     "cass_foam": N(10, "mm", "assumption", "this plan", "foam sheet under the ceiling cassettes' fill strips on the top tier"),
     "wrap": N(5, "mm", "assumption", "this plan", "per side on pallet 2, between a part's own size and its lane and tier: about 3 mm of PE foam wrap and the corner guards; a carton is its own outer box"),
     "dr_bed": N(10, "mm", "assumption", "this plan", "foam sheet under DR's flat front face: DR lies face down with its felt panel up and nothing on it (PM, 2026-11-01)"),
@@ -176,7 +177,8 @@ TIME = {
     "t_overhead_rest_s": N(60, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 2)", "lift a part overhead onto its rest and let go: nobody holds a part overhead to fix it"),
     "t_check_door_light_s": N(300, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 4)", "one person: the door, then the light test walking round the lit pod with the room dark"),
     "t_clean_s": N(300, "s", "assumption", "the PM's ruling 2026-11-01 (time sinks, item 4)", "the other person at the same time: cleaning inside and out"),
-    "t_prop_s": N(30, "s", "assumption", "the Lead's ruling 2026-11-01 (seam prop)", "fetch the seam prop and stand it on the room floor at its mark under the seam's front corner"),
+    "t_prop_s": N(30, "s", "assumption", "the Lead's ruling 2026-11-01 (seam prop)", "both: one keeps a hand under C1's seam corner while the other stands the seam prop on the room floor under it (a 2.35 m timber is not left standing on its end while a ceiling half goes up past it)"),
+    "t_brush_s": N(30, "s", "assumption", "the PM's ruling 2026-11-01 (the kick strip's end brushes: about a minute for both)", "fit one of the kick strip's end brushes: wipe its end face, stand the brush on the room floor against it and press it firmly along its whole length"),
     "t_prop_off_s": N(15, "s", "assumption", "the Lead's ruling 2026-11-01 (seam prop)", "take the seam prop away once the 4 seam pins are in"),
     "t_packer_stack_s": N(60, "s", "assumption", "this plan (D-132)", "stack the setting packers at both of the door's bottom corners to the band's bottom edge beside each, checked with a rule"),
     "t_sleeve_s": N(90, "s", "assumption", "this plan (#263)", "from a step stool outside the front right corner, drop the roof sleeve through C2's roof slot onto its gasket on the exhaust fan box"),
@@ -203,6 +205,10 @@ OTHER_FIXINGS = [
     dict(step=10, where="Door hinges on DL", owner="FRONT", count=0, size="per the named hinge set (HOLD)",
          status="HOLD in the register (D-46, ISS-002)", note="time is in the door step; the hinge halves that sit in DL ship fitted in DL (PM)",
          text="the hinge set's own locking parts (FRONT; the hinges are HOLD until a rated set is named)"),
+    dict(step=10, where="The kick strip's two end brushes", owner="FRONT", count=0, size="self-adhesive brush strips, each about 105 long, from the room floor to Z 105",
+         status="HOLD-23 (368008) and HOLD-25 (the hinge-end brush, its number from Control): joints register H-43, H-46",
+         note="time is in the door step (t_brush_s); they ship in the door's kit bag (the PM's ruling 2026-11-01)",
+         text="the kick strip's two end brushes, pressed on by hand (368008 at the fixed glass's end, the hinge-end brush at DL's end; both HOLD)"),
     dict(step=13, where="Intake riser and supply fan box in DR", owner="AIR and FRONT", count=0, size="not designed yet (HOLD)",
          status="HOLD in the register", note="time is in the step", text="their fixings in DR (AIR and FRONT design, on hold)"),
     dict(step=15, where="Air column on DR and the floor", owner="AIR", count=0, size="none on site: 2 hook studs set in the factory, 2 spigots",
@@ -400,7 +406,8 @@ PIECES = [
           note="the pane with its 180 seal; its U-channels and seals ship fitted on the sill (PM ruling), in DR and in DT (D-68)"),
     Piece("2-02", "360001", "FRONT - DOOR UNIT", "Cụm cửa kính", "-", [("DOOR", 1)], S(2096, 1177, 149),
           "FRONT 360001 P01 STEP without its hinges: 2095.5 x 1177 x 148.8 (the magnetic seal half 2 mm past the glass, the pulls 70 a side); the hinge halves that sit in DL ship in DL (PM ruling)",
-          2, 10, "FRONT", glass=True),
+          2, 10, "FRONT", glass=True,
+          note="the door's kit bag rides taped to its kick strip, never to the glass: the kick strip's two end brushes, 368008 and the longer-pile hinge-end brush (joints register H-46, its number from Control), both HOLD, and an alcohol wipe; fitted on site in step 10 (the PM's ruling 2026-11-01)"),
     Piece("2-03", "350003", "FRONT - DECOR BLOCK ASSY - DR", "Khối trang trí phải (cụm)", "DR", [("DR", 1), ("FIX", DR_CHANNEL_SHARE)], S(2290, 1020, 216),
           "FRONT 350003 P01 STEP: 2290 x 1020 x 215.5, the inner felt panel 10.5 mm proud of the back plate; AIR's reserved spaces in it are empty when it ships", 2, 9, "FRONT",
           note="lies on its flat front face on a foam sheet, felt panel up, nothing on it (PM, 2026-11-01)"),
@@ -531,8 +538,8 @@ PACKAGING = [
          status="assumption", src="this plan (glass_rest_kg); flat-packed in the crate", pallet=2),
     dict(pn="911003", name="PACKAGING - TIER SEPARATOR: ISPM 15 STAMPED TIMBER BATTENS ON POSTS", kind="made", qty=4, kg=MINE["sep_kg"].value, wood=True,
          status="assumption", src="this plan (sep_kg)", pallet=2),
-    dict(pn="911004", name="PACKAGING - SEAM PROP: ISPM 15 STAMPED BATTEN 22 X 95, ALONG THE TIER 3 SEPARATOR, CUT TO THE CEILING SEAM'S HEIGHT AND MARKED",
-         kind="made", qty=1, kg=MINE["prop_kg"].value, wood=True, status="assumption", src="this plan (prop_h, prop_kg); the Lead's ruling 2026-11-01", pallet=2),
+    dict(pn="911004", name="PACKAGING - SEAM PROP: ISPM 15 STAMPED TIMBER 45 X 45, CUT TO THE CEILING SEAM'S HEIGHT, LABELLED AND MARKED, IN TIER 3",
+         kind="made", qty=1, kg=MINE["prop_kg"].value, wood=True, status="assumption", src="this plan (prop_h, prop_w, prop_kg); D-152", pallet=2),
     dict(pn="918010", name="PACKAGING - PROTECTION SET, 48 X 40: fibreboard edge boards and cap board, corner guards, foam interleaf, PE sheets, straps, film",
          kind="bought", qty=1, kg=lay("pack_kg_std"), status=LAYP["pack_kg_std"].status, src="layout study pack_kg_std", pallet=1),
     dict(pn="918011", name="PACKAGING - PROTECTION SET, 96 X 48: fibreboard cap board, corner guards, foam, PE sheets, straps, film",
@@ -557,11 +564,12 @@ TIERS2 = [
         dict(tags=["2-04"], lie="edge"),
         dict(tags=["2-05"], lie="edge"),
         dict(tags=["2-06"], lie="edge")]),
-    dict(name="Tier 3: DL on its side, DT, soffit, air column", lanes=[
+    dict(name="Tier 3: DL on its side, DT, soffit, air column, seam prop", lanes=[
         dict(tags=["2-08"], lie="edge"),
         dict(tags=["2-11", "2-12"], lie="flat"),
         dict(tags=["2-09"], lie="flat"),
-        dict(tags=["2-10"], lie="edge")]),
+        dict(tags=["2-10"], lie="edge"),
+        dict(tags=[], packing="PROP", lie="flat")]),   # the seam prop 911004 (D-152): packing timber, its own lane
     dict(name="Tier 4: air parts, light shelf, FR1 and cartons", lanes=[
         dict(tags=["2-16"], lie="flat"),
         dict(tags=["2-17"], lie="edge"),
@@ -573,6 +581,7 @@ TIERS2 = [
         dict(tags=["2-21"], lie="flat")]),
 ]
 CRATE_TAGS = ["2-02", "2-01"]   # inside the crate, bottom to top: door, then the fixed glass (fitted first)
+PACKING_COLOUR = {"CRATE": "#e8e8e8", "PROP": "#d2b48c"}   # lanes of packing, not pieces: the glass crate, the seam prop
 
 GROUP_COLOUR = {"BASE": "#8d6e63", "WALL": "#c9a227", "CEILING": "#d9b44a", "LINING": "#7f8c8d", "FRONT": "#2f6f8f",
                 "AIR": "#4e9a6e", "ELECTRICAL": "#9b59b6", "INTERIOR": "#b5651d", "KIT": "#555555", "PACK": "#bbbbbb"}
@@ -600,7 +609,7 @@ KEY_BOLT = lay("t_bolt_captive_s")        # the kit's 5 mm key, where the driver
 STEPS = [
     dict(n=1, title="Unpack and set the parts down at their places", tags=["2-21"],
          A="Cuts the straps and film on pallet 2 and hands the tiers down, top first: the OPEN FIRST kit and the ceiling cassettes, then tiers 4 to 2. Leaves the glass crate closed on the pallet.",
-         B="Sets every part from pallet 2 down at its own place round the pod, as the label map shows, felt and ACP faces up on floor protection, and keeps the long batten marked SEAM PROP (tier 3's separator) for step 7; opens the kit (hex key, this guide, label map) and ticks the packing list.",
+         B="Sets every part from pallet 2 down at its own place round the pod, as the label map shows, felt and ACP faces up on floor protection, and keeps the seam prop (the 45 × 45 timber labelled SEAM PROP - STEP 7, from tier 3) for step 7; opens the kit (hex key, this guide, label map) and ticks the packing list.",
          check="Every label on the packing list is found and lies at its place. Nothing leans on the glass crate. Pallet 1 stays strapped until step 3.",
          ops=[op("open pallet 1, packed in fitting order", 2, lay("t_unpack_std_ordered_min") * 60, 1, "t_unpack_std_ordered_min"),
               op("unload pallet 2 tiers 5 to 2, each part to its place", 2, lay("t_unpack_long_ordered_min") * 60, 1, "t_unpack_long_ordered_min")],
@@ -644,12 +653,12 @@ STEPS = [
               op("set each panel on its spigots", 2, lay("t_place_hung_s"), 2, "t_place_hung_s")],
          joints={"J-WALL-01": 8, "J-WALL-02": 6}),
     dict(n=7, title="Ceiling: C1, C2", tags=["1-09", "1-10"],
-         A=f"First stands the seam prop (the batten marked SEAM PROP, {MINE['prop_h'].value:g} mm, kept from pallet 2's packing in step 1) upright on the room floor at its mark under the front end of the C1-C2 seam. With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2 and its seam corner on the prop, and both let go: it rests on the wall tops and the prop before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in. C2 carries the roof slot.",
+         A=f"With B on a second stool, lifts C1 from inside onto its back spigots (on B3), its side against L2. B keeps a hand under C1's seam corner, at the front end of the C1-C2 seam, while A stands the seam prop (the timber labelled SEAM PROP, {MINE['prop_h'].value:g} mm, kept from pallet 2's packing in step 1) upright on the room floor under it; B lowers the corner onto the prop and both let go: C1 rests on the wall tops and the prop before any bolt (no one holds a part overhead to fix it). Then C2 the same, dropping past C1's lead-in, its seam corner onto the prop beside C1's. C2 carries the roof slot.",
          B="Drives the 4 pins of the C1-C2 closing seam, then the 8 back-edge bolts up from the back panels' top bays, then the 8 side-edge bolts; last, tightens the 6 upper corner bolts left finger-tight in step 6. Once the 4 seam pins are in, takes the seam prop away; it goes with the packaging.",
          check="Ceiling seams closed; the C1-C2 gap even (4.3 to 6.7 mm); all 6 upper corner bolts now tight.",
-         ops=[op("stand the seam prop under the seam's front corner", 1, TIME["t_prop_s"].value, 1, "t_prop_s"),
-              carry("1-09"), carry("1-10"),
+         ops=[carry("1-09"), carry("1-10"),
               op("lift each ceiling half onto its rest, then let go", 2, TIME["t_overhead_rest_s"].value, 2, "t_overhead_rest_s"),
+              op("stand the seam prop under C1's seam corner, a hand under the corner meanwhile", 2, TIME["t_prop_s"].value, 1, "t_prop_s"),
               op("tighten the 6 upper corner bolts (second visit)", 1, BOLT, 6, "t_bolt_driver_s"),
               op("take the seam prop away", 1, TIME["t_prop_off_s"].value, 1, "t_prop_off_s")],
          joints={"J-CEIL-02": 4, "J-CEIL-01": 16}),
@@ -672,12 +681,13 @@ STEPS = [
          joints={"J-FRONT-01": 6}),
     dict(n=10, title="Door (before DT)", tags=["2-02"],
          A=f"Stacks setting packers from the kit on the room floor where the door's bottom corners land, each stack as high as the base band's bottom edge beside it (about {MINE['door_gap'].value:g} mm; the door's kick strip hangs on that line and the room floor is not flat, D-132). With B, tilts the door unit up in the crate on its padded long edge, both suction lifters at its top edge (each lifts about 12 kg at the start), onto the padded glass rest; then both carry it upright (about 25 kg each) and stand it on the packers, so its hinge halves meet DL's at their height, and lower them on.",
-         B=f"Secures the hinges as the named set requires (HOLD), slides the packers out, then swings the door slowly to 90 degrees and back, checking that its kick strip runs level with the band's bottom edge, about {MINE['door_gap'].value:g} mm over the room floor, and that the drop seal comes down onto the floor when it closes (D-132). The hinges hold the door at its closed position; there is no lock (D-83).",
-         check="The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub.",
+         B=f"Secures the hinges as the named set requires (HOLD) and slides the packers out. With the door open, fits the kick strip's two end brushes from the door's kit bag (taped to the kick strip): wipes both end faces with the bag's alcohol wipe, stands each brush on the room floor against its end face (368008 at the fixed glass's end, the longer-pile hinge-end brush at DL's end) and presses it firmly along its whole length (the PM's ruling 2026-11-01). Then swings the door slowly to 90 degrees and back, checking that its kick strip runs level with the band's bottom edge, about {MINE['door_gap'].value:g} mm over the room floor, and that the drop seal comes down onto the floor and each brush closes against the end plate beside it when it shuts (D-132, D-150). The hinges hold the door at its closed position; there is no lock (D-83).",
+         check="The door hangs before DT goes on: DT's underside is only 4 mm above the door top (PM ruling). Door swings freely, no rub; both end brushes stand on the floor along their whole length.",
          ops=[op("stack the setting packers to the band's height", 1, TIME["t_packer_stack_s"].value, 1, "t_packer_stack_s"),
               op("tilt the door up onto the glass rest", 2, TIME["t_tilt_s"].value, 1, "t_tilt_s"),
               carry("2-02"), op("hang the door and adjust", 2, lay("t_door_prehung_min") * 60, 1, "t_door_prehung_min"),
-              op("slide the setting packers out", 1, TIME["t_packer_s"].value, 1, "t_packer_s")],
+              op("slide the setting packers out", 1, TIME["t_packer_s"].value, 1, "t_packer_s"),
+              op("fit one of the kick strip's end brushes", 1, TIME["t_brush_s"].value, 2, "t_brush_s")],
          joints={}),
     dict(n=11, title="Top decor block DT, from above", tags=["2-11"],
          A="From a step stool outside the front, with B on a second stool, lowers DT from above onto DL and DR so its slot takes the glass's top edge, and both let go: DT rests on DL and DR before its bolts.",
@@ -1131,6 +1141,12 @@ class Model:
             else:
                 h = 0.0
                 for ln in tier["lanes"]:
+                    if ln.get("packing") == "PROP":   # the seam prop: bare timber, no wrap, along the deck
+                        a, sec = MINE["prop_h"].value, MINE["prop_w"].value
+                        h = max(h, sec)
+                        lanes.append(dict(width=sec, items=[dict(tag="PROP", along=a, across=sec, up=sec, wrap=0.0, bed=0.0)],
+                                          length=a, lie="flat", ok=a <= deck_l))
+                        continue
                     items = []
                     bed = MINE[ln["bed"]].value if ln.get("bed") else 0.0
                     for t in ln["tags"]:
@@ -1473,6 +1489,10 @@ def gen_tables(m):
                     r2.append([t["name"], "crate", "-", f"GLASS CRATE 911001 with {', '.join(CRATE_TAGS[::-1])}",
                                f"{m.crate_mass():.1f}", f"{MINE['crate_l'].value:g} x {MINE['crate_w'].value:g} x {f0(t['h'])}", "10, 11"])
                     continue
+                if it["tag"] == "PROP":
+                    r2.append([t["name"], f"{ln['width']:g}", "-", "SEAM PROP 911004: packing timber, labelled SEAM PROP - STEP 7",
+                               f"{MINE['prop_kg'].value:.1f}", f"{it['along']:g} x {it['across']:g} x {it['up']:g}", "7"])
+                    continue
                 p = PIECE[it["tag"]]
                 r2.append([t["name"], f"{ln['width']:g}", f"**{p.tag}**", p.name, f"{p.kg:.1f}",
                            f"{it['along']:g} x {it['across']:g} x {it['up']:g}", p.step])
@@ -1653,7 +1673,7 @@ def packing_csv(m):
     for tr in tiers:
         for ln in tr["lanes"]:
             for it in ln["items"]:
-                if it["tag"] != "CRATE":
+                if it["tag"] in PIECE:
                     place[it["tag"]] = (f"pallet 2, {tr['name'].split(':')[0].lower()}, lane {ln['width']:.0f} mm, "
                                         + ("on edge" if ln["lie"] == "edge" else "flat"))
     for i, t in enumerate(CRATE_TAGS):
@@ -1737,7 +1757,7 @@ def svg_pallet2(m):
         for ln in t["lanes"]:
             xx = ox
             for it in ln["items"]:
-                col = "#e8e8e8" if it["tag"] == "CRATE" else GROUP_COLOUR[PIECE[it["tag"]].group]
+                col = PACKING_COLOUR.get(it["tag"]) or GROUP_COLOUR[PIECE[it["tag"]].group]
                 out.append(f'<rect x="{xx:.1f}" y="{y0 + (t["h"] - it["up"]) * sc:.1f}" width="{it["along"] * sc:.1f}" height="{it["up"] * sc:.1f}" fill="{col}" fill-opacity="0.35" stroke="#333" stroke-width="0.4"/>')
                 xx += it["along"] * sc
         out.append(svg_text(ox + L * sc + 8, y0 + t["h"] * sc / 2 + 4, f"{t['name']} ({t['h']:.0f})", 10))
@@ -1757,7 +1777,7 @@ def svg_pallet2(m):
         for ln in t["lanes"]:
             xx = cx
             for it in ln["items"]:
-                col = "#e8e8e8" if it["tag"] == "CRATE" else GROUP_COLOUR[PIECE[it["tag"]].group]
+                col = PACKING_COLOUR.get(it["tag"]) or GROUP_COLOUR[PIECE[it["tag"]].group]
                 out.append(f'<rect x="{xx:.1f}" y="{yy:.1f}" width="{it["along"] * sp:.1f}" height="{it["across"] * sp:.1f}" fill="{col}" fill-opacity="0.6" stroke="#333" stroke-width="0.4"/>')
                 if it["across"] * sp >= 7:
                     label = "CRATE: 2-01 over 2-02" if it["tag"] == "CRATE" else it["tag"]

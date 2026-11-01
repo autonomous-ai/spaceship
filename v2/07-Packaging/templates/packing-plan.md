@@ -49,9 +49,9 @@ On site, keep the two horizontal straps on and take one piece at a time off the 
 
 {{TIERS_TABLE}}
 
-**Glass crate (911001), tier 1.** {{CRATE_SUM}} Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate.
+**Glass crate (911001), tier 1.** {{CRATE_SUM}} Both panes lie on foam pads with their setting-block edges to the same end, under a slatted lid; nothing in the crate presses on a glass face. A pair of padded A-frame glass rests (911002) travels flat in the crate. The door's kit bag (the kick strip's two end brushes and an alcohol wipe, fitted on site in guide step 10) rides taped to the door's kick strip, never to the glass.
 
-**The seam prop (911004).** The tier 3 separator carries one more batten, 22 × 95, along the deck, cut to {{PROP_H}} mm (the ceiling's seam corner over the room floor; CEILING confirms) and marked SEAM PROP - STEP 7. In guide step 7 it props C1's corner at the front end of the C1-C2 seam until the seam pins are in (the Lead's ruling, 2026-11-01), then goes with the packaging. It is packing, not a part of the pod: its mass is in the tare.
+**The seam prop (911004).** Its own 45 × 45 timber, ISPM 15, cut to {{PROP_H}} mm (the ceiling's seam corner over the room floor; CEILING confirms), labelled SEAM PROP - STEP 7 and marked with its height, in a lane of its own along the deck in tier 3 (D-152). In guide step 7 it props the ceiling halves' corners at the front end of the C1-C2 seam until the seam pins are in, then goes with the packaging. It is packing, not a part of the pod: its mass is in the tare.
 
 **Tier separators (911003).** Timber battens carried on posts at the corners and sides, so no tier rests on a decor skin, a felt face or the crate lid's span: the crate lid takes tier 2's load only over its frame.
 
