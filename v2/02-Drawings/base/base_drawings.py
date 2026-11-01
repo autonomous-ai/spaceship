@@ -122,7 +122,7 @@ SPEC = {
         ("top", VO.TopViewOrientationType, 0.5, (90.0, 160.0)),             # hidden lines: the bottom wall's hole
         ("left", VO.LeftViewOrientationType, 0.5, (196.0, 240.0)),          # the knee end plate's keyholes; clear of the notes
         ("iso", VO.IsoTopRightViewOrientationType, 0.25, (90.0, 70.0)),
-    ], {"angles": [("start", 82.745, "in", 20.0),                          # the knee end: 7.25 deg off square
+    ], {"angles": [("start", 82.745, "in", 12.0),                          # the knee end: 7.25 deg off square (at 20 its text crossed the inner edge)
                    ("end", 62.798, "out", 14.0)],                          # the door end, square to the pod's X: 27.20 off square
         "seats": "left"}),                                                  # in the 19 mm gap between the front and end views
     "111602": ("111602_P01_BASE-LEVELLING-GLIDE-M10-D40_DWG", "turned", [     # A3, 2:1

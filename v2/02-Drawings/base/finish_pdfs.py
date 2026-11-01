@@ -85,7 +85,7 @@ DATUMS = {
     "111105": "Part system CS-111105: X along FL2's outer face from its knee end (the long point of its mitre), Y "
               "inward square to it, Z up from the band's bottom face. Datums: A = the top face (DL's seat), B = the "
               "knee end plate's outer face, C = the outer face (Y 0). End cuts: the knee 7.25 deg off square (82.75 "
-              "deg to the outer face); the door end 27.20 deg off square (62.80 deg), parallel to DL's door face. "
+              "deg to the outer face); the door end 27.2 deg off square (62.8 deg), parallel to DL's door face. "
               "At the door end: a 7 mm block welded on to reach "
               "DL's door face, and a 2 mm plate welded into it, flush with DL's door face, from FL2's inner face to the "
               "kick strip's back line (112.6 wide), from the band's bottom face to its top, its back edge a full round "
@@ -238,6 +238,52 @@ def fill_created_by(page):
     page.insert_text((lab.x0, base), AUTHOR, fontsize=max(hgt / 1.15, 3.5 * 72.0 / 25.4), fontname="helv")
 
 
+def stack_tags(page, x_max):
+    """Fusion puts a hole table's tag at each hole's upper right, so two coaxial holes (FL2's Ø8 key hole in the top
+    wall over the glide's Ø13.5 rivnut hole in the bottom wall) get their tags on top of each other. Tags that overlap
+    are written again side by side on the first one's line, 1 mm apart (a redaction takes out every letter it
+    touches, so the whole group is taken out and written again); nothing else moves, and a group with any other text
+    in its box is left alone. Only the views' tags (left of x_max, the notes column; the hole table's own tags are
+    right of it). Returns the tags moved."""
+    import re
+    tags = []
+    for b in page.get_text("dict")["blocks"]:
+        for ln in b.get("lines", []):
+            for sp in ln.get("spans", []):
+                if re.fullmatch(r"[A-Z][0-9]{1,2}", sp["text"].strip()) and sp["bbox"][2] < x_max:
+                    tags.append(sp)
+    tags.sort(key=lambda sp: (sp["text"].strip(), sp["bbox"][0]))
+    groups = []
+    for sp in tags:
+        r = fitz.Rect(sp["bbox"])
+        g = next((g for g in groups if any((r & fitz.Rect(q["bbox"])).get_area() >
+                                           0.2 * min(r.get_area(), fitz.Rect(q["bbox"]).get_area()) for q in g)), None)
+        if g is None:
+            groups.append([sp])
+        else:
+            g.append(sp)
+    moved = []
+    for g in (g for g in groups if len(g) > 1):
+        box = fitz.Rect(g[0]["bbox"])
+        for q in g[1:]:
+            box |= fitz.Rect(q["bbox"])
+        names = [q["text"].strip() for q in g]
+        others = [w[4] for w in page.get_text("words") if fitz.Rect(w[:4]).intersects(box) and w[4] not in names]
+        if others:
+            print("  tags %s overlap but share their box with %s: left as they are" % (", ".join(names), others))
+            continue
+        page.add_redact_annot(box)
+        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=fitz.PDF_REDACT_LINE_ART_NONE,
+                              text=fitz.PDF_REDACT_TEXT_REMOVE)
+        x, y = g[0]["origin"]
+        for q in g:
+            page.insert_text((x, y), q["text"].strip(), fontsize=q["size"], fontname="helv",
+                             color=fitz.sRGB_to_pdf(q["color"]))
+            x += fitz.get_text_length(q["text"].strip(), fontname="helv", fontsize=q["size"]) + 2.8
+        moved += names[1:]
+    return moved
+
+
 def finish(pn):
     if pn in GENERATOR:
         raise SystemExit("%s is drawn by the drawing generator (D-112); not finished here" % pn)
@@ -250,6 +296,9 @@ def finish(pn):
     page = doc[0]
     fill_created_by(page)
     w, h = page.rect.width, page.rect.height
+    moved = stack_tags(page, w * 0.56)
+    if moved:
+        print("%s: hole tag(s) %s moved off the tag they covered (coaxial holes)" % (pn, ", ".join(moved)))
     lines = text_block(pn)
     mm = 72.0 / 25.4
     # letters at least 2.5 mm tall: ISO 3098 measures the capital height, about 0.72 of the font size in Arial,
