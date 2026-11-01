@@ -269,7 +269,12 @@ class Sheet:
     def text_width(self, s, size, bold=False):
         fs = size / CAP
         if self._latin(s) or not self.fonts["bold" if bold else "reg"]:
-            return fitz.get_text_length(s, fontname="hebo" if bold else "helv", fontsize=fs * MM) / MM
+            # the built-in Helvetica's own widths (fitz.get_text_length under-measures Ø and µ: 'Ø9.53' 7.55 against
+            # 9.48 printed at 2.5 mm letters; the Air Engineer's read-back found it)
+            key = "base_bold" if bold else "base_reg"
+            if key not in self.__dict__:
+                self.__dict__[key] = fitz.Font("hebo" if bold else "helv")
+            return self.__dict__[key].text_length(s, fontsize=fs * MM) / MM
         return self._font_obj(bold).text_length(s, fontsize=fs * MM) / MM
 
     def _font_obj(self, bold):

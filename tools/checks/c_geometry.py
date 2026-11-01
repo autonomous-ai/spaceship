@@ -22,6 +22,7 @@ import csv
 import fnmatch
 import math
 import os
+import glob
 import re
 from collections import defaultdict
 
@@ -321,7 +322,9 @@ def check_gap_rules(root, mdl, bodies, rules):
         A = [b for b in bodies if ra.search(b.label)]
         B = [b for b in bodies if rb.search(b.label)]
         if rb.search(ROOM_FLOOR.label):
-            B.append(ROOM_FLOOR)            # D-132, D-151: no floor in the pod; the room floor is the plane Z 0
+            # D-132, D-151: no floor in the pod; the room floor is the plane Z 0 and nothing else, whatever a part is
+            # called (BASE's lip seal 'BASE SEAL - LIP - ROOM FLOOR' took its place by name: the Lead, 2026-11-01)
+            B = [ROOM_FLOOR]
         if not A or not B:
             continue
         lo, hi = num(r.get("min_gap_mm")), num(r.get("max_gap_mm"))
@@ -354,6 +357,116 @@ def check_gap_rules(root, mdl, bodies, rules):
             r0.get("fix", ""), items[0][2].file, r0.get("owner") or owner_for(items[0][2].file),
             {"model": mdl, "rules": [{"id": r["id"], "gap_mm": round(g, 2), "a": a.label, "b": b.label}
                                      for r, g, a, b, lo, hi in items]}))
+    return fs
+
+
+# ----------------------------------------------------------------- C02 bond lines (D-137, the Lead 2026-11-01)
+
+BOND_TOL = 0.1          # mm: the CAD models the bond line exactly
+SKIN_RE = re.compile(r"\bSKIN\b", re.I)
+FRAME_RE = re.compile(r"\bFRAME\b", re.I)
+
+
+def bond_t(root):
+    """The skeleton's bond line (bond_t, mm) from its newest parameter table, or None."""
+    for p in sorted(glob.glob(os.path.join(root, "v2/01-CAD-Native/skeleton/*_POD-SKELETON-PARAMETERS.csv")),
+                    reverse=True):
+        for row in read_csv(p):
+            if (row.get("name") or row.get("parameter") or "").strip() == "bond_t":
+                return num(row.get("value") or row.get("expression"))
+    return None
+
+
+def _world_planes(b):
+    out = []
+    for f in b.solid.faces:
+        if f.kind == "plane" and f.points:
+            out.append((sf.norm(b.frame.vector(f.normal)), b.frame.point(f.origin), [b.frame.point(q) for q in f.points]))
+    return out
+
+
+def _plane_axes(n):
+    ref = (1.0, 0.0, 0.0) if abs(n[0]) < 0.9 else (0.0, 1.0, 0.0)
+    u = sf.norm((n[1] * ref[2] - n[2] * ref[1], n[2] * ref[0] - n[0] * ref[2], n[0] * ref[1] - n[1] * ref[0]))
+    return u, (n[1] * u[2] - n[2] * u[1], n[2] * u[0] - n[0] * u[2], n[0] * u[1] - n[1] * u[0])
+
+
+def skin_gap(skin, member, axis=None, reach=6.0):
+    """The smallest gap between a skin's flat face and a frame member's flat face that face each other and overlap,
+    within reach; axis: only faces square to it (a panel's depth axis), or every face (a faceted block)."""
+    best = None
+    for ns, os_, ps in _world_planes(skin):
+        if axis is not None and abs(abs(ns[axis]) - 1.0) > 1e-4:
+            continue
+        for nf, of, pf in _world_planes(member):
+            if sf.dot(ns, nf) > -0.9999:
+                continue
+            d = sf.dot(sf._sub(os_, of), nf)
+            if d < -0.01 or d > reach:
+                continue
+            u, v = _plane_axes(nf)
+            a = [(sf.dot(q, u), sf.dot(q, v)) for q in ps]
+            c = [(sf.dot(q, u), sf.dot(q, v)) for q in pf]
+            ou = min(max(x for x, _y in a), max(x for x, _y in c)) - max(min(x for x, _y in a), min(x for x, _y in c))
+            ov = min(max(y for _x, y in a), max(y for _x, y in c)) - max(min(y for _x, y in a), min(y for _x, y in c))
+            if ou > 1.0 and ov > 1.0 and (best is None or d < best):
+                best = d
+    return best
+
+
+def check_bond_lines(root, mdl, bodies, bt=None):
+    """D-137 (the Lead's ask, 2026-11-01): every bonded skin sits the skeleton's bond_t off its frame. In each panel or
+    block assembly, every frame member face that faces the skin within 2 x bond_t is a bonded face and must sit
+    bond_t off it: a panel's faces square to its depth axis (its returns are left alone), a faceted block's in every
+    direction. Under bond_t is severe (no room for the bond, so the parts are sized wrong), over it major."""
+    bt = bond_t(root) if bt is None else bt
+    if not bt:
+        return []
+    groups = {}
+    for b in bodies:
+        parts = (b.label or "").split(" / ")
+        if len(parts) < 2:
+            continue
+        idx = [i for i, c in enumerate(parts[:-2]) if re.search(r"ASSY", c, re.I)]
+        key = " / ".join(parts[:(idx[-1] + 1) if idx else 1])
+        comp = " / ".join(parts[:-1])
+        g = groups.setdefault(key, {"skins": [], "frames": []})
+        if SKIN_RE.search(parts[-2]):
+            g["skins"].append(b)
+        elif FRAME_RE.search(comp) and not SKIN_RE.search(comp):
+            g["frames"].append(b)
+    fs = []
+    for key, g in sorted(groups.items()):
+        if not g["skins"] or not g["frames"]:
+            continue
+        lo = [min(b.box[k] for b in g["frames"]) for k in range(3)]
+        hi = [max(b.box[k + 3] for b in g["frames"]) for k in range(3)]
+        ext = [hi[k] - lo[k] for k in range(3)]
+        n = min(range(3), key=lambda k: ext[k])
+        axis = n if ext[n] < 0.25 * min(ext[k] for k in range(3) if k != n) else None
+        for skin in g["skins"]:
+            off = []
+            for m in g["frames"]:
+                d = skin_gap(skin, m, axis, reach=2.0 * bt)
+                if d is not None and abs(d - bt) > BOND_TOL:
+                    parts = (m.label or "").split(" / ")
+                    name = parts[-2] if len(parts) > 1 else m.label
+                    if len(parts) > 1 and sum(1 for o in g["frames"] if (o.label or "").split(" / ")[-2:-1] == [name]) > 1:
+                        name += " (%s)" % parts[-1]          # one frame component of many bodies (before D-120)
+                    off.append((0.0 if abs(d) < 0.005 else round(d, 2), name))
+            if not off:
+                continue
+            thin = any(d < bt for d, _m in off)
+            sname = (skin.label or "").split(" / ")[-2]
+            fs.append(Finding(
+                "C02", "bond-line", "%s %s" % (mdl, sname), "severe" if thin else "major",
+                "%s: %d frame member face(s) facing it sit %s mm off the skin; D-137's bond needs the skeleton's "
+                "bond_t, %.1f mm, between a bonded skin and its frame (the Lead, 2026-11-01). Members: %s." % (
+                    sname, len(off), "/".join(sorted({"%g" % d for d, _m in off})), bt,
+                    "; ".join("%s at %g" % (m, d) for d, m in sorted(off)[:6]) + (" ..." if len(off) > 6 else "")),
+                "Model the bond line: the frame's faces %.1f mm off the skin's back face (the frame's tube lengths "
+                "change with it), and export the STEP again." % bt, skin.file, owner_for(skin.file),
+                {"model": mdl, "bond_t": bt, "members": len(off)}))
     return fs
 
 
@@ -641,7 +754,33 @@ def _edge_accepted(rows, hole, edges, need):
     return None
 
 
-def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None, edge_exceptions=None):
+# the Lead's ruling (2026-11-01, CEILING's fan bulkheads): the 2-diameter rule is for fastener holes, not openings.
+# A round cut over the biggest fastener clearance, or one its part row names as an opening, is an opening, checked by
+# a web rule: material of at least 2 x the sheet's thickness, and at least 3 mm, to any edge and to the next hole, as
+# laser cutting needs
+OPENING_DIA = 20.0          # mm: over the 5 mm key's Ø19 access hole, the biggest fastener clearance
+OPENING_WEB = 3.0           # mm, laser cutting
+OPENING_WORDS = re.compile(r"\b(?:openings?|bores?|cut-?outs?|vents?)\b", re.I)
+DIA_IN_TEXT = re.compile(r"[\u00d8\u2300\u03a6]\s*(\d+(?:\.\d+)?)")
+
+
+def is_opening(hole, row_text=""):
+    """An opening (fan bore, air or cable opening), not a fastener hole: over OPENING_DIA, or a size its part's row
+    names together with 'opening', 'bore', 'cut-out' or 'vent'."""
+    if hole.diameter > OPENING_DIA + 1e-6:
+        return True
+    if row_text and OPENING_WORDS.search(row_text):
+        return any(abs(float(d) - hole.diameter) <= 0.5 for d in DIA_IN_TEXT.findall(row_text))
+    return False
+
+
+def _opening_web_need(hole, so):
+    t = hole.length if hole.length and hole.length > 0.05 else (getattr(so, "thickness", None) or 0.0)
+    return max(2.0 * t, OPENING_WEB), t
+
+
+def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rules=None, edge_exceptions=None,
+                        row_texts=None):
     """Per-part checks on a STEP file. materials: part number -> material text."""
     fs = []
     hole_rules = hole_rules if hole_rules is not None else load_hole_rules(root)
@@ -660,11 +799,27 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
         # the edge-distance and spacing rules are for rigid sheet and machined parts (the owner's rule 9, "for the
         # sheet parts"): a hole near the edge of a felt, fill, foam or gasket can't tear out under load
         holes = [] if is_soft(inst.get("name") or "") or is_soft(so.name or "") else so.holes
+        text = (row_texts or {}).get(pn, "")
+        opening = {id(h): is_opening(h, text) for h in holes}
         for h in holes:
             edges = sf.free_edge_distances(so, h)
             if not edges:
                 continue
             e = min(x[0] for x in edges)
+            if opening[id(h)]:
+                need, t = _opening_web_need(h, so)
+                web = e - h.diameter / 2.0
+                if web + 1e-6 < need:
+                    fs.append(Finding(
+                        "C09", "opening-web", "%s opening Ø%.1f at %s" % (part, h.diameter, _pt(h.center)), "major",
+                        "Opening Ø%.2f in %s leaves %.1f mm of material to the free edge; an opening needs at least "
+                        "%.1f mm (2 x the %.1f mm sheet, and 3 mm for laser cutting: the Lead's ruling, 2026-11-01). "
+                        "Opening centre %s in the part's own coordinates." % (
+                            h.diameter, part, web, need, t, _pt(h.center)),
+                        "Leave at least %.1f mm of material round the opening, or join that edge to its neighbour "
+                        "(a 3 mm rim on a free edge of a plate that carries a fan is too weak)." % need,
+                        r, owner_for(r, pn), {"web_mm": round(web, 2), "dia_mm": round(h.diameter, 2)}))
+                continue
             need = edge_factor * h.diameter
             if e + 1e-6 < need:
                 rows = edge_exceptions.get(pn, [])
@@ -693,6 +848,19 @@ def check_part_features(root, path, materials, rules, edge_factor=2.0, hole_rule
                               a.axis)) > 0.5:
                     continue        # different walls
                 c2c = sf.line_distance(b.center, a.center, a.axis)
+                if opening[id(a)] or opening[id(b)]:
+                    need, t = _opening_web_need(a if opening[id(a)] else b, so)
+                    web = c2c - (a.diameter + b.diameter) / 2.0
+                    if 1e-3 < c2c and web + 1e-6 < need:
+                        fs.append(Finding(
+                            "C09", "opening-web", "%s opening web at %s and %s" % (part, _pt(a.center), _pt(b.center)),
+                            "major",
+                            "Ø%.2f and Ø%.2f in %s leave %.1f mm of material between them; next to an opening that "
+                            "needs at least %.1f mm (2 x the %.1f mm sheet, and 3 mm for laser cutting: the Lead's "
+                            "ruling, 2026-11-01)." % (a.diameter, b.diameter, part, web, need, t),
+                            "Space them to leave at least %.1f mm of material." % need,
+                            r, owner_for(r, pn), {"web_mm": round(web, 2)}))
+                    continue
                 need = 2.0 * max(a.diameter, b.diameter)
                 if 1e-3 < c2c < need:
                     fs.append(Finding(
