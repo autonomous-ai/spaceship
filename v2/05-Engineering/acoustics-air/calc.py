@@ -337,9 +337,26 @@ TUBE_KG_M = {
 }
 
 
+# D-131 (PM ruling 2026-11-01): the wall, ceiling and decor-core frames are welded, galvanised steel tube with the same
+# outside sections. The Joints Engineer's gauges (1.0 mm for perimeters, 40 x 40s and members with a bolt, spigot, rivnut
+# or stud; 0.8 mm for studs; Z100 zinc), with 5 studs per side panel (D-135) and 1.2 mm rails and front stiles on the
+# side panels for margin, put 52.3 kg more on the 10 wall and ceiling frames (source, the Joints Engineer's latest).
+# Spread over this model's wall and ceiling area, that takes the decided 20 x 40 frames from aluminium's 1.87 kg/m2 to
+# about 5.14 (the steel-to-aluminium ratio below); every v2 frame in the search takes the same ratio (calculation). The
+# decor cores' steel comes with FRONT's rework; until then they stay in REST_KG as they were.
+FRAMES_STEEL = True
+STEEL_FRAME_DELTA_KG = 52.3
+
+
+def steel_frame_ratio():
+    alu = TUBE_KG_M["alu 20x40x1.2"] * TUBE_M_PER_M2_400
+    return 1 + STEEL_FRAME_DELTA_KG / ((OUT_WALL_M2 + OUT_CEIL_M2) * alu)
+
+
 def frame(t):
     if t.startswith("alu"):
-        return TUBE_KG_M[t] * TUBE_M_PER_M2_400      # all aluminium frames at the DECIDED 400 mm pitch
+        kg = TUBE_KG_M[t] * TUBE_M_PER_M2_400        # the v2 frames at the DECIDED 400 mm pitch
+        return kg * steel_frame_ratio() if FRAMES_STEEL else kg     # in steel since D-131
     return TUBE_KG_M[t] * TUBE_M_PER_M2
 
 
@@ -413,9 +430,9 @@ def walls():
               [a3, al1], 100, 100, ("none",), True, al100, 113),
         Build("DL-ST-40-FLG", "ACP 3 / 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
               [a3, s05], 40, 40, ("none",), True, al, 81, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
-        Build("DL-ST-40-FLG-12", "ACP 3 / 20x40x1.2 frame, 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
+        Build("DL-ST-40-FLG-12", "ACP 3 / 20x40 steel frame (D-131), 40 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
               [a3, s05], 40, 40, ("none",), True, frame("alu 20x40x1.2"), 81, extra_kg_m2=TRAY_KG_M2, felt_gap=True),
-        Build("DL-ST4-40-FLG-12", "ACP 3 / 20x40x1.2 frame, 40 fill / floating cassette: steel 0.4 tray, 25 air, felt 9",
+        Build("DL-ST4-40-FLG-12", "ACP 3 / 20x40 steel frame (D-131), 40 fill / floating cassette: steel 0.4 tray, 25 air, felt 9",
               [a3, plate("steel 0.4", [layer("steel", 0.4)])], 40, 40, ("none",), True, frame("alu 20x40x1.2"), 81,
               extra_kg_m2=TRAY_KG_M2 * 0.8, felt_gap=True),
         Build("DL-ST-100-FLG", "ACP 3 / 100 fill / floating cassette: steel 0.5 tray, 25 air, felt 9",
@@ -531,7 +548,8 @@ ALPHA = {
 # ---------------------------------------------------------------------------
 GEOM = {
     "v1": dict(w=2.372, d=1.480, h=2.223),   # V1_BOM inside size, source
-    "v2": dict(w=2.42, d=1.50, h=2.30),      # calculation from PLAN outside size; build-ups ASSUME
+    "v2": dict(w=2.42, d=1.50, h=2.312),     # calculation from PLAN outside size; build-ups ASSUME; 12 mm taller
+                                             # with no floor (D-132)
 }
 DOOR_W, DOOR_H = 1.1756, 2.011               # V1_BOM GL-01 (kept in v2: same look)
 DOOR_M2 = DOOR_W * DOOR_H
@@ -540,6 +558,7 @@ FIXED_M2 = 3.425 - DOOR_M2                   # finished fixed-glass shape from t
 GLASS_M2 = DOOR_M2 + FIXED_M2
 OUT_WALL_M2 = 2 * 1.5 * 2.29 + 2.424 * 2.252  # layout-study panel areas: 2 sides 1500 x 2290 + back 2424 x 2252
 OUT_CEIL_M2 = 2.424 * 1.5                       # layout-study ceiling 2424 x 1500
+FLOOR_REMOVED_KG = 21.0   # D-132 (PM ruling 2026-11-01): the floor panels, their foam and the threshold go, about 21 kg
 REST_KG = 102.4   # layout study (branch super-tab/7667a51, commit cb7009f, work in progress): 'Spaceship light
                   # indoor build' total 303.0 kg minus walls+ceiling 103.0, felt 29.0 and glass 68.5. Includes the
                   # thin floor and base band, decor blocks, door hardware with drop seal and glazing profiles,
@@ -716,10 +735,16 @@ D60 = dict(
                                                                      # its left face stays behind the block)
     soffit=((-1161.0, 1161.0), (-645.0, -285.0), (2120.0, 2340.0)),  # soffit outer: X, Y, Z (AIR #91: 5 mm off the linings)
     kick=(24.0, 124.0),              # supply kick grille on the column's front and left faces, Z (AIR #91)
-    sup_box=((645.0, 945.0), (-847.0, -692.0), (1650.0, 1950.0)),    # supply fan box in the right block
+    sup_box=((662.0, 962.0), (-842.0, -687.0), (1650.0, 1950.0)),    # supply fan box in DR: FRONT's reserved space
+                                                                     # (PR #105: X about 662, 12 clear of the glass
+                                                                     # channel), 5 mm off DR's front skin
     dr_open=((961.0, 1161.0), (1895.0, 2110.0)),                     # opening in the block's inner face: X, Z
-    riser_lo=(139.0, 155.0, 1340.0),  # lower riser behind the column: width, depth, length
-    riser_up=(250.0, 155.0, 400.0),   # upper riser and turn into the fan box
+    riser_x=(956.0, 1095.0),          # intake riser X: FRONT's reserved space (PR #105)
+    riser_y=(-803.0, -653.0),         # its Y: 4.8 mm off DR's corner facet at its front-right corner, 6.5 off DR's panels
+    riser_lo=(139.0, 150.0, 1340.0),  # the riser with its sealed intake boot (D-130): width, depth, length from the band top
+    riser_up=(250.0, 150.0, 400.0),   # the lower transition into the fan box (FRONT's reserved space), as a duct with 2 bends
+    boot_neck=(139.0, 136.5),         # D-130 boot's throat where it passes DR's base: FRONT's measured 0.0186 m2 inside the
+                                      # riser's outline (DR's back bottom tube takes an 18.5 mm strip up to Z 150, and stays)
     exh_grille=((-1150.0, -885.0), (-633.0, -297.0)),                # on the soffit's underside: X, Y
     exh_box=((867.0, 1161.0), (-640.0, -326.0), (2159.0, 2332.0)),   # exhaust fan box in the soffit's right end (AIR #91)
     roof=((872.0, 1157.0), (-620.0, -326.0)),                        # roof slot: X, Y (D-61, AIR #91)
@@ -792,7 +817,7 @@ def fanbox_rooms(casing=FANBOX_CASING):
     h_up = sh - FANBOX_SUP_FAN_Z - FAN_T                  # the plenum above the fans
     s_lined = 2 * di * (h_up - FANBOX_LIN_GAP)
     supply = dict(rad_area=sw * h_up, lined=s_lined, bare=2 * (wi + di) * h_up - s_lined + wi * di,
-                  opens=[(wi * di, "cart_top")], fill=0.040, wall=casing)
+                  opens=[(wi * di, "cart_top")], fill=0.040, wall=casing, walls_out=2 * (sw + sd) * h_up)
     (ex0, ex1), (ey0, ey1), (ez0, ez1) = D60["exh_box"]
     ew, ed, eh = (ex1 - ex0) / 1000, (ey1 - ey0) / 1000, (ez1 - ez0) / 1000
     li, wj = ew - t, ed - 2 * t                           # inside; open on the cartridge face and the top
@@ -831,6 +856,104 @@ def fanbox_r(bx, path, i, f, derate=None):
         a += area * open_alpha(kind, path, i, f, derate)
         s_tot += area
     return a / (1 - a / s_tot)
+
+
+# DR's cavity (FRONT 350003 P01, PR #105; D-130). The supply riser, the two transitions and the fan box stand in DR's
+# interior, which is bare: no fill, no lining. D-130's sealed intake boot carries the room air from the mesh, through
+# DR's base, to the riser's foot, so the supply fans' inlet noise stays inside the riser; DR's cavity takes only what the
+# riser's, the transitions' and the fan box's walls radiate. The pod sees it through DR's removable inner panel, 3 mm ACP
+# with 9 mm felt on its pod side and its edges gasketed (D-130). Without the boot the riser's foot opens into DR and the
+# cavity takes all of the inlet side's sound (about 37.8 dB(A) at 65 l/s, section 7j). Areas from FRONT's parts list
+# masses; the panel's outline from skeleton P04 (calculation).
+DR_TRANSITION = (0.30, 0.15, 0.40)   # m: the upper transition (HOLD) as a duct: width, depth, length (ASSUME)
+BOOT_TAPER_K = 0.05                  # ASSUME: the boot's tapered mouth into its throat, at the throat's speed
+BOOT_KG = 0.5                        # kg: D-130's sealed intake boot (AIR) and the cartridges' inlet-end gaskets (ASSUME)
+
+
+def boot_neck_k():
+    """(K at the throat's speed, the throat's free area m2) for D-130's boot: its tapered mouth, and the widening from
+    the throat into the riser, taken as sudden (calculation)."""
+    nw, nd = (x / 1000 for x in D60["boot_neck"])
+    lo_w, lo_d, _ = (x / 1000 for x in D60["riser_lo"])
+    a_n, a_r = (nw - 0.002) * (nd - 0.002), (lo_w - 0.002) * (lo_d - 0.002)
+    return BOOT_TAPER_K + max(0.0, 1 - a_n / a_r) ** 2, a_n
+
+
+FRONT_DR_FILE = HERE.parents[1] / "01-CAD-Native" / "front" / "dr_block.py"   # FRONT owns DR (PM ruling, D-130)
+FRONT_DR_PENDING = {"ri_d": 155.0, "fb_y0": -847.0, "op_w": 203.0}  # FRONT's values before its D-130 change lands
+
+
+def front_dr_drift():
+    """DR's air sizes in this report against FRONT's named values in its DR model, one source both ways (D-130):
+    [(name, FRONT's mm, this report's mm, state)], state "ok", "pending" (FRONT's D-130 change not landed yet) or
+    "MISMATCH". fb_x0 is FRONT's expression from the glass line (about X 662), so it isn't compared."""
+    import re
+    (bx0, bx1), (by0, by1), (bz0, bz1) = D60["sup_box"]
+    (ox0, ox1), (oz0, oz1) = D60["dr_open"]
+    (rx0, rx1), (ry0, ry1) = D60["riser_x"], D60["riser_y"]
+    mine = dict(ri_x0=rx0, ri_w=rx1 - rx0, ri_y0=ry0, ri_d=ry1 - ry0, fb_w=bx1 - bx0, fb_y0=by0, fb_d=by1 - by0,
+                fb_z0=bz0, fb_h=bz1 - bz0, op_x0=ox0, op_w=ox1 - ox0, op_z0=oz0, op_h=oz1 - oz0)
+    text = FRONT_DR_FILE.read_text(encoding="utf-8")
+    out = []
+    for name, v in mine.items():
+        m = re.search(r'\("%s",\s*"(-?[\d.]+) mm"' % name, text)
+        if not m:
+            out.append((name, None, v, "MISMATCH"))
+            continue
+        theirs = float(m.group(1))
+        state = ("ok" if abs(theirs - v) < 0.01 else
+                 "pending" if abs(theirs - FRONT_DR_PENDING.get(name, 1e9)) < 0.01 else "MISMATCH")
+        out.append((name, theirs, v, state))
+    return out
+
+
+def dr_inner_panel():
+    """DR's removable inner panel (FRONT 351303): from X 949, the air column's left face, to the glass line, up to the
+    soffit's underside at Z 2120. (area m2, perimeter m)."""
+    zs = [z for z in range(100, 2121) if dr_edge_x(z) + DECOR_SKIN < 949]
+    z0 = zs[0]
+    area = sum(949 - dr_edge_x(z) - DECOR_SKIN for z in zs) * 1e-6
+    top = (949 - dr_edge_x(2120) - DECOR_SKIN) / 1000
+    diag = math.hypot((dr_edge_x(2120) - dr_edge_x(z0)) / 1000, (2120 - z0) / 1000)
+    return area, (2120 - z0) / 1000 + top + diag
+
+
+def dr_cavity():
+    """DR's cavity: its bare inside area (m2), the inner panel's area and perimeter."""
+    lo_w, lo_d, lo_l = (x / 1000 for x in D60["riser_lo"])
+    up_w, up_d, up_l = (x / 1000 for x in D60["riser_up"])
+    (bx0, bx1), (by0, by1), (bz0, bz1) = D60["sup_box"]
+    sw, sd, sh = (bx1 - bx0) / 1000, (by1 - by0) / 1000, (bz1 - bz0) / 1000
+    w, d, L = DR_TRANSITION
+    dr_inside = 6.917 / 3.5 + 1.203 / 4.05 + 3.867 / 8.1 + 1.439 / 3.5     # FRONT's skin, back plate, access and inner panels
+    parts = 2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l + 2 * (sw + sd) * sh + 2 * (w + d) * L
+    area, perim = dr_inner_panel()
+    return dict(bare=dr_inside + parts, panel=area, perim=perim)
+
+
+def wall_breakout_db(side_db, kg_m2, wid, dep, length, f):
+    """Sound power a plain duct's walls radiate on all sides, dB (the breakout formula with the whole perimeter)."""
+    tl = max(breakout_tl(f, kg_m2, wid, dep), 10 * math.log10(2 * length * (1 / wid + 1 / dep)))
+    return side_db + 10 * math.log10(2 * (wid + dep) * length / (wid * dep)) - tl
+
+
+def dr_cavity_power(path, side, rf, derate=None):
+    """D-130: what DR's cavity passes to the pod through the inner panel, linear power at the head (calculation)."""
+    room = inside_room_terms()
+    cav, bx = dr_cavity(), path["box"]
+    out = 0.0
+    for i, f in enumerate(BANDS):
+        src = sum(10 ** (wall_breakout_db(side[i], p["kg_m2"], p["wid"], p["dep"], p["L"], f) / 10) for p in path["room"])
+        lp_box = side[i] + 10 * math.log10(4 / fanbox_r(bx, path, i, f, derate))
+        src += 10 ** ((lp_box - 6 + 10 * math.log10(bx["walls_out"]) - r_single(leaf_of(bx["wall"]), f)) / 10)
+        w, d, L = DR_TRANSITION
+        src += 10 ** (wall_breakout_db(side[i], MAT["alu"][0] * 2.0 / 1000, w, d, L, f) / 10)
+        a = cav["bare"] * FANBOX_BARE_ALPHA
+        lp = 10 * math.log10(src) + 10 * math.log10(4 * (1 - a / cav["bare"]) / a)
+        tau = (cav["panel"] * 10 ** (-r_single(acp(), f) / 10)
+               + cav["perim"] * SEAL_STRIP * 10 ** (-SCEN["central"]["seal_r"] / 10))
+        out += 10 ** ((lp - 6 + 10 * math.log10(tau) + room(rf, i)) / 10)
+    return out
 
 
 FRAME_ANGLE_KG_M = 0.26    # aluminium angle 25 x 25 x 2 mm for the column and soffit frames (calculation: 2.7 g/cm3)
@@ -894,8 +1017,9 @@ def d60_parts(casing="al20"):
          f"3 mm aluminium casing (D-124), a 2 mm bulkhead; 50 mm linings at 32 kg/m3 where they fit, "
          f"{rooms['exhaust']['lined']:.3f} m2 (D-121); sleeve 0.093 m2 of 2 mm aluminium"),
         ("Intake riser with a mesh allowance, in the right block", f"{lo_w*1000:.0f}-{up_w*1000:.0f} x {lo_d*1000:.0f} x {(lo_l+up_l)*1000:.0f}",
-         (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5,
-         "1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces (assumption)"),
+         (2 * (lo_w + lo_d) * lo_l + 2 * (up_w + up_d) * up_l) * st + 0.5 + BOOT_KG,
+         f"1 mm galvanised steel; 0.5 kg for its foot and the mesh band piece's extra over the band it replaces, and "
+         f"{BOOT_KG:g} kg for D-130's sealed intake boot and the cartridges' gaskets (assumptions)"),
         ("Roof slot grille and sleeve", "285 x 294", 0.5, "assumption"),
     ]
     return rows
@@ -1017,8 +1141,8 @@ FIXES = [
     ("Silenced vents (D-60: cartridges in the air column and the soffit, intake riser in the right decor block)",
      dict(vents="silenced"), round(d60_air_kg("al20") - d60_ceiling_saving_kg() - 3.0, 1),
      "calculation: the D-60 air parts less the ceiling lining the soffit replaces and the 3 kg in the layout study's rest"),
-    ("Thin floor with base seal (DECIDED, D-05)", dict(floor="thin", base_seal=True), 0.5,
-     "HW base-seal row; the floor itself is in the weight study"),
+    ("No floor of its own, a base seal lip on the room floor (D-132; was D-05's thin floor)", dict(floor="thin", base_seal=True),
+     0.5, "HW base-seal row; the pod stands on the room's slab, as the model already took it"),
     ("Sealed cable holes", dict(grommets=True), 0.1, "HW grommet row"),
 ]
 FIX_ALL = {}
@@ -1034,7 +1158,7 @@ EXTRA_FIX_KG = 2.6
 
 def pod_total_kg(cfg, wb, gb):
     """Whole pod, all light fixes on: rest of pod + wall and ceiling build-ups (with felt, fill, frame) + front."""
-    kg = REST_KG + EXTRA_FIX_KG
+    kg = REST_KG + EXTRA_FIX_KG - (FLOOR_REMOVED_KG if cfg.get("floor") == "thin" else 0.0)   # D-132: no floor
     kg += wb[cfg["wall"]].kg_m2 * OUT_WALL_M2 + wb[cfg.get("ceiling", cfg["wall"])].kg_m2 * OUT_CEIL_M2
     kg += gb[cfg["glass"]].kg_m2 * GLASS_M2 + FRONT_EXTRA_KG.get(cfg["glass"], 0.0)
     kg += d60_air_kg(cfg.get("casing", "al20")) - d60_ceiling_saving_kg() - 3.0   # D-60 air parts, less the ceiling
@@ -1454,7 +1578,9 @@ def path_noise12(path, q_ls, derate=SIL_DERATE, tone_250=0.0, fan_key=FAN_PICK):
                     brk += 10 ** ((lwb + room(rf, i)) / 10)
             cum = [c + x for c, x in zip(cum, part_il(p, derate))]
     bx = path.get("box")
-    if bx and "lined" in bx:   # a D-60 fan box room (D-121, D-124), reverberant, behind a filled double wall
+    if path.get("dr_cavity"):   # D-130: the supply box, riser and transitions radiate into DR's cavity, then the pod
+        brk += dr_cavity_power(path, side, rf, derate)
+    elif bx and "lined" in bx:   # a D-60 fan box room (D-121, D-124), reverberant, behind a filled double wall
         rdw, _ = wall_pair_r(bx["wall"], bx["fill"])
         for i, f in enumerate(BANDS):
             lwb = side[i] + 10 * math.log10(bx["rad_area"] / fanbox_r(bx, path, i, f, derate)) - rdw[i]
@@ -1548,9 +1674,11 @@ def d60_paths(casing="al20"):
     supply = dict(
         pod=[part("split", L, w - 0.004, d - 0.004, gap=gap, ngap=n, lin=lin, fill=D60["fill_col"] / 1000, rad=w + d,
                   bends=1, wall=casing)],
-        room=[part("plain", lo_l, lo_w, lo_d, fill=fill, free=(lo_w - 0.002) * (lo_d - 0.002), wall="st10"),   # behind the column
-              part("plain", up_l, up_w, up_d, fill=0.005, free=(up_w - 0.002) * (up_d - 0.002), bends=2, wall="st10")],
-        box=fanbox_rooms()["supply"], grille=D60_FREE["kick"], opening=D60_FREE["intake"], r=1.0)
+        room=[part("plain", lo_l, lo_w, lo_d, fill=fill, free=(lo_w - 0.002) * (lo_d - 0.002), wall="st10", face=False),
+              part("plain", up_l, up_w, up_d, fill=0.005, free=(up_w - 0.002) * (up_d - 0.002), bends=2, wall="st10",
+                   face=False)],   # in DR's cavity (D-130), not facing the pod
+        box=fanbox_rooms()["supply"], dr_cavity=True, extra=(boot_neck_k(),), grille=D60_FREE["kick"],
+        opening=D60_FREE["intake"], r=1.0)
     exhaust = dict(
         pod=[part("split", L, w - 0.004, d - 0.004, gap=gap, ngap=n, lin=lin, fill=fill, rad=w + d, bends=1, wall=casing)],
         room=[part("plain", 0.10, 0.285, 0.294, face=False)],
@@ -1937,7 +2065,7 @@ def t_d60_sizes():
     (cx0, cx1), (cy0, cy1), (cz0, cz1) = D["col"]
     (sx0, sx1), (sy0, sy1), (sz0, sz1) = D["soffit"]
     sk, fl, cl = D["skin"], D["fill"], 5.0
-    cart_x = (cx1 - cl - w, cx1 - cl)
+    cart_x = (cx1 - w, cx1)                    # its right side on the column's limit, 5 mm off the lining (AIR #91)
     cart_y = (cy0 + cl, cy0 + cl + d)
     cart_z = (D["kick"][1] + 10, D["kick"][1] + 10 + L)
     (bx0, bx1), (by0, by1), (bz0, bz1) = D["sup_box"]
@@ -1950,7 +2078,8 @@ def t_d60_sizes():
     kick_len = (cx1 - cx0 - 2 * sk) + (cy1 - cy0 - 2 * sk)
     ex_cart_x = (ex0 - L, ex0)
     ex_cart_z = (sz0 + sk + fl, sz0 + sk + fl + w)
-    riser_x0 = dr_edge_x(SKEL["dr_zb"]) + DECOR_SKIN + 5
+    (rx0, rx1), (ry0, ry1) = D["riser_x"], D["riser_y"]
+    nw, nd = D["boot_neck"]
     f = lambda a, b: f"{a:.0f} to {b:.0f}"
     rows = [
         ("Air column, outer", f"{cx1 - cx0:.0f} x {cy1 - cy0:.0f} x {cz1 - cz0:.0f}",
@@ -1961,13 +2090,15 @@ def t_d60_sizes():
          f"X {f(*cart_x)}, Y {f(*cart_y)}, Z {f(*cart_z)}",
          f"2 mm aluminium casing; two {D['gap']:.0f} mm passages running up and down between three {D['lin']:.0f} mm "
          f"Pyrotek Sorberpoly 2D layers parallel to the front face; {fl:.0f} mm polyester fill to the front and left "
-         f"faces; {cl:.0f} mm clear on the other sides to slide it out"),
+         f"faces; {cl:.0f} mm clear on the other sides to slide it out, with a gasket round its inlet end so those gaps "
+         "don't bypass the passages (D-130)"),
         ("Kick grille, supply out", f"{D['kick'][1] - D['kick'][0]:.0f} tall x {kick_len:.0f} along the front and left faces",
          f"Z {f(*D['kick'])}", f"{D60_FREE['kick']:.3f} m2 free or more (60%); base plenum Z {f(cz0, cart_z[0])} under "
          f"the cartridge"),
         ("Opening from the right block into the column top", f"{ox1 - ox0:.0f} x {oz1 - oz0:.0f}",
          f"in the block's inner face at X {f(ox0, ox1)}, Z {f(oz0, oz1)}",
-         f"supply air from the fan box; column top plenum Z {f(cart_z[1], cz1)}"),
+         f"supply air from the fan box; column top plenum Z {f(cart_z[1], cz1)}; its right edge is the column's (X "
+         f"{cx1:.0f}); FRONT's op_x0, op_w, op_z0, op_h"),
         ("Sensor hub and controls", "180 x 180 zone, up to 29 deep",
          f"on the column's front face, centred X {(cx0 + cx1) / 2:.0f}, Z 1200",
          "no fill behind it; a 30 x 30 mm cable chase in the column's front-left corner runs up to the top plenum and on "
@@ -1977,19 +2108,31 @@ def t_d60_sizes():
          f"two Noctua NF-A14 industrialPPC-3000 PWM on a level bulkhead {FANBOX_SUP_FAN_Z * 1000:.0f} mm above the open "
          f"bottom, blowing up; 3 mm aluminium (D-124); 50 mm linings on the two short end walls only, from "
          f"{FANBOX_LIN_GAP * 1000:.0f} mm above the fans to the top (D-121): on the long walls they would choke the air; "
-         "44 mm fill to the block's inner face, which lifts off here (D-59); a transition carries the air right to the "
-         "opening"),
+         f"{by0 - (SKEL['yf'] + DECOR_SKIN):.0f} mm off DR's front skin; an air gap of "
+         f"{SKEL['yf'] + SKEL['decor_d'] - 1.5 - by1:.0f} mm, no fill, to DR's removable inner panel (D-59); a transition "
+         "carries the air right to the opening; the joined assembly with the riser is "
+         f"{ry1 - by0:.0f} mm deep; FRONT's names in its DR model: fb_x0, fb_y0, fb_w, fb_d, fb_z0, fb_h (D-130)"),
         ("Intake riser", f"{lo_w:.0f} to {up_w:.0f} wide x {lo_d:.0f} deep x {lo_l + up_l:.0f}",
-         f"X {riser_x0:.0f} to {riser_x0 + lo_w:.0f}, Y {SKEL['yf'] + SKEL['decor_d'] - DECOR_SKIN - lo_d:.0f} to "
-         f"{SKEL['yf'] + SKEL['decor_d'] - DECOR_SKIN:.0f}, Z 105 to {105 + lo_l:.0f}, behind the column; then it widens "
-         f"and turns into the fan box inlet below Z {bz0:.0f}",
-         "1 mm galvanised steel, 0.021 m2 free or more"),
+         f"X {f(rx0, rx1)}, Y {f(ry0, ry1)}, up to Z {105 + lo_l:.0f}, behind the column, in FRONT's reserved space; "
+         f"then it widens and turns into the fan box inlet below Z {bz0:.0f}",
+         f"1 mm galvanised steel, {(lo_w - 2) * (lo_d - 2) / 1e6:.3f} m2 free; 4.8 mm off DR's corner facet at its "
+         "front-right corner, 6.5 mm off DR's panels; it stands in DR's bare cavity; FRONT's ri_x0, ri_w, ri_y0, ri_d"),
+        ("Intake boot (D-130)", f"{nw:.0f} x {nd:.0f} at its narrowest",
+         f"from the mesh band piece, up through DR's base (Z {SKEL['dr_zb']:.0f} to 253), to the riser's foot",
+         f"sealed all round (AIR, with the riser), so the supply fans' inlet noise never enters DR's cavity or the space "
+         f"under the block; its narrowest section is the riser's own outline, so it adds {boot_neck_k()[0]:.2f} of a "
+         "velocity head; FRONT's frame must clear it there; BASE's mesh frame at its mouth"),
         ("Intake (FRONT and BASE)", f"band piece {band_under_dr_mm():.0f} long x {SKEL['band_h']:.0f} tall",
          f"the front base band under the right block: its front face from X {dr_edge_x(SKEL['dr_zb']):.0f} to "
          f"{SKEL['xr'] - SKEL['dr_xc']:.0f} and along the corner facet, Z {SKEL['glide_h']:.0f} to {SKEL['dr_zb']:.0f}",
          f"a flush black mesh with the band's outline, 80% free over 95 mm, {D60_FREE['intake']:.3f} m2 free (PM, "
          f"2026-10-31); the block gets its own support behind it (BASE); a closing plate at Y -645 from Z 15 to "
-         f"{SKEL['dr_zb']:.0f} separates the space under the block from the pod; the riser opens down into that space"),
+         f"{SKEL['dr_zb']:.0f} separates the space under the block from the pod; the intake boot (D-130) takes the air "
+         "from behind the mesh to the riser"),
+        ("Gaskets (D-130)", "", "DR's removable inner panel and access panel, all round their edges (FRONT); each "
+         "cartridge's inlet end, all round its casing (AIR)",
+         "the panels' edges would leak DR's cavity into the pod; the cartridges' 5 mm slide-out gaps would let the air "
+         "and its noise bypass the passages (about 5 dB at 65 l/s, section 7j)"),
         ("Soffit, outer", f"{sx1 - sx0:.0f} x {sy1 - sy0:.0f} x {sz1 - sz0:.0f}",
          f"X {f(sx0, sx1)}, Y {f(sy0, sy1)}, Z {f(sz0, sz1)}",
          f"underside and front face felt-covered, front face flush with the column's; the underside lifts off in sections; "
@@ -2104,7 +2247,14 @@ def main(argv=None):
         for k in bad:
             print(f"MISMATCH: table '{k}' differs from report.md")
         print("verify:", "OK, all", len(out), "tables match report.md" if not bad else f"{len(bad)} table(s) differ")
-        return 1 if bad else 0
+        drift = front_dr_drift()
+        for name, theirs, mine, state in drift:
+            if state != "ok":
+                print(f"{'MISMATCH' if state == 'MISMATCH' else 'pending'}: FRONT's {name} = {theirs} mm, this report {mine:g} mm"
+                      + (" (FRONT's D-130 change)" if state == "pending" else ""))
+        off = [d for d in drift if d[3] == "MISMATCH"]
+        print("FRONT's DR names:", "OK" if not off else f"{len(off)} differ", f"({sum(d[3] == 'pending' for d in drift)} pending)")
+        return 1 if bad or off else 0
     for k, v in out.items():
         print(f"<!-- calc.py: {k} -->")
         print(v)

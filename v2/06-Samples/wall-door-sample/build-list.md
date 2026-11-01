@@ -74,6 +74,7 @@ Positions follow `conventions.md` §4: left and right are as seen from outside, 
 | Coupon | What | Count | Test |
 |---|---|---:|---|
 | Rivnut | A 300 mm piece of the 20 × 40 × 1.2 tube from the frame's own batch, with one rivnut (P05) set through a stop washer (P07) in a 40 mm face, as in the joint (joints register 2.2) | 15 (assumption: 10 for spin-out, 5 for the cycle check) | T06 |
+| Rivnut, DR | A 300 mm piece of DR's 20 × 20 × 1.0 frame tube (P02F) with one rivnut (P05) in a 20 mm face, no stop washer, and a washer (P25) on its head as DR's panel stop (joints register H-34) | 5 (assumption: spin-out) | T06 |
 | Bond | A lap-shear pair: an ACP strip (P01) on a 150 mm tube piece, bonded the way S1 is bonded | 10 (assumption: 5 as cured, 5 aged) | T09 |
 | Clip | A strip of the cassette's 0.5 mm return (P08) with one clip (P11), and its mate on a 150 mm tube piece | 10 (assumption: 5 in shear for the wall, 5 in pull-out for the ceiling) | T07 |
 
