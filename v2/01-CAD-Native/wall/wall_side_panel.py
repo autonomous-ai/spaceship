@@ -1405,10 +1405,15 @@ def mitre_plates(design, frame, corners, axis, face, toward_room):
         ou, ov, iu, iv = (ev(design, e) for e in (o[0], o[1], i[0], i[1]))
         ln = math.hypot(iu - ou, iv - ov)
         du, dv = (iu - ou) / ln, (iv - ov) / ln
+        # the plate's own extents about its README origin (its STEP may stand back from the outer faces, Lead
+        # 2026-11-01: a shorter blank whose square edges sit inside the frame's faces), read from its body
+        lb = c.bRepBodies.item(0).boundingBox
+        ext = [(lb.minPoint.x * 10.0, lb.maxPoint.x * 10.0), (lb.minPoint.y * 10.0, lb.maxPoint.y * 10.0),
+               (lb.minPoint.z * 10.0, lb.maxPoint.z * 10.0)]
         pts = []
-        for a in (0.0, ln):
-            for b in (0.0, depth):
-                for k in (-t / 2, t / 2):
+        for a in ext[0]:
+            for b in ext[1]:
+                for k in ext[2]:
                     u, v, w = ou + a * du - k * dv, ov + a * dv + k * du, f + toward_room * b
                     pts.append((w, u, v) if axis == "x" else (u, w, v))
         want = [min(q[j] for q in pts) for j in range(3)] + [max(q[j] for q in pts) for j in range(3)]
