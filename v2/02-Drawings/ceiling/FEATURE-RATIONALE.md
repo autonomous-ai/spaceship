@@ -68,7 +68,7 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-513201-01 | Panel | 1157 × 1042 × 9 on the lips, no holes | The room face (D-17, D-53); the lights are on the wall-top light shelf (D-70) | 1 mm clear of the returns (`felt_c`) | calculation |
 | F-513201-02 | Sprinkler reserve | Ø150 zones at X' ±386.67, Y' 190.75 (marked, nothing cut) | A later sprinkler drop (REQ-US-01) | The middle of the outer felt spans and of the bay between X1 and X2 (tests) | assumption |
 
-## Fill 513301, 513302, 513303, PET 40 at 24 kg/m³ (D-81; one tabulated drawing, D-89)
+## Fill 513301, 513302, 513303, PET 40 at 25 kg/m³ (one tabulated drawing, D-89)
 
 | Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|

@@ -155,19 +155,19 @@ SPECS = {
     ]),
     "fill_a": spec("fill_a", 0.2, [
         "Tolerances (assumption): cut sizes +/-2; thickness as supplied.",
-        "PET fill 40, 24 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
+        "PET fill 40, 25 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
         "Cut file: 513301_P01_LINING-FILL-CEILING-BAY-A_DXF.dxf. Notches clear the clips and catches by 5.",
         "Fixing to the tray's back: HOLD (H10); gravity holds it in service.",
     ]),
     "fill_b": spec("fill_b", 0.2, [
         "Tolerances (assumption): cut sizes +/-2; thickness as supplied.",
-        "PET fill 40, 24 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
+        "PET fill 40, 25 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
         "Cut file: 513302_P01_LINING-FILL-CEILING-BAY-B_DXF.dxf. Notches clear the clips by 5.",
         "Fixing to the tray's back: HOLD (H10).",
     ]),
     "fill_c": spec("fill_c", 0.2, [
         "Tolerances (assumption): cut sizes +/-2; thickness as supplied.",
-        "PET fill 40, 24 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
+        "PET fill 40, 25 kg/m3 by default (D-81; the wall sample's T02 confirms it, else 32).",
         "Cut file: 513303_P01_LINING-FILL-CEILING-BAY-C_DXF.dxf. Notches clear the clips by 5.",
         "Fixing to the tray's back: HOLD (H10).",
     ]),

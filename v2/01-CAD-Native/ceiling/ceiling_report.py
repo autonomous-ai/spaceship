@@ -63,26 +63,6 @@ def sync_params(design):
     return changed
 
 
-def sync_materials(design):
-    """Reference update for materials, as sync_params is for parameters: give every part the
-    material ceiling_model.py names for it, at its density (the fill went to D-81's 24 kg/m3).
-    Returns the part numbers changed."""
-    ctx = CB.Ctx(design)
-    by_pn = {pn: mk for (pn, _n, _vn, _kind, mk) in M.PARTS.values() if mk and mk in M.MATERIALS}
-    changed = set()
-    for comp in design.allComponents:
-        mk = by_pn.get(comp.partNumber)
-        if not mk:
-            continue
-        want = CB.material(ctx, mk)
-        for b in comp.bRepBodies:
-            if b.material is None or b.material.name != want.name:
-                b.material = want
-                changed.add(comp.partNumber)
-    adsk.doEvents()
-    return sorted(changed)
-
-
 def run(_context):
     app = adsk.core.Application.get()
     doc = app.activeDocument
@@ -95,9 +75,6 @@ def run(_context):
     print("document %s, version %s" % (doc.name, doc.dataFile.versionNumber if doc.dataFile else "unsaved"))
     changed = sync_params(design)
     print("parameter sync from ceiling_model.py: %s" % (", ".join(changed) or "no change"))
-    mat_changed = sync_materials(design)
-    print("material sync from ceiling_model.py: %s" % (", ".join(mat_changed) or "no change"))
-    changed = changed + ["material of " + pn for pn in mat_changed]
     tl = design.timeline
     bad = [tl.item(i).name for i in range(tl.count)
            if tl.item(i).healthState != adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState]
