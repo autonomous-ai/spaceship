@@ -213,20 +213,17 @@ OWN = [
     ("dt_sp_y", "-pod_d / 2 + decor_d - 12.88 mm", "mm", "calculation",
      "J-FRONT-03: the spigots' Y, -657.88, the middle of where DR's ledge tube and DT's bottom back tube overlap"),
     ("ab_hole", "7 mm", "mm", "source",
-     "the pod's M6 clearance hole, 7.0 (D-64, D-75; the mechanical check's hole rule M6-CLEARANCE-7) for the bolts "
-     "838001; the frame's rivnut heads (0.76 proud, SHX) sit in the access panel's 1 mm perimeter gasket (HOLD)"),
+     "the pod's M6 clearance hole, 7.0 (D-64, D-75; the mechanical check's hole rule M6-CLEARANCE-7) for the inner "
+     "face panel's screws 838001"),
     ("ab_x", "pod_w / 2 - dr_skin_t - fr_wb + 2 * fr_hole_rn + 2 mm", "mm", "calculation",
-     "access panel bolts on the bolt-line tube: the rivnut 2 diameters plus 2 from the tube's inner edge (C09)"),
-    ("ab_z0", "300 mm", "mm", "assumption", "lowest access panel bolt on the bolt-line tube"),
-    ("ab_p", "350 mm", "mm", "assumption", "pitch of the 6 access panel bolts on the bolt-line tube"),
-    ("ab_x1", "dr_col_x0 + 45 mm", "mm", "assumption", "access panel's top and bottom bolts, left"),
-    ("ab_x2", "pod_w / 2 - dr_skin_t - fr_wb - 2 * fr_hole_rn - 3 mm", "mm", "calculation",
-     "access panel's top and bottom bolts, right: their rivnuts 2 diameters plus 3 from the end of the bottom and "
-     "band tubes (C09)"),
-    ("ab_zb", "fg_vis_zb + fr_wbot / 2", "mm", "calculation",
-     "access panel's bottom bolts: the middle of the 40 bottom tube, so the rivnut is 2 diameters from both its edges"),
+     "the panel's screw line on the bolt-line tube: the rivnut 2 diameters plus 2 from the tube's inner edge (C09)"),
     ("ab_zt", "fg_vis_zt + 2 * fr_hole_rn + 1 mm", "mm", "calculation",
-     "access panel's top bolts: their rivnuts 2 diameters plus 1 above the band tube's lower edge (C09)"),
+     "the panel's screw line on the band tube: its rivnuts 2 diameters plus 1 above the tube's lower edge (C09)"),
+    ("dr_sc_clear", "40 mm", "mm", "calculation",
+     "the panel's end screws 40 from the corners of its screw line, clear of the frame's welded corners (D-130)"),
+    ("dr_felt_hole", "22 mm", "mm", "calculation",
+     "felt holes over the panel's screw heads (washer 18 and the key), plugged with felt cut from the same sheet: no "
+     "bare socket heads on the room side (PM ruling 2026-11-01)"),
     # the top chamfer and the DT joint as lines, for the frame
     ("dr_cl", "sqrt((pod_d / 2 - ch_yb) * (pod_d / 2 - ch_yb) + (pod_h - ch_zlo) * (pod_h - ch_zlo))", "mm",
      "calculation", "length of the top chamfer in the side view"),
@@ -263,6 +260,8 @@ PARTS = {
     "BACK": ("351302", "FRONT - DECOR BACK PLATE - DR", "Tấm hậu khối phải"),
     "ACCESS": ("351305", "FRONT - DECOR ACCESS PANEL - DR", "Tấm thăm khối phải"),
     "FELT": ("351304", "FRONT - DECOR INNER PANEL FELT - DR", "Nỉ tấm trong khối phải"),
+    "SEAL": ("848013", "SEALS - ACCESS PANEL SEAL - 4.0 THICK - VERY SOFT FOAM PSA",
+             "Gioăng tấm thăm - xốp rất mềm dày 4.0, keo dán sẵn"),
     "RISER": ("351402", "FRONT - AIR INTAKE RISER - DR", "Ống gió đứng khối phải"),
     "TLOW": ("351403", "FRONT - AIR TRANSITION - LOWER - DR", "Ống chuyển hướng dưới"),
     "FBOX": ("351404", "FRONT - SUPPLY FAN BOX - DR", "Hộp quạt cấp"),
@@ -284,11 +283,51 @@ FRAME = ("351306", "FRONT - DECOR FRAME - DR", "Khung trang trí phải (hàn)")
 # tube sections and walls (PM ruling 2026-11-01): skin-only tubes 1.0, rivnut tubes 1.2, the fan box shelf 1.5
 S20, S40, S60, S80 = "20 x 20 x 1.0", "40 x 20 x 1.5", "60 x 20 x 1.5", "80 x 20 x 1.5"   # D-130: rivnut walls 1.5
 S20_SHELF = "20 x 20 x 1.5"
-S20_RN = "20 x 20 x 1.2"            # the ledge tube: DT's two spigot rivnuts (J-FRONT-03)
+S20_RN = "20 x 20 x 1.2"            # (no tube now: the ledge tube takes the panel's rivnuts too, so 1.5)
+S20_PNL = "20 x 20 x 1.5"           # the ledge, diagonal and glass-edge tubes: the panel's rivnuts (D-130, Joints)
 WALL = {"20 x 20 x 1.0": "fr_t_sk", "20 x 20 x 1.2": "fr_t_rn", "40 x 20 x 1.5": "fr_t_pnl", "60 x 20 x 1.5": "fr_t_pnl",
         "80 x 20 x 1.5": "fr_t_pnl", "20 x 20 x 1.5": "fr_t"}
-ACCESS_BOLTS = ([("ab_x", "ab_z0 + %d * ab_p" % k) for k in range(6)] + [("ab_x1", "ab_zb"), ("ab_x2", "ab_zb")] +
-                [("ab_x1", "ab_zt"), ("ab_x2", "ab_zt")])
+# D-130: the inner face panel's screw and seal line runs on the middles of the frame tubes under its edges, each
+# line a*x + b*z = c with its normal into the panel; edge k runs along tube PANEL_LINES[k] from corner k to corner k+1
+PANEL_LINES = [
+    ("B01", FL.line(0, 1, "fg_vis_zb + fr_wbot / 2")),                    # the bottom tube, Z 130
+    ("B02", FL.line(-1, 0, "-ab_x")),                                      # the bolt-line tube, X 1188
+    ("B08", FL.line(0, -1, "-ab_zt")),                                     # the band tube, Z 2140
+    ("B04", FL.line(1, 0, "-pod_w / 2 + dt_xr + fr_w / 2")),               # the DT joint tube: the 30 mm step
+    ("B05", FL.line(0, -1, "-(fg_vis_zt - fr_w / 2)")),                    # DT's ledge tube, Z 2110
+    ("B06", FL.line("fg_dnx", "fg_dnz", "fg_dc + dr_skin_t + fr_w / 2")),  # the diagonal tube's middle
+    ("B07", FL.line("fg_rnx", "fg_rnz", "fg_rc + dr_skin_t + fr_w / 2")),  # the glass-edge tube's middle
+]
+# screws per edge, about dr_pitch apart (Joints' 400) and dr_sc_clear from the corners: 21 in all
+SCREWS_PER_EDGE = [2, 6, 3, 0, 2, 3, 5]
+for _k in range(len(PANEL_LINES)):
+    _u, _v = FL.meet(PANEL_LINES[_k - 1][1], PANEL_LINES[_k][1])
+    OWN.append(("dr_pl%dx" % _k, _u, "mm", "calculation", "the inner face panel's screw line, corner %d, X" % _k))
+    OWN.append(("dr_pl%dz" % _k, _v, "mm", "calculation", "the inner face panel's screw line, corner %d, Z" % _k))
+for _k in range(len(PANEL_LINES)):
+    _j = (_k + 1) % len(PANEL_LINES)
+    OWN.append(("dr_pe%d" % _k, "sqrt((dr_pl%dx - dr_pl%dx) * (dr_pl%dx - dr_pl%dx) + (dr_pl%dz - dr_pl%dz) * "
+                "(dr_pl%dz - dr_pl%dz))" % (_j, _k, _j, _k, _j, _k, _j, _k), "mm", "calculation",
+                "the inner face panel's screw line along tube %s, its length" % PANEL_LINES[_k][0]))
+
+
+def panel_screws():
+    """[(tube, (x, z))]: the inner face panel's screws, evenly along each edge of its line from dr_sc_clear to
+    dr_sc_clear short of its corners (D-130)."""
+    out = []
+    for k, (key, _l) in enumerate(PANEL_LINES):
+        n, j = SCREWS_PER_EDGE[k], (k + 1) % len(PANEL_LINES)
+        for i in range(n):
+            t = "((dr_sc_clear + %d * (dr_pe%d - 2 * dr_sc_clear) / %d) / dr_pe%d)" % (i, k, n - 1, k)
+            out.append((key, ("dr_pl%dx + (dr_pl%dx - dr_pl%dx) * %s" % (k, j, k, t),
+                              "dr_pl%dz + (dr_pl%dz - dr_pl%dz) * %s" % (k, j, k, t))))
+    return out
+
+
+def seal_outline(push):
+    """The seal's edge: the screw line pushed by `push` (into the panel when positive), corner for corner."""
+    lines = [FL.push(l, push) for _k, l in PANEL_LINES]
+    return [FL.meet(lines[k - 1], lines[k]) for k in range(len(lines))]
 
 
 def frame_members():
@@ -308,9 +347,9 @@ def frame_members():
     sk3, sk23 = "dr_skin_t", "dr_skin_t + fr_w"
     M = []
 
-    def add(key, name, axes, pts, along, a, b, section=S20, axis=(0, 1), ends=None):
+    def add(key, name, axes, pts, along, a, b, section=S20, axis=(0, 1), ends=None, t=None):
         M.append({"key": key, "name": name, "axes": axes, "pts": pts, "along": along, "a": a, "b": b,
-                  "section": section, "t": WALL[section], "axis": axis,
+                  "section": section, "t": t or WALL[section], "axis": axis,
                   "ends": ends or "mitred to its neighbours (angles on the frame drawing)"})
 
     front = FL.ring([(bot, "0 mm", "fr_w"), (facf, "0 mm", "fr_w"), (chf, "0 mm", "fr_w"), (dtjf, "0 mm", "fr_w"),
@@ -323,9 +362,9 @@ def frame_members():
                     (ledge, "0 mm", "fr_w"), (diag, sk3, "fr_w"), (rl, sk3, "fr_w")])
     for k, (key, nm, sec) in enumerate((("B01", "BACK RING BOTTOM", S40), ("B02", "BACK RING BOLT LINE", S80),
                                         ("B03", "BACK RING TOP", S20), ("B04", "BACK RING DT JOINT", S20),
-                                        ("B05", "BACK RING DT LEDGE", S20_RN), ("B06", "BACK RING DIAGONAL", S20),
-                                        ("B07", "BACK RING GLASS EDGE", S20))):
-        add(key, nm, ("x", "z"), back[k], "y", yb0, yb1, sec)
+                                        ("B05", "BACK RING DT LEDGE", S20_PNL), ("B06", "BACK RING DIAGONAL", S20_PNL),
+                                        ("B07", "BACK RING GLASS EDGE", S20_PNL))):
+        add(key, nm, ("x", "z"), back[k], "y", yb0, yb1, sec, t="fr_t_pnl" if sec == S20_PNL else None)
     # cross tubes in the front ring: v1's 724, and the shelf the fan box stands on
     rl23, dg23 = FL.push(rl, sk23), FL.push(diag, sk23)
     for key, nm, edge, z0, sec in (("F07", "FRONT RING CROSS 724", rl23, "%s + fr_h1" % ZB, S20),
@@ -518,9 +557,10 @@ def build(app):
     prism(c, ("x", "z"), [("op_x0", "op_z0"), ("op_x0 + op_w", "op_z0"), ("op_x0 + op_w", "op_z0 + op_h"),
                           ("op_x0", "op_z0 + op_h")], "y", ya + " - 1 mm", yb_acc + " + 1 mm",
           "OPENING - INTO THE AIR COLUMN TOP", "CUT - OPENING INTO THE AIR COLUMN", CUT, ap)
-    sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - ACCESS PANEL BOLTS OVER THE RIVNUTS (10)",
-                   ACCESS_BOLTS, "ab_hole")
-    L.extrude_span(c, sk, "y", ya + " - 1 mm", yb_acc + " + 1 mm", CUT, [ap], "CUT - ACCESS PANEL BOLT HOLES",
+    screws = panel_screws()
+    sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - THE PANEL'S SCREWS (%d)" % len(screws),
+                   [pt for _k, pt in screws], "ab_hole")
+    L.extrude_span(c, sk, "y", ya + " - 1 mm", yb_acc + " + 1 mm", CUT, [ap], "CUT - THE PANEL'S SCREW HOLES",
                    profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
     sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0, "HOLES - AIR COLUMN HOOK STUD RIVNUTS (2)",
                    [("dr_stud_x", "dr_stud_z1"), ("dr_stud_x", "dr_stud_z2")], "jf_hole")
@@ -537,6 +577,42 @@ def build(app):
               "EXTRUDE - FELT 9")
     bodies["FELT"] = f.bodies.item(0)
     bodies["FELT"].name = "DR INNER FACE PANEL FELT 9"
+    # holes in the felt over the panel's screws, so no bare socket head shows on the room side; each plugged with felt
+    # cut from the same sheet (PM ruling 2026-11-01). Only where a hole meets the felt (near the bottom the felt is a
+    # sliver between the glass line and the column's edge)
+    fpoly = [(L.ev(design, u), L.ev(design, v)) for u, v in inner]
+    r_h = L.ev(design, "dr_felt_hole") / 2
+
+    def meets_felt(x, z):
+        n, ins = len(fpoly), False
+        for i in range(n):
+            (x1, z1), (x2, z2) = fpoly[i], fpoly[(i + 1) % n]
+            if (z1 > z) != (z2 > z) and x < x1 + (z - z1) * (x2 - x1) / (z2 - z1):
+                ins = not ins
+            dx, dz = x2 - x1, z2 - z1
+            t = max(0.0, min(1.0, ((x - x1) * dx + (z - z1) * dz) / (dx * dx + dz * dz)))
+            if ((x1 + t * dx - x) ** 2 + (z1 + t * dz - z) ** 2) ** 0.5 < r_h:
+                return True
+        return ins
+    felt_pts = [pt for _k, pt in panel_screws() if meets_felt(L.ev(design, pt[0]), L.ev(design, pt[1]))]
+    if felt_pts:
+        sk = L.circles(design, c, c.xZConstructionPlane, ("x", "z"), 0,
+                       "HOLES - OVER THE PANEL'S SCREW HEADS, PLUGGED (%d)" % len(felt_pts), felt_pts, "dr_felt_hole")
+        L.extrude_span(c, sk, "y", yb_acc + " - 1 mm", yb_acc + " + felt_t + 1 mm", CUT, [bodies["FELT"]],
+                       "CUT - FELT HOLES OVER THE SCREW HEADS", profiles=[sk.profiles.item(i) for i in range(sk.profiles.count)])
+    print("FELT HOLES|%d over the panel's %d screws" % (len(felt_pts), len(panel_screws())))
+
+    # ---- 848013 the panel's seal (D-130, joints register H-34): one loop on the frame's tubes along the screw line,
+    # 4.0 very soft foam squeezed to the 2.36 stop gap; cut round each stop washer when fitted (Joints, option (a))
+    c = comp("SEAL")
+    ys0 = YB + " - dr_back_t"
+    f = prism(c, ("x", "z"), seal_outline("-dr_seal_w / 2"), "y", ys0, ya, "OUTLINE - 848013 SEAL, OUTER EDGE",
+              "EXTRUDE - 848013 SEAL (SQUEEZED TO THE STOP GAP)")
+    seal = f.bodies.item(0)
+    prism(c, ("x", "z"), seal_outline("dr_seal_w / 2"), "y", ys0 + " - 1 mm", ya + " + 1 mm",
+          "OUTLINE - 848013 SEAL, INNER EDGE", "CUT - 848013 SEAL, INSIDE THE LOOP", CUT, seal)
+    seal.name = "848013 PANEL SEAL 4.0 SQUEEZED TO 2.36"
+    bodies["SEAL"] = seal
 
 
     # ---- air parts from the D-60 table
@@ -594,12 +670,14 @@ def build(app):
     tubes = FL.root_bodies(frame_occ, native, moccs)
     bodies.update(tubes)
     yb1 = YB + " - dr_back_t"
-    for key, name, centres, dia in (
-            ("B02", "HOLES - J-FRONT-01 RIVNUT TAILS AND BOLT TIPS (6)", [("jf_x", "jf_z%d" % i) for i in range(1, 7)],
-             "fr_hole_jf"),
-            ("B02", "HOLES - ACCESS PANEL RIVNUTS ON THE BOLT-LINE TUBE (6)", ACCESS_BOLTS[:6], "fr_hole_rn"),
-            ("B01", "HOLES - ACCESS PANEL RIVNUTS ON THE BOTTOM TUBE (2)", ACCESS_BOLTS[6:8], "fr_hole_rn"),
-            ("B08", "HOLES - ACCESS PANEL RIVNUTS ON THE BAND TUBE (2)", ACCESS_BOLTS[8:10], "fr_hole_rn")):
+    # J-FRONT-01's tails, and the inner face panel's rivnuts on the screw line, each tube's in that tube (D-130)
+    holes = [("B02", "HOLES - J-FRONT-01 RIVNUT TAILS AND BOLT TIPS (6)", [("jf_x", "jf_z%d" % i) for i in range(1, 7)],
+              "fr_hole_jf")]
+    for key, _l in PANEL_LINES:
+        pts = [pt for k, pt in panel_screws() if k == key]
+        if pts:
+            holes.append((key, "HOLES - THE INNER FACE PANEL'S RIVNUTS ON %s (%d)" % (key, len(pts)), pts, "fr_hole_rn"))
+    for key, name, centres, dia in holes:
         mc = mcomps[key]                     # each hole in its own tube's component
         sk = L.circles(design, mc, mc.xZConstructionPlane, ("x", "z"), 0, name, centres, dia)
         L.extrude_span(mc, sk, "y", yb1 + " - fr_t_pnl - 1 mm", yb1 + " + 0.5 mm", CUT, [native[key]],
@@ -635,11 +713,11 @@ def build(app):
     al6063 = L.material(design, "Aluminium 6063-T6 tube (2700 kg/m3)", "Aluminum", 2700.0)
     for k in native:
         native[k].material = al6063
-    for k, m in (("SKIN", acp), ("BACK", alu), ("ACCESS", alu), ("FELT", felt), ("RISER", env),
+    for k, m in (("SKIN", acp), ("BACK", alu), ("ACCESS", alu), ("FELT", felt), ("SEAL", env), ("RISER", env),
                  ("TLOW", env), ("FBOX", env), ("TUP", env), ("TUP2", env)):
         bodies[k].material = m
     looks = {"SKIN": ["Paint - Enamel Glossy (Yellow)"], "BACK": ["Aluminum - Satin"], "ACCESS": ["Aluminum - Satin"],
-             "FELT": ["Fabric (Gray)", "Plastic - Matte (Grey)"],
+             "FELT": ["Fabric (Gray)", "Plastic - Matte (Grey)"], "SEAL": ["Plastic - Matte (Black)"],
              "RISER": ["Steel - Satin", "Paint - Enamel Glossy (Grey)"],
              "FBOX": ["Aluminum - Satin"],
              "TLOW": ["Paint - Enamel Glossy (Red)"], "TUP": ["Paint - Enamel Glossy (Red)"],
@@ -744,6 +822,7 @@ ANCHORS = [
     ("ACCESS", 3, "dr_strip_x0"), ("ACCESS", 5, "fg_vis_zt + dr_band_dz"), ("ACCESS", 4, "dr_acc_face_y"),
     ("ACCESS", 1, "-pod_d / 2 + decor_d - dr_back_t + dr_pnl_gap"),
     ("FELT", 3, "dr_col_x0"), ("FELT", 5, "fg_vis_zt"), ("FELT", 4, "dr_acc_face_y + felt_t"),
+    ("SEAL", 4, "-pod_d / 2 + decor_d - dr_back_t + dr_pnl_gap"), ("SEAL", 3, "ab_x + dr_seal_w / 2"),
     ("RISER", 2, "fg_vis_zb + dr_skin_t + ri_gap"), ("RISER", 5, "ri_zt"), ("RISER", 0, "ri_x0"),
     ("FBOX", 0, "fb_x0"), ("FBOX", 2, "fb_z0"), ("FBOX", 5, "fb_z0 + fb_h"),
     ("TUP", 5, "op_z0 + op_h"),
@@ -754,13 +833,16 @@ ANCHORS = [
 ]
 
 # what each tube's row says about its holes and fixings (the cuts in build(); none on the copies)
-MEMBER_NOTES = {
-    "B01": "40 x 20 x 1.2; 2 rivnuts 838003 for the access panel's bottom bolts (Z 130); J-FRONT-02: spigot hole 8.5 "
+MEMBER_NOTES = {    # {n}: the inner face panel's rivnuts in that tube (D-130), counted from its screw line
+    "B01": "40 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws (Z 130); J-FRONT-02: spigot hole 8.5 "
            "at X 1050 and slot 8.5 x 14 at X 1147 in its bottom wall, over BASE's support behind the mesh",
-    "B02": "80 x 20 x 1.2; 6 holes 14 in its back wall round the J-FRONT-01 rivnut tails (X 1224); 6 rivnuts 838003 "
-           "for the access panel's bolts (X 1188)",
-    "B05": "20 x 20 x 1.2; 2 rivnuts 838003 in its top for DT's spigots 831001 (J-FRONT-03, X 270 and 410)",
-    "B08": "60 x 20 x 1.2; 2 rivnuts 838003 for the access panel's top bolts (Z 2140)",
+    "B02": "80 x 20 x 1.5; 6 holes 14 in its back wall round the J-FRONT-01 rivnut tails (X 1224); {n} rivnuts 838003 "
+           "for the inner face panel's screws (X 1188)",
+    "B05": "20 x 20 x 1.5; 2 rivnuts 838003 in its top for DT's spigots 831001 (J-FRONT-03, X 270 and 410) and {n} in "
+           "its back wall for the inner face panel's screws (Z 2110)",
+    "B06": "20 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws, on its middle",
+    "B07": "20 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws, on its middle",
+    "B08": "60 x 20 x 1.5; {n} rivnuts 838003 for the inner face panel's screws (Z 2140)",
     "F08": "20 x 20 x 1.5: carries the fan box's shelf",
     "C03": "20 x 20 x 1.5: carries the fan box's shelf",
 }
@@ -779,6 +861,8 @@ def export_all(app):
     members = frame_members()
     tube_m = sum(FL.member_numbers(m, ev)["length"] for m in members) / 1000.0
     gt = "general tolerance ISO 2768-m"
+    seal_m = sum(ev("dr_pe%d" % k) for k in range(len(PANEL_LINES))) / 1000.0
+    n_screws = len(panel_screws())
     # one row per tube part (D-120, Control's numbers in #232): its copies counted in the quantity
     mparts = FL.member_parts(root_dir, FRAME_PN, MP.DR_MEMBERS)
     member_rows, seen = [], set()
@@ -792,7 +876,7 @@ def export_all(app):
         note = "member%s %s of the frame %s; %.1f long, ends: %s" % (
             "s" if len(keys) > 1 else "", ", ".join(keys), FRAME_PN, num["length"], m["ends"])
         if m["key"] in MEMBER_NOTES:
-            note += "; " + MEMBER_NOTES[m["key"]]
+            note += "; " + MEMBER_NOTES[m["key"]].format(n=sum(1 for k, _p in panel_screws() if k == m["key"]))
         member_rows.append((pn, mname, mvn, len(keys), "made: tube cut to length, ends as its cut list row",
                             "aluminium EN AW-6063-T6 tube %s, finish: mill finish (hidden, D-79)" % m["section"], "cad",
                             "calculation (CAD, 2700 kg/m3, shelled)", "DRAFT", "number allocation (D-120, #232)", note))
@@ -808,8 +892,9 @@ def export_all(app):
          "aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.2 (rivnuts), 20 x 20 x 1.5 "
          "(fan box shelf), finish: mill finish (hidden, D-79)", None, "", "DRAFT",
          "v1 decor frame drawing (front and back frames); D-79; joints register HOLD-10; D-120 (each tube its own "
-         "part, #232)", "%.1f m of tube; welds per its weldment drawing; rivnuts 838003 fitted in the factory: 10 for "
-         "the access panel bolts and 2 for DT's spigots 831001 (in 352307, 352308, 352311 and 352316)" % tube_m),
+         "part, #232)", "%.1f m of tube; welds per its weldment drawing; rivnuts 838003 fitted in the factory: %d for "
+         "the inner face panel's screws, each with an 838004 stop washer on its head (D-130), and 2 for DT's spigots "
+         "831001 (in the bottom, bolt-line, band, ledge, diagonal and glass-edge tubes)" % (tube_m, n_screws)),
     ] + member_rows + [
         ("351302", PARTS["BACK"][1], PARTS["BACK"][2], 1, "made (laser-cut sheet, no drawing: D-89 part 4)",
          "aluminium EN AW-5754-H22 sheet 1.5 mm, finish: mill finish (hidden, D-79); " + gt, "cad",
@@ -832,7 +917,14 @@ def export_all(app):
         ("351304", PARTS["FELT"][1], PARTS["FELT"][2], 1, "made (laser-cut PET felt sheet, no drawing: D-128, its DXF "
          "matches its STEP), glued to 351305 at the factory", "PET felt 9 mm, finish Dark Gray (D-79); outline +/-2, " + gt, "cad",
          "calculation (CAD, 1.8 kg/m2)",
-         "DRAFT; emission certificate HOLD", "D-31; hardware selection A3", "DXF " + DXF_FLAT["FELT"]),
+         "DRAFT; emission certificate HOLD", "D-31; hardware selection A3",
+         "DXF " + DXF_FLAT["FELT"] + "; holes 22 over the panel's screw heads under it, each plugged with felt cut from "
+         "the same sheet (PM ruling 2026-11-01: no bare socket heads on the room side)"),
+        ("848013", PARTS["SEAL"][1], PARTS["SEAL"][2], 1, "bought by length",
+         "very soft foam strip with PSA, 4.0 thick, about 8 wide (product HOLD-19)", 0.02,
+         "assumption (soft foam, about 4 g/m)", "HOLD: product (HOLD-19)", "joints register H-34; D-130",
+         "one loop on the frame's tubes round the inner face panel, %.2f m along its screw line, squeezed from 4.0 to "
+         "2.36 on the panel's stops; cut round each of the %d stop washers when fitted (Joints)" % (seal_m, n_screws)),
         ("350004", AIR_ASSY[1], AIR_ASSY[2], 1, RESERVED_TYPE, "-", None,
          "not counted: AIR's supply fan box assembly 610401 (AIR #91)", RESERVED_STATUS, "D-87; PM ruling 2026-11-01",
          "the space AIR's supply fan box assembly takes (riser, transitions, fan box and its two fans), its own pallet "
