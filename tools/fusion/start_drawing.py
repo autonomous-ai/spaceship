@@ -19,15 +19,20 @@ buttons through macOS accessibility, all inside the Fusion lock:
 3. open or activate DESIGN_NAME (refused if it has unsaved changes) and queue
    Create Drawing (its dialog defaults: Manual, From scratch, ISO, mm);
 4. press OK in that dialog and wait for the new drawing;
-5. press Cancel in the Base View dialog that Fusion then opens by itself;
+5. press Cancel in the Base View dialog that Fusion then opens by itself.
+   Each press is tried again for up to 10 s while Fusion still shows that
+   dialog's command: the dialog shows up to accessibility a moment after its
+   command goes active (2026-11-01: one try found "none" and the start
+   failed, 6 times that day);
 6. set the sheet size (read back and checked), save the drawing as
    DRAWING_NAME in --folder, close it (unless --keep-open), and close the
    design again if this command opened it;
 7. check that no dialog is left, and give the lock back.
 
 Cleanup, whenever a step fails after the dialog was queued (also on SIGTERM,
-SIGHUP, Ctrl-C and lost contact with Fusion): Cancel through accessibility
-first, as a person would press it; Fusion's own cancel (a read-only script
+SIGHUP, Ctrl-C, lost contact with Fusion, an accessibility call that times out
+and any unexpected error): Cancel through accessibility
+first, as a person would press it, and only in this start's own dialog; Fusion's own cancel (a read-only script
 that starts Fusion's Select command) only when Fusion says its Create Drawing
 or Base View dialog is open but accessibility has seen no dialog on two polls
 in a row, never while Fusion is busy; then the unsaved drawing it made is
@@ -78,17 +83,19 @@ AX_CLICK = '''on run argv
         set bn to name of every button of w
         if bn contains "OK" and bn contains "Cancel" then
           set isNamed to false
-          try
-            if (title of w as text) contains hint then set isNamed to true
-          end try
-          try
-            if (name of w as text) contains hint then set isNamed to true
-          end try
-          try
-            repeat with t in (value of every static text of w)
-              if (t as text) contains hint then set isNamed to true
-            end repeat
-          end try
+          if hint is not "" then
+            try
+              if (title of w as text) contains hint then set isNamed to true
+            end try
+            try
+              if (name of w as text) contains hint then set isNamed to true
+            end try
+            try
+              repeat with t in (value of every static text of w)
+                if (t as text) contains hint then set isNamed to true
+              end repeat
+            end try
+          end if
           if isNamed then
             click (first button of w whose name is target)
             return "clicked by title"
@@ -305,9 +312,13 @@ class Steps:
         return ok, out
 
     @staticmethod
-    def osa(script, *args):
-        p = subprocess.run(["osascript", "-"] + list(args), input=script, text=True,
-                           capture_output=True, timeout=30)
+    def osa(script, *args, run=subprocess.run):
+        try:
+            p = run(["osascript", "-"] + list(args), input=script, text=True, capture_output=True, timeout=30)
+        except subprocess.TimeoutExpired:
+            # 2026-11-01 07:41: CEILING's OK press hit this timeout; it wasn't caught, so the
+            # cleanup never ran and the Create Drawing dialog stayed open for every later run
+            raise StartError("accessibility call timed out after 30 s")
         if p.returncode != 0:
             raise StartError("accessibility call failed: %s" % p.stderr.strip()[:300])
         return p.stdout.strip()
@@ -329,6 +340,29 @@ class Steps:
         return session_locked()
 
 
+def press(steps, button, cmd, wait_s, poll_s=1.0):
+    """Press `button` in the dialog of Fusion's command `cmd` (Create Drawing or Base View). Fusion reports
+    the command a moment before its Qt dialog shows up to accessibility, and the dialog's buttons can be
+    rebuilt while it settles (2026-11-01, 06:36 and 07:06: "none" from a dialog that the cleanup found a
+    second later, and "Invalid index" for a button found a moment before). So "none" or an accessibility
+    error is tried again every poll for up to wait_s seconds, but only while Fusion still shows that same
+    command; a retry never presses in another dialog. Returns "clicked ..." when pressed, "left ..." when
+    Fusion moved off the command after a failed try (an errored click may still have worked: the checks after
+    the press decide), or the last failure ("none", "ambiguous", "error ...")."""
+    t0 = time.time()
+    while True:
+        try:
+            how = steps.click(button, TITLES[cmd])
+        except StartError as e:
+            how = "error (%s)" % str(e)[:200]
+        if how.startswith("clicked") or how == "ambiguous" or time.time() - t0 >= wait_s:
+            return how
+        time.sleep(poll_s)
+        now, _u = steps.state()
+        if now != cmd:
+            return "left the dialog after %s (Fusion now in %s)" % (how, now or "no command")
+
+
 def wait_for(steps, pred, timeout_s, poll_s=1.0):
     """Poll Fusion's state until pred(cmd, unsaved) is true; return the last state."""
     t0 = time.time()
@@ -341,7 +375,7 @@ def wait_for(steps, pred, timeout_s, poll_s=1.0):
         time.sleep(poll_s)
 
 
-def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
+def cancel_dialogs(steps, log, tries=4, poll_s=1.0, expect=CREATE_CMD):
     """Get Fusion back to idle. Cancel through accessibility FIRST (what a person
     would press). Fusion's own cancel only when Fusion says one of this
     command's two dialogs is open (Create Drawing, Base View) but accessibility
@@ -366,10 +400,20 @@ def cancel_dialogs(steps, log, tries=4, poll_s=1.0):
             left, ax_ok = [], False
         if mcp_ok and cmd in IDLE_CMDS and not left:
             return True
-        if left:
+        if left and mcp_ok and cmd not in (CREATE_CMD, BASE_VIEW_CMD):
+            # Fusion says it's idle or in another command, so the dialog listed isn't this start's
+            # (Reviewer 5 on #301: someone's Preferences dialog got the Cancel): press nothing; if it
+            # stays, the start ends with exit 4 for a person to look
+            unseen = 0
+            log("cleanup: a dialog is open but Fusion is %s, not in this start's dialog: nothing pressed"
+                % ("idle" if cmd in IDLE_CMDS else "in %s" % (cmd or "no command")))
+        elif left:
             unseen = 0
             try:
-                log("cleanup: accessibility Cancel: %s" % steps.click("Cancel", TITLES.get(cmd, "")))
+                # this start's own dialog: the one Fusion names, else (Fusion can't be read) the one the
+                # start was at, Create Drawing before OK and Base View after
+                mine = cmd if mcp_ok else expect
+                log("cleanup: accessibility Cancel: %s" % steps.click("Cancel", TITLES[mine]))
             except StartError as e:
                 log("cleanup: %s" % e)
         elif mcp_ok and cmd in (CREATE_CMD, BASE_VIEW_CMD):
@@ -437,7 +481,7 @@ def precheck(steps, design="", name="", folder=rs.DEFAULT_FOLDER, log=None):
 def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None, status=None):
     """The sequence; raises StartError with what went wrong. status["queued"] is
     set once a dialog may be open, so the caller knows to clean up."""
-    w = {"dialog": 30, "drawing": 90, "base_view": 30, "idle": 20, "poll": 1.0}
+    w = {"dialog": 30, "drawing": 90, "base_view": 30, "idle": 20, "poll": 1.0, "press": 10}
     w.update(waits or {})
     status = status if status is not None else {}
     project, *subfolders = [p for p in folder.split("/") if p]
@@ -464,9 +508,10 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     cmd, _u, seen = wait_for(steps, lambda c, u: c == CREATE_CMD, w["dialog"], w["poll"])
     if not seen:
         raise StartError("the Create Drawing dialog didn't open (active command %s)" % cmd)
-    how = steps.click("OK", TITLES[CREATE_CMD])
-    if not how.startswith("clicked"):
+    how = press(steps, "OK", CREATE_CMD, w["press"], w["poll"])
+    if not how.startswith(("clicked", "left")):
         raise StartError("couldn't press OK in Create Drawing (%s)" % how)
+    status["ok_pressed"] = True
     log("pressed OK in Create Drawing (%s)" % how)
 
     cmd, unsaved, made = wait_for(steps, lambda c, u: u >= 1 and c != CREATE_CMD, w["drawing"], w["poll"])
@@ -477,8 +522,8 @@ def start_drawing(steps, design, name, folder, sheet, keep_open, log, waits=None
     # Fusion opens the Base View dialog by itself, a few seconds later
     cmd, _u, seen = wait_for(steps, lambda c, u: c == BASE_VIEW_CMD, w["base_view"], w["poll"])
     if seen:
-        how = steps.click("Cancel", TITLES[BASE_VIEW_CMD])
-        if not how.startswith("clicked"):
+        how = press(steps, "Cancel", BASE_VIEW_CMD, w["press"], w["poll"])
+        if not how.startswith(("clicked", "left")):
             raise StartError("couldn't press Cancel in Base View (%s)" % how)
         log("pressed Cancel in Base View (%s)" % how)
     else:
@@ -522,28 +567,38 @@ def run_with_cleanup(steps, design, name, folder, sheet, keep_open, log, waits=N
         start_drawing(steps, design, name, folder, sheet, keep_open, log, waits, status)
         log("done: %s" % name)
         return 0
-    except (StartError, rs.McpError, KeyboardInterrupt) as e:
+    except Exception as e:  # noqa: BLE001 - every failure gets the cleanup (2026-11-01 07:41: an uncaught
+        # accessibility timeout skipped it and left Create Drawing open for every later run)
         kind = "lost contact with Fusion" if isinstance(e, rs.McpError) else \
-            "stopped" if isinstance(e, KeyboardInterrupt) else "FAILED"
+            "FAILED" if isinstance(e, StartError) else "FAILED (unexpected %s)" % type(e).__name__
         print("start_drawing: %s: %s" % (kind, e), file=sys.stderr)
-        if not status.get("queued"):
-            if not isinstance(e, rs.McpError):
-                close_design(steps, design, folder, status, log)   # Reviewer 5, P3 on #101
-            return 2 if isinstance(e, rs.McpError) else 1
-        idle = cancel_dialogs(steps, log)
-        if not idle:
-            print("start_drawing: Fusion may still have a dialog open: press Cancel in Fusion",
-                  file=sys.stderr)
-            return 4
-        if not status.get("saved"):
-            try:
-                ok, out = steps.run(CLOSE_UNSAVED_SCRIPT)
-                if out:
-                    log(out.strip())
-            except (StartError, rs.McpError) as e2:
-                print("start_drawing: couldn't close the unsaved drawing: %s" % e2, file=sys.stderr)
-        close_design(steps, design, folder, status, log)          # Reviewer 5, P3 on #101
+        return _clean_up(steps, design, folder, status, log, e)
+    except KeyboardInterrupt as e:
+        print("start_drawing: stopped: %s" % e, file=sys.stderr)
+        return _clean_up(steps, design, folder, status, log, e)
+
+
+def _clean_up(steps, design, folder, status, log, e):
+    """After a failed or stopped start: Fusion back to idle (Cancel in this start's own dialog first), the
+    unsaved drawing closed, the design closed if this start opened it. Returns the exit code."""
+    if not status.get("queued"):
+        if not isinstance(e, rs.McpError):
+            close_design(steps, design, folder, status, log)   # Reviewer 5, P3 on #101
         return 2 if isinstance(e, rs.McpError) else 1
+    idle = cancel_dialogs(steps, log, expect=BASE_VIEW_CMD if status.get("ok_pressed") else CREATE_CMD)
+    if not idle:
+        print("start_drawing: Fusion may still have a dialog open: press Cancel in Fusion",
+              file=sys.stderr)
+        return 4
+    if not status.get("saved"):
+        try:
+            ok, out = steps.run(CLOSE_UNSAVED_SCRIPT)
+            if out:
+                log(out.strip())
+        except (StartError, rs.McpError) as e2:
+            print("start_drawing: couldn't close the unsaved drawing: %s" % e2, file=sys.stderr)
+    close_design(steps, design, folder, status, log)          # Reviewer 5, P3 on #101
+    return 2 if isinstance(e, rs.McpError) else 1
 
 
 # PM rule 2026-10-31: drawing starts are batched in one lock hold, up to 6 starts

@@ -229,7 +229,7 @@ HARDWARE_ROWS = {
     "grille_washer": ("air", "stainless steel A2", "none (plain stainless)",
                       "HOLD: any maker to ISO 7093-1, picked at the RFQ", "ISO 7093-1 - 6.4 x 18 x 1.6 - A2", "",
                       "one under each roof grille bolt's head (R-J10); joints register H-09"),
-    "grille_rivnut": ("air", "aluminium 5056", "none (plain aluminium, as supplied)", "Sherex (PEM)", "CAH3-610-4.2",
+    "grille_rivnut": ("air", "steel 1008/1010", "zinc plated, trivalent passivation", "Sherex (PEM)", "CAH2-610-4.2",
                       "HOLD-01 (D-48)",
                       "set at the factory in the roof sleeve's top flange, one near each corner, for the grille's bolts; "
                       "joints register H-03"),

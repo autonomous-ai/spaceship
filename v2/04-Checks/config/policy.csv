@@ -1,3 +1,4 @@
 key,value,status_source
 missing_drawing_severity,severe,"confirmed: D-97 (2026-11-01): drawing starts resumed with PR #101, and D-84's major rating while the screen is locked no longer applies; a missing drawing for a part we make is severe and stays open until drawn, while a model that passes every other check still merges (D-91 as reworded). The auto-screen-lock value (D-84) is kept in the code for the record only"
 pod_mass_cap_kg,460,"provisional: D-131 (2026-11-01), until the wall sample's recount; was 420 (D-37, D-54)"
+tapped_engagement_min_d,1.5,"assumption: the usual least engagement for a steel or stainless screw in an aluminium tapped hole, 1.5 x d (9.0 mm at M6); the joints register's own figures meet it: 10.5 for the base keys' M6 x 12 fixing screws (PM rulings on F-017 and F-018) and 12.7 to 14.2 for their hook studs (J-BASE-02)"

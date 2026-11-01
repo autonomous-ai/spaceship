@@ -1,5 +1,5 @@
 {
- "next": 279,
+ "next": 339,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3094,7 +3094,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3119,7 +3119,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -3149,7 +3149,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -3407,7 +3407,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3432,7 +3432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3457,7 +3457,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3482,7 +3482,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3507,7 +3507,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3532,7 +3532,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3557,7 +3557,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3582,7 +3582,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3607,7 +3607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3632,7 +3632,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3657,7 +3657,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3682,7 +3682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3707,7 +3707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3732,7 +3732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3757,7 +3757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3782,7 +3782,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3807,7 +3807,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -3832,7 +3832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4335,7 +4335,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C01",
@@ -4394,7 +4394,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4419,7 +4419,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4444,7 +4444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4469,7 +4469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4494,7 +4494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4519,7 +4519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4544,7 +4544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4569,7 +4569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4687,7 +4687,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -4742,7 +4742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4767,7 +4767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4792,7 +4792,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4817,7 +4817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4842,7 +4842,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4867,7 +4867,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4881,7 +4881,7 @@
    "evidence": {},
    "key": "C05|no-drawing|811204",
    "id": "F-157",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 b3cc47e",
    "posted": "CEILING group 2026-11-01",
@@ -4890,9 +4890,15 @@
      "date": "2026-11-01",
      "rev": "b3cc47e",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "6028cf8",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 d86ddcb",
+   "closed": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -4906,7 +4912,7 @@
    "evidence": {},
    "key": "C05|no-drawing|811205",
    "id": "F-158",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 b3cc47e",
    "posted": "CEILING group 2026-11-01",
@@ -4925,10 +4931,15 @@
      "date": "2026-11-01",
      "rev": "0d355cd",
      "event": "reopened: seen again"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "6028cf8",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a",
-   "closed": "2026-11-01 a8d75f6"
+   "last_seen": "2026-11-01 d86ddcb",
+   "closed": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -4942,7 +4953,7 @@
    "evidence": {},
    "key": "C06|top-part-number|810000",
    "id": "F-159",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 b3cc47e",
    "posted": "CEILING group 2026-11-01",
@@ -4951,9 +4962,15 @@
      "date": "2026-11-01",
      "rev": "b3cc47e",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "6028cf8",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 d86ddcb",
+   "closed": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -4982,7 +4999,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5011,7 +5028,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5040,7 +5057,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5069,7 +5086,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5098,7 +5115,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5127,7 +5144,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5156,7 +5173,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5185,7 +5202,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5214,7 +5231,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5243,7 +5260,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5272,7 +5289,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5301,7 +5318,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5330,7 +5347,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5359,7 +5376,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5388,7 +5405,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5417,7 +5434,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5446,7 +5463,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5471,7 +5488,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5496,7 +5513,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5521,7 +5538,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5546,7 +5563,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5571,7 +5588,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5596,7 +5613,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5621,7 +5638,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5646,7 +5663,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5671,7 +5688,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5696,7 +5713,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5742,7 +5759,8 @@
     "model": "assembly/fusion",
     "mm3": 69.74,
     "a": "410000_P01_CEILING_CAD:1 / 510301 LINING - CASSETTE - CEILING - COMMON (1):1 / 513101 LINING - TRAY - CEILING:2 / Body1",
-    "b": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body5"
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1 / Body5",
+    "pairs": 1
    },
    "key": "C01|clash|assembly 513101 LINING - TRAY - CEILING:2 x 710031 ELECTRICAL - DRAW WIRE - CEILING ROUTE:1",
    "id": "F-188",
@@ -5756,7 +5774,8 @@
      "rev": "3d6c2af",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5ea6334"
   },
   {
    "check": "C06",
@@ -5783,7 +5802,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5812,7 +5831,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5841,7 +5860,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5870,7 +5889,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5899,7 +5918,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -5928,7 +5947,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5953,7 +5972,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -5978,7 +5997,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6003,7 +6022,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6028,7 +6047,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6053,7 +6072,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6078,7 +6097,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6103,7 +6122,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6128,7 +6147,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6153,7 +6172,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6178,7 +6197,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6203,7 +6222,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6228,7 +6247,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6253,7 +6272,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6278,7 +6297,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6303,7 +6322,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6328,7 +6347,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6383,7 +6402,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6408,7 +6427,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6433,7 +6452,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6458,7 +6477,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6513,7 +6532,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6538,7 +6557,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6563,7 +6582,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6588,7 +6607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6613,7 +6632,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6638,7 +6657,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6663,7 +6682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6688,7 +6707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6713,7 +6732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -6738,7 +6757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C08",
@@ -6767,7 +6786,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6792,7 +6811,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6817,7 +6836,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6842,7 +6861,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6867,7 +6886,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6892,7 +6911,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6917,7 +6936,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6942,7 +6961,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6967,7 +6986,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -6992,7 +7011,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -7017,7 +7036,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -7042,7 +7061,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -7067,7 +7086,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -7092,7 +7111,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -7117,7 +7136,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C11",
@@ -7142,7 +7161,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7167,7 +7186,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C09",
@@ -7195,7 +7214,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C09",
@@ -7223,7 +7242,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7252,7 +7271,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7281,7 +7300,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7310,7 +7329,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7339,7 +7358,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7368,7 +7387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7397,7 +7416,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7422,7 +7441,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7447,7 +7466,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7472,7 +7491,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7497,7 +7516,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7522,7 +7541,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7547,7 +7566,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7572,7 +7591,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7597,7 +7616,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7622,7 +7641,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7647,7 +7666,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7672,7 +7691,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7697,7 +7716,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7722,7 +7741,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7747,7 +7766,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7772,7 +7791,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7797,7 +7816,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C05",
@@ -7822,7 +7841,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7847,7 +7866,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7872,7 +7891,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7897,7 +7916,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C06",
@@ -7922,7 +7941,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 5c8f25a"
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C09",
@@ -7949,7 +7968,8 @@
      "rev": "5c8f25a",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C09",
@@ -7976,7 +7996,8 @@
      "rev": "5c8f25a",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C09",
@@ -8003,7 +8024,8 @@
      "rev": "5c8f25a",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C09",
@@ -8030,7 +8052,8 @@
      "rev": "5c8f25a",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C09",
@@ -8057,7 +8080,8 @@
      "rev": "5c8f25a",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 6028cf8"
   },
   {
    "check": "C09",
@@ -8084,7 +8108,2160 @@
      "rev": "5c8f25a",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "838003",
+   "severity": "major",
+   "message": "838003 is named 'HARDWARE - RIVET NUT - M6 - SHEREX CAH3-610-4.2' in the CAD (110000_P01_BASE_STEP.step, 210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step, 210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step, 210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step, 210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step, 210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step, 210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step) and the parts lists v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv, v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv, v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv, v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv, v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv, v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv, v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv; the joints register names it 'HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2', and hardware names come from the register (D-99). The names differ in CAH3-610-4.2 (gone), CAH2-610-4.2 (new), STEEL (new), ZINC (new), so they name a different part.",
+   "fix": "Use the register's name, with the material and finish it gives, in each file above (7 CAD, 8 parts lists).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE; ELECTRICAL; WALL",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+     "v2/03-Manufacturing/base/110000_P01_BASE_STEP.step",
+     "v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv",
+     "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_STEP.step",
+     "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_STEP.step",
+     "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+     "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_STEP.step",
+     "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+     "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_STEP.step",
+     "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+     "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_STEP.step",
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
+     "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_STEP.step"
+    ],
+    "register": "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2"
+   },
+   "key": "C06|name-mismatch|838003",
+   "id": "F-279",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "BASE, CEILING, Control, ELECTRICAL and WALL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "owners now BASE; ELECTRICAL; WALL (was BASE; CEILING; Control; ELECTRICAL; WALL): CEILING's and AIR's lists fixed in #284, the master BOM in #279"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611101 AIR - COLUMN FACE - FRONT:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1 overlap by 217790.1 mm3 (the largest of 2 body pairs, 218037.2 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 217790.1,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1",
+    "pairs": 2
+   },
+   "key": "C01|clash|assembly 611101 AIR - COLUMN FACE - FRONT:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-280",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611101 AIR - COLUMN FACE - FRONT:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 30240.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 30240.0,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611101 AIR - COLUMN FACE - FRONT:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611101 AIR - COLUMN FACE - FRONT:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "id": "F-281",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611102 AIR - COLUMN FACE - LEFT:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 12960.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 12960.0,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611102 AIR - COLUMN FACE - LEFT:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611102 AIR - COLUMN FACE - LEFT:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "id": "F-282",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body2 overlap by 5216.0 mm3 (the largest of 2 body pairs, 5220.3 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 5216.0,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body2",
+    "pairs": 2
+   },
+   "key": "C01|clash|assembly 611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-283",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611104 AIR - COLUMN FILL:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1 overlap by 99543.6 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 99543.6,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611104 AIR - COLUMN FILL:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-284",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611104 AIR - COLUMN FILL:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 3240.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 3240.0,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611104 AIR - COLUMN FILL:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611104 AIR - COLUMN FILL:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "id": "F-285",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618101 AIR - SENSOR HUB ZONE - HOLD:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1 overlap by 47520.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 47520.0,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 618101 AIR - SENSOR HUB ZONE - HOLD:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-286",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618101 AIR - SENSOR HUB ZONE - HOLD:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 866520.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 866520.0,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 618101 AIR - SENSOR HUB ZONE - HOLD:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 618101 AIR - SENSOR HUB ZONE - HOLD:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "id": "F-287",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611103 AIR - COLUMN CORNER ANGLE:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1 overlap by 9000.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 9000.0,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611103 AIR - COLUMN CORNER ANGLE:1 x 710041 ELECTRICAL - HUB AND CONTROLS ZONE:1",
+   "id": "F-288",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611103 AIR - COLUMN CORNER ANGLE:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1 overlap by 41484.0 mm3 (the largest of 3 body pairs, 41760.4 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 41484.0,
+    "a": "610000_P01_AIR_CAD:1 / 610101 AIR - AIR COLUMN:1 / 611103 AIR - COLUMN CORNER ANGLE:1 / Body2",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body1",
+    "pairs": 3
+   },
+   "key": "C01|clash|assembly 611103 AIR - COLUMN CORNER ANGLE:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-289",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6 overlap by 2730.0 mm3 (the largest of 2 body pairs, 3051.2 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 2730.0,
+    "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6",
+    "pairs": 2
+   },
+   "key": "C01|clash|assembly 611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-290",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611202 AIR - SOFFIT FACE - FRONT:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6 overlap by 8778.0 mm3 (the largest of 2 body pairs, 9025.1 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 8778.0,
+    "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611202 AIR - SOFFIT FACE - FRONT:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6",
+    "pairs": 2
+   },
+   "key": "C01|clash|assembly 611202 AIR - SOFFIT FACE - FRONT:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-291",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611203 AIR - SOFFIT FILL:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6 overlap by 2835.0 mm3 (the largest of 2 body pairs, 3108.0 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 2835.0,
+    "a": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611203 AIR - SOFFIT FILL:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body6",
+    "pairs": 2
+   },
+   "key": "C01|clash|assembly 611203 AIR - SOFFIT FILL:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-292",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611402 AIR - FAN BOX CASING - SUPPLY:1 x 351306 FRONT - DECOR FRAME - DR:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5 overlap by 431.9 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 431.86,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+    "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body5",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611402 AIR - FAN BOX CASING - SUPPLY:1 x 351306 FRONT - DECOR FRAME - DR:1",
+   "id": "F-293",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611402 AIR - FAN BOX CASING - SUPPLY:1 x 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1 overlap by 130.3 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 130.32,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+    "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611402 AIR - FAN BOX CASING - SUPPLY:1 x 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1",
+   "id": "F-294",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611402 AIR - FAN BOX CASING - SUPPLY:1 x 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1 overlap by 198.3 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 198.29,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611402 AIR - FAN BOX CASING - SUPPLY:1 / Body1",
+    "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611402 AIR - FAN BOX CASING - SUPPLY:1 x 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1",
+   "id": "F-295",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618102 AIR - SUPPLY TRANSITION - HOLD:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1 and 710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body4 overlap by 3780.0 mm3 (the largest of 2 body pairs, 4406.6 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 3780.0,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+    "b": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body4",
+    "pairs": 2
+   },
+   "key": "C01|clash|assembly 618102 AIR - SUPPLY TRANSITION - HOLD:1 x 710023 ELECTRICAL - HARNESS - AIR COLUMN:1",
+   "id": "F-296",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and ELECTRICAL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618102 AIR - SUPPLY TRANSITION - HOLD:1 x 351305 FRONT - DECOR ACCESS PANEL - DR:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1 overlap by 7740.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 7740.0,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+    "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 618102 AIR - SUPPLY TRANSITION - HOLD:1 x 351305 FRONT - DECOR ACCESS PANEL - DR:1",
+   "id": "F-297",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618102 AIR - SUPPLY TRANSITION - HOLD:1 x 351303 FRONT - DECOR INNER PANEL - DR:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1 overlap by 196080.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 196080.0,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618102 AIR - SUPPLY TRANSITION - HOLD:1 / Body1",
+    "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351303 FRONT - DECOR INNER PANEL - DR:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 618102 AIR - SUPPLY TRANSITION - HOLD:1 x 351303 FRONT - DECOR INNER PANEL - DR:1",
+   "id": "F-298",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611501 AIR - INTAKE RISER:1 x 351306 FRONT - DECOR FRAME - DR:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7 overlap by 447.6 mm3 (the largest of 3 body pairs, 859.6 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 447.55,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+    "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body7",
+    "pairs": 3
+   },
+   "key": "C01|clash|assembly 611501 AIR - INTAKE RISER:1 x 351306 FRONT - DECOR FRAME - DR:1",
+   "id": "F-299",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611501 AIR - INTAKE RISER:1 x 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1 overlap by 230.6 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 230.61,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+    "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611501 AIR - INTAKE RISER:1 x 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1",
+   "id": "F-300",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 611501 AIR - INTAKE RISER:1 x 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1 overlap by 284.2 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 284.19,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 611501 AIR - INTAKE RISER:1 / Body1",
+    "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 611501 AIR - INTAKE RISER:1 x 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1",
+   "id": "F-301",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618103 AIR - RISER TRANSITION - HOLD:1 x 351301 FRONT - DECOR SKIN - DR:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1 overlap by 98693.7 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 98693.68,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+    "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351301 FRONT - DECOR SKIN - DR:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 618103 AIR - RISER TRANSITION - HOLD:1 x 351301 FRONT - DECOR SKIN - DR:1",
+   "id": "F-302",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618103 AIR - RISER TRANSITION - HOLD:1 x 351306 FRONT - DECOR FRAME - DR:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12 overlap by 8887.2 mm3 (the largest of 3 body pairs, 14993.0 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 8887.25,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+    "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351306 FRONT - DECOR FRAME - DR:1 / Body12",
+    "pairs": 3
+   },
+   "key": "C01|clash|assembly 618103 AIR - RISER TRANSITION - HOLD:1 x 351306 FRONT - DECOR FRAME - DR:1",
+   "id": "F-303",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618103 AIR - RISER TRANSITION - HOLD:1 x 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1 overlap by 152005.9 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 152005.87,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+    "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 618103 AIR - RISER TRANSITION - HOLD:1 x 361003 FRONT - FIXED GLASS - 4+4 LAMINATED:1",
+   "id": "F-304",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 618103 AIR - RISER TRANSITION - HOLD:1 x 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1",
+   "severity": "severe",
+   "message": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1 and 360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1 overlap by 15403.2 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 15403.22,
+    "a": "610000_P01_AIR_CAD:1 / 610401 AIR - SUPPLY FAN BOX:1 / 618103 AIR - RISER TRANSITION - HOLD:1 / Body1",
+    "b": "360002_P01_FRONT-FIXED-GLASS-UNIT_CAD:1 / 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 618103 AIR - RISER TRANSITION - HOLD:1 x 368004 FRONT - GLAZING U-PROFILE - BOHLE BO5201571:1",
+   "id": "F-305",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): CEILING rebuilds AIR from FRONT's current named values (the one inner panel, the fan box at X 673 and 25 mm back, the clear passage beside it); nothing of AIR's crosses the fixed glass's plane or DR's skin. FRONT confirms the names are on its branch; the Checker reruns after.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 x 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1",
+   "severity": "severe",
+   "message": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body4 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1 overlap by 4320.0 mm3 (the largest of 2 body pairs, 4410.6 mm3 in all) in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 4320.0,
+    "a": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body4",
+    "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 350004 FRONT - AIR SUPPLY ASSY - DR - RESERVED AIR SPACE:1 / 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1 / Body1",
+    "pairs": 2
+   },
+   "key": "C01|clash|assembly 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 x 351405 FRONT - AIR TRANSITION - UPPER - DR - RESERVED AIR SPACE:1",
+   "id": "F-306",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "ELECTRICAL and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 x 351305 FRONT - DECOR ACCESS PANEL - DR:1",
+   "severity": "severe",
+   "message": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body3 and 350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1 overlap by 316.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 316.02,
+    "a": "710000_P01_ELECTRICAL_CAD:1 / 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 / Body3",
+    "b": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 710023 ELECTRICAL - HARNESS - AIR COLUMN:1 x 351305 FRONT - DECOR ACCESS PANEL - DR:1",
+   "id": "F-307",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "ELECTRICAL and FRONT groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner ELECTRICAL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): one owner. The hub is ELECTRICAL's, so 710041 is its space; AIR keeps only the opening in the column and 618101 stops being a second body; CEILING and ELECTRICAL agree a cable path outside the column's fill and front face, clear of FRONT's reserved air space and DR's panel; ELECTRICAL models it.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 351305 FRONT - DECOR ACCESS PANEL - DR:1 x 511102 LINING - TRAY - SIDE LOWER - RH:1",
+   "severity": "severe",
+   "message": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1 and 510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_CAD:1 / 511102 LINING - TRAY - SIDE LOWER - RH:1 / Body1 overlap by 20122.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 20122.05,
+    "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+    "b": "510102_P01_LINING-CASSETTE-SIDE-LOWER-RH_CAD:1 / 511102 LINING - TRAY - SIDE LOWER - RH:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 351305 FRONT - DECOR ACCESS PANEL - DR:1 x 511102 LINING - TRAY - SIDE LOWER - RH:1",
+   "id": "F-308",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "FRONT and WALL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner WALL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (WALL group): DR's one panel stays as built (room face at Y -641.14); WALL starts the R-side cassettes at Y -640, 1 mm off the panel; the service steps unclip R1's and R2's front cassettes before DR's panel comes off; no extra trim part.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C01",
+   "rule": "clash",
+   "subject": "assembly 351305 FRONT - DECOR ACCESS PANEL - DR:1 x 511104 LINING - TRAY - SIDE UPPER - RH:1",
+   "severity": "severe",
+   "message": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1 and 510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_CAD:1 / 511104 LINING - TRAY - SIDE UPPER - RH:1 / Body1 overlap by 15807.0 mm3 in the assembly (Fusion, exact intersection).",
+   "fix": "Fix the geometry so they meet or clear; if the overlap is intended, add it to v2/04-Checks/config/clash-allow.csv with its reason.",
+   "file": "",
+   "owner": "WALL",
+   "evidence": {
+    "model": "assembly/fusion",
+    "mm3": 15807.04,
+    "a": "350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_CAD:1 / 351305 FRONT - DECOR ACCESS PANEL - DR:1 / Body1",
+    "b": "510104_P01_LINING-CASSETTE-SIDE-UPPER-RH_CAD:1 / 511104 LINING - TRAY - SIDE UPPER - RH:1 / Body1",
+    "pairs": 1
+   },
+   "key": "C01|clash|assembly 351305 FRONT - DECOR ACCESS PANEL - DR:1 x 511104 LINING - TRAY - SIDE UPPER - RH:1",
+   "id": "F-309",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "FRONT and WALL groups, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner WALL (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (WALL group): DR's one panel stays as built (room face at Y -641.14); WALL starts the R-side cassettes at Y -640, 1 mm off the panel; the service steps unclip R1's and R2's front cassettes before DR's panel comes off; no extra trim part.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-model",
+   "subject": "assembly 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 at [-1100.0, -635.0, 2346.2]",
+   "severity": "major",
+   "message": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body2 is modelled 7.0 mm long with its head, but its name gives M6 x 25, 31.0 mm with the head: the check can't follow it to its thread or its tool, so it leaves the rest of it out.",
+   "fix": "Model the bolt at its full size, one body and one component per bolt (the bolt STEP the joints register names), and export the STEP again.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "bolt": {
+     "bolt": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body2",
+     "length_mm": 7.0,
+     "dia_mm": 6.0,
+     "head": [
+      -1100.0,
+      -635.0,
+      2346.2
+     ],
+     "axis": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "layers": [
+      {
+       "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+       "from_head_mm": 0.25,
+       "to_mm": 2.75,
+       "is_nut": false
+      }
+     ],
+     "collisions": [],
+     "tip_clearance": null,
+     "tool": "5 mm hex key (ISO 4762 M6)",
+     "tool_blocked_by": [
+      {
+       "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body1",
+       "segment": "axis",
+       "segment_mm": [
+        0.0,
+        30.0
+       ],
+       "mm3": 276.5
+      },
+      {
+       "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body1",
+       "segment": "room",
+       "segment_mm": [
+        0.0,
+        40.0
+       ],
+       "mm3": 276.5
+      },
+      {
+       "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+       "segment": "room",
+       "segment_mm": [
+        40.0,
+        140.0
+       ],
+       "mm3": 7412.0
+      },
+      {
+       "body": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351102 FRONT - DECOR BACK PLATE - DL:1 / Body1",
+       "segment": "room",
+       "segment_mm": [
+        40.0,
+        140.0
+       ],
+       "mm3": 2757.0
+      },
+      {
+       "body": "350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_CAD:1 / 351104 FRONT - DECOR FRAME - DL:1 / Body3",
+       "segment": "room",
+       "segment_mm": [
+        40.0,
+        140.0
+       ],
+       "mm3": 1812.2
+      },
+      {
+       "body": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+       "segment": "room",
+       "segment_mm": [
+        40.0,
+        140.0
+       ],
+       "mm3": 3257.6
+      },
+      {
+       "body": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351204 FRONT - DECOR FRAME - DT:1 / Body4",
+       "segment": "room",
+       "segment_mm": [
+        40.0,
+        140.0
+       ],
+       "mm3": 1419.8
+      }
+     ]
+    }
+   },
+   "key": "C07|fastener-model|assembly 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 at [-1100.0, -635.0, 2346.2]",
+   "id": "F-310",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): full M6 x 25, one component per bolt.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C07",
+   "rule": "fastener-model",
+   "subject": "assembly 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 at [-950.0, -635.0, 2346.2]",
+   "severity": "major",
+   "message": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body4 is modelled 7.0 mm long with its head, but its name gives M6 x 25, 31.0 mm with the head: the check can't follow it to its thread or its tool, so it leaves the rest of it out.",
+   "fix": "Model the bolt at its full size, one body and one component per bolt (the bolt STEP the joints register names), and export the STEP again.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly/fusion",
+    "bolt": {
+     "bolt": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body4",
+     "length_mm": 7.0,
+     "dia_mm": 6.0,
+     "head": [
+      -950.0,
+      -635.0,
+      2346.2
+     ],
+     "axis": [
+      0.0,
+      0.0,
+      1.0
+     ],
+     "layers": [
+      {
+       "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / Body1",
+       "from_head_mm": 0.25,
+       "to_mm": 2.75,
+       "is_nut": false
+      }
+     ],
+     "collisions": [],
+     "tip_clearance": null,
+     "tool": "5 mm hex key (ISO 4762 M6)",
+     "tool_blocked_by": [
+      {
+       "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body3",
+       "segment": "axis",
+       "segment_mm": [
+        0.0,
+        30.0
+       ],
+       "mm3": 276.5
+      },
+      {
+       "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 / Body3",
+       "segment": "room",
+       "segment_mm": [
+        0.0,
+        40.0
+       ],
+       "mm3": 276.5
+      },
+      {
+       "body": "610000_P01_AIR_CAD:1 / 610201 AIR - SOFFIT:1 / 611210 AIR - SOFFIT DOOR-SIDE PLATE:1 / Body1",
+       "segment": "room",
+       "segment_mm": [
+        40.0,
+        140.0
+       ],
+       "mm3": 7412.0
+      },
+      {
+       "body": "350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_CAD:1 / 351202 FRONT - DECOR BACK PLATE - DT:1 / Body1",
+       "segment": "room",
+       "segment_mm": [
+        40.0,
+        140.0
+       ],
+       "mm3": 5981.0
+      }
+     ]
+    }
+   },
+   "key": "C07|fastener-model|assembly 838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC:1 at [-950.0, -635.0, 2346.2]",
+   "id": "F-311",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 9e0dcd1",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "9e0dcd1",
+     "event": "owner CEILING (the Lead's ruling)"
+    }
+   ],
+   "note": "Lead ruling 2026-11-01 (CEILING group): full M6 x 25, one component per bolt.",
+   "last_seen": "2026-11-01 5ea6334"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211101",
+   "severity": "major",
+   "message": "211101 WALL - PANEL FRAME - SIDE LOWER - LH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - BACK (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210101_P01_WALL-PANEL-ASSY-SIDE-LOWER-LH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L1"
+   },
+   "key": "C11|frame-steel|211101",
+   "id": "F-312",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211102",
+   "severity": "major",
+   "message": "211102 WALL - PANEL FRAME - SIDE LOWER - RH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - BACK (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210102_P01_WALL-PANEL-ASSY-SIDE-LOWER-RH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L1"
+   },
+   "key": "C11|frame-steel|211102",
+   "id": "F-313",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211103",
+   "severity": "major",
+   "message": "211103 WALL - PANEL FRAME - SIDE UPPER - LH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - BACK (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210103_P01_WALL-PANEL-ASSY-SIDE-UPPER-LH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L2"
+   },
+   "key": "C11|frame-steel|211103",
+   "id": "F-314",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211104",
+   "severity": "major",
+   "message": "211104 WALL - PANEL FRAME - SIDE UPPER - RH: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 and 40 x 40 x 1.2, studs 20 x 40 x 1 ('); its finish (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - BACK (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 40 x 40 x 1.2'), STILE - FRONT (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210104_P01_WALL-PANEL-ASSY-SIDE-UPPER-RH_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "L2"
+   },
+   "key": "C11|frame-steel|211104",
+   "id": "F-315",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211201",
+   "severity": "major",
+   "message": "211201 WALL - PANEL FRAME - BACK LOWER - B1: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 x 1.2, studs 20 x 40 x 1 (D-85) mill f'); its finish (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - CENTRE (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1'), STILE - OUTER (cut length) (210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210201_P01_WALL-PANEL-ASSY-BACK-LOWER-B1_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "B1"
+   },
+   "key": "C11|frame-steel|211201",
+   "id": "F-316",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "211202",
+   "severity": "major",
+   "message": "211202 WALL - PANEL FRAME - BACK LOWER - B2: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 3) lacks galvanized steel (it reads 'aluminium tube 6063-T6: perimeter 20 x 40 x 1.2, studs 20 x 40 x 1 (D-85) mill f'); its finish (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 3) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 5 member rows not in J-FRAME-01's steel: RAIL - BOTTOM (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 4): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), RAIL - TOP (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 5): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - CENTRE (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 6): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2'), STILE - MID (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 7): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1'), STILE - OUTER (cut length) (210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv line 8): galvanized steel (it reads 'aluminium tube 6063-T6 20 x 40 x 1.2').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/wall/210202_P01_WALL-PANEL-ASSY-BACK-LOWER-B2_BOM.csv",
+   "owner": "WALL",
+   "evidence": {
+    "model": "frames",
+    "key": "B1"
+   },
+   "key": "C11|frame-steel|211202",
+   "id": "F-317",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "WALL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "411101",
+   "severity": "major",
+   "message": "411101 CEILING - PANEL FRAME - C1: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (410000_P01_CEILING-PARTS-LIST_BOM.csv line 5) lacks galvanized steel (it reads 'Aluminium 6063-T6, mill finish (D-79) mill finish with the bond prep (D-79)'); its finish (410000_P01_CEILING-PARTS-LIST_BOM.csv line 5) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 7 member rows not in J-FRAME-01's steel: SIDE MEMBER SIDE (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 2): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), SEAM MEMBER SEAM (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 3): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), FRONT MEMBER FRONT (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 4): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), BACK MEMBER 40X40 BACK (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 5): galvanized steel (it reads 'aluminium 40 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 1 X1 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 6): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 2 X2 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 7): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "frames",
+    "key": "C1"
+   },
+   "key": "C11|frame-steel|411101",
+   "id": "F-318",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "411102",
+   "severity": "major",
+   "message": "411102 CEILING - PANEL FRAME - C2: D-131 makes it welded galvanized steel (joints register J-FRAME-01: S280GD+Z or SGC400, Z100, 1.2/1.0/0.8 mm gauges, zinc-rich touch-up on the welds), but its row (410000_P01_CEILING-PARTS-LIST_BOM.csv line 6) lacks galvanized steel (it reads 'Aluminium 6063-T6, mill finish (D-79) mill finish with the bond prep (D-79)'); its finish (410000_P01_CEILING-PARTS-LIST_BOM.csv line 6) doesn't name the zinc ('mill finish with the bond prep (D-79)'); 7 member rows not in J-FRAME-01's steel: SIDE MEMBER SIDE (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 9): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), SEAM MEMBER SEAM (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 10): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), FRONT MEMBER FRONT (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 11): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), BACK MEMBER 40X40 BACK (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 12): galvanized steel (it reads 'aluminium 40 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 1 X1 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 13): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)'), CROSS MEMBER 2 X2 (410000_P01_CEILING-TUBE-CUT-LIST_BOM.csv line 14): galvanized steel (it reads 'aluminium 20 x 40 x 1.2 (6063-T6; alloy ISS-034)').",
+   "fix": "Give the frame's row and each member row the steel, its grade and Z100, and the frame's finish the zinc and the weld touch-up, as J-FRAME-01 gives them (D-131).",
+   "file": "v2/03-Manufacturing/ceiling/410000_P01_CEILING-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "frames",
+    "key": "C1"
+   },
+   "key": "C11|frame-steel|411102",
+   "id": "F-319",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351104",
+   "severity": "major",
+   "message": "351104 FRONT - DECOR FRAME - DL: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DL; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 60 x 20 x 1.5 mill finish (hidden'); 26 member rows not galvanized steel: BACK RING BOTTOM B01 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 2), BACK RING DOOR SIDE B02 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 3), BACK RING SLOPE UNDER DT B03 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 4), BACK RING BOLT LINE B04 (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 5), RING BOTTOM - DOOR SIDE R1D (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 6), RING BOTTOM - BACK R1K (351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350001_P01_FRONT-DECOR-BLOCK-ASSY-DL_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351104",
+   "id": "F-320",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351204",
+   "severity": "major",
+   "message": "351204 FRONT - DECOR FRAME - DT: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DT; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube 20 x 20 x 1.5 and 40 x 20 x 1.5 (the back ring's to'); 13 member rows not galvanized steel: BACK RING BOTTOM B01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 2), BACK RING DR JOINT B02 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 3), BACK RING TOP B03 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 4), BACK RING SLOPE OVER DL B04 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 5), BACK RING POST B05 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 6), FRONT FACET TUBE F01 (351204_P01_FRONT-DECOR-FRAME-DT-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350002_P01_FRONT-DECOR-BLOCK-ASSY-DT_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351204",
+   "id": "F-321",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C11",
+   "rule": "frame-steel",
+   "subject": "351306",
+   "severity": "major",
+   "message": "351306 FRONT - DECOR FRAME - DR: D-131 makes it welded galvanized steel box tube with the decor tubes as they are (FRONT's decor core DR; the gauges come from the Joints Engineer's check, which doesn't cover the decor cores yet), but its row (350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv line 4) lacks galvanized steel (it reads 'aluminium EN AW-6063-T6 tube: 20 x 20 x 1.0 (skin only), 40, 60 and 80 x 20 x 1.'); 24 member rows not galvanized steel: FRONT RING BOTTOM F01 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 2), FRONT RING FACET SIDE F02 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 3), FRONT RING TOP F03 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 4), FRONT RING DT JOINT F04 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 5), FRONT RING DIAGONAL F05 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 6), FRONT RING GLASS EDGE F06 (351306_P01_FRONT-DECOR-FRAME-DR-TUBE-CUT-LIST.csv line 7).",
+   "fix": "Give the frame's row and each tube row galvanized steel (D-131); the gauges come with the Joints Engineer's table.",
+   "file": "v2/03-Manufacturing/front/350003_P01_FRONT-DECOR-BLOCK-ASSY-DR_BOM.csv",
+   "owner": "FRONT",
+   "evidence": {
+    "model": "frames"
+   },
+   "key": "C11|frame-steel|351306",
+   "id": "F-322",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "FRONT group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C06",
+   "rule": "name-mismatch",
+   "subject": "118001",
+   "severity": "minor",
+   "message": "118001 is named 'BASE - BASE SEAL - FLOOR EDGE - FIXED 4 GAP' in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv; the joints register names it 'BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD', and hardware names come from the register (D-99).",
+   "fix": "Use the register's name in the parts list v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv.",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {
+    "files": [
+     "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv"
+    ],
+    "register": "BASE - BASE SEAL - LIP - ROOM FLOOR - HOLD"
+   },
+   "key": "C06|name-mismatch|118001",
+   "id": "F-323",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 c22880b",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "c22880b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG",
+   "severity": "major",
+   "message": "110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf: a note names 'the BASE Engineer (AI agent)' as its maker ('Made by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/base/110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|110401_P01_BASE-FLOOR-PANEL-ASSY-F1_DWG",
+   "id": "F-324",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG",
+   "severity": "major",
+   "message": "111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf: a note names 'tools/drawgen (D-112)' as its maker ('Made by ...', sheet 2); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again. This drawing was made by tools/drawgen (D-112): fix the generator and regenerate it.",
+   "file": "v2/02-Drawings/base/111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG.pdf",
+   "owner": "Drawing Generator",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|111101_P01_BASE-BAND-TUBE-SIDE-LH_DWG",
+   "id": "F-325",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "Drawing Generator group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "a8cd10a",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d86ddcb",
+     "event": "reopened: seen again"
+    }
+   ],
+   "closed": "2026-11-01 a8cd10a",
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "111103_P01_BASE-BAND-TUBE-BACK_DWG",
+   "severity": "major",
+   "message": "111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf: a note names 'tools/drawgen (D-112)' as its maker ('Made by ...', sheet 2); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again. This drawing was made by tools/drawgen (D-112): fix the generator and regenerate it.",
+   "file": "v2/02-Drawings/base/111103_P01_BASE-BAND-TUBE-BACK_DWG.pdf",
+   "owner": "Drawing Generator",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|111103_P01_BASE-BAND-TUBE-BACK_DWG",
+   "id": "F-326",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "Drawing Generator group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "a8cd10a",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d86ddcb",
+     "event": "reopened: seen again"
+    }
+   ],
+   "closed": "2026-11-01 a8cd10a",
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "111401_P01_BASE-FLOOR-PANEL-F1_DWG",
+   "severity": "major",
+   "message": "111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf: a note names 'the BASE Engineer (AI agent)' as its maker ('Made by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/base/111401_P01_BASE-FLOOR-PANEL-F1_DWG.pdf",
+   "owner": "BASE",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|111401_P01_BASE-FLOOR-PANEL-F1_DWG",
+   "id": "F-327",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG",
+   "severity": "major",
+   "message": "710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1, 2, 3); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/electrical/710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710000_P01_ELECTRICAL-WIRING-DIAGRAM_DWG",
+   "id": "F-328",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "ELECTRICAL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG",
+   "severity": "major",
+   "message": "710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/electrical/710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710001_P01_ELECTRICAL-POWER-UNIT-B2_DWG",
+   "id": "F-329",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "ELECTRICAL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG",
+   "severity": "major",
+   "message": "710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/electrical/710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710011_P01_ELECTRICAL-HARNESS-LIGHT-FEED-B2-B4_DWG",
+   "id": "F-330",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "ELECTRICAL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG",
+   "severity": "major",
+   "message": "710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/electrical/710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710021_P01_ELECTRICAL-HARNESS-TRUNK-B2-R1_DWG",
+   "id": "F-331",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "ELECTRICAL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG",
+   "severity": "major",
+   "message": "710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/electrical/710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710023_P01_ELECTRICAL-HARNESS-AIR-COLUMN_DWG",
+   "id": "F-332",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "ELECTRICAL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG",
+   "severity": "major",
+   "message": "710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/electrical/710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710024_P01_ELECTRICAL-HARNESS-CALL-LIGHT-R2_DWG",
+   "id": "F-333",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "ELECTRICAL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG",
+   "severity": "major",
+   "message": "710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/electrical/710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710031_P01_ELECTRICAL-DRAW-WIRE-CEILING-ROUTE_DWG",
+   "id": "F-334",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "ELECTRICAL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG",
+   "severity": "major",
+   "message": "710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf: its DATE / BY field reads 'ELECTRICAL Engineer' (sheet 1); a note names 'assembly_sheets.py' as its maker ('Generated by ...', sheet 1); the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous', and the notes name no other maker (the Lead's ruling).",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', drop any maker line from the notes (a note may name the source: which STEP and its revision; never an agent, a role or a script as the maker), and export again.",
+   "file": "v2/02-Drawings/electrical/710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG.pdf",
+   "owner": "ELECTRICAL",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|710041_P01_ELECTRICAL-HUB-AND-CONTROLS-ZONE_DWG",
+   "id": "F-335",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "ELECTRICAL group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "111211_P01_BASE-CORNER-KEY-TABULATED_DWG",
+   "severity": "major",
+   "message": "111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/joints/111211_P01_BASE-CORNER-KEY-TABULATED_DWG.pdf",
+   "owner": "Joints Engineer",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|111211_P01_BASE-CORNER-KEY-TABULATED_DWG",
+   "id": "F-336",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "Joints group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d86ddcb",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 a8cd10a",
+   "closed": "2026-11-01 d86ddcb"
+  },
+  {
+   "check": "C05",
+   "rule": "drawing-author",
+   "subject": "831001_P01_HARDWARE-LOCATING-SPIGOT_DWG",
+   "severity": "major",
+   "message": "831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf: its CREATED BY field reads nothing (sheet 1); its PDF author reads nothing; the owner's rule (2026-11-01) is that a drawing's Created by field and its PDF author read 'Autonomous'.",
+   "fix": "Set the title block's Created by (or Made by) field and the PDF's author to 'Autonomous', and export again.",
+   "file": "v2/02-Drawings/joints/831001_P01_HARDWARE-LOCATING-SPIGOT_DWG.pdf",
+   "owner": "Joints Engineer",
+   "evidence": {
+    "model": "pdf-people"
+   },
+   "key": "C05|drawing-author|831001_P01_HARDWARE-LOCATING-SPIGOT_DWG",
+   "id": "F-337",
+   "status": "CLOSED",
+   "source": "auto",
+   "found": "2026-11-01 12d5825",
+   "posted": "Joints group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "12d5825",
+     "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "d86ddcb",
+     "event": "closed: the check ran on this revision and no longer finds it"
+    }
+   ],
+   "last_seen": "2026-11-01 a8cd10a",
+   "closed": "2026-11-01 d86ddcb"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "810000",
+   "severity": "major",
+   "message": "810000 INTERIOR has no drawing PDF (810000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/interior/810000_P01_INTERIOR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|810000",
+   "id": "F-338",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 6028cf8",
+   "posted": "",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "6028cf8",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 6028cf8"
   }
  ]
 }
