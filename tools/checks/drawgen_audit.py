@@ -5,7 +5,7 @@ generator PR that tightens the read-back could leave main with sheets that now f
 
 For each PDF under v2/02-Drawings that tools/drawgen made (its creator field says drawgen):
 - it is read back with the tree's own read-back (readback.check for a part sheet, assembly.check for an assembly
-  sheet), and every failure is reported;
+  sheet, pod_assembly.check for the GA, 100000), and every failure is reported;
 - it is drawn again from its entry with the tree's own code, into a temporary folder (never over the committed sheet),
   and the bytes are compared: the generator draws the same bytes from the same sources (the date comes from the
   STEP's header), so a sheet that differs is out of date. The report says why: its sources changed since it was
@@ -111,16 +111,26 @@ def main(argv=None):
     import drawgen                                   # noqa: E402
     import readback as rb                            # noqa: E402
     import specs                                     # noqa: E402
+    try:
+        import pod_assembly                          # noqa: E402  the GA, 100000 (#377); a tree before it has none
+    except ImportError:
+        pod_assembly = None
 
     asm = assembly.assemblies()
 
     def kind_of(pn):
+        if pod_assembly is not None and pn == pod_assembly.POD_PN:
+            return "pod"
         return "assembly" if pn in asm else ("part" if pn in specs.SPECS else None)
 
     def read(path, kind):
+        if kind == "pod":
+            return pod_assembly.check(path)[0]
         return (assembly.check(path) if kind == "assembly" else rb.check(path))[0]
 
     def redraw(pn, kind, out):
+        if kind == "pod":
+            return pod_assembly.generate(out)[0]
         if kind == "assembly":
             team, entry = asm[pn]
             return assembly.generate(pn, team, entry, out)[0]
