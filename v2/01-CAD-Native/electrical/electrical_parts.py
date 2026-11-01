@@ -30,9 +30,10 @@ SUPPLIES = [
 FAN_W_MAX = 6.6        # Noctua's maximum input power, 0.55 A at 12 V (maker page via retailer copies, 2026-10-31: unverified)
 LIGHT_BUDGET_W = 22.0  # DECIDED (PM 2026-11-01): uplight, down-light and call light together, the hub balancing them
 UP_W = round(4.434 * 6.0, 1)      # 26.6 W, the uplight strip at full (calculation)
-DOWN_W = round(2 * 1.026 * 6.0, 1)  # 12.3 W, two rows of the down strip at full (calculation)
+DOWN_ROW = 0.975                    # m: one down-light row, 39 sections of 25 mm, the longest that fits the 991 mm LED profile 718101 with room for the feed (D-126)
+DOWN_W = round(2 * DOWN_ROW * 6.0, 1)  # 11.7 W, two rows of the down strip at full (calculation)
 CALL_W = 2.7
-UP_TYP = round(LIGHT_BUDGET_W - DOWN_W, 1)   # 9.7 W: the work scene, down-light full, the uplight takes the rest
+UP_TYP = round(LIGHT_BUDGET_W - DOWN_W, 1)   # 10.3 W: the work scene, down-light full, the uplight takes the rest
 FAN_W_53 = 2.6         # at about 73 % speed for 53 l/s (air report §7d): cube law 0.73^3 x 6.6 (calculation)
 LOADS = [
     ("LD01", "Supply fan pair (2 x Noctua NF-A14 industrialPPC-3000 PWM), high in DR", "PS3", "F3a 2 A", 2,
@@ -51,10 +52,10 @@ LOADS = [
      "light controller CH1", 1, UP_W, UP_TYP, "calculation (strip length from the model x 6.0 W/m; maker data)",
      "REQ-AIR-06, D-70; Häfele 25L1-18",
      "26.6 W and 4300 lm at full; in the work scene the hub runs it at 9.7 W, about 1570 lm"),
-    ("LD08", "Down-light under the right-wall shelf, 2 rows x 1.026 m of Loox5 2168, aimed at the ledge", "PS2",
-     "light controller CH2", 1, DOWN_W, DOWN_W, "calculation (2.052 m x 6.0 W/m; maker data)",
+    ("LD08", "Down-light under the right-wall shelf, 2 rows x 0.975 m of Loox5 2168 side by side in the shelf's LED profile 718101 behind its opal cover, aimed at the ledge", "PS2",
+     "light controller CH2", 1, DOWN_W, DOWN_W, "calculation (2 x 0.975 m x 6.0 W/m; maker data)",
      "PM ruling 2026-11-01 (down-light, about 22 W in all, about 300 lx on the ledge); Häfele 25L1-18",
-     "about 1990 lm; about 350 lx on the ledge at full (calculation, Lambertian strip 1.2 m above it, no reflections)"),
+     "about 1890 lm; about 333 lx on the ledge at full with no cover, about 233 lx through the opal cover at 70 % (calculation, Lambertian strip 1.2 m above it, no reflections; cover figure from the maker's catalogue for opal covers, unverified for its C15)"),
     ("LD06", "Voice cockpit hook, 12 V 5 A reserved outlet", "PS1", "F1 5 A", 1,
      60.0, 0.0, "DECIDED (D-11 peak; D-88 average)", "REQ-VCK-04; D-88",
      "60 W peak on the hook, 40 W average budget (D-88); kit not fitted in v2, so 0 W typical"),
@@ -529,9 +530,28 @@ part("drawcord", "718044", "ELECTRICAL - DRAW CORD - NYLON 3 MM", "Điện - dâ
 
 # ---- lights
 part("strip_shelf", "718050", "ELECTRICAL - LED STRIP - LOOX5 2168 - 12 V 6.0 W/M - 3000 K", "Điện - LED dây kệ đèn",
-     "PI", "710000", 6.486, "", "", 0.02, "assumption (kg per m)", maker="Häfele", sku="833.74.176 (3000 K: confirm the article order 175-178)",
+     "PI", "710000", 6.384, "", "", 0.02, "assumption (kg per m)", maker="Häfele", sku="833.74.176 (3000 K: confirm the article order 175-178)",
      size="8 mm wide", status=HOLD_BUY, source=HAFELE,
-     note="uplight 4.434 m and down-light 2 x 1.026 m; 970 lm/m, Ra > 90, R9 > 50; max 3.5 m per feed (every run here is 1.5 m or less); qty in m")
+     note="uplight 4.434 m and down-light 2 x 0.975 m (it cuts every 25 mm: section length 25 mm, maker page); 970 lm/m, Ra > 90, R9 > 50; max 3.5 m per feed (every run here is 1.5 m or less); qty in m")
+# ---- D-126: the light shelf's down-light profile, under INTERIOR's light shelf 810201 (CEILING places it; ELECTRICAL lists it)
+TECHLIGHT = "Tech-Light P13-2 profile and C15 cover: public retailer listings (BLT Direct, P13-2 1 m x 23 x 12.5; C15 fits P13-2, 19 inside) and the maker's catalogue (P13-2 for strips up to 2 x 8 mm; opal covers 70 %), read 2026-11-01"
+part("led_prof", "718101", "ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5", "Điện - thanh nhôm LED nổi 23 x 12.5 - kệ đèn",
+     "PI", "810201", 1, "aluminium", "anodised as supplied; colour to match the shelf (HOLD)", 0.16,
+     "assumption (about 0.16 kg/m for a 23 x 12.5 surface profile; maker figure HOLD)", maker="Tech-Light (type)",
+     sku="P13-2 type, cut to 991 mm", size="23 x 12.5 outside, 20 inside at the strip base, 991 long", status=HOLD_BUY, source=TECHLIGHT,
+     note="takes the down-light's two 8 mm strips side by side (2 x 0.975 m) with 4 mm to spare; heat 12 W/m at full: about 20 K above the room (calculation, 9 W/m2K on about 66 mm of outer surface), maker's rating HOLD; replaces CEILING's channel 811204 (D-126)")
+part("led_cover", "718102", "ELECTRICAL - LED PROFILE COVER - OPAL - CLIP-IN", "Điện - nắp mờ (opal) gài cho thanh LED",
+     "PI", "810201", 1, "polycarbonate (opal, as supplied; grade HOLD)", "opal, as supplied", 0.04,
+     "assumption (about 0.04 kg/m)", maker="Tech-Light (type)", sku="C15 opal type, cut to 991 mm", size="20 wide, 991 long",
+     status=HOLD_BUY, source=TECHLIGHT,
+     note="clip-in, held along its whole length, unclipped to change a strip; light transmission 70 % for the maker's opal covers (not stated for C15: unverified; a matt opal at 63 % would leave the ledge at about 275 lx); replaces the cut diffuser 811205 (D-126)")
+part("led_cap", "718103", "ELECTRICAL - LED PROFILE END CAP", "Điện - nắp bịt đầu thanh LED", "PI", "810201", 2,
+     "plastic, as supplied", "as supplied", 0.002, "assumption", maker="Tech-Light (type)", sku="P13-2 end cap type, one with a cable hole",
+     size="for 23 x 12.5", status=HOLD_BUY, source=TECHLIGHT, note="one at each end; the feed lead enters through one (HOLD with the profile)")
+part("led_clip", "718104", "ELECTRICAL - LED PROFILE MOUNTING CLIP", "Điện - kẹp gắn thanh LED", "PI", "810201", 3,
+     "steel, as supplied", "as supplied", 0.002, "assumption", maker="Tech-Light (type)", sku="P13-2 mounting clip type",
+     size="for 23 x 12.5", status=HOLD_BUY, source=TECHLIGHT,
+     note="3 on the 991 mm profile, about every 400 mm (assumption); the count follows the product's clip spacing (HOLD with the profile)")
 part("strip_call", "718051", "ELECTRICAL - LED STRIP - LOOX5 2165 - 12 V 3.0 W/M - 3000 K", "Điện - LED dây đèn gọi video",
      "PI", "710024", 0.9, "", "", 0.02, "assumption (kg per m)", maker="Häfele", sku="833.74.156 (3000 K: confirm)",
      size="8 mm wide", status=HOLD_BUY, source=HAFELE, note="about 440 lm for the 0.9 m bar; qty in m")
