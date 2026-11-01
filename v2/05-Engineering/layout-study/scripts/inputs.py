@@ -248,6 +248,7 @@ P = {
     "door_edge_seal_kg": V(1.0, "kg", "source", "S20", "door edge seals on 3 sides"),
     "base_seal_kg": V(0.5, "kg", "source", "S20", "seal under the thin floor and band"),
     "grommet_kg": V(0.1, "kg", "source", "S20", "sealed cable holes"),
+    "lip_seal_kgm": V(0.08, "kg/m", "source", "the PM, 2026-11-01 (D-132)", "the base seal as a soft lip on the band's inner face, BASE's 118001"),
     "t_leaf_s": V(60, "s", "assumption", "", "clip one inner leaf (sound mass + felt) onto its frame from inside"),
 }
 

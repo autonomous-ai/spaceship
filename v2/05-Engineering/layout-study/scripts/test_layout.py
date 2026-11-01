@@ -172,7 +172,7 @@ def test_p04_rollup_lines():
         assert len(hit) == 1 and hit[0][4] == "assumption", (name, hit)
     assert len([r for r in rows if "ships loose" in r[1]]) == 2
     ap = rollup.applied()
-    assert len(ap) == 9 and all(a[0] > 0 for a in ap), ap                    # D-81's four and D-85's five
+    assert len(ap) == 8 and all(a[0] > 0 for a in ap), ap                    # D-81's four and D-85's four (its floor item went with D-132)
     off = rollup.lines(**rollup.OFF)
     assert abs(rollup.pod_kg(off) - rollup.pod_kg(rows) - sum(a[0] for a in ap)) < 1e-6, "the table adds up exactly"
     assert set(rollup.OFF) == set(rollup.ADOPTED)
@@ -200,9 +200,7 @@ def test_cad_masses_from_main():
     door = next(r for k, r in rows.items() if k.startswith("Door unit 360001"))
     d = {r["pn"]: r["kg"] for r in rollup.read_parts_list(rollup.FRONT_DOOR_LIST) if r["pn"]}
     assert abs(door[3] - d["360001"]) < 1e-9 and rollup.basis(door) == "CAD, main", door
-    b = rollup.BASE_CAD
-    fl = next(r for k, r in rows.items() if k.startswith("Floor panels, 9 mm"))
-    assert abs(fl[3] - b["floor"]) < 1e-9 and rollup.basis(fl) == "CAD, main", fl
+    assert not [k for k in rows if k.startswith(("Floor panels", "Floor mat", "Door threshold"))]   # D-132: no floor
     key = rows["Corner key"]
     assert rollup.basis(key) == "CAD, main", key
     assert abs(key[2] * key[3] - sum(q * kg for q, kg in (rollup.JOINTS[pn] for pn in rollup.KEY_PNS))) < 1e-9, key
@@ -252,9 +250,10 @@ def test_cad_masses_from_main():
         assert abs(dl[3] - d[rollup.FRONT_DECOR_PN[b]]) < 1e-9 and rollup.basis(dl) == "CAD, main", dl
     assert rollup.FRONT_DECOR["DR"]["reserved"] == ["350004", "351402", "351403", "351404", "351405"]
     assert 0.5 < rollup.dr_channels_kg() < 0.6                                   # the right and diagonal channels
-    ks = rows["Base seal and cable grommets"]                       # the door edge seals are FRONT's (PR #105)
-    assert abs(ks[3] - p("base_seal_kg") - p("grommet_kg")) < 1e-9, ks
-    assert len(rollup.cad_swaps()) == 26
+    ks = rows["Base seal and cable grommets"]     # D-132: BASE's soft lip by its length; the door edge seals are FRONT's
+    bc = rollup.BASE_CAD
+    assert abs(ks[3] - bc["seal_m"] * p("lip_seal_kgm") - p("grommet_kg")) < 1e-9, ks
+    assert len(rollup.cad_swaps()) == 24
 
 
 def test_rollup_items_the_packing_plan_reads():

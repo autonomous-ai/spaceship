@@ -13,7 +13,7 @@ Every number below comes from the scripts in `scripts/`. `python3 scripts/run_al
 3. **Shipping (confirmed, D-04).** One 48 x 40 pallet and one 96 x 48 pallet, 526 kg gross, 6.7 lb/ft3. The 48 x 40 weighs 244 kg and stands 1,641 mm high. The 96 x 48 weighs 281 kg and stands 971 mm high, with both lites flat on top in their frame. Walls and ceiling are 81 mm thick.
 4. **Assembly (confirmed changes, D-08).** Two people with one 5 mm hex key. The light build takes 166 min before the fast-assembly changes and 104 min after. The decided build takes **126 min** (4.2 person-hours): 78 M6 bolts, 38 tool-free clips and 10 clip-on lining cassettes. The 1-hour target is not reached on these assumptions. Most of what remains is unpacking, levelling, setting the glass and door, and testing, so the timed prototype decides.
 5. **Decisions.** Every layout choice is confirmed by a decision; the table below cites it.
-6. **The live weight count on skeleton P04** ([weight-rollup.md](weight-rollup.md), ISS-081, F-010): **409.0 kg as shipped, 11.0 kg under the 420 kg cap and 1.0 kg under the PM's 410 kg target.** It takes the adopted savings of D-81 and D-85 (28.1 kg in all; the 24 kg/m3 fill, the 1.5 mm base band and the poplar-core floor are provisional on T02 and BASE's checks), budgets and allowances for the light shelf, the work-wall ledge and the named clips, tonight's CAD masses (CEILING PR #32, FRONT PRs #27, #28 and #105, WALL's L1), D-60's air parts and the P04 sizes. The voice kit's 4.0 kg reserve rides outside the cap (D-11, D-81). Its part list is `out/parts-decided-P04.csv`. The sections below still describe the P03 build.
+6. **The live weight count on skeleton P04** ([weight-rollup.md](weight-rollup.md), ISS-081, F-010): **391.2 kg as shipped, 28.8 kg under the 420 kg cap and 18.8 kg under the PM's 410 kg target.** It takes the adopted savings of D-81 and D-85 (23.3 kg in all; the 24 kg/m3 fill, the 1.5 mm base band and the poplar-core floor are provisional on T02 and BASE's checks), budgets and allowances for the light shelf, the work-wall ledge and the named clips, tonight's CAD masses (CEILING PR #32, FRONT PRs #27, #28 and #105, WALL's L1), D-60's air parts and the P04 sizes. The voice kit's 4.0 kg reserve rides outside the cap (D-11, D-81). Its part list is `out/parts-decided-P04.csv`. The sections below still describe the P03 build.
 
 ## Decisions
 
@@ -878,6 +878,7 @@ The STEP cross-check data (`data/v1_step_solids.csv`) comes from `scripts/step_c
 | door_edge_seal_kg | 1 | kg | source | S20 | door edge seals on 3 sides |
 | base_seal_kg | 0.5 | kg | source | S20 | seal under the thin floor and band |
 | grommet_kg | 0.1 | kg | source | S20 | sealed cable holes |
+| lip_seal_kgm | 0.08 | kg/m | source | the PM, 2026-11-01 (D-132) | the base seal as a soft lip on the band's inner face, BASE's 118001 |
 | t_leaf_s | 60 | s | assumption |  | clip one inner leaf (sound mass + felt) onto its frame from inside |
 
 Sources:

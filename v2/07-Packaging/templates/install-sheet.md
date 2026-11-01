@@ -9,7 +9,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 
 ## Result
 
-1. **Clear height: at least {{ROOM_H}} mm** from the floor to anything above the pod (ceiling, lights, sprinklers, ducts). The pod is {{POD_H}} mm tall (D-21); the roof work in guide step 18 needs {{ROOF_WORK}} mm above its roof (assumption). The air's own need above the roof slot is still to be set (ISS-049).
+1. **Clear height: at least {{ROOM_H}} mm** from the floor to anything above the pod (ceiling, lights, sprinklers, ducts). The pod is {{POD_H}} mm tall (D-21); the roof work in guide step {{STEP_ROOF}} needs {{ROOF_WORK}} mm above its roof (assumption). The air's own need above the roof slot is still to be set (ISS-049).
 2. **Floor: flat and level enough that the high and low points under the pod's 8 glides lie within {{FLOOR_PV}} mm of each other** (calculation: the glides run from {{GLIDE_MIN}} mm, the lowest setting the PM allows, to {{GLIDE_MAX}} mm, ISS-054's working range). The pod has no floor of its own (D-132): people stand on the room floor, so it should also be a finished, hard floor.
 3. **Power: one 120 V, 60 Hz wall outlet (NEMA 5-15, 15 A)** within reach of the pod's cord (D-133). The pod draws {{LOAD_W}} W at most on its 12 V side (ELECTRICAL's load table, the voice kit's 60 W hook included), so an ordinary outlet will do. In Vietnam the prototype runs through a 220-to-110 V step-down transformer (D-133).
 4. **Air: keep clear above the roof slot and in front of the intake under DR.** The pod breathes out through a slot in its roof near the front right corner and in through the mesh in the base band under the right decor block (D-61, D-62). AIR sets the minimum gaps (ISS-049); until then keep at least the {{ROOF_WORK}} mm above the roof that assembly needs, and nothing standing against the base band under DR.
@@ -32,7 +32,7 @@ The site's half of interface IF-17 (POD to room: floor, power, the air's clear s
 
 | Need | Value | Status and source |
 |---|---|---|
-| Clear height, floor to the lowest thing above the pod | {{ROOM_H}} mm or more | calculation: the pod's {{POD_H}} (D-21) + {{ROOF_WORK}} for the roof sleeve and the grille's 4 bolts (step 18, J-AIR-03; assumption) |
+| Clear height, floor to the lowest thing above the pod | {{ROOM_H}} mm or more | calculation: the pod's {{POD_H}} (D-21) + {{ROOF_WORK}} for the roof sleeve and the grille's 4 bolts (step {{STEP_ROOF}}, J-AIR-03; assumption) |
 | Height DT and the ceiling halves need as they go on | {{H_SPIGOTS}} mm | calculation: lifted {{SPIGOT_LIFT}} mm over their 8 mm spigots (assumption; J-FRONT-03, J-CEIL-01) |
 | Footprint | {{POD_W}} × {{POD_D}} mm | decided (D-01) |
 | Clear round the footprint while it goes together | {{LAY_OUT}} m a side, so about {{LAY_W}} × {{LAY_D}} mm | assumption: the parts set down at their places in step 1, and the step stools |
