@@ -7,6 +7,9 @@ owner reviews the code and a team's first entries). See tools/drawgen/teams/READ
 WALL_FRAME = {
     "datums": "spigot",
     "material_has": "steel", "material_why": "D-131's welded, galvanized steel frame",
+    # the bottom rail's cassette-ledge rivets (lower panels): plain Ø3.3 holes, drilled after welding, for the
+    # closed-end countersunk blind rivets 838012 (ISO 15974, Ø3.2; D-166) - not M4 tap drills
+    "rivet_holes": {3.3: "blind rivet 838012, closed end, countersunk, Ø3.2 (ISO 15974)"},
     "notes": [
         "FRAME: welded, galvanized steel box tube (D-131, J-FRAME-01). Corners mitred, with a 2.0 mm mitre plate "
         "welded into each mitre (831007 to 831009, placed as the joints CAD README gives). Every corner and T joint "
