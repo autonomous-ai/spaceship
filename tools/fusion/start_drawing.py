@@ -800,6 +800,12 @@ def main(argv=None):
                     help="after a call times out, an open this run started that hasn't ended by "
                          "the time it is S seconds old (from its start line) flags Fusion "
                          "unhealthy (default %(default)g; as run_script.py)")
+    ap.add_argument("--nudge-after", type=float, default=rs.NUDGE_AFTER_S, metavar="S",
+                    help="while a call waits, an open of this run that is S seconds old gets a read-only "
+                         "check, and the run logs whether the open ends right after (default %(default)g; "
+                         "0 turns it off; as run_script.py)")
+    ap.add_argument("--nudge-every", type=float, default=rs.NUDGE_EVERY_S, metavar="S",
+                    help="...and another one every S seconds while it lasts (default %(default)g)")
     ap.add_argument("--lock", default=None)
     ap.add_argument("--lock-wait", type=float, default=1200.0)
     ap.add_argument("--lock-front", default="", metavar="REASON",
@@ -844,6 +850,10 @@ def main(argv=None):
     mcp = rs.FusionMcp(opts.url, opts.timeout)
     offset = rs.open_log_size(rs.open_log_path(lock_path))   # this run's open log lines start here
     say = lambda m: print("start_drawing: %s" % m.replace("run_script: ", ""), file=sys.stderr, flush=True)
+    # as run_script.py (PM ruling 2026-11-01: today's 15-minute stall was a drawing open): an open of this run that
+    # sits idle over a minute gets a read-only check once a minute, inside this run's lock only
+    nudger = rs.OpenNudger(opts.url, rs.open_log_path(lock_path), offset, "%s: %s" % (lock.label, script),
+                           after_s=opts.nudge_after, every_s=opts.nudge_every, log=say)
     rc = 1
     try:
         refusal = rs.unhealthy_refusal(lock_path, log=say)
@@ -851,6 +861,7 @@ def main(argv=None):
             say("%s. This run did not start." % refusal)
             rc = rs.EXIT_UNHEALTHY
         else:
+            nudger.start()
             try:
                 steps = Steps(opts.url, opts.timeout, mcp=mcp)
             except rs.McpError as e:
@@ -875,6 +886,7 @@ def main(argv=None):
                     elif os.path.exists(rest):
                         os.remove(rest)
     finally:
+        nudger.stop()               # before the timeout path's own checks and the lock release
         if mcp.timed_out:
             # as run_script.py (#181, PM ruling 2026-11-01): never hand Fusion to the
             # next run while it may still be busy with a call of this one, nor while it
