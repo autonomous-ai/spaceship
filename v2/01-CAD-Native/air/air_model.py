@@ -114,15 +114,15 @@ AIR_PARAMS = [
     ("fr_wsh_t", "1.6 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): plain washers ISO 7089 M6, 1.6 thick (head and washer 7.6 proud)"),
     ("fr_scr_clr", "1 mm", "mm", "assumption", "AIR's clearance round FRONT's screw heads and washers, and in each relief"),
     ("b08_x1", "499.0 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B08's first screw"),
-    ("b08_x2", "823.5 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B08's second screw"),
-    ("b08_x3", "1148.1 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B08's third screw"),
+    ("b08_x2", "821.7 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): B08's second screw"),
+    ("b08_x3", "1144.4 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): B08's third screw"),
     ("b08_z", "2140.1 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B08's three screws' height"),
-    ("b01_x1", "997.2 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's first screw, under the supply cartridge"),
-    ("b01_x2", "1148.1 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's second screw, under the supply cartridge"),
+    ("b01_x1", "1000.2 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): B01's first screw, under the supply cartridge"),
+    ("b01_x2", "1145.1 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): B01's second screw, under the supply cartridge"),
     ("b01_z", "130.0 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B01's two screws' height (washers to Z 136; the cartridge from Z 140)"),
     ("cart_b01_clr", "4 mm", "mm", "confirmed", "the Lead's ruling 2026-11-01: the supply cartridge, lifted 6 (the Air Engineer's fix), stands 4 over the washers of B01's two screws; tied to them, so it holds when BASE's D-132 takes the floor out (floor top Z 12 to 0)"),
     ("b07_x", "939.0 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B07's lowest screw, moved 4 clear of the column's left face"),
-    ("b07_z", "259.8 mm", "mm", "source", "FRONT's DR rebuild (FRONT Engineer, 2026-11-01 07:57, with the Lead's correction: plain washers): B07's lowest screw's height"),
+    ("b07_z", "281.4 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): B07's lowest screw's height (was 259.8)"),
     ("blk_t", "2 mm", "mm", "source", "the air report's sizing (calc.py, D-121): each fan box's 2 mm aluminium bulkhead, the fans mounted on it"),
     ("fan_bore", "135 mm", "mm", "source", "the air report's fan bore (calc.py FAN_BORE 0.135 m): the bulkhead's opening at each fan"),
     ("fan_hp", "124.5 mm", "mm", "source", "Noctua NF-A14 (140 mm frame): its 4 mounting holes on a 124.5 mm square (the maker's data sheet, selection F1)"),
@@ -130,19 +130,20 @@ AIR_PARAMS = [
     ("s_lin_gap", "70 mm", "mm", "source", "D-121, the Air Engineer: the supply box's end-wall linings start about 70 mm above the fans, so the air reaches them"),
     ("e_lin_gap", "50 mm", "mm", "source", "D-121, the Air Engineer: the exhaust box's far-end lining stops 50 mm under the fans"),
     # ---- supply fan box and intake riser, inside the right decor block (D-61, D-62)
-    ("sb_x0", "673 mm", "mm", "source", "PM ruling 2026-11-01 (FRONT's fan box points): the supply fan box X 673 to 973, "
-     "FRONT's reserved space, 4 mm clear of DR's diagonal tube and its glass slot (was X 645 in report 7e)"),
+    ("sb_x0", "677 mm", "mm", "source", "PM ruling 2026-11-01 (FRONT's fan box points): the supply fan box X 677 to 977, "
+     "4 mm clear of DR's back ring diagonal tube B06 (with #313's glue line and the box 3 mm back, X 673 left 1.0 mm to it "
+     "in FRONT's STEP; CEILING's proposal to FRONT, 2026-11-01) and 5 of the front ring's diagonal (was X 645 in report 7e)"),
     ("sb_w", "300 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
     ("sb_d", "155 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
     ("sb_h", "300 mm", "mm", "source", R7E + ": supply fan box 300 x 155 x 300"),
-    ("sb_yf", "28 mm", "mm", "source", "PM ruling 2026-11-01: the supply fan box stands 25 mm further back from DR's front "
-     "skin (front face Y -822), so FRONT's tube across the skin at Z 1905 to 1925 fits in front of it with 5 mm (was 3)"),
+    ("sb_yf", "31 mm", "mm", "source", "PM ruling 2026-11-01 and FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the supply fan box's front face at Y -819, 5 mm "
+     "behind the cross tube F09 over it (Z 1904 to 1924), now 3 off the skin (was 28: Y -822)"),
     ("sb_z0", "1650 mm", "mm", "source", R7E + ": supply fan box Z 1650 to 1950"),
     ("op_x0", "961 mm", "mm", "source", R7E + ": opening from the block into the column top X 961 to 1161, Z 1895 to 2110"),
     ("op_z0", "1895 mm", "mm", "source", R7E + ": opening Z 1895 to 2110"),
     ("op_h", "215 mm", "mm", "source", R7E + ": opening 200 x 215"),
-    ("rs_x0", "956 mm", "mm", "source", "FRONT's reserved space for the riser (ri_x0, DR model; the air report's D-60 table): "
-     "X 956 to 1095 (report 7e had 955)"),
+    ("rs_x0", "959 mm", "mm", "source", "FRONT's DR rebuild with D-137's 3 mm glue line (#313 at 541fe7f, FRONT Engineer, 2026-11-01 10:47): the riser's space X 959 to 1098, 5.9 off the glass-edge tube B07 (was 956; "
+     "report 7e had 955)"),
     ("rs_w", "139 mm", "mm", "source", R7E + ": intake riser 139 wide, 155 deep"),
     ("rs_d", "150 mm", "mm", "source", "the air report's D-130 table (riser_y, riser_lo): the riser Y -803 to -653, 4.8 mm off "
      "DR's corner facet at its front-right corner and 6.5 off DR's frame face (was 155; FRONT's ri_d follows with D-130)"),
@@ -158,9 +159,8 @@ AIR_PARAMS = [
     #      F02; F07 Z 834 to 854, the same right end
     ("dr_skin_t", "3 mm", "mm", "source", "FRONT's DR skin, ACP 3 (DR model's dr_skin_t): DR's front ring tubes start behind it"),
     ("dr_fr_w", "20 mm", "mm", "source", "FRONT's DR frame tube 20 x 20 (DR model's fr_w): F07 and F08"),
-    ("dr_f08_x1", "1030.85 mm", "mm", "source", "FRONT's DR STEP on main (350003 P01): F08's and F07's right end, at the facet "
-     "side tube F02's inner face"),
-    ("dr_f07_zc", "844 mm", "mm", "source", "FRONT's DR STEP on main (350003 P01): F07, the front ring's cross tube, Z 834 to 854"),
+    ("dr_f08_x1", "1029.7 mm", "mm", "source", "FRONT's DR STEP on #313 (541fe7f, 350003 P01, every tube 3 off its skin): F08's and F07's right end, at the facet side tube F02's inner face"),
+    ("dr_f07_zc", "844 mm", "mm", "source", "FRONT's DR STEP on #313 (541fe7f, 350003 P01, every tube 3 off its skin): F07, the front ring's cross tube, Z 834 to 854"),
     ("lip_t", "3 mm", "mm", "source", "Control's allocation of 611408 (#279): a 3 mm aluminium lip angle, as the casing"),
     ("lip_h", "40 mm", "mm", "assumption", "the lip's upright leg on the box's front wall, room for its 3 rivets 20 above the "
      "foot leg and below the bulkhead (Z 1698)"),
@@ -178,10 +178,10 @@ AIR_PARAMS = [
     #      the Air Engineer's report #283): from the box's front line to DR's frame face, Z 1895 to 2110, kept ut_clr off
     #      the corner facet's shelf tube C04 (Z 1930 to 1950), whose inner face runs between these two plan points
     #      (FRONT's DR STEP on main, 350003 P01)
-    ("dr_fac_xa", "1050.85 mm", "mm", "source", "FRONT's DR STEP on main: C04's inner face, front end, X"),
-    ("dr_fac_ya", "-820.11 mm", "mm", "source", "FRONT's DR STEP on main: C04's inner face, front end, Y"),
-    ("dr_fac_xb", "1221.72 mm", "mm", "source", "FRONT's DR STEP on main: C04's inner face, back end, X"),
-    ("dr_fac_yb", "-666.5 mm", "mm", "source", "FRONT's DR STEP on main: C04's inner face, back end, Y"),
+    ("dr_fac_xa", "1049.7 mm", "mm", "source", "FRONT's DR STEP on #313 (541fe7f, 350003 P01, every tube 3 off its skin): C04's inner face, front end, X"),
+    ("dr_fac_ya", "-817.11 mm", "mm", "source", "FRONT's DR STEP on #313 (541fe7f, 350003 P01, every tube 3 off its skin): C04's inner face, front end, Y"),
+    ("dr_fac_xb", "1217.23 mm", "mm", "source", "FRONT's DR STEP on #313 (541fe7f, 350003 P01, every tube 3 off its skin): C04's inner face, back end, X"),
+    ("dr_fac_yb", "-666.5 mm", "mm", "source", "FRONT's DR STEP on #313 (541fe7f, 350003 P01, every tube 3 off its skin): C04's inner face, back end, Y"),
     ("ut_clr", "3 mm", "mm", "assumption", "the transition keeps this far off C04, so no metal touches DR's frame"),
     ("air_sk_ref", "4000 mm", "mm", "assumption", "the polygon sketches' reference point sits this far off the origin on "
      "both axes, so each corner's dimension stays positive whatever the pod's size (FRONT's sk_ref pattern)"),
@@ -571,7 +571,7 @@ def layout():
         b.append(("pad", "FAN BOX PAD %s" % side, box(x0, "%s + pad_l" % x0, "%s - pad_w / 2" % F08_YC,
                                                       "%s + pad_w / 2" % F08_YC, "sb_z0", "sb_z0 + pad_t")))
     b.append(("buffer", "RISER BUFFER", box("%s - buf_d / 2" % BUF_X, "%s + buf_d / 2" % BUF_X,
-                                            "%s + dr_skin_t + dr_fr_w + buf_gap" % YF, "rs_y0 - rvn_head",
+                                            "%s + dr_skin_t + bond_t + dr_fr_w + buf_gap" % YF, "rs_y0 - rvn_head",
                                             "dr_f07_zc - buf_d / 2", "dr_f07_zc + buf_d / 2")))
     # the roof sleeve with its top flange on C2's skin, and the grille on the flange (J-AIR-03)
     fx0, fx1, fy0, fy1 = sleeve_flange()
@@ -583,7 +583,7 @@ def layout():
 # the lip's ends and tip, the pads' line on F08 and the buffer's place over F07 (PM rulings 2026-11-01)
 LIP_X1 = "(dr_f08_x1 - lip_end)"
 LIP_Y0 = "(%s + dr_skin_t + lip_tip)" % YF
-F08_YC = "(%s + dr_skin_t + dr_fr_w / 2)" % YF
+F08_YC = "(%s + dr_skin_t + bond_t + dr_fr_w / 2)" % YF     # D-137: DR's front ring stands the skeleton's bond_t off the skin
 BUF_X = "((rs_x0 + dr_f08_x1) / 2)"
 
 

@@ -597,15 +597,17 @@ class EditTest(unittest.TestCase):
                                 "%s: a %s in %s finds nothing" % (edit, kind, bname))
 
 
-# FRONT's DR frame where the supply box assembly meets it (its DR STEP on main, 350003 P01, read 2026-11-01): the
-# shelf tube F08 and the cross tube F07 in the front ring (Y -847 to -827), the back ring's diagonal tube B06's inner
-# edge in side view (X, Z), C04's inner face in plan, the band tube B08's underside and the bolt-line tube B02's face
-F08 = dict(x0=667.66, x1=1030.85, y0=-847.0, y1=-827.0, z1=1650.0)
-F07 = dict(x1=1030.85, y1=-827.0, z0=834.0, z1=854.0)
-B06_INNER = ((277.76, 2100.0), (770.83, 1530.92))      # the diagonal tube, then the glass-edge tube B07 below it
-B07_INNER = ((770.83, 1530.92), (964.49, 150.0))
-C04_INNER = ((1050.85, -820.11), (1221.72, -666.5))
-B08_Z0, B02_X0 = 2120.0, 1167.0
+# FRONT's DR frame where the supply box assembly meets it (its DR STEP on #313 at 541fe7f, 350003 P01, with D-137's
+# 3 mm glue line: every tube 3 off its skin; read 2026-11-01): the shelf tube F08 and the cross tube F07 in the front
+# ring (Y -844 to -824, the skin's inner face at -847), the back ring's diagonal tube B06's inner edge in side view
+# (X, Z), C04's inner face in plan, the band tube B08's underside and the bolt-line tube B02's face
+SKIN_IN = -847.0
+F08 = dict(x0=671.63, x1=1029.7, y0=-844.0, y1=-824.0, z1=1650.0)
+F07 = dict(x1=1029.7, y1=-824.0, z0=834.0, z1=854.0)
+B06_INNER = ((281.73, 2100.0), (773.68, 1532.22))      # the diagonal tube, then the glass-edge tube B07 below it
+B07_INNER = ((773.68, 1532.22), (967.52, 150.0))
+C04_INNER = ((1049.7, -817.11), (1217.23, -666.5))
+B08_Z0, B02_X0 = 2120.0, 1164.0
 
 
 def seg_dist(p, seg):
@@ -638,12 +640,12 @@ class SupplyBoxRest(unittest.TestCase):
 
     def test_box_where_ruled(self):
         b = b6("SUPPLY FAN BOX")
-        self.assertEqual((b[0], b[1], b[2]), (673.0, 973.0, -822.0))
+        self.assertEqual((b[0], b[1], b[2]), (677.0, 977.0, -819.0))
         self.assertAlmostEqual(F08["y1"] - b[2], -5.0, msg="5 mm from F08's back face to the box's front")
 
     def test_lip_reaches_f08(self):
         lip = b6("FAN BOX LIP ANGLE SUPPLY")
-        self.assertAlmostEqual(lip[2] - F08["y0"], 2.0, msg="the lip's tip 2 mm off DR's skin")
+        self.assertAlmostEqual(lip[2] - SKIN_IN, 2.0, msg="the lip's tip 2 mm off DR's skin")
         self.assertAlmostEqual(lip[3], b6("SUPPLY FAN BOX")[2], msg="the lip's upright leg on the box's front wall")
         self.assertGreaterEqual(F08["y1"] - lip[2], 18.0 - 1e-9, msg="the foot covers 18 of F08's 20")
         self.assertAlmostEqual(F08["x1"] - lip[1], 5.0, msg="5 mm short of F02")
@@ -696,7 +698,8 @@ class SupplyTransition(unittest.TestCase):
                 p = (A.ev(V, x), A.ev(V, y))
                 self.assertGreaterEqual(side_of(p, C04_INNER), 3.0 - 1e-6, "corner %s inside 3 mm of C04" % (p,))
             self.assertLessEqual(A.ev(V, z1), B08_Z0 - 10.0 + 1e-9)
-            self.assertLessEqual(max(A.ev(V, x) for x, _y in pts), B02_X0 - 6.0 + 1e-9)
+            # #313's glue line brought B02 to X 1164: the transition keeps C04's 3 mm (ut_clr) from it too
+            self.assertLessEqual(max(A.ev(V, x) for x, _y in pts), B02_X0 - V["ut_clr"] + 1e-9)
         # C04's front end runs straight back along X 1050.85 to Y -820.11: the outline's front corner stays clear of it
         self.assertLess(A.ev(V, "ut_xf"), C04_INNER[0][0] - 6.0)
 
@@ -803,7 +806,7 @@ class DrFrameDrift(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.v = step_vertices(DR_STEP, ("F07 ", "F08 ", "C04 ", "B06 "))
+        cls.v = step_vertices(DR_STEP, ("F07 ", "F08 ", "C04 ", "C01 ", "B06 "))
 
     def test_f08_shelf(self):
         pts = self.v["F08"]
@@ -820,8 +823,11 @@ class DrFrameDrift(unittest.TestCase):
         self.assertAlmostEqual(max(p[1] for p in pts), F07["y1"], places=1)
 
     def test_c04_inner_face(self):
-        top = max(p[2] for p in self.v["C04"])
-        plan = {(p[0], p[1]) for p in self.v["C04"] if p[2] == top}
+        # D-120 (#313): the facet tubes C01, C04 and C05 are one part placed 3 times, differing only in height, so its
+        # one body (named C01's) gives C04's plan; DR models before #313 name C04's own body
+        pts = self.v.get("C04") or self.v["C01"]
+        top = max(p[2] for p in pts)
+        plan = {(p[0], p[1]) for p in pts if p[2] == top}
         for x, y in ((V["dr_fac_xa"], V["dr_fac_ya"]), (V["dr_fac_xb"], V["dr_fac_yb"])):
             self.assertTrue(any(abs(x - a) < 0.05 and abs(y - b) < 0.05 for a, b in plan), (x, y, sorted(plan)))
 
