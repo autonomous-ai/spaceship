@@ -15,7 +15,9 @@ Checked (C11, scope 'frames', so only a run that found the spec can close these 
 - frame-gauge (severe when a member row is thinner than its gauge, minor when thicker or its role can't be told):
   every steel member row's wall against its role's gauge, and its section against the role's;
 - frame-cad-gauge (severe when thinner, minor when thicker once the list says steel): every member body's wall as the
-  CAD models it, its role read from where it sits in its frame.
+  CAD models it, its role read from where it sits in its frame;
+- frame-steel (major) for the frames D-131 makes steel that J-FRAME-01's table doesn't cover yet (FRONT's decor cores,
+  config/steel-frames.csv): their rows and tubes name galvanized steel.
 """
 
 import importlib.util
@@ -198,9 +200,10 @@ def frame_rows(root, frames):
                 continue
             if lvl is not None:
                 cur = None
-            owner = row.get("frame") or row.get("parent") or ""
-            if owner in out and is_member_row(row):
-                out[owner]["members"].append((r_, i, row))
+            if row.get("frame") in out:          # a tube cut list: every row is a member of its frame
+                out[row["frame"]]["members"].append((r_, i, row))
+            elif row.get("parent") in out and is_member_row(row):
+                out[row["parent"]]["members"].append((r_, i, row))
     return out
 
 
@@ -403,14 +406,54 @@ def check_frame_cad(root, spec, frames, bodies, names, steel):
     return fs
 
 
+DECIDED_STEEL = "v2/04-Checks/config/steel-frames.csv"
+
+
+def galv_lacks(text):
+    """D-131's words for the frames outside J-FRAME-01's table (FRONT's decor cores): galvanized steel."""
+    if NOT_STEEL.search(text) or not STEEL.search(text):
+        return ["galvanized steel (it reads '%s')" % text.strip()[:80]]
+    return [] if GALV.search(text) else ["its zinc (galvanized)"]
+
+
+def check_decided_steel(root, cfg_rows, rows):
+    """frame-steel for the frames a decision makes steel that J-FRAME-01's table doesn't cover yet
+    (config/steel-frames.csv: part_number, decision, what): their rows and members name galvanized steel."""
+    fs = []
+    for c in cfg_rows:
+        pn = c["part_number"]
+        d = rows.get(pn) or {"rows": [], "members": []}
+        if not d["rows"]:
+            continue
+        f0, name = d["rows"][0][0], d["rows"][0][2].get("name", "")
+        lacks = ["its row (%s line %d) lacks %s" % (os.path.basename(f), i, "; ".join(ls))
+                 for f, i, row in d["rows"]
+                 for ls in [galv_lacks(row.get("material", "") + " " + row.get("finish", ""))] if ls]
+        bad = ["%s (%s line %d)" % (_member_name(row) or "?", os.path.basename(f), i) for f, i, row in d["members"]
+               if galv_lacks(_member_text(row))]
+        if bad:
+            lacks.append("%d member row%s not galvanized steel: %s" % (len(bad), "s" if len(bad) > 1 else "",
+                                                                      ", ".join(bad[:6])))
+        if lacks:
+            fs.append(Finding(
+                "C11", "frame-steel", pn, "major",
+                "%s %s: %s makes it %s, but %s." % (pn, name, c["decision"], c["what"], "; ".join(lacks)),
+                "Give the frame's row and each tube row galvanized steel (%s); the gauges come with the Joints "
+                "Engineer's table." % c["decision"], f0, owner_for(f0, pn), {"model": SCOPE}))
+    return fs
+
+
 def check_frames(root, bodies):
-    """All three, and whether the spec was found (only then do the 'frames' findings count as checked)."""
+    """All of them, and whether the spec was found (only then do the 'frames' findings count as checked)."""
     spec = load_spec(root)
     frames = frame_numbers(root)
     if spec is None or not frames:
         return [], False
-    rows = frame_rows(root, frames)
+    p = os.path.join(root, DECIDED_STEEL)
+    decided = [r for r in (read_csv(p) if os.path.exists(p) else []) if r.get("part_number") not in frames]
+    rows = frame_rows(root, frames + [r["part_number"] for r in decided])
     fs, steel = check_frame_lists(root, spec, frames, rows)
     names = {pn: (d["rows"][0][2].get("name", "") if d["rows"] else "") for pn, d in rows.items()}
     fs += check_frame_cad(root, spec, frames, bodies, names, steel)
+    fs += check_decided_steel(root, decided, rows)
     return fs, True
