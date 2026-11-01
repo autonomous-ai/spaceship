@@ -79,9 +79,13 @@ Tests: `<venv>/bin/python tools/drawgen/tests/test_drawgen.py` (prints `N of N p
   unfolds to, and every DXF circle on a model hole, on one run of bends or two (a tray: across each run from its own
   flange, along it from the base both share). Where no hole pins which way up the DXF is drawn, every reading the
   bend lines allow must fold the same part, so the DXF must be symmetric that way, or the part is refused (Reviewer 6
-  on #335). Cut-outs that aren't round holes, and slots, are refused for now (the check reads round holes). A model
-  that folds sharp takes its inside radius from the entry. Anything else is refused with the reason (INTERIOR's
-  811201: a hole the DXF cuts in a bend zone; WALL's 511202: its 304 x 268 and 80 x 11 cut-outs).
+  on #335). Cut-outs that aren't round holes (rectangles, sharp or with round corners, and slots, through one
+  flange) are in the hole tables (centre X and Y, length x width along X or Y, corner radius) with their centre lines,
+  and each one's edge, unfolded, must be the same shape as one of the DXF's, point for point both ways and counted
+  (WALL's 511202: its power unit's 304 x 268 and the 80 x 11 corner slot); any other shape is refused. The folds are
+  read from a section through the middle, or the nearest one clear of holes and cut-outs, and the profile section is
+  cut there. A model that folds sharp takes its inside radius from the entry. Anything else is refused with the reason
+  (INTERIOR's 811201: a hole the DXF cuts in a bend zone).
 - Scale: the largest ISO scale at which the views fit beside the hole tables; for a long part the table column
   gets narrower (its text wraps more) before the scale drops, as long as the tables still end above the title block.
   Where the removed sections or the flat pattern would then run off the sheet, the next smaller scale.
@@ -122,5 +126,7 @@ the PDF's own text and paths); for a bent part, every bend row is on one of the 
 OCC), each run's bend lines sit where its outside flange lengths, angles, inside radius and the printed K-factor put
 them within 0.05 mm, its flat is as long as the DXF's, every STEP hole unfolds (by the sheet's record of how each
 flange unfolds, each flange checked against a face of the STEP) onto a DXF circle of its size within 0.05 mm and
-every DXF circle onto a STEP hole, and the flat's size, the K-factor and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
+every DXF circle onto a STEP hole; every cut-out of the STEP (found from its own faces through the sheet that close
+into a void) unfolds onto one of the DXF's cut shapes point for point both ways, with its table row's centre and
+size as the STEP has them; and the flat's size, the K-factor and every bend tag are printed. `generate` runs it on every drawing it writes. The mechanical check's drawing rule (C05) and
 the release checklist count the drawings by their file names, like any other drawing.

@@ -157,21 +157,25 @@ class Dxf:
                 prims += [("L", pts[i], pts[i + 1]) for i in range(32)]
         return prims
 
-    def cut_loops(self, tol=0.01):
-        """How many separate shapes the cut lines, arcs and splines make, round holes (circles) aside: 1 for a flat
-        that is one outline; each cut-out that isn't a round hole adds one."""
-        ends = []
+    def cut_components(self, tol=0.01):
+        """The separate shapes the cut lines, arcs and splines make, round holes (circles) aside, largest first (the
+        outline, then each cut-out that isn't a round hole): [{"prims": [...], "box": (x0, y0, x1, y1)}]."""
+        ents = []           # (its ends, its primitives)
         for lay, a, b in self.lines:
             if self.role(lay) == "cut":
-                ends.append((a, b))
+                ents.append(((a, b), [("L", a, b)]))
         for lay, c, r, a0, a1 in self.arcs:
             if self.role(lay) == "cut":
-                ends.append(tuple((c[0] + r * math.cos(math.radians(t)), c[1] + r * math.sin(math.radians(t)))
-                                  for t in (a0, a1)))
+                ends = tuple((c[0] + r * math.cos(math.radians(t)), c[1] + r * math.sin(math.radians(t))) for t in (a0, a1))
+                ents.append((ends, [("A", c, r, a0, a1)]))
         for lay, deg, kn, ctrl in self.splines:
             if self.role(lay) == "cut" and ctrl:
-                ends.append((ctrl[0], ctrl[-1]))       # a clamped spline starts and ends on its end control points
-        parent = list(range(len(ends)))
+                segs = spline_beziers(deg, kn, ctrl)
+                prims = [("?", deg)] if segs is None else [
+                    ("L", p, q) for seg in segs for p, q in zip([_bezier(seg, i / 32.0) for i in range(32)],
+                                                                [_bezier(seg, i / 32.0) for i in range(1, 33)])]
+                ents.append(((ctrl[0], ctrl[-1]), prims))   # a clamped spline starts and ends on its end points
+        parent = list(range(len(ents)))
 
         def root(i):
             while parent[i] != i:
@@ -180,7 +184,7 @@ class Dxf:
             return i
         cells = {}
         cs = 10 * tol
-        for i, pair in enumerate(ends):
+        for i, (pair, _p) in enumerate(ents):
             for p in pair:
                 cx, cy = int(math.floor(p[0] / cs)), int(math.floor(p[1] / cs))
                 for dx in (-1, 0, 1):
@@ -189,7 +193,22 @@ class Dxf:
                             if math.hypot(p[0] - q[0], p[1] - q[1]) <= tol:
                                 parent[root(i)] = root(j)
                 cells.setdefault((cx, cy), []).append((i, p))
-        return len({root(i) for i in range(len(ends))})
+        groups = {}
+        for i, (_pair, prims) in enumerate(ents):
+            groups.setdefault(root(i), []).extend(prims)
+        out = []
+        for prims in groups.values():
+            pts = [q for pr in prims if pr[0] != "?" for q in _samples(pr, 5.0)]
+            box = (min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts)) \
+                if pts else (0.0, 0.0, 0.0, 0.0)
+            out.append({"prims": prims, "box": box})
+        out.sort(key=lambda g: -(g["box"][2] - g["box"][0]) * (g["box"][3] - g["box"][1]))
+        return out
+
+    def cut_loops(self, tol=0.01):
+        """How many separate shapes the cut lines, arcs and splines make, round holes (circles) aside: 1 for a flat
+        that is one outline; each cut-out that isn't a round hole adds one."""
+        return len(self.cut_components(tol))
 
     def off_symmetry(self, T, tol=0.05, step=1.0):
         """None when the cut geometry (outline and holes), the bend lines and the bend zone lines all map onto
