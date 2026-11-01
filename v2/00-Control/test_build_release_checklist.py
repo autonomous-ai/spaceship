@@ -264,6 +264,61 @@ class MakerDigits(unittest.TestCase):
         self.assertEqual((parts[0]["maker"], parts[0]["sku"]), ("Belden", "9534 060100"))
 
 
+class D162CutListRow(unittest.TestCase):
+    """D-162: a weldment member's drawing is its frame's cut list row, when the row states section, cut length,
+    both end angles and quantity; a member keeps its own sheet only where the row can't say it."""
+    CUT = FRONT_LISTS + "351104_P01_FRONT-DECOR-FRAME-DL-TUBE-CUT-LIST.csv"
+    HEAD = "frame,member,member_part,name,section,length_mm,qty,ends,status\n"
+
+    def made(self, ends, file_map=None):
+        cut = {self.CUT: self.HEAD + f"351104,B01,352101,BACK RING BOTTOM,6063-T6 aluminium tube 20 x 20 x 1.5,272.0,1,{ends},calculation\n"}
+        fai = rc.fai_plan(PLAN, BOM)
+        register = BOM.parse_register(REGISTER, "test")
+        fm = dict(BLOCK_FILES, **(file_map or {}))
+        made, _ = rc.check_parts(D120Members().lists(), register, rc.files_by_pn(fm), list(fm), fai, fai[1],
+                                 rc.register_products(REGISTER, BOM), "unlocked", BOM, {}, cut, {})
+        return next(m for m in made if m["part_number"] == "352101")
+
+    def test_a_full_cut_list_row_is_the_members_drawing(self):
+        m = self.made('"41.01° and 45° from square"')
+        self.assertTrue(m["dwg"].startswith("its frame's cut list row, 351104 (D-162)"), m["dwg"])
+        self.assertNotIn("drawing", m["gaps"])
+
+    def test_a_row_that_sends_the_angles_elsewhere_is_not_a_drawing(self):
+        m = self.made('mitred to its neighbours (angles on the frame drawing)')
+        self.assertEqual(m["dwg"], "no: its cut list row (D-162) doesn't give both end angles")
+        self.assertIn("drawing", m["gaps"])
+
+    def test_square_ends_count_as_both_angles(self):
+        self.assertIn("(D-162)", self.made("square both ends")["dwg"])
+
+    def test_the_members_own_sheet_still_counts(self):
+        sheet = {"v2/02-Drawings/front/352101_P01_FRONT-DECOR-FRAME-DL-BACK-RING-BOTTOM_DWG.pdf": "working tree"}
+        self.assertEqual(self.made('mitred to its neighbours (angles on the frame drawing)', sheet)["dwg"], "yes")
+
+
+class MakerAlternatives(unittest.TestCase):
+    """Reviewer 6 on #345: 848011 names two candidates to pick at the RFQ, so it isn't a chosen product yet; an
+    all-digit number counts only from the SKU cell."""
+
+    def tape(self, **kw):
+        r = row("848011", "buy", "SEALS - HOOK AND LOOP - 25 MM - LOCATING ONLY", "hook-and-loop or reclosable fastener tape, 25 mm, PSA")
+        r.update(kw)
+        return r
+
+    def test_a_maker_or_sku_cell_naming_alternatives_is_not_named(self):
+        _, bought = run([self.tape(maker="VELCRO Brand, or 3M (one to pick at the RFQ)",
+                                   sku="VELCRO PS14 hook 25 mm, or 3M Dual Lock SJ3560 25 mm (hardware selection V2-ENG-SEL)")], {})
+        self.assertEqual(bought[0]["sku"], "no")
+
+    def test_digits_in_the_name_alone_do_not_count(self):
+        elec = row("718027", "buy", "ELECTRICAL - CABLE - 4 X 24 AWG SCREENED - BELDEN 9534", team="ELECTRICAL",
+                   src="v2/03-Manufacturing/electrical/710000_P01_ELECTRICAL-PARTS-LIST_BOM.csv")
+        elec.update(maker="Belden", sku="")
+        _, bought = run([elec], {})
+        self.assertEqual(bought[0]["sku"], "no")
+
+
 class BoughtParts(unittest.TestCase):
     def test_register_named_part_with_a_test_is_done(self):
         _, bought = run([row("838001", "buy", "HARDWARE - BOLT - M6 X 16")], {},
