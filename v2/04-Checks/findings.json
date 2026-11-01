@@ -1,5 +1,5 @@
 {
- "next": 227,
+ "next": 273,
  "findings": [
   {
    "check": "C02",
@@ -759,7 +759,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -784,7 +784,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -809,7 +809,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -834,7 +834,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -859,7 +859,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -884,7 +884,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -1033,7 +1033,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -1058,7 +1058,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -1083,7 +1083,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -1337,7 +1337,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -1362,7 +1362,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -1387,7 +1387,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3094,7 +3094,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3119,7 +3119,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -3149,7 +3149,7 @@
      "event": "owner set by hand to BASE: the Joints Engineer's list has the key's name (D-95); BASE's row is the one off"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -3407,7 +3407,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3432,7 +3432,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3457,7 +3457,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3482,7 +3482,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3507,7 +3507,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3532,7 +3532,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3557,7 +3557,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3582,7 +3582,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3607,7 +3607,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3632,7 +3632,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3657,7 +3657,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3682,7 +3682,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3707,7 +3707,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3732,7 +3732,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3757,7 +3757,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3782,7 +3782,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3807,7 +3807,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -3832,7 +3832,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4335,7 +4335,7 @@
    ],
    "note": "The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
    "closed": "2026-11-01 c72ea57 The shell check now waits until every assembly that covers the shell is on main (BASE, WALL, FRONT decor and door, CEILING); this opening was a part not merged yet (the back walls, the right band, the decor blocks or the band end caps), found on main c72ea57 and never posted. It comes back if it's still open when the pod is complete.",
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C01",
@@ -4394,7 +4394,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4419,7 +4419,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4444,7 +4444,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4469,7 +4469,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4494,7 +4494,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4519,7 +4519,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4544,7 +4544,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4569,7 +4569,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4687,7 +4687,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -4742,7 +4742,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4767,7 +4767,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4792,7 +4792,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4817,7 +4817,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4842,7 +4842,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4867,7 +4867,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4892,7 +4892,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -4927,7 +4927,7 @@
      "event": "reopened: seen again"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b",
+   "last_seen": "2026-11-01 5fa198d",
    "closed": "2026-11-01 a8d75f6"
   },
   {
@@ -4953,7 +4953,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -4982,7 +4982,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5011,7 +5011,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5040,7 +5040,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5069,7 +5069,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5098,7 +5098,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5127,7 +5127,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5156,7 +5156,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5185,7 +5185,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5214,7 +5214,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5243,7 +5243,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5272,7 +5272,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5301,7 +5301,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5330,7 +5330,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5359,7 +5359,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5388,7 +5388,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5417,7 +5417,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5446,7 +5446,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5471,7 +5471,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5496,7 +5496,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5521,7 +5521,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5546,7 +5546,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5571,7 +5571,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5596,7 +5596,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5621,7 +5621,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5646,7 +5646,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5671,7 +5671,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5696,7 +5696,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5783,7 +5783,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5812,7 +5812,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5841,7 +5841,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5870,7 +5870,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5899,7 +5899,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C06",
@@ -5928,7 +5928,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5953,7 +5953,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -5978,7 +5978,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6003,7 +6003,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6028,7 +6028,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6053,7 +6053,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6078,7 +6078,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6103,7 +6103,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6128,7 +6128,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6153,7 +6153,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6178,7 +6178,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6203,7 +6203,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6228,7 +6228,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6253,7 +6253,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6278,7 +6278,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6303,7 +6303,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6328,7 +6328,7 @@
      "event": "opened"
     }
    ],
-   "last_seen": "2026-11-01 e8ae80b"
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6342,7 +6342,7 @@
    "evidence": {},
    "key": "C05|letter-height|110401",
    "id": "F-211",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "BASE group, 2026-11-01",
@@ -6351,8 +6351,14 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "75b3f86",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
-   ]
+   ],
+   "closed": "2026-11-01 75b3f86"
   },
   {
    "check": "C05",
@@ -6376,7 +6382,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6400,7 +6407,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6424,7 +6432,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6448,7 +6457,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6462,7 +6472,7 @@
    "evidence": {},
    "key": "C05|letter-height|111401",
    "id": "F-216",
-   "status": "OPEN",
+   "status": "CLOSED",
    "source": "auto",
    "found": "2026-11-01 e8ae80b",
    "posted": "BASE group, 2026-11-01",
@@ -6471,8 +6481,14 @@
      "date": "2026-11-01",
      "rev": "e8ae80b",
      "event": "opened"
+    },
+    {
+     "date": "2026-11-01",
+     "rev": "75b3f86",
+     "event": "closed: the check ran on this revision and no longer finds it"
     }
-   ]
+   ],
+   "closed": "2026-11-01 75b3f86"
   },
   {
    "check": "C05",
@@ -6496,7 +6512,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6520,7 +6537,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6544,7 +6562,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6568,7 +6587,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6592,7 +6612,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6616,7 +6637,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6640,7 +6662,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6664,7 +6687,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6688,7 +6712,8 @@
      "rev": "e8ae80b",
      "event": "opened"
     }
-   ]
+   ],
+   "last_seen": "2026-11-01 5fa198d"
   },
   {
    "check": "C05",
@@ -6710,6 +6735,1187 @@
     {
      "date": "2026-11-01",
      "rev": "e8ae80b",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C08",
+   "rule": "hole-size-M6-CLEARANCE-7",
+   "subject": "assembly SOFFIT RAIL DOOR holes Ø6.60",
+   "severity": "major",
+   "message": "610000_P01_AIR_CAD / 610201 AIR - SOFFIT:1 / 611205 AIR - SOFFIT TOP RAIL - DOOR SIDE:1 / SOFFIT RAIL DOOR has 2 hole(s) of Ø6.60 facing a rivnut (C1 FRONT MEMBER). An M6 clearance hole smaller than the ruled 7.0 mm: with a rivnut on the other side the bolt float drops to 0.31 mm and the joint may not go together (stack ST-03). Rule: confirmed: D-64 and D-75 (holes Ø7.0) with the F-009 ruling: position Ø0.4 (±0.2) from the spigot hole, by CNC or jig.",
+   "fix": "Make it Ø7.0 (+0.1/0) and give its position Ø0.4 from the spigot hole on the drawing; if this is a factory joint, not a site joint, say so in the feature rationale",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "model": "assembly",
+    "dia_mm": 6.6,
+    "count": 2
+   },
+   "key": "C08|hole-size-M6-CLEARANCE-7|assembly SOFFIT RAIL DOOR holes Ø6.60",
+   "id": "F-227",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611106",
+   "severity": "major",
+   "message": "611106 AIR - COLUMN FOOT PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611106",
+   "id": "F-228",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611103",
+   "severity": "major",
+   "message": "611103 AIR - COLUMN CORNER ANGLE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611103",
+   "id": "F-229",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611107",
+   "severity": "major",
+   "message": "611107 AIR - COLUMN PLENUM SIDE PLATE - LOW in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611107",
+   "id": "F-230",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611108",
+   "severity": "major",
+   "message": "611108 AIR - COLUMN PLENUM SIDE PLATE - HIGH in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611108",
+   "id": "F-231",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611301",
+   "severity": "major",
+   "message": "611301 AIR - CARTRIDGE CASING in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611301",
+   "id": "F-232",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611302",
+   "severity": "major",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'Pyrotek Sorberpoly 2D 40 kg/m3'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611302",
+   "id": "F-233",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611201",
+   "severity": "major",
+   "message": "611201 AIR - SOFFIT UNDERSIDE - LEFT HINGED in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611201",
+   "id": "F-234",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611207",
+   "severity": "major",
+   "message": "611207 AIR - SOFFIT UNDERSIDE - RIGHT HINGED in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611207",
+   "id": "F-235",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611208",
+   "severity": "major",
+   "message": "611208 AIR - SOFFIT UNDERSIDE - FIXED OVER THE COLUMN in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no finish. Material given: 'ACP 3 + felt 9 face (5.3 kg/m2)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611208",
+   "id": "F-236",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611205",
+   "severity": "major",
+   "message": "611205 AIR - SOFFIT TOP RAIL - DOOR SIDE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611205",
+   "id": "F-237",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611209",
+   "severity": "major",
+   "message": "611209 AIR - SOFFIT TOP RAIL - ROOM SIDE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611209",
+   "id": "F-238",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611206",
+   "severity": "major",
+   "message": "611206 AIR - SOFFIT END PLATE - LEFT in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611206",
+   "id": "F-239",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611210",
+   "severity": "major",
+   "message": "611210 AIR - SOFFIT DOOR-SIDE PLATE in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611210",
+   "id": "F-240",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611401",
+   "severity": "major",
+   "message": "611401 AIR - FAN BOX CASING - EXHAUST in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611401",
+   "id": "F-241",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C11",
+   "rule": "material-finish",
+   "subject": "611402",
+   "severity": "major",
+   "message": "611402 AIR - FAN BOX CASING - SUPPLY in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv has no material grade (a named grade or alloy and temper, not just a family). Material given: 'Aluminium (alloy HOLD)'.",
+   "fix": "State the material grade (for example EN AW-6063 T6, DX51D+Z275, A2-70) and the finish (for example anodised 15 um, powder coat RAL ..., zinc plated, mill finish) in the parts list and on the drawing.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C11|material-finish|611402",
+   "id": "F-242",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "row-incomplete",
+   "subject": "618101",
+   "severity": "minor",
+   "message": "618101 AIR - SENSOR HUB ZONE - HOLD in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv is missing: mass.",
+   "fix": "Fill them in, each number with its status and source.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|row-incomplete|618101",
+   "id": "F-243",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348",
+   "severity": "severe",
+   "message": "Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -950 Y -635 Z 2348 in the part's own coordinates.",
+   "fix": "Move the hole to at least 13.2 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "edge_mm": 8.5,
+    "dia_mm": 6.6
+   },
+   "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -950 Y -635 Z 2348",
+   "id": "F-244",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C09",
+   "rule": "edge-distance",
+   "subject": "611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348",
+   "severity": "severe",
+   "message": "Hole Ø6.60 in 611205 SOFFIT RAIL DOOR is 8.5 mm from the free edge (centre to edge), 1.29 diameters; the rule is at least 2 diameters (13.2 mm). Hole centre X -1100 Y -635 Z 2348 in the part's own coordinates.",
+   "fix": "Move the hole to at least 13.2 mm from the edge, or justify a smaller distance with a calculation in the feature rationale.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "edge_mm": 8.5,
+    "dia_mm": 6.6
+   },
+   "key": "C09|edge-distance|611205 SOFFIT RAIL DOOR hole Ø6.6 at X -1100 Y -635 Z 2348",
+   "id": "F-245",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "610301",
+   "severity": "major",
+   "message": "610301 AIR - SPLITTER CARTRIDGE - COMMON (SUPPLY) is one component holding 4 bodies of 2 different shapes (CARTRIDGE EXHAUST, CARTRIDGE SUPPLY, LAYER 1 EXHAUST, LAYER 1 SUPPLY, LAYER 2 EXHAUST, LAYER 2 SUPPLY, LAYER 3 EXHAUST, LAYER 3 SUPPLY) in 610000_P01_AIR_STEP.step (4 bodies); 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 2,
+    "files": 2
+   },
+   "key": "C06|bodies-not-components|610301",
+   "id": "F-246",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611103",
+   "severity": "major",
+   "message": "611103 AIR - COLUMN CORNER ANGLE is one component holding 3 bodies of 2 different shapes (COLUMN ANGLE BL, COLUMN ANGLE FL, COLUMN ANGLE FR) in 610000_P01_AIR_STEP.step (3 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 3,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611103",
+   "id": "F-247",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611104",
+   "severity": "major",
+   "message": "611104 AIR - COLUMN FILL is one component holding 2 bodies of 2 different shapes (COLUMN FILL FRONT, COLUMN FILL LEFT) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611104",
+   "id": "F-248",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611105",
+   "severity": "major",
+   "message": "611105 AIR - KICK GRILLE is one component holding 2 bodies of 2 different shapes (KICK GRILLE FRONT, KICK GRILLE LEFT) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611105",
+   "id": "F-249",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "611203",
+   "severity": "major",
+   "message": "611203 AIR - SOFFIT FILL is one component holding 2 bodies of 2 different shapes (SOFFIT FILL FRONT, SOFFIT FILL UNDER) in 610000_P01_AIR_STEP.step (2 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 2,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|611203",
+   "id": "F-250",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "bodies-not-components",
+   "subject": "838002",
+   "severity": "major",
+   "message": "838002 HARDWARE - SOCKET HEAD BOLT - M6 X 25 - ISO 4762 8.8 ZINC is one component holding 4 bodies of 2 different shapes (LOCK SCREW 1 HEAD, LOCK SCREW 1 SHANK, LOCK SCREW 2 HEAD, LOCK SCREW 2 SHANK) in 610000_P01_AIR_STEP.step (4 bodies). D-120 (build plan rule 2, BP-04): every part is its own component with its own number, never a loose body.",
+   "fix": "Make each piece its own component with its own part number (the master BOM assigns them), so this number becomes an assembly of them; copies of one piece are one component placed several times (D-120; for the frames, D-115's cleated members).",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {
+    "bodies": 4,
+    "shapes": 2,
+    "files": 1
+   },
+   "key": "C06|bodies-not-components|838002",
+   "id": "F-251",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "611301",
+   "severity": "major",
+   "message": "611301 AIR - CARTRIDGE CASING is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|611301",
+   "id": "F-252",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "bom-not-in-cad",
+   "subject": "611302",
+   "severity": "major",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 is in v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv but in no STEP file in v2/03-Manufacturing.",
+   "fix": "Export its STEP from the native CAD (same revision), or take it off the list.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR-PARTS-LIST_BOM.csv",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C06|bom-not-in-cad|611302",
+   "id": "F-253",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610000",
+   "severity": "major",
+   "message": "610000 AIR has no drawing PDF (610000_REV_NAME_DWG.pdf under v2/02-Drawings) though its CAD is in v2/03-Manufacturing/air/610000_P01_AIR_STEP.step.",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "v2/03-Manufacturing/air/610000_P01_AIR_STEP.step",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610000",
+   "id": "F-254",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610101",
+   "severity": "major",
+   "message": "610101 AIR - AIR COLUMN has no drawing PDF (610101_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610101",
+   "id": "F-255",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610201",
+   "severity": "major",
+   "message": "610201 AIR - SOFFIT has no drawing PDF (610201_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610201",
+   "id": "F-256",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610301",
+   "severity": "major",
+   "message": "610301 AIR - SPLITTER CARTRIDGE - COMMON has no drawing PDF (610301_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610301",
+   "id": "F-257",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610401",
+   "severity": "major",
+   "message": "610401 AIR - SUPPLY FAN BOX has no drawing PDF (610401_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610401",
+   "id": "F-258",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "610402",
+   "severity": "major",
+   "message": "610402 AIR - EXHAUST FAN BOX has no drawing PDF (610402_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|610402",
+   "id": "F-259",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611103",
+   "severity": "severe",
+   "message": "611103 AIR - COLUMN CORNER ANGLE has no drawing PDF (611103_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611103",
+   "id": "F-260",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611104",
+   "severity": "major",
+   "message": "611104 AIR - COLUMN FILL has no drawing, and D-89's cut-list route doesn't apply: it isn't a plain rectangle (a body in its STEP has 10 faces, a block has 6: pockets or notches).",
+   "fix": "For a plain knife-cut rectangle or strip, give part number, size, material and tolerance in its parts-list or cut-list row (D-89); for a felt or fill piece with through-openings or edge notches, its DXF with the full outline and every opening and a row with material, density or grade, thickness and tolerance (D-128); otherwise make a drawing.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611104",
+   "id": "F-261",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611105",
+   "severity": "severe",
+   "message": "611105 AIR - KICK GRILLE has no drawing PDF (611105_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611105",
+   "id": "F-262",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611301",
+   "severity": "severe",
+   "message": "611301 AIR - CARTRIDGE CASING has no drawing PDF (611301_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611301",
+   "id": "F-263",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611302",
+   "severity": "severe",
+   "message": "611302 AIR - CARTRIDGE LAYER 50 has no drawing PDF (611302_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611302",
+   "id": "F-264",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611401",
+   "severity": "severe",
+   "message": "611401 AIR - FAN BOX CASING - EXHAUST has no drawing PDF (611401_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611401",
+   "id": "F-265",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611402",
+   "severity": "severe",
+   "message": "611402 AIR - FAN BOX CASING - SUPPLY has no drawing PDF (611402_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611402",
+   "id": "F-266",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611501",
+   "severity": "severe",
+   "message": "611501 AIR - INTAKE RISER has no drawing PDF (611501_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611501",
+   "id": "F-267",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C05",
+   "rule": "no-drawing",
+   "subject": "611601",
+   "severity": "severe",
+   "message": "611601 AIR - ROOF SLEEVE has no drawing PDF (611601_REV_NAME_DWG.pdf under v2/02-Drawings).",
+   "fix": "Make the ISO first-angle drawing, export it through the name strip, and commit it.",
+   "file": "",
+   "owner": "CEILING",
+   "evidence": {},
+   "key": "C05|no-drawing|611601",
+   "id": "F-268",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5966c3e",
+   "posted": "CEILING group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5966c3e",
+     "event": "opened"
+    }
+   ],
+   "last_seen": "2026-11-01 5fa198d"
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "110401",
+   "severity": "major",
+   "message": "110401 BASE - FLOOR PANEL ASSY - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|110401",
+   "id": "F-269",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5fa198d",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5fa198d",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "111401",
+   "severity": "major",
+   "message": "111401 BASE - FLOOR PANEL - F1 is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, v2/03-Manufacturing/base/111401_P01_BASE-FLOOR-PANEL-F1_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|111401",
+   "id": "F-270",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5fa198d",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5fa198d",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "cancelled-by-decision",
+   "subject": "111501",
+   "severity": "major",
+   "message": "111501 BASE - FLOOR FOAM - F1 - CLOSED-CELL 3 MM is still in v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv, v2/03-Manufacturing/base/110000_P01_BASE_STEP.step, though D-132 cancelled it (floor parts: the pod has no floor, people stand on the room floor).",
+   "fix": "Take it out of the CAD, the parts list and the drawings (D-132).",
+   "file": "v2/03-Manufacturing/base/110000_P01_BASE_BOM.csv",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|cancelled-by-decision|111501",
+   "id": "F-271",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5fa198d",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5fa198d",
+     "event": "opened"
+    }
+   ]
+  },
+  {
+   "check": "C06",
+   "rule": "required-by-decision",
+   "subject": "the base seal lip on the band's inner face, pressing on the ",
+   "severity": "major",
+   "message": "D-132 requires the base seal lip on the band's inner face, pressing on the room floor across the glides' range, but no parts list or CAD part in v2/03-Manufacturing/base/ names it yet.",
+   "fix": "Model it and give it its row and number (D-132).",
+   "file": "v2/03-Manufacturing/base",
+   "owner": "BASE",
+   "evidence": {},
+   "key": "C06|required-by-decision|the base seal lip on the band's inner face, pressing on the ",
+   "id": "F-272",
+   "status": "OPEN",
+   "source": "auto",
+   "found": "2026-11-01 5fa198d",
+   "posted": "BASE group, 2026-11-01",
+   "history": [
+    {
+     "date": "2026-11-01",
+     "rev": "5fa198d",
      "event": "opened"
     }
    ]
