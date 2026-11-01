@@ -210,7 +210,7 @@ Read from: this working tree.
 
 **Joints register**
 - H-50 HARDWARE - BLIND RIVET - CLOSED END - CLIP MALE - HOLD: no part number
-- H-53 SEALS - DECOR SEAM TAPE - PRE-COMPRESSED EXPANDING FOAM - HOLD: no part number
+- H-53 SEALS - DECOR SEAM TAPE - PRE-COMPRESSED FOAM - 8 X 1-4 - HOLD: no part number
 
 ## Reserved air spaces, not counted (D-105)
 
