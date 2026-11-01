@@ -98,6 +98,12 @@ OWN = [
     ("kick_skin", "1 mm", "mm", "assumption", "extrusion skin of the hollow side walls and their closing flanges (6063, 1.0 mm)"),
     ("kick_ch_w", "kick_wall - 2 * kick_skin", "mm", "calculation", "chamber inside each side wall: 2 mm"),
     ("kick_cav_h", "kick_h - kick_pocket_d - kick_web", "mm", "calculation", "drop-seal cavity height; must hold gsa_h"),
+    # US door rule (PM ruling 2026-11-01): anything standing proud low on the door's push side is tapered, no steeper
+    # than 60 deg; the push side is the pod side (the door opens outward), so only the pod-side wall's top is tapered
+    # and the outside face, seen from the front, stays square (the look unchanged)
+    ("kick_bev_h", "kick_wall * sqrt(3)", "mm", "calculation",
+     "rise of the push-side taper across the 4 mm pod-side wall: tan 60 deg = sqrt(3), so 6.93 up at 60 deg from the "
+     "horizontal (US door rule, PM ruling 2026-11-01)"),
     ("gsa_t", "11.6 mm", "mm", "source", "athmer Schall-Ex GSA 1-1112 section 11.6 x 40 (hardware selection C4)"),
     ("gsa_h", "40 mm", "mm", "source", "athmer Schall-Ex GSA 1-1112 section 11.6 x 40 (hardware selection C4)"),
     ("hinge_clamp_h", "120 mm", "mm", "assumption", "reserved height per hinge on the glass; HOLD H01 until a rated hinge is named"),
@@ -109,8 +115,12 @@ OWN = [
     ("hinge_z1", "door_zb + 250 mm", "mm", "assumption", "bottom hinge centre 250 above the visible glass bottom; HOLD H01"),
     ("hinge_z3", "leaf_zt - 250 mm", "mm", "assumption", "top hinge centre 250 below the glass top; HOLD H01"),
     ("hinge_z2", "(hinge_z1 + hinge_z3) / 2", "mm", "assumption", "middle hinge at mid-span; HOLD H01"),
-    ("lock_zc", "1050 mm", "mm", "assumption",
-     "pull centre 1050 above the room floor, Z 0 (usual handle height; D-132: the pod has no floor of its own)"),
+    # US door rule (PM ruling 2026-11-01): the pull's operable part between 865 and 1220 above the floor (the room
+    # floor, Z 0: D-132, the pod has no floor of its own)
+    ("pull_z_lo", "865 mm", "mm", "decided", "US door rule (PM ruling 2026-11-01): the pull no lower than 865 above the floor"),
+    ("pull_z_hi", "1220 mm", "mm", "decided", "US door rule (PM ruling 2026-11-01): the pull no higher than 1220 above the floor"),
+    ("lock_zc", "(pull_z_lo + pull_z_hi) / 2", "mm", "calculation",
+     "pull centre in the middle of the US band, 1042.5 above the room floor, Z 0; the build fails if the bar leaves the band"),
     # no latch on the glass (PM ruling 2026-10-31): the door is held at the top by a magnetic door-stop catch in DT's
     # underside; its strike clips on the leaf's top edge at the latch corner
     ("st_l", "62 mm", "mm", "source", "Sugatsune HT-MSG62 strike plate, 62 long (datasheet D2, Dec 2020)"),
@@ -121,7 +131,8 @@ OWN = [
     ("ms_w", "fg_gap / 2", "mm", "assumption", "the door's half of the 180 deg magnetic seal pair fills half the 4 mm gap"),
     ("ms_t", "1.5 mm", "mm", "assumption", "the seal profile over each glass face"),
     ("pull_cc", "300 mm", "mm", "source", "HOLD candidate Häfele 903.10.390 pull pair, 300 mm centres, Ø19 (selection C2)"),
-    ("pull_len", "pull_cc + 60 mm", "mm", "assumption", "bar 30 mm past each fixing"),
+    ("pull_len", "pull_cc + 50 mm", "mm", "assumption",
+     "bar 25 mm past each fixing (350), so the whole bar fits the US band's 355 mm; the named pull must be no longer"),
     ("pull_w", "40 mm", "mm", "assumption", "reserved width: the Ø19 bar and its fixing roses"),
     ("pull_stand", "70 mm", "mm", "assumption", "reserved projection from each glass face"),
     ("pull_back", "100 mm", "mm", "assumption", "pull axis 100 mm in from the latch edge"),
@@ -193,7 +204,8 @@ def build(app):
     L.add_params(design, L.GLASS_PARAMS)
     L.add_params(design, OWN)
     root = design.rootComponent
-    for name, expr in (("kick_cav_h", "gsa_h"),):
+    for name, expr in (("kick_cav_h", "gsa_h"), ("pull_zc - pull_len / 2", "pull_z_lo"),
+                       ("pull_z_hi", "pull_zc + pull_len / 2")):
         if L.ev(design, name) < L.ev(design, expr):
             raise RuntimeError("%s (%.1f) is smaller than %s (%.1f)" % (name, L.ev(design, name), expr, L.ev(design, expr)))
     comps, bodies = {}, {}
@@ -222,14 +234,16 @@ def build(app):
         c = comp("KICK")
         bodies["KICK"] = L.prism(design, c, "KICK", ("y", "z"), [
             (KY0, "kick_zb"), (UY0, "kick_zb"), (UY0, "kick_zb + kick_cav_h"), (UY1, "kick_zb + kick_cav_h"),
-            (UY1, "kick_zb"), (KY1, "kick_zb"), (KY1, "door_zb"), (UY1, "door_zb"),
+            (UY1, "kick_zb"), (KY1, "kick_zb"), (KY1, "door_zb - kick_bev_h"), (UY1, "door_zb"),
             (UY1, "door_zb - kick_pocket_d"), (UY0, "door_zb - kick_pocket_d"), (UY0, "door_zb"), (KY0, "door_zb")],
             "x", "kick_x0", "kick_x1", "KICK STRIP", "SECTION - KICK STRIP (H: GLAZING POCKET OVER DROP-SEAL CAVITY)",
             "EXTRUDE - KICK STRIP LENGTH")
-        for side, y0 in (("OUTSIDE", KY0 + " + kick_skin"), ("POD SIDE", UY1 + " + kick_skin")):
+        # the pod-side chamber stops a skin under the taper (at least 1.3 of wall left square to the taper)
+        for side, y0, ztop in (("OUTSIDE", KY0 + " + kick_skin", "door_zb - kick_skin"),
+                               ("POD SIDE", UY1 + " + kick_skin", "door_zb - kick_bev_h - kick_skin")):
             sk = L.poly(design, c, c.yZConstructionPlane, ("y", "z"), 0, "SECTION - KICK STRIP CHAMBER - " + side,
                         [(y0, "kick_zb + kick_skin"), (y0 + " + kick_ch_w", "kick_zb + kick_skin"),
-                         (y0 + " + kick_ch_w", "door_zb - kick_skin"), (y0, "door_zb - kick_skin")])
+                         (y0 + " + kick_ch_w", ztop), (y0, ztop)])
             L.extrude_span(c, sk, "x", "kick_x0", "kick_x1", adsk.fusion.FeatureOperations.CutFeatureOperation,
                            [bodies["KICK"]], "CUT - KICK STRIP CHAMBER - " + side + " (D-85)")
 
@@ -321,7 +335,8 @@ def build(app):
         if key in comps:
             print("MASS|%s|%s|%.3f kg" % (key, PARTS[key][0], L.comp_mass(comps[key])))
     print("unit box", L.box(root))
-    for name in ("kick_h", "kick_len", "kick_cav_h", "kick_wall", "leaf_zt", "pull_x", "hinge_z1", "hinge_z2", "hinge_z3"):
+    for name in ("kick_h", "kick_len", "kick_cav_h", "kick_wall", "kick_bev_h", "leaf_zt", "pull_x", "pull_zc", "pull_len",
+                 "hinge_z1", "hinge_z2", "hinge_z3"):
         print("PARAM|%s|%.2f" % (name, L.ev(design, name)))
     if bad or loose or bad_clash or missing:
         raise RuntimeError("door unit checks failed (unhealthy %s, loose %s, clashes %s, missing %s)" % (
