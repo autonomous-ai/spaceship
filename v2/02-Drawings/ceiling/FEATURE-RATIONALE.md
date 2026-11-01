@@ -21,17 +21,49 @@ Status words follow conventions §9. **HOLD** marks a feature whose geometry wai
 | F-4111-05 | Front member 412103 (C1) / 412203 (C2) | the frame's full width, Y −645…−625; 45° mitres (D-117) | Closes the frame; carries the soffit's door-side hanger rivnuts, and C1's the two lock rivnuts, so the two differ | D-55; D-87; D-117, D-120 | confirmed |
 | F-4111-06 | Cross member X1, 412105 (one part for both frames: C2's is C1's turned end for end) | Y −301…−281, square cut between the side and seam members | Sits 16 mm over the soffit's back edge so the soffit's back studs have a member above them; its one hanger rivnut sits at the same distance from the seam end in both frames | D-87; D-120; Control's allocation 2026-11-01 (412205 cancelled) | confirmed |
 | F-4111-07 | Cross members X2, X3: 412001, one plain part (4 per pod) | Y 92.5…112.5 and 461.25…481.25 (368.75 pitch from the front member), square cut | Support the bonded ACP at 400 or less (D-16, X1 to X3) | D-16; D-120 | confirmed |
-| F-4111-08 | Side bolt holes, J-CEIL-01 | Ø7.0 in the outer wall and Ø19 in the inner wall, 4 at Y −425, −73.33, 278.33, 630 (from Y −645: 220, then 351.67), Z 2374 | Bolt side: captive M6 × 16 into the wall's rivnuts; the 5 mm key reaches in through the Ø19 from the frame's open bay | Joints register 2.9 owns the bolt lines (PM ruling 2026-10-31): 220 rule along the ceiling's 1495, bolt line on the tube's centre (R-J15) | confirmed |
-| F-4111-09 | Back rivnut holes, J-CEIL-01 | Ø9.53, 4 in the back member's underside at Y 824, X ∓222.75, ∓475.75, ∓728.74, ∓981.74 (from the closing face: 220, then 253.00) | Nut side: rivnuts on Ø20 stop washers set the 2.26 gap to the back panel | Joints register 2.9 (220 rule on the 1198.99 frame; 4 per back panel, PM correction 2026-10-31); Y on the back tube's centre (R-J15) | confirmed |
-| F-4111-10 | Spigot hole and slot | Ø8.5 round at X ∓102.75; 8.5 × 14 slot along X at X ∓1101.74; Y 824 | Each half drops onto the back panel's two spigots | R-J13 (100 from each end). Round at the seam end because ST-04 runs from the round hole to the closing face (±0.1); the slot lets the side bolts pull the half onto its stops | confirmed |
-| F-4111-11 | Closing seam pins, J-CEIL-02 | C1: Ø7.0 in the closing face; C2: Ø9.53 rivnut in the closing face and Ø19 access in the inner wall; 4 at the side bolts' Y, Z 2374 | The M6 × 25 pin from C2's rivnut crosses the 5.5 gap into C1's hole: holds the faces flush, pulls nothing | Joints register 2.10, 3.6 | confirmed |
-| F-4111-12 | Lead-in | 1 × 45° on the closing face's lower edge (seam member and back member end) | C2 drops past C1 without catching the bulb seal | R-J9 | confirmed |
-| F-4111-13 | Soffit hanger rivnuts | Ø9.53 in the front member (Y −635) and in X1 (Y −291), at X ∓583 | The soffit's 4 keyhole studs (AIR) | PM ruling 2026-11-01 (D-87). On 20 mm faces: edge distance 5.2 (HOLD-04, as the register) | confirmed; edge distance HOLD-04 |
-| F-4111-14 | Soffit lock rivnuts | Ø9.53 in cross member 1's underside at X ∓1100 and ∓950, Y −291, in both frames; only C1's take the two captive M6 screws | Two captive M6 screws lock the soffit, so taking a cassette out can never free it. They moved off C1's front member when DR's new removable panel brought the soffit's door side to about Y −639.6: the front member's rivnuts can't leave its middle (5 mm of flat to the tube's side, HOLD-04), and the door-side rail would have left 4.6 mm to its edge. On the room-side rail the loaded edge is 18 mm away. C2's cross member carries the mirrored rivnuts unused (they sit over the column's fixed underside), so the member stays one part (412105) | PM rulings 2026-11-01 (D-87 hooks; option b for DR's panel face, the Lead). Over the soffit's left inlet plenum, where no cartridge is: the key reaches them through the left hinged underside | confirmed |
 | F-4111-15 | Clearances | every bolt 30 or more from any member meeting its own (side bolts: 148 or more) | Stiles move, never bolts | R-J14 (checked by the offline tests) | calculation |
 | F-4111-16 | Roof slot clearance (C2) | C2's side access holes 24.7 from the slot's edge | The roof sleeve and the soffit come out before any ceiling bolt is turned, and go in after | Joints register 3.5 (D-60 note); assembly order R-J9 | calculation |
 | F-4111-17 | Member joints | welded in a jig: each corner with a 2.0 mitre plate (831007 at the front, 831008 at the back: square-ended blanks, 26.5 from 1.75 and 41.5 from 3.15 along the mitre, so both ends sit 0.5 inside the frame's faces, #308), the T joints direct; beads ground on the skin and closing faces; burnt zones wire-brushed and coated with 2-component zinc-rich epoxy; no vent or drain holes; joint holes made after welding | One stiff frame without glued cleats; the plate carries the corner (the register's corner check) | D-131 (the cleats of D-115 and D-117 cancelled); joints register J-FRAME-01 | confirmed (method); the weld notes follow WALL's L1 sample review |
 | F-4111-18 | Plate cut-backs and gauges | each mitred end cut back square to its mitre by half the plate: 1.41 along the member at 45°, 2.24 off the side and seam members and 1.12 off the back member at the back corners; walls 1.0 (side, seam, front, back, X1) and 0.8 (X2, X3); S280GD+Z or SGC400, Z100 | The plates fit and the outside sizes stay; the gauges carry the site joints (1.0 under every rivnut, bolt, spigot and hanger stud) and the lining's clips (0.8) | J-FRAME-01 (D-131): the joints register's gauge and steel rows | confirmed |
+
+Each member's holes, under the member that carries them (D-120: each member its own part, drawn on its own sheet from
+the STEP; the drawing generator reads these rows into its hole tables). Every joint hole is made after welding
+(J-FRAME-01), located from the frame's joint faces and its spigot hole.
+
+### Side member 412101 (both frames; C2's is C1's turned upside down)
+
+| Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
+|---|---|---|---|---|---|
+| F-4111-08 | Side bolt holes, J-CEIL-01 | Ø7.0 in the outer wall and Ø19 in the inner wall, 4 at Y −425, −73.33, 278.33, 630 (from Y −645: 220, then 351.67), Z 2374 | Bolt side: captive M6 × 16 into the wall's rivnuts; the 5 mm key reaches in through the Ø19 from the frame's open bay | Joints register 2.9 owns the bolt lines (PM ruling 2026-10-31): 220 rule along the ceiling's 1495, bolt line on the tube's centre (R-J15) | confirmed |
+
+### Seam members 412102 (C1) and 412202 (C2)
+
+| Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
+|---|---|---|---|---|---|
+| F-4111-11 | Closing seam pins, J-CEIL-02 | C1: Ø7.0 in the closing face; C2: Ø9.53 rivnut in the closing face and Ø19 access in the inner wall; 4 at Y −425, −73.33, 278.33, 630 (the side bolts' Y), Z 2374 | The M6 × 25 pin from C2's rivnut crosses the 5.5 gap into C1's hole: holds the faces flush, pulls nothing | Joints register 2.10, 3.6 | confirmed |
+| F-4111-12 | Lead-in | 1 × 45° on the closing face's lower edge (seam member and back member end) | C2 drops past C1 without catching the bulb seal | R-J9 | confirmed |
+
+### Back members 40 × 40, 412104 (C1) and 412204 (C2)
+
+| Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
+|---|---|---|---|---|---|
+| F-4111-09 | Back rivnut holes, J-CEIL-01 | Ø9.53, 4 in the back member's underside at Y 824, X ∓222.75, ∓475.75, ∓728.74, ∓981.74 (from the closing face: 220, then 253.00) | Nut side: rivnuts on Ø20 stop washers set the 2.26 gap to the back panel | Joints register 2.9 (220 rule on the 1198.99 frame; 4 per back panel, PM correction 2026-10-31); Y on the back tube's centre (R-J15) | confirmed |
+| F-4111-10 | Spigot hole and slot | Ø8.5 round at X ∓102.75; 8.5 × 14 slot along X at X ∓1101.74; Y 824 | Each half drops onto the back panel's two spigots | R-J13 (100 from each end). Round at the seam end because ST-04 runs from the round hole to the closing face (±0.1); the slot lets the side bolts pull the half onto its stops | confirmed |
+
+### Front members 412103 (C1) and 412203 (C2)
+
+| Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
+|---|---|---|---|---|---|
+| F-4111-13 | Soffit hanger rivnuts, front member | Ø9.53 in the front member's underside, Y −635, at X ∓583 | The soffit's 4 keyhole studs (AIR) | PM ruling 2026-11-01 (D-87). On 20 mm faces: edge distance 5.2 (HOLD-04, as the register) | confirmed; edge distance HOLD-04 |
+
+### Cross member 1, 412105 (both frames; C2's is C1's turned end for end)
+
+| Feature ID | Feature | Size, offset, pitch | Function | Constraint source or calculation | Status |
+|---|---|---|---|---|---|
+| F-4111-13A | Soffit hanger rivnuts, cross member 1 | Ø9.53 in X1's underside, Y −291, at X ∓583 | The soffit's 4 keyhole studs (AIR) | PM ruling 2026-11-01 (D-87). On 20 mm faces: edge distance 5.2 (HOLD-04, as the register) | confirmed; edge distance HOLD-04 |
+| F-4111-14 | Soffit lock rivnuts | Ø9.53 in cross member 1's underside at X ∓1100 and ∓950, Y −291, in both frames; only C1's take the two captive M6 screws | Two captive M6 screws lock the soffit, so taking a cassette out can never free it. They moved off C1's front member when DR's new removable panel brought the soffit's door side to about Y −639.6: the front member's rivnuts can't leave its middle (5 mm of flat to the tube's side, HOLD-04), and the door-side rail would have left 4.6 mm to its edge. On the room-side rail the loaded edge is 18 mm away. C2's cross member carries the mirrored rivnuts unused (they sit over the column's fixed underside), so the member stays one part (412105) | PM rulings 2026-11-01 (D-87 hooks; option b for DR's panel face, the Lead). Over the soffit's left inlet plenum, where no cartridge is: the key reaches them through the left hinged underside | confirmed |
+
+The plain cross member 412001 (X2, X3, 4 per pod) has no holes.
 
 ## Skins 411301 (C1) and 411302 (C2): ACP 3, EV3038 Dark Yellow
 
