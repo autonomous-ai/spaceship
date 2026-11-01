@@ -54,7 +54,7 @@ _ns = {}
 exec(compile(_hatch_src, "hatch.py", "exec"), _ns)
 hatch_segments = _ns["hatch_segments"]
 chain_for, read_line_mode, spacing_for = _ns["chain_for"], _ns["read_line_mode"], _ns["spacing_for"]
-fill_lines, hatch_chains, pieces = _ns["fill_lines"], _ns["chains"], _ns["pieces"]
+fill_lines, hatch_chains, pieces, spaced = _ns["fill_lines"], _ns["chains"], _ns["pieces"], _ns["spaced"]
 MAX_SKETCHES = 3000     # one sketch per chain, piece or line: past this the sheet would be unworkable
 # PM ruling 2026-11-01 08:3x: thin layers (skins, frames, cassettes; under 2 mm on the sheet at 1:20)
 # are shown in outline, with this note; Fusion snaps their 0.3 mm fill lines onto each other
@@ -207,13 +207,22 @@ def run(_context):
     # the probe's form: one chain, 4-point pieces that never turn a corner, or one line per sketch; the
     # old one-sketch forms put every line in a single sketch
     plan, single = [], []
-    for i, (body, body_loops) in enumerate(loops):
-        poly = [[to_sheet(p) for p in lp] for lp in body_loops]
+    polys = [[[to_sheet(p) for p in lp] for lp in body_loops] for _body, body_loops in loops]
+    corners = [p for poly in polys for lp in poly for p in lp]   # the view draws every face's corners
+    placed = list(corners)                                       # points already on the sheet, for snapping
+    n_short = n_drop = 0
+    for i, poly in enumerate(polys):
         thin = spacing_for(poly) < 1.0
         filled += thin
         if thin:
             continue                                            # outline only (the view draws it)
         segs = fill_lines(poly, i)
+        if mode == "own-sketch":
+            # Fusion snaps a point onto an earlier one within about 2.5 mm (08:42 probe): every line end
+            # kept 3 mm clear of the corners and of the lines drawn before it (hatch.spaced)
+            segs, short, drop = spaced(segs, fixed=placed)
+            placed += [p for sg in segs for p in sg]
+            n_short, n_drop = n_short + short, n_drop + drop
         n_seg += len(segs)
         if mode == "own-sketch":
             plan += [[[a, b]] for a, b in segs]
@@ -239,8 +248,8 @@ def run(_context):
     n_sk = len(plan)
     adsk.doEvents()
     print("section %s at %.2f mm: %d cut faces (%d thin, in outline), %d hatch lines in %d sketch(es), "
-          "the %r form, %d failed; view extent %s" % (
-              sec, at, len(loops), filled, n_seg, n_sk, mode, failed, tuple(round(v, 1) for v in ex)))
+          "the %r form (%d shortened, %d left out to keep 3 mm from other points), %d failed; view extent %s" % (
+              sec, at, len(loops), filled, n_seg, n_sk, mode, n_short, n_drop, failed, tuple(round(v, 1) for v in ex)))
     if failed:
         raise RuntimeError("%d hatch sketch line(s) weren't made; nothing kept" % failed)
     # what was asked, per sketch, for the line-by-line check of the export (ga_pdf_check.py

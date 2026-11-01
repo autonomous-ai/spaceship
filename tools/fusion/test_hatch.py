@@ -197,6 +197,30 @@ class PiecesTests(unittest.TestCase):
         drawn = sorted(tuple(sorted((ch[i], ch[i + 1]))) for ch in edged for i in range(0, len(ch) - 1, 2))
         self.assertEqual(drawn, sorted(tuple(sorted(s)) for s in segs))   # every hatch line still once
 
+    def test_spaced_lines_keep_every_end_clear_of_earlier_points_and_corners(self):
+        # 08:42 probe: Fusion pulled points 2.05 and 2.06 mm from earlier points onto them
+        sq = [(230.0, 200.0), (250.0, 200.0), (250.0, 220.0), (230.0, 220.0)]
+        segs = hatch.hatch_segments(sq, spacing=2.0)
+        kept, shortened, dropped = hatch.spaced(segs, fixed=sq)
+        ends = [p for s in kept for p in s]
+        for i, p in enumerate(ends):
+            for q in sq:
+                self.assertGreaterEqual(math.dist(p, q), hatch.SNAP_MM - 1e-9)
+            for q in ends[:i - (i % 2)]:                                   # every earlier line's ends
+                self.assertGreaterEqual(math.dist(p, q), hatch.SNAP_MM - 1e-9)
+        for a, b in kept:
+            self.assertGreaterEqual(math.dist(a, b), hatch.MIN_LINE_MM)
+        self.assertEqual(len(kept) + dropped, len(segs))
+        self.assertGreater(len(kept), len(segs) // 2)                     # the hatch still reads as one
+
+    def test_spaced_lines_stay_on_their_own_line(self):
+        a, b = (0.0, 0.0), (10.0, 10.0)
+        (kept,), _s, _d = hatch.spaced([(a, b)], fixed=[(0.0, 0.0)])
+        p, q = kept
+        self.assertAlmostEqual(p[0], p[1])                                 # moved along the 45 degree line
+        self.assertGreaterEqual(math.dist(p, a), hatch.SNAP_MM)
+        self.assertEqual(q, b)
+
     def test_the_thin_face_answer_from_the_probe(self):
         import json
         import tempfile

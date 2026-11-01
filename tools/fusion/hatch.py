@@ -121,6 +121,44 @@ def pieces(chain, max_segments=PIECE_SEGMENTS):
     return [list(chain[i:i + max_segments + 1]) for i in range(0, len(chain) - 1, max_segments)]
 
 
+SNAP_MM = 3.0      # Fusion snaps a new drawing-sketch point onto an existing point this close (2026-11-01
+                   # 08:42 probe: points 2.05 and 2.06 mm away were pulled onto earlier points, 2.7+ mm kept)
+MIN_LINE_MM = 2.0  # a hatch line shortened below this is left out
+
+
+def spaced(segments, fixed=(), snap=SNAP_MM, min_len=MIN_LINE_MM, step=0.25):
+    """The hatch lines with every end at least `snap` from every point placed before it and from
+    `fixed` (the faces' corners, which the view draws): an end that is too close moves along its
+    line, toward the other end, until it is clear; a line left shorter than min_len is dropped.
+    Returns (lines kept, lines shortened, lines dropped)."""
+    placed = [tuple(p) for p in fixed]
+
+    def clear(p):
+        return all(math.dist(p, q) >= snap for q in placed)
+
+    def pull(p, q):                     # move p toward q until clear, or None when it can't be
+        L = math.dist(p, q)
+        t = 0.0
+        while t <= L:
+            r = (p[0] + (q[0] - p[0]) * t / L, p[1] + (q[1] - p[1]) * t / L) if L else p
+            if clear(r):
+                return r
+            t += step
+        return None
+
+    kept, shortened, dropped = [], 0, 0
+    for a, b in segments:
+        a2 = a if clear(a) else pull(a, b)
+        b2 = None if a2 is None else (b if clear(b) else pull(b, a2))
+        if a2 is None or b2 is None or math.dist(a2, b2) < min_len:
+            dropped += 1
+            continue
+        shortened += (a2 != a) or (b2 != b)
+        kept.append((a2, b2))
+        placed += [a2, b2]
+    return kept, shortened, dropped
+
+
 def loop_area_perimeter(loops):
     """(area, perimeter) of a face given as loops (outer + holes, even-odd)."""
     if loops and isinstance(loops[0][0], (int, float)):
