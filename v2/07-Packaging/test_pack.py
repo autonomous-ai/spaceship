@@ -372,7 +372,7 @@ def test_kick_strip_brushes():
     for words in ("alcohol wipe", "stands each brush on the room floor", "presses it firmly along its whole length", "368008"):
         assert words in door["B"], words
     note = pack.PIECE["2-02"].note
-    assert "kit bag" in note and "368008" in note and "hinge-end brush" in note and "alcohol wipe" in note, note
+    assert "kit bag" in note and "368008" in note and "hinge-end brush 368009" in note and "alcohol wipe" in note, note   # D-154
     assert [f for f in pack.OTHER_FIXINGS if f["step"] == door["n"] and "end brushes" in f["where"] and f["count"] == 0]
     without = [dict(s, ops=[o for o in s["ops"] if o["src"] != "t_brush_s"]) for s in pack.STEPS]
     delta = pack.clock_min(pack.STEPS, pack.OTHER_FIXINGS) - pack.clock_min(without, pack.OTHER_FIXINGS)
