@@ -75,6 +75,8 @@ def run(root, rev):
         if not bodies:
             continue
         findings += c_geometry.check_shell(root, mdl, bodies)
+        if mdl == "assembly":
+            findings += c_geometry.check_acp_bays(root, mdl, bodies)          # D-135: the ACP skin's bays
         faces = c_geometry.shell_faces_ready(mdl, bodies)
         if faces:
             ran |= {"C01", "C01:" + mdl} | {"C01:%s-%s" % (mdl, z) for z in faces}
@@ -124,8 +126,9 @@ def run(root, rev):
                 r, owner_for(r, fn["pn"])))
         for prod in s.products():
             pn = prod["part_number"]
-            d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"]})
+            d = step_products.setdefault(pn, {"files": set(), "count": 0, "name": prod["name"], "names": {}})
             d["files"].add(rel(root, p))
+            d["names"].setdefault(rel(root, p), prod["name"])
             d["count"] = max(d["count"], counts.get(pn, 0))
         for inst in s.instances():
             so = s.solid(inst["solid"])
@@ -155,6 +158,7 @@ def run(root, rev):
     findings += c_parts.check_components(root, per_part, c_geometry.load_step)     # D-120: parts are components
     findings += c_parts.check_copies(root, per_part, c_geometry.load_step)         # copies match their part
     if plists:
+        findings += c_parts.check_decided_items(root, plists, step_products)   # D-131, D-132: cancelled and added
         findings += c_parts.check_cad_match(root, plists, step_products)
         findings += c_parts.check_mixed_metals(root, plists, contacts_from(asm))
     # shipping

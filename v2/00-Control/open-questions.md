@@ -64,7 +64,7 @@ The build plan has no lights. The v1 BOM lists 2 square 170 × 170 ceiling light
 - Opening outward leaves the small inside free for the customer's furniture (the pod ships empty), makes it quicker to get out, and the drop seal still closes onto the threshold.
 - Keeping v1's hand keeps v1's hardware positions as a check.
 
-## Q4. Floor type: thin floor (DECIDED, D-05 and D-18; the layer build below is PROPOSED)
+## Q4. Floor type: thin floor (DECIDED, D-05 and D-18; the layer build below is PROPOSED). Since replaced: no floor (D-132)
 
 The PM's decisions: 2–3 cm panels lying on the room floor, the walls fixed around them, in place of the plan's raised 50×100 steel floor frame (D-05); the floor sits inside the aluminium base band, with a 20 mm threshold at the door (D-18).
 

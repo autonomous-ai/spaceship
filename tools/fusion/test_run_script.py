@@ -22,6 +22,7 @@ import shutil
 import tempfile
 import threading
 import time
+import types
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -46,6 +47,8 @@ class FakeFusion(http.server.ThreadingHTTPServer):
         self.max_active = 0
         self.scripts = []          # (arrival time, script text)
         self.done = []             # (end time, script text)
+        self.open_log = None       # where a STUCK_OPEN / OPEN_ENDS script logs its open
+        self.open_end_after = 1.5  # an OPEN_ENDS script's open ends this long after it started
         self.mutex = threading.Lock()
         self.thread = threading.Thread(target=self.serve_forever, daemon=True)
         self.thread.start()
@@ -57,6 +60,11 @@ class FakeFusion(http.server.ThreadingHTTPServer):
     def stop(self):
         self.shutdown()
         self.server_close()
+
+    def log_open(self, text):
+        """A line as the wrapper writes it inside Fusion (run_script.WRAPPER)."""
+        with open(self.open_log, "a", encoding="utf-8") as fh:
+            fh.write(time.strftime("%Y-%m-%d %H:%M:%S UTC ", time.gmtime()) + text + "\n")
 
 
 class FakeHandler(http.server.BaseHTTPRequestHandler):
@@ -79,6 +87,11 @@ class FakeHandler(http.server.BaseHTTPRequestHandler):
                 script = base64.b64decode(m.group(1)).decode("utf-8")
             with srv.mutex:
                 srv.scripts.append((time.time(), script))
+            if "STUCK_OPEN_IN_FUSION" in script or "OPEN_ENDS_IN_FUSION" in script:
+                srv.log_open("start open ZZ_P00_STUCK-SAMPLE_DWG v1 visible; run: TEST: stuck.py")
+                if "OPEN_ENDS_IN_FUSION" in script:
+                    threading.Timer(srv.open_end_after, srv.log_open,
+                                    ["end open ZZ_P00_STUCK-SAMPLE_DWG v1 after 1.5 s: ok"]).start()
             with (srv.main if srv.serial else contextlib.nullcontext()):
                 with srv.mutex:
                     srv.active += 1
@@ -574,6 +587,108 @@ class RunnerTests(unittest.TestCase):
         self.assertLess(time.time() - t0, 5.5)              # gave up after the wait, not the script
         self.assertFalse(os.path.exists(self.lockdir))
 
+    # Stuck in an open (PM ruling 2026-11-01). Live 03:39: an open never ended, the
+    # read-only check after the timeout was answered at once, the session went on, and
+    # its next open crashed Fusion at 03:55.
+    def stuck_run(self, marker="STUCK_OPEN_IN_FUSION", limit="2"):
+        self.fake.delay, self.fake.slow_delay = 0.05, 6.0     # Fusion answers the check at once
+        self.fake.open_log = self.lockdir + ".opens.log"
+        stuck = self.write("stuck.py", "SLOW_IN_FUSION " + marker)
+        return self.runner(stuck, "--url", self.fake.url, "--timeout", "1", "--busy-poll", "0.5",
+                           "--busy-wait", "30", "--open-limit", limit)
+
+    def test_an_open_that_never_ends_flags_fusion_unhealthy_even_though_it_answers(self):
+        code, _out, err = self.stuck_run()
+        self.assertEqual(code, rs.EXIT_UNHEALTHY, err)
+        self.assertIn("Fusion answers again", err)                 # the check alone would pass it
+        self.assertIn("FUSION IS UNHEALTHY", err)
+        self.assertIn("ZZ_P00_STUCK-SAMPLE_DWG v1", err)
+        with open(rs.unhealthy_path(self.lockdir)) as fh:
+            flag = json.load(fh)
+        self.assertEqual([o["what"] for o in flag["opens"]], ["ZZ_P00_STUCK-SAMPLE_DWG v1"])
+        self.assertEqual(flag["fusion_pid"], rs.fusion_pid())
+        self.assertEqual(flag["fusion_pids"], rs.fusion_pids())
+        self.assertFalse(os.path.exists(self.lockdir))            # the lock goes back; runs refuse
+
+    def test_after_the_flag_every_run_refuses_without_sending_fusion_anything(self):
+        self.stuck_run()
+        sent = len(self.fake.scripts)
+        second = self.write("second.py", "SECOND_RUN")
+        code, _out, err = self.runner(second, "--url", self.fake.url)
+        self.assertEqual(code, rs.EXIT_UNHEALTHY, err)
+        self.assertIn("flagged unhealthy", err)
+        self.assertIn("did not start", err)
+        _c, token, _e = self.runner("--lock-hold", "60")
+        token = token.strip()
+        code2, _o, err2 = self.runner(second, "--url", self.fake.url, env={rs.TOKEN_ENV: token})
+        self.assertEqual(code2, rs.EXIT_UNHEALTHY, err2)          # inside a held lock too: a session stops
+        self.runner("--lock-release", env={rs.TOKEN_ENV: token})
+        self.assertEqual(len(self.fake.scripts), sent)            # nothing reached Fusion
+
+    def test_an_open_that_ends_within_the_grace_is_not_flagged(self):
+        self.fake.open_end_after = 4.0                            # after the timeout and the check
+        code, _out, err = self.stuck_run("OPEN_ENDS_IN_FUSION", limit="20")
+        self.assertEqual(code, 2, err)                            # a timeout, as before
+        self.assertIn("hasn't ended", err)
+        self.assertNotIn("FUSION IS UNHEALTHY", err)
+        self.assertFalse(os.path.exists(rs.unhealthy_path(self.lockdir)))
+
+    def test_a_timeout_without_an_open_is_not_flagged(self):
+        self.fake.delay, self.fake.slow_delay = 0.05, 4.0
+        self.fake.open_log = self.lockdir + ".opens.log"
+        code, _out, err = self.runner(self.write("slow.py", "SLOW_IN_FUSION"), "--url", self.fake.url,
+                                      "--timeout", "1", "--busy-poll", "0.5", "--busy-wait", "30")
+        self.assertEqual(code, 2, err)
+        self.assertFalse(os.path.exists(rs.unhealthy_path(self.lockdir)))
+
+    def test_an_open_left_by_an_earlier_run_is_not_this_runs(self):
+        # a dangling start line written before this run took the lock isn't this run's
+        self.fake.open_log = self.lockdir + ".opens.log"
+        self.fake.log_open("start open OLD_P00_SAMPLE_CAD v3 HIDDEN; run: TEST: earlier.py")
+        self.fake.delay, self.fake.slow_delay = 0.05, 4.0
+        code, _out, err = self.runner(self.write("slow.py", "SLOW_IN_FUSION"), "--url", self.fake.url,
+                                      "--timeout", "1", "--busy-poll", "0.5", "--busy-wait", "30",
+                                      "--open-limit", "1")
+        self.assertEqual(code, 2, err)
+        self.assertFalse(os.path.exists(rs.unhealthy_path(self.lockdir)))
+
+    def test_the_doc_step_installs_the_open_logger_too(self):
+        # Reviewer 5 on #269: opens in the --doc step were logged only once a wrapped
+        # script had installed the logger (not right after a Fusion start)
+        code, _out, err = self.runner(self.script, "--url", self.fake.url, "--doc", "X_P01_CAD",
+                                      "--label", "TEST")
+        self.assertEqual(code, 0, err)
+        doc = [sc for _t, sc in self.fake.scripts if "'mode': 'open'" in sc]
+        self.assertEqual(len(doc), 1)
+        self.assertIn("_OPENLOG = %r" % rs.open_log_path(self.lockdir), doc[0])
+        self.assertIn("'TEST: noop.py'", doc[0])                  # this run's label on its opens
+
+    def write_flag(self, pid):
+        with open(rs.unhealthy_path(self.lockdir), "w") as fh:
+            json.dump({"flagged_utc": "2026-11-01 03:55:00 UTC", "fusion_pid": pid, "by": "TEST",
+                       "opens": [{"started": "2026-11-01 03:39:45 UTC", "what": "ZZ_P00_X_DWG v1",
+                                  "run": "TEST: box.py"}]}, fh)
+
+    def test_a_flag_from_before_a_fusion_restart_is_cleared(self):
+        self.write_flag(dead_pid())                               # that Fusion process is gone
+        code, _out, err = self.runner(self.script, "--url", self.fake.url)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(self.fake.scripts), 1)               # the run went on
+        self.assertIn("it has restarted (now process", err)
+        self.assertFalse(os.path.exists(rs.unhealthy_path(self.lockdir)))
+
+    def test_status_shows_the_flag_and_clear_unhealthy_removes_it(self):
+        self.write_flag(rs.fusion_pid())                          # the Fusion running now
+        _c, out, _e = self.runner("--lock-status")
+        self.assertIn("UNHEALTHY", out)
+        self.assertIn("ZZ_P00_X_DWG v1", out)
+        code, out, _e = self.runner("--clear-unhealthy")
+        self.assertEqual(code, 0)
+        self.assertIn("cleared the unhealthy flag", out)
+        self.assertFalse(os.path.exists(rs.unhealthy_path(self.lockdir)))
+        code, out, err = self.runner(self.script, "--url", self.fake.url)
+        self.assertEqual(code, 0, err)
+
     def test_sigterm_gives_back_the_lock(self):
         self.fake.delay = 5
         p = self.runner(self.script, "--url", self.fake.url, wait=False)
@@ -721,6 +836,238 @@ class OpenLogTests(unittest.TestCase):
 
     def test_the_log_sits_next_to_the_lock(self):
         self.assertEqual(rs.open_log_path("/tmp/x.lock"), "/tmp/x.lock.opens.log")
+
+
+class OpenGuardTests(unittest.TestCase):
+    """The open log decides after a timeout whether Fusion is stuck in an open."""
+
+    LOG = ["2026-11-01 03:39:14 UTC start open ZZ_P00_PROMOTE-SAMPLE_CAD v2 visible; run: a run from wt-ga: box.py",
+           "2026-11-01 03:39:16 UTC end open ZZ_P00_PROMOTE-SAMPLE_CAD v2 after 2.0 s: ok",
+           "2026-11-01 03:39:45 UTC start open ZZ_P00_PROMOTE-SAMPLE_DWG v1 visible; run: a run from wt-ga: box.py"]
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="openguard-")
+        self.lock = os.path.join(self.tmp, "fusion.lock")
+        self.log = rs.open_log_path(self.lock)
+
+    def write(self, lines, mode="w"):
+        with open(self.log, mode, encoding="utf-8") as fh:
+            fh.write("".join(l + "\n" for l in lines))
+
+    def test_the_live_log_of_0339_shows_the_drawing_open_that_never_ended(self):
+        self.write(self.LOG)
+        self.assertEqual(rs.unfinished_opens(self.log),
+                         [{"started": "2026-11-01 03:39:45 UTC", "what": "ZZ_P00_PROMOTE-SAMPLE_DWG v1",
+                           "run": "a run from wt-ga: box.py"}])
+
+    def test_only_lines_after_the_runs_offset_count(self):
+        self.write(self.LOG)
+        offset = rs.open_log_size(self.log)
+        self.assertEqual(rs.unfinished_opens(self.log, offset), [])
+        self.write(["2026-11-01 04:00:00 UTC start open A B_CAD v3 HIDDEN; run: x",       # a space in the name
+                    "2026-11-01 04:00:01 UTC end open A B_CAD v3 after 1.0 s: error 3 : timed out after 30 s",
+                    "2026-11-01 04:00:02 UTC start open (name unreadable) visible; run: y"], "a")
+        self.assertEqual([o["what"] for o in rs.unfinished_opens(self.log, offset)], ["(name unreadable)"])
+
+    def test_the_wrappers_own_lines_parse(self):
+        # tie the reader to the writer: lines made by the real wrapper code
+        t = OpenLogTests()
+        t.run_wrapped(t.fake_core(), self.log, "X_P01_CAD", False)
+        self.assertEqual(rs.unfinished_opens(self.log), [])
+        with open(self.log) as fh:
+            start = fh.read().splitlines()[0]
+        self.write([start])
+        self.assertEqual([o["what"] for o in rs.unfinished_opens(self.log)], ["X_P01_CAD v4"])
+
+    def test_no_log_means_nothing_unfinished(self):
+        self.assertEqual(rs.unfinished_opens(self.log), [])
+        self.assertEqual(rs.open_log_size(self.log), 0)
+
+    START = 1793504385.0           # 2026-11-01 03:39:45 UTC, the stuck open's start line
+
+    def guard(self, end_at=None, limit=600.0, first=150.0, pids=(4242,), lock=None, events=None):
+        """guard_opens on a fake wall clock starting `first` s after the open's start (as after
+        start_drawing's 120 s call timeout); the open ends `end_at` s after its start, if given."""
+        clock = {"t": self.START + first}
+        events = events if events is not None else []
+
+        def sleep(s):
+            events.append(("sleep", s))
+            clock["t"] += s
+            if end_at is not None and clock["t"] >= self.START + end_at:
+                self.write(["2026-11-01 03:44:45 UTC end open ZZ_P00_PROMOTE-SAMPLE_DWG v1 after 300.0 s: ok"], "a")
+        msgs = []
+        left = rs.guard_opens(self.lock, 0, "TEST: box.py", limit_s=limit, poll_s=10.0, log=msgs.append,
+                              wall=lambda: clock["t"], sleep=sleep, pids=lambda: list(pids), lock=lock)
+        return left, msgs, clock["t"] - self.START
+
+    class FakeLock:
+        def __init__(self, events, ok=True):
+            self.events, self.ok = events, ok
+
+        def extend(self, seconds, note=None):
+            self.events.append(("extend", seconds, note))
+            return self.ok
+
+    def test_the_lock_is_renewed_before_every_poll(self):
+        # Reviewer 5, P2 on #272: the wait can last up to 10 minutes; an expired lock would
+        # let the next run start on a Fusion that may be stuck, before the flag is written
+        self.write(self.LOG)
+        events = []
+        left, _msgs, age = self.guard(lock=self.FakeLock(events), events=events)
+        self.assertEqual((len(left), age), (1, 600.0))
+        self.assertEqual([e[0] for e in events], ["extend", "sleep"] * 45)      # 150 s to 600 s, 10 s polls
+        for ext, nap in zip(events[0::2], events[1::2]):
+            self.assertGreaterEqual(ext[1], nap[1] + 120.0)                     # covers the nap and more
+            self.assertIn("hasn't ended", ext[2])
+
+    def test_a_real_lock_and_a_held_lock_outlive_the_wait(self):
+        self.write(self.LOG)
+        lk = rs.FusionLock(self.lock, label="TEST", hold_s=2)
+        lk.acquire(1)
+        self.guard(lock=lk)
+        owner = lk.read_owner()
+        self.assertGreater(owner["expires"], time.time() + 100)                # renewed, not 2 s
+        self.assertIn("checking whether Fusion is stuck", rs.describe_owner(owner))
+        self.assertTrue(lk.release())
+        os.remove(rs.unhealthy_path(self.lock))
+        holder = rs.FusionLock(self.lock, label="SESSION", pid=None, hold_s=2)  # a session's held lock
+        holder.acquire(1)
+        joiner = rs.FusionLock(self.lock, label="STEP", hold_s=2)
+        joiner.acquire(0.2, token=holder.token)
+        self.guard(lock=joiner)
+        self.assertGreater(rs.FusionLock(self.lock).read_owner()["expires"], time.time() + 100)
+        joiner.release()
+        self.assertTrue(rs.FusionLock(self.lock).release_held(holder.token))
+
+    def test_a_failed_renewal_is_said_and_the_check_goes_on(self):
+        self.write(self.LOG)
+        events = []
+        left, msgs, _age = self.guard(lock=self.FakeLock(events, ok=False), events=events)
+        self.assertEqual(len(left), 1)                                          # still flagged at the limit
+        self.assertTrue(any("couldn't renew the Fusion lock" in m for m in msgs))
+
+    def test_the_start_time_reads_as_utc(self):
+        self.assertEqual(rs._started_epoch({"started": "2026-11-01 03:39:45 UTC"}), self.START)
+        self.assertIsNone(rs._started_epoch({"started": "soon"}))
+
+    def test_a_slow_open_that_ends_before_the_limit_is_not_flagged(self):
+        # Reviewer 5 on #269: start_drawing's calls time out at 120 s; a cloud open that takes
+        # 5 minutes and then ends must not stop every team
+        self.write(self.LOG)
+        left, msgs, age = self.guard(end_at=300.0)
+        self.assertEqual(left, [])
+        self.assertEqual(age, 300.0)
+        self.assertFalse(os.path.exists(rs.unhealthy_path(self.lock)))
+        self.assertIn("hasn't ended", msgs[0])
+        self.assertIn("10 min old", msgs[0])
+
+    def test_an_open_still_pending_at_the_limit_writes_the_flag(self):
+        self.write(self.LOG)
+        left, msgs, age = self.guard()
+        self.assertEqual([o["what"] for o in left], ["ZZ_P00_PROMOTE-SAMPLE_DWG v1"])
+        self.assertEqual(age, 600.0)                                  # counted from its start line
+        with open(rs.unhealthy_path(self.lock)) as fh:
+            flag = json.load(fh)
+        self.assertEqual((flag["fusion_pids"], flag["fusion_pid"], flag["by"]), ([4242], 4242, "TEST: box.py"))
+        self.assertTrue(any("FUSION IS UNHEALTHY" in m for m in msgs))
+
+    def test_an_open_already_past_the_limit_is_flagged_at_once(self):
+        # run_script's 900 s timeout: the open is older than the limit when the check starts
+        self.write(self.LOG)
+        left, _msgs, age = self.guard(first=900.0)
+        self.assertEqual(len(left), 1)
+        self.assertEqual(age, 900.0)                                  # no extra wait
+
+    def test_an_unreadable_start_time_counts_from_when_it_was_seen(self):
+        self.write(["junk UTC start open Q_DWG v1 visible; run: x"])
+        self.assertEqual(rs.unfinished_opens(self.log), [])           # not an open line at all
+        self.write(["2026-13-45 99:99:99 UTC start open Q_DWG v1 visible; run: x"])
+        left, _msgs, _age = self.guard(limit=60.0)
+        self.assertEqual([o["what"] for o in left], ["Q_DWG v1"])
+
+    def flagged(self):
+        self.write(self.LOG)
+        self.guard()                                                  # flag written with process 4242
+        self.assertTrue(os.path.exists(rs.unhealthy_path(self.lock)))
+
+    def refusal(self, now, notes=None):
+        return rs.unhealthy_refusal(self.lock, log=(notes.append if notes is not None else lambda m: None),
+                                    pids=lambda: now)
+
+    def test_no_flag_no_refusal(self):
+        self.assertIsNone(self.refusal([4242]))
+
+    def test_the_same_fusion_process_is_refused(self):
+        self.flagged()
+        why = self.refusal([4242])
+        self.assertIn("ZZ_P00_PROMOTE-SAMPLE_DWG v1", why)
+        self.assertIn("restarted", why)
+
+    def test_one_new_fusion_process_or_none_clears_the_flag(self):
+        for now, said in (([5151], "it has restarted (now process 5151)"), ([], "it isn't running")):
+            self.flagged()
+            notes = []
+            self.assertIsNone(self.refusal(now, notes))
+            self.assertIn(said, notes[0])
+            self.assertFalse(os.path.exists(rs.unhealthy_path(self.lock)))
+
+    def test_two_fusion_processes_keep_the_flag(self):
+        # Reviewer 5 on #269: during a relaunch overlap the stuck process may still run
+        self.flagged()
+        self.assertIsNotNone(self.refusal([4242, 5151]))
+        self.assertIsNotNone(self.refusal([5151, 6262]))
+        self.assertIsNotNone(self.refusal(None))                      # ps unreadable: keep it
+
+    def test_a_flag_without_process_numbers_or_unreadable_is_kept(self):
+        with open(rs.unhealthy_path(self.lock), "w") as fh:
+            fh.write("{not json")
+        self.assertIsNotNone(self.refusal([5151]))
+        with open(rs.unhealthy_path(self.lock), "w") as fh:
+            json.dump({"fusion_pid": None, "fusion_pids": None, "opens": []}, fh)
+        self.assertIsNotNone(self.refusal([5151]))
+
+    def test_a_flag_from_before_this_change_still_clears_on_a_restart(self):
+        with open(rs.unhealthy_path(self.lock), "w") as fh:
+            json.dump({"fusion_pid": 4242, "opens": []}, fh)             # #269's flag: one number
+        self.assertIsNotNone(self.refusal([4242]))
+        self.assertIsNone(self.refusal([5151]))
+
+    def test_the_process_list_reader(self):
+        out = ("  101 /Applications/Other.app/Contents/MacOS/Other\n"
+               "  202 /Users/x/Applications/Autodesk Fusion.app/Contents/MacOS/Autodesk Fusion\n"
+               "  303 /Users/x/b43a/Autodesk Fusion.app/Contents/MacOS/Autodesk Fusion\n")
+        fake = lambda *a, **k: types.SimpleNamespace(stdout=out)
+        self.assertEqual(rs.fusion_pids(run=fake), [202, 303])
+
+        def broken(*a, **k):
+            raise OSError("no ps")
+        self.assertIsNone(rs.fusion_pids(run=broken))
+
+    def test_a_doc_step_installs_the_logger_and_labels_its_opens(self):
+        t = OpenLogTests()
+        core = t.fake_core()
+        adsk = types.ModuleType("adsk")
+        adsk.core, adsk.fusion = core, types.ModuleType("adsk.fusion")
+        keep = {k: sys.modules.get(k) for k in ("adsk", "adsk.core", "adsk.fusion")}
+        sys.modules.update({"adsk": adsk, "adsk.core": core, "adsk.fusion": adsk.fusion})
+        try:
+            exec(compile(rs.doc_script("open", "N_CAD", open_log=self.log, run_label="TEST: doc step"),
+                         "doc_step", "exec"), {})
+
+            class F:
+                name, versionNumber = "Y_P01_CAD", 2
+            core.Documents().open(F(), True)
+        finally:
+            for k, v in keep.items():
+                if v is None:
+                    sys.modules.pop(k, None)
+                else:
+                    sys.modules[k] = v
+        with open(self.log) as fh:
+            lines = fh.read().splitlines()
+        self.assertIn("start open Y_P01_CAD v2 visible; run: TEST: doc step", lines[0])
+        self.assertRegex(lines[1], r"end open Y_P01_CAD v2 after [0-9.]+ s: ok$")
 
 
 class FreshModulesTests(unittest.TestCase):
