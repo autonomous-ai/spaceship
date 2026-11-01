@@ -172,12 +172,34 @@ def p02_setup(keys=P02_BATCH_KEYS):
             ("838001", "111214", "hook stud threads in the knee key's tapped holes (J-BASE-02)"),
             ("838010", "111214", "fixing screw threads in the knee key's tapped holes (J-BASE-02)")])
         WITH_ASSEMBLY = tuple(WITH_ASSEMBLY) + ("fl1", "fl2")
+        # their part designs in their own systems, so the generator draws each along its outer face, with datum C on
+        # it (in the pod both lie off the axes): CS-111104 X along FL1's outer face from its corner end, Y inward, Z
+        # from the band's bottom; CS-111105 the same from FL2's knee end. The assembly keeps pod coordinates.
+        PART_SYSTEM.update({
+            "fl1": facet_part_system(XL_, "-dl_y1", "%s + dl_x2" % XL_, "-dl_y2",
+                                     "ORIGIN AT THE CORNER END, OUTER FACE, BOTTOM"),
+            "fl2": facet_part_system("%s + dl_x2" % XL_, "-dl_y2", "%s + dl_x3" % XL_, "-dl_y3",
+                                     "ORIGIN AT THE KNEE END, OUTER FACE, BOTTOM")})
     if "band_r_tube" in keys:     # its back end carries a corner key (D-129): its part design follows each assembly save, as 111101's
         WITH_ASSEMBLY = tuple(WITH_ASSEMBLY) + ("band_r_tube",)
     PART_BUILDS.update({k: fns for k, fns in (
         ("band_r_tube", ("step_p02_band_r",)), ("fr1", ("step_p02_fr1",)), ("sill_bent", ("step_p02_sill_bent",)), ("sill_plate", ("step_p02_sill_plate",)),
         ("fl1", ("step_p02_fl1",)), ("fl2", ("step_p02_fl2",)))
         if k in keys})
+
+
+def facet_part_system(x0e, y0e, x1e, y1e, where):
+    """A facet piece's part system (to_part_system): turned about Z so its outer face, from (x0e, y0e) to (x1e, y1e)
+    in the pod, runs along +X (the pod's inside then lies toward +Y), and moved so (x0e, y0e) on the band's bottom is
+    the origin. Worked out from the design's values when the part design is built (it isn't edit-tested; the
+    assembly, which is, keeps pod coordinates)."""
+    def spec(design):
+        x0, y0, x1, y1 = (ev(design, e) for e in (x0e, y0e, x1e, y1e))
+        phi = -math.atan2(y1 - y0, x1 - x0)
+        c, s_ = math.cos(phi), math.sin(phi)
+        return ("%.6f deg" % math.degrees(phi), "%.6f mm" % -(x0 * c - y0 * s_), "%.6f mm" % -(x0 * s_ + y0 * c),
+                "-glide_h", where)
+    return spec
 
 
 def tube_from_plan(design, key, label, outline, bore_rect):

@@ -186,17 +186,17 @@ def test_units_join_and_printed_widths():
 def test_shafts_cut_along_their_axis_are_drawn_whole():
     """ISO 128-50: the entry's spigots and glide stems are drawn whole where a section cuts them, not hatched; a
     spigot the plane doesn't cut (in front of section C) is not drawn in it at all. The entry may name more such
-    parts (BASE's corner key studs on #303)."""
+    parts (BASE's corner key studs on #303). The glide is BASE's made 111602 since D-164 (it was the bought 118002)."""
     team, entry = assembly.assemblies()["110101"]
-    assert set(entry["unhatched"]) >= {"831001", "118002"}
+    assert set(entry["unhatched"]) >= {"831001", "111602"}
     assy = assembly.Assy("110101", team, entry)
     views = assembly.plan_views(assy)
     secs = {v.letter: v for v in views.values() if v.kind == "section"}
     for letter, v in secs.items():
         hatched = {assy.occs[i].item.pn for i, _l in v.hatch}
-        assert not hatched & {"831001", "118002"}, (letter, hatched)
+        assert not hatched & {"831001", "111602"}, (letter, hatched)
     drawn = lambda v, pn: any(ps for o, ps in zip(assy.occs, v.prims) if o.item.pn == pn)
-    assert drawn(secs["A"], "118002") and drawn(secs["B"], "831001")
+    assert drawn(secs["A"], "111602") and drawn(secs["B"], "831001")
     assert not drawn(secs["C"], "831001"), "a spigot in front of section C is drawn in it"
     assert {assy.occs[i].item.pn for i, _l in secs["A"].hatch} >= {"111101", "111601"}
 

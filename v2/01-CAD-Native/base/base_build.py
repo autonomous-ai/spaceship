@@ -1887,7 +1887,12 @@ PART_SYSTEM = {
 
 
 def to_part_system(design, comp, key):
-    angle, tx, ty, tz = PART_SYSTEM[key]
+    # an entry is (angle, tx, ty, tz) as expressions, or a function of the design that gives them with the origin's
+    # words (P02's facet pieces under DL, whose turn comes from the skeleton's DL points)
+    spec = PART_SYSTEM[key]
+    spec = spec(design) if callable(spec) else spec
+    angle, tx, ty, tz = spec[:4]
+    where = spec[4] if len(spec) > 4 else "ORIGIN AT THE BACK END, OUTER FACE, BOTTOM"
     bodies = adsk.core.ObjectCollection.create()
     bodies.add(comp.bRepBodies.item(0))
     mf = comp.features.moveFeatures
@@ -1900,7 +1905,7 @@ def to_part_system(design, comp, key):
     mi = mf.createInput2(bodies)
     mi.defineAsTranslateXYZ(vi(tx), vi(ty), vi(tz), True)
     f2 = mf.add(mi)
-    f2.name = "MOVE - PART SYSTEM: ORIGIN AT THE BACK END, OUTER FACE, BOTTOM"
+    f2.name = "MOVE - PART SYSTEM: %s" % where
     print("  part system: turned %s about Z, moved by (%s, %s, %s): %s" % (
         angle, tx, ty, tz, fmt_box(bbox_mm(comp.bRepBodies.item(0)))))
 

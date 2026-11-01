@@ -185,6 +185,8 @@ TOLERANCE = {
     "111104": "see its drawing", "111105": "see its drawing",
     "111601": "ISO 2768-m; critical hole: Ø13.50 +0.15/0 for the glide's M10 rivnut 838006 (D-163), centred +-0.2; DXF 111601",
     "111111": "ISO 2768-m; outline 97 x 37 -0.2/-0.4 so it slides into the bore (assumption); DXF 111111",
+    "111303": "ISO 2768-m; flat 2 mm plate, no holes; outline to the profile's inside faces, 0 to 0.5 gap for the weld "
+              "(assumption); DXF 111303",
     "831002": "joints register H-08: thickness +-0.05",
 }
 
@@ -264,7 +266,7 @@ PART_INFO_BY_KEY = {
                   "calculation", "DRAFT", "CAD; FRONT's answer and the PM ruling of 2026-11-01",
                   "member of the welded sill 111301: the bent profile with the 4 seat holes for the M3 rivnuts"),
     "sill_plate": ("aluminium sheet EN AW-5005 H14, 2 mm (assumption)", AA20,
-                   "laser cut from the blank in its DXF (its 3 corners at the profile's inside bends relieved C3)",
+                   "laser cut flat from the blank in its DXF; its 3 corners relieved C3 where they meet the profile's inside radii",
                    "calculation", "DRAFT", "CAD; D-150 (Reviewer 8's P1 on #303)",
                    "member of the welded sill 111301: the door-end plate, welded in all round, its outer face flush"),
 }

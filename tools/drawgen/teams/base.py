@@ -76,6 +76,8 @@ NO_DRAWING = {
               "drawing (BASE feature rationale FD-03)",
     "111111": "D-89 part 4: a flat 2 mm plate cut from sheet, no holes; its DXF and its full parts-list row are the "
               "drawing (D-165)",
+    "111303": "D-89 part 4: the welded sill's door-end plate, a flat 2 mm plate cut from sheet, no holes; its DXF and its "
+              "full parts-list row are the drawing; the weld is on the sill's weldment sheet 111301",
 }
 
 # Assembly sheets (tools/drawgen/assembly.py): the band assembly with its factory-fitted hardware. What a STEP can't
@@ -98,6 +100,10 @@ ASSEMBLIES = {
             # through the back corner key 111211 inside the back end (D-129): the key, its 2 hook stud bolts through the
             # inner wall and its 2 fixing screws through the bottom wall; hidden in every view, so it needs a section
             {"letter": "D", "point": [-1230, 830, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 25,
+             "window": [-1256, -1194, -2, 121]},
+            # through the front corner key 111212 in the front end (D-144, batch 2) and its 2 fixing screws 838010
+            # (at Y -641.53, corner-keys.csv): hidden in every view, as the back key is
+            {"letter": "E", "point": [-1230, -641.53, 50], "normal": [0, -1, 0], "scale": 2.0, "slice": 25,
              "window": [-1256, -1194, -2, 121]},
         ],
         "interfaces": [
@@ -180,5 +186,99 @@ ASSEMBLIES["110103"] = {
         "2026-11-01); the glides 111602 preset; the lip 118001 bonded along the inner face (D-132). On site the band "
         "is lowered between the side bands onto their back corner keys' studs through its end plates' open slots "
         "(joints register J-BASE-02, D-129) (BASE parts list notes).",
+    ],
+}
+
+# The welded sill 111301 (D-120: a weldment of its two members, the Lead's split of 2026-11-01): the bent profile 111302
+# (its own sheet, the bent-sheet mode) and the door-end plate 111303 (D-89 part 4: its DXF and its list row). This
+# sheet gives the weld.
+ASSEMBLIES["111301"] = {
+    "principal": "front",          # so the sections read upright (Z up)
+    "views": ["above"],
+    "sections": [
+        # through the welded door-end plate: the plate inside the profile's section (the weld runs round it)
+        {"letter": "A", "point": [219.5, -770, 50], "normal": [-1, 0, 0], "scale": 2.0, "slice": 10,
+         "window": [684, 816, 6, 114]},
+    ],
+    "notes": [
+        "Weld the door-end plate 111303 into the bent profile 111302's door end (X 218.5), its outer face flush with "
+        "the profile's end, all round where it meets the profile (filler 5356, assumption); the weld closes the C3 "
+        "reliefs at the profile's inside radii. Grind the plate's outer face flush, then anodise black AA20 as one "
+        "part (D-150; BASE feature rationale FS-03, FS-05).",
+        "The 4 M3 flush rivnuts 838008 go into the seat's countersunk holes after anodising, at the band assembly "
+        "110106 (BASE parts list).",
+    ],
+}
+
+# FR1's band assembly 110106: the tube under the fixed glass with its welded sill, glides and end cap
+ASSEMBLIES["110106"] = {
+    "principal": "front",          # so the sections read upright (Z up)
+    "views": ["above"],
+    "unhatched": ["111602", "838007"],
+    "sections": [
+        # across FR1 and the sill at the first glide: the tube, load block, glide, the sill's ledge, seat and kerb
+        {"letter": "A", "point": [293.5, -770, 50], "normal": [1, 0, 0], "scale": 1.0, "slice": 25,
+         "window": [-856, -684, -2, 121]},
+        # across the sill's door end, looking into it: the welded door-end plate, FR1's end cap and the lip (D-150)
+        {"letter": "B", "point": [219.5, -770, 50], "normal": [-1, 0, 0], "scale": 1.0, "slice": 10,
+         "window": [684, 856, -2, 121]},
+    ],
+    "notes": [
+        "Fitted at the factory (D-87), in this order: the M10 rivnuts 838006 set through FR1's bottom face and the 5 mm "
+        "load blocks 111601 (grip 6.5, PM ruling 2026-11-01); the glides 111602 preset; the welded sill 111301 riveted "
+        "to FR1's inner face by its flange (rivets HOLD); the 4 M3 rivnuts 838008 set flush in the sill's seat; the "
+        "end cap 111111 bonded flush in FR1's door end; the lip 118001 bonded along FR1's inner face and the sill's "
+        "door-end plate (D-132, D-150) (BASE parts list notes).",
+        "FRONT's bottom U-channel is screwed to the seat with the 4 M3 countersunk screws 838007 when the fixed glass "
+        "goes in (joints register J-FRONT-04).",
+    ],
+}
+
+# DL's band assembly 110104: the two facet pieces under DL with their keys, spigots and glide
+ASSEMBLIES["110104"] = {
+    "principal": "front",          # so the sections read upright (Z up)
+    "views": ["above"],
+    "unhatched": ["831001", "111602", "838010", "838001"],
+    "sections": [
+        # through DL's round spigot on FL1, over the knee key 111214 in FL1's knee end (hidden in every view)
+        {"letter": "A", "point": [-1176.66, -718, 50], "normal": [1, 0, 0], "scale": 1.0, "slice": 25,
+         "window": [-760, -680, -2, 121]},
+        # through FL2's glide, its load block and M10 rivnut
+        {"letter": "B", "point": [-1017.63, -800, 50], "normal": [1, 0, 0], "scale": 1.0, "slice": 25,
+         "window": [-840, -760, -2, 121]},
+        # across the knee joint at the knee face's centre (-1146.59, -735.38): the knee key's 2 hook stud bolts 838001,
+        # drawn whole, into FL2's end plate keyholes (a section square to the knee face would be off the views' axes)
+        {"letter": "D", "point": [-1146.59, -735.38, 50], "normal": [1, 0, 0], "scale": 1.0, "slice": 30,
+         "window": [-790, -680, -2, 121]},
+        # through the hinge-side plate's strike pad and the lip under the plate (the PM's hinge-side ruling)
+        {"letter": "C", "point": [-975, -699, 50], "normal": [0, -1, 0], "scale": 1.0, "slice": 20,
+         "window": [-1000, -955, -2, 121]},
+    ],
+    "notes": [
+        "Fitted at the factory (D-87), in this order: the M6 rivnuts 838003 set in FL1's and FL2's top faces for DL's "
+        "two spigots 831001, screwed in with threadlocker (joints register J-FRONT-02); the M10 rivnut 838006 set "
+        "through FL2's bottom face and its 5 mm load block 111601 (grip 6.5); the glide 111602 preset; the knee key "
+        "111214 slid into FL1's knee end and fixed by its 2 screws 838010 through the bottom wall (joints register "
+        "J-BASE-02); the lip 118001 bonded along both pieces' inner faces and under FL2's door-end plate (D-132; BASE "
+        "feature rationale FE-07) (BASE parts list notes).",
+        "On site FL1 goes on along the side band's front key studs through its end plate's keyholes, then down 10; "
+        "FL2 goes on along the knee key's studs the same way (joints register J-BASE-02).",
+    ],
+}
+
+# The base ring 110000: its band assemblies as items (each has its own sheet), put together on site
+ASSEMBLIES["110000"] = {
+    "principal": "front",
+    "views": ["above"],
+    "notes": [
+        "Put together on site on the room floor, before the walls (D-87; joints register J-BASE-02): the side bands "
+        "110101 and 110102 first; the back band 110103 lowered between them onto their back corner keys' studs; DL's "
+        "band assembly 110104 next, FL1 along the LH side band's front key studs and FL2 along the knee key's studs, "
+        "each then down 10; FR1's assembly 110106 last, down onto the intake's inline key studs (the intake comes "
+        "with P02 batch 3) (BASE feature rationale FB-25, FB-28).",
+        "The glides are preset at the factory (D-87). On site the ring is levelled from above with a 5 mm hex key "
+        "through the band tops, up from the highest floor spot, never below 8.5 (FR1's glides by turning their base, "
+        "FB-24); then its diagonals and the door opening (1190.5 ±2 at the floor) are checked before the walls go on "
+        "(BASE feature rationale FE-04; test BT-05).",
     ],
 }
