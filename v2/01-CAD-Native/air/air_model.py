@@ -311,9 +311,9 @@ HARDWARE = {
                     "Bulong lục giác chìm M6 × 16", 4, 0.0062),
     "grille_washer": ("838004", "HARDWARE - WASHER - M6 LARGE - ISO 7093-1 6.4 X 18 A2",
                       "Long đen to M6 inox", 4, 0.0028),
-    "grille_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", 4, 0.0067),
+    "grille_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2", "Tán rút M6 thép mạ kẽm", 4, 0.0067),
     # the riser buffer 618501 screws into one rivnut set at the factory in the riser's front wall (PM ruling 2026-11-01)
-    "buffer_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAH2-610-4.2", "Tán rút M6 thép mạ kẽm", 1,
+    "buffer_rivnut": ("838003", "HARDWARE - RIVET NUT - M6 - STEEL ZINC - SHEREX CAL2-610-4.2", "Tán rút M6 thép mạ kẽm", 1,
                       0.0067),
 }
 
