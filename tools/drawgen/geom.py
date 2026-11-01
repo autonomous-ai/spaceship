@@ -199,8 +199,12 @@ def load_part(path, pn):
     """The bodies of part pn in a STEP file (its own file, or a team assembly holding it), with their names and
     a unit check against the repo's reader. Raises when the file holds no solid of that part."""
     bodies = []
+    occurrences = 0
     for name, solids in read_step(path):
         if part_number_of(name) != pn:
+            continue
+        occurrences += 1
+        if occurrences > 1:     # the same part used again in the assembly: one is drawn (FRONT's 352211, 3 off)
             continue
         for s in solids:
             bodies.append(Body("", s))
@@ -221,7 +225,7 @@ def load_part(path, pn):
             best = min(names.items(), key=lambda kv: sum(abs(x - y) for x, y in zip(kv[0], key)), default=None)
             if best and sum(abs(x - y) for x, y in zip(best[0], key)) < 0.6:
                 b.name = best[1]
-    unit = {"declared": sf.unit_name, "scale_to_mm": sf.scale}
+    unit = {"declared": sf.unit_name, "scale_to_mm": sf.scale, "occurrences": max(occurrences, 1)}
     # unit check (D-13): the repo reader scales by the declared unit; OCC converts on its own. They must agree.
     worst = 0.0
     for b in bodies:
@@ -276,6 +280,7 @@ class Hole:
         self.t0, self.t1 = t0, t1
         self.partners = []       # other runs on the same axis (a hole through two tube walls)
         self.tag = None
+        self.point_angle = None  # a blind hole's drill point (degrees), when its cone is in the model
 
     @property
     def normal(self):
@@ -351,6 +356,20 @@ def _inside(solid, p):
     return c.State() == TopAbs_IN
 
 
+def _square_end(shape, p, out, r, gap=0.6, eps=0.05):
+    """True when the hole's end at p sits in a face square to the hole: just round the hole, material just behind
+    the end plane and none just in front of it, all the way round (out: the axis pointing out of the material)."""
+    a = (1.0, 0.0, 0.0) if abs(out[0]) < 0.9 else (0.0, 1.0, 0.0)
+    u = vnorm(vcross(out, a))
+    v = vcross(out, u)
+    for k in range(8):
+        t = k * math.pi / 4
+        q = vadd(p, vadd(vmul(u, (r + gap) * math.cos(t)), vmul(v, (r + gap) * math.sin(t))))
+        if not _inside(shape, vadd(q, vmul(out, -eps))) or _inside(shape, vadd(q, vmul(out, eps))):
+            return False
+    return True
+
+
 def features(body):
     """(holes, slots) of one body, from its cylindrical faces."""
     cyls = []
@@ -369,6 +388,29 @@ def features(body):
                 break
         else:
             groups.append([c])
+    # cones: a drill point closes a blind hole's bottom (the probe past the cylinder's end lands in the point's
+    # cavity, so the end would read as open)
+    cones = []
+    for f in _faces(body.shape):
+        sf = BRepAdaptor_Surface(f, True)
+        if sf.GetType() == GeomAbs_Cone:
+            cn = sf.Cone()
+            dd = cn.Axis().Direction()
+            cones.append({"apex": pnt(cn.Apex()), "dir": canon_dir((dd.X(), dd.Y(), dd.Z())), "semi": abs(cn.SemiAngle())})
+
+    def point_at(d, a0, r, t_end, beyond):
+        """A cone that is the drill point at this end of a run (beyond: +1 past t1, -1 before t0): its angle."""
+        for cn in cones:
+            if abs(abs(vdot(cn["dir"], d)) - 1) > 1e-6:
+                continue
+            off = vsub(cn["apex"], a0)
+            t = vdot(off, d)
+            if math.sqrt(max(0.0, vdot(off, off) - t * t)) > 0.02:
+                continue
+            want = r / math.tan(cn["semi"]) if cn["semi"] > 1e-6 else 1e9
+            if abs((t - t_end) * beyond - want) < max(0.02, 0.01 * r):
+                return 2 * math.degrees(cn["semi"])
+        return None
     holes, partial = [], []
     for g in groups:
         g.sort(key=lambda c: c["t0"])
@@ -388,13 +430,20 @@ def features(body):
             d, a0 = h0["dir"], h0["a0"]
             p0 = vadd(a0, vmul(d, run["t0"]))
             p1 = vadd(a0, vmul(d, run["t1"]))
-            closed0 = _inside(body.shape, vadd(a0, vmul(d, run["t0"] - 0.05)))
-            closed1 = _inside(body.shape, vadd(a0, vmul(d, run["t1"] + 0.05)))
+            pt0 = point_at(d, a0, h0["r"], run["t0"], -1)
+            pt1 = point_at(d, a0, h0["r"], run["t1"], +1)
+            closed0 = pt0 is not None or _inside(body.shape, vadd(a0, vmul(d, run["t0"] - 0.05)))
+            closed1 = pt1 is not None or _inside(body.shape, vadd(a0, vmul(d, run["t1"] + 0.05)))
             through = not closed0 and not closed1
+            sq0 = sq1 = False
+            if through:     # a through hole drilled square to one face and leaving another at an angle: from the square one
+                sq0, sq1 = _square_end(body.shape, p0, vmul(d, -1.0), h0["r"]), _square_end(body.shape, p1, d, h0["r"])
             if closed0 and not closed1:
                 entry, axis = p1, vmul(d, -1.0)
             elif closed1 and not closed0:
                 entry, axis = p0, d
+            elif sq0 != sq1:
+                entry, axis = (p0, d) if sq0 else (p1, vmul(d, -1.0))
             else:           # the end farther from the body's centre is the outer face
                 c = body.centroid
                 if vdot(vsub(p1, c), d) >= -vdot(vsub(p0, c), d):
@@ -404,6 +453,7 @@ def features(body):
             key = (tuple(round(x, 6) for x in d), tuple(round(x, 2) for x in a0))     # the axis line only
             holes.append(Hole(body, entry, axis, 2 * h0["r"], run["t1"] - run["t0"], through, key,
                               run["t0"], run["t1"]))
+            holes[-1].point_angle = pt1 if entry is p0 else pt0
     # partners: runs on one axis line (both walls of a tube)
     for h in holes:
         h.partners = [o for o in holes if o is not h and o.line_key == h.line_key]
@@ -498,8 +548,37 @@ def unexplained_curved_faces(body, holes, slots):
                     continue
             out.append(("convex cylinder" if info and not info["concave"] else "cylinder", info["r"] if info else None))
             continue
+        if t == GeomAbs_Cone and drill_point_of(s, holes) is not None:
+            continue
         out.append(({GeomAbs_Cone: "cone"}.get(t, "surface type %s" % int(t)), None))
     return out
+
+
+def drill_point_of(surface, holes, tol=0.02):
+    """The blind hole a cone is the drill point of (the cone on the hole's axis, pointing into the material, its
+    base the hole's diameter at the hole's closed end), or None. Sets that hole's point_angle (degrees)."""
+    cone = surface.Cone()
+    ax = cone.Axis()
+    apex_dir = (ax.Direction().X(), ax.Direction().Y(), ax.Direction().Z())
+    apex = pnt(cone.Apex())
+    for h in holes:
+        if h.through:
+            continue
+        # the apex on the hole's axis line, beyond its closed end, and the cone's axis along the hole's
+        bottom = vadd(h.entry, vmul(h.axis, h.depth))
+        off = vsub(apex, h.entry)
+        along = vdot(off, h.axis)
+        if math.sqrt(max(0.0, vdot(off, off) - along * along)) > tol or along < h.depth - tol:
+            continue
+        if abs(abs(vdot(apex_dir, h.axis)) - 1) > 1e-6:
+            continue
+        half = cone.SemiAngle()
+        # the cone's base is the hole's circle: the apex sits r / tan(half) past the bottom
+        if abs(math.dist(apex, bottom) - (h.dia / 2) / math.tan(abs(half))) > max(tol, 0.01 * h.dia):
+            continue
+        h.point_angle = 2 * math.degrees(abs(half))
+        return h
+    return None
 
 
 def planes(body):
@@ -519,6 +598,37 @@ def planes(body):
         BRepGProp.SurfaceProperties_s(f, props)
         out.append((n, vdot(o, n), props.Mass(), f))
     return out
+
+
+def _vertices_of(shape):
+    from OCP.TopAbs import TopAbs_VERTEX
+    e = TopExp_Explorer(shape, TopAbs_VERTEX)
+    while e.More():
+        yield e.Current()
+        e.Next()
+
+
+def member_axis(body):
+    """The axis of a straight member (a tube or bar): square to its two largest side faces that aren't parallel
+    (their normals' cross product). None when the body isn't a long prism (no such pair, or the body isn't
+    longest along that axis)."""
+    fs = sorted(planes(body), key=lambda t: -t[2])
+    if not fs:
+        return None
+    n1 = fs[0][0]
+    n2 = next((t[0] for t in fs[1:] if abs(vdot(t[0], n1)) < 0.5), None)
+    if n2 is None:
+        return None
+    a = vnorm(vcross(n1, n2))
+    a = canon_dir(a)
+    # long along it: the body's extent along the axis beats its extent along both normals
+    pts = [pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in _vertices_of(body.shape)]
+    if not pts:
+        return None
+    ext = lambda d: max(vdot(q, d) for q in pts) - min(vdot(q, d) for q in pts)
+    if ext(a) < 1.5 * max(ext(n1), ext(n2)):
+        return None
+    return a
 
 
 def half_space_keep(shape, point, normal, big=1e5):
