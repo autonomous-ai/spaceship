@@ -12,9 +12,9 @@
     100000_P04_POD-GENERAL-ASSEMBLY_NOTES.txt by tools/fusion/sheet_notes.py.
 
 To make sheet 1 again, never delete a sheet (2026-10-31: deleting the old sheet
-and saving crashed Fusion): promote the drawing's first version, the empty sheet
-start_drawing saved (ga_promote.py), then run step=all on it. The versions in
-between stay in the drawing's history.
+and saving crashed Fusion) and never promote an old version (D-141: it gave 0-byte
+files): rename the old drawing NAME_SUPERSEDED-<date>, start a new one under a
+revision suffix (start_drawing.py) and run step=all on it.
 
 Views, the first-angle symbol, the notes picture and the dimensions come from the
 shared drawing helpers (tools/fusion/fusion_drawing.py, given to every script by

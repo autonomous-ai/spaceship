@@ -26,9 +26,9 @@ A-A: plane X = the door's middle (the door's left and right bottom corners,
 B-B: plane Y = 0 (mid depth), viewer at the front (-Y): the cross-section
      through both side walls, the floor, the ceiling and their linings.
 
-Then start_drawing.py makes each design's drawing (screen unlocked), and the
-section views go on it, hatched with sheet sketch lines by
-ga_section_sheet.py (the API has no hatch).
+Then start_drawing.py makes each design's drawing (screen unlocked), and
+ga_section_sheet.py places the section view on it, every cut face in outline
+(no hatch at 1:20, PM ruling 2026-11-01), with the sections' note.
 """
 
 import time

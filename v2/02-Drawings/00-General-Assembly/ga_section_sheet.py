@@ -1,379 +1,61 @@
-"""GA sheets 2 and 3: a section view on the drawing of a cut copy, with hatch.
+"""GA sheets 2 and 3: a section view, in outline, on the drawing of a cut copy of the skeleton.
 
-    python3 tools/fusion/start_drawing.py 100000_P04_POD-SECTION-AA_CAD 100000_P04_POD-SECTION-AA_DWG --sheet A2
+    python3 tools/fusion/start_drawing.py 100000_P04_POD-SECTION-AA_CAD 100000_P04_POD-SECTION-AA_DWG --sheet A2 --keep-open
     python3 tools/fusion/run_script.py v2/02-Drawings/00-General-Assembly/ga_section_sheet.py \\
-        --doc 100000_P04_POD-SECTION-AA_DWG --arg section=AA --save "section A-A view" --close
+        --doc 100000_P04_POD-SECTION-AA_DWG --arg section=AA --arg notes_png=NOTE.png --arg notes_px=25 \\
+        --arg notes_py=20 --save "section A-A"
 
-The drawing is of the cut copy made by ga_section_design.py, so its base view
-from the viewer's side shows the cut faces. This script places that view at
-1:20, then hatches every cut face: it opens the section design, finds the
-planar faces lying on the section plane, maps their loops onto the sheet
-through the view's extent, and draws lines in sheet sketches
-(tools/fusion/hatch.py, pasted in; the API has no hatch). ISO 128-50: a face
-narrower than 2 mm on the sheet (a skin, frame or cassette layer at 1:20) is
-filled with lines 0.3 mm apart running along the strip, so it reads solid;
-wider faces get 45 degree lines 2 mm apart, adjacent bodies alternating 45 and
-135 degrees.
+The drawing is of the cut copy made by ga_section_design.py, so its base view from the viewer's side shows the
+cut faces. This script places that view at 1:20 and the sections' note (100000_P04_POD-SECTION_NOTES.txt,
+rendered by tools/fusion/sheet_notes.py --render-only), its lower-left corner at notes_px, notes_py.
 
-Lines.add is a preview API, and Fusion's PDF export doesn't always keep what
-it holds (live probe 2026-11-01: a sketch of many lines loses its first point,
-lines under about 1 mm are merged into wrong paths; one chain per sketch is
-kept exactly). So the session first probes it (ga_pdf_check.py probe) and
-passes the form that works: --arg line_mode_file=PROBE.json. In the "chain"
-form each face's lines are joined into chains, one sketch per chain. With no
-working form, the view is placed and the hatch is left out (a GAP line says
-so). The chains asked are written to NAME.hatch.json next to the export, and
-ga_pdf_check.py hatch checks the PDF line by line against it. A sheet that is
-hatched already is refused: redo it from the drawing's first version
-(ga_promote.py), never by deleting (a delete then save crashed Fusion).
+No hatch (PM ruling 2026-11-01): every cut face in these sections is 2.3 mm or less on the sheet at 1:20, and
+three live probes on the B-B view showed Fusion's drawing-sketch lines can't carry a hatch there: line ends on a
+view edge, or 0.25 mm beside it, were moved to the edge's corner (0 of 21 right), and with the hatch drawn
+before the view each line's start jumped about 4 mm onto the line before it (6 of 55 right). So every cut face
+is in outline and the note says so; the layer build-ups are on the assembly sheets' section details. Check an
+export with ga_pdf_check.py outline. A sheet that has its view already is refused: a redo is a new drawing
+under a revision suffix, the old one renamed (D-141), never a delete.
 """
-
-import json
-import os
-import time
 
 import adsk
 import adsk.core
 import adsk.drawing
-import adsk.fusion
 from fusion_drawing import base_view, insert_image   # shared helpers (tools/fusion), given by run_script.py
 
 ARGS = globals().get("SCRIPT_ARGS", {})
 SCALE = 1.0 / 20.0
 VO = adsk.drawing.ViewOrientationTypes
-# section: (design name, orientation, sheet centre, plane axis, how model maps onto the sheet)
+# section: (design name, orientation, sheet centre in mm)
 SECTIONS = {
     # seen from the left (-X): sheet x runs along -Y (the front, -Y, is on the right), sheet y along +Z
-    "AA": ("100000_P04_POD-SECTION-AA_CAD", VO.LeftViewOrientationType, (230.0, 230.0), "x", ("-y", "z")),
+    "AA": ("100000_P04_POD-SECTION-AA_CAD", VO.LeftViewOrientationType, (230.0, 230.0)),
     # seen from the front (-Y): sheet x along +X, sheet y along +Z
-    "BB": ("100000_P04_POD-SECTION-BB_CAD", VO.FrontViewOrientationType, (230.0, 230.0), "y", ("x", "z")),
+    "BB": ("100000_P04_POD-SECTION-BB_CAD", VO.FrontViewOrientationType, (230.0, 230.0)),
 }
-
-_hatch_src = open(os.path.join(ARGS.get("repo_root", "."), "tools/fusion/hatch.py"), encoding="utf-8").read()
-_ns = {}
-exec(compile(_hatch_src, "hatch.py", "exec"), _ns)
-hatch_segments = _ns["hatch_segments"]
-chain_for, read_line_mode, spacing_for = _ns["chain_for"], _ns["read_line_mode"], _ns["spacing_for"]
-fill_lines, hatch_chains, pieces, spaced = _ns["fill_lines"], _ns["chains"], _ns["pieces"], _ns["spaced"]
-inset = _ns["inset"]
-MAX_SKETCHES = 3000     # one sketch per chain, piece or line: past this the sheet would be unworkable
-# PM ruling 2026-11-01 08:3x: thin layers (skins, frames, cassettes; under 2 mm on the sheet at 1:20)
-# are shown in outline, with this note; Fusion snaps their 0.3 mm fill lines onto each other
 NOTES_WIDTH = 180.0     # mm on the sheet; the note's lower-left corner at --arg notes_px, notes_py
-
-
-def find_in_folder(folder, name):
-    """The DataFiles called name, read safely: the shared check (fusion_folder.py,
-    given to every script by run_script.py) when the runner has it, else a guarded
-    look (a runner from before PR #121). A folder entry can flicker right after a
-    Fusion restart (2026-10-31: DataFiles.item raised "invalid argument index")."""
-    try:
-        from fusion_folder import read_folder
-    except ImportError:
-        read_folder = None
-    if read_folder is not None:
-        files, _unknown, _others = read_folder(folder, stop_when=lambda fs, u, o: name in fs)
-        return files.get(name, [])
-    hits = []
-    for _ in range(12):
-        hits = []
-        for i in range(folder.dataFiles.count):
-            try:
-                f = folder.dataFiles.item(i)
-                if f.name == name:
-                    hits.append(f)
-            except Exception:
-                pass
-        if hits:
-            break
-        adsk.doEvents()
-        time.sleep(5)
-    return hits
-
-
-def p2(x, y):
-    return adsk.core.Point2D.create(x, y)
-
-
-def dpt(x, y):
-    return adsk.drawing.DrawingPoint.create(p2(x, y))
-
-
-def extent(view: "adsk.drawing.View"):
-    xs, ys = [], []
-    vc = view.viewCurves
-    for i in range(vc.count):
-        c = vc.item(i)
-        if c.type == adsk.drawing.ViewCurveTypes.LineViewCurveType:
-            for p in (c.startPoint, c.endPoint):
-                xs.append(p.coordinate.x)
-                ys.append(p.coordinate.y)
-    return min(xs), min(ys), max(xs), max(ys)
-
-
-def view_points(view: "adsk.drawing.View"):
-    """Every end point of the view's curves, in sheet mm: Fusion pulls a sketch point onto one of
-    these when it lies on the curve or too close to it (GA B-B, 2026-11-01)."""
-    pts = []
-    vc = view.viewCurves
-    for i in range(vc.count):
-        c = vc.item(i)
-        for name in ("startPoint", "endPoint"):
-            try:
-                p = getattr(c, name)
-            except Exception:
-                p = None
-            if p is not None:
-                pts.append((p.coordinate.x, p.coordinate.y))
-    return pts
-
-
-def model_box(design: "adsk.fusion.Design"):
-    bodies = [b for c in design.allComponents for b in c.bRepBodies]
-    lo = [min(getattr(b.boundingBox.minPoint, a) for b in bodies) * 10.0 for a in "xyz"]
-    hi = [max(getattr(b.boundingBox.maxPoint, a) for b in bodies) * 10.0 for a in "xyz"]
-    return lo, hi
-
-
-def cut_loops(design: "adsk.fusion.Design", axis, at_mm):
-    """Outer and inner loops (model mm) of planar faces lying on the section plane, per body."""
-    k = "xyz".index(axis)
-    out = []
-    for c in design.allComponents:
-        for b in c.bRepBodies:
-            loops = []
-            for f in b.faces:
-                if f.geometry.surfaceType != adsk.core.SurfaceTypes.PlaneSurfaceType:
-                    continue
-                geo = adsk.core.Plane.cast(f.geometry)
-                n = [geo.normal.x, geo.normal.y, geo.normal.z]
-                if abs(abs(n[k]) - 1.0) > 1e-6:
-                    continue
-                if abs(geo.origin.asArray()[k] * 10.0 - at_mm) > 0.01:
-                    continue
-                for lp in f.loops:
-                    pts = []
-                    for co in lp.coEdges:
-                        e = co.edge
-                        sv, ev = (e.startVertex, e.endVertex) if not co.isOpposedToEdge else (e.endVertex, e.startVertex)
-                        pts.append([v * 10.0 for v in sv.geometry.asArray()])
-                    loops.append(pts)
-            if loops:
-                out.append((b.name, loops))
-    return out
 
 
 def run(_context):
     app = adsk.core.Application.get()
     sec = ARGS.get("section", "AA")
-    design_name, orientation, center, axis, (sx, sy) = SECTIONS[sec]
+    _design, orientation, center = SECTIONS[sec]
     doc = adsk.drawing.DrawingDocument.cast(app.activeDocument)
     sheet = doc.drawing.sheets.item(0)
-    # --arg hatch_first=1: the hatch is drawn on the empty sheet and the view placed after it, at the place
-    # predicted from the design's box (2026-11-01: with the view there first, Fusion pulled every hatch end
-    # that lay on or beside a view edge onto the edge and moved it to the edge's corner)
-    hatch_first = ARGS.get("hatch_first") == "1"
-    if hatch_first and sheet.views.count:
-        raise RuntimeError("hatch_first needs a sheet with no view yet; this one has %d" % sheet.views.count)
-    if sheet.views.count == 0 and not hatch_first:
-        # the shared helper sets the style (visible edges) and scale again and checks them
-        v = base_view(sheet, orientation, SCALE, center)
-        print("placed the %s view at %s, 1:%g" % (sec, center, 1 / v.scaleValue))
-    view = None if hatch_first else sheet.views.item(0)
-    old = [sheet.sketches.item(i) for i in range(sheet.sketches.count)]
-    print("sketches on the sheet: %s" % ([(k.name, k.lines.count) for k in old] or "none"))
-    if any(k.name.startswith("HATCH - SECTION") for k in old):
-        # no deletes (2026-10-31: a delete then save crashed Fusion): to draw it again,
-        # promote the drawing's first version (ga_promote.py) and run this again
-        raise RuntimeError("the sheet is hatched already; promote the drawing's first version to redo it")
-    # the form of Lines.add that draws a straight line, from this session's live probe
-    if ARGS.get("outline_only") == "1":
-        # PM ruling 2026-11-01 10:1x: no hatch on the GA sections at 1:20. Every cut face in them is 2.3 mm
-        # or less on the sheet, and Fusion moved hatch ends beside a view edge onto the edge's corner (two
-        # probes); the view shows every cut face in outline, and the note says so
-        if hatch_first:
-            raise RuntimeError("outline_only places the view itself; leave hatch_first out")
-        print("outline only (PM ruling 2026-11-01): no hatch; every cut face in outline")
-        place_note(sheet)
-        return
-    probing = bool(ARGS.get("probe_insets"))
-    mode = "own-sketch" if probing else read_line_mode(ARGS.get("line_mode_file"), ARGS.get("line_mode", "plain"))
-    if mode == "none":
-        print("GAP: no hatch drawn: the line probe found no form that draws a straight line exactly, so "
-              "the hatch waits for a fix (the view is placed)")
-        return
-
-    # the section design, for the cut faces
-    sdoc = None
-    for i in range(app.documents.count):
-        if app.documents.item(i).name == design_name:
-            sdoc = app.documents.item(i)
-    opened = sdoc is None
-    if opened:
-        proj = [p for p in app.data.dataProjects if p.name == "Default Project"][0]
-        folder = proj.rootFolder.dataFolders.itemByName("FocusPod v2")
-        hits = find_in_folder(folder, design_name)
-        if len(hits) != 1:
-            raise RuntimeError("expected one %s in the team folder, found %d" % (design_name, len(hits)))
-        df = hits[0]
-        sdoc = app.documents.open(df, False)
-    design = adsk.fusion.Design.cast(sdoc.products.itemByProductType("DesignProductType"))
-    at = design.userParameters.itemByName("sec_offset").value * 10.0
-    lo, hi = model_box(design)
-    loops = cut_loops(design, axis, at)
-    if opened:
-        sdoc.close(False)
-    doc.activate()
-    ex = predicted_extent(center, lo, hi, sx, sy) if hatch_first else extent(view)
-    if hatch_first:
-        print("hatch first: the view will sit at %s (sheet mm)" % (tuple(round(v, 2) for v in ex),))
-
-    def place_view():
-        """hatch_first: the view, placed after the hatch, must land where the hatch was drawn for."""
-        v = base_view(sheet, orientation, SCALE, center)
-        got = extent(v)
-        off = max(abs(a - b) for a, b in zip(got, ex))
-        print("placed the %s view at %s, 1:%g, after the hatch: extent %s, %.3f mm from the prediction"
-              % (sec, center, 1 / v.scaleValue, tuple(round(x, 2) for x in got), off))
-        if off > 0.05:
-            raise RuntimeError("the view landed %.2f mm from where the hatch was drawn for; nothing is kept" % off)
-
-    def to_sheet(p):
-        def coord(spec):
-            neg = spec.startswith("-")
-            k = "xyz".index(spec[-1])
-            return (hi[k] - p[k]) if neg else (p[k] - lo[k])
-        return (ex[0] + coord(sx) * SCALE, ex[1] + coord(sy) * SCALE)
-
-    base = "HATCH - SECTION %s" % sec
-    record, n_seg, failed, filled = {}, 0, 0, 0
-    # every sketch's chains, planned first (2026-11-01 probes: Fusion's PDF export garbles long chains,
-    # pieces that turn a corner and lines under 1 mm apart, which it snaps onto each other): a thin face
-    # is left in outline (PM ruling, with the sheet note); other faces' 45 degree lines, 2 mm apart, in
-    # the probe's form: one chain, 4-point pieces that never turn a corner, or one line per sketch; the
-    # old one-sketch forms put every line in a single sketch
-    plan, single = [], []
-    polys = [[[to_sheet(p) for p in lp] for lp in body_loops] for _body, body_loops in loops]
-    corners = [p for poly in polys for lp in poly for p in lp]   # the view draws every face's corners
-    placed = list(corners) + (view_points(view) if view else [])  # points already on the sheet, for snapping
-    # every hatch end kept this far inside its face (sheet mm): an end ON a view edge was moved along the
-    # edge to its corner, or the line was dropped (GA B-B, 2026-11-01); the inset probe sets the value
-    gap = float(ARGS.get("inset_mm", "0"))
-    if probing:
-        probe_insets(doc, sheet, polys, placed, place_view if hatch_first else None)
-        return
-    n_short = n_drop = n_inset_drop = 0
-    for i, poly in enumerate(polys):
-        thin = spacing_for(poly) < 1.0
-        filled += thin
-        if thin:
-            continue                                            # outline only (the view draws it)
-        segs, n_in = inset(fill_lines(poly, i), poly, gap)
-        n_inset_drop += n_in
-        if mode == "own-sketch":
-            # Fusion snaps a point onto an earlier one within about 2.5 mm (08:42 probe): every line end
-            # kept 3 mm clear of the corners and of the lines drawn before it (hatch.spaced)
-            segs, short, drop = spaced(segs, fixed=placed)
-            placed += [p for sg in segs for p in sg]
-            n_short, n_drop = n_short + short, n_drop + drop
-        n_seg += len(segs)
-        if mode == "own-sketch":
-            plan += [[[a, b]] for a, b in segs]
-        elif mode == "chain":
-            plan += [[ch] for ch in hatch_chains(segs, poly)]
-        elif mode == "pairs":
-            plan += [[pc] for ch in hatch_chains(segs, poly, edge_links=True) for pc in pieces(ch)]
-        else:
-            single += [chain_for(a, b, mode) for a, b in segs]
-    if single:
-        plan.append(single)
-    if len(plan) > MAX_SKETCHES:
-        raise RuntimeError("the hatch would take %d sketches, more than %d; nothing drawn" % (len(plan), MAX_SKETCHES))
-    for k, chains_ in enumerate(plan, 1):
-        name = "%s %03d" % (base, k)
-        sk = sheet.sketches.add(name)
-        for ch in chains_:
-            if sk.lines.add([p2(*q) for q in ch]) is None:      # None when it fails
-                failed += 1
-        record[name] = [[list(q) for q in ch] for ch in chains_]
-        if k % 50 == 0:
-            adsk.doEvents()
-    n_sk = len(plan)
-    adsk.doEvents()
-    print("section %s at %.2f mm: %d cut faces (%d thin, in outline), %d hatch lines in %d sketch(es), "
-          "the %r form, ends %.2f mm inside their faces (%d too short for that), %d shortened, %d left out to "
-          "keep 3 mm from other points, %d failed; view extent %s" % (
-              sec, at, len(loops), filled, n_seg, n_sk, mode, gap, n_inset_drop, n_short, n_drop, failed,
-              tuple(round(v, 1) for v in ex)))
-    if failed:
-        raise RuntimeError("%d hatch sketch line(s) weren't made; nothing kept" % failed)
-    if hatch_first:
-        place_view()
-    # what was asked, per sketch, for the line-by-line check of the export (ga_pdf_check.py
-    # hatch reads NAME.hatch.json next to NAME.pdf)
-    out = os.path.join(ARGS.get("repo_root", "."), "v2", "02-Drawings", "00-General-Assembly",
-                       "%s.hatch.json" % doc.name)
-    with open(out, "w", encoding="utf-8") as fh:
-        json.dump({"drawing": doc.name, "form": mode, "thin": "outline", "thin_faces": filled, "inset_mm": gap,
-                   "layers": record}, fh)
-    print("hatch record: %s (%d sketch(es))" % (os.path.basename(out), len(record)))
+    if sheet.views.count:
+        raise RuntimeError("the sheet has %d view(s) already; a redo is a new drawing (D-141), nothing changed"
+                           % sheet.views.count)
+    # the shared helper sets the style (visible edges) and the scale again on the made view and checks them
+    v = base_view(sheet, orientation, SCALE, center)
+    print("placed the %s view at %s, 1:%g, every cut face in outline (no hatch at 1:20, PM ruling 2026-11-01)"
+          % (sec, center, round(1 / v.scaleValue, 3)))
     place_note(sheet)
 
 
 def place_note(sheet):
-    """The sections' note (PM rulings 2026-11-01), if --arg notes_png is given: its lower-left corner at
-    notes_px, notes_py, NOTES_WIDTH wide."""
+    """The sections' note, if --arg notes_png is given: its lower-left corner at notes_px, notes_py,
+    NOTES_WIDTH wide."""
     if ARGS.get("notes_png"):
         scale = insert_image(sheet, ARGS["notes_png"], float(ARGS["notes_px"]), float(ARGS["notes_py"]), NOTES_WIDTH)
         print("note placed at (%s, %s) mm, %g mm wide (scale %.4f)" % (ARGS["notes_px"], ARGS["notes_py"],
                                                                      NOTES_WIDTH, scale))
-
-
-def predicted_extent(center, lo, hi, sx, sy):
-    """Where a base view of the design will sit (sheet mm: x0, y0, x1, y1): Fusion centres the view's box
-    on its point (B-B, 2026-11-01: placed at (230, 230), extent (167.5, 170, 292.5, 290), the 2500 x 2400
-    box at 1:20). sx and sy name the model axis along the sheet's x and y ("x", "-y", "z")."""
-    w = (hi["xyz".index(sx[-1])] - lo["xyz".index(sx[-1])]) * SCALE
-    h = (hi["xyz".index(sy[-1])] - lo["xyz".index(sy[-1])]) * SCALE
-    return (center[0] - w / 2.0, center[1] - h / 2.0, center[0] + w / 2.0, center[1] + h / 2.0)
-
-
-def probe_insets(doc, sheet, polys, placed, place_view=None):
-    """The inset probe (--arg probe_insets=0,0.1,0.3 --arg probe_pdf=OUT.pdf): the real hatch lines of the
-    wider faces, shared round-robin between the gaps asked, each end moved that far inside its face, each line
-    in its own sketch "PROBE INSET <gap> <n>"; the sheet is exported to OUT.pdf and the cases written to
-    OUT.pdf.json for ga_pdf_check.py probe. Nothing is saved: the session closes the drawing without saving."""
-    gaps = [float(g) for g in ARGS["probe_insets"].split(",")]
-    cases = {g: [] for g in gaps}
-    faces = 0
-    for i, poly in enumerate(polys):
-        if spacing_for(poly) < 1.0:
-            continue                                            # thin faces stay in outline
-        faces += 1
-        for k, seg in enumerate(fill_lines(poly, i)):
-            g = gaps[(k + i) % len(gaps)]
-            got, _dropped = inset([seg], poly, g)
-            cases[g] += got
-    spec, report = [], []
-    for g in gaps:
-        lines, short, drop = spaced(cases[g], fixed=placed)
-        placed += [p for sg in lines for p in sg]
-        label = "INSET %.2f" % g
-        made = 0
-        for k, (a, b) in enumerate(lines, 1):
-            sk = sheet.sketches.add("PROBE %s %03d" % (label, k))
-            if sk.lines.add([p2(*a), p2(*b)]) is not None:
-                made += 1
-        adsk.doEvents()
-        spec.append([label, [[list(a), list(b)] for a, b in lines], True])
-        report.append({"case": label, "asked": len(lines), "made": made, "count": 1})
-        print("probe case %s: %d line(s) asked, %d made (%d shortened, %d left out by the 3 mm rule)"
-              % (label, len(lines), made, short, drop))
-    if place_view is not None:
-        place_view()                                            # hatch first: the view after the lines
-    opts = doc.drawing.exportManager.createPDFExportOptions(ARGS["probe_pdf"])
-    opts.openPDF = False
-    ok = doc.drawing.exportManager.execute(opts)
-    with open(ARGS["probe_pdf"] + ".json", "w", encoding="utf-8") as fh:
-        json.dump({"cases": spec, "report": report}, fh)
-    print("probe pdf %s: %s (%d wider faces; nothing saved)" % (ARGS["probe_pdf"], ok, faces))
