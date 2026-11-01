@@ -32,8 +32,8 @@ entry} (D-139). An entry holds only what the STEP and the list can't give:
 - views: the related first-angle views ('above', 'below', 'from_left', 'from_right'); else as many as it takes to
   show every part, at least one;
 - sections: [{letter, point, normal (toward the viewer), scale, slice (depth kept behind the plane), window (x0, x1,
-  y0, y1 in the section's view), around (a part number: the plane through its first placement or body, the window
-  the assembly's full thickness by that part +- half), stack (the layers' faces as ordinates and a balloon on each
+  y0, y1 in the section's view), around (a part number: the plane through its first placement or body, offset mm
+  along the normal from its centre, the window the assembly's full thickness by that part +- half), stack (the layers' faces as ordinates and a balloon on each
   layer: a build-up, D-147 (2)), stack_from ({pn, face}: the build-up's 0 on that datum face, positive the way it
   looks), on (the view its plane is drawn on)}]; with no sections given, a section across a part hidden in every
   view is added; a part still hidden in every view and every section the entry gives stops the sheet with a message
@@ -750,7 +750,9 @@ def section_view(assy, spec, views):
         if not boxes:
             raise NotDrawable("%s: section %s's part %s is not in the STEP" % (assy.pn, spec["letter"], spec["around"]))
         b = sorted(boxes, key=lambda b: tuple(round((b[k] + b[k + 3]) / 2, 1) for k in (2, 1, 0)))[0]
-        spec = dict(spec, point=[(b[0] + b[3]) / 2, (b[1] + b[4]) / 2, (b[2] + b[5]) / 2])
+        n_ = vnorm(tuple(spec["normal"]))
+        sh_ = float(spec.get("offset", 0.0))   # mm along the normal: off the part's centre, still through it
+        spec = dict(spec, point=[(b[k] + b[k + 3]) / 2 + n_[k] * sh_ for k in range(3)])
     letter, point, normal = spec["letter"], tuple(spec["point"]), vnorm(tuple(spec["normal"]))
     base = None
     for v in views.values():
@@ -1124,7 +1126,8 @@ def _std_name(view):
 
 
 FAR = 1e5               # the viewer's distance for a sight line (mm)
-CLEAR = 0.8             # an arrow's tip at least this far (paper mm) from every other part's line
+CLEAR = 1.5             # an arrow's tip at least this far (paper mm) from every other part's line, so at print size
+                        # the two lines don't merge (Reviewer 9 on #350: 0.8 read as the tray's edge)
 DOT_CLEAR = 1.2         # a dot at least this far (paper mm) from every line
 
 
@@ -1340,6 +1343,8 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
                         continue
                     if clear and av.kind == "section" and _crossings(sh, a, S, u):
                         continue
+                    if _runs_along(sh, a, S):
+                        continue
                     if any(seg_dist(cc, a, S) < r + 1.5 for cc in centres):
                         continue
                     t3 = c[6] if kind == "dot" else edge_tip3d(av, i, assy, pt)
@@ -1371,6 +1376,29 @@ def place_balloons(sh, assy, views, sides, items=None, only=None, recs=None, lea
                      "centre": ctr, "r": B_R})
         sh.flush()
     return recs
+
+
+def _runs_along(sh, a, S, gap=0.4, length=2.0):
+    """True when the leader from a to S lies along a drawn line (within gap mm, parallel, for more than length mm):
+    it would read as part of that line (a rib's centre line, an outline)."""
+    L = math.hypot(S[0] - a[0], S[1] - a[1])
+    if L < 1e-9:
+        return False
+    u = ((S[0] - a[0]) / L, (S[1] - a[1]) / L)
+    box = (min(a[0], S[0]), min(a[1], S[1]), max(a[0], S[0]), max(a[1], S[1]))
+    for p, q in sh.grid.near(box, gap):
+        M = math.hypot(q[0] - p[0], q[1] - p[1])
+        if M < length:
+            continue
+        v = ((q[0] - p[0]) / M, (q[1] - p[1]) / M)
+        if abs(u[0] * v[1] - u[1] * v[0]) > 0.05:          # not parallel (about 3 degrees)
+            continue
+        if abs((p[0] - a[0]) * u[1] - (p[1] - a[1]) * u[0]) > gap:      # not on the leader's line
+            continue
+        t0, t1 = sorted(((p[0] - a[0]) * u[0] + (p[1] - a[1]) * u[1], (q[0] - a[0]) * u[0] + (q[1] - a[1]) * u[1]))
+        if min(t1, L) - max(t0, 0.0) > length:
+            return True
+    return False
 
 
 def _crossings(sh, a, S, u):

@@ -442,6 +442,8 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
     by_cut_row = cut_rows(cut_texts)
     reg = {i["part_number"]: i for i in register if i["part_number"]}
     cut_lists = [p for p in paths if is_cut_list(p)]
+    member_frame = d120_members(parts, cut_texts)
+    frame_kinds = holders_kinds(parts, by_pn)
     made, bought, last_unit, seen = [], [], {}, {}
     for r in parts:
         pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
@@ -459,6 +461,9 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             text = " ".join([r["material"], r["process"], r["name"]])
             cad = any(by_pn.get(h, {}).get("CAD") for h in holders)
             step = any(by_pn.get(h, {}).get("STEP") for h in holders)
+            frames = member_frame.get(pn, set())
+            cad = cad or any("CAD" in frame_kinds.get(f, set()) for f in frames)  # a D-120 member: its frame's files
+            step = step or any("STEP" in frame_kinds.get(f, set()) for f in frames)
             soft = soft_kind(r["name"]) if r["make_buy"] != "assembly" else ""
             by_cut = bool(soft) and cut_list_lacks(by_cut_row.get(pn, []), thickness=soft == "soft") == []
             strip = ((d125 or {}).get(pn) if not soft and r["make_buy"] == "make" and kind_of(pn) == "part" else None)
@@ -527,8 +532,9 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             in_reg = (pn in reg) if hw else None
             given = reg_status.get(pn, "defer")  # the register wins where it states the product (D-63)
             hold = given == "hold" or (given == "defer" and bool(r["hold"]))
-            words = " ".join([r["name"], r["material"]])
-            sku = "HOLD" if hold else ("yes" if given == "named" or SKU.search(words) else "no")
+            words = " ".join([r["name"], r["material"], r.get("sku", "")])
+            digits_sku = bool(r.get("maker", "").strip()) and bool(re.search(r"\b\d{4,}\b", " ".join([r.get("sku", ""), r["name"]])))
+            sku = "HOLD" if hold else ("yes" if given == "named" or SKU.search(words) or digits_sku else "no")
             rid = reg.get(pn, {}).get("id", "")
             found = {t for pats, ids in accept if any(p.fullmatch(pn) for p in pats) for t in ids}
             found |= {tid for tid, t in tests if pn and (re.search(rf"\b{pn}\b", t) or (rid and re.search(rf"\b{rid}\b", t)))}
@@ -540,6 +546,68 @@ def check_parts(parts, register, by_pn, paths, fai, tests, reg_status, screen, b
             bought.append(line)
             seen[key] = line
     return made, bought
+
+
+def with_maker_cells(parts, sources):
+    """Each parts-list row with its list's own maker and sku cells, which the master BOM's reader doesn't carry: a
+    maker part number made only of digits (Belden 9534, a Molex or Southwire number) counts as named when the row
+    names its maker."""
+    cells = {}
+    for path, (text, _where) in sources.items():
+        if not path.endswith("_BOM.csv"):
+            continue
+        try:
+            for row in csv.DictReader(io.StringIO(text)):
+                low = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str) and isinstance(v, str)}
+                pn = low.get("part_number", "")
+                if pn and (low.get("maker") or low.get("sku")):
+                    cells.setdefault((path, pn), (low.get("maker", ""), low.get("sku", "")))
+        except csv.Error:
+            continue
+    out = []
+    for r in parts:
+        maker, sku = cells.get((r["source_file"].split(" @ ")[0], r["part_number"]), ("", ""))
+        out.append({**r, "maker": maker, "sku": sku} if (maker or sku) else r)
+    return out
+
+
+def holders_kinds(parts, by_pn):
+    """{number: the file kinds (CAD, STEP, ...) its own files or its holders' carry}: a row's holders are its own
+    number, the last assembly above it in its list and its list's own number, over every list that carries it."""
+    out, last_unit = {}, {}
+    for r in parts:
+        pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
+        if r["make_buy"] == "assembly":
+            last_unit[src] = pn
+        if not pn:
+            continue
+        for h in (pn, last_unit.get(src, ""), src.rsplit("/", 1)[-1][:6]):
+            out.setdefault(pn, set()).update(k for k, v in by_pn.get(h, {}).items() if v)
+    return out
+
+
+def d120_members(parts, cut_texts):
+    """{member number: {its frame's number}} for D-120 weldment members: the other rows in a frame's own parts list
+    (a list whose own number is a part named as a FRAME or made as a weldment), and the member_part of a cut list's
+    row, under that row's frame. A member's model is its frame's, so it takes the frame's CAD and STEP."""
+    frames = {r["part_number"] for r in parts if r["part_number"]
+              and re.search(r"\bFRAME\b|weldment", " ".join([r["name"], r["material"], r.get("kind", "")]), re.I)}
+    out = {}
+    for r in parts:
+        pn, src = r["part_number"], r["source_file"].split(" @ ")[0]
+        unit = src.rsplit("/", 1)[-1][:6]
+        if pn and unit in frames and pn != unit and not is_cut_list(src):
+            out.setdefault(pn, set()).add(unit)
+    for text in (cut_texts or {}).values():
+        try:
+            for row in csv.DictReader(io.StringIO(text)):
+                cells = {(k or "").strip().lower(): (v or "").strip() for k, v in row.items() if isinstance(k, str) and isinstance(v, str)}
+                member, frame = cells.get("member_part", ""), cells.get("frame", "")
+                if re.fullmatch(r"\d{6}", member) and re.fullmatch(r"\d{6}", frame):
+                    out.setdefault(member, set()).add(frame)
+        except csv.Error:
+            continue
+    return out
 
 
 def made_hold(r, rows):
@@ -773,6 +841,7 @@ def main(argv=None):
         ref_note = "this working tree"
     sources = bom.load_sources(refs)
     parts, skipped, register, reg_where = bom.build(sources)
+    parts = with_maker_cells(parts, sources)
     for path, (text, _) in sources.items():  # a frame whose list carries its cut rows has its cut list
         if path.endswith("_BOM.csv") and re.search(r"^\d*,?,[^\n]*,cut,", text, re.M | re.I):
             for r in parts:

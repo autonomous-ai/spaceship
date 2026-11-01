@@ -74,7 +74,9 @@ def _cassette(tray, back, end, **more):
             {"view": "principal", "of": ["518001"], "along": "y", "origin": {"pn": tray, "face": "-Z"}, "list": True,
              "words": "the clip centres up the cassette, from datum C (principal view)"},
         ],
-        "sections": [{"letter": "D", "around": "518001", "normal": [0, 0, -1], "half": 70, "scale": 0.5, "slice": 10,
+        # 10 below the clip's centre (still through it), so its trace doesn't lie along the clip's ordinate line
+        "sections": [{"letter": "D", "around": "518001", "offset": 10, "normal": [0, 0, -1], "half": 70, "scale": 0.5,
+                      "slice": 10,
                       "stack": True, "stack_from": {"pn": tray, "face": back}}],
         "notes": [_ORDER],
     })
@@ -82,9 +84,10 @@ def _cassette(tray, back, end, **more):
 
 ASSEMBLIES = {
     "510101": _cassette("511101", "-X", "-Y"),      # L1: back face toward -X, front return toward -Y
-    "510102": _cassette("511102", "+X", "-Y"),      # R1
+    # R1 and R2 seen from the wall side too (Reviewer 9 on #350), where their clips are: the view from the right
+    "510102": _cassette("511102", "+X", "-Y", principal="right", overall_sides={"y": "right"}),
     "510103": _cassette("511103", "-X", "-Y"),      # L2
-    "510104": _cassette("511104", "+X", "-Y"),      # R2
+    "510104": _cassette("511104", "+X", "-Y", principal="right", overall_sides={"y": "right"}),
     "510201": _cassette("511201", "+Y", "-X"),      # B1: back face toward +Y, its end at the left side wall
     # B2: its end at the right side wall, the left edge of its rear view, so the overall height goes on the right
     "510202": _cassette("511202", "+Y", "+X", overall_sides={"y": "right"}),
