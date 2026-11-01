@@ -119,6 +119,38 @@ class MadeParts(unittest.TestCase):
         made, _ = run([self.frame()], file_map)
         self.assertEqual(made[0]["gaps"], ["DXF or cut list"])
 
+    # D-131's steel members, word for word: CEILING's 412101 (#348 at 3d7c6ae) and WALL's 212101 (#343 at 5afde8e)
+    CEILING_TUBE = ("Galvanized steel S280GD+Z or SGC400 (yield 280 MPa or more), Z100",
+                    "tube cut to length (mitred ends where it meets the corners, cut back for the 2.0 mitre plate), welded into "
+                    "the frame; holes CNC or jig drilled after welding (+/-0.2 from the spigot hole, R-J6)")
+    WALL_TUBE = ("steel box tube 20 x 40 x 1.2, S280GD+Z (EN 10346) or SGC400 (JIS G3302): certified yield 280 MPa or more, "
+                 "zinc Z100 (J-FRAME-01, D-131)")
+
+    def test_a_galvanized_steel_tube_is_read_as_a_tube_not_sheet(self):
+        # the CEILING Drawings Engineer's catch on #362: 'galvanized' alone reads as sheet, so D-131's steel tubes wanted
+        # a DXF even with their cut list rows; the tube words now come first (and FRONT's 'GLASS EDGE' tubes too)
+        ceiling = row("412101", "make", "CEILING - FRAME SIDE MEMBER - COMMON", self.CEILING_TUBE[0], team="CEILING")
+        ceiling["process"] = self.CEILING_TUBE[1]
+        wall = row("212101", "make", "WALL - FRAME RAIL BOTTOM - SIDE LOWER - LH", self.WALL_TUBE)
+        glass_edge = row("352306", "make", "FRONT - DECOR FRAME DR - FRONT RING GLASS EDGE",
+                         "aluminium EN AW-6063-T6 tube 20 x 20 x 1.0", team="FRONT")
+        for r in (ceiling, wall, glass_edge):
+            r["cut_rows"] = True
+        made, _ = run([ceiling, wall, glass_edge], {})
+        self.assertEqual([m["flat"] for m in made], ["yes", "yes", "yes"])
+        # with no cut list row, a steel tube still wants one
+        bare = dict(ceiling)
+        del bare["cut_rows"]
+        made, _ = run([bare], {})
+        self.assertEqual(made[0]["flat"], "no")
+        self.assertIn("DXF or cut list", made[0]["gaps"])
+
+    def test_galvanized_sheet_with_no_tube_words_still_needs_its_dxf(self):
+        tray = row("513101", "make", "LINING - TRAY - CEILING", "galvanised steel DX51D+Z, 0.5 sheet", team="CEILING")
+        tray["cut_rows"] = True     # a cut list row doesn't stand in for a sheet part's DXF
+        made, _ = run([tray], {})
+        self.assertEqual(made[0]["flat"], "no")
+
     def test_a_sheet_part_needs_its_own_dxf(self):
         skin = row("211301", "make", "WALL - SKIN", "ACP 3 mm EV3038")
         file_map = files("210101_P01_WALL-PANEL_CAD.f3d", "210101_P01_WALL-PANEL_STEP.step", "211301_P01_WALL-SKIN_DWG.pdf")
@@ -535,6 +567,29 @@ class D89SoftGoods(unittest.TestCase):
         self.assertEqual(rc.soft_kind("BASE - SEAL HOLDER - LH"), "")
         self.assertEqual(rc.soft_kind("WALL - CAVITY FILL - SIDE LOWER - LH"), "felt or fill")
 
+    FILL_PIECES = ("WALL - CAVITY FILL PIECE F01 240 X 1102.7 - SIDE LOWER - COMMON",
+                   "WALL - CAVITY FILL PIECE F09 274.7 X 1078.6 - BACK LOWER - B1")
+
+    def test_a_fill_piece_is_fill_with_its_size_and_code_left_out(self):
+        # the WALL Drawings Engineer's catch: the head noun read 'X' from the size, so WALL's fill pieces missed the
+        # fill ruling the mechanical check follows (the Lead's ruling on WALL's L1 sample, 2026-11-01)
+        for n in self.FILL_PIECES:
+            self.assertEqual((rc.head_noun(n), rc.soft_kind(n)), ("FILL", "felt or fill"), n)
+        row_text = ("part_number,name,size_mm,material,tolerance_mm\n111501," + self.FILL_PIECES[0] +
+                    ",240 x 1102.7 x 40,PET fill 24 kg/m3,±2\n")
+        line = self.foam(self.CADS, row_text, name=self.FILL_PIECES[0])
+        self.assertEqual((line["flat"], line["dwg"]), ("cut list", "cut list (D-89)"))
+
+    def test_the_checklist_reads_names_with_the_mechanical_checks_own_function(self):
+        # one reader for both tools: a change in C05's head_noun reaches the checklist
+        common = rc.checks_common()
+        old = common.head_noun
+        common.head_noun = lambda name: "FELT"
+        try:
+            self.assertEqual(rc.soft_kind("WALL - PANEL FRAME - SIDE LOWER - LH"), "felt or fill")
+        finally:
+            common.head_noun = old
+
     def test_a_felt_row_in_a_parts_list_serves_as_its_cut_list(self):
         fai = rc.fai_plan(PLAN, BOM)
         felt = row("511301", "make", "LINING - FELT - SIDE LOWER - LH", "PET felt 9 mm")
@@ -552,7 +607,8 @@ class D89SoftGoods(unittest.TestCase):
         spec.loader.exec_module(common)
         names = ["LINING - FELT - SIDE LOWER - LH", "LINING - FILL - CEILING - BAY A", "WALL - CAVITY FILL - SIDE LOWER - LH",
                  "BASE - SEAL MAT - F1", "BASE - FLOOR FOAM - F1", "FRONT - DROP SEAL - ATHMER SCHALL-EX GSA 1-1112",
-                 "BASE - SEAL HOLDER - LH", "SEALS - JOINT GASKET - 8 X 3.97", "POD - FIXING TAPE", "WALL - PANEL FRAME - SIDE LOWER - LH"]
+                 "BASE - SEAL HOLDER - LH", "SEALS - JOINT GASKET - 8 X 3.97", "POD - FIXING TAPE", "WALL - PANEL FRAME - SIDE LOWER - LH",
+                 *self.FILL_PIECES, "WALL - FRAME STILE BACK 40 X 40 - SIDE LOWER - LH"]
         for n in names:
             self.assertEqual(rc.head_noun(n), common.head_noun(n), n)
             self.assertEqual(bool(rc.soft_kind(n)), common.is_soft(n), n)

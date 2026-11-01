@@ -76,29 +76,46 @@ def _listing(folder):
     return out
 
 
-def pause_after_new_file(sleep=time.sleep, clock=time.time, pause_s=NEW_FILE_PAUSE_S):
-    """Wait until pause_s has gone by since the last new cloud file this Fusion saved, letting Fusion work in the
-    meantime; returns the seconds waited. The runner's hook notes each saveAs on adsk.core (_spaceship_new_file_at,
-    a time.time(); _spaceship_new_file, its name), in every run through run_script.py and start_drawing.py.
+def pause_after_new_file(sleep=time.sleep, clock=time.monotonic, wall=time.time, pause_s=NEW_FILE_PAUSE_S):
+    """Wait until pause_s has gone by since the last save this Fusion made, a new cloud file or a new version,
+    letting Fusion work in the meantime; returns the seconds waited, never more than pause_s. The runner's hook
+    notes each saveAs on adsk.core: _spaceship_new_file_mono (time.monotonic(), read with clock) and
+    _spaceship_new_file, its name; and each save: _spaceship_saved_mono and _spaceship_saved_name; in every run
+    through run_script.py and start_drawing.py. A Fusion session whose hook came from an older runner notes only
+    _spaceship_new_file_at (time.time(), read with wall); the cap keeps a clock step from stretching the wait
+    (Reviewer 5, P3 on #379).
 
     Why (PM ruling 2026-11-01): Fusion crashed twice that day right after it fetched the team folder's second page
     of files, each time 1 to 3 s after it started a live-update subscription; at 14:00:58 that was two seconds after
     BASE's run saved a new file and went on to read the folder for its next one. The same fetch had worked about
-    1,700 times before, so this is a pause on a pattern seen twice, not a proven cure."""
+    1,700 times before, so this is a pause on a pattern seen twice, not a proven cure. A new version's save waits
+    the same (PM ruling 2026-11-01, on #386: no folder is listed within 10 s of any save)."""
     if adsk is None:
         return 0.0
+    notes = []
     try:
         import adsk.core as _ac
-        t = getattr(_ac, "_spaceship_new_file_at", None)
-        name = getattr(_ac, "_spaceship_new_file", "") or "?"
+        t = getattr(_ac, "_spaceship_new_file_mono", None)
+        if isinstance(t, (int, float)):
+            notes.append((pause_s - (clock() - t), "the new cloud file %s" % (
+                getattr(_ac, "_spaceship_new_file", "") or "?")))
+        else:
+            t = getattr(_ac, "_spaceship_new_file_at", None)
+            if isinstance(t, (int, float)):
+                notes.append((pause_s - (wall() - t), "the new cloud file %s" % (
+                    getattr(_ac, "_spaceship_new_file", "") or "?")))
+        t = getattr(_ac, "_spaceship_saved_mono", None)
+        if isinstance(t, (int, float)):
+            notes.append((pause_s - (clock() - t), "saving %s" % (getattr(_ac, "_spaceship_saved_name", "") or "?")))
     except Exception:
         return 0.0
-    if not isinstance(t, (int, float)):
+    if not notes:
         return 0.0
-    left = pause_s - (clock() - t)
+    left, what = max(notes)
+    left = min(pause_s, left)
     if left <= 0:
         return 0.0
-    print("fusion_folder: waiting %.1f s after the new cloud file %s before reading the folder" % (left, name))
+    print("fusion_folder: waiting %.1f s after %s before reading the folder" % (left, what))
     end = clock() + left
     while clock() < end:
         adsk.doEvents()
