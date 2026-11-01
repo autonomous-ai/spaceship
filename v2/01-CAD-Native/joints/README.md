@@ -15,6 +15,7 @@ The made parts of the joints register (`v2/05-Engineering/joints/joints-register
 | `831001_P01_HARDWARE-LOCATING-SPIGOT_CAD.f3d` | Locating spigot 831001 (H-05). |
 | `831002_P01_HARDWARE-STOP-WASHER_CAD.f3d` | Stop washer 831002 (H-08). It is flat and cut from sheet, so it has a DXF and no drawing (D-89 part 4). |
 | `corner_keys.py`, `corner-keys.csv` | Where each of the 6 keys sits in the pod, from the skeleton's named values and BASE's front points (register J-BASE-02). |
+| `frame_steel_check.py` | The steel frame check for J-FRAME-01 (D-131): gauges, the steel grade, masses, the corner lift with the mitre plates, seam bolts and rivnuts. `--check` checks every rule, including that 0.8 mm perimeters and steel under 280 MPa would fail. The joints register quotes its tables. |
 | `BUILD-RECORD.md` | The build run's log, with sizes, masses, STEP checks and edit tests. |
 
 ## Placing the parts (for WALL, BASE, FRONT, CEILING and AIR)
