@@ -75,11 +75,15 @@ class Rules(unittest.TestCase):
         _, _, _, fails, _ = run({FRONT: GOOD_DOOR, FRONT.replace("360001_P01_FRONT-DOOR-UNIT", "360002_P01_FIXED"): again, bom.REGISTER: REGISTER})
         self.assertFalse(any(f.startswith("duplicate") for f in fails), fails)
 
+    RENAMED = REGISTER.replace("| H-01 | 830101 | Bolt M6 x 16 |", "| H-01 | 830101 | Bolt M6 x 16 - ISO 4762 8.8 zinc |")
+    TODO_HEAD = "part_number,list,listed_name,register_id,team,ruling\n"
+    TODO_ROW = f"830101,{FRONT},BOLT M6 X 16,H-01,FRONT,the PM's ruling of 2026-11-01\n"
+
     def test_register_name_wins_over_an_older_wording(self):
-        # D-99: the register renames its item (838003's steel re-spec); the team's list still has the old wording
-        reg = REGISTER.replace("| H-01 | 830101 | Bolt M6 x 16 |", "| H-01 | 830101 | Bolt M6 x 16 - ISO 4762 8.8 zinc |")
+        # D-99: the register renames its item (838003's steel re-spec); the team's list still has the old wording, and
+        # the row waits on the to-do list for its team's rename
         twice = GOOD_DOOR + "830101,BOLT M6 X 16,Bu lông,\"bought, captive\",steel 8.8 zinc plated,2,0.007,source,DRAFT,x,\n"
-        parts, _, _, fails, missing = run({FRONT: twice, bom.REGISTER: reg})
+        parts, _, _, fails, missing = run({FRONT: twice, bom.REGISTER: self.RENAMED, bom.NAME_TODO: self.TODO_HEAD + self.TODO_ROW})
         bolts = [r for r in parts if r["part_number"] == "830101"]
         self.assertEqual({(r["name"], r["listed_name"]) for r in bolts}, {("Bolt M6 x 16 - ISO 4762 8.8 zinc", "BOLT M6 X 16")})
         self.assertEqual(fails, [])
@@ -87,6 +91,38 @@ class Rules(unittest.TestCase):
         self.assertEqual(len(todo), 1, missing)   # once per team, number and wording, not once per row
         self.assertEqual({b["name"] for b in bom.bought_rows(parts, []) if b["part_number"] == "830101"},
                          {"Bolt M6 x 16 - ISO 4762 8.8 zinc"})
+
+    def test_a_row_without_the_register_name_fails_unless_it_waits_on_the_list(self):
+        # Reviewer 7 on #337: a list that puts a register item's old name back passed the build; now it fails
+        parts, _, _, fails, _ = run({FRONT: GOOD_DOOR, bom.REGISTER: self.RENAMED})
+        self.assertTrue(any(f.startswith(f"register name: 830101 in {FRONT} is named 'BOLT M6 X 16'") for f in fails), fails)
+        # the to-do list holds only the rows it names: another list with the old wording still fails
+        other = FRONT.replace("360001_P01_FRONT-DOOR-UNIT", "360002_P01_FRONT-FIXED-GLASS-UNIT")
+        _, _, _, fails, _ = run({FRONT: GOOD_DOOR, other: GOOD_DOOR.replace("360001,", "360002,").replace("361001,", "361003,"),
+                                 bom.REGISTER: self.RENAMED, bom.NAME_TODO: self.TODO_HEAD + self.TODO_ROW})
+        self.assertEqual([f for f in fails if f.startswith("register name")],
+                         [f"register name: 830101 in {other} is named 'BOLT M6 X 16', not the joints register's H-01 "
+                          f"'Bolt M6 x 16 - ISO 4762 8.8 zinc' (D-99): take the register's name, or list the row in "
+                          f"{bom.NAME_TODO} until the team renames it"])
+
+    def test_the_to_do_list_only_shrinks(self):
+        # the Lead's rules: a row whose list now has the register's name, or no such row, fails until it's removed,
+        # and a row joins only with the PM's say (its ruling)
+        renamed_list = GOOD_DOOR.replace("830101,BOLT M6 X 16,", "830101,Bolt M6 x 16 - ISO 4762 8.8 zinc,")
+        _, _, _, fails, _ = run({FRONT: renamed_list, bom.REGISTER: self.RENAMED, bom.NAME_TODO: self.TODO_HEAD + self.TODO_ROW})
+        self.assertEqual([f for f in fails if f.startswith("register name")],
+                         [f"register name: {bom.NAME_TODO} waits for 830101 in {FRONT} to drop 'BOLT M6 X 16', but no row "
+                          f"there has that wording now: remove the row"])
+        no_ruling = self.TODO_HEAD + self.TODO_ROW.replace("the PM's ruling of 2026-11-01", "")
+        _, _, _, fails, _ = run({FRONT: GOOD_DOOR, bom.REGISTER: self.RENAMED, bom.NAME_TODO: no_ruling})
+        self.assertTrue(any("names no ruling: a row joins the list only with the PM's say" in f for f in fails), fails)
+
+    def test_the_real_to_do_list_matches_main(self):
+        # every row of the committed list waits on a real stale row, and every stale row on this tree is listed
+        sources = bom.load_sources([])
+        parts, _, register, reg_where = bom.build(sources)
+        fails, _ = bom.check(parts, register, reg_where)
+        self.assertEqual([f for f in fails if f.startswith("register name")], [])
 
     def test_a_bolt_under_the_rivnut_number_fails(self):
         # Reviewer 6 (#279): a shared M6 and zinc don't make an M6 bolt the register's rivet nut 838003
@@ -233,7 +269,7 @@ class WallAndRegisterV3(unittest.TestCase):
             "1,211101,WALL - PANEL FRAME - SIDE LOWER - LH,,MP,\"aluminium tube 20 x 40 x 1.2, finish mill (D-79)\",1,pc,,,3.307,3.307,calculation,CAD,\n"
             "2,,RAIL - BOTTOM (cut length),,cut,aluminium tube,1,pc,1489.74,,0.554,0.554,calculation,CAD,\n"
             "1,211501,WALL - CAVITY FILL - SIDE LOWER - LH,,MP,PET fill 40 mm,4,pc,,,,1.901,calculation,CAD,\n"
-            "1,838001,CAPTIVE BOLT - M6 x 16,,PI,steel 8.8 zinc,7,pc,,,0.007,0.049,source,register H-01,\n")
+            "1,838001,HARDWARE - SOCKET HEAD BOLT - M6 X 16,,PI,steel 8.8 zinc,7,pc,,,0.007,0.049,source,register H-01,\n")
         parts, _, _, fails, _ = run({WALL: wall, bom.REGISTER: REGISTER_V3})
         self.assertEqual(fails, [])
         by = {r["part_number"]: r for r in parts}
@@ -296,10 +332,19 @@ class RegisterItems(unittest.TestCase):
         _, _, _, fails, _ = run({WALL: WALL_HDR + rows, bom.REGISTER: REGISTER_V4})
         return fails
 
-    def test_same_item_in_other_words_passes(self):
+    def test_same_item_in_other_words_is_no_duplicate_but_must_take_the_register_name(self):
+        # the same item in other words isn't a second item (no duplicate), but since the Lead's ruling on Reviewer 7's
+        # point (#337) the list must carry the register's name, or wait on the to-do list for its team's rename
         rows = ("1,838001,CAPTIVE BOLT - M6 x 16 - ISO 4762 - 8.8 - ZINC,,PI,steel 8.8 zinc,7,pc,,,0.007,0.049,source,x,\n"
                 "1,831001,LOCATING SPIGOT - D8 x M6 (H-05),,MP,stainless,2,pc,,,0.004,0.008,assumption,x,\n")
-        self.assertEqual(self.fails_for(rows), [])
+        fails = self.fails_for(rows)
+        self.assertFalse(any(f.startswith("duplicate") for f in fails), fails)
+        self.assertEqual(sorted(f.split(" in ")[0] for f in fails), ["register name: 831001", "register name: 838001"])
+        todo = ("part_number,list,listed_name,register_id,team,ruling\n"
+                f"838001,{WALL},CAPTIVE BOLT - M6 x 16 - ISO 4762 - 8.8 - ZINC,H-01,WALL,the PM's ruling\n"
+                f"831001,{WALL},LOCATING SPIGOT - D8 x M6 (H-05),H-05,WALL,the PM's ruling\n")
+        _, _, _, fails, _ = run({WALL: WALL_HDR + rows, bom.REGISTER: REGISTER_V4, bom.NAME_TODO: todo})
+        self.assertEqual(fails, [])
 
     def test_wrong_bolt_length_fails(self):
         f = self.fails_for("1,838001,BOLT - M6 x 25 - ISO 4762 - 8.8,,PI,steel,2,pc,,,0.009,0.018,source,x,\n")
