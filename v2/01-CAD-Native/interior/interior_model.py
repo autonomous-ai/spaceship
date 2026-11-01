@@ -49,7 +49,10 @@ INTERIOR_PARAMS = [
     ("lg_t", "1.5 mm", "mm", "confirmed", "D-85: 1.5 mm folded aluminium"),
     ("lg_lip", "25 mm", "mm", "assumption", "front lip folded down"),
     ("lg_up", "25 mm", "mm", "assumption", "back flange folded down, at the wall"),
-    ("lg_gap", "2 mm", "mm", "assumption", "the ledge stands 2 off the felt so it never bridges the floating lining (D-17)"),
+    ("lg_gap", "5 mm", "mm", "calculation", "the ledge, its brackets and the screen rail stand 5 off the lining's face, so "
+     "nothing fixed to the frame touches the floating lining: D-17 (the cassette never touches the frame) and D-57's 4 mm "
+     "(the wall stack's gap), plus 1 for the felt's thickness tolerance; the mechanical check's LINING-FLOATS rule found "
+     "2.0 to the lower side cassette's tray at the old 2"),
     ("br_w", "200 mm", "mm", "assumption", "ledge bracket arm under the ledge, HOLD (a rated concealed shelf bracket)"),
     ("br_h", "150 mm", "mm", "assumption", "ledge bracket height at the wall, HOLD"),
     ("br_t", "30 mm", "mm", "assumption", "ledge bracket width along the wall, HOLD"),
@@ -74,7 +77,9 @@ PARTS = {   # key: part number, name, Vietnamese name, kind, material key
     # takes ELECTRICAL's numbers (Control's allocation): 718101 profile, 718102 cover, 718103 end cap,
     # 718104 mounting clip. ELECTRICAL lists them; INTERIOR models the profile (one HOLD envelope with
     # its cover, end caps and clips) under 718101, in the light shelf assembly
-    "lprofile": ("718101", "ELECTRICAL - LED PROFILE - SURFACE 23 X 12.5 - HOLD", "Thanh nhôm đèn LED gắn nổi 23x12.5 (chờ)", "HOLD", "hold"),
+    # the name as ELECTRICAL's parts list gives it (one name everywhere, guideline 4.2); its product is on HOLD there
+    "lprofile": ("718101", "ELECTRICAL - LED PROFILE - LIGHT SHELF - SURFACE 23 X 12.5", "Điện - thanh nhôm LED nổi 23 x 12.5 - kệ đèn",
+                 "HOLD", "hold"),
     "bracket": ("818101", "INTERIOR - LEDGE BRACKET - HOLD", "Ke đỡ bàn tựa (chờ)", "HOLD", "hold"),
     "rail": ("818102", "INTERIOR - SCREEN RAIL - HOLD", "Thanh treo màn hình (chờ)", "HOLD", "hold"),
 }
