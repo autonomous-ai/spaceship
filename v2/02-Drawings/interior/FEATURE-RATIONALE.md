@@ -8,7 +8,7 @@ Why every feature is where it is (guideline §7). Decisions: D-70 (interior prin
 
 INTERIOR parts sit on the floating linings or stand off them (D-17): the light shelf is light and screws to the wall cassettes; the ledge and the screen rail take people's weight, so they stand on stand-offs through clearance holes in the lining, fixed to the wall frame's stiles, 5 mm off the felt so nothing touches the floating leaf (D-57's 4 mm plus 1 for the felt's tolerance).
 
-## Light shelf 810201 (1.0 mm folded aluminium U along the side and back wall tops)
+## Light shelf 810201: back run 811201, side runs 811202 LH and 811203 RH (1.0 mm folded aluminium U along the side and back wall tops)
 
 | Feature ID | Feature | Size, offset | Function | Constraint source or calculation | Status |
 |---|---|---|---|---|---|
