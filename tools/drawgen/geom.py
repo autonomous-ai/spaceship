@@ -526,7 +526,65 @@ def features(body):
             k.neck = dist          # entry centre to the neck end's centre
             slots.append(k)
             break
+    # open-ended slots (D-129's hook-in end caps): one half cylinder whose open side runs to the part's edge,
+    # straight at its width, often widening in a taper to a mouth at the edge
+    for i, a in enumerate(partial):
+        if i in used or not (math.pi - 0.05 < a["span"] < math.pi + 0.05):
+            continue
+        o = open_slot(body, a)
+        if o is not None:
+            used.add(i)
+            slots.append(o)
     return holes, slots
+
+
+def open_slot(body, a):
+    """An open-ended slot from its half cylinder a (_cyl_info), or None: its sizes from the part's own vertices in
+    the wall the slot goes through, so they are exact. along: from the end's centre toward the opening."""
+    d, a0, r = a["dir"], a["a0"], a["r"]
+    o = vmul(a["mid"], -1.0)                    # the opening side
+    lat = vnorm(vcross(d, o))
+    c = vadd(a0, vmul(d, 0.5 * (a["t0"] + a["t1"])))      # the end's centre, mid-wall
+    pts = []
+    for v in _vertices_of(body.shape):
+        p = pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v)))
+        t = vdot(vsub(p, a0), d)
+        if a["t0"] - 1e-3 <= t <= a["t1"] + 1e-3:
+            q = vsub(p, c)
+            pts.append((vdot(q, o), vdot(q, lat)))
+    # the edge it opens on: the wall's farthest vertices along the opening within a few widths of the slot
+    near = [q for q in pts if abs(q[1]) < 6 * r]
+    if not near:
+        return None
+    s_edge = max(q[0] for q in near)
+    if s_edge < r:
+        return None
+    # open: empty all the way from the end's centre to the edge
+    if any(_inside(body.shape, vadd(c, vmul(o, s_))) for s_ in (0.5 * s_edge, 0.9 * s_edge, s_edge - 0.05)):
+        return None
+    # the mouth at the edge: the nearest vertices either side of the centre line
+    at_edge = [q[1] for q in near if abs(q[0] - s_edge) < 1e-3 and abs(q[1]) > r - 1e-3]
+    left = [w for w in at_edge if w > 0]
+    right = [-w for w in at_edge if w < 0]
+    if not left or not right:
+        return None
+    mouth = min(left) + min(right)
+    # the taper's start: where the sides leave the slot's width (the last vertices at width before the edge)
+    sides = [q[0] for q in near if abs(abs(q[1]) - r) < 1e-3 and -1e-3 < q[0] < s_edge - 1e-3]
+    s_taper = max(sides) if sides and mouth > 2 * r + 1e-3 else s_edge
+    p0, p1 = vadd(a0, vmul(d, a["t0"])), vadd(a0, vmul(d, a["t1"]))
+    cen = body.centroid
+    if vdot(vsub(p1, cen), d) >= -vdot(vsub(p0, cen), d):       # entered from the outer face (the part's end)
+        entry, axis = p1, vmul(d, -1.0)
+    else:
+        entry, axis = p0, d
+    sl = Slot(body, entry, axis, o, 2 * r, s_edge + r, a["t1"] - a["t0"], True)
+    sl.kind = "open_slot"
+    sl.r = r
+    sl.edge = s_edge            # the end's centre to the edge
+    sl.mouth = mouth            # width at the edge
+    sl.taper = s_edge - s_taper  # the taper's length, from the edge (0: straight to the edge)
+    return sl
 
 
 def unexplained_curved_faces(body, holes, slots):
@@ -629,6 +687,236 @@ def member_axis(body):
     if ext(a) < 1.5 * max(ext(n1), ext(n2)):
         return None
     return a
+
+
+class Notch:
+    """A rectangular cut-out through one wall at a member's end, open at that end (BASE's back band: the stud-head
+    notches in its bottom wall, FB-15). Sizes from the model's own faces."""
+    kind = "notch"
+
+    def __init__(self, body, sgn, end_s, lax, across, wall_n, lo, hi, s_back, t, outer, faces):
+        self.body = body
+        self.sgn = sgn                  # +1: at the member's end along +axis; -1: at its other end
+        self.end_s = end_s              # that end, along the axis
+        self.lax = lax                  # the member's axis
+        self.across = across            # across the notch (its width), a profile direction
+        self.wall_n = wall_n            # the outward normal of the wall it goes through
+        self.lo, self.hi = lo, hi       # its sides, along `across`
+        self.s_back = s_back            # its back face, along the axis
+        self.t = t                      # the wall's thickness (the notch goes through it)
+        self.outer = outer              # the wall's outer face, along wall_n
+        self.faces = faces
+        self.tag = None
+
+    @property
+    def width(self):
+        return self.hi - self.lo
+
+    @property
+    def length(self):
+        return abs(self.end_s - self.s_back)
+
+    def point(self, s, a, w=None):
+        """The 3D point at axial position s, across position a, on the wall's outer face (or at w along wall_n)."""
+        w = self.outer if w is None else w
+        base = vadd(vmul(self.lax, s), vmul(self.across, a))
+        return vadd(base, vmul(self.wall_n, w))
+
+
+class Chamfer:
+    """An edge break with equal legs (45°) between a member's square end face and one of its side faces, made of one
+    or more coplanar faces (BASE's back band: the 1 x 45° bevel, FB-16, cut in two by the notch)."""
+    kind = "chamfer"
+
+    def __init__(self, body, sgn, end_s, lax, side_n, n, leg, faces, pts):
+        self.body = body
+        self.sgn = sgn
+        self.end_s = end_s
+        self.lax = lax
+        self.side_n = side_n            # the side face's outward normal
+        self.n = n                      # the chamfer face's outward normal
+        self.leg = leg                  # both legs (mm)
+        self.faces = faces
+        self.pts = pts                  # every vertex of its faces
+        self.tag = None
+
+
+def _in_feature(sl, pts, tol=0.02):
+    """True when every point lies in the space a slot, keyhole or open slot cuts: its flats and tapers are its own."""
+    lat = vnorm(vcross(sl.axis, sl.along))
+    if sl.kind == "open_slot":
+        lo_a, hi_a, half = -sl.r, sl.edge, sl.mouth / 2
+    elif sl.kind == "keyhole":
+        lo_a, hi_a, half = -sl.entry_dia / 2, sl.neck + sl.width / 2, sl.entry_dia / 2
+    else:
+        lo_a, hi_a, half = -sl.length / 2, sl.length / 2, sl.width / 2
+    for p in pts:
+        q = vsub(p, sl.entry)
+        a, l, d = vdot(q, sl.along), vdot(q, lat), vdot(q, sl.axis)
+        if not (lo_a - tol <= a <= hi_a + tol and abs(l) <= half + tol and -tol <= d <= sl.depth + tol):
+            return False
+    return True
+
+
+def _face_desc(x, lax):
+    """A face for a refusal: where it is and which way it faces."""
+    lo = [min(p[k] for p in x["pts"]) for k in range(3)]
+    hi = [max(p[k] for p in x["pts"]) for k in range(3)]
+    k = max(range(3), key=lambda i: abs(x["n"][i]))
+    return "a %.1f mm2 face facing %s%s at X %.2f..%.2f, Y %.2f..%.2f, Z %.2f..%.2f" % (
+        x["area"], "+" if x["n"][k] > 0 else "-", "XYZ"[k], lo[0], hi[0], lo[1], hi[1], lo[2], hi[2])
+
+
+def flat_features(body, slots):
+    """A straight member's flat faces sorted out: (notches, chamfers, end plates, unexplained). A flat face is the
+    member's own when it lies on a plane of its profile (a face that runs at least half the length), is a square end
+    face, is cut by one of its slots, keyholes or open slots (their flats and tapers), or belongs to an end cut (the
+    oblique faces of a mitre or a compound cut, inside the end's cut length). Of the rest: a square face just inside
+    an end, facing inward and inside the profile, is a welded end plate's inner face (its thickness 6 or less); a
+    notch is a back face facing its end with two side faces from it to the end, through one wall; a chamfer is a small
+    oblique face between a square end face and one side face, with equal legs. What is left, the caller refuses: a
+    feature this tool can't size yet (a step, a pocket, an uneven chamfer...). Bodies that aren't straight members
+    return nothing here."""
+    lax = member_axis(body)
+    if lax is None:
+        return [], [], [], []
+    verts = [pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in _vertices_of(body.shape)]
+    ss = [vdot(p, lax) for p in verts]
+    smin, smax = min(ss), max(ss)
+    length = smax - smin
+    faces = []
+    for n, off, area, f in planes(body):
+        pts = [pnt(BRep_Tool.Pnt_s(TopoDS.Vertex_s(v))) for v in _vertices_of(f)]
+        s_ = [vdot(p, lax) for p in pts]
+        faces.append({"n": n, "off": off, "area": area, "f": f, "pts": pts, "s0": min(s_), "s1": max(s_),
+                      "c": vdot(n, lax)})
+    longs = [x for x in faces if abs(x["c"]) < 1e-6 and x["s1"] - x["s0"] >= 0.5 * length]
+    dirs = []
+    for y in longs:
+        if not any(abs(abs(vdot(y["n"], d)) - 1) < 1e-6 for d in dirs):
+            dirs.append(canon_dir(y["n"]))
+
+    def rng(pts, d):
+        v = [vdot(p, d) for p in pts]
+        return min(v), max(v)
+    bounds = [(d, rng(verts, d)) for d in dirs]
+
+    def on_long(x):
+        return any(vdot(x["n"], y["n"]) > 1 - 1e-9 and abs(x["off"] - y["off"]) < 1e-3 for y in longs)
+
+    def at_end(x, e):
+        return abs(x["s0"] - e) < 1e-3 and abs(x["s1"] - e) < 1e-3
+
+    ends = {+1: smax, -1: smin}
+    square_end = {g: [x for x in faces if abs(abs(x["c"]) - 1) < 1e-6 and x["c"] * g > 0 and at_end(x, e)]
+                  for g, e in ends.items()}
+    rest = []
+    for x in faces:
+        if abs(x["c"]) < 1e-6 and on_long(x):
+            continue
+        if any(abs(abs(x["c"]) - 1) < 1e-6 and at_end(x, e) for e in ends.values()):
+            continue
+        if any(_in_feature(sl, x["pts"]) for sl in slots):
+            continue
+        rest.append(x)
+    # chamfers: oblique, at a square end, between that end face and one side face, legs equal and 5 or less
+    chamfers, used = [], set()
+    for i, x in enumerate(rest):
+        if abs(x["c"]) < 1e-6 or abs(abs(x["c"]) - 1) < 1e-6:
+            continue
+        g = 1 if x["c"] > 0 else -1
+        e = ends[g]
+        if not square_end[g] or abs((x["s1"] if g > 0 else x["s0"]) - e) > 1e-3:
+            continue
+        side = vnorm(vsub(x["n"], vmul(lax, x["c"])))       # the side face's outward normal
+        if not any(abs(abs(vdot(side, d)) - 1) < 1e-6 for d in dirs):
+            continue
+        a = x["s1"] - x["s0"]                                 # the leg along the member
+        w0, w1 = rng(x["pts"], side)
+        outer = max(rng(verts, side))
+        b = w1 - w0                                           # the leg across, up from the side face
+        if abs(w1 - outer) > 1e-3 or a > 5.0 or b > 5.0 or abs(a - b) > 0.01:
+            continue
+        for ch in chamfers:
+            if ch.sgn == g and vdot(ch.n, x["n"]) > 1 - 1e-9 and abs(vdot(vsub(ch.pts[0], x["pts"][0]), x["n"])) < 1e-3:
+                ch.faces.append(x["f"])
+                ch.pts += x["pts"]
+                break
+        else:
+            chamfers.append(Chamfer(body, g, e, lax, side, x["n"], a, [x["f"]], list(x["pts"])))
+        used.add(i)
+    # end cuts: the oblique faces within an end's cut length (a mitre, the facets of a compound cut)
+    for g, e in ends.items():
+        obl = [x for i, x in enumerate(rest) if i not in used and abs(x["c"]) > 1e-6 and abs(abs(x["c"]) - 1) > 1e-6
+               and abs((x["s1"] if g > 0 else x["s0"]) - e) < 1e-3]
+        if not obl:
+            continue
+        reach = max(x["s1"] - x["s0"] for x in obl) + 1e-3
+        for i, x in enumerate(rest):
+            if i in used or abs(x["c"]) < 1e-6 or abs(abs(x["c"]) - 1) < 1e-6:
+                continue
+            if (g > 0 and x["s0"] >= e - reach) or (g < 0 and x["s1"] <= e + reach):
+                used.add(i)
+    # end plates: a square face 6 or less inside an end, facing away from it, inside the profile
+    plates = []
+    for i, x in enumerate(rest):
+        if i in used or abs(abs(x["c"]) - 1) > 1e-6:
+            continue
+        g = -1 if x["c"] > 0 else 1                           # it faces away from this end
+        t = abs(ends[g] - x["s0"])
+        inside = all(lo + 0.5 < rng(x["pts"], d)[0] and rng(x["pts"], d)[1] < hi - 0.5 for d, (lo, hi) in bounds)
+        if 0 < t <= 6.0 and inside and abs(x["s1"] - x["s0"]) < 1e-3:
+            plates.append({"sgn": g, "t": t, "face": x["f"]})
+            used.add(i)
+    # notches: a back face facing its end, two sides from it to the end, all through one wall
+    notches = []
+    for i, x in enumerate(rest):
+        if i in used or abs(abs(x["c"]) - 1) > 1e-6 or abs(x["s1"] - x["s0"]) > 1e-3:
+            continue
+        g = 1 if x["c"] > 0 else -1
+        e = ends[g]
+        sb = x["s0"]
+        if abs(sb - e) < 1e-3:
+            continue
+        for d, (blo, bhi) in bounds:
+            w0, w1 = rng(x["pts"], d)
+            if abs(w0 - blo) < 1e-3:
+                wall_n, outer = vmul(d, -1.0), -blo
+            elif abs(w1 - bhi) < 1e-3:
+                wall_n, outer = d, bhi
+            else:
+                continue
+            t = w1 - w0
+            if t > 6.0:
+                continue
+            others = [(d2, r2) for d2, r2 in bounds if abs(vdot(d2, d)) < 1e-6]
+            if len(others) != 1:
+                continue
+            ac, prof = others[0]
+            lo, hi = rng(x["pts"], ac)
+            sides = []
+            for j, y in enumerate(rest):
+                if j in used or j == i or abs(y["c"]) > 1e-6 or abs(abs(vdot(y["n"], ac)) - 1) > 1e-6:
+                    continue
+                pos = rng(y["pts"], ac)[0]
+                want = 1.0 if abs(pos - lo) < 1e-3 else (-1.0 if abs(pos - hi) < 1e-3 else 0.0)
+                if not want or vdot(y["n"], ac) * want < 0.5:
+                    continue                                  # a side faces into the notch
+                if abs(min(y["s0"], y["s1"]) - min(sb, e)) > 1e-3 or abs(max(y["s0"], y["s1"]) - max(sb, e)) > 1e-3:
+                    continue
+                if rng(y["pts"], d) != (w0, w1) and (abs(rng(y["pts"], d)[0] - w0) > 1e-3 or
+                                                    abs(rng(y["pts"], d)[1] - w1) > 1e-3):
+                    continue
+                sides.append(j)
+            if len(sides) != 2:
+                continue
+            notches.append(Notch(body, g, e, lax, ac, wall_n, lo, hi, sb, t, outer,
+                                 [x["f"]] + [rest[j]["f"] for j in sides]))
+            notches[-1].prof = prof         # the member's profile along `across` (its two side faces)
+            used.update([i] + sides)
+            break
+    odd = [_face_desc(x, lax) for i, x in enumerate(rest) if i not in used]
+    return notches, chamfers, plates, odd
 
 
 def half_space_keep(shape, point, normal, big=1e5):

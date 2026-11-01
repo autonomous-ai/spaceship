@@ -29,7 +29,8 @@ SUPPLIES = [
 # id, load, supply, branch fuse, qty, W each max, W each typical, status of W, source, note
 FAN_W_MAX = 6.6        # Noctua's maximum input power, 0.55 A at 12 V (maker page via retailer copies, 2026-10-31: unverified)
 LIGHT_BUDGET_W = 22.0  # DECIDED (PM 2026-11-01): uplight, down-light and call light together, the hub balancing them
-UP_W = round(4.434 * 6.0, 1)      # 26.6 W, the uplight strip at full (calculation)
+UP_M = 4.434                        # m: the uplight strip along the shelf (calculation, from the shelf's length)
+UP_W = round(UP_M * 6.0, 1)       # 26.6 W, the uplight strip at full (calculation)
 DOWN_ROW = 0.975                    # m: one down-light row, 39 sections of 25 mm, the longest that fits the 991 mm LED profile 718101 with room for the feed (D-126)
 DOWN_W = round(2 * DOWN_ROW * 6.0, 1)  # 11.7 W, two rows of the down strip at full (calculation)
 CALL_W = 2.7
@@ -100,8 +101,8 @@ part("w_draw", "710031", "ELECTRICAL - DRAW WIRE - CEILING ROUTE", "Điện - d�
      process="draw cords tied off at each hole (REQ-VCK-03): the ceiling route W33 and the column route W32")
 part("hubzone", "710041", "ELECTRICAL - HUB AND CONTROLS ZONE", "Điện - vùng cảm biến và nút bấm", "HS", "710000", 1,
      "", "", None, "calculation (sum of its parts)", process="fitted in the air column's 180 x 180 zone (D-61, D-70)")
-part("cord", "719001", "ELECTRICAL - CORD SET - 220 V VN - 3 M (KIT)", "Điện - bộ dây nguồn 220 V - 3 m", "HS", "710000", 1,
-     "", "", None, "calculation (sum of its parts)", process="ships loose in the installation kit; the US version changes only this cord, the inlet side and the socket (REQ-ELE-01)")
+part("cord", "719001", "ELECTRICAL - CORD SET - 120 V US - 3 M (KIT)", "Điện - bộ dây nguồn 120 V (Mỹ) - 3 m", "HS", "710000", 1,
+     "", "", None, "calculation (sum of its parts)", process="ships loose in the installation kit; US 120 V 60 Hz, 15 A (D-133): a NEMA 5-15P plug, SJT 14/3 cord and the powerCON TRUE1 cord connector, UL listed as a set (UL 817, HOLD)")
 
 
 # ------------------------------------------------------------------ harness list
@@ -113,6 +114,9 @@ PU_IN = 150.0          # mm of lead inside the power unit to its terminal (assum
 TAIL = 150.0           # mm of tail beyond a grommet or slot, to mate the plugs before hanging (assumption)
 LOOP = 150.0           # mm of slack loop in a pocket (= pk_l, assumption)
 KIT_LOOP = 500.0       # mm service loop at the voice kit drop (assumption)
+# LED strip feed leads (718053) at the harness ends: the back uplight fed both ways, the left jumper's two ends, the right
+# jumper's back end, right uplight and the two down-light rows, the call bar (Reviewer 7: they had no parts line)
+STRIP_FEEDS = {"W11a": 2, "W11b": 2, "W11c": 4, "W12": 1}
 
 AWG18, AWG20, AWG22, AWG24 = 0.823, 0.519, 0.326, 0.205   # mm2 (source: AWG table)
 
@@ -147,24 +151,28 @@ def harnesses(v):
 
     # ---- mains and LAN, inside B2 and the power unit (factory wired, never touched on site)
     add(id="W01", harness_pn="710001", segment="PU", function="mains feed", frm="inlet (outside B2, v1 position)",
-        to="RCBO in the power unit", route="SLEEVE in B2's frame bay", circuit="mains 220 V",
-        conductors="L, N, PE", cable="H07V-K 1.5 mm2 single cores in the sleeve", area_mm2=1.5,
-        length_mm=L("SLEEVE") + 150 + 200, end_a="inlet terminals (powerCON TRUE1 TOP)", end_b="RCBO, PE terminal",
-        grommets="sleeve end bushes", amps_max=10.0, note="mains only inside B2 and the unit (D-10, IF-12)")
+        to="breaker in the power unit", route="SLEEVE in B2's frame bay", circuit="mains 120 V",
+        conductors="L, N, PE", cable="UL 1015 14 AWG single cores (black, white, green) in the sleeve", area_mm2=2.08,
+        length_mm=L("SLEEVE") + 150 + 200, end_a="inlet terminals (powerCON TRUE1 TOP)", end_b="breaker, PE terminal",
+        grommets="sleeve end bushes", amps_max=15.0,
+        note="mains only inside B2 and the unit (D-10, IF-12); US 120 V 60 Hz, 15 A (D-133)")
     add(id="W02", harness_pn="710001", segment="PU", function="mains inside the unit",
-        frm="RCBO", to="user socket; PS1, PS2, PS3 inputs", route="inside the power unit", circuit="mains 220 V",
-        conductors="L, N (+ PE to the socket)", cable="H05V-K 1.0 mm2", area_mm2=1.0, length_mm=1500,
-        length_status="assumption (layout inside the unit)", end_a="RCBO", end_b="socket, supply input leads",
-        grommets="", amps_max=10.0, note="supply inputs on their own leads, kept apart from the 12 V side")
+        frm="breaker", to="GFCI receptacle; PS1, PS2, PS3 inputs", route="inside the power unit", circuit="mains 120 V",
+        conductors="L, N (+ PE to the receptacle)", cable="UL 1015 14 AWG (black, white; green to the receptacle)",
+        area_mm2=2.08, length_mm=1500,
+        length_status="assumption (layout inside the unit)", end_a="breaker",
+        end_b="GFCI receptacle LINE terminals; supply input leads in UL 486C lever connectors",
+        grommets="", amps_max=15.0,
+        note="supply inputs on the breaker side, not the GFCI's load side, so a trip leaves the 12 V side on; kept apart from the 12 V wiring")
     add(id="W03", harness_pn="710001", segment="PU", function="protective bond", frm="PE terminal",
         to="B2 frame (under a unit mounting bolt, serrated washer)", route="inside B2", circuit="PE",
-        conductors="PE", cable="H07V-K 2.5 mm2 green-yellow", area_mm2=2.5, length_mm=300,
-        length_status="assumption", end_a="M6 ring lug", end_b="M6 ring lug", grommets="", amps_max=None,
+        conductors="PE", cable="UL 1015 14 AWG green", area_mm2=2.08, length_mm=300,
+        length_status="assumption", end_a="M6 ring lug, 16-14 AWG", end_b="M6 ring lug, 16-14 AWG", grommets="", amps_max=None,
         note="B2 is the only panel a mains part touches (compliance note 3)")
     add(id="W04", harness_pn="710001", segment="PU", function="LAN in", frm="etherCON feed-through (outside B2)",
-        to="LAN socket port 1 (unit face)", route="SLEEVE in B2's frame bay", circuit="LAN",
+        to="LAN keystone jack 1 (unit face)", route="SLEEVE in B2's frame bay", circuit="LAN",
         conductors="4 pairs", cable="Cat6 U/UTP patch cord", area_mm2=None, length_mm=L("SLEEVE") + 300,
-        end_a="RJ45 plug into the feed-through", end_b="punched down at the socket", grommets="sleeve end bushes",
+        end_a="RJ45 plug into the feed-through", end_b="punched down at keystone jack 1", grommets="sleeve end bushes",
         amps_max=None, note="plan VT09; the building LAN comes in at v1's position")
     # ---- light feed (PS2) to the light shelf: PU -> B2-CASS -> B4-CASS -> shelf
     add(id="W10a", harness_pn="710001", segment="PU", function="light feed", frm="light controller outputs (PS2) via F2 5 A",
@@ -221,7 +229,7 @@ def harnesses(v):
             to="pocket P1 in B2-CASS", route="out of the unit's right side (bushed holes H01, H02) straight into B2-CASS's cable gap: the cut-out is plain", circuit=circ,
             conductors=cond, cable=cable, area_mm2=area, parallel=par, length_mm=PU_IN + cross_side + LOOP,
             end_a={"W20": "PS3 output", "W30": "F1 5 A", "W24": "light controller link, PS2 current sense, PS1 and PS2 rail taps",
-                   "W31": "LAN socket port 2"}[wid],
+                   "W31": "punched down at keystone jack 2 (unit face)"}[wid],
             end_b=end("receptacle"), grommets="the unit's H01/H02", amps_max=amps,
             note="slack to the first clip: it crosses the 4 mm floating gap, so no clip within 150 mm of the cut-out")
         add(id=wid + "b", harness_pn="710021", segment="B2-CASS", function=fn, frm="P1", to="back-right corner",
@@ -274,12 +282,12 @@ def harnesses(v):
         amps_max=2 * FAN_W_MAX / 12.0, note="two signals, balanced flow (D-61)")
     add(id="W42", harness_pn="710023", segment="COLUMN", function="inlet temperature sensor",
         frm="hub sensor port", to="supply fan box inlet (DR)", route="CHASE, TO-DR", circuit="hub sensor",
-        conductors="4 cores (sensor supply, ground, two signal)", cable="4 x 24 AWG shielded", area_mm2=AWG24,
+        conductors="4 cores (sensor supply, ground, two signal)", cable="4 x 24 AWG screened", area_mm2=AWG24,
         length_mm=up_chase + L("TO-DR") + 500, end_a="hub sensor connector (HOLD, ISS-060)",
         end_b="sensor probe (HOLD H-ELE-06)", grommets="G-DR", amps_max=None,
         note="the 4 K limit's room reading (D-50, REQ-ELE-04)")
     add(id="W43", harness_pn="710023", segment="COLUMN", function="hub supply", frm="F3c 1 A", to="sensor hub",
-        route="hub zone", circuit="PS3 hub", conductors="+12 V, 0 V", cable="2 x 22 AWG", area_mm2=AWG22,
+        route="hub zone", circuit="PS3 hub", conductors="+12 V, 0 V", cable="2 x 18 AWG, Class 2", area_mm2=AWG18,
         length_mm=300, length_status="assumption", end_a="fuse block", end_b="hub power connector (HOLD, ISS-060)",
         grommets="", amps_max=5.0 / 12.0, note="")
     add(id="W44", harness_pn="710023", segment="COLUMN", function="controls loom", frm="BOOST, TEST, CALL buttons and the LIGHT knob",
@@ -326,6 +334,8 @@ NEUTRIK = "https://www.neutrik.com/en/product/nac3mpx-top ; https://www.neutrik.
 HEYCO = "https://www.heyco.com/products/bushings-grommets-heycaps-plugs/tubing-caps-and-plugs/heyco-shorty-bushings"
 HAFELE = "https://files.hafele.co.uk/CatalogFiles/www/25L1-18.pdf"
 SE = "https://www.se.com/vn/en/product/A9D32610/"
+EATON_FAZ = "Eaton FAZ-NA UL 489 brochure (https://www.multiwaycontrol.com/multiway/FAZ_circuit_breaker_UL489_Eaton.pdf): 17.7 mm per pole, 70.5 mm deep; retailer listing FAZ-C15/1-NA-L-SP, read 2026-11-01"
+GFCI_SRC = "Pass & Seymour 1595TR series brochure (USESI 103691: 1.72 x 4.20 in, 1.13 in deep), Legrand 1597 pages, read 2026-11-01"
 SEL = "v2/05-Engineering/hardware/selection.md"
 JNT = "v2/05-Engineering/joints/joints-register.md 2.1"
 AL = "aluminium 5052-H32"
@@ -339,14 +349,15 @@ part("pu_body", "711001", "ELECTRICAL - POWER UNIT - ENCLOSURE BODY", "Điện -
      note="folded tray 296 x 260 x 72 with 22 mm front lips; two Ø19.1 lead exits (right), Ø19.1 light feed exit (top), "
           "Ø25 sleeve entry (bottom), 4 M4 clinch nut holes in the lips")
 part("pu_front", "711002", "ELECTRICAL - POWER UNIT - FRONT PLATE", "Điện - hộp nguồn - mặt trước", "MP", "710001", 1,
-     AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.309,
-     "CAD (Fusion volume 115,340 mm3 x 2.68 g/cm3, 711002 P01 design)", size="320 x 284",
-     process="laser cut from 1.5 mm sheet as a flat plate; anodised", status="DRAFT; HOLD features: the two 86-plate openings (UTEN codes, H-ELE-04)",
+     AL + " 1.5 mm", "black anodised AA20 (visible aluminium, D-67)", 0.344,
+     "CAD (Fusion volume 128,264 mm3 x 2.68 g/cm3, 711002 P01 design, D-133 rebuild)", size="320 x 284",
+     process="laser cut from 1.5 mm sheet as a flat plate; anodised", status="DRAFT; HOLD features: the GFCI receptacle's decorator opening and the two keystone openings, set by the picked parts' drawings (D-133)",
      source="711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_CAD; DXF 711002_P01_ELECTRICAL-POWER-UNIT-FRONT-PLATE_DXF.dxf (no drawing, D-89 part 4)",
      note="flat plate, its DXF gives the full outline and every hole (D-89 part 4); thickness 1.5 mm; general tolerance "
           "ISO 2768-m; covers B2-CASS's cut felt edge 8 mm all round and stands 2 mm off the felt on 4 spacers (718049); critical holes: "
           "the 4 x Ø4.5 M4 holes on the body's clinch nuts (42 and 23 mm from the plate's edges, true "
-          "position Ø0.3), the RCBO window 37 x 45 +0.5/0; HOLD: the two 86-plate openings (UTEN codes)")
+          "position Ø0.3), the breaker window 19 x 45 +0.5/0; HOLD: the GFCI receptacle's decorator opening 33.6 x 67 "
+          "with its two 6-32 plate screw holes 96.8 apart, and the two keystone openings 14.9 x 19.4 (D-133)")
 # ---- power unit 710001: bought parts
 part("ps_cv", "718001", "ELECTRICAL - 12 V SUPPLY - 60 W CLASS 2", "Điện - nguồn 12 V 60 W", "PI", "710001", 3,
      "potted plastic case, IP67", "", 0.40, "source", maker="Mean Well", sku="LPV-60-12",
@@ -358,15 +369,17 @@ part("lightctl", "718002", "ELECTRICAL - LED CONTROLLER - 3 CHANNEL 12 V PWM - R
      source="PM ruling 2026-11-01 (the hub balances uplight, down-light and call light at about 22 W)",
      note="constant-voltage PWM dimmer for 12 V strips, 3 channels (uplight, down-light, call), at least 3 A per channel, "
           "common +12 V, set by the hub over RS-485 (DMX or Modbus); on a lost link it holds its level or goes dark, never brighter")
-part("rcbo", "718003", "ELECTRICAL - RCBO - 1P+N C10 30 MA TYPE A", "Điện - CB chống giật 1P+N 10 A 30 mA", "PI", "710001", 1,
-     "", "", 0.20, "assumption", maker="Schneider Electric", sku="A9D32610 (Acti9 iDPN Vigi)", size="36 W x 73 D",
-     status=HOLD_BUY, source=SE + " (Vietnam datasheet)",
-     note="6 kA; type A suits the supplies' electronic inputs. Inrush: Mean Well allows 6 LPV-60 or 16 PWM-60 per C16; "
-          "2 + 1 on a C10 uses about 63 % of that (calculation)")
+part("rcbo", "718003", "ELECTRICAL - CIRCUIT BREAKER - 1P 15 A C - UL 489", "Điện - CB 1 cực 15 A (UL 489)", "PI", "710001", 1,
+     "", "", 0.12, "assumption", maker="Eaton", sku="FAZ-C15/1-NA-L (UL 489, 1 pole, 15 A, C curve; or equal)",
+     size="17.7 W x 70.5 D, DIN rail", status=HOLD_BUY, source=EATON_FAZ,
+     note="D-133: US 120 V 60 Hz. UL 489 branch circuit breaker (interrupting rating at 120 V to confirm on the listing); "
+          "protects the 14 AWG mains wiring at 15 A (NEC 240.4(D)); C curve for the three supplies' inrush. "
+          "The GFCI receptacle 718007 gives the user outlets the personnel protection the RCBO gave")
 part("inlet", "718004", "ELECTRICAL - APPLIANCE INLET - POWERCON TRUE1 TOP", "Điện - ổ cắm nguồn vào", "PI", "710001", 1,
      "", "", 0.05, "assumption", maker="Neutrik", sku="NAC3MPX-TOP", size="flange 26 x 31 x 4.5; 31.2 behind",
      status=HOLD_BUY, source=NEUTRIK + "; " + SEL,
-     note="16 A 250 VAC (EN 60320-1), 20 A 250 VAC (UL 498); plug or unplug under load; UL94 V-0; IP65 mated or capped. "
+     note="UL 498 certified (Neutrik's page names UL file E343813); 20 A in the US (retailer listings give 20 A at 120 VAC; the UL rating to "
+          "confirm on the certificate, H-ELE-03); used at 120 V 60 Hz, 15 A (D-133); plug or unplug under load; UL94 V-0; IP65 mated or capped. "
           "In B2's skin at X 120, Z 313 (v1's spot moved off the closing seam); panel range to confirm (H-ELE-03)")
 part("inlet_cap", "718005", "ELECTRICAL - INLET SEALING CAP", "Điện - nắp che ổ nguồn vào", "PI", "710001", 1,
      "", "", 0.01, "assumption", maker="Neutrik", sku="SCNAC-01 (as named in selection E; confirm)", status=HOLD_BUY,
@@ -374,18 +387,19 @@ part("inlet_cap", "718005", "ELECTRICAL - INLET SEALING CAP", "Điện - nắp c
 part("lan_ft", "718006", "ELECTRICAL - LAN FEED-THROUGH - ETHERCON", "Điện - ổ mạng xuyên vách", "PI", "710001", 1,
      "", "", 0.04, "assumption", maker="Neutrik", sku="NE8FDP", size="flange 26 x 31; 34.55 behind",
      status=HOLD_BUY, source=NEUTRIK + "; " + SEL, note="CAT5e coupler (so the link is CAT5e); panel up to 4 mm")
-part("socket", "718007", "ELECTRICAL - USER SOCKET - UTEN S300 UNIVERSAL", "Điện - ổ cắm 5 chấu UTEN S300", "PI", "710001", 1,
-     "", "", 0.10, "assumption", maker="UTEN", sku="S300 socket, code HOLD (H-ELE-04)", size="86 x 86",
-     status=HOLD_BUY, source=SEL + " (plan VT07)", note="the plan's VT07 set adds a switch P01 doesn't need (ISS-061)")
-part("lan_socket", "718008", "ELECTRICAL - LAN SOCKET - UTEN S300 TWO PORT", "Điện - ổ mạng đôi UTEN S300", "PI", "710001", 1,
-     "", "", 0.05, "assumption", maker="UTEN", sku="S300 two-port LAN, code HOLD (H-ELE-04; S300G-1PC is the one-port)",
-     size="86 x 86", status=HOLD_BUY, source=SEL + " (plan VT09)",
-     note="port 1: the building LAN; port 2: the tie line W31 to the voice kit (REQ-VCK-05)")
-part("backbox", "718009", "ELECTRICAL - BACK BOX - 86 PLATE", "Điện - đế âm cho mặt 86", "PI", "710001", 2,
-     "PC", "", 0.05, "assumption", maker="UTEN", sku="UBBOX/A", size="85 x 85 x 50", status=HOLD_BUY, source=SEL)
+part("socket", "718007", "ELECTRICAL - RECEPTACLE - GFCI TR DUPLEX 15 A - NEMA 5-15R", "Điện - ổ cắm đôi chống giật GFCI NEMA 5-15R",
+     "PI", "710001", 1, "", "", 0.25, "assumption", maker="Pass & Seymour (Legrand)",
+     sku="1595TRW (15 A 125 V, tamper-resistant, self-test, UL 943 Class A; or equal: Eaton TRSGF15W, Leviton GFTR1)",
+     size="decorator face 33.3 x 66.7; strap 43.7 x 106.7; 28.7 behind the strap", status=HOLD_BUY, source=GFCI_SRC,
+     note="D-133: the pod's user outlets, two NEMA 5-15R, tamper-resistant (NEC 406.12), GFCI trips at 4 to 6 mA (UL 943 Class A). "
+          "On the unit face: its strap behind the front plate, held by two 6-32 plate screws (718054), the earthed enclosure as its box; "
+          "fed from the breaker's side; replaces the UTEN S300 socket (plan VT07)")
+# 718008 (UTEN two-port LAN socket) and 718009 (86 back box) are retired by D-133: the keystone jacks snap into the
+# front plate, and the GFCI receptacle needs no box. A retired number is never used again.
+RETIRED = {"718008": "D-133: LAN keystone jacks in the front plate", "718009": "D-133: no 86 back box"}
 part("dinrail", "718010", "ELECTRICAL - DIN RAIL - TS35 X 7.5 - 100 MM", "Điện - thanh ray DIN", "PI", "710001", 1,
      "steel", "zinc plated", 0.03, "assumption", maker="Phoenix Contact", sku="NS 35/7,5 PERF 2000MM, 0801733, cut to 100 (unverified)",
-     status=HOLD_BUY, source="EN 60715 TS35", note="carries the RCBO")
+     status=HOLD_BUY, source="EN 60715 TS35", note="carries the breaker")
 part("fuseholder", "718011", "ELECTRICAL - FUSE HOLDER - ATO BLADE - INLINE", "Điện - đế cầu chì lưỡi", "PI", "710001", 2,
      "", "", 0.01, "assumption", sku="HOLD (H-ELE-11)", status=HOLD_BUY, source="ISO 8820-3 blade fuses",
      note="F1 and F2")
@@ -405,6 +419,12 @@ part("m4spacer", "718049", "ELECTRICAL - SPACER - M4 X 2 MM - NYLON, BLACK", "Đ
      sku="M4 round spacer 4.3 ID x 8 OD x 2 mm", size="M4 x 2", status=HOLD_BUY, source="this design (README section 3)",
      note="under the front plate at its 4 screws: the plate stands 2 mm off the felt, so the floating lining never touches the unit (D-17)")
 P["m4spacer"].update(length_mm="2")
+part("plate_screw", "718054", "ELECTRICAL - SCREW - 6-32 X 1/2 - OVAL HEAD, BLACK", "Điện - vít 6-32 x 1/2 đầu dù, đen", "PI",
+     "710001", 2, "steel", "black oxide", 0.001, "assumption", maker="HOLD: standard part",
+     sku="6-32 UNC x 1/2 in oval head slotted (a decorator wallplate screw)", size="6-32", status=HOLD_BUY,
+     source="decorator wallplates: two 6-32 screws 3-13/16 in (96.8 mm) apart into the device strap",
+     note="D-133: the GFCI receptacle's strap to the front plate, the plate acting as its wallplate")
+P["plate_screw"].update(length_mm="12.7")
 part("m4nut", "718047", "ELECTRICAL - CLINCH NUT - M4 - FOR 1.0 MM ALUMINIUM", "Điện - đai ốc ép M4", "PI", "710001", 4,
      "aluminium", "plain, as supplied", 0.0008, "assumption", maker="PennEngineering",
      sku="CLA-M4-1 (unverified: the aluminium clinch nut for 1.0 mm sheet)", size="M4", status=HOLD_BUY,
@@ -416,12 +436,14 @@ part("pestud", "718014", "ELECTRICAL - EARTH STUD - M5 SELF-CLINCHING", "Điện
 part("serrated", "718015", "ELECTRICAL - BONDING WASHER - SERRATED M6 A2", "Điện - long đen răng tiếp địa", "PI", "710001", 1,
      "stainless A2", "", 0.001, "assumption", sku="DIN 6798 A 6.4 A2, maker HOLD", status=HOLD_BUY, source="DIN 6798",
      note="under the bond lead's lug on one mounting bolt, so the lug bites through to bare aluminium")
-part("lug", "718016", "ELECTRICAL - RING TERMINAL - INSULATED 1.5-2.5 MM2", "Điện - đầu cos tròn", "PI", "710001", 5,
-     "tinned copper", "", 0.001, "assumption", sku="M5 x 4, M6 x 1; maker HOLD", status=HOLD_BUY, source="",
-     note="PE lugs")
-part("sleeve", "718017", "ELECTRICAL - CONDUIT - PVC FLEXIBLE - 20 MM", "Điện - ống luồn dây mềm 20", "PI", "710001", 0.6,
-     "PVC", "", 0.08, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY, source="",
-     note="the sleeve in B2's bay, inlet to unit, 0.57 m (route model); qty in m")
+part("lug", "718016", "ELECTRICAL - RING TERMINAL - INSULATED 16-14 AWG", "Điện - đầu cos tròn 16-14 AWG", "PI", "710001", 5,
+     "tinned copper", "", 0.001, "assumption", sku="16-14 AWG, #10 (M5) x 4, 1/4 in (M6) x 1, UL 486A-486B listed; maker HOLD",
+     status=HOLD_BUY, source="", note="PE lugs (D-133: 14 AWG)")
+part("sleeve", "718017", "ELECTRICAL - CONDUIT - FLEXIBLE NONMETALLIC 1/2 IN", "Điện - ống luồn dây mềm 1/2 in", "PI", "710001", 0.6,
+     "PVC, UL 1660 liquidtight flexible nonmetallic (LFNC-B)", "", 0.08, "assumption (kg per m)",
+     sku="trade size 1/2 (21.3 OD); maker HOLD", status=HOLD_BUY, source="",
+     note="the sleeve in B2's bay, inlet to unit, 0.57 m (route model); its end bushes in the inlet and the unit's Ø25 entry H04 HOLD "
+          "(H-ELE-03); qty in m")
 part("bolt", "838001", "HARDWARE - SOCKET HEAD BOLT - M6 X 16 - ISO 4762 8.8 ZINC", "Bulong lục giác chìm M6 × 16", "PI",
      "710001", 4, "steel", "zinc plated", 0.0055, "assumption", maker="HOLD: standard part, maker picked with the joints register",
      sku="ISO 4762 M6 x 16, 8.8, zinc plated", size="M6", status=HOLD_BUY, source=JNT,
@@ -451,14 +473,15 @@ def _m(ids):
     return sum(rows[i]["length_mm"] for i in ids) / 1000.0
 
 
-cable("w15", "718020", "ELECTRICAL - WIRE - H07V-K 1.5 MM2 (BROWN, BLUE, GREEN-YELLOW)", "Điện - dây đơn mềm 1.5", "710001",
-      3 * _m(["W01"]), 0.020, "maker HOLD (e.g. a VN 450/750 V flexible core)", "W01: L, N, PE in the sleeve")
-cable("w10", "718021", "ELECTRICAL - WIRE - H05V-K 1.0 MM2", "Điện - dây đơn mềm 1.0", "710001", 1.5, 0.014,
-      "maker HOLD", "W02 inside the unit (assumption)")
-cable("w25", "718022", "ELECTRICAL - WIRE - H07V-K 2.5 MM2 GREEN-YELLOW", "Điện - dây tiếp địa 2.5", "710001", 0.3, 0.032,
-      "maker HOLD", "W03 bond lead")
+cable("w15", "718020", "ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE, GREEN)", "Điện - dây đơn UL 1015 14 AWG (đen, trắng, xanh lá)",
+      "710001", 3 * _m(["W01"]), 0.025, "maker HOLD: UL 1015 AWM, 600 V, 105 °C, stranded copper",
+      "W01: L, N, PE in the sleeve (D-133: sized for 15 A)")
+cable("w10", "718021", "ELECTRICAL - WIRE - UL 1015 14 AWG (BLACK, WHITE)", "Điện - dây đơn UL 1015 14 AWG (đen, trắng)", "710001",
+      1.5, 0.025, "maker HOLD: as 718020", "W02 inside the unit (assumption; D-133: sized for 15 A)")
+cable("w25", "718022", "ELECTRICAL - WIRE - UL 1015 14 AWG GREEN", "Điện - dây tiếp địa UL 1015 14 AWG", "710001", 0.3, 0.025,
+      "maker HOLD: as 718020", "W03 bond lead (D-133: 14 AWG, the equipment ground for a 15 A circuit, NEC 250.122)")
 cable("c218", "718023", "ELECTRICAL - CABLE - 2 X 18 AWG - CLASS 2", "Điện - cáp 2 x 18 AWG", "710000",
-      _m(["W11b", "W12", "W43"]), 0.025,
+      _m(["W11b", "W12", "W43"]), 0.025,  # W43's row said 2 x 22 AWG, which had no line (Reviewer 7): it is this cable
       "maker HOLD: 300 V PVC, CL2 or CL3 listed for the US phase", "12 V feeds")
 cable("c418", "718024", "ELECTRICAL - CABLE - 4 X 18 AWG - CLASS 2", "Điện - cáp 4 x 18 AWG", "710000",
       _m(["W30a", "W30b", "W30c", "W20a", "W20b", "W20c", "W20d", "W11c"]), 0.045, "maker HOLD: as 718023",
@@ -503,8 +526,9 @@ for key, pn, name, vi, parent, qty, sku, mass, note in (
 for key, pn, name, vi, qty, note in (
         ("rj45", "718038", "ELECTRICAL - RJ45 PLUG - CAT6", "Điện - đầu RJ45", 5, "W04 1, W31a 1, W31b 2, W31c 1"),
         ("coupler", "718039", "ELECTRICAL - RJ45 INLINE COUPLER - CAT6", "Điện - đầu nối RJ45", 2, "X1 and X2"),
-        ("keystone", "718040", "ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP", "Điện - nhân mạng RJ45", 1,
-         "the kit's data end at X7, capped")):
+        ("keystone", "718040", "ELECTRICAL - RJ45 KEYSTONE JACK - CAT6 - WITH DUST CAP", "Điện - nhân mạng RJ45", 3,
+         "2 snapped into the front plate (jack 1 the building LAN, W04; jack 2 the tie line W31a; D-133) and 1 at the kit's "
+         "data end at X7, capped")):
     part(key, pn, name, vi, "PI", "710000", qty, "", "", 0.005, "assumption", sku="maker HOLD (H-ELE-12)",
          status=HOLD_BUY, source="", note=note)
 
@@ -564,6 +588,13 @@ part("call_profile", "718052", "ELECTRICAL - CALL LIGHT PROFILE AND DIFFUSER - 0
      "PI", "710024", 1, "aluminium + opal PMMA", "anodised, maker's standard (colour with INTERIOR)", 0.15, "assumption", maker="Häfele", sku="Loox5 profile, article HOLD (H-ELE-09)",
      status=HOLD_BUY, source=HAFELE, note="the maker recommends a diffuser profile for even light")
 
+part("strip_lead", "718053", "ELECTRICAL - LED STRIP FEED LEAD - LOOX5 8 MM", "Điện - dây nối nguồn LED dây Loox5 8 mm",
+     "PI", "710000", sum(STRIP_FEEDS.values()), "", "", 0.01, "assumption", maker="Häfele",
+     sku="Loox5 lead for 8 mm monochrome 12 V strip, article HOLD (H-ELE-09)", status=HOLD_BUY, source=HAFELE,
+     note="clip-on feed leads at the strip ends: " + ", ".join("%s %d" % kv for kv in STRIP_FEEDS.items()) +
+          " (the back uplight both ways; the left jumper's ends; the right jumper's back end, right uplight and down-light rows 1 "
+          "and 2; the call bar)")
+
 # ---- hub and controls zone 710041
 part("m4hub", "718048", "ELECTRICAL - SCREW - M4 X 12 - ISO 7045 A2 PAN HEAD, BLACK", "Điện - vít M4 x 12 đen", "PI", "710041", 4,
      "stainless steel", "black oxide (visible)", 0.0018, "assumption", maker="HOLD: standard part",
@@ -608,15 +639,18 @@ part("ycable", "718068", "ELECTRICAL - FAN Y-CABLE - 4-PIN PWM", "Điện - cáp
 # ---- cord set kit 719001 (ships loose; the US version changes only this, the inlet side and the socket)
 part("cord_conn", "718070", "ELECTRICAL - CORD CONNECTOR - POWERCON TRUE1 TOP", "Điện - giắc dây nguồn", "PI", "719001", 1,
      "", "", 0.08, "assumption", maker="Neutrik", sku="mate of NAC3MPX-TOP, as selection E (NAC3F-TRUE1-S / NAC3FX-W-TOP): confirm",
-     status=HOLD_BUY, source=SEL, note="locking")
-part("cord_wire", "718071", "ELECTRICAL - CORD - H05VV-F 3G1.5", "Điện - dây nguồn mềm 3 x 1.5", "PI", "719001", 3.0, "PVC", "",
-     0.12, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY, source="", note="3 m; qty in m")
-part("plug_vn", "718072", "ELECTRICAL - MAINS PLUG - VN OFFICE SOCKET", "Điện - phích cắm", "PI", "719001", 1, "", "", 0.06,
-     "assumption", sku="HOLD: plug type checked with the factory's office sockets", status=HOLD_BUY, source="")
+     status=HOLD_BUY, source=SEL, note="locking; UL 498 (as the inlet), for SJT 14/3 (its cable range to confirm)")
+part("cord_wire", "718071", "ELECTRICAL - CORD - SJT 14/3", "Điện - dây nguồn SJT 14/3", "PI", "719001", 3.0,
+     "PVC jacket, UL 62 type SJT, 300 V, 3 x 14 AWG", "", 0.13, "assumption (kg per m)", sku="maker HOLD", status=HOLD_BUY,
+     source="", note="3 m, 15 A (D-133); qty in m")
+part("plug_us", "718072", "ELECTRICAL - MAINS PLUG - NEMA 5-15P", "Điện - phích cắm NEMA 5-15P", "PI", "719001", 1, "", "", 0.06,
+     "assumption", sku="15 A 125 V straight blade, industrial grade, UL 498; maker HOLD", status=HOLD_BUY, source="",
+     note="D-133: US 120 V. The prototype is tested in Vietnam through a 220-to-110 V step-down transformer (the test set's, "
+          "not a pod part)")
 
 
 # D-89 part 4: flat sheet parts carry thickness and the general tolerance in their row
-P["pu_front"].update(thickness_mm="1.5", tolerance="ISO 2768-m; M4 holes true position Ø0.3; RCBO window +0.5/0")
+P["pu_front"].update(thickness_mm="1.5", tolerance="ISO 2768-m; M4 holes true position Ø0.3; breaker window +0.5/0")
 P["hub_plate"].update(thickness_mm="1.5", tolerance="ISO 2768-m")
 P["pu_body"].update(thickness_mm="1.0", tolerance="ISO 2768-m (drawing 711001)")
 
